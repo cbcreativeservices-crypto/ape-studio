@@ -205,10 +205,25 @@ export function ExposureCheckin() {
       style={[styles.panel, { paddingTop: insets.top + 6, borderColor: ks.border, transform: [{ translateY }], opacity }]}
       accessibilityLiveRegion="polite"
     >
-      <Pressable onPress={openMonitor} accessibilityRole="button" accessibilityLabel={hostOpen ? 'Dismiss the listening exposure check-in' : 'Open the Listening Exposure Monitor'}>
+      {/* ONE element (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08):
+          on iOS this button swallowed everything inside it — the ✕ could not
+          be reached and the readings were never spoken, only "Open the
+          Listening Exposure Monitor". The label now carries the readings,
+          and Dismiss rides along as a custom action (and the escape gesture). */}
+      <Pressable
+        onPress={openMonitor}
+        accessibilityRole="button"
+        accessibilityLabel={`${ks.title}. ${fmtDuration(snap.todayActiveSec)} today, dose ${Math.round(snap.todayDose * 100)}%. ${exposureMessage(snap)}`}
+        accessibilityHint={hostOpen ? 'Dismisses the check-in' : 'Opens the Listening Exposure Monitor'}
+        accessibilityActions={[{ name: 'dismiss', label: 'Dismiss' }]}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName === 'dismiss') dismiss();
+        }}
+        onAccessibilityEscape={dismiss}
+      >
         <View style={styles.headRow}>
           <Text style={[styles.title, kind === 'reached' && { color: AUDIO_RED }]}>{ks.title}</Text>
-          <Pressable onPress={dismiss} hitSlop={12} accessibilityRole="button" accessibilityLabel="Dismiss">
+          <Pressable onPress={dismiss} hitSlop={12} accessible={false} accessibilityRole="button" accessibilityLabel="Dismiss">
             <Text style={styles.close}>✕</Text>
           </Pressable>
         </View>

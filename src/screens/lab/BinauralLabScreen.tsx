@@ -594,7 +594,7 @@ function Stage({
           stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap).
           Renders nothing on iOS, web and builds without the module. */}
       <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
-      <Svg width={size} height={size} viewBox={`0 0 ${STAGE_U} ${STAGE_U}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox={`0 0 ${STAGE_U} ${STAGE_U}`}>
         {/* Distance rings (1..4 m). */}
         {[1, 2, 3, 4].map((m) => (
           <Circle

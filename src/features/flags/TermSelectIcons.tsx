@@ -28,7 +28,7 @@ import {
  *  the term is bookmarked, outline otherwise; tints with the toggle colour. */
 export function BookmarkIcon({ color, filled, size = 16 }: { color: string; filled: boolean; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       <Path
         d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"
         fill={filled ? color : 'none'}

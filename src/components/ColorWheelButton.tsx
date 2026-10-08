@@ -30,7 +30,7 @@ export type WheelScheme = { id: string; label: string; stops: readonly { pos: nu
 export function SchemeSwatch({ stops, w = 100, h = 34 }: { stops: readonly { pos: number; color: string }[]; w?: number; h?: number }) {
   const gid = useId().replace(/[^a-zA-Z0-9]/g, '') + 'led';
   return (
-    <Svg width={w} height={h}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h}>
       <Defs>
         <SvgGradient id={gid} x1="0" y1="0" x2="1" y2="0">
           {stops.map((s, i) => (
@@ -49,7 +49,7 @@ export function ColorWheel({ size = 22 }: { size?: number }) {
   const c = size / 2;
   const r = c - 1;
   return (
-    <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       {HUES.map((col, i) => {
         const a0 = ((i * 60 - 90) * Math.PI) / 180;
         const a1 = (((i + 1) * 60 - 90) * Math.PI) / 180;

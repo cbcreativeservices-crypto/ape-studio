@@ -541,7 +541,7 @@ function SlopeChart({
   const tint = NOISE_TINTS[selectedKey];
   const freqTicks = [20, 200, 1000, 2000, 20000];
   return (
-    <Svg width={w} height={h} viewBox={`0 0 ${W} ${VH}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${VH}`}>
       {/* GRAY plot background (owner 2026-08-05) — gives brown enough contrast. */}
       <Rect x={0} y={0} width={W} height={H} fill="#4d4d53" />
       {/* 0 dB reference + 1 kHz anchor (darker than the gray so they read) */}

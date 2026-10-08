@@ -19,7 +19,7 @@ export function DeckIcon({
   fill?: string;
 }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       {/* Two back cards, offset up-and-left with a slight tilt — unfilled frames.
           Drawn first so the opaque front card covers the part behind it. */}
       <G transform="rotate(-16 10 10)">

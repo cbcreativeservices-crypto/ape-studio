@@ -661,7 +661,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       onLayout={(e) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
     >
       {/* ── layer 1: base machine (gradient ids suffixed B) ──────────────── */}
-      <Svg width="100%" height={height} viewBox={`0 0 ${VBW} ${VBH}`} style={StyleSheet.absoluteFill}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={height} viewBox={`0 0 ${VBW} ${VBH}`} style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="hmWoodB" x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor="#8a6a3e" />
@@ -833,7 +833,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             platStyle,
           ]}
         >
-          <Svg width="100%" height="100%" viewBox={`${PB.x} ${PB.y} ${PB.w} ${PB.h}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`${PB.x} ${PB.y} ${PB.w} ${PB.h}`}>
             <Defs>
               <LinearGradient id="hmPaperP" x1="0" y1="0" x2="1" y2="1">
                 <Stop offset="0" stopColor="#efe9d6" />
@@ -869,7 +869,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       ) : null}
 
       {/* ── layer 3: arms, pen, inset (gradient id T) ─────────────────────── */}
-      <Svg width="100%" height={height} viewBox={`0 0 ${VBW} ${VBH}`} style={StyleSheet.absoluteFill}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={height} viewBox={`0 0 ${VBW} ${VBH}`} style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="hmPaperT" x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor="#efe9d6" />

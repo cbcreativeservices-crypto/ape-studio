@@ -503,7 +503,7 @@ function CentsGrid({
   return (
     <View onLayout={width && width > 0 ? undefined : (e) => setMeasured(Math.round(e.nativeEvent.layout.width))}>
       {w > 0 ? (
-        <Svg width={pw} height={height} viewBox={`0 0 ${w} ${h}`}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={pw} height={height} viewBox={`0 0 ${w} ${h}`}>
           <Rect x={0} y={0} width={w} height={h} fill="#0c0c0f" />
           {/* Vertical semitone gridlines + note names. */}
           {Array.from({ length: hiM - loM + 1 }, (_, k) => {

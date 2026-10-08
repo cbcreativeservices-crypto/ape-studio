@@ -308,7 +308,8 @@ function App() {
   // ⛔ APPLY AN OTA ON THIS LAUNCH, not the one after it (owner 2026-09-19).
   // ⚠️ The first version of this CRASHED a production build — it ran its own
   // check/fetch alongside the native one and reloaded mid-render. This one
-  // only listens for the native downloader and reloads after interactions.
+  // only listens for the native downloader, and (Sentry APE-STUDIO-D, build
+  // 32) reloads only once the app is in the BACKGROUND — never on screen.
   // Read the crash note at the top of autoUpdate.ts before touching it.
   useEffect(() => startAutoUpdate(), []);
 

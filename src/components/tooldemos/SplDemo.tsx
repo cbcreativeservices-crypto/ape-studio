@@ -352,7 +352,7 @@ function RampMeter({
 }) {
   return (
     <View style={[styles.meterTrack, { height: trackH, width }]}>
-      <Svg width='100%' height='100%' viewBox={`0 0 10 ${trackH}`} preserveAspectRatio='none'>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 10 ${trackH}`} preserveAspectRatio='none'>
         <Defs>
           <LinearGradient id={gradId} x1='0' y1='0' x2='0' y2='1'>
             {LOUDNESS_STOPS.map((s) => (
@@ -494,7 +494,7 @@ function PeakRmsScene() {
           style={[styles.vizPanel, styles.scope]}
           onLayout={(e: LayoutChangeEvent) => setScopeW(e.nativeEvent.layout.width)}
         >
-          <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
             <Defs>
               <LinearGradient
                 id='splWaveRamp'
@@ -641,7 +641,7 @@ function WeightingScene() {
       </Text>
 
       <View style={[styles.vizPanel, styles.curveBox]}>
-        <Svg width='100%' height='100%' viewBox={`0 0 ${CURVE_W} ${CURVE_H}`} preserveAspectRatio='none'>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${CURVE_W} ${CURVE_H}`} preserveAspectRatio='none'>
           {CURVE_GRID_XS.map((x) => (
             <Line key={x} x1={x} y1={0} x2={x} y2={CURVE_H} stroke={colors.hairlineDim} strokeWidth={1} />
           ))}
@@ -728,7 +728,7 @@ function FastSlowScene() {
         style={[styles.vizPanel, styles.stair]}
         onLayout={(e: LayoutChangeEvent) => setStairW(e.nativeEvent.layout.width)}
       >
-        <Svg width='100%' height='100%' viewBox={`0 0 ${STAIR_W} ${STAIR_H}`} preserveAspectRatio='none'>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${STAIR_W} ${STAIR_H}`} preserveAspectRatio='none'>
           <Line
             x1={0}
             y1={STAIR_ACTION_Y}

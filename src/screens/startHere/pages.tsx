@@ -364,7 +364,7 @@ function ThreePartsStrip() {
     </View>
   );
   const arcs = (
-    <Svg width={64} height={48} viewBox="0 0 64 48">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={64} height={48} viewBox="0 0 64 48">
       {[0, 1, 2, 3].map((k) => (
         <SvgPath key={k} d={`M ${10 + k * 12} ${12 - k * 2} Q ${18 + k * 12} 24 ${10 + k * 12} ${36 + k * 2}`} stroke="#ffc64d" strokeWidth={2} fill="none" strokeLinecap="round" opacity={1 - k * 0.18} />
       ))}

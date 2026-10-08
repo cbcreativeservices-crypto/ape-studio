@@ -460,7 +460,7 @@ export function HarmonicStems({
         {/* OVERLAYS — ghost (A/B), envelope, spacing. pointerEvents="none":
             they must never intercept a stem tap or drag. */}
         {overlaysOn ? (
-          <Svg width={plotW} height={PLOT_H} style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={plotW} height={PLOT_H} style={StyleSheet.absoluteFill} pointerEvents="none">
             {ghostSet
               ? ghostSet.map((h) => {
                   // Ghost tops only for harmonics that CONTRIBUTED in A —

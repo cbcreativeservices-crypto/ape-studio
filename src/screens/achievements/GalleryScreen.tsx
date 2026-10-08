@@ -24,7 +24,7 @@ function BadgeDisc({ color, size = 48 }: { color: string; size?: number | '100%'
   // Design: radial rings — dark core, color ring, dark band, color ring, dark rim.
   // Drawn in a 48-unit box and scaled, so the tablet's big tile keeps the art.
   return (
-    <Svg width={size} height={size} viewBox="0 0 48 48">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 48 48">
       <Circle cx={24} cy={24} r={24} fill="#122030" />
       <Circle cx={24} cy={24} r={16} fill="none" stroke={color} strokeWidth={3} />
       <Circle cx={24} cy={24} r={10.5} fill="none" stroke={color} strokeWidth={2.5} opacity={0.85} />

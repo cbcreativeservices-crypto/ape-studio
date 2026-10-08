@@ -84,7 +84,7 @@ export function FrameStrip({
   );
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
         {frames.map((f, i) => {
           const x0 = 10 + i * slot;
@@ -152,7 +152,7 @@ export function EqVsStrips({
   const onlySib = !uniform && losses.every((l, i) => (frames[i].sibilant ? l > 0.5 : l <= 0.5));
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
         {/* legend — once, for both panels */}
         <SvgText x={12} y={12} fontSize={LBL} fill={colors.cyanBright} fontFamily={F}>■ voice body</SvgText>
@@ -221,7 +221,7 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
   const thrLabelY = thrY - 4 < topA + 4 ? thrY + 10 : thrY - 4;
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
         <SvgText x={12} y={12} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>DETECTOR · hiss-band level, dB (0 = loudest S)</SvgText>
         {[0, -10, -20, -30, -40].map((d) => (
@@ -289,7 +289,7 @@ export function BandSpectrum({
   const curvePts = curve ? Array.from(curve, (m, i) => `${(10 + i * bw + bw / 2).toFixed(1)},${(bottom - m * (bottom - top)).toFixed(1)}`).join(' ') : '';
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
         {band ? <Rect x={x(band[0])} y={top - 4} width={Math.max(1, x(band[1]) - x(band[0]))} height={bottom - top + 8} fill={colors.orange} opacity={0.1} /> : null}
         {ghost ? Array.from(ghost, (m, i) => <Rect key={`g${i}`} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={m * (bottom - top)} fill={colors.textMuted} opacity={0.35} />) : null}
@@ -335,7 +335,7 @@ export function PathDiagram({ active, onSelect, mode, width, height }: Box & { a
   const name = (id: string) => [...main, ...sc].find((b) => b.id === id)?.name ?? id;
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={`Signal-flow diagram. Main path: ${main.map((b) => b.name).join(', then ')}. A copy of the input feeds the side chain: ${sc.map((b) => b.name).join(', then ')}; the gain computer's control line sets the gain element. Use the Next Block button to read each block.`}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
         <SvgText x={12} y={15} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>MAIN PATH · the voice</SvgText>
         {/* main path — solid cyan */}

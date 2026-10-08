@@ -528,7 +528,7 @@ function BlockadeArt({ run, revealed }: { run: boolean; revealed: boolean }) {
 
 export function ExampleArt({ id, w, h, run, revealed }: { id: ExampleId; w: number; h: number; run: boolean; revealed: boolean }) {
   return (
-    <Svg width={w} height={h} viewBox={`0 0 ${WHY_VB_W} ${WHY_VB_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${WHY_VB_W} ${WHY_VB_H}`}>
       {id === 'a' ? <ShowpieceArt run={run} revealed={revealed} /> : null}
       {id === 'b' ? <ProfessionalArt run={run} revealed={revealed} /> : null}
       {id === 'c' ? <PileArt run={run} revealed={revealed} /> : null}

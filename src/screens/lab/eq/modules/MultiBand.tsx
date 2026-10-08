@@ -408,7 +408,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
               <NodeDragSurface gw={gw} gh={gh} onGrab={grab} onDrag={applyDrag}>
                 {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
                 <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} width={gw} height={gh} />
-                <Svg
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
                   pointerEvents="none"
                   style={StyleSheet.absoluteFill}
                   width={gw}

@@ -192,7 +192,7 @@ export function VuSkinGlyph({ width = 58 }: { width?: number }): ReactNode {
   const tipX = VU_CTR.x + VU_NEEDLE_TIP * Math.sin(a);
   const tipY = VU_CTR.y - VU_NEEDLE_TIP * Math.cos(a);
   return (
-    <Svg width={width} height={h} viewBox={SKIN_VB} preserveAspectRatio="xMidYMid meet">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={h} viewBox={SKIN_VB} preserveAspectRatio="xMidYMid meet">
       <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
       {SPL_SCALE}
       <Line x1={VU_CTR.x} y1={VU_CTR.y} x2={tipX} y2={tipY} stroke={NEEDLE} strokeWidth={10} strokeLinecap="round" />
@@ -340,7 +340,7 @@ export const SkinnedVu = memo(function SkinnedVu({ width, height, live, live0Db,
 
   return (
     <View style={{ width, height }}>
-      <Svg width={width} height={height} viewBox={SKIN_VB} preserveAspectRatio={par}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={SKIN_VB} preserveAspectRatio={par}>
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
         {splRefScale(ref0Spl)}

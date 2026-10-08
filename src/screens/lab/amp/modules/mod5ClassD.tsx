@@ -35,7 +35,7 @@ function SignalPath({ width, height }: { width: number; height: number }) {
   const boxes: string[][] = [['AUDIO IN'], ['MODULATION'], ['SWITCHING'], ['OUTPUT', 'FILTER'], ['SPEAKER']];
   const bw = 66, gap = 6, x0 = 3, y = 8, bh = 36;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${PATH_W} ${PATH_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${PATH_W} ${PATH_H}`}>
       {boxes.map((b, i) => {
         const x = x0 + i * (bw + gap);
         const last = i === 4;
@@ -63,7 +63,7 @@ function SwitchingStage({ dutyAtPeak, width, height }: { dutyAtPeak: number; wid
   const px0 = 86, pw = 60, pyHi = 56, pyLo = 70;
   const pulse = `M${px0} ${pyLo} V${pyHi} H${(px0 + pw * d).toFixed(1)} V${pyLo} H${px0 + pw}`;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>
       <SvgText x={20} y={16} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>+RAIL</SvgText>
       <SvgText x={20} y={144} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>−RAIL</SvgText>
       <Line x1={60} y1={12} x2={60} y2={138} stroke={AMP_COLORS.supply} strokeWidth={1.2} strokeDasharray="3,2" />

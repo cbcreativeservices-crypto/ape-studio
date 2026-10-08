@@ -29,7 +29,7 @@ const AMBER = colors.amber; // academy accent (token, not a magic hex)
  *  bare line). */
 function LockGlyph({ size = 46, color = AMBER }: { size?: number; color?: string }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M7 10V7.5a5 5 0 0 1 10 0V10" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
       <Rect x={4.5} y={10} width={15} height={10.5} rx={2.4} stroke={color} strokeWidth={1.8} />
       {/* Keyhole: a small bore + tapered stem. */}

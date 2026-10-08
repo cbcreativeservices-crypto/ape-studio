@@ -731,7 +731,7 @@ function PatchDiagram({
 
   return (
     <View>
-      <Svg width={pw} height={ph} viewBox={`0 0 ${w} ${h}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={pw} height={ph} viewBox={`0 0 ${w} ${h}`}>
         <Defs>
           <LinearGradient id="mdBg" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0%" stopColor="#14141a" />

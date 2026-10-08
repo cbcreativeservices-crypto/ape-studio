@@ -461,7 +461,7 @@ export function SupportIcon({ id, w }: { id: string; w: number }) {
   const h = Math.round(w / ICON_ASPECT);
   const p = u(uid);
   return (
-    <Svg width={w} height={h} viewBox={`0 0 ${ICON_VB_W} ${ICON_VB_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${ICON_VB_W} ${ICON_VB_H}`}>
       <Paints id={uid} />
       <Defs>
         <ClipPath id={`${uid}clip`}>

@@ -200,7 +200,7 @@ function SpeechChart() {
       <Text style={styles.chartTitle}>SPEECH · “PRO-FES-SION-AL AU-DI-O” · {marks.length} SYLLABLE ENVELOPES</Text>
       <ExpandableFigure aspect={W / H} title="SPEECH" badge={CHART_HONESTY} render={(w, h) => (
       <View accessible accessibilityRole="image" accessibilityLabel={`Speech: ${marks.length} syllables over ${Math.round(total)} milliseconds, each a short envelope with near-silence between. Illustrative model.`} style={{ width: w, height: h }}>
-        <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
           {marks.map((m, i) => (
             <G key={m.label}>
@@ -289,7 +289,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
         <Text style={styles.chartTitle}>DURATION · IMPULSE → CONTINUOUS · LOG TIME</Text>
         <ExpandableFigure aspect={W / H} title="DURATION" badge="TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED" controls={<View style={styles.dock}>{picks}</View>} render={(w, h) => (
         <View accessible accessibilityRole="image" accessibilityLabel={`Duration timeline on a logarithmic axis from 1 millisecond to 20 seconds: ${DURATION_EXAMPLES.map((e, i) => `${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`).join('; ')}.${chosen ? ` Selected: ${chosen.name}.` : ''} Typical values, illustrative.`} style={{ width: w, height: h }}>
-          <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
             <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
             {DURATION_BANDS.map((b, i) => (
               <G key={b.category}>

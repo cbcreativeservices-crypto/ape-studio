@@ -461,7 +461,7 @@ export function CableSection({ cls, tint, cx, cy, R, fine = true }: { cls: CiCab
 /** The list swatch: the section, no words. */
 export function CableSwatchArt({ cls, tint, size }: { cls: CiCableClass; tint: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 20 20">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 20 20">
       <CableSection cls={cls} tint={tint} cx={10} cy={10} R={8.6} fine={false} />
     </Svg>
   );
@@ -483,7 +483,7 @@ export function CableSectionFigure({ cls, tint, w, h }: { cls: CiCableClass; tin
   // labels + the OD line form one column, centred on the section
   const top = cy - (n * gap) / 2 + 2;
   return (
-    <Svg width={w} height={h} viewBox={`0 0 ${SECTION_VB_W} ${SECTION_VB_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${SECTION_VB_W} ${SECTION_VB_H}`}>
       <CableSection cls={cls} tint={tint} cx={cx} cy={cy} R={R} />
       {sp.labels.map((l, i) => {
         const ax = cx + l.at[0] * s;

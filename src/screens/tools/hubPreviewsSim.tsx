@@ -163,7 +163,7 @@ function GenWaveSlot({
   return (
     <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]}>
       {shape === 'noise' ? (
-        <Svg width="100%" height="100%" viewBox={`0 0 ${GEN_PLOT_W} ${GEN_PLOT_H}`} preserveAspectRatio="none">
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`0 0 ${GEN_PLOT_W} ${GEN_PLOT_H}`} preserveAspectRatio="none">
           <Defs>
             <MirGrad id={gradId} y1={GEN_MID - GEN_AMP} y2={GEN_MID + GEN_AMP} />
           </Defs>
@@ -174,7 +174,7 @@ function GenWaveSlot({
         <Animated.View
           style={{ width: svgW, height: '100%', transform: [{ translateX: scrollX }] }}
         >
-          <Svg
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
             width="100%"
             height="100%"
             viewBox={`0 0 ${GEN_PLOT_W + GEN_LAMBDA} ${GEN_PLOT_H}`}
@@ -249,7 +249,7 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
 
   return (
     <View style={StyleSheet.absoluteFill} onLayout={onLayout} pointerEvents="none">
-      <Svg width="100%" height="100%" viewBox={VB}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
         <Rect width={2048} height={1024} fill="#060608" />
         {GEN_CHROME}
       </Svg>
@@ -271,7 +271,7 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
         {/* Second seeded noise trace cross-fades over the first. */}
         {(pair.cur === 'noise' || pair.prev === 'noise') && plotW > 0 && (
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: Animated.multiply(noiseFlick, pair.cur === 'noise' ? fade : prevOp) }]}>
-            <Svg width="100%" height="100%" viewBox={`0 0 ${GEN_PLOT_W} ${GEN_PLOT_H}`} preserveAspectRatio="none">
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`0 0 ${GEN_PLOT_W} ${GEN_PLOT_H}`} preserveAspectRatio="none">
               <Defs>
                 <MirGrad id="hpMirGenN2" y1={GEN_MID - GEN_AMP} y2={GEN_MID + GEN_AMP} />
               </Defs>
@@ -393,7 +393,7 @@ const HubRt60Sim: FC<{ active: boolean }> = memo(({ active }) => {
           sim's window sits 64 canvas units further left — the decay starts a
           clear margin in from the glass edge, the flat floor gives up 64
           units on the right. Same window height, so nothing else shifts. */}
-      <Svg width="100%" height="100%" viewBox={`${STRIP_WINDOW.x - 64} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`${STRIP_WINDOW.x - 64} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`}>
         <Defs>
           <LvlGrad id="hpLvlRt" y1={104} y2={920} />
           <LinearGradient id="hpFillRt" gradientUnits="userSpaceOnUse" x1="0" y1={104} x2="0" y2={920}>

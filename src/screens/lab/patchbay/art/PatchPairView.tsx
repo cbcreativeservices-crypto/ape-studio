@@ -160,7 +160,7 @@ function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bott
     </G>
   );
   return (
-    <Svg width={w} height={(w * FACE_H) / W} viewBox={`0 0 ${W} ${FACE_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={(w * FACE_H) / W} viewBox={`0 0 ${W} ${FACE_H}`}>
       <Rect x={0} y={2} width={W} height={FACE_H - 4} rx={6} fill={PB.panel} stroke={PB.panelEdge} />
       <Circle cx={12} cy={FACE_H / 2} r={2.4} fill="#3a3b41" />
       <Circle cx={W - 12} cy={FACE_H / 2} r={2.4} fill="#3a3b41" />

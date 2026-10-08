@@ -195,7 +195,7 @@ export function MethodIcon({
           : null,
       ]}
     >
-      <Svg width={inner} height={inner} viewBox="0 0 24 24">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={inner} height={inner} viewBox="0 0 24 24">
         <Glyph method={method} glow color={glyphColor} off={off} />
         <Glyph method={method} color={glyphColor} off={off} />
       </Svg>

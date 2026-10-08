@@ -281,7 +281,7 @@ function FilterChip({
  *  concentric iris ring and a solid round pupil, for the SOLO study-view button. */
 function EyeIcon({ color, pupil }: { color: string; pupil: string }) {
   return (
-    <Svg width={24} height={29} viewBox="0 0 24 29">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={24} height={29} viewBox="0 0 24 29">
       {/* Natural eye lids (arched upper, flatter lower, slight tilt) — even
           taller so the iris ring + pupil read clearly (user request 2026-07-24). */}
       <Path
@@ -303,7 +303,7 @@ function EyeIcon({ color, pupil }: { color: string; pupil: string }) {
  *  the card's other SVG corner icons; user request 2026-07-24). */
 function FullscreenIcon({ color }: { color: string }) {
   return (
-    <Svg width={23} height={23} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={23} height={23} viewBox="0 0 24 24">
       {/* Corner-bracket frame — larger within the same button (user 2026-07-24). */}
       <Path
         d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"
@@ -330,7 +330,7 @@ function FullscreenIcon({ color }: { color: string }) {
 /** Shuffle glyph — two crossing arrows (replaces the SHUFFLE text). */
 function ShuffleIcon({ color }: { color: string }) {
   return (
-    <Svg width={22} height={16} viewBox="0 0 21 16">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={22} height={16} viewBox="0 0 21 16">
       <Path
         d="M2 4 H6 L15 12 H19"
         stroke={color}
@@ -1642,11 +1642,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             // invalid <button>-in-<button> on web and the outer role
             // flattened them away from screen readers. Tap-to-reveal keeps
             // working; the inner controls become reachable.
+            // ⛔ …ONLY WITH accessible={false} (Sentry APE-STUDIO-W/R/S sweep,
+            // 2026-10-08): a Pressable is an accessibility ELEMENT by default
+            // on iOS whatever its role, so the card was still one element whose
+            // label was every text inside it run together, and the four buttons
+            // stayed unreachable. The term itself is the reveal control.
             <Pressable
               onPress={soloReveal ? undefined : onTap}
               onLongPress={() => setFullscreen(true)}
               delayLongPress={850}
               style={{ flex: 1 }}
+              accessible={false}
             >
               <View style={[styles.card, soloReveal && styles.cardSolo]}>
                 {/* Bookmark toggle on the card (user request 2026-07-18) —
@@ -1942,7 +1948,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           </Pressable>
           {/* In Study Sheet mode tapping must NOT flip (term + sections are all
               shown at once); swipe still changes card. */}
-          <Pressable accessibilityRole="button" onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
+          {/* Not ONE button (APE-STUDIO-W/R/S sweep): as one, its label was
+              the whole card — term and every section — run together, and the
+              study sheet's sections could not be read one by one. The term
+              (and the section eyebrow) carry the flip for a screen reader. */}
+          <Pressable accessible={false} onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
             {card ? (
               studyMode ? (
                 // STUDY SHEET: term + every chosen section together, scrollable.
@@ -1977,7 +1987,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       <CautionBadge />
                     </View>
                   ) : null}
-                  <Text accessibilityRole="header" style={styles.fsTerm}>{card.term}</Text>
+                  <Text
+                    accessibilityRole="button"
+                    accessibilityHint="Reveals the definition"
+                    onPress={onTap}
+                    style={styles.fsTerm}
+                  >
+                    {card.term}
+                  </Text>
                 </View>
               ) : (
                 <ScrollView style={styles.fsScrollView} contentContainerStyle={styles.fsScroll} showsVerticalScrollIndicator={false}>
@@ -1993,7 +2010,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       always shown this eyebrow; full screen dropped it, so the
                       reader could carousel between DEFINITION, PLAIN ENGLISH
                       and COMMON MISTAKES with nothing saying which was which. */}
-                  <Text style={styles.fsEyebrow}>{LEVEL_LABELS[Math.max(0, level - 1)]}</Text>
+                  <Text
+                    style={styles.fsEyebrow}
+                    accessibilityRole="button"
+                    accessibilityHint="Shows the next section"
+                    onPress={onTap}
+                  >
+                    {LEVEL_LABELS[Math.max(0, level - 1)]}
+                  </Text>
                   {/* Term image in the full-screen reveal too (user request
                       2026-07-18) — it only rendered in the study sheet before. */}
                   {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (

@@ -57,13 +57,13 @@ export function HarmonicComparison({
   const summary = `Harmonic ladders. Root ${rootLabel} harmonic ${rootHarmonic} at ${pa.toFixed(2)} hertz; ${upperLabel} harmonic ${upperHarmonic} at ${pb.toFixed(2)} hertz; ${aligned ? 'same frequency, exact alignment' : `difference ${diffHz.toFixed(2)} hertz, ${diffCents.toFixed(2)} cents`}.`;
   return (
     <View style={{ gap: 6 }} accessible accessibilityLabel={summary}>
-      <Svg width="100%" height={fit ? undefined : H} style={fit ? { aspectRatio: W / H } : undefined} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : H} style={fit ? { aspectRatio: W / H } : undefined} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {[0, 1].map((row) => {
           const f0 = row === 0 ? rootHz : upperHz;
           const hi = row === 0 ? rootHarmonic : upperHarmonic;
           return (
-            <Svg key={row}>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={row}>
               {/* 9.5 in the viewBox, not 9 (review 2026-09-30): on a 375-wide
                   phone under 700 pt tall the M glass drops to S and this
                   340 × 150 drawing fits by HEIGHT at ×0.974 — a 9 was 8.8 pt. */}
@@ -77,7 +77,7 @@ export function HarmonicComparison({
                 if (f > fHi) return null;
                 const on = n === hi;
                 return (
-                  <Svg key={n}>
+                  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={n}>
                     <Line x1={x(f)} y1={rowY[row] - (on ? 18 : 10)} x2={x(f)} y2={rowY[row]} stroke={on ? (aligned ? ROLE.exact : row === 0 ? ROLE.active : ROLE.operation) : colors.textMutedDeep} strokeWidth={on ? 3 : 1.2} opacity={on ? 1 : isolate ? 0.18 : 0.5} />
                     <SvgText x={x(f)} y={rowY[row] + 12} fontSize={9.5} fill={on ? colors.textPrimary : colors.textMutedDeep} textAnchor="middle" fontFamily={fonts.oswaldMedium} opacity={on || !isolate ? 1 : 0.3}>{n}</SvgText>
                   </Svg>
@@ -139,7 +139,7 @@ export function BeatingModel({ diffHz, fit, note = true }: { diffHz: number; /**
   }
   return (
     <View style={{ gap: 4 }} accessible accessibilityLabel={`Beating model, explanatory and not a measurement: ${d < 0.01 ? 'no beating, the partials coincide' : `envelope rises and falls ${d.toFixed(2)} times per second`}`}>
-      <Svg width="100%" height={fit ? undefined : H2} style={fit ? { aspectRatio: W2 / H2 } : undefined} viewBox={`0 0 ${W2} ${H2}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : H2} style={fit ? { aspectRatio: W2 / H2 } : undefined} viewBox={`0 0 ${W2} ${H2}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
         <Rect x={0} y={0} width={W2} height={H2} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={6} y1={H2 / 2} x2={W2 - 6} y2={H2 / 2} stroke="rgba(255,255,255,0.1)" />
         <Polyline points={pts1.join(' ')} fill="none" stroke={ROLE.active} strokeWidth={1} opacity={0.8} />

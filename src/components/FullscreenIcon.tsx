@@ -7,7 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 
 export function FullscreenIcon({ color, size = 23 }: { color: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       {/* Corner-bracket frame. */}
       <Path
         d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"

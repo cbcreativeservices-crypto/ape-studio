@@ -31,6 +31,11 @@ if (Platform.OS === 'web') {
     try {
       const { LoadSkiaWeb } = await import('@shopify/react-native-skia/lib/module/web');
       await LoadSkiaWeb({ locateFile: (file: string) => `/${file}` });
+      // No WebGL (no GPU, a hidden preview pane, the browser's context cap)
+      // must not throw out of every <Canvas> — fall back to CanvasKit's CPU
+      // surface instead (Sentry APE-STUDIO-G; see skiaWebFallback.ts).
+      const { installSkiaWebFallback } = await import('./src/lib/skiaWebFallback');
+      installSkiaWebFallback((globalThis as { CanvasKit?: unknown }).CanvasKit);
     } catch (e) {
       // Non-fatal: the app boots without Skia and falls back to SVG.
       console.warn('[skia-web] CanvasKit failed to load; Skia views fall back to SVG.', e);

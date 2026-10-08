@@ -302,7 +302,7 @@ export function LabScopeSweep({
       <Animated.View
         style={[s.trace, edge === 'top' ? s.onTop : s.onBottom, { opacity, transform: [{ translateX: x }] }]}
       >
-        <Svg width={TRACE_W} height={TRACE_H} viewBox={`0 0 ${TRACE_W} ${TRACE_H}`}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={TRACE_W} height={TRACE_H} viewBox={`0 0 ${TRACE_W} ${TRACE_H}`}>
           <G stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" fill="none">
             <Path d={LEAD} strokeWidth={1} strokeOpacity={0.35} />
             <Path d={WAVEFORMS[letter] ?? ''} strokeWidth={0.75} />

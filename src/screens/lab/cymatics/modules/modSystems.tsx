@@ -52,7 +52,7 @@ function StringDemo({ w: boxW, h: boxH, n, running }: { w: number; h: number; n:
     return s;
   }, [w, h, n, phase, amp]);
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Defs>
         <SvgGradient id="strg" x1="0" y1={h / 2 - amp} x2="0" y2={h / 2 + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -94,7 +94,7 @@ function PipeDemo({ w: boxW, h: boxH, n, running }: { w: number; h: number; n: n
   const top = h / 2 - amp - 16;
   const bot = h / 2 + amp + 16;
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Defs>
         <SvgGradient id="pipg" x1="0" y1={h / 2 - amp} x2="0" y2={h / 2 + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -140,7 +140,7 @@ function LevitationDemo({ w: boxW, h: boxH, running }: { w: number; h: number; r
     return s;
   }, [w, h, phase, top, bot]);
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Defs>
         <SvgGradient id="levg" x1={w / 2 - 26} y1="0" x2={w / 2 + 26} y2="0" gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -206,7 +206,7 @@ function WaterDemo({ w: boxW, h: boxH, running }: { w: number; h: number; runnin
   }, [left, right, restY, surf, amp]);
 
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Defs>
         <SvgGradient id="watg" x1="0" y1={restY - amp} x2="0" y2={restY + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -282,7 +282,7 @@ function SpeakerDemo({ w: boxW, h: boxH, running }: { w: number; h: number; runn
   const grains = [-0.75, -0.5, -0.25, 0.25, 0.5, 0.75];
 
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Defs>
         <SvgGradient id="spkg" x1="0" y1={rimY - amp} x2="0" y2={rimY + depth + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -348,7 +348,7 @@ function BellDemo({ w: boxW, h: boxH, running }: { w: number; h: number; running
     `Z`;
 
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Defs>
         <SvgGradient id="bellg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
           <Stop offset="0%" stopColor="#8a6a2e" />

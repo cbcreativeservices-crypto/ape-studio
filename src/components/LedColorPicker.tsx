@@ -67,9 +67,12 @@ export function LedColorPicker({
   );
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <Pressable style={styles.scrim} onPress={handleClose} accessible={false}>
-        {/* Inner card: stop the backdrop tap so picking inside never closes. */}
-        <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none">
+      <Pressable style={styles.scrim} onPress={handleClose} accessible={false} onAccessibilityEscape={handleClose}>
+        {/* Inner card: stop the backdrop tap so picking inside never closes.
+            accessible={false}: role "none" does NOT stop a Pressable being one
+            iOS accessibility element, which swallowed every swatch and key in
+            the card (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08). */}
+        <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none" accessible={false}>
           <Text style={styles.title}>LED METER COLOUR</Text>
           {spectrumFor ? (
             <View style={styles.spectrumWrap}>

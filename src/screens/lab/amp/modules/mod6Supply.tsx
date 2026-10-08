@@ -40,7 +40,7 @@ function ChainDiagram({ kind, width, height }: { kind: 'linear' | 'smps'; width:
   const bw = (CHAIN_W - 6 - gap * (n - 1)) / n;
   const y = 8, bh = 36;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
       {boxes.map((b, i) => {
         const x = 3 + i * (bw + gap);
         const last = i === n - 1;

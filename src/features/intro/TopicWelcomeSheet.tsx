@@ -199,14 +199,16 @@ export function TopicWelcomeSheet({
       statusBarTranslucent
       onRequestClose={dismiss}
     >
-      <Pressable
-        style={styles.scrim}
-        onPress={dismiss}
-        accessibilityRole="button"
-        accessibilityLabel="Dismiss the topic introduction"
-      >
+      {/* Neither the scrim nor the card is an accessibility element
+          (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08): as the
+          "Dismiss" button the scrim WRAPPED the card, so on iOS a screen
+          reader heard only "Dismiss the topic introduction" and could not
+          read the welcome or reach START STUDYING. Role "none" does not stop
+          a Pressable being an element either. START STUDYING dismisses; so
+          does the escape gesture. */}
+      <Pressable style={styles.scrim} onPress={dismiss} accessible={false} onAccessibilityEscape={dismiss}>
         {/* The card swallows taps so a stray press inside it does not dismiss. */}
-        <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none">
+        <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none" accessible={false}>
           <Text style={styles.eyebrow}>WELCOME TO THIS TOPIC</Text>
           <Text style={styles.title}>{copy.title}</Text>
           <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.bodyPad} showsVerticalScrollIndicator={false}>

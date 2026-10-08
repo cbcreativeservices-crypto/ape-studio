@@ -205,7 +205,7 @@ export function WaveformPreview({
     <PreviewFrame caption={caption} height={height} onPress={onPress} a11yLabel={a11y}>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
         {geo ? (
-          <Svg width={geo.w} height={geo.h}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={geo.w} height={geo.h}>
             <Defs>
               <LinearGradient id={gid} gradientUnits="userSpaceOnUse" x1={0} y1={geo.gradY0} x2={0} y2={geo.gradY1}>
                 {WAVE_LEVEL_STOPS.map((s) => (

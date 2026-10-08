@@ -71,7 +71,7 @@ function LedMini({ levelPref, avgTint, target }: { levelPref: string | null; avg
     segs.push(<Rect key={i} x={11.5} y={segY(i)} width={13} height={3} fill={color} fillOpacity={opacity} />);
   }
   return (
-    <Svg width={40} height={56} viewBox="0 0 36 56" preserveAspectRatio="xMidYMid meet">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={40} height={56} viewBox="0 0 36 56" preserveAspectRatio="xMidYMid meet">
       <Rect x={9} y={1.5} width={18} height={53} rx={3.5} fill={HOUSING_FILL} stroke={HOUSING_STROKE} strokeWidth={1} />
       {segs}
       {/* Average marker line — the AVG target's headline element. */}
@@ -108,7 +108,7 @@ export function RtaBarsDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   const c = tint ?? defaultTint;
   const heights = [10, 17, 26, 34, 38, 33, 25, 18, 12, 8];
   return (
-    <Svg width={62} height={44} viewBox="0 0 88 44" preserveAspectRatio="xMidYMid meet">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={62} height={44} viewBox="0 0 88 44" preserveAspectRatio="xMidYMid meet">
       <Line x1={3} x2={85} y1={40} y2={40} stroke="#2b2b33" strokeWidth={1} />
       {heights.map((h, i) => (
         <Rect key={i} x={4 + i * 8.2} y={40 - h} width={6.2} height={h} rx={1} fill={c} />
@@ -125,7 +125,7 @@ export function RtaBarsDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
 export function WaveTraceDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   const c = tint ?? defaultTint;
   return (
-    <Svg width={62} height={44} viewBox="0 0 88 44" preserveAspectRatio="xMidYMid meet">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={62} height={44} viewBox="0 0 88 44" preserveAspectRatio="xMidYMid meet">
       {/* Deliberately dim (not MIDLINE_BLUE): a blue line in a colour picker
           would read as a pickable colour. */}
       <Line x1={2} x2={86} y1={22} y2={22} stroke="#2b2b33" strokeWidth={1} />
@@ -144,7 +144,7 @@ export function WaveTraceDiagram({ tint, defaultTint }: DiagramTint): ReactNode 
 export function TunerDiagram({ tint, defaultTint }: DiagramTint): ReactNode {
   const c = tint ?? defaultTint;
   return (
-    <Svg width={62} height={44} viewBox="0 0 88 44" preserveAspectRatio="xMidYMid meet">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={62} height={44} viewBox="0 0 88 44" preserveAspectRatio="xMidYMid meet">
       {[0, 1, 2, 4, 5, 6].map((i) => (
         <Line key={i} x1={14 + i * 10} x2={14 + i * 10} y1={6} y2={14} stroke={DIM_LINE} strokeWidth={1.5} />
       ))}

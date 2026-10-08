@@ -679,6 +679,9 @@ affects other side: nothing (client-only Lab 5 screen fixes)
 ### 2026-10-07 15:46 · ccode · 8ccc26cb
 changed: mixing guides: restore the brand-name exception "Hammond" (owner 2026-10-07)
 affects other side: nothing (client-only: generated mixing-guide text now keeps "Hammond"; no backend change)
+### 2026-10-07 16:55 · ccode · db65fbad
+changed: Sentry fixes: accessibility tree (W/R/S), background-only OTA reload (D), mic flush on background (T), Skia web guards (G/E) + app-wide ratchets
+affects other side: nothing (app JS only, branch sentry-fixes, not published; no server, store-console or SQL change)
 needs: nothing
 
 

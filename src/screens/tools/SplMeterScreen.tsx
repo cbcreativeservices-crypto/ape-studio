@@ -1657,7 +1657,10 @@ export function SplMeterScreen({ navigation }: Props) {
             {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
             <View style={styles.logCard}>
               <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHead} />
-              <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('session_log')} delayLongPress={260}>
+              {/* accessible={false}: as an element its label was every cell of
+                  the log run together; the cells read on their own and the HELP
+                  key above explains (APE-STUDIO-W/R/S sweep). */}
+              <Pressable accessible={false} onLongPress={() => help('session_log')} delayLongPress={260}>
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq · dBA</Text>
@@ -2196,13 +2199,25 @@ export function SplMeterScreen({ navigation }: Props) {
             // toggle (top-left) and the settings bar (bottom) are INTERACTIVE child
             // Pressables: they act on their own taps while the meter / empty areas
             // still fall through to close — the same pattern as the settings popup.
+            // ⛔ The root is NOT one accessibility element (APE-STUDIO-W/R/S
+            // nested-element sweep, 2026-10-08): as the "Close" button it
+            // wrapped the toggle and the settings bar, which on iOS made every
+            // one of them unreachable to a screen reader. The ✕ is the close
+            // element; the escape gesture closes too.
             <Pressable
               style={styles.vuFsRoot}
               onPress={() => setVuFsClosing(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Close the full VU screen — tap the meter to close"
+              accessible={false}
+              onAccessibilityEscape={() => setVuFsClosing(true)}
             >
-              <View style={[styles.vuFsClose, { left: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
+              <View
+                style={[styles.vuFsClose, { left: camInset + 14, top: fsChromeTop }]}
+                pointerEvents="none"
+                accessible
+                accessibilityRole="button"
+                accessibilityLabel="Close the full VU screen"
+                onAccessibilityTap={() => setVuFsClosing(true)}
+              >
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               {/* LANDSCAPE-ONLY (owner 2026-08-19): render the Full VU content
@@ -2368,16 +2383,24 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
           )}
           {(gaugeFsOpen || gaugeFsClosing) && (
+            // Not one element either — same reason as the full VU above.
             <Pressable
               style={styles.vuFsRoot}
               onPress={() => setGaugeFsClosing(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Close the fullscreen SPL gauge — tap to close"
+              accessible={false}
+              onAccessibilityEscape={() => setGaugeFsClosing(true)}
             >
               {gaugeFsNeedsRotate ? <LandscapeRequiredNotice what="fullscreen SPL gauge" onClose={() => setGaugeFsClosing(true)} /> : null}
               {winW >= winH && !gaugeFsClosing ? (
                 <>
-                  <View style={[styles.vuFsClose, { right: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
+                  <View
+                    style={[styles.vuFsClose, { right: camInset + 14, top: fsChromeTop }]}
+                    pointerEvents="none"
+                    accessible
+                    accessibilityRole="button"
+                    accessibilityLabel="Close the fullscreen SPL gauge"
+                    onAccessibilityTap={() => setGaugeFsClosing(true)}
+                  >
                     <Text style={styles.vuFsCloseX}>✕</Text>
                   </View>
                   <View style={[styles.gaugeFsStage, { paddingLeft: camInset + 16, paddingRight: camInset + 12 }]} pointerEvents="box-none">

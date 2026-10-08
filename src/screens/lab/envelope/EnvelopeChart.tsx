@@ -197,7 +197,7 @@ export function EnvelopeChart({
         }
         render={(w, h) => (
           <View accessible accessibilityRole="image" accessibilityLabel={a11y} style={{ width: w, height: h }}>
-            <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
               <Defs>
                 {/* Vertical amplitude ramp mapped to ±(peak / PEAK_ON_RAMP) so the
                     envelope's peak lands in the orange band, never red. */}

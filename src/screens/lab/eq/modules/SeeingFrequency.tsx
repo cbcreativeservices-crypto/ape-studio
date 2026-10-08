@@ -187,7 +187,7 @@ function SeeingGlass({
       </View>
       <View style={{ flex: 1 }}>
         {chartW > 0 && (
-          <Svg width={chartW} height={chartH}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={chartW} height={chartH}>
             <Defs>
               {/* App-wide MIDI level ramp anchored to the dB scale —
                   loudness colour standard (blue floor → red 0 dBFS). */}

@@ -91,7 +91,7 @@ test('the SVG stages (Harmony, Systems) and the A/B tags (Change) scale through 
   assert.match(shared, /viewBox: `0 0 \$\{w\} \$\{h\}`/, 'the SVG viewBox is the glass-unit box');
   const systems = strip(read('modules/modSystems.tsx'));
   assert.equal((systems.match(/useGlassUnits\(boxW, boxH\)/g) ?? []).length, 6, 'all six system drawings');
-  assert.equal((systems.match(/<Svg \{\.\.\.svg\}>/g) ?? []).length, 6, 'every Svg carries the scaled viewBox');
+  assert.equal((systems.match(/<Svg \{\.\.\.svg\}(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")?>/g) ?? []).length, 6, 'every Svg carries the scaled viewBox');
   assert.doesNotMatch(systems, /<Svg width=\{w\} height=\{h\}>/, 'no unscaled Svg left');
   const harmony = strip(read('modules/modHarmony.tsx'));
   assert.equal((harmony.match(/useGlassUnits\(boxW, boxH\)/g) ?? []).length, 3, 'waves, Lissajous, spectrum');

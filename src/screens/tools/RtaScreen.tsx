@@ -446,7 +446,7 @@ function RtaGlass({
             honest equivalent of what a sighted user reads off the chart. */}
         <View style={{ flex: 1 }} accessible accessibilityRole="image" accessibilityLabel={spectrumA11yLabel(bands)}>
           {chartW > 0 && (
-            <Svg width={chartW} height={chartH}>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={chartW} height={chartH}>
               <Defs>
                 {/* Shared LED ramp — one def for every bar (perf discipline). */}
                 <LinearGradient
@@ -751,7 +751,7 @@ function PianoStripImpl({
       <View style={{ width: gutter }} />
       <View style={styles.pianoArea} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
         {w > 0 && n > 0 && (
-          <Svg width={w} height={PH}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={PH}>
             {/* Keybed */}
             <Rect x={0} y={0} width={w} height={PH} rx={4} fill={KEYBED} />
             {/* Detected-note highlight UNDER the keys/lines (owner 2026-08-10). */}

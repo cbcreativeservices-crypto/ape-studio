@@ -72,7 +72,7 @@ export function HeadCrossSection({ selected, onSelect, highlight, controls, fsTi
   return (
     <ExpandableFigure aspect={300 / 320} title={fsTitle} controls={controls} render={(w, h) => (
     <View accessible accessibilityLabel={`Side-view cross-section of the head, neck and chest with ${ANATOMY.length} numbered structures: ${ANATOMY.map((a, i) => `${i + 1} ${a.name}`).join(', ')}. Use the buttons below the drawing to select one.`} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox="0 0 300 320">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 300 320">
         <Rect x={0} y={0} width={300} height={320} rx={10} fill="#0a0a0c" stroke={colors.hairline} />
 
         {/* ── silhouette: face (left) → crown → nape → shoulders ── */}
@@ -198,7 +198,7 @@ export function VocalFolds({ voiced, reduceMotion, controls }: { voiced: boolean
   return (
     <ExpandableFigure aspect={W / H} title="FOLDS" controls={controls} render={(w, h) => (
     <View accessible accessibilityLabel={voiced ? 'Vocal folds seen from above, vibrating: they meet along their length and open and close in the middle, producing a buzz.' : 'Vocal folds seen from above, held apart in a V: air passes freely, producing only breath noise.'} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <SvgText x={12} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>LOOKING DOWN THE LARYNX · FRONT AT TOP</SvgText>
         {/* laryngeal inlet, vestibule, epiglottis rim */}
@@ -278,7 +278,7 @@ export function SpectrumSvg({
   const bandColor = bandKind === 'loss' ? colors.blue : colors.orange;
   return (
       <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {band ? <Rect x={x(band[0])} y={top - 4} width={Math.max(1, x(band[1]) - x(band[0]))} height={bottom - top + 8} fill={bandColor} opacity={bandKind === 'loss' ? 0.1 : 0.12} /> : null}
         {band && bandLabel ? <SvgText x={x(band[0]) + 4} y={top + 6} fontSize={9} fill={bandColor} fontFamily={fonts.oswaldMedium}>{bandLabel}</SvgText> : null}
@@ -320,7 +320,7 @@ export function FormantChart({ v, f0 = 120, height = 140, title, controls }: { v
       {title ? <Title>{title}</Title> : null}
       <ExpandableFigure aspect={W / H} title="FORMANTS" badge="Typical adult-male values · illustrative, not a measurement" controls={controls} render={(w, h) => (
       <View accessible accessibilityLabel={`Harmonics of a ${f0} hertz voice shaped by the mouth for ${v.sound}: peaks near ${v.f1}, ${v.f2} and ${v.f3} hertz. Typical adult-male values, illustrative.`} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Polyline points={envPts} fill="none" stroke={colors.gold} strokeWidth={1.5} strokeDasharray="4,3" opacity={0.9} />
         {Array.from(harm.hz, (f, i) => (
@@ -355,7 +355,7 @@ export function TraceSvg({ samples, height = 120, a11y, w, h }: { samples: Float
   const pts = Array.from(samples, (s, i) => `${(10 + (i / (samples.length - 1)) * (W - 20)).toFixed(1)},${(mid - s * amp).toFixed(1)}`).join(' ');
   return (
       <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Defs>
           <LinearGradient id={gid} x1={0} y1={mid - amp} x2={0} y2={mid + amp} gradientUnits="userSpaceOnUse">
             {WAVE_LEVEL_STOPS.map((s) => <Stop key={s.offset} offset={s.offset} stopColor={s.color} />)}
@@ -398,7 +398,7 @@ export function RangeBars({ ranges, colors: cols, a11y }: { ranges: VoiceRange[]
   return (
     <ExpandableFigure aspect={W / H} title="VOICES" render={(w, h) => (
     <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {L.ticks.map((t) => (
           <G key={t.hz}>

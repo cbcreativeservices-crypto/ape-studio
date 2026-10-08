@@ -339,7 +339,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
         importantForAccessibility="no-hide-descendants"
       >
         <MovingLayer x={txPx} y={tyPx}>
-          <Svg width={w} height={h} viewBox="0 0 360 150">
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 360 150">
             {/* how much field is riding on the cable right now */}
             <ACircle
               cx={SIG_X0}
@@ -498,7 +498,7 @@ function CrossPreview({ kind, w, nonce }: { kind: string; w: number; nonce: numb
   const sepArrows = useAnimatedProps(() => ({ opacity: 0.35 + 0.65 * Math.min(1, shot.value * 1.4) }));
 
   return (
-    <Svg width={w} height={h} viewBox="0 0 120 64">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 120 64">
       <Rect x={0} y={0} width={120} height={64} rx={7} fill="#0f1013" />
       <JacketPath d="M8 20 H112" color={pow} width={3.4} />
       {kind === 'parallel-close' ? (

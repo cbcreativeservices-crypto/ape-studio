@@ -77,7 +77,7 @@ function MeterSvg({ chain, programme, peak, highlight, w }: { chain: GainNode[];
   const firstClip = chain.find((c) => c.clipped && !c.inheritedClip);
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={`Gain chain: ${chain.map((c) => `${c.label} ${Math.round(c.levelDbu)} dBu${c.clipped ? ', clipping' : ''}`).join('; ')}`}>
-      <Svg width={w ?? '100%'} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w ?? '100%'} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
         <Defs>
           {/* ONE ramp for every bar, in scale space: red at the top of the dBu
               axis, blue 60 dB below it and beneath — a bar's colour is its

@@ -255,7 +255,7 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
   for (const e of edges) if (e.label && !feedTag.has(e.to)) feedTag.set(e.to, { text: e.label, color: e.level === 'air' ? '#8a8b93' : CABLE_COLORS[e.level] });
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ aspectRatio: MAP_W / MAP_H }}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ aspectRatio: MAP_W / MAP_H }}>
         <Rect x={0} y={0} width={MAP_W} height={MAP_H} rx={12} fill="#0e1015" stroke={colors.hairline} strokeWidth={0.8} />
         {/* the three columns: a faint zone each, its name across the top */}
         {COL_X.map((x0, i) => (

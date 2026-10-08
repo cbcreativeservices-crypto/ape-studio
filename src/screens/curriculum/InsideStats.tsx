@@ -160,7 +160,7 @@ function boltPath(nx: number, ny: number, cxp: number, cyp: number): string {
 /** A small STATIC VU-meter glyph (arc + needle) — image only, not live. */
 function VuGlyph() {
   return (
-    <Svg width={17} height={13} viewBox="0 0 34 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={17} height={13} viewBox="0 0 34 24">
       <Path d="M4 21 A 13 13 0 0 1 30 21" fill="none" stroke={colors.blue} strokeWidth={1.7} strokeLinecap="round" />
       <Line x1="9" y1="12.5" x2="10" y2="14.5" stroke={colors.blue} strokeWidth={1} strokeLinecap="round" />
       <Line x1="17" y1="9.5" x2="17" y2="11.7" stroke={colors.blue} strokeWidth={1} strokeLinecap="round" />
@@ -346,7 +346,7 @@ export function InsideStats({
         </View>
 
         <View ref={diagramRef} style={styles.diagram} onLayout={(e) => { const l = e.nativeEvent.layout; setBox({ w: Math.round(l.width), h: Math.round(l.height) }); }}>
-          <Svg width={w} height={h} style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} style={StyleSheet.absoluteFill} pointerEvents="none">
             <Defs>
               <RadialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
                 <Stop offset="0" stopColor={GLOW} stopOpacity={0.22} />

@@ -196,7 +196,7 @@ export function TimelinePreview({
     <PreviewFrame caption={caption} height={height} onPress={onPress} a11yLabel={a11y}>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
         {geo ? (
-          <Svg width={geo.w} height={geo.h}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={geo.w} height={geo.h}>
             <Defs>
               <LinearGradient id={gid} gradientUnits="userSpaceOnUse" x1={0} y1={PAD_V} x2={0} y2={geo.h - PAD_V}>
                 {geo.stops.map((s) => (

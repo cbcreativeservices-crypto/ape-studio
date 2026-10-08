@@ -47,7 +47,12 @@ export function LearningIntroSheet({
     <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
       {/* Tapping the dimmed area dismisses (never a hard block); the card
           absorbs its own taps so content/BEGIN aren't swallowed. */}
-      <Pressable accessibilityRole="button" style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">
+      {/* NOT an accessibility element (APE-STUDIO-W/R/S nested-element sweep,
+          2026-10-08): as the "Dismiss" button it WRAPPED the card, so on iOS
+          a screen reader heard one element, "Dismiss", and could neither read
+          the intro nor reach BEGIN. BEGIN dismisses; so does the escape
+          gesture. */}
+      <Pressable accessible={false} style={styles.backdrop} onPress={onBegin} onAccessibilityEscape={onBegin}>
         <Pressable accessible={false} style={[styles.card, { maxHeight: `${88}%` }]} onPress={() => {}}>
           <View style={styles.head}>
             <Text style={styles.eyebrow}>TOPIC INTRO</Text>

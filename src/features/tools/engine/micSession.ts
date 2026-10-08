@@ -277,6 +277,26 @@ export function releaseMicNow(): void {
 }
 
 /**
+ * A debounced release that is still WAITING runs now (the app is going to the
+ * background — wired in AudioOutputGate's 'background' branch; this module
+ * must not import react-native, its tests run in plain Node). Returns true if
+ * one was pending.
+ *
+ * ⛔ Sentry APE-STUDIO-T (fatal, iPad Pro, build 27, 2026-09-25): the Tools
+ * hub's background stop went through releaseMic()'s 1.5 s timer. iOS suspends
+ * a backgrounded app's JS timers, so the stop did not run until the process
+ * was woken EIGHT MINUTES later — and ApeDsp.stop() then reached into an
+ * AVAudioEngine whose session iOS had torn down meanwhile (EXC_BAD_ACCESS in
+ * AVAudioEngineImpl::UpdateInputNode). A stop the app has already decided on
+ * must happen before suspension, not whenever the process next wakes.
+ */
+export function flushPendingRelease(): boolean {
+  if (!releaseTimer) return false;
+  doStop();
+  return true;
+}
+
+/**
  * Cancel a pending release WITHOUT starting anything — an intermediate screen
  * (ToolInfo) holds an already-warm session across the user's dwell so the next
  * tool adopts it. Returns true if a warm stream is being held (false if the mic

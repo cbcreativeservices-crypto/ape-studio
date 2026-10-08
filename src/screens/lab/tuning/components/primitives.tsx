@@ -229,7 +229,7 @@ export function CentsRail({
   const summary = `Cents rail from 0 to 1200. ${markers.map((m) => `${m.label} at ${m.cents.toFixed(2)} cents`).join('; ')}.`;
   return (
     <View accessible accessibilityLabel={summary} accessibilityRole="image" style={{ width: '100%' }}>
-      <Svg width="100%" height={fit ? undefined : height} style={fit ? { aspectRatio: RAIL_W / height } : undefined} viewBox={`0 0 ${RAIL_W} ${height}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : height} style={fit ? { aspectRatio: RAIL_W / height } : undefined} viewBox={`0 0 ${RAIL_W} ${height}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
         <Rect x={0} y={0} width={RAIL_W} height={height} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {divisions
           ? Array.from({ length: 13 }, (_, k) => (
@@ -244,7 +244,7 @@ export function CentsRail({
           const y = 14 + i * 12;
           const col = ROLE[b.role ?? 'near'];
           return (
-            <Svg key={i}>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={i}>
               <Line x1={x1} y1={y} x2={x2} y2={y} stroke={col} strokeWidth={1.5} />
               <Line x1={x1} y1={y - 4} x2={x1} y2={y + 4} stroke={col} strokeWidth={1.5} />
               <Line x1={x2} y1={y - 4} x2={x2} y2={y + 4} stroke={col} strokeWidth={1.5} />
@@ -285,7 +285,7 @@ function RailMarkerGlyph({ m, axisY, selected, onPress, reduceMotion }: { m: Rai
     ],
   });
   return (
-    <Svg onPress={onPress}>
+    <Svg onPress={onPress} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <AnimatedPolygon points={points as unknown as string} fill={selected || m.emphasis ? col : 'none'} stroke={col} strokeWidth={selected ? 2 : 1.4} opacity={faint ? 0.35 : 1} />
       <AnimatedSvgText x={x as unknown as number} y={labelY} fontSize={m.emphasis || selected ? 10 : 9} fill={col} textAnchor={anchor} fontFamily={fonts.oswaldMedium} opacity={faint ? 0.6 : 1}>
         {m.label}
@@ -352,7 +352,7 @@ export function DeviationMeter({ cents, rangeCents = 30, label, fit }: { cents: 
   return (
     <View accessible accessibilityLabel={`${label ?? 'Deviation'}: ${exact ? 'exact' : `${cents > 0 ? '+' : ''}${cents.toFixed(2)} cents, ${state}`}`} style={{ gap: 3 }}>
       {label ? <Eyebrow>{label}</Eyebrow> : null}
-      <Svg width="100%" height={fit ? undefined : h} style={fit ? { aspectRatio: w / h } : undefined} viewBox={`0 0 ${w} ${h}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : h} style={fit ? { aspectRatio: w / h } : undefined} viewBox={`0 0 ${w} ${h}`}>
         <Rect x={0} y={0} width={w} height={h} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={h / 2} x2={w - 10} y2={h / 2} stroke="rgba(255,255,255,0.15)" />
         <Line x1={150} y1={6} x2={150} y2={h - 6} stroke={colors.textSub} strokeWidth={1.5} />

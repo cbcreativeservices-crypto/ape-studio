@@ -1911,6 +1911,14 @@ export function CourseSelectionScreen() {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
         getItemLayout={(_d, i) => ({ length: cd.w + CARD_GAP, offset: (cd.w + CARD_GAP) * i, index: i })}
+        // ⛔ WINDOWED (Sentry APE-STUDIO-W/R/S, 2026-10-07): the list's
+        // defaults (initialNumToRender 10, windowSize 21) mounted all ~30 cards
+        // — art, gradients, captions, keys — and an accessibility client walks
+        // every one of them. Three screens' width either side of the centred
+        // card is plenty for a fling; getItemLayout keeps scrollToIndex exact.
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={7}
         renderItem={({ item, index }) => (
           <View>
             <MemoCourseCardView
@@ -1966,7 +1974,14 @@ export function CourseSelectionScreen() {
       {/* Push the scroll dots down to sit just above the bottom nav bar. */}
       <View style={{ flex: 1 }} />
 
-      <View style={[styles.dots, { gap: dotFit.gap }]}>
+      {/* The dots are a page indicator: ONE accessible element that says the
+          position, instead of ~30 unlabelled views (APE-STUDIO-W/R/S). */}
+      <View
+        style={[styles.dots, { gap: dotFit.gap }]}
+        accessible={!!displayDeck?.length}
+        accessibilityElementsHidden={!displayDeck?.length}
+        accessibilityLabel={displayDeck?.length ? `Card ${activeIdx + 1} of ${displayDeck.length}` : undefined}
+      >
         {(displayDeck ?? []).map((c, i) => {
           const color = dotColorFor(c);
           const active = i === activeIdx;

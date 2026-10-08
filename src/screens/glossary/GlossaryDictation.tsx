@@ -21,7 +21,7 @@ import { notify } from '../../lib/confirm';
  *  Red while actively listening. */
 function MicGlyph({ color, size = 19 }: { color: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       <Rect x={9} y={3} width={6} height={11} rx={3} fill={color} />
       <Path d="M6 11 a6 6 0 0 0 12 0" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
       <Path d="M12 17 v3" stroke={color} strokeWidth={1.8} strokeLinecap="round" />

@@ -462,7 +462,14 @@ export function GalleryScreen() {
                         onPress={() => (selecting ? toggleSelect(p.id) : open(p.id))}
                         onLongPress={() => toggleFav(p)}
                         accessibilityRole="button"
-                        accessibilityLabel={`${p.name} — ${STUDIO_TAG[p.state.studio]}, ${formatHz(p.state.hz)}${selecting ? (sel ? ', selected' : ', tap to select') : ''}`}
+                        accessibilityLabel={`${p.name} — ${STUDIO_TAG[p.state.studio]}, ${formatHz(p.state.hz)}${p.favourite ? ', favourite' : ''}${selecting ? (sel ? ', selected' : ', tap to select') : ''}`}
+                        // The ★ key is nested in this card, so on iOS it was
+                        // unreachable to a screen reader; it rides here as a
+                        // custom action (APE-STUDIO-W/R/S nested-element sweep).
+                        accessibilityActions={[{ name: 'favourite', label: p.favourite ? 'Remove from favourites' : 'Add to favourites' }]}
+                        onAccessibilityAction={(e) => {
+                          if (e.nativeEvent.actionName === 'favourite') toggleFav(p);
+                        }}
                       >
                         <View style={styles.thumb}>
                           <PatternFigure geometry={g} artwork={artworks[p.id] ?? null} width={cardW - 2} height={cardW - 2} pad={8} />
@@ -471,7 +478,7 @@ export function GalleryScreen() {
                           <Text style={styles.cardName} numberOfLines={1}>
                             {p.name}
                           </Text>
-                          <Pressable onPress={() => toggleFav(p)} hitSlop={8} accessibilityRole="button" accessibilityLabel={p.favourite ? 'Remove from favourites' : 'Add to favourites'}>
+                          <Pressable onPress={() => toggleFav(p)} hitSlop={8} accessible={false} accessibilityRole="button" accessibilityLabel={p.favourite ? 'Remove from favourites' : 'Add to favourites'}>
                             <Text style={[styles.star, p.favourite && styles.starOn]}>★</Text>
                           </Pressable>
                         </View>

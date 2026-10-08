@@ -470,7 +470,7 @@ function TravelingWaveStrip({ points, width, height }: { points: number[]; width
     >
       {w > 0 ? (
         <Animated.View style={[{ width: w * 1.5 }, slide]}>
-          <Svg width={w * 1.5} height={height}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w * 1.5} height={height}>
             <Defs>
               <LinearGradient
                 id="oscWaveLevel"
@@ -565,7 +565,7 @@ function HarmonicBars({
           .join(' ')
       : '';
   return (
-    <Svg width={width} height={height}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height}>
       {/* userSpaceOnUse is load-bearing: without it each bar would get its own
           bounding-box gradient and every bar, loud or quiet, would look the
           same. Mapped y=0 (full scale) → y=H (silence) instead. */}

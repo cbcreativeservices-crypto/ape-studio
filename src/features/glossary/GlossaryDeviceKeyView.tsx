@@ -26,7 +26,7 @@ const AMBER = '#FFC64D';
 /** A key, not a padlock — what was declined is an identifier, not a purchase. */
 function KeyGlyph({ size = 46, color = AMBER }: { size?: number; color?: string }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={8} cy={12} r={3.6} stroke={color} strokeWidth={1.8} />
       <Path d="M11.6 12 H20" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
       <Path d="M17.2 12 v3.1" stroke={color} strokeWidth={1.8} strokeLinecap="round" />

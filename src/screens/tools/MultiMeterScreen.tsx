@@ -351,7 +351,7 @@ const SgGrid = memo(function SgGrid({
   const tx = width - (newestId + 1) * colW;
   const yFor = (hz: number) => SG_H - ((Math.log(hz) - SG_LOG_MIN) / SG_LOG_SPAN) * SG_H;
   return (
-    <Svg width={width} height={SG_H}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={SG_H}>
       {[100, 1000, 10000].map((hz) => (
         <Line key={hz} x1={0} x2={width} y1={yFor(hz)} y2={yFor(hz)} stroke="#1c1c26" strokeWidth={1} strokeDasharray="3 5" />
       ))}
@@ -1388,7 +1388,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                   onResponderMove={(e) => setCursorX(Math.max(0, Math.min(plotW, e.nativeEvent.locationX)))}
                 >
                   {plotW > 0 && (
-                    <Svg width={plotW} height={heroH}>
+                    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={plotW} height={heroH}>
                       <Defs>
                         {/* ONE shared LED ramp, anchored to the dB scale
                             (userSpaceOnUse) — every bar shares it. */}
@@ -1517,7 +1517,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                 </Pressable>
                 <View style={styles.scopeSurface} onLayout={(e) => setScopeW(Math.round(e.nativeEvent.layout.width))}>
                   {scopeW > 0 && (
-                    <Svg width={scopeW} height={SCOPE_H}>
+                    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={scopeW} height={SCOPE_H}>
                       {scope && (
                         <Defs>
                           {/* Amplitude → MIDI-velocity colour (blue at the mid line
