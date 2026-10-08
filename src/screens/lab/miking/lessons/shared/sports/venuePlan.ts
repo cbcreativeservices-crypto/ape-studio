@@ -195,7 +195,7 @@ export type VenueScene = {
   /** The playing area (filled). */
   play: readonly P2[];
   /** The surface: grass, a diamond's dirt, a hard court, ice, a mock area. */
-  surface: 'grass' | 'diamond' | 'court' | 'ice' | 'mock';
+  surface: 'grass' | 'diamond' | 'court' | 'ice' | 'mock' | SurfaceG3;
   markings: readonly Marking[];
   keepClear: readonly KeepClear[];
   routes: readonly Route[];
@@ -208,6 +208,8 @@ export type VenueScene = {
   /** A barrier between live play and crew (a backstop screen, boards and
    *  glass, a fence): drawn as a solid wall line. */
   barriers: readonly { id: string; label: string; pts: readonly P2[] }[];
+  /** Plan silhouettes of horses and vehicles (Lab 7b group 3, owner decision D7-3). */
+  tokens?: readonly Token[];
   /** The plan box that frames the whole scene (m). */
   frame: PlanRect;
   /** INTERNAL: which dimensions are drawing defaults (never shown). */
@@ -315,3 +317,13 @@ export const BADGE_WORDS: Readonly<Record<Badge['kind'], string>> = {
   noHardware: 'No hardware facing the play.',
   liveBall: 'May be live-ball territory: a ball can arrive here.',
 };
+
+/* ── Lab 7b group 3 (lab7-g6): more surfaces and the plan silhouettes ── */
+
+/** A synthetic running track, a gymnastics or wrestling mat, a ring's
+ *  canvas, an arena's sand footing, pool water, a circuit's asphalt. */
+export type SurfaceG3 = 'track' | 'mat' | 'canvas' | 'sand' | 'water' | 'asphalt';
+/** A horse or a vehicle seen from above (owner decision D7-3, default: plan
+ *  silhouettes only, no detailed figure): its place, the way it faces (as
+ *  dirFromDeg) and what it is. Drawn to scale by ArenaArt.tsx. */
+export type Token = { id: string; kind: 'horse' | 'car'; p: P2; dirDeg: number; label: string };

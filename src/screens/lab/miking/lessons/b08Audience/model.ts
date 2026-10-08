@@ -167,6 +167,8 @@ export const B08_SETUPS: SportSetup[] = [
     scene: EVENT_SCENE,
     box: EVENT_BOX,
     noRange: true,
+    // Hung from the truss: no corner close-up (it would draw the pair on a stand).
+    noCloseUp: true,
   },
   {
     id: 'su.zones',

@@ -249,3 +249,10 @@ import { B13_LESSON } from '../lessons/b13FieldDiamond/lesson.ts';
 LESSON_CONTENT.B13 = B13_LESSON;
 import { B14_LESSON } from '../lessons/b14CourtIce/lesson.ts';
 LESSON_CONTENT.B14 = B14_LESSON;
+/* Lab 7 · part 2 · G3 — arenas, moving sources, complete coverage: B15, B16, B17 (one block; each lesson on its own line). */
+import { B15_LESSON } from '../lessons/b15TrackGymCombat/lesson.ts';
+LESSON_CONTENT.B15 = B15_LESSON;
+import { B16_LESSON } from '../lessons/b16MotorHorseWater/lesson.ts';
+LESSON_CONTENT.B16 = B16_LESSON;
+import { B17_LESSON } from '../lessons/b17CrowdComplete/lesson.ts';
+LESSON_CONTENT.B17 = B17_LESSON;

@@ -646,21 +646,90 @@ affects other side: nothing (client-only merge: Lab 7b group 1's speech-in-sport
 needs: nothing
 
 
-### 2026-10-08 04:16 · ccode · dccc1e40
-changed: Merge origin/final-lab into lab7-g2 (Lab 7a group 2)
-affects other side: nothing (client-only: final-lab merged into lab7-g2; Miking Lab 7 group 2 screenshots and layout fixes; the shared voice line no longer repeats "the mouth's axis"; Miking stays hidden; no server, no SQL)
+### 2026-10-08 05:52 · ccode · 39cfdea9
+changed: docs(lab6 review): test counts after the second merge (9930 pass, 0 fail)
+affects other side: nothing server-side — Lab 6 review doc: the suite count after the second merge; docs only.
 needs: nothing
 
 
-### 2026-10-08 03:44 · ccode · 7eefa4b1
-changed: Miking Lab 7 group 2: B04 Boom and Camera-Mounted Pickup, B02 News Anchors and Seated Interviews
-affects other side: nothing (client-only: Miking Lab 7 group 2 lessons B04 and B02 and their shared kit; Miking stays hidden; no server, no SQL)
+### 2026-10-08 05:43 · ccode · 09d63e07
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
+affects other side: nothing server-side — final-lab (Lab 7b group 3) merged again into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
 
 
-### 2026-10-08 02:27 · ccode · bdeb18de
-changed: Miking Lab 7 group 2: shared camera frame (cameraFrame.ts) for B04/B02/B05 and group 3
-affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-frame tool; no server, no SQL)
+### 2026-10-08 05:42 · ccode · e0427c1b
+changed: docs(lab6 review): test counts after the merge (9846 pass, 0 fail)
+affects other side: nothing server-side — Lab 6 review doc: the suite count after merging final-lab; docs only.
+needs: nothing
+
+
+### 2026-10-08 05:32 · ccode · 32a5996f
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
+affects other side: nothing server-side — final-lab (Lab 7 groups) merged into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:24 · ccode · 443ab6dd
+changed: docs(lab6 review): REVIEW_LAB6_2026_10_08 — two-expert review of F01–F16
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:22 · ccode · 25ff1923
+changed: test(lab6 review): pin the 2026-10-08 Lab 6 review fixes
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:20 · ccode · 9bf0435a
+changed: fix(lab6 review): starting-points voice in F07/F09; F10 drill gain value no longer cropped
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:03 · ccode · 4bdee9d0
+changed: fix(lab6 review): F09/F10 wording — no technique "must", no stray "silently"
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:03 · ccode · 3671e76b
+changed: fix(lab6 review): fairer quick-check items in F02–F08 and F13; F04 pad physics
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:02 · ccode · 5970e4d7
+changed: fix(lab6 review): F16 sample-rate item contradicted itself; F09 boom vs body-mic level
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:27 · ccode · fd0ea5a9
+changed: Merge lab7-g6: Miking Lab 7b B15-B17 arenas, moving sources, complete coverage
+affects other side: nothing (client-only Miking Lab 7 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-08 05:06 · ccode · f05ad5d3
+changed: Merge origin/final-lab (Lab 7b group 1) into lab7-g2 (Lab 7a group 2)
+affects other side: nothing (client-only merge: final-lab with Lab 7b group 1 into lab7-g2 — both groups kept side by side; broadcast lab blurb covers both; Miking stays hidden; no server, no SQL)
+### 2026-10-08 05:25 · ccode · 97e9e075
+changed: Merge origin/final-lab into lab7-g6 (Lab 7b group 3)
+affects other side: nothing server-side — final-lab (Lab 7b group 1, B09–B11) merged into lab7-g6 beside Lab 7b group 3 (B15–B17); app code and docs only; Miking stays hidden (MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-08 05:14 · ccode · 68df5be4
+changed: Miking Lab 7b group 3: visual pass from the phone captures
+affects other side: nothing — app-side visual pass on the Miking Lab 7b group 3 lessons (B15–B17); no backend, schema or store change
+needs: nothing
+
+
+### 2026-10-08 04:34 · ccode · 3082e2f4
+changed: Miking Lab 7b group 3: shared sports kit for arenas, moving sources, complete coverage
+affects other side: nothing — app-side Miking Lab 7b group 3 shared kit only (lessons/shared/sports: practice room and mock venue, arena plans, pass-by, coverage planner, downmix); no backend, schema or store change
 needs: nothing
 
 
@@ -679,6 +748,24 @@ needs: nothing
 ### 2026-10-08 03:30 · ccode · 6513a183
 changed: Miking Lab 7b group 1: the speech-in-sport kit (sport mics, held arm, feeds, booth plan, handoff, frame T)
 affects other side: nothing (client-only: the Lab 7b group 1 speech-in-sport kit in lessons/shared/broadcast — sport mics, the held-arm clip style, feeds, booth plan, handoff, frame T; no DB, no schema)
+needs: nothing
+
+
+### 2026-10-08 04:16 · ccode · dccc1e40
+changed: Merge origin/final-lab into lab7-g2 (Lab 7a group 2)
+affects other side: nothing (client-only: final-lab merged into lab7-g2; Miking Lab 7 group 2 screenshots and layout fixes; the shared voice line no longer repeats "the mouth's axis"; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 03:44 · ccode · 7eefa4b1
+changed: Miking Lab 7 group 2: B04 Boom and Camera-Mounted Pickup, B02 News Anchors and Seated Interviews
+affects other side: nothing (client-only: Miking Lab 7 group 2 lessons B04 and B02 and their shared kit; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 02:27 · ccode · bdeb18de
+changed: Miking Lab 7 group 2: shared camera frame (cameraFrame.ts) for B04/B02/B05 and group 3
+affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-frame tool; no server, no SQL)
 needs: nothing
 
 

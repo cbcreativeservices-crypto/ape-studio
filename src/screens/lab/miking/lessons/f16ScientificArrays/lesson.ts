@@ -358,13 +358,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ar.mix.2',
     page: 'practice',
-    prompt: 'A detector set to 96 kHz for calls up to 60 kHz. What else must you check?',
+    prompt: 'A detector set to 192 kHz for calls up to 60 kHz. What else do you check?',
     options: ['The mic and filter reach 60 kHz', 'The calls are louder than speech', 'Nothing: the rate decides it'],
     correct: 'The mic and filter reach 60 kHz',
-    explain: '96 kHz keeps below 48 kHz — not enough here. And even a high enough rate needs a mic and an anti-alias filter that reach the band.',
+    explain: '192 kHz keeps everything below 96 kHz — enough for 60 kHz calls on paper. But a high enough rate is not enough on its own: the mic and the anti-alias filter must reach the band too.',
     why: {
       'The calls are louder than speech': 'Loudness is not the question: the band is.',
-      'Nothing: the rate decides it': 'A sample-rate label alone does not prove usable ultrasonic sensitivity.',
+      'Nothing: the rate decides it': 'A high enough rate is needed, but a sample-rate label alone does not prove usable ultrasonic sensitivity.',
     },
   },
   {

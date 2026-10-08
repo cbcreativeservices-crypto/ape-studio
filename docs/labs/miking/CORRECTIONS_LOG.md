@@ -1604,7 +1604,7 @@ Built by the Lab 7 group 1 builder (G1 of `BUILD_PROMPTS_lab7a.md`). Research: `
 
 ## Lab 7 · group 2 · Body-worn and camera: B05, B04, B02 (branch lab7-g2, 2026-10-08)
 
-Built by the Lab 7 group 2 builder (G2 of `BUILD_PROMPTS_lab7a.md`). Research: `lavalier_headset/`, `boom_camera/`, `news_anchor/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §19. Shared kit: `lessons/shared/broadcast/` (`cameraFrame.ts`, `CameraArt.tsx`, `cameraPages.tsx`, `bodyWorn.ts`, `BodyWornArt.tsx`, `bodyWornPages.tsx`, `boomPole.ts`; group 2 mic types in `broadcastMics.ts`; `doubleMic` in `routing.ts`).
+Built by the Lab 7 group 2 builder (G2 of `BUILD_PROMPTS_lab7a.md`). Research: `lavalier_headset/`, `boom_camera/`, `news_anchor/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §20. Shared kit: `lessons/shared/broadcast/` (`cameraFrame.ts`, `CameraArt.tsx`, `cameraPages.tsx`, `bodyWorn.ts`, `BodyWornArt.tsx`, `bodyWornPages.tsx`, `boomPole.ts`; group 2 mic types in `broadcastMics.ts`; `doubleMic` in `routing.ts`).
 
 | id | Lesson | Line | Lesson says | App says | Why / source | Status |
 |---|---|---|---|---|---|---|
@@ -1676,7 +1676,7 @@ GEOMETRY_PROPOSAL.md, `BATCH7_RESEARCH_SUMMARY_PART2.md` §2. Shared kit: `lesso
 
 Built by the Lab 7 part 2 group 1 builder (G1 of `BUILD_PROMPTS_lab7b.md`; pushed as `lab7-g4` because `lab7-g1` is
 Lab 7a's). Research: `commentators/`, `sideline_interviews/`, `athletes_officials/`, `BATCH7_RESEARCH_SUMMARY_PART2.md`
-§2–§5; the Lab 7 part 2 register `commentators/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §20 (renumbered at the lab7-g3 merge). Shared kit:
+§2–§5; the Lab 7 part 2 register `commentators/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §19. Shared kit:
 `lessons/shared/broadcast/` (sportMics, feeds, boothPlan, handoff, standing, SportSpeechArt, sportPages) and the engine's
 new held-arm clip style.
 
@@ -1718,9 +1718,9 @@ new held-arm clip style.
 
 Built by the Lab 7 group 3 builder (G3 of `BUILD_PROMPTS_lab7a.md`; the last Lab 7a group). Research: `field_reporter/`,
 `audience_ambience/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to
-`SOURCES_SHARED.md` §21. Base: `origin/lab7-g2` with `origin/lab7-g4` merged in (Lab 7b group 1's speech-in-sport kit —
+`SOURCES_SHARED.md` §22 (renumbered at the final-lab merge). Base: `origin/lab7-g2` with `origin/lab7-g4` merged in (Lab 7b group 1's speech-in-sport kit —
 the held arm, the flagged handhelds, `handoff.ts`, `standing.ts` — was not yet on final-lab; the merge kept both
-registry blocks and renumbered Lab 7b group 1's SOURCES_SHARED section 19 → 20). Shared kit added in
+registry blocks; final-lab's numbering of the SOURCES_SHARED sections was kept at the final-lab merge). Shared kit added in
 `lessons/shared/broadcast/`: `fieldInterview.ts` (the handoff path; reuses `handoff.ts`), `reporterWind.ts` +
 `ReporterArt.tsx`, `reporterPages.tsx`, `venue.ts` (on Lab 7b group 2's `venuePlan.ts`), `AudienceArt.tsx`,
 `audiencePages.tsx`; `repOmni` in `broadcastMics.ts`.
@@ -1751,7 +1751,44 @@ registry blocks and renumbered Lab 7b group 1's SOURCES_SHARED section 19 → 20
 - `repOmni`: 23 cm long, a 24 mm grille radius, the flag drawn (generic, no logo); held in the reporter's right hand (Lab 7b group 1's held arm: 30 cm + 29 cm).
 - Wind: three sites (sheltered doorway, open street, exposed waterfront) and three layers; the curls are illustrative (0–3).
 - B08 venues: the studio audience — a 9 × 6 m raked section 2 m from the stage, aisles at ±5.2 m, exits at the back corners, a PA at each front corner of the stage 2.8 m up, a camera riser at the back, a rigging bar 1.2–2.0 m out (3.2 m up for the mic), the stage corners (2.4 m up); the event — three sections round a 15 m stage, PA clusters 7 m up and a front fill, a rail at each section's front (3.5 m), a truss over the hall (6 m), a cross-aisle and exits. The faces 1.2 m up. Left and right as drawn on the plan.
-- B08's spaced pair hangs from the truss (a qualified rigger), but the plan kit's close-up draws every 'compact' mic on a stand — the stand reads as the drop. Say if a hung drawing is wanted.
+- B08's spaced pair hangs from the truss (a qualified rigger): its setup and method show no corner close-up (Lab 7b group 3's `noCloseUp`), since the kit's close-up draws a stand. Say if a hung drawing is wanted.
 - PA coverage wedges (±40–55°) are a simplified picture of aim, not dispersion.
 - Brand list: Windjammer and the DPA 5100 added to BRAND_NAMES (the rest of the Lab 7a names were listed by groups 1 and 2).
 
+## Lab 7b · group 3 · Arenas, moving sources, complete coverage: B15, B16, B17 (branch lab7-g6, 2026-10-08)
+
+Built by the Lab 7 part 2 group 3 builder (G3 of `BUILD_PROMPTS_lab7b.md`; the spec's branch name `lab7-g3` belongs to
+Lab 7a, so the backup branch is `lab7-g6`, started from group 2's `lab7-g5`). Research: `track_gym_combat/`,
+`motorsport_equestrian_aquatic/`, `crowd_complete/` SOURCES.md and GEOMETRY_PROPOSAL.md, `BATCH7_RESEARCH_SUMMARY_PART2.md`
+§2. Shared kit: `lessons/shared/sports/` (group 2's, extended); keys in `SOURCES_SHARED.md` §21.
+
+| Id | Lesson | Lines | Was | Now | Why | Status |
+|---|---|---|---|---|---|---|
+| L7B-G3-01 (B15-01) | B15, B16 | B15 L204, B16 L264 | two copies of the same practice geometry (A/B/C, M1/M2) | ONE shared scene `practiceSmall` (practiceScenes.ts), one engine model builder (`smallModel`) used by both lessons | the layouts are identical (summary §2 item 9) | APPLIED |
+| L7B-G3-02 (B16-01) | B16 | L192 | "underwater and airborne dB references differ" with no numbers | internal record: 1 µPa in water, 20 µPa in air (a 26 dB offset) — `SOURCES_SHARED.md` §20 C-MEDIA-DB; on screen only "the references differ — equal level is not equal pressure" | summary §2 item 10 | APPLIED (internal) |
+| L7B-G3-03 (B16-02) | B16 | L194 | the hydrophone sensitivity "1V/Pa" in the manual's text layer | recorded as 1 V/µPa (glyph loss), so nobody "fixes" the lesson; no figure on screen (no model named) | summary §2 item 11 | APPLIED (internal) |
+| L7B-G3-04 (B17-01) | B17 | L16, L31 | "four microphone input channels" and "14" typed into the text | the coverage planner (`coverage.ts`) computes them from its role table (1 + 1 + 2; 2 + 4 + 4 + 4); the one check that asks the count builds its options from `channelCount('minimal')` (tested) | summary §2 item 12 | APPLIED |
+| L7B-G3-05 (R-07) | B15, B16, B17 | L2, L25, L195, L203–L214; L2, L25, L91, L196, L263–L273; L2, L13, L16, L82, L102, L112, L221–L233 | "Pro Audio Training Academy", "Academy recommendations / starting point", "student", "classroom", "instructor-approved", "submit" | "you", "suggested starting points", "practice", "a quiet room", "approved"; the observation sheets are optional practice sheets | institutional wording (summary §2 item 14) | APPLIED |
+| L7B-G3-06 (R-08) | B15, B16, B17 | refs; B15 L14–L23, L109, L134, L137, L187–L191; B16 L14–L23, L109, L114, L167, L194, L238, L246–L249; B17 L11, L62, L71–L78, L109–L111, L182, L185 | federations and rule numbers (World Athletics CR22, FIG, World Boxing 3.1 / 13.11.2 / 13.12, UWW Art. 4, IJF SOR, FIA §5.7, FEI Art. 241, World Aquatics 15.16, OSHA 1910.303, FIBA 2.5.1, ITU-R BS.775, EBU R 128, BT.1359), makers and models (Sennheiser MKH 416, Shure MX391, Rycote, DPA 4060/4062, Aquarian H2dX, SCHOEPS MK 4 / CCM 4 / ORTF-2plus2, AMBEO), the author Wittek | generic types; "check your event's rules"; "an example fold-down"; "one delivery example — use your broadcaster's"; BRAND_NAMES extended (World Athletics, World Gymnastics, FIG, World Boxing, UWW, IJF, FIA, FEI, World Aquatics, H2dX, ITU, EBU, MK 4, CCM 4, CMC 1, ORTF-2plus2, Wittek, 4060/4062) | owner ruling 2026-10-04 | APPLIED |
+| L7B-G3-07 (R-09) | B15, B16, B17 | B15 L179–L180; B16 L217, L240; B17 L190, L216 | the lightning rule and the rain-jacket caution repeated per lesson | the ONE sports safety card (`shared/sports/safety.ts`, group 2's) on every "before any mic" step, with each lesson's own rows (B16 adds the horse row and the wet-area electrics row); every lesson's accuracy note keeps "wait 30 minutes after the last thunder" (tested) | summary §2 item 16 | APPLIED |
+| L7B-G3-08 | B15, B16, B17 | B15 L195, B16 L91, B17 L82 | "−12 dBFS" as the gentle-test starting point | kept as "the strongest gentle peak near −12 dBFS … a trial starting point, not a broadcast standard", the headroom chain reused (group 2's) | — | APPLIED |
+| L7B-G3-09 | B16 | L257 | "a walking classroom source is not a model of high-speed motorsport behavior" | the pass-by tool (`passBy.ts`) prints no pitch or speed number anywhere; one static note (tested: no digit in it) | GEOMETRY_PROPOSAL §1 | APPLIED |
+| L7B-G3-10 | B17 | L105 | "do not add invented cheers … in factual live coverage" | a STARTING SETUPS check and a practice reason (ethics, kept exactly) | — | APPLIED |
+| L7B-G3-11 | B15, B17 | B15 L211; B17 L229 | the overlap trial with M1 and M2 (B15) | M1 and M2 sit as mirror images across the walk, so every point of the line is equally far from both: Δt = 0 all along it (true geometry, said in a check). The TWO MICS page pairs M2 with M1 at its double-range place (L209), so the delay visibly changes from A to C; B17 pairs D with the audience pair, the clap moved 1 m either way (L229) | the shared overlap step teaches "the delay changes as the source walks" — with mirror places it would not | APPLIED · OWNER REVIEW |
+| L7B-G3-12 | B15, B16, B17 | — | the lessons' coordinate frames (mics beside or behind the source line) | each practice scene is the lesson's frame TURNED (B15/B16 a quarter turn, B17 half a turn) so the mics face into the source area as on every sports plan; distances, angles and left/right unchanged (tested); every label keeps the lesson's own coordinates | frame P's convention (venuePlan.ts) and the shared Placement Studio's aim lane | APPLIED |
+| L7B-G3-13 | B17 | L222 | the action mic D aimed at A side-on to the target's plane | its engine zone checks the angle to A (`aim`, 8°) instead of the disc test (`aimAt`), which cannot see a mic aimed parallel to the target's plane | engine geometry (zones.aimsAt) | APPLIED |
+
+### OWNER REVIEW (defaults used; change any)
+- **D7-3 people, horses, vehicles** — default used: horses and vehicles as PLAN SILHOUETTES only (`ArenaArt.tsx` tokens: a horse about 2.6 m nose to tail on the jumping arena, two closed race cars on the circuit), drawn to scale and never smaller than a readable mark; no detailed animal or car art, no team marks; no people drawn on any plan (targets are rings).
+- **D7-4 hydrophone** — default used: KEPT as ONE optional, non-core ANOTHER START card on B16's STARTING SETUPS (plus a MICROPHONES card): a still-water container in a dry equipment area, the sensor on a strain-relieved cable over the rim, the recorder and every connector on the dry side (the corner box draws the section); no people or animals in the water; never the default aquatic mic. No hydrophone mic type was added to the engine (drawn on the lesson's own pages only).
+- **D7-5 immersive** — default used: NO new preset in the Lab 5 array tool; immersive stays in words (the four capsule tracks need their conversion and are not speaker feeds; a hemisphere spot is not a complete layout). Note: Lab 6 group 6 already added a tetrahedral first-order preset (`foa`) to the array tool for F10 — if D7-5 says yes, B17 can show it without new geometry; the "four-channel hemisphere spot" would still need a drawing default.
+- **D7-2 sport outlines** — default used: nine more plan outlines at common dimensions (track start with eight 1.22 m lanes, gymnastics floor 12 × 12 m and vault, a 6.1 m boxing ring, the wrestling mat, judo, a circuit segment, a 70 × 45 m jumping arena, a 50 × 25 m pool, an indoor arena), every one a drawing default (`arenaPlans.ts` `defaults`); judo carries no number at all ("check the event plan").
+- **D7-1 rules on screen** — default kept from group 2: the wrestling border (about 9 m and 1.5 m) said only as "typical clear zone — check your event's rules"; B17's 2 m court clearance said as "a sport's clearance, not a mic place".
+- B15's height trial: a low contact at 0.3 m and a standing mouth at 1.5 m, capsule heights 0.6 m and 1.2 m (GEOMETRY_PROPOSAL §3, TRIAL) — said in words on the Placement Studio's low and high zones; the readouts measure to the 1 m clap (the lesson's own).
+- B17's audience mouths at 1.5 m (level with S's capsules, so the printed plan ranges are the slant ranges) and the action clap at 1 m (D's height) — drawing defaults.
+- B17's MICROPHONES page carries an interactive credit (the Mid-Side width, `msWidth`); its LIVE CHECKS credit needs the coverage planner (both layouts, two roles lost) AND the downmix (every mono source and the fold-down). The routing steps (B15's supplied cue feed, B17's audience and talkback) are not credit-bearing.
+- B15 LIVE CHECKS reuses group 1's routing step (`shared/broadcast/broadcastPages.useRoutingStep`) with a 'playback' source for the supplied start-cue feed; no destination was added to `routing.ts` (an "international sound" feed is said in words).
+- A setup or a method drawn on a VENUE OUTLINE shows no corner close-up (`noCloseUp`): its capsule height there is a drawing default and the close-up would print it ("CAPSULE 1.2 m UP"); the practice-scene setups keep theirs (the lessons’ own heights), and the hydrophone keeps its container section (no number in it). Group 2’s venue-outline setups (B13, B14) still print a height in their close-up — left as built, flagged here.
+- Room-sized scenes (narrower than 14 m: the practice room, the mock venue, the container) draw their mic marks at 1/12 of the plan’s width instead of 1/8, and every plan’s target, mark and footprint labels sit at an offset scaled to the plan (unchanged for a field 38 m or wider; B14’s 15 m practice line now labels closer to its points). The two practice scenes are framed with empty room on the right, so the corner close-up never covers a source point.
+- Shared edits outside group 3's own files (each a small, marked block): `venuePlan.ts` (six surfaces, the optional `tokens` layer), `VenueArt.tsx` (the surfaces, the silhouettes, the pair and hydrophone glyphs), `sportsPages.tsx` (the hydrophone and pair close-ups, no aim line on a hydrophone, the `noCloseUp` option, the room-sized glyph, and dev-only `&sport= &layer= &method=` preview parameters), `sportPlans.ts` (the arena plans registered), `practiceScenes.ts` / `practiceModels.ts` (the two scenes appended).
+- D7-6 photos — not done (no images touched).

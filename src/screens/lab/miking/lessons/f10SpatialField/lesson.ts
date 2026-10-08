@@ -430,7 +430,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is a full-range field channel going to the LFE bus?',
     options: ['Take the field channel off the LFE', 'Turn the subwoofer down in the room', 'Add a sixth mic for the low end'],
     correct: 'Take the field channel off the LFE',
-    explain: '“.1” is a separate low-frequency effects channel. Never send a full-range field channel to it silently.',
+    explain: '“.1” is a separate low-frequency effects channel. Never send a full-range field channel to it.',
     why: {
       'Turn the subwoofer down in the room': 'That hides the routing error in one room only.',
       'Add a sixth mic for the low end': 'No mic is needed for “.1”.',

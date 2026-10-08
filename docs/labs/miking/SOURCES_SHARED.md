@@ -309,26 +309,8 @@ E, the crowd mark, the camera, the turn arc, the practice line's outside zone an
 height, the ambience height, a talker's 1.55 m mouth height for B13's targets, the headroom chain's event sizes and
 stage limits, the dish shell thickness.
 
-## 19. Lab 7 group 2 — body-worn and camera (B05, B04, B02; `lessons/shared/broadcast/` bodyWorn, cameraFrame, boomPole)
 
-Added 2026-10-08 by the Lab 7 group 2 builder (branch lab7-g2): the keys the body-worn and camera kit, the group 2 mic types and the B05 / B04 / B02 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `lavalier_headset/`, `boom_camera/` and `news_anchor/SOURCES.md`. Nothing here is shown to the learner (owner ruling 2026-10-04).
-
-| Key | Source | URL | Status 2026-10-08 |
-|---|---|---|---|
-| R-LAV | RØDE, "Lavalier Mounting: Best Practices": the sternum "a nice balance of close proximity and natural sound"; the lav upside down in its clip to reduce plosives; the broadcast loop and a secondary loop taped below the clip (bodyWorn.LAV_BAND, MOVES/LOOPS; B05 `b5.sternum`, B02 `b2.lav`) | https://rode.com/en-us/about/news-info/lavalier-mounting-best-practices | Medium (search extract, prep pass 2026-10-07) |
-| SN-ME2 | Sennheiser ME 2 manual: attach to clothing "keeping a distance of 25 cm (10") from your mouth" (D-LAV1, the band's top) | https://docs.cloud.sennheiser.com/en-us/lavalier-mics/manual-me2.html | Medium (search extract) |
-| SN-ME3 | Sennheiser ME 3 quick guide: capsule "2-3 cm (1") from the mouth", near its corner (bodyWorn.HEADSET_BAND; B05 headsets; the `hsCard` type) | https://www.sennheiser.com/globalassets/digizuite/41080-en-me_3_quick_guide_04_2025.pdf | Medium (search extract) |
-| S-PASTOR | Shure, "How to Choose the Best Mic for the Pastor": omni lav "5 to 8 inches (12 to 20 cm) below the pastor's mouth" (D-LAV1; correction B05-1 — the figure is THIS article's) | https://www.shure.com/en-US/insights/how-to-choose-the-best-mic-for-the-pastor | Medium (search extract) |
-| S-LAVPICK | Shure, "How to Choose the Best Lavalier Microphone": "above the sternum"; shirt, tie and collar options; no distance number (bodyWorn mount points) | https://www.shure.com/en-US/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
-| S-LAVHS | Shure, "Fundamentals: Choosing Between Lavalier and Headset Mics": qualitative only (the `lavCard` type's internal note) | https://www.shure.com/en-US/insights/fundamentals-choosing-between-lavalier-and-headset-mics | found, not re-read (qualitative) |
-| CTRY-B6 | Countryman B6 protective caps: flat, "Bright" +4 dB and "Very Bright" +8 dB at 15 kHz — that model only (never a number on screen; the concealed-lav words) | https://www.countryman.com | Medium (dealer listings) |
-| R-BOOM | RØDE, boompole usage: "boom from above, or below if absolutely necessary. You should never record from the sides" (cameraFrame boomAbove / boomBelow / boomSide; B04 zones; B02 boom) | https://rode.com/blog/all/what-you-need-to-know-about-boompole-usage-and-best-practices | Medium (search extract) |
-| S-SHOTGUN | Shure, "Shotgun Mics and Video Production": "slightly above, below, or to the side"; rejection "more than about 30 degrees off to the sides" (internal); D-SG1 "four to five times" an omni's distance — recorded, never shown (the `camMic` type; B04 side boom) | https://www.shure.com/en-GB/insights/shotgun-mics-and-video-production | Medium (search extract) |
-| LESSON-B02 | The owner's lesson B02 (practice statements kept as written; B-INST, B-XLINK applied) | `source_text/B02-…txt` | the lesson |
-| LESSON-B04 | The owner's lesson B04 (practice statements kept as written; B-INST, B-XLINK applied; O-SG pending) | `source_text/B04-…txt` | the lesson |
-| LESSON-B05 | The owner's lesson B05 (practice statements kept as written; B05-1, B-INST, B-XLINK applied) | `source_text/B05-…txt` | the lesson |
-
-## 20. Lab 7 part 2 · group 1 — speech in sport (B09, B10, B11; `lessons/shared/broadcast/` sportMics, feeds, boothPlan, handoff, standing)
+## 19. Lab 7 part 2 · group 1 — speech in sport (B09, B10, B11; `lessons/shared/broadcast/` sportMics, feeds, boothPlan, handoff, standing)
 
 Added 2026-10-08 by the Lab 7 part 2 group 1 builder (branch lab7-g4). The full Lab 7 part 2 register is
 `commentators/SOURCES.md` §0; the lessons' own audits are `commentators/`, `sideline_interviews/` and
@@ -352,7 +334,54 @@ arm 300 mm, forearm 290 mm, the grip 45 mm up the handle), the reporter's place 
 the touchline, the exit route, the PAs, the backdrop, the operators, frame T's landmarks (the breastbone ~21 cm below the
 lips, the small of the back), the keep-out regions on an athlete, the handoff strip's phase lengths.
 
-## 21. Lab 7 group 3 — field and audience (B03, B08; `lessons/shared/broadcast/` fieldInterview, reporterWind, venue)
+## 20. Lab 7 group 2 — body-worn and camera (B05, B04, B02; `lessons/shared/broadcast/` bodyWorn, cameraFrame, boomPole)
+
+Added 2026-10-08 by the Lab 7 group 2 builder (branch lab7-g2): the keys the body-worn and camera kit, the group 2 mic types and the B05 / B04 / B02 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `lavalier_headset/`, `boom_camera/` and `news_anchor/SOURCES.md`. Nothing here is shown to the learner (owner ruling 2026-10-04).
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| R-LAV | RØDE, "Lavalier Mounting: Best Practices": the sternum "a nice balance of close proximity and natural sound"; the lav upside down in its clip to reduce plosives; the broadcast loop and a secondary loop taped below the clip (bodyWorn.LAV_BAND, MOVES/LOOPS; B05 `b5.sternum`, B02 `b2.lav`) | https://rode.com/en-us/about/news-info/lavalier-mounting-best-practices | Medium (search extract, prep pass 2026-10-07) |
+| SN-ME2 | Sennheiser ME 2 manual: attach to clothing "keeping a distance of 25 cm (10") from your mouth" (D-LAV1, the band's top) | https://docs.cloud.sennheiser.com/en-us/lavalier-mics/manual-me2.html | Medium (search extract) |
+| SN-ME3 | Sennheiser ME 3 quick guide: capsule "2-3 cm (1") from the mouth", near its corner (bodyWorn.HEADSET_BAND; B05 headsets; the `hsCard` type) | https://www.sennheiser.com/globalassets/digizuite/41080-en-me_3_quick_guide_04_2025.pdf | Medium (search extract) |
+| S-PASTOR | Shure, "How to Choose the Best Mic for the Pastor": omni lav "5 to 8 inches (12 to 20 cm) below the pastor's mouth" (D-LAV1; correction B05-1 — the figure is THIS article's) | https://www.shure.com/en-US/insights/how-to-choose-the-best-mic-for-the-pastor | Medium (search extract) |
+| S-LAVPICK | Shure, "How to Choose the Best Lavalier Microphone": "above the sternum"; shirt, tie and collar options; no distance number (bodyWorn mount points) | https://www.shure.com/en-US/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
+| S-LAVHS | Shure, "Fundamentals: Choosing Between Lavalier and Headset Mics": qualitative only (the `lavCard` type's internal note) | https://www.shure.com/en-US/insights/fundamentals-choosing-between-lavalier-and-headset-mics | found, not re-read (qualitative) |
+| CTRY-B6 | Countryman B6 protective caps: flat, "Bright" +4 dB and "Very Bright" +8 dB at 15 kHz — that model only (never a number on screen; the concealed-lav words) | https://www.countryman.com | Medium (dealer listings) |
+| R-BOOM | RØDE, boompole usage: "boom from above, or below if absolutely necessary. You should never record from the sides" (cameraFrame boomAbove / boomBelow / boomSide; B04 zones; B02 boom) | https://rode.com/blog/all/what-you-need-to-know-about-boompole-usage-and-best-practices | Medium (search extract) |
+| S-SHOTGUN | Shure, "Shotgun Mics and Video Production": "slightly above, below, or to the side"; rejection "more than about 30 degrees off to the sides" (internal); D-SG1 "four to five times" an omni's distance — recorded, never shown (the `camMic` type; B04 side boom) | https://www.shure.com/en-GB/insights/shotgun-mics-and-video-production | Medium (search extract) |
+| LESSON-B02 | The owner's lesson B02 (practice statements kept as written; B-INST, B-XLINK applied) | `source_text/B02-…txt` | the lesson |
+| LESSON-B04 | The owner's lesson B04 (practice statements kept as written; B-INST, B-XLINK applied; O-SG pending) | `source_text/B04-…txt` | the lesson |
+| LESSON-B05 | The owner's lesson B05 (practice statements kept as written; B05-1, B-INST, B-XLINK applied) | `source_text/B05-…txt` | the lesson |
+
+## 21. Lab 7 part 2 · group 3 — arenas, moving sources, complete coverage (B15, B16, B17; `lessons/shared/sports/`)
+
+Added 2026-10-08 by the Lab 7 part 2 group 3 builder (branch lab7-g6). The full Lab 7 part 2 register is
+`commentators/SOURCES.md` §0; the lessons' own audits are `track_gym_combat/`, `motorsport_equestrian_aquatic/` and
+`crowd_complete/SOURCES.md`. The keys the code cites (zones, parts, the shared tools) — internal record only, never shown:
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| LESSON-B15 | The owner's lesson B15 — the practice room A (0,0), B (0,2), C (0,4), M1 (2,2), M2 (−2,2), capsule and clap 1 m; M1→B 2 m, M1→A/C √8 = 2.83 m; the double range (4,2) → 4 m | `source_text/B15-…txt` | the lesson; CONFIRMED arithmetic |
+| LESSON-B16 | The owner's lesson B16 — the same practice room (B15-01: ONE scene); the walk A → C, "a walking source is not a Doppler speed measurement" (L257) | `source_text/B16-…txt` | the lesson |
+| LESSON-B17 | The owner's lesson B17 — the mock venue A (0,0), U1–U3 (±1, 2), S (0,4) 1.5 m aimed at U2, D (2,0) 1 m on A, S′ 1 m closer; minimal 4 / extensive 14 channels (1 + 1 + 2; 2 + 4 + 4 + 4) | `source_text/B17-…txt` | the lesson; CONFIRMED arithmetic (B17-01: computed, never typed) |
+| UWW-MAT | UWW International Wrestling Rules 2026 Art. 4: a 9 m wrestling area, a 1.50 m border; the protection area is not a mic strip | see `commentators/SOURCES.md` §0 | Medium (secondary) — the one rule clearance drawn in B15, said as "typical clear zone — check your event's rules" |
+| ORTF | ORTF: two cardioids 17 cm apart, 110° between their axes | `crowd_complete/SOURCES.md` L93 | CONFIRMED (the Lab 5 array tool's fixed preset) |
+| C-MS | M/S: L = M + kS, R = M − kS, (L + R)/2 = M | `crowd_complete/SOURCES.md` L102 | CONFIRMED algebra (`downmix.ts`) |
+| ITU-775 | ITU-R BS.775: L′ = L + 0.7071 C + 0.7071 LS (the −3 dB coefficient), shown as "an example fold-down" | see `commentators/SOURCES.md` §0 | CONFIRMED (standard coefficient; PDF not re-read 2026-10-08) |
+| EBU-R128 | EBU R 128: −23 LUFS, ±1 LU where live work makes it impractical, −1 dBTP — shown as "one delivery example — use your broadcaster's" | see `commentators/SOURCES.md` §0 | Medium |
+| C-PASSBY | The pass-by readouts: slant range, the inverse-square change, the ideal polar gain, Δt and the comb notches between two fixed mics for each source position; no pitch or speed (L257) | `passBy.ts` | DERIVED (ideal model, C-SOUND) |
+| C-B17-10MS | 3.43 m of path ≈ 10 ms; equal copies cancel near 50, 150, 250 Hz … (the calculator's speed of sound, rounded) | `crowd_complete/SOURCES.md` L157 | CONFIRMED arithmetic |
+| NWS-SPORTS | As §18: shelter at thunder, wait 30 minutes after the last thunder; open shelters not safe | https://www.weather.gov/safety/lightning-sports | read 2026-10-07 |
+| H2DX | One maker's hydrophone manual: phantom ≤ 48 V; single-ended XLR, pin 3 unused; horizontal omni; −165 dB re 1 V/µPa ± 4 dB, 20 Hz–4 kHz (B16-02: the manual's text layer reads "1V/Pa" — glyph loss; the unit is 1 V/µPa) | see `commentators/SOURCES.md` §0 | CONFIRMED (internal only; no figure on screen) |
+| C-MEDIA-DB | Underwater and airborne decibels use different references (1 µPa in water, 20 µPa in air: a 26 dB offset) — B16-01 | standard acoustics | CONFIRMED (internal; on screen only "the references differ") |
+
+Drawing defaults (never printed as a dimension): every venue outline's size (D7-2: track, gymnastics, boxing, judo,
+circuit, jumping arena, pool, arena), the horse and car silhouettes' places (D7-3), the hydrophone container, its water and
+sensor depths (D7-4), the practice room's and mock venue's areas, footprints, clearance bands, way out, commentary station and
+camera view, the audience's 1.5 m mouth height, B15's low and standing source heights (0.3 / 1.5 m) and capsule heights
+(0.6 / 1.2 m), the coverage planner's role cards, the downmix demo's three sources.
+
+## 22. Lab 7 group 3 — field and audience (B03, B08; `lessons/shared/broadcast/` fieldInterview, reporterWind, venue)
 
 Added 2026-10-08 by the Lab 7 group 3 builder (branch lab7-g3): the keys the field-reporter tools, the `repOmni` type and
 the B03 / B08 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in
@@ -375,4 +404,3 @@ Drawing defaults (never printed as a dimension unless calculated from the drawin
 the camera beside the reporter, the kerb, B03's loudspeaker; B08's two venues (the studio audience's rows, the event's
 sections, aisles, exits and stage), the PA clusters and their coverage wedges, the crowd mics' heights and places, the
 immersive tokens' size.
-

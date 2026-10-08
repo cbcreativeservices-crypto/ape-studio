@@ -23,12 +23,13 @@
  * rulebook named — sport clearances, never mic positions.
  */
 import { CLEAR_ZONE_WORDS, bandAround, p2, type Badge, type KeepClear, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
+import { ARENA_BUILD, type ArenaSportId } from './arenaPlans.ts';
 
 /** Yards and feet in metres (exact, international). */
 const YD = 0.9144;
 const FT = 0.3048;
 
-export type SportId = 'football' | 'soccer' | 'rugby' | 'baseball' | 'softball' | 'basketball' | 'volleyball' | 'tennis' | 'badminton' | 'hockey';
+export type SportId = 'football' | 'soccer' | 'rugby' | 'baseball' | 'softball' | 'basketball' | 'volleyball' | 'tennis' | 'badminton' | 'hockey' | ArenaSportId;
 
 const rect = (r: PlanRect): P2[] => [p2(r.x0, r.y0), p2(r.x1, r.y0), p2(r.x1, r.y1), p2(r.x0, r.y1)];
 const line = (...pts: P2[]) => ({ pts });
@@ -378,6 +379,8 @@ const BUILD: Record<SportId, () => VenueScene> = {
   tennis,
   badminton,
   hockey,
+  // Lab 7b group 3 (lab7-g6): track, gymnastics, combat, motorsport, equestrian, aquatic, the arena.
+  ...ARENA_BUILD,
 };
 const CACHE: Partial<Record<SportId, VenueScene>> = {};
 /** A sport's plan (built once). */
@@ -386,3 +389,9 @@ export function sportPlan(id: SportId): VenueScene {
 }
 export const FIELD_SPORTS: readonly SportId[] = ['football', 'soccer', 'rugby', 'baseball', 'softball'];
 export const COURT_SPORTS: readonly SportId[] = ['basketball', 'volleyball', 'tennis', 'badminton', 'hockey'];
+
+/* ── Lab 7b group 3 (lab7-g6) ── */
+export { TRACK_GYM_COMBAT, MOTOR_HORSE_WATER } from './arenaPlans.ts';
+/** The hydrophone's still-water container (B16's optional ANOTHER START). */
+export const containerPlan = (): VenueScene => (CONTAINER_PLAN ??= ARENA_BUILD.container());
+let CONTAINER_PLAN: VenueScene | undefined;
