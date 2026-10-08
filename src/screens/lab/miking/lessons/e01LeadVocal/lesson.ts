@@ -562,7 +562,7 @@ export const E01_LESSON: Lesson = {
   labId: 'ensembles',
   title: 'Lead Vocal',
   subtitle: 'Any voice, any style: about 15 cm in the studio, within 10 cm on stage — measured from the lips',
-  noun: { one: 'lead vocal', many: 'lead vocals' },
+  noun: { one: 'lead vocal', many: 'lead vocals', subject: 'singer', person: true },
   model: E01_MODEL,
   micTypeIds: ['vocLdc', 'vocDynCard', 'vocDynSuper', 'vocLdcOpen', 'vocHeadset'],
   zones: E01_ZONES,

@@ -20,7 +20,9 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { B04_MODEL, FLOOR, PA_C } from './geometry.ts';
 import { B04_ZONES } from './model.ts';
 import { B04_COPY } from './copy.ts';
@@ -83,6 +85,8 @@ const pages: LessonPages = {
     takeaway: 'Outside every frame, as close as it allows, aimed and re-aimed, safe for people, one mic on air per voice and a tested fallback pass. A longer tube or a “hotter” camera gain do not — and more than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the talker');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b4.snd.* L5, L12, L22 · b4.set.*
@@ -94,11 +98,11 @@ const scenarios: MikingScenario[] = [
     id: 'b4.snd.1',
     page: 'sound',
     prompt: 'The camera reframes from a close shot to a wide one. What happens to the boom?',
-    options: ['It must stay farther away, out of the bigger frame', 'Nothing — the boom ignores the camera’s frame', 'It can come closer, since the talker looks smaller'],
-    correct: 'It must stay farther away, out of the bigger frame',
+    options: ['It moves farther away, out of the bigger frame', 'It stays put: the boom is above the shot anyway', 'It can come closer, since the talker looks smaller'],
+    correct: 'It moves farther away, out of the bigger frame',
     explain: 'A wider picture shows more room above and round the talker. The boom stays just outside it — farther from the mouth, so more room against the voice.',
     why: {
-      'Nothing — the boom ignores the camera’s frame': 'The boom must stay out of the picture: the frame sets how close it can be.',
+      'It stays put: the boom is above the shot anyway': 'The wider frame’s top is higher: where the boom was is now in the picture.',
       'It can come closer, since the talker looks smaller': 'The talker only looks smaller; the frame’s edge moved farther out.',
     },
   },
@@ -126,7 +130,7 @@ const scenarios: MikingScenario[] = [
       'The question louder than the talker': 'The talker is on the axis; the interviewer is not.',
     },
   },
-  hearingCheck('b4.set.1', W),
+  voiceRatingCheck('b4.set.1', 'the talker'),
   {
     id: 'b4.set.2',
     page: 'setting',
@@ -155,12 +159,12 @@ const scenarios: MikingScenario[] = [
     id: 'b4.set.4',
     page: 'setting',
     prompt: 'The boom is the program mic; the lav is the safety track. Where does the lav go?',
-    options: ['Its own recorder track, out of the program', 'Into the program with the boom, a bit lower', 'Into the earpiece, so the talker hears it'],
+    options: ['Its own recorder track, out of the program', 'Into the program with the boom, a bit lower', 'The earpiece, so the talker hears it'],
     correct: 'Its own recorder track, out of the program',
     explain: 'Summed with the boom, the lav’s earlier copy combs the voice. Kept on its own track it is a fallback ready to choose.',
     why: {
       'Into the program with the boom, a bit lower': 'Lower or not, it is a second open mic on one voice.',
-      'Into the earpiece, so the talker hears it': 'The earpiece carries cues and the program, not a spare mic.',
+      'The earpiece, so the talker hears it': 'The earpiece carries cues and the program, not a spare mic.',
     },
   },
   {
@@ -178,13 +182,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b4.mic.1',
     page: 'microphone',
-    prompt: 'Does a shotgun make a distant voice sound close?',
-    options: ['No — only moving it closer does that', 'Yes — that is what its tube is for', 'Yes, if it is aimed precisely enough'],
-    correct: 'No — only moving it closer does that',
+    prompt: 'A voice sounds distant on a shotgun. What makes it sound close?',
+    options: ['Moving the mic closer to the mouth', 'A longer tube, which is made to reach', 'Aiming the tube more precisely'],
+    correct: 'Moving the mic closer to the mouth',
     explain: 'A shotgun narrows its pickup at higher frequencies; it does not bring the voice nearer against the room. Distance decides that.',
     why: {
-      'Yes — that is what its tube is for': 'The tube narrows the high-frequency pickup; it does not reach farther.',
-      'Yes, if it is aimed precisely enough': 'Aim keeps it on the voice; it does not shorten the distance.',
+      'A longer tube, which is made to reach': 'The tube narrows the high-frequency pickup; it does not reach farther.',
+      'Aiming the tube more precisely': 'Aim keeps it on the voice; it does not shorten the distance.',
     },
   },
   {
@@ -251,8 +255,8 @@ const scenarios: MikingScenario[] = [
     id: 'b4.place.3',
     page: 'placement',
     prompt: 'When does the side of the frame make sense?',
-    options: ['Only when the shot leaves no better place', 'It is the first choice for most shots', 'When the talker is about to turn away from it'],
-    correct: 'Only when the shot leaves no better place',
+    options: ['When above and below are blocked or sound worse', 'It is the first choice for most shots', 'When the talker is about to turn away from it'],
+    correct: 'When above and below are blocked or sound worse',
     explain: 'Beside the frame can hear more of the room at head height, and a turn away loses the voice. A conditional start: audition it rather than impose or ban it.',
     why: {
       'It is the first choice for most shots': 'Above is the usual first place; the side is for when it is blocked.',
@@ -404,7 +408,7 @@ const scenarios: MikingScenario[] = [
       'Hold the pole tighter for the whole take': 'A tight grip tires the arm and passes more handling noise.',
     },
   },
-  removeDelay('b4.mix.3'),
+  removeDelayVoice('b4.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -468,7 +472,7 @@ const symptoms: Symptom[] = [
       'Swap the boom for an omni nearer the PA': 'An omni nearer the PA hears it from every side.',
     },
   },
-  hollowSymptom('b4.sym.hollow'),
+  hollowVoiceSymptom('b4.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -501,7 +505,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A long shotgun far back, so the frame never matters', ok: false, power: 'phantom', feedback: 'Far back hears more room; a longer tube does not reach farther.' },
       { id: 'e', label: 'A boom dipped into the top of the frame for more voice', ok: false, power: 'phantom', feedback: 'In the picture is not an option: the mic and its shadow show.' },
     ],
-    reasons: [docReason('the lips, as close as the frame allows'), clearReason('every frame, the light and the talker'), { id: 'r.room', label: 'The room behind the talker along the mic’s axis is checked', role: 'required', feedback: 'Say what the mic’s axis points at past the talker.' }, { id: 'r.zoom', label: 'A shotgun brings a distant voice close', role: 'wrong', feedback: 'A shotgun does not zoom: distance decides.' }, BRAND_REASON('talker'), LOUD_REASON],
+    reasons: [docReason('the lips, as close as the frame allows'), clearReason('every frame, the light and the talker'), { id: 'r.room', label: 'The room behind the talker along the mic’s axis is checked', role: 'required', feedback: 'Say what the mic’s axis points at past the talker.' }, { id: 'r.zoom', label: 'A shotgun brings a distant voice close', role: 'wrong', feedback: 'A shotgun does not zoom: distance decides.' }, BRAND_REASON('talker'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, as close as the frame allows, outside every frame, the room behind the talker checked — and no claim that a shotgun zooms.',
   },
   {
@@ -521,7 +525,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the camera goes to a wider shot. The boom…', options: ['Comes closer', 'Stays the same', 'Must stay farther away'], after: 'Now STEP through (or PLAY ONCE), then switch the shot, turn the head and cue the second talker.' },
+  sound: { prompt: 'Before you step through: the camera goes to a wider shot. The boom…', options: ['Comes closer', 'Stays the same', 'Moves farther away'], after: 'Now STEP through (or PLAY ONCE), then switch the shot, turn the head and cue the second talker.' },
   microphone: { prompt: 'Before you choose: which mic is as far from the talker as the camera?', options: ['The boom', 'The camera’s own mic', 'The lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the boom from above the frame to below it. What changes?', options: ['A different perspective', 'Nothing at all', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a hypercardioid boom mic reject it best?', options: ['Straight in front', 'Off to the rear, about 110°', 'At its side'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -571,24 +575,24 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Outdoors, near overhead power lines. The boom pole?',
-    options: ['Stays down unless the clearance is sure', 'Goes up slowly, angled away from the lines', 'Goes up if it is a carbon pole'],
+    options: ['Stays down unless the clearance is sure', 'Goes up slowly, angled away from the lines', 'Up, if it is a carbon pole'],
     correct: 'Stays down unless the clearance is sure',
     explain: 'Never hold or raise a conductive pole near overhead power lines; if you are unsure, the pole stays down and the site’s qualified people decide.',
     why: {
       'Goes up slowly, angled away from the lines': 'Slowly is not safe if the clearance is unknown.',
-      'Goes up if it is a carbon pole': 'Carbon conducts too: the pole stays down.',
+      'Up, if it is a carbon pole': 'Carbon conducts too: the pole stays down.',
     },
   },
   {
     id: 'q.5',
     covers: 'setting',
     prompt: 'The boom and a safety lav on one talker. The program gets…',
-    options: ['One of them; the other on its own track', 'Both of them, summed at an even level', 'Both, with the lav a little lower'],
+    options: ['One of them; the other on its own track', 'Both of them, summed at an even level', 'The lav, with the boom tucked under it'],
     correct: 'One of them; the other on its own track',
     explain: 'Summed, the two arrival times comb. Choose the intended channel; keep the other ready as the fallback.',
     why: {
       'Both of them, summed at an even level': 'Even levels make the deepest comb.',
-      'Both, with the lav a little lower': 'A lower lav still combs with the boom.',
+      'The lav, with the boom tucked under it': 'Tucked under or not, a second open mic on one voice still combs.',
     },
   },
   hearingDiag('q.6', W),
@@ -613,7 +617,7 @@ export const B04_LESSON: Lesson = {
   labId: 'broadcast',
   title: 'Boom and Camera-Mounted Pickup',
   subtitle: 'A boom just outside the widest frame, aimed at the mouth — and the camera’s own mic, as far away as the camera',
-  noun: { one: 'talker', many: 'talkers', subject: 'talker' },
+  noun: { one: 'talker', many: 'talkers', subject: 'talker', person: true },
   model: B04_MODEL,
   micTypeIds: ['locBoomSg', 'locBoomHyper', 'camMic', 'locLav'],
   zones: B04_ZONES,

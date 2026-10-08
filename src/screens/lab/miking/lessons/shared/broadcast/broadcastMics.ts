@@ -252,7 +252,7 @@ export const BROADCAST_MIC_TYPES = {
     clip: { reach: dd(40, 'a clothing clip’s reach to the capsule (drawing default)') },
     examples: [{ model: 'directional miniature lavalier (generic)', fact: 'The lesson B05 L5 / L13: orient the actual sensitive axis toward the mouth; more rejection in a useful geometry, but turns, wind, plosives and proximity effect need more care.', src: 'S-LAVHS' }],
     art: 'lavalier',
-    blurb: 'A tiny directional capsule on a clip: its sensitive end must point at the mouth, so a turn of the head takes the voice off its axis — more rejection of the room when it is aimed well, more care with breath and fabric.',
+    blurb: 'A tiny directional capsule on a clip: its sensitive end needs to point at the mouth, so a turn of the head takes the voice off its axis — more rejection of the room when it is aimed well, more care with breath and fabric.',
   },
   hsCard: {
     id: 'hsCard',

@@ -596,7 +596,7 @@ export const F09_LESSON: Lesson = {
   labId: 'field',
   title: 'Location Speech and Practical Sounds',
   subtitle: 'A boom just above the frame, a body mic on the chest, a plant for the action — each on its own channel',
-  noun: { one: 'talker on location', many: 'talkers on location', subject: 'talker' },
+  noun: { one: 'talker on location', many: 'talkers on location', subject: 'talker', person: true },
   model: F09_MODEL,
   micTypeIds: ['locBoomSg', 'locBoomHyper', 'locBoomFur', 'locLav', 'locPlant', 'locCam', 'vocDynCard', 'vocDynSuper', 'vocHeadset'],
   zones: F09_ZONES,

@@ -28,7 +28,7 @@ export type Site = { id: ReporterSite; label: string; short: string; what: strin
 /** The layers, lightest first. */
 export const REPORTER_COVERS: readonly Cover[] = [
   { id: 'grille', label: 'The built-in grille only', short: 'GRILLE', what: 'The mic’s own mesh grille with the pop filter inside it: it breaks up breath blasts and very light air — nothing more.', rank: 0 },
-  { id: 'foam', label: 'A foam reporter windscreen', short: 'FOAM', what: 'A correctly sized open-cell foam ball over the grille: a common extra layer for light wind. It must fit snugly and not hide the flag or the capsule’s front.', rank: 1 },
+  { id: 'foam', label: 'A foam reporter windscreen', short: 'FOAM', what: 'A correctly sized open-cell foam ball over the grille: a common extra layer for light wind. It needs to fit snugly and not hide the flag or the capsule’s front.', rank: 1 },
   { id: 'fur', label: 'A fitted furry cover', short: 'FUR', what: 'A long-hair cover made for this mic, over its foam: slows moving air at the surface before it reaches the capsule — for stronger wind. Check the fit, that it stays on, and how it sounds.', rank: 2 },
 ];
 

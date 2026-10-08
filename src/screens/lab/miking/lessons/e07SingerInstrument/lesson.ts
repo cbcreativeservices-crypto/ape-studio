@@ -606,7 +606,7 @@ export const E07_LESSON: Lesson = {
   labId: 'ensembles',
   title: 'Singer with Guitar or Piano',
   subtitle: 'One performer, two sources: one coherent mic, or a vocal mic and an instrument mic — each hearing both',
-  noun: { one: 'singer with an instrument', many: 'singers with instruments' },
+  noun: { one: 'singer with an instrument', many: 'singers with instruments', subject: 'performer', person: true },
   model: E07_MODEL,
   micTypeIds: ['vocDynCard', 'vocDynSuper', 'vocLdc', 'sdcCard', 'instDynCard', 'vocLdcOpen'],
   zones: E07_ZONES,
