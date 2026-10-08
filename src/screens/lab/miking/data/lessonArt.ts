@@ -226,3 +226,10 @@ import { F15_ART } from '../lessons/f15Machinery/art';
 ART.F15 = F15_ART;
 import { F16_ART } from '../lessons/f16ScientificArrays/art';
 ART.F16 = F16_ART;
+/* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
+import { B01_ART } from '../lessons/b01RadioHost/art';
+ART.B01 = B01_ART;
+import { B07_ART } from '../lessons/b07Voiceover/art';
+ART.B07 = B07_ART;
+import { B06_ART } from '../lessons/b06Panels/art';
+ART.B06 = B06_ART;

@@ -119,6 +119,17 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   F14: { close: ['vn.overlap'], distant: null },
   F15: { close: ['mp.detail'], distant: ['mp.far'] },
   F16: { close: null, distant: null },
+  // Lab 7 group 1 — desk and studio voice. Every desk mic hangs on an arm or a
+  // gooseneck (an engine 'clip' mount), which the distance rule never takes
+  // as a farther, studio start: the lesson's own words name it
+  // (CORRECTIONS_LOG L7G1).
+  B01: { distant: ['b1.cond'] },
+  // B07: at the guest desk the live read is the close end of the host's
+  // range; the guest's headset is another start, not the live one.
+  B07: { close: ['b7.live'] },
+  // B06: the aisle question mic is nearer its talker than the lectern
+  // gooseneck, but it is not a live start for the presenter.
+  B06: { close: null },
 };
 
 const LIVE = /\b(live|on stage|for a stage|a loud stage|for live sound|stage)\b/i;

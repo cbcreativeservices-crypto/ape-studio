@@ -254,3 +254,21 @@ Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full registe
 | GRAS-FF | GRAS microphone guide | the measurement mics' field responses (reused from group 4) |
 | F14-LESSON, F15-LESSON, F16-LESSON | the owner's lesson texts (`source_text/F14…F16-*.txt`) | the practice claims each zone and item rests on |
 | CALC-* | app calculators | `speedOfSoundAir` (λ/2; Δt via twoMic.deltaTms), `leq` via calcBridge (the cycle strip) |
+## 17. Lab 7 group 1 — broadcast desk and studio voice (B01, B07, B06; `lessons/shared/broadcast/`)
+
+Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the broadcast mic types and their zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `radio_host/`, `voiceover_guests/` and `panels_press/SOURCES.md`; Lab 5 voice keys in `lead_vocal/SOURCES.md` §0.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| S-SM7B-UG | Shure SM7B user guide: "speak directly into the mic 1 to 6 inches (2.54 to 15 cm) away"; cardioid (the `bcDynArm` / `bcDynStand` types; B01 `b1.close`, B07 close start) | https://pubs.shure.com/guide/SM7B/en-US | Medium (prep pass 2026-10-07, guide copy) |
+| R-POD | RØDE, "How To Make Your Podcast Sound Professional": dynamic "about 4 - 6 inches", condenser "about 6 – 8 inches", "a very slight angle" (B01 `b1.dyn`, `b1.cond`, `b1.offBreath`; the `bcLdcArm` type) | https://rode.com/about/news-info/how-to-make-your-podcast-sound-professional | read 2026-10-07 (prep pass) |
+| R-BLEED | RØDE help, multi-person bleed: "less than six inches", mics "facing away from one another" (B01 `b1.hostB`) | https://help.rode.com/hc/en-us/articles/6948902770447 | Medium (403; search extract) |
+| S-CHURCH | Shure, church mic basics: lectern gooseneck "10"-14" and a little off-center" (B06-1); omni lav "8" below the mouth in the center" (the `bcGoose` types; B06 lectern start) | https://www.shure.com/en-us/insights/talkin-church-mic-basics-with-gino-sigismondi-mic-selection-and-placement | read 2026-10-07 (prep pass) |
+| S-PODIUM | Shure, comb filtering with podium mics: mute one of two mics on one talker; gain "around 7-10 inches" (B06 two-mic page; O-LEC) | https://www.shure.com/en-US/insights/how-to-avoid-comb-filtering-with-podium-mics | Medium (search extract) |
+| PSC-TRAIN | Press distribution box: "+4dBm balanced line level" input, "12 transformer isolated microphone level outputs" (routing.ts PRESS_BOX; B06) | https://www.markertek.com/Attachments/Manuals/PSC/FPSC0015-Manual.pdf | Medium (dealer copy of the maker text) |
+| DPA-VOC-STUDIO | DPA, how to mic vocals in a studio: close "about 4 inches … directly on axis", loose "around 12 inches" (B07 zones; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| N-VOC | Neumann studio vocal set-up: "20–30 cm (8–12 inches)" (B07 moderate start; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| N-POP | Neumann pop screen "at least 10 cm"; "top down, at about eye level, and angle it down" (B07 over the script; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| LESSON-B01 | The owner's lesson B01 (practice statements kept as written; B01-1, B-INST applied) | `source_text/B01-…txt` | the lesson |
+| LESSON-B06 | The owner's lesson B06 (practice statements kept as written; B06-1, B-INST applied) | `source_text/B06-…txt` | the lesson |
+| LESSON-B07 | The owner's lesson B07 (practice statements kept as written; B-INST applied) | `source_text/B07-…txt` | the lesson |

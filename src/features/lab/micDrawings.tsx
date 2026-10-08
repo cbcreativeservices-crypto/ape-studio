@@ -26,6 +26,7 @@
  */
 import { useMemo } from 'react';
 import { AmbiTetraMic, BlimpMic, DmsClusterMic, DummyHeadMic, LavalierMic, ShotgunMic } from './micDrawingsField';
+import { BroadcastDynamicMic } from './micDrawingsBroadcast';
 import {
   BlurMask,
   Circle,
@@ -1192,11 +1193,14 @@ export function ShotgunMountMic({ r, len, fore, tint, mount = true }: { r: numbe
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). `fore` (lab6 group 1): the body reaching
  *  ahead of the reference point — the shock-mounted shotgun's tube. */
-export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
+export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
   switch (art) {
     /* Lab 6 group 1: the Foley short shotgun in its shock mount, measured to its capsule. */
     case 'shotgunMount':
       return <ShotgunMountMic r={r} len={len} fore={fore} tint={tint} />;
+    /* Lab 7 group 1: the broadcast dynamic (micDrawingsBroadcast.tsx). */
+    case 'broadcastDynamic':
+      return <BroadcastDynamicMic r={r} len={len} tint={tint} />;
     /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
     case 'shotgun':
       return <ShotgunMic r={r} len={len} tint={tint} />;
