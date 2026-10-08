@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 13:01 · ccode · daba6474
+changed: Merge figure-review: human figures drawn correctly, proportionally and decently
+affects other side: nothing (client-only drawings)
+needs: nothing
+
+
 ### 2026-10-08 12:07 · ccode · 814988e0
 changed: docs: handoff stub filled
 affects other side: nothing (client-only)
