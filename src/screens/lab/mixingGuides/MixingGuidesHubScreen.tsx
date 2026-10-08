@@ -64,8 +64,8 @@ export function MixingGuidesHubScreen() {
   const total = MIXING_GUIDE_INDEX.length;
 
   // ── The world map (owner 2026-10-07/08): pinned above the list.
-  //  - SWIPE: while the learner scrolls, the card under their finger lights its
-  //    countries (and keeps following as the list glides after the finger lifts).
+  //  - PRESS / SWIPE: only the card the finger is pressing is lit, held for
+  //    the whole drag; lifting the finger clears the map.
   //  - TAP: a deliberate press SELECTS — the countries flash for 1.5 s while the
   //    map is showing, then the guide opens. With the map hidden it opens at once.
   //  - HOVER (web / iPad pointer) lights the card under the pointer.
@@ -78,9 +78,7 @@ export function MixingGuidesHubScreen() {
   const grid = useRef({ x: 0, y: 0 });
   const scrollBox = useRef<View>(null);
   const scrollWin = useRef({ x: 0, y: 0 });
-  const finger = useRef({ x: 0, y: 0 });
   const scrollY = useRef(0);
-  const dragUntil = useRef(0);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // The style flashing now, read by the tile callbacks through a ref so they
   // stay STABLE (hunt 2026-10-08 T-1: they depended on `flashId`, so a tap
@@ -90,11 +88,15 @@ export function MixingGuidesHubScreen() {
   const setFlash = useCallback((id: string | null) => { flashRef.current = id; setFlashId(id); }, []);
   useEffect(() => () => { if (openTimer.current) clearTimeout(openTimer.current); }, []);
   // Leaving mid-flash (BACK, a tab switch) cancels the pending open.
-  useFocusEffect(useCallback(() => () => {
-    if (openTimer.current) clearTimeout(openTimer.current);
-    openTimer.current = null;
-    flashRef.current = null;
-    setFlashId(null);
+  useFocusEffect(useCallback(() => {
+    // Coming back to the list: no country is lit until a finger is on a card.
+    setActiveId(null);
+    return () => {
+      if (openTimer.current) clearTimeout(openTimer.current);
+      openTimer.current = null;
+      flashRef.current = null;
+      setFlashId(null);
+    };
   }, []));
   /** Open now: the flash (if any) ends and its timer is cancelled. */
   const openNow = useCallback((id: string) => {
@@ -128,24 +130,34 @@ export function MixingGuidesHubScreen() {
   const measureScroll = useCallback(() => {
     scrollBox.current?.measureInWindow((x, y) => { scrollWin.current = { x, y }; });
   }, []);
-  const onFinger = useCallback((e: GestureResponderEvent) => {
-    finger.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
-  }, []);
-  const onDragStart = useCallback(() => { measureScroll(); dragUntil.current = Date.now() + 1500; }, [measureScroll]);
-  // The card under the finger (in the list's own coordinates). Only a
-  // finger-driven scroll moves the map — a mouse wheel would fight the hover.
-  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    scrollY.current = e.nativeEvent.contentOffset.y;
-    if (mapHidden || flashRef.current || Date.now() > dragUntil.current) return;
-    dragUntil.current = Math.max(dragUntil.current, Date.now() + 400);
-    const cx = finger.current.x - scrollWin.current.x - grid.current.x;
-    const cy = finger.current.y - scrollWin.current.y + scrollY.current - grid.current.y;
-    const hit = MIXING_GUIDE_INDEX.find((g) => {
+  // The card under a point on screen (in the list's own coordinates).
+  const tileAt = useCallback((pageX: number, pageY: number) => {
+    const cx = pageX - scrollWin.current.x - grid.current.x;
+    const cy = pageY - scrollWin.current.y + scrollY.current - grid.current.y;
+    return MIXING_GUIDE_INDEX.find((g) => {
       const b = tileBox.get(g.id);
       return shownIds.has(g.id) && b && b.h > 0 && cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h;
     });
-    if (hit) setActiveId((cur) => (cur === hit.id ? cur : hit.id));
-  }, [mapHidden, shownIds, tileBox]);
+  }, [shownIds, tileBox]);
+  // Owner 2026-10-08: ONLY the card the finger is pressing is lit. The card it
+  // LANDS on stays selected while the finger is down, even as the list scrolls
+  // under it (it used to follow whichever card slid under the finger); lifting
+  // the finger clears the map (touch end, or the end of a drag — not touch
+  // CANCEL, which Android sends when the scroll takes the gesture over). Read on touch-down, not press-in: a quick swipe
+  // never fires press-in. A tap's 1.5 s flash is not cleared by the lift.
+  const onFinger = useCallback((e: GestureResponderEvent) => {
+    if (mapHidden || flashRef.current) return;
+    const hit = tileAt(e.nativeEvent.pageX, e.nativeEvent.pageY);
+    setActiveId(hit ? hit.id : null);
+  }, [mapHidden, tileAt]);
+  const onFingerUp = useCallback(() => {
+    // Let a tap's press (which starts the flash) land first.
+    setTimeout(() => { if (!flashRef.current) setActiveId(null); }, 120);
+  }, []);
+  const onDragStart = measureScroll;
+  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollY.current = e.nativeEvent.contentOffset.y;
+  }, []);
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <LabHeader title="MIXING GUIDES" subtitle={`${total} music styles — what the audience expects, and where to start the mix`} />
@@ -157,11 +169,11 @@ export function MixingGuidesHubScreen() {
       <View ref={scrollBox} style={styles.scrollBox} onLayout={measureScroll}>
       <ScrollView
         onTouchStart={onFinger}
-        onTouchMove={onFinger}
+        onTouchEnd={onFingerUp}
         onScroll={onScroll}
         scrollEventThrottle={100}
         onScrollBeginDrag={onDragStart}
-        onMomentumScrollBegin={onDragStart}
+        onScrollEndDrag={onFingerUp}
         contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
