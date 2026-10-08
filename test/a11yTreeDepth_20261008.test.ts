@@ -292,7 +292,7 @@ describe('APE-STUDIO-W/R/S — the accessibility tree stays small', () => {
   it('the pinned nested-element fixes stay fixed', () => {
     const flash = read('src/screens/study/FlashcardsScreen.tsx');
     assert.match(flash, /style=\{\{ flex: 1 \}\}\s*accessible=\{false\}\s*>/, 'the card wrapper is not one element');
-    assert.match(flash, /<Pressable accessible=\{false\} onPress=\{studyMode \? undefined : onTap\} style=\{styles\.fsBody\}>/);
+    assert.match(flash, /<Pressable accessible=\{false\} onPress=\{studyMode \|\| level !== 0 \? undefined : onTap\} style=\{styles\.fsBody\}>/);
     assert.match(read('src/features/intro/LearningIntroSheet.tsx'), /<Pressable accessible=\{false\} style=\{styles\.backdrop\} onPress=\{onBegin\} onAccessibilityEscape=\{onBegin\}>/);
     assert.match(read('src/features/intro/TopicWelcomeSheet.tsx'), /<Pressable style=\{styles\.scrim\} onPress=\{dismiss\} accessible=\{false\} onAccessibilityEscape=\{dismiss\}>/);
     assert.match(read('src/screens/glossary/GlossaryScreen.tsx'), /<Pressable onPress=\{popupBack\} accessible=\{false\} onAccessibilityEscape=\{popupBack\}>/);
