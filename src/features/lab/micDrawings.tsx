@@ -25,6 +25,7 @@
  *     with an animated transform — see ShockMountView.
  */
 import { useMemo } from 'react';
+import { ParabolicDishMic } from './micDrawingsDish';
 import {
   BlurMask,
   Circle,
@@ -1191,8 +1192,11 @@ export function ShotgunMic({ r, len, fore, tint, mount = true }: { r: number; le
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). `fore` (lab6 group 1): the body reaching
  *  ahead of the reference point — the shotgun's tube. */
-export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm' | 'shotgun'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
+export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm' | 'shotgun' | 'dish'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
   switch (art) {
+    // lab6 group 2: the parabolic dish (micDrawingsDish.tsx).
+    case 'dish':
+      return <ParabolicDishMic r={r} len={len} fore={fore} tint={tint} />;
     case 'shotgun':
       return <ShotgunMic r={r} len={len} fore={fore} tint={tint} />;
     // Lab 6 group 4: the measurement mic and the sound level meter.

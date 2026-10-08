@@ -260,7 +260,9 @@ export type MountKind = 'stand' | 'surface' | 'clip' | 'boom' | 'pole';
  *  mic on its preamp; a complete sound level meter under its windscreen. */
 /* lab6 group 1: 'shotgun' — a short shotgun (an interference tube ahead of
  *  the capsule, a shock mount at its tail; features/lab/micDrawings.tsx). */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm' | 'shotgun';
+/* lab6 group 2: 'dish' — a parabolic dish, the capsule at its focus facing the
+ *  bowl (features/lab/micDrawingsDish.tsx); its reference point is the focus. */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm' | 'shotgun' | 'dish';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never
@@ -511,6 +513,12 @@ export type InstrumentModel = {
    *  the guitars' headstock and tuners; the glass takes the other corner
    *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */
   insetKeepClear?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
+  /* lab6 group 2 (2026-10-08) — a FIELD SITE drawn metres wide (frame G):
+   * the mic, its pattern lobe and its stand are drawn `hardwareScale` times
+   * larger than life so a 10 cm mic is not a speck on a 25 m site plan (a map
+   * symbol; the lesson says once that mics are drawn larger). Drawing only:
+   * collision, zones and every readout keep true size. Absent = 1. */
+  hardwareScale?: number;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

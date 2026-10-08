@@ -403,7 +403,7 @@ function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: 
 
 /* ── the mic glyph ───────────────────────────────────────────────────── */
 
-function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValue<MicPose>; view: ViewId; typeId: string; blocked: SharedValue<Blocked>; focus: boolean; xf: SharedValue<ViewXform> }) {
+function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1 }: { pose: SharedValue<MicPose>; view: ViewId; typeId: string; blocked: SharedValue<Blocked>; focus: boolean; xf: SharedValue<ViewXform>; /* lab6 group 2: hardwareScale */ hk?: number }) {
   const t = micType(typeId);
   const len = t.body.length.mm;
   const r = t.body.radius.mm;
@@ -420,12 +420,12 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
     const by = view === 'side' ? -aim.y : -aim.z;
     const fore = Math.max(0.12, Math.sqrt(bx * bx + by * by));
     const ang = Math.atan2(by, bx) - Math.PI / 2;
-    return [{ translateX: p.p.x }, { translateY: vOf(view, p.p) }, { rotate: ang }, { scaleY: fore }, { translateX: surface && view === 'side' ? -r : 0 }];
+    return [{ translateX: p.p.x }, { translateY: vOf(view, p.p) }, { rotate: ang }, { scale: hk }, { scaleY: fore }, { translateX: surface && view === 'side' ? -r : 0 }];
   });
   const redOpacity = useDerivedValue(() => (blocked.value ? 0.95 : 0));
   const ring = useDerivedValue(() => {
     const p = pose.value;
-    const k = len + RING_OFFSET_PX / xf.value.s;
+    const k = len * hk + RING_OFFSET_PX / xf.value.s;
     const aim = aimVec(p.az, p.el);
     const tail = sub(p.p, { x: aim.x * k, y: aim.y * k, z: aim.z * k });
     return vec(tail.x, vOf(view, tail));
@@ -572,7 +572,7 @@ const STAND_ART = (() => {
  * view), and the cable taped along the boom. The base and the cable are
  * drawing only (ILLUSTRATIVE): the collision keeps the tubes it always had.
  */
-function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId }) {
+function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; /* lab6 group 2: hardwareScale */ hk?: number }) {
   const scene = rig.scene;
   const body = rig.body[slot];
   const art = STAND_ART();
@@ -613,7 +613,7 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
   const jx = useDerivedValue(() => geo.value.jx);
   const jv = useDerivedValue(() => geo.value.jv);
   const jOn = useDerivedValue(() => geo.value.joint);
-  const footXf = useDerivedValue(() => [{ translateX: geo.value.fx }, { translateY: geo.value.fv }]);
+  const footXf = useDerivedValue(() => [{ translateX: geo.value.fx }, { translateY: geo.value.fv }, { scale: hk }]);
   const footOn = useDerivedValue(() => geo.value.stand);
   if (body.mount !== 'stand' && body.mount !== 'boom') return null;
   return (
@@ -636,10 +636,10 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
         )}
       </Group>
       {/* Tubes: a dark edge, the satin body, a rim light toward the upper left. */}
-      <Path path={path} style="stroke" strokeWidth={17} strokeCap="round" color="#0b0c0f" />
-      <Path path={path} style="stroke" strokeWidth={12.5} strokeCap="round" color="#4d515b" />
-      <Group transform={[{ translateX: -1.6 }, { translateY: -2.2 }]}>
-        <Path path={path} style="stroke" strokeWidth={3.5} strokeCap="round" color="#d4d8e0" opacity={0.5} />
+      <Path path={path} style="stroke" strokeWidth={17 * hk} strokeCap="round" color="#0b0c0f" />
+      <Path path={path} style="stroke" strokeWidth={12.5 * hk} strokeCap="round" color="#4d515b" />
+      <Group transform={[{ translateX: -1.6 * hk }, { translateY: -2.2 * hk }]}>
+        <Path path={path} style="stroke" strokeWidth={3.5 * hk} strokeCap="round" color="#d4d8e0" opacity={0.5} />
       </Group>
       {/* The cable, taped along the boom (its run is ILLUSTRATIVE). */}
       <Group transform={[{ translateX: 0 }, { translateY: 9 }]}>
@@ -648,9 +648,9 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
       </Group>
       {/* The clutch at the boom joint. */}
       <Group opacity={jOn}>
-        <Circle cx={jx} cy={jv} r={13} color="#16171b" />
-        <Circle cx={jx} cy={jv} r={13} style="stroke" strokeWidth={2.4} color="#8a8f99" />
-        <Circle cx={jx} cy={jv} r={4.5} color="#d4d8e0" />
+        <Circle cx={jx} cy={jv} r={13 * hk} color="#16171b" />
+        <Circle cx={jx} cy={jv} r={13 * hk} style="stroke" strokeWidth={2.4 * hk} color="#8a8f99" />
+        <Circle cx={jx} cy={jv} r={4.5 * hk} color="#d4d8e0" />
       </Group>
     </>
   );
@@ -664,7 +664,7 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
  * hands, facing the mic. The figure is static and only MOVES with the hands
  * (a transform), so dragging the mic stays on the UI thread.
  */
-function PoleMount({ rig, slot, pose, view, Operator }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; Operator?: LessonArt['PoleOperator'] }) {
+function PoleMount({ rig, slot, pose, view, Operator, hk = 1 }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; Operator?: LessonArt['PoleOperator']; /* lab6 group 2: hardwareScale */ hk?: number }) {
   const scene = rig.scene;
   const body = rig.body[slot];
   const geo = useDerivedValue(() => {
@@ -703,8 +703,8 @@ function PoleMount({ rig, slot, pose, view, Operator }: { rig: Rig; slot: MicSlo
           <Operator view={view} />
         </Group>
       ) : null}
-      <Path path={path} style="stroke" strokeWidth={POLE_RADIUS * 2 + 4} strokeCap="round" color="#060608" />
-      <Path path={path} style="stroke" strokeWidth={POLE_RADIUS * 2} strokeCap="round" color="#2b2e35" />
+      <Path path={path} style="stroke" strokeWidth={(POLE_RADIUS * 2 + 4) * hk} strokeCap="round" color="#060608" />
+      <Path path={path} style="stroke" strokeWidth={POLE_RADIUS * 2 * hk} strokeCap="round" color="#2b2e35" />
       <Group transform={[{ translateX: -1.2 }, { translateY: -1.8 }]}>
         <Path path={path} style="stroke" strokeWidth={3} strokeCap="round" color="#c9ced8" opacity={0.45} />
       </Group>
@@ -762,7 +762,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   );
 }
 
-function PolarSlice({ pose, view, pattern, shotgun = false }: { pose: SharedValue<MicPose>; view: ViewId; pattern: MicPattern; shotgun?: boolean }) {
+function PolarSlice({ pose, view, pattern, shotgun = false, hk = 1 }: { pose: SharedValue<MicPose>; view: ViewId; pattern: MicPattern; shotgun?: boolean; /* lab6 group 2: hardwareScale */ hk?: number }) {
   // lab6 group 1: a SHORT SHOTGUN — its base pattern below the tube's
   // transition, and the narrower lobe it tends toward at high frequencies
   // (engine/physics/shotgun.ts): a simplified picture, drawn inside the base.
@@ -776,7 +776,7 @@ function PolarSlice({ pose, view, pattern, shotgun = false }: { pose: SharedValu
     for (let i = 0; i <= 120; i++) {
       const phi = (i / 120) * Math.PI * 2;
       const d = view === 'side' ? { x: Math.cos(phi), y: Math.sin(phi), z: 0 } : { x: Math.cos(phi), y: 0, z: Math.sin(phi) };
-      const g = shotgunLobe(angleBetween(aim, d), 'high') * POLAR_R * 1.35;
+      const g = shotgunLobe(angleBetween(aim, d), 'high') * POLAR_R * 1.35 * hk;
       const u = cu + g * Math.cos(phi);
       const v = cv + g * Math.sin(phi);
       if (i === 0) p.moveTo(u, v);
@@ -795,7 +795,7 @@ function PolarSlice({ pose, view, pattern, shotgun = false }: { pose: SharedValu
     for (let i = 0; i <= 90; i++) {
       const phi = (i / 90) * Math.PI * 2;
       const d = view === 'side' ? { x: Math.cos(phi), y: Math.sin(phi), z: 0 } : { x: Math.cos(phi), y: 0, z: Math.sin(phi) };
-      const g = Math.abs(gain(pattern, angleBetween(aim, d))) * POLAR_R;
+      const g = Math.abs(gain(pattern, angleBetween(aim, d))) * POLAR_R * hk;
       const u = cu + g * Math.cos(phi);
       const v = cv + g * Math.sin(phi);
       if (i === 0) p.moveTo(u, v);
@@ -1783,22 +1783,22 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             </>
           ) : null}
           {micsShown.map((m) => (
-            <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
+            <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={model.hardwareScale ?? 1} />
           ))}
           {micsShown.map((m) => (
-            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} />
+            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={model.hardwareScale ?? 1} />
           ))}
           {micsShown.map((m) => (
             <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
           ))}
           {showPolar
-            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} />)
+            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} hk={model.hardwareScale ?? 1} />)
             : null}
           {guideData.map((d) => (
             <SetupGuide key={`guide:${d.slot}`} g={d.g} view={view} xf={xf} dashMm={10 / base.s} drawDim={!d.short} />
           ))}
           {micsShown.map((m) => (
-            <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} />
+            <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} hk={model.hardwareScale ?? 1} />
           ))}
         </Group>
       </Canvas>

@@ -38,7 +38,7 @@ import { MIC_TYPES, micType } from '../data/micTypes';
 import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
 import { viewToggle } from '../engine/scene/viewToggle.ts';
-import { ROLE_LABEL } from '../engine/setups.ts';
+import { roleWords } from '../engine/setups.ts';
 import { useSetups } from './PSetups';
 
 /** "{line}" / "{head}" / "{tol}" in a copy line. */
@@ -177,14 +177,14 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
             kind: 'options' as const,
             id: 'from',
             label: 'START',
-            valueLabel: fromNow ? ROLE_LABEL[fromNow.role].split(' ')[0] : 'CHOOSE',
+            valueLabel: fromNow ? roleWords(fromNow).split(' ')[0] : 'CHOOSE',
             selectedId: fromShown,
             onSelect: (id: string) => {
               setFromShown(id);
               setFromId(id);
               chooseStart?.(id);
             },
-            options: setups.map((s) => ({ id: s.id, label: `${ROLE_LABEL[s.role]} · ${s.title}`, blurb: s.mics.length > 1 ? `Starts from its first mic: ${s.line}` : s.line })),
+            options: setups.map((s) => ({ id: s.id, label: `${roleWords(s)} · ${s.title}`, blurb: s.mics.length > 1 ? `Starts from its first mic: ${s.line}` : s.line })),
           },
         ]
       : []),
@@ -276,7 +276,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          {fromNow ? <Body>{`START FROM · ${ROLE_LABEL[fromNow.role].toLowerCase()}: ${fromNow.title}${fromNow.mics.length > 1 ? ' (its first mic)' : ''}. Choose another in START FROM.`}</Body> : null}
+          {fromNow ? <Body>{`START FROM · ${roleWords(fromNow).toLowerCase()}: ${fromNow.title}${fromNow.mics.length > 1 ? ' (its first mic)' : ''}. Choose another in START FROM.`}</Body> : null}
           <Landing looking={`${t.short} · ${variantShort}`} prompt="Move the mic from its starting setup: drag it (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and listen for what changes." />
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${t.mount === 'stand' ? C.placement.blocked[variant] ?? '' : ''}`}</Note> : null}
