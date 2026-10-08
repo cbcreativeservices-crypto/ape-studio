@@ -205,6 +205,27 @@ export const BRAND_NAMES: readonly string[] = [
   'BLX4R',
   'MV7',
   'PodMic',
+  // Lab 7 part 2, group 2 research (docs/labs/miking/field_diamond, parabolic, court_ice): the dish makers, the
+  // governing bodies and leagues whose rules were read, and the products named. ('Rycote', 'Sennheiser', 'Shure',
+  // 'DPA', 'MKH ?416' and 'NWS' are in the lists above.)
+  'Klover',
+  'MiK',
+  'Wildtronics',
+  'IFAB',
+  'World Rugby',
+  'FIBA',
+  'FIVB',
+  'NFL',
+  'MLB',
+  'NHL',
+  'USA Softball',
+  'ITF',
+  'BWF',
+  'IIHF',
+  'DEL',
+  'TopVision',
+  'VP83F',
+  'MX391',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

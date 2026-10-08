@@ -634,6 +634,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 03:03 · ccode · 36f8a870
+changed: Merge origin/final-lab into lab7-g5 (Lab 7b group 2)
+affects other side: nothing server-side — final-lab merged into lab7-g5 (Lab 6 groups 2 and 5, Lab 7 group 1, then Lab 7 part 2 group 2); app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 02:28 · ccode · 222c8ca0
+changed: Miking Lab 7b group 2: B12 Parabolic, B13 Field and Diamond, B14 Court and Ice
+affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
+needs: nothing
+
+
+### 2026-10-08 01:57 · ccode · f0f35555
+changed: Miking Lab 7b group 2: the shared sports kit (venue plan builder, practice scenes, dish, boundary/plant, headroom)
+affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
+needs: nothing
+
+
 ### 2026-10-08 02:34 · ccode · 22178948
 changed: Merge origin/final-lab into lab6-g2
 affects other side: nothing (client-only merge; Miking still hidden)

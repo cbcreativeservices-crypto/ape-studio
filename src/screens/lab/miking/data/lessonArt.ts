@@ -245,3 +245,10 @@ import { B07_ART } from '../lessons/b07Voiceover/art';
 ART.B07 = B07_ART;
 import { B06_ART } from '../lessons/b06Panels/art';
 ART.B06 = B06_ART;
+/* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
+import { B12_ART } from '../lessons/b12Parabolic/art';
+ART.B12 = B12_ART;
+import { B13_ART } from '../lessons/b13FieldDiamond/art';
+ART.B13 = B13_ART;
+import { B14_ART } from '../lessons/b14CourtIce/art';
+ART.B14 = B14_ART;

@@ -223,3 +223,10 @@ import { B07_LESSON } from '../lessons/b07Voiceover/lesson.ts';
 LESSON_CONTENT.B07 = B07_LESSON;
 import { B06_LESSON } from '../lessons/b06Panels/lesson.ts';
 LESSON_CONTENT.B06 = B06_LESSON;
+/* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
+import { B12_LESSON } from '../lessons/b12Parabolic/lesson.ts';
+LESSON_CONTENT.B12 = B12_LESSON;
+import { B13_LESSON } from '../lessons/b13FieldDiamond/lesson.ts';
+LESSON_CONTENT.B13 = B13_LESSON;
+import { B14_LESSON } from '../lessons/b14CourtIce/lesson.ts';
+LESSON_CONTENT.B14 = B14_LESSON;

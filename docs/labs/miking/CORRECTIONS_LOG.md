@@ -1601,3 +1601,34 @@ Built by the Lab 7 group 1 builder (G1 of `BUILD_PROMPTS_lab7a.md`). Research: `
 - Routing depth (owner list item 6): one WHERE EACH MIC GOES step on STARTING SETUPS per lesson (B01 guest heard / guest return; B07 remote return / talkback; B06 question mic / ambience mic / the reporter’s input level on the press box). The press box is drawn with 12 isolated outputs (the example product’s count; never said).
 - 3:1 at a desk/table: a note only, never graded (owner list item 3) — used.
 - Brand list: no new brand appears in learner text; the Lab 7a names (RØDE, Rode, Rycote, Sound Devices, AMBEO, National Weather Service) were already in BRAND_NAMES; the rest of summary §5 item 8 (Countryman, Professional Sound/PSC, SM7B, ME 2/3, MD 46, RE 50, invisiLav, Press Train/Bridge, DCA 901, SCM 410, BLX4R, MV7, PodMic) added to BRAND_NAMES.
+## Lab 7b · group 2 · Action pickup on fields and courts: B12, B13, B14 (branch lab7-g5, 2026-10-08)
+
+Built by the Lab 7 part 2 group 2 builder (G2 of `BUILD_PROMPTS_lab7b.md`; the spec's branch name `lab7-g2` was taken by
+Lab 7a, so the backup branch is `lab7-g5`). Research: `field_diamond/`, `parabolic/`, `court_ice/` SOURCES.md and
+GEOMETRY_PROPOSAL.md, `BATCH7_RESEARCH_SUMMARY_PART2.md` §2. Shared kit: `lessons/shared/sports/` (G3 imports it).
+
+| Id | Lesson | Lines | Was | Now | Why | Status |
+|---|---|---|---|---|---|---|
+| L7B-G2-01 (B12-01) | B12 | L58 | the maker's FAQ: wavelength "not relevant in the same way" | never shown; the bowl is taught by the wave-acoustic reading (gain only where the wavelength is shorter than the dish, ≈ c / D) | physically misleading (summary §2 item 5) | APPLIED |
+| L7B-G2-02 (B12-02) | B12 | — | no dish geometry in the lesson | the paraboloid DERIVED from the maker's focal references (660 / 224 / 122 mm and 406 / 122 / 84 mm), `placeholder`, "a simplified picture" said once; no dimension printed | parabolic/SOURCES.md §b | APPLIED |
+| L7B-G2-03 (B13-01) | B13 | L17, L63 | "IFAB Law 1 … Section 1.12" | internal record cites "Law 1, §1.12 (the equipment sentence)"; on screen only "nothing attached to goals, nets and flagposts" | locator under a "Commercial advertising" heading | APPLIED (internal) |
+| L7B-G2-04 (B14-01) | B14 | L14 | FIBA "unobstructed boundary lane" | said as an obstruction clearance — "a typical clear zone … not a crew strip" | the rule text read is an obstruction clearance | APPLIED |
+| L7B-G2-05 (R-07) | B12, B13, B14 | L2, L116–L160 / L46–L53 / L177–L200 | "Pro Audio Training Academy", "classroom", "student", "supervisor", "instructor-approved" | "you", "practice", "the safety observer", "a qualified person"; the observation sheets are optional practice sheets | institutional wording (summary §2 item 14) | APPLIED |
+| L7B-G2-06 (R-08) | B12, B13, B14 | refs, L48, L57, L62, L105, L163–L170 | maker and model names (Klover MiK 16 / 26, Wildtronics, Shure VP83F / MX391, Sennheiser MKH 416, Rycote, TopVision) and rulebooks (IFAB, World Rugby, MLB, USA Softball, NFL, FIBA, FIVB, ITF, BWF, DEL, IIHF) | generic types; "check your event's rules"; BRAND_NAMES extended | owner ruling 2026-10-04 | APPLIED |
+| L7B-G2-07 (R-09) | B13, B14 | L114 / L155 | lightning and the rain-cover caution repeated per lesson | ONE sports safety card (`shared/sports/safety.ts`): shelter in a substantial building or hard-topped vehicle, dugouts and open rain shelters not safe, 30 minutes after the last thunder; a windscreen is not waterproofing | summary §2 item 16 | APPLIED |
+| L7B-G2-08 | B13, B14 | L105 / L172 | "−12 dBFS" as the loudest safe rehearsal peak | kept as "a suggested starting point, not a delivery standard"; the model-specific −12 to −6 dB of one maker's guide is internal only | S-VP83F (Medium) | APPLIED |
+| L7B-G2-09 | B12 | L27 | aim below a distant player (one maker's 26-inch guide) | an ANOTHER START "idea to try", "test it with your own dish and geometry" | UNSOURCED today; model-specific | APPLIED |
+| L7B-G2-10 | B13 | L62 | a producer's 17 fixed pitch mics | not shown (no count, no producer) | press release, producer-specific | APPLIED |
+| L7B-G2-11 | B13 | L118 | the fixed ambience mark E "in the crew strip", no coordinate | E drawn at (25, −6), `placeholder`, never printed; its ranges are not printed (an ambience pair aims at no target) | never invent a dimension | APPLIED |
+| L7B-G2-12 | B13 | L136 | the target height not given ("measure the slant distance to the actual source height") | targets at the voice family's 1.55 m standing mouth height (drawing default); slant ranges "calculated from the drawing" | — | APPLIED · OWNER REVIEW |
+| L7B-G2-13 | B14 | L182 | the clap "at the same height" as the 1 m capsule | targets at 1.0 m — the lesson's own | — | APPLIED |
+
+### OWNER REVIEW (defaults used; change any)
+- **D7-1 rules on screen** — default used: sport clearance numbers only as "typical clear zone — check your event's rules" (rugby 5 m / 3.5 m / 3 m, basketball about 2 m, volleyball about 3 m, more at top events), no rulebook named; one "approval first" row on every "before any mic" card.
+- **D7-2 sport outlines** — default used: ten plan outlines at common dimensions, every one a drawing default (`sportPlans.ts` `defaults`); the PRACTICE scenes are the Placement Studios.
+- **D7-6 photos** — not done (no images touched; prompts not written).
+- The practice field's crew strip (1.5 m wide), the camera, the crowd mark K, the way out and cable route, the dish's ±40° turn arc, the practice line's outside zone, the second position M2 (4 m along the line), the B12 fallback place F (7, −6), the dish's axis height (1.3 m) and the ambience height (1.5 m) are drawing defaults.
+- The headroom chain is an EXAMPLE chain (event sizes +10 / +16 dB over a gentle clap; stage limits) — drawing defaults, labelled "an example chain … not measurements"; the one printed number is the converter's dBFS from the learner's own gains.
+- Mic glyphs on a plan are drawn at a fixed share of the plan's width (a mark, not to scale); the corner close-up shows the mic itself to scale.
+- The engine's MICROPHONES first step ("on the instrument") is kept, as in F10; its distance label prints the engine's precision (e.g. "≈ 10.005 m (393.9 in)") — an engine-wide formatting question for metre-scale scenes.
+- Not built: D7-3/D7-4/D7-5 are group 3's. Group 1's routing panel is not used here (B12–B14 keep effects off the PA in words).
