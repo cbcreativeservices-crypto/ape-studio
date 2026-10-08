@@ -1321,3 +1321,26 @@ Audio-engineer and learning review of the restructured pages (MEET IT, STARTING 
 | RV34-16 | A10 acoustic | One core setup | — | The common live start (a vocal dynamic cupped with the harmonica) is not in the research | OWNER: decide |
 | RV34-17 | C06b | TWO MICS pairs one bass's under-bridge miniature with the section spot whose own card says "not one close mic per player" | — | Two contexts in one setup | OWNER: decide |
 | RV34-18 | A12 | TWO MICS "The main pair and a spot" draws the main pair as one mic | — | A setup draws at most two mics | OWNER: decide |
+
+## Lab 6 · group 4 · Measurement core: F11, F12, F13 (branch lab6-g4, 2026-10-08)
+
+Applied from `BATCH6_RESEARCH_SUMMARY_PART2.md` §2 (items 2, 3, 6, 10, 12, 13, 14, 15, 16) and the folders' SOURCES.md.
+
+| id | lesson | was | now | basis | status |
+|---|---|---|---|---|---|
+| G4-01 | F12 L41 (item 2) | shelter "until 30 minutes after the last thunder" | "wait 30 minutes after the last lightning or thunder"; "get inside a safe place immediately" when thunder is heard (F12 safety line, `sl.set.2`, `sl.q.2`) | NWS-LTG | APPLIED |
+| G4-02 | F13 L78, ref [7] (item 3) | "ISO/DIS 3382-1 … 2026 revision draft" | no standard named on screen (D-6B-3); internally: the revision is at Committee Draft, the 2009 edition current | ISO-3382 (search) | APPLIED · OWNER: check ref URL 85647 vs 85701 |
+| G4-03 | F12 refs [4]/[6] (item 6) | two titles, one FHWA URL | one key, FHWA-FG (no reference list on screen) | FHWA-FG | APPLIED |
+| G4-04 | F11 L45 (item 10) | "instructor supervision" | "with someone qualified on the equipment" (accuracy note, before-any-mic safety line) | wording | APPLIED |
+| G4-05 | F11/F12/F13 headers (item 12) | "Scientific and Acoustical Lab" / "Foley, Field and Acoustical Lab" | registry name "Miking Lab 6: Foley, Field & Scientific" | registry | APPLIED |
+| G4-06 | all three (item 13) | "Pro Audio Training Academy" | stripped | wording | APPLIED |
+| G4-07 | all three (item 14) | the learner named as a pupil; "classroom exercise"; "Guided teaching exercise"; a pupil's measurement sheet | "you", "Practice", "measurement sheet / field sheet" (shared/measure/logSheet.ts) | wording | APPLIED |
+| G4-08 | F13 L89 (item 15) | "F14 subsequent acoustical topic" | no cross-link printed; the PA variant names "system + room" (F14 builds on it) | wording | APPLIED |
+| G4-09 | F11 L32 (item 16) | "OSHA requires documented pre- and post-use calibration … good professional practice more broadly" | on screen: a field check before and after, the after value unadjusted; both statements kept internally (OSHA-G CONFIRMED, OSHA-OTM not re-read) | OSHA-G | APPLIED |
+| G4-10 | F12 site (summary §1) | no power-line clearance on the site | power line on the verge, 3 m (10 ft) keep-out ring drawn in the section; safety line; `sl.set.1`, `sl.q.1` (critical) | OSHA-ELEC | APPLIED (D-6B-9) |
+| G4-11 | F12 L34 | "energy subtraction when sufficiently separated" (no number) | energy subtraction, refused inside the method's limit: lab default 3 dB, labelled "your method sets this" (shared/measure/background.ts; calculator TODO) | D-6B-8 default | APPLIED · OWNER: approve the calculator on audio-tools-engine |
+| G4-12 | F12 L26–L27 (enrichment) | facade positions without numbers | 2 m (6.6 ft) from the facade midpoint; one "close to but not touching" (drawn 6–30 cm); 1.5 m (5 ft) height as one method's example | FHWA-FG | APPLIED |
+| G4-13 | F13 receivers | no height | seated ear height 1.2 m, labelled a sensible listener height, never the method's rule | MEYER-MAPP | APPLIED |
+| G4-14 | F11/F12/F13 | "documented" throughout | "logged / written down" (the learner-text ban on "documented") | wording | APPLIED |
+
+OWNER REVIEW (defaults applied): D-6B-1 chain rack as a page type — yes (engine/chain/); D-6B-2 synthetic histories and model decays labelled "a made-up / simplified example" — yes; D-6B-3 no standard names on screen — yes (BRAND_NAMES extended); D-6B-8 3 dB default + calculator stub; D-6B-9 safety numbers exact — yes; operator keep-away radius 1 m drawing default (F11 proposal item 3); F12 open-position distance from the road (3–4.5 m), F13 room and seats, F11 off-axis example angle 30° — drawing defaults.
