@@ -43,7 +43,7 @@ const envelopes: Envelope[] = [
   { id: 'env.dance', label: 'the dancer’s moving space', shape: { kind: 'box', min: v3(-FC.danceR.mm, -FC.danceTop.mm, -FC.route.mm - FC.danceR.mm), max: v3(FC.danceR.mm, 0, FC.route.mm + FC.danceR.mm) }, prov: ill('the dance envelope (r 700 round the dancer, up to the raised hands) swept along the route: a drawing default'), variants: ['dance'] },
 ];
 
-/* ── RECOMMENDED STARTING POINTS: the lesson's own trials (internal kind
+/* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind
  *    'trial'), 30–60 cm for a still player — never closer than the general
  *    30 cm floor — and a wider, higher view for a dancer. ── */
 const z = (o: Omit<DocumentedZone, 'kind' | 'src' | 'side' | 'draw'> & { c: Vec3; dA: [number, number] }): DocumentedZone => {

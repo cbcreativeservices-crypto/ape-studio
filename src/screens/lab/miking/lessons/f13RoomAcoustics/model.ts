@@ -1,5 +1,5 @@
 /**
- * F13 ROOM ACOUSTICS AND REVERBERATION — the recommended starting points
+ * F13 ROOM ACOUSTICS AND REVERBERATION — the suggested starting points
  * (charter §2 layer 1). Source keys: measurement_mics/SOURCES.md §0. Frame:
  * F13 geometry.ts (the test source's centre at the origin).
  *

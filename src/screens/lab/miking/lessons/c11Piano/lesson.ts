@@ -45,9 +45,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — over the strings, back from the hammers, outside the curve, over the open top or behind the soundboard — measured from the surface each names, clear of everything that moves, then move the mic and see what changes.',
-    credit: { scenarios: ['pn.place.1', 'pn.place.2', 'pn.place.3', 'pn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named surface — not a rule. Height, distance from the hammers and angle are separate things to try, and the lid, the strings and the pianist’s space come first.',
+    goal: 'Start where we suggest you begin — over the strings, back from the hammers, outside the curve, over the open top or behind the soundboard — measured from the surface each names, clear of everything that moves, then move the mic and see what changes.',
+    credit: { scenarios: ['pn.place.1', 'pn.place.2', 'pn.place.3', 'pn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named surface — not a rule. Height, distance from the hammers and angle are separate things to try, and the lid, the strings and the pianist’s space come first.',
   },
   context: {
     title: 'Studio or live',
@@ -316,12 +316,12 @@ const scenarios: MikingScenario[] = [
     id: 'pn.two.2',
     page: 'twoMic',
     prompt: 'You flip the bass mic’s polarity. What happens to the arrival-time difference?',
-    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals line up again in time': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -517,7 +517,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from — the strings, the curve, the top.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from — the strings, the curve, the top.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the strings, dampers, lid and the pianist', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a piano', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const WIDE_REASON: SetupReason = { id: 'r.wide', label: 'It will give the widest stereo piano possible', role: 'wrong', feedback: 'Width is not a passing reason — a piano need not span hard left and right, and wide pairs can thin out in mono.' };
@@ -529,9 +529,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud club stage, a grand beside the drums, wedges everywhere. One or two channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Lid on the short stick; one dynamic about 15 cm over the middle strings, 20 cm back from the hammers', ok: true, power: 'none', feedback: 'A recommended starting point under a lower lid: close, separated, and the dynamic needs no power.' },
-      { id: 'b', label: 'Lid on the short stick; a small condenser aimed into a sound hole in the frame', ok: true, power: 'phantom', feedback: 'A recommended one-mic live option, separated by the lower lid — the condenser has its phantom power here.' },
-      { id: 'c', label: 'Short stick; a treble mic and a bass mic over the strings, checked in mono', ok: true, power: 'phantom', feedback: 'Recommended starting points for a split pair, separated by the lid — and the mono check is in the plan.' },
+      { id: 'a', label: 'Lid on the short stick; one dynamic about 15 cm over the middle strings, 20 cm back from the hammers', ok: true, power: 'none', feedback: 'A suggested starting point under a lower lid: close, separated, and the dynamic needs no power.' },
+      { id: 'b', label: 'Lid on the short stick; a small condenser aimed into a sound hole in the frame', ok: true, power: 'phantom', feedback: 'A suggested one-mic live option, separated by the lower lid — the condenser has its phantom power here.' },
+      { id: 'c', label: 'Short stick; a treble mic and a bass mic over the strings, checked in mono', ok: true, power: 'phantom', feedback: 'Suggested starting points for a split pair, separated by the lid — and the mono check is in the plan.' },
       { id: 'd', label: 'Lid on the full stick; a pair of omnis two metres out in the room', ok: false, power: 'phantom', feedback: 'Omnis far out hear the drums and the wedges more than the piano: a poor choice beside a loud stage.' },
       { id: 'e', label: 'A dynamic resting on the strings near the hammers, for the most attack', ok: false, power: 'none', feedback: 'Nothing may touch the strings, dampers or hammers. Keep the mic above them.' },
     ],
@@ -543,8 +543,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet room, an upright pulled out from the wall, a singer-songwriter. One channel, and it has NO phantom power.',
     setups: [
-      { id: 'a', label: 'A dynamic just over the open top, between bass and treble, checked across the keyboard', ok: true, power: 'none', feedback: 'A recommended starting point over the top; a dynamic needs no phantom.' },
-      { id: 'b', label: 'A dynamic about 20 cm behind the soundboard, moved to find the sweet spot', ok: true, power: 'none', feedback: 'A recommended rear starting point — with time to listen for the sweet spot; no phantom needed.' },
+      { id: 'a', label: 'A dynamic just over the open top, between bass and treble, checked across the keyboard', ok: true, power: 'none', feedback: 'A suggested starting point over the top; a dynamic needs no phantom.' },
+      { id: 'b', label: 'A dynamic about 20 cm behind the soundboard, moved to find the sweet spot', ok: true, power: 'none', feedback: 'A suggested rear starting point — with time to listen for the sweet spot; no phantom needed.' },
       { id: 'c', label: 'A small condenser inside the open top, aimed toward the hammers', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'A dynamic squeezed between the piano’s back and the wall', ok: false, power: 'none', feedback: 'Pressed against the wall there is no usable space: pull the piano out (its owner moves it) or choose the top.' },
       { id: 'e', label: 'The upper front panel taken off by you, a dynamic at the hammers', ok: false, power: 'none', feedback: 'Panel removal is the owner’s or a technician’s job, never an operator default.' },
@@ -785,7 +785,7 @@ export const C11_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every piano, pianist and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 2.1 m grand, a 1.55 m baby grand and a 1.32 m upright with their insides drawn from typical layouts, mic patterns and the two-mic comb as textbook shapes, and string and soundboard motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Set the lid first, and place real mics with the pianist stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every piano, pianist and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 2.1 m grand, a 1.55 m baby grand and a 1.32 m upright with their insides drawn from typical layouts, mic patterns and the two-mic comb as textbook shapes, and string and soundboard motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Set the lid first, and place real mics with the pianist stopped.',
   copy: PIANO_COPY,
 };
 

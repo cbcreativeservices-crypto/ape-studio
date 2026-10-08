@@ -1,5 +1,5 @@
 /**
- * C09a VIOLIN / FIDDLE — the recommended starting points (charter §2 layer
+ * C09a VIOLIN / FIDDLE — the suggested starting points (charter §2 layer
  * 1). Source keys point into docs/labs/miking/violin/SOURCES.md (the bowed
  * family's keys are in its §0); the geometry is violin/GEOMETRY_PROPOSAL.md
  * on the shared bowed family. Corrections V-01 … V-06 (CORRECTIONS_LOG).

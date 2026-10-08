@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 09:24 · ccode · dc122f42
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aca7c57b6090123b7
+affects other side: nothing (client-only merge of final-lab into owner-x)
+needs: nothing
+
+
+### 2026-10-08 09:23 · ccode · 47560c2c
+changed: Miking owner decisions X1–X6 (2026-10-08): one distance rule, suggest, dock short forms, setups prompt, shared distractors, label pass
+affects other side: nothing (client-only: Miking engine rounding, wording, dock short forms and label layout; the shared rack gained two optional a11y fields; no DB or backend change)
+needs: nothing
+
+
 ### 2026-10-08 09:22 · ccode · 9199684c
 changed: Miking Lab 7: shotguns read to the capsule in B04, B10, B11 (owner: capsule everywhere)
 affects other side: nothing — app lesson content only (Miking stays hidden)

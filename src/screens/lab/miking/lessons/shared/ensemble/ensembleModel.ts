@@ -186,7 +186,7 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
     ...(o.viewsByVariant ? { viewsByVariant: o.viewsByVariant } : {}),
     viewTags: who === 'audience' ? { side: 'FROM THE AUDIENCE · FRONT', top: 'FROM ABOVE · THE STAGE PLOT' } : { side: 'FROM THE HALL · FRONT', top: 'FROM ABOVE · THE CONDUCTOR’S VIEW' },
     // The authored boxes ARE the stage (stageViews): a scene with no mic
-    // keeps them, so the recommended starting points drawn round the
+    // keeps them, so the suggested starting points drawn round the
     // players always sit on the glass.
     fitAuthored: { side: true, top: true },
     // A stage-sized scene fits at ~0.02–0.1 on a phone: print its few labels there.

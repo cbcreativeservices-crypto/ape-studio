@@ -1,5 +1,5 @@
 /**
- * F03 PROPS AND OBJECT HANDLING — the recommended starting points (charter
+ * F03 PROPS AND OBJECT HANDLING — the suggested starting points (charter
  * §2 layer 1). NO numeric position exists in the lesson or its sources (F03
  * L25 says so): every distance is a DRAWING DEFAULT (O-6 — shown as a
  * suggested starting point in plain words); the METHODS are sourced

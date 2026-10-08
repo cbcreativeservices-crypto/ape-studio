@@ -11,7 +11,7 @@
  * (a recording tuba) — both sourced; "back" (historic military) is said in
  * words only.
  *
- * RECOMMENDED STARTING POINTS (corrections LB-06, LB-07):
+ * SUGGESTED STARTING POINTS (corrections LB-06, LB-07):
  *   above   about 2 ft above an upward bell, aimed at its edge — 56–66 cm,
  *           drawn ±5 cm round 61 cm;
  *   side    1–2 ft from the bell, a little off its axis — 30.5–61 cm; for an

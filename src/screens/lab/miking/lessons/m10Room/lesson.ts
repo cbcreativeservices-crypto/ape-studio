@@ -40,8 +40,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — measured from the kick’s front head, facing the kit, clear of exits and walkways — then move the mic and compare.',
-    credit: { scenarios: ['rm.place.1', 'rm.place.2', 'rm.place.3', 'rm.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — measured from the kick’s front head, facing the kit, clear of exits and walkways — then move the mic and compare.',
+    credit: { scenarios: ['rm.place.1', 'rm.place.2', 'rm.place.3', 'rm.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'A room-mic starting point is a place to begin and to compare from — not a standard distance. Change one thing at a time, and compare at the same listening level.',
   },
   context: {
@@ -505,7 +505,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const DOC: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the kick’s front head', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the kick’s front head', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR: SetupReason = { id: 'r.clear', label: 'The stand and cable stay clear of the kit, exits, walkways and players', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND: SetupReason = { id: 'r.brand', label: 'It is the room mic most studios own', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties and by ear.' };
 const FAR: SetupReason = { id: 'r.far', label: 'Farther out always gives a better room sound', role: 'wrong', feedback: 'Farther is not always better: reflections, spill and the room’s faults can make it worse.' };
@@ -693,6 +693,6 @@ export const M10_LESSON: Lesson = {
   ],
   live: { wedges: M10_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every kit, room and show is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a drawing-value studio room around a typical 5-piece kit, straight-line arrival times at 20 °C, reflections as single bounces off flat surfaces, and mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, room and show is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a drawing-value studio room around a typical 5-piece kit, straight-line arrival times at 20 °C, reflections as single bounces off flat surfaces, and mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: M10_COPY,
 };

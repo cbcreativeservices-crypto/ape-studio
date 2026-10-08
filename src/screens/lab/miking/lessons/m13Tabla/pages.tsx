@@ -229,7 +229,7 @@ const SPEC: HandSpec = {
     label: 'The tabla pair with one small condenser placed for you',
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself — then try one per drum.',
     pieces: (z: DocumentedZone) => [
-      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is a simple place we recommend you begin with a tabla — one mic for the pair, a starting point, not a rule.`, cell: 3 },
+      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is a simple place we suggest you begin with a tabla — one mic for the pair, a starting point, not a rule.`, cell: 3 },
       { title: 'MEASURED FROM', text: 'From the area between the two heads: the readout measures from there to the mic’s FRONT, rounded to ≈ 5 mm.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
       { title: 'THE VIEWPOINT', text: 'Above and in front, from the audience side — never in either hand’s path, never over the player.', cell: 1 },
@@ -246,7 +246,7 @@ const SPEC: HandSpec = {
     tried: (p) => `You predicted “${p}”. Moving the mic toward the bayan changes the balance most; only turning it can put the dayan further off-axis without bringing the bayan closer.`,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin: the shared mic and the farther ones measured from the area between the heads, the close ones from their own head. They are starting points, not rules — every pair, player and room is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin: the shared mic and the farther ones measured from the area between the heads, the close ones from their own head. They are starting points, not rules — every pair, player and room is different.',
     'Change one thing at a time: compare two targets at the same distance, then two distances at the same target. Over a single drum, try a target between the black patch and the outer head, then one the player suggests. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
     'One mic per drum: each mic also hears the other drum. Angle them apart for separation, then hear both together — in mono.',
   ],

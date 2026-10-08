@@ -35,7 +35,7 @@ export const F13_COPY: Partial<LessonCopy> = {
     note: 'Mark every position so a second pass after a change can find it again.',
     availableLead: 'Starting points for the receiver here',
     learn: {
-      intro: 'After our research, each blue zone is a seat we recommend you begin with, measured from the source. The method you use sets the real counts and spacing.',
+      intro: 'After our research, each blue zone is a seat we suggest you begin with, measured from the source. The method you use sets the real counts and spacing.',
       separate: 'Move only the receiver between runs; keep the source, the settings and the room state the same.',
       clearance: 'People and stands out of the direct path; cables out of public routes.',
       tendencies: 'What a seat stands for is a tendency to check against the method — never a promise.',

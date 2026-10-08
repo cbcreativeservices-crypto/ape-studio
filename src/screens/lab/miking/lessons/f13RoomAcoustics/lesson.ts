@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the receiver yourself — a seat mid-audience, near the back, near a side wall — at a seated ear height, and see what each one stands for.',
-    credit: { scenarios: ['ra.place.1', 'ra.place.2', 'ra.place.3', 'ra.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, at two different recommended seats, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ra.place.1', 'ra.place.2', 'ra.place.3', 'ra.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, at two different suggested seats, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Seats that differ in distance and in their nearest walls, each marked for a second pass. Move only the receiver between runs.',
   },
   context: {
@@ -635,6 +635,6 @@ export const F13_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules: the method you use sets the real source and receiver positions, their count and the reporting. Experiment, and trust your ears and the room as well as the figures. The lab is silent and draws a simplified picture: a room that is a drawing, straight sound paths with one bounce each, and decay curves that are made-up examples.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: the method you use sets the real source and receiver positions, their count and the reporting. Experiment, and trust your ears and the room as well as the figures. The lab is silent and draws a simplified picture: a room that is a drawing, straight sound paths with one bounce each, and decay curves that are made-up examples.',
   copy: F13_COPY,
 };

@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 20–40 cm from a side or top view of the bell — with the stick’s whole path clear, and see what each view changes.',
-    credit: { scenarios: ['bell.place.1', 'bell.place.2', 'bell.place.3', 'bell.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 20–40 cm from a side or top view of the bell — with the stick’s whole path clear, and see what each view changes.',
+    credit: { scenarios: ['bell.place.1', 'bell.place.2', 'bell.place.3', 'bell.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'A side or top view, 20–40 cm from the bell, outside every stroke and rebound. Move the mic, not the player’s stroke.',
   },
   context: {
@@ -538,7 +538,7 @@ export const I05A_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the bell') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every bell, mount, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 7 in cowbell mounted or held, the walls’ flex drawn as a shape, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bell, mount, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 7 in cowbell mounted or held, the walls’ flex drawn as a shape, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: BELL_COPY,
   sp: {
     strikeTitle: 'Strike to sound',

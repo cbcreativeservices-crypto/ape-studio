@@ -352,7 +352,7 @@ function ownSentence(rig: Rig, slot: MicSlot, z: DocumentedZone, outside: string
   const s = rig.lesson.model.surfaces.find((q) => q.id === z.refSurface);
   const l = rig.lesson.model.lines.find((q) => q.id === lineId);
   const at = r.zoneId ? rig.lesson.zones.find((q) => q.id === r.zoneId) ?? null : null;
-  return `Mic ${slot}: ${micType(m.typeId).label.toLowerCase()}, ${outside}, ${fmtLen(Math.abs(r.distance))} from ${s?.label ?? 'the reference'}, ${fmtLen(r.radial)} off ${l?.label ?? 'the reference line'}, aimed ${fmtAngle(r.offAxis)} off it.${at ? ` At a recommended starting point: ${at.label}.` : ' Not at a recommended starting point.'}${r.blocked ? ` Stopped: it would touch the ${r.blocked.label}.` : ' Clear of every part.'}`;
+  return `Mic ${slot}: ${micType(m.typeId).label.toLowerCase()}, ${outside}, ${fmtLen(Math.abs(r.distance))} from ${s?.label ?? 'the reference'}, ${fmtLen(r.radial)} off ${l?.label ?? 'the reference line'}, aimed ${fmtAngle(r.offAxis)} off it.${at ? ` At a suggested starting point: ${at.label}.` : ' Not at a suggested starting point.'}${r.blocked ? ` Stopped: it would touch the ${r.blocked.label}.` : ' Clear of every part.'}`;
 }
 
 function HandPlacement(spec: HandSpec) {
@@ -449,7 +449,7 @@ function HandPlacement(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={ex} art={spec.art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => `${spec.worked.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. A worked example: the mic is placed for you. ${nowLine(ex, ['A'], spec.outside)}`} />,
-          badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
+          badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
             { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${pieces.length}` },
@@ -474,7 +474,7 @@ function HandPlacement(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={rig} art={spec.art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={(v) => `${spec.place.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. ${nowLine(rig, ['A'], spec.outside)}`} />,
-          badge: spec.words?.placeBadge ?? 'Blue = recommended starting points · grey dashes = the player’s hands and body · pinch to zoom',
+          badge: spec.words?.placeBadge ?? 'Blue = suggested starting points · grey dashes = the player’s hands and body · pinch to zoom',
           bezel,
           params,
           initialParam: 'pos',
@@ -485,7 +485,7 @@ function HandPlacement(spec: HandSpec) {
             <Landing looking={`${t.short} · ${spec.place.looking}`} prompt={spec.place.prompt} />
             <NowLine text={nowLine(rig, ['A'], spec.outside)} />
             {shown.blocked ? <Note tone="warn">{`It would touch ${shown.blocked.label} — the mic stops there. The player’s space comes first.`}</Note> : null}
-            {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
+            {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
             <Body>{`Activity: zones rested in, clear of the player — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
             {tried && predicted ? <Note tone="ok">{spec.place.tried(predicted)}</Note> : null}
             {spec.place.notes ? spec.place.notes(rig) : null}

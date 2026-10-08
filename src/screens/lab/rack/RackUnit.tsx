@@ -412,7 +412,7 @@ export function RackUnit({
                   selected={openTrayId === p.id}
                   onPress={() => setOpenTrayId((cur) => (cur === p.id ? null : p.id))}
                   onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                  a11y={`${p.label}: ${p.valueLabel}. Tap to open the chooser.`}
+                  a11y={`${p.label}: ${p.valueA11y ?? p.valueLabel}. Tap to open the chooser.`}
                 />
               );
             case 'toggle':

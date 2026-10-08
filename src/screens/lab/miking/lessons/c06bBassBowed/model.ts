@@ -1,5 +1,5 @@
 /**
- * C06b UPRIGHT BASS, BOWED — the recommended starting points (charter §2
+ * C06b UPRIGHT BASS, BOWED — the suggested starting points (charter §2
  * layer 1), on the shared bass with its bow (lessons/shared/bowed/bass.ts).
  * Source keys: docs/labs/miking/upright_bass_bowed/SOURCES.md (and the
  * plucked file's). Corrections UB-01 … UB-05.

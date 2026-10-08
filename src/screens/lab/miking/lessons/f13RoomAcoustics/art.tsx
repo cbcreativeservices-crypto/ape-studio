@@ -39,7 +39,9 @@ const LABELS = {
     { id: 'src', text: 'OMNI TEST SOURCE', short: 'SOURCE', u: 0, v: TOP + 520, align: 'center' as const, at: { u: 0, v: -SRC_R }, variants: ['room'] },
     { id: 'pa', text: 'INSTALLED PA', short: 'PA', u: PA13.x + 500, v: TOP + 520, align: 'left' as const, at: { u: PA13.x, v: PA_TOP }, variants: ['pa'] },
     { id: 'vent', text: 'AIR VENT', u: 4000, v: TOP + 420, align: 'center' as const, at: { u: 4000, v: TOP + 80 } },
-    { id: 'seats', text: 'SEATS', u: 4700, v: F13_FLOOR - 1500, align: 'center' as const, at: { u: 4750, v: F13_FLOOR - 900 } },
+    // Above the receivers' ear height, between the rows and the door: never
+    // under the receiver's ring (owner decision X6, 2026-10-08).
+    { id: 'seats', text: 'SEATS', u: 5650, v: F13_FLOOR - 2400, align: 'center' as const, at: { u: 5650, v: F13_FLOOR - 900 } },
     { id: 'door', text: 'DOOR', u: ROOM13.front - 500, v: F13_FLOOR - 2600, align: 'right' as const, at: { u: ROOM13.front - 40, v: F13_FLOOR - 2100 } },
   ],
   top: [

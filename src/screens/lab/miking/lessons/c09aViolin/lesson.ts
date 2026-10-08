@@ -44,9 +44,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — in front of the player and a little above the violin, aimed at the bridge, clear of the bow — then move the mic and see what changes.',
-    credit: { scenarios: ['vn.place.1', 'vn.place.2', 'vn.place.3', 'vn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part — the bridge — not a rule; the stand distances are modest suggestions. Distance, height and angle are separate things to try, and the bow’s clearance comes first.',
+    goal: 'Start where we suggest you begin — in front of the player and a little above the violin, aimed at the bridge, clear of the bow — then move the mic and see what changes.',
+    credit: { scenarios: ['vn.place.1', 'vn.place.2', 'vn.place.3', 'vn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bridge — not a rule; the stand distances are modest suggestions. Distance, height and angle are separate things to try, and the bow’s clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -420,8 +420,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a solo classical violin, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 0.5–1 m in front and a little above, aimed at the bridge', ok: true, power: 'phantom', feedback: 'A recommended starting point that blends the violin and the room — then small changes by ear.' },
-      { id: 'b', label: 'Small condenser about 30 cm in front of where the bow meets the strings', ok: true, power: 'phantom', feedback: 'A recommended starting point for more definition — listen that the bow does not take over.' },
+      { id: 'a', label: 'Small condenser about 0.5–1 m in front and a little above, aimed at the bridge', ok: true, power: 'phantom', feedback: 'A suggested starting point that blends the violin and the room — then small changes by ear.' },
+      { id: 'b', label: 'Small condenser about 30 cm in front of where the bow meets the strings', ok: true, power: 'phantom', feedback: 'A suggested starting point for more definition — listen that the bow does not take over.' },
       { id: 'c', label: 'A mic a few centimetres from the bridge, for the most detail', ok: false, power: 'phantom', feedback: 'Very close to the bridge the friction and rosin take over — and the mic sits in the bow’s way.' },
       { id: 'd', label: 'Two miniatures, one on each side, to make the solo stereo', ok: false, power: 'phantom', feedback: 'Stereo is not a requirement for a small solo instrument; two close mics move the image.' },
       { id: 'e', label: 'A stand mic level with the bow arm, beside the player’s right hand', ok: false, power: 'phantom', feedback: 'That is the bow arm’s path: the mic would be struck.' },
@@ -434,8 +434,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a fiddler in a band with drums and a banjo, moving and stepping up for solos. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature clipped to the bass-side rib, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the fiddle — check the clip fits and the cable is relieved.' },
-      { id: 'b', label: 'A miniature on a holder behind the bridge, under the strings, checked for harshness', ok: true, power: 'phantom', feedback: 'A recommended starting point: steady as the player moves — compare under and over the strings.' },
+      { id: 'a', label: 'A miniature clipped to the bass-side rib, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the fiddle — check the clip fits and the cable is relieved.' },
+      { id: 'b', label: 'A miniature on a holder behind the bridge, under the strings, checked for harshness', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over the strings.' },
       { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the fiddle.' },
       { id: 'd', label: 'A clip pushed onto the bridge, where the sound starts', ok: false, power: 'phantom', feedback: 'Nothing goes on the bridge: it can damp it and risk the instrument.' },
       { id: 'e', label: 'A miniature taped to the top, by the f-hole', ok: false, power: 'phantom', feedback: 'Never improvise on the varnish or the f-hole edge: use a mount made for the violin.' },
@@ -614,6 +614,6 @@ export const C09A_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules; the stand distances in particular are modest suggestions. Every violin, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules; the stand distances in particular are modest suggestions. Every violin, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: VIOLIN_COPY,
 };

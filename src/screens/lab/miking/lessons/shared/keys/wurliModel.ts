@@ -190,7 +190,7 @@ export function wurliModel(id: string, name: string): InstrumentModel {
   };
 }
 
-/* ── the recommended starting points ── */
+/* ── the suggested starting points ── */
 const AIM_SQUARE = { maxOffAxis: 20, prov: ill('"aimed at the speaker": ±20° of the grille’s normal is the lab’s tolerance') };
 /** "An inch away, off-center and at a slight angle": 1 in = 25.4 mm (the
  *  research's number); the band round it is the lab's. */

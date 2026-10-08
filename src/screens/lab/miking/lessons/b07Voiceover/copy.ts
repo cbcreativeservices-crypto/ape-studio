@@ -89,8 +89,8 @@ export const B07_COPY: Partial<LessonCopy> = {
     },
     note: 'Clearance comes first: nothing touches the reader, the line to the script stays open, the mount holds within its rating, and cables stay out of walking paths.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a reader or a guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, script and room is different.',
-      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the reader reading the same passage each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a reader or a guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, script and room is different.',
+      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the reader reading the same passage each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
       clearance: 'Clearance comes first: off the face, out of the line to the script, clear of the hands and the page turns.',
       tendencies: 'Closer tends to sound more intimate, with more breath, pops and bass from a directional mic (the proximity effect); farther, more room and a steadier level; off the mouth’s line or above the script, softer pops. These are tendencies, and voices vary.',
     },

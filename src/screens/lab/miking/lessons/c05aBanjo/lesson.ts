@@ -39,8 +39,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — aimed at where the neck meets the pot, or close in front of the head — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — aimed at where the neck meets the pot, or close in front of the head — then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Different starting points are different places for different jobs: the neck junction for a blend, about 3 in from the head for attack and projection. Change one thing at a time, and keep clear of both hands.',
   },
   context: {
@@ -285,9 +285,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A bluegrass band on a stage with floor wedges. The banjo gets its own channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser, cardioid, about 3 in from the head’s centre, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point, close for gain before feedback, its rejection toward the wedge.' },
-      { id: 'b', label: 'Instrument dynamic aimed at the neck junction, at the close end, rear to the wedge', ok: true, power: 'none', feedback: 'A recommended target, brought closer for the stage.' },
-      { id: 'c', label: 'Clip-on mini on an approved clip by the tailpiece, aimed at the bridge', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the banjo.' },
+      { id: 'a', label: 'Small condenser, cardioid, about 3 in from the head’s centre, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, close for gain before feedback, its rejection toward the wedge.' },
+      { id: 'b', label: 'Instrument dynamic aimed at the neck junction, at the close end, rear to the wedge', ok: true, power: 'none', feedback: 'A suggested target, brought closer for the stage.' },
+      { id: 'c', label: 'Clip-on mini on an approved clip by the tailpiece, aimed at the bridge', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the banjo.' },
       { id: 'd', label: 'Figure-8 ribbon in front of the banjo, the wedge right behind it', ok: false, power: 'none', feedback: 'A figure-8 hears its back as well as its front: with the wedge behind it, it invites feedback.' },
       { id: 'e', label: 'Clip the mini to a string, right over the head’s centre', ok: false, power: 'phantom', feedback: 'Never clip to a string, the bridge or the head. Use an approved mount.' },
     ],
@@ -299,8 +299,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, a good room, a clawhammer piece on an open-back banjo. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Instrument dynamic about 3 in from the head’s edge, compared with the junction', ok: true, power: 'none', feedback: 'A recommended starting point; it needs no phantom.' },
+      { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'Instrument dynamic about 3 in from the head’s edge, compared with the junction', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom.' },
       { id: 'c', label: 'Small omni condenser near the neck junction, for the room', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Clip-on mini by the tailpiece', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic behind the open back, assumed to give the deepest tone', ok: false, power: 'none', feedback: 'Behind, the player’s body obstructs it: audition a rear view, never assume it.' },

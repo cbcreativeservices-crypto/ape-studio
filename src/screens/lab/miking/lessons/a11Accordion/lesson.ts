@@ -46,8 +46,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic about 30–60 cm in front, centred; or a mic for each side — always outside the bellows’ whole travel; then switch BELLOWS and see the bass side move.',
-    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.place.3', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the bellows’ travel and the player, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — one mic about 30–60 cm in front, centred; or a mic for each side — always outside the bellows’ whole travel; then switch BELLOWS and see the bass side move.',
+    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.place.3', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the bellows’ travel and the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'One mic about 30–60 cm in front, centred, integrates the two sides. A treble mic about 30 cm from the keyboard side and a bass mic just beyond the fully open bass side give separate control — but the bass side’s distance changes all through the cycle.',
   },
   context: {
@@ -416,7 +416,7 @@ const symptoms: Symptom[] = [
   },
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, outside the bellows’ travel', role: 'required', feedback: 'Say why it is a good place to begin, and that it stays outside the whole travel.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, outside the bellows’ travel', role: 'required', feedback: 'Say why it is a good place to begin, and that it stays outside the whole travel.' };
 const SIDES_REASON: SetupReason = { id: 'r.sides', label: 'It hears the side the music needs', role: 'optional', feedback: 'A fair reason: both sides radiate, and the music decides which matters.' };
 
 const setupTasks: SetupTask[] = [
@@ -425,7 +425,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio recording: a solo piano accordion, melody and bass both important, in a good room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 45 cm in front, centred between the sides', ok: true, power: 'phantom', feedback: 'The recommended integrated start; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 45 cm in front, centred between the sides', ok: true, power: 'phantom', feedback: 'The suggested integrated start; it needs the phantom this channel has.' },
       { id: 'b', label: 'A condenser about 30 cm from the keyboard side, plus one just beyond the fully open bass side', ok: true, power: 'phantom', feedback: 'Fair for separate control — check the pair in mono over full bellows strokes.' },
       { id: 'c', label: 'A mic pointed into the bellows’ gap', ok: false, power: 'phantom', feedback: 'The bellows are the air source, and the mic would sit in their travel.' },
       { id: 'd', label: 'A mic taped to the treble grille', ok: false, power: 'phantom', feedback: 'Never tape a grille: it can damage the instrument and smother its sound.' },
@@ -588,6 +588,6 @@ export const A11_LESSON: Lesson = {
   ],
   live: { wedges: A11_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. The distances come from listening tests and practice: one mic about 30–60 cm in front, a condenser about 30 cm from the keyboard side, one close to the bass side, a dynamic about 46 cm from the grille. Every accordion, register, player and room is different: move the mic, experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: one reed’s swing (motion drawn larger), an ideal reed’s shapes, a full-size piano accordion whose sizes are drawing defaults, mic patterns as textbook shapes. Distances are rounded to about 5 mm. Keep every stand and cable outside the bellows’ whole travel, and nothing goes on the instrument without the player’s agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. The distances come from listening tests and practice: one mic about 30–60 cm in front, a condenser about 30 cm from the keyboard side, one close to the bass side, a dynamic about 46 cm from the grille. Every accordion, register, player and room is different: move the mic, experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: one reed’s swing (motion drawn larger), an ideal reed’s shapes, a full-size piano accordion whose sizes are drawing defaults, mic patterns as textbook shapes. Distances are rounded to about 5 mm. Keep every stand and cable outside the bellows’ whole travel, and nothing goes on the instrument without the player’s agreement.',
   copy: { words: metalWords('accordion', 'player') },
 };

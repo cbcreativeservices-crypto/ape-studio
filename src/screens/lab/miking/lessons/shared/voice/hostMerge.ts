@@ -7,7 +7,7 @@
  * ITS variant only (re-tagged), each variant keeps its own views, floor,
  * boom route and inset, and nothing is renamed — so the families' art, hit
  * tests and labels keep working on their own ids. `retagZones` does the
- * same for a host lesson's recommended starting points (their validated
+ * same for a host lesson's suggested starting points (their validated
  * start poses are unchanged; validateLesson re-checks them in the merged
  * model). Pure.
  *

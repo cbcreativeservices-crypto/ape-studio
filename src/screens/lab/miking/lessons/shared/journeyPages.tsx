@@ -416,7 +416,7 @@ export function micSentence(rig: Rig, slot: MicSlot, nouns: { inside?: string; o
   const l = rig.lesson.model.lines.find((q) => q.id === rig.lineId);
   const z = r.zoneId ? rig.lesson.zones.find((q) => q.id === r.zoneId) ?? null : null;
   const where = r.inside && nouns.inside ? nouns.inside : nouns.outside;
-  return `Mic ${slot}: ${t.label.toLowerCase()}, ${where}, ${fmtLen(Math.abs(r.distance))} from ${s?.label ?? 'the reference'}, ${fmtLen(r.radial)} off ${l?.label ?? 'the reference line'}, aimed ${fmtAngle(r.offAxis)} off it.${z ? ` At a recommended starting point: ${z.label}.` : ' Not at a recommended starting point.'}${r.blocked ? ` Stopped: it would touch the ${r.blocked.label}.` : ' Clear of every part.'}`;
+  return `Mic ${slot}: ${t.label.toLowerCase()}, ${where}, ${fmtLen(Math.abs(r.distance))} from ${s?.label ?? 'the reference'}, ${fmtLen(r.radial)} off ${l?.label ?? 'the reference line'}, aimed ${fmtAngle(r.offAxis)} off it.${z ? ` At a suggested starting point: ${z.label}.` : ' Not at a suggested starting point.'}${r.blocked ? ` Stopped: it would touch the ${r.blocked.label}.` : ' Clear of every part.'}`;
 }
 
 const styles = StyleSheet.create({

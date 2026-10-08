@@ -41,9 +41,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — near the 12th fret, measured from the point the starting point names, clear of the hands — then move the mic and see what changes.',
-    credit: { scenarios: ['ag.place.1', 'ag.place.2', 'ag.place.3', 'ag.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named point — the 12th fret, the sound hole, the bridge — not a rule. Distance, position and angle are separate things to try, and the player’s clearance comes first.',
+    goal: 'Start where we suggest you begin — near the 12th fret, measured from the point the starting point names, clear of the hands — then move the mic and see what changes.',
+    credit: { scenarios: ['ag.place.1', 'ag.place.2', 'ag.place.3', 'ag.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named point — the 12th fret, the sound hole, the bridge — not a rule. Distance, position and angle are separate things to try, and the player’s clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -312,12 +312,12 @@ const scenarios: MikingScenario[] = [
     id: 'ag.two.2',
     page: 'twoMic',
     prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference?',
-    options: ['It drops to zero, so both of the arrivals now line up again', 'It doubles, because the inverted copy arrives later', 'Nothing: polarity flips the sign; the delay stays the same'],
+    options: ['It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it', 'Nothing: polarity flips the sign; the delay stays the same'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
       'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -501,7 +501,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the arm, the hands and the player’s view', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on acoustic guitar', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest guitar of any position', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and the loudest spot is often the boomiest.' };
@@ -513,9 +513,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A singer-guitarist on a small, fairly loud stage. A floor wedge sits in front of them. One channel for the guitar; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser, cardioid, 15–30 cm out from the 12th fret, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point, clear of the hands, its rejection turned toward the wedge.' },
-      { id: 'b', label: 'Clip-on mini on a clip made for this guitar, between the neck joint and the hole', ok: true, power: 'phantom', feedback: 'A recommended starting point that keeps its distance as the player moves — with the owner’s OK.' },
-      { id: 'c', label: 'Instrument dynamic, cardioid, near the 12th fret at the close end of the band', ok: true, power: 'none', feedback: 'A robust close option at a recommended starting point; watch the proximity bass.' },
+      { id: 'a', label: 'Small condenser, cardioid, 15–30 cm out from the 12th fret, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the hands, its rejection turned toward the wedge.' },
+      { id: 'b', label: 'Clip-on mini on a clip made for this guitar, between the neck joint and the hole', ok: true, power: 'phantom', feedback: 'A suggested starting point that keeps its distance as the player moves — with the owner’s OK.' },
+      { id: 'c', label: 'Instrument dynamic, cardioid, near the 12th fret at the close end of the band', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point; watch the proximity bass.' },
       { id: 'd', label: 'Small condenser 3 cm from the sound hole, for the most level', ok: false, power: 'phantom', feedback: 'Right at the hole it booms, and it sits in the strumming hand’s path. Start near the 12th fret.' },
       { id: 'e', label: 'Small condenser 1 m back, to hear the whole guitar', ok: false, power: 'phantom', feedback: 'On a loud stage, that far back hears the wedge and the band as much as the guitar — feedback comes early.' },
     ],
@@ -527,8 +527,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, a soft fingerstyle piece on a nylon-string guitar. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic, 15–30 cm out from the 12th fret (here, the neck joint)', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom. Check that the soft notes sit above the noise.' },
-      { id: 'b', label: 'Instrument dynamic, 15–30 cm out from the sound hole, listening for boom', ok: true, power: 'none', feedback: 'A recommended starting point; it needs no phantom. Compare it with the 12th fret.' },
+      { id: 'a', label: 'Instrument dynamic, 15–30 cm out from the 12th fret (here, the neck joint)', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check that the soft notes sit above the noise.' },
+      { id: 'b', label: 'Instrument dynamic, 15–30 cm out from the sound hole, listening for boom', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Compare it with the 12th fret.' },
       { id: 'c', label: 'Small condenser, cardioid, near the 12th fret', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic 2 cm over the strings at the 12th fret, for detail', ok: false, power: 'none', feedback: 'That is in the fretting hand’s path, and it magnifies finger noise. Start out in front.' },
@@ -700,6 +700,6 @@ export const C01_LESSON: Lesson = {
   ],
   live: { wedges: C01_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every guitar, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: three typical bodies, a seated player whose reach is drawn roughly, mic patterns and the two-mic comb as textbook shapes, and string and top motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every guitar, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: three typical bodies, a seated player whose reach is drawn roughly, mic patterns and the two-mic comb as textbook shapes, and string and top motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: C01_COPY,
 };

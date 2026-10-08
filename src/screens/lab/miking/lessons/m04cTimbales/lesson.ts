@@ -41,8 +41,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic above the pair, between the shells, under each drum, or a clip-on per drum — out of every stick path; then move the mic and see what changes.',
-    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — one mic above the pair, between the shells, under each drum, or a clip-on per drum — out of every stick path; then move the mic and see what changes.',
+    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Top and shell positions favour different surfaces: heads and rimshots above, the cáscara near the shells. Bring in a separate mic only for a demonstrated need — and never a mic right above a rimshot target.',
   },
   context: {
@@ -216,7 +216,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Immediately above a common rimshot target',
     explain: 'A rimshot target is in the stick path: a mic there will be struck. Start outside the whole stick arc.',
     why: {
-      'Above the pair on the audience side': 'That is a recommended starting region, outside the stick path.',
+      'Above the pair on the audience side': 'That is a suggested starting region, outside the stick path.',
       'Between the shells on the audience side': 'That is another starting region to try — if the mount is secure.',
     },
   },
@@ -296,12 +296,12 @@ const scenarios: MikingScenario[] = [
     id: 'tb.two.1',
     page: 'twoMic',
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Electrical polarity inversion is not a time-alignment control. It reverses the sign; the delay stays.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, for the surfaces the part uses', role: 'required', feedback: 'Say why it is a good place to begin, and which surfaces it favours.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, for the surfaces the part uses', role: 'required', feedback: 'Say why it is a good place to begin, and which surfaces it favours.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay out of every stick path', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on timbales', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the pair', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Timbales with a bell, a studio session with other percussion, limited channels. The part uses heads, rimshots and a steady cáscara. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point with the fewest channels; check the cáscara and the bell in it.' },
+      { id: 'a', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point with the fewest channels; check the cáscara and the bell in it.' },
       { id: 'b', label: 'A compact dynamic right between the shells, on the audience side', ok: true, power: 'none', feedback: 'A starting idea that can favour the cáscara; check that the heads and rimshots stay usable.' },
       { id: 'c', label: 'A clip-on condenser on each drum’s far rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control; it needs the phantom power this input has. Check the bell in both.' },
       { id: 'd', label: 'A mic just above a rimshot target on the player’s side', ok: false, power: 'none', feedback: 'That is in the stick path: it will be struck.' },
@@ -523,7 +523,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage with a floor wedge in front of the timbales; a crowded percussion area. The spare inputs have NO phantom power.',
     setups: [
       { id: 'a', label: 'A compact dynamic spot on each drum, outside the stick path', ok: true, power: 'none', feedback: 'Close, directional, independent control on a loud stage; dynamics need no phantom.' },
-      { id: 'b', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'c', label: 'A clip-on condenser on each rim', ok: false, power: 'phantom', feedback: 'It needs phantom power these inputs lack.' },
       { id: 'd', label: 'A small-condenser pair a metre above the drums', ok: false, power: 'phantom', feedback: 'Distant on a loud stage, and it needs phantom power.' },
       { id: 'e', label: 'Two dynamics beneath the drums among the stand legs', ok: false, power: 'none', feedback: 'A studio idea to try — not a safe default for a crowded stage.' },
@@ -699,7 +699,7 @@ export const M04C_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. We could not find a recommended timbale mic distance, so the starting points here are regions to begin in: out of every stick path, then listen. Every pair, part and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a recommended timbale mic distance, so the starting points here are regions to begin in: out of every stick path, then listen. Every pair, part and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: SMALL,
     drums: { small: SMALL, large: LARGE },
@@ -767,7 +767,7 @@ export const M04C_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one on each drum’s far rim, out of the stick path, with the player’s OK. Check for stand or clamp noise, and the bell in both.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. We could not find a recommended timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a recommended timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
       'The shell-oriented and above-head starting points differ because they favour different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
       'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where; recheck after the full-intensity passage.',
       'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',

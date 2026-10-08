@@ -1,6 +1,6 @@
 /**
  * I11a RHODES (TINE PIANO) — the technical truth (charter §2 layer 1): the
- * lesson's choices. The recommended starting points live in
+ * lesson's choices. The suggested starting points live in
  * shared/keys/rhodesZones.ts (on the speaker family's combo); the instrument
  * facts in shared/keys/keysSpec.ts.
  *

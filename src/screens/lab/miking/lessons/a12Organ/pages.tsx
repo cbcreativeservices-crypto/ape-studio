@@ -325,7 +325,7 @@ const AXES: HandSpec['axes'] = {
 };
 
 const worked = (z: DocumentedZone) => [
-  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin with a pipe organ: the listener’s perspective, a main pair in the body of the room — a practice, with no single distance.`, cell: 3 },
+  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a pipe organ: the listener’s perspective, a main pair in the body of the room — a practice, with no single distance.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the organ’s façade down the nave to the mic’s FRONT (here shown for the pair’s centre). The readout also says how far the pair is off the case’s centre line.', cell: 0 },
   { title: 'THE RANGE', text: z.band, cell: 0 },
   { title: 'ACROSS AND UP', text: 'Over the pews, never in an aisle or an exit, on a safe floor stand at a modest height. Higher is not always better: compare the whole passage.', cell: 1 },
@@ -373,7 +373,7 @@ const HAND: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin: a main pair over the congregation aimed at the main ranks; a case study’s fourth-pew position; a spot in front of one division. The organ’s own starting points have no universal distances — walk, listen and compare.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin: a main pair over the congregation aimed at the main ranks; a case study’s fourth-pew position; a spot in front of one division. The organ’s own starting points have no universal distances — walk, listen and compare.',
     'Start with one coherent main pair; add a division spot only to solve a stated balance problem, bring it up under the pair, and recheck soft and full registrations in mono. Spots and mains arrive at different times: move or rebalance before reaching for delay or polarity.',
     'Floor stands only, in the pews’ rows or other clear places — never in an aisle, an exit or the wheelchair route, never touching the organ. Anything elevated or suspended is the venue’s installation by competent people.',
   ],
@@ -414,7 +414,7 @@ const HAND: HandSpec = {
     sheetNote: 'For a real organ, with the organist’s and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = recommended starting points · grey dashes = aisles, passages and exits kept clear · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · grey dashes = aisles, passages and exits kept clear · pinch to zoom',
     clearance: 'Clearance and access come first: the aisles, the passages, the exits and the wheelchair route stay clear; nothing touches or hangs from the organ; the console and the organist keep their space. Elevated or suspended mics are the venue’s installation, by competent people.',
     cardioidTried: 'What you just saw: a mic’s rejection sits behind it, or off to the sides of its rear. A spot facing up at the organ turns its back toward the nave — where a PA high on the arch can sit in a null.',
     sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each division gives its own delay, so no single setting suits every registration.',

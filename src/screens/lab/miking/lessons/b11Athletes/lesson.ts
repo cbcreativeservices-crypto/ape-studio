@@ -51,9 +51,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin once a mount is approved — a miniature at the breastbone, a headset boom at the mouth corner — then move it and see what changes.',
-    credit: { scenarios: ['b11.place.1', 'b11.place.2', 'b11.place.3', 'b11.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the wearer’s equipment, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — and only where approved. The cable’s loop, the pack’s retention and the antenna matter as much as the capsule.',
+    goal: 'Start where we suggest you begin once a mount is approved — a miniature at the breastbone, a headset boom at the mouth corner — then move it and see what changes.',
+    credit: { scenarios: ['b11.place.1', 'b11.place.2', 'b11.place.3', 'b11.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the wearer’s equipment, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — and only where approved. The cable’s loop, the pack’s retention and the antenna matter as much as the capsule.',
   },
   context: {
     title: 'Coach, official or athlete',
@@ -481,8 +481,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A coach at the sideline; the event and the coach approve a broadcast mic; the coach wears the team’s own headset.',
     setups: [
-      { id: 'a', label: 'A miniature at the approved place on the chest, its own channel', ok: true, power: 'pack', feedback: 'A recommended start: both hands left for the work — check rub, turns and the pack’s retention.' },
-      { id: 'b', label: 'An approved broadcast headset, apart from the team headset', ok: true, power: 'pack', feedback: 'A recommended start: a steadier distance — check the fit beside the team’s headset.' },
+      { id: 'a', label: 'A miniature at the approved place on the chest, its own channel', ok: true, power: 'pack', feedback: 'A suggested start: both hands left for the work — check rub, turns and the pack’s retention.' },
+      { id: 'b', label: 'An approved broadcast headset, apart from the team headset', ok: true, power: 'pack', feedback: 'A suggested start: a steadier distance — check the fit beside the team’s headset.' },
       { id: 'c', label: 'A mic spliced into the team headset’s line', ok: false, power: 'none', feedback: 'The team’s communications are their own system: never tap into them.' },
       { id: 'd', label: 'A chest mic and a headset both open in the program', ok: false, power: 'pack', feedback: 'Two open mics on one voice comb. Choose one.' },
       { id: 'e', label: 'A mic hidden on the bench, not mentioned to the team', ok: false, power: 'none', feedback: 'Never record someone with a hidden mic without approval.' },
@@ -495,8 +495,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An official makes public announcements over the stadium PA; the broadcast has permission to carry them.',
     setups: [
-      { id: 'a', label: 'The event’s announcement headset, opened to announce, muted after', ok: true, power: 'pack', feedback: 'A recommended start: opened on purpose — check the PA against its pattern.' },
-      { id: 'b', label: 'The approved announcement mic split to the PA and the program', ok: true, power: 'none', feedback: 'A recommended start with permission for the split — check the route and the mute.' },
+      { id: 'a', label: 'The event’s announcement headset, opened to announce, muted after', ok: true, power: 'pack', feedback: 'A suggested start: opened on purpose — check the PA against its pattern.' },
+      { id: 'b', label: 'The approved announcement mic split to the PA and the program', ok: true, power: 'none', feedback: 'A suggested start with permission for the split — check the route and the mute.' },
       { id: 'c', label: 'The officials’ private circuit routed into the program', ok: false, power: 'none', feedback: 'Never open the private circuit into the program by assumption.' },
       { id: 'd', label: 'The announcement mic left open through play', ok: false, power: 'none', feedback: 'Left open it carries private talk and feeds the PA back.' },
       { id: 'e', label: 'A crew member walks on to swap a failing pack', ok: false, power: 'pack', feedback: 'Never into play: mute it and use the tested spare outside play.' },
@@ -669,6 +669,6 @@ export const B11_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — once it is approved — ideas and concepts to consider, not rules. Every person, kit, rule and mic is different: move the mic, experiment within the approval, and trust your ears. The lab is silent and draws a simplified picture: a generic figure, illustrative keep-out regions, textbook patterns. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Approval first; protective equipment never touched; never into play.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — once it is approved — ideas and concepts to consider, not rules. Every person, kit, rule and mic is different: move the mic, experiment within the approval, and trust your ears. The lab is silent and draws a simplified picture: a generic figure, illustrative keep-out regions, textbook patterns. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Approval first; protective equipment never touched; never into play.',
   copy: B11_COPY,
 };

@@ -40,9 +40,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above the playing head, looking diagonally down at it, outside the mallet’s and the hands’ path — then move the mic and see what changes.',
-    credit: { scenarios: ['cbd.place.1', 'cbd.place.2', 'cbd.place.3', 'cbd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the playing head — not a rule and not a safety distance. The drum and its stand never move; the mic does.',
+    goal: 'Start where we suggest you begin — above the playing head, looking diagonally down at it, outside the mallet’s and the hands’ path — then move the mic and see what changes.',
+    credit: { scenarios: ['cbd.place.1', 'cbd.place.2', 'cbd.place.3', 'cbd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the playing head — not a rule and not a safety distance. The drum and its stand never move; the mic does.',
   },
   context: {
     title: 'Studio or live',
@@ -377,7 +377,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the playing head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the playing head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const STAND_REASON: SetupReason = { id: 'r.stand', label: 'The drum and its stand stay exactly as the crew set them', role: 'required', feedback: 'The drum never moves for a mic.' };
 const LOW_REASON: SetupReason = { id: 'r.low', label: 'It will give the most low end of any position', role: 'wrong', feedback: 'No position always gives the most low end — and the main pickup carries much of it.' };
 
@@ -387,7 +387,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A symphony recording in a good hall. The bass drum’s hits sound woolly in the main pair. One spot channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser above the playing head, about 45 cm away, looking diagonally down, blended low', ok: true, power: 'phantom', feedback: 'The recommended starting point for the transient; it needs the phantom power this channel has.' },
+      { id: 'a', label: 'Small condenser above the playing head, about 45 cm away, looking diagonally down, blended low', ok: true, power: 'phantom', feedback: 'The suggested starting point for the transient; it needs the phantom power this channel has.' },
       { id: 'b', label: 'Small dynamic a little closer, above the playing head and looking down at it, blended low', ok: true, power: 'none', feedback: 'A closer variant of the same idea; check the mallet and hands, and blend it under the main pair.' },
       { id: 'c', label: 'A ribbon mic close to the playing head for a warm sound', ok: false, power: 'none', feedback: 'A bass drum’s air blast can damage a ribbon close up.' },
       { id: 'd', label: 'Turn the drum to face the main pair instead of adding a mic', ok: false, power: 'none', feedback: 'The drum is not turned to suit the mics; that is the player’s and crew’s decision.' },
@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · An amplified concert band, monitors on stage. The operator needs a usable bass-drum channel. The spare input has NO phantom power.',
     setups: [
       { id: 'a', label: 'Small dynamic above the playing head, closer than 45 cm, looking down at it', ok: true, power: 'none', feedback: 'A stable, directional spot as near as safely useful; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Small dynamic about 45 cm from the playing head, looking diagonally down', ok: true, power: 'none', feedback: 'The recommended starting point; check its gain before feedback with the operator.' },
+      { id: 'b', label: 'Small dynamic about 45 cm from the playing head, looking diagonally down', ok: true, power: 'none', feedback: 'The suggested starting point; check its gain before feedback with the operator.' },
       { id: 'c', label: 'Small condenser at the 45 cm spot', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'A room mic two metres away to catch the whole drum', ok: false, power: 'none', feedback: 'On a loud amplified stage a far mic hears more bleed and gives less gain before feedback.' },
       { id: 'e', label: 'Tilt the drum toward the audience so it needs no mic', ok: false, power: 'none', feedback: 'The drum is not moved for sound; that is the player’s and crew’s call, under the stand’s manual.' },
@@ -580,6 +580,6 @@ export const M07A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the bass drum’s low end already; when a spot helps, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. The drum and its stand never move for a mic. The lab is silent and draws a simplified picture: a 36 × 16 in drum, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the bass drum’s low end already; when a spot helps, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. The drum and its stand never move for a mic. The lab is silent and draws a simplified picture: a 36 × 16 in drum, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: CBD_COPY,
 };

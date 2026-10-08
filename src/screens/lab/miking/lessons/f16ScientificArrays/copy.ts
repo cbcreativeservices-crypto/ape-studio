@@ -39,7 +39,7 @@ export const F16_COPY: Partial<LessonCopy> = {
     note: 'Write every element’s coordinate from the origin — the time difference means nothing without it.',
     availableLead: 'Starting points for this element',
     learn: {
-      intro: 'After our research, each blue zone is a place we recommend you begin — a coordinate from the marked origin. The array’s method sets the real spacing and layout.',
+      intro: 'After our research, each blue zone is a place we suggest you begin — a coordinate from the marked origin. The array’s method sets the real spacing and layout.',
       separate: 'Spacing, height and aim are separate: change one at a time, and write each coordinate down.',
       clearance: 'Stands clear of the source and the paths; nothing near a running device.',
       tendencies: 'What a layout can tell is a tendency to check with a known source — never a promise.',

@@ -42,7 +42,7 @@ const MICS = ['mlSdc', 'mlDynCard'];
 /** Shure's close example (S-LIVE / S-RECBK): one mic 4–6 in above the bars. */
 export const CLOSE_EXAMPLE = { min: 4 * IN, max: 6 * IN } as const;
 
-/* ── RECOMMENDED STARTING POINTS (lesson L11; corrections I2-G*) ── */
+/* ── SUGGESTED STARTING POINTS (lesson L11; corrections I2-G*) ── */
 export const GLOCK_ZONES: DocumentedZone[] = [
   slantZone(GLOCK_FAM, {
     id: 'gl.high',

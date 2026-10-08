@@ -41,8 +41,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic above the head first; a low mic only when the opening is clear — outside every hand, knee and foot; then move it and see what changes.',
-    credit: { scenarios: ['dj.place.1', 'dj.place.2', 'dj.place.3', 'dj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — one mic above the head first; a low mic only when the opening is clear — outside every hand, knee and foot; then move it and see what changes.',
+    credit: { scenarios: ['dj.place.1', 'dj.place.2', 'dj.place.3', 'dj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Two starting points sit very close and quite far above the head: different cases, not rules. If one mic carries enough bass, a second is unnecessary; a low mic only where the opening is clear.',
   },
   context: {
@@ -296,12 +296,12 @@ const scenarios: MikingScenario[] = [
     id: 'dj.two.1',
     page: 'twoMic',
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'A 180° electrical polarity reversal does not remove the acoustic travel-time difference or align all frequencies.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, measured from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, measured from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of hands, knees, feet and the drum’s movement', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on djembe', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the drum', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A solo studio performance; the djembe stands raised on foam blocks with its opening clear. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'One slim condenser above the outer edge, about 41 cm from the head’s centre', ok: true, power: 'phantom', feedback: 'A recommended starting point that hears the whole drum and the room; phantom is available.' },
+      { id: 'a', label: 'One slim condenser above the outer edge, about 41 cm from the head’s centre', ok: true, power: 'phantom', feedback: 'A suggested starting point that hears the whole drum and the room; phantom is available.' },
       { id: 'b', label: 'A compact dynamic close above the head, angled, plus a low mic aimed at the opening', ok: true, power: 'none', feedback: 'A case-example pair — check the blend in mono; dynamics need no phantom.' },
       { id: 'c', label: 'One compact dynamic close above the head, angled, outside the hands', ok: true, power: 'none', feedback: 'One mic first — if it carries enough bass, a second is unnecessary.' },
       { id: 'd', label: 'A mic pushed into the open foot for the bass', ok: false, power: 'none', feedback: 'Never obstruct the opening.' },
@@ -523,7 +523,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage; the player sits with the djembe on the floor between the knees. The spare inputs have NO phantom power.',
     setups: [
       { id: 'a', label: 'One compact dynamic close above the head, angled, outside the hands', ok: true, power: 'none', feedback: 'A stable directional top mic, outside all motion; a dynamic needs no phantom.' },
-      { id: 'b', label: 'A compact hypercardioid dynamic farther above the outer edge', ok: true, power: 'none', feedback: 'A recommended starting point, its narrow pattern helping against spill; no phantom needed.' },
+      { id: 'b', label: 'A compact hypercardioid dynamic farther above the outer edge', ok: true, power: 'none', feedback: 'A suggested starting point, its narrow pattern helping against spill; no phantom needed.' },
       { id: 'c', label: 'A low mic under the drum for the bass', ok: false, power: 'none', feedback: 'The drum rests on the floor: nothing goes under it.' },
       { id: 'd', label: 'A slim condenser close above the head', ok: false, power: 'phantom', feedback: 'It needs phantom power these inputs lack.' },
       { id: 'e', label: 'A mic clipped to the rope ring', ok: false, power: 'none', feedback: 'Clamp nothing to the ropes; a clip must be made for the drum and approved by its owner.' },
@@ -697,7 +697,7 @@ export const M05_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. The examples here are different cases — very close and quite far, top and bottom — not rules: test one mic before adding another. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. The examples here are different cases — very close and quite far, top and bottom — not rules: test one mic before adding another. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: DJEMBE,
     shellLook: 'goblet',
@@ -762,7 +762,7 @@ export const M05_LESSON: HandLesson = {
       hdSdc: 'Ideas to try with this kind of mic: above the outer edge, about 41 cm from the head’s centre, pointing across it — more of the whole drum and the room. Check the bass it already carries.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
+      'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
       'Change one variable at a time while the player plays the same full passage. Nearer raises direct sound but can exaggerate contact; backing off in a good room integrates the strokes with more room and more of the band. A fixed angle does not mean a fixed tone across drums and patterns.',
       'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       'A low mic is a focused supplement, often narrower and with less hand articulation — not a one-mic solution. If there is no safe, repeatable low position, keep one well-placed top or front mic.',

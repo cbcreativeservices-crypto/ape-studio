@@ -90,8 +90,8 @@ export const B02_COPY: Partial<LessonCopy> = {
     },
     note: 'Ask first: a lav goes on a person only with their agreement and wardrobe’s; nothing on skin except an adhesive made for skin. A fixed boom over a seated person is rigged by qualified crew.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a seated anchor or guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, desk and voice is different.',
-      separate: 'Where the mic is — chest, above, the desk — its distance and its angle off the mouth are separate variables: change one at a time, with the anchor reading, turning and handling papers as they really will. Distances are measured to the mic’s front (a short shotgun’s capsule) and rounded to about 5 mm.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a seated anchor or guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, desk and voice is different.',
+      separate: 'Where the mic is — chest, above, the desk — its distance and its angle off the mouth are separate variables: change one at a time, with the anchor reading, turning and handling papers as they really will. Distances are measured to the mic’s front (a short shotgun’s capsule) and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
       clearance: 'Clearance comes first: off the clothes and the face, outside every frame, the base away from the papers and the hands.',
       tendencies: 'A chest lav: steady distance, a little chest-heavy, the clothes. A boom above: open, more room, out of the picture. A raised desk mic: closer, but the desk’s bounce. A boundary: low, more room and papers. Tendencies, and sets vary.',
     },

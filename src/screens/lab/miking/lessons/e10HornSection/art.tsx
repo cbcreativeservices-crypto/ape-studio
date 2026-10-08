@@ -74,7 +74,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For a real section, with the players’ and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = recommended starting points · grey dashes = the players’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: every slide at full extension, the bells’ travel, hands, chairs and feet, and the players’ way in and out.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A close mic aimed back at the bell turns its rear toward the audience side — where a wedge can sit in its rejection.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each player gives its own delay.',

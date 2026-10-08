@@ -46,9 +46,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — facing the holes a third of the way up from the bell — then move the mic and see what changes.',
-    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part of the clarinet — not a rule. Distance, height and angle are separate things to try; clearance from the hands and the bell comes first.',
+    goal: 'Start where we suggest you begin — facing the holes a third of the way up from the bell — then move the mic and see what changes.',
+    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part of the clarinet — not a rule. Distance, height and angle are separate things to try; clearance from the hands and the bell comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is a mic a few centimetres from the lower joint’s keys a good first choice?',
     options: ['Yes — the closer the mic, the clearer the tone', 'Yes, if you cut the high end to hide the clicks', 'Not usually: keys and fingers can take over'],
     correct: 'Not usually: keys and fingers can take over',
-    explain: 'Very close to the mechanism, the clicks and pads can rival the notes, and one hole dominates. The recommended start keeps 15–20 cm, facing the holes, so the holes and the bell blend.',
+    explain: 'Very close to the mechanism, the clicks and pads can rival the notes, and one hole dominates. The suggested start keeps 15–20 cm, facing the holes, so the holes and the bell blend.',
     why: {
       'Yes — the closer the mic, the clearer the tone': 'Closer brings more of one spot and more mechanism — not a clearer whole clarinet.',
       'Yes, if you cut the high end to hide the clicks': 'EQ dulls the clarinet along with the clicks. Distance is the first fix.',
@@ -334,8 +334,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a solo clarinet, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Small condenser 15–20 cm from the holes, a third of the way up from the bell', ok: true, power: 'phantom', feedback: 'A recommended starting point that hears the holes and the bell — then small changes by ear.' },
-      { id: 'b', label: 'Small condenser about 0.6–1 m in front, aimed at the middle of the clarinet', ok: true, power: 'phantom', feedback: 'A recommended starting point that blends the clarinet and the good room.' },
+      { id: 'a', label: 'Small condenser 15–20 cm from the holes, a third of the way up from the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point that hears the holes and the bell — then small changes by ear.' },
+      { id: 'b', label: 'Small condenser about 0.6–1 m in front, aimed at the middle of the clarinet', ok: true, power: 'phantom', feedback: 'A suggested starting point that blends the clarinet and the good room.' },
       { id: 'c', label: 'A mic pointed straight into the bell from a few centimetres', ok: false, power: 'phantom', feedback: 'A bell-only view favours the lowest notes and misses the holes.' },
       { id: 'd', label: 'A mic beside the mouthpiece, to hear the reed', ok: false, power: 'phantom', feedback: 'By the mouth it hears breath and reed edge, and sits in the player’s face.' },
       { id: 'e', label: 'Two clip mics, one at the bell and one on the barrel, for stereo', ok: false, power: 'phantom', feedback: 'Stereo is not needed for a small solo source, and two close views move as the player moves.' },
@@ -348,8 +348,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a clarinettist in a band with drums and amps, a wedge in front, moving a little in solos. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the clarinet — check the clip’s fit and the cable.' },
-      { id: 'b', label: 'A cardioid on a stand close in front of the holes, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point with the rejection aimed — mark the spot with the player.' },
+      { id: 'a', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the clarinet — check the clip’s fit and the cable.' },
+      { id: 'b', label: 'A cardioid on a stand close in front of the holes, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — mark the spot with the player.' },
       { id: 'c', label: 'Small condenser a metre in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the wedge more than the clarinet.' },
       { id: 'd', label: 'A clip squeezed over the ring keys of the lower joint', ok: false, power: 'phantom', feedback: 'Nothing goes on the ring keys, rods or pads: it stops the notes and risks the instrument.' },
       { id: 'e', label: 'An omni close to the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'An omni rejects nothing; turned up, it brings the stage and feedback with it.' },
@@ -488,7 +488,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, clip or cable anywhere the hands, the keys or the bell can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the middle of the clarinet, or the top of the bell. They are starting points, not rules. Move from there and listen: there is no single right answer, and every clarinet and room is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the middle of the clarinet, or the top of the bell. They are starting points, not rules. Move from there and listen: there is no single right answer, and every clarinet and room is different.',
       separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the low notes, the throat notes and the top register each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the fingers and thumbs, the keys, the bell as it moves, and the face. The engine stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a balance of holes and bell; into the bell, the lowest notes stand out; very close to the keys, the clicks; farther, more room and blend. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and clarinets vary.',
@@ -636,7 +636,7 @@ export const A08A_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every clarinet, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal tube, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every clarinet, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal tube, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A B♭ clarinet held by a seated player, seen from the audience, its bore drawn open',

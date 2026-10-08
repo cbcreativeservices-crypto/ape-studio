@@ -1,5 +1,5 @@
 /**
- * A05b ALTO SAXOPHONE — the recommended starting points (charter §2 layer
+ * A05b ALTO SAXOPHONE — the suggested starting points (charter §2 layer
  * 1), on the shared family's zone kinds (lessons/shared/sax/saxZones.ts;
  * research alto_sax/SOURCES.md §2):
  *

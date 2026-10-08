@@ -1,5 +1,5 @@
 /**
- * F12 SOUND LEVEL AND ENVIRONMENTAL NOISE — the recommended starting points
+ * F12 SOUND LEVEL AND ENVIRONMENTAL NOISE — the suggested starting points
  * (charter §2 layer 1). Source keys: measurement_mics/SOURCES.md §0. Frame:
  * F12 geometry.ts (the ground at the facade; +x toward the road).
  *

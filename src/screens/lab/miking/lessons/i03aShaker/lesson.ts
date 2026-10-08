@@ -43,8 +43,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 30–60 cm from the middle of the playing area, outside the whole motion — then change height and angle, and the direction of the shake, and see what changes.',
-    credit: { scenarios: ['shk.place.1', 'shk.place.2', 'shk.place.3', 'shk.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 30–60 cm from the middle of the playing area, outside the whole motion — then change height and angle, and the direction of the shake, and see what changes.',
+    credit: { scenarios: ['shk.place.1', 'shk.place.2', 'shk.place.3', 'shk.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'One mic outside the whole arc, about 30–60 cm from the middle of the playing area, is the place to begin. A shake toward the mic makes each forward stroke jump; side to side tends to stay steadier — if the player chooses it.',
   },
   context: {
@@ -386,13 +386,13 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A quiet studio overdub: one player, one shaker, a pleasant room. The producer wants a clear, natural pulse. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 40 cm in front of the playing area, facing it', ok: true, power: 'phantom', feedback: 'The recommended start: outside the arc, facing where most strokes happen; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 40 cm in front of the playing area, facing it', ok: true, power: 'phantom', feedback: 'The suggested start: outside the arc, facing where most strokes happen; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 50 cm away, a little higher, angled down into the arc', ok: true, power: 'phantom', feedback: 'Also a fair start: a different balance of rattle, hand noise and room — compare by ear.' },
       { id: 'c', label: 'A mic 10 cm from the shaker, where the forward stroke ends', ok: false, power: 'phantom', feedback: 'That is inside the motion: the shaker or the hand would reach it — and every stroke would jump in level.' },
       { id: 'd', label: 'Ask the player to hold the shaker still and roll the fill', ok: false, power: 'none', feedback: 'The player’s motion is never changed to suit a mic.' },
       { id: 'e', label: 'Two close mics, one on each end of the shaker', ok: false, power: 'phantom', feedback: 'One mono spot is usually enough; two close mics on a moving source add a changing delay between them.' },
     ],
-    reasons: [{ id: 'r.doc', label: 'It is a recommended starting point, about 30–60 cm from the middle of the playing area', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' }, CLEAR_REASON, POWER_REASON, PEAK_REASON, BRAND_REASON, TECH_REASON],
+    reasons: [{ id: 'r.doc', label: 'It is a suggested starting point, about 30–60 cm from the middle of the playing area', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' }, CLEAR_REASON, POWER_REASON, PEAK_REASON, BRAND_REASON, TECH_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point from the middle of the playing area, outside the whole motion, power that matches the mic.',
   },
   {
@@ -575,7 +575,7 @@ export const I03A_LESSON: SpLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every shaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a small clear shaker in two ways of shaking, a few beads standing for the fill, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every shaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a small clear shaker in two ways of shaking, a few beads standing for the fill, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: SHK_COPY,
   sp: {
     strikeTitle: 'Stroke to sound',

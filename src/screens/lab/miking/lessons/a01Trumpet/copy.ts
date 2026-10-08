@@ -39,7 +39,7 @@ export const A01_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, stand or cable where the bell, a mute, the valve hands or the player can reach it is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the bell rim’s centre. They are starting points, not rules. Move from there and listen: there is no single right answer, and every horn, player and room is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the bell rim’s centre. They are starting points, not rules. Move from there and listen: there is no single right answer, and every horn, player and room is different.',
       separate: 'Distance and the angle off the bell’s axis are separate variables: change one at a time, and play the full phrase — quiet notes, the strongest accents and every mute — each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bell’s movement, every mute’s path, the valve hands and the player’s walk path.',
       tendencies: 'On the axis tends to sound brighter and more defined; off to one side, softer, with less bite; farther, more room and spill. A directional mic close up also lifts the lows (proximity effect). These are tendencies, and horns vary.',

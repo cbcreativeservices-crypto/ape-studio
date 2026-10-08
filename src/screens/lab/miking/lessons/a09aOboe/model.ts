@@ -1,5 +1,5 @@
 /**
- * A09a OBOE — the recommended starting points (charter §2 layer 1). Source
+ * A09a OBOE — the suggested starting points (charter §2 layer 1). Source
  * keys point into docs/labs/miking/oboe/SOURCES.md and the reed family's
  * keys in soprano_clarinet/SOURCES.md §0; corrections A9A-01 … (CORRECTIONS_LOG).
  *

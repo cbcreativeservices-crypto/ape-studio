@@ -126,5 +126,5 @@ function zonesFor(s: WbState): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L20-L23; corrections WB-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L20-L23; corrections WB-xx). ── */
 export const WB_ZONES: DocumentedZone[] = [...zonesFor(STATES.table), ...zonesFor(STATES.held)];

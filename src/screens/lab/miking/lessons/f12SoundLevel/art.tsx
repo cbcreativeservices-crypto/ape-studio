@@ -38,7 +38,10 @@ const LABELS = {
   side: [
     { id: 'house', text: 'HOUSE', u: -5200, v: -8400, align: 'center' as const, at: { u: -4200, v: -7300 } },
     { id: 'facade', text: 'FACADE', u: 900, v: -6400, align: 'left' as const, at: { u: 0, v: -5200 } },
-    { id: 'hvac', text: 'AIR UNIT', u: 1400, v: -2200, align: 'left' as const, at: { u: 900, v: -950 } },
+    // Above the meter's ring at the method's 1.5 m (its ring reaches ≈ 2.1 m),
+    // the leader kept left of the ring at the 2 m and the facade positions
+    // (owner decision X6, 2026-10-08 — it sat under the meter's ring).
+    { id: 'hvac', text: 'AIR UNIT', u: 1400, v: -2650, align: 'left' as const, at: { u: 900, v: -950 } },
     { id: 'power', text: 'POWER LINE · KEEP 3 M (10 FT) AWAY', short: 'POWER LINE', u: POWER.x, v: -POWER.h - 3500, align: 'center' as const },
     { id: 'road', text: 'ROAD', u: 9000, v: -900, align: 'center' as const, at: { u: 9000, v: -100 } },
   ],

@@ -11,7 +11,7 @@
  * euphonium on the lap; BELL UP (most concert setups, the default) or BELL
  * FRONT (a bell-front model made for forward projection) — both sourced.
  *
- * RECOMMENDED STARTING POINTS:
+ * SUGGESTED STARTING POINTS:
  *   above   about 2 ft (60 cm) above an upright bell, aimed toward its edge —
  *           56–66 cm, drawn ±5 cm round 61 cm;
  *   side    1–2 ft from the bell, slightly off axis — 30.5–61 cm; for an

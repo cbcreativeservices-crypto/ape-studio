@@ -252,5 +252,5 @@ function frontPortZones(): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L11-L12, L32-L33; corrections CJ-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L11-L12, L32-L33; corrections CJ-xx). ── */
 export const CAJ_ZONES: DocumentedZone[] = [...rearZones(), ...frontPortZones()];

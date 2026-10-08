@@ -132,7 +132,7 @@ function B16Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      'After our research, each blue starting point is where we recommend you begin — from the approved equipment area, the axis across the walk or along it. They are starting points, not rules: compare one change at a time and use your ears. Experimentation is encouraged.',
+      'After our research, each blue starting point is where we suggest you begin — from the approved equipment area, the axis across the walk or along it. They are starting points, not rules: compare one change at a time and use your ears. Experimentation is encouraged.',
       'For a real course, arena or pool, replace these practice distances with the approved survey — and never move toward the action, over a barrier or into a run-off to get closer.',
     ),
   ];

@@ -15,7 +15,7 @@
  *   usePlacementStep   the Placement Studio on the plan: START from a setup,
  *                      MOVE (along, out, height) and AIM; refused in play,
  *                      keep-clear space, a route or off an approved place;
- *                      rest in two recommended starting points
+ *                      rest in two suggested starting points
  *   useCoverageStep    coverage map mode: tag each zone detail / ambience
  *                      only / unavailable, with its handoff
  *   useHeadroomStep    the chain, stage by stage: find the first overloaded
@@ -620,7 +620,7 @@ export function beforeStep(p: PageProps, rows: readonly SafetyRow[], extra?: Rea
 
 /* ═════════ PLACEMENT ═════════ */
 
-/** A recommended starting point on the plan: where the mic stands (a plan
+/** A suggested starting point on the plan: where the mic stands (a plan
  *  rectangle), its capsule height range, and the target it aims at (within
  *  `tol` degrees of it). `kinds`: the mics it takes. */
 export type PlanZone = { id: string; label: string; band: string; tendency: string; rect: PlanRect; h: [number, number]; target: string; tol: number; kinds: readonly PlanMicKind[] };
@@ -739,7 +739,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
   const axisVal = axis === 'h' ? h : axis === 'x' ? at.x : at.y;
   const snap = (v: number) => Math.round((lo[0] + v * (lo[1] - lo[0])) * 10) / 10;
   const apply = (val: number): { at: P2; h: number } => (axis === 'h' ? { at: atRef.current, h: Math.max(0, val) } : axis === 'x' ? { at: { x: val, y: atRef.current.y }, h: hRef.current } : { at: { x: atRef.current.x, y: val }, h: hRef.current });
-  const nowWords = `The ${start.mics[0].label}: ${fmtM1(h)} up${target ? `; ${fmtM1(range)} from ${target.label}, ${Math.round(offT)}° off its axis` : ''}${crowd ? `; the crowd ${Math.round(offCrowd)}° off its axis` : ''}.${zone ? ` At a recommended starting point: ${zone.label}.` : ' Not at a recommended starting point.'}${refused ? ` Refused: it would stand in ${refused.label}.` : ''}${outOfArc ? ' Outside the turn arc: stop and hand off.' : ''}`;
+  const nowWords = `The ${start.mics[0].label}: ${fmtM1(h)} up${target ? `; ${fmtM1(range)} from ${target.label}, ${Math.round(offT)}° off its axis` : ''}${crowd ? `; the crowd ${Math.round(offCrowd)}° off its axis` : ''}.${zone ? ` At a suggested starting point: ${zone.label}.` : ' Not at a suggested starting point.'}${refused ? ` Refused: it would stand in ${refused.label}.` : ''}${outOfArc ? ' Outside the turn arc: stop and hand off.' : ''}`;
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -819,7 +819,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
           )}
         </PlanStage>
       ),
-      badge: 'Blue = recommended starting points (where the mic stands) · blue line = the path to the target · amber dashed = the aim · calculated from the drawing',
+      badge: 'Blue = suggested starting points (where the mic stands) · blue line = the path to the target · amber dashed = the aim · calculated from the drawing',
       bezel: [
         { k: 'RANGE', v: fmtM1(range), flex: 1 },
         { k: 'OFF AXIS', v: Number.isFinite(offT) ? `${Math.round(offT)}°` : '—', tint: offT > 20 ? RED : undefined, flex: 0.9 },
@@ -838,10 +838,10 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
         {outOfArc && arc ? <Note tone="warn">Outside the approved turn arc: stop tracking and hand off to a fixed mic or the ambience — never step or lean out of the operating box.</Note> : null}
         {zone ? (
           <Card>
-            <Point title={`RECOMMENDED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>
+            <Point title={`SUGGESTED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>
           </Card>
         ) : (
-          <Body>{`Not at a recommended starting point. On this plan: ${zones.filter((z) => z.kinds.includes(kind)).map((z) => z.label).join('; ')}.`}</Body>
+          <Body>{`Not at a suggested starting point. On this plan: ${zones.filter((z) => z.kinds.includes(kind)).map((z) => z.label).join('; ')}.`}</Body>
         )}
         {target && Number.isFinite(range) ? <Body>{`To ${target.label}: ${fmtRange(range)} (slant, capsule ${fmtM1(h)} to a source ${fmtM1(target.h)} up) — calculated from the drawing.`}</Body> : null}
         <Body>{`Activity: zones rested in — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>

@@ -61,7 +61,7 @@ const HAND: HandSpec = {
     label: 'The triangle with a small condenser placed for you',
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself.',
     pieces: (z: DocumentedZone) => [
-      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin with a triangle — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a triangle — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
       { title: 'MEASURED FROM', text: 'From the triangle itself, where it hangs while played: the readout measures from its centre to the mic’s FRONT, rounded to ≈ 5 mm.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
       { title: 'THE VIEWPOINT', text: 'In front of the triangle and a little to one side — the player’s left here, away from the beater hand — level with it or a little above.', cell: 1 },
@@ -79,7 +79,7 @@ const HAND: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from the triangle where it is played. They are starting points, not rules: move from there and listen — every triangle, beater and player is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the triangle where it is played. They are starting points, not rules: move from there and listen — every triangle, beater and player is different.',
     'Change one thing at a time, and listen to the same light stroke, strong stroke, roll and cutoff at matched level. If a stroke sounds painfully sharp, check the beater and the playing spot first, then a safer off-axis or wider view. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
     'Never put the mic inside the triangle or in the beater’s path just to gain level. On a loud stage, fix the balance on stage before raising the gain.',
   ],

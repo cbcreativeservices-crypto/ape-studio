@@ -38,9 +38,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — aimed where the neck meets the body — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin. On a small instrument a small move changes a lot: record the exact position, and keep clear of the picking arc.',
+    goal: 'Start where we suggest you begin — aimed where the neck meets the body — then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin. On a small instrument a small move changes a lot: record the exact position, and keep clear of the picking arc.',
   },
   context: {
     title: 'Studio or live',
@@ -284,9 +284,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A bluegrass band on a stage with floor wedges. The mandolin gets its own channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser, cardioid, aimed at the neck junction at the close end, rear to the wedge', ok: true, power: 'phantom', feedback: 'A recommended target, brought close for gain, its rejection toward the wedge.' },
-      { id: 'b', label: 'Instrument dynamic aimed at the neck junction, clear of the picking arc', ok: true, power: 'none', feedback: 'A robust close option at a recommended target.' },
-      { id: 'c', label: 'Clip-on mini on a clip whose range fits this body, between joint and opening', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the player — with the owner’s OK.' },
+      { id: 'a', label: 'Small condenser, cardioid, aimed at the neck junction at the close end, rear to the wedge', ok: true, power: 'phantom', feedback: 'A suggested target, brought close for gain, its rejection toward the wedge.' },
+      { id: 'b', label: 'Instrument dynamic aimed at the neck junction, clear of the picking arc', ok: true, power: 'none', feedback: 'A robust close option at a suggested target.' },
+      { id: 'c', label: 'Clip-on mini on a clip whose range fits this body, between joint and opening', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the player — with the owner’s OK.' },
       { id: 'd', label: 'Clip the mini to the scroll, aimed back at the f-holes', ok: false, power: 'phantom', feedback: 'The scroll is fragile carved wood, not a mount.' },
       { id: 'e', label: 'Small omni 1 m out front, to hear the whole band’s blend', ok: false, power: 'phantom', feedback: 'On a stage with wedges an omni that far out hears everything but the mandolin.' },
     ],
@@ -298,8 +298,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, a tremolo melody on an A-style mandolin. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Instrument dynamic about 20 cm from the oval hole, a little off it', ok: true, power: 'none', feedback: 'A recommended starting point; it needs no phantom. Listen for boom.' },
+      { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'Instrument dynamic about 20 cm from the oval hole, a little off it', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Listen for boom.' },
       { id: 'c', label: 'Small omni condenser at the neck junction', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power.' },
       { id: 'd', label: 'Clip-on mini between the joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic 2 cm into the oval hole', ok: false, power: 'none', feedback: 'Never insert a mic into an opening: it favours one resonance and risks the instrument.' },

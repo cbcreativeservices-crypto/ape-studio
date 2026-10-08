@@ -38,7 +38,7 @@ export const B12_COPY: Partial<LessonCopy> = {
     note: 'The operator stays in the approved place and turns only inside the arc.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'After our research, each starting point is where we recommend you begin — the dish’s axis on a chosen target from an approved place. Starting points, not rules. Experimentation is encouraged.',
+      intro: 'After our research, each starting point is where we suggest you begin — the dish’s axis on a chosen target from an approved place. Starting points, not rules. Experimentation is encouraged.',
       separate: 'The target, the aim and the focus are separate decisions; change one at a time.',
       clearance: 'The approved place only; never into play, run-off or a route.',
       tendencies: 'On the axis and in focus tends to bring the most high-frequency detail; off either, the target dulls first. Tendencies, to check by ear.',

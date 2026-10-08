@@ -45,8 +45,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about an inch from a grille, off-centre, at a slight angle — then compare the centre, the outer end, a little more distance and the other grille, one change at a time.',
-    credit: { scenarios: ['wu.place.1', 'wu.place.2', 'wu.place.3', 'wu.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points, clear of every part and the player, and answer the four checks.' },
+    goal: 'Start where we suggest you begin — about an inch from a grille, off-centre, at a slight angle — then compare the centre, the outer end, a little more distance and the other grille, one change at a time.',
+    credit: { scenarios: ['wu.place.1', 'wu.place.2', 'wu.place.3', 'wu.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, clear of every part and the player, and answer the four checks.' },
     takeaway: 'Measure from the grille of the speaker that sounds best, keep clear of the lid, the keys and the player, and change one thing at a time: across the speaker, OR away from it, OR the angle — OR the other grille.',
   },
   context: {
@@ -515,7 +515,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the grille of the speaker that sounds best', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille of the speaker that sounds best', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay off the lid and clear of the keys, the player and the pedal', role: 'required', feedback: 'Clearance — of the instrument and the player — is part of every passing setup.' };
 const STEREO_REASON: SetupReason = { id: 'r.stereo', label: 'Two grilles make it a stereo instrument', role: 'wrong', feedback: 'Two grilles usually carry the same signal: not stereo.' };
 const CLAMP_REASON: SetupReason = { id: 'r.clamp', label: 'A clamp on the lid keeps the mic steady', role: 'wrong', feedback: 'Nothing is clamped to the lid: it rattles and can be damaged.' };
@@ -526,7 +526,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage, a reed piano played through its own speakers, a mono PA. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Compact dynamic about an inch off the better grille, off-centre, at a slight angle', ok: true, power: 'none', feedback: 'The recommended close start: directional and close for a loud stage; a dynamic needs no power.' },
+      { id: 'a', label: 'Compact dynamic about an inch off the better grille, off-centre, at a slight angle', ok: true, power: 'none', feedback: 'The suggested close start: directional and close for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser a few centimetres off the better grille, on its own stand', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has phantom — check its level rating and the space.' },
       { id: 'c', label: 'The auxiliary output, through a DI, if the owner confirms the jack', ok: true, power: 'none', feedback: 'A fair live answer when the stage is very loud — it changes the captured path: no speaker, no lid.' },
       { id: 'd', label: 'A mic 60–90 cm from the back of the case, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the band, not the instrument.' },
@@ -715,5 +715,5 @@ export const I11B_LESSON: Lesson = {
   ],
   live: { wedges: wurliWedges() },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every instrument, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reed piano at typical proportions (its two 4 × 8 in oval speakers are real; the case size, the grille positions and their tilt are drawing choices — measure the real one), a seated player as a keep-clear outline, one note of the mechanism as an inside view, textbook mic patterns, and motion drawn larger. Distances are measured from the grille to the mic’s front and rounded to about 5 mm. Keep the case closed, keep stands off the lid, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reed piano at typical proportions (its two 4 × 8 in oval speakers are real; the case size, the grille positions and their tilt are drawing choices — measure the real one), a seated player as a keep-clear outline, one note of the mechanism as an inside view, textbook mic patterns, and motion drawn larger. Distances are measured from the grille to the mic’s front and rounded to about 5 mm. Keep the case closed, keep stands off the lid, and send a speaker output only to a speaker.',
 };

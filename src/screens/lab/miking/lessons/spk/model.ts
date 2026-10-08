@@ -2,7 +2,7 @@
  * SPEAKER CABINET & LESLIE MODULE (lesson id SPK) — the technical truth for
  * the CONVENTIONAL cabinet's placement (charter §2 layer 1). The speaker
  * family's facts live in lessons/shared/speakers/speakerModel.ts; this file
- * holds the module's RECOMMENDED STARTING POINTS in frame C.
+ * holds the module's SUGGESTED STARTING POINTS in frame C.
  *
  * Sources: docs/labs/miking/speaker_leslie/SOURCES.md §c and
  * GEOMETRY_PROPOSAL.md A4. Learner-facing words (label, band, tendency,

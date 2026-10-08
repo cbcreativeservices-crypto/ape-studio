@@ -48,9 +48,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above the top cymbal, on the side away from the snare, clear of the stick and the air at the edges — then move the mic and see what changes.',
-    credit: { scenarios: ['hh.place.1', 'hh.place.2', 'hh.place.3', 'hh.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points (change MIC for the others), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the top cymbal — not a rule. Height, the spot over the plate and the angle are separate things to try; the snare stays off the mic’s front, and clearance comes first.',
+    goal: 'Start where we suggest you begin — above the top cymbal, on the side away from the snare, clear of the stick and the air at the edges — then move the mic and see what changes.',
+    credit: { scenarios: ['hh.place.1', 'hh.place.2', 'hh.place.3', 'hh.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (change MIC for the others), and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the top cymbal — not a rule. Height, the spot over the plate and the angle are separate things to try; the snare stays off the mic’s front, and clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -340,9 +340,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud rock stage. The snare is loud, the drummer’s fill sits beside the throne. One spare channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A small condenser 5–10 cm above the bow on the far side, the pair hiding the snare', ok: true, power: 'phantom', feedback: 'A recommended starting point, with the snare shaded by the pair — and the power it needs.' },
-      { id: 'b', label: 'A small dynamic a few centimetres over the outer edge on the far side, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point that suits a loud stage — listen for the air as the pair closes.' },
-      { id: 'c', label: 'A clip-on condenser under the bottom cymbal, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A recommended starting point out of the stick’s way, its rejection toward the monitors.' },
+      { id: 'a', label: 'A small condenser 5–10 cm above the bow on the far side, the pair hiding the snare', ok: true, power: 'phantom', feedback: 'A suggested starting point, with the snare shaded by the pair — and the power it needs.' },
+      { id: 'b', label: 'A small dynamic a few centimetres over the outer edge on the far side, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point that suits a loud stage — listen for the air as the pair closes.' },
+      { id: 'c', label: 'A clip-on condenser under the bottom cymbal, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stick’s way, its rejection toward the monitors.' },
       { id: 'd', label: 'A mic just past the edge, level with the gap between the cymbals', ok: false, power: 'none', feedback: 'That is where the air rushes out as the pair closes — a thump or wind noise. Start above the edge instead.' },
       { id: 'e', label: 'A mic over the bow on the player’s side, where the stick lands', ok: false, power: 'none', feedback: 'That is the stick’s path. Start on the far side, away from it.' },
     ],
@@ -355,12 +355,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session in a good room. The overheads give a crisp hi-hat. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No hat mic: the overheads already carry the hats clearly', ok: true, power: 'none', feedback: 'A fair plan when the overheads carry the hats — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic over the far edge, aimed down, the snare on the far side of the pair', ok: true, power: 'none', feedback: 'A recommended starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic over the far edge, aimed down, the snare on the far side of the pair', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
       { id: 'c', label: 'A small condenser 5–10 cm above the bow, away from the snare', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'A clip-on condenser under the bottom cymbal', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
       { id: 'e', label: 'A mic straight over the clutch, touching the pull rod to hold it still', ok: false, power: 'none', feedback: 'Never on the rod or the clutch: they move with the pedal. Keep the mic clear.' },
     ],
-    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a recommended starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the hi-hat’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
+    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the hi-hat’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'Two plans pass: no hat mic, or a dynamic over the far edge. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
   },
 ];
@@ -541,7 +541,7 @@ export const I01A_LESSON: CymbalLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every pair of hats, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit, a 14 in pair drawn to a common profile, the stick’s side, the swing and the air at the edges as drawn keep-outs, mic patterns as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every pair of hats, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit, a 14 in pair drawn to a common profile, the stick’s side, the swing and the air at the edges as drawn keep-outs, mic patterns as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: HAT_COPY,
   cym: HAT_CYM,
 };

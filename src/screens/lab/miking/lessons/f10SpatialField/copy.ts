@@ -43,7 +43,7 @@ export const F10_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: clear of the footpath and of people, on a stable stand, away from power lines.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'After our research, each starting point is where we recommend you begin for that destination — at the listener’s point, facing the scene front. They are starting points, not rules: walk and listen at other places. Experimentation is encouraged.',
+      intro: 'After our research, each starting point is where we suggest you begin for that destination — at the listener’s point, facing the scene front. They are starting points, not rules: walk and listen at other places. Experimentation is encouraged.',
       separate: 'Height, place and facing are separate decisions; log each one.',
       clearance: 'Clear of the public route, on a stable stand, away from power lines.',
       tendencies: 'Closer to the front source tends to bring more of it and less of the place; at the listener’s point, the place as a listener hears it. Tendencies, to check by ear.',

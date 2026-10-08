@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself at the practice line — the shotgun, the compact mic, the boundary on the floor — and see the range and angle change between A, B and C.',
-    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest a mic, in the outside zone, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest a mic, in the outside zone, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'From outside the line, aimed at the contact height: one variable at a time, the gain unchanged across A, B and C.',
   },
   context: {
@@ -445,8 +445,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A basketball broadcast: approved corner and end positions, the floor position refused, the basket plant not approved.',
     setups: [
-      { id: 'a', label: 'Approved corner shotguns on the two baskets, plus ambience', ok: true, power: 'phantom', feedback: 'A recommended start: an end sector each, handed off as the attack moves.' },
-      { id: 'b', label: 'One compact mic at an approved end, plus ambience', ok: true, power: 'phantom', feedback: 'A recommended start with fewer channels — the far end will be distant.' },
+      { id: 'a', label: 'Approved corner shotguns on the two baskets, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start: an end sector each, handed off as the attack moves.' },
+      { id: 'b', label: 'One compact mic at an approved end, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start with fewer channels — the far end will be distant.' },
       { id: 'c', label: 'A small mic taped to the rim', ok: false, power: 'phantom', feedback: 'Not on the rim, the net or the breakaway — and the plant was not approved.' },
       { id: 'd', label: 'A boundary mic in the 2 m clear band', ok: false, power: 'phantom', feedback: 'The band is a clearance, and the floor position was refused.' },
       { id: 'e', label: 'A dish carried along the sideline', ok: false, power: 'phantom', feedback: 'A dish is bulky courtside, and moving along the line is not an approved place.' },
@@ -465,7 +465,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An ice hockey game: approved fixed positions outside the enclosure, the glass and boards to respect.',
     setups: [
-      { id: 'a', label: 'Fixed mics at approved end and side places outside the glass', ok: true, power: 'phantom', feedback: 'A recommended start: sectors distributed round the rink, the glass checked by listening.' },
+      { id: 'a', label: 'Fixed mics at approved end and side places outside the glass', ok: true, power: 'phantom', feedback: 'A suggested start: sectors distributed round the rink, the glass checked by listening.' },
       { id: 'b', label: 'An approved elevated feed, plus ambience', ok: true, power: 'phantom', feedback: 'A fair start where the glass screens a low position — with qualified approval of the whole installation.' },
       { id: 'c', label: 'A handheld mic through a camera opening', ok: false, power: 'phantom', feedback: 'Camera openings are assigned facilities, not audio access.' },
       { id: 'd', label: 'A mic screwed to the ice-facing boards', ok: false, power: 'phantom', feedback: 'No exposed hardware faces the ice; never drill the boards.' },
@@ -611,6 +611,6 @@ export const B14_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every court, rink and event is different: get approval, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: the practice line is the lesson’s own; the courts are typical layouts; the floor reflection is an ideal hard floor; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into play or its clear space, only approved fixtures installed by qualified venue people, and never alter padding, glass, boards or nets.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every court, rink and event is different: get approval, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: the practice line is the lesson’s own; the courts are typical layouts; the floor reflection is an ideal hard floor; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into play or its clear space, only approved fixtures installed by qualified venue people, and never alter padding, glass, boards or nets.',
   copy: B14_COPY,
 };

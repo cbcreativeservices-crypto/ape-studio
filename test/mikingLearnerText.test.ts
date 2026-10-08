@@ -403,6 +403,6 @@ describe('the journey ends at Practice; one "about these starting points" note',
   it('the evidence-badge components are gone from the kit', () => {
     const kit = readFileSync(join(MIKING, 'engine/kit.tsx'), 'utf8');
     assert.doesNotMatch(kit, /export function (ProvenanceTag|HowToRead)\b/);
-    assert.match(kit, /RECOMMENDED STARTING POINT/);
+    assert.match(kit, /SUGGESTED STARTING POINT/); // owner decision X2 (2026-10-08): "suggest"
   });
 });

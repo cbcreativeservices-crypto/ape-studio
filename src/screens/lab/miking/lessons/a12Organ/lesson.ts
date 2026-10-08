@@ -45,8 +45,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a main pair over the congregation aimed at the main ranks — then compare a case study’s position and a division spot, all from safe floor stands.',
-    credit: { scenarios: ['org.place.1', 'org.place.2', 'org.place.3', 'org.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the aisles, the exits and the organ, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — a main pair over the congregation aimed at the main ranks — then compare a case study’s position and a division spot, all from safe floor stands.',
+    credit: { scenarios: ['org.place.1', 'org.place.2', 'org.place.3', 'org.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the aisles, the exits and the organ, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'The main pair in the body of the room is the organ’s sound; walk, listen and compare positions — the pedal changes over short moves. A division spot is a local view for a stated need, under the pair. No universal distances.',
   },
   context: {
@@ -591,6 +591,6 @@ export const A12_LESSON: Lesson = {
   ],
   live: { wedges: A12_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A pipe organ has no universal mic distance: start with a main pair in the body of the room aimed at the main ranks, walk, listen and compare; the fourth-pew position is one search’s result in one room, shown as a case study. Every organ and room is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a stylised organ and church, ideal pipes, straight paths, one ideal room resonance, mic patterns as textbook shapes. Distances are rounded. Floor stands only where people do not walk; anything elevated is the venue’s installation by competent people; never touch or hang anything from the organ; protect hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A pipe organ has no universal mic distance: start with a main pair in the body of the room aimed at the main ranks, walk, listen and compare; the fourth-pew position is one search’s result in one room, shown as a case study. Every organ and room is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a stylised organ and church, ideal pipes, straight paths, one ideal room resonance, mic patterns as textbook shapes. Distances are rounded. Floor stands only where people do not walk; anything elevated is the venue’s installation by competent people; never touch or hang anything from the organ; protect hearing.',
   copy: { words: metalWords('organ', 'organist') },
 };

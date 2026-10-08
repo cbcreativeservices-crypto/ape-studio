@@ -1,5 +1,5 @@
 /**
- * F05 FOLEY PERSPECTIVE AND MULTIPLE MICROPHONES — the recommended starting
+ * F05 FOLEY PERSPECTIVE AND MULTIPLE MICROPHONES — the suggested starting
  * points (charter §2 layer 1). Keys: foley_footsteps/SOURCES.md §0 and
  * foley_perspective/SOURCES.md; geometry from foley_perspective/
  * GEOMETRY_PROPOSAL.md §2. Every distance is from the keys at the middle of

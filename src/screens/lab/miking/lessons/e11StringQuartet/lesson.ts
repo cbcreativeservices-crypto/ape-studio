@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — height and distance separately — and see how the cello, the first violin and the inner voices change.',
-    credit: { scenarios: ['sq.place.1', 'sq.place.2', 'sq.31', 'sq.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sq.place.1', 'sq.place.2', 'sq.31', 'sq.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Closer tends to more direct sound but favours the front players; farther back, more room and less clarity. Change height and distance separately, at matched level.',
   },
   context: {
@@ -537,7 +537,7 @@ export const E11_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E11_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A quartet has no single right setup: seat the players as they like, start with a pair in front of and above them, change height and distance one at a time, and add a support only for a line that needs it. Every group, room and stage is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Mounts only with the players’ approval and never on varnish; protect your hearing; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A quartet has no single right setup: seat the players as they like, start with a pair in front of and above them, change height and distance one at a time, and add a support only for a line that needs it. Every group, room and stage is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Mounts only with the players’ approval and never on varnish; protect your hearing; never provoke feedback.',
   copy: { words: ensembleWords('string quartet') },
   ensemble: {
     seatings: { quartet: 'quartet.arc', quartetVa: 'quartet.arcVa', sections: 'strings.american' },
@@ -559,11 +559,11 @@ export const E11_LESSON: EnsembleLesson = {
     ],
     safety: 'Mounts only with the player’s approval: never on the bridge or the varnish, no cable pulling on the instrument, every bow sweep left clear. Stands stable and clear of the players’ movement; anything over the players is the venue’s rigging. Protect your hearing; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a quartet: a central pair in front of and above the group, with a view across all four — a trial to start from, not a published best place.',
+      begin: 'After our research, this is where we suggest you begin with a quartet: a central pair in front of and above the group, with a view across all four — a trial to start from, not a published best place.',
       clearance: 'The stand in front of the quartet, clear of the bows’ sweep, the cello’s endpin and the players’ sightlines; its cable dressed flat and out of the way.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the main pair’s centre — for a quartet, 1–2 m in front and 1.8–2.5 m up; for larger sections, over or just behind the podium, 3–4 m up.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s centre — for a quartet, 1–2 m in front and 1.8–2.5 m up; for larger sections, over or just behind the podium, 3–4 m up.',
       'Change height and distance separately, checking the cello’s definition, the first violin’s dominance, the inner voices and the room’s decay at each step.',
       'Keep the pair’s own geometry as you move it: changing the 17 cm pair’s spacing makes a different near-coincident pair.',
     ],

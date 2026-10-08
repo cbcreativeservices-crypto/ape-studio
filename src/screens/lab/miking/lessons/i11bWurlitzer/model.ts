@@ -1,6 +1,6 @@
 /**
  * I11b WURLITZER (REED PIANO) — the technical truth (charter §2 layer 1): the
- * lesson's choices. The recommended starting points and the instrument in
+ * lesson's choices. The suggested starting points and the instrument in
  * frame W live in shared/keys/wurliModel.ts; the facts in shared/keys/
  * keysSpec.ts (the 4 × 8 in oval speaker is the speaker family's one new
  * driver).

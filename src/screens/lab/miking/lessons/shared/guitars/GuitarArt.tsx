@@ -713,7 +713,7 @@ function partLabel(id: string, text: string, short: string | undefined, at: { u:
  * ART PASS 2026-10-05: every label names its part's point (`at`) and offers
  * places OUTSIDE the instrument's outline — above it, below it, then farther
  * out with a leader — so the scene's layout (labelLayout.fitLabels) can keep
- * the words off the mic, the recommended starting points and each other.
+ * the words off the mic, the suggested starting points and each other.
  * `box` is the view's frame, so no label is placed off the glass.
  */
 export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarScene, view: ViewId) => ArtLabel[], box?: { u0: number; u1: number; v0: number; v1: number }): ArtLabel[] {
@@ -850,7 +850,7 @@ export function makeGuitarArt(
     hitTest: (view, variant, u, v, tol) => guitarHit(scOf(variant), view, u, v, tol),
     // The drawn player, so the part labels keep off the figure too.
     figureAt: (view, variant, u, v, tol) => figureCovers(playerPoseOf(scOf(variant), view), u, v, tol),
-    // The words keep off the recommended starting points and step back from
+    // The words keep off the suggested starting points and step back from
     // the mic (art pass 2026-10-05: labels were drawn over both).
     labelObstacles: (view, variant, shown) =>
       zones

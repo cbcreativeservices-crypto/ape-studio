@@ -1,5 +1,5 @@
 /**
- * F08 MOVING SOURCES AND PASS-BYS — the recommended starting points (charter
+ * F08 MOVING SOURCES AND PASS-BYS — the suggested starting points (charter
  * §2 layer 1). Keys: foley_footsteps/SOURCES.md §0, field_moving_passby/
  * SOURCES.md; geometry from field_moving_passby/GEOMETRY_PROPOSAL.md §3.
  * Distances are read from the path's centre line to the mic. No source gives

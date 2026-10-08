@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the rig yourself — its place, its height, its front — and see what changes: the distance to the source, how far its front is off the scene, whether it stands in the way.',
-    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the rig, clear of the way, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the rig, clear of the way, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'A spatial rig is a point of view: where a listener would be, at their height, facing the scene front. Move it one change at a time, log the front and the height — and never in a public route.',
   },
   context: {
@@ -475,8 +475,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A headphone documentary walk through a market: one listener’s point of view, people moving round, a footpath.',
     setups: [
-      { id: 'a', label: 'A binaural head at a listener’s height, clear of the path', ok: true, power: 'phantom', feedback: 'A recommended start for headphones — check the take on the headphones it is for.' },
-      { id: 'b', label: 'An Ambisonic mic upright, its front logged, rendered binaurally', ok: true, power: 'phantom', feedback: 'A recommended start: turnable later, rendered for headphones — keep the four tracks right.' },
+      { id: 'a', label: 'A binaural head at a listener’s height, clear of the path', ok: true, power: 'phantom', feedback: 'A suggested start for headphones — check the take on the headphones it is for.' },
+      { id: 'b', label: 'An Ambisonic mic upright, its front logged, rendered binaurally', ok: true, power: 'phantom', feedback: 'A suggested start: turnable later, rendered for headphones — keep the four tracks right.' },
       { id: 'c', label: 'A wide spaced array set up across the footpath', ok: false, power: 'phantom', feedback: 'Never block a public route.' },
       { id: 'd', label: 'In-ear mics fitted to a passer-by without asking', ok: false, power: 'phantom', feedback: 'Informed consent first, always.' },
       { id: 'e', label: 'A single close mic on one stall holder', ok: false, power: 'phantom', feedback: 'A close mic is not a listener’s point of view.' },
@@ -495,8 +495,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An outdoor concert streamed in surround and stereo, a PA either side of the stage, a singer who must be clear.',
     setups: [
-      { id: 'a', label: 'An Ambisonic mic in the audience, plus a close mic on the singer', ok: true, power: 'phantom', feedback: 'A recommended start: the place and the voice as two layers — keep the array off the PA.' },
-      { id: 'b', label: 'A five-channel array in the audience, plus close mics for the PA', ok: true, power: 'phantom', feedback: 'A recommended start for a surround stream — check the stereo and mono downmix.' },
+      { id: 'a', label: 'An Ambisonic mic in the audience, plus a close mic on the singer', ok: true, power: 'phantom', feedback: 'A suggested start: the place and the voice as two layers — keep the array off the PA.' },
+      { id: 'b', label: 'A five-channel array in the audience, plus close mics for the PA', ok: true, power: 'phantom', feedback: 'A suggested start for a surround stream — check the stereo and mono downmix.' },
       { id: 'c', label: 'The audience array fed into the PA for more space', ok: false, power: 'phantom', feedback: 'That makes a feedback path.' },
       { id: 'd', label: 'Only the array, the singer taken from it later', ok: false, power: 'phantom', feedback: 'No array isolates the singer later.' },
       { id: 'e', label: 'Track 4 of the Ambisonic mic sent to the LFE', ok: false, power: 'phantom', feedback: 'Never a full-range field channel in the LFE.' },
@@ -641,6 +641,6 @@ export const F10_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
   copy: F10_COPY,
 };

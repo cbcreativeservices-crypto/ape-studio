@@ -20,6 +20,9 @@ export const STAGE_HEIGHTS: Record<StageSize, number> = { S: 160, M: 200, L: 250
 export type BezelItem = {
   k: string;
   v: string;
+  /** The value in full for the accessibility label when `v` is a short form
+   *  (Miking owner decision X3, 2026-10-08). Defaults to `v`. */
+  vA11y?: string;
   /** Optional second value line in the unit style (e.g. the imperial
    *  "(9.8 in)" under "≈ 25 cm"), so a dual-unit value fits its cell and the
    *  cell keeps its key (D36 drops the key of a value too wide to fit). */
@@ -151,6 +154,10 @@ export type DockParam =
       label: string;
       /** Current value shown on the button (mono amber). */
       valueLabel: string;
+      /** The value in full for the accessibility label when `valueLabel` is a
+       *  short form for the narrow key (Miking owner decision X3, 2026-10-08:
+       *  "SUPER" on the key, "SUPERCARDIOID" read aloud). Defaults to valueLabel. */
+      valueA11y?: string;
       options: TrayOption[];
       selectedId: string | null;
       onSelect: (id: string) => void;
@@ -169,6 +176,10 @@ export type DockParam =
       id: string;
       label: string;
       valueLabel: string;
+      /** The value in full for the accessibility label when `valueLabel` is a
+       *  short form for the narrow key (Miking owner decision X3, 2026-10-08:
+       *  "SUPER" on the key, "SUPERCARDIOID" read aloud). Defaults to valueLabel. */
+      valueA11y?: string;
       /** Custom tray content — 2–3 INTERACTING params co-visible in one sheet
        *  (the Meter Bridge graft). Compose LabChips/rows; long-press lessons
        *  keep working because the lab renders its own chips. Always sticky. */

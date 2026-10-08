@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the crowd mic yourself on the studio plan — where on the approved places, how high, where it aims — and see the faces and the PA change.',
-    credit: { scenarios: ['b8.place.1', 'b8.place.2', 'b8.place.3', 'b8.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['b8.place.1', 'b8.place.2', 'b8.place.3', 'b8.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'On an approved place, raised, aimed at the faces of a section: change one thing at a time — the place, the height, the aim — and never into an aisle, an exit or the space over people unless a rigger hung it.',
   },
   context: {
@@ -467,14 +467,14 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio audience of about sixty, one section, a PA at the stage’s corners, a stereo stream that is also heard in mono.',
     setups: [
-      { id: 'a', label: 'An XY pair raised over the section’s front, aimed at faces', ok: true, power: 'phantom', feedback: 'A recommended start: width, a predictable mono sum — check the PA in its middle.' },
+      { id: 'a', label: 'An XY pair raised over the section’s front, aimed at faces', ok: true, power: 'phantom', feedback: 'A suggested start: width, a predictable mono sum — check the PA in its middle.' },
       { id: 'b', label: 'One mono crowd mic raised and aimed at faces', ok: true, power: 'phantom', feedback: 'A fair start: simple and mono-safe — no width.' },
       { id: 'c', label: 'Two zone mics treated as a stereo pair', ok: false, power: 'phantom', feedback: 'Two zones are not a coherent pair: the mono sum combs.' },
       { id: 'd', label: 'A crowd mic low in the front row', ok: false, power: 'phantom', feedback: 'The nearest people dominate.' },
       { id: 'e', label: 'The crowd mics also fed to the PA', ok: false, power: 'phantom', feedback: 'Crowd mics never go to the main PA.' },
     ],
     reasons: [
-      { id: 'r.doc', label: 'A recommended starting point: raised, aimed at the faces', role: 'required', feedback: 'Say why it is a good place to begin.' },
+      { id: 'r.doc', label: 'A suggested starting point: raised, aimed at the faces', role: 'required', feedback: 'Say why it is a good place to begin.' },
       { id: 'r.route', label: 'The crowd mics go to the stream and recording only', role: 'required', feedback: 'Say where the crowd mics go — and where they do not.' },
       { id: 'r.mono', label: 'The mono sum is checked by ear', role: 'optional', feedback: 'A fair reason for a pair.' },
       { id: 'r.align', label: 'Time-aligning two zones fixes their sum', role: 'wrong', feedback: 'Alignment fits one seat only.' },
@@ -487,7 +487,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An arena event, three sections, PA clusters high at the stage’s corners, a stereo broadcast.',
     setups: [
-      { id: 'a', label: 'A zone per section on its rail, each named and monitored', ok: true, power: 'phantom', feedback: 'A recommended start: each section represented, each on its own channel.' },
+      { id: 'a', label: 'A zone per section on its rail, each named and monitored', ok: true, power: 'phantom', feedback: 'A suggested start: each section represented, each on its own channel.' },
       { id: 'b', label: 'A spaced pair on the truss plus a zone per side section', ok: true, power: 'phantom', feedback: 'A start that can pass — rigged by a qualified rigger, the mono sum checked.' },
       { id: 'c', label: 'One mono mic in the middle for the whole arena', ok: false, power: 'phantom', feedback: 'One capsule cannot represent every section of an arena.' },
       { id: 'd', label: 'Crowd mics clamped over the seats by the audio crew', ok: false, power: 'phantom', feedback: 'Nothing over people without a qualified rigger.' },
@@ -634,6 +634,6 @@ export const B08_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every audience, room and PA is different: listen at several approved places, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the two venues are typical layouts; the PA’s wedges show where it points, not how it spreads; patterns are textbook shapes; levels and delays are calculated from the drawing. Safety is exact: crowd mics never into the main PA, nothing hung over people without a qualified rigger, aisles and exits clear.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every audience, room and PA is different: listen at several approved places, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the two venues are typical layouts; the PA’s wedges show where it points, not how it spreads; patterns are textbook shapes; levels and delays are calculated from the drawing. Safety is exact: crowd mics never into the main PA, nothing hung over people without a qualified rigger, aisles and exits clear.',
   copy: B08_COPY,
 };

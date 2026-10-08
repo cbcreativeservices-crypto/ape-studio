@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the elements yourself — the baseline pair, a wider pair, a third element off the line — each at a logged coordinate from the origin.',
-    credit: { scenarios: ['ar.place.1', 'ar.place.2', 'ar.place.3', 'ar.rec.2'], interactive: 'twoZones', note: 'Rest an element, clear of everything, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ar.place.1', 'ar.place.2', 'ar.place.3', 'ar.rec.2'], interactive: 'twoZones', note: 'Rest an element, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Every element at a coordinate written from the marked origin, on the axis it belongs to, on the same clock. Change one element at a time and return to the centre run.',
   },
   context: {
@@ -653,6 +653,6 @@ export const F16_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules: there is no single aperture, spacing, scan density or distance for every site, and the array’s own method sets them. Experiment, and trust your ears and the room as well as the map. The lab is silent and draws a simplified picture: straight paths at 20 °C, a two-element baseline, a probe on paper, and specialist kit drawn as objects. Use specialist equipment only with a qualified operator.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: there is no single aperture, spacing, scan density or distance for every site, and the array’s own method sets them. Experiment, and trust your ears and the room as well as the map. The lab is silent and draws a simplified picture: straight paths at 20 °C, a two-element baseline, a probe on paper, and specialist kit drawn as objects. Use specialist equipment only with a qualified operator.',
   copy: F16_COPY,
 };

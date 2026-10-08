@@ -11,7 +11,7 @@
  * the right of the right hip and points to the REAR, out and a little down;
  * the right hand is in the bell.
  *
- * RECOMMENDED STARTING POINTS (corrections LB-03 … LB-06):
+ * SUGGESTED STARTING POINTS (corrections LB-03 … LB-06):
  *   rear   behind and beside the bell, low, aimed toward it and a little off
  *          its axis — the bell-side school ("aiming toward bell"; "behind the
  *          horn player, often closer to the ground … off axis"). No published

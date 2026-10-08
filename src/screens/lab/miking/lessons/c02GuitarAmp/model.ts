@@ -1,6 +1,6 @@
 /**
  * C02 ELECTRIC GUITAR AND GUITAR AMPLIFIERS — the technical truth (charter §2
- * layer 1). The recommended starting points live in the speaker family's
+ * layer 1). The suggested starting points live in the speaker family's
  * shared/speakers/ampZones.ts (GUITAR_ZONES + the open-back zone), because the
  * steel lesson (C04) mics the same kind of combo with the same research; this
  * file names the lesson's choices.

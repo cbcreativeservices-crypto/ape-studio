@@ -39,7 +39,7 @@ export const FLOOR_Y = CSN_DIMS.batterH.mm;
 
 const BOTH = ['smallDynCard', 'orchSdc'];
 
-/* ── RECOMMENDED STARTING POINTS (lesson L20-L31; corrections CS-01, CS-02 in
+/* ── SUGGESTED STARTING POINTS (lesson L20-L31; corrections CS-01, CS-02 in
  *  CORRECTIONS_LOG.md). No source gives a CONCERT-snare number: the close
  *  figures are the kit snare's, borrowed (internal record), and the app says
  *  "a starting point to adjust with the player". ── */

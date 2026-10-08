@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — height, distance and across — and see what changes: the front-to-back balance, the time differences, what the recording angle takes in.',
-    credit: { scenarios: ['orc.place.1', 'orc.place.2', 'orc.31', 'orc.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players and the conductor, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['orc.place.1', 'orc.place.2', 'orc.31', 'orc.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players and the conductor, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'The main array is a perspective: higher hears more of the back rows and the hall, closer more of the front desks. Move the whole array, one change at a time, at matched level — and keep every sightline and walkway clear.',
   },
   context: {
@@ -537,7 +537,7 @@ export const E14_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E14_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. An orchestra has no single right setup: start with one main perspective above or just behind the podium, listen, move it one change at a time, and add a support only for a named need. Every orchestra, hall and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a typical seating, ideal patterns, straight paths and distances read from the drawing. Anything flown or reached over players is the venue’s rigging, by qualified crew; protect your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. An orchestra has no single right setup: start with one main perspective above or just behind the podium, listen, move it one change at a time, and add a support only for a named need. Every orchestra, hall and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a typical seating, ideal patterns, straight paths and distances read from the drawing. Anything flown or reached over players is the venue’s rigging, by qualified crew; protect your hearing.',
   copy: { words: ensembleWords('orchestra') },
   ensemble: {
     seatings: { american: 'orch.american', german: 'orch.german' },
@@ -559,11 +559,11 @@ export const E14_LESSON: EnsembleLesson = {
     ],
     safety: 'No one flies a main array, attaches anything to the venue’s structure, climbs above the ensemble or routes a boom over players without the venue’s approved rigging plan and qualified crew. Stands need stable bases and protected cable routes; exits, aisles and sightlines stay clear. Protect your hearing during loud passages.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with an orchestra: one main perspective over or just behind the podium — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with an orchestra: one main perspective over or just behind the podium — a place to start and compare, not a rule.',
       clearance: 'The stand behind the podium, out of the conductor’s and the players’ way and off the walkways; nothing over the players. Higher and safer is fine — a flown array is the venue’s rigging, by qualified crew.',
     },
     learnZones: [
-      'What you just did, in words. After our research, each blue zone is where we recommend you begin with the main array’s centre: over the podium, or just behind it, about 3–4 m up. They are places to start and compare — the best place for a mic need not be the best seat for a person.',
+      'What you just did, in words. After our research, each blue zone is where we suggest you begin with the main array’s centre: over the podium, or just behind it, about 3–4 m up. They are places to start and compare — the best place for a mic need not be the best seat for a person.',
       'Change one thing at a time — height, then distance, then spacing — and compare at matched level, on the same passage, so louder never wins by itself. Restore the setting you prefer and say why.',
       'The array moves as a unit: its own geometry (17 cm and 110°, or the tree’s 2 m and 1.5 m) stays as it is. A different spacing is a different method, chosen on purpose.',
     ],

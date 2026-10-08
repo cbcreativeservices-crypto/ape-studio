@@ -1,5 +1,5 @@
 /**
- * B05 LAVALIER, HEADSET AND CONCEALED PICKUP — the recommended starting
+ * B05 LAVALIER, HEADSET AND CONCEALED PICKUP — the suggested starting
  * points (charter §2 layer 1), on frame V (the presenter) and the body-worn
  * family (shared/broadcast/bodyWorn.ts). Source keys: docs/labs/miking/
  * lavalier_headset/SOURCES.md and the Lab 7a register (radio_host/SOURCES.md
@@ -49,7 +49,7 @@ function chestZone(spec: Omit<VoiceZoneSpec, 'distance' | 'off' | 'start' | 'kin
 const STERNUM_Z = chestZone({
   id: 'b5.sternum',
   label: 'On the sternum, in the centre',
-  band: 'After our research, here is where we recommend you begin: with the wearer’s agreement, a small omni lav clipped to a firm clothing edge over the middle of the chest — about 12–25 cm (5–10 in) from the lips — the capsule clear of rubbing fabric, hair and jewellery.',
+  band: 'After our research, here is where we suggest you begin: with the wearer’s agreement, a small omni lav clipped to a firm clothing edge over the middle of the chest — about 12–25 cm (5–10 in) from the lips — the capsule clear of rubbing fabric, hair and jewellery.',
   aimTol: 60,
   aimProv: ill('an omni: its aim matters little — pointed up toward the mouth (the lab’s tolerance)'),
   micTypeIds: ['locLav'],

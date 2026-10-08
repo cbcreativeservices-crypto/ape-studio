@@ -49,8 +49,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a stand mic about 15–30 cm from the harmonica at mouth and hand height, or a mic about 2.5–5 cm from the harp amp’s grille at the dust cap’s edge — then compare.',
-    credit: { scenarios: ['hm.place.1', 'hm.place.2', 'hm.place.3', 'hm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player and the amp, in two different recommended starting points on one path (switching PATH starts afresh), and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — a stand mic about 15–30 cm from the harmonica at mouth and hand height, or a mic about 2.5–5 cm from the harp amp’s grille at the dust cap’s edge — then compare.',
+    credit: { scenarios: ['hm.place.1', 'hm.place.2', 'hm.place.3', 'hm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player and the amp, in two different suggested starting points on one path (switching PATH starts afresh), and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Acoustic: about 15–30 cm from the harmonica, just beyond the hands, facing the playing zone — a little off the breath stream if bursts dominate. Amp: on the real speaker, about 2.5–5 cm from the grille at the dust cap’s edge; toward the centre for bite, outward for a softer top.',
   },
   context: {
@@ -419,7 +419,7 @@ const symptoms: Symptom[] = [
   monoSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the harmonica', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the harmonica', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const HANDS_REASON: SetupReason = { id: 'r.hands', label: 'The hand wah and the breath are heard, not the bursts', role: 'optional', feedback: 'A fair reason for a stand mic just beyond the hands, a little off the breath stream.' };
 const SPEAKER_REASON: SetupReason = { id: 'r.spk', label: 'It is on the real speaker, measured from the grille', role: 'required', feedback: 'Find the speaker behind the cloth; the cabinet’s middle is not always the speaker’s.' };
 const FEEDBACK_REASON: SetupReason = { id: 'r.fb', label: 'The amp does not point at the cupped harp mic', role: 'optional', feedback: 'A fair live reason: the omni harp mic has no null to protect it.' };
@@ -430,7 +430,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A quiet studio: an acoustic harmonica solo with hand wah, in a room that sounds good. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 20 cm in front of the hands, at mouth height', ok: true, power: 'phantom', feedback: 'The recommended start, just beyond the hands; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 20 cm in front of the hands, at mouth height', ok: true, power: 'phantom', feedback: 'The suggested start, just beyond the hands; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small dynamic about 25 cm away, a little off the breath stream', ok: true, power: 'none', feedback: 'Also a fair start: off the breath stream, still facing the hands.' },
       { id: 'c', label: 'A stand mic 3 cm from the lips, right in the breath', ok: false, power: 'none', feedback: 'Inside the hands’ movement and in the breath stream — and near the face.' },
       { id: 'd', label: 'A vocal mic cupped in the hands, its grille covered', ok: false, power: 'none', feedback: 'A covered directional grille loses its pattern; and it is not the acoustic sound asked for.' },
@@ -594,6 +594,6 @@ export const A10_LESSON: Lesson = {
   ],
   live: { wedges: A10_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No maker publishes a universal stand distance for an acoustic harmonica: the 15–30 cm is a practical starting experiment. The amp’s starting points come from amplifier-speaker practice, measured from the grille cloth. Every player, harmonica, harp mic, amp and room is different: move the mic, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: one reed’s swing (motion drawn larger), an ideal reed’s shapes, the hands’ chamber as drawings, mic patterns as textbook shapes. Distances are rounded to about 5 mm. Keep clear of the mouth and the hands, check the input the harp mic needs, and never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. No maker publishes a universal stand distance for an acoustic harmonica: the 15–30 cm is a practical starting experiment. The amp’s starting points come from amplifier-speaker practice, measured from the grille cloth. Every player, harmonica, harp mic, amp and room is different: move the mic, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: one reed’s swing (motion drawn larger), an ideal reed’s shapes, the hands’ chamber as drawings, mic patterns as textbook shapes. Distances are rounded to about 5 mm. Keep clear of the mouth and the hands, check the input the harp mic needs, and never provoke feedback.',
   copy: { words: metalWords('harmonica', 'player') },
 };

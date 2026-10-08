@@ -201,5 +201,5 @@ function mountedZones(): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L23-L37; corrections TB-01..TB-03). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L23-L37; corrections TB-01..TB-03). ── */
 export const TAMB_ZONES: DocumentedZone[] = [...heldZones('held'), ...heldZones('shaken'), ...mountedZones()];

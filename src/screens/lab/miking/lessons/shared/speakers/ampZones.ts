@@ -1,5 +1,5 @@
 /**
- * THE AMPLIFIED CHAIN — the RECOMMENDED STARTING POINTS on an amp's speaker,
+ * THE AMPLIFIED CHAIN — the SUGGESTED STARTING POINTS on an amp's speaker,
  * in frame C (origin at the miked speaker's centre on the baffle; +x out
  * toward the mic). Shared by the electric-guitar (C02) and steel (C04)
  * lessons — both mic a guitar-type combo — and the electric-bass lesson (C08).

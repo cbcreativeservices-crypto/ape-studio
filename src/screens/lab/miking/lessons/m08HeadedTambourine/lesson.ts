@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 15–30 cm from the tambourine, outside the whole motion — then aim at the head or the rim and see what changes.',
-    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 15–30 cm from the tambourine, outside the whole motion — then aim at the head or the rim and see what changes.',
+    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'One mic outside the whole motion, about 15–30 cm away, is the place to begin — then the head for body or the rim for jingle. It is a starting point, not a safety clearance, and the player’s motion is never changed for it.',
   },
   context: {
@@ -390,7 +390,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, about 15–30 cm from the instrument as played', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, about 15–30 cm from the instrument as played', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const GRIP_REASON: SetupReason = { id: 'r.grip', label: 'The player can change their grip to suit the mic', role: 'wrong', feedback: 'The player’s technique is never changed for a mic.' };
 
 const setupTasks: SetupTask[] = [
@@ -591,6 +591,6 @@ export const M08_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every tambourine, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 10 in headed tambourine in three ways of playing, mic patterns and the two-mic comb as textbook shapes, and head and jingle motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every tambourine, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 10 in headed tambourine in three ways of playing, mic patterns and the two-mic comb as textbook shapes, and head and jingle motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: TAMB_COPY,
 };

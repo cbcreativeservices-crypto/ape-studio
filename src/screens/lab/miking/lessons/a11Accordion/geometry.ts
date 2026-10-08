@@ -97,7 +97,7 @@ const envelopes: Envelope[] = [
   },
 ];
 
-/* ── RECOMMENDED STARTING POINTS ── */
+/* ── SUGGESTED STARTING POINTS ── */
 const STAND = ['sdcCard', 'smallDynCard'];
 const FRONT_N: Vec3 = v3(1, 0, 0);
 /** The instrument's middle across, at half opening — the one-mic view's centre line. */

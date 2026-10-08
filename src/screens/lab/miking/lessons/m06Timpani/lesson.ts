@@ -40,9 +40,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a shared spot about 1 m above the heads, or a closer one on the conductor’s side — clear of the mallets and the sightline, then move the mic and see what changes.',
-    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points (switch SET to try the four-drum pairs), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the heads — not a rule, and not a safety clearance. The number of drums is not a required number of mics.',
+    goal: 'Start where we suggest you begin — a shared spot about 1 m above the heads, or a closer one on the conductor’s side — clear of the mallets and the sightline, then move the mic and see what changes.',
+    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch SET to try the four-drum pairs), and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the heads — not a rule, and not a safety clearance. The number of drums is not a required number of mics.',
   },
   context: {
     title: 'Studio or live',
@@ -377,7 +377,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the heads', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the heads', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const COUNT_REASON: SetupReason = { id: 'r.count', label: 'Every drum should have its own mic, whatever the music', role: 'wrong', feedback: 'The number of drums is not a required number of mics.' };
 
 const setupTasks: SetupTask[] = [
@@ -386,7 +386,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A symphony recording in a good hall, two timpani. The rolls sound a little soft in definition; the main pair is up. One spot channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 1 m above the heads, between the two drums, blended low', ok: true, power: 'phantom', feedback: 'A recommended shared spot for a pair; it needs the phantom power this channel has.' },
+      { id: 'a', label: 'Small condenser about 1 m above the heads, between the two drums, blended low', ok: true, power: 'phantom', feedback: 'A suggested shared spot for a pair; it needs the phantom power this channel has.' },
       { id: 'b', label: 'Small dynamic on the conductor’s side of the larger drum, a little above its rim, aimed at the head', ok: true, power: 'none', feedback: 'A closer spot for definition; check that both drums are covered and blend it low.' },
       { id: 'c', label: 'A mic on each drum, close over the playing area', ok: false, power: 'phantom', feedback: 'Over the playing area is in the mallets’ path, and two mics were not asked for.' },
       { id: 'd', label: 'A stand between the player and the conductor, at eye height', ok: false, power: 'phantom', feedback: 'That blocks the timpanist’s sightline to the conductor.' },
@@ -579,6 +579,6 @@ export const M06_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the timpani already; when a spot helps, every set, player and hall is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair (or four) of timpani, ideal head shapes with a timpani’s ratios, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the timpani already; when a spot helps, every set, player and hall is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair (or four) of timpani, ideal head shapes with a timpani’s ratios, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: TIMP_COPY,
 };

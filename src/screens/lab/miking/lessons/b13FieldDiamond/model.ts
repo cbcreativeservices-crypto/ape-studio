@@ -1,5 +1,5 @@
 /**
- * B13 FIELD AND DIAMOND SPORTS — the recommended starting points (charter §2
+ * B13 FIELD AND DIAMOND SPORTS — the suggested starting points (charter §2
  * layer 1): the engine's zones (for the shared pages' data and tests), the
  * lesson's STARTING SETUPS drawn on the plan, the Placement Studio's zones,
  * the coverage-map tasks and the overlap pair. Research: docs/labs/miking/

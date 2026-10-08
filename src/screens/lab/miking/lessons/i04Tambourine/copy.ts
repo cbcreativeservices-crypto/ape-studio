@@ -96,7 +96,7 @@ export const TMB_COPY: LessonCopy = spCopy({
     typeNotes: { smallDynCard: 'If the jingles sound too cutting through a condenser, a dynamic (or a ribbon, kept well out of the motion, in a studio) can give a gentler balance — compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic. The CLEAR readout is the gap to the nearest stroke; 15–30 cm is a starting distance from the instrument, not a safety clearance. Watch PEAK meters.',
     learn: {
-      intro: 'What you just did, in words. After our research, one mic about 15–30 cm (6–12 in) from the tambourine itself, as it is played, is where we recommend you begin — in front facing the jingles, or slightly above or to the side of the playing zone. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, one mic about 15–30 cm (6–12 in) from the tambourine itself, as it is played, is where we suggest you begin — in front facing the jingles, or slightly above or to the side of the playing zone. Starting points, not rules.',
       separate: 'Two different measurements: the starting distance is from the instrument at its normal playing position; the CLEAR readout is the gap to the nearest stroke. Change one variable at a time.',
       clearance: 'Clearance comes first. Have the player show the loudest accent, the shake and any strike into the hand before anything is placed — and leave room for the complete stroke.',
       tendencies: 'Too piercing? Compare distance, angle, room and playing method first; a farther mic softens the direct jingle but adds room and spill. Shaken toward and away, the forward accents jump; side to side tends to be more even. All tendencies to check by ear.',

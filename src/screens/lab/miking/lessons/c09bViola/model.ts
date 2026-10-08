@@ -1,5 +1,5 @@
 /**
- * C09b VIOLA — the recommended starting points (charter §2 layer 1).
+ * C09b VIOLA — the suggested starting points (charter §2 layer 1).
  * Source keys: docs/labs/miking/viola/SOURCES.md (and violin/SOURCES.md §0
  * for the family's). Corrections VA-01 … VA-04 (CORRECTIONS_LOG).
  *

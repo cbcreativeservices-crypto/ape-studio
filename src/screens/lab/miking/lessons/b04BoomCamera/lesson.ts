@@ -56,9 +56,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the boom just above the frame, aimed at the mouth — then move it below or beside the frame, or to the camera, and see what changes.',
-    credit: { scenarios: ['b4.place.1', 'b4.place.2', 'b4.place.3', 'b4.rec.2'], interactive: 'twoZones', note: 'Rest the mic, outside the frame, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. The side the boom comes from, its distance and its aim are separate controls; the frame and people’s safety come first.',
+    goal: 'Start where we suggest you begin — the boom just above the frame, aimed at the mouth — then move it below or beside the frame, or to the camera, and see what changes.',
+    credit: { scenarios: ['b4.place.1', 'b4.place.2', 'b4.place.3', 'b4.rec.2'], interactive: 'twoZones', note: 'Rest the mic, outside the frame, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The side the boom comes from, its distance and its aim are separate controls; the frame and people’s safety come first.',
   },
   context: {
     title: 'Studio or live',
@@ -499,8 +499,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A seated interview in a reflective room, a close shot, no loudspeakers.',
     setups: [
-      { id: 'a', label: 'A boom just above the frame, aimed at the mouth', ok: true, power: 'phantom', feedback: 'A recommended start: as close as the picture allows — check the room behind the talker.' },
-      { id: 'b', label: 'A compact directional mic in the same place, compared', ok: true, power: 'phantom', feedback: 'A recommended start for a reflective room — compare it with the shotgun at matched loudness.' },
+      { id: 'a', label: 'A boom just above the frame, aimed at the mouth', ok: true, power: 'phantom', feedback: 'A suggested start: as close as the picture allows — check the room behind the talker.' },
+      { id: 'b', label: 'A compact directional mic in the same place, compared', ok: true, power: 'phantom', feedback: 'A suggested start for a reflective room — compare it with the shotgun at matched loudness.' },
       { id: 'c', label: 'The camera’s mic only, its gain turned well up', ok: false, power: 'phantom', feedback: 'As far as the camera, with the room turned up too.' },
       { id: 'd', label: 'A long shotgun far back, so the frame never matters', ok: false, power: 'phantom', feedback: 'Far back hears more room; a longer tube does not reach farther.' },
       { id: 'e', label: 'A boom dipped into the top of the frame for more voice', ok: false, power: 'phantom', feedback: 'In the picture is not an option: the mic and its shadow show.' },
@@ -513,8 +513,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live public event: a talker on a stage, a PA, a broadcast camera close on them.',
     setups: [
-      { id: 'a', label: 'A boom above the frame, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A recommended start — checked with the system’s operator at a safe level.' },
-      { id: 'b', label: 'A boom for the broadcast, a lav on its own track', ok: true, power: 'phantom', feedback: 'A recommended start: one mic on air, a tested fallback.' },
+      { id: 'a', label: 'A boom above the frame, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A suggested start — checked with the system’s operator at a safe level.' },
+      { id: 'b', label: 'A boom for the broadcast, a lav on its own track', ok: true, power: 'phantom', feedback: 'A suggested start: one mic on air, a tested fallback.' },
       { id: 'c', label: 'The boom and the lav summed in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
       { id: 'd', label: 'The boom swung out over the audience to reach', ok: false, power: 'phantom', feedback: 'Never swing gear over people.' },
       { id: 'e', label: 'Raise the boom until it rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Bring it up to its working level only.' },
@@ -677,6 +677,6 @@ export const B04_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never swing gear over people; no pole near power lines; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never swing gear over people; no pole near power lines; never provoke feedback.',
   copy: B04_COPY,
 };

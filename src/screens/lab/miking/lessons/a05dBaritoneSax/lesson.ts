@@ -78,7 +78,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
     saxLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up; in a good room try the triangle — about the horn’s length from its top and its bottom.',
     saxClip: 'Ideas to try with a clip: keep it on the rim, angled between the bell and the keys — and remember it hears only part of a big horn.',
   },
-  learnIntro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the top and the bottom of the horn. They are starting points, not rules; the bigger the horn, the farther away it can blend. Move from there and listen: there is no single right answer.',
+  learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the top and the bottom of the horn. They are starting points, not rules; the bigger the horn, the farther away it can blend. Move from there and listen: there is no single right answer.',
   unknowns: [{ text: 'The baritone’s length: a museum baritone measures app. 96.7 cm overall; the modern height drawn (1 m) and the low-A extension are drawing defaults.', dims: [] }],
   wedges: saxWedges(MOUTH_HEIGHT.standing, 820, 200),
   accuracyExtra: 'The baritone is drawn about a metre tall with a 16 cm bell and a low A.',

@@ -1,5 +1,5 @@
 /**
- * F01 FOLEY FOOTSTEPS AND SURFACES — the recommended starting points (charter
+ * F01 FOLEY FOOTSTEPS AND SURFACES — the suggested starting points (charter
  * §2 layer 1). Keys point into docs/labs/miking/foley_footsteps/SOURCES.md
  * (§0 the Lab 6 register); geometry from GEOMETRY_PROPOSAL.md §5. Every
  * distance is from the CAPSULE (a shotgun's capsule sits at the back of its

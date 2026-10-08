@@ -43,8 +43,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin on a bass cabinet — on one woofer, close at the dust cap’s edge — then try a little more distance for room to breathe, one change at a time.',
-    credit: { scenarios: ['ba.place.1', 'ba.place.2', 'ba.place.3', 'ba.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points, clear of every part, and answer the four checks.' },
+    goal: 'Start where we suggest you begin on a bass cabinet — on one woofer, close at the dust cap’s edge — then try a little more distance for room to breathe, one change at a time.',
+    credit: { scenarios: ['ba.place.1', 'ba.place.2', 'ba.place.3', 'ba.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, clear of every part, and answer the four checks.' },
     takeaway: 'Pick ONE woofer, measure from the grille, and change one thing at a time. Close (2.5–15 cm) for focus and isolation; 10–45 cm to let the lows develop where the room and the stage allow.',
   },
   context: {
@@ -533,7 +533,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'Every mic and DI gets the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each source is powered.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'The mic is at a recommended starting point on one woofer, measured from the grille', role: 'required', feedback: 'Say where it begins and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'The mic is at a suggested starting point on one woofer, measured from the grille', role: 'required', feedback: 'Say where it begins and what it is measured from.' };
 const LABEL_REASON: SetupReason = { id: 'r.label', label: 'The DI and the mic are labelled as separate sources and checked in mono', role: 'required', feedback: 'Name each source for what it carries, and judge the blend in mono.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most bassists use', role: 'wrong', feedback: 'A brand is not part of passing.' };
 const BASS_REASON: SetupReason = { id: 'r.lows', label: 'It will give the most low end of any setup', role: 'wrong', feedback: 'No setup gives the most low end on every rig; it is not a passing reason.' };
@@ -735,5 +735,5 @@ export const C08_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every bass, rig, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 4 × 10 cabinet with a horn (its outer size is real; the layout, the woofer sizes and the head are drawing choices), an ideal string, textbook mic patterns, motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Make connections with levels at zero, never open an amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, rig, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 4 × 10 cabinet with a horn (its outer size is real; the layout, the woofer sizes and the head are drawing choices), an ideal string, textbook mic patterns, motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Make connections with levels at zero, never open an amp, and send a speaker output only to a speaker.',
 };

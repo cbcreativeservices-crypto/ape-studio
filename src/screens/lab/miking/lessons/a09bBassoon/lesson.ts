@@ -47,8 +47,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — facing the keys a third of the way down from the bell — then move the mic and see what changes.',
-    credit: { scenarios: ['bsn.place.1', 'bsn.place.2', 'bsn.place.3', 'bsn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — facing the keys a third of the way down from the bell — then move the mic and see what changes.',
+    credit: { scenarios: ['bsn.place.1', 'bsn.place.2', 'bsn.place.3', 'bsn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Each starting point serves a goal: close for a focused spot, a foot away for balance, high on the right for the room, near the bell to compare the lowest note. Clearance comes first.',
   },
   context: {
@@ -346,8 +346,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a solo bassoon, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Small condenser about a foot from the boot’s finger holes, facing them', ok: true, power: 'phantom', feedback: 'A recommended starting point for a balanced bassoon — then compare a little farther and higher.' },
-      { id: 'b', label: 'Small condenser 15–20 cm from the long joint, a third of the way down from the bell', ok: true, power: 'phantom', feedback: 'A recommended starting point for a focused spot — check the lowest note against the rest.' },
+      { id: 'a', label: 'Small condenser about a foot from the boot’s finger holes, facing them', ok: true, power: 'phantom', feedback: 'A suggested starting point for a balanced bassoon — then compare a little farther and higher.' },
+      { id: 'b', label: 'Small condenser 15–20 cm from the long joint, a third of the way down from the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for a focused spot — check the lowest note against the rest.' },
       { id: 'c', label: 'A mic pointed straight into the bell, a few centimetres away', ok: false, power: 'phantom', feedback: 'A bell-only view favours the very lowest note and misses the holes below.' },
       { id: 'd', label: 'A small clip on the bocal, right by the reed', ok: false, power: 'phantom', feedback: 'Nothing goes on the bocal — and the sound leaves lower down.' },
       { id: 'e', label: 'A mic on the floor under the boot, aimed up', ok: false, power: 'phantom', feedback: 'Under the boot it sits in the seat strap’s and the feet’s way, and hears little of the holes and the bell.' },
@@ -360,8 +360,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a bassoonist in a band with drums and amps, a wedge in front. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature on the bell joint, aimed down the instrument at the keys', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the bassoon — check the clip and the lowest note.' },
-      { id: 'b', label: 'A cardioid close to the long joint, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point with the rejection aimed — mark the spot with the player.' },
+      { id: 'a', label: 'A miniature on the bell joint, aimed down the instrument at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the bassoon — check the clip and the lowest note.' },
+      { id: 'b', label: 'A cardioid close to the long joint, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — mark the spot with the player.' },
       { id: 'c', label: 'An omni a metre away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a metre away hears the band and the wedge more than the bassoon.' },
       { id: 'd', label: 'A clip squeezed round the bocal', ok: false, power: 'phantom', feedback: 'Nothing goes on the bocal: it is delicate and can be bent.' },
       { id: 'e', label: 'A mic straight into the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'A bell-only view hears the lowest note; turned up, it brings the stage and feedback.' },
@@ -482,7 +482,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, clip or cable anywhere the bocal, the hands, the strap or the bell can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the long joint a third of the way down from the bell, the boot’s holes, the keys from the side, the bell. They are starting points for different goals, not rules.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the long joint a third of the way down from the bell, the boot’s holes, the keys from the side, the bell. They are starting points for different goals, not rules.',
       separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the lowest note, the middle and the top each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the bocal and reed, the fingers and thumbs, the seat strap and the bell beside the head. The engine stops the mic and names what it would touch.',
       tendencies: 'Toward the bell tends to bring the lowest note forward; toward the holes, the middle register; very close to the keys, clicks; farther, more room and blend. A directional mic up close also lifts the lows. These are tendencies, and bassoons vary.',
@@ -631,7 +631,7 @@ export const A09B_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every bassoon, reed, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them along the folded bore, the air column as an ideal cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bassoon, reed, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them along the folded bore, the air column as an ideal cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A bassoon on its side, keys toward you, its folded air column drawn open',

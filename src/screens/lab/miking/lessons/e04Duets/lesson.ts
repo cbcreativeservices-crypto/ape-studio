@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the mic yourself — toward one singer, higher, back — and see what each singer’s distance does to the duet.',
-    credit: { scenarios: ['du.place.1', 'du.place.2', 'du.place.3', 'du.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['du.place.1', 'du.place.2', 'du.place.3', 'du.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'At one mic, distance is balance: matched for a matched duet; 15 cm closer is a clear jump. Move the singers before adding mics, and keep both on the same acoustic plane.',
   },
   context: {
@@ -547,7 +547,7 @@ export const E04_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E04_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Decide first: one blended ensemble or separately controllable voices; then place the singers before adding mics. Every duet, group and room is different: rehearse, experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical standing singers, ideal patterns, straight paths, distances measured from the lips. Move a real mic near someone’s face only with their agreement; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Decide first: one blended ensemble or separately controllable voices; then place the singers before adding mics. Every duet, group and room is different: rehearse, experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical standing singers, ideal patterns, straight paths, distances measured from the lips. Move a real mic near someone’s face only with their agreement; never provoke feedback.',
   copy: { words: { ...ensembleWords('duet'), player: 'singers', reference: 'LIPS', inside: 'among the singers', outside: 'clear of the singers', axis: 'the mouth’s axis', facing: 'facing the singers', shield: 'singers in path' } },
   ensemble: {
     seatings: { shared: 'duo.shared', fig8: 'duo.fig8', quartet: 'vocal.quartet' },
@@ -570,14 +570,14 @@ export const E04_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands, secure cable paths, clear movement areas. Nobody covers a grille, points a handheld at a monitor or passes a live mic. Hearing protection for high-level checks. Monitors up in small steps only to the agreed level — down at once at any ring; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a duet in a good room: one mic at their mouth height, the two singers on a semicircle in front, each mouth the same distance away — a place to start and rehearse, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a duet in a good room: one mic at their mouth height, the two singers on a semicircle in front, each mouth the same distance away — a place to start and rehearse, not a rule.',
       clearance: 'The stand’s base clear of both singers’ feet, its boom running away from them; the cable dressed flat, out of their moves.',
       height: 'At the singers’ mouth height, so both mouths meet its front at the same distance; a little higher, angled down, keeps it out of the breath. A pair for a group sits a little above the mouths.',
       forward: 'In the middle, each mouth about the same distance away — 40 cm in this drawing; nearer one singer, that voice gets louder and bassier. 15 cm (6 in) closer is a clear jump.',
       aim: 'Its front between the two singers: a cardioid hears the semicircle in front, an omni all round, a figure-8 its front and back. Turn or angle it only while listening to both.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin — for one shared mic, in the middle at the mouths’ height or a little higher; for a figure-8, halfway between the mouths; for a quartet’s pair, 0.6–1.8 m in front. Places to start and rehearse, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin — for one shared mic, in the middle at the mouths’ height or a little higher; for a figure-8, halfway between the mouths; for a quartet’s pair, 0.6–1.8 m in front. Places to start and rehearse, not a best place.',
       'At one mic, every centimetre toward a singer is level for that singer — the NEAR / FAR readout is the balance the mic hears. Match the distances first.',
       'Move the singers before adding mics; change one thing at a time and compare at matched level.',
     ],

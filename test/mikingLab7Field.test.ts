@@ -232,7 +232,7 @@ describe('Lab 7 group 3 — the learner’s words', () => {
     it(`${l.id}: no institutional words, the starting-points voice, no link to another lesson, no singer`, () => {
       const strings = learnerStrings(l);
       for (const s of strings) assert.doesNotMatch(s, /\b(student|classroom|instructor|Pro Audio Training Academy)\b/i);
-      assert.ok(strings.some((s) => /After our research, here is where we recommend you begin/.test(s)));
+      assert.ok(strings.some((s) => /After our research, here is where we suggest you begin/.test(s)));
       assert.ok(strings.some((s) => /Experimentation is encouraged/.test(s)));
       for (const s of strings.filter((q) => q !== l.id)) assert.doesNotMatch(s, /\b(B0[1-9]|B1\d|F0\d|F1[0-6])\b/);
       for (const s of [...strings, ...learnerStrings(copyOf(l).context), ...learnerStrings(copyOf(l).placement), ...learnerStrings(copyOf(l).terms)]) assert.doesNotMatch(s, /\b(singers?|song)\b/i, s.slice(0, 80));

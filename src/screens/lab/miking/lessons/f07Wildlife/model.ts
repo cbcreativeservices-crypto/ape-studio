@@ -1,5 +1,5 @@
 /**
- * F07 WILDLIFE AND DISTANT SOURCES — the recommended starting points (charter
+ * F07 WILDLIFE AND DISTANT SOURCES — the suggested starting points (charter
  * §2 layer 1). Keys: foley_footsteps/SOURCES.md §0, field_wildlife_distant/
  * SOURCES.md; geometry from field_wildlife_distant/GEOMETRY_PROPOSAL.md §3.
  * Distances are read from the target to the mic; every range is a DRAWING

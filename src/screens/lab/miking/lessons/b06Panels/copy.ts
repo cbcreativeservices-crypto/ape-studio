@@ -88,8 +88,8 @@ export const B06_COPY: Partial<LessonCopy> = {
     },
     note: 'Clearance comes first: nothing touches the talker, the necks stay out of the sight lines and the camera’s view, the bases away from papers, the aisle stand out of the walking path.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every panel, room and PA is different.',
-      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to about 5 mm.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every panel, room and PA is different.',
+      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
       clearance: 'Clearance comes first: off the face, out of the sight line and the paper’s path, clear of the hands and the aisle.',
       tendencies: 'Closer tends to bring more voice against the room and the neighbours; farther, more room, more bleed and more of each head turn. These are tendencies, and rooms vary.',
     },

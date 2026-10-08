@@ -50,9 +50,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the handheld under about 15 cm from the speaking mouth, a little below the breath — then move it and see what changes.',
-    credit: { scenarios: ['b10.place.1', 'b10.place.2', 'b10.place.3', 'b10.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. Close to the speaking mouth, out of the breath, clear of faces and the lens; the approved area and the exit come first.',
+    goal: 'Start where we suggest you begin — the handheld under about 15 cm from the speaking mouth, a little below the breath — then move it and see what changes.',
+    credit: { scenarios: ['b10.place.1', 'b10.place.2', 'b10.place.3', 'b10.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Close to the speaking mouth, out of the breath, clear of faces and the lens; the approved area and the exit come first.',
   },
   context: {
     title: 'Sideline or post-event',
@@ -481,8 +481,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A sudden sideline interview seconds after play: one reporter, one guest out of breath, a loud crowd, a gusty wind.',
     setups: [
-      { id: 'a', label: 'One omni handheld with a wind cover, moved to each mouth', ok: true, power: 'none', feedback: 'A recommended start: forgiving of aim — move it before each answer and check the wind.' },
-      { id: 'b', label: 'A cardioid handheld, kept close and aimed at each mouth', ok: true, power: 'none', feedback: 'A recommended start in heavy noise — if the reporter aims well and keeps it close.' },
+      { id: 'a', label: 'One omni handheld with a wind cover, moved to each mouth', ok: true, power: 'none', feedback: 'A suggested start: forgiving of aim — move it before each answer and check the wind.' },
+      { id: 'b', label: 'A cardioid handheld, kept close and aimed at each mouth', ok: true, power: 'none', feedback: 'A suggested start in heavy noise — if the reporter aims well and keeps it close.' },
       { id: 'c', label: 'One handheld held still halfway between the two', ok: false, power: 'none', feedback: 'Far from both mouths: distant answers and the crowd close behind.' },
       { id: 'd', label: 'A body mic clipped on the guest as they walk up', ok: false, power: 'pack', feedback: 'No time for approval or a proper fit — and nothing goes on a person without it.' },
       { id: 'e', label: 'A long shotgun from behind the camera', ok: false, power: 'phantom', feedback: 'Distance still decides; it will not isolate the voice in a stadium.' },
@@ -495,8 +495,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A scheduled post-event guest at a mark in front of a backdrop; time to prepare; the guest agrees to be fitted.',
     setups: [
-      { id: 'a', label: 'An approved body mic at the breastbone, its own channel', ok: true, power: 'pack', feedback: 'A recommended start: steady, with nothing in the hands — check rub, sweat and the radio path.' },
-      { id: 'b', label: 'A boom held outside the frame, aimed down at the mouth', ok: true, power: 'phantom', feedback: 'A recommended start: nothing on the body — keep it close and re-aimed.' },
+      { id: 'a', label: 'An approved body mic at the breastbone, its own channel', ok: true, power: 'pack', feedback: 'A suggested start: steady, with nothing in the hands — check rub, sweat and the radio path.' },
+      { id: 'b', label: 'A boom held outside the frame, aimed down at the mouth', ok: true, power: 'phantom', feedback: 'A suggested start: nothing on the body — keep it close and re-aimed.' },
       { id: 'c', label: 'The body mic and a handheld both open, to be safe', ok: false, power: 'none', feedback: 'Two open mics on one voice comb. Choose one, or switch on purpose.' },
       { id: 'd', label: 'A mic on the camera, since the shot is close', ok: false, power: 'none', feedback: 'The camera is metres away: distant and crowd-heavy.' },
       { id: 'e', label: 'A mic taped to the guest’s protective gear', ok: false, power: 'none', feedback: 'Never improvise a mount on regulated or protective gear.' },
@@ -668,6 +668,6 @@ export const B10_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every voice, wind and stadium is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing side by side, mic patterns and the two-mic comb as textbook shapes, levels by distance alone. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never into play or a route; approval before anything goes on a person.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, wind and stadium is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing side by side, mic patterns and the two-mic comb as textbook shapes, levels by distance alone. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never into play or a route; approval before anything goes on a person.',
   copy: B10_COPY,
 };

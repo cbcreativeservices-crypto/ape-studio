@@ -1,5 +1,5 @@
 /**
- * B16 MOTORSPORT, EQUESTRIAN AND AQUATIC EVENTS — the recommended starting
+ * B16 MOTORSPORT, EQUESTRIAN AND AQUATIC EVENTS — the suggested starting
  * points (charter §2 layer 1) on the shared practice room (frame P,
  * practiceScenes.ts `practiceSmall`, the same scene as B15). Research:
  * docs/labs/miking/motorsport_equestrian_aquatic/SOURCES.md and

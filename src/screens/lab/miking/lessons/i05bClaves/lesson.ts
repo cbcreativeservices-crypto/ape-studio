@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 30–60 cm from the middle of the striking area — outside both hands’ paths, and see what each spot changes.',
-    credit: { scenarios: ['clv.place.1', 'clv.place.2', 'clv.place.3', 'clv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 30–60 cm from the middle of the striking area — outside both hands’ paths, and see what each spot changes.',
+    credit: { scenarios: ['clv.place.1', 'clv.place.2', 'clv.place.3', 'clv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'One mic in front of the striking area, 30–60 cm away, never between the sticks. A mono mic usually serves one player and one pair.',
   },
   context: {
@@ -132,7 +132,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Between the two claves, in the striker’s path',
     explain: 'A miss or a follow-through could strike a mic between the sticks — or the player’s hand.',
     why: {
-      'In front of the player, facing the striking area': 'That is the recommended start, outside both hands.',
+      'In front of the player, facing the striking area': 'That is the suggested start, outside both hands.',
       'Slightly above the striking area, angled down at it': 'Above and in front is a fair alternative, clear of the striker.',
     },
   },
@@ -376,7 +376,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A quiet studio overdub: one player, one pair of claves, a pleasant room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 40 cm in front of the striking area, aimed at it', ok: true, power: 'phantom', feedback: 'The recommended start, outside both hands; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 40 cm in front of the striking area, aimed at it', ok: true, power: 'phantom', feedback: 'The suggested start, outside both hands; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small dynamic about 45 cm away, a little higher, angled down', ok: true, power: 'none', feedback: 'Also fair: a different balance — and a dynamic needs no power.' },
       { id: 'c', label: 'A mic between the two claves, close to the strike', ok: false, power: 'phantom', feedback: 'In the striker’s path: a miss would hit the mic or the hand.' },
       { id: 'd', label: 'Ask the player to grip the supported clave firmly for control', ok: false, power: 'none', feedback: 'A firm grip chokes the ring; the grip is the player’s.' },
@@ -467,7 +467,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'A miss or follow-through could strike a mic there, or the player’s hand.',
     why: {
       'Slightly above the striking area, angled down at it': 'Above and in front is fair, clear of the striker.',
-      'In front of the player, aimed at the strike': 'That is the recommended start.',
+      'In front of the player, aimed at the strike': 'That is the suggested start.',
     },
   },
   quickHearing(W),
@@ -538,7 +538,7 @@ export const I05B_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the claves') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every pair, grip, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of claves in two constructions, an ideal unclamped bar’s bending shape, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every pair, grip, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of claves in two constructions, an ideal unclamped bar’s bending shape, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: CLV_COPY,
   sp: {
     strikeTitle: 'Strike to sound',

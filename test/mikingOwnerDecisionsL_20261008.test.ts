@@ -92,6 +92,21 @@ describe('L6A extended (owner: capsule everywhere) — B04, B10, B11', () => {
   });
 });
 
+describe('after owner-x (2026-10-08): the rounding words and the ground line', () => {
+  it('Lab 6/7 accuracy notes say the one distance rule', () => {
+    for (const id of ['F01', 'F02', 'F03', 'F04', 'F09', 'B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B09', 'B10', 'B11']) {
+      const a = lesson(id).accuracyDetail;
+      assert.doesNotMatch(a, /rounded to about 5 mm(?! below 1 m)/, id);
+      assert.match(a, /rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m/, id);
+    }
+  });
+  it('the ground line reads “1.5 m above the ground”, never “above the ground the ground”', () => {
+    for (const [id, dir] of [['F06', 'f06Ambience'], ['F07', 'f07Wildlife'], ['F08', 'f08Passby'], ['F12', 'f12SoundLevel']]) {
+      assert.match(src(`lessons/${dir}/geometry.ts`), /label: 'the ground'[^\n]*words: \{ plus: 'above', minus: 'below',/, id);
+    }
+  });
+});
+
 describe('Lab 6 — F06 and the titles', () => {
   it('L6F: the 60 cm spaced pair adds the wider-spacing line', () => {
     const t = src('lessons/f06Ambience/model.ts');

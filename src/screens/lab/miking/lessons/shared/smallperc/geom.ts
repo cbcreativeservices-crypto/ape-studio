@@ -106,7 +106,7 @@ export function clearLine(id: string, label: string, a: Vec3, b: Vec3, r: number
 }
 
 /**
- * A recommended starting point measured from a TARGET point `c` (the centre
+ * A suggested starting point measured from a TARGET point `c` (the centre
  * of the playing area, a strike spot, a port): every point dMin–dMax from it,
  * aMin–aMax degrees off the direction `n`, the mic facing back at `c` within
  * `aimTol`. Drawn as the same sector (sectorPolys) in both views; its start

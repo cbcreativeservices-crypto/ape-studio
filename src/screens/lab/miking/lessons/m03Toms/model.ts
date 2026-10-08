@@ -76,7 +76,7 @@ function rimDrawn(d: PlacedDrum, r0: number, r1: number, h0: number, h1: number,
   };
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson table L23–L39; corrections T-01…).
+/* ── SUGGESTED STARTING POINTS (lesson table L23–L39; corrections T-01…).
  *  Learner-facing: label, band, tendency, checks. The rest is the internal
  *  record (owner ruling 2026-10-04). ── */
 const DYN = ['tomDynSuper', 'smallDynCard'];

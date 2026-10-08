@@ -117,5 +117,5 @@ function zonesFor(v: 'solid' | 'hollow'): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L19-L22; corrections CV-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L19-L22; corrections CV-xx). ── */
 export const CLV_ZONES: DocumentedZone[] = [...zonesFor('solid'), ...zonesFor('hollow')];

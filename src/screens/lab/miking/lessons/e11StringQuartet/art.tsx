@@ -60,7 +60,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For a real quartet or section, with the players’ agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = recommended starting points · grey dashes = the players and their bows · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · grey dashes = the players and their bows · pinch to zoom',
     clearance: 'Clearance comes first: the bows’ full sweep, the left hands, the chairs, the cello’s endpin, the cables and the players’ sightlines. Mounts only with the player’s approval.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — where a monitor can sit in its rejection.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each player gives its own delay.',

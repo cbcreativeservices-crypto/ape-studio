@@ -1,5 +1,5 @@
 /**
- * B03 FIELD REPORTERS AND HANDHELD INTERVIEWS — the recommended starting
+ * B03 FIELD REPORTERS AND HANDHELD INTERVIEWS — the suggested starting
  * points (charter §2 layer 1), on the standing guest (frame V) and the
  * reporter facing them; the voice family's zone builder (shared/voice/
  * voiceZones). Source keys: docs/labs/miking/field_reporter/SOURCES.md, the
@@ -52,7 +52,7 @@ const SHARED_D = Math.hypot(SHARED_P.x, SHARED_P.y, SHARED_P.z);
 const SHARED: VoiceZoneSpec = {
   id: 'b3.shared',
   label: 'One omni at chest height, between the two',
-  band: `After our research, here is where we recommend you begin in a quiet or moderate place: the reporter’s omni held at about chest height midway between the two people, its top tilted up between their mouths — here about ${cm(SHARED_D)} cm from each. Then listen: if the street is loud or the people are far apart, move it toward whoever is speaking.`,
+  band: `After our research, here is where we suggest you begin in a quiet or moderate place: the reporter’s omni held at about chest height midway between the two people, its top tilted up between their mouths — here about ${cm(SHARED_D)} cm from each. Then listen: if the street is loud or the people are far apart, move it toward whoever is speaking.`,
   kind: 'sourced',
   src: 'R-REPORTER',
   quote: 'held at around chest height between the interviewer and the person being interviewed (the maker’s own model and a typical interview: a starting trial, not a distance rule — the lesson L20)',

@@ -49,9 +49,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above the bars and a little toward the audience, higher or closer, or a safe lateral angle — and see why a published close position conflicts with the mallets.',
-    credit: { scenarios: ['gl.place.1', 'gl.place.2', 'gl.place.3', 'gl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, not a rule. The close 10–15 cm example sits inside a real player’s mallet path: never set it unless the player proves every stroke clears it.',
+    goal: 'Start where we suggest you begin — above the bars and a little toward the audience, higher or closer, or a safe lateral angle — and see why a published close position conflicts with the mallets.',
+    credit: { scenarios: ['gl.place.1', 'gl.place.2', 'gl.place.3', 'gl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, not a rule. The close 10–15 cm example sits inside a real player’s mallet path: never set it unless the player proves every stroke clears it.',
   },
   context: {
     title: 'Studio or live',
@@ -366,7 +366,7 @@ const symptoms: Symptom[] = [
   distortionSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLOSE_REASON: SetupReason = { id: 'r.close', label: 'The close 10–15 cm position is published, so it needs no clearance check', role: 'wrong', feedback: 'A starting distance never overrides a collision check: it sits inside the mallet path.' };
 
 const setupTasks: SetupTask[] = [
@@ -549,7 +549,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real stand. No number overrides a collision or stability concern.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: one mic above the bars and a little toward the audience, about 30–60 cm from them — higher for a more integrated view, closer for a more immediate one — or a safe lateral angle to compare. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic above the bars and a little toward the audience, about 30–60 cm from them — higher for a more integrated view, closer for a more immediate one — or a safe lateral angle to compare. Starting points, not rules.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the whole phrase and its decay.',
       clearance: 'Clearance comes first. A published close position — about 10–15 cm above the bars — puts the capsule or the boom inside a real player’s mallet arc: drawn red here. Use it only if the player proves full clearance for the whole passage and the strongest stroke.',
       tendencies: 'Closer tends to be more immediate, with more attack, and can favour one area; higher integrates the keyboard and the room. All tendencies to check by ear.',
@@ -689,7 +689,7 @@ export const I10_LESSON: MalletLesson = {
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every glockenspiel, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a concert glockenspiel (or a case model) with bar and tube lengths worked out (the tubes as quarter wavelengths at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every glockenspiel, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a concert glockenspiel (or a case model) with bar and tube lengths worked out (the tubes as quarter wavelengths at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy,
   mallet: words,
 };

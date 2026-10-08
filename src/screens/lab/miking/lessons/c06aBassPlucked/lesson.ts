@@ -46,8 +46,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — out in front of the strings, a little above the bridge — then move the mic higher, lower and to an f-hole, and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — out in front of the strings, a little above the bridge — then move the mic higher, lower and to an f-hole, and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: '“Just above the bridge” means out in front of the strings, a little higher than the bridge — not on it. A stand mic in front and a capsule under the strings are different geometries: their distances are not interchangeable.',
   },
   context: {
@@ -443,7 +443,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a natural jazz walking bass in a good isolated room. One channel, phantom available.',
     setups: [
-      { id: 'a', label: 'Small condenser 15–30 cm in front of the strings, just above the bridge', ok: true, power: 'phantom', feedback: 'A recommended starting point: note, body and finger together — then a little higher and lower.' },
+      { id: 'a', label: 'Small condenser 15–30 cm in front of the strings, just above the bridge', ok: true, power: 'phantom', feedback: 'A suggested starting point: note, body and finger together — then a little higher and lower.' },
       { id: 'b', label: 'An omni in front at a moderate distance, for the whole bass and the room', ok: true, power: 'phantom', feedback: 'A fair studio choice in a good isolated room — no directional proximity lift.' },
       { id: 'c', label: 'A mic pushed into the f-hole for the most bass', ok: false, power: 'phantom', feedback: 'Nothing goes into an f-hole; and one opening overstates a local resonance.' },
       { id: 'd', label: 'A clip pressed onto the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Never on the bridge: it can inhibit its vibration and risk the instrument.' },
@@ -458,7 +458,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage with drums beside the bass. A pickup is installed; one mic channel and one pickup channel; phantom available.',
     setups: [
       { id: 'a', label: 'Pickup on its own channel for the low end; a miniature under the strings below the bridge for detail', ok: true, power: 'phantom', feedback: 'A common, sound plan: the pickup carries the lows, the mic adds detail as feedback allows.' },
-      { id: 'b', label: 'Pickup on its own channel; a low-profile mic at the far f-hole, checked for feedback', ok: true, power: 'phantom', feedback: 'A recommended live spot — never on the bridge — with the pickup carrying the lows.' },
+      { id: 'b', label: 'Pickup on its own channel; a low-profile mic at the far f-hole, checked for feedback', ok: true, power: 'phantom', feedback: 'A suggested live spot — never on the bridge — with the pickup carrying the lows.' },
       { id: 'c', label: 'Pickup and mic summed onto one channel', ok: false, power: 'phantom', feedback: 'Keep them separate, so a feeding-back mic can come down without losing the bass.' },
       { id: 'd', label: 'The mic alone, 1 m in front, turned up to the band’s level', ok: false, power: 'phantom', feedback: 'On a loud stage a distant mic alone runs out of gain before feedback.' },
       { id: 'e', label: 'A clip on the bridge, so the mic gets the strongest vibration', ok: false, power: 'phantom', feedback: 'Never on the bridge: it can inhibit its vibration.' },
@@ -626,6 +626,6 @@ export const C06A_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every bass, bassist and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one bassist in a typical stance, the hands’ space, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the bassist stopped, only with their agreement — and never where a stand could fall onto the bass.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, bassist and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one bassist in a typical stance, the hands’ space, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the bassist stopped, only with their agreement — and never where a stand could fall onto the bass.',
   copy: bassCopy('pluck', { worked: 'ub.front', context: 'ub.front', twoA: 'ub.under', twoB: 'ub.front', prefix: P, studioId: `${P}.ctx.studio` }),
 };

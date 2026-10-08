@@ -49,9 +49,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a headset boom at the outside corner of the mouth in the booth, a lip ribbon’s guard on the lip at an open position — then move the mic and see what changes.',
-    credit: { scenarios: ['b9.place.1', 'b9.place.2', 'b9.place.3', 'b9.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the commentator, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. The corner of the mouth keeps the capsule out of the breath; clearance from the face, glasses and notes comes first.',
+    goal: 'Start where we suggest you begin — a headset boom at the outside corner of the mouth in the booth, a lip ribbon’s guard on the lip at an open position — then move the mic and see what changes.',
+    credit: { scenarios: ['b9.place.1', 'b9.place.2', 'b9.place.3', 'b9.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the commentator, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The corner of the mouth keeps the capsule out of the breath; clearance from the face, glasses and notes comes first.',
   },
   context: {
     title: 'Booth or open position',
@@ -490,8 +490,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Two commentators in a closed booth with a window to the field, both following the play and turning to each other.',
     setups: [
-      { id: 'a', label: 'A headset boom each at the mouth corner, each on its own channel', ok: true, power: 'none', feedback: 'A recommended start: close, turning with each head — check each channel while the other talks.' },
-      { id: 'b', label: 'Supercardioid headsets, booms on the side toward the partner', ok: true, power: 'none', feedback: 'A recommended start — check the actual pattern and where the partner sits against it.' },
+      { id: 'a', label: 'A headset boom each at the mouth corner, each on its own channel', ok: true, power: 'none', feedback: 'A suggested start: close, turning with each head — check each channel while the other talks.' },
+      { id: 'b', label: 'Supercardioid headsets, booms on the side toward the partner', ok: true, power: 'none', feedback: 'A suggested start — check the actual pattern and where the partner sits against it.' },
       { id: 'c', label: 'One mic on the desk between the two commentators', ok: false, power: 'phantom', feedback: 'Far from both mouths: more crowd, no balance, and every turn changes it.' },
       { id: 'd', label: 'Desk-arm mics for both, set 30 cm out of the way', ok: false, power: 'none', feedback: 'Far and fixed: a turning commentator leaves it, and the partner comes up.' },
       { id: 'e', label: 'The booth loudspeaker on so both can hear the program', ok: false, power: 'none', feedback: 'A loudspeaker near open mics sends the program back in. Use the headsets.' },
@@ -504,8 +504,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An open position: one commentator at the rail, a loud crowd in front, the PA cluster high to the front-left, a breeze.',
     setups: [
-      { id: 'a', label: 'A lip ribbon held to the mouth on its guard, its side toward the PA', ok: true, power: 'none', feedback: 'A recommended start: a repeatable close distance — check its rear and the PA with the venue live.' },
-      { id: 'b', label: 'A headset boom at the mouth corner with a windscreen', ok: true, power: 'none', feedback: 'A recommended start: close and turning with the head — check wind and the PA.' },
+      { id: 'a', label: 'A lip ribbon held to the mouth on its guard, its side toward the PA', ok: true, power: 'none', feedback: 'A suggested start: a repeatable close distance — check its rear and the PA with the venue live.' },
+      { id: 'b', label: 'A headset boom at the mouth corner with a windscreen', ok: true, power: 'none', feedback: 'A suggested start: close and turning with the head — check wind and the PA.' },
       { id: 'c', label: 'A desk-arm condenser 20 cm away for a natural sound', ok: false, power: 'phantom', feedback: 'Farther and fixed: the crowd and the PA rise against the voice.' },
       { id: 'd', label: 'A shotgun aimed at the commentator from the next seat', ok: false, power: 'phantom', feedback: 'A shotgun at a distance does not isolate a voice in a stadium. Close comes first.' },
       { id: 'e', label: 'Turn the commentary up until it is louder than the PA', ok: false, power: 'none', feedback: 'More gain raises the PA too — and risks feedback.' },
@@ -678,6 +678,6 @@ export const B09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. No mic cancels a stadium; never provoke feedback; start the headphone level low.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. No mic cancels a stadium; never provoke feedback; start the headphone level low.',
   copy: B09_COPY,
 };

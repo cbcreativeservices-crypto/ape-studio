@@ -45,8 +45,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above the China on the side away from the player, or under its lowest point — clear of the stick and the swing, then move the mic.',
-    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.place.3', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points (switch MOUNT for the China turned over), and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — above the China on the side away from the player, or under its lowest point — clear of the stick and the swing, then move the mic.',
+    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.place.3', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the China turned over), and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'No distance is published for a China: a zone is a place to begin, measured from its rim plane — or, underneath, from its lowest point in its mount. Clearance comes first.',
   },
   context: {
@@ -330,9 +330,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage. The China is turned over and crashed for accents; the band wants it very direct. One spare channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A small condenser under the turned-over China, below its cup, aimed up', ok: true, power: 'phantom', feedback: 'A recommended starting point: very direct, its rear toward the floor — with the power it needs.' },
-      { id: 'b', label: 'A small condenser 20–30 cm above the China on the far side, aimed at the shoulder', ok: true, power: 'phantom', feedback: 'A recommended starting point out of the stick’s way.' },
-      { id: 'c', label: 'A small dynamic above the China on the far side', ok: true, power: 'none', feedback: 'A recommended starting point that needs no power.' },
+      { id: 'a', label: 'A small condenser under the turned-over China, below its cup, aimed up', ok: true, power: 'phantom', feedback: 'A suggested starting point: very direct, its rear toward the floor — with the power it needs.' },
+      { id: 'b', label: 'A small condenser 20–30 cm above the China on the far side, aimed at the shoulder', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stick’s way.' },
+      { id: 'c', label: 'A small dynamic above the China on the far side', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power.' },
       { id: 'd', label: 'A mic just under the rim of the turned-over China, level with the cup', ok: false, power: 'none', feedback: 'Inside the downward swing, beside the hanging cup. Start below the cup.' },
       { id: 'e', label: 'A mic on the player’s side, over the edge the stick crashes', ok: false, power: 'none', feedback: 'That is the stick’s path. Start on the far side.' },
     ],
@@ -345,12 +345,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session. The China cuts through the overheads clearly. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No China mic: the overheads already carry it', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic above the China on the far side, aimed at the shoulder', ok: true, power: 'none', feedback: 'A recommended starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic above the China on the far side, aimed at the shoulder', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
       { id: 'c', label: 'A small condenser under the China, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
       { id: 'd', label: 'A side-address condenser under the China', ok: false, power: 'phantom', feedback: 'A fair idea — but it needs phantom power, and this input has none.' },
       { id: 'e', label: 'Turn the China upright so it is quieter in the overheads', ok: false, power: 'none', feedback: 'How it is mounted is the player’s choice. Mic it as it is.' },
     ],
-    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a recommended starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the China’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
+    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the China’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'Two plans pass: no China mic, or a dynamic above it. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
   },
 ];

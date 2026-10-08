@@ -1,5 +1,5 @@
 /**
- * THE TINE PIANO'S AMP (I11a) — the RECOMMENDED STARTING POINTS on the combo
+ * THE TINE PIANO'S AMP (I11a) — the SUGGESTED STARTING POINTS on the combo
  * it plays through, in the speaker family's FRAME C (origin at the speaker's
  * centre on the baffle; +x out toward the mic). The combo is the Lab 4
  * amplified chain's (shared/speakers/ampModel.ts), reused unchanged:

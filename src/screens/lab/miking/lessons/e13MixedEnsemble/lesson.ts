@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes for the front and back players and across the width.',
-    credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Change one variable at a time and compare at a consistent level. Closer favours the front players; farther back, more blend and room. The array moves as a unit.',
   },
   context: {
@@ -527,7 +527,7 @@ export const E13_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E13_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A mixed ensemble has no single right setup: agree the balance with the players, build the sound with one main array, then add a support only for a stated reason. Every ensemble, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Anything suspended is the venue’s, by qualified personnel; protect your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A mixed ensemble has no single right setup: agree the balance with the players, build the sound with one main array, then add a support only for a stated reason. Every ensemble, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Anything suspended is the venue’s, by qualified personnel; protect your hearing.',
   copy: { words: ensembleWords('ensemble') },
   ensemble: {
     seatings: { chamber: 'chamber.mixed', orchestra: 'orch.american' },
@@ -549,11 +549,11 @@ export const E13_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands, protected cable routes and the players’ movement come first. A tree needs safe support for its span and reach: manufacturer-rated hardware and qualified venue personnel for anything suspended — never ordinary cable as suspension. Protect your hearing; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a chamber group: one main pair in front and a little above — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a chamber group: one main pair in front and a little above — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the group, clear of the players’ sightlines, bows and slides, and of the audience’s way; its cable dressed flat and out of the walkways.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the main array’s centre — for a chamber group, 1.5–3 m in front and 2–2.5 m up; for an orchestra, over or just behind the podium, 3–4 m up. Places to start and compare, not measurements of a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main array’s centre — for a chamber group, 1.5–3 m in front and 2–2.5 m up; for an orchestra, over or just behind the podium, 3–4 m up. Places to start and compare, not measurements of a best place.',
       'Change one variable at a time — distance, height, then the spacing or angle — and compare at a consistent monitoring level on the same passage.',
       'Keep the array’s own geometry as you move it; a different spacing is a different method, chosen on purpose.',
     ],

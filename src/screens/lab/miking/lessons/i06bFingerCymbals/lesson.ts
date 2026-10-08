@@ -44,8 +44,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 30–60 cm from a still player’s hands, a little above; high and wide for a dancer — then move the mic and see what changes.',
-    credit: { scenarios: ['fc.place.1', 'fc.place.2', 'fc.place.3', 'fc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 30–60 cm from a still player’s hands, a little above; high and wide for a dancer — then move the mic and see what changes.',
+    credit: { scenarios: ['fc.place.1', 'fc.place.2', 'fc.place.3', 'fc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'A still player: about 30–60 cm from the playing area, a little above, seeing both cymbals and the release. A dancer: a wider or higher view outside the whole route — never between the cymbals, and never limiting the dance.',
   },
   context: {
@@ -392,7 +392,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W, 'a hand or a cymbal'),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from where the cymbals are played', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from where the cymbals are played', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -400,7 +400,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio overdub: a still player, an orchestral part — held flat, struck edge-first — with soft notes and a few accents. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 40 cm in front and a little above the playing area', ok: true, power: 'phantom', feedback: 'A recommended starting point, clear of both hands; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 40 cm in front and a little above the playing area', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of both hands; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 55 cm away, a little above, for more of the room', ok: true, power: 'phantom', feedback: 'A wider view — check the soft notes stay distinct.' },
       { id: 'c', label: 'A mic held between the two cymbals', ok: false, power: 'phantom', feedback: 'That is where the cymbals and fingers move.' },
       { id: 'd', label: 'A gate on the channel to cut the room between strokes', ok: false, power: 'phantom', feedback: 'A gate would cut the ring the music needs.' },
@@ -569,6 +569,6 @@ export const I06B_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no single agreed finger-cymbal miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every pair, player, dance and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one measured pair, a standing player or a dancer on a straight route, the plate’s shapes on a flat disc held at its centre, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands and the route.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed finger-cymbal miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every pair, player, dance and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one measured pair, a standing player or a dancer on a straight route, the plate’s shapes on a flat disc held at its centre, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands and the route.',
   copy: { words: metalWords('finger cymbals', 'player') },
 };

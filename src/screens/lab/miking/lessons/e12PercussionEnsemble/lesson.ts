@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes between the front and back instruments and across the width.',
-    credit: { scenarios: ['pe.place.1', 'pe.place.2', 'pe.31', 'pe.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['pe.place.1', 'pe.place.2', 'pe.31', 'pe.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Move the complete array to change the direct-to-room ratio and the front–back balance. Raising it changes which surfaces dominate — not always a better blend. Compare at a consistent, moderate level.',
   },
   context: {
@@ -550,7 +550,7 @@ export const E12_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E12_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A percussion ensemble has no single right setup: rehearse the balance, establish one main pickup, then add a support only for a named problem. Every group, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Keep your ears away from close strikes.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A percussion ensemble has no single right setup: rehearse the balance, establish one main pickup, then add a support only for a named problem. Every group, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Keep your ears away from close strikes.',
   copy: { words: ensembleWords('percussion ensemble') },
   ensemble: {
     seatings: { trio: 'perc.trio', large: 'perc.large' },
@@ -572,11 +572,11 @@ export const E12_LESSON: EnsembleLesson = {
     ],
     safety: 'Suitably rated stands, secured, with overhead hardware out of reach; cables clear of paths, pedals and instrument changes. Never block a resonator or touch a vibrating bar. Keep ears away from close strikes and use hearing protection when the exposure warrants it. Never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a compact percussion group: one main pair in front and a little above — a suggested trial to start from and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a compact percussion group: one main pair in front and a little above — a suggested trial to start from and compare, not a rule.',
       clearance: 'The stand in front of the group, clear of the players’ paths and the audience’s way; its cable dressed flat and out of the walkways.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the main array — about 2–3 m in front and 2–2.5 m up for a compact group. A wide or deep group may need a different approach: compare.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main array — about 2–3 m in front and 2–2.5 m up for a compact group. A wide or deep group may need a different approach: compare.',
       'Move the complete array to change the direct-to-room ratio and the front–back balance; raising it changes which surfaces and instruments dominate. Compare at a consistent, moderate level.',
       'Keep the array’s own geometry as you move it; a different spacing is a different method, chosen on purpose.',
     ],

@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the meter yourself — in the open, 2 m from the facade, at the wall — at the method’s height, and see what each position stands for.',
-    credit: { scenarios: ['sl.place.1', 'sl.place.2', 'sl.place.3', 'sl.rec.2'], interactive: 'twoZones', note: 'Rest the meter, clear of everything, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sl.place.1', 'sl.place.2', 'sl.place.3', 'sl.rec.2'], interactive: 'twoZones', note: 'Rest the meter, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Put the meter where the method says, at the height it names, and say which kind of position it is. A reading at a wall is never called an open-field reading.',
   },
   context: {
@@ -635,6 +635,6 @@ export const F12_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules: your question and the method you are handed name the receivers, the height, the descriptor and the limits. Experiment, and trust your ears and the room as well as the meter. The lab is silent and draws a simplified picture: a site that is a drawing, straight sound paths, level histories that are made-up examples, and this lab’s default background limit. Formal exposure, environmental or legal decisions need a qualified practitioner and the applicable method.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: your question and the method you are handed name the receivers, the height, the descriptor and the limits. Experiment, and trust your ears and the room as well as the meter. The lab is silent and draws a simplified picture: a site that is a drawing, straight sound paths, level histories that are made-up examples, and this lab’s default background limit. Formal exposure, environmental or legal decisions need a qualified practitioner and the applicable method.',
   copy: F12_COPY,
 };

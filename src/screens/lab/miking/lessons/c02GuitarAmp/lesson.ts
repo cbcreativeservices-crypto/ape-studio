@@ -47,8 +47,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin on a guitar combo — close, at the dust cap’s edge, measured from the grille — then move across the cone and away from it, one change at a time.',
-    credit: { scenarios: ['eg.place.1', 'eg.place.2', 'eg.place.3', 'eg.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points, clear of every part, and answer the four checks.' },
+    goal: 'Start where we suggest you begin on a guitar combo — close, at the dust cap’s edge, measured from the grille — then move across the cone and away from it, one change at a time.',
+    credit: { scenarios: ['eg.place.1', 'eg.place.2', 'eg.place.3', 'eg.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, clear of every part, and answer the four checks.' },
     takeaway: 'Measure from the grille, on the speaker that is sounding, and change one thing at a time: across the cone, OR away from it, OR the angle. A tiny move can matter more than changing the mic.',
   },
   context: {
@@ -529,7 +529,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the grille, the vents and the player’s pedals', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a guitar amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position gives the most bass on every amp.' };
@@ -540,7 +540,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud club stage, a 1 × 12 combo, a mono PA. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic close to the grille, aimed at the dust cap’s edge', ok: true, power: 'none', feedback: 'A recommended starting point, close and directional for a loud stage; a dynamic needs no power.' },
+      { id: 'a', label: 'Instrument dynamic close to the grille, aimed at the dust cap’s edge', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the speaker itself', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has the phantom power it needs — check its level rating.' },
       { id: 'c', label: 'Instrument dynamic half-way out across the cone, turned a little toward the edge', ok: true, power: 'none', feedback: 'Another good first listen; fine if it suits the player’s tone.' },
       { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and monitors and lowers the margin before feedback.' },
@@ -750,5 +750,5 @@ export const C02_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every guitar, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), an ideal string, textbook mic patterns, and cone and string motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Place mics with the amp off or muted, never open an amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every guitar, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), an ideal string, textbook mic patterns, and cone and string motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Place mics with the amp off or muted, never open an amp, and send a speaker output only to a speaker.',
 };

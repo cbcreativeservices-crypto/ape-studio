@@ -91,7 +91,7 @@ export type SceneOptions = {
   wedge?: { at: Vec3; faces: Vec3; src: Vec3; glyph?: 'wedge' | 'none' } | null;
   highlight?: string | null;
   onTapPart?: (partId: string) => void;
-  /** Only these recommended starting points are drawn (a STARTING SETUPS
+  /** Only these suggested starting points are drawn (a STARTING SETUPS
    *  drawing shows the setup's own zones, not every one in the lesson). */
   zoneIds?: readonly string[];
   /** STARTING SETUPS: each mic's aim line and its distance as a dimension,
@@ -1124,7 +1124,7 @@ function GuideLabel({ xf, u, v, nx, ny, W, H, text, scale, maxX, maxY }: { xf: S
 function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null> }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const path = useMemo(() => zonePath(z, view, rig), [z, view, rig.lesson, rig.variant]);
-  // One consistent style for every recommended starting point (owner ruling
+  // One consistent style for every suggested starting point (owner ruling
   // 2026-10-04): the same blue band, the same solid edge.
   const tone = BLUE;
   const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.03));

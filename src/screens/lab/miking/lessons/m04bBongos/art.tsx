@@ -33,7 +33,7 @@ function Block({ view }: { view: ViewId }) {
   );
 }
 
-// Charcoal trousers, never blue: blue on the glass means a recommended starting point.
+// Charcoal trousers, never blue: blue on the glass means a suggested starting point.
 const DENIM = ['#6b6660', '#4a4643', '#2c2a29'];
 
 /** The seated player's legs (KNEES), from the same boxes the collision uses:

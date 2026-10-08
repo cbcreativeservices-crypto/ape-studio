@@ -11,7 +11,7 @@
  *
  *   • every part with a solid in this variant (the instrument, its stand,
  *     the player's modelled body), projected to the view;
- *   • every recommended starting point's mic (its front plus a mic's length
+ *   • every suggested starting point's mic (its front plus a mic's length
  *     behind it, so a placed mic is on the glass);
  *   • the floor line in a side view (the instrument stands on something);
  *   • a margin for labels and clearance (CONTENT_PAD of the larger side,
@@ -88,7 +88,7 @@ export function bodyEnvelope(e: { id: string; label: string }): boolean {
 
 /**
  * The content frame for a view: the content's box, padded, inside the
- * authored box. `zones`: the lesson's recommended starting points.
+ * authored box. `zones`: the lesson's suggested starting points.
  */
 export function contentFrame(
   model: InstrumentModel,

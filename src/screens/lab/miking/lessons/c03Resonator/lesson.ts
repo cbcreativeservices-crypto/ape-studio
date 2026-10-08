@@ -38,9 +38,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — facing the coverplate and upper body, a little off the picking hand — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, read from the coverplate — there is no flat-top sound hole here. Move a few centimetres at a time, then change distance; the bar’s and the hand’s clearance comes first.',
+    goal: 'Start where we suggest you begin — facing the coverplate and upper body, a little off the picking hand — then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, read from the coverplate — there is no flat-top sound hole here. Move a few centimetres at a time, then change distance; the bar’s and the hand’s clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -284,9 +284,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A square-neck resonator played lap style on a fairly loud bluegrass stage, a wedge in front. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser on a boom from the side, 20–45 cm from the coverplate, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point, from the side, clear of the bar and hand, aimed against the wedge.' },
-      { id: 'b', label: 'Instrument dynamic on a side boom, about 20 cm from the coverplate, off the picking hand', ok: true, power: 'none', feedback: 'A robust close option at a recommended starting point.' },
-      { id: 'c', label: 'Clip-on mini on a suitable body clip, capsule toward the coverplate’s edge', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the instrument — never on the cone.' },
+      { id: 'a', label: 'Small condenser on a boom from the side, 20–45 cm from the coverplate, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, from the side, clear of the bar and hand, aimed against the wedge.' },
+      { id: 'b', label: 'Instrument dynamic on a side boom, about 20 cm from the coverplate, off the picking hand', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point.' },
+      { id: 'c', label: 'Clip-on mini on a suitable body clip, capsule toward the coverplate’s edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the instrument — never on the cone.' },
       { id: 'd', label: 'Mic stand straight up over the cone, 5 cm above its centre', ok: false, power: 'phantom', feedback: 'In the player’s and the bar’s space, and one close spot sounds narrow. Come in from the side.' },
       { id: 'e', label: 'Clip the mini onto the coverplate itself, aimed at the cone', ok: false, power: 'phantom', feedback: 'Never mount on the coverplate or the cone: they are delicate and part of the sound.' },
     ],
@@ -298,8 +298,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, a round-neck resonator played upright. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 20–45 cm from the coverplate and upper body, a little off the picking hand', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Instrument dynamic about 20 cm from the coverplate, compared with a broader view', ok: true, power: 'none', feedback: 'A recommended starting point; it needs no phantom.' },
+      { id: 'a', label: 'Instrument dynamic 20–45 cm from the coverplate and upper body, a little off the picking hand', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'Instrument dynamic about 20 cm from the coverplate, compared with a broader view', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom.' },
       { id: 'c', label: 'Small condenser facing the coverplate', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Clip-on mini near the coverplate’s edge', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting on the coverplate, aimed into its holes', ok: false, power: 'none', feedback: 'Never rest anything on the coverplate. Keep the mic off the hardware.' },

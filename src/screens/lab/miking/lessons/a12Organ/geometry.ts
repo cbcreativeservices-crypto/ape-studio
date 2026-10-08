@@ -69,7 +69,7 @@ const envelopes: Envelope[] = [
   { id: 'env.organist', label: 'the organist at the console', shape: { kind: 'box', min: v3(CONSOLE.x1, -1800, CONSOLE.z0 - 200), max: v3(CONSOLE.x1 + 900, 0, CONSOLE.z1 + 200) }, prov: ill('the organist and the bench behind the console: a drawing default') },
 ];
 
-/* ── RECOMMENDED STARTING POINTS ── */
+/* ── SUGGESTED STARTING POINTS ── */
 const MICS = ['sdcCard', 'sdc'];
 const pose = (p: Vec3, at: Vec3) => ({ p, ...aimTo(p, at) });
 const GREAT = divisionPoint('great');

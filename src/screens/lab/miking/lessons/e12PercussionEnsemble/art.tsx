@@ -74,7 +74,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For a real group, with the players’ and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = recommended starting points · grey dashes = the players’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ paths, sticks and mallets, pedals and instrument changes; nothing on a bar or over a resonator opening.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A mic aimed down at the heads turns its back up and away — where a wedge can sit in its rejection.',
     sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each instrument gives its own delay.',

@@ -36,7 +36,7 @@ const envelopes: Envelope[] = [
   { id: 'env.hand', label: 'the sweeping hand', shape: { kind: 'box', min: v3(-300, P0.y - 110, -HALF - 90), max: v3(70, P0.y + 110, HALF + 30) }, prov: ill('the hand’s path along the row, plus a margin: a drawing default') },
 ];
 
-/* ── RECOMMENDED STARTING POINTS: the lesson's own trials (internal kind
+/* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind
  *    'trial'), 40–80 cm from the row's centre, facing its length; optional
  *    end mics outside the swing. ── */
 const BOTH = ['sdcCard', 'smallDynCard'];

@@ -1,5 +1,5 @@
 /**
- * A07 PICCOLO — the recommended starting points (charter §2 layer 1). Every
+ * A07 PICCOLO — the suggested starting points (charter §2 layer 1). Every
  * distance is the FLUTE's, transferred as the lesson itself says — "a useful
  * comparison, not a piccolo-specific optimum" (L26; piccolo/SOURCES.md:
  * "The above techniques apply to both flutes, recorders, and other variants

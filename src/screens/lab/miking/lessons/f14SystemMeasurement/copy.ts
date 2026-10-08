@@ -47,7 +47,7 @@ export const F14_COPY: Partial<LessonCopy> = {
     note: 'Log the radius, the angle or the seat for every trace — and the source that was playing.',
     availableLead: 'Starting points for this mic here',
     learn: {
-      intro: 'After our research, each blue zone is a place we recommend you begin — on the axis, off it, close to a driver, or at a listener’s seat. The method you are handed sets the real radii, angles and seats.',
+      intro: 'After our research, each blue zone is a place we suggest you begin — on the axis, off it, close to a driver, or at a listener’s seat. The method you are handed sets the real radii, angles and seats.',
       separate: 'Radius, angle and seat are separate: change one at a time, and write each one down.',
       clearance: 'Nothing touches a cone, a grille or a port; stands out of the routes; you back from the capsule.',
       tendencies: 'What a position stands for is a tendency to check against the method — never a promise.',

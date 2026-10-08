@@ -61,7 +61,7 @@ const HAND: HandSpec = {
     label: 'The bar chimes with a small condenser placed for you',
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself.',
     pieces: (z: DocumentedZone) => [
-      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin with bar chimes — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with bar chimes — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
       { title: 'MEASURED FROM', text: 'From the middle of the row, at the bars’ height: the readout measures to the mic’s FRONT, rounded to ≈ 5 mm.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
       { title: 'THE VIEWPOINT', text: 'In front of the row, facing its whole length — so the first and the last bars are heard in balance — at a height that sees the bars, not only the rail.', cell: 1 },
@@ -79,7 +79,7 @@ const HAND: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from the middle of the row (or, for the end mics, from an end). They are starting points, not rules: move from there and listen — every row, mount and player is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the middle of the row (or, for the end mics, from an end). They are starting points, not rules: move from there and listen — every row, mount and player is different.',
     'Change one thing at a time, and replay the same direction, speed and force: a faster or stronger sweep changes the source, not the mic. Listen to the first and last bars, the shimmer, any harshness, clanks, the room and spill. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
     'An end mic on its own favours its end of the row; a mic at each end is an option for a deliberately wide or difficult setup. Start with one mic and add a second only after hearing the reason.',
   ],

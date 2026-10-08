@@ -42,9 +42,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — at the grille on the dust-cap line, the centre, the edge, turned off axis, a little farther back, or behind an open back — measured from the surface each names, then move the mic one thing at a time and see what changes.',
-    credit: { scenarios: ['cv.place.1', 'cv.place.2', 'cv.place.3', 'cv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named surface — not a rule. Centre to edge, angle and distance are separate things to try; mark each position so you can come back to it.',
+    goal: 'Start where we suggest you begin — at the grille on the dust-cap line, the centre, the edge, turned off axis, a little farther back, or behind an open back — measured from the surface each names, then move the mic one thing at a time and see what changes.',
+    credit: { scenarios: ['cv.place.1', 'cv.place.2', 'cv.place.3', 'cv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named surface — not a rule. Centre to edge, angle and distance are separate things to try; mark each position so you can come back to it.',
   },
   context: {
     title: 'Studio or live',
@@ -320,12 +320,12 @@ const scenarios: MikingScenario[] = [
     id: 'cv.two.2',
     page: 'twoMic',
     prompt: 'You flip the farther mic’s polarity. What happens to the arrival-time difference?',
-    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay. The notches move; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals line up again in time': 'Flipping polarity changes the sign, not when the sound arrives.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic, or delaying a track, changes when it arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic, or delaying a track, changes when it arrives.',
     },
   },
   {
@@ -508,7 +508,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the right connection and power (a DI or line input; phantom only where a mic needs it)', role: 'required', feedback: 'Say how each path connects: the clavinet’s output never gets a mic input or phantom.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the right surface — or a labelled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right surface — or a labelled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, stand and cables are safe: off the grille, clear of a hot amp and the player’s feet', role: 'required', feedback: 'Safety and clearance are part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Right on the centre, closest, always gives the best clavinet', role: 'wrong', feedback: 'The centre tends to be brightest, not best; the part decides.' };
@@ -519,8 +519,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A funk session: the player wants their amp’s sound, with a wah pedal. Two channels; a passive DI is available.',
     setups: [
-      { id: 'a', label: 'A passive DI after the pedals, plus a close dynamic at the grille on the dust-cap line', ok: true, power: 'none', feedback: 'A recommended pairing: the effects in both, the amp in the mic — aligned in mono.' },
-      { id: 'b', label: 'One close dynamic at the grille, between the centre and the edge', ok: true, power: 'none', feedback: 'A recommended single-mic start: the player’s amp sound.' },
+      { id: 'a', label: 'A passive DI after the pedals, plus a close dynamic at the grille on the dust-cap line', ok: true, power: 'none', feedback: 'A suggested pairing: the effects in both, the amp in the mic — aligned in mono.' },
+      { id: 'b', label: 'One close dynamic at the grille, between the centre and the edge', ok: true, power: 'none', feedback: 'A suggested single-mic start: the player’s amp sound.' },
       { id: 'c', label: 'A condenser 30 cm from the clavinet’s strings, with no amp', ok: false, power: 'phantom', feedback: 'The strings make almost no sound in the air: the clavinet needs its amp or a direct path.' },
       { id: 'd', label: 'The clavinet’s output into a mic input with phantom on', ok: false, power: 'phantom', feedback: 'Never a mic input or phantom on the clavinet’s output: use a DI or line input.' },
       { id: 'e', label: 'A close mic placed between two speakers of a 2×12 cabinet', ok: false, power: 'none', feedback: 'Between speakers it hears two sources at different distances. Choose one.' },
@@ -533,8 +533,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud club stage: the clavinet’s amp sits behind the player, a wedge in front of them. One or two channels.',
     setups: [
-      { id: 'a', label: 'The direct signal (a DI after the pedals) to the PA', ok: true, power: 'none', feedback: 'A recommended live path: more gain before feedback, less spill.' },
-      { id: 'b', label: 'A close dynamic at the grille, its null aimed toward the wedge, plus the DI', ok: true, power: 'none', feedback: 'A recommended combination, with the null pointed at the loudest monitor.' },
+      { id: 'a', label: 'The direct signal (a DI after the pedals) to the PA', ok: true, power: 'none', feedback: 'A suggested live path: more gain before feedback, less spill.' },
+      { id: 'b', label: 'A close dynamic at the grille, its null aimed toward the wedge, plus the DI', ok: true, power: 'none', feedback: 'A suggested combination, with the null pointed at the loudest monitor.' },
       { id: 'c', label: 'A close mic with its null aimed away from the wedge', ok: false, power: 'none', feedback: 'That points the pickup at the wedge. The null goes TOWARD the loudest monitor.' },
       { id: 'd', label: 'A room mic 2 m in front of the amp', ok: false, power: 'none', feedback: 'On a loud stage a distant mic hears the band and the monitors more than the amp.' },
       { id: 'e', label: 'A mic taped to the grille cloth', ok: false, power: 'none', feedback: 'The mic never touches the grille; use a stand or an approved clip.' },
@@ -721,6 +721,6 @@ export const C12_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every clavinet, pedal, amp, speaker and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a generic combo and a closed 1×12 cabinet with typical sizes, one string of the clavinet drawn straight, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Electrical faults are for a qualified technician.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every clavinet, pedal, amp, speaker and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a generic combo and a closed 1×12 cabinet with typical sizes, one string of the clavinet drawn straight, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Electrical faults are for a qualified technician.',
   copy: CLAV_COPY,
 };

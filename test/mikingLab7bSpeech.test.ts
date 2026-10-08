@@ -262,7 +262,7 @@ describe('Lab 7 part 2 · G1 lessons: B09, B10, B11', () => {
     });
     it(`${id}: the starting-points voice, no institutional words, no brand, no link to other lessons, 3:1 never a pass gate`, () => {
       const strings = learnerStrings(l);
-      assert.ok(strings.some((s) => /After our research, here is where we recommend you begin/.test(s)));
+      assert.ok(strings.some((s) => /After our research, here is where we suggest you begin/.test(s)));
       assert.ok(strings.some((s) => /Experimentation is encouraged/.test(s)));
       for (const s of strings) assert.doesNotMatch(s, /\b(student|classroom|instructor|Academy|IFAB|FIFA|NFL|Shure|Sennheiser|Coles|SM2|4104|HMD)\b/i);
       for (const s of strings.filter((q) => q !== l.id)) assert.doesNotMatch(s, /\b(B0\d|B1\d|F\d\d)\b/);

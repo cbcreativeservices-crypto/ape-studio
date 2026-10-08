@@ -55,12 +55,12 @@ export const polarityDelay = (id: string): MikingScenario => ({
   id,
   page: 'twoMic',
   prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference between the two mics?',
-  options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up', 'It doubles, because the inverted copy arrives later'],
+  options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up', 'Cut in half: the flipped copy cancels half of it'],
   correct: 'Nothing: polarity flips the sign; the delay stays',
   explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
   why: {
     'It drops to zero, so the two arrivals line up': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-    'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+    'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
   },
 });
 
@@ -158,5 +158,5 @@ export const hollowSymptom = (id: string): Symptom => ({
 export const POWER_REASON: SetupReason = { id: 'r.power', label: 'The mic gets the power it needs — phantom for the condensers, the manual’s rule for a ribbon', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom power; a ribbon follows its own manual.' };
 export const BRAND_REASON = (noun: string): SetupReason => ({ id: 'r.brand', label: `It is the brand most engineers reach for on a ${noun}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' });
 export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It is the loudest position, right on the bell’s axis', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and on axis is the brightest, hardest view, not the best one.' };
-export const docReason = (from: string): SetupReason => ({ id: 'r.doc', label: `It is a recommended starting point for this kind of mic, measured from ${from}`, role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' });
+export const docReason = (from: string): SetupReason => ({ id: 'r.doc', label: `It is a suggested starting point for this kind of mic, measured from ${from}`, role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' });
 export const clearReason = (what: string): SetupReason => ({ id: 'r.clear', label: `The mic, mount and cable stay clear of ${what}`, role: 'required', feedback: 'Clearance is part of every passing setup.' });

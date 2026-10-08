@@ -42,9 +42,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — over a tom’s rim, measured square to its head, aimed at it, clear of the sticks and cymbals — then move the mic and see what changes.',
-    credit: { scenarios: ['tm.place.1', 'tm.place.2', 'tm.place.3', 'tm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points (switch DRUM for the floor tom’s), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named head — not a rule. Rim distance, height and aim are separate things to try, one mic can cover two toms, and clearance comes first.',
+    goal: 'Start where we suggest you begin — over a tom’s rim, measured square to its head, aimed at it, clear of the sticks and cymbals — then move the mic and see what changes.',
+    credit: { scenarios: ['tm.place.1', 'tm.place.2', 'tm.place.3', 'tm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch DRUM for the floor tom’s), and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named head — not a rule. Rim distance, height and aim are separate things to try, one mic can cover two toms, and clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -313,12 +313,12 @@ const scenarios: MikingScenario[] = [
     id: 'tm.two.2',
     page: 'twoMic',
     prompt: 'You flip the bottom mic’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the sign; it does not remove a delay caused by sound reaching the mics at different times.',
     why: {
       'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -502,7 +502,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each channel gives its mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'Each mic starts at a recommended starting point, from its own head', role: 'required', feedback: 'Say why each position is a good place to begin, and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'Each mic starts at a suggested starting point, from its own head', role: 'required', feedback: 'Say why each position is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mics, mounts and cables stay out of the sticks’ path and the cymbals’ swing', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand of tom mic most engineers use', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const NAME_REASON: SetupReason = { id: 'r.name', label: 'A floor tom needs a different kind of mic because it is a floor tom', role: 'wrong', feedback: 'A drum’s name does not decide the mic. Its sound, its place and the mount do.' };
@@ -514,9 +514,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud rock stage. Crashes hang low over the rack toms. Three spare channels; phantom power is available on all of them.',
     setups: [
-      { id: 'a', label: 'A supercardioid dynamic over each tom, 2.5 to 7.5 cm above its head, aimed at it, the crash off its rear axis', ok: true, power: 'none', feedback: 'Three recommended starting points, tight patterns for isolation, rejection turned toward the crash.' },
-      { id: 'b', label: 'A clip-on dynamic on each tom’s rim, 3 to 5 cm above the head, angled 30 to 60°', ok: true, power: 'none', feedback: 'Recommended starting points, low and out of the cymbals’ way — with clamps that suit the hoops.' },
-      { id: 'c', label: 'A rim condenser on each tom, its head angled at the drumhead, phantom on', ok: true, power: 'phantom', feedback: 'A recommended starting point with the power it needs — check how much crash it hears.' },
+      { id: 'a', label: 'A supercardioid dynamic over each tom, 2.5 to 7.5 cm above its head, aimed at it, the crash off its rear axis', ok: true, power: 'none', feedback: 'Three suggested starting points, tight patterns for isolation, rejection turned toward the crash.' },
+      { id: 'b', label: 'A clip-on dynamic on each tom’s rim, 3 to 5 cm above the head, angled 30 to 60°', ok: true, power: 'none', feedback: 'Suggested starting points, low and out of the cymbals’ way — with clamps that suit the hoops.' },
+      { id: 'c', label: 'A rim condenser on each tom, its head angled at the drumhead, phantom on', ok: true, power: 'phantom', feedback: 'A suggested starting point with the power it needs — check how much crash it hears.' },
       { id: 'd', label: 'One mic raised up level with the crashes, to catch all three toms at once', ok: false, power: 'none', feedback: 'Up among the cymbals it hears mostly cymbal — and the cymbals swing. Stay close over the toms.' },
       { id: 'e', label: 'A mic resting on each head, so nothing can move', ok: false, power: 'none', feedback: 'Never on the head: it is a moving part, and the sticks land there.' },
     ],
@@ -529,12 +529,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio jazz trio in a good room. The overheads sound full. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No tom mics: the overheads already carry the toms clearly', ok: true, power: 'none', feedback: 'A fair plan when the overheads carry the toms — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'One dynamic between the two rack toms, 2.5 to 7.5 cm above them, the floor tom left to the overheads', ok: true, power: 'none', feedback: 'A recommended shared position, powered by what this input can supply.' },
+      { id: 'b', label: 'One dynamic between the two rack toms, 2.5 to 7.5 cm above them, the floor tom left to the overheads', ok: true, power: 'none', feedback: 'A suggested shared position, powered by what this input can supply.' },
       { id: 'c', label: 'A rim condenser on the floor tom for detail', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Three tom mics, one per drum, on the one spare channel', ok: false, power: 'none', feedback: 'Three mics need three channels. One channel means none, or a shared mic.' },
       { id: 'e', label: 'Remove the floor tom’s bottom head so a mic can go inside', ok: false, power: 'none', feedback: 'That changes the drum. Never take a head off to suit a mic plan — it is the player’s call.' },
     ],
-    reasons: [{ ...DOC_REASON, label: 'The plan starts from what the overheads give, and any mic from a recommended starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads and the room are part of the kit sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, NAME_REASON],
+    reasons: [{ ...DOC_REASON, label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads and the room are part of the kit sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, NAME_REASON],
     explain: 'Two plans pass: no tom mics, or one shared mic. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
   },
 ];
@@ -740,6 +740,6 @@ export const M03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit’s toms and cymbals, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit’s toms and cymbals, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: TOMS_COPY,
 };

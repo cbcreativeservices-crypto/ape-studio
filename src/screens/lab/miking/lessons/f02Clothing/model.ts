@@ -1,5 +1,5 @@
 /**
- * F02 CLOTHING AND BODY MOVEMENT — the recommended starting points (charter
+ * F02 CLOTHING AND BODY MOVEMENT — the suggested starting points (charter
  * §2 layer 1). Keys point into docs/labs/miking/foley_clothing/SOURCES.md
  * (and foley_footsteps/SOURCES.md §0); geometry from GEOMETRY_PROPOSAL.md §2.
  * Every distance is from the CAPSULE to the active fabric.

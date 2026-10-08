@@ -102,7 +102,7 @@ const AMP_MODEL = ampModel('combo', 'a10-amp', 'harp amp (a combo with one 12 in
 const ampParts: Part[] = AMP_MODEL.parts.map((p) => ({ ...p, listIn: ['amp'] }));
 const ampEnvelopes: Envelope[] = AMP_MODEL.envelopes.map((e) => ({ ...e, variants: ['amp'] }));
 
-/* ── RECOMMENDED STARTING POINTS ── */
+/* ── SUGGESTED STARTING POINTS ── */
 const STAND_MICS = ['smallDynCard', 'sdcCard'];
 
 /** Acoustic: the lesson's own trial, 15–30 cm from the harmonica, at mouth

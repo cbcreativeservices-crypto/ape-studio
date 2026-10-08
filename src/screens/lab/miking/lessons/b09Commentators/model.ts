@@ -1,5 +1,5 @@
 /**
- * B09 COMMENTATORS AND ANNOUNCE POSITIONS — the recommended starting points
+ * B09 COMMENTATORS AND ANNOUNCE POSITIONS — the suggested starting points
  * (charter §2 layer 1), on the seated commentator (frame V) and the voice
  * family's zone builder (shared/voice/voiceZones). Source keys:
  * docs/labs/miking/commentators/SOURCES.md §0; every distance is from the
@@ -38,7 +38,7 @@ const HEADSET_PROV = ill('no source gives a distance: 2–6 cm from the lip poin
 const HEADSET: VoiceZoneSpec = {
   id: 'b9.headset',
   label: 'Headset boom at the outside corner of the mouth',
-  band: 'After our research, here is where we recommend you begin: the headset boom’s capsule at the outside corner of the mouth — close, but not directly in front, just out of the breath — aimed at the mouth. Fit the headset first, then set the boom.',
+  band: 'After our research, here is where we suggest you begin: the headset boom’s capsule at the outside corner of the mouth — close, but not directly in front, just out of the breath — aimed at the mouth. Fit the headset first, then set the boom.',
   kind: 'sourced',
   src: 'S-SM2',
   quote: 'as close as possible to the outside corner of the mouth (not directly in front.)',

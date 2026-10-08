@@ -1,5 +1,5 @@
 /**
- * B14 COURT, RACKET AND ICE SPORTS — the recommended starting points (charter
+ * B14 COURT, RACKET AND ICE SPORTS — the suggested starting points (charter
  * §2 layer 1) on the shared practice line (frame P). Research: docs/labs/
  * miking/court_ice/SOURCES.md and GEOMETRY_PROPOSAL.md §3; words from the
  * owner's lesson (source_text/B14-…; "L<n>" in comments only).

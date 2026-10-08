@@ -39,7 +39,7 @@ export const B16_COPY: Partial<LessonCopy> = {
     note: 'Every stand, cable loop and windshield stays in its equipment area, out of the walking path.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'After our research, each starting point is where we recommend you begin — from an approved place, the axis across or along the path. They are starting points, not rules. Experimentation is encouraged.',
+      intro: 'After our research, each starting point is where we suggest you begin — from an approved place, the axis across or along the path. They are starting points, not rules. Experimentation is encouraged.',
       separate: 'Range, height and aim are separate decisions; change one at a time and log each.',
       clearance: 'Only an approved place: never the course, a run-off, a gate or a route.',
       tendencies: 'Aimed across, a short strong sector; aimed along, a longer one with more of what lies beyond. Tendencies, to check by ear.',

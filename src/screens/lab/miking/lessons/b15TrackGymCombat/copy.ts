@@ -40,7 +40,7 @@ export const B15_COPY: Partial<LessonCopy> = {
     note: 'Every stand, cable loop and windshield stays in its equipment area, out of the walking path.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'After our research, each starting point is where we recommend you begin — from an approved equipment area, the axis on a named source point. They are starting points, not rules. Experimentation is encouraged.',
+      intro: 'After our research, each starting point is where we suggest you begin — from an approved equipment area, the axis on a named source point. They are starting points, not rules. Experimentation is encouraged.',
       separate: 'Range, height and aim are separate decisions; change one at a time and log each.',
       clearance: 'Only an approved place: never the walking path, a route or a camera’s view.',
       tendencies: 'Nearer and on the axis tends to bring more detail; farther or off the axis, more of the room. Tendencies, to check by ear.',

@@ -47,9 +47,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — measured from the right head, aimed at it, clear of every moving part — then move the mic and see what changes.',
-    credit: { scenarios: ['k.place.1', 'k.place.2', 'k.place.3', 'k.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named head — not a rule. Distance, height and angle are separate things to try, and clearance comes first.',
+    goal: 'Start where we suggest you begin — measured from the right head, aimed at it, clear of every moving part — then move the mic and see what changes.',
+    credit: { scenarios: ['k.place.1', 'k.place.2', 'k.place.3', 'k.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named head — not a rule. Distance, height and angle are separate things to try, and clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -308,12 +308,12 @@ const scenarios: MikingScenario[] = [
     id: 'k.two.1',
     page: 'twoMic',
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still the same distance apart.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -510,7 +510,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of heads, beater, damping and pedal', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a kick', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the drum', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -522,9 +522,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · An existing port in the front head. A loud club show; the drummer wants a defined attack. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Supercardioid kick dynamic inside, 5 to 7.5 cm from the batter head, slightly off the beater line', ok: true, power: 'none', feedback: 'A recommended starting point, close and directional for a loud stage; attack is its tendency.' },
+      { id: 'a', label: 'Supercardioid kick dynamic inside, 5 to 7.5 cm from the batter head, slightly off the beater line', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage; attack is its tendency.' },
       { id: 'b', label: 'Boundary plate resting on the pillow, 25 to 152 mm from the batter head, grille uncovered', ok: true, power: 'phantom', feedback: 'Made to rest on cushioning, low profile inside; it needs the phantom power this channel has.' },
-      { id: 'c', label: 'Supercardioid kick dynamic inside, 20 to 30 cm from the batter head, on the beater line', ok: true, power: 'none', feedback: 'A recommended starting point: softer attack, balanced — fine if the whole assembly clears the port edge and damping.' },
+      { id: 'c', label: 'Supercardioid kick dynamic inside, 20 to 30 cm from the batter head, on the beater line', ok: true, power: 'none', feedback: 'A suggested starting point: softer attack, balanced — fine if the whole assembly clears the port edge and damping.' },
       { id: 'd', label: 'Small condenser laid on the pillow inside, so that it cannot move about', ok: false, power: 'phantom', feedback: 'A small condenser is not made to lie on the pillow: it can rattle, slide or touch the damping. Mount it clear instead.' },
       { id: 'e', label: 'Kick dynamic touching the batter head, to get the most attack possible', ok: false, power: 'none', feedback: 'Keep the mic off the head: the head is a moving part, and contact can damage both.' },
     ],
@@ -536,7 +536,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Studio session. The front head is intact, and the drummer wants to keep it. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Cardioid kick dynamic outside, at the level of the front head', ok: true, power: 'none', feedback: 'A recommended starting point with a more resonant tendency; a dynamic needs no phantom.' },
+      { id: 'a', label: 'Cardioid kick dynamic outside, at the level of the front head', ok: true, power: 'none', feedback: 'A suggested starting point with a more resonant tendency; a dynamic needs no phantom.' },
       { id: 'b', label: 'Supercardioid kick dynamic just outside, near the edge of the front head', ok: true, power: 'none', feedback: 'Outside pickup suits a front head with no port, and a dynamic needs no phantom.' },
       { id: 'c', label: 'Condenser just outside the front head, near its edge', ok: false, power: 'phantom', feedback: 'Outside suits an intact head, but this input has no phantom power and a condenser needs it.' },
       { id: 'd', label: 'Boundary plate resting on the pillow inside the drum', ok: false, power: 'phantom', feedback: 'There is no way in without taking the head off — and this input has no phantom power.' },
@@ -741,7 +741,7 @@ export const M01_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 22 × 18 in kick, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 22 × 18 in kick, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   // The pages' kick words (moved verbatim from the shared pages, 2026-10-04).
   copy: KICK_COPY,
 };

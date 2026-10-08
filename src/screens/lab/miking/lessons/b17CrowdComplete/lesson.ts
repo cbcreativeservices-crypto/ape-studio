@@ -44,7 +44,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the audience pair yourself in the mock venue — its viewpoint, its height and its aim — and hear the broad and the close perspective apart.',
-    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.place.3', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair, in its footprint, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.place.3', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair, in its footprint, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'A broad viewpoint carries the venue; a closer or lower one picks out nearby voices. Move only the pair’s centre, keep the source the same, and listen in mono too.',
   },
   context: {
@@ -469,8 +469,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A regional match in stereo: one commentator, one approved action place, few inputs, a small crew.',
     setups: [
-      { id: 'a', label: 'A commentary mic, one action mic, one stereo audience pair', ok: true, power: 'phantom', feedback: 'A recommended start: the minimal stereo layout — speech, action and ambience each on its own fader.' },
-      { id: 'b', label: 'A commentary mic, one action mic, one mono audience mic', ok: true, power: 'phantom', feedback: 'A recommended start for a mono production: less spatial information, the same separate roles.' },
+      { id: 'a', label: 'A commentary mic, one action mic, one stereo audience pair', ok: true, power: 'phantom', feedback: 'A suggested start: the minimal stereo layout — speech, action and ambience each on its own fader.' },
+      { id: 'b', label: 'A commentary mic, one action mic, one mono audience mic', ok: true, power: 'phantom', feedback: 'A suggested start for a mono production: less spatial information, the same separate roles.' },
       { id: 'c', label: 'The commentary mic alone, its spill as the crowd', ok: false, power: 'phantom', feedback: 'Commentary spill is not a venue bed: the crowd vanishes when the speech stops.' },
       { id: 'd', label: 'Two audience spots aimed at the loudest fans', ok: false, power: 'phantom', feedback: 'Aim across a region, not at the nearest people — and a main bed first.' },
       { id: 'e', label: 'A plant on the goal when the action place is refused', ok: false, power: 'phantom', feedback: 'If action pickup is denied, the wider venue feed is the fallback — never an unapproved plant.' },
@@ -489,8 +489,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An arena final: a large bowl, two commentators, a team to monitor the sums, approved high platforms.',
     setups: [
-      { id: 'a', label: 'Two commentary inputs, four action sectors, a main ambience and two spots', ok: true, power: 'phantom', feedback: 'A recommended start: the extensive layout — where each extra input fills a gap the minimal one lacks, and an operator watches the sums.' },
-      { id: 'b', label: 'The minimal layout plus one audience spot for a named gap', ok: true, power: 'phantom', feedback: 'A recommended start: grow the minimal layout only where listening found a gap.' },
+      { id: 'a', label: 'Two commentary inputs, four action sectors, a main ambience and two spots', ok: true, power: 'phantom', feedback: 'A suggested start: the extensive layout — where each extra input fills a gap the minimal one lacks, and an operator watches the sums.' },
+      { id: 'b', label: 'The minimal layout plus one audience spot for a named gap', ok: true, power: 'phantom', feedback: 'A suggested start: grow the minimal layout only where listening found a gap.' },
       { id: 'c', label: 'A mic on every row of seats for the fullest crowd', ok: false, power: 'phantom', feedback: 'Mics everywhere add overlap and single points of failure, not coverage.' },
       { id: 'd', label: 'The four capsule tracks sent straight to four loudspeakers', ok: false, power: 'phantom', feedback: 'Capsule tracks need their conversion; they are not speaker feeds.' },
       { id: 'e', label: 'A main array hung by the crew from the roof truss', ok: false, power: 'phantom', feedback: 'Overhead rigging is an engineered installation by qualified venue staff — never improvised.' },
@@ -636,6 +636,6 @@ export const B17_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every venue, audience and broadcaster is different: get approval, listen to every output, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the mock venue and its marks are the lesson’s own; the arena is a typical layout; ranges, delays, the M/S patterns and the downmix levels are calculated from the drawing and ideal patterns; the delivery card is one example — use your broadcaster’s. Safety is exact: no blocked seat, aisle or exit; no improvised overhead rigging; never provoke feedback; with thunder, shelter at once and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every venue, audience and broadcaster is different: get approval, listen to every output, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the mock venue and its marks are the lesson’s own; the arena is a typical layout; ranges, delays, the M/S patterns and the downmix levels are calculated from the drawing and ideal patterns; the delivery card is one example — use your broadcaster’s. Safety is exact: no blocked seat, aisle or exit; no improvised overhead rigging; never provoke feedback; with thunder, shelter at once and wait 30 minutes after the last thunder.',
   copy: B17_COPY,
 };

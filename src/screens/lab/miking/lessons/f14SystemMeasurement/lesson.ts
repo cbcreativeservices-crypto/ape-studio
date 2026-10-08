@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the measurement mic yourself — on the axis and off it, close to the woofer, at seats across the venue, at the studio’s listening position and beside it.',
-    credit: { scenarios: ['sy.place.1', 'sy.place.2', 'sy.place.3', 'sy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sy.place.1', 'sy.place.2', 'sy.place.3', 'sy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Keep the radius when you change the angle; sample every region whose sound matters, at an ear height; one chair is not the room. Write the source, the position and the aim for every trace.',
   },
   context: {
@@ -656,6 +656,6 @@ export const F14_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules: there is no single mic count, radius, angle grid, level or target that suits every loudspeaker and venue, and the method you are handed sets them. Experiment, and trust your ears and the room as well as the trace. The lab is silent and draws a simplified picture: a small loudspeaker, a small venue and a studio, straight paths at 20 °C, arrival heights and a processor latency as made-up examples, and an ideal comb for the overlap. Measure real systems with the operator’s agreement and someone qualified on the equipment.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: there is no single mic count, radius, angle grid, level or target that suits every loudspeaker and venue, and the method you are handed sets them. Experiment, and trust your ears and the room as well as the trace. The lab is silent and draws a simplified picture: a small loudspeaker, a small venue and a studio, straight paths at 20 °C, arrival heights and a processor latency as made-up examples, and an ideal comb for the overlap. Measure real systems with the operator’s agreement and someone qualified on the equipment.',
   copy: F14_COPY,
 };

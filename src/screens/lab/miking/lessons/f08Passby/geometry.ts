@@ -56,7 +56,7 @@ export const F08_SURFACES: ReferenceSurface[] = [
   { id: 'path', partId: 'path', label: 'the path’s centre line', point: { x: ROUTE_X, y: -PB_H, z: 0 }, normal: { x: -1, y: 0, z: 0 }, plus: { words: 'back from', key: 'BACK FROM' }, variants: ['walk'] },
   { id: 'route', partId: 'route', label: 'the route’s centre line', point: { x: VEH_X, y: -PB_H, z: 0 }, normal: { x: -1, y: 0, z: 0 }, plus: { words: 'back from', key: 'BACK FROM' }, variants: ['vehicle'] },
 ];
-export const F08_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: 0, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above the ground', minus: 'below the ground', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
+export const F08_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: 0, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above', minus: 'below', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
 
 const VARIANTS: Variant[] = [
   { id: 'walk', label: 'WALKING PASS', blurb: 'A consenting walker on a park path closed to traffic, passing 3 m from the listening point.', phrase: 'beside a walking route' },

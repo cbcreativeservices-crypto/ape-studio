@@ -126,7 +126,7 @@ function B17Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      'After our research, each blue starting point is where we recommend you begin — a broad, stable viewpoint first, a closer one only for a named gap. They are starting points, not rules: move only the pair’s centre, keep the source the same, and listen in stereo and in mono. Experimentation is encouraged.',
+      'After our research, each blue starting point is where we suggest you begin — a broad, stable viewpoint first, a closer one only for a named gap. They are starting points, not rules: move only the pair’s centre, keep the source the same, and listen in stereo and in mono. Experimentation is encouraged.',
       'For a real event, every viewpoint, platform and cable route is approved by the venue — no blocked seats, aisles, exits, accessibility routes or camera views.',
     ),
   ];

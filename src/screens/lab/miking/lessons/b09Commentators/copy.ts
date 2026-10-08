@@ -88,8 +88,8 @@ export const B09_COPY: Partial<LessonCopy> = {
     },
     note: 'Clearance comes first: nothing touches the face, the boom clears glasses and the notes, and every cable is secured away from walkways and windows.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a commentator, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, booth and stadium is different.',
-      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with the commentator calling real play each time. Distances are measured to the mic’s FRONT — a headset capsule’s foam, a lip ribbon’s guard — and rounded to about 5 mm; no millimetre claim is made.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a commentator, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, booth and stadium is different.',
+      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with the commentator calling real play each time. Distances are measured to the mic’s FRONT — a headset capsule’s foam, a lip ribbon’s guard — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m; no millimetre claim is made.',
       clearance: 'Clearance comes first: off the face, out of the breath, clear of glasses, a scarf and the notes.',
       tendencies: 'Closer tends to sound fuller and drier, with more breath and pops (the proximity effect); beside the mouth, softer pops; farther, more crowd and more of the partner. These are tendencies, and voices vary.',
     },

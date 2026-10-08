@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the pair yourself — closer, farther, higher — and watch the players’ distances to it: the equal-distance idea, read from the drawing.',
-    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.31', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.31', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Move the pair in small steps and judge the blend, the room, the width and the mono sum. When the players sit about equally far from it, they arrive about equally — moving a player is often the simplest balance control.',
   },
   context: {
@@ -564,7 +564,7 @@ export const E08_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E08_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A small group has no single right setup: seat the players, start with one pair where they are about equally far, and add a spot only for a clear reason, 3:1 between spots. The readouts are calculated from the drawing — straight paths, ideal patterns, no room — to compare setups, not to measure a room. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Keep stands clear of bows, hands and walkways; protect your hearing; never chase feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A small group has no single right setup: seat the players, start with one pair where they are about equally far, and add a spot only for a clear reason, 3:1 between spots. The readouts are calculated from the drawing — straight paths, ideal patterns, no room — to compare setups, not to measure a room. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Keep stands clear of bows, hands and walkways; protect your hearing; never chase feedback.',
   copy: { words: ensembleWords('group') },
   ensemble: {
     seatings: { duo: 'acoustic.duo', trio: 'acoustic.trio' },
@@ -586,13 +586,13 @@ export const E08_LESSON: EnsembleLesson = {
     ],
     safety: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it; stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; never chase feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a small group: one pair where the players are about equally far from it — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a small group: one pair where the players are about equally far from it — a place to start and compare, not a rule.',
       clearance: 'The boom stand reaches in from the audience side, its base clear of the players’ feet, the bows and the walkway; its cable dressed flat.',
       height: 'About 1.3 m up — a little above the instruments, so it hears each one over the others’ hands and bows.',
       forward: 'At the point the players sit round, about 1.5 m from each: every player about equally far. Move it closer and the nearest player leads; farther, more blend and more room.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the pair — about 1–2 m from the players, a little above the instruments, where they are about equally far. Places to start and compare, not measurements of a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the pair — about 1–2 m from the players, a little above the instruments, where they are about equally far. Places to start and compare, not measurements of a best place.',
       'Watch SPREAD: how far apart the players’ distances to the pair are. Near zero, they arrive about equally; moving a player is often simpler than moving the mics.',
       'Change one thing at a time and compare at matched level; keep the pair’s own geometry as you move it.',
     ],

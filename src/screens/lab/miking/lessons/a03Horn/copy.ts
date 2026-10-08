@@ -30,7 +30,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it toward the bell, a little off its axis — the lab counts it while the mic points within about {tol}° of the bell’s centre. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell and the space it rises into in a “bells up” passage, the right hand and arm, the player turning, and the chair. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Behind the bell a mic hears the horn directly — more edge and detail, bigger level swings; in front it hears the horn with the room. Both are recommended places to begin: which suits depends on the room, the music and what else is on stage.',
+    reveal: 'Behind the bell a mic hears the horn directly — more edge and detail, bigger level swings; in front it hears the horn with the room. Both are suggested places to begin: which suits depends on the room, the music and what else is on stage.',
     typeNotes: {
       smallDynCard: 'Ideas to try with a small dynamic behind the horn: start low, off to the bell’s side, aimed toward the bell; then move one thing at a time — farther, more off axis, lower — and play the soft and the loud passages each time.',
       sdcCard: 'Ideas to try with a small condenser: behind the bell for a direct view, or in front, above or below the horn, for the horn with the room. Compare the two at matched level.',
@@ -40,7 +40,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, stand or cable anywhere the bell can rise, the right hand can go or the player can turn is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic: behind and beside the bell (measured from the bell), or in front of the player (measured from the horn). They are starting points, not rules — move from there and listen; every horn, player and room is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic: behind and beside the bell (measured from the bell), or in front of the player (measured from the horn). They are starting points, not rules — move from there and listen; every horn, player and room is different.',
       separate: 'Distance, height and the angle off the bell’s axis are separate variables: change one at a time, and play the soft phrase and the strongest accent each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable out of the bell’s rise, the right hand’s way into the bell and the player’s turn. The grey hatch appears as the mic comes near one of them.',
       tendencies: 'Closer to the bell’s axis tends to bring more edge and level swings; farther off axis, softer; in front, more of the room. These are tendencies, and horns and rooms vary.',

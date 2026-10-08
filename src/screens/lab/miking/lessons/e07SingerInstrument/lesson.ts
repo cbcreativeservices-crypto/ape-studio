@@ -67,8 +67,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the vocal mic about 15 cm from the lips, its rejection toward the instrument — then move the mics and see what each hears, and how far apart they are.',
-    credit: { scenarios: ['sw.place.1', 'sw.place.2', 'sw.place.3', 'sw.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of the performer and the instrument, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — the vocal mic about 15 cm from the lips, its rejection toward the instrument — then move the mics and see what each hears, and how far apart they are.',
+    credit: { scenarios: ['sw.place.1', 'sw.place.2', 'sw.place.3', 'sw.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of the performer and the instrument, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Each mic is measured from its own source. With a singer behind an instrument the mics end up close together — some bleed is normal; the rejection, the spacing and a mono check decide how much the music can take.',
   },
   context: {
@@ -465,8 +465,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio: a singer-guitarist, a quiet good room, a delicate song. Phantom power available.',
     setups: [
-      { id: 'a', label: 'One condenser out in front, moved until voice and guitar balance', ok: true, power: 'phantom', feedback: 'A recommended idea for a coherent take in a good room — the balance is set by the mic’s place and the posture.' },
-      { id: 'b', label: 'A vocal mic ~15 cm from the lips and a guitar mic ~22 cm from the 12th fret, rejection toward each other', ok: true, power: 'phantom', feedback: 'A recommended pair for control — check each alone and the pair in mono.' },
+      { id: 'a', label: 'One condenser out in front, moved until voice and guitar balance', ok: true, power: 'phantom', feedback: 'A suggested idea for a coherent take in a good room — the balance is set by the mic’s place and the posture.' },
+      { id: 'b', label: 'A vocal mic ~15 cm from the lips and a guitar mic ~22 cm from the 12th fret, rejection toward each other', ok: true, power: 'phantom', feedback: 'A suggested pair for control — check each alone and the pair in mono.' },
       { id: 'c', label: 'A mic inside the sound hole and a second at the singer’s chest', ok: false, power: 'phantom', feedback: 'Inside the hole is the boomiest place, and neither sound leaves the chest.' },
       { id: 'd', label: 'Four mics on the guitar, chosen later', ok: false, power: 'phantom', feedback: 'Every mic adds bleed and phase; choose a relationship first.' },
       { id: 'e', label: 'An omni vocal mic 5 cm from the lips to block the guitar', ok: false, power: 'phantom', feedback: 'An omni blocks nothing: at 5 cm only the closeness keeps the voice ahead of the guitar — and the capsule sits in the breath.' },
@@ -486,7 +486,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Live: a singer at a grand piano, a wedge, a PA. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A vocal dynamic on a boom, rejection toward the strings; piano mics close over the strings', ok: true, power: 'phantom', feedback: 'A recommended live setup — check the boom’s clearance and the margin before feedback.' },
+      { id: 'a', label: 'A vocal dynamic on a boom, rejection toward the strings; piano mics close over the strings', ok: true, power: 'phantom', feedback: 'A suggested live setup — check the boom’s clearance and the margin before feedback.' },
       { id: 'b', label: 'A vocal dynamic on a boom; the piano’s mics inside the lid, mounted without touching the strings', ok: true, power: 'phantom', feedback: 'Also fair — with the owner’s agreement and nothing near the moving parts.' },
       { id: 'c', label: 'A distant stereo pair on the room for a natural sound', ok: false, power: 'phantom', feedback: 'Distant piano mics need too much gain for reinforcement.' },
       { id: 'd', label: 'A stand right beside the bench, the vocal mic over the keys', ok: false, power: 'none', feedback: 'A stand where the pianist can strike it, or in the way of the bench and the pedals, is the wrong place.' },
@@ -665,6 +665,6 @@ export const E07_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every performer, instrument and room is different: move the mics, experiment, and trust your ears. The lab is silent and draws a simplified picture: one seated singer-guitarist and one singer at a grand in typical poses, mic patterns and the two-mic comb as textbook shapes, the guitar as one point for the null exercise; the 3:1 figures are computed from the drawing. Distances are rounded to about 5 mm and measured from each source to the mic’s front. Place real mics with the performer stopped, and open a piano only with its owner’s agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every performer, instrument and room is different: move the mics, experiment, and trust your ears. The lab is silent and draws a simplified picture: one seated singer-guitarist and one singer at a grand in typical poses, mic patterns and the two-mic comb as textbook shapes, the guitar as one point for the null exercise; the 3:1 figures are computed from the drawing. Distances are rounded to about 5 mm and measured from each source to the mic’s front. Place real mics with the performer stopped, and open a piano only with its owner’s agreement.',
   copy: E07_COPY,
 };

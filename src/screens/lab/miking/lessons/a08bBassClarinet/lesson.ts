@@ -46,8 +46,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — 0.6–1.2 m in front, aimed at the middle — then compare the body-and-bell blend and a bell-favouring view.',
-    credit: { scenarios: ['bcl.place.1', 'bcl.place.2', 'bcl.place.3', 'bcl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — 0.6–1.2 m in front, aimed at the middle — then compare the body-and-bell blend and a bell-favouring view.',
+    credit: { scenarios: ['bcl.place.1', 'bcl.place.2', 'bcl.place.3', 'bcl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Begin far enough away to hear the whole instrument, then move in. A body-and-bell blend, a bell-favouring view and a clip are comparisons for different goals — and the lowest note decides a lot.',
   },
   context: {
@@ -363,8 +363,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio overdub, a bass clarinet to low C, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Small condenser 0.6–1.2 m in front, aimed at the middle of the instrument', ok: true, power: 'phantom', feedback: 'A recommended starting point that hears the whole instrument — then move in by ear.' },
-      { id: 'b', label: 'Small condenser 25–55 cm in front and a little to the side, at the lower body and bell', ok: true, power: 'phantom', feedback: 'A recommended starting point for the blend — check the lowest note and the keys.' },
+      { id: 'a', label: 'Small condenser 0.6–1.2 m in front, aimed at the middle of the instrument', ok: true, power: 'phantom', feedback: 'A suggested starting point that hears the whole instrument — then move in by ear.' },
+      { id: 'b', label: 'Small condenser 25–55 cm in front and a little to the side, at the lower body and bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for the blend — check the lowest note and the keys.' },
       { id: 'c', label: 'A mic pointed straight down the bell’s throat from close above', ok: false, power: 'phantom', feedback: 'Down the throat, the bell’s lowest notes lead and the holes fall away.' },
       { id: 'd', label: 'The soprano clarinet’s 15–20 cm, a third up from the bell', ok: false, power: 'phantom', feedback: 'That figure is for the soprano clarinet; it does not transfer to the bass.' },
       { id: 'e', label: 'A mic clamped to the curved neck', ok: false, power: 'phantom', feedback: 'The neck is never a mount — and the sound leaves lower down.' },
@@ -377,8 +377,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a bass clarinettist in a band, a wedge in front, seated. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A clip confirmed for this instrument on the bell’s rim, aimed between the bell and the keys', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the instrument — re-test every register.' },
-      { id: 'b', label: 'A cardioid on a weighted stand close in front, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point with the rejection aimed — check the peg and the floor.' },
+      { id: 'a', label: 'A clip confirmed for this instrument on the bell’s rim, aimed between the bell and the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the instrument — re-test every register.' },
+      { id: 'b', label: 'A cardioid on a weighted stand close in front, its rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point with the rejection aimed — check the peg and the floor.' },
       { id: 'c', label: 'An omni a metre away, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage an omni a metre away hears the band and the wedge more than the instrument.' },
       { id: 'd', label: 'A mic on the floor beside the peg, aimed up at the bell', ok: false, power: 'phantom', feedback: 'By the peg it hears floor thumps, and the stand sits in the peg’s path.' },
       { id: 'e', label: 'A mic straight into the bell, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'A bell-only view loses the holes; turned up, it brings the stage and feedback.' },
@@ -499,7 +499,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A stand, clip or cable anywhere the peg, the hands or the bell can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the middle of the instrument, the span from the lower body to the bell, the bell, the lowest keys. They are starting points and comparisons, not rules.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the middle of the instrument, the span from the lower body to the bell, the bell, the lowest keys. They are starting points and comparisons, not rules.',
       separate: 'Distance, height and the side angle are separate variables: change one at a time, and play the lowest note of the part, the middle and the top each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the peg and its path, the chair, the neck, the hands and the bell. The engine stops the mic and names what it would touch.',
       tendencies: 'Farther tends to blend the bell and the holes; toward the bell, more low-note weight; toward the keys, articulation and clicks. A directional mic up close also lifts the lows. These are tendencies, and instruments vary.',
@@ -651,7 +651,7 @@ export const A08B_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules; for the bass clarinet, most close distances are our own drawings of good practice. Every instrument, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal tube, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules; for the bass clarinet, most close distances are our own drawings of good practice. Every instrument, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal tube, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A bass clarinet on its side, keys toward you, its air column drawn open',

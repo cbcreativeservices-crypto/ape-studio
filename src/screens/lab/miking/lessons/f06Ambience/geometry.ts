@@ -71,7 +71,7 @@ export const F06_SURFACES: ReferenceSurface[] = [
 ];
 
 /** The ground as a reference plane: the signed distance is the height above it. */
-export const F06_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: 0, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above the ground', minus: 'below the ground', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
+export const F06_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: 0, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above', minus: 'below', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
 
 const VARIANTS: Variant[] = [
   { id: 'woodland', label: 'WOODLAND', blurb: 'A woodland stream: the water ahead, a walking path behind the listening point, birds calling in the canopy.', phrase: 'by a woodland stream' },

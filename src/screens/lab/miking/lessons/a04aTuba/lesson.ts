@@ -44,9 +44,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about two feet above an upward bell aimed at its edge, or a foot or two from the bell a little off its axis — clear of the bell’s sway; then move the mic and see what changes.',
-    credit: { scenarios: ['tu.place.1', 'tu.place.2', 'tu.place.3', 'tu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part — the bell, or the tuba — not a rule. Aim across an upward bell, never down into it. Clearance comes first.',
+    goal: 'Start where we suggest you begin — about two feet above an upward bell aimed at its edge, or a foot or two from the bell a little off its axis — clear of the bell’s sway; then move the mic and see what changes.',
+    credit: { scenarios: ['tu.place.1', 'tu.place.2', 'tu.place.3', 'tu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the tuba — not a rule. Aim across an upward bell, never down into it. Clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -406,8 +406,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with a brass band and a drummer. One channel for a bell-up tuba; a sub-heavy PA.',
     setups: [
-      { id: 'a', label: 'Small dynamic a foot or two from the bell, above and to the side, aimed across the opening', ok: true, power: 'none', feedback: 'A recommended starting point: close, directional, clear of the sway — check it with the player silent for subwoofer spill.' },
-      { id: 'b', label: 'A mount its maker confirms for this bell, the cable kept from the valves and slides', ok: true, power: 'phantom', feedback: 'A recommended option when a confirmed mount exists: it moves with the bell.' },
+      { id: 'a', label: 'Small dynamic a foot or two from the bell, above and to the side, aimed across the opening', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, clear of the sway — check it with the player silent for subwoofer spill.' },
+      { id: 'b', label: 'A mount its maker confirms for this bell, the cable kept from the valves and slides', ok: true, power: 'phantom', feedback: 'A suggested option when a confirmed mount exists: it moves with the bell.' },
       { id: 'c', label: 'A small condenser 1.2 m in front, for the whole tuba and the room', ok: false, power: 'phantom', feedback: 'A good studio view — on a loud stage it hears the band and the subwoofers more than the tuba.' },
       { id: 'd', label: 'A mic lowered into the bell, for the strongest signal', ok: false, power: 'none', feedback: 'Never into the bell: one local part, the air stream and the valves — and a risk to the tuba.' },
       { id: 'e', label: 'A clip on a tuning slide, close to the valves', ok: false, power: 'phantom', feedback: 'Slides bend easily and must never hold anything — and the valves are noise, not tuba.' },
@@ -420,8 +420,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Studio. A wind ensemble is recorded with a main pair already up; the producer wants a little more tuba definition.',
     setups: [
-      { id: 'a', label: 'A small condenser about 60 cm above the bell, aimed at its edge, raised under the main pair and checked in mono', ok: true, power: 'phantom', feedback: 'A recommended starting point used as a spot: open and rounded, raised just enough.' },
-      { id: 'b', label: 'A small dynamic a foot or two from the bell, off axis, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A recommended starting point — closer and more defined; check it with the main pair in mono.' },
+      { id: 'a', label: 'A small condenser about 60 cm above the bell, aimed at its edge, raised under the main pair and checked in mono', ok: true, power: 'phantom', feedback: 'A suggested starting point used as a spot: open and rounded, raised just enough.' },
+      { id: 'b', label: 'A small dynamic a foot or two from the bell, off axis, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A suggested starting point — closer and more defined; check it with the main pair in mono.' },
       { id: 'c', label: 'A spot on the bell’s axis, as close as it goes, with a big low boost', ok: false, power: 'none', feedback: 'That turns a supporting bass line into an oversized source — and proximity already lifts the lows.' },
       { id: 'd', label: 'Delay the spot to the main pair and flip its polarity, as a matter of course', ok: false, power: 'phantom', feedback: 'Neither is automatic: move or rebalance first, then judge both in mono.' },
       { id: 'e', label: 'Turn the main pair up until the tuba is clear', ok: false, power: 'phantom', feedback: 'That raises everything else too. Definition needs a little direct tuba, not more of everything.' },
@@ -599,6 +599,6 @@ export const A04A_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every tuba, player and room is different: find the bell, move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell and the hands’ space shown as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every tuba, player and room is different: find the bell, move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell and the hands’ space shown as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: TUBA_COPY,
 };

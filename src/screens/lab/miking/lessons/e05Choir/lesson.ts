@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — nearer, farther, higher — and see what changes for the first and back rows and across the width.',
-    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the singers, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Choose the array, then move it toward or away and listen. Nearer favours the first rows and diction; farther, the blend and the room — and the whole choir inside the pair’s angle. Move the pair as a unit.',
   },
   context: {
@@ -517,7 +517,7 @@ export const E05_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E05_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A choir has no single right setup: listen to it first, fix the balance with the director, then use the fewest mics that cover it — a few feet out and a little above, aimed at the singers, spaced 3:1, or one main pair. Every choir, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Nothing hangs over the singers; protect your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A choir has no single right setup: listen to it first, fix the balance with the director, then use the fewest mics that cover it — a few feet out and a little above, aimed at the singers, spaced 3:1, or one main pair. Every choir, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Nothing hangs over the singers; protect your hearing.',
   copy: { words: { ...ensembleWords('choir'), player: 'singers', inside: 'among the singers', outside: 'clear of the singers', axis: 'the line toward the singers', facing: 'facing the singers', shield: 'singers in path' } },
   ensemble: {
     seatings: { risers: 'choir.risers', arc: 'choir.arc' },
@@ -539,12 +539,12 @@ export const E05_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands with wide bases and protected cable paths, clear of the risers’ edges and the singers’ way on and off. Nothing hangs over the singers’ heads: anything hung is the venue’s, on approved rigging. Stop the choir before moving a mic. Protect your hearing; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin a choir recording: one main pair, centred, a few feet in front and a little above the first row’s heads — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin a choir recording: one main pair, centred, a few feet in front and a little above the first row’s heads — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the first row, clear of the singers’ feet and sightlines to the conductor; its cable dressed flat and away from the way on and off the risers.',
       height: `A little above the first row’s heads, so it sees past them to the rows on the steps behind. Higher hears more of the back rows and the room; lower, more of the first row and its diction.`,
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the main pair’s centre — near, about 0.6–1.2 m (2–4 ft) in front and 0.3–0.9 m (1–3 ft) above the first row’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair’s centre — near, about 0.6–1.2 m (2–4 ft) in front and 0.3–0.9 m (1–3 ft) above the first row’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
       'Change one variable at a time — distance, height, then the angle — and compare at a consistent level on the same passage, on loudspeakers.',
       'Area mics follow the same idea: a few feet out, a little above, aimed at the middle or back rows, and at least three times their distance to the singers apart from each other.',
     ],

@@ -34,7 +34,7 @@ export const VIBE_FAM: MalletFamily = {
 
 const DOWN_MICS = ['mlSdc', 'mlDynCard'];
 
-/* ── RECOMMENDED STARTING POINTS (lesson L10, L11, L15; corrections I2-V*) ── */
+/* ── SUGGESTED STARTING POINTS (lesson L10, L11, L15; corrections I2-V*) ── */
 export const VIBE_ZONES: DocumentedZone[] = [
   oneMicZone(VIBE_FAM, {
     id: 'vb.one',

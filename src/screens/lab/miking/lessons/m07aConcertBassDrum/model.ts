@@ -46,7 +46,7 @@ const E = (CBD_DIMS.deccaElev.mm * Math.PI) / 180;
 const DECCA_START = { x: CBD_DIMS.deccaDist.mm * Math.cos(E), y: -CBD_DIMS.deccaDist.mm * Math.sin(E), z: 0 };
 const BOTH = ['orchSdc', 'smallDynCard'];
 
-/* ── RECOMMENDED STARTING POINTS (lesson L13-L24; corrections B-01..B-03). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L13-L24; corrections B-01..B-03). ── */
 export const CBD_ZONES: DocumentedZone[] = [
   {
     id: 'cbd.spot',

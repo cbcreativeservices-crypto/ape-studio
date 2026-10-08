@@ -1,5 +1,5 @@
 /**
- * THE SAXOPHONE FAMILY'S RECOMMENDED STARTING POINTS (charter §2 layer 1),
+ * THE SAXOPHONE FAMILY'S SUGGESTED STARTING POINTS (charter §2 layer 1),
  * as geometry: each kind of zone the research gives (alto_sax/SOURCES.md
  * §2, alto_sax/GEOMETRY_PROPOSAL.md §4), built on a family (saxFamily.ts).
  * The LESSON writes the words (label, band, tendency, checks) — the voice

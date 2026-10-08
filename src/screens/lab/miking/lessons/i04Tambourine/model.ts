@@ -180,5 +180,5 @@ function zonesFor(s: TmbState): DocumentedZone[] {
   return [front, side];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L12-L17; corrections HT-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L12-L17; corrections HT-xx). ── */
 export const TMB_ZONES: DocumentedZone[] = (['shaken', 'struck', 'crescent', 'mounted'] as const).flatMap((v) => zonesFor(STATES[v]));

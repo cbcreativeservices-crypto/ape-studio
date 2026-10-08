@@ -1,5 +1,5 @@
 /**
- * E07 SINGER WITH GUITAR OR PIANO — the recommended starting points (charter
+ * E07 SINGER WITH GUITAR OR PIANO — the suggested starting points (charter
  * §2 layer 1), from singer_with_instrument/SOURCES.md and the Lab 5 register
  * (lead_vocal/SOURCES.md §0); corrections E7-… (CORRECTIONS_LOG).
  *

@@ -37,7 +37,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a plan and move the drum pair yourself — lower, higher, over the kit or in front of it — and see what changes.',
-    credit: { scenarios: ['bd.place.1', 'bd.place.2', 'bd.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different recommended starting points, and answer the three checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bd.place.1', 'bd.place.2', 'bd.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the three checks. The worked example earns nothing on its own.' },
     takeaway: 'Change one thing at a time and compare at matched level. A pair over the kit hears the whole kit; nearer the snare, more drums; higher, more cymbals and room.',
   },
   context: {
@@ -609,7 +609,7 @@ export const E09_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E09_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A band has no single right plan: hear it, arrange it, then add only the mics each part needs. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare plans, not to predict a venue. Every band, room and production is different: experiment, compare at matched level, and trust your ears. Keep hot equipment ventilated, cables and walkways clear, protect your hearing and never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A band has no single right plan: hear it, arrange it, then add only the mics each part needs. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare plans, not to predict a venue. Every band, room and production is different: experiment, compare at matched level, and trust your ears. Keep hot equipment ventilated, cables and walkways clear, protect your hearing and never provoke feedback.',
   copy: { words: ensembleWords('band') },
   ensemble: {
     seatings: { stage: 'band.stage', room: 'band.room' },
@@ -631,13 +631,13 @@ export const E09_LESSON: EnsembleLesson = {
     ],
     safety: 'Never cover hot equipment or block its ventilation; use safe, approved isolation. Keep cables, power and walkways clear and serviceable; split mics only through a proper splitter. Protect your hearing; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a band: the drum pair over the kit, then close mics only where a part needs control — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a band: the drum pair over the kit, then close mics only where a part needs control — a place to start and compare, not a rule.',
       clearance: 'The boom stand stands in front of the kit, its base clear of the kick pedal and the walkway; the bar above the cymbals’ swing and the sticks’ highest point; the cable dressed flat.',
       height: 'Each mic about 1.2 m (4 ft) from the snare’s centre — the same distance — pointing straight down. Higher tends to more cymbals and room; lower, more drums.',
       forward: 'Centred over the snare, so the snare stays in the middle of the picture; the two mics over the hi-hat side and the other side of the kit.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the drum pair — each mic about 1–1.4 m from the snare over the kit — or, in a good room, a low pair about 1 m in front of the kick. Places to start and compare, not measurements of a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the drum pair — each mic about 1–1.4 m from the snare over the kit — or, in a good room, a low pair about 1 m in front of the kick. Places to start and compare, not measurements of a best place.',
       'Change one thing at a time — height, then where it sits over the kit — and compare at a consistent level on the same passage.',
       'Keep the two mics the same distance from the snare as you move them, so the snare stays centred and the pair sums well in mono.',
     ],

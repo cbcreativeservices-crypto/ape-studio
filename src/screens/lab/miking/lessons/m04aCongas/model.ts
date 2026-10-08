@@ -9,7 +9,7 @@
  * spacing, shell taper, rim and the raised-stand height are DRAWING DEFAULTS
  * (placeholder: true — drawn, never a readout, listed in the unknowns).
  *
- * The RECOMMENDED STARTING POINTS (owner ruling 2026-10-04): learner-facing
+ * The SUGGESTED STARTING POINTS (owner ruling 2026-10-04): learner-facing
  * `label`, `band`, `tendency`, `checks` in plain starting-point words; `kind`,
  * `src`, `quote` and every `prov` are the INTERNAL research record.
  */

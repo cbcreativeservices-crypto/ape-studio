@@ -692,6 +692,6 @@ export const M11_LESSON: Lesson = {
   ],
   live: { wedges: M11_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every kit, room and show is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit in a right-handed layout, mics at illustrative starting places (each drum’s own lesson has its numbers), straight-line arrival times at 20 °C and mic patterns as textbook shapes. The channel counts describe a plan — they never grade it. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, room and show is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit in a right-handed layout, mics at illustrative starting places (each drum’s own lesson has its numbers), straight-line arrival times at 20 °C and mic patterns as textbook shapes. The channel counts describe a plan — they never grade it. Place real mics with the drummer stopped.',
   copy: M11_COPY,
 };

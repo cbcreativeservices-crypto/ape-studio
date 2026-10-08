@@ -6,7 +6,8 @@
  *
  *   fmtLen(62)   → "≈ 6 cm (2.4 in)"
  *   fmtLen(65)   → "≈ 6.5 cm (2.6 in)"
- *   fmtLen(1240) → "≈ 1.24 m (48.8 in)"
+ *   fmtLen(1240) → "≈ 1.25 m (49 in)"
+ *   fmtLen(10005) → "≈ 10 m (33 ft)"   (owner X1: long distances round, feet ≥ 3 m)
  *   fmtAngle(12) → "≈ 10°"
  */
 
@@ -27,31 +28,6 @@ function trimZero(s: string): string {
   while (end > 0 && s.charAt(end - 1) === '0') end--;
   if (end > 0 && s.charAt(end - 1) === '.') end--;
   return s.slice(0, end);
-}
-
-/** Metric part only, rounded to 5 mm: "6 cm", "6.5 cm", "1.24 m". */
-export function fmtMetric(mm: number): string {
-  'worklet';
-  const r = round5(mm);
-  const a = Math.abs(r);
-  if (a >= 1000) return `${trimZero((r / 1000).toFixed(3))} m`;
-  if (a >= 10) return `${trimZero((r / 10).toFixed(1))} cm`;
-  return `${r} mm`;
-}
-
-/** Imperial part, from the SAME rounded value: "2.4 in". */
-export function fmtImperial(mm: number): string {
-  'worklet';
-  const r = round5(mm);
-  return `${trimZero((r / MM_PER_IN).toFixed(1))} in`;
-}
-
-/** "≈ 6 cm (2.4 in)" — metric first (the lab's own unit; a citation keeps
- *  the source's own unit first, written out in the lesson text). */
-export function fmtLen(mm: number): string {
-  'worklet';
-  if (!(mm === mm)) return 'not measured';
-  return `≈ ${fmtMetric(mm)} (${fmtImperial(mm)})`;
 }
 
 /* ── lab6 group 1 (2026-10-08): a SCALED rounding tier for scenes from a prop
@@ -78,16 +54,60 @@ export function roundScaled(mm: number): number {
   return r === 0 ? 0 : r;
 }
 
-/** "≈ 85 cm (33.5 in)" below a metre; "≈ 1.25 m (4.1 ft)" / "≈ 35 m (114.8 ft)" above —
- *  metric first, rounded on the scaled tier; the imperial part from the SAME
- *  rounded value. */
-export function fmtLenScaled(mm: number): string {
+/* ── ONE distance rule for every readout (owner decision X1, 2026-10-08) ──
+ *  below 1 m   5 mm steps, cm and inches        "≈ 6.5 cm (2.6 in)"
+ *  1 m – 3 m   the scaled tier (50 mm), m and whole inches   "≈ 1.25 m (49 in)"
+ *  3 m and up  the scaled tier (50 mm to 10 m, 0.1 m to 100 m, then 1 m),
+ *              m and FEET (0.1 ft below 10 m, whole feet beyond)
+ *                                                "≈ 3.55 m (11.6 ft)", "≈ 10 m (33 ft)"
+ *  so a long distance never claims millimetres. The imperial part always comes
+ *  from the SAME rounded metric value. `fmtLenScaled` is the same rule. */
+
+/** Feet start here (mm, on the rounded value). */
+export const FEET_FROM_MM = 3000;
+export const MM_PER_FT = 304.8;
+
+/** The rounded value the shared rule shows for a distance (mm). */
+export function roundLen(mm: number): number {
+  'worklet';
+  const r5 = round5(mm);
+  return Math.abs(r5) < 1000 ? r5 : roundScaled(mm);
+}
+
+/** Metric part only, on the shared rule: "6 cm", "6.5 cm", "1.25 m", "10 m". */
+export function fmtMetric(mm: number): string {
+  'worklet';
+  const r = roundLen(mm);
+  const a = Math.abs(r);
+  if (a >= 1000) return `${trimZero((r / 1000).toFixed(a >= 100000 ? 0 : 2))} m`;
+  if (a >= 10) return `${trimZero((r / 10).toFixed(1))} cm`;
+  return `${r} mm`;
+}
+
+/** Imperial part, from the SAME rounded value: "2.4 in", "49 in", "11.6 ft", "33 ft". */
+export function fmtImperial(mm: number): string {
+  'worklet';
+  const r = roundLen(mm);
+  const a = Math.abs(r);
+  if (a < 1000) return `${trimZero((r / MM_PER_IN).toFixed(1))} in`;
+  if (a < FEET_FROM_MM) return `${Math.round(r / MM_PER_IN)} in`;
+  const ft = r / MM_PER_FT;
+  return `${a < 10000 ? trimZero(ft.toFixed(1)) : String(Math.round(ft))} ft`;
+}
+
+/** "≈ 6 cm (2.4 in)" — metric first (the lab's own unit; a citation keeps
+ *  the source's own unit first, written out in the lesson text). */
+export function fmtLen(mm: number): string {
   'worklet';
   if (!(mm === mm)) return 'not measured';
-  const r = roundScaled(mm);
-  const a = Math.abs(r);
-  if (a < 1000) return `≈ ${trimZero((r / 10).toFixed(1))} cm (${trimZero((r / MM_PER_IN).toFixed(1))} in)`;
-  return `≈ ${trimZero((r / 1000).toFixed(2))} m (${trimZero((r / 304.8).toFixed(1))} ft)`;
+  return `≈ ${fmtMetric(mm)} (${fmtImperial(mm)})`;
+}
+
+/** The shared distance rule (X1) — kept as a name for the scaled tier; it is
+ *  exactly `fmtLen`. */
+export function fmtLenScaled(mm: number): string {
+  'worklet';
+  return fmtLen(mm);
 }
 
 /** Round to the nearest 5°. */

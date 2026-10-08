@@ -49,8 +49,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin on a cabinet — measured from the grille, on the active speaker — then build a rotary cabinet’s pickup from outside, in stages.',
-    credit: { scenarios: ['spk.place.1', 'spk.place.2', 'spk.place.3', 'spk.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points on a cabinet, build an upper-and-lower rotary-cabinet pickup with the cabinet switched off, and answer the four checks.' },
+    goal: 'Start where we suggest you begin on a cabinet — measured from the grille, on the active speaker — then build a rotary cabinet’s pickup from outside, in stages.',
+    credit: { scenarios: ['spk.place.1', 'spk.place.2', 'spk.place.3', 'spk.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points on a cabinet, build an upper-and-lower rotary-cabinet pickup with the cabinet switched off, and answer the four checks.' },
     takeaway: 'Measure from the grille, on the speaker that is sounding, and change one thing at a time: across the cone OR away from it. A rotary cabinet is miked from outside, upper and lower, in stages — never through a louver.',
   },
   context: {
@@ -519,7 +519,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the right reference', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from — the grille, or the cabinet’s outside.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right reference', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from — the grille, or the cabinet’s outside.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay outside, clear of the grille, vents and walkways', role: 'required', feedback: 'Clearance is part of every passing setup — and nothing goes inside a cabinet.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position gives the most bass on every cabinet.' };
@@ -530,7 +530,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud club stage, a guitar combo with one 12 in speaker, a mono PA. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic close in front of the speaker, aimed at the dust-cap edge', ok: true, power: 'none', feedback: 'A recommended starting point, close and directional for a loud stage; a dynamic needs no power.' },
+      { id: 'a', label: 'Instrument dynamic close in front of the speaker, aimed at the dust-cap edge', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the active speaker', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has the phantom power it needs.' },
       { id: 'c', label: 'Instrument dynamic right at the grille, on the centre of the cone', ok: true, power: 'none', feedback: 'A brighter starting point; fine if it suits the player’s tone — keep it off the cloth.' },
       { id: 'd', label: 'A mic 60–90 cm back from the cabinet, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and monitors and lowers the margin before feedback.' },
@@ -749,5 +749,5 @@ export const SPK_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every speaker, cabinet, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 12 in speaker as the reference, three cabinets, and one classic two-rotor cabinet — its rotor sizes, openings and direction of turning are drawing choices, while its speeds and the times it takes to change speed are the maker’s own figures. Cone motion is drawn larger, mic patterns are textbook shapes, and distances are rounded to about 5 mm and measured to the mic’s front. Never open a rotary cabinet; place mics with the amp off or muted.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every speaker, cabinet, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 12 in speaker as the reference, three cabinets, and one classic two-rotor cabinet — its rotor sizes, openings and direction of turning are drawing choices, while its speeds and the times it takes to change speed are the maker’s own figures. Cone motion is drawn larger, mic patterns are textbook shapes, and distances are rounded to about 5 mm and measured to the mic’s front. Never open a rotary cabinet; place mics with the amp off or muted.',
 };

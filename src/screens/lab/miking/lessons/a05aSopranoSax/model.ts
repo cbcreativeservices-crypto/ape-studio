@@ -1,5 +1,5 @@
 /**
- * A05a SOPRANO SAXOPHONE — the recommended starting points, on the shared
+ * A05a SOPRANO SAXOPHONE — the suggested starting points, on the shared
  * family's zone kinds (lessons/shared/sax/saxZones.ts; research
  * soprano_sax/SOURCES.md and alto_sax/SOURCES.md §2). The soprano is the
  * exception: its bell does not curve up, so a mic at the middle of the body
