@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 06:39 · ccode · 52d9b23f
+changed: Miking Lab 7b review (B09-B17): audio-expert + learning fixes
+affects other side: nothing — app-side words only (Miking Lab 7b lessons B09–B17, the miking journey/restructure text, review doc); no backend, schema or Supabase change; nothing published
+needs: nothing
+
+
 ### 2026-10-08 05:27 · ccode · fd0ea5a9
 changed: Merge lab7-g6: Miking Lab 7b B15-B17 arenas, moving sources, complete coverage
 affects other side: nothing (client-only Miking Lab 7 lessons; Miking stays hidden)
