@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 01:07 · ccode · 5d350d97
+changed: web: new headline — The Whole Craft of Audio. Right in Your Pocket.
+affects other side: nothing (website copy; cherry-pick of audio-tools-engine f2733281)
+needs: nothing
+
+
 ### 2026-10-08 00:59 · ccode · a482d323
 changed: Mixing Guides map: a swipe follows the card under the finger; a tap flashes the countries 1.5 s, then opens
 affects other side: nothing (client-only hub interaction)
