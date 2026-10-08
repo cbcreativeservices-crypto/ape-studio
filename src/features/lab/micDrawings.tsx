@@ -1096,10 +1096,107 @@ export function SoundLevelMeter({ r, len, tint }: { r: number; len: number; tint
   );
 }
 
+/* lab6 group 1 (2026-10-08) — THE SHORT SHOTGUN for the Miking Labs (Lab 6
+ * Foley and field; foley_footsteps/GEOMETRY_PROPOSAL.md §4). On the Miking
+ * convention, but its reference point is the CAPSULE: the interference tube
+ * reaches `fore` mm AHEAD of it (toward −y: the slotted tube and the front
+ * grille), the short body `len` mm behind it (toward +y) ends at the XLR. A
+ * SHOCK MOUNT cradles the body (a ring on elastic cords inside a frame on the
+ * boom's clamp) — the line every Foley stand mic carries (correction F01-C5).
+ * Sizes: a common short shotgun's Ø 19 × 250 mm, the capsule 200 mm behind
+ * the grille (drawing defaults). */
+function buildShotgun(r: number, len: number, fore: number) {
+  const tube: SkPathT = Skia.Path.Make();
+  tube.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, -fore, 2 * r, fore + len * 0.25), r * 0.35, r * 0.35));
+  const body: SkPathT = Skia.Path.Make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, -r * 0.2, 2 * r, len + r * 0.2), r * 0.45, r * 0.45));
+  // The slots of the interference tube: short dark slits in pairs down its length.
+  const slots: SkPathT = Skia.Path.Make();
+  const n = Math.max(4, Math.round(fore / (r * 2.4)));
+  for (let k = 1; k < n; k++) {
+    const y = -fore + (k * fore) / n;
+    slots.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.55, y - r * 0.45, r * 1.1, r * 0.55), r * 0.2, r * 0.2));
+  }
+  const cap: SkPathT = Skia.Path.Make();
+  cap.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 1.04, -fore - r * 0.1, r * 2.08, r * 1.2), r * 0.5, r * 0.5));
+  const seam: SkPathT = Skia.Path.Make();
+  seam.addRect(Skia.XYWHRect(-r * 1.06, -r * 0.35, r * 2.12, r * 0.5));
+  const xlr: SkPathT = Skia.Path.Make();
+  xlr.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.8, len - r * 0.25, r * 1.6, r * 0.55), r * 0.2, r * 0.2));
+  // The shock mount: an inner ring round the body, an outer frame, the cords.
+  const cy = len * 0.45;
+  const outer = r * 2.7;
+  const frame: SkPathT = Skia.Path.Make();
+  frame.addRRect(Skia.RRectXY(Skia.XYWHRect(-outer, cy - r * 0.55, 2 * outer, r * 1.1), r * 0.5, r * 0.5));
+  frame.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.45, cy + r * 0.4, r * 0.9, len * 0.6 + r * 1.2), r * 0.3, r * 0.3));
+  const cords: SkPathT = Skia.Path.Make();
+  for (const sgn of [-1, 1]) {
+    cords.moveTo(sgn * r * 1.02, cy - r * 0.9);
+    cords.lineTo(sgn * outer * 0.92, cy - r * 0.15);
+    cords.moveTo(sgn * r * 1.02, cy + r * 0.9);
+    cords.lineTo(sgn * outer * 0.92, cy + r * 0.15);
+  }
+  const band: SkPathT = Skia.Path.Make();
+  band.addRect(Skia.XYWHRect(-r * 1.12, cy - r * 0.32, r * 2.24, r * 0.64));
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, -fore, 2 * r, fore + len), r * 0.4, r * 0.4));
+  return { tube, body, slots, cap, seam, xlr, frame, cords, band, shadow };
+}
+
+export function ShotgunMountMic({ r, len, fore, tint, mount = true }: { r: number; len: number; fore: number; tint?: string; mount?: boolean }) {
+  const p = useMemo(() => buildShotgun(r, len, fore), [r, len, fore]);
+  const lit = LIT(r);
+  const hair = Math.max(0.35, r * 0.05);
+  return (
+    <Group>
+      <Group transform={[{ translateX: -r * 0.15 }, { translateY: r * 0.12 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.45}>
+          <BlurMask blur={r * 0.25} style="normal" />
+        </Path>
+      </Group>
+      {mount ? (
+        <>
+          <Path path={p.frame}>
+            <LinearGradient start={lit.start} end={lit.end} colors={['#5b5f69', '#2a2c32', '#121317']} />
+          </Path>
+          <Path path={p.frame} style="stroke" strokeWidth={hair * 1.4} color="#050506" />
+        </>
+      ) : null}
+      <Path path={p.tube}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#9aa0ab', '#4a4e57', '#24262c', '#121317']} positions={[0, 0.3, 0.7, 1]} />
+      </Path>
+      <Path path={p.slots} color="#050506" opacity={0.85} />
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#e6e9ef', METAL_HI, METAL_MID, '#2b2d34']} positions={[0, 0.22, 0.6, 1]} />
+      </Path>
+      <Path path={p.seam} color="#1a1b20" opacity={0.85} />
+      <Path path={p.cap}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#a9aeb8', '#575c66', '#1e2025']} />
+      </Path>
+      <Path path={p.xlr} color="#1a1b20" />
+      <Path path={p.tube} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.9} />
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.85} />
+      {mount ? (
+        <>
+          <Path path={p.cords} style="stroke" strokeWidth={Math.max(0.5, r * 0.16)} strokeCap="round" color="#c9a24a" opacity={0.9} />
+          <Path path={p.band}>
+            <LinearGradient start={lit.start} end={lit.end} colors={['#4d515b', '#1d1e23']} />
+          </Path>
+        </>
+      ) : null}
+      <Path path={p.tube} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.25} />
+    </Group>
+  );
+}
+
 /** One switch for every Miking mic art id (the placement scene and the
- *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm'; r: number; len: number; cross?: number; tint?: string }) {
+ *  polar page draw through it). `fore` (lab6 group 1): the body reaching
+ *  ahead of the reference point — the shock-mounted shotgun's tube. */
+export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
   switch (art) {
+    /* Lab 6 group 1: the Foley short shotgun in its shock mount, measured to its capsule. */
+    case 'shotgunMount':
+      return <ShotgunMountMic r={r} len={len} fore={fore} tint={tint} />;
     /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
     case 'shotgun':
       return <ShotgunMic r={r} len={len} tint={tint} />;

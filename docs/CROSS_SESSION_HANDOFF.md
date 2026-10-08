@@ -637,6 +637,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-10-08 00:30 · ccode · 85ee77e4
 changed: Mixing Guides: world map pinned above the 50 styles — hover, touch or drag fills each style's home countries
 affects other side: nothing (client-only map data and hub UI)
+### 2026-10-08 00:29 · ccode · 863942a3
+changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 6 F09-F10, Mixing pro note)
+affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-08 00:10 · ccode · 22b6d7ae
+changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 4, sentry fixes)
+affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
 
 
@@ -649,9 +658,30 @@ needs: nothing
 ### 2026-10-08 00:06 · ccode · fc730e94
 changed: Mixing family: 'Knowing When to Bring In a Pro' note — first-open popup with GOT IT, link on each lab's first page
 affects other side: nothing (client-only popup copy and wiring; no backend reads or writes)
+needs: nothing
+
+
 ### 2026-10-08 00:03 · ccode · eef0d2e8
 changed: Merge remote-tracking branch 'origin/final-lab' into lab6-g6
 affects other side: nothing (client-only: Lab 6 group 6 F09/F10 merged with group 4 F11-F13; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-07 23:57 · ccode · 6fc407d4
+changed: Miking Lab 6 group 1: sources, corrections log and 412x915 captures
+affects other side: nothing (docs and captures only)
+needs: nothing
+
+
+### 2026-10-07 23:57 · ccode · 6cba1bc7
+changed: Miking Lab 6 group 1: the Foley stage (F01-F04) and its shared toolkit
+affects other side: nothing (client-only lessons; no backend, no data; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-07 23:56 · ccode · 8d436522
+changed: Miking engine: shotgun mic, pole (boom) mount, scaled lengths (Lab 6 group 1)
+affects other side: nothing (client-only lab engine; no backend, no data)
 needs: nothing
 
 

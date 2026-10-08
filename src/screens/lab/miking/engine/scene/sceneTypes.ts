@@ -73,6 +73,12 @@ export type LessonArt = {
    *  orchestra's percussion, a hand drum): the lesson's own plan, drawn in
    *  place of the shared kit plan. Same contract as KitPlan. */
   SettingPlan?: (props: SettingPlanProps) => ReactElement;
+  /** lab6 group 1 — the operator of a hand-held boom POLE ('pole' mount),
+   *  drawn in a local frame: the hands at the origin, the body behind them
+   *  along +u, facing −u (toward the mic). Side view: v = 0 is the FLOOR
+   *  under the hands (the hands at v = −POLE_HANDS_H). The scene moves and
+   *  turns it with the pole's end (PlacementScene PoleMount). */
+  PoleOperator?: (props: { view: ViewId }) => ReactElement;
 };
 
 /** What PSetting hands a lesson's own SettingPlan (the KitPlan contract). */
