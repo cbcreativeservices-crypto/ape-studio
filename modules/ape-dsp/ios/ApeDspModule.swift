@@ -9,6 +9,7 @@
 //  - pull-based frame access (synchronous Function, ≤30 Hz polled by JS).
 import AVFoundation
 import ExpoModulesCore
+import UIKit
 
 /// Hardware model identifier (e.g. "iPhone16,2") via uname — computed once. Used
 /// as the community mic-catalog device key on iOS, where PlatformConstants does
@@ -58,6 +59,9 @@ public class ApeDspModule: Module {
   /// that iOS says not to resume). The recovery watchdog works toward this.
   private var desiredRunning = false
   private var watchdog: DispatchSourceTimer?
+  /// The app is in the BACKGROUND (UIApplication notifications, main queue).
+  /// Capture is closed there and never (re)opened there — Sentry APE-STUDIO-T.
+  private var inBackground = false
 
   private func logEvent(_ s: String) {
     let t = Date().timeIntervalSince1970
@@ -150,6 +154,10 @@ public class ApeDspModule: Module {
     }
 
     // ---- Generator (Tool 6). Q4 caps enforced in the C++ core. ----
+    // MAIN QUEUE, every engine-touching start/stop (Sentry APE-STUDIO-T sweep,
+    // 2026-10-08): Expo runs an AsyncFunction on a background queue by
+    // default, where it raced the route / interruption / background observers
+    // (all on main) that stop and tear down the same AVAudioEngines.
     AsyncFunction("genStart") { (promise: Promise) in
       do {
         try self.startGeneratorOutput()
@@ -158,11 +166,11 @@ public class ApeDspModule: Module {
       } catch {
         promise.reject("E_GEN_START", "Could not start audio output: \(error.localizedDescription)")
       }
-    }
+    }.runOnQueue(.main)
     AsyncFunction("genStop") { () -> Void in
       self.core.genStop()
       self.teardownOutputIfIdle()
-    }
+    }.runOnQueue(.main)
     Function("genSet") { (params: [String: Any]) -> Void in
       // ORDER MATTERS: every target key ("frequency", "levelDb", "sweep",
       // "additive", …) is marshaled BEFORE "mode". setMode() arms the core's
@@ -252,11 +260,11 @@ public class ApeDspModule: Module {
       } catch {
         promise.reject("E_BIN_START", "Could not start audio output: \(error.localizedDescription)")
       }
-    }
+    }.runOnQueue(.main)
     AsyncFunction("binStop") { () -> Void in
       self.core.binStop()
       self.teardownOutputIfIdle()
-    }
+    }.runOnQueue(.main)
     // Source i (0..2): { on, type (0 sine·1 white·2 pink), freq, levelDb,
     // azDeg (−180..180, + = right), dist (m) }. Ramped natively — drag-rate safe.
     Function("binSet") { (sourceIdx: Int, params: [String: Any]) -> Void in
@@ -281,11 +289,11 @@ public class ApeDspModule: Module {
       } catch {
         promise.reject("E_MOD_START", "Could not start audio output: \(error.localizedDescription)")
       }
-    }
+    }.runOnQueue(.main)
     AsyncFunction("modStop") { () -> Void in
       self.core.modStop()
       self.teardownOutputIfIdle()
-    }
+    }.runOnQueue(.main)
     Function("modSet") { (param: Int, value: Double) -> Void in
       self.core.modSet(Int32(param), value: value)
     }
@@ -296,6 +304,10 @@ public class ApeDspModule: Module {
     OnCreate {
       self.observeNotifications()
       self.startWatchdog()
+      // applicationState is main-thread only.
+      DispatchQueue.main.async {
+        self.inBackground = UIApplication.shared.applicationState == .background
+      }
     }
 
     OnDestroy {
@@ -444,6 +456,16 @@ public class ApeDspModule: Module {
 
   private func startCapture() throws {
     if running { return }
+    // ⛔ NEVER OPEN CAPTURE IN THE BACKGROUND (Sentry APE-STUDIO-T sweep,
+    // 2026-10-08). This app has no background-audio mode: iOS suspends it and
+    // tears the record session down behind it, so an engine built there is
+    // built against an input that is about to vanish. The watchdog reopens
+    // capture on return (desiredRunning is kept).
+    if inBackground {
+      throw NSError(domain: "ApeDsp", code: 4, userInfo: [
+        NSLocalizedDescriptionKey: "the app is in the background",
+      ])
+    }
     let session = AVAudioSession.sharedInstance()
 
     // Category + MEASUREMENT mode (functional spec §1.2 — non-negotiable).
@@ -454,6 +476,17 @@ public class ApeDspModule: Module {
     try session.setActive(true, options: [])
 
     refreshRouteInfo()
+
+    // ⛔ No input route = no `engine.inputNode` (Sentry APE-STUDIO-T): touching
+    // the input node builds it against the current input hardware, and with
+    // none attached AVAudioEngine can dereference garbage before Swift can
+    // throw. Refuse as an ordinary error; the watchdog retries once a route
+    // exists.
+    guard session.isInputAvailable, !session.currentRoute.inputs.isEmpty else {
+      throw NSError(domain: "ApeDsp", code: 3, userInfo: [
+        NSLocalizedDescriptionKey: "no microphone input is available",
+      ])
+    }
 
     let engine = AVAudioEngine()
     let input = engine.inputNode
@@ -542,22 +575,48 @@ public class ApeDspModule: Module {
      it is NOT device-tested (reproducing it needs an iPad, a live capture and a
      background transition). The ordering is the documented-safe one and the
      guard can only skip work, but it wants a device pass before it is trusted.
+
+     ⛔ 2026-10-08 (native-ios-fixes): STOP NEVER TOUCHES `inputNode` AT ALL.
+     The route check above was still a race — a route can vanish between the
+     check and the access, and a route can EXIST while the session behind it
+     has been reset (media services reset, a long suspension). There is no
+     reason to remove the tap: every capture builds a NEW AVAudioEngine, and
+     releasing the stopped engine releases its tap with it. So stop quiesces
+     the engine (no more tap callbacks) and lets it go — the input node is
+     never asked for on the way out.
      */
-    if let engine = engine {
-      if engine.isRunning { engine.stop() }
-      // Only touch inputNode while an input route exists: with the session torn
-      // down behind a backgrounded app there is none, and inputNode would rebuild
-      // against missing hardware (the crash). The engine is released just below,
-      // which drops its tap with it.
-      if tapInstalled && !AVAudioSession.sharedInstance().currentRoute.inputs.isEmpty {
-        engine.inputNode.removeTap(onBus: 0)
-      }
-    }
+    if stopping { return }  // re-entrant call (interruption during a stop)
+    stopping = true
+    defer { stopping = false }
+    if let engine = engine, engine.isRunning { engine.stop() }
     tapInstalled = false
     engine = nil
     core.stop()
     running = false
     try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+  }
+
+  private var stopping = false
+
+  /// The AVAudio objects are DEAD (media services were reset, Apple: "all
+  /// AVAudio objects must be recreated"): drop every reference WITHOUT calling
+  /// into any of them — even engine.stop() on a reset engine is undefined.
+  /// Capture reopens through the watchdog when the user still wants it; output
+  /// voices are told to JS as lost so each screen shows STOPPED.
+  private func dropAudioObjectsAfterReset() {
+    let hadOutput = core.anyOutputRunning()
+    logEvent("media services RESET — audio objects dropped")
+    engine = nil
+    tapInstalled = false
+    running = false
+    stopReason = "media-services-reset"
+    core.stop()
+    core.genStop()
+    core.binStop()
+    core.modStop()
+    outEngine = nil
+    outNode = nil
+    if hadOutput { sendEvent("onOutputLost", ["reason": "media-services-reset"]) }
   }
 
   private func refreshRouteInfo() {
@@ -601,7 +660,9 @@ public class ApeDspModule: Module {
     let t = DispatchSource.makeTimerSource(queue: .main)
     t.schedule(deadline: .now() + 2, repeating: 2)
     t.setEventHandler { [weak self] in
-      guard let self, self.desiredRunning, !self.restarting, !self.interrupted else { return }
+      // Never in the background (APE-STUDIO-T): nothing is restarted behind a
+      // suspended app; the first tick after the return reopens capture.
+      guard let self, self.desiredRunning, !self.restarting, !self.interrupted, !self.inBackground else { return }
       if self.running {
         let stalled = (self.core.frame()["captureStalled"] as? Bool) ?? false
         guard stalled else { return }
@@ -635,6 +696,30 @@ public class ApeDspModule: Module {
 
   private func observeNotifications() {
     let nc = NotificationCenter.default
+    // ⛔ APP LIFECYCLE (Sentry APE-STUDIO-T, 2026-10-08). Capture is closed the
+    // moment the app is backgrounded — here, natively, on main, before iOS
+    // suspends us — instead of whenever a JS timer next gets to run (that was
+    // eight minutes later, against a session iOS had already torn down).
+    // `desiredRunning` is kept, so the watchdog reopens capture on return.
+    observers.append(
+      nc.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) {
+        [weak self] _ in
+        guard let self else { return }
+        self.inBackground = true
+        if self.running || self.engine != nil { self.stopCapture(reason: "background") }
+      })
+    observers.append(
+      nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) {
+        [weak self] _ in
+        self?.inBackground = false
+      })
+    // Media services reset: every AVAudio object is invalid — drop them all
+    // without calling into any (APE-STUDIO-T sweep).
+    observers.append(
+      nc.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main) {
+        [weak self] _ in
+        self?.dropAudioObjectsAfterReset()
+      })
     observers.append(
       nc.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) {
         [weak self] note in
