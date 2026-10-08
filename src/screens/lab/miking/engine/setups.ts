@@ -48,7 +48,16 @@ export type StartingSetup = {
   zones: DocumentedZone[];
   /** One plain line: what it tends to sound like, and its trade-off. */
   line: string;
+  /* lab6 group 2 — the role's words for this lesson (SETUP_PICKS `labels`,
+   * O-14: ambience and wildlife setups are named for what they are, "A
+   * SECOND POSITION", "A WIDER VIEW"); absent = ROLE_LABEL. */
+  label?: string;
 };
+
+/** lab6 group 2 — a setup's role in words (its lesson's own name, else ROLE_LABEL). */
+export function roleWords(s: Pick<StartingSetup, 'role' | 'label'>): string {
+  return s.label ?? ROLE_LABEL[s.role];
+}
 
 /** A two-mic pair from a family's own two-mic page (its art), when the
  *  lesson's copy has none. Poses are that page's own. */
@@ -59,7 +68,7 @@ export type PairInput = { label: string; A: { typeId: string; pattern?: MicPatte
  * zone ids are the lesson's; `null` = the lesson has no setup for that role).
  * Each is logged in CORRECTIONS_LOG.md (R-06 setups).
  */
-export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'distant', readonly string[] | null>> & { pair?: null }>> = {
+export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'distant', readonly string[] | null>> & { pair?: null; /* lab6 group 2 */ labels?: Partial<Record<SetupRole, string>> }>> = {
   // Kick: the one-mic start is already the close one (inside, near the
   // batter head); "an outside or more distant mic may help" in a studio (the
   // lesson's own studio words) — outside the front head.
@@ -109,6 +118,16 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   // start; the position at the wall is nearer the air unit, not a "close"
   // mic — it stays ANOTHER START (sound_level/GEOMETRY_PROPOSAL.md §4).
   F12: { close: null, distant: null },
+  /* lab6 group 2 — the field (O-14: role names that fit the field). F06:
+   * an ambience has no stage or close start; its farther setup is a second
+   * permitted position (field_ambience/GEOMETRY_PROPOSAL.md §3). */
+  F06: { close: null, distant: ['amb.wood.second', 'amb.plaza.second'], labels: { distant: 'SECOND POSITION' } },
+  // F08: the "close" start is the tracked shotgun (it holds the subject);
+  // the ORTF pair is drawn whole as ANOTHER START, never as one mic.
+  F08: { close: ['pb.walk.track'], distant: null, labels: { close: 'TRACKED' } },
+  // F07: wildlife has no stage or close start; its farther role is a WIDER
+  // VIEW — an omni for a group or the place (field_wildlife_distant §3).
+  F07: { close: null, distant: ['wl.flock.wide', 'wl.far.wide'], labels: { distant: 'WIDER VIEW' } },
   // Lab 6 group 5 — systems, products and sensors (loudspeaker_measurement/,
   // machinery_sound/, scientific_arrays/GEOMETRY_PROPOSAL.md §4). F14: CLOSE ·
   // LIVE is the venue's overlap seat; the near-field woofer point is ANOTHER
@@ -415,7 +434,9 @@ export function startingSetups(lesson: Lesson, variant: VariantId, micTypes: Rec
     used.add(z.id);
     out.push(single('more', z));
   }
-  return out;
+  // lab6 group 2: the lesson's own role names (SETUP_PICKS `labels`).
+  const labels = picks.labels;
+  return labels ? out.map((s) => (labels[s.role] ? { ...s, label: labels[s.role] } : s)) : out;
 }
 
 /** The setups a learner must look at for STARTING SETUPS' credit: every
