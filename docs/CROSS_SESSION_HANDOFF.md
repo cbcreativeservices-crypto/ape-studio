@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 12:04 · ccode · 50ab08f3
+changed: Lab full screen turns with the phone: lift the portrait lock while it is up, restore on close
+affects other side: nothing (client-only orientation)
+needs: nothing
+
+
 ### 2026-10-08 11:52 · ccode · 8af7a798
 changed: Mixing Guides map: only the pressed card is lit; held for the whole drag; cleared on lift and on return
 affects other side: nothing (client-only hub interaction)
