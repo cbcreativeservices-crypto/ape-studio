@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 08:56 · ccode · c22d4a5b
+changed: web: subline on two lines with a hard break (phones too)
+affects other side: nothing (website copy; cherry-pick of b4b6138c)
+needs: nothing
+
+
 ### 2026-10-08 08:34 · ccode · 33fb6398
 changed: WIP HF1 (owner-draw: figure hands take the shared FigureHead skin)
 affects other side: nothing (client-only drawing)
