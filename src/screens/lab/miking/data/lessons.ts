@@ -186,3 +186,10 @@ import { F12_LESSON } from '../lessons/f12SoundLevel/lesson.ts';
 LESSON_CONTENT.F12 = F12_LESSON;
 import { F13_LESSON } from '../lessons/f13RoomAcoustics/lesson.ts';
 LESSON_CONTENT.F13 = F13_LESSON;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_LESSON } from '../lessons/f14SystemMeasurement/lesson.ts';
+LESSON_CONTENT.F14 = F14_LESSON;
+import { F15_LESSON } from '../lessons/f15Machinery/lesson.ts';
+LESSON_CONTENT.F15 = F15_LESSON;
+import { F16_LESSON } from '../lessons/f16ScientificArrays/lesson.ts';
+LESSON_CONTENT.F16 = F16_LESSON;

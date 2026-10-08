@@ -141,6 +141,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'F11', labId: 'field', title: 'Measurement Microphones and Calibration', subtitle: 'The question first, the right field and power path, a check before and after — and an honest label', status: 'ready' },
   { id: 'F12', labId: 'field', title: 'Sound Level and Environmental Noise', subtitle: 'A named question and window, the method’s height, an open or facade position — and a conclusion no bigger than the evidence', status: 'ready' },
   { id: 'F13', labId: 'field', title: 'Room Acoustics and Reverberation', subtitle: 'Room only or system + room, seats that differ, a tail above the floor — T20, T30 and EDT kept apart', status: 'ready' },
+  /* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+  { id: 'F14', labId: 'field', title: 'Loudspeaker and Sound System Measurement', subtitle: 'The question first, the tap and the delay named, the radius kept — seats sampled one source at a time', status: 'ready' },
+  { id: 'F15', labId: 'field', title: 'Machinery and Product Sound', subtitle: 'A guarded device, a safe boundary, whole cycles from the same positions — and a claim no bigger than the setup', status: 'ready' },
+  { id: 'F16', labId: 'field', title: 'Scientific Arrays and Specialized Sensors', subtitle: 'A marked origin, one clock, the right spacing — an arrival order without a false location, each medium in its own units', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

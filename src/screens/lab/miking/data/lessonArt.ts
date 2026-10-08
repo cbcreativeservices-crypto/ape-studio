@@ -200,3 +200,10 @@ import { F12_ART } from '../lessons/f12SoundLevel/art';
 ART.F12 = F12_ART;
 import { F13_ART } from '../lessons/f13RoomAcoustics/art';
 ART.F13 = F13_ART;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_ART } from '../lessons/f14SystemMeasurement/art';
+ART.F14 = F14_ART;
+import { F15_ART } from '../lessons/f15Machinery/art';
+ART.F15 = F15_ART;
+import { F16_ART } from '../lessons/f16ScientificArrays/art';
+ART.F16 = F16_ART;

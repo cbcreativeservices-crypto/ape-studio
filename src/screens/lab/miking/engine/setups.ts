@@ -109,6 +109,16 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   // start; the position at the wall is nearer the air unit, not a "close"
   // mic — it stays ANOTHER START (sound_level/GEOMETRY_PROPOSAL.md §4).
   F12: { close: null, distant: null },
+  // Lab 6 group 5 — systems, products and sensors (loudspeaker_measurement/,
+  // machinery_sound/, scientific_arrays/GEOMETRY_PROPOSAL.md §4). F14: CLOSE ·
+  // LIVE is the venue's overlap seat; the near-field woofer point is ANOTHER
+  // START on the bench, not a stage mic; the studio's neighbour positions
+  // are the pair, not a farther start. F15: the close detail mic outside the
+  // exclusion zone for a live demo; the listener-like Foley perspective
+  // farther back. F16: an array lesson — no close or farther single mic.
+  F14: { close: ['vn.overlap'], distant: null },
+  F15: { close: ['mp.detail'], distant: ['mp.far'] },
+  F16: { close: null, distant: null },
 };
 
 const LIVE = /\b(live|on stage|for a stage|a loud stage|for live sound|stage)\b/i;
