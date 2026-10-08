@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 10:58 · ccode · 7b2bdf17
+changed: fix(flashcards): full-screen swipes move between sections, long sections scroll, related terms show terms only; build line in About
+affects other side: nothing in code (client-only; the category is no longer shown under RELATED TERMS).
+needs: glossary text fixes for Pro Audio Safety: exact replacements + scan findings in Downloads\2026-10-08_COMP_A_SAFETY_FLASHCARD_FIXES.md (§1 requested fixes; §1.6 MISTAKES unreadable from here: masked for anon).
+
+
 ### 2026-10-08 10:37 · ccode · 4cd833ad
 changed: Hunt 2026-10-08: toddler + timing on Miking Labs 6-7, Mixing Guides map, ProNote
 affects other side: nothing (client-only: Mixing Guides hub tap/flash, map caption width, Miking dock short forms; no server, schema or store change)
