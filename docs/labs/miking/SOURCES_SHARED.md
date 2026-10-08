@@ -239,3 +239,29 @@ condenser's body S-SM4-WEB.)
 | S-3REASONS | Shure, "Three Reasons Why Mic Placement Matters": cardioid and supercardioid patterns reduce off-axis sound; "Aligning floor monitors and side fills with the directional microphone's angle of rejection will give the maximum gain before feedback" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
 | MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
 | ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
+## 16. Lab 7 part 2 · group 2 — action pickup on fields and courts (B12, B13, B14; `lessons/shared/sports/`)
+
+Added 2026-10-08 by the Lab 7 part 2 group 2 builder (branch lab7-g5). The full Lab 7 part 2 register is
+`commentators/SOURCES.md` §0; the lessons' own audits are `parabolic/`, `field_diamond/` and `court_ice/SOURCES.md`.
+The keys the code cites (zones, mic types, parts) — internal record only, never shown:
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| KLOVER-FAQ | Klover MiK FAQs: the 26-inch dish "omni"; the 16-inch "omnidirectional or wide-cardioid"; focus "2-1/4 inches behind … hub or 4 inches behind the front face" (26) and "1-1/8 … 1-1/2 inches" (16) — the dish drawing is DERIVED from these (`parabolic/SOURCES.md` §b) | see `commentators/SOURCES.md` §0 | read 2026-10-07 (prep pass); the FAQ's wavelength remark is NOT taught (B12-01) |
+| IFAB-L1 | IFAB Law 1 §1.12: no extraneous equipment (cameras, microphones) attached to goals, nets, flagposts | see `commentators/SOURCES.md` §0 | read 2026-10-07 |
+| WR-L1 | World Rugby Law 1.3(e): perimeter 5 m where practicable, at least 3.5 m (men) / 3.0 m (women) | see `commentators/SOURCES.md` §0 | read 2026-10-07 |
+| FIBA-2M | FIBA: obstructions at least 2 m from the playing court | see `commentators/SOURCES.md` §0 (FIBA) | Medium (2026 article numbers not re-read) |
+| FIVB-FZ | FIVB: free zone ≥ 3 m; top events 5 m sides, 6.5 m ends, 12.5 m high | see `commentators/SOURCES.md` §0 (FIVB) | Medium |
+| NWS-SPORTS | NWS lightning and outdoor sports: "wait at least 30 minutes after the last thunder"; "dugouts, rain shelters, sheds, etc., are NOT SAFE" | https://www.weather.gov/safety/lightning-sports | read 2026-10-07 (NWS-LTG in §0) |
+| S-VP83F | Shure VP83F user guide: loudest sounds peaking between −12 and −6 dB (model-specific; the −12 dBFS trial is the lessons' own) | see `commentators/SOURCES.md` §0 | Medium |
+| LESSON-B12 | The owner's lesson B12 (practice statements kept as written) | `source_text/B12-…txt` | the lesson |
+| LESSON-B13 | The owner's lesson B13 — the practice field (30 × 20 m, M (15, −6), A/B/C), CONFIRMED by calculation | `source_text/B13-…txt` | the lesson |
+| LESSON-B14 | The owner's lesson B14 — the practice line (A/B/C 2/5/8 m inside, M 3 m outside → 5/8/11 m), CONFIRMED arithmetic | `source_text/B14-…txt` | the lesson |
+| C-BOUNDARY | The boundary reflection: extra path 2h for perpendicular arrival, first notch c/(4h) — 286 Hz at 0.30 m, 858 Hz at 0.10 m, 8.6 kHz at 0.01 m | `court_ice/SOURCES.md` "Derived" | DERIVED (geometry, C-SOUND) |
+| C-DISH | The dish's gain onset c / D — about 520 Hz (0.660 m), 845 Hz (0.406 m); a paraboloid focuses on-axis rays at f | `parabolic/SOURCES.md` §b | DERIVED (ideal model) |
+
+Drawing defaults (never printed as a dimension): every sport outline's size (D7-2), the practice field's crew strip,
+E, the crowd mark, the camera, the turn arc, the practice line's outside zone and second mic place, the dish's axis
+height, the ambience height, a talker's 1.55 m mouth height for B13's targets, the headroom chain's event sizes and
+stage limits, the dish shell thickness.

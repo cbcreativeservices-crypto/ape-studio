@@ -320,3 +320,6 @@ Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
 /* Lab 6 group 4 — measurement core (F11–F16): the measurement mics and the sound level meter. Appended so other lessons merge cleanly. */
 import { MEASURE_MIC_TYPES } from '../lessons/shared/measure/measureMics.ts';
 Object.assign(MIC_TYPES, MEASURE_MIC_TYPES);
+/* Lab 7 part 2, group 2 — action pickup on fields and courts (B12–B14): the parabolic dish (lessons/shared/sports). Appended so other lessons merge cleanly. */
+import { SPORTS_MIC_TYPES } from '../lessons/shared/sports/sportsMics.ts';
+Object.assign(MIC_TYPES, SPORTS_MIC_TYPES);
