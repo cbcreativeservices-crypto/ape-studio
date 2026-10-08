@@ -207,6 +207,18 @@ ART.F03 = withFoleyPages({ ...F03_ART, StrikeSequence: PropStrike, CoupledHeads:
 import { F04_ART, F04_PATH } from '../lessons/f04Impacts/pages';
 import { ImpactStrike, WaterHitTail } from '../lessons/f04Impacts/soundArt';
 ART.F04 = withFoleyPages({ ...F04_ART, StrikeSequence: ImpactStrike, CoupledHeads: WaterHitTail }, F04_PATH);
+/* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 (each lesson on its own line). */
+import { F05_ART } from '../lessons/f05Perspective/art';
+import { KeysStrike, NearFarKeys } from '../lessons/f05Perspective/soundArt';
+import { F05TwoMic, F05_STEP_COUNT_TWOMIC } from '../lessons/f05Perspective/pages';
+const F05_FOLEY = withFoleyPages({ ...F05_ART, StrikeSequence: KeysStrike, CoupledHeads: NearFarKeys });
+ART.F05 = { ...F05_FOLEY, pages: { ...F05_FOLEY.pages, twoMic: F05TwoMic as never }, stepCounts: { ...F05_FOLEY.stepCounts, twoMic: F05_STEP_COUNT_TWOMIC } };
+import { F06_ART } from '../lessons/f06Ambience/art';
+ART.F06 = F06_ART;
+import { F07_ART } from '../lessons/f07Wildlife/art';
+ART.F07 = F07_ART;
+import { F08_ART } from '../lessons/f08Passby/art';
+ART.F08 = F08_ART;
 /* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
 import { F09_ART } from '../lessons/f09LocationSpeech/art';
 ART.F09 = F09_ART;
@@ -219,6 +231,20 @@ import { F12_ART } from '../lessons/f12SoundLevel/art';
 ART.F12 = F12_ART;
 import { F13_ART } from '../lessons/f13RoomAcoustics/art';
 ART.F13 = F13_ART;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_ART } from '../lessons/f14SystemMeasurement/art';
+ART.F14 = F14_ART;
+import { F15_ART } from '../lessons/f15Machinery/art';
+ART.F15 = F15_ART;
+import { F16_ART } from '../lessons/f16ScientificArrays/art';
+ART.F16 = F16_ART;
+/* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
+import { B01_ART } from '../lessons/b01RadioHost/art';
+ART.B01 = B01_ART;
+import { B07_ART } from '../lessons/b07Voiceover/art';
+ART.B07 = B07_ART;
+import { B06_ART } from '../lessons/b06Panels/art';
+ART.B06 = B06_ART;
 /* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
 import { B12_ART } from '../lessons/b12Parabolic/art';
 ART.B12 = B12_ART;

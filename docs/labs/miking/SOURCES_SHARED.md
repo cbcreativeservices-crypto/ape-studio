@@ -240,7 +240,50 @@ condenser's body S-SM4-WEB.)
 | MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
 | ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
 
-## 16. Lab 7 part 2 · group 2 — action pickup on fields and courts (B12, B13, B14; `lessons/shared/sports/`)
+## 15. The parabolic dish for Lab 6's field lessons (F07 and later; `lessons/shared/field/dishMics.ts`, `dish.ts`)
+
+Added 2026-10-08 by the Lab 6 group 2 builder (branch lab6-g2): the dish card (`dishMic`, art `dish`). The full
+Lab 6 register is `foley_footsteps/SOURCES.md` §0; the dish model is `field_wildlife_distant/SOURCES.md` §2.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| CORNELL-MIC | Cornell Lab, Macaulay Library, "Microphones": reflectors "57 cm (22 inches) in diameter"; "Higher frequency sounds, with shorter wavelengths, are amplified more than lower frequency sounds" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 preparation) |
+| SCH-DISH | SCHOEPS Parabolic Dish Set product page: 585 mm, focal 210 mm, the capsule at 0° toward the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| INNERCORE | Innercore parabolic microphone, technical details: 500 mm, focal 140 mm, the capsule pointing back at the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
+## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
+
+Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.
+
+| Key | Source | Used for |
+|---|---|---|
+| MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing receiver heights (F14 seats; F15's seated user, reused) |
+| ISO-3744 | ISO 3744:2025 (ed. 4), via national-body listings | internal only: the sound-power method F15 calls "the named method" |
+| DOSITS-AW | DOSITS, sound in air vs water | 1 µPa vs 20 µPa; 26 dB of a 61.5 dB difference (arrays.WATER_AIR; the units card) |
+| PROBE-SPACER | intensity-probe maker data (search) | the 12 / 25 / 50 mm spacer presets (arrays.SPACERS_MM); the bands are not printed |
+| MW-ULA | MathWorks, time-delay beamforming of a ULA | spacing below half a wavelength (arrays.lambdaHalf) |
+| GRAS-FF | GRAS microphone guide | the measurement mics' field responses (reused from group 4) |
+| F14-LESSON, F15-LESSON, F16-LESSON | the owner's lesson texts (`source_text/F14…F16-*.txt`) | the practice claims each zone and item rests on |
+| CALC-* | app calculators | `speedOfSoundAir` (λ/2; Δt via twoMic.deltaTms), `leq` via calcBridge (the cycle strip) |
+## 17. Lab 7 group 1 — broadcast desk and studio voice (B01, B07, B06; `lessons/shared/broadcast/`)
+
+Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the broadcast mic types and their zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `radio_host/`, `voiceover_guests/` and `panels_press/SOURCES.md`; Lab 5 voice keys in `lead_vocal/SOURCES.md` §0.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| S-SM7B-UG | Shure SM7B user guide: "speak directly into the mic 1 to 6 inches (2.54 to 15 cm) away"; cardioid (the `bcDynArm` / `bcDynStand` types; B01 `b1.close`, B07 close start) | https://pubs.shure.com/guide/SM7B/en-US | Medium (prep pass 2026-10-07, guide copy) |
+| R-POD | RØDE, "How To Make Your Podcast Sound Professional": dynamic "about 4 - 6 inches", condenser "about 6 – 8 inches", "a very slight angle" (B01 `b1.dyn`, `b1.cond`, `b1.offBreath`; the `bcLdcArm` type) | https://rode.com/about/news-info/how-to-make-your-podcast-sound-professional | read 2026-10-07 (prep pass) |
+| R-BLEED | RØDE help, multi-person bleed: "less than six inches", mics "facing away from one another" (B01 `b1.hostB`) | https://help.rode.com/hc/en-us/articles/6948902770447 | Medium (403; search extract) |
+| S-CHURCH | Shure, church mic basics: lectern gooseneck "10"-14" and a little off-center" (B06-1); omni lav "8" below the mouth in the center" (the `bcGoose` types; B06 lectern start) | https://www.shure.com/en-us/insights/talkin-church-mic-basics-with-gino-sigismondi-mic-selection-and-placement | read 2026-10-07 (prep pass) |
+| S-PODIUM | Shure, comb filtering with podium mics: mute one of two mics on one talker; gain "around 7-10 inches" (B06 two-mic page; O-LEC) | https://www.shure.com/en-US/insights/how-to-avoid-comb-filtering-with-podium-mics | Medium (search extract) |
+| PSC-TRAIN | Press distribution box: "+4dBm balanced line level" input, "12 transformer isolated microphone level outputs" (routing.ts PRESS_BOX; B06) | https://www.markertek.com/Attachments/Manuals/PSC/FPSC0015-Manual.pdf | Medium (dealer copy of the maker text) |
+| DPA-VOC-STUDIO | DPA, how to mic vocals in a studio: close "about 4 inches … directly on axis", loose "around 12 inches" (B07 zones; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| N-VOC | Neumann studio vocal set-up: "20–30 cm (8–12 inches)" (B07 moderate start; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| N-POP | Neumann pop screen "at least 10 cm"; "top down, at about eye level, and angle it down" (B07 over the script; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| LESSON-B01 | The owner's lesson B01 (practice statements kept as written; B01-1, B-INST applied) | `source_text/B01-…txt` | the lesson |
+| LESSON-B06 | The owner's lesson B06 (practice statements kept as written; B06-1, B-INST applied) | `source_text/B06-…txt` | the lesson |
+| LESSON-B07 | The owner's lesson B07 (practice statements kept as written; B-INST applied) | `source_text/B07-…txt` | the lesson |
+## 18. Lab 7 part 2 · group 2 — action pickup on fields and courts (B12, B13, B14; `lessons/shared/sports/`)
 
 Added 2026-10-08 by the Lab 7 part 2 group 2 builder (branch lab7-g5). The full Lab 7 part 2 register is
 `commentators/SOURCES.md` §0; the lessons' own audits are `parabolic/`, `field_diamond/` and `court_ice/SOURCES.md`.

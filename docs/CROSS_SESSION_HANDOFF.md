@@ -646,6 +646,57 @@ affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B1
 needs: nothing
 
 
+### 2026-10-08 02:34 · ccode · 22178948
+changed: Merge origin/final-lab into lab6-g2
+affects other side: nothing (client-only merge; Miking still hidden)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · b0d17d1d
+changed: Lab 6 group 2: corrections log section and phone-width captures
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · d5eeb7c8
+changed: Lab 6 group 2: model tests and the research brand names
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · ee9bb9cb
+changed: Lab 6 group 2: F06 ambience, F08 pass-bys, F07 wildlife, F05 Foley perspective
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · 9b1959fe
+changed: Lab 6 group 2: the shared field toolkit (frame G, sites, wind, safety, path, image, dish)
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+
+### 2026-10-08 02:02 · ccode · d567fe40
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a5842596b925d1318
+affects other side: nothing (client-only: final-lab merged into lab7-g1 — Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)
+needs: nothing
+
+
+### 2026-10-08 01:45 · ccode · 31717808
+changed: Miking Lab 7 group 1: B01 hosts, B07 voiceover and guests, B06 panels and press
+affects other side: nothing (client-only: Lab 7 lessons B01, B07, B06 behind the existing Miking release gate; no server, no new route)
+needs: nothing
+
+
+### 2026-10-08 00:50 · ccode · b5346c0b
+changed: Miking Lab 7 group 1: the shared broadcast desk kit
+affects other side: nothing (client-only: the Lab 7 broadcast desk kit under lessons/shared/broadcast; groups 2 and 3 import it; Miking stays hidden)
+needs: nothing
+
+### 2026-10-08 01:20 · ccode · fcf25436
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — third merge of final-lab into lab6-g5 (web and Mixing Guides changes only)
+needs: nothing
+
+
 ### 2026-10-08 01:10 · ccode · 97dd2ecc
 changed: web: Coming Soon panel sits low so the full headline shows above it
 affects other side: nothing (website layout; cherry-pick of 6d89f09b)
@@ -661,12 +712,20 @@ needs: nothing
 ### 2026-10-08 00:59 · ccode · a482d323
 changed: Mixing Guides map: a swipe follows the card under the finger; a tap flashes the countries 1.5 s, then opens
 affects other side: nothing (client-only hub interaction)
+
+### 2026-10-08 01:10 · ccode · cf52a845
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — second merge of final-lab into lab6-g5 (the goals copy rule; F14–F16 goals already follow it)
 needs: nothing
 
 
 ### 2026-10-08 00:45 · ccode · 77ea81d0
 changed: Lab copy: Objectives rewritten in the learner's voice; build notes removed from Miking goals
 affects other side: nothing (client-only lab copy)
+
+### 2026-10-08 00:59 · ccode · d84f8265
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — merge of final-lab into lab6-g5 (doc conflicts kept both sides; SOURCES_SHARED group 5 block renumbered §16)
 needs: nothing
 
 
@@ -736,6 +795,16 @@ needs: nothing
 ### 2026-10-07 23:12 · ccode · 48fa4836
 changed: web: launch date moves to Tuesday, October 13
 affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+
+### 2026-10-08 00:50 · ccode · 6b1202c5
+changed: Miking Lab 6 g5: F14, F15, F16 lessons registered in the field lab
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
+needs: nothing
+
+
+### 2026-10-08 00:49 · ccode · 7ae43a4f
+changed: Miking Lab 6 g5: venue, system timing, claim ladder, exclusion zone, arrays, sensors
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
 needs: nothing
 
 

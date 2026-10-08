@@ -14,7 +14,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicPattern, ViewId } from '../engine/model/types.ts';
 import { copyOf } from '../engine/model/copy.ts';
-import { ROLE_LABEL, typeForZone, zoneInVariant, type StartingSetup } from '../engine/setups.ts';
+import { roleWords, typeForZone, zoneInVariant, type StartingSetup } from '../engine/setups.ts';
 import { bestView, guideFor } from '../engine/geometry/guides.ts';
 import { hasBothViews, viewToggle } from '../engine/scene/viewToggle.ts';
 import { SetupStage } from '../engine/scene/SetupStage';
@@ -121,7 +121,7 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
             <Text style={styles.line}>{pl.pattern}</Text>
           </Card>
           {setup ? (
-            <Body>{`${setup.role === 'more' ? 'Where it starts' : ROLE_LABEL[setup.role]}: ${setup.title}.${zone && typeFits ? ` ${zone.band}` : ''}`}</Body>
+            <Body>{`${setup.role === 'more' ? 'Where it starts' : roleWords(setup)}: ${setup.title}.${zone && typeFits ? ` ${zone.band}` : ''}`}</Body>
           ) : (
             <Note>None of this lesson’s starting points uses this type here — try another TYPE, or another setup of the instrument on the setups page.</Note>
           )}

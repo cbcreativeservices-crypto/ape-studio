@@ -151,6 +151,23 @@ export const BRAND_NAMES: readonly string[] = [
   'Hayes',
   'Sound Devices',
   'Warner',
+  // Lab 6 group 2 research (docs/labs/miking/field_ambience, field_moving_passby, field_wildlife_distant, foley_perspective):
+  // the sound library and its parent, dish makers, the physics text, authors, the traffic and hearing bodies.
+  'Cornell',
+  'Macaulay',
+  'Innercore',
+  'Telinga',
+  'Wildtronics',
+  'OpenStax',
+  'MKH',
+  'Les Smith',
+  'Watson Wu',
+  'Potter',
+  'MUTCD',
+  'ANSI',
+  'CDC',
+  'SM ?63',
+  'Brixen',
   // Lab 6 group 6 research (docs/labs/miking/location_speech, spatial_field).
   // ('Rode', 'RØDE', 'Rycote', 'Sound Devices' and 'Hayes' are in the group 1 list above.)
   'Thirion',
@@ -172,6 +189,22 @@ export const BRAND_NAMES: readonly string[] = [
   'Smaart',
   'Meyer',
   'MAPP',
+  // Lab 7 group 1 research (docs/labs/miking/radio_host, voiceover_guests, panels_press; BATCH7 summary §5 item 8).
+  'Countryman',
+  'Professional Sound',
+  'PSC',
+  'SM ?7B',
+  'ME ?[23]',
+  'MD ?46',
+  'RE ?50B?',
+  'invisiLav',
+  'Press Train',
+  'Press Bridge',
+  'DCA ?901',
+  'SCM ?410',
+  'BLX4R',
+  'MV7',
+  'PodMic',
   // Lab 7 part 2, group 2 research (docs/labs/miking/field_diamond, parabolic, court_ice): the dish makers, the
   // governing bodies and leagues whose rules were read, and the products named. ('Rycote', 'Sennheiser', 'Shure',
   // 'DPA', 'MKH ?416' and 'NWS' are in the lists above.)

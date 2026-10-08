@@ -28,7 +28,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicPattern, SettingItem, ViewId } from '../engine/model/types.ts';
 import { copyOf } from '../engine/model/copy.ts';
-import { coreSetups, ROLE_LABEL, startingSetups, type StartingSetup } from '../engine/setups.ts';
+import { coreSetups, roleWords, startingSetups, type StartingSetup } from '../engine/setups.ts';
 import { bestView, guideFor } from '../engine/geometry/guides.ts';
 import { hasBothViews, viewToggle } from '../engine/scene/viewToggle.ts';
 import { SetupStage } from '../engine/scene/SetupStage';
@@ -96,7 +96,7 @@ function devSetupIndex(): number {
 export function SetupCard({ s, where }: { s: StartingSetup; where?: Partial<Record<string, string>> }) {
   return (
     <View style={styles.card}>
-      <Text style={styles.role}>{ROLE_LABEL[s.role]}</Text>
+      <Text style={styles.role}>{roleWords(s)}</Text>
       <Text style={styles.title}>{s.title}</Text>
       {s.mics.map((m) => {
         const z = s.zones.find((q) => q.id === m.zoneId);
@@ -208,7 +208,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
         format: (v) => {
           const k = Math.round(v * (setups.length - 1));
           const s = setups[k];
-          return s ? `${k + 1} of ${setups.length} · ${ROLE_LABEL[s.role].toLowerCase()}` : 'no setup';
+          return s ? `${k + 1} of ${setups.length} · ${roleWords(s).toLowerCase()}` : 'no setup';
         },
         formatShort: (v) => `${Math.round(v * (setups.length - 1)) + 1} / ${setups.length}`,
       },
@@ -216,11 +216,11 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
         kind: 'options',
         id: 'pick',
         label: 'SETUPS',
-        valueLabel: sel ? ROLE_LABEL[sel.role].split(' ')[0] : '—',
+        valueLabel: sel ? roleWords(sel).split(' ')[0] : '—',
         selectedId: sel?.id ?? null,
         onSelect: (id) => setIdx(Math.max(0, setups.findIndex((s) => s.id === id))),
         sticky: true,
-        options: setups.map((s) => ({ id: s.id, label: `${ROLE_LABEL[s.role]} · ${s.title}`, blurb: s.line })),
+        options: setups.map((s) => ({ id: s.id, label: `${roleWords(s)} · ${s.title}`, blurb: s.line })),
       },
       ...viewToggle({ view, setView, stage: 'dual', both }),
       ...(lesson.model.variants.length > 1
@@ -251,7 +251,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
   ];
   // The drawing's own label names the setup it DRAWS (it lags the fader).
   const dd0 = drawnGuides[0]?.distance;
-  const a11y = drawn ? `${ROLE_LABEL[drawn.role]}: ${drawn.title}. ${drawn.mics.map((m) => micWords(m.typeId, m.pattern)).join('; ')}.${dd0 != null ? ` Distance ${fmtLen(dd0)}.` : ''}` : 'No setup.';
+  const a11y = drawn ? `${roleWords(drawn)}: ${drawn.title}. ${drawn.mics.map((m) => micWords(m.typeId, m.pattern)).join('; ')}.${dd0 != null ? ` Distance ${fmtLen(dd0)}.` : ''}` : 'No setup.';
   const around = aroundItems(lesson.setting.items);
   const aroundRow = (it: SettingItem) => (
     <Point key={it.id} title={`${it.tag} · ${it.label.toUpperCase()}`}>
@@ -275,7 +275,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
       },
       well: (
         <>
-          <Landing looking={sel ? `${ROLE_LABEL[sel.role]} · ${variantShort}` : variantShort} prompt="Step through SETUP. Each one is drawn on the instrument: the mic and its stand, where it points (amber) and its distance (white)." />
+          <Landing looking={sel ? `${roleWords(sel)} · ${variantShort}` : variantShort} prompt="Step through SETUP. Each one is drawn on the instrument: the mic and its stand, where it points (amber) and its distance (white)." />
           {sel ? <SetupCard s={sel} where={where} /> : <Note>This lesson has no starting setup for this choice — try another one in the dock.</Note>}
           <Body>{`Looked at: ${seenCore} of ${core.length} setup${core.length === 1 ? '' : 's'}${setups.length > core.length ? ` (and ${setups.length - core.length} more starting point${setups.length - core.length === 1 ? '' : 's'} to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
         </>
