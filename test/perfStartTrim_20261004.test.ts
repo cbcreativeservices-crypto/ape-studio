@@ -475,6 +475,10 @@ const COUNTS_AT_HEAD: Record<string, string> = {
   calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
 const TOTAL_AT_HEAD = 226; // was 217 before the ampacity calculator; +1 Miking Labs 1-4 (2026-10-04/05); +1 Mixing Guides (2026-10-07, preview state); +1 Miking Lab 5: Voice & Ensemble (2026-10-07)
+/** Lab 6 group 1 (2026-10-08): a Miking lab is listed once it has a ready lesson, so the
+ *  instruments row and the total follow the registry's ready labs (5 when the counts above
+ *  were taken) instead of a hard-coded lab total. */
+const MIKING_READY_AT_HEAD = 5;
 
 describe('3. the members-only gate decides exactly as before', () => {
   it('loading the catalog (what the gate does at start) does not load the calc registry', async () => {
@@ -516,7 +520,10 @@ describe('3. the members-only gate decides exactly as before', () => {
     const cat = await import('../src/screens/lab/labCatalog.ts');
     const now: Record<string, string> = {};
     for (const c of cat.LAB_CATEGORIES) now[c.id] = cat.categoryCountLabel(c);
-    assert.deepEqual(now, COUNTS_AT_HEAD);
-    assert.equal(cat.totalLabCount(), TOTAL_AT_HEAD);
+    const { readyLabs } = await import('../src/screens/lab/miking/data/registry.ts');
+    const more = readyLabs().length - MIKING_READY_AT_HEAD;
+    const instruments = 7 + more;
+    assert.deepEqual(now, { ...COUNTS_AT_HEAD, instruments: `${instruments} Labs` });
+    assert.equal(cat.totalLabCount(), TOTAL_AT_HEAD + more);
   });
 });

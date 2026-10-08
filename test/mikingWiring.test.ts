@@ -70,18 +70,20 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
   it('one tile per READY family, straight on the Labs menu, named by family — no placeholder (owner 2026-10-06)', () => {
     const fam = cat.families!.find((f) => f.name === 'Miking Labs')!;
     assert.deepEqual(fam.labs.map((l) => l.params!.lab), readyLabs().map((l: { id: string }) => l.id));
-    assert.deepEqual(fam.labs.map((l) => l.name), ['Membranophones', 'Idiophones', 'Aerophones', 'Chordophones', 'Voice & Ensemble']);
+    // The family names of the READY labs, in the registry's order (lab6 group 1: no hard-coded lab total).
+    assert.deepEqual(fam.labs.map((l) => l.name), readyLabs().map((l: { family: string }) => l.family));
+    assert.deepEqual(fam.labs.map((l) => l.name).slice(0, 6), ['Membranophones', 'Idiophones', 'Aerophones', 'Chordophones', 'Voice & Ensemble', 'Foley, Field & Scientific']);
     assert.ok(!fam.labs.some((l) => l.name === 'Miking Labs'), 'no intermediate "Miking Labs" tile');
     // Owner copy 2026-10-06: "17 Miking Lab Lessons" — the registry's ready count, no chevron.
     const { lessonsOf } = REGISTRY as { lessonsOf: (id: string) => unknown[] };
     for (const l of fam.labs as { countLine?: string; params?: { lab?: string } }[]) {
       assert.equal(l.countLine, `${lessonsOf(l.params!.lab!).length} Miking Lab Lessons`);
     }
-    assert.deepEqual((fam.labs as { countLine?: string }[]).map((l) => l.countLine), ['17 Miking Lab Lessons', '24 Miking Lab Lessons', '18 Miking Lab Lessons', '20 Miking Lab Lessons', `${lessonsOf('ensembles').length} Miking Lab Lessons`]);
+    assert.deepEqual((fam.labs as { countLine?: string }[]).map((l) => l.countLine).slice(0, 4), ['17 Miking Lab Lessons', '24 Miking Lab Lessons', '18 Miking Lab Lessons', '20 Miking Lab Lessons']);
     assert.equal(mikingLessonCount(1), '1 Miking Lab Lesson', 'singular');
     const ear = strip(read('src/screens/lab/EarLabScreen.tsx'));
     assert.match(ear, /\{leaf\.countLine \? \(\s*<Text style=\{styles\.tileCount\} \{\.\.\.fitValue\(12\)\} numberOfLines=\{2\}>\{leaf\.countLine\}<\/Text>/, 'the Labs menu tile shows it, never cut short');
-    assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums', 'percussion', 'winds', 'strings', 'ensembles'], 'Labs 1, 2, 3, 4 and 5 have ready lessons today');
+    assert.deepEqual(readyLabs().map((l: { id: string }) => l.id).slice(0, 6), ['drums', 'percussion', 'winds', 'strings', 'ensembles', 'field'], 'Labs 1–6 have ready lessons today (Lab 6 from group 1, 2026-10-08)');
     for (const l of readyLabs()) assert.ok((l as { blurb: string }).blurb.length > 40, `${l.id}: a listed lab has its blurb`);
     assert.ok(LESSONS.every((l: { status: string }) => l.status === 'ready'));
     assert.ok(categoryLeaves(cat as never).some((l: { route?: string }) => l.route === 'MikingHub'));

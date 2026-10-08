@@ -126,6 +126,31 @@ export const BRAND_NAMES: readonly string[] = [
   'Glenn Miller',
   'Dior',
   'Absil',
+  // Lab 6 group 1 research (docs/labs/miking/foley_footsteps, foley_clothing, foley_props, foley_impacts_liquids).
+  // "Hammond" is the owner's one allowed name (2026-10-07) and is never added here.
+  'Rode',
+  'RØDE',
+  'Rycote',
+  'KMR',
+  'NTG',
+  'CMIT',
+  'TLM',
+  'U67',
+  'Schoeps',
+  'SCHOEPS',
+  'Foley First',
+  'NoiseFloor',
+  'Krotos',
+  'Hensley',
+  'Hecker',
+  'Roesch',
+  'Malcolm',
+  'Cross',
+  'Valasis',
+  'Bry',
+  'Hayes',
+  'Sound Devices',
+  'Warner',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

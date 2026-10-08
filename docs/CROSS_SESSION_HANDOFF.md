@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 23:56 · ccode · 8d436522
+changed: Miking engine: shotgun mic, pole (boom) mount, scaled lengths (Lab 6 group 1)
+affects other side: nothing (client-only lab engine; no backend, no data)
+needs: nothing
+
+
 ### 2026-10-07 17:04 · ccode · 8dd2dd1e
 changed: Merge remote-tracking branch 'origin/prep-lab7b' into HEAD
 affects other side: nothing (docs only)

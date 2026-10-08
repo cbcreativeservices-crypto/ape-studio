@@ -193,3 +193,17 @@ import { E16_ART } from '../lessons/e16BigBand/art';
 ART.E16 = E16_ART;
 import { E12_ART } from '../lessons/e12PercussionEnsemble/art';
 ART.E12 = E12_ART;
+/* Lab 6 (field), group 1 — Foley stage: F01, F02, F03, F04 (each lesson on its own line). */
+import { withFoleyPages } from '../lessons/shared/foley/foleyPages';
+import { F01_ART } from '../lessons/f01Footsteps/art';
+import { FootstepFloor, FootstepStrike } from '../lessons/f01Footsteps/soundArt';
+ART.F01 = withFoleyPages({ ...F01_ART, StrikeSequence: FootstepStrike, CoupledHeads: FootstepFloor });
+import { F02_ART } from '../lessons/f02Clothing/art';
+import { ClothMotion, ClothStrike } from '../lessons/f02Clothing/soundArt';
+ART.F02 = withFoleyPages({ ...F02_ART, StrikeSequence: ClothStrike, CoupledHeads: ClothMotion });
+import { F03_ART } from '../lessons/f03Props/art';
+import { PropClickBody, PropStrike } from '../lessons/f03Props/soundArt';
+ART.F03 = withFoleyPages({ ...F03_ART, StrikeSequence: PropStrike, CoupledHeads: PropClickBody });
+import { F04_ART, F04_PATH } from '../lessons/f04Impacts/pages';
+import { ImpactStrike, WaterHitTail } from '../lessons/f04Impacts/soundArt';
+ART.F04 = withFoleyPages({ ...F04_ART, StrikeSequence: ImpactStrike, CoupledHeads: WaterHitTail }, F04_PATH);

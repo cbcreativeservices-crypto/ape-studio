@@ -1,0 +1,137 @@
+/**
+ * F03 PROPS AND OBJECT HANDLING — the shared pages' words, on the Foley
+ * family's words (shared/foley/foleyCopy.ts) with the lesson's own. No
+ * source gives a distance to a prop: every number is a drawing default
+ * (O-6, CORRECTIONS_LOG.md Lab 6 group 1). Starting-points voice.
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+import { foleyCopy } from '../shared/foley/foleyCopy.ts';
+
+export const F03_COPY: Partial<LessonCopy> = foleyCopy({
+  what: 'a handled prop',
+  variantKey: 'PROP',
+  variantShort: { keys: 'keys', paper: 'paper', door: 'a door', chair: 'a chair', live: 'a live station' },
+  sceneSubject: {
+    keys: 'a Foley artist handling a key ring at hand level',
+    paper: 'a Foley artist handling a sheet of paper at a table',
+    door: 'a Foley artist at a door on its Foley stand',
+    chair: 'a Foley artist lifting a wooden chair',
+    live: 'a Foley artist handling keys at a live theatre station',
+  },
+  axesBlurb: 'Up or down (y). The prop’s sounding part is height 0.',
+  instrument: {
+    figureBadge: 'A Foley artist and a prop · the part that sounds at the centre',
+    figureLabel: 'Side view of a Foley artist handling a prop, the prop’s sounding part at the centre of the drawing.',
+    partsBadge: 'A handled prop · tap a part to name it',
+    partsLooking: { side: 'Side view · from the artist’s right', top: 'From above · the artist and the prop' },
+    partsIdle: 'One “prop sound” is several events in several places: the grasp, a small contact, the body answering, a final contact. Tap the prop’s parts — then switch PROP.',
+    variantNotes: {
+      keys: 'KEYS: a jingle, an insertion, a turn — small metal events from one hand. Switch PROP to see paper, a door or a chair.',
+      paper: 'PAPER: a lift, the friction of a bend, a fold, a set-down — on a sturdy table that can answer too.',
+      door: 'DOOR: the handle, the latch, the hinge, the panel and the frame — and its swing and pinch points, keep-outs for hands and hardware.',
+      chair: 'CHAIR: lifted, dragged, set down — the legs on the floor and the frame. An assistant for anything heavy.',
+      live: 'LIVE: keys at a fixed prop station beside a theatre stage — the PA and a wedge share the room.',
+    },
+  },
+  sound: {
+    strikes: [{ id: 'c', label: 'ONE ACTION', mm: 0, blurb: 'One handled action.' }],
+    strikeDefault: 'c',
+    striker: 'ACTION',
+    strikerPhrase: 'the action',
+    subject: 'The prop drawn large, one action in four events',
+    looking: { keys: 'The key ring, drawn large · one action', paper: 'The sheet on the table, drawn large · one action', door: 'The door’s handle and latch, drawn large · one action', chair: 'The chair, drawn large · one action', live: 'The key ring, drawn large · one action' },
+    cells: [
+      { k: 'HAND', at: ['MOVES IT', 'HOLDS', 'HOLDS', 'LETS GO'], flex: 1 },
+      { k: 'CONTACT', at: ['—', 'SMALL CLICK', 'DONE', 'FINAL CONTACT'], flex: 1.1 },
+      { k: 'BODY', at: ['—', '—', 'ANSWERS', 'THE ROOM'], flex: 1 },
+    ],
+    reveal: 'A prop sound is several events in several places on the prop: the grasp, a small contact, the body answering, a final contact — decide which moments carry the scene and which would distract.',
+    after: 'Then silence — or the next action. A close mic hears one place on the prop; a farther mic joins its parts and the room.',
+    shapesNotes: ['The pictures show the order of events and where each starts — never its level. A substitute prop may make the wanted sound better than the pictured one, if it is safe and controllable.'],
+    coupledSubject: 'A door from above, swinging closed',
+    coupledNote: 'The same door has a small sound and a large one in different places: a mic aimed at the latch hears a click; one that hears the panel and frame hears the door’s body.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: how a real prop sounds depends on the object, the performer and the room. The pictures show where the sound comes from.',
+    pair: {
+      title: 'A click or the body',
+      badge: 'A simplified picture: where the sound starts, not how loud · the door from above · motion drawn larger',
+      looking: 'A door from above',
+      prompt: 'Drag SWING to close the door, then switch PART. Watch where each part’s sound starts.',
+      key: 'PART',
+      rest: 'half open',
+      cells: ['PART', 'WHERE', 'YOU HEAR'],
+      together: {
+        option: 'THE LATCH',
+        blurb: 'The small part at the door’s edge: the latch releasing and catching.',
+        short: 'LATCH',
+        title: 'THE LATCH',
+        card: 'The latch releases and catches at the door’s edge: a small, sharp click. A mic aimed close at it hears the click — perhaps with no door behind it.',
+        v0: 'LATCH',
+        sub0: 'at the edge',
+        v1: 'A SMALL CLICK',
+        air: { plus: 'CLICK', minus: 'CLICK', rest: '—' },
+      },
+      opposed: {
+        option: 'THE PANEL',
+        blurb: 'The large part: the panel swinging and closing into the frame.',
+        short: 'PANEL',
+        title: 'THE PANEL AND FRAME',
+        card: 'The panel resonates as it swings and when it closes into the frame: a large, low sound spread over its whole face — the door’s body.',
+        v0: 'PANEL',
+        sub0: 'the whole face',
+        v1: 'RESONATES',
+        air: { plus: 'BODY', minus: 'BODY', rest: 'SWINGING' },
+      },
+    },
+  },
+  before: [
+    { title: 'BREAK THE ACTION INTO EVENTS', text: 'Name each audible event in order — the grasp, a jingle, the insertion, a turn, the latch, the hinge, the panel, the final contact. Decide which carry the scene. Choose the prop and the action before the microphone: a mic cannot fix a prop with the wrong material or rhythm.' },
+    { title: 'MARK THE TRAVEL', text: 'With the prop secured and still, rehearse at real speed. Mark the whole hand, door, drawer or chair travel and the pinch zones — hinges and the latch edge. The mic, its cable and any operator stay outside them; never fasten a mic to a moving door without an approved mounting plan.' },
+    { title: 'SAFE, MANAGEABLE PROPS', text: 'Stable props and stands; an assistant for heavy furniture; no real sharp weapons, broken glass, unstable stacks or live electrical devices are needed. Do not block exits, secure cables against trips, and keep monitoring comfortable.' },
+  ],
+  worked: { keys: 'f03.whole', paper: 'f03.whole', door: 'f03.whole', chair: 'f03.whole', live: 'f03.detail' },
+  live: {
+    variant: 'live',
+    zone: 'f03.detail',
+    typeId: 'scSupercard',
+    patterns: [
+      { id: 'supercardioid', label: 'supercardioid', typeId: 'scSupercard' },
+      { id: 'cardioid', label: 'cardioid', typeId: 'scSupercard' },
+    ],
+    micNoun: 'A small supercardioid',
+    plan: { u0: -1100, u1: 2900, v0: -2700, v1: 1500 },
+    side: { u0: -1100, u1: 2900, v0: -1100, v1: 1060 },
+    looking: 'The station from above · the wedge on the floor in front of the artist',
+    prompt: 'The wedge stays where the artist needs it. Turn or tilt the MIC (AIM), or change its PATTERN, until the wedge sits in the rejection — while the mic still points at the keys.',
+    points: [
+      { title: 'A KNOWN STATION', text: 'Studio: one mic outside the travel, about 1–1.4 m from the action, then a closer look at the part that matters. Live: a compact, stable mic position and a known object station keep the prop in the pickup, cue after cue.' },
+      { title: 'THE PA IN THE ROOM', text: 'A prop performed live reads through the PA with music, speech and the room. A distant room mic may be less useful there: it hears the PA and takes away feedback margin.' },
+      { title: 'THE WEDGE IN THE REJECTION', text: 'Line the wedge up with the mic’s angle of rejection and check it at show level with the system operator.' },
+      { title: 'ON LOCATION', text: 'A stand or boom out of frame may follow the action, but wind, traffic and access can prevent a studio-like place. Keep stands out of travel paths and document the environment.' },
+    ],
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed at the keys, its rear points away from the artist — the wedge, on the floor ahead and to one side, sits off that line, nearer a supercardioid’s deeper rejection.',
+    shieldNote: 'The artist and the station reflect the wedge’s sound, which a free-field pattern cannot show. Check at show level with the system operator.',
+  },
+  studio: {
+    id: 'f03.ctx.studio',
+    prompt: 'A quiet Foley stage: a door opened and closed for a medium shot. A fair first plan?',
+    note: 'On a quiet stage there is no wedge to reject: one mic covering the whole action from outside the swing, then an aimed look at the latch or the panel, is a place to begin. Switch back to LIVE for the wedge exercise.',
+  },
+  pair: {
+    variant: 'keys',
+    label: 'Close detail + room mic',
+    A: { typeId: 'scSupercard', zone: 'f03.detail' },
+    B: { typeId: 'ldcRoom', zone: 'f03.room' },
+    learn: [
+      'One working method: a close detail mic and a farther room/object mic, on separate channels, blended to give the scene its perspective and depth. Start with one mono mic and the whole action; add the second only when it gives a reasoned option.',
+      'Compare each alone and the sum in mono over the whole action: arrival differences change a transient and its resonance, and a moving prop changes them as it moves. Choose a balance for the whole action, and keep the channel labels for editing.',
+    ],
+    warn: 'This simplified graph treats the prop as one point and both mics as hearing the same sound. A moving prop changes the delay as it moves, and the room mic hears more reflections. Read the notch POSITIONS and treat their depths as illustrative.',
+  },
+  practice: { gain: 'f03.prac.gain', second: 'f03.prac.3', mixed: ['f03.mix.1', 'f03.mix.2', 'f03.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: where a door’s sounds start, a pattern’s null, and the delay between two mics.' },
+  startIntro: 'This lesson is about putting a microphone on handled props — keys, paper, a door, a chair. First the action itself: where its sounds come from, then real starting setups drawn on the stage, the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
+  ref: 'the prop’s sounding part',
+  otherRef: 'Every starting point here is measured from the part of the prop that sounds — the latch, the jingle, the bend, the leg on the floor — to the mic’s capsule. No one distance suits every prop: these are our suggested places to begin.',
+  reveal: 'Closer tends to bring distinct clicks and handling detail — and maybe no object behind them; farther, the object’s parts and the room as one event, with more room noise. Props vary, so “it depends on this prop” is fair too.',
+  tendencies: 'Closer: distinct clicks, handling noise, a narrow view. Farther: the whole object and its room. A cardioid or supercardioid reduces some off-axis room; an omni covers a moving object more evenly. Tendencies to check by ear.',
+  performer: 'the artist',
+});

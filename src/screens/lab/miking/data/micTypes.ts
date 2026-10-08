@@ -311,3 +311,6 @@ Object.assign(MIC_TYPES, ENSEMBLE_MIC_TYPES);
 /* Lab 5, group 2 — voice II, groups (E02, E04, E05, E06): the shared large-diaphragm condenser. Appended so other lessons merge cleanly. */
 import { GROUP_VOICE_MIC_TYPES } from '../lessons/shared/ensemble/groupVoiceMics.ts';
 Object.assign(MIC_TYPES, GROUP_VOICE_MIC_TYPES);
+/* Lab 6 group 1 — the field mics (short shotgun on a stand or a pole, small supercardioid, the room condenser, the hydrophone and contact cards). Appended so other lessons merge cleanly. */
+import { FIELD_MIC_TYPES } from '../lessons/shared/fieldmics/fieldMics.ts';
+Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
