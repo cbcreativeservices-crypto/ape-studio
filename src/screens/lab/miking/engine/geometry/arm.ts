@@ -63,3 +63,49 @@ export function gooseneckPts(base: Vec3, tail: Vec3, aim: Vec3): [Vec3, Vec3, Ve
   const k = Math.sqrt(dx * dx + dy * dy + dz * dz) * 0.42;
   return [base, { x: base.x, y: base.y - k, z: base.z }, { x: tail.x - aim.x * k, y: tail.y - aim.y * k, z: tail.z - aim.z * k }, tail];
 }
+
+/* ── Lab 7b group 1: a mic held in a hand (MicType.clip.style 'held') ── */
+
+/** Where the fist closes on a held mic: a little up the handle from its tail
+ *  (`grip` mm, a drawing default), along the mic's axis `aim` (unit). */
+export function heldFist(tail: Vec3, aim: Vec3, grip = 45): Vec3 {
+  'worklet';
+  return { x: tail.x + aim.x * grip, y: tail.y + aim.y * grip, z: tail.z + aim.z * grip };
+}
+
+/** The elbow of an arm from the SHOULDER to the fist (upper arm `a`, forearm
+ *  `b`): the same two-circle solve as elbowOf, but the elbow LOWERED (+y) —
+ *  an arm holding something out in front hangs from the shoulder, its elbow
+ *  below the line. Stretched past a + b it lies on the straight line (the
+ *  hand cannot reach: the engine turns the arm red). */
+export function heldElbowOf(shoulder: Vec3, fist: Vec3, a: number, b: number): Vec3 {
+  'worklet';
+  const dx = fist.x - shoulder.x;
+  const dy = fist.y - shoulder.y;
+  const dz = fist.z - shoulder.z;
+  const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  if (d < 1e-6) return { x: shoulder.x, y: shoulder.y + a, z: shoulder.z };
+  const ux = dx / d;
+  const uy = dy / d;
+  const uz = dz / d;
+  if (d >= a + b) {
+    const t = (a / (a + b)) * d;
+    return { x: shoulder.x + ux * t, y: shoulder.y + uy * t, z: shoulder.z + uz * t };
+  }
+  let t = (a * a - b * b + d * d) / (2 * d);
+  t = Math.max(-a, Math.min(a, t));
+  const h = Math.sqrt(Math.max(0, a * a - t * t));
+  // "Down" (+y) with its part along the line removed: the hanging side.
+  let nx = -ux * uy;
+  let ny = 1 - uy * uy;
+  let nz = -uz * uy;
+  let nl = Math.sqrt(nx * nx + ny * ny + nz * nz);
+  if (nl < 1e-6) {
+    // The arm runs straight up or down: bend toward +x (out in front).
+    nx = 1 - ux * ux;
+    ny = -uy * ux;
+    nz = -uz * ux;
+    nl = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+  }
+  return { x: shoulder.x + ux * t + (nx / nl) * h, y: shoulder.y + uy * t + (ny / nl) * h, z: shoulder.z + uz * t + (nz / nl) * h };
+}

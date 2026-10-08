@@ -23,7 +23,10 @@
  *   ambienceInPa    an ambience or crowd mic sent to the local PA (it is for
  *                   broadcast and the recording: B08, S-CHURCH "Don't mic the
  *                   congregation for sound reinforcement");
- *   talkbackOnAir   the producer's talkback on the program or the PA.
+ *   talkbackOnAir   the producer's talkback on the program or the PA;
+ *   doubleMic       (group 2) two open mics on one talker — a headset and the
+ *                   lectern, a boom and a lav — summed into the same feed:
+ *                   one voice twice, a comb (S-PODIUM: mute one).
  * And one connection rule (the press feed box, PSC-TRAIN: a line-level
  * input, isolated mic-level outputs):
  *   connect(out, input)  line into a mic input overloads; mic into a line
@@ -49,7 +52,9 @@ export const DESTINATIONS: Readonly<Record<DestId, { label: string; short: strin
 };
 
 export type SourceKind = 'mic' | 'remote' | 'playback' | 'ambience' | 'talkback';
-export type RouteSource = { id: string; label: string; short: string; kind: SourceKind; level: 'mic' | 'line' };
+/** `talker` (Lab 7 group 2): whose voice a mic carries — two OPEN mics on one
+ *  talker summed into one feed is a problem ('doubleMic'). */
+export type RouteSource = { id: string; label: string; short: string; kind: SourceKind; level: 'mic' | 'line'; talker?: string };
 
 /** A lesson's routing: its sources, the destinations it shows, the sends. */
 export type RoutingPlan = {
@@ -76,7 +81,11 @@ export type RouteProblem =
   | { code: 'speakerLoop'; dest: 'monitor' | 'pa'; source: string }
   | { code: 'missing'; dest: DestId; source: string }
   | { code: 'ambienceInPa'; source: string }
-  | { code: 'talkbackOnAir'; dest: DestId };
+  | { code: 'talkbackOnAir'; dest: DestId }
+  /** Lab 7 group 2: two open mics on ONE talker (a headset and the lectern, a
+   *  boom and a lav) summed into the same feed — two arrival times, a combed
+   *  voice (S-PODIUM: mute one). */
+  | { code: 'doubleMic'; dest: DestId; talker: string; a: string; b: string };
 
 /** Everything the plan gets wrong, in a stable order. */
 export function routeProblems(plan: RoutingPlan): RouteProblem[] {
@@ -97,6 +106,15 @@ export function routeProblems(plan: RoutingPlan): RouteProblem[] {
     if (kind(s.id) !== 'talkback') continue;
     for (const d of ['program', 'stream', 'pa', 'pressBox'] as const) if (reaches(plan, s.id, d)) out.push({ code: 'talkbackOnAir', dest: d });
   }
+  // Lab 7 group 2: one talker through two open mics into the same feed.
+  const open = plan.sources.filter((s) => s.talker && (plan.openMics ?? []).includes(s.id));
+  for (const d of ['pa', 'program', 'stream'] as const) {
+    for (let i = 0; i < open.length; i++) {
+      for (let j = i + 1; j < open.length; j++) {
+        if (open[i].talker === open[j].talker && reaches(plan, open[i].id, d) && reaches(plan, open[j].id, d)) out.push({ code: 'doubleMic', dest: d, talker: open[i].talker!, a: open[i].id, b: open[j].id });
+      }
+    }
+  }
   for (const [d, ids] of Object.entries(plan.needs ?? {}) as [DestId, readonly string[]][]) for (const id of ids) if (!reaches(plan, id, d)) out.push({ code: 'missing', dest: d, source: id });
   return out;
 }
@@ -115,6 +133,8 @@ export function problemWords(plan: RoutingPlan, p: RouteProblem): string {
       return `${name(p.source)} goes to the PA: an ambience mic is for the broadcast and the recording, not the room’s loudspeakers.`;
     case 'talkbackOnAir':
       return `The producer’s talkback reaches ${DESTINATIONS[p.dest].label}: talkback is for the talent and the crew, kept off the air.`;
+    case 'doubleMic':
+      return `${name(p.a)} and ${name(p.b)} are both open on the same talker into ${DESTINATIONS[p.dest].label}: one voice arrives twice, a little apart — a hollow, combed sound. Choose one for that feed; mute the other or keep it on its own recorder track.`;
   }
 }
 

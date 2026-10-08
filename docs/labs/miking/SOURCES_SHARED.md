@@ -308,3 +308,47 @@ Drawing defaults (never printed as a dimension): every sport outline's size (D7-
 E, the crowd mark, the camera, the turn arc, the practice line's outside zone and second mic place, the dish's axis
 height, the ambience height, a talker's 1.55 m mouth height for B13's targets, the headroom chain's event sizes and
 stage limits, the dish shell thickness.
+
+
+## 19. Lab 7 part 2 · group 1 — speech in sport (B09, B10, B11; `lessons/shared/broadcast/` sportMics, feeds, boothPlan, handoff, standing)
+
+Added 2026-10-08 by the Lab 7 part 2 group 1 builder (branch lab7-g4). The full Lab 7 part 2 register is
+`commentators/SOURCES.md` §0; the lessons' own audits are `commentators/`, `sideline_interviews/` and
+`athletes_officials/SOURCES.md`. The keys the code cites (zones, mic types, parts) — internal record only, never shown:
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| S-SM2 | Shure SM2 broadcast headset guide: "Dynamic, Close-Talking"; "Cardioid (unidirectional)"; boom "pivots through 155°", adjusts through an 89 mm range; "as close as possible to the outside corner of the mouth (not directly in front.)" (the `bcHeadsetBoom` type; B09 `b9.headset`, B10 `b10.headset`, B11 `b11.headset` / `b11.official`) | https://pubs.shure.com/view/guide/SM2/en-US.pdf | read 2026-10-07 (prep pass) |
+| SN-HMD26 | Sennheiser HMD/HME 26 product specification (a supercardioid dynamic version, a cardioid condenser version) — the redirect chain was not readable: the `bcHeadsetSuper` type is drawn as a TEXTBOOK supercardioid, never a readout of the product | see `commentators/SOURCES.md` §0 | UNSOURCED (B09-03: refresh the link) |
+| COLES-4104 | Coles 4104 commentator's microphone: "bi-directional"; usable in wind "up to 20 mph (32 km)" bare, "up to 40 mph (64 km) or more" with its windshield (the `bcLipRibbon` type) | https://coleselectroacoustics.com/4104-commentators-microphone/ | read 2026-10-07 |
+| COLES-SPEC | Coles 4104 spec PDF — image-only: the guard-to-ribbon depth is UNKNOWN (D7-7: a drawing default, never a readout) | see `commentators/SOURCES.md` §0 | not readable |
+| LESSON-B09 | The owner's lesson B09 (practice statements kept as written; B09-02 / R-07 / R-08 applied) | `source_text/B09-…txt` | the lesson |
+| LESSON-B10 | The owner's lesson B10 (practice statements kept as written; R-07 / R-08 applied) | `source_text/B10-…txt` | the lesson |
+| LESSON-B11 | The owner's lesson B11 (practice statements kept as written; B11-01 / R-07 / R-08 applied; no rule book on screen, D7-1) | `source_text/B11-…txt` | the lesson |
+| SHURE-LAV | (reused from §14) "Place the shirt microphone above the sternum" — the B10 and B11 body mics at frame T's breastbone | §14 | read 2026-10-07 |
+| S-SM58-UG | (reused from §10, Lab 5) the handheld row "Lips less than 15 cm (6 in.) away … on axis" — B10's `b10.hand` start (the lesson gives no number) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 |
+
+Drawing defaults (never printed as a dimension): the booth (desk 1.8 × 0.75 m, seats 0.9 m apart), the headset capsule's
+2–6 cm at the mouth corner, the headset boom's 170 mm reach, the lip guard's place and its 60 mm depth, the held arm (upper
+arm 300 mm, forearm 290 mm, the grip 45 mm up the handle), the reporter's place (0.65 m to the guest's left), the camera,
+the touchline, the exit route, the PAs, the backdrop, the operators, frame T's landmarks (the breastbone ~21 cm below the
+lips, the small of the back), the keep-out regions on an athlete, the handoff strip's phase lengths.
+
+## 20. Lab 7 group 2 — body-worn and camera (B05, B04, B02; `lessons/shared/broadcast/` bodyWorn, cameraFrame, boomPole)
+
+Added 2026-10-08 by the Lab 7 group 2 builder (branch lab7-g2): the keys the body-worn and camera kit, the group 2 mic types and the B05 / B04 / B02 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `lavalier_headset/`, `boom_camera/` and `news_anchor/SOURCES.md`. Nothing here is shown to the learner (owner ruling 2026-10-04).
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| R-LAV | RØDE, "Lavalier Mounting: Best Practices": the sternum "a nice balance of close proximity and natural sound"; the lav upside down in its clip to reduce plosives; the broadcast loop and a secondary loop taped below the clip (bodyWorn.LAV_BAND, MOVES/LOOPS; B05 `b5.sternum`, B02 `b2.lav`) | https://rode.com/en-us/about/news-info/lavalier-mounting-best-practices | Medium (search extract, prep pass 2026-10-07) |
+| SN-ME2 | Sennheiser ME 2 manual: attach to clothing "keeping a distance of 25 cm (10") from your mouth" (D-LAV1, the band's top) | https://docs.cloud.sennheiser.com/en-us/lavalier-mics/manual-me2.html | Medium (search extract) |
+| SN-ME3 | Sennheiser ME 3 quick guide: capsule "2-3 cm (1") from the mouth", near its corner (bodyWorn.HEADSET_BAND; B05 headsets; the `hsCard` type) | https://www.sennheiser.com/globalassets/digizuite/41080-en-me_3_quick_guide_04_2025.pdf | Medium (search extract) |
+| S-PASTOR | Shure, "How to Choose the Best Mic for the Pastor": omni lav "5 to 8 inches (12 to 20 cm) below the pastor's mouth" (D-LAV1; correction B05-1 — the figure is THIS article's) | https://www.shure.com/en-US/insights/how-to-choose-the-best-mic-for-the-pastor | Medium (search extract) |
+| S-LAVPICK | Shure, "How to Choose the Best Lavalier Microphone": "above the sternum"; shirt, tie and collar options; no distance number (bodyWorn mount points) | https://www.shure.com/en-US/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
+| S-LAVHS | Shure, "Fundamentals: Choosing Between Lavalier and Headset Mics": qualitative only (the `lavCard` type's internal note) | https://www.shure.com/en-US/insights/fundamentals-choosing-between-lavalier-and-headset-mics | found, not re-read (qualitative) |
+| CTRY-B6 | Countryman B6 protective caps: flat, "Bright" +4 dB and "Very Bright" +8 dB at 15 kHz — that model only (never a number on screen; the concealed-lav words) | https://www.countryman.com | Medium (dealer listings) |
+| R-BOOM | RØDE, boompole usage: "boom from above, or below if absolutely necessary. You should never record from the sides" (cameraFrame boomAbove / boomBelow / boomSide; B04 zones; B02 boom) | https://rode.com/blog/all/what-you-need-to-know-about-boompole-usage-and-best-practices | Medium (search extract) |
+| S-SHOTGUN | Shure, "Shotgun Mics and Video Production": "slightly above, below, or to the side"; rejection "more than about 30 degrees off to the sides" (internal); D-SG1 "four to five times" an omni's distance — recorded, never shown (the `camMic` type; B04 side boom) | https://www.shure.com/en-GB/insights/shotgun-mics-and-video-production | Medium (search extract) |
+| LESSON-B02 | The owner's lesson B02 (practice statements kept as written; B-INST, B-XLINK applied) | `source_text/B02-…txt` | the lesson |
+| LESSON-B04 | The owner's lesson B04 (practice statements kept as written; B-INST, B-XLINK applied; O-SG pending) | `source_text/B04-…txt` | the lesson |
+| LESSON-B05 | The owner's lesson B05 (practice statements kept as written; B05-1, B-INST, B-XLINK applied) | `source_text/B05-…txt` | the lesson |

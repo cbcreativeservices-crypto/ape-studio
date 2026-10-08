@@ -667,6 +667,45 @@ needs: nothing
 ### 2026-10-08 05:02 · ccode · 5970e4d7
 changed: fix(lab6 review): F16 sample-rate item contradicted itself; F09 boom vs body-mic level
 affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+### 2026-10-08 05:06 · ccode · f05ad5d3
+changed: Merge origin/final-lab (Lab 7b group 1) into lab7-g2 (Lab 7a group 2)
+affects other side: nothing (client-only merge: final-lab with Lab 7b group 1 into lab7-g2 — both groups kept side by side; broadcast lab blurb covers both; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 04:37 · ccode · c1e21560
+changed: Merge origin/final-lab into lab7-g4 (Lab 7b group 1)
+affects other side: nothing (client-only merge: final-lab into lab7-g4 — Lab 6 group 2 and Lab 7b group 2 alongside Lab 7b group 1; Miking still hidden)
+needs: nothing
+
+
+### 2026-10-08 04:25 · ccode · f63ae343
+changed: Miking Lab 7b group 1: review fixes and phone-width screenshots
+affects other side: nothing (client-only: Miking Lab 7b group 1 review fixes — art, labels, the context page's pattern names — and phone-width screenshots)
+needs: nothing
+
+
+### 2026-10-08 03:30 · ccode · 6513a183
+changed: Miking Lab 7b group 1: the speech-in-sport kit (sport mics, held arm, feeds, booth plan, handoff, frame T)
+affects other side: nothing (client-only: the Lab 7b group 1 speech-in-sport kit in lessons/shared/broadcast — sport mics, the held-arm clip style, feeds, booth plan, handoff, frame T; no DB, no schema)
+needs: nothing
+
+
+### 2026-10-08 04:16 · ccode · dccc1e40
+changed: Merge origin/final-lab into lab7-g2 (Lab 7a group 2)
+affects other side: nothing (client-only: final-lab merged into lab7-g2; Miking Lab 7 group 2 screenshots and layout fixes; the shared voice line no longer repeats "the mouth's axis"; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 03:44 · ccode · 7eefa4b1
+changed: Miking Lab 7 group 2: B04 Boom and Camera-Mounted Pickup, B02 News Anchors and Seated Interviews
+affects other side: nothing (client-only: Miking Lab 7 group 2 lessons B04 and B02 and their shared kit; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 02:27 · ccode · bdeb18de
+changed: Miking Lab 7 group 2: shared camera frame (cameraFrame.ts) for B04/B02/B05 and group 3
+affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-frame tool; no server, no SQL)
 needs: nothing
 
 

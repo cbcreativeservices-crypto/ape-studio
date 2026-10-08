@@ -223,6 +223,20 @@ import { B07_LESSON } from '../lessons/b07Voiceover/lesson.ts';
 LESSON_CONTENT.B07 = B07_LESSON;
 import { B06_LESSON } from '../lessons/b06Panels/lesson.ts';
 LESSON_CONTENT.B06 = B06_LESSON;
+/* Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line). */
+import { B05_LESSON } from '../lessons/b05Lavalier/lesson.ts';
+LESSON_CONTENT.B05 = B05_LESSON;
+import { B04_LESSON } from '../lessons/b04BoomCamera/lesson.ts';
+LESSON_CONTENT.B04 = B04_LESSON;
+import { B02_LESSON } from '../lessons/b02NewsAnchor/lesson.ts';
+LESSON_CONTENT.B02 = B02_LESSON;
+/* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
+import { B09_LESSON } from '../lessons/b09Commentators/lesson.ts';
+LESSON_CONTENT.B09 = B09_LESSON;
+import { B10_LESSON } from '../lessons/b10Sideline/lesson.ts';
+LESSON_CONTENT.B10 = B10_LESSON;
+import { B11_LESSON } from '../lessons/b11Athletes/lesson.ts';
+LESSON_CONTENT.B11 = B11_LESSON;
 /* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
 import { B12_LESSON } from '../lessons/b12Parabolic/lesson.ts';
 LESSON_CONTENT.B12 = B12_LESSON;
