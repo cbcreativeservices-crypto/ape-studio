@@ -31,5 +31,5 @@ export function BeginningMixingLabScreen() {
   // shows; it was 7.1 s before classicWave became a wavetable, which is why
   // this was not wired until now.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} />;
+  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote />;
 }
