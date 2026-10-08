@@ -260,9 +260,10 @@ export function useSpillStep(spec: SpillSpec): MikingStep {
   const partner = partnerAt(gap);
   const pm = partnerMouth(partner, turn);
   const S = boothSpill(m.p, aim, LIP, pm, m.pattern);
+  const nearNull = S.patternDb == null || S.patternDb > 25;
   const box = spec.box(gap);
   const tw = turn === 0 ? 'facing the field' : `turned ${-turn}° toward the other commentator`;
-  const a11y = `From above, two commentators side by side at a desk, ${Math.round(gap / 10)} cm apart. The partner is ${tw}. ${m.label}: ${cm(S.own)} from its own commentator’s lips, ${cm(S.partner)} from the partner’s, ${Math.round(S.offAxis / 5) * 5}° off its front. The partner arrives about ${Math.round(S.distDb)} dB lower by distance${S.patternDb == null ? ', in the pattern’s null' : `, ${Math.round(S.patternDb)} dB by the pattern`}.`;
+  const a11y = `From above, two commentators side by side at a desk, ${Math.round(gap / 10)} cm apart. The partner is ${tw}. ${m.label}: ${cm(S.own)} from its own commentator’s lips, ${cm(S.partner)} from the partner’s, ${Math.round(S.offAxis / 5) * 5}° off its front. The partner arrives about ${Math.round(S.distDb)} dB lower by distance${nearNull ? ', near the ideal pattern’s null' : `, ${Math.round(S.patternDb ?? 0)} dB by the pattern`}.`;
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -319,7 +320,9 @@ export function useSpillStep(spec: SpillSpec): MikingStep {
     { k: 'OWN', v: cm(S.own), flex: 0.8 },
     { k: 'PARTNER', v: cm(S.partner), flex: 0.9 },
     { k: 'BY DISTANCE', v: `−${Math.round(S.distDb)} dB`, flex: 1 },
-    { k: 'BY PATTERN', v: S.patternDb == null ? 'NULL' : `${S.patternDb >= 0 ? '−' : '+'}${Math.abs(Math.round(S.patternDb))} dB`, flex: 1 },
+    // An ideal null's depth is an artefact (Kick review M3): past 25 dB the
+    // bezel says NULL, never a number.
+    { k: 'BY PATTERN', v: nearNull ? 'NULL (IDEAL)' : `${(S.patternDb ?? 0) >= 0 ? '−' : '+'}${Math.abs(Math.round(S.patternDb ?? 0))} dB`, flex: 1 },
   ];
   const labels: StaticLabel[] = [
     { id: 'own', text: 'YOU', u: -260, v: -330, align: 'center', tone: 'amber' },
@@ -355,8 +358,8 @@ export function useSpillStep(spec: SpillSpec): MikingStep {
         <Landing looking={spec.words.looking} prompt={spec.words.prompt} />
         <Card>
           <Point title="BY DISTANCE">{`Your lips ${cm(S.own)} from the mic, the partner’s ${cm(S.partner)}: the partner arrives about ${Math.round(S.distDb)} dB lower by distance alone (20·log of the ratio).`}</Point>
-          <Point title="BY PATTERN">{S.patternDb == null ? `The partner sits about ${Math.round(S.offAxis / 5) * 5}° off the mic’s front — in the ideal pattern’s null. A real mic in a real booth still hears them: reflections come round any null.` : `The partner sits about ${Math.round(S.offAxis / 5) * 5}° off the mic’s front: the ideal pattern takes about ${Math.abs(Math.round(S.patternDb))} dB ${S.patternDb >= 0 ? 'more off' : 'LESS off — the partner is nearer its front than you'}.`}</Point>
-          <Point title="TOGETHER">{S.totalDb == null ? 'On paper the partner vanishes; in the booth they never do. Check each mic alone while the other commentator talks.' : `About ${Math.round(S.totalDb)} dB between your voice and your partner’s in your mic — a calculated, simplified number. Listen to each channel alone while the other talks.`}</Point>
+          <Point title="BY PATTERN">{nearNull ? `The partner sits about ${Math.round(S.offAxis / 5) * 5}° off the mic’s front — at or near the ideal pattern’s null, where the drawing promises more than 25 dB. A real mic in a real booth rejects far less there, least in the lows, and reflections come round any null.` : `The partner sits about ${Math.round(S.offAxis / 5) * 5}° off the mic’s front: the ideal pattern takes about ${Math.abs(Math.round(S.patternDb ?? 0))} dB ${(S.patternDb ?? 0) >= 0 ? 'more off' : 'LESS off — the partner is nearer its front than you'}.`}</Point>
+          <Point title="TOGETHER">{nearNull ? `By distance alone about ${Math.round(S.distDb)} dB; the pattern adds more on paper. In the booth the partner never vanishes: check each mic alone while the other commentator talks.` : `About ${Math.round(S.totalDb ?? S.distDb)} dB between your voice and your partner’s in your mic — a calculated, simplified number. Listen to each channel alone while the other talks.`}</Point>
         </Card>
         {seen.size >= Math.min(2, spec.mics.length) ? <Note tone="ok">{spec.words.done}</Note> : null}
       </>
