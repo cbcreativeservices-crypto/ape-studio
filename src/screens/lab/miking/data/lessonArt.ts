@@ -266,3 +266,10 @@ import { B13_ART } from '../lessons/b13FieldDiamond/art';
 ART.B13 = B13_ART;
 import { B14_ART } from '../lessons/b14CourtIce/art';
 ART.B14 = B14_ART;
+/* Lab 7 · part 2 · G3 — arenas, moving sources, complete coverage: B15, B16, B17 (one block; each lesson on its own line). */
+import { B15_ART } from '../lessons/b15TrackGymCombat/art';
+ART.B15 = B15_ART;
+import { B16_ART } from '../lessons/b16MotorHorseWater/art';
+ART.B16 = B16_ART;
+import { B17_ART } from '../lessons/b17CrowdComplete/art';
+ART.B17 = B17_ART;
