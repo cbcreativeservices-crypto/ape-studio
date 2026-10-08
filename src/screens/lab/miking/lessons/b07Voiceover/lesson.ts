@@ -13,7 +13,9 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { DESK_TOP_Y, SEATED_FLOOR } from '../shared/broadcast/talkerPose.ts';
 import { B07_MODEL, MONITOR_C } from './geometry.ts';
 import { B07_ZONES } from './model.ts';
@@ -77,6 +79,8 @@ const pages: LessonPages = {
     takeaway: 'A repeatable place measured from the lips, plosive and proximity control, close or moderate justified by the room, the guest’s real mic checked and a clean return pass. A brand or a louder take do not — and more than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the reader and the guest');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b7.snd.* L21–L22, L30 · b7.set.*
@@ -120,7 +124,7 @@ const scenarios: MikingScenario[] = [
       'Hearing more of the booth than of the voice': 'Aimed at the mouth, it still hears mostly the voice.',
     },
   },
-  hearingCheck('b7.set.1', W),
+  voiceRatingCheck('b7.set.1', 'the reader'),
   {
     id: 'b7.set.2',
     page: 'setting',
@@ -172,13 +176,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b7.mic.1',
     page: 'microphone',
-    prompt: 'Does a broadcast dynamic reject a noisy room because it is dynamic?',
-    options: ['No — its pattern and closeness do that', 'Yes — dynamics ignore the room around them', 'Yes — dynamics hear only from straight ahead'],
-    correct: 'No — its pattern and closeness do that',
+    prompt: 'A broadcast dynamic close to the reader hears little of a noisy booth. Why?',
+    options: ['Its pattern, and how close it is', 'Its dynamic element ignores the room', 'Dynamics hear only from straight ahead'],
+    correct: 'Its pattern, and how close it is',
     explain: 'The voice against the room comes from distance and pattern. A close directional mic helps in a poor room whatever its transducer.',
     why: {
-      'Yes — dynamics ignore the room around them': 'The transducer does not filter the room; distance and pattern do.',
-      'Yes — dynamics hear only from straight ahead': 'A cardioid dynamic hears the sides too, less at the rear.',
+      'Its dynamic element ignores the room': 'The transducer does not filter the room; distance and pattern do.',
+      'Dynamics hear only from straight ahead': 'A cardioid dynamic hears the sides too, less at the rear.',
     },
   },
   {
@@ -244,13 +248,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b7.place.3',
     page: 'placement',
-    prompt: 'A 90° turn of the mic off the breath line stopped the pops. Is that a rule for every mic?',
-    options: ['No — test how this mic sounds off its axis', 'Yes — 90° off the breath suits all mics alike', 'Yes — a turned mic sounds smoother with all voices'],
-    correct: 'No — test how this mic sounds off its axis',
+    prompt: 'A 90° turn of the mic off the breath line stopped the pops. What next, with another mic?',
+    options: ['Test how that mic sounds off its axis', 'Turn it 90° too: the angle suits all mics', 'Turn it 90°: a turned mic is smoother'],
+    correct: 'Test how that mic sounds off its axis',
     explain: 'Some mics stay smooth far off axis; others dull or colour the consonants. Test the offset on the real mic and voice.',
     why: {
-      'Yes — 90° off the breath suits all mics alike': 'Off-axis sound differs from mic to mic; a big angle can colour the voice.',
-      'Yes — a turned mic sounds smoother with all voices': 'Off the axis, many mics lose clarity. Listen before deciding.',
+      'Turn it 90° too: the angle suits all mics': 'Off-axis sound differs from mic to mic; a big angle can colour the voice.',
+      'Turn it 90°: a turned mic is smoother': 'Off the axis, many mics lose clarity. Listen before deciding.',
     },
   },
   {
@@ -387,7 +391,7 @@ const scenarios: MikingScenario[] = [
       'Strong noise reduction to remove the room': 'Noise reduction cannot restore missing consonants or a reverberant voice.',
     },
   },
-  removeDelay('b7.mix.3'),
+  removeDelayVoice('b7.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -451,7 +455,7 @@ const symptoms: Symptom[] = [
       'Ask the reader to speak more softly through the lines': 'The delivery is the performance; move the mic.',
     },
   },
-  hollowSymptom('b7.sym.hollow'),
+  hollowVoiceSymptom('b7.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -484,7 +488,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A mic aimed at the script stand to catch its sound', ok: false, power: 'none', feedback: 'Aimed at the stand, the mic hears its reflection, not the voice.' },
       { id: 'e', label: 'A loudspeaker in the booth so the reader can hear', ok: false, power: 'none', feedback: 'A loudspeaker spills into the open mic. Headphones.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the reader’s face and the line to the script'), { id: 'r.room', label: 'Close placement suits the dry perspective in this room', role: 'required', feedback: 'Say why the distance fits the brief and the room.' }, { id: 'r.panel', label: 'Soft panels make the booth soundproof', role: 'wrong', feedback: 'Panels soften some reflections; they do not stop outside noise.' }, BRAND_REASON('voice-over'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the reader’s face and the line to the script'), { id: 'r.room', label: 'Close placement suits the dry perspective in this room', role: 'required', feedback: 'Say why the distance fits the brief and the room.' }, { id: 'r.panel', label: 'Soft panels make the booth soundproof', role: 'wrong', feedback: 'Panels soften some reflections; they do not stop outside noise.' }, BRAND_REASON('voice-over'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, a perspective the room supports, clear of the face and the script.',
   },
   {
@@ -553,12 +557,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'setting',
     prompt: 'A remote guest with a good mic sounds distant. A first check?',
-    options: ['Which mic the app is really using', 'Their camera’s angle on their face', 'The colour of the room they sit in'],
+    options: ['Which mic the app is really using', 'Their camera’s angle on their face', 'The speed of their internet line'],
     correct: 'Which mic the app is really using',
     explain: 'The laptop’s own mic may be the active input. Confirm the input with the guest.',
     why: {
       'Their camera’s angle on their face': 'The camera angle does not change the sound input.',
-      'The colour of the room they sit in': 'Colour is not the issue; the input, the distance and the room’s sound are.',
+      'The speed of their internet line': 'A slow line breaks the sound up or drops it; it does not make a voice distant and roomy.',
     },
   },
   {

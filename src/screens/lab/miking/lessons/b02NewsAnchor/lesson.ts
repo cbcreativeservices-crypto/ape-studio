@@ -19,7 +19,9 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { SEATED_FLOOR } from '../shared/broadcast/talkerPose.ts';
 import { B02_MODEL, PA_C } from './geometry.ts';
 import { B02_ZONES } from './model.ts';
@@ -83,6 +85,8 @@ const pages: LessonPages = {
     takeaway: 'Consent, a centred place measured from the lips, a channel for each speaker, one mic on air per voice and a tested fallback pass. A brand, a hidden mic for its own sake or a “hotter” signal do not — and more than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the anchor and the guest');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b2.snd.* L6–L7, L29–L31 ·
@@ -126,7 +130,7 @@ const scenarios: MikingScenario[] = [
       'The guest louder than the anchor': 'The anchor is much closer to their own lav.',
     },
   },
-  hearingCheck('b2.set.1', W),
+  voiceRatingCheck('b2.set.1', 'the anchor'),
   {
     id: 'b2.set.2',
     page: 'setting',
@@ -184,19 +188,19 @@ const scenarios: MikingScenario[] = [
     explain: 'Conceal only after the visible position works, and compare: cloth over a capsule can dull and rub. Keep the visible lav or a boom ready.',
     why: {
       'Hidden first, since it looks better on camera': 'Hidden first skips the check that the place works at all.',
-      'Not at all — a hidden lav is unusable': 'They can, with a model-compatible mount and a careful test.',
+      'Not at all — a hidden lav is unusable': 'A hidden lav can work, with a mount made for that model and a careful test.',
     },
   },
   {
     id: 'b2.mic.2',
     page: 'microphone',
-    prompt: 'Is a lav taped flat to the desk the same as a boundary mic?',
-    options: ['No — a boundary mic is built for the surface', 'Yes — a small mic lying on a desk is one', 'Yes, if it faces up toward the anchor’s mouth'],
-    correct: 'No — a boundary mic is built for the surface',
+    prompt: 'What makes a boundary mic different from a lav taped flat to the desk?',
+    options: ['Its element is built to sit at the surface', 'Its capsule is far larger than a lav’s', 'It faces up toward the anchor’s mouth'],
+    correct: 'Its element is built to sit at the surface',
     explain: 'A purpose-built boundary mic places its element right at the surface with a designed opening; a lav taped down is not the same mic.',
     why: {
-      'Yes — a small mic lying on a desk is one': 'A boundary mic is designed for the surface; a lav is not.',
-      'Yes, if it faces up toward the anchor’s mouth': 'Its facing does not make it a boundary design.',
+      'Its capsule is far larger than a lav’s': 'Size is not the point: a boundary mic is designed for the surface; a lav is not.',
+      'It faces up toward the anchor’s mouth': 'A taped lav can face up too: its facing does not make it a boundary design.',
     },
   },
   {
@@ -214,13 +218,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b2.mic.4',
     page: 'microphone',
-    prompt: 'Does a shotgun on the boom make the anchor sound close from far away?',
-    options: ['No — only closeness does that', 'Yes — that is what its tube does', 'Yes, if it is aimed well enough'],
-    correct: 'No — only closeness does that',
+    prompt: 'The anchor sounds distant on the boom’s shotgun. What brings the voice closer?',
+    options: ['Moving the boom nearer, to the frame’s edge', 'A longer tube, which reaches farther', 'Aiming the tube more precisely at the mouth'],
+    correct: 'Moving the boom nearer, to the frame’s edge',
     explain: 'Directional rejection cannot restore the voice-to-room balance lost to distance. Bring the boom as close as the frame allows.',
     why: {
-      'Yes — that is what its tube does': 'The tube narrows the highs; it does not reach farther.',
-      'Yes, if it is aimed well enough': 'Aim keeps it on the voice; it does not shorten the distance.',
+      'A longer tube, which reaches farther': 'The tube narrows the highs; it does not reach farther.',
+      'Aiming the tube more precisely at the mouth': 'Aim keeps it on the voice; it does not shorten the distance.',
     },
   },
   {
@@ -239,8 +243,8 @@ const scenarios: MikingScenario[] = [
     id: 'b2.place.2',
     page: 'placement',
     prompt: 'The camera goes to a two-shot. What happens to the boom’s place?',
-    options: ['It must move farther away', 'It can come closer now', 'Nothing — the frame did not change'],
-    correct: 'It must move farther away',
+    options: ['It moves farther away', 'It can come closer now', 'Nothing — the frame did not change'],
+    correct: 'It moves farther away',
     explain: 'The wider frame’s top is higher: the boom stays just outside it, farther from the mouth — more room against the voice.',
     why: {
       'It can come closer now': 'A wider picture leaves less room, not more.',
@@ -347,13 +351,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b2.two.4',
     page: 'twoMic',
-    prompt: 'Two unchecked mics on the anchor. Is that a backup?',
-    options: ['No — a backup is checked on its own', 'Yes — two mics are safer than one', 'Yes, if both are summed into the program'],
+    prompt: 'Two unchecked mics on the anchor, both open in the program. Is that a backup?',
+    options: ['No — a backup is checked on its own', 'Yes — two mics are safer than one', 'It is, if both are the same model'],
     correct: 'No — a backup is checked on its own',
-    explain: 'A fallback is a second mic checked on its own track, with a clear cue for switching. Two unverified mics are not redundancy.',
+    explain: 'A fallback is a second mic checked on its own track, with a clear cue for switching. Two unverified mics are not redundancy — and both open, they comb.',
     why: {
-      'Yes — two mics are safer than one': 'Unchecked, both may fail — or comb when summed.',
-      'Yes, if both are summed into the program': 'Summed, they comb: that is not a backup.',
+      'Yes — two mics are safer than one': 'Unchecked, both may fail — and open together on one voice, they comb.',
+      'It is, if both are the same model': 'A matching model can fail the same way; unchecked, it proves nothing.',
     },
   },
   {
@@ -404,7 +408,7 @@ const scenarios: MikingScenario[] = [
       'Swap it for a longer shotgun higher up': 'A longer tube does not bring the voice closer.',
     },
   },
-  removeDelay('b2.mix.3'),
+  removeDelayVoice('b2.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -468,7 +472,7 @@ const symptoms: Symptom[] = [
       'Swap the gooseneck for an omni nearer the PA': 'An omni nearer the PA hears it from every side.',
     },
   },
-  hollowSymptom('b2.sym.hollow'),
+  hollowVoiceSymptom('b2.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -501,7 +505,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'The camera’s mic only, its gain turned up', ok: false, power: 'phantom', feedback: 'As far as the camera: the room comes up with the voices.' },
       { id: 'e', label: 'Both lavs hidden before any visible test', ok: false, power: 'phantom', feedback: 'Conceal only after the visible place works, and compare.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the clothes, the papers and the frame'), { id: 'r.channels', label: 'Each speaker on their own labelled channel, checked alone and in overlap', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.hidden', label: 'A hidden lav sounds the same as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('anchor'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the clothes, the papers and the frame'), { id: 'r.channels', label: 'Each speaker on their own labelled channel, checked alone and in overlap', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.hidden', label: 'A hidden lav sounds the same as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('news anchor'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, clear of the clothes and the frame, a channel for each speaker — and no claim that hidden sounds the same.',
   },
   {
@@ -515,7 +519,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'The boom and the lav both in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
       { id: 'e', label: 'Raise the mics until the PA rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Bring each to its working level only.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the talkers, the papers and the frame'), { id: 'r.one', label: 'One mic on air per voice; the fewest mics open', role: 'required', feedback: 'Say how the open mics are kept to the ones needed.' }, { id: 'r.op', label: 'The PA level and the mics checked with the operator', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('anchor'), { id: 'r.loudest', label: 'Turn the mics up until the voices beat the PA', role: 'wrong', feedback: 'More gain brings feedback closer.' }],
+    reasons: [docReason('the lips'), clearReason('the talkers, the papers and the frame'), { id: 'r.one', label: 'One mic on air per voice; the fewest mics open', role: 'required', feedback: 'Say how the open mics are kept to the ones needed.' }, { id: 'r.op', label: 'The PA level and the mics checked with the operator', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('news anchor'), { id: 'r.loudest', label: 'Turn the mics up until the voices beat the PA', role: 'wrong', feedback: 'More gain brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: close mics measured from the lips, one on air per voice, the fewest open, the PA toward the rejection and checked with the operator — and no feedback provoked.',
   },
 ];
@@ -544,13 +548,13 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.2',
     covers: 'sound',
-    prompt: 'The camera widens to a two-shot. The boom must…',
-    options: ['Stay farther away, out of the frame', 'Come closer, as the anchor looks smaller', 'Stay exactly where it was before'],
-    correct: 'Stay farther away, out of the frame',
+    prompt: 'The camera widens to a two-shot. Where does the boom go?',
+    options: ['Farther away, out of the wider frame', 'Closer, as the anchor looks smaller', 'Exactly where it was before'],
+    correct: 'Farther away, out of the wider frame',
     explain: 'The wider frame’s top is higher: the boom stays just outside it, farther from the mouth.',
     why: {
-      'Come closer, as the anchor looks smaller': 'The anchor only looks smaller; the frame’s edge moved out.',
-      'Stay exactly where it was before': 'Where it was is now in the picture.',
+      'Closer, as the anchor looks smaller': 'The anchor only looks smaller; the frame’s edge moved out.',
+      'Exactly where it was before': 'Where it was is now in the picture.',
     },
   },
   {

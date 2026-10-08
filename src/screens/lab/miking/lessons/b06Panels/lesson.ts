@@ -15,7 +15,9 @@
  * a NOTE, never graded.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { B06_MODEL, PA_C, STAND_FLOOR } from './geometry.ts';
 import { B06_ZONES } from './model.ts';
 import { B06_COPY } from './copy.ts';
@@ -78,6 +80,8 @@ const pages: LessonPages = {
     takeaway: 'Each voice intelligible at its destination, an individual or shared choice justified, a planned lectern handoff, the press feed’s content and level known, and a safe setup pass. More than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the panel and the presenter');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b6.snd.* L6, L29–L32 · b6.set.*
@@ -121,7 +125,7 @@ const scenarios: MikingScenario[] = [
       'A boundary mic only works when people are silent': 'It works for speech; it is simply farther from each mouth.',
     },
   },
-  hearingCheck('b6.set.1', W),
+  voiceRatingCheck('b6.set.1', 'the panelist'),
   {
     id: 'b6.set.2',
     page: 'setting',
@@ -173,13 +177,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b6.mic.1',
     page: 'microphone',
-    prompt: 'A boundary mic lies on the table. Is it an omni?',
-    options: ['Not always — check its actual pattern', 'Yes — boundary mics hear evenly all round', 'Yes — lying flat turns a mic into an omni'],
+    prompt: 'A boundary mic lies on the table between two panelists. Is it an omni?',
+    options: ['Not always — check its actual pattern', 'Yes — boundary mics hear evenly all round', 'It turns into one by lying flat'],
     correct: 'Not always — check its actual pattern',
     explain: 'Many boundary mics are half-cardioid or half-supercardioid. Aim its front at the talkers and check the real pattern.',
     why: {
-      'Yes — boundary mics hear evenly all round': 'Some do; many are directional above the surface.',
-      'Yes — lying flat turns a mic into an omni': 'Lying on a surface changes the response near it, not the pattern’s type.',
+      'Yes — boundary mics hear evenly all round': 'Some are; many are directional above the surface.',
+      'It turns into one by lying flat': 'Lying on a surface changes the response near it, not the pattern’s type.',
     },
   },
   {
@@ -224,7 +228,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where can a lectern gooseneck start, as an idea?',
     options: ['About 25–36 cm away, a little off the mouth', 'Right against the lips, so it hears only them', 'Low on the lectern top, under the papers'],
     correct: 'About 25–36 cm away, a little off the mouth',
-    explain: 'After our research, about 10–14 in (25–36 cm), a little off the mouth’s axis, is a place to begin — out of the sight line and the paper’s path. Try it with a short and a tall presenter.',
+    explain: 'After our research, about 25–36 cm (10–14 in), a little off the mouth’s axis, is a place to begin — out of the sight line and the paper’s path. Try it with a short and a tall presenter.',
     why: {
       'Right against the lips, so it hears only them': 'Too close for a lectern: pops, and every head turn becomes a big change.',
       'Low on the lectern top, under the papers': 'Under the papers it hears the pages, not the voice.',
@@ -368,12 +372,12 @@ const scenarios: MikingScenario[] = [
     id: 'b6.mix.1',
     page: 'practice',
     prompt: 'A first syllable is clipped whenever a new panelist starts speaking. What do you check?',
-    options: ['The automatic mixer’s settings, in rehearsal', 'The panelists’ chairs and the table height', 'The colour of the mute lights on the table bases'],
+    options: ['The automatic mixer’s settings, in rehearsal', 'The panelists’ chairs and the table height', 'The PA’s level in the room at that moment'],
     correct: 'The automatic mixer’s settings, in rehearsal',
     explain: 'Automatic mixers choose or share gain and have hold, off-attenuation and priority settings that vary by model. Rehearse interruptions and listen for clipped first syllables.',
     why: {
       'The panelists’ chairs and the table height': 'Furniture does not clip a first syllable; a gate or an automatic mixer can.',
-      'The colour of the mute lights on the table bases': 'The lights show the state; the settings decide it.',
+      'The PA’s level in the room at that moment': 'The PA’s level does not decide when a channel opens; the automatic mixer’s settings do.',
     },
   },
   {
@@ -388,7 +392,7 @@ const scenarios: MikingScenario[] = [
       'The lectern mic is too far from the box': 'The box is fed by the mixer, not by a mic’s distance.',
     },
   },
-  removeDelay('b6.mix.3'),
+  removeDelayVoice('b6.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -452,7 +456,7 @@ const symptoms: Symptom[] = [
       'Swap all the goosenecks for omni capsules': 'Omnis hear the PA from every side: feedback comes sooner.',
     },
   },
-  hollowSymptom('b6.sym.hollow'),
+  hollowVoiceSymptom('b6.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -484,7 +488,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'The question mic to the PA only', ok: false, power: 'none', feedback: 'The stream and the press would never hear the questions.' },
       { id: 'e', label: 'Every mic left open the whole time', ok: false, power: 'phantom', feedback: 'Each open mic costs margin and adds room. Open the needed ones.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the talkers’ faces, the sight lines and the aisle'), { id: 'r.route', label: 'The question and the remote voice are routed to the stream and the press feed', role: 'required', feedback: 'Say how the feeds get every voice.' }, { id: 'r.three', label: 'A strict 3:1 spacing guarantees a clean mix', role: 'wrong', feedback: '3:1 can help with spaced mics; it is not a guarantee at a talking table.' }, BRAND_REASON('panel'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the talkers’ faces, the sight lines and the aisle'), { id: 'r.route', label: 'The question and the remote voice are routed to the stream and the press feed', role: 'required', feedback: 'Say how the feeds get every voice.' }, { id: 'r.three', label: 'A strict 3:1 spacing guarantees a clean mix', role: 'wrong', feedback: '3:1 can help with spaced mics; it is not a guarantee at a talking table.' }, BRAND_REASON('panel'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: close mics measured from the lips, the fewest open, every voice routed on purpose, and clearance kept.',
   },
   {
@@ -528,12 +532,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'sound',
     prompt: 'Why mute the panel mics of people who are not speaking?',
-    options: ['Each open mic adds room and lowers margin', 'A muted mic sounds warmer when it is opened again', 'The mics overheat when they stay open'],
+    options: ['Each open mic adds room and lowers margin', 'A muted mic sounds warmer when it is opened again', 'A mic with no talker adds only a little hiss'],
     correct: 'Each open mic adds room and lowers margin',
     explain: 'Every open mic adds the speaker later, the room, and — live — costs about 3 dB per doubling.',
     why: {
       'A muted mic sounds warmer when it is opened again': 'Muting does not change the mic’s tone.',
-      'The mics overheat when they stay open': 'Open mics do not overheat; they add bleed and cost margin.',
+      'A mic with no talker adds only a little hiss': 'It adds far more than hiss: the speaker, later, the room — and live, it costs margin before feedback.',
     },
   },
   {

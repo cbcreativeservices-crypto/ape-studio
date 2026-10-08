@@ -1,0 +1,112 @@
+# Review 2026-10-08 — Miking Lab 7 part 1 (Broadcast speech and audience), B01–B08
+
+Two experts reviewed the eight lessons, then fixed what was clearly wrong:
+- **AE**: a working broadcast and podcast engineer, A2 and location sound mixer;
+- **CL**: a cognitive-learning and instructional-design expert.
+
+Branch `review-lab7a`, from `origin/lab7-g3` 955735a9 (it already contains `final-lab` c2c08840; "Merge lab7-g3" was not yet on `final-lab`). Lab 7 part 2 (B09–B17) is reviewed separately on `review-lab7b`.
+
+## Summary
+
+The lab is in good shape. The physics and the safety content are sound; the numbers that matter were checked by hand (table "Verified" below). The eight lessons follow the journey, with PREDICT FIRST, a worked example, six quick-check items with at least one critical safety item each, and briefs where more than one setup passes. The routing model (mix-minus, talkback off air, the earpiece, the press box's levels, crowd mics never into the PA, two open mics on one talker) is right and well taught.
+
+- **Found:** 0 major and 13 minor problems (R1–R13), all **FIXED**. Most are item fairness and words the voice lessons borrowed from the instrument families.
+- **Left for the owner:** 5 new items (O-A to O-E), each with a recommendation. The owner items already in CORRECTIONS_LOG.md (L7G1 / L7G2 / L7G3) were not changed; my expert opinion is noted beside them at the end.
+- **The biggest fixes:**
+  - R1: 17 quick-check and page items could be answered without the idea: the key was the only option that did not start "Yes" (or the only "No" against two "Yes"). Each is now a real question with believable distractors.
+  - R3–R5: the voice lessons borrowed the bowed family's instrument words — "the loudest sound of any position **on the instrument**", "two mics **on one instrument**", "a second mic **(or the pickup)**", "until **the body** comes back", "the loudest **host passage**" — and the brand reason read "on **a anchor**", "on **a audience**", "on **a arena**".
+  - R6 (the builders' L7G2-18 / L7G3-17): MEET IT called a person "it" ("Meet the host in brief — what it is and its parts — and see where its sound leaves it"). B01–B07 now give MEET IT in person words, with exactly the credit the engine would build.
+- **Not changed:** no owner-review default; no release gate (`MIKING_PUBLIC` stays false); no image or photo asset; no engine file; no head or figure drawing code (the head-fix work runs in parallel).
+
+**Method**:
+- I read BUILD_PROMPTS_lab7a, the three Lab 7 part 1 sections of CORRECTIONS_LOG.md (L7G1, L7G2, L7G3), the Lab 6 review and the visual charter.
+- I read every `lesson.ts` of B01–B08 in full (pages, checks, symptoms, order tasks, briefs, predictions, the quick check, the orient cards, the setting, the accuracy note) and the copy (`copy.ts`) of each.
+- I read the shared broadcast models where a number or a rule is taught: `deskReflection.ts`, `openMicPanel.ts`, `routing.ts`, the routing words, `broadcastMics.ts` blurbs, `reporterWind.ts`, and the shared item builders the lessons use (`shared/bowed/bowedItems.ts`, `shared/broadcast/sportItems.ts`, `engine/model/sharedItems.ts`, `engine/restructure.ts` meetContent).
+- A scan over every item looked for: distractors sharing a first word the key lacks; implausible fillers; must / always / never / only in keys and technique text; instrument words in voice lessons.
+- On my own preview server (port 8217, the in-app pane at 390 wide), I looked at the changed MEET IT goal and some changed items (see "Seen in the preview").
+
+## Findings
+
+| id | lesson / page | expert | severity | finding | fix applied / owner decision |
+|---|---|---|---|---|---|
+| R1 | B01 `b1.mic.3`; B02 `b2.mic.2`, `b2.mic.4`, `b2.two.4`; B03 `b3.mic.1`, `b3.mix.2`, `q.2`; B04 `b4.mic.1`; B05 `b5.mic.4`, `b5.two.4`; B06 `b6.mic.1`; B07 `b7.mic.1`, `b7.place.3`; B08 `b8.mic.1`, `b8.two.3`, `b8.set.2`, `q.2` | CL | minor | Seventeen items keyed the one option a test-wise learner can spot: "No — …" (or "Not always") against two "Yes — …" distractors, or a key against two "Yes, …" options. The same pattern the Lab 6 review fixed (R4–R6). | **FIXED.** Each is now a real question with its own misconceptions as distractors, e.g. b1.mic.3 "A close broadcast dynamic hears little of a noisy room. What does that?" (its pattern and how close it is / its dynamic element / its heavy body); b5.two.4 "You delay the headset … How long does that fix last?" (until the presenter moves); b8.two.3 "You time-align two zone mics to one laugh. Where does that alignment hold?" (at that one seat only). Each distractor keeps its own why. Pinned (no item's distractors share a Yes / No / Not opening the key lacks). |
+| R2 | B03 `b3.set.4`, `b3.mix.1`; B06 `b6.mix.1`, `q.2`; B07 `q.4`; B08 `b8.mix.1` | CL | minor | Implausible fillers: "The brand of the wind cover", "The colour of the flag on the handle", "The colour of the mute lights", "The mics overheat when they stay open", "The colour of the room they sit in", "It is the wrong brand for the venue". | **FIXED** with believable misconceptions: "The order of the questions"; "The receiver's output level at the mixer"; "The PA's level in the room"; "A mic with no talker adds only a little hiss"; "The speed of their internet line"; "Its pattern is too narrow for the room" — each with a why. Pinned. |
+| R3 | B01, B02, B04, B05, B06, B07 — PRACTICE briefs | CL | minor | The wrong reason "It will give the loudest sound of any position **on the instrument**" (the bowed family's `LOUD_REASON`) in six voice lessons. | **FIXED**: the voice version already in the kit (`LOUD_VOICE`, "the loudest voice of any position"), as B03 used. Pinned. |
+| R4 | B01, B02, B04, B05, B06, B07 — PRACTICE `mix.3`; TROUBLESHOOT "hollow" | CL | minor | "Two mics on **one instrument** sound thin together" (`removeDelay`) and "A mic and a second mic **(or the pickup)** sound hollow … until **the body** comes back" (`hollowSymptom`). | **FIXED**: `removeDelayVoice` (already in the kit) and a new `hollowVoiceSymptom` ("One voice sounds hollow with two mics open"; the key "Solo each, sum in mono; mute or move one", the explanation "often the answer is one mic open, not two") in `shared/broadcast/voiceItems.ts`. Pinned. |
+| R5 | B01–B07 `set.1` (max SPL); B02, B08 briefs | CL | minor | The max-SPL check read "the loudest **host passage**", "the loudest **interview passage**", "the loudest **voice-over passage**". The brand reason read "on **a anchor**", "on **a audience**", "on **a arena**". | **FIXED**: `voiceRatingCheck` — "Your mic for the host is rated … well above the host's loudest laugh or shout at the mic"; the brand reason "on a news anchor", "on a studio audience", "on a crowd in an arena". The engine's max-SPL item itself is unchanged. Pinned. |
+| R6 | B01–B07 MEET IT goal (builders' L7G2-18, L7G3-17) | CL | minor | The engine's generic goal called a person "it": "Meet the host in brief — what it is and its parts — and see where its sound leaves it". | **FIXED for B01–B07** (B08 already wrote its own): each lesson gives `pages.meet = personMeet(pages, 'the host')` — "Meet the host in brief — who speaks and what is around them — and see where the voice leaves: those are the places a mic can hear it best." The credit is the same checks the engine builds (instrument + sound pages), the takeaway the sound page's. No engine file changed. Pinned. B09–B11 (part 2) can adopt the same helper — see O-A for the rest of the engine wording. |
+| R7 | B03 sound goal, `q.1` explain, the one-mic step (`pages.tsx`), the cardioid card (`reporterPages.tsx`); `reporterWind.ts` foam card; `broadcastMics.ts` directional lav blurb; B04 boom tendency (`model.ts`) | CL | minor | Technique said as a rule: "a directional mic **must** point at the speaking mouth", "It **must** fit snugly", "its sensitive end **must** point at the mouth", "it **must** be re-aimed as the talker turns". | **FIXED**: "needs to point", "needs to fit", "needs re-aiming"; q.1's explain says why ("hears best along its front, so it is turned to the speaking mouth"). Picture and safety limits (the boom stays outside the frame; nothing over people) stay firm on purpose. Pinned. |
+| R8 | B02 `b2.place.2`, `q.2`; B04 `b4.snd.1`, the sound prediction | CL | minor | Keys and a stem said "must" ("It must move farther away", "The boom must…"); b4.snd.1's distractor "Nothing — the boom ignores the camera's frame" was not believable. | **FIXED**: "It moves farther away"; q.2 "Where does the boom go?" with parallel options; b4.snd.1's distractor "It stays put: the boom is above the shot anyway" (a real beginner's belief), with its why. Pinned (no non-critical key in B01–B08 says "must"). |
+| R9 | B04 `b4.place.3` | CL / AE | minor | The key "**Only** when the shot leaves no better place" contradicted its own explanation ("A conditional start: audition it rather than impose or ban it"). | **FIXED**: "When above and below are blocked or sound worse". Pinned. |
+| R10 | B03 MICROPHONES prediction | CL | minor | The options "Yes / No / Only an omni" for "does a dynamic mic pick out one voice from a crowd?" — the third did not answer the question. | **FIXED**: "Only when held close". |
+| R11 | B02 `b2.mic.1` | CL | minor | The why "They can, with a model-compatible mount…" answered a "Not at all — a hidden lav is unusable" option in the wrong number. | **FIXED**: "A hidden lav can work, with a mount made for that model and a careful test." |
+| R12 | B06 `b6.place.1` explain | CL | minor | "about 10–14 in (25–36 cm)" — inches first, where every other distance in Lab 7 is centimetres first. | **FIXED**: "about 25–36 cm (10–14 in)" (the B06-1 correction is unchanged). |
+| R13 | B08 `q.2` | AE | minor | (part of R1) The rewrite asks what two far-apart zone mics do in mono: "A comb that moves seat to seat" — the zone delay depends on where the laugh starts; the old item only asked for a label. | **FIXED** with R1. |
+| O-A | Engine journey words, every voice and broadcast lesson | CL | — | Beyond MEET IT (R6), the engine still says "instrument" to a person: the journey map's lines "Real mic setups drawn **on the instrument**" and "seen **on the instrument**" (`engine/journey.ts` STAGES), and the STARTING SETUPS prompt "Each one is drawn **on the instrument**" (`pages/PSetups.tsx`). Shown in all of Lab 5 and Lab 7. | **OWNER** (an engine wording change every lab shares, so not done in a review). Recommendation: neutral words that fit an instrument and a person — "Real mic setups drawn on the source" / "seen on the source", or better a lesson word (`copy.words.instrument`, which the broadcast lessons already set: "a host at a desk"). If the owner prefers, the `personMeet` helper (R6) shows the per-lesson pattern; B09–B11 can use it now. |
+| O-B | Voice, B01–B08 accuracy note | CL | — | "After our research, here is where we recommend you begin", where the standard line says "suggested starting points". Same as Lab 6 O-C. | **OWNER**: pick one for all labs. Recommendation: "suggest", the later rule. |
+| O-C | B02 `q.2` and `b2.place.2`; B04 `q.1` and `b4.rec.1` | CL | — | The quick check repeats a page item almost word for word (the two-shot moves the boom). The quick check is a skip-ahead test, so repetition is not harmful, but it tests recall of one wording. | **OWNER** (a lab-wide policy on quick-check overlap). Recommendation: keep; if changed, ask the quick-check item from the camera's side ("Which frame do you ask for first?"). |
+| O-D | Setup data, B02 / B05 briefs | AE | — | The (unshown) `power` field marks a wireless bodypack lav and a wireless headset as 'phantom'. A bodypack powers its own capsule; only a wired miniature through its adapter takes phantom. No learner sees the field today. | **OWNER** (data only). Recommendation: if the field is ever shown, add a third value ('pack') rather than 'phantom'. |
+| O-E | Readouts, all scenes (engine `fmtLen`) | AE | — | "Distances are rounded to about 5 mm" and long distances print 5 mm with inches (the Lab 6 O-B finding) — the PA at 2.6 m and the crowd mics at 3.2–6 m read as more precise than any drawing default. | **OWNER**, as Lab 6 O-B: wire the scaled rounding (`fmtLenScaled`) for Lab 6 and Lab 7 scenes. |
+
+### Verified — no change (AE)
+
+| check | result |
+|---|---|
+| Open mics (B01, B02, B06) | 10·log10(NOM): each doubling costs about 3 dB; four open mics ≈ 6 dB (b6.rec.3). The bleed matrix is inverse square × an ideal first-order pattern. 3:1 is a NOTE only: a reason claiming it guarantees a clean mix is graded wrong (B01, B06). |
+| Desk / stand reflection (B01, B02, B06, B07) | Image source mirrored through the plate, Δt = (r₂ − r₁)/c, first notch 1/(2Δt); the reflection exists only when its bounce lands on the plate; the reflected arrival is weighed by the pattern at the bounce point's angle (not the image's). "Read where the dip falls, not its depth" is the honest framing. |
+| Nulls (B01–B08) | Supercardioid ≈ 125°, hypercardioid ≈ 110°, cardioid 180°; a cardioid at 90° ≈ half (−6 dB) (b8.ctx.1). "A real null is shallower than the drawing" is said each time. B04's PA (2 m out, 1.9 m left, 1.7 m up) sits ≈ 126° off a boom aimed down from the operator's side — the note's "off the rear" is right. |
+| Proximity (B01, B05, B07) | Closer to a directional mic: more bass and breath, less room; an omni has no pressure-gradient bass lift (b5.mic.3, b7.mic.2). "Compare at matched loudness" every time. |
+| Lav and headset (B02, B05) | One sternum band 12.5–25 cm (5–10 in), every mount point inside it; the headset 2–3 cm from the corner of the mouth, out of the breath; the broadcast loop and a taped loop; no bodypack lav straight into 48 V, only through its own adapter; consent, wardrobe, skin-safe adhesive only on skin. All correct practice. |
+| Boom and camera (B02, B04) | Each boom start derived from the frame (15 cm outside the widest frame), "a shotgun does not zoom", the camera mic moves with the camera, automatic gain pumps the room — correct. Carbon poles conduct (q.4). |
+| Lectern (B06, B05) | 25–36 cm (10–14 in), a little off the mouth and below it (B06-1). The press box: a line-level input, isolated mic-level outputs; line into a mic input overloads, mic into line is too quiet; phantom never into an unverified feed port. |
+| Field (B03) | The shared omni midway favours neither voice; moved toward the speaker, the voice rises by distance against a distant street; a cardioid aimed between two mouths serves neither. Wind: grille / foam / fitted fur for a handheld (no basket); "no layer makes a mic immune"; a filter cannot undo overload. |
+| Routing (all) | Mix-minus for a remote guest's return; talkback and cues kept off the air; the return on an earpiece, not a loudspeaker by an open mic; two open mics on one talker into one feed flagged; a stream carries only what is routed into it; crowd and ambience mics never into the PA (B08, a failing routing check). |
+| Audience (B08) | XY: Δt = 0, no mono comb; spaced and zone pairs comb, the delay changing with the seat, so "time-align" fits one seat; a raised mic evens the distances to a section ("one person can dominate" from 6 dB per halving of distance); surround labels L C R Ls Rs, Ambisonic A-format FLU FRD BLD BRU, each with its front, no decode drawn. |
+| Safety (all) | Never provoke feedback (bring each mic to its working level, pull down at any ring); thunder → a substantial building or a hard-topped vehicle, 30 minutes after the last thunder, a windscreen is not safety; never a person in a vehicle path; nothing swung or hung over people without a qualified rigger; no conductive pole near power lines, if unsure the pole stays down; aisles and exits clear; 85 dBA / 8 h, 3 dB exchange, max SPL is not a hearing limit. |
+| Names and voice | No brand, model or citation on screen (the existing BRAND_NAMES guard passes); "Hammond" untouched; the starting-points line in place. |
+
+### Verified — no change (CL)
+
+- **Journey:** every lesson runs MEET IT → STARTING SETUPS → MICROPHONES → PLACEMENT STUDIO → ADVANCED → PRACTICE; PREDICT FIRST is not graded; one FROM EARLIER per page; six quick-check items each, with at least one critical safety item; each brief passes more than one setup with graded reasons; wrong reasons are named (brand, loudest, 3:1 as a guarantee, "a dynamic does not pick up wind", "a shotgun zooms").
+- **Goals** are written for the learner, never as build notes; no "Shown, never played."; feedback explains why for every distractor.
+- **Terms** are consistent across B01–B08 and with Labs 5–6: "rejection" (not "null") in learner keys, "the PA", "mix-minus", "the program", "open mics", "a starting point measured from the lips".
+- **Navigation:** labs never block navigation, and the lab ends on LabEndScreen ("what's left") — engine features, unchanged.
+- **Legibility:** the builders measured ≥ 9 pt at 390 wide (their `lab7-g1…g3` captures); nothing I changed alters a readout or a dock.
+
+## Owner items already logged (not changed) — expert opinion
+
+- **L7G1 OWNER REVIEW** (seated talker 740 / 450 / 470 mm, the 6 cm desk edge, head turn ±60°, the arm and gooseneck sizes, B01 desk and PA, B07 script stand and monitor, B06 panel and lectern geometry, O-LEC, routing depth, 3:1 as a note): approve all. The 6 cm desk edge is a fair "leaning in" host. O-LEC: approve leaving the 7–10 in gain-setting distance out — one lectern start is clearer.
+- **L7G1-05 / L7G2-07 / L7G3-03** (references as titles in the docs, nothing on screen): approve.
+- **L7G2 OWNER REVIEW — O-SG** (the shotgun drawn as the existing supercardioid-based simplified lobe): approve. Reusing one drawing for every shotgun is more honest than a second invented shape; the words already say the real pattern narrows with pitch.
+- **L7G2 — cameras, shot presets, the 15 cm boom margin, the operator's grips, the body-worn mount points, the cable path, the breath jet, the PA places, the two-talker cue, concealment as one layer:** approve. A 15 cm margin is a sensible frame line for a beginner; experienced operators work tighter, which the "as close as the frame allows" words already cover.
+- **L7G2-14** (the guest beside the anchor, both facing camera; "toward the guest" a 60° head turn): approve as a simplification. A real desk often angles the guest 30–45° toward the anchor; one line in words would be enough if wanted.
+- **L7G2-15** (hairline / wig placement omitted): approve — specialist theatre practice.
+- **L7G2-16** (B02's gooseneck 20–30 cm, B06's default): approve; it matches common desk practice.
+- **L7G2-18 / L7G3-17** (the engine calls a person "it"): MEET IT fixed for B01–B07 (R6); the rest is O-A.
+- **L7G3 OWNER REVIEW** (B03 talkers 75 cm face to face, the shared place, the scene, `repOmni`, wind sites and layers; B08 venues, heights, the hung pair with no close-up, PA wedges as aim not dispersion): approve. The 28 cm below the mouths for the shared place is a fair "chest height".
+- **L7G3-07** (B03 handoff 15–30 cm): approve; in practice reporters often work 10–20 cm in a loud street, which the "close end 10 cm" already shows.
+- **L7G3-13** (no handheld question mic as a B08 setup): approve; teaching it in words and routing is enough.
+- **L7G3-14** (surround / Ambisonic tokens on their own step, no decode): approve.
+- **L7G3-15** (B12–B14 crowds still drawn with heads): for the part 2 review; recommend the same empty-seat flag there.
+
+## Seen in the preview
+
+On my own Expo web server (port 8217) in the in-app pane at 390 wide: see the commit log of this branch for what was checked; the MEET IT goal for B01 and B03 reads in person words; changed items render on one or two lines with their whys.
+
+## Counts
+
+| Severity | Found | Fixed | Owner |
+|---|---|---|---|
+| Major | 0 | — | — |
+| Minor | 13 | 13 (R1–R13) | — |
+| New owner items | 5 | — | 5 (O-A … O-E) |
+
+## Files touched
+
+- Lesson data: `lessons/b01RadioHost/lesson.ts`, `b02NewsAnchor/lesson.ts`, `b03FieldReporter/{lesson.ts,pages.tsx}`, `b04BoomCamera/{lesson.ts,model.ts}`, `b05Lavalier/lesson.ts`, `b06Panels/lesson.ts`, `b07Voiceover/lesson.ts`, `b08Audience/lesson.ts`.
+- Shared broadcast (words only): `shared/broadcast/reporterPages.tsx` (one card blurb), `reporterWind.ts` (one card), `broadcastMics.ts` (one blurb); new `shared/broadcast/voiceItems.ts` (`voiceRatingCheck`, `hollowVoiceSymptom`, `personMeet`).
+- No engine, image, registry, head or figure file was changed.
+
+## Tests
+
+- New: `test/mikingLab7aReview.test.ts`, with 6 tests.

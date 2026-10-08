@@ -18,7 +18,9 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { B05_MODEL, FLOOR, PA_C } from './geometry.ts';
 import { B05_ZONES } from './model.ts';
 import { B05_COPY } from './copy.ts';
@@ -81,6 +83,8 @@ const pages: LessonPages = {
     takeaway: 'Consent, a centred place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the presenter');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b5.snd.* L5, L24–L25, L31–L32 ·
@@ -124,7 +128,7 @@ const scenarios: MikingScenario[] = [
       'Because it hears only from the side, not the front': 'Most headsets are omni or cardioid; the place is about breath and steadiness.',
     },
   },
-  hearingCheck('b5.set.1', W),
+  voiceRatingCheck('b5.set.1', 'the presenter'),
   {
     id: 'b5.set.2',
     page: 'setting',
@@ -212,13 +216,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b5.mic.4',
     page: 'microphone',
-    prompt: 'A cap on a hidden lav makes it brighter. Does that fix fabric rubbing?',
-    options: ['No — move it or change the mount', 'Yes — brighter covers the rubbing', 'Yes, as long as the cap fits snugly'],
-    correct: 'No — move it or change the mount',
+    prompt: 'A hidden lav rubs on the fabric. A bright cap is in the kit. What fixes the rubbing?',
+    options: ['Moving it, or changing the mount', 'The bright cap, to cover the rub', 'The bright cap, fitted snugly'],
+    correct: 'Moving it, or changing the mount',
     explain: 'A model’s own bright cap can make up for some of the cloth’s dulling — for that model only. It does nothing for a capsule that rubs: fix the place and the mount.',
     why: {
-      'Yes — brighter covers the rubbing': 'A brighter tone makes rubbing more obvious, if anything.',
-      'Yes, as long as the cap fits snugly': 'A cap changes the tone, not the movement of cloth on the capsule.',
+      'The bright cap, to cover the rub': 'A brighter tone makes rubbing more obvious, if anything.',
+      'The bright cap, fitted snugly': 'A cap changes the tone, not the movement of cloth on the capsule.',
     },
   },
   {
@@ -345,13 +349,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b5.two.4',
     page: 'twoMic',
-    prompt: 'Can delaying the headset fix the comb with the lectern mic for good?',
-    options: ['No — it suits one place, and they move', 'Yes — once lined up it stays lined up', 'Yes, if the delay is set a little longer'],
-    correct: 'No — it suits one place, and they move',
+    prompt: 'You delay the headset to line it up with the lectern mic. How long does that fix last?',
+    options: ['Until the presenter moves', 'For the whole show, once set', 'For good, if set a little long'],
+    correct: 'Until the presenter moves',
     explain: 'A delay lines the two arrivals up for one position of the mouth. As the presenter moves, the gap changes again. Muting one is the reliable step.',
     why: {
-      'Yes — once lined up it stays lined up': 'The gap depends on where the mouth is: it changes as they move.',
-      'Yes, if the delay is set a little longer': 'A wrong delay makes a new comb; it does not remove one.',
+      'For the whole show, once set': 'The gap depends on where the mouth is: it changes as they move.',
+      'For good, if set a little long': 'A wrong delay makes a new comb; it does not remove one.',
     },
   },
   {
@@ -402,7 +406,7 @@ const scenarios: MikingScenario[] = [
       'Swap the headset for a lav up on the shirt collar': 'That gives up the headset’s steadiness; fix the capsule’s place first.',
     },
   },
-  removeDelay('b5.mix.3'),
+  removeDelayVoice('b5.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -466,7 +470,7 @@ const symptoms: Symptom[] = [
       'Clip the lav up nearer to the mouth': 'The capsule’s place does not fix the radio path.',
     },
   },
-  hollowSymptom('b5.sym.hollow'),
+  hollowVoiceSymptom('b5.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -499,7 +503,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A lav taped to the skin with camera tape', ok: false, power: 'phantom', feedback: 'Camera tape is not skin-safe. Use an adhesive made for skin, after asking.' },
       { id: 'e', label: 'The bodypack lav plugged straight into a phantom input', ok: false, power: 'phantom', feedback: 'Never — only through its own specified adapter.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewellery'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewellery'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, the capsule clear of the clothes, the wearer’s agreement — and no promise that hidden sounds the same.',
   },
   {

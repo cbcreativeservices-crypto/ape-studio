@@ -18,8 +18,9 @@
  * model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
 import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { B03_MODEL, FLOOR, PA_C } from './geometry.ts';
 import { B03_ZONES } from './model.ts';
 import { B03_COPY } from './copy.ts';
@@ -35,7 +36,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where the voices come from',
-    goal: 'See where speech leaves each person, what one mic hears shared between them or moved to whoever speaks, why a directional mic must point at the speaking mouth, and what wind does at the capsule.',
+    goal: 'See where speech leaves each person, what one mic hears shared between them or moved to whoever speaks, why a directional mic needs to point at the speaking mouth, and what wind does at the capsule.',
     credit: { scenarios: ['b3.snd.1', 'b3.snd.2', 'b3.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'Every distance is read from the lips. A shared omni favours neither voice and hears the street all round; moved to the speaker, the voice comes up. A directional mic pointed between two people serves neither. Check wind at the capsule.',
   },
@@ -82,6 +83,8 @@ const pages: LessonPages = {
     takeaway: 'A deliberate handoff, the omni-or-directional trade-off named, wind and handling controlled without promising silence, a safe spot written down and the live program checked. More than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the reporter and the guest');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b3.snd.* L12–L13, L20, L24 ·
@@ -125,7 +128,7 @@ const scenarios: MikingScenario[] = [
       'The street gets farther from the mic': 'A few centimetres hardly change the distance to the street; the mouth is what comes closer.',
     },
   },
-  hearingCheck('b3.set.1', W),
+  voiceRatingCheck('b3.set.1', 'the guest'),
   {
     id: 'b3.set.2',
     page: 'setting',
@@ -154,12 +157,12 @@ const scenarios: MikingScenario[] = [
     id: 'b3.set.4',
     page: 'setting',
     prompt: 'Before a live report from a busy place, what should the crew agree first?',
-    options: ['A clear signal to stop or move', 'Which word starts the first answer', 'The brand of the wind cover'],
+    options: ['A clear signal to stop or move', 'Which word starts the first answer', 'The order of the questions'],
     correct: 'A clear signal to stop or move',
     explain: 'Agree a clear stop or relocate signal before going on air: if the place becomes unsafe, everyone knows what it looks like.',
     why: {
       'Which word starts the first answer': 'The words can change; the safety signal must not.',
-      'The brand of the wind cover': 'A brand decides nothing; agree the stop signal.',
+      'The order of the questions': 'Questions change on air as the story moves; the stop signal is the one thing to settle first.',
     },
   },
   {
@@ -177,13 +180,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b3.mic.1',
     page: 'microphone',
-    prompt: 'The reporter’s mic is an omni dynamic. Does being a dynamic help it pick out one voice?',
-    options: ['No: an omni hears every side alike', 'Yes: dynamics reject all distant sound', 'Yes, as long as it is held up high'],
-    correct: 'No: an omni hears every side alike',
+    prompt: 'The reporter’s mic is an omni dynamic. What helps it favour one voice in a crowd?',
+    options: ['Being close to the speaking mouth', 'Its dynamic capsule, which rejects distant sound', 'Being held up high, above the crowd'],
+    correct: 'Being close to the speaking mouth',
     explain: 'Dynamic is how it turns sound into a signal; omni is how it hears. An omni dynamic hears the crowd, the traffic and the PA from every side — closeness is what favours the voice.',
     why: {
-      'Yes: dynamics reject all distant sound': 'A dynamic capsule is not a pattern: an omni dynamic hears all round.',
-      'Yes, as long as it is held up high': 'Height changes the distances a little, not the pattern.',
+      'Its dynamic capsule, which rejects distant sound': 'A dynamic capsule is not a pattern: an omni dynamic hears all round.',
+      'Being held up high, above the crowd': 'Height changes the distances a little, not the pattern — and it takes the mic away from the mouth.',
     },
   },
   {
@@ -372,24 +375,24 @@ const scenarios: MikingScenario[] = [
     id: 'b3.mix.1',
     page: 'practice',
     prompt: 'A wireless handheld drops out as the crowd moves past. What should have been checked?',
-    options: ['The radio range through the actual place', 'The colour of the flag on the handle', 'A fresh battery in the mic, and nothing else'],
+    options: ['The radio range through the actual place', 'The receiver’s output level at the mixer', 'A fresh battery in the mic, and nothing else'],
     correct: 'The radio range through the actual place',
     explain: 'Check the radio coordination, the battery and the usable range in the actual place with the responsible technician. A clean meter at setup is not proof through a moving crowd.',
     why: {
-      'The colour of the flag on the handle': 'The flag says nothing about the radio path.',
+      'The receiver’s output level at the mixer': 'The output level matters once a signal arrives; a dropout is the radio path failing before that.',
       'A fresh battery in the mic, and nothing else': 'A battery helps; the range and the coordination still need checking.',
     },
   },
   {
     id: 'b3.mix.2',
     page: 'practice',
-    prompt: 'The street’s rumble is in every answer. Is a high-pass filter the whole fix?',
-    options: ['No: protect the mic, then filter gently', 'Yes: it removes all wind and handling', 'Yes: it also rescues an overloaded take'],
-    correct: 'No: protect the mic, then filter gently',
+    prompt: 'The street’s rumble and some wind are in every answer. A fair plan?',
+    options: ['Protect the mic first, then filter gently', 'A strong high-pass filter, which removes both', 'Leave it: a filter later rescues the take'],
+    correct: 'Protect the mic first, then filter gently',
     explain: 'A high-pass filter can reduce low rumble and also thin the voice; it cannot reverse capsule or input overload. Wind protection, closeness and the spot come first.',
     why: {
-      'Yes: it removes all wind and handling': 'It reduces some rumble; turbulence at the capsule remains.',
-      'Yes: it also rescues an overloaded take': 'Overload cannot be undone afterwards.',
+      'A strong high-pass filter, which removes both': 'It reduces some rumble and thins the voice; turbulence at the capsule remains.',
+      'Leave it: a filter later rescues the take': 'An overloaded take cannot be undone afterwards.',
     },
   },
   removeDelayVoice('b3.mix.3'),
@@ -456,7 +459,7 @@ const symptoms: Symptom[] = [
       'Swap to an omni held farther away': 'An omni held far hears the PA from every side: feedback sooner.',
     },
   },
-  hollowSymptom('b3.sym.hollow'),
+  hollowVoiceSymptom('b3.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -509,7 +512,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: one omni sits midway between two people. Whose voice will it favour?', options: ['The guest’s', 'The reporter’s', 'Neither'], after: 'Now STEP through (or PLAY ONCE), then slide the mic between them.' },
-  microphone: { prompt: 'Before you move anything: does a dynamic mic pick out one voice from a crowd?', options: ['Yes', 'No', 'Only an omni'], after: 'Now choose each TYPE and see where it starts.' },
+  microphone: { prompt: 'Before you move anything: does a dynamic mic pick out one voice from a crowd?', options: ['Yes', 'No', 'Only when held close'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the omni moves from the shared place to 20 cm from the guest. What changes?', options: ['More of the guest, less of the street', 'More of the street', 'It depends on this street'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The loudspeaker is beyond the reporter. Where will a cardioid held at the guest’s mouth reject it best?', options: ['Straight behind the mic', 'In front of the mic', 'At the mic’s sides'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -522,7 +525,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A cardioid handheld is pointed between two talkers. What happens?',
     options: ['Neither voice is on its front', 'Both are caught fully and evenly', 'The street behind them is rejected'],
     correct: 'Neither voice is on its front',
-    explain: 'A directional mic must point at the speaking mouth; between two mouths it serves neither.',
+    explain: 'A directional mic hears best along its front, so it is turned to the speaking mouth; between two mouths it serves neither.',
     why: {
       'Both are caught fully and evenly': 'Evenly, perhaps — but both off its front.',
       'The street behind them is rejected': 'The rejection is behind the mic, not the people.',
@@ -531,13 +534,13 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.2',
     covers: 'sound',
-    prompt: 'Does an omni dynamic pick out one voice from the crowd around it?',
-    options: ['No: it hears every side alike', 'Yes: dynamics reject distant sound', 'Yes, once it is held up high'],
-    correct: 'No: it hears every side alike',
-    explain: 'Closeness to the speaking mouth favours the voice, not the capsule type.',
+    prompt: 'An omni dynamic in a crowd. How does it hear the people around it?',
+    options: ['From every side alike', 'Less from far away, as a dynamic', 'Less from below, once it is held high'],
+    correct: 'From every side alike',
+    explain: 'Omni is how it hears; dynamic is how it makes a signal. Closeness to the speaking mouth favours the voice, not the capsule type.',
     why: {
-      'Yes: dynamics reject distant sound': 'Dynamic is the transducer, not the pattern.',
-      'Yes, once it is held up high': 'Height does not change the pattern.',
+      'Less from far away, as a dynamic': 'Dynamic is the transducer, not the pattern.',
+      'Less from below, once it is held high': 'Height does not change the pattern.',
     },
   },
   {

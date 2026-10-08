@@ -15,7 +15,9 @@
  * 3:1 is a NOTE, never graded (owner list item 3).
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { SEATED_FLOOR } from '../shared/broadcast/talkerPose.ts';
 import { B01_MODEL, PA_C } from './geometry.ts';
 import { B01_ZONES } from './model.ts';
@@ -79,6 +81,8 @@ const pages: LessonPages = {
     takeaway: 'The address side, a repeatable distance from the lips, plosive control, proximity effect where it applies, a channel per host, and an honest line between bleed and feedback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the host');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b1.snd.* L5, L21, L24, L27 ·
@@ -123,7 +127,7 @@ const scenarios: MikingScenario[] = [
       'Two open mics make that voice twice as loud': 'The far copy is lower and later: it colours the sound more than it adds level.',
     },
   },
-  hearingCheck('b1.set.1', W),
+  voiceRatingCheck('b1.set.1', 'the host'),
   {
     id: 'b1.set.2',
     page: 'setting',
@@ -199,13 +203,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b1.mic.3',
     page: 'microphone',
-    prompt: 'Does a broadcast dynamic hear less of a noisy room because it is dynamic?',
-    options: ['No — its pattern and closeness do that', 'Yes — a dynamic element ignores the room', 'Yes — dynamics hear only from the front'],
-    correct: 'No — its pattern and closeness do that',
+    prompt: 'A close broadcast dynamic hears little of a noisy room. What does that?',
+    options: ['Its pattern and how close it is', 'Its dynamic element, which ignores the room', 'Its heavy body, which blocks sound from behind'],
+    correct: 'Its pattern and how close it is',
     explain: 'The voice against the room comes from distance and pattern. A close dynamic often helps in a poor room — because it is close and directional, not because it is dynamic.',
     why: {
-      'Yes — a dynamic element ignores the room': 'The transducer type does not filter out the room. Distance and pattern decide the balance.',
-      'Yes — dynamics hear only from the front': 'A cardioid dynamic hears the sides too, less at the rear — the same as a cardioid condenser.',
+      'Its dynamic element, which ignores the room': 'The transducer type does not filter out the room. Distance and pattern decide the balance.',
+      'Its heavy body, which blocks sound from behind': 'The body does not block the room: the pattern does the rejecting, and a cardioid still hears the sides — the same as a cardioid condenser.',
     },
   },
   {
@@ -390,7 +394,7 @@ const scenarios: MikingScenario[] = [
       'The guest might speak too loudly into it': 'Level is handled with gain. The open mic’s cost is margin and bleed.',
     },
   },
-  removeDelay('b1.mix.3'),
+  removeDelayVoice('b1.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -454,7 +458,7 @@ const symptoms: Symptom[] = [
       'Swap the host’s mic for an omni so it hears the room': 'An omni hears the PA from every side: feedback comes sooner.',
     },
   },
-  hollowSymptom('b1.sym.hollow'),
+  hollowVoiceSymptom('b1.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -487,7 +491,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Each mic low over the desk, aimed up at the chin', ok: false, power: 'none', feedback: 'Low over the desk it hears the bounce strongly, and the chin is not where the voice leaves.' },
       { id: 'e', label: 'A loudspeaker on the desk so both hosts can hear', ok: false, power: 'none', feedback: 'A loudspeaker near open mics feeds the program back in. Use headphones.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the host’s face, the sight line and the papers'), { id: 'r.channel', label: 'Each host is on their own channel, checked alone and in mono', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.three', label: 'The 3:1 rule guarantees no bleed at this desk', role: 'wrong', feedback: '3:1 can help with spaced mics; it is not a guarantee at a talking desk.' }, BRAND_REASON('host'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the host’s face, the sight line and the papers'), { id: 'r.channel', label: 'Each host is on their own channel, checked alone and in mono', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.three', label: 'The 3:1 rule guarantees no bleed at this desk', role: 'wrong', feedback: '3:1 can help with spaced mics; it is not a guarantee at a talking desk.' }, BRAND_REASON('host'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, clear of the face and the papers, each host on their own channel, checked in mono — and no promise of zero bleed.',
   },
   {

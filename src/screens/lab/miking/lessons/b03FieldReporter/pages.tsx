@@ -41,7 +41,7 @@ function useTools(): MikingStep[] {
     words: {
       looking: 'From above · a reporter and a guest, one handheld between them · the side in the corner',
       prompt: 'Slide MIC AT from the reporter, through the shared place at chest height, to the guest. Change WHO SPEAKS, the MIC, its AIM, and where the LOUD SOURCE is.',
-      done: 'The shared omni is an easy start in a quiet place — it favours neither voice and needs no rushed aiming. When the street is loud, move it to whoever is speaking, just before they start. A directional handheld must point at the speaking mouth, close: pointed between two people, it serves neither.',
+      done: 'The shared omni is an easy start in a quiet place — it favours neither voice and needs no rushed aiming. When the street is loud, move it to whoever is speaking, just before they start. A directional handheld needs to point at the speaking mouth, close: pointed between two people, it serves neither.',
     },
   });
   const wind = useReporterWindStep({

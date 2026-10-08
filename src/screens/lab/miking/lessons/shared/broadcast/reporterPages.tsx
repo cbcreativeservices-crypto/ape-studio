@@ -130,7 +130,7 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
       },
       options: [
         { id: 'omni', label: 'The reporter’s omni', blurb: 'Hears every side about equally: forgiving of aim — and of the street.' },
-        { id: 'cardioid', label: 'A cardioid handheld', blurb: 'Hears most in front, least behind: it must point at the speaking mouth.' },
+        { id: 'cardioid', label: 'A cardioid handheld', blurb: 'Hears most in front, least behind: it needs to point at the speaking mouth.' },
       ],
     },
     {
