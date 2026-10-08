@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 01:20 · ccode · fcf25436
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — third merge of final-lab into lab6-g5 (web and Mixing Guides changes only)
+needs: nothing
+
+
 ### 2026-10-08 01:10 · ccode · 97dd2ecc
 changed: web: Coming Soon panel sits low so the full headline shows above it
 affects other side: nothing (website layout; cherry-pick of 6d89f09b)
