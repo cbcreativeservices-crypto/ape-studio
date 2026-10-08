@@ -143,6 +143,8 @@ export const B02_MODEL: InstrumentModel = {
   views: B02_VIEWS.close,
   viewsByVariant: { close: B02_VIEWS.close, twoShot: B02_VIEWS.twoShot, public: B02_VIEWS.public },
   fitAuthored: { side: true, top: true },
+  // In public, the PA's cabinet stands top right: the mini view goes bottom right.
+  insetAt: { public: 'bottom' },
   // The setups keep to the desk, the talkers and the boom's stand (the camera
   // 2.6 m out made a 21 cm lav distance a few pixels on a phone).
   setupFrameMax: { side: { u0: -700, u1: 1200, v0: -950, v1: 1260 }, top: { u0: -700, u1: 1200, v0: -1250, v1: 1500 } },

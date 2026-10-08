@@ -25,7 +25,7 @@ import { useBodyTurnStep } from '../shared/broadcast/bodyWornPages';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
 import { B02Scene } from './scene';
 import { B02_ZONES } from './model.ts';
-import { BOOM_CLOSE, CAM_CLOSE, CAM_TWO, DESK_PLATE, GUEST, HEAD_TOP, LAV_A, LAV_G_AT } from './geometry.ts';
+import { BOOM_CLOSE, CAM_CLOSE, CAM_TWO, DESK, DESK_PLATE, GUEST, HEAD_TOP, LAV_A, LAV_G_AT } from './geometry.ts';
 import { SEATED_FLOOR } from '../shared/broadcast/talkerPose.ts';
 
 type PageFn = (p: PageProps) => ReactNode;
@@ -45,7 +45,7 @@ function useTools() {
     boxTop: { u0: -460, u1: 940, v0: -720, v1: 980 },
     boxSide: { u0: -420, u1: 900, v0: -700, v1: 560 },
     insetAt: { x: 0.6, y: 0.52, w: 0.39, h: 0.46 },
-    axisLabelV: 330,
+    axisLabelAt: { u: DESK.max.x + 40, v: 0, align: 'left' },
     pitch: true,
     words: {
       subject: 'an anchor at a desk with a lav, a fixed boom and a gooseneck',

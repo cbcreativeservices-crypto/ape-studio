@@ -60,7 +60,7 @@ export function b05Labels(view: ViewId, variant: VariantId): ArtLabel[] {
   }
   out.push({ id: 'v.mouth', text: 'MOUTH', u: 150, v: -170, align: 'left', at: { u: 2, v: 0 }, alts: [{ u: 150, v: 170, align: 'left' }] });
   out.push({ id: 'v.chest', text: 'SHOULDERS', short: 'CHEST', u: -150, v: 330, align: 'center', at: { u: -100, v: 180 } });
-  if (variant === 'live') out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: -LECTERN.halfW - 130, align: 'center', tone: 'muted' });
+  if (variant === 'live') out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: LECTERN.halfW + 130, align: 'center', tone: 'muted' });
   return out;
 }
 

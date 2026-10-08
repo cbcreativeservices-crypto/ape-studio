@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 04:16 · ccode · dccc1e40
+changed: Merge origin/final-lab into lab7-g2 (Lab 7a group 2)
+affects other side: nothing (client-only: final-lab merged into lab7-g2; Miking Lab 7 group 2 screenshots and layout fixes; the shared voice line no longer repeats "the mouth's axis"; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
 ### 2026-10-08 03:44 · ccode · 7eefa4b1
 changed: Miking Lab 7 group 2: B04 Boom and Camera-Mounted Pickup, B02 News Anchors and Seated Interviews
 affects other side: nothing (client-only: Miking Lab 7 group 2 lessons B04 and B02 and their shared kit; Miking stays hidden; no server, no SQL)

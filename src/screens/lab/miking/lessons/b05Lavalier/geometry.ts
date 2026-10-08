@@ -105,6 +105,8 @@ export const B05_MODEL: InstrumentModel = {
   views: B05_VIEWS.studio,
   viewsByVariant: { studio: B05_VIEWS.studio, live: B05_VIEWS.live },
   fitAuthored: { side: true, top: true },
+  // Live, the PA's cabinet stands top right: the mini view goes bottom right.
+  insetAt: { live: 'bottom' },
   // The setups keep to the head and the chest (a 2–3 cm headset distance on a
   // whole-stage drawing was a few pixels on a phone).
   setupFrameMax: { side: { u0: -420, u1: 640, v0: -380, v1: 560 }, top: { u0: -420, u1: 640, v0: -420, v1: 420 } },

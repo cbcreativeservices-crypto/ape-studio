@@ -139,6 +139,8 @@ export const B04_MODEL: InstrumentModel = {
   views: B04_VIEWS.close,
   viewsByVariant: { close: B04_VIEWS.close, wide: B04_VIEWS.wide, live: B04_VIEWS.live },
   fitAuthored: { side: true, top: true },
+  // Live, the PA's cabinet stands top right: the mini view goes bottom right.
+  insetAt: { live: 'bottom' },
   // No cap on the setups' drawing: each one shows the talker with its whole
   // rig — the pole to the operator's hands, or the camera with its own mic.
   yFloor: VOICE_DIMS.lipStanding,
