@@ -43,7 +43,10 @@
  *    handle on a tap (the lane is one tap away; an open tray keeps it up).
  *  - A wide drawing's portrait hint says so and sends the learner sideways.
  */
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { NavigationContext } from '@react-navigation/native';
+import { lockPortrait, unlockOrientation } from '../../../lib/screenOrientationSafe';
+import { restingOrientation } from '../../../navigation/navOrientation';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { isTabletWindow } from '../../../theme/tablet'; // tablet wording, owner 2026-09-29 (Android large-screen pass)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -128,6 +131,23 @@ export function StageFullScreen({
   useEffect(() => {
     setStepKey('1');
   }, [visible]);
+
+  // TURNING THE PHONE SIDEWAYS (owner 2026-10-08: "turning the phone sideways
+  // in the new labs is not allowing the screen to go landscape"). The app locks
+  // phones to portrait at boot (App.tsx), so the Modal's "every orientation"
+  // never got the chance. While the full screen is up the lock is lifted (the
+  // imperative lock AND the route option, as the tool full screens do), and
+  // portrait is restored on close and on unmount. A tablet is never locked.
+  const navigation = useContext(NavigationContext);
+  useEffect(() => {
+    if (!visible) return;
+    unlockOrientation();
+    navigation?.setOptions({ orientation: 'default' });
+    return () => {
+      lockPortrait();
+      navigation?.setOptions({ orientation: restingOrientation('portrait') });
+    };
+  }, [visible, navigation]);
   // The hint line rolls DOWN out of the way on a tap and back up from a
   // small ? chip (owner 2026-09-26: "make the 'pick a zoom step…' message
   // collapsable — animate it like a roll up/down message"). Height and
