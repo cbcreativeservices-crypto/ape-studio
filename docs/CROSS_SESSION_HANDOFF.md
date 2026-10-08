@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 23:12 · ccode · 48fa4836
+changed: web: launch date moves to Tuesday, October 13
+affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+needs: nothing
+
+
 ### 2026-10-07 17:07 · ccode · 6660b125
 changed: Merge remote-tracking branch 'origin/sentry-fixes' into HEAD
 affects other side: nothing (client-only)
