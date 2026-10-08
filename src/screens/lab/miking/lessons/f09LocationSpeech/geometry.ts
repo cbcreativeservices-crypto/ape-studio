@@ -26,6 +26,7 @@ import { FRAME_V, VOICE_DIMS, EAR, EAR_HALF, HEAD_C, HEAD_R } from '../shared/vo
 import { SINGER_NECK, SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { VOICE_PART_WORDS } from '../shared/voice/voiceModel.ts';
 import { mouthLine, mouthSurface, onAnchor, voiceRegions } from '../shared/voice/voiceZones.ts';
+import { FUR_CAPSULE_MM, SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
 import { boomStart, frameForShot, headroomKeepOut, powerLineKeepOut, type CameraFrame, type OverheadLine } from '../shared/field/location.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
@@ -68,8 +69,12 @@ export const LAV_CLIP = v3(CHEST_X + 1, SINGER_NECK.y + 107, 0);
 export const LAV_P = v3(CHEST_X + 6, SINGER_NECK.y + 92, 0);
 
 /* ── the boom's starting point (location.boomStart: 150 mm above the frame
- *  line, 45° above the mouth's axis, aimed at the mouth) ── */
-export const BOOM = boomStart(FRAME, { clearance: 150, elevDeg: 45 });
+ *  line, 45° above the mouth's axis, aimed at the mouth). Owner 2026-10-08
+ *  (L6A): the TIP keeps the 150 mm clearance and the readout is the
+ *  shotgun's CAPSULE, about 200 mm behind the tip (285 mm behind the fur
+ *  basket's front outdoors) ── */
+export const BOOM = boomStart(FRAME, { clearance: 150, elevDeg: 45, capsule: SHOTGUN_CAPSULE_MM });
+export const BOOM_FUR = boomStart(FRAME, { clearance: 150, elevDeg: 45, capsule: FUR_CAPSULE_MM });
 
 /* ── the overhead power line (outdoor): along z, 1.2 m behind the talker,
  *  5.2 m above the ground — a drawing default; its keep-out is exact ── */
@@ -94,7 +99,7 @@ const FIG = ill('the shared adult figure (players/playerPose BODY), placed round
 const W = VOICE_PART_WORDS;
 const S = SINGER_SOLIDS;
 const parts: Part[] = [
-  { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves the talker — almost all of it. Every distance here is measured from the lips to the front of the mic.', prov: FIG },
+  { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves the talker — almost all of it. Every distance here is measured from the lips to the mic’s capsule.', prov: FIG },
   { id: 'v.nose', ...W.nose, prov: FIG },
   { id: 'v.folds', ...W.folds, listIn: [], prov: ill('the larynx, low in the throat: a simplified picture') },
   { id: 'v.head', ...W.head, label: 'head and face', role: 'The head turns as the talker speaks and looks around: a boom is turned to follow it, a mic on the chest does not. Nothing touches the face.', solid: S.head, prov: FIG },
@@ -116,7 +121,7 @@ const envelopes: Envelope[] = [
 ];
 
 const rims: Rim[] = [
-  { id: 'grip', label: 'the boom operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, variants: ['set', 'outdoor'], types: ['locBoomSg', 'locBoomHyper', 'locBoomFur'] },
+  { id: 'grip', label: 'the boom operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, variants: ['set', 'outdoor'], types: ['locBoomSgCap', 'locBoomHyper', 'locBoomFurCap'] },
   { id: 'lav', label: 'a clip on the shirt, above the breastbone', c: LAV_CLIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'] },
   { id: 'clip.ear', label: 'a headset over the right ear', c: onAnchor(FRAME_V, { x: EAR.x, y: EAR.y, z: EAR_HALF }), axis: v3(0, 0, 1), r: 0, variants: ['live'], types: ['vocHeadset'] },
 ];

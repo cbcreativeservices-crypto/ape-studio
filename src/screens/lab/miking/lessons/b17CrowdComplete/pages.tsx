@@ -51,7 +51,7 @@ function B17Meet(p: PageProps) {
   const range = useRangeStep({ scene: PRACTICE_CROWD, from: PC.S, fromH: PC.hS, fromLabel: 'S', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: the action and the three audience places, as seen from the stereo centre S.' });
   const box = PRACTICE_CROWD.frame;
   const steps: MikingStep[] = [
-    startStep(lesson, journey, ''),
+    startStep(lesson, journey, '', { ownIntro: true }),
     factsStep(
       lesson,
       <ExpandableFigure

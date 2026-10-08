@@ -484,7 +484,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'One omni handheld with a wind cover, moved to each mouth', ok: true, power: 'none', feedback: 'A recommended start: forgiving of aim — move it before each answer and check the wind.' },
       { id: 'b', label: 'A cardioid handheld, kept close and aimed at each mouth', ok: true, power: 'none', feedback: 'A recommended start in heavy noise — if the reporter aims well and keeps it close.' },
       { id: 'c', label: 'One handheld held still halfway between the two', ok: false, power: 'none', feedback: 'Far from both mouths: distant answers and the crowd close behind.' },
-      { id: 'd', label: 'A body mic clipped on the guest as they walk up', ok: false, power: 'none', feedback: 'No time for approval or a proper fit — and nothing goes on a person without it.' },
+      { id: 'd', label: 'A body mic clipped on the guest as they walk up', ok: false, power: 'pack', feedback: 'No time for approval or a proper fit — and nothing goes on a person without it.' },
       { id: 'e', label: 'A long shotgun from behind the camera', ok: false, power: 'phantom', feedback: 'Distance still decides; it will not isolate the voice in a stadium.' },
     ],
     reasons: [docReason('the speaking person’s lips'), clearReason('the faces, the lens and the routes'), { id: 'r.handoff', label: 'The mic reaches each mouth before they speak', role: 'required', feedback: 'Say how the first words are caught.' }, { id: 'r.pattern', label: 'The pattern isolates the voice from the crowd', role: 'wrong', feedback: 'No pattern isolates a voice in a stadium.' }, BRAND_REASON('reporter'), LOUD_VOICE],
@@ -495,7 +495,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A scheduled post-event guest at a mark in front of a backdrop; time to prepare; the guest agrees to be fitted.',
     setups: [
-      { id: 'a', label: 'An approved body mic at the breastbone, its own channel', ok: true, power: 'none', feedback: 'A recommended start: steady, with nothing in the hands — check rub, sweat and the radio path.' },
+      { id: 'a', label: 'An approved body mic at the breastbone, its own channel', ok: true, power: 'pack', feedback: 'A recommended start: steady, with nothing in the hands — check rub, sweat and the radio path.' },
       { id: 'b', label: 'A boom held outside the frame, aimed down at the mouth', ok: true, power: 'phantom', feedback: 'A recommended start: nothing on the body — keep it close and re-aimed.' },
       { id: 'c', label: 'The body mic and a handheld both open, to be safe', ok: false, power: 'none', feedback: 'Two open mics on one voice comb. Choose one, or switch on purpose.' },
       { id: 'd', label: 'A mic on the camera, since the shot is close', ok: false, power: 'none', feedback: 'The camera is metres away: distant and crowd-heavy.' },

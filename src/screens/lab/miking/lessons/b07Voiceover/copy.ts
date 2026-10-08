@@ -113,6 +113,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     side: { u0: -500, u1: 1300, v0: -600, v1: 1260 },
     target: 'monitor',
     targetWord: 'monitor',
+    badgeWhere: 'the monitor loudspeaker where a desk often puts it',
     looking: 'The host at the desk · the monitor loudspeaker on the desk',
     prompt: 'If the monitor had to stay on, where would its sound be rejected most? Turn or tilt the MIC (AIM), or change its PATTERN, until the monitor sits in the rejection — while the mic still points at the mouth.',
     activityDone: 'done — the monitor sat in a null by your aim or pattern',

@@ -315,8 +315,10 @@ Object.assign(MIC_TYPES, GROUP_VOICE_MIC_TYPES);
 import { FOLEY_MIC_TYPES } from '../lessons/shared/fieldmics/fieldMics.ts';
 Object.assign(MIC_TYPES, FOLEY_MIC_TYPES);
 /* Lab 6 (field), group 6 — location and spatial (F09, F10): the boom, body, plant and camera mics, the binaural head, the Ambisonic mic and the Double M/S cluster. Appended so other lessons merge cleanly. */
-import { FIELD_MIC_TYPES } from '../lessons/shared/field/fieldMics.ts';
+import { F09_CAPSULE_MIC_TYPES, FIELD_MIC_TYPES } from '../lessons/shared/field/fieldMics.ts';
 Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
+/* Owner 2026-10-08 (L6A): F09's shotguns read to their capsule (the same mics with the tube ahead). */
+Object.assign(MIC_TYPES, F09_CAPSULE_MIC_TYPES);
 /* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 — the parabolic dish. Appended so other lessons merge cleanly. */
 import { FIELD2_MIC_TYPES } from '../lessons/shared/field/dishMics.ts';
 Object.assign(MIC_TYPES, FIELD2_MIC_TYPES);

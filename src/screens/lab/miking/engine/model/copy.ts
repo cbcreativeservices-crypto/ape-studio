@@ -153,6 +153,10 @@ export type LessonCopy = {
     /** Sources a pattern cannot reach (their note is shown as a warning). */
     frontIds: readonly string[];
     targetWord: string;
+    /** Owner 2026-10-08 (L7F): the live badge's loudspeaker words, the
+     *  lesson's own ("the PA where the venue hangs it"). Default: "monitors
+     *  where a stage often puts them". */
+    badgeWhere?: string;
     looking: string;
     prompt: string;
     activityDone: string;

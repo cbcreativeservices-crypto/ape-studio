@@ -120,6 +120,7 @@ export const B03_COPY: Partial<LessonCopy> = {
     side: { u0: -800, u1: 3200, v0: -1300, v1: 1640 },
     target: 'pa',
     targetWord: 'loudspeaker',
+    badgeWhere: 'the loudspeaker where an event often puts it',
     looking: 'The guest at a live event · the local loudspeaker beyond the reporter',
     prompt: 'The loudspeaker stays where the event needs it. Turn or tilt the handheld (AIM), or change its PATTERN, until the loudspeaker sits in the rejection — while the mic still points at the guest’s mouth.',
     activityDone: 'done — the loudspeaker sat in a null by your aim or pattern',

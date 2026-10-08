@@ -115,6 +115,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     side: { u0: -700, u1: 2700, v0: -2100, v1: 1640 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where the venue hangs it',
     looking: 'The official with an announcement headset · the PA high to the front-left',
     prompt: 'The PA stays where the venue needs it. Turn or tilt the headset capsule (AIM), or change its PATTERN, until the PA sits in the rejection — while it still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',

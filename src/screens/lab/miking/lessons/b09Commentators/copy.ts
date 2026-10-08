@@ -109,6 +109,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     side: { u0: -700, u1: 2400, v0: -1900, v1: 1260 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where the venue hangs it',
     looking: 'The commentator at the open rail · the PA cluster high to the front-left',
     prompt: 'The PA stays where the venue needs it. Turn or tilt the lip mic (AIM) until the PA sits in the figure-8’s side null — while its front still meets the mouth.',
     activityDone: 'done — the PA sat in the side null by your aim',

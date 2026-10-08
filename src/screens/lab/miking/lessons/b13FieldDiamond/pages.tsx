@@ -60,7 +60,7 @@ function B13Meet(p: PageProps) {
   const range = useRangeStep({ scene: PRACTICE_FIELD, from: PF.M, fromH: PF.hHigh, fromLabel: 'M', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: the same approved mark, three targets — each a different range and angle.' });
   const box = PRACTICE_FIELD.frame;
   const steps: MikingStep[] = [
-    startStep(lesson, journey, ''),
+    startStep(lesson, journey, '', { ownIntro: true }),
     factsStep(
       lesson,
       <ExpandableFigure

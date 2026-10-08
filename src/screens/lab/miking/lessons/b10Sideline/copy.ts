@@ -118,6 +118,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     side: { u0: -1600, u1: 2900, v0: -1700, v1: 1640 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where the venue hangs it',
     looking: 'The guest at the sideline · the PA high beyond the camera',
     prompt: 'The PA stays where the venue needs it. Turn or tilt the handheld (AIM), or change its PATTERN, until the PA sits in the rejection — while the mic still points at the guest’s mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',

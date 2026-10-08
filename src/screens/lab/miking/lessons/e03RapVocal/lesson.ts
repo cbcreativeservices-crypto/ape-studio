@@ -474,7 +474,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A live show: the performer moves across the stage, a wedge in front, the beat loud through the PA.',
     setups: [
       { id: 'a', label: 'A handheld dynamic within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A recommended starting point: close, with distance technique — back off for shouts, keep the grille open.' },
-      { id: 'b', label: 'A headset by the mouth corner, set as its maker says', ok: true, power: 'phantom', feedback: 'A recommended starting point for a moving performer — check the battery, the pack and the wedge.' },
+      { id: 'b', label: 'A headset by the mouth corner, set as its maker says', ok: true, power: 'pack', feedback: 'A recommended starting point for a moving performer — check the battery, the pack and the wedge.' },
       { id: 'c', label: 'A handheld cupped tight to keep the sound in', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer.' },
       { id: 'd', label: 'A condenser on a stand at the centre of the stage', ok: false, power: 'phantom', feedback: 'A fixed mic hears the performer only when they come back to it — and the stage the rest of the time.' },
       { id: 'e', label: 'An omni handheld so the performer can turn freely', ok: false, power: 'none', feedback: 'An omni rejects nothing: it hears the wedge and the PA as much as the voice.' },

@@ -201,7 +201,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
             accessibilityLabel={label}
           />
         ),
-        badge: `A simplified pattern (white dashed: shape, not range) · monitors where a stage often puts them · counts within ±${NULL_TOL}° of a null`,
+        badge: `A simplified pattern (white dashed: shape, not range) · ${X.badgeWhere ?? 'monitors where a stage often puts them'} · counts within ±${NULL_TOL}° of a null`,
         bezel,
         params,
         initialParam: 'aim',

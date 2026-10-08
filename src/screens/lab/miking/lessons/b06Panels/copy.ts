@@ -112,6 +112,7 @@ export const B06_COPY: Partial<LessonCopy> = {
     side: { u0: -600, u1: 2000, v0: -1100, v1: 1600 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where a stage often puts it',
     looking: 'The presenter at the lectern · the PA at the stage’s front corner',
     prompt: 'The PA stays where the event needs it. Turn or tilt the gooseneck (AIM), or change its PATTERN, until the PA sits in the rejection — while the capsule still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',

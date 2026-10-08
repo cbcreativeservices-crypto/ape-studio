@@ -156,7 +156,7 @@ export const F06_ZONES: DocumentedZone[] = [
 const pairs = (zone: string, c: Vec3, variant: 'woodland' | 'plaza'): SetupPairData[] => [
   arraySetup({ label: 'ORTF pair at the listening point (17 cm, 110°)', id: 'ortf', zone, c, bearing: 0, typeA: 'arrCard', variants: [variant], line: 'More side-to-side spread than a coincident pair, from both time and level differences — check the low end and transients in mono.' }),
   arraySetup({ label: 'X/Y pair at the listening point (90°)', id: 'xy', zone, c, bearing: 0, typeA: 'arrCard', variants: [variant], more: true, line: 'Compact and dependable in mono; width is not the same as depth — listen to what lands in the middle and at the edges.' }),
-  arraySetup({ label: 'Spaced omnis, 60 cm apart', id: 'ab', zone, c, bearing: 0, typeA: 'arrOmni', params: { spacing: 600 }, variants: [variant], more: true, line: 'A broad, open sense of space and the low end of the place — time differences can comb in a mono sum, so compare each channel too.' }),
+  arraySetup({ label: 'Spaced omnis, 60 cm apart', id: 'ab', zone, c, bearing: 0, typeA: 'arrOmni', params: { spacing: 600 }, variants: [variant], more: true, line: 'A broad, open sense of space and the low end of the place — time differences can comb in a mono sum, so compare each channel too. Wider spacing is common for ambience — check it in mono.' }),
   arraySetup({ label: 'M/S pair at the listening point', id: 'ms', zone, c, bearing: 0, typeA: 'arrCard', typeB: 'arrFig8', variants: [variant], more: true, line: 'Width set later in the matrix; summed to mono the Side cancels and the Mid remains. Keep the raw Mid and Side labelled.' }),
 ];
 

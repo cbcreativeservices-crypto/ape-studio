@@ -39,8 +39,11 @@ import type { PageProps } from '../../pages/pageTypes';
 
 /* ── page 1 ── */
 /** `_intro`: the lesson's own words for the old journey, kept as written but no
- *  longer shown — every START says the journey as it now is (journeyIntro). */
-export function startStep(lesson: Lesson, journey: JourneyProps, _intro: string): MikingStep {
+ *  longer shown — every START says the journey as it now is (journeyIntro).
+ *  `opts.ownIntro` (owner 2026-10-08, L7A): a lesson that names no instrument
+ *  (B12–B17: a field, a dish, a venue) shows its OWN `terms.startIntro`. */
+export function startStep(lesson: Lesson, journey: JourneyProps, _intro: string, opts: { ownIntro?: boolean } = {}): MikingStep {
+  const own = opts.ownIntro ? copyOf(lesson).terms?.startIntro : undefined;
   return {
     key: 'start',
     title: 'Start here',
@@ -48,7 +51,7 @@ export function startStep(lesson: Lesson, journey: JourneyProps, _intro: string)
     layout: 'read',
     body: (
       <>
-        <Body>{journeyIntro(lesson.noun, copyOf(lesson).words.instrument)}</Body>
+        <Body>{own ?? journeyIntro(lesson.noun, copyOf(lesson).words.instrument)}</Body>
         <JourneyMap met={journey.met} here="meet" />
         <PathChooser journey={journey} />
         {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}

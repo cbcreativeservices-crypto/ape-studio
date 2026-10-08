@@ -113,7 +113,7 @@ function B12Meet(p: PageProps) {
   const parts = usePartsStep();
   const tool = useDishStep({ onInteractive: () => undefined, done: true, prediction: lesson.predictions.meet });
   const steps: MikingStep[] = [
-    startStep(lesson, journey, ''),
+    startStep(lesson, journey, '', { ownIntro: true }),
     factsStep(
       lesson,
       <ExpandableFigure

@@ -499,11 +499,11 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded seated interview in a quiet studio: an anchor and a guest, a two-shot, no loudspeakers.',
     setups: [
-      { id: 'a', label: 'A centred lav on each, on separate labelled channels', ok: true, power: 'phantom', feedback: 'A recommended start — check turns, the clothes and an overlap in the program.' },
+      { id: 'a', label: 'A centred lav on each, on separate labelled channels', ok: true, power: 'pack', feedback: 'A recommended start — check turns, the clothes and an overlap in the program.' },
       { id: 'b', label: 'A boom just outside the frame for each voice, the lavs as fallbacks', ok: true, power: 'phantom', feedback: 'A recommended start — check the widest frame and keep each fallback on its own track.' },
       { id: 'c', label: 'One boundary on the desk between them for both', ok: false, power: 'phantom', feedback: 'Shared and far from both mouths: less control, more room and papers.' },
       { id: 'd', label: 'The camera’s mic only, its gain turned up', ok: false, power: 'phantom', feedback: 'As far as the camera: the room comes up with the voices.' },
-      { id: 'e', label: 'Both lavs hidden before any visible test', ok: false, power: 'phantom', feedback: 'Conceal only after the visible place works, and compare.' },
+      { id: 'e', label: 'Both lavs hidden before any visible test', ok: false, power: 'pack', feedback: 'Conceal only after the visible place works, and compare.' },
     ],
     reasons: [docReason('the lips'), clearReason('the clothes, the papers and the frame'), { id: 'r.channels', label: 'Each speaker on their own labelled channel, checked alone and in overlap', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.hidden', label: 'A hidden lav sounds the same as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('news anchor'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, clear of the clothes and the frame, a channel for each speaker — and no claim that hidden sounds the same.',
@@ -513,7 +513,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A public interview: an anchor and a guest at a desk, an audience and a PA, a broadcast program.',
     setups: [
-      { id: 'a', label: 'A centred lav each, the fewest open, the PA checked with the operator', ok: true, power: 'phantom', feedback: 'A recommended start — check the margin at a safe level.' },
+      { id: 'a', label: 'A centred lav each, the fewest open, the PA checked with the operator', ok: true, power: 'pack', feedback: 'A recommended start — check the margin at a safe level.' },
       { id: 'b', label: 'A gooseneck each, raised, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A recommended start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'Every mic on the desk left open in case', ok: false, power: 'phantom', feedback: 'Each open mic hears the PA: less margin before feedback.' },
       { id: 'd', label: 'The boom and the lav both in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
@@ -647,7 +647,7 @@ export const B02_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'anchor', label: 'the anchor', short: 'ANCHOR', note: 'Seated at the desk, the mouth at the point every distance is read from. The head turns to the camera, the guest and the script.', prov: { kind: 'illustrative', reason: 'the shared figure seated (drawing default)' }, tag: 'THE SOURCE', scene: 'all' },
-      { id: 'guest', label: 'the guest', short: 'GUEST', note: 'Beside the anchor, 80 cm along the desk: their voice reaches every open mic near them — later and lower.', prov: { kind: 'illustrative', reason: 'the lesson L32; the spacing a drawing default' }, tag: 'BLEED', scene: 'all' },
+      { id: 'guest', label: 'the guest', short: 'GUEST', note: 'Beside the anchor, 80 cm along the desk: their voice reaches every open mic near them — later and lower. A guest angled 30–45° toward the anchor also works.', prov: { kind: 'illustrative', reason: 'the lesson L32; the spacing a drawing default' }, tag: 'BLEED', scene: 'all' },
       { id: 'desk', label: 'the desk and its papers', short: 'DESK', note: 'A hard top 45 cm below the lips: it reflects the voice into a raised mic, and papers, a keyboard and taps travel through it.', prov: { kind: 'illustrative', reason: 'the lesson L6, L29' }, tag: 'REFLECTION', scene: 'all' },
       { id: 'clothes', label: 'the clothes and the earpiece', short: 'CLOTHES', note: 'A jacket, a tie, hair, jewellery and the earpiece’s cable can brush a lav. Wardrobe approves any change.', prov: { kind: 'illustrative', reason: 'the lesson L8, L10' }, tag: 'NOISE', scene: 'all' },
       { id: 'frame', label: 'the camera’s frame', short: 'FRAME', note: 'A boom stays just outside the widest frame; a reframe or a second camera can bring it into the picture.', prov: { kind: 'illustrative', reason: 'the lesson L6, L15' }, tag: 'PICTURE', scene: 'studio' },

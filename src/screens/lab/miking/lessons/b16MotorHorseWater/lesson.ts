@@ -357,7 +357,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In the optional hydrophone trial, where do the recorder and connectors go?',
     options: ['On the dry side, cable strain-relieved', 'Beside the container, within easy reach', 'In the water too, to keep cables short'],
     correct: 'On the dry side, cable strain-relieved',
-    explain: 'Keep the recorder and every connector dry, the sensor placed gently, the cable strain-relieved — never pulled out by a damaged cable. No people or animals in the water.',
+    explain: 'Keep the recorder and every connector dry, the sensor placed gently, the cable strain-relieved. Never lift it by a damaged cable; replace a damaged cable before use. No people or animals in the water.',
     why: {
       'Beside the container, within easy reach': 'Beside the container is the splash zone; connectors stay on the dry side.',
       'In the water too, to keep cables short': 'Connectors and the recorder never go in the water.',

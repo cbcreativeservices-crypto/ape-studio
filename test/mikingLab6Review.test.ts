@@ -50,9 +50,10 @@ describe('Lab 6 review (2026-10-08)', () => {
     assert.match(q.explain, /before the preamp/);
   });
 
-  it('F09: the boom/body-mic gap is said as about 13 dB (20·log10(90/21) = 12.6)', () => {
-    assert.equal(Math.round(20 * Math.log10(90 / 21)), 13);
-    assert.match(item('F09', 'loc.mix.1').explain, /about 13 dB/);
+  // Owner 2026-10-08 (L6A): read to the capsule, the wide-shot boom is 110 cm.
+  it('F09: the boom/body-mic gap is said as about 14 dB (20·log10(110/21) = 14.4)', () => {
+    assert.equal(Math.round(20 * Math.log10(110 / 21)), 14);
+    assert.match(item('F09', 'loc.mix.1').explain, /about 14 dB/);
   });
 
   it('F02–F04 two.4: no option says "Yes:" (the key was the odd one out)', () => {

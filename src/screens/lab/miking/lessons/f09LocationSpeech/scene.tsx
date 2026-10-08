@@ -18,7 +18,7 @@ export const CAMERA: CameraSpec = { box: CAMERA_BOX, lens: LENS, floor: FLOOR, s
 export const OPERATOR_POSES = operatorPoses(OPERATOR.feet, GRIP);
 /** The pole's rear end, behind the front hand: along the line from the boom's
  *  starting tail through the grip (a drawing default, 0.7 m). */
-const TAIL = { x: BOOM.p.x - BOOM.aim.x * 250, y: BOOM.p.y - BOOM.aim.y * 250, z: BOOM.p.z - BOOM.aim.z * 250 };
+const TAIL = { x: BOOM.tip.x - BOOM.aim.x * 250, y: BOOM.tip.y - BOOM.aim.y * 250, z: BOOM.tip.z - BOOM.aim.z * 250 };
 const RD = (() => { const d = { x: GRIP.x - TAIL.x, y: GRIP.y - TAIL.y, z: GRIP.z - TAIL.z }; const l = Math.hypot(d.x, d.y, d.z); return { x: d.x / l, y: d.y / l, z: d.z / l }; })();
 export const POLE_STUB = { a: GRIP, b: { x: GRIP.x + RD.x * 700, y: GRIP.y + RD.y * 700, z: GRIP.z + RD.z * 700 } };
 
