@@ -34,7 +34,7 @@ const sub = (a: Vec3, b: Vec3): Vec3 => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - 
 const LIP: Vec3 = { x: 0, y: 0, z: 0 };
 
 const BOOM_BAND = 'Start as close as the frame allows: the mic just above the top of the shot — here about 60 cm from the lips — aimed down at the mouth. A wider shot pushes it farther away.';
-const BOOM_TEND = 'A natural voice with some of the room around it. Closer brings more voice and less room; a wider shot forces it farther away. It must follow the head as the talker turns.';
+const BOOM_TEND = 'A natural voice with some of the room around it. Closer brings more voice and less room; a wider shot forces it farther away. Its operator turns it with the head as the talker turns.';
 const BOOM_CHECKS = ['The top of the frame: no mic, pole or shadow in the shot', 'Head turns: the mic re-aimed with the talker', 'Wind, handling and the pole’s cable — quiet rehearsal'];
 
 /** The boom: a voice zone above the mouth (approached 30–80° above its axis),

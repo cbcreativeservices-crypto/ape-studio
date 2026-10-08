@@ -639,6 +639,83 @@ changed: Miking Lab 7b review (B09-B17): audio-expert + learning fixes
 affects other side: nothing — app-side words only (Miking Lab 7b lessons B09–B17, the miking journey/restructure text, review doc); no backend, schema or Supabase change; nothing published
 needs: nothing
 
+### 2026-10-08 06:23 · ccode · c0e6ecfa
+changed: Merge origin/final-lab into lab7-g3 (Lab 7a group 3)
+affects other side: nothing (client-only merge: final-lab into lab7-g3 — Lab 7a group 3 (B03, B08) alongside Lab 7a group 2, Lab 7b groups 1–3 and the Lab 6 review; full suite 9985 pass, 0 fail; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 05:56 · ccode · 1679991f
+changed: Miking Lab 7 group 3: B08 Broadcast Audience and Event Space, the audience venue kit, tests and log
+affects other side: nothing (client-only: Miking Lab 7 group 3 — B08 audience lesson, the venue kit, tests and the corrections log; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 04:59 · ccode · 6317812a
+changed: Merge origin/lab7-g4 into lab7-g3 (Lab 7b group 1 kit for Lab 7a group 3)
+affects other side: nothing (client-only merge: Lab 7b group 1's speech-in-sport kit into lab7-g3 so Lab 7a group 3 can reuse it; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
+### 2026-10-08 05:52 · ccode · 39cfdea9
+changed: docs(lab6 review): test counts after the second merge (9930 pass, 0 fail)
+affects other side: nothing server-side — Lab 6 review doc: the suite count after the second merge; docs only.
+needs: nothing
+
+
+### 2026-10-08 05:43 · ccode · 09d63e07
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
+affects other side: nothing server-side — final-lab (Lab 7b group 3) merged again into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:42 · ccode · e0427c1b
+changed: docs(lab6 review): test counts after the merge (9846 pass, 0 fail)
+affects other side: nothing server-side — Lab 6 review doc: the suite count after merging final-lab; docs only.
+needs: nothing
+
+
+### 2026-10-08 05:32 · ccode · 32a5996f
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
+affects other side: nothing server-side — final-lab (Lab 7 groups) merged into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:24 · ccode · 443ab6dd
+changed: docs(lab6 review): REVIEW_LAB6_2026_10_08 — two-expert review of F01–F16
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:22 · ccode · 25ff1923
+changed: test(lab6 review): pin the 2026-10-08 Lab 6 review fixes
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:20 · ccode · 9bf0435a
+changed: fix(lab6 review): starting-points voice in F07/F09; F10 drill gain value no longer cropped
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:03 · ccode · 4bdee9d0
+changed: fix(lab6 review): F09/F10 wording — no technique "must", no stray "silently"
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:03 · ccode · 3671e76b
+changed: fix(lab6 review): fairer quick-check items in F02–F08 and F13; F04 pad physics
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:02 · ccode · 5970e4d7
+changed: fix(lab6 review): F16 sample-rate item contradicted itself; F09 boom vs body-mic level
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
 
 ### 2026-10-08 05:27 · ccode · fd0ea5a9
 changed: Merge lab7-g6: Miking Lab 7b B15-B17 arenas, moving sources, complete coverage

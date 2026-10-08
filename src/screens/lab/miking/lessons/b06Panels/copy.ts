@@ -15,6 +15,7 @@ const INTRO = 'This lesson is about putting microphones on a group of talkers â€
 const BASE = standingVoiceCopy({
   what: 'a panelist or a presenter',
   startIntro: INTRO,
+  contextIntro: 'These are scenario-based comparisons, not restrictions: the talkers are the same â€” the room, the open mics and the PA change.',
   worked: { studio: 'b6.goose', live: 'b6.lectern' },
   liveZone: 'b6.lectern',
   pairA: 'b6.lectern',

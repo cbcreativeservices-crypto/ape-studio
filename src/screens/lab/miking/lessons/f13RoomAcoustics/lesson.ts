@@ -322,8 +322,8 @@ const scenarios: MikingScenario[] = [
     id: 'ra.prac.gain',
     page: 'practice',
     prompt: 'Before the sweep: what do you check about the levels?',
-    options: ['Clean input, unlimited output, room for the tail', 'The level as high as the PA will go without a fault', 'The input set low, so nothing could possibly clip'],
-    correct: 'Clean input, unlimited output, room for the tail',
+    options: ['Clean input, no output limiter, room for the tail', 'The level as high as the PA will go without a fault', 'The input set low, so nothing could possibly clip'],
+    correct: 'Clean input, no output limiter, room for the tail',
     explain: 'Watch the input for clipping and the output for limiting, at a safe, modest level, with enough range for the decay above the floor.',
     why: {
       'The level as high as the PA will go without a fault': 'Never drive the source louder only to force a result: modest, safe levels.',

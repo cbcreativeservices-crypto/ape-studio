@@ -19,7 +19,8 @@ function targetSurface(scene: VenueScene, id: string, prefix: string): Reference
 }
 
 /** Engine model of a practice scene. `src`: the lesson whose layout it is. */
-function sceneModel(o: { scene: VenueScene; id: string; name: string; prefix: string; variant: { id: string; label: string; blurb: string; phrase: string }; src: string; parts: { id: string; label: string; short: string; role: string; lesson: boolean }[]; views: InstrumentModel['views'] }): InstrumentModel {
+/** Exported for Lab 7 group 3 (B08's venues): any VenueScene as an engine model. */
+export function sceneModel(o: { scene: VenueScene; id: string; name: string; prefix: string; variant: { id: string; label: string; blurb: string; phrase: string }; src: string; parts: { id: string; label: string; short: string; role: string; lesson: boolean }[]; views: InstrumentModel['views'] }): InstrumentModel {
   const LESSON: Provenance = { kind: 'trial', src: o.src, note: 'the lesson’s own practice geometry, CONFIRMED by calculation' };
   const DD = ill('a drawing default (the practice scene’s other places)');
   const parts: Part[] = o.parts.map((p) => ({ id: `${o.prefix}.${p.id}`, label: p.label, short: p.short, role: p.role, prov: p.lesson ? LESSON : DD }));

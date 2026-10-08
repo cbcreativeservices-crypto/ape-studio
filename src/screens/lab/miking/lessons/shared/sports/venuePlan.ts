@@ -175,7 +175,7 @@ export type Footprint = { id: string; label: string; short: string; rect: PlanRe
  *  half-angle and how far the cone is drawn (all drawing defaults). */
 export type Camera = { id: string; label: string; p: P2; dirDeg: number; halfDeg: number; reach: number };
 /** A crowd or PA sector: its centre (what a mic hears it from) and its outline. */
-export type Sector = { id: string; label: string; short: string; kind: 'crowd' | 'pa'; c: P2; h: number; poly: readonly P2[] };
+export type Sector = { id: string; label: string; short: string; kind: 'crowd' | 'pa'; c: P2; h: number; poly: readonly P2[]; /** Lab 7 group 3: seats drawn without people (rows of seat backs, no heads). */ empty?: boolean };
 /** A target point (a sound to pick up), at its source height h (m). */
 export type Target = { id: string; label: string; short: string; p: P2; h: number };
 /** A mark: where a mic, an ambience pair or an operator starts. */
