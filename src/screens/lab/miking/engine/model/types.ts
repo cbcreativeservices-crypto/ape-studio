@@ -252,7 +252,9 @@ export type MountKind = 'stand' | 'surface' | 'clip' | 'boom';
  *  tapered handle — held in a stand clip. 'vocalLdc' (Lab 5): the side-
  *  address condenser drawn with its BASKET centred on the front point (the
  *  singer sings into the basket; the body hangs below). */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc';
+/** 'measMic' / 'slm' (Lab 6 group 4, the measurement lessons): a measurement
+ *  mic on its preamp; a complete sound level meter under its windscreen. */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never
