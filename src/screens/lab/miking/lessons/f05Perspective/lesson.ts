@@ -464,10 +464,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'f05.q.3',
     covers: 'setting',
     prompt: 'Before a second mic goes up, you name…',
-    options: ['Its job', 'Its brand', 'Its price'],
-    correct: 'Its job',
+    options: ['Its job in the scene', 'Its make and model', 'Its loudest position'],
+    correct: 'Its job in the scene',
     explain: 'Detail, whole action, room or travel: each mic has a job.',
-    why: { 'Its brand': 'Choose by properties and the job.', 'Its price': 'Price says nothing about what the mic is for.' },
+    why: { 'Its make and model': 'Choose by properties and the job, not by name.', 'Its loudest position': 'Level is not a job: perspective is.' },
   },
   {
     id: 'f05.q.4',

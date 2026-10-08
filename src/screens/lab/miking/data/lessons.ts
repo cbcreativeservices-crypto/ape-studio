@@ -230,6 +230,11 @@ import { B04_LESSON } from '../lessons/b04BoomCamera/lesson.ts';
 LESSON_CONTENT.B04 = B04_LESSON;
 import { B02_LESSON } from '../lessons/b02NewsAnchor/lesson.ts';
 LESSON_CONTENT.B02 = B02_LESSON;
+/* Lab 7 (broadcast), group 3 — field and audience: B03, B08 (each lesson on its own line). */
+import { B03_LESSON } from '../lessons/b03FieldReporter/lesson.ts';
+LESSON_CONTENT.B03 = B03_LESSON;
+import { B08_LESSON } from '../lessons/b08Audience/lesson.ts';
+LESSON_CONTENT.B08 = B08_LESSON;
 /* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
 import { B09_LESSON } from '../lessons/b09Commentators/lesson.ts';
 LESSON_CONTENT.B09 = B09_LESSON;
@@ -244,3 +249,10 @@ import { B13_LESSON } from '../lessons/b13FieldDiamond/lesson.ts';
 LESSON_CONTENT.B13 = B13_LESSON;
 import { B14_LESSON } from '../lessons/b14CourtIce/lesson.ts';
 LESSON_CONTENT.B14 = B14_LESSON;
+/* Lab 7 · part 2 · G3 — arenas, moving sources, complete coverage: B15, B16, B17 (one block; each lesson on its own line). */
+import { B15_LESSON } from '../lessons/b15TrackGymCombat/lesson.ts';
+LESSON_CONTENT.B15 = B15_LESSON;
+import { B16_LESSON } from '../lessons/b16MotorHorseWater/lesson.ts';
+LESSON_CONTENT.B16 = B16_LESSON;
+import { B17_LESSON } from '../lessons/b17CrowdComplete/lesson.ts';
+LESSON_CONTENT.B17 = B17_LESSON;

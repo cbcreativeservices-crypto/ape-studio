@@ -75,7 +75,7 @@ export function PathChooser({ journey }: { journey: JourneyProps }) {
   return (
     <View style={{ gap: 8 }}>
       <Text style={styles.q}>How would you like to start?</Text>
-      {opt('new', `New to miking ${/^[aeiou]/i.test(noun.one) ? 'an' : 'a'} ${noun.one}`,'Start at the beginning: the instrument and where its sound leaves, the starting setups drawn on it, then the microphones.')}
+      {opt('new', `New to miking ${/^[aeiou]/i.test(noun.one) ? 'an' : 'a'} ${noun.one}`,'Start at the beginning: where the sound leaves, the starting setups, then the microphones.')}
       {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. Pass it and every activity opens now; the first two pages stay here to earn their credit whenever you like.')}
     </View>
   );
@@ -187,7 +187,7 @@ export function FoundationsCard({ journey, pageTitle }: { journey: JourneyProps;
   return (
     <View style={{ gap: 12 }}>
       <Text style={styles.bridgeHead}>BUILT ON THE FIRST TWO PAGES</Text>
-      <Text style={styles.resultText}>{`“${pageTitle}” puts a microphone to work. It is built on what the first two pages show: the instrument and where its sound leaves, and the starting setups drawn on it. Its activity opens once those are done — or once you pass the quick check. NEXT and CONTENTS still go anywhere.`}</Text>
+      <Text style={styles.resultText}>{`“${pageTitle}” puts a microphone to work. It is built on what the first two pages show: where the sound leaves, and the starting setups. Its activity opens once those are done — or once you pass the quick check. NEXT and CONTENTS still go anywhere.`}</Text>
       {FOUNDATION_PAGES.map((p) => {
         const ok = journey.met.has(p);
         return (

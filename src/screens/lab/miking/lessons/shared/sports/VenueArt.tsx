@@ -31,6 +31,8 @@ import { shotgunLobe } from '../../../engine/physics/shotgun.ts';
 import { gain } from '../../../engine/physics/polar.ts';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { COVERAGE_WORDS, DEG, degOf, dirFromDeg, planUV, type CoverageZone, type P2, type TurnArc, type VenueScene } from './venuePlan.ts';
+// Lab 7b group 3 (lab7-g6): the new surfaces, the plan silhouettes, the stereo pairs and the hydrophone.
+import { G3MicGlyph, SURFACE_G3, TokensArt, isG3Kind, type G3MicKind } from './ArenaArt';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = (): SkPath => Skia.Path.Make();
@@ -84,6 +86,7 @@ const SURFACE: Record<VenueScene['surface'], { around: [string, string]; play: [
   court: { around: ['#3a3b40', '#2a2b30'], play: ['#b07a45', '#8c5a2e'] },
   ice: { around: ['#2b2e36', '#1f2228'], play: ['#e9f1f7', '#c9d8e4'] },
   mock: { around: ['#3b3a37', '#2c2b29'], play: ['#55524c', '#47443f'] },
+  ...SURFACE_G3,
 };
 
 function Surface({ scene, px }: { scene: VenueScene; px: number }) {
@@ -292,12 +295,12 @@ function camLens(s: number): SkPath {
 function SectorsArt({ scene, px }: { scene: VenueScene; px: number }) {
   return (
     <Group>
-      {scene.sectors.map((sec) => (sec.kind === 'crowd' ? <Stand key={sec.id} poly={sec.poly} px={px} /> : <PaBox key={sec.id} c={sec.c} px={px} />))}
+      {scene.sectors.map((sec) => (sec.kind === 'crowd' ? <Stand key={sec.id} poly={sec.poly} px={px} empty={sec.empty} /> : <PaBox key={sec.id} c={sec.c} px={px} />))}
     </Group>
   );
 }
 /** Spectator stands from above: stepped rows of seats in a frame. */
-function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
+function Stand({ poly, px, empty = false }: { poly: readonly P2[]; px: number; empty?: boolean }) {
   const g = useMemo(() => {
     const area = polyPath(poly);
     const b = bounds(poly);
@@ -306,14 +309,19 @@ function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
     const step = 800;
     if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) { rows.moveTo(b.u0, v); rows.lineTo(b.u1, v); }
     else for (let u = b.u0 + step / 2; u < b.u1; u += step) { rows.moveTo(u, b.v0); rows.lineTo(u, b.v1); }
-    // Seats along each row — a stand drawn as SEATING without people (head
-    // fix 2026-10-08, owner decision 3: a crowd is never a scatter of circle
-    // "heads"). One seat pan every 500 mm, just in front of its row line.
+    // A stand is SEATING without people (head fix 2026-10-08, owner decision
+    // 3: a crowd is never a scatter of circle "heads"). An occupied section:
+    // a seat pan every 500 mm just in front of its row line, in a warm tone
+    // (taken seats). An empty section (Lab 7 group 3): a seat back on every
+    // place, a short dash every 550 mm along each row.
+    const pans = make();
+    const pan = (u: number, v: number, du: number, dv: number) => pans.addRRect(Skia.RRectXY(Skia.XYWHRect(u - du / 2, v - dv / 2, du, dv), 60, 60));
+    if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 250; u < b.u1 - 150; u += 500) pan(u, v - 200, 380, 260);
+    else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 250; v < b.v1 - 150; v += 500) pan(u - 200, v, 260, 380);
     const seats = make();
-    const seat = (u: number, v: number, du: number, dv: number) => seats.addRRect(Skia.RRectXY(Skia.XYWHRect(u - du / 2, v - dv / 2, du, dv), 60, 60));
-    if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 250; u < b.u1 - 150; u += 500) seat(u, v - 200, 380, 260);
-    else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 250; v < b.v1 - 150; v += 500) seat(u - 200, v, 260, 380);
-    return { area, rows, seats, b };
+    if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 300; u < b.u1 - 150; u += 550) { seats.moveTo(u, v - 150); seats.lineTo(u + 300, v - 150); }
+    else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 300; v < b.v1 - 150; v += 550) { seats.moveTo(u - 150, v); seats.lineTo(u - 150, v + 300); }
+    return { area, rows, pans, seats, b };
   }, [poly]);
   return (
     <Group>
@@ -321,7 +329,8 @@ function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
         <LinearGradient start={vec(g.b.u0, g.b.v0)} end={vec(g.b.u1, g.b.v1)} colors={['#4a4e57', '#2c2f35']} />
       </Path>
       <Path path={g.rows} style="stroke" strokeWidth={Math.max(60, 0.8 * px)} color="#15161a" opacity={0.8} />
-      <Path path={g.seats} color="#6b707b" opacity={0.6} />
+      {/* Lab 7 group 3: an empty section's seat backs; an occupied one's taken seats (no people drawn). */}
+      {empty ? <Path path={g.seats} style="stroke" strokeWidth={Math.max(90, 1.4 * px)} strokeCap="round" color="#7b8494" opacity={0.75} /> : <Path path={g.pans} color="#9a8a78" opacity={0.6} />}
       <Path path={g.area} style="stroke" strokeWidth={1.2 * px} color="#0b0c0f" />
     </Group>
   );
@@ -419,6 +428,7 @@ export function VenuePlan({ scene, px, show, activeFootprint, highlight }: { sce
     <Group>
       <Surface scene={scene} px={px} />
       <Markings scene={scene} px={px} />
+      <TokensArt scene={scene} px={px} />
       {on('keepClear') ? <KeepClearArt scene={scene} px={px} /> : null}
       {on('sectors') ? <SectorsArt scene={scene} px={px} /> : null}
       {on('barriers') ? <BarriersArt scene={scene} px={px} /> : null}
@@ -437,8 +447,10 @@ export function VenuePlan({ scene, px, show, activeFootprint, highlight }: { sce
 export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?: boolean; layers?: boolean; px?: number } = {}): StaticLabel[] {
   const out: StaticLabel[] = [];
   const off = 1100;
-  if (opts.targets !== false) for (const t of scene.targets) out.push({ id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 1300, v: uv(t.p).v - 500, align: 'left', tone: 'amber' });
-  if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.short, u: uv(m.p).u + 1300, v: uv(m.p).v + 300, align: 'left' });
+  // Lab 7b group 3: a room-sized scene (a few metres across) pulls its labels in with it; a field keeps 1.3 m.
+  const k = Math.min(1, (scene.frame.x1 - scene.frame.x0) / 38);
+  if (opts.targets !== false) for (const t of scene.targets) out.push({ id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 1300 * k, v: uv(t.p).v - 500 * k, align: 'left', tone: 'amber' });
+  if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.short, u: uv(m.p).u + 1300 * k, v: uv(m.p).v + 300 * k, align: 'left' });
   if (opts.layers) {
     const seen = new Set<string>();
     for (const k of scene.keepClear) {
@@ -447,14 +459,14 @@ export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?
       const b = bounds(k.poly);
       out.push({ id: `k.${k.id}`, text: k.short, u: (b.u0 + b.u1) / 2, v: (b.v0 + b.v1) / 2, align: 'center', tone: 'muted' });
     }
-    for (const f of scene.footprints.slice(0, 2)) out.push({ id: `f.${f.id}`, text: f.short, u: uv({ x: f.rect.x1, y: f.rect.y0 }).u + 400, v: uv({ x: f.rect.x1, y: f.rect.y0 }).v - off * 0.2, align: 'left', tone: 'muted' });
+    for (const f of scene.footprints.slice(0, 2)) out.push({ id: `f.${f.id}`, text: f.short, u: uv({ x: f.rect.x1, y: f.rect.y0 }).u + 400 * k, v: uv({ x: f.rect.x1, y: f.rect.y0 }).v - off * 0.2 * k, align: 'left', tone: 'muted' });
   }
   return out;
 }
 
 /* ── mics on the plan ── */
 
-export type PlanMicKind = 'shotgun' | 'compact' | 'dish' | 'boundary' | 'xy';
+export type PlanMicKind = 'shotgun' | 'compact' | 'dish' | 'boundary' | 'xy' | G3MicKind;
 /** A mic glyph at a plan point, aimed at `aimDeg` (as dirFromDeg), drawn at a
  *  fixed screen size (`sizePx` long): a MARK on the plan, not to scale. */
 export function PlanMic(props: { at: P2; aimDeg: number; kind: PlanMicKind; px: number; sizePx?: number; tint?: string }) {
@@ -480,6 +492,7 @@ function PlanMicGlyph({ at, aimDeg, kind, px, sizePx = 30, tint }: { at: P2; aim
   const screen = Math.atan2(-d.y, d.x);
   if (kind === 'shotgun') return <ShotgunArt x={o.u} y={o.v} angleDeg={screen / DEG} scale={(sizePx * px) / 250} />;
   if (kind === 'dish') return <DishPlanGlyph at={at} aimDeg={aimDeg} px={px} sizePx={sizePx} />;
+  if (isG3Kind(kind)) return <G3MicGlyph at={at} aimDeg={aimDeg} kind={kind} px={px} sizePx={sizePx} tint={tint} />;
   const rot = screen - Math.PI / 2 + Math.PI;
   if (kind === 'xy')
     return (

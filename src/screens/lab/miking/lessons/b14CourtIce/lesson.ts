@@ -136,12 +136,12 @@ const scenarios: MikingScenario[] = [
     id: 'cl.set.3',
     page: 'setups',
     prompt: 'A mic is wanted on the ice-facing side of the boards. What applies?',
-    options: ['No hardware faces the ice', 'It is fine if it is low enough', 'It is fine if it is padded well'],
+    options: ['No hardware faces the ice', 'It is fine if it is low enough', 'Padding it well makes it acceptable'],
     correct: 'No hardware faces the ice',
     explain: 'The ice-facing surface stays smooth and unobstructed. Mics go at approved places outside the enclosure.',
     why: {
       'It is fine if it is low enough': 'Low hardware still faces the play.',
-      'It is fine if it is padded well': 'Padding does not make an obstruction approved.',
+      'Padding it well makes it acceptable': 'Padding does not make an obstruction approved.',
     },
   },
   {
@@ -305,8 +305,8 @@ const scenarios: MikingScenario[] = [
     id: 'cl.two.3',
     page: 'twoMic',
     prompt: 'You align the pair for a clap at B. The play moves to A. Then?',
-    options: ['The alignment no longer fits', 'It still fits: the mics did not move', 'It fits better: A is nearer'],
-    correct: 'The alignment no longer fits',
+    options: ['It no longer fits the new paths', 'It still fits: the mics did not move', 'It fits better: A is nearer'],
+    correct: 'It no longer fits the new paths',
     explain: 'A moving source changes the difference between paths; an alignment that helps at one point may worsen another. Document any static target you align.',
     why: {
       'It still fits: the mics did not move': 'The source moved; the paths changed.',
@@ -354,12 +354,12 @@ const scenarios: MikingScenario[] = [
     id: 'cl.mix.3',
     page: 'practice',
     prompt: 'The rink’s glass stands between the mic and the play. What do you assume?',
-    options: ['Nothing — listen to what it does', 'It passes sound just like open air', 'It blocks the sound almost completely'],
+    options: ['Nothing — listen to what it does', 'It passes sound just like open air', 'Near silence: glass blocks almost all of it'],
     correct: 'Nothing — listen to what it does',
     explain: 'Glass can screen airborne sound and make reflections; a mic pressed to it may hear local vibration or crowd spill. Listen to the real installation.',
     why: {
       'It passes sound just like open air': 'Transparent to the eye is not transparent to sound.',
-      'It blocks the sound almost completely': 'Check by listening — it screens, it does not silence.',
+      'Near silence: glass blocks almost all of it': 'Check by listening — it screens, it does not silence.',
     },
   },
 ];

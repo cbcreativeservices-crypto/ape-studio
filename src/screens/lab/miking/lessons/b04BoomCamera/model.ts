@@ -59,7 +59,7 @@ const ABOVE: VoiceZoneSpec = {
   mount: 'clip',
   variants: ['close', 'live'],
   start: { d: near(BOOM_ABOVE.d), deg: 45, spread: 12, at: 'mouth' },
-  tendency: 'A natural voice with some of the room, no clothing noise — and it must be re-aimed as the talker turns. A wider shot pushes it farther away: more room against the voice.',
+  tendency: 'A natural voice with some of the room, no clothing noise — and it needs re-aiming as the talker turns. A wider shot pushes it farther away: more room against the voice.',
   checks: ['The top of every frame: no mic, pole or shadow in the picture', 'Head turns: the mic re-aimed with the talker', 'What its axis points at past the talker: a hard floor, a window'],
 };
 

@@ -132,7 +132,7 @@ export const SPORT_SPEECH_MIC_TYPES = {
     clip: HELD,
     examples: FLAG_EX,
     art: 'flagHandheld',
-    blurb: 'A rugged handheld with a flag under its grille, held by the reporter and moved to whoever is speaking. Omni: forgiving of small aim errors as people turn — and it hears the crowd from every side, so it must be close.',
+    blurb: 'A rugged handheld with a flag under its grille, held by the reporter and moved to whoever is speaking. Omni: forgiving of small aim errors as people turn — and it hears the crowd from every side, so keep it close.',
   },
   bcFlagCard: {
     id: 'bcFlagCard',

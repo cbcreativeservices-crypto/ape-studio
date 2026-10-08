@@ -209,6 +209,9 @@ export const BRAND_NAMES: readonly string[] = [
   'CCM ?41',
   'B6',
   'MixPre',
+  // Lab 7 group 3 (B03, B08): the research's remaining makers' products (the rest were listed by groups 1 and 2).
+  'Windjammer',
+  'DPA ?5100',
   // Lab 7 part 2, group 1 research (docs/labs/miking/commentators, sideline_interviews, athletes_officials): the
   // headset, lip-mic and intercom makers and models, and the league named. ('Shure', 'Sennheiser', 'DPA', 'RØDE',
   // 'Sound Devices', 'NIOSH' and 'NWS' are in the lists above.)
@@ -240,6 +243,27 @@ export const BRAND_NAMES: readonly string[] = [
   'TopVision',
   'VP83F',
   'MX391',
+  // Lab 7 part 2, group 3 research (docs/labs/miking/track_gym_combat, motorsport_equestrian_aquatic, crowd_complete):
+  // the federations whose rules were read, the standards bodies and the products named. ('Sennheiser', 'Shure', 'DPA',
+  // 'Aquarian', 'Rycote', 'SCHOEPS', 'AMBEO', 'MKH ?416', 'OSHA', 'NWS' and 'FIBA' are in the lists above.)
+  'World Athletics',
+  'World Gymnastics',
+  'FIG',
+  'World Boxing',
+  'UWW',
+  'IJF',
+  'FIA',
+  'FEI',
+  'World Aquatics',
+  'H2dX',
+  'ITU',
+  'EBU',
+  'MK ?4',
+  'CCM ?4',
+  'CMC ?1',
+  'ORTF-2plus2',
+  'Wittek',
+  '406[02]',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

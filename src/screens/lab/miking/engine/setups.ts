@@ -157,6 +157,15 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   // farther view is the boundary on the desk, not the fixed boom (an engine
   // 'stand' mic the distance rule would take).
   B02: { close: ['b2.goose'], distant: ['b2.boundary'] },
+  // Lab 7 group 3 — field and audience (field_reporter/GEOMETRY_PROPOSAL §5).
+  // B03: the directional handheld at the speaker is the live start (the
+  // shared omni is ONE MIC); no farther start — a camera mic is B04's.
+  B03: { close: ['b3.handoffDir'], distant: null },
+  // B08: its STARTING SETUPS are its own (drawn on the venue plans); the
+  // engine's ONE MIC is the mono crowd mic, TWO MICS the two zones — no
+  // close or farther start among the engine's zones (the spaced pair is on
+  // the event's plan, not the studio model).
+  B08: { close: null, distant: null },
   // Lab 7 · part 2 · G1 — speech in sport (commentators/, sideline_interviews/,
   // athletes_officials/GEOMETRY_PROPOSAL.md §4–5). B09: the lip ribbon is the
   // open position's close start; the desk-arm mic in a quiet booth is the

@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'pb.ctx.2',
     page: 'context',
-    prompt: 'A celebration erupts right beside the dish. What must the gain have allowed for?',
+    prompt: 'A celebration erupts right beside the dish. What should the gain have allowed for?',
     options: ['The nearest, loudest event', 'Only the quiet distant target', 'The average level of the play'],
     correct: 'The nearest, loudest event',
     explain: 'Leave headroom for the nearest or loudest event — impacts, whistles, celebrations, nearby shouting.',
@@ -267,13 +267,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'pb.ctx.3',
     page: 'context',
-    prompt: 'What can a high-pass filter NOT do for the dish?',
-    options: ['Repair a clipped peak', 'Reduce some wind rumble', 'Lower some handling noise'],
-    correct: 'Repair a clipped peak',
-    explain: 'A high-pass filter can tame rumble; it cannot restore overload, or give the dish low-frequency gain it never had.',
+    prompt: 'A nearby shout clipped the dish’s transmitter input. What can a high-pass filter on the channel do about it?',
+    options: ['Nothing for the clip itself', 'Remove the distortion it caused', 'Bring back the lost peak'],
+    correct: 'Nothing for the clip itself',
+    explain: 'A high-pass filter can tame wind rumble and low handling thumps; it cannot repair a clip that already happened upstream, or give the dish low-frequency gain it never had. Lower the gain where it clipped.',
     why: {
-      'Reduce some wind rumble': 'That is what it can do.',
-      'Lower some handling noise': 'That too — low handling thumps.',
+      'Remove the distortion it caused': 'Clipping adds distortion right across the spectrum; a filter that only cuts the lows leaves it in.',
+      'Bring back the lost peak': 'What the clip flattened is gone; no filter after it can restore it.',
     },
   },
   {
@@ -305,8 +305,8 @@ const scenarios: MikingScenario[] = [
     id: 'pb.two.3',
     page: 'twoMic',
     prompt: 'You align the two mics for a kick at A. The play moves to C. Then?',
-    options: ['The alignment no longer fits', 'It still fits: the mics did not move', 'It fits better, as C is farther'],
-    correct: 'The alignment no longer fits',
+    options: ['It no longer fits the new paths', 'It still fits: the mics did not move', 'It fits better, as C is farther'],
+    correct: 'It no longer fits the new paths',
     explain: 'The paths change as the source moves, so the delay that fits changes. Hand off, or keep one dominant mic per zone.',
     why: {
       'It still fits: the mics did not move': 'The source moved; the paths changed.',

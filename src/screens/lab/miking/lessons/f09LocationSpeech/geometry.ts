@@ -97,7 +97,7 @@ const parts: Part[] = [
   { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves the talker — almost all of it. Every distance here is measured from the lips to the front of the mic.', prov: FIG },
   { id: 'v.nose', ...W.nose, prov: FIG },
   { id: 'v.folds', ...W.folds, listIn: [], prov: ill('the larynx, low in the throat: a simplified picture') },
-  { id: 'v.head', ...W.head, label: 'head and face', role: 'The head turns as the talker speaks and looks around: a boom must follow it, a mic on the chest does not. Nothing touches the face.', solid: S.head, prov: FIG },
+  { id: 'v.head', ...W.head, label: 'head and face', role: 'The head turns as the talker speaks and looks around: a boom is turned to follow it, a mic on the chest does not. Nothing touches the face.', solid: S.head, prov: FIG },
   { id: 'v.chest', label: 'chest (where a body mic goes)', short: 'chest', role: 'A body mic clips here, just above the breastbone — with the talker’s agreement. It moves with the chest, not with the head.', solid: S.torso, prov: FIG },
   { id: 'player.neck', label: 'neck', short: 'neck', role: 'The neck, chin to collar.', solid: S.neck, listIn: [], prov: FIG },
   { id: 'player.legs', label: 'the talker’s legs and feet', short: 'legs', role: 'Where the talker stands: stands, cables and bodypacks stay clear of the feet and the walking path.', solid: S.legs, listIn: [], prov: FIG },

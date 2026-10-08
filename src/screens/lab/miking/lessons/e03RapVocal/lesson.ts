@@ -575,7 +575,7 @@ export const E03_LESSON: Lesson = {
   labId: 'ensembles',
   title: 'Rap and Rhythmic Vocal',
   subtitle: 'Fast consonants and sudden peaks: a close, steady distance, a working zone, the grille kept open',
-  noun: { one: 'rap vocal', many: 'rap vocals' },
+  noun: { one: 'rap vocal', many: 'rap vocals', subject: 'performer', person: true },
   model: E03_MODEL,
   micTypeIds: ['vocDynCard', 'vocDynSuper', 'vocLdc', 'vocHeadset'],
   zones: E03_ZONES,

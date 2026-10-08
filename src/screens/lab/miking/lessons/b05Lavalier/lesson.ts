@@ -18,7 +18,9 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hearingDiag, hollowSymptom, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingDiag, polarityDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
+import { hollowVoiceSymptom, personMeet, voiceRatingCheck } from '../shared/broadcast/voiceItems.ts';
 import { B05_MODEL, FLOOR, PA_C } from './geometry.ts';
 import { B05_ZONES } from './model.ts';
 import { B05_COPY } from './copy.ts';
@@ -81,6 +83,8 @@ const pages: LessonPages = {
     takeaway: 'Consent, a centred place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
   },
 };
+/** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
+pages.meet = personMeet(pages, 'the presenter');
 
 /*
  * THE CHECKS. Lesson lines in comments only: b5.snd.* L5, L24–L25, L31–L32 ·
@@ -92,12 +96,12 @@ const scenarios: MikingScenario[] = [
     id: 'b5.snd.1',
     page: 'sound',
     prompt: 'The presenter turns to a guest. What happens at a lav on the chest?',
-    options: ['The mouth moves off it; it stays put', 'It turns with the head and keeps aim', 'It comes nearer to the turned mouth'],
+    options: ['The mouth moves off it; it stays put', 'It turns with the head and keeps aim', 'Nearer to the mouth as it turns'],
     correct: 'The mouth moves off it; it stays put',
     explain: 'A lav is fixed to the clothes on the chest. The head turns about its centre, so the mouth swings away from the lav’s line — a little farther and well off the mouth’s axis.',
     why: {
       'It turns with the head and keeps aim': 'Only a headset turns with the head. A lav moves with the chest.',
-      'It comes nearer to the turned mouth': 'The mouth swings sideways, away from the middle of the chest.',
+      'Nearer to the mouth as it turns': 'The mouth swings sideways, away from the middle of the chest.',
     },
   },
   {
@@ -124,7 +128,7 @@ const scenarios: MikingScenario[] = [
       'Because it hears only from the side, not the front': 'Most headsets are omni or cardioid; the place is about breath and steadiness.',
     },
   },
-  hearingCheck('b5.set.1', W),
+  voiceRatingCheck('b5.set.1', 'the presenter'),
   {
     id: 'b5.set.2',
     page: 'setting',
@@ -141,12 +145,12 @@ const scenarios: MikingScenario[] = [
     id: 'b5.set.3',
     page: 'setting',
     prompt: 'A bodypack lav’s plug fits a 48 V phantom input. May you plug it in?',
-    options: ['Only through its own specified adapter', 'Straight in — a plug that fits is wired right', 'Straight in, once the phantom is set to 24 V'],
+    options: ['Only through its own specified adapter', 'Straight in — a plug that fits is wired right', 'Through a spare adapter from the kit'],
     correct: 'Only through its own specified adapter',
     explain: 'A miniature mic needs the right bias, wiring and level. Never plug a bodypack lav straight into a phantom-powered input — only through the adapter or power module made for it.',
     why: {
       'Straight in — a plug that fits is wired right': 'The same plug shape can carry different wiring and bias. Check the model’s adapter.',
-      'Straight in, once the phantom is set to 24 V': 'Lowering the phantom voltage is not the answer. Use its own adapter or module.',
+      'Through a spare adapter from the kit': 'Another adapter can carry the wrong wiring or bias: only the one made for this mic.',
     },
   },
   {
@@ -212,13 +216,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b5.mic.4',
     page: 'microphone',
-    prompt: 'A cap on a hidden lav makes it brighter. Does that fix fabric rubbing?',
-    options: ['No — move it or change the mount', 'Yes — brighter covers the rubbing', 'Yes, as long as the cap fits snugly'],
-    correct: 'No — move it or change the mount',
+    prompt: 'A hidden lav rubs on the fabric. A bright cap is in the kit. What fixes the rubbing?',
+    options: ['Moving it, or changing the mount', 'The bright cap, to cover the rub', 'More treble on the channel later'],
+    correct: 'Moving it, or changing the mount',
     explain: 'A model’s own bright cap can make up for some of the cloth’s dulling — for that model only. It does nothing for a capsule that rubs: fix the place and the mount.',
     why: {
-      'Yes — brighter covers the rubbing': 'A brighter tone makes rubbing more obvious, if anything.',
-      'Yes, as long as the cap fits snugly': 'A cap changes the tone, not the movement of cloth on the capsule.',
+      'The bright cap, to cover the rub': 'A brighter tone makes rubbing more obvious, if anything.',
+      'More treble on the channel later': 'Treble raises the rub with the voice; it does not stop the cloth moving on the capsule.',
     },
   },
   {
@@ -309,12 +313,12 @@ const scenarios: MikingScenario[] = [
     id: 'b5.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · The presenter reads down. Which mic’s distance to the mouth holds?',
-    options: ['The headset', 'The lav on the sternum', 'The lav on the lapel'],
+    options: ['The headset', 'The lav on the sternum', 'A lapel lav, off to one side'],
     correct: 'The headset',
     explain: 'A headset is worn on the head and tips with it. A lav stays on the chest while the mouth tips down and away.',
     why: {
       'The lav on the sternum': 'It stays on the chest while the mouth tips down: the distance and angle change.',
-      'The lav on the lapel': 'A lapel is part of the jacket — it stays put as the head tips.',
+      'A lapel lav, off to one side': 'A lapel is part of the jacket — it stays put as the head tips.',
     },
   },
   {
@@ -345,13 +349,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b5.two.4',
     page: 'twoMic',
-    prompt: 'Can delaying the headset fix the comb with the lectern mic for good?',
-    options: ['No — it suits one place, and they move', 'Yes — once lined up it stays lined up', 'Yes, if the delay is set a little longer'],
-    correct: 'No — it suits one place, and they move',
+    prompt: 'You delay the headset to line it up with the lectern mic. How long does that fix last?',
+    options: ['Until the presenter moves', 'For the whole show, once set', 'Until the PA level changes'],
+    correct: 'Until the presenter moves',
     explain: 'A delay lines the two arrivals up for one position of the mouth. As the presenter moves, the gap changes again. Muting one is the reliable step.',
     why: {
-      'Yes — once lined up it stays lined up': 'The gap depends on where the mouth is: it changes as they move.',
-      'Yes, if the delay is set a little longer': 'A wrong delay makes a new comb; it does not remove one.',
+      'For the whole show, once set': 'The gap depends on where the mouth is: it changes as they move.',
+      'Until the PA level changes': 'The PA level does not move the mouth: the gap changes when the presenter moves.',
     },
   },
   {
@@ -402,7 +406,7 @@ const scenarios: MikingScenario[] = [
       'Swap the headset for a lav up on the shirt collar': 'That gives up the headset’s steadiness; fix the capsule’s place first.',
     },
   },
-  removeDelay('b5.mix.3'),
+  removeDelayVoice('b5.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -466,7 +470,7 @@ const symptoms: Symptom[] = [
       'Clip the lav up nearer to the mouth': 'The capsule’s place does not fix the radio path.',
     },
   },
-  hollowSymptom('b5.sym.hollow'),
+  hollowVoiceSymptom('b5.sym.hollow'),
 ];
 
 const orderTasks: OrderTask[] = [
@@ -499,7 +503,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A lav taped to the skin with camera tape', ok: false, power: 'phantom', feedback: 'Camera tape is not skin-safe. Use an adhesive made for skin, after asking.' },
       { id: 'e', label: 'The bodypack lav plugged straight into a phantom input', ok: false, power: 'phantom', feedback: 'Never — only through its own specified adapter.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewellery'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewellery'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, the capsule clear of the clothes, the wearer’s agreement — and no promise that hidden sounds the same.',
   },
   {
@@ -556,12 +560,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'A bodypack lav and a 48 V phantom input. What is safe?',
-    options: ['Only through the mic’s own specified adapter', 'Straight in, if the plug fits the input socket', 'Straight in, with the gain turned down low'],
+    options: ['Only through the mic’s own specified adapter', 'Straight in, if the plug fits the input socket', 'With the gain turned down low first'],
     correct: 'Only through the mic’s own specified adapter',
     explain: 'Never plug a bodypack lav straight into phantom power: only through the adapter or power module made for it. A fitting plug is not proof of the right wiring or bias.',
     why: {
       'Straight in, if the plug fits the input socket': 'The same plug shape can carry different wiring and bias.',
-      'Straight in, with the gain turned down low': 'Gain does nothing about the phantom voltage on the mic.',
+      'With the gain turned down low first': 'Gain does nothing about the phantom voltage on the mic.',
     },
   },
   {
@@ -581,12 +585,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'The headset is live at the lectern. The lectern mic should be…',
-    options: ['Muted, so the voice has one open mic', 'Open, so that the voice sounds a little fuller', 'Open but lower, as a backup'],
+    options: ['Muted, so the voice has one open mic', 'Open, so that the voice sounds a little fuller', 'Lower, kept open as a backup'],
     correct: 'Muted, so the voice has one open mic',
     explain: 'Two open mics on one voice comb and cost margin before feedback. Mute the one not in use; keep any backup on its own track.',
     why: {
       'Open, so that the voice sounds a little fuller': 'Two copies of one voice sound hollower, not fuller.',
-      'Open but lower, as a backup': 'A backup is switched to, not left open in the mix.',
+      'Lower, kept open as a backup': 'A backup is switched to, not left open in the mix.',
     },
   },
   hearingDiag('q.6', W),
@@ -611,7 +615,7 @@ export const B05_LESSON: Lesson = {
   labId: 'broadcast',
   title: 'Lavalier, Headset and Concealed Pickup',
   subtitle: 'A lav on the sternum about 12–25 cm from the lips, or a headset by the corner of the mouth — fitted with the wearer’s agreement',
-  noun: { one: 'presenter', many: 'presenters', subject: 'presenter' },
+  noun: { one: 'presenter', many: 'presenters', subject: 'presenter', person: true },
   model: B05_MODEL,
   micTypeIds: ['locLav', 'lavCard', 'vocHeadset', 'hsCard', 'bcGoose'],
   zones: B05_ZONES,

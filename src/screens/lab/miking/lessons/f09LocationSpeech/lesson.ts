@@ -308,7 +308,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What does a body mic on the chest do when the head turns?',
     options: ['Stays put: it moves with the chest, not the head', 'Turns with the head, so the voice stays on its axis', 'Moves farther from the mouth than a boom'],
     correct: 'Stays put: it moves with the chest, not the head',
-    explain: 'A body mic follows the torso. Its distance from the mouth barely changes; the boom is the mic that must be turned with the head.',
+    explain: 'A body mic follows the torso. Its distance from the mouth barely changes; the boom is the mic that is turned with the head.',
     why: {
       'Turns with the head, so the voice stays on its axis': 'It is clipped to the chest; the head turns above it.',
       'Moves farther from the mouth than a boom': 'It stays close — usually closer than the boom.',
@@ -381,7 +381,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A wide shot puts the boom 90 cm away; the body mic is 21 cm away. What tends to follow?',
     options: ['The boom hears more room against the voice', 'The boom hears the voice exactly as well', 'The body mic hears more room than the boom'],
     correct: 'The boom hears more room against the voice',
-    explain: 'By distance alone the boom hears the voice about 12 dB weaker than the body mic, with the room much the same — so more room against the voice. A tendency, judged by ear.',
+    explain: 'By distance alone the boom hears the voice about 13 dB weaker than the body mic, with the room much the same — so more room against the voice. A tendency, judged by ear.',
     why: {
       'The boom hears the voice exactly as well': 'More than four times as far: the voice arrives weaker at the boom.',
       'The body mic hears more room than the boom': 'Close to the mouth, the body mic hears the voice strongly against the room.',
@@ -517,8 +517,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'sound',
     prompt: 'A wider shot is called. What tends to happen to the boom?',
-    options: ['It must move farther from the mouth', 'It can come closer to the mouth', 'Nothing: the shot does not limit a boom'],
-    correct: 'It must move farther from the mouth',
+    options: ['It moves farther from the mouth', 'It can come closer to the mouth', 'Nothing: the shot does not limit a boom'],
+    correct: 'It moves farther from the mouth',
     explain: 'The frame’s top edge rises with a wider shot, and the boom stays above it — farther from the mouth.',
     why: {
       'It can come closer to the mouth': 'A wider frame takes more space above the head, not less.',
@@ -596,7 +596,7 @@ export const F09_LESSON: Lesson = {
   labId: 'field',
   title: 'Location Speech and Practical Sounds',
   subtitle: 'A boom just above the frame, a body mic on the chest, a plant for the action — each on its own channel',
-  noun: { one: 'talker on location', many: 'talkers on location', subject: 'talker' },
+  noun: { one: 'talker on location', many: 'talkers on location', subject: 'talker', person: true },
   model: F09_MODEL,
   micTypeIds: ['locBoomSg', 'locBoomHyper', 'locBoomFur', 'locLav', 'locPlant', 'locCam', 'vocDynCard', 'vocDynSuper', 'vocHeadset'],
   zones: F09_ZONES,

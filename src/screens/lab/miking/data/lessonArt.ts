@@ -252,6 +252,11 @@ import { B04_ART } from '../lessons/b04BoomCamera/art';
 ART.B04 = B04_ART;
 import { B02_ART } from '../lessons/b02NewsAnchor/art';
 ART.B02 = B02_ART;
+/* Lab 7 (broadcast), group 3 — field and audience: B03, B08 (each lesson on its own line). */
+import { B03_ART } from '../lessons/b03FieldReporter/art';
+ART.B03 = B03_ART;
+import { B08_ART } from '../lessons/b08Audience/art';
+ART.B08 = B08_ART;
 /* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
 import { B09_ART } from '../lessons/b09Commentators/art';
 ART.B09 = B09_ART;
@@ -266,3 +271,10 @@ import { B13_ART } from '../lessons/b13FieldDiamond/art';
 ART.B13 = B13_ART;
 import { B14_ART } from '../lessons/b14CourtIce/art';
 ART.B14 = B14_ART;
+/* Lab 7 · part 2 · G3 — arenas, moving sources, complete coverage: B15, B16, B17 (one block; each lesson on its own line). */
+import { B15_ART } from '../lessons/b15TrackGymCombat/art';
+ART.B15 = B15_ART;
+import { B16_ART } from '../lessons/b16MotorHorseWater/art';
+ART.B16 = B16_ART;
+import { B17_ART } from '../lessons/b17CrowdComplete/art';
+ART.B17 = B17_ART;

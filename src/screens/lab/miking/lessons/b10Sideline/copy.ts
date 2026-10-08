@@ -20,7 +20,7 @@ const BASE = standingVoiceCopy({
   liveZone: 'b10.hand',
   pairA: 'b10.hand',
   pairB: { p: { x: 0, y: 0, z: 0 }, az: 0, el: 0 },
-  practice: { gain: 'b10.prac.gain', second: 'b10.prac.3', mixed: ['b10.mix.1', 'b10.mix.2', 'b10.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the handoff, the open mics, and polarity versus delay.' },
+  practice: { gain: 'b10.prac.gain', second: 'b10.prac.3', mixed: ['b10.mix.1', 'b10.mix.2', 'b10.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: a shotgun from the stands, the radio frequencies, and polarity versus delay.' },
   before: [
     { title: 'PLAN THE POSITION BEFORE THE HANDOFF', text: 'Confirm the permitted interview zone, the camera’s framing, the cable or radio path, the program feed and who moves the mic. Mark where the reporter and the guest stand, the crowd and the PA, the wind, and the nearest clear exit.' },
     SPORTS_SAFETY.play,

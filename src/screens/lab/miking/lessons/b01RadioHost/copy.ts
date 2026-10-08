@@ -15,6 +15,7 @@ const INTRO = 'This lesson is about putting a microphone on a host who speaks â€
 const BASE = standingVoiceCopy({
   what: 'a host at a desk',
   startIntro: INTRO,
+  contextIntro: 'These are scenario-based comparisons, not restrictions: the host is the same â€” the room, the guests and the loudspeakers change.',
   worked: { studio: 'b1.dyn', live: 'b1.close' },
   liveZone: 'b1.close',
   pairA: 'b1.dyn',

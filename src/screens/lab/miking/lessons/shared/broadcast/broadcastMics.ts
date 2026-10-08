@@ -43,11 +43,14 @@
  *                       part 'bc.desk'); shotgunShort and lavOmni are
  *                       Lab 6's (fieldmics SHOTGUN_SHORT; field locLav) —
  *                       reused, never redefined (G2_SLOTS);
- *   G3 (B03, B08):      repOmni.
+ *   G3 (B03, B08):      repOmni — FILLED by group 3 (lab7-g3): the
+ *                       reporter's long-handle omni, held (Lab 7b's 'held'
+ *                       clip style and HELD_ARM, sportMics.ts).
  */
 import type { MicType } from '../../../engine/model/types.ts';
 import { VOICE_DIMS } from '../voice/voiceSpec.ts';
 import { VOICE_MIC_TYPES } from '../voice/voiceMics.ts';
+import { HELD_ARM } from './sportMics.ts';
 
 const dd = (mm: number, needed: string) => ({ mm, prov: { kind: 'unknown', needed } as const, placeholder: true });
 const src = (s: string, quote: string) => ({ kind: 'sourced', src: s, quote }) as const;
@@ -249,7 +252,7 @@ export const BROADCAST_MIC_TYPES = {
     clip: { reach: dd(40, 'a clothing clip’s reach to the capsule (drawing default)') },
     examples: [{ model: 'directional miniature lavalier (generic)', fact: 'The lesson B05 L5 / L13: orient the actual sensitive axis toward the mouth; more rejection in a useful geometry, but turns, wind, plosives and proximity effect need more care.', src: 'S-LAVHS' }],
     art: 'lavalier',
-    blurb: 'A tiny directional capsule on a clip: its sensitive end must point at the mouth, so a turn of the head takes the voice off its axis — more rejection of the room when it is aimed well, more care with breath and fabric.',
+    blurb: 'A tiny directional capsule on a clip: its sensitive end needs to point at the mouth, so a turn of the head takes the voice off its axis — more rejection of the room when it is aimed well, more care with breath and fabric.',
   },
   hsCard: {
     id: 'hsCard',
@@ -282,4 +285,28 @@ export const BROADCAST_MIC_TYPES = {
     blurb: 'A low plate lying on the desk toward the talker: it hears the hemisphere above the desk, most toward its front, with its element so close to the desk that the desk’s own bounce arrives with the direct sound. It also hears papers, hands and the room. Needs phantom power.',
   },
   /* ── Lab 7 group 3 (B03, B08): repOmni ── */
+  // The long-handle reporter's omni, held in the reporter's hand (the held
+  // arm of Lab 7b's sportMics: the grip is the holder's SHOULDER). The
+  // directional handheld B03 compares it with is Lab 7b's bcFlagCard (reused).
+  // B08's crowd mics are Lab 5's arrCard / sdcCard and the stereo-array tool.
+  repOmni: {
+    id: 'repOmni',
+    label: 'Reporter’s long-handle omni with a mic flag',
+    short: 'REPORTER OMNI',
+    transducer: 'dynamic',
+    address: 'end',
+    patterns: [{ id: 'omni', label: 'omni', prov: src('R-REPORTER', 'an omnidirectional reporter microphone … held at around chest height between the interviewer and the person being interviewed') }],
+    // A longer handle than a stage handheld (the hand stays below the flag
+    // and the grille clear of the fist): a drawing default, no outline read.
+    body: { length: dd(230, 'a long-handle reporter’s omni, grille to tail (drawing default)'), radius: dd(24, 'a reporter’s omni ball-grille radius (drawing default)') },
+    power: 'none needed (dynamic)',
+    mount: 'clip',
+    clip: { reach: HELD_ARM.reach, style: 'held', elbow: { a: HELD_ARM.upper, b: HELD_ARM.fore } },
+    examples: [
+      { model: 'RØDE Reporter class (long-handle omni dynamic)', fact: 'R-REPORTER: "held at around chest height between the interviewer and the person being interviewed" — the maker’s own model and a typical interview: a starting trial, not a distance rule (the lesson L20). Internal shock mount and pop filter: a design, not immunity.', src: 'R-REPORTER' },
+      { model: 'Electro-Voice RE50B class (interview omni)', fact: 'EV-RE50B: the maker calls its built-in pop filtering impervious to wind — marketing; the app teaches a monitored wind test (the lesson L21, L68). Never shown.', src: 'EV-RE50B' },
+    ],
+    art: 'flagHandheld',
+    blurb: 'A rugged dynamic on a long handle with a flag under the grille, held by the reporter. Omni: it forgives aim as people turn, and it hears the street, the crowd and a loudspeaker from every side just as well — being a dynamic does not make it pick out one voice. Needs no power.',
+  },
 } satisfies Record<string, MicType>;

@@ -352,3 +352,55 @@ Added 2026-10-08 by the Lab 7 group 2 builder (branch lab7-g2): the keys the bod
 | LESSON-B02 | The owner's lesson B02 (practice statements kept as written; B-INST, B-XLINK applied) | `source_text/B02-…txt` | the lesson |
 | LESSON-B04 | The owner's lesson B04 (practice statements kept as written; B-INST, B-XLINK applied; O-SG pending) | `source_text/B04-…txt` | the lesson |
 | LESSON-B05 | The owner's lesson B05 (practice statements kept as written; B05-1, B-INST, B-XLINK applied) | `source_text/B05-…txt` | the lesson |
+
+## 21. Lab 7 part 2 · group 3 — arenas, moving sources, complete coverage (B15, B16, B17; `lessons/shared/sports/`)
+
+Added 2026-10-08 by the Lab 7 part 2 group 3 builder (branch lab7-g6). The full Lab 7 part 2 register is
+`commentators/SOURCES.md` §0; the lessons' own audits are `track_gym_combat/`, `motorsport_equestrian_aquatic/` and
+`crowd_complete/SOURCES.md`. The keys the code cites (zones, parts, the shared tools) — internal record only, never shown:
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| LESSON-B15 | The owner's lesson B15 — the practice room A (0,0), B (0,2), C (0,4), M1 (2,2), M2 (−2,2), capsule and clap 1 m; M1→B 2 m, M1→A/C √8 = 2.83 m; the double range (4,2) → 4 m | `source_text/B15-…txt` | the lesson; CONFIRMED arithmetic |
+| LESSON-B16 | The owner's lesson B16 — the same practice room (B15-01: ONE scene); the walk A → C, "a walking source is not a Doppler speed measurement" (L257) | `source_text/B16-…txt` | the lesson |
+| LESSON-B17 | The owner's lesson B17 — the mock venue A (0,0), U1–U3 (±1, 2), S (0,4) 1.5 m aimed at U2, D (2,0) 1 m on A, S′ 1 m closer; minimal 4 / extensive 14 channels (1 + 1 + 2; 2 + 4 + 4 + 4) | `source_text/B17-…txt` | the lesson; CONFIRMED arithmetic (B17-01: computed, never typed) |
+| UWW-MAT | UWW International Wrestling Rules 2026 Art. 4: a 9 m wrestling area, a 1.50 m border; the protection area is not a mic strip | see `commentators/SOURCES.md` §0 | Medium (secondary) — the one rule clearance drawn in B15, said as "typical clear zone — check your event's rules" |
+| ORTF | ORTF: two cardioids 17 cm apart, 110° between their axes | `crowd_complete/SOURCES.md` L93 | CONFIRMED (the Lab 5 array tool's fixed preset) |
+| C-MS | M/S: L = M + kS, R = M − kS, (L + R)/2 = M | `crowd_complete/SOURCES.md` L102 | CONFIRMED algebra (`downmix.ts`) |
+| ITU-775 | ITU-R BS.775: L′ = L + 0.7071 C + 0.7071 LS (the −3 dB coefficient), shown as "an example fold-down" | see `commentators/SOURCES.md` §0 | CONFIRMED (standard coefficient; PDF not re-read 2026-10-08) |
+| EBU-R128 | EBU R 128: −23 LUFS, ±1 LU where live work makes it impractical, −1 dBTP — shown as "one delivery example — use your broadcaster's" | see `commentators/SOURCES.md` §0 | Medium |
+| C-PASSBY | The pass-by readouts: slant range, the inverse-square change, the ideal polar gain, Δt and the comb notches between two fixed mics for each source position; no pitch or speed (L257) | `passBy.ts` | DERIVED (ideal model, C-SOUND) |
+| C-B17-10MS | 3.43 m of path ≈ 10 ms; equal copies cancel near 50, 150, 250 Hz … (the calculator's speed of sound, rounded) | `crowd_complete/SOURCES.md` L157 | CONFIRMED arithmetic |
+| NWS-SPORTS | As §18: shelter at thunder, wait 30 minutes after the last thunder; open shelters not safe | https://www.weather.gov/safety/lightning-sports | read 2026-10-07 |
+| H2DX | One maker's hydrophone manual: phantom ≤ 48 V; single-ended XLR, pin 3 unused; horizontal omni; −165 dB re 1 V/µPa ± 4 dB, 20 Hz–4 kHz (B16-02: the manual's text layer reads "1V/Pa" — glyph loss; the unit is 1 V/µPa) | see `commentators/SOURCES.md` §0 | CONFIRMED (internal only; no figure on screen) |
+| C-MEDIA-DB | Underwater and airborne decibels use different references (1 µPa in water, 20 µPa in air: a 26 dB offset) — B16-01 | standard acoustics | CONFIRMED (internal; on screen only "the references differ") |
+
+Drawing defaults (never printed as a dimension): every venue outline's size (D7-2: track, gymnastics, boxing, judo,
+circuit, jumping arena, pool, arena), the horse and car silhouettes' places (D7-3), the hydrophone container, its water and
+sensor depths (D7-4), the practice room's and mock venue's areas, footprints, clearance bands, way out, commentary station and
+camera view, the audience's 1.5 m mouth height, B15's low and standing source heights (0.3 / 1.5 m) and capsule heights
+(0.6 / 1.2 m), the coverage planner's role cards, the downmix demo's three sources.
+
+## 22. Lab 7 group 3 — field and audience (B03, B08; `lessons/shared/broadcast/` fieldInterview, reporterWind, venue)
+
+Added 2026-10-08 by the Lab 7 group 3 builder (branch lab7-g3): the keys the field-reporter tools, the `repOmni` type and
+the B03 / B08 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in
+`field_reporter/SOURCES.md` and `audience_ambience/SOURCES.md`. Nothing here is shown to the learner (owner ruling
+2026-10-04).
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| R-REPORTER | RØDE Reporter user manual: "held at around chest height between the interviewer and the person being interviewed"; omni (`repOmni`; B03 `b3.shared`, the handoff path's shared place) | https://edge.rode.com//pdf/products/117/reporter_user_manual.pdf | High (PDF read, prep pass 2026-10-07) |
+| EV-RE50B | Electro-Voice RE50B product page: an omni interview dynamic whose maker calls its pop filter "impervious to wind" — marketing, recorded and never shown; the app teaches a monitored wind test (`repOmni` examples) | https://products.electrovoice.com/r/re50b | Medium (extract) |
+| S-TOP6 | Shure, "The Top Six Church Audio Questions": "one (or two for stereo) microphone(s) above and somewhat in front of the congregation … aimed at the faces of the people and away from the main PA speakers" (B08 `b8.mono`; the PA-angle tool) | https://www.shure.com/en-US/insights/the-top-six-church-audio-questions-for-2012 | Medium (extract) |
+| DPA-5100 | DPA 5100 mobile surround mic: a self-contained 5.1 head — three front capsules, two rear (B08's five-capsule token, its channel map in words) | dpamicrophones.com (manual) | Medium (dealer extracts of maker text) |
+| SN-AMBEO | Sennheiser AMBEO VR MIC: four matched cardioid capsules, A-format → B-format by the maker's converter (B08's four-capsule token; the Lab 6 `foa` preset) | maker page | Medium (extract) |
+| DPA-STEREO | DPA, stereo recording techniques: XY stable mono, ORTF width with some mono compatibility, spaced AB combs in mono (Lab 5 key, re-listed for B08's pair presets) | see `full_orchestra/SOURCES.md` | read 2026-10-05 |
+| LESSON-B03 | The owner's lesson B03 (practice statements kept as written; B-INST, B-XLINK applied; the lightning rule exact) | `source_text/B03-…txt` | the lesson |
+| LESSON-B08 | The owner's lesson B08 (practice statements kept as written; B-INST, B-XLINK — L66 "later sports sound pickup" not linked) | `source_text/B08-…txt` | the lesson |
+
+Drawing defaults (never printed as a dimension unless calculated from the drawing and said so): the reporter and guest
+75 cm apart face to face, the shared place 28 cm below the mouths, the handoff band 15–30 cm, the loud source 2 m away,
+the camera beside the reporter, the kerb, B03's loudspeaker; B08's two venues (the studio audience's rows, the event's
+sections, aisles, exits and stage), the PA clusters and their coverage wedges, the crowd mics' heights and places, the
+immersive tokens' size.
