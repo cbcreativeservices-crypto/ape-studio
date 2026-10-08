@@ -239,3 +239,18 @@ condenser's body S-SM4-WEB.)
 | S-3REASONS | Shure, "Three Reasons Why Mic Placement Matters": cardioid and supercardioid patterns reduce off-axis sound; "Aligning floor monitors and side fills with the directional microphone's angle of rejection will give the maximum gain before feedback" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
 | MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
 | ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
+## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
+
+Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.
+
+| Key | Source | Used for |
+|---|---|---|
+| MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing receiver heights (F14 seats; F15's seated user, reused) |
+| ISO-3744 | ISO 3744:2025 (ed. 4), via national-body listings | internal only: the sound-power method F15 calls "the named method" |
+| DOSITS-AW | DOSITS, sound in air vs water | 1 µPa vs 20 µPa; 26 dB of a 61.5 dB difference (arrays.WATER_AIR; the units card) |
+| PROBE-SPACER | intensity-probe maker data (search) | the 12 / 25 / 50 mm spacer presets (arrays.SPACERS_MM); the bands are not printed |
+| MW-ULA | MathWorks, time-delay beamforming of a ULA | spacing below half a wavelength (arrays.lambdaHalf) |
+| GRAS-FF | GRAS microphone guide | the measurement mics' field responses (reused from group 4) |
+| F14-LESSON, F15-LESSON, F16-LESSON | the owner's lesson texts (`source_text/F14…F16-*.txt`) | the practice claims each zone and item rests on |
+| CALC-* | app calculators | `speedOfSoundAir` (λ/2; Δt via twoMic.deltaTms), `leq` via calcBridge (the cycle strip) |

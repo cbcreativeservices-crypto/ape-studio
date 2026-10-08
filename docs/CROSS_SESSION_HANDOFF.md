@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 01:20 · ccode · fcf25436
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — third merge of final-lab into lab6-g5 (web and Mixing Guides changes only)
+needs: nothing
+
+
 ### 2026-10-08 01:10 · ccode · 97dd2ecc
 changed: web: Coming Soon panel sits low so the full headline shows above it
 affects other side: nothing (website layout; cherry-pick of 6d89f09b)
@@ -649,12 +655,20 @@ needs: nothing
 ### 2026-10-08 00:59 · ccode · a482d323
 changed: Mixing Guides map: a swipe follows the card under the finger; a tap flashes the countries 1.5 s, then opens
 affects other side: nothing (client-only hub interaction)
+
+### 2026-10-08 01:10 · ccode · cf52a845
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — second merge of final-lab into lab6-g5 (the goals copy rule; F14–F16 goals already follow it)
 needs: nothing
 
 
 ### 2026-10-08 00:45 · ccode · 77ea81d0
 changed: Lab copy: Objectives rewritten in the learner's voice; build notes removed from Miking goals
 affects other side: nothing (client-only lab copy)
+
+### 2026-10-08 00:59 · ccode · d84f8265
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — merge of final-lab into lab6-g5 (doc conflicts kept both sides; SOURCES_SHARED group 5 block renumbered §16)
 needs: nothing
 
 
@@ -724,6 +738,16 @@ needs: nothing
 ### 2026-10-07 23:12 · ccode · 48fa4836
 changed: web: launch date moves to Tuesday, October 13
 affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+
+### 2026-10-08 00:50 · ccode · 6b1202c5
+changed: Miking Lab 6 g5: F14, F15, F16 lessons registered in the field lab
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
+needs: nothing
+
+
+### 2026-10-08 00:49 · ccode · 7ae43a4f
+changed: Miking Lab 6 g5: venue, system timing, claim ladder, exclusion zone, arrays, sensors
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
 needs: nothing
 
 
