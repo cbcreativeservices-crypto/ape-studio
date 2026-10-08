@@ -643,6 +643,15 @@ needs: nothing
 ### 2026-10-08 12:04 · ccode · 50ab08f3
 changed: Lab full screen turns with the phone: lift the portrait lock while it is up, restore on close
 affects other side: nothing (client-only orientation)
+### 2026-10-08 12:59 · ccode · 494c0d7b
+changed: Merge remote-tracking branch 'origin/final-lab' into figure-review
+affects other side: nothing (merge of origin/final-lab into figure-review; handoff entries only)
+needs: nothing
+
+
+### 2026-10-08 12:59 · ccode · 871cf2b7
+changed: fix(miking figures): anatomy + decency review of every human figure (owner F04)
+affects other side: nothing — client-side drawing and pose geometry only (Miking stays hidden); no backend, no assets.
 needs: nothing
 
 

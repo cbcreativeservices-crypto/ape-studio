@@ -33,7 +33,7 @@ export const HALF_PATH = 1000;
 export const KEYS_PATH: PathDef = straightPath(v3(0, 30, HALF_PATH), v3(0, 30, -HALF_PATH), 1.0, 0);
 
 /** The artist, mid-path, holding the key ring at the origin (the shared adult figure). */
-export const ARTIST: Body3 = standing({ floorY: F05_FLOOR, x: -380, wrR: v3(-60, -30, 40), elR: v3(-300, -160, 220), wrL: v3(-330, 160, -230), elL: v3(-360, -100, -220), kindR: 'grip' });
+export const ARTIST: Body3 = standing({ floorY: F05_FLOOR, x: -380, wrR: v3(-60, -30, 40), elR: v3(-300, -160, 220), wrL: v3(-390, 160, -230), elL: v3(-410, -100, -220), kindR: 'grip' });
 export const ARTIST_SIDE = sidePose(ARTIST);
 export const ARTIST_TOP = topPose(ARTIST);
 

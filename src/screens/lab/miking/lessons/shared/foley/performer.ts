@@ -147,31 +147,55 @@ export function standing(o: {
   stepL?: number;
   liftL?: number;
   liftR?: number;
+  /** A forward bend at the hips, degrees (the upper body — neck, shoulders,
+   *  head — turns forward about the hips; figure review 2026-10-08: a hand
+   *  that works low in front of the body reaches by bending, never by a
+   *  stretched arm). Default 0 (upright). */
+  lean?: number;
 }): Body3 {
   const f = o.floorY;
   const x = o.x;
   const z = o.z ?? 0;
   const h = (mm: number) => f - mm;
-  const neck = v3(x, h(1440), z);
-  const shR = v3(x - 4, h(1382), z + 176);
-  const shL = v3(x - 18, h(1392), z - 176);
   const sR = o.stepR ?? 20;
   const sL = o.stepL ?? 0;
   const ftR = v3(x + sR, h(o.liftR ?? 0), z + 100);
   const ftL = v3(x + sL, h(o.liftL ?? 0), z - 100);
   const hipR = v3(x - 10, h(910), z + 104);
   const hipL = v3(x - 24, h(916), z - 104);
-  const knee = (hip: Vec3, ft: Vec3, bend: number) => v3((hip.x + ft.x) / 2 + bend, (hip.y + ft.y) / 2, (hip.z + ft.z) / 2);
+  // The upper body, turned forward about the hips by `lean`.
+  const pivot = v3(x - 17, h(913), z);
+  const th = ((o.lean ?? 0) * Math.PI) / 180;
+  const bend = (p: Vec3): Vec3 => {
+    const dx = p.x - pivot.x;
+    const dy = p.y - pivot.y;
+    return v3(pivot.x + dx * Math.cos(th) - dy * Math.sin(th), pivot.y + dx * Math.sin(th) + dy * Math.cos(th), p.z);
+  };
+  const neck = bend(v3(x, h(1440), z));
+  const shR = bend(v3(x - 4, h(1382), z + 176));
+  const shL = bend(v3(x - 18, h(1392), z - 176));
+  const knee = (hip: Vec3, ft: Vec3, bendK: number) => v3((hip.x + ft.x) / 2 + bendK, (hip.y + ft.y) / 2, (hip.z + ft.z) / 2);
   const mid = (a: Vec3, b: Vec3, out: number, drop: number) => v3((a.x + b.x) / 2 + out, (a.y + b.y) / 2 + drop, (a.z + b.z) / 2);
+  // Each arm is a true two-bone chain from its OWN shoulder (figure review
+  // 2026-10-08): the upper arm and the forearm keep their adult lengths, the
+  // elbow bends toward the authored elbow (only a hint), and a hand never
+  // reaches past the arm's length.
+  const armR = armChain(shR, o.wrR, o.elR ?? mid(shR, o.wrR, -40, 40));
+  const armL = armChain(shL, o.wrL, o.elL ?? mid(shL, o.wrL, -40, 40));
   return {
-    head: v3(x + 16, h(1598), z),
+    // The head stays nearly upright over the collar (it looks down a little
+    // as the body bends; a head turned with the whole torso juts forward).
+    head: (() => {
+      const t = th * 0.6;
+      return v3(neck.x + 16 * Math.cos(t) + 158 * Math.sin(t), neck.y + 16 * Math.sin(t) - 158 * Math.cos(t), z);
+    })(),
     neck,
     shR,
     shL,
-    elR: o.elR ?? mid(shR, o.wrR, -40, 40),
-    elL: o.elL ?? mid(shL, o.wrL, -40, 40),
-    wrR: o.wrR,
-    wrL: o.wrL,
+    elR: armR.el,
+    elL: armL.el,
+    wrR: armR.wr,
+    wrL: armL.wr,
     hipR,
     hipL,
     knR: knee(hipR, ftR, sR > 60 ? 20 : sR < -60 ? -30 : 12),
@@ -182,6 +206,56 @@ export function standing(o: {
     kindL: o.kindL ?? 'rest',
     floorY: f,
   };
+}
+
+/** The adult arm (mm; a 1.71 m figure): upper arm ≈ 0.19 × height, forearm
+ *  (elbow to wrist) ≈ 0.155 × height — drawing defaults. */
+export const ARM = { upper: 325, fore: 265 } as const;
+
+/**
+ * A two-bone arm from a shoulder toward a wrist target: the wrist held within
+ * the arm's reach (98.5 % of full length, never locked straight), the elbow
+ * where both bones keep their lengths, bent toward `hint`.
+ */
+export function armChain(sh: Vec3, wrist: Vec3, hint: Vec3): { el: Vec3; wr: Vec3 } {
+  const U = ARM.upper;
+  const F = ARM.fore;
+  let d = v3(wrist.x - sh.x, wrist.y - sh.y, wrist.z - sh.z);
+  let L = Math.hypot(d.x, d.y, d.z);
+  const max = (U + F) * 0.985;
+  const min = Math.abs(U - F) + 40;
+  if (L < 1e-6) {
+    d = v3(0, 1, 0);
+    L = 1;
+  }
+  const n = v3(d.x / L, d.y / L, d.z / L);
+  const Lc = Math.max(min, Math.min(max, L));
+  const wr = v3(sh.x + n.x * Lc, sh.y + n.y * Lc, sh.z + n.z * Lc);
+  // The elbow: `a` along the shoulder→wrist line, `r` off it toward the hint.
+  const a = (U * U - F * F + Lc * Lc) / (2 * Lc);
+  const r = Math.sqrt(Math.max(0, U * U - a * a));
+  let pv = v3(hint.x - sh.x, hint.y - sh.y, hint.z - sh.z);
+  const along = pv.x * n.x + pv.y * n.y + pv.z * n.z;
+  pv = v3(pv.x - n.x * along, pv.y - n.y * along, pv.z - n.z * along);
+  // An elbow flexes one way: a hand below the shoulder never has its elbow
+  // pointing FORWARD (+x) of the shoulder–wrist line. A hint ahead of the
+  // line is turned back (figure review 2026-10-08: the walker's far elbow
+  // jutted out in front of the chest). Raised arms keep their hint.
+  if (pv.x > 0 && n.y > 0.3) {
+    pv = v3(-pv.x, pv.y, pv.z);
+    const again = pv.x * n.x + pv.y * n.y + pv.z * n.z;
+    pv = v3(pv.x - n.x * again, pv.y - n.y * again, pv.z - n.z * again);
+  }
+  let pl = Math.hypot(pv.x, pv.y, pv.z);
+  if (pl < 1e-6) {
+    // No usable hint: bend back and down (behind the arm's line).
+    const back = v3(-1, 0.4, 0);
+    const b2 = back.x * n.x + back.y * n.y + back.z * n.z;
+    pv = v3(back.x - n.x * b2, back.y - n.y * b2, back.z - n.z * b2);
+    pl = Math.hypot(pv.x, pv.y, pv.z) || 1;
+  }
+  const el = v3(sh.x + n.x * a + (pv.x / pl) * r, sh.y + n.y * a + (pv.y / pl) * r, sh.z + n.z * a + (pv.z / pl) * r);
+  return { el, wr };
 }
 
 /** The motion envelope over a pit (F01): the footfall area and the body's

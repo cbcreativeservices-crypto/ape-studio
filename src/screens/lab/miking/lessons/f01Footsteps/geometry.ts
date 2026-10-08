@@ -40,8 +40,10 @@ export const WALKER = standing({
   liftL: 30,
   wrR: v3(-200, -840, 205),
   elR: v3(-140, -1105, 200),
-  wrL: v3(110, -870, -205),
-  elL: v3(40, -1120, -200),
+  // The far arm's swing kept beside the thigh (figure review 2026-10-08: a
+  // hand swung out in front of the pelvis read as at the groin in profile).
+  wrL: v3(-60, -880, -205),
+  elL: v3(-80, -1130, -200),
 });
 export const WALKER_SIDE = sidePose(WALKER);
 export const WALKER_TOP = topPose(WALKER);

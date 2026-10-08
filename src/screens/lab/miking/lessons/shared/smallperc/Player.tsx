@@ -53,7 +53,9 @@ export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
       // The head and neck: the figure's own skin silhouette in profile,
       // facing +x, the neck down into the collar (head fix 2026-10-08 — a head
       // ON A BODY is PlayerFigure's FigureHead, never an oval with hair).
-      head: headProfile(pt(-346, H(1632)), 108, H(1440), 1).fill,
+      // Head centre at 1606 (figure review 2026-10-08: at 1632 the neck showed
+      // ~120 mm between jaw and collar, a stretched neck).
+      head: headProfile(pt(-346, H(1606)), 108, H(1440), 1).fill,
       belt: fromD(smoothPathD([[-272, H(952)], [-468, H(944)]], false)),
     };
   }, []);
