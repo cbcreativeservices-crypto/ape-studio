@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 12:59 · ccode · 871cf2b7
+changed: fix(miking figures): anatomy + decency review of every human figure (owner F04)
+affects other side: nothing — client-side drawing and pose geometry only (Miking stays hidden); no backend, no assets.
+needs: nothing
+
+
 ### 2026-10-08 11:15 · ccode · 40a76aa1
 changed: perf(about): lazy-load the build label so the app-start graph stays at 260
 affects other side: nothing
