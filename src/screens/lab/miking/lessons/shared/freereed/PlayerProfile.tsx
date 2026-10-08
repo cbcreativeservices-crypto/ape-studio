@@ -23,7 +23,7 @@
  * once per pose.
  */
 import { BlurMask, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { FigureHead, headProfile as figureHeadProfile } from '../players/PlayerFigure';
+import { FIGURE_SKIN, FigureHead, headProfile as figureHeadProfile } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -37,9 +37,13 @@ export const SHIRT_RIM = '#9aa6bd';
 export const SHIRT_EDGE = '#171a21';
 export const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
 export const TROUSER_RIM = '#767c89';
-export const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
-export const SKIN_RIM = '#b3b8c1';
-export const SKIN_EDGE = '#24272d';
+/** The hands wear the SHARED figure skin, the head's tone (owner
+ *  2026-10-08, HF1 — they were a grey neutral). */
+export const SKIN = FIGURE_SKIN.ramp;
+export const SKIN_RIM = FIGURE_SKIN.rim;
+export const SKIN_EDGE = FIGURE_SKIN.edge;
+/** The far hand, a step darker in the same tone. */
+export const SKIN_FAR = FIGURE_SKIN.ramp.slice(1);
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
 
 /** A standing player in profile (facing +u). Every joint is a drawing

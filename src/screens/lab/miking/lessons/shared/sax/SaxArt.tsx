@@ -33,7 +33,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
-import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { FIGURE_SKIN, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
@@ -59,8 +59,10 @@ const THROAT = ['#5c3d0c', '#2a1904', '#0d0801'];
 const SHIRT = ['#5d687e', '#465064', '#2f3645'];
 const SHIRT_EDGE = '#171a21';
 const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
-const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
-const SKIN_EDGE = '#24272d';
+/** The hands wear the shared figure skin, the head's tone (owner
+ *  2026-10-08, HF1 — they were a grey neutral). */
+const SKIN = FIGURE_SKIN.ramp;
+const SKIN_EDGE = FIGURE_SKIN.edge;
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
 const STRAP = ['#3a3f4a', '#1d2027', '#0d0f13'];
 const CHAIR = ['#3a3c43', '#1d1e22', '#0c0c0e'];

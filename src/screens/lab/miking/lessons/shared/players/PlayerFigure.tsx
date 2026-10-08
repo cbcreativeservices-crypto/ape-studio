@@ -65,6 +65,11 @@ export const FIGURE_TONES: Record<FigureTone, ToneDef> = {
   shoe: { ramp: ['#5a4030', '#3a281c', '#22170f', '#120c08'], rim: '#a58a72', core: '#050302', edge: '#070504', rimW: 4, coreW: 14 },
   seat: { ramp: ['#4a4c55', '#2e3036', '#1b1c21', '#0f1013'], rim: '#8d929d', core: '#050506', edge: '#08080a', rimW: 5, coreW: 20 },
 };
+/** THE figure skin (owner 2026-10-08, HF1): the one tone FigureHead wears —
+ *  and so every hand, arm and neck drawn on a figure with that head (art that
+ *  paints its own limbs: smallperc/cajón hands, low brass, sax, free reed).
+ *  A head and its hands never differ. */
+export const FIGURE_SKIN = FIGURE_TONES.skin;
 const SHIRT_LINE = '#161a24';
 const CHROME = ['#f2f4f8', '#b9bec8', '#6b707b', '#d4d8df'];
 const PICK = ['#7a3a1a', '#4a200c'];

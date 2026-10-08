@@ -13,14 +13,18 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { FIGURE_SKIN } from '../players/PlayerFigure';
 import { nailOutline, placePt, smoothPathD, tubeOutline, type HandGeo, type Placement, type Pt } from './hands.ts';
 
-/** Skin, lit from the upper left; a warm rim; nail and crease tones. */
-export const SKIN = ['#f6d4b4', '#e2ae87', '#c48a63', '#93603f'];
-export const SKIN_RIM = '#5a3624';
-const NAIL = '#f7e2d4';
-const NAIL_RIM = '#c4957b';
-const CREASE = '#9a6544';
+/** Skin, lit from the upper left: the SHARED figure skin, the tone the
+ *  player's FigureHead wears (owner 2026-10-08, HF1 — the hands were a
+ *  lighter warm palette of their own). SKIN_RIM is its contour; the nails,
+ *  creases and knuckle shine are taken from the same tone. */
+export const SKIN = FIGURE_SKIN.ramp;
+export const SKIN_RIM = FIGURE_SKIN.edge;
+const NAIL = FIGURE_SKIN.rim;
+const NAIL_RIM = FIGURE_SKIN.ramp[2];
+const CREASE = FIGURE_SKIN.ramp[3];
 /** A shirt sleeve (dark slate), lit from the upper left. */
 export const SLEEVE = ['#5d6b82', '#3f4b5f', '#262e3b'];
 export const SLEEVE_RIM = '#141820';
@@ -164,7 +168,7 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
       <Path path={b.nails} color={NAIL} opacity={farThumb ? 0 : 1} />
       <Path path={b.nails} style="stroke" strokeWidth={0.8} color={NAIL_RIM} />
       <Path path={b.creases} style="stroke" strokeWidth={1.1} strokeCap="round" color={CREASE} opacity={0.8} />
-      <Path path={b.shine} style="stroke" strokeWidth={3} strokeCap="round" color="#fff3e6" opacity={0.35} />
+      <Path path={b.shine} style="stroke" strokeWidth={3} strokeCap="round" color={FIGURE_SKIN.rim} opacity={0.35} />
     </Group>
   );
 }

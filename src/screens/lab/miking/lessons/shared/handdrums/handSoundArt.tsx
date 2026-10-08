@@ -34,6 +34,7 @@ import { strokeShares } from './strokes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { BRASS, CHROME, FLOOR, GOAT, INK, RAWHIDE, FILM, WOOD } from './handDrumArt';
 import type { HandDrum } from './handDrumModel.ts';
+import { FIGURE_SKIN } from '../players/PlayerFigure';
 import type { StrokeSpec } from './family.ts';
 
 const AMBER = '#ffc64d';
@@ -117,7 +118,8 @@ function handPath(len: number): SkPath {
   p.close();
   return p;
 }
-const SKIN = ['#e8b48c', '#c98d62', '#9a6440'];
+/** The striking hand wears the shared figure skin (owner 2026-10-08, HF1). */
+const SKIN = FIGURE_SKIN.ramp;
 
 export function buildSection(s: SectionSpec) {
   const d = s.drum;
@@ -313,7 +315,7 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
                 <Path path={g.hand}>
                   <LinearGradient start={vec(-d.R, -d.R * 0.4)} end={vec(d.R * 0.5, 0)} colors={SKIN} />
                 </Path>
-                <Path path={g.hand} style="stroke" strokeWidth={1.4} color="#5a3820" />
+                <Path path={g.hand} style="stroke" strokeWidth={1.4} color={FIGURE_SKIN.edge} />
               </Group>
             ) : (
               <Group>
