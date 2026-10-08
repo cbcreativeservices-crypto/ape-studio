@@ -236,3 +236,7 @@ ART.B06 = B06_ART;
 /* Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line). */
 import { B05_ART } from '../lessons/b05Lavalier/art';
 ART.B05 = B05_ART;
+import { B04_ART } from '../lessons/b04BoomCamera/art';
+ART.B04 = B04_ART;
+import { B02_ART } from '../lessons/b02NewsAnchor/art';
+ART.B02 = B02_ART;

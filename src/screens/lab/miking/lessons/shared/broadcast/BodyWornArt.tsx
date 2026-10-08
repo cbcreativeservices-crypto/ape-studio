@@ -18,12 +18,18 @@
  *   HeadsetFrame a headset's ear hook and its thin boom along the cheek to
  *                the capsule (the capsule itself is the mic art).
  *   BreathJet    the plosive air jet out of the lips (a simplified cone).
+ *   StandingPresenter  the voice family's standing figure in a jacket, the
+ *                bodypack on the belt (`headless` for a step that draws the
+ *                head turned).
  */
 import { useMemo } from 'react';
 import { BlurMask, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { EAR, EAR_HALF, HEAD_C } from '../voice/voiceSpec.ts';
-import { BREATH_JET, BODY_DIMS, CHEST_X, NECK_Y } from './bodyWorn.ts';
+import { VoiceFigure } from '../voice/VoiceArt';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { SINGER_SIDE, SINGER_TOP } from '../voice/voicePose.ts';
+import { BREATH_JET, BODY_DIMS, CHEST_X, NECK_Y, packAt } from './bodyWorn.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -340,6 +346,34 @@ export function BreathJet({ view, hit = false }: { view: ViewId; hit?: boolean }
       <Path path={p.edges} style="stroke" strokeWidth={2.4} color={hit ? RED : AMBER} opacity={0.7}>
         <DashPathEffect intervals={[8, 6]} />
       </Path>
+    </Group>
+  );
+}
+
+/* ── a standing presenter ── */
+
+const SIDE_HEADLESS = { ...SINGER_SIDE, head: { ...SINGER_SIDE.head, r: 1 } };
+const TOP_HEADLESS = { ...SINGER_TOP, head: { ...SINGER_TOP.head, r: 1 } };
+
+/** The voice family's standing figure in a jacket, the bodypack on the back
+ *  of the belt (frame V). `headless` leaves the head off (a step draws it
+ *  turned); `pack` false hides the pack. */
+export function StandingPresenter({ view, headless = false, pack = true, tie = false }: { view: ViewId; headless?: boolean; pack?: boolean; tie?: boolean }) {
+  const pose = view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS;
+  const at = packAt(true);
+  return (
+    <Group>
+      {pack && view === 'side' ? <BeltPack view="side" at={at} /> : null}
+      {headless ? (
+        <Group>
+          <PlayerBehind pose={pose} />
+          <PlayerInFront pose={pose} hands={view === 'side'} />
+        </Group>
+      ) : (
+        <VoiceFigure view={view} variant="studio" />
+      )}
+      <Jacket view={view} standing tie={tie} />
+      {pack && view === 'top' ? <BeltPack view="top" at={at} /> : null}
     </Group>
   );
 }

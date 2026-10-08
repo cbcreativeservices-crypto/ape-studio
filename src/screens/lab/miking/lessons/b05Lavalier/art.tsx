@@ -1,8 +1,9 @@
 /**
  * B05 LAVALIER, HEADSET AND CONCEALED PICKUP — the look (charter §2 layer 3):
  * the scene (scene.tsx: the presenter in a jacket, the bodypack, the camera
- * in the studio, the lectern and the PA live) and the lesson's own pages (pages.tsx: MEET IT's chest
- * or head, the loops, the breath; STARTING SETUPS' routing and "before any mic").
+ * in the studio, the lectern and the PA live) and the lesson's own pages
+ * (pages.tsx: MEET IT's chest or head, the loops, the breath; STARTING
+ * SETUPS' routing and "before any mic").
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';

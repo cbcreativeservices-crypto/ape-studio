@@ -37,7 +37,7 @@
  *                       hsCard — FILLED by group 2 (lab7-g2): compactHyper
  *                       (a compact hyper/supercardioid on a fixed boom
  *                       stand), camMic (a short shotgun on the camera's
- *                       shoe, 'surface' on the part 'bc.camera'), lavCard
+ *                       shoe, a 'clip' on the camera's shoe rim), lavCard
  *                       (a directional lav), hsCard (a directional headset)
  *                       and bcBoundaryDesk (the table boundary on a desk,
  *                       part 'bc.desk'); shotgunShort and lavOmni are
@@ -228,8 +228,10 @@ export const BROADCAST_MIC_TYPES = {
     body: { length: dd(180, 'a camera-top short shotgun’s length (drawing default)'), radius: dd(10, 'a camera-top short shotgun’s radius') },
     lobe: 'shotgun',
     power: 'the camera’s input (its own setting), or its own battery — check the model',
-    mount: 'surface',
-    surfacePartId: 'bc.camera',
+    // On the camera's shoe: an engine 'clip' whose grip is the shoe (a Rim
+    // on each camera — cameraFrame.cameraShoe), so it moves with the camera.
+    mount: 'clip',
+    clip: { reach: dd(60, 'a camera shoe mount’s reach from the shoe to the mic’s tail (drawing default)') },
     examples: [{ model: 'camera-mounted short shotgun on a shoe mount (generic)', fact: 'The lesson B04 L5, L41–L47: it moves with the lens; a shotgun does not zoom; moving the camera back moves the mic back; camera AGC and level settings checked; reference or backup track. D-SG1 (a maker’s “four to five times” an omni’s distance) is never shown.', src: 'S-SHOTGUN' }],
     art: 'shotgun',
     blurb: 'A short shotgun in a small suspension on the camera’s shoe: it points where the lens points and stays as far from the talker as the camera is — move the camera back and the mic goes back with it. Directional pickup does not bring a distant voice closer.',

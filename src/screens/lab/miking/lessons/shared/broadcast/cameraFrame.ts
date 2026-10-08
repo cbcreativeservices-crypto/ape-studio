@@ -44,6 +44,7 @@
  *                          the frame, aimed back at the mouth — "as close as
  *                          the frame allows" (DERIVED);
  *   cameraBody(cam)        the camera body as a box (a collision solid);
+ *   cameraShoe(cam)        the shoe a camera mic clamps to (a Rim);
  *   cameraMic(cam, ...)    a mic on the camera's shoe: it moves with the
  *                          camera, aimed where the lens points;
  *   headroomFan / sideFan / footFan   the parts of the shot a boom must keep
@@ -263,6 +264,13 @@ export function boomBelow(cam: BroadcastCamera, mouth: Vec3, opts: { clearance?:
 export function boomSide(cam: BroadcastCamera, mouth: Vec3, opts: { clearance?: number; side?: 1 | -1; planDeg?: number; elevDeg?: number } = {}): BoomStart & { ok: boolean } {
   const s = opts.side ?? -1;
   return boomOutside(cam, mouth, towardCamera(cam, mouth, opts.elevDeg ?? 10, s * (opts.planDeg ?? 70)), opts.clearance ?? 150);
+}
+
+/** The camera's accessory shoe on top of the body, 20 cm behind the lens
+ *  point (a drawing default): the grip a camera mic's mount clamps to. */
+export function cameraShoe(cam: BroadcastCamera): Vec3 {
+  const { fwd, up } = cameraAxes(cam);
+  return add(add(cam.lens, scale(up, 95)), scale(fwd, -200));
 }
 
 /** A mic on the camera's shoe: `above` mm over the lens axis and `back` mm

@@ -42,6 +42,9 @@ export type ShotSpec = {
   from: readonly BoomFrom[];
   /** The boom's line (the lab's angles: drawing defaults) and its margin. */
   boom: { clearance: number; elevDeg: number; planDeg?: number; belowDeg?: number; sideDeg?: number; side?: 1 | -1 };
+  /** A short shotgun read to its CAPSULE: the tube's length behind the tip
+   *  that keeps clear of the frame (fieldmics SHOTGUN_BODY.fore). */
+  tube?: number;
   /** A body mic on the chest (frame V), when the lesson has one. */
   bodyMic?: Vec3;
   /** Draw the camera's own mic (and read it). */
@@ -68,7 +71,8 @@ export function useShotStep(spec: ShotSpec): MikingStep {
     return boomAbove(cam, LIP, { clearance: B.clearance, elevDeg: B.elevDeg, planDeg: B.planDeg });
   }, [cam, from, spec.boom]);
   const cmic = useMemo(() => cameraMic(cam), [cam]);
-  const dBoom = boom.d;
+  const tube = spec.tube ?? 0;
+  const dBoom = boom.d + tube;
   const dCam = dist(cmic.p, LIP);
   const dBody = spec.bodyMic ? dist(spec.bodyMic, LIP) : null;
   const mainView: ViewId = from === 'side' ? 'top' : 'side';
@@ -171,7 +175,7 @@ export function useShotStep(spec: ShotSpec): MikingStep {
         <Card>
           <Point title={`${shot.label.toUpperCase()} · BOOM ${FROM_WORDS[from].short}`}>
             {boom.ok
-              ? `As close as this picture allows, the boom sits ${cm(dBoom)} from the lips — 15 cm clear of the frame’s edge, aimed at the mouth.${spec.camMic ? ` The camera’s mic is ${cm(dCam)} away: by distance alone it hears the voice about ${db(dBoom, dCam).toFixed(0)} dB weaker than the boom does, with the room and the noise as loud as ever.` : ''}${dBody != null ? ` The body mic stays ${cm(dBody)} away whatever the shot.` : ''}`
+              ? `As close as this picture allows, the boom ${tube ? `mic’s tube ends 15 cm clear of the frame’s edge, its capsule ${cm(dBoom)} from the lips` : `sits ${cm(dBoom)} from the lips — 15 cm clear of the frame’s edge`}, aimed at the mouth.${spec.camMic ? ` The camera’s mic is ${cm(dCam)} away: by distance alone it hears the voice about ${db(dBoom, dCam).toFixed(0)} dB weaker than the boom does, with the room and the noise as loud as ever.` : ''}${dBody != null ? ` The body mic stays ${cm(dBody)} away whatever the shot.` : ''}`
               : 'From here no place on this line clears the frame: choose another side.'}
           </Point>
         </Card>

@@ -10,37 +10,19 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { VoiceFigure, voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
-import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
-import { SINGER_SIDE, SINGER_SOLIDS, SINGER_TOP } from '../shared/voice/voicePose.ts';
+import { voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
+import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { Lectern, PaSpeaker } from '../shared/broadcast/BroadcastArt';
-import { BeltPack, Jacket } from '../shared/broadcast/BodyWornArt';
+import { StandingPresenter } from '../shared/broadcast/BodyWornArt';
 import { BroadcastCameraRig, FrameWedge } from '../shared/broadcast/CameraArt';
 import { CHEST_X, NECK_Y } from '../shared/broadcast/bodyWorn.ts';
 import { B05_VIEWS, CAMERA, CAMERA_BOX, FLOOR, HEAD_TOP, LECTERN, PACK, PA_C } from './geometry.ts';
 
-const SIDE_HEADLESS = { ...SINGER_SIDE, head: { ...SINGER_SIDE.head, r: 1 } };
-const TOP_HEADLESS = { ...SINGER_TOP, head: { ...SINGER_TOP.head, r: 1 } };
-
-/** The presenter: the figure, the jacket over the shirt, the pack. `headless`
- *  leaves the head off (a step draws it turned). */
+/** The presenter: the shared standing figure in a jacket, the pack on the
+ *  belt (BodyWornArt). `headless` leaves the head off (a step draws it
+ *  turned). */
 export function Presenter({ view, headless = false }: { view: ViewId; headless?: boolean }): ReactElement {
-  const pose = view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS;
-  return (
-    <Group>
-      {view === 'side' ? <BeltPack view="side" at={PACK} /> : null}
-      {headless ? (
-        <Group>
-          <PlayerBehind pose={pose} />
-          <PlayerInFront pose={pose} hands={view === 'side'} />
-        </Group>
-      ) : (
-        <VoiceFigure view={view} variant="studio" />
-      )}
-      <Jacket view={view} standing />
-      {view === 'top' ? <BeltPack view="top" at={PACK} /> : null}
-    </Group>
-  );
+  return <StandingPresenter view={view} headless={headless} />;
 }
 
 /** Everything round the presenter, far side first. */

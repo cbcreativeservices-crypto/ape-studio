@@ -162,6 +162,8 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'B06', labId: 'broadcast', title: 'Panels, Press Conferences and Groups', subtitle: 'A gooseneck each, the lectern a little off the mouth — the fewest open mics, and every voice routed on purpose', status: 'ready' },
   // Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line).
   { id: 'B05', labId: 'broadcast', title: 'Lavalier, Headset and Concealed Pickup', subtitle: 'A lav on the sternum about 12–25 cm from the lips, or a headset by the corner of the mouth — fitted with the wearer’s agreement', status: 'ready' },
+  { id: 'B04', labId: 'broadcast', title: 'Boom and Camera-Mounted Pickup', subtitle: 'A boom just outside the widest frame, aimed at the mouth — and the camera’s own mic, as far away as the camera', status: 'ready' },
+  { id: 'B02', labId: 'broadcast', title: 'News Anchors and Seated Interviews', subtitle: 'A centred lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

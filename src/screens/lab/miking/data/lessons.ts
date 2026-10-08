@@ -217,3 +217,7 @@ LESSON_CONTENT.B06 = B06_LESSON;
 /* Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line). */
 import { B05_LESSON } from '../lessons/b05Lavalier/lesson.ts';
 LESSON_CONTENT.B05 = B05_LESSON;
+import { B04_LESSON } from '../lessons/b04BoomCamera/lesson.ts';
+LESSON_CONTENT.B04 = B04_LESSON;
+import { B02_LESSON } from '../lessons/b02NewsAnchor/lesson.ts';
+LESSON_CONTENT.B02 = B02_LESSON;
