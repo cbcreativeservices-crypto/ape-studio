@@ -1321,3 +1321,67 @@ Audio-engineer and learning review of the restructured pages (MEET IT, STARTING 
 | RV34-16 | A10 acoustic | One core setup | — | The common live start (a vocal dynamic cupped with the harmonica) is not in the research | OWNER: decide |
 | RV34-17 | C06b | TWO MICS pairs one bass's under-bridge miniature with the section spot whose own card says "not one close mic per player" | — | Two contexts in one setup | OWNER: decide |
 | RV34-18 | A12 | TWO MICS "The main pair and a spot" draws the main pair as one mic | — | A setup draws at most two mics | OWNER: decide |
+
+## Lab 6 · group 1 · Foley stage: F01, F02, F03, F04 (branch lab6-g1, 2026-10-08)
+
+Sources: `source_text/{Foley-Footsteps-and-Surfaces,F02-Clothing-and-Body-Movement,F03-Props-and-Object-Handling,F04-Impacts-Liquids-and-Textures}-Miking-Technique.txt`; research `foley_footsteps/` (SOURCES.md §0 the Lab 6 register, §c the shotgun model; GEOMETRY_PROPOSAL.md frame F and the stage), `foley_clothing/`, `foley_props/`, `foley_impacts_liquids/`, BATCH6_RESEARCH_SUMMARY.md §1–§5.
+Shared code built (group 1 owns): `lessons/shared/foley/` — `frameF.ts` (frame F + `toFrameS`/`fromFrameS`), `stage.ts` (pit, surfaces, slab, live booth, `boothSolids`), `performer.ts` (poses on the shared player figure, motion / exit / gesture / body keep-outs, `poseCovers`), `propGeom.ts` + `props.tsx` (key ring, paper, door with swing arc and pinch points, chair, padded block, basin with the splash envelope, brush on fabric), `medium.ts` + `MediumArt.tsx` (air / water / structure card), `StageArt.tsx`, `foleyZones.ts`, `foleyCopy.ts`, `foleyItems.ts`, `FoleySetting.tsx`, `foleyPages.ts`; `lessons/shared/fieldmics/` — `fieldMics.ts` (`SHOTGUN_SHORT`, `FIELD_MIC_TYPES`: shotgunShort, shotgunPole, scSupercard, ldcRoom, hydrophone, contactSensor), `FieldMicArt.tsx` (`ShotgunArt`, `ShockMountArt`, `PoleOperatorArt`, `PoleBoomArt`), `shotgunLobe.ts` (`shotgunLobe`, `shotgunLobePath`). Engine (each a commented "lab6 group 1" block): `MountKind` += `'pole'` (collision.ts `POLE_*`, PlacementScene `PoleMount`, `LessonArt.PoleOperator`); `transducer` += `'hydrophone' | 'contact'`; `MicType.body.fore` / `MicBody.fore` (a body reaching ahead of its reference point — the shotgun's tube; the capsule is the reference); `MicType.lobe: 'shotgun'` + `engine/physics/shotgun.ts` (drawn in `PolarSlice`); `MicArtId` += `'shotgun'` (features/lab/micDrawings `ShotgunMic`, shock mount drawn on it); units.ts `scaleStep` / `roundScaled` / `fmtLenScaled`. Tests: `test/mikingLab6Foley.test.ts`.
+
+### Corrections
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| F01-C1 | F01 L2, L3, L12, L17, L26, L65, L70, L78–L79, L126 | "Pro Audio Training Academy", "Students evaluate", "classroom position/trial", "as a classroom demonstration", "performers and students", "Student observation sheet", "Pass criterion: the student" | No header; "you"; "a suggested trial"; "as a demonstration"; "everyone in the room"; the optional observation sheet | No institutional wording | — | APPLIED |
+| F01-C2 | F01 L12–L18 | Only the 0.8–1.0 m classroom trial as the close start | The sourced 0.9–1.8 m (3–6 ft), "in front and/or to the side … about 15 degrees", is the worked example (ONE MIC); the 0.8–1.0 m trial stays as the CLOSE start (O-1 default) | The lesson omitted the published practice | MIX-2005 | APPLIED · OWNER REVIEW O-1, O-4 |
+| F01-C3 | F01 L20 | 1.5–2 m | + "moved one about half a metre closer when the steps needed more articulation" (zone band, a check) | Source's own note | FF-KMR | APPLIED |
+| F01-C4 | F01 refs [4], [5] | nl-NL locale; brand title | Record only | — | S-FOLEY, FF-KMR | RECORDED |
+| F01-C5 | (plan) | No shock mount | Every Foley stand mic is drawn in a shock mount; the setting, a symptom and a setup reason name it | Plan item missing | general practice (RYC-BOOM not re-read) | APPLIED |
+| F01-C6 | F01 L139 | ".docx" cross-links, B04 "later lessons" | Dropped (no future promises) | House rule | — | APPLIED |
+| F01-C7 | F01 L2 | "Foley Field and Scientific Lab" / "…Acoustical Lab" | The registry name "Foley, Field & Scientific" | One name | — | APPLIED |
+| F02-C1 | F02 L3, L50, L57–L59, L81, L83 | "Students will compare", "Guided teaching exercise", "Student observation sheet", "classroom applications" | "you", "Practice", the optional sheet | No institutional wording | — | APPLIED |
+| F02-C2 | F02 L25 | "sometimes farther for a rain cover" | "up to about 3 m (10 ft)" — zone `f02.rain`, 2.5–3 m | Source gives the number | FF-CLOTH | APPLIED |
+| F02-C3 | F02 L93 | B04 / B05 / F09 cross-links | Dropped until they ship | No future promises | — | APPLIED |
+| F02-C4 | F02 ref [4] | Brand in a ref title | Record only | — | SCH-CCM41 | RECORDED |
+| F03-C1 | F03 L25, L50, L58 | "reasoned classroom trials", "Guided teaching exercise", "Student observation sheet" | "suggested trials" (internal `kind: 'trial'`), "Practice", the optional sheet | No institutional wording | — | APPLIED |
+| F03-C2 | F03 L28 | "A documented Foley session used three stations" | "several stations" (check `f03.two.4`) | The text read describes two stations by content | MIX-1997 | APPLIED |
+| F03-C3 | F03 L33 ref [9] | A band article cited for live Foley | The live advice rests on the monitor-in-the-rejection rule (internal record) | Wrong support | S-3REASONS, S-LIVE | APPLIED |
+| F03-C4 | F03 ref [1] | Textbook companion page | Record only | — | OUP-MW | RECORDED |
+| F03-C5 | F03 cross-links | B04 | Dropped | No future promises | — | APPLIED |
+| F04-C1 | F04 L3, L6, L26, L50, L58 | "Students locate", "classroom sources/materials/choice", "Guided teaching exercise", "Student observation sheet" | "you", "suggested safe materials", "Practice", the optional sheet | No institutional wording | — | APPLIED |
+| F04-C2 | F04 L6 | "not purported industry prescriptions" | "suggested safe materials" | Voice | — | APPLIED |
+| F04-C3 | F04 ref [6] | HTML guide link | The maker's user-guide PDF (internal record; no brand on screen) | The HTML renders client-side | S-SM4-UG | RECORDED |
+| F04-C4 | F04 L28 / F10 | Hydrophone and contact sensor deferred to F10 | Taught HERE as the air / water / structure card (STARTING SETUPS decision step, MICROPHONES checks); never placed (O-7) | F10 omits them | ASE-ELEM | APPLIED |
+
+### Build decisions (drawing defaults and engine choices)
+
+| id | What | Why | Status |
+|---|---|---|---|
+| L6G1-F1 | Frame F is frame S turned a quarter turn about the vertical: +x the walker's front line toward the mics, +z the performer's right (as Lab 2's frame H). `toFrameS` / `fromFrameS` convert. | In frame S's axes the engine's side view would show a footstep mic straight in front of the figure, its distance invisible; turned, the side view is a section through the front line | APPLIED · group 2 (F05) imports the converters |
+| L6G1-F2 | The shotgun's reference point is the CAPSULE (`body.fore` = the 200 mm tube ahead of it, tested for collision; the readout measures to the capsule) | SOURCES §c: "the distance readout measures to the capsule, not to the grille" | APPLIED · test pins it |
+| L6G1-F3 | The banded shotgun lobe: below c/L the supercardioid; above, `|g(θ)|·cos⁶θ` drawn inside it (ILLUSTRATIVE), "a simplified picture" said once, no number | O-2 default | APPLIED · OWNER REVIEW O-2 |
+| L6G1-F01-08 | F01's one-scene 3.5 m position is taught in words and a check, not drawn as a zone | A 3.5 m zone would shrink every drawing of the pit to fit it; the 1.5–2 m start already shows "farther" | APPLIED · OWNER REVIEW G1-OR-1 |
+| L6G1-F01-09 | The close start sits at 0.98 m, 30° up, its tube's tip ~70 mm outside the motion envelope (pit + rim, x = ±600 mm) | GEOMETRY_PROPOSAL §5: "moves the mic (not the envelope) if they touch" | APPLIED |
+| L6G1-F02-01 | The close detail start (40–60 cm, O-5) uses the small supercardioid only, and is drawn for the HELD garment and the live station (worn, the swinging arms reach it) | A shotgun's tube would reach 20 cm into the gesture envelope | APPLIED · OWNER REVIEW O-5 |
+| L6G1-F02-02 | The boom-pole start (worn variant): a 2 m pole from in front and above, the operator's hands 1.4 m up, the operator's body in the collision assembly | GEOMETRY_PROPOSAL §4 pole; tip ≥ envelope + 150 mm | APPLIED |
+| L6G1-F03-01 | F03's TWO MICS is the close detail + room pair (ASE-CROSS), so its CLOSE and FARTHER roles are drawn inside the pair, not as separate setups | The engine gives the pair's zones to the pair | APPLIED · OWNER REVIEW G1-OR-2 |
+| L6G1-F04-01 | F04's live variant is the padded impact only; the water effect is not offered live | F04 L33: no wet effect live without approved containment | APPLIED |
+| L6G1-T1 | The field yes/no balance: each lesson has one "No —" keyed item (a hollow floor's boom, a lav under fabric, a mic on a moving door, a windscreen in a splash) | The engine-wide answer-pattern guard | APPLIED |
+| L6G1-T2 | mikingWiring and perfStartTrim derive the ready labs and the instruments count from the registry (no hard-coded lab total) | Merge hygiene for groups 1 and 2 | APPLIED |
+
+### OWNER REVIEW (drawing defaults chosen where the research leaves the decision open)
+
+| id | Default used | Where | Status |
+|---|---|---|---|
+| O-1 | The lesson's own 0.8–1.0 m trial shown as a suggested CLOSE starting point (F01 `f01.close`) | F01 | OWNER: approve |
+| O-2 | The shotgun drawn as a simplified picture: the base supercardioid, a narrower inner lobe for the highs, no numbers | engine PolarSlice; all shotgun mics | OWNER: approve |
+| O-3 | People in the house figure style: the walker, the Foley artist with garment and props, the boom operator | all four lessons | OWNER: approve |
+| O-4 | "Only about 15 degrees" read as 15° off the walker's front line in plan | F01 `f01.roesch` | OWNER: approve |
+| O-5 | F02 close detail 40–60 cm, outside the drawn gesture envelope, a small supercardioid | F02 `f02.close` | OWNER: approve |
+| O-6 | F03 prop distances as drawing defaults (whole action 1–1.4 m, detail 35–55 cm, room 2.2–2.8 m, panel 0.6–1 m) | F03 | OWNER: approve |
+| O-7 | The splash envelope at 2.5 × the basin's radius (illustrative); the hydrophone and the contact sensor as cards only, never placed | F04 | OWNER: approve |
+| O-13 | Lab 6 goes ready lesson by lesson (the tile appears with F01–F04) | registry | OWNER: approve |
+| G1-OR-1 | The 3.5 m wide-scene example in words, not a drawn zone | F01 | OWNER: decide |
+| G1-OR-2 | F03's setups: ONE MIC (whole action) and TWO MICS (close detail + room) — no separate CLOSE / FARTHER setups | F03 | OWNER: decide |
+| G1-OR-3 | Stage geometry: the pit 1.2 m across the walker, 100 mm deep; the motion envelope 450 mm beyond the walking sides, a 2 m column; the exit path 600 mm wide to the performer's left; the gesture reach 750 mm | shared/foley | OWNER: approve |
+| G1-OR-4 | Every mic height (no source gives one): F01 low for the close mic, higher farther out; the room mics 2 m up | all four lessons | OWNER: approve |
+| G1-OR-5 | The live variants: a booth rail at 1.9 m, the PA beside the stage, a wedge 1.5 m in front and 0.75 m to the performer's right, facing back | all four lessons | OWNER: approve |

@@ -188,3 +188,18 @@ Facts in `background_vocals/`, `duets_small_vocal/` and `choir/SOURCES.md`; the 
 |---|---|---|---|
 | AKG-C414 | AKG, C414 XLS/XLII manual §4.6.2 Choir/Backing Vocals: "select the cardioid or omni pattern and place the vocalists in a semicircle in front of the microphone"; "one stereo microphone plus one spot microphone each for the soprano, alto, tenor, and bass sections" | see `lead_vocal/SOURCES.md` §0 | PDF read 2026-10-05 in the Batch 5 research pass |
 | S-REC | Shure, *Microphone Techniques for Recording* (booklet), Ensemble Vocals p.5–6: "Having the vocalists circle around an omnidirectional mic …"; "Two cardioid mics, positioned back to back"; the choir mic "a few feet in front of, and a few feet above, the heads of the first row … aimed at the last row" | see `snare/SOURCES.md`, `lead_vocal/SOURCES.md` §0 | re-read 2026-10-05 in the Batch 5 research pass |
+
+## 13. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
+
+Added 2026-10-08 by the Lab 6 group 1 builder (branch lab6-g1): the short shotgun (on a stand or a pole), the
+small supercardioid without a tube, the room condenser and the hydrophone / contact cards. The full Lab 6 register
+is `foley_footsteps/SOURCES.md` §0; the shotgun model is its §c. (The pencil body is AX-DPE8; the large
+condenser's body S-SM4-WEB.)
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| SCH-SHOTGUN | SCHOEPS, "Principal Characteristics of the Different Microphone Types" (PDF): "For wavelengths longer than the tube — at low and midrange frequencies — the tube has little effect … no greater rejection of off-axis sound than the capsule on which it is based. At higher frequencies the pickup pattern becomes narrower"; "A small directional microphone with smooth off-axis response … can often be placed closer to a sound source than a shotgun microphone" | see `foley_footsteps/SOURCES.md` §0, §c | PDF read 2026-10-07 (Lab 6 preparation) |
+| DPA-TUBE | DPA, "The interference tube and its use in microphones": "Increased interference tube length will result in increased attenuation at lower frequencies"; "when a shotgun microphone is rotated, the surroundings sound different due to shifts in sound color." | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| S-3REASONS | Shure, "Three Reasons Why Mic Placement Matters": cardioid and supercardioid patterns reduce off-axis sound; "Aligning floor monitors and side fills with the directional microphone's angle of rejection will give the maximum gain before feedback" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
+| ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
