@@ -306,12 +306,14 @@ function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
     const step = 800;
     if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) { rows.moveTo(b.u0, v); rows.lineTo(b.u1, v); }
     else for (let u = b.u0 + step / 2; u < b.u1; u += step) { rows.moveTo(u, b.v0); rows.lineTo(u, b.v1); }
-    // Heads: a sparse scatter along the rows.
-    const heads = make();
-    let k = 0;
-    if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 300 + ((k++ % 3) * 170); u < b.u1; u += 900) heads.addCircle(u, v - 120, 140);
-    else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 300 + ((k++ % 3) * 170); v < b.v1; v += 900) heads.addCircle(u - 120, v, 140);
-    return { area, rows, heads, b };
+    // Seats along each row — a stand drawn as SEATING without people (head
+    // fix 2026-10-08, owner decision 3: a crowd is never a scatter of circle
+    // "heads"). One seat pan every 500 mm, just in front of its row line.
+    const seats = make();
+    const seat = (u: number, v: number, du: number, dv: number) => seats.addRRect(Skia.RRectXY(Skia.XYWHRect(u - du / 2, v - dv / 2, du, dv), 60, 60));
+    if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 250; u < b.u1 - 150; u += 500) seat(u, v - 200, 380, 260);
+    else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 250; v < b.v1 - 150; v += 500) seat(u - 200, v, 260, 380);
+    return { area, rows, seats, b };
   }, [poly]);
   return (
     <Group>
@@ -319,7 +321,7 @@ function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
         <LinearGradient start={vec(g.b.u0, g.b.v0)} end={vec(g.b.u1, g.b.v1)} colors={['#4a4e57', '#2c2f35']} />
       </Path>
       <Path path={g.rows} style="stroke" strokeWidth={Math.max(60, 0.8 * px)} color="#15161a" opacity={0.8} />
-      <Path path={g.heads} color="#c9b39a" opacity={0.55} />
+      <Path path={g.seats} color="#6b707b" opacity={0.6} />
       <Path path={g.area} style="stroke" strokeWidth={1.2 * px} color="#0b0c0f" />
     </Group>
   );

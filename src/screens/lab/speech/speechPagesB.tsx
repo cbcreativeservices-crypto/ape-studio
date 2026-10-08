@@ -7,6 +7,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
+import { HeadIconSvg } from '../../../features/lab/headIconsSvg';
 import {
   DISTANCE_PRESETS, PROBLEMS, SPEECH_CHECKS, VOICE_RANGES, distanceEffect, plosiveTrace, problemSpectrum, problemTrace, voiceSpectrum, type ProblemId,
 } from '../../../features/speech/speechModel';
@@ -43,11 +44,12 @@ export function PopFilterDiagram({ withFilter, controls }: { withFilter: boolean
     <View accessible accessibilityLabel={withFilter ? 'Mouth, then a pop filter mesh, then the microphone capsule: the air jet is broken up at the mesh and arrives as weak turbulence; the sound wavefronts pass through unchanged.' : 'Mouth directly in front of the microphone capsule: the air jet arrives at the capsule as one push, together with the sound.'} style={{ width: w, height: h }}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        {/* face profile (nose, lips, chin) at the left edge */}
-        <Path d="M 1 8 C 14 14 24 24 30 34 C 36 42 30 46 32 50 C 40 52 42 58 36 62 C 42 66 42 72 34 74 C 30 84 20 96 8 110 L 1 110 Z" fill="#17181d" stroke="#3d3f48" strokeWidth={1.2} />
-        <Path d="M 33 51 C 40 52 42 57 36 61 Z" fill="#d78a80" />
-        <Path d="M 36 63 C 42 66 42 71 34 73 Z" fill="#d78a80" />
-        <SvgText x={20} y={104} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>"P"</SvgText>
+        {/* the talker — the owner's SIDE head icon facing the mic, the mouth
+            open on the "P" (head fix 2026-10-08: a lone head uses the shared
+            icon). The mouth sits on the jet's origin; the back of the skull
+            crops off the left edge, as the head spec allows. */}
+        <HeadIconSvg view="side" facing="right" speaking x={mx - 2} y={my} size={96} plate />
+        <SvgText x={66} y={104} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>"P"</SvgText>
         {/* sound wavefronts — pass either way */}
         {[28, 52, 76, 100, 124, 148, 172].map((r) => <Path key={r} d={arc(r)} fill="none" stroke={colors.cyanBright} strokeWidth={1.1} opacity={0.5} />)}
         {/* air jet streamlines */}

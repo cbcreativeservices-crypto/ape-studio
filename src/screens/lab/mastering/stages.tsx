@@ -16,6 +16,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { MIDLINE_BLUE, levelColor, levelColorForDb, splColorForDba } from '../../../features/tools/levelColor';
 import { eqResponseDb, type EqBandSpec } from '../../../features/lab/fxViz';
 import { GearInSvg, type GlyphKind } from '../soundsystems/art/gearArt';
+import { HeadIconSvg } from '../../../features/lab/headIconsSvg';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { PEAK_RED } from './kit';
 import { XF_OVERLAP_SEC, fitFontBoost, linToDb, perceivedBalanceShift, type Overview, type PathDevice, type PathGrade, type SeqBlock } from './masteringEngine';
@@ -989,7 +990,9 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
       <Path d={`M${lx} ${spkY} L${rxp} ${spkY} L${cx} ${listY} Z`} stroke={ink.cyan} strokeWidth={1} fill="rgba(93,205,255,0.06)" />
       <GearInSvg kind="poweredSpeaker" id="room-l" x={lx} y={spkY} size={34} />
       <GearInSvg kind="poweredSpeaker" id="room-r" x={rxp} y={spkY} size={34} />
-      <GearInSvg kind="listener" id="room-ear" x={cx} y={listY} size={30} />
+      {/* The listener from above: the owner's ABOVE head icon, turned to face
+          the speakers (up the screen) — head fix 2026-10-08. */}
+      <HeadIconSvg view="above" x={cx} y={listY} size={26} rotation={Math.PI} color="#a7aeb8" minStroke={1.2} />
       {/* legend */}
       <SvgText x={lx0} y={ry0 + 12} fontSize={FONT} fill={ink.text} fontFamily={fonts.oswaldMedium}>FROM ABOVE</SvgText>
       <Line x1={lx0} y1={ry0 + 26} x2={lx0 + 14} y2={ry0 + 26} stroke={ink.cyan} strokeWidth={1.2} />

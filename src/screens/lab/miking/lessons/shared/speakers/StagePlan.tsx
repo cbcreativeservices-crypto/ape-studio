@@ -22,6 +22,12 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout, LESLIE } from './speakerModel.ts';
+import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { FigureHead, headAbove } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
+
+/** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
+const AUDIENCE_HEAD_MM = 230;
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -58,11 +64,13 @@ function build() {
   const cab = rr(make(), CAB.box.x0, CAB.box.z0, CAB.box.x1, CAB.box.z1, 18);
   const cabGrille = rr(make(), CAB.box.x1 - 22, CAB.box.z0 + 26, CAB.box.x1, CAB.box.z1 - 26, 4);
   const handle = rr(make(), CAB.box.x0 + 90, -70, CAB.box.x0 + 130, 70, 10);
-  // A player seen from above: shoulders and head (minimal line art).
+  // A player seen from above: shoulders and the figure's own head from above
+  // (head fix 2026-10-08: a head ON A BODY is PlayerFigure's skin-silhouette
+  // head — never a circle, never the line-art icon). headAbove's nose points
+  // +v; the group below turns it to face the audience (+u).
   const shoulders = make();
   shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
-  const head = make();
-  head.addCircle(0, 0, 95);
+  const head = headAbove(pt(0, 0), 100).fill;
   // A guitar across the body (top view): body and neck.
   const guitar = make();
   guitar.addOval(Skia.XYWHRect(60, -210, 170, 230));
@@ -105,12 +113,15 @@ function build() {
   // A floor wedge from above (sloped grille facing `faces`).
   const wedge = rr(make(), -150, -280, 150, 280, 18);
   const wedgeGrille = rr(make(), -40, -258, 136, 258, 14);
-  // PA stack from above, and an audience row (heads).
+  // PA stack from above, and two audience rows: each listener the owner's
+  // ABOVE head icon (a lone head in a plan), turned to face the stage (−u).
   const pa = rr(make(), -300, -300, 300, 300, 20);
   const paHorn = rr(make(), 140, -140, 300, 140, 12);
-  const heads = make();
-  for (let v = -2400; v <= 2400; v += 420) heads.addCircle(POS.audience, v, 95);
-  for (let v = -2190; v <= 2190; v += 420) heads.addCircle(POS.audience + 330, v, 95);
+  const crowd: { x: number; y: number; rotation: number }[] = [];
+  const faceStage = aboveRotation(-1, 0);
+  for (let v = -2400; v <= 2400; v += 420) crowd.push({ x: POS.audience, y: v, rotation: faceStage });
+  for (let v = -2190; v <= 2190; v += 420) crowd.push({ x: POS.audience + 330, y: v, rotation: faceStage });
+  const heads = makeHeadIconPaths('above', AUDIENCE_HEAD_MM, crowd);
   // The studio room's walls.
   const room = rr(make(), -1300, -2200, 3200, 2900, 40);
   const playerSpace = make();
@@ -216,9 +227,9 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
               <Path path={b.guitar}>
                 <LinearGradient start={vec(60, -210)} end={vec(230, 420)} colors={['#a06a38', '#5c3417']} />
               </Path>
-              <Path path={b.head}>
-                <RadialGradient c={vec(-30, -30)} r={140} colors={['#c9b79e', '#8e7a60']} />
-              </Path>
+              <Group transform={[{ rotate: -Math.PI / 2 }]}>
+                <FigureHead fill={b.head} />
+              </Group>
             </Group>
             {/* the drum kit */}
             {scene === 'stage'
@@ -286,7 +297,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
                     <Path path={b.paHorn} color="#0b0b0d" />
                   </Group>
                 ))}
-                <Path path={b.heads} color="#4a4e57" opacity={0.85} />
+                <HeadIconPaths lines={b.heads.lines} plate={b.heads.plate} strokeWidth={Math.max(headIconStroke('above', AUDIENCE_HEAD_MM), 1 / xf.s)} color="#7d828d" />
               </>
             ) : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={30} color={AMBER} /> : null}

@@ -18,6 +18,12 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from './speakerModel.ts';
 import { bassHead } from './ampModel.ts';
+import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { FigureHead, headAbove } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
+
+/** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
+const AUDIENCE_HEAD_MM = 230;
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -75,8 +81,10 @@ function build(who: Backline) {
   // The player from above (minimal line art), facing the audience (+u).
   const shoulders = make();
   shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
-  const headTop = make();
-  headTop.addCircle(0, 0, 95);
+  // The player's head from above is the figure's own (head fix 2026-10-08: a
+  // head ON A BODY is PlayerFigure's skin silhouette, never a circle); its
+  // nose points +v, turned below to face +u.
+  const headTop = headAbove(pt(0, 0), 100).fill;
   // The instrument across the body (guitar / bass), or the steel in front.
   const inst = make();
   if (who === 'steel') inst.addRRect(Skia.RRectXY(Skia.XYWHRect(170, -450, 300, 900), 26, 26));
@@ -109,9 +117,13 @@ function build(who: Backline) {
   const wedge = rr(-150, -280, 150, 280, 18);
   const wedgeGrille = rr(-40, -258, 136, 258, 14);
   const pa = rr(-300, -300, 300, 300, 20);
-  const heads = make();
-  for (let v = -2100; v <= 2100; v += 420) heads.addCircle(BACKLINE_POS.audience, v, 95);
-  for (let v = -1890; v <= 1890; v += 420) heads.addCircle(BACKLINE_POS.audience + 330, v, 95);
+  // The audience: each listener the owner's ABOVE head icon (a lone head in a
+  // plan), turned to face the stage (−u).
+  const crowd: { x: number; y: number; rotation: number }[] = [];
+  const faceStage = aboveRotation(-1, 0);
+  for (let v = -2100; v <= 2100; v += 420) crowd.push({ x: BACKLINE_POS.audience, y: v, rotation: faceStage });
+  for (let v = -1890; v <= 1890; v += 420) crowd.push({ x: BACKLINE_POS.audience + 330, y: v, rotation: faceStage });
+  const heads = makeHeadIconPaths('above', AUDIENCE_HEAD_MM, crowd);
   const room = rr(-950, -2150, 3050, 2250, 40);
   const deck = rr(BACKLINE_BOX.stage.u0, BACKLINE_BOX.stage.v0, BACKLINE_POS.audience - 450, BACKLINE_BOX.stage.v1, 0);
   return { amp, ampFront, head, handle, shoulders, headTop, inst, strings, keep, board, stomp, di, other, drums, wedge, wedgeGrille, pa, heads, room, deck };
@@ -226,9 +238,9 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
               <Path path={g.shoulders}>
                 <RadialGradient c={vec(-40, -80)} r={300} colors={['#5a5d66', '#33363d', '#1c1d22']} />
               </Path>
-              <Path path={g.headTop}>
-                <RadialGradient c={vec(-25, -30)} r={120} colors={['#d9b99a', '#a8835f', '#6e5236']} />
-              </Path>
+              <Group transform={[{ rotate: -Math.PI / 2 }]}>
+                <FigureHead fill={g.headTop} />
+              </Group>
             </Group>
             {/* Monitors (stage), PA and the audience. */}
             {scene === 'stage'
@@ -250,9 +262,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
                     </Path>
                   </Group>
                 ))}
-                <Path path={g.heads}>
-                  <RadialGradient c={vec(BACKLINE_POS.audience, -600)} r={3000} colors={['#5a5d66', '#2c2e34', '#17181c']} />
-                </Path>
+                <HeadIconPaths lines={g.heads.lines} plate={g.heads.plate} strokeWidth={Math.max(headIconStroke('above', AUDIENCE_HEAD_MM), 1 / xf.s)} color="#7d828d" />
               </>
             ) : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}

@@ -68,6 +68,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
+import { FigureHeadAt } from '../../../features/lab/figureHead';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
@@ -1817,14 +1818,15 @@ export function WavelengthRulerView({
     return p;
   }, [w, floorY]);
 
-  // Human scale figure — line-art person in the house single-stroke language
-  // (micspeaker head-icon/guitarist idiom): uniform stroke, rounded caps,
-  // organic curves, no fill. Garnish — vertical is NOT to the metre scale.
+  // Human scale figure — a line-art body (uniform stroke, rounded caps,
+  // organic curves) with the figure's own skin-silhouette head (head fix
+  // 2026-10-08: a head on a body is never a circle and never the line-art
+  // icon). Garnish — vertical is NOT to the metre scale.
+  const personX = w - 26;
   const person = useMemo(() => {
     const p = Skia.Path.Make();
     const px = w - 26;
     const fy = floorY;
-    p.addCircle(px, fy - 41, 4.6); // head
     p.moveTo(px, fy - 36.2); // torso: gentle S from neck to hips
     p.cubicTo(px + 0.8, fy - 32, px - 0.8, fy - 26, px, fy - 21);
     p.moveTo(px - 6, fy - 33.5); // shoulders sloping naturally
@@ -1881,6 +1883,7 @@ export function WavelengthRulerView({
           strokeJoin="round"
           opacity={0.85}
         />
+        <FigureHeadAt view="front" cx={personX} cy={floorY - 41} h={9.6} neckTo={floorY - 35} />
         <Vignette w={w} h={h} />
         </Group>
       </Canvas>

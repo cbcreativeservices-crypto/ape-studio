@@ -10,6 +10,7 @@
 import { useContext, useEffect, useMemo, useRef } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import { FigureHeadSvg } from '../../../features/lab/figureHeadSvg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
@@ -20,7 +21,6 @@ import { SURFACE_TINT, type PlanHandle } from './RoomPlanView';
 
 const WALL = '#8d919c';
 const HEAD_LINE = '#d9dbe0';
-const HEAD_PLATE = '#15161a';
 const SPK_HI = '#5b5f6a';
 const SPK_LO = '#26282e';
 const TREAT = '#c9a24a';
@@ -290,19 +290,22 @@ export function RoomSideView({
   );
 }
 
+/** The seated listener in section: torso to the chair, chair to the floor,
+ *  and the figure's own skin-silhouette head in profile, its nose toward the
+ *  speakers (left) and its EAR on the ear-height point (head fix 2026-10-08 —
+ *  a head on a body is never the line-art icon and never a circle). */
 function ListenerSide({ p, size, selected, floorY }: { p: Pt; size: number; selected: boolean; floorY: number }) {
   const r = size / 2;
+  const k = size / 226; // FigureHeadSvg units → px (crown→chin ≈ size)
   return (
-    <G transform={`translate(${p.x},${p.y})`}>
-      {selected ? <Circle cx={0} cy={0} r={r + 8} fill="none" stroke={colors.green} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
+    <G>
+      {selected ? <Circle cx={p.x} cy={p.y} r={r + 8} fill="none" stroke={colors.green} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
       {/* torso to the chair, chair to the floor */}
-      <Path d={`M0,${r} q${-r * 0.2},${r * 1.4} ${-r * 0.1},${r * 2.4} M${-r * 0.1},${r * 2.4} l${-r * 1.4},0 M${-r * 1.0},${r * 2.4} L${-r * 1.0},${floorY - p.y}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.2} strokeLinecap="round" opacity={0.7} />
-      {/* head in profile: nose toward the speakers (left) */}
-      <Circle cx={0} cy={0} r={r} fill={HEAD_PLATE} stroke={HEAD_LINE} strokeWidth={1.4} />
-      <Path d={`M${-r},${-r * 0.15} l${-r * 0.3},${r * 0.3} l${r * 0.3},${r * 0.15}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
-      {/* the ear — at the ear height the number names */}
-      <Path d={`M${r * 0.15},${-r * 0.3} q${r * 0.5},0 ${r * 0.1},${r * 0.6}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" />
-      <Circle cx={0} cy={0} r={r} fill="none" stroke={colors.green} strokeWidth={1.2} opacity={0.35} />
+      <G transform={`translate(${p.x},${p.y})`}>
+        <Path d={`M0,${r} q${-r * 0.2},${r * 1.4} ${-r * 0.1},${r * 2.4} M${-r * 0.1},${r * 2.4} l${-r * 1.4},0 M${-r * 1.0},${r * 2.4} L${-r * 1.0},${floorY - p.y}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.2} strokeLinecap="round" opacity={0.7} />
+      </G>
+      {/* the head: its ear (34, 11 units behind/below the head centre) on p */}
+      <FigureHeadSvg view="side" facing={-1} cx={p.x - 34 * k} cy={p.y - 11 * k} h={size} neckTo={p.y + r * 1.15} />
     </G>
   );
 }

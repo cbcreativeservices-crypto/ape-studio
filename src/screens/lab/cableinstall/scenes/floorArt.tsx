@@ -12,8 +12,9 @@
  * vehicle-rated protector (yellow lids, black ramps). Labels use the lab's
  * fonts (Oswald) — the plans used the browser's default serif before.
  */
-import { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import { Circle, Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Callout, useUid } from '../svgArt';
+import { HeadIconSvg } from '../../../../features/lab/headIconsSvg';
 
 export const PLAN_LABEL = '#8d9199';
 
@@ -196,18 +197,13 @@ export function MicStandTop({ x, y, boom = 0, reach = 12 }: { x: number; y: numb
   );
 }
 
-/** A performer's position from above, facing downstage (the audience):
- *  shoulders 0.45 m, the head, the nose toward the house — the way a plot
- *  marks where a singer stands. */
+/** A performer's position from above, facing downstage (the audience) —
+ *  the way a plot marks where a singer stands: the owner's ABOVE head icon,
+ *  a lone head marker, its face toward the house (+y). Head fix 2026-10-08:
+ *  a head on its own is the shared icon, never a circle. Drawn over
+ *  life size (0.4 m crown→chin, ~1.7× a real head) so it reads on the plot. */
 export function PerformerTop({ x, y, m }: { x: number; y: number; m: number }) {
-  const sw = 0.45 * m;
-  return (
-    <G>
-      <Ellipse cx={x} cy={y + 0.6} rx={sw / 2} ry={3.2} fill="#6b7280" stroke="#2a2d33" strokeWidth={0.5} />
-      <Circle cx={x} cy={y - 0.2} r={3} fill="#9aa1ad" stroke="#2a2d33" strokeWidth={0.5} />
-      <Path d={`M${x - 1.1} ${y + 2.5} L${x} ${y + 4} L${x + 1.1} ${y + 2.5}`} fill="#9aa1ad" stroke="#2a2d33" strokeWidth={0.4} />
-    </G>
-  );
+  return <HeadIconSvg view="above" x={x} y={y} size={0.4 * m} color="#b4bac6" plate minStroke={1} />;
 }
 
 /** A wedge monitor from above (0.6 × 0.4 m), its grille face toward the

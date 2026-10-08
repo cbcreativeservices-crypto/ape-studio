@@ -118,7 +118,7 @@ function sideArt(v: VariantId): ReactElement {
       <Circle cx={0} cy={top} r={GONG.post.mm * 0.7} color={STEEL[3]} />
       <Path path={polyPath([[0, top], [-6, CY - R * 0.69]])} style="stroke" strokeWidth={3} color="#c9b48c" />
       <Group transform={[{ scaleX: -1 }]}>
-        <PlayerInk path={playerSide([[-(head[0] + 230), head[1] - 120]])} faint />
+        <PlayerInk path={playerSide([[-(head[0] + 230), head[1] - 120]])} faint head="side" />
       </Group>
       <Path path={prof}>
         <LinearGradient start={vec(-RIM, CY - R)} end={vec(DOME, CY + R)} colors={[BRONZE[1], BRONZE[2], BRONZE[4]]} />
@@ -157,7 +157,7 @@ function topArt(v: VariantId): ReactElement {
       </RoundedRect>
       {bossed ? <RoundedRect x={DOME} y={-BOSS_R} width={BOSS_H - DOME} height={2 * BOSS_R} r={10} color={BRONZE[1]} /> : null}
       <Group transform={[{ translateX: PLAYER.x }, { translateY: PLAYER.z }, { scaleX: -1 }, { translateX: 360 }]}>
-        <PlayerInk path={playerTop()} faint />
+        <PlayerInk path={playerTop()} faint head="top" />
       </Group>
       <Mallet grip={[PLAYER.x - 40, PLAYER.z + 160]} head={head} />
     </Group>
@@ -218,7 +218,7 @@ function frontArt(variant: VariantId, highlight: string | null): ReactElement {
       <Floor u0={-3000} u1={3000} />
       {/* the player beside the struck face (screen right), the mallet hand reaching in */}
       <Group transform={[{ translateX: FU(PLAYER.z) }]}>
-        <PlayerInk path={playerFront([[grip[0] - FU(PLAYER.z) + 10, grip[1] + 10]])} faint />
+        <PlayerInk path={playerFront([[grip[0] - FU(PLAYER.z) + 10, grip[1] + 10]])} faint head="front" />
       </Group>
       {/* the frame */}
       {hl('gg.frame') ? <RoundedRect x={-W - 40} y={top - 40} width={2 * W + 80} height={-top + 20} r={40} color={HIGHLIGHT} opacity={0.18} /> : null}

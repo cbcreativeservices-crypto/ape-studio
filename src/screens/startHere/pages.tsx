@@ -25,7 +25,7 @@ import { StageFit } from '../lab/rack/StageFit';
 import { StageTextScale, useStageTextScale } from '../lab/rack/stageAspect';
 import { CollapsibleSection } from '../lab/LabShell';
 import { flipFader } from '../lab/soundsystems/rackLayout';
-import { GearGlyph } from '../lab/soundsystems/art/gearArt';
+import { HeadGlyph } from '../../features/lab/headIconsSvg';
 import { CheckQuestion, LevelMeterBar, VizUnavailableCard } from '../lab/foundations/bits';
 import type { VizModule } from '../lab/foundations/skiaGate';
 import type { VizMetersModule } from '../lab/meter/skiaGate';
@@ -59,7 +59,7 @@ import {
   type StationId,
   type Unplug,
 } from '../../features/startHere/startHereContent';
-import { PATH_ASPECT, SignalPathArt, stationLive, type PathMark } from './SignalPathArt';
+import { HEAD_GLYPH_INK, PATH_ASPECT, SignalPathArt, stationLive, type PathMark } from './SignalPathArt';
 import { Card, Lead, OrderExerciseView, Para, RevealList, SortExerciseView, TermChips } from './bits';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -354,8 +354,9 @@ function L1Vibrate({ ctx: _ctx }: { ctx: PageCtx }) {
   );
 }
 
-/** Source → medium → listener, drawn with the Sound Systems line-art heads
- *  and the air arcs (the reading page still opens with a picture). */
+/** Source → medium → listener, drawn with the owner's SIDE head icons facing
+ *  each other across the air arcs (head fix 2026-10-08: lone heads use the
+ *  shared icon; the reading page still opens with a picture). */
 function ThreePartsStrip() {
   const col = (label: string, color: string, node: ReactNode) => (
     <View style={styles.stripCol}>
@@ -372,9 +373,9 @@ function ThreePartsStrip() {
   );
   return (
     <View style={styles.strip} accessibilityRole="image" accessibilityLabel="A person making a sound, the air carrying it, and a listener">
-      {col('SOURCE', colors.amber, <GearGlyph kind="listener" size={56} legends={false} />)}
+      {col('SOURCE', colors.amber, <HeadGlyph view="side" facing="right" speaking size={56} color={HEAD_GLYPH_INK} />)}
       {col('MEDIUM · AIR', colors.amber, arcs)}
-      {col('LISTENER', '#9fd0ff', <GearGlyph kind="listener" size={56} legends={false} />)}
+      {col('LISTENER', '#9fd0ff', <HeadGlyph view="side" facing="left" size={56} color={HEAD_GLYPH_INK} />)}
     </View>
   );
 }
@@ -852,7 +853,7 @@ function SourceStage({ viz, w, h, source, f, focused }: { viz: VizModule; w: num
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         <View style={{ width: srcW, height: rowH, alignItems: 'center', justifyContent: 'center' }}>
           {source === 'voice' ? (
-            <GearGlyph kind="listener" size={Math.min(srcW, rowH) * 0.9} label="A person humming" />
+            <HeadGlyph view="side" facing="right" size={Math.min(srcW, rowH) * 0.9} color={HEAD_GLYPH_INK} label="A person humming" />
           ) : (
             <viz.SpeakerConeView clock={clock} width={srcW} height={rowH} visHz={visHz} amp={0.75} />
           )}

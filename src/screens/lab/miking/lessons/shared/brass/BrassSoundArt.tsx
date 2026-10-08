@@ -38,6 +38,7 @@ import { PaintItem } from '../bowed/BowedArt';
 import { PROJ, hornGroups } from './BrassArt';
 import { bellProfile, bellRadius, SLIDE_POSITIONS, type BrassSpec } from './brassSpec.ts';
 import type { HornPose } from './brassPosture.ts';
+import { HeadIcon, aboveRotation } from '../../../../../../features/lab/headIcons';
 import { lobe, lobeWords, type Band } from './brassSoundMath.ts';
 
 export { lobe, lobeWords, type Band };
@@ -365,10 +366,11 @@ export function BellRadiation({ w, h, P, band, deg, accessibilityLabel }: { w: n
           </Group>
         ))}
       </Group>
-      <Group>
-        <Path path={(() => { const p = make(); p.addCircle(head.x, head.z, P.player.headR); return p; })()} color="#2a211c" />
-        <Path path={(() => { const p = make(); p.addCircle(head.x + 40, head.z, P.player.headR * 0.5); return p; })()} color="#b98d6f" />
-      </Group>
+      {/* The player at the mouthpiece, from above: no body is drawn here, so
+          the head is the owner's ABOVE head icon (head fix 2026-10-08 — a
+          lone head), its face toward the horn (+u). The width of a ~230 mm
+          head; the stroke kept ≥ ~1 px at this plan's scale. */}
+      <HeadIcon view="above" x={head.x} y={head.z} size={P.player.headR * 2.3} rotation={aboveRotation(1, 0)} plate minStroke={6} />
       <Path path={micP} style="stroke" strokeWidth={2.5} color={AMBER} opacity={0.7}>
         <DashPathEffect intervals={[12, 10]} />
       </Path>

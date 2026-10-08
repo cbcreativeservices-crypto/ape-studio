@@ -131,7 +131,7 @@ function sidePaths(g: HarpGeom, key: string): SidePaths {
   return o;
 }
 
-/** The harpist and chair from the side (ILLUSTRATIVE, muted). */
+/** The harpist's chair from the side (ILLUSTRATIVE, muted). */
 function harpistSide(): SidePaths {
   const hit = sideCache.get('harpist');
   if (hit) return hit;
@@ -144,45 +144,8 @@ function harpistSide(): SidePaths {
   for (const x of [s.x0 + 30, s.x1 - 60]) o.legs.addRect(Skia.XYWHRect(x, s.y, 30, -s.y));
   o.back = make();
   o.back.addRRect(Skia.RRectXY(Skia.XYWHRect(s.x0 - 10, s.y - 450, 34, 450), 10, 10));
-  const hip = { x: (s.x0 + s.x1) / 2, y: s.y - 70 };
-  o.torso = make();
-  o.torso.moveTo(hip.x - 110, hip.y + 40);
-  o.torso.quadTo(hip.x - 140, (hip.y + h.head.y) / 2, h.head.x - 70, h.head.y + 190);
-  o.torso.quadTo(h.head.x + 60, h.head.y + 150, h.head.x + 110, h.head.y + 230);
-  o.torso.quadTo(hip.x + 120, (hip.y + h.head.y) / 2 + 80, hip.x + 90, hip.y + 40);
-  o.torso.close();
-  o.thigh = make();
-  o.thigh.moveTo(hip.x - 60, hip.y - 50);
-  o.thigh.lineTo(hip.x + 300, hip.y - 40);
-  o.thigh.lineTo(hip.x + 300, hip.y + 50);
-  o.thigh.lineTo(hip.x - 60, hip.y + 60);
-  o.thigh.close();
-  o.shin = make();
-  o.shin.moveTo(hip.x + 250, hip.y + 20);
-  o.shin.lineTo(hip.x + 330, hip.y + 20);
-  o.shin.lineTo(hip.x + 360, -60);
-  o.shin.lineTo(hip.x + 290, -60);
-  o.shin.close();
-  o.shoe = make();
-  o.shoe.addRRect(Skia.RRectXY(Skia.XYWHRect(hip.x + 280, -62, 170, 62), 20, 20));
-  o.neck = make();
-  o.neck.addRRect(Skia.RRectXY(Skia.XYWHRect(h.head.x - 28, h.head.y + 70, 60, 120), 20, 20));
-  o.head = make();
-  o.head.addOval(Skia.XYWHRect(h.head.x - h.headR * 0.92, h.head.y - h.headR, h.headR * 1.84, h.headR * 2));
-  o.hair = make();
-  o.hair.addArc(Skia.XYWHRect(h.head.x - h.headR, h.head.y - h.headR * 1.05, h.headR * 1.9, h.headR * 1.6), 160, 220);
-  o.hair.close();
-  // Arms reaching forward to the strings (hands drawn at the strings).
-  o.arm = make();
-  o.arm.moveTo(h.head.x + 40, h.head.y + 220);
-  o.arm.lineTo(h.head.x + 340, h.head.y + 360);
-  o.arm.lineTo(h.head.x + 520, h.head.y + 300);
-  o.arm.lineTo(h.head.x + 520, h.head.y + 360);
-  o.arm.lineTo(h.head.x + 330, h.head.y + 430);
-  o.arm.lineTo(h.head.x + 20, h.head.y + 300);
-  o.arm.close();
-  o.hand = make();
-  o.hand.addOval(Skia.XYWHRect(h.head.x + 500, h.head.y + 290, 90, 70));
+  // The harpist is the shared figure (harpistPose). The old blocky body and
+  // its oval head + hair were dead code — removed in the head fix 2026-10-08.
   sideCache.set('harpist', o);
   return o;
 }

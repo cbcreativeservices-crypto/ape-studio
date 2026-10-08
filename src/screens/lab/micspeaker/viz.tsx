@@ -60,6 +60,8 @@ import { useStageTextScale } from '../rack/stageAspect';
 import { fonts } from '../../../theme/tokens';
 import { heatColor } from '../../../features/tools/levelColor';
 import { CondenserMic, HandheldMic } from '../../../features/lab/micDrawings';
+import { HEAD_ICON_PLATE, HeadIcon, SIDE_CANON, appendHeadIcon, headIconStroke } from '../../../features/lab/headIcons';
+import { FigureHeadAt } from '../../../features/lab/figureHead';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const PARTICLE = '#cfd2d8';
@@ -108,7 +110,6 @@ const M_BUST = 0.95; //  seated head+shoulders visible height, metres
 // Authored drawn heights (in local px at scale 1) of the reusable builders,
 // used to convert a metric size into the `scale` each one expects.
 const CAB_DRAWN_H = 18; // CabinetSide spans y −9…+9
-const BUST_DRAWN_H = 16.6; // appendBust footprint
 
 /** Centred scale transform: shrink canvas content to SCENE_SCALE about the
  *  canvas centre so a uniform margin appears on every side. Returned as a
@@ -179,159 +180,15 @@ export function headScaleForMic(grilleR: number, bodyLen: number): number {
 }
 
 /**
- * PROFILE head — CLEAN LINE-ART ICON, authored FACING LEFT (owner ruling
- * 2026-07-29; the shaded/rendered head was rejected twice and is gone).
- *
- * ORIGIN = THE MOUTH OPENING, exactly: the lip line is y = 0 and the front of
- * the lips is x = 0 (call sites measure mouth→grille gaps straight from it).
- * Canon, in head units: crown −35.1 · brow −21.4 · nose tip −7.7 · nose base
- * −3.9 · MOUTH 0 · chin +10.5 · neck base +20.9. Head depth (nose tip −11.3 →
- * occiput +32.5) ≈ head height, and the cranium is deliberately FULL AT THE
- * BACK — the single most common profile mistake.
- *
- * The reference art is one uniform stroke: no fill, no gradient, no shading,
- * no hair. Landmarks along the front edge, in path order from the neck up:
- * throat → jaw sweeping BACK AND UP to the ear → chin tucking under → fuller
- * lower lip → lip notch → upper lip → philtrum → nostril undercut → defined
- * nose tip → straight bridge → nasion (brow notch) → brow → forehead slope →
- * crown → full back of the skull → occiput → nape. The THICK SQUARED NECK is
- * two open lines dropping from the jaw and the nape, not a thin stalk.
- *
- * FACING: this is the ONLY authored version. The right-facing head every call
- * site actually uses is derived by MIRRORING (scaleX −1) inside ProfileHead,
- * exactly as the owner instructed — there is no second hand-authored path.
- */
-function appendProfileOutline(p: SkPathT, s: number): void {
-  p.moveTo(16.8 * s, -0.6 * s); // the ramus, just in front of the ear
-  p.cubicTo(16.6 * s, 6.4 * s, 15.0 * s, 10.0 * s, 12.0 * s, 11.4 * s); // → gonion
-  p.cubicTo(7.0 * s, 13.4 * s, 1.5 * s, 12.6 * s, -3.0 * s, 9.7 * s); // jaw → chin
-  p.cubicTo(-4.4 * s, 8.5 * s, -5.6 * s, 7.8 * s, -5.6 * s, 6.7 * s); // chin projects
-  p.cubicTo(-5.6 * s, 5.5 * s, -4.0 * s, 5.1 * s, -4.0 * s, 3.5 * s); // …tucks under
-  p.cubicTo(-4.2 * s, 2.5 * s, -5.2 * s, 2.3 * s, -5.2 * s, 1.5 * s); // fuller lower lip
-  p.cubicTo(-5.2 * s, 0.8 * s, -4.4 * s, 0.5 * s, -3.9 * s, 0.0 * s); // lip notch (= origin plane)
-  p.cubicTo(-4.3 * s, -0.7 * s, -4.7 * s, -1.1 * s, -4.9 * s, -1.5 * s); // upper lip
-  p.cubicTo(-4.4 * s, -2.5 * s, -3.6 * s, -3.0 * s, -2.6 * s, -3.9 * s); // philtrum
-  p.cubicTo(-4.8 * s, -4.3 * s, -6.8 * s, -4.6 * s, -8.6 * s, -5.2 * s); // nose base / wing
-  p.cubicTo(-10.3 * s, -5.7 * s, -11.3 * s, -6.5 * s, -11.3 * s, -7.7 * s); // nostril undercut → tip
-  p.cubicTo(-11.3 * s, -9.6 * s, -9.3 * s, -11.7 * s, -6.5 * s, -14.7 * s); // straight bridge
-  p.cubicTo(-4.5 * s, -16.7 * s, -3.4 * s, -17.5 * s, -3.0 * s, -18.7 * s); // nasion notch
-  p.cubicTo(-2.8 * s, -19.7 * s, -4.0 * s, -20.2 * s, -4.0 * s, -21.4 * s); // brow
-  p.cubicTo(-4.0 * s, -24.1 * s, -2.4 * s, -27.2 * s, 0.6 * s, -29.9 * s); // forehead slope
-  p.cubicTo(3.8 * s, -32.8 * s, 8.2 * s, -34.8 * s, 13.5 * s, -35.1 * s); // crown
-  p.cubicTo(21.2 * s, -35.6 * s, 28.0 * s, -31.6 * s, 30.5 * s, -25.3 * s);
-  p.cubicTo(32.5 * s, -20.3 * s, 32.1 * s, -14.3 * s, 29.9 * s, -8.9 * s); // FULL at the back
-  p.cubicTo(28.4 * s, -5.3 * s, 26.4 * s, -2.3 * s, 25.4 * s, 1.5 * s); // occiput → mastoid
-  p.cubicTo(24.6 * s, 4.5 * s, 24.1 * s, 7.7 * s, 23.7 * s, 11.1 * s); // nape
-}
-
-function buildProfileHead(s: number): { lines: SkPathT; plate: SkPathT; open: SkPathT } {
-  // ── The one stroked family: outline + neck + ear + lip line ───────────────
-  const lines = Skia.Path.Make();
-  appendProfileOutline(lines, s);
-  // Thick squared neck column: two open lines, jaw → base and nape → base.
-  lines.moveTo(6.2 * s, 13.2 * s);
-  lines.lineTo(7.6 * s, 20.9 * s);
-  lines.moveTo(23.7 * s, 11.1 * s);
-  lines.lineTo(23.4 * s, 20.9 * s);
-  // Ear, mid-skull: outer helix oval…
-  lines.moveTo(14.2 * s, -14.7 * s);
-  lines.cubicTo(17.6 * s, -16.7 * s, 21.4 * s, -14.9 * s, 21.6 * s, -10.7 * s);
-  lines.cubicTo(21.8 * s, -7.3 * s, 19.8 * s, -4.5 * s, 17.2 * s, -3.3 * s);
-  lines.cubicTo(15.2 * s, -2.4 * s, 13.6 * s, -3.5 * s, 13.4 * s, -5.7 * s);
-  lines.cubicTo(13.2 * s, -8.7 * s, 13.4 * s, -12.1 * s, 14.2 * s, -14.7 * s);
-  lines.close();
-  // …plus the small inner fold curl.
-  lines.moveTo(15.4 * s, -13.3 * s);
-  lines.cubicTo(18.6 * s, -13.7 * s, 19.8 * s, -10.9 * s, 18.8 * s, -7.9 * s);
-  lines.cubicTo(18.2 * s, -6.1 * s, 16.8 * s, -5.1 * s, 15.6 * s, -5.1 * s);
-  // Lip line running back into the face from the notch.
-  lines.moveTo(-4.2 * s, 0.1 * s);
-  lines.cubicTo(-2.6 * s, 0.8 * s, -0.8 * s, 0.9 * s, 0.6 * s, 0.4 * s);
-
-  // ── Speaking variant: the lip strokes open into a small mouth lens ────────
-  const open = Skia.Path.Make();
-  open.moveTo(-4.4 * s, -0.8 * s);
-  open.cubicTo(-2.4 * s, -1.8 * s, -0.4 * s, -1.4 * s, 1.0 * s, -0.3 * s);
-  open.cubicTo(-0.4 * s, 1.8 * s, -2.8 * s, 2.0 * s, -4.4 * s, 0.9 * s);
-  open.close();
-
-  // ── Readability plate: the silhouette + the neck column, filled dark. The
-  //    ONLY fill in the icon, and only used where a head sits on a heat map.
-  const plate = Skia.Path.Make();
-  appendProfileOutline(plate, s); // Skia closes it implicitly when filled
-  plate.close();
-  plate.moveTo(6.2 * s, 13.2 * s);
-  plate.lineTo(7.6 * s, 20.9 * s);
-  plate.lineTo(23.4 * s, 20.9 * s);
-  plate.lineTo(23.7 * s, 11.1 * s);
-  plate.close();
-  return { lines, plate, open };
-}
-
-/**
- * FRONT head — the same line-art language, symmetric, used wherever a head is
- * seen face-on. Tall rounded cranium, temples narrowing to cheeks, a soft
- * tapered jaw to a rounded chin, one small elongated ear each side with a tiny
- * inner fold, two curved eyebrow strokes, a nose drawn ONLY as two short
- * bridge lines meeting two nostril curls, and a small two-stroke mouth.
- * NOTE: the reference has NO EYES — deliberately kept that way.
- */
-function buildFrontHead(s: number): { lines: SkPathT; plate: SkPathT } {
-  const shell = (p: SkPathT) => {
-    p.moveTo(0, -35.1 * s);
-    p.cubicTo(7.6 * s, -35.1 * s, 12.8 * s, -31.8 * s, 14.0 * s, -25.8 * s);
-    p.cubicTo(14.8 * s, -21.4 * s, 14.2 * s, -15.6 * s, 13.6 * s, -8.8 * s); // temple → cheek
-    p.cubicTo(13.2 * s, -3.9 * s, 11.4 * s, 1.0 * s, 8.6 * s, 5.1 * s); // cheek → jaw
-    p.cubicTo(6.4 * s, 8.2 * s, 3.5 * s, 10.4 * s, 0, 10.5 * s); // jaw → rounded chin
-    p.cubicTo(-3.5 * s, 10.4 * s, -6.4 * s, 8.2 * s, -8.6 * s, 5.1 * s);
-    p.cubicTo(-11.4 * s, 1.0 * s, -13.2 * s, -3.9 * s, -13.6 * s, -8.8 * s);
-    p.cubicTo(-14.2 * s, -15.6 * s, -14.8 * s, -21.4 * s, -14.0 * s, -25.8 * s);
-    p.cubicTo(-12.8 * s, -31.8 * s, -7.6 * s, -35.1 * s, 0, -35.1 * s);
-    p.close();
-  };
-  const lines = Skia.Path.Make();
-  shell(lines);
-  for (const g of [-1, 1]) {
-    // Ear: small elongated outer curve hugging the skull…
-    lines.moveTo(g * 13.4 * s, -14.2 * s);
-    lines.cubicTo(g * 17.6 * s, -15.2 * s, g * 18.4 * s, -10.0 * s, g * 17.0 * s, -6.2 * s);
-    lines.cubicTo(g * 16.0 * s, -3.6 * s, g * 13.8 * s, -3.4 * s, g * 13.2 * s, -5.4 * s);
-    // …with a tiny inner fold.
-    lines.moveTo(g * 15.4 * s, -12.4 * s);
-    lines.cubicTo(g * 16.6 * s, -11.0 * s, g * 16.4 * s, -8.4 * s, g * 15.2 * s, -7.0 * s);
-    // Eyebrow.
-    lines.moveTo(g * 10.0 * s, -18.4 * s);
-    lines.cubicTo(g * 7.6 * s, -20.4 * s, g * 4.6 * s, -20.4 * s, g * 2.6 * s, -19.0 * s);
-    // Nose: a short bridge line that ends in a nostril curl (no nose outline).
-    lines.moveTo(g * 2.0 * s, -15.2 * s);
-    lines.lineTo(g * 2.6 * s, -5.2 * s);
-    lines.cubicTo(g * 3.6 * s, -3.6 * s, g * 5.0 * s, -4.0 * s, g * 5.2 * s, -5.6 * s);
-    // Neck column.
-    lines.moveTo(g * 7.0 * s, 6.6 * s);
-    lines.lineTo(g * 7.0 * s, 20.9 * s);
-  }
-  // Two-stroke mouth.
-  lines.moveTo(-5.0 * s, -0.8 * s);
-  lines.cubicTo(-2.4 * s, -2.0 * s, 2.4 * s, -2.0 * s, 5.0 * s, -0.8 * s);
-  lines.moveTo(-4.4 * s, 0.5 * s);
-  lines.cubicTo(-2.0 * s, 2.0 * s, 2.0 * s, 2.0 * s, 4.4 * s, 0.5 * s);
-
-  const plate = Skia.Path.Make();
-  shell(plate);
-  plate.moveTo(-7.0 * s, 6.6 * s);
-  plate.lineTo(-7.0 * s, 20.9 * s);
-  plate.lineTo(7.0 * s, 20.9 * s);
-  plate.lineTo(7.0 * s, 6.6 * s);
-  plate.close();
-  return { lines, plate };
-}
-
-/**
- * PROFILE head icon. `angleRad` = the facing direction, 0 = +x (RIGHT) — the
- * left-facing canon above is MIRRORED (scaleX −1) to get there, per the owner.
- * Stroke width scales with `scale` (never absolute px), rounded caps/joins.
- * `tint` rides on the same stroke as the state accent; `plate` turns on the
- * dark interior for heads that sit over a heat-map field.
+ * PROFILE head — the owner's line-art SIDE icon (2026-07-29). Since the head
+ * fix (2026-10-08) its geometry lives ONCE, app-wide, in
+ * features/lab/headIconGeometry.ts (moved there verbatim: authored FACING
+ * LEFT, origin = the mouth, crown −35.1 · chin +10.5 · neck base +20.9) and is
+ * drawn by the shared HeadIcon. `angleRad` = the facing direction, 0 = +x
+ * (RIGHT) — the left-facing canon is MIRRORED to get there, per the owner.
+ * `tint` rides on the stroke as the state accent; `plate` turns on the dark
+ * interior for heads that sit over a heat-map field. ⛔ Icons are for a head
+ * ALONE (owner 2026-10-08) — never on a body.
  */
 function ProfileHead({
   x,
@@ -354,95 +211,19 @@ function ProfileHead({
   /** Mouth-open state: the lip strokes open into a small mouth. */
   speaking?: boolean;
 }) {
-  const parts = useMemo(() => buildProfileHead(scale), [scale]);
-  const s = scale;
-  const lw = 1.55 * s;
   return (
-    <Group
-      transform={[{ translateX: x }, { translateY: y }, { rotate: angleRad }, { scaleX: -1 }]}
-    >
-      {plate ? <Path path={parts.plate} color={HEAD_PLATE} /> : null}
-      {glow ? (
-        <Path
-          path={parts.lines}
-          color={tint}
-          style="stroke"
-          strokeWidth={lw * 3.4}
-          strokeCap="round"
-          strokeJoin="round"
-          opacity={0.3}
-        >
-          <BlurMask blur={3 * s} style="normal" />
-        </Path>
-      ) : null}
-      <Path
-        path={parts.lines}
-        color={LINE}
-        style="stroke"
-        strokeWidth={lw}
-        strokeCap="round"
-        strokeJoin="round"
-      />
-      <Path
-        path={parts.lines}
-        color={tint}
-        style="stroke"
-        strokeWidth={lw}
-        strokeCap="round"
-        strokeJoin="round"
-        opacity={0.34}
-      />
-      {speaking ? (
-        <Path
-          path={parts.open}
-          color={LINE}
-          style="stroke"
-          strokeWidth={lw}
-          strokeCap="round"
-          strokeJoin="round"
-        />
-      ) : null}
-    </Group>
-  );
-}
-
-/** FRONT head icon — same line-art language, used wherever a head is face-on. */
-function FrontHead({
-  x,
-  y,
-  scale,
-  tint,
-  plate,
-}: {
-  x: number;
-  y: number;
-  scale: number;
-  tint: string;
-  plate?: boolean;
-}) {
-  const parts = useMemo(() => buildFrontHead(scale), [scale]);
-  const lw = 1.55 * scale;
-  return (
-    <Group transform={[{ translateX: x }, { translateY: y }]}>
-      {plate ? <Path path={parts.plate} color={HEAD_PLATE} /> : null}
-      <Path
-        path={parts.lines}
-        color={LINE}
-        style="stroke"
-        strokeWidth={lw}
-        strokeCap="round"
-        strokeJoin="round"
-      />
-      <Path
-        path={parts.lines}
-        color={tint}
-        style="stroke"
-        strokeWidth={lw}
-        strokeCap="round"
-        strokeJoin="round"
-        opacity={0.34}
-      />
-    </Group>
+    <HeadIcon
+      view="side"
+      x={x}
+      y={y}
+      scale={scale}
+      facing="right"
+      rotation={angleRad}
+      tint={tint}
+      glow={glow}
+      plate={plate}
+      speaking={speaking}
+    />
   );
 }
 
@@ -586,50 +367,6 @@ function Claves({
         strokeCap="round"
         strokeJoin="round"
         opacity={0.34}
-      />
-    </Group>
-  );
-}
-
-/** Head-and-shoulders bust appended to `p`; `x` = center, `y` = base line.
- *  ONE closed contour (shoulders → neck → jaw → cranium → back down) so the
- *  caller's dark outline stroke traces a single crisp silhouette with no
- *  internal seams — these are drawn small and layered over heat maps, where a
- *  clean edge is the only thing keeping them readable. Same overall footprint
- *  (16.6·s tall, 16·s wide) as the previous helper, so every seat/stage layout
- *  that positions them is untouched. */
-function appendBust(p: SkPathT, x: number, y: number, s: number) {
-  p.moveTo(x - 8 * s, y);
-  // Left trapezius → shoulder → neck.
-  p.cubicTo(x - 8 * s, y - 4.6 * s, x - 6.6 * s, y - 6.8 * s, x - 4.2 * s, y - 7.6 * s);
-  p.cubicTo(x - 2.8 * s, y - 8.1 * s, x - 2.1 * s, y - 8.6 * s, x - 2.0 * s, y - 9.6 * s);
-  // Jaw → cheek → cranium (widest just above the ear line).
-  p.cubicTo(x - 3.2 * s, y - 10.6 * s, x - 3.9 * s, y - 11.9 * s, x - 3.9 * s, y - 13.2 * s);
-  p.cubicTo(x - 3.9 * s, y - 15.4 * s, x - 2.2 * s, y - 16.7 * s, x, y - 16.7 * s);
-  p.cubicTo(x + 2.2 * s, y - 16.7 * s, x + 3.9 * s, y - 15.4 * s, x + 3.9 * s, y - 13.2 * s);
-  p.cubicTo(x + 3.9 * s, y - 11.9 * s, x + 3.2 * s, y - 10.6 * s, x + 2.0 * s, y - 9.6 * s);
-  // Right neck → shoulder → trapezius.
-  p.cubicTo(x + 2.1 * s, y - 8.6 * s, x + 2.8 * s, y - 8.1 * s, x + 4.2 * s, y - 7.6 * s);
-  p.cubicTo(x + 6.6 * s, y - 6.8 * s, x + 8 * s, y - 4.6 * s, x + 8 * s, y);
-  p.close();
-}
-
-/** Audience/performer busts in the SAME LINE-ART LANGUAGE as the head icons
- *  (owner ruling 2026-07-29): the silhouette keeps its shape, but it is now a
- *  light uniform stroke over a subtle dark interior so it reads instantly on
- *  top of a busy heat-map field. `stroke` carries meaning where the caller has
- *  meaning to carry (the coverage class); `sw` scales with the bust. */
-function LineBusts({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: number }) {
-  return (
-    <Group>
-      <Path path={path} color={HEAD_PLATE} />
-      <Path
-        path={path}
-        color={stroke}
-        style="stroke"
-        strokeWidth={sw}
-        strokeCap="round"
-        strokeJoin="round"
       />
     </Group>
   );
@@ -2638,11 +2375,10 @@ export function StereoTechniqueView({
     shadow.addRect(Skia.XYWHRect(0, DECK_H + LIP_H, w, 9));
     return { board, lip, planks, shadow };
   }, [w]);
-  const performers = useMemo(() => {
-    const p = Skia.Path.Make();
-    for (const fx of [0.3, 0.5, 0.7]) appendBust(p, w * fx, DECK_H - 2, 1.2);
-    return p;
-  }, [w]);
+  // Performers on the deck, seen from ABOVE (this is a plan): the owner's
+  // ABOVE head icon, facing down the screen toward the pair (head fix
+  // 2026-10-08 — a lone head marker, never a bust).
+  const performers = [0.3, 0.5, 0.7].map((fx) => w * fx);
 
   return (
     <Canvas style={{ width, height, backgroundColor: BG }}>
@@ -2665,7 +2401,9 @@ export function StereoTechniqueView({
       </Path>
       <Path path={deck.planks} color="#161a22" style="stroke" strokeWidth={1} opacity={0.5} />
       {/* Performers, in the same line-art language as the head icons. */}
-      <LineBusts path={performers} stroke={LINE} sw={1.5} />
+      {performers.map((px) => (
+        <HeadIcon key={px} view="above" x={px} y={DECK_H / 2} size={20} plate minStroke={1.3} />
+      ))}
       <Path path={deck.lip}>
         <LinearGradient
           start={vec(0, DECK_H)}
@@ -3580,17 +3318,17 @@ export function TopCoverageView({
     p.addRect(Skia.XYWHRect(0, 0, w, stageH));
     return p;
   }, [w]);
-  const performers = useMemo(() => {
-    const p = Skia.Path.Make();
-    for (const fx of [0.42, 0.5, 0.58]) appendBust(p, w * fx, stageH - 3, 1);
-    return p;
-  }, [w]);
+  // The band on the deck, seen from ABOVE: the owner's ABOVE head icon facing
+  // down the screen toward the house (head fix 2026-10-08: a lone head marker).
+  const performers = [0.42, 0.5, 0.58].map((fx) => w * fx);
 
-  // Audience SEATING (owner 2026-07-29): rows of head-dots (viewed from above)
-  // in proportional blocks split by aisles. The heat map is an OVERLAY on this
-  // seating — drawn under the field at reduced field alpha so the seats read
-  // through it, exactly like a coverage plot laid over a venue plan. A head
-  // from above is ~0.4 m; the block/aisle proportions follow a real room.
+  // Audience SEATING (owner 2026-07-29), drawn as SEATS — a seat pan and its
+  // backrest, viewed from above — in proportional blocks split by aisles.
+  // Head fix 2026-10-08 (owner decision 3): a crowd this dense is seating
+  // WITHOUT people, never a field of circle "heads". The heat map is an
+  // OVERLAY on this seating — drawn under the field at reduced field alpha so
+  // the seats read through it, exactly like a coverage plot laid over a venue
+  // plan. The block/aisle proportions follow a real room.
   const seating = useMemo(() => {
     const dots = Skia.Path.Make();
     const x0 = 10;
@@ -3602,14 +3340,16 @@ export function TopCoverageView({
     const aisleFrac = 0.05; // each aisle = 5% of the audience width
     const blockW = (span - aisleFrac * span * (blocks - 1)) / blocks;
     const pitch = 11; // seat/row pitch (px)
-    const dotR = 3.0;
     for (let b = 0; b < blocks; b++) {
       const bx0 = x0 + b * (blockW + aisleFrac * span);
       const cols = Math.max(1, Math.round(blockW / pitch));
       const cstep = blockW / cols;
       for (let yy = y0; yy <= y1; yy += pitch) {
         for (let cc = 0; cc < cols; cc++) {
-          dots.addCircle(bx0 + (cc + 0.5) * cstep, yy, dotR);
+          const sx = bx0 + (cc + 0.5) * cstep;
+          // Seat pan, then the backrest on the far side from the stage.
+          dots.addRRect(Skia.RRectXY(Skia.XYWHRect(sx - 3.4, yy - 3.2, 6.8, 5.2), 1.3, 1.3));
+          dots.addRRect(Skia.RRectXY(Skia.XYWHRect(sx - 3.8, yy + 2.6, 7.6, 1.8), 0.9, 0.9));
         }
       }
     }
@@ -3628,9 +3368,11 @@ export function TopCoverageView({
         <Path path={stage}>
           <LinearGradient start={vec(0, 0)} end={vec(0, stageH)} colors={['#3b4252', '#232833']} />
         </Path>
-        {/* Performers in the line-art language of the head icons. */}
-        <LineBusts path={performers} stroke={LINE} sw={1.4} />
-        {/* SEATING under the map: dim head-dots + a faint rim, drawn BEFORE the
+        {/* The band: the owner's ABOVE head icon (a plan), facing the house. */}
+        {performers.map((px) => (
+          <HeadIcon key={px} view="above" x={px} y={stageH / 2} size={17} plate minStroke={1.2} />
+        ))}
+        {/* SEATING under the map: dim seats + a faint rim, drawn BEFORE the
             field so the coverage overlays real seats (not floating on black). */}
         <Path path={seating} color="#2b3040" />
         <Path path={seating} color="#4a5162" style="stroke" strokeWidth={0.6} />
@@ -3705,14 +3447,15 @@ const SEAT_LINE: Record<CoverageClass, string> = {
   gray: '#b6b9c4',
 };
 
-/** Standing GUITARIST — recognizable line-art musician holding a guitar, in the
- *  same single-stroke language as the head icons (owner ruling 2026-07-29).
+/** Standing GUITARIST — recognizable line-art musician holding a guitar
+ *  (owner ruling 2026-07-29). Head fix 2026-10-08 (owner): a head ON A BODY is
+ *  the figure's own skin-silhouette head (FigureHeadAt → PlayerFigure
+ *  FigureHead), never the line-art icon and never a circle.
  *  Canonical figure is ~46 units crown→feet, origin AT THE FEET (y grows down,
  *  figure occupies y ∈ [−46s, 0]) so it stands on the stage deck. Sized from
  *  the scene metre so it is a true ~1.7 m reference beside the ~0.6 m cabinet. */
 function buildGuitarist(s: number): { body: SkPathT; guitar: SkPathT } {
   const body = Skia.Path.Make();
-  body.addCircle(0, -42.5 * s, 3.7 * s); // head
   body.moveTo(0, -38.8 * s); // spine: neck → hips
   body.lineTo(0, -22 * s);
   body.moveTo(-5 * s, -36.5 * s); // shoulders
@@ -3747,6 +3490,9 @@ function Guitarist({ x, footY, scale, tint }: { x: number; footY: number; scale:
       <Path path={parts.guitar} color={tint} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" />
       <Path path={parts.body} color={LINE} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" />
       <Path path={parts.body} color={tint} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" opacity={0.4} />
+      {/* The head: crown −46.2 → chin −38.8 (a true 1/7.5 of the figure), the
+          neck down into the shoulder line. */}
+      <FigureHeadAt view="front" cx={0} cy={-42.5 * scale} h={7.4 * scale} neckTo={-36.6 * scale} />
     </Group>
   );
 }
@@ -3863,7 +3609,8 @@ export function SideCoverageView({
   const MPP = HUMAN_PX / M_HUMAN; // pixels per metre
   const cabScale = (M_CAB * MPP) / CAB_DRAWN_H; // ~0.6 m cabinet
   const boxScale = (M_BOX * MPP) / CAB_DRAWN_H; // ~0.3 m line-array box
-  const bustScale = (M_BUST * MPP) / BUST_DRAWN_H; // seated head+shoulders
+  // A seated listener's head icon, crown → neck base = the old bust height.
+  const seatHeadPx = ((M_BUST * MPP) * SIDE_CANON.height) / (SIDE_CANON.neckBase - SIDE_CANON.crown);
   const guitaristScale = (M_HUMAN * MPP) / 46; // 46-unit canonical figure
 
   // Line-array hang: N boxes down from the fly point with progressive splay —
@@ -3968,16 +3715,20 @@ export function SideCoverageView({
       rearWedge.close();
     }
 
-    // Seats: fixed-spacing GRAY busts from the front edge to past the right of
-    // the display. The audience is ALWAYS gray (owner 2026-08-05) — coverage is
-    // read from the heat map, not from tinting the people — and stays to scale
-    // with the stage figure (same metres-per-pixel).
+    // Seats: fixed-spacing GRAY listeners from the front edge to past the right
+    // of the display. The audience is ALWAYS gray (owner 2026-08-05) — coverage
+    // is read from the heat map, not from tinting the people. Head fix
+    // 2026-10-08: each is the owner's SIDE head icon (a lone head, never a
+    // bust), facing the stage, its neck standing on the floor line exactly
+    // where the old bust stood, and the same footprint (crown → neck base =
+    // the old bust's height), so the layout and scale are unchanged.
     const seats = Skia.Path.Make();
+    const seatPlates = Skia.Path.Make();
     const SEAT_DX = Math.max(20, MPP * 0.95);
     for (let sx = audFront; sx < w + SEAT_DX; sx += SEAT_DX) {
       const t = Math.min(1, Math.max(0, (sx - audFront) / Math.max(1, w - audFront)));
       const rise = sloped ? t * 30 : 0;
-      appendBust(seats, sx, floorY - rise, bustScale);
+      appendHeadIcon(seats, seatPlates, 'side', sx, floorY - rise, seatHeadPx, { facing: 'left', anchor: 'neck' });
     }
     return {
       wedgeFill,
@@ -3988,6 +3739,7 @@ export function SideCoverageView({
       delayWedge,
       rearWedge,
       seats,
+      seatPlates,
       dlyX,
       dlyY,
       rearX,
@@ -4012,7 +3764,7 @@ export function SideCoverageView({
     rearDelayOn,
     arrayBoxes,
     arrayMidY,
-    bustScale,
+    seatHeadPx,
   ]);
 
   // Side-plane heat map (stage front → rear wall, ceiling → floor): the same
@@ -4181,8 +3933,9 @@ export function SideCoverageView({
             <CabinetSide x={geo.rearX} y={geo.rearY} tiltDeg={62} scale={cabScale * 0.86} />
           </Group>
         ) : null}
-        {/* The audience: proportional line-art busts, always gray. */}
-        <LineBusts path={geo.seats} stroke={SEAT_LINE.gray} sw={1.7} />
+        {/* The audience: the owner's side head icon, facing the stage, always gray. */}
+        <Path path={geo.seatPlates} color={HEAD_ICON_PLATE} />
+        <Path path={geo.seats} color={SEAT_LINE.gray} style="stroke" strokeWidth={headIconStroke('side', seatHeadPx, 1.1)} strokeCap="round" strokeJoin="round" />
         {/* Delay-alignment race to the rear rows (conceptual timing). */}
         {rearDelayOn ? (
           <AlignmentOverlay

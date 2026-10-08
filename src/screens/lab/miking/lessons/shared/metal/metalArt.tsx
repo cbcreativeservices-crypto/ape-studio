@@ -6,9 +6,11 @@
  *   rod        a metal rod along a polyline: a dark under-stroke, the body,
  *              a lit edge toward the upper left and a thin specular line —
  *              so a 12.7 mm steel rod reads as round steel, not a line;
- *   player     a standing player as quiet line art (a bald head — the house
- *              style), from the side, from above and from the front, so the
- *              instrument stays the subject;
+ *   player     a standing player as quiet line art, from the side, from above
+ *              and from the front, so the instrument stays the subject; the
+ *              head is the figure's own skin silhouette (PlayerFigure
+ *              FigureHead — head fix 2026-10-08: a head on a body is never a
+ *              circle and never the line-art head icon), drawn quietly too;
  *   standing   a floor band for the side and front views.
  *
  * Paths are built once per call site (useMemo / module caches); nothing
@@ -16,6 +18,8 @@
  */
 import type { ReactElement } from 'react';
 import { BlurMask, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { FigureHead, headAbove, headFront, headProfile } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 
 export type SkPath = ReturnType<typeof Skia.Path.Make>;
 export const make = (): SkPath => Skia.Path.Make();
@@ -90,7 +94,6 @@ export function Floor({ u0, u1 }: { u0: number; u1: number }): ReactElement {
  */
 export function playerSide(hands: readonly (readonly [number, number])[] = []): SkPath {
   const p = make();
-  p.addCircle(-360, -1650, 95);
   p.moveTo(-420, -1555);
   p.cubicTo(-470, -1400, -470, -1150, -440, -950); // back
   p.lineTo(-430, -500);
@@ -114,7 +117,6 @@ export function playerSide(hands: readonly (readonly [number, number])[] = []): 
 export function playerTop(hands: readonly (readonly [number, number])[] = []): SkPath {
   const p = make();
   p.addOval(Skia.XYWHRect(-470, -240, 230, 480));
-  p.addCircle(-360, 0, 92);
   for (const [hx, hz] of hands) {
     const sz = hz >= 0 ? 200 : -200;
     p.moveTo(-330, sz);
@@ -125,11 +127,6 @@ export function playerTop(hands: readonly (readonly [number, number])[] = []): S
 
 export function playerFront(hands: readonly (readonly [number, number])[] = []): SkPath {
   const p = make();
-  p.addCircle(0, -1650, 95);
-  p.moveTo(-60, -1550);
-  p.lineTo(-60, -1500);
-  p.moveTo(60, -1550);
-  p.lineTo(60, -1500);
   p.moveTo(-210, -1460);
   p.cubicTo(-120, -1500, 120, -1500, 210, -1460); // shoulders
   p.moveTo(-190, -1440);
@@ -148,9 +145,47 @@ export function playerFront(hands: readonly (readonly [number, number])[] = []):
   return p;
 }
 
-/** The player's line art, drawn quietly behind the instrument. */
-export function PlayerInk({ path, faint = false }: { path: SkPath; faint?: boolean }): ReactElement {
-  return <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" strokeJoin="round" color={INK} opacity={faint ? 0.35 : 0.6} />;
+/** Which head the line-art player wears: the view it is drawn in. */
+export type PlayerHeadView = 'side' | 'top' | 'front';
+/** Each view's head centre on the line-art player (frame H). */
+const HEAD_AT: Record<PlayerHeadView, readonly [number, number]> = { side: [-360, -1650], top: [-360, 0], front: [0, -1650] };
+const headCache = new Map<string, SkPath>();
+/** The figure's head (PlayerFigure geometry, an adult head, r 100 mm),
+ *  centred on the origin: side faces +x, top's nose +v (turned when drawn),
+ *  front face-on; the neck runs down into the shoulder line. Built once. */
+function headFill(view: PlayerHeadView): SkPath {
+  const hit = headCache.get(view);
+  if (hit) return hit;
+  const c = pt(0, 0);
+  const fill = view === 'side' ? headProfile(c, 100, 175, 1).fill : view === 'front' ? headFront(c, 100, 185).fill : headAbove(c, 100).fill;
+  headCache.set(view, fill);
+  return fill;
+}
+
+/**
+ * The line-art player's HEAD: the figure's own skin silhouette (head fix
+ * 2026-10-08 — a head ON A BODY is PlayerFigure's FigureHead, never a circle
+ * and never the line-art icon), at the same quiet weight as the line art.
+ * `at` overrides the view's head centre (a figure with its own pose).
+ */
+export function PlayerHead({ view, at, faint = false }: { view: PlayerHeadView; at?: readonly [number, number]; faint?: boolean }): ReactElement {
+  const [u, v] = at ?? HEAD_AT[view];
+  return (
+    <Group opacity={faint ? 0.5 : 0.8} transform={[{ translateX: u }, { translateY: v }, ...(view === 'top' ? [{ rotate: -Math.PI / 2 }] : [])]}>
+      <FigureHead fill={headFill(view)} />
+    </Group>
+  );
+}
+
+/** The player's line art, drawn quietly behind the instrument, and its head
+ *  (`head`: the view the path was built in — playerSide/Top/Front). */
+export function PlayerInk({ path, faint = false, head, headAt }: { path: SkPath; faint?: boolean; head?: PlayerHeadView; headAt?: readonly [number, number] }): ReactElement {
+  return (
+    <Group>
+      <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" strokeJoin="round" color={INK} opacity={faint ? 0.35 : 0.6} />
+      {head ? <PlayerHead view={head} at={headAt} faint={faint} /> : null}
+    </Group>
+  );
 }
 
 /**

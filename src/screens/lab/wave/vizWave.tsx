@@ -55,6 +55,8 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
+import { HeadIcon, SIDE_CANON, aboveRotation } from '../../../features/lab/headIcons';
+import { FigureHeadAt } from '../../../features/lab/figureHead';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
@@ -208,26 +210,13 @@ function Floor({ w, y, h }: { w: number; y: number; h: number }) {
   );
 }
 
-/** Head-and-shoulders bust contour (copied from micspeaker/viz appendBust) —
- *  ONE closed silhouette so the light line-art stroke traces a crisp edge. */
-function appendBust(p: SkPathT, x: number, y: number, s: number) {
-  p.moveTo(x - 8 * s, y);
-  p.cubicTo(x - 8 * s, y - 4.6 * s, x - 6.6 * s, y - 6.8 * s, x - 4.2 * s, y - 7.6 * s);
-  p.cubicTo(x - 2.8 * s, y - 8.1 * s, x - 2.1 * s, y - 8.6 * s, x - 2.0 * s, y - 9.6 * s);
-  p.cubicTo(x - 3.2 * s, y - 10.6 * s, x - 3.9 * s, y - 11.9 * s, x - 3.9 * s, y - 13.2 * s);
-  p.cubicTo(x - 3.9 * s, y - 15.4 * s, x - 2.2 * s, y - 16.7 * s, x, y - 16.7 * s);
-  p.cubicTo(x + 2.2 * s, y - 16.7 * s, x + 3.9 * s, y - 15.4 * s, x + 3.9 * s, y - 13.2 * s);
-  p.cubicTo(x + 3.9 * s, y - 11.9 * s, x + 3.2 * s, y - 10.6 * s, x + 2.0 * s, y - 9.6 * s);
-  p.cubicTo(x + 2.1 * s, y - 8.6 * s, x + 2.8 * s, y - 8.1 * s, x + 4.2 * s, y - 7.6 * s);
-  p.cubicTo(x + 6.6 * s, y - 6.8 * s, x + 8 * s, y - 4.6 * s, x + 8 * s, y);
-  p.close();
-}
-
 /** A standing person, front view, drawn to a real height (feet at `gy`,
  *  `u` = px per metre) — for side-view scenes where the figure must stay in
  *  proportion with the speaker and the barrier (owner 2026-09-26: "the
  *  speaker, human figure and height all stay in correct proportional
- *  dimensions"). 1.75 m tall. Body contour + head, one path each. */
+ *  dimensions"). 1.75 m tall. The BODY contour only: the head is the figure's
+ *  own skin-silhouette head, <StandingHead/> (head fix 2026-10-08 — a head on
+ *  a body is never the line-art icon and never a circle). */
 function appendStanding(p: SkPathT, x: number, gy: number, u: number) {
   const P = (dx: number, h: number): [number, number] => [x + dx * u, gy - h * u];
   const pts: [number, number][] = [
@@ -238,8 +227,12 @@ function appendStanding(p: SkPathT, x: number, gy: number, u: number) {
   ];
   pts.forEach(([px, py], i) => (i === 0 ? p.moveTo(px, py) : p.lineTo(px, py)));
   p.close();
-  const [hx, hy] = P(0, 1.63);
-  p.addCircle(hx, hy, 0.12 * u);
+}
+
+/** The head of appendStanding's figure: centred 1.63 m up, a true 0.23 m
+ *  crown→chin, its neck down into the 1.5 m shoulder line. */
+function StandingHead({ x, gy, u }: { x: number; gy: number; u: number }) {
+  return <FigureHeadAt view="front" cx={x} cy={gy - 1.63 * u} h={0.23 * u} neckTo={gy - 1.49 * u} minContour={0.6} />;
 }
 
 /** A handheld/stand microphone seen from above, grille toward +x, rotated
@@ -739,24 +732,26 @@ function buildWalls(
       }
       stroke(chairs, '#3b4256', 1.1 * u, 1);
     } else if (mat === 'audience') {
-      // A seated row from above: shoulders and heads, seat backs behind.
+      // A seated row from above, drawn as SEATING without people (head fix
+      // 2026-10-08, owner decision 3: a crowd this dense is never a row of
+      // circle "heads"): a seat pan per place, its backrest on the wall side.
       fill(band(0, T), '#14161d');
       fill(band(0.82 * T, T), '#2a2f3d');
-      const sh = Skia.Path.Make();
-      const heads = Skia.Path.Make();
+      const pans = Skia.Path.Make();
+      const backs = Skia.Path.Make();
       const S = Math.max(7 * u, 0.62 * T);
-      for (let t = S / 2; t < len - S / 3; t += S) {
-        const [cx, cy] = P(t, 0.58 * T);
-        const along = 0.52 * T;
-        const deep = 0.26 * T;
+      const place = (into: SkPathT, t: number, d: number, along: number, deep: number, r: number) => {
+        const [cx, cy] = P(t, d);
         const wR = horiz ? along : deep;
         const hR = horiz ? deep : along;
-        sh.addOval(Skia.XYWHRect(cx - wR / 2, cy - hR / 2, wR, hR));
-        const [hx, hy] = P(t, 0.34 * T);
-        heads.addCircle(hx, hy, 0.19 * T);
+        into.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - wR / 2, cy - hR / 2, wR, hR), r, r));
+      };
+      for (let t = S / 2; t < len - S / 3; t += S) {
+        place(pans, t, 0.42 * T, 0.5 * T, 0.4 * T, 0.08 * T);
+        place(backs, t, 0.7 * T, 0.56 * T, 0.12 * T, 0.05 * T);
       }
-      fill(sh, '#3b4256');
-      fill(heads, '#9aa2b8', 0.9);
+      fill(pans, '#3b4256');
+      fill(backs, '#5a6278', 0.9);
     }
 
     // Reflectivity edge on the room side: bright = reflective, matte = absorbed.
@@ -880,30 +875,11 @@ function SubGlyph({ x, y, dim }: { x: number; y: number; dim: boolean }) {
   );
 }
 
-/** The listener — line-art FRONT-head icon language (head-icon spec: light
- *  uniform stroke, rounded caps, NO fill except the readability plate). */
-function ListenerGlyph({ x, y }: { x: number; y: number }) {
-  const parts = useMemo(() => {
-    const lines = Skia.Path.Make();
-    lines.addCircle(0, -8.4, 4.8); // head
-    lines.moveTo(-8.2, 3.4); // shoulders
-    lines.cubicTo(-6.6, -1.4, -3.2, -3, 0, -3);
-    lines.cubicTo(3.2, -3, 6.6, -1.4, 8.2, 3.4);
-    const plate = Skia.Path.Make();
-    plate.addCircle(0, -8.4, 4.8);
-    plate.moveTo(-8.2, 3.4);
-    plate.cubicTo(-6.6, -1.4, -3.2, -3, 0, -3);
-    plate.cubicTo(3.2, -3, 6.6, -1.4, 8.2, 3.4);
-    plate.close();
-    return { lines, plate };
-  }, []);
-  return (
-    <Group transform={[{ translateX: x }, { translateY: y }]}>
-      <Path path={parts.plate} color={HEAD_PLATE} />
-      <Path path={parts.lines} color={LINE} style="stroke" strokeWidth={1.4} strokeCap="round" strokeJoin="round" />
-      <Path path={parts.lines} color={ACCENT_GREEN} style="stroke" strokeWidth={1.4} strokeCap="round" strokeJoin="round" opacity={0.3} />
-    </Group>
-  );
+/** The listener (fallback while the owner's PNG loads) — the SAME owner ABOVE
+ *  head icon, drawn as vectors (features/lab/headIcons), turned to face the
+ *  source (head fix 2026-10-08). */
+function ListenerGlyph({ x, y, size, rotation }: { x: number; y: number; size: number; rotation: number }) {
+  return <HeadIcon view="above" x={x} y={y} size={size} rotation={rotation} tint={ACCENT_GREEN} tintOpacity={0.3} plate minStroke={1.2} />;
 }
 
 // ── Pressure wavefront ring trains ───────────────────────────────────────────
@@ -2247,8 +2223,10 @@ export function RoomSceneView(p: RoomSceneProps) {
           ) : null;
         })}
         </Group>
-        {/* The listener — the owner's front-head line icon (LINE + a green
-            accent wash), falling back to the vector glyph while it loads. */}
+        {/* The listener — the owner's ABOVE head icon (LINE + a green accent
+            wash), turned to face the first source (head fix 2026-10-08: a lone
+            head in a plan uses the above icon, rotated to where the person
+            faces), falling back to the same icon in vectors while it loads. */}
         {p.listenerKind === 'mic' ? (
           (() => {
             const mx = geo.x0 + scene.listener.x * geo.pxPerM;
@@ -2265,23 +2243,39 @@ export function RoomSceneView(p: RoomSceneProps) {
             const feetY = geo.y0 + (scene.listener.y + 1.55) * geo.pxPerM;
             const fig = Skia.Path.Make();
             appendStanding(fig, ex, feetY, geo.pxPerM);
-            return <LineBust path={fig} stroke={LINE} sw={Math.max(1, 0.05 * geo.pxPerM)} />;
+            return (
+              <>
+                <LineBust path={fig} stroke={LINE} sw={Math.max(1, 0.05 * geo.pxPerM)} />
+                <StandingHead x={ex} gy={feetY} u={geo.pxPerM} />
+              </>
+            );
           })()
-        ) : headFrontImg ? (
-          <>
-            {/* Dark backing disc + light ring: the thin line head vanished on
-                a black node line and blended into bright maps — the lesson's
-                "drag the listener" needs it findable on ANY colour
-                (walkthrough 2026-09-26). */}
-            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={headPx * 0.62} color={BG} opacity={0.72} />
-            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={headPx * 0.62} color={LINE} style="stroke" strokeWidth={Math.max(0.8, 0.06 * headPx)} opacity={0.9} />
-            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={headPx} color={LINE} plate />
-            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={headPx} color={ACCENT_GREEN} opacity={0.28} />
-          </>
         ) : (
-          <Group origin={vec(geo.x0 + scene.listener.x * geo.pxPerM, geo.y0 + scene.listener.y * geo.pxPerM)} transform={[{ scale: ts }]}>
-            <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
-          </Group>
+          (() => {
+            const lx = geo.x0 + scene.listener.x * geo.pxPerM;
+            const ly = geo.y0 + scene.listener.y * geo.pxPerM;
+            const src = scene.sources[0];
+            const rot = src ? aboveRotation(src.x - scene.listener.x, src.y - scene.listener.y) : 0;
+            return headFrontImg ? (
+              <>
+                {/* Dark backing disc + light ring: the thin line head vanished on
+                    a black node line and blended into bright maps — the lesson's
+                    "drag the listener" needs it findable on ANY colour
+                    (walkthrough 2026-09-26). */}
+                <Circle cx={lx} cy={ly} r={headPx * 0.62} color={BG} opacity={0.72} />
+                <Circle cx={lx} cy={ly} r={headPx * 0.62} color={LINE} style="stroke" strokeWidth={Math.max(0.8, 0.06 * headPx)} opacity={0.9} />
+                <Group origin={vec(lx, ly)} transform={[{ rotate: rot }]}>
+                  <IconMark image={headFrontImg} cx={lx} cy={ly} size={headPx} color={LINE} plate />
+                  <IconMark image={headFrontImg} cx={lx} cy={ly} size={headPx} color={ACCENT_GREEN} opacity={0.28} />
+                </Group>
+              </>
+            ) : (
+              <>
+                <Circle cx={lx} cy={ly} r={headPx * 0.62} color={BG} opacity={0.72} />
+                <ListenerGlyph x={lx} y={ly} size={headPx * 0.69} rotation={rot} />
+              </>
+            );
+          })()
         )}
         {/* The singled-out path (Echo: the far-wall return). */}
         {highlightPathPx ? <GlowStroke path={highlightPathPx} color={WAVE} width={2.2 * ts} opacity={0.95} /> : null}
@@ -2800,6 +2794,7 @@ export function BarrierSceneView(p: {
           <BlurMask blur={0.25 * ppm} style="normal" />
         </Circle>
         <LineBust path={bust} stroke={LINE} sw={Math.max(1, 0.06 * ppm)} />
+        <StandingHead x={lx} gy={groundY} u={ppm} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {/* Ring floor disclosed: above ~420 Hz the true λ is finer than the
@@ -2983,14 +2978,12 @@ export function GradientSceneView(p: {
     return path;
   }, [w, wind, ts]);
 
-  const bust = useMemo(() => {
-    const path = Skia.Path.Make();
-    // Ear (≈13 bust units up) at a standing 1.6 m on the SAME ×20 height scale
-    // as the rays, so a ray printed at ear height visibly reaches the head
-    // (proportion audit 2026-09-26: the bust stood ~0.7 m tall).
-    appendBust(path, x0px + GRAD_LISTENER_M * ppm, groundY, (1.6 * ppmY) / 13);
-    return path;
-  }, [x0px, ppm, ppmY, groundY]);
+  // The distant listener — the owner's SIDE head icon facing the source (head
+  // fix 2026-10-08: a lone head, never a bust). Its neck stands on the ground
+  // and its EAR sits at a standing 1.6 m on the SAME ×20 height scale as the
+  // rays, so a ray printed at ear height visibly reaches the head (proportion
+  // audit 2026-09-26). The ear's centre is 29.9 head units above the neck base.
+  const listenerHead = { x: x0px + GRAD_LISTENER_M * ppm, size: ((1.6 * ppmY) / 29.9) * SIDE_CANON.height };
 
   // "UNIFORM AIR" must account for wind shear too (fix 2026-08-28) — it was
   // printed over a visibly bent ray fan whenever WIND alone did the bending.
@@ -3026,7 +3019,7 @@ export function GradientSceneView(p: {
         <SkLine p1={{ x: x0px, y: groundY - h0 * ppmY + 9 * ts }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2 * ts} />
         <SideSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
         {/* The distant listener. */}
-        <LineBust path={bust} stroke={LINE} sw={1.2 * ts} />
+        <HeadIcon view="side" anchor="neck" x={listenerHead.x} y={groundY} size={listenerHead.size} facing="left" plate minStroke={1.2 * ts} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {topLabel ? <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: 12 * ts, top: 10 * ts }]}>{topLabel}</RNText> : null}

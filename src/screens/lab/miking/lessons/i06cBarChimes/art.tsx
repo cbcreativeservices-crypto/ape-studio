@@ -65,7 +65,7 @@ function sideArt(v: VariantId): ReactElement {
   return (
     <Group>
       <Floor u0={-4000} u1={5000} />
-      <PlayerInk path={playerSide([hand])} />
+      <PlayerInk path={playerSide([hand])} head="side" />
       <Rod path={polyPath([[0, 0], [0, RAIL_Y]])} d={STAND.r * 2} pal={STEEL} />
       {rows.map((x) => (
         <Group key={x}>
@@ -88,7 +88,7 @@ function topArt(v: VariantId): ReactElement {
   shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-dep / 2 + 8, -HALF + 10, dep, 2 * HALF), 8, 8));
   return (
     <Group>
-      <PlayerInk path={playerTop([[-40, -HALF + 20]])} faint />
+      <PlayerInk path={playerTop([[-40, -HALF + 20]])} faint head="top" />
       <Circle cx={0} cy={STAND.z} r={STAND.r + 4} color="#3a3e46" />
       <Path path={polyPath([[0, STAND.z], [0, HALF - 10]])} style="stroke" strokeWidth={10} color="#5a5f6a" />
       <Path path={shadow} color="#000" opacity={0.45}>
@@ -163,7 +163,7 @@ function FrontImpl({ variant, highlight }: { variant: VariantId; highlight: stri
   return (
     <Group>
       <Floor u0={-2400} u1={2400} />
-      <PlayerInk path={playerFront([handAt])} faint />
+      <PlayerInk path={playerFront([handAt])} faint head="front" />
       {hl('bc.stand') ? <Path path={polyPath([[FU(STAND.z), -40], [FU(STAND.z), RAIL_Y]])} style="stroke" strokeWidth={50} color={HIGHLIGHT} opacity={0.3} /> : null}
       <Rod path={polyPath([[FU(STAND.z), 0], [FU(STAND.z), RAIL_Y], [FU(HALF) + 12, RAIL_Y]])} d={STAND.r * 2} pal={STEEL} />
       {[...bars].sort((a, b) => a.x - b.x).map((b, i) => (

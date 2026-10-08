@@ -7,14 +7,14 @@
  * from the upper left. Paths are built once (useMemo); nothing moves (D8).
  */
 import { useMemo } from 'react';
-import { BlurMask, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { smoothPathD, tubeOutline, type Pt } from './hands.ts';
 import { SKIN, SKIN_RIM, SLEEVE, SLEEVE_RIM } from './Hand';
 import { PLAYER } from './geom.ts';
-import { make, oval } from '../concert/paths.ts';
+import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 
 const fromD = (d: string) => Skia.Path.MakeFromSVGString(d) ?? Skia.Path.Make();
-const HAIR = ['#4a3426', '#2b1d14', '#140d09'];
 const TROUSER = ['#3a3f4a', '#23272f', '#14161b'];
 const tube = (a: Pt, b: Pt, w0: number, w1: number) => fromD(smoothPathD(tubeOutline([a, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], b], w0, w1)));
 
@@ -47,34 +47,13 @@ export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
       [-440, H(520)],
       [-462, H(960)],
     ];
-    const neck: Pt[] = [
-      [-392, H(1440)],
-      [-300, H(1440)],
-      [-292, H(1540)],
-      [-390, H(1556)],
-    ];
-    const hair: Pt[] = [
-      [-448, H(1600)],
-      [-430, H(1700)],
-      [-340, H(1742)],
-      [-262, H(1700)],
-      [-286, H(1672)],
-      [-360, H(1660)],
-      [-404, H(1580)],
-    ];
-    const nose: Pt[] = [
-      [-252, H(1640)],
-      [-236, H(1606)],
-      [-252, H(1596)],
-    ];
     return {
       torso: fromD(smoothPathD(torso)),
       legs: fromD(smoothPathD(legs)),
-      neck: fromD(smoothPathD(neck)),
-      head: oval(make(), -346, H(1632), 100, 116),
-      ear: oval(make(), -378, H(1624), 15, 24),
-      hair: fromD(smoothPathD(hair)),
-      nose: fromD(smoothPathD(nose, false)),
+      // The head and neck: the figure's own skin silhouette in profile,
+      // facing +x, the neck down into the collar (head fix 2026-10-08 — a head
+      // ON A BODY is PlayerFigure's FigureHead, never an oval with hair).
+      head: headProfile(pt(-346, H(1632)), 108, H(1440), 1).fill,
       belt: fromD(smoothPathD([[-272, H(952)], [-468, H(944)]], false)),
     };
   }, []);
@@ -84,29 +63,18 @@ export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
         <LinearGradient start={vec(PLAYER.backX, -900)} end={vec(PLAYER.chestX, 0)} colors={TROUSER} />
       </Path>
       <Path path={g.legs} style="stroke" strokeWidth={2.2} color="#0b0c0f" />
-      <Path path={g.neck}>
-        <LinearGradient start={vec(-390, -1560)} end={vec(-290, -1440)} colors={SKIN} />
-      </Path>
+      <FigureHead fill={g.head} />
       <Path path={g.torso}>
         <LinearGradient start={vec(PLAYER.backX, -1460)} end={vec(PLAYER.chestX, -940)} colors={SLEEVE} />
       </Path>
       <Path path={g.torso} style="stroke" strokeWidth={2.4} color={SLEEVE_RIM} />
       <Path path={g.belt} style="stroke" strokeWidth={14} strokeCap="round" color="#17181c" />
-      <Path path={g.head}>
-        <RadialGradient c={vec(-320, -1680)} r={190} colors={SKIN} />
-      </Path>
-      <Path path={g.head} style="stroke" strokeWidth={2.2} color={SKIN_RIM} />
-      <Path path={g.hair}>
-        <LinearGradient start={vec(-450, -1740)} end={vec(-260, -1580)} colors={HAIR} />
-      </Path>
-      <Path path={g.ear} color={SKIN[2]} />
-      <Path path={g.ear} style="stroke" strokeWidth={1.6} color={SKIN_RIM} />
-      <Path path={g.nose} style="stroke" strokeWidth={2.2} strokeCap="round" strokeJoin="round" color={SKIN_RIM} />
     </Group>
   );
 }
 
-/** The standing player from above: shoulders, the head (hair), facing +x. */
+/** The standing player from above: shoulders and the head — the figure's own
+ *  skin silhouette from above (head fix 2026-10-08), facing +x. */
 export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
   const g = useMemo(() => {
     const x = PLAYER.shoulderX;
@@ -123,8 +91,7 @@ export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
     return {
       sh: fromD(smoothPathD(sh)),
       shadow: fromD(smoothPathD(sh.map((p) => [p[0] + 18, p[1] + 26] as Pt))),
-      head: oval(make(), x + 4, 0, 108, 92),
-      nose: oval(make(), x + 112, 0, 14, 12),
+      head: headAbove(pt(0, 0), 100).fill,
     };
   }, []);
   const x = PLAYER.shoulderX;
@@ -137,11 +104,9 @@ export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
         <LinearGradient start={vec(x - 130, -250)} end={vec(x + 120, 250)} colors={SLEEVE} />
       </Path>
       <Path path={g.sh} style="stroke" strokeWidth={2.4} color={SLEEVE_RIM} />
-      <Path path={g.nose} color={SKIN[1]} />
-      <Path path={g.head}>
-        <RadialGradient c={vec(x - 40, -40)} r={150} colors={HAIR} />
-      </Path>
-      <Path path={g.head} style="stroke" strokeWidth={2} color="#0c0806" />
+      <Group transform={[{ translateX: x + 4 }, { rotate: -Math.PI / 2 }]}>
+        <FigureHead fill={g.head} />
+      </Group>
     </Group>
   );
 }

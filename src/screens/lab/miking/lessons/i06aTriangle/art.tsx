@@ -88,7 +88,7 @@ function sideArt(v: VariantId): ReactElement {
   return (
     <Group>
       <Floor u0={-3000} u1={3000} />
-      <PlayerInk path={playerSide(held ? [hand, strikeHand] : [[-200, P0.y + 40], [-210, P0.y + 90]])} />
+      <PlayerInk path={playerSide(held ? [hand, strikeHand] : [[-200, P0.y + 40], [-210, P0.y + 90]])} head="side" />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[STAND.x, 0], [STAND.x, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
@@ -124,7 +124,7 @@ function topArt(v: VariantId): ReactElement {
   shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-14, z0 - 6, 28, z1 - z0 + 12), 14, 14));
   return (
     <Group>
-      <PlayerInk path={playerTop(held ? [hand, strikeHand] : [[-200, -90], [-200, 90]])} faint />
+      <PlayerInk path={playerTop(held ? [hand, strikeHand] : [[-200, -90], [-200, 90]])} faint head="top" />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[STAND.x, -STAND.barHalf], [STAND.x, STAND.barHalf]])} d={14} pal={STEEL} />
@@ -221,7 +221,7 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
   return (
     <Group>
       <Floor u0={-2000} u1={2000} />
-      <PlayerInk path={playerFront(held ? [[60, CLIP_Y - 25], [-170, BASE_Y + 110]] : [[-150, P0.y + 80], [150, P0.y + 80]])} faint />
+      <PlayerInk path={playerFront(held ? [[60, CLIP_Y - 25], [-170, BASE_Y + 110]] : [[-150, P0.y + 80], [150, P0.y + 80]])} faint head="front" />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[0, 0], [0, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
