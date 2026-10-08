@@ -41,13 +41,13 @@ function atPlace(spec: VoiceZoneSpec, p: Vec3): DocumentedZone {
   const base = voiceZone(B04_MODEL, FRAME_V, spec, MIC_TYPES);
   return { ...base, start: { p, ...aimOf(sub(LIP, p)) } };
 }
-const BOOM_PROV = ill('no source gives a boom distance: 35–120 cm is the lab’s band; each start is DERIVED — 15 cm outside the widest frame on its line, aimed at the mouth (cameraFrame.boomOutside; the angles are the lab’s drawing)');
+const BOOM_PROV = ill('no source gives a boom distance: 35–120 cm is the lab’s band; each start is DERIVED — the tip 15 cm outside the widest frame on its line, aimed at the mouth, read to the capsule 20 cm behind it (owner 2026-10-08) (cameraFrame.boomOutside; the angles are the lab’s drawing)');
 const near = (d: number) => [d, d + 40, d + 80, d + 150, d + 250, d + 350];
 
 const ABOVE: VoiceZoneSpec = {
   id: 'b4.above',
   label: 'Above the frame, aimed at the mouth',
-  band: `After our research, here is where we recommend you begin: as close as the picture allows — the mic just above the top of the widest frame and a little in front, about 15 cm clear of its edge, aimed down at the mouth. In this close shot that is about ${cm(BOOM_ABOVE.d)} cm from the lips.`,
+  band: `After our research, here is where we recommend you begin: as close as the picture allows — the mic just above the top of the widest frame and a little in front, about 15 cm clear of its edge, aimed down at the mouth. In this close shot its capsule is about ${cm(BOOM_ABOVE.d)} cm from the lips.`,
   kind: 'sourced',
   src: 'R-BOOM',
   quote: 'boom from above, or below if absolutely necessary',
@@ -55,7 +55,7 @@ const ABOVE: VoiceZoneSpec = {
   distance: { min: 350, max: 1200 },
   off: { min: 30, max: 80, toward: 'up', prov: ill('above the mouth and a little in front: 30–80° above its axis (the lab’s drawing)') },
   aimTol: 15,
-  micTypeIds: ['locBoomSg', 'locBoomHyper'],
+  micTypeIds: ['locBoomSgCap', 'locBoomHyper'],
   mount: 'clip',
   variants: ['close', 'live'],
   start: { d: near(BOOM_ABOVE.d), deg: 45, spread: 12, at: 'mouth' },
@@ -81,7 +81,7 @@ const COMPACT: VoiceZoneSpec = {
 const BELOW: VoiceZoneSpec = {
   id: 'b4.below',
   label: 'Below the frame, aimed up at the mouth',
-  band: `When the top of the picture, the light or the set blocks overhead, an idea to try: the mic below the bottom of the frame, about 15 cm clear of it, aimed up at the mouth — here about ${cm(BOOM_BELOW.d)} cm away.`,
+  band: `When the top of the picture, the light or the set blocks overhead, an idea to try: the mic below the bottom of the frame, about 15 cm clear of it, aimed up at the mouth — here its capsule about ${cm(BOOM_BELOW.d)} cm away.`,
   kind: 'sourced',
   src: 'R-BOOM',
   quote: 'boom from above, or below if absolutely necessary',
@@ -89,7 +89,7 @@ const BELOW: VoiceZoneSpec = {
   distance: { min: 350, max: 1200 },
   off: { min: 30, max: 80, toward: 'down', prov: ill('below the mouth and a little in front: 30–80° below its axis (the lab’s drawing)') },
   aimTol: 15,
-  micTypeIds: ['locBoomSg', 'locBoomHyper'],
+  micTypeIds: ['locBoomSgCap', 'locBoomHyper'],
   mount: 'clip',
   variant: 'close',
   start: { d: near(BOOM_BELOW.d), deg: 45, spread: 12, at: 'mouth' },
@@ -100,7 +100,7 @@ const BELOW: VoiceZoneSpec = {
 const SIDE: VoiceZoneSpec = {
   id: 'b4.side',
   label: 'Beside the frame — a conditional start',
-  band: `Only when the shot and the blocking leave no better place: beside the frame at about mouth height, about 15 cm clear of its edge, aimed at the mouth — here about ${cm(BOOM_SIDE.d)} cm away. Audition it; do not assume it.`,
+  band: `Only when the shot and the blocking leave no better place: beside the frame at about mouth height, about 15 cm clear of its edge, aimed at the mouth — here its capsule about ${cm(BOOM_SIDE.d)} cm away. Audition it; do not assume it.`,
   kind: 'sourced',
   src: 'S-SHOTGUN',
   quote: 'slightly above, below, or to the side of the sound source',
@@ -108,7 +108,7 @@ const SIDE: VoiceZoneSpec = {
   distance: { min: 350, max: 1300 },
   off: { min: 50, max: 100, toward: 'left', prov: ill('beside the mouth on the operator’s side: 50–100° off its axis (the lab’s drawing)') },
   aimTol: 15,
-  micTypeIds: ['locBoomSg', 'locBoomHyper'],
+  micTypeIds: ['locBoomSgCap', 'locBoomHyper'],
   mount: 'clip',
   variant: 'close',
   start: { d: near(BOOM_SIDE.d), deg: 70, spread: 12, at: 'mouth' },
@@ -160,11 +160,12 @@ function camZone(id: string, label: string, variant: 'close' | 'wide' | 'live', 
 
 export const B04_ZONES: DocumentedZone[] = [
   atPlace(ABOVE, BOOM_ABOVE.p),
-  atPlace(COMPACT, BOOM_ABOVE.p),
+  // A compact hypercardioid has no tube: its front sits where the shotgun’s tip does.
+  atPlace(COMPACT, BOOM_ABOVE.tip),
   atPlace(BELOW, BOOM_BELOW.p),
   atPlace(SIDE, BOOM_SIDE.p),
   camZone('b4.cam', 'On the camera — as far away as the camera is', 'close', ['close', 'live'], CAMMIC_CLOSE.p, `For a reference or a backup track: a short shotgun on the camera’s shoe, aimed at the talker — about ${(Math.hypot(CAMMIC_CLOSE.p.x, CAMMIC_CLOSE.p.y) / 1000).toFixed(1)} m from the lips here; move the camera back and it goes back too.`),
   atPlace(LAVZ, LAV.at),
-  atPlace({ ...ABOVE, id: 'b4.above.wide', label: 'Above the wider frame, aimed at the mouth', band: `In the wide shot the frame’s top is higher: as close as it allows, the mic about 15 cm above it and a little in front, aimed at the mouth — about ${cm(BOOM_WIDE.d)} cm from the lips, farther than in the close shot.`, variants: undefined, variant: 'wide', start: { d: near(BOOM_WIDE.d), deg: 45, spread: 12, at: 'mouth' } }, BOOM_WIDE.p),
+  atPlace({ ...ABOVE, id: 'b4.above.wide', label: 'Above the wider frame, aimed at the mouth', band: `In the wide shot the frame’s top is higher: as close as it allows, the mic about 15 cm above it and a little in front, aimed at the mouth — its capsule about ${cm(BOOM_WIDE.d)} cm from the lips, farther than in the close shot.`, variants: undefined, variant: 'wide', start: { d: near(BOOM_WIDE.d), deg: 45, spread: 12, at: 'mouth' } }, BOOM_WIDE.p),
   camZone('b4.cam.wide', 'On the camera, moved back for the wide shot', 'wide', null, CAMMIC_WIDE.p, `The camera moved back for the wide shot, and its mic went with it — about ${(Math.hypot(CAMMIC_WIDE.p.x, CAMMIC_WIDE.p.y) / 1000).toFixed(1)} m from the lips now: more room and noise against the voice than before.`),
 ];

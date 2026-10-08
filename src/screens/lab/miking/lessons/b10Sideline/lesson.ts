@@ -611,7 +611,7 @@ export const B10_LESSON: Lesson = {
   subtitle: 'One handheld moved to the mouth before the answer starts — a body mic or a boom when there is time, inside the approved area',
   noun: { one: 'interview', many: 'interviews', subject: 'guest', person: true },
   model: B10_MODEL,
-  micTypeIds: ['bcFlagOmni', 'bcFlagCard', 'bcFlagSuper', 'bcHeadsetBoom', 'locLav', 'locBoomSg'],
+  micTypeIds: ['bcFlagOmni', 'bcFlagCard', 'bcFlagSuper', 'bcHeadsetBoom', 'locLav', 'locBoomSgCap'],
   zones: B10_ZONES,
   pages,
   scenarios,
@@ -668,6 +668,6 @@ export const B10_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every voice, wind and stadium is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing side by side, mic patterns and the two-mic comb as textbook shapes, levels by distance alone. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never into play or a route; approval before anything goes on a person.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every voice, wind and stadium is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing side by side, mic patterns and the two-mic comb as textbook shapes, levels by distance alone. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never into play or a route; approval before anything goes on a person.',
   copy: B10_COPY,
 };

@@ -117,7 +117,7 @@ const rims: Rim[] = [
   { id: 'hand.G', label: 'the guest’s hand', c: SHOULDER_GUEST, axis: v3(0, 0, 1), r: 0, types: FLAGS, variants: ['twoMics'] },
   { id: 'clip.ear.R', label: 'the headset over the reporter’s right ear', c: earOf(REPORTER, 'R'), axis: v3(0, 0, 1), r: 0, types: ['bcHeadsetBoom', 'bcHeadsetSuper'], variants: ['sideline'] },
   { id: 'lav', label: 'a clip on the guest’s shirt, at the breastbone', c: LAV_CLIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'], variants: ['postEvent'] },
-  { id: 'grip', label: 'the boom operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, types: ['locBoomSg'], variants: ['postEvent'] },
+  { id: 'grip', label: 'the boom operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, types: ['locBoomSgCap'], variants: ['postEvent'] },
 ];
 
 export const B10_MODEL: InstrumentModel = {

@@ -81,7 +81,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     workedClear: 'Clear of the picture and of people: the mic, the pole and any shadow stay outside every frame; the pole and the operator stay clear of the talker, and nothing swings above anyone. Clearance comes first, before any number.',
     reveal: 'Above tends to sound the most natural; below, more chest and floor; beside, more of the room at head height; the camera’s mic, the most room of all. Rooms vary, so “it depends on this room” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
-      locBoomSg: 'Ideas to try with the short shotgun: as close as the frame allows, aimed at the mouth; then compare a compact directional mic in the same place if the room is reflective.',
+      locBoomSgCap: 'Ideas to try with the short shotgun: as close as the frame allows, aimed at the mouth; then compare a compact directional mic in the same place if the room is reflective.',
       locBoomHyper: 'Ideas to try with a compact hypercardioid: the same place, matched loudness — listen to the reflected speech and the room behind the talker.',
       locBoomFur: 'Ideas to try outdoors: the shotgun in its basket and fur for the wind — it does not keep rain out.',
       camMic: 'Ideas to try with the camera’s mic: a reference track; compare it with the boom at matched loudness, with the camera close and moved back.',
@@ -89,8 +89,8 @@ export const B04_COPY: Partial<LessonCopy> = {
     },
     note: 'The picture first: ask for the widest frame and check it at the mic’s exact place. Never swing a mic, a clamp or a cable above people; an overhead rig is set by qualified crew.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a talker on camera, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, room and voice is different.',
-      separate: 'The side the boom comes from, its distance and its aim are separate variables: change one at a time, with the talker speaking and turning as they really will. Distances are measured to the mic’s front and rounded to about 5 mm — no millimetre claim is made.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a talker on camera, measured from the lips to the front of the mic — a shotgun’s capsule. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, room and voice is different.',
+      separate: 'The side the boom comes from, its distance and its aim are separate variables: change one at a time, with the talker speaking and turning as they really will. Distances are measured to the mic’s front — a shotgun’s to its capsule, about 20 cm behind the tip — and rounded to about 5 mm; no millimetre claim is made.',
       clearance: 'Clearance comes first: outside every frame, clear of the light’s shadows, the pole and the operator clear of the talker, nothing above anyone’s head.',
       tendencies: 'Closer tends to bring more voice and less room; the shotgun’s narrower pickup higher up does not reach farther; a wider shot means a farther boom. These are tendencies, and rooms vary.',
     },
@@ -101,7 +101,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     zone: 'b4.above',
     typeId: 'locBoomHyper',
     patterns: [
-      { id: 'supercardioid', label: 'short shotgun (drawn as a supercardioid)', typeId: 'locBoomSg' },
+      { id: 'supercardioid', label: 'short shotgun (drawn as a supercardioid)', typeId: 'locBoomSgCap' },
       { id: 'hypercardioid', label: 'compact hypercardioid', typeId: 'locBoomHyper' },
     ],
     micNoun: 'A boom mic',
@@ -129,7 +129,7 @@ export const B04_COPY: Partial<LessonCopy> = {
   twoMic: {
     variant: 'close',
     label: 'The boom and the safety lav',
-    A: { typeId: 'locBoomSg', pattern: 'supercardioid', zone: 'b4.above' },
+    A: { typeId: 'locBoomSgCap', pattern: 'supercardioid', zone: 'b4.above' },
     B: { typeId: 'locLav', pattern: 'omni', zone: 'b4.lav' },
     learn: [
       'A boom for the program and a lav as a safety track hear the same voice — the lav first, close on the chest, the boom a little later from above. Summed, the voice combs.',
@@ -142,7 +142,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     instrument: 'the talker',
     startIntro: INTRO,
     startNew: 'Good — NEXT takes you through the talker and the frame first. You can change how you started here at any time.',
-    otherRef: 'Every starting point here is measured from the lips — where the voice leaves — to the front of the mic. A boom’s place is set by the frame: as close as the picture allows.',
+    otherRef: 'Every starting point here is measured from the lips — where the voice leaves — to the front of the mic — a shotgun’s capsule, about 20 cm behind its tip. A boom’s place is set by the frame: as close as the picture allows.',
     clipMount: 'Mount: a boom pole held by an operator outside the frame (a suspension on its end), the camera’s shoe, or a clip on the clothes',
     standMount: 'Mount: a boom stand rigged and secured by qualified crew',
     observation: 'For a real talker and crew, with their agreement. Write tendencies in words — what you heard, not a promised result.',

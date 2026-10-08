@@ -71,6 +71,27 @@ describe('L6A — F09 reads a shotgun to its capsule', () => {
   });
 });
 
+describe('L6A extended (owner: capsule everywhere) — B04, B10, B11', () => {
+  it('the Lab 7 booms use the capsule-read shotgun; the camera mic carries its tube', () => {
+    for (const id of ['B04', 'B10', 'B11']) {
+      const L = lesson(id);
+      assert.ok(L.micTypeIds.includes('locBoomSgCap') && !L.micTypeIds.includes('locBoomSg'), id);
+      assert.match(L.accuracyDetail, /a shotgun’s capsule, about 20 cm behind its tip/, id);
+    }
+    assert.equal(MIC_TYPES.camMic.body.fore?.mm, 130);
+    assert.equal(MIC_TYPES.camMic.body.length.mm + 130, 180);
+  });
+  it('the starts moved back 20 cm along the same line, so the drawn tip stays put', () => {
+    const z = (id: string, zid: string) => lesson(id).zones.find((q) => q.id === zid)!;
+    const above = z('B04', 'b4.above');
+    const compact = z('B04', 'b4.compact');
+    assert.ok(Math.abs(len(above.start.p) - len(compact.start.p) - 200) < 1, 'the compact (no tube) sits at the shotgun’s tip');
+    assert.match(src('lessons/b10Sideline/model.ts'), /start: \{ d: \[900, /);
+    assert.match(src('lessons/b11Athletes/model.ts'), /start: \{ d: \[1200, /);
+    assert.match(src('lessons/b04BoomCamera/pages.tsx'), /tube: SHOTGUN_CAPSULE_MM,\n\s+camTube: CAM_CAPSULE_MM,/);
+  });
+});
+
 describe('Lab 6 — F06 and the titles', () => {
   it('L6F: the 60 cm spaced pair adds the wider-spacing line', () => {
     const t = src('lessons/f06Ambience/model.ts');

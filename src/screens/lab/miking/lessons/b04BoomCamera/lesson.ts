@@ -619,7 +619,7 @@ export const B04_LESSON: Lesson = {
   subtitle: 'A boom just outside the widest frame, aimed at the mouth — and the camera’s own mic, as far away as the camera',
   noun: { one: 'talker', many: 'talkers', subject: 'talker', person: true },
   model: B04_MODEL,
-  micTypeIds: ['locBoomSg', 'locBoomHyper', 'camMic', 'locLav'],
+  micTypeIds: ['locBoomSgCap', 'locBoomHyper', 'camMic', 'locLav'],
   zones: B04_ZONES,
   pages,
   scenarios,
@@ -677,6 +677,6 @@ export const B04_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never swing gear over people; no pole near power lines; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never swing gear over people; no pole near power lines; never provoke feedback.',
   copy: B04_COPY,
 };

@@ -612,7 +612,7 @@ export const B11_LESSON: Lesson = {
   subtitle: 'Approval is the first mic position: a chest mic or a headset where allowed, the private circuit kept closed, a fallback ready',
   noun: { one: 'wearer', many: 'wearers', subject: 'wearer', person: true },
   model: B11_MODEL,
-  micTypeIds: ['locLav', 'bcHeadsetBoom', 'bcHeadsetSuper', 'locBoomSg'],
+  micTypeIds: ['locLav', 'bcHeadsetBoom', 'bcHeadsetSuper', 'locBoomSgCap'],
   zones: B11_ZONES,
   pages,
   scenarios,
@@ -669,6 +669,6 @@ export const B11_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — once it is approved — ideas and concepts to consider, not rules. Every person, kit, rule and mic is different: move the mic, experiment within the approval, and trust your ears. The lab is silent and draws a simplified picture: a generic figure, illustrative keep-out regions, textbook patterns. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Approval first; protective equipment never touched; never into play.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — once it is approved — ideas and concepts to consider, not rules. Every person, kit, rule and mic is different: move the mic, experiment within the approval, and trust your ears. The lab is silent and draws a simplified picture: a generic figure, illustrative keep-out regions, textbook patterns. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Approval first; protective equipment never touched; never into play.',
   copy: B11_COPY,
 };
