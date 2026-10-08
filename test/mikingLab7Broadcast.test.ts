@@ -20,7 +20,7 @@ import { DESK_TOP_Y, HOST, SEATED_FLOOR, SEATED_SOLIDS, TURN_LIMITS, onTalker, p
 import { deskPlate, deskReflection, imageSource, onPlate, reflectionPoint } from '../src/screens/lab/miking/lessons/shared/broadcast/deskReflection.ts';
 import { bleedMatrix, leakCombs, openMics, strongestLeak, threeToOneNote, type PanelMic, type PanelTalker } from '../src/screens/lab/miking/lessons/shared/broadcast/openMicPanel.ts';
 import { CONNECT_WORDS, DESTINATIONS, PRESS_BOX, connect, feeds, reaches, routeProblems, withSends, type RoutingPlan } from '../src/screens/lab/miking/lessons/shared/broadcast/routing.ts';
-import { BROADCAST_MIC_SLOTS, BROADCAST_MIC_TYPES, DESK_ARM } from '../src/screens/lab/miking/lessons/shared/broadcast/broadcastMics.ts';
+import { BROADCAST_MIC_SLOTS, BROADCAST_MIC_TYPES, DESK_ARM, G2_SLOTS } from '../src/screens/lab/miking/lessons/shared/broadcast/broadcastMics.ts';
 import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
 import { LESSONS, labMeta, lessonsOf } from '../src/screens/lab/miking/data/registry.ts';
 import { validateLesson } from '../src/screens/lab/miking/engine/model/validate.ts';
@@ -198,9 +198,16 @@ describe('routing (routing.ts)', () => {
 });
 
 describe('broadcast mics and the drawn arms', () => {
-  it('the group 1 types are in MIC_TYPES; the group 2 and 3 slots are reserved, not defined', () => {
+  it('the group 1 types are in MIC_TYPES; group 2 fills its slots (never twice); the group 3 slot is reserved', () => {
     for (const id of Object.keys(BROADCAST_MIC_TYPES)) assert.ok(MIC_TYPES[id], id);
-    for (const id of [...BROADCAST_MIC_SLOTS.G2, ...BROADCAST_MIC_SLOTS.G3]) assert.ok(!(id in BROADCAST_MIC_TYPES), id);
+    // Group 2 (lab7-g2): every slot resolves to a MIC_TYPES entry; a slot an
+    // earlier lab already filled (shotgunShort, the lav) is not redefined here.
+    for (const id of BROADCAST_MIC_SLOTS.G2) {
+      const fill = G2_SLOTS[id];
+      assert.ok(MIC_TYPES[fill], `${id} → ${fill}`);
+      if (fill !== id || id === 'shotgunShort') assert.ok(!(id in BROADCAST_MIC_TYPES), `${id} is filled elsewhere`);
+    }
+    for (const id of BROADCAST_MIC_SLOTS.G3) assert.ok(!(id in BROADCAST_MIC_TYPES), id);
   });
   it('a desk arm reaches exactly its two segments; its body carries the arm’s drawing', () => {
     const b = micBodyOf(MIC_TYPES.bcDynArm);

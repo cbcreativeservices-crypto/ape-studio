@@ -205,6 +205,10 @@ export const BRAND_NAMES: readonly string[] = [
   'BLX4R',
   'MV7',
   'PodMic',
+  // Lab 7 group 2 (B05, B04, B02): the research's remaining makers' models.
+  'CCM ?41',
+  'B6',
+  'MixPre',
   // Lab 7 part 2, group 1 research (docs/labs/miking/commentators, sideline_interviews, athletes_officials): the
   // headset, lip-mic and intercom makers and models, and the league named. ('Shure', 'Sennheiser', 'DPA', 'RØDE',
   // 'Sound Devices', 'NIOSH' and 'NWS' are in the lists above.)

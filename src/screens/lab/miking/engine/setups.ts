@@ -149,6 +149,14 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   // B06: the aisle question mic is nearer its talker than the lectern
   // gooseneck, but it is not a live start for the presenter.
   B06: { close: null },
+  // Lab 7 group 2 — body-worn and camera. B04: the safety lav is nearer the
+  // mouth but is a fallback track, not a live start; the farther view is the
+  // camera's own mic (close and wide shots) — CORRECTIONS_LOG L7G2-11.
+  B04: { close: null, distant: ['b4.cam', 'b4.cam.wide'] },
+  // B02: the live start is the desk gooseneck (a public interview); the
+  // farther view is the boundary on the desk, not the fixed boom (an engine
+  // 'stand' mic the distance rule would take).
+  B02: { close: ['b2.goose'], distant: ['b2.boundary'] },
   // Lab 7 · part 2 · G1 — speech in sport (commentators/, sideline_interviews/,
   // athletes_officials/GEOMETRY_PROPOSAL.md §4–5). B09: the lip ribbon is the
   // open position's close start; the desk-arm mic in a quiet booth is the

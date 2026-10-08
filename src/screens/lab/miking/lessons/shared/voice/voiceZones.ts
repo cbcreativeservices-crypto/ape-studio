@@ -40,7 +40,7 @@ export function mouthLine(V: VoiceAnchor, opts: { id?: string; surface?: string;
     point: V.lip,
     dir: V.fwd,
     surfaces: [opts.surface ?? 'mouth'],
-    words: { plus: 'off the mouth’s axis', minus: 'off the mouth’s axis', keyPlus: 'OFF AXIS', keyMinus: 'OFF AXIS' },
+    words: { plus: 'off', minus: 'off', keyPlus: 'OFF AXIS', keyMinus: 'OFF AXIS' },
     ...(opts.variants ? { variants: opts.variants } : {}),
   };
 }

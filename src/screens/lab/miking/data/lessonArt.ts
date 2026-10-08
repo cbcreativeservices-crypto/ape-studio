@@ -245,6 +245,13 @@ import { B07_ART } from '../lessons/b07Voiceover/art';
 ART.B07 = B07_ART;
 import { B06_ART } from '../lessons/b06Panels/art';
 ART.B06 = B06_ART;
+/* Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line). */
+import { B05_ART } from '../lessons/b05Lavalier/art';
+ART.B05 = B05_ART;
+import { B04_ART } from '../lessons/b04BoomCamera/art';
+ART.B04 = B04_ART;
+import { B02_ART } from '../lessons/b02NewsAnchor/art';
+ART.B02 = B02_ART;
 /* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
 import { B09_ART } from '../lessons/b09Commentators/art';
 ART.B09 = B09_ART;
