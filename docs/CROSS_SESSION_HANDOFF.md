@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:10 · ccode · 22b6d7ae
+changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 4, sentry fixes)
+affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
 ### 2026-10-07 23:57 · ccode · 6fc407d4
 changed: Miking Lab 6 group 1: sources, corrections log and 412x915 captures
 affects other side: nothing (docs and captures only)
