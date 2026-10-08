@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 12:07 · ccode · 814988e0
+changed: docs: handoff stub filled
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-08 12:04 · ccode · 50ab08f3
 changed: Lab full screen turns with the phone: lift the portrait lock while it is up, restore on close
 affects other side: nothing (client-only orientation)
