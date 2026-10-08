@@ -31,9 +31,9 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   // F10 location and spatial; group 4: F11–F13 measurement): the blurb names
   // only what is built; later groups widen it as they land.
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: 'Microphones on a Foley stage, on location, in the field and for measurement, on drawn stages, sets, sites, benches and rooms — footsteps, cloth, props, impacts and a little water with the performer’s whole movement kept clear; speech with the camera’s frame, the boom, the body mic and the practical sounds of a scene; spatial pickup for headphones, surround and Ambisonics with the channel maps that keep it right; the measurement chain and its field check, where a measurement mic or a meter goes for the question asked, and the honest label for the result. Safety in plain words. Silent; suggested starting points.', family: 'Foley, Field & Scientific', familyBlurb: 'Miking Foley, location, the field and measurement' },
-  // Not built yet: no ready lesson, so neither the lab nor its family tile is
-  // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
-  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
+  // Lab 7 is filled by groups (part 2, group 2: B12–B14 action pickup on fields
+  // and courts): the blurb names only what is built; later groups widen it.
+  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: 'Microphones for sport, on drawn fields, diamonds and courts — approved perimeter shotguns aimed into named zones, a tracked parabolic dish, fixed ambience and boundary mics, the coverage map with its handoffs and the headroom of the whole chain, every position approved and clear of play. Safety in plain words. Silent; suggested starting points.', family: 'Sports & Broadcast', familyBlurb: 'Miking sport, from the field to the court' },
 ];
 
 export const LESSONS: readonly LessonMeta[] = [
@@ -152,6 +152,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'F11', labId: 'field', title: 'Measurement Microphones and Calibration', subtitle: 'The question first, the right field and power path, a check before and after — and an honest label', status: 'ready' },
   { id: 'F12', labId: 'field', title: 'Sound Level and Environmental Noise', subtitle: 'A named question and window, the method’s height, an open or facade position — and a conclusion no bigger than the evidence', status: 'ready' },
   { id: 'F13', labId: 'field', title: 'Room Acoustics and Reverberation', subtitle: 'Room only or system + room, seats that differ, a tail above the floor — T20, T30 and EDT kept apart', status: 'ready' },
+  /* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
+  { id: 'B12', labId: 'broadcast', title: 'Parabolic and Tracked Action Pickup', subtitle: 'The bowl helps the highs on its axis: the maker’s focus, small turns inside an approved arc, and a planned handoff', status: 'ready' },
+  { id: 'B13', labId: 'broadcast', title: 'Field and Diamond Sports', subtitle: 'From an approved place: a perimeter shotgun on a named zone, a tracked dish, a fixed ambience bed — and an honest coverage map', status: 'ready' },
+  { id: 'B14', labId: 'broadcast', title: 'Court, Racket and Ice Sports', subtitle: 'Outside the clear space, aimed at the contact height: perimeter and compact mics, the floor boundary, approved plants — air kept apart from structure', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

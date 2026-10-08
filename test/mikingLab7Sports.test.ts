@@ -37,6 +37,14 @@ import { AIM_TRIALS, DISHES, focalLength, gainOnsetHz, halfWidthAt, raySet, refl
 import { HEIGHTS, firstNotch, paths, perpendicularNotch } from '../src/screens/lab/miking/lessons/shared/sports/boundary.ts';
 import { INDOOR_ROWS, OUTDOOR_ROWS, SPORTS_SAFETY } from '../src/screens/lab/miking/lessons/shared/sports/safety.ts';
 import { SPORTS_MIC_TYPES } from '../src/screens/lab/miking/lessons/shared/sports/sportsMics.ts';
+import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
+import { LESSONS, labMeta, lessonsOf } from '../src/screens/lab/miking/data/registry.ts';
+import { MIC_TYPES } from '../src/screens/lab/miking/data/micTypes.ts';
+import { validateLesson } from '../src/screens/lab/miking/engine/model/validate.ts';
+import { itemRules } from './_mikingItemRules.ts';
+import { B13_PLACE, B13_SETUPS, B13_COVERAGE, B13_OVERLAP } from '../src/screens/lab/miking/lessons/b13FieldDiamond/model.ts';
+import { B12_PLACE, B12_SETUPS, TRACK_PATH, F as B12_F } from '../src/screens/lab/miking/lessons/b12Parabolic/model.ts';
+import { B14_PLACE, B14_SETUPS, B14_OVERLAP } from '../src/screens/lab/miking/lessons/b14CourtIce/model.ts';
 
 const near = (a: number, b: number, tol: number) => Math.abs(a - b) <= tol;
 
@@ -240,5 +248,79 @@ describe('the one safety card (safety.ts)', () => {
     assert.equal(t.body.radius.mm, DISHES.large.D / 2);
     assert.ok(t.body.radius.placeholder && t.body.length.placeholder);
     assert.equal(t.patterns[0].id, 'unstated');
+  });
+});
+
+/* ═════════ the three lessons (B12, B13, B14) ═════════ */
+
+const G2 = ['B12', 'B13', 'B14'] as const;
+
+describe('Lab 7 part 2, group 2: registry and validity', () => {
+  it('B12, B13, B14 are ready lessons of the broadcast lab, in one contiguous block; the lab has its blurb', () => {
+    const ids = lessonsOf('broadcast').map((l) => l.id);
+    for (const id of G2) assert.ok(ids.includes(id), id);
+    const at = LESSONS.findIndex((l) => l.id === 'B12');
+    assert.deepEqual(LESSONS.slice(at, at + 3).map((l) => l.id), [...G2]);
+    assert.ok((labMeta('broadcast')?.blurb.length ?? 0) > 40 && (labMeta('broadcast')?.familyBlurb.length ?? 0) > 10);
+  });
+  for (const id of G2) {
+    it(`${id} validates and follows the item-writing rules`, () => {
+      const l = lessonById(id)!;
+      assert.equal(l.labId, 'broadcast');
+      assert.deepEqual(validateLesson(l, MIC_TYPES), []);
+      itemRules(l);
+    });
+  }
+});
+
+describe('the placement zones and setups sit in approved, clear places', () => {
+  const cases = [
+    { id: 'B13', scene: PRACTICE_FIELD, zones: B13_PLACE, setups: B13_SETUPS },
+    { id: 'B12', scene: PRACTICE_FIELD, zones: B12_PLACE, setups: B12_SETUPS },
+    { id: 'B14', scene: PRACTICE_LINE, zones: B14_PLACE, setups: B14_SETUPS },
+  ];
+  for (const c of cases) {
+    it(`${c.id}: every zone centre is on an approved place, out of play and keep-clear space; every target exists`, () => {
+      for (const z of c.zones) {
+        const centre = { x: (z.rect.x0 + z.rect.x1) / 2, y: (z.rect.y0 + z.rect.y1) / 2 };
+        assert.equal(refusedAt(c.scene, centre), null, z.id);
+        assert.equal(keepClearAt(c.scene, centre), null, z.id);
+        assert.ok(c.scene.targets.some((t) => t.id === z.target), z.id);
+        assert.ok(z.h[0] <= z.h[1]);
+      }
+    });
+    it(`${c.id}: every practice-scene setup mic is on an approved place; at least four core roles`, () => {
+      const core = c.setups.filter((s) => s.core);
+      assert.ok(core.length >= 4, `${core.length}`);
+      assert.equal(c.setups[0].role, 'ONE MIC');
+      for (const s of c.setups) {
+        if (s.scene) {
+          assert.ok(s.noRange, `${s.id}: a sport outline prints no range`);
+          continue;
+        }
+        for (const m of s.mics) assert.equal(refusedAt(c.scene, m.at), null, `${s.id}/${m.id}`);
+      }
+    });
+  }
+  it('the ONE MIC ranges are the lessons’ own: B13 10 m to A, B12 10 m to A, B14 8 m to B (plan)', () => {
+    const r = (s: (typeof B13_SETUPS)[number]) => planRange(s.mics[0].at, s.mics[0].aimAt);
+    assert.equal(r(B13_SETUPS[0]).toFixed(1), '10.0');
+    assert.equal(r(B12_SETUPS[0]).toFixed(1), '10.0');
+    assert.equal(r(B14_SETUPS[0]).toFixed(1), '8.0');
+  });
+  it('B12: the tracking walk leaves the turn arc, and the fixed fallback is on the crew strip', () => {
+    assert.ok(TRACK_PATH.slice(0, 3).every((p) => reachable(PF_ARC, p)));
+    assert.ok(!reachable(PF_ARC, TRACK_PATH[3]));
+    assert.equal(refusedAt(PRACTICE_FIELD, B12_F), null);
+  });
+  it('B13: the coverage map has a zone that is not detail, and every zone a handoff', () => {
+    assert.ok(B13_COVERAGE.some((z) => !z.ok.includes('detail')));
+    for (const z of B13_COVERAGE) assert.ok(z.handoff.length > 5 && z.ok.length >= 1);
+  });
+  it('the overlap pairs change their delay as the source walks (a fixed delay fits one point)', () => {
+    for (const o of [B13_OVERLAP, B14_OVERLAP]) {
+      const d = o.path.map((p) => overlap(p, 1.2, o.a.at, o.a.h, o.b.at, o.b.h).dtMs);
+      assert.ok(Math.max(...d) - Math.min(...d) > 1, d.join(', '));
+    }
   });
 });

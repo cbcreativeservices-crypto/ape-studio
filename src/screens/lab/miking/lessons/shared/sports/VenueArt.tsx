@@ -435,8 +435,8 @@ export function VenuePlan({ scene, px, show, activeFootprint, highlight }: { sce
 export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?: boolean; layers?: boolean; px?: number } = {}): StaticLabel[] {
   const out: StaticLabel[] = [];
   const off = 1100;
-  if (opts.targets !== false) for (const t of scene.targets) out.push({ id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 700, v: uv(t.p).v - 300, align: 'left', tone: 'amber' });
-  if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.short, u: uv(m.p).u + 700, v: uv(m.p).v + 200, align: 'left' });
+  if (opts.targets !== false) for (const t of scene.targets) out.push({ id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 1300, v: uv(t.p).v - 500, align: 'left', tone: 'amber' });
+  if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.short, u: uv(m.p).u + 1300, v: uv(m.p).v + 300, align: 'left' });
   if (opts.layers) {
     const seen = new Set<string>();
     for (const k of scene.keepClear) {

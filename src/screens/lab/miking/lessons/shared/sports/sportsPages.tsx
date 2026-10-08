@@ -304,6 +304,142 @@ export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: r
   };
 }
 
+/* ═════════ MEET IT · range and angle from one mark ═════════ */
+
+/** The targets as seen from one mark: plan and slant range, the aim left or
+ *  right of straight ahead, and the free-field level change against the first
+ *  target — all calculated from the drawing. */
+export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, prompt }: { scene: VenueScene; from: P2; fromH: number; fromLabel: string; prediction?: Prediction; box?: PlanRect; prompt: string }): MikingStep {
+  const ts = scene.targets;
+  const [k, setK] = useState(0);
+  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set([ts[0]?.id ?? '']));
+  const [predicted, setPredicted] = useState<string | null>(null);
+  const t = ts[Math.min(k, ts.length - 1)];
+  const r0 = slantRange(from, fromH, ts[0].p, ts[0].h);
+  const plan = planRange(from, t.p);
+  const slant = slantRange(from, fromH, t.p, t.h);
+  const aim = aimRel(from, t.p);
+  const db = rangeDb(r0, slant);
+  const words = `${t.label}: ${fmtM1(plan)} from ${fromLabel} in plan, ${fmtM1(slant)} to the source’s height; ${aimWords(aim)}; about ${Math.abs(db).toFixed(1)} dB ${db >= 0 ? 'weaker' : 'stronger'} than ${ts[0].short} (direct sound, open ground).`;
+  return {
+    key: 'range',
+    title: 'Where the sound comes from',
+    kind: 'TRY',
+    layout: 'rack',
+    rack: {
+      render: (w, h) => (
+        <PlanStage w={w} h={h} scene={scene} box={box} a11y={words} labels={venueLabels(scene)} highlight={t.id}>
+          {(px) => (
+            <>
+              <PlanAim from={from} to={{ x: from.x, y: from.y + Math.max(4, plan * 0.45) }} px={px} color="#9aa0ab" head={false} />
+              <PlanPath a={from} b={t.p} px={px} width={2.4} />
+            </>
+          )}
+        </PlanStage>
+      ),
+      badge: 'From above · blue = the straight path from the mark · grey dashed = straight ahead · calculated from the drawing',
+      bezel: [
+        { k: 'TARGET', v: t.short, flex: 0.8 },
+        { k: 'RANGE', v: fmtM1(slant), flex: 1 },
+        { k: 'AIM', v: Math.round(aim) === 0 ? '0°' : `${Math.abs(Math.round(aim))}° ${aim > 0 ? 'L' : 'R'}`, flex: 0.9 },
+        { k: `VS ${ts[0].short}`, v: k === 0 ? '—' : `${db >= 0 ? '−' : '+'}${Math.abs(db).toFixed(1)} dB`, flex: 1 },
+      ],
+      params: [
+        {
+          kind: 'fader',
+          id: 'target',
+          label: 'TARGET',
+          value: ts.length > 1 ? k / (ts.length - 1) : 0,
+          onChange: (v) => {
+            const i = Math.round(v * (ts.length - 1));
+            setK(i);
+            setSeen((p) => (p.has(ts[i].id) ? p : new Set([...p, ts[i].id])));
+          },
+          format: () => `${k + 1} of ${ts.length} · ${t.label}`,
+          formatShort: () => t.short,
+        },
+      ],
+      initialParam: 'target',
+    },
+    well: (
+      <>
+        {prediction ? <PredictCard p={prediction} value={predicted} onPick={setPredicted} /> : null}
+        <Landing looking={`From ${fromLabel} · ${t.label}`} prompt={prompt} />
+        <NowLine text={words} />
+        <Card>
+          <Point title="DISTANCE">{`${fmtRange(slant)} to the source’s height. Each doubling of distance costs about 6 dB of direct sound in the open; the background does not drop with it.`}</Point>
+          <Point title="ANGLE">{Math.round(aim) === 0 ? 'Straight ahead: on the axis of a mic aimed this way.' : `${aimWords(aim)}: a mic aimed straight ahead hears it off its axis — weaker, the higher frequencies first.`}</Point>
+        </Card>
+        {seen.size === ts.length ? <Note tone="ok">{`Each target is a different range and angle from the same approved mark: a mic aimed at one hears the others less well. No mic zooms — the plan decides who covers what. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Targets looked at: ${seen.size} of ${ts.length}.`}</Body>}
+      </>
+    ),
+  };
+}
+
+/* ═════════ MICROPHONES · the pickup methods ═════════ */
+
+export type Method = { id: string; label: string; short: string; gives: string; limit: string; mics: SportMic[]; scene?: VenueScene; box?: PlanRect; note?: string };
+
+export function useMethodsStep({ scene, methods, box, prediction, prompt, done }: { scene: VenueScene; methods: readonly Method[]; box?: PlanRect; prediction?: Prediction; prompt: string; done: string }): MikingStep {
+  const [id, setId] = useState(methods[0].id);
+  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set([methods[0].id]));
+  const [predicted, setPredicted] = useState<string | null>(null);
+  const mt = methods.find((q) => q.id === id) ?? methods[0];
+  const sc = mt.scene ?? scene;
+  return {
+    key: 'methods',
+    title: 'The methods',
+    kind: 'COMPARE',
+    layout: 'rack',
+    rack: {
+      render: (w, h) => (
+        <PlanStage w={w} h={h} scene={sc} box={mt.box ?? (mt.scene ? undefined : box)} a11y={`${mt.label}. ${mt.gives} ${mt.limit}`} labels={venueLabels(sc, { layers: false })} inset={mt.mics[0] ? micCloseUp(mt.mics[0]) : null}>
+          {(px) => (
+            <>
+              {mt.mics.map((m) => (
+                <MicOnPlan key={m.id} m={m} px={px} />
+              ))}
+            </>
+          )}
+        </PlanStage>
+      ),
+      badge: 'From above · white dashed = a pattern’s shape, not its range · the corner box = the mic itself, to scale',
+      bezel: [
+        { k: 'METHOD', v: mt.short, flex: 1.6 },
+        { k: 'LOOKED AT', v: `${seen.size} / ${methods.length}`, flex: 1 },
+      ],
+      params: [
+        {
+          kind: 'options',
+          id: 'method',
+          label: 'METHOD',
+          valueLabel: mt.short.slice(0, 9),
+          selectedId: id,
+          sticky: true,
+          onSelect: (v) => {
+            setId(v);
+            setSeen((p) => (p.has(v) ? p : new Set([...p, v])));
+          },
+          options: methods.map((q) => ({ id: q.id, label: q.label, blurb: q.gives })),
+        },
+      ],
+      initialParam: 'method',
+    },
+    well: (
+      <>
+        {prediction ? <PredictCard p={prediction} value={predicted} onPick={setPredicted} /> : null}
+        <Landing looking={`${mt.label} · from above`} prompt={prompt} />
+        <Card>
+          <Point title="WHAT IT GIVES">{mt.gives}</Point>
+          <Point title="ITS LIMIT">{mt.limit}</Point>
+          {mt.note ? <Point title="TO CHECK">{mt.note}</Point> : null}
+        </Card>
+        {seen.size === methods.length ? <Note tone="ok">{done}</Note> : <Body>{`Methods looked at: ${seen.size} of ${methods.length}.`}</Body>}
+      </>
+    ),
+  };
+}
+
 /* ═════════ STARTING SETUPS ═════════ */
 
 export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps; scene: VenueScene; setups: readonly SportSetup[]; box?: PlanRect; prompt: string }): MikingStep {
@@ -501,7 +637,7 @@ const AXIS_WORDS: Record<Axis, { label: string; blurb: string }> = {
   h: { label: 'HEIGHT', blurb: 'The capsule’s height above the ground.' },
 };
 
-export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc, prediction, refuseWords }: {
+export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: arcIn, arcKinds, prediction, refuseWords }: {
   p: PageProps;
   scene: VenueScene;
   zones: readonly PlanZone[];
@@ -512,6 +648,8 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc, pr
   ranges: { x: [number, number]; y: [number, number]; h: [number, number] };
   /** An operator's turn arc (a dish): an aim outside it is refused. */
   arc?: TurnArc;
+  /** The mic kinds the arc applies to (default: every kind). */
+  arcKinds?: readonly PlanMicKind[];
   prediction?: Prediction;
   refuseWords?: string;
 }): MikingStep {
@@ -545,6 +683,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc, pr
     setMoved(false);
   };
   const kind = m0.kind;
+  const arc = arcIn && (!arcKinds || arcKinds.includes(kind)) ? arcIn : undefined;
   const deg = aim; // relative to straight ahead (+y): the same as degOf
   const refused = refusedAt(scene, at);
   const outOfArc = arc ? !(aim >= arc.fromDeg - 1e-9 && aim <= arc.toDeg + 1e-9) : false;
@@ -981,6 +1120,84 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
           <Point title="POLARITY">{pol === 1 ? 'Normal. Flip B’s polarity and watch what changes: the notches move — the delay does not.' : 'Flipped: the notches moved, the delay stayed exactly the same. Polarity flips the sign, never the time.'}</Point>
         </Card>
         {flipped.a && flipped.b && walked ? <Note tone="ok">{`Polarity is not time alignment. With two open action mics, pick a dominant mic per zone or hand off smoothly — and check the sum in mono. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Flip B’s polarity both ways AND walk the source.</Body>}
+      </>
+    ),
+  };
+}
+
+/* ═════════ TRACKING AND HANDOFF ═════════ */
+
+/** A tracked dish at its operator's place following a walking source; the
+ *  dish turns only inside the arc — past it the operator stops and the mix
+ *  hands off to a fixed mic (B12 L28, B13 L78–L80). */
+export function useTrackStep({ scene, dish, arc, path, fixed, box, onInteractive, done }: { scene: VenueScene; dish: SportMic; arc: TurnArc; path: readonly P2[]; fixed: SportMic; box?: PlanRect; onInteractive: (id: string) => void; done: boolean }): MikingStep {
+  const [t, setT] = useState(0);
+  const [hand, setHand] = useState(false);
+  const [seen, setSeen] = useState({ out: false, handedOut: false });
+  const segs = path.length - 1;
+  const k = Math.max(0, Math.min(segs - 1e-9, t * segs));
+  const i = Math.floor(k);
+  const f = k - i;
+  const src: P2 = { x: path[i].x + (path[i + 1].x - path[i].x) * f, y: path[i].y + (path[i + 1].y - path[i].y) * f };
+  const want = degOf({ x: src.x - dish.at.x, y: src.y - dish.at.y });
+  const inArc = want >= arc.fromDeg - 1e-9 && want <= arc.toDeg + 1e-9;
+  const aim = Math.max(arc.fromDeg, Math.min(arc.toDeg, want));
+  const hS = scene.targets[0]?.h ?? 1.5;
+  const range = slantRange(dish.at, dish.h, src, hS);
+  const fixedRange = slantRange(fixed.at, fixed.h, src, hS);
+  useEffect(() => {
+    if (!inArc) setSeen((s) => ({ out: true, handedOut: s.handedOut || hand }));
+  }, [inArc, hand]);
+  useEffect(() => {
+    if (seen.out && seen.handedOut && !done) onInteractive('handoff');
+  }, [seen, done, onInteractive]);
+  const onAir = hand ? 'FIXED' : 'DISH';
+  const dishAt: SportMic = { ...dish, aimAt: { x: dish.at.x - Math.sin((aim * Math.PI) / 180) * 10, y: dish.at.y + Math.cos((aim * Math.PI) / 180) * 10 } };
+  const fixedAt: SportMic = { ...fixed, aimAt: fixed.aimAt };
+  const words = `The source ${fmtM1(range)} from the dish, ${aimWords(want)}. ${inArc ? 'Inside the turn arc: the dish follows it.' : 'Outside the turn arc: the operator stops at the edge.'} On air: the ${hand ? 'fixed mic' : 'dish'}.`;
+  return {
+    key: 'track',
+    title: 'Track, then hand off',
+    kind: 'TRY',
+    layout: 'rack',
+    rack: {
+      render: (w, h) => (
+        <PlanStage w={w} h={h} scene={scene} box={box} a11y={words} labels={[...venueLabels(scene, { marks: false }), { id: 'oa', text: `ON AIR · ${onAir}`, u: planUV(hand ? fixed.at : dish.at).u, v: planUV(hand ? fixed.at : dish.at).v + 1500, align: 'center', tone: 'amber' }]}>
+          {(px) => (
+            <>
+              <ArcArt arc={arc} px={px} out={!inArc} />
+              <PlanPath a={dish.at} b={src} px={px} width={hand ? 1.2 : 2.4} color={hand ? '#5b5f69' : BLUE} />
+              {hand ? <PlanPath a={fixed.at} b={src} px={px} width={2.4} color={AMBER} /> : null}
+              <MicOnPlan m={dishAt} px={px} lobe={false} />
+              <MicOnPlan m={fixedAt} px={px} />
+              <TargetRing p={src} px={px} active />
+              {!inArc ? <Circle cx={planUV(dish.at).u} cy={planUV(dish.at).v} r={16 * px} style="stroke" strokeWidth={3 * px} color={RED} /> : null}
+            </>
+          )}
+        </PlanStage>
+      ),
+      badge: 'Amber wedge = the approved turn arc · blue = the dish’s path · amber line = the fixed mic’s · calculated from the drawing',
+      bezel: [
+        { k: 'RANGE', v: fmtM1(hand ? fixedRange : range), flex: 1 },
+        { k: 'TARGET', v: Math.round(want) === 0 ? '0°' : `${Math.abs(Math.round(want))}° ${want > 0 ? 'L' : 'R'}`, flex: 0.9 },
+        { k: 'ARC', v: inArc ? 'INSIDE' : 'STOP', tint: inArc ? GREEN : RED, flex: 0.9 },
+        { k: 'ON AIR', v: onAir, tint: AMBER, flex: 0.9 },
+      ],
+      params: [
+        { kind: 'fader', id: 'walk', label: 'WALK', value: t, onChange: setT, format: () => `the source ${fmtM1(range)} from the dish, ${aimWords(want)}`, formatShort: () => fmtM1(range) },
+        { kind: 'toggle', id: 'hand', label: 'HAND OFF', value: hand, onToggle: () => setHand((x) => !x) },
+      ],
+      initialParam: 'walk',
+    },
+    well: (
+      <>
+        <Landing looking="Tracking from the approved place · from above" prompt="WALK the source from A past C toward the near corner. The dish follows only inside the arc. When it cannot, HAND OFF to the fixed mic — the operator never steps out." />
+        <NowLine text={words} />
+        <Card>
+          <Point title={inArc ? 'INSIDE THE ARC' : 'OUTSIDE THE ARC — STOP'}>{inArc ? 'Small, smooth turns, listening as well as looking: the dish follows the action while the operator stays in the box.' : 'The target has left the safe turn arc. Stop at the edge and hand off at the rehearsed cue — to a fixed mic or the ambience.'}</Point>
+          <Point title="THE HANDOFF">{hand ? `The fixed mic is on air: ${fmtM1(fixedRange)} from the source. A smooth, modest crossfade — both open at once can double the attack.` : 'The dish is on air. Plan the handoff before the play needs it.'}</Point>
+        </Card>
+        {seen.out && seen.handedOut ? <Note tone="ok">You let the target go and handed off. A good angle never justifies moving into an unsafe or unapproved place — the plan, not the operator’s feet, covers the rest.</Note> : <Body>Walk the source out of the arc, and hand off there.</Body>}
       </>
     ),
   };

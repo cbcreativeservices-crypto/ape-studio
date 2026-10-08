@@ -200,3 +200,10 @@ import { F12_LESSON } from '../lessons/f12SoundLevel/lesson.ts';
 LESSON_CONTENT.F12 = F12_LESSON;
 import { F13_LESSON } from '../lessons/f13RoomAcoustics/lesson.ts';
 LESSON_CONTENT.F13 = F13_LESSON;
+/* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
+import { B12_LESSON } from '../lessons/b12Parabolic/lesson.ts';
+LESSON_CONTENT.B12 = B12_LESSON;
+import { B13_LESSON } from '../lessons/b13FieldDiamond/lesson.ts';
+LESSON_CONTENT.B13 = B13_LESSON;
+import { B14_LESSON } from '../lessons/b14CourtIce/lesson.ts';
+LESSON_CONTENT.B14 = B14_LESSON;

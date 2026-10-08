@@ -89,7 +89,7 @@ export const PRACTICE_FIELD: VenueScene = {
   ],
   routes: [
     { id: 'exit', label: 'the withdrawal path', short: 'WAY OUT', pts: [p2(15, -7.4), p2(15, -9.8)], kind: 'exit' },
-    { id: 'cable', label: 'the cable route along the crew strip', short: 'CABLE', pts: [p2(-1.5, -6.8), p2(31.5, -6.8)], kind: 'crew' },
+    { id: 'cable', label: 'the cable route along the crew strip', short: 'CABLE', pts: [p2(-1.5, -7.3), p2(31.5, -7.3)], kind: 'crew' },
   ],
   footprints: [{ id: 'crew', label: 'the crew strip', short: 'CREW STRIP', rect: PF_CREW }],
   cameras: [{ id: 'cam', label: 'a camera position', p: p2(1.5, -6.3), dirDeg: -22, halfDeg: 22, reach: 14 }],
