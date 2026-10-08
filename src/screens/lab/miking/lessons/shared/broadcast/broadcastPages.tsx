@@ -73,6 +73,14 @@ export function aimedAtLips(id: string, label: string, short: string, p: Vec3, l
   return { id, label, short, p, aim: unit(sub(LIP, p)), ...look };
 }
 
+/** How deep a comb's dips are, in words (the ideal two-arrival sum's notch
+ *  depth: a copy far weaker than the direct sound makes shallow dips). */
+export function depthWords(depthDb: number): string {
+  if (depthDb > -3) return `shallow, about ${Math.abs(depthDb).toFixed(0)} dB on paper, because the copy is so much weaker`;
+  if (depthDb > -10) return `about ${Math.abs(depthDb).toFixed(0)} dB deep on paper — enough to colour the voice`;
+  return 'deep on paper — the two copies are nearly equal';
+}
+
 /* ── a comb strip (the simplified two-arrival sum) ── */
 
 const F0 = 100;
@@ -257,7 +265,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
           a11y={a11y}
           inset={inset}
           labels={[
-            { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: axisEnd.x, v: axisEnd.z + (t.dir.z >= 0 ? 60 : -80), align: 'right', tone: 'muted' },
+            { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: axisEnd.x, v: axisEnd.z + (t.dir.z >= 0 ? 120 : -140), align: 'right', tone: 'muted' },
             ...shown.map((q, i) => ({ id: `m.${q.id}`, text: q.short, u: q.p.x + 60, v: q.p.z + (i % 2 ? 140 : -140), align: 'left' as const, tone: 'amber' as const, at: { u: q.p.x, v: q.p.z } })),
           ]}
         >
@@ -402,7 +410,7 @@ export function useReflectStep(spec: ReflectSpec): MikingStep {
         <Card>
           <Point title="TWO COPIES OF ONE VOICE">
             {R.exists
-              ? `Straight to the mic: ${cm(R.r1)}. Off ${spec.words.surface}: ${cm(R.r2)} — ${ms(R.dtMs)} later and ${lower == null ? 'arriving in the mic’s null' : `about ${lower.toFixed(0)} dB lower (by distance and the mic’s pattern)`}. Together they cancel some pitches: the first dip near ${hz(R.firstNotchHz)}, then more above it.`
+              ? `Straight to the mic: ${cm(R.r1)}. Off ${spec.words.surface}: ${cm(R.r2)} — ${ms(R.dtMs)} later and ${lower == null ? 'arriving in the mic’s null' : `about ${lower.toFixed(0)} dB lower (by distance and the mic’s pattern)`}. Added together they make a comb of dips, the first near ${hz(R.firstNotchHz)} — ${depthWords(R.depthDb)}.`
               : `From here the bounce off ${spec.words.surface} misses the mic: the reflection’s mirror point falls off the surface.`}
           </Point>
         </Card>
@@ -520,7 +528,7 @@ export function useOpenMicStep(spec: OpenMicSpec): MikingStep {
               .join(' ')}
           </Point>
           <Point title={`OPEN MICS · ${nom.open}`}>{nom.open > 1 ? `Each doubling of open mics costs about 3 dB of gain before feedback: ${nom.open} open, about ${nom.costDb.toFixed(1)} dB less margin than one. Mute the mics no one is using.` : 'One open mic: the most margin this setup can have.'}</Point>
-          {leaks ? <Point title="ONE VOICE, TWO MICS">{`In the mix, ${talker.label.toLowerCase()} arrives through their own mic first and through ${spec.mics.find((m) => m.id === leaks.other)?.label.toLowerCase()} ${ms(leaks.dtMs)} later${leaks.levelDb == null ? ' — off the back of its pattern, where the simplified drawing shows a null; a real mic in a real room rejects much less there, so the copy is still heard' : ''}. The two copies cancel some pitches, the first near ${hz(leaks.firstNotchHz)}.`}</Point> : null}
+          {leaks ? <Point title="ONE VOICE, TWO MICS">{`In the mix, ${talker.label.toLowerCase()} arrives through their own mic first and through ${spec.mics.find((m) => m.id === leaks.other)?.label.toLowerCase()} ${ms(leaks.dtMs)} later${leaks.levelDb == null ? ' — off the back of its pattern, where the simplified drawing shows a null; a real mic in a real room rejects much less there, so the copy is still heard' : ''}. The two copies make a comb of dips, the first near ${hz(leaks.firstNotchHz)} — ${depthWords(leaks.depthDb)}.`}</Point> : null}
           {three ? <Point title="THE 3:1 NOTE">{`A helpful starting idea, not a test: the closest pair of open mics is ${cm(three.apart)} apart, ${three.ok ? 'at least' : 'less than'} three times the farther mic-to-talker distance (${cm(three.need)}). It helps with spaced mics; it cannot promise a quiet mix at a talking table.`}</Point> : null}
         </Card>
         {seenPresets.size >= Math.min(2, spec.presets.length) ? <Note tone="ok">{spec.words.done}</Note> : null}
