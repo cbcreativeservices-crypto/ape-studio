@@ -35,6 +35,22 @@ export const CLIP_REACH = 120;
 export const OVERHEAD_BOOM = 750;
 export const OVERHEAD_BOOM_RADIUS = 12;
 export const OVERHEAD_STAND_RADIUS = 18;
+/* lab6 group 1 (2026-10-08) — a hand-held BOOM POLE ('pole' mount). Every
+ * length is a DRAWING DEFAULT (foley_footsteps/GEOMETRY_PROPOSAL.md §4: "pole
+ * length (drawing default 2000 mm)"): the pole runs from the mic's tail, away
+ * from its aim, to the operator's hands at about chest height; the operator
+ * stands just behind the hands, and their body is part of the assembly — so
+ * an operator who would stand inside a performer's motion is stopped too. */
+export const POLE_LEN = 2000;
+export const POLE_RADIUS = 9;
+/** The operator's hands, above the floor (mm). */
+export const POLE_HANDS_H = 1400;
+/** The steepest the pole may slope (deg) when the mic is far above or below the hands. */
+export const POLE_MAX_SLOPE = 60;
+/** The operator's body column: behind the hands, its radius, its height. */
+export const OPERATOR_BACK = 320;
+export const OPERATOR_R = 190;
+export const OPERATOR_H = 1650;
 
 export function compileScene(model: InstrumentModel, variant: VariantId): CompiledScene {
   const solids: Solid[] = [];
@@ -131,7 +147,10 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     return [{ a, b, r, piece: 'body' }];
   }
   const aim = aimVec(pose.az, pose.el);
-  const a = sub(p, scale(aim, r));
+  // lab6 group 1: a body that reaches AHEAD of its reference point (a
+  // shotgun's tube in front of its capsule) is tested over its whole length.
+  const fore = body.fore ?? 0;
+  const a = fore > r ? add(p, scale(aim, fore - r)) : sub(p, scale(aim, r));
   const b = sub(p, scale(aim, Math.max(r, L - r)));
   const tail = sub(p, scale(aim, L));
   const out: Seg[] = [{ a, b, r, piece: 'body' }];
@@ -153,6 +172,38 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     // point (no rims on the scene: the body alone).
     const g = nearestRimPoint(scene.rims ?? [], tail);
     if (g) out.push({ a: tail, b: g.q, r: 6, piece: 'arm' });
+    return out;
+  }
+  if (body.mount === 'pole') {
+    // lab6 group 1: the BOOM POLE. Away from the aim in plan (or along the
+    // model's fallback when the mic points nearly straight up or down), to
+    // the operator's hands at POLE_HANDS_H — the slope limited to
+    // ±POLE_MAX_SLOPE — then the operator's body just behind the hands.
+    let hx = -aim.x;
+    let hz = -aim.z;
+    let hl = Math.sqrt(hx * hx + hz * hz);
+    if (hl < 0.35) {
+      const fb = scene.mountRule?.fallback ?? { x: 1, y: 0, z: 0 };
+      hx = fb.x;
+      hz = fb.z;
+      hl = Math.sqrt(hx * hx + hz * hz);
+      if (hl < 1e-6) {
+        hx = 1;
+        hz = 0;
+        hl = 1;
+      }
+    }
+    const ux = hx / hl;
+    const uz = hz / hl;
+    const want = scene.yFloor - POLE_HANDS_H - tail.y;
+    const lim = POLE_LEN * Math.sin((POLE_MAX_SLOPE * Math.PI) / 180);
+    const dy = Math.max(-lim, Math.min(lim, want));
+    const run = Math.sqrt(POLE_LEN * POLE_LEN - dy * dy);
+    const hands = { x: tail.x + ux * run, y: tail.y + dy, z: tail.z + uz * run };
+    out.push({ a: tail, b: hands, r: POLE_RADIUS, piece: 'boom' });
+    const bx = hands.x + ux * OPERATOR_BACK;
+    const bz = hands.z + uz * OPERATOR_BACK;
+    out.push({ a: { x: bx, y: scene.yFloor - OPERATOR_H + OPERATOR_R, z: bz }, b: { x: bx, y: scene.yFloor - OPERATOR_R, z: bz }, r: OPERATOR_R, piece: 'stand' });
     return out;
   }
   if (body.mount === 'boom') {

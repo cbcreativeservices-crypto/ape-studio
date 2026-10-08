@@ -29,7 +29,7 @@ export function PolarCompare({ w, h, typeId, pattern, angle, label }: { w: numbe
   const cy = h * 0.52;
   const R = Math.min(w * 0.42, h * 0.42);
   // The mic points RIGHT (front = +x on screen); its body extends left.
-  const k = (R * 0.55) / t.body.length.mm;
+  const k = (R * 0.55) / (t.body.length.mm + (t.body.fore?.mm ?? 0));
   const lobe = useMemo(() => {
     const p = Skia.Path.Make();
     if (!isModelled(pattern)) return p;
@@ -83,7 +83,7 @@ export function PolarCompare({ w, h, typeId, pattern, angle, label }: { w: numbe
           </>
         ) : null}
         <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: Math.PI / 2 }, { scale: k }]}>
-          <MikingMicArt art={t.art} r={r} len={len} cross={r * 2} />
+          <MikingMicArt art={t.art} r={r} len={len} cross={r * 2} fore={t.body.fore?.mm ?? 0} />
         </Group>
         <Line p1={vec(cx, cy)} p2={vec(sx, sy)} color={AMBER} strokeWidth={1.4} opacity={0.8}>
           <DashPathEffect intervals={[6, 5]} />

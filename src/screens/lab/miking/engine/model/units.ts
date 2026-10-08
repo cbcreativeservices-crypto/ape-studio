@@ -54,6 +54,42 @@ export function fmtLen(mm: number): string {
   return `≈ ${fmtMetric(mm)} (${fmtImperial(mm)})`;
 }
 
+/* ── lab6 group 1 (2026-10-08): a SCALED rounding tier for scenes from a prop
+ *  to a field (Lab 6 Foley, field and scientific; Lab 7): the step grows with
+ *  the distance so a 3.5 m perspective or a 40 m pass-by never claims
+ *  millimetres (foley_footsteps/GEOMETRY_PROPOSAL.md §1). ── */
+
+/** The rounding step for a distance (mm): 10 mm below 1 m, 50 mm below 10 m,
+ *  0.1 m below 100 m, then 1 m. */
+export function scaleStep(mm: number): number {
+  'worklet';
+  const a = Math.abs(mm);
+  if (a < 1000) return 10;
+  if (a < 10000) return 50;
+  if (a < 100000) return 100;
+  return 1000;
+}
+
+/** Round a distance on the scaled tier (no "-0"). */
+export function roundScaled(mm: number): number {
+  'worklet';
+  const st = scaleStep(mm);
+  const r = Math.round(mm / st) * st;
+  return r === 0 ? 0 : r;
+}
+
+/** "≈ 85 cm (33.5 in)" below a metre; "≈ 1.25 m (4.1 ft)" / "≈ 35 m (114.8 ft)" above —
+ *  metric first, rounded on the scaled tier; the imperial part from the SAME
+ *  rounded value. */
+export function fmtLenScaled(mm: number): string {
+  'worklet';
+  if (!(mm === mm)) return 'not measured';
+  const r = roundScaled(mm);
+  const a = Math.abs(r);
+  if (a < 1000) return `≈ ${trimZero((r / 10).toFixed(1))} cm (${trimZero((r / MM_PER_IN).toFixed(1))} in)`;
+  return `≈ ${trimZero((r / 1000).toFixed(2))} m (${trimZero((r / 304.8).toFixed(1))} ft)`;
+}
+
 /** Round to the nearest 5°. */
 export function round5deg(deg: number): number {
   'worklet';
