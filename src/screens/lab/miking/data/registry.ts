@@ -27,9 +27,9 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — brass, saxophones, the flute, piccolo, clarinets, oboe and bassoon, the harmonica, the accordion and the pipe organ: how the lips, the reed, the air jet or the bellows start the sound, where it leaves (a bell, the first open holes, the embouchure, the reeds, the pipes), recommended starting points clear of the mouth, the hands, the bell, the slide, the keys, the breath, the bellows and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Aerophones', familyBlurb: 'Miking winds and brass, from trumpet to pipe organ' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Chordophones', familyBlurb: 'Miking strings and pianos, from guitar to harp' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: 'Place microphones on drawn singers and ensembles — a lead vocal, rap, a singer at a guitar or piano, the string quartet and sections, mixed classical groups and the full orchestra: where the sound comes from, recommended starting points (measured from the lips for a voice; main pairs and the three-omni tree drawn whole for an ensemble), supports for a named need, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Voice & Ensemble', familyBlurb: 'Miking voices and ensembles, from a lead vocal to the orchestra' },
+  { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: 'Microphones for measurement and the field, on drawn benches, sites and rooms: the measurement chain and its power path, the field check before and after, where a measurement mic or a meter goes for the question asked, and the honest label for the result. Silent; suggested starting points.', family: 'Foley, Field & Scientific', familyBlurb: 'Miking for measurement and the field, from the calibrated mic to the room' },
   // Not built yet: no ready lesson, so neither the lab nor its family tile is
   // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
-  { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '', family: 'Foley, Field & Scientific', familyBlurb: '' },
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
 ];
 
@@ -137,6 +137,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'E10', labId: 'ensembles', title: 'Horn Sections', subtitle: 'Brass and saxes together: one section view, a mic for two, or a close mic on each — the players make the balance', status: 'ready' },
   { id: 'E16', labId: 'ensembles', title: 'Jazz Big Band', subtitle: 'Rows of reeds and brass with a rhythm section: a main view, section mics or a mic on every horn — the band makes the balance', status: 'ready' },
   { id: 'E12', labId: 'ensembles', title: 'Percussion Ensembles', subtitle: 'Stations of drums, mallets and small percussion: one main pickup first, at most two supports, the movement covered', status: 'ready' },
+  /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
+  { id: 'F11', labId: 'field', title: 'Measurement Microphones and Calibration', subtitle: 'The question first, the right field and power path, a check before and after — and an honest label', status: 'ready' },
+  { id: 'F12', labId: 'field', title: 'Sound Level and Environmental Noise', subtitle: 'A named question and window, the method’s height, an open or facade position — and a conclusion no bigger than the evidence', status: 'ready' },
+  { id: 'F13', labId: 'field', title: 'Room Acoustics and Reverberation', subtitle: 'Room only or system + room, seats that differ, a tail above the floor — T20, T30 and EDT kept apart', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

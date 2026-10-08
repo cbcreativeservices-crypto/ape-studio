@@ -311,3 +311,6 @@ Object.assign(MIC_TYPES, ENSEMBLE_MIC_TYPES);
 /* Lab 5, group 2 — voice II, groups (E02, E04, E05, E06): the shared large-diaphragm condenser. Appended so other lessons merge cleanly. */
 import { GROUP_VOICE_MIC_TYPES } from '../lessons/shared/ensemble/groupVoiceMics.ts';
 Object.assign(MIC_TYPES, GROUP_VOICE_MIC_TYPES);
+/* Lab 6 group 4 — measurement core (F11–F16): the measurement mics and the sound level meter. Appended so other lessons merge cleanly. */
+import { MEASURE_MIC_TYPES } from '../lessons/shared/measure/measureMics.ts';
+Object.assign(MIC_TYPES, MEASURE_MIC_TYPES);
