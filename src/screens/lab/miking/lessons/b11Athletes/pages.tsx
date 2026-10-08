@@ -70,7 +70,7 @@ const B11Setting = makeBroadcastSetting({
         official: { id: 'off', label: 'The official’s announcement mic', short: 'OFFICIAL' },
         dests: ['pa', 'program', 'recorder'],
       },
-      looks: { coach: { art: 'lavalier', r: 4, len: 30 }, off: { art: 'headsetBoom', r: 11, len: 30 } },
+      looks: { coach: { art: 'lavalier', r: 9, len: 42 }, off: { art: 'headsetBoom', r: 20, len: 55 } },
       controls: ['official', 'priv'],
       privateCircuit: { label: 'Officials’ private circuit' },
       chain: true,

@@ -21,7 +21,7 @@ const two = (v: VariantId) => v === 'booth';
 /** Everything at the position. `headless`: the commentator drawn without a
  *  head (a step that draws it turned); `gap`: the analyst's seat moved (the
  *  partner step). */
-export function B09Scene({ view, variant, headless = false, analyst = ANALYST }: { view: ViewId; variant: VariantId; headless?: boolean; analyst?: typeof ANALYST }): ReactElement {
+export function B09Scene({ view, variant, headless = false, analyst = ANALYST, holding }: { view: ViewId; variant: VariantId; headless?: boolean; analyst?: typeof ANALYST; holding?: boolean }): ReactElement {
   const b = two(variant);
   const open = variant === 'open';
   const studio = variant === 'studio';
@@ -31,7 +31,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST }:
       <Group>
         {open ? <CrowdStand view="side" x0={FRONT_X + 500} dx={2200} z0={-3000} z1={3000} floor={SEATED_FLOOR + 900} rows={3} /> : null}
         {open ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} /> : null}
-        <BoothWindow view="side" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={zs.z0} z1={zs.z1} open={open} />
+        <BoothWindow view="side" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={zs.z0} z1={zs.z1} sillY={open ? DESK_TOP_Y - 150 : DESK_TOP_Y - 60} open={open} />
         {studio ? <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} /> : null}
         <StudioChair view="side" t={CALLER} />
         {!open ? <Laptop view="side" at={SCREEN} toward={-1} /> : null}
@@ -39,7 +39,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST }:
         <Script view="side" at={NOTES} />
         {/* The analyst sits beside the commentator, nearer the viewer: from
             the side they would cover the commentator — shown from above. */}
-        {open ? <SeatedHolding view="side" t={CALLER} phones /> : <SeatedTalker view="side" t={CALLER} phones headless={headless} />}
+        {open || holding ? <SeatedHolding view="side" t={CALLER} phones /> : <SeatedTalker view="side" t={CALLER} phones headless={headless} />}
       </Group>
     );
   }
@@ -47,17 +47,17 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST }:
     <Group>
       {!studio ? <CrowdStand view="top" x0={FRONT_X + 500} dx={1500} z0={open ? -3400 : zs.z0 - 200} z1={open ? 900 : zs.z1 + 200} floor={SEATED_FLOOR} rows={3} /> : null}
       {open ? <PaSpeaker view="top" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} /> : null}
-      <BoothWindow view="top" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={open ? -3400 : zs.z0} z1={open ? 900 : zs.z1} open={open} />
+      <BoothWindow view="top" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={open ? -3400 : zs.z0} z1={open ? 900 : zs.z1} sillY={DESK_TOP_Y - 60} open={open} />
       <StudioChair view="top" t={CALLER} />
       {b ? <StudioChair view="top" t={analyst} /> : null}
-      {open ? <SeatedHolding view="top" t={CALLER} part="lower" /> : <SeatedTalker view="top" t={CALLER} part="lower" />}
+      {open || holding ? <SeatedHolding view="top" t={CALLER} part="lower" /> : <SeatedTalker view="top" t={CALLER} part="lower" />}
       {b ? <SeatedTalker view="top" t={analyst} part="lower" /> : null}
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} />
       <Script view="top" at={NOTES} turn={-0.08} />
       {!open ? <Laptop view="top" at={SCREEN} toward={-1} /> : null}
       {studio ? <ArmClamp view="top" grip={GRIP_A} deskTop={DESK_TOP_Y} /> : null}
       {b ? <SeatedTalker view="top" t={analyst} part="upper" phones /> : null}
-      {open ? <SeatedHolding view="top" t={CALLER} part="upper" phones /> : <SeatedTalker view="top" t={CALLER} part="upper" phones headless={headless} />}
+      {open || holding ? <SeatedHolding view="top" t={CALLER} part="upper" phones /> : <SeatedTalker view="top" t={CALLER} part="upper" phones headless={headless} />}
     </Group>
   );
 }

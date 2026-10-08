@@ -57,7 +57,7 @@ export const TOUCHLINE_X = -1300;
 /** The clear exit route to the guest's right (a corridor kept open). */
 export const EXIT_Z = 1150;
 /** The PA (sideline): high beyond the camera, to the front-right. */
-export const PA_C = v3(2600, -1900, 1500);
+export const PA_C = v3(2600, -1300, 1500);
 
 /** The post-event backdrop behind the guest. */
 export const BACKDROP_X = -650;
@@ -76,7 +76,7 @@ export const B10_VARIANTS: Variant[] = [
 ];
 
 export const B10_VIEWS: Record<'sideline' | 'twoMics' | 'postEvent', { side: ViewBox; top: ViewBox }> = {
-  sideline: { side: { u0: -1700, u1: 2900, v0: -2300, v1: 1640 }, top: { u0: -1700, u1: 2900, v0: -1500, v1: 1900 } },
+  sideline: { side: { u0: -1600, u1: 2900, v0: -1700, v1: 1640 }, top: { u0: -1700, u1: 2900, v0: -1500, v1: 1900 } },
   twoMics: { side: { u0: -700, u1: 1500, v0: -500, v1: 1640 }, top: { u0: -700, u1: 1500, v0: -1100, v1: 600 } },
   postEvent: { side: { u0: -900, u1: 2900, v0: -1200, v1: 1640 }, top: { u0: -900, u1: 2900, v0: -1100, v1: 1500 } },
 };

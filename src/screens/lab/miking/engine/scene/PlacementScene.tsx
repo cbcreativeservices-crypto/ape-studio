@@ -788,8 +788,11 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   if (style === 'held') {
     // A long-sleeved arm (the shared figure's shirt and skin tones): a dark
     // contour, the sleeve, a rim light along its lit edge; red when the hand
-    // cannot reach. The fist is drawn over the handle (HeldFistGlyph).
+    // cannot reach. The fist is drawn over the handle (HeldFistGlyph). From
+    // the side the holder usually stands beyond the person the mic serves:
+    // the arm is drawn a little faded there (a 2-D drawing has no depth).
     return (
+      <Group opacity={view === 'side' ? 0.62 : 1}>
       <Group opacity={on}>
         <Path path={path} style="stroke" strokeWidth={96} strokeCap="round" strokeJoin="round" color="#12151c" />
         <Path path={path} style="stroke" strokeWidth={90} strokeCap="round" strokeJoin="round" color="#55617b" />
@@ -797,6 +800,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
           <Path path={path} style="stroke" strokeWidth={30} strokeCap="round" strokeJoin="round" color="#76839e" opacity={0.75} />
         </Group>
         <Path path={path} style="stroke" strokeWidth={98} strokeCap="round" strokeJoin="round" color="#ff6b5e" opacity={red} />
+      </Group>
       </Group>
     );
   }
@@ -876,6 +880,7 @@ function HeldFistGlyph({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pos
   const on = useDerivedValue(() => geo.value.on);
   if (body.mount !== 'clip' || body.armStyle !== 'held') return null;
   return (
+    <Group opacity={view === 'side' ? 0.62 : 1}>
     <Group opacity={on} transform={tf}>
       <Circle cx={0} cy={0} r={42} color="#2a201a" />
       <Circle cx={0} cy={0} r={38}>
@@ -884,6 +889,7 @@ function HeldFistGlyph({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pos
       {[-18, -6, 6, 18].map((k) => (
         <Line key={k} p1={vec(k, -24)} p2={vec(k + 2, 22)} color="#2a201a" strokeWidth={2.4} opacity={0.55} />
       ))}
+    </Group>
     </Group>
   );
 }

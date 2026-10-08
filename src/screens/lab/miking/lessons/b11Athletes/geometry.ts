@@ -42,8 +42,8 @@ export const FIELD_X = 1300;
 export const LAV_P = TORSO.sternum;
 export const LAV_CLIP = v3(TORSO.sternum.x - 5, TORSO.sternum.y + 15, 0);
 /** The perimeter boom (coach): an operator outside play along the sideline, to the coach's left. */
-export const OPERATOR = { feet: v3(500, FLOOR, -1500), box: { min: v3(350, -210, -1690), max: v3(650, FLOOR, -1310) } };
-export const GRIP = v3(380, -285, -1270);
+export const OPERATOR = { feet: v3(800, FLOOR, -1500), box: { min: v3(650, -210, -1690), max: v3(950, FLOOR, -1310) } };
+export const GRIP = v3(680, -285, -1270);
 /** The PA (official): high to the front-left, facing the stands. */
 export const PA_C = v3(2200, -1800, -2600);
 

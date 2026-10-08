@@ -21,7 +21,8 @@ import { BROADCAST_HEARING, aimedAtLips, makeBroadcastSetting, makeBroadcastSoun
 import { useFeedsStep, useSpillStep } from '../shared/broadcast/sportPages';
 import { B09Scene } from './scene';
 import { B09_ZONES } from './model.ts';
-import { ANALYST } from './geometry.ts';
+import { ANALYST, SHOULDER_A } from './geometry.ts';
+import { HeldArmArt } from '../shared/broadcast/SportSpeechArt';
 
 type PageFn = (p: PageProps) => ReactNode;
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -53,7 +54,15 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
       { id: 'lip', label: 'The lip ribbon against the lip', short: 'LIP RIBBON', p: LIP_P, art: 'lipRibbon', r: 20, len: 220, pattern: 'figure8' },
       { id: 'arm', label: 'The desk-arm mic at about 10 cm', short: 'ARM MIC', p: ARM_P, art: 'broadcastDynamic', r: 30, len: 190, pattern: 'cardioid' },
     ],
-    top: (gap) => <B09Scene view="top" variant="booth" analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />,
+    top: (gap, _px, m) =>
+      m.id === 'lip' ? (
+        <>
+          <B09Scene view="top" variant="booth" holding analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />
+          <HeldArmArt view="top" shoulder={SHOULDER_A} p={m.p} aim={v3(-1, 0, 0)} len={m.len} />
+        </>
+      ) : (
+        <B09Scene view="top" variant="booth" analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />
+      ),
     box: (gap) => ({ u0: -650, u1: 1250, v0: -640, v1: gap + 640 }),
     words: {
       looking: 'From above · you and your partner at the desk · the field to the right',
@@ -82,7 +91,7 @@ const B09Setting = makeBroadcastSetting({
         producer: { id: 'prod', label: 'The producer’s talkback', short: 'PRODUCER' },
         dests: ['program', 'recorder', 'phones', 'ifb', 'talkback'],
       },
-      looks: { cA: { art: 'headsetBoom', r: 11, len: 30 }, cB: { art: 'headsetBoom', r: 11, len: 30 }, crowd: { art: 'shotgun', r: 9.5, len: 250 }, prod: 'talkback' },
+      looks: { cA: { art: 'headsetBoom', r: 20, len: 55 }, cB: { art: 'headsetBoom', r: 20, len: 55 }, crowd: { art: 'shotgun', r: 9.5, len: 250 }, prod: 'talkback' },
       controls: ['key', 'ret', 'crowd'],
       words: {
         looking: 'A signal-flow drawing · the commentary mics, the crowd, the producer · where each one goes',

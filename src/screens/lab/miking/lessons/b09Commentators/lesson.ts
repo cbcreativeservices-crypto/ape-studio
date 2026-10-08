@@ -13,7 +13,8 @@
  * never dogma; no source, brand or model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hollowSymptom, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingCheck, hollowSymptom, polarityDelay, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
 import { SEATED_FLOOR } from '../shared/broadcast/talkerPose.ts';
 import { B09_MODEL, PA_C } from './geometry.ts';
 import { B09_ZONES } from './model.ts';
@@ -398,7 +399,7 @@ const scenarios: MikingScenario[] = [
       'All the talk, so viewers can hear the inside story': 'Private communication is not program material unless it is approved for air.',
     },
   },
-  removeDelay('b9.mix.3'),
+  removeDelayVoice('b9.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -495,7 +496,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Desk-arm mics for both, set 30 cm out of the way', ok: false, power: 'none', feedback: 'Far and fixed: a turning commentator leaves it, and the partner comes up.' },
       { id: 'e', label: 'The booth loudspeaker on so both can hear the program', ok: false, power: 'none', feedback: 'A loudspeaker near open mics sends the program back in. Use the headsets.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the face, glasses and the notes'), { id: 'r.channel', label: 'Each voice on its own labelled channel, checked alone and in mono', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.silent', label: 'The pattern guarantees the partner is not in the mic', role: 'wrong', feedback: 'No pattern guarantees isolation when two people sit close together.' }, BRAND_REASON('commentator'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the face, glasses and the notes'), { id: 'r.channel', label: 'Each voice on its own labelled channel, checked alone and in mono', role: 'required', feedback: 'Say how the two voices are kept apart.' }, { id: 'r.silent', label: 'The pattern guarantees the partner is not in the mic', role: 'wrong', feedback: 'No pattern guarantees isolation when two people sit close together.' }, BRAND_REASON('commentator'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a close start measured from the lips, clear of the face and the notes, each voice on its own channel, checked in mono — and no promise of zero bleed.',
   },
   {

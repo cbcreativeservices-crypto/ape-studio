@@ -15,7 +15,8 @@
  * model in learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hollowSymptom, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingCheck, hollowSymptom, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
 import { B10_MODEL, FLOOR, PA_C } from './geometry.ts';
 import { B10_ZONES } from './model.ts';
 import { B10_COPY } from './copy.ts';
@@ -389,7 +390,7 @@ const scenarios: MikingScenario[] = [
       'The guest’s team, on the day': 'Frequencies are coordinated for the whole venue.',
     },
   },
-  removeDelay('b10.mix.3'),
+  removeDelayVoice('b10.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -486,7 +487,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A body mic clipped on the guest as they walk up', ok: false, power: 'none', feedback: 'No time for approval or a proper fit — and nothing goes on a person without it.' },
       { id: 'e', label: 'A long shotgun from behind the camera', ok: false, power: 'phantom', feedback: 'Distance still decides; it will not isolate the voice in a stadium.' },
     ],
-    reasons: [docReason('the speaking person’s lips'), clearReason('the faces, the lens and the routes'), { id: 'r.handoff', label: 'The mic reaches each mouth before they speak', role: 'required', feedback: 'Say how the first words are caught.' }, { id: 'r.pattern', label: 'The pattern isolates the voice from the crowd', role: 'wrong', feedback: 'No pattern isolates a voice in a stadium.' }, BRAND_REASON('reporter'), LOUD_REASON],
+    reasons: [docReason('the speaking person’s lips'), clearReason('the faces, the lens and the routes'), { id: 'r.handoff', label: 'The mic reaches each mouth before they speak', role: 'required', feedback: 'Say how the first words are caught.' }, { id: 'r.pattern', label: 'The pattern isolates the voice from the crowd', role: 'wrong', feedback: 'No pattern isolates a voice in a stadium.' }, BRAND_REASON('reporter'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a mic close to the speaking mouth, moved before the answer, clear of faces, the lens and the routes — and no promise that a pattern removes the crowd.',
   },
   {

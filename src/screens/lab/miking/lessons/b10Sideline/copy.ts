@@ -115,7 +115,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     elMax: 45,
     aimBlurb: 'Swing the front up to 60° either way — it still faces the speaking mouth.',
     plan: { u0: -1700, u1: 2900, v0: -1500, v1: 1900 },
-    side: { u0: -1700, u1: 2900, v0: -2300, v1: 1640 },
+    side: { u0: -1600, u1: 2900, v0: -1700, v1: 1640 },
     target: 'pa',
     targetWord: 'PA',
     looking: 'The guest at the sideline · the PA high beyond the camera',
@@ -125,6 +125,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     shieldNote: 'The two people, the camera and the stadium reflect the PA’s sound too, and the free-field pattern cannot show that. Listen at the actual program, with the venue live.',
     learn: {
       ...BASE.context!.learn,
+      intro: 'These are scenario-based comparisons, not restrictions: the voices are the same — the place, the time to prepare, the crowd and the PA change.',
       body: 'At the sideline every open mic hears the crowd and the PA. A pattern’s rejection is a tool to aim; a mic close to the speaking mouth does more.',
       warn: 'No mic position alone makes a stadium quiet. Never create feedback deliberately — if an interview mic feeds a local PA, bring it up only to its working level and pull it down at any ring.',
     },

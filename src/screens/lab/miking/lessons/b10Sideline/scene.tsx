@@ -38,7 +38,11 @@ export function B10Scene({ view, variant, reporter = true }: { view: ViewId; var
       {post ? <Backdrop view={view} x={BACKDROP_X} z0={-1050} z1={1050} h={2300} floor={FLOOR} /> : null}
       {!side && variant !== 'postEvent' ? <DirArrow a={{ u: -200, v: EXIT_Z }} b={{ u: 1700, v: EXIT_Z }} color="#5bff85" w={12} /> : null}
       {!side && sideline ? <DirArrow a={{ u: -1500, v: -1350 }} b={{ u: -900, v: -1000 }} color="#8fbcff" w={10} /> : null}
-      {reporter ? <StandingTalker view={view} t={REPORTER} arm={h.reporter ? 'R' : undefined} phones={sideline} dim={side ? 0.72 : 1} /> : null}
+      {/* From the side the reporter stands right behind the guest (0.65 m
+          farther from the viewer): drawn, their head would sit on the guest's
+          as a second outline — so they are shown from above; their arm
+          holding the mic is the engine's, faded from the side. */}
+      {reporter && !side ? <StandingTalker view={view} t={REPORTER} arm={h.reporter ? 'R' : undefined} phones={sideline} /> : null}
       <StandingTalker view={view} t={GUEST} arm={h.guest ? 'R' : undefined} />
       {post ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
       <CameraRig view={view} spec={CAMERA} />
@@ -59,8 +63,8 @@ export function b10Labels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'b10.camera', text: 'CAMERA', u: CAMERA_BOX.max.x - 120, v: CAMERA_BOX.min.y - 160, align: 'center', at: { u: CAMERA_BOX.max.x - 150, v: CAMERA_BOX.min.y + 40 } },
     ];
     if (sideline) {
-      out.push({ id: 'b10.play', text: 'PLAY AREA · KEEP OUT', short: 'PLAY AREA', u: TOUCHLINE_X - 40, v: FLOOR - 260, align: 'right', tone: 'muted', at: { u: TOUCHLINE_X - 200, v: FLOOR - 20 } });
-      out.push({ id: 'b10.pa', text: 'PA', u: PA_C.x - 360, v: PA_C.y - 120, align: 'right', at: { u: PA_C.x - 150, v: PA_C.y } });
+      out.push({ id: 'b10.play', text: 'PLAY AREA', u: TOUCHLINE_X - 120, v: FLOOR - 320, align: 'center', tone: 'muted', at: { u: TOUCHLINE_X - 200, v: FLOOR - 20 } });
+      out.push({ id: 'b10.pa', text: 'PA', u: PA_C.x - 420, v: PA_C.y + 60, align: 'right', at: { u: PA_C.x - 170, v: PA_C.y } });
     }
     if (post) {
       out.push({ id: 'b10.backdrop', text: 'BACKDROP', u: BACKDROP_X - 60, v: -900, align: 'right', tone: 'muted', at: { u: BACKDROP_X, v: -700 } });
@@ -107,6 +111,6 @@ export function b10HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 export function b10FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
   const h = holds(variant);
   if (standingCovers(view, GUEST, u, v, tol, h.guest ? 'R' : undefined)) return true;
-  if (standingCovers(view, REPORTER, u, v, tol, h.reporter ? 'R' : undefined)) return true;
+  if (view === 'top' && standingCovers(view, REPORTER, u, v, tol, h.reporter ? 'R' : undefined)) return true;
   return variant === 'postEvent' && figureCovers(view === 'side' ? OPERATOR_POSES.side : OPERATOR_POSES.top, u, v, tol);
 }

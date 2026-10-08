@@ -44,7 +44,7 @@ import { boothSpill, partnerAt, partnerMouth } from './boothPlan.ts';
 import { HANDOFF_EARLY, HANDOFF_LATE, HANDOFF_ON_TIME, between, betweenDrop, clippedQuestion, handoffOk, levelDb, lostSyllables, type Handoff } from './handoff.ts';
 import { TORSO, TORSO_FRONT, bodyWornChain, chestVsHeadset, frontUV, keepOutsOf, type Wearer } from './standing.ts';
 import { turnHead } from './talkerPose.ts';
-import { BodyChain, HeadsetOnHead, KeepOutRegion, PlaceRing } from './SportSpeechArt';
+import { BodyChain, HeadsetOnHead, HeldArmArt, KeepOutRegion, PlaceRing } from './SportSpeechArt';
 
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 const unit = (a: Vec3): Vec3 => {
@@ -100,11 +100,14 @@ function PrivateCircuitStrip({ w, h, label, refused }: { w: number; h: number; l
         <RoundedRect x={w * 0.37 - 13} y={h * 0.25 - 4} width={26} height={20} r={4} color="#c9ced8" />
         {refused ? <Line p1={vec(w * 0.66, h * 0.5)} p2={vec(w * 0.8, h * 0.5)} color="#ff6b5e" strokeWidth={4} /> : null}
       </Canvas>
-      <Text style={[styles.strip, { left: w * 0.66, top: h * 0.14, width: w * 0.33 }]} {...fitValue(10)}>
+      <Text style={[styles.strip, { left: w * 0.66, top: h * 0.08, width: w * 0.33, color: refused ? '#ff6b5e' : colors.textPrimary }]} {...fitValue(10)}>
         {refused ? '✕ REFUSED' : 'CLOSED'}
       </Text>
-      <Text style={[styles.strip, { left: w * 0.66, top: h * 0.56, width: w * 0.33, color: colors.textMuted }]} {...fitValue(9)}>
-        {label.toUpperCase()}
+      <Text style={[styles.strip, { left: w * 0.66, top: h * 0.4, width: w * 0.33, color: colors.textMuted }]} {...fitValue(9)}>
+        PRIVATE CIRCUIT
+      </Text>
+      <Text style={[styles.strip, { left: w * 0.66, top: h * 0.66, width: w * 0.33, color: colors.textMuted }]} {...fitValue(9)}>
+        NEVER ON AIR
       </Text>
     </View>
   );
@@ -151,13 +154,13 @@ export function useFeedsStep(spec: FeedsSpec): MikingStep {
       ? [opt('key', 'MIC KEY', s.key, [{ id: 'onAir', label: 'On air', blurb: KEY_WORDS.onAir }, { id: 'cough', label: 'Cough', blurb: KEY_WORDS.cough }, { id: 'talkback', label: 'Talkback', blurb: KEY_WORDS.talkback }] as const, (v) => set({ key: v }))]
       : []),
     ...(spec.controls.includes('ret')
-      ? [opt('ret', 'RETURN', s.ret, [{ id: 'mixMinus', label: 'Mix-minus', blurb: 'The program without the commentators’ own voices: they hear themselves directly, never late.' }, { id: 'full', label: 'Whole program', blurb: 'The whole program comes back, their own voices included — late, through the chain.' }] as const, (v) => set({ ret: v }))]
+      ? [opt('ret', 'RETURN', s.ret, [{ id: 'mixMinus', label: 'Mix-minus', blurb: 'The program without the commentators’ own voices: they hear themselves directly, never late.' }, { id: 'full', label: 'Full mix', blurb: 'The whole program comes back, their own voices included — late, through the chain.' }] as const, (v) => set({ ret: v }))]
       : []),
     ...(spec.controls.includes('crowd') && spec.feed.crowd
-      ? [opt('crowd', 'CROWD', s.crowd, [{ id: 'own', label: 'Own channel', blurb: 'The crowd bed on its own channel into the program, added on purpose.' }, { id: 'none', label: 'Not routed', blurb: 'The crowd mics are not in the program: only what the commentary mics happen to hear.' }] as const, (v) => set({ crowd: v }))]
+      ? [opt('crowd', 'CROWD', s.crowd, [{ id: 'own', label: 'Separate', blurb: 'The crowd bed on its own channel into the program, added on purpose.' }, { id: 'none', label: 'Not routed', blurb: 'The crowd mics are not in the program: only what the commentary mics happen to hear.' }] as const, (v) => set({ crowd: v }))]
       : []),
     ...(spec.controls.includes('official') && spec.feed.official
-      ? [opt('official', 'OFFICIAL MIC', s.official, [{ id: 'off', label: 'Off', blurb: 'The announcement mic muted between announcements.' }, { id: 'pa', label: 'To the PA', blurb: 'Opened on purpose for an announcement: the crowd hears it on the PA.' }, { id: 'paProgram', label: 'PA + program', blurb: 'Also split to the broadcast — only with explicit permission for that split.' }] as const, (v) => set({ official: v }))]
+      ? [opt('official', 'OFFICIAL MIC', s.official, [{ id: 'off', label: 'Off', blurb: 'The announcement mic muted between announcements.' }, { id: 'pa', label: 'To the PA', blurb: 'Opened on purpose for an announcement: the crowd hears it on the PA.' }, { id: 'paProgram', label: 'PA + air', blurb: 'Also split to the broadcast — only with explicit permission for that split.' }] as const, (v) => set({ official: v }))]
       : []),
     ...(spec.controls.includes('priv') && spec.privateCircuit
       ? [opt('priv', 'PRIVATE', s.priv, [{ id: 'closed', label: 'Closed', blurb: 'The officials’ private circuit on its own approved route.' }, { id: 'tryAir', label: 'Put on air', blurb: 'Ask the tool to open the private circuit into the program. It will refuse.' }] as const, (v) => set({ priv: v }))]
@@ -237,7 +240,7 @@ export type SpillSpec = {
   mics: readonly SpillMic[];
   /** The booth from above, around commentator A at the origin and the
    *  partner `gap` mm to their right (frame V on A). */
-  top: (gap: number, px: number) => ReactNode;
+  top: (gap: number, px: number, mic: SpillMic) => ReactNode;
   box: (gap: number) => ViewBox;
   words: { looking: string; prompt: string; done: string };
 };
@@ -333,7 +336,7 @@ export function useSpillStep(spec: SpillSpec): MikingStep {
         <FieldStage w={w} h={h} view="top" box={box} a11y={a11y} labels={labels}>
           {(px) => (
             <>
-              {spec.top(gap, px)}
+              {spec.top(gap, px, m)}
               <Ray a={uvOf('top', pm)} b={uvOf('top', m.p)} px={px} color="#8fbcff" width={2.4} />
               <Ray a={uvOf('top', LIP)} b={uvOf('top', m.p)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
               <MicAt view="top" p={m.p} aim={aim} art={m.art} r={m.r} len={m.len} />
@@ -370,6 +373,8 @@ export type HandoffSpec = {
   atReporter: Vec3;
   atGuest: Vec3;
   look: { art: MicArtId; r: number; len: number };
+  /** The holder's shoulder (the reporter's): the arm is drawn from it. */
+  shoulder: Vec3;
   top: (px: number) => ReactNode;
   box: ViewBox;
   words: { looking: string; prompt: string; done: string };
@@ -498,6 +503,7 @@ export function useHandoffStep(spec: HandoffSpec): MikingStep {
               <Ray a={uvOf('top', speaker)} b={uvOf('top', micP)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
               <Ray a={uvOf('top', other)} b={uvOf('top', micP)} px={px} color="#8fbcff" width={2} />
               <MicAt view="top" p={micP} aim={aim} art={spec.look.art} r={spec.look.r} len={spec.look.len} />
+              <HeldArmArt view="top" shoulder={spec.shoulder} p={micP} aim={aim} len={spec.look.len} />
             </>
           )}
         </FieldStage>
@@ -604,7 +610,7 @@ export function useBodyStep(spec: BodySpec): MikingStep {
   const bezel: BezelItem[] = [
     { k: 'WEARER', v: who.toUpperCase(), flex: 1 },
     { k: 'CHEST MIC', v: cm(cmp.chest.d), flex: 1 },
-    { k: 'TURN COSTS', v: `${cmp.chest.db >= 0 ? '−' : '+'}${db0(Math.abs(cmp.chest.db))}`, flex: 1 },
+    { k: 'TURN COSTS', v: Math.abs(cmp.chest.db) < 0.5 ? '0 dB' : `${cmp.chest.db > 0 ? '−' : '+'}${db0(Math.abs(cmp.chest.db))}`, flex: 1 },
     { k: 'HEADSET', v: '0 dB', flex: 0.9 },
   ];
   const labels: StaticLabel[] = [

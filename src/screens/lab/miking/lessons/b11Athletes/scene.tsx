@@ -49,6 +49,7 @@ export function B11Scene({ view, variant, headless = false }: { view: ViewId; va
       {!athlete ? <PlayAreaHatch view={view} x={FIELD_X} depth={700} z0={-2900} z1={700} floor={FLOOR} /> : null}
       {official ? <PaSpeaker view={view} c={PA_C} faces={1} floor={FLOOR} /> : null}
       {side ? <BodyChain uv={SIDE_UV} chain={official ? HEAD : CHEST} /> : null}
+      {coach && side ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} dim={0.6} /> : null}
       <StandingTalker view={view} t={WEARER} headless={headless} />
       {!athlete && !headless ? (
         <OnTalker view={view} t={WEARER}>
@@ -56,7 +57,7 @@ export function B11Scene({ view, variant, headless = false }: { view: ViewId; va
         </OnTalker>
       ) : null}
       {athlete ? <KeepOuts view={view} /> : null}
-      {coach ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
+      {coach && !side ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
     </Group>
   );
 }
@@ -72,12 +73,10 @@ export function b11Labels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     const out: ArtLabel[] = [
       { id: 'v.mouth', text: 'MOUTH', u: 150, v: -200, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 180, v: 120, align: 'left' }] },
-      { id: 'b11.pack', text: 'PACK · SMALL OF THE BACK', short: 'PACK', u: TORSO.smallOfBack.x - 90, v: TORSO.smallOfBack.y + 230, align: 'right', tone: 'muted', at: { u: TORSO.smallOfBack.x, v: TORSO.smallOfBack.y } },
     ];
     if (!athlete) out.push({ id: 'b11.teamset', text: 'TEAM HEADSET', short: 'TEAM SET', u: -330, v: -330, align: 'right', tone: 'muted', at: { u: HEAD_C.x + 20, v: HEAD_C.y - 40 } });
     if (!athlete) out.push({ id: 'b11.field', text: 'FIELD · NO CREW IN PLAY', short: 'FIELD', u: FIELD_X + 360, v: FLOOR - 220, align: 'center', tone: 'muted' });
     if (official) out.push({ id: 'b11.pa', text: 'PA', u: PA_C.x - 360, v: PA_C.y - 100, align: 'right', at: { u: PA_C.x - 150, v: PA_C.y } });
-    if (athlete) out.push({ id: 'ko.helmet', text: 'NEVER MOUNT HERE', short: 'KEEP OUT', u: 300, v: -320, align: 'left', tone: 'muted', at: { u: HEAD_C.x + HEAD_R * 0.7, v: HEAD_C.y - HEAD_R * 0.6 } });
     if (coach) out.push({ id: 'b11.operator', text: 'PERIMETER BOOM', short: 'BOOM', u: OPERATOR.feet.x + 250, v: 650, align: 'left', tone: 'muted' });
     return out;
   }

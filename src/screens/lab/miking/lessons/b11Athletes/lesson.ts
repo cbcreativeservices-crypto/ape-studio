@@ -16,7 +16,8 @@
  * learner text; no badges.
  */
 import type { DiagnosticItem, Lesson, LessonPages, MikingScenario, OrderTask, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
-import { BRAND_REASON, LOUD_REASON, clearReason, docReason, hearingCheck, hollowSymptom, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { BRAND_REASON, clearReason, docReason, hearingCheck, hollowSymptom, polarityDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
+import { LOUD_VOICE, removeDelayVoice } from '../shared/broadcast/sportItems.ts';
 import { B11_MODEL, FLOOR, PA_C } from './geometry.ts';
 import { B11_ZONES } from './model.ts';
 import { B11_COPY } from './copy.ts';
@@ -389,7 +390,7 @@ const scenarios: MikingScenario[] = [
       'The first to switch on gets the clearest one': 'First come is how systems knock each other out.',
     },
   },
-  removeDelay('b11.mix.3'),
+  removeDelayVoice('b11.mix.3'),
 ];
 
 const symptoms: Symptom[] = [
@@ -486,7 +487,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A chest mic and a headset both open in the program', ok: false, power: 'none', feedback: 'Two open mics on one voice comb. Choose one.' },
       { id: 'e', label: 'A mic hidden on the bench, not mentioned to the team', ok: false, power: 'none', feedback: 'Never record someone with a hidden mic without approval.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the team’s equipment and the field'), { id: 'r.approval', label: 'The event and the coach approved the mic, its place and its destination', role: 'required', feedback: 'Say what was approved and by whom.' }, { id: 'r.channel', label: 'Its own labelled channel, to the approved destination only', role: 'required', feedback: 'Say where the audio may go.' }, BRAND_REASON('coach'), LOUD_REASON],
+    reasons: [docReason('the lips'), clearReason('the team’s equipment and the field'), { id: 'r.approval', label: 'The event and the coach approved the mic, its place and its destination', role: 'required', feedback: 'Say what was approved and by whom.' }, { id: 'r.channel', label: 'Its own labelled channel, to the approved destination only', role: 'required', feedback: 'Say where the audio may go.' }, BRAND_REASON('coach'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: approval, a start measured from the lips, clear of the team’s equipment, its own channel to the approved destination.',
   },
   {

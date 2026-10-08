@@ -18,14 +18,18 @@ import type { SourcePageId } from '../../engine/model/types.ts';
 import type { PageProps } from '../../pages/pageTypes';
 import { makeBroadcastSetting, makeBroadcastSound, useOpenMicStep, useRoutingStep } from '../shared/broadcast/broadcastPages';
 import { useHandoffStep } from '../shared/broadcast/sportPages';
+import { HeldArmArt } from '../shared/broadcast/SportSpeechArt';
+import { aimVec } from '../../engine/geometry/vec.ts';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
 import { B10Scene } from './scene';
 import { B10_ZONES } from './model.ts';
-import { GUEST, REPORTER } from './geometry.ts';
+import { GUEST, REPORTER, SHOULDER_REP } from './geometry.ts';
 
 type PageFn = (p: PageProps) => ReactNode;
 const zone = (id: string) => B10_ZONES.find((z) => z.id === id)!;
 const FLAG_LOOK = { art: 'flagHandheld' as const, r: 25, len: 162 };
+/** The handheld's start at the guest's mouth (the reporter's hand holds it). */
+const HAND = zone('b10.hand').start;
 
 function useTools(): ReturnType<typeof useHandoffStep>[] {
   const handoff = useHandoffStep({
@@ -34,7 +38,8 @@ function useTools(): ReturnType<typeof useHandoffStep>[] {
     atGuest: zone('b10.hand').start.p,
     atReporter: zone('b10.reporter').start.p,
     look: FLAG_LOOK,
-    top: () => <B10Scene view="top" variant="twoMics" />,
+    shoulder: SHOULDER_REP,
+    top: () => <B10Scene view="top" variant="sideline" />,
     box: { u0: -650, u1: 1150, v0: -1150, v1: 520 },
     words: {
       looking: 'From above · the reporter and the guest, one handheld between them',
@@ -56,7 +61,12 @@ function useTools(): ReturnType<typeof useHandoffStep>[] {
       { id: 'G', label: 'Only the guest’s', blurb: 'The guest answers: the reporter’s headset pulled down.', open: ['mG'] },
       { id: 'R', label: 'Only the reporter’s', blurb: 'The reporter asks: the guest’s mic pulled down.', open: ['mR'] },
     ],
-    top: () => <B10Scene view="top" variant="sideline" />,
+    top: () => (
+      <>
+        <B10Scene view="top" variant="sideline" />
+        <HeldArmArt view="top" shoulder={SHOULDER_REP} p={HAND.p} aim={aimVec(HAND.az, HAND.el)} len={FLAG_LOOK.len} />
+      </>
+    ),
     box: { u0: -650, u1: 1150, v0: -1150, v1: 520 },
     words: {
       subject: 'a reporter with a headset and a guest with a handheld',
@@ -98,21 +108,21 @@ const B10Setting = makeBroadcastSetting({
   useRouting: () =>
     useRoutingStep({
       plan: PLAN,
-      looks: { guest: FLAG_LOOK, rep: { art: 'headsetBoom', r: 11, len: 30 }, crowd: { art: 'shotgun', r: 9.5, len: 250 }, ret: 'player', prod: 'talkback' },
+      looks: { guest: FLAG_LOOK, rep: { art: 'headsetBoom', r: 20, len: 55 }, crowd: { art: 'shotgun', r: 9.5, len: 250 }, ret: 'player', prod: 'talkback' },
       switches: [
         {
           id: 'heard',
           label: 'RETURN TO',
           options: [
-            { id: 'ear', label: 'Reporter’s earpiece', blurb: 'The program return and the cues go to the reporter’s earpiece only.', sends: { ret: ['ifb'] } },
-            { id: 'speaker', label: 'A loudspeaker', blurb: 'The program return plays on a small loudspeaker beside the interview.', sends: { ret: ['monitor'] } },
+            { id: 'ear', label: 'Earpiece', blurb: 'The program return and the cues go to the reporter’s earpiece only.', sends: { ret: ['ifb'] } },
+            { id: 'speaker', label: 'Speaker', blurb: 'The program return plays on a small loudspeaker beside the interview.', sends: { ret: ['monitor'] } },
           ],
         },
         {
           id: 'crowd',
           label: 'CROWD',
           options: [
-            { id: 'own', label: 'Own channel', blurb: 'The crowd mics on their own channel into the program.', sends: { crowd: ['program', 'recorder'] } },
+            { id: 'own', label: 'Separate', blurb: 'The crowd mics on their own channel into the program.', sends: { crowd: ['program', 'recorder'] } },
             { id: 'none', label: 'Not routed', blurb: 'No crowd mics: only what the interview mics happen to hear.', sends: { crowd: [] } },
           ],
         },
@@ -120,8 +130,8 @@ const B10Setting = makeBroadcastSetting({
           id: 'cue',
           label: 'CUES',
           options: [
-            { id: 'ifb', label: 'Earpiece only', blurb: 'The producer’s cues to the reporter’s earpiece.', sends: { prod: ['ifb'] } },
-            { id: 'air', label: 'Into the program', blurb: 'The producer’s cues end up in the program.', sends: { prod: ['ifb', 'program'] } },
+            { id: 'ifb', label: 'Earpiece', blurb: 'The producer’s cues to the reporter’s earpiece.', sends: { prod: ['ifb'] } },
+            { id: 'air', label: 'On air', blurb: 'The producer’s cues end up in the program.', sends: { prod: ['ifb', 'program'] } },
           ],
         },
       ],

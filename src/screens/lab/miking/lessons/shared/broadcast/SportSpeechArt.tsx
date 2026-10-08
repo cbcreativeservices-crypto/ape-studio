@@ -29,6 +29,8 @@ import { FigureMass, PlayerBehind, PlayerInFront, figureCovers, handShape } from
 import { Headphones, OnTalker, talkerPose } from './BroadcastArt';
 import { frontUV, standPoses, type Stander } from './standing.ts';
 import type { Talker } from './talkerPose.ts';
+import { heldElbowOf, heldFist } from '../../../engine/geometry/arm.ts';
+import { HELD_ARM } from './sportMics.ts';
 import type { PlayerPose } from '../players/playerPose.ts';
 import { EAR, EAR_HALF, HEAD_C, HEAD_R, VOICE_DIMS } from '../voice/voiceSpec.ts';
 
@@ -133,29 +135,32 @@ export function standingCovers(view: ViewId, t: Stander, u: number, v: number, t
 
 /* ── the booth window / the open rail ── */
 
-/** The commentary position's front: a window (frame, glass, a sill) — or,
- *  `open`, a rail with nothing between the talker and the stadium. `x` the
- *  front's plane, from `z0` to `z1`, between heights `y0` (top) and `y1`. */
-export function BoothWindow({ view, x, y0, y1, z0, z1, open = false }: { view: ViewId; x: number; y0: number; y1: number; z0: number; z1: number; open?: boolean }) {
+/** The commentary position's front: a window (a wall up to the sill at
+ *  `sillY`, the glass above it, a header at `y0`) — or, `open`, a rail at the
+ *  sill's height with nothing between the talker and the stadium. `x` the
+ *  front's plane, from `z0` to `z1`; `y1` the floor. */
+export function BoothWindow({ view, x, y0, y1, z0, z1, sillY, open = false }: { view: ViewId; x: number; y0: number; y1: number; z0: number; z1: number; sillY: number; open?: boolean }) {
   const p = useMemo(() => {
     const frame = make();
     const glass = make();
     const sill = make();
     if (view === 'side') {
       if (open) {
-        frame.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 20, y1 - 380, 40, 380), 10, 10));
-        sill.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 40, y1 - 400, 80, 36), 12, 12));
+        // A low wall to the rail, the rail's top bar.
+        frame.addRect(Skia.XYWHRect(x - 30, sillY, 60, y1 - sillY));
+        sill.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 50, sillY - 30, 100, 40), 14, 14));
       } else {
-        frame.addRect(Skia.XYWHRect(x - 24, y0, 48, y1 - y0));
-        glass.addRect(Skia.XYWHRect(x - 10, y0 + 30, 20, y1 - y0 - 330));
-        sill.addRect(Skia.XYWHRect(x - 60, y1 - 300, 120, 40));
+        frame.addRect(Skia.XYWHRect(x - 40, sillY, 80, y1 - sillY));
+        frame.addRect(Skia.XYWHRect(x - 40, y0, 80, 70));
+        glass.addRect(Skia.XYWHRect(x - 14, y0 + 70, 28, sillY - y0 - 70));
+        sill.addRect(Skia.XYWHRect(x - 70, sillY - 20, 140, 30));
       }
     } else {
       frame.addRect(Skia.XYWHRect(x - 24, z0, 48, z1 - z0));
       if (!open) glass.addRect(Skia.XYWHRect(x - 10, z0 + 60, 20, z1 - z0 - 120));
     }
     return { frame, glass, sill };
-  }, [view, x, y0, y1, z0, z1, open]);
+  }, [view, x, y0, y1, z0, z1, sillY, open]);
   return (
     <Group>
       <Path path={p.glass} color="#8fbcff" opacity={0.28} />
@@ -237,32 +242,44 @@ export function Backdrop({ view, x, z0, z1, h, floor }: { view: ViewId; x: numbe
 
 /* ── the crowd ── */
 
-/** A few rows of stadium seats with heads (where the crowd noise comes
- *  from): in plan, rows along z from `x0` outward by `dx`; in section, a
- *  rake rising away. Muted: it is the background. */
+/** A few rows of stadium seating (where the crowd noise comes from): in
+ *  plan, tiers along z from `x0` outward by `dx`, each a concrete step with
+ *  its row of folding seats; in section, the rake of steps rising away. No
+ *  people are drawn: the crowd is the sound, the stand says where. Muted:
+ *  it is the background. */
 export function CrowdStand({ view, x0, dx, z0, z1, floor, rows = 4 }: { view: ViewId; x0: number; dx: number; z0: number; z1: number; floor: number; rows?: number }) {
   const p = useMemo(() => {
+    const steps = make();
     const seats = make();
-    const heads = make();
     const sgn = Math.sign(dx) || 1;
     const step = Math.abs(dx) / rows;
     for (let r = 0; r < rows; r++) {
-      const x = x0 + sgn * (r + 0.5) * step;
+      const xa = x0 + sgn * r * step;
+      const xb = xa + sgn * step;
+      const lo = Math.min(xa, xb);
       if (view === 'top') {
-        seats.addRRect(Skia.RRectXY(Skia.XYWHRect(x - step * 0.3, z0, step * 0.6, z1 - z0), 18, 18));
-        for (let z = z0 + 220; z < z1 - 100; z += 480) heads.addCircle(x, z + (r % 2) * 240, 95);
+        steps.addRect(Skia.XYWHRect(lo, z0, step, z1 - z0));
+        // A row of folding seats on the step: seat pans with their backs.
+        const sx = sgn > 0 ? lo + step * 0.25 : lo + step * 0.35;
+        for (let z = z0 + 120; z < z1 - 380; z += 500) seats.addRRect(Skia.RRectXY(Skia.XYWHRect(sx, z, step * 0.4, 440), 40, 40));
       } else {
-        const rise = r * 420;
-        seats.addRect(Skia.XYWHRect(x - step * 0.45, floor - 450 - rise, step * 0.9, 450 + rise));
-        heads.addCircle(x, floor - 450 - rise - 520, 110);
+        const rise = (r + 1) * 400;
+        steps.addRect(Skia.XYWHRect(lo, floor - rise, step, rise));
+        const sx = sgn > 0 ? lo + step * 0.3 : lo + step * 0.3;
+        seats.addRRect(Skia.RRectXY(Skia.XYWHRect(sx, floor - rise - 430, 60, 430), 20, 20));
+        seats.addRRect(Skia.RRectXY(Skia.XYWHRect(sx, floor - rise - 120, step * 0.4, 60), 20, 20));
       }
     }
-    return { seats, heads };
+    return { steps, seats };
   }, [view, x0, dx, z0, z1, floor, rows]);
+  const b = p.steps.getBounds();
   return (
-    <Group opacity={0.55}>
-      <Path path={p.seats} color="#2a2d34" />
-      <Path path={p.heads} color="#5d6573" />
+    <Group opacity={0.6}>
+      <Path path={p.steps}>
+        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={['#3a3d45', '#26282e', '#16171b']} />
+      </Path>
+      <Path path={p.steps} style="stroke" strokeWidth={4} color="#0b0c0f" />
+      <Path path={p.seats} color="#33445e" />
       <Path path={p.seats} style="stroke" strokeWidth={3} color="#0b0c0f" />
     </Group>
   );
@@ -410,6 +427,39 @@ export function HeadsetOnHead({ view }: { view: 'front' | 'side' }) {
       <Path path={p.boom} style="stroke" strokeWidth={5} strokeCap="round" color="#4d515b" />
       <Circle cx={tip.u} cy={tip.v} r={12} color="#26282e" />
       <Circle cx={tip.u} cy={tip.v} r={12} style="stroke" strokeWidth={2} color="#08080a" />
+    </Group>
+  );
+}
+
+/** The arm holding a mic, for a tool step's own drawing (the placement scene
+ *  draws it itself): the shoulder to a lowered elbow to the fist a little up
+ *  the handle — the engine's held-arm geometry (geometry/arm.ts). `p` the
+ *  mic's front, `aim` its unit axis, `len` its length; `view` side or top. */
+export function HeldArmArt({ view, shoulder, p, aim, len, dim = 1 }: { view: ViewId; shoulder: Vec3; p: Vec3; aim: Vec3; len: number; dim?: number }) {
+  const tail = { x: p.x - aim.x * len, y: p.y - aim.y * len, z: p.z - aim.z * len };
+  const f = heldFist(tail, aim);
+  const e = heldElbowOf(shoulder, f, HELD_ARM.upper.mm, HELD_ARM.fore.mm);
+  const uv = (q: Vec3) => ({ u: q.x, v: view === 'side' ? q.y : q.z });
+  const path = useMemo(() => {
+    const q = make();
+    const a = uv(shoulder);
+    const b = uv(e);
+    const c = uv(f);
+    q.moveTo(a.u, a.v);
+    q.lineTo(b.u, b.v);
+    q.lineTo(c.u, c.v);
+    return q;
+  }, [shoulder.x, shoulder.y, shoulder.z, e.x, e.y, e.z, f.x, f.y, f.z, view]); // eslint-disable-line react-hooks/exhaustive-deps
+  const fc = uv(f);
+  return (
+    <Group opacity={dim}>
+      <Path path={path} style="stroke" strokeWidth={96} strokeCap="round" strokeJoin="round" color="#12151c" />
+      <Path path={path} style="stroke" strokeWidth={90} strokeCap="round" strokeJoin="round" color="#55617b" />
+      <Group transform={[{ translateX: -6 }, { translateY: -9 }]}>
+        <Path path={path} style="stroke" strokeWidth={30} strokeCap="round" strokeJoin="round" color="#76839e" opacity={0.75} />
+      </Group>
+      <Circle cx={fc.u} cy={fc.v} r={42} color="#2a201a" />
+      <Circle cx={fc.u} cy={fc.v} r={38} color="#a28977" />
     </Group>
   );
 }

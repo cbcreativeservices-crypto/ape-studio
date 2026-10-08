@@ -122,6 +122,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     shieldNote: 'The official’s head and the stadium reflect the PA’s sound too, and the free-field pattern cannot show that. Bring the mic up only to its working level with the PA on.',
     learn: {
       ...BASE.context!.learn,
+      intro: 'These are scenario-based comparisons, not restrictions: the voice is the same — who wears the mic, what is approved and where it goes change.',
       body: 'An official’s announcement mic feeds the PA it can hear. A pattern’s rejection helps a little; a close capsule, the mic open only for the announcement and the PA’s own placement do more.',
       warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the stadium all matter. Never create feedback deliberately — at any ring, pull it down at once.',
     },

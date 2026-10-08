@@ -116,6 +116,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     shieldNote: 'The stadium’s reflections, the desk and the commentator reflect the PA’s sound too, and the free-field pattern cannot show that. Listen with the venue live, at the agreed level.',
     learn: {
       ...BASE.context!.learn,
+      intro: 'These are scenario-based comparisons, not restrictions: the commentator is the same — the position, the crowd and the PA change.',
       body: 'At an open position the PA and the crowd reach every commentary mic. A pattern’s null is a tool to aim; a close mic does more.',
       warn: 'No mic position alone prevents feedback where the commentary feeds the PA: the pattern, the open mics, the PA’s place and level and the stadium all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
     },
