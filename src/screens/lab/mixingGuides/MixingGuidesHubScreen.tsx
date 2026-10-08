@@ -27,6 +27,7 @@ import { fitValue } from '../../../theme/legibility';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import { LabHeader } from '../kit/LabNavBar';
+import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { MIXING_GUIDE_INDEX, type MixingGuideEntry } from './data/index';
 import { STARTING_POINTS_LINE } from './data/types';
@@ -68,6 +69,8 @@ export function MixingGuidesHubScreen() {
           One guide per style: what its audience listens for, then balance, EQ, compression, effects, vocals, loudness, live versus studio, common mistakes and reference recordings.
         </Text>
         <Text style={[styles.note, wide && readingText]}>{STARTING_POINTS_LINE}</Text>
+        {/* The Mixing-family note (owner 2026-10-07): a small link on the first page. */}
+        <ProNoteButton />
 
         <View style={[styles.searchWrap, wide && readingText]}>
           <Text style={styles.searchIcon} accessible={false}>⌕</Text>
@@ -111,6 +114,8 @@ export function MixingGuidesHubScreen() {
             ))}
           </GlassPanel>
       </ScrollView>
+      {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
+      <ProNoteIntro />
     </View>
   );
 }

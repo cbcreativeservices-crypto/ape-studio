@@ -744,20 +744,27 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   const on = useDerivedValue(() => geo.value.on);
   const red = useDerivedValue(() => geo.value.far * 0.9);
   if (body.mount !== 'clip') return null;
+  // Lab 6 group 6: a BOOM POLE (MicType.clip.arm) is drawn its own thickness —
+  // a satin carbon tube with a rim light — and has no jaw: the operator's
+  // hands, in the lesson's art, hold its end.
+  const pole = body.armR != null;
+  const w = pole ? body.armR! * 2 : 7;
   return (
     <Group opacity={on}>
-      <Path path={path} style="stroke" strokeWidth={11} strokeCap="round" color="#0b0c0f" />
-      <Path path={path} style="stroke" strokeWidth={7} strokeCap="round" color="#4d515b" />
+      <Path path={path} style="stroke" strokeWidth={w + 4} strokeCap="round" color="#0b0c0f" />
+      <Path path={path} style="stroke" strokeWidth={w} strokeCap="round" color={pole ? '#3a3d45' : '#4d515b'} />
       <Group transform={[{ translateX: -1 }, { translateY: -1.5 }]}>
-        <Path path={path} style="stroke" strokeWidth={2} strokeCap="round" color="#d4d8e0" opacity={0.5} />
+        <Path path={path} style="stroke" strokeWidth={pole ? Math.max(2, w * 0.22) : 2} strokeCap="round" color="#d4d8e0" opacity={0.5} />
       </Group>
-      <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" color="#ff6b5e" opacity={red} />
+      <Path path={path} style="stroke" strokeWidth={w + 2} strokeCap="round" color="#ff6b5e" opacity={red} />
       {/* The jaw gripping the hoop. */}
-      <Group transform={jaw}>
-        <Circle cx={0} cy={0} r={9} color="#16171b" />
-        <Circle cx={0} cy={0} r={9} style="stroke" strokeWidth={2} color="#8a8f99" />
-        <Circle cx={0} cy={0} r={3} color="#d4d8e0" />
-      </Group>
+      {pole ? null : (
+        <Group transform={jaw}>
+          <Circle cx={0} cy={0} r={9} color="#16171b" />
+          <Circle cx={0} cy={0} r={9} style="stroke" strokeWidth={2} color="#8a8f99" />
+          <Circle cx={0} cy={0} r={3} color="#d4d8e0" />
+        </Group>
+      )}
     </Group>
   );
 }

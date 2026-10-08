@@ -59,7 +59,7 @@ export const SHOTGUN_SHORT: MicType = {
   power: 'phantom power (48 V) for most',
   mount: 'stand',
   examples: SHOTGUN_EXAMPLES,
-  art: 'shotgun',
+  art: 'shotgunMount',
   blurb: 'A short shotgun: a slotted tube in front of a supercardioid capsule. Through the lows and mids it hears like that capsule; higher up its pickup narrows — and off its axis the tone changes. It does not remove the room’s reflections. Distances are read to the capsule, at the back of the tube. In a shock mount; needs phantom power.',
 };
 
@@ -145,3 +145,7 @@ export const FIELD_MIC_TYPES: Record<string, MicType> = {
     blurb: 'A sensor that touches a dry surface and hears the vibration IN that surface — the container wall, a board — not the air. A third path, kept on its own labelled track.',
   },
 };
+
+/** The same table under a name that cannot be mistaken for Lab 6 group 6's location /
+ *  spatial FIELD_MIC_TYPES (lessons/shared/field/fieldMics.ts): data/micTypes.ts imports this one. */
+export const FOLEY_MIC_TYPES = FIELD_MIC_TYPES;

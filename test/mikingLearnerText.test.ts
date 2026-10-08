@@ -151,6 +151,15 @@ export const BRAND_NAMES: readonly string[] = [
   'Hayes',
   'Sound Devices',
   'Warner',
+  // Lab 6 group 6 research (docs/labs/miking/location_speech, spatial_field).
+  // ('Rode', 'RØDE', 'Rycote', 'Sound Devices' and 'Hayes' are in the group 1 list above.)
+  'Thirion',
+  'KU ?100',
+  'AMBEO',
+  'MKH ?416',
+  'National Weather Service',
+  'National Park Service',
+  // ('Meyer' is in the group 4 list below.)
   // Lab 6 group 4 research (docs/labs/miking/measurement_mics, sound_level, room_acoustics): makers, agencies and standards bodies.
   'NTi',
   'NIST',
