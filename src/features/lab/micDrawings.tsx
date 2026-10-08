@@ -26,6 +26,7 @@
  */
 import { useMemo } from 'react';
 import { AmbiTetraMic, BlimpMic, DmsClusterMic, DummyHeadMic, LavalierMic, ShotgunMic } from './micDrawingsField';
+import { BroadcastDynamicMic } from './micDrawingsBroadcast';
 import {
   BlurMask,
   Circle,
@@ -1098,8 +1099,11 @@ export function SoundLevelMeter({ r, len, tint }: { r: number; len: number; tint
 
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm'; r: number; len: number; cross?: number; tint?: string }) {
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'broadcastDynamic'; r: number; len: number; cross?: number; tint?: string }) {
   switch (art) {
+    /* Lab 7 group 1: the broadcast dynamic (micDrawingsBroadcast.tsx). */
+    case 'broadcastDynamic':
+      return <BroadcastDynamicMic r={r} len={len} tint={tint} />;
     /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
     case 'shotgun':
       return <ShotgunMic r={r} len={len} tint={tint} />;

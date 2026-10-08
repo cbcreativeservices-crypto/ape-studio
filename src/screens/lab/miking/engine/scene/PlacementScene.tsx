@@ -48,6 +48,7 @@ import { fitXform, project, unprojectDelta, zoomAbout, type ViewXform } from '..
 import { guideFor, projected, type Guide } from '../geometry/guides.ts';
 import { fmtLen } from '../model/units.ts';
 import { assembly, CLIP_REACH, constrainMove, pinToSurface, type Blocked } from '../geometry/collision.ts';
+import { elbowOf, gooseneckPts } from '../geometry/arm.ts';
 import { deriveReadouts } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { gain, isModelled } from '../physics/polar.ts';
@@ -674,9 +675,35 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
     }
     return { ax: 0, av: 0, bx: 0, bv: 0, on: 0, far: 0 };
   });
+  // Lab 7 group 1: a desk ARM is drawn as two segments through a raised
+  // elbow, a GOOSENECK as a curve up from its base into the mic's tail
+  // (geometry/arm.ts) — from the same two end points as the capsule.
+  const style = body.armStyle;
+  const elbow = body.elbow;
   const path = useDerivedValue(() => {
     const p = Skia.Path.Make();
     if (!geo.value.on) return p;
+    if (style === 'deskArm' && elbow) {
+      const segs = assembly(scene, pose.value, body);
+      for (let i = 0; i < segs.length; i++) {
+        if (segs[i].piece !== 'arm') continue;
+        const e = elbowOf(segs[i].b, segs[i].a, elbow.a, elbow.b);
+        p.moveTo(geo.value.bx, geo.value.bv);
+        p.lineTo(e.x, vOf(view, e));
+        p.lineTo(geo.value.ax, geo.value.av);
+      }
+      return p;
+    }
+    if (style === 'gooseneck') {
+      const segs = assembly(scene, pose.value, body);
+      for (let i = 0; i < segs.length; i++) {
+        if (segs[i].piece !== 'arm') continue;
+        const q = gooseneckPts(segs[i].b, segs[i].a, aimVec(pose.value.az, pose.value.el));
+        p.moveTo(q[0].x, vOf(view, q[0]));
+        p.cubicTo(q[1].x, vOf(view, q[1]), q[2].x, vOf(view, q[2]), q[3].x, vOf(view, q[3]));
+      }
+      return p;
+    }
     p.moveTo(geo.value.ax, geo.value.av);
     p.lineTo(geo.value.bx, geo.value.bv);
     return p;
@@ -685,6 +712,39 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   const on = useDerivedValue(() => geo.value.on);
   const red = useDerivedValue(() => geo.value.far * 0.9);
   if (body.mount !== 'clip') return null;
+  if (style === 'deskArm' || style === 'gooseneck') {
+    const goose = style === 'gooseneck';
+    const w = goose ? 9 : 11;
+    return (
+      <Group opacity={on}>
+        <Path path={path} style="stroke" strokeWidth={w + 5} strokeCap="round" strokeJoin="round" color="#0b0c0f" />
+        <Path path={path} style="stroke" strokeWidth={w} strokeCap="round" strokeJoin="round" color={goose ? '#2a2c32' : '#3d4049'} />
+        {goose ? (
+          // The neck's ribs: short dark bands along the flexible tube.
+          <Path path={path} style="stroke" strokeWidth={w} strokeCap="butt" color="#0c0d10" opacity={0.75}>
+            <DashPathEffect intervals={[1.6, 3.4]} />
+          </Path>
+        ) : (
+          // The springs, riding just above each segment.
+          <Group transform={[{ translateX: 0 }, { translateY: -9 }]}>
+            <Path path={path} style="stroke" strokeWidth={3.2} strokeJoin="round" color="#8a8f99" opacity={0.85}>
+              <DashPathEffect intervals={[2.2, 2.2]} />
+            </Path>
+          </Group>
+        )}
+        <Group transform={[{ translateX: -1.2 }, { translateY: -1.8 }]}>
+          <Path path={path} style="stroke" strokeWidth={Math.max(2, w * 0.24)} strokeCap="round" strokeJoin="round" color="#d4d8e0" opacity={0.45} />
+        </Group>
+        <Path path={path} style="stroke" strokeWidth={w + 2} strokeCap="round" strokeJoin="round" color="#ff6b5e" opacity={red} />
+        {/* The swivel at the grip (the clamp's post top or the neck's base). */}
+        <Group transform={jaw}>
+          <Circle cx={0} cy={0} r={goose ? 8 : 10} color="#16171b" />
+          <Circle cx={0} cy={0} r={goose ? 8 : 10} style="stroke" strokeWidth={2} color="#8a8f99" />
+          <Circle cx={0} cy={0} r={3} color="#d4d8e0" />
+        </Group>
+      </Group>
+    );
+  }
   // Lab 6 group 6: a BOOM POLE (MicType.clip.arm) is drawn its own thickness —
   // a satin carbon tube with a rim light — and has no jaw: the operator's
   // hands, in the lesson's art, hold its end.

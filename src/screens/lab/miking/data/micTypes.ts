@@ -317,3 +317,6 @@ Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
 /* Lab 6 group 4 — measurement core (F11–F16): the measurement mics and the sound level meter. Appended so other lessons merge cleanly. */
 import { MEASURE_MIC_TYPES } from '../lessons/shared/measure/measureMics.ts';
 Object.assign(MIC_TYPES, MEASURE_MIC_TYPES);
+/* Lab 7 (broadcast), group 1 — desk and studio voice (B01, B07, B06): the broadcast dynamics, the arm condenser, the goosenecks and the table boundary; groups 2 and 3 add theirs to the same table (shared/broadcast/broadcastMics.ts). Appended so other lessons merge cleanly. */
+import { BROADCAST_MIC_TYPES } from '../lessons/shared/broadcast/broadcastMics.ts';
+Object.assign(MIC_TYPES, BROADCAST_MIC_TYPES);
