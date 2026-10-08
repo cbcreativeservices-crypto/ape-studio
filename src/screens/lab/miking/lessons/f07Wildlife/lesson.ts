@@ -40,7 +40,7 @@ const pages: LessonPages = {
   },
   microphone: {
     title: 'Shotgun, dish or wide',
-    goal: 'See why a dish helps only where the wavelength is shorter than the dish, why it must be aimed precisely, and what a shotgun and an omni do instead.',
+    goal: 'See why a dish helps only where the wavelength is shorter than the dish, why it needs to be aimed precisely, and what a shotgun and an omni do instead.',
     credit: { scenarios: ['wl.mic.1', 'wl.mic.2', 'wl.mic.3', 'wl.rec.1'], interactive: 'dishTried', note: 'Move the pitch below and above the dish’s line, and answer the four checks.' },
     takeaway: 'A dish gathers mid and high pitches at its focus while the aim holds, and gives little help below about c / D for its size. A shotgun narrows in the highs and follows movement more easily; an omni keeps the place.',
   },
@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'With a dish, what do you do before recording a phrase?',
     options: ['Sweep slowly on headphones to aim', 'Raise the gain as far as it goes', 'Point it roughly toward the trees'],
     correct: 'Sweep slowly on headphones to aim',
-    explain: 'A narrow dish must be aimed precisely: sweep slowly, find where the call is clearest, and hold it steady through the phrase.',
+    explain: 'A narrow dish needs to be aimed precisely: sweep slowly, find where the call is clearest, and hold it steady through the phrase.',
     why: {
       'Raise the gain as far as it goes': 'Gain does not aim: find the clearest direction first.',
       'Point it roughly toward the trees': 'Roughly loses the high pitches first — aim precisely.',

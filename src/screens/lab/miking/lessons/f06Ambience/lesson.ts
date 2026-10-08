@@ -565,10 +565,10 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'An animal reacts to you while you set up. What does it mean?',
-    options: ['You are too close: back away', 'It is curious: keep working', 'It wants food: offer some'],
+    options: ['You are too close: back away', 'It is curious: keep working', 'It is calm: set up a bit nearer'],
     correct: 'You are too close: back away',
     explain: 'If an animal reacts to you, you are too close. Follow local distances — never lure or feed it.',
-    why: { 'It is curious: keep working': 'A reaction means too close, whatever the reason.', 'It wants food: offer some': 'Feeding or luring wildlife is never part of a recording.' },
+    why: { 'It is curious: keep working': 'A reaction means too close, whatever the reason.', 'It is calm: set up a bit nearer': 'It has just reacted to you: that means too close. Increase the distance, never close it.' },
   },
   {
     id: 'amb.q.3',
@@ -600,11 +600,11 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'amb.q.6',
     covers: 'setting',
-    prompt: 'What is a windscreen NOT?',
-    options: ['Waterproofing', 'Wind protection', 'Part of the kit'],
-    correct: 'Waterproofing',
+    prompt: 'Rain starts on a mic in a basket and fur. What does the windscreen do about it?',
+    options: ['Little: shelter the mic and plugs', 'It keeps the capsule dry for the take', 'Enough, if the fur is thick and long'],
+    correct: 'Little: shelter the mic and plugs',
     explain: 'A windscreen is not waterproofing: shelter outdoor mics from rain, sleet and snow, and protect the connectors.',
-    why: { 'Wind protection': 'That is exactly what it is.', 'Part of the kit': 'It is part of every outdoor kit — but it does not keep water out.' },
+    why: { 'It keeps the capsule dry for the take': 'It slows the wind; water still gets through to the mic.', 'Enough, if the fur is thick and long': 'Thicker fur slows more wind — and soaks up water. Shelter the mic.' },
   },
 ];
 

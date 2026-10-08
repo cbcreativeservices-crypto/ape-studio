@@ -96,12 +96,12 @@ const scenarios: MikingScenario[] = [
     id: 'pb.snd.2',
     page: 'sound',
     prompt: 'A steady tone moves past at walking pace. What happens to its pitch?',
-    options: ['A little higher, then a little lower', 'Much higher, then very much lower', 'Much higher first, then much lower later'],
+    options: ['A little higher, then a little lower', 'Much higher, then very much lower', 'A little lower, then a little higher'],
     correct: 'A little higher, then a little lower',
     explain: 'Approaching it arrives a little higher, receding a little lower — at walking pace only about 7 cents either way in the ideal model: hard to hear.',
     why: {
       'Much higher, then very much lower': 'At walking pace the shift is tiny — a few cents.',
-      'Much higher first, then much lower later': 'Approach raises the pitch; recession lowers it.',
+      'A little lower, then a little higher': 'Backwards: approaching raises the pitch; receding lowers it.',
     },
   },
   {
@@ -156,12 +156,12 @@ const scenarios: MikingScenario[] = [
     id: 'pb.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Which of these is NOT created by panning?',
-    options: ['A Doppler pitch shift', 'Left–right movement of it', 'A change of side'],
+    options: ['A Doppler pitch shift', 'Movement across the image', 'A change from one side to the other'],
     correct: 'A Doppler pitch shift',
     explain: 'Panning moves the image; the pitch shift comes only from real relative motion during the recording.',
     why: {
-      'Left–right movement of it': 'That is exactly what panning creates.',
-      'A change of side': 'Panning does move a sound from one side to the other.',
+      'Movement across the image': 'That is exactly what panning creates.',
+      'A change from one side to the other': 'Panning does move a sound from one side to the other.',
     },
   },
   {
