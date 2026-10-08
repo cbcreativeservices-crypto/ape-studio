@@ -188,6 +188,15 @@ import { F03_LESSON } from '../lessons/f03Props/lesson.ts';
 LESSON_CONTENT.F03 = F03_LESSON;
 import { F04_LESSON } from '../lessons/f04Impacts/lesson.ts';
 LESSON_CONTENT.F04 = F04_LESSON;
+/* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 (each lesson on its own line). */
+import { F05_LESSON } from '../lessons/f05Perspective/lesson.ts';
+LESSON_CONTENT.F05 = F05_LESSON;
+import { F06_LESSON } from '../lessons/f06Ambience/lesson.ts';
+LESSON_CONTENT.F06 = F06_LESSON;
+import { F07_LESSON } from '../lessons/f07Wildlife/lesson.ts';
+LESSON_CONTENT.F07 = F07_LESSON;
+import { F08_LESSON } from '../lessons/f08Passby/lesson.ts';
+LESSON_CONTENT.F08 = F08_LESSON;
 /* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
 import { F09_LESSON } from '../lessons/f09LocationSpeech/lesson.ts';
 LESSON_CONTENT.F09 = F09_LESSON;
@@ -221,3 +230,10 @@ import { B04_LESSON } from '../lessons/b04BoomCamera/lesson.ts';
 LESSON_CONTENT.B04 = B04_LESSON;
 import { B02_LESSON } from '../lessons/b02NewsAnchor/lesson.ts';
 LESSON_CONTENT.B02 = B02_LESSON;
+/* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
+import { B12_LESSON } from '../lessons/b12Parabolic/lesson.ts';
+LESSON_CONTENT.B12 = B12_LESSON;
+import { B13_LESSON } from '../lessons/b13FieldDiamond/lesson.ts';
+LESSON_CONTENT.B13 = B13_LESSON;
+import { B14_LESSON } from '../lessons/b14CourtIce/lesson.ts';
+LESSON_CONTENT.B14 = B14_LESSON;

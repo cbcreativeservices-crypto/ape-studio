@@ -45,6 +45,7 @@ function useTools() {
     boxTop: { u0: -460, u1: 940, v0: -720, v1: 980 },
     boxSide: { u0: -420, u1: 900, v0: -700, v1: 560 },
     insetAt: { x: 0.6, y: 0.52, w: 0.39, h: 0.46 },
+    axisLabelV: 330,
     pitch: true,
     words: {
       subject: 'an anchor at a desk with a lav, a fixed boom and a gooseneck',

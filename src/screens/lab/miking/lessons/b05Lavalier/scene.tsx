@@ -53,20 +53,14 @@ export function b05Labels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     out.push({ id: 'v.mouth', text: 'MOUTH', u: 150, v: -170, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 160, v: 90, align: 'left' }] });
     out.push({ id: 'b5.jacket', text: 'JACKET AND SHIRT', short: 'JACKET', u: 200, v: 520, align: 'left', tone: 'muted', at: { u: CHEST_X + 2, v: NECK_Y + 360 } });
-    if (variant === 'studio') out.push({ id: 'bc.camera', text: 'CAMERA', u: CAMERA_BOX.max.x - 150, v: CAMERA_BOX.min.y - 150, align: 'center', at: { u: CAMERA_BOX.max.x - 150, v: CAMERA_BOX.min.y + 40 } });
-    else {
-      out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: 900, align: 'center', tone: 'muted' });
-      out.push({ id: 'b5.pa', text: 'PA', u: PA_C.x, v: PA_C.y - 380, align: 'center', at: { u: PA_C.x, v: PA_C.y - 280 } });
-    }
+    // The camera and the PA are named by a tap (THE PARTS): a label for them
+    // would sit alone at the edge of a setup framed close on the presenter.
+    if (variant === 'live') out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: 900, align: 'center', tone: 'muted' });
     return out;
   }
   out.push({ id: 'v.mouth', text: 'MOUTH', u: 150, v: -170, align: 'left', at: { u: 2, v: 0 }, alts: [{ u: 150, v: 170, align: 'left' }] });
   out.push({ id: 'v.chest', text: 'SHOULDERS', short: 'CHEST', u: -150, v: 330, align: 'center', at: { u: -100, v: 180 } });
-  if (variant === 'studio') out.push({ id: 'bc.camera', text: 'CAMERA', u: CAMERA_BOX.max.x - 100, v: CAMERA_BOX.max.z + 260, align: 'center', at: { u: CAMERA_BOX.max.x - 150, v: 40 } });
-  else {
-    out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: -LECTERN.halfW - 130, align: 'center', tone: 'muted' });
-    out.push({ id: 'b5.pa', text: 'PA', u: PA_C.x, v: PA_C.z - 320, align: 'center', at: { u: PA_C.x, v: PA_C.z - 170 } });
-  }
+  if (variant === 'live') out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: -LECTERN.halfW - 130, align: 'center', tone: 'muted' });
   return out;
 }
 

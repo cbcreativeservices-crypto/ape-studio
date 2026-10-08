@@ -646,6 +646,52 @@ affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-fra
 needs: nothing
 
 
+### 2026-10-08 03:03 · ccode · 36f8a870
+changed: Merge origin/final-lab into lab7-g5 (Lab 7b group 2)
+affects other side: nothing server-side — final-lab merged into lab7-g5 (Lab 6 groups 2 and 5, Lab 7 group 1, then Lab 7 part 2 group 2); app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 02:28 · ccode · 222c8ca0
+changed: Miking Lab 7b group 2: B12 Parabolic, B13 Field and Diamond, B14 Court and Ice
+affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
+needs: nothing
+
+
+### 2026-10-08 01:57 · ccode · f0f35555
+changed: Miking Lab 7b group 2: the shared sports kit (venue plan builder, practice scenes, dish, boundary/plant, headroom)
+affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
+needs: nothing
+
+
+### 2026-10-08 02:34 · ccode · 22178948
+changed: Merge origin/final-lab into lab6-g2
+affects other side: nothing (client-only merge; Miking still hidden)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · b0d17d1d
+changed: Lab 6 group 2: corrections log section and phone-width captures
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · d5eeb7c8
+changed: Lab 6 group 2: model tests and the research brand names
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · ee9bb9cb
+changed: Lab 6 group 2: F06 ambience, F08 pass-bys, F07 wildlife, F05 Foley perspective
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · 9b1959fe
+changed: Lab 6 group 2: the shared field toolkit (frame G, sites, wind, safety, path, image, dish)
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+
 ### 2026-10-08 02:02 · ccode · d567fe40
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a5842596b925d1318
 affects other side: nothing (client-only: final-lab merged into lab7-g1 — Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)

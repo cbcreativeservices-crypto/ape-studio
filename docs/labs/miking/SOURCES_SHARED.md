@@ -240,6 +240,17 @@ condenser's body S-SM4-WEB.)
 | MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
 | ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
 
+## 15. The parabolic dish for Lab 6's field lessons (F07 and later; `lessons/shared/field/dishMics.ts`, `dish.ts`)
+
+Added 2026-10-08 by the Lab 6 group 2 builder (branch lab6-g2): the dish card (`dishMic`, art `dish`). The full
+Lab 6 register is `foley_footsteps/SOURCES.md` §0; the dish model is `field_wildlife_distant/SOURCES.md` §2.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| CORNELL-MIC | Cornell Lab, Macaulay Library, "Microphones": reflectors "57 cm (22 inches) in diameter"; "Higher frequency sounds, with shorter wavelengths, are amplified more than lower frequency sounds" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 preparation) |
+| SCH-DISH | SCHOEPS Parabolic Dish Set product page: 585 mm, focal 210 mm, the capsule at 0° toward the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| INNERCORE | Innercore parabolic microphone, technical details: 500 mm, focal 140 mm, the capsule pointing back at the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
 ## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
 
 Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.
@@ -272,8 +283,33 @@ Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the bro
 | LESSON-B01 | The owner's lesson B01 (practice statements kept as written; B01-1, B-INST applied) | `source_text/B01-…txt` | the lesson |
 | LESSON-B06 | The owner's lesson B06 (practice statements kept as written; B06-1, B-INST applied) | `source_text/B06-…txt` | the lesson |
 | LESSON-B07 | The owner's lesson B07 (practice statements kept as written; B-INST applied) | `source_text/B07-…txt` | the lesson |
+## 18. Lab 7 part 2 · group 2 — action pickup on fields and courts (B12, B13, B14; `lessons/shared/sports/`)
 
-## 18. Lab 7 group 2 — body-worn and camera (B05, B04, B02; `lessons/shared/broadcast/` bodyWorn, cameraFrame, boomPole)
+Added 2026-10-08 by the Lab 7 part 2 group 2 builder (branch lab7-g5). The full Lab 7 part 2 register is
+`commentators/SOURCES.md` §0; the lessons' own audits are `parabolic/`, `field_diamond/` and `court_ice/SOURCES.md`.
+The keys the code cites (zones, mic types, parts) — internal record only, never shown:
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| KLOVER-FAQ | Klover MiK FAQs: the 26-inch dish "omni"; the 16-inch "omnidirectional or wide-cardioid"; focus "2-1/4 inches behind … hub or 4 inches behind the front face" (26) and "1-1/8 … 1-1/2 inches" (16) — the dish drawing is DERIVED from these (`parabolic/SOURCES.md` §b) | see `commentators/SOURCES.md` §0 | read 2026-10-07 (prep pass); the FAQ's wavelength remark is NOT taught (B12-01) |
+| IFAB-L1 | IFAB Law 1 §1.12: no extraneous equipment (cameras, microphones) attached to goals, nets, flagposts | see `commentators/SOURCES.md` §0 | read 2026-10-07 |
+| WR-L1 | World Rugby Law 1.3(e): perimeter 5 m where practicable, at least 3.5 m (men) / 3.0 m (women) | see `commentators/SOURCES.md` §0 | read 2026-10-07 |
+| FIBA-2M | FIBA: obstructions at least 2 m from the playing court | see `commentators/SOURCES.md` §0 (FIBA) | Medium (2026 article numbers not re-read) |
+| FIVB-FZ | FIVB: free zone ≥ 3 m; top events 5 m sides, 6.5 m ends, 12.5 m high | see `commentators/SOURCES.md` §0 (FIVB) | Medium |
+| NWS-SPORTS | NWS lightning and outdoor sports: "wait at least 30 minutes after the last thunder"; "dugouts, rain shelters, sheds, etc., are NOT SAFE" | https://www.weather.gov/safety/lightning-sports | read 2026-10-07 (NWS-LTG in §0) |
+| S-VP83F | Shure VP83F user guide: loudest sounds peaking between −12 and −6 dB (model-specific; the −12 dBFS trial is the lessons' own) | see `commentators/SOURCES.md` §0 | Medium |
+| LESSON-B12 | The owner's lesson B12 (practice statements kept as written) | `source_text/B12-…txt` | the lesson |
+| LESSON-B13 | The owner's lesson B13 — the practice field (30 × 20 m, M (15, −6), A/B/C), CONFIRMED by calculation | `source_text/B13-…txt` | the lesson |
+| LESSON-B14 | The owner's lesson B14 — the practice line (A/B/C 2/5/8 m inside, M 3 m outside → 5/8/11 m), CONFIRMED arithmetic | `source_text/B14-…txt` | the lesson |
+| C-BOUNDARY | The boundary reflection: extra path 2h for perpendicular arrival, first notch c/(4h) — 286 Hz at 0.30 m, 858 Hz at 0.10 m, 8.6 kHz at 0.01 m | `court_ice/SOURCES.md` "Derived" | DERIVED (geometry, C-SOUND) |
+| C-DISH | The dish's gain onset c / D — about 520 Hz (0.660 m), 845 Hz (0.406 m); a paraboloid focuses on-axis rays at f | `parabolic/SOURCES.md` §b | DERIVED (ideal model) |
+
+Drawing defaults (never printed as a dimension): every sport outline's size (D7-2), the practice field's crew strip,
+E, the crowd mark, the camera, the turn arc, the practice line's outside zone and second mic place, the dish's axis
+height, the ambience height, a talker's 1.55 m mouth height for B13's targets, the headroom chain's event sizes and
+stage limits, the dish shell thickness.
+
+## 19. Lab 7 group 2 — body-worn and camera (B05, B04, B02; `lessons/shared/broadcast/` bodyWorn, cameraFrame, boomPole)
 
 Added 2026-10-08 by the Lab 7 group 2 builder (branch lab7-g2): the keys the body-worn and camera kit, the group 2 mic types and the B05 / B04 / B02 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `lavalier_headset/`, `boom_camera/` and `news_anchor/SOURCES.md`. Nothing here is shown to the learner (owner ruling 2026-10-04).
 

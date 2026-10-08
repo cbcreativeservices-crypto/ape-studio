@@ -1408,6 +1408,73 @@ Applied from `BATCH6_RESEARCH_SUMMARY_PART2.md` §2 (items 2, 3, 6, 10, 12, 13, 
 | G4-14 | F11/F12/F13 | "documented" throughout | "logged / written down" (the learner-text ban on "documented") | wording | APPLIED |
 
 OWNER REVIEW (defaults applied): D-6B-1 chain rack as a page type — yes (engine/chain/); D-6B-2 synthetic histories and model decays labelled "a made-up / simplified example" — yes; D-6B-3 no standard names on screen — yes (BRAND_NAMES extended); D-6B-8 3 dB default + calculator stub; D-6B-9 safety numbers exact — yes; operator keep-away radius 1 m drawing default (F11 proposal item 3); F12 open-position distance from the road (3–4.5 m), F13 room and seats, F11 off-axis example angle 30° — drawing defaults.
+
+## Lab 6 · group 2 · perspective & field: F06, F08, F07, F05 (branch lab6-g2, 2026-10-08)
+
+Sources: `source_text/{F05-Foley-Perspective-and-Multiple-Microphones,F06-Natural-and-Urban-Ambience,F07-Wildlife-and-Distant-Sources,F08-Moving-Sources-and-Pass-bys}-Miking-Technique.txt`; research `field_ambience/`, `field_moving_passby/`, `field_wildlife_distant/`, `foley_perspective/` (each SOURCES.md §c), `foley_footsteps/SOURCES.md` §0 (the Lab 6 register) and §c, BATCH6_RESEARCH_SUMMARY.md §2–§5.
+Shared code built (group 2 owns): `lessons/shared/field/` — `frameG.ts` (frame G: bearings, `faceS`, `poseToward`, `poseFacing`, `frontUp`), `sites.ts` + `SiteArt.tsx` (woodland, plaza, wood edge with its brook, meadow, bison meadow, closed walking route, closed vehicle route; keep-outs from the features), `wind.ts` + `WindArt.tsx` (bare / foam / softie / basket / basket + fur on the shotgun, three exposures), `safety.ts` (lightning, wildlife, traffic, water, hearing cards; 25 yd / 100 yd rings), `fieldLog.ts` (typed only, no location), `path.ts` (the path tool: level, off-axis, Doppler, tracked mic, pair Δt), `stereoImage.ts` (where a source tends to land for X/Y, ORTF, A/B, M/S, mono), `dish.ts` + `DishArt.tsx` + `dishMics.ts` (the parabolic dish: profile, focus, c / D, beam bands), `fieldSteps.tsx`, `fieldPages.tsx`, `fieldCopy.ts`, `fieldArrays.ts`. `features/lab/micDrawingsDish.tsx` (`ParabolicDishMic`). Engine (each a commented "lab6 group 2" block): `MicArtId` += `'dish'`; `InstrumentModel.hardwareScale` (PlacementScene draws the mic, mount and lobe larger on a field-sized site); `StartingSetup.label` + `roleWords()` + `SETUP_PICKS[..].labels` (O-14). Tests: `test/mikingLab6Field.test.ts`.
+
+### Corrections
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| F05-C1 | F05 header, practice, observation sheet | Institutional wording ("students", "classroom") | "you"; "Practice"; the optional field log | No institutional wording | — | APPLIED |
+| F05-C2 | F05 X/Y paragraph | An X/Y angle left open | X/Y starts at 90° between the capsules (a starting point) | The research gives the common starting angle | DPA-STEREO | APPLIED |
+| F05-C3 | F05 ORTF paragraph | "ORTF" named without its geometry | 170 mm apart, 110° included — the whole pair moves, never the geometry | Locked geometry | DPA-STEREO | APPLIED |
+| F05-C4 | F05 close-mic example | "3–6 ft" alone | + "in front and/or to the side, about 15°" (zone `f05.mono`, bearing 15°) | The published practice says both | MIX-2005 | APPLIED |
+| F05-C5 | F05 refs | A fragile reference | Record only | — | — | RECORDED |
+| F05-C6 | F05 cross-links | Links to unbuilt lessons | Dropped (no future promises) | House rule | — | APPLIED |
+| F06-C1 | F06 header, practice | Institutional wording | "you", "Practice", the optional field log | No institutional wording | — | APPLIED |
+| F06-C2 | F06 pair paragraph | X/Y angle open | 90° | As F05-C2 | DPA-STEREO | APPLIED |
+| F06-C3 | F06 wildlife distances | US-park distances as a rule | 25 yards (about 23 m) for most animals, 100 yards (about 91 m) for bears and wolves, as EXAMPLES — "local rules come first" | They are one agency's rules | NPS-WILD | APPLIED · O-11 |
+| F06-C4 | F06 wind | "Do not record above 5 m/s" | One monitoring protocol excludes wind above 5 m/s; a creative take is judged by ear and protection | Scope of the source | NPS-RM47 | APPLIED |
+| F06-C5 | F06 lightning | "Wait until the storm passes" | "30 minutes after the last lightning or thunder"; rain shelters, small sheds and open vehicles are not safe | Exact safety facts | NWS-LTG | APPLIED |
+| F06-C6 | F06 cross-links | Links to unbuilt lessons | Dropped | No future promises | — | APPLIED |
+| F07-C1 | F07 header, practice | Institutional wording | "you", "Practice" | No institutional wording | — | APPLIED |
+| F07-C2 | F07 setbacks | US-park distances as a rule | Examples, local rules first; every start drawn outside the 25-yard ring | As F06-C3 | NPS-WILD | APPLIED · O-11 |
+| F07-C3 | F07 dish | "A dish amplifies sound" | Concentrates the pitches whose wavelength is shorter than the dish; little help below about c / D (about 600 Hz for 57 cm, 587 Hz for 585 mm, 686 Hz for 500 mm) — computed, no gain curve | The relation is derived, not sourced as a curve | CORNELL-MIC, SCH-DISH, INNERCORE | APPLIED · O-9 |
+| F07-C4 | F07 dish handling | The rustle warning cited | Kept as practice, uncited | No source on screen | — | APPLIED |
+| F07-C5 | F07, F08 titles | "…Distant Sources", "Moving Sources…" | "Wildlife and Distant Sounds", "Moving Sounds and Pass-bys" | "Sources" reads as a citation on screen (learner-text guard) | — | APPLIED · OWNER REVIEW G2-1 |
+| F08-C1 | F08 header, practice | Institutional wording | "you", "Practice" | No institutional wording | — | APPLIED |
+| F08-C2 | F08 Doppler | Doppler named, no size | A worked MODEL size: walking 1.4 m/s about +7.1 / −7.0 cents (c = 343.21 m/s, the calculator's); "never assign a Doppler number to an uncontrolled pass" kept | Scale of the effect | OSX-DOPPLER | APPLIED · O-10 |
+| F08-C3 | F08 refs | A dead maker link | Record only | — | — | RECORDED |
+| F08-C4 | F08 cross-links | Links to unbuilt lessons | Dropped | No future promises | — | APPLIED |
+
+### Build decisions (drawing defaults and engine choices)
+
+| id | What | Why | Status |
+|---|---|---|---|
+| L6G2-G1 | Frame G: origin the listening point on the ground, +x toward the scene, +y down, +z the array's right; Lab 5's `arrayCapsules` is used unchanged with `face = faceS(bearing) = 90 + bearing` | One stereo tool for Labs 5 and 6; the test pins ORTF 170 mm / 110° and the left capsule on the left | APPLIED |
+| L6G2-G2 | `InstrumentModel.hardwareScale` (F06 ×8, F08 ×6, F07 ×10): the mic, its mount and its lobe drawn larger than life on a field-sized site; distances and collisions stay true. The F05 stage stays at true size | At 30–70 m across a phone the mic would be under a pixel | APPLIED · the accuracy note says "drawn larger than life" |
+| L6G2-G3 | Role names through `SETUP_PICKS[..].labels`: F06 SECOND POSITION, F07 WIDER VIEW, F08 TRACKED | O-14 | APPLIED |
+| L6G2-G4 | The dish as a mic type (`dishMic`, art `dish`, radius 285 mm); its length and capsule offset placeholders, named in the lesson's unknowns | The engine places a body, not a reflector | APPLIED |
+| L6G2-G5 | Every pair drawn whole (both capsules, locked geometry) as its own zone; F07's flock ORTF starts at capsule A | The engine gives a used zone to one setup only | APPLIED |
+| L6G2-G6 | The plaza sidewalk folded into the plaza site (kerb 9 m ahead, facade 9 m behind, a walkway between) | One urban site keeps the lesson to two variants | APPLIED · OWNER REVIEW G2-2 |
+| L6G2-G7 | The image readout's full-side marks: 15 dB level or 1.1 ms time difference = fully at one speaker (drawing defaults, the readout says "tends to land") | No single published mapping | APPLIED · OWNER REVIEW G2-3 |
+| L6G2-G8 | Distances past about 6 m still print the engine's inches in brackets ("≈ 27.06 m (1065.4 in)") — the shared format, pinned by tests | Not changed here | OWNER REVIEW G2-4 |
+| L6G2-G9 | F05's marked path carries a 5 mm floor-marking solid (inside the lane keep-out), so the content frame keeps the whole path on the glass | Content-frame guard | APPLIED |
+| L6G2-T1 | Yes/no balance: Yes-keyed items added in F07 (`wl.two.1`) and F08 (`pb.prac.3`) to keep the field lab inside the answer-pattern guard | Engine-wide guard | APPLIED |
+
+### OWNER REVIEW (drawing defaults chosen where the research leaves the decision open)
+
+| id | Default used | Where | Status |
+|---|---|---|---|
+| O-3 | People, birds, animals and a car in the house figure style; the car in plan only | F06–F08 sites, F05 artist | OWNER: approve |
+| O-8 | A/B omni spacing 600 mm for ambience | F06 `amb.*.pair` more | OWNER: approve |
+| O-9 | No dish gain curve: words + the "helps above about N Hz" readout, an illustrative narrowing beam | F07 | OWNER: approve |
+| O-10 | Finger-scrubbed path with level and pitch strips (ideal model); walking 1.4 m/s, vehicle 20 m/s; the vehicle only as a PAPER PLAN | F08 | OWNER: approve |
+| O-11 | 25 yd / 100 yd shown as examples, local rules first | F06, F07 | OWNER: approve |
+| O-12 | The field log typed only, on the device, no location | F06–F08 practice | OWNER: approve |
+| O-14 | SECOND POSITION / WIDER VIEW / TRACKED role names | F06, F07, F08 | OWNER: approve |
+| G2-1 | F07 / F08 titles reworded without "Sources" (F07-C5) | registry, lessons | OWNER: decide |
+| G2-2 | One urban site (plaza + sidewalk) | F06 | OWNER: approve |
+| G2-3 | The image full-side marks 15 dB / 1.1 ms | shared/field/stereoImage.ts | OWNER: approve |
+| G2-4 | Inches in brackets on long field distances (house format) | engine readouts | OWNER: decide |
+| G2-5 | Mic heights 1.5 m for every field start (F05: room mic 2 m up, X/Y 1.5 m out, ORTF 2 m out) | F05–F08 | OWNER: approve |
+| G2-6 | Site distances: F06 stream about 6.5 m ahead, path 1.6 m behind; F07 one bird 26 m out and 9 m up, the flock line 30 m out and 6 m up crossing at 8 m/s, a large animal 70 m out; F08 walking path 3 m from the mic line (envelope 1.5 m each side), vehicle line 9 m (envelope 3 m, crew line 4.5 m) | F06–F08 | OWNER: approve |
+| G2-7 | Typical dish 57 cm with focus 0.36 · D (205 mm, derived from the 585 / 210 mm ratio); presets 585 / 210 mm and 500 / 140 mm | F07 | OWNER: approve |
+| G2-8 | Birds and mics drawn larger than life on field sites (said in the accuracy note) | F06–F08 | OWNER: approve |
+
 ## Lab 6 · group 6 · Location and spatial: F09, F10 (branch lab6-g6, 2026-10-08)
 
 Built by the Lab 6 group 6 builder (G-C of `BUILD_PROMPTS_lab6b.md`). Research: `location_speech/`, `spatial_field/`, `measurement_mics/SOURCES.md` §0, `BATCH6_RESEARCH_SUMMARY_PART2.md` §2. Defaults used for the D-items are listed under OWNER REVIEW at the end.
@@ -1537,7 +1604,7 @@ Built by the Lab 7 group 1 builder (G1 of `BUILD_PROMPTS_lab7a.md`). Research: `
 
 ## Lab 7 · group 2 · Body-worn and camera: B05, B04, B02 (branch lab7-g2, 2026-10-08)
 
-Built by the Lab 7 group 2 builder (G2 of `BUILD_PROMPTS_lab7a.md`). Research: `lavalier_headset/`, `boom_camera/`, `news_anchor/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §18. Shared kit: `lessons/shared/broadcast/` (`cameraFrame.ts`, `CameraArt.tsx`, `cameraPages.tsx`, `bodyWorn.ts`, `BodyWornArt.tsx`, `bodyWornPages.tsx`, `boomPole.ts`; group 2 mic types in `broadcastMics.ts`; `doubleMic` in `routing.ts`).
+Built by the Lab 7 group 2 builder (G2 of `BUILD_PROMPTS_lab7a.md`). Research: `lavalier_headset/`, `boom_camera/`, `news_anchor/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §19. Shared kit: `lessons/shared/broadcast/` (`cameraFrame.ts`, `CameraArt.tsx`, `cameraPages.tsx`, `bodyWorn.ts`, `BodyWornArt.tsx`, `bodyWornPages.tsx`, `boomPole.ts`; group 2 mic types in `broadcastMics.ts`; `doubleMic` in `routing.ts`).
 
 | id | Lesson | Line | Lesson says | App says | Why / source | Status |
 |---|---|---|---|---|---|---|
@@ -1570,3 +1637,34 @@ Built by the Lab 7 group 2 builder (G2 of `BUILD_PROMPTS_lab7a.md`). Research: `
 - The two-talker cue (B04): the talker and the interviewer standing face to face 1.1 m apart, the boom above between them (55 cm out, 52 cm up, 26 cm to one side).
 - Concealment is shown as one shirt layer over the same place (no fabric acoustic model; the bright-cap idea in words only, no dB).
 - Brand list: CCM 41, B6 and MixPre added to BRAND_NAMES (the rest of the Lab 7a names were added by group 1).
+## Lab 7b · group 2 · Action pickup on fields and courts: B12, B13, B14 (branch lab7-g5, 2026-10-08)
+
+Built by the Lab 7 part 2 group 2 builder (G2 of `BUILD_PROMPTS_lab7b.md`; the spec's branch name `lab7-g2` was taken by
+Lab 7a, so the backup branch is `lab7-g5`). Research: `field_diamond/`, `parabolic/`, `court_ice/` SOURCES.md and
+GEOMETRY_PROPOSAL.md, `BATCH7_RESEARCH_SUMMARY_PART2.md` §2. Shared kit: `lessons/shared/sports/` (G3 imports it).
+
+| Id | Lesson | Lines | Was | Now | Why | Status |
+|---|---|---|---|---|---|---|
+| L7B-G2-01 (B12-01) | B12 | L58 | the maker's FAQ: wavelength "not relevant in the same way" | never shown; the bowl is taught by the wave-acoustic reading (gain only where the wavelength is shorter than the dish, ≈ c / D) | physically misleading (summary §2 item 5) | APPLIED |
+| L7B-G2-02 (B12-02) | B12 | — | no dish geometry in the lesson | the paraboloid DERIVED from the maker's focal references (660 / 224 / 122 mm and 406 / 122 / 84 mm), `placeholder`, "a simplified picture" said once; no dimension printed | parabolic/SOURCES.md §b | APPLIED |
+| L7B-G2-03 (B13-01) | B13 | L17, L63 | "IFAB Law 1 … Section 1.12" | internal record cites "Law 1, §1.12 (the equipment sentence)"; on screen only "nothing attached to goals, nets and flagposts" | locator under a "Commercial advertising" heading | APPLIED (internal) |
+| L7B-G2-04 (B14-01) | B14 | L14 | FIBA "unobstructed boundary lane" | said as an obstruction clearance — "a typical clear zone … not a crew strip" | the rule text read is an obstruction clearance | APPLIED |
+| L7B-G2-05 (R-07) | B12, B13, B14 | L2, L116–L160 / L46–L53 / L177–L200 | "Pro Audio Training Academy", "classroom", "student", "supervisor", "instructor-approved" | "you", "practice", "the safety observer", "a qualified person"; the observation sheets are optional practice sheets | institutional wording (summary §2 item 14) | APPLIED |
+| L7B-G2-06 (R-08) | B12, B13, B14 | refs, L48, L57, L62, L105, L163–L170 | maker and model names (Klover MiK 16 / 26, Wildtronics, Shure VP83F / MX391, Sennheiser MKH 416, Rycote, TopVision) and rulebooks (IFAB, World Rugby, MLB, USA Softball, NFL, FIBA, FIVB, ITF, BWF, DEL, IIHF) | generic types; "check your event's rules"; BRAND_NAMES extended | owner ruling 2026-10-04 | APPLIED |
+| L7B-G2-07 (R-09) | B13, B14 | L114 / L155 | lightning and the rain-cover caution repeated per lesson | ONE sports safety card (`shared/sports/safety.ts`): shelter in a substantial building or hard-topped vehicle, dugouts and open rain shelters not safe, 30 minutes after the last thunder; a windscreen is not waterproofing | summary §2 item 16 | APPLIED |
+| L7B-G2-08 | B13, B14 | L105 / L172 | "−12 dBFS" as the loudest safe rehearsal peak | kept as "a suggested starting point, not a delivery standard"; the model-specific −12 to −6 dB of one maker's guide is internal only | S-VP83F (Medium) | APPLIED |
+| L7B-G2-09 | B12 | L27 | aim below a distant player (one maker's 26-inch guide) | an ANOTHER START "idea to try", "test it with your own dish and geometry" | UNSOURCED today; model-specific | APPLIED |
+| L7B-G2-10 | B13 | L62 | a producer's 17 fixed pitch mics | not shown (no count, no producer) | press release, producer-specific | APPLIED |
+| L7B-G2-11 | B13 | L118 | the fixed ambience mark E "in the crew strip", no coordinate | E drawn at (25, −6), `placeholder`, never printed; its ranges are not printed (an ambience pair aims at no target) | never invent a dimension | APPLIED |
+| L7B-G2-12 | B13 | L136 | the target height not given ("measure the slant distance to the actual source height") | targets at the voice family's 1.55 m standing mouth height (drawing default); slant ranges "calculated from the drawing" | — | APPLIED · OWNER REVIEW |
+| L7B-G2-13 | B14 | L182 | the clap "at the same height" as the 1 m capsule | targets at 1.0 m — the lesson's own | — | APPLIED |
+
+### OWNER REVIEW (defaults used; change any)
+- **D7-1 rules on screen** — default used: sport clearance numbers only as "typical clear zone — check your event's rules" (rugby 5 m / 3.5 m / 3 m, basketball about 2 m, volleyball about 3 m, more at top events), no rulebook named; one "approval first" row on every "before any mic" card.
+- **D7-2 sport outlines** — default used: ten plan outlines at common dimensions, every one a drawing default (`sportPlans.ts` `defaults`); the PRACTICE scenes are the Placement Studios.
+- **D7-6 photos** — not done (no images touched; prompts not written).
+- The practice field's crew strip (1.5 m wide), the camera, the crowd mark K, the way out and cable route, the dish's ±40° turn arc, the practice line's outside zone, the second position M2 (4 m along the line), the B12 fallback place F (7, −6), the dish's axis height (1.3 m) and the ambience height (1.5 m) are drawing defaults.
+- The headroom chain is an EXAMPLE chain (event sizes +10 / +16 dB over a gentle clap; stage limits) — drawing defaults, labelled "an example chain … not measurements"; the one printed number is the converter's dBFS from the learner's own gains.
+- Mic glyphs on a plan are drawn at a fixed share of the plan's width (a mark, not to scale); the corner close-up shows the mic itself to scale.
+- The engine's MICROPHONES first step ("on the instrument") is kept, as in F10; its distance label prints the engine's precision (e.g. "≈ 10.005 m (393.9 in)") — an engine-wide formatting question for metre-scale scenes.
+- Not built: D7-3/D7-4/D7-5 are group 3's. Group 1's routing panel is not used here (B12–B14 keep effects off the PA in words).

@@ -66,26 +66,22 @@ export function B02Instrument({ view, variant }: { view: ViewId; variant: Varian
   return <B02Scene view={view} variant={variant} />;
 }
 
-export function b02Labels(view: ViewId, variant: VariantId): ArtLabel[] {
-  const v = vOf(variant);
-  const body = cameraBody(CAM_OF[v]);
+export function b02Labels(view: ViewId, _variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     const out: ArtLabel[] = [
       { id: 'v.mouth', text: 'MOUTH', u: 140, v: -170, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 160, v: 110, align: 'left' }] },
       { id: 'bc.desk', text: 'ANCHOR DESK', short: 'DESK', u: 560, v: DESK.max.y + 90, align: 'center', tone: 'muted', at: { u: 560, v: DESK.max.y } },
       { id: 'b2.base', text: 'GOOSENECK BASE', short: 'BASE', u: GOOSE_BASE.x + 90, v: DESK_TOP_Y - 160, align: 'left', tone: 'muted', at: { u: GOOSE_BASE.x, v: DESK_TOP_Y - 20 } },
-      { id: 'bc.camera', text: 'CAMERA', u: body.max.x - 150, v: body.min.y - 150, align: 'center', at: { u: body.max.x - 150, v: body.min.y + 40 } },
     ];
-    if (v === 'public') out.push({ id: 'b2.pa', text: 'PA', u: PA_C.x, v: PA_C.y - 380, align: 'center', at: { u: PA_C.x, v: PA_C.y - 280 } });
+    // The camera and the PA are named by a tap (THE PARTS): the setups are
+    // framed close on the desk, where their labels would sit alone.
     return out;
   }
   const out: ArtLabel[] = [
     { id: 'v.mouth', text: 'MOUTH', u: 150, v: -170, align: 'left', at: { u: 2, v: 0 } },
     { id: 'g.head', text: 'GUEST', u: -360, v: GUEST.lip.z, align: 'right', at: { u: GUEST.lip.x + HEAD_C.x - HEAD_R + 10, v: GUEST.lip.z } },
     { id: 'bc.desk', text: 'ANCHOR DESK', short: 'DESK', u: 600, v: DESK.max.z - 110, align: 'center', tone: 'muted' },
-    { id: 'bc.camera', text: 'CAMERA', u: body.max.x - 100, v: body.max.z + 260, align: 'center', at: { u: body.max.x - 150, v: 40 } },
   ];
-  if (v === 'public') out.push({ id: 'b2.pa', text: 'PA', u: PA_C.x, v: PA_C.z + 330, align: 'center', at: { u: PA_C.x, v: PA_C.z + 170 } });
   return out;
 }
 

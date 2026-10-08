@@ -151,6 +151,23 @@ export const BRAND_NAMES: readonly string[] = [
   'Hayes',
   'Sound Devices',
   'Warner',
+  // Lab 6 group 2 research (docs/labs/miking/field_ambience, field_moving_passby, field_wildlife_distant, foley_perspective):
+  // the sound library and its parent, dish makers, the physics text, authors, the traffic and hearing bodies.
+  'Cornell',
+  'Macaulay',
+  'Innercore',
+  'Telinga',
+  'Wildtronics',
+  'OpenStax',
+  'MKH',
+  'Les Smith',
+  'Watson Wu',
+  'Potter',
+  'MUTCD',
+  'ANSI',
+  'CDC',
+  'SM ?63',
+  'Brixen',
   // Lab 6 group 6 research (docs/labs/miking/location_speech, spatial_field).
   // ('Rode', 'RØDE', 'Rycote', 'Sound Devices' and 'Hayes' are in the group 1 list above.)
   'Thirion',
@@ -192,6 +209,27 @@ export const BRAND_NAMES: readonly string[] = [
   'CCM ?41',
   'B6',
   'MixPre',
+  // Lab 7 part 2, group 2 research (docs/labs/miking/field_diamond, parabolic, court_ice): the dish makers, the
+  // governing bodies and leagues whose rules were read, and the products named. ('Rycote', 'Sennheiser', 'Shure',
+  // 'DPA', 'MKH ?416' and 'NWS' are in the lists above.)
+  'Klover',
+  'MiK',
+  'Wildtronics',
+  'IFAB',
+  'World Rugby',
+  'FIBA',
+  'FIVB',
+  'NFL',
+  'MLB',
+  'NHL',
+  'USA Softball',
+  'ITF',
+  'BWF',
+  'IIHF',
+  'DEL',
+  'TopVision',
+  'VP83F',
+  'MX391',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

@@ -60,6 +60,9 @@ export type BodyTurnSpec = {
   pitch: boolean;
   /** Where the side inset sits (a share of the stage; default top-right). */
   insetAt?: { x: number; y: number; w: number; h: number };
+  /** How far (mm, + = down the page) the mouth's-axis label sits from the
+   *  axis — set it to keep the label off a script on the desk. */
+  axisLabelV?: number;
   /** Where TURN starts and its preset words (a partner on the right…). */
   words: { looking: string; prompt: string; done: string; subject: string; right?: string; left?: string };
 };
@@ -194,7 +197,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
           a11y={a11y}
           inset={inset}
           labels={[
-            { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: axisEnd.x, v: axisEnd.z + (t.dir.z >= 0 ? 110 : -130), align: 'right', tone: 'muted' },
+            { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: axisEnd.x, v: axisEnd.z + (spec.axisLabelV ?? (t.dir.z >= 0 ? 110 : -130)), align: 'right', tone: 'muted' },
             { id: 'sel', text: m.short, u: mAt.x + 70, v: mAt.z + (mAt.z >= 0 ? 150 : -150), align: 'left', tone: 'amber', at: { u: mAt.x, v: mAt.z } },
           ]}
         >

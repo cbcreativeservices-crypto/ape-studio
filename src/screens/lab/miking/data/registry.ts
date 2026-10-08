@@ -31,9 +31,10 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   // F10 location and spatial; group 4: F11–F13 measurement): the blurb names
   // only what is built; later groups widen it as they land.
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: 'Microphones on a Foley stage, on location, in the field and for measurement, on drawn stages, sets, sites, benches and rooms — footsteps, cloth, props, impacts and a little water with the performer’s whole movement kept clear; speech with the camera’s frame, the boom, the body mic and the practical sounds of a scene; spatial pickup for headphones, surround and Ambisonics with the channel maps that keep it right; the measurement chain and its field check, where a measurement mic or a meter goes for the question asked, and the honest label for the result. Safety in plain words. Silent; suggested starting points.', family: 'Foley, Field & Scientific', familyBlurb: 'Miking Foley, location, the field and measurement' },
-  // Lab 7 is filled by groups (group 1: B01, B07, B06 desk and studio voice);
-  // the blurb names only what is built; later groups widen it as they land.
-  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: 'Microphones for speech on air, on drawn desks, booths, tables and lecterns — a host at a desk with a mic on an arm, a voice-over reader and a studio guest, a panel and a press conference: measured from the lips, what a head turn and a hard desk do, every open mic counted, and where each mic goes — the headphones, the stream, a remote guest’s return, the press feed. Never provoking feedback. Silent; suggested starting points.', family: 'Sports & Broadcast', familyBlurb: 'Miking speech for broadcast — hosts, guests, panels and press' },
+  // Lab 7 is filled by groups (part 1 group 1: B01, B07, B06 desk and studio
+  // voice; part 2 group 2: B12–B14 action pickup on fields and courts): the
+  // blurb names only what is built; later groups widen it as they land.
+  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: 'Microphones for speech on air and for sport, on drawn desks, booths, tables and lecterns, fields, diamonds and courts — a host at a desk with a mic on an arm, a voice-over reader and a studio guest, a panel and a press conference, measured from the lips, every open mic counted and routed; approved perimeter shotguns aimed into named zones, a tracked parabolic dish, fixed ambience and boundary mics, the coverage map with its handoffs and the headroom of the whole chain, every position approved and clear of play. Never provoking feedback; safety in plain words. Silent; suggested starting points.', family: 'Sports & Broadcast', familyBlurb: 'Miking speech for broadcast and sport — hosts, panels, fields and courts' },
 ];
 
 export const LESSONS: readonly LessonMeta[] = [
@@ -145,6 +146,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'F02', labId: 'field', title: 'Clothing and Body Movement', subtitle: 'A cloth pass: about 1–1.5 m from the moving fabric, a close detail outside the whole gesture, the room close under it', status: 'ready' },
   { id: 'F03', labId: 'field', title: 'Props and Object Handling', subtitle: 'Keys, paper, a door, a chair: the whole action first from outside the travel, then the part that sounds', status: 'ready' },
   { id: 'F04', labId: 'field', title: 'Impacts, Liquids and Textures', subtitle: 'A safe impact, a little water, a dry texture: outside the splash and the travel, the attack against the tail', status: 'ready' },
+  /* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 (each lesson on its own line). */
+  { id: 'F05', labId: 'field', title: 'Foley Perspective and Multiple Microphones', subtitle: 'One mic for the whole action, a room mic for a reason, a pair for travel — near and far are not left and right', status: 'ready' },
+  { id: 'F06', labId: 'field', title: 'Natural and Urban Ambience', subtitle: 'A listening point chosen by ear, about 1.5 m up and off every path — one mic or a pair, protected from the wind, checked in mono', status: 'ready' },
+  { id: 'F07', labId: 'field', title: 'Wildlife and Distant Sounds', subtitle: 'From a permitted point outside the setback ring: a shotgun aimed at the call, a dish for one high caller, a wider view for a group', status: 'ready' },
+  { id: 'F08', labId: 'field', title: 'Moving Sounds and Pass-bys', subtitle: 'The path drawn first: a mic 2–4 m back and outside the envelope, fixed or tracked, the whole pass with headroom — a vehicle only on paper', status: 'ready' },
   // Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line).
   { id: 'F09', labId: 'field', title: 'Location Speech and Practical Sounds', subtitle: 'A boom just above the frame, a body mic on the chest, a plant for the action — each on its own channel', status: 'ready' },
   { id: 'F10', labId: 'field', title: 'Spatial and Specialist Field Pickup', subtitle: 'The listener’s point first: a binaural head, an Ambisonic mic, a five-channel array — and the channel map that keeps them right', status: 'ready' },
@@ -164,6 +170,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'B05', labId: 'broadcast', title: 'Lavalier, Headset and Concealed Pickup', subtitle: 'A lav on the sternum about 12–25 cm from the lips, or a headset by the corner of the mouth — fitted with the wearer’s agreement', status: 'ready' },
   { id: 'B04', labId: 'broadcast', title: 'Boom and Camera-Mounted Pickup', subtitle: 'A boom just outside the widest frame, aimed at the mouth — and the camera’s own mic, as far away as the camera', status: 'ready' },
   { id: 'B02', labId: 'broadcast', title: 'News Anchors and Seated Interviews', subtitle: 'A centred lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker', status: 'ready' },
+  /* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
+  { id: 'B12', labId: 'broadcast', title: 'Parabolic and Tracked Action Pickup', subtitle: 'The bowl helps the highs on its axis: the maker’s focus, small turns inside an approved arc, and a planned handoff', status: 'ready' },
+  { id: 'B13', labId: 'broadcast', title: 'Field and Diamond Sports', subtitle: 'From an approved place: a perimeter shotgun on a named zone, a tracked dish, a fixed ambience bed — and an honest coverage map', status: 'ready' },
+  { id: 'B14', labId: 'broadcast', title: 'Court, Racket and Ice Sports', subtitle: 'Outside the clear space, aimed at the contact height: perimeter and compact mics, the floor boundary, approved plants — air kept apart from structure', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
