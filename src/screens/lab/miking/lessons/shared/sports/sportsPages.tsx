@@ -69,6 +69,7 @@ import {
 } from './venuePlan.ts';
 import { ArcArt, CoverageArt, DishPlanGlyph, PlanAim, PlanLobe, PlanMic, PlanPath, TargetRing, VenuePlan, venueLabels, type PlanMicKind } from './VenueArt';
 import { DishSection } from './DishArt';
+import { hydroCloseUp, isPairKind } from './ArenaArt';
 import { BoundarySection } from './BoundaryArt';
 import { DISHES } from './parabolic.ts';
 import { EVENTS, EVENT_IDS, HEADROOM_DEFAULTS, START_SETTINGS, STAGES, TRIAL_DBFS, chainGood, chainWords, fmtDb, fmtDbfs, readChain, type ChainSettings, type EventId } from './headroom.ts';
@@ -106,7 +107,7 @@ export function devIndex(key = 'setup'): number {
 
 /** A mic glyph's length on a plan (mm): about a tenth of the plan's width,
  *  so it reads at 1× and zooms with the drawing in full screen. */
-export const glyphMm = (r: PlanRect): number => Math.min(((r.x1 - r.x0) * 1000) / 8, 4500);
+export const glyphMm = (r: PlanRect): number => Math.min(((r.x1 - r.x0) * 1000) / (r.x1 - r.x0 < 14 ? 12 : 8), 4500); // a room-sized plan (Lab 7b group 3): a smaller mark
 
 /** A plan on the glass: the venue, then the step's own layer, then labels. */
 export function PlanStage({ w, h, scene, box, a11y, labels, inset, children, show, activeFootprint, highlight }: { w: number; h: number; scene: VenueScene; box?: PlanRect; a11y: string; labels: StaticLabel[]; inset?: FieldInset | null; children?: (px: number, g: number) => ReactNode; show?: Parameters<typeof VenuePlan>[0]['show']; activeFootprint?: string | null; highlight?: string | null }) {
@@ -152,6 +153,8 @@ export function closeUpAt(m: SportMic, box: PlanRect): FieldInset['at'] {
 }
 
 export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.6, y: 0.02, w: 0.38, h: 0.46 }): FieldInset {
+  // Lab 7b group 3: the hydrophone's container, cut through.
+  if (m.kind === 'hydrophone') return hydroCloseUp(at);
   if (m.kind === 'dish') {
     const d = DISHES.large;
     return {
@@ -217,7 +220,7 @@ export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.6, y: 0.02
           color="#5b5f69"
         />
         {m.kind === 'shotgun' ? <ShotgunArt x={0} y={-H} angleDeg={(ang * 180) / Math.PI} /> : null}
-        {m.kind === 'compact' || m.kind === 'xy' ? (
+        {m.kind === 'compact' || m.kind === 'xy' || isPairKind(m.kind) ? (
           <Group transform={[{ translateX: 0 }, { translateY: -H }, { rotate: ang + Math.PI / 2 }]}>
             <MikingMicArt art="sdc" r={10.5} len={104} />
           </Group>
@@ -267,10 +270,14 @@ const LAYERS: readonly { id: LayerId; label: string; short: string; text: (s: Ve
   { id: 'sound', label: 'Cameras, crowd and PA', short: 'CROWD · PA', text: () => 'The cameras’ frames, the crowd and the PA: what a mic must stay out of the picture of, and what it will hear besides the play.' },
 ];
 
+/** The sport a plan tour opens on (the preview harness may pick another). */
+const sid0 = (sports: readonly SportId[]): SportId => sports[Math.min(devIndex('sport'), sports.length - 1)];
+
 export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: readonly SportId[]; title: string; prompt: string; a11yLead: string }): MikingStep {
-  const [sid, setSid] = useState<SportId>(sports[0]);
-  const [k, setK] = useState(0);
-  const [seen, setSeen] = useState<ReadonlySet<SportId>>(() => new Set([sports[0]]));
+  // The web preview harness only: `&sport=<n>&layer=<n>` (1-based) opens that sport and layer.
+  const [sid, setSid] = useState<SportId>(() => sports[Math.min(devIndex('sport'), sports.length - 1)]);
+  const [k, setK] = useState(() => Math.min(devIndex('layer'), LAYERS.length - 1));
+  const [seen, setSeen] = useState<ReadonlySet<SportId>>(() => new Set([sid0(sports)]));
   const scene = sportPlan(sid);
   const layer = LAYERS[Math.min(k, LAYERS.length - 1)];
   const show = {
@@ -408,7 +415,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
 export type Method = { id: string; label: string; short: string; gives: string; limit: string; mics: SportMic[]; scene?: VenueScene; box?: PlanRect; note?: string };
 
 export function useMethodsStep({ scene, methods, box, prediction, prompt, done }: { scene: VenueScene; methods: readonly Method[]; box?: PlanRect; prediction?: Prediction; prompt: string; done: string }): MikingStep {
-  const [id, setId] = useState(methods[0].id);
+  const [id, setId] = useState(() => methods[Math.min(devIndex('method'), methods.length - 1)].id);
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set([methods[0].id]));
   const [predicted, setPredicted] = useState<string | null>(null);
   const mt = methods.find((q) => q.id === id) ?? methods[0];
@@ -424,7 +431,7 @@ export function useMethodsStep({ scene, methods, box, prediction, prompt, done }
           {(px, g) => (
             <>
               {mt.mics.map((m) => (
-                <MicOnPlan g={g} key={m.id} m={m} px={px} />
+                <MicOnPlan g={g} key={m.id} m={m} px={px} aim={m.kind !== 'hydrophone'} />
               ))}
             </>
           )}
@@ -512,7 +519,7 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
             {(px, g) => (
               <>
                 {sel.mics.map((m) => (
-                  <MicOnPlan g={g} key={m.id} m={m} px={px} />
+                  <MicOnPlan g={g} key={m.id} m={m} px={px} aim={m.kind !== 'hydrophone'} />
                 ))}
               </>
             )}

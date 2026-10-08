@@ -7,7 +7,7 @@
  */
 import type { Envelope, InstrumentModel, Part, Provenance, ReferenceSurface, Vec3 } from '../../../engine/model/types.ts';
 import { toEngine, type VenueScene } from './venuePlan.ts';
-import { PRACTICE_FIELD, PRACTICE_LINE } from './practiceScenes.ts';
+import { PRACTICE_CROWD, PRACTICE_FIELD, PRACTICE_LINE, PRACTICE_SMALL } from './practiceScenes.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -94,5 +94,50 @@ export function lineModel(id: string, src: string): InstrumentModel {
       { id: 'M2', label: 'a second approved mic position', short: 'M2', role: 'A second approved place for the overlap trial — along the line from M.', lesson: false },
     ],
     views: { side: { u0: -7500, u1: 7500, v0: -2500, v1: 400 }, top: { u0: -7500, u1: 7500, v0: -10500, v1: 5500 } },
+  });
+}
+
+/* ═════════ Lab 7b group 3 (lab7-g6): the practice room (B15, B16) and the mock venue (B17) ═════════ */
+
+/** The practice room as an engine model (B15, B16 — one shared scene). */
+export function smallModel(id: string, src: string): InstrumentModel {
+  return sceneModel({
+    scene: PRACTICE_SMALL,
+    id,
+    name: 'a practice room with three source points and two equipment areas',
+    prefix: 'ps',
+    variant: { id: 'room', label: 'PRACTICE ROOM', blurb: 'A quiet, cleared room: A, B and C 2 m apart on one walking line; the equipment areas M1 and M2 2 m either side of B.', phrase: 'in the practice room' },
+    src,
+    parts: [
+      { id: 'area', label: 'the source area (the walking line)', short: 'source area', role: 'Where the source participant walks, claps and speaks — only there. No stand, cable or windshield reaches into it.', lesson: true },
+      { id: 'A', label: 'source point A (0, 0)', short: 'A', role: 'One end of the line: about 2.83 m from M1.', lesson: true },
+      { id: 'B', label: 'source point B (0, 2)', short: 'B', role: 'The middle: 2 m from M1, straight ahead of it.', lesson: true },
+      { id: 'C', label: 'source point C (0, 4)', short: 'C', role: 'The other end: about 2.83 m from M1.', lesson: true },
+      { id: 'M1', label: 'mic mark M1 (2, 2)', short: 'M1', role: 'The first equipment area: the fixed detail mic, aimed at B.', lesson: true },
+      { id: 'M2', label: 'mic mark M2 (−2, 2)', short: 'M2', role: 'The second equipment area, across the line: the overlap and fallback trials.', lesson: true },
+    ],
+    views: { side: { u0: -1900, u1: 10200, v0: -2000, v1: 300 }, top: { u0: -1900, u1: 10200, v0: -3400, v1: 5200 } },
+  });
+}
+
+/** The mock venue as an engine model (B17). */
+export function crowdModel(id: string, src: string): InstrumentModel {
+  return sceneModel({
+    scene: PRACTICE_CROWD,
+    id,
+    name: 'a mock venue with an action point, an audience and a stereo centre',
+    prefix: 'pc',
+    variant: { id: 'venue', label: 'MOCK VENUE', blurb: 'A dry room laid out as a small venue: the action point A, the audience places U1–U3, the stereo centre S behind them, the action mic D beside A.', phrase: 'in the mock venue' },
+    src,
+    parts: [
+      { id: 'area', label: 'the source area (the action and the audience)', short: 'source area', role: 'Where the participants stand, speak and clap gently. Every stand and cable stays in its own marked footprint.', lesson: true },
+      { id: 'A', label: 'the action point A (0, 0)', short: 'A', role: 'The action: 2 m from D, 4 m from S.', lesson: true },
+      { id: 'U1', label: 'audience place U1 (−1, 2)', short: 'U1', role: 'One side of the audience: about 2.24 m from S.', lesson: true },
+      { id: 'U2', label: 'audience place U2 (0, 2)', short: 'U2', role: 'The audience’s centre: 2 m from S, on the pair’s axis.', lesson: true },
+      { id: 'U3', label: 'audience place U3 (1, 2)', short: 'U3', role: 'The other side: about 2.24 m from S.', lesson: true },
+      { id: 'S', label: 'the stereo centre S (0, 4)', short: 'S', role: 'The audience pair: capsules 1.5 m up, aimed at U2.', lesson: true },
+      { id: 'D', label: 'the action mic D (2, 0)', short: 'D', role: 'The action mic: 1 m up, aimed at A.', lesson: true },
+    ],
+    views: { side: { u0: -4000, u1: 8600, v0: -2200, v1: 300 }, top: { u0: -4000, u1: 8600, v0: -1400, v1: 5400 } },
   });
 }
