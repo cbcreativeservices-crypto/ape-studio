@@ -1,0 +1,104 @@
+# Machinery and Product Sound Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F15  •  Scientific and product applications
+Measure an operating product from repeatable, safe microphone positions. Students compare a user position with a small spatial map, document the operating cycle, distinguish airborne pressure from structural vibration, and state which quantitative claims their setup can support. The teaching exercise uses a guarded, low-risk device. No audio examples are included.
+# Choose the question before the microphone position
+A microphone measures airborne sound pressure where its capsule sits. A fixed position can describe what an operator hears at that point; it cannot alone determine the machine’s sound power, the source of a rattle, or a worker’s full-shift noise dose. Decide whether the task is a creative product sound, a repeatable A/B comparison, fault investigation, operator-position emission sound pressure, or formal sound-power determination. Each calls for different positions and controls. ISO 3744:2025 describes sound power from pressure measurements over an enveloping measurement surface in a qualifying field above reflecting plane(s). ISO 11201 and 11202 address emission pressure at specified work positions under their different environmental conditions. [1–4]
+Use the product’s normal guarded operation and documented load: idle versus working, speed, duty cycle, material being processed, warm-up state and mounting can change its sound. Identify other machines, HVAC and reverberant surfaces. Record background with the test device off when safe and practical. If that operating state cannot be reproduced, a change in sound is not evidence of a hardware improvement. NIOSH emphasizes holding microphone distance and observation duration constant for before/after tool comparisons. [5, 6]
+# Map airborne pickup without entering a hazard zone
+Purpose
+Miking approach
+Claim and limitation
+User or operator position
+Mount a suitable mic at the defined normal listening/work position, with height, orientation, distance and operating state logged. Keep the stand outside the machine’s guarded envelope and normal traffic.
+Pressure at that position and condition. Worker exposure needs the appropriate exposure method, duration and work pattern; a short fixed sample is not a personal dose. [3–5]
+Comparative product perspective
+Choose a fixed reference coordinate relative to product housing and a second useful angle at the same documented distance. Use the same product support, room and operating cycle each pass.
+A relative sonic comparison; microphone polar pattern and reflections affect tonal balance. An uncalibrated recording cannot claim an absolute dB SPL change. [5, 7]
+Small spatial map
+Record a safe set of coordinates around an exterior perimeter, changing one position at a time; include suspected vent and panel directions if accessible without approaching hazards.
+A map of sound at sampled points, not automatically sound power or exact source localization. Add background and repeatability checks. [1, 8]
+Structure-borne vibration
+If a qualified operator can install an appropriate accelerometer or contact sensor while the machine is isolated, acquire that channel separately from an airborne microphone.
+Vibration and acoustic pressure use different units and paths. Contact-sensor output is not calibrated airborne SPL. [8, 9]
+
+A close microphone can emphasize one casing panel, motor end or vent relative to the rest, which is useful for creative or diagnostic work. Its reading does not automatically represent the whole device at normal listening distance. Avoid placing a capsule in a hot exhaust stream, spray, chip path or moving airflow where wind turbulence can dominate or damage equipment. Do not reach through a guard to obtain a “cleaner” result. When comparing directions, distinguish capsule axis and microphone pattern from the radial position relative to the product. [7, 10]
+# Control the chain and the operating cycle
+For comparative recording, mark the stand feet or use measured coordinates, identify the microphone orientation, lock gain and processing, and leave headroom for start, stop, impact or fault transients. Capture complete cycles with a cycle marker or operator log. Take repeated runs at each position; discard or annotate interruptions, overloads and changes in speed. A brief recording made at only one phase of a cycle can conceal an intermittent rattle or exaggerate a start-up event. Preserve raw channels and label edits, filters and analysis windows. [5, 7, 11]
+For quantitative levels, select a calibrated instrument and settings required by the named method, record pre/post acoustic checks if required, and report the metric, weighting, averaging interval, background correction and uncertainty. A waveform peak in dBFS is not a sound-pressure level. Sound power is a property estimated for the source under defined test conditions; sound pressure varies with position and environment. A directional mic chosen for an attractive recording is not a silent substitute for the receiver specified in a measurement standard. [1–4]
+If a microphone and accelerometer are recorded together, compare event timing and frequency behavior as clues, not as proof of a unique transmission path. Structural vibration can radiate into air from a panel; airborne sound can also excite that panel. A proper source-path contribution study requires additional sensors, transfer relationships and analysis. Secure any sensor cable only after authorized isolation and assessment; never attach, reposition or retrieve a sensor by hand from an energized, moving or guarded area. [8, 9, 12]
+# Understand spatial and method limits
+A sound-power survey needs a defined measurement surface, positions, environment, source operating conditions and corrections under its current standard and any product-specific noise test code. Do not call an informal four-position walkaround “ISO 3744 compliant.” Differently shaped measurement surfaces can yield different estimates within the stated uncertainty. For in-situ work-position pressure, ISO 11202 permits specified approximate environmental corrections; ISO 11201 presumes a suitable essentially free field. Select the applicable code and qualified measurement team for a regulatory or product declaration. [1–4]
+A spatial map can still teach a useful physical lesson without claiming sound power: compare the reference coordinate with two safe alternatives; inspect frequency bands or spectra along with overall level; then return to the original point. A peak near a vent may result from directed airflow, motor sound or microphone wind artifact. A resonant panel may change with load. Investigate through repeatable conditions and a qualified maintenance assessment before attributing a fault. Acoustic arrays and intensity probes are specialized methods, cross-linked to F16, and should not be inferred from a single microphone. [8, 10, 12]
+# Creative, live and industrial contexts
+Context
+Placement priority
+Reporting boundary
+Foley or product storytelling
+Choose a listener-like position and safe exterior detail positions to capture operation and material character; log the actual load and surface.
+A designed or layered effect may be useful but should not be presented as an unaltered measurement.
+Live demonstration or broadcast
+Keep stand, cable and mic outside moving paths; use a receiver perspective that communicates the product without hazardous proximity or feedback into local PA.
+A broadcast mix prioritizes clarity; its processing and routing make it unsuitable for a calibrated noise claim.
+Production quality check
+Fix the jig, microphone coordinate, product mode and acceptance method; track background and run-to-run variation.
+A pass/fail threshold must be validated against good and defective units under the actual plant conditions. [11]
+
+# Nonnegotiable machinery and hearing safety
+Choose a low-risk, intact device such as a guarded desktop fan for the student exercise, under its manufacturer instructions. Survey the area with its owner/operator; keep hair, clothing, cables, stands and people clear of intakes, blades, belts, pinch points, hot surfaces, liquid, traffic and electrical conductors. Guards and interlocks stay in place. If the planned position cannot be reached safely from outside the hazard zone, omit that position. No student places contact sensors on, opens, services or modifies an operating industrial machine. [13, 14]
+When access or sensor attachment constitutes servicing, the authorized employer procedure for hazardous-energy control applies; an untrained student must not improvise lockout. Schedule the task with qualified personnel who control isolation and re-energization. If noise is high, follow the site hearing-conservation procedure, limit time and use properly selected protection. An acoustic exercise does not replace a workplace exposure assessment. Do not suppress alarms or guards to make a clean take. [5, 13–15]
+# Guided teaching exercise
+1. With a supervised, intact guarded low-risk device, write the purpose and operating state. Confirm permission, instructions and safe access with the operator. Sketch the device, guard and exclusion zone.
+2. Choose an accessible normal-user point A and two safe exterior points B and C. Record distance, height, microphone axis, device orientation, support surface, room and background state. Mark the positions without entering the guard.
+3. With the device off, capture the ambient condition. Operate it through a repeatable cycle while the student remains outside the exclusion zone; record an entire cycle at A and repeat it. Document start, steady state and stop.
+4. Repeat the same operating condition at B and C with fixed mic gain and suitable headroom. Return to A for a repeat. Annotate any change in background, speed or loading; do not adjust a running machine to improve the test.
+5. Compare A, B and C by band and time segment; distinguish real location differences from an inconsistent cycle or mic wind artifact. State whether the result is creative perspective, relative comparison or calibrated pressure measurement.
+6. Design a separate formal-survey proposal: name the desired quantity, applicable standard or product test code, environmental qualification, calibration, positions, operating conditions and who is authorized to perform it. Do not carry out a hazardous test.
+Pass criterion: the student keeps a safe boundary, repeats source and receiver geometry, captures complete cycles, distinguishes pressure from vibration and sound power, and states invalid or unmeasured claims. No audio examples.
+# Student field sheet
+Device and operator _____________________  Purpose ____________________  Date/time __________________
+Guards and exclusion zone ___________________________  Operating load/cycle __________________________
+Run and state
+Position, pattern and chain
+Result, disturbance and decision
+Ambient/device off
+____________________________
+____________________________
+A1 and A repeat
+____________________________
+____________________________
+B and C
+____________________________
+____________________________
+Return to A
+____________________________
+____________________________
+
+Calibration or relative-only label _____________________  Gain/filters ___________________  Peak __________
+Background and room ___________________________  Cycle length/speed/load __________________________
+Airborne vs vibration channels _____________________  Uncertainty and remaining questions ______________
+
+# Critical evidence audit
+## Agreement
+ISO standards distinguish sound-power surfaces from specified-position emission pressure. NIOSH supports consistent distance and duration in comparisons; NI and HBK distinguish airborne microphones from vibration and more advanced transmission-path methods. OSHA guidance places safe guarding and hazardous-energy control ahead of sensor access. [1–9, 12–15]
+## Different methods and purpose
+ISO 3744:2025 addresses a source sound-power result in a qualifying field; ISO 11202 addresses an in-situ work-position emission level with corrections. Neither conflicts with a creative close pickup, but the latter has no automatic sound-power or compliance status. A contact accelerometer can reveal structural behavior that an airborne mic alone may not, yet it does not measure airborne pressure. [1–4, 8, 9]
+## Gaps and uncertainty
+A product-specific code may control load, mounting, microphone coordinates and declarations; the cited general guidance cannot establish those for every product. An informal student map has unknown representativeness and uncertainty. A coincident frequency peak in acoustic and vibration channels is suggestive, not a proven source-path attribution. The current ISO 3744 edition is 2025; using a withdrawn 2010 edition as the present governing text would be an error. [1, 4, 12]
+# Sources and curriculum connections
+Primary standards-body, government and instrumentation guidance checked October 4, 2026. Linked pages may contain media; this lesson includes no audio examples.
+[1] ISO 3744:2025 Sound power above reflecting plane <https://www.iso.org/standard/80866.html>
+[2] ISO 11201:2010 Work position emission pressure <https://www.iso.org/standard/54908.html>
+[3] ISO 11202:2010 In situ work position pressure <https://www.iso.org/standard/54907.html>
+[4] ISO 11200:2014 Selection of emission pressure standards <https://www.iso.org/standard/35377.html>
+[5] CDC NIOSH Understand Noise Exposure <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[6] CDC NIOSH Eliminate or Reduce Noise <https://www.cdc.gov/niosh/noise/prevent/eliminate.html>
+[7] NI Sound and Vibration Measurement Hardware <https://www.ni.com/en/shop/hardware-portfolio/daq-sensor-io/sound-vibration>
+[8] NI What Is Acoustic Monitoring <https://www.ni.com/en/solutions/condition-monitoring/what-is-acoustic-monitoring.html>
+[9] NI Measuring Vibration with Accelerometers <https://www.ni.com/en/shop/data-acquisition/sensor-fundamentals/measuring-vibration-with-accelerometers.html>
+[10] NIOSH Industrial Noise Control Manual <https://www.cdc.gov/niosh/docs/75-183/pdfs/75-183.pdf>
+[11] NTi Audio Noise and Vibration Quality Control <https://www.nti-audio.com/en/applications/quality-control/noise-vibration>
+[12] HBK Source Path Contribution Analysis <https://www.hbkworld.com/en/solutions/applications/nvh/transfer-path-analysis>
+[13] OSHA Machine Guarding General Requirements <https://www.osha.gov/etools/machine-guarding/introduction/general-requirements>
+[14] OSHA Control of Hazardous Energy 29 CFR 1910.147 <https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147>
+[15] CDC NIOSH Hearing Protection <https://www.cdc.gov/niosh/noise/prevent/ppe.html>
+Cross-links: F11 microphone calibration; F12 sound levels; F14 loudspeaker measurement; F16 scientific arrays and specialized sensors; F05 Foley perspective; Sports and Broadcasting Lab.

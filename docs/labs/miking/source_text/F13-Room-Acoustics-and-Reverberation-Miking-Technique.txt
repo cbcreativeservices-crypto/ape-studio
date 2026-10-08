@@ -1,0 +1,89 @@
+# Room Acoustics and Reverberation Miking Technique
+Pro Audio Training Academy  •  Foley, Field and Acoustical Lab F13  •  Studio, venue and measurement applications
+Measure how sound develops and dies away at listener positions. This lesson emphasizes microphone placement, repeatable impulse-response capture, frequency-dependent decay, and the limits imposed by background noise. A room measurement and a loudspeaker-system measurement answer different questions. No audio examples are included.
+# Define the question and the operating state
+A room impulse response (IR) describes the direct arrival and later reflections for one source–receiver pair. A change in either position changes the result. First state the purpose: estimate room reverberation for acoustic use, characterize the installed reinforcement system at a listener location, compare treatment changes, or document a particular recording position. Record whether doors, curtains, movable panels, furniture, audience, HVAC and other machinery are in their intended operating states. Empty and occupied conditions may differ materially. [1–4]
+For a room-oriented test, use a suitable broadly radiating, well-characterized test source where the applicable method calls for one. A sweep through the installed PA characterizes its response plus the room along that path: speaker directivity, processing and coverage shape the result. This is useful for a listener-position system check but cannot by itself isolate an intrinsic room response. Label the source and signal chain accurately. Follow ISO 3382-2 for ordinary rooms or ISO 3382-1 for performance spaces when a formal result is required; the standard, purpose and room type determine positions, apparatus and reporting. [1–3]
+# Choose an excitation and microphone chain
+Method
+Miking and capture
+Use and limitation
+Controlled logarithmic sweep
+Stable test source, measurement mic at a documented receiver point, correct reference/routing, unclipped playback and recording; deconvolve with the sweep software.
+Repeatable IR and decay estimates when the source excites the needed bands and the tail is captured. Inspect processing, noise and distortion. [2, 5]
+Interrupted broadband noise
+With suitable test equipment, build a steady field, stop the source, and repeat decays at documented positions.
+Can estimate band decay; it does not supply the same full time-resolved IR merely by stopping noise. Repeatability and adequate range matter. [4, 6]
+Physical impulsive source
+A permitted, sufficiently broadband and repeatable source may be analyzed with appropriate equipment.
+A clap or dropped object is often inconsistent, poorly excites low bands and can contaminate a formal measurement. Do not use explosive or firearm-like sources in this lab. [2, 5]
+
+Use a calibrated or verified measurement microphone and chain when claiming quantitative, comparable values; note microphone model, response, calibration, gain and any windscreen. An omnidirectional measurement microphone is a common receiver for room-acoustic work, while a directional mic can intentionally characterize a chosen perspective but cannot silently substitute for a standard receiver. Disable automatic gain control, noise reduction, gating, reverb and changing dynamics; note any unavoidable processing. Confirm sample rate, channel mapping, polarity and clocking. [1–3, 5]
+# Place the source and receiver deliberately
+Select source positions representing the real use: performer positions for a room study, or the actual installed speaker and processing for a system study. Select receiver positions across relevant listeners or working areas, including locations likely to differ in distance, boundaries and coverage. Measure multiple source–receiver combinations as required by the chosen standard or project brief. Do not replace spatial sampling with a single “center of room” reading. Avoid a position dominated only by direct sound or an unrepresentative wall/corner unless that position itself is the target. The governing method, room geometry and purpose set precise spacing and counts; there is no universal microphone height or source distance for every room. [1–3]
+Mount the microphone firmly, orient it according to its calibration and method, and keep people and stands out of the direct path where practicable. Mark positions and measure distances so a second pass after treatment can reproduce them. Monitor from a safe location; a person near the mic or a moved chair changes reflection conditions. For open-air or unusual spaces, check whether the selected indoor-room method actually applies. [1–3]
+# Capture enough decay without unsafe level
+Before the test, measure or log the room noise by band with the intended HVAC and occupancy. Record the full excitation and a tail long enough to include the useful decay plus the background floor. Watch the input for clipping and the output for limiting. Repeat each configuration to spot transient noise, movement and failed playback. A sweep captured through a noisy room can yield an IR, but a plotted decay that merges with the floor does not support a reliable late slope. Close an optional noise source only if the intended operating condition permits, or reschedule a quieter measurement. [2, 4–6]
+For energy-decay analysis, the T20 slope is fitted from −5 to −25 dB and extrapolated by three; T30 uses −5 to −35 dB and extrapolates by two. Early decay time (EDT) uses the first 10 dB and extrapolates by six. These are estimates of the time for a 60 dB decay, not direct observations of 20 or 30 seconds. Keep the end of the fitted region sufficiently above the noise floor: Rational Acoustics describes a 10 dB margin and roughly 35 dB usable range for T20 or 45 dB for T30 under ideal conditions. If T30 lacks margin, consider a valid T20; if neither is supported, report insufficient range. Do not drive the source louder solely to force a result. [4–6]
+Inspect the IR and energy-decay curve in frequency bands, not only a single broadband “RT60” figure. Reverse integration of squared IR energy is a common decay-curve method. Check early reflection spikes, a changing slope, low-frequency modes, tail truncation and sudden disturbances; small rooms and non-diffuse spaces may not have one clean exponential decay. Report T20/T30/EDT separately and identify invalid bands, spatial spread and the method used. Averaging positions is useful only when the individual observations and outliers remain visible. [1, 4–6]
+# Studio and live-sound applications
+Application
+Placement decision
+Interpretation
+Studio room or booth
+Compare representative source and mic positions; repeat after moving panels or curtains with geometry and room state logged.
+A shorter reported T does not alone mean better recording quality; early reflections, coloration and position also matter.
+Concert or rehearsal space
+Sample performer and audience regions in the intended occupancy/curtain state; use the applicable performance-space method.
+Compare bands and position variation; an empty-hall number may not predict an audience condition. [1]
+Installed PA or broadcast venue
+Measure at listener positions with the actual speaker path, preset and safe test procedure; document each active source.
+The measured IR includes system and room. Check coverage and intelligibility separately; do not call it a room-only T. [2]
+
+A measurement microphone must be routed to a recording or analyzer input, not accidentally returned to the PA. In a live space, coordinate the test with the operator and venue, mute unrelated program paths, protect hearing, and keep stands and cables out of public routes. Secure speakers on rated supports; leave flown-system work to qualified personnel. Avoid unannounced sweeps around performers or audiences. A formal acoustic survey must meet the relevant apparatus, position and reporting requirements; this classroom exercise is a comparative investigation unless those requirements are met. [1–3]
+# Guided teaching exercise
+1. Write the question and room state: room-only comparison or installed-system listener response. List the planned source, its path and two or more representative receiver positions. Identify the standard if claiming a formal result.
+2. Log steady background noise and disturbances. Set the mic at position A with documented height, orientation and distance. Check calibration or verification status, software reference, processing bypass and input headroom.
+3. Capture a controlled sweep at a safe, appropriate level and enough post-sweep time for the decay. Repeat once. Reject clipped, disturbed, truncated or mismatched takes before fitting a slope.
+4. Move only the receiver to position B, document the difference and repeat. If comparing a treatment change, restore the same positions, source, settings and operating state for the second pass.
+5. Inspect band-by-band decay and noise floor. Mark whether T30, T20 or neither has enough usable range; compare EDT only as a distinct early-decay measure. Record early reflection or multi-slope behavior.
+6. For a live-system variant, write a separate result label naming the PA source and processing. Explain why its IR cannot be attributed solely to the room. Keep the measurement mic out of the loudspeaker return.
+Pass criterion: the student identifies the measurement target, reproduces geometry, captures an unclipped adequate tail, rejects unsupported fits, distinguishes T20/T30/EDT and reports spatial and operating-state limits. No audio examples.
+
+# Student measurement sheet
+Room and purpose __________________________  Date/time __________________  Operator __________________
+Standard/project method ___________________  Room state/occupancy/HVAC ______________________________
+Run / source / receiver
+Geometry and chain
+Decay and quality decision
+A1 / repeat
+____________________________
+____________________________
+B1 / repeat
+____________________________
+____________________________
+After change, A/B
+____________________________
+____________________________
+
+Mic/calibration __________________________  Source and processing __________________  Peak/clipping __________
+Background by band _____________________  Tail/window _______________________  Invalid bands __________
+T20/T30/EDT by band and method ______________________  Position variation / limitations __________________
+# Critical evidence audit
+## What the sources agree on
+ISO 3382 frames reverberation measurement around defined procedures and multiple positions. Rational Acoustics and NTi agree that T20 and T30 are fitted, extrapolated decays whose usefulness depends on sufficient dynamic range and an uncontaminated floor. Their guides support inspecting frequency bands and documenting measurement conditions. [1–6]
+## Different purposes and methods
+An impulse response from an installed PA is valid for system-plus-room behavior at that position; a room-focused result calls for a suitable test source and method. Interrupted noise can yield decay estimates, while controlled sweep deconvolution yields a time-resolved IR. EDT and late-decay T values quantify different portions of the response and need not agree. These distinctions should appear in the result label. [1–6]
+## Limits
+The cited public guides do not supply a universal source level, mic distance, position count or acceptable reverberation time for every room. Small-room modal decay, variable occupancy, uncalibrated equipment and low signal-to-noise ratio can defeat a single summary number. The published ISO 3382-1:2009 performance-space edition is the cited current standard; a 2026 revision draft is under development, so the draft must not be represented as a published replacement. [1, 7]
+# Sources and curriculum connections
+Primary standards-body and measurement-equipment guidance checked October 5, 2026. Linked pages may contain media; this lesson includes no audio examples.
+[1] ISO 3382-1:2009, performance spaces <https://www.iso.org/standard/40979.html>
+[2] ISO 3382-2:2008, ordinary rooms <https://www.iso.org/standard/36201.html>
+[3] Rational Acoustics, IR Measurements Part 1 <https://support.rationalacoustics.com/support/solutions/articles/150000191163-ir-measurements-part-1-pre-smaart-preparation>
+[4] Rational Acoustics, Reverberation Time: Spilling the T <https://support.rationalacoustics.com/support/solutions/articles/150000190451-reverberation-time-spilling-the-t-on-rt60>
+[5] Rational Acoustics, IR Measurements Part 2 <https://support.rationalacoustics.com/support/solutions/articles/150000191499-ir-measurements-part-2-utilizing-smaart>
+[6] NTi Audio, Reverberation Time measurement <https://www.nti-audio.com/en/applications/room-building-acoustics/reverberation-time>
+[7] ISO/DIS 3382-1 draft status <https://www.iso.org/standard/85647.html>
+[8] NTi Audio, XL3 Reverberation Time function <https://www.nti-audio.com/en/functions/reverberation-time>
+Cross-links: F11 measurement microphone and calibration; F12 sound level and environmental noise; F14 subsequent acoustical topic; studio room placement; choir, orchestra and live ensemble miking.

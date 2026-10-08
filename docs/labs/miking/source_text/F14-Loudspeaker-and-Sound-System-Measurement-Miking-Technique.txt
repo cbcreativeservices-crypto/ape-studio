@@ -1,0 +1,101 @@
+# Loudspeaker and Sound System Measurement Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F14  •  Studio monitor and live sound applications
+Choose microphone positions that answer a defined loudspeaker or system question. Students compare a reference axis, off-axis points and representative listener locations, identify timing and signal references, and separate direct radiation from room-influenced results. No audio examples are included.
+# Start with the measured quantity
+A microphone measures acoustic pressure at its own position. A loudspeaker’s response depends on angle, distance, boundary conditions and electrical input; an installed system measurement also includes processing, multiple sources and the room. Name the test before setting the stand: a single speaker’s direct radiation, its useful coverage, a subwoofer and main overlap, or the audience’s actual experience. A single room trace cannot establish a loudspeaker’s free-field specification or uniform venue coverage. [1–4]
+For quantitative comparisons, use a measurement microphone with the appropriate calibration file or verified response and aim it in the orientation that file specifies. Record microphone and interface identities, gains, sample rate, source input and processing state. Absolute SPL requires an acoustically calibrated chain; a relative transfer-function trace alone is not an absolute SPL certificate. Avoid automatic gain, dynamic EQ, limiting or other time-varying processing unless the aim is to characterize that operating mode. [2, 5]
+# Plan positions for the intended result
+Question
+Microphone geometry
+What the result means
+Reference axis and off-axis radiation
+Place the capsule at a documented distance and angle relative to a stated speaker reference axis. Hold radius and source state fixed while changing horizontal or vertical angle.
+Angle-dependent response in the tested environment; a true free-field directivity claim needs suitable measurement conditions and method. [3, 4]
+Listener-area coverage
+Sample normal ear-height positions across front, middle, rear, edges, balconies or fill transitions as applicable. Name every position and active source.
+Installed system plus room at those seats. Compare individual traces before calculating a spatial summary. [1, 6]
+Subwoofer or low-frequency system
+Compare representative seats and boundary-related locations while one source or subsystem is active at a time. Check main/sub overlap separately.
+Room modes, boundaries, source spacing and crossover processing strongly affect each position; one close point cannot describe the audience. [1, 7]
+Near-field component check
+For an accessible driver or port, place the capsule close to the chosen radiator under an appropriate method; avoid contact with the cone, grille, vent or electrical parts, and log the offset.
+Can improve direct-to-room ratio at low frequencies, but the raw close trace is not automatically the far-field response of a multiway cabinet. [3, 8]
+
+Meyer Sound describes practical line-array samples at the beginning, middle and end of coverage, with extra points for deep areas; point-source and fill checks include main axes and overlap or edge-of-coverage regions. Treat these as application examples, not a universal three-microphone standard. Sample every listener region whose performance matters and disclose unsampled regions. If an on-axis trace differs from an off-axis one, verify that source and mic geometry, rather than an accidental level or processor change, caused it. [1]
+# Route the reference and establish timing
+For a dual-channel transfer function, route a copy of the signal driving the path under test to the analyzer reference and the mic to its measurement input. Identify exactly where the reference is taken: before or after console and DSP. A pre-DSP reference includes processing in the measured path; a post-DSP reference may exclude it. Neither is inherently wrong, but the two results answer different questions. The mic path must never return to the live PA. Confirm correct channels, polarity, phantom power, input level and headroom before excitation. [2, 5, 9]
+Find the acoustic arrival relative to the selected reference; propagation, processor latency and interface paths contribute. Set the measurement time reference so corresponding signal segments align, and repeat it after moving the mic or changing a path. Preserve the reported physical/processing delay separately if a relative phase or alignment decision needs it. An automated delay finder can choose a strong arrival that is not the intended source in a reverberant or overlapping system: inspect the impulse or arrival display and verify source identity. [5, 9]
+Use suitable controlled excitation at an agreed safe level. Record the source, duration, analyzer time windows, averaging/smoothing, reference point, delay, active channels and any mute state. Inspect both magnitude and phase with coherence or other quality indication, rather than treating an attractive curve as sufficient. Poor coherence may arise from timing mismatch, noise, reflections, interference or changing system behavior; it is not a unique diagnosis. Increasing playback is not the default cure. [2, 5, 10]
+# Distinguish direct radiation from the room
+At a listener position, the measured frequency response contains the loudspeaker’s directional output, nearby boundary effects, interference and reverberation. An early-arrival window can reduce later reflections for a direct-sound estimate, but a short window loses low-frequency resolution. A long window includes more low-frequency information and more room energy. State the window and useful frequency range. In a small room, low-frequency modes and early floor, desk or wall reflections often dominate; do not EQ a narrow spatial cancellation as if it were a speaker defect. Compare positions and physical causes before changing processing. [3, 4, 7, 10]
+Near-field close-miking of one cone or port suppresses room pickup relative to that radiator, but it changes geometry and may miss other acoustic outputs. Properly merging near- and far-field data requires level, phase, area and boundary corrections under a defined method; simply splicing two plots is not a calibrated full-system result. Specialized near-field scanning reconstructs far-field radiation through many positions and processing; one close microphone does not duplicate it. [3, 8, 11]
+A ground-plane setup puts microphone and source near a large reflecting ground surface to suppress a distinct floor-bounce path and evaluates half-space behavior. It is a deliberate measurement condition, not an all-purpose way to remove walls, weather and ground material from the result. State whether the source and capsule are on the plane, the geometry, site and method. A mic resting on a stage floor while a flown array plays measures an installed-system boundary position, not the same standardized half-space loudspeaker test. [1, 12]
+# Studio and live sound workflows
+Setting
+Sequence
+Interpretive limit
+Studio monitors
+Measure left and right separately at the working listening position, then nearby head positions; compare height, desk/floor reflections and bass variation. Keep monitor level and settings documented.
+One exact chair location can hide a severe neighboring null or peak; “flat at one point” does not prove broad listening quality. [3, 7]
+Live main and fills
+Check each subsystem alone across its intended seats, then overlap positions with intended sources active; record arrival and phase relationships before/after adjustments.
+An alignment chosen at one mic can change at another seat. Coverage, level and tonal consistency must be reviewed across the area. [1, 5]
+Subwoofer integration
+Measure mains and subs separately around the crossover, at defined positions, then together. Track actual reference delay and processing state.
+Summation at the chosen seat does not guarantee summation everywhere; room and array geometry remain important. [1, 7]
+
+In a live venue, coordinate source muting with the system operator, keep the route to amplifiers unambiguous and prevent unexpected playback. Keep stands out of access routes, secure cables and use rated speaker support. Do not move flown or energized equipment for a class exercise. Hearing safety, venue policy and nearby occupants set permissible test conditions; stop if the required measurement quality cannot be achieved safely. Studio monitors can also produce hazardous levels in a small room. [13]
+# Guided teaching exercise
+1. Write two questions: one about a loudspeaker reference-axis versus off-axis result, and one about listener coverage. Sketch the source, intended axis, boundaries and three representative listener positions.
+2. Verify the mic and reference chain. Label the electrical reference tap, microphone calibration/orientation, active source, processor mode and test level. Confirm the mic cannot feed the loudspeaker.
+3. Capture a reference-axis trace at a documented radius, then a modest off-axis trace with the same radius and input. Check arrival, quality and level for each. Do not interpret the off-axis difference as directivity if room paths dominate.
+4. Measure near/mid/far or center/edge listener locations with one system component active. Store each trace separately. Check timing after moving the mic and record unusual reflections or poor quality.
+5. If mains and sub are available, measure each alone and then both at an overlap seat, without changing gain or delay silently. Compare another seat before proposing a setting. Do not claim a room-wide result from one point.
+6. Return to the original position and repeat. State which findings are direct-sound estimates, installed-system results or limited near/boundary checks. Identify any frequency range made unreliable by the window or noise.
+Pass criterion: the student keeps source and reference paths explicit, measures consistent on/off-axis geometry, samples relevant seats, verifies timing and data quality, and limits every conclusion to the actual conditions. No audio examples.
+# Student measurement sheet
+Project and purpose ____________________  Date/time _____________  Source and operating state _____________
+Point / source
+Geometry and reference
+Quality and interpretation
+Axis / repeat
+__________________________
+____________________________
+Off axis / repeat
+__________________________
+____________________________
+Listener center
+__________________________
+____________________________
+Listener edge or overlap
+__________________________
+____________________________
+
+Mic, calibration, orientation ________________________  Input chain and reference tap ____________________
+Delay / window / smoothing ________________________  Level / noise / clipping _________________________
+Active processing and channels _____________________  Supported frequency range ______________________
+Position-to-position finding ________________________  Limits and next safe test ________________________
+
+# Critical evidence audit
+## Agreement
+Meyer Sound treats coverage as a spatial question; Rational Acoustics treats reference timing, coherence and position-dependent averaging as measurement-quality issues; Klippel distinguishes free-field, far-field, near-field and half-space conditions. These sources jointly support naming the source, geometry, reference and environment before interpreting a response. [1–5, 8–12]
+## Different methods and purposes
+A short-window trace emphasizes early arrival but limits low-frequency resolution; an in-room listener trace intentionally includes the room. A close mic on a driver can help investigate that radiator, while a specialized scan or properly merged measurement can estimate far-field characteristics. These methods are complementary, not interchangeable. Coherence-weighted spatial averaging may reduce influence from unreliable points, but the individual seats and edge conditions must still be examined. [3, 4, 8, 10, 11]
+## Unresolved limits
+There is no universal mic count, radius, angle grid, playback level, averaging scheme or EQ target for every loudspeaker and venue in these sources. Manufacturer prediction examples are not proof of installed performance. The lesson makes comparative classroom claims; formal product specifications, compliance measurements or maximum-output testing require a named current standard, calibrated apparatus, defined source conditions and qualified safety procedures. [1, 3, 12]
+# Sources and curriculum connections
+Primary manufacturer and analyzer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Meyer Sound MAPP 3D User Guide, microphone placement and measurement views <https://docs.meyersound.com/products/en/user-guide---mapp-3d.html>
+[2] Rational Acoustics Measurement 101 Types of Measurement <https://support.rationalacoustics.com/support/solutions/articles/150000190431-measurement-101-types-of-measurement>
+[3] Klippel Far Field Sound Pressure On axis <https://www.klippel.de/know-how/measurements/sound-radiation-and-propagation/far-field-sound-pressure-on-axis.html>
+[4] Klippel Loudspeaker Directivity Training <https://klippel.de/training/attachments/training8/Training_8_Measurement_of_Loudspeaker_Directivity_en.pdf>
+[5] Rational Acoustics Delay Finder vs Delay Tracker <https://support.rationalacoustics.com/support/solutions/articles/150000184350-delay-finder-vs-delay-tracker>
+[6] Rational Acoustics Coherence Weighted Averaging <https://support.rationalacoustics.com/support/solutions/articles/150000214546-coherence-weighted-decibel-averaging-transfer-function->
+[7] Klippel In Situ Room Compensation <https://docs.klippel.de/db-lab/latest/frequencyresponse-distortion/isc/isc.html>
+[8] Klippel Merging Near and Far Field Measurements AN39 <https://www.klippel.de/fileadmin/klippel/Files/Know_How/Application_Notes/AN_39_Merging_Near_and_Farfield_Measurements.pdf>
+[9] Meyer Sound Galileo GALAXY User Guide, SIM probe points <https://docs.meyersound.com/products/en/user-guide---galileo-galaxy.html>
+[10] Rational Acoustics What Is Coherence <https://support.rationalacoustics.com/support/solutions/articles/150000183871-what-is-coherence->
+[11] Klippel Near Field Scanner System <https://www.klippel.de/products/rd-system/modules/nfs-near-field-scanner.html>
+[12] Meyer Sound MAPP 3D Ground Plane and Half Space <https://docs.meyersound.com/products/en/user-guide---mapp-3d.html>
+[13] CDC NIOSH Understand Noise Exposure <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+Cross-links: F11 measurement microphones and calibration; F12 sound level and noise; F13 room acoustics; Sound Systems Lab; Custom Room and Placement Lab; live ensemble reinforcement.

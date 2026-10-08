@@ -1,0 +1,102 @@
+# Scientific Arrays and Specialized Sensors Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F16  •  Scientific and diagnostic applications
+An array combines measurements from known locations; an intensity probe estimates directional acoustic energy flow; a hydrophone senses underwater pressure. Each requires its own geometry, calibration, bandwidth and reporting units. This introductory lesson teaches the physical placement decisions and limits of a safe classroom comparison, then identifies specialist extensions. No audio examples are included.
+# Define the medium, quantity and coordinate system
+Before placing a sensor, name the measured medium and target: airborne pressure at several points, direction of arrival, source-region image, normal sound intensity through a surface, underwater pressure, or ultrasonic events. Mark a coordinate origin, array axes, source region and obstacles. Record sensor identity, positions, orientation, support, environment, sampling and timing. A plotted “hot spot” from an array is an estimate produced by a model, not a direct photograph of sound or proof of one physical fault. [1–4]
+For a quantitative study, verify microphone sensitivity and frequency response, channel matching and the needed calibration. Array phase and time offsets matter even when each element’s standalone magnitude response looks acceptable. Preserve simultaneously acquired raw channels, calibration data, processing settings and uncertainty. An ordinary stereo pair with two independent, drifting recorders is not automatically a coherent measurement array. [3–6]
+# Place microphone arrays for directional information
+Method
+Placement and routing
+Interpretive boundary
+Two-element arrival comparison
+Fix two omni capsules at a measured baseline, label left/right, record both on one synchronized clock. Keep source and array geometry documented; compare a centered and a safely displaced source.
+Arrival order can reveal which side was earlier. A single straight baseline has front/back and other geometric ambiguities; reflections can create a misleading arrival. [3, 5]
+Multi-element beamforming
+Use a known two- or three-dimensional sensor layout with matched channels; aim and locate the aperture relative to the defined target region, following the array method.
+Aperture, element spacing, wavelength, sidelobes and reflections set usable resolution and frequency range. An image is not a calibrated source-power map by default. [1, 3, 7]
+Near-field holography
+Place the specified dense array or scanning plane close to the source under the system’s method; register array plane and source geometry.
+Can estimate near-field pressure and reconstruct other quantities over its supported range. It differs from conventional far-field beamforming. [7, 8]
+
+For many simple arrays, a larger aperture can improve angular resolution at a given wavelength, while excessive element spacing can cause ambiguous spatial lobes at higher frequencies. In a conventional uniform design, spacing around or below half a wavelength of the highest frequency of interest is a useful anti-aliasing design principle; practical arrays may use irregular spacing and processing with different limits. This is not a license to choose one spacing for the entire audio band. Specify the array manufacturer’s geometry, usable band and processing before teaching a precise direction or location. [3, 5, 7]
+Place the array far enough from a hazardous object or turbulent airstream to protect it and retain the intended measurement geometry. HBK describes beamforming at a distance from vehicles in wind tunnels, outside turbulent flow. Mount securely and keep the array’s optical image registered to acoustic coordinates if overlaying a heat map on video. Check a known stationary test source at a permitted, modest level to verify channel order, timing and map registration; do not call the hottest pixel a fault without independent checks. [1, 7]
+# Use a sound-intensity probe correctly
+A common p–p intensity probe uses two phase-matched pressure microphones with a defined spacer to estimate the particle-velocity component along their connecting axis and hence active intensity in that direction. The probe’s spacer and calibration determine its usable frequency range. Rotate the probe according to the intended surface normal and its manufacturer’s positive direction; a 90-degree incidence to the probe axis tends toward zero axial component, even if pressure is substantial. Pressure alone is scalar; intensity carries a directional component. [9–11]
+For a source sound-power study, a qualified operator measures the normal component over an enclosing surface, at defined points or by prescribed scans, and applies the chosen ISO 9614 method and validity indicators. ISO 9614-1 covers discrete points; Parts 2 and 3 cover scanning with different accuracy grades. An informal probe pass over one panel is a localization aid, not a sound-power declaration. Check pressure and phase calibration and the pressure-residual intensity performance using the equipment’s procedure. Avoid asserting that background noise is harmless: intensity can help in some in-situ conditions, but external sources, nonstationary fields, poor phase match and unsuitable bands can invalidate a result. [9–13]
+The sound-intensity exercise in this module is a layout and reporting exercise unless calibrated specialist equipment and a qualified instructor are available. Students draw an enclosing surface and indicate its outward normals and safe scan access. They do not insert a probe through guards or into moving, hot or energized machinery. Cross-link F15 for machinery operating state and authorized isolation. [10–13]
+# Acoustic imaging is a conditional estimate
+Beamforming steers or combines synchronized microphone channels to emphasize a direction; a mapped peak can be a true source, a reflection, an array sidelobe or an algorithmic artifact. Repeat with a changed array viewpoint or source state and compare with a single-microphone inspection. HBK notes that conventional beamforming is often more useful at higher frequencies, while near-field holography addresses a different lower-frequency and close-plane regime. The displayed image depends on the chosen band, dynamic range, processing, array size and source distance. [1, 7, 8]
+For a field or studio product, choose the method to suit the question: a compact array for directional comparison, an imaging array for a permitted source region, or an intensity probe for energy-flow questions. None replaces a calibrated exposure meter at a worker’s ear, a room-acoustic IR method, or a microphone specified by a product standard. Save raw data alongside the color map and note the exact range and threshold used for display. [1, 2, 9]
+# Specialist media and bandwidth extensions
+Extension
+Sensor and placement
+Limit to teach
+Underwater passive sound
+Use a hydrophone rated and calibrated for the deployment; document depth, mooring, orientation where relevant, water conditions, site permissions and self-noise.
+Air microphones are not hydrophones. Underwater pressure levels often use dB re 1 µPa; airborne SPL commonly uses dB re 20 µPa. The numbers are not directly comparable. [14–16]
+Ultrasonic bioacoustics
+Use a detector and microphone with verified ultrasonic response and adequate sample rate; follow the species survey protocol, site permissions, weather and non-disturbance rules.
+An ordinary audio microphone/interface may not capture calls outside its usable band. Detection and automated classification are not a count of animals without survey design and review. [17, 18]
+Industrial ultrasound
+Only qualified staff select rated transducers and methods for leak, defect or high-intensity ultrasonic work; use passive listening where authorized.
+Never emit unverified ultrasound for a classroom demonstration or assume inaudibility means lack of hazard. Separate acoustic sensing from electrical or mechanical inspection.
+
+Sampling must exceed twice the highest frequency retained in a band-limited waveform, with anti-alias filtering and actual transducer bandwidth also adequate; a sample-rate label by itself does not prove usable ultrasonic sensitivity. Hydrophone voltage must be converted using the specific sensor and chain calibration before reporting underwater pressure. NOAA and USGS use purpose-built sensors and protocols because deployment and interpretation are part of the measurement. [4, 14, 16–18]
+# Safe classroom exercise and evaluation
+1. Choose a stationary, modest-level source in a controlled room and a two-channel synchronized recorder. Define one straight array baseline, coordinate origin, capsule separation and channel map. Keep playback at an agreed safe level; no audio examples are supplied.
+2. Verify both microphones and cabling with a common source position. Mark a centered source point and a second safe point to one side. Capture two repeated events at each point, using the same source state and gain. Preserve the unprocessed channels.
+3. Inspect the arrival order and consistency at the two positions. Note the direct arrival, any reflection and uncertainty. Return to the center to check repeatability. Do not infer unique azimuth or range from one baseline.
+4. Sketch how a larger array or alternative viewpoint could resolve an ambiguity; state the spacing, frequency and clocking requirements to investigate before using a commercial array.
+5. On paper, mark the outward normal of an enclosure around a small device and a safe path for a professional intensity survey. Identify spacer, pair phase check and ISO 9614 method as prerequisites. Do not operate specialist equipment without a qualified operator.
+6. For a hypothetical underwater or ultrasonic project, list the medium, reference pressure or band, required sensor, calibration, permissions, placement metadata and one claim that the proposed setup cannot support.
+Pass criterion: the student preserves geometry and timing, reports arrival-order evidence without false localization, explains intensity direction and instrument checks, and keeps medium-specific units and safety boundaries explicit. No audio examples.
+# Student observation sheet
+Purpose _______________________  Date/time ____________________  Medium and source __________________
+Setup and run
+Geometry, sensor and timing
+Observation and limitation
+Center 1 / repeat
+____________________________
+____________________________
+Side 1 / repeat
+____________________________
+____________________________
+Return to center
+____________________________
+____________________________
+Specialist design only
+____________________________
+____________________________
+
+Element/channel identities __________________  Baseline/axis __________________  Sample rate/filter ______________
+Background/reflections _____________________  Calibration/phase __________________  Valid band ______________
+Intensity normal or medium-specific units _____________________  Uncertainty/next check __________________
+
+# Critical evidence audit
+## Points of agreement
+HBK, NI and MathWorks show that arrays depend on geometry, bandwidth and synchronized channel relationships. ISO 9614 and IEC 61043 make intensity a method- and instrument-specific quantity. NOAA and USGS distinguish underwater and ultrasonic sensing from ordinary airborne recording. These all support recording coordinates, response, calibration and method before a scientific claim. [1–18]
+## Different methods and apparent conflicts
+Beamforming and holography map different aspects of a field over different geometries and bands; a high-frequency beamforming map need not resemble a low-frequency holography map. An intensity probe may perform useful in-situ work near a source despite steady ambient pressure, yet it still requires phase checks and method validity. The common half-wavelength spacing guidance for a simple uniform array does not specify an arbitrary commercial array’s full usable band. [7–13]
+## Gaps
+The sources give no one-size-fits-all array aperture, sensor spacing, scan density, source distance, acoustic-camera confidence threshold or wildlife placement for every site. A two-mic arrival-order exercise is only a limited demonstration. Full sound-power, source localization, ecological abundance or underwater exposure claims require a named current procedure, calibrated equipment and uncertainty analysis. [1–18]
+# Sources and curriculum connections
+Primary standards-body, government, manufacturer and developer guidance checked October 4, 2026. Linked pages may contain media; this lesson includes no audio examples.
+[1] HBK Beamforming and Microphone Arrays <https://www.hbkworld.com/en/solutions/applications/acoustics/noise-source-identification/beamforming>
+[2] NI Measuring Sound with Microphones <https://www.ni.com/en/shop/data-acquisition/sensor-fundamentals/measuring-sound-with-microphones.html>
+[3] MathWorks Acoustic Room Beamforming with Relative Transfer Functions <https://www.mathworks.com/help/audio/ug/room-acoustic-beamforming-with-rtf-example.html>
+[4] NI Sound and Vibration Measurement Hardware <https://www.ni.com/en/shop/hardware-portfolio/daq-sensor-io/sound-vibration>
+[5] MathWorks Microphone Array Time Delay Beamforming <https://www.mathworks.com/help/phased/ug/time-delay-beamforming-of-microphone-ula-array-gs.html>
+[6] MathWorks Array Pilot Calibration <https://www.mathworks.com/help/phased/ug/using-pilot-calibration-to-compensate-for-array-uncertainties.html>
+[7] HBK Acoustic Camera Beamforming and Holography <https://cloud.hbkworld.com/en/knowledge/resource-center/articles/acoustic-camera-beamforming>
+[8] HBK Acoustic Holography <https://www.hbkworld.com/en/solutions/applications/acoustics/noise-source-identification/acoustic-holography>
+[9] HBK Measuring Sound Intensity <https://www.hbkworld.com/en/knowledge/resource-center/articles/measuring-sound-intensity>
+[10] ISO 9614-1:1993 Discrete intensity points <https://www.iso.org/standard/17427.html>
+[11] ISO 9614-2:1996 Scanning intensity <https://www.iso.org/standard/21247.html>
+[12] ISO 9614-3:2002 Precision scanning <https://www.iso.org/standard/24012.html>
+[13] IEC 61043 Sound intensity instruments <https://webstore.iec.ch/en/publication/4353>
+[14] NOAA What Is a Hydrophone <https://oceanservice.noaa.gov/facts/hydrophone.html>
+[15] NOAA Air and Water Sound Reference Discussion <https://sanctuaries.noaa.gov/management/pdfs/anthro_noise.pdf>
+[16] NOAA Passive Acoustic Data <https://www.ncei.noaa.gov/products/passive-acoustic-data>
+[17] USGS NABat Field Season and Survey Preparation <https://pubs.usgs.gov/publication/tm2C2/full>
+[18] USGS NABat Conducting Mobile Acoustic Surveys <https://pubs.usgs.gov/publication/tm2C3/full>
+Cross-links: F11 microphone calibration; F12 sound pressure; F13 room acoustics; F14 loudspeakers; F15 machinery and product sound; F10 water and hydrophone; field recording and Sports and Broadcasting spatial pickup.
