@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 05:32 · ccode · 32a5996f
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
+affects other side: nothing server-side — final-lab (Lab 7 groups) merged into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
 ### 2026-10-08 05:24 · ccode · 443ab6dd
 changed: docs(lab6 review): REVIEW_LAB6_2026_10_08 — two-expert review of F01–F16
 affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
@@ -667,6 +673,9 @@ needs: nothing
 ### 2026-10-08 05:02 · ccode · 5970e4d7
 changed: fix(lab6 review): F16 sample-rate item contradicted itself; F09 boom vs body-mic level
 affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
 ### 2026-10-08 05:06 · ccode · f05ad5d3
 changed: Merge origin/final-lab (Lab 7b group 1) into lab7-g2 (Lab 7a group 2)
 affects other side: nothing (client-only merge: final-lab with Lab 7b group 1 into lab7-g2 — both groups kept side by side; broadcast lab blurb covers both; Miking stays hidden; no server, no SQL)
