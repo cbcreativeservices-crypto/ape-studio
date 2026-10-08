@@ -286,13 +286,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f02.two.4',
     page: 'twoMic',
-    prompt: 'Two characters each need a jacket pass. Is that a two-mic setup?',
-    options: ['Two passes, one after the other, can each use one mic', 'Yes: each character needs its own mic at once', 'Yes: two garments need two microphones at once'],
-    correct: 'Two passes, one after the other, can each use one mic',
+    prompt: 'Two characters each need a jacket pass. What does that call for?',
+    options: ['Two passes, one after the other, each on one mic', 'Two mics open at once, one aimed at each garment', 'One mic between both artists, summed with a room mic'],
+    correct: 'Two passes, one after the other, each on one mic',
     explain: 'Separate performances or layers are not simultaneous multi-mic capture. Record each character’s pass on its own when it helps, and keep notes of which tracks belong together.',
     why: {
-      'Yes: each character needs its own mic at once': 'Two passes recorded one after the other each need only one mic.',
-      'Yes: two garments need two microphones at once': 'Extra channels add room and editing; add them for a reason.',
+      'Two mics open at once, one aimed at each garment': 'Each open mic also hears the other garment, a little later: two passes one after the other keep them apart.',
+      'One mic between both artists, summed with a room mic': 'That blurs both garments together and adds a delay and a comb. Record each pass on its own.',
     },
   },
   foleyGain(W),
