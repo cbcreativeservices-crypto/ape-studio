@@ -646,6 +646,24 @@ affects other side: nothing — app-side Miking Lab 7b group 3 shared kit only (
 needs: nothing
 
 
+### 2026-10-08 04:37 · ccode · c1e21560
+changed: Merge origin/final-lab into lab7-g4 (Lab 7b group 1)
+affects other side: nothing (client-only merge: final-lab into lab7-g4 — Lab 6 group 2 and Lab 7b group 2 alongside Lab 7b group 1; Miking still hidden)
+needs: nothing
+
+
+### 2026-10-08 04:25 · ccode · f63ae343
+changed: Miking Lab 7b group 1: review fixes and phone-width screenshots
+affects other side: nothing (client-only: Miking Lab 7b group 1 review fixes — art, labels, the context page's pattern names — and phone-width screenshots)
+needs: nothing
+
+
+### 2026-10-08 03:30 · ccode · 6513a183
+changed: Miking Lab 7b group 1: the speech-in-sport kit (sport mics, held arm, feeds, booth plan, handoff, frame T)
+affects other side: nothing (client-only: the Lab 7b group 1 speech-in-sport kit in lessons/shared/broadcast — sport mics, the held-arm clip style, feeds, booth plan, handoff, frame T; no DB, no schema)
+needs: nothing
+
+
 ### 2026-10-08 03:03 · ccode · 36f8a870
 changed: Merge origin/final-lab into lab7-g5 (Lab 7b group 2)
 affects other side: nothing server-side — final-lab merged into lab7-g5 (Lab 6 groups 2 and 5, Lab 7 group 1, then Lab 7 part 2 group 2); app code and docs only; Miking stays hidden (MIKING_PUBLIC false).

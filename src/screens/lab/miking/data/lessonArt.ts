@@ -245,6 +245,13 @@ import { B07_ART } from '../lessons/b07Voiceover/art';
 ART.B07 = B07_ART;
 import { B06_ART } from '../lessons/b06Panels/art';
 ART.B06 = B06_ART;
+/* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
+import { B09_ART } from '../lessons/b09Commentators/art';
+ART.B09 = B09_ART;
+import { B10_ART } from '../lessons/b10Sideline/art';
+ART.B10 = B10_ART;
+import { B11_ART } from '../lessons/b11Athletes/art';
+ART.B11 = B11_ART;
 /* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
 import { B12_ART } from '../lessons/b12Parabolic/art';
 ART.B12 = B12_ART;
