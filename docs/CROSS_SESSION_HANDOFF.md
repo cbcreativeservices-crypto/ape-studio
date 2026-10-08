@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 23:14 · ccode · 7c48c7fd
+changed: Merge lab6-g4: Miking Lab 6 F11-F13 measurement lessons
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
 ### 2026-10-07 23:12 · ccode · 48fa4836
 changed: web: launch date moves to Tuesday, October 13
 affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
