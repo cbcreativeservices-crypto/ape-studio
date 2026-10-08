@@ -187,6 +187,8 @@ export function PlantSection({ mount, px, struck = true }: { mount: PlantMount; 
           </Path>
           <Path path={g.arm} style="stroke" strokeWidth={18} strokeCap="round" color="#3a3d45" />
           {mount === 'isolated' ? <ShockMountArt x={430} y={-700} r={14} angleDeg={0} /> : null}
+          {/* A pale disc behind the small mic, so its dark body reads against the dark room. */}
+          <Circle cx={mount === 'isolated' ? 470 : 430} cy={-700} r={95} color="#e8eef5" opacity={0.22} />
           <Group transform={[{ translateX: mount === 'isolated' ? 500 : 470 }, { translateY: -700 }, { rotate: -Math.PI / 2 + Math.PI }]}>
             <MikingMicArt art="sdc" r={10.5} len={104} />
           </Group>

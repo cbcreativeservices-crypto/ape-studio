@@ -104,14 +104,18 @@ export function devIndex(key = 'setup'): number {
   return m ? Math.max(0, Number(m[1]) - 1) : 0;
 }
 
+/** A mic glyph's length on a plan (mm): about a tenth of the plan's width,
+ *  so it reads at 1× and zooms with the drawing in full screen. */
+export const glyphMm = (r: PlanRect): number => Math.min(((r.x1 - r.x0) * 1000) / 8, 4500);
+
 /** A plan on the glass: the venue, then the step's own layer, then labels. */
-export function PlanStage({ w, h, scene, box, a11y, labels, inset, children, show, activeFootprint, highlight }: { w: number; h: number; scene: VenueScene; box?: PlanRect; a11y: string; labels: StaticLabel[]; inset?: FieldInset | null; children?: (px: number) => ReactNode; show?: Parameters<typeof VenuePlan>[0]['show']; activeFootprint?: string | null; highlight?: string | null }) {
+export function PlanStage({ w, h, scene, box, a11y, labels, inset, children, show, activeFootprint, highlight }: { w: number; h: number; scene: VenueScene; box?: PlanRect; a11y: string; labels: StaticLabel[]; inset?: FieldInset | null; children?: (px: number, g: number) => ReactNode; show?: Parameters<typeof VenuePlan>[0]['show']; activeFootprint?: string | null; highlight?: string | null }) {
   return (
     <FieldStage w={w} h={h} view="top" box={planBox(box ?? scene.frame)} a11y={a11y} labels={labels} inset={inset}>
       {(px) => (
         <>
           <VenuePlan scene={scene} px={px} show={show} activeFootprint={activeFootprint} highlight={highlight} />
-          {children ? children(px) : null}
+          {children ? children(px, glyphMm(box ?? scene.frame)) : null}
         </>
       )}
     </FieldStage>
@@ -119,13 +123,19 @@ export function PlanStage({ w, h, scene, box, a11y, labels, inset, children, sho
 }
 
 /** A mic drawn on the plan: its pattern's shape (optional), the glyph, its aim. */
-export function MicOnPlan({ m, px, lobe = true, aim = true }: { m: SportMic; px: number; lobe?: boolean; aim?: boolean }) {
+/** A plan point `metres` ahead of `at` along an aim (degrees, as dirFromDeg) —
+ *  where an aim line starts, clear of the mic glyph it would otherwise hide. */
+export function aheadOf(at: P2, deg: number, metres: number): P2 {
+  return { x: at.x - Math.sin((deg * Math.PI) / 180) * metres, y: at.y + Math.cos((deg * Math.PI) / 180) * metres };
+}
+
+export function MicOnPlan({ m, px, g, lobe = true, aim = true }: { m: SportMic; px: number; /** the glyph's length (mm): glyphMm */ g: number; lobe?: boolean; aim?: boolean }) {
   const deg = micAimDeg(m);
   return (
     <Group>
-      {lobe && m.pattern ? <PlanLobe at={m.at} aimDeg={deg} px={px} pattern={m.pattern} rPx={44} /> : null}
-      {aim ? <PlanAim from={m.at} to={m.aimAt} px={px} /> : null}
-      <PlanMic at={m.at} aimDeg={deg} kind={m.kind} px={px} />
+      {lobe && m.pattern ? <PlanLobe at={m.at} aimDeg={deg} px={px} pattern={m.pattern} rPx={(g * 1.5) / px} /> : null}
+      {aim ? <PlanAim from={aheadOf(m.at, deg, (g * 0.95) / 1000)} to={m.aimAt} px={px} /> : null}
+      <PlanMic at={m.at} aimDeg={deg} kind={m.kind} px={px} sizePx={g / px} />
     </Group>
   );
 }
@@ -133,7 +143,15 @@ export function MicOnPlan({ m, px, lobe = true, aim = true }: { m: SportMic; px:
 /** The close-up in the corner: the real mic at its capsule height, from the
  *  side (u = metres from the mic toward its target, v = −height), its stand
  *  to the ground and the height as a white dimension — to scale. */
-export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.66, y: 0.02, w: 0.32, h: 0.4 }): FieldInset {
+/** The corner the close-up takes: top-right, unless the mic itself is drawn
+ *  there on the plan (then top-left), so the box never hides the mic. */
+export function closeUpAt(m: SportMic, box: PlanRect): FieldInset['at'] {
+  const u = (m.at.x - box.x0) / (box.x1 - box.x0);
+  const v = (box.y1 - m.at.y) / (box.y1 - box.y0);
+  return u > 0.5 && v < 0.6 ? { x: 0.02, y: 0.02, w: 0.38, h: 0.46 } : { x: 0.6, y: 0.02, w: 0.38, h: 0.46 };
+}
+
+export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.6, y: 0.02, w: 0.38, h: 0.46 }): FieldInset {
   if (m.kind === 'dish') {
     const d = DISHES.large;
     return {
@@ -159,10 +177,19 @@ export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.66, y: 0.0
   const ang = Math.atan2(-rise, R); // screen angle of the aim
   return {
     view: 'side',
-    box: { u0: -650, u1: 950, v0: -H - 420, v1: 160 },
+    // Close on the mic itself (to scale); the stand runs on down out of the box.
+    box: { u0: -330, u1: 470, v0: -H - 300, v1: -H + 320 },
     at,
     draw: (px) => (
       <Group>
+        <Path
+          path={(() => {
+            const p = Skia.Path.Make();
+            p.addRect(Skia.XYWHRect(-2000, -H - 2000, 5000, H + 2000));
+            return p;
+          })()}
+          color="#4b5b6d"
+        />
         <Path
           path={(() => {
             const p = Skia.Path.Make();
@@ -196,19 +223,19 @@ export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.66, y: 0.0
           </Group>
         ) : null}
         <PlanAimSide from={{ u: 0, v: -H }} ang={ang} px={px} />
-        <DimSide a={{ u: -200, v: 0 }} b={{ u: -200, v: -H }} px={px} />
       </Group>
     ),
-    labels: [{ id: 'cu', text: `CAPSULE ${fmtM1(m.h)} UP`, short: fmtM1(m.h), u: -230, v: -H / 2, align: 'right', tone: 'muted' }],
+    labels: [{ id: 'cu', text: `CAPSULE ${fmtM1(m.h)} UP`, short: fmtM1(m.h), u: 100, v: -H - 230, align: 'center', tone: 'muted' }],
   };
 }
 function PlanAimSide({ from, ang, px }: { from: { u: number; v: number }; ang: number; px: number }) {
   const p = Skia.Path.Make();
-  p.moveTo(from.u, from.v);
-  p.lineTo(from.u + Math.cos(ang) * 850, from.v + Math.sin(ang) * 850);
+  // Starts past the mic's front (a short shotgun's tube is 200 mm), so the line never hides the mic.
+  p.moveTo(from.u + Math.cos(ang) * 280, from.v + Math.sin(ang) * 280);
+  p.lineTo(from.u + Math.cos(ang) * 900, from.v + Math.sin(ang) * 900);
   return <Path path={p} style="stroke" strokeWidth={2 * px} color={AMBER} opacity={0.9} />;
 }
-function DimSide({ a, b, px }: { a: { u: number; v: number }; b: { u: number; v: number }; px: number }) {
+export function DimSide({ a, b, px }: { a: { u: number; v: number }; b: { u: number; v: number }; px: number }) {
   const p = Skia.Path.Make();
   p.moveTo(a.u, a.v);
   p.lineTo(b.u, b.v);
@@ -329,7 +356,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
     rack: {
       render: (w, h) => (
         <PlanStage w={w} h={h} scene={scene} box={box} a11y={words} labels={venueLabels(scene)} highlight={t.id}>
-          {(px) => (
+          {(px, g) => (
             <>
               <PlanAim from={from} to={{ x: from.x, y: from.y + Math.max(4, plan * 0.45) }} px={px} color="#9aa0ab" head={false} />
               <PlanPath a={from} b={t.p} px={px} width={2.4} />
@@ -393,11 +420,11 @@ export function useMethodsStep({ scene, methods, box, prediction, prompt, done }
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={sc} box={mt.box ?? (mt.scene ? undefined : box)} a11y={`${mt.label}. ${mt.gives} ${mt.limit}`} labels={venueLabels(sc, { layers: false })} inset={mt.mics[0] ? micCloseUp(mt.mics[0]) : null}>
-          {(px) => (
+        <PlanStage w={w} h={h} scene={sc} box={mt.box ?? (mt.scene ? undefined : box)} a11y={`${mt.label}. ${mt.gives} ${mt.limit}`} labels={venueLabels(sc, { layers: false })} inset={mt.mics[0] ? micCloseUp(mt.mics[0], closeUpAt(mt.mics[0], mt.box ?? (mt.scene ? sc.frame : box ?? sc.frame))) : null}>
+          {(px, g) => (
             <>
               {mt.mics.map((m) => (
-                <MicOnPlan key={m.id} m={m} px={px} />
+                <MicOnPlan g={g} key={m.id} m={m} px={px} />
               ))}
             </>
           )}
@@ -460,11 +487,12 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
   }, [seenCore, core.length, interactiveDone, onInteractive]);
   const sc = sel?.scene ?? scene;
   const m0 = sel?.mics[0];
-  const r0 = m0 && !sel?.noRange ? slantRange(m0.at, m0.h, m0.aimAt, m0.aimH) : NaN;
+  const r0 = m0 && !sel?.noRange && m0.kind !== 'xy' ? slantRange(m0.at, m0.h, m0.aimAt, m0.aimH) : NaN;
   const labels: StaticLabel[] = sel
     ? [
         ...venueLabels(sc, { layers: false }),
-        ...(sel.noRange ? [] : sel.mics).map((m) => {
+        // An ambience pair aims into the play, at no target: no range is printed for it.
+        ...(sel.noRange ? [] : sel.mics.filter((m) => m.kind !== 'xy')).map((m) => {
           const a = planUV(m.at);
           const b = planUV(m.aimAt);
           const r = slantRange(m.at, m.h, m.aimAt, m.aimH);
@@ -480,11 +508,11 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
     rack: {
       render: (w, h) =>
         sel ? (
-          <PlanStage w={w} h={h} scene={sc} box={sel.box ?? box} a11y={`${sel.role}: ${sel.title}. ${sel.start}`} labels={labels} inset={m0 ? micCloseUp(m0) : null}>
-            {(px) => (
+          <PlanStage w={w} h={h} scene={sc} box={sel.box ?? box} a11y={`${sel.role}: ${sel.title}. ${sel.start}`} labels={labels} inset={m0 ? micCloseUp(m0, closeUpAt(m0, sel.box ?? box ?? sc.frame)) : null}>
+            {(px, g) => (
               <>
                 {sel.mics.map((m) => (
-                  <MicOnPlan key={m.id} m={m} px={px} />
+                  <MicOnPlan g={g} key={m.id} m={m} px={px} />
                 ))}
               </>
             )}
@@ -609,8 +637,8 @@ export function useWorkedStep({ scene, mic, pieces, box, title }: { scene: Venue
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={scene} box={box} a11y={`A worked example, placed for you: ${title}. ${pc.title.toLowerCase()}: ${pc.text}`} labels={venueLabels(scene)} inset={micCloseUp(mic)}>
-          {(px) => <MicOnPlan m={mic} px={px} />}
+        <PlanStage w={w} h={h} scene={scene} box={box} a11y={`A worked example, placed for you: ${title}. ${pc.title.toLowerCase()}: ${pc.text}`} labels={venueLabels(scene)} inset={micCloseUp(mic, closeUpAt(mic, box ?? scene.frame))}>
+          {(px, g) => <MicOnPlan g={g} m={mic} px={px} />}
         </PlanStage>
       ),
       badge: 'WORKED EXAMPLE · placed for you · the corner box = the mic at its height, to scale',
@@ -771,14 +799,14 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
     layout: 'rack',
     rack: {
       render: (w, hh) => (
-        <PlanStage w={w} h={hh} scene={scene} box={box} a11y={nowWords} labels={venueLabels(scene)} inset={micCloseUp(mic)} highlight={tid}>
-          {(px) => (
+        <PlanStage w={w} h={hh} scene={scene} box={box} a11y={nowWords} labels={venueLabels(scene)} inset={micCloseUp(mic, closeUpAt(mic, box ?? scene.frame))} highlight={tid}>
+          {(px, g) => (
             <>
               {arc ? <ArcArt arc={arc} px={px} out={outOfArc} /> : null}
               {zoneRects(px)}
               {target ? <PlanPath a={at} b={target.p} px={px} width={1.6} /> : null}
-              <MicOnPlan m={mic} px={px} aim={false} />
-              <PlanAim from={at} to={{ x: at.x - Math.sin((deg * Math.PI) / 180) * Math.max(4, range * 0.6), y: at.y + Math.cos((deg * Math.PI) / 180) * Math.max(4, range * 0.6) }} px={px} />
+              <MicOnPlan g={g} m={mic} px={px} aim={false} />
+              <PlanAim from={aheadOf(at, deg, (g * 0.95) / 1000)} to={{ x: at.x - Math.sin((deg * Math.PI) / 180) * Math.max(4, range * 0.6), y: at.y + Math.cos((deg * Math.PI) / 180) * Math.max(4, range * 0.6) }} px={px} />
               {refused || outOfArc ? <Circle cx={planUV(at).u} cy={planUV(at).v} r={14 * px} style="stroke" strokeWidth={3 * px} color={RED} /> : null}
             </>
           )}
@@ -877,11 +905,11 @@ export function useCoverageStep({ scene, tasks, mics, box, onInteractive, done }
     rack: {
       render: (w, h) => (
         <PlanStage w={w} h={h} scene={scene} box={box} a11y={`The coverage map from above. ${tasks.map((t) => `${t.label}: ${COVERAGE_WORDS[tags[t.id]].label.toLowerCase()}`).join('; ')}.`} labels={labels} show={{ targets: false }}>
-          {(px) => (
+          {(px, g) => (
             <>
               <CoverageArt zones={zones} px={px} active={z.id} />
               {mics.map((m) => (
-                <MicOnPlan key={m.id} m={m} px={px} lobe={false} aim={false} />
+                <MicOnPlan g={g} key={m.id} m={m} px={px} lobe={false} aim={false} />
               ))}
             </>
           )}
@@ -1000,7 +1028,7 @@ export function useHeadroomStep({ onInteractive, done, prediction }: { onInterac
 /** The comb's shape as an inset graph (20 Hz – 20 kHz, log), a simplified
  *  picture: one point source, straight paths, the two mics' 1/r levels. */
 function combInset(dtMs: number, gA: number, gB: number, pol: 1 | -1): FieldInset {
-  const N = 160;
+  const N = 700;
   const W = 1000;
   const H = 520;
   const xOf = (f: number) => (Math.log10(f / 20) / 3) * W;
@@ -1022,7 +1050,7 @@ function combInset(dtMs: number, gA: number, gB: number, pol: 1 | -1): FieldInse
   return {
     view: 'top',
     box: { u0: -40, u1: W + 40, v0: -H - 140, v1: 120 },
-    at: { x: 0.02, y: 0.62, w: 0.5, h: 0.36 },
+    at: { x: 0.5, y: 0.02, w: 0.48, h: 0.34 },
     draw: (px) => (
       <Group>
         <Path path={grid} style="stroke" strokeWidth={1 * px} color="#5b5f69" opacity={0.7} />
@@ -1066,12 +1094,12 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
     rack: {
       render: (w, h) => (
         <PlanStage w={w} h={h} scene={scene} box={box} a11y={words} labels={[...venueLabels(scene, { marks: false }), { id: 'A', text: 'MIC A', u: planUV(a.at).u, v: planUV(a.at).v + 1300, align: 'center', tone: 'amber' }, { id: 'B', text: 'MIC B', u: planUV(b.at).u, v: planUV(b.at).v + 1300, align: 'center', tone: 'amber' }]} inset={combInset(o.dtMs, gA, gB, pol)} show={{ targets: true }}>
-          {(px) => (
+          {(px, g) => (
             <>
               <PlanPath a={src} b={a.at} px={px} width={2.2} />
               <PlanPath a={src} b={b.at} px={px} width={2.2} color={AMBER} />
-              <MicOnPlan m={a} px={px} lobe={false} />
-              <MicOnPlan m={b} px={px} lobe={false} />
+              <MicOnPlan g={g} m={a} px={px} lobe={false} />
+              <MicOnPlan g={g} m={b} px={px} lobe={false} />
               <TargetRing p={src} px={px} active />
             </>
           )}
@@ -1163,13 +1191,13 @@ export function useTrackStep({ scene, dish, arc, path, fixed, box, onInteractive
     rack: {
       render: (w, h) => (
         <PlanStage w={w} h={h} scene={scene} box={box} a11y={words} labels={[...venueLabels(scene, { marks: false }), { id: 'oa', text: `ON AIR · ${onAir}`, u: planUV(hand ? fixed.at : dish.at).u, v: planUV(hand ? fixed.at : dish.at).v + 1500, align: 'center', tone: 'amber' }]}>
-          {(px) => (
+          {(px, g) => (
             <>
               <ArcArt arc={arc} px={px} out={!inArc} />
               <PlanPath a={dish.at} b={src} px={px} width={hand ? 1.2 : 2.4} color={hand ? '#5b5f69' : BLUE} />
               {hand ? <PlanPath a={fixed.at} b={src} px={px} width={2.4} color={AMBER} /> : null}
-              <MicOnPlan m={dishAt} px={px} lobe={false} />
-              <MicOnPlan m={fixedAt} px={px} />
+              <MicOnPlan g={g} m={dishAt} px={px} lobe={false} />
+              <MicOnPlan g={g} m={fixedAt} px={px} />
               <TargetRing p={src} px={px} active />
               {!inArc ? <Circle cx={planUV(dish.at).u} cy={planUV(dish.at).v} r={16 * px} style="stroke" strokeWidth={3 * px} color={RED} /> : null}
             </>

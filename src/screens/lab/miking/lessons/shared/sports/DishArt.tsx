@@ -27,7 +27,7 @@ const AMBER = '#ffc64d';
 const BLUE = '#8fbcff';
 
 /** The shell's drawn thickness (mm) — a drawing default. */
-const SHELL = 7;
+const SHELL = 14;
 
 export function DishSection({ dish, px, elementOffset = 0, wind = false, cutaway = true }: { dish: Dish; px: number; elementOffset?: number; wind?: boolean; cutaway?: boolean }) {
   const g = useMemo(() => {
@@ -87,7 +87,7 @@ export function DishSection({ dish, px, elementOffset = 0, wind = false, cutaway
       <Path path={g.shell}>
         <LinearGradient start={vec(0, -g.R)} end={vec(dish.depth, g.R)} colors={['#e6eef6', '#9fb3c6', '#5d7083']} />
       </Path>
-      <Path path={g.shell} style="stroke" strokeWidth={Math.max(1.2, 1.2 * px)} color="#0b0c0f" opacity={0.7} />
+      <Path path={g.shell} style="stroke" strokeWidth={Math.max(1.2, 1.4 * px)} color="#e6eef6" opacity={0.8} />
       <Path path={g.rim} color="#d8dee6" />
       <Path path={g.hub}>
         <LinearGradient start={vec(-46, -34)} end={vec(-2, 34)} colors={['#5b5f69', '#2a2c32', '#121317']} />

@@ -151,6 +151,7 @@ export const B13_SETUPS: SportSetup[] = [
     line: 'Bat contact and the catcher’s glove; test both batters’ sides, and whether the catcher, umpire or netting changes it.',
     mics: [m('sgp', 'shotgun', 'plate-area shotgun', { x: (BACK.x0 + BACK.x1) / 2, y: (BACK.y0 + BACK.y1) / 2 }, PF.hHigh, { x: 0, y: 0 }, 1.0, 'shotgun')],
     scene: BASE,
+    box: { x0: -30, y0: -26, x1: 30, y1: 34 },
     noRange: true,
   },
   {
@@ -193,6 +194,7 @@ export const B13_SETUPS: SportSetup[] = [
     line: 'Overlapping fixed sectors carry continuity; a dish follows only where an operator stays clear of officials and players.',
     mics: [m('sgs', 'shotgun', 'perimeter shotgun', { x: (NEAR.x0 + NEAR.x1) / 2, y: (NEAR.y0 + NEAR.y1) / 2 }, PF.hHigh, { x: 16.5, y: 34 - 20.16 + 8 }, 0.5, 'shotgun')],
     scene: SOC,
+    box: { x0: 4, y0: -15, x1: 50, y1: 27 },
     noRange: true,
   },
 ];

@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 02:28 · ccode · 222c8ca0
+changed: Miking Lab 7b group 2: B12 Parabolic, B13 Field and Diamond, B14 Court and Ice
+affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
+needs: nothing
+
+
+### 2026-10-08 01:57 · ccode · f0f35555
+changed: Miking Lab 7b group 2: the shared sports kit (venue plan builder, practice scenes, dish, boundary/plant, headroom)
+affects other side: nothing server-side — Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
+needs: nothing
+
+
 ### 2026-10-08 01:10 · ccode · 97dd2ecc
 changed: web: Coming Soon panel sits low so the full headline shows above it
 affects other side: nothing (website layout; cherry-pick of 6d89f09b)

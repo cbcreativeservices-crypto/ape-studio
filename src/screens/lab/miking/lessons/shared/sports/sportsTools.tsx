@@ -242,7 +242,7 @@ export function usePlantStep({ onInteractive, done }: { onInteractive: (id: stri
           w={w}
           h={h}
           view="side"
-          box={{ u0: -700, u1: 900, v0: -2000, v1: 120 }}
+          box={{ u0: -420, u1: 760, v0: -1900, v1: -200 }}
           a11y={`A padded support post struck high up; the vibration runs down it. ${W.label}: ${W.hears}`}
           labels={[
             { id: 'imp', text: 'IMPACT', u: 220, v: -1800, align: 'left', tone: 'muted' },

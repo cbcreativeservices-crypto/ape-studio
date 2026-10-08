@@ -33,7 +33,7 @@ function rr(x: number, y: number, w: number, h: number, r: number): SkPath {
 function Device({ id, x, y, w, h }: { id: StageId; x: number; y: number; w: number; h: number }) {
   const cx = x + w / 2;
   const cy = y + h / 2;
-  if (id === 'capsule') return <ShotgunArt x={x + w * 0.12} y={cy} angleDeg={180} scale={(w * 0.8) / 250} mount={false} />;
+  if (id === 'capsule') return <ShotgunArt x={x + w * 0.88} y={cy} angleDeg={180} scale={(w * 0.8) / 250} mount={false} />;
   if (id === 'tx') {
     const s = Math.min(w * 0.42, h * 0.95);
     return (

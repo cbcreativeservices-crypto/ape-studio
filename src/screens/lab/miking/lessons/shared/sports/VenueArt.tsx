@@ -455,7 +455,23 @@ export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?
 export type PlanMicKind = 'shotgun' | 'compact' | 'dish' | 'boundary' | 'xy';
 /** A mic glyph at a plan point, aimed at `aimDeg` (as dirFromDeg), drawn at a
  *  fixed screen size (`sizePx` long): a MARK on the plan, not to scale. */
-export function PlanMic({ at, aimDeg, kind, px, sizePx = 26, tint }: { at: P2; aimDeg: number; kind: PlanMicKind; px: number; sizePx?: number; tint?: string }) {
+export function PlanMic(props: { at: P2; aimDeg: number; kind: PlanMicKind; px: number; sizePx?: number; tint?: string }) {
+  // A pale disc under the glyph: dark equipment stays readable on dark grass or floor.
+  const L = (props.sizePx ?? 30) * props.px;
+  const d = dirFromDeg(props.aimDeg);
+  // The disc sits on the glyph's middle: a shotgun's tube runs ahead of its capsule, a pencil's body behind its front.
+  const k = props.kind === 'shotgun' ? 0.3 : props.kind === 'dish' ? 0.15 : -0.4;
+  const o = uv({ x: props.at.x + (d.x * k * L) / 1000, y: props.at.y + (d.y * k * L) / 1000 });
+  const r = L * 0.62;
+  return (
+    <Group>
+      <Circle cx={o.u} cy={o.v} r={r} color="#e8eef5" opacity={0.36} />
+      <Circle cx={o.u} cy={o.v} r={r} style="stroke" strokeWidth={1.2 * props.px} color="#e8eef5" opacity={0.6} />
+      <PlanMicGlyph {...props} />
+    </Group>
+  );
+}
+function PlanMicGlyph({ at, aimDeg, kind, px, sizePx = 30, tint }: { at: P2; aimDeg: number; kind: PlanMicKind; px: number; sizePx?: number; tint?: string }) {
   const o = uv(at);
   const d = dirFromDeg(aimDeg);
   // Screen angle of the aim (v is −y).
