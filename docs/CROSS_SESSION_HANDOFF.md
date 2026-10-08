@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 16:09 · ccode · e2321edc
+changed: art: redraw the voice cutaway as a mid-sagittal head, neck and chest
+affects other side: nothing (app art only: Lab 5 voice cutaway + profile head neck; Miking stays hidden)
+needs: nothing
+
+
 ### 2026-10-08 14:01 · ccode · e7ea8276
 changed: Mixing Guides: taps on a card are no longer ignored
 affects other side: nothing (client-only)
