@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 03:30 · ccode · 6513a183
+changed: Miking Lab 7b group 1: the speech-in-sport kit (sport mics, held arm, feeds, booth plan, handoff, frame T)
+affects other side: nothing (client-only: the Lab 7b group 1 speech-in-sport kit in lessons/shared/broadcast — sport mics, the held-arm clip style, feeds, booth plan, handoff, frame T; no DB, no schema)
+needs: nothing
+
+
 ### 2026-10-08 02:02 · ccode · d567fe40
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a5842596b925d1318
 affects other side: nothing (client-only: final-lab merged into lab7-g1 — Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)

@@ -214,3 +214,10 @@ import { B07_LESSON } from '../lessons/b07Voiceover/lesson.ts';
 LESSON_CONTENT.B07 = B07_LESSON;
 import { B06_LESSON } from '../lessons/b06Panels/lesson.ts';
 LESSON_CONTENT.B06 = B06_LESSON;
+/* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
+import { B09_LESSON } from '../lessons/b09Commentators/lesson.ts';
+LESSON_CONTENT.B09 = B09_LESSON;
+import { B10_LESSON } from '../lessons/b10Sideline/lesson.ts';
+LESSON_CONTENT.B10 = B10_LESSON;
+import { B11_LESSON } from '../lessons/b11Athletes/lesson.ts';
+LESSON_CONTENT.B11 = B11_LESSON;
