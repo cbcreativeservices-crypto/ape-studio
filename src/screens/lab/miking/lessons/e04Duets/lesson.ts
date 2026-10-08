@@ -26,7 +26,7 @@ export const EX4 = 'In a live-style test, bring the monitors up in small steps o
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the duet and the small group — two singers at one mic, two face to face, a quartet on an arc — and where each voice leaves: the mouth, forward. Shown, never played.',
+    goal: 'Meet the duet and the small group — two singers at one mic, two face to face, a quartet on an arc — and where each voice leaves: the mouth, forward.',
     credit: { scenarios: ['du.meet.1', 'du.meet.2', 'du.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Each voice leaves its own mouth, forward. At one mic the nearer singer is louder and, at a directional mic, bassier; matched distances make a matched duet.',
   },

@@ -132,7 +132,7 @@ function meetContent(lesson: Lesson): PageContent {
   const noun = lesson.noun.subject ?? lesson.noun.one;
   return {
     title: 'Meet it — where the sound comes from',
-    goal: `Meet the ${noun} in brief — what it is and its parts — and see where its sound leaves it: those are the places a mic can hear it best. Shown, never played.`,
+    goal: `Meet the ${noun} in brief — what it is and its parts — and see where its sound leaves it: those are the places a mic can hear it best.`,
     credit: {
       scenarios,
       note: scenarios.length ? `Answer the ${scenarios.length === 1 ? 'check' : `${scenarios.length} checks`} on where the sound leaves.` : 'Credited when you move on from the last step — explore as much as you like.',

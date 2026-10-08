@@ -49,7 +49,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where the sounds come from',
-    goal: 'See where the voice leaves the singer and what comes with it, and where the instrument’s sound leaves — and why a mic on one always hears the other. Shown, never played.',
+    goal: 'See where the voice leaves the singer and what comes with it, and where the instrument’s sound leaves — and why a mic on one always hears the other.',
     credit: { scenarios: ['sw.snd.1', 'sw.snd.2', 'sw.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'Two sources a few tens of centimetres apart: every mic hears both. Which way each mic’s rejection points decides how much of the other source it takes — and the pair, summed, needs a mono check.',
   },

@@ -442,7 +442,7 @@ export function MasteringLabScreen() {
 
   const head = (
     <View style={styles.objective}>
-      <Text style={styles.objectiveLabel}>OBJECTIVE · MODULE {mod.num} OF {MASTERING_MODULES.length}</Text>
+      <Text style={styles.objectiveLabel}>IN THIS MODULE · {mod.num} OF {MASTERING_MODULES.length}</Text>
       <Text style={styles.objectiveText}>{mod.objective}</Text>
     </View>
   );

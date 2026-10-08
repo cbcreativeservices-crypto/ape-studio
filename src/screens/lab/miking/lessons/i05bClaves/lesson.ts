@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a strike becomes sound — the clave bending in its lowest shape, its still points, the hollow under it — and what a squeezed grip does. Shown, never played.',
+    goal: 'See how a strike becomes sound — the clave bending in its lowest shape, its still points, the hollow under it — and what a squeezed grip does.',
     credit: { scenarios: ['clv.snd.1', 'clv.snd.2', 'clv.snd.3'], interactive: 'soundPath', note: 'Step the strike through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A click at the strike, then a short woody ring — if the supported clave is able to bend. Supported near its still points, it rings; squeezed into the palm, it is choked.',
   },

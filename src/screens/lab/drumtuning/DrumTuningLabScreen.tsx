@@ -420,7 +420,7 @@ export function DrumTuningLabScreen() {
   // ONE line at the top of a chapter's first step (the full objective is on
   // CONTENTS and the REVIEW page): a rack well is short, and the prompt must
   // not be pushed below the fold.
-  const head = <Text style={styles.objectiveLabel}>{`CHAPTER ${mod.num} GOAL · ${mod.goal}`}</Text>;
+  const head = <Text style={styles.objectiveLabel}>{`CHAPTER ${mod.num} · ${mod.goal}`}</Text>;
   const standing = scenarios.length
     ? `${answeredCount} of ${scenarios.length} decisions right${needsInteractive ? `, interactive ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''}`
     : needsInteractive

@@ -20,7 +20,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the paired strings, the floating bridge, the top and the air in the body — and where the sound leaves. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the paired strings, the floating bridge, the top and the air in the body — and where the sound leaves.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The top, driven through the floating bridge, does most of the radiating; the air breathes through the opening. Design differences — oval hole or f-holes — are tendencies, not guarantees.',
   },

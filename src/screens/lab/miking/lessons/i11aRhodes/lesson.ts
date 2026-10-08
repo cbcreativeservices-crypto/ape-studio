@@ -29,7 +29,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a struck tine becomes a signal and the signal becomes moving air — and why the spot on the cone matters. Shown, never played.',
+    goal: 'See how a struck tine becomes a signal and the signal becomes moving air — and why the spot on the cone matters.',
     credit: { scenarios: ['rh.snd.1', 'rh.snd.2', 'rh.snd.3'], interactive: 'soundPath', note: 'Step the mechanism to the end and swing the tine by hand, step the cone through to the end, and answer the three checks.' },
     takeaway: 'The tine and its tonebar ring together; the pickup senses the tine’s tip. In the amp the cone pushes in front and pulls behind. Close in, the centre of the cone tends to sound brighter than the edge.',
   },

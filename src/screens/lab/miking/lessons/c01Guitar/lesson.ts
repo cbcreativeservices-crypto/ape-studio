@@ -23,7 +23,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the string, the bridge, the top and the air in the body — and where the sound leaves the guitar. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the string, the bridge, the top and the air in the body — and where the sound leaves the guitar.',
     credit: { scenarios: ['ag.snd.1', 'ag.snd.2', 'ag.snd.3'], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A string on its own moves little air: the top, driven through the bridge, does most of the work, and the air in the body breathes through the sound hole. Where you pluck changes the mix of shapes; where you put a mic changes which part you hear.',
   },

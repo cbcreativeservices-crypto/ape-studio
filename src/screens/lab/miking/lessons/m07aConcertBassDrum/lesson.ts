@@ -22,7 +22,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mallet stroke becomes sound — the playing head, the air, the far head — and where the sound leaves the drum. Shown, never played.',
+    goal: 'See how a mallet stroke becomes sound — the playing head, the air, the far head — and where the sound leaves the drum.',
     credit: { scenarios: ['cbd.snd.1', 'cbd.snd.2', 'cbd.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The transient starts where the mallet meets the playing head. The long low body — both heads, the air and the shell — leaves from both heads, sideways along the drum’s axis. Tendencies, and drums vary.',
   },

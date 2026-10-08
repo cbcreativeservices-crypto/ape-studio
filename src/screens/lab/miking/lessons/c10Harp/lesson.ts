@@ -21,7 +21,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the string, the soundboard, the air inside the box — and where the sound leaves the harp. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the string, the soundboard, the air inside the box — and where the sound leaves the harp.',
     credit: { scenarios: ['hp.snd.1', 'hp.snd.2', 'hp.snd.3'], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A plucked string pulls on the soundboard where it is anchored, and the board moves the air; air also leaves through the holes in the box’s back. A close mic hears one part of a large source; distance blends the whole.',
   },

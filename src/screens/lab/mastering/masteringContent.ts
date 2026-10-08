@@ -22,42 +22,42 @@ export type MasteringModule = { id: MasteringModuleId; num: number; title: strin
 export const MASTERING_MODULES: readonly MasteringModule[] = [
   {
     id: 'what', num: 1, title: 'What mastering is', short: 'WHAT',
-    objective: 'Place mastering in the project chain, name what it can and cannot change, and hear why a louder version is not automatically a better one.',
+    objective: 'Find where mastering sits in a project, what it can and can’t change, and why a louder version isn’t automatically a better one.',
     takeaway: 'Mastering is the final listening, decision-making and delivery stage. It can shape the whole programme; it cannot rebalance the parts of a stereo mix. When one element is wrong, the honest move is a mix revision.',
   },
   {
     id: 'roles', num: 2, title: 'Two roles', short: 'ROLES',
-    objective: 'Separate the two jobs by what each one controls, and know which of them can address a given request.',
+    objective: 'Tell mixing and mastering apart by what each one controls, so you know which one can fix a given problem.',
     takeaway: 'The mixer shapes relationships among tracks; the mastering engineer evaluates the finished programme and prepares it for release. Same ears, different perspective, different control.',
   },
   {
     id: 'room', num: 3, title: 'Room and monitoring', short: 'ROOM',
-    objective: 'Describe the listening environment before the gear list: acoustic control, main and secondary monitoring, a sensible repeatable level, and the complete playback path.',
+    objective: 'Start with the room, not the gear list: acoustic control, main and second monitors, a listening level you can repeat, and the whole playback path.',
     takeaway: 'Judgement is only as good as the room and the level it was made at. Build the monitoring path in order, keep the level sensible and consistent, and treat headphones and small speakers as checks, not the reference.',
   },
   {
     id: 'tools', num: 4, title: 'Mastering equipment and tools', short: 'TOOLS',
-    objective: 'Group mastering tools by the decisions they support, and pick a tool or a next check from a listening goal rather than a preset.',
+    objective: 'Sort mastering tools by the decisions they help you make, and choose a tool or your next check from what you hear — not from a preset.',
     takeaway: 'There is no required chain. EQ for tone, dynamics for density and control, stereo tools for width with a mono check, meters for verification — chosen by the goal, confirmed by listening.',
   },
   {
     id: 'workflow', num: 5, title: 'The mastering workflow', short: 'FLOW',
-    objective: 'Walk a typical workflow from mix delivery to quality check, and compare a processed version against the unprocessed mix at matched level.',
+    objective: 'Walk through a typical session from receiving the mix to the final check, comparing your version with the original mix at the same loudness.',
     takeaway: 'Receive and inspect, listen before touching anything, decide whether the mix is ready, change only what serves the goal, sequence, deliver to the current spec, and check the exports you actually sent.',
   },
   {
     id: 'loudness', num: 6, title: 'Loudness and translation', short: 'LOUD',
-    objective: 'Read peak, true peak, integrated loudness and dynamic range in plain language, and judge a louder master against a quieter one at matched level.',
+    objective: 'Read peak, true peak, loudness and dynamic range in plain words, and compare a louder master with a quieter one fairly, at the same loudness.',
     takeaway: 'The right loudness depends on the content and the destination. Normalization at playback does not make careful mastering pointless, because the processing still changes dynamics and sound. Translation checks are checks.',
   },
   {
     id: 'release', num: 7, title: 'Mastering for release', short: 'RELEASE',
-    objective: 'Match the deliverable to the destination — digital distribution, CD, vinyl, broadcast or picture, alternate versions — by confirming the current requirements rather than assuming one setting.',
+    objective: 'Deliver the right file for each destination — streaming, CD, vinyl, broadcast or picture, plus alternate versions — by checking today’s requirements instead of assuming one setting.',
     takeaway: 'Every destination has its own current specification and every client has a request. Confirm both, deliver exactly that, and document what you delivered.',
   },
   {
     id: 'project', num: 8, title: 'Putting it all together', short: 'PROJECT',
-    objective: 'Master a short fictional release end to end: read the brief, sort the problems, choose the checks and tools, sequence the tracks, plan the delivery and complete a final QC.',
+    objective: 'Master a short fictional release from start to finish: read the brief, sort the problems, choose your checks and tools, set the track order, plan the delivery and do a final check.',
     takeaway: 'A mastering job is a sequence of decisions, each one checked by listening and by a meter, and finished by a delivery somebody can actually use.',
   },
 ];

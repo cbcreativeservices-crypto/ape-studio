@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a scrape becomes the güiro’s rasp — each ridge a click, the hollow body under them — and what the stroke’s length does. Shown, never played.',
+    goal: 'See how a scrape becomes the güiro’s rasp — each ridge a click, the hollow body under them — and what the stroke’s length does.',
     credit: { scenarios: ['gui.snd.1', 'gui.snd.2', 'gui.snd.3'], interactive: 'soundPath', note: 'Step the scrape through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Many ridge clicks in a row are the rasp; the body resonates under them. Length, pressure and speed shape it — before any mic.',
   },

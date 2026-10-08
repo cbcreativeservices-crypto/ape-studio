@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound — the bar bends, rings in many shapes at once, and sends sound out all round — and why it must hang freely. Shown, never played.',
+    goal: 'See how a stroke becomes sound — the bar bends, rings in many shapes at once, and sends sound out all round — and why it must hang freely.',
     credit: { scenarios: ['tri.snd.1', 'tri.snd.2', 'tri.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The triangle is a bar, bent: struck, it rings in many shapes at once whose pitches are not whole-number steps apart — a shimmer, not one note. It rings only while it hangs freely; a hand on the metal stops it.',
   },

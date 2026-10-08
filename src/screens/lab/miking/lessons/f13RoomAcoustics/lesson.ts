@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How a room answers',
-    goal: 'See how a room answers a sound at three seats — the direct sound, the first reflections off each surface, then the decay. Shown, never played.',
+    goal: 'See how a room answers a sound at three seats — the direct sound, the first reflections off each surface, then the decay.',
     credit: { scenarios: ['ra.snd.1', 'ra.snd.2', 'ra.snd.3'], note: 'Answer the three checks on how the room answers.' },
     takeaway: 'Direct, early, late: every seat hears its own mix of them. The decay is the late part sinking into the room’s noise floor.',
   },

@@ -20,7 +20,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the string, the bridge, the top and the air in the body — and where the sound leaves the bass. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the string, the bridge, the top and the air in the body — and where the sound leaves the bass.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The top, driven through the bridge, does most of the work, and the air in the body breathes through the hole. The lowest notes are the hardest for a small body to radiate — listen for them.',
   },

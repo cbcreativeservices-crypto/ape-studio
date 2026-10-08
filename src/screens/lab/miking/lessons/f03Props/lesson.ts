@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where a prop’s sounds come from',
-    goal: 'See how one action becomes several sounds — a small contact, the body answering, a final contact — and where each starts on the prop. Shown, never played.',
+    goal: 'See how one action becomes several sounds — a small contact, the body answering, a final contact — and where each starts on the prop.',
     credit: { scenarios: ['f03.snd.1', 'f03.snd.2', 'f03.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'A latch clicks at the edge; a panel resonates over its whole face; keys jingle below the ring. A mic aimed at one place hears that place most — so decide which part carries the scene.',
   },

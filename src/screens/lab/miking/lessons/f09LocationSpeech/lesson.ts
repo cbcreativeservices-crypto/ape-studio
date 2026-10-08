@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where the voice and the action come from',
-    goal: 'See where speech leaves the talker, how the camera’s frame decides how close a boom can come, and what a head turn does to each mic. Shown, never played.',
+    goal: 'See where speech leaves the talker, how the camera’s frame decides how close a boom can come, and what a head turn does to each mic.',
     credit: { scenarios: ['loc.snd.1', 'loc.snd.2', 'loc.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'Every distance is read from the lips. A wider shot pushes the boom away; a body mic keeps its distance but stays on the chest; a turning head takes the voice off a mic that does not follow. Tendencies, and scenes vary.',
   },

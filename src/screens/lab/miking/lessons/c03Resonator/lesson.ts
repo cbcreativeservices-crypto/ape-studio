@@ -20,7 +20,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the string, the bridge, the cone under the coverplate — and where the sound leaves. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the string, the bridge, the cone under the coverplate — and where the sound leaves.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'It is still a string instrument: the strings start it. But a metal cone, not a wooden top, does most of the radiating — through the coverplate and the ports — and that is the resonator’s voice.',
   },

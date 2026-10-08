@@ -29,7 +29,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a strike becomes sound — the beater, the heads, the air inside — and where the sound leaves the drum. Shown, never played.',
+    goal: 'See how a strike becomes sound — the beater, the heads, the air inside — and where the sound leaves the drum.',
     credit: { scenarios: ['k.snd.1', 'k.snd.2', 'k.snd.3'], interactive: 'soundPath', note: 'Step the strike through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Attack starts where the beater meets the batter head. The body — both heads, the air inside and the shell ringing together — leaves mostly through the front head and the port. A mic hears more of whichever it is closer to and faces: a tendency, and drums vary.',
   },

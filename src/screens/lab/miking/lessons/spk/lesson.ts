@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How a speaker sounds',
-    goal: 'See how a signal becomes moving air, how a speaker spreads its sound, and how a rotary cabinet makes it swirl. Shown, never played.',
+    goal: 'See how a signal becomes moving air, how a speaker spreads its sound, and how a rotary cabinet makes it swirl.',
     credit: { scenarios: ['spk.snd.1', 'spk.snd.2', 'spk.snd.3'], interactive: 'soundPath', note: 'Step the cone through to the end, take the rotary cabinet to fast once (or step it there), and answer the three checks.' },
     takeaway: 'The cone pushes the air in front and pulls it behind — an open back sounds out too, opposite in polarity. The higher the pitch, the narrower the speaker beams. In a rotary cabinet the horn carries the highs and the drum the lows; they change speed at different rates.',
   },

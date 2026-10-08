@@ -30,7 +30,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how buzzing lips become a note — the air column, the standing wave, the bell — and where the sound goes: spread all round low down, beamed ahead up high. Shown, never played.',
+    goal: 'See how buzzing lips become a note — the air column, the standing wave, the bell — and where the sound goes: spread all round low down, beamed ahead up high.',
     credit: { scenarios: ['tp.snd.1', 'tp.snd.2', 'tp.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The lips buzz, the tube’s standing wave sets the note, and the bell lets the sound out: the lows spread round, the highs beam along the bell’s axis. So the angle to the bell is a tone control — tendencies, and horns vary.',
   },

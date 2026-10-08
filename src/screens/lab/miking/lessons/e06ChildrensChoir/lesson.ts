@@ -33,7 +33,7 @@ export const SAFEGUARDING = 'Children are supervised at all times. A responsible
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a children’s choir from above — its two rows, its sections, a featured singer — and where its sound leaves: every young mouth, forward, lower and often quieter than an adult’s. Shown, never played.',
+    goal: 'Meet a children’s choir from above — its two rows, its sections, a featured singer — and where its sound leaves: every young mouth, forward, lower and often quieter than an adult’s.',
     credit: { scenarios: ['cc.meet.1', 'cc.meet.2', 'cc.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Children’s voices leave their mouths lower than adults’ and are often quieter, and they change level quickly. A mic set for adults’ heights hears the tops of their heads — aim at their mouths.',
   },

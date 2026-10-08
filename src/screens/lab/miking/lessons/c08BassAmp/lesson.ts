@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a bass string becomes a signal and the signal becomes moving air — the lowest notes, the pickups, the cone and the horn. Shown, never played.',
+    goal: 'See how a bass string becomes a signal and the signal becomes moving air — the lowest notes, the pickups, the cone and the horn.',
     credit: { scenarios: ['ba.snd.1', 'ba.snd.2', 'ba.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and try both pickups, step the cone through to the end, and answer the three checks.' },
     takeaway: 'A bass’s lowest note is about 41 Hz on four strings and about 31 Hz on a five-string’s low B. Each pickup senses its own spot. The woofers carry the body; a horn, if there is one, adds the top end.',
   },

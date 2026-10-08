@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mallet stroke becomes a bright, short note — the bar’s shapes, the tube under it — and where the sound leaves. Shown, never played.',
+    goal: 'See how a mallet stroke becomes a bright, short note — the bar’s shapes, the tube under it — and where the sound leaves.',
     credit: { scenarios: ['xy.snd.1', 'xy.snd.2', 'xy.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A hard bar, struck, rings briefly about its still points; the tube under it — a quarter wavelength long — rings with it. The mallet decides much of the brightness and the click.',
   },

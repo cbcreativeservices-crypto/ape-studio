@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound in a splash — fast, high and short — and who on the kit hears it. Shown, never played.',
+    goal: 'See how a stroke becomes sound in a splash — fast, high and short — and who on the kit hears it.',
     credit: { scenarios: ['sp.snd.1', 'sp.snd.2', 'sp.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A splash speaks at once and fades soon; small and thin, it rings higher than a crash and swings a lot. On top of a crash, the two sound and move together.',
   },

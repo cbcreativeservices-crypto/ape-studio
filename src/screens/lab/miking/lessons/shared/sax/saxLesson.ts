@@ -90,7 +90,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     },
     sound: {
       title: 'How it makes its sound',
-      goal: `See how breath becomes sound — the reed, the air column, the first open tone hole — and where the sound leaves the ${s}, note by note. Shown, never played.`,
+      goal: `See how breath becomes sound — the reed, the air column, the first open tone hole — and where the sound leaves the ${s}, note by note.`,
       credit: { scenarios: [id('snd.1'), id('snd.2'), id('snd.3')], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
       takeaway: 'Most of a note leaves through the first open tone hole and the open holes just past it; the bell carries the lowest notes and the high harmonics. Where the sound leaves moves with every note — a close mic hears that move; a little distance blends it.',
     },

@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a breath becomes a clarinet note — the reed, the air column, the first open hole — and where the sound leaves the instrument. Shown, never played.',
+    goal: 'See how a breath becomes a clarinet note — the reed, the air column, the first open hole — and where the sound leaves the instrument.',
     credit: { scenarios: ['cl.snd.1', 'cl.snd.2', 'cl.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The reed lets air in in puffs; the air column rings; most of each note leaves from the first open hole, and only the lowest notes from the bell. Up a twelfth for the upper register. A mic sees one part of a moving picture — tendencies, and clarinets vary.',
   },

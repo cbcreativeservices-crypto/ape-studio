@@ -15,7 +15,7 @@ import { E11_MODEL, E11_PLACE, E11_SETUPS, E11_WEDGES, E11_ZONES, Q_C } from './
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the string quartet in brief — two violins, viola and cello, and the larger sections they grow into — and see where each instrument’s sound leaves it. Shown, never played.',
+    goal: 'Meet the string quartet in brief — two violins, viola and cello, and the larger sections they grow into — and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['sq.meet.1', 'sq.meet.2', 'sq.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Bowed strings are large, complex sources: the body, the strings and the bow together, with the room. A mic close in hears a part; a little farther away it hears the instrument whole and the quartet blended.',
   },

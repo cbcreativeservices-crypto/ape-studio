@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How the kit reaches them',
-    goal: 'See how a cymbal makes its sound and sends it out, and how every part of the kit reaches a point above it at a different moment. Shown, never played.',
+    goal: 'See how a cymbal makes its sound and sends it out, and how every part of the kit reaches a point above it at a different moment.',
     credit: { scenarios: ['oh.snd.1', 'oh.snd.2', 'oh.snd.3'], interactive: 'soundPath', note: 'Step the cymbal’s stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A cymbal’s whole plate rings and sends sound from both faces, the top one toward the overheads. Every source reaches a mic at a time set by its distance — about 34 cm per millisecond — so two mics hear each source at two different times.',
   },

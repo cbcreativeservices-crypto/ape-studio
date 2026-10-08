@@ -21,7 +21,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How the kit reaches every mic',
-    goal: 'See how a cymbal sends its sound out, and how every source on the kit reaches every close mic — sooner and louder for its own drum, later and quieter for the rest. Shown, never played.',
+    goal: 'See how a cymbal sends its sound out, and how every source on the kit reaches every close mic — sooner and louder for its own drum, later and quieter for the rest.',
     credit: { scenarios: ['kt.snd.1', 'kt.snd.2', 'kt.snd.3'], interactive: 'soundPath', note: 'Step the cymbal’s stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Every open mic hears the whole kit: its own source first and loudest, the rest later and quieter. That bleed is part of every multi-mic setup — to use, or to reduce, never to erase.',
   },

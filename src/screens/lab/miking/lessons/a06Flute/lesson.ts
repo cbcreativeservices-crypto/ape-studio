@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how an air jet becomes a flute note — the jet, the edge, the air column, the first open hole — and where the sound and the air leave. Shown, never played.',
+    goal: 'See how an air jet becomes a flute note — the jet, the edge, the air column, the first open hole — and where the sound and the air leave.',
     credit: { scenarios: ['fl.snd.1', 'fl.snd.2', 'fl.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Sound leaves from the embouchure hole for every note and from the first open hole, which moves as the fingering changes; the air jet blows straight out past the lips. A mic in the jet hears wind — tendencies, and flutes vary.',
   },

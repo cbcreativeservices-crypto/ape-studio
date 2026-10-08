@@ -203,7 +203,7 @@ export function AmpModuleScreen() {
 
   const head = (
     <View style={styles.objective}>
-      <Text style={styles.objectiveLabel}>OBJECTIVE</Text>
+      <Text style={styles.objectiveLabel}>IN THIS MODULE</Text>
       <Text style={styles.objectiveText}>{mod.objective}</Text>
     </View>
   );

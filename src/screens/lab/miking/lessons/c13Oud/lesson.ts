@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a risha stroke becomes sound — the string, the bridge, the face and the air in the bowl — and where the sound leaves the oud. Shown, never played.',
+    goal: 'See how a risha stroke becomes sound — the string, the bridge, the face and the air in the bowl — and where the sound leaves the oud.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The face, driven through the bridge, does most of the work; the bowl’s air breathes through the rosettes. The risha’s click starts each note; the bloom follows.',
   },

@@ -21,7 +21,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the string, the bridge, the head and its shapes — and where the sound leaves the banjo. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the string, the bridge, the head and its shapes — and where the sound leaves the banjo.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Strings start it; the bridge drives a drumhead off-centre, so many of its shapes ring — bright and quick. A mic near the head hears more attack and projection; nearer the neck, more strings and fingers.',
   },

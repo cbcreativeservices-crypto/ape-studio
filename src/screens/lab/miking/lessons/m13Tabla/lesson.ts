@@ -22,7 +22,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound on each drum, what the black patch does, and why the bayan’s pitch can move. Shown, never played.',
+    goal: 'See how a stroke becomes sound on each drum, what the black patch does, and why the bayan’s pitch can move.',
     credit: { scenarios: ['ta.snd.1', 'ta.snd.2', 'ta.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The black patch’s weight lets the dayan ring with a clear pitch. The bayan’s patch sits off-centre, and pressing the head with the heel of the hand bends its pitch — so the left hand moves across the head all the time.',
   },
