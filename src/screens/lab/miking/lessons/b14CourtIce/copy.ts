@@ -51,7 +51,7 @@ export const B14_COPY: Partial<LessonCopy> = {
     learn: ['Two open mics hear one point at different times; as the source moves the difference changes.', 'Choose a dominant feed per sector, or hand off; polarity reversal is a diagnostic, not time alignment.'],
     warn: 'A simplified picture: one point source, straight paths, no room.',
   },
-  practice: { gain: 'cl.prac.gain', second: 'cl.prac.3', mixed: ['cl.mix.1', 'cl.mix.2', 'cl.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the floor, two mics in time, and the structure.' },
+  practice: { gain: 'cl.prac.gain', second: 'cl.prac.3', mixed: ['cl.mix.1', 'cl.mix.2', 'cl.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the floor, two mics in time, and the glass.' },
   terms: {
     instrument: 'the court',
     aimRef: 'the source point',

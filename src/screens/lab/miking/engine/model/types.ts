@@ -634,8 +634,10 @@ export type Lesson = {
   /** The instrument's short noun, for the journey's wording ("kick" / "kicks").
    *  `subject`: what MEET IT and STARTING SETUPS show, when the lesson is
    *  named for a mic role rather than an instrument ("kit overhead" → the
-   *  drum kit). Default: `one`. */
-  noun: { one: string; many: string; subject?: string };
+   *  drum kit). Default: `one`. `person`: the subject is a person (a
+   *  commentator, a guest, a wearer) — the journey's words then say
+   *  "they / their voice", never "it / its sound" (Lab 7b review 2026-10-08). */
+  noun: { one: string; many: string; subject?: string; person?: boolean };
   model: InstrumentModel;
   micTypeIds: string[];
   zones: DocumentedZone[];

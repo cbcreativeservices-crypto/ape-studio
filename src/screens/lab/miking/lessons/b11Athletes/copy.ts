@@ -21,7 +21,7 @@ const BASE = standingVoiceCopy({
   liveZone: 'b11.official',
   pairA: 'b11.lav',
   pairB: { p: { x: 0, y: 0, z: 0 }, az: 0, el: 0 },
-  practice: { gain: 'b11.prac.gain', second: 'b11.prac.3', mixed: ['b11.mix.1', 'b11.mix.2', 'b11.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the stop conditions, the private circuit, and polarity versus delay.' },
+  practice: { gain: 'b11.prac.gain', second: 'b11.prac.3', mixed: ['b11.mix.1', 'b11.mix.2', 'b11.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the stop conditions, the radio frequencies, and polarity versus delay.' },
   before: [
     { title: 'BEFORE ANY MIC: APPROVAL', text: 'Approval is the first mic position. Get the current rules for this sport and event, the production’s rights, the team’s and the person’s agreement, and a named equipment reviewer: who may be miked, when, where the pack sits, what audio may be used or sent, and who may remove it. A sideline credential approves none of that.' },
     SPORTS_SAFETY.protective,

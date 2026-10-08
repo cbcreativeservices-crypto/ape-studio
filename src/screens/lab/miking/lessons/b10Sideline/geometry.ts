@@ -90,7 +90,7 @@ const voiceR = talkerVoice(REPORTER, IDS_R);
 const parts: Part[] = [
   { id: 'v.mouth', ...W.mouth, role: 'Where the guest’s voice leaves — almost all of it. Every distance here is measured from the lips to the front of the mic.', prov: FIG },
   { id: 'v.nose', ...W.nose, prov: FIG },
-  { id: 'v.head', ...W.head, label: 'the guest’s head', role: 'The guest turns to the reporter, to the camera, and away when they are out of breath. A handheld must follow the mouth; nothing touches the face.', solid: S.head, prov: FIG },
+  { id: 'v.head', ...W.head, label: 'the guest’s head', role: 'The guest turns to the reporter, to the camera, and away when they are out of breath. A handheld follows the speaking mouth; nothing touches the face.', solid: S.head, prov: FIG },
   { id: 'v.chest', label: 'the guest’s chest', short: 'chest', role: 'A body mic clips here, at the breastbone — only with the guest’s and the event’s approval, clear of straps, badges and protective gear.', solid: S.torso, prov: FIG },
   { id: 'player.neck', label: 'neck', short: 'neck', role: 'The neck, chin to collar.', solid: S.neck, listIn: [], prov: FIG },
   { id: 'player.legs', label: 'the guest’s legs', short: 'legs', role: 'Where the guest stands: cables and packs stay clear of the feet.', solid: S.legs, listIn: [], prov: FIG },
