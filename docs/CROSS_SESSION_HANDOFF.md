@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 09:23 · ccode · 47560c2c
+changed: Miking owner decisions X1–X6 (2026-10-08): one distance rule, suggest, dock short forms, setups prompt, shared distractors, label pass
+affects other side: nothing (client-only: Miking engine rounding, wording, dock short forms and label layout; the shared rack gained two optional a11y fields; no DB or backend change)
+needs: nothing
+
+
 ### 2026-10-08 07:48 · ccode · 3f76f3d2
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a9302d490bf88e504
 affects other side: nothing (client-only merge of final-lab into head-fix; the sports stand keeps Lab 7's empty seat backs and draws taken seats instead of circle heads)
