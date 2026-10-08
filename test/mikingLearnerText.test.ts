@@ -240,6 +240,27 @@ export const BRAND_NAMES: readonly string[] = [
   'TopVision',
   'VP83F',
   'MX391',
+  // Lab 7 part 2, group 3 research (docs/labs/miking/track_gym_combat, motorsport_equestrian_aquatic, crowd_complete):
+  // the federations whose rules were read, the standards bodies and the products named. ('Sennheiser', 'Shure', 'DPA',
+  // 'Aquarian', 'Rycote', 'SCHOEPS', 'AMBEO', 'MKH ?416', 'OSHA', 'NWS' and 'FIBA' are in the lists above.)
+  'World Athletics',
+  'World Gymnastics',
+  'FIG',
+  'World Boxing',
+  'UWW',
+  'IJF',
+  'FIA',
+  'FEI',
+  'World Aquatics',
+  'H2dX',
+  'ITU',
+  'EBU',
+  'MK ?4',
+  'CCM ?4',
+  'CMC ?1',
+  'ORTF-2plus2',
+  'Wittek',
+  '406[02]',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */
