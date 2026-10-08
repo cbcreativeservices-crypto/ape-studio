@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 17:04 · ccode · af0b2448
+changed: Merge remote-tracking branch 'origin/prep-lab6b' into HEAD
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-07 17:03 · ccode · 3d745473
 changed: Merge remote-tracking branch 'origin/prep-lab6a' into HEAD
 affects other side: nothing (docs only)
