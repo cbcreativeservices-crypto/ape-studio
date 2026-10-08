@@ -12,7 +12,7 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import { READING_MAX_W, readingColumn } from '../../theme/readingColumn';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
-import { readBuildLabel } from '../../features/updates/readBuildLabel';
+type ReadBuildLabelModule = typeof import('../../features/updates/readBuildLabel');
 
 /** Free-tier lines a MEMBER never sees (owner 2026-09-29: no membership
  *  marketing, and no pointing out what is free, to people who already pay). */
@@ -90,7 +90,11 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
   // until a read has actually produced the tier.
   const upsell = useUpsellAllowed();
   const insets = useSafeAreaInsets();
-  const buildLabel = readBuildLabel();
+  // Lazy require: keeps expo-updates / the label reads off the app-start graph
+  // (perfStartTrim ratchet); only read while the sheet is open.
+  const buildLabel = visible
+    ? (require('../../features/updates/readBuildLabel') as ReadBuildLabelModule).readBuildLabel()
+    : '';
   return (
     <Modal accessibilityViewIsModal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
