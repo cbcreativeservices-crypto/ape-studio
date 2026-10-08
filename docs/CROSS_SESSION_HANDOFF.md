@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 06:54 · ccode · d6c3a6ae
+changed: Merge remote-tracking branch 'origin/review-lab7b' into worktree-agent-ab27380b17ddabce0
+affects other side: nothing (client-only merge: final-lab and review-lab7b (B09–B17 review, the shared `person` noun flag) into review-lab7a; no server, no SQL)
+needs: nothing
+
+
 ### 2026-10-08 06:54 · ccode · 642c2c01
 changed: fix(lab7a review): B01-B08 item fairness, voice words, MEET IT in person words
 affects other side: nothing (client-only: Lab 7 part 1 review wording and item fixes in B01–B08; Miking stays hidden; no server, no SQL)

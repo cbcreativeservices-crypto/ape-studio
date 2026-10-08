@@ -55,7 +55,7 @@ export function personMeet(pages: LessonPages, who: string): PageContent {
   const scenarios = [...(pages.instrument?.credit.scenarios ?? []), ...(pages.sound?.credit.scenarios ?? [])];
   return {
     title: 'Meet it — where the sound comes from',
-    goal: `Meet ${who} in brief — who speaks and what is around them — and see where the voice leaves: those are the places a mic can hear it best.`,
+    goal: `Meet ${who} in brief — who speaks and what is around them — and see where the voice leaves: those are the places a mic can hear them best.`,
     credit: {
       scenarios,
       note: scenarios.length ? `Answer the ${scenarios.length === 1 ? 'check' : `${scenarios.length} checks`} on where the voice leaves.` : 'Credited when you move on from the last step — explore as much as you like.',

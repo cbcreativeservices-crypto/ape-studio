@@ -153,12 +153,12 @@ const scenarios: MikingScenario[] = [
     id: 'b7.set.4',
     page: 'setting',
     prompt: 'How do you check a reader’s mic before a session?',
-    options: ['With their real voice at the real level', 'By blowing into it to see that it works', 'By raising the level until it starts to ring'],
+    options: ['With their real voice at the real level', 'By blowing into it to see that it works', 'Raise the level until it starts to ring'],
     correct: 'With their real voice at the real level',
     explain: 'Use the real voice: soft, normal and emphatic lines. Never blow into a capsule and never provoke feedback to test a mic.',
     why: {
       'By blowing into it to see that it works': 'Blowing into a capsule can harm it and tells you nothing about the voice.',
-      'By raising the level until it starts to ring': 'Provoking feedback risks ears and loudspeakers. Never test that way.',
+      'Raise the level until it starts to ring': 'Provoking feedback risks ears and loudspeakers. Never test that way.',
     },
   },
   {
@@ -249,12 +249,12 @@ const scenarios: MikingScenario[] = [
     id: 'b7.place.3',
     page: 'placement',
     prompt: 'A 90° turn of the mic off the breath line stopped the pops. What next, with another mic?',
-    options: ['Test how that mic sounds off its axis', 'Turn it 90° too: the angle suits all mics', 'Turn it 90°: a turned mic is smoother'],
+    options: ['Test how that mic sounds off its axis', 'Turn it 90° too: the angle suits all mics', 'Nothing new: off axis is smoother on most mics'],
     correct: 'Test how that mic sounds off its axis',
     explain: 'Some mics stay smooth far off axis; others dull or colour the consonants. Test the offset on the real mic and voice.',
     why: {
       'Turn it 90° too: the angle suits all mics': 'Off-axis sound differs from mic to mic; a big angle can colour the voice.',
-      'Turn it 90°: a turned mic is smoother': 'Off the axis, many mics lose clarity. Listen before deciding.',
+      'Nothing new: off axis is smoother on most mics': 'Off the axis, many mics lose clarity. Listen before deciding.',
     },
   },
   {
@@ -545,12 +545,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'How do you test a reader’s mic and the system before a session?',
-    options: ['With the real voice at a working level', 'By blowing into the capsule to hear it work', 'By raising the level until it rings, then back'],
+    options: ['With the real voice at a working level', 'By blowing into the capsule to hear it work', 'Raising the level until it rings, then back'],
     correct: 'With the real voice at a working level',
     explain: 'Never blow into a capsule and never provoke feedback: use the real voice at a working level.',
     why: {
       'By blowing into the capsule to hear it work': 'It can harm the capsule and tells you nothing about the voice.',
-      'By raising the level until it rings, then back': 'Provoking feedback risks ears and loudspeakers.',
+      'Raising the level until it rings, then back': 'Provoking feedback risks ears and loudspeakers.',
     },
   },
   {
@@ -599,7 +599,7 @@ export const B07_LESSON: Lesson = {
   labId: 'broadcast',
   title: 'Voiceover, Narration and Broadcast Guests',
   subtitle: 'Close and dry or moderate with the room — the script, the guest’s real mic, and a return without their own voice',
-  noun: { one: 'voice-over', many: 'voice-overs', subject: 'reader' },
+  noun: { one: 'voice-over', many: 'voice-overs', subject: 'reader', person: true },
   model: B07_MODEL,
   micTypeIds: ['bcDynStand', 'vocLdc', 'vocLdcOpen', 'bcDynArm', 'bcDynSuper', 'vocHeadset'],
   zones: B07_ZONES,

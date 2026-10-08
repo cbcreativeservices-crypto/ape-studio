@@ -132,12 +132,12 @@ const scenarios: MikingScenario[] = [
     id: 'b1.set.2',
     page: 'setting',
     prompt: 'A new mic is a long cylinder. How do you know where the host should speak into it?',
-    options: ['Check its address side: its end, or a marked front', 'Speak into its long side, as you would on most mics', 'Speak into the end the cable comes out of'],
+    options: ['Check its address side: its end, or a marked front', 'Speak into its long side, as you would on most mics', 'The end the cable comes out of'],
     correct: 'Check its address side: its end, or a marked front',
     explain: 'An end-address mic is spoken into along its body; a side-address mic into its marked front. The shape alone does not tell you — check the mic.',
     why: {
       'Speak into its long side, as you would on most mics': 'Many broadcast dynamics are end-address: spoken into the end. Check, do not guess.',
-      'Speak into the end the cable comes out of': 'The cable leaves the back. The front is the other end — or a marked side.',
+      'The end the cable comes out of': 'The cable leaves the back. The front is the other end — or a marked side.',
     },
   },
   {
@@ -560,12 +560,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'setting',
     prompt: 'How do you find where to speak into a broadcast mic?',
-    options: ['Check its address side: its end or a marked front', 'Speak into the long side, as you would with most mics', 'Speak into the end that the cable comes out of'],
+    options: ['Check its address side: its end or a marked front', 'Speak into the long side, as you would with most mics', 'The end that the cable comes out of'],
     correct: 'Check its address side: its end or a marked front',
     explain: 'End-address mics are spoken into their end; side-address mics into a marked front. The shape does not tell you.',
     why: {
       'Speak into the long side, as you would with most mics': 'Many broadcast mics are end-address. Check the mic.',
-      'Speak into the end that the cable comes out of': 'The cable leaves the back of the mic.',
+      'The end that the cable comes out of': 'The cable leaves the back of the mic.',
     },
   },
   {
@@ -602,7 +602,7 @@ export const B01_LESSON: Lesson = {
   labId: 'broadcast',
   title: 'Radio, Podcast and Studio Hosts',
   subtitle: 'A broadcast dynamic about 10–15 cm from the lips on a desk arm — a mic and a channel for each host',
-  noun: { one: 'host', many: 'hosts', subject: 'host' },
+  noun: { one: 'host', many: 'hosts', subject: 'host', person: true },
   model: B01_MODEL,
   micTypeIds: ['bcDynArm', 'bcDynSuper', 'bcLdcArm'],
   zones: B01_ZONES,

@@ -23,6 +23,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
 import { pageOf } from '../src/screens/lab/miking/engine/restructure.ts';
+import { journeyIntro } from '../src/screens/lab/miking/engine/journey.ts';
+import { copyOf } from '../src/screens/lab/miking/engine/model/copy.ts';
 import type { DiagnosticItem, Lesson, MikingScenario, Symptom } from '../src/screens/lab/miking/engine/model/types.ts';
 import { learnerStrings, itemRules } from './_mikingItemRules.ts';
 
@@ -82,10 +84,37 @@ describe('Lab 7 part 1 review (2026-10-08)', () => {
       const meet = pageOf(L, 'meet');
       assert.doesNotMatch(meet.goal, /what it is and its parts|leaves it:/, id);
       assert.match(meet.goal, /^Meet the .+ in brief — who speaks/, id);
+      assert.doesNotMatch(meet.goal, /hear it best/, id);
       const want = [...(L.pages.instrument?.credit.scenarios ?? []), ...(L.pages.sound?.credit.scenarios ?? [])];
       assert.deepEqual([...meet.credit.scenarios], want, id);
       assert.equal(meet.takeaway, L.pages.sound?.takeaway, id);
     }
+  });
+
+  it('no two distractors share an opening word the key lacks (bar the shared polarity and max-SPL items)', () => {
+    const word = (s: string) => s.toLowerCase().match(/[a-z’']+/)?.[0] ?? '';
+    const SHARED = /^(b\d\.two\.2|q\.6)$/; // bowedItems polarityDelay / hearingDiag — every lab (review O-F)
+    const bad: string[] = [];
+    for (const id of ALL)
+      for (const q of items(lesson(id))) {
+        if (SHARED.test(q.id)) continue;
+        const o = q.options.filter((x) => x !== q.correct);
+        if (o.length === 2 && word(o[0]) === word(o[1]) && !/^(the|a|an)$/.test(word(o[0])) && word(q.correct) !== word(o[0])) bad.push(`${id} ${q.id}: ${o.join(' | ')}`);
+      }
+    assert.deepEqual(bad, []);
+  });
+
+  it('a person is never "it": B01–B07, E01, E03, E07 and F09 set noun.person; B08 (an audience) does not', () => {
+    for (const id of [...VOICE, 'E01', 'E03', 'E07', 'F09']) {
+      const L = lesson(id);
+      assert.equal(L.noun.person, true, id);
+      const intro = journeyIntro(L.noun, copyOf(L).words.instrument);
+      assert.doesNotMatch(intro, /\b(itself|its|it)\b/, `${id}: ${intro}`);
+      assert.doesNotMatch(pageOf(L, 'meet').goal, /\b(what it is|its parts|its sound|hear it)\b/, id);
+    }
+    // the Lab 5 voice lessons meet the singer / performer, not "the lead vocal … the person"
+    assert.match(pageOf(lesson('E01'), 'meet').goal, /^Meet the singer /);
+    assert.notEqual(lesson('B08').noun.person, true);
   });
 
   it('B03/B04: technique as practice; the B04 side-of-frame key is not "Only when"', () => {
