@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:07 · ccode · b4489923
+changed: Merge lab6-g6: Miking Lab 6 F09-F10 location speech and spatial field
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
 ### 2026-10-08 00:06 · ccode · fc730e94
 changed: Mixing family: 'Knowing When to Bring In a Pro' note — first-open popup with GOT IT, link on each lab's first page
 affects other side: nothing (client-only popup copy and wiring; no backend reads or writes)
