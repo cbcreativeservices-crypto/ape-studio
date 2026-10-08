@@ -143,11 +143,11 @@ export function ImmersiveScene({ w, h, kind, accessibilityLabel }: { w: number; 
     kind === 'surround5'
       ? [
           { id: 'f', text: 'FRONT', u: 18, v: -165, align: 'left', tone: 'amber' },
-          { id: 'L', text: 'L', u: -150, v: -40, align: 'center' },
-          { id: 'C', text: 'C', u: 0, v: -100, align: 'center' },
-          { id: 'R', text: 'R', u: 150, v: -40, align: 'center' },
-          { id: 'Ls', text: 'Ls', u: -112, v: 118, align: 'center' },
-          { id: 'Rs', text: 'Rs', u: 112, v: 118, align: 'center' },
+          { id: 'L', text: 'L', u: -128, v: -70, align: 'center' },
+          { id: 'C', text: 'C', u: 24, v: -66, align: 'left' },
+          { id: 'R', text: 'R', u: 128, v: -70, align: 'center' },
+          { id: 'Ls', text: 'Ls', u: -96, v: 108, align: 'center' },
+          { id: 'Rs', text: 'Rs', u: 96, v: 108, align: 'center' },
         ]
       : [
           { id: 'f', text: 'FRONT MARK', short: 'FRONT', u: 18, v: -165, align: 'left', tone: 'amber' },

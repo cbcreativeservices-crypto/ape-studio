@@ -351,7 +351,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={EVENT_SCENE} box={{ x0: -14, y0: -3, x1: 6, y1: 16 }} a11y={`A crowd mic ${spot === 'rail' ? 'on the centre section’s rail' : 'at the stage’s corner'}, aimed ${tilt === 'faces' ? 'down at the faces' : 'up over the heads'}: the left PA cluster ${Math.round(pa.deg)}° off its axis, ${Math.abs(Math.round(pa.db))} dB down by the pattern.`} labels={venueLabels(EVENT_SCENE, { targets: true, marks: false })} show={{ targets: true, marks: false, routes: false }}>
+        <PlanStage w={w} h={h} scene={EVENT_SCENE} box={{ x0: -14, y0: -3, x1: 6, y1: 16 }} a11y={`A crowd mic ${spot === 'rail' ? 'on the centre section’s rail' : 'at the stage’s corner'}, aimed ${tilt === 'faces' ? 'down at the faces' : 'up over the heads'}: the left PA cluster ${Math.round(pa.deg)}° off its axis, ${Math.abs(Math.round(pa.db))} dB down by the pattern.`} labels={venueLabels(EVENT_SCENE, { targets: true, marks: false }).filter((l) => l.id !== 't.R')} show={{ targets: true, marks: false, routes: false }}>
           {(px, g) => (
             <>
               <PaCoverage venue="event" px={px} />
