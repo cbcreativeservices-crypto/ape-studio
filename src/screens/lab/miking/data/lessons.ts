@@ -179,6 +179,11 @@ import { E16_LESSON } from '../lessons/e16BigBand/lesson.ts';
 LESSON_CONTENT.E16 = E16_LESSON;
 import { E12_LESSON } from '../lessons/e12PercussionEnsemble/lesson.ts';
 LESSON_CONTENT.E12 = E12_LESSON;
+/* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
+import { F09_LESSON } from '../lessons/f09LocationSpeech/lesson.ts';
+LESSON_CONTENT.F09 = F09_LESSON;
+import { F10_LESSON } from '../lessons/f10SpatialField/lesson.ts';
+LESSON_CONTENT.F10 = F10_LESSON;
 /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
 import { F11_LESSON } from '../lessons/f11MeasurementMics/lesson.ts';
 LESSON_CONTENT.F11 = F11_LESSON;

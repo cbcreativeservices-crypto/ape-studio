@@ -637,6 +637,9 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-10-08 00:06 · ccode · fc730e94
 changed: Mixing family: 'Knowing When to Bring In a Pro' note — first-open popup with GOT IT, link on each lab's first page
 affects other side: nothing (client-only popup copy and wiring; no backend reads or writes)
+### 2026-10-08 00:03 · ccode · eef0d2e8
+changed: Merge remote-tracking branch 'origin/final-lab' into lab6-g6
+affects other side: nothing (client-only: Lab 6 group 6 F09/F10 merged with group 4 F11-F13; Miking stays hidden)
 needs: nothing
 
 
@@ -662,6 +665,12 @@ needs: nothing
 changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
 affects other side: nothing (client-only lab code; no backend reads or writes)
 needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
+
+
+### 2026-10-07 22:43 · ccode · a21c0b79
+changed: Miking Lab 6 group 6: F09 Location Speech and F10 Spatial Field Pickup
+affects other side: nothing (client-only; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
 
 
 ### 2026-10-07 17:07 · ccode · 6660b125

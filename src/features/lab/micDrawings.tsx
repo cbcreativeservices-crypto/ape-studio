@@ -25,6 +25,7 @@
  *     with an animated transform — see ShockMountView.
  */
 import { useMemo } from 'react';
+import { AmbiTetraMic, BlimpMic, DmsClusterMic, DummyHeadMic, LavalierMic, ShotgunMic } from './micDrawingsField';
 import {
   BlurMask,
   Circle,
@@ -1097,8 +1098,21 @@ export function SoundLevelMeter({ r, len, tint }: { r: number; len: number; tint
 
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm'; r: number; len: number; cross?: number; tint?: string }) {
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm'; r: number; len: number; cross?: number; tint?: string }) {
   switch (art) {
+    /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
+    case 'shotgun':
+      return <ShotgunMic r={r} len={len} tint={tint} />;
+    case 'blimp':
+      return <BlimpMic r={r} len={len} tint={tint} />;
+    case 'lavalier':
+      return <LavalierMic r={r} len={len} tint={tint} />;
+    case 'dummyHead':
+      return <DummyHeadMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
+    case 'ambiTetra':
+      return <AmbiTetraMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
+    case 'dmsCluster':
+      return <DmsClusterMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
     // Lab 6 group 4: the measurement mic and the sound level meter.
     case 'measMic':
       return <MeasurementMic r={r} len={len} tint={tint} />;

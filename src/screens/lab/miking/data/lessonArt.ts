@@ -193,6 +193,11 @@ import { E16_ART } from '../lessons/e16BigBand/art';
 ART.E16 = E16_ART;
 import { E12_ART } from '../lessons/e12PercussionEnsemble/art';
 ART.E12 = E12_ART;
+/* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
+import { F09_ART } from '../lessons/f09LocationSpeech/art';
+ART.F09 = F09_ART;
+import { F10_ART } from '../lessons/f10SpatialField/art';
+ART.F10 = F10_ART;
 /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
 import { F11_ART } from '../lessons/f11MeasurementMics/art';
 ART.F11 = F11_ART;

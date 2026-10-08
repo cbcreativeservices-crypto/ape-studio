@@ -1344,3 +1344,38 @@ Applied from `BATCH6_RESEARCH_SUMMARY_PART2.md` §2 (items 2, 3, 6, 10, 12, 13, 
 | G4-14 | F11/F12/F13 | "documented" throughout | "logged / written down" (the learner-text ban on "documented") | wording | APPLIED |
 
 OWNER REVIEW (defaults applied): D-6B-1 chain rack as a page type — yes (engine/chain/); D-6B-2 synthetic histories and model decays labelled "a made-up / simplified example" — yes; D-6B-3 no standard names on screen — yes (BRAND_NAMES extended); D-6B-8 3 dB default + calculator stub; D-6B-9 safety numbers exact — yes; operator keep-away radius 1 m drawing default (F11 proposal item 3); F12 open-position distance from the road (3–4.5 m), F13 room and seats, F11 off-axis example angle 30° — drawing defaults.
+## Lab 6 · group 6 · Location and spatial: F09, F10 (branch lab6-g6, 2026-10-08)
+
+Built by the Lab 6 group 6 builder (G-C of `BUILD_PROMPTS_lab6b.md`). Research: `location_speech/`, `spatial_field/`, `measurement_mics/SOURCES.md` §0, `BATCH6_RESEARCH_SUMMARY_PART2.md` §2. Defaults used for the D-items are listed under OWNER REVIEW at the end.
+
+| id | Lesson | Line | Lesson says | App says | Why / source | Status |
+|---|---|---|---|---|---|---|
+| G6-01 | F09 | L30, L42 | "Keep the pole away from power lines" (no distance) | "Keep the boom pole, the stands and every mic at least 3 m (10 ft) from overhead power lines — farther if you do not know the voltage. If you cannot be sure of the clearance, do not raise the pole" — and a 3 m keep-out in the OUTDOORS model that stops a mic | OSHA-ELEC "Stay at least 10 feet away from overhead power lines" (summary §2 item 1; safety-critical) | APPLIED |
+| G6-02 | F09 | L42 | "move to safe shelter when thunder is heard" (no wait) | "…get inside a safe place at once — do not stay to finish a take. Wait 30 minutes after the last lightning or thunder" | NWS-LTG (summary §2 item 2) | APPLIED |
+| G6-03 | F10 | L44 | "waiting 30 minutes after the last thunder" | "30 minutes after the last lightning or thunder" (one shared constant, `location.ts` SAFETY_WORDS) | NWS-LTG (summary §2 item 2) | APPLIED |
+| G6-04 | F10 | plan scope | hydrophone / contact-sensor comparison expected in F10 | not in F10: hydrophones stay in F16, contact sensors in F04 (D-6B-4); F10 says nothing of them | summary §2 items 7, 8 | APPLIED |
+| G6-05 | F09, F10 | L2 | "Pro Audio Training Academy • Foley Field and Acoustical Lab F09/F10" | the registry's "Miking Lab 6: Foley, Field & Scientific" | summary §2 items 12, 13 | APPLIED |
+| G6-06 | F09 | L3, L44–L53 | "Students", "Guided teaching exercise", "Student observation sheet" | "you", PRACTICE, an optional observation sheet (scene and permission, mic, placement and channel, distance and shot, decision, limitation) | summary §2 item 14 | APPLIED |
+| G6-07 | F10 | L3, L45–L55 | "Students", "Guided teaching exercise", "Student field sheet" | "you", PRACTICE, an optional field sheet (site and permission, capture, position/front/channel map, destination, wind/weather/stand safety, converter and routing) | summary §2 item 14 | APPLIED |
+| G6-08 | F09 | L27, L32 | practitioner and maker names (Simon Hayes, David Thirion, DPA, Shure, RØDE, Sound Devices, Rycote) | no names; the practice kept in words | owner ruling 2026-10-04; BRAND_NAMES extended | APPLIED |
+| G6-09 | F10 | L13, L26, L31, L35 | KU 100, DPA 5100, Sennheiser AMBEO | generic types ("a model head", "a compact surround mic", "a first-order Ambisonic mic") | owner ruling 2026-10-04 | APPLIED |
+| G6-10 | F09 | — | boom distance not given | no number claimed as a rule: the start is 15 cm above the frame's top edge (proposal's drawing default), 45° above the mouth's axis (the lab's), the zone 35–120 cm; MEET IT's FRAME LINE step shows close / medium / wide shots moving it (55 / 61 / 90 cm, calculated from the drawing) | location_speech/SOURCES.md #3, #15 | APPLIED (drawing default) |
+| G6-11 | F09 | — | lav distance from mouth not given | read from the drawing (≈ 21 cm, "above the sternum" SHURE-LAV); zone 15–32 cm | location_speech/SOURCES.md #4 | APPLIED (drawing default) |
+| G6-12 | F09 | — | a shotgun's capsule sits behind its tube (part 1's `mic.ref` at the capsule) | the engine's rule kept: distances to the mic's FRONT; the words say the capsule is behind the slotted tube | consistency with every Miking lesson; part 1 may differ — OWNER REVIEW | APPLIED |
+| G6-13 | F09 | — | the shotgun's pattern | drawn as a supercardioid (a simplified picture: the tube narrows only the higher frequencies), said once | foley_footsteps/SOURCES.md §c | APPLIED |
+| G6-14 | F10 | — | no spacing for 5.0, IRT cross, Hamasaki square, Double M/S | drawn as "an example layout", never a number (`ARRAYS[…].example`, tested) | D-6B-7 | APPLIED |
+| G6-15 | F10 | — | dummy-head height not given | 1.7 m standing / 1.2 m seated (MEYER-MAPP listener heights), as the proposal aligns | spatial_field/GEOMETRY_PROPOSAL §2 | APPLIED |
+| G6-16 | F10 | L36 | FuMa vs ambiX | taught by name (channel conventions, not brands): FuMa W, X, Y, Z with W 3 dB down; ambiX W, Y, Z, X — the drill shows a wrong read putting a front source overhead | spatial_field/SOURCES.md #8 | APPLIED |
+| G6-17 | F09 | — | (setups) outdoors had no TWO MICS | `setupPairs`: the outdoor boom + body mic (the set's pair, its outdoor zones) | R-06 rule: the lesson's own zones | APPLIED |
+| G6-18 | F09, F10 | — | the shared `hearingCheck` / `matchedLevels` items start "Yes"/"Not" | each lesson's own wording (no yes/no key pattern in the new field lab) | test/mikingItemBalance yes/no balance per lab | APPLIED |
+| G6-19 | engine | — | a scene with two clip mics (a pole's grip and a lav's clip) attached each to the nearest rim | `Rim.types` (a rim serves only the named types) and `MicType.clip.arm` (a pole's thickness; no clamp jaw) — backward-compatible | needed for the boom + body mic on one talker | APPLIED |
+
+### OWNER REVIEW (defaults used; change any)
+- D-6B-5 people in art: the shared figure (talker, boom operator, singer, performer, walker), FigureHead — default used.
+- D-6B-6 Lab 7 overlap: one location kit (`lessons/shared/field/location.ts`, `LocationArt.tsx`) for F09 and Lab 7 B04/B05 — default used.
+- D-6B-7 example layouts without numbers — default used.
+- D-6B-9 safety numbers exact on screen — used.
+- G6-12: distances to the mic's front (engine) vs part 1's capsule reference for the shotgun — confirm one rule for both.
+- The A-format example capsule order (FLU, FRD, BLD, BRU) is a generic convention: a real mic's manual rules (said on screen).
+- The power line (5.2 m up, 1.2 m behind the talker) and the camera (2.5 m, three shot sizes) are drawing defaults.
+- Not built: Lab 6 part 1's moving-source path (`path.ts`) was not merged — F10's walker is a finger-scrubbed straight walk (`spatial.along`), to swap for the shared path tool when it lands. G-A's chain rack was not merged — the A-format drill is F10's own page step (`spatial.ts` model, pages.tsx), ready to move into the rack.
