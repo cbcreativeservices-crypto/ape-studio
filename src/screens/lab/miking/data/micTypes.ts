@@ -314,6 +314,9 @@ Object.assign(MIC_TYPES, GROUP_VOICE_MIC_TYPES);
 /* Lab 6 group 1 — the field mics (short shotgun on a stand or a pole, small supercardioid, the room condenser, the hydrophone and contact cards). Appended so other lessons merge cleanly. */
 import { FIELD_MIC_TYPES } from '../lessons/shared/fieldmics/fieldMics.ts';
 Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
+/* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 — the parabolic dish. Appended so other lessons merge cleanly. */
+import { FIELD2_MIC_TYPES } from '../lessons/shared/field/dishMics.ts';
+Object.assign(MIC_TYPES, FIELD2_MIC_TYPES);
 /* Lab 6 group 4 — measurement core (F11–F16): the measurement mics and the sound level meter. Appended so other lessons merge cleanly. */
 import { MEASURE_MIC_TYPES } from '../lessons/shared/measure/measureMics.ts';
 Object.assign(MIC_TYPES, MEASURE_MIC_TYPES);

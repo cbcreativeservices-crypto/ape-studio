@@ -143,6 +143,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'F02', labId: 'field', title: 'Clothing and Body Movement', subtitle: 'A cloth pass: about 1–1.5 m from the moving fabric, a close detail outside the whole gesture, the room close under it', status: 'ready' },
   { id: 'F03', labId: 'field', title: 'Props and Object Handling', subtitle: 'Keys, paper, a door, a chair: the whole action first from outside the travel, then the part that sounds', status: 'ready' },
   { id: 'F04', labId: 'field', title: 'Impacts, Liquids and Textures', subtitle: 'A safe impact, a little water, a dry texture: outside the splash and the travel, the attack against the tail', status: 'ready' },
+  /* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 (each lesson on its own line). */
+  { id: 'F05', labId: 'field', title: 'Foley Perspective and Multiple Microphones', subtitle: 'One mic for the whole action, a room mic for a reason, a pair for travel — near and far are not left and right', status: 'ready' },
+  { id: 'F06', labId: 'field', title: 'Natural and Urban Ambience', subtitle: 'A listening point chosen by ear, about 1.5 m up and off every path — one mic or a pair, protected from the wind, checked in mono', status: 'ready' },
+  { id: 'F07', labId: 'field', title: 'Wildlife and Distant Sounds', subtitle: 'From a permitted point outside the setback ring: a shotgun aimed at the call, a dish for one high caller, a wider view for a group', status: 'ready' },
+  { id: 'F08', labId: 'field', title: 'Moving Sounds and Pass-bys', subtitle: 'The path drawn first: a mic 2–4 m back and outside the envelope, fixed or tracked, the whole pass with headroom — a vehicle only on paper', status: 'ready' },
   /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
   { id: 'F11', labId: 'field', title: 'Measurement Microphones and Calibration', subtitle: 'The question first, the right field and power path, a check before and after — and an honest label', status: 'ready' },
   { id: 'F12', labId: 'field', title: 'Sound Level and Environmental Noise', subtitle: 'A named question and window, the method’s height, an open or facade position — and a conclusion no bigger than the evidence', status: 'ready' },
