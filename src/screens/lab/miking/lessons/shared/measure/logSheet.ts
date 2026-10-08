@@ -48,3 +48,35 @@ export const ROOM_SHEET: SheetField[] = [
   choice('decay', 'Decay figure supported', ['T30', 'T20', 'Neither — not enough range']),
   text('notes', 'Bands that were refused, spread between positions, and the result’s label'),
 ];
+
+/* Lab 6 group 5 — systems, products and sensors (F14, F15, F16): their sheets (one block, appended). */
+
+/** F14 — the loudspeaker and system measurement sheet. */
+export const SYSTEM_SHEET: SheetField[] = [
+  ...COMMON,
+  text('source', 'Source, active channels and processing state'),
+  choice('tap', 'Reference tap', ['Before the processor', 'After the processor', 'No reference — level only']),
+  text('timing', 'Delay, window, smoothing, and the frequency range the window supports'),
+  text('points', 'Points: axis and repeat, off axis, listener centre, edge or overlap'),
+  text('notes', 'Position-to-position finding, and the limits of the claim'),
+];
+
+/** F15 — the product field sheet. */
+export const PRODUCT_SHEET: SheetField[] = [
+  ...COMMON,
+  text('device', 'Device, its guards and the exclusion zone; the operator who agreed'),
+  text('cycle', 'Load, speed and cycle; start, steady and stop marked'),
+  text('runs', 'Runs: device off, A and its repeat, B, C, back to A'),
+  choice('channels', 'Channels', ['Airborne only', 'Airborne and vibration, side by side']),
+  text('notes', 'Background, disturbances, and what the setup cannot claim'),
+];
+
+/** F16 — the array and sensor observation sheet. */
+export const ARRAY_SHEET: SheetField[] = [
+  ...COMMON,
+  text('geometry', 'Origin, axes, baseline, and each element’s position'),
+  text('timing', 'Clock, sample rate and filter; the raw channels kept'),
+  text('runs', 'Runs: centre and repeat, side and repeat, back to the centre'),
+  choice('medium', 'Medium and units', ['Air, dB re 20 µPa', 'Water, dB re 1 µPa', 'Intensity, with its normal']),
+  text('notes', 'What the setup cannot support, and the next check'),
+];
