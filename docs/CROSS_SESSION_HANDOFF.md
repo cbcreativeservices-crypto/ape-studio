@@ -634,6 +634,42 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 05:24 · ccode · 443ab6dd
+changed: docs(lab6 review): REVIEW_LAB6_2026_10_08 — two-expert review of F01–F16
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:22 · ccode · 25ff1923
+changed: test(lab6 review): pin the 2026-10-08 Lab 6 review fixes
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:20 · ccode · 9bf0435a
+changed: fix(lab6 review): starting-points voice in F07/F09; F10 drill gain value no longer cropped
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:03 · ccode · 4bdee9d0
+changed: fix(lab6 review): F09/F10 wording — no technique "must", no stray "silently"
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:03 · ccode · 3671e76b
+changed: fix(lab6 review): fairer quick-check items in F02–F08 and F13; F04 pad physics
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
+### 2026-10-08 05:02 · ccode · 5970e4d7
+changed: fix(lab6 review): F16 sample-rate item contradicted itself; F09 boom vs body-mic level
+affects other side: nothing server-side — Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
+needs: nothing
+
+
 ### 2026-10-08 03:03 · ccode · 36f8a870
 changed: Merge origin/final-lab into lab7-g5 (Lab 7b group 2)
 affects other side: nothing server-side — final-lab merged into lab7-g5 (Lab 6 groups 2 and 5, Lab 7 group 1, then Lab 7 part 2 group 2); app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
