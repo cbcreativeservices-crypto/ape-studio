@@ -11,7 +11,8 @@
 /** Primary tagline — most prominent on the homepage; used sparingly elsewhere. */
 export const TAGLINE = "The Whole Craft of Audio. Right in Your Pocket.";
 /** The line under the headline (owner 2026-10-08). */
-export const SUBLINE = "Everything you'd search for across books, videos and forums, in one place you carry everywhere.";
+/** Two lines with a hard break, on phones too (owner via Comp A, 2026-10-08). */
+export const SUBLINE = ["Everything you'd search for across books, videos, and forums", "In one place you carry everywhere"] as const;
 
 /** Educational philosophy — Academy / Curriculum Development / About. */
 export const PHILOSOPHY =
