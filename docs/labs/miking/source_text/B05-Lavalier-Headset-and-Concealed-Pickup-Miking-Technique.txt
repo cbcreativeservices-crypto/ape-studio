@@ -1,0 +1,94 @@
+# Lavalier Headset and Concealed Pickup Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B05  •  Body worn speech microphones
+A body-worn microphone should remain useful while a person turns, reads, walks and changes posture. This lesson compares visible and concealed chest lavaliers with headworn microphones; it teaches mounting, cable strain relief, plosive and fabric checks, compatible electrical paths, and live reinforcement differences. Placement examples from individual manufacturers are starting trials for those designs, not universal distances. No audio examples are included.
+# Choose by mouth movement, clothing and program route
+Before fitting a mic, learn the expected camera frames, costume, headset or eyeglasses, vigorous movement, wind, sweat, seated posture and speaking directions. Ask whether the mic feeds only a recorder/program or also a local PA. A chest lav stays fixed to clothing as the head moves, so mouth distance and orientation can change during turns. A properly secured headworn mic moves with the head, keeping its capsule-to-mouth relationship more consistent. A boom outside frame may avoid clothing contact when framing and movement allow it. [1–4]
+Approach
+Good starting condition
+Main compromise
+Visible omni lavalier
+Mount on a stable central chest area or clothing edge, clear of rubbing fabric, hair and jewelry; test head turns and posture. [1, 5]
+Discreet and orientation forgiving, but chest-to-mouth distance and ambient/PA pickup can limit clarity or gain before feedback.
+Directional lavalier
+Orient the actual sensitive axis toward the mouth and check the pattern and model-specific clip. [1, 2]
+Can improve rejection in a useful geometry, but turn-induced off-axis tone, wind, plosives and proximity effect require more care.
+Headworn omni
+Fit the headband comfortably and place capsule near the mouth corner, outside the main breath stream, following the specific product instructions. [3, 4, 6]
+Consistent distance with head turns and forgiving aim; still hears room and PA, and fit/visibility may not suit a production.
+Headworn directional
+Use the model’s intended position and aim; verify rear/side rejection relative to monitors and speakers. [3, 4]
+Can offer more separation and feedback margin, but small shifts, breath blasts and proximity effect can change tone.
+The actual direct-to-ambient ratio depends on distance, source level, polar response and surroundings. A directional mic is not automatically safer or clearer if its null faces the wrong way or its capsule is off axis. In a loud reinforced room, a near-mouth headworn design can provide useful gain before feedback compared with a more distant chest lav; a poorly placed PA or multiple open mics can still defeat it. In a quiet, unreinforced studio, a clean chest lav may meet the picture and speech brief with less visible hardware. [1–4]
+# Place a visible lavalier and control its cable
+Start near the upper sternum or central neckline on a secure garment edge, with the grille clear and the supplied clip used as intended. RØDE calls sternum placement a general balance; Shure gives 5–8 in (12–20 cm) below the mouth in a particular speaking and worship example. Neither is a universal measurement for all voices, wardrobe or lav capsules. Shure also shows shirt, tie and collar options. A side lapel may fit the shot but must be checked when the wearer turns both directions. [1, 5, 7]
+Make a small service loop at the clip where appropriate and secure another length of cable lower on the garment to transfer pull away from the capsule. RØDE describes a broadcast/newsman’s loop and secondary strain relief. Let the wearer sit, stand, turn and gesture; listen for necklace, tie, collar, hair, cable taps and transmitter movement. Keep fabric from rubbing the capsule, avoid a tight lead across a moving seam, and do not tape over the microphone inlet. [5]
+Listen to normal, quiet and emphatic speech from every expected direction. If a plosive reaches the capsule, move it out of the direct breath stream, consider the model’s windscreen and reevaluate sound; RØDE describes an upside-down orientation for a lav in its clip as one model- and setup-dependent trial. A high-pass filter can reduce some low rumble but cannot repair rubbing, breath overload or a disconnected lead. Rehearse with the real costume, not a substitute garment. [5, 7]
+# Conceal with consent and model-compatible accessories
+First establish a working visible placement, then test a discreet mount inside the neckline, button opening or garment with a purpose-built concealer or suitable tape method. Keep an acoustic opening and a small separation from rubbing fabric. Support the capsule and cable in more than one place, leaving slack through body movement. RØDE describes a soft concealer and strain relief; Rycote offers fabric and fur accessories to reduce friction and wind. A hidden microphone covered by cloth may lose high-frequency clarity and create intermittent scratch even when the voice seems loud enough. [5, 8, 9]
+Ask the wearer for consent and coordinate with wardrobe before attaching, piercing or modifying any garment. Use only an adhesive explicitly approved for skin if attaching to skin; RØDE identifies skin-safe adhesive for its invisiLav. Gaffer or camera tape intended for fabric is not automatically skin-safe. Ask about adhesive sensitivity and choose an alternative if needed. Keep cables and packs away from pressure points, and allow the wearer to remove or adjust the setup. Hairline or wig placement is a specialized, production-specific option, not an instruction to put adhesive in hair without a qualified fitter. [8, 10]
+If the capsule is under clothing, some models offer protective caps with a high-frequency lift to compensate for material loss. Countryman documents such choices for its B6; they do not transfer to unrelated mic models. Compare the visible reference, the concealed position and any manufacturer-approved cap at similar playback level. A brighter cap will not remove fabric rubbing. If the hidden mount fails, use a visible lav or a close boom that the frame permits. [11]
+# Fit a headworn mic beside the mouth
+Follow the specific headset’s bending and wearing instructions; do not force a fragile boom or bend the capsule housing. Sennheiser specifies 2–3 cm from the corner of the mouth for its ME 3 and related models. This illustrates a near-mouth trial, not a universal measurement for every headset. Keep the capsule out of the direct breath jet and off the cheek; check smiling, glasses, earrings, beard and hair contact. Fit the headband so it does not slip during ordinary movement or create discomfort. [3, 4, 6]
+Listen through head turns, emphatic words and plosives. An omni headworn mic usually tolerates slight aiming changes and has no directional proximity effect, while a cardioid/headworn design can reject some off-axis sound at the cost of more sensitive positioning and wind/plosive behavior. Compare model polar plots and the actual PA directions rather than assuming a cardioid null is exactly behind every headset. A small foam windscreen can help with breath and hair contact when approved for the capsule. [3, 4]
+For a speaker who uses a lectern, mute an unused lectern mic when the headworn or lav feed is live; two open microphones hearing the same speech at different times can color the sum, and an open PA path can also reduce feedback margin. A headset is not a license to raise loudspeaker level without a system check. If the performer has an IFB or other earpiece, verify fit, cable clearance and comfortable monitoring separately. [2]
+# Verify the electrical and wireless path
+Use the correct microphone-to-transmitter connector and adapter. Miniature electret systems commonly require compatible bias from the bodypack or adapter; an apparently matching plug shape does not guarantee the proper wiring, bias, level or polarity. DPA documents model-specific adapters and warns that soldering a random connector can prevent correct operation. Do not put a bodypack lav directly on a 48 V phantom input unless its specified adapter or power module is designed for that connection. [12]
+Secure the transmitter to an approved garment position where it cannot fall, press into the wearer or strain the mic lead, and route its antenna as the system manual requires. Confirm frequency coordination, battery condition, RF coverage along the full movement path, transmitter input gain, receiver output and live channel assignment with the responsible operator. Have the wearer perform the actual scene while monitoring; a clean RF check at one spot does not prove movement coverage. Sweat and rain protection depend on each unit’s rating and accessories, not merely on a lav capsule’s water resistance. [13, 14]
+# Studio, location and live comparison
+For a studio interview without local PA, prioritize a natural voice, visual continuity and low clothing noise; visible lav, concealed lav, headset or boom may all work. For field broadcast, wind, wardrobe, quick setup and wireless integrity gain importance. For live reinforcement, move the capsule close to the mouth and choose pattern and PA geometry for adequate gain before feedback, avoiding unnecessary open channels. The same person may need a different mount or microphone when changing from seated news to an active public presentation. [1–4]
+A lav may serve as a safety channel for a boom, but route them separately and inspect both alone before any sum; different arrival times can change tone. In a live program, the operator should know the primary channel, fallback, mute status and what goes to program, PA, monitor or IFB. Avoid a feedback demonstration by increasing gain until a squeal; test at a controlled level with the venue operator and stop at the first sign of instability. [2]
+# Guided placement lab
+1. Choose a consenting participant and a permitted room. Define quiet recorded speech and a separate hypothetical live-PA condition. List the actual wardrobe, head turns, movement path and camera frame; verify compatible mic, adapter and transmitter before fitting.
+2. Attach a visible central lav with a service loop and secondary cable support. Set gain from the loudest plausible speech. Compare facing forward, turning each way, reading down, sitting and standing; note voice balance, fabric and cable noise.
+3. Test a consented concealment method with the actual garment and a model-approved mount or fabric adhesive. Check the full movement sequence. If skin contact is proposed, verify skin-safe product, consent and sensitivity; do not improvise with fabric tape.
+4. Fit a compatible headworn mic according to its manual, outside the breath stream. Compare omni and directional models if available, matching playback level and checking plosives, hair/glasses contact and positional stability.
+5. At safe level under a qualified operator, compare the chosen feeds in the actual live system geometry without forcing feedback. Inspect each channel, mute unused mics, trace program/PA/IFB routing and verify RF coverage along the permitted movement path.
+6. Document the primary choice and a tested fallback, capsule distance and orientation, garment/mount, cap/windscreen, cable loop, transmitter compatibility, head turns, remaining noise and any image compromise.
+Pass criterion: the student explains chest versus head movement, controls clothing and cable noise by placement, uses only model-compatible power and mounts, checks consent and comfort, and distinguishes quiet-program pickup from reinforced live gain requirements. No audio examples.
+# Student observation sheet
+Participant consent __________________  Scene/wardrobe __________________  Camera/PA context ___________
+Trial
+Mount and path
+Turns, noise, tone and decision
+Visible lav
+________________________
+____________________________
+Concealed lav
+________________________
+____________________________
+Omni headworn
+________________________
+____________________________
+Directional headworn
+________________________
+____________________________
+Movement and live route
+________________________
+____________________________
+Mic, cap, clip/adhesive ____________________  Distance/orientation ____________________  Cable loop __________
+Bodypack/adapter/bias ____________________  RF/battery ____________________  IFB/PA/program ______________
+Chosen primary and fallback _____________________________  Comfort and unresolved issue ___________________
+# Critical evidence audit
+# Points of agreement
+Shure, DPA, RØDE and Sennheiser support mounting away from clothing contact and breath blasts and testing actual movement. Headworn placement keeps the capsule closer and more stable relative to a turning mouth than a chest lav. A directional pattern can improve rejection in a favorable geometry, while an omni is often more forgiving. Wireless compatibility and gain must be verified at the whole system. [1–7, 12–14]
+# Different approaches and apparent contradictions
+RØDE suggests a sternum trial, Shure gives 5–8 in below the mouth in one worship application, and Sennheiser gives 2–3 cm from the mouth corner for specific headset models. These describe different devices and tasks; none is a universal placement standard. DPA’s examples of strong directional headset background rejection depend on the source, frequency, pattern and position, so do not convert a model comparison into a fixed room-isolation figure. Countryman’s under-clothing caps apply to designated models only. [1, 3–7, 11]
+# Gaps and confidence
+No source determines the best garment attachment, adhesive, headband fit, transmitter frequency or feedback margin for every person and venue. Manufacturer accessories can be safe for specified use yet still require consent, sensitivity checks and rehearsal. Confidence is high in the acoustic distance and movement distinctions; exact mounting and live routing require on-site testing with the actual gear.
+# Primary sources and curriculum connections
+Manufacturer guidance consulted October 4, 2026. Linked pages may contain media; no audio examples are supplied in this lesson.
+[1] Shure Choosing Between Lavalier and Headset Mics
+[2] Shure Church Mic Basics Selection and Placement
+[3] DPA Omni vs Cardioid Headset Microphones
+[4] DPA How to Mic Speech with Headworn and Miniature Mics
+[5] RØDE Lavalier Mounting Best Practices
+[6] Sennheiser ME 3 Positioning Guide
+[7] Shure How to Choose the Best Lavalier Microphone
+[8] RØDE invisiLav Mounting System
+[9] Rycote Lavalier Solutions
+[10] Shure Top Mic Placement Tips for Theater
+[11] Countryman B6 Lavalier FAQ
+[12] DPA Wireless Miniature Microphone Connection Guide
+[13] Shure Five Mistakes to Avoid When Using Wireless
+[14] Shure BLX4R Correct Microphone Placement
+Cross-links: B02 news anchors and seated interviews; B03 handheld reporters; B04 boom and camera-mounted pickup; B06 panels; B11 athlete, coach and official body-worn applications.

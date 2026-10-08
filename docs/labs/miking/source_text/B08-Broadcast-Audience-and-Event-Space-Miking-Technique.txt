@@ -1,0 +1,66 @@
+# Broadcast Audience and Event Space Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B08  •  Live event and studio audience applications
+Audience and room microphones convey applause, cheering, singing, laughter and the scale of a venue to listeners who are not there. Their placement should represent the intended crowd without letting a nearby spectator, loudspeaker or camera position dominate. This lesson compares mono, stereo and immersive coverage and keeps reaction microphones distinct from close speech and event-detail sources. No audio examples are included.
+# Define what the remote listener needs
+List the event’s important acoustic layers: presenters/performers, audience response, venue reverberation, public-address loudspeakers and specific event action. Decide which are already supplied by close microphones or a production feed. An ambience microphone is not a substitute for a handheld audience-question mic or intelligible performer mic. In a live production, confirm the separate broadcast/stream, PA and monitor destinations before any crowd mic is opened. [1, 2]
+Walk the venue while the PA and crowd are active if possible. Mark the loudspeaker coverage, front fills, subwoofers, audience sections, camera sightlines, access routes, HVAC and reflective surfaces. Listen at several legal mounting points. A pleasing seat for a person is not automatically the best microphone location: the mic’s pattern, height, aim and nearby people determine the captured balance. [1, 3, 4]
+# Build coverage from one zone outward
+Configuration
+Starting placement and purpose
+Important limitation
+Single mono crowd mic
+A directional mic elevated and aimed toward the faces/upper bodies of a representative audience section, with the PA as far off its sensitive axis as practical. Start above and somewhat in front of that section, then listen and adjust. [1, 2]
+One position can overrepresent a small group, aisle chatter, applause nearest the capsule or a speaker cluster. It supplies no left/right width.
+Two audience zones
+Place distinct left/right crowd positions with similar coverage and a known channel map, often raised at stage edges or in front of audience sections. Aim away from PA and monitor each separately. [1, 5]
+This is not automatically a coherent stereo array; unequal local events, timing and PA pickup can make an unstable image or colored mono sum.
+Coincident XY stereo
+A compact pair of angled directional capsules at one stable location, set to encompass the audience’s useful width. [6]
+Predictable mono sum and stable localization, but less spaciousness than some spaced arrays; a center location may hear more PA than crowd.
+Near-coincident or spaced pair
+ORTF can add width with some mono compatibility; spaced omni AB can present diffuse hall energy and low end. Choose placement and spacing by actual crowd/PA balance. [3, 6]
+Time differences in a spaced array can cause comb filtering when summed to mono. Check downmix; do not treat AB as guaranteed mono-safe.
+Surround / immersive array
+Use a purpose-built surround mic or documented multi-zone array when a surround/immersive deliverable is specified. Preserve orientation, channel identity, mounting and decoder requirements. [7, 8]
+A 5.1 array and a four-capsule Ambisonics mic have different signal formats. A stereo fold-down must be checked, not guessed from channel names.
+# Place for the audience rather than the PA
+Shure’s congregation-broadcast example uses one or two elevated directional microphones aimed toward faces and away from the main PA. This is a useful starting geometry for seated event audiences, subject to actual loudspeaker location and sightline. Shure also advises keeping those ambience microphones out of the main PA mix; a distant audience mic routed into nearby reinforcement can create feedback, and it will not make an individual audience question intelligible. Give a questioner a close handheld/aisle mic instead. [1, 2]
+Test the audience zone at quiet speech, expected applause and full PA level. Move or re-aim to reduce loudspeaker dominance before trying to fix it with EQ. A directional mic has side/rear rejection that depends on frequency and pattern; do not assume its label removes a loudspeaker reflected from the room. Try another section or height if one spectator, clapping directly under a mic, stage wash, ventilation or seat movement dominates. [1, 4, 5]
+In a small studio audience, one well-placed mic or stereo pair may cover laughter and applause if the room and sightlines permit. An arena often needs several audience zones because one capsule cannot represent every section. Select the minimum useful zones, name each by location, and build the broadcast blend from independently monitored inputs. A steerable array can focus on sections in some installed systems, but its field of view, PA rejection and channel routing still need on-site testing. [5, 9]
+# Protect the program and the event mix
+Keep crowd microphones on their own broadcast/record paths, with a documented policy for artist in-ear or backstage monitors if they are used there. A worship/concert stream may hold a low level of room pickup for continuity and bring more up for audience response, but speech intelligibility must remain anchored by the close speech source. This is a mix decision after microphone placement; it is not a fixed level prescription. [1, 10]
+Check the channels in solo and in context: a crowd mic may sound spacious alone yet add delayed PA copies of speech or music to the main mix. Compare crowd energy during pauses, applause and performance. If several distant zones are combined, note arrival-time differences and listen for hollow or smeared sound, especially on the mono output. Do not “time-align” blindly to one event when audience sources are distributed and the mix purpose is ambience. [3, 6]
+For outdoor events, use suitable wind protection and a secure suspension or mount within the microphone’s weather rating. A foam alone is generally for light wind; stronger exposure may require a designed windshield. Wind rumble can overload before a high-pass filter helps, while a blanket high-pass setting can remove useful crowd low end. Test actual wind and rain conditions and follow venue shutdown instructions. [11]
+# Stereo, mono and immersive delivery checks
+For mono delivery, a single crowd mic or one selected channel from a spaced AB pair may be clearer than an unchecked sum. XY tends to retain a stable center when summed; ORTF and other separated configurations must be auditioned for tonal change. Label left/right from the intended viewer/listener orientation, check polarity and evaluate headphones, stereo speakers and the actual mono path. [6]
+For a 5.1 audience array, record the model’s specified front/rear channel map and orientation. For first-order Ambisonics using a four-capsule A-format mic, preserve four separate, gain-matched capsule signals and use the manufacturer’s specified conversion/decode; rotating a final stereo file is not equivalent. These are optional advanced workflows, and neither replaces a clean mono/stereo broadcast plan. [7, 8]
+# Safety, access and operational handoff
+Obtain the venue’s mounting and cable permissions. Put stands and cables outside exits and traffic paths; protect any floor crossing. Do not fly or suspend equipment above people without a qualified rigger and approved hardware. Confirm camera/lighting clearance, audience access, RF coordination if wireless, and the ownership of each broadcast and PA channel. Follow event safety direction during weather or crowd movement. [5, 7, 11]
+Leave headroom for a sudden cheer or nearby clap; monitor at a safe level and lower headphone gain before testing the loudest event. Do not create feedback by deliberately opening an audience mic into the PA. A practical fallback is one protected, safely placed mono crowd mic or a single usable channel from an existing pair, plus the venue’s separate clean program feed. [1, 2]
+# Guided placement lab
+1. Map a small audience and one PA cluster, then a larger multi-section event. Draw legal mic positions, crowd direction, PA axes, camera sightlines, exits and broadcast/PA routes.
+2. Place one safely mounted directional crowd mic for a representative section. During a controlled rehearsal, listen separately to audience, PA and room noise. Adjust aim/position to improve the intended balance; document the geometry.
+3. Compare a second audience zone and then one compact XY pair. If ORTF or AB is available, document spacing/orientation and check the actual stereo width and mono sum. Do not infer a stereo image merely from two widely separated zone mics.
+4. Rehearse quiet speech, applause, a loud crowd peak and audience question. Confirm that the question uses its close mic, the broadcast receives the right sources, and the crowd mic is not in main PA.
+5. If an immersive rig exists, verify its mounting, front orientation, channel labels, gain/format instructions and the approved fold-down; otherwise describe the required checks without improvising a decode.
+6. Create a final placement card with zone/channel map, wind protection if outdoors, PA avoidance, safe mounting and cable route, mono fallback, destination monitoring and a remaining limitation.
+Pass criterion: the student shows a crowd-dominant pickup for the brief, identifies PA spill and near-spectator bias, distinguishes a stereo pair from two zones, verifies the mono output and maintains an audience question path separate from ambience. No audio examples.
+# Critical evidence audit
+# Agreement and context
+Shure’s congregation example and live-broadcast guidance support aiming raised crowd microphones at people rather than loudspeakers and keeping them out of main PA. DPA and Sound Devices support deliberate room/array placement and stereo checks. A small audience can use one or two mics; a large venue may require zones or a steerable system, depending on actual coverage. The cited systems and distances are examples, not a universal event layout. [1–6, 9]
+# Limits
+No source guarantees that a directional pattern, an elevated position or an array eliminates PA spill, crowd imbalance or feedback. XY, ORTF and AB have different stereo and mono behavior; a spaced AB sum can comb-filter. The immersive examples have incompatible native formats. This lab therefore tests the real room, routing, channel map and deliverables; it does not offer a fixed EQ, gain, height or mic count for all audiences. [1, 3, 6–9]
+# Sources and curriculum connections
+Primary manufacturer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Shure, The Top Six Church Audio Questions: Congregation Pickup
+[2] Shure, Church Mic Basics: Congregation and Reinforcement
+[3] Sound Devices, Live Recording Microphone Tips
+[4] Shure, Microphone Techniques for Live Sound Reinforcement
+[5] Shure, Reimagining Crowd Mics for Broadcast
+[6] DPA, Stereo Recording Techniques and Setups
+[7] DPA, 5100 Mobile Surround Microphone Manual
+[8] Sennheiser, Making Recordings Using the AMBEO VR MIC
+[9] Shure, DCA901 Broadcast Microphone Array User Guide
+[10] DPA, Westminster Live Streaming Microphone Case Study
+[11] Rycote, Windshield and Shock Mount Systems
+Cross-links: B03 field reporter for crowd interviews; B06 panels and audience questions; F06 natural and urban ambience for site perspective; Ensembles and Voice for intentional group singing; later sports sound pickup for action detail.

@@ -1,0 +1,85 @@
+# Field Reporters and Handheld Interviews Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B03  •  On-location speech
+A reporter must keep the microphone near the person speaking while respecting camera framing, ambient sound, wind and changing movement. This lesson teaches a one-microphone interview first, then tests a directional alternative and a two-microphone fallback. It addresses recorded and live broadcast use without treating one microphone pattern or distance as a universal rule. No audio examples are included.
+# Choose a safe position and a speech target
+Before raising a microphone, coordinate the camera shot, eyelines, interview length, route to the recorder or live program, and permission to stand in the location. Find a spot that minimizes avoidable traffic, ventilation, crowds and loudspeaker spill. Rotate the interview so the loudest unwanted source is less intrusive when possible, but do not place people in an unsafe position just for a quieter background. Listen to the intended position before and during a rehearsal. A mic that stays on the camera may be much farther from either voice than a handheld mic. [1, 2]
+Keep the reporter, guest and camera operator outside vehicle paths, crowd surges, emergency activity and restricted areas. A stand or cable cannot block an exit or travel route. For a live remote, agree on a clear stop/relocate signal before going on air. If thunder is heard, move to a substantial safe shelter and remain there at least 30 minutes after the last thunder; a weatherproof windscreen does not make an outdoor interview safe in a thunderstorm. [12]
+# Compare omni and directional handheld pickup
+Pattern and use
+Working position
+What changes
+Omnidirectional reporter mic
+Keep the microphone between two nearby speakers in a quiet or moderate setting, or deliberately move it toward the active speaker when noise or spacing calls for it. The RØDE Reporter manual illustrates a chest-height shared position for its own model and typical interview. [1, 3]
+Less critical axial aim and a smoother handoff; hears crowd, traffic and PA arriving from every direction. It does not isolate voices just because it is a dynamic microphone.
+Cardioid or other directional handheld
+Aim the intended speaking end toward the active mouth, hold at a consistent practical distance, then move and re-aim for the next voice. Check the model’s actual address axis and pattern. [1, 4]
+Can improve direct-to-ambient balance in some geometries, but missed aim and changing distance alter level and timbre. Directional proximity effect and wind/plosive sensitivity may matter.
+Two mics or separate channels
+Where channel count and access permit, give reporter and guest their own close mics, with channel identity and routing checked. [2]
+Avoids a rushed one-mic handoff but adds hardware, open-channel spill and live routing work; examine the combined program.
+Shure notes that field news reporters commonly use an omni between interviewer and interviewee, and RØDE shows the convenience of an omni in quick interviews. RØDE also says a directional handheld must be close to the chosen speaker. The RØDE Reporter manual’s shared chest-height example is a model-specific starting trial, not a rule that speech at that distance will overcome a loud street or a large gap between speakers. Move closer, change position, or use separate microphones when the speech-to-background ratio is inadequate. [1–3]
+Hold the body below the grille, without covering ports, and do not grip or strike a mic flag. Verify that a fitted flag or windshield does not obstruct the capsule or alter the intended pattern. Even models with internal shock isolation can pick up bumps, finger movement or cable taps; the Electro-Voice RE50B and RØDE Reporter cite specific handling and wind-control design, not a promise of immunity. If wireless, avoid covering the antenna or gripping the transmitter contrary to its manual. [3, 5–7]
+# Rehearse the handoff instead of chasing each word
+Place the reporter and guest so they can speak comfortably and the mic can move along a short, clear path without entering faces, blocking the lens or striking the guest. The reporter speaks with the mic at the chosen close position, then moves it toward the guest just before the guest’s answer begins. Return before the next question. If the guest interrupts or two people overlap, decide which voice matters for the live program and keep a separate feed if the format regularly requires overlap. Avoid pointing a directional mic between two widely spaced mouths and assuming its pattern will capture both equally. [1, 2]
+Watch the speaker’s mouth and listen to actual words rather than moving only when the camera points to someone. A guest may turn toward the camera, lean back, or turn toward an interpreter. Re-aim and adjust reach while keeping safe personal space; obtain consent before bringing a mic close to a face. Keep the boom of an outstretched handheld clear of passing people and moving vehicles. The operator should not stretch so far that posture becomes unstable or the mic brushes clothing or hair. [1, 2]
+Set gain with the loudest likely speech or excited reaction, leaving headroom at the transmitter, receiver, preamp and recorder. Monitor the actual program channel through comfortable headphones and check for clipping, low level, unexpected mute, polarity or switching faults. A close speaker can suddenly shout; do not rely on later compression or an automatic level function to repair an overloaded input. Maintain a documented fallback, such as a cabled mic, coordinated spare wireless channel or nearby sheltered interview position, tested before a live hit. [8]
+# Wind, handling and weather protection
+Check wind at the capsule, not merely the weather report. A built-in mesh grille or pop filter can reduce breath blasts and light wind; a correctly sized open-cell foam reporter windscreen is a common additional layer for light wind, while a compatible furry cover may be needed for stronger moving air. Rycote describes reporter foams for light wind and purpose-built Windjammer combinations. Verify the fit, retention and acoustic result on the actual microphone. A windshield is not waterproofing and cannot save a take already distorted by severe turbulence. [5, 6, 9, 10]
+Keep the capsule out of the direct breath stream when plosives occur, but maintain the intended address axis for a directional mic. Stop an unused cable from tapping the handle and protect connectors from pull. For a cabled mic, route the lead behind the operator and away from feet and traffic; use a cable-free position if safe routing is impossible. For a wireless mic, verify RF coordination, battery state and usable range in the actual location with the responsible technician. A momentary scan or clean meter at setup is not proof of uninterrupted coverage through a moving crowd. [8, 11]
+A high-pass filter can reduce low-frequency wind or handling rumble but can also thin the voice and cannot reverse capsule or input overload. Monitor at the selected position with the windshield installed, and recheck if wind direction changes. If conditions become unsafe or the capsule repeatedly overloads, pause and relocate; never continue a live segment just to preserve the shot. [9, 10, 12]
+# Camera, live PA and studio differences
+A visible handheld makes an interview’s speaking turns clear to the viewer; coordinate its flag, reach, camera side and frame with the operator. If the mic must remain out of shot, a close boom or body-worn mic belongs to B02, B04 or B05 and should be selected according to the frame and movement. Camera-mounted sound may be a reference or fallback but cannot be assumed equivalent to a source-proximate handheld. [1, 2]
+For a controlled studio interview, seated lavaliers or booms can keep separate channels and reduce handoff movement. A field report may need a rugged handheld because setup time and guest access are limited. For live reinforcement, the mic-to-PA routing and loudspeaker geometry determine feedback margin: a directional pattern can help only if it is correctly aimed and its low-sensitivity directions suit the PA. An omni held close may work for an unreinforced broadcast feed yet need a different plan for high-gain local speakers. Confirm what goes to program, PA, earpiece or IFB and talkback, and mute unused paths intentionally. [2, 4]
+# Guided placement lab
+1. In a permitted safe indoor or sheltered location, mark a camera position and two speaking points. Place a controllable background source at a modest level and record its location, then choose a microphone and define the program path. No audio examples are supplied.
+2. With an omnidirectional reporter mic, compare a shared central position and an intentional handoff toward each speaker. Keep normal conversational posture and similar speech delivery. Note clarity, room/background, level variation and camera obstruction.
+3. Repeat with a directional handheld. Identify its address axis, re-aim for each turn, then deliberately demonstrate an off-axis turn at a controlled level. Note any difference in clarity and tonal consistency; do not overstate isolation.
+4. On each mic, compare a stable grip with gentle routine hand motion; add a correctly fitted windscreen and test only in safe, manageable moving air. Do not expose electronics to rain or create hazardous wind or loudness for a demonstration.
+5. Have the guest turn, interrupt and step to a premarked safe position. The operator maintains useful microphone-to-mouth geometry without colliding with the camera or guest. Check the selected program feed and a tested fallback.
+6. Record a final setup note: placement, pattern, windshield, input/headroom, camera line, background, weather, channel/IFB/PA routes and any unresolved limitation.
+Pass criterion: the student demonstrates a deliberate handoff, identifies the omni versus directional tradeoff, controls wind and handling without promising perfect isolation, documents a safe location, and verifies the live program path.
+# Student observation sheet
+Location and permission __________________  Camera position __________________  Date __________________
+Trial
+Mic position and route
+Speech, background, handling and decision
+Omni central
+________________________
+____________________________
+Omni handoff
+________________________
+____________________________
+Directional handoff
+________________________
+____________________________
+Wind/handling check
+________________________
+____________________________
+Movement/fallback
+________________________
+____________________________
+Mic/pattern ______________________  Windshield __________________  Weather/noise __________________
+Gain/headroom ___________________  Camera/crew clearance ______________  RF/cable check ______________
+Program/PA/IFB paths ______________________  Selected method and limitation _________________________
+# Critical evidence audit
+# Points of agreement
+Shure and RØDE support source-proximate handheld speech in field interviews. RØDE, Shure, Sennheiser and Electro-Voice distinguish forgiving omni handling from the more careful aiming of directional patterns. Rycote and Shure describe graded wind protection and do not establish a windproof microphone. [1–10]
+# Differences and direct tensions
+The RØDE Reporter manual proposes a shared chest-height position for a typical interview; RØDE’s broader guidance stresses close placement for intelligible speech. Both can be true at different ambient levels and speaker spacing. Electro-Voice product language calls its built-in pop filtering impervious to wind, while dedicated windscreen guidance treats wind as a condition requiring suitable protection. Teach a monitored test, not literal immunity. [1, 3, 5, 9, 10]
+# Important gaps
+None of these sources supplies a universal mouth distance, tolerated wind speed, handoff timing, RF channel, or safe position at every venue. The actual mic manual, camera composition, local noise, wireless coordination, weather and location authority govern the final arrangement. Roadside, emergency and severe-weather reporting require operational safety planning beyond this microphone exercise. Confidence is high in the close-placement and pattern principles; any particular site setup needs verification.
+# Primary sources and curriculum connections
+Manufacturer and public-safety guidance consulted October 4, 2026. Linked pages may contain media; no audio examples are supplied in this lesson.
+[1] RØDE How To Record Better Interview Audio
+[2] Shure Audio Systems Guide for Video and Film Production
+[3] RØDE Reporter User Manual
+[4] Shure Handheld Wireless Microphones for Presenters
+[5] Electro-Voice RE50B Handheld Interview Microphone
+[6] RØDE Reporter Product Guidance
+[7] Sennheiser MD 46 Handheld Microphone
+[8] Shure Troubleshooting Wireless Dropouts
+[9] Rycote Mic Foams and Reporter Wind Protection
+[10] Shure Methods to Minimize Wind Noise
+[11] Shure Wireless Workbench Mobile User Guide
+[12] National Weather Service Lightning Safety Overview
+Cross-links: B02 news anchors and seated interviews; B04 boom and camera-mounted pickup; B05 lavaliers; B10 sideline and post-event interviews; F09 location speech and practical sounds.

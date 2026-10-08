@@ -1,0 +1,88 @@
+# News Anchors and Seated Interviews Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B02  •  On-camera seated speech
+A seated news anchor or interview guest may look toward a camera, a co-anchor, a monitor, or another person. Place the microphone so speech remains intelligible through those turns and through normal posture changes while fitting the shot. This lesson compares visible and concealed lavaliers, desk microphones and a boom just outside the frame; it also tests live program routing. No audio examples are included.
+# Define the shot, movement and acoustic target
+Ask the camera director or operator for the widest actual framing, camera moves, lighting boundaries and likely head turns before placing hardware. Listen at the seat for ventilation, equipment fans, a reflective tabletop and room reverberation. Mark whether the anchor must stand, swivel, handle papers or use a tablet. A mic hidden successfully in one close shot may appear in a wider angle, while a microphone placed just outside a static frame may enter when a camera reframes. RØDE identifies the stationary head-and-shoulders interview as a useful case for close lavalier or near-frame boom placement. [1]
+A chest-mounted lavalier hears the voice from below the mouth and remains at roughly the same torso position as the wearer moves, but head turns change mouth-to-mic geometry. An overhead boom hears a different, often more open perspective without wardrobe noise, but its distance changes if the speaker leans or leaves its pickup area. A desk mic avoids mounting on wardrobe, though papers, keyboard handling, and hard-table reflections become important. Select the first position by the actual scene and intended program route, then monitor it with representative delivery. [1–4]
+# Visible lavalier as a reliable first trial
+Place a model-compatible lavalier near the center chest or upper sternum on a firm clothing edge, clear of hair, jewelry, scarves and moving jacket layers. This is a starting area, not a universal distance: Sennheiser specifies about 25 cm (10 in) mouth separation for its ME 2, while RØDE describes the sternum as a useful general location. An offset lapel can be convenient, but rehearse turns toward and away from it; a centered placement often reduces left-versus-right turn imbalance. Check the mic manual and its intended orientation, wind protection and connector. [2, 5, 6]
+Use a neat cable path with a small service/strain-relief loop below the clip where practical. Secure the remaining cable without tightening it across moving fabric, and keep the transmitter or cable connector from tugging on the capsule when the person sits or stands. RØDE describes the broadcast loop and a secondary taped loop for this purpose. Confirm the actual clip and fabric hold; a thin shirt or loose lapel may need a different model-compatible accessory. Ask permission before attaching equipment to a person or clothing and let wardrobe staff coordinate the mount. [2, 6]
+Rehearse in camera posture: look at each camera, turn to an interview partner, lower the chin to read, and make the expected hand movements. Listen for voice coloration, reduced level on turns, breath blasts, cable thumps and fabric brushing the capsule. Change position or garment contact before reaching for EQ or denoising. A headworn mic can keep capsule-to-mouth distance more constant when movement or reinforcement demands it, but it is a separate visual choice and is developed in B05. [3, 7]
+# Conceal only after the visible position works
+When the production requires an unseen mic, test a compatible concealer or appropriate mount inside the garment or at an approved neckline, keeping fabric from scraping the grille. Secure the capsule and cable separately with slack and strain relief; use skin-safe adhesive when contact with skin is required and check sensitivities with the wearer. RØDE presents tape and purpose-built mount examples, not an all-fabric guarantee. Do not put adhesive on skin, cut wardrobe, or pierce fabric without consent and the wardrobe team’s approval. [2]
+Monitor a full movement rehearsal while the actual jacket, tie, blouse, hair, makeup, jewelry and IFB are in place. A capsule covered by cloth can lose high-frequency clarity and suffer intermittent rubbing; concealer shape, fabric and tiny position changes matter. Model-specific caps can compensate for some covered placements, but choose the cap only by its manufacturer guidance and listening test. Keep a visible lav or a workable boom available if the hidden mount is noisy. [2, 8]
+# Use a boom just outside the shot
+For a stationary interview, mount a suitably directional microphone above and slightly in front of the speaker, just outside the widest active frame, aimed toward the mouth or upper chest. RØDE describes a several-inch-from-subject overhead trial in a tight talking-head shot, but that is an example, not a guaranteed clearance for any lens. A second camera, overhead light, eyeline or cue screen can force another approach. Keep the stand, arm and mic out of every camera and lighting path; a secured stand and approved overhead rig are necessary before anyone sits beneath it. [1]
+Aiming and distance remain critical even with a shotgun: its polar pattern does not make a distant voice close. In a reflective interior, compare a compact directional boom mic with a shotgun in that particular room. Shotgun off-axis coloration and reflected sound can be troublesome; choose by monitored result, not by a universal indoor ban or a claim that the longest interference tube reaches farther. If the subject turns between interviewer and camera, test both directions and consider an operator cue, a wider-angle pickup or a lavalier. [1, 9, 10]
+Below-frame booming is an alternative when lights, set, or sight lines block an overhead position; keep it away from the hard desk edge and check tabletop reflections and hand noise. A fixed stand boom cannot automatically follow a moving subject. In a multicamera interview, one boom may need an operator or separate speaker channels, and the picture may make a sufficiently close boom impossible. Distinguish a boom as the program mic from a lavalier safety track; when both hear the same speech, inspect the combined feed for coloration from different arrival times and use the intended channel rather than blindly summing both. [1, 4, 10]
+# Desk microphones and tabletop reflections
+Choice
+Placement trial
+Principal limitation
+Gooseneck or small desk stand
+Aim the capsule at the talker and raise it above the table enough to be closer to the mouth, while checking the shot. Shure contrasts this with flat tabletop pickup. [4, 11]
+Visible hardware; the speaker may turn or lean out of its useful axis. Keep the base isolated from paper, taps and typing.
+Boundary microphone
+Mount a boundary-designed microphone as specified on a suitable tabletop; place it toward the speaker and leave its designed acoustic aperture clear. [11, 12]
+Low profile, but it can collect table activity, multiple voices and more room at a longer mouth distance. Do not treat an ordinary lav taped to the table as equivalent to a purpose-built boundary microphone.
+Fixed stand outside frame
+Aim a directional mic toward a predictable seated mouth position, nearer than a camera mic where the frame allows. [1]
+A reframe or swivel can change tone and level. Check mount stability and the off-axis voice in rehearsals.
+A flat reflective desk can combine direct and reflected sound at a raised microphone, producing frequency-dependent coloration. A purpose-built boundary mic places its element close to the surface and changes that local reflection geometry, yet it does not remove all room reflections or paper noise. A gooseneck moves the capsule nearer the person and away from desk activity. Move the mic, the papers or the person’s working position and compare at similar listening level; do not assume that “boundary” always wins. [4, 11, 12]
+# Two speakers and live continuity
+For an anchor and guest, assign separate close mics and independently labeled channels where possible. Rehearse each in turn, then a natural overlap, looking across the desk and into the camera. A shared boundary or a wide boom may be adequate in a quiet, controlled room but gives less level and routing control, especially when one person speaks softly and the other handles papers. Mute unused channels as the format permits and check the summed program for bleed, tonal changes and room buildup. [1, 4]
+Trace each mic to the recorder, live program, headphones/IFB, talkback and any room PA. A normal TV news set may not reinforce the anchor’s lav through local loudspeakers; a public interview or studio audience can require reinforcement, so monitor spill and feedback margin change the decision. Keep a tested fallback: a second independently checked mic/channel or an available boom/desk feed, with a clear operator cue for switching. Two unverified mics are not redundancy. Wireless lavaliers require coordinated compatible transmitters, receivers, power and RF checks by the responsible technician. [6, 13]
+# Guided placement lab
+1. Choose a seated two-person camera layout. Mark the widest shot, each eyeline, expected head turns, desk working area and room noise. Define whether this is a recorded interview, live program or reinforced event.
+2. Fit one visible lavalier to each speaker with consent and a checked cable loop. Set gain with normal and emphatic speech. Listen to each isolated channel while the speaker faces the camera, the partner and the desk.
+3. On one speaker, test an approved concealed mount in the actual garment. Compare with the visible mount for speech clarity, fabric noise and normal movement; restore the visible mount if concealment fails.
+4. With qualified rigging, position a boom just outside the widest frame and aim at one talker. Compare overhead and a safe below-frame alternative if available, then compare compact directional and shotgun choices in the room.
+5. Test a correctly mounted boundary or gooseneck on the desk, one at a time. Move papers and let the speaker turn. Note the difference between direct voice, room, tabletop activity and visible framing.
+6. Rehearse turn-taking and overlap with separate channels. Check each channel, selected program and live routes, then document one primary position and a tested fallback. Keep gain controlled and headphones comfortable.
+Pass criterion: a student can explain why each placement meets the actual camera frame, preserve usable speech through head turns, identify clothing or desk noise before processing, distinguish a genuine boundary mic from a lav placed on a surface, and demonstrate a safe primary and fallback route. No audio examples.
+# Student observation sheet
+Production ____________________  Shot/framing ____________________  Room ____________________
+Trial and speaker
+Geometry and channel
+Head turn, noise, picture and choice
+Visible lav
+__________________________
+____________________________
+Concealed lav
+__________________________
+____________________________
+Overhead/below boom
+__________________________
+____________________________
+Desk microphone
+__________________________
+____________________________
+Overlap/fallback
+__________________________
+____________________________
+Garment/consent __________________  Wider camera check __________________  Desk activity __________________
+Mic and mount models ______________  Power/RF check _____________________  Program/IFB/PA route __________
+Best position and reason ________________________________  Remaining limitation __________________
+# Critical evidence audit
+# Points of agreement
+RØDE, DPA, Shure and Sennheiser agree that placement close enough to favor speech, a stable mount and testing with actual movement matter. Broadcast lavs, booms and desk pickup solve different camera and movement constraints. Multiple open microphones and a distant tabletop position can increase room or competing-sound pickup. [1–7, 11]
+# Differences and limits
+RØDE describes a sternum trial, and Sennheiser gives an approximately 25 cm mouth distance for a particular lav model; these are compatible examples rather than one rule for all clothing and capsules. A visible lav avoids some concealment noise but can color sound with head turns; a close boom avoids wardrobe contact but can fall outside the active frame or pickup zone. A boundary mic manages the local surface reflection differently from a raised mic; it does not promise reflection-free speech. [1–6, 11, 12]
+# Contradictions and gaps
+Some promotional descriptions say shotgun microphones “capture sound at a distance,” while model guidance also stresses placing them close: directional rejection cannot restore the direct-to-reverberant ratio lost through excessive distance. Sources do not supply one best angle, shot margin, wireless frequency plan, gain value, or fallback route for every set. Validate those with the actual lens, room, wardrobe, microphone manual and venue operator. [1, 9, 10, 13]
+# Primary sources and curriculum connections
+Manufacturer technical guidance consulted October 4, 2026. Linked pages may contain media; this document contains no audio examples.
+[1] RØDE How To Record Better Interview Audio
+[2] RØDE Lavalier Mounting Best Practices
+[3] DPA Miniature Mics in Broadcast
+[4] Shure Audio for Distance Learning
+[5] Sennheiser ME 2 Manual
+[6] Sennheiser Attaching the Clip On Microphone
+[7] DPA How to Mic Speech on Stage with Miniature Mics
+[8] Countryman B6 Lavalier Datasheet
+[9] Shure Choosing a Shotgun Microphone
+[10] RØDE How Far Away Can I Be from a Shotgun Microphone
+[11] Shure Guide to Corporate Sound
+[12] Shure Audio Systems Guide for Meetings and Conferences
+[13] Shure Selection and Operation of Wireless Microphone Systems
+Cross-links: B01 hosts for close speech and multi-open-mic control; B04 boom and camera-mounted pickup; B05 lavalier and concealed pickup; B06 panels and press conferences; Ensembles and Voice for vocal behavior.

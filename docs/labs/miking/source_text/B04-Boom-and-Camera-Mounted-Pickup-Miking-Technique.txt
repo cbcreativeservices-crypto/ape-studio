@@ -1,0 +1,84 @@
+# Boom and Camera Mounted Pickup Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B04  •  Dialogue and camera perspective
+A boom can put a microphone near a speaker while keeping it outside the picture. A camera-mounted mic moves with the lens, so its voice pickup changes when camera distance and angle change. This lesson teaches overhead, below-frame and conditional side placement; compares compact directional and shotgun microphones in an actual room; and tests a camera microphone as a deliberate alternative. No audio examples are included.
+# Start with source distance, the shot and the route
+Ask the camera operator for the widest active frame, every simultaneous camera angle, reframes, movement path, lighting and shadows. Identify the speaking positions and their expected turns. Choose the closest safe microphone position allowed by those constraints, then check the picture at that exact placement. A shotgun rejects some off-axis sound but does not “zoom” a distant voice closer; moving the camera back normally moves an on-camera mic back as well and can expose more room or environmental sound relative to speech. [1–4]
+Trace microphone power and output through the camera or recorder before rehearsal. Check the specific model’s phantom, battery or plug-in-power needs, connector wiring, channel assignment and input setting. Test normal and emphatic speech, watch input meters and leave headroom at every stage. When a separate recorder is used, preserve a clear channel and time/sync workflow; an on-camera track can serve as reference or backup but should be evaluated on its own merits, not automatically treated as the final dialogue. [2, 5]
+# Position a boom close and just outside every frame
+Position
+Initial geometry
+Check in the actual scene
+Above frame
+Put the mic slightly in front of and above the active speaker, just outside the widest frame; aim the capsule toward the mouth or upper chest. Mark a safe clearance and allow for movement. [2, 6]
+Test shadow, eyeline, head turns, boom tip and pole intrusion. Aim the rejection region away from a dominant noise where the pattern permits; avoid a hard reflector behind the voice.
+Below frame
+When the top of frame, lighting or set blocks overhead pickup, bring a boom from below and aim toward the mouth, staying clear of the desk and knees. [6, 7]
+Compare tonal shift, reflections from a desk or ceiling, footsteps, clothing and operator clearance. Do not assume it matches an overhead perspective.
+Side or oblique
+Use only when blocking and the shot prevent better geometry; keep the mic near the speaker, aimed along its usable axis, with a clear operator path. [7]
+Compare voice balance as the head turns and what falls behind the subject in the mic’s direction. It may admit more horizontal ambient sound; audition rather than impose a ban.
+RØDE recommends above as a general first position and below when required, while Shure notes that a shotgun can also be placed slightly to the side to stay out of frame. These are different production constraints, not a universal physical prohibition. The microphone must have a clear path, the performer must have room to act and the crew must see the edge of frame. A fixed stand boom works for a predictably seated subject; a moving subject requires a skilled operator or another pickup plan. [2, 6, 7]
+Cue the boom for each person before the speaking turn, using script or interview blocking. Shift the axis smoothly and avoid sweeping over a loud background source if possible. One narrow boom aimed at the current speaker cannot guarantee equally clean overlapping dialogue from another person. For frequent overlap or very wide simultaneous shots, evaluate separate body-worn or stand microphones and test the combined program rather than treating a distant boom as coverage. [2, 7]
+# Choose a microphone in the room, not by length alone
+Outdoors or in a relatively reflection-free location, a suitable shotgun can emphasize an on-axis talker while rejecting some side sound, but nearby traffic in front of it or wind at the capsule can still dominate. Inside a reflective room, compare a short shotgun with a compact cardioid, supercardioid or hypercardioid mic at similarly usable positions. The interference tube’s frequency-dependent off-axis response may color reflected speech; a compact directional design may sound more stable in some rooms. Neither type is universally best indoors, and its pattern does not replace proximity. [1, 6, 8, 9]
+Check the rear lobe and frequency-dependent polar pattern of the actual supercardioid/hypercardioid before pointing it toward a PA loudspeaker or another talker. Aim the mic at the mouth, but also listen for what its axis points toward after passing the person: hard floor, window, loudspeaker or noisy crowd may be reflected into the pickup. Moving the mic and changing the scene’s reflective geometry may improve speech more than choosing a longer tube. SCHOEPS describes a compact supercardioid as an indoor alternative, whereas RØDE identifies the same reflection issue with shotgun mics. These are manufacturer examples, not a universal equipment ranking. [6, 8, 9]
+# Handle wind, movement and mounting noise
+Use a compatible suspension and manage the cable so it cannot rattle against the pole or tug the capsule. Check locks, pole joints, mount rating and connector retention before moving over people; never let a mic, clamp or cable swing above performers. An overhead stand or rig must be approved and secured by qualified crew for the venue, with a clear exclusion path during setup. Ask camera and lighting crew for clearance before each new position. [6, 7, 10]
+Outside, add wind protection sized to the microphone and weather: foam may be adequate for mild conditions, while a fitted basket/blimp and fur layer offer more protection in stronger wind. Keep the microphone away from direct gusts and monitor for low-frequency buffeting. Windscreens and shock mounts attenuate particular problems; they are not waterproof and cannot restore an overloaded take. Do not expose an unapproved mic or recorder to precipitation or hold a conductive pole near overhead power lines. Move to a safe location or stop if access, weather or rigging is unsafe. [6, 10]
+Practice a quiet grip and slow repositioning. Cable loops, rubbing fingers, foot movement and a boom that drifts into frame can all damage a take. Fatigue changes height and aim, so schedule relief and shorten reach instead of stretching to the limit. A live program has no chance to select another take; monitor the program feed and retain a tested backup position or channel. [7, 10]
+# Use camera-mounted pickup intentionally
+Mount the mic with the maker’s shoe or clamp, secure its cable so it does not touch controls or lens mechanisms, and verify that the camera does not block the capsule or any side ports. Aim where the source will actually be, not merely wherever the lens points if speakers are off-axis. Use the camera mic for close self-presentation, nearby environmental perspective, a run-and-gun fallback or a guide track when it yields an acceptable result. If the subject is farther back, compare a close boom or lavalier rather than raising camera gain and calling that equivalent. [1, 3, 4, 5]
+Test with the camera operator panning, reframing, focusing and touching controls. Suspension may reduce but not eliminate handling and motor noise. If the camera has automatic gain control, inspect how it treats pauses and changing background; use a tested manual setting if available and appropriate. Check the correct cable and mic/line level on the specific camera, plus headphone monitoring and recorded playback. A mic mounted on the camera is still an airborne microphone with a real acoustic position; it cannot avoid room reverberation by being directional. [1, 3, 4, 5]
+# Live broadcast and reinforcement
+Separate recorder, camera return, program, talkback, IFB and any audience PA destinations. Confirm which mic is actually on air after a switch. A boom used for a live public event may pick up PA sound and reduce gain before feedback if routed back into nearby loudspeakers; its working position and pattern must be checked with the system operator. Studio dialogue using headphones and no local reinforcement has a different feedback risk. For two open microphones hearing the same speech, listen to each alone and their program sum for coloration caused by different arrival times. Choose the intended feed or manage overlap; do not apply an arbitrary delay as an automatic cure. [2, 5]
+# Guided placement lab
+1. Set up a safe seated two-person mock interview with the camera at a close and then a wider frame. Mark the widest active image, lighting shadow boundary, speaking points, hard surfaces and operator path. Use modest voice levels; no audio examples are supplied.
+2. Place an approved boom just above the close frame and aim at Speaker A. Record normal speech, head turns and a brief reply from B. Check image edges, isolated pickup, direct-to-room balance and pole noise. Recheck the wider frame before every take.
+3. Compare a safe below-frame position, then a safe oblique side position if the geometry permits. Keep each as close as the shot allows and note tonal, room, handling and visual differences. Reject any position that creates collision or unsafe reach.
+4. In the same room, compare a compact directional mic and a shotgun at the same practicable boom geometry. Inspect off-axis dialogue and reflections, then change geometry if that has more effect than changing the microphone.
+5. Mount and test a camera microphone at close and wider camera distances. Keep speech delivery similar, verify camera channel and gain, and note whether movement or lens operation is audible. Compare the camera track with the source-proximate boom at matched playback loudness.
+6. Test a two-speaker exchange and natural overlap. Inspect independent tracks and selected program, identify a workable fallback, and document mic model, pattern, position, frame, power, windshield, mounting and channel route.
+Pass criterion: the student preserves performer and crew clearance, keeps a close boom outside all active frames, diagnoses indoor reflection and on-camera distance limits, handles a second speaker, and verifies a live route and safe fallback.
+# Student observation sheet
+Scene __________________  Room/ambient source __________________  Widest frame and cameras ______________
+Trial
+Geometry and mic
+Voice, noise, picture and decision
+Above boom
+________________________
+____________________________
+Below / side
+________________________
+____________________________
+Compact / shotgun
+________________________
+____________________________
+Camera close / wide
+________________________
+____________________________
+Two speakers / live
+________________________
+____________________________
+Mount approval __________________  Wind/suspension __________________  Cable and power _________________
+Camera/recorder/channel ____________________  Program/PA/IFB path ____________________
+Selected setup and remaining gap ________________________________________________________________
+# Critical evidence audit
+# Points of agreement
+RØDE and Shure agree that source distance, accurate aim, room sound, wind protection and secure mounting matter. RØDE’s current shotgun guidance explicitly rejects the idea that directionality zooms a voice in. SCHOEPS and RØDE describe the potential advantage of a compact directional microphone in a reflective interior. [1–9]
+# Different approaches and direct contradictions
+RØDE’s boom article calls above the preferred position and advises against side pickup; Shure permits a slight side position when it keeps the mic out of frame. Both are workable as conditional trials: compare the actual voice, background and picture. RØDE’s interview article calls a shotgun capable of capture at a distance, but its later support guidance says closeness still improves clarity and a shotgun cannot zoom. Teach the latter physical limit while treating model-specific range figures as context, not universal promises. [1, 2, 6, 7]
+# Gaps and confidence
+The sources provide no universal pole height, mouth distance, safe overhead support, interior mic winner, acceptable camera distance or treatment for every room. Confidence is high in the distance and geometry principles; the final setup requires actual camera framing, microphone specifications, monitored tests and qualified mounting where equipment is overhead. A broad promotional claim that dynamic microphones inherently reject room echo is not a valid substitute for comparing distance and polar pattern.
+# Primary sources and curriculum connections
+Manufacturer technical guidance consulted October 4, 2026. Linked pages may contain media; no audio examples are included in this lesson.
+[1] RØDE Shotgun Microphone Distance Guidance
+[2] RØDE How To Record Better Interview Audio
+[3] RØDE Audio For Film 101
+[4] Shure Shotgun Mics and Video Production
+[5] Shure Audio Systems Guide for Video and Film Production
+[6] RØDE Guide to Indoor and Outdoor Boom Equipment
+[7] RØDE Boompole Usage and Best Practices
+[8] SCHOEPS CCM 41 Supercardioid Technical Discussion
+[9] SCHOEPS Film Dialogue Microphone Overview
+[10] Rycote Suspensions and Wind Protection
+Cross-links: B02 seated interviews for lavalier versus fixed boom; B03 handheld field interviews; B05 lavalier and concealed pickup; F09 location speech; F13 room acoustics.
