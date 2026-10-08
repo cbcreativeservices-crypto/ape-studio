@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 02:18 · ccode · b0d17d1d
+changed: Lab 6 group 2: corrections log section and phone-width captures
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · d5eeb7c8
+changed: Lab 6 group 2: model tests and the research brand names
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · ee9bb9cb
+changed: Lab 6 group 2: F06 ambience, F08 pass-bys, F07 wildlife, F05 Foley perspective
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · 9b1959fe
+changed: Lab 6 group 2: the shared field toolkit (frame G, sites, wind, safety, path, image, dish)
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
 ### 2026-10-08 00:10 · ccode · 22b6d7ae
 changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 4, sentry fixes)
 affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
