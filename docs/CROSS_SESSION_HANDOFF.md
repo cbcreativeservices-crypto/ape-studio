@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 17:05 · ccode · 3be3fc8d
+changed: NATIVE (next iOS build only): stopCapture never touches inputNode; capture closed on background, never opened there (Sentry APE-STUDIO-T)
+affects other side: nothing on the server. Branch native-ios-fixes moves the iOS runtime fingerprint — it ships only in an owner-ordered iOS build; never merge it into a branch that still publishes OTA to builds 33/34
+needs: nothing
+
+
+### 2026-10-07 16:56 · ccode · 3a759dc8
+changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
+affects other side: nothing on the server (cherry-pick of a54dde1b onto native-ios-fixes; native — needs an owner-ordered iOS build)
+needs: nothing
+
+
 ### 2026-10-07 15:40 · ccode · c6214f1f
 changed: Merge remote-tracking branch 'origin/review-mixing' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Mixing Guides review merged onto final-lab; handoff conflict kept both entries; no DB; not published)
