@@ -637,6 +637,9 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-10-08 09:33 · ccode · 46776ace
 changed: Merge owner-draw: owner decisions 2026-10-08 (B10 reporter, hand colour)
 affects other side: nothing (client-only drawing changes)
+### 2026-10-08 09:36 · ccode · eede2984
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a47361a9d982063cf
+affects other side: nothing (client-only merge of final-lab, with owner-x, into owner-l)
 needs: nothing
 
 
@@ -652,6 +655,24 @@ affects other side: nothing (client-only: Miking engine rounding, wording, dock 
 ### 2026-10-08 09:07 · ccode · cd3923e8
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a62db0a96f54d3054
 affects other side: nothing (client-only owner-draw branch: B10 faint reporter + REPORTER'S HAND label, figure hands on the shared skin; e74f091c)
+needs: nothing
+
+
+### 2026-10-08 09:22 · ccode · 9199684c
+changed: Miking Lab 7: shotguns read to the capsule in B04, B10, B11 (owner: capsule everywhere)
+affects other side: nothing — app lesson content only (Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-08 09:04 · ccode · f6a230e7
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a47361a9d982063cf
+affects other side: nothing (client-only merge of final-lab into owner-l)
+needs: nothing
+
+
+### 2026-10-08 09:03 · ccode · 2b30ec36
+changed: Miking Labs 6-7: apply the owner's lesson decisions of 2026-10-08 (owner-l)
+affects other side: nothing — app lesson content only (Miking stays hidden); no backend, schema or release-gate change
 needs: nothing
 
 

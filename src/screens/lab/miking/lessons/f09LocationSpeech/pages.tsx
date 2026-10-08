@@ -40,6 +40,7 @@ import { SINGER_TOP } from '../shared/voice/voicePose.ts';
 import { boomStart, distanceDb, frameForShot, micToMouth, SHOT_IDS, SHOTS, turnedMouth, type ShotId } from '../shared/field/location.ts';
 import { Aim, Dim, FieldStage, MicAt, Ray, uvOf } from '../shared/field/FieldStage';
 import { BOOM, F09_VIEWS, GRIP, LAV_P, LENS } from './geometry.ts';
+import { SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
 import { LocationScene } from './scene';
 import { Group } from '@shopify/react-native-skia';
 
@@ -70,13 +71,14 @@ function useFrameStep(): MikingStep {
   const [shot, setShot] = useState<ShotId>('medium');
   const [seen, setSeen] = useState<ReadonlySet<ShotId>>(() => new Set(['medium']));
   const frame = useMemo(() => frameForShot(LENS, shot), [shot]);
-  const boom = useMemo(() => boomStart(frame, { clearance: 150, elevDeg: 45 }), [frame]);
+  const boom = useMemo(() => boomStart(frame, { clearance: 150, elevDeg: 45, capsule: SHOTGUN_CAPSULE_MM }), [frame]);
   const dBoom = boom.d;
   const dLav = Math.hypot(LAV_P.x, LAV_P.y, LAV_P.z);
   const db = distanceDb(dLav, dBoom);
-  const tail = sub(boom.p, v3(boom.aim.x * 250, boom.aim.y * 250, 0));
+  // Owner 2026-10-08 (L6A): the tip keeps the clearance; the readout is the capsule.
+  const tail = sub(boom.tip, v3(boom.aim.x * 250, boom.aim.y * 250, 0));
   const words = `${SHOTS[shot].label.toLowerCase()} shot (${SHOTS[shot].words})`;
-  const a11y = `A talker at a counter seen from the right, the camera 2.5 metres in front, its frame drawn as dashed lines: a ${words}. The boom mic sits 15 centimetres above the top of the frame, ${cm(dBoom)} from the lips, aimed at the mouth; a body mic on the chest is ${cm(dLav)} from the lips.`;
+  const a11y = `A talker at a counter seen from the right, the camera 2.5 metres in front, its frame drawn as dashed lines: a ${words}. The boom mic’s tip sits 15 centimetres above the top of the frame, aimed at the mouth, its capsule ${cm(dBoom)} from the lips; a body mic on the chest is ${cm(dLav)} from the lips.`;
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -122,7 +124,7 @@ function useFrameStep(): MikingStep {
             <>
               <LocationScene view="side" variant="set" frame={frame} />
               <Ray a={uvOf('side', tail)} b={uvOf('side', GRIP)} px={px} color="#3a3d45" width={5} dash={[1000, 0]} />
-              <MicAt view="side" p={boom.p} aim={boom.aim} art="shotgun" r={9.5} len={250} />
+              <MicAt view="side" p={boom.tip} aim={boom.aim} art="shotgun" r={9.5} len={250} />
               <MicAt view="side" p={LAV_P} aim={unit(sub(LIP, LAV_P))} art="lavalier" r={3} len={12} />
               <Dim a={uvOf('side', LIP)} b={uvOf('side', boom.p)} px={px} />
               <Dim a={uvOf('side', v3(-30, 0, 0))} b={uvOf('side', v3(-30, LAV_P.y, 0))} px={px} color="#cfd4dc" />
@@ -139,7 +141,7 @@ function useFrameStep(): MikingStep {
       <>
         <Landing looking="Side view · the talker, the camera and its frame" prompt="Switch SHOT: close, medium, wide. Where can the boom go — and the body mic?" />
         <Card>
-          <Point title={`${SHOTS[shot].label} SHOT`}>{`The frame’s top edge sits ${shot === 'close' ? 'just' : shot === 'medium' ? 'a little' : 'well'} above the head. The boom stays 15 cm above that edge, aimed down at the mouth — ${cm(dBoom)} from the lips. The body mic on the chest stays ${cm(dLav)} away whatever the shot: here the boom hears the voice about ${db.toFixed(0)} dB weaker than the body mic does (by distance alone).`}</Point>
+          <Point title={`${SHOTS[shot].label} SHOT`}>{`The frame’s top edge sits ${shot === 'close' ? 'just' : shot === 'medium' ? 'a little' : 'well'} above the head. The boom’s tip stays 15 cm above that edge, aimed down at the mouth — its capsule ${cm(dBoom)} from the lips. The body mic on the chest stays ${cm(dLav)} away whatever the shot: here the boom hears the voice about ${db.toFixed(0)} dB weaker than the body mic does (by distance alone).`}</Point>
         </Card>
         {seen.size === 3 ? <Note tone="ok">A wider shot pushes the boom farther from the mouth — more room and noise against the voice. The body mic keeps its distance, but sounds of the chest and the clothes. Often both are recorded, each on its own channel, and the editor chooses.</Note> : null}
         <Body>The camera, its distance and the three shots are drawing defaults; the distances and the dB come from the drawing, by distance alone — a simplified picture. Move a mic, not the gain.</Body>
@@ -205,6 +207,8 @@ function useTurnStep(hidden: boolean): MikingStep {
     { k: 'BODY MIC', v: `${cm(l.d)} · ${deg(l.offAxis)}`, flex: 1.2 },
   ];
   const boomTop = uvOf('top', BOOM.p);
+  // The shotgun's tip, 200 mm ahead of the capsule the readouts use (owner 2026-10-08, L6A).
+  const boomTip = v3(BOOM.p.x + boomAim.x * SHOTGUN_CAPSULE_MM, BOOM.p.y + boomAim.y * SHOTGUN_CAPSULE_MM, BOOM.p.z + boomAim.z * SHOTGUN_CAPSULE_MM);
   return {
     key: 'turn',
     title: 'The head turns',
@@ -231,7 +235,7 @@ function useTurnStep(hidden: boolean): MikingStep {
               <TurnedHead yawDeg={yaw} />
               <Ray a={uvOf('top', m.mouth)} b={uvOf('top', axisEnd)} px={px} color="#e8eaee" width={2.2} />
               <MicAt view="top" p={LAV_P} aim={unit(sub(LIP, LAV_P))} art="lavalier" r={3} len={12} />
-              <MicAt view="top" p={BOOM.p} aim={boomAim} art="shotgun" r={9.5} len={250} />
+              <MicAt view="top" p={boomTip} aim={boomAim} art="shotgun" r={9.5} len={250} />
               <Aim from={boomTop} dir={{ u: boomAim.x, v: boomAim.z }} len={Math.max(60, Math.hypot(boomAim.x, boomAim.z) * 420)} px={px} />
               <Dim a={uvOf('top', m.mouth)} b={boomTop} px={px} />
             </>

@@ -544,7 +544,7 @@ export const F01_LESSON: Lesson & { sp: SpExtra } = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. Every shoe, surface, performer and room is different: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged. The lab is silent and draws a simplified picture: one walker mid-stride, the floor cut open, a shotgun’s narrowing as a simplified shape, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the middle of the steps to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. Every shoe, surface, performer and room is different: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged. The lab is silent and draws a simplified picture: one walker mid-stride, the floor cut open, a shotgun’s narrowing as a simplified shape, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the middle of the steps to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
   copy: F01_COPY,
   sp: SP,
 };

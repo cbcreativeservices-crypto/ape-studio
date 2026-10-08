@@ -662,6 +662,6 @@ export const B01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Live: never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Live: never provoke feedback.',
   copy: B01_COPY,
 };

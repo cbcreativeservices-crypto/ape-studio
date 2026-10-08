@@ -169,3 +169,36 @@ export const FIELD_MIC_TYPES = {
     blurb: 'A cardioid facing forward, one facing back and a figure-8 facing sideways, close together: three tracks decoded afterwards to front and rear, left and right. Mark which side of the figure-8 is positive. Three channels of phantom power.',
   },
 } satisfies Record<string, MicType>;
+
+/**
+ * Owner 2026-10-08 (L6A): in Lab 6 every shotgun distance is read to its
+ * CAPSULE, as in F01–F05 (foley_footsteps/SOURCES.md §c). F09's three
+ * shotguns — on the pole, in the fur basket, on the camera — are the same
+ * mics as above with `body.fore` (the tube ahead of the capsule), so
+ * `pose.p` is the capsule. The ids above stay as they were for the Lab 7
+ * lessons that reuse them (B04, B10, B11). Sizes are drawing defaults.
+ */
+/** The short shotgun's capsule: about 200 mm behind its tip. */
+export const SHOTGUN_CAPSULE_MM = 200;
+/** In the basket (420 mm, the 250 mm shotgun centred): 85 mm of basket ahead of the tip. */
+export const FUR_CAPSULE_MM = SHOTGUN_CAPSULE_MM + 85;
+/** The camera-top shotgun (180 mm): its capsule about 130 mm behind its tip. */
+export const CAM_CAPSULE_MM = 130;
+
+function capsuleRead(base: MicType, id: string, capsule: number, why: string): MicType {
+  return {
+    ...base,
+    id,
+    body: {
+      ...base.body,
+      length: dd(base.body.length.mm - capsule, `${why}: the body behind the capsule (${base.body.length.mm} mm overall, drawing default)`),
+      fore: dd(capsule, `${why}: the part ahead of the capsule (drawing default ${capsule} mm)`),
+    },
+  };
+}
+
+export const F09_CAPSULE_MIC_TYPES: Record<string, MicType> = {
+  locBoomSgCap: capsuleRead(FIELD_MIC_TYPES.locBoomSg, 'locBoomSgCap', SHOTGUN_CAPSULE_MM, 'a short shotgun on the pole'),
+  locBoomFurCap: capsuleRead(FIELD_MIC_TYPES.locBoomFur, 'locBoomFurCap', FUR_CAPSULE_MM, 'the shotgun in its basket windshield'),
+  locCamCap: capsuleRead(FIELD_MIC_TYPES.locCam, 'locCamCap', CAM_CAPSULE_MM, 'the camera-top shotgun'),
+};

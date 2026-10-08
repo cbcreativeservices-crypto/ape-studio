@@ -678,6 +678,6 @@ export const B09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. No mic cancels a stadium; never provoke feedback; start the headphone level low.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. No mic cancels a stadium; never provoke feedback; start the headphone level low.',
   copy: B09_COPY,
 };

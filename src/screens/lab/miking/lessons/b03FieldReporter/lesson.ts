@@ -662,6 +662,6 @@ export const B03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
   copy: B03_COPY,
 };

@@ -89,7 +89,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: nothing touches the face, the boom clears glasses and the notes, and every cable is secured away from walkways and windows.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a commentator, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, booth and stadium is different.',
-      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with the commentator calling real play each time. Distances are measured to the mic’s FRONT — a headset capsule’s foam, a lip ribbon’s guard — and rounded to about 5 mm; no millimetre claim is made.',
+      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with the commentator calling real play each time. Distances are measured to the mic’s FRONT — a headset capsule’s foam, a lip ribbon’s guard — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m; no millimetre claim is made.',
       clearance: 'Clearance comes first: off the face, out of the breath, clear of glasses, a scarf and the notes.',
       tendencies: 'Closer tends to sound fuller and drier, with more breath and pops (the proximity effect); beside the mouth, softer pops; farther, more crowd and more of the partner. These are tendencies, and voices vary.',
     },
@@ -109,6 +109,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     side: { u0: -700, u1: 2400, v0: -1900, v1: 1260 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where the venue hangs it',
     looking: 'The commentator at the open rail · the PA cluster high to the front-left',
     prompt: 'The PA stays where the venue needs it. Turn or tilt the lip mic (AIM) until the PA sits in the figure-8’s side null — while its front still meets the mouth.',
     activityDone: 'done — the PA sat in the side null by your aim',

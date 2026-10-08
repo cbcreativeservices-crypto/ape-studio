@@ -45,6 +45,8 @@ export type ShotSpec = {
   /** A short shotgun read to its CAPSULE: the tube's length behind the tip
    *  that keeps clear of the frame (fieldmics SHOTGUN_BODY.fore). */
   tube?: number;
+  /** The camera mic read to its capsule: its tube ahead (owner 2026-10-08, L6A). */
+  camTube?: number;
   /** A body mic on the chest (frame V), when the lesson has one. */
   bodyMic?: Vec3;
   /** Draw the camera's own mic (and read it). */
@@ -79,7 +81,8 @@ export function useShotStep(spec: ShotSpec): MikingStep {
   const dBoom = boom.d + tube;
   /** Where the distance is read to: the front, or a shotgun's capsule. */
   const cap = v3(boom.p.x - boom.aim.x * tube, boom.p.y - boom.aim.y * tube, boom.p.z - boom.aim.z * tube);
-  const dCam = dist(cmic.p, LIP);
+  const camTube = spec.camTube ?? 0;
+  const dCam = dist(v3(cmic.p.x - cmic.aim.x * camTube, cmic.p.y - cmic.aim.y * camTube, cmic.p.z - cmic.aim.z * camTube), LIP);
   const dBody = spec.bodyMic ? dist(spec.bodyMic, LIP) : null;
   const mainView: ViewId = from === 'side' ? 'top' : 'side';
   const tail = v3(boom.p.x - boom.aim.x * 250, boom.p.y - boom.aim.y * 250, boom.p.z - boom.aim.z * 250);

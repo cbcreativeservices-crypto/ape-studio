@@ -34,6 +34,7 @@ import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { SINGER_TOP } from '../shared/voice/voicePose.ts';
 import { Aim, Dim, FieldStage, MicAt, Ray, uvOf } from '../shared/field/FieldStage';
 import { B04Scene } from './scene';
+import { CAM_CAPSULE_MM, SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
 import { BOOM_ABOVE, CAM_CLOSE, CAM_WIDE, FLOOR, HEAD_TOP, LAV } from './geometry.ts';
 
 type PageFn = (p: PageProps) => ReactNode;
@@ -174,6 +175,8 @@ function useTools() {
     ],
     from: ['above', 'below', 'side'],
     boom: { clearance: 150, elevDeg: 45, planDeg: -25, belowDeg: 40, sideDeg: 70, side: -1 },
+    tube: SHOTGUN_CAPSULE_MM,
+    camTube: CAM_CAPSULE_MM,
     bodyMic: LAV.at,
     camMic: true,
     scene: (view) => <B04Scene view={view} variant="close" operator={false} camera={false} />,
@@ -193,7 +196,7 @@ function useTools() {
   });
   const turn = useBodyTurnStep({
     mics: [
-      { id: 'boom', label: 'The boom, held still', short: 'BOOM', p: BOOM_ABOVE.p, rides: 'fixed', art: 'shotgun', r: 9.5, len: 250 },
+      { id: 'boom', label: 'The boom, held still', short: 'BOOM', p: BOOM_ABOVE.p, rides: 'fixed', art: 'shotgun', r: 9.5, len: 250, fore: SHOTGUN_CAPSULE_MM },
       { id: 'lav', label: 'The safety lav on the chest', short: 'LAV', p: LAV.at, rides: 'chest', art: 'lavalier', r: 3, len: 12 },
     ],
     top: () => <StandingPresenter view="top" headless />,

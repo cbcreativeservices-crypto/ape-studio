@@ -151,12 +151,12 @@ describe('F09: the boom, the body mic, the plant, the camera mic and the power l
     }
     // A mic raised toward the line is stopped by its keep-out.
     const sc = compileScene(F09.model, 'outdoor');
-    const hit = checkAssembly(sc, { p: v3(-900, -1100, 0), az: 0, el: -60 }, micBodyOf(MIC_TYPES.locBoomFur));
+    const hit = checkAssembly(sc, { p: v3(-900, -1100, 0), az: 0, el: -60 }, micBodyOf(MIC_TYPES.locBoomFurCap));
     assert.equal(hit?.partId, 'f9.power');
   });
   it('the boom pole reaches the operator’s grip; the body mic clips to the chest, never to the pole', () => {
     const sc = compileScene(F09.model, 'set');
-    const boom = assembly(sc, zone('loc.boom').start, micBodyOf(MIC_TYPES.locBoomSg)).find((s) => s.piece === 'arm')!;
+    const boom = assembly(sc, zone('loc.boom').start, micBodyOf(MIC_TYPES.locBoomSgCap)).find((s) => s.piece === 'arm')!;
     assert.ok(dist(boom.b, GRIP) < 1, 'the pole ends at the grip');
     const lav = assembly(sc, zone('loc.lav').start, micBodyOf(MIC_TYPES.locLav)).find((s) => s.piece === 'arm')!;
     assert.ok(dist(lav.a, lav.b) < 40, 'a short clip to the shirt');

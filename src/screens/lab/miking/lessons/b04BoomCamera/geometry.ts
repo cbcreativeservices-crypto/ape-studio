@@ -30,6 +30,7 @@ import { REACH_PART } from '../shared/broadcast/talkerModel.ts';
 import { BODY_MOUNTS } from '../shared/broadcast/bodyWorn.ts';
 import { SHOT_PRESETS, boomAbove, boomBelow, boomSide, cameraBody, cameraForShot, cameraMic, cameraShoe, footFan, headroomFan, sideFan, type BroadcastCamera } from '../shared/broadcast/cameraFrame.ts';
 import { operatorAt } from '../shared/broadcast/boomPole.ts';
+import { CAM_CAPSULE_MM, SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -52,21 +53,28 @@ export const CAM_OF: Readonly<Record<'close' | 'wide' | 'live', BroadcastCamera>
  *  the mouth; the angles are the lab's drawing: 45° up and 25° round toward
  *  the operator's side; below 40° down; beside 70° round, a little raised) ── */
 const B = { clearance: 150, planDeg: -25 };
-export const BOOM_ABOVE = boomAbove(CAM_CLOSE, LIP, { clearance: B.clearance, elevDeg: 45, planDeg: B.planDeg });
-export const BOOM_BELOW = boomBelow(CAM_CLOSE, LIP, { clearance: B.clearance, elevDeg: 40, planDeg: B.planDeg });
-export const BOOM_SIDE = boomSide(CAM_CLOSE, LIP, { clearance: B.clearance, side: -1, planDeg: 70 });
-export const BOOM_WIDE = boomAbove(CAM_WIDE, LIP, { clearance: B.clearance, elevDeg: 45, planDeg: B.planDeg });
+/** Owner 2026-10-08 (L6A): a shotgun is read to its CAPSULE, k mm behind
+ *  its tip on the same line. The TIP keeps the frame clearance (tip, where
+ *  the mic is drawn); p and d are the capsule and its distance. */
+function capsuleRead<T extends { p: Vec3; aim: Vec3 }>(b: T, k: number): T & { tip: Vec3; d: number } {
+  const p = v3(b.p.x - b.aim.x * k, b.p.y - b.aim.y * k, b.p.z - b.aim.z * k);
+  return { ...b, tip: b.p, p, d: Math.hypot(p.x - LIP.x, p.y - LIP.y, p.z - LIP.z) };
+}
+export const BOOM_ABOVE = capsuleRead(boomAbove(CAM_CLOSE, LIP, { clearance: B.clearance, elevDeg: 45, planDeg: B.planDeg }), SHOTGUN_CAPSULE_MM);
+export const BOOM_BELOW = capsuleRead(boomBelow(CAM_CLOSE, LIP, { clearance: B.clearance, elevDeg: 40, planDeg: B.planDeg }), SHOTGUN_CAPSULE_MM);
+export const BOOM_SIDE = capsuleRead(boomSide(CAM_CLOSE, LIP, { clearance: B.clearance, side: -1, planDeg: 70 }), SHOTGUN_CAPSULE_MM);
+export const BOOM_WIDE = capsuleRead(boomAbove(CAM_WIDE, LIP, { clearance: B.clearance, elevDeg: 45, planDeg: B.planDeg }), SHOTGUN_CAPSULE_MM);
 
 /* ── the camera's own mic, on its shoe ── */
-export const CAMMIC_CLOSE = cameraMic(CAM_CLOSE);
-export const CAMMIC_WIDE = cameraMic(CAM_WIDE);
+export const CAMMIC_CLOSE = capsuleRead(cameraMic(CAM_CLOSE), CAM_CAPSULE_MM);
+export const CAMMIC_WIDE = capsuleRead(cameraMic(CAM_WIDE), CAM_CAPSULE_MM);
 
 /* ── the boom operator: outside every frame on the talker's left, the pole
  *  held high (drawing defaults; poles reach 2.5 m) ── */
 export const GRIP_CLOSE = v3(1000, -350, -1000);
 export const GRIP_WIDE = v3(900, -450, -1300);
-export const OP_FEET_CLOSE = operatorAt(GRIP_CLOSE, BOOM_ABOVE.p, FLOOR);
-export const OP_FEET_WIDE = operatorAt(GRIP_WIDE, BOOM_WIDE.p, FLOOR);
+export const OP_FEET_CLOSE = operatorAt(GRIP_CLOSE, BOOM_ABOVE.tip, FLOOR);
+export const OP_FEET_WIDE = operatorAt(GRIP_WIDE, BOOM_WIDE.tip, FLOOR);
 
 /** The PA (live): at the stage's front corner on the talker's left, beyond
  *  the operator, facing the audience (+x): 2 m out, 1.9 m across, its
@@ -90,10 +98,10 @@ export const B04_VIEWS: Record<'close' | 'wide' | 'live', { side: ViewBox; top: 
 
 const W = VOICE_PART_WORDS;
 const S = SINGER_SOLIDS;
-const POLE_TYPES = ['locBoomSg', 'locBoomHyper', 'locBoomFur'];
+const POLE_TYPES = ['locBoomSgCap', 'locBoomHyper', 'locBoomFurCap'];
 
 const parts: Part[] = [
-  { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves the talker — almost all of it. Every distance here is measured from the lips to the front of the mic.', prov: FIG },
+  { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves the talker — almost all of it. Every distance here is measured from the lips to the mic’s capsule.', prov: FIG },
   { id: 'v.nose', ...W.nose, prov: FIG },
   { id: 'v.head', ...W.head, label: 'head and face', role: 'The head turns and reads down: a boom is re-aimed with it; nothing of the boom comes near the face.', solid: S.head, prov: FIG },
   { id: 'v.chest', label: 'chest (where a lav clips)', short: 'chest', role: 'A lav for a safety track clips here, with the talker’s agreement — on its own channel.', solid: S.torso, prov: FIG },

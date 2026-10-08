@@ -660,6 +660,6 @@ export const B06_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never provoke feedback; never send phantom power into an unverified feed.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Never provoke feedback; never send phantom power into an unverified feed.',
   copy: B06_COPY,
 };

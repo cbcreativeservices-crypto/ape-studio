@@ -90,7 +90,7 @@ export const F12_SURFACES: ReferenceSurface[] = [
 ];
 
 /** The ground as a reference PLANE: the signed distance is the height above it. */
-export const F12_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: F12_GROUND, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above the ground', minus: 'below the ground', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
+export const F12_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: F12_GROUND, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above', minus: 'below', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
 
 /** Keep-out: the road (nobody stands in traffic). The power line's 3 m (10 ft)
  *  keep-out is drawn round the conductor in the section (SiteArt): it is a rule

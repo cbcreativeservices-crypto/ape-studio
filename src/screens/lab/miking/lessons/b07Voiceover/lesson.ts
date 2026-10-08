@@ -659,7 +659,7 @@ export const B07_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, script and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reader in a typical standing pose, a host and a guest seated, the script stand’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never test a mic by blowing into it or by provoking feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, script and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reader in a typical standing pose, a host and a guest seated, the script stand’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Never test a mic by blowing into it or by provoking feedback.',
   copy: B07_COPY,
 };
 

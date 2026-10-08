@@ -91,7 +91,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     note: 'Ask first: the mic goes on a person only with their agreement, and they can take it off. Nothing is taped to skin except with an adhesive made for skin; wardrobe approves any change to the clothes.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a presenter, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, garment and room is different.',
-      separate: 'The place on the body, the distance and the angle off the mouth’s axis are separate variables: change one at a time, with the presenter speaking, turning and moving as they really will. Distances are measured to the capsule’s front and rounded to about 5 mm — no millimetre claim is made.',
+      separate: 'The place on the body, the distance and the angle off the mouth’s axis are separate variables: change one at a time, with the presenter speaking, turning and moving as they really will. Distances are measured to the capsule’s front and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m — no millimetre claim is made.',
       clearance: 'Clearance and comfort come first: the capsule off rubbing fabric, the cable looped and secured, the pack where it cannot fall or press — and the wearer’s agreement throughout.',
       tendencies: 'On the chest: one steady distance, a little chest-heavy, quieter as the head turns. Off the middle (a lapel): one turn quieter than the other. Hidden: duller and noisier with movement. A headset: steady with turns, the closest to the mouth. These are tendencies, and people vary.',
     },
@@ -111,6 +111,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     side: { u0: -600, u1: 1900, v0: -600, v1: 1620 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where a stage often puts it',
     looking: 'The presenter at the lectern · the PA at the stage’s front corner, on their right',
     prompt: 'The PA stays where the show needs it. Turn or tilt the headset’s capsule (AIM) until the PA sits in its rejection — while it still points toward the mouth.',
     activityDone: 'done — the PA sat in the headset’s null by your aim',

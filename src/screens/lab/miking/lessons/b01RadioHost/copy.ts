@@ -88,7 +88,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: nothing touches the host, the arm stays out of the sight line and the page turns, and the clamp holds within its rating.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a host, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, desk and room is different.',
-      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the host reading the real script each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm — no millimetre claim is made.',
+      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the host reading the real script each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m — no millimetre claim is made.',
       clearance: 'Clearance comes first: off the face, out of the sight line, clear of the hands and the papers.',
       tendencies: 'Closer tends to sound fuller and drier, with more breath and pops from a directional mic (the proximity effect); farther, more room and more of the other host; off the mouth’s line, softer pops. These are tendencies, and voices vary.',
     },
@@ -111,6 +111,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     side: { u0: -600, u1: 3000, v0: -1000, v1: 1260 },
     target: 'pa',
     targetWord: 'PA',
+    badgeWhere: 'the PA where a stage often puts it',
     looking: 'The host live at the desk · the PA at the stage’s front corner',
     prompt: 'The PA stays where the show needs it. Turn or tilt the MIC (AIM), or change its PATTERN, until the PA sits in the rejection — while the mic still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',

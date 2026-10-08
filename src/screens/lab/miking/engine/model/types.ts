@@ -582,7 +582,7 @@ export type OrderTask = { id: string; page: SourcePageId; prompt: string; steps:
  * for it. Feedback checks the reasoning for consistency with the brief and
  * the chosen setup; it never compares with one fixed answer.
  */
-export type SetupChoice = { id: string; label: string; ok: boolean; power: 'none' | 'phantom'; feedback: string };
+export type SetupChoice = { id: string; label: string; ok: boolean; power: 'none' | 'phantom' | 'pack'; feedback: string };
 export type SetupReason = { id: string; label: string; role: 'required' | 'optional' | 'wrong'; feedback: string };
 export type SetupTask = { id: string; page: SourcePageId; brief: string; setups: readonly SetupChoice[]; reasons: readonly SetupReason[]; explain: string };
 /** An ungraded prediction made BEFORE an activity (try before tell). */

@@ -89,11 +89,11 @@ const scenarios: MikingScenario[] = [
     id: 'loc.snd.1',
     page: 'sound',
     prompt: 'On a set, what is every distance in this lesson measured from?',
-    options: ['The talker’s lips, to the front of the mic', 'The camera’s lens, to the front of the mic', 'The talker’s chest, where a body mic goes'],
-    correct: 'The talker’s lips, to the front of the mic',
+    options: ['The talker’s lips, to the mic’s capsule', 'The camera’s lens, to the mic’s capsule', 'The talker’s chest, where a body mic goes'],
+    correct: 'The talker’s lips, to the mic’s capsule',
     explain: 'Speech leaves through the mouth, so the distances start at the lips. The camera decides where a mic may go, but the voice is measured from the mouth.',
     why: {
-      'The camera’s lens, to the front of the mic': 'The lens decides the frame, not the voice. A mic near the camera is as far from the mouth as the camera is.',
+      'The camera’s lens, to the mic’s capsule': 'The lens decides the frame, not the voice. A mic near the camera is as far from the mouth as the camera is.',
       'The talker’s chest, where a body mic goes': 'The chest is where a body mic sits; the voice still leaves through the mouth.',
     },
   },
@@ -378,12 +378,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'loc.mix.1',
     page: 'practice',
-    prompt: 'A wide shot puts the boom 90 cm away; the body mic is 21 cm away. What tends to follow?',
+    prompt: 'A wide shot puts the boom’s capsule 110 cm away; the body mic is 21 cm away. What tends to follow?',
     options: ['The boom hears more room against the voice', 'The boom hears the voice exactly as well', 'The body mic hears more room than the boom'],
     correct: 'The boom hears more room against the voice',
-    explain: 'By distance alone the boom hears the voice about 13 dB weaker than the body mic, with the room much the same — so more room against the voice. A tendency, judged by ear.',
+    explain: 'By distance alone the boom hears the voice about 14 dB weaker than the body mic, with the room much the same — so more room against the voice. A tendency, judged by ear.',
     why: {
-      'The boom hears the voice exactly as well': 'More than four times as far: the voice arrives weaker at the boom.',
+      'The boom hears the voice exactly as well': 'About five times as far: the voice arrives weaker at the boom.',
       'The body mic hears more room than the boom': 'Close to the mouth, the body mic hears the voice strongly against the room.',
     },
   },
@@ -483,7 +483,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A boom in fur just above the frame, the pole kept clear of the line', ok: true, power: 'phantom', feedback: 'A suggested start if the frame lets it come close enough — check the wide shot and the clearance from the line.' },
       { id: 'c', label: 'The camera mic alone, turned up for the wide shot', ok: false, power: 'none', feedback: 'At the camera the voice is weak against the wind and the street. Get a mic closer.' },
       { id: 'd', label: 'A boom raised high over the talker toward the line', ok: false, power: 'phantom', feedback: 'Never near a power line: at least 3 m (10 ft) from the pole and the mic, and if unsure, keep it down.' },
-      { id: 'e', label: 'A body mic hidden without the guest knowing', ok: false, power: 'phantom', feedback: 'Never hide a mic to record anyone secretly. Ask, and fit it with their agreement.' },
+      { id: 'e', label: 'A body mic hidden without the guest knowing', ok: false, power: 'pack', feedback: 'Never hide a mic to record anyone secretly. Ask, and fit it with their agreement.' },
     ],
     reasons: [docReason('the lips'), clearReason('the shot, the talker and the power line (at least 3 m)'), { id: 'r.consent', label: 'The guest agreed before the body mic was fitted', role: 'required', feedback: 'Say how consent was handled: ask first.' }, { id: 'r.wind', label: 'The fur slows the wind; it does not keep rain out', role: 'optional', feedback: 'A fair outdoor reason.' }, BRAND_REASON('location shoot'), LOUD_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, out of the shot, clear of the power line, consent asked, and each mic on its own channel.',
@@ -494,7 +494,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A presenter walks a small stage with a PA, a wedge in front, a live stream and a recorder.',
     setups: [
       { id: 'a', label: 'A handheld within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A suggested start: close enough to stay ahead of the PA — check the wedge against the actual pattern.' },
-      { id: 'b', label: 'A headset or a body mic fitted well, the fewest open mics', ok: true, power: 'phantom', feedback: 'A suggested start for a presenter who moves — check the margin before feedback with the PA on.' },
+      { id: 'b', label: 'A headset or a body mic fitted well, the fewest open mics', ok: true, power: 'pack', feedback: 'A suggested start for a presenter who moves — check the margin before feedback with the PA on.' },
       { id: 'c', label: 'A planted mic at the back of the stage for the whole talk', ok: false, power: 'phantom', feedback: 'Far from the mouth it hears the PA and the room: less margin before feedback.' },
       { id: 'd', label: 'The handheld, cupped by the presenter for more level', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer.' },
       { id: 'e', label: 'Every spare mic left open in case it helps', ok: false, power: 'phantom', feedback: 'Each open mic adds room and lowers the margin before feedback. Close the unused ones.' },
@@ -507,7 +507,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a talker’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
   microphone: { prompt: 'Before you move anything: which mic keeps one distance from the mouth in a wide shot?', options: ['The boom', 'The body mic', 'The camera mic'], after: 'Now choose each TYPE and see where it starts.' },
-  placement: { prompt: 'Predict: you bring the boom from 90 cm to 60 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this scene'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you bring the boom’s capsule from 110 cm to 80 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this scene'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the presenter. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip the body mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -598,7 +598,7 @@ export const F09_LESSON: Lesson = {
   subtitle: 'A boom just above the frame, a body mic on the chest, a plant for the action — each on its own channel',
   noun: { one: 'talker on location', many: 'talkers on location', subject: 'talker', person: true },
   model: F09_MODEL,
-  micTypeIds: ['locBoomSg', 'locBoomHyper', 'locBoomFur', 'locLav', 'locPlant', 'locCam', 'vocDynCard', 'vocDynSuper', 'vocHeadset'],
+  micTypeIds: ['locBoomSgCap', 'locBoomHyper', 'locBoomFurCap', 'locLav', 'locPlant', 'locCamCap', 'vocDynCard', 'vocDynSuper', 'vocHeadset'],
   zones: F09_ZONES,
   pages,
   scenarios,
@@ -661,6 +661,6 @@ export const F09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s capsule. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
   copy: F09_COPY,
 };

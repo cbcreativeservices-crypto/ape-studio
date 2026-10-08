@@ -573,7 +573,7 @@ export const F04_LESSON: Lesson & { sp: SpExtra } = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. No one distance suits every impact, basin and texture: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged — with water and electricity, always inside the safety rules. The lab is silent and draws a simplified picture: the splash envelope as an illustrative mark, the travel as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the action to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. No one distance suits every impact, basin and texture: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged — with water and electricity, always inside the safety rules. The lab is silent and draws a simplified picture: the splash envelope as an illustrative mark, the travel as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the action to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
   copy: F04_COPY,
   sp: SP,
 };

@@ -1219,10 +1219,24 @@ export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kic
     case 'broadcastDynamic':
       return <BroadcastDynamicMic r={r} len={len} tint={tint} />;
     /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
+    // Owner 2026-10-08 (L6A): a shotgun read to its CAPSULE — the same drawing,
+    // its tip `fore` mm ahead of the reference point.
     case 'shotgun':
-      return <ShotgunMic r={r} len={len} tint={tint} />;
+      return fore > 0 ? (
+        <Group transform={[{ translateY: -fore }]}>
+          <ShotgunMic r={r} len={len + fore} tint={tint} />
+        </Group>
+      ) : (
+        <ShotgunMic r={r} len={len} tint={tint} />
+      );
     case 'blimp':
-      return <BlimpMic r={r} len={len} tint={tint} />;
+      return fore > 0 ? (
+        <Group transform={[{ translateY: -fore }]}>
+          <BlimpMic r={r} len={len + fore} tint={tint} />
+        </Group>
+      ) : (
+        <BlimpMic r={r} len={len} tint={tint} />
+      );
     case 'lavalier':
       return <LavalierMic r={r} len={len} tint={tint} />;
     case 'dummyHead':

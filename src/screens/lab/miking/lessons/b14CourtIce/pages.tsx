@@ -44,7 +44,7 @@ function B14Meet(p: PageProps) {
   const range = useRangeStep({ scene: PRACTICE_LINE, from: PL.M, fromH: PL.h, fromLabel: 'M', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: three points on one line from the mark outside — 5, 8 and 11 m.' });
   const box = PRACTICE_LINE.frame;
   const steps: MikingStep[] = [
-    startStep(lesson, journey, ''),
+    startStep(lesson, journey, '', { ownIntro: true }),
     factsStep(
       lesson,
       <ExpandableFigure

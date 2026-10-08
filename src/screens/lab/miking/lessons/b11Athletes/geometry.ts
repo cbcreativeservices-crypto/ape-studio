@@ -87,7 +87,7 @@ const HEADSETS = ['bcHeadsetBoom', 'bcHeadsetSuper'];
 const rims: Rim[] = [
   { id: 'lav', label: 'a clip at the breastbone', c: LAV_CLIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'], variants: ['coach', 'athlete'] },
   { id: 'clip.ear', label: 'the headset over the right ear', c: earOf(WEARER, 'R'), axis: v3(0, 0, 1), r: 0, types: HEADSETS, variants: ['coach', 'official'] },
-  { id: 'grip', label: 'the perimeter operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, types: ['locBoomSg'], variants: ['coach'] },
+  { id: 'grip', label: 'the perimeter operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, types: ['locBoomSgCap'], variants: ['coach'] },
 ];
 
 export const B11_MODEL: InstrumentModel = {

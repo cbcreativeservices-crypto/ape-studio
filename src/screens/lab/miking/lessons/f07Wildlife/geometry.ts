@@ -66,7 +66,7 @@ export const F07_SURFACES: ReferenceSurface[] = [
   { id: 'flock', partId: 'flock', label: 'the flock’s line', point: FLOCK_P, normal: { x: -1, y: 0, z: 0 }, target: true, variants: ['flock'] },
   { id: 'animal', partId: 'animal', label: 'the animal', point: ANIMAL_P, normal: { x: -1, y: 0, z: 0 }, target: true, variants: ['distant'] },
 ];
-export const F07_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: 0, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above the ground', minus: 'below the ground', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
+export const F07_LINES: RefLine[] = [{ id: 'ground', label: 'the ground', point: { x: 0, y: 0, z: 0 }, dir: { x: 0, y: -1, z: 0 }, plane: true, words: { plus: 'above', minus: 'below', keyPlus: 'HEIGHT', keyMinus: 'BELOW' } }];
 
 const VARIANTS: Variant[] = [
   { id: 'bird', label: 'ONE BIRD', blurb: 'One bird calling from a canopy at a woodland edge, 26 m away, its setback ring drawn; the trail and a brook behind you.', phrase: 'at a woodland edge' },

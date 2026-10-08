@@ -185,9 +185,12 @@ export function frameForShot(lens: Vec3, shot: ShotId): CameraFrame {
  * `clearance` mm above the frame's top edge — "as close as the frame allows",
  * aimed back down at the mouth. The proposal's drawing default is 150 mm of
  * clearance; the elevation is the lab's (45°: overhead and a little in front).
- * Returns the mic's FRONT, its distance from the lips and its aim.
+ * The clearance is kept by the mic's TIP. Owner 2026-10-08 (L6A): a shotgun
+ * is read to its CAPSULE, `capsule` mm behind the tip on the same line — so
+ * `p` and `d` are the capsule's place and its distance from the lips, and
+ * `tip` is the tube's end (`capsule` 0: a mic whose capsule is at its front).
  */
-export function boomStart(f: CameraFrame, opts: { clearance?: number; elevDeg?: number } = {}): { p: Vec3; d: number; aim: Vec3 } {
+export function boomStart(f: CameraFrame, opts: { clearance?: number; elevDeg?: number; capsule?: number } = {}): { p: Vec3; d: number; aim: Vec3; tip: Vec3 } {
   const C = opts.clearance ?? 150;
   const e = (opts.elevDeg ?? 45) * DEG;
   const c = Math.cos(e);
@@ -196,8 +199,10 @@ export function boomStart(f: CameraFrame, opts: { clearance?: number; elevDeg?: 
   const T = f.top;
   const d = Math.max(0, (C - T) / (s + ((f.lens.y - T) * c) / f.lens.x));
   const dd = Math.ceil(d / 5) * 5;
-  const p = v3(dd * c, -dd * s, 0);
-  return { p, d: dd, aim: v3(-c, s, 0) };
+  const k = opts.capsule ?? 0;
+  const tip = v3(dd * c, -dd * s, 0);
+  const p = v3((dd + k) * c, -(dd + k) * s, 0);
+  return { p, d: dd + k, aim: v3(-c, s, 0), tip };
 }
 
 /* ── THE HEAD TURN ── */

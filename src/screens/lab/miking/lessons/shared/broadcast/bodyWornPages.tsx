@@ -47,7 +47,7 @@ const dbCell = (db: number) => (Math.abs(db) < 0.5 ? '0 dB' : `${db > 0 ? '−' 
 
 /** A mic the step draws: where its front is (frame V, facing ahead), what
  *  it moves with, how it is drawn, and its aim (default at the lips). */
-export type WornMic = { id: string; label: string; short: string; p: Vec3; rides: 'chest' | 'head' | 'fixed'; art: MicArtId; r: number; len: number; aim?: Vec3; headset?: boolean };
+export type WornMic = { id: string; label: string; short: string; p: Vec3; rides: 'chest' | 'head' | 'fixed'; art: MicArtId; r: number; len: number; aim?: Vec3; headset?: boolean; /** Owner 2026-10-08 (L6A): a shotgun read to its capsule at `p` — its tube drawn `fore` mm ahead. */ fore?: number };
 
 export type BodyTurnSpec = {
   mics: readonly WornMic[];
@@ -152,7 +152,9 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
   const mics = (view: 'top' | 'side') =>
     spec.mics.map((q) => {
       const at = q.rides === 'head' ? withHead(q.p, yaw, pitch) : q.p;
-      return <MicAt key={q.id} view={view} p={at} aim={aimOf(q)} art={q.art} r={q.r} len={q.len} />;
+      const a = aimOf(q);
+      const f = q.fore ?? 0;
+      return <MicAt key={q.id} view={view} p={v3(at.x + a.x * f, at.y + a.y * f, at.z + a.z * f)} aim={a} art={q.art} r={q.r} len={q.len} />;
     });
   const headset = (view: 'top' | 'side') => {
     const hs = spec.mics.find((q) => q.headset);

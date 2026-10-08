@@ -32,8 +32,8 @@ function stub(grip: Vec3, boom: { p: Vec3; aim: Vec3 }): { a: Vec3; b: Vec3 } {
   return { a: grip, b: { x: grip.x + (d.x / l) * 700, y: grip.y + (d.y / l) * 700, z: grip.z + (d.z / l) * 700 } };
 }
 export const OPERATOR = {
-  close: { poses: operatorPoses(OP_FEET_CLOSE, GRIP_CLOSE), stub: stub(GRIP_CLOSE, BOOM_ABOVE) },
-  wide: { poses: operatorPoses(OP_FEET_WIDE, GRIP_WIDE), stub: stub(GRIP_WIDE, BOOM_WIDE) },
+  close: { poses: operatorPoses(OP_FEET_CLOSE, GRIP_CLOSE), stub: stub(GRIP_CLOSE, { p: BOOM_ABOVE.tip, aim: BOOM_ABOVE.aim }) },
+  wide: { poses: operatorPoses(OP_FEET_WIDE, GRIP_WIDE), stub: stub(GRIP_WIDE, { p: BOOM_WIDE.tip, aim: BOOM_WIDE.aim }) },
 } as const;
 const opOf = (v: V) => (v === 'wide' ? OPERATOR.wide : OPERATOR.close);
 
