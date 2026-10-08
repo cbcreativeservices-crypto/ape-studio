@@ -51,9 +51,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above or beside the slide’s path, aimed across the bell — then move the mic and see what changes, and why straight in front is stopped.',
-    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the bell rim’s centre — not a rule. The slide’s whole path comes first: a mic straight in front of the bell looks reasonable, but its stand drops through the slide.',
+    goal: 'Start where we suggest you begin — above or beside the slide’s path, aimed across the bell — then move the mic and see what changes, and why straight in front is stopped.',
+    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s centre — not a rule. The slide’s whole path comes first: a mic straight in front of the bell looks reasonable, but its stand drops through the slide.',
   },
   context: {
     title: 'Studio or live',
@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Its stand drops through the slide’s path',
     explain: 'The slide reaches past the bell and out to 7th position below it. A mic in front looks fine, but its stand and boom cross the slide’s path. Go above the slide or out to the bell’s side.',
     why: {
-      'It is too close to the bell for the mic': '40 cm is inside the recommended range; it is the stand that collides.',
+      'It is too close to the bell for the mic': '40 cm is inside the suggested range; it is the stand that collides.',
       'It is too far away for a trombone spot mic': 'Distance is not the problem here — the slide’s path is.',
     },
   },
@@ -417,8 +417,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a trombone overdub, a good room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Dynamic 30–60 cm from the bell, out to its side, clear of the slide', ok: true, power: 'none', feedback: 'A recommended starting point, outside the slide’s path — then small changes by ear.' },
-      { id: 'b', label: 'Condenser 60–120 cm in front, high and off axis, aimed at the bell', ok: true, power: 'phantom', feedback: 'A recommended starting point for a more open view — check its stand clears the slide at 7th.' },
+      { id: 'a', label: 'Dynamic 30–60 cm from the bell, out to its side, clear of the slide', ok: true, power: 'none', feedback: 'A suggested starting point, outside the slide’s path — then small changes by ear.' },
+      { id: 'b', label: 'Condenser 60–120 cm in front, high and off axis, aimed at the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for a more open view — check its stand clears the slide at 7th.' },
       { id: 'c', label: 'A stand mic straight in front of the bell, 40 cm out', ok: false, power: 'none', feedback: 'Its stand drops through the slide’s path: the slide would hit it in the lower positions.' },
       { id: 'd', label: 'A clip on the outer slide, near the crook', ok: false, power: 'phantom', feedback: 'Nothing is mounted on the slide: it moves, and it is precision tubing.' },
       { id: 'e', label: 'A mic tucked under the slide, aimed up at the bell', ok: false, power: 'none', feedback: 'Under the slide is its path at every position — and the sound leaves the bell above.' },
@@ -431,8 +431,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a bass trombone with drums, moving, the valves used in low passages, a plunger in one tune. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge, cable routed clear', ok: true, power: 'phantom', feedback: 'A recommended starting point that rides on the bell — check the fit on the larger bell, the plunger and the triggers.' },
-      { id: 'b', label: 'Dynamic beside the bell, out of the slide’s path, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A recommended starting point if the player keeps to an agreed zone.' },
+      { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge, cable routed clear', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit on the larger bell, the plunger and the triggers.' },
+      { id: 'b', label: 'Dynamic beside the bell, out of the slide’s path, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone.' },
       { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band more than the horn — and its stand meets the slide.' },
       { id: 'd', label: 'A clip on the valve linkage, close to the triggers', ok: false, power: 'phantom', feedback: 'The linkage must move freely, and the thumb works there. Only the bell rim.' },
       { id: 'e', label: 'A boom reaching in over the slide’s crook', ok: false, power: 'none', feedback: 'The crook travels out to 7th: a boom over it is in the slide’s path.' },
@@ -611,6 +611,6 @@ export const A02_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the slide’s positions as the ideal ones, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s centre to the mic’s front. Place real mics with the player stopped, and only with their agreement — and never let anything touch the slide.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the slide’s positions as the ideal ones, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s centre to the mic’s front. Place real mics with the player stopped, and only with their agreement — and never let anything touch the slide.',
   copy: A02_COPY,
 };

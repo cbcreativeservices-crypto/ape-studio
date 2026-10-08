@@ -1,5 +1,5 @@
 /**
- * E01 LEAD VOCAL — the recommended starting points (charter §2 layer 1),
+ * E01 LEAD VOCAL — the suggested starting points (charter §2 layer 1),
  * built on frame V (lessons/shared/voice). Source keys point into
  * docs/labs/miking/lead_vocal/SOURCES.md §0; every distance is from the LIP
  * POINT to the mic's FRONT; corrections E1-… (CORRECTIONS_LOG).

@@ -1,5 +1,5 @@
 /**
- * F16 SCIENTIFIC ARRAYS AND SPECIALIZED SENSORS — the recommended starting
+ * F16 SCIENTIFIC ARRAYS AND SPECIALIZED SENSORS — the suggested starting
  * points (charter §2 layer 1). Source keys: measurement_mics/SOURCES.md §0;
  * the lesson's claims: scientific_arrays/SOURCES.md. Frame: F16 geometry.ts
  * (the marked origin at the baseline's centre).

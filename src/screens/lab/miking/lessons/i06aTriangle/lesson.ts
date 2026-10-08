@@ -9,7 +9,7 @@
  *
  * The 30–60 cm range is the lesson's own teaching trial (it says so); the
  * general 30 cm floor for percussion is the one published number. On screen
- * they are simply recommended starting points.
+ * they are simply suggested starting points.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, tailSymptom, type MetalWords } from '../shared/metal/metalItems.ts';
@@ -45,8 +45,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 30–60 cm from the triangle, in front and a little to one side, away from the beater — then move the mic and see what changes.',
-    credit: { scenarios: ['tri.place.1', 'tri.place.2', 'tri.place.3', 'tri.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 30–60 cm from the triangle, in front and a little to one side, away from the beater — then move the mic and see what changes.',
+    credit: { scenarios: ['tri.place.1', 'tri.place.2', 'tri.place.3', 'tri.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Begin about 30–60 cm away, aimed at the bars as a whole, away from the beater — never inside the triangle or the beater’s path. Change one thing at a time, and listen to light and strong strokes, a roll and the cutoff.',
   },
   context: {
@@ -405,7 +405,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W, 'the beater'),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, about 30–60 cm from the triangle', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, about 30–60 cm from the triangle', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A quiet studio overdub: one triangle part with soft strokes, a roll and a damped cutoff. The room sounds good. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 40 cm in front and to one side, a little above, aimed at the bars', ok: true, power: 'phantom', feedback: 'A recommended starting point, clear of the beater; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 40 cm in front and to one side, a little above, aimed at the bars', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the beater; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 70 cm away, seeing the whole triangle, in the good room', ok: true, power: 'phantom', feedback: 'A wider view for the shimmer — check the soft strokes and the cutoff stay clear.' },
       { id: 'c', label: 'A mic inside the triangle’s open space, for the most level', ok: false, power: 'phantom', feedback: 'That is in the beater’s path and the rolls.' },
       { id: 'd', label: 'Ask the player to hold the triangle by its metal so it stays still', ok: false, power: 'none', feedback: 'Holding the metal damps the ring — and the player’s technique is never changed for a mic.' },
@@ -581,6 +581,6 @@ export const I06A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no single agreed triangle miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every triangle, beater, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 8 in triangle, a standing player, the bar’s shapes drawn on the straight bar it was bent from, motion drawn much larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the beater and the hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed triangle miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every triangle, beater, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 8 in triangle, a standing player, the bar’s shapes drawn on the straight bar it was bent from, motion drawn much larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the beater and the hands.',
   copy: { words: metalWords('triangle', 'percussionist') },
 };

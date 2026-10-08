@@ -35,7 +35,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — closer, farther, higher — and see what changes for the soloist, the bass and the drums.',
-    credit: { scenarios: ['jz.place.1', 'jz.place.2', 'jz.31', 'jz.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['jz.place.1', 'jz.place.2', 'jz.31', 'jz.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Change one thing at a time and compare at matched level. Closer, the front player dominates; farther back, more blend and more room. The pair moves as a unit.',
   },
   context: {
@@ -576,7 +576,7 @@ export const E15_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E15_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A combo has no single right setup: hear the group, agree its layout with the players, choose one main view, and add a support only for a stated reason. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare setups, not to predict a club. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Nothing fixed to a valuable instrument without the owner’s approval; protect your hearing; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A combo has no single right setup: hear the group, agree its layout with the players, choose one main view, and add a support only for a stated reason. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare setups, not to predict a club. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Nothing fixed to a valuable instrument without the owner’s approval; protect your hearing; never provoke feedback.',
   copy: { words: ensembleWords('combo') },
   ensemble: {
     seatings: { quartet: 'jazz.quartet', guitar: 'jazz.guitar' },
@@ -598,13 +598,13 @@ export const E15_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands; cable paths clear of the players, the audience, the piano pedals and the bass endpin. No mic in a horn bell or under a moving lid without clearance for the whole performance; no improvised clip or adhesive on a valuable instrument. Anything elevated is rigged by approved personnel. Protect your hearing; never sustain feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a combo: one main pair in front of the group and a little above — a place to start and compare, then add supports only for a named need.',
+      begin: 'After our research, this is where we suggest you begin with a combo: one main pair in front of the group and a little above — a place to start and compare, then add supports only for a named need.',
       clearance: 'The stand in front of the group, clear of the soloist’s movement, the wedges and the audience’s way; its cable dressed flat and out of the walkways.',
       height: 'About 2.2 m up — high enough to see past the soloist to the bass, the piano and the kit. Higher hears more of the back of the group and the room; lower, more of the soloist.',
       forward: 'About 2 m in front of the band’s front line. Closer tends to more of the soloist and more direct sound; farther back, more blend and more room — and, live, less gain before feedback.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the main pair — about 1.5–3 m in front of the group and 2–2.5 m up. Places to start and compare, not measurements of a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair — about 1.5–3 m in front of the group and 2–2.5 m up. Places to start and compare, not measurements of a best place.',
       'Change one thing at a time — distance, height, then the angle — and compare at a consistent level on the same chorus.',
       'If one player dominates, try the pair’s distance and height — or the players’ positions, with their agreement — before adding a support.',
     ],

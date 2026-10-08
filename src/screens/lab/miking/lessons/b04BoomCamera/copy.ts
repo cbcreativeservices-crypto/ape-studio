@@ -89,7 +89,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     },
     note: 'The picture first: ask for the widest frame and check it at the mic’s exact place. Never swing a mic, a clamp or a cable above people; an overhead rig is set by qualified crew.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a talker on camera, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, room and voice is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a talker on camera, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, room and voice is different.',
       separate: 'The side the boom comes from, its distance and its aim are separate variables: change one at a time, with the talker speaking and turning as they really will. Distances are measured to the mic’s front and rounded to about 5 mm — no millimetre claim is made.',
       clearance: 'Clearance comes first: outside every frame, clear of the light’s shadows, the pole and the operator clear of the talker, nothing above anyone’s head.',
       tendencies: 'Closer tends to bring more voice and less room; the shotgun’s narrower pickup higher up does not reach farther; a wider shot means a farther boom. These are tendencies, and rooms vary.',

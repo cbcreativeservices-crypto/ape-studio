@@ -119,7 +119,7 @@ function B14Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      'After our research, each blue starting point is where we recommend you begin — from the outside zone, aimed at the contact height; on the floor, the boundary in its intended geometry. Starting points, not rules: change one variable at a time and use your ears. Experimentation is encouraged.',
+      'After our research, each blue starting point is where we suggest you begin — from the outside zone, aimed at the contact height; on the floor, the boundary in its intended geometry. Starting points, not rules: change one variable at a time and use your ears. Experimentation is encouraged.',
       'For real sports work, replace the practice geometry with the approved survey: never carry these practice distances into a live court or rink.',
     ),
   ];

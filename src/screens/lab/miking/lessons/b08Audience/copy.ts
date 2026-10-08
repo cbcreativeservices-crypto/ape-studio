@@ -41,7 +41,7 @@ export const B08_COPY: Partial<LessonCopy> = {
     note: 'Approval comes first: only an approved place, never in an aisle or an exit, never over people unless a qualified rigger hung it.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'After our research, each starting point is where we recommend you begin — raised, on an approved place, aimed at the faces of a section, the PA off its front. They are starting points, not rules. Experimentation is encouraged.',
+      intro: 'After our research, each starting point is where we suggest you begin — raised, on an approved place, aimed at the faces of a section, the PA off its front. They are starting points, not rules. Experimentation is encouraged.',
       separate: 'Place, height and aim are separate decisions; change one at a time and listen to each.',
       clearance: 'Only an approved place: never in an aisle, an exit or a camera’s view; nothing over people without a qualified rigger.',
       tendencies: 'Higher and aimed at the faces tends to bring the section together; lower, one nearby person; toward the PA, the loudspeakers. Tendencies, to check by ear.',

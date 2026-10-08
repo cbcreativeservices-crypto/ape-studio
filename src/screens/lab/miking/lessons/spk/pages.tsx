@@ -743,7 +743,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
   const [exStep, setExStep] = useState(0);
   const exShown = ex.shown('A');
   const worked: { title: string; text: string; cell: number }[] = [
-    { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin with a cabinet — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+    { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin with a cabinet — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
     { title: 'THE SPEAKER', text: 'In front of the speaker that is really sounding — marked from outside the grille with the amp off or muted. In a cabinet with several, ask which one.', cell: 1 },
     { title: 'THE DISTANCE', text: `${exZone.band} The readout measures from the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm.`, cell: 0 },
     { title: 'ACROSS THE CONE', text: 'Off the cone axis by the dust cap’s radius: aimed at the line where the dust cap meets the cone. The bezel reads how far off the axis the mic sits.', cell: 1 },
@@ -922,7 +922,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={ex} art={cabArt('1x12')} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of a 1 by 12 cabinet cut through its speaker. A worked example: the mic is placed for you. ${cabNow(ex, ['A'])}`} />,
-        badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
+        badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: [
           { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` },
@@ -947,7 +947,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView key={cabId} rig={rig} art={cabArt(cab.kind)} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of the ${cab.label.toLowerCase()}, cut through the miked speaker. ${cabNow(rig, ['A'])}`} />,
-        badge: 'Blue = recommended starting points · dashed lobe = pattern shape · pinch to zoom',
+        badge: 'Blue = suggested starting points · dashed lobe = pattern shape · pinch to zoom',
         bezel,
         params,
         initialParam: 'pos',
@@ -958,7 +958,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
           <Landing looking={`${t.short} · ${cab.label.toLowerCase()}`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it across the cone and away from it, one change at a time." />
           <NowLine text={cabNow(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there. Keep it off the grille cloth.`}</Note> : null}
-          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
+          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
           <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
           {tried ? <Note tone="ok">{`You predicted “${predicted}”. Across the cone at the same distance, the edge most often sounds mellower — and speakers vary, so “it depends on this speaker” is fair too.`}</Note> : null}
           {cab.kind !== '1x12' ? <Note>The zones sit on the miked speaker (ringed on page 1). Placing a mic between two speakers can give strong phase effects — start on one.</Note> : null}
@@ -982,7 +982,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         <>
           <Landing looking={`The rotary cabinet · ${ARR.find((a) => a.id === arr)!.label.toLowerCase()}`} prompt={power ? 'Run it, slow then fast: watch which mic each bell points at as it turns. Switch the cabinet OFF to move a mic.' : 'With the cabinet OFF, choose a PICKUP and set the DISTANCE. Build an upper-and-lower pickup inside the starting range — then switch it on.'} />
           <Card>
-            <Point title="WHERE WE RECOMMEND YOU BEGIN">{`Start about 7.5–30 cm (3–12 in) outside the upper louvers, and the same outside a lower opening. Side mics can sit from a few centimetres to about 30 cm out, just under the top louvers. A pair farther back: about 2 m, in a good room.`}</Point>
+            <Point title="WHERE WE SUGGEST YOU BEGIN">{`Start about 7.5–30 cm (3–12 in) outside the upper louvers, and the same outside a lower opening. Side mics can sit from a few centimetres to about 30 cm out, just under the top louvers. A pair farther back: about 2 m, in a good room.`}</Point>
           </Card>
           <Body>{`Activity: an upper-and-lower pickup built outside, in range, with the cabinet off — ${built ? 'done' : 'not yet'}.`}</Body>
           {!allIn ? <Note tone="warn">{mics.some((m) => distanceFromCabinet(m) < LESLIE_RANGES.close.min && m.level !== 'room') ? 'Closer than the starting range: keep every mic clear of the openings and the moving air — move it out.' : 'Farther than the starting range: try it closer, from outside.'}</Note> : null}
@@ -1000,7 +1000,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       layout: 'read',
       body: (
         <>
-          <Body>What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker and cabinet is different.</Body>
+          <Body>What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker and cabinet is different.</Body>
           <Body>Change one thing at a time. Keep the distance and move across the cone — centre, dust-cap edge, toward the edge — or keep the spot and move away from the grille. A mic farther back hears more of the cabinet and the room; a mic moved toward the edge most often sounds mellower. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
           <Body>On a rotary cabinet: start with each mic alone, then add the lower to the upper at a useful level and check the blend in mono — through slow, fast and the change between them.</Body>
           <Note tone="warn">Clearance comes first: off the grille cloth, the stand steady, the cable away from the player and the walkway; on a rotary cabinet everything outside, with the cabinet off while you place it.</Note>

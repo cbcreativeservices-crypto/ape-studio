@@ -70,7 +70,7 @@ export const PILLOW_TOP = R_IN - KICK_DIMS.pillowH.mm;
  *  pressed between the heads (1 mm short of each head plane). */
 export const PILLOW_X1 = Math.min(KICK_DIMS.pillowLen.mm, KICK_DIMS.L.mm - 1);
 
-/* ── RECOMMENDED STARTING POINTS (lesson table L19-37; corrections K-01, K-02,
+/* ── SUGGESTED STARTING POINTS (lesson table L19-37; corrections K-01, K-02,
  *  K-09). Learner-facing: label, band, tendency, checks — plain starting-point
  *  words (owner ruling 2026-10-04). `kind`, `src`, `quote` and every `prov`
  *  are the INTERNAL research record, never shown. ── */

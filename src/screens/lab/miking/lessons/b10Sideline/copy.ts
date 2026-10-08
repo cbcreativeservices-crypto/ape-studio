@@ -93,7 +93,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     },
     note: 'Clearance comes first: nothing touches a face, the flag stays out of the lens, and nobody steps into play or blocks a route.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic at an interview, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, wind and stadium is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic at an interview, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, wind and stadium is different.',
       separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with real questions and answers each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm — no millimetre claim is made.',
       clearance: 'Clearance comes first: off the faces, out of the lens, inside the approved area, the exit kept clear.',
       tendencies: 'Closer tends to sound fuller and drier, with more breath and handling; farther, more crowd and wind; below the mouth’s line, softer pops. These are tendencies, and voices vary.',

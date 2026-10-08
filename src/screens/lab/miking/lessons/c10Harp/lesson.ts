@@ -39,9 +39,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 60 cm in front, near the top of the pillar, behind on the harpist’s right, 30 cm from the board, or at a sound hole — measured from the surface each names, clear of the harpist, then move the mic and see what changes.',
-    credit: { scenarios: ['hp.place.1', 'hp.place.2', 'hp.place.3', 'hp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named surface — not a rule. Distance from the board, height and angle are separate things to try, and the harpist’s space comes first.',
+    goal: 'Start where we suggest you begin — about 60 cm in front, near the top of the pillar, behind on the harpist’s right, 30 cm from the board, or at a sound hole — measured from the surface each names, clear of the harpist, then move the mic and see what changes.',
+    credit: { scenarios: ['hp.place.1', 'hp.place.2', 'hp.place.3', 'hp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named surface — not a rule. Distance from the board, height and angle are separate things to try, and the harpist’s space comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -317,12 +317,12 @@ const scenarios: MikingScenario[] = [
     id: 'hp.two.2',
     page: 'twoMic',
     prompt: 'You flip the lower mic’s polarity. What happens to the arrival-time difference?',
-    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay. The notches move; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals line up again in time': 'Flipping polarity changes the sign, not when the sound arrives.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -505,7 +505,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the harpist’s hands, feet, view and head', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a harp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Closest to the soundboard always gives the fullest harp', role: 'wrong', feedback: 'Closest tends to favour one region and boom; the whole harp blends with distance.' };
@@ -516,9 +516,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A solo concert harp, a good recital hall, a recording. Two channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A spaced pair of omnis about 2 m or more away, toward the room’s centre, not too low', ok: true, power: 'phantom', feedback: 'A recommended solo starting point: the whole harp and the room — checked in mono.' },
-      { id: 'b', label: 'One small condenser about 60 cm in front, aimed back at part of the board', ok: true, power: 'phantom', feedback: 'A recommended single-mic start: defined and practical.' },
-      { id: 'c', label: 'A cardioid near the top of the pillar, looking down at the board', ok: true, power: 'phantom', feedback: 'A recommended spot — perhaps with a distant pair for the room.' },
+      { id: 'a', label: 'A spaced pair of omnis about 2 m or more away, toward the room’s centre, not too low', ok: true, power: 'phantom', feedback: 'A suggested solo starting point: the whole harp and the room — checked in mono.' },
+      { id: 'b', label: 'One small condenser about 60 cm in front, aimed back at part of the board', ok: true, power: 'phantom', feedback: 'A suggested single-mic start: defined and practical.' },
+      { id: 'c', label: 'A cardioid near the top of the pillar, looking down at the board', ok: true, power: 'phantom', feedback: 'A suggested spot — perhaps with a distant pair for the room.' },
       { id: 'd', label: 'A cardioid 5 cm from the middle of the board, for the most detail', ok: false, power: 'phantom', feedback: 'That close, a cardioid favours one region and booms — and crowds the harpist.' },
       { id: 'e', label: 'A boom over the harpist’s head, pointing down into the strings', ok: false, power: 'phantom', feedback: 'Nothing goes over the harpist’s head. Bring a spot in from the side.' },
     ],
@@ -530,8 +530,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A harp with a loud band on a club stage, a wedge for the harpist. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A cardioid about 60 cm in front, its rear toward the harpist’s wedge', ok: true, power: 'phantom', feedback: 'A recommended start, with the wedge aimed into its rejection.' },
-      { id: 'b', label: 'An approved miniature omni at the second sound hole from the bottom', ok: true, power: 'phantom', feedback: 'A recommended live option, close and concealed — with the owner’s agreement.' },
+      { id: 'a', label: 'A cardioid about 60 cm in front, its rear toward the harpist’s wedge', ok: true, power: 'phantom', feedback: 'A suggested start, with the wedge aimed into its rejection.' },
+      { id: 'b', label: 'An approved miniature omni at the second sound hole from the bottom', ok: true, power: 'phantom', feedback: 'A suggested live option, close and concealed — with the owner’s agreement.' },
       { id: 'c', label: 'A spaced pair of omnis 3 m away, to catch the whole harp', ok: false, power: 'phantom', feedback: 'On a loud stage a distant pair hears the band more than the harp.' },
       { id: 'd', label: 'A miniature taped inside a sound hole with foam around it', ok: false, power: 'phantom', feedback: 'No tape on the finish and no foam pushed in without the owner asking for it.' },
       { id: 'e', label: 'A cardioid right in the string plane at hand height', ok: false, power: 'phantom', feedback: 'That is where the harpist’s hands work. Keep to one side.' },
@@ -724,6 +724,6 @@ export const C10_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every harp, harpist and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a concert pedal harp and a smaller lever harp with typical proportions, mic patterns and the two-mic comb as textbook shapes, and string and soundboard motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Nothing touches the harp without the owner’s agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every harp, harpist and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a concert pedal harp and a smaller lever harp with typical proportions, mic patterns and the two-mic comb as textbook shapes, and string and soundboard motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Nothing touches the harp without the owner’s agreement.',
   copy: HARP_COPY,
 };

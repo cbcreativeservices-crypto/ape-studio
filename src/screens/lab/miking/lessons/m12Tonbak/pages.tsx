@@ -243,7 +243,7 @@ const SPEC: HandSpec = {
     label: 'The tonbak with a small condenser placed for you',
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself.',
     pieces: (z: DocumentedZone) => [
-      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin with a tonbak — a balanced starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a tonbak — a balanced starting point, not a rule, and not a promise of a sound.`, cell: 3 },
       { title: 'MEASURED FROM', text: 'From the head: the readout measures from the head area the mic is aimed at to the mic’s FRONT, rounded to ≈ 5 mm.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
       { title: 'THE VIEWPOINT', text: 'From the audience side, about 30–45° off the line straight out of the head — not straight into it, and never in the hands’ path.', cell: 1 },
@@ -260,7 +260,7 @@ const SPEC: HandSpec = {
     tried: (p) => `You predicted “${p}”. Closer in, the mic hears more of the head’s detail and less of the room — and more contact and finger sound. Whether that suits depends on the player and the music.`,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from the head (or, for the opening mic, from the lower opening). They are starting points, not rules: move from there and listen — every drum and player is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the head (or, for the opening mic, from the lower opening). They are starting points, not rules: move from there and listen — every drum and player is different.',
     'Change one thing at a time. Keep the distance and change the viewpoint, or keep the viewpoint and change the distance. If one hand or the edge takes over, move to a new viewpoint rather than only turning the mic. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
     'The opening mic is a support for the head mic, never a replacement — outside the opening, and judged in mono with the head mic.',
   ],

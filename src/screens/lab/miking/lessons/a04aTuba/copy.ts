@@ -39,7 +39,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, boom or cable anywhere the bell sways, the valve hand moves or the slides stick out is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic and bell',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the bell (or, farther back, from the tuba). They are starting points, not rules — move from there and listen; every tuba, player and room is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the bell (or, farther back, from the tuba). They are starting points, not rules — move from there and listen; every tuba, player and room is different.',
       separate: 'Distance, height and the angle off the bell’s axis are separate variables: change one at a time, and play the lowest written note and a short, loud phrase each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, boom and cable out of the bell’s opening and sway, the valve hand, the slides and the water keys. The grey hatch appears as the mic comes near one of them.',
       tendencies: 'Toward the bell’s axis tends to bring more attack and bite; off axis, softer; farther, more of the room. With a directional mic close up, proximity effect also lifts the lows. These are tendencies, and tubas vary.',

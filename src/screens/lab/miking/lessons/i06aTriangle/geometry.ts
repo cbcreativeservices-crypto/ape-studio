@@ -110,7 +110,7 @@ const envelopes: Envelope[] = [
   { id: 'env.beaters', label: 'the two beaters’ paths', shape: { kind: 'box', min: v3(-300, P0.y - 40, -170), max: v3(80, MOUNTED.open[1] + 80, 170) }, prov: ill('two beaters on the lower sides, plus a margin: a drawing default'), variants: ['mounted'] },
 ];
 
-/* ── RECOMMENDED STARTING POINTS: the lesson's own trials (internal kind
+/* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind
  *    'trial'), 30–60 cm from the instrument, never closer than Shure's
  *    general 30 cm floor; one consistent style on screen. ── */
 const z = (o: Omit<DocumentedZone, 'kind' | 'src' | 'side' | 'draw' | 'refSurface'> & { dA: [number, number] }): DocumentedZone => {

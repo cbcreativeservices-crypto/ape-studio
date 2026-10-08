@@ -51,9 +51,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a gooseneck about 20–30 cm below a panelist’s mouth, the lectern gooseneck about 25–36 cm and a little off the mouth — then move the mic and see what changes.',
-    credit: { scenarios: ['b6.place.1', 'b6.place.2', 'b6.place.3', 'b6.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the talker, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. A short and a tall presenter, a turn to a neighbour and a step back all change the answer; clearance from the face, the sight line and the papers comes first.',
+    goal: 'Start where we suggest you begin — a gooseneck about 20–30 cm below a panelist’s mouth, the lectern gooseneck about 25–36 cm and a little off the mouth — then move the mic and see what changes.',
+    credit: { scenarios: ['b6.place.1', 'b6.place.2', 'b6.place.3', 'b6.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. A short and a tall presenter, a turn to a neighbour and a step back all change the answer; clearance from the face, the sight line and the papers comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -482,7 +482,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A four-person panel with a lectern, a PA in the room, a live stream and audience questions.',
     setups: [
-      { id: 'a', label: 'A gooseneck each, a lectern gooseneck, an aisle mic routed to every feed', ok: true, power: 'phantom', feedback: 'A recommended start: close mics, the question routed on purpose — check the open mics with the PA on.' },
+      { id: 'a', label: 'A gooseneck each, a lectern gooseneck, an aisle mic routed to every feed', ok: true, power: 'phantom', feedback: 'A suggested start: close mics, the question routed on purpose — check the open mics with the PA on.' },
       { id: 'b', label: 'Headsets on the panel and the presenter, an aisle mic to every feed', ok: true, power: 'phantom', feedback: 'A start that can pass — check fit, clothing noise and the lectern handoff.' },
       { id: 'c', label: 'One shared boundary for the whole panel', ok: false, power: 'phantom', feedback: 'Far from most mouths, with a PA: more room, less margin.' },
       { id: 'd', label: 'The question mic to the PA only', ok: false, power: 'none', feedback: 'The stream and the press would never hear the questions.' },
@@ -496,7 +496,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio roundtable for a recording, no PA, two people close together.',
     setups: [
-      { id: 'a', label: 'A gooseneck each, on separate channels', ok: true, power: 'phantom', feedback: 'A recommended start: the most control — check their view of each other.' },
+      { id: 'a', label: 'A gooseneck each, on separate channels', ok: true, power: 'phantom', feedback: 'A suggested start: the most control — check their view of each other.' },
       { id: 'b', label: 'One shared boundary between them, its front toward both', ok: true, power: 'phantom', feedback: 'A fair start in a quiet room if both stay near it — check its real pattern and the turns.' },
       { id: 'c', label: 'One mic hanging high above the table', ok: false, power: 'phantom', feedback: 'High and far: room and cross-talk.' },
       { id: 'd', label: 'A loudspeaker on the table for the producer’s cues', ok: false, power: 'none', feedback: 'A loudspeaker among open mics spills into them. Headphones.' },
@@ -660,6 +660,6 @@ export const B06_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never provoke feedback; never send phantom power into an unverified feed.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never provoke feedback; never send phantom power into an unverified feed.',
   copy: B06_COPY,
 };

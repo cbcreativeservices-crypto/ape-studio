@@ -39,7 +39,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the dish yourself from the operator’s place — its aim on A, B or C, inside the arc — and the fixed shotgun it hands off to.',
-    credit: { scenarios: ['pb.place.1', 'pb.place.2', 'pb.place.3', 'pb.rec.2'], interactive: 'twoZones', note: 'Rest a mic, on an approved place and inside the arc, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['pb.place.1', 'pb.place.2', 'pb.place.3', 'pb.rec.2'], interactive: 'twoZones', note: 'Rest a mic, on an approved place and inside the arc, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'From an approved place, small turns inside the arc: the target on the axis, the focus right — and the plan, not the operator’s feet, covers the rest.',
   },
   context: {
@@ -444,8 +444,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · An outdoor field match: kicks and calls wanted from the far side, one operator at an approved place, wind expected.',
     setups: [
-      { id: 'a', label: 'The dish from the approved place, with a fixed fallback and ambience', ok: true, power: 'phantom', feedback: 'A recommended start: tracked detail inside the arc, a planned handoff, the bed under both.' },
-      { id: 'b', label: 'Fixed perimeter mics into the far sectors, plus ambience', ok: true, power: 'phantom', feedback: 'A recommended start where tracking is not possible — less isolated detail.' },
+      { id: 'a', label: 'The dish from the approved place, with a fixed fallback and ambience', ok: true, power: 'phantom', feedback: 'A suggested start: tracked detail inside the arc, a planned handoff, the bed under both.' },
+      { id: 'b', label: 'Fixed perimeter mics into the far sectors, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start where tracking is not possible — less isolated detail.' },
       { id: 'c', label: 'The operator walks the touchline to follow the play', ok: false, power: 'phantom', feedback: 'Stay in the approved place; never chase play.' },
       { id: 'd', label: 'A shotgun mounted at the dish’s focus for more reach', ok: false, power: 'phantom', feedback: 'Use the dish’s own capsule and design.' },
       { id: 'e', label: 'The dish with no cover, the gain turned right up', ok: false, power: 'phantom', feedback: 'Wind overload and no headroom.' },
@@ -464,7 +464,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · An indoor arena with hard walls: shoe and ball detail near one end, a close perimeter position approved.',
     setups: [
-      { id: 'a', label: 'A close perimeter mic at the approved position, plus ambience', ok: true, power: 'phantom', feedback: 'A recommended start: indoors a close mic can sound more natural than a long-distance dish.' },
+      { id: 'a', label: 'A close perimeter mic at the approved position, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start: indoors a close mic can sound more natural than a long-distance dish.' },
       { id: 'b', label: 'A dish from the approved end place, compared with the close mic', ok: true, power: 'phantom', feedback: 'A fair start — keep whichever gives the better target against the room.' },
       { id: 'c', label: 'The largest dish, because it is the most directional', ok: false, power: 'phantom', feedback: 'Decide by what you hear, not the label.' },
       { id: 'd', label: 'The dish carried onto the court’s edge between plays', ok: false, power: 'phantom', feedback: 'Never into the playing area or its clear space.' },
@@ -609,6 +609,6 @@ export const B12_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every dish, venue and sport is different: follow your dish’s own manual, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: an ideal bowl drawn from derived sizes, straight rays, the lowest helped frequency as the speed of sound ÷ the dish’s width; ranges and delays are calculated from the drawing; the headroom chain is an example. No drawing turns a distance into a working range. Safety is exact: stay in the approved place, start the headphones low, and never chase play.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every dish, venue and sport is different: follow your dish’s own manual, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: an ideal bowl drawn from derived sizes, straight rays, the lowest helped frequency as the speed of sound ÷ the dish’s width; ranges and delays are calculated from the drawing; the headroom chain is an example. No drawing turns a distance into a working range. Safety is exact: stay in the approved place, start the headphones low, and never chase play.',
   copy: B12_COPY,
 };

@@ -46,9 +46,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic above the middle, or one of a spaced pair — clear of the raised mallets, then move the mic and see what changes.',
-    credit: { scenarios: ['vb.place.1', 'vb.place.2', 'vb.place.3', 'vb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. The raised mallets set the minimum height.',
+    goal: 'Start where we suggest you begin — one mic above the middle, or one of a spaced pair — clear of the raised mallets, then move the mic and see what changes.',
+    credit: { scenarios: ['vb.place.1', 'vb.place.2', 'vb.place.3', 'vb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. The raised mallets set the minimum height.',
   },
   context: {
     title: 'Studio or live',
@@ -382,7 +382,7 @@ const symptoms: Symptom[] = [
   monoSymptomM(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const COUNT_REASON: SetupReason = { id: 'r.count', label: 'A vibraphone always needs exactly two mics', role: 'wrong', feedback: 'One mic, a pair or the band’s mains can each be right; the part and the setting decide.' };
 
 const setupTasks: SetupTask[] = [
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A solo overdub in a good room. The part uses the whole keyboard, with the motor on slowly and long pedalled chords. Two channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Two condensers, spaced about 61 cm apart, about 46 cm above the bars, aimed down', ok: true, power: 'phantom', feedback: 'A recommended pair for the whole range; check the middle and the mono sum.' },
+      { id: 'a', label: 'Two condensers, spaced about 61 cm apart, about 46 cm above the bars, aimed down', ok: true, power: 'phantom', feedback: 'A suggested pair for the whole range; check the middle and the mono sum.' },
       { id: 'b', label: 'Two condensers with their grilles together, 135° apart, about 46 cm above the middle', ok: true, power: 'phantom', feedback: 'The coincident pair: no arrival-time difference, a picture made by level.' },
       { id: 'c', label: 'One mic under the tubes, aimed up at the motor', ok: false, power: 'phantom', feedback: 'Under the tubes is a coloured effect, and near the motor it hears its noise — not the whole instrument.' },
       { id: 'd', label: 'Two mics 10 cm above the bars, over the middle', ok: false, power: 'phantom', feedback: 'That is inside the mallets’ travel: the player would strike them.' },
@@ -585,7 +585,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real stand. 45 cm is a starting height, not a safety clearance — the highest mallet stroke decides.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: one mic about 45–75 cm above the middle, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an alternative, a mic under the tubes. They are starting points, not rules: move from there and listen.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 45–75 cm above the middle, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an alternative, a mic under the tubes. They are starting points, not rules: move from there and listen.',
       separate: 'Height, distance along the keyboard and angle are separate variables: change one at a time, with the real phrase — low, middle and high, single notes and chords.',
       clearance: 'Clearance comes first. Have the player show the mallets’ full arc over both rows and the whole passage before anything is placed. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
       tendencies: 'Closer tends to bring more attack and one region of the keyboard; higher blends the keyboard and adds the room. Under the tubes: a coloured, local sound. All tendencies to check by ear.',
@@ -726,7 +726,7 @@ export const I07_LESSON: MalletLesson = {
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every vibraphone, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a three-octave vibraphone with bar lengths and tube lengths worked out (the tubes as quarter wavelengths at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every vibraphone, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a three-octave vibraphone with bar lengths and tube lengths worked out (the tubes as quarter wavelengths at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy,
   mallet: words,
 };

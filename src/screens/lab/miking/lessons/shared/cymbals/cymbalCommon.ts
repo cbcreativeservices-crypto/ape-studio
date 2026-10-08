@@ -38,7 +38,7 @@ export function stageWords(name: string): Pick<Lesson['setting'], 'stage' | 'stu
 }
 
 export function accuracyDetail(what: string): string {
-  return `ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every cymbal, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit, ${what}, the swing and the stick’s path as drawn keep-outs, mic patterns as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.`;
+  return `ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every cymbal, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit, ${what}, the swing and the stick’s path as drawn keep-outs, mic patterns as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.`;
 }
 
 export function practiceSheet(name: string, plans: readonly string[], aimWords: string): Lesson['practice']['fields'] {

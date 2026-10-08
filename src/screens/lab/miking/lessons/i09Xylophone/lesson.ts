@@ -49,9 +49,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic above the middle of the played notes, one of a spaced pair, or a safe off-axis position — then move the mic and see what changes.',
-    credit: { scenarios: ['xy.place.1', 'xy.place.2', 'xy.place.3', 'xy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the bars — not a rule. Only where it clears both hands and every stroke; move higher or off-axis when it does not.',
+    goal: 'Start where we suggest you begin — one mic above the middle of the played notes, one of a spaced pair, or a safe off-axis position — then move the mic and see what changes.',
+    credit: { scenarios: ['xy.place.1', 'xy.place.2', 'xy.place.3', 'xy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule. Only where it clears both hands and every stroke; move higher or off-axis when it does not.',
   },
   context: {
     title: 'Studio or live',
@@ -361,7 +361,7 @@ const symptoms: Symptom[] = [
   distortionSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const MALLET_REASON: SetupReason = { id: 'r.mallet', label: 'A brighter mic lets the player use metal mallets safely', role: 'wrong', feedback: 'No mic makes an unsuitable mallet safe: metal can damage or break the bars.' };
 
 const setupTasks: SetupTask[] = [
@@ -542,7 +542,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real stand. The bands are starting points, not safety clearances.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: one mic about 45–75 cm above the middle of the played notes, aimed down; one of a spaced pair; a safe off-axis position on the audience side; and, only for a deliberate colour, a mic under the tubes. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 45–75 cm above the middle of the played notes, aimed down; one of a spaced pair; a safe off-axis position on the audience side; and, only for a deliberate colour, a mic under the tubes. Starting points, not rules.',
       separate: 'Height, place and angle are separate variables: change one at a time, with low, middle and high notes, fast figures and the loudest accent.',
       clearance: 'Clearance comes first: walk the full phrase with the player before locking anything. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel.',
       tendencies: 'Closer tends to bring more mallet impact and one region; farther or off-axis blends more bars and more room. All tendencies to check by ear.',
@@ -681,7 +681,7 @@ export const I09_LESSON: MalletLesson = {
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every xylophone, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a xylophone with bar and tube lengths worked out (the tubes as quarter wavelengths of the sounding notes at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every xylophone, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a xylophone with bar and tube lengths worked out (the tubes as quarter wavelengths of the sounding notes at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy,
   mallet: words,
 };

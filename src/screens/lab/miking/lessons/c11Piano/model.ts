@@ -82,7 +82,7 @@ function holeDrawn(g: typeof GB): Partial<Record<ViewId, ZoneDraw>> {
   return { top: { cu: h.x, cv: h.z, r0: 0, r1: 85, a0: 0, a1: 360 }, side: { u0: h.x - 85, u1: h.x + 85, v0: -300, v1: -120 } };
 }
 
-/* ── RECOMMENDED STARTING POINTS. Learner-facing: label, band, tendency,
+/* ── SUGGESTED STARTING POINTS. Learner-facing: label, band, tendency,
  *  checks (starting-points voice, owner ruling 2026-10-04). `kind`, `src`,
  *  `quote` and every `prov` are the internal record. ── */
 const DYN_OR_COND = ['sdcCard', 'instDynCard'];

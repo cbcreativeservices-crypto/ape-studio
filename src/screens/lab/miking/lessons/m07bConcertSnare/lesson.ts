@@ -44,9 +44,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — measured from the rim or head it names, angled at the head, outside the sticks’ reach — then move the mic and see what changes.',
-    credit: { scenarios: ['cs.place.1', 'cs.place.2', 'cs.place.3', 'cs.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named rim or head — not a rule, and not a safety clearance. Distance, height and angle are separate things to try, and the player’s whole motion comes first.',
+    goal: 'Start where we suggest you begin — measured from the rim or head it names, angled at the head, outside the sticks’ reach — then move the mic and see what changes.',
+    credit: { scenarios: ['cs.place.1', 'cs.place.2', 'cs.place.3', 'cs.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named rim or head — not a rule, and not a safety clearance. Distance, height and angle are separate things to try, and the player’s whole motion comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -381,7 +381,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the rim or head it names', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the rim or head it names', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will make the snare the loudest thing in the orchestra', role: 'wrong', feedback: 'A spot is blended to serve the music, not to win.' };
 
 const setupTasks: SetupTask[] = [
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A symphony recording in a good hall. In a quiet passage the snare roll gets lost; a main pair is already up. One spot channel; phantom power is available.',
     setups: [
       { id: 'a', label: 'Small condenser above and to one side, aimed across the head, blended low under the main pair', ok: true, power: 'phantom', feedback: 'A broader spot keeps the drum in its place in the orchestra; it needs the phantom power this channel has.' },
-      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the centre, blended low', ok: true, power: 'none', feedback: 'A recommended starting point that hears the whole drum; blend it under the main pair.' },
+      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the centre, blended low', ok: true, power: 'none', feedback: 'A suggested starting point that hears the whole drum; blend it under the main pair.' },
       { id: 'c', label: 'Small condenser clamped to the rim, without asking the player', ok: false, power: 'phantom', feedback: 'Nothing is clamped to the instrument without a compatible mount and the owner’s agreement.' },
       { id: 'd', label: 'A mic 3 cm over the middle of the head, where the sticks land', ok: false, power: 'none', feedback: 'That is in the sticks’ path. Stay outside the whole stick motion.' },
       { id: 'e', label: 'No spot: raise the main pair until the roll comes through', ok: false, power: 'none', feedback: 'The brief says the roll is lost in the main pickup; raising the whole pair does not single out the snare.' },
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · An amplified outdoor concert. Monitors on stage; the PA operator needs a usable snare channel. The spare input has NO phantom power.',
     setups: [
       { id: 'a', label: 'Small dynamic just outside the rim, 2.5–7.5 cm above it, aimed across the head', ok: true, power: 'none', feedback: 'Close and directional for a loud stage; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the centre', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom. Check its gain before feedback with the operator.' },
+      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the centre', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check its gain before feedback with the operator.' },
       { id: 'c', label: 'Small condenser above and to one side, well back from the drum', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a broad spot hears much more of a loud stage.' },
       { id: 'd', label: 'A dynamic resting on the edge of the batter head', ok: false, power: 'none', feedback: 'Keep the mic off the head: it is a moving part, and the sticks can hit it.' },
       { id: 'e', label: 'No spot: the open-air stage will carry the snare by itself', ok: false, power: 'none', feedback: 'The operator needs a channel; outdoors, the hall does not help, and spill and wind work against a distant pickup.' },
@@ -593,7 +593,7 @@ export const M07B_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A concert snare may need no spot at all; when it does, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 14 × 6½ in concert snare, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A concert snare may need no spot at all; when it does, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 14 × 6½ in concert snare, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: CSN_COPY,
 };
 

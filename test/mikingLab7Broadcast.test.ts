@@ -289,7 +289,7 @@ describe('Lab 7 group 1 lessons: B01, B07, B06', () => {
       for (const s of [...l.scenarios, ...l.diagnostic]) assert.doesNotMatch(s.correct, /3:1/);
       const strings = learnerStrings(l);
       for (const s of strings) assert.doesNotMatch(s, /\b(student|classroom|instructor|Pro Audio Training Academy)\b/i);
-      assert.ok(strings.some((s) => /After our research, here is where we recommend you begin/.test(s)));
+      assert.ok(strings.some((s) => /After our research, here is where we suggest you begin/.test(s)));
       assert.ok(strings.some((s) => /Experimentation is encouraged/.test(s)));
       for (const s of strings) assert.doesNotMatch(s, /\b(B0[2-58]|B1\d|F13)\b/);
     });

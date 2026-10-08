@@ -50,9 +50,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a dynamic about 10 cm from the lips in the studio, a handheld within about 10 cm on stage — then move the mic and see what changes, and how much a lean inside the working zone moves the level.',
-    credit: { scenarios: ['rp.place.1', 'rp.place.2', 'rp.place.3', 'rp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the performer, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips. Close up, a small lean is a big level change — a rehearsed working zone keeps the verse steady. Clearance from the face comes first.',
+    goal: 'Start where we suggest you begin — a dynamic about 10 cm from the lips in the studio, a handheld within about 10 cm on stage — then move the mic and see what changes, and how much a lean inside the working zone moves the level.',
+    credit: { scenarios: ['rp.place.1', 'rp.place.2', 'rp.place.3', 'rp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the performer, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips. Close up, a small lean is a big level change — a rehearsed working zone keeps the verse steady. Clearance from the face comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -459,8 +459,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio: a dry, fast verse with shouted ad-libs, over a dense beat. A controlled room; phantom power available.',
     setups: [
-      { id: 'a', label: 'A dynamic about 10 cm from the lips, in a rehearsed working zone', ok: true, power: 'none', feedback: 'A recommended starting point: dry and focused — check the boom as the performer leans in, and the ad-lib peaks.' },
-      { id: 'b', label: 'A condenser about 15 cm out, a screen in front', ok: true, power: 'phantom', feedback: 'A recommended starting point for more detail — check harsh S sounds and the shouted peaks.' },
+      { id: 'a', label: 'A dynamic about 10 cm from the lips, in a rehearsed working zone', ok: true, power: 'none', feedback: 'A suggested starting point: dry and focused — check the boom as the performer leans in, and the ad-lib peaks.' },
+      { id: 'b', label: 'A condenser about 15 cm out, a screen in front', ok: true, power: 'phantom', feedback: 'A suggested starting point for more detail — check harsh S sounds and the shouted peaks.' },
       { id: 'c', label: 'A handheld the performer moves toward each word', ok: false, power: 'none', feedback: 'Chasing every syllable changes the level and the low end on every line. Agree a zone instead.' },
       { id: 'd', label: 'A condenser 2 cm from the lips with no screen', ok: false, power: 'phantom', feedback: 'Right in the air path of a fast verse: pop after pop, and moisture on the capsule.' },
       { id: 'e', label: 'An omni 1 m away, to catch every move', ok: false, power: 'phantom', feedback: 'A metre away the room joins every word — the opposite of a dry verse, and hard to remove later.' },
@@ -473,8 +473,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live show: the performer moves across the stage, a wedge in front, the beat loud through the PA.',
     setups: [
-      { id: 'a', label: 'A handheld dynamic within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A recommended starting point: close, with distance technique — back off for shouts, keep the grille open.' },
-      { id: 'b', label: 'A headset by the mouth corner, set as its maker says', ok: true, power: 'phantom', feedback: 'A recommended starting point for a moving performer — check the battery, the pack and the wedge.' },
+      { id: 'a', label: 'A handheld dynamic within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A suggested starting point: close, with distance technique — back off for shouts, keep the grille open.' },
+      { id: 'b', label: 'A headset by the mouth corner, set as its maker says', ok: true, power: 'phantom', feedback: 'A suggested starting point for a moving performer — check the battery, the pack and the wedge.' },
       { id: 'c', label: 'A handheld cupped tight to keep the sound in', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer.' },
       { id: 'd', label: 'A condenser on a stand at the centre of the stage', ok: false, power: 'phantom', feedback: 'A fixed mic hears the performer only when they come back to it — and the stage the rest of the time.' },
       { id: 'e', label: 'An omni handheld so the performer can turn freely', ok: false, power: 'none', feedback: 'An omni rejects nothing: it hears the wedge and the PA as much as the voice.' },
@@ -636,6 +636,6 @@ export const E03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every performer, beat and room is different: move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one performer in a typical standing pose, the working zone as a drawn outline, the airway as a simplified cut, the puff of air and the S hiss as shapes, mic patterns and the two-mic comb as textbook shapes; the level swing is an estimate with no reflections. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Move a real mic near someone’s face only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every performer, beat and room is different: move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one performer in a typical standing pose, the working zone as a drawn outline, the airway as a simplified cut, the puff of air and the S hiss as shapes, mic patterns and the two-mic comb as textbook shapes; the level swing is an estimate with no reflections. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Move a real mic near someone’s face only with their agreement.',
   copy: E03_COPY,
 };

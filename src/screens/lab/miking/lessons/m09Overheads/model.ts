@@ -5,7 +5,7 @@
  * recomputed here from the shared kit and pinned by test/mikingModelM09.test.ts).
  * Frame: the KIT frame K (kit/GEOMETRY_PROPOSAL.md §1).
  *
- * The recommended starting points are written in the starting-points voice
+ * The suggested starting points are written in the starting-points voice
  * (owner ruling 2026-10-04): `label`, `band`, `tendency`, `checks` are what the
  * learner reads; `kind`, `src`, `quote` and every `prov` are the INTERNAL
  * record. No name of a person or a maker reaches the learner: the two-mic
@@ -121,7 +121,7 @@ export const RM_B: Vec3 = (() => {
  *  (proposal §2.2–2.3, a drawing default). */
 export const PAIR_CENTRE: Vec3 = { x: S0.x, y: MONO.y, z: S0.z };
 
-/* ── RECOMMENDED STARTING POINTS ── */
+/* ── SUGGESTED STARTING POINTS ── */
 
 const OH_TYPES = ['ohPencil', 'ohLdc'];
 const AIM_SNARE = { surface: 'snare', r: SNARE_R, prov: ill('"pointed at a particular spot on the drum" / "pointing to the centre of the snare": the lab counts any aim that lands on the snare head') };

@@ -472,7 +472,7 @@ function placeInset(r: Rect, above: number, below: number): { r: Rect; at: 'top'
 /**
  * PER-LESSON VIEW BOXES from the geometry (owner art pass 2026-10-05: "the
  * ukulele draws too small"). Each variant's views are framed on the
- * INSTRUMENT and its recommended starting points — not on the player — so a
+ * INSTRUMENT and its suggested starting points — not on the player — so a
  * soprano ukulele fills the stage the way a dreadnought does. True
  * proportions are kept (one scale for the instrument and the player; the
  * player is cropped, never shrunk). The mic's roam (useRig.boundsOf) follows
@@ -599,7 +599,7 @@ export type ZoneSpec = {
   checks: string[];
 };
 
-/** A recommended starting point for one variant, from its scene. */
+/** A suggested starting point for one variant, from its scene. */
 export function zoneFor(sc: GuitarScene, z: ZoneSpec): DocumentedZone {
   const vid = sc.variant.id;
   const P = sc.o.P;

@@ -1,5 +1,5 @@
 /**
- * C06a UPRIGHT BASS, PLUCKED — the recommended starting points (charter §2
+ * C06a UPRIGHT BASS, PLUCKED — the suggested starting points (charter §2
  * layer 1), on the shared bass (lessons/shared/bowed/bass.ts). Source keys:
  * docs/labs/miking/upright_bass_plucked/SOURCES.md. Corrections UB-01 …
  *

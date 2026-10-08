@@ -67,7 +67,7 @@ export const E07_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the performer before moving a real mic, and keep every stand clear of the hands, the arm, the pedals and the bench.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic — the vocal mic measured from the lips, the instrument mic from the point its zone names. They are starting points, not rules: move from there and listen.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic — the vocal mic measured from the lips, the instrument mic from the point its zone names. They are starting points, not rules: move from there and listen.',
       separate: 'Distance and angle are separate variables for each mic: change one thing at a time, and have the performer play and sing the real song each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. The mics, the stands and the booms keep clear of the face, the hands, the strumming arm, the neck, the pedals, the music desk and the lid.',
       tendencies: 'Each mic hears both sources. A mic closer to its own source, with its rejection toward the other, hears more of its own; the two together, summed, can thin or hollow the sound. These are tendencies — judge the pair in mono.',

@@ -44,8 +44,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above the plate on the side away from the player, or underneath — clear of the stroke and the swing, then move the mic and see what changes.',
-    credit: { scenarios: ['cr.place.1', 'cr.place.2', 'cr.place.3', 'cr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points (switch CRASH for the other one), and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — above the plate on the side away from the player, or underneath — clear of the stroke and the swing, then move the mic and see what changes.',
+    credit: { scenarios: ['cr.place.1', 'cr.place.2', 'cr.place.3', 'cr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch CRASH for the other one), and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'No one number is published for a crash: a zone is a place to begin, measured from the plate. Above or underneath, on the far side; clear of the follow-through and the swing — clearance comes first.',
   },
   context: {
@@ -329,9 +329,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with floor wedges. The crashes get lost in the overheads under the spill. One spare channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A small condenser 12–20 cm under the 16 in crash, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A recommended starting point, its rejection toward the wedges — a good reason on this stage.' },
-      { id: 'b', label: 'A small condenser 20–35 cm above the crash on the far side, aimed at the plate', ok: true, power: 'phantom', feedback: 'A recommended starting point out of the stroke — with the power it needs.' },
-      { id: 'c', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A recommended starting point that needs no power.' },
+      { id: 'a', label: 'A small condenser 12–20 cm under the 16 in crash, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A suggested starting point, its rejection toward the wedges — a good reason on this stage.' },
+      { id: 'b', label: 'A small condenser 20–35 cm above the crash on the far side, aimed at the plate', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stroke — with the power it needs.' },
+      { id: 'c', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power.' },
       { id: 'd', label: 'A mic just past the edge on the player’s side, where the stick follows through', ok: false, power: 'none', feedback: 'That is the stick’s follow-through — it would be struck. Start on the far side.' },
       { id: 'e', label: 'A mic a few centimetres under the plate', ok: false, power: 'none', feedback: 'Inside the downward swing: a big hit brings the plate down onto it. Start lower.' },
     ],
@@ -344,12 +344,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session in a good room. The overheads carry the crashes well. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No crash mic: the overheads already carry the crashes', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A recommended starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
       { id: 'c', label: 'A small condenser under the crash, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
       { id: 'd', label: 'A small condenser above the crash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'e', label: 'Tighten the crash’s wing nut so it cannot swing into a close mic', ok: false, power: 'none', feedback: 'A cymbal must move freely — over-tightening chokes it and can crack it. Move the mic.' },
     ],
-    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a recommended starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the crash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
+    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the crash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'Two plans pass: no crash mic, or a dynamic above it. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
   },
 ];

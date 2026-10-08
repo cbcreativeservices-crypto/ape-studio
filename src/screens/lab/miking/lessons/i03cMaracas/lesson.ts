@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic centred about 40–80 cm from the midpoint between the heads — then try a spot per head, and a singer’s pair.',
-    credit: { scenarios: ['mar.place.1', 'mar.place.2', 'mar.place.3', 'mar.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — one mic centred about 40–80 cm from the midpoint between the heads — then try a spot per head, and a singer’s pair.',
+    credit: { scenarios: ['mar.place.1', 'mar.place.2', 'mar.place.3', 'mar.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'One centred mic outside both arcs is the place to begin; a spot per head only when one hand disappears or the parts need it — and checked in mono.',
   },
   context: {
@@ -387,7 +387,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio overdub: a pair of maracas, a supportive groove, a quiet room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'One small condenser centred about 60 cm in front of the pair', ok: true, power: 'phantom', feedback: 'The recommended start: both heads, outside both arcs; it needs the phantom this channel has.' },
+      { id: 'a', label: 'One small condenser centred about 60 cm in front of the pair', ok: true, power: 'phantom', feedback: 'The suggested start: both heads, outside both arcs; it needs the phantom this channel has.' },
       { id: 'b', label: 'One small condenser about 50 cm away, centred, a little higher', ok: true, power: 'phantom', feedback: 'Also fair: a different height to balance the heads — compare by ear.' },
       { id: 'c', label: 'Two spots, hard-panned, because there are two maracas', ok: false, power: 'phantom', feedback: 'Two instruments do not require two channels; stereo should serve a deliberate idea.' },
       { id: 'd', label: 'A mic aimed at the handles to avoid the bright seeds', ok: false, power: 'phantom', feedback: 'The heads are the source; aimed at the handles the mic misses them.' },
@@ -549,7 +549,7 @@ export const I03C_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the maracas') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of maracas in two settings, a few beads standing for the seeds, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of maracas in two settings, a few beads standing for the seeds, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: MAR_COPY,
   sp: {
     strikeTitle: 'Stroke to sound',

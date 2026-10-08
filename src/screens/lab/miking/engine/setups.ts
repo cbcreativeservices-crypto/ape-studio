@@ -5,7 +5,7 @@
  *
  * A lesson's starting setups are BUILT FROM ITS OWN RESEARCHED STARTING
  * POINTS — never invented: every mic of every setup sits at one of the
- * lesson's recommended zones' validated start poses (or at the pose its own
+ * lesson's suggested zones' validated start poses (or at the pose its own
  * two-mic page uses), with the mic type that zone asks for.
  *
  *   ONE MIC         the zone the lesson's worked example reads (copy

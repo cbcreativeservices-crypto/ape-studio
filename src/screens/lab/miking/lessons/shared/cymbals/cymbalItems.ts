@@ -131,7 +131,7 @@ export function orderTask(w: CymWords): OrderTask {
     prompt: `Tap the steps of a ${w.one} mic setup in the order you would do them.`,
     steps: [
       { text: `Ask the player how ${w.the} should sound; listen with the overheads up`, early: 'Start with the player and with what the kit already gives.' },
-      { text: 'Choose the mic and a recommended starting point', early: 'Choose once you know what is missing.' },
+      { text: 'Choose the mic and a suggested starting point', early: 'Choose once you know what is missing.' },
       { text: 'Have the player stop; mount the mic clear of the stick, the swing and the player', early: 'You need a mic and a place before you mount it.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom where it is needed', early: 'Power comes after the mic is mounted and connected — with the outputs muted first.' },
       { text: 'Set input gain on the loudest strokes, with headroom', early: 'Gain is set once the mic is connected and powered.' },
@@ -146,7 +146,7 @@ export const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each mic gets 
 export const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the stick, the swing and the player', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 export const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand of cymbal mic most engineers use', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 export function docReason(w: CymWords): SetupReason {
-  return { id: 'r.doc', label: `The mic starts at a recommended starting point, measured from ${w.the}`, role: 'required', feedback: 'Say why the position is a good place to begin, and what it is measured from.' };
+  return { id: 'r.doc', label: `The mic starts at a suggested starting point, measured from ${w.the}`, role: 'required', feedback: 'Say why the position is a good place to begin, and what it is measured from.' };
 }
 export function nameReason(w: CymWords): SetupReason {
   return { id: 'r.name', label: `Every ${w.one} needs its own close mic, whatever the music`, role: 'wrong', feedback: 'Often the overheads carry the cymbals well. A close mic is a choice for what the music needs, not a rule.' };

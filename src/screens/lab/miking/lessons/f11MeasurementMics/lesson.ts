@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the measurement mic yourself — on the axis, farther back, off the axis, out in the room — and see what each position can and cannot stand for.',
-    credit: { scenarios: ['mm.place.1', 'mm.place.2', 'mm.place.3', 'mm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mm.place.1', 'mm.place.2', 'mm.place.3', 'mm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Put the mic where the method defines, not where it is convenient — and write down its reference point, height, distance, angle and grid. Change one thing at a time; return to the first spot to check it repeats.',
   },
   context: {
@@ -652,6 +652,6 @@ export const F11_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules: the method you are handed sets the real distances, angles and tolerances. Experiment, and trust your ears and the room as well as the meter. The lab is silent and draws a simplified picture: a small loudspeaker and a 1/2 in measurement mic on a bench, wavefronts at a real wavelength, the mic’s pattern as a textbook omni, and the calibrator’s readings as made-up examples. Run real checks with someone qualified on the equipment.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: the method you are handed sets the real distances, angles and tolerances. Experiment, and trust your ears and the room as well as the meter. The lab is silent and draws a simplified picture: a small loudspeaker and a 1/2 in measurement mic on a bench, wavefronts at a real wavelength, the mic’s pattern as a textbook omni, and the calibrator’s readings as made-up examples. Run real checks with someone qualified on the equipment.',
   copy: F11_COPY,
 };

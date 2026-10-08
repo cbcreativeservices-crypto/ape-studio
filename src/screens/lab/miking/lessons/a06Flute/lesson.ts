@@ -49,8 +49,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — close, between the lip plate and the left hand, off the air jet — then move the mic and see what changes.',
-    credit: { scenarios: ['fl.place.1', 'fl.place.2', 'fl.place.3', 'fl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — close, between the lip plate and the left hand, off the air jet — then move the mic and see what changes.',
+    credit: { scenarios: ['fl.place.1', 'fl.place.2', 'fl.place.3', 'fl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Close for detail, behind the head for less breath, a metre in front for the room, a headset or a clip for a moving player — each a place to begin, not a rule. Keep the capsule out of the air jet.',
   },
   context: {
@@ -377,8 +377,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a solo flute overdub, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Small condenser 5–10 cm from the flute, between the lip plate and the left hand, off the jet', ok: true, power: 'phantom', feedback: 'A recommended starting point for detail — listen for breath and keys.' },
-      { id: 'b', label: 'Small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A recommended starting point with less breath — check the head’s movement.' },
+      { id: 'a', label: 'Small condenser 5–10 cm from the flute, between the lip plate and the left hand, off the jet', ok: true, power: 'phantom', feedback: 'A suggested starting point for detail — listen for breath and keys.' },
+      { id: 'b', label: 'Small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A suggested starting point with less breath — check the head’s movement.' },
       { id: 'c', label: 'A mic straight in front of the lips, in the air jet', ok: false, power: 'phantom', feedback: 'In the jet the capsule hears wind and pops.' },
       { id: 'd', label: 'A mic aimed at the end of the foot joint only', ok: false, power: 'phantom', feedback: 'The foot leads only for the lowest notes; most of the sound leaves from the embouchure and the holes.' },
       { id: 'e', label: 'A darker mic because the flute is silver-coloured', ok: false, power: 'phantom', feedback: 'The colour is not a recipe — choose by what you hear.' },
@@ -391,8 +391,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a flutist (metal concert flute) who walks and turns in a band with drums. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A headset the player agrees to wear, the capsule beside the lips, out of the jet', ok: true, power: 'phantom', feedback: 'A recommended starting point that follows the head — check the air and the register.' },
-      { id: 'b', label: 'A miniature on an approved strap round the foot, aimed back at the keys', ok: true, power: 'phantom', feedback: 'A recommended starting point that follows the flute — check the fit and the cable.' },
+      { id: 'a', label: 'A headset the player agrees to wear, the capsule beside the lips, out of the jet', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the head — check the air and the register.' },
+      { id: 'b', label: 'A miniature on an approved strap round the foot, aimed back at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the flute — check the fit and the cable.' },
       { id: 'c', label: 'A stand mic a metre in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage, and with a walking player, a metre away hears the band more than the flute.' },
       { id: 'd', label: 'A clip squeezed over the keys of the body', ok: false, power: 'phantom', feedback: 'Nothing over the keys, rods or pads: it stops the notes and risks the flute.' },
       { id: 'e', label: 'An omni close in front of the lips, turned up', ok: false, power: 'phantom', feedback: 'In the jet it hears wind; an omni rejects nothing, so turned up it brings the stage and feedback.' },
@@ -517,7 +517,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, boom or cable anywhere the flute, the hands or a turning head can reach — or in the air jet — is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the flute between the lip plate and the left hand, the player’s head, the middle of the flute, the foot’s keys, the embouchure hole. They are starting points, not rules — move from there and listen.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the flute between the lip plate and the left hand, the player’s head, the middle of the flute, the foot’s keys, the embouchure hole. They are starting points, not rules — move from there and listen.',
       separate: 'Distance, height and angle are separate variables: change one at a time, and play low, high, soft, strong, tongued and legato phrases each time — one held note is not a test. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the flute’s reach, the hands, the head’s turn and the air jet. The engine stops the mic and names what it would touch.',
       tendencies: 'Close tends to bring detail, air and keys; behind the head, less breath; a metre in front, more room and fewer clicks; a headset favours the embouchure, a foot clip the holes and keys. These are tendencies, and flutes and players vary.',
@@ -665,7 +665,7 @@ export const A06_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every flute, player and room is different, and the material alone is not a sound recipe: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal pipe, the air jet as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every flute, player and room is different, and the material alone is not a sound recipe: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal pipe, the air jet as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A flute stood on end, keys toward you, its air column drawn open',

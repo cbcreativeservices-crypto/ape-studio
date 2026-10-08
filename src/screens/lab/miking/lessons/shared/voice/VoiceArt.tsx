@@ -198,7 +198,7 @@ export function voiceHitTest(view: ViewId, variant: VariantId, u: number, v: num
   return null;
 }
 
-/** The words keep off the recommended starting points the scene is showing
+/** The words keep off the suggested starting points the scene is showing
  *  (each zone's drawn section, as its bounding box). */
 export function voiceLabelObstacles(zones: readonly DocumentedZone[]): NonNullable<LessonArt['labelObstacles']> {
   return (view, _variant, shown) => {

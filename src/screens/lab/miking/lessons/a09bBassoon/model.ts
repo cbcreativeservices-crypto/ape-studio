@@ -1,5 +1,5 @@
 /**
- * A09b BASSOON — the recommended starting points (charter §2 layer 1). Source
+ * A09b BASSOON — the suggested starting points (charter §2 layer 1). Source
  * keys point into docs/labs/miking/bassoon/SOURCES.md and the reed family's
  * keys in soprano_clarinet/SOURCES.md §0; corrections A9B-01 … (CORRECTIONS_LOG).
  *

@@ -91,7 +91,7 @@ export const F09_COPY: Partial<LessonCopy> = {
     },
     note: 'Clearance comes first: nothing touches the talker, the pole and its shadow stay out of the shot, cables stay out of the walking path, and outdoors nothing comes within 3 m (10 ft) of a power line. Ask before putting anything on a person.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on location, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: there is no single right answer, and every talker, place and shot is different.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on location, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: there is no single right answer, and every talker, place and shot is different.',
       separate: 'Distance, height and the angle off the mouth’s axis are separate variables; the frame and the head turn change them during a take. Distances are measured to the mic’s FRONT and rounded to about 5 mm — a shotgun’s capsule sits behind its slotted tube, so no millimetre claim is made.',
       clearance: 'Clearance comes first: out of the shot, clear of the talker and the walking path, and away from power lines.',
       tendencies: 'Closer tends to bring more voice and less room; farther, more room and noise; a body mic, a steady distance with a chest-heavy tone and clothing noise; a planted mic, one place only. These are tendencies, and places vary.',

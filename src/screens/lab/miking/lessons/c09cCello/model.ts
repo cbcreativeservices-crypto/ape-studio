@@ -8,7 +8,7 @@
  * top; +x toward the audience; +y DOWN; +z the player's right. The cellist
  * sits behind the cello and faces +x (posture.ts `seated`).
  *
- * RECOMMENDED STARTING POINTS (corrections C-01 … C-05 in CORRECTIONS_LOG):
+ * SUGGESTED STARTING POINTS (corrections C-01 … C-05 in CORRECTIONS_LOG):
  *   front  "one foot from the bridge" (Shure) — 25–35 cm, drawn ±5 cm round
  *          the foot; "in front" is the lesson's reading of a direction the
  *          source does not give (C-02);

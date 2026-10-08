@@ -115,7 +115,7 @@ export const SHK_COPY: LessonCopy = {
     note: 'Clearance comes first: stop the player before moving a real mic. Watch PEAK meters — a shaker’s brief peaks can overload an input that a slow meter says is fine.',
     availableLead: 'Starting points for this mic and way of shaking',
     learn: {
-      intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the playing area, facing where most strokes happen, is where we recommend you begin — a common minimum for percussion is about 30 cm between mic and instrument. Starting points, not rules: move and listen — there is no single right answer.',
+      intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the playing area, facing where most strokes happen, is where we suggest you begin — a common minimum for percussion is about 30 cm between mic and instrument. Starting points, not rules: move and listen — there is no single right answer.',
       separate: 'Distance, height and angle are separate variables: change one at a time, with the same pattern. Distance is read from the middle of the playing area — not from the nearest point of one stroke.',
       clearance: 'Clearance comes first. Have the player show the whole arc and the biggest accent before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room for a real player.',
       tendencies: 'Farther back if one stroke jumps in level, if single clicks dominate, or if the player cannot move freely; closer if the room or the band swamps it. All tendencies to check by ear.',

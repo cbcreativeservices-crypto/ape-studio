@@ -50,9 +50,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a broadcast dynamic about 10 cm from the lips in the booth, about 11 cm at the guest desk — then move the mic and see what changes.',
-    credit: { scenarios: ['b7.place.1', 'b7.place.2', 'b7.place.3', 'b7.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the reader, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. Close versus moderate is a choice of perspective that the room must support; clearance from the face and the script comes first.',
+    goal: 'Start where we suggest you begin — a broadcast dynamic about 10 cm from the lips in the booth, about 11 cm at the guest desk — then move the mic and see what changes.',
+    credit: { scenarios: ['b7.place.1', 'b7.place.2', 'b7.place.3', 'b7.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the reader, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Close versus moderate is a choice of perspective that the room must support; clearance from the face and the script comes first.',
   },
   context: {
     title: 'Booth or desk',
@@ -482,7 +482,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A dry, close announcer read in a small booth with a little fan noise, the reader standing at a script stand.',
     setups: [
-      { id: 'a', label: 'A broadcast dynamic about 10 cm on axis, its windscreen on, the fan off', ok: true, power: 'none', feedback: 'A recommended start: close and dry — check pops and the script’s reflection.' },
+      { id: 'a', label: 'A broadcast dynamic about 10 cm on axis, its windscreen on, the fan off', ok: true, power: 'none', feedback: 'A suggested start: close and dry — check pops and the script’s reflection.' },
       { id: 'b', label: 'A condenser above the script at eye level, aimed down at the mouth', ok: true, power: 'phantom', feedback: 'An idea that can pass — check the voice a little off its axis and the mount.' },
       { id: 'c', label: 'A condenser 60 cm away for a natural booth sound', ok: false, power: 'phantom', feedback: 'Far from the mouth: more booth and fan, not the dry read the brief asks for.' },
       { id: 'd', label: 'A mic aimed at the script stand to catch its sound', ok: false, power: 'none', feedback: 'Aimed at the stand, the mic hears its reflection, not the voice.' },
@@ -496,7 +496,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A guest joins a live program from home, on a laptop, in a quiet room.',
     setups: [
-      { id: 'a', label: 'An external mic near the mouth, chosen as the input, on headphones', ok: true, power: 'none', feedback: 'A recommended start: check the app chose it, and give them a return without their own voice.' },
+      { id: 'a', label: 'An external mic near the mouth, chosen as the input, on headphones', ok: true, power: 'none', feedback: 'A suggested start: check the app chose it, and give them a return without their own voice.' },
       { id: 'b', label: 'A wired earbud mic held steady, on its own earbuds', ok: true, power: 'none', feedback: 'A fair fallback: check speech and cable rub.' },
       { id: 'c', label: 'The laptop’s own mic, the guest a metre back, on speakers', ok: false, power: 'none', feedback: 'A distant mic and loudspeakers: room, echo and spill.' },
       { id: 'd', label: 'Heavy noise reduction on the laptop mic', ok: false, power: 'none', feedback: 'Software cannot restore missing consonants. Placement first.' },
@@ -659,7 +659,7 @@ export const B07_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every voice, script and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reader in a typical standing pose, a host and a guest seated, the script stand’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never test a mic by blowing into it or by provoking feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, script and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reader in a typical standing pose, a host and a guest seated, the script stand’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Never test a mic by blowing into it or by provoking feedback.',
   copy: B07_COPY,
 };
 

@@ -165,7 +165,7 @@ function B08Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      'After our research, each blue starting point is where we recommend you begin — on an approved place, raised, aimed at the faces of a section, the PA off its front. They are starting points, not rules: compare one change at a time, and use your ears. Experimentation is encouraged.',
+      'After our research, each blue starting point is where we suggest you begin — on an approved place, raised, aimed at the faces of a section, the PA off its front. They are starting points, not rules: compare one change at a time, and use your ears. Experimentation is encouraged.',
       'Only an approved place: never in an aisle or an exit, never over people unless a qualified rigger hung it — and never into the main PA.',
     ),
   ];

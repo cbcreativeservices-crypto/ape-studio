@@ -44,9 +44,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — measured to the snare, aimed at it, clear of the player and the cymbals — then move the mic and see what changes.',
-    credit: { scenarios: ['oh.place.1', 'oh.place.2', 'oh.place.3', 'oh.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named reference — usually the snare’s centre. Height, position, aim and spacing are separate things to try, and clearance comes first.',
+    goal: 'Start where we suggest you begin — measured to the snare, aimed at it, clear of the player and the cymbals — then move the mic and see what changes.',
+    credit: { scenarios: ['oh.place.1', 'oh.place.2', 'oh.place.3', 'oh.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named reference — usually the snare’s centre. Height, position, aim and spacing are separate things to try, and clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -513,7 +513,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const DOC: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured to the snare’s centre', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured to the snare’s centre', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR: SetupReason = { id: 'r.clear', label: 'Mics, booms and cables stay clear of the sticks, the cymbals’ swing and the player', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND: SetupReason = { id: 'r.brand', label: 'It is the pair most engineers buy for drums', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties and by ear.' };
 const WIDE: SetupReason = { id: 'r.wide', label: 'The widest pair gives the best drum sound', role: 'wrong', feedback: 'Width is a choice for the music, not a measure of quality — and wide pairs need the most care in mono.' };
@@ -715,6 +715,6 @@ export const M09_LESSON: Lesson = {
   ],
   live: { wedges: M09_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every kit, player and room is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit in a right-handed layout (its positions and heights are drawing values), mic patterns and the two-mic comb as textbook shapes, cymbal motion drawn larger. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every kit, player and room is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit in a right-handed layout (its positions and heights are drawing values), mic patterns and the two-mic comb as textbook shapes, cymbal motion drawn larger. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: M09_COPY,
 };

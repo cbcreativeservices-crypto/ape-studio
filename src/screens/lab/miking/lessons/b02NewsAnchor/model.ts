@@ -1,5 +1,5 @@
 /**
- * B02 NEWS ANCHORS AND SEATED INTERVIEWS — the recommended starting points
+ * B02 NEWS ANCHORS AND SEATED INTERVIEWS — the suggested starting points
  * (charter §2 layer 1), on the seated anchor (frame V) and the guest, the
  * body-worn family, the camera frame and the fixed boom (shared/broadcast).
  * Source keys: docs/labs/miking/news_anchor/SOURCES.md and the Lab 7a
@@ -102,7 +102,7 @@ const GOOSE: VoiceZoneSpec = {
 };
 
 export const B02_ZONES: DocumentedZone[] = [
-  atPlace(lavSpec('b2.lav', 'On the anchor’s sternum, in the centre', 'After our research, here is where we recommend you begin: with the anchor’s agreement, a small omni lav on a firm clothing edge over the middle of the chest — about 12–25 cm (5–10 in) from the lips — clear of hair, jewellery and the jacket’s movement.', 'One steady distance however the camera frames them, a natural voice from below the chin — quieter when the head turns or reads down, and it hears the clothes.', ['Facing the camera, turning to the guest, reading down', 'Rubbing, the tie, the jacket, the earpiece cable', 'The broadcast loop and the cable secured lower down']), LAV_A.at),
+  atPlace(lavSpec('b2.lav', 'On the anchor’s sternum, in the centre', 'After our research, here is where we suggest you begin: with the anchor’s agreement, a small omni lav on a firm clothing edge over the middle of the chest — about 12–25 cm (5–10 in) from the lips — clear of hair, jewellery and the jacket’s movement.', 'One steady distance however the camera frames them, a natural voice from below the chin — quieter when the head turns or reads down, and it hears the clothes.', ['Facing the camera, turning to the guest, reading down', 'Rubbing, the tie, the jacket, the earpiece cable', 'The broadcast loop and the cable secured lower down']), LAV_A.at),
   atPlace(lavSpec('b2.concealed', 'Hidden under the shirt, on the sternum', 'Only after the visible place works: the same lav under one layer of the shirt, in a concealer made for it, with the anchor’s agreement and wardrobe’s — an opening kept for the sound.', 'Invisible in any shot — but the cloth over it can dull the top end and rub. Compare it with the visible place at matched loudness; keep the visible lav or the boom ready.', ['The visible place first, then the hidden one, at matched loudness', 'Scratching through the whole movement', 'Nothing over the capsule’s opening'], ['close', 'twoShot']), LAV_A.at),
   atPlace(boomSpec('b2.boom', ['close'], BOOM_CLOSE.d, `For a stationary interview, the program mic can be a fixed boom: just above the widest frame and a little in front, aimed at the mouth — the tube’s tip about 15 cm clear of the edge, its capsule here about ${cm(BOOM_CLOSE.d)} cm from the lips. Rigged by qualified crew.`), BOOM_CLOSE.p),
   atPlace(boomSpec('b2.boom.two', ['twoShot', 'public'], BOOM_TWO.d, `In the two-shot the frame’s top is higher: the fixed boom just above it, aimed at the anchor’s mouth — its capsule about ${cm(BOOM_TWO.d)} cm away, farther than in the close shot.`), BOOM_TWO.p),

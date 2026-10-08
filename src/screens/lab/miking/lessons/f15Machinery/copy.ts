@@ -39,7 +39,7 @@ export const F15_COPY: Partial<LessonCopy> = {
     note: 'Mark the stand’s feet: a return to A must find the same spot.',
     availableLead: 'Starting points for this mic here',
     learn: {
-      intro: 'After our research, each blue zone is a place we recommend you begin — all outside the exclusion zone, beside the airflow. The product’s own test code sets real positions.',
+      intro: 'After our research, each blue zone is a place we suggest you begin — all outside the exclusion zone, beside the airflow. The product’s own test code sets real positions.',
       separate: 'Distance, angle and height are separate: change one at a time, and keep the cycle the same.',
       clearance: 'Nothing enters the zone; nothing reaches through a guard; the stand out of every path.',
       tendencies: 'What a position stands for is a tendency to check — never a promise about the whole device.',

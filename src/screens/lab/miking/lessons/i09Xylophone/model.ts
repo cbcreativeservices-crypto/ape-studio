@@ -28,7 +28,7 @@ export const XYLO_FAM: MalletFamily = {
 
 const MICS = ['mlSdc', 'mlDynCard'];
 
-/* ── RECOMMENDED STARTING POINTS (lesson L10, L15; corrections I2-X*) ── */
+/* ── SUGGESTED STARTING POINTS (lesson L10, L15; corrections I2-X*) ── */
 export const XYLO_ZONES: DocumentedZone[] = [
   oneMicZone(XYLO_FAM, {
     id: 'xy.one',

@@ -39,7 +39,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself in the practice room — its place in the equipment area, its height and its aim — and see the range and the angle change between A, B and C.',
-    credit: { scenarios: ['tg.place.1', 'tg.place.2', 'tg.place.3', 'tg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tg.place.1', 'tg.place.2', 'tg.place.3', 'tg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'From one approved area, each source point is a different range and angle: aim at the source’s height, change one thing at a time, and never move into the walking path.',
   },
   context: {
@@ -464,8 +464,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A wrestling event: two event-assigned places outside the mat, three channels, the protection area busy.',
     setups: [
-      { id: 'a', label: 'A directional at each assigned place, plus a wider venue feed', ok: true, power: 'phantom', feedback: 'A recommended start: one dominant action feed per sector, and the wider feed for the gaps.' },
-      { id: 'b', label: 'One directional on the centre, a stereo ambience pair for the rest', ok: true, power: 'phantom', feedback: 'A recommended start: a single sector supported by a wider feed — not presented as complete coverage.' },
+      { id: 'a', label: 'A directional at each assigned place, plus a wider venue feed', ok: true, power: 'phantom', feedback: 'A suggested start: one dominant action feed per sector, and the wider feed for the gaps.' },
+      { id: 'b', label: 'One directional on the centre, a stereo ambience pair for the rest', ok: true, power: 'phantom', feedback: 'A suggested start: a single sector supported by a wider feed — not presented as complete coverage.' },
       { id: 'c', label: 'A mic taped in the protection border for the edge action', ok: false, power: 'phantom', feedback: 'The protection area is not a mic strip — the action carries into it.' },
       { id: 'd', label: 'A small mic hidden at a mat joint near the centre', ok: false, power: 'phantom', feedback: 'Nothing hard is hidden in the mat, and it can be struck or snag.' },
       { id: 'e', label: 'The coach’s shouts as the main mat perspective', ok: false, power: 'phantom', feedback: 'Coaches’ voices are not the mat: keep them from becoming the whole perspective.' },
@@ -484,8 +484,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A gymnastics floor final: the routine music in the room, an authorized music feed offered, landings wanted.',
     setups: [
-      { id: 'a', label: 'A perimeter directional sector, a stereo venue view, the music feed on its own input', ok: true, power: 'phantom', feedback: 'A recommended start: detail, continuity and the music each separately controllable, the feed’s delay logged.' },
-      { id: 'b', label: 'A stereo venue view, with the music feed kept separate', ok: true, power: 'phantom', feedback: 'A recommended start where no detail sector is approved: the routine and the room, the music controllable.' },
+      { id: 'a', label: 'A perimeter directional sector, a stereo venue view, the music feed on its own input', ok: true, power: 'phantom', feedback: 'A suggested start: detail, continuity and the music each separately controllable, the feed’s delay logged.' },
+      { id: 'b', label: 'A stereo venue view, with the music feed kept separate', ok: true, power: 'phantom', feedback: 'A suggested start where no detail sector is approved: the routine and the room, the music controllable.' },
       { id: 'c', label: 'A mic on the floor’s edge where the gymnast lands', ok: false, power: 'phantom', feedback: 'The border and the landing space stay clear.' },
       { id: 'd', label: 'The music feed and every room mic summed at equal level', ok: false, power: 'phantom', feedback: 'Several delayed copies of the music smear it: avoid equal-level delayed versions.' },
       { id: 'e', label: 'Ask the gymnast to repeat a hard landing for a level check', ok: false, power: 'phantom', feedback: 'Test only normal authorized warm-up — never repeated hard landings for sound.' },
@@ -631,6 +631,6 @@ export const B15_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every venue and event is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue outlines, their routes and approved places are typical layouts; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into the performance space, a route or the apparatus; with thunder, shelter at once and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every venue and event is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue outlines, their routes and approved places are typical layouts; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into the performance space, a route or the apparatus; with thunder, shelter at once and wait 30 minutes after the last thunder.',
   copy: B15_COPY,
 };

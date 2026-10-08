@@ -1,5 +1,5 @@
 /**
- * B12 PARABOLIC AND TRACKED ACTION PICKUP — the recommended starting points
+ * B12 PARABOLIC AND TRACKED ACTION PICKUP — the suggested starting points
  * (charter §2 layer 1) on the shared practice field (frame P). Research:
  * docs/labs/miking/parabolic/SOURCES.md and GEOMETRY_PROPOSAL.md §3–§4; words
  * from the owner's lesson (source_text/B12-…; "L<n>" in comments only).

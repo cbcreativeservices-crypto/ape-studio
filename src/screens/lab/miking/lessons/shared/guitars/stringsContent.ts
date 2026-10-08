@@ -126,12 +126,12 @@ export function twoMicChecks(p: string, n: Noun): MikingScenario[] {
       id: `${p}.two.2`,
       page: 'twoMic',
       prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference?',
-      options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'It doubles, because the inverted copy arrives even later'],
+      options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it'],
       correct: 'Nothing: polarity flips the sign; the delay stays the same',
       explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
       why: {
         'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-        'It doubles, because the inverted copy arrives even later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+        'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
       },
     },
     {
@@ -289,7 +289,7 @@ export function setupOrder(p: string, n: Noun, placeStep: string): OrderTask {
 }
 
 export const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-export const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+export const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 export const clearReason = (what: string): SetupReason => ({ id: 'r.clear', label: `The mic, mount and cable stay clear of ${what}`, role: 'required', feedback: 'Clearance is part of every passing setup.' });
 export const brandReason = (n: Noun): SetupReason => ({ id: 'r.brand', label: `It is the brand most engineers reach for on ${n.one}s`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' });
 export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest sound of any position', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and the loudest spot is often the least balanced.' };
@@ -301,7 +301,7 @@ export const STRINGS_PREDICT = {
 } as const;
 
 export const ACCURACY = (n: Noun, picture: string) =>
-  `ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every ${n.one}, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: ${picture}, a player whose reach is drawn roughly, mic patterns and the two-mic comb as textbook shapes, and string and top motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.`;
+  `ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every ${n.one}, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: ${picture}, a player whose reach is drawn roughly, mic patterns and the two-mic comb as textbook shapes, and string and top motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.`;
 
 const STAGE: Provenance = { kind: 'illustrative', reason: 'a typical small stage; no source gives the positions' };
 

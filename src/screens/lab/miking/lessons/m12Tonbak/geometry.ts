@@ -57,7 +57,7 @@ const envelopes = [
   { id: 'env.shins', label: 'the player’s shins and feet', shape: { kind: 'box' as const, min: v3(100, -470, -340), max: v3(270, 0, 300) }, prov: ill('shins and feet of a seated player: a drawing default') },
 ];
 
-/* ── RECOMMENDED STARTING POINTS: the lesson's own trials (internal kind
+/* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind
  *    'trial'); one consistent style on screen (owner ruling). ── */
 const z = (o: Omit<DocumentedZone, 'kind' | 'src' | 'side' | 'draw'> & { surfaceC: Vec3; surfaceN: Vec3; dA: [number, number] }): DocumentedZone => {
   const { surfaceC, surfaceN, dA, ...rest } = o;

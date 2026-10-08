@@ -54,9 +54,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a lav on the sternum in the studio, a headset by the corner of the mouth live — then move the mic and see what changes.',
-    credit: { scenarios: ['b5.place.1', 'b5.place.2', 'b5.place.3', 'b5.rec.2'], note: 'Rest the mic in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. The place on the body, the distance and the angle off the mouth are separate controls; comfort, the clothes and the cable come first.',
+    goal: 'Start where we suggest you begin — a lav on the sternum in the studio, a headset by the corner of the mouth live — then move the mic and see what changes.',
+    credit: { scenarios: ['b5.place.1', 'b5.place.2', 'b5.place.3', 'b5.rec.2'], note: 'Rest the mic in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The place on the body, the distance and the angle off the mouth are separate controls; comfort, the clothes and the cable come first.',
   },
   context: {
     title: 'Studio or live',
@@ -497,8 +497,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded studio interview, no loudspeakers, a close shot; the presenter in a jacket, agreeing to a body mic.',
     setups: [
-      { id: 'a', label: 'An omni lav on the sternum, a loop at the clip and one lower down', ok: true, power: 'phantom', feedback: 'A recommended start: centred, steady, quiet cable — check turns and the clothes.' },
-      { id: 'b', label: 'A lav hidden under the shirt, after the visible place was checked', ok: true, power: 'phantom', feedback: 'A recommended start if the shot needs it — compare it with the visible place.' },
+      { id: 'a', label: 'An omni lav on the sternum, a loop at the clip and one lower down', ok: true, power: 'phantom', feedback: 'A suggested start: centred, steady, quiet cable — check turns and the clothes.' },
+      { id: 'b', label: 'A lav hidden under the shirt, after the visible place was checked', ok: true, power: 'phantom', feedback: 'A suggested start if the shot needs it — compare it with the visible place.' },
       { id: 'c', label: 'A lav on the far lapel, untested with turns', ok: false, power: 'phantom', feedback: 'Off the middle and untested: a turn away from it will drop the voice.' },
       { id: 'd', label: 'A lav taped to the skin with camera tape', ok: false, power: 'phantom', feedback: 'Camera tape is not skin-safe. Use an adhesive made for skin, after asking.' },
       { id: 'e', label: 'The bodypack lav plugged straight into a phantom input', ok: false, power: 'phantom', feedback: 'Never — only through its own specified adapter.' },
@@ -511,8 +511,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live talk on a stage with a PA: the presenter walks away from a lectern that has its own mic.',
     setups: [
-      { id: 'a', label: 'An omni headset beside the mouth, the lectern mic muted', ok: true, power: 'phantom', feedback: 'A recommended start: close to the mouth, one open mic — check the PA with the operator.' },
-      { id: 'b', label: 'A directional headset, its rear toward the PA, the lectern muted', ok: true, power: 'phantom', feedback: 'A recommended start — check its actual pattern against the PA’s place.' },
+      { id: 'a', label: 'An omni headset beside the mouth, the lectern mic muted', ok: true, power: 'phantom', feedback: 'A suggested start: close to the mouth, one open mic — check the PA with the operator.' },
+      { id: 'b', label: 'A directional headset, its rear toward the PA, the lectern muted', ok: true, power: 'phantom', feedback: 'A suggested start — check its actual pattern against the PA’s place.' },
       { id: 'c', label: 'A lav low on the chest with the PA turned up', ok: false, power: 'phantom', feedback: 'Farther from the mouth, and more PA level: less margin before feedback.' },
       { id: 'd', label: 'The headset and the lectern mic both open', ok: false, power: 'phantom', feedback: 'Two open mics on one voice comb and cost margin. Mute one.' },
       { id: 'e', label: 'Raise the headset until it rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Bring each mic to its working level only.' },
@@ -675,6 +675,6 @@ export const B05_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give as drawing defaults, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give as drawing defaults, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; never provoke feedback.',
   copy: B05_COPY,
 };

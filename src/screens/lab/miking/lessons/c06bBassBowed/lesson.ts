@@ -47,8 +47,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — out in front of the strings, a little above the bridge, outside the bow’s whole sweep — then compare lower, an f-hole and a section spot.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — out in front of the strings, a little above the bridge, outside the bow’s whole sweep — then compare lower, an f-hole and a section spot.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Bowed, the front starting point must sit outside the bow’s sweep as well as in front of the strings. Closer to where the bow plays brings more scrape; a broader view integrates the bass with the room.',
   },
   context: {
@@ -444,7 +444,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a solo bowed bass in a good quiet room. One channel, phantom available.',
     setups: [
-      { id: 'a', label: 'Small condenser 15–30 cm in front, a little above the bridge, outside the bow’s sweep', ok: true, power: 'phantom', feedback: 'A recommended starting point: body, pitch and bow together — then compare lower and broader.' },
+      { id: 'a', label: 'Small condenser 15–30 cm in front, a little above the bridge, outside the bow’s sweep', ok: true, power: 'phantom', feedback: 'A suggested starting point: body, pitch and bow together — then compare lower and broader.' },
       { id: 'b', label: 'An omni in front at a moderate distance, for the whole bass and the room', ok: true, power: 'phantom', feedback: 'A fair choice in a good quiet room — no proximity lift, the bow blended in.' },
       { id: 'c', label: 'A mic a few centimetres from the strings where the bow plays', ok: false, power: 'phantom', feedback: 'In the bow’s path: it will be hit, and it hears mostly scrape.' },
       { id: 'd', label: 'A clip pressed onto the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Never on the bridge: it can impede its vibration and risk the instrument.' },
@@ -627,6 +627,6 @@ export const C06B_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every bass, bassist, bow and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one bassist in a typical stance, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the bassist stopped, only with their agreement — outside the bow’s whole path, and never where a stand could fall onto the bass.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, bassist, bow and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one bassist in a typical stance, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the bassist stopped, only with their agreement — outside the bow’s whole path, and never where a stand could fall onto the bass.',
   copy: bassCopy('bow', { worked: 'ub.front', context: 'ub.front', twoA: 'ub.under', twoB: 'ub.spot', prefix: P, studioId: `${P}.ctx.studio` }),
 };

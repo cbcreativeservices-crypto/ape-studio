@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself in the practice room — its place, its height, and its aim across the walk or along it — and see the range and the angle change.',
-    credit: { scenarios: ['mo.place.1', 'mo.place.2', 'mo.place.3', 'mo.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mo.place.1', 'mo.place.2', 'mo.place.3', 'mo.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Aimed across, a short strong sector; aimed along, a longer one with more of what lies beyond. Change one thing at a time from an approved place.',
   },
   context: {
@@ -477,8 +477,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A circuit: one approved media point behind the barrier, two channels, the nearest cars very loud.',
     setups: [
-      { id: 'a', label: 'A shotgun aimed along the straight, plus a mono ambience', ok: true, power: 'phantom', feedback: 'A recommended start: the approach on the axis, the event carried by the ambience, generous input margin.' },
-      { id: 'b', label: 'A coincident stereo pair at the media point', ok: true, power: 'phantom', feedback: 'A recommended start where the trajectory matters: check its orientation and the mono downmix.' },
+      { id: 'a', label: 'A shotgun aimed along the straight, plus a mono ambience', ok: true, power: 'phantom', feedback: 'A suggested start: the approach on the axis, the event carried by the ambience, generous input margin.' },
+      { id: 'b', label: 'A coincident stereo pair at the media point', ok: true, power: 'phantom', feedback: 'A suggested start where the trajectory matters: check its orientation and the mono downmix.' },
       { id: 'c', label: 'A stand inside the run-off for a closer pass', ok: false, power: 'phantom', feedback: 'Nobody stands in the run-off, at any time.' },
       { id: 'd', label: 'A mic taped to the safety barrier', ok: false, power: 'phantom', feedback: 'Nothing is attached to a safety barrier or a flag post by default.' },
       { id: 'e', label: 'Gain set on a distant car, peaks left to chance', ok: false, power: 'phantom', feedback: 'The nearest pass needs its headroom at every stage.' },
@@ -497,8 +497,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Show jumping: two assigned perimeter positions, a soft sand footing, the arena closed during each round.',
     setups: [
-      { id: 'a', label: 'A directional on a selected landing, plus a wider stereo view', ok: true, power: 'phantom', feedback: 'A recommended start: selected landings and the round’s rhythm, both from outside the arena.' },
-      { id: 'b', label: 'A wider mono or stereo view only, from the perimeter', ok: true, power: 'phantom', feedback: 'A recommended start when soft footing or distance masks the detail.' },
+      { id: 'a', label: 'A directional on a selected landing, plus a wider stereo view', ok: true, power: 'phantom', feedback: 'A suggested start: selected landings and the round’s rhythm, both from outside the arena.' },
+      { id: 'b', label: 'A wider mono or stereo view only, from the perimeter', ok: true, power: 'phantom', feedback: 'A suggested start when soft footing or distance masks the detail.' },
       { id: 'c', label: 'A small mic on a fence’s rail for the touches', ok: false, power: 'phantom', feedback: 'Nothing that changes a fence; an approved remote plant belongs in the technical plan.' },
       { id: 'd', label: 'A clip mic on the horse’s bridle', ok: false, power: 'phantom', feedback: 'Never a mic on a horse, its tack or its rider.' },
       { id: 'e', label: 'A stand by the in-gate for the best angle', ok: false, power: 'phantom', feedback: 'Equipment never blocks a gate.' },
@@ -644,6 +644,6 @@ export const B16_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every course, arena and pool is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue plans, the car and the horse are typical drawings; ranges, levels and delays along the walk are calculated from the drawing, and no pitch or speed is ever calculated. Safety is exact: never into a course, a run-off, an arena or a deck route; no mic on a horse, its tack or its rider; wet-area electrics by a qualified person; with thunder, shelter at once and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every course, arena and pool is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue plans, the car and the horse are typical drawings; ranges, levels and delays along the walk are calculated from the drawing, and no pitch or speed is ever calculated. Safety is exact: never into a course, a run-off, an arena or a deck route; no mic on a horse, its tack or its rider; wet-area electrics by a qualified person; with thunder, shelter at once and wait 30 minutes after the last thunder.',
   copy: B16_COPY,
 };

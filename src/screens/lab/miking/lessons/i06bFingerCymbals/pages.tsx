@@ -20,7 +20,7 @@ const A0 = zoneOf('fc.A').start;
 const H0 = zoneOf('fc.high').start;
 
 const pieces = (z: DocumentedZone, view: string, clear: string) => [
-  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
   { title: 'MEASURED FROM', text: `From ${z.refSurface === 'dance' ? 'the dancer’s hands, in the middle of the route' : 'the middle of the area where the cymbals are played'}: the readout measures to the mic’s FRONT, rounded to ≈ 5 mm.`, cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
   { title: 'THE VIEWPOINT', text: view, cell: 1 },
@@ -84,7 +84,7 @@ const HELD: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from where the cymbals are played. They are starting points, not rules: move from there and listen — every pair, player and room is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from where the cymbals are played. They are starting points, not rules: move from there and listen — every pair, player and room is different.',
     'Change one thing at a time, and replay the whole phrase rather than one ideal hit. Judge whether every stroke stays audible, whether the attack drowns the ring, and whether movement changes the level or tone. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
     'For a dancer, a stand spot can miss the source as it leaves the pickup area: map the route, listen to the existing stage mics, and try a wider or higher view — never restrict the dance to meet a mic.',
   ],

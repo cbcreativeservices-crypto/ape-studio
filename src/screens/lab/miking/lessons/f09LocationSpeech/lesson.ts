@@ -49,9 +49,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a boom just above the frame line, aimed at the mouth, on set; a handheld within about 10 cm live — then move the mic and see what changes.',
-    credit: { scenarios: ['loc.place.1', 'loc.place.2', 'loc.place.3', 'loc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, out of the shot and clear of the talker, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. The frame, the head turns and the place change the answer during a take; clearance and safety come first.',
+    goal: 'Start where we suggest you begin — a boom just above the frame line, aimed at the mouth, on set; a handheld within about 10 cm live — then move the mic and see what changes.',
+    credit: { scenarios: ['loc.place.1', 'loc.place.2', 'loc.place.3', 'loc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, out of the shot and clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The frame, the head turns and the place change the answer during a take; clearance and safety come first.',
   },
   context: {
     title: 'On set or live',
@@ -479,8 +479,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A documentary interview outdoors: a wide shot opening to a medium, light wind, a power line along the street behind.',
     setups: [
-      { id: 'a', label: 'A body mic on the chest, plus a boom in fur above the medium shot', ok: true, power: 'phantom', feedback: 'A recommended start: the body mic holds the wide shot, the boom the medium — each on its own channel, the pole well away from the line.' },
-      { id: 'b', label: 'A boom in fur just above the frame, the pole kept clear of the line', ok: true, power: 'phantom', feedback: 'A recommended start if the frame lets it come close enough — check the wide shot and the clearance from the line.' },
+      { id: 'a', label: 'A body mic on the chest, plus a boom in fur above the medium shot', ok: true, power: 'phantom', feedback: 'A suggested start: the body mic holds the wide shot, the boom the medium — each on its own channel, the pole well away from the line.' },
+      { id: 'b', label: 'A boom in fur just above the frame, the pole kept clear of the line', ok: true, power: 'phantom', feedback: 'A suggested start if the frame lets it come close enough — check the wide shot and the clearance from the line.' },
       { id: 'c', label: 'The camera mic alone, turned up for the wide shot', ok: false, power: 'none', feedback: 'At the camera the voice is weak against the wind and the street. Get a mic closer.' },
       { id: 'd', label: 'A boom raised high over the talker toward the line', ok: false, power: 'phantom', feedback: 'Never near a power line: at least 3 m (10 ft) from the pole and the mic, and if unsure, keep it down.' },
       { id: 'e', label: 'A body mic hidden without the guest knowing', ok: false, power: 'phantom', feedback: 'Never hide a mic to record anyone secretly. Ask, and fit it with their agreement.' },
@@ -493,8 +493,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A presenter walks a small stage with a PA, a wedge in front, a live stream and a recorder.',
     setups: [
-      { id: 'a', label: 'A handheld within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A recommended start: close enough to stay ahead of the PA — check the wedge against the actual pattern.' },
-      { id: 'b', label: 'A headset or a body mic fitted well, the fewest open mics', ok: true, power: 'phantom', feedback: 'A recommended start for a presenter who moves — check the margin before feedback with the PA on.' },
+      { id: 'a', label: 'A handheld within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A suggested start: close enough to stay ahead of the PA — check the wedge against the actual pattern.' },
+      { id: 'b', label: 'A headset or a body mic fitted well, the fewest open mics', ok: true, power: 'phantom', feedback: 'A suggested start for a presenter who moves — check the margin before feedback with the PA on.' },
       { id: 'c', label: 'A planted mic at the back of the stage for the whole talk', ok: false, power: 'phantom', feedback: 'Far from the mouth it hears the PA and the room: less margin before feedback.' },
       { id: 'd', label: 'The handheld, cupped by the presenter for more level', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer.' },
       { id: 'e', label: 'Every spare mic left open in case it helps', ok: false, power: 'phantom', feedback: 'Each open mic adds room and lowers the margin before feedback. Close the unused ones.' },
@@ -661,6 +661,6 @@ export const F09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
   copy: F09_COPY,
 };

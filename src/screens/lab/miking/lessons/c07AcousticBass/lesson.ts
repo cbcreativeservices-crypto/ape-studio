@@ -38,9 +38,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the upper body near the neck joint, measured from the point the starting point names, clear of the hands — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named point — and for this instrument, borrowed from the guitar. Distance, position and angle are separate things to try; check the lowest notes every time.',
+    goal: 'Start where we suggest you begin — the upper body near the neck joint, measured from the point the starting point names, clear of the hands — then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named point — and for this instrument, borrowed from the guitar. Distance, position and angle are separate things to try; check the lowest notes every time.',
   },
   context: {
     title: 'Studio or live',
@@ -285,8 +285,8 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A loud stage with drums and a floor wedge. The acoustic bass has a pickup and a DI. One extra channel for a mic; phantom power is available.',
     setups: [
       { id: 'a', label: 'The pickup carries the level; a clip-on mini adds character, checked with it in mono', ok: true, power: 'phantom', feedback: 'A sensible live plan: dependable level from the pickup, a mic blended as far as feedback allows.' },
-      { id: 'b', label: 'Instrument dynamic at the neck joint, its rear toward the wedge, blended with the pickup', ok: true, power: 'none', feedback: 'A recommended starting point, aimed against the wedge, checked against the pickup.' },
-      { id: 'c', label: 'Small condenser near the neck joint, at the close end of the band, rear to the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point; on a loud stage keep it close and aimed.' },
+      { id: 'b', label: 'Instrument dynamic at the neck joint, its rear toward the wedge, blended with the pickup', ok: true, power: 'none', feedback: 'A suggested starting point, aimed against the wedge, checked against the pickup.' },
+      { id: 'c', label: 'Small condenser near the neck joint, at the close end of the band, rear to the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point; on a loud stage keep it close and aimed.' },
       { id: 'd', label: 'Small condenser 3 cm into the sound hole, for the most low end', ok: false, power: 'phantom', feedback: 'At the hole it booms unevenly and invites feedback, and it is in the plucking hand’s path.' },
       { id: 'e', label: 'Small omni 1 m away, to hear the whole instrument naturally', ok: false, power: 'phantom', feedback: 'On a loud stage an omni that far out hears the drums and the wedge as much as the bass.' },
     ],
@@ -298,7 +298,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio duet, bass and voice. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 20–45 cm out from the neck joint, angled to the top and strings', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom. Check the lowest notes.' },
+      { id: 'a', label: 'Instrument dynamic 20–45 cm out from the neck joint, angled to the top and strings', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check the lowest notes.' },
       { id: 'b', label: 'Instrument dynamic about 30 cm from the treble side of the upper bout', ok: true, power: 'none', feedback: 'A borrowed starting point worth trying; it needs no phantom.' },
       { id: 'c', label: 'Small condenser at the neck joint, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },

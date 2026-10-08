@@ -44,9 +44,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — behind and beside the bell, aimed toward it, or in front of the player — clear of the bell’s rise and the right hand; then move the mic and see what changes.',
-    credit: { scenarios: ['hn.place.1', 'hn.place.2', 'hn.place.3', 'hn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part — the bell, or the horn — not a rule. Behind the bell is direct; in front is the horn with its room. Clearance comes first.',
+    goal: 'Start where we suggest you begin — behind and beside the bell, aimed toward it, or in front of the player — clear of the bell’s rise and the right hand; then move the mic and see what changes.',
+    credit: { scenarios: ['hn.place.1', 'hn.place.2', 'hn.place.3', 'hn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the horn — not a rule. Behind the bell is direct; in front is the horn with its room. Clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -409,8 +409,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with a rock band. One channel for a featured horn; the drums and a side-fill sit behind the horn section.',
     setups: [
-      { id: 'a', label: 'Small dynamic behind and beside the bell, low, aimed toward it a little off axis, its rear toward the fill', ok: true, power: 'none', feedback: 'A recommended starting point: close, directional, its rejection aimed at the back of the stage — clear of the bell’s rise.' },
-      { id: 'b', label: 'A clip its maker confirms for this horn, on the bell rim (not the joint), checked for noise and feedback', ok: true, power: 'phantom', feedback: 'A recommended option when a confirmed clip exists: it moves with the bell. Check the fit, the finish and the cable.' },
+      { id: 'a', label: 'Small dynamic behind and beside the bell, low, aimed toward it a little off axis, its rear toward the fill', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, its rejection aimed at the back of the stage — clear of the bell’s rise.' },
+      { id: 'b', label: 'A clip its maker confirms for this horn, on the bell rim (not the joint), checked for noise and feedback', ok: true, power: 'phantom', feedback: 'A suggested option when a confirmed clip exists: it moves with the bell. Check the fit, the finish and the cable.' },
       { id: 'c', label: 'One small condenser 2 m in front of the player, for the natural reflected sound', ok: false, power: 'phantom', feedback: 'A good hall view — but on a loud stage it hears the band far more than the horn.' },
       { id: 'd', label: 'A trumpet clip on the detachable bell joint, for the strongest grip', ok: false, power: 'phantom', feedback: 'Never load the detachable joint, and a trumpet clip is not a confirmed horn fit.' },
       { id: 'e', label: 'A mic pushed into the bell beside the hand, for the most level', ok: false, power: 'none', feedback: 'Nothing goes into the bell or where the hand works. Level comes from gain, not from the hand’s space.' },
@@ -423,8 +423,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Studio. A horn and piano recital in a good-sounding hall, a main pair already up; the producer wants a little more horn definition.',
     setups: [
-      { id: 'a', label: 'A figure-8 in front, above the horn, a side toward the piano, raised under the main pair and checked in mono', ok: true, power: 'none', feedback: 'A recommended starting point: a front spot that keeps the room in the horn, its side null on the piano.' },
-      { id: 'b', label: 'A small dynamic behind and beside the bell, off axis, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A recommended starting point for control — keep it low in the balance so the reflected sound still leads; check it in mono.' },
+      { id: 'a', label: 'A figure-8 in front, above the horn, a side toward the piano, raised under the main pair and checked in mono', ok: true, power: 'none', feedback: 'A suggested starting point: a front spot that keeps the room in the horn, its side null on the piano.' },
+      { id: 'b', label: 'A small dynamic behind and beside the bell, off axis, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A suggested starting point for control — keep it low in the balance so the reflected sound still leads; check it in mono.' },
       { id: 'c', label: 'A mic right on the bell’s axis, 15 cm away, for maximum clarity', ok: false, power: 'none', feedback: 'That is the hardest, brightest view, with the biggest level swings — and far from the recital sound.' },
       { id: 'd', label: 'A reflective panel behind the player, every time, to brighten the horn', ok: false, power: 'none', feedback: 'Not an automatic fix: a panel changes the tone, raises spill and can add a sharp early reflection.' },
       { id: 'e', label: 'Turn the main pair up until the horn is clear enough', ok: false, power: 'phantom', feedback: 'That raises the piano and the room with it. Definition needs a little direct horn, not more of everything.' },
@@ -602,6 +602,6 @@ export const A03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Two schools are in use for the horn: a front view that hears it with the room, and a mic beside the bell for control; both are places to begin. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell and the hands’ space shown as keep-outs, mic patterns and the two-mic comb as textbook shapes, and sound paths as straight lines. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Two schools are in use for the horn: a front view that hears it with the room, and a mic beside the bell for control; both are places to begin. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell and the hands’ space shown as keep-outs, mic patterns and the two-mic comb as textbook shapes, and sound paths as straight lines. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: HORN_COPY,
 };

@@ -48,7 +48,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the mic yourself — the user’s position, the same radius to the side and behind, a close detail outside the zone, a listener’s perspective farther out.',
-    credit: { scenarios: ['mp.place.1', 'mp.place.2', 'mp.place.3', 'mp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mp.place.1', 'mp.place.2', 'mp.place.3', 'mp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Positions from outside the zone only, at a logged radius and height, one change at a time — and back to A to check it repeats.',
   },
   context: {
@@ -651,6 +651,6 @@ export const F15_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules: the product’s own test code and the site set the real positions, distances and limits. Experiment, and trust your ears and the room as well as the meter — but never inside the exclusion zone. The lab is silent and draws a simplified picture: a guarded desk fan on a small table, a zone and an airflow cone as drawings, straight paths at 20 °C, and a made-up cycle strip. Work on real devices only with the owner’s permission and someone qualified on them.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: the product’s own test code and the site set the real positions, distances and limits. Experiment, and trust your ears and the room as well as the meter — but never inside the exclusion zone. The lab is silent and draws a simplified picture: a guarded desk fan on a small table, a zone and an airflow cone as drawings, straight paths at 20 °C, and a made-up cycle strip. Work on real devices only with the owner’s permission and someone qualified on them.',
   copy: F15_COPY,
 };

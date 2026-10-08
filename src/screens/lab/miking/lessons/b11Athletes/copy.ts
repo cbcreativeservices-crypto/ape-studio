@@ -91,7 +91,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     },
     note: 'Approval and clearance come first: the approved place only, nothing on protective equipment, the cable without a loop that can catch, nobody in play.',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on a person in sport — once it is approved — measured from the lips to the front of the mic. They are starting points, not rules: no chest position or mouth offset fits every uniform, body and mic. Experimentation is encouraged, inside the approval.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a person in sport — once it is approved — measured from the lips to the front of the mic. They are starting points, not rules: no chest position or mouth offset fits every uniform, body and mic. Experimentation is encouraged, inside the approval.',
       separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with safe, representative movement each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm — no millimetre claim is made.',
       clearance: 'Clearance comes first: the approved place, nothing on protective equipment, the cable and the pack secured.',
       tendencies: 'A chest mic tends to sound fuller and steadier and to change with head turns; a headset boom keeps one distance and hears more breath; a perimeter mic hears more of the field and the crowd. These are tendencies, and people vary.',

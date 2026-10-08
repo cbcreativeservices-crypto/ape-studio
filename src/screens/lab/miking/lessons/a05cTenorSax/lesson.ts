@@ -78,7 +78,7 @@ export const A05C_LESSON: Lesson = buildSaxLesson({
     saxLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up the horn (seated: about level with the right elbow); in a good room try over the player’s shoulder too.',
     saxClip: 'Ideas to try with a clip: keep it on the rim where it is made to go, and change only the capsule’s angle — between the bell and the keys for balance, into the bell for more bite.',
   },
-  learnIntro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bell, the tone holes, a third of the way up the horn. They are starting points, not rules; the bigger the horn, the more a little distance helps it blend. Move from there and listen: there is no single right answer.',
+  learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, a third of the way up the horn. They are starting points, not rules; the bigger the horn, the more a little distance helps it blend. Move from there and listen: there is no single right answer.',
   wedges: saxWedges(MOUTH_HEIGHT.standing, 1000, 220),
   accuracyExtra: 'The tenor is drawn about 86 cm tall with a 14 cm bell.',
   contextBoxes: { plan: { u0: -500, u1: 1750, v0: -700, v1: 1100 }, side: { u0: -500, u1: 1750, v0: -350, v1: 1650 } },

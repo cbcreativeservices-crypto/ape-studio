@@ -6,7 +6,7 @@
  *
  * OWNER RULING 2026-10-04: suggested starting points, never dogma. Learner text
  * names NO source, brand or model and carries no badge — "after our research,
- * here is where we recommend you begin". The research stays in
+ * here is where we suggest you begin". The research stays in
  * docs/labs/miking/congas/ and in the code-only fields. Pinned by
  * test/mikingLearnerText.test.ts and test/mikingHandDrums.test.ts.
  *
@@ -46,9 +46,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic for the pair, or one per drum — measured from the right head, outside the hands; then move the mic and see what changes.',
-    credit: { scenarios: ['cg.place.1', 'cg.place.2', 'cg.place.3', 'cg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named head — not a rule. Shift toward the quieter drum, raise for a blend, move closer for directness — one change at a time, and clearance first.',
+    goal: 'Start where we suggest you begin — one mic for the pair, or one per drum — measured from the right head, outside the hands; then move the mic and see what changes.',
+    credit: { scenarios: ['cg.place.1', 'cg.place.2', 'cg.place.3', 'cg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named head — not a rule. Shift toward the quieter drum, raise for a blend, move closer for directness — one change at a time, and clearance first.',
   },
   context: {
     title: 'Studio or live',
@@ -304,12 +304,12 @@ const scenarios: MikingScenario[] = [
     id: 'cg.two.1',
     page: 'twoMic',
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -505,7 +505,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the hands, wrists, knees and the open ends', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on congas', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the drums', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -516,8 +516,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Two congas on the floor, a quiet studio, overdubbed alone. The player wants open tones, slaps and bass all heard. One or two channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point for a pair: a full sound with good attack, on one channel.' },
-      { id: 'b', label: 'A slim condenser over each drum, starting about 15–60 cm from its head', ok: true, power: 'phantom', feedback: 'A recommended starting point; in a quiet room, distance can balance the strokes, and phantom is available.' },
+      { id: 'a', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for a pair: a full sound with good attack, on one channel.' },
+      { id: 'b', label: 'A slim condenser over each drum, starting about 15–60 cm from its head', ok: true, power: 'phantom', feedback: 'A suggested starting point; in a quiet room, distance can balance the strokes, and phantom is available.' },
       { id: 'c', label: 'A clip-on condenser at each drum’s far rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control in little space; it needs the phantom power this input has.' },
       { id: 'd', label: 'A mic slid under each drum’s open end, to catch the bass', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under, and the open end is never blocked.' },
       { id: 'e', label: 'A mic over the player’s side of the heads, where the hands land', ok: false, power: 'none', feedback: 'That is inside the hand path: the mic or stand would be struck.' },
@@ -531,7 +531,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage with a floor wedge in front of the drums, which stand on the floor. The spare inputs have NO phantom power.',
     setups: [
       { id: 'a', label: 'A compact dynamic over each drum, outside the hands, aimed at its head', ok: true, power: 'none', feedback: 'Close and directional, one per drum for control on a loud stage; a dynamic needs no phantom.' },
-      { id: 'b', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point for a pair; a dynamic needs no phantom.' },
+      { id: 'b', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for a pair; a dynamic needs no phantom.' },
       { id: 'c', label: 'A clip-on condenser at each drum’s far rim', ok: false, power: 'phantom', feedback: 'A fair stage idea, but these inputs have no phantom power and the clip-on mic needs it.' },
       { id: 'd', label: 'A slim condenser a metre above both drums', ok: false, power: 'phantom', feedback: 'Too distant for a loud stage — and it needs phantom power these inputs lack.' },
       { id: 'e', label: 'A dynamic under each drum’s open end', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under them.' },
@@ -706,7 +706,7 @@ export const M04A_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of congas, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of congas, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: TUMBA,
     shellLook: 'staved',
@@ -772,7 +772,7 @@ export const M04A_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: on each drum’s far rim, the capsule just above the head and aimed across it — little stage space, independent control. Check the clamp for rattles, and keep it out of every hand stroke.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum and player is different.',
+      'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum and player is different.',
       'Height, distance and angle are separate variables: change one at a time and have the player play every stroke again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       'Clearance comes first. Stop the player before moving a mic; keep the capsule, stand, boom, clamp and cable clear of every hand stroke, wrist and knee — and of the open lower ends. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear; leave more room on a real stage, and check again during the loudest, most animated passage.',
       'Closer and more direct tends to bring more hand detail and isolation — and can favour one stroke or make slaps very pronounced. Backing off in a good room tends to balance the strokes, with more of the room and the band. A separate room mic, about two metres in front, is another idea for a good studio. Move the mic before reaching for EQ.',

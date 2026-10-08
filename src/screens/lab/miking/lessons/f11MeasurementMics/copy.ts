@@ -39,7 +39,7 @@ export const F11_COPY: Partial<LessonCopy> = {
     note: 'You stand back from the capsule before a reading: your body is part of the field.',
     availableLead: 'Starting points for this mic here',
     learn: {
-      intro: 'After our research, each blue zone is a place we recommend you begin — measured from the loudspeaker’s reference point. The method you are handed sets the real distances.',
+      intro: 'After our research, each blue zone is a place we suggest you begin — measured from the loudspeaker’s reference point. The method you are handed sets the real distances.',
       separate: 'Distance, height and angle are separate: change one at a time, and write each one down.',
       clearance: 'Clearance comes first: the stand clear of the loudspeaker, out of paths; you back from the capsule.',
       tendencies: 'What a position stands for is a tendency to check against the method — never a promise.',

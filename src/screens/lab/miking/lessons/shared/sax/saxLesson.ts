@@ -108,9 +108,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     },
     placement: {
       title: 'Placement Studio',
-      goal: 'Start where we recommend you begin — a few centimetres above the bell, aimed at the sound holes, clear of the player — then move the mic and see what changes.',
-      credit: { scenarios: [id('place.1'), id('place.2'), id('place.3'), id('rec.2')], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-      takeaway: 'A recommended zone is a place to begin, measured from a named part — the bell, the tone holes — not a rule. Toward the bell tends brighter, toward the holes warmer with more key noise, farther blends the horn and the room. Clearance comes first.',
+      goal: 'Start where we suggest you begin — a few centimetres above the bell, aimed at the sound holes, clear of the player — then move the mic and see what changes.',
+      credit: { scenarios: [id('place.1'), id('place.2'), id('place.3'), id('rec.2')], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+      takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, the tone holes — not a rule. Toward the bell tends brighter, toward the holes warmer with more key noise, farther blends the horn and the room. Clearance comes first.',
     },
     context: {
       title: 'Studio or live',
@@ -494,7 +494,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
 
   const R: Reasons = {
     POWER: { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom (a miniature through its adapter); a dynamic needs none.' },
-    DOC: { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the part it names', role: 'required', feedback: 'Say why it is a good place to begin, and which part it is measured from.' },
+    DOC: { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the part it names', role: 'required', feedback: 'Say why it is a good place to begin, and which part it is measured from.' },
     CLEAR: { id: 'r.clear', label: 'The mic, mount and cable stay clear of the bell’s swing, the hands and the keys', role: 'required', feedback: 'Clearance is part of every passing setup.' },
     BRAND: { id: 'r.brand', label: `It is the brand most engineers reach for on a ${s}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' },
     LOUD: { id: 'r.loud', label: 'It will give the loudest sound of any position on the horn', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and no position is “the loudest” on every horn.' },
@@ -742,7 +742,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       ...(c.unknowns ?? []),
     ],
     live: { wedges: c.wedges },
-    accuracyDetail: `ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every saxophone, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, a simplified fingering and tone-hole layout, the bell’s swing as a hatched area that appears when a mic comes near, mic patterns and the two-mic comb as textbook shapes. ${c.accuracyExtra} Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.`,
+    accuracyDetail: `ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every saxophone, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, a simplified fingering and tone-hole layout, the bell’s swing as a hatched area that appears when a mic comes near, mic patterns and the two-mic comb as textbook shapes. ${c.accuracyExtra} Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.`,
     copy,
   };
 }
@@ -783,8 +783,8 @@ export function saxSetupTasks(pfx: string, s: string, R: Reasons): SetupTask[] {
       brief: `BRIEF 1 · A loud club. The ${s} player steps forward for solos and moves with the music. One channel; phantom power is available.`,
       setups: [
         { id: 'a', label: 'A bell clip made for this horn, the capsule angled between the bell and the keys', ok: true, power: 'phantom', feedback: 'It moves with the horn, so the level holds as the player moves; it needs the phantom power this channel has.' },
-        { id: 'b', label: 'A supercardioid dynamic a few centimetres above the bell, aimed at the holes, the wedge in its rejection', ok: true, power: 'none', feedback: 'A recommended starting point, close and directional for a loud stage — the player will need to stay near it.' },
-        { id: 'c', label: 'A cardioid dynamic a few centimetres from the bell, aimed into it, for a bright, separate lead', ok: true, power: 'none', feedback: 'A recommended starting point with a brighter, more isolated tendency — fine if the stand is clear of the bell’s swing.' },
+        { id: 'b', label: 'A supercardioid dynamic a few centimetres above the bell, aimed at the holes, the wedge in its rejection', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage — the player will need to stay near it.' },
+        { id: 'c', label: 'A cardioid dynamic a few centimetres from the bell, aimed into it, for a bright, separate lead', ok: true, power: 'none', feedback: 'A suggested starting point with a brighter, more isolated tendency — fine if the stand is clear of the bell’s swing.' },
         { id: 'd', label: 'A clip squeezed onto a key rod, the capsule tucked in over the pads', ok: false, power: 'phantom', feedback: 'Nothing clamps to a rod or a key: it can bend the mechanism or stop a key closing. Clips go on the bell rim only.' },
         { id: 'e', label: 'A stand right under the bell, so the mic can sit inside it', ok: false, power: 'none', feedback: 'The stand would stand in the bell’s swing, and a mic inside the bell can be struck. Keep both clear.' },
       ],
@@ -796,8 +796,8 @@ export function saxSetupTasks(pfx: string, s: string, R: Reasons): SetupTask[] {
       page: 'practice',
       brief: `BRIEF 2 · Studio, a good room, a solo ${s} ballad. The only spare input has NO phantom power.`,
       setups: [
-        { id: 'a', label: 'A cardioid dynamic a few centimetres above the bell, aimed at the sound holes', ok: true, power: 'none', feedback: 'A recommended starting point for a natural tone — and a dynamic needs no phantom.' },
-        { id: 'b', label: 'A cardioid dynamic a few centimetres from the sound holes, for a warmer, fuller tone', ok: true, power: 'none', feedback: 'A recommended starting point with a warmer tendency — listen for key noise; a dynamic needs no phantom.' },
+        { id: 'a', label: 'A cardioid dynamic a few centimetres above the bell, aimed at the sound holes', ok: true, power: 'none', feedback: 'A suggested starting point for a natural tone — and a dynamic needs no phantom.' },
+        { id: 'b', label: 'A cardioid dynamic a few centimetres from the sound holes, for a warmer, fuller tone', ok: true, power: 'none', feedback: 'A suggested starting point with a warmer tendency — listen for key noise; a dynamic needs no phantom.' },
         { id: 'c', label: 'A large condenser 50 cm in front, aimed between the bell and the keys', ok: false, power: 'phantom', feedback: 'A fine place to begin in a good room — but this input has no phantom power, and a condenser needs it.' },
         { id: 'd', label: 'A bell clip angled between the bell and the keys', ok: false, power: 'phantom', feedback: 'The miniature is a condenser: it needs phantom power through its adapter, and this input has none.' },
         { id: 'e', label: 'A dynamic pushed right into the bell for the most level', ok: false, power: 'none', feedback: 'Inside the bell the mic can be struck, and it hears only part of the horn. Level comes from gain.' },

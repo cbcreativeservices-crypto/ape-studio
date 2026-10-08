@@ -46,8 +46,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the flute’s close position, between the lip plate and the left hand, off the jet — then compare behind the head and farther in front.',
-    credit: { scenarios: ['pc.place.1', 'pc.place.2', 'pc.place.3', 'pc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — the flute’s close position, between the lip plate and the left hand, off the jet — then compare behind the head and farther in front.',
+    credit: { scenarios: ['pc.place.1', 'pc.place.2', 'pc.place.3', 'pc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'The flute’s starting points are places to begin on a piccolo, not measured optimums. Copy the relationship, test the whole phrase, and keep the capsule out of the jet.',
   },
   context: {
@@ -374,8 +374,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · An orchestra recording in a good hall. The main pair hears the piccolo but a little distant. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A small condenser near head height, close and off the jet, brought in gently under the main pair', ok: true, power: 'phantom', feedback: 'A recommended starting point for a restrained spot — check mono and depth.' },
-      { id: 'b', label: 'A small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A recommended starting point with less breath — check the neighbours’ spill.' },
+      { id: 'a', label: 'A small condenser near head height, close and off the jet, brought in gently under the main pair', ok: true, power: 'phantom', feedback: 'A suggested starting point for a restrained spot — check mono and depth.' },
+      { id: 'b', label: 'A small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A suggested starting point with less breath — check the neighbours’ spill.' },
       { id: 'c', label: 'Three close mics on the piccolo, one per register', ok: false, power: 'phantom', feedback: 'Multiple close mics on one piccolo add delays for nothing.' },
       { id: 'd', label: 'A presence-peak vocal mic close to the lips', ok: false, power: 'phantom', feedback: 'In the jet, and a presence peak can turn the piccolo shrill.' },
       { id: 'e', label: 'Make the spot the loudest channel in the piccolo passages', ok: false, power: 'phantom', feedback: 'A loud spot pulls the piccolo unnaturally forward of the orchestra.' },
@@ -388,8 +388,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a piccolo player who moves, in a band with drums and a wedge. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A properly fitted headset, the capsule beside the lips, out of the jet', ok: true, power: 'phantom', feedback: 'A recommended starting point that follows the head — check the register and feedback.' },
-      { id: 'b', label: 'A stand mic close, off the jet, its rejection aimed at the wedge — the player stays on a mark', ok: true, power: 'phantom', feedback: 'A recommended starting point if the player agrees to a working zone.' },
+      { id: 'a', label: 'A properly fitted headset, the capsule beside the lips, out of the jet', ok: true, power: 'phantom', feedback: 'A suggested starting point that follows the head — check the register and feedback.' },
+      { id: 'b', label: 'A stand mic close, off the jet, its rejection aimed at the wedge — the player stays on a mark', ok: true, power: 'phantom', feedback: 'A suggested starting point if the player agrees to a working zone.' },
       { id: 'c', label: 'A concert-flute clip squeezed onto the piccolo', ok: false, power: 'phantom', feedback: 'A clip of the wrong size or pressure can slip, cover a hole or press the body.' },
       { id: 'd', label: 'A mic a metre away, turned up to clear the band', ok: false, power: 'phantom', feedback: 'Far away on a loud stage it hears the band; turned up, it brings feedback.' },
       { id: 'e', label: 'Raise the piccolo channel because the instrument is small', ok: false, power: 'phantom', feedback: 'A small instrument is not a quiet one — and more gain brings feedback closer.' },
@@ -510,7 +510,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, boom or cable anywhere a turning head, the hands or the piccolo can reach — or in the air jet — is in the wrong place.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin — the flute’s starting points, transferred: the piccolo between the lip plate and the left hand, the player’s head, the middle of the piccolo, the embouchure hole. Places to begin and compare, not piccolo-specific optimums.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin — the flute’s starting points, transferred: the piccolo between the lip plate and the left hand, the player’s head, the middle of the piccolo, the embouchure hole. Places to begin and compare, not piccolo-specific optimums.',
       separate: 'Distance, height and angle are separate variables: change one at a time, and play low, high, soft, strong and fast passages each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable clear of the air jet, a turning head and the hands. The engine stops the mic and names what it would touch.',
       tendencies: 'Close tends to bring detail, breath and keys; behind the head, less breath; a metre in front, more room. A presence peak can turn a piccolo shrill. These are tendencies, and piccolos vary.',
@@ -658,7 +658,7 @@ export const A07_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules; on the piccolo they are the flute’s starting points, carried over. Every piccolo, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal pipe, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules; on the piccolo they are the flute’s starting points, carried over. Every piccolo, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal pipe, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A piccolo stood on end, keys toward you, its air column drawn open',

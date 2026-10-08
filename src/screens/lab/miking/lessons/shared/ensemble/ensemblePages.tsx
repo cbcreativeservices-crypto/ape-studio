@@ -15,7 +15,7 @@
  *   PLACEMENT STUDIO the worked example (a main array read piece by piece) →
  *                    START from a setup, move the ARRAY (height, distance,
  *                    across; its spacing or angle where the method allows),
- *                    rest it in two recommended starting points → how they
+ *                    rest it in two suggested starting points → how they
  *                    work → checks
  *   microphones, studio or live, two mics, troubleshoot, practice: the
  *   shared pages (shared/hand/handPages) in the lesson's words.
@@ -707,7 +707,7 @@ export function EnsemblePlacement(p: PageProps) {
     one ? { k: 'NEAREST', v: `${Math.round(dNearNow / 10)} cm`, flex: 0.9 } : ra ? { k: `IN ${ra}°`, v: `${inside} / ${s.sections.length}`, flex: 0.9 } : { k: 'EDGES Δt', v: `${dtEdge.toFixed(1)} ms`, flex: 1 },
     { k: 'ZONE', v: blocked ? 'BLOCKED' : zone ? 'IN ZONE' : '—', tint: blocked ? '#ff6b5e' : zone ? '#5bff85' : undefined, flex: 1 },
   ];
-  const nowWords = `The ${def.name.toLowerCase()} is ${fmtStage(-c.y)} up, ${c.z >= 0 ? `${fmtStage(c.z)} in front of ${front}` : `${fmtStage(-c.z)} behind ${front}`}${Math.abs(c.x) > 50 ? `, ${fmtStage(Math.abs(c.x))} to the ${who}’s ${c.x < 0 ? 'left' : 'right'}` : ''}. The nearest and farthest ${them} arrive about ${bias.toFixed(0)} dB apart by distance; ${one ? `the nearest mouth is ${Math.round(dNearNow / 10)} cm from the mic` : ra ? `${inside} of ${s.sections.length} sections sit inside its ${ra}° recording angle` : `the outermost ${them} reach the two sides up to ${dtEdge.toFixed(1)} ms apart`}.${zone ? ` At a recommended starting point: ${zone.label}.` : ' Not at a recommended starting point.'}${blocked ? ` Blocked: it would touch ${blocked}.` : ''}`;
+  const nowWords = `The ${def.name.toLowerCase()} is ${fmtStage(-c.y)} up, ${c.z >= 0 ? `${fmtStage(c.z)} in front of ${front}` : `${fmtStage(-c.z)} behind ${front}`}${Math.abs(c.x) > 50 ? `, ${fmtStage(Math.abs(c.x))} to the ${who}’s ${c.x < 0 ? 'left' : 'right'}` : ''}. The nearest and farthest ${them} arrive about ${bias.toFixed(0)} dB apart by distance; ${one ? `the nearest mouth is ${Math.round(dNearNow / 10)} cm from the mic` : ra ? `${inside} of ${s.sections.length} sections sit inside its ${ra}° recording angle` : `the outermost ${them} reach the two sides up to ${dtEdge.toFixed(1)} ms apart`}.${zone ? ` At a suggested starting point: ${zone.label}.` : ' Not at a suggested starting point.'}${blocked ? ` Blocked: it would touch ${blocked}.` : ''}`;
   const zonesDrawn: StageZone[] = zones.map((z) => ({ key: z.id, box: z.box, on: zone?.id === z.id }));
   // group 2: one shared mic shows its distance to the nearest mouth, not its height and front.
   const rigNow: StageRig[] = useMemo(() => [{ key: 'now', id: preset, params, place, mount, ...(one ? { dimTo: soundPoint(nf.near) } : {}) }], [preset, params, c, face, tilt, mount, one, nf.near]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -751,7 +751,7 @@ export function EnsemblePlacement(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} rigs={rigNow} zones={zonesDrawn} rings={eqNow ? [eqNow.ring] : []} dims detail={!one} lobes={view !== 'plan'} accessibilityLabel={nowWords} />,
-        badge: 'Blue = recommended starting points for the array’s centre · amber dot = the array’s centre · readouts calculated from the drawing',
+        badge: 'Blue = suggested starting points for the array’s centre · amber dot = the array’s centre · readouts calculated from the drawing',
         bezel,
         params: params2,
         initialParam: 'move',
@@ -765,10 +765,10 @@ export function EnsemblePlacement(p: PageProps) {
           {blocked ? <Note tone="warn">{`It would touch ${blocked}: the players, their bows and the conductor’s space come first. Move it.`}</Note> : null}
           {zone ? (
             <Card>
-              <Point title={`RECOMMENDED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>
+              <Point title={`SUGGESTED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>
             </Card>
           ) : (
-            <Body>{`Not at a recommended starting point. For this seating: ${zones.map((z) => z.label).join('; ')}.`}</Body>
+            <Body>{`Not at a suggested starting point. For this seating: ${zones.map((z) => z.label).join('; ')}.`}</Body>
           )}
           <Body>{`Activity: zones rested in, clear of the players — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
           {predicted != null && visited.size >= 2 && pred ? <Note tone="ok">{pred.after}</Note> : null}

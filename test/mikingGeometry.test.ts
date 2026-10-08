@@ -266,7 +266,8 @@ describe('display rounding (rulings §16.5, §16.11)', () => {
     assert.equal(round5(63), 65);
     assert.equal(fmtLen(62), '≈ 6 cm (2.4 in)');
     assert.equal(fmtLen(65), '≈ 6.5 cm (2.6 in)');
-    assert.equal(fmtLen(1240), '≈ 1.24 m (48.8 in)');
+    // Owner decision X1 (2026-10-08): a metre and more rounds on the scaled tier.
+    assert.equal(fmtLen(1240), '≈ 1.25 m (49 in)');
     assert.equal(fmtAngle(12), '≈ 10°');
     assert.equal(fmtAngle(13), '≈ 15°');
   });

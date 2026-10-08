@@ -1,5 +1,5 @@
 /**
- * A05d BARITONE SAXOPHONE — the recommended starting points, on the shared
+ * A05d BARITONE SAXOPHONE — the suggested starting points, on the shared
  * family's zone kinds (lessons/shared/sax/saxZones.ts; research
  * baritone_sax/SOURCES.md and alto_sax/SOURCES.md §2):
  *

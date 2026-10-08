@@ -297,7 +297,7 @@ describe('Lab 7 group 2 lessons: B05, B04, B02', () => {
     it(`${id}: no institutional words, no brand, the starting-points voice, no link to an unbuilt lesson, 3:1 never graded`, () => {
       const strings = learnerStrings(l);
       for (const s of strings) assert.doesNotMatch(s, /\b(student|classroom|instructor|Pro Audio Training Academy)\b/i);
-      assert.ok(strings.some((s) => /After our research, here is where we recommend you begin/.test(s)));
+      assert.ok(strings.some((s) => /After our research, here is where we suggest you begin/.test(s)));
       assert.ok(strings.some((s) => /Experimentation is encouraged/.test(s)));
       for (const s of strings.filter((q) => q !== id)) assert.doesNotMatch(s, /\b(B0[1-8]|B1\d|F1[0-6]|F0\d)\b/);
       for (const t of l.setupTasks) for (const r of t.reasons) if (/3:1/.test(r.label)) assert.equal(r.role, 'wrong');

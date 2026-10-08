@@ -78,7 +78,7 @@ export const A05B_LESSON: Lesson = buildSaxLesson({
     saxLdc: 'Ideas to try: begin about half a metre in front, aimed between the bell and the left-hand keys; in a good room try a little farther, or over the player’s shoulder.',
     saxClip: 'Ideas to try with a clip: keep it on the rim where it is made to go, and change only the capsule’s angle — between the bell and the keys for balance, into the bell for more bite.',
   },
-  learnIntro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the space in front. They are starting points, not rules. Move from there and listen: there is no single right answer, and every horn, player and room is different.',
+  learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the space in front. They are starting points, not rules. Move from there and listen: there is no single right answer, and every horn, player and room is different.',
   wedges: saxWedges(MOUTH_HEIGHT.standing, 1250, 160),
   accuracyExtra: 'The alto is drawn about 70 cm tall with a 12 cm bell.',
   contextBoxes: { plan: { u0: -500, u1: 1650, v0: -700, v1: 1000 }, side: { u0: -500, u1: 1650, v0: -350, v1: 1650 } },

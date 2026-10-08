@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the shared mic (or the group mic) yourself — nearer one singer, higher, back — and see what each singer’s distance does to the balance.',
-    credit: { scenarios: ['bv.place.1', 'bv.place.2', 'bv.step', 'bv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bv.place.1', 'bv.place.2', 'bv.step', 'bv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'At a shared mic the singers’ distances are the mix: matched for a blend, the loudest a step back. Move one thing at a time and mark what works on the floor.',
   },
   context: {
@@ -371,7 +371,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A pop band: three backing singers beside the drums, a wedge in front of each, harmony entries that need their own levels.',
     setups: [
-      { id: 'a', label: 'A handheld each, 4–8 cm from the lips, the wedge behind it', ok: true, power: 'none', feedback: 'A recommended start: close, separate, each part on its own fader; check the wedge against the pattern.' },
+      { id: 'a', label: 'A handheld each, 4–8 cm from the lips, the wedge behind it', ok: true, power: 'none', feedback: 'A suggested start: close, separate, each part on its own fader; check the wedge against the pattern.' },
       { id: 'b', label: 'A supercardioid handheld each, the wedge a little to one side', ok: true, power: 'none', feedback: 'Fair beside loud drums, with the wedge near its null.' },
       { id: 'c', label: 'One condenser a metre in front of all three', ok: false, power: 'phantom', feedback: 'It hears the drums almost as much as the voices, and no part has its own level.' },
       { id: 'd', label: 'Handhelds the singers cup to sound louder', ok: false, power: 'none', feedback: 'Cupping muffles the voice and brings feedback closer.' },
@@ -540,7 +540,7 @@ export const E02_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E02_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Decide first what the backing parts should sound like; a mic each gives control, one shared mic gives a blend the singers make by distance. Every group, song and room is different: rehearse, experiment and trust your ears. The lab is silent and draws a simplified picture: typical standing singers, ideal patterns, straight paths and distances read from the drawing, measured from the lips. Move a real mic near someone’s face only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Decide first what the backing parts should sound like; a mic each gives control, one shared mic gives a blend the singers make by distance. Every group, song and room is different: rehearse, experiment and trust your ears. The lab is silent and draws a simplified picture: typical standing singers, ideal patterns, straight paths and distances read from the drawing, measured from the lips. Move a real mic near someone’s face only with their agreement.',
   copy: { words: { ...ensembleWords('backing group'), player: 'singers', reference: 'LIPS', inside: 'among the singers', outside: 'clear of the singers', axis: 'the mouth’s axis', facing: 'facing the singers', shield: 'singers in path' } },
   ensemble: {
     seatings: { live: 'vocal.line', shared: 'vocal.shared', studio: 'vocal.circle' },
@@ -563,14 +563,14 @@ export const E02_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands and secured cables so the singers can move without tripping or striking a mic. Lower the channel before moving a live mic; never pass a live handheld. Keep monitors and headphones comfortable — never ask singers to shout over unsafe levels — and never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin when singers share a mic: one large condenser at their mouth height, every mouth about the same distance from it — a place to start and rehearse, not a rule. For a row of singers, the group mic sits a little above their heads instead.',
+      begin: 'After our research, this is where we suggest you begin when singers share a mic: one large condenser at their mouth height, every mouth about the same distance from it — a place to start and rehearse, not a rule. For a row of singers, the group mic sits a little above their heads instead.',
       clearance: 'The stand’s base clear of the singers’ feet and their way in and out; its cable dressed flat, out of the moves.',
       height: 'A shared mic sits at the singers’ mouth height, so every mouth meets its front at the same distance; a little higher, angled down, keeps it out of the breath. A group mic over a row sits a little above the heads, aimed down at the middle singer.',
       forward: 'In the middle of the group, each mouth about the same distance away — 40 cm in this drawing; set the real distance in rehearsal and mark the floor. Nearer one singer, that voice gets louder and bassier.',
       aim: 'Its front toward the middle singer: a cardioid hears the singers round its front, an omni every side. Move the mic or the singers — not just the angle — to change the balance.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin — for a shared mic, in the middle at the mouths’ height or a little higher; for a group mic over a row, about 0.6–1.2 m (2–4 ft) in front and a little above the heads. Places to start and rehearse, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin — for a shared mic, in the middle at the mouths’ height or a little higher; for a group mic over a row, about 0.6–1.2 m (2–4 ft) in front and a little above the heads. Places to start and rehearse, not a best place.',
       'At a shared mic, every centimetre toward one singer is level for that singer: the NEAR / FAR readout is the balance the mic hears. Match the distances, then let the singers do the mixing.',
       'Change one thing at a time — the height, then the distance — and mark the stand height and the singers’ places on the floor once it works.',
     ],

@@ -44,8 +44,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 40–80 cm from the middle of the row, facing its length — then move the mic and see what changes.',
-    credit: { scenarios: ['bc.place.1', 'bc.place.2', 'bc.place.3', 'bc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing and the hand, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 40–80 cm from the middle of the row, facing its length — then move the mic and see what changes.',
+    credit: { scenarios: ['bc.place.1', 'bc.place.2', 'bc.place.3', 'bc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing and the hand, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Begin about 40–80 cm from the middle of the row, facing its whole length, at a height that sees the bars. Check both sweep directions. An end mic alone gives an uneven row; a pair at the ends is a deliberate option.',
   },
   context: {
@@ -392,7 +392,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W, 'a swinging bar or the hand'),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the middle of the row', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the middle of the row', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -400,7 +400,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A solo overdub: slow sweeps in both directions, a soft and a strong gesture, and the full decay, in a good room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 50 cm from the middle of the row, facing its length, at the bars’ height', ok: true, power: 'phantom', feedback: 'A recommended starting point, clear of the swing; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 50 cm from the middle of the row, facing its length, at the bars’ height', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the swing; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 75 cm away, for a more blended row in the good room', ok: true, power: 'phantom', feedback: 'A wider view — check both sweep directions and the tail.' },
       { id: 'c', label: 'A mic level with the rail, close to one end', ok: false, power: 'phantom', feedback: 'It misses the bars below it and favours one end.' },
       { id: 'd', label: 'A gate to keep the room out between sweeps', ok: false, power: 'phantom', feedback: 'A gate would cut the shimmer’s tail.' },
@@ -567,6 +567,6 @@ export const I06C_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no single agreed bar-chime miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every row, mount, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 27-bar row with drawn bar sizes, a bar held at neither end for its shapes, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the swing and the hand.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed bar-chime miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every row, mount, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 27-bar row with drawn bar sizes, a bar held at neither end for its shapes, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the swing and the hand.',
   copy: { words: metalWords('bar chimes', 'player') },
 };

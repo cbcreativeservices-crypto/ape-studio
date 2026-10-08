@@ -1,5 +1,5 @@
 /**
- * F06 NATURAL AND URBAN AMBIENCE — the recommended starting points (charter
+ * F06 NATURAL AND URBAN AMBIENCE — the suggested starting points (charter
  * §2 layer 1). Keys: foley_footsteps/SOURCES.md §0 (the Lab 6 register) and
  * field_ambience/SOURCES.md; geometry from field_ambience/
  * GEOMETRY_PROPOSAL.md §3. Distances are read from the water's edge

@@ -71,7 +71,7 @@ const envelopes: Envelope[] = [
   { id: 'env.player', label: 'the player', shape: { kind: 'box', min: v3(PLAYER.x - 160, -1850, PLAYER.z - 230), max: v3(PLAYER.x + 170, 0, PLAYER.z + 200) }, prov: ill('a standing player beside the struck face: a drawing default') },
 ];
 
-/* ── RECOMMENDED STARTING POINTS: the lesson's own trials (internal kind
+/* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind
  *    'trial'): A in front, 60–120 cm; B closer, 30–60 cm, offset to a clear
  *    outer part of the face; D a room mic; a bossed gong's boss view. ── */
 const BOTH = ['sdcCard', 'smallDynCard'];

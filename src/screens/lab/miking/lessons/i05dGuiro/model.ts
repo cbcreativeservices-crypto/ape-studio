@@ -123,5 +123,5 @@ function zonesFor(v: GuId): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L10-L14; corrections GU-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L10-L14; corrections GU-xx). ── */
 export const GU_ZONES: DocumentedZone[] = [...zonesFor('gourd'), ...zonesFor('fiberglass')];

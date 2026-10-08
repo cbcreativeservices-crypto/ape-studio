@@ -29,12 +29,12 @@ export const hearingDiag = (id: string, w: Words): DiagnosticItem => ({
   covers: 'setting',
   critical: true,
   prompt: `Your ${w.noun} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
-  options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic is nearer the speaker than you'],
+  options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'Your ears are safe as long as the mic is nearer the speaker than you'],
   correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
   explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
   why: {
     'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-    'It is safe as long as the mic is nearer the speaker than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
+    'Your ears are safe as long as the mic is nearer the speaker than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
   },
 });
 
@@ -55,12 +55,12 @@ export const polarityDelay = (id: string): MikingScenario => ({
   id,
   page: 'twoMic',
   prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference between the two mics?',
-  options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals line up again in the sum', 'It doubles, because the inverted copy arrives later'],
+  options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals line up again in the sum', 'Cut in half: the flipped copy cancels half of it'],
   correct: 'Nothing: polarity flips the sign; the delay stays the same',
   explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
   why: {
     'It drops to zero, so the two arrivals line up again in the sum': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-    'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+    'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
   },
 });
 
@@ -145,5 +145,5 @@ export const hollowSymptom = (id: string): Symptom => ({
 export const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the condenser the phantom power it needs', role: 'required', feedback: 'Say how the mic is powered: these condensers need phantom power (a miniature through its adapter).' };
 export const BRAND_REASON = (noun: string): SetupReason => ({ id: 'r.brand', label: `It is the brand most engineers reach for on a ${noun}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' });
 export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest sound of any position on the instrument', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and no position is “the loudest” on every instrument.' };
-export const docReason = (from: string): SetupReason => ({ id: 'r.doc', label: `It is a recommended starting point for this kind of mic, measured from ${from}`, role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' });
+export const docReason = (from: string): SetupReason => ({ id: 'r.doc', label: `It is a suggested starting point for this kind of mic, measured from ${from}`, role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' });
 export const clearReason = (what: string): SetupReason => ({ id: 'r.clear', label: `The mic, mount and cable stay clear of ${what}`, role: 'required', feedback: 'Clearance is part of every passing setup.' });

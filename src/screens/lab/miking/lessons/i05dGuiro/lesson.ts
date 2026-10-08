@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — roughly 30–60 cm from the middle of the scraped area, covering the whole stroke — facing more of the ridges, or a little lower for more body.',
-    credit: { scenarios: ['gui.place.1', 'gui.place.2', 'gui.place.3', 'gui.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — roughly 30–60 cm from the middle of the scraped area, covering the whole stroke — facing more of the ridges, or a little lower for more body.',
+    credit: { scenarios: ['gui.place.1', 'gui.place.2', 'gui.place.3', 'gui.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Two viewpoints to compare — more ridges or more body — both covering the whole stroke, never across the scraper’s path.',
   },
   context: {
@@ -536,7 +536,7 @@ export const I05D_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the güiro') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every güiro, scraper, stroke and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a güiro held across the player’s front, its ridges drawn wider apart than real, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every güiro, scraper, stroke and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a güiro held across the player’s front, its ridges drawn wider apart than real, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: GU_COPY,
   sp: {
     strikeTitle: 'Scrape to sound',

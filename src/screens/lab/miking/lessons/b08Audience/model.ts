@@ -1,5 +1,5 @@
 /**
- * B08 BROADCAST AUDIENCE AND EVENT SPACE — the recommended starting points
+ * B08 BROADCAST AUDIENCE AND EVENT SPACE — the suggested starting points
  * (charter §2 layer 1): the engine's zones (for the shared pages' data and
  * the tests), the lesson's STARTING SETUPS drawn on the venue plans, the
  * Placement Studio's zones and the two-zone overlap pair. Research:
@@ -58,7 +58,7 @@ export const B08_ZONES: DocumentedZone[] = [
   crowdZone({
     id: 'b8.mono',
     label: 'One crowd mic above the front of the section',
-    band: 'After our research, here is where we recommend you begin: one directional mic raised above and somewhat in front of a representative section, aimed down at the faces and upper bodies, the PA as far off its front as you can — then listen and adjust.',
+    band: 'After our research, here is where we suggest you begin: one directional mic raised above and somewhat in front of a representative section, aimed down at the faces and upper bodies, the PA as far off its front as you can — then listen and adjust.',
     kind: 'sourced',
     src: 'S-TOP6',
     quote: 'one (or two for stereo) microphone(s) above and somewhat in front of the congregation … aimed at the faces of the people and away from the main PA speakers',

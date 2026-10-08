@@ -43,9 +43,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about a foot in front of the bridge, aimed at it, clear of the bow — then move the mic and see what changes.',
-    credit: { scenarios: ['vc.place.1', 'vc.place.2', 'vc.place.3', 'vc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part — the bridge — not a rule. Distance, height and angle are separate things to try, and the bow’s clearance comes first.',
+    goal: 'Start where we suggest you begin — about a foot in front of the bridge, aimed at it, clear of the bow — then move the mic and see what changes.',
+    credit: { scenarios: ['vc.place.1', 'vc.place.2', 'vc.place.3', 'vc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bridge — not a rule. Distance, height and angle are separate things to try, and the bow’s clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -430,8 +430,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with a band. One channel for the cello, phantom power available; the cellist moves a lot with the music.',
     setups: [
-      { id: 'a', label: 'Miniature clipped to the outer strings below the bridge, capsule under the strings toward the bridge', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the cello and stays clear of the bow.' },
-      { id: 'b', label: 'The same miniature, its capsule angled toward an f-hole, checked for feedback', ok: true, power: 'phantom', feedback: 'A recommended starting point: more level — check the tone and feedback with the monitors on.' },
+      { id: 'a', label: 'Miniature clipped to the outer strings below the bridge, capsule under the strings toward the bridge', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the cello and stays clear of the bow.' },
+      { id: 'b', label: 'The same miniature, its capsule angled toward an f-hole, checked for feedback', ok: true, power: 'phantom', feedback: 'A suggested starting point: more level — check the tone and feedback with the monitors on.' },
       { id: 'c', label: 'Small condenser about a foot from the bridge, its stand clear of the bow', ok: false, power: 'phantom', feedback: 'A good studio starting point — but a cellist who moves a lot leaves its working zone on a loud stage.' },
       { id: 'd', label: 'A clip-on mic clamped to the bridge, for the strongest vibration', ok: false, power: 'phantom', feedback: 'Never clamp the bridge: it damps the instrument and risks it. Clip to the strings below it.' },
       { id: 'e', label: 'A mic pushed into the treble f-hole, for the most level', ok: false, power: 'phantom', feedback: 'Nothing goes into an f-hole: it presses on the instrument, and one hole is not the whole cello.' },
@@ -444,8 +444,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Studio. A string quartet is recorded with a main pair already up; the producer wants a little more cello definition.',
     setups: [
-      { id: 'a', label: 'Small condenser about a foot from the bridge, raised gradually under the main pair, checked in mono', ok: true, power: 'phantom', feedback: 'A recommended starting point used as a spot: raised just enough, checked against the main pair.' },
-      { id: 'b', label: 'Miniature on the outer strings below the bridge, at a modest level under the main pair', ok: true, power: 'phantom', feedback: 'A recommended starting point — a closer, more coloured spot; compare it with the main pair in mono.' },
+      { id: 'a', label: 'Small condenser about a foot from the bridge, raised gradually under the main pair, checked in mono', ok: true, power: 'phantom', feedback: 'A suggested starting point used as a spot: raised just enough, checked against the main pair.' },
+      { id: 'b', label: 'Miniature on the outer strings below the bridge, at a modest level under the main pair', ok: true, power: 'phantom', feedback: 'A suggested starting point — a closer, more coloured spot; compare it with the main pair in mono.' },
       { id: 'c', label: 'Small condenser 2 m away, to match the main pair’s distance', ok: false, power: 'phantom', feedback: 'That adds room, not definition — the main pair already hears the cello from there.' },
       { id: 'd', label: 'Two close mics on the cello, one per side, to make it stereo', ok: false, power: 'phantom', feedback: 'A second close mic is not a stereo requirement, and it pulls the cellist forward out of the quartet.' },
       { id: 'e', label: 'A mic inside the f-hole, as close as it gets', ok: false, power: 'phantom', feedback: 'Nothing goes into an f-hole, and one opening is not the whole cello.' },
@@ -624,6 +624,6 @@ export const C09C_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every cello, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one cellist in a typical posture, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the cellist stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every cello, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one cellist in a typical posture, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the cellist stopped, and only with their agreement.',
   copy: CELLO_COPY,
 };

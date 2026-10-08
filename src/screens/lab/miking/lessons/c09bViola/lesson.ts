@@ -44,9 +44,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — in front of the player and a little above, aimed broadly at the bridge and top, clear of the bow — then move the mic and see what changes.',
-    credit: { scenarios: ['va.place.1', 'va.place.2', 'va.place.3', 'va.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part — the bridge — not a rule; the stand distance is a modest suggestion. Move one variable at a time, play both extreme strings, and keep the bow clear.',
+    goal: 'Start where we suggest you begin — in front of the player and a little above, aimed broadly at the bridge and top, clear of the bow — then move the mic and see what changes.',
+    credit: { scenarios: ['va.place.1', 'va.place.2', 'va.place.3', 'va.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bridge — not a rule; the stand distance is a modest suggestion. Move one variable at a time, play both extreme strings, and keep the bow clear.',
   },
   context: {
     title: 'Studio or live',
@@ -430,8 +430,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Overdub in a dense pop arrangement: the viola needs more definition and separation. One channel, phantom available.',
     setups: [
-      { id: 'a', label: 'Compact cardioid 20–30 cm from the bridge, aimed at the bridge and top', ok: true, power: 'phantom', feedback: 'A recommended starting point: closer and aimed, for definition — listen for bow noise and the C string.' },
-      { id: 'b', label: 'Compact cardioid aimed toward the body, a little farther back', ok: true, power: 'phantom', feedback: 'A recommended starting point that favours weight — useful if the arrangement is thin.' },
+      { id: 'a', label: 'Compact cardioid 20–30 cm from the bridge, aimed at the bridge and top', ok: true, power: 'phantom', feedback: 'A suggested starting point: closer and aimed, for definition — listen for bow noise and the C string.' },
+      { id: 'b', label: 'Compact cardioid aimed toward the body, a little farther back', ok: true, power: 'phantom', feedback: 'A suggested starting point that favours weight — useful if the arrangement is thin.' },
       { id: 'c', label: 'Small condenser 1.2 m away, to catch the room', ok: false, power: 'phantom', feedback: 'Far away adds room, not the definition and separation the brief asks for.' },
       { id: 'd', label: 'A mic clamped to the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Nothing clamps the bridge: it can damp it and risk the instrument.' },
       { id: 'e', label: 'A stand mic beside the bow hand, as close to the strings as possible', ok: false, power: 'phantom', feedback: 'That is the bow arm’s path: the mic would be struck.' },
@@ -444,8 +444,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage; the violist turns and sways. One channel, phantom available, the monitors are loud.',
     setups: [
-      { id: 'a', label: 'Miniature on a body clip made for the viola, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the viola — check the fit and do a full motion test.' },
-      { id: 'b', label: 'Miniature on a holder behind the bridge, over the strings, checked for colour', ok: true, power: 'phantom', feedback: 'A recommended starting point: steady as the player moves — compare under and over.' },
+      { id: 'a', label: 'Miniature on a body clip made for the viola, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the viola — check the fit and do a full motion test.' },
+      { id: 'b', label: 'Miniature on a holder behind the bridge, over the strings, checked for colour', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over.' },
       { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage, a metre away hears the monitors more than the viola — and the player leaves its zone.' },
       { id: 'd', label: 'A violin clip pushed onto the viola without checking it fits', ok: false, power: 'phantom', feedback: 'Mounts are not interchangeable: use one made to fit this viola.' },
       { id: 'e', label: 'A supercardioid with the wedge straight behind it, trusted to reject it', ok: false, power: 'phantom', feedback: 'A supercardioid has a rear lobe: straight behind is not its best rejection.' },
@@ -624,6 +624,6 @@ export const C09B_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules; the stand distance in particular is a modest suggestion. Every viola, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules; the stand distance in particular is a modest suggestion. Every viola, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: VIOLA_COPY,
 };

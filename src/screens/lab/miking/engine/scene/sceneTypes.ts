@@ -24,6 +24,11 @@ export type ArtLabel = {
   alts?: readonly { u: number; v: number; align: 'left' | 'center' | 'right' }[];
   at?: { u: number; v: number };
   lead?: { u: number; v: number };
+  /** Where the named part IS, when the label's own place is set off from it
+   *  (a venue's marks): a label moved into free space points here, not at its
+   *  own empty place (owner decision X6, 2026-10-08). Draws no leader at the
+   *  label's own place. */
+  point?: { u: number; v: number };
 };
 
 /** A rectangle in mm of a view's (u, v) plane. */
@@ -36,7 +41,7 @@ export type LessonArt = {
   /** The part under a model point (u, v), `tol` in mm; null = none. */
   hitTest: (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => string | null;
   /** Opt-in label manners (strings art pass 2026-10-05): rectangles (mm)
-   *  the part labels keep off — the boxes of the recommended starting points
+   *  the part labels keep off — the boxes of the suggested starting points
    *  the scene is showing (`shown`: their ids) — and whether a label fades
    *  while a mic sits under it (the lobe's tag also steps round the labels),
    *  so the words never hide the mic, a zone or a readout. A lesson that

@@ -1,5 +1,5 @@
 /**
- * A02 TROMBONE AND BASS TROMBONE — the recommended starting points (charter
+ * A02 TROMBONE AND BASS TROMBONE — the suggested starting points (charter
  * §2 layer 1). Source keys point into docs/labs/miking/trombone/SOURCES.md
  * and bass_trombone/SOURCES.md (the Lab 3 keys: trumpet/SOURCES.md §0); the
  * geometry is trombone/GEOMETRY_PROPOSAL.md §4. Distances from the bell

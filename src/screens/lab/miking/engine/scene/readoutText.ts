@@ -97,7 +97,7 @@ export type BezelCell ={ k: string; v: string; sub?: string; tint?: string; flex
 
 export const ZONE_TINT = { zone: '#6fa8ff', blocked: '#ff6b5e' } as const;
 
-/** A zone's mark: one consistent style for every recommended starting point
+/** A zone's mark: one consistent style for every suggested starting point
  *  (owner ruling 2026-10-04 — no SOURCED / TRIAL marks on screen). */
 export function zoneMark(zone: DocumentedZone | null): string {
   return zone ? 'IN ZONE' : 'NONE';

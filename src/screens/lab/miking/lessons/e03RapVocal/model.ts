@@ -1,5 +1,5 @@
 /**
- * E03 RAP AND RHYTHMIC VOCAL — the recommended starting points (charter §2
+ * E03 RAP AND RHYTHMIC VOCAL — the suggested starting points (charter §2
  * layer 1), on frame V (lessons/shared/voice), from rap_vocal/SOURCES.md and
  * the Lab 5 register (lead_vocal/SOURCES.md §0). Every distance is from the
  * lip point to the mic's front; corrections E3-… (CORRECTIONS_LOG).

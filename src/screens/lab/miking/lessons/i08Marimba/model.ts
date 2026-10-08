@@ -27,7 +27,7 @@ export const MARIMBA_FAM: MalletFamily = {
 
 const MICS = ['mlSdc', 'mlDynCard'];
 
-/* ── RECOMMENDED STARTING POINTS (lesson L11, L14, L16; corrections I2-M*) ── */
+/* ── SUGGESTED STARTING POINTS (lesson L11, L14, L16; corrections I2-M*) ── */
 export const MARIMBA_ZONES: DocumentedZone[] = [
   oneMicZone(MARIMBA_FAM, {
     id: 'mr.one',

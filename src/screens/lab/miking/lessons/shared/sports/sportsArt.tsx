@@ -31,8 +31,8 @@ export function venueLessonArt(scene: VenueScene, partOf: (id: string) => string
     );
   }
   const labels = (view: ViewId): ArtLabel[] => [
-    ...scene.targets.map((t) => ({ id: partOf(t.id), text: t.short, u: planUV(t.p).u, v: view === 'top' ? planUV(t.p).v - 900 : -t.h * 1000 - 400, align: 'center' as const })),
-    ...scene.marks.map((m) => ({ id: partOf(m.id), text: m.short, u: planUV(m.p).u, v: view === 'top' ? planUV(m.p).v + 900 : -300, align: 'center' as const, tone: 'muted' as const })),
+    ...scene.targets.map((t) => ({ id: partOf(t.id), text: t.short, u: planUV(t.p).u, v: view === 'top' ? planUV(t.p).v - 900 : -t.h * 1000 - 400, align: 'center' as const, ...(view === 'top' ? { point: planUV(t.p) } : {}) })),
+    ...scene.marks.map((m) => ({ id: partOf(m.id), text: m.short, u: planUV(m.p).u, v: view === 'top' ? planUV(m.p).v + 900 : -300, align: 'center' as const, tone: 'muted' as const, ...(view === 'top' ? { point: planUV(m.p) } : {}) })),
   ];
   const hitTest = (view: ViewId, _v: VariantId, u: number, v: number, tol: number): string | null => {
     for (const t of scene.targets) {

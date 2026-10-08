@@ -43,9 +43,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — over the rim, measured from the rim or the head the starting point names, aimed at the head, clear of the sticks — then move the mic and see what changes.',
-    credit: { scenarios: ['sn.place.1', 'sn.place.2', 'sn.place.3', 'sn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named surface — the rim or a head — not a rule. Rim position, height and angle are separate things to try, and the sticks’ clearance comes first.',
+    goal: 'Start where we suggest you begin — over the rim, measured from the rim or the head the starting point names, aimed at the head, clear of the sticks — then move the mic and see what changes.',
+    credit: { scenarios: ['sn.place.1', 'sn.place.2', 'sn.place.3', 'sn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named surface — the rim or a head — not a rule. Rim position, height and angle are separate things to try, and the sticks’ clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -314,12 +314,12 @@ const scenarios: MikingScenario[] = [
     id: 'sn.two.2',
     page: 'twoMic',
     prompt: 'You flip the bottom mic’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
       'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -503,7 +503,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and whether it is measured from the rim or a head.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and whether it is measured from the rim or a head.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay out of the sticks’ path, rimshots and the hi-hat', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a snare', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest snare of any position on the drum', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and no position is “the loudest” on every drum.' };
@@ -515,9 +515,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud club stage. The hi-hat sits close above the snare, and the drummer plays lots of rimshots. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small cardioid dynamic over the rim, 2.5 to 7.5 cm above it, aimed at the head, its rear toward the hi-hat', ok: true, power: 'none', feedback: 'A recommended starting point, clear of the sticks, its rejection turned toward the hi-hat.' },
-      { id: 'b', label: 'Supercardioid dynamic over the rim, aimed at the head, the hi-hat off to one side of its rear', ok: true, power: 'none', feedback: 'A recommended starting point; the hi-hat sits where a supercardioid rejects most.' },
-      { id: 'c', label: 'Clip-on dynamic clamped to the rim, 3 to 5 cm above the head, angled 30 to 60° from straight down', ok: true, power: 'none', feedback: 'A recommended starting point, low and clear of the rimshots — with a clamp that suits the hoop.' },
+      { id: 'a', label: 'Small cardioid dynamic over the rim, 2.5 to 7.5 cm above it, aimed at the head, its rear toward the hi-hat', ok: true, power: 'none', feedback: 'A suggested starting point, clear of the sticks, its rejection turned toward the hi-hat.' },
+      { id: 'b', label: 'Supercardioid dynamic over the rim, aimed at the head, the hi-hat off to one side of its rear', ok: true, power: 'none', feedback: 'A suggested starting point; the hi-hat sits where a supercardioid rejects most.' },
+      { id: 'c', label: 'Clip-on dynamic clamped to the rim, 3 to 5 cm above the head, angled 30 to 60° from straight down', ok: true, power: 'none', feedback: 'A suggested starting point, low and clear of the rimshots — with a clamp that suits the hoop.' },
       { id: 'd', label: 'Small dynamic 3 cm over the middle of the head, for the most crack', ok: false, power: 'none', feedback: 'The middle of the head is the sticks’ path: the mic would be struck. Stay over the rim.' },
       { id: 'e', label: 'Rim condenser laid flat on the head so that it cannot move', ok: false, power: 'phantom', feedback: 'Never on the head: it touches a moving part, and its head should be angled, not flat to the drum.' },
     ],
@@ -529,8 +529,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Studio session. The top mic is up; the producer wants more of the wires. The second input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Small dynamic just below the bottom rim, aimed up at the head and wires, then check polarity with the top mic', ok: true, power: 'none', feedback: 'A recommended starting point below the drum; a dynamic needs no phantom; the polarity check follows.' },
-      { id: 'b', label: 'Clip-on dynamic on the bottom hoop, aimed up, then check polarity with the top mic', ok: true, power: 'none', feedback: 'A recommended starting point, clear of the stand; a dynamic needs no phantom.' },
+      { id: 'a', label: 'Small dynamic just below the bottom rim, aimed up at the head and wires, then check polarity with the top mic', ok: true, power: 'none', feedback: 'A suggested starting point below the drum; a dynamic needs no phantom; the polarity check follows.' },
+      { id: 'b', label: 'Clip-on dynamic on the bottom hoop, aimed up, then check polarity with the top mic', ok: true, power: 'none', feedback: 'A suggested starting point, clear of the stand; a dynamic needs no phantom.' },
       { id: 'c', label: 'Rim condenser on the bottom hoop, aimed up at the wires', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Small dynamic pressed against the wires, for the most sizzle', ok: false, power: 'none', feedback: 'The wires move: a mic touching them rattles and damps them. Keep it clear.' },
       { id: 'e', label: 'A second top mic just above the first, aimed at the wires through the head', ok: false, power: 'none', feedback: 'A top mic faces the batter head; the wires’ sound leaves mostly downward. A bottom mic is the way to get more of it.' },
@@ -750,6 +750,6 @@ export const M02_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 14 × 5.5 in snare in a typical kit layout, mic patterns and the two-mic comb as textbook shapes, and head and wire motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 14 × 5.5 in snare in a typical kit layout, mic patterns and the two-mic comb as textbook shapes, and head and wire motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: SNARE_COPY,
 };

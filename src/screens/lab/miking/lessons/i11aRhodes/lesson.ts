@@ -47,8 +47,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin on the keyboard’s amp — close, at the dust cap’s edge, measured from the grille — then move across the cone and away from it, one change at a time.',
-    credit: { scenarios: ['rh.place.1', 'rh.place.2', 'rh.place.3', 'rh.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points, clear of every part, and answer the four checks.' },
+    goal: 'Start where we suggest you begin on the keyboard’s amp — close, at the dust cap’s edge, measured from the grille — then move across the cone and away from it, one change at a time.',
+    credit: { scenarios: ['rh.place.1', 'rh.place.2', 'rh.place.3', 'rh.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, clear of every part, and answer the four checks.' },
     takeaway: 'Measure from the grille, on the speaker that is sounding, and change one thing at a time: across the cone, OR away from it, OR the angle. Judge on chords, single notes, low and high, soft and hard.',
   },
   context: {
@@ -516,7 +516,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the grille, the vents and the pedal foot', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the mic most engineers use on this instrument', role: 'wrong', feedback: 'A brand or a habit is not part of passing: choose by properties.' };
 const DI_REASON: SetupReason = { id: 'r.di', label: 'The direct signal already sounds just like the miked amp', role: 'wrong', feedback: 'The direct signal lacks the speaker and the room — it is a different sound.' };
@@ -527,7 +527,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud club stage: a tine piano through a 1 × 12 combo, a mono PA. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic close to the grille, aimed at the dust cap’s edge', ok: true, power: 'none', feedback: 'A recommended start, close and directional for a loud stage; a dynamic needs no power.' },
+      { id: 'a', label: 'Instrument dynamic close to the grille, aimed at the dust cap’s edge', ok: true, power: 'none', feedback: 'A suggested start, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the speaker itself', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has phantom — check its level rating.' },
       { id: 'c', label: 'Instrument dynamic over the outer cone, the same distance', ok: true, power: 'none', feedback: 'Another good first listen — warmer comping — if it suits the player’s sound.' },
       { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and wedges, and lowers the margin before feedback.' },
@@ -739,5 +739,5 @@ export const I11A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every instrument, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo amp with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), a 61-key tine piano drawn at a typical size, one note of its mechanism as an inside view, textbook mic patterns, and motion drawn larger. The close distances are general amplifier starting points, measured here from the grille cloth to the mic’s front and rounded to about 5 mm. Place mics with the amp muted, never open the instrument or the amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo amp with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), a 61-key tine piano drawn at a typical size, one note of its mechanism as an inside view, textbook mic patterns, and motion drawn larger. The close distances are general amplifier starting points, measured here from the grille cloth to the mic’s front and rounded to about 5 mm. Place mics with the amp muted, never open the instrument or the amp, and send a speaker output only to a speaker.',
 };

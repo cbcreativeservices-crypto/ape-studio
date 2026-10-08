@@ -134,5 +134,5 @@ function zonesFor(s: BellState): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L19-L22; corrections CB-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L19-L22; corrections CB-xx). ── */
 export const BELL_ZONES: DocumentedZone[] = [...zonesFor(STATES.mounted), ...zonesFor(STATES.handheld)];

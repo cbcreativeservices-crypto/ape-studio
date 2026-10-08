@@ -3,14 +3,14 @@
  * free), the family's version of pages/PPlacement.tsx.
  *
  * WATCH (rack, worked example): the mic placed FOR the learner at a
- * recommended starting point (its own rig, never credit); STEP reads it piece
+ * suggested starting point (its own rig, never credit); STEP reads it piece
  * by piece — where to begin, the head it is measured from, the distance, the
  * line, the aim, clearance — with the bezel cell for the piece lit.
  * PLACE (rack): PREDICT FIRST, then drag the mic (or POSITION / AIM; ZONE
  * jumps; SETUP picks the mic, the drums' setup and the head distances are
  * read from). Collisions stop the mic and say what it would hit.
  * LEARN (read) → CHECK (read).
- * Credit: the mic RESTS, clear of every part, in two different recommended
+ * Credit: the mic RESTS, clear of every part, in two different suggested
  * zones (on release) + the checks.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -70,7 +70,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const exHead = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.label ?? 'its head';
   const exLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line)?.label ?? 'its line' : null;
   const worked: { title: string; text: string; cell: number }[] = [
-    { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+    { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
     { title: 'THE HEAD', text: `The distance is measured from ${exHead}, straight up from it. The same number from somewhere else would put the mic somewhere else entirely.`, cell: 0 },
     { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside that range.`, cell: 0 },
     { title: 'THE LINE', text: exLine ? `This starting point also places the mic near ${exLine}: how far it may stray is drawn as the blue region you can see in both views.` : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
@@ -178,7 +178,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} highlight={exHighlight} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
-        badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
+        badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,
         initialParam: 'piece',
@@ -200,7 +200,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={labelFor} />,
-        badge: 'Blue = recommended starting points · keep-clear areas show as a mic comes near · dashed lobe = pattern shape · pinch to zoom',
+        badge: 'Blue = suggested starting points · keep-clear areas show as a mic comes near · dashed lobe = pattern shape · pinch to zoom',
         bezel,
         params,
         initialParam: 'pos',
@@ -211,7 +211,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           <Landing looking={`${t.short}${multi ? ` · ${vLabel.toLowerCase()}` : ''}`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — try another mic type in SETUP for the others — then move it and see what changes." />
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{shown.blocked.partId === 'gooseneck' ? 'A clip-on mic reaches only as far as its gooseneck from the rim it clamps to — it stops there.' : `It would touch the ${shown.blocked.label} — the mic stops there.`}</Note> : null}
-          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. Starting points for this mic${multi ? ' and setup' : ''}: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or setup'}.`}</Body>}
+          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic${multi ? ' and setup' : ''}: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or setup'}.`}</Body>}
           <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
           {tried && pred ? <Note tone="ok">{`You predicted “${predicted}”. ${pred.after}`}</Note> : null}
           {idea ? <Note>{idea}</Note> : null}

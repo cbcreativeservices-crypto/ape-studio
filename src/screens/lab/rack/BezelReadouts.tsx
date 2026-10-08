@@ -96,7 +96,7 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
       delayLongPress={350}
       disabled={!it.onPress && !it.helpKey}
       accessibilityRole={it.onPress ? 'button' : 'text'}
-      accessibilityLabel={`${it.k}: ${it.v}${it.sub ? ` ${it.sub}` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`}
+      accessibilityLabel={`${it.k}: ${it.vA11y ?? it.v}${it.sub ? ` ${it.sub}` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`}
       onLayout={(e) => setCellW(Math.round(e.nativeEvent.layout.width))}
     >
       {cropped ? null : (

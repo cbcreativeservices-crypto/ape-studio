@@ -46,8 +46,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin on the steel’s amp — close, at the dust cap’s edge — then move across the cone or away from it, one change at a time.',
-    credit: { scenarios: ['ps.place.1', 'ps.place.2', 'ps.place.3', 'ps.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points, clear of every part, and answer the four checks.' },
+    goal: 'Start where we suggest you begin on the steel’s amp — close, at the dust cap’s edge — then move across the cone or away from it, one change at a time.',
+    credit: { scenarios: ['ps.place.1', 'ps.place.2', 'ps.place.3', 'ps.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, clear of every part, and answer the four checks.' },
     takeaway: 'General amp practice, tested on a steel amp: measure from the grille on the real speaker, change one thing at a time, and set the gain for the biggest attack and the volume pedal’s full travel.',
   },
   context: {
@@ -536,7 +536,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say where it begins and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say where it begins and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Stand and cable stay clear of the pedals, knee levers and volume pedal', role: 'required', feedback: 'The player’s working zone is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most steel players use', role: 'wrong', feedback: 'A brand is not part of passing.' };
 const BRIGHT_REASON: SetupReason = { id: 'r.bright', label: 'It gives the brightest steel sound possible', role: 'wrong', feedback: 'Brightest is not a passing reason; the brief decides.' };
@@ -734,5 +734,5 @@ export const C04_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. These are general amp-miking practices to experiment with on a steel player’s amp, not steel-specific coordinates: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the instruments with typical proportions, one combo standing in for the steel amp, an ideal string, textbook mic patterns, motion drawn larger. Keep the player’s pedals and knee levers clear, never open an amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. These are general amp-miking practices to experiment with on a steel player’s amp, not steel-specific coordinates: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the instruments with typical proportions, one combo standing in for the steel amp, an ideal string, textbook mic patterns, motion drawn larger. Keep the player’s pedals and knee levers clear, never open an amp, and send a speaker output only to a speaker.',
 };

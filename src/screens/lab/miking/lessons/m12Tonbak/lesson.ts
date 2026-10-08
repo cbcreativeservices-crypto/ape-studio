@@ -7,7 +7,7 @@
  *
  * Every tonbak position is the lesson's own trial; there is no published
  * tonbak miking standard (the lesson says so). On screen they are simply
- * recommended starting points, with the honest note that every player and
+ * suggested starting points, with the honest note that every player and
  * drum differ.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — measured from the head, from the audience side, clear of the hands — then move the mic and see what changes.',
-    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — measured from the head, from the audience side, clear of the hands — then move the mic and see what changes.',
+    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Distance, viewpoint and angle are separate things to try, one at a time. If one hand or the edge takes over, move to a new viewpoint rather than only turning the mic. The hands’ path comes before every number.',
   },
   context: {
@@ -297,12 +297,12 @@ const scenarios: MikingScenario[] = [
     id: 'tb.two.1',
     page: 'twoMic',
     prompt: 'You flip the opening mic’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays',
     explain: 'Inverting a channel changes its sign; it does not remove a difference in arrival time. Only moving a mic changes the delay.',
     why: {
       'It drops to zero, so the two arrivals line up again': 'The mics are still at the same distances: the delay is unchanged.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only a mic’s position changes the delay.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only a mic’s position changes the delay.',
     },
   },
   {
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the head', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the head', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the hands, legs and movement', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers use on hand drums', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position', role: 'wrong', feedback: 'Bass emphasis is not a passing reason — the player’s balance is.' };
@@ -690,5 +690,5 @@ export const M12_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. We could not find a recommended way to mic the tonbak: these starting points are adapted from how microphones behave, and every drum, player and room is different. Move the mic, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one wooden tonbak, a seated posture the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a recommended way to mic the tonbak: these starting points are adapted from how microphones behave, and every drum, player and room is different. Move the mic, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one wooden tonbak, a seated posture the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands.',
 };

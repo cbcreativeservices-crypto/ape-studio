@@ -43,9 +43,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about two feet above an upright bell aimed toward its edge, or a foot or two from the bell slightly off axis — clear of the bell’s tilt and the path to stand; then move the mic and see what changes.',
-    credit: { scenarios: ['eu.place.1', 'eu.place.2', 'eu.place.3', 'eu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named part — the bell, or the euphonium — not a rule. Aim toward the edge of an upright bell, never down into it. Clearance comes first.',
+    goal: 'Start where we suggest you begin — about two feet above an upright bell aimed toward its edge, or a foot or two from the bell slightly off axis — clear of the bell’s tilt and the path to stand; then move the mic and see what changes.',
+    credit: { scenarios: ['eu.place.1', 'eu.place.2', 'eu.place.3', 'eu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the euphonium — not a rule. Aim toward the edge of an upright bell, never down into it. Clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -405,8 +405,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with a big band. One channel for a bell-front euphonium; the player stands for solos.',
     setups: [
-      { id: 'a', label: 'Small dynamic a foot or two in front of the bell, slightly off axis, the stand clear of the path to stand', ok: true, power: 'none', feedback: 'A recommended starting point: close, directional, set for the real bell — check the wedges round its rejection.' },
-      { id: 'b', label: 'A clip its maker confirms for this bell, the cable away from both valve hands and the mute', ok: true, power: 'phantom', feedback: 'A recommended option when a confirmed clip exists: it follows the player who stands for solos.' },
+      { id: 'a', label: 'Small dynamic a foot or two in front of the bell, slightly off axis, the stand clear of the path to stand', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, set for the real bell — check the wedges round its rejection.' },
+      { id: 'b', label: 'A clip its maker confirms for this bell, the cable away from both valve hands and the mute', ok: true, power: 'phantom', feedback: 'A suggested option when a confirmed clip exists: it follows the player who stands for solos.' },
       { id: 'c', label: 'A mic 60 cm above where an upright bell would be', ok: false, power: 'phantom', feedback: 'That suits an upright bell. This one faces the front: point the stand in its real direction.' },
       { id: 'd', label: 'A trumpet clip taped to the bell, for a quick fit', ok: false, power: 'phantom', feedback: 'A trumpet clip may not fit, and tape on a valuable finish is never the answer.' },
       { id: 'e', label: 'A mic on the bell’s axis, as close as it goes, for the most level', ok: false, power: 'none', feedback: 'The brightest, hardest view — and level comes from gain, not from crowding the bell.' },
@@ -419,8 +419,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · Studio. A brass band with a main pair up; an upright euphonium plays a lyrical solo in a good room.',
     setups: [
-      { id: 'a', label: 'A small condenser about 60 cm above the bell, aimed toward its edge, raised under the main pair and checked in mono', ok: true, power: 'phantom', feedback: 'A recommended starting point: open and rounded, with the room — raised just enough.' },
-      { id: 'b', label: 'A ribbon a little farther back and off the axis, out of the bell’s air, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A recommended option: a softer view, kept out of the bell’s air — follow its manual on power.' },
+      { id: 'a', label: 'A small condenser about 60 cm above the bell, aimed toward its edge, raised under the main pair and checked in mono', ok: true, power: 'phantom', feedback: 'A suggested starting point: open and rounded, with the room — raised just enough.' },
+      { id: 'b', label: 'A ribbon a little farther back and off the axis, out of the bell’s air, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A suggested option: a softer view, kept out of the bell’s air — follow its manual on power.' },
       { id: 'c', label: 'A ribbon 10 cm over the centre of the bell, for warmth', ok: false, power: 'none', feedback: 'Right in the bell’s stream of air: a risk to a ribbon, and a local, direct sound.' },
       { id: 'd', label: 'A stereo pair on the euphonium alone, to make the solo wider', ok: false, power: 'phantom', feedback: 'One player inside the band does not need a stereo pair; it pulls the image apart.' },
       { id: 'e', label: 'Turn the main pair up until the solo stands out', ok: false, power: 'phantom', feedback: 'That raises the whole band with it. A gentle spot gives the line its own share.' },
@@ -599,6 +599,6 @@ export const A04B_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every euphonium, player and room is different: find the bell, move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell, the hands and the path to stand shown as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every euphonium, player and room is different: find the bell, move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell, the hands and the path to stand shown as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: EUPH_COPY,
 };

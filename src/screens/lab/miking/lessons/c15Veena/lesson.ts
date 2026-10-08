@@ -43,9 +43,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — over the top plate, 30–50 cm out, out of the plucking hand’s reach — measured from the point the starting point names, then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named point. A broad view of the plate first; toward the bridge for articulation; move in small steps and compare at matched levels.',
+    goal: 'Start where we suggest you begin — over the top plate, 30–50 cm out, out of the plucking hand’s reach — measured from the point the starting point names, then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named point. A broad view of the plate first; toward the bridge for articulation; move in small steps and compare at matched levels.',
   },
   context: {
     title: 'Studio or live',
@@ -336,9 +336,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A concert stage: the veena on a rug, a mridangam beside, a side-fill monitor on a stand at the player’s right. One channel for the veena; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser, cardioid, 30–50 cm over the plate, rear toward the side-fill', ok: true, power: 'phantom', feedback: 'A recommended starting point, its rejection toward the side-fill.' },
-      { id: 'b', label: 'Instrument dynamic over the plate, out of the hand’s reach, rear toward the side-fill', ok: true, power: 'none', feedback: 'A recommended starting point; a robust stage choice.' },
-      { id: 'c', label: 'Small condenser at the same distance, turned toward the bridge, rear toward the side-fill', ok: true, power: 'phantom', feedback: 'A recommended start for more articulation; watch the buzz.' },
+      { id: 'a', label: 'Small condenser, cardioid, 30–50 cm over the plate, rear toward the side-fill', ok: true, power: 'phantom', feedback: 'A suggested starting point, its rejection toward the side-fill.' },
+      { id: 'b', label: 'Instrument dynamic over the plate, out of the hand’s reach, rear toward the side-fill', ok: true, power: 'none', feedback: 'A suggested starting point; a robust stage choice.' },
+      { id: 'c', label: 'Small condenser at the same distance, turned toward the bridge, rear toward the side-fill', ok: true, power: 'phantom', feedback: 'A suggested start for more articulation; watch the buzz.' },
       { id: 'd', label: 'Small condenser taped to the top plate beside the bridge', ok: false, power: 'phantom', feedback: 'Nothing is taped to the plate or bridge without the owner’s consent and an approved attachment.' },
       { id: 'e', label: 'Small omni 1 m in front, to hear the whole veena naturally', ok: false, power: 'phantom', feedback: 'On a stage beside a mridangam, an omni that far out hears the drum and the monitor as much as the veena.' },
     ],
@@ -350,8 +350,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, solo veena. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed between the bridge and the body', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Instrument dynamic at the same distance, turned toward the bridge', ok: true, power: 'none', feedback: 'A recommended start for articulation; it needs no phantom.' },
+      { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed between the bridge and the body', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'Instrument dynamic at the same distance, turned toward the bridge', ok: true, power: 'none', feedback: 'A suggested start for articulation; it needs no phantom.' },
       { id: 'c', label: 'Small condenser over the plate, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Instrument dynamic with its grille removed, 25 cm from the plate', ok: false, power: 'none', feedback: 'Keep a mic’s protective parts on unless its maker allows otherwise — and 25 cm was a study’s radius, not a rule.' },
       { id: 'e', label: 'Instrument dynamic resting against the gourd under the neck', ok: false, power: 'none', feedback: 'The gourd is a support on the player’s thigh: nothing rests on it, and it is not the soundboard.' },

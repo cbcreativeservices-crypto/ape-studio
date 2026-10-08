@@ -45,8 +45,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 60–120 cm in front of the face, or 30–60 cm off to a clear outer part — measured from the face at rest, outside the swing and the mallet; then compare.',
-    credit: { scenarios: ['gg.place.1', 'gg.place.2', 'gg.place.3', 'gg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing, the mallet and the player, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 60–120 cm in front of the face, or 30–60 cm off to a clear outer part — measured from the face at rest, outside the swing and the mallet; then compare.',
+    credit: { scenarios: ['gg.place.1', 'gg.place.2', 'gg.place.3', 'gg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing, the mallet and the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Begin about 60–120 cm in front, facing the broad face; or 30–60 cm off to a clear outer part. Back away for bloom and room, come closer for presence. Distances are from the face at rest — the swing comes first.',
   },
   context: {
@@ -404,7 +404,7 @@ const symptoms: Symptom[] = [
   contactSymptom(W, 'the swinging gong or the mallet'),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the face at rest', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the face at rest', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const KIND_REASON: SetupReason = { id: 'r.kind', label: 'The gong was identified first — tam-tam or bossed', role: 'optional', feedback: 'A fair reason: the approach follows the kind of gong.' };
 
 const setupTasks: SetupTask[] = [
@@ -581,6 +581,6 @@ export const I12_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No gong maker prescribes a mic position: these starting points come from how microphones behave and source-focused versus room-focused pickup, and every gong, mallet, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: a 32 in tam-tam and an 18 in bossed gong, the face’s shapes on a flat disc unsupported at its edge, the build-up as which shapes hold the energy (never a speed or a level), mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured from the face at rest to the mic’s front. Keep clear of the swing and the mallet.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. No gong maker prescribes a mic position: these starting points come from how microphones behave and source-focused versus room-focused pickup, and every gong, mallet, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: a 32 in tam-tam and an 18 in bossed gong, the face’s shapes on a flat disc unsupported at its edge, the build-up as which shapes hold the energy (never a speed or a level), mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured from the face at rest to the mic’s front. Keep clear of the swing and the mallet.',
   copy: { words: metalWords('gong', 'player') },
 };

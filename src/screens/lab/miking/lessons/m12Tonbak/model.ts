@@ -9,7 +9,7 @@
  * the player's right, tilted up — a DRAWING DEFAULT the owner checks on the
  * phone (the lesson leaves the posture to the player: "note the head
  * orientation"). Every tonbak position in the lesson is the lesson's own
- * TRIAL; they are shown as recommended starting points (owner ruling).
+ * TRIAL; they are shown as suggested starting points (owner ruling).
  */
 import type { Dim, Provenance } from '../../engine/model/types.ts';
 

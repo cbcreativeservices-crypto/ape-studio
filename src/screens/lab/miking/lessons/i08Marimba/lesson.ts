@@ -48,9 +48,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic above the middle of the played span, or one of a spaced pair — clear of every mallet, then move the mic and see what changes.',
-    credit: { scenarios: ['mr.place.1', 'mr.place.2', 'mr.place.3', 'mr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. Centre it on the notes the part plays, not on the instrument.',
+    goal: 'Start where we suggest you begin — one mic above the middle of the played span, or one of a spaced pair — clear of every mallet, then move the mic and see what changes.',
+    credit: { scenarios: ['mr.place.1', 'mr.place.2', 'mr.place.3', 'mr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. Centre it on the notes the part plays, not on the instrument.',
   },
   context: {
     title: 'Studio or live',
@@ -371,7 +371,7 @@ const symptoms: Symptom[] = [
   distortionSymptom(W),
 ];
 
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const COUNT_REASON: SetupReason = { id: 'r.count', label: 'A five-octave marimba always needs exactly two mics', role: 'wrong', feedback: 'The part’s range decides, not the instrument’s size.' };
 
 const setupTasks: SetupTask[] = [
@@ -553,7 +553,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real stand. The heights are starting points, not safety clearances — the mallets’ highest stroke decides.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: one mic about 60–100 cm above the middle of the PLAYED span, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an optional effect, a mic under the pipes. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 60–100 cm above the middle of the PLAYED span, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an optional effect, a mic under the pipes. Starting points, not rules.',
       separate: 'Height, the place along the keyboard and the angle are separate variables: change one at a time, with low, middle and high notes, rolls and chords.',
       clearance: 'Clearance comes first. The player’s whole reach along the keyboard sets it, not a still pose. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
       tendencies: 'Closer to one end favours it; higher blends the keyboard and adds room and spill. Under the pipes: a coloured, local sound. All tendencies to check by ear.',
@@ -693,7 +693,7 @@ export const I08_LESSON: MalletLesson = {
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every marimba, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a five-octave (or four-and-a-third) marimba with bar and pipe lengths worked out (the pipes as quarter wavelengths at A = 442 Hz, the lowest as boxes), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every marimba, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a five-octave (or four-and-a-third) marimba with bar and pipe lengths worked out (the pipes as quarter wavelengths at A = 442 Hz, the lowest as boxes), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy,
   mallet: words,
 };

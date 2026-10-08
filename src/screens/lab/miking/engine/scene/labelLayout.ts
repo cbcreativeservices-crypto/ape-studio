@@ -50,7 +50,7 @@ export function leaderLine(r: LabelRect, xf: ViewXform, lead: { u: number; v: nu
  *
  * COLLISION-AWARE PLACEMENT (strings art pass 2026-10-05; opt-in, so a label
  * with neither changes nothing):
- *   • `obstacles` (px) — the recommended starting points' boxes a lesson asks
+ *   • `obstacles` (px) — the suggested starting points' boxes a lesson asks
  *     its labels to keep off — count as already taken, like `avoid`;
  *   • a label's `alts` are other places it may sit, tried after its own
  *     place: the FULL words anywhere come before the short form, the short
@@ -86,7 +86,30 @@ export type LabelOpts = {
   maxY?: number;
 };
 
-type Fit = { u: number; v: number; text: string; short?: string; align: Align; alts?: readonly LabelPlace[]; at?: { u: number; v: number }; lead?: { u: number; v: number }; priority?: 1 | 2 | 3 };
+type Seg = { x1: number; y1: number; x2: number; y2: number };
+/** Two leader lines cross (an end shared within 2 px does not count). Pure. */
+export function segsCross(a: Seg, b: Seg): boolean {
+  const near = (x1: number, y1: number, x2: number, y2: number) => Math.hypot(x1 - x2, y1 - y2) < 2;
+  if (near(a.x1, a.y1, b.x1, b.y1) || near(a.x1, a.y1, b.x2, b.y2) || near(a.x2, a.y2, b.x1, b.y1) || near(a.x2, a.y2, b.x2, b.y2)) return false;
+  const d = (px: number, py: number, qx: number, qy: number, rx: number, ry: number) => (qx - px) * (ry - py) - (qy - py) * (rx - px);
+  const d1 = d(b.x1, b.y1, b.x2, b.y2, a.x1, a.y1);
+  const d2 = d(b.x1, b.y1, b.x2, b.y2, a.x2, a.y2);
+  const d3 = d(a.x1, a.y1, a.x2, a.y2, b.x1, b.y1);
+  const d4 = d(a.x1, a.y1, a.x2, a.y2, b.x2, b.y2);
+  return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+}
+/** A leader line runs through a label's box (sampled; pure). */
+export function segHitsRect(sg: Seg, r: PxRect): boolean {
+  const n = Math.max(2, Math.ceil(Math.hypot(sg.x2 - sg.x1, sg.y2 - sg.y1) / 2));
+  for (let i = 0; i <= n; i++) {
+    const x = sg.x1 + ((sg.x2 - sg.x1) * i) / n;
+    const y = sg.y1 + ((sg.y2 - sg.y1) * i) / n;
+    if (x > r.x0 + 1 && x < r.x1 - 1 && y > r.y0 + 1 && y < r.y1 - 1) return true;
+  }
+  return false;
+}
+
+type Fit = { u: number; v: number; text: string; short?: string; align: Align; alts?: readonly LabelPlace[]; at?: { u: number; v: number }; lead?: { u: number; v: number }; point?: { u: number; v: number }; priority?: 1 | 2 | 3 };
 
 export function fitLabels<T extends Fit>(
   labels: T[],
@@ -102,6 +125,11 @@ export function fitLabels<T extends Fit>(
   // label that would run under it takes its short form, or is dropped.
   const kept: PxRect[] = [...(avoid ? [avoid] : []), ...(obstacles ?? [])];
   const out: (T & { leader?: { u: number; v: number } })[] = [];
+  // Owner decision X6 (2026-10-08): in the level-of-detail layout no leader
+  // crosses another leader or runs through another label's words, and no
+  // label sits on a leader already drawn (B11's crossing lines, B17's U3 / D).
+  const labelRects: PxRect[] = [];
+  const segs: Seg[] = [];
   const rectOf = (p: LabelPlace, text: string): PxRect => {
     const W = labelWidth(text, scale, maxX);
     const x = xf.ox + p.u * xf.s;
@@ -147,14 +175,17 @@ export function fitLabels<T extends Fit>(
     // `lead` (the Lab 4 review's name) is the same as `at`.
     const at = l.at ?? l.lead;
     let done = false;
+    // A clean place first (no crossing); failing that, the place the layout
+    // found before this rule, so no label is lost to it (zooming in never
+    // shows fewer).
+    let strict = lod;
     const take = (p: LabelPlace, text: string, own: boolean) => {
       const r = rectOf(p, text);
       if (!clear(r)) return false;
-      kept.push(r);
       let leader: { u: number; v: number } | undefined;
       // A label set away from its part points back to it: to `at`, or (in
       // free space) to where the art wrote it, which names the part.
-      const anchor = at ?? (lod && !own ? { u: l.u, v: l.v } : undefined);
+      const anchor = at ?? (lod && !own ? l.point ?? { u: l.u, v: l.v } : undefined);
       if (anchor) {
         const ax = xf.ox + anchor.u * xf.s;
         const ay = xf.oy + anchor.v * xf.s;
@@ -163,16 +194,27 @@ export function fitLabels<T extends Fit>(
         const onGlass = !lod || (ax >= 0 && ax <= maxX && ay >= Math.max(0, minY) && ay <= maxY);
         if (!near && onGlass) leader = anchor;
       }
+      if (lod) {
+        if (strict && segs.some((sg) => segHitsRect(sg, r))) return false;
+        const line = leader ? leaderLine(r, xf, leader) : null;
+        if (strict && line && (segs.some((sg) => segsCross(sg, line)) || labelRects.some((k) => segHitsRect(line, k)))) return false;
+        if (line) segs.push(line);
+      }
+      kept.push(r);
+      labelRects.push(r);
       if (own && p === places[0] && text === l.text && !leader) placed.set(idx, l);
       else placed.set(idx, { ...l, text, u: p.u, v: p.v, align: p.align, ...(leader ? { leader } : {}) });
       return true;
     };
+    for (const pass of lod ? [true, false] : [false]) {
+    if (done) break;
+    strict = pass;
     for (const text of texts) {
       for (let i = 0; i < places.length && !done; i++) done = take(places[i], text, true);
       if (done) break;
     }
     if (!done && lod) {
-      const a = at ?? { u: l.u, v: l.v };
+      const a = at ?? l.point ?? { u: l.u, v: l.v };
       // A point off the glass (a pointer label at the drawing's edge, "←
       // PLAYER") is searched from the nearest point on the glass.
       const ax = Math.max(4, Math.min(maxX - 4, xf.ox + a.u * xf.s));
@@ -182,6 +224,7 @@ export function fitLabels<T extends Fit>(
         for (let i = 0; i < cands.length && !done; i++) done = take(cands[i], text, false);
         if (done) break;
       }
+    }
     }
   }
   // Back in the art's order (the scenes draw them in that order).

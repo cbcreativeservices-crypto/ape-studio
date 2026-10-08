@@ -4,7 +4,7 @@
  *
  *   rigs      main arrays (ArrayRig: the stand, the bar, the capsules)
  *   singles   support and spot mics, each on a boom stand from the floor
- *   zones     recommended starting points (blue, a box in the view)
+ *   zones     suggested starting points (blue, a box in the view)
  *   radiate   where each chosen section's sound leaves (blue arcs: WHERE,
  *             never how loud)
  *   dims      the first rig's height above the floor and its distance in

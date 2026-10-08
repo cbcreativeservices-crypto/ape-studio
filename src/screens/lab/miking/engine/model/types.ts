@@ -172,7 +172,7 @@ export type ZoneKind = 'sourced' | 'trial';
  *  round a drum's rim, from above. */
 export type ZoneDraw = { u0: number; u1: number; v0: number; v1: number; round?: boolean } | { cu: number; cv: number; r0: number; r1: number; a0: number; a1: number };
 /**
- * A RECOMMENDED STARTING POINT (owner ruling 2026-10-04). Learner-facing:
+ * A SUGGESTED STARTING POINT (owner ruling 2026-10-04). Learner-facing:
  * `label`, `band`, `tendency`, `checks` — plain starting-point words, no
  * source names. Internal record only (never shown): `kind`, `src`, `quote`,
  * every `prov`.

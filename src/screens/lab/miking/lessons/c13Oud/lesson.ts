@@ -42,9 +42,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the upper face, between the main rose and the neck — measured from the point the starting point names, clear of the player, then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from a named point. Distance, position and angle are separate things to try; listen to whole phrases, quiet and loud.',
+    goal: 'Start where we suggest you begin — the upper face, between the main rose and the neck — measured from the point the starting point names, clear of the player, then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from a named point. Distance, position and angle are separate things to try; listen to whole phrases, quiet and loud.',
   },
   context: {
     title: 'Studio or live',
@@ -312,9 +312,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A small stage with a frame drum beside the oud and a floor wedge in front. One channel for the oud; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser on the upper face, near the close end of the band, rear to the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point, aimed against the wedge, close enough to stand out from the drum.' },
-      { id: 'b', label: 'Instrument dynamic close by the main rose, angled down, rear to the wedge', ok: true, power: 'none', feedback: 'A recommended stage start; watch the rose’s boom, and keep clear of the risha.' },
-      { id: 'c', label: 'Small condenser closer to the face, about 20 cm, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A recommended closer start: more definition against the drum, more risha click.' },
+      { id: 'a', label: 'Small condenser on the upper face, near the close end of the band, rear to the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, aimed against the wedge, close enough to stand out from the drum.' },
+      { id: 'b', label: 'Instrument dynamic close by the main rose, angled down, rear to the wedge', ok: true, power: 'none', feedback: 'A suggested stage start; watch the rose’s boom, and keep clear of the risha.' },
+      { id: 'c', label: 'Small condenser closer to the face, about 20 cm, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested closer start: more definition against the drum, more risha click.' },
       { id: 'd', label: 'Small condenser 2 cm into the main rose, for the most low end', ok: false, power: 'phantom', feedback: 'That close, the rose booms unevenly, invites feedback — and the mic is in the risha’s way.' },
       { id: 'e', label: 'Small omni 1.5 m away, to hear the whole oud naturally', ok: false, power: 'phantom', feedback: 'On a stage beside a drum, an omni that far out hears the drum and the wedge as much as the oud.' },
     ],
@@ -326,8 +326,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, solo oud, a pleasing room. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 30–45 cm out from the upper face, aimed between the rose and the neck', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom. Then try a little farther back.' },
-      { id: 'b', label: 'Instrument dynamic about 20 cm from the face, between the roses', ok: true, power: 'none', feedback: 'A recommended closer start; it needs no phantom. Watch the proximity bass.' },
+      { id: 'a', label: 'Instrument dynamic 30–45 cm out from the upper face, aimed between the rose and the neck', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Then try a little farther back.' },
+      { id: 'b', label: 'Instrument dynamic about 20 cm from the face, between the roses', ok: true, power: 'none', feedback: 'A suggested closer start; it needs no phantom. Watch the proximity bass.' },
       { id: 'c', label: 'Small condenser on the upper face, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'Small condenser with an omni capsule, farther back in the room', ok: false, power: 'phantom', feedback: 'A nice idea in this room — but a condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting on the face under the strings', ok: false, power: 'none', feedback: 'Never rest a mic on the instrument: it damps the face, rattles and can mark the finish.' },

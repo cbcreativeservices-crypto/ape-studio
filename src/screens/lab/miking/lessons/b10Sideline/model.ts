@@ -1,5 +1,5 @@
 /**
- * B10 SIDELINE AND POST-EVENT INTERVIEWS — the recommended starting points
+ * B10 SIDELINE AND POST-EVENT INTERVIEWS — the suggested starting points
  * (charter §2 layer 1), on the standing guest (frame V) and the reporter
  * beside them; the voice family's zone builder (shared/voice/voiceZones).
  * Source keys: docs/labs/miking/commentators/SOURCES.md §0 and
@@ -39,7 +39,7 @@ const FLAGS = ['bcFlagOmni', 'bcFlagCard', 'bcFlagSuper'];
 const HAND: VoiceZoneSpec = {
   id: 'b10.hand',
   label: 'The handheld at the speaking mouth, under 15 cm',
-  band: 'After our research, here is where we recommend you begin: the handheld under about 15 cm (6 in) from the speaking mouth, a little below the breath, aimed at the mouth — moved there before the answer starts.',
+  band: 'After our research, here is where we suggest you begin: the handheld under about 15 cm (6 in) from the speaking mouth, a little below the breath, aimed at the mouth — moved there before the answer starts.',
   kind: 'sourced',
   src: 'S-SM58-UG',
   quote: 'Lips less than 15 cm (6 in.) away or touching the wind- screen, on axis (the handheld row of frame V; the B10 lesson L27 gives no number: "close enough to favor the speaker … out of the direct breath blast")',

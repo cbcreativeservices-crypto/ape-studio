@@ -56,9 +56,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a lav on the anchor’s sternum — then try a hidden lav, a boom outside the frame, a desk mic, and see what changes.',
-    credit: { scenarios: ['b2.place.1', 'b2.place.2', 'b2.place.3', 'b2.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. Where the mic is, its distance and its angle off the mouth are separate controls; consent, the picture and the clothes come first.',
+    goal: 'Start where we suggest you begin — a lav on the anchor’s sternum — then try a hidden lav, a boom outside the frame, a desk mic, and see what changes.',
+    credit: { scenarios: ['b2.place.1', 'b2.place.2', 'b2.place.3', 'b2.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Where the mic is, its distance and its angle off the mouth are separate controls; consent, the picture and the clothes come first.',
   },
   context: {
     title: 'Studio or live',
@@ -499,8 +499,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded seated interview in a quiet studio: an anchor and a guest, a two-shot, no loudspeakers.',
     setups: [
-      { id: 'a', label: 'A centred lav on each, on separate labelled channels', ok: true, power: 'phantom', feedback: 'A recommended start — check turns, the clothes and an overlap in the program.' },
-      { id: 'b', label: 'A boom just outside the frame for each voice, the lavs as fallbacks', ok: true, power: 'phantom', feedback: 'A recommended start — check the widest frame and keep each fallback on its own track.' },
+      { id: 'a', label: 'A centred lav on each, on separate labelled channels', ok: true, power: 'phantom', feedback: 'A suggested start — check turns, the clothes and an overlap in the program.' },
+      { id: 'b', label: 'A boom just outside the frame for each voice, the lavs as fallbacks', ok: true, power: 'phantom', feedback: 'A suggested start — check the widest frame and keep each fallback on its own track.' },
       { id: 'c', label: 'One boundary on the desk between them for both', ok: false, power: 'phantom', feedback: 'Shared and far from both mouths: less control, more room and papers.' },
       { id: 'd', label: 'The camera’s mic only, its gain turned up', ok: false, power: 'phantom', feedback: 'As far as the camera: the room comes up with the voices.' },
       { id: 'e', label: 'Both lavs hidden before any visible test', ok: false, power: 'phantom', feedback: 'Conceal only after the visible place works, and compare.' },
@@ -513,8 +513,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A public interview: an anchor and a guest at a desk, an audience and a PA, a broadcast program.',
     setups: [
-      { id: 'a', label: 'A centred lav each, the fewest open, the PA checked with the operator', ok: true, power: 'phantom', feedback: 'A recommended start — check the margin at a safe level.' },
-      { id: 'b', label: 'A gooseneck each, raised, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A recommended start — check the actual pattern against the PA’s place.' },
+      { id: 'a', label: 'A centred lav each, the fewest open, the PA checked with the operator', ok: true, power: 'phantom', feedback: 'A suggested start — check the margin at a safe level.' },
+      { id: 'b', label: 'A gooseneck each, raised, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A suggested start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'Every mic on the desk left open in case', ok: false, power: 'phantom', feedback: 'Each open mic hears the PA: less margin before feedback.' },
       { id: 'd', label: 'The boom and the lav both in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
       { id: 'e', label: 'Raise the mics until the PA rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Bring each to its working level only.' },
@@ -676,6 +676,6 @@ export const B02_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead booms rigged by qualified crew; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead booms rigged by qualified crew; never provoke feedback.',
   copy: B02_COPY,
 };

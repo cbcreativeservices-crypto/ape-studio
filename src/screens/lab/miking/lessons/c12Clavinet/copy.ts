@@ -68,7 +68,7 @@ export const CLAV_COPY: LessonCopy = {
     note: `Clearance comes first: the mic never touches the grille (it is drawn ${GRILLE_X} mm in front of the baffle), the stand cannot tip into the speaker, and nothing goes near a hot tube chassis.`,
     availableLead: 'Starting points for this mic and amp',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic on this amp, measured from the surface it names — the grille, or the open back. They are starting points, not rules: move from there and listen — there is no single right answer.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this amp, measured from the surface it names — the grille, or the open back. They are starting points, not rules: move from there and listen — there is no single right answer.',
       separate: 'Distance from the grille, position across the cone and angle are separate variables: change one at a time, and mark each position so you can return to it. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. The mic never touches the grille or a moving cone; the stand cannot fall into the speaker; nothing goes near a hot tube chassis; cables are taped where the player walks.',
       tendencies: 'Toward the centre of the speaker tends to bring more bite and edge; toward the edge, or turned off axis, a rounder sound; farther back, more cabinet and room. These are tendencies; amps, speakers and settings vary.',

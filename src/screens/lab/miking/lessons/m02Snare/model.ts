@@ -73,7 +73,7 @@ export const NEIGHBOURS = {
   kick: { c: L({ x: 0, y: 0, z: 0 }) },
 };
 
-/* ── RECOMMENDED STARTING POINTS (lesson table L21–L31, corrections S-01…S-04).
+/* ── SUGGESTED STARTING POINTS (lesson table L21–L31, corrections S-01…S-04).
  *  Learner-facing: label, band, tendency, checks. `kind`, `src`, `quote` and
  *  every `prov` are the internal record (owner ruling 2026-10-04). ── */
 

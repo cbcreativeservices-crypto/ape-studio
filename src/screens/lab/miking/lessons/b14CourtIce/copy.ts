@@ -37,7 +37,7 @@ export const B14_COPY: Partial<LessonCopy> = {
     note: 'The mics and the observers stay outside the line; only the source participant walks inside.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'After our research, each starting point is where we recommend you begin — from the outside zone, aimed at the contact height. Starting points, not rules. Experimentation is encouraged.',
+      intro: 'After our research, each starting point is where we suggest you begin — from the outside zone, aimed at the contact height. Starting points, not rules. Experimentation is encouraged.',
       separate: 'Distance, height, aim and the mic are separate variables; change one at a time.',
       clearance: 'Outside the line, out of the walking route and the camera line.',
       tendencies: 'Nearer tends to bring more detail and less room; off the axis, the tone changes. Tendencies, to check by ear.',

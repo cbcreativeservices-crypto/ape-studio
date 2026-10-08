@@ -1,5 +1,5 @@
 /**
- * F04 IMPACTS, LIQUIDS AND TEXTURES — the recommended starting points
+ * F04 IMPACTS, LIQUIDS AND TEXTURES — the suggested starting points
  * (charter §2 layer 1). No source gives a distance or a splash radius (F04
  * L21): every number is a DRAWING DEFAULT; the METHODS are sourced
  * (foley_impacts_liquids/SOURCES.md, GEOMETRY_PROPOSAL.md §2):

@@ -54,9 +54,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the omni at chest height between the two in a quiet place, or close to the speaking mouth when it is loud — then move it and see what changes.',
-    credit: { scenarios: ['b3.place.1', 'b3.place.2', 'b3.place.3', 'b3.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. The shared place is an easy start; the louder the place, the closer the mic goes to whoever is speaking. Clearance from faces and the lens comes first.',
+    goal: 'Start where we suggest you begin — the omni at chest height between the two in a quiet place, or close to the speaking mouth when it is loud — then move it and see what changes.',
+    credit: { scenarios: ['b3.place.1', 'b3.place.2', 'b3.place.3', 'b3.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The shared place is an easy start; the louder the place, the closer the mic goes to whoever is speaking. Clearance from faces and the lens comes first.',
   },
   context: {
     title: 'Street or live event',
@@ -485,7 +485,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded interview on a windy city street, one camera, the guest standing, ten minutes to set up.',
     setups: [
-      { id: 'a', label: 'The omni with a fitted fur, moved to whoever speaks', ok: true, power: 'none', feedback: 'A recommended start: close to each speaker, the wind covered — rehearse the handoff.' },
+      { id: 'a', label: 'The omni with a fitted fur, moved to whoever speaks', ok: true, power: 'none', feedback: 'A suggested start: close to each speaker, the wind covered — rehearse the handoff.' },
       { id: 'b', label: 'A cardioid handheld with a foam, re-aimed each turn', ok: true, power: 'none', feedback: 'A start that can pass if the reporter aims well — check wind and pops at that distance.' },
       { id: 'c', label: 'The camera’s own mic, from the tripod', ok: false, power: 'none', feedback: 'Far from both voices on a windy street: the street wins.' },
       { id: 'd', label: 'The omni shared, the bare grille only', ok: false, power: 'none', feedback: 'On a windy street a bare grille rumbles and the shared place hears the street.' },
@@ -499,7 +499,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live interview at an outdoor event, a local PA on a pole nearby, the program on air.',
     setups: [
-      { id: 'a', label: 'A cardioid handheld close, its rejection toward the PA', ok: true, power: 'none', feedback: 'A recommended start: close and aimed — bring it up only to its working level.' },
+      { id: 'a', label: 'A cardioid handheld close, its rejection toward the PA', ok: true, power: 'none', feedback: 'A suggested start: close and aimed — bring it up only to its working level.' },
       { id: 'b', label: 'The omni close to whoever speaks, kept out of the PA', ok: true, power: 'none', feedback: 'A fair start for the broadcast if the PA does not need it — check the routing.' },
       { id: 'c', label: 'The omni shared, fed loud into the PA', ok: false, power: 'none', feedback: 'Far from each mouth and loud in the PA: feedback comes first.' },
       { id: 'd', label: 'The return on a speaker beside the pair', ok: false, power: 'none', feedback: 'The open mic hears it again: use an earpiece.' },
@@ -662,6 +662,6 @@ export const B03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
   copy: B03_COPY,
 };

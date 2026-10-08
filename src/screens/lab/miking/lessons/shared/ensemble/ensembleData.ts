@@ -78,7 +78,7 @@ export type EnsembleSetup = {
   /** The view it opens in. */
   view?: StageView;
 };
-/** A recommended starting point for the MAIN ARRAY's centre (the Placement Studio). */
+/** A suggested starting point for the MAIN ARRAY's centre (the Placement Studio). */
 export type PlaceZone = { id: string; label: string; band: string; box: { min: Vec3; max: Vec3 }; variants?: readonly string[]; tendency: string };
 export type EnsembleData = {
   /** variant → its seating preset. */

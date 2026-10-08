@@ -1,5 +1,5 @@
 /**
- * F10 SPATIAL FIELD PICKUP — the recommended starting points (charter §2
+ * F10 SPATIAL FIELD PICKUP — the suggested starting points (charter §2
  * layer 1) and the lesson's STARTING SETUPS drawn whole (its own page: an
  * array is drawn with every capsule, never as one engine mic). Frame F10
  * (geometry.ts). Research: docs/labs/miking/spatial_field/SOURCES.md,

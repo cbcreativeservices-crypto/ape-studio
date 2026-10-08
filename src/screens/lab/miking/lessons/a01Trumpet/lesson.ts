@@ -48,9 +48,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — in front of the bell, a little off its axis, aimed toward it, clear of the player — then move the mic and see what changes.',
-    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the bell rim’s centre — not a rule. The angle to the bell’s axis and the distance are separate tone controls, and clearance from the bell, the mutes and the hands comes first.',
+    goal: 'Start where we suggest you begin — in front of the bell, a little off its axis, aimed toward it, clear of the player — then move the mic and see what changes.',
+    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s centre — not a rule. The angle to the bell’s axis and the distance are separate tone controls, and clearance from the bell, the mutes and the hands comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -413,8 +413,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a trumpet overdub, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Dynamic about 30–50 cm from the bell, a little off its axis', ok: true, power: 'none', feedback: 'A recommended starting point: a balanced horn — then small changes by ear.' },
-      { id: 'b', label: 'Condenser about 60–120 cm in front, aimed at the bell’s edge', ok: true, power: 'phantom', feedback: 'A recommended starting point for a more open view in a good room — check it takes the peaks.' },
+      { id: 'a', label: 'Dynamic about 30–50 cm from the bell, a little off its axis', ok: true, power: 'none', feedback: 'A suggested starting point: a balanced horn — then small changes by ear.' },
+      { id: 'b', label: 'Condenser about 60–120 cm in front, aimed at the bell’s edge', ok: true, power: 'phantom', feedback: 'A suggested starting point for a more open view in a good room — check it takes the peaks.' },
       { id: 'c', label: 'A mic right inside the bell, for the most detail', ok: false, power: 'none', feedback: 'No mic goes in the bell: it takes the full blast, risks overload and blocks the mutes.' },
       { id: 'd', label: 'Two close mics either side of the bell, for stereo', ok: false, power: 'phantom', feedback: 'Stereo is not a requirement for one horn; two close mics move the image as it turns.' },
       { id: 'e', label: 'A mic beside the valves, out of the bell’s way', ok: false, power: 'none', feedback: 'The valves are where the hands work — and the sound leaves the bell, not the valves.' },
@@ -427,8 +427,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a trumpet soloist with drums and a singer, moving and turning, with a cup mute in one tune. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge', ok: true, power: 'phantom', feedback: 'A recommended starting point that rides on the bell — check the fit, the cup mute and the cable.' },
-      { id: 'b', label: 'Dynamic about 30 cm away, a little off axis, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A recommended starting point if the player keeps to an agreed zone — check the cup mute clears it.' },
+      { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit, the cup mute and the cable.' },
+      { id: 'b', label: 'Dynamic about 30 cm away, a little off axis, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone — check the cup mute clears it.' },
       { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the horn.' },
       { id: 'd', label: 'A generic clamp tightened onto the bell, then taped', ok: false, power: 'phantom', feedback: 'Never an unapproved clamp on a bell or its finish: use a clip made for it, with the player’s agreement.' },
       { id: 'e', label: 'A mic aimed straight at the singer’s mic, to share it', ok: false, power: 'none', feedback: 'That puts the bell at the singer’s ear and mic — a layout problem, not a mic choice.' },
@@ -607,6 +607,6 @@ export const A01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s centre to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s centre to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: A01_COPY,
 };

@@ -64,7 +64,7 @@ const HAND: HandSpec = {
     label: 'The gong in its frame with a small condenser placed for you',
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself.',
     pieces: (z: DocumentedZone) => [
-      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin with a gong — a useful overall view, not a rule, and not a promise of a sound.`, cell: 3 },
+      { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a gong — a useful overall view, not a rule, and not a promise of a sound.`, cell: 3 },
       { title: 'MEASURED FROM', text: 'From the gong’s face while it hangs at rest, to the mic’s FRONT — rounded to ≈ 5 mm. The readout also says how far the mic is off the face’s centre line.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
       { title: 'OFF THE CENTRE LINE', text: 'Close to the line straight out of the face’s centre, at about the height where it is played — facing the broad radiating surface.', cell: 1 },
@@ -82,7 +82,7 @@ const HAND: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from the gong’s face at rest (or, for the boss view, from the boss). They are starting points, not rules: move from there and listen — every gong, mallet, player and room is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the gong’s face at rest (or, for the boss view, from the boss). They are starting points, not rules: move from there and listen — every gong, mallet, player and room is different.',
     'A change in angle or distance also changes the room in the sound: compare the same passage at a similar level, one change at a time. Do not assume the strongest point is the centre, or that both faces sound the same.',
     'A tam-tam: compare a view that hears a broad area with a deliberately closer colour before deciding what is “natural”. A bossed gong: hear the player’s stroke acoustically first, then aim at the boss from a safe offset and compare a broader front view.',
   ],

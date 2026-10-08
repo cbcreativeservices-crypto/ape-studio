@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — in front of the plate (close and dead centre, or about 30–40 cm out just below the top edge, angled down), or at the port — outside both hands, the knees and the way off the box.',
-    credit: { scenarios: ['caj.place.1', 'caj.place.2', 'caj.place.3', 'caj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — in front of the plate (close and dead centre, or about 30–40 cm out just below the top edge, angled down), or at the port — outside both hands, the knees and the way off the box.',
+    credit: { scenarios: ['caj.place.1', 'caj.place.2', 'caj.place.3', 'caj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Front for attack and slap, port for low end and air — two working examples, not an average. Outside the hands, legs, rocking box and exit.',
   },
   context: {
@@ -534,7 +534,7 @@ export const I02_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the cajón') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every cajón, player, floor and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a box cajón with a seated player, the plate’s flex drawn as a shape, a front-port model with a vertical set-back plate (real ones slant), mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every cajón, player, floor and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a box cajón with a seated player, the plate’s flex drawn as a shape, a front-port model with a vertical set-back plate (real ones slant), mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: CAJ_COPY,
   sp: {
     strikeTitle: 'Strike to sound',

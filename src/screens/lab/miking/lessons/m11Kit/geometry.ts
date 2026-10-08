@@ -1,7 +1,7 @@
 /**
  * M11 COMPLETE DRUM-KIT SETUPS — where things are: the shared kit as one
  * scene (wide enough for a low room pair in front of the kick), the same
- * stage monitors as every Lab 1 lesson, and the two recommended starting
+ * stage monitors as every Lab 1 lesson, and the two suggested starting
  * points the two-mic page pairs: a kick mic just outside the front head and
  * an overhead over the snare (the overheads lesson's own zone).
  */

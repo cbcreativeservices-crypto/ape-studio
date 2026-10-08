@@ -1,5 +1,5 @@
 /**
- * A06 FLUTE — the recommended starting points (charter §2 layer 1). Source
+ * A06 FLUTE — the suggested starting points (charter §2 layer 1). Source
  * keys point into docs/labs/miking/flute/SOURCES.md (the EDGE-TONE family's
  * keys); corrections A6-01 … (CORRECTIONS_LOG).
  *

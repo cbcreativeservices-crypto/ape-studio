@@ -134,7 +134,7 @@ function B13Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      `After our research, each blue starting point is where we recommend you begin — from the approved mark, the axis on a named target, at a height you log. They are starting points, not rules: compare one change at a time, and use your ears. Experimentation is encouraged. The dish is a hand-held collector here: its axis about ${DISH_H.toFixed(1)} m up is only the drawing’s.`,
+      `After our research, each blue starting point is where we suggest you begin — from the approved mark, the axis on a named target, at a height you log. They are starting points, not rules: compare one change at a time, and use your ears. Experimentation is encouraged. The dish is a hand-held collector here: its axis about ${DISH_H.toFixed(1)} m up is only the drawing’s.`,
       'Approval comes first: never into the offset, the play or a route to get closer — distance is the plan’s to solve, not the operator’s legs.',
     ),
   ];

@@ -45,8 +45,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — facing the holes a third of the way up from the bell — then move the mic and see what changes.',
-    credit: { scenarios: ['ob.place.1', 'ob.place.2', 'ob.place.3', 'ob.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — facing the holes a third of the way up from the bell — then move the mic and see what changes.',
+    credit: { scenarios: ['ob.place.1', 'ob.place.2', 'ob.place.3', 'ob.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'Each starting point serves a goal: close for a natural spot, a foot away for balance, near the bell for a bright live sound, farther for the room. Distance, height and angle are separate things to try; clearance comes first.',
   },
   context: {
@@ -333,8 +333,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a solo oboe, a good quiet room. One channel, phantom power available.',
     setups: [
-      { id: 'a', label: 'Small condenser 15–20 cm from the holes, a third of the way up from the bell', ok: true, power: 'phantom', feedback: 'A recommended starting point for a natural spot sound — then small changes by ear.' },
-      { id: 'b', label: 'Small condenser about a foot from the sound holes, facing them', ok: true, power: 'phantom', feedback: 'A recommended starting point for a balanced oboe.' },
+      { id: 'a', label: 'Small condenser 15–20 cm from the holes, a third of the way up from the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for a natural spot sound — then small changes by ear.' },
+      { id: 'b', label: 'Small condenser about a foot from the sound holes, facing them', ok: true, power: 'phantom', feedback: 'A suggested starting point for a balanced oboe.' },
       { id: 'c', label: 'A mic a few centimetres from the reed, where the sound is made', ok: false, power: 'phantom', feedback: 'At the reed it hears breath and edge and sits in the player’s way.' },
       { id: 'd', label: 'A mic pointed straight into the bell from close up', ok: false, power: 'phantom', feedback: 'A bell-only view favours the lowest notes and misses the holes.' },
       { id: 'e', label: 'Two close mics, at the bell and the upper joint, for stereo', ok: false, power: 'phantom', feedback: 'Stereo is not needed for one oboe; two close views move as the player moves.' },
@@ -347,8 +347,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: an oboist in a band with drums and amps, a wedge in front. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A small condenser a few centimetres from the bell, a little off its axis', ok: true, power: 'phantom', feedback: 'A recommended starting point for a bright, isolated live sound — check the low notes against the rest.' },
-      { id: 'b', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the oboe — check the clip’s fit and the cable.' },
+      { id: 'a', label: 'A small condenser a few centimetres from the bell, a little off its axis', ok: true, power: 'phantom', feedback: 'A suggested starting point for a bright, isolated live sound — check the low notes against the rest.' },
+      { id: 'b', label: 'A miniature on a clip above the bell, aimed back up at the keys', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the oboe — check the clip’s fit and the cable.' },
       { id: 'c', label: 'A small condenser a metre in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the wedge more than the oboe.' },
       { id: 'd', label: 'A clip on the reed’s staple, as close as the sound gets', ok: false, power: 'phantom', feedback: 'Nothing goes on the reed: it is at the player’s lips and is fragile.' },
       { id: 'e', label: 'An omni by the holes, turned up until it clears the band', ok: false, power: 'phantom', feedback: 'An omni rejects nothing; turned up, it brings the stage and feedback with it.' },
@@ -469,7 +469,7 @@ const copy: Partial<LessonCopy> = {
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, clip or cable anywhere the reed, the hands or the bell can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the hole field, the bell, or the middle of the oboe. They are starting points for different goals, not rules. Move from there and listen: there is no single right answer.',
+      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the hole field, the bell, or the middle of the oboe. They are starting points for different goals, not rules. Move from there and listen: there is no single right answer.',
       separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the lowest note of the part, the top and a fast passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the reed and face, the fingers, the keys and the bell as it pivots. The engine stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a natural balance; near the bell, brighter and more isolated with the lowest notes forward; very close to the keys, clicks; farther, more room. A directional mic up close also lifts the lows. These are tendencies, and oboes vary.',
@@ -617,7 +617,7 @@ export const A09A_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every oboe, reed, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every oboe, reed, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'An oboe on its side, keys toward you, its air column drawn open',

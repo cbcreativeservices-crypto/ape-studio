@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 25–50 cm from the block, outside the mallet’s path — from above toward the playing surface, or in front toward the opening.',
-    credit: { scenarios: ['wb.place.1', 'wb.place.2', 'wb.place.3', 'wb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 25–50 cm from the block, outside the mallet’s path — from above toward the playing surface, or in front toward the opening.',
+    credit: { scenarios: ['wb.place.1', 'wb.place.2', 'wb.place.3', 'wb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Two viewpoints to compare — the playing surface and the opening — both outside the mallet’s path, never into the slot.',
   },
   context: {
@@ -538,7 +538,7 @@ export const I05C_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the woodblock') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every block, mallet, support and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a woodblock on foam or in the hand, the wall’s flex drawn as a shape, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every block, mallet, support and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a woodblock on foam or in the hand, the wall’s flex drawn as a shape, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: WB_COPY,
   sp: {
     strikeTitle: 'Strike to sound',

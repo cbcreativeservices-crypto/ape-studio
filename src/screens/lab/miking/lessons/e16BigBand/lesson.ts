@@ -37,7 +37,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — closer, farther, higher — and see how the reeds and the rear brass trade places.',
-    credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the band, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the band, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Close to the front row the reeds are prominent and the rear brass distant; a higher view, a little farther out in front, evens the rows. Compare at matched level, one change at a time; the band’s balance comes first.',
   },
   context: {
@@ -555,7 +555,7 @@ export const E16_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E16_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Big bands are recorded and reinforced in more than one way: a main pair with rhythm support, section mics, a mic on every horn. Choose from the room and the music, not a channel count. Every band, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Big bands are recorded and reinforced in more than one way: a main pair with rhythm support, section mics, a mic on every horn. Choose from the room and the music, not a channel count. Every band, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing.',
   copy: { words: { ...ensembleWords('big band'), sheet: 'For a real band, with the bandleader’s, the players’ and the venue’s agreement. Two positions on the same rows: write tendencies in words — what you heard, not a promised result.' } },
   ensemble: {
     seatings: { rows: 'bb.standard', horseshoe: 'bb.horseshoe' },
@@ -577,11 +577,11 @@ export const E16_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands; cables protected from chairs, pedals, slides, mutes and access routes. Approved risers, suspended arrays and structural attachments are the venue’s qualified crew’s work. Set levels on the strongest planned passage and follow the venue’s hearing practice; follow each ribbon’s own manual on air and power; never sustain feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a big band: one main pair in front of the horns, from an elevated view — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a big band: one main pair in front of the horns, from an elevated view — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the band, clear of the soloists’ path and the audience’s way; its cable dressed flat and out of the walkways.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the main pair — about 2–3 m in front of the horn rows, from an elevated view; in the studio horseshoe, inside the U at about head height. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the main pair — about 2–3 m in front of the horn rows, from an elevated view; in the studio horseshoe, inside the U at about head height. Places to start and compare, not a best place.',
       'Change one variable at a time — fore and aft, then the height — and compare quiet reeds and a brass peak at matched level.',
       'The band sets its own balance; the pair captures it. Move the whole pair; a different spacing or angle is a different method.',
     ],

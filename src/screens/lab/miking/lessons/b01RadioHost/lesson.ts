@@ -52,9 +52,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a broadcast dynamic about 10–15 cm from the lips in the studio, closer on a live show — then move the mic and see what changes.',
-    credit: { scenarios: ['b1.place.1', 'b1.place.2', 'b1.place.3', 'b1.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the host, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. Distance, height and the angle off the mouth’s axis are separate tone controls; clearance from the face, the sight line and the papers comes first.',
+    goal: 'Start where we suggest you begin — a broadcast dynamic about 10–15 cm from the lips in the studio, closer on a live show — then move the mic and see what changes.',
+    credit: { scenarios: ['b1.place.1', 'b1.place.2', 'b1.place.3', 'b1.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the host, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Distance, height and the angle off the mouth’s axis are separate tone controls; clearance from the face, the sight line and the papers comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -485,8 +485,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A two-host podcast in a small, fairly quiet room with a hard desk, both hosts on headphones.',
     setups: [
-      { id: 'a', label: 'A broadcast dynamic each on an arm, about 10–15 cm, rears toward each other', ok: true, power: 'none', feedback: 'A recommended start: close, each on its own channel — check the overlap in mono and the desk’s bounce.' },
-      { id: 'b', label: 'A screened condenser each, about 15–20 cm, a soft cloth on the desk', ok: true, power: 'phantom', feedback: 'A recommended start for a quiet room — check the room and the other host in each mic.' },
+      { id: 'a', label: 'A broadcast dynamic each on an arm, about 10–15 cm, rears toward each other', ok: true, power: 'none', feedback: 'A suggested start: close, each on its own channel — check the overlap in mono and the desk’s bounce.' },
+      { id: 'b', label: 'A screened condenser each, about 15–20 cm, a soft cloth on the desk', ok: true, power: 'phantom', feedback: 'A suggested start for a quiet room — check the room and the other host in each mic.' },
       { id: 'c', label: 'One mic between them in the middle of the desk', ok: false, power: 'phantom', feedback: 'Far from both mouths: more room, more desk, no way to balance the two voices.' },
       { id: 'd', label: 'Each mic low over the desk, aimed up at the chin', ok: false, power: 'none', feedback: 'Low over the desk it hears the bounce strongly, and the chin is not where the voice leaves.' },
       { id: 'e', label: 'A loudspeaker on the desk so both hosts can hear', ok: false, power: 'none', feedback: 'A loudspeaker near open mics feeds the program back in. Use headphones.' },
@@ -499,8 +499,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live talk show: one host at a desk on a stage, an audience and a PA, a stream and a recorder.',
     setups: [
-      { id: 'a', label: 'A broadcast dynamic close on an arm, its rejection toward the PA', ok: true, power: 'none', feedback: 'A recommended start: close enough to stay ahead of the PA — check the margin with the PA on.' },
-      { id: 'b', label: 'A supercardioid close, the PA a little to one side of its rear', ok: true, power: 'none', feedback: 'A recommended start — check the actual pattern against the PA’s place.' },
+      { id: 'a', label: 'A broadcast dynamic close on an arm, its rejection toward the PA', ok: true, power: 'none', feedback: 'A suggested start: close enough to stay ahead of the PA — check the margin with the PA on.' },
+      { id: 'b', label: 'A supercardioid close, the PA a little to one side of its rear', ok: true, power: 'none', feedback: 'A suggested start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'A condenser farther back, for a more natural voice', ok: false, power: 'phantom', feedback: 'Farther back, it hears more of the PA against the voice: less margin before feedback.' },
       { id: 'd', label: 'Every spare mic on the desk left open in case', ok: false, power: 'none', feedback: 'Each open mic adds the PA and the room. Keep only the needed mics open.' },
       { id: 'e', label: 'Raise the host’s mic until it rings, then back off', ok: false, power: 'none', feedback: 'Never provoke feedback. Bring each mic to its working level only.' },
@@ -662,6 +662,6 @@ export const B01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Live: never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Live: never provoke feedback.',
   copy: B01_COPY,
 };

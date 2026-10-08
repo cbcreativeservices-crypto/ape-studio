@@ -42,8 +42,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 30–60 cm from the middle of the playing area — then try one egg, two eggs close together and two hands apart, and see what changes.',
-    credit: { scenarios: ['egg.place.1', 'egg.place.2', 'egg.place.3', 'egg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 30–60 cm from the middle of the playing area — then try one egg, two eggs close together and two hands apart, and see what changes.',
+    credit: { scenarios: ['egg.place.1', 'egg.place.2', 'egg.place.3', 'egg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'One mic outside the motion, about 30–60 cm from the middle of the playing area. Two eggs close together: one mic between them. Hands wide apart: perhaps one each — if the arrangement needs it.',
   },
   context: {
@@ -376,7 +376,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A quiet studio overdub: one egg, a soft part, a pleasant room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 40 cm in front of the playing area, aimed into it', ok: true, power: 'phantom', feedback: 'The recommended start, outside the motion; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 40 cm in front of the playing area, aimed into it', ok: true, power: 'phantom', feedback: 'The suggested start, outside the motion; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 50 cm away, a little higher, angled down', ok: true, power: 'phantom', feedback: 'Also fair: a different balance of egg, hand and room — compare by ear.' },
       { id: 'c', label: 'A mic 8 cm from the egg so the soft part is loud enough', ok: false, power: 'phantom', feedback: 'Inside the motion — and very close, every stroke jumps and handling noise rises. Choose the egg or the gain instead.' },
       { id: 'd', label: 'A clip-on mic taped to the egg', ok: false, power: 'phantom', feedback: 'No mic on a small egg without a purpose-built, safe system and the player’s agreement.' },
@@ -538,7 +538,7 @@ export const I03B_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the eggs') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every egg, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: an egg shaker in one or two hands, a few beads standing for the grains, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every egg, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: an egg shaker in one or two hands, a few beads standing for the grains, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: EGG_COPY,
   sp: {
     strikeTitle: 'Stroke to sound',

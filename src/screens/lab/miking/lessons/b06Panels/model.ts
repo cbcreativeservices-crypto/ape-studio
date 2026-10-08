@@ -1,5 +1,5 @@
 /**
- * B06 PANELS, PRESS CONFERENCES AND GROUPS — the recommended starting
+ * B06 PANELS, PRESS CONFERENCES AND GROUPS — the suggested starting
  * points (charter §2 layer 1), on frame V (the focus panelist, the
  * presenter) and the other talkers' anchors (shared/broadcast). Source keys:
  * docs/labs/miking/panels_press/SOURCES.md and the Lab 7a register
@@ -37,7 +37,7 @@ const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const GOOSE: VoiceZoneSpec = {
   id: 'b6.goose',
   label: 'A gooseneck about 20–30 cm, below the mouth',
-  band: 'After our research, here is where we recommend you begin: a gooseneck in front of each panelist, its capsule about 20–30 cm (8–12 in) from the lips and a little below the mouth’s line, aimed across their normal speaking arc — the base away from the papers.',
+  band: 'After our research, here is where we suggest you begin: a gooseneck in front of each panelist, its capsule about 20–30 cm (8–12 in) from the lips and a little below the mouth’s line, aimed across their normal speaking arc — the base away from the papers.',
   kind: 'trial',
   src: 'LESSON-B06',
   quote: 'One per seated talker where practical; bring the capsule toward the mouth, aim across the normal speaking arc, keep the base away from page turning and knocks (the lesson L12; PRACTICE)',

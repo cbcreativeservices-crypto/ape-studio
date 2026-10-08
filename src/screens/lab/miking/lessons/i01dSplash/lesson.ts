@@ -44,8 +44,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — above the splash on the side away from the player, or under it on the arm — clear of the stick and the swing, then move the mic.',
-    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points (switch MOUNT for the splash on the crash), and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — above the splash on the side away from the player, or under it on the arm — clear of the stick and the swing, then move the mic.',
+    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the splash on the crash), and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'No distance is published for a splash: a zone is a place to begin, measured from the plate. Above, or underneath on the arm; on a crash, above both. Clearance comes first.',
   },
   context: {
@@ -329,9 +329,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage. One splash cue keeps getting lost. The splash is on its arm over the 10 in tom. One spare channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A small condenser 15–25 cm above the splash on the far side, aimed at its bow', ok: true, power: 'phantom', feedback: 'A recommended starting point — with the power it needs.' },
-      { id: 'b', label: 'A tiny clip-on condenser held on the arm, 8–13 cm under the splash, aimed up', ok: true, power: 'phantom', feedback: 'A recommended starting point, out of the stick’s way, its rear toward the floor.' },
-      { id: 'c', label: 'A small dynamic above the splash on the far side', ok: true, power: 'none', feedback: 'A recommended starting point that needs no power.' },
+      { id: 'a', label: 'A small condenser 15–25 cm above the splash on the far side, aimed at its bow', ok: true, power: 'phantom', feedback: 'A suggested starting point — with the power it needs.' },
+      { id: 'b', label: 'A tiny clip-on condenser held on the arm, 8–13 cm under the splash, aimed up', ok: true, power: 'phantom', feedback: 'A suggested starting point, out of the stick’s way, its rear toward the floor.' },
+      { id: 'c', label: 'A small dynamic above the splash on the far side', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power.' },
       { id: 'd', label: 'A mic between the splash and the crash above it, level with both edges', ok: false, power: 'none', feedback: 'That is where both plates swing. Start above or under the splash.' },
       { id: 'e', label: 'A mic taped to the splash’s arm right under the plate, touching it', ok: false, power: 'none', feedback: 'Never touching the cymbal: it moves and rings. Keep clear of it.' },
     ],
@@ -344,12 +344,12 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session. The splash sits on top of the 18 in crash; the overheads carry it well. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No splash mic: the overheads already carry the stacked cymbals', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic above the splash on the far side, hearing both plates', ok: true, power: 'none', feedback: 'A recommended starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic above the splash on the far side, hearing both plates', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
       { id: 'c', label: 'A small condenser above the splash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
       { id: 'd', label: 'A clip-on condenser between the splash and the crash', ok: false, power: 'phantom', feedback: 'No room there, and no phantom power on this input.' },
       { id: 'e', label: 'Take the splash off the crash so a mic can go between them', ok: false, power: 'none', feedback: 'The stack is the player’s choice. Mic it as it is.' },
     ],
-    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a recommended starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the splash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
+    reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the splash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'Two plans pass: no splash mic, or a dynamic above the stack. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
   },
 ];

@@ -22,7 +22,7 @@
  *                    for, its limit → checks
  *   PLACEMENT        the worked example read piece by piece → START from a
  *                    setup, MOVE the rig and TURN its front, rest it in two
- *                    recommended starting points → how they work → checks
+ *                    suggested starting points → how they work → checks
  *   CHANNELS AND     the A-FORMAT DRILL (four tracks in order, matched and
  *   DESTINATIONS     linked gain, the output convention chosen, no
  *   (context)        full-range channel in the LFE — where a test source
@@ -830,7 +830,7 @@ function F10Placement(p: PageProps) {
   const axisVal = axis === 'h' ? h : axis === 'x' ? c.x : c.z;
   const withAxis = (q: Vec3, val: number) => (axis === 'h' ? v3(q.x, -val, q.z) : axis === 'x' ? v3(val, q.y, q.z) : v3(q.x, q.y, val));
   const snap = (val: number) => Math.round((A.lo + val * (A.hi - A.lo)) / 50) * 50;
-  const nowWords = `The ${start ? start.title.toLowerCase() : 'rig'}: ${fmtMFt(h)} up, ${c.x >= 0 ? `${fmtM(c.x)} toward the front` : `${fmtM(-c.x)} back`}${Math.abs(c.z) > 50 ? `, ${fmtM(Math.abs(c.z))} to the ${c.z < 0 ? 'left' : 'right'}` : ''}; the front source ${fmtM(dSrc)} away, ${Math.round(frontOff)}° off its front.${zone ? ` At a recommended starting point: ${zone.label}.` : ' Not at a recommended starting point.'}${blocked ? ` Blocked: it would stand in ${blocked}.` : ''}`;
+  const nowWords = `The ${start ? start.title.toLowerCase() : 'rig'}: ${fmtMFt(h)} up, ${c.x >= 0 ? `${fmtM(c.x)} toward the front` : `${fmtM(-c.x)} back`}${Math.abs(c.z) > 50 ? `, ${fmtM(Math.abs(c.z))} to the ${c.z < 0 ? 'left' : 'right'}` : ''}; the front source ${fmtM(dSrc)} away, ${Math.round(frontOff)}° off its front.${zone ? ` At a suggested starting point: ${zone.label}.` : ' Not at a suggested starting point.'}${blocked ? ` Blocked: it would stand in ${blocked}.` : ''}`;
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -936,7 +936,7 @@ function F10Placement(p: PageProps) {
             )}
           </FieldStage>
         ),
-        badge: 'Blue = recommended starting points for the rig’s centre · blue line = the path to the front source · calculated from the drawing',
+        badge: 'Blue = suggested starting points for the rig’s centre · blue line = the path to the front source · calculated from the drawing',
         bezel: [
           { k: 'HEIGHT', v: fmtM(h), flex: 0.8 },
           { k: 'TO SOURCE', v: fmtM(dSrc), flex: 0.9 },
@@ -954,10 +954,10 @@ function F10Placement(p: PageProps) {
           {blocked ? <Note tone="warn">{`It would stand in ${blocked}. Keep the way clear and people safe: move it.`}</Note> : null}
           {zone ? (
             <Card>
-              <Point title={`RECOMMENDED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>
+              <Point title={`SUGGESTED STARTING POINT · ${zone.label.toUpperCase()}`}>{`${zone.band} ${zone.tendency}`}</Point>
             </Card>
           ) : (
-            <Body>{`Not at a recommended starting point. Here: ${zones.map((z) => z.label).join('; ')}.`}</Body>
+            <Body>{`Not at a suggested starting point. Here: ${zones.map((z) => z.label).join('; ')}.`}</Body>
           )}
           {frontOff > 20 ? <Note>{`Its front is ${Math.round(frontOff)}° away from the front source. A spatial rig keeps its front to the scene front — turn the rig, not the scene; log the front either way.`}</Note> : null}
           <Body>{`Activity: zones rested in, clear of the way — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
@@ -972,7 +972,7 @@ function F10Placement(p: PageProps) {
       layout: 'read',
       body: (
         <>
-          <Body>After our research, each blue zone is where we recommend you begin for that point of view — measured from the ground, facing the scene front. They are starting points, not rules: walk and listen at other places, and use your ears and the place. Experimentation is encouraged.</Body>
+          <Body>After our research, each blue zone is where we suggest you begin for that point of view — measured from the ground, facing the scene front. They are starting points, not rules: walk and listen at other places, and use your ears and the place. Experimentation is encouraged.</Body>
           <Body>Height, place and facing are separate decisions; change one at a time and log each — the front, the height, the channel map — with the take.</Body>
           <Note tone="warn">{`Clearance comes first: never in a public route, the stand weighted against wind, nothing within 3 m (10 ft) of a power line, and inside at once if you hear thunder — ${SAFETY_WORDS.lightning.split(' — ')[0].toLowerCase()}.`}</Note>
         </>

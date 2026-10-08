@@ -49,9 +49,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — a screened condenser about 15 cm from the lips on the mouth’s axis in the studio, a handheld within about 10 cm on stage — then move the mic and see what changes.',
-    credit: { scenarios: ['lv.place.1', 'lv.place.2', 'lv.place.3', 'lv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singer, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin, measured from the lips — not a rule. Distance, height and the angle off the mouth’s axis are separate tone controls, and clearance from the face comes first.',
+    goal: 'Start where we suggest you begin — a screened condenser about 15 cm from the lips on the mouth’s axis in the studio, a handheld within about 10 cm on stage — then move the mic and see what changes.',
+    credit: { scenarios: ['lv.place.1', 'lv.place.2', 'lv.place.3', 'lv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singer, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Distance, height and the angle off the mouth’s axis are separate tone controls, and clearance from the face comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -446,8 +446,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Studio, a soul ballad: breathy verses, a big chorus. A quiet room, phantom power available, the singer on headphones.',
     setups: [
-      { id: 'a', label: 'Condenser about 15 cm from the lips, on the axis, a screen in front', ok: true, power: 'phantom', feedback: 'A recommended starting point: clear and direct — check the chorus for headroom and pops.' },
-      { id: 'b', label: 'Condenser about 25 cm out, on the axis, the room joining in', ok: true, power: 'phantom', feedback: 'A recommended starting point for a more blended sound in a good room — check breath and level changes.' },
+      { id: 'a', label: 'Condenser about 15 cm from the lips, on the axis, a screen in front', ok: true, power: 'phantom', feedback: 'A suggested starting point: clear and direct — check the chorus for headroom and pops.' },
+      { id: 'b', label: 'Condenser about 25 cm out, on the axis, the room joining in', ok: true, power: 'phantom', feedback: 'A suggested starting point for a more blended sound in a good room — check breath and level changes.' },
       { id: 'c', label: 'A condenser 2 cm from the lips, no screen', ok: false, power: 'phantom', feedback: 'Right in the air path: pops, heavy proximity and breath. Give it distance and a screen.' },
       { id: 'd', label: 'Monitor on loudspeakers so the singer feels the track', ok: false, power: 'phantom', feedback: 'Loudspeakers leak the track into the vocal mic. Closed-back headphones, speakers off.' },
       { id: 'e', label: 'A mic aimed at the chest, because the voice is low', ok: false, power: 'none', feedback: 'The voice leaves through the mouth. Aim at the mouth; try the chest only as a deliberate idea.' },
@@ -460,8 +460,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud rock stage: the singer moves, a floor wedge in front, drums and amps close by. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A handheld dynamic within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A recommended starting point: close enough to stay ahead of the band — check the wedge against the actual pattern.' },
-      { id: 'b', label: 'A supercardioid handheld, the wedge a little to one side of its rear', ok: true, power: 'none', feedback: 'A recommended starting point if the wedge can sit near its null — check the pattern.' },
+      { id: 'a', label: 'A handheld dynamic within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A suggested starting point: close enough to stay ahead of the band — check the wedge against the actual pattern.' },
+      { id: 'b', label: 'A supercardioid handheld, the wedge a little to one side of its rear', ok: true, power: 'none', feedback: 'A suggested starting point if the wedge can sit near its null — check the pattern.' },
       { id: 'c', label: 'A studio condenser 30 cm away for a natural sound', ok: false, power: 'phantom', feedback: 'At 30 cm on a loud stage it hears the band and the wedge almost as much as the voice.' },
       { id: 'd', label: 'A handheld the singer cups to keep the sound in', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer. Keep the grille open.' },
       { id: 'e', label: 'An omni handheld so the singer can move anywhere', ok: false, power: 'none', feedback: 'An omni rejects nothing: on a loud stage it hears the wedge and the band as much as the voice.' },
@@ -623,6 +623,6 @@ export const E01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every singer, song and room is different: move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one singer in a typical standing pose, the airway as a simplified cut, the puff of air and the S hiss as shapes, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Move a real mic near someone’s face only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every singer, song and room is different: move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one singer in a typical standing pose, the airway as a simplified cut, the puff of air and the S hiss as shapes, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured from the lips to the mic’s front. Move a real mic near someone’s face only with their agreement.',
   copy: E01_COPY,
 };

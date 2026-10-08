@@ -3,7 +3,7 @@
  * card, point and takeaway are the Mastering Lab's own (re-exported, not
  * copied — the drumtuning/kit.tsx precedent).
  *
- *   ZoneCard        a RECOMMENDED STARTING POINT in plain words: what it is,
+ *   ZoneCard        a SUGGESTED STARTING POINT in plain words: what it is,
  *                   the suggested range, what to listen for, what to check.
  *                   One consistent style (owner ruling 2026-10-04: no source
  *                   names, no SOURCED / TRIAL badges on screen).
@@ -33,11 +33,11 @@ export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../
 
 const BLUE = '#6fa8ff';
 
-/** A recommended starting point, in plain words (owner ruling 2026-10-04). */
+/** A suggested starting point, in plain words (owner ruling 2026-10-04). */
 export function ZoneCard({ z }: { z: DocumentedZone }) {
   return (
     <View style={[styles.zone, { borderLeftColor: BLUE }]}>
-      <Text style={styles.zoneKey}>RECOMMENDED STARTING POINT</Text>
+      <Text style={styles.zoneKey}>SUGGESTED STARTING POINT</Text>
       <Text style={styles.zoneLabel}>{z.label}</Text>
       <Text style={styles.band}>{z.band}</Text>
       <Text style={styles.tendency}>{`LISTEN FOR · ${z.tendency}`}</Text>

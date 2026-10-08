@@ -134,7 +134,7 @@ const AXES_AMP: HandSpec['axes'] = {
 };
 
 const WORDS: HandSpec['words'] = {
-  placeBadge: 'Blue = recommended starting points · grey dashes = the hands, the player and the amp’s vents · pinch to zoom',
+  placeBadge: 'Blue = suggested starting points · grey dashes = the hands, the player and the amp’s vents · pinch to zoom',
   clearance: 'Clearance comes first: the mouth, the hands’ whole movement, any neck holder and a harmonica swap. On the amp, keep the mic off the grille and the air behind the amp clear. Cables out of walkways.',
   cardioidTried: 'What you just saw: a cardioid rejects most directly behind (180°). A stand mic facing the harmonica turns its back toward the audience side — where a floor wedge often sits. The harp amp, behind the player, sits off to its side: no null reaches it.',
   sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: the front and the back of the cone each give their own delay.',
@@ -215,7 +215,7 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
 };
 
 const workedAcoustic = (z: DocumentedZone) => [
-  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin with an acoustic harmonica — a practical starting experiment, not a published standard, and not a promise of a sound.`, cell: 3 },
+  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with an acoustic harmonica — a practical starting experiment, not a published standard, and not a promise of a sound.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the harmonica — its hole face at the lips — to the mic’s FRONT, rounded to ≈ 5 mm. The readout also says how far the mic is off the line straight out of the harmonica (the breath line).', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
   { title: 'THE HEIGHT', text: 'At about mouth and hand height, facing the playing zone. If breath bursts dominate, move a little off the breath line — the next zone.', cell: 1 },
@@ -223,7 +223,7 @@ const workedAcoustic = (z: DocumentedZone) => [
   { title: 'CLEARANCE', text: 'Just beyond the hands’ whole movement, never able to swing into the mouth, the instrument or a neck holder; the stand stable, its cable away from the player’s feet.', cell: 3 },
 ];
 const workedAmp = (z: DocumentedZone) => [
-  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we recommend you begin on a harp amp — amplifier-speaker practice, a dependable first listen, not a rule.`, cell: 3 },
+  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin on a harp amp — amplifier-speaker practice, a dependable first listen, not a rule.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm — on the REAL speaker behind the cloth, found first. The cabinet’s middle is not always the speaker’s.', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
   { title: 'ACROSS THE CONE', text: 'At the edge of the dust cap — the ring where the dome meets the cone. From here: toward the centre for more bite, outward for a softer top end.', cell: 1 },
@@ -245,7 +245,7 @@ const HAND_ACOUSTIC: HandSpec = {
     notes: () => <VariantChips />,
   },
   learnZones: [
-    'What you just did, in words. After our research, each blue zone is where we recommend you begin: at the harmonica, measured from the harmonica; on the amp, measured from the grille. They are starting points, not rules: move from there and listen — every player, harmonica, amp and room is different.',
+    'What you just did, in words. After our research, each blue zone is where we suggest you begin: at the harmonica, measured from the harmonica; on the amp, measured from the grille. They are starting points, not rules: move from there and listen — every player, harmonica, amp and room is different.',
     'Acoustic: the hands’ chamber is part of the sound, so face the playing zone and keep it in every comparison. Move off the breath stream if bursts dominate. Avoid a high-pass setting that thins the low register — test with the real harmonicas.',
     'Amp: find the real speaker, then compare the dust cap’s edge, the centre and the edge at the same distance. A mic on the amp hears the amplified system — the cupped harp mic, the amp, its distortion and the speaker.',
   ],

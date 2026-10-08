@@ -131,8 +131,10 @@ describe('the field mics and the engine additions', () => {
     assert.equal(roundScaled(1376), 1400);
     assert.equal(roundScaled(35049), 35000);
     assert.equal(roundScaled(-3), 0);
-    assert.equal(fmtLenScaled(1376), '≈ 1.4 m (4.6 ft)');
-    assert.equal(fmtLenScaled(864), '≈ 86 cm (33.9 in)');
+    // Owner decision X1 (2026-10-08): fmtLenScaled IS the shared rule — feet from 3 m, 5 mm below 1 m.
+    assert.equal(fmtLenScaled(1376), '≈ 1.4 m (55 in)');
+    assert.equal(fmtLenScaled(864), '≈ 86.5 cm (34.1 in)');
+    assert.equal(fmtLenScaled(35049), '≈ 35 m (115 ft)');
   });
 });
 

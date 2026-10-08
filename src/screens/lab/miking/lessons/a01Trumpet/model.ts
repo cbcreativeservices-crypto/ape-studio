@@ -1,5 +1,5 @@
 /**
- * A01 TRUMPET AND FLUGELHORN — the recommended starting points (charter §2
+ * A01 TRUMPET AND FLUGELHORN — the suggested starting points (charter §2
  * layer 1). Source keys point into docs/labs/miking/trumpet/SOURCES.md (the
  * Lab 3 and brass keys are its §0) and flugelhorn/SOURCES.md; the geometry
  * is trumpet/GEOMETRY_PROPOSAL.md §5 on the shared brass family. Every

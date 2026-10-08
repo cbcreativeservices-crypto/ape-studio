@@ -35,7 +35,7 @@ export const F12_COPY: Partial<LessonCopy> = {
     note: 'Return to the same spot, height and aim for a before-and-after; log what changed.',
     availableLead: 'Starting points for the meter here',
     learn: {
-      intro: 'After our research, each blue zone is a place we recommend you begin, measured from the road’s edge or the facade. Your question and your method name the real receivers.',
+      intro: 'After our research, each blue zone is a place we suggest you begin, measured from the road’s edge or the facade. Your question and your method name the real receivers.',
       separate: 'Height, distance and the facade are separate: change one at a time, and write each one down.',
       clearance: 'Safety first: authorized positions, away from the road and electrical hazards; the tripod is no hazard to the public.',
       tendencies: 'What a position stands for is a tendency to check against the method — never a promise.',

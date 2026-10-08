@@ -1,5 +1,5 @@
 /**
- * B15 TRACK, GYMNASTICS AND COMBAT SPORTS — the recommended starting points
+ * B15 TRACK, GYMNASTICS AND COMBAT SPORTS — the suggested starting points
  * (charter §2 layer 1) on the shared practice room (frame P,
  * practiceScenes.ts `practiceSmall`). Research: docs/labs/miking/
  * track_gym_combat/SOURCES.md and GEOMETRY_PROPOSAL.md §1–§4; words from the

@@ -29,7 +29,7 @@ const MIC_STAND = ['sdcCard', 'instDynCard'];
 const NEAR = ill('"near": within 8 cm of the point’s line — the lab’s drawing of "near"');
 const AIMED = ill('aimed at the point: the mic’s axis meets the top within 11 cm of it — the lab’s tolerance');
 
-/** The five recommended starting points on one body (zone ids get the
+/** The five suggested starting points on one body (zone ids get the
  *  variant suffix: `fret12.steel`). */
 export function c01ZoneSpecs(sc: GuitarScene): ZoneSpec[] {
   const g = sc.g;

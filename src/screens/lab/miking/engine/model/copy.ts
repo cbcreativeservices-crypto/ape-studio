@@ -350,7 +350,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     note: 'Clearance comes first: stop the player before moving a real mic.',
     availableLead: 'Starting points for this mic here',
     learn: {
-      intro: 'After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the head it names. They are starting points, not rules.',
+      intro: 'After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules.',
       separate: 'Height, distance and angle are separate variables: change one at a time.',
       clearance: 'Clearance comes first. Stop the player before moving a mic.',
       tendencies: 'Tonal changes are tendencies to check by ear.',

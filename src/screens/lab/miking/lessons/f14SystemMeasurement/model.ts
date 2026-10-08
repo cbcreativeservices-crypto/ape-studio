@@ -1,5 +1,5 @@
 /**
- * F14 LOUDSPEAKER AND SOUND SYSTEM MEASUREMENT — the recommended starting
+ * F14 LOUDSPEAKER AND SOUND SYSTEM MEASUREMENT — the suggested starting
  * points (charter §2 layer 1). Source keys: measurement_mics/SOURCES.md §0;
  * the lesson's claims: loudspeaker_measurement/SOURCES.md. Frame: F14
  * geometry.ts (the floor at y = 0 in every scene).

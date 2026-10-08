@@ -50,7 +50,7 @@ export function describeMic(m: MicDescription, short = false): string {
   const dist = `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? m.plusWords ?? 'from' : m.minusWords ?? 'behind'} ${m.surfaceLabel}`;
   const off = m.lineWords ? `${fmtLen(Math.abs(r.radial))} ${r.radial >= 0 ? m.lineWords.plus : m.lineWords.minus} ${m.lineLabel}` : `${fmtLen(r.radial)} off ${m.lineLabel}`;
   const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off ${m.axisWords ?? "the head's axis"}` : '';
-  const zone = m.zoneLabel ? ` At a recommended starting point: ${m.zoneLabel}.` : ' Not at a recommended starting point.';
+  const zone = m.zoneLabel ? ` At a suggested starting point: ${m.zoneLabel}.` : ' Not at a suggested starting point.';
   const clear = r.blocked ? ` Blocked: it would touch the ${r.blocked.label}.` : ' Clear of all parts.';
   if (short) return `Mic ${m.slot}: ${where}, ${dist}, ${off}${aim}.${m.zoneLabel ? ` Zone: ${m.zoneLabel}.` : ''}${r.blocked ? ` Blocked by the ${r.blocked.label}.` : ''}`;
   return `Mic ${m.slot}: ${m.typeLabel}, ${m.patternLabel}, ${where}, ${dist}, ${off}${aim}.${zone}${clear}`;

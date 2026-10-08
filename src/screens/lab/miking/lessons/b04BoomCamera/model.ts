@@ -1,5 +1,5 @@
 /**
- * B04 BOOM AND CAMERA-MOUNTED PICKUP — the recommended starting points
+ * B04 BOOM AND CAMERA-MOUNTED PICKUP — the suggested starting points
  * (charter §2 layer 1), on frame V (the talker), the camera frame and the
  * boom (shared/broadcast/cameraFrame.ts, boomPole.ts). Source keys: docs/
  * labs/miking/boom_camera/SOURCES.md and the Lab 7a register (radio_host/
@@ -47,7 +47,7 @@ const near = (d: number) => [d, d + 40, d + 80, d + 150, d + 250, d + 350];
 const ABOVE: VoiceZoneSpec = {
   id: 'b4.above',
   label: 'Above the frame, aimed at the mouth',
-  band: `After our research, here is where we recommend you begin: as close as the picture allows — the mic just above the top of the widest frame and a little in front, about 15 cm clear of its edge, aimed down at the mouth. In this close shot that is about ${cm(BOOM_ABOVE.d)} cm from the lips.`,
+  band: `After our research, here is where we suggest you begin: as close as the picture allows — the mic just above the top of the widest frame and a little in front, about 15 cm clear of its edge, aimed down at the mouth. In this close shot that is about ${cm(BOOM_ABOVE.d)} cm from the lips.`,
   kind: 'sourced',
   src: 'R-BOOM',
   quote: 'boom from above, or below if absolutely necessary',

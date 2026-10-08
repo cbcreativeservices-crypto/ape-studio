@@ -750,7 +750,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const [exStep, setExStep] = useState(0);
     const exShown = ex.shown('A');
     const worked: { title: string; text: string; cell: number }[] = [
-      { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+      { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
       { title: 'THE SPEAKER', text: spec.worked?.speaker ?? `In front of the speaker that is really sounding — found from outside the grille with the amp off or muted. ${spec.rig === 'combo' ? 'On this combo it sits off-centre, under the controls.' : 'On this cabinet, one woofer — not the gap between two.'}`, cell: 1 },
       { title: 'THE DISTANCE', text: `${exZone.band} The readout measures from the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm.`, cell: 0 },
       { title: 'ACROSS THE CONE', text: spec.worked?.across ?? 'Off the cone axis by about the dust cap’s radius: aimed at the line where the dust cap meets the cone. The bezel reads how far off the axis the mic sits.', cell: 1 },
@@ -836,7 +836,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of ${spec.ampNoun} cut through its speaker. A worked example: the mic is placed for you. ${now(ex, ['A'])}`} />,
-          badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
+          badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
             { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` },
@@ -861,7 +861,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of ${spec.ampNoun}, cut through the miked speaker. ${now(rig, ['A'])}`} />,
-          badge: 'Blue = recommended starting points · dashed lobe = pattern shape · keep-clear areas show as a mic comes near · pinch to zoom',
+          badge: 'Blue = suggested starting points · dashed lobe = pattern shape · keep-clear areas show as a mic comes near · pinch to zoom',
           bezel,
           params,
           initialParam: 'pos',
@@ -872,7 +872,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             <Landing looking={`${t.short} · ${spec.ampNoun}`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it across the cone and away from it, one change at a time." />
             <NowLine text={now(rig, ['A'])} />
             {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.`}</Note> : null}
-            {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
+            {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
             <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
             {tried ? <Note tone="ok">{`You predicted “${predicted}”. Across the cone at the same distance, toward the edge most often sounds smoother and darker — and speakers vary, so “it depends on this speaker” is fair too.`}</Note> : null}
             <Note>{spec.notes.place}</Note>
@@ -886,7 +886,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         layout: 'read',
         body: (
           <>
-            <Body>What you just did, in words. After our research, each blue zone is where we recommend you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker, amp and player is different.</Body>
+            <Body>What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker, amp and player is different.</Body>
             <Body>Change one thing at a time. Keep the distance and slide across the cone — centre, dust-cap edge, toward the edge — or keep the spot and move away from the grille, or keep both and change only the angle. A mic farther back hears more of the cabinet and the room, and more of the stage. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
             <Body>Compare at matched level, on the same passage — louder always sounds “better” at first. Then write down where you ended: the speaker, the spot, the distance, the angle, and the player’s settings.</Body>
             <Note tone="warn">Clearance comes first: off the grille cloth, the stand steady, the cable away from the player and the walkway, nothing against the amp’s vents.</Note>

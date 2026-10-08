@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the section pair yourself — closer, farther, higher — and see what changes across the players.',
-    credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Rehearse the balance before moving mics. Closer favours the nearest player; farther or higher evens the section out with more room. Move the pair as a unit, one change at a time.',
   },
   context: {
@@ -123,7 +123,7 @@ const scenarios: MikingScenario[] = [
     correct: 'In the path of the moving slide',
     explain: 'The slide moves in and out through more than half a metre. A stand in its path is a collision hazard and a noise source: keep the mic above or beside it, clear at full extension.',
     why: {
-      'Above the slide, aimed across the bell': 'That is a recommended start: clear of the slide at every position.',
+      'Above the slide, aimed across the bell': 'That is a suggested start: clear of the slide at every position.',
       'Beside the bell on the slide’s side': 'Also fair, as long as the slide’s full travel stays clear.',
     },
   },
@@ -584,7 +584,7 @@ export const E10_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E10_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. A horn section has no single right setup: hear the players, rehearse the balance, start with a minimal plan and expand only for a stated need. Every section, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Brass peaks close to a bell can reach about 130 dB SPL: protect the mics, the preamps and your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A horn section has no single right setup: hear the players, rehearse the balance, start with a minimal plan and expand only for a stated need. Every section, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Brass peaks close to a bell can reach about 130 dB SPL: protect the mics, the preamps and your hearing.',
   copy: { words: ensembleWords('horn section') },
   ensemble: {
     seatings: { line: 'horns.line', arc: 'horns.arc' },
@@ -606,11 +606,11 @@ export const E10_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can reach about 130 dB SPL. Never lift a protective mains earth to cure hum; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a horn section: one section pair in front of the players, a little above, before any close mic — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a horn section: one section pair in front of the players, a little above, before any close mic — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the line, clear of the slides at full extension and of the players’ way in and out; its cable dressed flat and out of the walkways.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the section pair — on stage about 1.2–1.8 m in front and a little above; in the studio at the arc’s centre, about 1.5 m from every player. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the section pair — on stage about 1.2–1.8 m in front and a little above; in the studio at the arc’s centre, about 1.5 m from every player. Places to start and compare, not a best place.',
       'Change one variable at a time — distance, height, then the angle — and compare at matched level on the same passage.',
       'The players set the section’s balance; the pair captures it. Move the whole pair; a different spacing or angle is a different method.',
     ],

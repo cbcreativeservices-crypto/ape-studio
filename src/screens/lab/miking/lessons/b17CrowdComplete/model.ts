@@ -1,5 +1,5 @@
 /**
- * B17 CROWD AND COMPLETE SPORTS COVERAGE — the recommended starting points
+ * B17 CROWD AND COMPLETE SPORTS COVERAGE — the suggested starting points
  * (charter §2 layer 1) on the shared mock venue (frame P, practiceScenes.ts
  * `practiceCrowd`). Research: docs/labs/miking/crowd_complete/SOURCES.md and
  * GEOMETRY_PROPOSAL.md §1–§5; words from the owner's lesson

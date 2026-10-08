@@ -40,7 +40,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself on the practice field — along the crew strip, its height and its aim — and see the range and the angle change as you move between A, B and C.',
-    credit: { scenarios: ['fd.place.1', 'fd.place.2', 'fd.place.3', 'fd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['fd.place.1', 'fd.place.2', 'fd.place.3', 'fd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'From one approved mark, the targets differ in range and angle: aim into a named zone, change one thing at a time, and never move into the offset to get closer.',
   },
   context: {
@@ -464,8 +464,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A school soccer match: one operator, three channels, and the goal-area position refused.',
     setups: [
-      { id: 'a', label: 'Fixed perimeter mics into the near and goal sectors, plus ambience', ok: true, power: 'phantom', feedback: 'A recommended start: overlapping fixed sectors and a bed — accept less isolated goal detail.' },
-      { id: 'b', label: 'A dish from an approved place, plus a fixed ambience pair', ok: true, power: 'phantom', feedback: 'A recommended start, where the operator stays clear of officials, players and cameras.' },
+      { id: 'a', label: 'Fixed perimeter mics into the near and goal sectors, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start: overlapping fixed sectors and a bed — accept less isolated goal detail.' },
+      { id: 'b', label: 'A dish from an approved place, plus a fixed ambience pair', ok: true, power: 'phantom', feedback: 'A suggested start, where the operator stays clear of officials, players and cameras.' },
       { id: 'c', label: 'A mic clipped to the goal net for the goalmouth', ok: false, power: 'phantom', feedback: 'Nothing is attached to goals, nets or flagposts.' },
       { id: 'd', label: 'The operator follows play along the touchline', ok: false, power: 'phantom', feedback: 'That is the officials’ and players’ space: stay on the approved place.' },
       { id: 'e', label: 'One shotgun aimed broadly at the whole pitch', ok: false, power: 'phantom', feedback: 'Aim into a named sector; a view of the field is not coverage of it.' },
@@ -484,8 +484,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A baseball broadcast: bat contact wanted, with the backstop screening and foul territory to respect.',
     setups: [
-      { id: 'a', label: 'A plate-area shotgun behind the backstop, plus ambience', ok: true, power: 'phantom', feedback: 'A recommended start: the capsule and support entirely on the protected side of the screen.' },
-      { id: 'b', label: 'A dish from a protected place, chosen before the pitch', ok: true, power: 'phantom', feedback: 'A recommended start: choose the plate before the pitch, and hand off after contact.' },
+      { id: 'a', label: 'A plate-area shotgun behind the backstop, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start: the capsule and support entirely on the protected side of the screen.' },
+      { id: 'b', label: 'A dish from a protected place, chosen before the pitch', ok: true, power: 'phantom', feedback: 'A suggested start: choose the plate before the pitch, and hand off after contact.' },
       { id: 'c', label: 'A mic pushed through the netting toward the plate', ok: false, power: 'phantom', feedback: 'Never pass equipment through screening into live-ball space.' },
       { id: 'd', label: 'A stand in foul territory near first base', ok: false, power: 'phantom', feedback: 'Foul territory can be live: balls and throws arrive there.' },
       { id: 'e', label: 'Swing the dish after contact to catch the bat', ok: false, power: 'phantom', feedback: 'The bat’s transient has gone by then: choose before the pitch.' },
@@ -633,6 +633,6 @@ export const B13_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every venue and event is different: get approval, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: the practice field and its marks are the lesson’s own; the sport outlines, the crew strip, the ambience mark and the camera are typical layouts; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into play, the run-off or a route; with thunder, shelter at once — dugouts and open rain shelters are not safe — and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every venue and event is different: get approval, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: the practice field and its marks are the lesson’s own; the sport outlines, the crew strip, the ambience mark and the camera are typical layouts; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into play, the run-off or a route; with thunder, shelter at once — dugouts and open rain shelters are not safe — and wait 30 minutes after the last thunder.',
   copy: B13_COPY,
 };

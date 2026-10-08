@@ -2,7 +2,7 @@
  * THE VOICE'S STARTING POINTS, built on any singer (frame V, voiceSpec.ts):
  * the mouth as a reference TARGET (every distance is "from the mouth": the
  * lip point to the mic's front), the mouth's axis as a reference line, the
- * places the voice leaves (the mouth; the nose), and the recommended zones —
+ * places the voice leaves (the mouth; the nose), and the suggested zones —
  * each a distance band from the mouth, an approach (how far off the mouth's
  * axis, and to which side), and an aim at the mouth — with a start pose
  * found once at load: the first candidate inside the zone and clear of every

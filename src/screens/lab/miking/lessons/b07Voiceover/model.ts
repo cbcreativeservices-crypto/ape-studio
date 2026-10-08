@@ -1,5 +1,5 @@
 /**
- * B07 VOICEOVER, NARRATION AND BROADCAST GUESTS — the recommended starting
+ * B07 VOICEOVER, NARRATION AND BROADCAST GUESTS — the suggested starting
  * points (charter §2 layer 1), on frame V (the reader) and the guest's own
  * anchor (shared/broadcast), built by the voice family's zone builder.
  * Source keys: docs/labs/miking/voiceover_guests/SOURCES.md and the Lab 7a
@@ -42,7 +42,7 @@ const ON_AXIS = ill('on the mouth’s axis: within 15° of it (the lab’s drawi
 const CLOSE: VoiceZoneSpec = {
   id: 'b7.close',
   label: 'Close in front, about 10 cm',
-  band: 'After our research, here is where we recommend you begin: the end of a broadcast dynamic about 10 cm (4 in) from the lips — anywhere from about 2.5 to 15 cm (1–6 in) — on the mouth’s axis, its windscreen on.',
+  band: 'After our research, here is where we suggest you begin: the end of a broadcast dynamic about 10 cm (4 in) from the lips — anywhere from about 2.5 to 15 cm (1–6 in) — on the mouth’s axis, its windscreen on.',
   kind: 'sourced',
   src: 'S-SM7B-UG',
   quote: 'speak directly into the mic 1 to 6 inches (2.54 to 15 cm) away (DPA-VOC-STUDIO: "about 4 inches from the mouth directly on axis")',

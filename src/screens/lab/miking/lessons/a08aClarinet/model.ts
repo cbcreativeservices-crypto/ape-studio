@@ -1,5 +1,5 @@
 /**
- * A08a B♭ CLARINET — the recommended starting points (charter §2 layer 1).
+ * A08a B♭ CLARINET — the suggested starting points (charter §2 layer 1).
  * Source keys point into docs/labs/miking/soprano_clarinet/SOURCES.md (the
  * reed family's keys in its §0); the geometry is its GEOMETRY_PROPOSAL.md on
  * the shared woodwind family. Corrections A8A-01 … (CORRECTIONS_LOG).

@@ -7,7 +7,7 @@
  *
  * One documented close distance exists (3–4 in from the heads, L21); every
  * other position is the lesson's own trial. On screen they are simply
- * recommended starting points, with the honest note that every player,
+ * suggested starting points, with the honest note that every player,
  * pair and room differ.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
@@ -40,8 +40,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — from the audience side, clear of both hands — then move the mic and see what changes.',
-    credit: { scenarios: ['ta.place.1', 'ta.place.2', 'ta.place.3', 'ta.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — from the audience side, clear of both hands — then move the mic and see what changes.',
+    credit: { scenarios: ['ta.place.1', 'ta.place.2', 'ta.place.3', 'ta.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Distance, viewpoint and angle are separate things to try, one at a time. If one drum dominates, move toward the weaker one rather than only turning the mic. Both hands’ paths come before every number.',
   },
   context: {
@@ -306,12 +306,12 @@ const scenarios: MikingScenario[] = [
     id: 'ta.two.1',
     page: 'twoMic',
     prompt: 'You flip the bayan mic’s polarity. What happens to the arrival-time difference between the mics?',
-    options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays',
     explain: 'Inverting a channel reverses its sign; it does not remove a difference in arrival time. No tabla mic has to be inverted by rule.',
     why: {
       'It drops to zero, so the two arrivals line up again': 'The mics are still at the same distances: the delay is unchanged.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only a mic’s position changes the delay.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only a mic’s position changes the delay.',
     },
   },
   {
@@ -506,7 +506,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channels give the mics the power they need (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the heads', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the heads', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mics, stands and cables stay clear of both hands, the knees and the supports', role: 'required', feedback: 'Clearance is part of every passing setup — the bayan hand moves all the time.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers use on tabla', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the bayan the most low end', role: 'wrong', feedback: 'Low-end emphasis is not a passing reason — the player’s balance is.' };
@@ -604,11 +604,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Placing a mic near the bayan, what comes before every distance?',
-    options: ['The hand’s full path as it presses and slides across the head', 'The exact distance that the recommended starting point gives you', 'The shortest cable run from the stand to the desk'],
+    options: ['The hand’s full path as it presses and slides across the head', 'The exact distance that the suggested starting point gives you', 'The shortest cable run from the stand to the desk'],
     correct: 'The hand’s full path as it presses and slides across the head',
     explain: 'Hand clearance takes priority over every number. The bayan hand moves across the head all the time; a mic must never force the player to stop.',
     why: {
-      'The exact distance that the recommended starting point gives you': 'The numbers are starting points; the hands’ clearance comes first.',
+      'The exact distance that the suggested starting point gives you': 'The numbers are starting points; the hands’ clearance comes first.',
       'The shortest cable run from the stand to the desk': 'A tidy cable matters, but never before the player’s space.',
     },
   },
@@ -699,5 +699,5 @@ export const M13_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Only the close distance comes from a real session; the other starting points are adapted from how microphones behave, and every pair, player and room is different. Move the mics, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one pair, a seated layout the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of both hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Only the close distance comes from a real session; the other starting points are adapted from how microphones behave, and every pair, player and room is different. Move the mics, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one pair, a seated layout the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of both hands.',
 };

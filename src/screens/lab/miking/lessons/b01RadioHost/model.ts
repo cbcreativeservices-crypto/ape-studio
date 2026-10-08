@@ -1,5 +1,5 @@
 /**
- * B01 RADIO, PODCAST AND STUDIO HOSTS — the recommended starting points
+ * B01 RADIO, PODCAST AND STUDIO HOSTS — the suggested starting points
  * (charter §2 layer 1), on the seated talker (shared/broadcast, frame V on
  * the host) and the voice family's zone builder (shared/voice/voiceZones).
  * Source keys: docs/labs/miking/radio_host/SOURCES.md §0; every distance is
@@ -33,7 +33,7 @@ const VB = talkerAnchor(HOST_B);
 const DYN: VoiceZoneSpec = {
   id: 'b1.dyn',
   label: 'In front of the mouth, about 10–15 cm',
-  band: 'After our research, here is where we recommend you begin: the end of a broadcast dynamic about 10–15 cm (4–6 in) from the lips, on the mouth’s axis, aimed at the mouth — the host speaks into its end.',
+  band: 'After our research, here is where we suggest you begin: the end of a broadcast dynamic about 10–15 cm (4–6 in) from the lips, on the mouth’s axis, aimed at the mouth — the host speaks into its end.',
   kind: 'sourced',
   src: 'R-POD',
   quote: 'about 4 - 6 inches away from your mouth (dynamic)',

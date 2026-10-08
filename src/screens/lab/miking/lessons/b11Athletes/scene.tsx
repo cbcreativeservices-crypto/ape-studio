@@ -77,7 +77,9 @@ export function b11Labels(view: ViewId, variant: VariantId): ArtLabel[] {
     if (!athlete) out.push({ id: 'b11.teamset', text: 'TEAM HEADSET', short: 'TEAM SET', u: -330, v: -330, align: 'right', tone: 'muted', at: { u: HEAD_C.x + 20, v: HEAD_C.y - 40 } });
     if (!athlete) out.push({ id: 'b11.field', text: 'FIELD · NO CREW IN PLAY', short: 'FIELD', u: FIELD_X + 360, v: FLOOR - 220, align: 'center', tone: 'muted' });
     if (official) out.push({ id: 'b11.pa', text: 'PA', u: PA_C.x - 360, v: PA_C.y - 100, align: 'right', at: { u: PA_C.x - 150, v: PA_C.y } });
-    if (coach) out.push({ id: 'b11.operator', text: 'PERIMETER BOOM', short: 'BOOM', u: OPERATOR.feet.x + 250, v: 650, align: 'left', tone: 'muted' });
+    // Above the operator's raised pole, where no other label or leader runs
+    // (owner decision X6, 2026-10-08: its leader crossed TEAM HEADSET's).
+    if (coach) out.push({ id: 'b11.operator', text: 'PERIMETER BOOM', short: 'BOOM', u: OPERATOR.feet.x, v: -700, align: 'center', tone: 'muted' });
     return out;
   }
   const out: ArtLabel[] = [{ id: 'v.mouth', text: 'MOUTH', u: 170, v: 220, align: 'left', at: { u: 2, v: 0 }, alts: [{ u: 170, v: -220, align: 'left' }] }];

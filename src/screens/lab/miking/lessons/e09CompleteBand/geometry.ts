@@ -121,7 +121,7 @@ const BASE = ensembleModel({
 export const E09_MODEL = addVoice(BASE, SINGER_V, VOX_IDS, ['stage', 'room']);
 const surf = (id: string) => E09_MODEL.surfaces.find((s) => s.id === id)!;
 
-/* ── the recommended starting points the shared pages read ── */
+/* ── the suggested starting points the shared pages read ── */
 const VOX_ZONE = voiceZone(E09_MODEL, SINGER_V, stageRow({ id: 'bd.voc', micTypeIds: ['vocDynSuper', 'vocDynCard'], variants: ['stage', 'room'] }), MIC_TYPES, { surface: VOX_IDS.surface });
 const ampZone = (id: string, variant: 'stage' | 'room', sec: 'gtr' | 'bass', s: string, m: CloseMic): DocumentedZone => {
   const z = sec === 'gtr' ? E09_BORROWED.amp : E09_BORROWED.bass;

@@ -38,9 +38,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — the upper body and neck joint, off the strumming arc — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A recommended zone is a place to begin — this one borrowed from the guitar, and said so. Compare three regions one change at a time, and keep the strumming arc clear.',
+    goal: 'Start where we suggest you begin — the upper body and neck joint, off the strumming arc — then move the mic and see what changes.',
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A suggested zone is a place to begin — this one borrowed from the guitar, and said so. Compare three regions one change at a time, and keep the strumming arc clear.',
   },
   context: {
     title: 'Studio or live',
@@ -284,9 +284,9 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A singer-player on a small stage, a floor wedge in front. One channel for the ukulele; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser, cardioid, 20–40 cm from the neck joint, off the strumming arc, rear to the wedge', ok: true, power: 'phantom', feedback: 'A recommended starting point, clear of the hands, its rejection toward the wedge.' },
-      { id: 'b', label: 'Instrument dynamic at the upper body, close end of the band, clear of the vocal mic', ok: true, power: 'none', feedback: 'A robust close option at a recommended starting point.' },
-      { id: 'c', label: 'Clip-on mini on a clip whose range fits the measured body', ok: true, power: 'phantom', feedback: 'A recommended starting point that moves with the player — with the owner’s OK.' },
+      { id: 'a', label: 'Small condenser, cardioid, 20–40 cm from the neck joint, off the strumming arc, rear to the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the hands, its rejection toward the wedge.' },
+      { id: 'b', label: 'Instrument dynamic at the upper body, close end of the band, clear of the vocal mic', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point.' },
+      { id: 'c', label: 'Clip-on mini on a clip whose range fits the measured body', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the player — with the owner’s OK.' },
       { id: 'd', label: 'Small condenser pushed into the sound hole for the most level', ok: false, power: 'phantom', feedback: 'Never insert a mic into the hole: it favours one resonance and risks the instrument.' },
       { id: 'e', label: 'Rely on the vocal mic’s bleed as the ukulele’s only mic', ok: false, power: 'phantom', feedback: 'A vocal mic’s bleed is not a reliable dedicated ukulele mic.' },
     ],
@@ -298,8 +298,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, a fingerpicked melody on a soprano. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 20–40 cm from the neck joint, a little off the hole’s axis', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Instrument dynamic about 20 cm toward the sound hole, compared with the joint', ok: true, power: 'none', feedback: 'A recommended starting point; it needs no phantom. Listen for one booming note.' },
+      { id: 'a', label: 'Instrument dynamic 20–40 cm from the neck joint, a little off the hole’s axis', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'Instrument dynamic about 20 cm toward the sound hole, compared with the joint', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Listen for one booming note.' },
       { id: 'c', label: 'Small omni condenser a little back, for the room', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power.' },
       { id: 'd', label: 'Clip-on mini between the hole and the joint', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting against the top for isolation', ok: false, power: 'none', feedback: 'Never press a mic against the instrument: it rattles, damps it and can mark it.' },

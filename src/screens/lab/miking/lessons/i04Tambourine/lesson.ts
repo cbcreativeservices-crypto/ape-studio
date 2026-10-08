@@ -44,8 +44,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — about 15–30 cm from the tambourine itself, as it is played — and read the CLEAR gap to the nearest stroke separately.',
-    credit: { scenarios: ['tmb.place.1', 'tmb.place.2', 'tmb.place.3', 'tmb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    goal: 'Start where we suggest you begin — about 15–30 cm from the tambourine itself, as it is played — and read the CLEAR gap to the nearest stroke separately.',
+    credit: { scenarios: ['tmb.place.1', 'tmb.place.2', 'tmb.place.3', 'tmb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Measure the start from the instrument as played; keep a CLEAR gap to the nearest stroke; side-to-side tends to be more even than toward-and-away.',
   },
   context: {
@@ -378,7 +378,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio overdub: a headless tambourine, shaken and struck into the hand. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 20 cm in front of the tambourine as played, facing the jingles', ok: true, power: 'phantom', feedback: 'The recommended start, outside the arc; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 20 cm in front of the tambourine as played, facing the jingles', ok: true, power: 'phantom', feedback: 'The suggested start, outside the arc; it needs the phantom this channel has.' },
       { id: 'b', label: 'Small condenser about 25 cm slightly above the playing zone, looking down', ok: true, power: 'phantom', feedback: 'Also fair: a lateral shake changes the distance less — compare by ear.' },
       { id: 'c', label: 'A mic 5 cm from the jingles, inside the swing', ok: false, power: 'phantom', feedback: 'Inside the arc: the frame could strike it, and every stroke would jump.' },
       { id: 'd', label: 'A mic aimed at the middle of the ring for the body', ok: false, power: 'phantom', feedback: 'There is no head: the middle is empty air.' },
@@ -540,7 +540,7 @@ export const I04_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the tambourine') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every tambourine, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 10 in headless tambourine and a crescent in four ways of playing, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every tambourine, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 10 in headless tambourine and a crescent in four ways of playing, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: TMB_COPY,
   sp: {
     strikeTitle: 'Shake to sound',

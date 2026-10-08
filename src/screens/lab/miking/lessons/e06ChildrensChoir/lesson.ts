@@ -52,7 +52,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from the pair and move it yourself — nearer, farther, higher — and see what changes for the front and back rows. From above: the height is in the readout and the words.',
-    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.31', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the children, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.31', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the children, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Begin with one pair and move it in small steps. Nearer favours the front row and the words; farther, the blend. Aim at the mouths, not the tops of heads: children stand lower than adults.',
   },
   context: {
@@ -543,7 +543,7 @@ export const E06_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E06_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. With children, safety and safeguarding come first: supervision at all times, a responsible adult in charge of every mic, stable stands and clear exits, quiet levels measured where the children stand. Then one pair before any close mic, aimed at their mouths. Every group, room and production is different: experiment gently and trust your ears. The lab is silent and draws the children from above only, as a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. With children, safety and safeguarding come first: supervision at all times, a responsible adult in charge of every mic, stable stands and clear exits, quiet levels measured where the children stand. Then one pair before any close mic, aimed at their mouths. Every group, room and production is different: experiment gently and trust your ears. The lab is silent and draws the children from above only, as a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing.',
   copy: { words: { ...ensembleWords('children’s choir'), player: 'children', inside: 'among the children', outside: 'clear of the children', axis: 'the line toward the children', facing: 'facing the children', shield: 'children in path', viewSide: 'From the hall (the children not drawn),' } },
   ensemble: {
     seatings: { choir: 'choir.children', feature: 'choir.childrenSolo' },
@@ -566,13 +566,13 @@ export const E06_LESSON: EnsembleLesson = {
     ],
     safety: 'Supervision at all times; a responsible adult controls every mic. Stable stands, sandbags and cable ramps; exits clear; stop the group before moving anything. Nothing hangs over the children’s heads; a hung mic goes in front of the mouths, only by a competent rigger with the venue’s approval. Quiet monitors, the level measured where the children stand; never provoke feedback.',
     workedWords: {
-      begin: 'After our research, this is where we recommend you begin with a children’s choir: one pair, centred, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a children’s choir: one pair, centred, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
       clearance: 'The stand’s wide base in front of the first row, clear of the children’s feet and the way out; a sandbag on its base, its cable taped flat or under a ramp, away from the children’s path.',
       height: 'A little above the children’s heads — lower than for adults — so it aims at their mouths and the back row. Too high and they turn dull and distant; too low and it hears the riser and the front row. (From above, the height is in the readout.)',
       forward: 'A few feet in front of the first row. Nearer favours the front row and the words; farther, the blend and the room.',
     },
     learnZones: [
-      'What you just did, in words. After our research, the blue zones are where we recommend you begin with the pair’s centre — near, about 0.6–1.2 m (2–4 ft) in front, 0.3–0.9 m (1–3 ft) above the children’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
+      'What you just did, in words. After our research, the blue zones are where we suggest you begin with the pair’s centre — near, about 0.6–1.2 m (2–4 ft) in front, 0.3–0.9 m (1–3 ft) above the children’s heads; or farther and higher, where the whole choir fills the pair’s angle. Places to start and compare, not a best place.',
       'From above you see how far forward and how wide; the height is in the readout. Aim at the mouths: children stand lower than adults.',
       'Change one thing at a time and compare at a consistent level — and stop the group before any stand is moved.',
     ],

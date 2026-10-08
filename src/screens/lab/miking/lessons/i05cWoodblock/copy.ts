@@ -93,7 +93,7 @@ export const WB_COPY: LessonCopy = spCopy({
     typeNotes: { smallDynCard: 'A cardioid dynamic or condenser can both work; a closer live spot only where clearance and isolation are confirmed.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never into the slot, never where a mallet can reach. Watch PEAK meters for the loudest real hit.',
     learn: {
-      intro: 'What you just did, in words. After our research, a mic about 25–50 cm (10–20 in) from the block, outside the mallet’s path, is where we recommend you begin — from above toward the playing surface, or in front toward the opening. A common minimum for percussion is about 30 cm. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, a mic about 25–50 cm (10–20 in) from the block, outside the mallet’s path, is where we suggest you begin — from above toward the playing surface, or in front toward the opening. A common minimum for percussion is about 30 cm. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time with the whole pattern. Compare the two viewpoints at matched level.',
       clearance: 'Clearance comes first: the mallet’s whole path, its rebound and a missed stroke. Never put the mic into the slot. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'A farther mic may bring in a pleasing room; a closer one stronger direct sound — with more impact and mount noise. Start with the support and the mallet before EQ. All tendencies to check by ear.',

@@ -194,7 +194,7 @@ function B12Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      `After our research, each blue starting point is where we recommend you begin — the dish from the approved place, its axis on a chosen target, inside the arc; the fixed shotgun on the zone the dish lets go. Starting points, not rules: listen, compare, and use your ears. Experimentation is encouraged. The dish’s axis about ${DISH_H.toFixed(1)} m up is only the drawing’s.`,
+      `After our research, each blue starting point is where we suggest you begin — the dish from the approved place, its axis on a chosen target, inside the arc; the fixed shotgun on the zone the dish lets go. Starting points, not rules: listen, compare, and use your ears. Experimentation is encouraged. The dish’s axis about ${DISH_H.toFixed(1)} m up is only the drawing’s.`,
       'Never run backward while looking into the dish, never chase play into a crew lane or the run-off — a good angle never justifies an unapproved place.',
     ),
   ];

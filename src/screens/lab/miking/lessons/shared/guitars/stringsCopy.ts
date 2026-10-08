@@ -111,7 +111,7 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
       note: `Clearance comes first: stop the player before moving a real mic. A mic, stand or cable anywhere ${o.clearWhat} can reach is in the wrong place, whatever the number says.`,
       availableLead: 'Starting points for this mic',
       learn: {
-        intro: `What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the point it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every ${n.one} is different.`,
+        intro: `What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the point it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every ${n.one} is different.`,
         separate: o.learnSeparate,
         clearance: `Clearance comes first. Stop the player before moving a mic; keep the mic, stand and cable out of ${o.clearWhat}, and never lean a boom toward the player or the instrument. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room for a real player.`,
         tendencies: o.learnTendencies,

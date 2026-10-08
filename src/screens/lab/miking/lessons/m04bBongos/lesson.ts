@@ -41,8 +41,8 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we recommend you begin — one mic between the heads, or a spot or clip-on per drum — clear of every finger stroke; then move the mic and see what changes.',
-    credit: { scenarios: ['bg.place.1', 'bg.place.2', 'bg.place.3', 'bg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    goal: 'Start where we suggest you begin — one mic between the heads, or a spot or clip-on per drum — clear of every finger stroke; then move the mic and see what changes.',
+    credit: { scenarios: ['bg.place.1', 'bg.place.2', 'bg.place.3', 'bg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'No source gives a bongo distance: “just above” means safely clear of the hands, then listen. Move toward the weaker drum, back off to blend — one change at a time.',
   },
   context: {
@@ -296,12 +296,12 @@ const scenarios: MikingScenario[] = [
     id: 'bg.two.1',
     page: 'twoMic',
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'It doubles, because the inverted copy arrives later'],
+    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
-      'It doubles, because the inverted copy arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
     },
   },
   {
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is read from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is read from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the fingers, palms and legs', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on bongos', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the pair', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · Bongos between a seated player’s knees, a quiet studio, one performer. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point: both drums on one channel; a dynamic needs no phantom.' },
+      { id: 'a', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point: both drums on one channel; a dynamic needs no phantom.' },
       { id: 'b', label: 'Two small condensers as a coincident pair above the drums', ok: true, power: 'phantom', feedback: 'An image of the pair with little arrival difference; phantom is available. Check it in mono.' },
       { id: 'c', label: 'A clip-on condenser at each rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control in little space; it needs the phantom power this input has.' },
       { id: 'd', label: 'A mic under the pair, between the player’s knees', ok: false, power: 'none', feedback: 'That is where the legs move — and an unsupported bottom mount. Keep the space clear.' },
@@ -523,7 +523,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · Bongos on a stand on a loud stage, near the drum kit. The spare inputs have NO phantom power.',
     setups: [
       { id: 'a', label: 'A compact dynamic spot for each drum, outside the hands', ok: true, power: 'none', feedback: 'Close, directional, independent control on a loud stage; dynamics need no phantom.' },
-      { id: 'b', label: 'One compact dynamic between the heads, just above, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
+      { id: 'b', label: 'One compact dynamic between the heads, just above, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'c', label: 'Two small condensers as a coincident pair above the drums', ok: false, power: 'phantom', feedback: 'A fair studio idea, but these inputs have no phantom power.' },
       { id: 'd', label: 'A clip-on condenser at each rim', ok: false, power: 'phantom', feedback: 'It needs phantom power these inputs lack.' },
       { id: 'e', label: 'One mic a metre above to catch the whole setup', ok: false, power: 'none', feedback: 'Too distant near a loud kit: more spill and feedback risk.' },
@@ -698,7 +698,7 @@ export const M04B_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. We could not find a recommended bongo mic distance, so the starting points here are regions to begin in: safely clear of the hands, then listen. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a recommended bongo mic distance, so the starting points here are regions to begin in: safely clear of the hands, then listen. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: HEMBRA,
     drums: { macho: MACHO, hembra: HEMBRA },
@@ -766,7 +766,7 @@ export const M04B_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one clip-on at each rim, outside the hands — little stage space. Check the clamp fits, for vibration, cable strain and every finger motion.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. We could not find a recommended bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a recommended bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
       'Height, distance and angle are separate variables: change one at a time and have the player play the whole part again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       'Clearance comes first. Stop the player before moving a mic; keep the grille, body, clamp, boom and cable out of every finger and palm stroke, and leave room for a seated player’s legs. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear; check again during vigorous playing.',
       'A shared mic farther away can represent both drums more evenly in a quiet room — and gathers more room and other instruments; a close mic gives more direct sound but may favour one stroke or one drum. A figure-8 between the drums, a lobe toward each head, is another idea — map its back lobe and side nulls first.',

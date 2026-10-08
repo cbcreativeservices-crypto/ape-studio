@@ -1,5 +1,5 @@
 /**
- * F11 MEASUREMENT MICROPHONES AND CALIBRATION — the recommended starting
+ * F11 MEASUREMENT MICROPHONES AND CALIBRATION — the suggested starting
  * points (charter §2 layer 1). Source keys: measurement_mics/SOURCES.md §0.
  * Frame: F11 geometry.ts (the loudspeaker's reference point at the origin).
  *

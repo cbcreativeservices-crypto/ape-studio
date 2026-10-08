@@ -1,5 +1,5 @@
 /**
- * F15 MACHINERY AND PRODUCT SOUND — the recommended starting points (charter
+ * F15 MACHINERY AND PRODUCT SOUND — the suggested starting points (charter
  * §2 layer 1). Source keys: measurement_mics/SOURCES.md §0; the lesson's
  * claims: machinery_sound/SOURCES.md. Frame: F15 geometry.ts (the fan's
  * footprint centre on the table top at the origin, the airflow along +x).

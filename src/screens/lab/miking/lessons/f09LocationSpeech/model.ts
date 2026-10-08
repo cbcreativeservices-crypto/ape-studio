@@ -1,5 +1,5 @@
 /**
- * F09 LOCATION SPEECH — the recommended starting points (charter §2 layer 1),
+ * F09 LOCATION SPEECH — the suggested starting points (charter §2 layer 1),
  * on frame V (lessons/shared/voice) and the location kit
  * (lessons/shared/field/location.ts). Source keys: docs/labs/miking/
  * location_speech/SOURCES.md (and measurement_mics/SOURCES.md §0); every

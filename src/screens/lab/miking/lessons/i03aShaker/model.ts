@@ -107,5 +107,5 @@ function zonesFor(v: 'toward' | 'side'): DocumentedZone[] {
   ];
 }
 
-/* ── RECOMMENDED STARTING POINTS (lesson L19-L24; corrections SH-xx). ── */
+/* ── SUGGESTED STARTING POINTS (lesson L19-L24; corrections SH-xx). ── */
 export const SHK_ZONES: DocumentedZone[] = [...zonesFor('toward'), ...zonesFor('side')];

@@ -63,7 +63,7 @@ const SPEC = ensembleHandSpec({
     sheetNote: 'For real singers, with their agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
-    placeBadge: 'Blue = recommended starting points · grey dashes = the singers’ space · pinch to zoom',
+    placeBadge: 'Blue = suggested starting points · grey dashes = the singers’ space · pinch to zoom',
     clearance: 'Clearance comes first: the singers’ faces, hands and feet as they move; the stand’s boom runs away from them.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A handheld aimed level at a mouth has its back toward the wedge — but the wedge is low, so tilt or a tighter pattern decides how much it hears.',
     sourceNote: 'What you just saw: a voice reaches two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each singer gives their own delay.',
