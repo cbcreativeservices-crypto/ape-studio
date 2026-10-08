@@ -49,8 +49,9 @@ export const WEARER: Body3 = standing({
   liftL: 25,
   elR: v3(-240, 90, 215),
   wrR: v3(-300, 340, 230),
-  elL: v3(-60, 95, -215),
-  wrL: v3(40, 330, -235),
+  // The far arm's swing kept beside the thigh (figure review 2026-10-08).
+  elL: v3(-150, 95, -215),
+  wrL: v3(-140, 330, -235),
 });
 export const bodyOf = (v: VariantId): Body3 => (v === 'worn' ? WEARER : HOLDER);
 export const POSES = {

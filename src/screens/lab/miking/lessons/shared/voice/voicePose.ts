@@ -30,10 +30,13 @@ export const SINGER_SIDE: PlayerPose = {
   neck: pt(NECK.x, NECK.y),
   shoulderR: pt(NECK.x - 4, NECK.y + 58),
   shoulderL: pt(NECK.x - 18, NECK.y + 48),
-  elbowR: pt(NECK.x + 6, NECK.y + 352),
-  elbowL: pt(NECK.x - 10, NECK.y + 342),
-  handR: { wrist: pt(NECK.x + 40, NECK.y + 612), dir: Math.PI / 2 - 0.22, kind: 'rest' },
-  handL: { wrist: pt(NECK.x + 22, NECK.y + 602), dir: Math.PI / 2 - 0.2, kind: 'rest' },
+  // The arms hang at the sides: the hands beside the thighs, never ahead of
+  // them (figure review 2026-10-08 — a hand at the trousers' front edge read
+  // as at the groin in profile).
+  elbowR: pt(NECK.x - 6, NECK.y + 352),
+  elbowL: pt(NECK.x - 16, NECK.y + 342),
+  handR: { wrist: pt(NECK.x + 6, NECK.y + 612), dir: Math.PI / 2 - 0.08, kind: 'rest' },
+  handL: { wrist: pt(NECK.x - 8, NECK.y + 602), dir: Math.PI / 2 - 0.08, kind: 'rest' },
   hipR: pt(NECK.x - 14, NECK.y + 530),
   hipL: pt(NECK.x - 24, NECK.y + 524),
   kneeR: pt(NECK.x + 4, NECK.y + 980),

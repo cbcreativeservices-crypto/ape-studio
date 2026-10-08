@@ -32,9 +32,9 @@ export const floorOf = (v: VariantId) => FLOOR[v] ?? TABLE_H;
 export const TABLE = { x0: -380, x1: 300, z0: -450, z1: 450 } as const;
 export const tableTop = (v: VariantId) => (v === 'water' ? BASIN.water : v === 'texture' ? BOARD_T : 0);
 
-const IMPACT_BODY: Body3 = standing({ floorY: FLOOR.impact, x: -520, wrR: v3(-110, -180, 40), elR: v3(-380, -330, 210), wrL: v3(-300, 120, -240), elL: v3(-470, -150, -220), kindR: 'grip' });
-const WATER_BODY: Body3 = standing({ floorY: FLOOR.water, x: -560, wrR: v3(-190, -320, 60), elR: v3(-420, -520, 210), wrL: v3(-330, 120, -240), elL: v3(-500, -160, -220), kindR: 'grip' });
-const TEXTURE_BODY: Body3 = standing({ floorY: FLOOR.texture, x: -520, wrR: v3(-110, -90, 80), elR: v3(-360, -300, 220), wrL: v3(-200, -40, -260), elL: v3(-430, -260, -240), kindR: 'grip' });
+const IMPACT_BODY: Body3 = standing({ floorY: FLOOR.impact, x: -500, lean: 28, wrR: v3(-110, -180, 40), elR: v3(-330, -300, 230), wrL: v3(-330, -40, -210), elL: v3(-420, -300, -260), kindR: 'grip' });
+const WATER_BODY: Body3 = standing({ floorY: FLOOR.water, x: -560, lean: 30, wrR: v3(-190, -320, 60), elR: v3(-400, -480, 230), wrL: v3(-170, -250, -40), elL: v3(-380, -420, -260), kindR: 'grip' });
+const TEXTURE_BODY: Body3 = standing({ floorY: FLOOR.texture, x: -520, lean: 25, wrR: v3(-110, -90, 80), elR: v3(-330, -300, 230), wrL: v3(-200, -40, -260), elL: v3(-400, -300, -280), kindR: 'grip' });
 export const BODIES: Readonly<Record<string, Body3>> = { impact: IMPACT_BODY, water: WATER_BODY, texture: TEXTURE_BODY, live: IMPACT_BODY };
 export const bodyOf = (v: VariantId): Body3 => BODIES[v] ?? IMPACT_BODY;
 const POSES = Object.fromEntries(Object.entries(BODIES).map(([k, b]) => [k, { side: sidePose(b), top: topPose(b) }]));

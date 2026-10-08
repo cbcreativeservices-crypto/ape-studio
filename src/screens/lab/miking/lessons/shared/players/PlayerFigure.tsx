@@ -775,7 +775,13 @@ function buildSide(pose: PlayerPose): Built {
   const ankle = (foot: Pt) => pt(foot.u - f * 40, foot.v - 70);
   const leg = (h: Pt, k: Pt, foot: Pt) => limb([h, k, ankle(foot)], [BODY.thighR, seated ? BODY.kneeR : BODY.kneeR - 4, BODY.ankleR]);
   const legFar = leg(pose.hipL, pose.kneeL, pose.footL);
-  const legNear = leg(pose.hipR, pose.kneeR, pose.footR);
+  // The PELVIS in the trousers (figure review 2026-10-08, owner on F04: the
+  // shirt hung below the hips as a bulge and the seat read as a belly): the
+  // shirt is tucked in at the belt, and below it one trouser mass — a FLAT
+  // front no further forward than the thigh, the seat behind, the crotch
+  // under — joined to the near leg, so the hips read the way the face looks.
+  const pelvis = smooth([along(0.15, 92), along(0.02, 88), along(-0.1, 80), along(-0.17, 20), along(-0.16, -64), along(-0.06, -104), along(0.06, -110), along(0.15, -108)], 0.5);
+  const legNear = union(pelvis, leg(pose.hipR, pose.kneeR, pose.footR));
   // Shoes in profile: the heel behind the ankle, the toe forward.
   const shoe = (foot: Pt) => smooth([pt(foot.u - f * 96, foot.v - 2), pt(foot.u - f * 100, foot.v - 64), pt(foot.u - f * 44, foot.v - 92), pt(foot.u + f * 40, foot.v - 62), pt(foot.u + f * 140, foot.v - 34), pt(foot.u + f * 150, foot.v - 4)], 0.45);
   const armFar = limb([pose.shoulderL, pose.elbowL, pose.handL.wrist], [BODY.upperArmR - 2, BODY.elbowR, BODY.wristR + 2]);
@@ -802,6 +808,21 @@ function buildSide(pose: PlayerPose): Built {
     p.close();
     return Skia.Path.MakeFromOp(p, torso, PathOp.Intersect) ?? p;
   })();
+  // The shirt is tucked in: nothing of it below the belt.
+  const tuck = (() => {
+    const q = make();
+    const a = along(0.12, 400);
+    const b = along(0.12, -400);
+    const c = along(-3, -400);
+    const d = along(-3, 400);
+    q.moveTo(a.u, a.v);
+    q.lineTo(b.u, b.v);
+    q.lineTo(c.u, c.v);
+    q.lineTo(d.u, d.v);
+    q.close();
+    return q;
+  })();
+  const shirt = Skia.Path.MakeFromOp(torso, tuck, PathOp.Difference) ?? torso;
   const linesFront = make();
   const cuffAt = lerp(pose.handR.wrist, pose.elbowR, 40 / Math.max(40, dist(pose.handR.wrist, pose.elbowR)));
   linesFront.addPath(crease(pose.elbowR, pose.handR.wrist, dist(pose.elbowR, cuffAt) / Math.max(1, dist(pose.elbowR, pose.handR.wrist)), BODY.wristR + 6, 3));
@@ -822,8 +843,8 @@ function buildSide(pose: PlayerPose): Built {
     { path: legFar, tone: 'trousers', far: true },
     { path: armFar, tone: 'shirt', far: true },
     { path: hL.path, tone: 'skin', far: true },
-    { path: torso, tone: 'shirt' },
     { path: legNear, tone: 'trousers' },
+    { path: shirt, tone: 'shirt' },
   ];
   const front: Mass[] = [
     { path: armNear, tone: 'shirt' },
@@ -838,7 +859,7 @@ function buildSide(pose: PlayerPose): Built {
       { path: shoe(pose.footR), tone: pose.posture === 'floor' ? 'skin' : 'shoe' },
     ],
     foldsBehind: [
-      { path: drape, light: SHIRT_LIGHT, clip: torso },
+      { path: drape, light: SHIRT_LIGHT, clip: shirt },
       { path: legFolds(pose.hipR, pose.kneeR, ankle(pose.footR)), light: TROUSER_LIGHT, clip: legNear },
     ],
     foldsFront: [{ path: sleeveFolds(sh, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }],

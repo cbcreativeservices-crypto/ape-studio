@@ -147,6 +147,14 @@ function newBatch(): Batch {
   };
 }
 
+/** Add a part to a figure mass as a UNION (figure review 2026-10-08): with
+ *  addPath, a torso and the shoulder oval drawn in opposite directions
+ *  cancelled where they overlapped — a hole over the chest that read as a
+ *  coat hanger and a long neck. */
+function addFig(b: Batch, tone: FigTone, q: SkPath): void {
+  b.fig[tone] = Skia.Path.MakeFromOp(b.fig[tone], q, PathOp.Union) ?? b.fig[tone];
+}
+
 /* ── geometry helpers (build time) ── */
 type P2 = { u: number; v: number };
 const P = (u: number, v: number): P2 => ({ u, v });
@@ -682,15 +690,15 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   const lift = standing && KIND[k].posture === 'seated' ? STAND_LIFT : 0;
   // The chair (a drummer's throne: a round seat on a post — group 5).
   if (k === 'drumkit') {
-    b.fig.seat.addPath(rr(o.u - 175, g - DIMS.chairSeat - 40, o.u + 175, g - DIMS.chairSeat + 20, 30));
+    addFig(b, 'seat', rr(o.u - 175, g - DIMS.chairSeat - 40, o.u + 175, g - DIMS.chairSeat + 20, 30));
     line(b.legs, P(o.u, g - DIMS.chairSeat), P(o.u, g - 120));
     line(b.legs, P(o.u, g - 120), P(o.u - 220, g));
     line(b.legs, P(o.u, g - 120), P(o.u + 220, g));
   } else if (!standing) {
     const w = front ? 210 : 230;
-    b.fig.seat.addPath(rr(o.u - w, g - DIMS.chairSeat - 30, o.u + w, g - DIMS.chairSeat + 10, 12));
-    if (front) b.fig.seat.addPath(rr(o.u - 200, g - 900, o.u + 200, g - DIMS.chairSeat - 20, 30));
-    else b.fig.seat.addPath(rr(X(0, -230) - 25, g - 900, X(0, -230) + 25, g - DIMS.chairSeat, 12));
+    addFig(b, 'seat', rr(o.u - w, g - DIMS.chairSeat - 30, o.u + w, g - DIMS.chairSeat + 10, 12));
+    if (front) addFig(b, 'seat', rr(o.u - 200, g - 900, o.u + 200, g - DIMS.chairSeat - 20, 30));
+    else addFig(b, 'seat', rr(X(0, -230) - 25, g - 900, X(0, -230) + 25, g - DIMS.chairSeat, 12));
     line(b.legs, P(o.u - w + 20, g - DIMS.chairSeat), P(o.u - w + 10, g));
     line(b.legs, P(o.u + w - 20, g - DIMS.chairSeat), P(o.u + w - 10, g));
   }
@@ -698,28 +706,28 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   if (standing) {
     for (const sx of [-1, 1]) {
       const xx = front ? o.u + sx * 95 : o.u + sx * 18;
-      b.fig.trousers.addPath(taper(P(xx, g - hipUp), P(xx + (front ? sx * 12 : 0), g - 90), 82, 58));
-      b.fig.shoe.addPath(ellipse(P(front ? xx + sx * 12 : o.u + Math.sign(fwdU || 1) * 60, g - 35), front ? 55 : 120, 38));
+      addFig(b, 'trousers', taper(P(xx, g - hipUp), P(xx + (front ? sx * 12 : 0), g - 90), 82, 58));
+      addFig(b, 'shoe', ellipse(P(front ? xx + sx * 12 : o.u + Math.sign(fwdU || 1) * 60, g - 35), front ? 55 : 120, 38));
     }
   } else if (front) {
     for (const sx of [-1, 1]) {
-      b.fig.trousers.addPath(taper(P(o.u + sx * 105, g - hipUp), P(o.u + sx * 115, g - 520), 84, 72));
-      b.fig.trousers.addPath(taper(P(o.u + sx * 115, g - 520), P(o.u + sx * 125, g - 90), 66, 52));
-      b.fig.shoe.addPath(ellipse(P(o.u + sx * 128, g - 35), 58, 38));
+      addFig(b, 'trousers', taper(P(o.u + sx * 105, g - hipUp), P(o.u + sx * 115, g - 520), 84, 72));
+      addFig(b, 'trousers', taper(P(o.u + sx * 115, g - 520), P(o.u + sx * 125, g - 90), 66, 52));
+      addFig(b, 'shoe', ellipse(P(o.u + sx * 128, g - 35), 58, 38));
     }
   } else {
     const fs = Math.sign(fwdU || -1);
     const knee = P(o.u + fs * 400, g - 520);
-    b.fig.trousers.addPath(taper(P(o.u, g - hipUp), knee, 86, 70));
-    b.fig.trousers.addPath(taper(knee, P(knee.u + fs * 20, g - 90), 64, 52));
-    b.fig.shoe.addPath(ellipse(P(knee.u + fs * 90, g - 35), 125, 38));
+    addFig(b, 'trousers', taper(P(o.u, g - hipUp), knee, 86, 70));
+    addFig(b, 'trousers', taper(knee, P(knee.u + fs * 20, g - 90), 64, 52));
+    addFig(b, 'shoe', ellipse(P(knee.u + fs * 90, g - 35), 125, 38));
   }
   // The torso and shoulders.
-  if (front) b.fig.shirt.addPath(poly([P(o.u - 160, g - hipUp + 30), P(o.u + 160, g - hipUp + 30), P(o.u + 215, g - sh), P(o.u - 215, g - sh)]));
-  else b.fig.shirt.addPath(poly([P(o.u - 120, g - hipUp + 30), P(o.u + 120, g - hipUp + 30), P(o.u + 115, g - sh), P(o.u - 115, g - sh)]));
-  b.fig.shirt.addPath(ellipse(P(o.u, g - sh), front ? 225 : 125, 70));
-  const arm = (pts: P2[]) => b.fig.shirt.addPath(limb(pts.map((q) => pt(q.u, q.v)), pts.map((_, i) => (i === 0 ? 58 : i === pts.length - 1 ? 40 : 48))));
-  const hand = (c: P2) => b.fig.skin.addPath(ellipse(c, 42, 48));
+  if (front) addFig(b, 'shirt', poly([P(o.u - 160, g - hipUp + 30), P(o.u + 160, g - hipUp + 30), P(o.u + 215, g - sh), P(o.u - 215, g - sh)]));
+  else addFig(b, 'shirt', poly([P(o.u - 120, g - hipUp + 30), P(o.u + 120, g - hipUp + 30), P(o.u + 115, g - sh), P(o.u - 115, g - sh)]));
+  addFig(b, 'shirt', ellipse(P(o.u, g - sh), front ? 225 : 125, 70));
+  const arm = (pts: P2[]) => addFig(b, 'shirt', limb(pts.map((q) => pt(q.u, q.v)), pts.map((_, i) => (i === 0 ? 58 : i === pts.length - 1 ? 40 : 48))));
+  const hand = (c: P2) => addFig(b, 'skin', ellipse(c, 42, 48));
   const shL = Q(-200, 0, sh - 40);
   const shR = Q(200, 0, sh - 40);
   switch (k) {
@@ -980,7 +988,7 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       for (const sx of [-1, 1]) {
         const u = X(sx * (L / 2 - 50), 220 + (sx < 0 ? row.Dlow.mm : row.Dhigh.mm) / 2);
         line(b.legs, P(u, g - hb + 14), P(u, g - 40));
-        b.fig.shoe.addPath(ellipse(P(u, g - 30), 34, 30));
+        addFig(b, 'shoe', ellipse(P(u, g - 30), 34, 30));
       }
       if (k === 'vibraphone') line(b.legs, Q(-250, 260, 120), Q(250, 260, 120));
       const hy = hb + 140;
@@ -1068,8 +1076,11 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       if (BAND_KINDS.has(k)) bandElevInstrument(b, s, view, { ...BAND_TOOLS, Q, X, arm, hand, shL, shR, g, o, front, rightU, fwdU });
   }
   const headC = P(o.u, g - ((standing ? DIMS.standingHead : DIMS.seatedHead) - 113));
-  const head = front ? headFront(pt(headC.u, headC.v), 104, g - sh + 30) : headProfile(pt(headC.u, headC.v), 104, g - sh + 30, fwdU >= 0 ? 1 : -1);
-  b.fig.skin.addPath(head.fill);
+  // The neck ends at the collar (figure review 2026-10-08: drawn over the
+  // shirt down to below the shoulder line, it read as a stretched neck).
+  const NECK_V = g - sh - 55;
+  const head = front ? headFront(pt(headC.u, headC.v), 104, NECK_V) : headProfile(pt(headC.u, headC.v), 104, NECK_V, fwdU >= 0 ? 1 : -1);
+  addFig(b, 'skin', head.fill);
 }
 
 function elevStand(b: Batch, s: Seat, view: 'front' | 'section') {

@@ -107,11 +107,49 @@ export function playerSide(hands: readonly (readonly [number, number])[] = []): 
   p.lineTo(-260, -20); // front leg
   p.lineTo(-150, -20);
   for (const [hx, hy] of hands) {
-    p.moveTo(-380, -1450); // shoulder
-    p.cubicTo(-380, -1250, -320, (hy - 1450) / 2 + 20, hx - 60, hy + 40);
+    // A two-bone arm from the shoulder (figure review 2026-10-08): the elbow
+    // where an adult upper arm and forearm meet, bent down and back — never a
+    // curve that sags to the hip before it reaches the hand.
+    const [eu, ev] = elbow2D(LINE_SHOULDER, [hx, hy], 1);
+    p.moveTo(LINE_SHOULDER[0], LINE_SHOULDER[1]);
+    p.lineTo(eu, ev);
     p.lineTo(hx, hy);
   }
   return p;
+}
+
+/** The line-art player's shoulder joint in profile (frame H). */
+export const LINE_SHOULDER: readonly [number, number] = [-380, -1450];
+/** The line-art arm in PROFILE (mm; drawing defaults): an adult upper arm
+ *  (≈ 320) and forearm (≈ 265) seen with the elbow a little out to the side,
+ *  so each reads somewhat shorter than its true length. */
+export const LINE_ARM = { upper: 265, fore: 240 } as const;
+
+/**
+ * The elbow of a two-bone arm in the drawing's plane, from a shoulder to a
+ * hand, bent DOWN (an arm straight down bends back, `facing` +1 = faces +u). A hand out of
+ * reach straightens the arm toward it.
+ */
+export function elbow2D(sh: readonly [number, number], hand: readonly [number, number], facing: 1 | -1): [number, number] {
+  const U = LINE_ARM.upper;
+  const F = LINE_ARM.fore;
+  const dx = hand[0] - sh[0];
+  const dy = hand[1] - sh[1];
+  const L = Math.max(1, Math.hypot(dx, dy));
+  const Lc = Math.min(L, U + F - 1);
+  const a = (U * U - F * F + Lc * Lc) / (2 * Lc);
+  const h = Math.sqrt(Math.max(0, U * U - a * a));
+  const nx = dx / L;
+  const ny = dy / L;
+  // Of the two perpendiculars the elbow takes the one BELOW the arm's line
+  // (gravity); an arm reaching straight down bends it back (−facing).
+  let px = -ny;
+  let py = nx;
+  if (py < -1e-6 || (Math.abs(py) <= 1e-6 && px * facing > 0)) {
+    px = -px;
+    py = -py;
+  }
+  return [sh[0] + nx * a + px * h, sh[1] + ny * a + py * h];
 }
 
 export function playerTop(hands: readonly (readonly [number, number])[] = []): SkPath {
