@@ -96,8 +96,9 @@ import { markLabUnit, registerLabUnits, useLabClearedUnits, type LabKey } from '
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, proNote = false }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -111,7 +112,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  `p<n>` (1-based — the Patchbay / Connector Select convention). Banked
    *  pages read CREDITED on the end screen even after START OVER (PRACTICE). */
   creditLabKey?: LabKey;
+  /** ADDITIVE (owner 2026-10-07): a Mixing-family lab — shows the "Knowing When
+   *  to Bring In a Pro" note on first open (once per device, shared flag) and a
+   *  small link to it on the first page (src/features/lab/ProNote.tsx). */
+  proNote?: boolean;
 }) {
+  // The note is owed: the guest reminder waits, so two popups never present together.
+  const [proNoteOwed, setProNoteOwed] = useState(proNote);
   /**
    * ⛔ THE UNDERSTANDING CHECK IS APPENDED HERE, FOR ALL 33 PagedLab LABS AT
    * ONCE (owner 2026-09-20). Member labs recorded no progress at all, so a
@@ -447,7 +454,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         {/* Before a guest begins (owner 2026-10-04): progress here is not
             saved or credited unless they sign in this session. Once per lab
             per session; inline in Low-Light; nothing for anyone else. */}
-        {ending ? null : <GuestStartReminder activity={`paged:${labId}`} kind={creditLabKey ? 'credit' : 'progress'} style={styles.unreadable} />}
+        {ending ? null : <GuestStartReminder activity={`paged:${labId}`} kind={creditLabKey ? 'credit' : 'progress'} hold={proNote && proNoteOwed} style={styles.unreadable} />}
         {ending ? (
           <LabEndScreen
             labTitle={title}
@@ -474,6 +481,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
               {holdPageBody ? null : (
                 <>
                   {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+                  {page === 0 && proNote ? <ProNoteButton /> : null}
                   <Page ctx={ctx} />
                   {/* The in-flow NEXT / FINISH at the end of the reading (nothing is
                       pinned at the bottom any more). */}
@@ -484,6 +492,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
           </ScrollView>
         )}
       </View>
+      {proNote ? <ProNoteIntro onOwed={setProNoteOwed} /> : null}
     </LabNavProvider>
   );
 }

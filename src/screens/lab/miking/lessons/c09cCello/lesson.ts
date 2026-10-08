@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a bowed string becomes sound — the grip and slip of the bow, the rocking bridge, the top and back — and where the sound leaves the cello. Shown, never played.',
+    goal: 'See how a bowed string becomes sound — the grip and slip of the bow, the rocking bridge, the top and back — and where the sound leaves the cello.',
     credit: { scenarios: ['vc.snd.1', 'vc.snd.2', 'vc.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The bow’s grip and slip keep the string going; the bridge rocks; the top, the back and the air inside radiate. A mic near the bow hears more of its bite, a mic farther away more of the whole body — tendencies, and cellos vary.',
   },

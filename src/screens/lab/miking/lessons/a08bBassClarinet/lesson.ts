@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a breath becomes a bass clarinet note — the reed, the long air column, the first open hole, the upturned bell — and where the sound leaves. Shown, never played.',
+    goal: 'See how a breath becomes a bass clarinet note — the reed, the long air column, the first open hole, the upturned bell — and where the sound leaves.',
     credit: { scenarios: ['bcl.snd.1', 'bcl.snd.2', 'bcl.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Like a saxophone, the bass clarinet radiates a blend of bell and tone holes; which leads changes with the note and the player’s angle. Up a twelfth for the upper register, like the clarinet.',
   },

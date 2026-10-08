@@ -21,7 +21,8 @@ export type IntroKey =
   | 'flashcardsCustomize' // T2 — after ~5 card views/swipes
   | 'flashcardsPower' // T3 — first category long-press, or ~45s in
   | 'glossary'
-  | 'awards';
+  | 'awards'
+  | 'mixingProNote'; // Mixing family (Beginning/Advanced Mixing, Mastering, Mixing Guides) — first open
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -140,5 +141,20 @@ export const SCREEN_INTROS: Record<
       'PROGRAMS — a broad topic path across a whole discipline, earned the same way.\n\n' +
       'Tap any collection to see what you’ve earned and what’s still ahead.',
     button: 'Tap anywhere to continue',
+  },
+  mixingProNote: {
+    // The owner's own copy, word for word (owner 2026-10-07: chose "original,
+    // unchanged"; the title was added). Rendered by ProNoteSheet
+    // (src/features/lab/ProNote.tsx) — a scrolling body with GOT IT pinned
+    // below, not the tap-anywhere IntroSheet. Paragraphs split on blank lines.
+    placeholder: false,
+    title: 'Knowing When to Bring In a Pro',
+    body:
+      'As you begin these mixing and mastering labs, remember that learning these processes also helps you recognize when to bring in a qualified professional. For music you intend to release, an experienced mixing or mastering engineer can be a valuable investment in the final result.\n\n' +
+      'A skilled engineer brings practiced listening, technical judgment, reliable equipment, and a studio environment that supports accurate decisions. Their experience helps them recognize problems, preserve what already works, and choose changes that serve the music. When choosing someone, listen to their previous work, review their credits, and consider their experience with your musical style. Equipment and an impressive résumé matter, but the quality of their work and their understanding of your goals matter most.\n\n' +
+      'This is especially valuable in mastering. An experienced mastering engineer may evaluate finished mixes from many artists, producers, and mixing engineers, developing a broad perspective on balance, dynamics, and release preparation. Just as importantly, they hear your project with fresh ears. After repeatedly recording, editing, and mixing the same music, you can become accustomed to imbalances, harshness, distortion, or excessive processing. Even experienced professionals can lose perspective when they have spent too long with a track.\n\n' +
+      'If these labs inspire you to pursue mixing or mastering professionally, pursue that goal. Practice, develop your listening skills, seek feedback, and build your experience. If your main goal is to create and release music, however, and your listening skills, monitoring environment, or understanding of the process are still developing, professional help may give your work its best opportunity to succeed.\n\n' +
+      'Continue learning and experimenting. Understanding the craft will help you communicate your intentions and evaluate the results when you collaborate with an engineer. Knowing when to seek another person’s expertise is itself an important professional skill.',
+    button: 'Got it',
   },
 };

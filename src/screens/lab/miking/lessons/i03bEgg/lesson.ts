@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound inside the egg — the grains lagging, striking, rolling — and how the grip changes where it can leave. Shown, never played.',
+    goal: 'See how a stroke becomes sound inside the egg — the grains lagging, striking, rolling — and how the grip changes where it can leave.',
     credit: { scenarios: ['egg.snd.1', 'egg.snd.2', 'egg.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The grains lag the shell and strike it when the stroke turns — the attack — and roll along it — the wash. A palm over the shell shields and damps part of it.',
   },

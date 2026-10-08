@@ -14,7 +14,7 @@
  * on the confirmed press — exactly the hub's timings.
  */
 import { memo, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Animated, Easing, Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, Easing, Platform, Pressable, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -70,10 +70,20 @@ export function GlassTile({
   accessibilityLabel,
   style,
   glassStyle,
+  onTouchStart,
+  onHoverIn,
+  onHoverOut,
+  onLayout,
 }: {
   children: ReactNode;
   onPress: () => void;
   accessibilityLabel: string;
+  /** ADDITIVE (Mixing Guides world map, 2026-10-08): a finger lands on the tile. */
+  onTouchStart?: () => void;
+  /** ADDITIVE: a mouse / trackpad pointer enters or leaves (web, iPad). */
+  onHoverIn?: () => void;
+  onHoverOut?: () => void;
+  onLayout?: (e: LayoutChangeEvent) => void;
   /** The recess (outer) — width / height from the caller. */
   style?: StyleProp<ViewStyle>;
   /** The glass (inner display) — background, padding, layout of the content. */
@@ -102,6 +112,7 @@ export function GlassTile({
     ]).start();
 
   const onIn = () => {
+    onTouchStart?.();
     if (!busy.current) animateIn();
   };
   const onOut = () => {
@@ -133,6 +144,9 @@ export function GlassTile({
       onPress={activate}
       onPressIn={onIn}
       onPressOut={onOut}
+      onHoverIn={onHoverIn}
+      onHoverOut={onHoverOut}
+      onLayout={onLayout}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       style={[styles.recess, style]}

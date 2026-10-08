@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes the cajón’s sound — the plate, the wires, the air in the box and the port — and what a centre stroke and a corner slap each move. Shown, never played.',
+    goal: 'See how a stroke becomes the cajón’s sound — the plate, the wires, the air in the box and the port — and what a centre stroke and a corner slap each move.',
     credit: { scenarios: ['caj.snd.1', 'caj.snd.2', 'caj.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Centre strokes pump the box’s air (bass, much of it from the port); corner slaps flex the top against the wires (snare-like). The port also puffs air.',
   },

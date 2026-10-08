@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound — the fill lagging, landing, sliding — and where the sound leaves. Shown, never played.',
+    goal: 'See how a stroke becomes sound — the fill lagging, landing, sliding — and where the sound leaves.',
     credit: { scenarios: ['shk.snd.1', 'shk.snd.2', 'shk.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The fill lags the shell, lands on the end when the stroke turns — the accent — and slides along the wall in between — the wash. The whole shell radiates; the player’s stroke sets the balance.',
   },

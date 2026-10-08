@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound in a ride — the tip on the bow, the plate’s shapes, the ping over the wash — and who on the kit hears it. Shown, never played.',
+    goal: 'See how a stroke becomes sound in a ride — the tip on the bow, the plate’s shapes, the ping over the wash — and who on the kit hears it.',
     credit: { scenarios: ['rd.snd.1', 'rd.snd.2', 'rd.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The ping starts where the tip meets the bow; the wash builds as the whole plate rings, and it leaves both faces — up to the overheads and down onto the floor tom. Where the stick lands changes which shapes ring.',
   },

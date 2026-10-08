@@ -30,7 +30,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound in a hi-hat — the stick, the plate’s shapes, closed against open — and where that sound goes. Shown, never played.',
+    goal: 'See how a stroke becomes sound in a hi-hat — the stick, the plate’s shapes, closed against open — and where that sound goes.',
     credit: { scenarios: ['hh.snd.1', 'hh.snd.2', 'hh.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The attack starts where the stick meets the top cymbal near its edge; closed, the pair holds itself still, open it rings and washes. Much of the sound spreads out sideways, and air rushes out of the edges as the pair closes.',
   },

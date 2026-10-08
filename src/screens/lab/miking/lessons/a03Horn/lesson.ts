@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how the player’s buzzing lips become sound — the pulse down the tube, the standing wave, the bell — and why the wall behind the player is part of a horn’s sound. Shown, never played.',
+    goal: 'See how the player’s buzzing lips become sound — the pulse down the tube, the standing wave, the bell — and why the wall behind the player is part of a horn’s sound.',
     credit: { scenarios: ['hn.snd.1', 'hn.snd.2', 'hn.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The lips buzz, the air column rings, and the sound leaves a bell that points back. In front you hear more of the room’s reflection; behind the bell, the direct and more forceful sound — tendencies, and rooms vary.',
   },

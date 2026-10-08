@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a key becomes sound — the hammer, the strings, the bridge, the soundboard, the damper — and where the sound leaves the piano. Shown, never played.',
+    goal: 'See how a key becomes sound — the hammer, the strings, the bridge, the soundboard, the damper — and where the sound leaves the piano.',
     credit: { scenarios: ['pn.snd.1', 'pn.snd.2', 'pn.snd.3'], interactive: 'soundPath', note: 'Step the key through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The attack starts where the hammers strike the strings; the body comes from the soundboard, which radiates up and down. A grand’s raised lid throws much of it out over the curved side; an upright sends much of it out at the back.',
   },

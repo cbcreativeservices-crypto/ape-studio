@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where the voice comes from',
-    goal: 'See how breath becomes a voice and where it leaves — and what fast, consonant-heavy delivery sends out with it: repeated puffs of air and sharp hiss along the mouth’s axis. Shown, never played.',
+    goal: 'See how breath becomes a voice and where it leaves — and what fast, consonant-heavy delivery sends out with it: repeated puffs of air and sharp hiss along the mouth’s axis.',
     credit: { scenarios: ['rp.snd.1', 'rp.snd.2', 'rp.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'The voice leaves through the mouth, so every distance is read from the lips. A fast verse sends puff after puff and hiss after hiss straight out along the mouth’s axis — a screen, a grille, a little angle or a little distance keeps them off a capsule.',
   },

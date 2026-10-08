@@ -193,6 +193,20 @@ import { E16_ART } from '../lessons/e16BigBand/art';
 ART.E16 = E16_ART;
 import { E12_ART } from '../lessons/e12PercussionEnsemble/art';
 ART.E12 = E12_ART;
+/* Lab 6 (field), group 1 — Foley stage: F01, F02, F03, F04 (each lesson on its own line). */
+import { withFoleyPages } from '../lessons/shared/foley/foleyPages';
+import { F01_ART } from '../lessons/f01Footsteps/art';
+import { FootstepFloor, FootstepStrike } from '../lessons/f01Footsteps/soundArt';
+ART.F01 = withFoleyPages({ ...F01_ART, StrikeSequence: FootstepStrike, CoupledHeads: FootstepFloor });
+import { F02_ART } from '../lessons/f02Clothing/art';
+import { ClothMotion, ClothStrike } from '../lessons/f02Clothing/soundArt';
+ART.F02 = withFoleyPages({ ...F02_ART, StrikeSequence: ClothStrike, CoupledHeads: ClothMotion });
+import { F03_ART } from '../lessons/f03Props/art';
+import { PropClickBody, PropStrike } from '../lessons/f03Props/soundArt';
+ART.F03 = withFoleyPages({ ...F03_ART, StrikeSequence: PropStrike, CoupledHeads: PropClickBody });
+import { F04_ART, F04_PATH } from '../lessons/f04Impacts/pages';
+import { ImpactStrike, WaterHitTail } from '../lessons/f04Impacts/soundArt';
+ART.F04 = withFoleyPages({ ...F04_ART, StrikeSequence: ImpactStrike, CoupledHeads: WaterHitTail }, F04_PATH);
 /* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
 import { F09_ART } from '../lessons/f09LocationSpeech/art';
 ART.F09 = F09_ART;
@@ -205,6 +219,13 @@ import { F12_ART } from '../lessons/f12SoundLevel/art';
 ART.F12 = F12_ART;
 import { F13_ART } from '../lessons/f13RoomAcoustics/art';
 ART.F13 = F13_ART;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_ART } from '../lessons/f14SystemMeasurement/art';
+ART.F14 = F14_ART;
+import { F15_ART } from '../lessons/f15Machinery/art';
+ART.F15 = F15_ART;
+import { F16_ART } from '../lessons/f16ScientificArrays/art';
+ART.F16 = F16_ART;
 /* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
 import { B01_ART } from '../lessons/b01RadioHost/art';
 ART.B01 = B01_ART;

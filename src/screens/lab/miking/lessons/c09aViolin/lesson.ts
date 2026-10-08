@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a bowed string becomes sound — the bow’s grip and slip, the rocking bridge, the top and back — and where the sound leaves the violin. Shown, never played.',
+    goal: 'See how a bowed string becomes sound — the bow’s grip and slip, the rocking bridge, the top and back — and where the sound leaves the violin.',
     credit: { scenarios: ['vn.snd.1', 'vn.snd.2', 'vn.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The bow’s grip and slip keep the string going; the bridge rocks; the top and back radiate, in a pattern that changes with pitch. A mic very close hears one slice; a little distance blends the whole violin — tendencies, and violins vary.',
   },

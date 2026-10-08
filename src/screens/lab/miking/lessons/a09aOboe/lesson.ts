@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a breath becomes an oboe note — the double reed, the air column, the first open hole — and where the sound leaves. Shown, never played.',
+    goal: 'See how a breath becomes an oboe note — the double reed, the air column, the first open hole — and where the sound leaves.',
     credit: { scenarios: ['ob.snd.1', 'ob.snd.2', 'ob.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The two blades let air in in puffs; the cone of air rings; most of each note leaves from the first open hole, the lowest from the bell; up an octave with the octave key. A mic sees one part of a moving picture.',
   },

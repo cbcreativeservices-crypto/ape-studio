@@ -15,7 +15,7 @@ import { CH_C, E13_MODEL, E13_PLACE, E13_SETUPS, E13_WEDGES, E13_ZONES } from '.
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a mixed ensemble in brief — strings, winds, a horn and a piano, and the orchestra it grows into — and see where each instrument’s sound leaves it. Shown, never played.',
+    goal: 'Meet a mixed ensemble in brief — strings, winds, a horn and a piano, and the orchestra it grows into — and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['mix.meet.1', 'mix.meet.2', 'mix.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Every family sends its sound its own way — strings up and out, the horn backward, the piano under its open lid — and the room joins them into one sound. A main array hears that blend; a close mic hears only part of one instrument.',
   },

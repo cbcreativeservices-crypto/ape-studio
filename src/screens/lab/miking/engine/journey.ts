@@ -27,7 +27,7 @@ export type StageId = 'meet' | 'setups' | 'mics' | 'placement' | 'advanced' | 'p
 export type Stage = { id: StageId; title: string; line: string; pages: readonly PageId[] };
 
 export const STAGES: readonly Stage[] = [
-  { id: 'meet', title: 'Meet it — where the sound comes from', line: 'What it is, in brief, and where its sound leaves — shown, never played.', pages: ['meet'] },
+  { id: 'meet', title: 'Meet it — where the sound comes from', line: 'What it is, in brief, and where its sound leaves.', pages: ['meet'] },
   { id: 'setups', title: 'Starting setups', line: 'Real mic setups drawn on the instrument: one mic, two mics, close and farther back.', pages: ['setups'] },
   { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — seen on the instrument.', pages: ['microphone'] },
   { id: 'placement', title: 'Placement Studio', line: 'Start from a setup, then move the mic and see what changes.', pages: ['placement'] },

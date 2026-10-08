@@ -179,6 +179,15 @@ import { E16_LESSON } from '../lessons/e16BigBand/lesson.ts';
 LESSON_CONTENT.E16 = E16_LESSON;
 import { E12_LESSON } from '../lessons/e12PercussionEnsemble/lesson.ts';
 LESSON_CONTENT.E12 = E12_LESSON;
+/* Lab 6 (field), group 1 — Foley stage: F01, F02, F03, F04 (each lesson on its own line). */
+import { F01_LESSON } from '../lessons/f01Footsteps/lesson.ts';
+LESSON_CONTENT.F01 = F01_LESSON;
+import { F02_LESSON } from '../lessons/f02Clothing/lesson.ts';
+LESSON_CONTENT.F02 = F02_LESSON;
+import { F03_LESSON } from '../lessons/f03Props/lesson.ts';
+LESSON_CONTENT.F03 = F03_LESSON;
+import { F04_LESSON } from '../lessons/f04Impacts/lesson.ts';
+LESSON_CONTENT.F04 = F04_LESSON;
 /* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
 import { F09_LESSON } from '../lessons/f09LocationSpeech/lesson.ts';
 LESSON_CONTENT.F09 = F09_LESSON;
@@ -191,6 +200,13 @@ import { F12_LESSON } from '../lessons/f12SoundLevel/lesson.ts';
 LESSON_CONTENT.F12 = F12_LESSON;
 import { F13_LESSON } from '../lessons/f13RoomAcoustics/lesson.ts';
 LESSON_CONTENT.F13 = F13_LESSON;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_LESSON } from '../lessons/f14SystemMeasurement/lesson.ts';
+LESSON_CONTENT.F14 = F14_LESSON;
+import { F15_LESSON } from '../lessons/f15Machinery/lesson.ts';
+LESSON_CONTENT.F15 = F15_LESSON;
+import { F16_LESSON } from '../lessons/f16ScientificArrays/lesson.ts';
+LESSON_CONTENT.F16 = F16_LESSON;
 /* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
 import { B01_LESSON } from '../lessons/b01RadioHost/lesson.ts';
 LESSON_CONTENT.B01 = B01_LESSON;

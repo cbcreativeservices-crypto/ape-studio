@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound — broad shapes first, then the build-up into many finer ones on a tam-tam, or the boss’s steadier tone — and where it leaves. Shown, never played.',
+    goal: 'See how a stroke becomes sound — broad shapes first, then the build-up into many finer ones on a tam-tam, or the boss’s steadier tone — and where it leaves.',
     credit: { scenarios: ['gg.snd.1', 'gg.snd.2', 'gg.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A gong rings in many shapes at once; where it is struck decides which. On a tam-tam the energy spreads after the stroke into finer shapes — the sound swells. A stroke on the boss drives mostly the ring-shaped ones. Both faces radiate.',
   },

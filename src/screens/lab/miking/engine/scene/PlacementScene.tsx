@@ -47,11 +47,12 @@ import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
 import { fitXform, project, unprojectDelta, zoomAbout, type ViewXform } from '../geometry/frame.ts';
 import { guideFor, projected, type Guide } from '../geometry/guides.ts';
 import { fmtLen } from '../model/units.ts';
-import { assembly, CLIP_REACH, constrainMove, pinToSurface, type Blocked } from '../geometry/collision.ts';
+import { assembly, CLIP_REACH, constrainMove, pinToSurface, POLE_RADIUS, type Blocked } from '../geometry/collision.ts';
 import { elbowOf, gooseneckPts } from '../geometry/arm.ts';
 import { deriveReadouts } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { gain, isModelled } from '../physics/polar.ts';
+import { shotgunLobe } from '../physics/shotgun.ts';
 import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
@@ -407,6 +408,8 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
   const t = micType(typeId);
   const len = t.body.length.mm;
   const r = t.body.radius.mm;
+  // lab6 group 1: a body reaching ahead of its reference point (a shotgun's tube).
+  const fore = t.body.fore?.mm ?? 0;
   const surface = t.mount === 'surface';
   // A side-address body stands upright: its long extent shows from the side,
   // its depth from above.
@@ -444,10 +447,10 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
     <Group>
       <Group transform={transform}>
         {t.pop ? <PopGooseneck pop={t.pop} len={len} flip={popFlip} /> : null}
-        <MikingMicArt art={t.art} r={r} len={len} cross={cross} />
+        <MikingMicArt art={t.art} r={r} len={len} cross={cross} fore={fore} />
         {t.pop ? <PopHoop pop={t.pop} /> : null}
         {/* Collision: a red outline + the scene's ✕ label (colour never alone). */}
-        <Path path={outlineOf(len, cross)} style="stroke" strokeWidth={5} color={RED} opacity={redOpacity} />
+        <Path path={outlineOf(len, cross, fore)} style="stroke" strokeWidth={5} color={RED} opacity={redOpacity} />
       </Group>
       {!surface && focus ? (
         <>
@@ -527,12 +530,12 @@ function PopGooseneck({ pop, len, flip }: { pop: NonNullable<ReturnType<typeof m
 }
 
 const outlineCache = new Map<string, ReturnType<typeof Skia.Path.Make>>();
-function outlineOf(len: number, cross: number) {
-  const k = `${len}:${cross}`;
+function outlineOf(len: number, cross: number, fore = 0) {
+  const k = `${len}:${cross}:${fore}`;
   let p = outlineCache.get(k);
   if (!p) {
     p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross / 2 - 4, -4, cross + 8, len + 8), 8, 8));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross / 2 - 4, -fore - 4, cross + 8, len + fore + 8), 8, 8));
     outlineCache.set(k, p);
   }
   return p;
@@ -655,6 +658,62 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
 }
 
 /**
+ * lab6 group 1 — a hand-held BOOM POLE ('pole' mount), drawn from the SAME
+ * capsules the collision uses (`assembly`): the pole as a slim carbon tube
+ * from the mic's tail to the operator's hands, and — when the lesson's art
+ * draws one (`LessonArt.PoleOperator`) — the operator, standing behind the
+ * hands, facing the mic. The figure is static and only MOVES with the hands
+ * (a transform), so dragging the mic stays on the UI thread.
+ */
+function PoleMount({ rig, slot, pose, view, Operator }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; Operator?: LessonArt['PoleOperator'] }) {
+  const scene = rig.scene;
+  const body = rig.body[slot];
+  const geo = useDerivedValue(() => {
+    if (body.mount !== 'pole') return { ax: 0, av: 0, bx: 0, bv: 0, ux: 1, uz: 0 };
+    const segs = assembly(scene, pose.value, body);
+    for (let i = 0; i < segs.length; i++) {
+      if (segs[i].piece !== 'boom') continue;
+      const a = segs[i].a;
+      const b = segs[i].b;
+      const hx = b.x - a.x;
+      const hz = b.z - a.z;
+      const hl = Math.sqrt(hx * hx + hz * hz) || 1;
+      return { ax: a.x, av: vOf(view, a), bx: b.x, bv: vOf(view, b), ux: hx / hl, uz: hz / hl };
+    }
+    return { ax: 0, av: 0, bx: 0, bv: 0, ux: 1, uz: 0 };
+  });
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(geo.value.ax, geo.value.av);
+    p.lineTo(geo.value.bx, geo.value.bv);
+    return p;
+  });
+  // The operator: side view — feet on the floor under the hands, mirrored to
+  // face the mic; plan — at the hands, turned along the pole.
+  const yFloor = scene.yFloor;
+  const xfOp = useDerivedValue(() => {
+    const g = geo.value;
+    if (view === 'side') return [{ translateX: g.bx }, { translateY: yFloor }, { scaleX: g.ux >= 0 ? 1 : -1 }];
+    return [{ translateX: g.bx }, { translateY: g.bv }, { rotate: Math.atan2(g.uz, g.ux) }];
+  });
+  if (body.mount !== 'pole') return null;
+  return (
+    <>
+      {Operator ? (
+        <Group transform={xfOp}>
+          <Operator view={view} />
+        </Group>
+      ) : null}
+      <Path path={path} style="stroke" strokeWidth={POLE_RADIUS * 2 + 4} strokeCap="round" color="#060608" />
+      <Path path={path} style="stroke" strokeWidth={POLE_RADIUS * 2} strokeCap="round" color="#2b2e35" />
+      <Group transform={[{ translateX: -1.2 }, { translateY: -1.8 }]}>
+        <Path path={path} style="stroke" strokeWidth={3} strokeCap="round" color="#c9ced8" opacity={0.45} />
+      </Group>
+    </>
+  );
+}
+
+/**
  * A RIM CLAMP's arm, from the mic's tail to its grip on the hoop — the same
  * capsule `assembly` uses (the clamp's look is ILLUSTRATIVE: a jaw on the
  * hoop, a short swivel arm). Red when the hoop is out of the clamp's reach.
@@ -770,7 +829,29 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   );
 }
 
-function PolarSlice({ pose, view, pattern }: { pose: SharedValue<MicPose>; view: ViewId; pattern: MicPattern }) {
+function PolarSlice({ pose, view, pattern, shotgun = false }: { pose: SharedValue<MicPose>; view: ViewId; pattern: MicPattern; shotgun?: boolean }) {
+  // lab6 group 1: a SHORT SHOTGUN — its base pattern below the tube's
+  // transition, and the narrower lobe it tends toward at high frequencies
+  // (engine/physics/shotgun.ts): a simplified picture, drawn inside the base.
+  const high = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (!shotgun) return p;
+    const ps = pose.value;
+    const aim = aimVec(ps.az, ps.el);
+    const cu = ps.p.x;
+    const cv = vOf(view, ps.p);
+    for (let i = 0; i <= 120; i++) {
+      const phi = (i / 120) * Math.PI * 2;
+      const d = view === 'side' ? { x: Math.cos(phi), y: Math.sin(phi), z: 0 } : { x: Math.cos(phi), y: 0, z: Math.sin(phi) };
+      const g = shotgunLobe(angleBetween(aim, d), 'high') * POLAR_R * 1.35;
+      const u = cu + g * Math.cos(phi);
+      const v = cv + g * Math.sin(phi);
+      if (i === 0) p.moveTo(u, v);
+      else p.lineTo(u, v);
+    }
+    p.close();
+    return p;
+  });
   const path = useDerivedValue(() => {
     const p = Skia.Path.Make();
     if (!isModelled(pattern)) return p;
@@ -799,6 +880,14 @@ function PolarSlice({ pose, view, pattern }: { pose: SharedValue<MicPose>; view:
       <Path path={path} style="stroke" strokeWidth={2.5} color={IDEAL} opacity={0.7}>
         <DashPathEffect intervals={[10, 7]} />
       </Path>
+      {shotgun ? (
+        <>
+          <Path path={high} color={IDEAL} opacity={0.1} />
+          <Path path={high} style="stroke" strokeWidth={2.5} color={IDEAL} opacity={0.85}>
+            <DashPathEffect intervals={[4, 5]} />
+          </Path>
+        </>
+      ) : null}
     </>
   );
 }
@@ -1764,10 +1853,13 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
           ))}
           {micsShown.map((m) => (
+            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} />
+          ))}
+          {micsShown.map((m) => (
             <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
           ))}
           {showPolar
-            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} />)
+            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} />)
             : null}
           {guideData.map((d) => (
             <SetupGuide key={`guide:${d.slot}`} g={d.g} view={view} xf={xf} dashMm={10 / base.s} drawDim={!d.short} />

@@ -30,7 +30,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mallet stroke becomes a note — the bar’s shapes, the pipe under it, the boxes under the lowest notes — and where the sound leaves. Shown, never played.',
+    goal: 'See how a mallet stroke becomes a note — the bar’s shapes, the pipe under it, the boxes under the lowest notes — and where the sound leaves.',
     credit: { scenarios: ['mr.snd.1', 'mr.snd.2', 'mr.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The bar rings about two still points the cord passes through; the pipe under it — a quarter wavelength long — rings with it and helps the note develop. A straight pipe for the lowest notes would be taller than the bars are high: they get boxes.',
   },

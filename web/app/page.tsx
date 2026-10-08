@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { LaunchOverlay } from "@/components/LaunchOverlay";
-import { TAGLINE, KNOWLEDGE } from "@/lib/brand";
+import { TAGLINE, SUBLINE, KNOWLEDGE } from "@/lib/brand";
 import { AppScreen } from "@/components/AppScreen";
 import { AppScreenMarquee } from "@/components/AppScreenMarquee";
 import { Meterbridge, RoomField, Veil, Well } from "@/components/Atmosphere";
@@ -34,8 +34,7 @@ function HomeContent() {
             {TAGLINE}
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-base text-text-sub sm:text-lg">
-            A structured way to learn professional audio — and a credential you
-            can show.
+            {SUBLINE}
           </p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link

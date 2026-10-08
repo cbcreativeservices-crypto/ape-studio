@@ -205,6 +205,7 @@ Added 2026-10-08 by the Lab 6 group 4 builder (branch lab6-g4). The full registe
 | RA-T | Rational Acoustics, T20/T30/EDT | fit ranges, ×3/×2/×6, 10 dB margin (decay.ts) |
 | MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing (measureSpec.LISTENER_HEIGHT, F13) |
 | CALC-* | app calculators | Leq and combine via calcBridge.ts; speed of sound and P_REF_PA via calcUnits |
+
 ## 14. Lab 6 group 6 — location and spatial (F09, F10; `lessons/shared/field/`)
 
 Added 2026-10-08 by the Lab 6 group 6 builder (branch lab6-g6): the keys the field and spatial mic types, zones and parts name. The full register is `measurement_mics/SOURCES.md` §0 (Lab 6 part 2); the shotgun model is `foley_footsteps/SOURCES.md` §c; per-lesson claims in `location_speech/SOURCES.md` and `spatial_field/SOURCES.md`.
@@ -224,7 +225,36 @@ Added 2026-10-08 by the Lab 6 group 6 builder (branch lab6-g6): the keys the fie
 | LESSON-F09 | The owner's lesson F09 (practice statements kept as written) | `source_text/F09-…txt` | the lesson |
 | LESSON-F10 | The owner's lesson F10 (practice statements kept as written) | `source_text/F10-…txt` | the lesson |
 
-## 15. Lab 7 group 1 — broadcast desk and studio voice (B01, B07, B06; `lessons/shared/broadcast/`)
+## 15. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
+
+Added 2026-10-08 by the Lab 6 group 1 builder (branch lab6-g1): the short shotgun (on a stand or a pole), the
+small supercardioid without a tube, the room condenser and the hydrophone / contact cards. The full Lab 6 register
+is `foley_footsteps/SOURCES.md` §0; the shotgun model is its §c. (The pencil body is AX-DPE8; the large
+condenser's body S-SM4-WEB.)
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| SCH-SHOTGUN | SCHOEPS, "Principal Characteristics of the Different Microphone Types" (PDF): "For wavelengths longer than the tube — at low and midrange frequencies — the tube has little effect … no greater rejection of off-axis sound than the capsule on which it is based. At higher frequencies the pickup pattern becomes narrower"; "A small directional microphone with smooth off-axis response … can often be placed closer to a sound source than a shotgun microphone" | see `foley_footsteps/SOURCES.md` §0, §c | PDF read 2026-10-07 (Lab 6 preparation) |
+| DPA-TUBE | DPA, "The interference tube and its use in microphones": "Increased interference tube length will result in increased attenuation at lower frequencies"; "when a shotgun microphone is rotated, the surroundings sound different due to shifts in sound color." | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| S-3REASONS | Shure, "Three Reasons Why Mic Placement Matters": cardioid and supercardioid patterns reduce off-axis sound; "Aligning floor monitors and side fills with the directional microphone's angle of rejection will give the maximum gain before feedback" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
+| ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
+## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
+
+Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.
+
+| Key | Source | Used for |
+|---|---|---|
+| MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing receiver heights (F14 seats; F15's seated user, reused) |
+| ISO-3744 | ISO 3744:2025 (ed. 4), via national-body listings | internal only: the sound-power method F15 calls "the named method" |
+| DOSITS-AW | DOSITS, sound in air vs water | 1 µPa vs 20 µPa; 26 dB of a 61.5 dB difference (arrays.WATER_AIR; the units card) |
+| PROBE-SPACER | intensity-probe maker data (search) | the 12 / 25 / 50 mm spacer presets (arrays.SPACERS_MM); the bands are not printed |
+| MW-ULA | MathWorks, time-delay beamforming of a ULA | spacing below half a wavelength (arrays.lambdaHalf) |
+| GRAS-FF | GRAS microphone guide | the measurement mics' field responses (reused from group 4) |
+| F14-LESSON, F15-LESSON, F16-LESSON | the owner's lesson texts (`source_text/F14…F16-*.txt`) | the practice claims each zone and item rests on |
+| CALC-* | app calculators | `speedOfSoundAir` (λ/2; Δt via twoMic.deltaTms), `leq` via calcBridge (the cycle strip) |
+## 17. Lab 7 group 1 — broadcast desk and studio voice (B01, B07, B06; `lessons/shared/broadcast/`)
 
 Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the broadcast mic types and their zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `radio_host/`, `voiceover_guests/` and `panels_press/SOURCES.md`; Lab 5 voice keys in `lead_vocal/SOURCES.md` §0.
 

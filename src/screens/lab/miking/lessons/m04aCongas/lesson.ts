@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a hand stroke becomes sound — the head, the air in the shell, the open lower end — and how where the hand lands changes what the head does. Shown, never played.',
+    goal: 'See how a hand stroke becomes sound — the head, the air in the shell, the open lower end — and how where the hand lands changes what the head does.',
     credit: { scenarios: ['cg.snd.1', 'cg.snd.2', 'cg.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The hand’s attack starts at the head. The body — the head and the air in the shell — leaves from the head and through the open lower end. A mic hears more of whichever it is closer to and faces: a tendency, and drums vary.',
   },

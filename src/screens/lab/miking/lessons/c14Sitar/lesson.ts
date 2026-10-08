@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mizrab stroke becomes sound — the string grazing the broad bridge, the board, the gourd’s air — where the sound leaves, and why the sympathetic strings ring after some notes. Shown, never played.',
+    goal: 'See how a mizrab stroke becomes sound — the string grazing the broad bridge, the board, the gourd’s air — where the sound leaves, and why the sympathetic strings ring after some notes.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The board, driven through the broad bridge, does most of the work; the bridge’s buzz is the player’s; and the sympathetic strings ring with the notes — or the overtones — that match their tuning.',
   },

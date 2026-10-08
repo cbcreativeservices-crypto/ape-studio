@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a glancing blow becomes sound in a crash — the edge, the plate’s shapes, the swing — and who on the kit hears it. Shown, never played.',
+    goal: 'See how a glancing blow becomes sound in a crash — the edge, the plate’s shapes, the swing — and who on the kit hears it.',
     credit: { scenarios: ['cr.snd.1', 'cr.snd.2', 'cr.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Struck on the edge, a crash opens up at once and swings hard; its sound leaves both faces and spreads widely — every mic on the kit hears it, each at its own time.',
   },
