@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 13:59 · ccode · 0ffe6ba9
+changed: Mixing Guides map: the tap-to-open flash is 1 s (was 1.5 s), three blinks
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-08 13:01 · ccode · daba6474
 changed: Merge figure-review: human figures drawn correctly, proportionally and decently
 affects other side: nothing (client-only drawings)
