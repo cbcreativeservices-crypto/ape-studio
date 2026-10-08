@@ -640,6 +640,18 @@ affects other side: nothing — website launch overlay date text only (now Tuesd
 needs: nothing
 
 
+### 2026-10-07 23:12 · ccode · 2d9b22ad
+changed: Miking Lab 6 g4: F11, F12, F13 lessons and the field lab row
+affects other side: nothing (client-only lesson data; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · a0b9a935
+changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
+affects other side: nothing (client-only lab code; no backend reads or writes)
+needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
+
+
 ### 2026-10-07 17:07 · ccode · 6660b125
 changed: Merge remote-tracking branch 'origin/sentry-fixes' into HEAD
 affects other side: nothing (client-only)
