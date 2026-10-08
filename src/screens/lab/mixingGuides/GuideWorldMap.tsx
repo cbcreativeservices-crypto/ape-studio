@@ -19,7 +19,7 @@
  * screen readers; the caption is read).
  */
 import { memo, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, G, Path } from 'react-native-svg';
 import { A11Y_HIDDEN } from '../../../features/settings/a11y';
 import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
@@ -77,6 +77,11 @@ export function GuideWorldMap({
   onHide: () => void;
 }) {
   const height = Math.round(width / WORLD_ASPECT);
+  // Hunt 2026-10-08 T-5: the caption is not held to the map's width. On a
+  // phone turned sideways the map is ~210 px wide (it is sized by the window
+  // height), and two lines that narrow cut the caption ("…comes from. Cli…").
+  const { width: winW } = useWindowDimensions();
+  const captionW = Math.max(width, Math.min(winW - 32, 560));
   const motion = useDecorativeMotion();
   // The fill layer shown, and its opacity: fade the old style out, swap, fade the new one in.
   const [shown, setShown] = useState<string | null>(activeId);
@@ -137,7 +142,7 @@ export function GuideWorldMap({
         </Animated.View>
         <Outline width={width} height={height} />
       </View>
-      <View style={[styles.captionRow, { width }]}>
+      <View style={[styles.captionRow, { width: captionW }]}>
         <Text style={styles.caption} numberOfLines={2} accessibilityLiveRegion="polite">{caption}</Text>
         <Pressable onPress={onHide} hitSlop={8} accessibilityRole="button" accessibilityLabel="Hide the world map">
           <Text style={styles.hide}>Hide map</Text>

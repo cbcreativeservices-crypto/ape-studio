@@ -19,6 +19,19 @@ const WHOLE: Readonly<Record<string, string>> = {
   'LEFT–RIGHT': 'SIDE',
   'FRONT+REAR': 'BOTH',
   DOWNSTAGE: 'FRONT',
+  // Lab 6–7 setup names that were cut on the setup key at 390 wide (hunt
+  // 2026-10-08 T-4: "WALKING P…", "INSTALLED PA·SY…"). Each short form is
+  // still unique among its own lesson's setups.
+  'WALKING PASS': 'WALKING', // F08
+  'VEHICLE · PAPER PLAN': 'VEHICLE', // F08
+  'HOLLOW WOOD': 'HOLLOW', // F01
+  'FAR AND LOW': 'FAR', // F07
+  'TEST SOURCE · ROOM ONLY': 'TEST', // F13
+  'INSTALLED PA · SYSTEM + ROOM': 'HOUSE PA', // F13
+  'VENUE · MAINS, SUB AND FILL': 'VENUE', // F14
+  'STUDIO MONITORS': 'MONITORS', // F14
+  'QUIET BOOTH': 'QUIET', // B09
+  'TWO HANDHELDS': 'TWO MICS', // B10
 };
 
 /** One word inside a value → its short form. */

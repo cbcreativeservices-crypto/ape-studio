@@ -82,30 +82,49 @@ export function MixingGuidesHubScreen() {
   const scrollY = useRef(0);
   const dragUntil = useRef(0);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The style flashing now, read by the tile callbacks through a ref so they
+  // stay STABLE (hunt 2026-10-08 T-1: they depended on `flashId`, so a tap
+  // re-rendered all 50 memoised tiles — ~145 ms to the flash on desktop dev —
+  // and again when the flash ended).
+  const flashRef = useRef<string | null>(null);
+  const setFlash = useCallback((id: string | null) => { flashRef.current = id; setFlashId(id); }, []);
   useEffect(() => () => { if (openTimer.current) clearTimeout(openTimer.current); }, []);
   // Leaving mid-flash (BACK, a tab switch) cancels the pending open.
   useFocusEffect(useCallback(() => () => {
     if (openTimer.current) clearTimeout(openTimer.current);
     openTimer.current = null;
+    flashRef.current = null;
     setFlashId(null);
   }, []));
-  const selectGuide = useCallback((id: string) => {
+  /** Open now: the flash (if any) ends and its timer is cancelled. */
+  const openNow = useCallback((id: string) => {
     if (openTimer.current) clearTimeout(openTimer.current);
-    if (mapHidden) { openTimer.current = null; openGuide(id); return; }
+    openTimer.current = null;
+    setFlash(null);
+    openGuide(id);
+  }, [openGuide, setFlash]);
+  const selectGuide = useCallback((id: string) => {
+    // Hunt 2026-10-08 T-2: a second tap on the style already flashing opens
+    // it now. It used to RESTART the 1.5 s, so tapping again and again (an
+    // impatient learner, a toddler) put the guide off for as long as they tapped.
+    if (mapHidden || flashRef.current === id) { openNow(id); return; }
+    if (openTimer.current) clearTimeout(openTimer.current);
     setActiveId(id);
-    setFlashId(id);
-    openTimer.current = setTimeout(() => {
-      openTimer.current = null;
-      setFlashId(null);
-      openGuide(id);
-    }, SELECT_FLASH_MS);
-  }, [mapHidden, openGuide]);
+    setFlash(id);
+    openTimer.current = setTimeout(() => openNow(id), SELECT_FLASH_MS);
+  }, [mapHidden, openNow, setFlash]);
+  // Hunt 2026-10-08 T-3: hiding the map mid-flash opens the chosen guide at
+  // once (as a tap does with the map hidden) instead of a blank wait.
+  const hideMap = useCallback(() => {
+    setMapHidden(true);
+    if (flashRef.current) openNow(flashRef.current);
+  }, [openNow]);
   const onTileLayout = useCallback((id: string, e: LayoutChangeEvent) => {
     const { x, y, width, height } = e.nativeEvent.layout;
     tileBox.set(id, { x, y, w: width, h: height });
   }, [tileBox]);
-  const onTileHoverOut = useCallback(() => setActiveId((cur) => (flashId ? cur : null)), [flashId]);
-  const onTilePoint = useCallback((id: string) => { if (!flashId) setActiveId(id); }, [flashId]);
+  const onTileHoverOut = useCallback(() => setActiveId((cur) => (flashRef.current ? cur : null)), []);
+  const onTilePoint = useCallback((id: string) => { if (!flashRef.current) setActiveId(id); }, []);
   const measureScroll = useCallback(() => {
     scrollBox.current?.measureInWindow((x, y) => { scrollWin.current = { x, y }; });
   }, []);
@@ -117,7 +136,7 @@ export function MixingGuidesHubScreen() {
   // finger-driven scroll moves the map — a mouse wheel would fight the hover.
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollY.current = e.nativeEvent.contentOffset.y;
-    if (mapHidden || flashId || Date.now() > dragUntil.current) return;
+    if (mapHidden || flashRef.current || Date.now() > dragUntil.current) return;
     dragUntil.current = Math.max(dragUntil.current, Date.now() + 400);
     const cx = finger.current.x - scrollWin.current.x - grid.current.x;
     const cy = finger.current.y - scrollWin.current.y + scrollY.current - grid.current.y;
@@ -126,14 +145,14 @@ export function MixingGuidesHubScreen() {
       return shownIds.has(g.id) && b && b.h > 0 && cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h;
     });
     if (hit) setActiveId((cur) => (cur === hit.id ? cur : hit.id));
-  }, [mapHidden, flashId, shownIds, tileBox]);
+  }, [mapHidden, shownIds, tileBox]);
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <LabHeader title="MIXING GUIDES" subtitle={`${total} music styles — what the audience expects, and where to start the mix`} />
       {mapHidden ? (
         <ShowMapButton onShow={() => setMapHidden(false)} />
       ) : (
-        <GuideWorldMap activeId={activeId} activeTitle={activeTitle} flashing={flashId !== null} width={mapW} touch={TOUCH} onHide={() => setMapHidden(true)} />
+        <GuideWorldMap activeId={activeId} activeTitle={activeTitle} flashing={flashId !== null} width={mapW} touch={TOUCH} onHide={hideMap} />
       )}
       <View ref={scrollBox} style={styles.scrollBox} onLayout={measureScroll}>
       <ScrollView
