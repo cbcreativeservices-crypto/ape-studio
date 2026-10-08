@@ -120,6 +120,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     shieldNote: 'The talker and the stage reflect the PA’s sound too, and the free-field pattern cannot show that. Check it with the system’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,
+      intro: 'These are scenario-based comparisons, not restrictions: the talker is the same — the room, the shot and the PA change.',
       body: 'Live, a boom hears the PA as well as the talker: its place and its pattern’s rejection are tools to aim — and the fewest open mics do more.',
       warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
     },

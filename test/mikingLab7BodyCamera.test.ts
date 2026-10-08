@@ -301,6 +301,8 @@ describe('Lab 7 group 2 lessons: B05, B04, B02', () => {
       assert.ok(strings.some((s) => /Experimentation is encouraged/.test(s)));
       for (const s of strings.filter((q) => q !== id)) assert.doesNotMatch(s, /\b(B0[1-8]|B1\d|F1[0-6]|F0\d)\b/);
       for (const t of l.setupTasks) for (const r of t.reasons) if (/3:1/.test(r.label)) assert.equal(r.role, 'wrong');
+      // The voice family's words are the singer's: none may leak into a talker's lesson.
+      for (const s of [...strings, ...learnerStrings(copyOf(l).context), ...learnerStrings(copyOf(l).placement), ...learnerStrings(copyOf(l).terms)]) assert.doesNotMatch(s, /\b(singers?|band|song)\b/i, s.slice(0, 80));
     });
   }
   it('B05: lav starts in the researched band, the headset by the mouth corner; B05-1 — no attributed “5–8 in” on screen', () => {

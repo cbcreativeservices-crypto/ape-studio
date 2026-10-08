@@ -14,9 +14,9 @@ import { voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
 import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { Lectern, PaSpeaker } from '../shared/broadcast/BroadcastArt';
 import { StandingPresenter } from '../shared/broadcast/BodyWornArt';
-import { BroadcastCameraRig, FrameWedge } from '../shared/broadcast/CameraArt';
+import { BroadcastCameraRig } from '../shared/broadcast/CameraArt';
 import { CHEST_X, NECK_Y } from '../shared/broadcast/bodyWorn.ts';
-import { B05_VIEWS, CAMERA, CAMERA_BOX, FLOOR, HEAD_TOP, LECTERN, PACK, PA_C } from './geometry.ts';
+import { CAMERA, CAMERA_BOX, FLOOR, LECTERN, PACK, PA_C } from './geometry.ts';
 
 /** The presenter: the shared standing figure in a jacket, the pack on the
  *  belt (BodyWornArt). `headless` leaves the head off (a step draws it
@@ -27,7 +27,6 @@ export function Presenter({ view, headless = false }: { view: ViewId; headless?:
 
 /** Everything round the presenter, far side first. */
 export function B05Scene({ view, variant, headless = false }: { view: ViewId; variant: VariantId; headless?: boolean }): ReactElement {
-  const box = B05_VIEWS[variant as 'studio' | 'live']?.[view] ?? B05_VIEWS.studio[view];
   if (variant === 'live') {
     return (
       <Group>
@@ -39,7 +38,6 @@ export function B05Scene({ view, variant, headless = false }: { view: ViewId; va
   }
   return (
     <Group>
-      <FrameWedge view={view} cam={CAMERA} reach={CAMERA.lens.x - box.u0} headTop={HEAD_TOP} show="lines" />
       <Presenter view={view} headless={headless} />
       <BroadcastCameraRig view={view} cam={CAMERA} floor={FLOOR} />
     </Group>
@@ -55,7 +53,6 @@ export function b05Labels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     out.push({ id: 'v.mouth', text: 'MOUTH', u: 150, v: -170, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 160, v: 90, align: 'left' }] });
     out.push({ id: 'b5.jacket', text: 'JACKET AND SHIRT', short: 'JACKET', u: 200, v: 520, align: 'left', tone: 'muted', at: { u: CHEST_X + 2, v: NECK_Y + 360 } });
-    out.push({ id: 'b5.pack', text: 'BODYPACK', short: 'PACK', u: PACK.x - 260, v: PACK.y + 40, align: 'right', tone: 'muted', at: { u: PACK.x - 12, v: PACK.y } });
     if (variant === 'studio') out.push({ id: 'bc.camera', text: 'CAMERA', u: CAMERA_BOX.max.x - 150, v: CAMERA_BOX.min.y - 150, align: 'center', at: { u: CAMERA_BOX.max.x - 150, v: CAMERA_BOX.min.y + 40 } });
     else {
       out.push({ id: 'b5.lectern', text: 'LECTERN', u: (LECTERN.x0 + LECTERN.x1) / 2, v: 900, align: 'center', tone: 'muted' });

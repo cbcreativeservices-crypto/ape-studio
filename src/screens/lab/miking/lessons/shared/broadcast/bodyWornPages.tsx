@@ -58,6 +58,8 @@ export type BodyTurnSpec = {
   boxTop: ViewBox;
   boxSide: ViewBox;
   pitch: boolean;
+  /** Where the side inset sits (a share of the stage; default top-right). */
+  insetAt?: { x: number; y: number; w: number; h: number };
   /** Where TURN starts and its preset words (a partner on the right…). */
   words: { looking: string; prompt: string; done: string; subject: string; right?: string; left?: string };
 };
@@ -161,7 +163,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
     ? {
         view: 'side',
         box: spec.boxSide,
-        at: { x: 0.6, y: 0.02, w: 0.39, h: 0.46 },
+        at: spec.insetAt ?? { x: 0.6, y: 0.02, w: 0.39, h: 0.46 },
         title: 'SIDE',
         draw: (px) => (
           <>

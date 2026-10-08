@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 03:44 · ccode · 7eefa4b1
+changed: Miking Lab 7 group 2: B04 Boom and Camera-Mounted Pickup, B02 News Anchors and Seated Interviews
+affects other side: nothing (client-only: Miking Lab 7 group 2 lessons B04 and B02 and their shared kit; Miking stays hidden; no server, no SQL)
+needs: nothing
+
+
 ### 2026-10-08 02:27 · ccode · bdeb18de
 changed: Miking Lab 7 group 2: shared camera frame (cameraFrame.ts) for B04/B02/B05 and group 3
 affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-frame tool; no server, no SQL)

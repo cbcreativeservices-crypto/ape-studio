@@ -188,6 +188,10 @@ export const BRAND_NAMES: readonly string[] = [
   'BLX4R',
   'MV7',
   'PodMic',
+  // Lab 7 group 2 (B05, B04, B02): the research's remaining makers' models.
+  'CCM ?41',
+  'B6',
+  'MixPre',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

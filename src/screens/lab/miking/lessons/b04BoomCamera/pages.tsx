@@ -111,7 +111,7 @@ function useTwoTalkerStep(): MikingStep {
     { k: 'SWING', v: deg5(swing), flex: 0.8 },
     { k: 'TALKER', v: `${deg5(a.th)} OFF`, flex: 1 },
     { k: 'INTERVIEWER', v: `${deg5(b.th)} OFF`, flex: 1.1 },
-    { k: 'BALANCE', v: Math.abs(diff) < 1 ? 'EVEN' : `${Math.abs(diff).toFixed(0)} dB ${diff > 0 ? 'TALKER' : 'INTV.'}`, flex: 1.2 },
+    { k: Math.abs(diff) < 1 ? 'BALANCE' : diff > 0 ? 'TALKER AHEAD' : 'INTERVIEWER AHEAD', v: Math.abs(diff) < 1 ? 'EVEN' : `${Math.abs(diff).toFixed(0)} dB`, flex: 1.2 },
   ];
   const top = uvOf('top', BOOM_2);
   return {
@@ -181,6 +181,9 @@ function useTools() {
     headTop: HEAD_TOP,
     boxSide: { u0: -700, u1: 3950, v0: -1050, v1: 1620 },
     boxTop: { u0: -700, u1: 3950, v0: -1700, v1: 1500 },
+    insetBoxSide: { u0: -650, u1: 1350, v0: -950, v1: 900 },
+    insetBoxTop: { u0: -650, u1: 1350, v0: -1250, v1: 600 },
+    insetAt: { x: 0.3, y: 0.55, w: 0.42, h: 0.43 },
     words: {
       subject: 'A talker standing',
       looking: 'Side view · the talker, the camera and its frame · from above in the corner',
@@ -197,6 +200,7 @@ function useTools() {
     side: () => <StandingPresenter view="side" headless />,
     boxTop: { u0: -460, u1: 700, v0: -620, v1: 460 },
     boxSide: { u0: -420, u1: 640, v0: -560, v1: 420 },
+    insetAt: { x: 0.6, y: 0.52, w: 0.39, h: 0.46 },
     pitch: true,
     words: {
       subject: 'a talker with a boom above and a lav on the chest',

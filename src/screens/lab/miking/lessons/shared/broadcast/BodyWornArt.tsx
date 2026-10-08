@@ -36,7 +36,7 @@ const make = () => Skia.Path.Make();
 const DEG = Math.PI / 180;
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
-const JACKET = ['#5d616b', '#41444c', '#2b2d33', '#18191d'];
+const JACKET = ['#4f535c', '#363940', '#24262b', '#141518'];
 const vOf = (view: ViewId, p: Vec3) => (view === 'side' ? p.y : p.z);
 
 /* ── the jacket and the tie ── */
@@ -46,6 +46,9 @@ function jacketPaths(view: ViewId, standing: boolean, tie: boolean) {
   const roll = make();
   const tieP = make();
   const collar = make();
+  const notch = make();
+  const button = make();
+  const welt = make();
   const X = CHEST_X;
   const hem = NECK_Y + (standing ? 600 : 470);
   if (view === 'side') {
@@ -58,9 +61,19 @@ function jacketPaths(view: ViewId, standing: boolean, tie: boolean) {
     body.lineTo(X - 14, NECK_Y + 230);
     body.cubicTo(X - 16, NECK_Y + 120, X - 26, NECK_Y + 50, X - 44, NECK_Y + 14);
     body.close();
-    // The lapel's roll line: from the collar out and down to the top button.
+    // The lapel's roll line: from the collar out and down to the top button,
+    // its notch standing a little off the chest near the collar.
     roll.moveTo(X - 26, NECK_Y + 10);
     roll.cubicTo(X + 2, NECK_Y + 60, X + 8, NECK_Y + 150, X + 4, NECK_Y + 250);
+    notch.moveTo(X - 10, NECK_Y + 38);
+    notch.lineTo(X + 12, NECK_Y + 66);
+    notch.lineTo(X + 4, NECK_Y + 96);
+    notch.lineTo(X - 6, NECK_Y + 90);
+    notch.close();
+    // A button at the waist, and a pocket's welt below it.
+    button.addCircle(X + 8, NECK_Y + 300, 6.5);
+    welt.moveTo(X - 2, hem - 150);
+    welt.lineTo(X - 70, hem - 156);
     // The shirt collar's wing at the throat.
     collar.moveTo(X - 40, NECK_Y - 18);
     collar.lineTo(X - 6, NECK_Y + 2);
@@ -90,7 +103,7 @@ function jacketPaths(view: ViewId, standing: boolean, tie: boolean) {
     collar.addRRect(Skia.RRectXY(Skia.XYWHRect(X - 46, -36, 34, 72), 12, 12));
     if (tie) tieP.addRRect(Skia.RRectXY(Skia.XYWHRect(X - 4, -18, 10, 36), 4, 4));
   }
-  return { body, roll, tieP, collar };
+  return { body, roll, tieP, collar, notch, button, welt };
 }
 
 /** A jacket (and a tie) over the shared figure's shirt, on its chest. */
@@ -108,6 +121,13 @@ export function Jacket({ view, standing = true, tie = false }: { view: ViewId; s
       <Path path={p.body} style="stroke" strokeWidth={2.2} color="#0b0c0f" />
       <Path path={p.collar} color="#d9dde4" />
       <Path path={p.collar} style="stroke" strokeWidth={1.6} color="#7d838e" />
+      <Path path={p.notch} color="#2b2d33" />
+      <Path path={p.notch} style="stroke" strokeWidth={1.6} color="#0b0c0f" />
+      <Path path={p.welt} style="stroke" strokeWidth={2.4} color="#101114" opacity={0.8} />
+      <Path path={p.button} color="#15161a" />
+      <Group transform={[{ translateX: -1.5 }, { translateY: -1.5 }]}>
+        <Path path={p.button} style="stroke" strokeWidth={1.2} color="#a7adb8" opacity={0.6} />
+      </Group>
       <Path path={p.roll} style="stroke" strokeWidth={2.4} color="#0e0f12" opacity={0.85} />
       <Group transform={[{ translateX: -1.4 }, { translateY: -1.4 }]}>
         <Path path={p.roll} style="stroke" strokeWidth={1.2} color="#c3c8d2" opacity={0.4} />

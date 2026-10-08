@@ -81,7 +81,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     workedClear: 'Clear of the wearer’s movement: the capsule on a firm edge, off rubbing fabric, hair and jewellery, the cable looped at the clip and secured lower down. The wearer agreed to all of it. Clearance comes first, before any number.',
     reveal: 'On the chest the distance holds as long as the chest does, but a turn of the head moves the mouth away; beside the mouth a headset keeps its distance; under one layer of cloth the top end can dull. People and clothes vary, so “it depends on this presenter” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
-      locLav: 'Ideas to try with an omni lav: begin in the middle of the chest, then try a lapel or the collar and rehearse turns both ways; compare at matched loudness.',
+      locLav: 'Ideas to try with an omni lav: begin in the middle of the chest, then try a lapel or the collar and rehearse turns both ways; compare at matched loudness. If a puff reaches it, turning it upside down in its clip is one trial on some models.',
       lavCard: 'Ideas to try with a directional lav: turn its sensitive end to the mouth, then turn the head — listen for how quickly the voice dulls.',
       vocHeadset: 'Ideas to try with a headset: the capsule where its maker says, beside the corner of the mouth and out of the breath — then leave it there.',
       hsCard: 'Ideas to try with a directional headset: aim it as its maker says, then check where its rear points against the PA and the monitors.',
@@ -118,6 +118,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     shieldNote: 'The head and the body reflect the PA’s sound too, and the free-field pattern cannot show that. Compare it with the venue’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,
+      intro: 'These are scenario-based comparisons, not restrictions: the presenter is the same — the room, the PA and the picture change.',
       body: 'With a PA, the closest capsule keeps the voice ahead of the loudspeakers; a directional headset adds a rejection to aim. The fewest open mics do more than either.',
       warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
     },

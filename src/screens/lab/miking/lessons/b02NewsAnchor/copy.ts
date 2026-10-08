@@ -121,6 +121,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     shieldNote: 'The desk, the talkers and the room reflect the PA’s sound too, and the free-field pattern cannot show that. Check it with the system’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,
+      intro: 'These are scenario-based comparisons, not restrictions: the anchor is the same — the set, the shot and the PA change.',
       body: 'In a public interview the PA is a loudspeaker every open mic hears. Close mics, the fewest open, and a pattern’s rejection aimed at the PA do more than any single trick.',
       warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
     },

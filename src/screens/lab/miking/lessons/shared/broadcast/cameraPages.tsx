@@ -55,6 +55,10 @@ export type ShotSpec = {
   headTop: Vec3;
   boxSide: ViewBox;
   boxTop: ViewBox;
+  /** The inset's own boxes (closer than the main view's) and its place. */
+  insetBoxSide?: ViewBox;
+  insetBoxTop?: ViewBox;
+  insetAt?: { x: number; y: number; w: number; h: number };
   words: { subject: string; looking: string; prompt: string; done: string };
 };
 
@@ -73,6 +77,8 @@ export function useShotStep(spec: ShotSpec): MikingStep {
   const cmic = useMemo(() => cameraMic(cam), [cam]);
   const tube = spec.tube ?? 0;
   const dBoom = boom.d + tube;
+  /** Where the distance is read to: the front, or a shotgun's capsule. */
+  const cap = v3(boom.p.x - boom.aim.x * tube, boom.p.y - boom.aim.y * tube, boom.p.z - boom.aim.z * tube);
   const dCam = dist(cmic.p, LIP);
   const dBody = spec.bodyMic ? dist(spec.bodyMic, LIP) : null;
   const mainView: ViewId = from === 'side' ? 'top' : 'side';
@@ -126,17 +132,18 @@ export function useShotStep(spec: ShotSpec): MikingStep {
       <Ray a={uvOf(view, tail)} b={uvOf(view, poleEnd)} px={px} color="#3a3d45" width={5} dash={[1000, 0]} />
       <MicAt view={view} p={boom.p} aim={boom.aim} art="shotgun" r={9.5} len={250} />
       <Aim from={uvOf(view, boom.p)} dir={{ u: boom.aim.x, v: view === 'side' ? boom.aim.y : boom.aim.z }} len={Math.min(dBoom * 0.5, 160)} px={px} />
-      <Dim a={uvOf(view, LIP)} b={uvOf(view, boom.p)} px={px} />
+      <Dim a={uvOf(view, LIP)} b={uvOf(view, cap)} px={px} />
     </>
   );
   const otherView: ViewId = mainView === 'side' ? 'top' : 'side';
+  const insetBox = otherView === 'side' ? spec.insetBoxSide ?? spec.boxSide : spec.insetBoxTop ?? spec.boxTop;
   const inset: FieldInset = {
     view: otherView,
-    box: otherView === 'side' ? spec.boxSide : spec.boxTop,
-    at: { x: 0.62, y: 0.02, w: 0.37, h: 0.44 },
+    box: insetBox,
+    at: spec.insetAt ?? { x: 0.62, y: 0.02, w: 0.37, h: 0.44 },
     title: otherView === 'side' ? 'SIDE' : 'FROM ABOVE',
     draw: (px) => draw(otherView, px),
-    labels: [{ id: 'iv', text: otherView === 'side' ? 'SIDE' : 'FROM ABOVE', short: otherView === 'side' ? 'SIDE' : 'ABOVE', u: (otherView === 'side' ? spec.boxSide : spec.boxTop).u0 + 120, v: (otherView === 'side' ? spec.boxSide : spec.boxTop).v0 + 160, align: 'left', tone: 'muted' }],
+    labels: [{ id: 'iv', text: otherView === 'side' ? 'SIDE' : 'FROM ABOVE', short: otherView === 'side' ? 'SIDE' : 'ABOVE', u: insetBox.u0 + (insetBox.u1 - insetBox.u0) * 0.06, v: insetBox.v0 + (insetBox.v1 - insetBox.v0) * 0.1, align: 'left', tone: 'muted' }],
   };
   const box = mainView === 'side' ? spec.boxSide : spec.boxTop;
   const bv = mainView === 'side' ? boom.p.y : boom.p.z;

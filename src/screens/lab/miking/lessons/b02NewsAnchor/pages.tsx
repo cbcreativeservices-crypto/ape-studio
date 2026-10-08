@@ -44,6 +44,7 @@ function useTools() {
     side: () => <B02Scene view="side" variant="close" headless camera={false} />,
     boxTop: { u0: -460, u1: 940, v0: -720, v1: 980 },
     boxSide: { u0: -420, u1: 900, v0: -700, v1: 560 },
+    insetAt: { x: 0.6, y: 0.52, w: 0.39, h: 0.46 },
     pitch: true,
     words: {
       subject: 'an anchor at a desk with a lav, a fixed boom and a gooseneck',
@@ -69,6 +70,8 @@ function useTools() {
     headTop: HEAD_TOP,
     boxSide: { u0: -700, u1: 2950, v0: -1150, v1: 1260 },
     boxTop: { u0: -700, u1: 2950, v0: -1400, v1: 1700 },
+    insetBoxTop: { u0: -600, u1: 1300, v0: -1200, v1: 1300 },
+    insetAt: { x: 0.3, y: 0.55, w: 0.42, h: 0.43 },
     words: {
       subject: 'An anchor at a desk',
       looking: 'Side view · the anchor, the camera and its frame · from above in the corner',
@@ -79,9 +82,9 @@ function useTools() {
   const desk = useReflectStep({
     plate: DESK_PLATE,
     places: [
-      { id: 'raised', label: 'Raised toward the mouth', blurb: 'The gooseneck’s capsule raised, 20° below the mouth’s line.', dir: v3(Math.cos((20 * Math.PI) / 180), Math.sin((20 * Math.PI) / 180), 0) },
-      { id: 'low', label: 'Low over the desk', blurb: 'Lower, 45° below the mouth’s line, nearer the desk.', dir: v3(Math.cos(Math.PI / 4), Math.sin(Math.PI / 4), 0) },
-      { id: 'level', label: 'Level with the mouth', blurb: 'On the mouth’s axis, high off the desk.', dir: v3(1, 0, 0) },
+      { id: 'raised', label: 'Raised', blurb: 'The gooseneck’s capsule raised, 20° below the mouth’s line.', dir: v3(Math.cos((20 * Math.PI) / 180), Math.sin((20 * Math.PI) / 180), 0) },
+      { id: 'low', label: 'Low', blurb: 'Lower, 45° below the mouth’s line, nearer the desk.', dir: v3(Math.cos(Math.PI / 4), Math.sin(Math.PI / 4), 0) },
+      { id: 'level', label: 'Level', blurb: 'On the mouth’s axis, high off the desk.', dir: v3(1, 0, 0) },
     ],
     look: GOOSE,
     range: { min: 150, max: 450, start: 250 },
