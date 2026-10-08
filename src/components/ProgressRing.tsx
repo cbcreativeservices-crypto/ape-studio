@@ -32,7 +32,7 @@ export function ProgressRing({
 
   return (
     <View style={{ width: size, height: size }}>
-      <Svg width={size} height={size}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size}>
         <Circle cx={cx} cy={cx} r={r} stroke={trackColor} strokeWidth={strokeWidth} fill="none" />
         {progress != null ? (
           <Circle

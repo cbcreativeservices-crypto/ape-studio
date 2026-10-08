@@ -161,7 +161,7 @@ function TapsScene({ vizW }: { vizW: number }) {
       </View>
 
       <View style={styles.stage}>
-        <Svg width={vizW} height={TAPS_SVG_H}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={vizW} height={TAPS_SVG_H}>
           <Defs>
             <LinearGradient
               id="hzSineRamp"
@@ -336,7 +336,7 @@ function PulseStrip({
 
   return (
     <View style={styles.stage}>
-      <Svg width={vizW} height={STRIP_SVG_H}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={vizW} height={STRIP_SVG_H}>
         {/* Ghost "on-time" marks — where a steady source would have landed */}
         {ghosts?.map((t) => (
           <Line
@@ -636,7 +636,7 @@ function TunerScene({ vizW }: { vizW: number }) {
           horizontally across a ±30¢ scale with a green ±5¢ zone. Replaces the
           retired arc/needle gauge (owner 2026-09-13). */}
       <View style={styles.tunerWindow}>
-        <Svg width={vizW} height={STRIP_H}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={vizW} height={STRIP_H}>
           {/* green in-tune zone — the only green on the face */}
           <Rect
             x={greenL}
@@ -737,7 +737,7 @@ function TunerScene({ vizW }: { vizW: number }) {
       {/* Octave ladder — where frequencies land musically */}
       <Text style={styles.mapLabel}>WHERE Hz LANDS MUSICALLY</Text>
       <View style={styles.stage}>
-        <Svg width={vizW} height={MAP_SVG_H}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={vizW} height={MAP_SVG_H}>
           {OCTAVE_NOTES.slice(0, -1).map((_, i) => {
             const x0 = mapX(i);
             const x1 = mapX(i + 1);

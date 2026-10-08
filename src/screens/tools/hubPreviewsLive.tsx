@@ -179,7 +179,7 @@ const HubSplSkin: FC = memo(() => {
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <Svg width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice">
         <Defs>
           <ClipPath id="hpVuFace">
             <Rect x={VU_FACE.x} y={VU_FACE.y} width={VU_FACE.w} height={VU_FACE.h} rx={VU_FACE.rx} />
@@ -274,7 +274,7 @@ const HubRtaMini: FC = memo(() => {
 
   return (
     <LiveShell>
-      <Svg width="100%" height="100%" viewBox={VB}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
         <Defs>
           <LvlGrad id="hpLvlRta" y1={104} y2={920} />
         </Defs>
@@ -375,7 +375,7 @@ const HubWaveMini: FC = memo(() => {
 
   return (
     <LiveShell>
-      <Svg width="100%" height="100%" viewBox={VB}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
         <Defs>
           <MirGrad id="hpMirWave" y1={104} y2={920} />
         </Defs>
@@ -430,7 +430,7 @@ const HubSpectroMini: FC = memo(() => {
 
   return (
     <LiveShell>
-      <Svg width="100%" height="100%" viewBox={VB}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
         <Rect width={2048} height={1024} fill="#060608" />
         {SPECTRO_CHROME}
         {paths.map((p, i) => (p ? <Path key={i} d={p} fill={HEAT_12[i]} /> : null))}
@@ -542,7 +542,7 @@ const HubMultiMini: FC = memo(() => {
 
   return (
     <LiveShell>
-      <Svg width="100%" height="100%" viewBox={VB}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
         <Defs>
           <LvlGrad id="hpLvlMm" y1={MM_RTA_TOP_Y} y2={MM_RTA_BOT_Y} />
           <HGrad id="hpLvlhMm" />
@@ -749,7 +749,7 @@ const HubTunerLive: FC = memo(() => {
   return (
     <LiveShell>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
-        <Svg width="100%" height="100%" viewBox={VB}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
           <Rect width={2048} height={1024} fill="#060608" />
           {TUNER_CHROME}
           <SvgText x={252} y={812} fill={TVU_INK} fontSize={TVU_READOUT_PT} fontWeight="700" textAnchor="start" fontFamily="sans-serif" opacity={cornerNote ? 0.92 : 0.5}>

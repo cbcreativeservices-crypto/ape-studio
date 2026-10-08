@@ -30,7 +30,7 @@ import type { TimeTrialSnapshot } from './timeTrial';
 /** Play triangle — shown on the flip button while the timer is PAUSED. */
 function PlayGlyph({ color, size = 16 }: { color: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       <Path d="M7 5 L19 12 L7 19 Z" fill={color} />
     </Svg>
   );
@@ -39,7 +39,7 @@ function PlayGlyph({ color, size = 16 }: { color: string; size?: number }) {
 /** Pause bars — shown on the flip button while the timer is RUNNING. */
 function PauseGlyph({ color, size = 16 }: { color: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       <Rect x={6} y={5} width={4} height={14} rx={1} fill={color} />
       <Rect x={14} y={5} width={4} height={14} rx={1} fill={color} />
     </Svg>
@@ -49,7 +49,7 @@ function PauseGlyph({ color, size = 16 }: { color: string; size?: number }) {
 /** Fader glyph — a line with a knob; the tap-to-open pace-preset control. */
 function FaderGlyph({ color, size = 16 }: { color: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       <Line x1={4} y1={9} x2={20} y2={9} stroke={color} strokeWidth={2} strokeLinecap="round" />
       <Circle cx={9} cy={9} r={3} fill={color} />
       <Line x1={4} y1={16} x2={20} y2={16} stroke={color} strokeWidth={2} strokeLinecap="round" />

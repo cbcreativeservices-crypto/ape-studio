@@ -208,7 +208,7 @@ function WavesStage({ w: boxW, h: boxH, fA, fB, fSum, labels }: { w: number; h: 
       accessible
       accessibilityLabel={`Three stacked waveforms: ${labels[0]}, ${labels[1]}, and their sum ${labels[2]}`}
     >
-      <Svg {...svg}>
+      <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <Defs>
           {rows.map((r) => (
             <SvgGradient key={r.id} id={r.id} x1="0" y1={r.y0 - r.a} x2="0" y2={r.y0 + r.a} gradientUnits="userSpaceOnUse">
@@ -258,7 +258,7 @@ function LissajousStage({ w: boxW, h: boxH, n1, n2, detune, running }: { w: numb
     return s;
   }, [w, h, R, n1, n2, detune, phase]);
   return (
-    <Svg {...svg}>
+    <Svg {...svg} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Line x1={w / 2} y1={h / 2 - R} x2={w / 2} y2={h / 2 + R} stroke="#2a2b33" strokeWidth={1} />
       <Line x1={w / 2 - R} y1={h / 2} x2={w / 2 + R} y2={h / 2} stroke="#2a2b33" strokeWidth={1} />
       <Path d={d} stroke={colors.amber} strokeWidth={1.6} fill="none" />

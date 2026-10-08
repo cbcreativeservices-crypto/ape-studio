@@ -208,7 +208,7 @@ function CableSwatch({ t, open }: { t: CiCableType; open: boolean }) {
   const sig = SIGNATURE[t.id];
   return (
     <View style={styles.swatchBox} pointerEvents="none">
-      <Svg width={26} height={26} viewBox="0 0 20 20">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={26} height={26} viewBox="0 0 20 20">
         {/* the type's real construction, end-on (knowArt) — not a ring-and-dot */}
         <CableSection cls={t.id} tint={t.tint} cx={10} cy={10} R={8.6} fine={false} />
         {open ? <SwatchFill tint={t.tint} /> : null}

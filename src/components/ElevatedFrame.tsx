@@ -12,7 +12,54 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle, Defs, Pattern, Rect } from 'react-native-svg';
+import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
+import { A11Y_HIDDEN } from '../features/settings/a11y';
+
+// <specks> — pure; unit-tested by test/a11yTreeDepth_20261008.test.ts, which
+// transpiles exactly this block. Kept in this module (not its own) because the
+// app-start module budget is a ratchet (test/perfStartTrim_20261004.test.ts).
+/**
+ * Draw a cloud of tiny round specks as a FEW <Path>s instead of one <Circle>
+ * per speck.
+ *
+ * ⛔ WHY (Sentry APE-STUDIO-W / R / S, 2026-10-07): every react-native-svg
+ * element is a real native view. This face drew 240 <Circle>s per panel and
+ * the Dashboard's gray rack face 130 more, so one Dashboard carried thousands
+ * of texture views — and an accessibility client walking that tree (App
+ * Review's tooling) hung the main thread for 2 s+.
+ *
+ * Specks that share a fill and (quantised) opacity are merged into ONE path of
+ * circle sub-paths: the same specks at the same places and radii; only the
+ * opacity is rounded to `opacityStep` (0.05 by default — below what a ≤ 2 px
+ * speck can show).
+ */
+export type Speck = { cx: number; cy: number; r: number; fill: string; opacity: number };
+export type SpeckPath = { d: string; fill: string; opacity: number };
+
+const f2 = (n: number) => (Math.round(n * 100) / 100).toString();
+
+/** One circle as a closed path (two half-arcs) — no extra node. */
+export function circlePath(cx: number, cy: number, r: number): string {
+  return `M${f2(cx - r)} ${f2(cy)}a${f2(r)} ${f2(r)} 0 1 0 ${f2(2 * r)} 0a${f2(r)} ${f2(r)} 0 1 0 ${f2(-2 * r)} 0Z`;
+}
+
+/** Group specks by fill + quantised opacity; one path per group, in first-seen
+ *  order so the paint order of the groups is stable between renders. */
+export function specksToPaths(specks: readonly Speck[], opacityStep = 0.05): SpeckPath[] {
+  const groups = new Map<string, SpeckPath>();
+  for (const s of specks) {
+    const o = Math.max(0, Math.min(1, Math.round(s.opacity / opacityStep) * opacityStep));
+    const key = `${s.fill}|${o.toFixed(3)}`;
+    let g = groups.get(key);
+    if (!g) {
+      g = { d: '', fill: s.fill, opacity: Number(o.toFixed(3)) };
+      groups.set(key, g);
+    }
+    g.d += circlePath(s.cx, s.cy, s.r);
+  }
+  return [...groups.values()];
+}
+// </specks>
 
 // --- procedural powder-coat speckle (deterministic LCG — identical every
 // render/reload; computed once at module load) ---
@@ -71,19 +118,34 @@ function speckColor(p: Palette, d: (typeof SPECKS)[number]): string {
   return d.kind === 'shadow' ? p.shadow : d.kind === 'light' ? p.light[d.pick] : p.dark[d.pick];
 }
 
+/** The 240 specks as a handful of paths per palette, computed once.
+ *  ⛔ Sentry APE-STUDIO-W/R/S (2026-10-07): one <Circle> per speck was 240
+ *  native views per panel, and an accessibility client walking a Dashboard
+ *  full of panels hung the iOS main thread for 2 s+. Same specks, same places. */
+const SPECK_PATHS = new Map<Palette, SpeckPath[]>();
+function speckPaths(p: Palette): SpeckPath[] {
+  let paths = SPECK_PATHS.get(p);
+  if (!paths) {
+    paths = specksToPaths(SPECKS.map((d) => ({ cx: d.x, cy: d.y, r: d.r, fill: speckColor(p, d), opacity: d.o })));
+    SPECK_PATHS.set(p, paths);
+  }
+  return paths;
+}
+
 /** The powder-coat speckle face. `dark` selects the Flashcards-only charcoal
  *  palette; `darken` (0..1) lays an extra black wash over the coat. */
 export function PanelFace({ dark = false, darken = 0 }: { dark?: boolean; darken?: number }) {
   const p = dark ? DARK_PALETTE : DEFAULT_PALETTE;
   const patternId = dark ? 'apePanelSpeckleDark' : 'apePanelSpeckleDefault';
   return (
-    <View pointerEvents="none" style={styles.absFill}>
-      <Svg width="100%" height="100%">
+    // Pure texture: the whole subtree is hidden from the accessibility tree.
+    <View pointerEvents="none" style={styles.absFill} {...A11Y_HIDDEN}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%">
         <Defs>
           <Pattern id={patternId} patternUnits="userSpaceOnUse" width={TILE} height={TILE}>
             <Rect width={TILE} height={TILE} fill={p.base} />
-            {SPECKS.map((d, i) => (
-              <Circle key={i} cx={d.x} cy={d.y} r={d.r} fill={speckColor(p, d)} opacity={d.o} />
+            {speckPaths(p).map((g, i) => (
+              <Path key={i} d={g.d} fill={g.fill} opacity={g.opacity} />
             ))}
           </Pattern>
         </Defs>

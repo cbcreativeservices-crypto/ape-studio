@@ -68,18 +68,21 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
           style={styles.lbBackdrop}
           onPress={() => setTarget(null)}
           accessibilityRole="button"
-          accessibilityLabel="Close photo"
+          // ONE element that says the photo AND how to close it — the image
+          // was a second element nested inside this one, unreachable on iOS
+          // (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08).
+          accessibilityLabel={`${target?.caption ?? 'Lab photograph'}. Tap to close.`}
+          onAccessibilityEscape={() => setTarget(null)}
         >
           <View style={[styles.lbCard, { width: lbSide, height: lbSide }]}>
             {target ? (
-              <Image accessible
+              <Image
+                accessible={false}
                 source={{ uri: target.url }}
                 style={styles.lbImage}
                 contentFit="contain"
                 cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
-                accessibilityRole="image"
-                accessibilityLabel={target.caption ?? 'Lab photograph'}
               />
             ) : null}
           </View>

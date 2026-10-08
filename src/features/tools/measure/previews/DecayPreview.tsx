@@ -214,7 +214,7 @@ export function DecayPreview({
     <PreviewFrame caption={caption} height={height} onPress={onPress} a11yLabel={a11y}>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
         {w > 0 ? (
-          <Svg width={w} height={height}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={height}>
             <Defs>
               {/* The live tool's rt60DecayRamp: hot where the energy is, cooling
                   to blue as the room dies away, pinned to the dB axis so a given

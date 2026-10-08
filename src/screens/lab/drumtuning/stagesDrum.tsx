@@ -279,7 +279,7 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
   const lookPt = typeof look === 'number' ? polar(cx, cy, R + 27, lugAngle(look, lugs)) : null;
   return (
     <View style={{ width, height }}>
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${TOP_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${TOP_H}`}>
       <Rect x={0} y={0} width={W} height={TOP_H} fill={ink.bg} />
       <Hardware cx={cx} cy={cy} R={R} lugs={lugs} selected={selected} loose={faults?.loose ?? null} lift={lift} bst={bst} />
       {/* the head on its bearing edge */}
@@ -415,7 +415,7 @@ export function AnatomyStage({ width, height, part }: { width: number; height: n
   const hi = (p: DrumPart) => (part === p ? ink.amber : null);
   const glow = (p: DrumPart, el: ReactNode) => (part === p ? <G>{el}</G> : <G opacity={0.9}>{el}</G>);
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${ANAT_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${ANAT_H}`}>
       <Rect x={0} y={0} width={W} height={ANAT_H} fill={ink.bg} />
       <Defs>
         <LinearGradient id="shellG" x1="0" y1="0" x2="1" y2="0">
@@ -558,7 +558,7 @@ export function EdgeStage({ width, height, profile }: { width: number; height: n
   }
   const peakX = profile === 'single45' ? wallX + wallW - 6 : profile === 'double45' ? wallX + 48 : wallX + 35;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${EDGE_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${EDGE_H}`}>
       <Rect x={0} y={0} width={W} height={EDGE_H} fill={ink.bg} />
       <Defs>
         <LinearGradient id="wallG" x1="0" y1="0" x2="1" y2="0">
@@ -653,7 +653,7 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing, b
   const snareHz = batterHz != null ? batterHz * Math.pow(2, snareSideCents / 1200) : null;
   return (
     <View style={{ width, height }}>
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${SNARE_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${SNARE_H}`}>
       <Rect x={0} y={0} width={W} height={SNARE_H} fill={ink.bg} />
       <Defs>
         <LinearGradient id="snShell" x1="0" y1="0" x2="0" y2="1">
@@ -752,7 +752,7 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
   );
   return (
     <View style={{ width, height }}>
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>
       <Rect x={0} y={0} width={W} height={KICK_H} fill={ink.bg} />
       <Defs>
         <LinearGradient id="kShell" x1="0" y1="0" x2="0" y2="1">
@@ -800,7 +800,7 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
       {tiny ? null : <SvgText x={W / 2} y={KICK_H - 6} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'open' ? 'closed front head: full coupling, longest note' : front === 'ported' ? 'ported: less coupling, faster decay, a mic path' : 'no front head: the batter alone, shortest note'}</SvgText>}
     </Svg>
     <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width, height }, swingStyle]}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>{beater}</Svg>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>{beater}</Svg>
     </Animated.View>
     <HeadGlow x={x1 - 2} y={yT - 4} w={8} h={yB - yT + 8} sync={sync} s={sc} />
     </View>
@@ -872,7 +872,7 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
   };
   return (
     <View style={{ width, height }}>
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${KIT_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KIT_H}`}>
       <Rect x={0} y={0} width={W} height={KIT_H} fill={ink.bg} />
       <Defs>
         <LinearGradient id="tomShell" x1="0" y1="0" x2="0" y2="1">

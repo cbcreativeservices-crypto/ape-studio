@@ -38,7 +38,7 @@ export function CrossoverZoom({ out, width, height }: { out: Float32Array; width
     pts.push(`${x.toFixed(1)},${Math.max(4, Math.min(H - 4, y)).toFixed(1)}`);
   }
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
       <Rect x={0} y={0} width={W} height={H} fill="#0a0a0c" />
       <Line x1={0} y1={H / 2} x2={W} y2={H / 2} stroke="rgba(255,255,255,0.12)" />
       <Line x1={W / 2} y1={0} x2={W / 2} y2={H} stroke="rgba(255,255,255,0.08)" strokeDasharray="3,3" />

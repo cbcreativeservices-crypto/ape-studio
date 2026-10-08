@@ -747,7 +747,7 @@ function Fretboard({
           accessibilityRole="button"
           accessibilityLabel="Fretboard — tap a string and fret"
         >
-          <Svg width={width} height={pxSvgH} viewBox={`0 0 ${w} ${svgH}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={pxSvgH} viewBox={`0 0 ${w} ${svgH}`}>
             <Defs>
               {/* Wood: vertical walnut gradient (light from upper-left). */}
               <LinearGradient id="fbWood" x1="0" y1="0" x2="0" y2="1">

@@ -468,7 +468,7 @@ export function GearKnob({
         </Text>
       </View>
       <View pointerEvents="none">
-        <Svg width={KNOB_SVG} height={KNOB_SVG}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={KNOB_SVG} height={KNOB_SVG}>
           {/* End-of-travel + centre detent ticks around the arc. */}
           {[-POINTER_SWEEP, -POINTER_SWEEP / 2, 0, POINTER_SWEEP / 2, POINTER_SWEEP].map((deg) => {
             const r = deg * (Math.PI / 180);

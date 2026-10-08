@@ -25,14 +25,14 @@ export type FlowPhase = 'lead' | 'complete' | 'end';
 // ---- Clean line glyphs, one per stop ----------------------------------------
 function WaveIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M2 12c2 0 2-7 4-7s2 14 4 14 2-11 4-11 2 8 4 8 2-4 4-4" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   );
 }
 function DecibelIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={3} y={13} width={3.4} height={7} rx={1} fill={color} opacity={0.55} />
       <Rect x={8.3} y={9} width={3.4} height={11} rx={1} fill={color} opacity={0.75} />
       <Rect x={13.6} y={5} width={3.4} height={15} rx={1} fill={color} />
@@ -42,7 +42,7 @@ function DecibelIcon({ color, size }: { color: string; size: number }) {
 }
 function CalcIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={5} y={3} width={14} height={18} rx={2.4} stroke={color} strokeWidth={1.7} />
       <Rect x={7.8} y={5.6} width={8.4} height={3.2} rx={1} fill={color} opacity={0.5} />
       <Circle cx={9} cy={13} r={1.1} fill={color} />
@@ -56,7 +56,7 @@ function CalcIcon({ color, size }: { color: string; size: number }) {
 }
 function RoomIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={3.5} y={5} width={17} height={14} rx={1.6} stroke={color} strokeWidth={1.7} />
       <Circle cx={8} cy={12} r={1.6} fill={color} />
       <Path d="M9.6 12H12M12 12l4 -3.2M12 12l4 3.2" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
@@ -65,7 +65,7 @@ function RoomIcon({ color, size }: { color: string; size: number }) {
 }
 function MeterIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M4 14a8 8 0 0 1 16 0" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
       <Line x1={12} y1={14} x2={16} y2={9.5} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
       <Circle cx={12} cy={14} r={1.6} fill={color} />
@@ -75,7 +75,7 @@ function MeterIcon({ color, size }: { color: string; size: number }) {
 }
 function CompassIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={12} r={8.5} stroke={color} strokeWidth={1.7} />
       <Path d="M15.2 8.8l-1.8 4.6-4.6 1.8 1.8-4.6z" stroke={color} strokeWidth={1.5} strokeLinejoin="round" fill={color} fillOpacity={0.25} />
     </Svg>
@@ -93,14 +93,14 @@ const STOP_ICON: Record<StopId, (p: { color: string; size: number }) => ReactEle
 
 function CheckIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M5 12.5l4.2 4.3L19 7" stroke={color} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   );
 }
 function ChevronIcon({ color, size }: { color: string; size: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M9 5l7 7-7 7" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   );

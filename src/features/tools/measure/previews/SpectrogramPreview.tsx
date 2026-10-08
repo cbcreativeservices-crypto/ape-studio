@@ -129,7 +129,7 @@ export function SpectrogramPreview({
       {/* The same decade rules and labels the live grid draws, from the same
           shared axis — so a saved capture is read against the axis it was
           measured on. */}
-      <Svg style={StyleSheet.absoluteFill}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill}>
         {FREQ_LABELS.map((l) => (
           <Line
             key={l.text}

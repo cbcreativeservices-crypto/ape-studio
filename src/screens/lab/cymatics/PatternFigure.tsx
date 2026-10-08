@@ -92,7 +92,7 @@ export const PatternFigure = memo(function PatternFigure({ geometry, artwork, wi
   const id = useMemo(() => `pf${(seq++).toString(36)}`, []);
   const paperUsed = paper ?? artwork?.background ?? 'plate';
   const svg = (
-    <Svg width={width} height={height}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height}>
       <FigureLayersSvg g={geometry} L={L} artwork={artwork} paper={paperUsed} id={id} lineScale={frame.w / LINE_REF_W} />
     </Svg>
   );

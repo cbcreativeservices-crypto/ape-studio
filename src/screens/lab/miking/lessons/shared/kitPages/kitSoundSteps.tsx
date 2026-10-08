@@ -191,7 +191,8 @@ export function useCymbalShapesStep({ words }: { words: ShapesWords }): MikingSt
 
 /* ── 3 · arrivals ── */
 
-export type ArrivalsWords = { title: string; badge: string; prompt: string; looking: string; note: string; arrived: string; pending: string };
+/** `subject` / `event` (Lab 6 group 4): what the scene shows and what the clock counts from, for the screen reader and the TIME lane — default the kit's words ("the kit", "the strokes"). */
+export type ArrivalsWords = { title: string; badge: string; prompt: string; looking: string; note: string; arrived: string; pending: string; subject?: string; event?: string };
 
 export function useArrivalsStep({
   words,
@@ -239,7 +240,7 @@ export function useArrivalsStep({
       value: t / maxMs,
       home: 0,
       onChange: (v) => setT(Math.round(v * maxMs * 20) / 20),
-      format: () => `${t.toFixed(2)} ms after the strokes`,
+      format: () => `${t.toFixed(2)} ms after ${words.event ?? 'the strokes'}`,
       formatShort: () => `${t.toFixed(1)} ms`,
     },
     {
@@ -273,7 +274,7 @@ export function useArrivalsStep({
           images={imgs}
           point={point}
           tMs={t}
-          accessibilityLabel={`${view === 'side' ? 'Side' : 'Top'} view of the kit with a listening point: ${point.label}. ${t.toFixed(2)} milliseconds after the strokes. ${rows.map((r) => `${r.label}: ${fmtLen(r.mm)} away, arrives after ${fmtMs(r.ms)}${t >= r.ms ? ', arrived' : ''}`).join('; ')}.`}
+          accessibilityLabel={`${view === 'side' ? 'Side' : 'Top'} view of ${words.subject ?? 'the kit'} with a listening point: ${point.label}. ${t.toFixed(2)} milliseconds after ${words.event ?? 'the strokes'}. ${rows.map((r) => `${r.label}: ${fmtLen(r.mm)} away, arrives after ${fmtMs(r.ms)}${t >= r.ms ? ', arrived' : ''}`).join('; ')}.`}
         />
       ),
       badge: words.badge,

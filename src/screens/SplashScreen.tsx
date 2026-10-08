@@ -117,7 +117,7 @@ export function SplashScreen({ navigation }: Props) {
   return (
     <View style={styles.root}>
       {/* Amber radial glow centered at 50%/42% (approximates the CSS radial-gradient). */}
-      <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill} pointerEvents="none">
         <Defs>
           <RadialGradient id="glow" cx="50%" cy="42%" r="55%">
             <Stop offset="0%" stopColor="#ffb400" stopOpacity={0.12} />

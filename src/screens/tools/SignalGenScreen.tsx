@@ -281,7 +281,7 @@ function GenScope({
 
   if (width <= 0) return <View style={{ height }} />;
   return (
-    <Svg width={width} height={height}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height}>
       <Defs>
         <LinearGradient
           id="genWaveLevel"

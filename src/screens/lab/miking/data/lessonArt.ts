@@ -207,3 +207,10 @@ ART.F03 = withFoleyPages({ ...F03_ART, StrikeSequence: PropStrike, CoupledHeads:
 import { F04_ART, F04_PATH } from '../lessons/f04Impacts/pages';
 import { ImpactStrike, WaterHitTail } from '../lessons/f04Impacts/soundArt';
 ART.F04 = withFoleyPages({ ...F04_ART, StrikeSequence: ImpactStrike, CoupledHeads: WaterHitTail }, F04_PATH);
+/* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
+import { F11_ART } from '../lessons/f11MeasurementMics/art';
+ART.F11 = F11_ART;
+import { F12_ART } from '../lessons/f12SoundLevel/art';
+ART.F12 = F12_ART;
+import { F13_ART } from '../lessons/f13RoomAcoustics/art';
+ART.F13 = F13_ART;

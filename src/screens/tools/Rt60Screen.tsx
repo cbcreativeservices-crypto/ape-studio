@@ -144,7 +144,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
 
   return (
     <View style={styles.curvePanel}>
-      <Svg width="100%" height={CURVE_H + 18} viewBox={`0 0 ${CURVE_W} ${CURVE_H + 18}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={CURVE_H + 18} viewBox={`0 0 ${CURVE_W} ${CURVE_H + 18}`}>
         <Defs>
           {/* The decay's Y axis IS level (0 dB → the floor), so the trace and
               its underfill ride the amplitude ramp: hot at the top where the
@@ -554,7 +554,10 @@ export function Rt60Screen({ navigation }: Props) {
             {/* Octave bands (spec §13 View 3): per-band method labels, honest
                 gaps — lit cells for valid fits, dim pending cells otherwise. */}
             <HelpHead title="OCTAVE BANDS" onHelp={() => help('band')} style={styles.groupHead} />
-            <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('band')} delayLongPress={260}>
+            {/* accessible={false}: as an element its label was every cell of
+                the band table run together; the cells now read on their own
+                and the HELP key above explains (APE-STUDIO-W/R/S sweep). */}
+            <Pressable accessible={false} onLongPress={() => help('band')} delayLongPress={260}>
             <View style={styles.bandTable}>
               <View style={styles.bandRowHead}>
                 <Text style={[styles.bandCellHead, { flex: 1.2 }]}>BAND</Text>

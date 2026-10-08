@@ -41,7 +41,7 @@ export function PopFilterDiagram({ withFilter, controls }: { withFilter: boolean
   return (
     <ExpandableFigure aspect={W / H} title="PLOSIVE" controls={controls} render={(w, h) => (
     <View accessible accessibilityLabel={withFilter ? 'Mouth, then a pop filter mesh, then the microphone capsule: the air jet is broken up at the mesh and arrives as weak turbulence; the sound wavefronts pass through unchanged.' : 'Mouth directly in front of the microphone capsule: the air jet arrives at the capsule as one push, together with the sound.'} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {/* face profile (nose, lips, chin) at the left edge */}
         <Path d="M 1 8 C 14 14 24 24 30 34 C 36 42 30 46 32 50 C 40 52 42 58 36 62 C 42 66 42 72 34 74 C 30 84 20 96 8 110 L 1 110 Z" fill="#17181d" stroke="#3d3f48" strokeWidth={1.2} />
@@ -158,7 +158,7 @@ export function DbBars({ rows, a11y, controls }: { rows: { label: string; db: nu
   return (
     <ExpandableFigure aspect={W / H} title="DISTANCE" controls={controls} render={(w, h) => (
     <View accessible={!!a11y} accessibilityLabel={a11y} style={{ width: w, height: h }}>
-    <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
       {ticks.map((t) => (
         <G key={t}>

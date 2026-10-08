@@ -461,7 +461,7 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
 
   return (
     <View style={{ width: w, height: h }}>
-      <Svg width={w} height={gh} viewBox={`0 0 ${lw} ${lgh}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={gh} viewBox={`0 0 ${lw} ${lgh}`}>
         <Rect x={0} y={0} width={lw} height={lgh} fill="#0c0c0f" />
         {/* Baseline + carrier marker. */}
         <Line x1={PAD} y1={lgh - 22} x2={lw - PAD} y2={lgh - 22} stroke="#3a3b46" strokeWidth={1.5} />

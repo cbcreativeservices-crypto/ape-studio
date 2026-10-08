@@ -218,7 +218,7 @@ export function VenueView(p: VenueViewProps) {
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={p.a11y}>
       {p.orientation ? <Text style={styles.orientText}>{p.orientation}</Text> : null}
-      <Svg width="100%" viewBox={`0 0 ${PLOT_W} ${PLOT_H}`} style={{ aspectRatio: PLOT_W / PLOT_H }}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" viewBox={`0 0 ${PLOT_W} ${PLOT_H}`} style={{ aspectRatio: PLOT_W / PLOT_H }}>
         <Defs>
           <LinearGradient id="vv-deck" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0" stopColor="#1e2331" />

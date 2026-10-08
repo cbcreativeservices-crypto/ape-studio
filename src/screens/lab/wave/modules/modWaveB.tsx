@@ -348,7 +348,7 @@ function ArrivalTimeline({
   const hOf = (db: number) => Math.max(3, (1 - clamp(topDb - db, 0, 40) / 40) * (H - padB - 10));
   const base = H - padB;
   return (
-    <Svg width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
       <SvgRect x={0} y={0} width={W} height={base} fill="#0f0f13" />
       <SvgLine x1={0} y1={base} x2={W} y2={base} stroke="#2e2f38" strokeWidth={1} />
       <SvgLine x1={xAt(thresholdMs)} y1={6} x2={xAt(thresholdMs)} y2={base} stroke="rgba(255,198,77,.4)" strokeWidth={1} strokeDasharray="4 3" />

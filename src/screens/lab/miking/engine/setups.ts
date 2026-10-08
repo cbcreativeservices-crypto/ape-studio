@@ -105,6 +105,10 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   C02: { close: null },
   C04: { close: null },
   C08: { close: null },
+  // Lab 6 group 4 — measurement core. F12: a survey has no stage or studio
+  // start; the position at the wall is nearer the air unit, not a "close"
+  // mic — it stays ANOTHER START (sound_level/GEOMETRY_PROPOSAL.md §4).
+  F12: { close: null, distant: null },
 };
 
 const LIVE = /\b(live|on stage|for a stage|a loud stage|for live sound|stage)\b/i;

@@ -69,7 +69,7 @@ export function PipelineStage({ width, height, index }: { width: number; height:
   const y = 14;
   const bh = 40;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} 132`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} 132`}>
       {PIPELINE.map((name, i) => {
         const x = 4 + i * (bw + gap);
         const lit = i === index;
@@ -161,7 +161,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
       accessibilityRole={onTap ? 'button' : undefined}
       accessibilityLabel={onTap ? (playing || pending ? `Stop ${label}` : preparing ? `Preparing the audio. Play ${label} when ready` : `Play ${label}`) : undefined}
     >
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {/* gain-reduction strip */}
         <SvgText x={x0} y={grTop + 8} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>GAIN REDUCTION</SvgText>
         <SvgText x={x1} y={grTop + 8} fontSize={FONT} fill={maxGrDb ? ink.amber : ink.dim} textAnchor="end" fontFamily={fonts.mono}>
@@ -236,7 +236,7 @@ export function ControlMapStage({ width, height, item }: { width: number; height
   const bh = 40;
   const ownerColor = item.owner === 'mix' ? ink.cyan : item.owner === 'master' ? ink.green : ink.amber;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} 150`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} 150`}>
       <SvgText x={6} y={16} fontSize={FONT} fill={ink.cyan} fontFamily={fonts.oswaldMedium}>MIXING ENGINEER</SvgText>
       <Line x1={6} y1={20} x2={168} y2={20} stroke={ink.cyan} strokeWidth={1} />
       <SvgText x={180} y={16} fontSize={FONT} fill={ink.green} fontFamily={fonts.oswaldMedium}>MASTERING ENGINEER</SvgText>
@@ -311,7 +311,7 @@ export function MonitorLevelStage({ width, height, levelDb }: { width: number; h
   const barY = barBot - lvl * (barBot - barTop);
   const tint = splColorForDba(levelDb);
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
       {[-12, -6, 0, 6, 12].map((db) => (
         <G key={db}>
@@ -393,7 +393,7 @@ export function MonitorPathStage({ width, height, chain, grade, reason, next }: 
   const lines = wrapWords(reason, 60).slice(0, 2);
   const ghostAt = next && !chain.includes(next) && chain.length < slots ? chain.length : -1;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${PATH_ASPECT_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${PATH_ASPECT_H}`}>
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>PLAYBACK → CONVERSION → LEVEL → AMPLIFICATION → AIR</SvgText>
       {Array.from({ length: slots }, (_, i) => {
         const d = chain[i];
@@ -478,7 +478,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
 
   if (view === 'eq' || view === 'analog') {
     return (
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {frame(view === 'eq' ? 'TILT EQ · broad tonal shaping' : 'ANALOG EQ · a different hand, same decision')}
         {[-12, -6, 0, 6, 12].map((db) => (
           <G key={db}>
@@ -508,7 +508,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
       pts.push(`${i === 0 ? 'M' : 'L'}${(x0 + ((inDb + 60) / 60) * (x1 - x0)).toFixed(1)} ${(bot - ((out + 60) / 60) * (bot - top)).toFixed(1)}`);
     }
     return (
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {frame(ratio >= 10 ? 'LIMITER · a ceiling on peaks' : 'COMPRESSOR · gentle control')}
         {[-48, -36, -24, -12, 0].map((db) => {
           const xi = x0 + ((db + 60) / 60) * (x1 - x0);
@@ -544,7 +544,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
     const rx = r * Math.min(1, 0.15 + wmult * 0.5);
     const ry = r;
     return (
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {frame('STEREO WIDTH · with the mono check')}
         <Line x1={cx} y1={top + 4} x2={cx} y2={bot - 4} stroke="#1f1f24" strokeWidth={0.6} />
         <Line x1={cx - r} y1={cy} x2={cx + r} y2={cy} stroke="#1f1f24" strokeWidth={0.6} />
@@ -580,7 +580,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
       );
     };
     return (
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {frame('METERS · verify, never guess')}
         {bar(x0 + 20, peak, -60, 'PEAK', levelColorForDb(peak))}
         {bar(x0 + 70, peak + 0.6, -60, 'TP MODEL', peak + 0.6 > 0 ? PEAK_RED : levelColorForDb(peak + 0.6))}
@@ -601,7 +601,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   if (view === 'monitor') {
     const chain: PathDevice[] = ['daw', 'dac', 'monitorCtl', 'active'];
     return (
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {frame('MONITORING CHAIN · trust what you hear')}
         {chain.map((d, i) => (
           <G key={d}>
@@ -617,7 +617,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   // playback / editing: the programme with a fade drawn at the tail
   const fadeSec = amount * 4;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       {frame('PLAYBACK & EDITING · fades, tops and tails')}
       {ov ? ov.hi.map((hi, c) => {
         const n = ov.hi.length;
@@ -658,7 +658,7 @@ export function WorkflowStage({ width, height, index }: { width: number; height:
   const bh = 36;
   const cur = WORKFLOW_STEPS[index];
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} 162`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} 162`}>
       <SvgText x={6} y={16} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>A COMMON WORKFLOW · order and scope vary by project</SvgText>
       {WORKFLOW_STEPS.map((s, i) => {
         const x = 6 + i * (bw + gap);
@@ -733,7 +733,7 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
   const ref = programmeDb.map((p, i) => `${i === 0 ? 'M' : 'L'}${fx(p.f, x0, x1).toFixed(1)} ${yOf(p.db).toFixed(1)}`).join(' ');
   const heard = programmeDb.map((p, i) => `${i === 0 ? 'M' : 'L'}${fx(p.f, x0, x1).toFixed(1)} ${yOf(p.db + eqResponseDb(system.bands, p.f)).toFixed(1)}`).join(' ');
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
       {[0, -12, -24, -36].map((db) => (
         <G key={db}>
@@ -793,7 +793,7 @@ export function DeliverySheetStage({ width, height, title, brief, items, confirm
   const wrapped = items.map((it) => wrapWords(it, Math.floor(itemChars / bst)).slice(0, 2));
   const pitch = (items.length > 5 ? 25 : 28) * bst;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={8} y={6} width={W - 16} height={H - 12} rx={6} fill="#141416" stroke={complete ? ink.green : ink.stroke} strokeWidth={1.2} />
       <Rect x={8} y={6} width={W - 16} height={26} rx={6} fill={complete ? '#0f1d14' : '#1a1812'} />
       {/* The destination's first word: the full name is on the bezel's tray
@@ -857,7 +857,7 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
   const pGap = 8;
   const pw = panels ? (x1 - x0 - pGap * (panels - 1)) / panels : 0;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <SvgText x={x0} y={16} fontSize={fs} fill={ink.dim} fontFamily={fonts.oswaldMedium}>RUNNING ORDER · length × loudness</SvgText>
       <SvgText x={x1} y={16} fontSize={fs} fill={maxStepLu > 6 ? ink.amber : ink.text} textAnchor="end" fontFamily={fonts.mono}>{`largest step ${maxStepLu.toFixed(1)} LU`}</SvgText>
       <Line x1={x0} y1={bot + 2} x2={x1} y2={bot + 2} stroke={ink.stroke} strokeWidth={0.8} />
@@ -969,7 +969,7 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
   const rRef = refl(rxp, rx1);
   const trap = (x: number, y: number, rot: number) => <Polygon key={`${x}${y}`} points={`${x},${y} ${x + 22},${y} ${x},${y + 22}`} fill="#2a2418" stroke={ink.amber} strokeWidth={0.8} transform={`rotate(${rot} ${x} ${y})`} />;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={rx0} y={ry0} width={rx1 - rx0} height={ry1 - ry0} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={1.2} />
       {/* corner bass traps */}
       {trap(rx0, ry0, 0)}
@@ -1099,7 +1099,7 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
     );
   }
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={2} y={2} width={W - 4} height={H - 4} rx={8} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
       {body}
     </Svg>

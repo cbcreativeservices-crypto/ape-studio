@@ -629,7 +629,7 @@ export function GearGlyph({ kind, size = 56, dim, label, power = 'on', legends =
   if (idRef.current == null) idRef.current = `g${(seq = (seq + 1) % 100000)}`;
   const id = idRef.current;
   return (
-    <Svg width={size} height={size} viewBox="0 0 64 64" opacity={dim ? 0.38 : 1} {...(label ? { accessibilityLabel: label } : {})}>
+    <Svg width={size} height={size} viewBox="0 0 64 64" opacity={dim ? 0.38 : 1} accessible={!!label} accessibilityLabel={label} accessibilityElementsHidden={!label} importantForAccessibility={label ? 'auto' : 'no-hide-descendants'}>
       <GearDefs id={id} />
       <Drawing kind={kind} id={id} lit={power !== 'off'} legends={legends} />
     </Svg>

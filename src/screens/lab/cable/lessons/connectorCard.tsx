@@ -114,15 +114,17 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
         <View
           style={styles.imageFrame}
           accessible
+          accessibilityRole="image"
           accessibilityLabel={`Photograph of a ${rec.displayName} connector${active.label ? `, ${active.label.toLowerCase()} view` : ''}`}
         >
-          <Image accessible
+          {/* The frame is the one element; the image is not a second one
+              nested inside it (APE-STUDIO-W/R/S nested-element sweep). */}
+          <Image
+          accessible={false}
           source={{ uri: active.url }}
           style={styles.image}
           contentFit="contain"
           cachePolicy="memory-disk"
-          accessibilityRole="image"
-          accessibilityLabel={active.label ?? 'Connector photograph'}
         />
         </View>
       ) : null}

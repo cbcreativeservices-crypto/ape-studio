@@ -563,7 +563,7 @@ export function WaveformScreen({ navigation }: Props) {
   const scopeInner =
     scopeW > 0 ? (
       <View style={{ width: scopeW, height: scopeH }} pointerEvents="none">
-        <Svg width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
           {scope?.dbTicks.map((t) => (
             <G key={t.db}>
               <Line x1={30} x2={scopeW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
@@ -602,7 +602,7 @@ export function WaveformScreen({ navigation }: Props) {
           </Canvas>
         ) : scope ? (
           // Web fallback (no CanvasKit): SVG trace, flat trace colour.
-          <Svg width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
             <Path d={scope.areaD} fill={traceColor} opacity={0.9} />
             <Path d={scope.rmsD} fill={traceColor} opacity={0.6} />
             {scope.hasClip ? <Path d={scope.clipD} stroke={colors.red} strokeWidth={scope.clipW} fill="none" /> : null}
@@ -894,11 +894,15 @@ export function WaveformScreen({ navigation }: Props) {
       {/* ZOOM / WINDOW chooser popup (owner rev 24). Tap outside or Android-back
           to close; picking an option applies + closes. */}
       {wavePopup != null ? (
+        // ⛔ NOT one accessibility element (APE-STUDIO-W/R/S nested-element
+        // sweep, 2026-10-08): as the "Close" button it wrapped the chooser,
+        // so on iOS a screen reader heard "Close" and could reach none of the
+        // options. Picking an option closes; so does the escape gesture.
         <Pressable
           style={styles.popupBackdrop}
           onPress={() => setWavePopup(null)}
-          accessibilityRole="button"
-          accessibilityLabel="Close"
+          accessible={false}
+          onAccessibilityEscape={() => setWavePopup(null)}
         >
           {/* The card swallows its own taps: a tap between swatches or on the
               title bubbled to the backdrop and closed the (deliberately open)

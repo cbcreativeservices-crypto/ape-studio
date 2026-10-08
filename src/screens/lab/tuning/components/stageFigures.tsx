@@ -44,10 +44,10 @@ export function Spiral({ fit = true, highlight = null }: { fit?: boolean; highli
   const first = pts[0], last = pts[12];
   return (
     <View style={{ width: '100%' }} accessible accessibilityRole="image" accessibilityLabel={`Fifth spiral: twelve fifths return to C's direction but land outside it — B sharp sits ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents above C.`}>
-      <Svg width="100%" height={fit ? undefined : SPIRAL_H} style={fit ? { aspectRatio: SPIRAL_W / SPIRAL_H } : undefined} viewBox={`0 0 ${SPIRAL_W} ${SPIRAL_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : SPIRAL_H} style={fit ? { aspectRatio: SPIRAL_W / SPIRAL_H } : undefined} viewBox={`0 0 ${SPIRAL_W} ${SPIRAL_H}`}>
         <Path d={d} fill="none" stroke={colors.textSub} strokeWidth={1.4} />
         {pts.map((p) => (
-          <Svg key={p.s.index}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={p.s.index}>
             <Circle cx={p.x} cy={p.y} r={p.s.index === 0 || p.s.index === 12 ? 6 : 3.5} fill={p.s.index === 12 ? ROLE.error : p.s.index === 0 ? ROLE.exact : colors.textSecondary} />
             <SvgText x={p.x + (p.x > cx ? 9 : -9)} y={p.y + 3.5} fontSize={10} fill={p.s.index === 12 ? ROLE.error : colors.textSecondary} textAnchor={p.x > cx ? 'start' : 'end'} fontFamily={fonts.oswaldMedium}>{p.s.spelling}</SvgText>
           </Svg>
@@ -75,7 +75,7 @@ export function DeviationChart({ system, selected, onSelect, fit = true }: { sys
   const summary = `Deviation from equal temperament: ${notes.map((n) => `${n.spelling} ${deviationFromEqualCents(n) >= 0 ? '+' : ''}${deviationFromEqualCents(n).toFixed(2)} cents`).join(', ')}.`;
   return (
     <View style={{ width: '100%' }} accessible accessibilityLabel={summary}>
-      <Svg width="100%" height={fit ? undefined : H} style={fit ? { aspectRatio: W / H } : undefined} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : H} style={fit ? { aspectRatio: W / H } : undefined} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={zeroY} x2={W - 10} y2={zeroY} stroke={colors.textSub} strokeWidth={1.2} />
         {/* 9.5 in the viewBox (review 2026-09-30): on a 375-wide phone under
@@ -93,7 +93,7 @@ export function DeviationChart({ system, selected, onSelect, fit = true }: { sys
           // Descriptive distance: green exact, gold within 10 ¢, orange beyond. Never red.
           const role = Math.abs(dev) < 0.05 ? 'exact' : Math.abs(dev) < 10 ? 'near' : 'far';
           return (
-            <Svg key={i} onPress={() => onSelect(i)}>
+            <Svg key={i} onPress={() => onSelect(i)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
               {/* A full-height hit lane per note: the bar alone (18 × 2 px for an exact note) was too small to tap. */}
               <Rect x={x - 18} y={16} width={36} height={H - 24} fill="transparent" />
               <Rect x={x - 9} y={dev >= 0 ? zeroY - h : zeroY} width={18} height={Math.max(2, h)} fill={ROLE[role]} opacity={i === selected ? 1 : 0.6} stroke={i === selected ? ROLE.active : 'none'} />

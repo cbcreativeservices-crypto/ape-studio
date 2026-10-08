@@ -640,9 +640,45 @@ affects other side: nothing (docs and captures only)
 needs: nothing
 
 
+### 2026-10-07 23:57 · ccode · 6cba1bc7
+changed: Miking Lab 6 group 1: the Foley stage (F01-F04) and its shared toolkit
+affects other side: nothing (client-only lessons; no backend, no data; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
 ### 2026-10-07 23:56 · ccode · 8d436522
 changed: Miking engine: shotgun mic, pole (boom) mount, scaled lengths (Lab 6 group 1)
 affects other side: nothing (client-only lab engine; no backend, no data)
+needs: nothing
+
+
+### 2026-10-07 23:14 · ccode · 7c48c7fd
+changed: Merge lab6-g4: Miking Lab 6 F11-F13 measurement lessons
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · 48fa4836
+changed: web: launch date moves to Tuesday, October 13
+affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · 2d9b22ad
+changed: Miking Lab 6 g4: F11, F12, F13 lessons and the field lab row
+affects other side: nothing (client-only lesson data; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · a0b9a935
+changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
+affects other side: nothing (client-only lab code; no backend reads or writes)
+needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
+
+
+### 2026-10-07 17:07 · ccode · 6660b125
+changed: Merge remote-tracking branch 'origin/sentry-fixes' into HEAD
+affects other side: nothing (client-only)
 needs: nothing
 
 
@@ -691,6 +727,9 @@ affects other side: nothing (client-only Lab 5 screen fixes)
 ### 2026-10-07 15:46 · ccode · 8ccc26cb
 changed: mixing guides: restore the brand-name exception "Hammond" (owner 2026-10-07)
 affects other side: nothing (client-only: generated mixing-guide text now keeps "Hammond"; no backend change)
+### 2026-10-07 16:55 · ccode · db65fbad
+changed: Sentry fixes: accessibility tree (W/R/S), background-only OTA reload (D), mic flush on background (T), Skia web guards (G/E) + app-wide ratchets
+affects other side: nothing (app JS only, branch sentry-fixes, not published; no server, store-console or SQL change)
 needs: nothing
 
 

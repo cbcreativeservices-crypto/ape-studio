@@ -151,6 +151,18 @@ export const BRAND_NAMES: readonly string[] = [
   'Hayes',
   'Sound Devices',
   'Warner',
+  // Lab 6 group 4 research (docs/labs/miking/measurement_mics, sound_level, room_acoustics): makers, agencies and standards bodies.
+  'NTi',
+  'NIST',
+  'IEC',
+  'ISO',
+  'FHWA',
+  'NPS',
+  'NWS',
+  'Rational Acoustics',
+  'Smaart',
+  'Meyer',
+  'MAPP',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

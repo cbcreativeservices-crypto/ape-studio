@@ -315,7 +315,7 @@ function ClipScene() {
         style={styles.scope}
         onLayout={(e: LayoutChangeEvent) => setScopeW(e.nativeEvent.layout.width)}
       >
-        <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
           {GRID_XS.map((x) => (
             <Line key={x} x1={x} y1={0} x2={x} y2={VB_H} stroke={colors.hairlineDim} strokeWidth={1} />
           ))}
@@ -352,7 +352,7 @@ function ClipScene() {
           />
         </Svg>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: cleanOpacity }]}>
-          <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
             <Defs>
               <LinearGradient id='wfClipMidi' x1={0} y1={0} x2={0} y2={VB_H} gradientUnits='userSpaceOnUse'>
                 {WAVE_LEVEL_STOPS.map((s) => (
@@ -364,7 +364,7 @@ function ClipScene() {
           </Svg>
         </Animated.View>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: drive }]}>
-          <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
             <Defs>
               <LinearGradient id='wfClipMidiHot' x1={0} y1={0} x2={0} y2={VB_H} gradientUnits='userSpaceOnUse'>
                 {WAVE_LEVEL_STOPS.map((s) => (
@@ -393,7 +393,7 @@ function ClipScene() {
           <>
             {/* Always-on: name the ceiling itself (steel = neutral reference). */}
             <View pointerEvents='none' style={StyleSheet.absoluteFill}>
-              <Svg width={scopeW} height={SCOPE_H}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={scopeW} height={SCOPE_H}>
                 <Callout
                   x={scopeW - 8}
                   y={ceilBottom + 16}
@@ -405,7 +405,7 @@ function ClipScene() {
             </View>
             {/* CLEAN state: the amber headroom margin, bracketed peak → ceiling. */}
             <Animated.View pointerEvents='none' style={[StyleSheet.absoluteFill, { opacity: cleanOpacity }]}>
-              <Svg width={scopeW} height={SCOPE_H}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={scopeW} height={SCOPE_H}>
                 <Line x1={peakX} y1={ceilTop + 1} x2={peakX} y2={peakY - 1} stroke={CALLOUT_AMBER} strokeWidth={1.5} />
                 <Line x1={peakX - 4} y1={ceilTop + 1} x2={peakX + 4} y2={ceilTop + 1} stroke={CALLOUT_AMBER} strokeWidth={1.5} />
                 <Line x1={peakX - 4} y1={peakY - 1} x2={peakX + 4} y2={peakY - 1} stroke={CALLOUT_AMBER} strokeWidth={1.5} />
@@ -428,7 +428,7 @@ function ClipScene() {
             </Animated.View>
             {/* HOT state: name the flattened tops (salmon = destroyed samples). */}
             <Animated.View pointerEvents='none' style={[StyleSheet.absoluteFill, { opacity: drive }]}>
-              <Svg width={scopeW} height={SCOPE_H}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={scopeW} height={SCOPE_H}>
                 <Line x1={flatLabelX} y1={19} x2={runMidX} y2={ceilTop - 1} stroke={LEADER} strokeWidth={1} />
                 <Callout
                   x={flatLabelX}
@@ -551,7 +551,7 @@ function TransientScene() {
             style={styles.paneScope}
             onLayout={(e: LayoutChangeEvent) => setPaneW(e.nativeEvent.layout.width)}
           >
-            <Svg width='100%' height='100%' viewBox={`0 0 ${PANE_W} ${PANE_H}`} preserveAspectRatio='none'>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${PANE_W} ${PANE_H}`} preserveAspectRatio='none'>
               <Line
                 x1={0}
                 y1={PANE_H / 2}
@@ -565,7 +565,7 @@ function TransientScene() {
             </Svg>
             {paneW > 0 ? (
               <View pointerEvents='none' style={StyleSheet.absoluteFill}>
-                <Svg width={paneW} height={PANE_PX_H}>
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={paneW} height={PANE_PX_H}>
                   {/* ATTACK — the taught feature (amber). */}
                   <Line x1={spikeX + 1} y1={spikeY + 2} x2={spikeX + 18} y2={22} stroke={LEADER} strokeWidth={1} />
                   <Callout x={spikeX + 22} y={26} fill={CALLOUT_AMBER} text='ATTACK' />
@@ -588,7 +588,7 @@ function TransientScene() {
         <View style={styles.pane}>
           <Text style={styles.paneLabel}>SUSTAINED — PAD</Text>
           <View style={styles.paneScope}>
-            <Svg width='100%' height='100%' viewBox={`0 0 ${PANE_W} ${PANE_H}`} preserveAspectRatio='none'>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' viewBox={`0 0 ${PANE_W} ${PANE_H}`} preserveAspectRatio='none'>
               <Line
                 x1={0}
                 y1={PANE_H / 2}
@@ -602,7 +602,7 @@ function TransientScene() {
             </Svg>
             {paneW > 0 ? (
               <View pointerEvents='none' style={StyleSheet.absoluteFill}>
-                <Svg width={paneW} height={PANE_PX_H}>
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={paneW} height={PANE_PX_H}>
                   {/* Envelope guide hugging the pad's peaks — the body never dips. */}
                   <Line
                     x1={paneW * 0.06}
@@ -634,7 +634,7 @@ function TransientScene() {
         onLayout={(e: LayoutChangeEvent) => setStripW(Math.round(e.nativeEvent.layout.width) - 20)}
       >
         {stripW > 0 ? (
-          <Svg width={stripW} height={STRIP_SVG_H}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={stripW} height={STRIP_SVG_H}>
             <SvgText x={0} y={11} fontFamily={fonts.oswaldSemiBold} fontSize={10} letterSpacing={1} fill={CALLOUT_STEEL}>
               PEAK — NEARLY THE SAME
             </SvgText>
@@ -701,7 +701,7 @@ function ZoomScene() {
       <Text style={styles.zPaneLabel}>1× REFERENCE — does not move</Text>
       <View style={styles.zPane} onLayout={(e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width))}>
         {w > 0 ? (
-          <Svg width={w} height={ZP_H}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={ZP_H}>
             <Defs>
               <LinearGradient id='zTop' x1={0} y1={ZP_H / 2 - full} x2={0} y2={ZP_H / 2 + full} gradientUnits='userSpaceOnUse'>
                 {WAVE_LEVEL_STOPS.map((s) => (
@@ -731,7 +731,7 @@ function ZoomScene() {
       <Text style={styles.zPaneLabel}>ZOOM ×{zoom} VIEW</Text>
       <View style={styles.zPane}>
         {w > 0 ? (
-          <Svg width={w} height={ZP_H}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={ZP_H}>
             <Defs>
               <LinearGradient id='zBot' x1={0} y1={ZP_H / 2 - full * zoom} x2={0} y2={ZP_H / 2 + full * zoom} gradientUnits='userSpaceOnUse'>
                 {WAVE_LEVEL_STOPS.map((s) => (

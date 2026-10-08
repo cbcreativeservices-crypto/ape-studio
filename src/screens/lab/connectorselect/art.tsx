@@ -61,7 +61,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
   return (
     <ExpandableFigure aspect={EXPLODED_W / EXPLODED_H} title="THE CABLE" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel="Exploded cable diagram: equipment jack on the left, then the plug, strain relief, and the cable opened up layer by layer — jacket, shield, insulation, signal conductors. Tap a zone or use the part list below.">
-      <Svg viewBox={`0 0 ${EXPLODED_W} ${EXPLODED_H}`} width={w} height={h}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox={`0 0 ${EXPLODED_W} ${EXPLODED_H}`} width={w} height={h}>
         {/* equipment panel + jack */}
         <Rect x={4} y={30} width={46} height={90} rx={6} fill={INK.panel} stroke={hi('jack') ?? '#33373d'} strokeWidth={sw('jack')} onPress={() => onSelect('jack')} />
         <Circle cx={27} cy={75} r={14} fill="#0c0d0f" stroke={hi('jack') ?? INK.metalDark} strokeWidth={sw('jack')} onPress={() => onSelect('jack')} />
@@ -227,7 +227,7 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
   return (
     <ExpandableFigure aspect={1} width={width} title="CROSS-SECTION" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-    <Svg viewBox="0 0 120 120" width={w} height={h}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox="0 0 120 120" width={w} height={h}>
       {rings.map((ring, i) => (
         <Circle key={i} cx={C} cy={C} r={ring.r} fill={ring.fill} stroke={ring.stroke ?? '#0c0d0f'} strokeWidth={1} />
       ))}
@@ -243,7 +243,7 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
 export function Lamp({ state, pulse }: { state: 'lit' | 'dark' | 'flicker'; pulse?: boolean }) {
   const fill = state === 'lit' ? colors.green : state === 'flicker' ? colors.gold : '#26262b';
   return (
-    <Svg viewBox="0 0 28 28" width={28} height={28}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox="0 0 28 28" width={28} height={28}>
       <Circle cx={14} cy={14} r={11} fill={fill} stroke="#0c0d0f" strokeWidth={2} opacity={state === 'flicker' && pulse ? 0.35 : 1} />
       {state !== 'dark' ? <Circle cx={10.5} cy={10.5} r={3} fill="#ffffff" opacity={0.5} /> : null}
     </Svg>
@@ -278,7 +278,7 @@ export function TesterFace({ state, pulse, a, b, word, controls }: {
   return (
     <ExpandableFigure aspect={FACE_W / FACE_H} title="THE TESTER" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-    <Svg viewBox={`0 0 ${FACE_W} ${FACE_H}`} width={w} height={h}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox={`0 0 ${FACE_W} ${FACE_H}`} width={w} height={h}>
       <Rect x={0} y={0} width={FACE_W} height={FACE_H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
       <SvgText x={10} y={14} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>CONTINUITY TESTER</SvgText>
       {/* the lamp */}

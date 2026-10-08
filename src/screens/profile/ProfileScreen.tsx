@@ -1595,7 +1595,16 @@ export function ProfileScreen() {
             style={styles.fullId}
             onPress={closeFullId}
             accessibilityRole="button"
-            accessibilityLabel="Close your ID"
+            // ONE element (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08):
+            // it wraps the whole ID, so on iOS a screen reader heard only
+            // "Close your ID" and could not reach BRIGHTEN. The label now says
+            // the ID; BRIGHTEN / DIM rides along as a custom action.
+            accessibilityLabel={`Your ID: ${pub.registryName || pub.name || 'no name added'}, ${statusLabel}${profile?.apeStudentId ? `, ID ${profile.apeStudentId}` : ''}. Tap to close.`}
+            accessibilityActions={lowLight ? [{ name: 'brighten', label: brightId ? 'Dim the ID again' : 'Brighten to scan' }] : undefined}
+            onAccessibilityAction={(e) => {
+              if (e.nativeEvent.actionName === 'brighten') setBrightId((b) => !b);
+            }}
+            onAccessibilityEscape={closeFullId}
           >
             <Text style={styles.fullIdName}>
               {pub.registryName || pub.name || 'Add your name'}
@@ -1611,6 +1620,7 @@ export function ProfileScreen() {
               <Pressable
                 style={styles.brighten}
                 onPress={() => setBrightId((b) => !b)}
+                accessible={false}
                 accessibilityRole="button"
                 accessibilityLabel={
                   brightId

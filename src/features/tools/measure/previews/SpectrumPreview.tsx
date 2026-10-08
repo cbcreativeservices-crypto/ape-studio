@@ -200,7 +200,7 @@ export function SpectrumPreview({
     <PreviewFrame caption={caption} height={height} onPress={onPress} a11yLabel={a11y}>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
         {w > 0 && win != null && chartW > 0 ? (
-          <Svg width={w} height={height}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={height}>
             <Defs>
               {/* The app-wide amplitude ramp, anchored to the dB axis in
                   userSpaceOnUse — not to the bar — exactly as the live RTA

@@ -533,7 +533,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
 
   return (
     <View style={{ width, height }} pointerEvents="none">
-      <Svg width={width} height={height} viewBox={`0 0 ${VB_W} ${VB_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${VB_W} ${VB_H}`}>
         <Defs>
           {/* Metallic bezel — same brushed top-lit gradient as the ToolsHub tiles. */}
           <LinearGradient id={`${uid}-bezel`} x1="0" y1="0" x2="0" y2="1">

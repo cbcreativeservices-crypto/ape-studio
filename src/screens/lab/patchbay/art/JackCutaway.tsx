@@ -105,7 +105,7 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
         }
         render={(w, h) => (
       <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         {/* jack body + front bushing */}
         <Rect x={62} y={30} width={262} height={134} rx={8} fill="#101013" stroke="#34353b" strokeWidth={1.4} />
         <Rect x={42} y={80} width={20} height={44} rx={3} fill="#1a1b1f" stroke="#3d3e44" strokeWidth={1.4} />

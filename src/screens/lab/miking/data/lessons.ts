@@ -188,3 +188,10 @@ import { F03_LESSON } from '../lessons/f03Props/lesson.ts';
 LESSON_CONTENT.F03 = F03_LESSON;
 import { F04_LESSON } from '../lessons/f04Impacts/lesson.ts';
 LESSON_CONTENT.F04 = F04_LESSON;
+/* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
+import { F11_LESSON } from '../lessons/f11MeasurementMics/lesson.ts';
+LESSON_CONTENT.F11 = F11_LESSON;
+import { F12_LESSON } from '../lessons/f12SoundLevel/lesson.ts';
+LESSON_CONTENT.F12 = F12_LESSON;
+import { F13_LESSON } from '../lessons/f13RoomAcoustics/lesson.ts';
+LESSON_CONTENT.F13 = F13_LESSON;

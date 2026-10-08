@@ -189,7 +189,24 @@ Facts in `background_vocals/`, `duets_small_vocal/` and `choir/SOURCES.md`; the 
 | AKG-C414 | AKG, C414 XLS/XLII manual §4.6.2 Choir/Backing Vocals: "select the cardioid or omni pattern and place the vocalists in a semicircle in front of the microphone"; "one stereo microphone plus one spot microphone each for the soprano, alto, tenor, and bass sections" | see `lead_vocal/SOURCES.md` §0 | PDF read 2026-10-05 in the Batch 5 research pass |
 | S-REC | Shure, *Microphone Techniques for Recording* (booklet), Ensemble Vocals p.5–6: "Having the vocalists circle around an omnidirectional mic …"; "Two cardioid mics, positioned back to back"; the choir mic "a few feet in front of, and a few feet above, the heads of the first row … aimed at the last row" | see `snare/SOURCES.md`, `lead_vocal/SOURCES.md` §0 | re-read 2026-10-05 in the Batch 5 research pass |
 
-## 13. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
+## 13. Lab 6 part 2 measurement keys (F11–F13, Lab 6 group 4; `lessons/shared/measure/`)
+
+Added 2026-10-08 by the Lab 6 group 4 builder (branch lab6-g4). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; these keys appear only in the code's internal `src` / `prov` fields.
+
+| Key | Source | Used for |
+|---|---|---|
+| NTI-CAL | NTi Audio Class 1 calibrator page | 94 / 114 dB at 1 kHz; the 1/4 in adapter (calibrator.ts, measureSpec.ts) |
+| GRAS-FF | GRAS microphone guide, free field / pressure / random incidence | the three field responses (measureSpec.ts, measureMics.ts, FIELD_MATCH) |
+| OSHA-G | OSHA 1910.95 Appendix G | checks before and after; area vs personal sampling |
+| OSHA-ELEC | OSHA electrical incidents eTool | 3 m (10 ft) from overhead power lines (F12) |
+| NWS-LTG | NWS lightning safety | inside at once; 30 min after the last lightning or thunder (F12) |
+| FHWA-FG | FHWA noise measurement field guide | 1.5 m height; facade positions (F12) |
+| NPS-RM47 | NPS RM47 part 2 | 5 m/s wind exclusion in one protocol (F12 weather card) |
+| RA-T | Rational Acoustics, T20/T30/EDT | fit ranges, ×3/×2/×6, 10 dB margin (decay.ts) |
+| MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing (measureSpec.LISTENER_HEIGHT, F13) |
+| CALC-* | app calculators | Leq and combine via calcBridge.ts; speed of sound and P_REF_PA via calcUnits |
+
+## 14. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
 
 Added 2026-10-08 by the Lab 6 group 1 builder (branch lab6-g1): the short shotgun (on a stand or a pole), the
 small supercardioid without a tube, the room condenser and the hydrophone / contact cards. The full Lab 6 register

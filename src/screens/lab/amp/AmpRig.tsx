@@ -95,7 +95,7 @@ function WavePanel({
       <Text style={[styles.panelTitle, { fontSize: TITLE_FONT * scale, lineHeight: TITLE_LINE * scale }]} numberOfLines={1}>
         {title}
       </Text>
-      <Svg width={w} height={svgH} viewBox={`0 0 ${W} ${h}`} preserveAspectRatio="none">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={svgH} viewBox={`0 0 ${W} ${h}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={W} height={h} fill="#0a0a0c" />
         <Line x1={0} y1={h / 2} x2={W} y2={h / 2} stroke="rgba(255,255,255,0.10)" strokeWidth={1} />
         {children}

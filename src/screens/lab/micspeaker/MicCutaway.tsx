@@ -93,7 +93,7 @@ export function MicCutaway({ width, running = true }: { width: number; running?:
   });
 
   const layer = (xml: string) => (
-    <SvgXml xml={xml} width={width} height={height} />
+    <SvgXml accessibilityElementsHidden importantForAccessibility="no-hide-descendants" xml={xml} width={width} height={height} />
   );
 
   return (

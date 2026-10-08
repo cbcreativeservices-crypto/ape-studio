@@ -190,7 +190,7 @@ function SpectrumGlass({
       </View>
       <View style={{ flex: 1 }}>
         {chartW > 0 && (
-          <Svg width={chartW} height={chartH}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={chartW} height={chartH}>
             <Defs>
               <LinearGradient id="liveEqFill" x1="0" y1={zeroY} x2="0" y2={floorY} gradientUnits="userSpaceOnUse">
                 {LOUDNESS_STOPS.map((s) => (

@@ -423,7 +423,7 @@ const LiveHeatmap = memo(function LiveHeatmap({
     }
   }
   return (
-    <Svg width={width} height={topH}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={topH}>
       {buckets.map((d, i) =>
         // Key by INDEX, not colour: two ramp steps can share a hex (the wide
         // green plateau has two #3fae52 stops), which collided as duplicate keys
@@ -784,7 +784,7 @@ function HarmonicStage({
       }
     }
     return (
-      <Svg width={pianoW} height={topH} pointerEvents="none">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={pianoW} height={topH} pointerEvents="none">
         {nodes}
       </Svg>
     );
@@ -808,7 +808,7 @@ function HarmonicStage({
         >
           {specW > 0 ? (
             view === 'model' ? (
-              <Svg width={specW} height={topH}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={specW} height={topH}>
                 {markerLines}
                 {modelLevels.map((m) => (
                   <Rect
@@ -841,7 +841,7 @@ function HarmonicStage({
                   rowYTop={rowY.top}
                   rowYBot={rowY.bot}
                 />
-                <Svg width={specW} height={topH} style={StyleSheet.absoluteFill}>
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={specW} height={topH} style={StyleSheet.absoluteFill}>
                   {markerLines}
                 </Svg>
                 {history.length === 0 ? (
@@ -885,7 +885,7 @@ function HarmonicStage({
             onLayout={(e) => setSliceW(Math.round(e.nativeEvent.layout.width))}
           >
             {sliceW > 0 ? (
-              <Svg width={sliceW} height={topH}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={sliceW} height={topH}>
                 {markerLines}
                 {liveSlicePath !== '' ? (
                   <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5 * ts} fill="none" />
@@ -906,7 +906,7 @@ function HarmonicStage({
         onLayout={(e) => setWaveW(Math.round(e.nativeEvent.layout.width))}
       >
         {waveW > 0 ? (
-          <Svg width={waveW} height={waveH}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={waveW} height={waveH}>
             <Defs>
               {/* Model-wave gradient (static amplitude axis). */}
               <LinearGradient

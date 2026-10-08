@@ -73,6 +73,7 @@ import {
   setOutputSoundingProbe,
 } from './audioOutputStore';
 import { panicMuteAudio, stopAllSound } from './panicMute';
+import { flushPendingRelease } from '../tools/engine/micSession';
 import { enableAudioBody, muteOnLeaveEnabled, onLeaveApp } from './leaveAppMute';
 import { authEventReMute } from './authReMute';
 import { ApeDsp, onOutputLost } from '../../../modules/ape-dsp';
@@ -309,6 +310,9 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
         // SAME silencing pass, minus the gate lock. Either way nothing is
         // left playing behind the user — the setting only decides whether
         // output is still on when they come back.
+        // A mic release already scheduled runs NOW, not when iOS next wakes
+        // us (Sentry APE-STUDIO-T — see flushPendingRelease in micSession).
+        flushPendingRelease();
         onLeaveApp(muteOnLeaveEnabled(), { panicMute: panicMuteAudio, stopAllSound });
         return;
       }

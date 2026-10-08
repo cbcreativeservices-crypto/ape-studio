@@ -131,7 +131,7 @@ const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi 
 function JogBase({ size }: { size: number }) {
   const c = size / 2;
   return (
-    <Svg width={size} height={size}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size}>
       <Defs>
         <RadialGradient id="jogBody" cx="50%" cy="50%" r="62%">
           <Stop offset="0" stopColor="#26262b" />
@@ -161,7 +161,7 @@ function JogBase({ size }: { size: number }) {
 function JogLighting({ size }: { size: number }) {
   const c = size / 2;
   return (
-    <Svg width={size} height={size}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size}>
       <Defs>
         <RadialGradient id="jogSh" cx="50%" cy="50%" r="50%">
           <Stop offset="0" stopColor="#000000" stopOpacity="0.5" />
@@ -188,7 +188,7 @@ function JogDimple({ size }: { size: number }) {
   const dCx = c + size * SVG_ORBIT * 0.866;
   const dCy = c - size * SVG_ORBIT * 0.5;
   return (
-    <Svg width={size} height={size}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size}>
       <Defs>
         {/* Concave bowl: light pooled toward the far/lower wall, deep at the rim.
             Capped at #1c1c20 — a matte dish never reads wet. */}

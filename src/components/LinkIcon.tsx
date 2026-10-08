@@ -10,7 +10,7 @@ import Svg, { Line, Path } from 'react-native-svg';
 
 export function LinkIcon({ size = 18, color = '#8b8f97', off = false }: { size?: number; color?: string; off?: boolean }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       {/* two interlocking chain links */}
       <Path
         d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.2 1.2"

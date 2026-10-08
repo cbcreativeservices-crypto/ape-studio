@@ -54,7 +54,7 @@ function DeviceDiagram({ device, control, width, height }: { device: Device; con
   // The device box is wide (160) so its terminal names fit at a legible size.
   const dx = 100, dw = 160, dy = 32, dh = 74;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${DEV_W} ${DEV_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${DEV_W} ${DEV_H}`}>
       {/* supply → device → load power path */}
       <Rect x={4} y={54} width={62} height={30} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} />
       <SvgText x={35} y={73} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SUPPLY</SvgText>
@@ -91,7 +91,7 @@ function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number;
       <Path key={`${x}-${k}`} d={`M${x} ${30 + k * (80 / turns)} a10 ${40 / turns} 0 0 ${sweep} 0 ${80 / turns}`} fill="none" stroke={color} strokeWidth={2} />
     ));
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${XF_W} ${XF_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${XF_W} ${XF_H}`}>
       <Rect x={150} y={18} width={60} height={104} rx={4} fill="#26262b" stroke={colors.steelBorder} />
       <SvgText x={180} y={74} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>CORE</SvgText>
       {coil(150, turnsP, AMP_COLORS.input, 0)}

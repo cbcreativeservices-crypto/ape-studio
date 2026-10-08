@@ -153,7 +153,7 @@ try {
 /** Small framed-image glyph — marks a term that has a media element. */
 function MediaGlyph({ color = '#7fbfff', size = 17 }: { color?: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 20 20">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 20 20">
       <Rect x={2.5} y={3.5} width={15} height={13} rx={2} fill="none" stroke={color} strokeWidth={1.6} />
       <Circle cx={7} cy={8} r={1.6} fill={color} />
       <Path d="M4 15 L8.5 10.5 L11.5 13.5 L14 11 L17 14" fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
@@ -4310,7 +4310,14 @@ ${COPY.glossaryFreeAllowance}`,
                       {/* Tap anywhere on the definition/details → go BACK one hop;
                           tapping a term LINK navigates forward instead
                           (onLinkPress sets suppressBack, popupBack skips). */}
-                      <Pressable onPress={popupBack} accessibilityRole="button" accessibilityLabel="Back">
+                      {/* ⛔ NOT an accessibility element (APE-STUDIO-W/R/S
+                          nested-element sweep, 2026-10-08): as the "Back"
+                          button it WRAPPED the definition and every detail,
+                          link, lab and calculator key — so on iOS a screen
+                          reader heard one element, "Back", and the definition
+                          was never read. The text and keys now read on their
+                          own; the escape gesture goes back one hop. */}
+                      <Pressable onPress={popupBack} accessible={false} onAccessibilityEscape={popupBack}>
                         <LinkedText
                           text={ttsBeg ? item.plain_english || item.definition : item.definition}
                           style={styles.cardPopupDef}
@@ -4494,15 +4501,22 @@ ${COPY.glossaryFreeAllowance}`,
 
       {/* Media viewer (user request 2026-07-18) — tap anywhere to close. */}
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
-        <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
+        {/* ONE element: the backdrop says what is shown AND how to close it.
+            The image inside was a second element nested in this one —
+            unreachable on iOS (APE-STUDIO-W/R/S nested-element sweep). */}
+        <Pressable
+          style={styles.mediaBackdrop}
+          onPress={() => setMediaPopup(null)}
+          accessibilityRole="button"
+          accessibilityLabel="Enlarged term illustration. Tap to close."
+          onAccessibilityEscape={() => setMediaPopup(null)}
+        >
           {mediaPopup ? (
-            <ExpoImage accessible
+            <ExpoImage accessible={false}
               source={{ uri: mediaPopup }}
               style={styles.mediaFull}
               contentFit="contain"
               cachePolicy="memory-disk"
-              accessibilityRole="image"
-              accessibilityLabel="Enlarged term illustration"
             />
           ) : null}
           <Text style={styles.mediaHint}>TAP TO CLOSE</Text>

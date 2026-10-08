@@ -5,6 +5,7 @@
  * module already checks on every launch; doing it again is what raced and
  * crashed the app. See the crash note in `autoUpdate.ts`.
  */
+import { AppState } from 'react-native';
 import { runSoon } from '../../lib/afterInteractions';
 import * as Updates from 'expo-updates';
 import { watchForPendingUpdate } from './autoUpdate';
@@ -21,6 +22,16 @@ export function startAutoUpdate(): () => void {
     onPending: (cb) => {
       const sub = Updates.addUpdatesStateChangeListener((e) => {
         if (e.context.isUpdatePending) cb();
+      });
+      return () => sub.remove();
+    },
+    // ⛔ The reload only ever runs from the BACKGROUND (Sentry APE-STUDIO-D —
+    // see autoUpdate.ts). 'inactive' (a permission alert, Control Centre, the
+    // app-switcher peek) is not the background: the app is still on screen.
+    isBackground: () => AppState.currentState === 'background',
+    onBackground: (cb) => {
+      const sub = AppState.addEventListener('change', (s) => {
+        if (s === 'background') cb();
       });
       return () => sub.remove();
     },

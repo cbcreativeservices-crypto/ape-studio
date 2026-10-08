@@ -60,7 +60,7 @@ function Box({ x, y, w, h, label, on, tone = '#2b2f37', onPress, a11y, dashed }:
 function Frame({ h, a11y, children }: { h: number; a11y: string; children: React.ReactNode }) {
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width="100%" viewBox={`0 0 ${W} ${h}`} style={{ aspectRatio: W / h }}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" viewBox={`0 0 ${W} ${h}`} style={{ aspectRatio: W / h }}>
         <Rect x={0} y={0} width={W} height={h} rx={12} fill="#0e1015" stroke={colors.hairline} strokeWidth={0.8} />
         {children}
       </Svg>
