@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 16:11 · ccode · 87239426
+changed: Android: block ACTIVITY_RECOGNITION + READ_MEDIA_IMAGES/VIDEO/VISUAL_USER_SELECTED (Play Health + Photo/video policy); Android SAVE opens the Share sheet instead of the media library (owner + Comp A 2026-10-09). NOTE: app.json change moves the iOS fingerprint; iOS OTAs to build 36 must publish with these lines temporarily removed.
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 15:14 · ccode · cd5d77ba
 changed: VU meter red lamp lights on clipping only (full scale, -0.1 dBFS), not at -3 dBFS; tool + Tools-hub tile (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
