@@ -407,7 +407,11 @@ const styles = StyleSheet.create({
     gap: 3,
     backgroundColor: '#101116',
   },
-  tileName: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: '#f2f3f5' },
+  // The calculator's NAME wears the laboratory's purple (owner, TestFlight:
+  // "no color contrast in the title here — it's all just white"); the
+  // tagline under it stays grey, so name and description read apart.
+  // #c4a2ff on the #101116 face ≈ 8.6 : 1.
+  tileName: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: colors.programPurple },
   tileTag: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#c7cace' },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },
   chainRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },

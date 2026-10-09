@@ -1289,6 +1289,9 @@ needs: nothing
 ### 2026-10-07 16:56 · ccode · 3a759dc8
 changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
 affects other side: nothing on the server (cherry-pick of a54dde1b onto native-ios-fixes; native — needs an owner-ordered iOS build)
+### 2026-10-07 16:37 · ccode · b1dd63c5
+changed: TestFlight feedback triage 2026-10-08: 46 items, 4 fixed now, patterns swept
+affects other side: nothing (client-only: TestFlight triage doc + slider/popup/copy fixes; no DB, no backend; not published)
 needs: nothing
 
 

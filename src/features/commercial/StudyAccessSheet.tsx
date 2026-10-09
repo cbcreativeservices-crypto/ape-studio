@@ -30,7 +30,16 @@ export function StudyAccessSheet({
   onUnlock,
   freeTopicNames = [],
   onTryFree,
+  guest = false,
 }: {
+  /**
+   * A KNOWN guest (no account — `remindAsGuest(tier, useGuestWording().guest)`,
+   * never a pending or unconfirmed member, D52). Owner, TestFlight build 32: a
+   * guest tester was not told how to open a members topic. A membership is
+   * attached to an account, so for a guest the how-to names the account step
+   * first — the Paywall asks for it at the purchase ("Create an account first").
+   */
+  guest?: boolean;
   visible: boolean;
   onClose: () => void;
   /** → the Academy paywall. */
@@ -66,8 +75,9 @@ export function StudyAccessSheet({
         <Text style={styles.eyebrow}>🔒 MEMBERS TOPIC</Text>
         <Text style={styles.title}>Membership required to study this topic</Text>
         <Text style={styles.how}>
-          To study it: tap UNLOCK ACADEMY ACCESS below and choose a membership. Everything on this
-          topic opens the moment it is active.
+          {guest
+            ? 'To study it you need an account and a membership: tap UNLOCK ACADEMY ACCESS below, choose a membership, and create your account when asked (or sign in if you have one). Everything on this topic opens the moment the membership is active.'
+            : 'To study it: tap UNLOCK ACADEMY ACCESS below and choose a membership. Everything on this topic opens the moment it is active.'}
         </Text>
         <Text style={styles.body}>
           You can explore individual terms in the glossary for free. Academy membership unlocks the
