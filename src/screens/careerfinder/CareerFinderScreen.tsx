@@ -16,7 +16,7 @@ import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions
 import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
 import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderFace, useCareerFinderSaving } from '../../features/careerfinder/store';
-import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
+import { Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 import { confirmDialog } from '../../lib/confirm';
 import { useGuestWording, useUpsellAllowed } from '../../features/commercial/useTier';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -80,7 +80,7 @@ export function CareerFinderScreen() {
   const changeAnswers = () => { setQuestionIndex(0); navigation.navigate('CareerFinderQuiz'); };
 
   return (
-    <FinderShell kicker={upsell ? 'AUDIO CAREER FINDER · FREE · NO ACCOUNT' : 'AUDIO CAREER FINDER'} title="Audio Career Finder" onBack={() => safeGoBack(navigation)} backLabel="Leave the Career Finder" headerRight={<BetaPill />}>
+    <FinderShell kicker={upsell ? 'AUDIO CAREER FINDER · FREE · NO ACCOUNT' : 'AUDIO CAREER FINDER'} title="Audio Career Finder" onBack={() => safeGoBack(navigation)} backLabel="Leave the Career Finder">
       <View style={styles.hero} accessible accessibilityRole="text" accessibilityLabel={`${fmt(CAREER_COUNT)} job titles, ${FAMILY_COUNT} career families, ${QUESTION_COUNT} questions, about five minutes`}>
         {[
           { v: fmt(CAREER_COUNT), l: 'TITLES', c: colors.amber },

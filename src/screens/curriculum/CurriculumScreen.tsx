@@ -179,13 +179,13 @@ export const CurriculumView = memo(function CurriculumView({
       // from there returns here to Explore), not on the intro pitch.
       const top = computeResult(finderRec.responses, familyFieldOf).top[0]?.family.name;
       return top
-        ? { blurb: `Your top match: ${top} — and four more.`, pill: 'RESULTS ›', a11y: `Audio Career Finder, Beta. Your top match: ${top}. Opens your results.`, route: 'CareerFinderResults' }
-        : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder, Beta. Opens your results.', route: 'CareerFinderResults' };
+        ? { blurb: `Your top match: ${top} — and four more.`, pill: 'RESULTS ›', a11y: `Audio Career Finder. Your top match: ${top}. Opens your results.`, route: 'CareerFinderResults' }
+        : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder. Opens your results.', route: 'CareerFinderResults' };
     }
     if (answered > 0) {
-      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. ${finderSaving ? (finderGuest ? 'Your answers are kept until you close the app.' : 'Your answers are saved.') : 'Your answers could not be saved on this phone.'}`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
+      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. ${finderSaving ? (finderGuest ? 'Your answers are kept until you close the app.' : 'Your answers are saved.') : 'Your answers could not be saved on this phone.'}`, pill: 'CONTINUE ›', a11y: `Audio Career Finder. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
     }
-    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${upsell ? 'Free, ' : ''}about five minutes.`, route: 'CareerFinder' };
+    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${upsell ? 'Free, ' : ''}about five minutes.`, route: 'CareerFinder' };
   }, [finderRec, finderSaving, finderGuest, upsell]);
 
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
@@ -629,7 +629,6 @@ export const CurriculumView = memo(function CurriculumView({
         <View style={styles.finderModal}>
           <View style={styles.finderEyebrowRow}>
             <Text style={styles.finderEyebrow}>{upsell ? 'CAREER DISCOVERY LAB · FREE' : 'CAREER DISCOVERY LAB'}</Text>
-            <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
           </View>
           <Text style={styles.finderTitle}>Audio Career Finder</Text>
           <Text style={styles.finderBlurb}>{finder.blurb}</Text>
@@ -731,7 +730,7 @@ const styles = StyleSheet.create({
   // grid's labels on the owner's same-day revision — see ./InsideStats.
   // Audio Career Finder full-width container (owner 2026-09-15): green chip
   // grammar (matches the old button's colours) at full width above the
-  // curriculum, label left + BETA, arrow right.
+  // curriculum, label left, arrow right.
   finderContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -750,15 +749,11 @@ const styles = StyleSheet.create({
   curTabActive: { borderBottomColor: colors.amber },
   curTabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.textSub },
   curTabTextActive: { color: colors.amber },
-  finderBtnBeta: { borderWidth: 1, borderColor: 'rgba(55,224,95,.6)', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 },
-  finderBtnBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, color: colors.greenBright },
   // Career Finder popup — the green container, shown from the button.
   finderBackdrop: { flex: 1, backgroundColor: 'rgba(8,8,10,0.72)', alignItems: 'center', justifyContent: 'center', padding: 26 },
   finderModal: { width: '100%', maxWidth: 360, backgroundColor: '#17171b', borderRadius: 14, borderWidth: 1, borderColor: colors.green, padding: 18, gap: 10 },
   finderEyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   finderEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
-  finderBeta: { borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
-  finderBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: colors.amber },
   finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textPrimary, letterSpacing: 0.3 },
   finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
   finderStart: { marginTop: 4, minHeight: 50, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', alignItems: 'center', justifyContent: 'center' },

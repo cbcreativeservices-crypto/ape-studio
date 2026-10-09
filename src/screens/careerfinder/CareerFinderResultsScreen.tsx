@@ -24,7 +24,7 @@ import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
 import { answeredCount, getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, useCareerFinderFace, useCareerFinderSaving, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
-import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
+import { Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 export const RESULTS_LEAD = 'Five audio career families lean on what you said you would enjoy. Start with the top one.';
@@ -78,7 +78,7 @@ export function CareerFinderResultsScreen() {
 
   const feedback = (answer: FeedbackAnswer) => void keepFeedback(answer, note);
   const mailFeedback = () => {
-    sendFeedback('suggestion', 'Audio Career Finder (Beta)', {
+    sendFeedback('suggestion', 'Audio Career Finder', {
       Screen: 'Career Finder results',
       'Gave a direction to explore': rec.feedback?.answer ?? '(not answered)',
       'What it misunderstood': note.trim() || '(blank)',
@@ -178,7 +178,7 @@ export function CareerFinderResultsScreen() {
             : null;
     if (words) {
       return (
-        <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back" headerRight={<BetaPill />}>
+        <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back">
           <Body>{words}</Body>
           {face === 'ready' ? <CtaButton label="START CAREER FINDER" tone="green" onPress={() => navigation.replace('CareerFinderQuiz')} /> : null}
         </FinderShell>
@@ -187,7 +187,7 @@ export function CareerFinderResultsScreen() {
   }
 
   return (
-    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back" headerRight={<BetaPill />}>
+    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back">
       <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers — not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
 
       <SectionLabel tone="green">{weak ? 'CLOSEST TO YOUR ANSWERS' : 'STRONGEST MATCHES'}</SectionLabel>
@@ -266,8 +266,7 @@ export function CareerFinderResultsScreen() {
 
       <Card tone="amber">
         <View style={styles.profileHead}>
-          <SectionLabel>BETA FEEDBACK</SectionLabel>
-          <BetaPill compact />
+          <SectionLabel>FEEDBACK</SectionLabel>
         </View>
         <Lead>Did these results give you at least one career direction you would explore?</Lead>
         <View style={styles.fbRow} accessibilityRole="radiogroup" accessibilityLabel="Did these results give you a direction to explore">

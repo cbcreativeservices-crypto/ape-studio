@@ -55,14 +55,6 @@ export function FinderShell({
 
 /* ── small parts ───────────────────────────────────────────────────────── */
 
-export function BetaPill({ compact }: { compact?: boolean }) {
-  return (
-    <View style={[styles.beta, compact && styles.betaCompact]} accessible accessibilityRole="text" accessibilityLabel="Beta feature">
-      <Text style={styles.betaText}>BETA</Text>
-    </View>
-  );
-}
-
 export function SectionLabel({ children, tone = 'amber' }: { children: ReactNode; tone?: 'amber' | 'green' | 'cyan' | 'muted' }) {
   const color = tone === 'green' ? colors.green : tone === 'cyan' ? colors.cyanBright : tone === 'muted' ? colors.textMuted : colors.amberLabel;
   return <Text style={[styles.sectionLabel, { color }]} accessibilityRole="header">{children}</Text>;
@@ -254,9 +246,6 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 12, ...readingColumn },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.hairlineDim, backgroundColor: colors.screenBgDeep },
 
-  beta: { alignSelf: 'flex-start', borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 4, paddingHorizontal: 7, paddingVertical: 2 },
-  betaCompact: { paddingHorizontal: 5, paddingVertical: 1 },
-  betaText: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.6 },
 
   sectionLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.8, marginTop: 4 },
   lead: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 16.5, lineHeight: 23 },

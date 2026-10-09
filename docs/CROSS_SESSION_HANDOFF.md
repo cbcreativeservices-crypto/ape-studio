@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:35 · ccode · edb14ff5
+changed: Miking Labs + Mixing Guides public in the store build (owner 2026-10-09, 62 labs); dev-only mic timing required lazily to keep the start graph at 260
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 02:32 · ccode · f2277907
 changed: Merge branch 'worktree-agent-a78c7b9a18180fc77' into next-store-build
 affects other side: nothing (store-build prep on next-store-build)
