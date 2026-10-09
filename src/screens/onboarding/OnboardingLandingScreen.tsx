@@ -37,7 +37,8 @@ export type OnboardingChoice =
   | 'explore'
   | 'enroll'
   | 'watchAgain'
-  | 'about';
+  | 'about'
+  | 'home';
 
 export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: OnboardingChoice) => void }) {
   const insets = useSafeAreaInsets();
@@ -53,6 +54,7 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
     }
     // Back to the Academy menu first, then open the destination from there.
     safeGoBack(navigation);
+    if (c === 'home') return;
     const nav = navigationRef as unknown as { navigate: (name: string, params?: object) => void };
     switch (c) {
       case 'membership':
@@ -98,11 +100,13 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
         ) : null}
 
         <View style={styles.block}>
-          <GlassButton label="START HERE" tint="green" height={54} fontSize={17} onPress={() => choose('startHere')} />
-          <Text style={styles.caption}>
-            <Text style={styles.captionStrong}>Brand new to audio? </Text>
-            The free beginner lab is the place to start your journey.
-          </Text>
+          <GlassButton label="NEW TO AUDIO? START HERE" tint="green" height={54} fontSize={17} onPress={() => choose('startHere')} />
+          <Text style={styles.caption}>The free beginner lab is the place to start your journey.</Text>
+        </View>
+
+        {/* Owner 2026-10-09: a second big choice — straight to the Academy menu. */}
+        <View style={styles.block}>
+          <GlassButton label="TAKE ME TO THE HOME SCREEN" tint="steel" height={54} fontSize={16} onPress={() => choose('home')} />
         </View>
 
         <Text style={[styles.eyebrow, styles.sectionEyebrow]}>OR JUMP RIGHT IN</Text>
