@@ -367,8 +367,11 @@ export const EnrollmentView = memo(function EnrollmentView({
   showBrand = true,
   onOpenCategory,
   onScreen = true,
+  openBrowseOnMount = false,
 }: {
   showBrand?: boolean;
+  /** Onboarding landing (owner 2026-10-09): open the browser and scroll down to it. */
+  openBrowseOnMount?: boolean;
   /**
    * Move the Awards pager to another page.
    *
@@ -591,6 +594,14 @@ export const EnrollmentView = memo(function EnrollmentView({
   }, []);
   const scrollRef = useRef<ScrollView>(null);
   const browseY = useRef(0);
+  // Onboarding landing → "Enroll…": once, after the first layout has measured
+  // where the browser sits, scroll down to it (it is already open).
+  useEffect(() => {
+    if (!openBrowseOnMount) return;
+    const t = setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, browseY.current - 8), animated: true }), 500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Pinned BROWSE & ADD tab bar — shown as an absolute overlay (outside the
   // ScrollView, so its taps aren't eaten like a sticky header) once the browse
   // section scrolls to the top (user request 2026-07-22).
@@ -631,7 +642,7 @@ export const EnrollmentView = memo(function EnrollmentView({
   const [recordOpen, setRecordOpen] = useState(enrollUi.recordOpen);
   // BROWSE & ADD list collapse (user request 2026-07-23) — the title + tabs stay,
   // the list below hides. Open by default.
-  const [browseOpen, setBrowseOpen] = useState(enrollUi.browseOpen); // collapsed on open (user request 2026-07-24)
+  const [browseOpen, setBrowseOpen] = useState(openBrowseOnMount || enrollUi.browseOpen); // collapsed on open (user request 2026-07-24); open from the onboarding landing
   const toggleCollapse = (id: string) =>
     setCollapsed((prev) => {
       const n = new Set(prev);

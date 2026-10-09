@@ -295,6 +295,10 @@ function sitesOf(file: string, s: string): Site[] {
  */
 const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
   'src/components/HelpKey.tsx': { count: 1, why: 'header "?" key on the screen itself' },
+  'src/screens/onboarding/OnboardingLandingScreen.tsx': {
+    count: 2,
+    why: 'MEMBERSHIP / About buttons on the one-time landing page — a pushed screen, not a popup; it pops itself (a stack pop, no Modal fade) before the navigate',
+  },
   'src/features/audio/ExposureCheckin.tsx': {
     count: 1,
     why: 'root-level slide-down panel (an Animated.View, not a Modal); when it is hosted inside a Modal it only dismisses',

@@ -446,6 +446,9 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   SpeechLab: [true, 'Speech & Voice Lab'],
   SplMeter: [false, null],
   Splash: [false, null],
+  // Onboarding (owner 2026-10-09): the video and its landing page, open to all.
+  IntroVideo: [false, null],
+  OnboardingLanding: [false, null],
   StartHere: [false, null],
   StartHereTerms: [false, null],
   StereoLab: [true, 'Stereo Imaging'],

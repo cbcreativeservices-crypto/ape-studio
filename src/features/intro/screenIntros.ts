@@ -22,7 +22,8 @@ export type IntroKey =
   | 'flashcardsPower' // T3 — first category long-press, or ~45s in
   | 'glossary'
   | 'awards'
-  | 'mixingProNote'; // Mixing family (Beginning/Advanced Mixing, Mastering, Mixing Guides) — first open
+  | 'mixingProNote' // Mixing family (Beginning/Advanced Mixing, Mastering, Mixing Guides) — first open
+  | 'introVideo'; // onboarding video, first Academy menu visit (owner 2026-10-09) — never drawn as a sheet
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -44,6 +45,15 @@ export const SCREEN_INTROS: Record<
   IntroKey,
   { title: string; body: string; placeholder?: boolean; button?: string }
 > = {
+  // The onboarding video (owner 2026-10-09). Only its seen-flag is used — the
+  // video plays on IntroVideoScreen, never in an IntroSheet.
+  introVideo: {
+    placeholder: false,
+    title: 'Introduction video',
+    body:
+      'A short tour of the Academy: the professional audio glossary, the labs, the audio tools and calculators, and how to enroll and study. ' +
+      'It plays once, on your first visit to the Academy menu. Watch it again any time with Replay intro.',
+  },
   appWelcome: {
     // Final welcome copy (user-provided 2026-07-18).
     placeholder: false,

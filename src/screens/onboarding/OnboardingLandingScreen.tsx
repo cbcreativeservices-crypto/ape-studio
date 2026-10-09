@@ -10,9 +10,19 @@
  *
  * Members never see the Membership pitch (no marketing to members): the key
  * is hidden when upsell is not allowed, the same rule as Home's corner button.
+ *
+ * Every choice LEAVES this page (it is shown once): it pops back to the
+ * Academy menu and opens the destination from there, so Back from any of them
+ * returns to the menu, never here. "Watch again" swaps this page for the video.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
+import { navigationRef } from '../../navigation/navigationRef';
+import { safeGoBack } from '../../lib/safeGoBack';
+import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { ResetIcon } from '../../components/ResetIcon';
 import { colors, fonts } from '../../theme/tokens';
@@ -33,10 +43,38 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
   const insets = useSafeAreaInsets();
   const upsell = useUpsellAllowed();
 
-  // Design pass: the routes are wired after the owner approves the page.
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const choose = (c: OnboardingChoice) => {
     if (onChoose) return onChoose(c);
-    if (__DEV__) console.log('[onboarding] choice', c);
+    if (c === 'watchAgain') {
+      navigation.replace('IntroVideo', { replay: true });
+      return;
+    }
+    // Back to the Academy menu first, then open the destination from there.
+    safeGoBack(navigation);
+    const nav = navigationRef as unknown as { navigate: (name: string, params?: object) => void };
+    switch (c) {
+      case 'membership':
+        return nav.navigate('Paywall');
+      case 'startHere':
+        return nav.navigate('StartHere');
+      case 'glossary': {
+        const params: GlossaryParams = { from: 'home' };
+        return nav.navigate('Study', { screen: 'Glossary', params, initial: false });
+      }
+      case 'calculators':
+        return nav.navigate('CalcLab');
+      case 'labs':
+        // The Labs menu opens on its first section, AUDIO FUNDAMENTALS.
+        return nav.navigate('EarLab');
+      case 'explore':
+        return nav.navigate('Awards', { category: 'curriculum', focus: 'topics' });
+      case 'enroll':
+        return nav.navigate('Awards', { category: 'enrollment', focus: 'browse' });
+      case 'about':
+        return nav.navigate('About');
+    }
   };
 
   return (
@@ -101,8 +139,8 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
             accessibilityRole="button"
             accessibilityLabel="Watch the intro video again"
           >
-            <ResetIcon color={colors.amberLabel} size={15} />
-            <Text style={styles.linkText}>Watch again</Text>
+            <ResetIcon color={REPLAY_GREEN} size={15} />
+            <Text style={[styles.linkText, styles.replayText]}>Watch again</Text>
           </Pressable>
           <Pressable
             style={styles.link}
@@ -118,6 +156,9 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
     </ScrollView>
   );
 }
+
+// Same dim green as "Replay intro" on the Academy menu (owner 2026-10-09).
+const REPLAY_GREEN = '#2a9a48';
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000' },
@@ -164,4 +205,5 @@ const styles = StyleSheet.create({
   },
   link: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6 },
   linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
+  replayText: { color: REPLAY_GREEN },
 });

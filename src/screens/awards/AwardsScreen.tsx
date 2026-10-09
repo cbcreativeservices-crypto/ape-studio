@@ -465,6 +465,8 @@ export function AwardsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const { width: screenW } = useWindowDimensions();
   const startIdx = Math.max(0, PAGE_ORDER.indexOf(route.params.category as PageKey));
+  // Read once, like `startIdx` (onboarding landing, owner 2026-10-09).
+  const [startFocus] = useState(route.params.focus);
   const [idx, setIdx] = useState(startIdx);
   // Lock the pager swipe once settled on Enrollments. Flipped only AFTER a swipe
   // fully settles (onMomentumScrollEnd) or a deliberate tab/jump, so ENTERING the
@@ -1047,6 +1049,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                 showBrand={false}
                 onOpenCategory={goToPage}
                 onScreen={currentKey === 'curriculum'}
+                openTopicsOnMount={startFocus === 'topics'}
               />
             </View>
           ) : item === 'directory' ? (
@@ -1059,6 +1062,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                 showBrand={false}
                 onOpenCategory={goToPage}
                 onScreen={currentKey === 'enrollment'}
+                openBrowseOnMount={startFocus === 'browse'}
               />
             </View>
           ) : (

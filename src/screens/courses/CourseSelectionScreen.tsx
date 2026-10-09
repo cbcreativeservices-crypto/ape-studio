@@ -53,6 +53,7 @@ import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
+import { useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import Svg, { Path } from 'react-native-svg';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
@@ -1240,6 +1241,9 @@ function CourseCardView({
  */
 const MemoCourseCardView = memo(CourseCardView);
 
+/** The onboarding video is launched at most once per app session. */
+let introVideoLaunched = false;
+
 export function CourseSelectionScreen() {
   const insets = useSafeAreaInsets();
   // The one thing about the deck that genuinely depends on the LIVE window (the
@@ -1287,6 +1291,16 @@ export function CourseSelectionScreen() {
   const openUpgrade = useCallback(() => setUpgradeOpen(true), []);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
+  // Onboarding video (owner 2026-10-09): plays once, on the first Academy menu
+  // visit. useScreenIntro holds it while Low-Light is on or the menu is not
+  // focused; the seen-flag is written only when the video plays to the end
+  // (IntroVideoScreen), so a failed play is offered again on the next launch.
+  const introVideo = useScreenIntro('introVideo');
+  useEffect(() => {
+    if (!introVideo.visible || introVideoLaunched) return;
+    introVideoLaunched = true;
+    (navigation as any).navigate('IntroVideo');
+  }, [introVideo.visible, navigation]);
   // First-run "start here" cues (owner 2026-09-14): Explore breathes until first
   // opened; About breathes until opened OR one week after this first Home view.
   const attract = useHomeAttract();
@@ -1753,9 +1767,7 @@ export function CourseSelectionScreen() {
           About. Plays the onboarding video again, then its landing page. */}
       <Pressable
         style={[styles.replayBtn, { top: insets.top + 36 }]}
-        onPress={() => {
-          if (__DEV__) console.log('[onboarding] replay intro');
-        }}
+        onPress={() => (navigation as any).navigate('IntroVideo', { replay: true })}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel="Replay intro video"

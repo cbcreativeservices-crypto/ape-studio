@@ -150,7 +150,12 @@ export type RootStackParamList = {
    *  Directory · Enrollment), five side-by-side pages. `category` is the landing
    *  page (user request 2026-07-18; Directory + Enrollment added 2026-07-22).
    *  Bottom nav hidden. */
-  Awards: { category: 'curriculum' | 'directory' | 'enrollment' | import('../screens/awards/awardsData').AwardCategory };
+  Awards: {
+    category: 'curriculum' | 'directory' | 'enrollment' | import('../screens/awards/awardsData').AwardCategory;
+    /** Onboarding landing (owner 2026-10-09): open Explore on its TOPICS list, or
+     *  Enrollment scrolled to its open browser. Read once, at mount. */
+    focus?: 'topics' | 'browse';
+  };
   /** Audio Community Directory (spec 2026-08-31 §5) — Explore · My Profile ·
    *  Requests. (The old standalone `Directory` "Get Discovered" modal route was
    *  unreachable and removed 2026-09-10; that content lives as DirectoryView in
@@ -195,6 +200,10 @@ export type RootStackParamList = {
   /** Start Here: Your First Steps in Audio (owner 2026-09-29) — the FREE
    *  beginner experience from its own Home card. Not a lab-catalog entry, not
    *  membership-gated, no certificate credit. */
+  /** Onboarding video (owner 2026-10-09): first Academy menu visit, or a replay. */
+  IntroVideo: { replay?: boolean } | undefined;
+  /** The one-time page the onboarding video ends on. */
+  OnboardingLanding: undefined;
   StartHere: undefined;
   /** Its 24 starter words — list, flip cards, quiz (pushed over StartHere). */
   StartHereTerms: undefined;

@@ -114,8 +114,11 @@ export const CurriculumView = memo(function CurriculumView({
   showBrand = true,
   onOpenCategory,
   onScreen = true,
+  openTopicsOnMount = false,
 }: {
   showBrand?: boolean;
+  /** Onboarding landing (owner 2026-10-09): start on the TOPICS list, scrolled to it. */
+  openTopicsOnMount?: boolean;
   /** False while a pager host shows another page — the hub's endless motion
    *  stops (see InsideStats `live`). */
   onScreen?: boolean;
@@ -157,6 +160,14 @@ export const CurriculumView = memo(function CurriculumView({
   const jumpToTab = useCallback((tab: 'topics' | 'subjects') => {
     setCurTab(tab);
     requestAnimationFrame(() => scrollRef.current?.scrollTo({ y: Math.max(0, tabsY.current - 10), animated: true }));
+  }, []);
+  // Onboarding landing → "Explore topics": once, after the first layout has
+  // measured where the tabs sit.
+  useEffect(() => {
+    if (!openTopicsOnMount) return;
+    const t = setTimeout(() => jumpToTab('topics'), 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Topic-art viewer (owner 2026-09-15): tapping a row thumbnail opens the
   // standard expanded image popup (TrophyModal). `list` remembers WHICH list

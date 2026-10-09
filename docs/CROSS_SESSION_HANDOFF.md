@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:37 · ccode · df3c327e
+changed: Deep links: iOS associatedDomains applinks:www (the apex 308s); Android keeps only the 9 www hosts
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 02:35 · ccode · edb14ff5
 changed: Miking Labs + Mixing Guides public in the store build (owner 2026-10-09, 62 labs); dev-only mic timing required lazily to keep the start graph at 260
 affects other side: nothing (store-build prep on next-store-build)

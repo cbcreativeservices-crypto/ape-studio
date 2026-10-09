@@ -142,6 +142,8 @@ const Lazy = {
   CareerFamily: lazyScreen(() => require('../screens/careerfinder/CareerFamilyScreen').CareerFamilyScreen),
   CareerFamilyList: lazyScreen(() => require('../screens/careerfinder/CareerFamilyListScreen').CareerFamilyListScreen),
   CareerFinderAbout: lazyScreen(() => require('../screens/careerfinder/CareerFinderAboutScreen').CareerFinderAboutScreen),
+  IntroVideo: lazyScreen(() => require('../screens/onboarding/IntroVideoScreen').IntroVideoScreen),
+  OnboardingLanding: lazyScreen(() => require('../screens/onboarding/OnboardingLandingScreen').OnboardingLandingScreen),
   StartHere: lazyScreen(() => require('../screens/startHere/StartHereScreen').StartHereScreen),
   StartHereTerms: lazyScreen(() => require('../screens/startHere/StartHereTermsScreen').StartHereTermsScreen),
   PublicGlossary: lazyScreen(() => require('../screens/landing/PublicGlossaryScreen').PublicGlossaryScreen),
@@ -567,6 +569,9 @@ export function RootNavigator() {
       {/* Start Here (owner 2026-09-29): FREE for everyone, guests included —
           deliberately NOT wrapped in withMembershipPreview / MemberGated.
           No swipe-back: its rack pages carry full-width faders. */}
+      {/* Onboarding (owner 2026-10-09): the video, then its one-time landing page. */}
+      <Stack.Screen name="IntroVideo" getComponent={Lazy.IntroVideo} options={{ animation: 'fade', gestureEnabled: false }} />
+      <Stack.Screen name="OnboardingLanding" getComponent={Lazy.OnboardingLanding} options={{ animation: 'fade' }} />
       <Stack.Screen name="StartHere" getComponent={Lazy.StartHere} />
       <Stack.Screen name="StartHereTerms" getComponent={Lazy.StartHereTerms} options={swipe} />
       {/* Anonymous public glossary (commercial browse path). */}
