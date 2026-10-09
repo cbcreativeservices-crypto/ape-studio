@@ -34,6 +34,7 @@ import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { armLandingReturn, takeLandingReturn } from '../../features/onboarding/landingReturn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
@@ -73,6 +74,10 @@ export function PaywallScreen({ navigation }: Props) {
    * ran `navigation.goBack()` for a screen no longer in the stack — popping
    * whatever the person had returned to (Settings, a lab) instead.
    */
+  // Opened from the onboarding landing page? Then a completed purchase goes
+  // back there (owner 2026-10-09). Taken once, at mount.
+  const toLanding = useRef<boolean | null>(null);
+  if (toLanding.current === null) toLanding.current = takeLandingReturn();
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -91,7 +96,15 @@ export function PaywallScreen({ navigation }: Props) {
       // is honoured however the notice is closed.
       notify('Welcome to Academy', 'Your Academy access is active. Enjoy!', () => {
         const pending = consumePendingLink();
-        if (!(pending && navigateToPath(pending))) safeGoBack(navigation);
+        if (pending && navigateToPath(pending)) return;
+        if (toLanding.current) {
+          // Back to the landing page so they can make their choice.
+          const st = navigation.getState();
+          if (st.routes[st.index - 1]?.name === 'OnboardingLanding') safeGoBack(navigation);
+          else (navigation as any).replace('OnboardingLanding');
+          return;
+        }
+        safeGoBack(navigation);
       });
     };
     // Reflect a server-verified purchase in the local entitlement. The MONEY
@@ -233,7 +246,11 @@ export function PaywallScreen({ navigation }: Props) {
         // (features/lab/sessionCarry); study progress still is not.
         'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; lab work from this session comes with you, but study progress done without an account does not transfer.',
         'Create account',
-        () => (navigation as any).navigate('Auth'),
+        () => {
+          // Keep the way back to the landing page for the purchase after sign-up.
+          if (toLanding.current) armLandingReturn();
+          (navigation as any).navigate('Auth');
+        },
         { cancelText: 'Not now' },
       );
       return;

@@ -22,6 +22,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import { navigationRef } from '../../navigation/navigationRef';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { armLandingReturn } from '../../features/onboarding/landingReturn';
 import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { ResetIcon } from '../../components/ResetIcon';
@@ -52,6 +53,13 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
 
   const choose = (c: OnboardingChoice) => {
     if (onChoose) return onChoose(c);
+    if (c === 'membership') {
+      // Over this page, not from the menu: closing the Paywall — or finishing a
+      // purchase — comes back HERE to make a choice (owner 2026-10-09).
+      armLandingReturn();
+      navigation.navigate('Paywall');
+      return;
+    }
     if (c === 'watchAgain') {
       navigation.replace('IntroVideo', { replay: true });
       return;
@@ -61,8 +69,6 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
     if (c === 'home') return;
     const nav = navigationRef as unknown as { navigate: (name: string, params?: object) => void };
     switch (c) {
-      case 'membership':
-        return nav.navigate('Paywall');
       case 'startHere':
         return nav.navigate('StartHere');
       case 'glossary': {
