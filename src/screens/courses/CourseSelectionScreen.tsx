@@ -53,7 +53,7 @@ import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
-import { ResetIcon } from '../../components/ResetIcon';
+import Svg, { Path } from 'react-native-svg';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
@@ -1760,7 +1760,11 @@ export function CourseSelectionScreen() {
         accessibilityRole="button"
         accessibilityLabel="Replay intro video"
       >
-        <ResetIcon color={REPLAY_GREEN} size={12} />
+        {/* The replay arrow, inline: a ResetIcon import would add a module to
+            the app-start graph (capped at 260, perfStartTrim). */}
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={12} height={12} viewBox="0 0 24 24">
+          <Path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill={REPLAY_GREEN} />
+        </Svg>
         <Text style={styles.replayBtnText} maxFontSizeMultiplier={HOME_MAX}>Replay intro</Text>
       </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />

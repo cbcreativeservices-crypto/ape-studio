@@ -197,6 +197,13 @@
           "project": "ape-studio",
           "url": "https://sentry.io/"
         }
+      ],
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": false,
+          "supportsPictureInPicture": false
+        }
       ]
     ],
     "extra": {
