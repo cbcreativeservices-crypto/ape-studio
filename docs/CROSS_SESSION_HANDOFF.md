@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:32 · ccode · a8fb5aca
+changed: supabase: commit Comp A's community-push (v2) and on-weekly-concept (v14) sources
+affects other side: nothing new (already live on users by OTA; now in the store build)
+needs: nothing
+
+
 ### 2026-10-09 02:31 · ccode · 4c77f57d
 changed: feat(notifications): quiet hours in Settings, p_tz on every save and at start
 affects other side: build 35/17 carries these package versions; Comp A sandbox-tests expo-iap 5.8.3 on 35
