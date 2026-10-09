@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 09:17 · ccode · 1e387823
+changed: Landing → Membership opens over the landing page; closing it, or completing a purchase (incl. a guest who signs up first, same session), returns to the landing page (owner 2026-10-09)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 08:56 · ccode · f4e9c1fe
 changed: Labs menu title 'LEARNING LABS' + the official Labs icon (a small speaker, LabsIcon); landing buttons carry their icons: Home, Glossary book, Calculators Σ, Labs speaker, My Topics mark (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
