@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:31 · ccode · 4c77f57d
+changed: feat(notifications): quiet hours in Settings, p_tz on every save and at start
+affects other side: build 35/17 carries these package versions; Comp A sandbox-tests expo-iap 5.8.3 on 35
+needs: sandbox purchase test on 35
+
+
+### 2026-10-09 02:31 · ccode · 044abba5
+changed: Store build: package updates (Reanimated 4.5.5, Worklets 0.10.4, expo-iap 5.8.3, speech-recognition 57.1.1, supabase-js 2.117.3, React Navigation 7.5/7.20) + expo-video (no background playback, no PiP); replay arrow inlined to keep the start graph at 260
+affects other side: build 35/17 carries these package versions; Comp A sandbox-tests expo-iap 5.8.3 on 35
+needs: sandbox purchase test on 35
+
+
 ### 2026-10-09 01:56 · ccode · 0e643005
 changed: Commitment popup waits for the next definition close after the 4-min mark; Replay intro button green (owner 2026-10-09)
 affects other side: nothing (app-only, branch next-store-build, not pushed)
