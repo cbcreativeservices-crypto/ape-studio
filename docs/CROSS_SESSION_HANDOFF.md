@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 13:30 · ccode · 22870bca
+changed: 13" iPad review: Study dashboard scales up to fill the iPad; card column 760→1000, reading screens 560→720 (Tools hub stays 560 so sideways phones keep their tiles) (owner 2026-10-09)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 09:17 · ccode · 1e387823
 changed: Landing → Membership opens over the landing page; closing it, or completing a purchase (incl. a guest who signs up first, same session), returns to the landing page (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
