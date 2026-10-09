@@ -20,7 +20,12 @@ test('iOS: unplug stops voices then emits onOutputLost', () => {
 
 test('iOS: js-stop on main; no inputNode access without an input route', () => {
   assert.match(swift, /self\.stopCapture\(reason: "js-stop"\)\s*\}\.runOnQueue\(\.main\)/);
-  assert.match(swift, /if tapInstalled && !AVAudioSession\.sharedInstance\(\)\.currentRoute\.inputs\.isEmpty \{/);
+  // Superseded 2026-10-08 (native-ios-fixes): the stop path no longer touches
+  // inputNode AT ALL — the route check still raced a vanishing route / a reset
+  // session. test/nativeStopCapture_20261008.test.ts pins the stronger rule.
+  const stop = swift.slice(swift.indexOf('private func stopCapture(reason: String) {'), swift.indexOf('private var stopping = false'));
+  assert.ok(stop.length > 0);
+  assert.doesNotMatch(stop.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, ''), /inputNode/);
 });
 
 test('Android: removal of a private output stops voices then emits', () => {

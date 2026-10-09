@@ -1274,6 +1274,15 @@ affects other side: nothing (client-only: generated mixing-guide text now keeps 
 ### 2026-10-07 16:55 · ccode · db65fbad
 changed: Sentry fixes: accessibility tree (W/R/S), background-only OTA reload (D), mic flush on background (T), Skia web guards (G/E) + app-wide ratchets
 affects other side: nothing (app JS only, branch sentry-fixes, not published; no server, store-console or SQL change)
+### 2026-10-07 17:05 · ccode · 3be3fc8d
+changed: NATIVE (next iOS build only): stopCapture never touches inputNode; capture closed on background, never opened there (Sentry APE-STUDIO-T)
+affects other side: nothing on the server. Branch native-ios-fixes moves the iOS runtime fingerprint — it ships only in an owner-ordered iOS build; never merge it into a branch that still publishes OTA to builds 33/34
+needs: nothing
+
+
+### 2026-10-07 16:56 · ccode · 3a759dc8
+changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
+affects other side: nothing on the server (cherry-pick of a54dde1b onto native-ios-fixes; native — needs an owner-ordered iOS build)
 needs: nothing
 
 
