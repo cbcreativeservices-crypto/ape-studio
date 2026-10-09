@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 15:14 · ccode · cd5d77ba
+changed: VU meter red lamp lights on clipping only (full scale, -0.1 dBFS), not at -3 dBFS; tool + Tools-hub tile (owner 2026-10-09)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 14:06 · ccode · 173dfdae
 changed: iPad: oscilloscope opens at x6 zoom and spectrogram at 80 dB range (iPad mics give a low raw level in measurement mode); display only (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
