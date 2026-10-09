@@ -82,7 +82,10 @@ export const skinPt = (deg: number, r: number) => {
 
 /* ── PEAK lamp (top-right of the face, per the reference) ───────────── */
 export const SKIN_LAMP = { x: 1258, y: 236, r: 34 };
-const PEAK_LAMP_DBFS = -3;
+// CLIP ONLY (owner 2026-10-09: "the red clip light should show clipping only…
+// it flashes all the time"). It lit at −3 dBFS, so ordinary loud sound lit it;
+// it now lights only when a sample reaches digital full scale.
+export const PEAK_LAMP_DBFS = -0.1;
 
 const INK = '#241606'; // scale ink on the cream face
 const INK_RED = '#b3231a';
@@ -279,8 +282,8 @@ export type SkinnedVuProps = {
 
 /** The skinned analogue VU. The needle integrates the live rms on the UI thread
  *  (rise tc 0.20 s, fall 0.45 s) and rotates about the DEEP scale centre via
- *  useAnimatedStyle, clipped to the face window; the PEAK lamp lights when the
- *  true peak crosses −3 dBFS.
+ *  useAnimatedStyle, clipped to the face window; the PEAK lamp lights only when the
+ *  peak reaches digital full scale (a clip).
  *
  *  MEMOISED (perf hunt 2026-10-03). The SPL screen mirrors the meter frame
  *  into React state ~20×/s for its TEXT readouts, and every one of those
@@ -311,7 +314,7 @@ export const SkinnedVu = memo(function SkinnedVu({ width, height, live, live0Db,
     vuVel.value = vuVel.value + acc * dt;
     vuVal.value = Math.max(0, vuVal.value + vuVel.value * dt);
     const pk = running ? live.peakDb.value : -120;
-    if (pk === pk && pk >= -3) lampT.value = 1;
+    if (pk === pk && pk >= PEAK_LAMP_DBFS) lampT.value = 1;
     else lampT.value = Math.max(0, lampT.value - dt / 0.6);
   }, true);
 

@@ -39,6 +39,7 @@ import {
   VU_SKIN,
   skinPt,
   vuAngle,
+  PEAK_LAMP_DBFS,
 } from './SkinnedVu';
 import type { PitchFrame, WaveBucket } from '../../../modules/ape-dsp';
 import {
@@ -171,7 +172,7 @@ const HubSplSkin: FC = memo(() => {
     }
     // PEAK lamp: ramp toward lit/unlit so the brightness CHANGES smoothly on a
     // clip (owner rev 19) — same treatment as the tool's SkinnedVu.
-    lampRef.current += ((peakDb >= -3 ? 1 : 0) - lampRef.current) * 0.5;
+    lampRef.current += ((peakDb >= PEAK_LAMP_DBFS ? 1 : 0) - lampRef.current) * 0.5;
   }
   const ang = vuAngle(vuRef.current);
   const tip = skinPt(ang, VU_NEEDLE_TIP);
