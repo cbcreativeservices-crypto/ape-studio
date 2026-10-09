@@ -18,6 +18,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cbcreativeservices.apestudio",
+      "associatedDomains": [
+        "applinks:www.proaudiotrainingacademy.com"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "Used to measure sound levels in the measurement tools, and — only when you tap the mic — to dictate a glossary search. Audio is processed on this device and is not recorded or uploaded.",
@@ -39,51 +42,6 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/get"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/topics"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/tools"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/learn"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/labs"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/glossary"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/awards"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/directory"
-            },
-            {
-              "scheme": "https",
-              "host": "proaudiotrainingacademy.com",
-              "pathPrefix": "/careers"
-            },
             {
               "scheme": "https",
               "host": "www.proaudiotrainingacademy.com",
