@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:32 · ccode · 14cd9a12
+changed: Merge remote-tracking branch 'origin/native-ios-fixes' into next-store-build
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 02:32 · ccode · a8fb5aca
 changed: supabase: commit Comp A's community-push (v2) and on-weekly-concept (v14) sources
 affects other side: nothing new (already live on users by OTA; now in the store build)
