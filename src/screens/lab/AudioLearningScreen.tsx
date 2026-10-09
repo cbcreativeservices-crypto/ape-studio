@@ -11,6 +11,7 @@
  * PREVIEW (EarLab enforces the per-lab lock + shared UpgradeSheet); this screen
  * only chooses the path.
  */
+import { LabsIcon } from '../../components/LabsIcon';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -93,7 +94,11 @@ export function AudioLearningScreen({ navigation }: Props) {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>AUDIO LEARNING</Text>
+          {/* Owner 2026-10-09: "Learning Labs", with the official Labs icon. */}
+          <View style={styles.titleRow}>
+            <LabsIcon color={colors.amber} size={18} />
+            <Text style={styles.title}>LEARNING LABS</Text>
+          </View>
           <Text style={styles.subtitle}>Choose your path</Text>
         </View>
         <AccuracyNote compact />
@@ -201,6 +206,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 32, gap: 16 },

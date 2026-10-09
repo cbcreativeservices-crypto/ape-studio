@@ -25,6 +25,10 @@ import { safeGoBack } from '../../lib/safeGoBack';
 import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { ResetIcon } from '../../components/ResetIcon';
+import { HomeIcon } from '../../components/HomeIcon';
+import { BookIcon } from '../../components/BookIcon';
+import { LabsIcon } from '../../components/LabsIcon';
+import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { colors, fonts } from '../../theme/tokens';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
 
@@ -106,22 +110,22 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
 
         {/* Owner 2026-10-09: a second big choice — straight to the Academy menu. */}
         <View style={styles.block}>
-          <GlassButton label="TAKE ME TO THE HOME SCREEN" tint="steel" height={54} fontSize={16} onPress={() => choose('home')} />
+          <GlassButton label="TAKE ME TO THE HOME SCREEN" tint="steel" height={54} fontSize={16} icon={<HomeIcon filled size={20} />} onPress={() => choose('home')} />
         </View>
 
         <Text style={[styles.eyebrow, styles.sectionEyebrow]}>OR JUMP RIGHT IN</Text>
         <View style={styles.grid}>
           <View style={styles.cell}>
-            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} onPress={() => choose('glossary')} />
+            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<BookIcon color={colors.blue} filled size={18} />} onPress={() => choose('glossary')} />
           </View>
           <View style={styles.cell}>
-            <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} onPress={() => choose('calculators')} />
+            <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} icon={<Text style={styles.sigma}>Σ</Text>} onPress={() => choose('calculators')} />
           </View>
           <View style={styles.cell}>
-            <GlassButton label="LABS" tint="steel" height={48} fontSize={14} onPress={() => choose('labs')} />
+            <GlassButton label="LABS" tint="steel" height={48} fontSize={14} icon={<LabsIcon color={colors.amber} size={18} />} onPress={() => choose('labs')} />
           </View>
           <View style={styles.cell}>
-            <GlassButton label="EXPLORE TOPICS" tint="steel" height={48} fontSize={14} onPress={() => choose('explore')} />
+            <GlassButton label="EXPLORE TOPICS" tint="steel" height={48} fontSize={14} icon={<MyTopicsIcon size={20} />} onPress={() => choose('explore')} />
           </View>
         </View>
 
@@ -210,4 +214,6 @@ const styles = StyleSheet.create({
   link: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6 },
   linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
   replayText: { color: REPLAY_GREEN },
+  // The calculators' purple sigma, as on "The Academy at a glance".
+  sigma: { fontSize: 17, lineHeight: 19, fontWeight: '700', color: colors.purple },
 });

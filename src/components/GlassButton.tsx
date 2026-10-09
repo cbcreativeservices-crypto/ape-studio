@@ -6,6 +6,7 @@
  *  - dims the backlight and the gloss (LED dip under key travel)
  * Tints: gold (amber backlight, default) · steel (blue-gray backlight).
  */
+import type { ReactNode } from 'react';
 import { useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -74,8 +75,11 @@ export function GlassButton({
   tint = 'gold',
   fontSize = 16,
   maxFontSizeMultiplier,
+  icon,
 }: {
   label: string;
+  /** Optional mark drawn left of the label (onboarding landing, owner 2026-10-09). */
+  icon?: ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   height?: number;
@@ -138,6 +142,8 @@ export function GlassButton({
           {/* bright top hairline — the glass edge catching light */}
           <View style={styles.topEdge} />
           {/* BACKLIT label — LED shining up from beneath the glass */}
+          <View style={icon ? styles.iconRow : null}>
+          {icon}
           <Text
             maxFontSizeMultiplier={maxFontSizeMultiplier}
             style={[
@@ -152,6 +158,7 @@ export function GlassButton({
           >
             {label}
           </Text>
+          </View>
           {/* curved specular gloss OVER the lit text — the clear-coat layer */}
           <LinearGradient
             pointerEvents="none"
@@ -170,6 +177,7 @@ export function GlassButton({
 }
 
 const styles = StyleSheet.create({
+  iconRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
   rim: {
     // 25% harder corners app-wide (Booth 2026-07-09u).
     borderRadius: 7.5,
