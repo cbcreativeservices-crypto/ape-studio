@@ -128,8 +128,11 @@ import { SamplerPreview } from '../features/intro/SamplerPreview';
 import { ProfilePreview } from '../screens/profile/ProfilePreview';
 import { CenterLockTuner } from '../screens/tools/CenterLockTuner';
 import { AuthScreen } from '../screens/auth/AuthScreen';
+// Onboarding landing page (owner spec 2026-10-09): `#labpreview/OnboardingLanding`.
+import { OnboardingLandingScreen } from '../screens/onboarding/OnboardingLandingScreen';
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
+  OnboardingLanding: OnboardingLandingScreen as ComponentType,
   RoomDesignLab: RoomDesignLabScreen as ComponentType,
   DeEsserLab: DeEsserLabScreen as ComponentType,
   SpeechLab: SpeechLabScreen as ComponentType,

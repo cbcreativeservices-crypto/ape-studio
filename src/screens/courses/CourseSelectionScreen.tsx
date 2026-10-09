@@ -54,6 +54,7 @@ import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
+import { ResetIcon } from '../../components/ResetIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
@@ -1749,6 +1750,20 @@ export function CourseSelectionScreen() {
           About
         </AttractText>
       </Pressable>
+      {/* Replay intro video (owner 2026-10-09): small text + icon, right below
+          About. Plays the onboarding video again, then its landing page. */}
+      <Pressable
+        style={[styles.replayBtn, { top: insets.top + 36 }]}
+        onPress={() => {
+          if (__DEV__) console.log('[onboarding] replay intro');
+        }}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel="Replay intro video"
+      >
+        <ResetIcon color={colors.textSub} size={12} />
+        <Text style={styles.replayBtnText} maxFontSizeMultiplier={HOME_MAX}>Replay intro</Text>
+      </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
 
       {/* Top-right Membership button (owner 2026-08-12): opposite About →
@@ -2068,6 +2083,8 @@ const styles = StyleSheet.create({
   // edge, not the root's safe-area padding (owner 2026-08-12 fix).
   aboutBtn: { position: 'absolute', left: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   aboutBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
+  replayBtn: { position: 'absolute', left: 8, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 6 },
+  replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.textSub },
   membershipBtn: { position: 'absolute', right: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
