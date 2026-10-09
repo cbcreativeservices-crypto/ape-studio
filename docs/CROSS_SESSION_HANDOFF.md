@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:57 · ccode · 95e90178
+changed: Intro video: ask to play again once the file is ready (web attaches the view after setup)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 02:37 · ccode · df3c327e
 changed: Deep links: iOS associatedDomains applinks:www (the apex 308s); Android keeps only the 9 www hosts
 affects other side: nothing (store-build prep on next-store-build)
