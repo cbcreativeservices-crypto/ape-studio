@@ -352,10 +352,10 @@ describe('wiring (Training Labs → Mixing, members only)', () => {
 });
 
 describe('release gate (owner 2026-10-07: hidden on store builds until approved, as Miking)', () => {
-  it('MIXING_PUBLIC is false; only dev or the preview update shows the tile', () => {
-    assert.equal(MIXING_PUBLIC, false);
+  it('MIXING_PUBLIC is true: public in the store build (owner 2026-10-09)', () => {
+    assert.equal(MIXING_PUBLIC, true);
     const src = read('src/screens/lab/labCatalog.ts');
-    assert.match(src, /export const MIXING_PUBLIC = false;/);
+    assert.match(src, /export const MIXING_PUBLIC = true;/);
     assert.match(src, /export function mixingGuidesVisible\(\): boolean \{\s*return \(\s*MIXING_PUBLIC \|\|\s*\(typeof __DEV__ !== 'undefined' && __DEV__\) \|\|\s*process\.env\.EXPO_PUBLIC_MIKING_PREVIEW === '1'\s*\);\s*\}/);
     assert.match(src, /\.\.\.\(mixingGuidesVisible\(\)\s*\? \[\{ name: 'Mixing Guides',/);
   });

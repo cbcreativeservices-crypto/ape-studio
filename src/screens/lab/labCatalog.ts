@@ -28,7 +28,7 @@ import { lessonsOf, readyLabs } from './miking/data/registry';
  * ON THE OWNER'S APPROVAL: set MIKING_PUBLIC to true and publish an update —
  * JS only, no new build.
  */
-export const MIKING_PUBLIC = false;
+export const MIKING_PUBLIC = true; // owner 2026-10-09: public in the store build (62 labs)
 export function mikingVisible(): boolean {
   return (
     MIKING_PUBLIC ||
@@ -48,7 +48,7 @@ export function mikingVisible(): boolean {
  * ON THE OWNER'S APPROVAL: set MIXING_PUBLIC to true and publish an update —
  * JS only, no new build.
  */
-export const MIXING_PUBLIC = false;
+export const MIXING_PUBLIC = true; // owner 2026-10-09: public in the store build (62 labs)
 export function mixingGuidesVisible(): boolean {
   return (
     MIXING_PUBLIC ||

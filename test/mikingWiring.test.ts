@@ -221,9 +221,9 @@ describe('wording', () => {
 });
 
 describe('release gate (owner 2026-10-06: hidden on store builds until approved)', () => {
-  it('MIKING_PUBLIC is false and only dev or the preview update shows the tiles', () => {
+  it('MIKING_PUBLIC is true: public in the store build (owner 2026-10-09)', () => {
     const src = read('src/screens/lab/labCatalog.ts');
-    assert.match(src, /export const MIKING_PUBLIC = false;/);
+    assert.match(src, /export const MIKING_PUBLIC = true;/);
     assert.match(src, /families: mikingVisible\(\) \? \[/);
     assert.match(src, /process\.env\.EXPO_PUBLIC_MIKING_PREVIEW === '1'/);
     assert.match(src, /MikingHub: 'Miking Labs',/);

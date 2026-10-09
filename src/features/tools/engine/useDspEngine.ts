@@ -28,7 +28,6 @@ import {
 import { micReleaseOnBackgroundEnabled } from '../../settings/store';
 import { acquireMic, micAcquireSeq, releaseMic, releaseMicNow } from './micSession';
 import { releaseOnSupersede } from './startSupersede';
-import { markMicAcquire } from '../devTiming';
 import type { WarningFlag } from '../measure/types';
 import { createClipBaseline, noSignalVerdict, type ClipBaseline } from './clipBaseline';
 
@@ -171,7 +170,9 @@ export function useDspEngine(config: EngineConfig, poll: {
       const acquiring = acquireMic(configRef.current, freshStartRef.current);
       const mySeq = micAcquireSeq(); // read synchronously — see micAcquireSeq
       await acquiring;
-      markMicAcquire(freshStartRef.current ? 'hub (fresh start)' : 'tool (adopt or start)', acquireAt, 'capture live');
+      // Dev-only timing log, required lazily so devTiming stays out of the
+      // app-start graph (store build 2026-10-09, perfStartTrim cap 260).
+      if (__DEV__) (require('../devTiming') as typeof import('../devTiming')).markMicAcquire(freshStartRef.current ? 'hub (fresh start)' : 'tool (adopt or start)', acquireAt, 'capture live');
       if (gen !== genRef.current) {
         // Torn down while starting — hand the stream back (debounced, so a fast
         // re-acquire by the next screen keeps it warm).

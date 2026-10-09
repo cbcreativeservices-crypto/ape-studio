@@ -37,18 +37,18 @@ const CAT = (await import('../src/screens/lab/labCatalog.ts')) as unknown as {
   mixingGuidesVisible: () => boolean;
 };
 
-describe('store build (no __DEV__, no preview switch): the hidden labs are hidden', () => {
-  it('neither gate is open', () => {
-    assert.equal(CAT.mikingVisible(), false);
-    assert.equal(CAT.mixingGuidesVisible(), false);
+describe('store build (no __DEV__, no preview switch): Miking + Mixing are public (owner 2026-10-09, 62 labs)', () => {
+  it('both gates are open', () => {
+    assert.equal(CAT.mikingVisible(), true);
+    assert.equal(CAT.mixingGuidesVisible(), true);
   });
-  it('no Miking family tile and no Mixing Guides tile anywhere in the catalog', () => {
+  it('the Miking family tiles and the Mixing Guides tile are in the catalog', () => {
     const routes = CAT.LAB_CATEGORIES.flatMap((c) => [...(c.labs ?? []), ...(c.families ?? []).flatMap((f) => f.labs)]).map((l) => l.route);
-    for (const r of ['MikingHub', 'MikingLesson', 'MixingGuides', 'MixingGuide']) assert.ok(!routes.includes(r), r);
+    for (const r of ['MikingHub', 'MixingGuides']) assert.ok(routes.includes(r), r);
     const instruments = CAT.LAB_CATEGORIES.find((c) => c.id === 'instruments')!;
-    assert.equal((instruments.families ?? []).length, 0, 'no empty "Miking Labs" family heading');
+    assert.ok((instruments.families ?? []).length > 0, 'the Miking Labs family heading is there');
   });
-  it('every Miking / Mixing route is still members-only with its tile hidden (deep link, restored state)', () => {
+  it('every Miking / Mixing route is still members-only', () => {
     for (const r of ['MikingHub', 'MikingLesson', 'MixingGuides', 'MixingGuide']) assert.equal(CAT.isMemberOnlyLabRoute(r), true, r);
   });
 });
