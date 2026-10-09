@@ -836,3 +836,21 @@ process is running.
 - **A table copy disagrees as soon as two exist.** Cable Loss had its own Ω/m table that differed from Voltage Drop's. Keep one shared model in calcUnits.ts.
 - **Agents in parallel on shared files work if each re-reads before editing and keeps edits small.** Eleven agents touched overlapping files (sessionCarry, projectStore, FlashcardsScreen, navigation/types) with no lost work. The lead re-runs the full suite after the last one lands.
 - **New subagent definitions do not hot-load.** A `~/.claude/agents/*.md` file created mid-session is only available in the next session.
+
+## 2026-10-07/08 — Labs 6–7, reviews, figures, store-build prep
+
+- **A tree-wide line-ending script must touch TEXT files only.** A Node script over every `git ls-files` path read PNG/WebP/JPG as UTF-8 and rewrote them, corrupting 1,716 images. A later `git commit -am` staged them (814988e0) and they reached origin/final-lab. Restore commit a7817653 (`git checkout 814988e0^ --pathspec-from-file=…`, verified 0-byte diff). Rules:
+  - filter to `.ts .tsx .js .cjs .json .md`;
+  - never `commit -a` in a worktree after a tree-wide rewrite;
+  - check `git show --stat HEAD` before every push;
+  - after normalising for a test run, `git -c core.autocrlf=false checkout -- .` before committing.
+- **Never change shared git config.** `core.autocrlf` is shared with the owner's main checkout across all worktrees; use `-c` flags. Never `rm .git` in a worktree; it is the link file (`gitdir: …/.git/worktrees/<name>`).
+- **A CRLF checkout fails source-regex tests.** It produced 2–24 false test failures. Normalise text first, then run the suite.
+- **Fingerprint byte-matching for Pixel OTAs.** `ape-build-snap` hashes differently from the build because of line endings in `.gitignore` and `modules/ape-*/android`. Copy those bytes from the main tree, confirm `eb43669e`, publish, then restore. Corrupted or changed assets also move the fingerprint. "No new assets found" on publish is a free check that images didn't change.
+- **Mixing big: one full suite per batch.** The lead ran the 7-minute suite after every merge, and agents ran it several times each. Now agents run targeted tests while working and the full suite once; the lead batches branches into one merge and one run. Fast-forward to an agent's branch when it already contains final-lab and passed the full suite there.
+- **Builders on one registry conflict in the same five files** (registry, lessons, lessonArt, micTypes, SOURCES_SHARED). Contiguous per-group blocks plus "keep both" resolution works; send code conflicts back to the builder that wrote the code.
+- **Touch gestures can't be proven in the web preview.** The pane is mouse only. Finger-follow, press-hold, swipe and landscape need the Pixel. Say so instead of claiming it.
+- **The app locks phones to portrait at boot**, so any full screen that should turn must lift the lock while open (imperative + route option) and restore it on close (StageFullScreen fix).
+- **A ScrollView steals taps.** A few pixels of finger movement cancel a child Pressable. Detect a still tap at the list level and dedupe with the press (Mixing Guides).
+- **Read figure geometry, not just pictures.** The F04 "mirrored legs + groin arm" came from a side figure with no hips and an unclamped arm chain. The anatomy ratchet now checks orientation, shoulder roots, reach, elbow direction and a groin box.
+- **Comp B has no app or DB access.** Hand audits over as files: app strings exported by script (100k unique strings), DB text via a Comp A export.

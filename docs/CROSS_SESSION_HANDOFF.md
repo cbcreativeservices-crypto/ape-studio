@@ -634,6 +634,35 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 night · ccode · SESSION SUMMARY for Comp A (end of ccode session)
+changed:
+- final-lab f1838df5:
+  - Labs 6+7 (33 lessons) built and expert/learning reviewed;
+  - head icons and figure anatomy fixes;
+  - the owner's 18 decisions applied;
+  - Mixing Guides world map and the "Bring In a Pro" popup;
+  - flashcards: full-screen section swipe/scroll, the Related Terms category bug (client) and the build number in About;
+  - lab full screens rotate;
+  - quick voice-cutaway redraw.
+- Website (audio-tools-engine), live: headline, two-line subline, launch date Tue Oct 13, Coming Soon panel lowered.
+- Combo XLR/TRS image: Comp A swap DONE (owner confirmed).
+affects other side: nothing in the schema; all client-side. Pixel preview OTA 01a11e59 (runtime eb43669e) only — nothing to production/testers.
+needs:
+  1. Downloads\2026-10-08_COMP_A_SAFETY_FLASHCARD_FIXES.md — tester (Terry) wording fixes for Pro Audio Safety:
+     - Incident Energy, Laser, Let-Go Current, and Incident Investigation (per Terry's email);
+     - JHA double quotes and 30 single-quoted phrases;
+     - ~158 fragment scenario bullets and cal/cm2 ×8;
+     - the "Grounding" related term and 20 safety terms filed under the wrong category.
+     Check the MISTAKES rewrite against the stored text (ccode could not read MISTAKES as anon).
+  2. Downloads\2026-10-08_COMP_A_GLOSSARY_TEXT_EXPORT_REQUEST.md — export all glossary/flashcard text to Downloads for Comp B's house-style audit (brief: Downloads\2026-10-08_COMP_B_STYLE_AUDIT_BRIEF.md).
+  3. Store build (iOS 35 / Android 17) — the COMP A items in section D of Downloads\2026-10-08_NEXT_STORE_BUILD_CHECKLIST.md:
+     - IAP products and the subscription group in ASC (none found 10-06), and Play products;
+     - the store-notifications deploy (never deployed, so refunds/cancels are not recorded);
+     - privacy labels / data safety, and release notes.
+     NO build until the owner's onboarding video is ready and he says build.
+  4. Still owed from before: STORE_NOTIFY_SLUG / App Store Server Notifications URL.
+
+
 ### 2026-10-08 16:09 · ccode · e2321edc
 changed: art: redraw the voice cutaway as a mid-sagittal head, neck and chest
 affects other side: nothing (app art only: Lab 5 voice cutaway + profile head neck; Miking stays hidden)

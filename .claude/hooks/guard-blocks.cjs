@@ -62,5 +62,30 @@ process.stdin.on('end', () => {
     );
   }
 
+  // 4) COMMIT -a (2026-10-08 lesson): after a tree-wide line-ending pass, `commit -a`
+  // staged 1,716 corrupted images (814988e0). Commit exact files instead.
+  const commitAll = (() => {
+    const m = /\bgit\b[^\n;&|]*?\bcommit\b([^\n;&|]*)/.exec(cmd);
+    if (!m) return false;
+    // Flags only: stop at the message (-m / --message / -F / a quoted string).
+    for (const tok of m[1].trim().split(/\s+/)) {
+      if (/^(?:-m|--message|-F|--file)/.test(tok) || /^["']/.test(tok)) break;
+      if (tok === '--all' || /^-[a-zA-Z]*a[a-zA-Z]*$/.test(tok)) return true;
+    }
+    return false;
+  })();
+  if (commitAll) {
+    return emit(
+      'ask',
+      'COMMIT -a RULE (2026-10-08): `git commit -a` stages EVERY modified file — after a line-ending pass that included 1,716 corrupted images. Use `git add <exact files>` then commit. Approve only if the working tree is known clean apart from the intended files.',
+    );
+  }
+
+  // 5) SHARED GIT CONFIG (2026-10-08): core.autocrlf/eol are shared with the owner's
+  // main checkout across all worktrees — use `git -c ...` per command instead.
+  if (/\bgit\s+config\b(?![^\n]*--get)[^\n]*\bcore\.(?:autocrlf|eol)\b/.test(cmd)) {
+    return emit('deny', 'Do not change core.autocrlf / core.eol — that config is shared with the owner\'s main checkout. Use `git -c core.autocrlf=false -c core.eol=lf <cmd>` per command.');
+  }
+
   process.exit(0); // allow
 });
