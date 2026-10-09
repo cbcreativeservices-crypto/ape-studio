@@ -59,7 +59,12 @@ export function IntroVideoScreen({ navigation, route }: Props) {
 
   useEventListener(player, 'playToEnd', () => finish(true));
   useEventListener(player, 'statusChange', ({ status }) => {
-    if (status === 'readyToPlay') startedRef.current = true;
+    if (status === 'readyToPlay') {
+      startedRef.current = true;
+      // The setup's play() can land before the view is attached (web does
+      // this); ask again once the file is ready.
+      if (!player.playing) player.play();
+    }
     if (status === 'error') finish(false);
   });
 
