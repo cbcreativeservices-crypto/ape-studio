@@ -225,6 +225,7 @@ const NOT_ANIMATION: Record<string, string> = {
   'src/screens/tools/SignalGenScreen.tsx': 'generator status poll',
   'src/screens/tools/SpectrogramScreen.tsx': 'engine spectrum poll',
   'src/screens/exam/FinalExamScreen.tsx': 'countdown + submit retry clocks',
+  'src/features/intro/glossaryUseTimer.ts': 'Glossary use clock for the one-time commitment popup',
   'src/screens/quiz/QuizScreen.tsx': 'countdown clock',
   'src/screens/results/ResultsScreen.tsx': 'lockout countdown',
   'src/screens/study/FillInBlankScreen.tsx': 'pace timer clock',

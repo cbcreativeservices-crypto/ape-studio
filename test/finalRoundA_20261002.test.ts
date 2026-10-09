@@ -120,13 +120,15 @@ describe('3. Career Finder store', () => {
 });
 
 // ── 4 ───────────────────────────────────────────────────────────────────────
-describe('4. the commitment intro is held until the tier is known', () => {
-  it('hold={!tierKnown}, tierKnown from the screen’s useEntitlement()', () => {
-    const s = read('src/screens/courses/CourseSelectionScreen.tsx');
-    assert.match(s, /<ScreenIntroOverlay introKey="commitment" delayMs=\{8000\} sessionOnly=\{entitlement !== 'academy'\} hold=\{!tierKnown\} \/>/);
-    // Tier sweep 2026-10-03: isMember left this destructure (the Membership
-    // link now reads useUpsellAllowed); tierKnown is still the screen's own.
-    assert.match(s, /const \{ entitlement, caps, resolved, setEntitlement, tierKnown \} = useEntitlement\(\);/);
+describe('4. the commitment intro left Home for the Glossary (owner 2026-10-09)', () => {
+  it('Home no longer hosts it; the Glossary shows it after ~4 minutes of use, once', () => {
+    const home = read('src/screens/courses/CourseSelectionScreen.tsx');
+    assert.doesNotMatch(home, /introKey="commitment"/);
+    const g = read('src/screens/glossary/GlossaryScreen.tsx');
+    assert.match(g, /useScreenIntro\('commitment', false, introHold \|\| glossaryIntro\.owed \|\| !commitmentReached\)/);
+    const timer = read('src/features/intro/glossaryUseTimer.ts');
+    assert.match(timer, /GLOSSARY_COMMITMENT_MS = 4 \* 60 \* 1000/);
+    assert.match(timer, /key: 'ape:onboarding:/, 'device-level key: survives the account wipe');
   });
 });
 

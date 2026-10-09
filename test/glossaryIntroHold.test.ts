@@ -30,7 +30,7 @@ describe('glossary intro waits its turn', () => {
   test('the intro is held while the key decision is open', () => {
     assert.match(
       glossary,
-      /<ScreenIntroOverlay introKey="glossary" hold=\{keyState !== 'ready' \|\| locked\} \/>/,
+      /const introHold = keyState !== 'ready' \|\| locked;\s*const glossaryIntro = useScreenIntro\('glossary', false, introHold\);/,
       'the glossary intro no longer waits for the device-key decision — it will draw over the consent dialog again',
     );
   });
@@ -51,6 +51,9 @@ describe('glossary intro waits its turn', () => {
   test('the lock also holds it', () => {
     // An intro about how to use the glossary makes no sense on top of a card
     // saying you have run out of lookups.
-    assert.match(glossary, /\|\| locked\}/, 'the weekly lock no longer holds the intro back');
+    assert.match(glossary, /const introHold = keyState !== 'ready' \|\| locked;/, 'the weekly lock no longer holds the intro back');
+    // The commitment popup (owner 2026-10-09) waits behind the same hold and
+    // behind the glossary intro — never two root Modals at once.
+    assert.match(glossary, /useScreenIntro\('commitment', false, introHold \|\| glossaryIntro\.owed \|\| !commitmentReached\)/);
   });
 });

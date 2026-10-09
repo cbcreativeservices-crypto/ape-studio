@@ -47,7 +47,6 @@ import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
-import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
 import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
@@ -1281,7 +1280,7 @@ export function CourseSelectionScreen() {
     requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: activeIdx, animated: false }));
   }, [windowW, activeIdx]);
   // CM2 — membership entitlement (provider reads server truth).
-  const { entitlement, caps, resolved, setEntitlement, tierKnown } = useEntitlement();
+  const { entitlement, caps, resolved, setEntitlement } = useEntitlement();
   const upsell = useUpsellAllowed();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   /** Stable, so the memoised cards are not re-rendered by a fresh closure. */
@@ -2049,15 +2048,10 @@ export function CourseSelectionScreen() {
         dismissLabel="NOT NOW"
       />
 
-      {/* The app WELCOME was to greet first-run users BEFORE the login screen
-          (user request 2026-07-23, AppWelcomeOverlay on AuthScreen) — but that
-          overlay is currently commented out there, so "Our Commitment to You"
-          is the first overlay anyone sees and carries its own greeting line. Paid (academy) users see it
-          once ever; everyone else once per app session — resets each launch
-          (owner 2026-08-01). HELD until the tier is known (final round A,
-          2026-10-02): `sessionOnly` read the boot 'anonymous', so a member who
-          had dismissed it for good saw it again at every sign-in. */}
-      <ScreenIntroOverlay introKey="commitment" delayMs={8000} sessionOnly={entitlement !== 'academy'} hold={!tierKnown} />
+      {/* "Our Commitment to You" moved to the Glossary (owner 2026-10-09): it
+          appears once, after ~4 minutes of first-time Glossary use
+          (glossaryUseTimer.ts). New users meet the intro video and its landing
+          page first. */}
     </View>
   );
 }

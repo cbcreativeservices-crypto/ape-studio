@@ -62,7 +62,8 @@ import {
   useTermList,
   useTermListUnreadable,
 } from '../../features/flags/flaggedStore';
-import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { IntroSheet, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
+import { useGlossaryUseReached } from '../../features/intro/glossaryUseTimer';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
@@ -1696,6 +1697,14 @@ ${COPY.glossaryFreeAllowance}`,
   // popup's fade, holds the dialog queue, runs once and is dropped on unmount.
   const paywallHandoff = useModalHandoff();
   const isFocused = useIsFocused();
+  // Intros (owner 2026-10-09): the Glossary welcome first; "Our Commitment to
+  // You" once, after ~4 minutes of first-time Glossary use. Both hold behind
+  // the device-key decision and the weekly lock, and never stack (one root
+  // Modal at a time — iOS refuses the second).
+  const introHold = keyState !== 'ready' || locked;
+  const glossaryIntro = useScreenIntro('glossary', false, introHold);
+  const commitmentReached = useGlossaryUseReached(isFocused && !introHold && !glossaryIntro.owed);
+  const commitmentIntro = useScreenIntro('commitment', false, introHold || glossaryIntro.owed || !commitmentReached);
   useFocusEffect(
     useCallback(() => {
       setLockHandoff(false);
@@ -4648,7 +4657,11 @@ ${COPY.glossaryFreeAllowance}`,
           weekly lock, because an intro about using the glossary makes no sense
           on top of something saying you cannot. Holding only defers it — the
           seen flag is written on dismiss, so it still appears, once, after. */}
-      <ScreenIntroOverlay introKey="glossary" hold={keyState !== 'ready' || locked} />
+      {glossaryIntro.visible ? (
+        <IntroSheet introKey="glossary" onDismiss={glossaryIntro.dismiss} />
+      ) : commitmentIntro.visible ? (
+        <IntroSheet introKey="commitment" onDismiss={commitmentIntro.dismiss} />
+      ) : null}
       {/* Weekly-lookup HARD LOCK over the dimmed glossary (owner 2026-09-10). */}
       {lockOverlay}
       {deviceKeyOverlay}
