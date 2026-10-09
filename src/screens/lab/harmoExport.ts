@@ -11,6 +11,7 @@
  * caller renders the button disabled with "available after the next app
  * build" — never a dead or lying control.
  */
+import { Platform } from 'react-native';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import * as shareImage from './calc/shareImage';
 
@@ -50,8 +51,12 @@ const asFileUri = (uri: string) => (uri.startsWith('file://') ? uri : `file://${
 export function isShareAvailable(): boolean {
   return shareImage.isAvailable();
 }
-/** Save-to-Photos availability (view-shot AND expo-media-library present). */
+/** Save-to-Photos availability (view-shot AND expo-media-library present).
+ *  ANDROID (owner 2026-10-09, Google Play photo-permission policy): the photo
+ *  permissions are blocked in app.json, so SAVE opens the Share sheet — which
+ *  offers "Save image" / Photos — and needs no permission at all. */
 export function isSaveAvailable(): boolean {
+  if (Platform.OS === 'android') return shareImage.isAvailable();
   return viewShot() != null && mediaLib() != null;
 }
 /** Print availability (view-shot AND expo-print present). */
@@ -59,13 +64,18 @@ export function isPrintAvailable(): boolean {
   return viewShot() != null && printLib() != null;
 }
 
-export type SaveResult = 'saved' | 'denied' | 'unavailable' | 'failed';
+/** 'shared' (Android): the Share sheet opened; the person chose where it went. */
+export type SaveResult = 'saved' | 'shared' | 'denied' | 'unavailable' | 'failed';
 
 /** Capture the ref'd card as a PNG and save it to the device photo library.
  *  'unavailable' = a native half is missing (this build) — the caller says
  *  "available after the next app build"; 'denied' = the user refused the
  *  Photos permission; 'failed' = anything else went wrong. Never throws. */
 export async function saveToPhotos(ref: unknown): Promise<SaveResult> {
+  if (Platform.OS === 'android') {
+    if (ref == null || !shareImage.isAvailable()) return 'unavailable';
+    return (await shareImage.captureAndShare(ref, 'Save image')) ? 'shared' : 'failed';
+  }
   const vs = viewShot();
   const ml = mediaLib();
   if (!vs || !ml || ref == null) return 'unavailable';

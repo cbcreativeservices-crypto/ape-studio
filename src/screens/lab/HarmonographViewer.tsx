@@ -183,7 +183,9 @@ export function HarmonographViewer(props: {
         setMsg(
           r === 'saved'
             ? 'Saved to Photos ✓'
-            : r === 'denied'
+            : r === 'shared'
+              ? 'Choose “Save image” or Photos in the share sheet.'
+              : r === 'denied'
               ? 'Photos permission denied — allow access in Settings to save.'
               : r === 'unavailable'
                 ? 'Saving to Photos isn’t available on this device.'
