@@ -125,7 +125,9 @@ describe('4. the commitment intro left Home for the Glossary (owner 2026-10-09)'
     const home = read('src/screens/courses/CourseSelectionScreen.tsx');
     assert.doesNotMatch(home, /introKey="commitment"/);
     const g = read('src/screens/glossary/GlossaryScreen.tsx');
-    assert.match(g, /useScreenIntro\('commitment', false, introHold \|\| glossaryIntro\.owed \|\| !commitmentReached\)/);
+    assert.match(g, /useScreenIntro\('commitment', false, introHold \|\| glossaryIntro\.owed \|\| !closedAfterReached\)/);
+    // …and only after the reader closes their next definition (owner 2026-10-09).
+    assert.match(g, /if \(commitmentReached && openDefs < prevOpenDefsRef\.current\) setClosedAfterReached\(true\);/);
     const timer = read('src/features/intro/glossaryUseTimer.ts');
     assert.match(timer, /GLOSSARY_COMMITMENT_MS = 4 \* 60 \* 1000/);
     assert.match(timer, /key: 'ape:onboarding:/, 'device-level key: survives the account wipe');

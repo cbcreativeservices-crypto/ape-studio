@@ -54,6 +54,6 @@ describe('glossary intro waits its turn', () => {
     assert.match(glossary, /const introHold = keyState !== 'ready' \|\| locked;/, 'the weekly lock no longer holds the intro back');
     // The commitment popup (owner 2026-10-09) waits behind the same hold and
     // behind the glossary intro — never two root Modals at once.
-    assert.match(glossary, /useScreenIntro\('commitment', false, introHold \|\| glossaryIntro\.owed \|\| !commitmentReached\)/);
+    assert.match(glossary, /useScreenIntro\('commitment', false, introHold \|\| glossaryIntro\.owed \|\| !closedAfterReached\)/);
   });
 });

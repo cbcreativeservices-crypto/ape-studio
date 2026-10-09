@@ -1698,13 +1698,12 @@ ${COPY.glossaryFreeAllowance}`,
   const paywallHandoff = useModalHandoff();
   const isFocused = useIsFocused();
   // Intros (owner 2026-10-09): the Glossary welcome first; "Our Commitment to
-  // You" once, after ~4 minutes of first-time Glossary use. Both hold behind
+  // You" once, after ~4 minutes of first-time Glossary use (see below). Both hold behind
   // the device-key decision and the weekly lock, and never stack (one root
   // Modal at a time — iOS refuses the second).
   const introHold = keyState !== 'ready' || locked;
   const glossaryIntro = useScreenIntro('glossary', false, introHold);
   const commitmentReached = useGlossaryUseReached(isFocused && !introHold && !glossaryIntro.owed);
-  const commitmentIntro = useScreenIntro('commitment', false, introHold || glossaryIntro.owed || !commitmentReached);
   useFocusEffect(
     useCallback(() => {
       setLockHandoff(false);
@@ -2151,6 +2150,17 @@ ${COPY.glossaryFreeAllowance}`,
    *  card popup in CARDS view? Both are "expanded and viewed" to a reader.
    *  Declared here because popupTrail is, and the search field reads it. */
   const anyExpanded = expandedIds.size > 0 || popupTrail.length > 0;
+  // "Our Commitment to You" (owner 2026-10-09): once the ~4 minutes are
+  // reached it waits for the reader to CLOSE their next definition — a natural
+  // pause, never in the middle of a lookup or on the way somewhere else.
+  const openDefs = expandedIds.size + (popupTrail.length > 0 ? 1 : 0);
+  const prevOpenDefsRef = useRef(openDefs);
+  const [closedAfterReached, setClosedAfterReached] = useState(false);
+  useEffect(() => {
+    if (commitmentReached && openDefs < prevOpenDefsRef.current) setClosedAfterReached(true);
+    prevOpenDefsRef.current = openDefs;
+  }, [openDefs, commitmentReached]);
+  const commitmentIntro = useScreenIntro('commitment', false, introHold || glossaryIntro.owed || !closedAfterReached);
   const [chooser, setChooser] = useState<string[] | null>(null); // ambiguous sense ids
   const popupScrollRef = useRef<ScrollView>(null);
   const popupScrollY = useRef(0);

@@ -1760,7 +1760,7 @@ export function CourseSelectionScreen() {
         accessibilityRole="button"
         accessibilityLabel="Replay intro video"
       >
-        <ResetIcon color={colors.textSub} size={12} />
+        <ResetIcon color={colors.green} size={12} />
         <Text style={styles.replayBtnText} maxFontSizeMultiplier={HOME_MAX}>Replay intro</Text>
       </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
@@ -2078,7 +2078,7 @@ const styles = StyleSheet.create({
   aboutBtn: { position: 'absolute', left: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   aboutBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
   replayBtn: { position: 'absolute', left: 8, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 6 },
-  replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.textSub },
+  replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.green },
   membershipBtn: { position: 'absolute', right: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
