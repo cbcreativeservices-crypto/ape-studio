@@ -31,7 +31,10 @@
  * is 430 pt, so `maxWidth: 560` never binds there and `alignSelf: 'center'` on a
  * full-width child is a no-op. Only tablets change.
  */
-export const READING_MAX_W = 560;
+// 13" iPad review (owner 2026-10-09): 560 left half a 13" iPad black on the
+// screens built on this column (Glossary, Enrollment, Explore, Paywall, Help…).
+// 720 keeps lines readable and fills far more of a tablet; phones never reach it.
+export const READING_MAX_W = 720;
 
 /**
  * The CARD column — for surfaces made of cards and rows rather than prose:
@@ -42,7 +45,14 @@ export const READING_MAX_W = 560;
  * fills a portrait iPad (820) and leaves a calm margin in landscape (1024).
  * Phones are untouched (never wider than 430).
  */
-export const CARD_MAX_W = 760;
+/**
+ * 13" iPad review (owner 2026-10-09: "make sure no other screens on the 13"
+ * ipad are being forced to display at the 760pt width"): 760 left 136 pt of
+ * black each side of a 13" iPad in portrait (1032). 1000 fills it, keeps a
+ * margin in landscape (1376), and still never binds on an 11" iPad (820) or
+ * any phone.
+ */
+export const CARD_MAX_W = 1000;
 
 /** Spread into the scroll content style of a card/row surface. */
 export const cardColumn = {
@@ -96,7 +106,9 @@ export const popupCard = {
 } as const;
 
 /** Alias kept so the Tools hub's tile arithmetic reads a tools-flavoured name. */
-export const TOOL_READING_MAX_W = READING_MAX_W;
+// Kept at the old 560 (2026-10-09): the Tools hub sizes its tiles from this,
+// and a phone held sideways (932 pt) must keep its exact tiles.
+export const TOOL_READING_MAX_W = 560;
 
 /**
  * Spread into a style to cap and centre a reading surface.
@@ -105,7 +117,7 @@ export const TOOL_READING_MAX_W = READING_MAX_W;
  */
 export const readingColumn = {
   width: '100%',
-  maxWidth: TOOL_READING_MAX_W,
+  maxWidth: READING_MAX_W,
   alignSelf: 'center',
 } as const;
 
@@ -123,6 +135,6 @@ export const readingColumn = {
  */
 export const readingText = {
   width: '100%',
-  maxWidth: TOOL_READING_MAX_W,
+  maxWidth: READING_MAX_W,
   alignSelf: 'flex-start',
 } as const;

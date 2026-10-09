@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CARD_MAX_W, READING_MAX_W, WIDE_MAX_W, wideColumn } from '../src/theme/readingColumn.ts';
+import { CARD_MAX_W, READING_MAX_W, TOOL_READING_MAX_W, WIDE_MAX_W, wideColumn } from '../src/theme/readingColumn.ts';
 import {
   GALLERY_PHONE_ART,
   TROPHY_VIEWER_PHONE,
@@ -123,7 +123,7 @@ test('Tools hub: every phone keeps the exact old tile, two across in 560', () =>
     assert.equal(hubContentMaxW(w, h), HUB_MAX_CONTENT_W, `${w}×${h}`);
     assert.equal(tileWidthFor(w, h), old(w), `${w}×${h}`);
   }
-  assert.equal(HUB_MAX_CONTENT_W, READING_MAX_W);
+  assert.equal(HUB_MAX_CONTENT_W, TOOL_READING_MAX_W); // 560 — reading screens went to 720 on 2026-10-09
   assert.equal(GRID_GAP, 12);
   assert.equal(TILE_FIT_SLACK, 2);
 });

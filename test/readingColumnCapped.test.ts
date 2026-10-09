@@ -83,7 +83,10 @@ test('the cap never binds on any phone this app is device-passed on', () => {
 });
 
 test('the Tools hub and its detail screens share ONE width', () => {
-  assert.equal(TOOL_READING_MAX_W, READING_MAX_W);
+  // 13" iPad review (2026-10-09): reading screens widened to 720; the Tools
+  // hub keeps 560 so a sideways phone keeps its exact tiles.
+  assert.equal(TOOL_READING_MAX_W, 560);
+  assert.ok(READING_MAX_W > TOOL_READING_MAX_W);
   // The hub's tile arithmetic moved to the pure hubGrid.ts (iPad pass
   // 2026-10-06): a PHONE keeps the shared 560; a tablet takes the wide column.
   const hub = readFileSync('src/screens/tools/hubGrid.ts', 'utf8');
@@ -114,7 +117,8 @@ test('every reading surface caps its scroll content', () => {
 test('the card column is wider than the reading column and still centred', () => {
   assert.equal(cardColumn.maxWidth, CARD_MAX_W);
   assert.ok(CARD_MAX_W > READING_MAX_W, 'cards get more of a tablet than prose does');
-  assert.ok(CARD_MAX_W <= 820, 'must still fit a portrait iPad (820) without binding');
+  // 13" iPad review (owner 2026-10-09): the card column fills a 13" iPad in portrait.
+  assert.ok(CARD_MAX_W <= 1032, 'must still fit a portrait 13" iPad (1032) without binding');
   assert.equal(cardColumn.alignSelf, 'center');
   assert.equal(cardColumn.width, '100%');
 });

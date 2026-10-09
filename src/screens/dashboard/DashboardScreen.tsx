@@ -144,7 +144,7 @@ import {
   GUEST_REMINDER_TITLE,
   remindAsGuest,
 } from '../../features/lab/guestReminderRules';
-import { cardColumn, popupCard } from '../../theme/readingColumn';
+import { popupCard } from '../../theme/readingColumn';
 
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
 // together — method rows, quiz, and the section labels — so the whole stack
@@ -759,6 +759,9 @@ export function DashboardScreen() {
     return true;
   }, []);
   const [error, setError] = useState<string | null>(null);
+  // iPad fill (owner 2026-10-09): the ScrollView's size and the rack's own size.
+  const [fitView, setFitView] = useState({ w: 0, h: 0 });
+  const [fitContent, setFitContent] = useState({ w: 0, h: 0 });
   const [errorCode, setErrorCode] = useState<string | null>(null);
   /** No Supabase session at all (Guest Mode). Drives the red "progress isn't
    *  saved" notice; false for EVERY saved account, member or not. */
@@ -1962,6 +1965,11 @@ export function DashboardScreen() {
     rawQuizState === 'locked' && devBypass('bypassQuizLocks') ? 'ready' : rawQuizState;
 
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.25, 1] });
+  // iPad fill — see the wrapper inside the ScrollView. Tablets only (≥ 700 pt).
+  const tabletScale =
+    fitView.w >= 700 && fitContent.w > 0 && fitContent.h > 0
+      ? Math.max(1, Math.min(1.6, (fitView.w - 24) / fitContent.w, (fitView.h - 8) / fitContent.h))
+      : 1;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -1975,7 +1983,17 @@ export function DashboardScreen() {
       <ScrollView
         ref={scrollRef}
         contentContainerStyle={[styles.scroll, jogCoachShowing && styles.scrollUnderCoach]}
+        onLayout={(e) => setFitView({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
       >
+        {/* iPad fill (owner 2026-10-09: "it takes up less than 1/2 of the
+            screen"): on a tablet the whole rack is scaled up, as one picture,
+            to fill the width or the height — whichever runs out first. Phones
+            are untouched (scale 1). The space the scale adds is reserved below
+            so the scroll still reaches the last row. */}
+        <View
+          onLayout={(e) => setFitContent({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
+          style={tabletScale > 1 ? { transform: [{ scale: tabletScale }], transformOrigin: 'top', marginBottom: fitContent.h * (tabletScale - 1) } : null}
+        >
         {/* Header (shared, 30%-enlarged tile — Booth 2026-07-08).
             Logo tap → About/Credits (Dashboard only). */}
         <AppHeader
@@ -2666,6 +2684,7 @@ export function DashboardScreen() {
         {/* The bottom "My Custom List" card was removed (user request
             2026-07-24). The custom list is moving to a selection from the topic
             carousel at the top of the current-topic area. */}
+        </View>
       </ScrollView>
 
       {/* The full-size topic image, and under it Computer B's long-form
@@ -2924,7 +2943,10 @@ const styles = StyleSheet.create({
   // card column. Spanning a 1366 pt landscape iPad, each 1U method panel was a
   // 20:1 sliver; at 760 it is ~11:1 — a real 19-inch 1U faceplate's 10.9:1.
   // No-op on a phone.
-  scroll: { padding: 14, paddingBottom: 10, gap: 8, ...cardColumn },
+  // The rack keeps its own 760 column on a tablet and is SCALED up to fill
+  // the screen (iPad fill, owner 2026-10-09) — stretching only its rows wider
+  // would leave the black below it.
+  scroll: { padding: 14, paddingBottom: 10, gap: 8, width: '100%', maxWidth: 760, alignSelf: 'center' },
   /* Clears the floating coach pill: bottom 18 + ~37 pill height + breathing
      room. Applied only while the hint shows — see the note at the ScrollView. */
   scrollUnderCoach: { paddingBottom: 72 },

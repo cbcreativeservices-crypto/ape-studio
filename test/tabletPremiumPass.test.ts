@@ -42,8 +42,8 @@ test('grids gain columns on a tablet and keep the phone count on a phone', () =>
   assert.equal(gridColumns(744 - 32, 220, 12, 2, 4), 3, 'iPad mini portrait');
   assert.equal(gridColumns(1024 - 32, 220, 12, 2, 4), 4, 'iPad 13" portrait');
   assert.equal(gridColumns(1366 - 32, 220, 12, 2, 4), 4, 'never past the max');
-  // Cymatics gallery lives in the card column: 760 - 32 → three squares.
-  assert.equal(gridColumns(CARD_MAX_W - 32, 200, 12, 2, 4), 3);
+  // Cymatics gallery lives in the card column: 1000 - 32 → four squares (13" iPad, 2026-10-09).
+  assert.equal(gridColumns(CARD_MAX_W - 32, 200, 12, 2, 4), 4);
 });
 
 test('the popup width is named, centred, and never binds on a phone', () => {
@@ -87,7 +87,8 @@ const CAPPED: Array<[string, RegExp]> = [
   // Study, dashboard, glossary, achievements, settings, community, sign-in.
   ['src/screens/study/FlashcardsScreen.tsx', /\n {2}body: \{[^}]*\.\.\.cardColumn/],
   ['src/screens/study/FillInBlankScreen.tsx', /\n {2}body: \{[^}]*\.\.\.cardColumn/],
-  ['src/screens/dashboard/DashboardScreen.tsx', /\n {2}scroll: \{[^}]*\.\.\.cardColumn/],
+  // 2026-10-09: the rack keeps its own 760 column and is scaled up to fill the iPad.
+  ['src/screens/dashboard/DashboardScreen.tsx', /\n {2}scroll: \{[^}]*maxWidth: 760/],
   ['src/screens/glossary/GlossaryScreen.tsx', /\n {2}list: \{[^}]*\.\.\.cardColumn/],
   ['src/screens/glossary/GlossaryScreen.tsx', /\n {2}cardList: \{[^}]*\.\.\.cardColumn/],
   ['src/screens/achievements/TopicsScreen.tsx', /styles\.scroll, cardColumn/],
