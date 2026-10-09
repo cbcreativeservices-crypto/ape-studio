@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 08:13 · ccode · 6c6d07a3
+changed: Landing page: 'NEW TO AUDIO? START HERE' + a big 'TAKE ME TO THE HOME SCREEN' choice (owner 2026-10-09)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 02:57 · ccode · 95e90178
 changed: Intro video: ask to play again once the file is ready (web attaches the view after setup)
 affects other side: nothing (store-build prep on next-store-build)
