@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 02:32 · ccode · f2277907
+changed: Merge branch 'worktree-agent-a78c7b9a18180fc77' into next-store-build
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 02:32 · ccode · 14cd9a12
 changed: Merge remote-tracking branch 'origin/native-ios-fixes' into next-store-build
 affects other side: nothing (store-build prep on next-store-build)
