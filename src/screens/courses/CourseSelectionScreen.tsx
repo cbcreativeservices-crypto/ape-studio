@@ -1760,7 +1760,7 @@ export function CourseSelectionScreen() {
         accessibilityRole="button"
         accessibilityLabel="Replay intro video"
       >
-        <ResetIcon color={colors.green} size={12} />
+        <ResetIcon color={REPLAY_GREEN} size={12} />
         <Text style={styles.replayBtnText} maxFontSizeMultiplier={HOME_MAX}>Replay intro</Text>
       </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
@@ -2056,6 +2056,9 @@ export function CourseSelectionScreen() {
   );
 }
 
+// Replay intro (owner 2026-10-09): a dimmer green than the app's success green.
+const REPLAY_GREEN = '#2a9a48';
+
 const styles = StyleSheet.create({
   // Tighter vertical rhythm (Booth 2026-07-15) so the shrunk cards + their
   // eyebrow captions all fit without clipping.
@@ -2078,7 +2081,7 @@ const styles = StyleSheet.create({
   aboutBtn: { position: 'absolute', left: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   aboutBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
   replayBtn: { position: 'absolute', left: 8, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 6 },
-  replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: colors.green },
+  replayBtnText: { fontFamily: fonts.barlowMedium, fontSize: 11, letterSpacing: 0.3, color: REPLAY_GREEN },
   membershipBtn: { position: 'absolute', right: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },

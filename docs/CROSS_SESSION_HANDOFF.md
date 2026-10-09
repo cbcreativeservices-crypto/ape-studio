@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 01:56 · ccode · 0e643005
+changed: Commitment popup waits for the next definition close after the 4-min mark; Replay intro button green (owner 2026-10-09)
+affects other side: nothing (app-only, branch next-store-build, not pushed)
+needs: nothing
+
+
 ### 2026-10-09 01:37 · ccode · cfd60a1c
 changed: Onboarding landing page design + Replay intro button on the Academy menu (design pass, routes not wired)
 affects other side: nothing (app-only, branch next-store-build, not pushed)
