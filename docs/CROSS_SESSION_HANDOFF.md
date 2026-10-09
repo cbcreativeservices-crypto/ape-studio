@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 08:26 · ccode · e52148ee
+changed: Login screen: remove 'Browse the Glossary' (owner 2026-10-09) — Guest Mode is the no-account door and leads through onboarding; PublicGlossary kept for website deep links
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 08:13 · ccode · 6c6d07a3
 changed: Landing page: 'NEW TO AUDIO? START HERE' + a big 'TAKE ME TO THE HOME SCREEN' choice (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
