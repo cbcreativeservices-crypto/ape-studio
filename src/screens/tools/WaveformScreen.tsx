@@ -31,7 +31,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -62,6 +62,7 @@ import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLesson
 import type { RootStackParamList } from '../../navigation/types';
 import { buildPixelEnvelope } from './waveEnvelope';
 import { readingText } from '../../theme/readingColumn';
+import { isTabletWindow } from '../../theme/tablet';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaveformLive'>;
@@ -120,7 +121,13 @@ export function WaveformScreen({ navigation }: Props) {
   // the SPL/VU fullscreens).
   const camInset = Math.max(insets.left, insets.right, insets.top);
   const [panelW, setPanelW] = useState(0);
-  const [zoom, setZoom] = useState<Zoom>(DEFAULT_ZOOM);
+  // iPad (owner 2026-10-09): iPad mics give a much lower raw level in
+  // measurement mode, so a tablet opens on the highest zoom (×6). Display only —
+  // zoom is not gain, and the zoom honesty line still shows.
+  const [zoom, setZoom] = useState<Zoom>(() => {
+    const { width, height } = Dimensions.get('window');
+    return isTabletWindow(width, height) ? 6 : DEFAULT_ZOOM;
+  });
   const [windowSec, setWindowSec] = useState<WindowSec>(DEFAULT_WINDOW);
   // ZOOM / WINDOW are compact value-buttons that open a small chooser popup
   // (owner rev 24 — the VU-fullscreen style). Android back closes it first.

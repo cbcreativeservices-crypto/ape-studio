@@ -38,7 +38,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { fitValue } from '../../theme/legibility';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -77,6 +77,7 @@ import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingText } from '../../theme/readingColumn';
+import { isTabletWindow } from '../../theme/tablet';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SpectrogramLive'>;
@@ -311,7 +312,13 @@ export function SpectrogramScreen({ navigation }: Props) {
   const { state, frames, start, stop, lastError, noSignal, meterFlags } = useDspEngine(cfg, { meter: true });
 
   const [history, setHistory] = useState<SpectroColumnData[]>([]);
-  const [dynRange, setDynRange] = useState<number>(60);
+  // iPad (owner 2026-10-09: the iPad mic "barely registers"): iPad mics give a
+  // much lower raw level in measurement mode, so a tablet opens on the widest
+  // range to show quieter sound. Display only — the dB values are unchanged.
+  const [dynRange, setDynRange] = useState<number>(() => {
+    const { width, height } = Dimensions.get('window');
+    return isTabletWindow(width, height) ? 80 : 60;
+  });
   // Scroll speed (owner 2026-07-31; reworked 2026-08-01): a DISPLAY-only zoom of
   // the column WIDTH — each column is `speed`× wider, so the waterfall scrolls
   // `speed`× faster and shows less history, GUARANTEED visible regardless of the
