@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 18:40 · ccode · f1d4aabb
+changed: Opening the app's own share/save sheet no longer counts as leaving the app (no auto-mute); bounded 60 s, then the leave rule runs if the app is still not in front; mic release still immediate (owner 2026-10-09)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 18:32 · ccode · 5a1cf80c
 changed: Harmonograph: the sound follows the figure on stereo engines — both pendulums raised by one factor into hearing (lower tone 220 Hz), exact ratio incl. detune (heard as beating); PLAY always works; caption shows the sound Hz (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
