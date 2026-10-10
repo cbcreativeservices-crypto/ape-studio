@@ -914,6 +914,7 @@ export type LabelPlan = Partial<Record<string, { du: number; dv: number; align?:
 /** Part labels at the anchors (offsets per lesson and view, mm). */
 export function bowedLabels(P: Posture, view: ViewId, offsets: Record<ViewId, LabelPlan>, bowed: boolean): ArtLabel[] {
   const A = anchorsOf(P);
+  const drawn = bowed ? drawnPosture(P) : P;
   const at = (p: Vec3, id: string, text: string, short: string | undefined, tone?: ArtLabel['tone']): ArtLabel | null => {
     const o = offsets[view][id];
     if (!o) return null;
@@ -930,7 +931,9 @@ export function bowedLabels(P: Posture, view: ViewId, offsets: Record<ViewId, La
     at(toLesson(P.ax, { x: (P.spec.tailpiece[0] + P.spec.tailpiece[1]) / 2, y: 0, z: 10 }), 'tail', 'TAILPIECE', 'TAIL'),
     P.spec.id === 'violin' || P.spec.id === 'viola' ? at(toLesson(P.ax, { x: P.st.tailX + 38, y: -P.spec.lower.mm * 0.22, z: 20 }), 'chin', 'CHIN REST', 'CHIN') : null,
     P.endpinTip ? at(P.endpinTip, 'endpin', 'ENDPIN', undefined, 'muted') : null,
-    bowed ? at(add(P.bow.contact, scale(P.bow.dir, -P.bow.hair * 0.42)), 'bow', 'BOW', undefined) : null,
+    // BOW names the stick AS DRAWN (drawnPosture: the end of a down-bow, the
+    // stick out toward the hand) — not the posture's mid-stroke tip behind the head.
+    bowed ? at(drawn !== P ? add(drawn.bow.contact, scale(drawn.bow.dir, drawn.bow.hair * 0.55)) : add(P.bow.contact, scale(P.bow.dir, -P.bow.hair * 0.42)), 'bow', 'BOW', undefined) : null,
     bowed ? at(add(P.bow.contact, scale(P.bow.dir, -P.bow.hair * 0.85)), 'sweep', 'BOW’S PATH', 'BOW PATH', 'illustrative') : null,
     at(P.player.head, 'player', 'PLAYER', undefined, 'muted'),
   ];
