@@ -46,6 +46,7 @@ import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
+const AUDIO_LOW_HZ = 220; // the lower tone of the raised pair (owner 2026-10-09)
 const BASE_F0 = 110; // Hz — harmonics n₁/n₂ of this sound the interval
 
 // Oscillator FREQUENCY range (owner 2026-08-23, tightened same day): each
@@ -156,7 +157,10 @@ export function HarmonographLabScreen() {
   const isExact = matched != null && detune === 0;
   // PLAY renders the MATCHED ratio as harmonics of BASE_F0 (the pendulums are
   // below hearing) — a clean ratio + locked detune is what can sound honestly.
-  const playable = additiveReady && detune === 0 && matched != null;
+  // Owner 2026-10-09 ("no one can hear the harmonograph"): on a STEREO engine
+  // (v5+, every store build) the sound FOLLOWS THE FIGURE at any setting — see
+  // soundPair. Older engines keep the exact-harmonic rule (clean + locked).
+  const playable = stereoReady ? n1 > 0 && n2 > 0 : additiveReady && detune === 0 && matched != null;
   const ratio = {
     n1,
     n2,
@@ -195,6 +199,35 @@ export function HarmonographLabScreen() {
     [stereoReady, intervalPayload],
   );
 
+  /** The FIGURE as sound (stereo engines, owner 2026-10-09). The pendulums
+   *  swing below hearing (0.5–10 Hz), so BOTH are raised by ONE factor until
+   *  the lower tone sits at AUDIO_LOW_HZ. The ratio is exact — detune included
+   *  (it acts on OSC 2 in LATERAL mode, on the platform in ROTARY, as in the
+   *  machine) — so a detuned pair BEATS: the drift the rose shows as
+   *  precession, heard as a slow wah-wah. */
+  const soundPair = useCallback((a: number, b: number, d: number, rot: boolean) => {
+    const f1 = a * BASE_F0;
+    const f2 = b * BASE_F0 * (rot ? 1 : 1 + d);
+    const low = Math.min(f1, f2);
+    if (!(low > 0)) return null;
+    const k = AUDIO_LOW_HZ / low;
+    return { fL: f1 * k, fR: f2 * k };
+  }, []);
+
+  /** What PLAY should sound for this state, or null for "quiet, still armed". */
+  const paramsFor = useCallback(
+    (a: number, b: number, d: number, rot: boolean): GenParams | null => {
+      if (stereoReady) {
+        const p = soundPair(a, b, d, rot);
+        return p ? { mode: GEN_MODES.sine, stereo: { on: true, fL: p.fL, fR: p.fR }, levelDb: GEN_LEVEL_DB } : null;
+      }
+      const m = matchRatio(a, b);
+      return additiveReady && m && d === 0 ? intervalGenParams(m.n1, m.n2) : null;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stereoReady, additiveReady, soundPair, intervalGenParams],
+  );
+
   // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
   // sound until ■). Only a clean, locked ratio can sound honestly, so moving
   // off one used to STOP the lab (▶), and landing back on a clean ratio was
@@ -203,17 +236,17 @@ export function HarmonographLabScreen() {
   // `wantRef` = the generator SHOULD be sounding; `soundingRef` = it is.
   const wantRef = useRef(false);
   const soundingRef = useRef(false);
-  const latestRef = useRef({ n1, n2, detune });
-  latestRef.current = { n1, n2, detune };
+  const latestRef = useRef({ n1, n2, detune, rotary });
+  latestRef.current = { n1, n2, detune, rotary };
 
   /** Start the generator on a clean pair (the ▶ press and the armed resume). */
-  const soundInterval = useCallback(async (m: { n1: number; n2: number }) => {
+  const soundInterval = useCallback(async (first: GenParams) => {
     const gen = ++genRef.current;
     wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    ApeDsp.genSet(intervalGenParams(m.n1, m.n2));
+    ApeDsp.genSet(first);
     try {
       // The fence (startFenced): a mute, a stop/hush, or a stop-all that lands
       // while the native start is in flight wins — this start never sounds on.
@@ -232,26 +265,27 @@ export function HarmonographLabScreen() {
       // different figure (bug hunt 2026-09-30 pass 2, the Fx/FM pass-1 fix).
       // Follow the NEWEST state: retune, or go quiet but stay armed (■).
       const latest = latestRef.current;
-      const lm = matchRatio(latest.n1, latest.n2);
-      if (!lm || latest.detune !== 0) {
+      const now = paramsFor(latest.n1, latest.n2, latest.detune, latest.rotary);
+      if (!now) {
         wantRef.current = false;
         void ApeDsp.genStop();
         return;
       }
-      if (lm.n1 !== m.n1 || lm.n2 !== m.n2) ApeDsp.genSet(intervalGenParams(lm.n1, lm.n2));
+      ApeDsp.genSet(now);
       soundingRef.current = true;
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
-  }, [requestAudioOutput, intervalGenParams]);
+  }, [requestAudioOutput, paramsFor]);
 
   const startInterval = useCallback(async () => {
     // Only sound real integer-harmonic pairs (never a sub-audio pendulum pair).
     // PLAY = the MATCHED ratio rendered as harmonics of BASE_F0 (the pendulums
     // themselves are below hearing); only a clean, locked ratio sounds.
-    if (!additiveReady || detune !== 0 || !matched) return;
-    await soundInterval(matched);
-  }, [additiveReady, detune, matched, soundInterval]);
+    const p = paramsFor(n1, n2, detune, rotary);
+    if (!p) return;
+    await soundInterval(p);
+  }, [paramsFor, n1, n2, detune, rotary, soundInterval]);
 
   /** Armed but not clean: silence the tone, keep ■. */
   const hushInterval = () => {
@@ -287,15 +321,15 @@ export function HarmonographLabScreen() {
   // Retune the interval audio to the new pair's MATCHED ratio (as harmonics of
   // BASE_F0), or go quiet while the ratio is not clean — never fake a tone.
   // Armed (■) either way; a clean ratio after a quiet stretch sounds again.
-  const retuneOrHush = (a: number, b: number, d: number = detune) => {
+  const retuneOrHush = (a: number, b: number, d: number = detune, rot: boolean = rotary) => {
     if (!running) return;
-    const m = matchRatio(a, b);
-    if (m && d === 0) {
+    const p = paramsFor(a, b, d, rot);
+    if (p) {
       if (soundingRef.current) {
-        ApeDsp.genSet(intervalGenParams(m.n1, m.n2));
+        ApeDsp.genSet(p);
         noteAudioActivity();
       } else {
-        void soundInterval(m);
+        void soundInterval(p);
       }
     } else {
       hushInterval();
@@ -319,9 +353,11 @@ export function HarmonographLabScreen() {
   };
   const pickDetune = (d: (typeof DETUNES)[number]['key']) => {
     setDetune(d);
-    retuneOrHush(n1, n2, d); // audio can't honestly follow a detuned ratio — quiet, still armed
+    retuneOrHush(n1, n2, d); // stereo: the detuned pair beats; older engines: quiet, still armed
   };
 
+  // What PLAY sounds right now on a stereo engine (the caption shows it).
+  const soundNow = stereoReady ? soundPair(n1, n2, detune, rotary) : null;
   const hz1 = ratio.n1 * BASE_F0;
   const hz2 = ratio.n2 * BASE_F0;
   const hz3 = n3 * BASE_F0;
@@ -554,7 +590,11 @@ export function HarmonographLabScreen() {
                   <LabChip
                     label={rotary ? 'ROTARY' : 'LATERAL'}
                     selected={rotary}
-                    onPress={() => setRotary((v) => !v)}
+                    onPress={() => {
+                      const next = !rotary;
+                      setRotary(next);
+                      retuneOrHush(n1, n2, detune, next); // detune moves between OSC 2 and the platform
+                    }}
                     onLongPress={() => openLesson('mode')}
                   />
                 </View>
@@ -598,7 +638,22 @@ export function HarmonographLabScreen() {
         <Text style={styles.sectionHead}>THE INTERVAL, AS SOUND</Text>
         {/* DRIVE FROM OSCILLATORS — real interval audio (v3 additive only);
             the play/stop control itself is the header ▶. */}
-        {engineReady ? (
+        {engineReady && stereoReady && soundNow ? (
+          <>
+            <Text style={styles.caption}>
+              {`The pendulums swing below hearing (${fmtHz(hz1)} : ${fmtHz(hz2)}), so PLAY (header ▶) raises BOTH by the same factor into hearing range — ` +
+                `${Math.round(soundNow.fL)} Hz on LEFT, ${Math.round(soundNow.fR)} Hz on RIGHT, hard-panned stereo. The exact ratio the machine is drawing` +
+                (detune !== 0 && !rotary
+                  ? `, detune included: the slow wah-wah you hear is BEATING — the same drift the rose shows as precession.`
+                  : matched
+                    ? ` — a ${matched.interval.toLowerCase()}.`
+                    : ` — a custom ratio, between the simple intervals.`)}
+            </Text>
+            <Text style={styles.advisory}>
+              {`Output ${GEN_LEVEL_DB} dBFS · uncalibrated. Speaker high-pass (${SPEAKER_HPF_HZ} Hz) — use headphones for the full, panned interval.`}
+            </Text>
+          </>
+        ) : engineReady ? (
           additiveReady ? (
             detune !== 0 ? (
               <Text style={styles.caption}>

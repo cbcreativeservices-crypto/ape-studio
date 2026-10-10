@@ -110,10 +110,11 @@ test('Harmonics: an F0 picked during the start retunes the plain fundamental onc
 
 test('Harmonograph: a ratio / detune moved during the start is followed (retune or quiet); RESET cancels a start in flight', () => {
   const s = read('src/screens/lab/HarmonographLabScreen.tsx');
-  assert.match(s, /latestRef\.current = \{ n1, n2, detune \};/);
+  assert.match(s, /latestRef\.current = \{ n1, n2, detune, rotary \};/);
   const start = s.slice(s.indexOf('const soundInterval = useCallback'), s.indexOf('const startInterval = useCallback'));
-  assert.match(start, /if \(!lm \|\| latest\.detune !== 0\) \{\n\s*wantRef\.current = false;\n\s*void ApeDsp\.genStop\(\);/);
-  assert.match(start, /if \(lm\.n1 !== m\.n1 \|\| lm\.n2 !== m\.n2\) ApeDsp\.genSet\(intervalGenParams\(lm\.n1, lm\.n2\)\);/);
+  // 2026-10-09: the newest state decides through paramsFor — quiet (null) or retuned.
+  assert.match(start, /const now = paramsFor\(latest\.n1, latest\.n2, latest\.detune, latest\.rotary\);\s*if \(!now\) \{\s*wantRef\.current = false;\s*void ApeDsp\.genStop\(\);/);
+  assert.match(start, /ApeDsp\.genSet\(now\);/);
   assert.match(s, /if \(running \|\| wantRef\.current\) stopInterval\(\);/);
 });
 

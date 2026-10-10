@@ -135,7 +135,8 @@ test('Harmonograph: an unclean ratio goes quiet but stays armed; ■ stays press
   assert.doesNotMatch(s, /retuneOrStop/);
   const fn = s.slice(s.indexOf('const retuneOrHush = '), s.indexOf('const pickRatio = '));
   assert.doesNotMatch(fn, /stopInterval\(\)/);
-  assert.match(fn, /void soundInterval\(m\);/);
+  // 2026-10-09: the sound follows the figure (paramsFor) — still sounds again, never stops the lab.
+  assert.match(fn, /void soundInterval\(p\);/);
   assert.match(fn, /hushInterval\(\);/);
   assert.match(s, /disabled=\{!playable && !running/);
   assert.doesNotMatch(s, /if \(d !== 0 && running\) stopInterval\(\);/);
