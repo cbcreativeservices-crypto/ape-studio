@@ -27,13 +27,13 @@ import type { PatternId, Vec3, ViewBox } from '../../../engine/model/types.ts';
 import { fitXform, type ViewXform } from '../../../engine/geometry/frame.ts';
 import { gain } from '../../../engine/physics/polar.ts';
 import { angleBetween } from '../../../engine/geometry/vec.ts';
-import { fitLabels } from '../../../engine/scene/labelLayout.ts';
+import { fitLabels, LABEL_AIR, labelRect, leaderLine, segHitsRect, segsCross, type LabelRect } from '../../../engine/scene/labelLayout.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { add, DEG, dist, fmtM, mul, planDir, unit, uv, uvDir, v3, type StageView } from './frameS.ts';
 import { arrayCapsules } from './stereoArray.ts';
 import { headTop, soundPoint, type Seat, type Seating } from './seating.ts';
 import { SeatingView, SECTION_SLICE } from './SeatingArt';
-import { ArrayDetail, ArrayRig, rigPoints, type RigSpec } from './ArrayArt';
+import { ArrayDetail, ArrayRig, rigHardware, rigPoints, type RigSpec } from './ArrayArt';
 import { stageClearOf, stageHit, stageLabels } from './stageLabels.ts';
 import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
 
@@ -221,6 +221,100 @@ export type EnsembleStageProps = {
  *  (the box, the label layout, the detail-corner search) on each parent render
  *  (toddler 2026-10-07 L5-R1-01). */
 const NONE: readonly never[] = Object.freeze([]);
+
+/**
+ * ELEVATION LABEL ROWS (round 2, 2026-10-10 — E14's side view had leaders
+ * crossing and tangling): the section names sit in ROWS above the players'
+ * heads and below the stage floor, each row filled left to right in the order
+ * of the parts they name, so the leaders fan out without crossing. A place is
+ * taken only when its words keep off every label already set, the detail
+ * inset and the drawing (clearOf), no leader runs through the words, and its
+ * own leader crosses no leader and runs through no words. A label with no
+ * such place keeps its own places (fitLabels then decides). Px throughout;
+ * the result is the label's first place, so fitLabels takes it as it is.
+ */
+function rowLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, topV: number, floorV: number, rightFirst: boolean, aboveFirst: boolean): { out: StaticLabel[]; failed: Set<number> } {
+  const hpx = 9.5 * scale * 1.25;
+  const taken: LabelRect[] = [...(corner ? [corner] : []), ...fixed.map((l) => labelRect(l, xf, scale, maxX))];
+  const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  const overlaps = (a: LabelRect, b: LabelRect) => a.x0 < b.x1 + 3 && a.x1 > b.x0 - 3 && a.y0 < b.y1 + 1 && a.y1 > b.y0 - 1;
+  const inMm = (r: LabelRect) => clearOf((r.x0 - LABEL_AIR - xf.ox) / xf.s, (r.y0 - LABEL_AIR - xf.oy) / xf.s, (r.x1 + LABEL_AIR - xf.ox) / xf.s, (r.y1 + LABEL_AIR - xf.oy) / xf.s);
+  const topPx = xf.oy + topV * xf.s;
+  const floorPx = xf.oy + floorV * xf.s;
+  // Rows: just under the floor first, then just over the heads, then further out.
+  const rows: { y: number; used: [number, number][] }[] = [];
+  for (let k = 0; k < 7; k++) {
+    const below = { y: floorPx + (1.4 + 1.25 * k) * hpx, used: [] as [number, number][] };
+    const above = { y: topPx - (1.2 + 1.25 * k) * hpx, used: [] as [number, number][] };
+    rows.push(...(aboveFirst ? [above, below] : [below, above]));
+  }
+  const order = labels.map((l, i) => ({ l, i })).filter((q) => q.l.at).sort((a, b) => (rightFirst ? -1 : 1) * (a.l.at!.u - b.l.at!.u));
+  const out = [...labels];
+  const failed = new Set<number>();
+  // Every part's point (px): a leader never runs through ANOTHER part's dot.
+  const dots = labels.filter((l) => l.at).map((l) => ({ x: xf.ox + l.at!.u * xf.s, y: xf.oy + l.at!.v * xf.s }));
+  const passes = (sg: { x1: number; y1: number; x2: number; y2: number }, d: { x: number; y: number }) => {
+    if (Math.hypot(sg.x1 - d.x, sg.y1 - d.y) < 1) return false;
+    const L2 = (sg.x2 - sg.x1) ** 2 + (sg.y2 - sg.y1) ** 2 || 1;
+    const t = Math.max(0, Math.min(1, ((d.x - sg.x1) * (sg.x2 - sg.x1) + (d.y - sg.y1) * (sg.y2 - sg.y1)) / L2));
+    return Math.hypot(sg.x1 + t * (sg.x2 - sg.x1) - d.x, sg.y1 + t * (sg.y2 - sg.y1) - d.y) < 5;
+  };
+  for (const { l, i } of order) {
+    const at = l.at!;
+    const ax = xf.ox + at.u * xf.s;
+    let done = false;
+    for (const text of l.short ? [l.text, l.short] : [l.text]) {
+      const W = labelRect({ ...l, text, align: 'center' }, xf, scale, maxX).x1 - labelRect({ ...l, text, align: 'center' }, xf, scale, maxX).x0;
+      // In each row: straight over the part, else the nearest gap either side.
+      // Straight over the part in ANY row before a shifted place in a near one
+      // (vertical leaders are the ones that never cross).
+      const tries: { row: (typeof rows)[number]; cx: number; k: number }[] = [];
+      rows.forEach((row, k) => {
+        const xs = [ax, ...row.used.flatMap(([x0, x1]) => [x1 + W / 2 + 4, x0 - W / 2 - 4])].map((x) => Math.min(maxX - W / 2 - 2, Math.max(W / 2 + 2, x)));
+        for (const cx of xs) tries.push({ row, cx, k });
+      });
+      tries.sort((p, q) => Math.round(Math.abs(p.cx - ax) / (2 * hpx)) - Math.round(Math.abs(q.cx - ax) / (2 * hpx)) || p.k - q.k);
+      for (const { row, cx } of tries) {
+        const v = (row.y + 7 * scale - hpx / 2 - xf.oy) / xf.s;
+        const cand = { ...l, text, u: (cx - xf.ox) / xf.s, v, align: 'center' as const };
+        const r = labelRect(cand, xf, scale, maxX);
+        if (r.y0 < 1 || r.y1 > maxY - 1) continue;
+        if (taken.some((t) => overlaps(r, t)) || !inMm(r)) continue;
+        const fat = { x0: r.x0 - 5, x1: r.x1 + 5, y0: r.y0 - 3, y1: r.y1 + 3 };
+        if (lines.some((sg) => segHitsRect(sg, fat))) continue;
+        const ln = leaderLine(r, xf, at);
+        if (ln && (taken.some((t) => segHitsRect(ln, { x0: t.x0 - 5, x1: t.x1 + 5, y0: t.y0 - 3, y1: t.y1 + 3 })) || lines.some((sg) => segsCross(sg, ln)) || dots.some((d) => passes(ln, d)))) continue;
+        const me = { x: xf.ox + at.u * xf.s, y: xf.oy + at.v * xf.s };
+        if (lines.some((sg) => passes(sg, me))) continue;
+        taken.push(r);
+        if (ln) lines.push(ln);
+        row.used.push([r.x0, r.x1]);
+        out[i] = { ...cand, alts: l.alts };
+        done = true;
+        break;
+      }
+      if (done) break;
+    }
+    if (!done) failed.add(i);
+  }
+  return { out, failed };
+}
+
+/** The row layout tried four ways (left or right end first, under the floor
+ *  or over the heads first); the one that sets the most labels cleanly wins.
+ *  A section name with no clean place at this zoom is LEFT OUT (the house
+ *  level-of-detail rule: no crossing leaders, no words on the drawing) — it
+ *  appears when the drawing is zoomed in, and a tap still names the section. */
+function rowLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, topV: number, floorV: number): StaticLabel[] {
+  let best: { out: StaticLabel[]; failed: Set<number> } | null = null;
+  for (const rightFirst of [false, true])
+    for (const aboveFirst of [false, true]) {
+      const r = rowLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, topV, floorV, rightFirst, aboveFirst);
+      if (!best || r.failed.size < best.failed.size) best = r;
+      if (best.failed.size === 0) break;
+    }
+  return best!.out.filter((_, i) => !best!.failed.has(i));
+}
 
 export function EnsembleStage(p: EnsembleStageProps) {
   const { w, h, seating, view, hi = null, rigs = NONE, singles = NONE, zones = NONE, radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = NONE, spill = NONE, rings = NONE, onTapSection } = p;
@@ -426,10 +520,33 @@ export function EnsembleStage(p: EnsembleStageProps) {
     // group 2: a focused (close) frame names only the singers it frames.
     const focusSecs = p.focus ? new Set(seating.seats.filter((q) => p.focus!.includes(q.id)).map((q) => q.section)) : null;
     const art = labels ? stageLabels(seating, view, slice).filter((l) => !focusSecs || focusSecs.has(l.id)).map((l) => ({ ...l, tone: l.id === hi ? ('amber' as const) : l.tone })) : [];
-    const all: StaticLabel[] = [...(dimG?.lab ?? []), ...singlesG.flatMap((q) => (q.dim ? [q.dim.label] : [])), ...extraLabels, ...art];
     // The detail inset's corner is taken: no label sits under it.
-    return fitLabels(all, xf, textScale, w, undefined, corner ? [corner] : undefined, { clearOf: stageClearOf(seating, view, slice), minY: 1, maxY: h - 1 });
-  }, [labels, seating, view, slice, hi, dimG, singlesG, extraLabels, xf, textScale, w, h, corner, p.focus]);
+    // Round 2 (2026-10-10): a label's words keep off the main array's stand
+    // and boom too (CONDUCTOR had landed on the mast) — the rig's mast and
+    // boom as segments, 250 mm either side.
+    const players = stageClearOf(seating, view, slice);
+    const segsOf = rigs.flatMap((r) => {
+      const hw = rigHardware(r, arrayCapsules(r.id, r.params, r.place));
+      const a = uv(view, v3(hw.foot.x, -380, hw.foot.z));
+      const b = uv(view, hw.mastTop);
+      const c = uv(view, hw.centreOfBar);
+      return [[a, b], ...(hw.boom ? [[b, c]] : [])] as { u: number; v: number }[][];
+    });
+    const clearOf = (u0: number, v0: number, u1: number, v1: number) => {
+      if (!players(u0, v0, u1, v1)) return false;
+      for (const [a, b] of segsOf)
+        for (let t = 0; t <= 1; t += 0.05) {
+          const u = a.u + (b.u - a.u) * t;
+          const v = a.v + (b.v - a.v) * t;
+          if (u >= u0 - 250 && u <= u1 + 250 && v >= v0 - 250 && v <= v1 + 250) return false;
+        }
+      return true;
+    };
+    const fixed: StaticLabel[] = [...(dimG?.lab ?? []), ...singlesG.flatMap((q) => (q.dim ? [q.dim.label] : [])), ...extraLabels];
+    const heads = seating.seats.filter((q) => view !== 'section' || Math.abs(q.p.x) <= slice).map((q) => uv(view, q.p).v - headTop(q));
+    const planned = view === 'plan' ? art : rowLayout(art, fixed, xf, textScale, w, h, clearOf, corner ?? null, Math.min(...heads, 0), 0);
+    return fitLabels([...fixed, ...planned], xf, textScale, w, undefined, corner ? [corner] : undefined, { clearOf, minY: 1, maxY: h - 1 });
+  }, [labels, seating, view, slice, hi, dimG, singlesG, extraLabels, xf, textScale, w, h, corner, p.focus, rigs]);
 
   const press = (e: { nativeEvent: { locationX: number; locationY: number } }) => {
     if (!onTapSection) return;
@@ -504,7 +621,8 @@ export function EnsembleStage(p: EnsembleStageProps) {
             {rigs.map((r) => (
               <ArrayRig key={r.key} spec={r} view={view} px={px} lobes={lobes} aims={aims} wedge={wedge} lit={r.lit !== false} aimLen={view === 'plan' ? 2600 : 1800} />
             ))}
-            {r0 ? <Circle cx={uv(view, r0.place.c).u} cy={uv(view, r0.place.c).v} r={4 * px} color={AMBER} opacity={0.8} /> : null}
+            {/* The array's centre: an amber RING (a filled dot hid the capsules under it). */}
+            {r0 ? <Circle cx={uv(view, r0.place.c).u} cy={uv(view, r0.place.c).v} r={5 * px} style="stroke" strokeWidth={1.6 * px} color={AMBER} opacity={0.9} /> : null}
             {dimG ? <Path path={dimG.lines} style="stroke" strokeWidth={1.6 * px} color="#ffffff" opacity={0.92} /> : null}
           </Group>
         </Canvas>

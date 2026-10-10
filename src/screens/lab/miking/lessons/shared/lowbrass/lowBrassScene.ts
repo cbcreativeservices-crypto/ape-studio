@@ -54,7 +54,15 @@ export type Joints = {
   mouth: Vec3;
 };
 
-export type Tube = { id: string; pts: Vec3[]; r: number; tone?: 'brass' | 'silver' };
+/**
+ * A length of tube. `r` is the radius the collision model reads; `rr`, when
+ * given, is the DRAWN radius at the tube's start and end (a conical branch
+ * widens along its length; drawing only, the model keeps `r`). `draw:
+ * false` keeps a tube in the model but out of the picture (the drawing
+ * routes the same metal through its own, smoother tube); `art: true` marks
+ * a drawing-only tube the model never reads (valve slides).
+ */
+export type Tube = { id: string; pts: Vec3[]; r: number; tone?: 'brass' | 'silver'; rr?: readonly [number, number]; draw?: false; art?: true };
 export type Valve = { c: Vec3; axis: Vec3; r: number; h: number; kind: 'rotary' | 'piston'; lever?: Vec3 };
 /** The bell: a flare from the throat (radius rT) to the rim (radius R),
  *  straight along `axis` (unit, pointing OUT of the bell). */
@@ -148,6 +156,36 @@ export function spline(pts: Vec3[], k = 8): Vec3[] {
   return out;
 }
 
+/** A valve slide pulled out level (in the side view's plane): two legs at
+ *  heights ya and yb from x0 out to xe, joined by a round crook. */
+export function uLoop(x0: number, ya: number, yb: number, xe: number, z: number, n = 10): Vec3[] {
+  const rb = Math.abs(yb - ya) / 2;
+  const s = Math.sign(xe - x0) || 1;
+  const cx = xe - s * rb;
+  const cy = (ya + yb) / 2;
+  const out: Vec3[] = [v(x0, ya, z), v(cx, ya, z)];
+  for (let i = 1; i < n; i++) {
+    const a = (Math.PI * i) / n;
+    out.push(v(cx + s * rb * Math.sin(a), cy - rb * Math.cos(a) * Math.sign(yb - ya), z));
+  }
+  out.push(v(cx, yb, z), v(x0, yb, z));
+  return out;
+}
+/** A slide hanging down: two legs at xa and xb from y0 down to ye (y is
+ *  down), a round crook at the bottom. */
+export function vLoop(xa: number, xb: number, y0: number, ye: number, z: number, n = 10): Vec3[] {
+  const rb = Math.abs(xb - xa) / 2;
+  const cx = (xa + xb) / 2;
+  const cy = ye - rb;
+  const out: Vec3[] = [v(xa, y0, z), v(xa, cy, z)];
+  for (let i = 1; i < n; i++) {
+    const a = Math.PI - (Math.PI * i) / n;
+    out.push(v(cx + rb * Math.cos(a), cy + rb * Math.sin(a), z));
+  }
+  out.push(v(xb, cy, z), v(xb, y0, z));
+  return out;
+}
+
 /** The bell's radius a fraction t (0 = throat … 1 = rim) along its flare:
  *  a brass bell opens slowly, then fast at the end (a drawing profile). */
 export function flareR(b: Bell, t: number): number {
@@ -171,7 +209,7 @@ function hornScene(spec: LowBrassSpec): BrassScene {
   const loops: Tube[] = [125, 109, 94].map((r, i) => ({ id: `coil${i}`, pts: ring(add(C, scale(nC, (i - 1) * 16)), e1, e2, r, 0, 2 * Math.PI, 56), r: 7.5 + i }));
   // The bell's tail leaves the coil at its lower back and runs to the throat.
   const tailStart = add(C, add(scale(e1, -0.62 * 112), scale(e2, 0.78 * 112)));
-  const tail: Tube = { id: 'bellTail', pts: spline([add(C, add(scale(e1, 0.2 * 118), scale(e2, 0.98 * 118))), tailStart, add(throat, scale(axis, -40)), throat], 8), r: 16 };
+  const tail: Tube = { id: 'bellTail', pts: spline([add(C, add(scale(e1, 0.2 * 118), scale(e2, 0.98 * 118))), tailStart, add(throat, scale(axis, -40)), throat], 8), r: 16, rr: [9.5, 24] };
   const mp0 = add(BASE.mouth, v(6, 0, 0));
   const mp1 = v(178, -1128, 38);
   const valveC = v(205, -912, 178);
@@ -224,8 +262,47 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   const top = v(215, d.topY, 240);
   const backBot = v(175, d.bottomY - 30 * k, 85);
   const backTop = v(170, d.topY + 140 * k, 70);
-  const bow: Tube = { id: 'bottomBow', pts: spline([backTop, backBot, v(205, d.bottomY + 60 * k, 120), bot], 8), r: 46 * k };
-  const branch: Tube = { id: 'bellBranch', pts: spline([bot, v(240, (d.bottomY + d.topY) / 2, 200), top], 8), r: d.branchR[1] };
+  // ── THE DRAWING (round 2). An upright B-flat tuba from the player's
+  // right, real-world sizes (the euphonium the same layout at k = 0.8):
+  //   body: one conical tube with no step. The back branch (dia. about
+  //   45 -> 100 mm) comes down from the valve section, round the BOTTOM BOW
+  //   (tube dia. about 100-115 mm, the U seen open toward the viewer), and up
+  //   the bell branch (about 112 -> 185 mm) into the throat; bell rim 443.
+  //   valves: FOUR top-action pistons in a row front to back (casing about
+  //   dia. 30 mm, about 150 mm tall at a 36 mm pitch; valve 1 nearest the
+  //   player, the right hand's fingers across the four buttons).
+  //   valve slides: U loops of about 21 mm tube with round crooks hanging
+  //   BELOW the cluster: 2nd shortest, 1st, 3rd, and the 4th's long loop.
+  //   leadpipe: from the mouthpiece receiver forward and down in front of
+  //   the cluster into the MAIN TUNING SLIDE, a big U-crook (tube about
+  //   24 mm), then back up over the top into the front casing.
+  //   stays: nickel braces between the bell branch, the cluster and the
+  //   loops. The collision model keeps its own tubes (draw: false) and radii.
+  const rT = d.rT;
+  const P0 = d.pistonsAt;
+  const VP = 36 * k;
+  const vx0 = P0.x - 5 * k;
+  const nTop = d.side ? 3 : spec.valves.n;
+  const vz = P0.z + 50 * k;
+  const valves: Valve[] = Array.from({ length: nTop }, (_, i) => ({ c: v(vx0 + i * VP, P0.y, vz), axis: v(0, -1, 0), r: 15 * k, h: 120 * k, kind: 'piston' as const }));
+  // The euphonium's fourth valve sits at the side, under the left hand.
+  if (d.side) valves.push({ c: v(250, -930 + 20 * (1 - k), 52), axis: v(0, 0, -1), r: 15 * k, h: 70, kind: 'piston' });
+  const yb = P0.y + 60 * k; // the casings' bottom caps
+  const xs = valves.slice(0, nTop).map((q) => q.c.x);
+  const bow: Tube = { id: 'bottomBow', pts: spline([backTop, backBot, v(205, d.bottomY + 60 * k, 120), bot], 8), r: 46 * k, draw: false };
+  const branch: Tube = { id: 'bellBranch', pts: spline([bot, v(240, (d.bottomY + d.topY) / 2, 200), top], 8), r: d.branchR[1], draw: false };
+  const backX = 215 - 85 * k;
+  const bellX = 215 + 67 * k;
+  const bowLow = d.bottomY + 58 * k;
+  const branchArt: Tube = { id: 'branchArt', pts: spline([v(bellX, d.bottomY + 4, 165), v(bellX - 8, d.bottomY - 160 * k, 185), v(240, (d.bottomY + d.topY) / 2 - 40, 210), top], 8), r: d.branchR[1], rr: [0.56 * rT, 0.92 * rT], art: true };
+  const bowArt: Tube = { id: 'bowArt', pts: spline([v(backX, d.bottomY - 10, 95), v(backX + 8, bowLow - 30 * k, 105), v((backX + bellX) / 2, bowLow, 125), v(bellX - 8, bowLow - 30 * k, 150), v(bellX, d.bottomY + 4, 165)], 7), r: 46 * k, rr: [0.5 * rT, 0.56 * rT], art: true };
+  const backArt: Tube = {
+    id: 'backArt',
+    pts: spline([v(xs[0] - 8 * k, P0.y - 20 * k, vz - 20), v(xs[0] - 45 * k, P0.y - 42 * k, 100), v(240, P0.y - 52 * k, 90), v(backX + 25, P0.y - 30 * k, 85), v(backX + 4, P0.y + 60 * k, 88), v(backX, d.bottomY - 10, 95)], 8),
+    r: d.branchR[0],
+    rr: [0.22 * rT, 0.5 * rT],
+    art: true,
+  };
   let bell: Bell;
   let neck: Tube;
   if (orient === 'up') {
@@ -233,32 +310,53 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
     const throat = add(top, scale(axis, 40));
     const rim = add(throat, scale(axis, d.bellLen));
     bell = { rim, axis, R, throat, rT: d.rT };
-    neck = { id: 'bellNeck', pts: [top, throat], r: d.rT };
+    neck = { id: 'bellNeck', pts: [top, throat], r: d.rT, rr: [0.92 * rT, rT] };
   } else {
     const axis = norm(v(1, -0.09, 0));
     const bend = add(top, v(-10, -130 * k, 10));
     const throat = add(bend, v(70 * k, -20 * k, 0));
     const rim = add(throat, scale(axis, d.bellLen));
     bell = { rim, axis, R, throat, rT: d.rT };
-    neck = { id: 'bellNeck', pts: spline([top, add(top, v(-12, -70 * k, 6)), bend, throat], 8), r: d.rT };
+    neck = { id: 'bellNeck', pts: spline([top, add(top, v(-12, -70 * k, 6)), bend, throat], 8), r: d.rT, rr: [0.92 * rT, rT] };
   }
-  // The pistons stand in a row along z in front of the body; their finger
-  // buttons on top.
-  const P0 = d.pistonsAt;
-  const valves: Valve[] = [0, 1, 2].map((i) => ({ c: add(P0, v(0, 0, i * 34)), axis: v(0, -1, 0), r: 15 * k, h: 120 * k, kind: 'piston' as const }));
-  if (spec.valves.n === 4 && !d.side) valves.push({ c: add(P0, v(0, 0, 3 * 34)), axis: v(0, -1, 0), r: 15 * k, h: 120 * k, kind: 'piston' });
-  // The euphonium's fourth valve sits at the side, under the left hand.
-  if (d.side) valves.push({ c: v(250, -930 + 20 * (1 - k), 52), axis: v(0, 0, -1), r: 15 * k, h: 70, kind: 'piston' });
   const mp0 = add(BASE.mouth, v(6, 0, 0));
   const mp1 = v(185, -1135, 30);
-  const leadpipe: Tube = { id: 'leadpipe', pts: spline([mp1, v(250, -1110, 55), add(P0, v(-10, -70 * k, -10)), add(P0, v(-20, 20, -12))], 8), r: 10 * k + 2 };
-  const valveLoop: Tube = { id: 'valveLoop', pts: spline([add(P0, v(-30, 60 * k, 0)), add(P0, v(-60, 80 * k, 60)), add(top, v(30, 260 * k, -10))], 8), r: 14 * k };
+  const leadpipe: Tube = { id: 'leadpipe', pts: spline([mp1, v(250, -1110, 55), add(P0, v(-10, -70 * k, -10)), add(P0, v(-20, 20, -12))], 8), r: 10 * k + 2, draw: false };
+  const valveLoop: Tube = { id: 'valveLoop', pts: spline([add(P0, v(-30, 60 * k, 0)), add(P0, v(-60, 80 * k, 60)), add(top, v(30, 260 * k, -10))], 8), r: 14 * k, draw: false };
   const slides: Tube[] = [
-    { id: 'slide1', pts: spline([add(P0, v(-40, 30 * k, 110)), add(P0, v(-40, 30 * k, 200 * k + 60)), add(P0, v(-40, 80 * k, 200 * k + 60)), add(P0, v(-40, 80 * k, 110))], 6), r: 13 * k },
-    { id: 'slide2', pts: spline([add(backBot, v(0, -120 * k, -10)), add(backBot, v(-70 * k, -120 * k, -40)), add(backBot, v(-70 * k, -200 * k, -40)), add(backBot, v(0, -200 * k, -10))], 6), r: 18 * k },
+    { id: 'slide1', pts: spline([add(P0, v(-40, 30 * k, 110)), add(P0, v(-40, 30 * k, 200 * k + 60)), add(P0, v(-40, 80 * k, 200 * k + 60)), add(P0, v(-40, 80 * k, 110))], 6), r: 13 * k, draw: false },
+    { id: 'slide2', pts: spline([add(backBot, v(0, -120 * k, -10)), add(backBot, v(-70 * k, -120 * k, -40)), add(backBot, v(-70 * k, -200 * k, -40)), add(backBot, v(0, -200 * k, -10))], 6), r: 18 * k, draw: false },
   ];
-  const back: Tube = { id: 'backBranch', pts: spline([backBot, v(172, (d.bottomY + d.topY) / 2, 78), backTop, add(backTop, v(40, -40 * k, 30)), add(P0, v(-40, -40 * k, 0))], 8), r: d.branchR[0] };
-  const handR = add(P0, v(15, -d.k * 120 - 45, 50));
+  const back: Tube = { id: 'backBranch', pts: spline([backBot, v(172, (d.bottomY + d.topY) / 2, 78), backTop, add(backTop, v(40, -40 * k, 30)), add(P0, v(-40, -40 * k, 0))], 8), r: d.branchR[0], draw: false };
+  const tr = 10.5 * k;
+  const xf = xs[nTop - 1]; // the front casing
+  // The leadpipe and the main tuning slide (in front of the cluster).
+  const ms0 = xf + 50 * k;
+  const ms1 = xf + 104 * k;
+  const msLow = P0.y + 130 * k;
+  const leadArt: Tube = { id: 'leadArt', pts: spline([mp1, v(270, -1118, 45), v(xs[1], P0.y - 128 * k, vz - 40), v(ms0 - 10 * k, P0.y - 70 * k, vz + 10), v(ms0, P0.y - 20 * k, vz + 20)], 8), r: 11 * k, rr: [6 * k, 11.5 * k], art: true };
+  const art: Tube[] = [
+    leadArt,
+    { id: 'mainSlide', pts: [...vLoop(ms0, ms1, P0.y - 20 * k, msLow, vz + 20).slice(0, -1), v(ms1, P0.y - 40 * k, vz + 20), v(ms1 - 12 * k, P0.y - 66 * k, vz + 14), v(xf + 22 * k, P0.y - 62 * k, vz + 6), v(xf + 12 * k, P0.y - 45 * k, vz)], r: 12 * k, art: true },
+    // Valve slides hanging below the cluster, nearest-the-viewer last.
+    { id: 'vslide1', pts: vLoop(xs[0] - 13 * k, xs[0] + 13 * k, yb - 6 * k, yb + 110 * k, vz + 26), r: tr, art: true },
+    { id: 'vslide2', pts: vLoop(xs[1] - 10 * k, xs[1] + 12 * k, yb - 6 * k, yb + 48 * k, vz + 30), r: tr, art: true },
+    { id: 'vslide3', pts: vLoop(xs[2] - 13 * k, xs[2] + 15 * k, yb - 6 * k, yb + 170 * k, vz + 22), r: tr, art: true },
+  ];
+  if (nTop === 4) art.push({ id: 'vslide4', pts: vLoop(xs[3] - 8 * k, xs[3] + 30 * k, yb - 6 * k, yb + 245 * k, vz + 16), r: tr * 1.12, art: true });
+  // Knuckles: the short bent ports joining neighbouring casings, low down.
+  for (let i = 0; i < nTop - 1; i++) {
+    const a = xs[i] + 12 * k;
+    const b = xs[i + 1] - 12 * k;
+    art.push({ id: `knuckle${i}`, pts: [v(a, P0.y + 30 * k, vz - 6), v((a + b) / 2, P0.y + 36 * k, vz - 6), v(b, P0.y + 30 * k, vz - 6)], r: 8 * k, art: true });
+  }
+  // Nickel stays (braces) between the branch, the cluster and the loops.
+  const stay = (id: string, a: Vec3, b: Vec3): Tube => ({ id, pts: [a, b], r: 3.2, tone: 'silver', art: true });
+  art.push(stay('stayA', v(bellX - 20, P0.y - 30 * k, vz - 10), v(xs[0] - 13 * k, P0.y - 30 * k, vz - 10)));
+  art.push(stay('stayB', v(bellX + 10, yb + 95 * k, vz + 10), v(xs[nTop - 1] - 8 * k, yb + 95 * k, vz + 14)));
+  art.push(stay('stayC', v(ms0, msLow - 40 * k, vz + 20), v(xf + 22 * k, msLow - 40 * k, vz + 18)));
+  // The right hand rests with its fingertips on the four buttons.
+  const handR = add(P0, v(35 * k + 5, -(60 + 46) * k, 50));
   const J: Joints = {
     ...BASE,
     elbowR: v(150, -870, 335),
@@ -274,7 +372,7 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
     J,
     chair: CHAIR,
     bell,
-    tubes: [bow, back, branch, neck, valveLoop, ...slides, leadpipe, { id: 'mouthpiece', pts: [mp0, mp1], r: 8, tone: 'silver' }],
+    tubes: [bow, back, branch, backArt, bowArt, branchArt, neck, valveLoop, ...slides, ...art, leadpipe, { id: 'mouthpiece', pts: [mp0, mp1], r: 8, tone: 'silver' }],
     valves,
     centre: v(255, (d.bottomY + d.topY) / 2 - 60, 175),
     bellHand: null,

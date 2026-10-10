@@ -11,7 +11,7 @@
  * (planGeom.ts), so a drag lands under the finger at 1× and 2× alike.
  *
  * Real objects, never stand-ins (house visual standard): a monitor seen from
- * above is a cabinet with a woofer; the listener is the line-art bald head
+ * above is its cabinet top, baffle forward, drivers as hidden lines; the listener is the line-art bald head
  * (head-icon spec) seen from above with its ears; doors swing, windows glaze,
  * panels have thickness. Level and pressure are coloured on the amplitude
  * standard (features/tools/levelColor.ts): quiet blue → loud red.
@@ -20,6 +20,7 @@ import { memo, useContext, useEffect, useMemo, useRef, useState, type ReactNode 
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { HeadIconSvg } from '../../../features/lab/headIconsSvg';
+import { DeskTopItems, MonitorPlan, SubPlan } from './studioPlanArt';
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelColor';
@@ -93,7 +94,6 @@ export const FLOOR_TINT: Record<string, string> = {
 };
 const HEAD_LINE = '#d9dbe0';
 const SPK_HI = '#5b5f6a';
-const SPK_LO = '#26282e';
 const AMBER = colors.amber;
 const CYAN = colors.cyanBright;
 const GREEN = colors.green;
@@ -546,23 +546,22 @@ export function treatmentCentre(t: Treatment, room: RoomDesign['room']): Pt | nu
 
 function SpeakerTop({ sp, T, fs, selected, label = 'above' }: { sp: Speaker; T: PlanTransform; fs: number; selected: boolean; label?: 'inside' | 'above' | 'none' }) {
   const q = T.toPx(sp);
-  // A nearfield monitor is ~20 cm wide and ~25 cm deep; never under MIN_GLYPH.
-  const wdt = Math.max(MIN_GLYPH, 0.2 * T.k);
-  const dep = wdt * 1.25;
+  // A nearfield 2-way is ≈ 210 mm wide × 280 mm deep (studioPlanArt); never
+  // under MIN_GLYPH, so a big room still shows it.
+  const wdt = Math.max(MIN_GLYPH, 0.21 * T.k);
+  const dep = wdt * (280 / 210);
   const toe = sp.toeDeg;
   const rot = sp.role === 'L' ? -toe : sp.role === 'R' ? toe : sp.role === 'LS' ? 180 + toe : sp.role === 'RS' ? 180 - toe : 0;
   const bw = wdt / 2;
-  const fw = wdt * 0.58;
+  const front = dep / 2;
   return (
     <G transform={`translate(${q.x},${q.y}) rotate(${rot})`}>
       {selected ? <Circle cx={0} cy={0} r={Math.max(bw, 11) + 6} fill="none" stroke={AMBER} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
-      {/* Cabinet seen from above: the baffle (wide, toward +y) and the rear */}
-      <Polygon points={`${-bw},${-dep * 0.55} ${bw},${-dep * 0.55} ${fw},${dep * 0.45} ${-fw},${dep * 0.45}`} fill={SPK_LO} stroke={selected ? AMBER : SPK_HI} strokeWidth={1.2} strokeLinejoin="round" />
-      {/* The woofer and tweeter, seen edge-on as the baffle line */}
-      <Line x1={-fw * 0.8} y1={dep * 0.45} x2={fw * 0.8} y2={dep * 0.45} stroke="#0e0f12" strokeWidth={2.2} />
-      <Circle cx={0} cy={dep * 0.3} r={Math.max(2, wdt * 0.16)} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
       {/* The coverage hint: a pale wedge out of the baffle */}
-      <Path d={`M0,${dep * 0.45} L${-wdt * 0.9},${dep * 0.45 + wdt * 1.1} A${wdt * 1.45},${wdt * 1.45} 0 0 0 ${wdt * 0.9},${dep * 0.45 + wdt * 1.1} Z`} fill="rgba(127,212,255,0.06)" stroke="rgba(127,212,255,0.25)" strokeWidth={0.8} />
+      <Path d={`M0,${front} L${-wdt * 0.9},${front + wdt * 1.1} A${wdt * 1.45},${wdt * 1.45} 0 0 0 ${wdt * 0.9},${front + wdt * 1.1} Z`} fill="rgba(127,212,255,0.06)" stroke="rgba(127,212,255,0.25)" strokeWidth={0.8} />
+      {/* The cabinet from above: lid, baffle toward the listener (+y), the
+          woofer behind the baffle as dashed hidden lines (studioPlanArt). */}
+      <MonitorPlan w={wdt} d={dep} stroke={selected ? AMBER : SPK_HI} />
       {label === 'above' ? (
         <SvgText x={0} y={-dep * 0.55 - 4} fill={selected ? AMBER : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform={`rotate(${-rot})`}>
           {sp.role}
@@ -578,17 +577,15 @@ function SpeakerTop({ sp, T, fs, selected, label = 'above' }: { sp: Speaker; T: 
 
 function SubTop({ sp, T, fs, selected }: { sp: Speaker; T: PlanTransform; fs: number; selected: boolean }) {
   const q = T.toPx(sp);
-  const sz = Math.max(MIN_GLYPH + 3, 0.4 * T.k);
+  // A 10" studio sub is ≈ 380 mm square in plan (studioPlanArt).
+  const sz = Math.max(MIN_GLYPH + 3, 0.38 * T.k);
   return (
     <G transform={`translate(${q.x},${q.y})`}>
       {[1.5, 2.1].map((m) => (
         <Circle key={m} cx={0} cy={0} r={(sz / 2) * m} fill="none" stroke={CYAN} strokeWidth={0.8} opacity={0.18} />
       ))}
       {selected ? <Circle cx={0} cy={0} r={sz / 2 + 6} fill="none" stroke={AMBER} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
-      <Rect x={-sz / 2} y={-sz / 2} width={sz} height={sz} rx={2} fill={SPK_LO} stroke={selected ? AMBER : SPK_HI} strokeWidth={1.2} />
-      <Circle cx={-sz * 0.22} cy={sz * 0.38} r={sz * 0.09} fill="#0e0f12" />
-      <Circle cx={sz * 0.22} cy={sz * 0.38} r={sz * 0.09} fill="#0e0f12" />
-      <Circle cx={0} cy={-sz * 0.05} r={sz * 0.26} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
+      <SubPlan s={sz} stroke={selected ? AMBER : SPK_HI} />
       <SvgText x={0} y={-sz / 2 - 4} fill={selected ? AMBER : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
         SUB
       </SvgText>
@@ -681,26 +678,70 @@ function FeatureGlyph({ f, T, fs, selected, draggable }: { f: RoomDesign['room']
   // The desk is modelled (its top bounces); everything else is drawn dotted
   // — "not modelled" — so the picture matches the words (cognitive review 24).
   const modelled = f.kind === 'desk';
+  // Drawn at their real plan sizes from T.k (px per metre): board 18 mm,
+  // sofa arm 0.16 m / back 0.2 m, 19" rack rails 482.6 mm apart (EIA-310).
+  const k = T.k;
+  const board = Math.max(1, 0.018 * k);
   return (
     <G>
-      <Rect x={q.x} y={q.y} width={W} height={D} rx={f.kind === 'sofa' ? 4 : 2} fill="#1d1e24" stroke={stroke} strokeWidth={1.1} strokeDasharray={modelled ? undefined : '3 3'} />
+      <Rect x={q.x} y={q.y} width={W} height={D} rx={f.kind === 'sofa' ? Math.min(6, 0.06 * k) : 1.5} fill="#1d1e24" stroke={stroke} strokeWidth={1.1} strokeDasharray={modelled ? undefined : '3 3'} />
       {f.kind === 'desk' ? (
-        <G>
-          {/* two displays on the desk */}
-          <Rect x={q.x + W * 0.28} y={q.y + D * 0.12} width={W * 0.18} height={D * 0.14} fill="#2b2d35" stroke={stroke} strokeWidth={0.7} />
-          <Rect x={q.x + W * 0.54} y={q.y + D * 0.12} width={W * 0.18} height={D * 0.14} fill="#2b2d35" stroke={stroke} strokeWidth={0.7} />
-        </G>
+        // displays + stand feet toward the front wall, keyboard and mouse at the listener's edge
+        <DeskTopItems x={q.x} y={q.y} w={W} d={D} k={k} stroke={stroke} />
       ) : f.kind === 'bookshelf' ? (
-        [0.33, 0.66].map((t) => <Line key={t} x1={q.x + W * t} y1={q.y} x2={q.x + W * t} y2={q.y + D} stroke={stroke} strokeWidth={0.7} />)
+        // the carcass top: side panels and fixed uprights every ≈ 0.8 m
+        <G>
+          <Rect x={q.x + board} y={q.y + board} width={Math.max(0, W - 2 * board)} height={Math.max(0, D - 2 * board)} fill="#23242b" />
+          {Array.from({ length: Math.max(0, Math.round(f.w / 0.8) - 1) }, (_, i) => {
+            const x = q.x + (W * (i + 1)) / Math.round(f.w / 0.8);
+            return <Rect key={i} x={x - board / 2} y={q.y} width={board} height={D} fill={stroke} opacity={0.7} />;
+          })}
+        </G>
       ) : f.kind === 'sofa' ? (
-        <Line x1={q.x} y1={q.y + D * 0.3} x2={q.x + W} y2={q.y + D * 0.3} stroke={stroke} strokeWidth={0.8} />
+        // back rest along the rear (+y) edge, an arm at each end, seat cushions
+        (() => {
+          const arm = Math.min(W * 0.18, 0.16 * k);
+          const back = Math.min(D * 0.3, 0.2 * k);
+          const seatW = W - 2 * arm;
+          const n = Math.max(1, Math.round(f.w / 0.7) - 0);
+          return (
+            <G>
+              <Rect x={q.x} y={q.y + D - back} width={W} height={back} rx={Math.min(4, back * 0.4)} fill="#2a2b33" stroke={stroke} strokeWidth={0.7} />
+              <Rect x={q.x} y={q.y} width={arm} height={D} rx={Math.min(4, arm * 0.4)} fill="#2a2b33" stroke={stroke} strokeWidth={0.7} />
+              <Rect x={q.x + W - arm} y={q.y} width={arm} height={D} rx={Math.min(4, arm * 0.4)} fill="#2a2b33" stroke={stroke} strokeWidth={0.7} />
+              {Array.from({ length: n }, (_, i) => (
+                <Rect key={i} x={q.x + arm + (seatW * i) / n + 0.8} y={q.y + 1} width={seatW / n - 1.6} height={D - back - 1.6} rx={Math.min(3, 0.04 * k)} fill="none" stroke={stroke} strokeWidth={0.6} opacity={0.8} />
+              ))}
+            </G>
+          );
+        })()
       ) : (
-        [0.25, 0.5, 0.75].map((t) => <Line key={t} x1={q.x} y1={q.y + D * t} x2={q.x + W} y2={q.y + D * t} stroke={stroke} strokeWidth={0.7} />)
+        // a 19" rack from above: top panel, vent slots, the front rails
+        (() => {
+          const rail = (0.4826 * k) / 2;
+          const cx = q.x + W / 2;
+          return (
+            <G>
+              {[0.3, 0.42, 0.54, 0.66].map((t) => (
+                <Line key={t} x1={q.x + W * 0.22} y1={q.y + D * t} x2={q.x + W * 0.78} y2={q.y + D * t} stroke={stroke} strokeWidth={Math.max(0.6, 0.01 * k)} strokeLinecap="round" />
+              ))}
+              <Rect x={cx - Math.min(rail, W / 2 - board)} y={q.y + D - board * 2.2} width={Math.min(rail * 2, W - 2 * board)} height={board * 1.4} fill="#3a3d45" />
+            </G>
+          );
+        })()
       )}
       {W > 30 ? (
-        <SvgText x={q.x + W / 2} y={q.y + D / 2 + fs * 0.35} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
-          {label}
-        </SvgText>
+        // The desk's name sits in its front-left corner, clear of the
+        // displays and the keyboard drawn on it.
+        f.kind === 'desk' ? (
+          <SvgText x={q.x + 4} y={q.y + D - 4} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="start">
+            {label}
+          </SvgText>
+        ) : (
+          <SvgText x={q.x + W / 2} y={q.y + D / 2 + fs * 0.35} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+            {label}
+          </SvgText>
+        )
       ) : null}
     </G>
   );

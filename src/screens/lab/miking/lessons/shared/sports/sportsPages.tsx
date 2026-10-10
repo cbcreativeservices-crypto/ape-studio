@@ -30,7 +30,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { Circle, Group, Path, Skia } from '@shopify/react-native-skia';
+import { Circle, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import type { Lesson, Prediction, ViewBox } from '../../../engine/model/types.ts';
@@ -201,24 +201,7 @@ export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.6, y: 0.02
           })()}
           color="#2f4a28"
         />
-        <Path
-          path={(() => {
-            const p = Skia.Path.Make();
-            p.moveTo(-60, -H + 40);
-            p.lineTo(-60, -260);
-            p.moveTo(-60, -260);
-            p.lineTo(-330, 0);
-            p.moveTo(-60, -260);
-            p.lineTo(200, 0);
-            p.moveTo(-60, -260);
-            p.lineTo(-60, 0);
-            return p;
-          })()}
-          style="stroke"
-          strokeWidth={Math.max(14, 2.4 * px)}
-          strokeCap="round"
-          color="#5b5f69"
-        />
+        <MicStandSide x={0} top={-H + 16} px={px} />
         {m.kind === 'shotgun' ? <ShotgunArt x={0} y={-H} angleDeg={(ang * 180) / Math.PI} /> : null}
         {m.kind === 'compact' || m.kind === 'xy' || isPairKind(m.kind) ? (
           <Group transform={[{ translateX: 0 }, { translateY: -H }, { rotate: ang + Math.PI / 2 }]}>
@@ -230,6 +213,53 @@ export function micCloseUp(m: SportMic, at: FieldInset['at'] = { x: 0.6, y: 0.02
     ),
     labels: [{ id: 'cu', text: `CAPSULE ${fmtM1(m.h)} UP`, short: fmtM1(m.h), u: 100, v: -H - 230, align: 'center', tone: 'muted' }],
   };
+}
+/*
+ * A tripod mic stand from the side (real dimensions, mm — a drawing default
+ * for the class): three Ø 16 legs hinged at a hub 260 mm up, feet on a 330 mm
+ * radius (one leg toward the viewer, on the axis; two at ±285 mm); a Ø 22
+ * lower tube to a clutch 44 mm tall, a Ø 16 upper tube to the 5/8-inch
+ * thread and the mount at the top. The ground is at v = 0 (side view, mm).
+ */
+function MicStandSide({ x, top, px }: { x: number; top: number; px: number }) {
+  const g = useMemo(() => {
+    const hub = -260;
+    const clutch = Math.max(top + 120, -Math.min(-top - 300, 950));
+    const legs = Skia.Path.Make();
+    for (const fx of [-285, 285, 0]) {
+      legs.moveTo(x, hub);
+      legs.lineTo(x + fx, -6);
+    }
+    const lower = Skia.Path.Make();
+    lower.moveTo(x, hub);
+    lower.lineTo(x, clutch);
+    const upper = Skia.Path.Make();
+    upper.moveTo(x, clutch);
+    upper.lineTo(x, top + 18);
+    const fittings = Skia.Path.Make();
+    fittings.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 22, hub - 20, 44, 40), 6, 6));
+    fittings.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 20, clutch - 22, 40, 44), 6, 6));
+    fittings.addRRect(Skia.RRectXY(Skia.XYWHRect(x + 18, clutch - 8, 16, 16), 4, 4));
+    fittings.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 12, top, 24, 26), 4, 4));
+    return { legs, lower, upper, fittings };
+  }, [x, top]);
+  const w = (mm: number) => Math.max(mm, 1.6 * px);
+  return (
+    <Group>
+      <Path path={g.legs} style="stroke" strokeWidth={w(16) + 4} strokeCap="round" color="#0b0c0f" />
+      <Path path={g.legs} style="stroke" strokeWidth={w(16)} strokeCap="round" color="#4a4e57" />
+      <Path path={g.lower} style="stroke" strokeWidth={w(22) + 4} color="#0b0c0f" />
+      <Path path={g.lower} style="stroke" strokeWidth={w(22)}>
+        <LinearGradient start={vec(x - 11, 0)} end={vec(x + 11, 0)} colors={['#6a6e78', '#2d3036', '#141519']} />
+      </Path>
+      <Path path={g.upper} style="stroke" strokeWidth={w(16) + 4} color="#0b0c0f" />
+      <Path path={g.upper} style="stroke" strokeWidth={w(16)}>
+        <LinearGradient start={vec(x - 8, 0)} end={vec(x + 8, 0)} colors={['#c3c8d1', '#7c818b', '#2f3238']} />
+      </Path>
+      <Path path={g.fittings} color="#202227" />
+      <Path path={g.fittings} style="stroke" strokeWidth={Math.max(1.4, 0.4 * px)} color="#060607" />
+    </Group>
+  );
 }
 function PlanAimSide({ from, ang, px }: { from: { u: number; v: number }; ang: number; px: number }) {
   const p = Skia.Path.Make();

@@ -89,21 +89,32 @@ export function rigPoints(spec: RigSpec): Vec3[] {
   return pts;
 }
 
-function tripod(p: SkPath, view: StageView, foot: Vec3, R = 380) {
+/**
+ * A TALL STAND's base (art pass 2026-10-10 — it was three bare lines): a
+ * heavy-duty tripod for a 3–4 m stand, its legs spread on about a 500 mm
+ * radius from a hub 380 mm up, each braced from a collar on the mast, with a
+ * foot on each leg. In elevation one leg comes toward the viewer (seen down
+ * the middle). `feet` collects the feet (filled). Drawing defaults of the class.
+ */
+function tripod(p: SkPath, view: StageView, foot: Vec3, R = 500, feet?: SkPath) {
   const o = uv(view, foot);
   if (view === 'plan') {
     for (let i = 0; i < 3; i++) {
       const a = Math.PI / 2 + (i * 2 * Math.PI) / 3;
       p.moveTo(o.u, o.v);
       p.lineTo(o.u + Math.cos(a) * R, o.v + Math.sin(a) * R);
+      feet?.addCircle(o.u + Math.cos(a) * R, o.v + Math.sin(a) * R, 30);
     }
-  } else {
-    p.moveTo(o.u, o.v - 320);
-    p.lineTo(o.u - R, o.v);
-    p.moveTo(o.u, o.v - 320);
-    p.lineTo(o.u + R * 0.85, o.v);
-    p.moveTo(o.u, o.v - 320);
-    p.lineTo(o.u + R * 0.15, o.v);
+    return;
+  }
+  const hub = o.v - 380;
+  for (const fx of [-R * 0.87, R * 0.87, R * 0.12]) {
+    p.moveTo(o.u, hub);
+    p.lineTo(o.u + fx, o.v - 12);
+    // the brace, from the collar 300 mm above the hub to the leg's middle
+    p.moveTo(o.u, hub - 300);
+    p.lineTo(o.u + fx * 0.5, hub + (o.v - 12 - hub) * 0.5);
+    feet?.addRRect(Skia.RRectXY(Skia.XYWHRect(o.u + fx - 34, o.v - 26, 68, 26), 10, 10));
   }
 }
 
@@ -145,18 +156,54 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
   const g = useMemo(() => {
     const h = rigHardware(spec, caps);
     const metal = make();
+    const mastLow = make();
     const legs = make();
     const bar = make();
-    // The main stand: tripod on the floor, mast up; a boom to the bar.
-    tripod(legs, view, h.foot);
+    const parts = make();
+    // The main stand: the tripod on the floor; the mast in three telescoping
+    // stages (Ø 35 / 28 / 22 mm) with a clutch at each joint; a boom through
+    // a boom clutch, its counterweight on the short rear end (art pass
+    // 2026-10-10 — the mast and boom were one bent line).
+    tripod(legs, view, h.foot, 500, parts);
     const f0 = uv(view, h.foot);
     const t0 = uv(view, h.mastTop);
-    metal.moveTo(f0.u, f0.v - (view === 'plan' ? 0 : 300));
-    metal.lineTo(t0.u, t0.v);
     const bc = uv(view, h.centreOfBar);
+    if (view === 'plan') {
+      metal.moveTo(f0.u, f0.v);
+      metal.lineTo(t0.u, t0.v);
+    } else {
+      const base = f0.v - 380;
+      const j1 = base + (t0.v - base) * 0.42;
+      const j2 = base + (t0.v - base) * 0.74;
+      mastLow.moveTo(f0.u, base);
+      mastLow.lineTo(f0.u, j1);
+      metal.moveTo(t0.u, j1);
+      metal.lineTo(t0.u, t0.v);
+      for (const [v, w] of [
+        [base - 30, 46],
+        [j1, 44],
+        [j2, 38],
+      ] as const) parts.addRRect(Skia.RRectXY(Skia.XYWHRect(f0.u - w, v - 34, w * 2, 68), 10, 10));
+    }
     if (h.boom) {
       metal.moveTo(t0.u, t0.v);
       metal.lineTo(bc.u, bc.v);
+      // The boom's rear end through the clutch, and its counterweight.
+      const L = Math.hypot(bc.u - t0.u, bc.v - t0.v) || 1;
+      const du = (bc.u - t0.u) / L;
+      const dv = (bc.v - t0.v) / L;
+      const rear = { u: t0.u - du * 520, v: t0.v - dv * 520 };
+      metal.moveTo(t0.u, t0.v);
+      metal.lineTo(rear.u, rear.v);
+      const w0 = { u: t0.u - du * 360, v: t0.v - dv * 360 };
+      const w = make();
+      w.moveTo(w0.u - dv * 45, w0.v + du * 45);
+      w.lineTo(rear.u - dv * 45, rear.v + du * 45);
+      w.lineTo(rear.u + dv * 45, rear.v - du * 45);
+      w.lineTo(w0.u + dv * 45, w0.v - du * 45);
+      w.close();
+      parts.addPath(w);
+      parts.addCircle(t0.u, t0.v, 48); // the boom clutch
     }
     // group 2: a large-diaphragm mount — a short cradle under each body (two
     // back to back share one), no bar and no clips.
@@ -191,10 +238,10 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
     // Outriggers: each on its own tall stand, a short boom to the mic.
     for (const q of h.out) {
       const foot = v3(q.p.x, 0, q.p.z);
-      tripod(legs, view, foot);
+      tripod(legs, view, foot, 420, parts);
       const a = uv(view, foot);
       const top = uv(view, v3(q.p.x, q.p.y - 120, q.p.z));
-      metal.moveTo(a.u, a.v - (view === 'plan' ? 0 : 300));
+      metal.moveTo(a.u, a.v - (view === 'plan' ? 0 : 380));
       metal.lineTo(top.u, top.v);
       const tail = uv(view, add(q.p, mul(q.dir, -MIC.len)));
       metal.moveTo(top.u, top.v);
@@ -223,7 +270,7 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
       }
       wedgeP.close();
     }
-    return { metal, legs, bar, lobesP, aimP, wedgeP };
+    return { metal, mastLow, legs, bar, parts, lobesP, aimP, wedgeP };
   }, [spec, caps, view, aimLen]);
   return (
     <Group opacity={lit ? 1 : 0.55}>
@@ -256,6 +303,12 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
       <Path path={g.metal} style="stroke" strokeWidth={Math.max(16, 2.2 * px)} strokeCap="round">
         <LinearGradient start={vec(-1000, -4000)} end={vec(1000, 0)} colors={['#c8ccd4', '#7d828d', '#3a3d45']} />
       </Path>
+      <Path path={g.mastLow} style="stroke" strokeWidth={Math.max(34, 4.2 * px)} strokeCap="butt" color="#0b0c0f" />
+      <Path path={g.mastLow} style="stroke" strokeWidth={Math.max(24, 3 * px)} strokeCap="butt">
+        <LinearGradient start={vec(-1000, -4000)} end={vec(1000, 0)} colors={['#c8ccd4', '#7d828d', '#3a3d45']} />
+      </Path>
+      <Path path={g.parts} color="#16171b" />
+      <Path path={g.parts} style="stroke" strokeWidth={Math.max(4, 0.8 * px)} color="#5b5f69" />
       <Path path={g.bar} style="stroke" strokeWidth={Math.max(16, 2.4 * px)} strokeCap="round" color="#16171b" />
       <Path path={g.bar} style="stroke" strokeWidth={Math.max(9, 1.4 * px)} strokeCap="round" color="#9aa0ab" />
       {caps.map((q, i) => {

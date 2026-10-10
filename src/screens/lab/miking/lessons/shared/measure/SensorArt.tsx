@@ -20,7 +20,7 @@
  * size; nothing moves by itself.
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { make, rectP } from './MeasureArt';
 
 const EDGE = '#07080a';
@@ -89,17 +89,19 @@ export function IntensityProbe({ cx, cy, spacer, deg, scale = 1 }: { cx: number;
     rectP(grids, -half - 3, -r * 0.9, -half, r * 0.9, 1);
     rectP(grids, half, -r * 0.9, half + 3, r * 0.9, 1);
     const spacerBody = rectP(make(), -half, -r * 0.45, half, r * 0.45, 1.5);
-    // The preamps run back to a Y-shaped holder and the handle (+v side).
+    // Each capsule on its 1/2 in preamplifier (Ø 12.7, drawn 55 mm of it), the
+    // preamps clamped in a fork whose arms meet the handle (+v side). (Round 2:
+    // the fork's bar was a 20 mm slab, heavier than the probe it holds.)
+    const preA = rectP(make(), -half - capLen - 55, -r, -half - capLen, r, 2);
+    const preB = rectP(make(), half + capLen, -r, half + capLen + 55, r, 2);
     const arms = make();
-    arms.moveTo(-half - capLen, 0);
-    arms.lineTo(-half - capLen - 22, 0);
-    arms.lineTo(-half - capLen - 22, 46);
-    arms.moveTo(half + capLen, 0);
-    arms.lineTo(half + capLen + 22, 0);
-    arms.lineTo(half + capLen + 22, 46);
-    const handle = rectP(make(), -half - capLen - 32, 46, half + capLen + 32, 66, 8);
-    const grip = rectP(make(), -14, 66, 14, 170, 9);
-    return { capA, capB, grids, spacerBody, arms, handle, grip, r };
+    arms.moveTo(-half - capLen - 40, r);
+    arms.lineTo(-half - capLen - 40, 52);
+    arms.moveTo(half + capLen + 40, r);
+    arms.lineTo(half + capLen + 40, 52);
+    const handle = rectP(make(), -half - capLen - 48, 50, half + capLen + 48, 60, 5);
+    const grip = rectP(make(), -14, 60, 14, 190, 10);
+    return { capA, capB, grids, spacerBody, arms, handle, grip, r, preA, preB };
   }, [spacer]);
   return (
     <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: (deg * Math.PI) / 180 }, { scale }]}>
@@ -108,12 +110,18 @@ export function IntensityProbe({ cx, cy, spacer, deg, scale = 1 }: { cx: number;
           <BlurMask blur={5} style="normal" />
         </Path>
       </Group>
-      <Path path={p.arms} style="stroke" strokeWidth={5} strokeCap="round" color="#3b3e45" />
+      <Path path={p.arms} style="stroke" strokeWidth={4} strokeCap="round" color="#3b3e45" />
       <Path path={p.grip}>
         <LinearGradient start={vec(-14, 0)} end={vec(14, 0)} colors={['#4a4e57', '#24262b']} />
       </Path>
       <Path path={p.handle}>
         <LinearGradient start={vec(0, 46)} end={vec(0, 66)} colors={['#8e939c', '#3e4148']} />
+      </Path>
+      <Path path={p.preA}>
+        <LinearGradient start={vec(0, -p.r)} end={vec(0, p.r)} colors={['#b9bec6', '#6a6f79', '#2c2f35']} />
+      </Path>
+      <Path path={p.preB}>
+        <LinearGradient start={vec(0, -p.r)} end={vec(0, p.r)} colors={['#b9bec6', '#6a6f79', '#2c2f35']} />
       </Path>
       <Path path={p.capA}>
         <LinearGradient start={vec(0, -p.r)} end={vec(0, p.r)} colors={['#eef0f4', '#9aa0aa', '#3c4048']} />
@@ -165,50 +173,82 @@ export function Hydrophone({ x, y, len, cable }: { x: number; y: number; len: nu
   );
 }
 
-/* ── the acoustic camera: capsules on a ring frame round a lens, face-on ── */
+/* ── the acoustic camera: a planar array round a lens, seen three-quarter on ── */
 
-/** A planar imaging array face-on, centred at (cx, cy), `r` mm to its outer capsules, on a short mount below. */
+/**
+ * A planar imaging array (art pass round 2, 2026-10-10 — it was drawn face-on
+ * beside a source it should have been facing, on a T-shaped foot). Now seen
+ * three-quarter on, its face turned toward +u (the source on the right), so
+ * the spiral layout still reads: the ring frame (Ø ≈ 2.16 r, 30 mm deep, its
+ * back edge showing), six spokes, 30 capsules on spiral arms, the camera lens
+ * at the hub standing proud toward the source, a yoke to a tripod. Drawing
+ * defaults of the class (arrays of ~0.5–1 m with tens of capsules).
+ */
 export function AcousticCamera({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+  const k = 0.42; // the face's foreshortening across (turned about 65° toward the source)
   const p = useMemo(() => {
-    const frame = make();
-    frame.addCircle(cx, cy, r * 1.08);
-    const inner = make();
-    inner.addCircle(cx, cy, r * 0.82);
+    const R = r * 1.08;
+    const ell = (x: number, y: number, rx: number, ry: number) => {
+      const q = make();
+      q.addOval(Skia.XYWHRect(x - rx, y - ry, rx * 2, ry * 2));
+      return q;
+    };
+    const back = ell(cx - 30, cy, R * k, R);
+    const frame = ell(cx, cy, R * k, R);
+    const inner = ell(cx, cy, r * 0.82 * k, r * 0.82);
     const spokes = make();
     for (let i = 0; i < 6; i++) {
       const a = (i * Math.PI) / 3;
-      spokes.moveTo(cx + Math.cos(a) * r * 0.2, cy + Math.sin(a) * r * 0.2);
-      spokes.lineTo(cx + Math.cos(a) * r * 1.05, cy + Math.sin(a) * r * 1.05);
+      spokes.moveTo(cx + Math.cos(a) * r * 0.2 * k, cy + Math.sin(a) * r * 0.2);
+      spokes.lineTo(cx + Math.cos(a) * R * 0.97 * k, cy + Math.sin(a) * R * 0.97);
     }
     const caps: { x: number; y: number }[] = [];
-    // Capsules on spiral arms (an irregular layout, as practical arrays use).
     for (let arm = 0; arm < 6; arm++)
       for (let j = 1; j <= 5; j++) {
         const t = j / 5;
         const a = (arm * Math.PI) / 3 + t * 1.1;
-        caps.push({ x: cx + Math.cos(a) * r * (0.22 + 0.8 * t), y: cy + Math.sin(a) * r * (0.22 + 0.8 * t) });
+        caps.push({ x: cx + Math.cos(a) * r * (0.22 + 0.8 * t) * k, y: cy + Math.sin(a) * r * (0.22 + 0.8 * t) });
       }
-    const mount = rectP(make(), cx - r * 0.08, cy + r * 1.06, cx + r * 0.08, cy + r * 1.7, r * 0.03);
-    const foot = rectP(make(), cx - r * 0.45, cy + r * 1.66, cx + r * 0.45, cy + r * 1.76, r * 0.05);
-    return { frame, inner, spokes, caps, mount, foot };
+    // The lens barrel, proud of the hub toward the source.
+    const barrel = rectP(make(), cx - 4, cy - r * 0.16, cx + r * 0.22, cy + r * 0.16, r * 0.04);
+    const glass = ell(cx + r * 0.22, cy, r * 0.16 * k, r * 0.16);
+    // The yoke behind the hub, the post down to a tripod.
+    const yoke = rectP(make(), cx - 30 - r * 0.25, cy - r * 0.05, cx - 30, cy + r * 0.05, r * 0.03);
+    const foot = cy + r * 1.76;
+    const apex = cy + r * 1.15;
+    const post = rectP(make(), cx - 30 - r * 0.25 - r * 0.045, cy, cx - 30 - r * 0.25 + r * 0.045, apex, r * 0.02);
+    const legs = make();
+    const px = cx - 30 - r * 0.25;
+    for (const fx of [-r * 0.62, r * 0.62, r * 0.1]) {
+      legs.moveTo(px, apex);
+      legs.lineTo(px + fx, foot);
+    }
+    return { back, frame, inner, spokes, caps, barrel, glass, yoke, post, legs, R };
   }, [cx, cy, r]);
   return (
     <Group>
-      <Path path={p.mount}>
-        <LinearGradient start={vec(cx - r * 0.1, 0)} end={vec(cx + r * 0.1, 0)} colors={['#9da2ac', '#3b3e45']} />
+      <Path path={p.legs} style="stroke" strokeWidth={r * 0.05} strokeCap="round" color="#0b0c0f" />
+      <Path path={p.legs} style="stroke" strokeWidth={r * 0.032} strokeCap="round" color="#6a6f79" />
+      <Path path={p.post}>
+        <LinearGradient start={vec(cx - r * 0.4, 0)} end={vec(cx - r * 0.2, 0)} colors={['#9da2ac', '#3b3e45']} />
       </Path>
-      <Path path={p.foot} color="#2a2c31" />
-      <Path path={p.frame} style="stroke" strokeWidth={r * 0.06} color="#3a3d44" />
+      <Path path={p.yoke} color="#2a2c31" />
+      {/* the frame's back edge (its depth), then its face */}
+      <Path path={p.back} style="stroke" strokeWidth={r * 0.06} color="#202227" />
+      <Path path={p.frame} color="#1d1f24" opacity={0.55} />
+      <Path path={p.frame} style="stroke" strokeWidth={r * 0.06} color="#4a4e57" />
       <Path path={p.inner} style="stroke" strokeWidth={r * 0.03} color="#2b2e34" />
       <Path path={p.spokes} style="stroke" strokeWidth={r * 0.035} color="#4a4e57" />
       {p.caps.map((c, i) => (
-        <Circle key={i} cx={c.x} cy={c.y} r={r * 0.045} color="#c7ccd4" />
+        <Circle key={i} cx={c.x} cy={c.y} r={r * 0.04} color="#c7ccd4" />
       ))}
-      <Circle cx={cx} cy={cy} r={r * 0.19}>
-        <RadialGradient c={vec(cx - r * 0.06, cy - r * 0.06)} r={r * 0.2} colors={['#4d6a8a', '#16212c', '#05070a']} />
-      </Circle>
-      <Circle cx={cx} cy={cy} r={r * 0.19} style="stroke" strokeWidth={r * 0.025} color="#8a9099" />
-      <Circle cx={cx - r * 0.06} cy={cy - r * 0.07} r={r * 0.04} color="#ffffff" opacity={0.35} />
+      <Path path={p.barrel}>
+        <LinearGradient start={vec(0, cy - r * 0.16)} end={vec(0, cy + r * 0.16)} colors={['#6a6f79', '#24262b', '#0c0d10']} />
+      </Path>
+      <Path path={p.glass}>
+        <RadialGradient c={vec(cx + r * 0.2, cy - r * 0.05)} r={r * 0.18} colors={['#4d6a8a', '#16212c', '#05070a']} />
+      </Path>
+      <Path path={p.glass} style="stroke" strokeWidth={r * 0.02} color="#8a9099" />
     </Group>
   );
 }
@@ -233,7 +273,23 @@ export function UltrasonicDetector({ x, y, len }: { x: number; y: number; len: n
     const screen = rectP(make(), x + len * 0.35, y - h * 0.32, x + len * 0.75, y + h * 0.02, h * 0.06);
     const keys = make();
     for (const k of [0.42, 0.55, 0.68]) keys.addCircle(x + len * k, y + h * 0.24, h * 0.07);
-    return { body, nose, mesh, screen, keys, h };
+    // Round 2 (2026-10-10 — it was a brick with a cone): the pistol grip under
+    // the body, raked back, its trigger, and the headphone socket at the tail
+    // (the operator listens to the heterodyned signal). Drawing defaults.
+    const grip = make();
+    grip.moveTo(x + len * 0.62, y + h * 0.48);
+    grip.lineTo(x + len * 0.8, y + h * 0.48);
+    grip.lineTo(x + len * 0.88, y + h * 1.32);
+    grip.quadTo(x + len * 0.83, y + h * 1.44, x + len * 0.74, y + h * 1.38);
+    grip.close();
+    const trigger = make();
+    trigger.moveTo(x + len * 0.6, y + h * 0.5);
+    trigger.quadTo(x + len * 0.56, y + h * 0.8, x + len * 0.62, y + h * 0.95);
+    trigger.lineTo(x + len * 0.64, y + h * 0.9);
+    trigger.quadTo(x + len * 0.6, y + h * 0.75, x + len * 0.64, y + h * 0.5);
+    trigger.close();
+    const jack = rectP(make(), x + len, y - h * 0.12, x + len + len * 0.04, y + h * 0.12, h * 0.04);
+    return { body, nose, mesh, screen, keys, h, grip, trigger, jack };
   }, [x, y, len]);
   return (
     <Group>
@@ -242,6 +298,12 @@ export function UltrasonicDetector({ x, y, len }: { x: number; y: number; len: n
           <BlurMask blur={6} style="normal" />
         </Path>
       </Group>
+      <Path path={p.grip}>
+        <LinearGradient start={vec(x + len * 0.62, 0)} end={vec(x + len * 0.9, 0)} colors={['#3e434c', '#1d1f24']} />
+      </Path>
+      <Path path={p.grip} style="stroke" strokeWidth={1.2} color={EDGE} />
+      <Path path={p.trigger} color="#2a2c31" />
+      <Path path={p.jack} color="#8a8f99" />
       <Path path={p.body}>
         <LinearGradient start={vec(0, y - p.h / 2)} end={vec(0, y + p.h / 2)} colors={['#4f5560', '#2c3037', '#16181c']} />
       </Path>

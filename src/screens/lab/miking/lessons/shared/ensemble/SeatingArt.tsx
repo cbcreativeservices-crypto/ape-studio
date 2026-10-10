@@ -22,15 +22,15 @@
  * outline marks it too).
  */
 import { useMemo, type ReactElement } from 'react';
-import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { FigureHead, FigureMass, headAbove, headFront, headProfile, limb } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose.ts';
-import { outline, BOWED, type BowedSpec } from '../bowed/bowedSpec.ts';
+import { outline, BOWED, fbHalf, fingerboardZ, halfWidth, stationsOf, stringYs, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
 import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
-import { DrumPlan, CymbalPlan } from '../drums/DrumArt';
-import { CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
+import { DrumPlan, CymbalPlan, CymbalSide, DrumExterior, SnareStandSide } from '../drums/DrumArt';
+import { CONCERT_BD_36x16, CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { DEG, planDir, uv, type StageView } from './frameS.ts';
-import { DIMS, headTop, isVoice, sectionBox, type Gear, type Seat, type Seating } from './seating.ts';
+import { DIMS, headTop, isVoice, sectionBox, BASS_DRUM_STATION, TIMPANI_SET, type Gear, type Seat, type Seating } from './seating.ts';
 // Group 4: the band players and the stage gear (drawn into these batches) —
 // the drum kit (one kind for groups 4 and 5) is Lab 1's shared kit, whole.
 import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPlan, bandPlanInstrument, bandPlanWhole, gearBehind, type BandTools } from './BandArt';
@@ -47,20 +47,17 @@ const AMBER = '#ffc64d';
 const IN = 25.4;
 /** The section view shows the players within this distance of the centre line (mm). */
 export const SECTION_SLICE = 1700;
-/** The timpani set round its player: head diameters (in, the concert lessons'
- *  sizes) low to high, left to right, on an arc 720 mm out (drawing default). */
-const TIMP = [
-  { d: 32 * IN, a: -58 },
-  { d: 29 * IN, a: -19 },
-  { d: 26 * IN, a: 19 },
-  { d: 23 * IN, a: 55 },
-] as const;
+/** The timpani set round its player (seating.ts TIMPANI_SET; pure, so the labels share it). */
+const TIMP = TIMPANI_SET;
 /** A grand piano's drawn size (mm): the piano family's ≈ 2.1 m grand, 1.5 m wide. */
-const GRAND = { L: 2100, W: 1500 } as const;
+export const GRAND = { L: 2100, W: 1500 } as const;
 
 /* ── materials (upper-left light; the house palette) ── */
 type Mat = { ramp: string[]; rim: string; core: string; edge: string; rimW: number; coreW: number };
 const MATS = {
+  /** A bowed instrument's ribs seen from above at a grazing angle (art pass 2026-10-10): the varnish, in shade.
+   *  FIRST, so the fingerboard and the pegbox paint over it. */
+  rib: { ramp: ['#8a4a1e', '#5a2a0e', '#381806', '#1c0b03'], rim: '#c98a52', core: '#0e0501', edge: '#140702', rimW: 3, coreW: 10 },
   varnish: { ramp: ['#e8a860', '#b86a2a', '#7a3a12', '#3d1a06'], rim: '#ffd9a0', core: '#1a0a02', edge: '#2a1206', rimW: 6, coreW: 22 },
   ebony: { ramp: ['#3a332e', '#1d1815', '#0c0a08', '#050403'], rim: '#8a7d70', core: '#000', edge: '#000', rimW: 3, coreW: 8 },
   brass: { ramp: ['#fff1b8', '#e8c25c', '#a87a1e', '#5e3e0a'], rim: '#fffbe0', core: '#2e1e04', edge: '#3a2806', rimW: 5, coreW: 18 },
@@ -158,6 +155,11 @@ function addFig(b: Batch, tone: FigTone, q: SkPath): void {
 /* ── geometry helpers (build time) ── */
 type P2 = { u: number; v: number };
 const P = (u: number, v: number): P2 => ({ u, v });
+/** A path-op result as a WINDING path (ops may return even-odd; batch paths fill by winding). */
+function asWinding(p: SkPath | null): SkPath {
+  if (!p) return make();
+  return p.makeAsWinding() ?? p;
+}
 function capsule(a: P2, b: P2, r: number): SkPath {
   return limb([pt(a.u, a.v), pt(b.u, b.v)], [r, r]);
 }
@@ -228,6 +230,446 @@ function placer(s: Seat) {
 function toPlan(s: Seat, x: number, y: number): P2 {
   const F = (s.face * Math.PI) / 180;
   return P(s.p.x + x * Math.cos(F) - y * Math.sin(F), s.p.z + x * Math.sin(F) + y * Math.cos(F));
+}
+
+/**
+ * A CELLO or DOUBLE BASS from above, as it is held: upright, its axis leaning
+ * back toward the player by `tilt` from vertical (art pass 2026-10-10 — the
+ * old drawing was the body outline alone, squashed, and read as a blob).
+ *
+ * Real sizes (bowedSpec, frame B): cello body 755 × 439 mm, ribs 120, string
+ * 690, bridge 90 high × 90 wide, endpin 300; double bass body 1162 × 700 mm,
+ * ribs 220, string 1115, bridge 160 × 160, endpin 250. Tilt from vertical: a
+ * seated cello about 25°, a standing bass about 20° (drawing default).
+ *
+ * The projection is the real one: a point at frame-B (x, y, z) lands at
+ *   tail + dir·(x − tailX)·sin(tilt) + side·y − dir·z·cos(tilt)
+ * (x along the axis climbs toward the player; z out of the top leans away),
+ * so from above you see the top foreshortened, the RIBS of the upper bouts
+ * as a band on the player's side (the back sits rib-depth behind the top),
+ * and the fingerboard, the bridge and the strings standing off the top.
+ * The highest string is on the player's right. Returns the key points the
+ * arms reach for, in the seat's local frame (x right, y back).
+ */
+function uprightPlan(b: Batch, put: (into: SkPath, local: SkPath) => void, spec: BowedSpec, tail: P2, lean: P2, tiltDeg: number) {
+  const st = stationsOf(spec);
+  const L = Math.hypot(lean.u, lean.v) || 1;
+  const dir = P(lean.u / L, lean.v / L);
+  const side = P(dir.v, -dir.u); // +y (the highest string) → the player's right
+  const sn = Math.sin(tiltDeg * DEG);
+  const cs = Math.cos(tiltDeg * DEG);
+  const at = (x: number, y: number, z = 0): P2 => {
+    const a = (x - st.tailX) * sn - z * cs;
+    return P(tail.u + dir.u * a + side.u * y, tail.v + dir.v * a + side.v * y);
+  };
+  const shape = (pts: readonly (readonly [number, number])[], z = 0, push = 0) =>
+    poly(pts.map(([x, y]) => {
+      const q = at(x, y, z);
+      return P(q.u + dir.u * push, q.v + dir.v * push);
+    }));
+  const rim = outline(spec);
+  const top = shape(rim);
+  // The ribs: the body swept from the top back to the back plate (rib depth
+  // toward the player, which is depth / sin(tilt) along frame-B x), minus the
+  // top — only the shoulders' ribs show. The sweep's half-width is the running
+  // maximum of the body's half-width over that shift (no stacked outlines).
+  const D = (spec.rib.mm * cs) / Math.max(0.05, sn);
+  const M = 240;
+  const x0 = st.tailX;
+  const x1 = st.neckX + D;
+  const step = (x1 - x0) / M;
+  const hw = Array.from({ length: M + 1 }, (_, j) => halfWidth(spec, x0 + j * step));
+  const win = Math.ceil(D / step);
+  const sw = hw.map((_, j) => {
+    let m = 0;
+    for (let k = Math.max(0, j - win); k <= j; k++) m = Math.max(m, hw[k]);
+    return m;
+  });
+  const sweptPts: [number, number][] = [...sw.map((w, j) => [x0 + j * step, -w] as [number, number]), ...[...sw].reverse().map((w, j) => [x0 + (M - j) * step, w] as [number, number])];
+  const ribs = asWinding(Skia.Path.MakeFromOp(shape(sweptPts), top, PathOp.Difference));
+  put(b.mat.rib, ribs);
+  put(b.mat.varnish, top);
+  // The f-holes: a slit between two round eyes, each side of the bridge.
+  const [f0, f1] = spec.fholeX;
+  for (const sy of [-1, 1]) {
+    const y = sy * spec.fholeY.mm;
+    const slit = spec.lower.mm * 0.012;
+    put(b.holes, poly([at(f0, y - slit), at(f1, y - slit * 0.6), at(f1, y + slit * 0.6), at(f0, y + slit)]));
+    put(b.holes, ellipse(at(f0, y + sy * slit), slit * 1.6, slit * 1.6));
+    put(b.holes, ellipse(at(f1, y - sy * slit), slit * 1.4, slit * 1.4));
+  }
+  // The tailpiece (ebony), narrow at the saddle, wide under the strings.
+  const [t0, t1] = spec.tailpiece;
+  const tz0 = stringZ(spec, t0) * 0.6;
+  const tz1 = stringZ(spec, t1) - spec.bridgeH.mm * 0.08;
+  const tw0 = spec.bridgeW.mm * 0.16;
+  const tw1 = spec.bridgeW.mm * 0.34;
+  put(b.mat.ebony, poly([at(t0, -tw0, tz0), at(t1, -tw1, tz1), at(t1 + 12, 0, tz1), at(t1, tw1, tz1), at(t0, tw0, tz0)]));
+  // The bridge: its feet on the top, its crown under the strings (pale maple).
+  const bw = spec.bridgeW.mm / 2;
+  const bh = spec.bridgeH.mm;
+  // Near-vertical, it is seen almost face-on from above: the feet, the waist,
+  // the shoulders and the arched crown (a drawing of the usual outline).
+  const bridge: [number, number][] = [
+    [-0.92, 0], [-0.62, 0], [-0.5, 0.2], [-0.26, 0.24], [0, 0.26], [0.26, 0.24], [0.5, 0.2], [0.62, 0], [0.92, 0],
+    [0.88, 0.12], [0.56, 0.42], [0.74, 0.7], [0.66, 0.86], [0.4, 0.96], [0, 1], [-0.4, 0.96], [-0.66, 0.86], [-0.74, 0.7], [-0.56, 0.42], [-0.88, 0.12],
+  ];
+  put(b.mat.hide, poly(bridge.map(([y, z]) => at(0, y * bw, z * bh))));
+  put(b.holes, ellipse(at(0, 0, bh * 0.6), bw * 0.1, bh * 0.08 * cs));
+  // The fingerboard (ebony), from its free end to the nut, under the strings.
+  const fb: P2[] = [];
+  const n = 10;
+  for (let i = 0; i <= n; i++) {
+    const x = st.fbEndX + ((st.nutX - st.fbEndX) * i) / n;
+    fb.push(at(x, -fbHalf(spec, x), fingerboardZ(spec, x)));
+  }
+  for (let i = n; i >= 0; i--) {
+    const x = st.fbEndX + ((st.nutX - st.fbEndX) * i) / n;
+    fb.push(at(x, fbHalf(spec, x), fingerboardZ(spec, x)));
+  }
+  put(b.mat.ebony, poly(fb));
+  // The pegbox and the scroll (varnish), past the nut; the pegs (cello:
+  // ebony, two each side) or the bass's machine heads (a brass plate each
+  // side, two keys each).
+  const zn = fingerboardZ(spec, st.nutX);
+  const scrollD = spec.upper.mm * 0.19;
+  const pb0 = st.nutX + 10;
+  const pb1 = st.scrollX - scrollD * 0.8;
+  const pbw = spec.fbNut.mm * 0.62;
+  put(b.mat.varnish, poly([at(pb0, -pbw, zn), at(pb1, -pbw * 0.9, zn), at(pb1, pbw * 0.9, zn), at(pb0, pbw, zn)]));
+  put(b.holes, poly([at(pb0 + 20, -pbw * 0.45, zn), at(pb1 - 10, -pbw * 0.4, zn), at(pb1 - 10, pbw * 0.4, zn), at(pb0 + 20, pbw * 0.45, zn)]));
+  put(b.mat.varnish, ellipse(at(st.scrollX - scrollD * 0.5, 0, zn), scrollD * 0.42, scrollD * 0.5));
+  put(b.holes, ellipse(at(st.scrollX - scrollD * 0.5, 0, zn), scrollD * 0.12, scrollD * 0.14));
+  const bass = spec.id === 'bass';
+  for (const [i, sy] of [[0, -1], [1, 1], [2, -1], [3, 1]] as const) {
+    const x = pb0 + (pb1 - pb0) * (bass ? [0.3, 0.3, 0.72, 0.72][i] : [0.22, 0.42, 0.62, 0.82][i]);
+    const out = bass ? spec.fbNut.mm * 1.7 : spec.fbNut.mm * 1.9;
+    if (bass) put(b.mat.brass, poly([at(pb0 + (pb1 - pb0) * 0.12, sy * pbw, zn), at(pb0 + (pb1 - pb0) * 0.9, sy * pbw, zn), at(pb0 + (pb1 - pb0) * 0.9, sy * (pbw + 10), zn), at(pb0 + (pb1 - pb0) * 0.12, sy * (pbw + 10), zn)]));
+    put(bass ? b.mat.silver : b.mat.ebony, capsule(at(x, sy * pbw, zn), at(x, sy * (pbw + out), zn), bass ? 7 : 9));
+    put(bass ? b.mat.silver : b.mat.ebony, ellipse(at(x, sy * (pbw + out), zn), bass ? 16 : 14, bass ? 22 : 18));
+  }
+  // The four strings: the tailpiece, over the bridge, to the nut.
+  for (let i = 0; i < 4; i++) {
+    const yt = stringYs(spec, t1)[i];
+    const yb = stringYs(spec, 0)[i];
+    const yn = stringYs(spec, st.nutX)[i];
+    const s0 = at(t1, yt * 0.9, tz1);
+    const s1 = at(0, yb, bh);
+    const s2 = at(st.nutX, yn, stringZ(spec, st.nutX));
+    const p = make();
+    p.moveTo(s0.u, s0.v);
+    p.lineTo(s1.u, s1.v);
+    p.lineTo(s2.u, s2.v);
+    put(b.hair, p);
+  }
+  // The endpin: the axis continued below the tail block to the floor.
+  const pin = spec.endpin?.mm ?? 0;
+  const e0 = at(st.tailX, 0, -spec.rib.mm / 2);
+  const e1 = P(e0.u - dir.u * pin * sn, e0.v - dir.v * pin * sn);
+  put(b.mat.ebony, ellipse(e0, 20, 20));
+  put(b.mat.steel, capsule(e0, e1, bass ? 8 : 6));
+  return {
+    /** The left hand on the fingerboard (about 260 mm below the nut). */
+    lh: at(st.nutX - 260, -fbHalf(spec, st.nutX - 260) * 0.4, fingerboardZ(spec, st.nutX - 260)),
+    /** The bow's contact point (between the bridge and the fingerboard's end). */
+    contact: at(st.contactX, 0, stringZ(spec, st.contactX)),
+    /** The plucking point (over the fingerboard's free end). */
+    pluck: at(st.fbEndX + 40, 0, stringZ(spec, st.fbEndX + 40)),
+  };
+}
+
+/** The grand's case outline from above as points (x across, + = treble;
+ *  a = ahead of the keyboard's front edge), mm: the front, the treble side's
+ *  straight run, the knee, the long concave bentside, the convex tail round
+ *  to the straight spine. One outline for the plan and the elevations. */
+export const GRAND_OUTLINE: readonly (readonly [number, number])[] = (() => {
+  const W = GRAND.W;
+  const L = GRAND.L;
+  const pts: [number, number][] = [[-W / 2, 0], [W / 2, 0], [W / 2, L * 0.25]];
+  const quad = (p0: readonly number[], c: readonly number[], p1: readonly number[]) => {
+    for (let i = 1; i <= 8; i++) {
+      const t = i / 8;
+      const m = 1 - t;
+      pts.push([m * m * p0[0] + 2 * m * t * c[0] + t * t * p1[0], m * m * p0[1] + 2 * m * t * c[1] + t * t * p1[1]]);
+    }
+  };
+  const cubic = (p0: readonly number[], c1: readonly number[], c2: readonly number[], p1: readonly number[]) => {
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      const m = 1 - t;
+      const w = [m * m * m, 3 * m * m * t, 3 * m * t * t, t * t * t];
+      pts.push([w[0] * p0[0] + w[1] * c1[0] + w[2] * c2[0] + w[3] * p1[0], w[0] * p0[1] + w[1] * c1[1] + w[2] * c2[1] + w[3] * p1[1]]);
+    }
+  };
+  quad([W / 2, L * 0.25], [W / 2, L * 0.305], [W * 0.44, L * 0.362]);
+  cubic([W * 0.44, L * 0.362], [W * 0.28, L * 0.515], [-W * 0.06, L * 0.72], [-W * 0.12, L * 0.88]);
+  cubic([-W * 0.12, L * 0.88], [-W * 0.163, L * 1.0], [-W * 0.5, L * 1.0], [-W / 2, L * 0.9]);
+  return pts;
+})();
+/** The grand's lid on full stick: opened 45° about the spine (drawing default). */
+export const GRAND_LID_DEG = 45;
+
+/**
+ * A 2.1 m GRAND PIANO from above, in a seat's local frame (x = the player's
+ * right, y back; the keyboard's front edge at y = −330, the case ahead of it).
+ * Art pass 2026-10-10 — real sizes of the class: case 2110 × 1480 mm; 88 keys
+ * over 1225 mm (52 naturals at 23.5 mm), naturals visible 150 mm, sharps 95 mm
+ * at the back; cheeks 128 mm each side; rim 60 mm; the music desk 900 mm wide.
+ * The outline: the straight spine (bass), a short straight treble side, the
+ * long CONCAVE bentside, the convex tail. The lid is hinged on the spine and
+ * open on full stick (45°), so from above it covers the bass side
+ * (its width × cos 45°) and the plate, the strings and the soundboard show
+ * on the treble side (the music desk taken off, as on a concert stage).
+ * Built once.
+ */
+let GRAND_PLAN: { body: SkPath; board: SkPath; plate: SkPath; cutouts: SkPath; strings: SkPath; whites: SkPath; blacks: SkPath } | null = null;
+export function grandPlan() {
+  if (GRAND_PLAN) return GRAND_PLAN;
+  const W = GRAND.W;
+  const L = GRAND.L;
+  const y0 = -330;
+  const f = (x: number, ahead: number) => P(x, y0 - ahead);
+  const outlineAt = (k: number) => {
+    // k: inset toward the inside (mm), applied by scaling about the case's middle.
+    const sx = (W / 2 - k) / (W / 2);
+    const sa = (L - 2 * k) / L;
+    return poly(GRAND_OUTLINE.map(([x, a]) => f(x * sx, k + a * sa)));
+  };
+  const outer = outlineAt(0);
+  const inner = outlineAt(60);
+  const plate = outlineAt(110);
+  // The soundboard shows as a margin round the plate (spruce under varnish).
+  const board = Skia.Path.MakeFromOp(inner, plate, PathOp.Difference) ?? make();
+  // The plate's openings (dark): three bays between the struts.
+  const cutouts = make();
+  // (Only the bays on the treble side: the open lid hides the rest.)
+  for (const [x, a0, a1, w] of [
+    [W * 0.37, L * 0.19, L * 0.29, 100],
+    [W * 0.24, L * 0.36, L * 0.5, 110],
+  ] as const) {
+    const q0 = f(x - w / 2, a0);
+    const q1 = f(x + w / 2, a1);
+    cutouts.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(q0.u, q1.u), Math.min(q0.v, q1.v), Math.abs(q1.u - q0.u), Math.abs(q1.v - q0.v)), w / 2, w / 2));
+  }
+  // The lid on full stick: the closed lid's outline squeezed toward the spine.
+  const tilt = Math.cos(GRAND_LID_DEG * DEG);
+  const lid = outer.copy();
+  lid.transform(Skia.Matrix().translate(-W / 2, 0).scale(tilt, 1).translate(W / 2, 0));
+  const lidEdge = -W / 2 + W * tilt;
+  // The front flap folds back onto the lid: nothing of the lid ahead of the fallboard.
+  const lidOpen = Skia.Path.MakeFromOp(lid, rr(-W, y0 - 250, W, y0 - L - 100, 0), PathOp.Intersect) ?? lid;
+  // The strings, front to back over the plate, where the lid does not hide
+  // them: each runs from behind the dampers to where it meets the plate's edge.
+  const strings = make();
+  for (let x = lidEdge + 40; x < W / 2 - 130; x += 36) {
+    const q0 = f(x, 420);
+    let a = 420;
+    while (a < L && plate.contains(f(x - (a - 420) * 0.04, a + 40).u, f(x - (a - 420) * 0.04, a + 40).v)) a += 20;
+    const q1 = f(x - (a - 420) * 0.04, a);
+    strings.moveTo(q0.u, q0.v);
+    strings.lineTo(q1.u, q1.v);
+  }
+  // The case: the rim ring, the cheeks and the key slip round the keys, the
+  // fallboard, the music desk and the open lid — all piano black.
+  const keysW = 1225;
+  const keyBed = rr(-keysW / 2, y0 + 1, keysW / 2, y0 - 150, 2);
+  let body = Skia.Path.MakeFromOp(outer, inner, PathOp.Difference) ?? make();
+  const front = rr(-W / 2, y0, W / 2, y0 - 250, 6); // cheeks + fallboard
+  body = Skia.Path.MakeFromOp(body, front, PathOp.Union) ?? body;
+  body = Skia.Path.MakeFromOp(body, keyBed, PathOp.Difference) ?? body;
+  body = Skia.Path.MakeFromOp(body, lidOpen, PathOp.Union) ?? body;
+  // The keys: 52 naturals, the sharps in twos and threes (A0 to C8).
+  const whites = rr(-keysW / 2, y0, keysW / 2, y0 - 150, 2);
+  const blacks = make();
+  const wk = keysW / 52;
+  // Natural index i from A0: the note names A B C D E F G repeating; a sharp
+  // follows every natural except B and E, and not after the last C.
+  for (let i = 0; i < 51; i++) {
+    const name = 'ABCDEFG'[i % 7];
+    if (name === 'B' || name === 'E') continue;
+    const x = -keysW / 2 + (i + 1) * wk;
+    blacks.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 6.5, y0 - 150, 13, 95), 2, 2));
+  }
+  const lines = make();
+  for (let i = 1; i < 52; i++) {
+    const x = -keysW / 2 + i * wk;
+    lines.addRect(Skia.XYWHRect(x - 0.8, y0 - 150, 1.6, 150));
+  }
+  blacks.addPath(lines);
+  // As WINDING paths: a batch path takes an empty-path addPath's fill type, so
+  // an even-odd ring added after another seat's part would fill its hole.
+  GRAND_PLAN = { body: asWinding(body), board: asWinding(board), plate, cutouts, strings, whites, blacks };
+  return GRAND_PLAN;
+}
+
+/* ═══════════════════ the CONCERT BASS DRUM (art pass 2026-10-10) ═══════════════════
+ * 36 × 16 in (914 × 406 mm, concertSpec CONCERT_BD_36x16): wood hoops 32 mm
+ * wide and 14 thick, 12 tension rods a head, calf-white heads; on a tilting
+ * stand (a yoke either side of the shell on a castored base), its centre about
+ * 760 mm up. The heads face the player's left and right. Before this pass the
+ * plan was a varnished slab and the elevation had the head and the shell
+ * swapped (a 400 × 914 box where the head faces the viewer). */
+const BD = { R: CONCERT_BD_36x16.d.mm / 2, D: CONCERT_BD_36x16.depth.mm, hoopH: CONCERT_BD_36x16.hoop.h.mm, hoopT: CONCERT_BD_36x16.hoop.t.mm, rods: CONCERT_BD_36x16.rods.n.mm, cy: BASS_DRUM_STATION.up } as const;
+const BD_SHELL = ['#2a160a', '#7a4a20', '#d9a766', '#c48f52', '#7a4a20', '#2a160a'];
+const BD_HOOP = ['#3a220e', '#b8803f', '#6e4219', '#2f1b0a'];
+const BD_POS = [0, 0.12, 0.3, 0.55, 0.85, 1];
+const CHROME_RAMP = ['#eef1f6', '#9aa0ab', '#4a4e57', '#c8ccd4'];
+
+/** From above, in the seat's local frame (x right, y back), its centre at (0, cy). */
+function BassDrumPlan({ cy }: { cy: number }) {
+  const g = useMemo(() => {
+    const { R, D, hoopH, hoopT } = BD;
+    const shell = rr(-D / 2, cy - R, D / 2, cy + R, 6);
+    const hoops = make();
+    for (const sx of [-1, 1]) hoops.addPath(rr(sx * (D / 2 + 8), cy - R - hoopT - 3, sx * (D / 2 + 8 - hoopH), cy + R + hoopT + 3, 6));
+    // The rods on the upper half, seen from above: each from its hoop claw in
+    // along the shell to its lug (a rod at angle θ lies at y = −(R + 22)·cos θ).
+    const rods = make();
+    const lugs = make();
+    for (let i = 0; i < BD.rods; i++) {
+      const th = ((i + 0.5) / BD.rods) * Math.PI * 2;
+      if (Math.sin(th) < 0.15) continue; // the lower half is under the shell
+      const y = cy - (R + 22) * Math.cos(th);
+      for (const sx of [-1, 1]) {
+        rods.moveTo(sx * (D / 2 - 10), y);
+        rods.lineTo(sx * (D / 2 - 120), y);
+        lugs.addPath(rr(sx * (D / 2 - 120), y - 9, sx * (D / 2 - 160), y + 9, 4));
+      }
+    }
+    // The stand: the yoke arms either side of the shell, the base rails, four casters.
+    const frame = make();
+    for (const sy of [-1, 1]) frame.addPath(rr(-40, cy + sy * (R + 30), 40, cy + sy * (R + 70), 10));
+    frame.addPath(rr(-300, cy - R - 60, -260, cy + R + 60, 10));
+    frame.addPath(rr(260, cy - R - 60, 300, cy + R + 60, 10));
+    const casters = make();
+    for (const x of [-280, 280]) for (const sy of [-1, 1]) casters.addCircle(x, cy + sy * (R + 70), 34);
+    return { shell, hoops, rods, lugs, frame, casters };
+  }, [cy]);
+  const { R, D } = BD;
+  return (
+    <Group>
+      <Path path={g.frame} color="#4a4e57" />
+      <Path path={g.casters} color="#1b1c21" />
+      <Group transform={[{ translateX: 30 }, { translateY: 40 }]}>
+        <Path path={g.shell} color="#000" opacity={0.45}>
+          <BlurMask blur={30} style="normal" />
+        </Path>
+      </Group>
+      {/* The shell as a lit cylinder: its axis across, so the light runs along it. */}
+      <Path path={g.shell}>
+        <LinearGradient start={vec(0, cy - R)} end={vec(0, cy + R)} colors={BD_SHELL} positions={BD_POS} />
+      </Path>
+      <Path path={g.shell} style="stroke" strokeWidth={4} color="#140b05" />
+      <Path path={g.rods} style="stroke" strokeWidth={12} strokeCap="round" color="#2a2c32" />
+      <Path path={g.rods} style="stroke" strokeWidth={5} strokeCap="round" color="#d9dde5" opacity={0.85} />
+      <Path path={g.lugs}>
+        <LinearGradient start={vec(-D / 2, 0)} end={vec(D / 2, 0)} colors={CHROME_RAMP} />
+      </Path>
+      <Path path={g.hoops}>
+        <LinearGradient start={vec(0, cy - R)} end={vec(0, cy + R)} colors={BD_HOOP} />
+      </Path>
+      <Path path={g.hoops} style="stroke" strokeWidth={3} color="#1a0e05" />
+    </Group>
+  );
+}
+
+/** In elevation at (cu, floorV): `a` = how much of the drum's axis lies along
+ *  the view's u (±1 = side-on, the shell; 0 = a head facing the viewer). */
+function BassDrumElev({ cu, floorV, a }: { cu: number; floorV: number; a: number }) {
+  const g = useMemo(() => {
+    const { R, D, hoopH, hoopT } = BD;
+    const cv = floorV - BD.cy;
+    const k = Math.sqrt(Math.max(0, 1 - a * a)) + 0.01; // a head's width factor
+    const h = (D / 2) * Math.abs(a);
+    const rH = R + hoopT + 3;
+    const near = P(cu + h, cv);
+    const shell = Skia.Path.MakeFromOp(rr(cu - h, cv - R, cu + h, cv + R, 2), ellipse(near, R * k, R), PathOp.Union) ?? make();
+    const head = ellipse(near, R * k, R);
+    const hoop = Skia.Path.MakeFromOp(ellipse(near, rH * k, rH), ellipse(near, (R - 6) * k, R - 6), PathOp.Difference) ?? make();
+    const farHoop = rr(cu - h - (hoopH * Math.abs(a)) / 2 - 4, cv - rH, cu - h + (hoopH * Math.abs(a)) / 2 + 4, cv + rH, 4);
+    // The rods round the near head (claw to lug), and along the shell's top and bottom when side-on.
+    const rods = make();
+    if (k > 0.25) {
+      for (let i = 0; i < BD.rods; i++) {
+        const th = ((i + 0.5) / BD.rods) * Math.PI * 2;
+        const x = Math.cos(th);
+        const y = Math.sin(th);
+        rods.moveTo(near.u + x * (rH + 4) * k, cv + y * (rH + 4));
+        rods.lineTo(near.u - Math.abs(a) * 120 + x * (rH + 18) * k, cv + y * (rH + 18));
+      }
+    }
+    if (Math.abs(a) > 0.3) {
+      for (const sy of [-1, 1]) {
+        for (const sx of [-1, 1]) {
+          rods.moveTo(cu + sx * h, cv + sy * (R + 22));
+          rods.lineTo(cu + sx * (h - 120 * Math.abs(a)), cv + sy * (R + 22));
+        }
+      }
+    }
+    // The stand: the yoke uprights either side of the shell (across the axis),
+    // the pivot hubs at the centre, the base and its casters.
+    const w = (R + 50) * k + 40;
+    const stand = make();
+    for (const sx of [-1, 1]) {
+      stand.moveTo(cu + sx * w, floorV - 70);
+      stand.lineTo(cu + sx * w, cv);
+    }
+    stand.moveTo(cu - w - 120, floorV - 70);
+    stand.lineTo(cu + w + 120, floorV - 70);
+    const hubs = make();
+    for (const sx of [-1, 1]) hubs.addCircle(cu + sx * w, cv, 26);
+    const casters = make();
+    for (const sx of [-1, 1]) casters.addCircle(cu + sx * (w + 100), floorV - 34, 34);
+    return { shell, head, hoop, farHoop, rods, stand, hubs, casters, cv };
+  }, [cu, floorV, a]);
+  const { R } = BD;
+  return (
+    <Group>
+      <Path path={g.stand} style="stroke" strokeWidth={34} strokeCap="round" color="#2a2c32" />
+      <Path path={g.stand} style="stroke" strokeWidth={22} strokeCap="round" color="#8a8f99" />
+      <Path path={g.casters} color="#1b1c21" />
+      <Path path={g.farHoop}>
+        <LinearGradient start={vec(cu, g.cv - R)} end={vec(cu, g.cv + R)} colors={BD_HOOP} />
+      </Path>
+      <Path path={g.shell}>
+        <LinearGradient start={vec(cu, g.cv - R)} end={vec(cu, g.cv + R)} colors={BD_SHELL} positions={BD_POS} />
+      </Path>
+      <Path path={g.head}>
+        <RadialGradient c={vec(cu - R * 0.3, g.cv - R * 0.35)} r={R * 1.5} colors={['#fbf8f0', '#e6dcc6', '#b8ab90']} />
+      </Path>
+      <Path path={g.rods} style="stroke" strokeWidth={12} strokeCap="round" color="#2a2c32" />
+      <Path path={g.rods} style="stroke" strokeWidth={5} strokeCap="round" color="#d9dde5" opacity={0.85} />
+      <Path path={g.hoop}>
+        <LinearGradient start={vec(cu - R, g.cv - R)} end={vec(cu + R, g.cv + R)} colors={BD_HOOP} />
+      </Path>
+      <Path path={g.hoop} style="stroke" strokeWidth={3} color="#1a0e05" />
+      <Path path={g.hubs} color="#16171b" />
+    </Group>
+  );
+}
+
+/**
+ * The 2.1 m GRAND from above as a standalone drawing (round 2, 2026-10-10:
+ * exported for reuse — e.g. the bowed lessons' setting plan). Frame, mm:
+ * x = the pianist's right (the treble side; the spine at x = −750), y toward
+ * the pianist; the keyboard's front edge at y = 0, the case running AHEAD to
+ * y = −2110. The lid is open on full stick. Place it with a Group transform
+ * (translate to the keyboard's front edge, rotate to the pianist's facing).
+ * The same paths as the stage drawings (grandPlan), the same materials.
+ */
+export function GrandPianoTop() {
+  const g = grandPlan();
+  return (
+    <Group transform={[{ translateY: 330 }]}>
+      <Mass path={g.board} mat="maple" />
+      <Mass path={g.plate} mat="brass" />
+      <Path path={g.cutouts} color="#0a0705" opacity={0.85} />
+      <Path path={g.strings} style="stroke" strokeWidth={5} strokeCap="round" color="#efe6cc" opacity={0.9} />
+      <Mass path={g.body} mat="piano" />
+      <Mass path={g.whites} mat="ivory" />
+      <Path path={g.blacks} color="#0a0705" opacity={0.85} />
+    </Group>
+  );
 }
 
 /** Group 4: the path builders BandArt.tsx draws with. */
@@ -319,36 +761,28 @@ function planSeat(b: Batch, s: Seat) {
       break;
     }
     case 'cello': {
-      const spec = BOWED.cello;
-      // Leaning back between the knees: the body foreshortened along y.
-      const tail = P(10, -520);
-      const dir = P(-0.12, 0.99);
-      put(b.mat.varnish, bodyPath(spec, tail, dir, 0.42, 1));
-      const nb = P(tail.u + dir.u * bodyLen(spec) * 0.42, tail.v + dir.v * bodyLen(spec) * 0.42);
-      const scroll = P(nb.u + dir.u * neckLen(spec) * 0.42, nb.v + dir.v * neckLen(spec) * 0.42);
-      put(b.mat.ebony, capsule(nb, scroll, 22));
-      put(b.stick, line(make(), tail, P(tail.u + 30, tail.v - 230)));
-      arm([LS, P(-250, -100), P(scroll.u - 40, scroll.v - 30)]);
-      hand(P(scroll.u - 40, scroll.v - 40));
+      // Between the knees, leaning back about 25°, the neck passing the
+      // player's left ear; the bow crosses the strings at the contact point.
+      const { lh, contact } = uprightPlan(b, put, BOWED.cello, P(20, -470), P(-0.3, 1), 25);
+      arm([LS, P(-250, -100), P(lh.u - 30, lh.v + 10)]);
+      hand(P(lh.u - 20, lh.v));
       const hR = P(330, -330);
       arm([RS, P(300, -120), hR]);
       hand(hR);
-      put(b.stick, line(make(), hR, P(hR.u - 720, hR.v - 40)));
-      put(b.hair, line(make(), P(hR.u, hR.v - 12), P(hR.u - 715, hR.v - 52)));
+      const bl = Math.hypot(contact.u - hR.u, contact.v - hR.v) || 1;
+      const tip = P(hR.u + ((contact.u - hR.u) / bl) * BOWED.cello.bow.mm, hR.v + ((contact.v - hR.v) / bl) * BOWED.cello.bow.mm);
+      put(b.stick, line(make(), hR, tip));
+      put(b.hair, line(make(), P(hR.u, hR.v - 12), P(tip.u, tip.v - 12)));
       break;
     }
     case 'bass': {
-      const spec = BOWED.bass;
-      const tail = P(-120, -560);
-      const dir = P(-0.05, 0.99);
-      put(b.mat.varnish, bodyPath(spec, tail, dir, 0.28, 1));
-      const nb = P(tail.u + dir.u * bodyLen(spec) * 0.28, tail.v + dir.v * bodyLen(spec) * 0.28);
-      const scroll = P(nb.u + dir.u * neckLen(spec) * 0.28, nb.v + dir.v * neckLen(spec) * 0.28);
-      put(b.mat.ebony, capsule(nb, scroll, 26));
-      arm([LS, P(-240, -60), P(scroll.u - 30, scroll.v - 20)]);
-      hand(P(scroll.u - 30, scroll.v - 30));
-      const hR = P(160, -420);
-      arm([RS, P(260, -160), hR]);
+      // Upright at the player's left front, leaning back about 20°, the
+      // scroll beside the head; the right hand plucks over the fingerboard's end.
+      const { lh, pluck } = uprightPlan(b, put, BOWED.bass, P(-120, -600), P(-0.15, 1), 20);
+      arm([LS, P(-250, -80), P(lh.u - 30, lh.v + 10)]);
+      hand(P(lh.u - 20, lh.v));
+      const hR = P(pluck.u + 70, pluck.v + 40);
+      arm([RS, P(200, -200), hR]);
       hand(hR);
       break;
     }
@@ -386,9 +820,17 @@ function planSeat(b: Batch, s: Seat) {
       break;
     }
     case 'horn': {
-      put(b.mat.brass, ellipse(P(170, -110), 88, 185));
-      put(b.mat.brass, flare(P(210, -10), P(260, 120), 40, 150));
-      put(b.holes, ellipse(P(262, 122), 110, 40));
+      // A double horn from above (art pass 2026-10-10): its coil (about
+      // 340 mm across) stands upright at the player's right, so from above it
+      // is edge-on — 125 mm thick with its wraps; the four rotary valves on
+      // its inner side under the left hand; the leadpipe from the lips; the
+      // bell (Ø 305) back and to the right, its mouth turned away.
+      put(b.mat.brass, ellipse(P(170, -110), 62, 172));
+      put(b.mat.brass, capsule(P(-10, -95), P(125, -255), 9));
+      put(b.mat.brass, flare(P(205, -10), P(255, 120), 40, 152));
+      put(b.holes, ellipse(P(257, 122), 112, 38));
+      for (const y of [-180, -140, -100, -60]) put(b.mat.silver, ellipse(P(104, y), 19, 17));
+      for (const y of [-250, -200, -30, 20]) put(b.hair, line(make(), P(130, y), P(212, y + 6)));
       arm([LS, P(-120, -200), P(90, -190)]);
       hand(P(90, -190));
       arm([RS, P(300, -20), P(250, 90)]);
@@ -436,8 +878,16 @@ function planSeat(b: Batch, s: Seat) {
       break;
     }
     case 'celesta': {
-      put(b.mat.piano, rr(-500, -760, 500, -250, 30));
-      put(b.desks, rr(-470, -300, 470, -255, 8));
+      // A 5-octave celesta (C to C, 61 keys: 36 naturals over 846 mm) from
+      // above: the cabinet 1000 × 480 mm, its keyboard shelf toward the player.
+      put(b.mat.piano, rr(-500, -810, 500, -330, 24));
+      put(b.mat.ivory, rr(-423, -460, 423, -335, 2));
+      for (let i = 0; i < 35; i++) {
+        const name = 'CDEFGAB'[i % 7];
+        const x = -423 + (i + 1) * 23.5;
+        put(b.holes, rr(x - 0.8, -460, x + 0.8, -335, 0));
+        if (name !== 'E' && name !== 'B') put(b.holes, rr(x - 6.5, -460, x + 6.5, -375, 2));
+      }
       arm([LS, P(-200, -170), P(-160, -290)]);
       arm([RS, P(200, -170), P(160, -290)]);
       hand(P(-160, -290));
@@ -445,38 +895,21 @@ function planSeat(b: Batch, s: Seat) {
       break;
     }
     case 'piano': {
-      // A grand from above, as the pianist sits at it: the long straight
-      // side on the left (the bass), the curved bentside on the right, the
-      // keyboard across the front; the lid open on its hinge along the
-      // straight side, so it opens toward the right.
-      const { L, W } = GRAND;
-      const y0 = -330;
-      const f = (x: number, ahead: number) => P(x, y0 - ahead);
-      const caseP = make();
-      const a = f(-W / 2, 0);
-      caseP.moveTo(a.u, a.v);
-      const q = (x1: number, f1: number, x2: number, f2: number, x3: number, f3: number) => {
-        const p1 = f(x1, f1);
-        const p2 = f(x2, f2);
-        const p3 = f(x3, f3);
-        caseP.cubicTo(p1.u, p1.v, p2.u, p2.v, p3.u, p3.v);
-      };
-      const t = f(-W / 2, L * 0.95);
-      caseP.lineTo(t.u, t.v);
-      q(-W / 2, L * 1.01, -W * 0.18, L * 1.01, -W * 0.02, L * 0.93);
-      q(W * 0.18, L * 0.82, W * 0.5, L * 0.66, W / 2, L * 0.42);
-      const r0 = f(W / 2, 0);
-      caseP.lineTo(r0.u, r0.v);
-      caseP.close();
-      put(b.mat.piano, caseP);
-      // The raised lid's edge (seen from above), the plate under it, the keys.
-      put(b.hair, line(make(), f(-W / 2 + 40, L * 0.9), f(W * 0.62, L * 0.35)));
-      put(b.mat.brass, ellipse(P(-W * 0.08, y0 - L * 0.48), W * 0.3, L * 0.3));
-      put(b.desks, rr(-W / 2 + 30, y0 + 5, W / 2 - 30, y0 - 150, 8));
-      arm([LS, P(-200, -160), P(-160, -300)]);
-      arm([RS, P(200, -160), P(160, -300)]);
-      hand(P(-160, -300));
-      hand(P(160, -300));
+      // A grand from above, as the pianist sits at it (grandPlan): the spine
+      // on the player's left (the bass), the bentside on the right, the
+      // keyboard across the front, the lid open on full stick toward the right.
+      const g = grandPlan();
+      put(b.mat.maple, g.board);
+      put(b.mat.brass, g.plate);
+      put(b.holes, g.cutouts);
+      put(b.hair, g.strings);
+      put(b.mat.piano, g.body);
+      put(b.mat.ivory, g.whites);
+      put(b.holes, g.blacks);
+      arm([LS, P(-200, -170), P(-170, -390)]);
+      arm([RS, P(200, -170), P(170, -390)]);
+      hand(P(-170, -390));
+      hand(P(170, -390));
       break;
     }
     case 'timpani': {
@@ -497,14 +930,15 @@ function planSeat(b: Batch, s: Seat) {
     case 'percussion': {
       const second = /\.2$/.test(s.id);
       if (!second) {
-        // A concert bass drum on its stand: the heads face left and right.
-        put(b.mat.varnish, rr(-200, -1080, 200, -170, 20));
-        put(b.mat.steel, rr(-230, -1100, -195, -150, 10));
-        put(b.mat.steel, rr(195, -1100, 230, -150, 10));
+        // A concert bass drum on its tilting stand (BassDrumPlan): the heads
+        // face the player's left and right; the beater toward the right head.
+        b.extra.push({ key: `bd:${s.id}`, el: <Group key={`bd:${s.id}`} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: (s.face * Math.PI) / 180 }]}><BassDrumPlan cy={-BASS_DRUM_STATION.ahead} /></Group> });
         arm([LS, P(-220, -160), P(-150, -260)]);
         arm([RS, P(240, -200), P(180, -320)]);
         hand(P(180, -320));
-        put(b.stick, line(make(), P(180, -320), P(210, -620)));
+        // A beater: a 380 mm shaft, a fleece head about 80 mm across.
+        put(b.stick, line(make(), P(180, -320), P(230, -560)));
+        put(b.mat.hide, ellipse(P(236, -590), 40, 46));
       } else {
         const c = toPlan(s, -120, -480);
         b.extra.push({ key: `sn:${s.id}`, el: <Group key={`sn:${s.id}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><DrumPlan drum={{ spec: CONCERT_SNARE_14x65, c: { x: 0, y: 0, z: 0 }, tiltDeg: 0 }} /></Group> });
@@ -730,6 +1164,8 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   const hand = (c: P2) => addFig(b, 'skin', ellipse(c, 42, 48));
   const shL = Q(-200, 0, sh - 40);
   const shR = Q(200, 0, sh - 40);
+  /** A part that hides the head and hands behind it (a bell seen end-on). */
+  let before: SkPath | null = null;
   switch (k) {
     case 'violin':
     case 'viola': {
@@ -830,7 +1266,21 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
         const R = tb ? 110 : 62;
         b.mat.brass.addPath(ellipse(bellAt, R, R));
         b.holes.addPath(ellipse(bellAt, R * 0.72, R * 0.72));
-        if (tb) b.mat.brass.addPath(rr(X(20, 0) - 14, g - 1120 - lift, X(20, 0) + 14, g - 760 - lift, 8));
+        // The bell is IN FRONT of the face (art pass 2026-10-10): the head and
+        // the hands are painted last, so the bell's disc is cut out of them below.
+        before = ellipse(bellAt, R, R);
+        if (tb) {
+          const sc = Q(-10, 900, 1080 + lift);
+          before = Skia.Path.MakeFromOp(before, rr(sc.u - 62, sc.v - 16, sc.u + 62, sc.v + 16, 16), PathOp.Union) ?? before;
+        }
+        // The slide, also pointing at the viewer: its end crook seen end-on —
+        // the two tubes (about 100 mm apart) joined by the bow, under the mouth.
+        if (tb) {
+          const sc = Q(-10, 900, 1080 + lift);
+          b.mat.brass.addPath(rr(sc.u - 62, sc.v - 16, sc.u + 62, sc.v + 16, 16));
+          b.holes.addPath(ellipse(P(sc.u - 48, sc.v), 7, 7));
+          b.holes.addPath(ellipse(P(sc.u + 48, sc.v), 7, 7));
+        }
       } else {
         const L = tb ? 900 : 470;
         b.mat.brass.addPath(capsule(mouth, P(mouth.u + d.u * L * kf, mouth.v + 20), tb ? 16 : 18));
@@ -869,23 +1319,101 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       hand(Q(80, 260, 1000));
       break;
     }
-    case 'piano':
-    case 'celesta': {
-      // The case ahead of the player: its length along the player's forward
-      // axis, its width across — drawn as the box it fills in this view.
-      const L = k === 'piano' ? GRAND.L : 480;
-      const W = k === 'piano' ? GRAND.W : 1000;
-      const us = [X(-W / 2, 330), X(W / 2, 330), X(-W / 2, 330 + L), X(W / 2, 330 + L)];
+    case 'piano': {
+      // The grand in elevation (art pass 2026-10-10), every part projected
+      // from its real place (GRAND_OUTLINE, a = ahead of the keys' front at
+      // 330 mm before the player): the rim 640–1000 mm high (an extruded
+      // outline is a band in any elevation), the lid on full stick about the
+      // spine, its prop, three legs on casters (two under the cheeks, one
+      // under the tail), the pedal lyre with three pedals, the key slip.
+      // How far the piano lies toward the viewer from its player (+1: we see
+      // the tail end, the player behind it; −1: we see the keys, the player in front).
+      const toward = front ? -Math.cos(F) : Math.sin(F);
+      const RIM0 = 640;
+      const RIM1 = 1000;
+      const A0 = 330;
+      const us = GRAND_OUTLINE.map(([x, a]) => X(x, A0 + a));
       const u0 = Math.min(...us);
       const u1 = Math.max(...us);
-      b.mat.piano.addPath(rr(u0, g - 1000, u1, g - 700, 20));
-      line(b.legs, P(u0 + 80, g - 700), P(u0 + 80, g));
-      line(b.legs, P(u1 - 80, g - 700), P(u1 - 80, g));
-      if (k === 'piano') b.mat.piano.addPath(poly([P(u0 + 40, g - 1000), P(u1 - 60, g - 1000), P(u0 + (u1 - u0) * 0.7, g - 1620)]));
-      arm([shL, Q(-120, 120, 800), Q(-150, 330, 760)]);
-      arm([shR, Q(120, 120, 800), Q(150, 330, 760)]);
-      hand(Q(-150, 330, 760));
-      hand(Q(150, 330, 760));
+      b.mat.piano.addPath(rr(u0, g - RIM1, u1, g - RIM0, 14));
+      // The lid: the outline (behind the fallboard) turned up about the spine.
+      const c = Math.cos(GRAND_LID_DEG * DEG);
+      const sl = Math.sin(GRAND_LID_DEG * DEG);
+      const lidPts = GRAND_OUTLINE.map(([x, a]) => {
+        const d = x + GRAND.W / 2;
+        return Q(-GRAND.W / 2 + d * c, A0 + Math.max(a, 250), RIM1 + 20 + d * sl);
+      });
+      // The lid is a 30 mm slab: its outline swept through its thickness (so
+      // seen end-on, from the tail or the keys, it still reads as a board).
+      const th = { r: -30 * sl, up: 30 * c };
+      const o0 = Q(0, 0, 0);
+      const o1 = Q(th.r, 0, th.up);
+      const T = P(o1.u - o0.u, o1.v - o0.v);
+      const lidUnder = poly(lidPts);
+      let lid = Skia.Path.MakeFromOp(lidUnder, poly(lidPts.map((q) => P(q.u + T.u, q.v + T.v))), PathOp.Union) ?? lidUnder;
+      for (let i = 0; i < lidPts.length; i++) {
+        const a = lidPts[i];
+        const z = lidPts[(i + 1) % lidPts.length];
+        lid = Skia.Path.MakeFromOp(lid, poly([a, z, P(z.u + T.u, z.v + T.v), P(a.u + T.u, a.v + T.v)]), PathOp.Union) ?? lid;
+      }
+      b.mat.piano.addPath(asWinding(lid));
+      // The prop: from the bentside rim up to the lid's underside.
+      const propA = GRAND.L * 0.5;
+      const propD = 1000;
+      line(b.stick, Q(GRAND.W * 0.24, A0 + propA, RIM1), Q(-GRAND.W / 2 + propD * c, A0 + propA, RIM1 + propD * sl));
+      // The legs (a tapered column each, a caster under it).
+      for (const [x, a] of [
+        [-GRAND.W / 2 + 90, 120],
+        [GRAND.W / 2 - 90, 120],
+        [-GRAND.W * 0.22, GRAND.L * 0.86],
+      ] as const) {
+        const q = X(x, A0 + a);
+        b.mat.piano.addPath(poly([P(q - 60, g - RIM0), P(q + 60, g - RIM0), P(q + 42, g - 90), P(q - 42, g - 90)]));
+        b.mat.brass.addPath(rr(q - 46, g - 100, q + 46, g - 70, 6));
+        b.mat.steel.addPath(ellipse(P(q, g - 36), 36, 36));
+      }
+      // The pedal lyre under the middle of the keybed, its pedals toward the player.
+      const ly = X(0, A0 + 230);
+      b.mat.piano.addPath(rr(ly - 70, g - RIM0, ly + 70, g - 560, 10));
+      b.mat.piano.addPath(poly([P(ly - 60, g - 560), P(ly + 60, g - 560), P(ly + 30, g - 130), P(ly - 30, g - 130)]));
+      b.mat.piano.addPath(rr(ly - 110, g - 150, ly + 110, g - 60, 12));
+      for (const x of [-60, 0, 60]) b.mat.brass.addPath(capsule(Q(x, 230, 95), Q(x, 130, 80), 14));
+      // The key slip and the key fronts along the front edge (seen where the view shows it).
+      if (toward < -0.3) {
+        const k0 = X(-612, A0);
+        const k1 = X(612, A0);
+        b.mat.ivory.addPath(rr(Math.min(k0, k1), g - 745, Math.max(k0, k1), g - 715, 3));
+      }
+      arm([shL, Q(-120, 120, 800), Q(-170, 360, 760)]);
+      arm([shR, Q(120, 120, 800), Q(170, 360, 760)]);
+      // (Seen from the tail, the hands are behind the case: not drawn over it.)
+      if (toward < 0.3) {
+        hand(Q(-170, 360, 760));
+        hand(Q(170, 360, 760));
+      }
+      break;
+    }
+    case 'celesta': {
+      // A celesta: a cabinet like a small upright, 1000 wide × 480 deep ×
+      // 1080 high (drawing default for the 5-octave class), the keyboard
+      // shelf at 720 mm toward the player, two front legs and a pedal.
+      const us = [X(-500, 330), X(500, 330), X(-500, 810), X(500, 810)];
+      const u0 = Math.min(...us);
+      const u1 = Math.max(...us);
+      b.mat.piano.addPath(rr(u0, g - 1080, u1, g - 680, 16));
+      const back = [X(-500, 480), X(500, 480), X(-500, 810), X(500, 810)];
+      b.mat.piano.addPath(rr(Math.min(...back), g - 680, Math.max(...back), g - 140, 10));
+      const kq = [X(-430, 330), X(430, 330), X(-430, 480), X(430, 480)];
+      b.mat.ivory.addPath(rr(Math.min(...kq), g - 735, Math.max(...kq), g - 705, 3));
+      for (const x of [-440, 440]) {
+        const q = X(x, 360);
+        b.mat.piano.addPath(poly([P(q - 40, g - 680), P(q + 40, g - 680), P(q + 30, g - 40), P(q - 30, g - 40)]));
+      }
+      b.mat.brass.addPath(capsule(Q(0, 470, 90), Q(0, 380, 80), 14));
+      arm([shL, Q(-120, 120, 800), Q(-150, 360, 750)]);
+      arm([shR, Q(120, 120, 800), Q(150, 360, 750)]);
+      hand(Q(-150, 360, 750));
+      hand(Q(150, 360, 750));
       break;
     }
     case 'timpani': {
@@ -902,18 +1430,22 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
     }
     case 'percussion': {
       if (!/\.2$/.test(s.id)) {
-        // A concert bass drum: its heads face the player's left and right.
-        const c = Q(0, 620, 760);
-        if (Math.abs(rightU) < 0.5) b.mat.varnish.addPath(rr(c.u - 200, c.v - 457, c.u + 200, c.v + 457, 30));
-        else b.mat.varnish.addPath(ellipse(c, 457, 457));
-        b.mat.steel.addPath(rr(c.u - 30, g - 300, c.u + 30, g, 8));
+        // A concert bass drum on its stand (BassDrumElev): its axis is the
+        // player's left–right, so side-on to a view where that runs along u.
+        const c = Q(0, BASS_DRUM_STATION.ahead, 0);
+        b.extra.push({ key: `bd:${s.id}:${view}`, el: <BassDrumElev key={`bd:${s.id}:${view}`} cu={c.u} floorV={g} a={rightU} /> });
       } else {
-        const sn = Q(-120, 480, 800);
-        b.mat.steel.addPath(rr(sn.u - 180, sn.v - 40, sn.u + 180, sn.v + 40, 10));
-        line(b.legs, P(sn.u, sn.v + 40), P(sn.u, g));
+        // The concert snare (14 × 6½ in) on its stand, its batter head at
+        // 820 mm; an 18 in suspended cymbal on a straight stand at 1150 mm.
+        const sn = X(-120, 480);
+        const top = g - 820;
+        const D = CONCERT_SNARE_14x65.depth.mm;
+        b.extra.push({ key: `sn:${s.id}:${view}`, el: <Group key={`sn:${s.id}:${view}`}><SnareStandSide cx={sn} basketY={top + D + 14} hoopR={CONCERT_SNARE_14x65.d.mm / 2} floorY={g} armsDeg={[20, 160, 270]} /><Group transform={[{ translateX: sn }, { translateY: top }]}><DrumExterior spec={CONCERT_SNARE_14x65} /></Group></Group> });
         const cy = Q(420, 420, 1150);
-        b.mat.brass.addPath(rr(cy.u - 230, cy.v - 8, cy.u + 230, cy.v + 8, 6));
-        line(b.legs, P(cy.u, cy.v), P(cy.u, g));
+        line(b.legs, P(cy.u, cy.v + 30), P(cy.u, g - 120));
+        line(b.legs, P(cy.u, g - 120), P(cy.u - 220, g));
+        line(b.legs, P(cy.u, g - 120), P(cy.u + 220, g));
+        b.extra.push({ key: `scy:${s.id}:${view}`, el: <CymbalSide key={`scy:${s.id}:${view}`} cx={cy.u} cy={cy.v} d={18 * IN} tiltDeg={0} /> });
       }
       arm([shL, Q(-220, 60, 1100), Q(-140, 330, 950)]);
       arm([shR, Q(220, 60, 1100), Q(80, 330, 950)]);
@@ -933,7 +1465,31 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       b.mat.silver.addPath(capsule(mouth, top, 9));
       b.mat.brass.addPath(taper(top, bow, big ? 34 : 22, big ? 56 : 36));
       b.mat.brass.addPath(ellipse(bow, big ? 62 : 42, big ? 52 : 36));
-      b.mat.brass.addPath(flare(bow, Q(big ? 230 : 190, big ? 280 : 240, (big ? 660 : 800) + lift), big ? 50 : 34, big ? 100 : 66));
+      // The bell (art pass 2026-10-10: the flare ended in a flat edge and read
+      // as a yellow triangle): alto bell Ø 120 mm, baritone Ø 230, opening up
+      // and forward; its rim drawn as the ellipse its circle makes in this view.
+      const bl = { r: big ? 230 : 190, f: big ? 330 : 300, up: (big ? 640 : 780) + lift };
+      const bw = { r: big ? 150 : 120, f: big ? 240 : 210, up: (big ? 270 : 560) + lift };
+      const bellEnd = Q(bl.r, bl.f, bl.up);
+      const RB = big ? 115 : 60;
+      b.mat.brass.addPath(flare(bow, bellEnd, big ? 50 : 34, RB));
+      {
+        const ax = { r: bl.r - bw.r, f: bl.f - bw.f, up: bl.up - bw.up };
+        const L3 = Math.hypot(ax.r, ax.f, ax.up) || 1;
+        const toward = front ? ax.r * Math.sin(F) - ax.f * Math.cos(F) : ax.r * Math.cos(F) + ax.f * Math.sin(F);
+        const du = ax.r * rightU + ax.f * fwdU;
+        const ang = Math.atan2(-ax.up, du);
+        const minor = Math.max(8, (RB * Math.abs(toward)) / L3 + RB * 0.18);
+        const rim = make();
+        rim.addOval(Skia.XYWHRect(-minor, -RB, minor * 2, RB * 2));
+        const hole = make();
+        hole.addOval(Skia.XYWHRect(-minor * 0.78, -RB * 0.84, minor * 1.56, RB * 1.68));
+        const m = Skia.Matrix().translate(bellEnd.u, bellEnd.v).rotate(ang);
+        rim.transform(m);
+        hole.transform(m);
+        b.mat.brass.addPath(rim);
+        b.holes.addPath(hole);
+      }
       if (big) b.mat.brass.addPath(ellipse(Q(-20, 150, 1180 + lift), 50, 44));
       for (const t of [0.3, 0.45, 0.6, 0.75]) b.mat.silver.addPath(ellipse(P(top.u + (bow.u - top.u) * t, top.v + (bow.v - top.v) * t), 11, 11));
       const h1 = P(top.u + (bow.u - top.u) * 0.22, top.v + (bow.v - top.v) * 0.22);
@@ -1081,6 +1637,7 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   const NECK_V = g - sh - 55;
   const head = front ? headFront(pt(headC.u, headC.v), 104, NECK_V) : headProfile(pt(headC.u, headC.v), 104, NECK_V, fwdU >= 0 ? 1 : -1);
   addFig(b, 'skin', head.fill);
+  if (before) b.fig.skin = Skia.Path.MakeFromOp(b.fig.skin, before, PathOp.Difference) ?? b.fig.skin;
 }
 
 function elevStand(b: Batch, s: Seat, view: 'front' | 'section') {

@@ -133,7 +133,7 @@ export function bowedModel(P: Posture, o: BowedModelOpts): InstrumentModel {
       role: 'The ebony board under the strings. The left hand stops the strings against it; its far end overhangs the top.',
       prov: ddProv(spec.fbEnd),
       clearance: clr,
-      solid: cap(B({ x: st.fbEndX, y: 0, z: fingerboardZ(spec, st.fbEndX) - fbHalf(spec, st.fbEndX) * 0.7 }), B({ x: st.nutX, y: 0, z: fingerboardZ(spec, st.nutX) - fbHalf(spec, st.nutX) * 0.7 }), fbHalf(spec, st.fbEndX) * 0.75),
+      solid: cap(B({ x: st.handEndX, y: 0, z: fingerboardZ(spec, st.handEndX) - fbHalf(spec, st.handEndX) * 0.7 }), B({ x: st.nutX, y: 0, z: fingerboardZ(spec, st.nutX) - fbHalf(spec, st.nutX) * 0.7 }), fbHalf(spec, st.handEndX) * 0.75),
     },
     {
       id: 'bw.neck',
@@ -248,7 +248,7 @@ export function bowedModel(P: Posture, o: BowedModelOpts): InstrumentModel {
     role: 'The left hand stops the strings anywhere along the fingerboard and shifts up and down it.',
     moving: true,
     prov: ill('env.bw.leftHand: the fingerboard, ±70 round the neck (proposal)'),
-    solid: cap(B({ x: st.fbEndX + 40, y: 0, z: fingerboardZ(spec, st.fbEndX + 40) - 10 }), B({ x: st.nutX - 10, y: 0, z: fingerboardZ(spec, st.nutX) - 10 }), 70),
+    solid: cap(B({ x: st.handEndX + 40, y: 0, z: fingerboardZ(spec, st.handEndX + 40) - 10 }), B({ x: st.nutX - 10, y: 0, z: fingerboardZ(spec, st.nutX) - 10 }), 70),
   });
   parts.push({ id: 'bw.armL1', label: 'the left arm', short: 'left arm', role: 'The left arm reaches the neck.', prov: PLAYER, listIn: [], solid: cap(pl.shoulderL, pl.elbowL, 50) });
   parts.push({ id: 'bw.armL2', label: 'the left arm', short: 'left arm', role: 'The left forearm.', prov: PLAYER, listIn: [], solid: cap(pl.elbowL, pl.handL, 45) });

@@ -28,6 +28,7 @@ import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polygon, Rad
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColor } from '../../../features/tools/levelColor';
 import { DRUMS, lugAngle, lugCents, textBoost, tinyFit, type DrumKind, type HeadState } from './drumEngine';
+import { Collar, DrumSvgDefs, ExteriorDrum, HW, HoopCut, HoopFar, LugCut, RodCut, StickSvg, WallCut } from './drumSvgParts';
 
 export { STAR_ORDER } from './drumEngine';
 
@@ -408,103 +409,85 @@ export function AnatomyStage({ width, height, part }: { width: number; height: n
   const tiny = tinyFit(width);
   const fs = FONT * bst;
   const f2 = F2 * bst;
-  const x0 = 92;
-  const x1 = 292;
-  const yT = 40;
-  const yB = 160;
+  // The 12 × 8 in rack tom (drumEngine DRUMS.rack) cut through its axis, at
+  // k = 0.62 units/mm: Ø 304.8 → 189 units, depth 203.2 → 126 units; a
+  // 6-ply 5.6 mm maple shell; hardware at true size (drumSvgParts HW).
+  const k = 0.62;
+  const R = (12 * 25.4) / 2;
+  const D = 8 * 25.4;
+  const tSh = 5.6;
+  const cx = 192;
+  const x0 = cx - R * k;
+  const x1 = cx + R * k;
+  const yT = 38;
+  const yB = yT + D * k;
+  const xi0 = x0 + tSh * k;
+  const xi1 = x1 - tSh * k;
   const hi = (p: DrumPart) => (part === p ? ink.amber : null);
   const glow = (p: DrumPart, el: ReactNode) => (part === p ? <G>{el}</G> : <G opacity={0.9}>{el}</G>);
+  const corners = ([[-1, 1], [1, 1], [-1, -1], [1, -1]] as const).map(([side, s]) => ({ xShell: side < 0 ? x0 : x1, yHead: s > 0 ? yT : yB, side, s, k }));
+  // The far inner wall's grain, bunching toward the silhouettes.
+  const grain = Array.from({ length: 11 }, (_, i) => cx + (xi1 - cx) * Math.cos((Math.PI * (i + 1)) / 12));
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${ANAT_H}`}>
       <Rect x={0} y={0} width={W} height={ANAT_H} fill={ink.bg} />
-      <Defs>
-        <LinearGradient id="shellG" x1="0" y1="0" x2="1" y2="0">
-          <Stop offset="0" stopColor={ink.shellDark} />
-          <Stop offset="0.5" stopColor={ink.shellLight} />
-          <Stop offset="1" stopColor={ink.shellDark} />
-        </LinearGradient>
-      </Defs>
+      <DrumSvgDefs />
+      {/* the far inner wall seen through the cut */}
+      <Rect x={xi0} y={yT} width={xi1 - xi0} height={yB - yT} fill="url(#dtCavityX)" />
+      {grain.map((x) => <Line key={x} x1={x} y1={yT + 2} x2={x} y2={yB - 2} stroke="#4a3220" strokeWidth={0.45} opacity={0.6} />)}
+      <Rect x={xi0} y={yT} width={xi1 - xi0} height={14} fill="#000" opacity={0.35} />
       {/* air */}
       {glow('air', (
         <G>
-          <Rect x={x0 + 8} y={yT + 6} width={x1 - x0 - 16} height={yB - yT - 12} fill={part === 'air' ? 'rgba(91,176,255,.18)' : 'rgba(91,176,255,.05)'} />
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((k) => (
-            <Circle key={k} cx={x0 + 24 + (k % 6) * 36} cy={yT + 30 + Math.floor(k / 6) * 60 + (k % 2) * 14} r={1.6} fill={part === 'air' ? ink.cyan : '#2a3a4a'} />
+          <Rect x={xi0 + 2} y={yT + 3} width={xi1 - xi0 - 4} height={yB - yT - 6} fill={part === 'air' ? 'rgba(91,176,255,.18)' : 'rgba(91,176,255,.05)'} />
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
+            <Circle key={n} cx={xi0 + 22 + (n % 6) * 30} cy={yT + 30 + Math.floor(n / 6) * 60 + (n % 2) * 14} r={1.6} fill={part === 'air' ? ink.cyan : '#2a3a4a'} />
           ))}
-          <SvgText x={(x0 + x1) / 2} y={(yT + yB) / 2 + 4} fontSize={fs} fill={hi('air') ?? ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>enclosed air</SvgText>
+          <SvgText x={cx} y={(yT + yB) / 2 + 4} fontSize={fs} fill={hi('air') ?? ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>enclosed air</SvgText>
         </G>
       ))}
-      {/* shell walls with plies */}
-      {glow('shell', (
-        <G>
-          <Rect x={x0} y={yT + 4} width={9} height={yB - yT - 8} fill="url(#shellG)" stroke={hi('shell') ?? ink.shellDark} strokeWidth={hi('shell') ? 1.6 : 0.6} />
-          <Rect x={x1 - 9} y={yT + 4} width={9} height={yB - yT - 8} fill="url(#shellG)" stroke={hi('shell') ?? ink.shellDark} strokeWidth={hi('shell') ? 1.6 : 0.6} />
-          {[2, 4, 6].map((d) => (
-            <G key={d}>
-              <Line x1={x0 + d} y1={yT + 5} x2={x0 + d} y2={yB - 5} stroke={ink.ply} strokeWidth={0.5} />
-              <Line x1={x1 - d} y1={yT + 5} x2={x1 - d} y2={yB - 5} stroke={ink.ply} strokeWidth={0.5} />
-            </G>
-          ))}
-        </G>
-      ))}
-      {/* bearing edges: the 45° cuts at each end of each wall */}
-      {glow('edge', (
-        <G>
-          {[[x0, yT + 4, 1], [x1 - 9, yT + 4, -1], [x0, yB - 4, 1], [x1 - 9, yB - 4, -1]].map(([x, y, s], k) => {
-            const top = k < 2;
-            const pts = top ? `${x},${y} ${x + 9},${y} ${x + (s > 0 ? 7 : 2)},${y - 5}` : `${x},${y} ${x + 9},${y} ${x + (s > 0 ? 7 : 2)},${y + 5}`;
-            return <Polygon key={k} points={pts} fill={hi('edge') ?? ink.shellLight} stroke={hi('edge') ?? ink.shellDark} strokeWidth={0.6} />;
-          })}
-        </G>
-      ))}
-      {/* heads */}
-      {glow('batter', <Rect x={x0 - 6} y={yT - 3} width={x1 - x0 + 12} height={3} fill={hi('batter') ?? ink.head} />)}
-      {glow('reso', <Rect x={x0 - 6} y={yB} width={x1 - x0 + 12} height={3} fill={hi('reso') ?? ink.headReso} />)}
-      {/* hoops */}
+      {/* the far halves of both hoops, edge-on beyond the heads */}
       {glow('hoop', (
         <G>
-          <Rect x={x0 - 12} y={yT - 8} width={8} height={14} rx={1} fill={hi('hoop') ?? ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
-          <Rect x={x1 + 4} y={yT - 8} width={8} height={14} rx={1} fill={hi('hoop') ?? ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
-          <Rect x={x0 - 12} y={yB - 6} width={8} height={14} rx={1} fill={hi('hoop') ?? ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
-          <Rect x={x1 + 4} y={yB - 6} width={8} height={14} rx={1} fill={hi('hoop') ?? ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
+          <HoopFar x0={x0 + 3 * k} x1={x1 - 3 * k} yHead={yT} s={1} k={k} fill={hi('hoop') ?? 'url(#dtChrome)'} />
+          <HoopFar x0={x0 + 3 * k} x1={x1 - 3 * k} yHead={yB} s={-1} k={k} fill={hi('hoop') ?? 'url(#dtChrome)'} />
         </G>
       ))}
-      {/* rods + lugs */}
-      {glow('rods', (
+      {/* heads: the films across the edge peaks, collars down the outside */}
+      {glow('batter', (
         <G>
-          {[x0 - 8, x1 + 8].map((x) => (
-            <G key={x}>
-              <Line x1={x} y1={yT - 12} x2={x} y2={yT + 40} stroke={hi('rods') ?? ink.metal} strokeWidth={2.2} />
-              <Rect x={x - 4} y={yT - 16} width={8} height={5} fill={hi('rods') ?? ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
-              <Line x1={x} y1={yB + 12} x2={x} y2={yB - 40} stroke={hi('rods') ?? ink.metal} strokeWidth={2.2} />
-              <Rect x={x - 4} y={yB + 11} width={8} height={5} fill={hi('rods') ?? ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
-            </G>
+          <Line x1={x0 + 1.7 * k} y1={yT} x2={x1 - 1.7 * k} y2={yT} stroke={hi('batter') ?? '#efe8d8'} strokeWidth={2} />
+          <Collar pl={corners[0]} peakU={-1.7} color={hi('batter') ?? '#efe8d8'} />
+          <Collar pl={corners[1]} peakU={-1.7} color={hi('batter') ?? '#efe8d8'} />
+        </G>
+      ))}
+      {glow('reso', (
+        <G>
+          <Line x1={x0 + 1.7 * k} y1={yB} x2={x1 - 1.7 * k} y2={yB} stroke={hi('reso') ?? '#cfd8e2'} strokeWidth={2} />
+          <Collar pl={corners[2]} peakU={-1.7} color={hi('reso') ?? '#cfd8e2'} />
+          <Collar pl={corners[3]} peakU={-1.7} color={hi('reso') ?? '#cfd8e2'} />
+        </G>
+      ))}
+      {/* the shell wall cut through: plies; the 45° bearing edges */}
+      {glow('shell', (
+        <G>
+          {[corners[0], corners[1]].map((pl, i) => (
+            <WallCut key={i} pl={pl} D={D} t={tSh} plies={6} fill={hi('shell') ?? 'url(#dtPly)'} edgeFill={hi('edge') ?? undefined} />
           ))}
         </G>
       ))}
-      {glow('lugs', (
-        <G>
-          {[x0 - 8, x1 + 8].map((x) => (
-            <Rect key={x} x={x - 6} y={(yT + yB) / 2 - 22} width={12} height={44} rx={4} fill={hi('lugs') ?? 'url(#lugGradA)'} stroke={ink.metalDark} strokeWidth={0.7} />
-          ))}
-          <Defs>
-            <LinearGradient id="lugGradA" x1="0" y1="0" x2="1" y2="0">
-              <Stop offset="0" stopColor={ink.metalDark} />
-              <Stop offset="0.5" stopColor={ink.metalLight} />
-              <Stop offset="1" stopColor={ink.metalDark} />
-            </LinearGradient>
-          </Defs>
-        </G>
-      ))}
-      {/* stick */}
-      <Line x1={x1 - 60} y1={yT - 40} x2={x1 - 20} y2={yT - 8} stroke="#c9a06a" strokeWidth={4} strokeLinecap="round" />
-      <Circle cx={x1 - 18} cy={yT - 6} r={4} fill="#e9dcc0" />
+      {/* lugs on the shell, rods from the hoop ears into them */}
+      {glow('lugs', <G>{corners.map((pl, i) => <LugCut key={i} pl={pl} tShell={tSh} fill={hi('lugs') ?? undefined} />)}</G>)}
+      {glow('rods', <G>{corners.map((pl, i) => <RodCut key={i} pl={pl} vEnd={HW.lugTop + 2} color={hi('rods') ?? undefined} />)}</G>)}
+      {glow('hoop', <G>{corners.map((pl, i) => <HoopCut key={i} pl={pl} fill={hi('hoop') ?? undefined} />)}</G>)}
+      {/* a stick at the batter, its tip bead on the head */}
+      <StickSvg x={x1 - 44} y={yT - 3} deg={-36} len={150} k={k} />
       {/* labels */}
       <SvgText x={x0 - 16} y={yT - 10} fontSize={fs} fill={hi('batter') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter head</SvgText>
       <SvgText x={x0 - 16} y={yB + 8} fontSize={fs} fill={hi('reso') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>resonant head</SvgText>
-      <SvgText x={x1 + 18} y={(yT + yB) / 2 + 4} fontSize={fs} fill={hi('lugs') ?? ink.text} fontFamily={fonts.barlowMedium}>lug</SvgText>
-      <SvgText x={x1 + 18} y={yT + 30} fontSize={fs} fill={hi('rods') ?? ink.text} fontFamily={fonts.barlowMedium}>rod</SvgText>
-      <SvgText x={x1 + 18} y={yT - 2} fontSize={fs} fill={hi('hoop') ?? ink.text} fontFamily={fonts.barlowMedium}>hoop</SvgText>
+      <SvgText x={x1 + 20} y={yT + 30} fontSize={fs} fill={hi('lugs') ?? ink.text} fontFamily={fonts.barlowMedium}>lug</SvgText>
+      <SvgText x={x1 + 20} y={yT + 13} fontSize={fs} fill={hi('rods') ?? ink.text} fontFamily={fonts.barlowMedium}>rod</SvgText>
+      <SvgText x={x1 + 20} y={yT - 3} fontSize={fs} fill={hi('hoop') ?? ink.text} fontFamily={fonts.barlowMedium}>hoop</SvgText>
       <SvgText x={x0 + 14} y={yT + 18} fontSize={fs} fill={hi('edge') ?? ink.text} fontFamily={fonts.barlowMedium}>bearing edge</SvgText>
       <SvgText x={x0 + 14} y={yB - 14} fontSize={fs} fill={hi('shell') ?? ink.text} fontFamily={fonts.barlowMedium}>shell</SvgText>
       {tiny ? null : <SvgText x={W / 2} y={ANAT_H - 6} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{PARTS.find((p) => p.id === part)?.label.toUpperCase()}</SvgText>}
@@ -630,77 +613,119 @@ function HeadGlow({ x, y, w, h, sync, s }: { x: number; y: number; w: number; h:
   return <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: x * s, top: y * s, width: w * s, height: h * s, borderRadius: 3 * s, backgroundColor: '#fff3c4' }, style]} />;
 }
 
-/** The snare from the side: shell, both hoops, rods and lugs, the snare
- *  wires under the bottom head on their strainer and butt plate. The lever
- *  and the wire-to-head gap follow the strainer setting; the stick's angle
- *  follows the STROKE; the ladder shows where the batter and the snare-side
- *  head sit; the batter glows with the hit. */
+/** The snare from the side, CUT through its axis: the steel shell with its
+ *  centre bead and rolled edges, both heads, the hoops, lugs and rods at the
+ *  silhouettes, and the 20-strand wires under the snare-side head on their
+ *  straps to the strainer (player's side, left) and the butt plate. The
+ *  lever and the wire-to-head gap follow the strainer setting; the stick's
+ *  angle follows the STROKE; the ladder shows where the batter and the
+ *  snare-side head sit; the batter glows with the hit. */
 export function SnareStage({ width, height, strainer, snareSideCents, playing, batterHz, strike = 0.7, sync }: { width: number; height: number; strainer: number; snareSideCents: number; playing?: boolean; batterHz?: number; strike?: number; sync?: SoundSync }) {
   // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
   const bst = textBoost(width);
   const tiny = tinyFit(width);
   const fs = FONT * bst;
   const fsS = FONT_S * bst;
+  // 14 × 5.5 in (355.6 × 139.7 mm) at k = 0.675 units/mm: 240 × 94 units.
+  // Steel shell 1.0 mm; wires 330 mm long (13 in), 20 strands, 75 mm wide;
+  // strainer body ≈ 22 × 56 mm with a 48 mm lever; butt plate ≈ 15 × 34 mm.
   const x0 = 60;
   const x1 = 300;
+  const cx = (x0 + x1) / 2;
+  const k = (x1 - x0) / 355.6;
+  const D = 139.7;
   const yT = 44;
-  const yB = 128;
+  const yB = yT + D * k;
+  const tSh = 1.0;
   const s = Math.max(0, Math.min(1, strainer));
-  const gap = 10 - 8 * s; // wires float at 0, pressed in at 1
-  const lever = -60 + 70 * s; // throw-off lever angle
+  const on = Math.min(1, s / 0.1);
+  // Wires drop ≈ 8 mm when thrown off and lie ≈ 1 mm under the head when tight.
+  const gap = (1 + 7 * (1 - s)) * k;
+  const lever = -110 * (1 - on); // ON: the lever up along the body; OFF: swung out and down
+  const knobOut = (2 + 6 * (1 - s)) * k; // the tension knob backs out as the wires loosen
   const sc = width / W;
   const stickA = -12 - 48 * Math.max(0, Math.min(1, strike)); // a ghost note barely lifts the stick; a rimshot comes from high up
   const snareHz = batterHz != null ? batterHz * Math.pow(2, snareSideCents / 1200) : null;
+  const corners = ([[-1, 1], [1, 1], [-1, -1], [1, -1]] as const).map(([side, sg]) => ({ xShell: side < 0 ? x0 : x1, yHead: sg > 0 ? yT : yB, side, s: sg, k }));
+  const xi0 = x0 + tSh * k;
+  const xi1 = x1 - tSh * k;
+  const yBead = yT + (D / 2) * k;
+  // The wire set: end plates at ±165 mm, strands under the head.
+  const wx0 = cx - 165 * k;
+  const wx1 = cx + 165 * k;
+  const wy = yB + gap;
+  const sag = playing ? 2.4 : 0;
+  // Strainer (left silhouette, outward = −x): body, knob, lever pivot.
+  const sx = (u: number) => x0 - u * k;
+  const sy = (v: number) => yT + v * k;
+  const pivot = { x: sx(25), y: sy(84) };
+  const strap = (xs: number, ys: number, xe: number) => `M${xs} ${ys} L${xs} ${yB + 12.5 * k} Q${xs} ${yB + 14 * k} ${xs + Math.sign(xe - xs) * 3} ${yB + 14 * k} L${xe} ${wy + 1}`;
   return (
     <View style={{ width, height }}>
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${SNARE_H}`}>
       <Rect x={0} y={0} width={W} height={SNARE_H} fill={ink.bg} />
-      <Defs>
-        <LinearGradient id="snShell" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#cfd3da" />
-          <Stop offset="0.5" stopColor="#8d929b" />
-          <Stop offset="1" stopColor="#5d6168" />
-        </LinearGradient>
-      </Defs>
-      {/* shell (a metal snare) */}
-      <Rect x={x0} y={yT + 4} width={x1 - x0} height={yB - yT - 8} fill="url(#snShell)" stroke={ink.metalDark} strokeWidth={0.8} />
-      {/* heads */}
-      <Rect x={x0 - 6} y={yT - 3} width={x1 - x0 + 12} height={3} fill={ink.head} />
-      <Rect x={x0 - 6} y={yB} width={x1 - x0 + 12} height={2.4} fill={ink.headReso} />
+      <DrumSvgDefs />
+      {/* the far inner wall of the steel shell, its bead a groove across */}
+      <Rect x={xi0} y={yT} width={xi1 - xi0} height={yB - yT} fill="url(#dtCavitySteel)" />
+      <Line x1={xi0} y1={yBead - 2.6} x2={xi1} y2={yBead - 2.6} stroke="#1a1b1f" strokeWidth={1} />
+      <Line x1={xi0} y1={yBead + 2.2} x2={xi1} y2={yBead + 2.2} stroke="#8d939e" strokeWidth={0.6} opacity={0.7} />
+      <Rect x={xi0} y={yT} width={xi1 - xi0} height={10} fill="#000" opacity={0.3} />
+      {/* far halves of both hoops, beyond the heads */}
+      <HoopFar x0={x0 + 3 * k} x1={x1 - 3 * k} yHead={yT} s={1} k={k} />
+      <HoopFar x0={x0 + 3 * k} x1={x1 - 3 * k} yHead={yB} s={-1} k={k} />
+      {/* heads: coated batter, thin clear snare-side head */}
+      <Line x1={x0 + 0.8} y1={yT} x2={x1 - 0.8} y2={yT} stroke={ink.head} strokeWidth={2} />
+      <Line x1={x0 + 0.8} y1={yB} x2={x1 - 0.8} y2={yB} stroke={ink.headReso} strokeWidth={1.4} />
+      {corners.map((pl, i) => <Collar key={i} pl={pl} peakU={-0.4} color={i < 2 ? ink.head : ink.headReso} />)}
+      {/* the steel wall cut through: rolled edges top and bottom, the bead */}
+      {([-1, 1] as const).map((side) => {
+        const xo = side < 0 ? x0 : x1;
+        const xin = xo - side * 1.2;
+        const bead = side * 2 * k;
+        const d = `M${xin} ${yT + 1.6} L${xin} ${yBead - 4} L${xo + bead} ${yBead - 2} L${xo + bead} ${yBead + 2} L${xin} ${yBead + 4} L${xin} ${yB - 1.6} L${xo} ${yB - 1.6} L${xo} ${yBead + 3} L${xo + bead} ${yBead + 1.4} L${xo + bead} ${yBead - 1.4} L${xo} ${yBead - 3} L${xo} ${yT + 1.6} Z`;
+        return (
+          <G key={side}>
+            <Path d={d} fill="#c6cad3" stroke="#3a3d44" strokeWidth={0.4} />
+            <Circle cx={xo + side * 0.4} cy={yT + 1.2} r={1.4} fill="#d9dde5" stroke="#3a3d44" strokeWidth={0.4} />
+            <Circle cx={xo + side * 0.4} cy={yB - 1.2} r={1.4} fill="#d9dde5" stroke="#3a3d44" strokeWidth={0.4} />
+          </G>
+        );
+      })}
+      {/* lugs (they sit either side of the strainer and the butt on the shell) */}
+      {corners.map((pl, i) => <LugCut key={i} pl={pl} tShell={tSh} />)}
+      {corners.map((pl, i) => <RodCut key={i} pl={pl} vEnd={HW.lugTop + 2} />)}
+      {corners.map((pl, i) => <HoopCut key={i} pl={pl} />)}
+      {/* the strainer (throw-off): mounting plate, body, tension knob, lever */}
+      <Rect x={sx(3)} y={sy(30)} width={3 * k} height={65 * k} rx={1} fill="#4a4e57" />
+      <Path d={`M${sx(3)} ${sy(36)} L${sx(22)} ${sy(38)} Q${sx(25)} ${sy(39)} ${sx(25)} ${sy(43)} L${sx(25)} ${sy(88)} Q${sx(25)} ${sy(92)} ${sx(21)} ${sy(92)} L${sx(3)} ${sy(92)} Z`} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
+      <Rect x={sx(16.5)} y={sy(36) - knobOut} width={5 * k} height={knobOut + 1} fill="#9aa0ab" />
+      <Rect x={sx(21)} y={sy(36) - knobOut - 10 * k} width={14 * k} height={10 * k} rx={2 * k} fill="#1d1e22" stroke="#5d616c" strokeWidth={0.5} />
+      <G transform={`translate(${pivot.x},${pivot.y}) rotate(${lever})`}>
+        <Rect x={-3.5 * k} y={-48 * k} width={7 * k} height={48 * k} rx={3.5 * k} fill={ink.amber} stroke="#7a5a00" strokeWidth={0.4} />
+      </G>
+      <Circle cx={pivot.x} cy={pivot.y} r={2.4} fill="#2a2c32" stroke="#c8ccd4" strokeWidth={0.5} />
+      {/* the butt plate (right silhouette) */}
+      <Rect x={x1} y={yT + (D - 50) * k} width={3 * k} height={40 * k} rx={1} fill="#4a4e57" />
+      <Rect x={x1 + 3 * k} y={yT + (D - 48) * k} width={15 * k} height={34 * k} rx={2.5 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
+      {/* straps from the strainer's slide and the butt plate, under the hoop, to the wire end plates */}
+      <Path d={strap(sx(12), sy(92), wx0)} stroke="#1c1c20" strokeWidth={2.2} fill="none" strokeLinejoin="round" />
+      <Path d={strap(x1 + 10 * k, yT + (D - 14) * k, wx1)} stroke="#1c1c20" strokeWidth={2.2} fill="none" strokeLinejoin="round" />
+      {/* the wires: coiled strands seen side-on, an end plate at each end */}
+      {[0, 1, 2, 3].map((n) => (
+        <Path key={n} d={`M${wx0 + 3} ${wy + 0.6 + n * 0.75} Q${cx} ${wy + 0.6 + n * 0.75 + sag} ${wx1 - 3} ${wy + 0.6 + n * 0.75}`} stroke={n % 2 ? '#8d939e' : ink.metalLight} strokeWidth={0.8} fill="none" strokeDasharray={n % 2 ? '1.2 0.6' : undefined} opacity={0.95} />
+      ))}
+      <Rect x={wx0 - 2} y={wy - 0.4} width={6} height={4} rx={0.8} fill="#b9bdc6" stroke="#2a2c32" strokeWidth={0.4} />
+      <Rect x={wx1 - 4} y={wy - 0.4} width={6} height={4} rx={0.8} fill="#b9bdc6" stroke="#2a2c32" strokeWidth={0.4} />
       {/* the stick: its height above the head follows the STROKE */}
-      <G transform={`translate(${(x0 + x1) / 2 + 30},${yT - 6}) rotate(${stickA})`}>
-        <Line x1={0} y1={0} x2={78} y2={0} stroke="#c9a06a" strokeWidth={4} strokeLinecap="round" />
-        <Circle cx={-2} cy={0} r={4} fill="#e9dcc0" />
-      </G>
+      <StickSvg x={cx + 30} y={yT - 1 - (HW.beadD * k) / 2} deg={stickA} len={170} k={k} />
       {/* the pitch ladder */}
-      {batterHz != null && snareHz != null ? <PitchLadder x={W - 22} top={yT + 6} bot={yB + 40} lo={120} hi={700} ticks={[{ hz: batterHz, label: 'B', color: ink.cyan }, { hz: snareHz, label: 'S', color: ink.green }]} bst={bst} /> : null}
-      {/* hoops, rods, lugs */}
-      {[x0 + 20, x0 + 80, x0 + 140, x0 + 200].map((x) => (
-        <G key={x}>
-          <Rect x={x - 4} y={yT - 8} width={8} height={12} rx={1} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.5} />
-          <Line x1={x} y1={yT + 4} x2={x} y2={yT + 30} stroke={ink.metal} strokeWidth={2} />
-          <Rect x={x - 6} y={(yT + yB) / 2 - 14} width={12} height={28} rx={3} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.6} />
-          <Line x1={x} y1={yB - 4} x2={x} y2={yB - 30} stroke={ink.metal} strokeWidth={2} />
-          <Rect x={x - 4} y={yB - 4} width={8} height={12} rx={1} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.5} />
-        </G>
-      ))}
-      {/* snare wires: coiled strands under the bottom head, between strainer and butt */}
-      {[0, 1, 2, 3, 4, 5].map((k) => (
-        <Path key={k} d={`M${x0 + 26} ${yB + 4 + gap + k * 1.6} Q${(x0 + x1) / 2} ${yB + 4 + gap + k * 1.6 + (playing ? 3 : 0)} ${x1 - 26} ${yB + 4 + gap + k * 1.6}`} stroke={ink.metalLight} strokeWidth={0.9} fill="none" opacity={0.9 - k * 0.08} />
-      ))}
-      {/* strainer (throw-off) on the left, butt plate on the right */}
-      <Rect x={x0 - 2} y={yB + 2} width={22} height={30} rx={3} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.7} />
-      <Circle cx={x0 + 9} cy={yB + 24} r={4} fill={ink.metalDark} />
-      <G transform={`translate(${x0 + 9},${yB + 24}) rotate(${lever})`}>
-        <Rect x={-2.5} y={-26} width={5} height={26} rx={2} fill={ink.amber} />
-      </G>
-      <Rect x={x1 - 20} y={yB + 2} width={22} height={22} rx={3} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.7} />
+      {batterHz != null && snareHz != null ? <PitchLadder x={W - 22} top={yT + 6} bot={168} lo={120} hi={700} ticks={[{ hz: batterHz, label: 'B', color: ink.cyan }, { hz: snareHz, label: 'S', color: ink.green }]} bst={bst} /> : null}
       {/* labels */}
       <SvgText x={x0 - 10} y={yT - 8} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter</SvgText>
-      <SvgText x={x1 - 24} y={yB + 50} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>snare-side head</SvgText>
-      <SvgText x={x0 + 100} y={yB + 26 + gap} fontSize={fs} fill={ink.metalLight} fontFamily={fonts.barlowMedium}>wires</SvgText>
-      <SvgText x={x0 + 30} y={yB + 48} fontSize={fs} fill={ink.amber} fontFamily={fonts.barlowMedium}>strainer · {s < 0.1 ? 'OFF' : s < 0.4 ? 'loose' : s < 0.7 ? 'medium' : 'tight (choke)'}</SvgText>
-      <SvgText x={x1 - 8} y={yB + 36} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>butt plate</SvgText>
+      <SvgText x={x1 - 24} y={178} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>snare-side head</SvgText>
+      <SvgText x={cx} y={wy + 15} fontSize={fs} fill={ink.metalLight} textAnchor="middle" fontFamily={fonts.barlowMedium}>wires</SvgText>
+      <SvgText x={34} y={178} fontSize={fs} fill={ink.amber} fontFamily={fonts.barlowMedium}>strainer · {s < 0.1 ? 'OFF' : s < 0.4 ? 'loose' : s < 0.7 ? 'medium' : 'tight (choke)'}</SvgText>
+      <SvgText x={x1 + 6} y={162} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>butt plate</SvgText>
       {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>14" SNARE · SIDE VIEW</SvgText>}
       {tiny ? null : <SvgText x={W - 6} y={14} fontSize={fs} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>S {snareSideCents >= 0 ? '+' : ''}{snareSideCents.toFixed(0)} ¢ vs B</SvgText>}
       {tiny ? null : <SvgText x={W / 2 - 20} y={SNARE_H - 6} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>wires follow the snare-side head · stick = stroke</SvgText>}
@@ -715,101 +740,198 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing, b
 export const KICK_H = 200;
 export const KICK_ASPECT = W / KICK_H;
 
-/** The bass drum from the side. The beater's resting angle follows BEATER;
- *  on ▶ STRIKE it swings into the batter in the first 60 ms of the clip and
- *  the batter glows with the measured envelope; the ladder tick shows where
- *  BATTER sits. */
+/** The bass drum from the side, CUT through its axis: the 8-ply shell's
+ *  walls, the coated batter (right, the player's side) and the ebony front
+ *  head with its port, wood hoops with claws and T-rods, the pillow against
+ *  the batter, and the pedal clamped to the batter hoop. The beater rests
+ *  back by the STRIKE setting and, on ▶ STRIKE, swings about the pedal's
+ *  axle into the batter in the first 60 ms of the clip; the batter glows
+ *  with the measured envelope; the ladder tick shows where BATTER sits. */
 export function KickStage({ width, height, front, damping, strike, batterHz, sync }: { width: number; height: number; front: 'open' | 'ported' | 'removed'; damping: number; strike: number; batterHz?: number; sync?: SoundSync }) {
   // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
   const bst = textBoost(width);
   const tiny = tinyFit(width);
   const fs = FONT * bst;
   const fsS = FONT_S * bst;
-  const x0 = 70; // front head (audience side)
-  const x1 = 250; // batter side
-  const yT = 28;
-  // The head labels sit at yB + 20 and the caption at KICK_H − 6: the shell
-  // ends here so the two never share a line.
-  const yB = 160;
+  // 22 × 16 in (558.8 × 406.4 mm) at k = 0.25 units/mm: 140 × 102 units.
+  // 8-ply 7 mm shell; wood hoops 25 × 8 mm standing 19 mm past the head;
+  // claws + T-rods, 8 per head; 5 in (127 mm) offset port. Pedal: base
+  // ≈ 120 mm, footboard + heel ≈ 250 mm, toe ≈ 110 mm up at rest, axle
+  // ≈ 175 mm above the floor and ≈ 88 mm behind the head, felt beater Ø 65 ×
+  // 50 mm meeting the head 1.5 in above centre. Pillow ≈ 110 mm thick.
+  const k = 0.25;
+  const R = 279.4;
+  const D = 406.4;
+  const tSh = 7;
+  const x0 = 110; // front head (audience side)
+  const x1 = x0 + D * k; // batter side
+  const floorY = 172;
+  const hoopOut = R + 3 + 8;
+  const cy = floorY - 2 - hoopOut * k; // the hoops clear the floor by ≈ 8 mm on the spurs
+  const yT = cy - R * k;
+  const yB = cy + R * k;
   const d = Math.max(0, Math.min(1, damping));
-  const pillowW = 30 + 70 * d;
-  const beaterA = -20 - 30 * strike;
+  const pillowLen = (0.17 + 0.39 * d) * D;
+  const pillowH = 110;
+  const restDeg = 20 + 30 * Math.max(0, Math.min(1, strike));
   const sc = width / W;
   const zero = useSharedValue(0);
   const p = sync?.progress ?? zero;
   const on = !!sync?.playing;
-  // The swing: the beater travels to the head over the attack and comes back.
+  // Upright local frame (the shared parts' frame: batter head at y = 0,
+  // walls at x = ±R), turned so the batter faces the pedal: screen =
+  // (x1 − y, cy + x).
+  const local = `translate(${x1},${cy}) rotate(90)`;
+  const corners = ([[-1, 1], [1, 1], [-1, -1], [1, -1]] as const).map(([side, sg]) => ({ xShell: side * R * k, yHead: sg > 0 ? 0 : D * k, side, s: sg, k }));
+  const port = { a: 6, b: 6 + 127 * k }; // the port's span on the front head, local x (screen y below centre)
+  // Pedal geometry (screen).
+  const ax = x1 + 22;
+  const ay = floorY - 175 * k;
+  const strikeY = cy - 38 * k;
+  const bw = 50 * k; // beater length along the strike
+  const bh = 65 * k; // beater diameter
+  const bc = { x: x1 + bw / 2, y: strikeY };
+  const toe = { x: x1 + 26, y: floorY - 110 * k };
+  const heel = { x: x1 + 82, y: floorY - 2 };
+  const ux = (heel.x - toe.x) / Math.hypot(heel.x - toe.x, heel.y - toe.y);
+  const uy = (heel.y - toe.y) / Math.hypot(heel.x - toe.x, heel.y - toe.y);
+  // The swing: at the strike the beater is at the head; it falls back to rest
+  // over the attack — one rotation about the axle (the pivot), never a slide.
   const swingStyle = useAnimatedStyle(() => {
     const t = p.value;
-    const k = on && t < 0.06 ? 1 - t / 0.06 : 0;
-    return { transform: [{ translateX: -k * 22 * sc }, { translateY: k * 6 * sc }] };
+    const kk = on && t < 0.06 ? 1 - t / 0.06 : 0;
+    const px = ax * sc - width / 2;
+    const py = ay * sc - height / 2;
+    return { transform: [{ translateX: px }, { translateY: py }, { rotate: `${-restDeg * kk}deg` }, { translateX: -px }, { translateY: -py }] };
   });
   const beater = (
-    <G transform={`translate(${x1 + 30},${yB - 70}) rotate(${beaterA})`}>
-      <Line x1={0} y1={0} x2={0} y2={-56 + 10} stroke={ink.metalLight} strokeWidth={2.4} />
-      <Circle cx={0} cy={-56 + 6} r={9} fill="#8a7a63" stroke="#5a4e3f" strokeWidth={0.8} />
+    <G transform={`rotate(${restDeg}, ${ax}, ${ay})`}>
+      <Line x1={ax} y1={ay} x2={bc.x} y2={bc.y + bh / 2 - 1} stroke="#2a2c32" strokeWidth={3.2} strokeLinecap="round" />
+      <Line x1={ax} y1={ay} x2={bc.x} y2={bc.y + bh / 2 - 1} stroke="#c8ccd4" strokeWidth={1.8} strokeLinecap="round" />
+      {/* the memory-lock collar on the shaft */}
+      <Rect x={ax + (bc.x - ax) * 0.55 - 2} y={ay + (bc.y - ay) * 0.55 - 1.4} width={4} height={2.8} rx={0.6} fill="#5d616c" />
+      <Rect x={bc.x - bw / 2} y={bc.y - bh / 2} width={bw} height={bh} rx={3} fill="url(#dtFelt)" stroke="#6e6655" strokeWidth={0.5} />
+      <Line x1={bc.x - bw / 2 + 1.2} y1={bc.y - bh / 2 + 2} x2={bc.x - bw / 2 + 1.2} y2={bc.y + bh / 2 - 2} stroke="#fffaf0" strokeWidth={0.6} opacity={0.7} />
     </G>
   );
   return (
     <View style={{ width, height }}>
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>
       <Rect x={0} y={0} width={W} height={KICK_H} fill={ink.bg} />
-      <Defs>
-        <LinearGradient id="kShell" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={ink.shellLight} />
-          <Stop offset="0.5" stopColor={ink.shell} />
-          <Stop offset="1" stopColor={ink.shellDark} />
-        </LinearGradient>
-      </Defs>
-      {/* shell on its spurs */}
-      <Rect x={x0} y={yT + 4} width={x1 - x0} height={yB - yT - 8} fill="url(#kShell)" stroke={ink.shellDark} strokeWidth={0.8} />
-      <Line x1={x0 + 20} y1={yB - 4} x2={x0 + 6} y2={yB + 16} stroke={ink.metal} strokeWidth={2.5} />
-      <Line x1={x1 - 20} y1={yB - 4} x2={x1 - 6} y2={yB + 16} stroke={ink.metal} strokeWidth={2.5} />
-      {/* pillow inside, against the batter */}
-      {d > 0.02 ? <Rect x={x1 - 8 - pillowW} y={yB - 46} width={pillowW} height={38} rx={10} fill="#d8d2c4" opacity={0.9} /> : null}
-      {d > 0.02 ? <SvgText x={x1 - 8 - pillowW / 2} y={yB - 24} fontSize={fs} fill="#4a4538" textAnchor="middle" fontFamily={fonts.barlowMedium}>pillow</SvgText> : null}
-      {/* batter head + hoop */}
-      <Rect x={x1} y={yT - 4} width={4} height={yB - yT + 8} fill={ink.head} />
-      {[yT - 2, (yT + yB) / 2, yB + 2].map((y) => (
-        <G key={y}>
-          <Rect x={x1 + 4} y={y - 4} width={10} height={8} rx={1} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.5} />
-          <Line x1={x1 - 4} y1={y} x2={x1 - 30} y2={y} stroke={ink.metal} strokeWidth={2} />
-        </G>
-      ))}
-      {/* front head: open / ported / removed */}
-      {front !== 'removed' ? <Rect x={x0 - 4} y={yT - 4} width={4} height={yB - yT + 8} fill="#1c1c1f" stroke="#444" strokeWidth={0.6} /> : null}
-      {front === 'ported' ? <Ellipse cx={x0 - 2} cy={yB - 36} rx={3} ry={14} fill={ink.bg} stroke={ink.amber} strokeWidth={1} /> : null}
-      {front === 'ported' ? <SvgText x={x0 - 12} y={yB - 56} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>port</SvgText> : null}
-      {[yT - 2, (yT + yB) / 2, yB + 2].map((y) => (front !== 'removed' ? (
-        <G key={y}>
-          <Rect x={x0 - 14} y={y - 4} width={10} height={8} rx={1} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.5} />
-          <Line x1={x0 + 4} y1={y} x2={x0 + 30} y2={y} stroke={ink.metal} strokeWidth={2} />
-        </G>
-      ) : null))}
-      {/* pedal; the beater is drawn in the overlay so it can swing */}
-      <Rect x={x1 + 18} y={yB + 10} width={70} height={6} rx={2} fill={ink.metalDark} />
-      <Path d={`M${x1 + 30} ${yB + 10} L${x1 + 80} ${yB - 2}`} stroke={ink.metal} strokeWidth={3} />
-      <Line x1={x1 + 30} y1={yB + 10} x2={x1 + 30} y2={yB - 70} stroke={ink.metal} strokeWidth={3} />
+      <DrumSvgDefs />
+      {/* the floor and the drum's soft contact shadow */}
+      <Rect x={60} y={floorY} width={250} height={1.2} fill="#2a2c32" />
+      <Ellipse cx={(x0 + x1) / 2} cy={floorY + 1} rx={D * k * 0.62} ry={2.4} fill="#000" opacity={0.55} />
+      {/* the far spur: its foot ahead of the front hoop */}
+      <Line x1={x0 + 30} y1={cy + 10} x2={x0 - 16} y2={floorY - 1} stroke="#2a2c32" strokeWidth={3.4} strokeLinecap="round" />
+      <Line x1={x0 + 30} y1={cy + 10} x2={x0 - 16} y2={floorY - 1} stroke="#a3a8b2" strokeWidth={2} strokeLinecap="round" />
+      <Rect x={x0 - 19} y={floorY - 2.4} width={6} height={2.4} rx={1} fill="#141518" />
+      <G transform={local}>
+        {/* the far inner wall seen through the cut, grain along the axis */}
+        <Rect x={-(R - tSh) * k} y={0} width={2 * (R - tSh) * k} height={D * k} fill="url(#dtCavityX)" />
+        {[0.2, 0.42, 0.62, 0.79, 0.92].flatMap((f) => [f, -f]).map((f) => <Line key={f} x1={f * (R - tSh) * k} y1={1} x2={f * (R - tSh) * k} y2={D * k - 1} stroke="#4a3220" strokeWidth={0.45} opacity={0.55} />)}
+        {/* the pillow on the bottom of the shell, against the batter head */}
+        {d > 0.02 ? (
+          <G>
+            <Rect x={(R - tSh - pillowH) * k} y={0.8} width={pillowH * k} height={pillowLen * k} rx={6} fill="url(#dtPillow)" stroke="#8a8270" strokeWidth={0.5} />
+            <Line x1={(R - tSh - pillowH / 2) * k} y1={6} x2={(R - tSh - pillowH / 2) * k} y2={pillowLen * k - 6} stroke="#9a917c" strokeWidth={0.6} strokeDasharray="2 2" />
+          </G>
+        ) : null}
+        {/* the far halves of the wood hoops, beyond the heads */}
+        <Rect x={-(R + 3) * k} y={-19 * k} width={2 * (R + 3) * k} height={19 * k} fill="url(#dtWood)" opacity={0.45} />
+        {front !== 'removed' ? <Rect x={-(R + 3) * k} y={D * k} width={2 * (R + 3) * k} height={19 * k} fill="url(#dtWood)" opacity={0.45} /> : null}
+        {/* heads: coated batter; ebony front head, ported or whole */}
+        <Line x1={-R * k + 0.6} y1={0} x2={R * k - 0.6} y2={0} stroke={ink.head} strokeWidth={1.8} />
+        {front !== 'removed' ? (
+          <G>
+            {front === 'ported' ? (
+              <G>
+                <Line x1={-R * k + 0.6} y1={D * k} x2={port.a} y2={D * k} stroke="#2b2f38" strokeWidth={1.8} />
+                <Line x1={port.b} y1={D * k} x2={R * k - 0.6} y2={D * k} stroke="#2b2f38" strokeWidth={1.8} />
+                {/* the port's reinforcing ring, cut */}
+                <Rect x={port.a - 0.8} y={D * k - 1.6} width={1.6} height={3.2} fill={ink.amber} />
+                <Rect x={port.b - 0.8} y={D * k - 1.6} width={1.6} height={3.2} fill={ink.amber} />
+              </G>
+            ) : (
+              <Line x1={-R * k + 0.6} y1={D * k} x2={R * k - 0.6} y2={D * k} stroke="#2b2f38" strokeWidth={1.8} />
+            )}
+          </G>
+        ) : null}
+        {corners.map((pl, i) => (i < 2 || front !== 'removed' ? <Collar key={i} pl={pl} peakU={-2.1} color={i < 2 ? ink.head : '#2b2f38'} /> : null))}
+        {/* the 8-ply wall, cut, its 45° bearing edges */}
+        {[corners[0], corners[1]].map((pl, i) => <WallCut key={i} pl={pl} D={D} t={tSh} plies={8} />)}
+        {/* lugs, T-rods on claws, and the wood hoops' cut faces */}
+        {corners.map((pl, i) => (i < 2 || front !== 'removed' ? (
+          <G key={i}>
+            <LugCut pl={pl} v0={46} len={30} tShell={tSh} />
+            <KickClawRod pl={pl} />
+          </G>
+        ) : <LugCut key={i} pl={pl} v0={46} len={30} tShell={tSh} />))}
+      </G>
+      {/* the pedal: base and hoop clamp, frame post with its spring, axle and sprocket, chain, footboard */}
+      <Rect x={x1 + 0.5} y={floorY - 2.2} width={32} height={2.2} rx={0.6} fill="#3a3d45" />
+      <Path d={`M${x1 + 0.5} ${floorY - 2.2} L${x1 + 0.5} ${floorY - 5} L${x1 + 7} ${floorY - 5} L${x1 + 7} ${floorY - 2.2} Z`} fill="#6b707b" stroke="#1a1b1f" strokeWidth={0.4} />
+      <Rect x={ax - 1.8} y={ay} width={3.6} height={floorY - 2.2 - ay} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.4} />
+      <Path d={`M${ax + 2.2} ${floorY - 18} ${Array.from({ length: 6 }, (_, i) => `L${ax + (i % 2 ? 2.2 : 5)} ${floorY - 18 - (i + 1) * 2}`).join(' ')}`} stroke="#9aa0ab" strokeWidth={0.8} fill="none" />
+      <Path d={`M${toe.x} ${toe.y} L${heel.x} ${heel.y} L${heel.x - uy * 2.2} ${heel.y + ux * 2.2 - 0.4} L${toe.x - uy * 2.2} ${toe.y + ux * 2.2} Z`} fill="url(#dtFoot)" stroke="#111215" strokeWidth={0.5} />
+      {Array.from({ length: 9 }, (_, i) => {
+        const t = 8 + i * 6;
+        return <Line key={i} x1={toe.x + ux * t} y1={toe.y + uy * t} x2={toe.x + ux * t + uy * 1.6} y2={toe.y + uy * t - ux * 1.6} stroke="#111215" strokeWidth={0.6} opacity={0.7} />;
+      })}
+      <Rect x={heel.x - 10} y={floorY - 2.4} width={14} height={2.4} rx={0.8} fill="#2a2c32" />
+      <Circle cx={heel.x - 1} cy={heel.y - 0.6} r={1.6} fill="#9aa0ab" />
+      <Line x1={toe.x + 0.6} y1={toe.y} x2={ax + 5} y2={ay + 1} stroke="#2a2c32" strokeWidth={2.4} />
+      <Line x1={toe.x + 0.6} y1={toe.y} x2={ax + 5} y2={ay + 1} stroke="#a2a7b1" strokeWidth={1.4} strokeDasharray="1.2 0.8" />
+      <Circle cx={ax} cy={ay} r={5.2} fill="#1b1c21" stroke="#6c717c" strokeWidth={0.6} />
+      <Circle cx={ax} cy={ay} r={1.8} fill="#d9dde5" />
       {/* the pitch ladder on the batter side */}
       {batterHz != null ? <PitchLadder x={W - 30} top={yT + 14} bot={yB - 30} lo={40} hi={110} ticks={[{ hz: batterHz, label: `${batterHz.toFixed(0)}`, color: ink.cyan }]} bst={bst} /> : null}
       {/* labels */}
-      <SvgText x={x1 + 2} y={yB + 21} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>batter</SvgText>
-      <SvgText x={x0 - 2} y={yB + 21} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'removed' ? 'front head off' : 'front head'}</SvgText>
-      <SvgText x={x1 + 60} y={yB - 80} fontSize={fs} fill={ink.text} fontFamily={fonts.barlowMedium}>beater</SvgText>
+      {d > 0.02 ? <SvgText x={x1 - (pillowLen * k) / 2} y={cy + (R - tSh - pillowH / 2) * k + 4} fontSize={fs} fill="#3a3528" textAnchor="middle" fontFamily={fonts.barlowMedium}>pillow</SvgText> : null}
+      {front === 'ported' ? <SvgText x={x0 - 22} y={cy + (port.a + port.b) / 2 + 4} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>port</SvgText> : null}
+      <SvgText x={x1 + 2} y={floorY + 12} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>batter</SvgText>
+      <SvgText x={x0 - 2} y={floorY + 12} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'removed' ? 'front head off' : 'front head'}</SvgText>
+      <SvgText x={x1 + 52} y={ay - 42} fontSize={fs} fill={ink.text} fontFamily={fonts.barlowMedium}>beater</SvgText>
       {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>22" BASS DRUM · SIDE VIEW</SvgText>}
       {tiny ? null : <SvgText x={W / 2} y={KICK_H - 6} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'open' ? 'closed front head: full coupling, longest note' : front === 'ported' ? 'ported: less coupling, faster decay, a mic path' : 'no front head: the batter alone, shortest note'}</SvgText>}
     </Svg>
     <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width, height }, swingStyle]}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>{beater}</Svg>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>
+        <DrumSvgDefs />
+        {beater}
+      </Svg>
     </Animated.View>
     <HeadGlow x={x1 - 2} y={yT - 4} w={8} h={yB - yT + 8} sync={sync} s={sc} />
     </View>
   );
 }
 
+/** A kick's wood hoop cut at one silhouette (25 mm wide, 8 mm thick, 19 mm
+ *  past the head), its claw hooked over the outer edge, and the T-rod from
+ *  the claw to the lug (upright local frame, as the shared parts). */
+function KickClawRod({ pl }: { pl: { xShell: number; yHead: number; side: -1 | 1; s: 1 | -1; k: number } }) {
+  const X = (u: number) => pl.xShell + pl.side * u * pl.k;
+  const Y = (v: number) => pl.yHead + pl.s * v * pl.k;
+  const rect = (u0: number, u1: number, v0: number, v1: number) => ({ x: Math.min(X(u0), X(u1)), y: Math.min(Y(v0), Y(v1)), width: Math.abs(X(u1) - X(u0)), height: Math.abs(Y(v1) - Y(v0)) });
+  const claw = `M${X(10)} ${Y(-17)} L${X(10)} ${Y(-21.5)} L${X(19)} ${Y(-21.5)} L${X(19)} ${Y(-4)} L${X(16.5)} ${Y(-4)} L${X(16.5)} ${Y(-19)} L${X(12)} ${Y(-19)} L${X(12)} ${Y(-17)} Z`;
+  return (
+    <G>
+      {/* the T-rod: from the claw along the shell into the lug */}
+      <Rect {...rect(12.3, 17.7, -26, 48)} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.3} />
+      {/* the T handle above the claw */}
+      <Rect {...rect(5, 25, -31, -26)} rx={1} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.3} />
+      {/* the wood hoop, cut */}
+      <Rect {...rect(3, 11, -19, 6)} rx={0.6} fill="url(#dtPly)" stroke="#140b05" strokeWidth={0.4} />
+      <Path d={claw} fill="#b9bdc6" stroke="#2a2c32" strokeWidth={0.4} />
+    </G>
+  );
+}
+
 /* ── the kit ladder (Chapter 6) ──────────────────────────────────────────── */
 
 export const KIT_H = 210;
+/** Kit-ladder drawing scale: design units per mm (both toms true to size). */
+const KIT_K = 0.21;
 export const KIT_ASPECT = W / KIT_H;
 
 /** Which tom is sounding, for the glow: `both` plays the rack for the first
@@ -850,23 +972,17 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
     const lit = which === 'floor' || (which === 'both' && t >= switchAt);
     return { opacity: on && lit ? envAmpAt(env, t) * 0.75 : 0 };
   });
-  const drum = (x: number, w: number, h: number, label: string, hz: number, legs: boolean) => {
+  // True scale for both toms (k = 0.21 units/mm): the 12 × 8 in rack tom
+  // (6 lugs a head, on its L-arm) and the 16 × 16 in floor tom (8 lugs, three
+  // legs), heads at y = 150 − depth.
+  const drum = (cx: number, dIn: number, depthIn: number, label: string, hz: number, legs: boolean) => {
+    const h = depthIn * 25.4 * KIT_K;
     const y = 150 - h;
     return (
       <G>
-        <Rect x={x} y={y} width={w} height={h} fill="url(#tomShell)" stroke={ink.shellDark} strokeWidth={0.8} />
-        <Rect x={x - 3} y={y - 3} width={w + 6} height={3} fill={ink.head} />
-        <Rect x={x - 3} y={y + h} width={w + 6} height={3} fill={ink.headReso} />
-        {[0.15, 0.5, 0.85].map((f) => (
-          <G key={f}>
-            <Rect x={x + w * f - 4} y={y + h / 2 - 9} width={8} height={18} rx={3} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
-            <Line x1={x + w * f} y1={y - 2} x2={x + w * f} y2={y + 18} stroke={ink.metal} strokeWidth={1.6} />
-            <Line x1={x + w * f} y1={y + h + 2} x2={x + w * f} y2={y + h - 18} stroke={ink.metal} strokeWidth={1.6} />
-          </G>
-        ))}
-        {legs ? [x + 6, x + w - 6].map((xx) => <Line key={xx} x1={xx} y1={y + h} x2={xx} y2={y + h + 22} stroke={ink.metal} strokeWidth={2.4} />) : null}
-        <SvgText x={x + w / 2} y={y - 10} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
-        <SvgText x={x + w / 2} y={y + h + (legs ? 34 : 16)} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
+        <ExteriorDrum cx={cx} yHead={y} dIn={dIn} depthIn={depthIn} k={KIT_K} lugs={legs ? 8 : 6} phaseDeg={legs ? 22.5 : 30} legs={legs ? 3 : 0} mount={legs ? null : { from: [-70, depthIn * 25.4 * 0.45], to: [-171, depthIn * 25.4 + 95] }} />
+        <SvgText x={cx} y={y - 10} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
+        <SvgText x={cx} y={y + h + (legs ? 34 : 16)} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
       </G>
     );
   };
@@ -874,15 +990,9 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
     <View style={{ width, height }}>
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${KIT_H}`}>
       <Rect x={0} y={0} width={W} height={KIT_H} fill={ink.bg} />
-      <Defs>
-        <LinearGradient id="tomShell" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={ink.shellLight} />
-          <Stop offset="0.5" stopColor={ink.shell} />
-          <Stop offset="1" stopColor={ink.shellDark} />
-        </LinearGradient>
-      </Defs>
-      {drum(22, 64, 44, '12" rack tom', rackHz, false)}
-      {drum(112, 84, 84, '16" floor tom', floorHz, true)}
+      <DrumSvgDefs />
+      {drum(54, 12, 8, '12" rack tom', rackHz, false)}
+      {drum(143, 16, 16, '16" floor tom', floorHz, true)}
       {/* the ladder */}
       <Line x1={lx} y1={top} x2={lx} y2={bot} stroke={ink.stroke} strokeWidth={1} />
       {[80, 100, 130, 160, 200, 250, 300].map((hz) => (
@@ -906,9 +1016,9 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
       {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>THE TOM RANGE · FUNDAMENTALS</SvgText>}
       <SvgText x={W - 6} y={KIT_H - 6} fontSize={fs} fill={tint} textAnchor="end" fontFamily={fonts.oswaldMedium}>{verdict.toUpperCase()}</SvgText>
     </Svg>
-    {/* the sounding tom's head glows with the hit (rack: x 22 w 64 h 44; floor: x 112 w 84 h 84; tops at 150 − h) */}
-    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 19 * sc, top: (150 - 44 - 4) * sc, width: 70 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, rackGlow]} />
-    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 109 * sc, top: (150 - 84 - 4) * sc, width: 90 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, floorGlow]} />
+    {/* the sounding tom's head glows with the hit (rack: centre 54, Ø 64; floor: centre 143, Ø 85; heads at 150 − depth) */}
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 19 * sc, top: (150 - 8 * 25.4 * KIT_K - 3) * sc, width: 70 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, rackGlow]} />
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: (143 - 8 * 25.4 * KIT_K - 3) * sc, top: (150 - 16 * 25.4 * KIT_K - 3) * sc, width: (16 * 25.4 * KIT_K + 6) * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, floorGlow]} />
     </View>
   );
 }

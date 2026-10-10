@@ -76,7 +76,9 @@ function Lacquer({ path, box, hi = false }: { path: SkPath; box: { u0: number; v
 /** The bellows' pleats between the treble side's inner face and the bass side's. */
 function Bellows({ top, bottom, view }: { top: number; bottom: number; view: 'front' | 'top' }): ReactElement {
   const b = bassBoxAt(top, bottom);
-  const N = 9;
+  // A full-size piano accordion's bellows: about 16 folds (real-world), each
+  // fold's ridge capped by a steel corner guard at the top and bottom edges.
+  const N = 16;
   const folds: { a: [number, number]; b: [number, number] }[] = [];
   // u = −z: the treble inner face at u = −TREBLE.z0, the bass inner face from it.top to it.bottom.
   for (let i = 0; i <= N; i++) {
@@ -95,20 +97,39 @@ function Bellows({ top, bottom, view }: { top: number; bottom: number; view: 'fr
   });
   const guards = make();
   if (view === 'front') {
+    // Steel corner protectors on every ridge, top and bottom (an L-shaped
+    // corner seen square-on: a small plate with a turned edge).
     folds.forEach((f, i) => {
-      if (i === 0 || i === N) return;
-      guards.addRRect(Skia.RRectXY(Skia.XYWHRect(f.a[0] - 7, f.a[1] - 4, 14, 14), 2, 2));
-      guards.addRRect(Skia.RRectXY(Skia.XYWHRect(f.b[0] - 7, f.b[1] - 10, 14, 14), 2, 2));
+      if (i === 0 || i === N || i % 2 === 1) return;
+      guards.addRRect(Skia.RRectXY(Skia.XYWHRect(f.a[0] - 6, f.a[1] - 5, 12, 16), 2, 2));
+      guards.addRRect(Skia.RRectXY(Skia.XYWHRect(f.b[0] - 6, f.b[1] - 11, 12, 16), 2, 2));
     });
   }
   const bb = body.getBounds();
+  // Each pleat is two facets folded toward and away from the viewer: the one
+  // turned to the upper-left light lit, the other in shade, so the bellows
+  // read as folded card and cloth, not a flat panel.
+  // Fold lines alternate RIDGE (even, toward the viewer) and VALLEY (odd):
+  // the facet running ridge -> valley faces the upper-left light, the next
+  // one is in shade.
+  const lit = make();
+  const shade = make();
+  for (let i = 0; i < N; i++) {
+    const f0 = folds[i];
+    const f1 = folds[i + 1];
+    (i % 2 === 0 ? lit : shade).addPath(poly([f0.a, f1.a, f1.b, f0.b]));
+  }
   return (
     <Group>
       <Path path={body}>
         <LinearGradient start={vec(bb.x, bb.y)} end={vec(bb.x + bb.width, bb.y + bb.height)} colors={CLOTH} />
       </Path>
-      <Path path={lines} style="stroke" strokeWidth={5} color="#5c606a" opacity={0.85} />
-      <Path path={lines} style="stroke" strokeWidth={1.4} color="#c9d0da" opacity={0.5} />
+      <Group clip={body}>
+        <Path path={lit} color="#6a6e7a" opacity={0.7} />
+        <Path path={shade} color="#050506" opacity={0.7} />
+      </Group>
+      <Path path={lines} style="stroke" strokeWidth={2.2} color="#5c606a" opacity={0.85} />
+      <Path path={lines} style="stroke" strokeWidth={0.9} color="#c9d0da" opacity={0.45} />
       {view === 'front' ? <Path path={guards} color="#c9d0da" opacity={0.9} /> : null}
       <Path path={body} style="stroke" strokeWidth={2} color="#0b0b0d" />
     </Group>
@@ -122,24 +143,62 @@ function TrebleFront({ hi }: { hi: string | null }): ReactElement {
   const u1 = -TREBLE.z0;
   const face = rr(u0, TREBLE.y0, u1, TREBLE.y1, 14);
   const grille = rr(-GRILLE.z1, GRILLE.y0, -GRILLE.z0, GRILLE.y1, 10);
-  // The grille's fretwork: rows of small arches.
+  // The grille's fretwork: a pierced chrome plate, a lattice of diamond
+  // openings in staggered rows (dark cloth behind), inside a plain border.
   const fret = make();
-  for (let y = GRILLE.y0 + 18; y < GRILLE.y1 - 10; y += 22) {
-    for (let x = -GRILLE.z1 + 10; x < -GRILLE.z0 - 8; x += 15) fret.addArc(Skia.XYWHRect(x, y, 11, 16), 180, 180);
+  let row = 0;
+  for (let y = GRILLE.y0 + 20; y < GRILLE.y1 - 16; y += 15, row++) {
+    for (let x = -GRILLE.z1 + 14 + (row % 2) * 7; x < -GRILLE.z0 - 12; x += 14) {
+      fret.moveTo(x, y - 6);
+      fret.lineTo(x + 4.5, y);
+      fret.lineTo(x, y + 6);
+      fret.lineTo(x - 4.5, y);
+      fret.close();
+    }
   }
+  // The keyboard seen along its edge: a full-size piano accordion's 41 keys,
+  // F to A over three and a half octaves (real-world: 24 white keys at about
+  // 19 mm, each about 14 mm deep at its front edge, the 17 black keys
+  // standing about 8 mm proud of them, lowest at the top). Each white key's
+  // rounded front end in relief, a dark gap between keys; each black key a
+  // raised block with its own lit top edge.
   const keyEdge = make();
-  for (let y = KEYS.y0; y < KEYS.y1; y += 18) keyEdge.addRRect(Skia.RRectXY(Skia.XYWHRect(u0 + 2, y + 1, 20, 15), 2, 2));
+  const keyLit = make();
+  const blackEdge = make();
+  const blackLit = make();
+  const pitch = (KEYS.y1 - KEYS.y0) / 24;
+  const WHITE = ['F', 'G', 'A', 'B', 'C', 'D', 'E'];
+  for (let k = 0; k < 24; k++) {
+    const y = KEYS.y0 + k * pitch;
+    keyEdge.addRRect(Skia.RRectXY(Skia.XYWHRect(u0 - 4, y + 1, 28, pitch - 2), 3.5, 3.5));
+    keyLit.addRRect(Skia.RRectXY(Skia.XYWHRect(u0 - 3, y + 1.8, 26, (pitch - 2) * 0.32), 2, 2));
+    const n = WHITE[k % 7];
+    // A black key after F, G, A, C and D (none after B or E), not after the top A.
+    if (k < 23 && n !== 'B' && n !== 'E') {
+      blackEdge.addRRect(Skia.RRectXY(Skia.XYWHRect(u0 - 13, y + pitch - 5.5, 22, 11), 2.4, 2.4));
+      blackLit.addRRect(Skia.RRectXY(Skia.XYWHRect(u0 - 12, y + pitch - 4.6, 20, 3), 1.2, 1.2));
+    }
+  }
   const tabs = make();
   for (let k = 0; k < 7; k++) tabs.addRRect(Skia.RRectXY(Skia.XYWHRect(u0 + 30 + k * 22, TREBLE.y0 - 14, 16, 18), 3, 3));
   return (
     <Group>
       <Lacquer path={face} box={{ u0, v0: TREBLE.y0, u1, v1: TREBLE.y1 }} hi={hi === 'ac.treble'} />
-      <Path path={keyEdge} color="#f3f1ea" />
-      <Path path={keyEdge} style="stroke" strokeWidth={1.2} color="#3a3d45" />
+      <Path path={keyEdge}>
+        <LinearGradient start={vec(u0 - 4, 0)} end={vec(u0 + 24, 0)} colors={['#ffffff', '#f3f1ea', '#cfcabc']} />
+      </Path>
+      <Path path={keyLit} color="#ffffff" opacity={0.7} />
+      <Path path={keyEdge} style="stroke" strokeWidth={1.4} color="#2a2c31" />
+      <Path path={blackEdge} color="#000000" opacity={0.45} transform={[{ translateX: 2 }, { translateY: 2 }]} />
+      <Path path={blackEdge}>
+        <LinearGradient start={vec(u0 - 13, 0)} end={vec(u0 + 9, 0)} colors={['#55575e', '#1c1d20', '#060607']} />
+      </Path>
+      <Path path={blackLit} color="#9aa0aa" opacity={0.8} />
       <Path path={grille}>
         <LinearGradient start={vec(-GRILLE.z1, GRILLE.y0)} end={vec(-GRILLE.z0, GRILLE.y1)} colors={CHROME} />
       </Path>
-      <Path path={fret} style="stroke" strokeWidth={4} color="#1b1c20" />
+      <Path path={fret} color="#141519" />
+      <Path path={fret} style="stroke" strokeWidth={0.8} color="#ffffff" opacity={0.35} />
       <Path path={grille} style="stroke" strokeWidth={2} color="#3a3d45" />
       <Path path={tabs}>
         <LinearGradient start={vec(u0, TREBLE.y0 - 14)} end={vec(u0, TREBLE.y0 + 4)} colors={['#ffffff', '#c9d0da', '#6a7280']} />
@@ -155,17 +214,73 @@ function BassFront({ top, bottom, hi }: { top: number; bottom: number; hi: strin
   const P = (q: { z: number; y: number }) => [-q.z, q.y] as [number, number];
   const face = poly([P(b.it), P(b.ib), P(b.ob), P(b.ot)]);
   const fb = face.getBounds();
-  // The strap across the bass side's end, and the air button on it.
+  // The bass box has real depth (real-world about 180 mm front to back, its
+  // outer END face about 480 x 180). Swung out on a pull it turns a little
+  // toward the audience, so a strip of that end face shows beyond the outer
+  // edge: on it the left-hand BASS STRAP (leather about 40 mm wide, a buckle
+  // at the top), the AIR BUTTON near the top front, and toward the player
+  // the button board's field of bass buttons (about 120 in 6 rows of 20 at
+  // about 15 mm, seen foreshortened).
+  const du = -(b.ob.z - b.ot.z);
+  const dv = b.ob.y - b.ot.y;
+  const dl = Math.hypot(du, dv) || 1;
+  const tu = du / dl;
+  const tv = dv / dl;
+  // The outward normal of the outer edge (toward +u, away from the bellows).
+  const nu = tv >= 0 ? tv : -tv;
+  const nv = tv >= 0 ? -tu : tu;
+  const E = 88; // the end face's apparent width
+  const A = P(b.ot);
+  const B = P(b.ob);
+  const at = (f: number, g: number): [number, number] => [A[0] + (B[0] - A[0]) * f + nu * E * g, A[1] + (B[1] - A[1]) * f + nv * E * g];
+  const endFace = poly([at(0, 0), at(1, 0), at(1, 1), at(0, 1)]);
+  const eb = endFace.getBounds();
+  // The button board: the rear 45 % of the end face, a field of buttons.
+  const board = poly([at(0.06, 0.55), at(0.94, 0.55), at(0.94, 0.96), at(0.06, 0.96)]);
+  const buttons = make();
+  for (let r = 0; r < 20; r++) {
+    for (let c = 0; c < 6; c++) {
+      const q = at(0.1 + (r / 19) * 0.8, 0.6 + (c / 5) * 0.32);
+      buttons.addOval(Skia.XYWHRect(q[0] - 2.8, q[1] - 3.6, 5.6, 7.2));
+    }
+  }
+  // The strap over the front part of the end face, its stitching and buckle.
   const strap = make();
-  strap.moveTo(-b.ot.z - 10, b.ot.y + 90);
-  strap.lineTo(-b.ob.z - 10, b.ob.y - 90);
+  const s0 = at(0.16, 0.24);
+  const s1 = at(0.9, 0.24);
+  strap.moveTo(s0[0], s0[1]);
+  strap.lineTo(s1[0], s1[1]);
+  const stitch = make();
+  for (const g of [0.14, 0.34]) {
+    const q0 = at(0.17, g);
+    const q1 = at(0.89, g);
+    stitch.moveTo(q0[0], q0[1]);
+    stitch.lineTo(q1[0], q1[1]);
+  }
+  const bk = at(0.13, 0.24);
+  const buckle = rr(bk[0] - 13, bk[1] - 9, bk[0] + 13, bk[1] + 9, 3);
+  const air = at(0.05, 0.3);
   return (
     <Group>
-      <Lacquer path={face} box={{ u0: fb.x, v0: fb.y, u1: fb.x + fb.width, v1: fb.y + fb.height }} hi={hi === 'ac.bassSide'} />
-      <Path path={strap} style="stroke" strokeWidth={34} strokeCap="round" color="#141519" />
-      <Path path={strap} style="stroke" strokeWidth={28} strokeCap="round">
-        <LinearGradient start={vec(-b.ot.z, b.ot.y)} end={vec(-b.ob.z, b.ob.y)} colors={['#6a4a2e', '#3c2615', '#24170c']} />
+      <Path path={endFace}>
+        <LinearGradient start={vec(eb.x, eb.y)} end={vec(eb.x + eb.width, eb.y + eb.height)} colors={['#7a1d23', '#561519', '#2c0a0c', '#1a0607']} />
       </Path>
+      <Path path={board} color="#141416" />
+      <Path path={buttons}>
+        <LinearGradient start={vec(eb.x, eb.y)} end={vec(eb.x + eb.width, eb.y + eb.height)} colors={['#ffffff', '#d9dbe0', '#9aa0aa']} />
+      </Path>
+      <Path path={endFace} style="stroke" strokeWidth={2} color="#e1e4ea" opacity={0.55} />
+      <Lacquer path={face} box={{ u0: fb.x, v0: fb.y, u1: fb.x + fb.width, v1: fb.y + fb.height }} hi={hi === 'ac.bassSide'} />
+      <Path path={strap} style="stroke" strokeWidth={30} strokeCap="butt" color="#120c07" />
+      <Path path={strap} style="stroke" strokeWidth={26} strokeCap="butt">
+        <LinearGradient start={vec(s0[0], s0[1])} end={vec(s1[0], s1[1])} colors={['#7a5634', '#4a2f18', '#2c1b0d']} />
+      </Path>
+      <Path path={stitch} style="stroke" strokeWidth={1.2} color="#c9a36e" opacity={0.75}>
+        <DashPathEffect intervals={[5, 4]} />
+      </Path>
+      <Path path={buckle} style="stroke" strokeWidth={3.2} color="#d9dde4" />
+      <Circle cx={air[0]} cy={air[1]} r={8} color="#d9dde4" />
+      <Circle cx={air[0] - 2} cy={air[1] - 2} r={4} color="#ffffff" opacity={0.8} />
       {hi === 'ac.strap' ? <Path path={strap} style="stroke" strokeWidth={46} strokeCap="round" color={HIGHLIGHT} opacity={0.5} /> : null}
     </Group>
   );

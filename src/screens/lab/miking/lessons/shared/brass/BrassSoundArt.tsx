@@ -415,6 +415,7 @@ export function MuteView({ w, h, P, mute, accessibilityLabel }: { w: number; h: 
     const extra = make();
     const corks = make();
     const hand = make();
+    const shine = make();
     const k = R / 61.5; // trumpet = 1
     if (mute === 'straight' || mute === 'cup') {
       // A truncated cone from deep in the bell out past the rim (drawing default).
@@ -427,6 +428,14 @@ export function MuteView({ w, h, P, mute, accessibilityLabel }: { w: number; h: 
       body.lineTo(xb, R * 0.78);
       body.lineTo(xa, bellRadius(spec, xa) * 0.55);
       body.close();
+      // Spun aluminium (real-world, trumpet: about 150 mm long, the closed
+      // end about dia. 95 mm): a sheen line along the upper flank, the
+      // turned edge of the closed end.
+      const ra = bellRadius(spec, xa) * 0.55;
+      shine.moveTo(xa + 8, -ra * 0.6);
+      shine.lineTo(xb - 4 * k, -R * 0.78 * 0.62);
+      shine.moveTo(xb + 3 * k, -R * 0.7);
+      shine.lineTo(xb + 3 * k, R * 0.7);
       for (const s of [-1, 1]) {
         const x = -F * 0.32;
         const r = bellRadius(spec, x);
@@ -469,7 +478,7 @@ export function MuteView({ w, h, P, mute, accessibilityLabel }: { w: number; h: 
       hand.addRRect(Skia.RRectXY(Skia.XYWHRect(80 * k, -34 * k, 70 * k, 68 * k), 30 * k, 30 * k));
       hand.addRRect(Skia.RRectXY(Skia.XYWHRect(140 * k, -18 * k, 90 * k, 36 * k), 18 * k, 18 * k));
     }
-    return { body, extra, corks, hand };
+    return { body, extra, corks, hand, shine };
   }, [mute, spec, F, R]);
   const metal = mute === 'plunger' ? ['#a3362a', '#6e1f17', '#3a0d09'] : ['#f6f8fb', '#b8bec8', '#6b717c'];
   const labels: StaticLabel[] = [
@@ -490,6 +499,7 @@ export function MuteView({ w, h, P, mute, accessibilityLabel }: { w: number; h: 
           <Path path={m.body}>
             <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={metal} />
           </Path>
+          <Path path={m.shine} style="stroke" strokeWidth={2.4} color="#ffffff" opacity={0.7} strokeCap="round" />
           <Path path={m.body} style="stroke" strokeWidth={2} color="#15171b" />
           <Path path={m.extra}>
             <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={mute === 'cup' ? ['#e9edf2', '#9aa1ad', '#4d535e'] : ['#f6f8fb', '#b8bec8', '#6b717c']} />

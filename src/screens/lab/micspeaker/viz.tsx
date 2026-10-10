@@ -929,7 +929,8 @@ export function PolarPatternView({
         />
         <BlurMask blur={7} style="normal" />
       </Circle>
-      <CabinetSide x={sx} y={sy} tiltDeg={srcTiltDeg} scale={1.55} />
+      {/* the source in PLAN (this scene is the horizontal plane): front face toward the mic */}
+      <CabinetTop x={sx} y={sy} aimDeg={90 - srcTiltDeg} scale={1.3} />
      </Group>
     </Canvas>
   );
@@ -3150,8 +3151,12 @@ export function classifyCoverage(lvl: number): CoverageClass {
   return 'gray';
 }
 
-/** Top-view PA cabinet: trapezoid box + face gradient + horn slot (local
- *  coords, front face toward +y — matching the aim convention). */
+/** Top-view (PLAN) PA cabinet — art pass 2026-10-10. A two-way 12-inch top
+ *  is 380 mm wide at the baffle, ~250 mm at the back and 370 mm deep (the
+ *  trapezoid lets boxes splay side by side): front half-width 11.5 s, back
+ *  7.6 s, depth 22 s keep those ratios. From above you see the lid and the
+ *  front grille's top edge — never the horn or the woofer, which face
+ *  forward. Local coords: front face toward +y, origin at the front face. */
 function CabinetTop({
   x,
   y,
@@ -3170,33 +3175,43 @@ function CabinetTop({
   tint?: string;
 }) {
   const s = (small ? 0.62 : 1) * scale;
-  const path = useMemo(() => {
+  const { path, grille, lid } = useMemo(() => {
+    const bw = 7.6 * s; // back half-width (250 mm)
+    const fw = 11.5 * s; // front half-width (380 mm)
+    const d = 22 * s; // depth (370 mm)
     const p = Skia.Path.Make();
-    const bw = 7.5 * s; // back half-width
-    const fw = 11.5 * s; // front half-width
-    const d = 17 * s; // depth
     p.moveTo(-bw, -d);
     p.lineTo(bw, -d);
     p.lineTo(fw, 0);
     p.lineTo(-fw, 0);
     p.close();
-    return p;
-  }, [s]);
-  const horn = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(-6.5 * s, -4.2 * s, 13 * s, 2.6 * s), 1.2 * s, 1.2 * s));
-    return p;
+    // the grille's top edge: a 1.2 s strip along the baffle
+    const g = Skia.Path.Make();
+    g.moveTo(-fw + 0.4 * s, -1.4 * s);
+    g.lineTo(fw - 0.4 * s, -1.4 * s);
+    g.lineTo(fw - 0.1 * s, -0.2 * s);
+    g.lineTo(-fw + 0.1 * s, -0.2 * s);
+    g.close();
+    // the lid's rim highlight (upper-left light) and two flying points
+    const l = Skia.Path.Make();
+    l.moveTo(-bw + 0.8 * s, -d + 0.9 * s);
+    l.lineTo(-fw + 1.2 * s, -2.2 * s);
+    l.addCircle(0, -d * 0.3, 0.7 * s);
+    l.addCircle(0, -d * 0.8, 0.7 * s);
+    return { path: p, grille: g, lid: l };
   }, [s]);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (-aimDeg * Math.PI) / 180 }]}>
       <Path path={path}>
-        <LinearGradient start={vec(-10 * s, -17 * s)} end={vec(10 * s, 0)} colors={[BODY_HI, BODY_LO]} />
+        <LinearGradient start={vec(-10 * s, -22 * s)} end={vec(10 * s, 0)} colors={[BODY_HI, BODY_LO]} />
       </Path>
       <Path path={path} color={tint ?? '#5a5e6a'} style="stroke" strokeWidth={tint ? 1.6 : 1.1} />
-      <Path path={horn} color="#101116" />
+      <Path path={grille} color="#0c0d10" />
+      <Path path={lid} color="#8a8f9c" style="stroke" strokeWidth={0.6} opacity={0.5} />
     </Group>
   );
 }
+
 
 export function TopCoverageView({
   width,
@@ -3398,41 +3413,64 @@ export function TopCoverageView({
 // ─────────────────────────────────────────────────────────────────────────────
 // SPEAKER LAB · Side view — height, tilt, vertical coverage, delay concept
 
-/** Side-view PA cabinet: rounded trapezoid, woofer cone + dust cap, horn slot.
- *  Local coords: front face toward +x; rotate = down-tilt. */
-function CabinetSide({ x, y, tiltDeg, scale = 1 }: { x: number; y: number; tiltDeg: number; scale?: number }) {
+/** Side-ELEVATION PA cabinets — art pass 2026-10-10. In a side view the
+ *  baffle is edge-on: you see the side panel, the front grille's edge, the
+ *  handle pocket and the hardware — never the woofer's face.
+ *  • 'top' (default): two-way 12-inch top, 620 H × 370 D mm → 18 × 10.7 s;
+ *    side handle pocket, pole-mount cup underneath, rigging points on top.
+ *  • 'array': line-array element, 300 H × 450 D mm → 18 × 27 s at its
+ *    (smaller) scale; the side tapers to ~220 mm at the back so neighbouring
+ *    boxes can splay, with the rigging frames (link plates) front and rear.
+ *  Local coords: front face toward +x at x = +4.5 s; rotate = down-tilt;
+ *  spans y −9 s … +9 s (CAB_DRAWN_H) at the front face. */
+function CabinetSide({ x, y, tiltDeg, scale = 1, kind = 'top' }: { x: number; y: number; tiltDeg: number; scale?: number; kind?: 'top' | 'array' }) {
   const s = scale;
-  const box = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.moveTo(-8 * s, -7 * s);
-    p.lineTo(10.5 * s, -9 * s);
-    p.quadTo(12 * s, -9 * s, 12 * s, -7.5 * s);
-    p.lineTo(12 * s, 7.5 * s);
-    p.quadTo(12 * s, 9 * s, 10.5 * s, 9 * s);
-    p.lineTo(-8 * s, 7 * s);
-    p.quadTo(-9.5 * s, 6.5 * s, -9.5 * s, 5 * s);
-    p.lineTo(-9.5 * s, -5 * s);
-    p.quadTo(-9.5 * s, -6.5 * s, -8 * s, -7 * s);
-    p.close();
-    return p;
-  }, [s]);
-  const horn = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(6 * s, -6.6 * s, 4.6 * s, 4.4 * s), 1.2 * s, 1.2 * s));
-    return p;
-  }, [s]);
+  const geo = useMemo(() => {
+    const fx = 4.5 * s; // front face
+    const box = Skia.Path.Make();
+    const grille = Skia.Path.Make();
+    const detail = Skia.Path.Make();
+    const hw = Skia.Path.Make(); // hardware (metal)
+    if (kind === 'array') {
+      const rx = fx - 27 * s; // rear
+      const rh = 6.6 * s; // rear half-height (220 mm)
+      box.moveTo(fx, -9 * s);
+      box.lineTo(rx, -rh);
+      box.lineTo(rx, rh);
+      box.lineTo(fx, 9 * s);
+      box.close();
+      grille.addRect(Skia.XYWHRect(fx - 1.2 * s, -9 * s, 1.2 * s, 18 * s));
+      // handle pocket mid-side
+      detail.addRRect(Skia.RRectXY(Skia.XYWHRect(rx + 9 * s, -1.6 * s, 7 * s, 3.2 * s), 1.4 * s, 1.4 * s));
+      // rigging link plates: front pair + rear pair, top and bottom
+      for (const yy of [-9, 9]) {
+        hw.addRRect(Skia.RRectXY(Skia.XYWHRect(fx - 4.2 * s, yy * s - 1 * s, 2.6 * s, 2 * s), 0.5 * s, 0.5 * s));
+      }
+      for (const yy of [-rh, rh]) {
+        hw.addRRect(Skia.RRectXY(Skia.XYWHRect(rx + 0.4 * s, yy - 1.1 * s, 3.2 * s, 2.2 * s), 0.5 * s, 0.5 * s));
+      }
+    } else {
+      const rx = fx - 10.7 * s;
+      box.addRRect(Skia.RRectXY(Skia.XYWHRect(rx, -9 * s, 10.7 * s, 18 * s), 1 * s, 1 * s));
+      grille.addRect(Skia.XYWHRect(fx - 0.9 * s, -8.8 * s, 0.9 * s, 17.6 * s));
+      // recessed side handle (upper third) + the side's wood-panel seam
+      detail.addRRect(Skia.RRectXY(Skia.XYWHRect(rx + 2.6 * s, -5.6 * s, 4.6 * s, 2.2 * s), 1 * s, 1 * s));
+      // pole-mount cup under the box, rigging points on top
+      hw.addRRect(Skia.RRectXY(Skia.XYWHRect(rx + 4 * s, 9 * s, 2.6 * s, 1.2 * s), 0.3 * s, 0.3 * s));
+      hw.addCircle(rx + 2.2 * s, -9.4 * s, 0.6 * s);
+      hw.addCircle(fx - 2.2 * s, -9.4 * s, 0.6 * s);
+    }
+    return { box, grille, detail, hw };
+  }, [s, kind]);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (tiltDeg * Math.PI) / 180 }]}>
-      <Path path={box}>
-        <LinearGradient start={vec(-9 * s, -9 * s)} end={vec(12 * s, 9 * s)} colors={[BODY_HI, BODY_LO]} />
+      <Path path={geo.box}>
+        <LinearGradient start={vec(-9 * s, -9 * s)} end={vec(6 * s, 9 * s)} colors={[BODY_HI, BODY_LO]} />
       </Path>
-      <Path path={box} color="#5a5e6a" style="stroke" strokeWidth={1.1} />
-      {/* Woofer: radial-gradient cone + dust cap. */}
-      <Circle cx={7.2 * s} cy={3 * s} r={4.6 * s}>
-        <RadialGradient c={vec(6 * s, 1.6 * s)} r={7 * s} colors={['#787c88', '#26272e']} />
-      </Circle>
-      <Circle cx={7.2 * s} cy={3 * s} r={1.5 * s} color="#a7abb6" />
-      <Path path={horn} color="#101116" />
+      <Path path={geo.box} color="#5a5e6a" style="stroke" strokeWidth={1.1} />
+      <Path path={geo.grille} color="#0c0d10" />
+      <Path path={geo.detail} color="#101116" />
+      <Path path={geo.hw} color="#8a8f9c" />
     </Group>
   );
 }
@@ -3911,11 +3949,26 @@ export function SideCoverageView({
           <LinearGradient start={vec(4, stageTop)} end={vec(4, floorY)} colors={['#2b2d36', '#15161b']} />
         </Path>
         <Path path={geo.stage} color="#454854" style="stroke" strokeWidth={1.2} />
-        {/* Guitarist on stage — a true ~1.7 m human next to the ~0.6 m cabinet. */}
-        <Guitarist x={stageW * 0.6} footY={stageTop} scale={guitaristScale} tint={ACCENT_ORANGE} />
+        {/* Guitarist on stage — a true ~1.7 m human next to the ~0.6 m cabinet.
+            Art pass round 2 (2026-10-10): stands UPSTAGE of the PA (x = 4 + 0.12
+            of the deck), the way a real stage is laid out — the flown PA hangs
+            over the downstage edge (spkX 30), never over a performer's head.
+            Position only; the figure and the level model are untouched. */}
+        <Guitarist x={4 + stageW * 0.12} footY={stageTop} scale={guitaristScale} tint={ACCENT_ORANGE} />
+        {/* The rigging that makes "flown" true: the hoist line from the top
+            of the hang to the ceiling and, for the array, its fly bar. Drawing
+            only — the boxes' own positions are the model's sources. */}
+        {lineArray ? (
+          <>
+            <SkLine p1={{ x: spkX - 4, y: arrayBoxes[0].y - 9 * boxScale - 2.2 }} p2={{ x: spkX - 4, y: ceilY }} color="#8a8f9c" strokeWidth={0.7} opacity={0.75} />
+            <SkLine p1={{ x: spkX - 10 * boxScale * 1.4 - 2, y: arrayBoxes[0].y - 9 * boxScale - 1.6 }} p2={{ x: spkX + 2, y: arrayBoxes[0].y - 9 * boxScale - 1.6 }} color="#5a5e6a" strokeWidth={1.8} strokeCap="round" />
+          </>
+        ) : (
+          <SkLine p1={{ x: spkX - 1, y: spkY - 9 * cabScale - 0.6 }} p2={{ x: spkX - 1, y: ceilY }} color="#8a8f9c" strokeWidth={0.7} opacity={0.75} />
+        )}
         {/* Cabinets: single flown box, OR the splayed line-array hang. */}
         {lineArray ? (
-          arrayBoxes.map((b, i) => <CabinetSide key={i} x={b.x} y={b.y} tiltDeg={b.tilt} scale={boxScale} />)
+          arrayBoxes.map((b, i) => <CabinetSide key={i} kind="array" x={b.x} y={b.y} tiltDeg={b.tilt} scale={boxScale} />)
         ) : (
           <CabinetSide x={spkX} y={spkY} tiltDeg={tiltDeg} scale={cabScale} />
         )}

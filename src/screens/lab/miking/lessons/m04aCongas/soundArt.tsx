@@ -1,23 +1,23 @@
 /**
  * M04a CONGAS — HOW IT SOUNDS, drawn: the tumba cut open down its middle
  * under the family's numbered overlay (shared/handdrums/handSoundArt.tsx).
- * The section follows the model's drawing-default taper (model.ts); the tall
+ * The section follows the elevation's bellied stave outline (art.tsx); the tall
  * shell is SHORTENED (a labelled break) so the head stays large on a phone.
  * The strike lands near the rim, where an open tone is played (WP-CONGA).
  */
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import { HandStrikeSequence, sectionMap, type SectionSpec } from '../shared/handdrums/handSoundArt';
+import { shellProfile } from '../shared/handdrums/handDrumArt';
+import { BELLY } from './art';
 import { HEAD_Y, TUMBA } from './model.ts';
 import { CONGA_MODEL } from './geometry.ts';
 
 function spec(variant: VariantId): SectionSpec {
   return {
     drum: TUMBA,
-    profile: [
-      { y: HEAD_Y, r: TUMBA.R },
-      { y: 0, r: TUMBA.rBottom },
-    ],
+    // The same bellied outline as the elevation (art.tsx).
+    profile: shellProfile(TUMBA, BELLY),
     wall: 14,
     material: 'wood',
     head: 'rawhide',

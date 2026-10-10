@@ -21,7 +21,12 @@ import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const WOOD = ['#c48f52', '#8a5426', '#5c3417', '#2f1b0a'];
-const METAL = ['#f2d8b8', '#c8915e', '#8a5a32', '#3a2414'];
+/* The bayan's kettle: chromed copper (the reference pair), so a polished
+ * chrome ramp — a bright upper-left highlight falling to deep shade — not a
+ * matt tan that reads as cloth. Real-object reference: bayan ~ 230–250 mm
+ * head, ~ 280 mm at its widest, ~ 250–280 mm tall; dayan ~ 140–150 mm head
+ * on a ~ 250 mm wooden shell. */
+const METAL = ['#f4f6fa', '#aeb4bf', '#555a64', '#1e2026'];
 const SKIN = ['#efe2c4', '#dccaa2', '#b8a072'];
 const PATCH = ['#3a3d45', '#15161a', '#050506'];
 
@@ -47,14 +52,28 @@ function profile(d: TablaDrum, s: number): number {
           [0.85, 0.91],
           [1, 0.9],
         ];
-  for (let i = 1; i < pts.length; i++) {
+  // A monotone cubic through the points (Fritsch–Carlson): one smooth wall,
+  // no flat spot at every knot (a smoothstep per span made the walls wobble).
+  const n = pts.length;
+  const dl = (k: number) => (pts[k + 1][1] - pts[k][1]) / (pts[k + 1][0] - pts[k][0]);
+  const m = (k: number) => {
+    if (k === 0) return dl(0);
+    if (k === n - 1) return dl(n - 2);
+    const a = dl(k - 1);
+    const b = dl(k);
+    return a * b <= 0 ? 0 : (2 * a * b) / (a + b);
+  };
+  for (let i = 1; i < n; i++) {
     if (t <= pts[i][0]) {
-      const k = (t - pts[i - 1][0]) / (pts[i][0] - pts[i - 1][0]);
-      const e = k * k * (3 - 2 * k);
-      return d.maxR * (pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * e);
+      const h = pts[i][0] - pts[i - 1][0];
+      const k = (t - pts[i - 1][0]) / h;
+      const k2 = k * k;
+      const k3 = k2 * k;
+      const v = (2 * k3 - 3 * k2 + 1) * pts[i - 1][1] + (k3 - 2 * k2 + k) * h * m(i - 1) + (-2 * k3 + 3 * k2) * pts[i][1] + (k3 - k2) * h * m(i);
+      return d.maxR * v;
     }
   }
-  return d.maxR * pts[pts.length - 1][1];
+  return d.maxR * pts[n - 1][1];
 }
 export const tablaProfile = profile;
 

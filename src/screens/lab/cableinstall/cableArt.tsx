@@ -396,13 +396,15 @@ function XlrBody() {
       </RoundedRect>
       {/* latch button on the shell */}
       <RoundedRect x={11} y={-10} width={6} height={3.4} r={1.4} color={METAL_MID} />
-      {/* pin cup */}
-      <RoundedRect x={25} y={-6.2} width={7} height={12.4} r={2.4}>
-        <LinearGradient start={vec(25, -6.2)} end={vec(25, 6.2)} colors={[METAL_MID, METAL_LO]} />
+      {/* the female front (art pass 2026-10-10): a SIDE view never shows the
+          socket holes — they are on the end face. The shell runs on to a
+          chamfered nose with the black insert's rim just showing at the end.
+          Female cable XLR class: Ø19 × ~50 mm body. */}
+      <RoundedRect x={25} y={-7.1} width={7} height={14.2} r={1.6}>
+        <LinearGradient start={vec(25, -7.1)} end={vec(25, 7.1)} colors={[METAL_HI, METAL_MID, METAL_LO]} positions={[0, 0.45, 1]} />
       </RoundedRect>
-      <Circle cx={28.5} cy={-2.4} r={1.15} color="#101216" />
-      <Circle cx={28.5} cy={2.4} r={1.15} color="#101216" />
-      <Circle cx={31} cy={0} r={1.15} color="#101216" />
+      <Path path={mk('M25 -7.1 L25.6 -7.1 L25.6 7.1 L25 7.1 Z')!} color="#0d0f12" opacity={0.7} />
+      <Path path={mk('M32 -6.2 L33.2 -5.2 L33.2 5.2 L32 6.2 Z')!} color="#15171b" />
       <Path path={mk('M8 -6.6 L25 -6.6')!} style="stroke" strokeWidth={1.1} color={RIM} />
     </>
   );

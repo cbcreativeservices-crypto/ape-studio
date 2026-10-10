@@ -45,15 +45,50 @@ function bellPath(bow: number) {
   return p;
 }
 
+/* Real-object reference (drawing only): a 7 in (178 mm) Latin/rock bell —
+ * pressed sheet steel, a closed end ~70 × 40 mm opening to a ~100 × 60 mm
+ * mouth with a rolled (hemmed) edge; the folded corners run its length; a
+ * steel mounting bracket with an eyebolt clamp is welded on top near the
+ * closed end. */
+function bracketPath() {
+  const p = make();
+  const xa = -L / 2 + 14;
+  const xb = -L / 2 + 50;
+  // the top wall's height at the plate's far end (the wall rises toward the mouth)
+  const yTop = -H0 / 2 - ((H1 - H0) / 2) * ((xb + L / 2) / L);
+  // a saddle plate welded on the top wall, a raised clamp block, the eyebolt's head
+  rrect(p, xa, yTop - 3, xb, yTop + 2.5, 1.5);
+  rrect(p, xa + 8, yTop - 16, xb - 8, yTop - 3, 2);
+  return p;
+}
+
 function BellBody({ bow, muted }: { bow: number; muted: boolean }) {
-  const g = useMemo(() => ({ body: bellPath(bow), rest: bellPath(0), lip: rrect(make(), L / 2 - 7, -H1 / 2 - 2, L / 2 + 2, H1 / 2 + 2, 2), cushion: rrect(make(), L / 2 - 34, -H1 / 2 + 6, L / 2 - 4, H1 / 2 - 6, 8) }), [bow]);
+  const g = useMemo(() => {
+    // the folded corner along the top (lit) and the bottom (shade), following the walls
+    const corner = make();
+    corner.moveTo(-L / 2 + 4, -H0 / 2 + 3);
+    corner.quadTo(0, -(H0 + H1) / 4 - bow * 2 + 3, L / 2 - 8, -H1 / 2 + 3);
+    const cornerLow = make();
+    cornerLow.moveTo(-L / 2 + 4, H0 / 2 - 3);
+    cornerLow.quadTo(0, (H0 + H1) / 4 + bow * 2 - 3, L / 2 - 8, H1 / 2 - 3);
+    const eye = make();
+    eye.addCircle(-L / 2 + 32, -H0 / 2 - 22.5, 4.5);
+    return { body: bellPath(bow), rest: bellPath(0), lip: rrect(make(), L / 2 - 7, -H1 / 2 - 2, L / 2 + 2, H1 / 2 + 2, 2), cushion: rrect(make(), L / 2 - 34, -H1 / 2 + 6, L / 2 - 4, H1 / 2 - 6, 8), corner, cornerLow, bracket: bracketPath(), eye };
+  }, [bow]);
   return (
     <Group>
       <Path path={g.rest} style="stroke" strokeWidth={1.2} color="#8a8f9c" opacity={Math.abs(bow) > 0.5 ? 0.6 : 0} />
       <Path path={g.body}>
         <LinearGradient start={vec(0, -H1 / 2)} end={vec(0, H1 / 2)} colors={BELL_BLACK} />
       </Path>
+      <Path path={g.corner} style="stroke" strokeWidth={1.6} color="#9aa0ab" opacity={0.55} />
+      <Path path={g.cornerLow} style="stroke" strokeWidth={1.2} color="#000" opacity={0.5} />
       <Path path={g.body} style="stroke" strokeWidth={1.4} color={INK} />
+      <Path path={g.bracket}>
+        <LinearGradient start={vec(0, -H0 / 2 - 18)} end={vec(0, -H0 / 2)} colors={['#c8ccd4', '#6d727c', '#2a2c32']} />
+      </Path>
+      <Path path={g.bracket} style="stroke" strokeWidth={0.9} color={INK} />
+      <Path path={g.eye} style="stroke" strokeWidth={2} color="#9aa0ab" />
       <Path path={g.lip}>
         <LinearGradient start={vec(0, -H1 / 2)} end={vec(0, H1 / 2)} colors={BELL_CHROME} />
       </Path>

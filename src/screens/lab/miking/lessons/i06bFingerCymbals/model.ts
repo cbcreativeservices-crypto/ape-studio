@@ -47,21 +47,33 @@ export const RA = FC.dA.mm / 2;
 export const RB = FC.dB.mm / 2;
 
 /**
- * A finger cymbal's profile, seen edge-on (u across, v up = −): a flat
- * flange and a raised dome, total height `h`. Points from one rim to the
- * other along the TOP surface (the dome's top at −h·0.7, a drawing choice).
+ * A finger cymbal's profile, seen edge-on (u across, v up = −): a thin
+ * flange rising gently from the rim to a ROUNDED dome (a hammered bell, not
+ * a flat-topped hat), total height `h`. Points from one rim to the other
+ * along the TOP surface (the dome's top at −h·0.7, a drawing choice).
+ * Real-object reference: a zill about 50–55 mm across with a 25–28 mm bell,
+ * the flange about 1.5 mm brass sloping 2–3 mm from rim to bell.
  */
+export const FLANGE_RISE = 2.5;
 export function profile(r: number, h: number): [number, number][] {
   const rd = (FC.domeD.mm / 2) * (r / RA);
   const dh = h * 0.7;
-  return [
-    [-r, 0],
-    [-rd - 3, -1.5],
-    [-rd, -dh * 0.55],
-    [-rd * 0.55, -dh],
-    [rd * 0.55, -dh],
-    [rd, -dh * 0.55],
-    [rd + 3, -1.5],
-    [r, 0],
-  ];
+  const out: [number, number][] = [[-r, 0]];
+  // the flange's gentle slope up to the bell, with a small fillet into it
+  out.push([-(rd + (r - rd) * 0.45), -FLANGE_RISE * 0.6]);
+  out.push([-rd - 2, -FLANGE_RISE]);
+  // the bell: a rounded dome (super-ellipse, a touch fuller than a circle)
+  const N = 18;
+  for (let i = 0; i <= N; i++) {
+    const t = Math.PI - (Math.PI * i) / N;
+    const c = Math.cos(t);
+    const sn = Math.sin(t);
+    const x = rd * Math.sign(c) * Math.pow(Math.abs(c), 0.85);
+    const y = -FLANGE_RISE - (dh - FLANGE_RISE) * Math.pow(sn, 0.7);
+    out.push([x, y]);
+  }
+  out.push([rd + 2, -FLANGE_RISE]);
+  out.push([rd + (r - rd) * 0.45, -FLANGE_RISE * 0.6]);
+  out.push([r, 0]);
+  return out;
 }

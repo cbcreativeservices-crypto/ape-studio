@@ -107,6 +107,16 @@ export type ShellSideProps = {
   rimDepth?: number;
   /** Far drum (behind another): drawn dimmer. */
   dim?: boolean;
+  /** A BELLIED stave shell (congas): how far the belly stands out past the
+   *  straight taper, as a fraction of the head radius, and where it peaks
+   *  (0 = under the rim … 1 = the lower edge). The drawing only — the model
+   *  keeps its capped cone for the collision. */
+  belly?: { out: number; at: number };
+  /** The hardware style: 'side' = hook, rod and a long side plate bolted to
+   *  the shell with the tuning nut on top (congas); 'ear' = a long hook to an
+   *  ear near the lower edge (bongos); 'casing' = a long tension rod from the
+   *  rim to a short lug bracket near the lower edge (timbales). Default 'side'. */
+  hardware?: 'side' | 'ear' | 'casing';
 };
 
 /** Visible lug angles (plan, from +x): the near half (sin ≥ 0, toward the camera at +z). */
@@ -119,58 +129,105 @@ export function nearAngles(n: number, phase = Math.PI / 2): number[] {
   return out;
 }
 
+/** The drawn outer radius of a (possibly bellied) shell at height y: the
+ *  straight taper from the head radius to the lower edge, plus the belly,
+ *  sin(π·t^k), peaking at t = `belly.at`. */
+export function shellR(d: HandDrum, belly: ShellSideProps['belly'], y: number): number {
+  const t = Math.max(0, Math.min(1, (y - d.headY) / (d.bottomY - d.headY)));
+  const lin = d.R + (d.rBottom - d.R) * t;
+  if (!belly) return lin;
+  const k = Math.log(0.5) / Math.log(Math.max(0.05, Math.min(0.95, belly.at)));
+  return lin + belly.out * d.R * Math.sin(Math.PI * Math.pow(t, k));
+}
+
+/** The same outline as a section profile (head → lower edge), for the cut-open drawings. */
+export function shellProfile(d: HandDrum, belly: ShellSideProps['belly'], n = 24): { y: number; r: number }[] {
+  return Array.from({ length: n + 1 }, (_, i) => {
+    const y = d.headY + ((d.bottomY - d.headY) * i) / n;
+    return { y, r: shellR(d, belly, y) };
+  });
+}
+
 function buildShellSide(p: ShellSideProps) {
   const { d } = p;
   const top = rimTopY(d);
   const rimDepth = p.rimDepth ?? 24;
-  const rTop = d.R; // the shell under the rim
   const yS = d.headY + rimDepth - 6; // the shell shows below the rim band
-  const rAt = (y: number) => rTop + ((d.rBottom - rTop) * (y - d.headY)) / (d.bottomY - d.headY);
-  const shell = poly([
-    [d.c.x - rAt(yS), yS],
-    [d.c.x + rAt(yS), yS],
-    [d.c.x + d.rBottom, d.bottomY],
-    [d.c.x - d.rBottom, d.bottomY],
-  ]);
+  const rAt = (y: number) => shellR(d, p.belly, y);
+  // The outline, sampled so the belly reads as one smooth curve.
+  const N = p.belly ? 40 : 1;
+  const ys = Array.from({ length: N + 1 }, (_, i) => yS + ((d.bottomY - yS) * i) / N);
+  const pts: [number, number][] = [];
+  ys.forEach((y) => pts.push([d.c.x - rAt(y), y]));
+  for (let i = ys.length - 1; i >= 0; i--) pts.push([d.c.x + rAt(ys[i]), ys[i]]);
+  const shell = poly(pts);
   const seams = make();
   const n = p.staves ?? 0;
-  for (let k = 0; k < n; k++) {
-    const a = (k + 0.5) * ((2 * Math.PI) / n);
+  for (let j = 0; j < n; j++) {
+    const a = (j + 0.5) * ((2 * Math.PI) / n);
     const s = Math.cos(a); // screen x offset fraction on the near half
     if (Math.sin(a) <= 0.02) continue;
-    seg(seams, d.c.x + rAt(yS) * s, yS, d.c.x + d.rBottom * s, d.bottomY);
+    ys.forEach((y, i) => (i === 0 ? seams.moveTo(d.c.x + rAt(y) * s, y) : seams.lineTo(d.c.x + rAt(y) * s, y)));
   }
   // Rim: a band from its top edge down over the head's edge.
   const rim = rrect(make(), d.c.x - d.R - d.rim.t, top, d.c.x + d.R + d.rim.t, d.headY + rimDepth, 4);
   const rimLip = seg(make(), d.c.x - d.R - d.rim.t + 3, top + 2.5, d.c.x + d.R + d.rim.t - 3, top + 2.5);
-  // Lugs on the near half: a tension hook over the rim, a rod, a side plate on the shell.
+  // Lugs on the near half (count: drawing default).
   const plates = make();
   const rods = make();
   const hooks = make();
+  const nuts = make();
+  const bolts = make();
+  const hw = p.hardware ?? 'side';
   const plateDown = p.plateDown ?? 120;
   for (const a of nearAngles(p.lugs ?? 0)) {
     const cs = Math.cos(a);
+    const w = Math.max(0.35, Math.sin(a)); // foreshortening of a part's width toward the outline
     const xr = d.c.x + (d.R + d.rim.t) * cs;
-    const y0 = d.headY + rimDepth + 8;
-    const y1 = d.headY + plateDown;
-    const xs0 = d.c.x + (rAt(y0) + 6) * cs;
-    const xs1 = d.c.x + (rAt(y1) + 6) * cs;
-    rrect(hooks, xr - 7, top - 3, xr + 7, d.headY + rimDepth + 4, 3);
-    seg(rods, xr, d.headY + rimDepth, (xs0 + xs1) / 2, y1 - 22);
-    rrect(plates, Math.min(xs0, xs1) - 8, y1 - 34, Math.max(xs0, xs1) + 8, y1 + 4, 4);
+    const yHook = d.headY + rimDepth + 4;
+    // The hook: a J over the rim's top edge, down its face.
+    rrect(hooks, xr - 6 * w, top - 3, xr + 6 * w, yHook, 3);
+    if (hw === 'side') {
+      // Rod down to the nut on the plate's top bracket; a long plate bolted on.
+      const yNut = d.headY + plateDown - 52;
+      const yPlate0 = yNut + 10;
+      const yPlate1 = d.headY + plateDown + 60;
+      const xs = (y: number) => d.c.x + (rAt(y) + 5) * cs;
+      seg(rods, xr, yHook, xs(yNut), yNut);
+      rrect(nuts, xs(yNut) - 9 * w, yNut - 12, xs(yNut) + 9 * w, yNut, 2);
+      rrect(plates, xs(yPlate0) - 10 * w, yPlate0, xs(yPlate1) + 10 * w, yPlate1, 4);
+      for (const yb of [yPlate0 + 16, yPlate1 - 14]) oval(bolts, (xs(yb)), yb, 3.4 * w, 3.4);
+    } else if (hw === 'ear') {
+      // A long hook down the shell to an ear near the lower edge, nut under it.
+      const yEar = d.headY + plateDown;
+      const xs = (y: number) => d.c.x + (rAt(y) + 7) * cs;
+      seg(rods, xr, yHook, xs(yEar - 8), yEar - 8);
+      rrect(plates, xs(yEar) - 11 * w, yEar - 8, xs(yEar) + 11 * w, yEar + 6, 3);
+      rrect(nuts, xs(yEar) - 6 * w, yEar + 6, xs(yEar) + 6 * w, yEar + 15, 2);
+      oval(bolts, xs(yEar), yEar - 1, 2.6 * w, 2.6);
+    } else {
+      // A long tension rod from the rim down the outside of the shell into a
+      // short lug bracket bolted on near the lower edge.
+      const yC1 = d.headY + plateDown;
+      const yC0 = yC1 - 40;
+      const xs = (y: number) => d.c.x + (rAt(y) + 6) * cs;
+      seg(rods, xr, yHook, xs(yC0), yC0);
+      rrect(plates, Math.min(xs(yC0), xs(yC1)) - 9 * w, yC0, Math.max(xs(yC0), xs(yC1)) + 9 * w, yC1, 6);
+    }
   }
   // A narrow band at the lower edge (the shell's bottom edge, drawn).
   const foot = rrect(make(), d.c.x - d.rBottom - 2, d.bottomY - 10, d.c.x + d.rBottom + 2, d.bottomY, 2);
   // The head, edge-on, just visible inside the rim's top.
   const headLine = seg(make(), d.c.x - d.R + 4, top + 5, d.c.x + d.R - 4, top + 5);
-  return { shell, seams, rim, rimLip, plates, rods, hooks, foot, headLine, yS, top, rimDepth };
+  const rMax = Math.max(...ys.map(rAt));
+  return { shell, seams, rim, rimLip, plates, rods, hooks, nuts, bolts, foot, headLine, yS, top, rimDepth, rMax };
 }
 
 export function ShellSide(props: ShellSideProps) {
-  const g = useMemo(() => buildShellSide(props), [props.d, props.look, props.staves, props.lugs, props.plateDown, props.rimDepth]); // eslint-disable-line react-hooks/exhaustive-deps
+  const g = useMemo(() => buildShellSide(props), [props.d, props.look, props.staves, props.lugs, props.plateDown, props.rimDepth, props.belly?.out, props.belly?.at, props.hardware]); // eslint-disable-line react-hooks/exhaustive-deps
   const { d } = props;
-  const x0 = d.c.x - d.R;
-  const x1 = d.c.x + d.R;
+  const x0 = d.c.x - g.rMax;
+  const x1 = d.c.x + g.rMax;
   const mat = props.look === 'brass' ? BRASS : props.dim ? WOOD_DARK : WOOD;
   return (
     <Group opacity={props.dim ? 0.62 : 1}>
@@ -192,6 +249,11 @@ export function ShellSide(props: ShellSideProps) {
         <LinearGradient start={vec(x0, 0)} end={vec(x1, 0)} colors={CHROME} />
       </Path>
       <Path path={g.plates} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={g.bolts} color="#2a2c32" />
+      <Path path={g.nuts}>
+        <LinearGradient start={vec(x0, 0)} end={vec(x1, 0)} colors={['#c8ccd4', '#6d727c', '#2a2c32']} />
+      </Path>
+      <Path path={g.nuts} style="stroke" strokeWidth={0.8} color={INK} />
       {/* the rim band (chrome) and its rolled top edge */}
       <Path path={g.rim}>
         <LinearGradient start={vec(x0 - d.rim.t, 0)} end={vec(x1 + d.rim.t, 0)} colors={CHROME} />

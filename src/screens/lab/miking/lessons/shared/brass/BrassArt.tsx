@@ -25,14 +25,14 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { View } from 'react-native';
-import { Canvas, Group, Paint, Skia } from '@shopify/react-native-skia';
+import { Canvas, Group, Skia } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, scale } from '../../../engine/geometry/vec.ts';
-import { PaintItem, bbox, circlePts, hull, playerGroups, polyPath, type Group3, type Item } from '../bowed/BowedArt';
+import { PaintItem, bbox, circlePts, hull, playerGroups, polyPath, type Group3, type Item, type PlayerOpts } from '../bowed/BowedArt';
 import { bellProfile, bellRadius, type BrassSpec } from './brassSpec.ts';
 import type { HornPose, Tube } from './brassPosture.ts';
 
@@ -82,7 +82,8 @@ const strokeItem = (pts: P2[], color: string, w: number, opacity = 1): Item => {
 
 /** A length of tube: outline, metal, lower shade, upper-left highlight. */
 function tubeItems(t: Tube, pr: Proj): Item[] {
-  const pts = t.pts.map(pr.pt);
+  // A valve slide is given by its four corners: drawn with round crooks.
+  const pts = t.pts.length === 4 && /^slide\d$/.test(t.id) ? roundCorners(t.pts.map(pr.pt)) : t.pts.map(pr.pt);
   const c = toneOf(t.tone);
   const r = t.r;
   const off = (k: number): P2[] => pts.map(([u, v]) => [u + k * r * 0.55, v + k * r * 0.6]);
@@ -184,13 +185,88 @@ function valveItems(vv: HornPose['valves'][number], P: HornPose, pr: Proj): Item
   return out;
 }
 
-/** The mouthpiece: a silver cup tapering to its shank. */
+/**
+ * The mouthpiece, silver-plated and turned: the rim (the widest part), the
+ * cup's outside closing in like a bowl, the throat, then the shank tapering
+ * a little into the receiver. Real-world: a trumpet's about dia. 26 mm across
+ * the rim by 88 mm long; a tenor trombone's about dia. 38 x 95 mm. The
+ * exterior radius along its length, as fractions of the rim radius.
+ */
+const MP_PROFILE: readonly [number, number][] = [
+  [0, 0.92],
+  [0.03, 1],
+  [0.08, 0.96],
+  [0.18, 0.76],
+  [0.3, 0.52],
+  [0.4, 0.45],
+  [0.6, 0.43],
+  [1, 0.36],
+];
 function mouthpieceItems(P: HornPose, pr: Proj): Item[] {
   const a = pr.pt(P.mouthpiece.cup);
   const b = pr.pt(P.mouthpiece.shank);
-  const r = P.mouthpiece.r;
-  const pts = hull([...circlePts(a, r, 16), ...circlePts(b, r * 0.55, 12)]);
-  return [{ path: polyPath(pts), fill: NICKEL_FILL, stroke: { color: OUTLINE, w: 1.6 }, box: bbox(pts), rim: 1 }];
+  const R = P.slide ? 19 : 13;
+  const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  if (L < R * 0.8) {
+    // End-on (from above a horn played toward you): the rim's ring.
+    const c = circlePts(a, R, 20);
+    return [{ path: polyPath(c), fill: NICKEL_FILL, stroke: { color: OUTLINE, w: 1.4 }, box: bbox(c), rim: 1 }];
+  }
+  const ux = (b[0] - a[0]) / L;
+  const uy = (b[1] - a[1]) / L;
+  const nx = -uy;
+  const ny = ux;
+  const left: P2[] = MP_PROFILE.map(([f, k]) => [a[0] + ux * L * f + nx * R * k, a[1] + uy * L * f + ny * R * k]);
+  const right: P2[] = MP_PROFILE.map(([f, k]) => [a[0] + ux * L * f - nx * R * k, a[1] + uy * L * f - ny * R * k]);
+  const pts = [...left, ...right.reverse()];
+  // The gradient runs ACROSS the axis (a turned part), lit from the upper left.
+  const s = nx + ny > 0 ? -1 : 1;
+  const mid: P2 = [a[0] + ux * L * 0.3, a[1] + uy * L * 0.3];
+  const box = { u0: mid[0] + s * nx * R, v0: mid[1] + s * ny * R, u1: mid[0] - s * nx * R, v1: mid[1] - s * ny * R };
+  const rimBand: P2[] = [left[0], left[2], right[right.length - 3], right[right.length - 1]];
+  const spec: P2[] = MP_PROFILE.map(([f, k]) => [a[0] + ux * L * f + s * nx * R * k * 0.5, a[1] + uy * L * f + s * ny * R * k * 0.5]);
+  return [
+    { path: polyPath(pts), fill: NICKEL_FILL, box },
+    { path: polyPath(rimBand), fill: '#ffffff', opacity: 0.3, box: bbox(rimBand) },
+    strokeItem(spec, '#ffffff', Math.max(1, R * 0.12), 0.85),
+    { path: polyPath(pts), stroke: { color: OUTLINE, w: 1.3 }, box: bbox(pts) },
+  ];
+}
+
+/** A polyline with its corners turned into round crooks (a valve slide's U,
+ *  drawn from its four corner points): each corner becomes an arc of radius
+ *  up to half the shorter neighbouring leg. */
+function roundCorners(pts: P2[]): P2[] {
+  if (pts.length < 3) return pts;
+  const out: P2[] = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const p = pts[i];
+    const a = pts[i - 1];
+    const b = pts[i + 1];
+    const la = Math.hypot(p[0] - a[0], p[1] - a[1]);
+    const lb = Math.hypot(b[0] - p[0], b[1] - p[1]);
+    if (la < 0.5 || lb < 0.5) {
+      out.push(p);
+      continue;
+    }
+    const da: P2 = [(a[0] - p[0]) / la, (a[1] - p[1]) / la];
+    const db: P2 = [(b[0] - p[0]) / lb, (b[1] - p[1]) / lb];
+    const cos = da[0] * db[0] + da[1] * db[1];
+    if (cos < -0.98 || cos > 0.98) {
+      out.push(p);
+      continue;
+    }
+    const k = Math.min(la, lb) / 2;
+    const q0: P2 = [p[0] + da[0] * k, p[1] + da[1] * k];
+    const q1: P2 = [p[0] + db[0] * k, p[1] + db[1] * k];
+    for (let j = 0; j <= 8; j++) {
+      const t = j / 8;
+      const u = 1 - t;
+      out.push([u * u * q0[0] + 2 * u * t * p[0] + t * t * q1[0], u * u * q0[1] + 2 * u * t * p[1] + t * t * q1[1]]);
+    }
+  }
+  out.push(pts[pts.length - 1]);
+  return out;
 }
 
 /** The rotors (bass trombone): drums of the valve, and the thumb triggers. */
@@ -226,10 +302,32 @@ export function hornGroups(P: HornPose, pr: Proj): Group3[] {
   return g;
 }
 
+/**
+ * How the hands HOLD the horn (figure polish 2026-10-10): a valved horn's
+ * right-hand fingers curve down ONTO the valve buttons (seen from the
+ * player's right; from above, the back of the hand over them), the left hand
+ * a fist round the valve casings; a trombone's hands each grip a brace.
+ */
+function brassHands(P: HornPose, view: ViewId): PlayerOpts['hands'] {
+  if (!P.valves.length) return { L: { kind: 'grip' }, R: { kind: 'grip' } };
+  // From above: the back of each hand, its fingers curled over the buttons /
+  // round the casings — knuckles, never a flat open paddle across the horn.
+  if (view !== 'side') return { L: { kind: 'grip' }, R: { kind: 'grip' } };
+  const pr = PROJ[view];
+  const b = P.valves.map((vv) => pr.pt(vv.button));
+  const mid = b[Math.floor(b.length / 2)];
+  const along = Math.atan2(b[b.length - 1][1] - b[0][1], b[b.length - 1][0] - b[0][0]);
+  // The right hand rises from a wrist low behind the casings (the forearm
+  // comes up from the elbow at the player's side, clear of the face and the
+  // leadpipe), the palm up past the casings, the fingers arching forward and
+  // DOWN onto the caps — the front fingertip on the middle button.
+  return { L: { kind: 'grip' }, R: { kind: 'keys', dir: along - 1.05, at: [mid[0], mid[1] + 2] } };
+}
+
 /** The horn and its player for one engine view, far to near. */
 export function sceneGroups(P: HornPose, view: ViewId): Group3[] {
   const horn = hornGroups(P, PROJ[view]);
-  const player = playerGroups({ player: P.player }, view, true);
+  const player = playerGroups({ player: P.player }, view, true, { hands: brassHands(P, view) });
   return [...player, ...horn].sort((a, b) => a.depth - b.depth);
 }
 
@@ -248,7 +346,9 @@ export function BrassScene({ P, view }: { P: HornPose; view: ViewId }) {
             ))}
           </Group>
         ) : (
-          <Group key={g.key} layer={<Paint opacity={0.62} />}>
+          // The player is OPAQUE (figure polish 2026-10-10): the depth sort
+          // puts the right hand over the buttons and the rest behind the horn.
+          <Group key={g.key}>
             {g.items.map((it, i) => (
               <PaintItem key={i} it={it} />
             ))}

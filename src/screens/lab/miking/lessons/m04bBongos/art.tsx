@@ -6,13 +6,15 @@
  * and the stand are drawing defaults (never stated in words).
  */
 import { useMemo } from 'react';
-import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { ContactShadow, FloorSide, HeadTop, INK, ShellSide, StandLegs, WOOD } from '../shared/handdrums/handDrumArt';
 import { planDist, rimTopY } from '../shared/handdrums/handDrumModel.ts';
 import { BONGO_DIMS as D, HEMBRA, MACHO } from './model.ts';
 import { BONGO_MODEL, LEGS, STAND } from './geometry.ts';
+import { FigureMass, limb } from '../shared/players/PlayerFigure';
+import { pt } from '../shared/players/playerPose';
 
 const RODS = D.lugs.mm;
 
@@ -33,47 +35,80 @@ function Block({ view }: { view: ViewId }) {
   );
 }
 
-// Charcoal trousers, never blue: blue on the glass means a suggested starting point.
-const DENIM = ['#6b6660', '#4a4643', '#2c2a29'];
-
-/** The seated player's legs (KNEES), from the same boxes the collision uses:
- *  a thigh from the hip to the knee, a shin to the floor, a shoe. Side view:
- *  `which` picks the far (left) or near (right) leg — the near one is drawn
- *  ghosted in front of the drums so the pair stays readable. */
-function Legs({ view, which, ghost }: { view: ViewId; which: 'L' | 'R' | 'both'; ghost?: boolean }) {
-  const p = useMemo(() => {
-    const out = Skia.Path.Make();
+/** The seated player's legs (KNEES), on the same boxes the collision uses
+ *  (figure polish 2026-10-10 — they were flat slabs: a rounded box for the
+ *  thigh, another for the shin, a bar for the shoe): the shared figure's
+ *  trouser leg — the thigh from the hip tapering to the knee (≈ 164 mm deep
+ *  at the hip, 124 at the knee), the shin to the ankle (80 mm), one mass,
+ *  the house form gradient, rim and contour — and a leather shoe on the
+ *  floor, its toe forward. Opaque, as every limb. From the player's right the
+ *  NEAR leg stands in front of the drums: it is drawn as a PHANTOM — its
+ *  outline in a dashed line, the technical illustrator's cut-away — so the
+ *  shells and the open lower ends stay in view, never a see-through limb. */
+function Legs({ view, which, phantom = false }: { view: ViewId; which: 'L' | 'R' | 'both'; phantom?: boolean }) {
+  const masses = useMemo(() => {
+    const out: { path: ReturnType<typeof Skia.Path.Make>; tone: 'trousers' | 'shoe' }[] = [];
     const sides = which === 'both' ? (['L', 'R'] as const) : ([which] as const);
     for (const sd of sides) {
       const th = LEGS[sd === 'L' ? 'thighL' : 'thighR'];
       const sh = LEGS[sd === 'L' ? 'shinL' : 'shinR'];
       if (th.kind !== 'box' || sh.kind !== 'box') continue;
       if (view === 'side') {
-        const t0 = th.min.y;
-        const t1 = th.max.y;
-        // Thigh: hip (rounded) to knee (rounded), slightly tapering.
-        out.moveTo(th.min.x, t0 + 8);
-        out.quadTo(th.min.x - 30, (t0 + t1) / 2, th.min.x, t1);
-        out.lineTo(th.max.x - 10, t1 - 6);
-        out.quadTo(th.max.x + 34, (t0 + t1) / 2, th.max.x - 6, t0 + 4);
-        out.close();
-        // Shin to the floor, and a shoe pointing forward.
-        out.addRRect(Skia.RRectXY(Skia.XYWHRect(sh.min.x + 8, sh.min.y + 40, sh.max.x - sh.min.x - 16, sh.max.y - sh.min.y - 70), 30, 30));
-        out.addRRect(Skia.RRectXY(Skia.XYWHRect(sh.min.x, sh.max.y - 42, sh.max.x - sh.min.x + 80, 42), 18, 18));
+        const tv = (th.min.y + th.max.y) / 2;
+        const hip = pt(th.min.x + 70, tv + 4);
+        const knee = pt(th.max.x - 14, tv);
+        const ankle = pt((sh.min.x + sh.max.x) / 2 - 10, sh.max.y - 92);
+        out.push({ path: limb([hip, knee, ankle], [82, 62, 40]), tone: 'trousers' });
+        // The shoe: the heel under the ankle, the toe forward, the sole on the floor.
+        const f = pt(ankle.u + 40, sh.max.y);
+        const P = (x: number, y: number) => pt(f.u + x, f.v + y);
+        out.push({ path: smoothPath([P(-96, -2), P(-100, -64), P(-44, -92), P(40, -62), P(140, -34), P(150, -4)]), tone: 'shoe' });
       } else {
-        out.addRRect(Skia.RRectXY(Skia.XYWHRect(th.min.x, th.min.z, th.max.x - th.min.x + 30, th.max.z - th.min.z), 55, 55));
+        const tz = (th.min.z + th.max.z) / 2;
+        // From above: the shoe's toe past the knee, then the thigh over it.
+        const toe = pt(sh.max.x + 120, tz);
+        out.push({ path: limb([pt(sh.max.x - 40, tz), toe], [44, 40]), tone: 'shoe' });
+        out.push({ path: limb([pt(th.min.x + 70, tz), pt(th.max.x - 14, tz)], [82, 64]), tone: 'trousers' });
       }
     }
     return out;
   }, [view, which]);
+  if (phantom) {
+    return (
+      <Group>
+        {masses.map((m, i) => (
+          <Path key={i} path={m.path} style="stroke" strokeWidth={3} color="#9aa0ab" opacity={0.8}>
+            <DashPathEffect intervals={[18, 12]} />
+          </Path>
+        ))}
+      </Group>
+    );
+  }
   return (
-    <Group opacity={ghost ? 0.38 : 1}>
-      <Path path={p}>
-        <LinearGradient start={vec(-560, -560)} end={vec(120, 0)} colors={DENIM} />
-      </Path>
-      <Path path={p} style="stroke" strokeWidth={2} color={INK} opacity={0.9} />
+    <Group>
+      {masses.map((m, i) => (
+        <FigureMass key={i} path={m.path} tone={m.tone} />
+      ))}
     </Group>
   );
+}
+
+/** A smooth closed outline through points. */
+function smoothPath(points: { u: number; v: number }[]) {
+  const p = Skia.Path.Make();
+  const n = points.length;
+  const at = (i: number) => points[(i + n) % n];
+  p.moveTo(points[0].u, points[0].v);
+  for (let i = 0; i < n; i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const k = 0.45 / 3;
+    p.cubicTo(p1.u + (p2.u - p0.u) * k, p1.v + (p2.v - p0.v) * k, p2.u - (p3.u - p1.u) * k, p2.v - (p3.v - p1.v) * k, p2.u, p2.v);
+  }
+  p.close();
+  return p;
 }
 
 export function BongoArt({ view, variant }: { view: ViewId; variant: VariantId }) {
@@ -91,9 +126,9 @@ export function BongoArt({ view, variant }: { view: ViewId; variant: VariantId }
           </>
         ) : null}
         {onStand ? null : <Legs view="side" which="L" />}
-        <ShellSide d={MACHO} look="staved" staves={10} lugs={RODS} plateDown={D.shellH.mm - 18} rimDepth={16} dim />
-        <ShellSide d={HEMBRA} look="staved" staves={10} lugs={RODS} plateDown={D.shellH.mm - 18} rimDepth={16} />
-        {onStand ? null : <Legs view="side" which="R" ghost />}
+        <ShellSide d={MACHO} look="staved" staves={10} lugs={RODS} plateDown={D.shellH.mm - 18} rimDepth={16} hardware="ear" dim />
+        <ShellSide d={HEMBRA} look="staved" staves={10} lugs={RODS} plateDown={D.shellH.mm - 18} rimDepth={16} hardware="ear" />
+        {onStand ? null : <Legs view="side" which="R" phantom />}
       </Group>
     );
   }
@@ -114,7 +149,7 @@ export function bongoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'hembra', text: 'HEMBRA (IN FRONT)', short: 'HEMBRA', u: HEMBRA.R + 30, v: top - 26, align: 'left' },
       { id: 'macho', text: 'MACHO BEHIND IT', short: 'MACHO BEHIND', u: HEMBRA.R + 30, v: top + 60, align: 'left', tone: 'muted' },
       { id: 'bottom', text: 'OPEN LOWER ENDS', short: 'OPEN ENDS', u: HEMBRA.R + 30, v: HEMBRA.bottomY + 10, align: 'left', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: -380, v: top - 26, align: 'center', tone: 'muted' },
+      { id: 'player', text: '← PLAYER', u: BONGO_MODEL.views.side!.u0 + 20, v: top - 26, align: 'left', tone: 'muted', point: { u: BONGO_MODEL.views.side!.u0 - 400, v: top - 26 } },
     ];
     if (variant === 'knees') out.push({ id: 'legs', text: 'PLAYER’S LEGS', short: 'LEGS', u: 130, v: -300, align: 'left', tone: 'muted' });
     return out;
@@ -122,7 +157,7 @@ export function bongoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   return [
     { id: 'macho', text: 'MACHO', u: MACHO.c.x, v: MACHO.c.z - MACHO.R - 46, align: 'center' },
     { id: 'hembra', text: 'HEMBRA', u: HEMBRA.c.x, v: HEMBRA.c.z + HEMBRA.R + 36, align: 'center' },
-    { id: 'player', text: '← PLAYER', u: -380, v: 0, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: BONGO_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: BONGO_MODEL.views.top!.u0 - 400, v: 0 } },
     { id: 'aud', text: 'AUDIENCE →', u: BONGO_MODEL.views.top!.u1 - 20, v: BONGO_MODEL.views.top!.v1 - 36, align: 'right', tone: 'muted' },
   ];
 }

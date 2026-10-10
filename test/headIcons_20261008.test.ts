@@ -126,9 +126,12 @@ const LONE: [string, RegExp][] = [
 const BODY: [string, RegExp][] = [
   ['src/screens/lab/micspeaker/viz.tsx', /<FigureHeadAt view="front"/],
   ['src/screens/lab/wave/vizWave.tsx', /<FigureHeadAt view="front"/],
-  ['src/screens/lab/roomdesign/RoomSideView.tsx', /<FigureHeadSvg view="side"/],
-  ['src/screens/lab/eq/modules/CameraAnalogy.tsx', /<FigureHeadSvg view="front"/],
-  ['src/screens/lab/foundations/viz.tsx', /<FigureHeadAt view="front"/],
+  // Figure polish 2026-10-10: these three drew a stick body under the head; each is now a WHOLE shared figure (its head is FigureHeadSvg / PlayerFigure's FigureHead).
+  ['src/screens/lab/roomdesign/RoomSideView.tsx', /<FigureSeatedSideSvg /],
+  ['src/features/lab/figureBodySvg.tsx', /<FigureHeadSvg view="front"[\s\S]*<FigureHeadSvg view="side"/],
+  ['src/screens/lab/eq/modules/CameraAnalogy.tsx', /<FigureStandingFrontSvg /],
+  ['src/screens/lab/foundations/viz.tsx', /<FigureStandingAt /],
+  ['src/features/lab/figureHead.tsx', /<PlayerBehind pose=\{STANDING_FRONT\} \/>/],
   ['src/screens/lab/cableinstall/svgArt.tsx', /<FigureHeadSvg view="front"/],
   ['src/screens/lab/miking/lessons/shared/metal/metalArt.tsx', /<FigureHead fill=\{headFill\(view\)\} \/>/],
   ['src/screens/lab/miking/lessons/shared/mallets/MalletArt.tsx', /<FigureHead fill=\{playerHeadFill\('front'\)\} \/>[\s\S]*<FigureHead fill=\{playerHeadFill\('above'\)\} \/>/],

@@ -31,24 +31,63 @@ const INK = {
   hi: colors.cyanBright,
 };
 
+/* The drawing is a ¼-inch (6.35 mm) TRS plug on a balanced (two conductors +
+ * braid shield) cable, AUTHORED AT 1.45 viewBox units per mm so every part
+ * is its real size relative to the others:
+ *   panel jack: hex nut 14 mm across flats, bushing Ø9.5, socket Ø6.4;
+ *   plug shaft Ø6.35 × 31 mm — tip 8 (ball + neck groove), insulator 2.5,
+ *     ring 5, insulator 2.5, sleeve 13;
+ *   handle (barrel) Ø13 × 38 mm with grip grooves;
+ *   strain-relief boot 25 mm, Ø10 tapering to the cable;
+ *   cable Ø6.5 mm PVC jacket; braid shield Ø5.2; two insulated conductors
+ *     Ø1.9 each, twisted; stranded copper Ø0.9 (drawn 1.1 mm so it reads).
+ * The cable's layers are stripped back in steps along its length — the usual
+ * cable-anatomy convention, read left to right. */
+const MM = 1.45;
+const CY = 75;
+const X_TIP = 62;
+const SHAFT = { tipBall: 8.6, neckEnd: 11, ins1: 13.5, ring: 18.5, ins2: 21, sleeve: 31 } as const;
+const X_BARREL = X_TIP + SHAFT.sleeve * MM; // 107
+const X_BOOT = X_BARREL + 38 * MM; // 162
+const X_JACKET = X_BOOT + 25 * MM; // 198
+const X_SHIELD = 250;
+const X_INSUL = 288;
+const X_COND = 314;
+const R_SHAFT = (6.35 / 2) * MM;
+const R_BARREL = (13 / 2) * MM;
+const R_CABLE = (6.5 / 2) * MM;
+const R_BRAID = (5.2 / 2) * MM;
+const R_WIRE = (1.9 / 2) * MM;
+
 /** Full-height invisible hit zones (design pass: the drawn shapes are far
  *  below 44 pt — conductors render ~3 pt tall). Each zone spans its part's
  *  whole horizontal band INCLUDING the label, the full 150-unit height
  *  (≈44+ pt at any phone width). `fill="transparent"` is required —
  *  `fill="none"` does not receive presses in react-native-svg. */
 const HIT_ZONES: readonly { id: string; x: number; w: number }[] = [
-  { id: 'jack', x: 0, w: 54 },
-  { id: 'contacts', x: 54, w: 62 },
-  { id: 'plug', x: 116, w: 52 },
-  { id: 'relief', x: 168, w: 28 },
-  { id: 'jacket', x: 196, w: 54 },
-  { id: 'shield', x: 250, w: 38 },
-  { id: 'insulation', x: 288, w: 26 },
-  { id: 'conductors', x: 314, w: 46 },
+  { id: 'jack', x: 0, w: 56 },
+  { id: 'contacts', x: 56, w: X_BARREL - 56 },
+  { id: 'plug', x: X_BARREL, w: X_BOOT - X_BARREL },
+  { id: 'relief', x: X_BOOT, w: X_JACKET - X_BOOT },
+  { id: 'jacket', x: X_JACKET, w: X_SHIELD - X_JACKET },
+  { id: 'shield', x: X_SHIELD, w: X_INSUL - X_SHIELD },
+  { id: 'insulation', x: X_INSUL, w: X_COND - X_INSUL },
+  { id: 'conductors', x: X_COND, w: 360 - X_COND },
 ];
 
 const EXPLODED_W = 360;
 const EXPLODED_H = 150;
+
+/** A horizontal cylinder segment lit from above: body, highlight band, core shadow. */
+function Cyl({ x0, x1, r, fill, stroke, sw = 0.8, hiOp = 0.45 }: { x0: number; x1: number; r: number; fill: string; stroke: string; sw?: number; hiOp?: number }) {
+  return (
+    <G>
+      <Rect x={x0} y={CY - r} width={x1 - x0} height={2 * r} fill={fill} stroke={stroke} strokeWidth={sw} />
+      <Rect x={x0 + 0.4} y={CY - r * 0.72} width={x1 - x0 - 0.8} height={r * 0.32} fill="#ffffff" opacity={hiOp} />
+      <Rect x={x0 + 0.4} y={CY + r * 0.45} width={x1 - x0 - 0.8} height={r * 0.5} fill="#000000" opacity={0.25} />
+    </G>
+  );
+}
 
 /** `controls`: the page's readout for the selected part, docked under the
  *  drawing in FULL SCREEN (D35, full-screen pass 2026-09-30); the SVG hit
@@ -57,65 +96,124 @@ const EXPLODED_H = 150;
  *  fixed 150 pt tall and letterboxed at every width. */
 export function ExplodedCable({ selected, onSelect, controls }: { selected: string | null; onSelect: (id: string) => void; controls?: ReactNode }) {
   const hi = (id: string) => (selected === id ? INK.hi : undefined);
-  const sw = (id: string) => (selected === id ? 2.5 : 1);
+  const sw = (id: string) => (selected === id ? 2 : 0.8);
+  const x = (mm: number) => X_TIP + mm * MM;
+  // hex nut (14 mm across flats → circumradius 8.08 mm)
+  const nutR = 8.08 * MM;
+  const hex = [0, 1, 2, 3, 4, 5].map((k) => `${(27 + nutR * Math.cos((Math.PI / 3) * k)).toFixed(2)},${(CY + nutR * Math.sin((Math.PI / 3) * k)).toFixed(2)}`).join(' ');
+  // braid: a diamond weave of short diagonal strokes across the exposed shield
+  const braid: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  for (let bx = X_SHIELD + 1; bx < X_INSUL - 6; bx += 3.2) {
+    braid.push({ x1: bx, y1: CY - R_BRAID, x2: bx + 2.6, y2: CY + R_BRAID });
+    braid.push({ x1: bx, y1: CY + R_BRAID, x2: bx + 2.6, y2: CY - R_BRAID });
+  }
+  // the twisted pair: two wires crossing every ~6 mm of lay
+  const lay = 6 * MM;
+  const wire = (phase: number) => {
+    let d = '';
+    for (let t = 0; t <= X_COND - X_INSUL + 0.01; t += 1) {
+      const yy = CY + R_WIRE * 1.05 * Math.cos(((t / lay) * 2 + phase) * Math.PI);
+      d += `${t === 0 ? 'M' : 'L'} ${(X_INSUL + t).toFixed(2)} ${yy.toFixed(2)} `;
+    }
+    return d;
+  };
   return (
     <ExpandableFigure aspect={EXPLODED_W / EXPLODED_H} title="THE CABLE" controls={controls} render={(w, h) => (
-    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel="Exploded cable diagram: equipment jack on the left, then the plug, strain relief, and the cable opened up layer by layer — jacket, shield, insulation, signal conductors. Tap a zone or use the part list below.">
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel="Exploded cable diagram: a quarter-inch TRS panel jack on the left, then the plug's tip, ring and sleeve contacts, its handle, the strain relief, and the cable opened up layer by layer — jacket, braided shield, the insulated twisted pair, the bare copper conductors. Tap a zone or use the part list below.">
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox={`0 0 ${EXPLODED_W} ${EXPLODED_H}`} width={w} height={h}>
-        {/* equipment panel + jack */}
-        <Rect x={4} y={30} width={46} height={90} rx={6} fill={INK.panel} stroke={hi('jack') ?? '#33373d'} strokeWidth={sw('jack')} onPress={() => onSelect('jack')} />
-        <Circle cx={27} cy={75} r={14} fill="#0c0d0f" stroke={hi('jack') ?? INK.metalDark} strokeWidth={sw('jack')} onPress={() => onSelect('jack')} />
-        <Circle cx={27} cy={75} r={5} fill="#000" stroke={INK.metalDark} strokeWidth={1} />
+        {/* equipment panel + ¼-inch jack, face-on: nut, washer, threaded bushing, socket */}
+        <G onPress={() => onSelect('jack')}>
+          <Rect x={4} y={30} width={46} height={90} rx={3} fill={INK.panel} stroke={hi('jack') ?? '#33373d'} strokeWidth={sw('jack')} />
+          <Rect x={5} y={31} width={44} height={6} rx={2} fill="#ffffff" opacity={0.05} />
+          <Circle cx={27} cy={CY} r={9.6 * MM} fill="#16181c" stroke="#2a2d33" strokeWidth={0.8} />
+          <Path d={`M ${hex.split(' ').join(' L ')} Z`} fill={INK.metalDark} stroke={hi('jack') ?? '#3d434b'} strokeWidth={sw('jack')} />
+          <Circle cx={27} cy={CY} r={4.75 * MM} fill={INK.metal} stroke="#4a5058" strokeWidth={0.8} />
+          <Circle cx={27} cy={CY} r={4.2 * MM} fill="none" stroke="#6b7480" strokeWidth={0.6} strokeDasharray="1.2 1" />
+          <Circle cx={27} cy={CY} r={3.2 * MM} fill="#000" />
+          <Path d={`M ${27 - nutR * 0.8} ${CY - nutR * 0.35} L ${27 - nutR * 0.3} ${CY - nutR * 0.85}`} stroke="#ffffff" strokeWidth={0.8} opacity={0.35} />
+        </G>
         <SvgText x={27} y={140} fill={hi('jack') ?? '#7d8590'} fontSize={10} textAnchor="middle">JACK</SvgText>
 
-        {/* contacts (plug tip area) */}
+        {/* contacts: tip (ball + neck), insulator, ring, insulator, sleeve */}
         <G onPress={() => onSelect('contacts')}>
-          <Rect x={66} y={68} width={26} height={14} rx={7} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} strokeWidth={sw('contacts')} />
-          <Rect x={92} y={70} width={8} height={10} fill={INK.shell} />
-          <Rect x={100} y={68} width={16} height={14} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} strokeWidth={sw('contacts')} />
+          <Path d={`M ${x(SHAFT.tipBall)} ${CY - R_SHAFT} L ${x(3)} ${CY - R_SHAFT} Q ${X_TIP} ${CY - R_SHAFT} ${X_TIP} ${CY} Q ${X_TIP} ${CY + R_SHAFT} ${x(3)} ${CY + R_SHAFT} L ${x(SHAFT.tipBall)} ${CY + R_SHAFT} Z`} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} strokeWidth={sw('contacts')} />
+          <Rect x={x(1.6)} y={CY - R_SHAFT * 0.72} width={x(SHAFT.tipBall) - x(1.6) - 0.4} height={R_SHAFT * 0.32} fill="#ffffff" opacity={0.45} />
+          <Cyl x0={x(SHAFT.tipBall)} x1={x(SHAFT.neckEnd)} r={R_SHAFT * 0.68} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} sw={sw('contacts')} />
+          <Cyl x0={x(SHAFT.neckEnd)} x1={x(SHAFT.ins1)} r={R_SHAFT} fill="#141518" stroke="#000" hiOp={0.12} />
+          <Cyl x0={x(SHAFT.ins1)} x1={x(SHAFT.ring)} r={R_SHAFT} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} sw={sw('contacts')} />
+          <Cyl x0={x(SHAFT.ring)} x1={x(SHAFT.ins2)} r={R_SHAFT} fill="#141518" stroke="#000" hiOp={0.12} />
+          <Cyl x0={x(SHAFT.ins2)} x1={x(SHAFT.sleeve)} r={R_SHAFT} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} sw={sw('contacts')} />
         </G>
-        <SvgText x={90} y={58} fill={hi('contacts') ?? '#7d8590'} fontSize={10} textAnchor="middle">CONTACTS</SvgText>
+        <SvgText x={(X_TIP + X_BARREL) / 2} y={58} fill={hi('contacts') ?? '#7d8590'} fontSize={10} textAnchor="middle">CONTACTS</SvgText>
 
-        {/* plug body */}
-        <Rect x={116} y={62} width={52} height={26} rx={5} fill={INK.shell} stroke={hi('plug') ?? '#3a3f46'} strokeWidth={sw('plug')} onPress={() => onSelect('plug')} />
-        <SvgText x={142} y={104} fill={hi('plug') ?? '#7d8590'} fontSize={10} textAnchor="middle">PLUG</SvgText>
+        {/* plug handle: nose cone, barrel with grip grooves */}
+        <G onPress={() => onSelect('plug')}>
+          <Path d={`M ${X_BARREL} ${CY - R_SHAFT - 0.6} L ${X_BARREL + 5} ${CY - R_BARREL} L ${X_BARREL + 5} ${CY + R_BARREL} L ${X_BARREL} ${CY + R_SHAFT + 0.6} Z`} fill={INK.shell} stroke={hi('plug') ?? '#3a3f46'} strokeWidth={sw('plug')} />
+          <Cyl x0={X_BARREL + 5} x1={X_BOOT} r={R_BARREL} fill={INK.shell} stroke={hi('plug') ?? '#3a3f46'} sw={sw('plug')} hiOp={0.16} />
+          {[0.32, 0.42, 0.52].map((f) => (
+            <Line key={f} x1={X_BARREL + (X_BOOT - X_BARREL) * f} y1={CY - R_BARREL + 0.8} x2={X_BARREL + (X_BOOT - X_BARREL) * f} y2={CY + R_BARREL - 0.8} stroke="#15171a" strokeWidth={1.2} />
+          ))}
+        </G>
+        <SvgText x={(X_BARREL + X_BOOT) / 2} y={104} fill={hi('plug') ?? '#7d8590'} fontSize={10} textAnchor="middle">PLUG</SvgText>
 
-        {/* strain relief */}
-        <Path d="M168 64 L196 68 L196 82 L168 86 Z" fill="#24272c" stroke={hi('relief') ?? '#3a3f46'} strokeWidth={sw('relief')} onPress={() => onSelect('relief')} />
-        <Line x1={174} y1={66} x2={174} y2={84} stroke="#3a3f46" strokeWidth={1} />
-        <Line x1={181} y1={67} x2={181} y2={83} stroke="#3a3f46" strokeWidth={1} />
-        <Line x1={188} y1={67} x2={188} y2={83} stroke="#3a3f46" strokeWidth={1} />
-        <SvgText x={182} y={58} fill={hi('relief') ?? '#7d8590'} fontSize={10} textAnchor="middle">RELIEF</SvgText>
+        {/* strain-relief boot: ribbed, tapering from Ø10 to the cable */}
+        <G onPress={() => onSelect('relief')}>
+          <Path d={`M ${X_BOOT} ${CY - 5 * MM} L ${X_JACKET} ${CY - R_CABLE - 0.4} L ${X_JACKET} ${CY + R_CABLE + 0.4} L ${X_BOOT} ${CY + 5 * MM} Z`} fill="#202328" stroke={hi('relief') ?? '#3a3f46'} strokeWidth={sw('relief')} />
+          {[0.15, 0.32, 0.49, 0.66, 0.83].map((f) => {
+            const rx = X_BOOT + (X_JACKET - X_BOOT) * f;
+            const rr = 5 * MM + (R_CABLE + 0.4 - 5 * MM) * f;
+            return <Line key={f} x1={rx} y1={CY - rr + 0.5} x2={rx} y2={CY + rr - 0.5} stroke="#0e0f12" strokeWidth={1.4} />;
+          })}
+          <Path d={`M ${X_BOOT + 1} ${CY - 5 * MM + 1.6} L ${X_JACKET - 1} ${CY - R_CABLE + 0.9}`} stroke="#ffffff" strokeWidth={0.8} opacity={0.18} />
+        </G>
+        <SvgText x={(X_BOOT + X_JACKET) / 2} y={58} fill={hi('relief') ?? '#7d8590'} fontSize={10} textAnchor="middle">RELIEF</SvgText>
 
         {/* jacket */}
-        <Rect x={196} y={68} width={54} height={14} rx={7} fill={INK.jacket} stroke={hi('jacket') ?? '#164a9e'} strokeWidth={sw('jacket')} onPress={() => onSelect('jacket')} />
-        <SvgText x={223} y={100} fill={hi('jacket') ?? '#7d8590'} fontSize={10} textAnchor="middle">JACKET</SvgText>
-
-        {/* shield (peeled braid) */}
-        <G onPress={() => onSelect('shield')}>
-          <Rect x={250} y={70} width={38} height={10} rx={5} fill={INK.shield} stroke={hi('shield') ?? '#8b939c'} strokeWidth={sw('shield')} />
-          <Line x1={254} y1={70} x2={262} y2={80} stroke="#8b939c" strokeWidth={0.8} />
-          <Line x1={262} y1={70} x2={270} y2={80} stroke="#8b939c" strokeWidth={0.8} />
-          <Line x1={270} y1={70} x2={278} y2={80} stroke="#8b939c" strokeWidth={0.8} />
-          <Line x1={278} y1={70} x2={286} y2={80} stroke="#8b939c" strokeWidth={0.8} />
+        <G onPress={() => onSelect('jacket')}>
+          <Cyl x0={X_JACKET} x1={X_SHIELD} r={R_CABLE} fill={INK.jacket} stroke={hi('jacket') ?? '#164a9e'} sw={sw('jacket')} hiOp={0.3} />
+          {/* the cut end of the jacket, a ring seen a little end-on */}
+          <Path d={`M ${X_SHIELD} ${CY - R_CABLE} Q ${X_SHIELD + 1.8} ${CY} ${X_SHIELD} ${CY + R_CABLE}`} fill="none" stroke="#164a9e" strokeWidth={1} />
         </G>
-        <SvgText x={269} y={60} fill={hi('shield') ?? '#7d8590'} fontSize={10} textAnchor="middle">SHIELD</SvgText>
+        <SvgText x={(X_JACKET + X_SHIELD) / 2} y={100} fill={hi('jacket') ?? '#7d8590'} fontSize={10} textAnchor="middle">JACKET</SvgText>
 
-        {/* insulation */}
+        {/* braided shield: a woven sleeve, combed open at its end */}
+        <G onPress={() => onSelect('shield')}>
+          <Rect x={X_SHIELD} y={CY - R_BRAID} width={X_INSUL - X_SHIELD - 6} height={2 * R_BRAID} fill="#8b939c" stroke={hi('shield') ?? '#6b737c'} strokeWidth={sw('shield')} />
+          {braid.map((b, i) => (
+            <Line key={i} {...b} stroke={i % 2 ? '#d9dee4' : INK.shield} strokeWidth={0.9} />
+          ))}
+          {[-3, -1.5, 0, 1.5, 3].map((k) => (
+            <Path key={k} d={`M ${X_INSUL - 6} ${CY + k * 1.1} Q ${X_INSUL - 3} ${CY + k * 2.2} ${X_INSUL - 0.5} ${CY + k * 3.4}`} fill="none" stroke={INK.shield} strokeWidth={0.6} />
+          ))}
+        </G>
+        <SvgText x={(X_SHIELD + X_INSUL) / 2} y={58} fill={hi('shield') ?? '#7d8590'} fontSize={10} textAnchor="middle">SHIELD</SvgText>
+
+        {/* insulation: the twisted pair (two coloured insulated conductors) */}
         <G onPress={() => onSelect('insulation')}>
-          <Rect x={288} y={66} width={26} height={7} rx={3.5} fill={INK.insul} stroke={hi('insulation') ?? '#a05f18'} strokeWidth={sw('insulation')} />
-          <Rect x={288} y={77} width={26} height={7} rx={3.5} fill="#3d7dd6" stroke={hi('insulation') ?? '#2b5ca3'} strokeWidth={sw('insulation')} />
+          <Path d={wire(1)} fill="none" stroke={hi('insulation') ?? '#2b5ca3'} strokeWidth={R_WIRE * 2 + (selected === 'insulation' ? 1.4 : 0.6)} strokeLinecap="round" />
+          <Path d={wire(1)} fill="none" stroke="#3d7dd6" strokeWidth={R_WIRE * 2} strokeLinecap="round" />
+          <Path d={wire(0)} fill="none" stroke={hi('insulation') ?? '#a05f18'} strokeWidth={R_WIRE * 2 + (selected === 'insulation' ? 1.4 : 0.6)} strokeLinecap="round" />
+          <Path d={wire(0)} fill="none" stroke={INK.insul} strokeWidth={R_WIRE * 2} strokeLinecap="round" />
         </G>
         <SvgText x={301} y={100} fill={hi('insulation') ?? '#7d8590'} fontSize={10} textAnchor="middle">INSUL.</SvgText>
 
-        {/* conductors */}
+        {/* conductors: bare stranded copper, the two ends splayed for soldering */}
         <G onPress={() => onSelect('conductors')}>
-          <Rect x={314} y={68} width={40} height={3.4} fill={INK.copper} stroke={hi('conductors') ?? '#a8862c'} strokeWidth={sw('conductors') - 0.5} />
-          <Rect x={314} y={79} width={40} height={3.4} fill={INK.copper} stroke={hi('conductors') ?? '#a8862c'} strokeWidth={sw('conductors') - 0.5} />
+          {[0, 1]
+            .map((ph) => CY + R_WIRE * 1.05 * Math.cos((((X_COND - X_INSUL) / lay) * 2 + ph) * Math.PI))
+            .sort((a, b) => a - b)
+            .map((y0, k) => ({ y0, y1: k === 0 ? CY - 7 : CY + 7 }))
+            .map((c, i) => (
+            <G key={i}>
+              <Path d={`M ${X_COND} ${c.y0} C ${X_COND + 12} ${c.y0} ${X_COND + 14} ${c.y1} ${X_COND + 38} ${c.y1}`} fill="none" stroke={hi('conductors') ?? '#a8862c'} strokeWidth={1.1 * MM + (selected === 'conductors' ? 1.4 : 0.5)} strokeLinecap="round" />
+              <Path d={`M ${X_COND} ${c.y0} C ${X_COND + 12} ${c.y0} ${X_COND + 14} ${c.y1} ${X_COND + 38} ${c.y1}`} fill="none" stroke={INK.copper} strokeWidth={1.1 * MM} strokeLinecap="round" />
+              <Path d={`M ${X_COND} ${c.y0} C ${X_COND + 12} ${c.y0} ${X_COND + 14} ${c.y1} ${X_COND + 38} ${c.y1}`} fill="none" stroke="#fff3c4" strokeWidth={0.4} strokeDasharray="1.4 1.2" opacity={0.7} />
+            </G>
+          ))}
         </G>
         {/* Anchored at the right edge: centred on 334 it ran past the
             viewBox and read "CONDUCTOR" (full-screen pass 2026-09-30). */}
-        <SvgText x={357} y={60} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="end">CONDUCTORS</SvgText>
+        <SvgText x={357} y={58} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="end">CONDUCTORS</SvgText>
 
         {/* full-height invisible tap zones on top — the real touch targets */}
         {HIT_ZONES.map((z) => (

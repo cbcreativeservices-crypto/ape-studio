@@ -17,7 +17,7 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { View } from 'react-native';
-import { Canvas, DashPathEffect, Group, LinearGradient, Paint, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, DashPathEffect, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
@@ -25,9 +25,10 @@ import type { VariantId, Vec3, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
 import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headProfile, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
+import type { HandKind } from '../players/playerPose.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { archAt, fbHalf, fingerboardZ, halfWidth, outline, stationsOf, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
-import { anchorsOf, toLesson, type BPoint, type BowPose, type Posture } from './posture.ts';
+import { anchorsOf, toB, toLesson, type BPoint, type BowPose, type Posture } from './posture.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = [number, number];
@@ -195,7 +196,11 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
     return B({ x: xx, y: y * s, z: archAt(spec, xx, y * s) * 0.6 });
   });
   if (facing > 0.15) out.top.push(item(purf, undefined, { color: '#1c0b02', w: 1.3 * k, opacity: 0.9 }));
-  // f-holes, with their nicks at the bridge line.
+  // f-holes (art pass 2026-10-10): the S-shaped stem as a cut of varying
+  // width — narrow at its middle, flaring into the WINGS by each eye — the
+  // small upper eye toward the neck and nearer the centre line, the larger
+  // lower eye toward the tail and farther out, and the nicks on the bridge
+  // line. Each point sits on the arch.
   const [fx0, fx1] = spec.fholeX;
   const fl = fx1 - fx0;
   for (const s of [1, -1]) {
@@ -203,22 +208,42 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
     const spread = 0.2 * Y;
     const up = { x: fx1 - 0.06 * fl, y: s * (Y - spread) };
     const lo = { x: fx0 + 0.06 * fl, y: s * (Y + spread) };
-    const stem: P2[] = [];
-    for (let i = 0; i <= 24; i++) {
-      const t = i / 24;
-      // An S between the eyes (a cubic with its handles along x).
-      const c1 = { x: up.x - 0.45 * fl, y: up.y };
-      const c2 = { x: lo.x + 0.45 * fl, y: lo.y };
-      const x = (1 - t) ** 3 * up.x + 3 * (1 - t) ** 2 * t * c1.x + 3 * (1 - t) * t * t * c2.x + t ** 3 * lo.x;
-      const y = (1 - t) ** 3 * up.y + 3 * (1 - t) ** 2 * t * c1.y + 3 * (1 - t) * t * t * c2.y + t ** 3 * lo.y;
-      stem.push(B({ x, y, z: archAt(spec, x, y) + 0.4 }));
+    const c1 = { x: up.x - 0.45 * fl, y: up.y };
+    const c2 = { x: lo.x + 0.45 * fl, y: lo.y };
+    const at = (t: number) => ({
+      x: (1 - t) ** 3 * up.x + 3 * (1 - t) ** 2 * t * c1.x + 3 * (1 - t) * t * t * c2.x + t ** 3 * lo.x,
+      y: (1 - t) ** 3 * up.y + 3 * (1 - t) ** 2 * t * c1.y + 3 * (1 - t) * t * t * c2.y + t ** 3 * lo.y,
+    });
+    const left: P2[] = [];
+    const right: P2[] = [];
+    const N = 28;
+    for (let i = 0; i <= N; i++) {
+      const t = 0.04 + (0.92 * i) / N;
+      const p = at(t);
+      const q = at(Math.min(1, t + 0.01));
+      const r = at(Math.max(0, t - 0.01));
+      const tx = q.x - r.x;
+      const ty = q.y - r.y;
+      const tl = Math.hypot(tx, ty) || 1;
+      // Stem width: 0.032 fl at its middle, the wings to 0.075 fl near each eye.
+      const wing = Math.exp(-(((t - 0.16) / 0.09) ** 2)) * 0.8 + Math.exp(-(((t - 0.84) / 0.09) ** 2));
+      const w = fl * (0.032 + 0.043 * wing);
+      // The wings flare to the f-hole's outer side (away from the centre line).
+      const nx = -ty / tl;
+      const ny = tx / tl;
+      const outSide = Math.sign(ny * s) || 1;
+      const wo = w * (0.5 + 0.25 * wing);
+      const wi = w - wo;
+      left.push(B({ x: p.x + nx * outSide * wo, y: p.y + ny * outSide * wo, z: archAt(spec, p.x, p.y) + 0.4 }));
+      right.push(B({ x: p.x - nx * outSide * wi, y: p.y - ny * outSide * wi, z: archAt(spec, p.x, p.y) + 0.4 }));
     }
-    const eyeU = circlePts([up.x, up.y], 0.065 * fl, 12).map(([x, y]) => B({ x, y, z: archAt(spec, x, y) + 0.4 }));
-    const eyeL = circlePts([lo.x, lo.y], 0.075 * fl, 12).map(([x, y]) => B({ x, y, z: archAt(spec, x, y) + 0.4 }));
-    out.top.push(item(stem, undefined, { color: '#050302', w: 0.045 * fl }, false));
+    out.top.push(item([...left, ...right.reverse()], '#050302'));
+    const eyeU = circlePts([up.x, up.y], 0.06 * fl, 14).map(([x, y]) => B({ x, y, z: archAt(spec, x, y) + 0.4 }));
+    const eyeL = circlePts([lo.x, lo.y], 0.08 * fl, 14).map(([x, y]) => B({ x, y, z: archAt(spec, x, y) + 0.4 }));
     out.top.push(item(eyeU, '#050302'));
     out.top.push(item(eyeL, '#050302'));
-    const nick = [B({ x: 0, y: s * (Y - 0.08 * fl), z: archAt(spec, 0, s * Y) + 0.4 }), B({ x: 0, y: s * (Y + 0.08 * fl), z: archAt(spec, 0, s * Y) + 0.4 })];
+    const mid = at(0.5);
+    const nick = [B({ x: 0, y: mid.y - 0.07 * fl, z: archAt(spec, 0, mid.y) + 0.4 }), B({ x: 0, y: mid.y + 0.07 * fl, z: archAt(spec, 0, mid.y) + 0.4 })];
     out.top.push(item(nick, undefined, { color: '#050302', w: 0.9 * k }, false));
   }
 
@@ -235,12 +260,29 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
   out.above.push(item(tailSide, EBONY, { color: OUTLINE, w: 1 * k }));
   out.above.push(item(tail, EBONY, { color: OUTLINE, w: 1.2 * k }, true, 0.9 * k));
   if (spec.id === 'violin' || spec.id === 'viola') {
-    const cr: P2[] = [];
-    for (let i = 0; i < 24; i++) {
-      const a = (i / 24) * Math.PI * 2;
-      cr.push(B({ x: st.tailX + 38 * k + 26 * k * Math.cos(a), y: -spec.lower.mm * 0.22 + 42 * k * Math.sin(a), z: spec.archTop.mm * 0.6 + 9 * k }));
-    }
-    out.above.push(item(cr, EBONY, { color: OUTLINE, w: 1 * k }, true, 0.8 * k));
+    // The chin rest (art pass 2026-10-10): an ebony cup, kidney-shaped,
+    // ~105 × 55 mm, left of the tailpiece on the lowest string's side and
+    // lapping a little over the tail edge; its dished cup drawn as an inner
+    // rim.
+    const cx = st.tailX + 26 * k;
+    const cy = -spec.lower.mm * 0.2;
+    const kidney = (sc: number): P2[] => {
+      const pts: P2[] = [];
+      for (let i = 0; i < 36; i++) {
+        const a = (i / 36) * Math.PI * 2;
+        // An ellipse 55 (along) × 105 (across), its tail-side edge pulled in
+        // at the middle (the bean's hollow faces the tailpiece's end).
+        const rx = 26 * k * sc;
+        const ry = 50 * k * sc;
+        const dent = Math.cos(a) > 0 ? 0 : 0.22 * Math.exp(-((Math.sin(a) / 0.45) ** 2));
+        const yy = cy + ry * Math.sin(a) * (1 - 0.08 * Math.cos(a));
+        const xx = cx + rx * Math.cos(a) * (1 - dent) + (Math.sin(a) > 0.6 ? 4 * k * sc : 0);
+        pts.push(B({ x: xx, y: yy, z: spec.archTop.mm * 0.6 + 12 * k }));
+      }
+      return pts;
+    };
+    out.above.push(item(kidney(1), { colors: ['#5a524b', '#2a2622', '#0d0c0b'] }, { color: OUTLINE, w: 1 * k }, true, 1 * k));
+    out.above.push(item(kidney(0.7), { colors: ['#3a3530', '#1a1816', '#0a0909'] }, { color: '#6a645d', w: 0.7 * k, opacity: 0.7 }));
   }
   // The neck (seen from the side under the fingerboard) with its heel.
   const nz = (x: number) => fingerboardZ(spec, x) - 5 * k;
@@ -275,17 +317,50 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
   const scrollR = pl * 0.24;
   const pbFace: P2[] = [B({ x: sx0, y: -pw, z: zn - 4 * k }), B({ x: sx1 - 2 * scrollR, y: -pw * 0.8, z: zn - 4 * k }), B({ x: sx1 - 2 * scrollR, y: pw * 0.8, z: zn - 4 * k }), B({ x: sx0, y: pw, z: zn - 4 * k })];
   out.above.push(item(pbFace, RIB, { color: OUTLINE, w: 1 * k }));
-  const volute: P2[] = circlePts([sx1 - scrollR, 0], scrollR, 20).map(([x, y]) => B({ x, y: y * 0.75, z: zn - 6 * k }));
+  // The open pegbox (art pass 2026-10-10): its cavity between the cheeks,
+  // where the strings wind onto the pegs.
+  const cav: P2[] = [B({ x: sx0 + 3 * k, y: -pw * 0.6, z: zn - 3.6 * k }), B({ x: sx1 - 2.1 * scrollR, y: -pw * 0.45, z: zn - 3.6 * k }), B({ x: sx1 - 2.1 * scrollR, y: pw * 0.45, z: zn - 3.6 * k }), B({ x: sx0 + 3 * k, y: pw * 0.6, z: zn - 3.6 * k })];
+  out.above.push(item(cav, '#120804', { color: '#2a1206', w: 0.6 * k }));
+  // The scroll seen face-on: the volute's outer turn, its centre spine and
+  // the turns either side of it (drawn, not traced).
+  const vc: P2 = [sx1 - scrollR, 0];
+  const volute: P2[] = circlePts(vc, scrollR, 24).map(([x, y]) => B({ x, y: y * 0.78, z: zn - 6 * k }));
   out.above.push(item(volute, RIB, { color: OUTLINE, w: 1 * k }, true, 0.8 * k));
-  // Pegs: two each side, alternating.
+  for (const s2 of [-1, 1]) {
+    const turn: P2[] = [];
+    for (let i = 0; i <= 14; i++) {
+      const a = -Math.PI * 0.62 + (i / 14) * Math.PI * 1.24;
+      turn.push(B({ x: vc[0] - scrollR * 0.15 + scrollR * 0.62 * Math.cos(a), y: s2 * scrollR * (0.36 + 0.3 * Math.sin(Math.abs(a) * 0.9)) * 0.78, z: zn - 5.5 * k }));
+    }
+    out.above.push(item(turn, undefined, { color: '#1c0a02', w: 0.9 * k, opacity: 0.85 }, false));
+  }
+  out.above.push(item([B({ x: vc[0] - scrollR * 0.95, y: 0, z: zn - 5.5 * k }), B({ x: vc[0] + scrollR * 0.95, y: 0, z: zn - 5.5 * k })], undefined, { color: '#e2a070', w: 0.9 * k, opacity: 0.45 }, false));
+  if (spec.id === 'bass') {
+    // The bass's machine heads: a brass gear plate along each cheek, two
+    // worm shafts out of each, a flat key on each shaft (~38 mm out).
+    for (const s2 of [-1, 1]) {
+      const plate: P2[] = [B({ x: sx0 + pl * 0.08, y: s2 * pw * 1.02, z: zn - 8 * k }), B({ x: sx0 + pl * 0.62, y: s2 * pw * 0.9, z: zn - 8 * k }), B({ x: sx0 + pl * 0.62, y: s2 * (pw * 0.9 + 4), z: zn - 8 * k }), B({ x: sx0 + pl * 0.08, y: s2 * (pw * 1.02 + 4), z: zn - 8 * k })];
+      out.above.push(item(plate, { colors: ['#f2d58a', '#b8913f', '#6d521c'] }, { color: OUTLINE, w: 0.6 * k }));
+    }
+  }
+  // Pegs: two each side, alternating (violin, viola, cello: ebony pegs with
+  // a collar and the thumb piece; the bass: worm shafts with flat keys).
   for (let i = 0; i < 4; i++) {
     const x = sx0 + pl * (0.14 + 0.15 * i);
     const s = i % 2 === 0 ? -1 : 1;
+    const bass = spec.id === 'bass';
+    const reach = bass ? 38 : 30 * k;
     const a = B({ x, y: s * pw, z: zn - 10 * k });
-    const b = B({ x, y: s * (pw + 30 * k), z: zn - 10 * k });
-    out.above.push({ path: limbPath(a, b, 3.5 * k, 3 * k), fill: spec.id === 'bass' ? METAL : EBONY, box: bbox([a, b]) });
-    const knob = circlePts([0, 0], 9 * k, 12).map(([dx, dy]) => B({ x: x + dx, y: s * (pw + 34 * k) + dy * 0.5, z: zn - 10 * k }));
-    out.above.push(item(knob, spec.id === 'bass' ? METAL : EBONY, { color: OUTLINE, w: 0.8 * k }));
+    const b = B({ x, y: s * (pw + reach), z: zn - 10 * k });
+    out.above.push({ path: limbPath(a, b, bass ? 4 : 3.5 * k, bass ? 4 : 3 * k), fill: bass ? METAL : EBONY, box: bbox([a, b]) });
+    if (!bass) {
+      const collar = [B({ x: x - 4.5 * k, y: s * (pw + reach * 0.62), z: zn - 10 * k }), B({ x: x + 4.5 * k, y: s * (pw + reach * 0.62), z: zn - 10 * k })];
+      out.above.push(item(collar, undefined, { color: '#d8cfbf', w: 1.6 * k, opacity: 0.85 }, false));
+    }
+    const kx = bass ? 16 : 10 * k;
+    const ky = bass ? 8 : 6 * k;
+    const knob = circlePts([0, 0], 1, 16).map(([dx, dy]) => B({ x: x + dx * kx, y: s * (pw + reach + ky) + dy * ky, z: zn - 10 * k }));
+    out.above.push(item(knob, bass ? METAL : EBONY, { color: OUTLINE, w: 0.8 * k }, true, 0.6 * k));
   }
   const pbSide: P2[] = [B({ x: sx0, y: 0, z: zn - 2 * k }), B({ x: sx1 - 1.6 * scrollR, y: 0, z: zn - 2 * k }), B({ x: sx1 - 1.6 * scrollR, y: 0, z: zn - 2.2 * scrollR }), B({ x: sx0, y: 0, z: zn - 30 * k })];
   out.above.push(item(pbSide, RIB, { color: OUTLINE, w: 1 * k }));
@@ -345,6 +420,22 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
   out.above.push(item(bf, MAPLE_PALE, { color: '#3a2a14', w: 1.1 * k }, true, 0.8 * k));
   const heart = circlePts([0, 0.55 * h], 0.055 * bw, 10).map(([y, z]) => B({ x: 0.1, y, z }));
   out.above.push(item(heart, '#2b1d0c'));
+  // Seen from the front of the top (art pass 2026-10-10) the bridge is its
+  // thin crown — ~1.5 mm at the top, the feet ~4.5 mm along the strings and
+  // a fifth of its width each — so it reads as a maple bar across the
+  // strings, not a hairline.
+  if (facing > 0.15) {
+    for (const s2 of [-1, 1]) {
+      const y0 = s2 * 0.3 * bw;
+      const y1 = s2 * 0.5 * bw;
+      const foot: P2[] = [B({ x: -2.6 * k, y: y0, z: archAt(spec, 0, y0) }), B({ x: -2.6 * k, y: y1, z: archAt(spec, 0, y1) }), B({ x: 2.6 * k, y: y1, z: archAt(spec, 0, y1) }), B({ x: 2.6 * k, y: y0, z: archAt(spec, 0, y0) })];
+      out.above.push(item(foot, MAPLE_PALE, { color: '#3a2a14', w: 0.6 * k }));
+    }
+    const crown: P2[] = [];
+    for (let i = 0; i <= 10; i++) crown.push(B({ x: -1.6 * k, y: (-0.5 + i / 10) * bw, z: bz((-0.5 + i / 10) * bw) }));
+    for (let i = 10; i >= 0; i--) crown.push(B({ x: 1.6 * k, y: (-0.5 + i / 10) * bw, z: bz((-0.5 + i / 10) * bw) }));
+    out.above.push(item(crown, MAPLE_PALE, { color: '#3a2a14', w: 0.7 * k }));
+  }
   // Strings: tailpiece → bridge → nut → into the pegbox.
   const ys0 = stringYs(spec, 0);
   const ysT = stringYs(spec, t1);
@@ -437,7 +528,25 @@ export function pluckPath(P: Posture, view: ViewId): SkPath {
 
 /* ── the player ── */
 /** The player figure (shared: the brass family draws its players with it). */
-export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId, withRightArm = true): Group3[] {
+/**
+ * How one hand holds (figure polish 2026-10-10): its shape, which way it
+ * points in the view (radians; default along the forearm), and the view point
+ * it lands on (default the skeleton's hand). `keys`/`wrap` land their
+ * FINGERTIPS there (fingers curved down onto valve buttons, round a neck);
+ * `grip` lands the fist's grip there; `rest`/`above` the palm. The forearm is
+ * drawn to the hand's wrist, so it never crosses what the fingers rest on.
+ */
+export type HandHold = { kind: HandKind; dir?: number; at?: P2; /** Paint depth for the hand and its forearm (e.g. just behind the instrument). */ depth?: number };
+export type PlayerOpts = { hands?: { L?: HandHold; R?: HandHold } };
+
+/** The point of a hand (its own frame) that lands on what it holds. */
+function holdAnchor(kind: HandKind, dir: number): P2 {
+  if (kind === 'keys' || kind === 'wrap') return [151, Math.cos(dir) >= 0 ? 28 : -28];
+  if (kind === 'grip' || kind === 'pick') return [100, 0];
+  return [70, 0];
+}
+
+export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId, withRightArm = true, opts: PlayerOpts = {}): Group3[] {
   const s = P.player;
   const q = (p: Vec3) => prj(view, p);
   const g: Group3[] = [];
@@ -450,10 +559,19 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
     g.push({ key, depth: depthOf(view, add(scale(a, 0.5), scale(b, 0.5))), items: [{ path: limbPath(A2, B2, ra, rb), fill, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([A2, B2]), rim: 1.4, tone: toneOf(fill) }] });
   };
   // Legs and feet.
-  limb('thighL', s.hipL, s.kneeL, 80, 62, TROUSER);
-  limb('thighR', s.hipR, s.kneeR, 80, 62, TROUSER);
-  limb('shinL', s.kneeL, s.ankleL, 60, 44, TROUSER);
-  limb('shinR', s.kneeR, s.ankleR, 60, 44, TROUSER);
+  // Each leg is ONE trouser mass, thigh into shin (no capsule joint at the
+  // knee), its shoe below it.
+  const leg = (key: string, hip: Vec3, knee: Vec3, ankle: Vec3) => {
+    const H2 = q(hip);
+    const K2 = q(knee);
+    const A2 = q(ankle);
+    const path = Skia.Path.MakeFromOp(limbPath(H2, K2, 80, 62), limbPath(K2, A2, 62, 44), PathOp.Union) ?? limbPath(H2, K2, 80, 62);
+    // Under the shirt's hem: never painted over the torso (a near thigh's
+    // round top read as a grey disc at the waist of a standing player).
+    g.push({ key, depth: Math.min(depthOf(view, add(scale(hip, 0.5), scale(knee, 0.5))), depthOf(view, s.chest) - 0.5), items: [{ path, fill: TROUSER, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([H2, K2, A2]), rim: 1.4, tone: 'trousers' }] });
+  };
+  leg('thighL', s.hipL, s.kneeL, s.ankleL);
+  leg('thighR', s.hipR, s.kneeR, s.ankleR);
   limb('footL', s.ankleL, s.toeL, 42, 34, SHOE);
   limb('footR', s.ankleR, s.toeR, 42, 34, SHOE);
   // Torso: the hull of shoulders, chest, waist and hips.
@@ -467,25 +585,52 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   ];
   const torso = hull(tc);
   g.push({ key: 'torso', depth: depthOf(view, s.chest), items: [{ path: polyPath(torso), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(torso), rim: 1.6, tone: 'shirt' }] });
-  // Arms.
-  limb('upperL', s.shoulderL, s.elbowL, 54, 44, CLOTH);
-  limb('foreL', s.elbowL, s.handL, 42, 32, CLOTH);
-  if (withRightArm) {
-    limb('upperR', s.shoulderR, s.elbowR, 54, 44, CLOTH);
-    limb('foreR', s.elbowR, s.handR, 42, 32, CLOTH);
-  }
-  // Hands with fingers (the shared hand, seen from its back), pointing along
-  // the forearm, in place of a disc.
-  const hand = (key: string, h: Vec3, elbow: Vec3) => {
-    const c = q(h);
+  // Hands with fingers (the shared hand), each HOLDING what it holds (figure
+  // polish 2026-10-10): its wrist, from where the hand lands.
+  const wristOf2 = (h: Vec3, elbow: Vec3, hold: HandHold | undefined): { wrist: P2; dir: number; kind: HandKind; depth?: number } => {
+    const c = hold?.at ?? q(h);
     const e = q(elbow);
-    const dir = Math.atan2(c[1] - e[1], c[0] - e[0]);
-    const hs = handShape({ wrist: { u: c[0] - Math.cos(dir) * 70, v: c[1] - Math.sin(dir) * 70 }, dir, kind: 'rest' });
-    const b = hs.path.getBounds();
-    g.push({ key, depth: depthOf(view, h) + 25, items: [{ path: hs.path, fill: SKIN, box: { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height }, tone: 'skin', lines: hs.lines }] });
+    const dir = hold?.dir ?? Math.atan2(c[1] - e[1], c[0] - e[0]);
+    const kind = hold?.kind ?? 'rest';
+    const [ax, ay] = holdAnchor(kind, dir);
+    const co = Math.cos(dir);
+    const si = Math.sin(dir);
+    return { wrist: [c[0] - (ax * co - ay * si), c[1] - (ax * si + ay * co)], dir, kind, depth: hold?.depth };
   };
-  hand('handL', s.handL, s.elbowL);
-  if (withRightArm) hand('handR', s.handR, s.elbowR);
+  const wL = wristOf2(s.handL, s.elbowL, opts.hands?.L);
+  const wR = wristOf2(s.handR, s.elbowR, opts.hands?.R);
+  // Arms: tapered sleeves, the forearm to the hand's own wrist.
+  const fore = (key: string, a: Vec3, b: Vec3, w2: P2, depth?: number) => {
+    const A2 = q(a);
+    g.push({ key, depth: depth !== undefined ? depth - 1 : depthOf(view, add(scale(a, 0.5), scale(b, 0.5))), items: [{ path: limbPath(A2, w2, 42, 31), fill: CLOTH, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([A2, w2]), rim: 1.4, tone: 'shirt' }] });
+  };
+  // From above, each arm is ONE sleeve (shoulder → elbow → wrist, tapering
+  // 112 → 88 → 62 mm), so the bent arm reads as an arm, never two bars
+  // meeting at a corner.
+  const armTop = (key: string, sh: Vec3, el: Vec3, h: Vec3, w2: P2) => {
+    const S2 = q(sh);
+    const E2 = q(el);
+    const path = Skia.Path.MakeFromOp(limbPath(S2, E2, 56, 44), limbPath(E2, w2, 44, 31), PathOp.Union) ?? limbPath(S2, E2, 56, 44);
+    g.push({ key, depth: depthOf(view, add(scale(el, 0.5), scale(h, 0.5))), items: [{ path, fill: CLOTH, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([S2, E2, w2]), rim: 1.4, tone: 'shirt' }] });
+  };
+  if (view === 'top') {
+    armTop('upperL', s.shoulderL, s.elbowL, s.handL, wL.wrist);
+    if (withRightArm) armTop('upperR', s.shoulderR, s.elbowR, s.handR, wR.wrist);
+  } else {
+    limb('upperL', s.shoulderL, s.elbowL, 54, 44, CLOTH);
+    fore('foreL', s.elbowL, s.handL, wL.wrist, wL.depth);
+    if (withRightArm) {
+      limb('upperR', s.shoulderR, s.elbowR, 54, 44, CLOTH);
+      fore('foreR', s.elbowR, s.handR, wR.wrist, wR.depth);
+    }
+  }
+  const hand = (key: string, h: Vec3, w: { wrist: P2; dir: number; kind: HandKind; depth?: number }) => {
+    const hs = handShape({ wrist: { u: w.wrist[0], v: w.wrist[1] }, dir: w.dir, kind: w.kind });
+    const b = hs.path.getBounds();
+    g.push({ key, depth: w.depth ?? depthOf(view, h) + 25, items: [{ path: hs.path, fill: SKIN, box: { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height }, tone: 'skin', lines: hs.lines }] });
+  };
+  hand('handL', s.handL, wL);
+  if (withRightArm) hand('handR', s.handR, wR);
   // The head: the house LINE-ART head (bald, no eyes; reference_head_icon_
   // spec) — in profile from the side, turned to the face from above — with
   // its neck column down to the collar (no hair, no shaded face).
@@ -564,12 +709,28 @@ export function PaintItem({ it }: { it: Item }) {
   );
 }
 
+/**
+ * The left hand ON THE NECK (figure polish 2026-10-10): seen from the
+ * player's right, the hand is behind the neck — the thumb on the neck's back,
+ * the palm hidden by it, the fingers curling round onto the fingerboard,
+ * their tips just over its edge — and the forearm reaches it from behind the
+ * instrument, never across the strings. From above: the back of the hand.
+ */
+function neckHold(P: Posture, view: ViewId, instDepth: number): HandHold | undefined {
+  if (view !== 'side' || !P.player) return undefined;
+  const hb = toB(P.ax, P.player.handL);
+  const face = toLesson(P.ax, { x: hb.x, y: hb.y, z: stringZ(P.spec, hb.x) + 10 });
+  const a = prj(view, P.player.handL);
+  const b = prj(view, face);
+  return { kind: 'wrap', dir: Math.atan2(b[1] - a[1], b[0] - a[0]), at: b, depth: instDepth - 1 };
+}
+
 /** All the groups for a view, far to near. */
 export function sceneGroups(P: Posture, view: ViewId, opts: { player?: boolean; bow?: boolean } = {}): Group3[] {
   const groups: Group3[] = [];
-  if (opts.player !== false) groups.push(...playerGroups(P, view, true));
-  const inst = instrumentItems(P, view);
   const instDepth = depthOf(view, { x: 0, y: 0, z: 0 });
+  if (opts.player !== false) groups.push(...playerGroups(P, view, true, { hands: { L: neckHold(P, view, instDepth) } }));
+  const inst = instrumentItems(P, view);
   // The bow lies on the strings: right after the instrument when its top
   // faces the camera, before it when the back does.
   const bowFirst = dot(P.ax.z, TO_VIEWER[view]) < -0.05;
@@ -588,9 +749,10 @@ export function BowedScene({ P, view, bow = true, sweep = true, hatch }: { P: Po
   const keep = useKeepOutsAtRest();
   const sw = useMemo(() => (sweep && keep ? sweepPaths(P, view) : null), [P, view, sweep, keep]);
   const pl = useMemo(() => (!bow && keep && P.kind === 'standing' ? pluckPath(P, view) : null), [P, view, bow, keep]);
-  // The player recedes (charter §6: the subject is the instrument): the
-  // parts behind it and the parts in front are each composited at a lower
-  // opacity, so the instrument and the mic read through the bow arm.
+  // The player is OPAQUE (figure polish 2026-10-10, owner: limbs that show
+  // the instrument through them read as mannequins): painted far to near, the
+  // parts behind the instrument first, the parts in front (the bow arm) over
+  // it. The keep-outs stay readable as the hatched sweeps drawn on top.
   const at = groups.findIndex((g) => g.key === 'instrument');
   const far = groups.slice(0, at);
   const near = groups.slice(at + 1);
@@ -604,9 +766,9 @@ export function BowedScene({ P, view, bow = true, sweep = true, hatch }: { P: Po
     ));
   return (
     <Group>
-      <Group layer={<Paint opacity={0.78} />}>{draw(far)}</Group>
+      <Group>{draw(far)}</Group>
       {draw(groups.slice(at, at + 1))}
-      <Group layer={<Paint opacity={0.5} />}>{draw(near)}</Group>
+      <Group>{draw(near)}</Group>
       {sw ? (
         <>
           <Group clip={sw.bow}>
@@ -786,7 +948,7 @@ export function portraitLabels(spec: BowedSpec): StaticLabel[] {
     { id: 'top', text: 'TOP (BELLY)', short: 'TOP', u: -spec.body.mm * 0.32, v: above, align: 'center', lead: { u: -spec.body.mm * 0.32, v: -W * 0.6 } },
     { id: 'tail', text: 'TAILPIECE', short: 'TAIL', u: tailU, v: below, align: 'center', lead: { u: tailU, v: spec.bridgeW.mm * 0.2 } },
     { id: 'fhole', text: 'F-HOLE', u: fhU + 30 * k, v: below, align: 'left', lead: { u: fhU, v: spec.fholeY.mm } },
-    spec.endpin ? { id: 'endpin', text: 'ENDPIN', u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: -40 * k - 10, align: 'center' } : { id: 'chin', text: 'CHIN REST', short: 'CHIN', u: st.tailX - 10, v: above, align: 'right', lead: { u: st.tailX + 30, v: -W * 0.35 } },
+    spec.endpin ? { id: 'endpin', text: 'ENDPIN', u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: -W * 0.72, align: 'center', lead: { u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: 0 } } : { id: 'chin', text: 'CHIN REST', short: 'CHIN', u: st.tailX - 10, v: above, align: 'right', lead: { u: st.tailX + 30, v: -W * 0.35 } },
     { id: 'strings', text: `STRINGS ${spec.strings.join(' ')}`, short: 'STRINGS', u: st.nutX * 0.7, v: below, align: 'center', tone: 'muted', lead: { u: st.nutX * 0.7, v: 0 } },
     { id: 'tip', text: 'BOW · TIP', short: 'TIP', u: P.bow.tip.x, v: P.bow.tip.y + 38 * k + 12, align: 'left' },
     { id: 'hair', text: 'HAIR', u: P.bow.contact.x, v: P.bow.tip.y + 30 * k + 8, align: 'center', tone: 'muted' },

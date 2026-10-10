@@ -186,13 +186,31 @@ function pillowSide(): SkPath {
   return p;
 }
 
+/*
+ * THE PEDAL (side), drawn at true size around the model's own anchors (the
+ * axle, the strike, the footboard box — geometry.ts; never moved here).
+ * REAL DIMENSIONS used for the parts the model leaves to the drawing (a
+ * single chain-drive pedal; drawing reference, nothing shown to the learner):
+ *   base plate 6 mm thick running forward to a hoop clamp at the batter hoop
+ *   (a jaw ≈ 14 × 27 mm with a T-screw); heel plate hinged to a footboard
+ *   ≈ 75 mm wide with grip ribs; a cast frame upright ≈ 34 mm wide at the
+ *   base tapering to ≈ 22 mm at the bearing, with a window; a 40 mm sprocket
+ *   on the axle and a chain from the footboard toe over it; a Ø 16 mm return
+ *   spring on the player's side of the frame, its crank on the axle; a
+ *   Ø 9.5 mm shaft with a memory-lock collar; a felt beater 60 × 60 mm (the
+ *   model's head size), its face flat to the head at the strike.
+ */
 function pedalSideParts() {
   const b = G.beater;
   const yF = G.yFloor;
-  const head = { x: b.axle.x + b.len * Math.cos(b.strikeAngle), y: b.axle.y + b.len * Math.sin(b.strikeAngle) };
-  const rest = { x: b.axle.x + b.len * Math.cos(b.restAngle), y: b.axle.y + b.len * Math.sin(b.restAngle) };
+  const ax = b.axle.x;
+  const ay = b.axle.y;
+  const head = { x: ax + b.len * Math.cos(b.strikeAngle), y: ay + b.len * Math.sin(b.strikeAngle) };
+  const rest = { x: ax + b.len * Math.cos(b.restAngle), y: ay + b.len * Math.sin(b.restAngle) };
   const { x0, x1, top } = G.pedal;
-  const base = rrect(make(), x0 - 6, yF - 7, x1 + 12, yF, 2);
+  const hoopFace = G.hoopX.batter[0];
+  // Base plate from the heel to the hoop clamp.
+  const base = rrect(make(), x0 - 6, yF - 7, hoopFace - 1, yF, 2);
   const board = make();
   board.moveTo(x0 + 2, yF - 9);
   board.lineTo(x1 - 32, top);
@@ -211,14 +229,54 @@ function pedalSideParts() {
     const py = yF - 9 + uy * t;
     seg(ribs, px - uy * 1.5, py + ux * 1.5, px + uy * 7, py - ux * 7);
   }
-  const post = rrect(make(), b.axle.x - 10, b.axle.y - 4, b.axle.x + 10, yF - 6, 5);
-  const chain = seg(make(), x1 - 26, top + 4, b.axle.x + 15, b.axle.y + 6);
-  const shaft = seg(make(), b.axle.x, b.axle.y, head.x, head.y);
-  const shaftRest = seg(make(), b.axle.x, b.axle.y, rest.x, rest.y);
-  // The memory-lock collar on the shaft, a little below the head.
-  const k = 0.78;
-  const collar = { x: b.axle.x + (head.x - b.axle.x) * k, y: b.axle.y + (head.y - b.axle.y) * k };
-  return { head, rest, base, board, ribs, post, chain, shaft, shaftRest, collar };
+  // The cast frame upright, tapering to the bearing, and its window.
+  const frame = make();
+  frame.moveTo(ax - 17, yF - 7);
+  frame.lineTo(ax - 11, ay + 6);
+  frame.quadTo(ax, ay - 4, ax + 11, ay + 6);
+  frame.lineTo(ax + 17, yF - 7);
+  frame.close();
+  const frameWindow = make();
+  frameWindow.moveTo(ax - 8, yF - 22);
+  frameWindow.lineTo(ax - 5, ay + 34);
+  frameWindow.quadTo(ax, ay + 28, ax + 5, ay + 34);
+  frameWindow.lineTo(ax + 8, yF - 22);
+  frameWindow.close();
+  // The return spring on the player's side, and its crank from the axle.
+  const spring = make();
+  const sx = ax - 27;
+  const sTop = ay + 30;
+  const sBot = yF - 26;
+  const turns = 9;
+  spring.moveTo(sx, sBot);
+  for (let i = 1; i <= turns * 2; i++) spring.lineTo(sx + (i % 2 ? -7 : 7), sBot + ((sTop - sBot) * i) / (turns * 2));
+  const springRod = seg(seg(make(), sx, sTop, sx, sTop - 8), sx, sBot, sx, yF - 7);
+  const crank = seg(make(), ax, ay, sx, sTop - 8);
+  // The sprocket on the axle, the chain from the toe over its top.
+  const sprocket = oval(make(), ax, ay, 20, 20);
+  const chain = make();
+  chain.moveTo(x1 - 24, top + 4);
+  chain.lineTo(ax + 20, ay);
+  chain.addArc(Skia.XYWHRect(ax - 20, ay - 20, 40, 40), 0, -100);
+  // The hoop clamp at the front of the base, its T-screw.
+  const clamp = rrect(make(), hoopFace - 15, yF - 34, hoopFace - 1, yF - 6, 3);
+  const clampScrew = seg(make(), hoopFace - 8, yF - 34, hoopFace - 8, yF - 54);
+  const clampKnob = rrect(make(), hoopFace - 20, yF - 60, hoopFace + 4, yF - 53, 3);
+  // Shaft, collar and the felt beater at the strike: its face flat to the head.
+  const shaft = seg(make(), ax, ay, head.x, head.y);
+  const shaftRest = seg(make(), ax, ay, rest.x, rest.y);
+  const k = 0.7;
+  const collar = { x: ax + (head.x - ax) * k, y: ay + (head.y - ay) * k };
+  const R = b.headR;
+  const beater = rrect(make(), head.x - R, head.y - R, head.x + R, head.y + R, R * 0.38);
+  const beaterLit = seg(make(), head.x - R + 4, head.y - R + 9, head.x - R + 4, head.y + R - 9);
+  // Where the shaft enters the felt (its lower edge): a ferrule.
+  const tEnter = R / Math.max(1e-6, ay - head.y);
+  const ferrule = { x: head.x + (ax - head.x) * tEnter, y: head.y + R };
+  // The swing: the beater's path from rest to the strike, about the axle.
+  const swing = make();
+  swing.addArc(Skia.XYWHRect(ax - b.len, ay - b.len, 2 * b.len, 2 * b.len), (b.restAngle * 180) / Math.PI, ((b.strikeAngle - b.restAngle) * 180) / Math.PI);
+  return { head, rest, base, board, ribs, frame, frameWindow, spring, springRod, crank, sprocket, chain, clamp, clampScrew, clampKnob, shaft, shaftRest, collar, beater, beaterLit, ferrule, swing };
 }
 
 function buildSide() {
@@ -439,47 +497,80 @@ export function KickArt({ view, variant }: { view: ViewId; variant: VariantId })
 
 function SidePedal({ ped }: { ped: ReturnType<typeof pedalSideParts> }) {
   const b = G.beater;
+  const ax = b.axle.x;
+  const ay = b.axle.y;
+  const restTurn = b.restAngle - b.strikeAngle;
   return (
     <>
-      {/* Base plate, footboard with grip ribs, the frame post and its cam. */}
+      {/* Base plate to the hoop clamp; heel hinge; footboard with grip ribs. */}
       <Path path={ped.base}>
         <LinearGradient start={vec(0, G.yFloor - 7)} end={vec(0, G.yFloor)} colors={['#5b5f69', '#202227']} />
       </Path>
+      <Path path={ped.clamp}>
+        <LinearGradient start={vec(G.hoopX.batter[0] - 15, 0)} end={vec(G.hoopX.batter[0], 0)} colors={CHROME} />
+      </Path>
+      <Path path={ped.clamp} style="stroke" strokeWidth={1} color={INK} />
+      <Path path={ped.clampScrew} style="stroke" strokeWidth={5} strokeCap="round" color={CHROME_DARK} />
+      <Path path={ped.clampScrew} style="stroke" strokeWidth={2} strokeCap="round" color="#c6cad4" />
+      <Path path={ped.clampKnob} color="#1b1c21" />
+      <Path path={ped.clampKnob} style="stroke" strokeWidth={1} color="#6c717c" />
       <Path path={ped.board}>
         <LinearGradient start={vec(G.pedal.x0, G.yFloor)} end={vec(G.pedal.x1, G.pedal.top)} colors={['#1f2126', '#6b707b', '#30323a']} />
       </Path>
       <Path path={ped.ribs} style="stroke" strokeWidth={2} strokeCap="round" color="#0f1013" opacity={0.75} />
       <Path path={ped.board} style="stroke" strokeWidth={1.2} color={INK} />
       <Circle cx={G.pedal.x0 + 8} cy={G.yFloor - 9} r={6} color="#9aa0ab" />
-      <Path path={ped.post}>
-        <LinearGradient start={vec(b.axle.x - 10, 0)} end={vec(b.axle.x + 10, 0)} colors={CHROME} />
+
+      {/* The return spring and its crank (player's side of the frame). */}
+      <Path path={ped.springRod} style="stroke" strokeWidth={3} strokeCap="round" color="#8a8f99" />
+      <Path path={ped.spring} style="stroke" strokeWidth={2.2} strokeJoin="round" color="#c6cad4" />
+      <Path path={ped.crank} style="stroke" strokeWidth={6} strokeCap="round" color={CHROME_DARK} />
+      <Path path={ped.crank} style="stroke" strokeWidth={2.4} strokeCap="round" color="#9aa0ab" />
+
+      {/* The cast frame upright and its window. */}
+      <Path path={ped.frame}>
+        <LinearGradient start={vec(ax - 17, 0)} end={vec(ax + 17, 0)} colors={CHROME} />
       </Path>
-      <Path path={ped.post} style="stroke" strokeWidth={1} color={INK} />
-      {/* Chain drive (ILLUSTRATIVE): links as a dashed heavy stroke. */}
+      <Path path={ped.frameWindow} color="#121317" />
+      <Path path={ped.frame} style="stroke" strokeWidth={1} color={INK} />
+
+      {/* Sprocket on the axle; the chain from the footboard toe over it. */}
+      <Path path={ped.sprocket} color="#1b1c21" />
+      <Path path={ped.sprocket} style="stroke" strokeWidth={2} color="#6c717c">
+        <DashPathEffect intervals={[3, 2.2]} />
+      </Path>
       <Path path={ped.chain} style="stroke" strokeWidth={5} color="#2a2c32" />
       <Path path={ped.chain} style="stroke" strokeWidth={3.5} strokeCap="round" color="#a2a7b1">
         <DashPathEffect intervals={[4, 3]} />
       </Path>
-      <Circle cx={b.axle.x} cy={b.axle.y} r={17} color="#1b1c21" />
-      <Circle cx={b.axle.x} cy={b.axle.y} r={17} style="stroke" strokeWidth={2} color="#6c717c" />
-      <Circle cx={b.axle.x} cy={b.axle.y} r={6}>
-        <RadialGradient c={vec(b.axle.x - 2, b.axle.y - 2)} r={7} colors={['#f2f4f8', '#7d828d']} />
+      <Circle cx={ax} cy={ay} r={7}>
+        <RadialGradient c={vec(ax - 2, ay - 2)} r={8} colors={['#f2f4f8', '#7d828d']} />
       </Circle>
 
-      {/* The rest position, ghosted. */}
-      <Path path={ped.shaftRest} style="stroke" strokeWidth={5} strokeCap="round" color="#c6cad4" opacity={0.22} />
-      <Circle cx={ped.rest.x} cy={ped.rest.y} r={b.headR} color={FELT[1]} opacity={0.2} />
+      {/* The swing and the rest position, as an outline (the same beater, turned back about the axle). */}
+      <Path path={ped.swing} style="stroke" strokeWidth={1.4} color="#c6cad4" opacity={0.45}>
+        <DashPathEffect intervals={[6, 6]} />
+      </Path>
+      <Group transform={[{ translateX: ax }, { translateY: ay }, { rotate: restTurn }, { translateX: -ax }, { translateY: -ay }]} opacity={0.4}>
+        <Path path={ped.shaft} style="stroke" strokeWidth={2} strokeCap="round" color="#c6cad4">
+          <DashPathEffect intervals={[6, 5]} />
+        </Path>
+        <Path path={ped.beater} style="stroke" strokeWidth={1.6} color="#e7dfcb">
+          <DashPathEffect intervals={[6, 5]} />
+        </Path>
+      </Group>
 
-      {/* Shaft, memory-lock collar and the felt head at the strike. */}
+      {/* Shaft, memory-lock collar and the felt beater at the strike. */}
       <Path path={ped.shaft} style="stroke" strokeWidth={6.5} strokeCap="round" color={CHROME_DARK} />
       <Path path={ped.shaft} style="stroke" strokeWidth={2.2} strokeCap="round" color="#e4e7ed" opacity={0.85} />
       <Circle cx={ped.collar.x} cy={ped.collar.y} r={7} color="#26282e" />
       <Circle cx={ped.collar.x} cy={ped.collar.y} r={7} style="stroke" strokeWidth={1.2} color="#8a8f99" />
-      <Circle cx={ped.head.x} cy={ped.head.y} r={b.headR}>
-        <RadialGradient c={vec(ped.head.x - b.headR * 0.4, ped.head.y - b.headR * 0.45)} r={b.headR * 1.5} colors={FELT} />
-      </Circle>
-      <Circle cx={ped.head.x} cy={ped.head.y} r={b.headR} style="stroke" strokeWidth={1.2} color="#6e6655" />
-      <Circle cx={ped.head.x} cy={ped.head.y} r={b.headR * 0.32} color="#3a3d45" opacity={0.85} />
+      <Path path={ped.beater}>
+        <RadialGradient c={vec(ped.head.x - b.headR * 0.4, ped.head.y - b.headR * 0.45)} r={b.headR * 1.7} colors={FELT} />
+      </Path>
+      <Path path={ped.beaterLit} style="stroke" strokeWidth={2} strokeCap="round" color="#ffffff" opacity={0.6} />
+      <Path path={ped.beater} style="stroke" strokeWidth={1.2} color="#6e6655" />
+      <Circle cx={ped.ferrule.x} cy={ped.ferrule.y} r={5} color="#4a4e57" />
     </>
   );
 }

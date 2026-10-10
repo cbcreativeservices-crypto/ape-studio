@@ -135,40 +135,79 @@ export function standingCovers(view: ViewId, t: Stander, u: number, v: number, t
 
 /* ── the booth window / the open rail ── */
 
+/*
+ * The commentary position's front (real dimensions, mm — drawing defaults for
+ * the class): a 120 mm wall cut in section (hatched) up to the sill, a 150 mm
+ * sill board projecting into the booth, a double-glazed window (two 6 mm panes
+ * on a 12 mm gap in a 60 mm frame) up to the header, the wall again above it.
+ * Open: a low wall to a Ø 50 handrail on its top.
+ */
 /** The commentary position's front: a window (a wall up to the sill at
  *  `sillY`, the glass above it, a header at `y0`) — or, `open`, a rail at the
  *  sill's height with nothing between the talker and the stadium. `x` the
  *  front's plane, from `z0` to `z1`; `y1` the floor. */
 export function BoothWindow({ view, x, y0, y1, z0, z1, sillY, open = false }: { view: ViewId; x: number; y0: number; y1: number; z0: number; z1: number; sillY: number; open?: boolean }) {
   const p = useMemo(() => {
-    const frame = make();
+    const wall = make();
+    const hatchArea = make();
     const glass = make();
+    const frame = make();
     const sill = make();
+    const rail = make();
+    const T = 120;
     if (view === 'side') {
       if (open) {
-        // A low wall to the rail, the rail's top bar.
-        frame.addRect(Skia.XYWHRect(x - 30, sillY, 60, y1 - sillY));
-        sill.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 50, sillY - 30, 100, 40), 14, 14));
+        wall.addRect(Skia.XYWHRect(x - T / 2, sillY, T, y1 - sillY));
+        rail.addCircle(x, sillY - 25, 25);
+        frame.addRect(Skia.XYWHRect(x - 6, sillY - 4, 12, 8));
       } else {
-        frame.addRect(Skia.XYWHRect(x - 40, sillY, 80, y1 - sillY));
-        frame.addRect(Skia.XYWHRect(x - 40, y0, 80, 70));
-        glass.addRect(Skia.XYWHRect(x - 14, y0 + 70, 28, sillY - y0 - 70));
-        sill.addRect(Skia.XYWHRect(x - 70, sillY - 20, 140, 30));
+        wall.addRect(Skia.XYWHRect(x - T / 2, sillY, T, y1 - sillY));
+        wall.addRect(Skia.XYWHRect(x - T / 2, y0, T, 90));
+        // The frame's sill and head members, and the two panes between them.
+        frame.addRect(Skia.XYWHRect(x - 30, sillY - 60, 60, 60));
+        frame.addRect(Skia.XYWHRect(x - 30, y0 + 90, 60, 50));
+        for (const dx of [-12, 6]) glass.addRect(Skia.XYWHRect(x + dx, y0 + 140, 6, sillY - 60 - (y0 + 140)));
+        sill.addRRect(Skia.RRectXY(Skia.XYWHRect(x - T / 2 - 150, sillY - 30, 150 + T / 2 + 10, 30), 6, 6));
       }
+      hatchArea.addPath(wall);
     } else {
-      frame.addRect(Skia.XYWHRect(x - 24, z0, 48, z1 - z0));
-      if (!open) glass.addRect(Skia.XYWHRect(x - 10, z0 + 60, 20, z1 - z0 - 120));
+      wall.addRect(Skia.XYWHRect(x - T / 2, z0, T, z1 - z0));
+      if (!open) {
+        frame.addRect(Skia.XYWHRect(x - 30, z0 + 60, 60, z1 - z0 - 120));
+        for (const dx of [-12, 6]) glass.addRect(Skia.XYWHRect(x + dx, z0 + 70, 6, z1 - z0 - 140));
+        sill.addRect(Skia.XYWHRect(x - T / 2 - 150, z0 + 60, 150, z1 - z0 - 120));
+      }
+      hatchArea.addPath(wall);
     }
-    return { frame, glass, sill };
+    const b = hatchArea.getBounds();
+    const hatch = make();
+    for (let k = b.x - b.height; k < b.x + b.width; k += 40) {
+      hatch.moveTo(k, b.y + b.height);
+      hatch.lineTo(k + b.height, b.y);
+    }
+    return { wall, hatchArea, hatch, glass, frame, sill, rail };
   }, [view, x, y0, y1, z0, z1, sillY, open]);
   return (
     <Group>
-      <Path path={p.glass} color="#8fbcff" opacity={0.28} />
-      <Path path={p.frame}>
-        <LinearGradient start={vec(x - 30, 0)} end={vec(x + 30, 0)} colors={['#7d828c', '#3a3d45', '#1b1c21']} />
+      <Path path={p.wall} color="#2a2c32" />
+      <Group clip={p.hatchArea}>
+        <Path path={p.hatch} style="stroke" strokeWidth={4} color="#4a4e57" opacity={0.7} />
+      </Group>
+      <Path path={p.wall} style="stroke" strokeWidth={2.4} color="#060607" />
+      <Path path={p.sill}>
+        <LinearGradient start={vec(x - 280, 0)} end={vec(x + 60, 0)} colors={['#6b5a49', '#4a3c30']} />
       </Path>
-      <Path path={p.sill} color="#3a3d45" />
-      <Path path={p.frame} style="stroke" strokeWidth={2.4} color="#060607" />
+      <Path path={p.sill} style="stroke" strokeWidth={2} color="#0c0a08" />
+      <Path path={p.frame}>
+        <LinearGradient start={vec(x - 30, 0)} end={vec(x + 30, 0)} colors={['#9aa0aa', '#4a4e57', '#1b1c21']} />
+      </Path>
+      <Path path={p.frame} style="stroke" strokeWidth={1.6} color="#060607" />
+      <Path path={p.glass} color="#a9c8ea" opacity={0.55} />
+      <Path path={p.glass} style="stroke" strokeWidth={1.2} color="#d6e6f7" opacity={0.6} />
+      <Path path={p.rail}>
+        <LinearGradient start={vec(x - 25, 0)} end={vec(x + 25, 0)} colors={['#c3c8d1', '#6b707b', '#2a2c32']} />
+      </Path>
+      <Path path={p.rail} style="stroke" strokeWidth={1.6} color="#060607" />
     </Group>
   );
 }

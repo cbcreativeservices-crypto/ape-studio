@@ -14,7 +14,7 @@
  * EVERYTHING ELSE IS A DRAWING DEFAULT (`placeholder: true`, never a
  * readout): the China's cup, shoulder, valley and lip (china_cymbal/
  * GEOMETRY_PROPOSAL.md: "the whole China profile is a drawing default"), the
- * splash profile (the family's 8 % rise, 20 % bell), the arm's bends and the
+ * splash profile (the family's 8 % rise, 32 % bell), the arm's bends and the
  * piggyback spacing, every position.
  *
  * POSITIONS (the shared kit frame K, kit/GEOMETRY_PROPOSAL.md §1):
@@ -38,10 +38,10 @@ const unk = (needed: string): Provenance => ({ kind: 'unknown', needed });
 const dd = (mm: number, needed: string): Dim => ({ mm, prov: unk(needed), placeholder: true });
 const yAt = (h: number) => KIT_FLOOR_Y - h;
 
-/** The family's crash profile (8 % rise, 20 % bell): drawing defaults. */
+/** The family's crash profile (8 % rise, 32 % bell): drawing defaults. */
 const profile = (d: number): Pick<CymbalSpec, 'rise' | 'bellD' | 'edgeFrac' | 'drawT'> => ({
   rise: dd(CYMBAL_PROFILE.rise * d, 'cymbal profile height (8 % of the diameter)'),
-  bellD: dd(CYMBAL_PROFILE.bell * d, 'bell diameter (20 % of the diameter)'),
+  bellD: dd(CYMBAL_PROFILE.bell * d, 'bell diameter (32 % of the diameter)'),
   edgeFrac: dd(0.85, 'where the edge band starts (85 % of the radius)'),
   drawT: dd(3, 'the drawn plate thickness (a line weight; the real thickness is unknown)'),
 });
@@ -165,7 +165,7 @@ export function splashArmPoints(): { clamp: Vec3; up: Vec3; elbow: Vec3; tilter:
 
 /** The family's Lab 2 drawing defaults, by name (for the lessons' unknowns). */
 export const FX_DRAWING_DEFAULTS: readonly string[] = [
-  'the splash profile (8 % rise, 20 % bell) and its position on the arm',
+  'the splash profile (8 % rise, 32 % bell) and its position on the arm',
   'the arm’s clamp height and bends (only the rod’s 3/8 in is published)',
   'the piggyback splash’s spacing above the crash',
   'the whole China profile: cup, shoulder slope, valley and lip',

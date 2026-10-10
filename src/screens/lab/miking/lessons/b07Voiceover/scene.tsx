@@ -48,7 +48,7 @@ export function B07Scene({ view, variant, headless = false }: { view: ViewId; va
     return (
       <Group>
         <ArmClamp view="side" grip={GRIP_H} deskTop={DESK_TOP_Y} />
-        {g ? <ArmClamp view="side" grip={GRIP_G} deskTop={DESK_TOP_Y} /> : null}
+        {g ? <ArmClamp view="side" grip={GRIP_G} deskTop={DESK_TOP_Y} edge={1} /> : null}
         <StudioChair view="side" t={READER} />
         {g ? <StudioChair view="side" t={GUEST} /> : null}
         {g ? <SeatedTalker view="side" t={GUEST} phones /> : null}
@@ -67,7 +67,7 @@ export function B07Scene({ view, variant, headless = false }: { view: ViewId; va
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} />
       <PaSpeaker view="top" c={MONITOR_C} faces={-1} h={260} d={200} w={160} floor={SEATED_FLOOR} pole={false} />
       <ArmClamp view="top" grip={GRIP_H} deskTop={DESK_TOP_Y} />
-      {g ? <ArmClamp view="top" grip={GRIP_G} deskTop={DESK_TOP_Y} /> : null}
+      {g ? <ArmClamp view="top" grip={GRIP_G} deskTop={DESK_TOP_Y} edge={1} /> : null}
       {g ? <SeatedTalker view="top" t={GUEST} part="upper" phones /> : null}
       <SeatedTalker view="top" t={READER} part="upper" phones headless={headless} />
     </Group>

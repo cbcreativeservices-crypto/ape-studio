@@ -150,7 +150,12 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
             <Rect x={Math.max(-6, tipX - 40)} y={92} width={4} height={22} fill="#141518" />
             <Rect x={Math.max(-6, tipX - 36)} y={92} width={14} height={22} fill="#c8a24a" />
             <Rect x={Math.max(-6, tipX - 22)} y={92} width={4} height={22} fill="#141518" />
-            <Path d={`M ${tipX - 18} 92 L ${tipX} 98 Q ${tipX + 6} 103 ${tipX} 108 L ${tipX - 18} 114 Z`} fill={PB.cord} />
+            {/* the TT tip (art pass 2026-10-10): a ball nose behind which the
+                neck groove narrows — the groove the tip spring rides */}
+            <Path d={`M ${tipX - 18} 96 L ${tipX - 13} 96 Q ${tipX - 12} 92 ${tipX - 8} 92 Q ${tipX + 1} 92 ${tipX + 1} 103 Q ${tipX + 1} 114 ${tipX - 8} 114 Q ${tipX - 12} 114 ${tipX - 13} 110 L ${tipX - 18} 110 Z`} fill={PB.cord} />
+            {/* round-bar shading: a lit band along the top, core shadow below */}
+            <Rect x={-6} y={95} width={Math.max(0, tipX - 10)} height={3} fill="#ffffff" opacity={0.22} />
+            <Rect x={-6} y={107} width={Math.max(0, tipX - 10)} height={6} fill="#000000" opacity={0.22} />
             {showConductors && insertion > 0.3 ? (
               <G>
                 <SvgText x={tipX - 9} y={128} fontSize={9} fill={PB.cord} textAnchor="middle" fontFamily={fonts.oswaldMedium}>T</SvgText>

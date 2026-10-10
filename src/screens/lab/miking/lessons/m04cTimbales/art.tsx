@@ -83,8 +83,8 @@ export function TimbaleArt({ view, variant }: { view: ViewId; variant: VariantId
         <ContactShadow cx={0} cy={2} rx={340} ry={9} />
         <StandLegs legs={legs} view="side" ring={{ cx: 0, cv: 0, r: 40, y: STAND.top.y + 8 }} />
         {bell ? <Bracket view="side" /> : null}
-        <ShellSide d={SMALL} look="brass" staves={24} lugs={LUGS} plateDown={D.depth.mm - 30} rimDepth={18} dim />
-        <ShellSide d={LARGE} look="brass" staves={24} lugs={LUGS} plateDown={D.depth.mm - 30} rimDepth={18} />
+        <ShellSide d={SMALL} look="brass" staves={0} lugs={LUGS} plateDown={D.depth.mm - 30} rimDepth={18} hardware="casing" dim />
+        <ShellSide d={LARGE} look="brass" staves={0} lugs={LUGS} plateDown={D.depth.mm - 30} rimDepth={18} hardware="casing" />
         {bell ? <Cowbell view="side" /> : null}
       </Group>
     );
@@ -112,7 +112,7 @@ export function timbaleLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'small', text: '14 IN BEHIND IT', short: '14 IN', u: LARGE.R + 30, v: top + 60, align: 'left', tone: 'muted' },
       { id: 'shell', text: 'BRASS SHELL', short: 'SHELL', u: LARGE.R + 30, v: LARGE.bottomY + 4, align: 'left', tone: 'muted' },
       { id: 'stand', text: 'STAND', u: 60, v: -420, align: 'left', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: -450, v: top - 26, align: 'center', tone: 'muted' },
+      { id: 'player', text: '← PLAYER', u: TIMB_MODEL.views.side!.u0 + 20, v: top - 26, align: 'left', tone: 'muted', point: { u: TIMB_MODEL.views.side!.u0 - 400, v: top - 26 } },
     ];
     if (variant === 'bell') out.push({ id: 'bell', text: 'COWBELL', u: BELL.x - 120, v: BELL.y - 60, align: 'right', tone: 'muted' });
     return out;
@@ -120,7 +120,7 @@ export function timbaleLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
     { id: 'small', text: '14 IN', u: SMALL.c.x, v: SMALL.c.z - SMALL.R - 44, align: 'center' },
     { id: 'large', text: '15 IN', u: LARGE.c.x, v: LARGE.c.z + LARGE.R + 34, align: 'center' },
-    { id: 'player', text: '← PLAYER', u: -450, v: 0, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: TIMB_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: TIMB_MODEL.views.top!.u0 - 400, v: 0 } },
     { id: 'aud', text: 'AUDIENCE →', u: TIMB_MODEL.views.top!.u1 - 20, v: TIMB_MODEL.views.top!.v1 - 36, align: 'right', tone: 'muted' },
   ];
   return out;

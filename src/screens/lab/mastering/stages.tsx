@@ -17,6 +17,7 @@ import { MIDLINE_BLUE, levelColor, levelColorForDb, splColorForDba } from '../..
 import { eqResponseDb, type EqBandSpec } from '../../../features/lab/fxViz';
 import { GearInSvg, type GlyphKind } from '../soundsystems/art/gearArt';
 import { HeadIconSvg } from '../../../features/lab/headIconsSvg';
+import { MonitorPlan } from '../roomdesign/studioPlanArt';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { PEAK_RED } from './kit';
 import { XF_OVERLAP_SEC, fitFontBoost, linToDb, perceivedBalanceShift, type Overview, type PathDevice, type PathGrade, type SeqBlock } from './masteringEngine';
@@ -942,6 +943,9 @@ export function ReadFigure({ aspect, render, title, badge = 'ILLUSTRATION · a m
 }
 
 export const ROOM_FIG_ASPECT = 360 / 200;
+/** The drawn room is 196 units wide = a 5.0 m mastering room (≈ 5.0 × 4.3 m),
+ *  so 1 m = 39.2 units; the monitors and diffusers are drawn at that scale. */
+const ROOM_U = 196 / 5.0;
 
 /** A treated mastering room from above: the listening triangle, the
  *  first-reflection points on the side walls and ceiling line, bass traps in
@@ -968,6 +972,8 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
   };
   const lRef = refl(lx, rx0);
   const rRef = refl(rxp, rx1);
+  // Aim each cabinet at the listener (30° for this equilateral triangle).
+  const toeDeg = (Math.atan2(cx - lx, listY - spkY) * 180) / Math.PI;
   const trap = (x: number, y: number, rot: number) => <Polygon key={`${x}${y}`} points={`${x},${y} ${x + 22},${y} ${x},${y + 22}`} fill="#2a2418" stroke={ink.amber} strokeWidth={0.8} transform={`rotate(${rot} ${x} ${y})`} />;
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
@@ -981,15 +987,42 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
       <Rect x={rx0} y={lRef - 16} width={5} height={32} fill={ink.amber} opacity={0.8} />
       <Rect x={rx1 - 5} y={rRef - 16} width={5} height={32} fill={ink.amber} opacity={0.8} />
       <Rect x={cx - 60} y={ry0} width={120} height={5} fill={ink.amber} opacity={0.5} />
-      {/* diffusion on the rear wall */}
-      {Array.from({ length: 9 }, (_, i) => <Rect key={i} x={cx - 54 + i * 12} y={ry1 - 8 - (i % 3) * 2} width={9} height={8 + (i % 3) * 2} fill="#1f2a1f" stroke={ink.green} strokeWidth={0.6} />)}
+      {/* diffusion on the rear wall: three 1-D quadratic-residue panels
+          (N = 7, wells n² mod 7 = 0 1 4 2 2 4 1), each 600 mm wide with
+          ≈ 86 mm wells and a 200 mm maximum well depth, seen from above */}
+      {[-1, 0, 1].map((p) => {
+        const pw = 0.6 * ROOM_U;
+        const x0 = cx + p * (pw + 2) - pw / 2;
+        const depth = 0.2 * ROOM_U;
+        const wellW = pw / 7;
+        const face = ry1 - depth - 1.2; // the panel's room-side face
+        return (
+          <G key={p}>
+            <Rect x={x0} y={face} width={pw} height={depth + 1.2} fill="#070a07" stroke={ink.green} strokeWidth={0.6} />
+            {[0, 1, 4, 2, 2, 4, 1].map((n, i) => (
+              // the solid behind each well: deeper wells leave less of it
+              <Rect key={i} x={x0 + i * wellW} y={face + (n / 4) * depth} width={wellW} height={depth + 1.2 - (n / 4) * depth} fill="#2d4a2d" />
+            ))}
+            {Array.from({ length: 6 }, (_, i) => (
+              <Line key={i} x1={x0 + (i + 1) * wellW} y1={face} x2={x0 + (i + 1) * wellW} y2={ry1} stroke={ink.green} strokeWidth={0.5} />
+            ))}
+          </G>
+        );
+      })}
       {/* reflection paths */}
       <Path d={`M${lx} ${spkY} L${rx0} ${lRef} L${cx} ${listY}`} stroke={ink.amber} strokeWidth={0.8} strokeDasharray="3,2" fill="none" opacity={0.7} />
       <Path d={`M${rxp} ${spkY} L${rx1} ${rRef} L${cx} ${listY}`} stroke={ink.amber} strokeWidth={0.8} strokeDasharray="3,2" fill="none" opacity={0.7} />
       {/* the triangle */}
       <Path d={`M${lx} ${spkY} L${rxp} ${spkY} L${cx} ${listY} Z`} stroke={ink.cyan} strokeWidth={1} fill="rgba(93,205,255,0.06)" />
-      <GearInSvg kind="poweredSpeaker" id="room-l" x={lx} y={spkY} size={34} />
-      <GearInSvg kind="poweredSpeaker" id="room-r" x={rxp} y={spkY} size={34} />
+      {/* The main monitors FROM ABOVE (this is a plan): each cabinet's top,
+          330 W × 400 D mm at the room's scale, toed in 30° to face the
+          listener — not front elevations stood in a plan. */}
+      <G transform={`translate(${lx},${spkY}) rotate(${-toeDeg})`}>
+        <MonitorPlan w={0.33 * ROOM_U} d={0.4 * ROOM_U} stroke="#6b707c" strokeWidth={0.9} />
+      </G>
+      <G transform={`translate(${rxp},${spkY}) rotate(${toeDeg})`}>
+        <MonitorPlan w={0.33 * ROOM_U} d={0.4 * ROOM_U} stroke="#6b707c" strokeWidth={0.9} />
+      </G>
       {/* The listener from above: the owner's ABOVE head icon, turned to face
           the speakers (up the screen) — head fix 2026-10-08. */}
       <HeadIconSvg view="above" x={cx} y={listY} size={26} rotation={Math.PI} color="#a7aeb8" minStroke={1.2} />
@@ -1027,15 +1060,42 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
   ));
   let body: ReactNode = null;
   if (kind === 'streaming') {
+    // A current phone, 71.5 × 147 mm (k = 0.653 units/mm): near-edge-to-edge
+    // screen (≈ 2.2 mm border), punch-hole camera, volume keys on the left
+    // edge and the side key on the right, a music player on screen.
     const cx = 60;
+    const k = 96 / 147;
+    const pw = 71.5 * k;
+    const ph = 96;
+    const px0 = cx - pw / 2;
+    const py0 = cy - ph / 2;
+    const bz = 2.2 * k;
+    const sx0 = px0 + bz;
+    const sy0 = py0 + bz;
+    const sw = pw - 2 * bz;
+    const art = sw - 8;
     body = (
       <G>
-        <Rect x={cx - 24} y={cy - 48} width={48} height={96} rx={8} fill="#121216" stroke={ink.stroke} strokeWidth={1.2} />
-        <Rect x={cx - 20} y={cy - 38} width={40} height={62} rx={3} fill="#0b0b0e" />
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <Rect key={i} x={cx - 17 + i * 4.5} y={cy - 2 - [6, 14, 9, 18, 11, 7, 13, 10][i]} width={3} height={[6, 14, 9, 18, 11, 7, 13, 10][i] + 4} fill={levelColor(0.3 + 0.08 * i)} />)}
-        <Rect x={cx - 16} y={cy + 12} width={32} height={2} fill={ink.stroke} />
-        <Rect x={cx - 16} y={cy + 12} width={13} height={2} fill={ink.cyan} />
-        <Circle cx={cx} cy={cy + 36} r={4} fill="none" stroke={ink.stroke} strokeWidth={1} />
+        {/* side keys first, so the frame overlaps their roots */}
+        <Rect x={px0 - 1} y={py0 + 26 * k} width={1.6} height={9 * k} rx={0.6} fill="#3a3c44" />
+        <Rect x={px0 - 1} y={py0 + 38 * k} width={1.6} height={9 * k} rx={0.6} fill="#3a3c44" />
+        <Rect x={px0 + pw - 0.6} y={py0 + 32 * k} width={1.6} height={14 * k} rx={0.6} fill="#3a3c44" />
+        <Rect x={px0} y={py0} width={pw} height={ph} rx={10 * k} fill="#1b1c21" stroke="#5a5e68" strokeWidth={1.1} />
+        <Rect x={sx0} y={sy0} width={sw} height={ph - 2 * bz} rx={8.6 * k} fill="#08080a" />
+        <Circle cx={cx} cy={sy0 + 4.2} r={1.5} fill="#000" stroke="#26282e" strokeWidth={0.6} />
+        {/* the player: cover art, title and artist lines, scrubber, transport */}
+        <Rect x={cx - art / 2} y={sy0 + 10} width={art} height={art} rx={2} fill="#2b2418" />
+        <Path d={`M${cx - art / 2} ${sy0 + 10 + art * 0.72} q ${art * 0.3} ${-art * 0.3} ${art * 0.55} ${-art * 0.08} t ${art * 0.45} ${-art * 0.2} l 0 ${art * 0.56 - 2} q 0 2 -2 2 l ${-art + 4} 0 q -2 0 -2 -2 z`} fill="#4a3a20" />
+        <Circle cx={cx + art * 0.22} cy={sy0 + 10 + art * 0.28} r={art * 0.1} fill={ink.amber} opacity={0.75} />
+        <Rect x={cx - art / 2} y={sy0 + 14 + art} width={art * 0.7} height={2.6} rx={1.3} fill="#c9ccd4" />
+        <Rect x={cx - art / 2} y={sy0 + 19 + art} width={art * 0.45} height={2} rx={1} fill="#5a5e68" />
+        <Rect x={cx - art / 2} y={sy0 + 26 + art} width={art} height={1.4} rx={0.7} fill="#3a3c44" />
+        <Rect x={cx - art / 2} y={sy0 + 26 + art} width={art * 0.4} height={1.4} rx={0.7} fill={ink.cyan} />
+        <Circle cx={cx - art / 2 + art * 0.4} cy={sy0 + 26.7 + art} r={1.6} fill="#e8e8e8" />
+        <Path d={`M${cx - 13} ${sy0 + 34 + art} l 0 6 M${cx - 12.4} ${sy0 + 37 + art} l 4.4 -3 l 0 6 z`} stroke="#c9ccd4" strokeWidth={0.9} fill="#c9ccd4" />
+        <Path d={`M${cx - 2.6} ${sy0 + 33.4 + art} l 6 3.6 l -6 3.6 z`} fill="#e8e8e8" />
+        <Path d={`M${cx + 13} ${sy0 + 34 + art} l 0 6 M${cx + 12.4} ${sy0 + 37 + art} l -4.4 -3 l 0 6 z`} stroke="#c9ccd4" strokeWidth={0.9} fill="#c9ccd4" />
+        <Rect x={cx - 9} y={py0 + ph - bz - 3.4} width={18} height={1.3} rx={0.65} fill="#5a5e68" />
         {/* the upload path to the distributor's cloud */}
         <Path d={`M${cx + 30} ${cy} l 50 0 m -5 -4 l 5 4 l -5 4`} stroke={ink.cyan} strokeWidth={1.2} fill="none" />
         <Path d={`M${cx + 96} ${cy - 10} c 0 -18 30 -18 30 0 c 14 -2 18 14 4 16 l -40 0 c -14 0 -14 -16 6 -16`} fill="#121216" stroke={ink.cyan} strokeWidth={1.2} />
@@ -1051,39 +1111,104 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
         {['01-Signal.wav', 'DDPID · DDPMS', 'PQDESCR', 'CDTEXT.BIN', 'checksum.md5'].map((f, i) => (
           <SvgText key={f} x={26} y={cy - 8 + i * 11} fontSize={FONT_S} fill={i === 0 ? ink.green : ink.text} fontFamily={fonts.mono}>{f}</SvgText>
         ))}
-        <Circle cx={166} cy={cy} r={30} fill="#c9d3dc" stroke={ink.stroke} strokeWidth={1} />
-        <Circle cx={166} cy={cy} r={27} fill="none" stroke="#9fb3c4" strokeWidth={0.6} />
-        <Circle cx={166} cy={cy} r={6} fill="#0b0b0e" />
+        {/* A 120 mm disc at 0.5 units/mm: Ø15 centre hole, clear hub to the
+            Ø33 stacking ring, mirror band, then the data area Ø46–Ø116 with
+            its diffraction sheen. */}
+        <Circle cx={166} cy={cy} r={30} fill="#aeb9c4" stroke="#7d8794" strokeWidth={0.8} />
+        <Circle cx={166} cy={cy} r={20.25} fill="none" stroke="#c4cfda" strokeWidth={17.5} />
+        <Path d={`M166 ${cy} L${166 + 29 * Math.cos(-2.2)} ${cy + 29 * Math.sin(-2.2)} A29 29 0 0 1 ${166 + 29 * Math.cos(-1.7)} ${cy + 29 * Math.sin(-1.7)} Z`} fill="#e9f1fb" opacity={0.75} />
+        <Path d={`M166 ${cy} L${166 + 29 * Math.cos(0.95)} ${cy + 29 * Math.sin(0.95)} A29 29 0 0 1 ${166 + 29 * Math.cos(1.45)} ${cy + 29 * Math.sin(1.45)} Z`} fill="#e9f1fb" opacity={0.55} />
+        <Path d={`M166 ${cy} L${166 + 29 * Math.cos(-1.7)} ${cy + 29 * Math.sin(-1.7)} A29 29 0 0 1 ${166 + 29 * Math.cos(-1.45)} ${cy + 29 * Math.sin(-1.45)} Z`} fill="#c9a6e0" opacity={0.45} />
+        <Path d={`M166 ${cy} L${166 + 29 * Math.cos(-2.45)} ${cy + 29 * Math.sin(-2.45)} A29 29 0 0 1 ${166 + 29 * Math.cos(-2.2)} ${cy + 29 * Math.sin(-2.2)} Z`} fill="#9fdcd2" opacity={0.4} />
+        <Circle cx={166} cy={cy} r={11.5} fill="#cfd8e1" stroke="#9aa5b2" strokeWidth={0.5} />
+        <Circle cx={166} cy={cy} r={8.4} fill="#7b8590" opacity={0.85} />
+        <Circle cx={166} cy={cy} r={8.4} fill="none" stroke="#c9d1da" strokeWidth={0.7} />
+        <Circle cx={166} cy={cy} r={3.75} fill="#0d0d10" stroke="#5f6873" strokeWidth={0.5} />
+        <Circle cx={166} cy={cy} r={29} fill="none" stroke="#8f9aa6" strokeWidth={0.5} />
         <SvgText x={166} y={cy + 44} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>reference disc</SvgText>
         {caption(['16-bit / 44.1 kHz', 'SRC first, dither', 'LAST, once'])}
       </G>
     );
   } else if (kind === 'vinyl') {
-    const cx = 70;
+    // A cutting lathe from ABOVE at 0.17 units/mm: a 14" (356 mm) lacquer on
+    // the platter — black lacquer over aluminium, no label, a centre hole and
+    // a drive-pin hole — with the 12" programme band being cut from Ø292 mm
+    // inward (inner limit ≈ Ø120 mm). The cutter head rides a carriage on a
+    // lead screw behind the platter, stylus on the disc's centre line, the
+    // swarf suction tube beside it.
+    const cx = 62;
+    const k = 0.17;
+    const rLac = (356 / 2) * k;
+    const rPlat = rLac + 1.6;
+    const rOut = (292 / 2) * k;
+    const rIn = (120.6 / 2) * k;
+    const rCut = rIn + (rOut - rIn) * 0.42; // where the stylus is now
+    const sx = cx + rCut; // stylus x (on the centre line, right of the spindle)
+    const grooves: number[] = [];
+    for (let r = rOut; r > rCut; r -= 0.85) grooves.push(r);
     body = (
       <G>
-        <Rect x={cx - 56} y={cy + 40} width={150} height={10} rx={2} fill="#121216" stroke={ink.stroke} strokeWidth={1} />
-        <Circle cx={cx} cy={cy} r={44} fill="#0a0a0a" stroke="#3a3a3a" strokeWidth={1} />
-        {[38, 33, 28, 23, 18].map((r) => <Circle key={r} cx={cx} cy={cy} r={r} fill="none" stroke="#2a2a2a" strokeWidth={0.6} />)}
-        <Circle cx={cx} cy={cy} r={9} fill="#b8a46a" />
-        <Circle cx={cx} cy={cy} r={1.5} fill="#0a0a0a" />
-        {/* cutter head arm */}
-        <Line x1={cx + 78} y1={cy - 46} x2={cx + 14} y2={cy - 10} stroke={ink.amber} strokeWidth={2} />
-        <Rect x={cx + 10} y={cy - 14} width={8} height={8} fill={ink.amber} />
-        <SvgText x={cx + 60} y={cy + 12} fontSize={FONT_S} fill={ink.amber} fontFamily={fonts.mono}>↖ inner groove:</SvgText>
-        <SvgText x={cx + 60} y={cy + 24} fontSize={FONT_S} fill={ink.amber} fontFamily={fonts.mono}>HF fidelity drops</SvgText>
-        {caption(['lacquer on the lathe:', 'side length, bass', 'centring, less limiting'].map((l) => l.slice(0, 20)))}
+        {/* the deck */}
+        <Rect x={10} y={8} width={206} height={104} rx={4} fill="#1a1b20" stroke="#3a3c44" strokeWidth={1} />
+        <Line x1={12} y1={9.4} x2={214} y2={9.4} stroke="#ffffff" strokeWidth={0.7} opacity={0.12} />
+        {/* platter rim, then the lacquer */}
+        <Circle cx={cx} cy={cy} r={rPlat} fill="#3a3c44" stroke="#5a5e68" strokeWidth={0.6} />
+        <Circle cx={cx} cy={cy} r={rLac} fill="#0b0b0d" />
+        {/* the cut band: concentric grooves with their grey sheen */}
+        {grooves.map((r, i) => (
+          <Circle key={r} cx={cx} cy={cy} r={r} fill="none" stroke={i % 3 === 0 ? '#3c3f47' : '#26282e'} strokeWidth={0.45} />
+        ))}
+        <Path d={`M${cx - rOut * 0.7} ${cy - rOut * 0.7} A${rOut} ${rOut} 0 0 1 ${cx + rOut * 0.2} ${cy - rOut * 0.98}`} stroke="#ffffff" strokeWidth={2.2} opacity={0.08} fill="none" />
+        {/* inner-groove limit (dashed) and the lacquer's two holes */}
+        <Circle cx={cx} cy={cy} r={rIn} fill="none" stroke={ink.amber} strokeWidth={0.6} strokeDasharray="2,2" opacity={0.8} />
+        <Circle cx={cx} cy={cy} r={1.4} fill="#c9ccd4" />
+        <Circle cx={cx + 0.5 * 25.4 * k * 1.2} cy={cy} r={0.8} fill="#2a2c33" />
+        {/* lead screw + carriage rails behind the platter */}
+        <Line x1={cx - 6} y1={cy - rPlat - 8} x2={212} y2={cy - rPlat - 8} stroke="#5a5e68" strokeWidth={1.4} />
+        <Line x1={cx - 6} y1={cy - rPlat - 8} x2={212} y2={cy - rPlat - 8} stroke="#8a8e98" strokeWidth={0.5} strokeDasharray="1,1" />
+        <Line x1={cx - 6} y1={cy - rPlat - 3} x2={212} y2={cy - rPlat - 3} stroke="#4a4e58" strokeWidth={1} />
+        {/* the carriage, its arm out over the disc, the cutter head */}
+        <Rect x={sx - 7} y={cy - rPlat - 12} width={14} height={12} rx={1.2} fill="#2c2e35" stroke="#6b707c" strokeWidth={0.7} />
+        <Rect x={sx - 3} y={cy - rPlat} width={6} height={rPlat - 10} fill="#2c2e35" stroke="#6b707c" strokeWidth={0.6} />
+        <Rect x={sx - 6} y={cy - 12} width={12} height={10} rx={1.5} fill="#3a3d45" stroke={ink.amber} strokeWidth={0.8} />
+        <Circle cx={sx} cy={cy} r={1} fill={ink.amber} />
+        {/* swarf suction tube from the stylus out to the side */}
+        <Path d={`M${sx + 1.5} ${cy + 0.5} q 10 3 18 -2 t 22 -8 t 30 -6`} stroke="#8a8e98" strokeWidth={1.2} fill="none" opacity={0.8} />
+        {/* the inner-groove note, with a leader to the inner limit */}
+        <Line x1={cx + rIn + 0.5} y1={cy + 2} x2={cx + 50} y2={cy + 18} stroke={ink.amber} strokeWidth={0.6} opacity={0.8} />
+        <SvgText x={cx + 52} y={cy + 22} fontSize={FONT_S} fill={ink.amber} fontFamily={fonts.mono}>↖ inner groove:</SvgText>
+        <SvgText x={cx + 52} y={cy + 34} fontSize={FONT_S} fill={ink.amber} fontFamily={fonts.mono}>HF fidelity drops</SvgText>
+        {/* Line-broken to fit the caption column (a slice to 20 characters
+            cut "limiting" to "limit"). */}
+        {caption(['lacquer on the lathe:', 'side length, bass', 'centring, less', 'limiting'])}
       </G>
     );
   } else if (kind === 'broadcast') {
     const x0 = 22;
+    const by = cy - 18; // top of the board
+    // seven 45° stripes per stick, 19 units apart
+    const stripes = (yTop: number, yBot: number, flip: boolean) =>
+      [0, 1, 2, 3, 4, 5, 6].map((i) => {
+        const a = x0 + 4 + i * 19;
+        const pts = flip
+          ? `${a + 10},${yBot} ${a + 19},${yBot} ${a + 9},${yTop} ${a},${yTop}`
+          : `${a},${yBot} ${a + 9},${yBot} ${a + 19},${yTop} ${a + 10},${yTop}`;
+        return <Polygon key={i} points={pts} fill="#e8e8e8" />;
+      });
     body = (
       <G>
-        <Rect x={x0} y={cy - 26} width={150} height={70} rx={3} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={1.2} />
-        <Rect x={x0} y={cy - 42} width={150} height={16} fill="#1a1812" stroke={ink.stroke} strokeWidth={1.2} />
-        {[0, 1, 2, 3, 4, 5, 6].map((i) => <Rect key={i} x={x0 + 3 + i * 21} y={cy - 41} width={11} height={14} fill={i % 2 ? '#e8e8e8' : '#0b0b0e'} />)}
+        {/* A timecode slate: the board, the fixed lower clapper stick and
+            the hinged upper stick lifted ≈ 7°, both with 45° stripes. */}
+        <Rect x={x0} y={by} width={150} height={70} rx={3} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={1.2} />
+        <Rect x={x0} y={by - 10} width={150} height={10} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={1} />
+        {stripes(by - 10, by, false)}
+        <G transform={`rotate(-7 ${x0 + 2} ${by - 11})`}>
+          <Rect x={x0} y={by - 21} width={150} height={10} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={1} />
+          {stripes(by - 21, by - 11, true)}
+        </G>
+        <Circle cx={x0 + 3} cy={by - 11} r={2.2} fill="#5a5e68" stroke="#8a8e98" strokeWidth={0.6} />
         {['SLATE · TC 01:00:00:00', 'SPOT 30 s · STEREO · 48 kHz', 'LOUDNESS: per the spec sent', 'TRUE PEAK: per the spec sent'].map((t, i) => (
-          <SvgText key={t} x={x0 + 8} y={cy - 10 + i * 13} fontSize={FONT_S} fill={i === 0 ? ink.amber : ink.text} fontFamily={fonts.mono}>{t}</SvgText>
+          <SvgText key={t} x={x0 + 8} y={by + 16 + i * 13} fontSize={FONT_S} fill={i === 0 ? ink.amber : ink.text} fontFamily={fonts.mono}>{t}</SvgText>
         ))}
         {caption(["the post house's", 'document names the', 'standard and tolerance'])}
       </G>

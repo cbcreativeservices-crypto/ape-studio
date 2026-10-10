@@ -16,7 +16,7 @@
  * level is OK.
  */
 
-export type NodeKind = 'instrument' | 'pedals' | 'volume' | 'di' | 'amp' | 'head' | 'cab' | 'combo' | 'mic' | 'desk' | 'keys' | 'keysAmp' | 'lidSpeakers';
+export type NodeKind = 'instrument' | 'bass' | 'steel' | 'pedals' | 'volume' | 'di' | 'amp' | 'head' | 'cab' | 'combo' | 'mic' | 'desk' | 'keys' | 'keysAmp' | 'lidSpeakers';
 export type ChainNode = { id: string; kind: NodeKind; lane: 'air' | 'di' | 'amp'; col: number };
 export type LinkKind = 'instrument' | 'speaker' | 'air' | 'mic' | 'balanced' | 'line';
 export type ChainLink = { from: string; to: string; kind: LinkKind };

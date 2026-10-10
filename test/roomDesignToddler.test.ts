@@ -222,7 +222,10 @@ describe('MONITORING: the side view draws the sub at its driver height (HEIGHT â
     const sub = s.slice(s.indexOf("if (sp.role === 'SUB')"), s.indexOf('const ww = spkSize'));
     assert.doesNotMatch(sub, /toSide\(\{ y: sp\.y, z: 0 \}\);\s*return/);
     assert.match(sub, /const cy = Math\.min\(q\.y, floorY - sz \/ 2\);/);
-    assert.match(sub, /y=\{cy - sz \/ 2\}/);
+    // Art pass 2026-10-10: the sub is drawn as its side elevation
+    // (studioPlanArt SubSide, centred on its origin) placed at (q.x, cy).
+    assert.match(sub, /transform=\{`translate\(\$\{q\.x\},\$\{cy\}\)`\}/);
+    assert.match(sub, /<SubSide s=\{sz\}/);
   });
 });
 

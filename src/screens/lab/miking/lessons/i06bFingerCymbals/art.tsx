@@ -16,9 +16,11 @@ import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
 import type { VariantId, ViewBox, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { BRASS, Floor, HandInk, handPinch, HIGHLIGHT, make, PlayerInk, playerFront, playerSide, playerTop, polyPath } from '../shared/metal/metalArt';
+import { BRASS, Floor, HIGHLIGHT, make, PlayerInk, playerFront, playerSide, playerTop, polyPath } from '../shared/metal/metalArt';
+import { Hand } from '../shared/smallperc/Hand';
+import { pinchHand, wristFor, type Placement } from '../shared/smallperc/hands.ts';
 import type { FrontArt } from '../shared/metal/metalPages';
-import { FC, P0, P0D, profile, RA, RB } from './model.ts';
+import { FC, FLANGE_RISE, P0, P0D, profile, RA, RB } from './model.ts';
 import { DROP_C, DROP_TILT, HAND_L, HAND_R } from './geometry.ts';
 
 const H = FC.h.mm;
@@ -54,25 +56,45 @@ function dancerFront(hands: readonly [number, number][]) {
 /** A cymbal seen edge-on: centre (u, v), radius r, rotated by `deg`, dome up
  *  (or down with flip). Brass, lit from the upper left; a rim highlight. */
 export function CymbalEdge({ u, v, r, deg = 0, flip = false, glow = false }: { u: number; v: number; r: number; deg?: number; flip?: boolean; glow?: boolean }): ReactElement {
-  const pts = profile(r, H).map(([a, b]) => [a, flip ? -b : b] as [number, number]);
-  const top = polyPath(pts);
-  const body = make();
-  pts.forEach(([a, b], i) => (i === 0 ? body.moveTo(a, b) : body.lineTo(a, b)));
-  // the underside: a thin flange back to the start
-  const t = FC.thick.mm * 1.6;
-  body.lineTo(r, flip ? -t : t);
-  body.lineTo(-r, flip ? -t : t);
-  body.close();
+  const g = useMemo(() => {
+    const sg = flip ? -1 : 1;
+    const pts = profile(r, H).map(([a, b]) => [a, sg * b] as [number, number]);
+    const top = make();
+    pts.forEach(([a, b], i) => (i === 0 ? top.moveTo(a, b) : top.lineTo(a, b)));
+    const rd = (FC.domeD.mm / 2) * (r / RA);
+    const t = FC.thick.mm * 1.6;
+    // the body: the top surface, then the underside — the flange's thickness
+    // back to the bell's mouth (the bell's hollow is out of sight)
+    const body = make();
+    pts.forEach(([a, b], i) => (i === 0 ? body.moveTo(a, b) : body.lineTo(a, b)));
+    body.lineTo(r, sg * t);
+    body.lineTo(rd + 2, sg * (-FLANGE_RISE + t));
+    body.lineTo(-rd - 2, sg * (-FLANGE_RISE + t));
+    body.lineTo(-r, sg * t);
+    body.close();
+    // a soft specular streak on the bell's lit (upper-left) shoulder
+    const shine = make();
+    const dh = H * 0.7;
+    shine.moveTo(-rd * 0.78, sg * (-FLANGE_RISE - (dh - FLANGE_RISE) * 0.45));
+    shine.quadTo(-rd * 0.62, sg * -dh * 0.92, -rd * 0.15, sg * -dh * 0.99);
+    // the strap: a short leather loop out through the bell's centre hole
+    const strap = make();
+    const y0 = sg * -dh;
+    strap.moveTo(-4, y0 + sg * 1);
+    strap.cubicTo(-7, y0 - sg * 10, 7, y0 - sg * 10, 4, y0 + sg * 1);
+    return { body, top, shine, strap };
+  }, [r, flip]);
   return (
     <Group transform={[{ translateX: u }, { translateY: v }, { rotate: (deg * Math.PI) / 180 }]}>
       {glow ? <Circle cx={0} cy={0} r={r * 1.25} color={HIGHLIGHT} opacity={0.3} /> : null}
-      <Path path={body}>
+      <Path path={g.strap} style="stroke" strokeWidth={3.4} strokeCap="round" color="#3a2010" />
+      <Path path={g.strap} style="stroke" strokeWidth={2} strokeCap="round" color="#8a5530" />
+      <Path path={g.body}>
         <LinearGradient start={vec(-r, -H)} end={vec(r, H * 0.4)} colors={[BRASS[0], BRASS[1], BRASS[2], BRASS[3]]} />
       </Path>
-      <Path path={body} style="stroke" strokeWidth={1.2} color={BRASS[4]} />
-      <Path path={top} style="stroke" strokeWidth={1} color={BRASS[0]} opacity={0.8} />
-      {/* the strap through the centre */}
-      <Path path={polyPath([[-3, flip ? 2 : -H * 0.68], [-5, flip ? 9 : -H * 0.68 - 8], [5, flip ? 9 : -H * 0.68 - 8], [3, flip ? 2 : -H * 0.68]])} style="stroke" strokeWidth={2.4} color="#6b3f1f" />
+      <Path path={g.shine} style="stroke" strokeWidth={1.6} strokeCap="round" color="#fff6d8" opacity={0.7} />
+      <Path path={g.body} style="stroke" strokeWidth={1} color={BRASS[4]} />
+      <Path path={g.top} style="stroke" strokeWidth={0.8} color={BRASS[0]} opacity={0.8} />
     </Group>
   );
 }
@@ -217,6 +239,24 @@ export function fingerCymbalsHitTest(view: ViewId, variant: VariantId, u: number
 /** Front coordinates: u = −z. */
 const FU = (zz: number) => -zz;
 
+/** The strap loop's top above the cymbal's centre (CymbalEdge's loop). */
+const STRAP_TOP = -H * 0.7 - 6.5;
+const PINCH = pinchHand();
+/** A pinching hand whose pinch lands on `at`, the hand reaching down to it
+ *  from the upper right (or, mirrored, from the upper left). */
+function pinchAt(at: readonly [number, number], fromLeft: boolean): Placement {
+  const angle = fromLeft ? 82 : 98;
+  return { at: wristFor(PINCH.hold!, [at[0], at[1]], angle, 1, fromLeft), angle, mirror: fromLeft };
+}
+/** The forearm, continuing from the pinch through the wrist and up out of
+ *  the drawing, a sleeve on its far part. */
+function armOf(pl: Placement, at: readonly [number, number]): { from: readonly [number, number]; w: number; sleeve: number } {
+  const dx = pl.at[0] - at[0];
+  const dy = pl.at[1] - at[1];
+  const l = Math.hypot(dx, dy) || 1;
+  return { from: [pl.at[0] + (dx / l) * 420, pl.at[1] + (dy / l) * 420], w: 54, sleeve: 260 };
+}
+
 function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
   const hl = (id: string) => highlight === id;
   if (isDance(variant)) {
@@ -247,15 +287,20 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
   }
   const heldU = FU(P0.z);
   const dropU = FU(DROP_C.z);
-  // Each hand pinches its cymbal's strap, just above the dome: the held one
-  // from the player's left (screen right), the dropped one from the right.
+  // Each hand pinches its cymbal's strap loop between the thumb and the index
+  // finger, just above the bell: the held one from the player's left (screen
+  // right), the dropped one from the right. Anatomical hands at true size
+  // (smallperc/hands.ts pinchHand: ≈ 190 mm hand, the thumb's pad on the
+  // index finger's pad), so the 55 mm cymbals read at their real scale.
   const a = (DROP_TILT * Math.PI) / 180;
-  const sTop = -H * 0.68 - 9;
+  const sTop = STRAP_TOP;
   const dropStrap: [number, number] = [dropU - Math.sin(a) * sTop, DROP_C.y + Math.cos(a) * sTop];
   return (
     <Group>
-      <HandInk path={handPinch(heldU, P0.y + sTop)} />
-      <HandInk path={handPinch(dropStrap[0], dropStrap[1], true)} />
+      {([[[heldU, P0.y + sTop], false], [dropStrap, true]] as const).map(([at, left], i) => {
+        const pl = pinchAt(at, left);
+        return <Hand key={i} geo={PINCH} pl={pl} forearm={armOf(pl, at)} edge={0.7} />;
+      })}
       <Circle cx={heldU + 8} cy={P0.y + 10} r={RA} color="#000" opacity={0.35}>
         <BlurMask blur={8} style="normal" />
       </Circle>
@@ -267,7 +312,8 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
 }
 
 function frontBox(v: VariantId): ViewBox {
-  return isDance(v) ? { u0: -620, u1: 620, v0: -1900, v1: 80 } : { u0: -150, u1: 150, v0: P0.y - 160, v1: P0.y + 70 };
+  // Orchestral: wide enough for both hands at true size, wrists and all.
+  return isDance(v) ? { u0: -620, u1: 620, v0: -1900, v1: 80 } : { u0: -250, u1: 250, v0: P0.y - 300, v1: P0.y + 80 };
 }
 
 function frontLabels(v: VariantId): ArtLabel[] {
@@ -281,7 +327,9 @@ function frontLabels(v: VariantId): ArtLabel[] {
   return [
     { id: 'fc.held', text: 'HELD FLAT', u: FU(P0.z) + RA + 8, v: P0.y + 4, align: 'left' },
     { id: 'fc.drop', text: 'DROPPED EDGE-FIRST', short: 'DROPPED', u: FU(DROP_C.z) - RB - 6, v: DROP_C.y - 18, align: 'right' },
-    { id: 'fc.strap', text: 'STRAP', u: FU(P0.z) + 10, v: P0.y - H - 14, align: 'left', tone: 'muted' },
+    // The name sits clear to the left; its leader lands on the strap loop
+    // (between the bell and the pinching fingers), never on the hand.
+    { id: 'fc.strap', text: 'STRAP', u: FU(P0.z) - RA - 10, v: P0.y - H * 0.7 - 30, align: 'right', tone: 'muted', at: { u: FU(P0.z) - 3, v: P0.y - H * 0.7 - 3 } },
   ];
 }
 

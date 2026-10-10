@@ -29,9 +29,10 @@ function labelsFor(show: ElectricShow): StaticLabel[] {
     return [
       { id: 'head', text: 'HEADSTOCK', u: -s.headLen * 0.5, v: -s.neckHalfW[0] - 52, align: 'center', tone: 'muted' },
       { id: 'neck', text: show === 'bassFretless' ? 'FRETLESS NECK' : 'NECK · FRETS', short: 'NECK', u: L * 0.32, v: -s.neckHalfW[1] - 22, align: 'center' },
-      { id: 'pu', text: s.pickups.length > 1 ? 'PICKUPS' : 'PICKUP', u: L - s.pickups[0].fromBridge, v: W + 30, align: 'center', tone: 'amber' },
-      { id: 'br', text: 'BRIDGE', u: L + 20, v: -W - 24, align: 'center', tone: 'muted' },
-      { id: 'ctl', text: 'CONTROLS', u: L + 90, v: W + 30, align: 'left', tone: 'muted' },
+      // Right-handed, player's view: the controls on the treble (upper) side, behind the bridge.
+      { id: 'pu', text: s.pickups.length > 1 ? 'PICKUPS' : 'PICKUP', u: L - s.pickups[Math.floor(s.pickups.length / 2)].fromBridge - 10, v: W + 30, align: 'center', tone: 'amber' },
+      { id: 'br', text: 'BRIDGE', u: L + 4, v: W + 30, align: 'left', tone: 'muted' },
+      { id: 'ctl', text: 'CONTROLS', u: L + 80, v: -W - 24, align: 'center', tone: 'muted' },
     ];
   }
   if (show === 'steelSide')

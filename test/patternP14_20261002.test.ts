@@ -98,10 +98,6 @@ describe('the overlay-label floors stay at 9 pt', () => {
  * are not text the learner reads. Count per file. May only shrink.
  */
 const SUB9_ALLOWED: Record<string, { n: number; why: string }> = {
-  'screens/lab/soundsystems/art/gearArt.tsx': {
-    n: 5,
-    why: 'silk-screen legends (IN/OUT, CH1, DI, TX·ST) are panel TEXTURE on cards; every display passes legends={false} (owner 2026-09-25)',
-  },
   'screens/lab/soundsystems/pagesLearnB.tsx': {
     n: 3,
     why: 'LoadRig: 300-unit viewBox in StageFit; at 375 wide the glass is 353, the drawing ≥ 341 → × 1.14 → 8.5 renders 9.7 pt',

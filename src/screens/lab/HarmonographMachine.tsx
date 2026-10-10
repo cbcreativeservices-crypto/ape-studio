@@ -3,7 +3,7 @@
  * of the three-pendulum rotary machine (Karl Sims build; spec:
  * docs/APE_HARMONOGRAPH_MECHANISM_2026_08_23.md, owner-verified 2026-08-23).
  *
- * The machine, honestly:
+ * The machine, honestly (drawn to the build's inches — see ART PASS below):
  *  - three VERTICAL pendulum shafts rock on knife-edge fulcrums at the table
  *    surface; the shaft TOP levers OPPOSITE the weight below (fixed lengths);
  *  - two fixed-length arms pin to the lateral shaft tops and meet at the pen —
@@ -173,15 +173,71 @@ function motion(phi: number, m: Mode) {
 
 /* ── static scenery + REST POSE (module-load constants) ───────────────────── */
 const P2 = (p: [number, number]) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`;
+/* ART PASS 2026-10-10 — the machine as a woodworker builds it, in inches:
+   a 36 × 36 × 1¼ top on four square 1¾" legs, 30" to the floor (table
+   height); each lateral pendulum rocks on a knife-edge bar resting in two
+   bearing blocks across its hole (the edge runs square to the swing), the
+   paper pendulum on a two-axis gimbal ring; the weights are stacks of three
+   Ø5" × 1" steel discs clamped on the shafts. The visible faces are the ones
+   toward the camera (−x and −y: the near corner is (0, 0)). */
+const TOP_TH = 1.25;
+const LEG_S = 1.75;
 const slabTop = [pj(0, 0, 0), pj(T, 0, 0), pj(T, T, 0), pj(0, T, 0)];
-const slabE1 = [pj(0, 0, -0.8), pj(T, 0, -0.8)];
-const slabE2 = [pj(T, T, -0.8)];
-const LEGS: [number, number][][] = [
-  [pj(3, 33, -0.4), pj(0, 36, -LEGZ)],
-  [pj(33, 33, -0.4), pj(36, 36, -LEGZ)],
-  [pj(3, 3, -0.4), pj(0, 0, -LEGZ)],
-  [pj(33, 3, -0.4), pj(36, 0, -LEGZ)],
+const slabFaceY = [pj(0, 0, 0), pj(T, 0, 0), pj(T, 0, -TOP_TH), pj(0, 0, -TOP_TH)]; // the y = 0 edge (front right)
+const slabFaceX = [pj(0, 0, 0), pj(0, T, 0), pj(0, T, -TOP_TH), pj(0, 0, -TOP_TH)]; // the x = 0 edge (front left)
+/** One leg's two visible faces (−x lit from the upper left, −y in shade). */
+function legFaces(cx: number, cy: number): { lit: string; shade: string } {
+  const h = LEG_S / 2;
+  const f = (pts: [number, number][]) => pts.map(P2).join(' ');
+  return {
+    lit: f([pj(cx - h, cy - h, -TOP_TH), pj(cx - h, cy + h, -TOP_TH), pj(cx - h, cy + h, -LEGZ), pj(cx - h, cy - h, -LEGZ)]),
+    shade: f([pj(cx - h, cy - h, -TOP_TH), pj(cx + h, cy - h, -TOP_TH), pj(cx + h, cy - h, -LEGZ), pj(cx - h, cy - h, -LEGZ)]),
+  };
+}
+const LEG_BACK = legFaces(34, 34);
+const LEGS_FRONT = [legFaces(34, 2), legFaces(2, 34), legFaces(2, 2)];
+/** A small block on the table top (bearing / gimbal post): top + two faces. */
+function blockFaces(cx: number, cy: number, sx: number, sy: number, hgt: number): { top: string; lit: string; shade: string } {
+  const f = (pts: [number, number][]) => pts.map(P2).join(' ');
+  const x0 = cx - sx / 2, x1 = cx + sx / 2, y0 = cy - sy / 2, y1 = cy + sy / 2;
+  return {
+    top: f([pj(x0, y0, hgt), pj(x1, y0, hgt), pj(x1, y1, hgt), pj(x0, y1, hgt)]),
+    lit: f([pj(x0, y0, hgt), pj(x0, y1, hgt), pj(x0, y1, 0), pj(x0, y0, 0)]),
+    shade: f([pj(x0, y0, hgt), pj(x1, y0, hgt), pj(x1, y0, 0), pj(x0, y0, 0)]),
+  };
+}
+// Pendulum A swings in x → its knife edge runs along y; B the other way.
+const BEARINGS = [
+  blockFaces(HA[0], HA[1] - 2.7, 1.4, 1.1, 1.1),
+  blockFaces(HA[0], HA[1] + 2.7, 1.4, 1.1, 1.1),
+  blockFaces(HB[0] - 2.7, HB[1], 1.1, 1.4, 1.1),
+  blockFaces(HB[0] + 2.7, HB[1], 1.1, 1.4, 1.1),
+  // the gimbal ring's two outer posts (axis along x)
+  blockFaces(HR[0] - 3.5, HR[1], 1.0, 1.2, 1.5),
+  blockFaces(HR[0] + 3.5, HR[1], 1.0, 1.2, 1.5),
 ];
+const EDGE_A = [pj(HA[0], HA[1] - 3.2, 1.0), pj(HA[0], HA[1] + 3.2, 1.0)];
+const EDGE_B = [pj(HB[0] - 3.2, HB[1], 1.0), pj(HB[0] + 3.2, HB[1], 1.0)];
+const GIMBAL_C = pj(HR[0], HR[1], 1.2);
+const GIMBAL_PINS = [pj(HR[0] - 3.5, HR[1], 1.2), pj(HR[0] - 2.6, HR[1], 1.2), pj(HR[0] + 2.6, HR[1], 1.2), pj(HR[0] + 3.5, HR[1], 1.2)];
+const GIMBAL_INNER = [pj(HR[0], HR[1] - 2.6, 1.2), pj(HR[0], HR[1] - 1.2, 1.2), pj(HR[0], HR[1] + 1.2, 1.2), pj(HR[0], HR[1] + 2.6, 1.2)];
+/* weights: three Ø5" × 1" discs (≈ 3.3" stack incl. the clamp collars) */
+const W_R = 2.5;
+const W_HALF = 1.65;
+const W_RX = W_R * SC;
+const W_RY = W_R * SC * SP;
+/** The stack's silhouette (side band + bottom rim) and its two disc seams,
+ *  for a stack whose axis projects to (x, yTop)…(x, yBot). */
+function stackSide(x: number, yTop: number, yBot: number): string {
+  'worklet';
+  return `M${x - W_RX} ${yBot} A${W_RX} ${W_RY} 0 0 0 ${x + W_RX} ${yBot} L${x + W_RX} ${yTop} A${W_RX} ${W_RY} 0 0 0 ${x - W_RX} ${yTop} Z`;
+}
+function stackSeams(x: number, yTop: number, yBot: number): string {
+  'worklet';
+  const y1 = yBot + (yTop - yBot) / 3;
+  const y2 = yBot + ((yTop - yBot) * 2) / 3;
+  return `M${x - W_RX} ${y1} A${W_RX} ${W_RY} 0 0 0 ${x + W_RX} ${y1} M${x - W_RX} ${y2} A${W_RX} ${W_RY} 0 0 0 ${x + W_RX} ${y2}`;
+}
 const HOLES = [HR, HA, HB].map((H) => pj(H[0], H[1], 0));
 const GRAIN = [1, 2, 3, 4, 5, 6].map((i) => {
   const a = pj(1.5, i * 5, 0),
@@ -215,9 +271,10 @@ const R_shaftA_above = [pj(HA[0], HA[1], 0), pj(HA[0], HA[1], TOP)];
 const R_shaftB_above = [pj(HB[0], HB[1], 0), pj(HB[0], HB[1], TOP)];
 const R_shaftR_below = [pj(HR[0], HR[1], -WGT + 3), pj(HR[0], HR[1], 0)];
 const R_shaftR_above = [pj(HR[0], HR[1], 0), pj(HR[0], HR[1], PLATZ - 0.8)];
-const R_discA = [-1, 0, 1].map((i) => pj(HA[0], HA[1], -WGT + i * 1.15));
-const R_discB = [-1, 0, 1].map((i) => pj(HB[0], HB[1], -WGT + i * 1.15));
-const R_discR = [-1, 0, 1].map((i) => pj(HR[0], HR[1], -WGT + 3 + i * 1.15));
+// weight stacks at rest: [top centre, bottom centre] of each
+const R_wA = [pj(HA[0], HA[1], -WGT + W_HALF), pj(HA[0], HA[1], -WGT - W_HALF)];
+const R_wB = [pj(HB[0], HB[1], -WGT + W_HALF), pj(HB[0], HB[1], -WGT - W_HALF)];
+const R_wR = [pj(HR[0], HR[1], -WGT + 3 + W_HALF), pj(HR[0], HR[1], -WGT + 3 - W_HALF)];
 const R_shadA = pj(HA[0], HA[1], -LEGZ + 0.5);
 const R_shadB = pj(HB[0], HB[1], -LEGZ + 0.5);
 const R_shadR = pj(HR[0], HR[1], -LEGZ + 0.5);
@@ -270,8 +327,8 @@ const ACircle = Animated.createAnimatedComponent(Circle);
 const COL_A = '#4fd0e0';
 const COL_B = '#b48bff';
 const COL_P = '#e0b25e';
-const DISC_RX = 2.5 * SC * 0.62,
-  DISC_RY = 2.5 * SC * 0.3;
+const DISC_RX = W_RX,
+  DISC_RY = W_RY;
 
 /* ── ink (member colour goes through here; classic red is the default) ────── */
 export const INK_DEFAULT = '#8e1f32';
@@ -539,50 +596,51 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     const b = pj(HR[0] + m.ox, HR[1] + m.oy, PLATZ - 0.8);
     return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
   });
-  // weights: one hook per disc/shadow (cx/cy) — no group transforms, ever
-  const discA0 = useAnimatedProps(() => {
+  // weights: each stack is a side band + a top ellipse + its seams, moved by
+  // primitive props only (path d, cx/cy) — no group transforms, ever
+  const sideA = useAnimatedProps(() => {
     const d = dpj((M.value.sA * WGT) / TOP, 0);
-    return { cx: R_discA[0][0] + d[0], cy: R_discA[0][1] + d[1] };
+    return { d: stackSide(R_wA[0][0] + d[0], R_wA[0][1] + d[1], R_wA[1][1] + d[1]) };
   });
-  const discA1 = useAnimatedProps(() => {
+  const seamA = useAnimatedProps(() => {
     const d = dpj((M.value.sA * WGT) / TOP, 0);
-    return { cx: R_discA[1][0] + d[0], cy: R_discA[1][1] + d[1] };
+    return { d: stackSeams(R_wA[0][0] + d[0], R_wA[0][1] + d[1], R_wA[1][1] + d[1]) };
   });
-  const discA2 = useAnimatedProps(() => {
+  const capA = useAnimatedProps(() => {
     const d = dpj((M.value.sA * WGT) / TOP, 0);
-    return { cx: R_discA[2][0] + d[0], cy: R_discA[2][1] + d[1] };
+    return { cx: R_wA[0][0] + d[0], cy: R_wA[0][1] + d[1] };
   });
   const shadA = useAnimatedProps(() => {
     const d = dpj((M.value.sA * WGT) / TOP, 0);
     return { cx: R_shadA[0] + d[0], cy: R_shadA[1] + d[1] };
   });
-  const discB0 = useAnimatedProps(() => {
+  const sideB = useAnimatedProps(() => {
     const d = dpj(0, (M.value.sB * WGT) / TOP);
-    return { cx: R_discB[0][0] + d[0], cy: R_discB[0][1] + d[1] };
+    return { d: stackSide(R_wB[0][0] + d[0], R_wB[0][1] + d[1], R_wB[1][1] + d[1]) };
   });
-  const discB1 = useAnimatedProps(() => {
+  const seamB = useAnimatedProps(() => {
     const d = dpj(0, (M.value.sB * WGT) / TOP);
-    return { cx: R_discB[1][0] + d[0], cy: R_discB[1][1] + d[1] };
+    return { d: stackSeams(R_wB[0][0] + d[0], R_wB[0][1] + d[1], R_wB[1][1] + d[1]) };
   });
-  const discB2 = useAnimatedProps(() => {
+  const capB = useAnimatedProps(() => {
     const d = dpj(0, (M.value.sB * WGT) / TOP);
-    return { cx: R_discB[2][0] + d[0], cy: R_discB[2][1] + d[1] };
+    return { cx: R_wB[0][0] + d[0], cy: R_wB[0][1] + d[1] };
   });
   const shadB = useAnimatedProps(() => {
     const d = dpj(0, (M.value.sB * WGT) / TOP);
     return { cx: R_shadB[0] + d[0], cy: R_shadB[1] + d[1] };
   });
-  const discR0 = useAnimatedProps(() => {
+  const sideR = useAnimatedProps(() => {
     const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
-    return { cx: R_discR[0][0] + d[0], cy: R_discR[0][1] + d[1] };
+    return { d: stackSide(R_wR[0][0] + d[0], R_wR[0][1] + d[1], R_wR[1][1] + d[1]) };
   });
-  const discR1 = useAnimatedProps(() => {
+  const seamR = useAnimatedProps(() => {
     const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
-    return { cx: R_discR[1][0] + d[0], cy: R_discR[1][1] + d[1] };
+    return { d: stackSeams(R_wR[0][0] + d[0], R_wR[0][1] + d[1], R_wR[1][1] + d[1]) };
   });
-  const discR2 = useAnimatedProps(() => {
+  const capR = useAnimatedProps(() => {
     const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
-    return { cx: R_discR[2][0] + d[0], cy: R_discR[2][1] + d[1] };
+    return { cx: R_wR[0][0] + d[0], cy: R_wR[0][1] + d[1] };
   });
   const shadR = useAnimatedProps(() => {
     const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
@@ -684,15 +742,12 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         </Defs>
         <Rect x={0} y={0} width={VBW} height={VBH} fill="#0b0b0e" />
         <Ellipse cx={MX + 20} cy={MY + LEGZ * CP * SC - 14} rx={150} ry={36} fill="url(#hmFloorB)" />
-        {LEGS.map((L, i) => (
-          <G key={i}>
-            <Line x1={L[0][0]} y1={L[0][1]} x2={L[1][0]} y2={L[1][1]} stroke="#3a2c18" strokeWidth={4.2} strokeLinecap="round" />
-            <Line x1={L[0][0]} y1={L[0][1]} x2={L[1][0]} y2={L[1][1]} stroke="#59452a" strokeWidth={1.8} strokeLinecap="round" />
-          </G>
-        ))}
-        <AEllipse animatedProps={shadR} cx={R_shadR[0]} cy={R_shadR[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
-        <AEllipse animatedProps={shadA} cx={R_shadA[0]} cy={R_shadA[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
-        <AEllipse animatedProps={shadB} cx={R_shadB[0]} cy={R_shadB[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
+        {/* the far leg, behind everything that hangs under the table */}
+        <Polygon points={LEG_BACK.lit} fill="#6e5230" stroke="#2a1f10" strokeWidth={0.5} />
+        <Polygon points={LEG_BACK.shade} fill="#4c3820" stroke="#2a1f10" strokeWidth={0.5} />
+        <AEllipse animatedProps={shadR} cx={R_shadR[0]} cy={R_shadR[1]} rx={W_RX * 1.2} ry={W_RY * 1.2} fill="#000" opacity={0.32} />
+        <AEllipse animatedProps={shadA} cx={R_shadA[0]} cy={R_shadA[1]} rx={W_RX * 1.2} ry={W_RY * 1.2} fill="#000" opacity={0.32} />
+        <AEllipse animatedProps={shadB} cx={R_shadB[0]} cy={R_shadB[1]} rx={W_RX * 1.2} ry={W_RY * 1.2} fill="#000" opacity={0.32} />
         <ALine
           animatedProps={shaftRBelow}
           x1={R_shaftR_below[0][0]}
@@ -703,9 +758,9 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           strokeWidth={3.2}
           strokeLinecap="round"
         />
-        <AEllipse animatedProps={discR0} cx={R_discR[0][0]} cy={R_discR[0][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <AEllipse animatedProps={discR1} cx={R_discR[1][0]} cy={R_discR[1][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <AEllipse animatedProps={discR2} cx={R_discR[2][0]} cy={R_discR[2][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <APath animatedProps={sideR} d={stackSide(R_wR[0][0], R_wR[0][1], R_wR[1][1])} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <APath animatedProps={seamR} d={stackSeams(R_wR[0][0], R_wR[0][1], R_wR[1][1])} fill="none" stroke="#0e0f12" strokeWidth={0.7} />
+        <AEllipse animatedProps={capR} cx={R_wR[0][0]} cy={R_wR[0][1]} rx={W_RX} ry={W_RY} fill="#7a7e88" stroke="#0e0f12" strokeWidth={0.7} />
         <ALine
           animatedProps={shaftABelow}
           x1={R_shaftA_below[0][0]}
@@ -716,9 +771,9 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           strokeWidth={3.2}
           strokeLinecap="round"
         />
-        <AEllipse animatedProps={discA0} cx={R_discA[0][0]} cy={R_discA[0][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <AEllipse animatedProps={discA1} cx={R_discA[1][0]} cy={R_discA[1][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <AEllipse animatedProps={discA2} cx={R_discA[2][0]} cy={R_discA[2][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <APath animatedProps={sideA} d={stackSide(R_wA[0][0], R_wA[0][1], R_wA[1][1])} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <APath animatedProps={seamA} d={stackSeams(R_wA[0][0], R_wA[0][1], R_wA[1][1])} fill="none" stroke="#0e0f12" strokeWidth={0.7} />
+        <AEllipse animatedProps={capA} cx={R_wA[0][0]} cy={R_wA[0][1]} rx={W_RX} ry={W_RY} fill="#7a7e88" stroke="#0e0f12" strokeWidth={0.7} />
         <ALine
           animatedProps={shaftBBelow}
           x1={R_shaftB_below[0][0]}
@@ -729,11 +784,19 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           strokeWidth={3.2}
           strokeLinecap="round"
         />
-        <AEllipse animatedProps={discB0} cx={R_discB[0][0]} cy={R_discB[0][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <AEllipse animatedProps={discB1} cx={R_discB[1][0]} cy={R_discB[1][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <AEllipse animatedProps={discB2} cx={R_discB[2][0]} cy={R_discB[2][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
-        <Polygon points={`${P2(slabTop[0])} ${P2(slabTop[1])} ${P2(slabE1[1])} ${P2(slabE1[0])}`} fill="url(#hmWoodEB)" />
-        <Polygon points={`${P2(slabTop[1])} ${P2(slabTop[2])} ${P2(slabE2[0])} ${P2(slabE1[1])}`} fill="#1c130a" />
+        <APath animatedProps={sideB} d={stackSide(R_wB[0][0], R_wB[0][1], R_wB[1][1])} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <APath animatedProps={seamB} d={stackSeams(R_wB[0][0], R_wB[0][1], R_wB[1][1])} fill="none" stroke="#0e0f12" strokeWidth={0.7} />
+        <AEllipse animatedProps={capB} cx={R_wB[0][0]} cy={R_wB[0][1]} rx={W_RX} ry={W_RY} fill="#7a7e88" stroke="#0e0f12" strokeWidth={0.7} />
+        {/* the three near legs, in front of the hanging weights */}
+        {LEGS_FRONT.map((L, i) => (
+          <G key={i}>
+            <Polygon points={L.lit} fill="#6e5230" stroke="#2a1f10" strokeWidth={0.5} />
+            <Polygon points={L.shade} fill="#4c3820" stroke="#2a1f10" strokeWidth={0.5} />
+          </G>
+        ))}
+        {/* the top: its two near edges, then the face */}
+        <Polygon points={slabFaceX.map(P2).join(' ')} fill="url(#hmWoodEB)" />
+        <Polygon points={slabFaceY.map(P2).join(' ')} fill="#2e2112" />
         <Polygon points={slabTop.map(P2).join(' ')} fill="url(#hmWoodB)" stroke="#2a1f10" strokeWidth={1} />
         {GRAIN.map((d, i) => (
           <Path key={i} d={d} stroke="#00000022" strokeWidth={0.8} fill="none" />
@@ -741,9 +804,25 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         {HOLES.map((h, i) => (
           <G key={i}>
             <Ellipse cx={h[0]} cy={h[1]} rx={1.6 * SC} ry={1.6 * SC * SP} fill="#0c0906" />
-            <Ellipse cx={h[0]} cy={h[1]} rx={2.4 * SC} ry={2.4 * SC * SP} fill="none" stroke="#a89468" strokeWidth={1} strokeOpacity={0.5} />
+            <Ellipse cx={h[0]} cy={h[1]} rx={1.9 * SC} ry={1.9 * SC * SP} fill="none" stroke="#a89468" strokeWidth={0.8} strokeOpacity={0.45} />
           </G>
         ))}
+        {/* bearing blocks (knife edges) and the gimbal posts */}
+        {BEARINGS.map((b, i) => (
+          <G key={`brg${i}`}>
+            <Polygon points={b.lit} fill="#8a8e98" />
+            <Polygon points={b.shade} fill="#4a4e58" />
+            <Polygon points={b.top} fill="#b9bdc6" stroke="#2a2c33" strokeWidth={0.4} />
+          </G>
+        ))}
+        <Line x1={EDGE_A[0][0]} y1={EDGE_A[0][1]} x2={EDGE_A[1][0]} y2={EDGE_A[1][1]} stroke="#c9ccd4" strokeWidth={1.6} strokeLinecap="round" />
+        <Line x1={EDGE_B[0][0]} y1={EDGE_B[0][1]} x2={EDGE_B[1][0]} y2={EDGE_B[1][1]} stroke="#c9ccd4" strokeWidth={1.6} strokeLinecap="round" />
+        <Ellipse cx={GIMBAL_C[0]} cy={GIMBAL_C[1]} rx={2.6 * SC} ry={2.6 * SC * SP} fill="none" stroke="#9a9ea8" strokeWidth={1.6} />
+        <Ellipse cx={GIMBAL_C[0]} cy={GIMBAL_C[1] - 0.6} rx={2.6 * SC} ry={2.6 * SC * SP} fill="none" stroke="#dfe2e8" strokeWidth={0.5} strokeOpacity={0.6} />
+        <Line x1={GIMBAL_PINS[0][0]} y1={GIMBAL_PINS[0][1]} x2={GIMBAL_PINS[1][0]} y2={GIMBAL_PINS[1][1]} stroke="#c9ccd4" strokeWidth={1.4} />
+        <Line x1={GIMBAL_PINS[2][0]} y1={GIMBAL_PINS[2][1]} x2={GIMBAL_PINS[3][0]} y2={GIMBAL_PINS[3][1]} stroke="#c9ccd4" strokeWidth={1.4} />
+        <Line x1={GIMBAL_INNER[0][0]} y1={GIMBAL_INNER[0][1]} x2={GIMBAL_INNER[1][0]} y2={GIMBAL_INNER[1][1]} stroke="#c9ccd4" strokeWidth={1.2} />
+        <Line x1={GIMBAL_INNER[2][0]} y1={GIMBAL_INNER[2][1]} x2={GIMBAL_INNER[3][0]} y2={GIMBAL_INNER[3][1]} stroke="#c9ccd4" strokeWidth={1.2} />
         <ALine
           animatedProps={shaftRAbove}
           x1={R_shaftR_above[0][0]}

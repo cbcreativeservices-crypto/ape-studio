@@ -291,9 +291,14 @@ export function AnalogChainView({
   const midY = h / 2;
 
   // Scene anchors: speaker → pressure gap → mic → voltage graph.
-  const magX = 8 * k;
-  const magW = 22 * k;
-  const magH = 42 * k;
+  // The driver in side elevation, proportioned from an 8" (200 mm) woofer
+  // (art pass 2026-10-10): cone mouth Ø165 → 54 units, so the ferrite motor
+  // stack (Ø100 × ≈ 33 mm: steel back plate, magnet ring, steel top plate)
+  // is ≈ 32 units tall and 16 deep — it was 42 × 22, bigger than the cone
+  // could carry. The stack keeps the old cone base, so nothing else moves.
+  const magX = 14 * k;
+  const magW = 16 * k;
+  const magH = 32 * k;
   const coneBaseX = magX + magW;
   const mouthX = coneBaseX + 24 * k;
   const mouthHalf = 27 * k;
@@ -306,10 +311,21 @@ export function AnalogChainView({
 
   // ── Static geometry (illustrated objects — gradients, organic silhouettes) ──
   const magnetPath = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(magX, midY - magH / 2, magW, magH), 3.5 * k, 3.5 * k));
-    return p;
-  }, [magX, magW, magH, midY, k]);
+    // steel back plate (3.5) · ferrite ring (8.5, a touch smaller across) · steel top plate (4)
+    const back = Skia.Path.Make();
+    back.addRRect(Skia.RRectXY(Skia.XYWHRect(magX, midY - magH / 2, 3.5 * k, magH), 1 * k, 1 * k));
+    const ring = Skia.Path.Make();
+    ring.addRRect(Skia.RRectXY(Skia.XYWHRect(magX + 3.5 * k, midY - magH / 2 + 1 * k, 8.5 * k, magH - 2 * k), 1.6 * k, 1.6 * k));
+    const top = Skia.Path.Make();
+    top.addRRect(Skia.RRectXY(Skia.XYWHRect(magX + 12 * k, midY - magH / 2, 4 * k, magH), 1 * k, 1 * k));
+    // cast basket arms from the top plate out to the mounting flange
+    const arms = Skia.Path.Make();
+    for (const sg of [-1, 1]) {
+      arms.moveTo(magX + magW, midY + sg * (magH / 2 - 2 * k));
+      arms.lineTo(mouthX - 1 * k, midY + sg * (mouthHalf + 3 * k));
+    }
+    return { back, ring, top, arms };
+  }, [magX, magW, magH, midY, k, mouthX, mouthHalf]);
 
   const conePath = useMemo(() => {
     const p = Skia.Path.Make();
@@ -446,13 +462,16 @@ export function AnalogChainView({
         <SkLine p1={vec(4, h - 10)} p2={vec(micX + micLen + 4 * k, h - 10)} color="#17171c" strokeWidth={2} />
 
         {/* Loudspeaker — magnet, moving cone, surround flange. */}
-        <Path path={magnetPath}>
-          <LinearGradient
-            start={vec(magX, midY - magH / 2)}
-            end={vec(magX + magW, midY + magH / 2)}
-            colors={[METAL_HI, METAL_MID, METAL_LO]}
-          />
+        <Path path={magnetPath.ring}>
+          <LinearGradient start={vec(0, midY - magH / 2)} end={vec(0, midY + magH / 2)} colors={['#4a4a52', '#1e1e24']} />
         </Path>
+        <Path path={magnetPath.back}>
+          <LinearGradient start={vec(0, midY - magH / 2)} end={vec(0, midY + magH / 2)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
+        </Path>
+        <Path path={magnetPath.top}>
+          <LinearGradient start={vec(0, midY - magH / 2)} end={vec(0, midY + magH / 2)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
+        </Path>
+        <Path path={magnetPath.arms} color={METAL_LO} style="stroke" strokeWidth={2.2 * k} strokeCap="round" />
         <Path path={flangePath} color={METAL_LO} />
         <Group transform={coneShift}>
           {/* Voice-coil former + copper windings at the throat. */}

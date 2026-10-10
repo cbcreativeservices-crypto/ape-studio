@@ -46,7 +46,7 @@ export type CymbalSpec = {
   d: Dim;
   /** Edge plane to the top of the bell (8 % of the diameter). */
   rise: Dim;
-  /** Bell diameter (20 % of the diameter). */
+  /** Bell diameter (32 % of the diameter). */
   bellD: Dim;
   /** Where the EDGE band starts, as a fraction of the radius (words only:
    *  "the edge" is the outer band a stick crashes on). */
@@ -59,7 +59,7 @@ export type CymbalSpec = {
 /* ── the sourced sizes ── */
 const profile = (d: number): Pick<CymbalSpec, 'rise' | 'bellD' | 'edgeFrac' | 'drawT'> => ({
   rise: dd(CYMBAL_PROFILE.rise * d, 'cymbal profile height (8 % of the diameter)'),
-  bellD: dd(CYMBAL_PROFILE.bell * d, 'bell diameter (20 % of the diameter)'),
+  bellD: dd(CYMBAL_PROFILE.bell * d, 'bell diameter (32 % of the diameter)'),
   edgeFrac: dd(0.85, 'where the edge band starts (85 % of the radius)'),
   drawT: dd(4, 'the drawn plate thickness (a line weight; the real thickness is unknown)'),
 });
@@ -134,7 +134,7 @@ export const BOOM_FEET: Readonly<Record<'crash1' | 'crash2' | 'ride', { u: numbe
 
 /** The family's drawing defaults, by name (for the lessons' unknowns). */
 export const CYMBAL_DRAWING_DEFAULTS: readonly string[] = [
-  'cymbal profile (8 % rise), bell (20 % of the diameter), edge band and drawn thickness',
+  'cymbal profile (8 % rise), bell (32 % of the diameter), edge band and drawn thickness',
   'felts, sleeve, wing nut, tilter and centre-hole sizes',
   'hi-hat clutch, pull rod, seat, stand tubes and tripod reach',
   'cymbal boom-stand tubes, boom joint height, counterweight and tripod reach',

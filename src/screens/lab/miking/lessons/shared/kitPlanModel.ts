@@ -45,8 +45,11 @@ export const KIT_CYMBALS: Readonly<Record<KitCymbalId, KitCymbal>> = {
   crash2: { id: 'crash2', label: '18 in crash', d: 18 * IN, c: { x: 250, y: yAt(1200), z: 360 }, tiltDeg: 15 },
   ride: { id: 'ride', label: '20 in ride', d: 20 * IN, c: { x: -80, y: yAt(1000), z: 640 }, tiltDeg: 10 },
 };
-/** Cymbal profile and bell (drawing defaults: §3 of the kit proposal). */
-export const CYMBAL_PROFILE = { rise: 0.08, bell: 0.2, swing: 60 } as const;
+/** Cymbal profile and bell (drawing defaults: §3 of the kit proposal). The
+ *  bell is ≈ 32 % of the diameter on real kit cymbals (14 in hats ≈ 4.5–5 in,
+ *  16 in crash ≈ 5 in, 18 in ≈ 5.75 in, 20 in ride ≈ 6.5 in); the art pass of
+ *  2026-10-10 raised it from 20 %, which drew flat-ride-sized cups. */
+export const CYMBAL_PROFILE = { rise: 0.08, bell: 0.32, swing: 60 } as const;
 
 export const KIT = {
   floorY: KIT_FLOOR_Y,

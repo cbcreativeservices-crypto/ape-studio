@@ -26,7 +26,7 @@
  * Nothing moves (D8). Paths are built once per scene and cached. No brand
  * mark, inlay logo or likeness of a maker's design.
  */
-import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { DocumentedZone, VariantId, ViewId } from '../../../engine/model/types.ts';
 import { viewsOf } from '../../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
@@ -92,10 +92,106 @@ function headHalfAt(sp: GuitarScene['g']['spec'], dx: number): number {
 
 /* ═══════════════════════════════ FACE ═══════════════════════════════ */
 
+/** Tailpiece lengths along the top (mm, drawing defaults): a mandolin's
+ *  stamped cover, a resonator's plate tailpiece. */
+const MANDO_TAIL_L = 85;
+const RESO_TAIL_L = 70;
+
+/** One carved f-hole, face-on, centred at (cx, cy), `len` long along the
+ *  strings; `s` = −1 bass side, +1 treble side (art pass 2026-10-10). */
+function fHolePath(cx: number, cy: number, len: number, s: number): SkPath {
+  const spread = 0.13 * len;
+  const up = { x: cx + 0.44 * len, y: cy - s * spread };
+  const lo = { x: cx - 0.44 * len, y: cy + s * spread };
+  const c1 = { x: up.x - 0.45 * len, y: up.y };
+  const c2 = { x: lo.x + 0.45 * len, y: lo.y };
+  const at = (t: number) => ({
+    x: (1 - t) ** 3 * up.x + 3 * (1 - t) ** 2 * t * c1.x + 3 * (1 - t) * t * t * c2.x + t ** 3 * lo.x,
+    y: (1 - t) ** 3 * up.y + 3 * (1 - t) ** 2 * t * c1.y + 3 * (1 - t) * t * t * c2.y + t ** 3 * lo.y,
+  });
+  const left: [number, number][] = [];
+  const right: [number, number][] = [];
+  for (let i = 0; i <= 24; i++) {
+    const t = 0.04 + (0.92 * i) / 24;
+    const p = at(t);
+    const q = at(Math.min(1, t + 0.01));
+    const r = at(Math.max(0, t - 0.01));
+    const tl = Math.hypot(q.x - r.x, q.y - r.y) || 1;
+    const nx = -(q.y - r.y) / tl;
+    const ny = (q.x - r.x) / tl;
+    const wing = Math.exp(-(((t - 0.16) / 0.09) ** 2)) * 0.8 + Math.exp(-(((t - 0.84) / 0.09) ** 2));
+    const w = len * (0.035 + 0.045 * wing);
+    left.push([p.x + (nx * w) / 2, p.y + (ny * w) / 2]);
+    right.push([p.x - (nx * w) / 2, p.y - (ny * w) / 2]);
+  }
+  const f = polyPath([...left, ...right.reverse()]);
+  f.addCircle(up.x, up.y, 0.055 * len);
+  f.addCircle(lo.x, lo.y, 0.075 * len);
+  return f;
+}
+
+/** An F-style mandolin's ornaments (G frame, mm; drawing defaults sized to
+ *  its 254 mm body): the SCROLL on the bass side (−y) of the upper body — a
+ *  volute ~50 mm across rising off the rim and curling back toward the
+ *  neck heel, with its carved spiral and the open eye under it — and three
+ *  POINTS, one on the treble side of the upper body aimed at the neck, one
+ *  on each side of the lower body. */
+function mandoFOrnaments(g: GuitarGeom): { solids: SkPath[]; spiral: SkPath; eye: SkPath } {
+  const hb = (x: number) => g.halfW(x, 'bass');
+  const ht = (x: number) => g.halfW(x, 'treble');
+  const solids: SkPath[] = [];
+  // The scroll: from the rim ~125 mm short of the heel, out round a volute
+  // (radius 25) beside the upper body, and back onto the body at the heel.
+  const vc = { x: g.edge - 42, y: -hb(g.edge - 70) - 22 };
+  const R = 25;
+  const sc = make();
+  sc.moveTo(g.edge - 125, -hb(g.edge - 125) + 2);
+  sc.cubicTo(g.edge - 100, -hb(g.edge - 100) - 18, vc.x - R * 1.2, vc.y - R * 1.05, vc.x, vc.y - R);
+  sc.cubicTo(vc.x + R * 0.6, vc.y - R, vc.x + R, vc.y - R * 0.55, vc.x + R, vc.y);
+  sc.cubicTo(vc.x + R, vc.y + R * 0.5, vc.x + R * 0.6, vc.y + R * 0.9, vc.x + R * 0.1, vc.y + R * 0.95);
+  sc.lineTo(g.edge - 6, -hb(g.edge - 6) + 1);
+  sc.lineTo(g.edge - 140, -hb(g.edge - 140) + 14);
+  sc.close();
+  solids.push(sc);
+  const spiral = make();
+  for (let i = 0; i <= 40; i++) {
+    const a = -Math.PI / 2 + (i / 40) * Math.PI * 2.6;
+    const r = R * (0.82 - (0.62 * i) / 40);
+    const x = vc.x + r * Math.cos(a);
+    const y = vc.y + r * Math.sin(a);
+    if (i === 0) spiral.moveTo(x, y);
+    else spiral.lineTo(x, y);
+  }
+  // The open eye between the volute's inner turn and the rim.
+  const eye = oval(vc.x - R * 0.35, vc.y + R * 0.78, R * 0.42, R * 0.22);
+  // A point: a spike off the rim at x, its tip `dx` along and `out` beyond the rim.
+  // Each point swells off the rim and sweeps to its tip (a carved horn, not a thorn).
+  const spike = (x: number, side: -1 | 1, dx: number, out: number) => {
+    const h = side < 0 ? hb : ht;
+    const p = make();
+    const tip = { x: x + dx, y: side * (h(x) + out) };
+    p.moveTo(x - 34, side * (h(x - 34) - 4));
+    p.cubicTo(x - 14, side * (h(x - 14) + out * 0.55), tip.x - dx * 0.35, tip.y - side * out * 0.05, tip.x, tip.y);
+    p.cubicTo(tip.x - dx * 0.25, tip.y - side * out * 0.55, x + 8, side * (h(x + 8) + 2), x + 18, side * (h(x + 18) - 4));
+    p.close();
+    return p;
+  };
+  solids.push(spike(g.edge - 72, 1, 40, 16));
+  solids.push(spike(g.tail + 92, -1, 26, 15));
+  solids.push(spike(g.tail + 92, 1, 26, 15));
+  return { solids, spiral, eye };
+}
+
 function buildFace(sc: GuitarScene) {
   const g = sc.g;
   const sp = g.spec;
-  const outline = polyPath(outlinePoly(g, 96));
+  const isMando = sp.id.startsWith('mando');
+  // An F-style mandolin's carved outline: the teardrop, its SCROLL on the
+  // bass side of the upper body, a point on the treble side of the upper
+  // body and a point on each side of the lower body (art pass 2026-10-10).
+  const fStyle = sp.id === 'mandoF' ? mandoFOrnaments(g) : null;
+  let outline = polyPath(outlinePoly(g, 96));
+  if (fStyle) for (const q of fStyle.solids) outline = Skia.Path.MakeFromOp(outline, q, PathOp.Union) ?? outline;
   const op = sp.opening;
   // The fingerboard over the body and up the neck (a tapered strip).
   const bx0 = g.boardEnd;
@@ -174,18 +270,29 @@ function buildFace(sc: GuitarScene) {
   // Strings: saddle (or bridge) to nut, then on to the posts.
   const ys0 = g.stringYs(sp.bridge.x.mm);
   const ysN = g.stringYs(g.L);
-  const startX = sp.bridge.kind === 'tieblock' ? sp.bridge.x.mm - sp.bridge.l.mm / 2 + 4 : sp.bridge.kind === 'banjo' || sp.bridge.kind === 'floating' ? (sp.body.pot ? sp.body.pot.cx.mm - sp.body.pot.d.mm / 2 + 30 : g.tail + 22) : sp.bridge.kind === 'spider' || sp.bridge.kind === 'biscuit' ? g.tail + 18 : sp.bridge.x.mm - 6;
+  const startX = sp.bridge.kind === 'tieblock' ? sp.bridge.x.mm - sp.bridge.l.mm / 2 + 4 : sp.bridge.kind === 'banjo' || sp.bridge.kind === 'floating' ? (sp.body.pot ? sp.body.pot.cx.mm - sp.body.pot.d.mm / 2 + 56 : isMando ? g.tail + MANDO_TAIL_L - 6 : g.tail + 22) : sp.bridge.kind === 'spider' || sp.bridge.kind === 'biscuit' ? g.tail + RESO_TAIL_L - 8 : sp.bridge.x.mm - 6;
   const strings: { path: SkPath; w: number; color: string }[] = [];
   const nStr = ys0.length;
   for (let k = 0; k < nStr; k++) {
     const p = make();
     const course = sp.strings.perCourse === 2 ? Math.floor(k / 2) : k;
-    const wound = course < sp.strings.wound;
+    // A five-string banjo's short fifth string (course 0) runs to its own
+    // peg on the neck (drawn below), not to the peghead.
+    if (sp.fifth && course === 0) continue;
+    const wound = course - (sp.fifth ? 1 : 0) < sp.strings.wound;
     p.moveTo(startX, ys0[k] * (sp.bridge.kind === 'banjo' || sp.bridge.kind === 'floating' || sp.bridge.kind === 'spider' ? 0.6 : 1));
     p.lineTo(sp.bridge.x.mm, ys0[k]);
     p.lineTo(g.L, ysN[k]);
-    // On to a post on its side of the headstock (bass strings to −y).
-    const post = posts.filter((q) => q.side === (course < sp.strings.courses / 2 ? -1 : 1))[Math.min(perSide - 1, course % perSide)] ?? posts[0];
+    // On to a post on its side of the headstock (bass strings to −y): on
+    // each side the OUTER string takes the post nearest the nut and the
+    // inner ones the posts beyond, so no string crosses another (the
+    // treble side counted from its outer edge; art pass 2026-10-10).
+    const c0 = sp.fifth ? 1 : 0; // the banjo's peghead carries courses 1 … 4
+    const nHead = sp.strings.courses - c0;
+    const ch = course - c0;
+    const bassSide = ch < nHead / 2;
+    const idx = bassSide ? ch % perSide : (nHead - 1 - ch) % perSide;
+    const post = posts.filter((q) => q.side === (bassSide ? -1 : 1))[Math.min(perSide - 1, idx)] ?? posts[0];
     p.lineTo(post.x, post.y * 0.72);
     const w = sp.strings.nylon ? (wound ? 1.1 : 0.95) : wound ? 1.05 : 0.7;
     strings.push({ path: p, w: sp.id === 'bass' ? w * 1.8 : sp.strings.perCourse === 2 ? w * 0.8 : w, color: sp.strings.nylon ? (wound ? STEEL_STR : NYLON_STR) : wound ? BRONZE_STR : STEEL_STR });
@@ -200,9 +307,28 @@ function buildFace(sc: GuitarScene) {
     p.lineTo(sp.fifth.mm + 6, -g.boardHalf(sp.fifth.mm) - 12);
     strings.push({ path: p, w: 0.7, color: STEEL_STR });
   }
+  // The fifth string's geared peg, out of the neck's bass side at its fret.
+  const fifthPeg = sp.fifth ? { x: sp.fifth.mm + 6, y: -g.boardHalf(sp.fifth.mm) - 16 } : null;
   // Pickguard: a teardrop on the treble side, between the hole and the waist.
   let guard: SkPath | null = null;
-  if (sp.pickguard && (op.kind === 'round' || op.kind === 'oval')) {
+  if (sp.pickguard && isMando) {
+    // A mandolin's ELEVATED FINGER REST: a long comma of tortoiseshell on
+    // the treble side, held off the top on a bracket at the fingerboard's
+    // end, following the rim ~9 mm in and tapering to a point by the bridge.
+    const x0 = sp.bridge.x.mm + 22;
+    const x1 = g.boardEnd + 6;
+    const outer: [number, number][] = [];
+    const inner: [number, number][] = [];
+    for (let i = 0; i <= 24; i++) {
+      const x = x0 + ((x1 - x0) * i) / 24;
+      const yo = g.halfW(x, 'treble') - 9;
+      const wdt = Math.min(36, 6 + 34 * Math.sin((Math.PI / 2) * Math.min(1, i / 9)));
+      const yi = Math.max(g.boardHalf(x) + 4, yo - wdt);
+      outer.push([x, yo]);
+      inner.push([x, yi]);
+    }
+    guard = polyPath([...outer, ...inner.reverse()]);
+  } else if (sp.pickguard && (op.kind === 'round' || op.kind === 'oval')) {
     const r = g.hole.r;
     const cx = g.hole.x - r * 0.3;
     const cy = r + 30;
@@ -224,18 +350,15 @@ function buildFace(sc: GuitarScene) {
     hole = oval(g.hole.x, 0, g.hole.r, g.hole.r2);
     for (const k of [1.12, 1.24]) ros.addOval(Skia.XYWHRect(g.hole.x - g.hole.r * k, -g.hole.r2 * k, g.hole.r * 2 * k, g.hole.r2 * 2 * k));
   } else if (op.kind === 'fholes') {
-    // Two f-shaped holes, mirrored about the centre line (drawing default).
+    // Two carved f-holes, mirrored about the centre line (drawing default
+    // place), cut as the violin family's are: an S stem flaring into wings,
+    // the small eye toward the neck and nearer the centre, the larger eye
+    // toward the tail and farther out.
     const f = make();
     const cx = op.x.mm;
     const len = op.d.mm;
     const off = op.d2 ? op.d2.mm : 60;
-    for (const s of [-1, 1]) {
-      const y = s * off;
-      f.moveTo(cx - len / 2, y + s * 6);
-      f.cubicTo(cx - len / 4, y + s * 14, cx + len / 4, y - s * 14, cx + len / 2, y - s * 6);
-      f.addCircle(cx - len / 2, y + s * 6, 5.5);
-      f.addCircle(cx + len / 2, y - s * 6, 5.5);
-    }
+    for (const s of [-1, 1]) f.addPath(fHolePath(cx, s * off, len, s));
     fholes = f;
   }
   // A resonator: the coverplate (a perforated disc), its palm plate, ports.
@@ -243,21 +366,28 @@ function buildFace(sc: GuitarScene) {
   if (op.kind === 'coverplate') {
     const cx = op.x.mm;
     const r = op.d.mm / 2;
+    // The coverplate's sound wells: nine groups round the plate, each a fan
+    // of small holes (the classic "sieve"), between a plain rim and the palm
+    // plate over the bridge (art pass 2026-10-10).
     const holes = make();
-    for (const ring of [{ rr: r * 0.82, n: 20, d: 6 }, { rr: r * 0.66, n: 14, d: 5 }]) {
-      for (let k = 0; k < ring.n; k++) {
-        const a = (k / ring.n) * Math.PI * 2;
-        holes.addCircle(cx + ring.rr * Math.cos(a), ring.rr * Math.sin(a), ring.d);
+    for (let k = 0; k < 9; k++) {
+      const a0 = (k / 9) * Math.PI * 2 + Math.PI / 9;
+      for (const [rr0, n, dd] of [[0.84, 3, 3.6], [0.73, 3, 3.6], [0.62, 2, 3.4]] as const) {
+        for (let j = 0; j < n; j++) {
+          const a = a0 + (j - (n - 1) / 2) * (0.085 / rr0);
+          holes.addCircle(cx + r * rr0 * Math.cos(a), r * rr0 * Math.sin(a), dd);
+        }
       }
     }
-    const palm = rr(cx - 34, -r * 0.62, cx + 34, r * 0.62, 18);
+    const palm = rr(cx - 30, -r * 0.5, cx + 30, r * 0.5, 22);
     const ports = make();
     const mesh = make();
     if (op.ports) {
       for (const s of [-1, 1]) {
         const px = op.ports.x.mm;
-        const py = s * op.ports.y.mm;
         const pr = op.ports.d.mm / 2;
+        // Each screened port sits wholly on the upper bout, ~14 mm in from its rim.
+        const py = s * Math.min(op.ports.y.mm, g.halfW(px, s < 0 ? 'bass' : 'treble') - pr - 14);
         ports.addCircle(px, py, pr);
         for (let k = -3; k <= 3; k++) {
           mesh.moveTo(px + k * 7, py - Math.sqrt(Math.max(0, pr * pr - (k * 7) ** 2)));
@@ -282,38 +412,48 @@ function buildFace(sc: GuitarScene) {
     }
     const fl = sp.resonatorBack ? sp.resonatorBack.d.mm / 2 : 0;
     const tp = cx - r;
+    // The tailpiece: ~60 mm from the tail-side rim over the head, ending
+    // ~35 mm short of the bridge.
     const tail = polyPath([
       [tp - 6, -14],
-      [tp + 70, -9],
-      [tp + 78, 0],
-      [tp + 70, 9],
+      [tp + 52, -10],
+      [tp + 60, 0],
+      [tp + 52, 10],
       [tp - 6, 14],
     ]);
     const arm = make();
     arm.addArc(Skia.XYWHRect(cx - r - 10, -r - 10, (r + 10) * 2, (r + 10) * 2), 200, 60);
     banjo = { head: oval(cx, 0, r - 6, r - 6), hoop: oval(cx, 0, r, r), hooks, flange: fl > r ? oval(cx, 0, fl, fl) : null, tail, arm };
   }
-  // A mandolin's tailpiece cover (its strings anchor at the tail).
-  const mandoTail = sp.id.startsWith('mando') ? rr(g.tail - 4, -22, g.tail + 40, 22, 8) : null;
+  // A mandolin's tailpiece (its strings anchor at the tail): a stamped
+  // cover ~85 mm long, 26 mm wide at the end pin flaring to 46 mm at its
+  // rounded bridge end; a resonator's: a plate tailpiece ~70 mm long.
+  const mandoTail = isMando
+    ? polyPath([
+        [g.tail - 5, -13],
+        [g.tail + MANDO_TAIL_L * 0.55, -19],
+        [g.tail + MANDO_TAIL_L - 6, -23],
+        [g.tail + MANDO_TAIL_L, -14],
+        [g.tail + MANDO_TAIL_L + 2, 0],
+        [g.tail + MANDO_TAIL_L, 14],
+        [g.tail + MANDO_TAIL_L - 6, 23],
+        [g.tail + MANDO_TAIL_L * 0.55, 19],
+        [g.tail - 5, 13],
+      ])
+    : sp.bridge.kind === 'spider' || sp.bridge.kind === 'biscuit'
+      ? polyPath([
+          [g.tail - 4, -16],
+          [g.tail + RESO_TAIL_L - 10, -26],
+          [g.tail + RESO_TAIL_L, -22],
+          [g.tail + RESO_TAIL_L, 22],
+          [g.tail + RESO_TAIL_L - 10, 26],
+          [g.tail - 4, 16],
+        ])
+      : null;
   // F-style points and scroll (drawing default ornaments on the bass side).
-  let scroll: SkPath | null = null;
-  if (sp.id === 'mandoF') {
-    const p = make();
-    const xu = sp.body.xUpper.mm;
-    const yb = -g.halfW(xu, 'bass');
-    p.moveTo(xu - 40, yb + 4);
-    p.cubicTo(xu - 10, yb - 40, xu + 40, yb - 38, xu + 52, yb - 10);
-    p.cubicTo(xu + 58, yb + 8, xu + 30, yb + 14, xu + 20, yb + 2);
-    p.cubicTo(xu + 14, yb - 8, xu + 30, yb - 16, xu + 36, yb - 6);
-    const xl = sp.body.xLower.mm;
-    for (const s of [-1, 1]) {
-      const yy = s * g.halfW(xl + 40, s < 0 ? 'bass' : 'treble');
-      p.moveTo(xl + 20, yy);
-      p.lineTo(xl + 50, yy + s * 22);
-      p.lineTo(xl + 70, yy);
-    }
-    scroll = p;
-  }
+  // The scroll's carved spiral and its eye (F-style).
+  const scroll: SkPath | null = fStyle ? fStyle.spiral : null;
+  const scrollEye: SkPath | null = fStyle ? fStyle.eye : null;
   // The bridge.
   const b = sp.bridge;
   let bridge: SkPath;
@@ -338,7 +478,25 @@ function buildFace(sc: GuitarScene) {
     bridge = rr(b.x.mm - b.l.mm / 2, -b.w.mm / 2, b.x.mm + b.l.mm / 2, b.w.mm / 2, 4);
     const sy = g.stringYs(0);
     saddle = rr(b.x.mm + b.l.mm / 2 - 6, sy[0] - 5, b.x.mm + b.l.mm / 2 - 3, sy[sy.length - 1] + 5, 1);
-  } else if (b.kind === 'banjo' || b.kind === 'floating') {
+  } else if (b.kind === 'floating') {
+    // An adjustable mandolin bridge seen from the front: the foot (base)
+    // fitted to the top, ~70 × 12 mm, the saddle across the strings, and a
+    // thumbwheel on its post at each end.
+    const w = b.w.mm / 2;
+    bridge = polyPath([
+      [b.x.mm - 6, -w],
+      [b.x.mm + 6, -w],
+      [b.x.mm + 5, -w * 0.55],
+      [b.x.mm + 5, w * 0.55],
+      [b.x.mm + 6, w],
+      [b.x.mm - 6, w],
+      [b.x.mm - 5, w * 0.55],
+      [b.x.mm - 5, -w * 0.55],
+    ]);
+    const sy = g.stringYs(0);
+    saddle = rr(b.x.mm - 1.4, sy[0] - 5, b.x.mm + 1.4, sy[sy.length - 1] + 5, 1);
+    for (const y of [sy[0] - 8, sy[sy.length - 1] + 8]) pins.push({ x: b.x.mm, y });
+  } else if (b.kind === 'banjo') {
     const w = b.w.mm / 2;
     bridge = polyPath([
       [b.x.mm - 4, -w],
@@ -355,7 +513,7 @@ function buildFace(sc: GuitarScene) {
     grain.moveTo(g.tail, y);
     grain.lineTo(g.edge, y);
   }
-  return { outline, board, boardEndArc, frets, marks, headPath, slots, posts, strings, guard, ros, hole, fholes, cover, banjo, mandoTail, scroll, bridge, saddle, pins, grain };
+  return { outline, board, boardEndArc, frets, marks, headPath, slots, posts, strings, guard, ros, hole, fholes, cover, banjo, mandoTail, scroll, scrollEye, bridge, saddle, pins, grain, fifthPeg };
 }
 
 export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
@@ -433,8 +591,9 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
           </Path>
         </>
       ) : null}
-      {P.fholes ? <Path path={P.fholes} style="stroke" strokeWidth={6} strokeCap="round" color="#120b06" /> : null}
-      {P.scroll ? <Path path={P.scroll} style="stroke" strokeWidth={3} color="#3a2414" opacity={0.9} /> : null}
+      {P.fholes ? <Path path={P.fholes} color="#0d0805" /> : null}
+      {P.scrollEye ? <Path path={P.scrollEye} color="#0d0805" /> : null}
+      {P.scroll ? <Path path={P.scroll} style="stroke" strokeWidth={2.2} strokeCap="round" color="#3a2414" opacity={0.85} /> : null}
       {P.cover ? (
         <>
           <Path path={P.cover.ports} color="#0c0a08" />
@@ -451,23 +610,43 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
         </>
       ) : null}
       {P.guard ? (
-        <Path path={P.guard}>
-          <LinearGradient start={vec(g.hole.x - 80, 20)} end={vec(g.hole.x + 40, 140)} colors={TORTOISE} />
-        </Path>
+        // held inside the top's outline (a cutaway body's scoop trims it)
+        <Group clip={P.outline}>
+          <Path path={P.guard}>
+            <LinearGradient start={vec(g.hole.x - 80, 20)} end={vec(g.hole.x + 40, 140)} colors={TORTOISE} />
+          </Path>
+          <Path path={P.guard} style="stroke" strokeWidth={0.8} color="#1a0b05" opacity={0.6} />
+        </Group>
       ) : null}
       {P.mandoTail ? (
-        <Path path={P.mandoTail}>
-          <LinearGradient start={vec(g.tail, -22)} end={vec(g.tail + 40, 22)} colors={CHROME} />
-        </Path>
+        <Group>
+          <Path path={P.mandoTail} color="#000" opacity={0.4} transform={[{ translateX: 1.5 }, { translateY: 3 }]}>
+            <BlurMask blur={3} style="normal" />
+          </Path>
+          <Path path={P.mandoTail}>
+            <LinearGradient start={vec(g.tail, -24)} end={vec(g.tail + 60, 24)} colors={CHROME} />
+          </Path>
+          <Path path={P.mandoTail} style="stroke" strokeWidth={1.2} color="#5d626d" />
+        </Group>
       ) : null}
       {/* the bridge */}
       <Path path={P.bridge}>
-        <LinearGradient start={vec(sp.bridge.x.mm - 20, -sp.bridge.w.mm / 2)} end={vec(sp.bridge.x.mm + 20, sp.bridge.w.mm / 2)} colors={sp.bridge.kind === 'banjo' || sp.bridge.kind === 'floating' ? ['#e7c48a', '#c99a5a', '#8f6532'] : ROSEWOOD} />
+        <LinearGradient start={vec(sp.bridge.x.mm - 20, -sp.bridge.w.mm / 2)} end={vec(sp.bridge.x.mm + 20, sp.bridge.w.mm / 2)} colors={sp.bridge.kind === 'banjo' ? ['#e7c48a', '#c99a5a', '#8f6532'] : ROSEWOOD} />
       </Path>
       {P.saddle ? <Path path={P.saddle} color={BONE} /> : null}
-      {P.pins.map((q, i) => (
-        <Circle key={`pin${i}`} cx={q.x} cy={q.y} r={sp.strings.perCourse === 2 ? 1.6 : 2.6} color={sp.strings.nylon ? BONE : '#f1ead8'} />
-      ))}
+      {P.pins.map((q, i) =>
+        sp.bridge.kind === 'floating' ? (
+          // the adjustable bridge's thumbwheels, knurled nickel
+          <Group key={`pin${i}`}>
+            <Circle cx={q.x} cy={q.y} r={5.2}>
+              <RadialGradient c={vec(q.x - 1.6, q.y - 1.6)} r={6} colors={['#ffffff', NICKEL, '#6b707b']} />
+            </Circle>
+            <Circle cx={q.x} cy={q.y} r={5.2} style="stroke" strokeWidth={0.8} color="#3a3d45" />
+          </Group>
+        ) : (
+          <Circle key={`pin${i}`} cx={q.x} cy={q.y} r={sp.strings.perCourse === 2 ? 1.6 : 2.6} color={sp.strings.nylon ? BONE : '#f1ead8'} />
+        ),
+      )}
       {/* the neck: fingerboard, frets, marks, nut, headstock */}
       {/* the board's own shadow on the top, then the board */}
       <Path path={P.board} color="#000" opacity={0.35} transform={[{ translateX: 2 }, { translateY: 4 }]}>
@@ -496,15 +675,18 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
         // The tuner: a shaft out of the headstock's edge to a button, and
         // the post through the face in its bushing.
         const hw = headHalfAt(sp, q.x - g.L);
-        const by = q.side * (hw + 13);
+        // A ukulele's friction-peg buttons are smaller (~13 × 18 mm).
+        const bw = sp.id === 'uke' ? 6.5 : 8;
+        const bh = sp.id === 'uke' ? 9 : 11;
+        const by = q.side * (hw + 2 + bh);
         const metal = sp.strings.nylon ? ['#fbf6ea', '#e6dcc4', '#bfb193'] : CHROME;
         return (
           <Group key={`post${i}`}>
             <Path path={rr(q.x - 2.2, q.side * (hw - 2), q.x + 2.2, q.side * (hw + 6), 1)} color="#9aa0ab" />
-            <Path path={oval(q.x, by, 8, 11)}>
-              <LinearGradient start={vec(q.x - 8, by - 11)} end={vec(q.x + 8, by + 11)} colors={metal} />
+            <Path path={oval(q.x, by, bw, bh)}>
+              <LinearGradient start={vec(q.x - bw, by - bh)} end={vec(q.x + bw, by + bh)} colors={metal} />
             </Path>
-            <Path path={oval(q.x, by, 8, 11)} style="stroke" strokeWidth={0.9} color="#4a4e57" />
+            <Path path={oval(q.x, by, bw, bh)} style="stroke" strokeWidth={0.9} color="#4a4e57" />
             <Circle cx={q.x} cy={q.y * 0.72} r={5.4} color="#6b707b" />
             <Circle cx={q.x} cy={q.y * 0.72} r={3.4}>
               <RadialGradient c={vec(q.x - 1.4, q.y * 0.72 - 1.4)} r={4} colors={['#ffffff', NICKEL, '#8a909b']} />
@@ -512,6 +694,15 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
           </Group>
         );
       })}
+      {P.fifthPeg ? (
+        <Group>
+          <Path path={rr(P.fifthPeg.x - 2, P.fifthPeg.y + 2, P.fifthPeg.x + 2, P.fifthPeg.y + 12, 1)} color="#9aa0ab" />
+          <Path path={oval(P.fifthPeg.x, P.fifthPeg.y - 4, 5, 7)}>
+            <LinearGradient start={vec(P.fifthPeg.x - 5, P.fifthPeg.y - 11)} end={vec(P.fifthPeg.x + 5, P.fifthPeg.y + 3)} colors={CHROME} />
+          </Path>
+          <Path path={oval(P.fifthPeg.x, P.fifthPeg.y - 4, 5, 7)} style="stroke" strokeWidth={0.8} color="#4a4e57" />
+        </Group>
+      ) : null}
       {/* string shadows on the top and the board (light from the upper left) */}
       <Group transform={[{ translateX: 1.4 }, { translateY: 2.6 }]} opacity={0.32}>
         {P.strings.map((s, i) => (
@@ -527,48 +718,94 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
 
 /* ═══════════════════════════════ EDGE ═══════════════════════════════ */
 
+/** The body seen edge-on from the bass side (x along the strings, z out of
+ *  the top; the top at z = 0, the back at −depth): the tapered rim with a
+ *  domed back, or a carved body's arched top and back. */
+function rimPath(tail: number, edge: number, D: number, carved: boolean): SkPath {
+  const p = make();
+  const L = edge - tail;
+  const r = 9;
+  if (carved) {
+    const rim = D * 0.55;
+    const arch = (D - rim) / 2;
+    p.moveTo(tail, -arch);
+    p.cubicTo(tail + L * 0.18, arch * 0.6, tail + L * 0.62, arch * 0.9, edge, -arch * 0.4);
+    p.lineTo(edge, -arch - rim + arch * 0.4);
+    p.cubicTo(tail + L * 0.62, -D - arch * 0.2, tail + L * 0.18, -D - arch * 0.1, tail, -arch - rim);
+    p.close();
+    return p;
+  }
+  const Dn = D * 0.82;
+  p.moveTo(tail + r, 0);
+  p.lineTo(edge - r, 0);
+  p.quadTo(edge, 0, edge, -r);
+  p.lineTo(edge, -Dn + r);
+  p.quadTo(edge, -Dn, edge - r, -Dn - 0.4);
+  // The back: a shallow dome (≈ 0.035 of the depth proud at its middle).
+  p.cubicTo(edge - L * 0.35, -Dn - D * 0.05 - (D - Dn) * 0.35, tail + L * 0.3, -D - D * 0.035, tail + r, -D);
+  p.quadTo(tail, -D, tail, -D + r);
+  p.lineTo(tail, -r);
+  p.quadTo(tail, 0, tail + r, 0);
+  p.close();
+  return p;
+}
+
 function buildEdge(sc: GuitarScene) {
   const g = sc.g;
   const sp = g.spec;
   const D = g.depth;
   // The sides, seen from above the bass edge: a band from the tail to the
   // neck end, its ends rounded.
-  const sides = sp.body.pot ? rr(g.tail, -D, g.edge, 0, 8) : rr(g.tail, -D, g.edge, 0, 22);
+  // ART PASS 2026-10-10: the rim is deeper at the tail block than at the
+  // neck block (a dreadnought ~124 → ~100 mm: the neck end at 0.82 of the
+  // tail's depth), the back slightly domed, the end blocks' corners rounded
+  // by the binding; a carved mandolin's top and back are arched (~12 mm
+  // each over a ~25 mm rim).
+  const carved = sp.id.startsWith('mando');
+  const sides = sp.body.pot ? rr(g.tail, -D, g.edge, 0, 8) : rimPath(g.tail, g.edge, D, carved);
   const back = sp.resonatorBack ? rr(sp.body.pot!.cx.mm - sp.resonatorBack.d.mm / 2, -D - sp.resonatorBack.depth.mm, sp.body.pot!.cx.mm + sp.resonatorBack.d.mm / 2, -D + 4, 26) : null;
   const neck = make();
   // Fingerboard on top of the neck shaft, the heel at the body.
   const hE = g.h(g.edge);
-  neck.moveTo(g.edge, hE - 2);
-  neck.lineTo(g.L, hE - 2);
-  neck.lineTo(g.L, -20);
-  neck.cubicTo(g.L - 120, -26, g.edge + 120, -26, g.edge + 30, -30);
-  neck.cubicTo(g.edge + 6, -32, g.edge, -D * 0.55, g.edge - 2, -D * 0.6);
+  // The neck shaft under the fingerboard: ~21 mm deep at the nut, ~25 mm
+  // by the body, then the heel sweeping down to the back of the neck block
+  // (art pass 2026-10-10: was ~40 mm deep, a plank).
+  const bTop = hE - 6;
+  const nutBack = bTop - 6 - (sp.id.startsWith('mando') || sp.id === 'uke' ? 17 : sp.id === 'bass' ? 23 : 21);
+  const heelBack = nutBack - 4;
+  neck.moveTo(g.edge, bTop);
+  neck.lineTo(g.L, bTop);
+  neck.lineTo(g.L, nutBack);
+  neck.cubicTo(g.L - 120, nutBack - 1, g.edge + 140, heelBack, g.edge + 60, heelBack);
+  neck.cubicTo(g.edge + 22, heelBack - 1, g.edge + 4, -D * 0.45, g.edge - 1, -D * 0.72);
   neck.close();
-  const board = rr(g.boardEnd, hE - 8, g.L, hE - 2, 1.5);
+  const board = rr(g.boardEnd, hE - 12, g.L, hE - 6, 1.5);
   // The headstock, tilted back from the nut (drawing default 14°; a banjo's
   // and a slotted head's less).
   const tilt = (sp.neck.head === 'banjo' ? 6 : sp.neck.head === 'slotted' ? 12 : 14) * DEG;
   const hl = sp.neck.headLen.mm;
   const hx = g.L + hl * Math.cos(tilt);
-  const hz = hE - 4 - hl * Math.sin(tilt);
+  const hz = bTop - hl * Math.sin(tilt);
+  // The headstock plate (~15 mm thick), its face continuing the fingerboard's line.
   const head = polyPath([
-    [g.L, hE - 1],
-    [hx, hz + 2],
-    [hx, hz - 14],
-    [g.L, hE - 20],
+    [g.L, bTop],
+    [hx, hz],
+    [hx, hz - 15],
+    [g.L, bTop - 17],
   ]);
   const strings = make();
   const bz = sp.opening.kind === 'coverplate' ? 18 : 11;
   strings.moveTo(sp.bridge.x.mm, bz);
-  strings.lineTo(g.L, hE + 1);
-  strings.lineTo(g.L + hl * 0.5 * Math.cos(tilt), hE - 2 - hl * 0.5 * Math.sin(tilt));
+  strings.lineTo(g.L, bTop + 1.5);
+  strings.lineTo(g.L + hl * 0.5 * Math.cos(tilt), bTop + 1 - hl * 0.5 * Math.sin(tilt));
   const bridge = rr(sp.bridge.x.mm - sp.bridge.l.mm / 2, 0, sp.bridge.x.mm + sp.bridge.l.mm / 2, bz - 2, 2);
   const cover = sp.opening.kind === 'coverplate' ? rr(sp.opening.x.mm - sp.opening.d.mm / 2, 0, sp.opening.x.mm + sp.opening.d.mm / 2, 7, 3) : null;
   const tuners = make();
   for (let k = 0; k < sp.neck.tuners; k++) {
     const x = g.L + hl * (0.22 + (0.66 * (k + 0.5)) / sp.neck.tuners) * Math.cos(tilt);
-    const z = hE - 8 - (x - g.L) * Math.tan(tilt);
-    tuners.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 5, z - 26, 10, 14), 3, 3));
+    // The gear housings on the back of the headstock.
+    const z = bTop - (x - g.L) * Math.tan(tilt) - 15;
+    tuners.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 6, z - 12, 12, 12), 3, 3));
   }
   return { sides, back, neck, board, head, strings, bridge, cover, tuners, hE };
 }
@@ -583,7 +820,9 @@ export function GuitarEdge({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
   const g = sc.g;
   const sp = g.spec;
   const D = g.depth;
-  const sideWood = sp.body.pot ? ['#7a4a26', '#5b3519', '#3a210f'] : sp.id === 'reso' ? ['#9aa0ab', '#6b707b', '#3f434b'] : MAHOGANY;
+  // Wood sides for every body here (the resonator's face is drawn as a wood
+  // top, so its rim is wood too: a wood-bodied resonator).
+  const sideWood = sp.body.pot ? ['#7a4a26', '#5b3519', '#3a210f'] : sp.id.startsWith('mando') ? ['#b9763c', '#8a5025', '#5a3014'] : MAHOGANY;
   return (
     <Group opacity={dim}>
       <Path path={P.sides} color="#000" opacity={0.4} transform={[{ translateX: 5 }, { translateY: 6 }]}>
@@ -598,8 +837,8 @@ export function GuitarEdge({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
         <LinearGradient start={vec(g.tail, -D)} end={vec(g.tail, 0)} colors={sideWood} />
       </Path>
       {/* the top and back edges, bound */}
-      <Line p1={vec(g.tail + 10, -1.5)} p2={vec(g.edge - 6, -1.5)} color={sp.body.pot ? '#d8dbe2' : BINDING} strokeWidth={3} />
-      <Line p1={vec(g.tail + 10, -D + 1.5)} p2={vec(g.edge - 6, -D + 1.5)} color={sp.body.pot ? '#d8dbe2' : BINDING} strokeWidth={2.4} />
+      {sp.id.startsWith('mando') ? null : <Line p1={vec(g.tail + 10, -1.5)} p2={vec(g.edge - 6, -1.5)} color={sp.body.pot ? '#d8dbe2' : BINDING} strokeWidth={3} />}
+      {sp.id.startsWith('mando') ? null : <Line p1={vec(g.tail + 10, -D + 1.5)} p2={vec(g.edge - 8, -D * 0.82 + 1.5)} color={sp.body.pot ? '#d8dbe2' : BINDING} strokeWidth={2.4} />}
       {P.cover ? (
         <Path path={P.cover}>
           <LinearGradient start={vec(0, 0)} end={vec(0, 7)} colors={CHROME} />
@@ -609,7 +848,7 @@ export function GuitarEdge({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
         <LinearGradient start={vec(g.edge, -30)} end={vec(g.edge, 20)} colors={MAHOGANY} />
       </Path>
       <Path path={P.board}>
-        <LinearGradient start={vec(0, P.hE - 8)} end={vec(0, P.hE)} colors={ROSEWOOD} />
+        <LinearGradient start={vec(0, P.hE - 12)} end={vec(0, P.hE - 6)} colors={ROSEWOOD} />
       </Path>
       <Path path={P.head}>
         <LinearGradient start={vec(g.L, 0)} end={vec(g.L + 80, -30)} colors={MAHOGANY} />

@@ -1,15 +1,16 @@
 /**
  * M05 DJEMBE — HOW IT SOUNDS, drawn: the goblet cut open down its middle (the
- * model's profile) under the family's numbered overlay. Raised, the open foot
+ * elevation's drawn goblet, art.tsx) under the family's numbered overlay. Raised, the open foot
  * radiates freely; on the floor it meets the floor.
  */
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import { HandStrikeSequence, type SectionSpec } from '../shared/handdrums/handSoundArt';
-import { DJEMBE, HEAD_Y, PROFILE, R, SUPPORT } from './model.ts';
+import { DJEMBE, HEAD_Y, R, SUPPORT } from './model.ts';
+import { DRAW_SECTION } from './art';
 
 function spec(raised: boolean): SectionSpec {
-  return { drum: DJEMBE, profile: PROFILE, wall: 18, material: 'wood', head: 'goat', tool: 'hand', floorY: raised ? SUPPORT : 0, open: raised, strikeFrac: 0.75 };
+  return { drum: DJEMBE, profile: DRAW_SECTION, wall: 18, material: 'wood', head: 'goat', tool: 'hand', floorY: raised ? SUPPORT : 0, open: raised, strikeFrac: 0.75 };
 }
 const SPECS = { floor: spec(false), raised: spec(true) };
 const BOXES = {

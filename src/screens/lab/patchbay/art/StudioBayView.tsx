@@ -68,9 +68,18 @@ export function StudioBayView({
         render={(w, h) => (
       <View style={{ width: w, height: h }}>
         <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-          <Rect x={0} y={4} width={W} height={H - 8} rx={7} fill={PB.panel} stroke={PB.panelEdge} />
-          <Circle cx={12} cy={H / 2} r={2.4} fill="#3a3b41" />
-          <Circle cx={W - 12} cy={H / 2} r={2.4} fill="#3a3b41" />
+          {/* the faceplate (art pass 2026-10-10): brushed panel, a lit top
+              bevel, and the rack ears' oval mounting slots */}
+          <Rect x={0} y={4} width={W} height={H - 8} rx={4} fill={PB.panel} stroke={PB.panelEdge} />
+          <Rect x={1} y={5} width={W - 2} height={2} rx={1} fill="#ffffff" opacity={0.07} />
+          {[0, W - 16].map((ex) => (
+            <G key={ex}>
+              <Line x1={ex === 0 ? 16 : W - 16} y1={6} x2={ex === 0 ? 16 : W - 16} y2={H - 6} stroke="#000" strokeWidth={0.8} opacity={0.5} />
+              {[H * 0.3, H * 0.7].map((sy) => (
+                <Rect key={sy} x={ex + 3} y={sy - 2.4} width={10} height={4.8} rx={2.4} fill="#050506" stroke="#3a3b41" strokeWidth={0.8} />
+              ))}
+            </G>
+          ))}
           <SvgText x={16} y={19} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>STUDIO BAY</SvgText>
           {pairs.map((p, i) => {
             const cx = X0 + i * STEP;
@@ -90,13 +99,24 @@ export function StudioBayView({
                   )
                 ) : null}
                 {/* jacks */}
-                <Circle cx={cx} cy={ROW_TOP} r={7} fill="#0a0a0c" stroke={plug.top ? PB.cord : isSel ? '#6a6b73' : '#3a3b41'} strokeWidth={plug.top ? 2 : 1.3} />
-                <Circle cx={cx} cy={ROW_TOP} r={2.6} fill={plug.top ? PB.cord : '#151519'} />
-                <Circle cx={cx} cy={ROW_BOT} r={7} fill="#0a0a0c" stroke={plug.bottom ? PB.cord : isSel ? '#6a6b73' : '#3a3b41'} strokeWidth={plug.bottom ? 2 : 1.3} />
-                <Circle cx={cx} cy={ROW_BOT} r={2.6} fill={plug.bottom ? PB.cord : '#151519'} />
-                {/* cord stubs */}
-                {plug.top ? <Line x1={cx + 5} y1={ROW_TOP + 5} x2={cx + 13} y2={ROW_TOP + 14} stroke={PB.cord} strokeWidth={2.2} strokeLinecap="round" /> : null}
-                {plug.bottom ? <Line x1={cx + 5} y1={ROW_BOT + 5} x2={cx + 13} y2={ROW_BOT + 14} stroke={PB.cord} strokeWidth={2.2} strokeLinecap="round" /> : null}
+                {/* ¼-inch jacks face-on: the bushing's nut ring, the socket and
+                    the sleeve contact inside; a plugged jack shows the patch
+                    cord's plug handle end-on with its cord dropping away */}
+                {[{ y: ROW_TOP, on: !!plug.top }, { y: ROW_BOT, on: !!plug.bottom }].map(({ y, on }) => (
+                  <G key={y}>
+                    <Circle cx={cx} cy={y} r={7} fill="#2a2b31" stroke={on ? PB.cord : isSel ? '#6a6b73' : '#3a3b41'} strokeWidth={on ? 2 : 1.3} />
+                    <Circle cx={cx - 1.2} cy={y - 1.2} r={5.6} fill="none" stroke="#ffffff" strokeWidth={0.6} opacity={0.12} />
+                    <Circle cx={cx} cy={y} r={4.2} fill="#08080a" />
+                    <Circle cx={cx} cy={y} r={3.2} fill="none" stroke="#3d3e45" strokeWidth={0.8} />
+                    {on ? (
+                      <>
+                        <Line x1={cx + 2} y1={y + 3} x2={cx + 9} y2={y + 16} stroke={PB.cord} strokeWidth={2.4} strokeLinecap="round" />
+                        <Circle cx={cx} cy={y} r={5.2} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
+                        <Circle cx={cx - 1} cy={y - 1} r={2.4} fill="#ffffff" opacity={0.12} />
+                      </>
+                    ) : null}
+                  </G>
+                ))}
                 <SvgText x={cx} y={H - 6} fontSize={9} fill={isSel ? colors.cyanBright : colors.textMuted} textAnchor="middle" fontFamily={fonts.mono}>
                   {String(p.n).padStart(2, '0')}
                 </SvgText>

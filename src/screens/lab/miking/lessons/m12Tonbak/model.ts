@@ -65,14 +65,27 @@ export const PROFILE: readonly (readonly [number, number])[] = (() => {
 
 export function radiusAt(s: number): number {
   const p = PROFILE;
+  const n = p.length;
   if (s <= p[0][0]) return p[0][1];
-  for (let i = 1; i < p.length; i++) {
+  // A monotone cubic through the samples (Fritsch–Carlson): one smooth wall.
+  // (A smoothstep per span flattened the wall at every sample, so the turned
+  // body rippled — it read as melted, not lathe-turned.)
+  const d = (k: number) => (p[k + 1][1] - p[k][1]) / (p[k + 1][0] - p[k][0]);
+  const m = (k: number) => {
+    if (k === 0) return d(0);
+    if (k === n - 1) return d(n - 2);
+    const a = d(k - 1);
+    const b = d(k);
+    return a * b <= 0 ? 0 : (2 * a * b) / (a + b);
+  };
+  for (let i = 1; i < n; i++) {
     if (s <= p[i][0]) {
-      const t = (s - p[i - 1][0]) / (p[i][0] - p[i - 1][0]);
-      // Smoothstep between samples (no kinks in the drawn outline).
-      const k = t * t * (3 - 2 * t);
-      return p[i - 1][1] + (p[i][1] - p[i - 1][1]) * k;
+      const h = p[i][0] - p[i - 1][0];
+      const t = (s - p[i - 1][0]) / h;
+      const t2 = t * t;
+      const t3 = t2 * t;
+      return (2 * t3 - 3 * t2 + 1) * p[i - 1][1] + (t3 - 2 * t2 + t) * h * m(i - 1) + (-2 * t3 + 3 * t2) * p[i][1] + (t3 - t2) * h * m(i);
     }
   }
-  return p[p.length - 1][1];
+  return p[n - 1][1];
 }

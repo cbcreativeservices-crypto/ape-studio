@@ -543,115 +543,218 @@ function outlineOf(len: number, cross: number, fore = 0) {
 
 /* ── per-mic overlays ────────────────────────────────────────────────── */
 
-/** The stand's static parts, built once (mm; translated to the foot). */
-const STAND_ART = (() => {
-  let made: { baseSide: ReturnType<typeof Skia.Path.Make>; hubSide: ReturnType<typeof Skia.Path.Make>; baseTop: ReturnType<typeof Skia.Path.Make> } | null = null;
-  return () => {
-    if (!made) {
-      const baseSide = Skia.Path.Make();
-      baseSide.addRRect(Skia.RRectXY(Skia.XYWHRect(-58, -11, 116, 11), 5, 5));
-      const hubSide = Skia.Path.Make();
-      hubSide.addRRect(Skia.RRectXY(Skia.XYWHRect(-13, -26, 26, 17), 4, 4));
-      // Seen from above: a TRIPOD base (three legs and a hub) — never a plain
-      // disc, which next to the head read as the port (geometry fix 2026-10-04).
-      const baseTop = Skia.Path.Make();
-      for (let k = 0; k < 3; k++) {
-        const a = (k * 2 * Math.PI) / 3 + Math.PI / 6;
-        baseTop.moveTo(0, 0);
-        baseTop.lineTo(Math.cos(a) * 70, Math.sin(a) * 70);
-      }
-      made = { baseSide, hubSide, baseTop };
-    }
-    return made;
-  };
-})();
-
 /**
- * The mic's mount, drawn from the SAME capsules the collision uses
- * (`assembly`): boom and stand as satin tubes with a rim light, the clutch at
- * the boom joint, a weighted base where the stand meets the floor (side
- * view), and the cable taped along the boom. The base and the cable are
- * drawing only (ILLUSTRATIVE): the collision keeps the tubes it always had.
+ * The mic's mount — a real boom stand, drawn from the SAME capsules the
+ * collision uses (`assembly`), so the placement geometry and the keep-outs
+ * are unchanged (art pass 2026-10-10; it was a single stick on a flat bar).
+ * Real dimensions (mm), a common tripod boom stand:
+ *   lower tube Ø 25, upper (height) tube Ø 19, a height clutch Ø 34 × 36
+ *   with its wing knob ≈ 480 above the floor (lower on a short stand);
+ *   a TRIPOD base: three legs Ø 14 from a collar near the bottom of the
+ *   tube, braced from a sliding collar, spread ≈ Ø 400 on a short (kick /
+ *   amp) stand to ≈ Ø 620 on a full one, rubber feet;
+ *   the boom Ø 16 (Ø 22 on an overhead boom), its ratchet clutch Ø 46 with a
+ *   T-handle at the joint, and the boom running ≈ 200 mm past the joint to
+ *   a counterweight Ø 50 × 80 (the counterweight and the base are DRAWING
+ *   only: the collision keeps the tubes it always had);
+ *   at the mic: the boom's threaded end into the clip's swivel (Ø 24).
+ * The cable runs taped along the boom (its run is ILLUSTRATIVE).
  */
 function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; /* lab6 group 2: hardwareScale */ hk?: number }) {
   const scene = rig.scene;
   const body = rig.body[slot];
-  const art = STAND_ART();
-  const path = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    if (body.mount !== 'stand' && body.mount !== 'boom') return p;
+  const heavy = body.mount === 'boom';
+  const lowerW = (heavy ? 32 : 25) * hk;
+  const upperW = (heavy ? 25 : 19) * hk;
+  const boomW = (heavy ? 22 : 16) * hk;
+  const parts = useDerivedValue(() => {
+    const boom = Skia.Path.Make();
+    const upper = Skia.Path.Make();
+    const lower = Skia.Path.Make();
+    const legs = Skia.Path.Make();
+    const braces = Skia.Path.Make();
+    const feet = Skia.Path.Make();
+    const counter = Skia.Path.Make();
+    const counterRod = Skia.Path.Make();
+    const knobs = Skia.Path.Make();
+    const out = { boom, upper, lower, legs, braces, feet, counter, counterRod, knobs, jx: 0, jv: 0, jOn: 0, tx: 0, tv: 0, tOn: 0, cx: 0, cv: 0, cOn: 0, fx: 0, fv: 0, fOn: 0 };
+    if (body.mount !== 'stand' && body.mount !== 'boom') return out;
     const segs = assembly(scene, pose.value, body);
+    let first = true;
+    let lastA = { u: 0, v: 0 };
+    let lastB = { u: 0, v: 0 };
+    let hasBoom = false;
     for (let i = 0; i < segs.length; i++) {
-      if (segs[i].piece === 'body') continue;
-      p.moveTo(segs[i].a.x, vOf(view, segs[i].a));
-      p.lineTo(segs[i].b.x, vOf(view, segs[i].b));
-    }
-    return p;
-  });
-  // The boom joint and the stand's foot, from the same capsules.
-  const geo = useDerivedValue(() => {
-    if (body.mount !== 'stand' && body.mount !== 'boom') return { jx: 0, jv: 0, fx: 0, fv: 0, joint: 0, stand: 0 };
-    const segs = assembly(scene, pose.value, body);
-    let jx = 0;
-    let jv = 0;
-    let fx = 0;
-    let fv = 0;
-    let joint = 0;
-    let stand = 0;
-    for (let i = 0; i < segs.length; i++) {
-      if (segs[i].piece === 'boom') {
-        jx = segs[i].b.x;
-        jv = vOf(view, segs[i].b);
-        joint = 1;
-      } else if (segs[i].piece === 'stand') {
-        fx = segs[i].b.x;
-        fv = vOf(view, segs[i].b);
-        stand = 1;
+      const s = segs[i];
+      const au = s.a.x;
+      const av = vOf(view, s.a);
+      const bu = s.b.x;
+      const bv = vOf(view, s.b);
+      if (s.piece === 'boom') {
+        boom.moveTo(au, av);
+        boom.lineTo(bu, bv);
+        if (first) {
+          out.tx = au;
+          out.tv = av;
+          out.tOn = 1;
+          first = false;
+        }
+        lastA = { u: au, v: av };
+        lastB = { u: bu, v: bv };
+        hasBoom = true;
+      } else if (s.piece === 'stand') {
+        out.fx = bu;
+        out.fv = bv;
+        out.fOn = 1;
+        const L = Math.sqrt((bu - au) * (bu - au) + (bv - av) * (bv - av));
+        if (view === 'side' && L > 1) {
+          // The upright: the outer (lower) tube from the base up to the
+          // height clutch, the inner tube above it to the boom clutch.
+          const ux = (au - bu) / L;
+          const uy = (av - bv) / L;
+          const clutchH = Math.min(480 * hk, L * 0.55);
+          const cu = bu + ux * clutchH;
+          const cv = bv + uy * clutchH;
+          lower.moveTo(bu, bv);
+          lower.lineTo(cu, cv);
+          upper.moveTo(cu, cv);
+          upper.lineTo(au, av);
+          out.cx = cu;
+          out.cv = cv;
+          out.cOn = 1;
+          // The tripod: legs from a collar on the tube to the floor (one
+          // to each side and one toward the viewer, foreshortened), braces
+          // from a sliding collar lower down to each leg's middle.
+          const R = Math.max(200, Math.min(310, L * 0.32)) * hk;
+          const hubH = Math.min(R * 0.62, clutchH * 0.7);
+          const brH = hubH * 0.32;
+          const hub = { u: bu, v: bv - hubH };
+          const toes = [bu - R * 0.87, bu + R * 0.87, bu - R * 0.22];
+          for (const tx of toes) {
+            legs.moveTo(hub.u, hub.v);
+            legs.lineTo(tx, bv - 6 * hk);
+            const mu = (hub.u + tx) / 2;
+            const mv = (hub.v + bv) / 2;
+            braces.moveTo(bu, bv - brH);
+            braces.lineTo(mu, mv);
+            feet.addRRect(Skia.RRectXY(Skia.XYWHRect(tx - 15 * hk, bv - 10 * hk, 30 * hk, 10 * hk), 4 * hk, 4 * hk));
+          }
+          knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(cu - 17 * hk, cv - 18 * hk, 34 * hk, 36 * hk), 5 * hk, 5 * hk));
+          knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(cu + 15 * hk, cv - 6 * hk, 26 * hk, 12 * hk), 5 * hk, 5 * hk));
+          knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(bu - 15 * hk, bv - hubH - 12 * hk, 30 * hk, 24 * hk), 4 * hk, 4 * hk));
+          knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(bu - 13 * hk, bv - brH - 9 * hk, 26 * hk, 18 * hk), 4 * hk, 4 * hk));
+        } else {
+          // From above the upright is a point: the tripod's three legs.
+          const R = 300 * hk;
+          for (let k = 0; k < 3; k++) {
+            const a = (k * 2 * Math.PI) / 3 + Math.PI / 6;
+            const tx = bu + Math.cos(a) * R;
+            const tz = bv + Math.sin(a) * R;
+            legs.moveTo(bu, bv);
+            legs.lineTo(tx, tz);
+            feet.addCircle(tx, tz, 13 * hk);
+          }
+          knobs.addCircle(bu, bv, 20 * hk);
+        }
       }
     }
-    return { jx, jv, fx, fv, joint, stand };
+    if (hasBoom) {
+      out.jx = lastB.u;
+      out.jv = lastB.v;
+      out.jOn = 1;
+      // The boom carries on past its clutch to the counterweight.
+      const du = lastB.u - lastA.u;
+      const dv = lastB.v - lastA.v;
+      const dl = Math.sqrt(du * du + dv * dv);
+      if (dl > 1) {
+        const ex = du / dl;
+        const ey = dv / dl;
+        const tail = 200 * hk;
+        counterRod.moveTo(lastB.u, lastB.v);
+        counterRod.lineTo(lastB.u + ex * (tail - 40 * hk), lastB.v + ey * (tail - 40 * hk));
+        const c0 = { u: lastB.u + ex * (tail - 80 * hk), v: lastB.v + ey * (tail - 80 * hk) };
+        const nx = -ey * 25 * hk;
+        const ny = ex * 25 * hk;
+        counter.moveTo(c0.u + nx, c0.v + ny);
+        counter.lineTo(c0.u + ex * 80 * hk + nx, c0.v + ey * 80 * hk + ny);
+        counter.lineTo(c0.u + ex * 80 * hk - nx, c0.v + ey * 80 * hk - ny);
+        counter.lineTo(c0.u - nx, c0.v - ny);
+        counter.close();
+      }
+    }
+    return out;
   });
-  const jx = useDerivedValue(() => geo.value.jx);
-  const jv = useDerivedValue(() => geo.value.jv);
-  const jOn = useDerivedValue(() => geo.value.joint);
-  const footXf = useDerivedValue(() => [{ translateX: geo.value.fx }, { translateY: geo.value.fv }, { scale: hk }]);
-  const footOn = useDerivedValue(() => geo.value.stand);
+  const boom = useDerivedValue(() => parts.value.boom);
+  const upper = useDerivedValue(() => parts.value.upper);
+  const lower = useDerivedValue(() => parts.value.lower);
+  const legs = useDerivedValue(() => parts.value.legs);
+  const braces = useDerivedValue(() => parts.value.braces);
+  const feet = useDerivedValue(() => parts.value.feet);
+  const counter = useDerivedValue(() => parts.value.counter);
+  const counterRod = useDerivedValue(() => parts.value.counterRod);
+  const knobs = useDerivedValue(() => parts.value.knobs);
+  const jx = useDerivedValue(() => parts.value.jx);
+  const jv = useDerivedValue(() => parts.value.jv);
+  const jOn = useDerivedValue(() => parts.value.jOn);
+  const tx = useDerivedValue(() => parts.value.tx);
+  const tv = useDerivedValue(() => parts.value.tv);
+  const tOn = useDerivedValue(() => parts.value.tOn);
+  const handle = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const g = parts.value;
+    if (!g.jOn) return p;
+    p.moveTo(g.jx, g.jv);
+    p.lineTo(g.jx + 30 * hk, g.jv - 38 * hk);
+    return p;
+  });
   if (body.mount !== 'stand' && body.mount !== 'boom') return null;
+  const tube = (path: SharedValue<ReturnType<typeof Skia.Path.Make>>, w: number) => (
+    <>
+      <Path path={path} style="stroke" strokeWidth={w + 4 * hk} strokeCap="butt" color="#0b0c0f" />
+      <Path path={path} style="stroke" strokeWidth={w} strokeCap="butt" color="#4d515b" />
+      <Group transform={[{ translateX: -w * 0.16 }, { translateY: -w * 0.16 }]}>
+        <Path path={path} style="stroke" strokeWidth={Math.max(2, w * 0.26)} strokeCap="butt" color="#d4d8e0" opacity={0.5} />
+      </Group>
+    </>
+  );
   return (
     <>
-      {/* The weighted base under the stand. */}
-      <Group transform={footXf} opacity={footOn}>
-        {view === 'side' ? (
-          <>
-            <Path path={art.baseSide}>
-              <LinearGradient start={vec(0, -11)} end={vec(0, 0)} colors={['#5b5f69', '#1d1e23']} />
-            </Path>
-            <Path path={art.hubSide} color="#2a2c32" />
-          </>
-        ) : (
-          <>
-            <Path path={art.baseTop} style="stroke" strokeWidth={13} strokeCap="round" color="#0b0c0f" opacity={0.9} />
-            <Path path={art.baseTop} style="stroke" strokeWidth={8} strokeCap="round" color="#4d515b" />
-            <Circle cx={0} cy={0} r={13} color="#2a2c32" />
-          </>
-        )}
-      </Group>
-      {/* Tubes: a dark edge, the satin body, a rim light toward the upper left. */}
-      <Path path={path} style="stroke" strokeWidth={17 * hk} strokeCap="round" color="#0b0c0f" />
-      <Path path={path} style="stroke" strokeWidth={12.5 * hk} strokeCap="round" color="#4d515b" />
-      <Group transform={[{ translateX: -1.6 * hk }, { translateY: -2.2 * hk }]}>
-        <Path path={path} style="stroke" strokeWidth={3.5 * hk} strokeCap="round" color="#d4d8e0" opacity={0.5} />
-      </Group>
+      {/* The tripod base: legs, braces, rubber feet. */}
+      <Path path={legs} style="stroke" strokeWidth={18 * hk} strokeCap="round" color="#0b0c0f" />
+      <Path path={legs} style="stroke" strokeWidth={13 * hk} strokeCap="round" color="#3d4049" />
+      <Path path={braces} style="stroke" strokeWidth={8 * hk} strokeCap="round" color="#0b0c0f" />
+      <Path path={braces} style="stroke" strokeWidth={5 * hk} strokeCap="round" color="#5a5e68" />
+      <Path path={feet} color="#121316" />
+      {/* The upright: outer tube, inner (height) tube; the boom; the counterweight. */}
+      {tube(lower, lowerW)}
+      {tube(upper, upperW)}
+      {tube(counterRod, boomW * 0.8)}
+      <Path path={counter}>
+        <LinearGradient start={vec(0, -40)} end={vec(0, 40)} colors={['#5a5e68', '#22242a', '#0b0b0d']} />
+      </Path>
+      <Path path={counter} style="stroke" strokeWidth={2 * hk} color="#0b0c0f" />
+      {tube(boom, boomW)}
       {/* The cable, taped along the boom (its run is ILLUSTRATIVE). */}
-      <Group transform={[{ translateX: 0 }, { translateY: 9 }]}>
-        <Path path={path} style="stroke" strokeWidth={5} strokeCap="round" color="#0e0f12" />
-        <Path path={path} style="stroke" strokeWidth={1.6} strokeCap="round" color="#3d4049" />
+      <Group transform={[{ translateX: 0 }, { translateY: boomW * 0.6 }]}>
+        <Path path={boom} style="stroke" strokeWidth={5 * hk} strokeCap="round" color="#0e0f12" />
+        <Path path={boom} style="stroke" strokeWidth={1.6 * hk} strokeCap="round" color="#3d4049" />
       </Group>
-      {/* The clutch at the boom joint. */}
+      {/* Clutch collars and the height clutch's wing knob (side view), the hub (from above). */}
+      <Path path={knobs} color="#16171b" />
+      <Path path={knobs} style="stroke" strokeWidth={2 * hk} color="#6c717c" />
+      {/* The boom clutch: a ratchet disc and its T-handle. */}
       <Group opacity={jOn}>
-        <Circle cx={jx} cy={jv} r={13 * hk} color="#16171b" />
-        <Circle cx={jx} cy={jv} r={13 * hk} style="stroke" strokeWidth={2.4 * hk} color="#8a8f99" />
-        <Circle cx={jx} cy={jv} r={4.5 * hk} color="#d4d8e0" />
+        <Path path={handle} style="stroke" strokeWidth={9 * hk} strokeCap="round" color="#16171b" />
+        <Circle cx={jx} cy={jv} r={23 * hk} color="#16171b" />
+        <Circle cx={jx} cy={jv} r={23 * hk} style="stroke" strokeWidth={2.4 * hk} color="#8a8f99" />
+        <Circle cx={jx} cy={jv} r={14 * hk} style="stroke" strokeWidth={1.6 * hk} color="#3d4049" />
+        <Circle cx={jx} cy={jv} r={5 * hk} color="#d4d8e0" />
+      </Group>
+      {/* At the mic: the boom's threaded end into the clip's swivel. */}
+      <Group opacity={tOn}>
+        <Circle cx={tx} cy={tv} r={12 * hk} color="#121316" />
+        <Circle cx={tx} cy={tv} r={12 * hk} style="stroke" strokeWidth={2 * hk} color="#6c717c" />
+        <Circle cx={tx} cy={tv} r={4 * hk} color="#9aa0ab" />
       </Group>
     </>
   );
@@ -782,6 +885,118 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
     return p;
   });
   const jaw = useDerivedValue(() => [{ translateX: geo.value.bx }, { translateY: geo.value.bv }]);
+  // Art pass 2026-10-10: a DESK SPRING ARM drawn as the real thing, from the
+  // SAME grip, elbow and tail (geometry and keep-outs unchanged). Real
+  // dimensions (mm), a common broadcast arm: each section two parallel tubes
+  // Ø 10 on 24 centres, a coil spring Ø 9 riding 34 above it between its
+  // anchors; the elbow a hinge block Ø 38 with its tension knob; a swivel
+  // Ø 40 on the riser post at the grip; at the mic end the 5/8 in thread
+  // and a SHOCK MOUNT — a rigid frame round the mic, the mic's cradle rings
+  // hung in elastic cord (rings ≈ 30 mm wider than the body, at ¼ and ⅗ of
+  // its length); the cable clipped along the lower tube.
+  const desk = useDerivedValue(() => {
+    const tubes = Skia.Path.Make();
+    const springs = Skia.Path.Make();
+    const cable = Skia.Path.Make();
+    const frame = Skia.Path.Make();
+    const elastic = Skia.Path.Make();
+    const out = { tubes, springs, cable, frame, elastic, ex: 0, ev: 0, mx: 0, mv: 0 };
+    if (style !== 'deskArm' || !elbow || !geo.value.on) return out;
+    const segs = assembly(scene, pose.value, body);
+    for (let i = 0; i < segs.length; i++) {
+      if (segs[i].piece !== 'arm') continue;
+      const e = elbowOf(segs[i].b, segs[i].a, elbow.a, elbow.b);
+      const G = { u: geo.value.bx, v: geo.value.bv };
+      const E = { u: e.x, v: vOf(view, e) };
+      const T = { u: geo.value.ax, v: geo.value.av };
+      out.ex = E.u;
+      out.ev = E.v;
+      const section = (P: { u: number; v: number }, Q: { u: number; v: number }) => {
+        const du = Q.u - P.u;
+        const dv = Q.v - P.v;
+        const L = Math.sqrt(du * du + dv * dv);
+        if (L < 1) return;
+        const tu = du / L;
+        const tv = dv / L;
+        // The normal on the raised (upper, −v) side.
+        let nu = tv;
+        let nv = -tu;
+        if (nv > 0) {
+          nu = -nu;
+          nv = -nv;
+        }
+        for (const k of [-12, 12]) {
+          tubes.moveTo(P.u + nu * k, P.v + nv * k);
+          tubes.lineTo(Q.u + nu * k, Q.v + nv * k);
+        }
+        // The spring: a coil seen side-on, from 12 % to 70 % of the section, with its hooks.
+        const s0 = 0.12 * L;
+        const s1 = 0.7 * L;
+        const off = 34;
+        springs.moveTo(P.u + tu * (s0 - 14) + nu * 12, P.v + tv * (s0 - 14) + nv * 12);
+        springs.lineTo(P.u + tu * s0 + nu * off, P.v + tv * s0 + nv * off);
+        const n = Math.max(6, Math.floor((s1 - s0) / 7));
+        for (let j = 1; j <= n; j++) {
+          const t = s0 + ((s1 - s0) * j) / n;
+          const w = j % 2 ? 5 : -5;
+          springs.lineTo(P.u + tu * t + nu * (off + w), P.v + tv * t + nv * (off + w));
+        }
+        springs.lineTo(P.u + tu * (s1 + 18) + nu * 12, P.v + tv * (s1 + 18) + nv * 12);
+        cable.moveTo(P.u - nu * 20, P.v - nv * 20);
+        cable.lineTo(Q.u - nu * 20, Q.v - nv * 20);
+      };
+      section(G, E);
+      section(E, T);
+      // The shock mount round the mic body: two cradle rings seen edge-on,
+      // the frame's side bar, elastic cord from frame to ring.
+      const aim = aimVec(pose.value.az, pose.value.el);
+      const au = aim.x;
+      const av = view === 'side' ? aim.y : aim.z;
+      const al = Math.sqrt(au * au + av * av) || 1;
+      const xu = au / al;
+      const xv = av / al;
+      const pu = -xv;
+      const pv = xu;
+      const R = body.radius + 15;
+      const Lb = body.length;
+      out.mx = T.u + xu * Lb * 0.4;
+      out.mv = T.v + xv * Lb * 0.4;
+      for (const f of [0.25, 0.6]) {
+        const cu = T.u + xu * Lb * f * al;
+        const cv = T.v + xv * Lb * f * al;
+        for (const sg of [-1, 1]) {
+          elastic.moveTo(cu + pu * sg * (R + 12) - xu * 14, cv + pv * sg * (R + 12) - xv * 14);
+          elastic.lineTo(cu + pu * sg * (R - 2), cv + pv * sg * (R - 2));
+          elastic.lineTo(cu + pu * sg * (R + 12) + xu * 14, cv + pv * sg * (R + 12) + xv * 14);
+        }
+      }
+      // Frame bar on the outside of the rings, from the thread mount at the tail.
+      const fb = Skia.Path.Make();
+      fb.moveTo(T.u + pu * (R + 12) - xu * 10, T.v + pv * (R + 12) - xv * 10);
+      fb.lineTo(T.u + pu * (R + 12) + xu * Lb * 0.66 * al, T.v + pv * (R + 12) + xv * Lb * 0.66 * al);
+      fb.moveTo(T.u - pu * (R + 12) - xu * 10, T.v - pv * (R + 12) - xv * 10);
+      fb.lineTo(T.u - pu * (R + 12) + xu * Lb * 0.66 * al, T.v - pv * (R + 12) + xv * Lb * 0.66 * al);
+      elastic.addPath(fb);
+      // The cradle rings, edge-on, square to the mic's axis.
+      for (const f of [0.25, 0.6]) {
+        const cu = T.u + xu * Lb * f * al;
+        const cv = T.v + xv * Lb * f * al;
+        const ring = Skia.Path.Make();
+        ring.addRRect(Skia.RRectXY(Skia.XYWHRect(-6, -R, 12, 2 * R), 5, 5));
+        ring.transform(Skia.Matrix().translate(cu, cv).rotate(Math.atan2(xv, xu)));
+        frame.addPath(ring);
+      }
+    }
+    return out;
+  });
+  const dTubes = useDerivedValue(() => desk.value.tubes);
+  const dSprings = useDerivedValue(() => desk.value.springs);
+  const dCable = useDerivedValue(() => desk.value.cable);
+  const dFrame = useDerivedValue(() => desk.value.frame);
+  const dElastic = useDerivedValue(() => desk.value.elastic);
+  const dEx = useDerivedValue(() => desk.value.ex);
+  const dEv = useDerivedValue(() => desk.value.ev);
+  const tailXf = useDerivedValue(() => [{ translateX: geo.value.ax }, { translateY: geo.value.av }]);
   const on = useDerivedValue(() => geo.value.on);
   const red = useDerivedValue(() => geo.value.far * 0.9);
   if (body.mount !== 'clip') return null;
@@ -804,8 +1019,50 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
       </Group>
     );
   }
-  if (style === 'deskArm' || style === 'gooseneck') {
-    const goose = style === 'gooseneck';
+  if (style === 'deskArm') {
+    return (
+      <Group opacity={on}>
+        {/* The cable, clipped along under the lower tube of each section. */}
+        <Path path={dCable} style="stroke" strokeWidth={6} strokeCap="round" color="#0e0f12" />
+        {/* Two parallel tubes per section: a dark edge, satin black, a rim light. */}
+        <Path path={dTubes} style="stroke" strokeWidth={13} strokeCap="round" color="#060608" />
+        <Path path={dTubes} style="stroke" strokeWidth={9.5} strokeCap="round" color="#2e3138" />
+        <Group transform={[{ translateX: -1 }, { translateY: -1.5 }]}>
+          <Path path={dTubes} style="stroke" strokeWidth={2.4} strokeCap="round" color="#c9ced8" opacity={0.45} />
+        </Group>
+        {/* The springs (steel coils) above each section. */}
+        <Path path={dSprings} style="stroke" strokeWidth={3.6} strokeJoin="round" color="#0b0c0f" />
+        <Path path={dSprings} style="stroke" strokeWidth={2.2} strokeJoin="round" color="#b4b9c3" />
+        <Path path={path} style="stroke" strokeWidth={30} strokeCap="round" strokeJoin="round" color="#ff6b5e" opacity={red} />
+        {/* The swivel on the riser post at the grip. */}
+        <Group transform={jaw}>
+          <Path path={Skia.Path.Make().addRRect(Skia.RRectXY(Skia.XYWHRect(-20, -14, 40, 34), 6, 6))} color="#16171b" />
+          <Path path={Skia.Path.Make().addRRect(Skia.RRectXY(Skia.XYWHRect(-20, -14, 40, 34), 6, 6))} style="stroke" strokeWidth={2} color="#6c717c" />
+          <Circle cx={0} cy={-2} r={7} color="#3d4049" />
+          <Circle cx={0} cy={-2} r={3} color="#d4d8e0" />
+        </Group>
+        {/* The elbow hinge and its tension knob. */}
+        <Circle cx={dEx} cy={dEv} r={19} color="#16171b" />
+        <Circle cx={dEx} cy={dEv} r={19} style="stroke" strokeWidth={2.4} color="#8a8f99" />
+        <Circle cx={dEx} cy={dEv} r={9} color="#3d4049" />
+        <Circle cx={dEx} cy={dEv} r={3.5} color="#d4d8e0" />
+        {/* The shock mount: elastic cord and the frame bars, then the cradle rings. */}
+        <Path path={dElastic} style="stroke" strokeWidth={6} strokeJoin="round" color="#0b0c0f" />
+        <Path path={dElastic} style="stroke" strokeWidth={3.4} strokeJoin="round" color="#3a3d45" />
+        <Path path={dFrame} color="#1b1c20" />
+        <Path path={dFrame} style="stroke" strokeWidth={1.6} color="#6c717c" />
+        {/* The 5/8 in thread mount at the arm's end. */}
+        <Group transform={tailXf}>
+          <Circle cx={0} cy={0} r={13} color="#121316" />
+          <Circle cx={0} cy={0} r={13} style="stroke" strokeWidth={2} color="#8a8f99" />
+          <Circle cx={0} cy={0} r={5} color="#c8ccd4" />
+        </Group>
+      </Group>
+    );
+  }
+  if (style === 'gooseneck') {
+    // (The desk arm has its own drawing above; this branch keeps the gooseneck.)
+    const goose: boolean = true;
     const w = goose ? 12 : 20;
     return (
       <Group opacity={on}>

@@ -150,8 +150,9 @@ export function pianoHitTest(view: ViewId, variant: VariantId, u: number, v: num
     if (u >= w.actionFront && u < -14 && v >= w.hammerY - 170 && v <= KEY_TOP_Y - 10) return 'up.action';
     if (s.panel && u >= w.panel.x - 30 - tol && u <= w.panel.x + tol && v >= w.panel.y0 && v <= w.panel.y1) return 'up.panel';
     if (u >= w.xKey && u <= w.panel.x && v >= KEY_TOP_Y - 10 - tol && v <= KEY_TOP_Y + 40) return 'up.keys';
+    // The pedals as drawn: out of the bottom board's toe rail (art pass 2026-10-10).
+    if (u >= w.lower.x - 190 - tol && u <= w.lower.x && v >= FLOOR_Y - 80 - tol) return 'up.pedals';
     if (u >= w.lower.x - 30 && u <= -14 && v >= w.keybedY + 30) return 'up.lower';
-    if (u >= -660 && u <= -460 && v >= FLOOR_Y - 80) return 'up.pedals';
     if (u < w.xKey - 200 && v > -650) return 'bench.upright';
     return null;
   }
@@ -159,7 +160,7 @@ export function pianoHitTest(view: ViewId, variant: VariantId, u: number, v: num
   if (u >= w.xBack - 4 && u <= w.lid.tip.x + tol && Math.abs(v) <= w.hw) return 'up.top';
   if (u >= w.soundboard.x0 && u <= w.xBack && Math.abs(v) <= w.hw) return 'up.back';
   if (Math.abs(u) <= 12 + tol && Math.abs(v) <= w.hw) return 'up.strings';
-  if (u >= -80 && u < -12 && Math.abs(v) <= w.hw) return 'up.action';
+  if (u >= -100 && u < -12 && Math.abs(v) <= w.hw) return 'up.action';
   if (u >= w.xKey && u <= w.xKey + 150 && Math.abs(v) <= -KEYS_Z0 + tol) return 'up.keys';
   if (u < w.xKey - 100) return 'bench.upright';
   return null;

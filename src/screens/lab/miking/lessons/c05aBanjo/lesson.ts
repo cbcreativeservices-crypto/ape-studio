@@ -440,7 +440,7 @@ export const C05A_LESSON: Lesson = {
   unknowns: [
     { text: 'The player’s standing posture and reach, and the height on the strap (the strings 1.08 m above the floor): drawing defaults. No HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The head’s, the strings’ and the bridge’s keep-off margins: illustrative.', dims: ['reso', 'open'] },
-    { text: 'The pot’s depth (70 mm), the resonator (Ø 330, 40 mm deep), the bridge’s place on the head (0.33 × Ø from the centre), the hooks (24), the tailpiece, the peghead and the fingerboard — drawing defaults; the head Ø 285 and the string lengths are a museum banjo’s.', dims: [] },
+    { text: 'The pot’s depth (70 mm), the resonator (Ø 330, 40 mm deep), the bridge’s place on the head (a third of Ø in from the tail-side rim), the hooks (24), the tailpiece, the peghead and the fingerboard — drawing defaults; the head Ø 285 and the string lengths are a museum banjo’s.', dims: [] },
     { text: 'The 30–40 cm neck-junction start reads DPA’s two-omni “distance” as a one-mic distance (it may mean the spacing); the 3 in rows are drawn as 6–9.5 cm; which head edge is not stated.', dims: [] },
     { text: 'The clip’s capsule height and reach, the mic sizes, the wedge, the shared mic and the band’s positions — drawing defaults.', dims: [] },
   ],

@@ -63,7 +63,6 @@ const WAVE_LEVEL_COLORS = WAVE_LEVEL_STOPS.map((s) => s.color);
 const WAVE_LEVEL_POS = WAVE_LEVEL_STOPS.map((s) => s.offset);
 
 const GLASS = '#4a4a54';
-const METAL = '#8a8c94';
 const WAVE = '#ffc64d';
 const GLOW = '#ffb246';
 const ELECTRON = '#6fa8ff';
@@ -692,11 +691,23 @@ export function TubeCutawayView({
         </>
       ) : null}
 
-      {/* ── Bakelite base + metal pins ── */}
-      <BakeliteBase x={cx - 44} y={baseY} w={88} h={18} />
-      {[-3, -2, -1, 0, 1, 2, 3].map((i) => (
-        <Pin key={i} x={cx + i * 12} y={baseY + 18} h={12} />
+      {/* ── Octal base, seen from the side (art pass 2026-10-10) ──
+          The octal power pentode class (EL34 / 6L6 size): glass Ø≈34 mm,
+          base Ø≈31 mm (0.9 of the glass), 8 pins Ø2.36 mm on a 17.45 mm
+          circle round a keyed centre spigot. From the side the 8 pins
+          overlap in pairs, so FOUR show — at ±0.38 and ±0.92 of the pin
+          circle's radius — with the spigot (and its key ridge) between
+          them. Pin circle scaled from the glass: 116 u ↔ 34 mm. The base's
+          HEIGHT stays compressed with the schematic envelope. */}
+      <BakeliteBase x={cx - 52} y={baseY} w={104} h={18} />
+      <RoundedRect x={cx - 50} y={baseY - 2} width={100} height={3} r={1.5} color="#8a8f99" opacity={0.55} />
+      {[-0.924, -0.383, 0.383, 0.924].map((k) => (
+        <Pin key={k} x={cx + k * 29.8} y={baseY + 18} h={12} />
       ))}
+      <RoundedRect x={cx - 4.6} y={baseY + 18} width={9.2} height={13.5} r={2.2}>
+        <LinearGradient start={vec(cx - 4.6, baseY)} end={vec(cx + 4.6, baseY)} colors={[BAKELITE_LIGHT, BAKELITE_MID, BAKELITE_DARK]} />
+      </RoundedRect>
+      <RoundedRect x={cx - 1} y={baseY + 18} width={2} height={13} r={1} color="#1a120d" />
       </Group>
     </Canvas>
   );
@@ -1804,83 +1815,3 @@ export function TubeVsTransistorView({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 10 · Classic tubes — bottle glyphs for the gallery
-
-export function TubeGlyph({
-  width,
-  height = 92,
-  kind,
-}: {
-  width: number;
-  height?: number;
-  kind: 'preamp' | 'power';
-}) {
-  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
-  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
-  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
-  // electrode, electron, stroke and glow is exactly twice its glass size. The
-  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
-  // the glass, so the picture there is untouched.
-  const ts = useStageTextScale();
-  const w = width / ts;
-  const h = height / ts;
-  const cx = w / 2;
-  const bw = kind === 'power' ? 34 : 20; // bottle half-width
-  const topY = kind === 'power' ? 8 : 16;
-  const baseY = h - 18;
-
-  const art = useMemo(() => {
-    const domeH = kind === 'power' ? 18 : 15;
-    const bottle = makeBottlePath(cx, topY, baseY, bw, domeH);
-    const streak = makeStreakPath(cx, topY, baseY, bw, domeH);
-    const grid = Skia.Path.Make();
-    for (let i = 0; i < 3; i++) grid.addCircle(cx, topY + 30 + i * 12, 1.6);
-    return { bottle, streak, grid };
-  }, [cx, topY, baseY, bw, kind]);
-
-  const plateX = cx - bw * 0.5;
-  const plateY = topY + 20;
-  const plateW = bw;
-  const plateH = baseY - topY - 30;
-  const edge = kind === 'power' ? METAL : GLASS;
-
-  return (
-    <Canvas style={{ width, height, backgroundColor: BG }}>
-      <Group transform={[{ scale: ts }]}>
-      {/* Warm filament glint deep in the bottle. */}
-      <Circle cx={cx} cy={baseY - 14} r={kind === 'power' ? 11 : 8} color={GLOW} opacity={0.4}>
-        <BlurMask blur={9} style="normal" />
-      </Circle>
-      <Circle cx={cx} cy={baseY - 14} r={2.4} color={FILAMENT_CORE} opacity={0.85}>
-        <BlurMask blur={2} style="normal" />
-      </Circle>
-      {/* Internal plate silhouette. */}
-      <RoundedRect x={plateX} y={plateY} width={plateW} height={plateH} r={3} opacity={0.9}>
-        <LinearGradient start={vec(plateX, plateY)} end={vec(plateX + plateW, plateY)} colors={['#565a64', '#3a3d45', '#2b2d34']} />
-      </RoundedRect>
-      <Path path={art.grid} color={METAL} />
-      {/* Glass: gradient body + edge + specular streak. */}
-      <Path path={art.bottle}>
-        <LinearGradient start={vec(cx - bw, topY)} end={vec(cx + bw, topY)} colors={['#8f97a826', '#58607014', '#4750601c']} />
-      </Path>
-      <Path path={art.bottle} color={edge} style="stroke" strokeWidth={2.2} />
-      <Path path={art.streak} style="stroke" strokeWidth={kind === 'power' ? 3.4 : 2.6} strokeCap="round" opacity={0.8}>
-        <LinearGradient start={vec(0, topY)} end={vec(0, baseY)} colors={['#ffffff54', '#ffffff1e', '#ffffff06']} />
-        <BlurMask blur={1.4} style="normal" />
-      </Path>
-      {/* Evacuation nub. */}
-      <Circle cx={cx} cy={topY - 1.5} r={2.2}>
-        <LinearGradient start={vec(cx - 2.2, topY - 3.7)} end={vec(cx + 2.2, topY)} colors={['#9aa2b2', '#565d6b']} />
-      </Circle>
-      {/* Bakelite base + pin stubs. */}
-      <BakeliteBase x={cx - bw + 4} y={baseY} w={2 * bw - 8} h={8} r={2} />
-      {[-1.5, -0.5, 0.5, 1.5].map((i) => (
-        <RoundedRect key={i} x={cx + i * (bw * 0.42) - 1.2} y={baseY + 8} width={2.4} height={5} r={1.2}>
-          <LinearGradient start={vec(cx + i * (bw * 0.42) - 1.2, baseY + 8)} end={vec(cx + i * (bw * 0.42) + 1.2, baseY + 8)} colors={['#c9ccd4', '#5b5e66']} />
-        </RoundedRect>
-      ))}
-      </Group>
-    </Canvas>
-  );
-}

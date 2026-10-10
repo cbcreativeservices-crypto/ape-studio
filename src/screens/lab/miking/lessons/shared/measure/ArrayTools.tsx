@@ -530,7 +530,7 @@ function CameraView({ w, h, label, k }: { w: number; h: number; label: string; k
             <BlurMask blur={20} style="normal" />
           </Circle>
           <AcousticCamera cx={-250} cy={-80} r={260} />
-          <Line p1={vec(60, -80)} p2={vec(880, -80)} color={BLUE} strokeWidth={2 / xf.s} opacity={0.5}>
+          <Line p1={vec(-170, -80)} p2={vec(880, -80)} color={BLUE} strokeWidth={2 / xf.s} opacity={0.5}>
             <DashPathEffect intervals={[8 / xf.s, 6 / xf.s]} />
           </Line>
         </Group>
@@ -552,7 +552,7 @@ function UltraView({ w, h, rate, topK, label, k }: { w: number; h: number; rate:
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={label}>
-        <Group transform={[{ translateX: w * 0.12 }, { translateY: h * 0.24 }, { scale: Math.min(w / 520, h / 300) }]}>
+        <Group transform={[{ translateX: w * 0.12 }, { translateY: h * 0.18 }, { scale: Math.min(w / 520, h / 300) }]}>
           <UltrasonicDetector x={0} y={0} len={300} />
         </Group>
         <Rect x={L} y={top + 30 * k} width={R - L} height={18} color="#24262b" />

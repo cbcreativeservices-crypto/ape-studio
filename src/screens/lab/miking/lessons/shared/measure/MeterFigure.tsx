@@ -32,21 +32,58 @@ export function MeterOnTripod({ w, h, label }: { w: number; h: number; label: st
       grass.moveTo(x, 0);
       grass.lineTo(x + 10, -30 - ((x * 7) % 25));
     }
-    // The tripod: a head under the meter, a centre column, three legs (two seen).
+    // The tripod (art pass 2026-10-10 — it was two flat bars splayed 45° from
+    // a bare post): a light aluminium tripod of the usual class, its apex
+    // (spider) 1000 mm up, three legs of three telescoping sections (Ø 26,
+    // 22, 18 mm) with a lock at each joint and a rubber foot, splayed so the
+    // feet stand on a 410 mm radius (legs about 1080 mm, 22° from vertical);
+    // a centre column (Ø 22) up to a small pan head under the meter. One leg
+    // points at the viewer (seen end-on, straight down the middle), the other
+    // two splay left and right (0.87 × 410 mm out).
+    const head = -H + len;
+    const APEX = -1000;
     const legs = Skia.Path.Make();
-    const head = -H + len + 30;
-    legs.moveTo(-14, head);
-    legs.lineTo(14, head);
-    legs.lineTo(14, -620);
-    legs.lineTo(-14, -620);
-    legs.close();
-    for (const s of [-1, 1]) {
-      legs.moveTo(s * 10, -640);
-      legs.lineTo(s * 560, 0);
-      legs.lineTo(s * 530, 0);
-      legs.lineTo(s * -6, -600);
+    const locks = Skia.Path.Make();
+    const feet = Skia.Path.Make();
+    const tube = (x0: number, y0: number, x1: number, y1: number, r0: number, r1: number) => {
+      const L = Math.hypot(x1 - x0, y1 - y0) || 1;
+      const nx = -(y1 - y0) / L;
+      const ny = (x1 - x0) / L;
+      legs.moveTo(x0 + nx * r0, y0 + ny * r0);
+      legs.lineTo(x1 + nx * r1, y1 + ny * r1);
+      legs.lineTo(x1 - nx * r1, y1 - ny * r1);
+      legs.lineTo(x0 - nx * r0, y0 - ny * r0);
       legs.close();
+    };
+    for (const [ax, fx] of [
+      [-40, -357],
+      [40, 357],
+      [0, 0],
+    ] as const) {
+      // Three sections from the spider to the foot, each a little thinner.
+      const at = (t: number) => [ax + (fx - ax) * t, APEX + (0 - APEX) * t] as const;
+      const cuts = [0, 0.4, 0.72, 0.965];
+      const rs = [13, 11, 9];
+      for (let i = 0; i < 3; i++) {
+        const [x0, y0] = at(cuts[i]);
+        const [x1, y1] = at(cuts[i + 1]);
+        tube(x0, y0, x1, y1, rs[i], rs[i]);
+        if (i < 2) {
+          const [lx, ly] = at(cuts[i + 1]);
+          locks.addRRect(Skia.RRectXY(Skia.XYWHRect(lx - rs[i] - 5, ly - 22, 2 * rs[i] + 10, 44), 5, 5));
+        }
+      }
+      const [qx, qy] = at(0.965);
+      feet.addRRect(Skia.RRectXY(Skia.XYWHRect(qx - 15, qy - 4, 30, -qy + 4), 8, 8));
     }
+    // The spider (the legs' hinge casting), the centre column and its lock
+    // (the column's lower end hides behind the leg toward the viewer),
+    // the pan head with its quick-release plate under the meter.
+    legs.addRRect(Skia.RRectXY(Skia.XYWHRect(-62, APEX - 30, 124, 56), 12, 12));
+    legs.addRect(Skia.XYWHRect(-11, head + 70, 22, APEX - 30 - head - 70));
+    locks.addRRect(Skia.RRectXY(Skia.XYWHRect(-26, APEX - 70, 52, 40), 6, 6));
+    locks.addRRect(Skia.RRectXY(Skia.XYWHRect(-34, head + 20, 68, 52), 10, 10));
+    locks.addRRect(Skia.RRectXY(Skia.XYWHRect(-44, head, 88, 20), 4, 4));
     const dim = Skia.Path.Make();
     dim.moveTo(-700, 0);
     dim.lineTo(-700, -H);
@@ -57,7 +94,7 @@ export function MeterOnTripod({ w, h, label }: { w: number; h: number; label: st
     const lead = Skia.Path.Make();
     lead.moveTo(-640, -H);
     lead.lineTo(-90, -H);
-    return { ground, grass, legs, dim, lead, head };
+    return { ground, grass, legs, locks, feet, dim, lead, head };
   }, [len]);
   const labels: StaticLabel[] = [
     { id: 'ws', text: 'FOAM WINDSCREEN · CAPSULE INSIDE', short: 'WINDSCREEN', u: 120, v: -H - 200, align: 'left', tone: 'amber', at: { u: 60, v: -H - 60 } },
@@ -74,9 +111,12 @@ export function MeterOnTripod({ w, h, label }: { w: number; h: number; label: st
           </Path>
           <Path path={p.grass} style="stroke" strokeWidth={9} strokeCap="round" color="#3d5a35" />
           <Path path={p.legs}>
-            <LinearGradient start={vec(-500, 0)} end={vec(500, 0)} colors={['#8f949c', '#4a4e55', '#2a2c31']} />
+            <LinearGradient start={vec(-500, 0)} end={vec(500, 0)} colors={['#b9bec6', '#6e737c', '#3a3d44']} />
           </Path>
-          <Path path={p.legs} style="stroke" strokeWidth={4} color="#08080a" />
+          <Path path={p.legs} style="stroke" strokeWidth={3} color="#08080a" />
+          <Path path={p.locks} color="#1c1d21" />
+          <Path path={p.locks} style="stroke" strokeWidth={2} color="#5a5e66" />
+          <Path path={p.feet} color="#121214" />
           <Group transform={[{ translateY: -H }]}>
             <SoundLevelMeter r={r} len={len} />
           </Group>

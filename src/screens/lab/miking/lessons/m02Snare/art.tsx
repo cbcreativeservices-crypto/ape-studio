@@ -28,7 +28,12 @@ import { FLOOR_Y, SNARE_DRUM } from './geometry.ts';
 const wiresOf = (v: VariantId): 'on' | 'off' => (v === 'off' ? 'off' : 'on');
 /** The crash's boom stand foot, from the shared kit (lesson frame). */
 const CRASH_FOOT = { x: PLAN_HARDWARE.booms.crash1.u - S0_KIT.x, z: PLAN_HARDWARE.booms.crash1.v - S0_KIT.z };
-const STICK = { from: { x: -R - 230, y: -150 }, to: { x: -6, y: -9 } };
+/** The stick at a playing angle (≈ 22° above the head), held from the
+ *  player's side: a 16 in (406 mm) stick, its bead on the batter between the
+ *  centre and the player's edge — clear of the hi-hat stand (u = −80), which
+ *  stands behind the snare, nearer the centre. */
+const STICK = { from: { x: -495, y: -156 }, to: { x: -125, y: -4 } };
+const STICK_TOP = { from: { x: -490, y: 70 }, to: { x: -125, y: -10 } };
 
 export function SnareArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   if (view === 'side') {
@@ -59,7 +64,7 @@ export function SnareArt({ view, variant }: { view: ViewId; variant: VariantId }
       <Group transform={topTransform(SNARE_DRUM)}>
         <DrumPlan drum={SNARE_DRUM} />
       </Group>
-      <Stick from={{ x: -375, y: 85 }} to={{ x: -14, y: -8 }} />
+      <Stick from={STICK_TOP.from} to={STICK_TOP.to} />
       {/* above the snare: the hi-hat and the crash, translucent */}
       <CymbalPlan cx={NB.hihat.c.x} cz={NB.hihat.c.z} d={NB.hihat.d} tiltDeg={0} dim={0.62} />
       <CymbalPlan cx={NB.crash1.c.x} cz={NB.crash1.c.z} d={NB.crash1.d} tiltDeg={NB.crash1.tiltDeg} dim={0.5} />
@@ -69,15 +74,20 @@ export function SnareArt({ view, variant }: { view: ViewId; variant: VariantId }
 
 export function snareLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'side') {
+    // Every name sits in free space on the glass with a leader to its part,
+    // laid out so no leader crosses another or runs through another name
+    // (round 2 of the art pass, 2026-10-10). The player's keep-out fills the
+    // left of the glass (u < −R − 70), so the names go right of the drum,
+    // above the hi-hat and just above the drum.
     return [
-      { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: R * 0.12, v: -36, align: 'left' },
-      { id: 'reso', text: 'SNARE-SIDE HEAD', short: 'SNARE HEAD', u: R + 34, v: DEPTH - 4, align: 'left' },
-      { id: 'wires', text: variant === 'off' ? 'WIRES (OFF)' : 'WIRES (ON)', short: 'WIRES', u: -R * 0.55, v: DEPTH + 34, align: 'center' },
-      { id: 'rim', text: 'RIM', u: R + 26, v: -H_UP - 16, align: 'left' },
-      { id: 'strainer', text: 'STRAINER', short: 'STRAINER', u: -R - 44, v: DEPTH * 0.5, align: 'right', tone: 'muted' },
-      { id: 'hihat', text: 'HI-HAT', u: NB.hihat.c.x, v: NB.hihat.c.y - 52, align: 'center', tone: 'muted' },
-      { id: 'stick', text: 'STICK', u: STICK.from.x + 60, v: STICK.from.y - 26, align: 'center', tone: 'illustrative' },
-      { id: 'stand', text: 'STAND', u: 40, v: DEPTH + 120, align: 'left', tone: 'muted' },
+      { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 255, v: -150, align: 'left', at: { u: 150, v: 0 } },
+      { id: 'rim', text: 'RIM', u: 255, v: -80, align: 'left', at: { u: HOOP.rOut, v: -H_UP } },
+      { id: 'reso', text: 'SNARE-SIDE HEAD', short: 'SNARE HEAD', u: 255, v: DEPTH - 45, align: 'left', at: { u: HOOP.rOut, v: DEPTH } },
+      { id: 'wires', text: variant === 'off' ? 'WIRES (OFF)' : 'WIRES (ON)', short: 'WIRES', u: 255, v: DEPTH + 60, align: 'left', at: { u: 110, v: DEPTH + 8 } },
+      { id: 'stand', text: 'STAND', u: 255, v: DEPTH + 150, align: 'left', tone: 'muted', at: { u: 22, v: DEPTH + 150 } },
+      { id: 'hihat', text: 'HI-HAT', u: -95, v: -400, align: 'right', tone: 'muted', at: { u: -200, v: NB.hihat.c.y - 5 } },
+      { id: 'stick', text: 'STICK', u: -45, v: -400, align: 'left', tone: 'illustrative', at: { u: -160, v: -20 } },
+      { id: 'strainer', text: 'STRAINER', u: -14, v: -100, align: 'left', tone: 'muted', at: { u: -R - 22, v: DEPTH * 0.5 } },
     ];
   }
   return [
@@ -121,12 +131,38 @@ export function snareHitTest(view: ViewId, variant: VariantId, u: number, v: num
   return null;
 }
 
+/** Distance from (u, v) to the segment a–b (mm). */
+function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: number; y: number }): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const t = Math.max(0, Math.min(1, ((u - a.x) * dx + (v - a.y) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(u - (a.x + t * dx), v - (a.y + t * dy));
+}
+
+/** Drawn hardware the hit test does not name — the stick, the stands' tubes
+ *  and legs, the crash boom — so the part labels keep off it too (label
+ *  occupancy only; taps are unchanged). */
+export function snareDrawnAt(view: ViewId, _variant: VariantId, u: number, v: number, tol: number): boolean {
+  if (view !== 'side') return segDist(u, v, STICK_TOP.from, STICK_TOP.to) <= 9 + tol;
+  if (segDist(u, v, STICK.from, STICK.to) <= 9 + tol) return true;
+  // the snare stand: centre tube, basket, legs
+  if (Math.abs(u) <= 22 + tol && v >= DEPTH && v <= FLOOR_Y) return true;
+  if (v >= DEPTH && v <= DEPTH + H_UP + 60 && Math.abs(u) <= HOOP.rOut + 10 + tol) return true;
+  for (const fx of [-208, 0, 208]) if (segDist(u, v, { x: 0, y: FLOOR_Y - 150 }, { x: fx, y: FLOOR_Y }) <= 12 + tol) return true;
+  // the hi-hat stand and pedal, the crash stand and its boom
+  if (Math.abs(u - NB.hihat.c.x) <= 20 + tol && v >= NB.hihat.c.y - 140 && v <= FLOOR_Y) return true;
+  if (Math.abs(u - CRASH_FOOT.x) <= 20 + tol && v >= NB.crash1.c.y + 110 && v <= FLOOR_Y) return true;
+  if (segDist(u, v, { x: CRASH_FOOT.x, y: NB.crash1.c.y + 120 }, { x: NB.crash1.c.x, y: NB.crash1.c.y + 24 }) <= 14 + tol) return true;
+  return false;
+}
+
 const SOUND = makeUprightSound((v) => ({ spec: SPEC, reso: true, wires: wiresOf(v) }), { batter: 'BATTER', reso: 'SNARE HEAD' });
 
 export const SNARE_ART: LessonArt = {
   Instrument: SnareArt,
   labels: snareLabels,
   hitTest: snareHitTest,
+  figureAt: snareDrawnAt,
   StrikeSequence: SOUND.StrikeSequence,
   CoupledHeads: SOUND.CoupledHeads,
   plan: { own: 'snare', offset: S0_KIT },

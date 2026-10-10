@@ -14,8 +14,8 @@
  */
 import { useMemo } from 'react';
 import { Group } from '@shopify/react-native-skia';
-import { FigureHead, FigureMass, headAbove, headFront, headProfile } from '../../screens/lab/miking/lessons/shared/players/PlayerFigure';
-import { BODY, pt } from '../../screens/lab/miking/lessons/shared/players/playerPose';
+import { FigureHead, FigureMass, PlayerBehind, PlayerInFront, headAbove, headFront, headProfile } from '../../screens/lab/miking/lessons/shared/players/PlayerFigure';
+import { BODY, pt, type PlayerPose } from '../../screens/lab/miking/lessons/shared/players/playerPose';
 
 /** Head radius in PlayerFigure's units for an adult head (crown→chin ≈ 2.05 r). */
 const R_MM = 111;
@@ -71,3 +71,46 @@ export function FigureHeadAt({
 
 /** An adult head's crown→chin height in metres (BODY.headH). */
 export const HEAD_H_M = BODY.headH / 1000;
+
+/**
+ * A STANDING ADULT, front view, at true size (figure polish 2026-10-10 — the
+ * labs outside Miking drew a line-art stick body under a head): the shared
+ * Miking PlayerFigure — shirt, belt, trousers, shoes, arms hanging at the
+ * sides with real hands, the figure's own skin-silhouette head — in mm, so
+ * the caller only gives the feet's centre on the floor and its scale.
+ * Real dimensions (mm): stature ≈ 1755; shoulders 376 between the joints;
+ * upper arm 300, forearm 260; hips 200 apart; knee 500 over the floor.
+ */
+const STANDING_FRONT: PlayerPose = {
+  view: 'front',
+  posture: 'standing',
+  head: { c: pt(0, -1636), r: 111 },
+  neck: pt(0, -1452),
+  shoulderR: pt(-BODY.shoulderHalf, -1430),
+  shoulderL: pt(BODY.shoulderHalf, -1430),
+  elbowR: pt(-214, -1132),
+  elbowL: pt(214, -1132),
+  handR: { wrist: pt(-212, -872), dir: Math.PI / 2 + 0.06, kind: 'rest' },
+  handL: { wrist: pt(212, -872), dir: Math.PI / 2 - 0.06, kind: 'rest' },
+  hipR: pt(-100, -900),
+  hipL: pt(100, -900),
+  kneeR: pt(-102, -500),
+  kneeL: pt(102, -500),
+  footR: pt(-112, 0),
+  footL: pt(112, 0),
+  floor: 0,
+};
+
+/** The standing adult with its feet's centre at (`cx`, `floorY`), `pxPerMm`
+ *  caller units per mm (an adult ≈ 1755 mm tall). Skia-only. */
+export function FigureStandingAt({ cx, floorY, pxPerMm }: { cx: number; floorY: number; pxPerMm: number }) {
+  return (
+    <Group transform={[{ translateX: cx }, { translateY: floorY }, { scale: pxPerMm }]}>
+      <PlayerBehind pose={STANDING_FRONT} />
+      <PlayerInFront pose={STANDING_FRONT} />
+    </Group>
+  );
+}
+
+/** A standing adult's stature in mm (STANDING_FRONT, crown to floor). */
+export const STANDING_H_MM = 1755;

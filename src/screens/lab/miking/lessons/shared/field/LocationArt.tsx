@@ -44,6 +44,10 @@ function buildCamera(view: ViewId, c: CameraSpec) {
   const finder = make();
   const handle = make();
   const legs = make();
+  const lower = make();
+  const clamps = make();
+  const spreader = make();
+  const pan = make();
   const head = make();
   const vMin = view === 'side' ? min.y : min.z;
   const vMax = view === 'side' ? max.y : max.z;
@@ -58,12 +62,36 @@ function buildCamera(view: ViewId, c: CameraSpec) {
     finder.addRRect(Skia.RRectXY(Skia.XYWHRect(max.x - 70, vMin - 4, 90, 44), 8, 8));
     handle.moveTo(bodyX0 + 30, vMin + 20);
     handle.cubicTo(bodyX0 + 40, vMin - 34, max.x - 60, vMin - 34, max.x - 50, vMin + 20);
-    // The fluid head and the tripod's legs to the floor.
+    // The fluid head (a 75 mm bowl) with its pan bar back toward the
+    // operator, and a video tripod's legs to the floor (art pass 2026-10-10 —
+    // they were three bare lines): twin-tube upper sections, single lower
+    // sections, a mid-level spreader, rubber feet. Drawing defaults of the class.
     const hx = (bodyX0 + max.x) / 2;
     head.addRRect(Skia.RRectXY(Skia.XYWHRect(hx - 60, vMax, 120, 46), 10, 10));
+    head.addRRect(Skia.RRectXY(Skia.XYWHRect(hx - 52, vMax + 46, 104, 34), 14, 14)); // the bowl
+    pan.moveTo(hx + 50, vMax + 22);
+    pan.lineTo(hx + 300, vMax + 150);
+    const top = vMax + 80;
+    const mid = top + (c.floor - top) * 0.55;
     for (const dx of [-c.spread * 0.55, c.spread * 0.12, c.spread * 0.5]) {
-      legs.moveTo(hx, vMax + 46);
-      legs.lineTo(hx + dx, c.floor);
+      const at = (t: number) => ({ x: hx + dx * t, y: top + (c.floor - top) * t });
+      const L = Math.hypot(dx, c.floor - top) || 1;
+      const nx = (c.floor - top) / L;
+      const ny = -dx / L;
+      for (const sd of [-1, 1]) {
+        legs.moveTo(hx + nx * 16 * sd, top + ny * 16 * sd);
+        const q = at(0.55);
+        legs.lineTo(q.x + nx * 16 * sd, q.y + ny * 16 * sd);
+      }
+      const q0 = at(0.55);
+      const q1 = at(0.97);
+      lower.moveTo(q0.x, q0.y);
+      lower.lineTo(q1.x, q1.y);
+      clamps.addRRect(Skia.RRectXY(Skia.XYWHRect(q0.x - 26, q0.y - 18, 52, 36), 6, 6));
+      clamps.addRRect(Skia.RRectXY(Skia.XYWHRect(q1.x - 18, q1.y - 6, 36, c.floor - q1.y + 6), 8, 8));
+      spreader.moveTo(hx, mid - 40);
+      const sp = at(0.45);
+      spreader.lineTo(sp.x, sp.y);
     }
   } else {
     finder.addRRect(Skia.RRectXY(Skia.XYWHRect(max.x - 70, vMax - 6, 60, 40), 8, 8));
@@ -74,7 +102,7 @@ function buildCamera(view: ViewId, c: CameraSpec) {
       legs.lineTo(hx + Math.cos(a) * c.spread, Math.sin(a) * c.spread);
     }
   }
-  return { body, lens, glass, finder, handle, legs, head };
+  return { body, lens, glass, finder, handle, legs, lower, clamps, spreader, pan, head };
 }
 
 export function CameraRig({ view, spec }: { view: ViewId; spec: CameraSpec }) {
@@ -82,11 +110,17 @@ export function CameraRig({ view, spec }: { view: ViewId; spec: CameraSpec }) {
   const b = p.body.getBounds();
   return (
     <Group>
-      <Path path={p.legs} style="stroke" strokeWidth={26} strokeCap="round" color="#0b0c0f" />
-      <Path path={p.legs} style="stroke" strokeWidth={18} strokeCap="round" color="#3d4049" />
+      <Path path={p.spreader} style="stroke" strokeWidth={12} strokeCap="round" color="#2a2c32" />
+      <Path path={p.lower} style="stroke" strokeWidth={22} strokeCap="round" color="#0b0c0f" />
+      <Path path={p.lower} style="stroke" strokeWidth={14} strokeCap="round" color="#3d4049" />
+      <Path path={p.legs} style="stroke" strokeWidth={view === 'side' ? 20 : 26} strokeCap="round" color="#0b0c0f" />
+      <Path path={p.legs} style="stroke" strokeWidth={view === 'side' ? 13 : 18} strokeCap="round" color="#4a4e57" />
       <Group transform={[{ translateX: -2 }, { translateY: -2 }]}>
         <Path path={p.legs} style="stroke" strokeWidth={4} strokeCap="round" color="#c9ced8" opacity={0.35} />
       </Group>
+      <Path path={p.clamps} color="#16171b" />
+      <Path path={p.pan} style="stroke" strokeWidth={24} strokeCap="round" color="#0b0c0f" />
+      <Path path={p.pan} style="stroke" strokeWidth={16} strokeCap="round" color="#3d4049" />
       <Path path={p.head}>
         <LinearGradient start={vec(b.x, b.y + b.height)} end={vec(b.x, b.y + b.height + 50)} colors={['#4a4e57', '#15161a']} />
       </Path>
@@ -172,18 +206,46 @@ export function operatorPoses(feet: Vec3, grip: Vec3): { side: PlayerPose; top: 
   const hx = feet.x + 10;
   const headC = pt(hx, floor - 1750 + 114);
   const neck = pt(hx + 18, headC.v + 172);
+  // The arms reach UP to the pole (figure polish 2026-10-10: the near elbow
+  // sat under the chin, so the forearm crossed the face): a two-bone arm
+  // (upper 300, forearm 265 mm) from each shoulder to its wrist, the elbow
+  // raised BESIDE and behind the head — the way an operator holds a boom
+  // overhead — so the face stays clear.
+  const upElbow = (s: ReturnType<typeof pt>, w: ReturnType<typeof pt>): ReturnType<typeof pt> => {
+    const A = 300;
+    const B = 265;
+    const dx = w.u - s.u;
+    const dy = w.v - s.v;
+    const d = Math.min(A + B - 1, Math.max(Math.abs(A - B) + 1, Math.hypot(dx, dy)));
+    const ux = dx / (Math.hypot(dx, dy) || 1);
+    const uy = dy / (Math.hypot(dx, dy) || 1);
+    const x = (A * A - B * B + d * d) / (2 * d);
+    const h = Math.sqrt(Math.max(0, A * A - x * x));
+    // The perpendicular that points up and back (away from the face, +u here).
+    let px = -uy;
+    let py = ux;
+    if (px < 0) {
+      px = -px;
+      py = -py;
+    }
+    return pt(s.u + ux * x + px * h, s.v + uy * x + py * h);
+  };
+  const shR = pt(neck.u + 4, neck.v + 58);
+  const shL = pt(neck.u + 18, neck.v + 48);
+  const wrR = pt(grip.x + 20, grip.y + 34);
+  const wrL = pt(grip.x + 150, grip.y + 120);
   const side: PlayerPose = {
     view: 'side',
     posture: 'standing',
     facing: -1,
     head: { c: headC, r: 114 },
     neck,
-    shoulderR: pt(neck.u + 4, neck.v + 58),
-    shoulderL: pt(neck.u + 18, neck.v + 48),
-    elbowR: pt(neck.u - 110, neck.v - 40),
-    elbowL: pt(neck.u - 60, neck.v + 30),
-    handR: { wrist: pt(grip.x + 20, grip.y + 34), dir: -Math.PI / 2 - 0.9, kind: 'grip' },
-    handL: { wrist: pt(grip.x + 150, grip.y + 120), dir: -Math.PI / 2 - 0.9, kind: 'grip' },
+    shoulderR: shR,
+    shoulderL: shL,
+    elbowR: upElbow(shR, wrR),
+    elbowL: upElbow(shL, wrL),
+    handR: { wrist: wrR, dir: -Math.PI / 2 - 0.9, kind: 'grip' },
+    handL: { wrist: wrL, dir: -Math.PI / 2 - 0.9, kind: 'grip' },
     hipR: pt(neck.u + 14, neck.v + 530),
     hipL: pt(neck.u + 24, neck.v + 524),
     kneeR: pt(neck.u - 4, neck.v + 980),

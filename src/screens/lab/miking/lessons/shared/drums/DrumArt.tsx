@@ -19,7 +19,11 @@
  *   CymbalSide / CymbalPlan / HiHatSide / HiHatPlan / BoomStand*  the kit
  *                 context the drum lessons need (spill sources, keep-outs).
  *                 Drawing defaults throughout (kit/GEOMETRY_PROPOSAL.md §3);
- *                 the cymbal family (lessons/shared/cymbals/) may replace them.
+ *                 Art pass 2026-10-10: CymbalSide and HiHatSide draw the
+ *                 cymbal family's plate, mounting stack, clutch and stand
+ *                 (lessons/shared/cymbals/CymbalArt) for every kit size; the
+ *                 boom stand has its two-stage tube, height clutch, ratchet
+ *                 joint and counterweight; bells are 32 % of the diameter.
  *
  * Rules kept (as for the kick's art): nothing here moves (D8); paths are built
  * ONCE per spec and option and cached at module scope; no brand mark; parts
@@ -30,6 +34,9 @@
 import { useMemo } from 'react';
 import { BlurMask, Circle, DashPathEffect, FillType, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { frameOf, hoopRadii, rodAngles, type DrumSpec, type PlacedDrum } from './drumSpec.ts';
+import { CymbalSide as FamilyCymbalSide, HiHatSide as FamilyHiHatSide } from '../cymbals/CymbalArt';
+import { CYMBAL_SPECS, KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
+import { KIT_FLOOR_Y } from '../kitPlanModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -398,7 +405,8 @@ export function KickSideNeighbour({ spec, x0, cy, dim = 0.5 }: { spec: DrumSpec;
 }
 
 /** The kick from above (uncut): its shell as a lit cylinder, both wood hoops,
- *  the rods at its silhouette, and the pedal on the player's side. `u0` is
+ *  the lugs, claws and T-rods on its upper half, and the pedal on the
+ *  player's side. `u0` is
  *  the batter head's x; `z` its axis. */
 export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec; u0: number; z: number; pedal?: { u0: number; u1: number; halfW: number }; dim?: number }) {
   const R = spec.d.mm / 2;
@@ -409,13 +417,33 @@ export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec;
     const hoops = make();
     rrect(hoops, -spec.hoop.above.mm, -rOut, spec.hoop.below.mm, rOut, 5);
     rrect(hoops, L - spec.hoop.below.mm, -rOut, L + spec.hoop.above.mm, rOut, 5);
+    // The hardware on the upper half (seen from above): at every rod angle φ
+    // (from the bottom toward +z, the M01 convention) with cos φ ≤ 0, a lug on
+    // the shell, a T-rod from the claw on the hoop to it, and the T handle —
+    // both ends. Real sizes: lug ≈ 16 × 32 mm standing 24 mm off the shell,
+    // rod axis ≈ 16 mm off the shell, claw ≈ 14 mm wide, T bar ≈ 28 mm.
     const rods = make();
-    for (const s of [-1, 1]) {
-      seg(rods, -spec.hoop.above.mm + 4, s * (rOut + 10), 60, s * (rOut + 10));
-      seg(rods, L + spec.hoop.above.mm - 4, s * (rOut + 10), L - 60, s * (rOut + 10));
+    const lugs = make();
+    const claws = make();
+    const tees = make();
+    const up = spec.hoop.above.mm;
+    for (const phi of rodAngles(spec)) {
+      const a = (phi * Math.PI) / 180;
+      if (Math.cos(a) > 0.01) continue;
+      const sn = Math.sin(a);
+      const zr = (R + 16) * sn;
+      const zl0 = R * sn - 8 * Math.abs(Math.cos(a)) * Math.sign(sn || 1);
+      const zl1 = (R + 24) * sn + 8 * Math.abs(Math.cos(a)) * Math.sign(sn || 1);
+      for (const end of [0, 1] as const) {
+        const X = (x: number) => (end === 0 ? x : L - x);
+        seg(rods, X(-up - 6), zr, X(60), zr);
+        rrect(lugs, X(44), Math.min(zl0, zl1), X(76), Math.max(zl0, zl1), 6);
+        rrect(claws, X(-up - 3), zr - 7, X(spec.hoop.below.mm + 2), zr + 7, 2);
+        rrect(tees, X(-up - 13), zr - 14, X(-up - 7), zr + 14, 2.5);
+      }
     }
     const ped = pedal ? rrect(make(), pedal.u0 - u0, -pedal.halfW, pedal.u1 - u0, pedal.halfW, 10) : null;
-    return { shell, hoops, rods, ped };
+    return { shell, hoops, rods, lugs, claws, tees, ped };
   }, [R, L, rOut, spec, pedal, u0]);
   return (
     <Group opacity={dim} transform={[{ translateX: u0 }, { translateY: z }]}>
@@ -427,10 +455,21 @@ export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec;
       <Path path={parts.shell}>
         <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={['#3a2210', '#e2b679', '#c48f52', '#7a4a20', '#2f1b0a']} positions={[0, 0.25, 0.5, 0.8, 1]} />
       </Path>
+      <Path path={parts.lugs}>
+        <LinearGradient start={vec(0, -R - 24)} end={vec(0, R + 24)} colors={CHROME} />
+      </Path>
+      <Path path={parts.lugs} style="stroke" strokeWidth={0.8} color={INK} />
       <Path path={parts.rods} style="stroke" strokeWidth={6} strokeCap="round" color="#2a2c32" />
       <Path path={parts.rods} style="stroke" strokeWidth={2} strokeCap="round" color="#d9dde5" opacity={0.8} />
       <Path path={parts.hoops}>
         <LinearGradient start={vec(0, -rOut)} end={vec(0, rOut)} colors={['#c48a4c', '#7a4a20', '#2f1b0a']} />
+      </Path>
+      <Path path={parts.claws}>
+        <LinearGradient start={vec(0, -rOut)} end={vec(0, rOut)} colors={CHROME} />
+      </Path>
+      <Path path={parts.claws} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={parts.tees}>
+        <LinearGradient start={vec(0, -rOut)} end={vec(0, rOut)} colors={CHROME} />
       </Path>
       {parts.ped ? (
         <Path path={parts.ped}>
@@ -599,10 +638,10 @@ export function DrumPlan({ drum, highlight = false, dim = 1, dashed = false }: {
 /* ═════════════════════════ KIT CONTEXT: cymbals, hi-hat, stands ═════════════════════════ */
 
 /** A cymbal's profile (side), local: centre at the origin, edge at ±R; the
- *  rise (8 % of the diameter) and bell (20 %) are drawing defaults. */
+ *  rise (8 % of the diameter) and bell (32 %) are drawing defaults. */
 function cymbalProfile(R: number) {
   const rise = 0.16 * R;
-  const bellR = 0.2 * R;
+  const bellR = 0.32 * R;
   const p = make();
   p.moveTo(-R, 0);
   p.cubicTo(-R * 0.6, -rise * 0.35, -bellR * 1.6, -rise * 0.62, -bellR, -rise * 0.7);
@@ -625,8 +664,19 @@ function cym(R: number) {
   return p;
 }
 
-/** A cymbal from the side, centre at (cx, cy), tilted toward the drummer. */
+/** The cymbal family's spec for a kit cymbal of this diameter (14, 16, 18
+ *  or 20 in), or null. */
+function familySpec(d: number) {
+  return Object.values(CYMBAL_SPECS).find((s) => Math.abs(s.d.mm - d) < 1) ?? null;
+}
+
+/** A cymbal from the side, centre at (cx, cy), tilted toward the drummer:
+ *  the cymbal family's plate (lathed bronze profile, bell) on its mounting
+ *  stack — tilter, felts, sleeve, wing nut — for every kit size; the plain
+ *  profile only for a size the family does not carry. */
 export function CymbalSide({ cx, cy, d, tiltDeg, dim = 1 }: { cx: number; cy: number; d: number; tiltDeg: number; dim?: number }) {
+  const spec = familySpec(d);
+  if (spec) return <FamilyCymbalSide spec={spec} cx={cx} cy={cy} tiltDeg={tiltDeg} dim={dim} />;
   const R = d / 2;
   const p = cym(R);
   return (
@@ -640,24 +690,57 @@ export function CymbalSide({ cx, cy, d, tiltDeg, dim = 1 }: { cx: number; cy: nu
   );
 }
 
-/** A boom cymbal stand from the side: tripod at the floor, the tube, the boom
- *  to the cymbal's centre (drawing default positions; kit proposal §2). */
+/**
+ * A boom cymbal stand from the side, built on the given foot, joint height
+ * (`top`) and cymbal centre: a tripod (Ø 22 mm legs, ≈ 160 mm reach, hub
+ * 150 mm up), a Ø 25 mm lower tube, the height clutch, a Ø 19 mm upper tube
+ * to the boom joint, and the Ø 19 mm boom from its 48 mm counterweight
+ * (140 mm behind the joint) up to the cymbal's tilter ≈ 24 mm under the
+ * cymbal (drawing defaults; kit proposal §2, the cymbal family's sizes).
+ */
 export function BoomStandSide({ foot, top, cym: c, floorY, dim = 1 }: { foot: number; top: number; cym: { x: number; y: number }; floorY: number; dim?: number }) {
-  const { tube, boom, legs } = useMemo(() => {
+  const g = useMemo(() => {
+    const hub = floorY - 150;
     const legs = make();
-    seg(legs, foot, floorY - 120, foot - 150, floorY);
-    seg(legs, foot, floorY - 120, foot + 150, floorY);
-    return { tube: seg(make(), foot, floorY - 30, foot, top), boom: seg(make(), foot, top, c.x, c.y + 14), legs };
+    seg(legs, foot, hub, foot - 160, floorY);
+    seg(legs, foot, hub, foot + 160, floorY);
+    seg(legs, foot, hub, foot + 48, floorY);
+    const clutchY = (hub + top) / 2 + 40;
+    const lower = seg(make(), foot, hub, foot, clutchY);
+    const upper = seg(make(), foot, clutchY, foot, top);
+    const end = { x: c.x, y: c.y + 24 };
+    const dx = end.x - foot;
+    const dy = end.y - top;
+    const l = Math.hypot(dx, dy) || 1;
+    const back = { x: foot - (dx / l) * 140, y: top - (dy / l) * 140 };
+    const boom = seg(make(), back.x, back.y, end.x, end.y);
+    return { legs, lower, upper, boom, back, clutchY, hub };
   }, [foot, top, c.x, c.y, floorY]);
   return (
     <Group opacity={dim}>
-      <Path path={legs} style="stroke" strokeWidth={8} strokeCap="round" color="#5b5f69" />
-      <Path path={tube} style="stroke" strokeWidth={14} strokeCap="round" color="#2a2c32" />
-      <Path path={tube} style="stroke" strokeWidth={9} strokeCap="round" color="#8a8f99" />
-      <Path path={boom} style="stroke" strokeWidth={9} strokeCap="round" color="#2a2c32" />
-      <Path path={boom} style="stroke" strokeWidth={5} strokeCap="round" color="#9aa0ab" />
-      <Circle cx={foot} cy={top} r={9} color="#16171b" />
-      <Circle cx={foot} cy={top} r={9} style="stroke" strokeWidth={2} color="#8a8f99" />
+      <Path path={g.legs} style="stroke" strokeWidth={10} strokeCap="round" color="#1d1e23" />
+      <Path path={g.legs} style="stroke" strokeWidth={6} strokeCap="round" color="#8a8f99" />
+      <Circle cx={foot} cy={g.hub} r={13} color="#1b1c21" />
+      <Path path={g.lower} style="stroke" strokeWidth={29} strokeCap="round" color="#16171b" />
+      <Path path={g.lower} style="stroke" strokeWidth={25} strokeCap="round" color="#7d828d" />
+      <Path path={g.upper} style="stroke" strokeWidth={22} strokeCap="round" color="#16171b" />
+      <Path path={g.upper} style="stroke" strokeWidth={17} strokeCap="round" color="#aeb3bd" />
+      <Group transform={[{ translateX: -3 }, { translateY: 0 }]}>
+        <Path path={g.upper} style="stroke" strokeWidth={2.2} strokeCap="round" color="#eef1f6" opacity={0.55} />
+      </Group>
+      <Path path={g.boom} style="stroke" strokeWidth={22} strokeCap="round" color="#16171b" />
+      <Path path={g.boom} style="stroke" strokeWidth={16} strokeCap="round" color="#9aa0ab" />
+      <Circle cx={g.back.x} cy={g.back.y} r={24}>
+        <RadialGradient c={vec(g.back.x - 8, g.back.y - 8)} r={34} colors={['#6c717c', '#2a2c32', '#121317']} />
+      </Circle>
+      {/* the height clutch (a wing bolt on its collar) and the ratchet boom joint */}
+      <Circle cx={foot} cy={g.clutchY} r={16} color="#16171b" />
+      <Circle cx={foot} cy={g.clutchY} r={16} style="stroke" strokeWidth={2} color="#9aa0ab" />
+      <Circle cx={foot + 22} cy={g.clutchY} r={7} color="#2a2c32" />
+      <Circle cx={foot} cy={top} r={18}>
+        <RadialGradient c={vec(foot - 5, top - 5)} r={22} colors={['#eef1f6', '#7d828d', '#2a2c32']} />
+      </Circle>
+      <Circle cx={foot} cy={top} r={18} style="stroke" strokeWidth={1.4} color={INK} />
     </Group>
   );
 }
@@ -683,8 +766,8 @@ export function CymbalPlan({ cx, cz, d, tiltDeg, highlight = false, dim = 0.82 }
           <RadialGradient c={vec(-R * 0.4 * ct, -R * 0.45)} r={R * 1.8} colors={BRONZE} />
         </Path>
         <Path path={rings} style="stroke" strokeWidth={1.6} color="#5e3e12" opacity={0.4} />
-        <Circle cx={0} cy={0} r={R * 0.2}>
-          <RadialGradient c={vec(-R * 0.06, -R * 0.07)} r={R * 0.3} colors={['#fff0c4', '#d9a85a', '#8a5e1e']} />
+        <Circle cx={0} cy={0} r={R * 0.32}>
+          <RadialGradient c={vec(-R * 0.1, -R * 0.11)} r={R * 0.45} colors={['#fff0c4', '#d9a85a', '#8a5e1e']} />
         </Circle>
         <Circle cx={0} cy={0} r={12} color="#1a1b1f" />
         <Path path={disc} style="stroke" strokeWidth={3} color="#7a5418" />
@@ -708,6 +791,17 @@ export function HiHatSide({ cx, cy, d, floorY, dim = 1 }: { cx: number; cy: numb
     seg(legs, cx, floorY - 150, cx + 170, floorY);
     return { tube: seg(make(), cx, cy + 40, cx, floorY - 40), rod: seg(make(), cx, cy - 60, cx, cy + 40), legs, pedal: rrect(make(), cx - 260, floorY - 46, cx - 20, floorY - 30, 6) };
   }, [cx, cy, floorY]);
+  // At the kit's own hi-hat (14 in, at its height over the floor) this is the
+  // cymbal family's: the pair, clutch and pull rod, seat, two-stage stand,
+  // tripod and pedal, moved into the caller's frame.
+  const hh = KIT_PLACED_CYMBALS.hihat;
+  if (Math.abs(d - hh.spec.d.mm) < 1 && Math.abs(floorY - cy - (KIT_FLOOR_Y - hh.c.y)) < 1) {
+    return (
+      <Group transform={[{ translateX: cx - hh.c.x }, { translateY: cy - hh.c.y }]}>
+        <FamilyHiHatSide dim={dim} />
+      </Group>
+    );
+  }
   return (
     <Group opacity={dim}>
       <Path path={legs} style="stroke" strokeWidth={8} strokeCap="round" color="#5b5f69" />
@@ -736,35 +830,132 @@ export function HiHatSide({ cx, cy, d, floorY, dim = 1 }: { cx: number; cy: numb
   );
 }
 
-/** A snare stand from the side, under a drum whose bottom hoop sits at
- *  `basketY`: tripod, post, and the basket arms gripping the hoop. Drawing
- *  defaults (snare/GEOMETRY_PROPOSAL §3: "leg spread and basket UNKNOWN"). */
-export function SnareStandSide({ cx, basketY, hoopR, floorY, armsDeg }: { cx: number; basketY: number; hoopR: number; floorY: number; armsDeg: readonly number[] }) {
+/**
+ * A snare stand from the side, under a drum whose bottom hoop sits at
+ * `basketY`. Drawing defaults (snare/GEOMETRY_PROPOSAL §3: "leg spread and
+ * basket UNKNOWN"); REAL proportions of a double-braced basket stand (mm):
+ *   basket centre 50 under the hoop; three basket arms (Ø 10 steel) rising
+ *   from it to rubber-tipped cradle hooks that grip the bottom hoop's edge
+ *   (rubber sleeve ≈ 30 long, hook lip ≈ 14 up); the basket adjustment knob
+ *   (Ø 36) under the basket centre; a ratchet tilter (Ø 40 disc, T-bolt) on
+ *   a Ø 19 upper tube; the height clutch (memory collar + wing bolt) on a
+ *   Ø 25.4 lower tube; three Ø 19 legs from the top collar (150 up) to
+ *   rubber feet ≈ 240 out, braced from a lower collar 60 up.
+ * Legs and arms sit at their plan angles (`legsDeg`, `armsDeg`; θ from +x
+ * toward +z, +z toward the viewer): the one pointing at the viewer is
+ * foreshortened to the centre, a far one is drawn behind and dimmer.
+ */
+export function SnareStandSide({ cx, basketY, hoopR, floorY, armsDeg, legsDeg = [90, 210, 330] }: { cx: number; basketY: number; hoopR: number; floorY: number; armsDeg: readonly number[]; legsDeg?: readonly number[] }) {
   const hub = basketY + 50;
-  const { post, legs, arms } = useMemo(() => {
-    const legs = make();
-    seg(legs, cx, floorY - 150, cx - 240, floorY);
-    seg(legs, cx, floorY - 150, cx + 240, floorY);
-    seg(legs, cx, floorY - 150, cx + 40, floorY);
-    const arms = make();
-    for (const deg of armsDeg) {
-      const x = Math.cos(deg * DEG) * hoopR;
-      arms.moveTo(cx, hub);
-      arms.lineTo(cx + x * 0.92, basketY + 4);
-      arms.lineTo(cx + x, basketY - 6);
+  const g = useMemo(() => {
+    const collar = floorY - 150;
+    const lowCollar = floorY - 60;
+    const tilt = hub + 46;
+    const clutchY = (collar + tilt) / 2 + 30;
+    const legsNear = make();
+    const legsFar = make();
+    const braces = make();
+    const feet = make();
+    for (const deg of legsDeg) {
+      const a = deg * DEG;
+      const fx = cx + Math.cos(a) * 240;
+      const tgt = Math.sin(a) < -0.2 ? legsFar : legsNear;
+      seg(tgt, cx, collar, fx, floorY - 6);
+      // brace from the lower collar to the leg's middle
+      seg(braces, cx, lowCollar, cx + Math.cos(a) * 120, (collar + floorY) / 2);
+      rrect(feet, fx - 14, floorY - 9, fx + 14, floorY, 4);
     }
-    return { post: seg(make(), cx, hub, cx, floorY - 150), legs, arms };
-  }, [cx, hub, basketY, hoopR, floorY, armsDeg]);
+    const lower = seg(make(), cx, lowCollar, cx, clutchY);
+    const upper = seg(make(), cx, clutchY, cx, tilt);
+    const post = seg(make(), cx, tilt, cx, hub);
+    const armsNear = make();
+    const armsFar = make();
+    const rubber = make();
+    const hooks = make();
+    for (const deg of armsDeg) {
+      const a = deg * DEG;
+      const x = Math.cos(a) * hoopR;
+      const far = Math.sin(a) < -0.2;
+      const tgt = far ? armsFar : armsNear;
+      const ex = cx + x * 0.96;
+      const ey = basketY + 6;
+      tgt.moveTo(cx + x * 0.12, hub);
+      tgt.lineTo(ex, ey);
+      if (!far && Math.abs(x) > 1) {
+        const ux = (ex - (cx + x * 0.12)) / Math.hypot(ex - (cx + x * 0.12), ey - hub);
+        const uy = (ey - hub) / Math.hypot(ex - (cx + x * 0.12), ey - hub);
+        // the rubber sleeve over the arm's last 30 mm
+        rubber.moveTo(ex - ux * 30, ey - uy * 30);
+        rubber.lineTo(ex, ey);
+        // the cradle hook: up the hoop's outside, a lip over its edge
+        const s = Math.sign(x);
+        hooks.moveTo(ex, ey);
+        hooks.lineTo(cx + s * (hoopR + 7), ey);
+        hooks.lineTo(cx + s * (hoopR + 7), basketY - 14);
+        hooks.lineTo(cx + s * (hoopR + 1), basketY - 14);
+      }
+    }
+    const basketHub = oval(make(), cx, hub, 13, 9);
+    const knob = rrect(make(), cx - 18, hub + 10, cx + 18, hub + 24, 5);
+    const tilter = oval(make(), cx, tilt, 20, 20);
+    const tBolt = seg(make(), cx + 20, tilt, cx + 52, tilt);
+    const tHandle = seg(make(), cx + 52, tilt - 12, cx + 52, tilt + 12);
+    const clutchRing = rrect(make(), cx - 19, clutchY - 7, cx + 19, clutchY + 9, 3);
+    const wing = rrect(make(), cx + 19, clutchY - 6, cx + 40, clutchY + 6, 3);
+    const collars = make();
+    rrect(collars, cx - 20, collar - 12, cx + 20, collar + 10, 4);
+    rrect(collars, cx - 17, lowCollar - 8, cx + 17, lowCollar + 8, 3);
+    return { legsNear, legsFar, braces, feet, lower, upper, post, armsNear, armsFar, rubber, hooks, basketHub, knob, tilter, tBolt, tHandle, clutchRing, wing, collars, tilt, clutchY };
+  }, [cx, hub, basketY, hoopR, floorY, armsDeg, legsDeg]);
   return (
     <Group>
-      <Path path={legs} style="stroke" strokeWidth={9} strokeCap="round" color="#2a2c32" />
-      <Path path={legs} style="stroke" strokeWidth={5} strokeCap="round" color="#8a8f99" />
-      <Path path={post} style="stroke" strokeWidth={15} strokeCap="round" color="#2a2c32" />
-      <Path path={post} style="stroke" strokeWidth={10} strokeCap="round" color="#9aa0ab" />
-      <Path path={arms} style="stroke" strokeWidth={8} strokeCap="round" strokeJoin="round" color="#2a2c32" />
-      <Path path={arms} style="stroke" strokeWidth={4} strokeCap="round" strokeJoin="round" color="#b6bbc5" />
-      <Circle cx={cx} cy={hub} r={12} color="#16171b" />
-      <Circle cx={cx} cy={hub} r={12} style="stroke" strokeWidth={2} color="#8a8f99" />
+      {/* far leg and far basket arm, behind */}
+      <Group opacity={0.55}>
+        <Path path={g.legsFar} style="stroke" strokeWidth={22} strokeCap="round" color="#2a2c32" />
+        <Path path={g.legsFar} style="stroke" strokeWidth={16} strokeCap="round" color="#7d828d" />
+        <Path path={g.armsFar} style="stroke" strokeWidth={13} strokeCap="round" color="#2a2c32" />
+        <Path path={g.armsFar} style="stroke" strokeWidth={8} strokeCap="round" color="#9aa0ab" />
+      </Group>
+      <Path path={g.braces} style="stroke" strokeWidth={11} strokeCap="round" color="#2a2c32" />
+      <Path path={g.braces} style="stroke" strokeWidth={6} strokeCap="round" color="#8a8f99" />
+      <Path path={g.legsNear} style="stroke" strokeWidth={22} strokeCap="round" color="#2a2c32" />
+      <Path path={g.legsNear} style="stroke" strokeWidth={16} strokeCap="round" color="#9aa0ab" />
+      <Path path={g.legsNear} style="stroke" strokeWidth={4} strokeCap="round" color="#eef1f6" opacity={0.45} />
+      <Path path={g.feet} color="#121316" />
+      {/* the centre tube: lower Ø 25.4, clutch, upper Ø 19 */}
+      <Path path={g.lower} style="stroke" strokeWidth={29} strokeCap="butt" color="#16171b" />
+      <Path path={g.lower} style="stroke" strokeWidth={25} strokeCap="butt" color="#8a8f99" />
+      <Path path={g.upper} style="stroke" strokeWidth={22} strokeCap="butt" color="#16171b" />
+      <Path path={g.upper} style="stroke" strokeWidth={18} strokeCap="butt" color="#b6bbc5" />
+      <Group transform={[{ translateX: -4 }, { translateY: 0 }]}>
+        <Path path={g.upper} style="stroke" strokeWidth={3} color="#eef1f6" opacity={0.5} />
+      </Group>
+      <Path path={g.collars}>
+        <LinearGradient start={vec(cx - 20, 0)} end={vec(cx + 20, 0)} colors={CHROME} />
+      </Path>
+      <Path path={g.clutchRing}>
+        <LinearGradient start={vec(cx - 19, 0)} end={vec(cx + 19, 0)} colors={CHROME} />
+      </Path>
+      <Path path={g.wing} color="#1d1e22" />
+      {/* tilter (ratchet disc and its T-bolt) and the post up to the basket */}
+      <Path path={g.post} style="stroke" strokeWidth={16} strokeCap="round" color="#16171b" />
+      <Path path={g.post} style="stroke" strokeWidth={11} strokeCap="round" color="#b6bbc5" />
+      <Path path={g.tilter}>
+        <RadialGradient c={vec(cx - 6, g.tilt - 6)} r={26} colors={['#eef1f6', '#7d828d', '#2a2c32']} />
+      </Path>
+      <Path path={g.tilter} style="stroke" strokeWidth={1.4} color={INK} />
+      <Path path={g.tBolt} style="stroke" strokeWidth={7} strokeCap="round" color="#2a2c32" />
+      <Path path={g.tHandle} style="stroke" strokeWidth={8} strokeCap="round" color="#1d1e22" />
+      {/* the basket: arms, rubber-tipped cradle hooks on the hoop, the knob */}
+      <Path path={g.armsNear} style="stroke" strokeWidth={13} strokeCap="round" strokeJoin="round" color="#2a2c32" />
+      <Path path={g.armsNear} style="stroke" strokeWidth={8} strokeCap="round" strokeJoin="round" color="#c6cad4" />
+      <Path path={g.rubber} style="stroke" strokeWidth={14} strokeCap="round" color="#141518" />
+      <Path path={g.hooks} style="stroke" strokeWidth={8} strokeCap="round" strokeJoin="round" color="#141518" />
+      <Path path={g.basketHub}>
+        <LinearGradient start={vec(cx - 13, 0)} end={vec(cx + 13, 0)} colors={CHROME} />
+      </Path>
+      <Path path={g.knob} color="#1d1e22" />
+      <Path path={g.knob} style="stroke" strokeWidth={1.2} color="#5d616c" />
     </Group>
   );
 }

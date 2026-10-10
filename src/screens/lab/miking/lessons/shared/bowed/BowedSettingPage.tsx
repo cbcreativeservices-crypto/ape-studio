@@ -21,7 +21,7 @@
  */
 import { useMemo, useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
-import { Canvas, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, DashPathEffect, FillType, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import type { SettingItem, ViewBox, Wedge } from '../../../engine/model/types.ts';
@@ -103,37 +103,166 @@ export function MusicStand() {
   );
 }
 
-/** A grand piano from above (generic): its bentside case, the keyboard, the
- *  open lid's outline. ≈ 2.1 m long. */
+/**
+ * A grand piano from above, lid up on its long prop (art pass 2026-10-10:
+ * was a stand-in — 36 evenly spaced black keys, an oval plate, no lid).
+ * A ~2.1 m (7 ft) grand, 1.5 m wide; the same footprint as before: the
+ * keyboard's front edge on x = 0, the keys out to x = −150, the case to
+ * x = 2100; y across, 0 … 1500.
+ *
+ *   CASE      the straight SPINE on the bass side (y = 0, the pianist's
+ *             left), the short tail, the BENTSIDE sweeping in an S from the
+ *             tail to the treble cheek, the straight treble side to the
+ *             keyboard; a rim of black lacquer.
+ *   KEYBOARD  88 keys from A0 to C8: 52 naturals (23.5 mm each, 1.22 m) and
+ *             36 sharps grouped in twos and threes, between two cheek
+ *             blocks; the fallboard behind them.
+ *   INSIDE    the spruce soundboard; the gilded cast-iron PLATE following
+ *             the rim, its struts and lightening openings; the tuning-pin
+ *             field at the front; the damper row; the strings — trebles
+ *             running straight back, the bass section overstrung across
+ *             them toward the tail.
+ *   LID       raised on its long prop (~50°) about the spine hinge: from
+ *             above it covers the case's bass half (the case outline
+ *             foreshortened across, cos 50°), drawn translucent so the
+ *             inside still reads; the prop from the bentside rim to it.
+ * Drawn, not traced; no maker's design or name.
+ */
 export function GrandPiano() {
   const p = useMemo(() => {
     const L = 2100;
     const Wd = 1500;
-    const caseP = make();
-    caseP.moveTo(0, 0);
-    caseP.lineTo(0, Wd);
-    caseP.lineTo(L * 0.42, Wd);
-    caseP.cubicTo(L * 0.62, Wd, L * 0.66, Wd * 0.62, L * 0.82, Wd * 0.5);
-    caseP.cubicTo(L * 0.98, Wd * 0.38, L * 1.02, Wd * 0.18, L * 0.96, Wd * 0.06);
-    caseP.cubicTo(L * 0.9, -Wd * 0.02, L * 0.5, 0, 0, 0);
-    caseP.close();
-    const keys = make();
-    keys.addRect(Skia.XYWHRect(-150, 20, 150, Wd - 40));
-    const blacks = make();
-    for (let i = 0; i < 36; i++) blacks.addRect(Skia.XYWHRect(-150, 40 + i * ((Wd - 80) / 36), 95, 18));
+    // The case outline (one side to the other, clockwise from the front
+    // bass corner).
+    const outline = (sy = 1) => {
+      const c = make();
+      c.moveTo(0, 0);
+      c.lineTo(L * 0.95, 0);
+      c.cubicTo(L * 1.0, 0, L * 1.012, Wd * 0.17 * sy, L * 0.975, Wd * 0.29 * sy);
+      c.cubicTo(L * 0.93, Wd * 0.41 * sy, L * 0.8, Wd * 0.47 * sy, L * 0.66, Wd * 0.58 * sy);
+      c.cubicTo(L * 0.53, Wd * 0.69 * sy, L * 0.48, Wd * sy, L * 0.31, Wd * sy);
+      c.lineTo(0, Wd * sy);
+      c.close();
+      return c;
+    };
+    const caseP = outline();
+    // The bentside's x at y (inside the rim), for the strings' far ends.
+    const rimX = (y: number) => {
+      const k: [number, number][] = [[0, 0.95], [0.17, 0.995], [0.29, 0.975], [0.41, 0.9], [0.58, 0.66], [0.75, 0.5], [0.9, 0.4], [1, 0.31]];
+      const t = y / Wd;
+      for (let i = 0; i < k.length - 1; i++) if (t <= k[i + 1][0]) return L * (k[i][1] + ((k[i + 1][1] - k[i][1]) * (t - k[i][0])) / (k[i + 1][0] - k[i][0]));
+      return L * 0.31;
+    };
+    // The soundboard: the case less a 45 mm rim.
+    const board = make();
+    board.moveTo(60, 45);
+    board.lineTo(L * 0.94, 45);
+    board.cubicTo(L * 0.975, 45, L * 0.985, Wd * 0.17, L * 0.955, Wd * 0.28);
+    board.cubicTo(L * 0.915, Wd * 0.39, L * 0.79, Wd * 0.445, L * 0.65, Wd * 0.555);
+    board.cubicTo(L * 0.525, Wd * 0.66, L * 0.475, Wd - 45, L * 0.31, Wd - 45);
+    board.lineTo(60, Wd - 45);
+    board.close();
+    // The plate: just inside the board, from the pin block back; its
+    // openings over the soundboard (even-odd), between the struts.
     const plate = make();
-    plate.addOval(Skia.XYWHRect(L * 0.12, Wd * 0.12, L * 0.55, Wd * 0.72));
-    return { caseP, keys, blacks, plate };
+    plate.addPath(board);
+    const holes: [number, number, number, number][] = [
+      [0.3, 0.22, 0.2, 0.15],
+      [0.55, 0.2, 0.16, 0.12],
+      [0.78, 0.17, 0.1, 0.09],
+      [0.32, 0.6, 0.13, 0.17],
+      [0.5, 0.48, 0.07, 0.07],
+    ];
+    for (const [cx, cy, rx, ry] of holes) plate.addOval(Skia.XYWHRect(L * (cx - rx / 2), Wd * (cy - ry / 2), L * rx, Wd * ry));
+    plate.setFillType(FillType.EvenOdd);
+    // The tuning-pin field across the front (a strip of pins on the plate's
+    // pin-block flange).
+    const pins = make();
+    for (let i = 0; i < 70; i++) {
+      const y = 80 + (i * (Wd - 160)) / 69;
+      pins.addCircle(140 + (i % 2) * 18, y, 4.5);
+    }
+    // The dampers: a row of felt blocks over the strings behind the pins
+    // (none on the top treble).
+    const dampers = make();
+    for (let i = 0; i < 46; i++) {
+      const y = 90 + (i * (Wd * 0.8 - 90)) / 45;
+      dampers.addRRect(Skia.RRectXY(Skia.XYWHRect(255, y - 9, 34, 18), 3, 3));
+    }
+    // The strings: trebles straight back to the hitch pins inside the
+    // bentside; the bass section overstrung, fanned across toward the tail.
+    const treble = make();
+    for (let i = 0; i < 44; i++) {
+      const y = Wd * 0.3 + (i * (Wd * 0.68 - 80)) / 43;
+      treble.moveTo(170, y);
+      treble.lineTo(rimX(y) - 95, y);
+    }
+    const bass = make();
+    for (let i = 0; i < 16; i++) {
+      const y0 = 75 + i * 22;
+      bass.moveTo(170, y0);
+      bass.lineTo(L * 0.9 - i * 12, Wd * 0.08 + i * 26);
+    }
+    // The bass bridge and the long (treble) bridge on the soundboard.
+    const bridges = make();
+    bridges.moveTo(L * 0.86, Wd * 0.08);
+    bridges.cubicTo(L * 0.88, Wd * 0.2, L * 0.86, Wd * 0.33, L * 0.82, Wd * 0.4);
+    bridges.moveTo(L * 0.74, Wd * 0.3);
+    bridges.cubicTo(L * 0.6, Wd * 0.5, L * 0.45, Wd * 0.75, L * 0.27, Wd * 0.95);
+    // The keyboard: 52 naturals from A0, 36 sharps (none after B or E).
+    const NAT = 23.5;
+    const y0 = (Wd - 52 * NAT) / 2;
+    const naturals = make();
+    const sharps = make();
+    const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    for (let i = 0; i < 52; i++) {
+      naturals.addRect(Skia.XYWHRect(-150, y0 + i * NAT + 0.6, 150, NAT - 1.2));
+      const n = names[i % 7];
+      if (i < 51 && n !== 'B' && n !== 'E') sharps.addRRect(Skia.RRectXY(Skia.XYWHRect(-150, y0 + (i + 1) * NAT - 6.8, 95, 13.6), 2, 2));
+    }
+    const cheeks = make();
+    cheeks.addRRect(Skia.RRectXY(Skia.XYWHRect(-160, 0, 170, y0 - 4), 10, 10));
+    cheeks.addRRect(Skia.RRectXY(Skia.XYWHRect(-160, y0 + 52 * NAT + 4, 170, Wd - (y0 + 52 * NAT) - 4), 10, 10));
+    const fallboard = make();
+    fallboard.addRect(Skia.XYWHRect(0, y0 - 4, 60, 52 * NAT + 8));
+    // The lid at ~50° on its long prop, hinged on the spine (y = 0): its
+    // outline foreshortened across by cos 50°.
+    const lid = outline(Math.cos(50 * DEG));
+    const prop = make();
+    prop.moveTo(L * 0.6, Wd * 0.64);
+    prop.lineTo(L * 0.62, Wd * 0.52);
+    return { caseP, board, plate, pins, dampers, treble, bass, bridges, naturals, sharps, cheeks, fallboard, lid, prop, L, Wd };
   }, []);
   return (
     <>
+      <Path path={p.caseP} color="#000" opacity={0.5} transform={[{ translateX: 18 }, { translateY: 24 }]} />
       <Path path={p.caseP}>
-        <LinearGradient start={vec(0, 0)} end={vec(2100, 1500)} colors={['#3d3f46', '#17181c', '#060607']} />
+        <LinearGradient start={vec(0, 0)} end={vec(p.L, p.Wd)} colors={['#3d3f46', '#17181c', '#060607']} />
       </Path>
-      <Path path={p.plate} color="#b38b3e" opacity={0.35} />
-      <Path path={p.caseP} style="stroke" strokeWidth={8} color="#7d818c" opacity={0.7} />
-      <Path path={p.keys} color="#ece9e1" />
-      <Path path={p.blacks} color="#111" />
+      <Path path={p.board}>
+        <LinearGradient start={vec(0, 0)} end={vec(p.L, p.Wd)} colors={['#e9cf98', '#d2b075', '#a9864d']} />
+      </Path>
+      <Path path={p.bridges} style="stroke" strokeWidth={22} strokeCap="round" color="#7a4f26" />
+      <Path path={p.plate}>
+        <LinearGradient start={vec(0, 0)} end={vec(p.L, p.Wd)} colors={['#f2d48a', '#c9a24a', '#8f6c22']} />
+      </Path>
+      <Path path={p.plate} style="stroke" strokeWidth={5} color="#6d521c" opacity={0.8} />
+      <Path path={p.treble} style="stroke" strokeWidth={2.4} color="#e4e8ef" opacity={0.85} />
+      <Path path={p.bass} style="stroke" strokeWidth={5} color="#c9884a" opacity={0.95} />
+      <Path path={p.pins} color="#d9dce3" />
+      <Path path={p.dampers} color="#1a1a1d" />
+      <Path path={p.caseP} style="stroke" strokeWidth={10} color="#7d818c" opacity={0.7} />
+      <Path path={p.fallboard} color="#0b0b0d" />
+      <Path path={p.cheeks}>
+        <LinearGradient start={vec(-160, 0)} end={vec(10, 200)} colors={['#3d3f46', '#111214']} />
+      </Path>
+      <Path path={p.naturals} color="#efece4" />
+      <Path path={p.sharps} color="#0e0e10" />
+      <Path path={p.lid} color="#0a0a0c" opacity={0.42} />
+      <Path path={p.lid} style="stroke" strokeWidth={8} color="#9aa0ab" opacity={0.75}>
+        <DashPathEffect intervals={[40, 26]} />
+      </Path>
+      <Path path={p.prop} style="stroke" strokeWidth={16} strokeCap="round" color="#2a2c32" />
     </>
   );
 }

@@ -30,7 +30,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
     return (
       <Group>
         {open ? <CrowdStand view="side" x0={FRONT_X + 500} dx={2200} z0={-3000} z1={3000} floor={SEATED_FLOOR + 900} rows={3} /> : null}
-        {open ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} /> : null}
+        {open ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} pole={false} /> : null}
         <BoothWindow view="side" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={zs.z0} z1={zs.z1} sillY={open ? DESK_TOP_Y - 150 : DESK_TOP_Y - 60} open={open} />
         {studio ? <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} /> : null}
         <StudioChair view="side" t={CALLER} />
@@ -46,7 +46,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
   return (
     <Group>
       {!studio ? <CrowdStand view="top" x0={FRONT_X + 500} dx={1500} z0={open ? -3400 : zs.z0 - 200} z1={open ? 900 : zs.z1 + 200} floor={SEATED_FLOOR} rows={3} /> : null}
-      {open ? <PaSpeaker view="top" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} /> : null}
+      {open ? <PaSpeaker view="top" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} pole={false} /> : null}
       <BoothWindow view="top" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={open ? -3400 : zs.z0} z1={open ? 900 : zs.z1} sillY={DESK_TOP_Y - 60} open={open} />
       <StudioChair view="top" t={CALLER} />
       {b ? <StudioChair view="top" t={analyst} /> : null}

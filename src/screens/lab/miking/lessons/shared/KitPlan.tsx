@@ -111,8 +111,8 @@ function HiHatArt({ hi }: { hi: boolean }) {
         <RadialGradient c={vec(c.u - r * 0.4, c.v - r * 0.45)} r={r * 1.8} colors={['#f6d58f', '#d2a04a', '#9a6a24', '#5e3e12']} />
       </Circle>
       <Path path={rings} style="stroke" strokeWidth={1.6} color="#5e3e12" opacity={0.4} />
-      <Circle cx={c.u} cy={c.v} r={r * 0.27}>
-        <RadialGradient c={vec(c.u - 14, c.v - 16)} r={r * 0.4} colors={['#fff0c4', '#d9a85a', '#8a5e1e']} />
+      <Circle cx={c.u} cy={c.v} r={r * 0.32}>
+        <RadialGradient c={vec(c.u - 18, c.v - 20)} r={r * 0.45} colors={['#fff0c4', '#d9a85a', '#8a5e1e']} />
       </Circle>
       <Circle cx={c.u} cy={c.v} r={14} color="#1a1b1f" />
       <Circle cx={c.u} cy={c.v} r={r} style="stroke" strokeWidth={3} color="#7a5418" />

@@ -20,6 +20,7 @@
  * HEIGHTS are a made-up example, said on the glass. FULLY SILENT; nothing
  * moves by itself; text ≥ 9 pt and zooms with full screen.
  */
+import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, DashPathEffect, Group, Line, Path, Rect, Skia, vec } from '@shopify/react-native-skia';
@@ -366,10 +367,12 @@ function OverlapScene({ w, h, seat, play, o, label }: { w: number; h: number; se
   const box = { u0: -1400, u1: 5200, v0: -4900, v1: 900 };
   const xf = useMemo(() => fitXform('top', box, w, planH, 6), [w, planH]); // eslint-disable-line react-hooks/exhaustive-deps
   const px = 1 / xf.s;
-  const seats = useMemo(() => {
-    const p = Skia.Path.Make();
-    for (const x of VENUE.rows.slice(0, 3)) for (const z of VENUE.seatsZ) if (z < 900) p.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 230, z - 230, 460, 460), 50, 50));
-    return p;
+  // The audience as its empty chairs from above, facing the stage (round 2,
+  // 2026-10-10 — they were purple squares; the house audienceChairs).
+  const chairs = useMemo(() => {
+    const at: { x: number; y: number; rotation: number }[] = [];
+    for (const x of VENUE.rows.slice(0, 3)) for (const z of VENUE.seatsZ) if (z < 900) at.push({ x, y: z, rotation: chairRowFacingStage(x, z, z)[0].rotation });
+    return makeChairsTop(at);
   }, []);
   const deck = useMemo(() => Skia.Path.Make().addRect(Skia.XYWHRect(box.u0, box.v0, -box.u0, box.v1 - box.v0)), []); // eslint-disable-line react-hooks/exhaustive-deps
   const main = play !== 'fill';
@@ -380,8 +383,7 @@ function OverlapScene({ w, h, seat, play, o, label }: { w: number; h: number; se
         <Canvas style={{ width: w, height: planH }} accessible accessibilityRole="image" accessibilityLabel={label}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
             <Path path={deck} color="#3b3027" />
-            <Path path={seats} color="#3d3044" />
-            <Path path={seats} style="stroke" strokeWidth={1.4 * px} color="#0b0b0c" />
+            <ChairsTop seats={chairs.seats} backs={chairs.backs} color="#6e5a78" strokeWidth={1.4 * px} />
             <SubCab view="top" />
             <TestSpeaker g={{ front: VENUE.main.x, depth: VENUE.main.depth, top: 0, bottom: 1, half: VENUE.main.half, woofer: { y: 0, r: 190 }, tweeter: { y: 0, r: 55 }, floorY: 0, z: -VENUE.main.z }} view="top" />
             <TestSpeaker g={{ front: VENUE.fill.x, depth: VENUE.fill.depth, top: 0, bottom: 1, half: VENUE.fill.half, woofer: { y: 0, r: 72 }, tweeter: { y: 0, r: 18 }, floorY: 0, stand: false }} view="top" />

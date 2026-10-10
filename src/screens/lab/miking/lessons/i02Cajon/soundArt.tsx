@@ -17,11 +17,11 @@
  * shape, not a computed mode; marks show ORDER and WHERE, never level.
  */
 import { useMemo } from 'react';
-import { DashPathEffect, Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
+import { Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import type { StaticLabel } from '../../engine/scene/StaticLabels';
-import { INK, make, oval } from '../shared/concert/paths.ts';
+import { INK, make } from '../shared/concert/paths.ts';
 import { AMBER, Arrow, BLUE, Burst, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
 import { BH, CAJ_DIMS, HX, PORT_R, stateOf, type CajState } from './model.ts';
 
@@ -29,6 +29,15 @@ export const SOUND_BOX = { u0: -300, u1: 330, v0: -600, v1: 40 };
 const BIRCH = ['#ecd2a2', '#d5b07a', '#b48a54', '#86622f'];
 const AIR_IN = 'rgba(150,190,255,0.16)';
 
+function seg2(p: ReturnType<typeof make>, a: number, b: number, c: number, d: number) {
+  p.moveTo(a, b);
+  p.lineTo(c, d);
+}
+
+/* Real-object reference (drawing only): a cajón ~318 × 318 × 480 mm, 12 mm
+ * birch-ply walls, a 3–4 mm tapa screwed on at its edges, a ~178 mm round
+ * port in the back, snare wires on a bar inside the top of the tapa, rubber
+ * feet under the corners. */
 /** The box in section: walls, the plate bowed by `bow` (mm, + = inward) at
  *  height `at` (0 = the middle, 1 = the top corner). */
 function Box({ s, bow, at }: { s: CajState; bow: number; at: number }) {
@@ -66,27 +75,64 @@ function Box({ s, bow, at }: { s: CajState; bow: number; at: number }) {
     plate.lineTo(s.plateX, yBot);
     plate.quadTo(s.plateX - bow * 2, yb, s.plateX, yTop);
     plate.close();
-    const port = front ? oval(make(), s.port.x, -lo + W / 2, CAJ_DIMS.portF.mm / 2, W / 2 + 2) : oval(make(), -HX + W / 2, s.port.y, W / 2 + 2, PORT_R);
-    const wires = make();
-    for (let i = 0; i < 2; i++) {
-      wires.moveTo(s.plateX - 14 - i * 8, yTop + 22);
-      wires.lineTo(s.plateX - 14 - i * 8 - (at > 0.5 ? bow * 0.8 : 0), yTop + 160);
+    // The port, in section: a GAP cut through the wall (the box's dark air
+    // continues through it), with the wall's cut end grain either side.
+    const port = make();
+    const portEdges = make();
+    if (front) {
+      const r = CAJ_DIMS.portF.mm / 2;
+      port.addRect({ x: s.port.x - r, y: -lo - 1, width: 2 * r, height: W + 2 });
+      seg2(portEdges, s.port.x - r, -lo, s.port.x - r, -lo + W);
+      seg2(portEdges, s.port.x + r, -lo, s.port.x + r, -lo + W);
+    } else {
+      port.addRect({ x: -HX - 1, y: s.port.y - PORT_R, width: W + 2, height: 2 * PORT_R });
+      seg2(portEdges, -HX, s.port.y - PORT_R, -HX + W, s.port.y - PORT_R);
+      seg2(portEdges, -HX, s.port.y + PORT_R, -HX + W, s.port.y + PORT_R);
     }
-    return { outer, inner, plate, port, wires };
+    // Snare wires: a short wooden bar screwed inside the top, the wires
+    // hanging from it and lying against the plate's upper half.
+    const wireBar = make();
+    wireBar.addRRect({ rect: { x: s.plateX - 46, y: yTop + W, width: 34, height: 14 }, rx: 2, ry: 2 });
+    const wires = make();
+    for (let i = 0; i < 3; i++) {
+      const x = s.plateX - 12 - i * 5;
+      wires.moveTo(x, yTop + W + 14);
+      wires.lineTo(x - (at > 0.5 ? bow * 0.8 : bow * 0.25), yTop + 175);
+    }
+    // Ply lines in the cut walls (9-ply birch), the plate's screws at its
+    // top and bottom edges, rubber feet under the corners.
+    const ply = make();
+    for (const f of [0.33, 0.66]) {
+      seg2(ply, -HX + W * f, -BH + W, -HX + W * f, -W);
+      seg2(ply, -HX + W, -BH + W * f, s.plateX - 8, -BH + W * f);
+      seg2(ply, -HX + W, -W * f, front ? HX - W : s.plateX - 8, -W * f);
+    }
+    const screws = make();
+    for (const y of [yTop + 7, yBot - 7]) screws.addCircle(s.plateX - 3, y, 3);
+    const feet = make();
+    for (const x of [-HX + 4, (front ? HX : s.plateX) - 34]) feet.addRRect({ rect: { x, y: -1, width: 30, height: 8 }, rx: 3, ry: 3 });
+    return { outer, inner, plate, port, portEdges, wires, wireBar, ply, screws, feet };
   }, [s, bow, at, front, lo]);
   return (
     <Group>
       <Path path={g.outer}>
         <LinearGradient start={vec(-HX, -BH)} end={vec(HX, 0)} colors={BIRCH} />
       </Path>
+      <Path path={g.ply} style="stroke" strokeWidth={0.8} color="#7a5a30" opacity={0.5} />
       <Path path={g.inner} color="#17120c" />
       <Path path={g.inner} color={AIR_IN} />
       <Path path={g.outer} style="stroke" strokeWidth={2} color={INK} />
+      {/* the port: the wall cut away, the box's air running through it */}
+      <Path path={g.port} color="#17120c" />
+      <Path path={g.port} color={AIR_IN} />
+      <Path path={g.portEdges} style="stroke" strokeWidth={2} color={INK} />
+      <Path path={g.feet} color="#1b1c21" />
       <Path path={g.plate} color="#6a4428" />
-      <Path path={g.wires} style="stroke" strokeWidth={2.4} color="#d6dae2">
-        <DashPathEffect intervals={[6, 4]} />
-      </Path>
-      <Path path={g.port} color="#050403" />
+      <Path path={g.plate} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={g.screws} color="#c8ccd4" />
+      <Path path={g.wireBar} color="#b48a54" />
+      <Path path={g.wireBar} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={g.wires} style="stroke" strokeWidth={1.4} color="#d6dae2" />
     </Group>
   );
 }

@@ -62,7 +62,13 @@ export const RHODES_FRONT = (() => {
     slip: { u0: -half + CHEEK, v0: keyTop + 20, u1: half - CHEEK, v1: bottom },
     knobs: [-half + CHEEK + 40, -half + CHEEK + 92],
     jack: -half + CHEEK + 150,
+    /** The leg sockets under the case (front pair; the rear pair sits behind). */
     legs: [-half + 90, half - 90],
+    /** Each chrome leg leans OUT this far between its socket and the floor
+     *  (≈ 6.5° over the 620 mm drop — the screw-in legs of a stage tine piano). */
+    legSplay: 70,
+    /** The white keys in the player's view: back edge foreshortened above the front. */
+    keys: keyRects(-half + CHEEK, RHODES.stage.whites, WHITE_KEY.mm, keyTop, keyTop - 22, 0),
     pedal: { u: 140, w: 110, h: 50 },
   };
 })();
@@ -131,7 +137,11 @@ export function rhodesHit(view: 'front' | 'top', u: number, v: number, tol: numb
   if (view === 'front') {
     const F = RHODES_FRONT;
     if (Math.abs(u - F.pedal.u) <= F.pedal.w / 2 + tol && v >= -F.pedal.h - tol && v <= tol) return 'rh.pedal';
-    if (Math.abs(Math.abs(u) - Math.abs(F.legs[1])) <= 30 + tol && v > F.bottom && v <= 0) return 'rh.legs';
+    if (v > F.bottom && v <= 0) {
+      // the leg's centre line leans out from its socket to the floor
+      const at = Math.abs(F.legs[1]) + F.legSplay * ((v - F.bottom) / -F.bottom);
+      if (Math.abs(Math.abs(u) - at) <= 30 + tol) return 'rh.legs';
+    }
     if (Math.abs(u - F.jack) <= 18 + tol && v >= F.nameRail.v0 - tol && v <= F.nameRail.v1 + tol) return 'rh.jack';
     if (F.knobs.some((k) => Math.abs(u - k) <= 20 + tol) && v >= F.nameRail.v0 - tol && v <= F.nameRail.v1 + tol) return 'rh.controls';
     if (v >= F.keyTops.v0 - tol && v <= F.keyFace.v1 + tol && Math.abs(u) <= F.half - F.cheek) return 'rh.keys';

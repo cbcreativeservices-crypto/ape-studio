@@ -98,11 +98,12 @@ const STEEL_EDGE = fretX(STEEL_L, 14); // 288.52
 const STEEL_LEN = 20 * IN; // 508
 const STEEL_TAIL = STEEL_EDGE - STEEL_LEN;
 /** The dreadnought's drawing-default stations as fractions of its body length
- *  (−110, 60, 220 on a 508 mm body from x = −219.48). */
+ *  (−67, 60, 187 on a 508 mm body from x = −219.48: about 0.30, 0.55 and
+ *  0.80 of the body from the tail; art pass 2026-10-10, was −110, 60, 220). */
 export const STEEL_PROPORTIONS = {
-  lower: (-110 - STEEL_TAIL) / STEEL_LEN,
+  lower: (-67 - STEEL_TAIL) / STEEL_LEN,
   waist: (60 - STEEL_TAIL) / STEEL_LEN,
-  upper: (220 - STEEL_TAIL) / STEEL_LEN,
+  upper: (187 - STEEL_TAIL) / STEEL_LEN,
   waistToLower: 280.99 / 406.4,
   upperToLower: 292 / 406.4,
 };
@@ -126,9 +127,12 @@ export const STEEL_DREAD: GuitarSpec = {
     waist: S(11.0625 * IN, 'TAY-DN', 'Waist 11-1/16"'),
     upper: dd(292, 'upper-bout width'),
     depth: S(4.625 * IN, 'TAY-DN', 'Depth from soundhole 4-5/8"'),
-    xLower: dd(-110, 'lower-bout station'),
+    // Stations (art pass 2026-10-10): a dreadnought is widest about 0.30 of
+    // its length from the tail, narrowest about 0.55, its upper bout widest
+    // about 0.80 (a 20 in body: ~6 in, ~11 in, ~16 in from the tail).
+    xLower: dd(-67, 'lower-bout station'),
     xWaist: dd(60, 'waist station'),
-    xUpper: dd(220, 'upper-bout station'),
+    xUpper: dd(187, 'upper-bout station'),
   },
   opening: { kind: 'round', x: dd(185, 'soundhole centre'), d: dd(100, 'soundhole diameter') },
   bridge: { kind: 'pin', x: dd(-8, 'bridge plate centre'), w: dd(150, 'bridge plate width (across)'), l: dd(30, 'bridge plate length (along)') },
@@ -165,9 +169,10 @@ export const NYLON_C5: GuitarSpec = {
     waist: dd(235, 'classical waist width'),
     upper: dd(280, 'classical upper-bout width'),
     depth: S(4 * IN, 'ELD-C5', 'Depth 4"'),
-    xLower: dd(-80, 'lower-bout station'),
-    xWaist: dd(90, 'waist station'),
-    xUpper: dd(255, 'upper-bout station'),
+    // Stations (art pass 2026-10-10): 0.30 / 0.55 / 0.80 of a 19-1/4 in body.
+    xLower: dd(-17, 'lower-bout station'),
+    xWaist: dd(105, 'waist station'),
+    xUpper: dd(227, 'upper-bout station'),
   },
   opening: { kind: 'round', x: dd(225, 'soundhole centre'), d: dd(85, 'soundhole diameter') },
   bridge: { kind: 'tieblock', x: dd(-8, 'tie-block bridge centre'), w: dd(185, 'tie-block bridge width'), l: dd(30, 'tie-block bridge length') },
@@ -214,6 +219,11 @@ export const RESO_SINGLE: GuitarSpec = {
   id: 'reso',
   name: 'single-cone resonator guitar',
   scale: T(STEEL_L, 'TAY-DN', 'resonator scale not read: the steel default'),
+  // Round 2 (2026-10-10): a wood-body resonator's neck meets the body at the
+  // 12th fret (12 frets clear), so the body sits 35 mm nearer the nut than a
+  // 14-fret dreadnought's and the coverplate lies well inside the lower bout.
+  // The outline stays the dreadnought's (the lesson's own words say so).
+  jointFret: dd(12, 'resonator neck joint: 12 frets clear (the usual wood-body resonator)'),
   body: { ...STEEL_DREAD.body, length: T(STEEL_LEN, 'TAY-DN', 'resonator bodies not sourced: the steel dreadnought outline'), lower: T(16 * IN, 'TAY-DN', 'as the steel'), waist: T(11.0625 * IN, 'TAY-DN', 'as the steel'), depth: T(4.625 * IN, 'TAY-DN', 'as the steel') },
   opening: { kind: 'coverplate', x: dd(-30, 'cone centre'), d: dd(270, 'coverplate diameter'), ports: { x: dd(230, 'upper-bout sound ports'), y: dd(120, 'sound-port offset'), d: dd(60, 'sound-port diameter') } },
   cone: { d: S(9.5 * IN, 'NAT-TECH', '9.5" cone'), x: dd(-30, 'cone centre') },
@@ -226,8 +236,14 @@ export const RESO_SINGLE: GuitarSpec = {
 export const RESO_ROUND: GuitarSpec = { ...RESO_SINGLE, id: 'resoRound', name: 'round-neck single-cone resonator guitar', bridge: { ...RESO_SINGLE.bridge, kind: 'biscuit' } };
 
 /* ── C05a banjo (banjo/GEOMETRY_PROPOSAL.md): origin at the bridge foot ── */
-const BANJO_POT_CX = -95;
+// The pot's centre, from the bridge (round 2, 2026-10-10): the bridge sits a
+// third of the head's diameter in from the TAIL-side rim, as on a played
+// banjo — so the centre is Ø/6 = +47.5 toward the neck, the neck-side rim at
+// +190 and the 22nd fret (202.6 from the bridge) just over it. Was −95, which
+// put the bridge a sixth of Ø in from the NECK-side rim (the proposal's words,
+// "toward the tail", with the sign flipped).
 const BANJO_D = 285;
+const BANJO_POT_CX = BANJO_D / 6;
 export const BANJO_5: GuitarSpec = {
   id: 'banjo',
   name: 'five-string banjo with a resonator',
@@ -244,7 +260,7 @@ export const BANJO_5: GuitarSpec = {
     xLower: dd(BANJO_POT_CX, 'pot centre'),
     xWaist: dd(BANJO_POT_CX, 'pot centre'),
     xUpper: dd(BANJO_POT_CX, 'pot centre'),
-    pot: { cx: dd(BANJO_POT_CX, 'pot centre (the bridge 0.33 × Ø toward the tail)'), d: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm') },
+    pot: { cx: dd(BANJO_POT_CX, 'pot centre (the bridge a third of Ø in from the tail-side rim)'), d: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm') },
   },
   opening: { kind: 'head', x: dd(BANJO_POT_CX, 'pot centre'), d: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm') },
   bridge: { kind: 'banjo', x: dd(0, 'bridge foot (the frame origin)'), w: dd(80, 'banjo bridge width'), l: dd(8, 'banjo bridge thickness') },
@@ -277,6 +293,8 @@ export const MANDO_A: GuitarSpec = {
     upper: derived(Math.round(260 * 0.62), 'a teardrop narrowing to the neck (drawing default 0.62 × the width)'),
     depth: dd(45, 'mandolin depth'),
     ...stationsFor(MANDO_EDGE, MANDO_LEN, 'mandolin stations'),
+    // A teardrop is widest about 0.42 of its length from the tail (art pass 2026-10-10).
+    xLower: dd(Math.round(MANDO_EDGE - MANDO_LEN * 0.58), 'teardrop: widest at 0.42 of the body from the tail'),
   },
   opening: { kind: 'oval', x: dd(110, 'oval hole centre'), d: dd(70, 'oval hole length'), d2: dd(50, 'oval hole width') },
   bridge: { kind: 'floating', x: dd(0, 'floating bridge foot'), w: dd(70, 'mandolin bridge width'), l: dd(10, 'mandolin bridge length') },
@@ -353,6 +371,64 @@ export type GuitarGeom = {
 
 const smooth = (a: number, b: number, t: number) => a + (b - a) * (1 - Math.cos(Math.PI * Math.max(0, Math.min(1, t)))) / 2;
 
+/** A super-ellipse arc: 1 at t = 0, 0 at |t| = 1 (q = 2 an ellipse; larger, squarer). */
+const superArc = (t: number, q: number) => Math.pow(Math.max(0, 1 - Math.pow(Math.min(1, Math.abs(t)), q)), 1 / q);
+/** A smooth maximum (polynomial, width k): exactly max(a, b) where they differ by more than k. */
+const smoothMax = (a: number, b: number, k: number) => {
+  const h = Math.max(k - Math.abs(a - b), 0) / k;
+  return Math.max(a, b) + (h * h * k) / 4;
+};
+
+/**
+ * A guitar-family outline (half-width at x): the lower bout a lobe from the
+ * tail (super-ellipse, q 2.3: a broad tail) widest at `xl`; the upper bout a
+ * lobe widest at `xu`, its shoulders a squarer super-ellipse (q 2.6) closing
+ * on the neck block at `edge`; the two lobes' inner flanks are ellipses that
+ * meet near `xw`, and a smooth maximum rounds that meeting into the waist.
+ * The flanks are solved (bisection) so the narrowest width is `waistH`.
+ */
+function boutsHalf(tail: number, edge: number, xl: number, xw: number, xu: number, lowerH: number, waistH: number, upperH: number): (x: number) => number {
+  const k = Math.max(8, waistH * 0.6);
+  const make = (w0: number) => {
+    const aL = (xw - xl) / Math.sqrt(Math.max(1e-6, 1 - (Math.min(w0, lowerH * 0.999) / lowerH) ** 2));
+    const aU = (xu - xw) / Math.sqrt(Math.max(1e-6, 1 - (Math.min(w0, upperH * 0.999) / upperH) ** 2));
+    return (x: number): number => {
+      if (x <= tail || x >= edge) return 0;
+      const a = x < xl ? lowerH * superArc((xl - x) / (xl - tail), 2.3) : lowerH * Math.sqrt(Math.max(0, 1 - ((x - xl) / aL) ** 2));
+      const b = x > xu ? upperH * superArc((x - xu) / (edge - xu), 2.6) : upperH * Math.sqrt(Math.max(0, 1 - ((xu - x) / aU) ** 2));
+      return smoothMax(a, b, k);
+    };
+  };
+  const narrowest = (f: (x: number) => number) => {
+    let m = Infinity;
+    for (let i = 0; i <= 120; i++) m = Math.min(m, f(xl + ((xu - xl) * i) / 120));
+    return m;
+  };
+  let lo = 1;
+  let hi = waistH;
+  for (let i = 0; i < 36; i++) {
+    const mid = (lo + hi) / 2;
+    if (narrowest(make(mid)) > waistH) hi = mid;
+    else lo = mid;
+  }
+  return make((lo + hi) / 2);
+}
+
+/**
+ * A teardrop (A-style mandolin): one lobe from the tail, widest at `xm`,
+ * then a long convex taper (cos^1.3) to about a quarter of the width where
+ * the neck joins at `edge` — no waist.
+ */
+function teardropHalf(tail: number, edge: number, xm: number, W: number): (x: number) => number {
+  const s = 0.24;
+  return (x: number): number => {
+    if (x <= tail || x >= edge) return 0;
+    if (x <= xm) return W * superArc((xm - x) / (xm - tail), 2);
+    const t = (x - xm) / (edge - xm);
+    return W * (s + (1 - s) * Math.pow(Math.cos((Math.PI * t) / 2), 1.3));
+  };
+}
+
 export function geomOf(spec: GuitarSpec): GuitarGeom {
   const L = spec.scale.mm;
   const edge = spec.edgeX ? spec.edgeX.mm : fretX(L, spec.jointFret!.mm);
@@ -373,15 +449,14 @@ export function geomOf(spec: GuitarSpec): GuitarGeom {
   const op = spec.opening;
   const holeR = op.kind === 'round' ? op.d.mm / 2 : op.kind === 'oval' ? op.d.mm / 2 : 0;
   const boardEnd = op.kind === 'round' || op.kind === 'oval' ? op.x.mm + holeR + 4 : pot ? edge - 4 : Math.max(edge - 70, fretX(L, spec.frets));
-  const shoulder = Math.max(edgeHalf + 22, upperH * 0.42);
-  const halfGuitar = (x: number): number => {
-    if (x <= tail || x >= edge) return 0;
-    if (x <= xl) return lowerH * Math.sqrt(Math.max(0, 1 - ((xl - x) / (xl - tail)) ** 2));
-    if (x <= xw) return smooth(lowerH, waistH, (x - xl) / (xw - xl));
-    if (x <= xu) return smooth(waistH, upperH, (x - xw) / (xu - xw));
-    const k = 1 - (shoulder / upperH) ** 2;
-    return upperH * Math.sqrt(Math.max(0, 1 - k * ((x - xu) / (edge - xu)) ** 2));
-  };
+  // ART PASS 2026-10-10 — the outline as a luthier draws it: two bouts,
+  // each a rounded lobe (a super-ellipse: the lower bout's broad tail, the
+  // upper bout's shoulders running round to the neck block), joined by a
+  // smooth concave waist whose narrowest width IS the waist figure. A
+  // teardrop (A-style mandolin) has no waist: one lobe at its widest, then a
+  // long convex taper into the neck. The bouts' widest points stay exactly
+  // the lower and upper widths at their stations.
+  const halfGuitar = spec.outline === 'teardrop' ? teardropHalf(tail, edge, xl, lowerH) : boutsHalf(tail, edge, xl, xw, xu, lowerH, waistH, upperH);
   const halfW = (x: number, side: 'bass' | 'treble'): number => {
     if (pot) {
       const r = pot.d.mm / 2;

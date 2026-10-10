@@ -20,7 +20,7 @@
  * (`tokens`, drawn to scale by ArenaArt.tsx) — no detailed animal or car art,
  * no people drawn on a plan.
  */
-import { CLEAR_ZONE_WORDS, bandAround, p2, type Badge, type KeepClear, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
+import { CLEAR_ZONE_WORDS, bandAround, basketballMarkings, p2, type Badge, type KeepClear, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
 
 export type ArenaSportId = 'track' | 'gymnastics' | 'boxing' | 'wrestling' | 'judo' | 'circuit' | 'jumping' | 'pool' | 'arena';
 
@@ -389,7 +389,7 @@ function arena(): VenueScene {
     blurb: 'A court inside a seating bowl: the action on the floor, the audience all round, the PA overhead and every camera’s frame — the complete picture.',
     play: rect(f),
     surface: 'court',
-    markings: [{ pts: rect(f), closed: true }, line(p2(L / 2, 0), p2(L / 2, W)), { pts: [], circle: { c: p2(L / 2, W / 2), r: 1.8 } }],
+    markings: basketballMarkings(L, W),
     keepClear: band('band', f, 2, 'the clear band round the court', 'drawing', 'The clear band round the floor: benches, officials and players chasing a ball use it.'),
     routes: [
       { id: 'bench', label: 'the benches and the officials’ table', short: 'BENCH · TABLE', pts: [p2(L / 2 - 8, -2.8), p2(L / 2 + 8, -2.8)], kind: 'bench' },

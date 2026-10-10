@@ -26,7 +26,7 @@ export function B01Scene({ view, variant, headless = false, phones }: { view: Vi
       <Group>
         {variant === 'live' ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR} /> : null}
         <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} />
-        {two ? <ArmClamp view="side" grip={GRIP_B} deskTop={DESK_TOP_Y} /> : null}
+        {two ? <ArmClamp view="side" grip={GRIP_B} deskTop={DESK_TOP_Y} edge={1} /> : null}
         <StudioChair view="side" t={HOST_A} />
         {two ? <StudioChair view="side" t={HOST_B} /> : null}
         {two ? <SeatedTalker view="side" t={HOST_B} phones={ph} /> : null}
@@ -50,7 +50,7 @@ export function B01Scene({ view, variant, headless = false, phones }: { view: Vi
       <Laptop view="top" at={LAPTOP_A} toward={1} />
       {two ? <Laptop view="top" at={LAPTOP_B} toward={-1} /> : null}
       <ArmClamp view="top" grip={GRIP_A} deskTop={DESK_TOP_Y} />
-      {two ? <ArmClamp view="top" grip={GRIP_B} deskTop={DESK_TOP_Y} /> : null}
+      {two ? <ArmClamp view="top" grip={GRIP_B} deskTop={DESK_TOP_Y} edge={1} /> : null}
       {two ? <SeatedTalker view="top" t={HOST_B} part="upper" phones={ph} /> : null}
       <SeatedTalker view="top" t={HOST_A} part="upper" phones={ph} headless={headless} />
     </Group>

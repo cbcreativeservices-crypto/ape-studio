@@ -127,9 +127,9 @@ test('micspeaker/viz — every stage view lays out in glass points and paints th
   assert.match(viewBody(src, 'ResponseCurveView'), /strokeWidth=\{2\.4 \* ts\}/);
 });
 
-test('tube/viz — all nine drawings lay out in glass points and paint through a scaled Group', () => {
+test('tube/viz — all eight drawings lay out in glass points and paint through a scaled Group (TubeGlyph, unused, deleted in the 2026-10-10 art pass)', () => {
   const src = read('tube/viz.tsx');
-  for (const v of ['TubeCutawayView', 'ElectronFlowView', 'GridControlView', 'AmplifyView', 'HighVoltageView', 'BiasView', 'SaturationView', 'TubeVsTransistorView', 'TubeGlyph']) {
+  for (const v of ['TubeCutawayView', 'ElectronFlowView', 'GridControlView', 'AmplifyView', 'HighVoltageView', 'BiasView', 'SaturationView', 'TubeVsTransistorView']) {
     assertScaledView(src, v);
   }
   // Every scaled Group is closed inside its Canvas.

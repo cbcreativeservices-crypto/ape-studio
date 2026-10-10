@@ -10,7 +10,7 @@
 import { useContext, useEffect, useMemo, useRef } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
-import { FigureHeadSvg } from '../../../features/lab/figureHeadSvg';
+import { FigureSeatedSideSvg } from '../../../features/lab/figureBodySvg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
@@ -18,11 +18,10 @@ import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-ges
 import { fingerAt, fingerOffset, pickHandle, sideLabelRows, sideTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
 import { bounds, ceilingHeightAt, cloudHangZ, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
 import { SURFACE_TINT, type PlanHandle } from './RoomPlanView';
+import { MonitorSide, StandSide, SubSide } from './studioPlanArt';
 
 const WALL = '#8d919c';
-const HEAD_LINE = '#d9dbe0';
 const SPK_HI = '#5b5f6a';
-const SPK_LO = '#26282e';
 const TREAT = '#c9a24a';
 const TREAT_OFF = '#4a4336';
 
@@ -172,7 +171,22 @@ export function RoomSideView({
         {/* Furniture: the desk (modelled) solid, the rest dotted */}
         {room.features.map((f) => {
           const q = toSide({ y: f.y - f.d / 2, z: f.h });
-          return <Rect key={f.id} x={q.x} y={q.y} width={f.d * T.k} height={f.h * T.k} fill="#1d1e24" stroke="#4a4c55" strokeWidth={1} strokeDasharray={f.kind === 'desk' ? undefined : '3 3'} />;
+          if (f.kind === 'desk') {
+            // In section a desk is its top (≈ 30 mm) on two end frames, not a
+            // solid block — the bounce the model traces is off that top.
+            const top = Math.max(2, 0.03 * T.k);
+            const leg = Math.max(2, 0.05 * T.k);
+            const legH = f.h * T.k - top;
+            return (
+              <G key={f.id}>
+                <Rect x={q.x} y={q.y} width={f.d * T.k} height={top} fill="#2a2c33" stroke="#4a4c55" strokeWidth={1} />
+                <Rect x={q.x + leg * 0.4} y={q.y + top} width={leg} height={legH} fill="#1d1e24" stroke="#4a4c55" strokeWidth={0.8} />
+                <Rect x={q.x + f.d * T.k - leg * 1.4} y={q.y + top} width={leg} height={legH} fill="#1d1e24" stroke="#4a4c55" strokeWidth={0.8} />
+                <Line x1={q.x + leg * 1.4} y1={q.y + top + legH * 0.82} x2={q.x + f.d * T.k - leg * 1.4} y2={q.y + top + legH * 0.82} stroke="#4a4c55" strokeWidth={1} />
+              </G>
+            );
+          }
+          return <Rect key={f.id} x={q.x} y={q.y} width={f.d * T.k} height={f.h * T.k} fill="#1d1e24" stroke="#4a4c55" strokeWidth={1} strokeDasharray="3 3" />;
         })}
 
         {/* Treatment seen from the side: cloud under the ceiling, rug on the floor, front-wall panels */}
@@ -242,23 +256,27 @@ export function RoomSideView({
             return (
               <G key={sp.role}>
                 {bottom < floorY - 1 ? <Rect x={q.x - sz * 0.3} y={bottom} width={sz * 0.6} height={floorY - bottom} fill="none" stroke={SPK_HI} strokeWidth={1} strokeDasharray="2 2" /> : null}
-                <Rect x={q.x - sz / 2} y={cy - sz / 2} width={sz} height={sz} rx={2} fill={SPK_LO} stroke={on ? colors.amber : SPK_HI} strokeWidth={1.2} />
-                <Circle cx={q.x} cy={cy} r={sz * 0.3} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
+                {/* the sub's side panel, baffle toward the listener (+x), woofer hidden (studioPlanArt) */}
+                <G transform={`translate(${q.x},${cy})`}>
+                  <SubSide s={sz} stroke={on ? colors.amber : SPK_HI} />
+                </G>
               </G>
             );
           }
+          // Side panel of a 210 × 330 × 280 mm nearfield: depth across, height up.
           const ww = spkSize * 1.2;
           const hh = spkSize * 1.6;
           return (
             <G key={sp.role} transform={`translate(${q.x},${q.y})`}>
-              {on ? <Circle cx={0} cy={0} r={hh / 2 + 6} fill="none" stroke={colors.amber} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
-              {/* a stand under the box */}
-              <Line x1={0} y1={hh * 0.5} x2={0} y2={toSide({ y: sp.y, z: 0 }).y - q.y} stroke={SPK_HI} strokeWidth={1.4} />
-              <Rect x={-ww / 2} y={-hh * 0.6} width={ww} height={hh} rx={1.5} fill={SPK_LO} stroke={on ? colors.amber : SPK_HI} strokeWidth={1.2} />
-              {/* tweeter at the acoustic centre, woofer below */}
-              <Circle cx={ww * 0.2} cy={0} r={Math.max(1.5, ww * 0.12)} fill="#0e0f12" stroke={SPK_HI} strokeWidth={0.7} />
-              <Circle cx={ww * 0.2} cy={hh * 0.2} r={Math.max(2.5, ww * 0.22)} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
-              <SvgText x={0} y={-hh * 0.6 - 4} fill={on ? colors.amber : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+              {on ? <Circle cx={0} cy={hh * 0.23} r={hh / 2 + 6} fill="none" stroke={colors.amber} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
+              {/* a real stand under the cabinet: top plate, column, base plate */}
+              <G transform={`translate(0,${hh * 0.73})`}>
+                <StandSide wpx={ww} floor={toSide({ y: sp.y, z: 0 }).y - q.y - hh * 0.73} />
+              </G>
+              {/* the cabinet's side: baffle toward the listener, drivers as
+                  hidden lines, the tweeter axis (acoustic centre) at 0 */}
+              <MonitorSide dpx={ww} hpx={hh} stroke={on ? colors.amber : SPK_HI} />
+              <SvgText x={0} y={-hh * 0.27 - 4} fill={on ? colors.amber : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
                 {sp.role === 'L' || sp.role === 'R' ? 'L/R' : sp.role}
               </SvgText>
             </G>
@@ -266,7 +284,7 @@ export function RoomSideView({
         })}
 
         {/* The listener, in profile: bald head, ear at ear height, seated */}
-        <ListenerSide p={lisPx} size={Math.max(16, 0.24 * T.k)} selected={selected === 'listener'} floorY={toSide({ y: 0, z: 0 }).y} />
+        <ListenerSide p={lisPx} size={Math.max(16, 0.24 * T.k)} pxPerMm={T.k / 1000} selected={selected === 'listener'} floorY={toSide({ y: 0, z: 0 }).y} />
 
         {/* Heights — the ceiling label at the REAR corner (clear of "L/R" at
             the front), the two height labels on separate baselines (cognitive
@@ -290,22 +308,20 @@ export function RoomSideView({
   );
 }
 
-/** The seated listener in section: torso to the chair, chair to the floor,
- *  and the figure's own skin-silhouette head in profile, its nose toward the
- *  speakers (left) and its EAR on the ear-height point (head fix 2026-10-08 —
- *  a head on a body is never the line-art icon and never a circle). */
-function ListenerSide({ p, size, selected, floorY }: { p: Pt; size: number; selected: boolean; floorY: number }) {
+/** The seated listener in section (figure polish 2026-10-10 — it was a
+ *  stick torso on a stick chair): the shared seated FIGURE at true size
+ *  (figureBodySvg — shirt, trousers, shoes, a hand on the knee, a chair),
+ *  facing the speakers (left), its EAR on the ear-height point; the chair's
+ *  seat height follows from the ear height. The head is the figure's own
+ *  skin silhouette (never the line-art icon, never a circle). `size` sizes
+ *  the selection ring (≈ 0.24 m at the room's scale). */
+function ListenerSide({ p, size, pxPerMm, selected, floorY }: { p: Pt; size: number; pxPerMm: number; selected: boolean; floorY: number }) {
   const r = size / 2;
-  const k = size / 226; // FigureHeadSvg units → px (crown→chin ≈ size)
   return (
     <G>
       {selected ? <Circle cx={p.x} cy={p.y} r={r + 8} fill="none" stroke={colors.green} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
-      {/* torso to the chair, chair to the floor */}
-      <G transform={`translate(${p.x},${p.y})`}>
-        <Path d={`M0,${r} q${-r * 0.2},${r * 1.4} ${-r * 0.1},${r * 2.4} M${-r * 0.1},${r * 2.4} l${-r * 1.4},0 M${-r * 1.0},${r * 2.4} L${-r * 1.0},${floorY - p.y}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.2} strokeLinecap="round" opacity={0.7} />
-      </G>
-      {/* the head: its ear (34, 11 units behind/below the head centre) on p */}
-      <FigureHeadSvg view="side" facing={-1} cx={p.x - 34 * k} cy={p.y - 11 * k} h={size} neckTo={p.y + r * 1.15} />
+      {/* at the ROOM's scale (px per mm), so the seated height, the chair and the ear agree with the walls */}
+      <FigureSeatedSideSvg earX={p.x} earY={p.y} floorY={floorY} px={pxPerMm} facing={-1} />
     </G>
   );
 }

@@ -69,7 +69,8 @@ function build(g: HandGeo, pl: Placement): Built {
   const front = [fromD(smoothPathD(place(tubeOutline(nearest.pts, nearest.w0, nearest.w1))))];
   const thumb = fromD(smoothPathD(place(tubeOutline(g.thumb.pts, g.thumb.w0, g.thumb.w1))));
   const nails = Skia.Path.Make();
-  for (const f of [...g.fingers, g.thumb]) if (f.nail) nails.addPath(fromD(smoothPathD(place(nailOutline(f)))));
+  if (g.nails) for (const n of g.nails) nails.addPath(fromD(smoothPathD(place(n))));
+  else for (const f of [...g.fingers, g.thumb]) if (f.nail) nails.addPath(fromD(smoothPathD(place(nailOutline(f)))));
   const creases = Skia.Path.Make();
   for (const c of g.creases) creases.addPath(fromD(smoothPathD(place(c), false)));
   // A soft highlight along the knuckles (light from the upper left).
@@ -92,9 +93,12 @@ export type HandProps = {
    *  side): drawn behind the body, mostly hidden. */
   farThumb?: boolean;
   opacity?: number;
+  /** The contour weight (× the default): lighter for a hand drawn large in a
+   *  close-up, so its outline stays faint. */
+  edge?: number;
 };
 
-export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1 }: HandProps) {
+export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1, edge = 1 }: HandProps) {
   const b = useMemo(() => build(geo, pl), [geo, pl]);
   const arm = useMemo(() => {
     if (!forearm) return null;
@@ -120,7 +124,7 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
       <Path path={b.thumb}>
         <LinearGradient start={g0} end={g1} colors={SKIN} />
       </Path>
-      <Path path={b.thumb} style="stroke" strokeWidth={1.5} color={SKIN_RIM} />
+      <Path path={b.thumb} style="stroke" strokeWidth={1.5 * edge} color={SKIN_RIM} />
     </>
   );
   return (
@@ -146,13 +150,13 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
       <Path path={b.body}>
         <LinearGradient start={g0} end={g1} colors={SKIN} />
       </Path>
-      <Path path={b.bodyEdge} style="stroke" strokeWidth={1.6} color={SKIN_RIM} />
+      <Path path={b.bodyEdge} style="stroke" strokeWidth={1.6 * edge} color={SKIN_RIM} />
       {b.back.map((p, i) => (
         <Group key={i}>
           <Path path={p}>
             <LinearGradient start={g0} end={g1} colors={SKIN} />
           </Path>
-          <Path path={p} style="stroke" strokeWidth={1.4} color={SKIN_RIM} />
+          <Path path={p} style="stroke" strokeWidth={1.4 * edge} color={SKIN_RIM} />
         </Group>
       ))}
       {heldBehind ? null : held}
@@ -161,12 +165,12 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
           <Path path={p}>
             <LinearGradient start={g0} end={g1} colors={SKIN} />
           </Path>
-          <Path path={p} style="stroke" strokeWidth={1.5} color={SKIN_RIM} />
+          <Path path={p} style="stroke" strokeWidth={1.5 * edge} color={SKIN_RIM} />
         </Group>
       ))}
       {farThumb ? null : thumbEl}
-      <Path path={b.nails} color={NAIL} opacity={farThumb ? 0 : 1} />
-      <Path path={b.nails} style="stroke" strokeWidth={0.8} color={NAIL_RIM} />
+      <Path path={b.nails} color={NAIL} opacity={farThumb ? 0 : (geo.nailAlpha ?? 1)} />
+      <Path path={b.nails} style="stroke" strokeWidth={0.8} color={NAIL_RIM} opacity={geo.nailAlpha ? 0.8 : 1} />
       <Path path={b.creases} style="stroke" strokeWidth={1.1} strokeCap="round" color={CREASE} opacity={0.8} />
       <Path path={b.shine} style="stroke" strokeWidth={3} strokeCap="round" color={FIGURE_SKIN.rim} opacity={0.35} />
     </Group>

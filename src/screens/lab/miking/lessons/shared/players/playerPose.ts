@@ -34,8 +34,12 @@ export type HandKind =
   | 'rest'
   /** A loose fist round a stick (a drummer's grip; the stick is the caller's). */
   | 'grip'
-  /** Fingers curved down onto keys (a pianist's hand, seen from the side). */
-  | 'keys';
+  /** Fingers curved down onto keys (a pianist's hand, seen from the side;
+   *  also a brass player's fingers on the valve buttons). */
+  | 'keys'
+  /** Fingers curled round a neck or a tube, seen from the fingers' side, the
+   *  thumb hidden behind it (a bass player's left hand from the right). */
+  | 'wrap';
 
 export type Hand = {
   /** The wrist joint. */

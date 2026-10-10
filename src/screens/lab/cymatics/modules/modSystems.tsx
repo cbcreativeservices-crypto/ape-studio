@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Svg, { Circle, Defs, Line, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../../features/tools/levelColor';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
@@ -302,10 +302,29 @@ function SpeakerDemo({ w: boxW, h: boxH, running }: { w: number; h: number; runn
       {/* The cone itself, tinted by the amplitude ramp */}
       <Path d={cone} stroke="url(#spkg)" strokeWidth={3} fill="none" strokeLinejoin="round" />
 
-      {/* Motor: former, magnet and backplate hanging under the apex */}
-      <Rect x={cx - 11} y={rimY + depth + 2} width={22} height={18} fill="url(#mag)" stroke="#8a8f99" strokeWidth={1} />
-      <Rect x={cx - 26} y={rimY + depth + 20} width={52} height={20} rx={2} fill="url(#mag)" stroke="#8a8f99" />
-      <Rect x={cx - 32} y={rimY + depth + 40} width={64} height={8} rx={2} fill="url(#mag)" stroke="#8a8f99" />
+      {/* Motor, in section under the apex (art pass 2026-10-10 — it was three
+          stacked boxes with the back plate wider than the magnet): the
+          voice-coil former from the cone's neck into the gap, the steel top
+          plate, the ferrite magnet ring and the steel back plate, all one
+          Ø100 mm stack for this 8"-class cone (u = px per mm), with the
+          basket arms from the rim down to the top plate. */}
+      {(() => {
+        const u = Math.max(0.5, Math.min(R / 82.5, (h - rimY - depth - 6) / 48));
+        const topY = rimY + depth + 14 * u;
+        const neck = coneY(0);
+        return (
+          <G>
+            <Path d={`M ${cx - R - 6} ${rimY - 4} L ${cx - 50 * u} ${topY} M ${cx + R + 6} ${rimY - 4} L ${cx + 50 * u} ${topY}`} stroke="#5d616b" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+            <Rect x={cx - 13 * u} y={neck} width={2 * u} height={topY + 4 * u - neck} fill="#b9a57a" />
+            <Rect x={cx + 11 * u} y={neck} width={2 * u} height={topY + 4 * u - neck} fill="#b9a57a" />
+            <Rect x={cx - 50 * u} y={topY} width={100 * u} height={8 * u} rx={1} fill="url(#mag)" stroke="#8a8f99" strokeWidth={0.8} />
+            <Rect x={cx - 48 * u} y={topY + 8 * u} width={96 * u} height={17 * u} rx={1.5} fill="#24252b" stroke="#55585f" strokeWidth={0.8} />
+            <Rect x={cx - 50 * u} y={topY + 25 * u} width={100 * u} height={7 * u} rx={1} fill="url(#mag)" stroke="#8a8f99" strokeWidth={0.8} />
+            {/* dust cap: the dome over the apex, riding the cone */}
+            <Path d={`M ${cx - 18 * u} ${coneY((18 * u) / R)} Q ${cx} ${neck - 16 * u} ${cx + 18 * u} ${coneY((18 * u) / R)}`} fill="#2f2f36" stroke="#8e8e96" strokeWidth={1.2} />
+          </G>
+        );
+      })()}
 
       {/* Grains, and the still ring they collect on */}
       {grains.map((t) => {

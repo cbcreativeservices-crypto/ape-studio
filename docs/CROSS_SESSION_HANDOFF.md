@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 01:59 · ccode · f60f6c6e
+changed: Explore: remove the green Career Finder bar and its popup
+affects other side: nothing (client UI on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 01:17 · ccode · a56483c8
 changed: Owner's PNG heads everywhere, audiences as true-size chairs, landing logo, intro noun fix
 affects other side: nothing (client art/copy on next-store-build; unpublished)

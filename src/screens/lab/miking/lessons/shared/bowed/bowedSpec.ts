@@ -212,8 +212,17 @@ export type Stations = {
   /** The nut (string length from the bridge) and the scroll's tip. */
   nutX: number;
   scrollX: number;
-  /** The fingerboard's free end (0.45 × stop, proposal §3). */
+  /** The fingerboard's free end: a fraction of the stop from the bridge —
+   *  violin and viola 0.29 (a 270 mm board on a 130 mm neck ends ~55 mm
+   *  from the bridge), cello 0.26, bass 0.36 (art pass 2026-10-10; was
+   *  0.45 × stop, proposal §3, which drew every board ~40% short). */
   fbEndX: number;
+  /** Where the left hand's usual travel ends toward the bridge (0.45 × stop,
+   *  proposal §3): the hand path's end and the fingerboard's collision
+   *  solid, kept where the lessons were built when the DRAWN fingerboard
+   *  grew to its true length (2026-10-10) — the suggested starting points
+   *  were placed against these. */
+  handEndX: number;
   /** The contact (bowing) point's centre and half-travel along x. */
   contactX: number;
   contactHalf: number;
@@ -229,63 +238,125 @@ export function stationsOf(s: BowedSpec): Stations {
     neckX,
     nutX: s.string.mm,
     scrollX,
-    fbEndX: 0.45 * s.stop.mm,
+    fbEndX: (s.id === 'cello' ? 0.26 : s.id === 'bass' ? 0.36 : 0.29) * s.stop.mm,
+    handEndX: 0.45 * s.stop.mm,
     contactX: (s.contact[0] + s.contact[1]) / 2,
     contactHalf: (s.contact[1] - s.contact[0]) / 2,
   };
 }
 
 /**
- * The body's HALF-WIDTH at frame-B x (mm): a lower bout, a C-shaped waist
- * between two corners, an upper bout — through the three sourced widths at
- * the row's stations (drawing defaults). 0 outside the body.
+ * THE OUTLINE as a luthier's pattern (art pass 2026-10-10). One template
+ * per form, in mm of a 356 mm violin body (u from the tail block along the
+ * centre line, w the half-width), traced through its key points:
+ *   the lower bout, widest 103 at u 85, running in to the LOWER CORNER, a
+ *   point aimed along the body toward the neck (tip at u 143, w 79); the
+ *   corner's inner edge turning back into the C-BOUT, narrowest 55.5 at
+ *   u 178; the UPPER CORNER (tip u 214, w 77) pointed back toward the tail;
+ *   the upper bout, widest 84 at u 268, closing round to the neck block —
+ *   or, the double bass's viol form, widest just past its corner and
+ *   running down SLOPING SHOULDERS to a broad neck block.
+ * Each instrument maps the template onto its own row: the stations by a
+ * piecewise-linear stretch along the body (lower, waist, upper), the widths
+ * by a scale that holds the lower bout to the corner, blends to the middle
+ * width at the waist and to the upper bout at the upper corner — so the
+ * lower, middle and upper widths are exactly the row's. Smooth runs are
+ * Catmull-Rom through the key points; the corner tips stay sharp.
+ * The corners overhang the C along the body, so the outline is not a
+ * function of x there: `outline` gives the true path; `halfWidth` the outer
+ * envelope (what the hit tests and the clearances need).
+ */
+type Pattern = { pts: [number, number][]; env: (u: number) => number };
+const patternCache = new Map<string, Pattern>();
+type Q = readonly [number, number];
+const TPL_L = 356;
+const TPL_LOWER: readonly Q[] = [[0, 0], [3, 32], [12, 62], [30, 86], [56, 100], [85, 103], [114, 98], [132, 88], [143, 79]];
+const TPL_C: readonly Q[] = [[143, 79], [137, 72], [141, 64], [152, 58], [178, 55.5], [203, 58.5], [213, 63], [219, 70], [214, 77]];
+const TPL_UPPER_ROUND: readonly Q[] = [[214, 77], [224, 80.5], [242, 83], [268, 84], [300, 80], [326, 66], [345, 42], [354, 18], [356, 0]];
+const TPL_UPPER_VIOL: readonly Q[] = [[214, 77], [222, 80], [236, 82], [250, 82.5], [272, 78.5], [300, 65], [326, 47], [345, 33], [353, 24], [356, 12], [356, 0]];
+
+/** A Catmull-Rom run through `pts` (the ends held), `n` steps a span. */
+function catmull(pts: readonly Q[], n = 10): [number, number][] {
+  const P = [pts[0], ...pts, pts[pts.length - 1]];
+  const out: [number, number][] = [];
+  for (let i = 1; i < P.length - 2; i++) {
+    const [p0, p1, p2, p3] = [P[i - 1], P[i], P[i + 1], P[i + 2]];
+    for (let k = 0; k < n; k++) {
+      const t = k / n;
+      const t2 = t * t;
+      const t3 = t2 * t;
+      const f = (j: 0 | 1) => 0.5 * (2 * p1[j] + (-p0[j] + p2[j]) * t + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * t2 + (-p0[j] + 3 * p1[j] - 3 * p2[j] + p3[j]) * t3);
+      out.push([f(0), f(1)]);
+    }
+  }
+  out.push([pts[pts.length - 1][0], pts[pts.length - 1][1]]);
+  return out;
+}
+
+/** Piecewise-linear through knots (x ascending). */
+function lerpKnots(knots: readonly Q[], x: number): number {
+  if (x <= knots[0][0]) return knots[0][1];
+  for (let i = 0; i < knots.length - 1; i++) {
+    const [x0, y0] = knots[i];
+    const [x1, y1] = knots[i + 1];
+    if (x <= x1) return y0 + ((y1 - y0) * (x - x0)) / Math.max(1e-9, x1 - x0);
+  }
+  return knots[knots.length - 1][1];
+}
+
+function patternOf(s: BowedSpec): Pattern {
+  const key = `${s.id}|${s.body.mm}|${s.lower.mm}|${s.middle.mm}|${s.upper.mm}|${s.stations.lower}|${s.stations.waist}|${s.stations.upper}|${s.shoulderSlope}`;
+  const hit = patternCache.get(key);
+  if (hit) return hit;
+  const viol = s.shoulderSlope > 0.5;
+  const upper = viol ? TPL_UPPER_VIOL : TPL_UPPER_ROUND;
+  const upMax = viol ? 82.5 : 84;
+  const upAt = viol ? 250 : 268;
+  // Template u → the row's fraction of the body (its three stations).
+  const uMap: readonly Q[] = [[0, 0], [85, s.stations.lower], [178, s.stations.waist], [upAt, s.stations.upper], [TPL_L, 1]];
+  // Template w → mm: the lower bout's scale to the lower corner, the middle's at the waist, the upper's from the upper corner.
+  const fl = s.lower.mm / 2 / 103;
+  const fm = s.middle.mm / 2 / 55.5;
+  const fu = s.upper.mm / 2 / upMax;
+  const wMap: readonly Q[] = [[0, fl], [143, fl], [178, fm], [214, fu], [TPL_L, fu]];
+  // The C's own scale reads the middle width at the waist exactly; at the
+  // corners each side keeps its bout's scale (so the points stay sharp).
+  const side = [...catmull(TPL_LOWER).slice(0, -1), ...catmull(TPL_C).slice(0, -1), ...catmull(upper)].map(([u, w]) => [lerpKnots(uMap, u), w * lerpKnots(wMap, u)] as [number, number]);
+  const env = (u: number): number => {
+    if (u < 0 || u > 1) return 0;
+    let m = 0;
+    for (let i = 0; i < side.length - 1; i++) {
+      const [u0, y0] = side[i];
+      const [u1, y1] = side[i + 1];
+      if ((u0 <= u && u <= u1) || (u1 <= u && u <= u0)) {
+        const t = u1 === u0 ? 1 : (u - u0) / (u1 - u0);
+        m = Math.max(m, y0 + (y1 - y0) * t);
+      }
+    }
+    return m;
+  };
+  const st = stationsOf(s);
+  const L = s.body.mm;
+  const pts: [number, number][] = [...side.map(([u, y]) => [st.tailX + u * L, -y] as [number, number]), ...[...side].reverse().map(([u, y]) => [st.tailX + u * L, y] as [number, number])];
+  const p = { pts, env };
+  patternCache.set(key, p);
+  return p;
+}
+
+/**
+ * The body's HALF-WIDTH at frame-B x (mm): the outer envelope of the
+ * pattern (the corner points included). 0 outside the body.
  */
 export function halfWidth(s: BowedSpec, x: number): number {
   const st = stationsOf(s);
-  const L = s.body.mm;
-  const u = (x - st.tailX) / L; // 0 at the tail end, 1 at the neck edge
-  if (u < 0 || u > 1) return 0;
-  const Wl = s.lower.mm / 2;
-  const Wm = s.middle.mm / 2;
-  const Wu = s.upper.mm / 2;
-  const { lower: sl, waist: sw, upper: su } = s.stations;
-  const c1 = sl + 0.6 * (sw - sl); // lower corner
-  const c2 = sw + 0.45 * (su - sw); // upper corner
-  // The corners: each bout runs out to a point a little proud of where the
-  // C-bout begins (the step reads as the corner's tip).
-  const wc1 = 0.72 * Wl;
-  const wc2 = 0.77 * Wu;
-  const tab = 0.012; // the corner's length along the body (fraction)
-  if (u <= sl) return Wl * Math.sqrt(Math.max(0, 1 - ((sl - u) / sl) ** 2));
-  if (u <= c1) return Wl * (1 - 0.18 * ((u - sl) / (c1 - sl)) ** 2);
-  if (u <= c1 + tab) return Wl * 0.82 + (wc1 - Wl * 0.82) * ((u - c1) / tab);
-  if (u <= c2 - tab) {
-    // The C: exactly the middle width at the waist, meeting each corner.
-    if (u <= sw) return Wm + (wc1 - Wm) * ((sw - u) / (sw - c1 - tab)) ** 2;
-    return Wm + (wc2 - Wm) * ((u - sw) / (c2 - tab - sw)) ** 2;
-  }
-  if (u <= c2) return wc2 + (Wu * 0.86 - wc2) * ((u - (c2 - tab)) / tab);
-  if (u <= su) return Wu * (1 - 0.14 * ((su - u) / (su - c2)) ** 2);
-  // Above the upper bout: round shoulders (violin), or sloping (bass).
-  const t = (u - su) / (1 - su);
-  const round = Wu * Math.sqrt(Math.max(0, 1 - t * t));
-  const sloped = Wu * (1 - t) ** 0.8 + 0.12 * Wu * t;
-  return round * (1 - s.shoulderSlope) + sloped * s.shoulderSlope;
+  return patternOf(s).env((x - st.tailX) / s.body.mm);
 }
 
-/** The outline as points (x, y) round the body, from the tail on the −y side. */
-export function outline(s: BowedSpec, n = 120): [number, number][] {
-  const st = stationsOf(s);
-  const pts: [number, number][] = [];
-  for (let i = 0; i <= n; i++) {
-    const x = st.tailX + ((st.neckX - st.tailX) * i) / n;
-    pts.push([x, -halfWidth(s, x)]);
-  }
-  for (let i = n; i >= 0; i--) {
-    const x = st.tailX + ((st.neckX - st.tailX) * i) / n;
-    pts.push([x, halfWidth(s, x)]);
-  }
-  return pts;
+/** The outline as points (x, y) round the body, from the tail on the −y
+ *  side: the pattern's true path, its corner points included (`n` is kept
+ *  for the callers; the pattern sets its own resolution). */
+export function outline(s: BowedSpec, _n = 120): [number, number][] {
+  return patternOf(s).pts;
 }
 
 /** Height of the top's surface above the rib edge on the centre line (z),

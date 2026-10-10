@@ -173,6 +173,23 @@ export type Seating = {
 };
 
 /* ── drawing defaults (mm) ── */
+/** The timpani set round its player: head diameters (in, the concert lessons'
+ *  sizes) low to high, left to right, on an arc 720 mm out (drawing default);
+ *  `a` = degrees from the player's forward, + to the player's right. The heads
+ *  stand 820 mm above the floor (TimpaniArt). */
+export const TIMPANI_SET = [
+  { d: 32 * 25.4, a: -58 },
+  { d: 29 * 25.4, a: -19 },
+  { d: 26 * 25.4, a: 19 },
+  { d: 23 * 25.4, a: 55 },
+] as const;
+export const TIMPANI_ARC = 720;
+export const TIMPANI_HEAD_H = 820;
+/** The concert bass drum at a percussion station (SeatingArt BassDrumPlan/Elev):
+ *  36 × 16 in, its centre 625 mm ahead of the player and 760 mm up, its heads
+ *  facing the player's left and right. */
+export const BASS_DRUM_STATION = { R: (36 * 25.4) / 2, depth: 16 * 25.4, ahead: 625, up: 760 } as const;
+
 export const DIMS = {
   /** The podium: 0.9 m square, 0.2 m high, its centre 1.3 m downstage of the
    *  front row's line. */

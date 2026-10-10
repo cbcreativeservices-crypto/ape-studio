@@ -21,6 +21,7 @@ import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { CymbalSide } from '../cymbals/CymbalArt';
+import { Stick } from '../drums/DrumArt';
 import { CRASH_16, surfaceHeight } from '../cymbals/cymbalSpec.ts';
 import { CYMBAL_SHAPES, cymbalShapeAt, cymbalShapePeak } from '../cymbals/cymbalModes.ts';
 
@@ -103,11 +104,6 @@ export function CymbalStrike({ w, h, reveal, shown, accessibilityLabel }: Cymbal
     const rest = restOutline();
     // The stick: from the upper left, its tip on the bow at the strike.
     const tipY = -surfaceHeight(SPEC, STRIKE_X);
-    const stick = Skia.Path.Make();
-    stick.moveTo(STRIKE_X - 130, tipY - 210);
-    stick.lineTo(STRIKE_X - 6, tipY - 9);
-    const tip = Skia.Path.Make();
-    tip.addOval(Skia.XYWHRect(STRIKE_X - 12, tipY - 16, 16, 14));
     // ③ curved arrows at the edges: the plate rocks on its felts.
     const rock = Skia.Path.Make();
     for (const s of [-1, 1]) {
@@ -126,7 +122,7 @@ export function CymbalStrike({ w, h, reveal, shown, accessibilityLabel }: Cymbal
       up.addArc(Skia.XYWHRect(-r, -r - 30, 2 * r, 2 * r), 215, 110);
       down.addArc(Skia.XYWHRect(-r, -r + 40, 2 * r, 2 * r), 35, 110);
     }
-    return { rest, stick, tip, rock, up, down, tipY };
+    return { rest, rock, up, down, tipY };
   }, []);
   const plate = useDerivedValue(() => {
     const v = reveal.value;
@@ -163,9 +159,8 @@ export function CymbalStrike({ w, h, reveal, shown, accessibilityLabel }: Cymbal
             <DashPathEffect intervals={[8, 6]} />
           </Path>
           <Group opacity={stickOn}>
-            <Path path={statics.stick} style="stroke" strokeWidth={13} strokeCap="round" color="#3b2a17" />
-            <Path path={statics.stick} style="stroke" strokeWidth={9} strokeCap="round" color="#d8b07a" />
-            <Path path={statics.tip} color="#e9cf9f" />
+            {/* a 16 in hickory stick (Ø 14.7 mm, tapered to its tip bead), the bead on the bow */}
+            <Stick from={{ x: STRIKE_X - 130, y: statics.tipY - 210 }} to={{ x: STRIKE_X - 3, y: statics.tipY - 5 }} />
           </Group>
           <Group opacity={rockOn}>
             <Path path={statics.rock} style="stroke" strokeWidth={4} strokeCap="round" strokeJoin="round" color={AMBER} />

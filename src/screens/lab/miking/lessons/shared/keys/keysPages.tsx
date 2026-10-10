@@ -37,6 +37,7 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, KeyButton, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import { lenCell } from '../../../engine/scene/readoutText.ts';
 import { fmtDb, fmtHz, fmtLen } from '../../../engine/model/units.ts';
+import { MEET_DROP } from '../../../engine/restructure.ts';
 import type { PageProps } from '../../../pages/pageTypes';
 import { factsStep, startStep } from '../journeyPages';
 import { CabExplorer, SPOT_WORDS, type CabExplorerView } from '../speakers/CabExplorer';
@@ -377,7 +378,10 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
     if (swing >= 0.5) swungFar.current = true;
     const coneDone = useRef(false);
     if (shown >= n) coneDone.current = true;
-    const done = mechDone.current && swungFar.current && coneDone.current;
+    // MEET IT leaves the mechanism step out (MEET_DROP) — then it is never asked
+    // for: a "still to do" may only name a step the learner can see.
+    const mechShown = !MEET_DROP.has('mech');
+    const done = (!mechShown || (mechDone.current && swungFar.current)) && coneDone.current;
     useEffect(() => {
       if (done && !interactiveDone.has('soundPath')) onInteractive('soundPath');
     }, [done, interactiveDone, onInteractive]);
@@ -564,7 +568,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
               <Point title="THE HELD TONE">{lesson.sound.body}</Point>
             </Card>
             <Note>{spec.notes.air}</Note>
-            {!done ? <Note tone="warn">{`Still to do for this page’s credit: ${[!mechDone.current ? 'step the mechanism to the end' : '', !swungFar.current ? 'swing the bar at least half-way by hand' : '', !coneDone.current ? 'step the cone through to the end' : ''].filter(Boolean).join(', ')}.`}</Note> : null}
+            {!done ? <Note tone="warn">{`Still to do for this page’s credit: ${[mechShown && !mechDone.current ? 'step the mechanism to the end' : '', mechShown && !swungFar.current ? 'swing the bar at least half-way by hand' : '', !coneDone.current ? 'step the cone through to the end' : ''].filter(Boolean).join(', ')}.`}</Note> : null}
             <Note>{spec.notes.mechCheck}</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
           </>

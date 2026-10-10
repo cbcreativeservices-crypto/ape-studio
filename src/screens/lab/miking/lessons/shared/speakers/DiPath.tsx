@@ -8,256 +8,73 @@
  * `badPatch`, the one patch that must never be made — a speaker output into
  * the desk — is drawn and struck out in red.
  *
- * Every node is a small illustrated object (lit from the upper left), never
- * a box with a word in it. Static (D8): it changes only on a tap.
+ * Every node is the real object drawn to its real proportions
+ * (chainIcons.tsx, art pass 2026-10-10), never a box with a word in it.
+ * Static (D8): it changes only on a tap.
  */
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
-import { BlurMask, Canvas, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, DashPathEffect, Group, Path, RoundedRect, Skia } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
-import { buildChain, type ChainLink, type ChainNode, type ChainSpec, type NodeKind } from './signalChain.ts';
+import { buildChain, type ChainLink, type ChainNode, type ChainSpec } from './signalChain.ts';
+import { ChainIcon, type IconArt } from './chainIcons';
 
-type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
 const RED = '#ff5a48';
 const CABLE = '#3a3c44';
-const CHROME = ['#f2f4f8', '#9aa0ab', '#3a3d45'] as const;
-const TOLEX = ['#3a3b41', '#1d1e22', '#0f1012'] as const;
 
-/** One node's drawing, centred at 0, 0, in a box of side S. */
-function NodeIcon({ kind, S, lit }: { kind: NodeKind; S: number; lit: boolean }) {
-  const h = S / 2;
-  const ring = lit ? <RoundedRect x={-h - 6} y={-h - 6} width={S + 12} height={S + 12} r={10} style="stroke" strokeWidth={3} color={AMBER} /> : null;
-  const shadow = (
-    <RoundedRect x={-h * 0.8 + 3} y={-h * 0.6 + 5} width={S * 0.8} height={S * 0.6} r={8} color="#000" opacity={0.45}>
-      <BlurMask blur={6} style="normal" />
-    </RoundedRect>
-  );
-  switch (kind) {
-    case 'instrument': {
-      // A solid-body electric, at an angle: body, neck, headstock.
-      const body = make();
-      body.addOval(Skia.XYWHRect(-h * 0.95, -h * 0.05, h * 1.0, h * 0.9));
-      body.addOval(Skia.XYWHRect(-h * 0.75, -h * 0.42, h * 0.8, h * 0.7));
-      const neck = make();
-      neck.moveTo(-h * 0.2, -h * 0.05);
-      neck.lineTo(h * 0.85, -h * 0.8);
-      return (
-        <Group>
-          {ring}
-          <Path path={body}>
-            <RadialGradient c={vec(-h * 0.6, -h * 0.2)} r={S} colors={['#9a2a22', '#4a0f0c', '#260706']} />
-          </Path>
-          <Path path={neck} style="stroke" strokeWidth={S * 0.09} strokeCap="round" color="#c99a5a" />
-          <Path path={neck} style="stroke" strokeWidth={S * 0.035} strokeCap="round" color="#2e1a10" />
-          <RoundedRect x={h * 0.72} y={-h * 0.98} width={h * 0.32} height={h * 0.3} r={4} color="#c99a5a" />
-          <RoundedRect x={-h * 0.62} y={h * 0.18} width={h * 0.34} height={h * 0.12} r={2} color="#121316" />
-        </Group>
-      );
-    }
+/** Which drawing a node gets: its kind, read with the chain it sits in (the
+ *  speaker IN a combo is a bare 12 in driver; a stack's is the bass cabinet;
+ *  the amp's direct out is a panel socket, not a DI box). */
+function artOf(n: ChainNode, spec: ChainSpec): IconArt {
+  switch (n.kind) {
+    case 'instrument':
+      return 'guitar';
+    case 'bass':
+      return 'bass';
+    case 'steel':
+      return 'steel';
     case 'pedals':
-    case 'volume': {
-      const p = make();
-      if (kind === 'volume') {
-        p.moveTo(-h * 0.85, h * 0.55);
-        p.lineTo(h * 0.85, h * 0.55);
-        p.lineTo(h * 0.85, h * 0.05);
-        p.lineTo(-h * 0.85, -h * 0.35);
-        p.close();
-      } else p.addRRect(Skia.RRectXY(Skia.XYWHRect(-h * 0.6, -h * 0.75, h * 1.2, h * 1.4), 8, 8));
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <Path path={p}>
-            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={kind === 'volume' ? [...TOLEX] : ['#3d8a5a', '#1f5236', '#0f2a1c']} />
-          </Path>
-          <Path path={p} style="stroke" strokeWidth={1.2} color="#7a7f8a" opacity={0.7} />
-          {kind === 'pedals' ? (
-            <>
-              <Circle cx={-h * 0.25} cy={-h * 0.4} r={h * 0.16} color="#e1e4ea" />
-              <Circle cx={h * 0.25} cy={-h * 0.4} r={h * 0.16} color="#e1e4ea" />
-              <Circle cx={0} cy={h * 0.35} r={h * 0.2}>
-                <RadialGradient c={vec(-3, h * 0.3)} r={h * 0.3} colors={[...CHROME]} />
-              </Circle>
-            </>
-          ) : null}
-        </Group>
-      );
-    }
+      return 'pedals';
+    case 'volume':
+      return 'volume';
     case 'di':
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <RoundedRect x={-h * 0.7} y={-h * 0.45} width={h * 1.4} height={h * 0.9} r={6}>
-            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={[...CHROME]} />
-          </RoundedRect>
-          <RoundedRect x={-h * 0.7} y={-h * 0.45} width={h * 1.4} height={h * 0.9} r={6} style="stroke" strokeWidth={1} color="#08080a" />
-          <Circle cx={-h * 0.35} cy={0} r={h * 0.2} color="#121316" />
-          <Circle cx={h * 0.35} cy={0} r={h * 0.24} color="#121316" />
-          {[0, 1, 2].map((i) => (
-            <Circle key={i} cx={h * 0.35 + Math.cos((i * 2 * Math.PI) / 3 - Math.PI / 2) * h * 0.11} cy={Math.sin((i * 2 * Math.PI) / 3 - Math.PI / 2) * h * 0.11} r={h * 0.04} color="#c8ccd4" />
-          ))}
-        </Group>
-      );
+      return n.id === 'ampdi' ? (spec.icons?.player === 'keys' ? 'auxOut' : 'ampOut') : 'di';
+    case 'amp':
+    case 'combo':
+      return 'combo';
     case 'head':
-    case 'combo': {
-      const combo = kind === 'combo';
-      const y0 = combo ? -h * 0.8 : -h * 0.35;
-      const hh = combo ? h * 1.6 : h * 0.7;
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <RoundedRect x={-h * 0.95} y={y0} width={h * 1.9} height={hh} r={6}>
-            <LinearGradient start={vec(-h, y0)} end={vec(h, y0 + hh)} colors={[...TOLEX]} />
-          </RoundedRect>
-          <RoundedRect x={-h * 0.82} y={y0 + h * 0.08} width={h * 1.64} height={h * 0.26} r={3}>
-            <LinearGradient start={vec(0, y0)} end={vec(0, y0 + h * 0.3)} colors={[...CHROME]} />
-          </RoundedRect>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <Circle key={i} cx={-h * 0.6 + i * h * 0.3} cy={y0 + h * 0.21} r={h * 0.07} color="#121316" />
-          ))}
-          {combo ? (
-            <>
-              <RoundedRect x={-h * 0.82} y={y0 + h * 0.44} width={h * 1.64} height={h * 1.06} r={5}>
-                <LinearGradient start={vec(-h, 0)} end={vec(h, h)} colors={['#3d3f46', '#2b2d33', '#1b1c20']} />
-              </RoundedRect>
-              <Circle cx={h * 0.12} cy={y0 + h * 0.98} r={h * 0.42} color="#000" opacity={0.25} />
-            </>
-          ) : null}
-        </Group>
-      );
-    }
+      return 'head';
     case 'cab':
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <RoundedRect x={-h * 0.9} y={-h * 0.9} width={h * 1.8} height={h * 1.8} r={6}>
-            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={[...TOLEX]} />
-          </RoundedRect>
-          <RoundedRect x={-h * 0.76} y={-h * 0.76} width={h * 1.52} height={h * 1.52} r={4} color="#120f0c" />
-          <Circle cx={0} cy={0} r={h * 0.6}>
-            <RadialGradient c={vec(-h * 0.25, -h * 0.25)} r={h * 0.9} colors={['#4a4038', '#2c2621', '#171411']} />
-          </Circle>
-          <Circle cx={0} cy={0} r={h * 0.2}>
-            <RadialGradient c={vec(-h * 0.07, -h * 0.08)} r={h * 0.3} colors={['#7a6f64', '#3b342e', '#1d1916']} />
-          </Circle>
-        </Group>
-      );
+      return spec.rig === 'combo' ? 'speaker12' : 'bassCab';
     case 'mic':
-      return (
-        <Group>
-          {ring}
-          <RoundedRect x={-h * 0.85} y={-h * 0.13} width={h * 1.25} height={h * 0.26} r={h * 0.13}>
-            <LinearGradient start={vec(0, -h * 0.13)} end={vec(0, h * 0.13)} colors={['#4b4e57', '#1b1c20', '#0b0b0d']} />
-          </RoundedRect>
-          <RoundedRect x={-h * 0.95} y={-h * 0.19} width={h * 0.36} height={h * 0.38} r={h * 0.12}>
-            <LinearGradient start={vec(0, -h * 0.2)} end={vec(0, h * 0.2)} colors={[...CHROME]} />
-          </RoundedRect>
-          <Path path={(() => { const p = make(); p.moveTo(h * 0.3, 0); p.lineTo(h * 0.55, h * 0.1); p.lineTo(h * 0.55, h * 0.95); return p; })()} style="stroke" strokeWidth={h * 0.08} color="#2a2c32" />
-        </Group>
-      );
+      return 'mic';
     case 'desk':
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <Path path={(() => { const p = make(); p.moveTo(-h * 0.95, h * 0.6); p.lineTo(h * 0.95, h * 0.6); p.lineTo(h * 0.75, -h * 0.5); p.lineTo(-h * 0.75, -h * 0.5); p.close(); return p; })()}>
-            <LinearGradient start={vec(0, -h * 0.5)} end={vec(0, h * 0.6)} colors={['#4b4e57', '#26282e', '#121316']} />
-          </Path>
-          {[0, 1, 2, 3].map((i) => (
-            <Group key={i}>
-              <RoundedRect x={-h * 0.55 + i * h * 0.36} y={-h * 0.3} width={h * 0.06} height={h * 0.75} r={2} color="#0b0b0d" />
-              <RoundedRect x={-h * 0.62 + i * h * 0.36} y={-h * 0.05 + (i % 2) * h * 0.2} width={h * 0.2} height={h * 0.12} r={2} color="#e1e4ea" />
-            </Group>
-          ))}
-        </Group>
-      );
-    case 'keys': {
-      // An electric piano seen from above at an angle: its case, the white
-      // keys with the black keys between, a dark lid over the action.
-      const x0 = -h * 0.95;
-      const W = h * 1.9;
-      const whites = 9;
-      const kw = (W - h * 0.16) / whites;
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <RoundedRect x={x0} y={-h * 0.62} width={W} height={h * 1.2} r={6}>
-            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={[...TOLEX]} />
-          </RoundedRect>
-          <RoundedRect x={x0 + h * 0.08} y={-h * 0.52} width={W - h * 0.16} height={h * 0.42} r={3}>
-            <LinearGradient start={vec(0, -h * 0.52)} end={vec(0, -h * 0.1)} colors={['#4b4e57', '#26282e', '#121316']} />
-          </RoundedRect>
-          {Array.from({ length: whites }, (_, i) => (
-            <RoundedRect key={`w${i}`} x={x0 + h * 0.08 + i * kw + 0.6} y={-h * 0.04} width={kw - 1.2} height={h * 0.58} r={1.5}>
-              <LinearGradient start={vec(0, -h * 0.04)} end={vec(0, h * 0.54)} colors={['#fbfbf8', '#e3e1da', '#b9b6ad']} />
-            </RoundedRect>
-          ))}
-          {[0, 1, 3, 4, 5, 7].map((i) => (
-            <RoundedRect key={`b${i}`} x={x0 + h * 0.08 + (i + 1) * kw - kw * 0.3} y={-h * 0.04} width={kw * 0.6} height={h * 0.34} r={1.2} color="#0d0d10" />
-          ))}
-        </Group>
-      );
-    }
+      return 'desk';
+    case 'keys':
+      return spec.icons?.amp === 'keysAmp' ? 'wurli' : 'rhodes';
     case 'keysAmp':
-      // The amplifier INSIDE the instrument: a small board on its rail.
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <RoundedRect x={-h * 0.8} y={-h * 0.5} width={h * 1.6} height={h * 1.0} r={4}>
-            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={['#3d7a52', '#1f4a31', '#0f2618']} />
-          </RoundedRect>
-          <RoundedRect x={-h * 0.8} y={-h * 0.5} width={h * 1.6} height={h * 1.0} r={4} style="stroke" strokeWidth={1} color="#08080a" />
-          {[-0.45, 0, 0.45].map((u) => (
-            <Circle key={u} cx={u * h} cy={-h * 0.12} r={h * 0.16}>
-              <RadialGradient c={vec(u * h - 3, -h * 0.18)} r={h * 0.24} colors={['#e9d7a8', '#9a7a3a', '#3c2c10']} />
-            </Circle>
-          ))}
-          {[-0.55, -0.2, 0.15, 0.5].map((u) => (
-            <RoundedRect key={`r${u}`} x={u * h} y={h * 0.18} width={h * 0.2} height={h * 0.12} r={2} color="#c8ccd4" />
-          ))}
-        </Group>
-      );
-    case 'lidSpeakers': {
-      // The lid seen from the player's side: two small oval speakers.
-      const oval = (cx: number) => {
-        const p = make();
-        p.addOval(Skia.XYWHRect(cx - h * 0.36, -h * 0.2, h * 0.72, h * 0.4));
-        return p;
-      };
-      return (
-        <Group>
-          {ring}
-          {shadow}
-          <RoundedRect x={-h * 0.95} y={-h * 0.45} width={h * 1.9} height={h * 0.9} r={8}>
-            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={['#7a3a2c', '#4a1e16', '#26100c']} />
-          </RoundedRect>
-          {[-0.45, 0.45].map((u) => (
-            <Group key={u}>
-              <Path path={oval(u * h)}>
-                <RadialGradient c={vec(u * h - h * 0.08, -h * 0.06)} r={h * 0.4} colors={[...SPEAKER_CONE]} />
-              </Path>
-              <Path path={oval(u * h)} style="stroke" strokeWidth={1.4} color="#d8d2c4" opacity={0.6} />
-              <Circle cx={u * h} cy={0} r={h * 0.07} color="#1b1714" />
-            </Group>
-          ))}
-        </Group>
-      );
-    }
+      return 'wurliAmp';
+    case 'lidSpeakers':
+      return 'wurliLid';
     default:
-      return null;
+      return 'combo';
   }
 }
-const SPEAKER_CONE = ['#4a4038', '#2c2621', '#171411'] as const;
+
+/** One node's drawing, centred at 0, 0, in a box of side S (chainIcons.tsx). */
+function NodeIcon({ art, S, lit, out }: { art: IconArt; S: number; lit: boolean; out: 'right' | 'down' }) {
+  const h = S / 2;
+  return (
+    <Group>
+      {lit ? <RoundedRect x={-h - 6} y={-h - 6} width={S + 12} height={S + 12} r={10} style="stroke" strokeWidth={3} color={AMBER} /> : null}
+      <ChainIcon art={art} S={S} out={out} />
+    </Group>
+  );
+}
 
 const LINK_LOOK: Record<ChainLink['kind'], { color: string; w: number; dash: number[] | null }> = {
   instrument: { color: CABLE, w: 3, dash: null },
@@ -294,10 +111,18 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
       if (a.y === b.y) {
         p.moveTo(a.x + S * 0.5, a.y);
         p.lineTo(b.x - S * 0.5, b.y);
+      } else if (b.y > a.y && l.to === 'dibox') {
+        // Down into the DI box's input jack, at its far (left) end.
+        p.moveTo(a.x, a.y + S * 0.5);
+        p.cubicTo(a.x, a.y + S * 0.5 + (b.y - a.y) * 0.4, b.x - S * 0.8, b.y + S * 0.1, b.x - S * 0.5, b.y + S * 0.1);
       } else if (b.y > a.y) {
         // Down to a lower lane.
         p.moveTo(a.x, a.y + S * 0.5);
         p.cubicTo(a.x, (a.y + b.y) / 2, b.x, (a.y + b.y) / 2, b.x, b.y - S * 0.42);
+      } else if (l.from === 'dibox' && l.kind === 'instrument') {
+        // The DI's THRU, from the same end as its input, up to the next box.
+        p.moveTo(a.x - S * 0.5, a.y);
+        p.cubicTo(a.x - S * 0.95, a.y - S * 0.15, b.x - S * 0.95, b.y + S * 0.35, b.x - S * 0.5, b.y + S * 0.1);
       } else {
         // Up from a lower lane to the air lane (or along it to the desk).
         const toDesk = l.to === 'desk';
@@ -353,8 +178,9 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
               return (
                 <Group key={i}>
                   {Array.from({ length: n }, (_, k) => {
-                    const x = a.x + S * 0.6 + ((b.x - a.x - S * 1.2) * (k + 0.5)) / n;
-                    const r = S * 0.28 + k * S * 0.05;
+                    // Each arc's front stays clear of the mic's grille (the icon sits right of its centre).
+                    const r = S * 0.24 + k * S * 0.045;
+                    const x = a.x + S * 0.55 + ((b.x - a.x - S * 0.95) * (k + 1)) / n - r;
                     const q = make();
                     q.addArc(Skia.XYWHRect(x - r, a.y - r, 2 * r, 2 * r), -40, 80);
                     return <Path key={k} path={q} style="stroke" strokeWidth={2.4} color={BLUE} opacity={0.9 - k * 0.12} />;
@@ -383,7 +209,7 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
             const p = at(n);
             return (
               <Group key={n.id} transform={[{ translateX: p.x }, { translateY: p.y }]}>
-                <NodeIcon kind={n.kind} S={S} lit={highlight === n.id} />
+                <NodeIcon art={artOf(n, spec)} S={S} lit={highlight === n.id} out={n.id === 'player' && spec.diBox ? 'down' : 'right'} />
               </Group>
             );
           })}

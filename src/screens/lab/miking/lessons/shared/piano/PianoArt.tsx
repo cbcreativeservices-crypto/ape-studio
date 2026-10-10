@@ -173,6 +173,9 @@ type GrandPlanPaths = {
   bridgePins: SkPath;
   steel: SkPath;
   copper: SkPath;
+  backs: SkPath;
+  hitch: SkPath;
+  bolts: SkPath;
   capo: SkPath;
   pins: SkPath;
   dampers: SkPath;
@@ -228,6 +231,23 @@ function grandPlanPaths(id: GrandId): GrandPlanPaths {
   const steel = make();
   const copper = make();
   for (const s of g.strings) seg(s.bass ? copper : steel, s.a[0], s.a[1], s.b[0], s.b[1]);
+  // Past the bridge each string runs a short back length to its hitch pin on
+  // the plate (≈ 25–60 mm; drawn 25 so it stays inside the case).
+  const backs = make();
+  const hitch = make();
+  for (const s of g.strings) {
+    const dx = s.b[0] - s.a[0];
+    const dz = s.b[1] - s.a[1];
+    const l = Math.hypot(dx, dz) || 1;
+    const ex = s.b[0] + (dx / l) * 25;
+    const ez = s.b[1] + (dz / l) * 25;
+    seg(backs, s.b[0], s.b[1], ex, ez);
+    oval(hitch, ex, ez, 3.2, 3.2);
+  }
+  // Plate bolts round the frame's edge (it is bolted to the rim and beams).
+  const bolts = make();
+  const edge = inset(g.inner, 34);
+  for (let i = 0; i < edge.length; i += 2) if (edge[i][0] > -60) oval(bolts, edge[i][0], edge[i][1], 9, 9);
   // The capo / agraffe line along the strings' front ends.
   const capo = make();
   const fronts = g.strings.filter((s) => !s.bass).map((s) => s.a);
@@ -254,7 +274,7 @@ function grandPlanPaths(id: GrandId): GrandPlanPaths {
   rect(cheeks, g.xKey, -KEYS_Z0 + 2, -140, g.hw);
   const shadow = poly(g.outline);
   const hammerLine = seg(make(), 0, KEYS_Z0, 0, -KEYS_Z0);
-  const out = { outline, inner, grain, plate, plateEdge, struts, holes, holeRims, longBridge, bassBridge, bridgePins, steel, copper, capo, pins, dampers, damperTops, desk, fallboard, cheeks, shadow, hammerLine };
+  const out = { outline, inner, grain, plate, plateEdge, struts, holes, holeRims, longBridge, bassBridge, bridgePins, steel, copper, backs, hitch, bolts, capo, pins, dampers, damperTops, desk, fallboard, cheeks, shadow, hammerLine };
   planCache.set(id, out);
   return out;
 }
@@ -298,7 +318,7 @@ function lidPaths(id: GrandId, state: LidState): LidPaths {
   const stickSideHi = make();
   if (st) {
     seg(stickSide, st.a.x, st.a.y, st.b.x, st.b.y);
-    seg(stickSideHi, st.a.x - 3, st.a.y, st.b.x - 3, st.b.y);
+    seg(stickSideHi, st.a.x - 5, st.a.y - 16, st.b.x - 5, st.b.y + 10);
   }
   const out = { top, edge, hinge, knuckles, stickPlan, side, sideEdge, sideUnder, stickSide, stickSideHi };
   lidCache.set(key, out);
@@ -350,6 +370,12 @@ export function GrandPlan({ id, lid, dim = 1 }: { id: GrandId; lid: LidState; di
       <Path path={p.steel} style="stroke" strokeWidth={1.8} color={P.STEEL} />
       <Path path={p.copper} style="stroke" strokeWidth={5.5} color="#6b3f17" />
       <Path path={p.copper} style="stroke" strokeWidth={3.4} color={P.COPPER} />
+      <Path path={p.backs} style="stroke" strokeWidth={1.6} color="#9aa0ab" opacity={0.8} />
+      <Path path={p.hitch} color="#3a3d45" />
+      <Path path={p.bolts}>
+        <RadialGradient c={vec(0, 0)} r={2400} colors={['#e7c26a', '#8f6a22']} />
+      </Path>
+      <Path path={p.bolts} style="stroke" strokeWidth={2} color="#3a2a0c" opacity={0.8} />
       <Path path={p.capo} style="stroke" strokeWidth={10} strokeJoin="round" color="#b88d36" />
       <Path path={p.pins} color="#8e939d" />
       <Path path={p.pins} style="stroke" strokeWidth={1.4} color="#2a2c32" />
@@ -418,9 +444,17 @@ type GrandSidePaths = {
   desk: SkPath;
   deskLedge: SkPath;
   legs: SkPath;
+  legBlocks: SkPath;
+  legHi: SkPath;
+  ferrules: SkPath;
+  casterHorns: SkPath;
   casters: SkPath;
   lyre: SkPath;
+  pedalBox: SkPath;
+  lyreBraces: SkPath;
   pedals: SkPath;
+  pedalHi: SkPath;
+  blackSide: SkPath;
   rimTopLine: SkPath;
 };
 const sideCache = new Map<GrandId, GrandSidePaths>();
@@ -464,9 +498,10 @@ function grandSidePaths(id: GrandId): GrandSidePaths {
   for (const d of [-1.5, 1.5]) seg(steel, -130, d, longEnd, d);
   const copper = make();
   for (const d of [-20, -16]) seg(copper, -190, d, bassEnd, d);
-  const pinBlock = rrect(make(), -300, 2, -150, 120, 6);
+  // The pin block (laminated maple ≈ 40 thick) under the plate, above the action.
+  const pinBlock = rrect(make(), -300, 26, -150, 54, 4);
   const pins = make();
-  for (let x = -290; x <= -185; x += 21) rrect(pins, x, -40, x + 8, 4, 2);
+  for (let x = -290; x <= -185; x += 21) rrect(pins, x, -40, x + 8, 26, 2);
   // One key and its action at the hammer line (rest position).
   const key = rrect(make(), g.xKey, KEY_TOP_Y, -120, KEY_TOP_Y + 24, 3);
   const keyTop = rect(make(), g.xKey, KEY_TOP_Y, g.xKey + KEY_DIMS.whiteLen.mm, KEY_TOP_Y + 6);
@@ -493,31 +528,81 @@ function grandSidePaths(id: GrandId): GrandSidePaths {
   desk.lineTo(g.desk.x1 - 16, g.desk.y0);
   desk.close();
   const deskLedge = rrect(make(), g.desk.x0 - 30, g.desk.y1 - 6, g.desk.x0 + 34, g.desk.y1 + 10, 4);
+  // LEGS (code comment only): a grand's leg ≈ 600 long from the case bottom
+  // to the floor, square and tapered ≈ 120 → 80, on a leg block under the
+  // case; a brass ferrule and a horned caster (wheel ≈ Ø 55) at the foot.
+  // The near (treble) front leg and the tail leg show; the bass front leg is
+  // hidden behind the treble one.
+  const F = FLOOR_Y;
   const legs = make();
+  const legBlocks = make();
+  const legHi = make();
+  const ferrules = make();
+  const casterHorns = make();
   const casters = make();
   const legXs = [g.legs[0].x, g.legs[2].x];
   for (const lx of legXs) {
-    legs.moveTo(lx - 62, bot);
-    legs.lineTo(lx + 62, bot);
-    legs.lineTo(lx + 38, FLOOR_Y - 64);
-    legs.lineTo(lx - 38, FLOOR_Y - 64);
+    rrect(legBlocks, lx - 80, bot, lx + 80, bot + 48, 6);
+    legs.moveTo(lx - 60, bot + 48);
+    legs.lineTo(lx + 60, bot + 48);
+    legs.lineTo(lx + 40, F - 112);
+    legs.lineTo(lx - 40, F - 112);
     legs.close();
-    oval(casters, lx, FLOOR_Y - 32, 30, 30);
+    seg(legHi, lx - 50, bot + 56, lx - 32, F - 118);
+    rrect(ferrules, lx - 46, F - 114, lx + 46, F - 82, 6);
+    casterHorns.moveTo(lx - 30, F - 82);
+    casterHorns.lineTo(lx + 30, F - 82);
+    casterHorns.lineTo(lx + 22, F - 40);
+    casterHorns.lineTo(lx - 10, F - 30);
+    casterHorns.close();
+    oval(casters, lx + 4, F - 27, 27, 27);
   }
+  // THE PEDAL LYRE (code comment only): the lyre ≈ 450 wide, seen edge-on
+  // from the side as one post ≈ 60 deep; the pedal box ≈ 140 deep × 75
+  // high, ≈ 45 off the floor; three brass pedals ≈ 40 wide standing ≈ 130
+  // out toward the pianist (seen one behind another); two lyre braces
+  // (rods) running back up to the case bottom.
+  const L0 = g.lyre.x;
   const lyre = make();
-  rrect(lyre, g.lyre.x - 60, bot, g.lyre.x - 42, FLOOR_Y - 70, 6);
-  rrect(lyre, g.lyre.x + 42, bot, g.lyre.x + 60, FLOOR_Y - 70, 6);
-  rrect(lyre, g.lyre.x - 80, FLOOR_Y - 92, g.lyre.x + 80, FLOOR_Y - 48, 10);
+  rrect(lyre, L0 - 62, bot, L0 + 62, bot + 30, 6);
+  lyre.moveTo(L0 - 26, bot + 30);
+  lyre.cubicTo(L0 - 46, bot + 200, L0 - 46, F - 260, L0 - 30, F - 120);
+  lyre.lineTo(L0 + 30, F - 120);
+  lyre.cubicTo(L0 + 46, F - 260, L0 + 46, bot + 200, L0 + 26, bot + 30);
+  lyre.close();
+  const pedalBox = rrect(make(), L0 - 70, F - 122, L0 + 70, F - 46, 10);
+  const lyreBraces = make();
+  seg(lyreBraces, L0 + 60, F - 100, L0 + 430, bot + 4);
   const pedals = make();
-  pedals.moveTo(g.lyre.x - 70, FLOOR_Y - 70);
-  pedals.lineTo(g.lyre.x - 170, FLOOR_Y - 62);
-  pedals.lineTo(g.lyre.x - 172, FLOOR_Y - 50);
-  pedals.lineTo(g.lyre.x - 70, FLOOR_Y - 56);
+  pedals.moveTo(L0 - 70, F - 90);
+  pedals.lineTo(L0 - 168, F - 84);
+  pedals.quadTo(L0 - 202, F - 82, L0 - 200, F - 70);
+  pedals.lineTo(L0 - 168, F - 70);
+  pedals.lineTo(L0 - 70, F - 74);
   pedals.close();
+  const pedalHi = seg(make(), L0 - 74, F - 88, L0 - 186, F - 81);
+  // The black key's profile on the end key (raised ≈ 12 at the back half).
+  const blackSide = rrect(make(), g.xKey + 55, KEY_TOP_Y - 12, g.xKey + KEY_DIMS.whiteLen.mm, KEY_TOP_Y + 4, 2);
   const rimTopLine = seg(make(), -140, top, g.tail.cx, top);
-  const out = { floorShadow, farWall, ghost, bottom, board, ribs, plate, capoBar, bridge, steel, copper, pinBlock, pins, key, keyTop, keybed, slip, actionFrame, shank, hammer, damperBlock, damperFelt, damperWire, fallboard, desk, deskLedge, legs, casters, lyre, pedals, rimTopLine };
+  const out = { floorShadow, farWall, ghost, bottom, board, ribs, plate, capoBar, bridge, steel, copper, pinBlock, pins, key, keyTop, keybed, slip, actionFrame, shank, hammer, damperBlock, damperFelt, damperWire, fallboard, desk, deskLedge, legs, legBlocks, legHi, ferrules, casterHorns, casters, lyre, pedalBox, lyreBraces, pedals, pedalHi, blackSide, rimTopLine };
   sideCache.set(id, out);
   return out;
+}
+
+/** A diagonal reflection band across the lid's lacquered underside. */
+const sheenCache = new Map<GrandId, SkPath>();
+function lidSheen(g: GrandGeom): SkPath {
+  const hit = sheenCache.get(g.spec.id);
+  if (hit) return hit;
+  const x0 = g.xKey + 200;
+  const p = poly([
+    [x0, g.rimTop - 1200],
+    [x0 + 260, g.rimTop - 1200],
+    [x0 + 900, g.rimTop + 10],
+    [x0 + 640, g.rimTop + 10],
+  ]);
+  sheenCache.set(g.spec.id, p);
+  return p;
 }
 
 export function GrandSide({ id, lid, dim = 1 }: { id: GrandId; lid: LidState; dim?: number }) {
@@ -532,30 +617,59 @@ export function GrandSide({ id, lid, dim = 1 }: { id: GrandId; lid: LidState; di
         <BlurMask blur={24} style="normal" />
       </Path>
       {/* legs and the pedal lyre */}
-      <Path path={p.legs}>
-        <LinearGradient start={vec(g.legs[0].x - 60, 0)} end={vec(g.legs[0].x + 60, 0)} colors={['#3a3c44', '#141418', '#08080a']} />
-      </Path>
-      <Path path={p.legs} style="stroke" strokeWidth={3} color="#6a6f7a" opacity={0.6} />
-      <Path path={p.casters}>
-        <LinearGradient start={vec(0, FLOOR_Y - 62)} end={vec(0, FLOOR_Y)} colors={['#c9a85a', '#7a5a20']} />
-      </Path>
+      {/* the pedal lyre: its braces, the lyre edge-on, the pedal box, pedals */}
+      <Path path={p.lyreBraces} style="stroke" strokeWidth={14} strokeCap="round" color="#141418" />
+      <Path path={p.lyreBraces} style="stroke" strokeWidth={3} strokeCap="round" color="#8a8f99" opacity={0.6} />
       <Path path={p.lyre}>
-        <LinearGradient start={vec(g.lyre.x - 80, 0)} end={vec(g.lyre.x + 80, 0)} colors={['#3a3c44', '#141418', '#08080a']} />
+        <LinearGradient start={vec(g.lyre.x - 46, 0)} end={vec(g.lyre.x + 46, 0)} colors={[...P.LACQUER]} positions={[...P.LACQUER_POS]} />
       </Path>
+      <Path path={p.lyre} style="stroke" strokeWidth={2.5} color="#6a6f7a" opacity={0.5} />
       <Path path={p.pedals}>
-        <LinearGradient start={vec(0, FLOOR_Y - 70)} end={vec(0, FLOOR_Y - 48)} colors={['#f3d98d', '#a37a2a']} />
+        <LinearGradient start={vec(0, FLOOR_Y - 90)} end={vec(0, FLOOR_Y - 70)} colors={['#fff0c2', '#e7c26a', '#8f6a22']} />
       </Path>
-      {/* the lid, seen from the curved side: the "sail", translucent */}
+      <Path path={p.pedalHi} style="stroke" strokeWidth={3} strokeCap="round" color="#fff6d8" opacity={0.8} />
+      <Path path={p.pedalBox}>
+        <LinearGradient start={vec(g.lyre.x - 70, FLOOR_Y - 122)} end={vec(g.lyre.x + 70, FLOOR_Y - 46)} colors={[...P.LACQUER]} positions={[...P.LACQUER_POS]} />
+      </Path>
+      <Path path={p.pedalBox} style="stroke" strokeWidth={2.5} color="#8a8f99" opacity={0.5} />
+      {/* legs on their blocks, brass ferrules and casters (the near treble
+          leg stands in front of the lyre) */}
+      <Path path={p.casterHorns}>
+        <LinearGradient start={vec(0, FLOOR_Y - 82)} end={vec(0, FLOOR_Y - 30)} colors={['#e9cf86', '#8a6a2a']} />
+      </Path>
+      <Path path={p.casters}>
+        <LinearGradient start={vec(0, FLOOR_Y - 54)} end={vec(0, FLOOR_Y)} colors={['#f3d98d', '#a37a2a', '#4a3510']} />
+      </Path>
+      <Path path={p.casters} style="stroke" strokeWidth={3} color="#2a1e08" opacity={0.8} />
+      {[g.legs[0].x, g.legs[2].x].map((lx) => (
+        <Group key={lx} clip={rrect(make(), lx - 90, g.caseBottom, lx + 90, FLOOR_Y, 0)}>
+          <Path path={p.legs}>
+            <LinearGradient start={vec(lx - 60, 0)} end={vec(lx + 60, 0)} colors={[...P.LACQUER]} positions={[...P.LACQUER_POS]} />
+          </Path>
+          <Path path={p.ferrules}>
+            <LinearGradient start={vec(lx - 46, 0)} end={vec(lx + 46, 0)} colors={['#a37a2a', '#f6dd95', '#cfa64b', '#5c4313']} />
+          </Path>
+        </Group>
+      ))}
+      <Path path={p.legHi} style="stroke" strokeWidth={5} strokeCap="round" color="#c8ccd4" opacity={0.55} />
+      <Path path={p.legs} style="stroke" strokeWidth={2.5} color="#000" opacity={0.7} />
+      <Path path={p.legBlocks}>
+        <LinearGradient start={vec(0, g.caseBottom)} end={vec(0, g.caseBottom + 48)} colors={['#3e4048', '#141418', '#08080a']} />
+      </Path>
+      {/* the lid, seen from the curved side: its black-lacquered underside
+          (the "sail"), a soft reflection, the lit free edge */}
       {lid !== 'off' ? (
         <Group>
-          <Path path={L.side} opacity={raised ? 0.86 : 0.95}>
-            <LinearGradient start={vec(g.xKey, -1000)} end={vec(g.xTail, g.rimTop)} colors={['#62656f', '#383a42', '#1c1d22']} />
+          <Path path={L.side} opacity={raised ? 0.96 : 0.98}>
+            <LinearGradient start={vec(g.xKey, -1000)} end={vec(g.xTail, g.rimTop)} colors={['#5c606a', '#34363d', '#1c1d22', '#2a2b31']} positions={[0, 0.3, 0.75, 1]} />
           </Path>
-          {/* the underside's satin sheen, lit from the upper left */}
-          <Path path={L.side} opacity={raised ? 0.35 : 0.2}>
-            <LinearGradient start={vec(g.xKey, -900)} end={vec(g.xKey + 900, -200)} colors={['rgba(255,255,255,0.28)', 'rgba(255,255,255,0)']} />
-          </Path>
-          <Path path={L.sideEdge} style="stroke" strokeWidth={6} color="#c8ccd4" opacity={0.6} />
+          <Group clip={L.side}>
+            <Path path={lidSheen(g)} opacity={raised ? 0.8 : 0.35}>
+              <LinearGradient start={vec(g.xKey, -900)} end={vec(g.xKey + 700, -200)} colors={['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.06)']} />
+            </Path>
+          </Group>
+          <Path path={L.side} style="stroke" strokeWidth={3} color="#000" opacity={0.8} />
+          <Path path={L.sideEdge} style="stroke" strokeWidth={7} color="#c8ccd4" opacity={0.7} />
         </Group>
       ) : null}
       {/* the far wall's inner face and the case floor */}
@@ -592,6 +706,9 @@ export function GrandSide({ id, lid, dim = 1 }: { id: GrandId; lid: LidState; di
         <LinearGradient start={vec(0, KEY_TOP_Y)} end={vec(0, KEY_TOP_Y + 24)} colors={['#d8c79f', '#9c855a']} />
       </Path>
       <Path path={p.keyTop} color={P.IVORY[0]} />
+      <Path path={p.blackSide}>
+        <LinearGradient start={vec(0, KEY_TOP_Y - 12)} end={vec(0, KEY_TOP_Y + 4)} colors={[...P.EBONY]} />
+      </Path>
       <Path path={p.shank} style="stroke" strokeWidth={8} strokeCap="round" color="#b89260" />
       <Path path={p.hammer}>
         <LinearGradient start={vec(-26, 30)} end={vec(24, 78)} colors={['#fbf6e8', P.FELT, '#b9ad92']} />
@@ -619,8 +736,13 @@ export function GrandSide({ id, lid, dim = 1 }: { id: GrandId; lid: LidState; di
       {/* the stick, on the near (treble) rim */}
       {st ? (
         <Group>
-          <Path path={L.stickSide} style="stroke" strokeWidth={16} strokeCap="round" color="#0f0f12" />
-          <Path path={L.stickSideHi} style="stroke" strokeWidth={4} strokeCap="round" color="#8a8f99" opacity={0.7} />
+          {/* a turned prop ≈ Ø 25, black lacquer, in a brass socket on the rim */}
+          <Path path={L.stickSide} style="stroke" strokeWidth={26} strokeCap="round" color="#000" opacity={0.6} />
+          <Path path={L.stickSide} style="stroke" strokeWidth={20} strokeCap="round" color="#17181c" />
+          <Path path={L.stickSideHi} style="stroke" strokeWidth={5} strokeCap="round" color="#c8ccd4" opacity={0.75} />
+          <Path path={rrect(make(), st.a.x - 24, st.a.y - 14, st.a.x + 24, st.a.y + 4, 4)}>
+            <LinearGradient start={vec(st.a.x - 24, 0)} end={vec(st.a.x + 24, 0)} colors={['#a37a2a', '#f6dd95', '#5c4313']} />
+          </Path>
         </Group>
       ) : null}
     </Group>
@@ -664,24 +786,52 @@ function uprightSidePaths(panelOn: boolean, wallX: number, topClosed: boolean): 
   for (let y = u.strings.y0 - 50; y >= u.yTop + 60; y -= 26) rrect(pins, -30, y, 0, y + 8, 2);
   out.pins = pins;
   out.strings = seg(make(), 0, u.strings.y0, 0, u.strings.y1);
-  // The action: hammer at rest in front of the strings at the hammer line,
-  // its shank down to the butt; the damper above it; brackets.
+  // The bass strings cross over the rest, in a plane just in front.
+  out.bassStrings = seg(make(), -12, u.strings.y0 + 240, -12, u.strings.y1 - 10);
+  // THE ACTION (code comment only, mm; a modern upright's, at the hammer
+  // line hy): the hammer head ≈ 50 deep × 55 tall, its crown ≈ 45 in front of
+  // the strings at rest; the shank ≈ 150 down to the butt on the main
+  // (centre) rail; the hammer (rest) rail in front of the shanks; the
+  // UNDER-DAMPER pressing the strings just below the strike, its lever down
+  // to the main rail; the wippen and jack over the key's capstan; the action
+  // brackets standing on the key frame.
   const hy = u.hammerY;
   const hammer = make();
-  hammer.moveTo(-70, hy - 26);
-  hammer.quadTo(-12, hy - 30, -6, hy);
-  hammer.quadTo(-12, hy + 30, -70, hy + 26);
+  hammer.moveTo(-96, hy - 27);
+  hammer.cubicTo(-70, hy - 29, -48, hy - 14, -45, hy);
+  hammer.cubicTo(-48, hy + 14, -70, hy + 29, -96, hy + 27);
   hammer.close();
   out.hammer = hammer;
-  out.shank = seg(make(), -66, hy, -150, hy + 150);
-  out.butt = rrect(make(), -186, hy + 140, -120, hy + 196, 10);
-  out.damper = rrect(make(), -36, hy - 150, -4, hy - 80, 5);
-  out.damperLever = seg(make(), -24, hy - 80, -150, hy + 40);
+  out.molding = rrect(make(), -106, hy - 16, -88, hy + 20, 4);
+  out.shank = seg(make(), -100, hy + 10, -118, hy + 150);
+  out.butt = rrect(make(), -142, hy + 128, -94, hy + 176, 10);
+  out.mainRail = rrect(make(), -176, hy + 140, -140, hy + 196, 5);
+  out.restRail = rrect(make(), -142, hy + 64, -120, hy + 90, 4);
+  out.damper = rrect(make(), -30, hy + 50, -10, hy + 116, 4);
+  out.damperFelt = rrect(make(), -10, hy + 54, 0, hy + 112, 3);
+  out.damperLever = seg(make(), -22, hy + 116, -70, hy + 186);
   const brackets = make();
-  rrect(brackets, u.actionFront, hy + 196, u.actionFront + 26, u.keyTopY - 6, 4);
-  rrect(brackets, u.actionFront, hy - 210, u.actionFront + 22, hy - 160, 4);
+  rrect(brackets, u.actionFront - 6, hy - 60, u.actionFront + 12, u.keyTopY - 6, 4);
+  rrect(brackets, u.actionFront - 6, hy + 150, -150, hy + 166, 4);
   out.brackets = brackets;
-  out.wippen = rrect(make(), -200, u.keyTopY - 40, -110, u.keyTopY - 8, 6);
+  const wippen = make();
+  wippen.moveTo(-224, u.keyTopY - 26);
+  wippen.lineTo(-104, hy + 196);
+  wippen.lineTo(-100, hy + 210);
+  wippen.lineTo(-220, u.keyTopY - 12);
+  wippen.close();
+  out.wippen = wippen;
+  out.jack = rrect(make(), -126, hy + 172, -114, hy + 200, 2);
+  out.capstan = rrect(make(), u.lower.x - 28, u.keyTopY - 20, u.lower.x - 14, u.keyTopY, 2);
+  // The key frame under the keys: front, balance and back rails on it.
+  const rails = make();
+  rrect(rails, u.xKey + 40, u.keyTopY + 24, u.xKey + 70, u.keyTopY + 50, 3);
+  rrect(rails, -420, u.keyTopY + 24, -386, u.keyTopY + 54, 3);
+  rrect(rails, u.lower.x - 50, u.keyTopY + 24, u.lower.x - 14, u.keyTopY + 50, 3);
+  rrect(rails, u.xKey + 40, u.keyTopY + 50, u.lower.x, u.keyTopY + 72, 3);
+  out.rails = rails;
+  // The keybed's full thickness under the key frame.
+  out.bedBlock = rect(make(), u.xKey + 30, u.keyTopY + 72, u.lower.x + 10, u.keybedY);
   out.key = rrect(make(), u.xKey, u.keyTopY, u.lower.x - 10, u.keyTopY + 24, 3);
   out.keyTop = rect(make(), u.xKey, u.keyTopY, u.xKey + KEY_DIMS.whiteLen.mm, u.keyTopY + 6);
   out.keybed = rect(make(), u.xKey + 30, u.keybedY, u.lower.x + 10, u.keybedY + 30);
@@ -707,13 +857,17 @@ function uprightSidePaths(panelOn: boolean, wallX: number, topClosed: boolean): 
     out.lid.lineTo(h.x + nx * -20, h.y + ny * -20);
     out.lid.close();
   }
+  // Three brass pedals (seen one behind another) standing ≈ 150 out of the
+  // bottom board's toe rail, ≈ 60 off the floor; the toe rail itself.
   const pedals = make();
-  pedals.moveTo(-480, FLOOR_Y - 52);
-  pedals.lineTo(-640, FLOOR_Y - 46);
-  pedals.lineTo(-642, FLOOR_Y - 34);
-  pedals.lineTo(-480, FLOOR_Y - 38);
+  pedals.moveTo(u.lower.x - 18, FLOOR_Y - 64);
+  pedals.lineTo(u.lower.x - 150, FLOOR_Y - 58);
+  pedals.quadTo(u.lower.x - 180, FLOOR_Y - 56, u.lower.x - 178, FLOOR_Y - 44);
+  pedals.lineTo(u.lower.x - 150, FLOOR_Y - 44);
+  pedals.lineTo(u.lower.x - 18, FLOOR_Y - 48);
   pedals.close();
   out.pedals = pedals;
+  out.toeRail = rrect(make(), u.lower.x - 40, FLOOR_Y - 78, u.lower.x, FLOOR_Y - 8, 4);
   out.wall = rect(make(), wallX, -950, wallX + 60, FLOOR_Y);
   const wallHatch = make();
   for (let y = -950; y < FLOOR_Y + 60; y += 40) seg(wallHatch, wallX + 60, y, wallX + 120, y - 60);
@@ -740,7 +894,7 @@ export function UprightSide({ panelOn = true, dim = 1, wallX, topClosed = false 
       <Path path={p.cheek}>
         <LinearGradient start={vec(u.xKey, u.yTop)} end={vec(u.xBack, FLOOR_Y)} colors={['#3a3c44', '#1d1e23', '#101013']} />
       </Path>
-      <Path path={p.cheek} style="stroke" strokeWidth={12} color="#aab0bc" opacity={0.75} />
+      <Path path={p.cheek} style="stroke" strokeWidth={7} color="#aab0bc" opacity={0.5} />
       <Path path={p.backPosts}>
         <LinearGradient start={vec(60, 0)} end={vec(u.xBack, 0)} colors={['#8a6a3a', '#5a4020']} />
       </Path>
@@ -762,21 +916,44 @@ export function UprightSide({ panelOn = true, dim = 1, wallX, topClosed = false 
         <LinearGradient start={vec(-30, 0)} end={vec(0, 0)} colors={['#eef1f6', '#7a7f8a']} />
       </Path>
       <Path path={p.strings} style="stroke" strokeWidth={4} color={P.STEEL} />
-      {/* the action */}
-      <Path path={p.brackets} color="#52565f" />
-      <Path path={p.damperLever} style="stroke" strokeWidth={6} strokeCap="round" color="#b89260" />
-      <Path path={p.damper}>
-        <LinearGradient start={vec(-36, 0)} end={vec(-4, 0)} colors={['#6a5844', '#3a2f24']} />
+      <Path path={p.bassStrings} style="stroke" strokeWidth={5} color={P.COPPER} opacity={0.9} />
+      {/* the action: brackets, main rail, wippen and jack, the butt and
+          shank, the hammer rest rail, the hammer, the under-damper */}
+      <Path path={p.brackets}>
+        <LinearGradient start={vec(u.actionFront - 6, 0)} end={vec(-150, 0)} colors={['#8a8f99', '#4a4e57']} />
       </Path>
-      <Path path={p.shank} style="stroke" strokeWidth={8} strokeCap="round" color="#b89260" />
-      <Path path={p.butt} color="#7a5a34" />
+      <Path path={p.mainRail}>
+        <LinearGradient start={vec(-176, 0)} end={vec(-140, 0)} colors={['#a77e48', '#6d4a22']} />
+      </Path>
+      <Path path={p.wippen}>
+        <LinearGradient start={vec(0, u.keyTopY - 30)} end={vec(0, u.keyTopY)} colors={['#c39a5e', '#8a6430']} />
+      </Path>
+      <Path path={p.jack} color="#a77e48" />
+      <Path path={p.damperLever} style="stroke" strokeWidth={6} strokeCap="round" color="#c9a26a" />
+      <Path path={p.damper}>
+        <LinearGradient start={vec(-30, 0)} end={vec(-10, 0)} colors={['#8a6a44', '#5a4026']} />
+      </Path>
+      <Path path={p.damperFelt} color={P.FELT_DARK} />
+      <Path path={p.shank} style="stroke" strokeWidth={9} strokeCap="round" color="#c9a26a" />
+      <Path path={p.butt}>
+        <LinearGradient start={vec(-142, 0)} end={vec(-94, 0)} colors={['#a77e48', '#6d4a22']} />
+      </Path>
+      <Path path={p.restRail} color="#4a3a2a" />
+      <Path path={p.molding}>
+        <LinearGradient start={vec(-106, 0)} end={vec(-88, 0)} colors={['#c39a5e', '#7a5a34']} />
+      </Path>
       <Path path={p.hammer}>
-        <LinearGradient start={vec(-70, u.hammerY - 30)} end={vec(-6, u.hammerY + 30)} colors={['#fbf6e8', P.FELT, '#b9ad92']} />
+        <LinearGradient start={vec(-96, u.hammerY - 30)} end={vec(-45, u.hammerY + 30)} colors={['#fbf6e8', P.FELT, '#b9ad92']} />
       </Path>
       <Path path={p.hammer} style="stroke" strokeWidth={2} color="#5a5040" opacity={0.7} />
-      <Path path={p.wippen} color="#7a5a34" />
       {/* keys, keybed, toe block and caster, pedals, panels, top, lid */}
       <Path path={p.keybed} color="#3a2a18" />
+      <Path path={p.bedBlock}>
+        <LinearGradient start={vec(0, u.keyTopY + 72)} end={vec(0, u.keybedY)} colors={['#2a1e12', '#3a2a18']} />
+      </Path>
+      <Path path={p.rails}>
+        <LinearGradient start={vec(0, u.keyTopY + 24)} end={vec(0, u.keyTopY + 72)} colors={['#a77e48', '#6d4a22']} />
+      </Path>
       <Path path={p.toe}>
         <LinearGradient start={vec(u.xKey + 30, 0)} end={vec(u.xKey + 110, 0)} colors={[...P.LACQUER]} positions={[...P.LACQUER_POS]} />
       </Path>
@@ -787,9 +964,13 @@ export function UprightSide({ panelOn = true, dim = 1, wallX, topClosed = false 
         <LinearGradient start={vec(0, u.keyTopY)} end={vec(0, u.keyTopY + 24)} colors={['#d8c79f', '#9c855a']} />
       </Path>
       <Path path={p.keyTop} color={P.IVORY[0]} />
+      <Path path={p.capstan} color="#cfa64b" />
       <Path path={p.slip} color="#0e0e11" />
       <Path path={p.pedals}>
-        <LinearGradient start={vec(0, FLOOR_Y - 52)} end={vec(0, FLOOR_Y - 34)} colors={['#f3d98d', '#a37a2a']} />
+        <LinearGradient start={vec(0, FLOOR_Y - 64)} end={vec(0, FLOOR_Y - 44)} colors={['#fff0c2', '#e7c26a', '#8f6a22']} />
+      </Path>
+      <Path path={p.toeRail}>
+        <LinearGradient start={vec(u.lower.x - 40, 0)} end={vec(u.lower.x, 0)} colors={['#3e4048', '#0c0c0f']} />
       </Path>
       <Path path={p.lower}>
         <LinearGradient start={vec(u.lower.x - 18, 0)} end={vec(u.lower.x, 0)} colors={['#3e4048', '#0c0c0f']} />
@@ -837,9 +1018,11 @@ function uprightPlanPaths(): Record<string, SkPath> {
   }
   o.stringLine = seg(make(), 0, -hw + 70, 0, hw - 70);
   o.hammers = make();
-  for (let k = 1; k <= KEYBOARD.keys; k++) rrect(o.hammers, -70, keyZ(k) - 5.5, -8, keyZ(k) + 5.5, 3);
+  for (let k = 1; k <= KEYBOARD.keys; k++) rrect(o.hammers, -96, keyZ(k) - 5.5, -45, keyZ(k) + 5.5, 3);
   o.dampers = make();
-  for (let k = 1; k <= 70; k++) rrect(o.dampers, -36, keyZ(k) - 5, -4, keyZ(k) + 5, 2);
+  // Under-dampers (below the strike, close to the strings): seen from above
+  // between the hammer heads and the strings.
+  for (let k = 1; k <= 70; k++) rrect(o.dampers, -30, keyZ(k) - 5, -2, keyZ(k) + 5, 2);
   o.cheeks = make();
   rect(o.cheeks, u.xKey, -hw, u.panel.x, KEYS_Z0 - 2);
   rect(o.cheeks, u.xKey, -KEYS_Z0 + 2, u.panel.x, hw);
@@ -877,7 +1060,7 @@ export function UprightPlan({ dim = 1 }: { dim?: number }) {
         <Path path={p.strings} style="stroke" strokeWidth={2.4} color={P.STEEL} />
         <Path path={p.dampers} color="#3a2f24" />
         <Path path={p.hammers}>
-          <LinearGradient start={vec(-70, 0)} end={vec(-8, 0)} colors={['#b9ad92', '#fbf6e8']} />
+          <LinearGradient start={vec(-96, 0)} end={vec(-45, 0)} colors={['#b9ad92', '#fbf6e8']} />
         </Path>
       </Group>
       <Path path={p.posts} color="#6a4c26" opacity={0.0} />

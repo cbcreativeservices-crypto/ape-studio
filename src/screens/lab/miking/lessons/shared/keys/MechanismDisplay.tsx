@@ -24,7 +24,7 @@
  */
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
-import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
@@ -35,6 +35,12 @@ import { REED, TINE, cantileverShape, tipSwing } from './keysSpec.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
+function poly(pts: readonly (readonly [number, number])[]): SkPath {
+  const p = make();
+  pts.forEach(([u, v], i) => (i === 0 ? p.moveTo(u, v) : p.lineTo(u, v)));
+  p.close();
+  return p;
+}
 function rr(p: SkPath, u0: number, v0: number, u1: number, v1: number, r: number): SkPath {
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(u0, u1), Math.min(v0, v1), Math.abs(u1 - u0), Math.abs(v1 - v0)), r, r));
   return p;
@@ -139,27 +145,59 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
     const block = make();
     const tonebar = make();
     const rail = make();
+    const grain = make();
     const pickup = make();
     const coil = make();
+    const flange = make();
+    const winding = make();
+    const bracket = make();
+    const screws: { u: number; v: number; r: number }[] = [];
     const field = make();
+    const railRects: [number, number, number, number][] = [];
     if (tine) {
+      // the tine block (steel), the tine swaged into its face; the tonebar
+      // screwed down onto the block's top; the block on the harp's rail
       rr(block, 0, -13, 26, 13, 3);
-      // the tonebar: on top of the block, running forward above the tine
       rr(tonebar, -TINE.tonebarL.mm, -24, 24, -15, 2.5);
-      rr(rail, -6, 13, 44, 34, 3);
-      // the pickup: pole face toward the tine's tip; its coil and rail
+      railRects.push([-6, 13, 44, 34]);
+      screws.push({ u: 13, v: -26, r: 4.4 });
+      // the pickup: a wound coil on its bobbin, the pole piece aimed along
+      // the tine at its tip; held by a steel bracket on the pickup rail
       const f = (S as typeof MECH.tine).pickupFace;
-      rr(pickup, f - 6, -TINE.pickupD.mm / 2, f, TINE.pickupD.mm / 2, 1.5);
-      rr(coil, f - 34, -13, f - 6, 13, 3);
-      rr(rail, f - 44, 15, f + 2, 36, 3);
+      const pr = TINE.pickupD.mm / 2;
+      pickup.addPath(poly([[f - 9, -pr], [f - 1.5, -pr], [f, -pr + 1.5], [f, pr - 1.5], [f - 1.5, pr], [f - 9, pr]]));
+      rr(coil, f - 31, -11, f - 9, 11, 2);
+      rr(flange, f - 35, -15, f - 31, 15, 1.2);
+      rr(flange, f - 9, -15, f - 6, 15, 1.2);
+      for (let i = 1; i < 9; i++) {
+        const u = f - 31 + (22 * i) / 9;
+        winding.moveTo(u, -10.5);
+        winding.lineTo(u + 1.2, 10.5);
+      }
+      bracket.addPath(poly([[f - 30, 15], [f - 12, 15], [f - 12, 17], [f - 4, 17], [f - 4, 21], [f - 34, 21], [f - 34, 15]]));
+      railRects.push([f - 44, 21, f + 2, 42]);
+      screws.push({ u: f - 8, v: 19, r: 2.6 });
       for (const r of [8, 13, 18]) field.addArc(Skia.XYWHRect(f - r, -r, 2 * r, 2 * r), -60, 120);
     } else {
+      // the reed bar (cut), the reed screwed to it; the pickup's comb plate
+      // (one tooth beside the reed's tip, seen through) on its insulated mount
       rr(block, 0, -11, 34, 15, 3);
-      rr(rail, -8, 15, 46, 34, 3);
+      railRects.push([-8, 15, 46, 34]);
+      screws.push({ u: 12, v: -13, r: 4.4 });
       const P = (S as typeof MECH.reed).plate;
       rr(pickup, P.u0, P.v0, P.u1, P.v1, 2);
       rr(coil, P.u0 - 2, P.v0 - 26, P.u1 + 2, P.v0, 3);
+      screws.push({ u: (P.u0 + P.u1) / 2, v: P.v0 - 13, r: 3 });
       for (const r of [6, 11, 16]) field.addArc(Skia.XYWHRect(P.u0 - 4 - r, -r, 2 * r, 2 * r), 120, 120);
+    }
+    // the wood's grain along the rails
+    for (const [x0, y0, x1, y1] of railRects) {
+      rr(rail, x0, y0, x1, y1, 3);
+      for (let i = 1; i < 4; i++) {
+        const y = y0 + ((y1 - y0) * i) / 4;
+        grain.moveTo(x0 + 3, y);
+        grain.cubicTo(x0 + (x1 - x0) * 0.3, y + 1.5, x0 + (x1 - x0) * 0.6, y - 1.5, x1 - 3, y);
+      }
     }
     const scope = rr(make(), FR.scope.u0, FR.scope.v0, FR.scope.u1, FR.scope.v1, 6);
     const grid = make();
@@ -183,20 +221,34 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
     arrow(strikeArrow, S.strikeU + 16, 44, S.strikeU + 16, 10, 7);
     const keyArrow = make();
     arrow(keyArrow, FR.box.u0 + 20, 56, FR.box.u0 + 20, 80, 7);
-    return { block, tonebar, rail, pickup, coil, field, scope, grid, out, outArrow, strikeArrow, keyArrow };
+    return { block, tonebar, rail, grain, pickup, coil, flange, winding, bracket, screws, field, scope, grid, out, outArrow, strikeArrow, keyArrow };
   }, [kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* the key and the hammer (rotated by the reveal) */
-  const keyPath = useMemo(() => rr(make(), MECH.keyFront, MECH.keyV - 9, MECH.keyBack, MECH.keyV + 9, 3), []);
-  const keyTop = useMemo(() => rr(make(), MECH.keyFront, MECH.keyV - 9, MECH.keyFront + 110, MECH.keyV - 5, 2), []);
-  const fulcrum = useMemo(() => {
+  // A key ≈ 22 deep in wood, the moulded key top over its front 135 mm with
+  // its front lip; the balance rail (wood) under the pivot.
+  const keyPath = useMemo(() => rr(make(), MECH.keyFront, MECH.keyV - 9, MECH.keyBack, MECH.keyV + 9, 2), []);
+  const keyTop = useMemo(
+    () =>
+      poly([
+        [MECH.keyFront - 2.5, MECH.keyV - 12],
+        [MECH.keyFront + 135, MECH.keyV - 12],
+        [MECH.keyFront + 135, MECH.keyV - 9],
+        [MECH.keyFront + 1, MECH.keyV - 9],
+        [MECH.keyFront + 1, MECH.keyV + 3],
+        [MECH.keyFront - 2.5, MECH.keyV + 3],
+      ]),
+    [],
+  );
+  const keyGrain = useMemo(() => {
     const p = make();
-    p.moveTo(MECH.fulcrumU - 9, MECH.keyV + 26);
-    p.lineTo(MECH.fulcrumU + 9, MECH.keyV + 26);
-    p.lineTo(MECH.fulcrumU, MECH.keyV + 10);
-    p.close();
+    for (const dv of [-4, 1, 5]) {
+      p.moveTo(MECH.keyFront + 140, MECH.keyV + dv);
+      p.cubicTo(MECH.keyFront + 220, MECH.keyV + dv + 1.2, MECH.keyBack - 120, MECH.keyV + dv - 1.2, MECH.keyBack - 4, MECH.keyV + dv);
+    }
     return p;
   }, []);
+  const fulcrum = useMemo(() => rr(make(), MECH.fulcrumU - 16, MECH.keyV + 12.5, MECH.fulcrumU + 16, MECH.keyV + 25, 2), []);
   const piv = MECH.hammerPivot;
   const hammer = useMemo(() => {
     const arm = make();
@@ -236,6 +288,19 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
   const phase = swing * 3;
   const y = vibrating ? tipSwing(phase, S.amp) * (tremolo ? trem(phase) : 1) : 0;
   const bar = useMemo(() => barLine(S.L, y), [kind, y]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the tine's tuning spring: a small coil slid along the tine (it moves with it)
+  const spring = useMemo(() => {
+    const p = make();
+    if (!tine) return p;
+    for (let i = 0; i <= 6; i++) {
+      const s = 0.74 + (i * 0.05) / 6;
+      const u = -s * S.L;
+      const v = y * cantileverShape(s);
+      p.moveTo(u + 0.6, v - 2.6);
+      p.lineTo(u - 0.6, v + 2.6);
+    }
+    return p;
+  }, [tine, y]); // eslint-disable-line react-hooks/exhaustive-deps
   const ghosts = useMemo(() => {
     const a = barLine(S.L, S.amp);
     const b = barLine(S.L, -S.amp);
@@ -328,53 +393,86 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
         <Path path={rr(make(), FR.box.u0 + 2, -54, FR.box.u1 - 2, 118, 10)}>
           <RadialGradient c={vec(-200, -40)} r={320} colors={['rgba(255,214,160,0.08)', 'rgba(255,214,160,0)']} />
         </Path>
-        {/* the key on its balance point (wood, an ivory top at the front) */}
-        <Path path={fulcrum} color="#5a4a3a" />
+        {/* the key on its balance rail: wood, a moulded key top over the
+            front, the felt washer under it (the key pivots on the rail's pin) */}
+        <Path path={fulcrum}>
+          <LinearGradient start={vec(MECH.fulcrumU - 16, 0)} end={vec(MECH.fulcrumU + 16, 0)} colors={[...SPK.ply.slice(1, 4)]} />
+        </Path>
+        <Path path={fulcrum} style="stroke" strokeWidth={0.8} color={SPK.plyLine} opacity={0.8} />
+        <Path path={rr(make(), MECH.fulcrumU - 8, MECH.keyV + 9, MECH.fulcrumU + 8, MECH.keyV + 12.5, 1)} color="#8e2f28" />
         <Group origin={vec(MECH.fulcrumU, MECH.keyV)} transform={keyXf}>
           <Path path={keyPath}>
-            <LinearGradient start={vec(0, MECH.keyV - 9)} end={vec(0, MECH.keyV + 9)} colors={['#d9a766', '#9c6631', '#5c3417']} />
+            <LinearGradient start={vec(0, MECH.keyV - 9)} end={vec(0, MECH.keyV + 9)} colors={['#e2b57a', '#b07a42', '#6e431f']} />
           </Path>
+          <Path path={keyGrain} style="stroke" strokeWidth={0.6} color="#5c3417" opacity={0.5} />
+          <Path path={keyPath} style="stroke" strokeWidth={0.8} color="#2b170a" opacity={0.7} />
           <Path path={keyTop}>
-            <LinearGradient start={vec(0, MECH.keyV - 9)} end={vec(0, MECH.keyV - 5)} colors={[...KEYS.ivory]} />
+            <LinearGradient start={vec(0, MECH.keyV - 12)} end={vec(0, MECH.keyV - 6)} colors={[...KEYS.ivory]} />
           </Path>
+          <Path path={keyTop} style="stroke" strokeWidth={0.6} color="#7d796f" opacity={0.8} />
         </Group>
-        {/* the hammer, on its pivot */}
-        <Circle cx={piv.u} cy={piv.v} r={7}>
-          <RadialGradient c={vec(piv.u - 2, piv.v - 2)} r={9} colors={[...KEYS.chrome]} />
-        </Circle>
+        {/* the hammer on its flange: a moulded arm, the strike tip on top */}
+        <Path path={rr(make(), piv.u - 12, piv.v - 6, piv.u + 22, piv.v + 8, 3)}>
+          <LinearGradient start={vec(0, piv.v - 6)} end={vec(0, piv.v + 8)} colors={[...SPK.ply.slice(1, 4)]} />
+        </Path>
         <Group origin={vec(piv.u, piv.v)} transform={hammerXf}>
           <Path path={hammer.arm}>
-            <LinearGradient start={vec(S.strikeU, 20)} end={vec(piv.u, piv.v)} colors={['#4b4e57', '#26282e', '#121316']} />
+            <LinearGradient start={vec(S.strikeU, 20)} end={vec(piv.u, piv.v)} colors={tine ? ['#55585f', '#2a2c32', '#121316'] : ['#c79a5e', '#8e5f2c', '#4e3014']} />
           </Path>
+          <Path path={hammer.arm} style="stroke" strokeWidth={0.9} color="#08080a" opacity={0.7} />
           <Path path={hammer.tip}>
-            <LinearGradient start={vec(0, 19)} end={vec(0, 30)} colors={['#3a3a3a', '#1c1c1c', '#0a0a0a']} />
+            <LinearGradient start={vec(0, 19)} end={vec(0, 30)} colors={tine ? ['#3a3a3a', '#1c1c1c', '#0a0a0a'] : ['#f2ede2', '#cfc6b4', '#8f8676']} />
           </Path>
+          <Path path={hammer.tip} style="stroke" strokeWidth={0.8} color="#08080a" opacity={0.6} />
         </Group>
-        {/* rails, the block (and the tonebar), the pickup */}
+        <Circle cx={piv.u} cy={piv.v} r={4.5}>
+          <RadialGradient c={vec(piv.u - 1.5, piv.v - 1.5)} r={6} colors={[...KEYS.chrome]} />
+        </Circle>
+        {/* the rails (wood), the block, its screw, the tonebar */}
         <Path path={still.rail}>
-          <LinearGradient start={vec(0, 13)} end={vec(0, 36)} colors={[...SPK.ply.slice(1, 4)]} />
+          <LinearGradient start={vec(0, 13)} end={vec(0, 42)} colors={[...SPK.ply.slice(1, 4)]} />
         </Path>
+        <Path path={still.grain} style="stroke" strokeWidth={0.6} color={SPK.plyLine} opacity={0.45} />
+        <Path path={still.rail} style="stroke" strokeWidth={0.8} color={SPK.plyLine} opacity={0.8} />
         <Path path={still.block}>
           <LinearGradient start={vec(0, -13)} end={vec(30, 15)} colors={[...SPK.steel]} />
         </Path>
-        <Circle cx={13} cy={tine ? -26 : -11} r={4} color="#c8ccd4" />
+        <Path path={still.block} style="stroke" strokeWidth={0.8} color="#08080a" opacity={0.6} />
         {tine && tonebar ? (
           <>
-            <Path path={still.tonebar} color="#000" opacity={0}>
-              <BlurMask blur={2} style="normal" />
-            </Path>
-            <Path path={tonebar} style="stroke" strokeWidth={9} strokeCap="round" color="#7c818c" />
-            <Path path={tonebar} style="stroke" strokeWidth={3} strokeCap="round" color="#d6dae2" opacity={0.6} />
+            <Path path={tonebar} style="stroke" strokeWidth={9} strokeCap="butt" color="#5d626c" />
+            <Path path={tonebar} style="stroke" strokeWidth={7} strokeCap="butt" color="#9aa0ab" />
+            <Path path={tonebar} style="stroke" strokeWidth={2} strokeCap="butt" color="#e6e9ef" opacity={0.7} />
             <Path path={rr(make(), 0, -24, 26, -13, 2)}>
               <LinearGradient start={vec(0, -24)} end={vec(0, -13)} colors={[...SPK.steel]} />
             </Path>
           </>
         ) : null}
-        {/* the coil(s) and the pickup's face / plate */}
-        <Path path={still.coil}>
-          <LinearGradient start={vec(0, -14)} end={vec(0, 14)} colors={tine ? ['#c27a3a', '#8a4a1a', '#4a2408'] : ['#8a8f9c', '#4a4e57', '#1f2126']} />
+        {still.screws.map((c, i) => (
+          <Group key={i}>
+            <Circle cx={c.u} cy={c.v} r={c.r}>
+              <RadialGradient c={vec(c.u - c.r * 0.4, c.v - c.r * 0.4)} r={c.r * 1.5} colors={[...KEYS.chrome]} />
+            </Circle>
+            <Line p1={vec(c.u - c.r * 0.7, c.v)} p2={vec(c.u + c.r * 0.7, c.v)} color="#2a2c32" strokeWidth={1} />
+          </Group>
+        ))}
+        {/* the pickup: bobbin flanges, the copper winding, the pole piece; or the comb's insulated mount */}
+        <Path path={still.bracket}>
+          <LinearGradient start={vec(0, 15)} end={vec(0, 21)} colors={[...SPK.steel]} />
         </Path>
-        <Path path={still.pickup} color={tine ? '#c8ccd4' : 'rgba(200,204,212,0.28)'} />
+        <Path path={still.coil}>
+          <LinearGradient start={vec(0, -14)} end={vec(0, 14)} colors={tine ? ['#e09a55', '#a85f26', '#5a2c0c'] : ['#6e4a2c', '#4a2f1a', '#24160b']} />
+        </Path>
+        <Path path={still.winding} style="stroke" strokeWidth={0.7} color="#3a1a06" opacity={0.6} />
+        <Path path={still.flange}>
+          <LinearGradient start={vec(0, -15)} end={vec(0, 15)} colors={['#3a3b41', '#1a1b1f', '#08080a']} />
+        </Path>
+        {tine ? (
+          <Path path={still.pickup}>
+            <LinearGradient start={vec(0, -7)} end={vec(0, 7)} colors={[...SPK.steel]} />
+          </Path>
+        ) : null}
+        {!tine ? <Path path={still.pickup} color="rgba(200,204,212,0.26)" /> : null}
         {!tine ? <Path path={still.pickup} style="stroke" strokeWidth={1.2} color="#c8ccd4" opacity={0.8} /> : null}
         {/* ③ ghosts of the two extreme shapes */}
         <Group opacity={o3}>
@@ -389,6 +487,7 @@ export function MechanismDisplay({ w, h, kind, reveal, shown, swing, tremolo = f
         <Path path={bar} style="stroke" strokeWidth={tine ? TINE.tineD.mm * 1.6 : 3} strokeCap="round" color="#aeb4c0" />
         <Path path={bar} style="stroke" strokeWidth={1} strokeCap="round" color="#ffffff" opacity={0.55} />
         {!tine ? <Circle cx={-S.L + 3} cy={y - 2.4} r={3.6} color="#b7b2a6" /> : null}
+        {tine ? <Path path={spring} style="stroke" strokeWidth={0.9} color="#e6e9ef" /> : null}
         {/* ① ② the key and strike arrows */}
         <Group opacity={o1}>
           <Path path={still.keyArrow} style="stroke" strokeWidth={3} strokeCap="round" color={AMBER} />

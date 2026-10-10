@@ -25,6 +25,10 @@ import { cabLayout, LESLIE } from './speakerModel.ts';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
+import { ChainIcon, type IconArt } from './chainIcons';
+import { PlanAmpTop, PlanDiBox, PlanInstrumentEdge, PlanPaStack, PlanPlayerTop } from './BacklinePlan';
+import { KitTop } from '../kitScene/KitSceneArt';
+import { WedgePlan } from '../KitPlan';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -57,65 +61,77 @@ function rr(p: SkPath, u0: number, v0: number, u1: number, v1: number, r: number
   return p;
 }
 
+/** The shared five-piece kit's origin on this stage (its kick's batter head)
+ *  and its own centre (kitPlanModel PLAN_BOX.kit): the kit at true size,
+ *  the kick clear of the side fill (art pass 2026-10-10). */
+const KIT_AT = { u: -400, v: -1770 } as const;
+const KIT_MID = { u: -135, v: 20 } as const;
+
 type Built = ReturnType<typeof build>;
 let built: Built | null = null;
+/* The organ console, its bench and pedalboard, and the rotary cabinet, from
+ * above (drawing defaults typical of the classic tonewheel console): the
+ * console 1245 wide with its lid, two manuals stepped toward the player (61
+ * playing keys + 12 reverse-coloured preset keys each, white keys 23 wide),
+ * key cheeks at the ends; the 25-note pedalboard (15 naturals, 10 sharps)
+ * in front of it on the floor; the bench 1100 × 380 with its hinged lid; the
+ * rotary cabinet 742 × 524 (LESLIE) with its top moulding, front toward +u. */
 function build() {
-  const cab = rr(make(), CAB.box.x0, CAB.box.z0, CAB.box.x1, CAB.box.z1, 18);
-  const cabGrille = rr(make(), CAB.box.x1 - 22, CAB.box.z0 + 26, CAB.box.x1, CAB.box.z1 - 26, 4);
-  const handle = rr(make(), CAB.box.x0 + 90, -70, CAB.box.x0 + 130, 70, 10);
   // A player seen from above: shoulders and the figure's own head from above
   // (head fix 2026-10-08: a head ON A BODY is PlayerFigure's skin-silhouette
   // head — never a circle, never the line-art icon). headAbove's nose points
   // +v; the group below turns it to face the audience (+u).
-  const shoulders = make();
-  shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
   const head = headAbove(pt(0, 0), 100).fill;
-  // A guitar across the body (top view): body and neck.
-  const guitar = make();
-  guitar.addOval(Skia.XYWHRect(60, -210, 170, 230));
-  guitar.addRRect(Skia.RRectXY(Skia.XYWHRect(130, 0, 40, 420), 10, 10));
-  // A DI box.
-  const di = rr(make(), -60, -45, 60, 45, 10);
-  // A drum kit from above (shells as discs with hoops; cymbals as thin discs).
-  const drums: { u: number; v: number; r: number; kind: 'drum' | 'cym' }[] = [
-    { u: 0, v: 0, r: 279, kind: 'drum' },
-    { u: 350, v: -380, r: 178, kind: 'drum' },
-    { u: 160, v: 220, r: 152, kind: 'drum' },
-    { u: 360, v: 330, r: 203, kind: 'drum' },
-    { u: 420, v: -620, r: 178, kind: 'cym' },
-    { u: 520, v: 120, r: 228, kind: 'cym' },
-    { u: 80, v: -480, r: 203, kind: 'cym' },
-  ];
-  // An organ console from above: the cabinet, the keyboards, the pedals.
-  const organ = rr(make(), -260, -620, 260, 620, 26);
-  const keys = make();
-  for (const off of [120, 180]) rr(keys, off - 22, -520, off + 22, 520, 6);
+  // The organ console (local: keys toward +u, where the organist sits).
+  const organ = rr(make(), -260, -622, 70, 622, 18);
+  const lid = rr(make(), -250, -610, 40, 610, 12);
+  const cheeks = make();
+  rr(cheeks, 60, -622, 250, -520, 10);
+  rr(cheeks, 60, 466, 250, 622, 10);
+  const manuals = [rr(make(), 60, -520, 150, -362 + 36 * 23, 2), rr(make(), 150, -520, 250, -362 + 36 * 23, 2)];
   const keyLines = make();
-  for (let v = -510; v < 520; v += 26) {
-    keyLines.moveTo(110, v);
-    keyLines.lineTo(150, v);
-    keyLines.moveTo(170, v);
-    keyLines.lineTo(210, v);
+  const blackKeys = make();
+  // Preset keys (−520 … −362), then 61 playing keys = 36 naturals × 23 mm.
+  const K0 = -362;
+  for (const [k0, k1] of [[60, 150], [150, 250]] as const) {
+    for (let v = -520 + 23; v < K0 + 36 * 23; v += 23) {
+      keyLines.moveTo(k0 + 2, v);
+      keyLines.lineTo(k1 - 1, v);
+    }
+    // Sharps on the back 58 % of each manual: after C, D, F, G, A.
+    for (let oct = 0; oct < 5; oct++)
+      for (const w of [0, 1, 3, 4, 5]) {
+        const v = K0 + (oct * 7 + w + 1) * 23;
+        blackKeys.addRRect(Skia.RRectXY(Skia.XYWHRect(k0 + 2, v - 6.5, (k1 - k0) * 0.58, 13), 2, 2));
+      }
   }
-  const pedals = make();
-  for (let v = -420; v <= 420; v += 60) rr(pedals, 280, v - 14, 520, v + 14, 8);
-  const bench = rr(make(), -150, -420, 150, 420, 30);
-  // The rotary cabinet from above: the wood top and its louvers.
+  const presets = [rr(make(), 62, -518, 148, -362, 2), rr(make(), 152, -518, 248, -362, 2)];
+  const pedalNat = make();
+  const pedalSharp = make();
+  for (let i = 0; i < 15; i++) {
+    const v = -462 + i * 66;
+    pedalNat.addRRect(Skia.RRectXY(Skia.XYWHRect(250, v - 22, 300, 44), 6, 6));
+  }
+  for (const i of [0, 1, 3, 4, 5, 7, 8, 10, 11, 12]) {
+    const v = -462 + i * 66 + 33;
+    pedalSharp.addRRect(Skia.RRectXY(Skia.XYWHRect(250, v - 13, 150, 26), 5, 5));
+  }
+  const pedalFrame = rr(make(), 240, -510, 560, 510, 14);
+  const bench = rr(make(), -190, -550, 190, 550, 24);
+  const benchLid = rr(make(), -170, -530, 170, 530, 16);
+  // The rotary cabinet from above (front toward +u): moulded top, walnut grain.
   const lw = LESLIE.w.mm / 2;
   const ld = LESLIE.d.mm / 2;
-  const leslie = rr(make(), -ld, -lw, ld, lw, 12);
-  const louvers = make();
-  for (let v = -300; v < 300; v += 22) {
-    louvers.moveTo(ld - 4, v);
-    louvers.lineTo(ld + 10, v + 8);
+  const leslie = rr(make(), -ld - 9, -lw - 9, ld + 9, lw + 9, 14);
+  const leslieTop = rr(make(), -ld + 14, -lw + 14, ld - 14, lw - 14, 8);
+  const grain = make();
+  for (let i = 0; i < 14; i++) {
+    const u = -ld + 30 + i * 36 + ((i * 7) % 5);
+    grain.moveTo(u, -lw + 20);
+    grain.cubicTo(u + 8, -lw * 0.4, u - 8, lw * 0.3, u + 3, lw - 20);
   }
-  // A floor wedge from above (sloped grille facing `faces`).
-  const wedge = rr(make(), -150, -280, 150, 280, 18);
-  const wedgeGrille = rr(make(), -40, -258, 136, 258, 14);
-  // PA stack from above, and the audience: one row of true-size empty chairs
-  // facing the stage (−u) — never heads (owner 2026-10-10).
-  const pa = rr(make(), -300, -300, 300, 300, 20);
-  const paHorn = rr(make(), 140, -140, 300, 140, 12);
+  // PA and the audience: one row of true-size empty chairs facing the stage
+  // (−u) — never heads (owner 2026-10-10).
   const chairs = makeChairsTop(chairRowFacingStage(POS.audience, -2400, 2400));
   // The studio room's walls.
   const room = rr(make(), -1300, -2200, 3200, 2900, 40);
@@ -123,13 +139,13 @@ function build() {
   playerSpace.addCircle(POS.player.u, POS.player.v, 520);
   const organSpace = rr(make(), POS.organ.u - 300, POS.organ.v - 720, POS.bench.u + 420, POS.organ.v + 720, 60);
   const deck = rr(make(), PLAN_BOX.stage.u0, PLAN_BOX.stage.v0, POS.audience - 450, PLAN_BOX.stage.v1, 0);
-  return { cab, cabGrille, handle, shoulders, head, guitar, di, drums, organ, keys, keyLines, pedals, bench, leslie, louvers, wedge, wedgeGrille, pa, paHorn, chairs, room, playerSpace, organSpace, deck };
+  return { head, organ, lid, cheeks, manuals, keyLines, blackKeys, presets, pedalNat, pedalSharp, pedalFrame, bench, benchLid, leslie, leslieTop, grain, chairs, room, playerSpace, organSpace, deck };
 }
 function getBuilt(): Built {
   return (built ??= build());
 }
 
-export const PLAN_BOX = { stage: { u0: -1300, u1: 3750, v0: -2550, v1: 3000 }, studio: { u0: -1400, u1: 3300, v0: -2300, v1: 3000 } } as const;
+export const PLAN_BOX = { stage: { u0: -1500, u1: 3750, v0: -2700, v1: 3000 }, studio: { u0: -1400, u1: 3300, v0: -2300, v1: 3000 } } as const;
 
 /** Item ids the plan carries, and where each sits (for taps and highlights). */
 export function planItems(scene: PlanScene, wedges: readonly Wedge[]): { id: string; u: number; v: number; r: number }[] {
@@ -141,7 +157,7 @@ export function planItems(scene: PlanScene, wedges: readonly Wedge[]): { id: str
     { id: 'leslie', u: POS.leslie.u, v: POS.leslie.v, r: 420 },
   ];
   if (scene === 'stage') {
-    out.push({ id: 'drums', u: POS.drums.u + 200, v: POS.drums.v, r: 760 });
+    out.push({ id: 'drums', u: KIT_AT.u + KIT_MID.u, v: KIT_AT.v + KIT_MID.v, r: 900 });
     for (const w of wedges) out.push({ id: w.id === 'guitarWedge' ? 'wedge' : w.id, u: w.p.x, v: w.p.z, r: 330 });
     out.push({ id: 'audience', u: POS.audience + 150, v: 0, r: 700 });
   } else {
@@ -200,96 +216,91 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             <Path path={b.organSpace} style="stroke" strokeWidth={16} color={GREY} opacity={0.5}>
               <DashPathEffect intervals={[50, 34]} />
             </Path>
-            {/* the guitar combo (its speaker faces the audience) and its DI box */}
-            <Path path={b.cab} color="#000" opacity={0.55}>
-              <BlurMask blur={40} style="normal" />
-            </Path>
-            <Path path={b.cab}>
-              <LinearGradient start={vec(CAB.box.x0, CAB.box.z0)} end={vec(CAB.box.x1, CAB.box.z1)} colors={['#3a3b41', '#1d1e22', '#0f1012']} />
-            </Path>
-            <Path path={b.cabGrille} color="#2b2d33" />
-            <Path path={b.handle} color="#0b0b0d" />
-            <Path path={b.cab} style="stroke" strokeWidth={10} color="#55585f" />
-            <Group transform={[{ translateX: POS.di.u }, { translateY: POS.di.v }]}>
-              <Path path={b.di}>
-                <LinearGradient start={vec(-60, -45)} end={vec(60, 45)} colors={['#8f949f', '#3e424b']} />
-              </Path>
-            </Group>
+            {/* the drum kit: the shared five-piece kit, true size */}
+            {scene === 'stage' ? (
+              <Group transform={[{ translateX: KIT_AT.u }, { translateY: KIT_AT.v }]}>
+                <KitTop keepOuts={false} />
+              </Group>
+            ) : null}
+            {/* the guitar's 1 × 12 cabinet (its speaker faces the audience) and its DI box */}
+            <PlanAmpTop u0={CAB.box.x0} u1={CAB.box.x1} v0={CAB.box.z0} v1={CAB.box.z1} />
             <Line p1={vec(POS.di.u, POS.di.v)} p2={vec(CAB.box.x0 + 60, 180)} color="#2a2c32" strokeWidth={16} />
-            {/* the guitarist, from above */}
+            <Group transform={[{ translateX: POS.di.u }, { translateY: POS.di.v }]}>
+              <PlanDiBox />
+            </Group>
+            {/* the guitarist, from above, the guitar worn edge-on */}
             <Group transform={[{ translateX: POS.player.u }, { translateY: POS.player.v }]}>
-              <Path path={b.shoulders} color="#3b3f48" />
-              <Path path={b.guitar}>
-                <LinearGradient start={vec(60, -210)} end={vec(230, 420)} colors={['#a06a38', '#5c3417']} />
-              </Path>
+              <PlanInstrumentEdge bass={false} />
+              <PlanPlayerTop pose="guitar" />
               <Group transform={[{ rotate: -Math.PI / 2 }]}>
                 <FigureHead fill={b.head} />
               </Group>
             </Group>
-            {/* the drum kit */}
-            {scene === 'stage'
-              ? b.drums.map((d, i) => (
-                  <Group key={i} transform={[{ translateX: POS.drums.u + d.u }, { translateY: POS.drums.v + d.v }]}>
-                    {d.kind === 'drum' ? (
-                      <>
-                        <Circle cx={0} cy={0} r={d.r + 12} color="#5a5d66" />
-                        <Circle cx={0} cy={0} r={d.r}>
-                          <RadialGradient c={vec(-d.r * 0.35, -d.r * 0.4)} r={d.r * 1.5} colors={['#fbf8f0', '#ece5d5', '#bfb39c']} />
-                        </Circle>
-                      </>
-                    ) : (
-                      <>
-                        <Circle cx={0} cy={0} r={d.r}>
-                          <RadialGradient c={vec(-d.r * 0.3, -d.r * 0.3)} r={d.r * 1.4} colors={['#f2d58a', '#b8902f', '#6b5216']} />
-                        </Circle>
-                        <Circle cx={0} cy={0} r={d.r * 0.18} color="#8a6a20" />
-                      </>
-                    )}
-                  </Group>
-                ))
-              : null}
-            {/* the organ, its pedals, the bench; the rotary cabinet beside it */}
+            {/* the organ console, its pedalboard, the bench; the rotary cabinet beside it */}
             <Group transform={[{ translateX: POS.organ.u }, { translateY: POS.organ.v }]}>
+              <Path path={b.pedalFrame} color="#2a1a0c" />
+              <Path path={b.pedalNat}>
+                <LinearGradient start={vec(250, 0)} end={vec(550, 0)} colors={['#e2b679', '#c48f52', '#8a5426']} />
+              </Path>
+              <Path path={b.pedalNat} style="stroke" strokeWidth={3} color="#3a220e" />
+              <Path path={b.pedalSharp}>
+                <LinearGradient start={vec(250, 0)} end={vec(400, 0)} colors={['#3a3d45', '#15161a']} />
+              </Path>
+              <Group transform={[{ translateX: 16 }, { translateY: 20 }]}>
+                <Path path={b.organ} color="#000" opacity={0.55}>
+                  <BlurMask blur={30} style="normal" />
+                </Path>
+              </Group>
               <Path path={b.organ}>
-                <LinearGradient start={vec(-260, -620)} end={vec(260, 620)} colors={['#9a6034', '#6b3d1c', '#3c210e']} />
+                <LinearGradient start={vec(-260, -622)} end={vec(70, 622)} colors={['#9a6034', '#6b3d1c', '#3c210e']} />
               </Path>
-              <Path path={b.pedals}>
-                <LinearGradient start={vec(280, 0)} end={vec(520, 0)} colors={['#c48f52', '#7a4a20']} />
+              <Path path={b.lid}>
+                <LinearGradient start={vec(-250, -610)} end={vec(40, 610)} colors={['#b07a44', '#7a4a20', '#4a2a10']} />
               </Path>
-              <Path path={b.keys} color="#f1ede4" />
-              <Path path={b.keyLines} style="stroke" strokeWidth={4} color="#1b1b1e" />
+              <Path path={b.organ} style="stroke" strokeWidth={6} color="#1a0f07" />
+              <Path path={b.cheeks}>
+                <LinearGradient start={vec(60, 0)} end={vec(250, 0)} colors={['#7a4a20', '#4a2a10']} />
+              </Path>
+              {b.manuals.map((m, i) => (
+                <Path key={`m${i}`} path={m} color="#f1ede4" />
+              ))}
+              <Path path={b.keyLines} style="stroke" strokeWidth={2.4} color="#8a857a" />
+              <Path path={b.blackKeys} color="#141416" />
+              {b.presets.map((m, i) => (
+                <Path key={`p${i}`} path={m} color="#1b1b1e" opacity={0.92} />
+              ))}
             </Group>
             <Group transform={[{ translateX: POS.bench.u }, { translateY: POS.bench.v }]}>
               <Path path={b.bench}>
-                <LinearGradient start={vec(-150, -420)} end={vec(150, 420)} colors={['#6b3d1c', '#3c210e']} />
+                <LinearGradient start={vec(-190, -550)} end={vec(190, 550)} colors={['#7a4a20', '#4a2a10', '#2a170a']} />
               </Path>
+              <Path path={b.benchLid} style="stroke" strokeWidth={4} color="#1a0f07" opacity={0.7} />
             </Group>
             <Group transform={[{ translateX: POS.leslie.u }, { translateY: POS.leslie.v }]}>
+              <Group transform={[{ translateX: 16 }, { translateY: 20 }]}>
+                <Path path={b.leslie} color="#000" opacity={0.55}>
+                  <BlurMask blur={30} style="normal" />
+                </Path>
+              </Group>
               <Path path={b.leslie}>
-                <LinearGradient start={vec(-262, -371)} end={vec(262, 371)} colors={['#c48f52', '#7a4a20', '#3a220e']} />
+                <LinearGradient start={vec(-271, -380)} end={vec(271, 380)} colors={['#c48f52', '#7a4a20', '#3a220e']} />
               </Path>
-              <Path path={b.louvers} style="stroke" strokeWidth={10} color="#2b170a" />
-              <Path path={b.leslie} style="stroke" strokeWidth={8} color="#1a0f07" />
+              <Path path={b.leslieTop}>
+                <LinearGradient start={vec(-262, -371)} end={vec(262, 371)} colors={['#b07a44', '#8a5426', '#5c3417']} />
+              </Path>
+              <Path path={b.grain} style="stroke" strokeWidth={4} color="#2b170a" opacity={0.18} />
+              <Path path={b.leslie} style="stroke" strokeWidth={6} color="#1a0f07" />
             </Group>
             {/* monitors (the same positions as the Studio-or-live page) */}
             {wedgeList.map((wd) => (
-              <Group key={wd.id} transform={[{ translateX: wd.p.x }, { translateY: wd.p.z }, { rotate: Math.atan2(wd.faces.z, wd.faces.x) }]}>
-                <Path path={b.wedge}>
-                  <LinearGradient start={vec(-150, -280)} end={vec(150, 280)} colors={['#3b3e46', '#24262c', '#15161a']} />
-                </Path>
-                <Path path={b.wedgeGrille} color="#0c0d10" />
-                <Path path={b.wedge} style="stroke" strokeWidth={8} color="#70747f" />
-              </Group>
+              <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={false} />
             ))}
             {/* PA and audience */}
             {scene === 'stage' ? (
               <>
                 {POS.pa.map((p, i) => (
                   <Group key={i} transform={[{ translateX: p.u }, { translateY: p.v }]}>
-                    <Path path={b.pa}>
-                      <LinearGradient start={vec(-300, -300)} end={vec(300, 300)} colors={['#3b3e46', '#15161a']} />
-                    </Path>
-                    <Path path={b.paHorn} color="#0b0b0d" />
+                    <PlanPaStack />
                   </Group>
                 ))}
                 <ChairsTop seats={b.chairs.seats} backs={b.chairs.backs} color="#7d828d" />
@@ -316,39 +327,22 @@ export function SignalChain({ w, h, highlight, onTap, accessibilityLabel }: { w:
   const box = { u0: -20, u1: 1020, v0: -140, v1: 300 };
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h]); // eslint-disable-line react-hooks/exhaustive-deps
   const at: Record<(typeof CHAIN)[number], { u: number; v: number }> = { player: { u: 60, v: 0 }, amp: { u: 250, v: 0 }, cab: { u: 450, v: 0 }, air: { u: 610, v: 0 }, mic: { u: 760, v: 0 }, di: { u: 450, v: 210 } };
-  const paths = useMemo(() => {
-    const amp = rr(make(), -70, -60, 70, 50, 10);
-    const ampFace = rr(make(), -60, -48, 60, -4, 6);
-    const knobs = make();
-    for (let k = -45; k <= 45; k += 18) knobs.addCircle(k, 22, 7);
-    const cab = rr(make(), -85, -90, 85, 90, 12);
-    const grille = rr(make(), -72, -77, 72, 77, 8);
-    const cone = make();
-    cone.addCircle(0, 0, 58);
-    const dust = make();
-    dust.addCircle(0, 0, 20);
+  // The links, drawn as what they are: the instrument cable, the SPEAKER
+  // cable (amp to cabinet only), the AIR (blue arcs, cabinet to mic), the
+  // mic cable, and the amp's direct out (amber dashes) — art pass 2026-10-10:
+  // the old drawing coloured every cable as air.
+  const links = useMemo(() => {
+    const instrument = make();
+    instrument.moveTo(at.player.u + 85, 0);
+    instrument.lineTo(at.amp.u - 85, 0);
+    const speaker = make();
+    speaker.moveTo(at.amp.u + 70, 30);
+    speaker.cubicTo(at.amp.u + 110, 40, at.cab.u - 120, 40, at.cab.u - 80, 30);
+    const micCable = make();
+    micCable.moveTo(at.mic.u + 85, 0);
+    micCable.lineTo(940 - 85, 0);
     const waves = make();
-    for (const r of [40, 75, 110]) waves.addArc(Skia.XYWHRect(-r, -r, 2 * r, 2 * r), -40, 80);
-    const mic = make();
-    mic.addRRect(Skia.RRectXY(Skia.XYWHRect(-12, -70, 24, 40), 8, 8));
-    mic.addRRect(Skia.RRectXY(Skia.XYWHRect(-9, -30, 18, 60), 6, 6));
-    const stand = make();
-    stand.moveTo(0, 30);
-    stand.lineTo(0, 110);
-    stand.moveTo(-45, 112);
-    stand.lineTo(45, 112);
-    const di = rr(make(), -60, -40, 60, 40, 10);
-    const desk = rr(make(), -60, -55, 60, 55, 10);
-    const guitar = make();
-    guitar.addOval(Skia.XYWHRect(-50, -10, 80, 95));
-    guitar.addRRect(Skia.RRectXY(Skia.XYWHRect(-6, -120, 14, 120), 5, 5));
-    const airLine = make();
-    airLine.moveTo(110, 0);
-    airLine.lineTo(180, 0);
-    airLine.moveTo(320, 0);
-    airLine.lineTo(365, 0);
-    airLine.moveTo(800, 0);
-    airLine.lineTo(900, 0);
+    for (const [x, r] of [[560, 30], [600, 42], [640, 54]] as const) waves.addArc(Skia.XYWHRect(x - r, -r, 2 * r, 2 * r), -40, 80);
     const wire = make();
     wire.moveTo(250, 50);
     wire.lineTo(250, 210);
@@ -356,8 +350,8 @@ export function SignalChain({ w, h, highlight, onTap, accessibilityLabel }: { w:
     wire.moveTo(510, 210);
     wire.lineTo(940, 210);
     wire.lineTo(940, 60);
-    return { amp, ampFace, knobs, cab, grille, cone, dust, waves, mic, stand, di, desk, guitar, airLine, wire };
-  }, []);
+    return { instrument, speaker, micCable, waves, wire };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const labels: StaticLabel[] = [
     { id: 'player', text: 'PLAYER', u: at.player.u, v: -125, align: 'center', tone: highlight === 'player' ? 'amber' : 'muted' },
     { id: 'amp', text: 'AMP', u: at.amp.u, v: -125, align: 'center', tone: highlight === 'amp' ? 'amber' : 'muted' },
@@ -382,57 +376,37 @@ export function SignalChain({ w, h, highlight, onTap, accessibilityLabel }: { w:
     if (best && bd < 140) onTap(best);
   };
   const hi = highlight && highlight in at ? at[highlight as (typeof CHAIN)[number]] : null;
+  // [id, drawing, u, v, size in model units]; the guitar is drawn a little
+  // smaller and right of its point so its body stays inside the glass.
+  const ICONS: readonly (readonly [string, IconArt, number, number, number?])[] = [
+    ['player', 'guitar', at.player.u + 22, at.player.v, 140],
+    ['amp', 'guitarHead', at.amp.u, at.amp.v],
+    ['cab', 'cab112', at.cab.u, at.cab.v],
+    ['mic', 'mic', at.mic.u, at.mic.v],
+    ['desk', 'desk', 940, 0],
+    ['di', 'ampOut', at.di.u, at.di.v],
+  ];
   return (
     <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <View pointerEvents="none" style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-            <Path path={paths.airLine} style="stroke" strokeWidth={6} color={BLUE} strokeCap="round" />
-            <Path path={paths.wire} style="stroke" strokeWidth={6} color={AMBER} strokeCap="round">
+            <Path path={links.instrument} style="stroke" strokeWidth={8} strokeCap="round" color="#3a3c44" />
+            <Path path={links.speaker} style="stroke" strokeWidth={14} strokeCap="round" color="#2a1c0c" />
+            <Path path={links.speaker} style="stroke" strokeWidth={9} strokeCap="round" color="#b07a3a" />
+            <Path path={links.micCable} style="stroke" strokeWidth={8} strokeCap="round" color="#3a3c44" />
+            <Path path={links.waves} style="stroke" strokeWidth={7} strokeCap="round" color={BLUE} opacity={0.85} />
+            <Path path={links.wire} style="stroke" strokeWidth={6} color={AMBER} strokeCap="round">
               <DashPathEffect intervals={[16, 10]} />
             </Path>
-            <Group transform={[{ translateX: at.player.u }, { translateY: at.player.v }]}>
-              <Path path={paths.guitar}>
-                <LinearGradient start={vec(-50, -120)} end={vec(30, 85)} colors={['#c48f52', '#5c3417']} />
-              </Path>
-            </Group>
-            <Group transform={[{ translateX: at.amp.u }, { translateY: at.amp.v }]}>
-              <Path path={paths.amp}>
-                <LinearGradient start={vec(-70, -60)} end={vec(70, 50)} colors={['#3a3b41', '#15161a']} />
-              </Path>
-              <Path path={paths.ampFace} color="#c9cdd5" opacity={0.85} />
-              <Path path={paths.knobs} color="#0b0b0d" />
-            </Group>
-            <Group transform={[{ translateX: at.cab.u }, { translateY: at.cab.v }]}>
-              <Path path={paths.cab}>
-                <LinearGradient start={vec(-85, -90)} end={vec(85, 90)} colors={['#3a3b41', '#15161a']} />
-              </Path>
-              <Path path={paths.grille} color="#2b2d33" />
-              <Path path={paths.cone}>
-                <RadialGradient c={vec(-20, -20)} r={80} colors={['#4f4740', '#171411']} />
-              </Path>
-              <Path path={paths.dust} color="#5b524a" />
-            </Group>
-            <Group transform={[{ translateX: at.air.u - 60 }, { translateY: at.air.v }]}>
-              <Path path={paths.waves} style="stroke" strokeWidth={6} color={BLUE} opacity={0.8} />
-            </Group>
-            <Group transform={[{ translateX: at.mic.u }, { translateY: at.mic.v }, { rotate: -Math.PI / 2 }]}>
-              <Path path={paths.mic}>
-                <LinearGradient start={vec(-12, -70)} end={vec(12, 30)} colors={['#a9aeb8', '#3a3d45']} />
-              </Path>
-            </Group>
-            <Group transform={[{ translateX: 940 }, { translateY: 0 }]}>
-              <Path path={paths.desk}>
-                <LinearGradient start={vec(-60, -55)} end={vec(60, 55)} colors={['#4a4e57', '#15161a']} />
-              </Path>
-            </Group>
-            <Group transform={[{ translateX: at.di.u }, { translateY: at.di.v }]}>
-              <Path path={paths.di}>
-                <LinearGradient start={vec(-60, -40)} end={vec(60, 40)} colors={['#8f949f', '#3e424b']} />
-              </Path>
-            </Group>
             {hi ? <Circle cx={hi.u} cy={hi.v} r={100} style="stroke" strokeWidth={6} color={AMBER} /> : null}
           </Group>
+          {/* The objects, each drawn true to itself (icons in screen pixels, 170 model units across). */}
+          {ICONS.map(([id, art, u, v, size]) => (
+            <Group key={id} transform={[{ translateX: xf.ox + u * xf.s }, { translateY: xf.oy + v * xf.s }]}>
+              <ChainIcon art={art} S={(size ?? 170) * xf.s} />
+            </Group>
+          ))}
         </Canvas>
         <StaticLabels labels={labels} xf={xf} scale={ts} w={w} />
       </View>

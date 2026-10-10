@@ -69,7 +69,8 @@ export const BASS: ElectricSpec = {
   ],
   frets: 20,
   bodyU0: 34 * IN - 300,
-  bodyLen: 460,
+  // Tail ≈ 125 mm behind the saddles (art pass 2026-10-10; was 460, a tail 160 mm back).
+  bodyLen: 426,
   bodyHalfW: 175,
   neckHalfW: [21, 32],
   headLen: 200,

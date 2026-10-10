@@ -7,7 +7,7 @@
  */
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { uv, type StageView } from './frameS.ts';
-import { headTop, KIND, sectionCentre, seatsOf, type Gear, type Seat, type Seating } from './seating.ts';
+import { BASS_DRUM_STATION, headTop, KIND, sectionCentre, seatsOf, TIMPANI_ARC, TIMPANI_HEAD_H, TIMPANI_SET, type Gear, type Seat, type Seating } from './seating.ts';
 import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
 
 /** group 5: the half-width of a wide section instrument in an elevation (mm). */
@@ -75,6 +75,51 @@ export function stageHit(s: Seating, view: StageView, u: number, v: number, tol:
   return null;
 }
 
+/** A seat's local (right, ahead) point in frame S (x, z). */
+function localXZ(q: Seat, right: number, ahead: number): { x: number; z: number } {
+  const F = (q.face * Math.PI) / 180;
+  return { x: q.p.x + right * Math.cos(F) + ahead * Math.sin(F), z: q.p.z + right * Math.sin(F) - ahead * Math.cos(F) };
+}
+
+/** How near the viewer a frame-S point is in an elevation (larger = nearer). */
+const nearness = (view: StageView, p: { x: number; z: number }) => (view === 'front' ? p.z : p.x);
+
+/**
+ * Where the TIMPANI label points in an elevation (round 2, 2026-10-10): at a
+ * timpano bowl the viewer can SEE — a point on a bowl just under its head,
+ * not hidden behind a nearer concert bass drum (E14's side view had the
+ * TIMPANI leader landing on the bass drum). Null when no bowl shows.
+ */
+function timpaniAnchor(s: Seating, view: StageView, q: Seat, slice: number): { u: number; v: number } | null {
+  const R = BASS_DRUM_STATION.R;
+  const qn = nearness(view, q.p);
+  // The bass drums in front of this player: their silhouettes in the view.
+  const occ = s.seats
+    .filter((o) => o.kind === 'percussion' && !/\.2$/.test(o.id) && (view !== 'section' || Math.abs(o.p.x) <= slice))
+    .map((o) => {
+      const c = localXZ(o, 0, BASS_DRUM_STATION.ahead);
+      const F = (o.face * Math.PI) / 180;
+      const a = Math.abs(view === 'front' ? Math.cos(F) : -Math.sin(F));
+      const half = R * Math.sqrt(Math.max(0, 1 - a * a)) + (BASS_DRUM_STATION.depth / 2) * a + 40;
+      const o2 = uv(view, { x: c.x, y: o.p.y - BASS_DRUM_STATION.up, z: c.z });
+      return { near: nearness(view, c), u0: o2.u - half, u1: o2.u + half, v0: o2.v - R - 40, v1: o2.v + R + 40 };
+    })
+    .filter((o) => o.near > qn);
+  const bowls = TIMPANI_SET.map((b) => {
+    const a = (b.a * Math.PI) / 180;
+    const c = localXZ(q, Math.sin(a) * TIMPANI_ARC, Math.cos(a) * TIMPANI_ARC);
+    return { c, r: b.d / 2 };
+  }).sort((m, n) => nearness(view, n.c) - nearness(view, m.c));
+  for (const b of bowls) {
+    const o = uv(view, { x: b.c.x, y: q.p.y - (TIMPANI_HEAD_H - 90), z: b.c.z });
+    for (const du of [0, 0.6, -0.6, 0.85, -0.85]) {
+      const u = o.u + du * b.r;
+      if (!occ.some((k) => u >= k.u0 && u <= k.u1 && o.v >= k.v0 && o.v <= k.v1)) return { u, v: o.v };
+    }
+  }
+  return null;
+}
+
 /** The section labels in a view, each beside its section with a leader to
  *  its centre (fitLabels moves a label that has no room, or drops it). */
 export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtLabel[] {
@@ -88,7 +133,8 @@ export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtL
     // player, chest high; the amp has its own label.
     const away = seats.some((q) => q.kind === 'eguitar' || q.kind === 'ebass');
     const c = away ? { x: seats.reduce((a, q) => a + q.p.x, 0) / seats.length, y: seats[0].p.y - 1150, z: seats.reduce((a, q) => a + q.p.z, 0) / seats.length } : sectionCentre(s, sec.id);
-    const at = uv(view, view === 'plan' ? { x: c.x, y: 0, z: c.z } : c);
+    const timp = view !== 'plan' && seats[0].kind === 'timpani' ? timpaniAnchor(s, view, seats[0], slice) : null;
+    const at = timp ?? uv(view, view === 'plan' ? { x: c.x, y: 0, z: c.z } : c);
     const us = seats.map((q) => uv(view, q.p).u);
     const vs = seats.map((q) => uv(view, q.p).v);
     const u0 = Math.min(...us) - 420;
@@ -110,15 +156,27 @@ export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtL
             { u: (u0 + u1) / 2, v: v1 + 200, align: 'center' },
             { u: left ? u1 + 80 : u0 - 80, v: at.v, align: left ? 'left' : 'right' },
           ]
-        : [
-            { u: (u0 + u1) / 2, v: v0 - 260, align: 'center' },
-            { u: (u0 + u1) / 2, v: v0 - 700, align: 'center' },
+        : // Elevations (round 2): straight up or straight down from the
+          // section's point first — vertical leaders cannot cross one another —
+          // in tiers above the heads and below the floor, then beside it.
+          [
+            ...[260, 700, 1140, 1580, 2020, 2460, 2900].map((d) => ({ u: at.u, v: v0 - d, align: 'center' as const })),
+            ...[520, 960, 1400, 1840, 2280].map((d) => ({ u: at.u, v: v1 + d, align: 'center' as const })),
+            // …then a little to either side (short slanted leaders).
+            ...[700, 1140, 1580, 2020, 2460].flatMap((d) => [-900, 900, -1800, 1800].map((du) => ({ u: at.u + du, v: v0 - d, align: 'center' as const }))),
+            ...[520, 960, 1400, 1840].flatMap((d) => [-900, 900, -1800, 1800].map((du) => ({ u: at.u + du, v: v1 + d, align: 'center' as const }))),
+            { u: (u0 + u1) / 2, v: v0 - 260, align: 'center' as const },
+            { u: (u0 + u1) / 2, v: v0 - 700, align: 'center' as const },
           ];
     const first = alts[0];
     // The cropped form keeps the noun: "1ST VIOLINS" → "VN 1", never a bare "1ST".
     const w0 = sec.short.split(' ')[0];
     const short = /^\d/.test(w0) ? `VN ${w0[0]}` : w0;
-    out.push({ id: sec.id, text: sec.short, short, u: first.u, v: first.v, align: first.align, alts: alts.slice(1), at, tone: undefined });
+    // Round 2: in an elevation the back row's percussion (the most crowded
+    // corner, under the detail inset) is placed first, so it gets a clean
+    // straight leader; the others fit round it.
+    const priority = view !== 'plan' && (sec.family === 'percussion' || seats[0].kind === 'timpani') ? 1 : undefined;
+    out.push({ id: sec.id, text: sec.short, short, u: first.u, v: first.v, align: first.align, alts: alts.slice(1), at, tone: undefined, ...(priority ? { priority } : {}) });
   }
   // Group 4: the amps, the PA and a gobo, named from above (muted: they are
   // not players).
@@ -132,7 +190,9 @@ export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtL
   // The conductor (and the podium).
   if (s.conductor && s.podium) {
     const o = uv(view, s.podium.c);
-    out.push({ id: 'cond', text: 'CONDUCTOR', short: 'COND.', u: o.u, v: view === 'plan' ? o.v + 700 : o.v - 2100, align: 'center', tone: 'muted', at: view === 'plan' ? { u: o.u, v: o.v } : { u: o.u, v: o.v - 1500 } });
+    // (Round 2: tiers straight above the conductor, so the label never lands on a mic stand.)
+    const condAlts: ArtLabel['alts'] = view === 'plan' ? undefined : [2540, 2980, 3420, 3860].map((d) => ({ u: o.u, v: o.v - d, align: 'center' as const }));
+    out.push({ id: 'cond', text: 'CONDUCTOR', short: 'COND.', u: o.u, v: view === 'plan' ? o.v + 700 : o.v - 2100, align: 'center', tone: 'muted', at: view === 'plan' ? { u: o.u, v: o.v } : { u: o.u, v: o.v - 1500 }, ...(condAlts ? { alts: condAlts } : {}) });
   }
   return out;
 }

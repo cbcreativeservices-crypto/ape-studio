@@ -111,18 +111,32 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
     const dirt = make();
     if (scene.surface === 'diamond') {
       // The base square (markings[0]): the dirt round it, the infield grass inside it.
+      // The infield dirt: an arc about the pitcher's plate (baseball: 95 ft
+      // from a plate 60 ft 6 in out; softball: 60 ft from a plate 43 ft out),
+      // the infield grass inside the base paths, the mound (Ø 18 ft) and the
+      // circle round home plate (Ø 26 ft) — baseball; softball's circle is a
+      // marking, its infield all dirt.
       const sq = scene.markings[0]?.pts ?? [];
       const grass = make();
+      const mound = make();
       if (sq.length === 4) {
+        const path = Math.hypot(sq[1].x - sq[0].x, sq[1].y - sq[0].y);
+        const ball = scene.id === 'baseball';
+        const plate = { x: sq[0].x, y: sq[0].y + path * (ball ? 60.5 / 90 : 43 / 60) };
+        const o = uv(plate);
+        dirt.addCircle(o.u, o.v, path * (ball ? 95 / 90 : 1) * 1000);
         const c = { x: (sq[0].x + sq[2].x) / 2, y: (sq[0].y + sq[2].y) / 2 };
-        const half = Math.hypot(sq[2].x - sq[0].x, sq[2].y - sq[0].y) / 2;
-        const o = uv(c);
-        dirt.addCircle(o.u, o.v, half * 1.42 * 1000);
-        grass.addPath(polyPath(sq.map((q) => ({ x: c.x + (q.x - c.x) * 0.7, y: c.y + (q.y - c.y) * 0.7 }))));
+        // A softball infield is usually all dirt; a baseball infield keeps its grass.
+        if (ball) {
+          grass.addPath(polyPath(sq.map((q) => ({ x: c.x + (q.x - c.x) * 0.84, y: c.y + (q.y - c.y) * 0.84 }))));
+          const h = uv(sq[0]);
+          mound.addCircle(h.u, h.v, 13 * 0.3048 * 1000);
+          mound.addCircle(o.u, o.v, 9 * 0.3048 * 1000);
+        }
       }
-      return { around, play, stripes, dirt, grass, b };
+      return { around, play, stripes, dirt, grass, mound, b };
     }
-    return { around, play, stripes, dirt, grass: make(), b };
+    return { around, play, stripes, dirt, grass: make(), mound: make(), b };
   }, [scene]);
   return (
     <Group>
@@ -143,6 +157,9 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
           <Path path={g.grass}>
             <LinearGradient start={vec(g.b.u0, g.b.v0)} end={vec(g.b.u1, g.b.v1)} colors={s.play} />
           </Path>
+          <Path path={g.mound}>
+            <LinearGradient start={vec(g.b.u0, g.b.v0)} end={vec(g.b.u1, g.b.v1)} colors={['#a77c52', '#7d5734']} />
+          </Path>
         </Group>
       ) : null}
       <Path path={g.play} style="stroke" strokeWidth={1.4 * px} color="#000" opacity={0.45} />
@@ -150,19 +167,37 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
   );
 }
 
+const INK = { white: WHITE, red: '#c43b3b', blue: '#2f5fb3', yellow: '#f2c230', orange: '#e8742c' } as const;
 function Markings({ scene, px }: { scene: VenueScene; px: number }) {
-  const p = useMemo(() => {
-    const out = make();
+  const groups = useMemo(() => {
+    // One path per ink and dash: an ice rink's lines default to red, every other surface's to white.
+    const fallback: keyof typeof INK = scene.surface === 'ice' ? 'red' : 'white';
+    const out = new Map<string, { ink: keyof typeof INK; dashed: boolean; path: SkPath }>();
     for (const m of scene.markings) {
+      const ink = m.ink ?? fallback;
+      const key = `${ink}:${m.dashed ? 1 : 0}`;
+      let g = out.get(key);
+      if (!g) {
+        g = { ink, dashed: !!m.dashed, path: make() };
+        out.set(key, g);
+      }
       if (m.circle) {
         const o = uv(m.circle.c);
-        out.addCircle(o.u, o.v, m.circle.r * 1000);
-      } else if (m.pts.length) out.addPath(polyPath(m.pts, !!m.closed));
+        g.path.addCircle(o.u, o.v, m.circle.r * 1000);
+      } else if (m.pts.length) g.path.addPath(polyPath(m.pts, !!m.closed));
     }
-    return out;
+    return [...out.values()];
   }, [scene]);
-  const ink = scene.surface === 'ice' ? '#c43b3b' : WHITE;
-  return <Path path={p} style="stroke" strokeWidth={Math.max(90, 1.3 * px)} color={ink} opacity={0.88} />;
+  const w = Math.max(90, 1.3 * px);
+  return (
+    <Group>
+      {groups.map((g) => (
+        <Path key={`${g.ink}${g.dashed}`} path={g.path} style="stroke" strokeWidth={g.ink === 'yellow' ? w * 1.6 : w} color={INK[g.ink]} opacity={0.88}>
+          {g.dashed ? <DashPathEffect intervals={[Math.max(900, 6 * px), Math.max(600, 4 * px)]} /> : null}
+        </Path>
+      ))}
+    </Group>
+  );
 }
 
 /* ── the layers ── */
@@ -265,6 +300,7 @@ export function CameraArt({ p, dirDeg, halfDeg, reach, px }: { p: P2; dirDeg: nu
   const d = dirFromDeg(dirDeg);
   const ang = Math.atan2(-d.y, d.x);
   const s = 9 * px;
+  const cam = camGlyph(s);
   return (
     <Group>
       <Path path={g.cone} color={BLUE} opacity={0.07} />
@@ -272,24 +308,49 @@ export function CameraArt({ p, dirDeg, halfDeg, reach, px }: { p: P2; dirDeg: nu
         <DashPathEffect intervals={[5 * px, 5 * px]} />
       </Path>
       <Group transform={[{ translateX: o.u }, { translateY: o.v }, { rotate: ang }]}>
-        <Path path={camBody(s)}>
+        <Path path={cam.body}>
           <LinearGradient start={vec(-s, -s)} end={vec(s, s)} colors={['#6b707b', '#30333a', '#15161a']} />
         </Path>
-        <Path path={camLens(s)} color="#0b0c0f" />
-        <Circle cx={s * 1.7} cy={0} r={s * 0.28} color="#3d5a80" />
+        <Path path={cam.lens}>
+          <LinearGradient start={vec(0, -s * 0.4)} end={vec(0, s * 0.4)} colors={['#3a3d45', '#0b0c0f']} />
+        </Path>
+        <Path path={cam.hood} color="#0b0c0f" />
+        <Path path={cam.vf} color="#202227" />
+        <Path path={cam.handle} style="stroke" strokeWidth={s * 0.14} strokeCap="round" color="#8a8f99" />
+        <Path path={cam.front} color="#3d5a80" />
+        <Path path={cam.body} style="stroke" strokeWidth={s * 0.08} color="#060607" />
       </Group>
     </Group>
   );
 }
-function camBody(s: number): SkPath {
-  const p = make();
-  p.addRRect(Skia.RRectXY(Skia.XYWHRect(-s * 1.1, -s * 0.7, s * 2.1, s * 1.4), s * 0.25, s * 0.25));
-  return p;
-}
-function camLens(s: number): SkPath {
-  const p = make();
-  p.addRRect(Skia.RRectXY(Skia.XYWHRect(s * 0.9, -s * 0.5, s * 0.9, s * 1.0), s * 0.15, s * 0.15));
-  return p;
+/*
+ * A broadcast camera from above, at a fixed screen size `s` (a mark, not to
+ * scale) but in true proportion (mm, a drawing default for an ENG/EFP camera
+ * with a box-style zoom): body 350 × 130, lens barrel 230 long × Ø 95 with
+ * its hood flaring to 140 wide, viewfinder on the body's left front, carry
+ * handle along the top. The lens points along +x; the origin is the lens's
+ * rear (the body's front face). 1 s ≈ 200 mm.
+ */
+function camGlyph(s: number) {
+  const k = s / 200;
+  const body = make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-350 * k, -65 * k, 350 * k, 130 * k), 18 * k, 18 * k));
+  const lens = make();
+  lens.addRRect(Skia.RRectXY(Skia.XYWHRect(0, -47 * k, 230 * k, 94 * k), 8 * k, 8 * k));
+  const hood = make();
+  hood.moveTo(225 * k, -47 * k);
+  hood.lineTo(300 * k, -70 * k);
+  hood.lineTo(300 * k, 70 * k);
+  hood.lineTo(225 * k, 47 * k);
+  hood.close();
+  const front = make();
+  front.addRect(Skia.XYWHRect(292 * k, -64 * k, 8 * k, 128 * k));
+  const vf = make();
+  vf.addRRect(Skia.RRectXY(Skia.XYWHRect(-150 * k, -118 * k, 150 * k, 60 * k), 10 * k, 10 * k));
+  const handle = make();
+  handle.moveTo(-300 * k, 0);
+  handle.lineTo(-40 * k, 0);
+  return { body, lens, hood, front, vf, handle };
 }
 
 function SectorsArt({ scene, px }: { scene: VenueScene; px: number }) {
@@ -335,21 +396,41 @@ function Stand({ poly, px, empty = false }: { poly: readonly P2[]; px: number; e
     </Group>
   );
 }
-/** A PA loudspeaker from above (cabinet and its grille edge). */
+/*
+ * A flown PA hang from above (mm, a drawing default for a mid-size line-array
+ * element): the cabinet 1100 wide × 500 deep, its grille along the front
+ * (toward +v, the audience or field), the rigging frame (bumper) on top a
+ * little wider with its two pick-up points. Never smaller than a mark.
+ */
 function PaBox({ c, px }: { c: P2; px: number }) {
   const o = uv(c);
-  const s = Math.max(500, 7 * px);
-  const p = make();
-  p.addRRect(Skia.RRectXY(Skia.XYWHRect(o.u - s, o.v - s * 0.7, s * 2, s * 1.4), s * 0.15, s * 0.15));
-  const grille = make();
-  grille.moveTo(o.u - s * 0.9, o.v + s * 0.7);
-  grille.lineTo(o.u + s * 0.9, o.v + s * 0.7);
+  const k = Math.max(1, (14 * px) / 1100);
+  const W = 1100 * k;
+  const D = 500 * k;
+  const g = useMemo(() => {
+    const cab = make();
+    cab.addRRect(Skia.RRectXY(Skia.XYWHRect(o.u - W / 2, o.v - D / 2, W, D), 40 * k, 40 * k));
+    const grille = make();
+    grille.addRRect(Skia.RRectXY(Skia.XYWHRect(o.u - W / 2 + 30 * k, o.v + D / 2 - 90 * k, W - 60 * k, 70 * k), 16 * k, 16 * k));
+    const frame = make();
+    frame.moveTo(o.u - W / 2 - 60 * k, o.v - 60 * k);
+    frame.lineTo(o.u + W / 2 + 60 * k, o.v - 60 * k);
+    frame.moveTo(o.u - W / 2 - 60 * k, o.v + 60 * k);
+    frame.lineTo(o.u + W / 2 + 60 * k, o.v + 60 * k);
+    const picks = make();
+    for (const x of [-W * 0.3, W * 0.3]) picks.addCircle(o.u + x, o.v, 45 * k);
+    return { cab, grille, frame, picks };
+  }, [o.u, o.v, W, D, k]);
   return (
     <Group>
-      <Path path={p}>
-        <LinearGradient start={vec(o.u - s, o.v - s)} end={vec(o.u + s, o.v + s)} colors={['#4a4e57', '#1d1e23', '#0b0c0e']} />
+      <Path path={g.cab}>
+        <LinearGradient start={vec(o.u - W / 2, o.v - D / 2)} end={vec(o.u + W / 2, o.v + D / 2)} colors={['#4a4e57', '#1d1e23', '#0b0c0e']} />
       </Path>
-      <Path path={grille} style="stroke" strokeWidth={2.2 * px} color="#6c717b" />
+      <Path path={g.grille} color="#2a2d33" />
+      <Path path={g.grille} style="stroke" strokeWidth={Math.max(12 * k, 0.8 * px)} color="#6c717b" />
+      <Path path={g.frame} style="stroke" strokeWidth={Math.max(30 * k, 1.2 * px)} strokeCap="round" color="#8a8f99" />
+      <Path path={g.picks} color="#c9a24a" />
+      <Path path={g.cab} style="stroke" strokeWidth={Math.max(10 * k, 0.8 * px)} color="#060607" />
     </Group>
   );
 }

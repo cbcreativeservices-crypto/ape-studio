@@ -75,13 +75,19 @@ export type PlayerFit = {
 export function playerFit(g: GuitarGeom, posture: Posture, floorY: number): PlayerFit {
   const D = g.depth;
   const lh = g.lowerH;
-  const sh = g.spec.body.pot ? g.spec.body.pot.cx.mm : g.spec.body.xLower.mm;
+  // A banjo's forearm rests on the armrest over the rim's bass-and-tail
+  // quarter (round 2, 2026-10-10: 0.64 R from the pot's centre).
+  const sh = g.spec.body.pot ? g.spec.body.pot.cx.mm - 0.64 * (g.spec.body.pot.d.mm / 2) : g.spec.body.xLower.mm;
   const hole = g.hole.x;
   // The picking hand over the top: short of the hole's neck side; over a
   // resonator's coverplate (x −60 … +120, resonator_dobro proposal); over a
   // banjo head up to the bridge's neck side.
   const pickX1 = g.spec.opening.kind === 'round' || g.spec.opening.kind === 'oval' ? hole - g.hole.r * 0.25 : g.spec.body.pot ? 60 : g.spec.opening.kind === 'coverplate' ? 120 : Math.min(160, g.edge - 100);
-  const pick: Box = { min: v(-60, -(lh - 22), 0), max: v(pickX1, lh - 22, 130) };
+  // A banjo's picking hand (round 2, 2026-10-10): the fingers pick on the
+  // neck side of the bridge and the ring and little fingers plant on the
+  // head beside it — from 25 mm behind the bridge; the wrist arches high
+  // over the tailpiece (the forearm's own solid, `arm`).
+  const pick: Box = { min: v(g.spec.body.pot ? -25 : -60, -(lh - 22), 0), max: v(pickX1, lh - 22, 130) };
   const fret: Box = { min: v(g.edge - 20, -70, -90), max: v(g.L + 20, 100, 110) };
   if (posture === 'lap') {
     // Face up in the lap; the player sits on the bass side (−y), leaning over.

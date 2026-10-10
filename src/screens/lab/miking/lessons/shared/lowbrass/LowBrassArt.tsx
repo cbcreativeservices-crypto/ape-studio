@@ -28,7 +28,7 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { basis, brassScene, flareR, ring, type Bell, type BrassScene, type Tube, type Valve } from './lowBrassScene.ts';
 import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
-import { FIGURE_SKIN, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { FIGURE_SKIN, FigureHead, FigureMass, handShape, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -125,11 +125,11 @@ function Lit({ path, pts, ramp, edge = OUTLINE, rim = 2.2, w = 1.6 }: { path: Sk
 }
 
 /** A brass (or silver) tube along projected points: a lit cylinder. */
-function TubeArt({ path, r, tone }: { path: SkPath; r: number; tone: typeof BRASS }) {
+function TubeArt({ path, r, tone, cap = 'round' }: { path: SkPath; r: number; tone: typeof BRASS; cap?: 'round' | 'butt' }) {
   return (
     <Group>
-      <Path path={path} style="stroke" strokeWidth={2 * r + 3} color={tone.edge} strokeCap="round" strokeJoin="round" />
-      <Path path={path} style="stroke" strokeWidth={2 * r} color={tone.mid} strokeCap="round" strokeJoin="round" />
+      <Path path={path} style="stroke" strokeWidth={2 * r + 3} color={tone.edge} strokeCap={cap} strokeJoin="round" />
+      <Path path={path} style="stroke" strokeWidth={2 * r} color={tone.mid} strokeCap={cap} strokeJoin="round" />
       <Group transform={[{ translateX: r * 0.32 }, { translateY: r * 0.36 }]}>
         <Path path={path} style="stroke" strokeWidth={r * 0.9} color={tone.low} opacity={0.75} strokeCap="round" strokeJoin="round" />
       </Group>
@@ -143,17 +143,185 @@ function TubeArt({ path, r, tone }: { path: SkPath; r: number; tone: typeof BRAS
   );
 }
 
-function tubeItems(t: Tube, view: ViewId): Item[] {
+/**
+ * A CONICAL tube (its drawn radius growing from rr[0] to rr[1] along its
+ * length): the true outline, offset from the projected centre line by the
+ * radius at each point, cut into short pieces that each carry their own
+ * form gradient across the tube (lit from the upper left), a contour, a
+ * lower shade and a specular line, so a widening branch reads as one
+ * smooth, round piece of metal.
+ */
+function coneItems(t: Tube, view: ViewId, tone: typeof BRASS): Item[] {
+  const rr = t.rr!;
+  const P = t.pts.map((p) => prj(view, p));
+  // Radius by the 3-D arc length (the true taper, whatever the view).
+  const acc = [0];
+  for (let i = 1; i < t.pts.length; i++) acc.push(acc[i - 1] + Math.hypot(t.pts[i].x - t.pts[i - 1].x, t.pts[i].y - t.pts[i - 1].y, t.pts[i].z - t.pts[i - 1].z));
+  const total = acc[acc.length - 1] || 1;
+  const rAt = (i: number) => rr[0] + (rr[1] - rr[0]) * (acc[i] / total);
+  let last: P2 = [0, -1];
+  const nrm = P.map((_, i) => {
+    const a = P[Math.max(0, i - 1)];
+    const b = P[Math.min(P.length - 1, i + 1)];
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const l = Math.hypot(dx, dy);
+    if (l < 0.5) return last;
+    last = [-dy / l, dx / l];
+    return last;
+  });
+  const L: P2[] = P.map((c, i) => [c[0] + nrm[i][0] * rAt(i), c[1] + nrm[i][1] * rAt(i)]);
+  const R: P2[] = P.map((c, i) => [c[0] - nrm[i][0] * rAt(i), c[1] - nrm[i][1] * rAt(i)]);
+  const out: Item[] = [];
+  const per = 3;
+  for (let i0 = 0; i0 < P.length - 1; i0 += per) {
+    const i1 = Math.min(P.length - 1, i0 + per);
+    const poly4: P2[] = [...L.slice(i0, i1 + 1), ...R.slice(i0, i1 + 1).reverse()];
+    // Round joints between pieces: the end discs (seen side-on they hide in the body).
+    const im = Math.floor((i0 + i1) / 2);
+    const c = P[im];
+    let n2 = nrm[im];
+    if (n2[0] + n2[1] > 0) n2 = [-n2[0], -n2[1]]; // toward the upper-left light
+    const r = rAt(im);
+    const path = poly(poly4);
+    const disc = poly(circ(P[i1], rAt(i1) * 0.97, 20));
+    const body = union([path, disc]);
+    const mid3 = t.pts[im];
+    const a: P2 = [c[0] + n2[0] * r, c[1] + n2[1] * r];
+    const b: P2 = [c[0] - n2[0] * r, c[1] - n2[1] * r];
+    const spec0 = make();
+    const spec1 = make();
+    const shade = make();
+    // The contour: the two long sides only (a seam line across the joints
+    // between pieces would read as a ring that is not on the metal).
+    const sides = make();
+    L.slice(i0, i1 + 1).forEach((q, j) => (j === 0 ? sides.moveTo(q[0], q[1]) : sides.lineTo(q[0], q[1])));
+    R.slice(i0, i1 + 1).forEach((q, j) => (j === 0 ? sides.moveTo(q[0], q[1]) : sides.lineTo(q[0], q[1])));
+    // One lit side for the whole piece (a per-point flip at a bend drew a
+    // stray highlight across the tube).
+    const sg = nrm[im][0] + nrm[im][1] > 0 ? -1 : 1;
+    for (let i = i0; i <= i1; i++) {
+      const m: P2 = [nrm[i][0] * sg, nrm[i][1] * sg];
+      const q = rAt(i);
+      const s1: P2 = [P[i][0] + m[0] * q * 0.52, P[i][1] + m[1] * q * 0.52];
+      const s2: P2 = [P[i][0] + m[0] * q * 0.74, P[i][1] + m[1] * q * 0.74];
+      const sh: P2 = [P[i][0] - m[0] * q * 0.62, P[i][1] - m[1] * q * 0.62];
+      if (i === i0) {
+        spec0.moveTo(s1[0], s1[1]);
+        spec1.moveTo(s2[0], s2[1]);
+        shade.moveTo(sh[0], sh[1]);
+      } else {
+        spec0.lineTo(s1[0], s1[1]);
+        spec1.lineTo(s2[0], s2[1]);
+        shade.lineTo(sh[0], sh[1]);
+      }
+    }
+    out.push({
+      key: `${t.id}:c${i0}`,
+      depth: depthOf(view, mid3),
+      node: (
+        <Group key={`${t.id}:c${i0}`}>
+          <Path path={body}>
+            <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={[tone.light, tone.hi, tone.mid, tone.low, tone.dark, tone.low]} positions={[0, 0.16, 0.42, 0.74, 0.93, 1]} />
+          </Path>
+          <Group clip={body}>
+            <Path path={shade} style="stroke" strokeWidth={Math.max(1.5, r * 0.34)} color={tone.dark} opacity={0.32} strokeCap="round" strokeJoin="round" />
+            <Path path={spec0} style="stroke" strokeWidth={Math.max(1.2, r * 0.16)} color={tone.light} opacity={0.85} strokeCap="round" strokeJoin="round" />
+            <Path path={spec1} style="stroke" strokeWidth={Math.max(0.8, r * 0.06)} color="#ffffff" opacity={0.55} strokeCap="round" strokeJoin="round" />
+          </Group>
+          <Path path={sides} style="stroke" strokeWidth={2.2} color={tone.edge} strokeJoin="round" strokeCap="round" />
+        </Group>
+      ),
+    });
+  }
+  return out;
+}
+
+/**
+ * The MOUTHPIECE, turned silver-plate: the rim (its outer edge the widest
+ * part), the cup's outside closing in like a bowl, the throat, and the
+ * shank tapering slightly to the receiver. Real-world: a tuba mouthpiece
+ * about dia. 46 mm across the rim by 95 mm long; a horn's about 25 x 80 mm.
+ * The exterior radius along its length, as fractions of the rim radius.
+ */
+const MP_PROFILE: readonly [number, number][] = [
+  [0, 0.94],
+  [0.025, 1],
+  [0.07, 0.97],
+  [0.16, 0.8],
+  [0.28, 0.56],
+  [0.38, 0.47],
+  [0.55, 0.45],
+  [1, 0.38],
+];
+function mouthpieceItems(t: Tube, view: ViewId, rimR: number): Item[] {
+  const a3 = t.pts[0];
+  const b3 = t.pts[t.pts.length - 1];
+  const pts: Vec3[] = [];
+  const radii: number[] = [];
+  for (const [f, k] of MP_PROFILE) {
+    pts.push(add(a3, scale(sub(b3, a3), f)));
+    radii.push(rimR * k);
+  }
+  const P = pts.map((p) => prj(view, p));
+  const dx = P[P.length - 1][0] - P[0][0];
+  const dy = P[P.length - 1][1] - P[0][1];
+  const l = Math.hypot(dx, dy) || 1;
+  const n: P2 = [-dy / l, dx / l];
+  const L: P2[] = P.map((c, i) => [c[0] + n[0] * radii[i], c[1] + n[1] * radii[i]]);
+  const R: P2[] = P.map((c, i) => [c[0] - n[0] * radii[i], c[1] - n[1] * radii[i]]);
+  const outline = poly([...L, ...R.reverse()]);
+  const lit: P2 = n[0] + n[1] > 0 ? [-n[0], -n[1]] : n;
+  const c = P[3];
+  const ga: P2 = [c[0] + lit[0] * rimR, c[1] + lit[1] * rimR];
+  const gb: P2 = [c[0] - lit[0] * rimR, c[1] - lit[1] * rimR];
+  // The rim's edge: a bright band across the lip end.
+  const rimBand = poly([L[0], L[2], R[R.length - 3], R[R.length - 1]]);
+  const spec = make();
+  P.forEach((q, i) => {
+    const s: P2 = [q[0] + lit[0] * radii[i] * 0.5, q[1] + lit[1] * radii[i] * 0.5];
+    if (i === 0) spec.moveTo(s[0], s[1]);
+    else spec.lineTo(s[0], s[1]);
+  });
+  return [
+    {
+      key: `${t.id}`,
+      depth: depthOf(view, scale(add(a3, b3), 0.5)),
+      node: (
+        <Group key={t.id}>
+          <Path path={outline}>
+            <LinearGradient start={vec(ga[0], ga[1])} end={vec(gb[0], gb[1])} colors={[SILVER.light, SILVER.hi, SILVER.mid, SILVER.low, SILVER.dark]} positions={[0, 0.2, 0.5, 0.8, 1]} />
+          </Path>
+          <Path path={rimBand} color="#ffffff" opacity={0.35} />
+          <Path path={spec} style="stroke" strokeWidth={Math.max(0.8, rimR * 0.12)} color="#ffffff" opacity={0.85} strokeCap="round" />
+          <Path path={outline} style="stroke" strokeWidth={1.4} color={SILVER.edge} strokeJoin="round" />
+        </Group>
+      ),
+    },
+  ];
+}
+
+function tubeItems(t: Tube, view: ViewId, s?: BrassScene): Item[] {
+  if (t.draw === false) return [];
   const tone = t.tone === 'silver' ? SILVER : BRASS;
+  if (t.id === 'mouthpiece' && s) return mouthpieceItems(t, view, s.spec.id === 'horn' ? 12.5 : s.spec.id === 'tuba' ? 23 : 19);
+  if (t.rr) return coneItems(t, view, tone);
+  // A leadpipe widens from the mouthpiece receiver.
+  if (t.id === 'leadpipe') return coneItems({ ...t, rr: [t.r * 0.62, t.r] }, view, tone);
   // Long tubes are cut into runs so each run sorts at its own depth (a coil
   // passes behind and in front of the valves).
   const run = 14;
   const out: Item[] = [];
+  const closed = t.pts.length > 3 && Math.hypot(t.pts[0].x - t.pts[t.pts.length - 1].x, t.pts[0].y - t.pts[t.pts.length - 1].y, t.pts[0].z - t.pts[t.pts.length - 1].z) < 1;
+  const single = t.pts.length - 1 <= run;
   for (let i0 = 0; i0 < t.pts.length - 1; i0 += run) {
-    const seg = t.pts.slice(i0, Math.min(t.pts.length, i0 + run + 1));
+    // Runs overlap their neighbours by a sample and meet with BUTT ends, so
+    // a joint never shows a bead or a ring (only a tube's free ends are round).
+    const j0 = Math.max(0, i0 - 1);
+    const seg = t.pts.slice(j0, Math.min(t.pts.length, i0 + run + 2));
     const path = poly(seg.map((p) => prj(view, p)), false);
     const c = seg.reduce((a, p) => add(a, p), { x: 0, y: 0, z: 0 });
-    out.push({ key: `${t.id}:${i0}`, depth: depthOf(view, scale(c, 1 / seg.length)), node: <TubeArt path={path} r={t.r} tone={tone} /> });
+    out.push({ key: `${t.id}:${i0}`, depth: depthOf(view, scale(c, 1 / seg.length)), node: <TubeArt path={path} r={t.r} tone={tone} cap={single && !closed ? 'round' : 'butt'} /> });
   }
   return out;
 }
@@ -206,14 +374,16 @@ function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: { wrist: Vec3
           ) : null}
         </Group>
       ) : null}
-      <Path path={p.rim} style="stroke" strokeWidth={9} color={BRASS.edge} />
-      <Path path={p.rim} style="stroke" strokeWidth={6.5} color={BRASS.hi} />
-      <Group transform={[{ translateX: -1.4 }, { translateY: -1.8 }]}>
-        <Path path={p.rim} style="stroke" strokeWidth={2} color={BRASS.light} opacity={0.9} />
+      {/* The rim's bead: a thin rolled wire edge (about 5 mm), not a band. */}
+      <Path path={p.rim} style="stroke" strokeWidth={6} color={BRASS.edge} />
+      <Path path={p.rim} style="stroke" strokeWidth={3.8} color={BRASS.hi} />
+      <Group transform={[{ translateX: -0.8 }, { translateY: -1 }]}>
+        <Path path={p.rim} style="stroke" strokeWidth={1.2} color={BRASS.light} opacity={0.95} />
       </Group>
     </Group>
   );
 }
+const sub2 = (a: P2, b: P2): P2 => [a[0] - b[0], a[1] - b[1]];
 const bbox2pts = (p: SkPath): P2[] => {
   const r = p.getBounds();
   return [
@@ -233,21 +403,65 @@ function valveItems(vl: Valve, view: ViewId, i: number): Item[] {
   // The end nearer the viewer shows its cap.
   const near = dot(vl.axis, TO_VIEWER[view]) >= 0 ? rb : ra;
   const cap = poly(near);
+  // The casing lit ACROSS its axis (a cylinder), not corner to corner.
+  const ax2 = sub2(prj(view, b), prj(view, a));
+  const axl = Math.hypot(ax2[0], ax2[1]);
+  const acr: P2 = axl > 1 ? [-ax2[1] / axl, ax2[0] / axl] : [1, 0];
+  const lit: P2 = acr[0] + acr[1] > 0 ? [-acr[0], -acr[1]] : acr;
+  const cc = prj(view, vl.c);
+  /** A band round the casing at axis offsets d0..d1 (a cap or a ring). */
+  const band = (d0: number, d1: number, dr: number) =>
+    hull([...ring(add(vl.c, scale(vl.axis, d0)), e1, e2, vl.r + dr, 0, 2 * Math.PI, 24), ...ring(add(vl.c, scale(vl.axis, d1)), e1, e2, vl.r + dr, 0, 2 * Math.PI, 24)].map((p) => prj(view, p)));
+  const caps: P2[][] = vl.kind === 'piston' ? [band(-vl.h / 2 - 2, -vl.h / 2 + 9, 2.6), band(vl.h / 2 - 9, vl.h / 2 + 2, 2.6), band(-vl.h * 0.16, -vl.h * 0.16 + 5, 1.2)] : [band(-vl.h / 2, -vl.h / 2 + 7, 2)];
   const nodes: ReactNode[] = [
-    <Lit key="casing" path={casing} pts={casingPts} ramp={vl.kind === 'rotary' ? [BRASS.hi, BRASS.mid, BRASS.low, BRASS.dark] : [BRASS.light, BRASS.hi, BRASS.mid, BRASS.low]} edge={BRASS.edge} />,
-    <Group key="cap">
-      <Path path={cap}>
-        <LinearGradient start={vec(bbox(near).u0, bbox(near).v0)} end={vec(bbox(near).u1, bbox(near).v1)} colors={[SILVER.light, SILVER.mid, SILVER.low]} />
+    <Group key="casing">
+      <Path path={casing}>
+        <LinearGradient start={vec(cc[0] + lit[0] * vl.r, cc[1] + lit[1] * vl.r)} end={vec(cc[0] - lit[0] * vl.r, cc[1] - lit[1] * vl.r)} colors={[BRASS.light, BRASS.hi, BRASS.mid, BRASS.low, BRASS.dark, BRASS.low]} positions={[0, 0.16, 0.42, 0.74, 0.93, 1]} />
       </Path>
-      <Path path={cap} style="stroke" strokeWidth={1.4} color={SILVER.edge} />
+      <Path path={casing} style="stroke" strokeWidth={1.6} color={BRASS.edge} strokeJoin="round" />
+      {caps.map((cp, j) => (
+        <Group key={j}>
+          <Path path={poly(cp)}>
+            <LinearGradient start={vec(cc[0] + lit[0] * (vl.r + 3), cc[1] + lit[1] * (vl.r + 3))} end={vec(cc[0] - lit[0] * (vl.r + 3), cc[1] - lit[1] * (vl.r + 3))} colors={[BRASS.light, BRASS.hi, BRASS.mid, BRASS.low, BRASS.dark]} positions={[0, 0.2, 0.5, 0.82, 1]} />
+          </Path>
+          <Path path={poly(cp)} style="stroke" strokeWidth={1.1} color={BRASS.edge} strokeJoin="round" />
+        </Group>
+      ))}
     </Group>,
+    vl.kind === 'rotary' ? (
+      // A rotary valve's back cap (real-world: about dia. 40 mm): a domed
+      // brass cap with its turned ring and centre screw, and the rotor's
+      // STOP ARM swinging between two cork bumpers.
+      <Group key="cap">
+        <Path path={cap}>
+          <RadialGradient c={vec(cc[0] - vl.r * 0.35, cc[1] - vl.r * 0.35)} r={vl.r * 1.5} colors={[BRASS.light, BRASS.hi, BRASS.mid, BRASS.low]} />
+        </Path>
+        <Path path={cap} style="stroke" strokeWidth={1.4} color={BRASS.edge} />
+        <Path path={poly(ring(add(vl.c, scale(vl.axis, vl.h / 2 + 1)), e1, e2, vl.r * 0.62, 0, 2 * Math.PI, 24).map((p) => prj(view, p)))} style="stroke" strokeWidth={1.1} color={BRASS.low} opacity={0.9} />
+        <Path path={poly(circ(cc, 2.6, 10))} color={SILVER.mid} />
+        <Path path={poly([cc, [cc[0] + vl.r * 0.62, cc[1] - vl.r * 0.55]], false)} style="stroke" strokeWidth={4.2} color={SILVER.edge} strokeCap="round" />
+        <Path path={poly([cc, [cc[0] + vl.r * 0.62, cc[1] - vl.r * 0.55]], false)} style="stroke" strokeWidth={2.4} color={SILVER.hi} strokeCap="round" />
+        <Path path={poly(circ([cc[0] + vl.r * 0.95, cc[1] - vl.r * 0.2], 3.4, 10))} color="#b98b5c" />
+        <Path path={poly(circ([cc[0] + vl.r * 0.2, cc[1] - vl.r * 0.95], 3.4, 10))} color="#b98b5c" />
+      </Group>
+    ) : (
+      <Group key="cap">
+        <Path path={cap}>
+          <LinearGradient start={vec(bbox(near).u0, bbox(near).v0)} end={vec(bbox(near).u1, bbox(near).v1)} colors={[SILVER.light, SILVER.mid, SILVER.low]} />
+        </Path>
+        <Path path={cap} style="stroke" strokeWidth={1.4} color={SILVER.edge} />
+      </Group>
+    ),
   ];
   if (vl.kind === 'piston') {
     // The finger button on its stem, above the casing.
-    const stemA = prj(view, add(vl.c, scale(vl.axis, -(vl.h / 2))));
-    const stemB = prj(view, add(vl.c, scale(vl.axis, -(vl.h / 2 + 26))));
-    const button = ring(add(vl.c, scale(vl.axis, -(vl.h / 2 + 30))), e1, e2, vl.r * 0.95, 0, 2 * Math.PI, 24).map((p) => prj(view, p));
-    const bh = hull([...button, ...ring(add(vl.c, scale(vl.axis, -(vl.h / 2 + 22))), e1, e2, vl.r * 0.95, 0, 2 * Math.PI, 24).map((p) => prj(view, p))]);
+    // (The axis points OUT of the casing's top: the stem and the pearl
+    // finger button stand above the top cap, real-world a button about
+    // dia. 24 mm on a stem about 25 mm.)
+    const stemA = prj(view, add(vl.c, scale(vl.axis, vl.h / 2)));
+    const stemB = prj(view, add(vl.c, scale(vl.axis, vl.h / 2 + 26)));
+    const button = ring(add(vl.c, scale(vl.axis, vl.h / 2 + 34)), e1, e2, vl.r * 0.8, 0, 2 * Math.PI, 24).map((p) => prj(view, p));
+    const bh = hull([...button, ...ring(add(vl.c, scale(vl.axis, vl.h / 2 + 25)), e1, e2, vl.r * 0.8, 0, 2 * Math.PI, 24).map((p) => prj(view, p))]);
     nodes.push(
       <Group key="button">
         <Path path={poly([stemA, stemB], false)} style="stroke" strokeWidth={6} color={SILVER.mid} strokeCap="round" />
@@ -257,7 +471,22 @@ function valveItems(vl: Valve, view: ViewId, i: number): Item[] {
   } else if (vl.lever) {
     const l0 = prj(view, vl.c);
     const l1 = prj(view, add(vl.c, vl.lever));
-    nodes.push(<Path key="lever" path={poly([l0, l1], false)} style="stroke" strokeWidth={7} color={BRASS.edge} strokeCap="round" />, <Path key="lever2" path={poly([l0, l1], false)} style="stroke" strokeWidth={4.5} color={BRASS.hi} strokeCap="round" />);
+    // The key lever: a thin rod out to the left hand's flat finger spatula.
+    const dl = Math.hypot(l1[0] - l0[0], l1[1] - l0[1]) || 1;
+    const ang = Math.atan2(l1[1] - l0[1], l1[0] - l0[0]);
+    const pad: P2[] = [];
+    for (let k = 0; k < 16; k++) {
+      const t2 = (k / 16) * Math.PI * 2;
+      const x = Math.cos(t2) * 9;
+      const y = Math.sin(t2) * 5;
+      pad.push([l1[0] + x * Math.cos(ang) - y * Math.sin(ang), l1[1] + x * Math.sin(ang) + y * Math.cos(ang)]);
+    }
+    void dl;
+    nodes.push(
+      <Path key="lever" path={poly([l0, l1], false)} style="stroke" strokeWidth={4.4} color={BRASS.edge} strokeCap="round" />,
+      <Path key="lever2" path={poly([l0, l1], false)} style="stroke" strokeWidth={2.6} color={BRASS.hi} strokeCap="round" />,
+      <Lit key="pad" path={poly(pad)} pts={pad} ramp={[BRASS.light, BRASS.hi, BRASS.mid, BRASS.low]} edge={BRASS.edge} w={1.1} rim={1.2} />,
+    );
   }
   return [{ key: `valve${i}`, depth: depthOf(view, vl.c) + 4, node: <Group key={`valve${i}`}>{nodes}</Group> }];
 }
@@ -281,12 +510,60 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   const tc: P2[] = [...circ(q(J.shoulderL), 66), ...circ(q(J.shoulderR), 66), ...circ(q(J.chest), 125), ...circ(q(add(scale(J.chest, 0.4), scale(J.pelvis, 0.6))), 112), ...circ(q(J.hipL), 92), ...circ(q(J.hipR), 92)];
   const torso = hull(tc);
   out.push({ key: 'torso', depth: depthOf(view, J.chest), node: <Lit key="torso" path={poly(torso)} pts={torso} ramp={SHIRT} /> });
+  // The arms and HANDS (figure polish 2026-10-10: the hands were capsules —
+  // mittens). Each hand is the shared anatomical hand (PlayerFigure
+  // handShape, the figure skin), holding what it holds:
+  //   • the right hand on top-action pistons, seen from the player's right:
+  //     the wrist behind and above the cluster, the fingers arching forward
+  //     and DOWN onto the buttons (fingertips where the scene puts them), so
+  //     the forearm comes from the elbow behind the casings and the whole
+  //     cluster stays in view; from above, the back of the hand over them;
+  //   • the left hand a fist round the branch (tuba, euphonium), or the
+  //     fingers on the rotor levers (horn).
+  const rotary = s.valves.some((vl) => vl.kind === 'rotary');
+  const side = view === 'side';
+  const handAt = (key: string, kind: 'keys' | 'grip' | 'above', tip: P2, dir: number, depth: number): P2 => {
+    const [ax, ay] = kind === 'keys' ? [151, Math.cos(dir) >= 0 ? 28 : -28] : kind === 'grip' ? [100, 0] : [70, 0];
+    const co = Math.cos(dir);
+    const si = Math.sin(dir);
+    const wrist: P2 = [tip[0] - (ax * co - ay * si), tip[1] - (ax * si + ay * co)];
+    const hs = handShape({ wrist: pt(wrist[0], wrist[1]), dir, kind });
+    out.push({
+      key,
+      depth,
+      node: (
+        <Group key={key}>
+          <FigureMass path={hs.path} tone="skin" contour={1.8} />
+          <Path path={hs.lines} style="stroke" strokeWidth={1.6} strokeCap="round" color={SKIN_EDGE} opacity={0.7} />
+        </Group>
+      ),
+    });
+    return wrist;
+  };
+  const fore2 = (key: string, a: Vec3, w2: P2, depth: number) => {
+    const pts = limbPts(q(a), w2, 42, 31);
+    out.push({ key, depth, node: <Lit key={key} path={poly(pts)} pts={pts} ramp={SHIRT} /> });
+  };
+  const dirOf = (a: Vec3, b: Vec3) => {
+    const A = q(a);
+    const B = q(b);
+    return Math.atan2(B[1] - A[1], B[0] - A[0]);
+  };
   limb('upperL', J.shoulderL, J.elbowL, 52, 42, SHIRT);
-  limb('foreL', J.elbowL, J.wristL, 42, 31, SHIRT);
   limb('upperR', J.shoulderR, J.elbowR, 52, 42, SHIRT);
-  limb('foreR', J.elbowR, J.wristR, 42, 31, SHIRT);
-  limb('handL', J.wristL, J.handL, 30, 36, SKIN);
-  if (!s.bellHand) limb('handR', J.wristR, J.handR, 30, 36, SKIN);
+  {
+    const kind = rotary ? 'keys' : 'grip';
+    const dir = dirOf(J.elbowL, J.handL);
+    const wL = handAt('handL', kind, q(J.handL), dir, depthOf(view, J.handL) + 25);
+    fore2('foreL', J.elbowL, wL, depthOf(view, scale(add(J.elbowL, J.wristL), 0.5)));
+  }
+  if (!s.bellHand) {
+    const dir = side ? 0 : dirOf(J.wristR, J.handR);
+    const wR = handAt('handR', side ? 'keys' : 'above', q(J.handR), dir, depthOf(view, J.handR) + 25);
+    fore2('foreR', J.elbowR, wR, depthOf(view, scale(add(J.elbowR, J.wristR), 0.5)));
+  } else {
+    limb('foreR', J.elbowR, J.wristR, 42, 31, SHIRT);
+  }
   // The neck, and the head: the SHARED figure head (head fix 2026-10-08 —
   // PlayerFigure headProfile / headAbove + FigureHead, the same skin
   // silhouette every lab figure wears; never a circle). Profile facing +x
@@ -352,7 +629,7 @@ function smoothClosed(pts: P2[]): SkPath {
 export function sceneItems(s: BrassScene, view: ViewId, opts: { player?: boolean } = {}): Item[] {
   const items: Item[] = [];
   if (opts.player !== false) items.push(...playerItems(s, view));
-  for (const t of s.tubes) items.push(...tubeItems(t, view));
+  for (const t of s.tubes) items.push(...tubeItems(t, view, s));
   s.valves.forEach((vl, i) => items.push(...valveItems(vl, view, i)));
   const b = s.bell;
   items.push({ key: 'bell', depth: depthOf(view, scale(add(b.rim, b.throat), 0.5)) + 10, node: <BellArt key="bell" b={b} view={view} hand={s.bellHand} /> });
@@ -363,13 +640,12 @@ export function sceneItems(s: BrassScene, view: ViewId, opts: { player?: boolean
  *  player recedes behind the instrument (charter §6). */
 export function LowBrassScene({ s, view, dim = 1 }: { s: BrassScene; view: ViewId; dim?: number }) {
   const items = useMemo(() => sceneItems(s, view), [s, view]);
-  const playerKeys = new Set(['thighL', 'thighR', 'shinL', 'shinR', 'footL', 'footR', 'torso', 'upperL', 'foreL', 'upperR', 'foreR', 'handL', 'handR', 'neckLimb', 'head', 'chair']);
   return (
     <Group opacity={dim}>
       {items.map((it) => (
-        <Group key={it.key} opacity={playerKeys.has(it.key) ? 0.82 : 1}>
-          {it.node}
-        </Group>
+        // The player is OPAQUE (figure polish 2026-10-10): nothing of the
+        // horn shows through an arm; the depth sort gives the order.
+        <Group key={it.key}>{it.node}</Group>
       ))}
     </Group>
   );

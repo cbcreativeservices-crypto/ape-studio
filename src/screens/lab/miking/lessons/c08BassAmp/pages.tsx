@@ -29,7 +29,7 @@ export const C08_SPEC: AmpPagesSpec = {
   ampParts: ['amp.head', 'spk.grille', 'spk.cabinet', 'spk.baffle', 'spk.cone', 'spk.dust', 'spk.surround', 'spk.frame', 'spk.magnet', 'spk.horn', 'spk.back'],
   ampNoun: 'the bass cabinet',
   string: { spec: BASS, idx: 0, name: 'The low E string (about 41 Hz)' },
-  chain: { pedals: 'pedals', rig: 'stack', diBox: true, ampDirect: true },
+  chain: { pedals: 'pedals', rig: 'stack', diBox: true, ampDirect: true, icons: { player: 'bass' } },
   workedZone: C08_WORKED,
   placeZone: C08_PLACE_START,
   micDefault: 'kickDynCard',

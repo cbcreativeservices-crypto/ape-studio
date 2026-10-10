@@ -27,7 +27,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, Line, Path, Polygon, Rect } from 'react-native-svg';
-import { FigureHeadSvg } from '../../../../features/lab/figureHeadSvg';
+import { FigureStandingFrontSvg } from '../../../../features/lab/figureBodySvg';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
@@ -64,7 +64,7 @@ const ANALOGY_GAIN_DB = 9; // fixed — gain is NOT part of the analogy (ruling)
  *  object (owner 2026-08-07: not the person, not the speaker beside it). */
 const FIXED_FREQ = 2000;
 /** Stages 0–1: the lens that cannot zoom. ≈0.89 octaves ⇒ a ±13.5 px view that
- *  covers the lamp alone (person ends at x≈172, monitor starts at x≈262). */
+ *  covers the lamp alone (person ends at x≈172, the monitor starts at x≈268). */
 const LOCKED_ZOOM = 0.83;
 
 type Stage = 0 | 1 | 2;
@@ -123,19 +123,19 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
       <Line x1={28} y1={68} x2={62} y2={68} stroke={INK} strokeWidth={1} />
       <Polygon points={`25,86 65,86 69,91 21,91`} fill={FILL2} stroke={INK} strokeWidth={1} strokeLinejoin="round" />
 
-      {/* CHAIR — seat + back + legs with a depth offset */}
-      <Path d="M94 92 L94 116 M116 92 L116 116 M97 113 L113 113" stroke={INK} strokeWidth={1.4} />
-      <Polygon points={`94,90 116,90 120,85 98,85`} fill={FILL2} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
-      <Path d="M116 90 L116 66 L120 62 L120 85" fill={FILL} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
+      {/* CHAIR — at the room's scale (≈ 37.7 units/m, from the 1.75 m
+          figure): seat 450 mm high × 450 wide, backrest top at 900 mm;
+          seat, legs and back with a small depth offset. */}
+      <Path d="M97 101 L97 116 M113 101 L113 116 M100.5 98 L100.5 112 M116.5 98 L116.5 112" stroke={INK} strokeWidth={1.3} strokeLinecap="round" />
+      <Polygon points={`96,101 114,101 117.5,97 99.5,97`} fill={FILL2} stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
+      <Path d="M114 101 L114 82 L117.5 79 L117.5 97" fill={FILL} stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
+      <Line x1={114.8} y1={86} x2={116.8} y2={84.2} stroke={INK} strokeWidth={0.8} strokeOpacity={0.6} />
 
-      {/* PERSON — proportioned figure, centered. The head is the figure's own
-          skin-silhouette head (head fix 2026-10-08: a head on a body is never
-          a circle and never the line-art icon), drawn after the body so its
-          neck runs down into the shoulders. */}
-      <Path d="M160 65 Q153 75 155 92 L165 92 Q167 75 160 65 Z" fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
-      <Path d="M155 70 L148 84 M165 70 L172 84" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
-      <Path d="M157 92 L154 116 M163 92 L166 116" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
-      <FigureHeadSvg view="front" cx={160} cy={57.5} h={15} neckTo={67} minContour={0.9} />
+      {/* PERSON (figure polish 2026-10-10 — it was a stick body under a
+          head): the shared standing FIGURE, front view, at the room's scale
+          (≈ 37.7 units/m: an adult 1.75 m = 66 units, crown at y 50), feet
+          on the floor, centred; the figure's own skin-silhouette head. */}
+      <FigureStandingFrontSvg cx={160} floorY={FLOOR_Y} px={0.0377} minContour={0.7} />
 
       {/* FLOOR LAMP — base, pole, shade */}
       <Ellipse cx={214} cy={116} rx={10} ry={2.6} fill={FILL2} stroke={INK} strokeWidth={1.2} />
@@ -143,31 +143,33 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
       <Polygon points={`205,70 223,70 219,54 209,54`} fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
       <Line x1={208} y1={60} x2={220} y2={60} stroke={INK} strokeWidth={0.8} strokeOpacity={0.6} />
 
-      {/* STUDIO MONITOR — front face + top + side, iso depth; woofer/tweeter/port */}
-      <Polygon points={`262,62 284,62 290,57 268,57`} fill={FILL2} stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
-      <Polygon points={`284,62 284,98 290,93 290,57`} fill="#0f1116" stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
-      <Rect x={262} y={62} width={22} height={36} rx={1.5} fill={FILL} stroke={INK} strokeWidth={1.4} />
-      <Circle cx={273} cy={85} r={6} fill={FILL2} stroke={INK} strokeWidth={1.2} />
-      <Circle cx={273} cy={85} r={2} fill={INK} fillOpacity={0.5} />
-      <Circle cx={273} cy={70} r={2.6} fill={FILL2} stroke={INK} strokeWidth={1.1} />
-      <Line x1={268} y1={93} x2={278} y2={93} stroke={INK} strokeWidth={1} strokeOpacity={0.6} />
+      {/* STUDIO MONITOR on its floor stand, at the room's scale: an 8"
+          two-way, 250 W × 400 H mm (9.4 × 15 units) with iso depth, its
+          tweeter at ≈ 1.2 m — seated ear height — on a stand (top plate,
+          column, base). Woofer Ø165 frame, tweeter, slot port. */}
+      <Line x1={273} y1={84} x2={273} y2={114.5} stroke={INK} strokeWidth={1.8} />
+      <Polygon points={`266,116 280,116 283,113.5 269,113.5`} fill={FILL2} stroke={INK} strokeWidth={1.1} strokeLinejoin="round" />
+      <Polygon points={`267.5,84 278.5,84 281.5,81.6 270.5,81.6`} fill={FILL2} stroke={INK} strokeWidth={1} strokeLinejoin="round" />
+      <Polygon points={`268.3,67 277.7,67 281.2,64 271.8,64`} fill={FILL2} stroke={INK} strokeWidth={1.2} strokeLinejoin="round" />
+      <Polygon points={`277.7,67 277.7,82 281.2,79 281.2,64`} fill="#0f1116" stroke={INK} strokeWidth={1.2} strokeLinejoin="round" />
+      <Rect x={268.3} y={67} width={9.4} height={15} rx={1} fill={FILL} stroke={INK} strokeWidth={1.3} />
+      <Circle cx={273} cy={76.4} r={3.1} fill={FILL2} stroke={INK} strokeWidth={1} />
+      <Circle cx={273} cy={76.4} r={1.1} fill={INK} fillOpacity={0.5} />
+      <Circle cx={273} cy={70.4} r={1.5} fill={FILL2} stroke={INK} strokeWidth={0.9} />
+      <Line x1={270.6} y1={80.4} x2={275.4} y2={80.4} stroke={INK} strokeWidth={0.9} strokeOpacity={0.6} />
 
-      {/* CAMERA field of view — apex at the lens, covering the aimed zone */}
-      <Polygon
-        points={`${CAM_APEX[0]},${CAM_APEX[1]} ${aimX - halfW},${FOV_TOP} ${aimX + halfW},${FOV_TOP}`}
-        fill={fov}
-        fillOpacity={0.12}
-        stroke={fov}
-        strokeOpacity={0.6}
-        strokeWidth={1}
-      />
-      <Line x1={aimX - halfW} y1={FOV_TOP} x2={aimX + halfW} y2={FOV_TOP} stroke={fov} strokeWidth={2} strokeOpacity={0.85} />
-
-      {/* CAMERA body — on its tripod */}
-      <Rect x={147} y={150} width={26} height={13} rx={2.5} fill={FILL2} stroke={colors.amber} strokeWidth={1.5} />
-      <Circle cx={160} cy={150} r={5} fill={FILL} stroke={colors.amber} strokeWidth={1.5} />
-      <Rect x={165} y={146} width={7} height={4} rx={1} fill={FILL} stroke={colors.amber} strokeWidth={1.2} />
-      <Path d="M151 163 L144 167 M169 163 L176 167 M160 163 L160 167" stroke={colors.amber} strokeWidth={1.3} strokeLinecap="round" />
+      {/* CAMERA seen from behind, nearest the viewer, on its tripod: body
+          with the viewfinder hump on top centre, mode dial and shutter button,
+          the right-hand grip, the rear screen; a pan head on three splayed
+          legs. (Its lens faces into the room — the field of view's apex.) */}
+      <Path d="M152.5 150.5 L154.5 146.2 L165.5 146.2 L167.5 150.5 Z" fill={FILL2} stroke={colors.amber} strokeWidth={1.2} strokeLinejoin="round" />
+      <Rect x={147.5} y={147.6} width={5} height={2.6} rx={1} fill={FILL} stroke={colors.amber} strokeWidth={1} />
+      <Rect x={168.6} y={148.4} width={3.4} height={1.8} rx={0.9} fill={colors.amber} />
+      <Rect x={146} y={150} width={28} height={14} rx={2.5} fill={FILL2} stroke={colors.amber} strokeWidth={1.4} />
+      <Path d="M168.5 150.6 Q174.6 151 174.6 157 Q174.6 163.4 168.5 163.4" fill={FILL} stroke={colors.amber} strokeWidth={1} />
+      <Rect x={149} y={152.6} width={16.4} height={9} rx={1.2} fill="#0b0c10" stroke={colors.amber} strokeWidth={0.8} strokeOpacity={0.7} />
+      <Rect x={157} y={164} width={6} height={1.6} fill={FILL} stroke={colors.amber} strokeWidth={0.9} />
+      <Path d="M158 165.6 L147 168 M162 165.6 L173 168 M160 165.6 L160 168" stroke={colors.amber} strokeWidth={1.3} strokeLinecap="round" />
     </Svg>
   );
 }

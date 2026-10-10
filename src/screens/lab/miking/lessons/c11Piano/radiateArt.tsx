@@ -44,7 +44,38 @@ const rr = (x0: number, y0: number, x1: number, y1: number, r: number) => {
   return p;
 };
 
-type EndPaths = { body: SkPath; inside: SkPath; board: SkPath; plate: SkPath; strings: SkPath; legs: SkPath; lid: SkPath | null; stick: SkPath | null; up: SkPath; reflect: SkPath; down: SkPath; leak: SkPath; floor: SkPath };
+type EndPaths = {
+  body: SkPath;
+  inside: SkPath;
+  liner: SkPath;
+  beams: SkPath;
+  board: SkPath;
+  ribs: SkPath;
+  plate: SkPath;
+  bridges: SkPath;
+  strings: SkPath;
+  bass: SkPath;
+  legs: SkPath;
+  ferrules: SkPath;
+  casters: SkPath;
+  hinge: SkPath;
+  lid: SkPath | null;
+  stick: SkPath | null;
+  up: SkPath;
+  reflect: SkPath;
+  down: SkPath;
+  leak: SkPath;
+  floor: SkPath;
+};
+/** Where a plan polyline crosses x = xm (its z), or null. */
+function crossZ(pts: readonly (readonly [number, number])[], xm: number): number | null {
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, z0] = pts[i - 1];
+    const [x1, z1] = pts[i];
+    if ((x0 - xm) * (x1 - xm) <= 0 && x0 !== x1) return z0 + ((xm - x0) / (x1 - x0)) * (z1 - z0);
+  }
+  return null;
+}
 const endCache = new Map<string, EndPaths>();
 
 /** The case cut across at x = xm, seen from the keyboard (u = z, v = y). */
@@ -56,14 +87,57 @@ function endPaths(g: GrandGeom, lid: LidState): EndPaths {
   const zb = -g.hw;
   const zt = Math.min(g.hw, g.bentZ(xm));
   const t = GRAND_DIMS.rimT.mm;
-  const body = rr(zb, g.rimTop, zt, g.caseBottom, 10);
+  /* REAL SECTION (code comment only, mm): the rim ≈ 55 thick (laminated
+   * maple, black lacquer outside), ≈ 355 deep; the soundboard ≈ 9 thick on
+   * the inner rim's liner, ribs under it; NO bottom — a grand is open
+   * underneath, braced by beams; the plate's bars and the strings above the
+   * board, the bridges between; legs ≈ 600 with brass casters. */
+  const body = Skia.Path.Make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(zb, g.rimTop, t, g.caseBottom - g.rimTop), 8, 8));
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(zt - t, g.rimTop, t, g.caseBottom - g.rimTop), 8, 8));
   const inside = rr(zb + t, g.rimTop + 2, zt - t, GRAND_DIMS.soundboardY.mm, 4);
-  const board = rr(zb + t, GRAND_DIMS.soundboardY.mm, zt - t, GRAND_DIMS.soundboardY.mm + 10, 2);
-  const plate = rr(zb + t + 20, -6, zt - t - 20, 26, 6);
+  const sbY = GRAND_DIMS.soundboardY.mm;
+  const liner = Skia.Path.Make();
+  liner.addRect(Skia.XYWHRect(zb + t, sbY + 9, 40, 70));
+  liner.addRect(Skia.XYWHRect(zt - t - 40, sbY + 9, 40, 70));
+  const beams = Skia.Path.Make();
+  for (const f of [0.22, 0.5, 0.78]) beams.addRRect(Skia.RRectXY(Skia.XYWHRect(zb + (zt - zb) * f - 45, g.caseBottom - 110, 90, 110), 6, 6));
+  const board = rr(zb + t, sbY, zt - t, sbY + 9, 2);
+  const ribs = Skia.Path.Make();
+  for (let z = zb + t + 90; z < zt - t - 60; z += 150) ribs.addRRect(Skia.RRectXY(Skia.XYWHRect(z, sbY + 9, 24, 24), 5, 5));
+  const plate = Skia.Path.Make();
+  // The plate's bars in section: its flange along each rim and two struts.
+  plate.addRRect(Skia.RRectXY(Skia.XYWHRect(zb + t + 4, -30, 70, 56), 6, 6));
+  plate.addRRect(Skia.RRectXY(Skia.XYWHRect(zt - t - 74, -30, 70, 56), 6, 6));
+  for (const f of [0.33, 0.62]) plate.addRRect(Skia.RRectXY(Skia.XYWHRect(zb + (zt - zb) * f - 30, -24, 60, 50), 6, 6));
+  const bridges = Skia.Path.Make();
+  const lbz = crossZ(g.longBridge, xm);
+  const bbz = crossZ(g.bassBridge, xm);
+  if (lbz != null) bridges.addRRect(Skia.RRectXY(Skia.XYWHRect(lbz - 22, 2, 44, sbY - 2), 4, 4));
+  if (bbz != null) bridges.addRRect(Skia.RRectXY(Skia.XYWHRect(bbz - 26, -18, 52, sbY + 18), 4, 4));
+  // The strings in section: steel (paired) below, the copper bass higher,
+  // crossing over them on the bass side.
   const strings = Skia.Path.Make();
-  for (let z = zb + t + 40; z < zt - t - 30; z += 22) strings.addCircle(z, -10, 4.5);
+  const bass = Skia.Path.Make();
+  for (let z = zb + t + 60; z < zt - t - 40; z += 22) strings.addCircle(z, -2, 4.2);
+  for (let z = zb + t + 50; z < zb + (zt - zb) * 0.32; z += 30) bass.addCircle(z, -22, 7);
   const legs = Skia.Path.Make();
-  for (const z of [-g.hw + 110, g.hw - 110]) legs.addRRect(Skia.RRectXY(Skia.XYWHRect(z - 40, g.caseBottom, 80, FLOOR_Y - 40 - g.caseBottom), 16, 16));
+  const ferrules = Skia.Path.Make();
+  const casters = Skia.Path.Make();
+  // In a true section the front legs and the lyre stand in front of the
+  // cut (removed); beyond it, only the tail leg shows, under the bass side.
+  for (const z of [g.legs[2].z]) {
+    legs.addRRect(Skia.RRectXY(Skia.XYWHRect(z - 80, g.caseBottom, 160, 48), 6, 6));
+    legs.moveTo(z - 60, g.caseBottom + 48);
+    legs.lineTo(z + 60, g.caseBottom + 48);
+    legs.lineTo(z + 40, FLOOR_Y - 112);
+    legs.lineTo(z - 40, FLOOR_Y - 112);
+    legs.close();
+    ferrules.addRRect(Skia.RRectXY(Skia.XYWHRect(z - 46, FLOOR_Y - 114, 92, 32), 6, 6));
+    casters.addCircle(z, FLOOR_Y - 27, 27);
+  }
+  const hinge = Skia.Path.Make();
+  hinge.addCircle(zb + 6, g.rimTop - 6, 16);
   const deg = LID_DEG[lid];
   const a = (deg * Math.PI) / 180;
   const W = zt - zb;
@@ -127,7 +201,7 @@ function endPaths(g: GrandGeom, lid: LidState): EndPaths {
   const floor = Skia.Path.Make();
   floor.moveTo(GRAND_END_BOX.u0, FLOOR_Y);
   floor.lineTo(GRAND_END_BOX.u1, FLOOR_Y);
-  const out = { body, inside, board, plate, strings, legs, lid: lidP, stick, up, reflect, down, leak, floor };
+  const out = { body, inside, liner, beams, board, ribs, plate, bridges, strings, bass, legs, ferrules, casters, hinge, lid: lidP, stick, up, reflect, down, leak, floor };
   endCache.set(key, out);
   return out;
 }
@@ -137,20 +211,39 @@ export function GrandEndSection({ g, lid }: { g: GrandGeom; lid: LidState }) {
   return (
     <Group>
       <Path path={p.floor} style="stroke" strokeWidth={4} color="#3a3d45" />
-      <Path path={p.legs}>
-        <LinearGradient start={vec(-g.hw, 0)} end={vec(g.hw, 0)} colors={['#3a3c44', '#141418', '#08080a']} />
+      <Path path={p.casters}>
+        <LinearGradient start={vec(0, FLOOR_Y - 54)} end={vec(0, FLOOR_Y)} colors={['#f3d98d', '#a37a2a', '#4a3510']} />
       </Path>
+      <Path path={p.legs}>
+        <LinearGradient start={vec(-g.hw, g.caseBottom)} end={vec(g.hw, FLOOR_Y)} colors={[...P.LACQUER]} positions={[...P.LACQUER_POS]} />
+      </Path>
+      <Path path={p.legs} style="stroke" strokeWidth={3} color="#6a6f7a" opacity={0.5} />
+      <Path path={p.ferrules}>
+        <LinearGradient start={vec(0, FLOOR_Y - 114)} end={vec(0, FLOOR_Y - 82)} colors={['#f6dd95', '#cfa64b', '#5c4313']} />
+      </Path>
+      {/* the open interior, then the rim walls in section */}
+      <Path path={p.inside} color="#121216" />
+      <Path path={p.beams}>
+        <LinearGradient start={vec(0, g.caseBottom - 110)} end={vec(0, g.caseBottom)} colors={['#6d4a22', '#3a2a18']} />
+      </Path>
+      <Path path={p.liner} color="#8a6430" />
       <Path path={p.body}>
         <LinearGradient start={vec(-g.hw, g.rimTop)} end={vec(g.hw, g.caseBottom)} colors={[...P.LACQUER]} positions={[...P.LACQUER_POS]} />
       </Path>
-      <Path path={p.inside} color="#121216" />
+      <Path path={p.body} style="stroke" strokeWidth={4} color="#9aa0ab" opacity={0.6} />
+      <Path path={p.ribs} color="#8a6a3a" />
       <Path path={p.board}>
         <LinearGradient start={vec(0, 90)} end={vec(0, 100)} colors={[...P.SPRUCE]} />
       </Path>
+      <Path path={p.bridges}>
+        <LinearGradient start={vec(0, 0)} end={vec(0, 90)} colors={[...P.MAPLE]} />
+      </Path>
       <Path path={p.plate}>
-        <LinearGradient start={vec(0, -6)} end={vec(0, 26)} colors={[...P.GOLD]} positions={[0, 0.35, 0.75, 1]} />
+        <LinearGradient start={vec(0, -30)} end={vec(0, 26)} colors={[...P.GOLD]} positions={[0, 0.35, 0.75, 1]} />
       </Path>
       <Path path={p.strings} color={P.STEEL} />
+      <Path path={p.bass} color={P.COPPER} />
+      <Path path={p.hinge} color="#c8ccd4" />
       {p.lid ? (
         <Group>
           <Group transform={[{ translateX: 10 }, { translateY: 14 }]}>

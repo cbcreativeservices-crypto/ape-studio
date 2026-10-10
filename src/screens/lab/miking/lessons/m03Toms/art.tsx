@@ -139,12 +139,14 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (isRack(variant)) {
     if (view === 'side') {
       return [
-        { id: 'batter', text: '12 IN BATTER', short: 'BATTER', u: TOM2.c.x + 30, v: TOM2.c.y - 60, align: 'left' },
-        { id: 'reso', text: 'BOTTOM HEAD', short: 'BOTTOM', u: TOM2.c.x + 200, v: TOM2.c.y + 230, align: 'left' },
-        { id: 'crash', text: 'CRASH', u: C2.c.x + 60, v: C2.c.y - 60, align: 'center', tone: 'muted' },
-        { id: 'holder', text: 'HOLDER', u: MOUNT.top.x + 40, v: MOUNT.top.y + 60, align: 'left', tone: 'muted' },
-        { id: 'kick', text: 'KICK', u: 380, v: -200, align: 'center', tone: 'muted' },
-        { id: 'stick', text: 'STICK', u: TOM2.c.x - 300, v: TOM2.c.y - 190, align: 'center', tone: 'illustrative' },
+        // Round 2 (2026-10-10): each name in free space with a leader to its
+        // part, laid out so no leader crosses another or runs through a name.
+        { id: 'batter', text: '12 IN BATTER', short: 'BATTER', u: -150, v: -470, align: 'center', at: { u: 100, v: -575 } },
+        { id: 'reso', text: 'BOTTOM HEAD', short: 'BOTTOM', u: 400, v: -470, align: 'left', at: { u: 300, v: -395 } },
+        { id: 'crash', text: 'CRASH', u: 330, v: -790, align: 'left', tone: 'muted', at: { u: 300, v: C2.c.y + 12 } },
+        { id: 'holder', text: 'HOLDER', u: 350, v: -330, align: 'left', tone: 'muted', at: { u: MOUNT.top.x + 2, v: MOUNT.top.y + 14 } },
+        { id: 'kick', text: 'KICK', u: -60, v: -220, align: 'right', tone: 'muted', at: { u: 40, v: -220 } },
+        { id: 'stick', text: 'STICK', u: -150, v: -600, align: 'center', tone: 'illustrative', at: { u: -100, v: -666 } },
       ];
     }
     return [
@@ -164,7 +166,7 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
         : { id: 'reso', text: 'BOTTOM HEAD', short: 'BOTTOM', u: FLOOR.c.x + FF.R + 34, v: FLOOR.c.y + FF.depth - 6, align: 'left' },
       { id: 'legs', text: 'LEGS', u: FLOOR.c.x + 40, v: FLOOR_Y - 120, align: 'left', tone: 'muted' },
       { id: 'ride', text: 'RIDE', u: RIDE.c.x - 60, v: RIDE.c.y + 70, align: 'center', tone: 'muted' },
-      { id: 'stick', text: 'STICK', u: FLOOR.c.x - 300, v: FLOOR.c.y - 190, align: 'center', tone: 'illustrative' },
+      { id: 'stick', text: 'STICK', u: FLOOR.c.x - 200, v: FLOOR.c.y - 50, align: 'center', tone: 'illustrative', at: { u: FLOOR.c.x - 160, v: FLOOR.c.y - 70 } },
     ];
   }
   return [
@@ -226,12 +228,40 @@ export function tomHitTest(view: ViewId, variant: VariantId, u: number, v: numbe
   return null;
 }
 
+/** Distance from (u, v) to the segment a–b (mm). */
+function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: number; y: number }): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const t = Math.max(0, Math.min(1, ((u - a.x) * dx + (v - a.y) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(u - (a.x + t * dx), v - (a.y + t * dy));
+}
+
+/** Drawn hardware the hit test does not name — the stick, the boom stands,
+ *  the floor tom's legs — so the part labels keep off it too (label
+ *  occupancy only; taps are unchanged). */
+export function tomsDrawnAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
+  if (view !== 'side') return false;
+  if (isRack(variant)) {
+    const st = stickTo(TOM2.c);
+    if (segDist(u, v, st.from, st.to) <= 9 + tol) return true;
+    const foot = PLAN_HARDWARE.booms.crash2.u;
+    if (Math.abs(u - foot) <= 20 + tol && v >= C2.c.y + 130) return true;
+    return segDist(u, v, { x: foot, y: C2.c.y + 140 }, { x: C2.c.x, y: C2.c.y + 24 }) <= 14 + tol;
+  }
+  const st = stickTo(FLOOR.c);
+  if (segDist(u, v, st.from, st.to) <= 9 + tol) return true;
+  const foot = PLAN_HARDWARE.booms.ride.u;
+  if (Math.abs(u - foot) <= 20 + tol && v >= RIDE.c.y + 130) return true;
+  return segDist(u, v, { x: foot, y: RIDE.c.y + 140 }, { x: RIDE.c.x, y: RIDE.c.y + 24 }) <= 14 + tol;
+}
+
 const SOUND = makeUprightSound((v) => (isRack(v) ? { spec: TOM_12x8, reso: true, wires: null } : { spec: FLOOR_16x16, reso: v !== 'open', wires: null }), { batter: 'BATTER', reso: 'BOTTOM HEAD' });
 
 export const TOMS_ART: LessonArt = {
   Instrument: TomsArt,
   labels: tomLabels,
   hitTest: tomHitTest,
+  figureAt: tomsDrawnAt,
   StrikeSequence: SOUND.StrikeSequence,
   CoupledHeads: SOUND.CoupledHeads,
   plan: { own: ['tom1', 'tom2', 'floor'] },

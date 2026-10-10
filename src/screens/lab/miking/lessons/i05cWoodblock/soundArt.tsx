@@ -16,7 +16,7 @@
  * shape, not a computed mode; marks show ORDER and WHERE, never level.
  */
 import { useMemo } from 'react';
-import { Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
+import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import type { StaticLabel } from '../../engine/scene/StaticLabels';
@@ -32,22 +32,52 @@ const SY = -0.18 * H;
 const ST = WB_DIMS.slotT.mm;
 const SD = WB_DIMS.slotDepth.mm;
 
-/** The block's end, its top wall over the slot bowed down by `bow` mm. */
+/** The block's end, the wall over the slot flexed by `bow` mm at its free
+ *  edge (the mouth). The wall is a lip fixed at the slot's inner end and free
+ *  at the opening, so it bends as a cantilever: deflection ∝ (distance from
+ *  the root)², the rest of the block stays put. Real-object reference: a
+ *  hardwood block ~190 × 65 × 70 mm, the slot ~8 mm high running ~45 mm in
+ *  under a top wall ~18 mm thick; edges eased (small radii). */
 function blockPath(bow: number) {
   const p = make();
   const x0 = -DP / 2;
   const x1 = DP / 2;
   const y0 = -H / 2;
   const y1 = H / 2;
-  p.moveTo(x0, y0);
-  p.quadTo(x0 + DP * 0.6, y0 + bow * 2, x1, y0);
-  p.lineTo(x1, SY - ST / 2);
-  p.lineTo(x1 - SD, SY - ST / 2 + bow);
-  p.lineTo(x1 - SD, SY + ST / 2);
+  const root = x1 - SD;
+  const k = 1.4; // the free edge's travel (motion drawn larger)
+  const def = (x: number) => (x <= root ? 0 : bow * k * ((x - root) / SD) ** 2);
+  const e = 3; // eased edges
+  p.moveTo(x0 + e, y0);
+  // the top surface: flat to the root, then the flexing lip
+  for (let i = 0; i <= 12; i++) {
+    const x = root + (SD * i) / 12;
+    p.lineTo(Math.min(x, x1 - 1.5), y0 + def(x));
+  }
+  p.quadTo(x1, y0 + def(x1), x1, y0 + def(x1) + 1.5);
+  // down the lip's face to the slot, back in under the lip to the root
+  p.lineTo(x1, SY - ST / 2 + def(x1));
+  for (let i = 12; i >= 0; i--) {
+    const x = root + (SD * i) / 12;
+    p.lineTo(x, SY - ST / 2 + def(x));
+  }
+  // the slot's rounded inner end (a saw-and-drill cut)
+  p.quadTo(root - ST / 2, SY, root, SY + ST / 2);
   p.lineTo(x1, SY + ST / 2);
-  p.lineTo(x1, y1);
-  p.lineTo(x0, y1);
+  p.lineTo(x1, y1 - e);
+  p.quadTo(x1, y1, x1 - e, y1);
+  p.lineTo(x0 + e, y1);
+  p.quadTo(x0, y1, x0, y1 - e);
+  p.lineTo(x0, y0 + e);
+  p.quadTo(x0, y0, x0 + e, y0);
   p.close();
+  return p;
+}
+
+/** End grain: the growth rings seen on the block's end (centre off the block, low left). */
+function endGrain() {
+  const p = make();
+  for (const r of [40, 52, 64, 78, 92, 106]) p.addArc(Skia.XYWHRect(-DP / 2 - 30 - r, H / 2 + 26 - r, 2 * r, 2 * r), -80, 75);
   return p;
 }
 
@@ -61,7 +91,7 @@ function Block({ bow, towel }: { bow: number; towel: boolean }) {
       support.lineTo(-DP / 2 - 26, H / 2 + 30);
       support.close();
     } else rrect(support, -DP / 2 + 6, H / 2 + 6, DP / 2 - 6, H / 2 + 26, 5);
-    return { body: blockPath(bow), rest: blockPath(0), support };
+    return { body: blockPath(bow), rest: blockPath(0), support, grain: endGrain() };
   }, [bow, towel]);
   return (
     <Group>
@@ -73,6 +103,9 @@ function Block({ bow, towel }: { bow: number; towel: boolean }) {
       <Path path={g.body}>
         <LinearGradient start={vec(-DP / 2, -H / 2)} end={vec(DP / 2, H / 2)} colors={BLOCK_WOOD} />
       </Path>
+      <Group clip={g.body}>
+        <Path path={g.grain} style="stroke" strokeWidth={0.9} color="#5e3a18" opacity={0.4} />
+      </Group>
       <Path path={g.body} style="stroke" strokeWidth={1.3} color={INK} />
     </Group>
   );

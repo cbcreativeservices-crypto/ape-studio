@@ -219,7 +219,7 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(side, /PathOp\.Difference\) \?\? torso;/, 'the shirt is cut at the belt (tucked in)');
     assert.doesNotMatch(side, /\{ path: torso, tone: 'shirt' \}/, 'the untucked torso is never drawn');
     // The far arm is drawn BEHIND the torso, from the far shoulder.
-    assert.match(side, /const armFar = limb\(\[pose\.shoulderL, /);
+    assert.match(side, /const armFar = sleeveArm\(pose\.shoulderL, /);
     const behind = side.slice(side.indexOf('const behind: Mass[]'));
     assert.ok(behind.indexOf('armFar') < behind.indexOf('path: shirt'), 'the far arm is painted before (behind) the shirt');
   });
@@ -240,5 +240,81 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(seating, /const NECK_V = g - sh - 55;/, 'the neck ends at the collar, not below the shoulder line');
     // Small percussion (I02–I05): the head sits on the collar (head centre 1606 mm, collar 1440 mm).
     assert.match(read('smallperc/Player.tsx'), /headProfile\(pt\(-346, H\(1606\)\), 108, H\(1440\), 1\)/);
+  });
+
+  // Figure polish 2026-10-10 (owner: "a pro reference app, my peers are my
+  // critics" — mannequin tubes, mitten hands, capsule joints).
+  it('PlayerFigure polish: real hands (four jointed fingers + a thumb, adult size), tapered sleeved arms with a deltoid, cut square at the cuff; small-percussion arms opaque', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    // The hand: four fingers, each three phalanges; the middle the longest;
+    // hand length (wrist crease → middle tip) 0.75–0.82 head lengths.
+    const table = src.slice(src.indexOf('const FINGERS = ['), src.indexOf('] as const;', src.indexOf('const FINGERS = [')));
+    const fingers = [...table.matchAll(/\{ x: (-?[\d.]+), y: (-?[\d.]+), a: (-?[\d.]+), seg: \[([\d.]+), ([\d.]+), ([\d.]+)\], r: \[([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+)\] \}/g)].map((m) => ({
+      reach: Number(m[1]) + Number(m[4]) + Number(m[5]) + Number(m[6]),
+      len: Number(m[4]) + Number(m[5]) + Number(m[6]),
+      r: [7, 8, 9, 10].map((i) => Number(m[i])),
+    }));
+    assert.equal(fingers.length, 4, 'four fingers');
+    const [index, middle, ring, little] = fingers;
+    assert.ok(middle.len > index.len && middle.len > ring.len && ring.len > little.len && index.len > little.len, 'middle longest, little shortest');
+    const handH = middle.reach / BODY.headH;
+    assert.ok(handH >= 0.75 && handH <= 0.82, `hand = ${handH.toFixed(2)} head lengths`);
+    for (const f of fingers) {
+      assert.ok(f.r[0] >= 9 && f.r[0] <= 12, `finger base ${f.r[0] * 2} mm wide`);
+      assert.ok(f.r.every((r, i) => i === 0 || r < f.r[i - 1]), 'each finger tapers to its tip');
+    }
+    assert.match(src, /const thumb = digit\(L, /, 'every hand has a jointed thumb');
+    // No mitten: no hand kind is a palm plus a single 'fingers' blob.
+    assert.doesNotMatch(src, /const fingers = limb\(\[L\(/);
+    // The arm: a tapered sleeve — upper arm thicker than the elbow, the
+    // forearm's belly thicker than the cuff — cut square at the cuff.
+    const up = src.match(/const upper = limb\(\[root, lerp\(root, e, 0\.3\), e\], \[(\d+), (\d+), (\d+)\]\)/);
+    const fo = src.match(/const fore = limb\(\[e, lerp\(e, w, 0\.26\), w\], \[(\d+), (\d+), (\d+)\]\)/);
+    assert.ok(up && fo, 'sleeveArm builds the upper arm and forearm');
+    assert.ok(Number(up![2]) > Number(up![3]) && Number(fo![2]) > Number(fo![3]) && Number(up![2]) > Number(fo![2]) && Number(fo![3]) < Number(up![3]), 'upper arm > elbow > forearm belly > cuff');
+    assert.match(src, /return Skia\.Path\.MakeFromOp\(arm, cut, PathOp\.Difference\) \?\? arm;/, 'the sleeve ends square at the cuff');
+    assert.doesNotMatch(src, /const arm(L|R|Near|Far) = limb\(/, 'no arm is a bare capsule chain');
+    for (const v of ['buildFront(', 'buildAbove(', 'buildSide(']) {
+      const body = src.slice(src.indexOf(`function ${v}`), src.indexOf('\n}\n', src.indexOf(`function ${v}`)));
+      assert.match(body, /sleeveArm\(/, `${v} draws its arms as sleeves`);
+    }
+    // The shoulder: a deltoid joined to the arm (front and profile), never a tube's round end over the shoulder line.
+    assert.match(src, /sleeveArm\(pt\(sR\.u, sR\.v \+ 12\), pose\.elbowR, pose\.handR\.wrist, deltoid\(R\)\)/);
+    assert.match(src, /const armNear = sleeveArm\(sh, pose\.elbowR, pose\.handR\.wrist, deltoid\);/);
+    assert.match(src, /const deltoid = Skia\.Path\.MakeFromOp\(deltoidRaw, torso, PathOp\.Intersect\)/, 'the profile deltoid stays inside the shoulder line');
+    // Small percussion: the arm is opaque (a far arm is darker, never see-through), the sleeve a cut T-shirt sleeve.
+    const sp = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/smallperc/Player.tsx', import.meta.url), 'utf8');
+    const arm2d = sp.slice(sp.indexOf('export function Arm2D('));
+    assert.doesNotMatch(arm2d, /<Group opacity=\{opacity\}>/);
+    assert.match(arm2d, /PathOp\.Difference\) \?\? cap;/, 'the sleeve hem is cut square');
+  });
+
+  // Figure polish round 2 (2026-10-10): the family figures the owner named.
+  it('family figures are OPAQUE and their hands hold what they hold (brass, low brass, bowed, woodwinds, boom operator, bongo legs)', () => {
+    const read = (p: string) => readFileSync(new URL(`../src/screens/lab/miking/lessons/${p}`, import.meta.url), 'utf8');
+    // Bowed + brass share playerGroups: no see-through player layers.
+    const bowed = read('shared/bowed/BowedArt.tsx');
+    const scene = bowed.slice(bowed.indexOf('export function BowedScene('));
+    assert.doesNotMatch(scene, /<Paint opacity=\{0\.(5|78)\} \/>/, 'the bowed player is opaque');
+    assert.match(bowed, /export type HandHold = \{ kind: HandKind;/);
+    assert.match(bowed, /fore\('foreL', s\.elbowL, s\.handL, wL\.wrist, wL\.depth\)/, 'the forearm ends at the hand’s own wrist');
+    assert.match(bowed, /return \{ kind: 'wrap', dir: Math\.atan2\(b\[1\] - a\[1\], b\[0\] - a\[0\]\), at: b, depth: instDepth - 1 \};/, 'the left hand wraps the neck from behind it');
+    const brass = read('shared/brass/BrassArt.tsx');
+    assert.doesNotMatch(brass, /<Paint opacity=\{0\.62\} \/>/, 'the brass player is opaque');
+    assert.match(brass, /R: \{ kind: 'keys', dir: along - 1\.05, at: \[mid\[0\], mid\[1\] \+ 2\] \}/, 'the valve hand’s fingers on the buttons');
+    // Low brass: opaque, anatomical hands, the forearm routed clear of the piston cluster.
+    const low = read('shared/lowbrass/LowBrassArt.tsx');
+    assert.doesNotMatch(low, /opacity=\{playerKeys\.has\(it\.key\) \? 0\.82 : 1\}/);
+    assert.doesNotMatch(low, /limb\('hand[LR]', J\.wrist[LR], J\.hand[LR], 30, 36, SKIN\)/, 'no capsule (mitten) hands');
+    assert.match(low, /const hs = handShape\(\{ wrist: pt\(wrist\[0\], wrist\[1\]\), dir, kind \}\);/);
+    // Woodwinds: from the audience the fingers close round the tube.
+    assert.match(read('shared/woodwinds/WindArt.tsx'), /kind: front \? \('grip' as const\) : \('above' as const\)/);
+    // Boom operator (B04 B10 B11 F09): the elbow raised beside the head, never under the chin.
+    const loc = read('shared/field/LocationArt.tsx');
+    assert.match(loc, /elbowR: upElbow\(shR, wrR\),/);
+    // Bongo legs: one trouser mass + a shoe; the near leg a dashed phantom, never a translucent ghost.
+    const bongo = read('m04bBongos/art.tsx');
+    assert.match(bongo, /path: limb\(\[hip, knee, ankle\], \[82, 62, 40\]\), tone: 'trousers'/);
+    assert.doesNotMatch(bongo, /opacity=\{ghost \? 0\.38 : 1\}/);
   });
 });

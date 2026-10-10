@@ -64,143 +64,230 @@ export const SPK = {
   corner: ['#e3e6ec', '#8a8f99', '#3c3f47'],
 } as const;
 
-/* ── one speaker in section (local: v = 0 on its axis) ── */
-type SpeakerPaths = { flange: SkPath; struts: SkPath; magnetPlates: SkPath; magnet: SkPath; cone: SkPath; coneFill: SkPath; surround: SkPath; dust: SkPath; coil: SkPath; spider: SkPath; gasket: SkPath };
+/* ── one speaker in section (local: v = 0 on its axis) ──
+ * A 12-in guitar speaker cut through its axis, at the reference driver's
+ * sizes (speakerModel.ts SPEAKER_12, k scales a 10 or 15): frame Ø309,
+ * cut-out Ø283, chassis depth 97 (flange face → magnet front), overall depth
+ * 135, magnet Ø156, voice coil Ø44 (1.75 in). The parts the datasheet does not
+ * give are drawing defaults typical of a ceramic-magnet guitar speaker:
+ * pressed-steel basket 1.2 mm (drawn 3 for legibility), its arms stepping in
+ * to a spider seat Ø132 then down to a mount ring on the top plate; front
+ * (top) plate Ø116 × 8 with a Ø48 bore; ceramic ring Ø156 / Ø76 × 22; back
+ * plate Ø156 × 8 with the Ø40 pole piece (Ø10 vent) up through the ring,
+ * flush with the top plate; coil former from the cone neck into the gap;
+ * corrugated cloth spider Ø132; paper cone 0.5 mm (drawn 2.4); a three-roll
+ * paper edge; felt-paper dust cap Ø100, dome 16; a tinsel lead to the
+ * terminal strip on one arm. */
+type SpeakerPaths = { flange: SkPath; rim: SkPath; arms: SkPath; seat: SkPath; topPlate: SkPath; ring: SkPath; backPole: SkPath; cone: SkPath; coneFill: SkPath; surround: SkPath; dust: SkPath; dustFill: SkPath; former: SkPath; winding: SkPath; spider: SkPath; tinsel: SkPath; terminal: SkPath };
 
 function speakerPaths(s: SpeakerSection, chord: number): SpeakerPaths {
-  const flange = make();
-  const struts = make();
-  const magnetPlates = make();
-  const magnet = make();
-  const cone = make();
-  const coneFill = make();
-  const surround = make();
-  const dust = make();
-  const coil = make();
-  const spider = make();
-  const gasket = make();
+  const k = s.k;
+  const P = {
+    flange: make(),
+    rim: make(),
+    arms: make(),
+    seat: make(),
+    topPlate: make(),
+    ring: make(),
+    backPole: make(),
+    cone: make(),
+    coneFill: make(),
+    surround: make(),
+    dust: make(),
+    dustFill: make(),
+    former: make(),
+    winding: make(),
+    spider: make(),
+    tinsel: make(),
+    terminal: make(),
+  };
+  const fb = s.xFlange - 3 * k; // the flange's back face
   // The cut may pass off the axis (a neighbour's cut-out): everything is
   // clipped to |v| ≤ the chord at that radius; the active speaker is cut
   // through its axis (chord = rCut).
   const full = chord >= s.rCut - 0.5;
+  const rSeat = 66 * k;
+  const xSeat = s.xApex - 12 * k;
+  const rTop = 58 * k;
+  const rBore = 24 * k;
+  const rPole = 20 * k;
+  const rVent = 5 * k;
+  const rRingIn = 38 * k;
+  const tPlate = 8 * k;
   for (const sgn of [-1, 1] as const) {
-    rect(flange, s.xFlange - 4 * s.k, sgn * (s.rCut - 2), s.xFlange, sgn * s.rFrame);
-    rect(gasket, s.xFlange + 0.01, sgn * (s.rCut + 1), s.xFlange + 1.5, sgn * (s.rFrame - 2));
-    // Basket struts from the flange to the magnet's front plate.
-    seg(struts, s.xFlange - 4 * s.k, sgn * (s.rFrame - 8 * s.k), s.xMagnetFront, sgn * (s.rMagnet + 4 * s.k));
-    seg(struts, s.xFlange - 4 * s.k, sgn * (s.rCut - 4 * s.k), s.xMagnetFront + 6 * s.k, sgn * (s.rMagnet - 2 * s.k));
+    // The flange: a flat steel ring, its outer edge rolled back for stiffness.
+    rect(P.flange, s.xFlange, sgn * (s.rCut - 3 * k), fb, sgn * s.rFrame);
+    rect(P.rim, fb, sgn * (s.rFrame - 4 * k), fb - 7 * k, sgn * s.rFrame);
+    if (!full) continue;
+    // One pressed-steel arm in the cut: flange → spider seat → mount ring.
+    P.arms.moveTo(fb, sgn * (s.rCut - 1 * k));
+    P.arms.lineTo(xSeat + 2 * k, sgn * (rSeat + 9 * k));
+    P.arms.lineTo(xSeat - 1 * k, sgn * (rSeat + 2 * k));
+    P.arms.lineTo(s.xMagnetFront + 3 * k, sgn * (rTop - 6 * k));
+    P.arms.lineTo(s.xMagnetFront + 1.5 * k, sgn * (rBore + 10 * k));
+    // The spider seat: the flat land the spider is glued to.
+    rect(P.seat, xSeat + 1.5 * k, sgn * (rSeat - 1 * k), xSeat - 2.5 * k, sgn * (rSeat + 9 * k));
+    // The motor: top plate (with the coil bore), ceramic ring, back plate
+    // with the pole piece up through the ring (its vent along the axis).
+    rect(P.topPlate, s.xMagnetFront, sgn * rBore, s.xMagnetFront - tPlate, sgn * rTop);
+    rect(P.ring, s.xMagnetFront - tPlate, sgn * rRingIn, s.xMagnetBack + tPlate, sgn * s.rMagnet);
+    rect(P.backPole, s.xMagnetBack + tPlate, sgn * rVent, s.xMagnetBack, sgn * s.rMagnet);
+    rect(P.backPole, s.xMagnetFront, sgn * rVent, s.xMagnetBack + tPlate + 0.01, sgn * rPole);
+    // Voice-coil former from the cone's neck into the gap; the winding sits
+    // in the gap, level with the top plate.
+    seg(P.former, s.xApex + 1 * k, sgn * s.rCoil, s.xMagnetFront - tPlate - 2 * k, sgn * s.rCoil);
+    rect(P.winding, s.xMagnetFront + 1 * k, sgn * (s.rCoil - 1.1 * k), s.xMagnetFront - tPlate - 1 * k, sgn * (s.rCoil + 1.1 * k));
+    // The spider: corrugated cloth from the former to the seat (5 rolls).
+    const n = 40;
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      const r = s.rCoil + 1 * k + (rSeat - s.rCoil - 1 * k) * t;
+      const x = xSeat + 1 * k + Math.sin(t * Math.PI * 5) * 2.4 * k * Math.sin(Math.PI * Math.min(1, t * 1.15));
+      if (i === 0) P.spider.moveTo(x, sgn * r);
+      else P.spider.lineTo(x, sgn * r);
+    }
+    // Cone paper from the neck to the edge (a gently curved cone).
+    const m = 28;
+    for (let i = 0; i <= m; i++) {
+      const r = s.rCoil + ((s.rSurroundIn - s.rCoil) * i) / m;
+      if (i === 0) P.cone.moveTo(s.coneX(r), sgn * r);
+      else P.cone.lineTo(s.coneX(r), sgn * r);
+    }
+    // The edge: three paper half-rolls from the cone to the flange, clamped
+    // under the gasket.
+    const r0 = s.rSurroundIn;
+    const r1 = s.rCut - 1 * k;
+    const x0 = s.coneX(r0);
+    const x1 = s.xFlange - 0.5 * k;
+    P.surround.moveTo(x0, sgn * r0);
+    const rolls = 3;
+    for (let i = 0; i < rolls; i++) {
+      const ra = r0 + ((r1 - r0) * i) / rolls;
+      const rb = r0 + ((r1 - r0) * (i + 1)) / rolls;
+      const xa = x0 + ((x1 - x0) * i) / rolls;
+      const xb = x0 + ((x1 - x0) * (i + 1)) / rolls;
+      P.surround.quadTo((xa + xb) / 2 + (i % 2 ? -3 : 3) * k, sgn * ((ra + rb) / 2), xb, sgn * rb);
+    }
   }
   if (full) {
-    // Magnet stack: front plate, ceramic ring, back plate (drawn as one
-    // structure 97 → 135 mm behind the flange, the documented depths).
-    const plate = 7 * s.k;
-    rect(magnetPlates, s.xMagnetFront, -s.rMagnet, s.xMagnetFront - plate, s.rMagnet);
-    rect(magnetPlates, s.xMagnetBack + plate, -s.rMagnet, s.xMagnetBack, s.rMagnet);
-    rect(magnet, s.xMagnetFront - plate, -s.rMagnet + 2, s.xMagnetBack + plate, s.rMagnet - 2);
-    // Cone (both sides of the axis) from the surround to the coil.
-    for (const sgn of [-1, 1] as const) {
-      const n = 24;
-      for (let i = 0; i <= n; i++) {
-        const r = s.rCoil + ((s.rSurroundIn - s.rCoil) * i) / n;
-        if (i === 0) cone.moveTo(s.coneX(r), sgn * r);
-        else cone.lineTo(s.coneX(r), sgn * r);
-      }
-    }
     // The cone's air side (a fill between the cone and the flange plane).
     const n = 24;
-    coneFill.moveTo(s.coneX(s.rCoil), -s.rCoil);
+    P.coneFill.moveTo(s.coneX(s.rCoil), -s.rCoil);
     for (let i = 0; i <= n; i++) {
       const r = s.rCoil + ((s.rSurroundIn - s.rCoil) * i) / n;
-      coneFill.lineTo(s.coneX(r), -r);
+      P.coneFill.lineTo(s.coneX(r), -r);
     }
-    coneFill.lineTo(s.xFlange - 3 * s.k, -s.rCut);
-    coneFill.lineTo(s.xFlange - 3 * s.k, s.rCut);
+    P.coneFill.lineTo(s.xFlange - 3 * k, -s.rCut);
+    P.coneFill.lineTo(s.xFlange - 3 * k, s.rCut);
     for (let i = n; i >= 0; i--) {
       const r = s.rCoil + ((s.rSurroundIn - s.rCoil) * i) / n;
-      coneFill.lineTo(s.coneX(r), r);
+      P.coneFill.lineTo(s.coneX(r), r);
     }
-    coneFill.close();
-    // Surround: a corrugated paper edge, two small rolls (drawing default).
-    for (const sgn of [-1, 1] as const) {
-      const r0 = s.rSurroundIn;
-      const r1 = s.rCut;
-      const x0 = s.coneX(r0);
-      const xm = s.xFlange - 3 * s.k;
-      surround.moveTo(x0, sgn * r0);
-      const steps = 4;
-      for (let i = 1; i <= steps; i++) {
-        const r = r0 + ((r1 - r0) * i) / steps;
-        const bump = i % 2 ? 3.2 * s.k : 0;
-        surround.lineTo(x0 + ((xm - x0) * i) / steps + bump, sgn * r);
-      }
-    }
-    // Dust cap dome.
-    const m = 16;
+    P.coneFill.close();
+    // Dust cap: a felt-paper dome glued over the neck.
+    const m = 20;
+    const base = s.dustX(s.rDust);
     for (let i = 0; i <= m; i++) {
       const r = -s.rDust + (2 * s.rDust * i) / m;
-      if (i === 0) dust.moveTo(s.dustX(Math.abs(r)), r);
-      else dust.lineTo(s.dustX(Math.abs(r)), r);
+      if (i === 0) P.dust.moveTo(s.dustX(Math.abs(r)), r);
+      else P.dust.lineTo(s.dustX(Math.abs(r)), r);
     }
-    // Voice-coil former into the magnet gap; the spider (a corrugated
-    // suspension) a little behind the apex.
-    seg(coil, s.xApex, -s.rCoil, s.xMagnetFront - 10 * s.k, -s.rCoil);
-    seg(coil, s.xApex, s.rCoil, s.xMagnetFront - 10 * s.k, s.rCoil);
-    const xs = s.xApex - 12 * s.k;
-    for (const sgn of [-1, 1] as const) {
-      spider.moveTo(xs, sgn * s.rCoil);
-      const r1 = s.rMagnet - 6 * s.k;
-      const w = 6;
-      for (let i = 1; i <= w; i++) spider.lineTo(xs + (i % 2 ? 2.5 : -2.5) * s.k, sgn * (s.rCoil + ((r1 - s.rCoil) * i) / w));
-    }
+    P.dustFill.addPath(P.dust);
+    P.dustFill.lineTo(base - 1.5 * k, s.rDust);
+    P.dustFill.lineTo(base - 1.5 * k, -s.rDust);
+    P.dustFill.close();
+    // Tinsel lead (upper side): from its eyelet on the cone's back to the
+    // terminal strip riveted to the arm.
+    const rE = 0.62 * s.rSurroundIn;
+    const xE = s.coneX(rE) - 1.5 * k;
+    const xT = (fb + xSeat) / 2 - 4 * k;
+    const tT = (fb - xT) / (fb - (xSeat + 2 * k));
+    const rT = s.rCut - 1 * k + (rSeat + 9 * k - (s.rCut - 1 * k)) * tT;
+    P.tinsel.moveTo(xE, -rE);
+    P.tinsel.cubicTo(xE - 10 * k, -rE - 2 * k, xT + 6 * k, -rT + 18 * k, xT - 1 * k, -rT + 5 * k);
+    rrect(P.terminal, xT - 7 * k, -rT + 1 * k, xT + 5 * k, -rT + 8 * k, 1.5 * k);
   } else {
     // An off-axis cut through a neighbour: the cone's chord only.
     const r = Math.min(chord, s.rSurroundIn);
-    seg(cone, s.coneX(Math.max(s.rCoil, Math.sqrt(Math.max(0, s.rCut * s.rCut - chord * chord)))), -r, s.coneX(s.rSurroundIn), -r);
+    seg(P.cone, s.coneX(Math.max(s.rCoil, Math.sqrt(Math.max(0, s.rCut * s.rCut - chord * chord)))), -r, s.coneX(s.rSurroundIn), -r);
   }
-  return { flange, struts, magnetPlates, magnet, cone, coneFill, surround, dust, coil, spider, gasket };
+  return P;
 }
 
 function SpeakerInSection({ s, chord, paths, active }: { s: SpeakerSection; chord: number; paths: SpeakerPaths; active: boolean }) {
   const full = chord >= s.rCut - 0.5;
+  const k = s.k;
   return (
     <Group>
-      {/* Basket struts (pressed steel) and the frame flange. */}
-      <Path path={paths.struts} style="stroke" strokeWidth={5 * s.k} strokeCap="round" color="#2d3038" />
-      <Path path={paths.struts} style="stroke" strokeWidth={1.6 * s.k} strokeCap="round" color="#9aa0ab" opacity={0.55} />
+      {/* The flange (painted pressed steel) and its rolled rim. */}
       <Path path={paths.flange}>
-        <LinearGradient start={vec(s.xFlange - 4, -s.rFrame)} end={vec(s.xFlange, s.rFrame)} colors={[...SPK.steel]} />
+        <LinearGradient start={vec(s.xFlange - 4, -s.rFrame)} end={vec(s.xFlange, s.rFrame)} colors={['#6d717b', '#3a3d45', '#1d1e23']} />
       </Path>
-      <Path path={paths.flange} style="stroke" strokeWidth={0.8} color={SPK.ink} />
-      <Path path={paths.gasket} color="#101114" />
+      <Path path={paths.rim} color="#2a2c32" />
+      <Path path={paths.flange} style="stroke" strokeWidth={0.7} color={SPK.ink} />
+      <Path path={paths.rim} style="stroke" strokeWidth={0.7} color={SPK.ink} />
       {full ? (
         <>
-          {/* Magnet: chrome plates either side of the dark ceramic ring. */}
-          <Path path={paths.magnet}>
-            <LinearGradient start={vec(0, -s.rMagnet)} end={vec(0, s.rMagnet)} colors={[...SPK.magnet]} />
-          </Path>
-          <Path path={paths.magnetPlates}>
-            <LinearGradient start={vec(0, -s.rMagnet)} end={vec(0, s.rMagnet)} colors={[...SPK.chrome]} />
-          </Path>
-          <Path path={paths.magnet} style="stroke" strokeWidth={0.8} color={SPK.ink} />
-          <Path path={paths.magnetPlates} style="stroke" strokeWidth={0.8} color={SPK.ink} />
           {/* The cone's front air space: a faint warm glow so the cone reads. */}
           <Path path={paths.coneFill}>
-            <LinearGradient start={vec(s.xApex, 0)} end={vec(s.xFlange, 0)} colors={['rgba(255,214,160,0.02)', 'rgba(255,214,160,0.07)']} />
+            <LinearGradient start={vec(s.xApex, 0)} end={vec(s.xFlange, 0)} colors={['rgba(255,214,160,0.04)', 'rgba(255,214,160,0.11)']} />
           </Path>
-          <Path path={paths.coil} style="stroke" strokeWidth={2.4 * s.k} color="#c4914a" />
-          <Path path={paths.spider} style="stroke" strokeWidth={1.4 * s.k} color="#b8a46e" opacity={0.85} />
-          {/* Cone paper (a thick stroke: a line weight, not a thickness). */}
-          <Path path={paths.cone} style="stroke" strokeWidth={4.2 * s.k} strokeCap="round" color={SPK.coneEdge} />
-          <Path path={paths.cone} style="stroke" strokeWidth={2.6 * s.k} strokeCap="round" color={active ? '#5a4c40' : '#3a332c'} />
-          <Path path={paths.surround} style="stroke" strokeWidth={2.4 * s.k} strokeJoin="round" color="#4b4038" />
-          <Path path={paths.dust} style="stroke" strokeWidth={3.4 * s.k} strokeCap="round" color="#0f0d0b" />
-          <Path path={paths.dust} style="stroke" strokeWidth={2 * s.k} strokeCap="round" color="#6b6056" />
+          {/* Basket arms in the cut: a folded steel strip (dark edge, lit face). */}
+          <Path path={paths.arms} style="stroke" strokeWidth={4.4 * k} strokeJoin="round" strokeCap="round" color="#141518" />
+          <Path path={paths.arms} style="stroke" strokeWidth={2.8 * k} strokeJoin="round" strokeCap="round" color="#4d515a" />
+          <Path path={paths.arms} style="stroke" strokeWidth={0.9 * k} strokeJoin="round" strokeCap="round" color="#9aa0ab" opacity={0.55} />
+          <Path path={paths.seat} color="#2d3038" />
+          {/* Motor: zinc-plated plates and pole, the dark ceramic ring between. */}
+          <Path path={paths.ring}>
+            <LinearGradient start={vec(0, -s.rMagnet)} end={vec(0, s.rMagnet)} colors={['#4a4d55', '#1f2025', '#2c2e34', '#101114']} positions={[0, 0.35, 0.65, 1]} />
+          </Path>
+          <Path path={paths.topPlate}>
+            <LinearGradient start={vec(s.xMagnetFront - 8 * k, -s.rMagnet)} end={vec(s.xMagnetFront, s.rMagnet)} colors={[...SPK.chrome]} />
+          </Path>
+          <Path path={paths.backPole}>
+            <LinearGradient start={vec(s.xMagnetBack, -s.rMagnet)} end={vec(s.xMagnetFront, s.rMagnet)} colors={[...SPK.chrome]} />
+          </Path>
+          <Path path={paths.ring} style="stroke" strokeWidth={0.7} color={SPK.ink} />
+          <Path path={paths.topPlate} style="stroke" strokeWidth={0.7} color={SPK.ink} />
+          <Path path={paths.backPole} style="stroke" strokeWidth={0.7} color={SPK.ink} />
+          {/* Coil former and winding (copper), the spider (tan cloth). */}
+          <Path path={paths.former} style="stroke" strokeWidth={1.4 * k} color="#d8c9a6" />
+          <Path path={paths.winding} color="#c47a3a" />
+          <Path path={paths.spider} style="stroke" strokeWidth={2.4 * k} strokeJoin="round" color="#3a2f18" />
+          <Path path={paths.spider} style="stroke" strokeWidth={1.3 * k} strokeJoin="round" color="#c9b072" />
+          {/* Cone paper: a dark core with a lit front face. */}
+          <Path path={paths.cone} style="stroke" strokeWidth={3.6 * k} strokeCap="round" color={SPK.coneEdge} />
+          <Path path={paths.cone} style="stroke" strokeWidth={2 * k} strokeCap="round" color={active ? '#8c7a68' : '#6a5c4f'} />
+          <Path path={paths.surround} style="stroke" strokeWidth={3 * k} strokeJoin="round" strokeCap="round" color={SPK.coneEdge} />
+          <Path path={paths.surround} style="stroke" strokeWidth={1.6 * k} strokeJoin="round" strokeCap="round" color="#7d6d5d" />
+          <Path path={paths.dustFill} color="#3a322b" />
+          <Path path={paths.dust} style="stroke" strokeWidth={2.8 * k} strokeCap="round" color="#0f0d0b" />
+          <Path path={paths.dust} style="stroke" strokeWidth={1.4 * k} strokeCap="round" color="#a09282" />
+          {/* Tinsel lead to the terminal strip. */}
+          <Path path={paths.tinsel} style="stroke" strokeWidth={1 * k} color="#d9c08a" opacity={0.85} />
+          <Path path={paths.terminal} color="#c9ccd3" />
+          <Path path={paths.terminal} style="stroke" strokeWidth={0.6} color={SPK.ink} />
         </>
       ) : (
-        <Path path={paths.cone} style="stroke" strokeWidth={2.6 * s.k} color="#3a332c" />
+        <Path path={paths.cone} style="stroke" strokeWidth={2.6 * k} color="#3a332c" />
       )}
     </Group>
   );
+}
+
+/** One speaker of `nominal` inches cut through its axis, on its own (local:
+ *  x = 0 at the mounting board's FRONT face, +x the way it fires; the flange
+ *  sits on the board's back face 18 mm behind). The rotary cabinet's woofer
+ *  uses it, turned to fire down. Paths built once per size. */
+const cutCache = new Map<number, { s: SpeakerSection; paths: SpeakerPaths }>();
+export function SpeakerCut({ nominal }: { nominal: number }) {
+  let c = cutCache.get(nominal);
+  if (!c) {
+    const s = speakerSection(nominal);
+    c = { s, paths: speakerPaths(s, s.rCut) };
+    cutCache.set(nominal, c);
+  }
+  return <SpeakerInSection s={c.s} chord={c.s.rCut} paths={c.paths} active={false} />;
 }
 
 /* ── a cabinet in section ── */
@@ -389,12 +476,34 @@ export function CabSection({ kind, back, view, showAxis = true }: { kind: CabKin
       </Path>
       <Path path={g.clothWeave} style="stroke" strokeWidth={0.7} color="#8d919b" opacity={0.55} />
       <Path path={g.cloth} style="stroke" strokeWidth={0.9} color={SPK.piping} opacity={0.65} />
+      {/* A 1 × 12's leather strap handle on the top (side view; ≈ 200 long,
+          22 high between two end caps). The combo draws its own (ampArt). */}
+      {kind === '1x12' && view === 'side' ? <TopHandle x0={c.box.x0} x1={c.grilleX} y={c.box.y0} /> : null}
       {/* The cone axis — the readout reference (crisp, never under an effect). */}
       {showAxis && act ? (
         <Line p1={vec(act.s.dustX(0), 0)} p2={vec(g.axisEnd, 0)} color={SPK.amber} strokeWidth={1.6} opacity={0.6}>
           <DashPathEffect intervals={[16, 10]} />
         </Line>
       ) : null}
+    </Group>
+  );
+}
+
+function TopHandle({ x0, x1, y }: { x0: number; x1: number; y: number }) {
+  const hx = (x0 + x1) / 2;
+  const strap = make();
+  strap.moveTo(hx - 92, y - 6);
+  strap.cubicTo(hx - 70, y - 26, hx + 70, y - 26, hx + 92, y - 6);
+  const caps = [rrect(make(), hx - 108, y - 10, hx - 80, y + 1, 4), rrect(make(), hx + 80, y - 10, hx + 108, y + 1, 4)];
+  return (
+    <Group>
+      <Path path={strap} style="stroke" strokeWidth={9} strokeCap="round" color="#0d0b0a" />
+      <Path path={strap} style="stroke" strokeWidth={6} strokeCap="round" color="#3a302b" />
+      {caps.map((p, i) => (
+        <Path key={i} path={p}>
+          <LinearGradient start={vec(0, y - 10)} end={vec(0, y)} colors={[...SPK.corner]} />
+        </Path>
+      ))}
     </Group>
   );
 }
@@ -444,6 +553,8 @@ function SpeakerFaceOn({ rFrame, rCut, rSurroundIn, rDust, k, active, detail }: 
       <Circle cx={0} cy={0} r={rFrame}>
         <RadialGradient c={vec(-rFrame * 0.4, -rFrame * 0.45)} r={rFrame * 1.6} colors={[...SPK.steel]} />
       </Circle>
+      {/* The cardboard gasket ring on the flange (the holes pass through it). */}
+      <Circle cx={0} cy={0} r={rCut + (rFrame - rCut) * 0.55} style="stroke" strokeWidth={(rFrame - rCut) * 0.9} color="#17181b" opacity={detail ? 0.9 : 0.6} />
       {holes.map(([x, y], i) => (
         <Circle key={i} cx={x} cy={y} r={4.5 * k} color="#0d0e11" />
       ))}

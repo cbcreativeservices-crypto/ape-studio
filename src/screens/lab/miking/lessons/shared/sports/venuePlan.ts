@@ -184,8 +184,10 @@ export type Mark = { id: string; label: string; short: string; p: P2; kind: 'mic
  *  only (a net post, a basket), no hardware facing the play. */
 export type Badge = { id: string; label: string; short: string; p: P2; kind: 'noAttach' | 'approvalOnly' | 'noHardware' | 'liveBall' };
 /** A painted line or an outline that is part of the sport's marking (drawn
- *  white), open or closed. */
-export type Marking = { pts: readonly P2[]; closed?: boolean; circle?: { c: P2; r: number } };
+ *  white), open or closed. `ink` paints it another colour where the sport does
+ *  (an ice rink's red centre and goal lines, its blue lines; goalposts);
+ *  `dashed` for a broken line (rugby's 10 m and 5 m lines). */
+export type Marking = { pts: readonly P2[]; closed?: boolean; circle?: { c: P2; r: number }; ink?: 'white' | 'red' | 'blue' | 'yellow' | 'orange'; dashed?: boolean };
 
 export type VenueScene = {
   id: string;
@@ -327,3 +329,41 @@ export type SurfaceG3 = 'track' | 'mat' | 'canvas' | 'sand' | 'water' | 'asphalt
  *  silhouettes only, no detailed figure): its place, the way it faces (as
  *  dirFromDeg) and what it is. Drawn to scale by ArenaArt.tsx. */
 export type Token = { id: string; kind: 'horse' | 'car'; p: P2; dirDeg: number; label: string };
+
+/* ── a basketball court's lines (B14 and B17's arena) ── */
+
+const courtRect = (x0: number, y0: number, x1: number, y1: number): P2[] => [p2(x0, y0), p2(x1, y0), p2(x1, y1), p2(x0, y1)];
+const courtArc = (c: P2, r: number, a0: number, a1: number, n = 24): P2[] =>
+  Array.from({ length: n + 1 }, (_, i) => {
+    const a = ((a0 + ((a1 - a0) * i) / n) * Math.PI) / 180;
+    return p2(c.x + r * Math.cos(a), c.y + r * Math.sin(a));
+  });
+/* FIBA 28 × 15 (metres; drawing defaults, never printed): three-point line
+ * r 6.75 from the ring's centre (1.575 from the end line), 0.9 in from the
+ * sidelines; key 5.8 × 4.9; free-throw circle r 1.8; no-charge arc r 1.25;
+ * backboard 1.8 wide, 1.2 in from the end line; ring Ø 0.45. */
+/** A FIBA basketball court's lines (28 × 15; MARKINGS above): the arena of
+ *  B17 draws the same court. */
+export function basketballMarkings(L: number, W: number): Marking[] {
+  const out: Marking[] = [{ pts: courtRect(0, 0, L, W), closed: true }, { pts: [p2(L / 2, 0), p2(L / 2, W)] }, { pts: [], circle: { c: p2(L / 2, W / 2), r: 1.8 } }];
+  for (const [x0, dir] of [
+    [0, 1],
+    [L, -1],
+  ] as const) {
+    const ring = p2(x0 + dir * 1.575, W / 2);
+    const side = W / 2 - 0.9;
+    const run = Math.sqrt(6.75 * 6.75 - side * side);
+    const a = (Math.atan2(side, run) * 180) / Math.PI;
+    const base = dir > 0 ? 0 : 180; // the arcs open toward the court
+    out.push(
+      { pts: courtRect(Math.min(x0, x0 + dir * 5.8), W / 2 - 2.45, Math.max(x0, x0 + dir * 5.8), W / 2 + 2.45), closed: true },
+      { pts: [], circle: { c: p2(x0 + dir * 5.8, W / 2), r: 1.8 } },
+      // The three-point line: straight 0.9 m in from each sideline, then the arc.
+      { pts: [p2(x0, 0.9), p2(ring.x + dir * run, 0.9), ...courtArc(ring, 6.75, dir > 0 ? -a : 180 + a, dir > 0 ? a : 180 - a, 32).slice(1, -1), p2(ring.x + dir * run, W - 0.9), p2(x0, W - 0.9)] },
+      { pts: courtArc(ring, 1.25, base - 90, base + 90, 12) },
+      { pts: [p2(x0 + dir * 1.2, W / 2 - 0.9), p2(x0 + dir * 1.2, W / 2 + 0.9)] },
+      { pts: [], circle: { c: ring, r: 0.225 }, ink: 'orange' },
+    );
+  }
+  return out;
+}

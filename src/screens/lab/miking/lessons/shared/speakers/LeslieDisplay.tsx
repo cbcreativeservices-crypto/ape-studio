@@ -40,6 +40,7 @@ import { InstrumentDynamicMic } from '../../../../../../features/lab/micDrawings
 import { fitXform, type ViewXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { CROSSOVER_HZ, LESLIE } from './speakerModel.ts';
+import { SpeakerCut } from './SpeakerArt';
 import { ROTORS, RUN_WALL_S, TIME_BASES, angleAt, atRest, retarget, rpmAt, settled, wrap360, type Ramp, type RotorMode, type TimeBaseId } from './rotor.ts';
 import { bellToMic, type LeslieMic } from './leslieMics.ts';
 
@@ -244,6 +245,46 @@ function buildAll() {
   const lowerSlats = slats(make(), -300, 300, lo.y0, lo.y1, true);
   const panelLine = make();
   panelLine.addRRect(Skia.RRectXY(Skia.XYWHRect(-W2 + 34, lu.y1 + 40, 2 * W2 - 68, lo.y0 - lu.y1 - 80), 5, 5));
+  // The front's finish (drawing defaults typical of the class): a walnut
+  // veneer with its grain running up the face; each louver window in a
+  // 10 mm bevelled frame, the slats 9 mm on a 20 mm pitch (lit top edge,
+  // shadowed under); the raised centre panel's bevel lit from the upper
+  // left; a 24 mm top moulding; a recessed toe-kick with two glides.
+  const grain = make();
+  for (let i = 0; i < 26; i++) {
+    const u = -W2 + 14 + i * 28 + ((i * 37) % 11) - 5;
+    const w = ((i * 53) % 9) - 4;
+    grain.moveTo(u, -H + 26);
+    grain.cubicTo(u + w * 3, -H * 0.72, u - w * 2, -H * 0.38, u + w, -PLINTH - 2);
+  }
+  const frames = make();
+  frames.addRRect(Skia.RRectXY(Skia.XYWHRect(-310, lu.y0 - 10, 620, lu.y1 - lu.y0 + 20), 8, 8));
+  frames.addRRect(Skia.RRectXY(Skia.XYWHRect(-310, lo.y0 - 10, 620, lo.y1 - lo.y0 + 20), 8, 8));
+  const slatLit = make();
+  const slatShade = make();
+  for (const [v0, v1] of [[lu.y0, lu.y1], [lo.y0, lo.y1]] as const)
+    for (let v = v0 + 4; v < v1 - 2; v += 20) {
+      slatLit.moveTo(-298, v + 1);
+      slatLit.lineTo(298, v + 1);
+      slatShade.moveTo(-298, v + 10.5);
+      slatShade.lineTo(298, v + 10.5);
+    }
+  const pv0 = lu.y1 + 40;
+  const pv1 = lo.y0 - 40;
+  const panelLit = make();
+  panelLit.moveTo(-W2 + 36, pv1 - 2);
+  panelLit.lineTo(-W2 + 36, pv0 + 2);
+  panelLit.lineTo(W2 - 36, pv0 + 2);
+  const panelShade = make();
+  panelShade.moveTo(W2 - 36, pv0 + 2);
+  panelShade.lineTo(W2 - 36, pv1 - 2);
+  panelShade.lineTo(-W2 + 36, pv1 - 2);
+  const capLip = make();
+  capLip.moveTo(-W2 - 6, -H + 22);
+  capLip.lineTo(W2 + 6, -H + 22);
+  const glides = make();
+  glides.addRRect(Skia.RRectXY(Skia.XYWHRect(-W2 + 30, -12, 46, 12), 3, 3));
+  glides.addRRect(Skia.RRectXY(Skia.XYWHRect(W2 - 76, -12, 46, 12), 3, 3));
   // INSIDE (the same elevation, the front taken away in the drawing).
   const interior = make();
   interior.addRect(Skia.XYWHRect(-W2 + WALL, -H + 24, 2 * W2 - 2 * WALL, H - 24 - PLINTH));
@@ -256,41 +297,142 @@ function buildAll() {
   const walls = make();
   walls.addRect(Skia.XYWHRect(-W2, -H + 22, WALL, H - 22 - PLINTH));
   walls.addRect(Skia.XYWHRect(W2 - WALL, -H + 22, WALL, H - 22 - PLINTH));
-  // Compression driver under the horn rotor's hub.
-  const driver = make();
-  driver.addRRect(Skia.RRectXY(Skia.XYWHRect(-58, HORN_Y + 60, 116, 150), 10, 10));
+  // INSIDE parts (the inside view: a labelled schematic after the maker's
+  // internal-structure drawing). Sizes are drawing defaults typical of the
+  // classic two-rotor cabinet, within the sourced 742 × 524 × 1043 box:
+  //   horn rotor — a cast manifold Ø68 × 56 on the hollow throat tube Ø24,
+  //     a belt pulley Ø120 under it, belt to a two-motor stack (fast over
+  //     slow, each Ø70 × 60) on a bracket on the left wall;
+  //   compression driver — magnet pot Ø116 × 88, top flange Ø92, threaded
+  //     neck to the throat, on a two-leg stand on the motor board;
+  //   woofer — the 15 in speaker (speakerSection(15): frame Ø386, depth
+  //     169) on the board, FIRING DOWN through its cut-out into the drum;
+  //   crossover (air-core coil Ø40 × 26, two caps) over the amplifier chassis
+  //     (valves standing up, two transformers) on the left wall;
+  //   low rotor — the drum Ø296 × 220 (LESLIE.drumR) open at the top under
+  //     the woofer, its window; a pulley Ø230 under it, the shaft in a
+  //     bearing on the floor board, belt to the drum motor (Ø70 × 70) hanging shaft-down.
+  const neck = make();
+  neck.addRect(Skia.XYWHRect(-12, HORN_Y + 28, 24, 32));
+  const driverFlange = make();
+  driverFlange.addRRect(Skia.RRectXY(Skia.XYWHRect(-46, HORN_Y + 60, 92, 12), 3, 3));
+  const driverPot = make();
+  driverPot.addRRect(Skia.RRectXY(Skia.XYWHRect(-58, HORN_Y + 72, 116, 88), 10, 10));
+  const driverRib = make();
+  driverRib.moveTo(-58, HORN_Y + 84);
+  driverRib.lineTo(58, HORN_Y + 84);
+  driverRib.moveTo(-58, HORN_Y + 148);
+  driverRib.lineTo(58, HORN_Y + 148);
+  const driverStand = make();
+  for (const x of [-44, 36]) driverStand.addRect(Skia.XYWHRect(x, HORN_Y + 160, 8, SHELF_Y - (HORN_Y + 160)));
+  driverStand.addRect(Skia.XYWHRect(-52, HORN_Y + 160, 104, 6));
+  driverStand.addRect(Skia.XYWHRect(-60, SHELF_Y - 6, 120, 6));
+  const terminal = make();
+  terminal.addRRect(Skia.RRectXY(Skia.XYWHRect(-70, HORN_Y + 104, 12, 22), 2, 2));
+  // The throat tube from the driver up into the rotor, the manifold, the pulley.
   const throat = make();
-  throat.addRect(Skia.XYWHRect(-14, HORN_Y + 18, 28, 46));
-  // The woofer on the lower compartment's top board, facing DOWN into the
-  // drum (its magnet above the board), after the maker's schematic.
-  const wR = LESLIE.woofer.mm / 2;
-  const woofer = make();
-  woofer.moveTo(-wR + 12, WOOF_Y + WALL);
-  woofer.cubicTo(-wR * 0.55, WOOF_Y - 20, -60, WOOF_Y - 64, -26, WOOF_Y - 78);
-  woofer.lineTo(26, WOOF_Y - 78);
-  woofer.cubicTo(60, WOOF_Y - 64, wR * 0.55, WOOF_Y - 20, wR - 12, WOOF_Y + WALL);
-  woofer.close();
-  const wMagnet = make();
-  wMagnet.addRRect(Skia.RRectXY(Skia.XYWHRect(-78, WOOF_Y - 160, 156, 82), 8, 8));
-  const wFrame = make();
-  wFrame.moveTo(-wR, WOOF_Y - 4);
-  wFrame.lineTo(-90, WOOF_Y - 150);
-  wFrame.moveTo(wR, WOOF_Y - 4);
-  wFrame.lineTo(90, WOOF_Y - 150);
-  // Crossover, power amp, preamp on the left (after the maker's schematic).
-  const chassis = make();
-  for (let i = 0; i < 3; i++) chassis.addRRect(Skia.RRectXY(Skia.XYWHRect(-W2 + WALL + 12, SHELF_Y + WALL + 18 + i * 64, 150, 52), 5, 5));
-  // The drum, in elevation.
+  throat.addRect(Skia.XYWHRect(-12, HORN_Y + 18, 24, 46));
+  const manifold = make();
+  manifold.addRRect(Skia.RRectXY(Skia.XYWHRect(-34, HORN_Y - 28, 68, 56), 10, 10));
+  const PULLEY_Y = HORN_Y + 40;
+  const pulley = make();
+  pulley.addOval(Skia.XYWHRect(-60, PULLEY_Y - 7, 120, 14));
+  // The horn motors on the left wall, the belt at the pulley's height.
+  const MX = -W2 + WALL + 18;
+  const motors = make();
+  motors.addRRect(Skia.RRectXY(Skia.XYWHRect(MX, PULLEY_Y + 14, 70, 60), 8, 8));
+  motors.addRRect(Skia.RRectXY(Skia.XYWHRect(MX, PULLEY_Y + 80, 70, 60), 8, 8));
+  const motorBands = make();
+  for (const y0 of [PULLEY_Y + 14, PULLEY_Y + 80]) {
+    motorBands.addRect(Skia.XYWHRect(MX, y0 + 8, 70, 4));
+    motorBands.addRect(Skia.XYWHRect(MX, y0 + 48, 70, 4));
+  }
+  const motorShaft = make();
+  motorShaft.addRect(Skia.XYWHRect(MX + 32, PULLEY_Y - 4, 6, 20));
+  const motorPulley = make();
+  motorPulley.addOval(Skia.XYWHRect(MX + 17, PULLEY_Y - 5, 36, 10));
+  const bracket = make();
+  bracket.addRect(Skia.XYWHRect(-W2 + WALL, PULLEY_Y + 140, 96, 6));
+  bracket.addRect(Skia.XYWHRect(-W2 + WALL, PULLEY_Y + 74, 18, 72));
+  const belt = make();
+  belt.moveTo(MX + 35, PULLEY_Y - 1);
+  belt.lineTo(0, PULLEY_Y - 1);
+  belt.moveTo(MX + 35, PULLEY_Y + 3);
+  belt.lineTo(0, PULLEY_Y + 3);
+  // Crossover over the amplifier chassis, both on the left wall.
+  const XL = -W2 + WALL + 6;
+  const xoBoard = make();
+  xoBoard.addRect(Skia.XYWHRect(XL, SHELF_Y + WALL + 66, 138, 7));
+  const xoCoil = make();
+  xoCoil.addRRect(Skia.RRectXY(Skia.XYWHRect(XL + 10, SHELF_Y + WALL + 40, 40, 26), 4, 4));
+  const xoFlanges = make();
+  xoFlanges.addRect(Skia.XYWHRect(XL + 8, SHELF_Y + WALL + 38, 44, 4));
+  xoFlanges.addRect(Skia.XYWHRect(XL + 8, SHELF_Y + WALL + 64, 44, 4));
+  const xoCaps = make();
+  xoCaps.addRRect(Skia.RRectXY(Skia.XYWHRect(XL + 62, SHELF_Y + WALL + 30, 20, 36), 6, 6));
+  xoCaps.addRRect(Skia.RRectXY(Skia.XYWHRect(XL + 92, SHELF_Y + WALL + 36, 30, 30), 8, 8));
+  const ampY = SHELF_Y + WALL + 180; // the chassis' bottom
+  const ampBox = make();
+  ampBox.addRRect(Skia.RRectXY(Skia.XYWHRect(XL, ampY - 34, 138, 34), 3, 3));
+  const ampTrans = make();
+  ampTrans.addRRect(Skia.RRectXY(Skia.XYWHRect(XL + 6, ampY - 76, 40, 42), 3, 3));
+  ampTrans.addRRect(Skia.RRectXY(Skia.XYWHRect(XL + 102, ampY - 66, 32, 32), 3, 3));
+  const ampTubes = make();
+  for (const x of [XL + 60, XL + 84]) {
+    ampTubes.moveTo(x - 9, ampY - 36);
+    ampTubes.lineTo(x - 9, ampY - 78);
+    ampTubes.quadTo(x - 9, ampY - 86, x, ampY - 88);
+    ampTubes.quadTo(x + 9, ampY - 86, x + 9, ampY - 78);
+    ampTubes.lineTo(x + 9, ampY - 36);
+    ampTubes.close();
+  }
+  const ampTubePlates = make();
+  for (const x of [XL + 60, XL + 84]) ampTubePlates.addRect(Skia.XYWHRect(x - 5, ampY - 70, 10, 24));
+  const wallCleats = make();
+  wallCleats.addRect(Skia.XYWHRect(XL - 6, ampY, 40, 8));
+  wallCleats.addRect(Skia.XYWHRect(XL - 6, SHELF_Y + WALL + 73, 30, 8));
+  // The drum, in elevation: a cylinder open at the top under the woofer.
   const drumTop = DRUM_TOP;
   const drumBot = DRUM_BOT;
   const drumBody = make();
   drumBody.addRect(Skia.XYWHRect(-DRUM_R, drumTop, 2 * DRUM_R, drumBot - drumTop));
+  drumBody.addArc(Skia.XYWHRect(-DRUM_R, drumBot - 20, 2 * DRUM_R, 40), 0, 180);
   const drumTopOval = make();
   drumTopOval.addOval(Skia.XYWHRect(-DRUM_R, drumTop - 20, 2 * DRUM_R, 40));
+  const drumMouth = make();
+  drumMouth.addOval(Skia.XYWHRect(-DRUM_R + 14, drumTop - 14, 2 * DRUM_R - 28, 28));
   const drumBotOval = make();
-  drumBotOval.addOval(Skia.XYWHRect(-DRUM_R, drumBot - 20, 2 * DRUM_R, 40));
+  drumBotOval.addArc(Skia.XYWHRect(-DRUM_R, drumBot - 20, 2 * DRUM_R, 40), 0, 180);
+  const drumBands = make();
+  drumBands.addArc(Skia.XYWHRect(-DRUM_R, drumTop + 10 - 20, 2 * DRUM_R, 40), 0, 180);
+  drumBands.addArc(Skia.XYWHRect(-DRUM_R, drumBot - 12 - 20, 2 * DRUM_R, 40), 0, 180);
+  const DP_Y = drumBot + 34;
+  const drumPulley = make();
+  drumPulley.addOval(Skia.XYWHRect(-115, DP_Y - 8, 230, 16));
   const spindle = make();
   spindle.addRect(Skia.XYWHRect(-6, drumBot, 12, -PLINTH - drumBot));
+  const bearing = make();
+  bearing.addRRect(Skia.RRectXY(Skia.XYWHRect(-22, -PLINTH - 26, 44, 26), 4, 4));
+  bearing.addRect(Skia.XYWHRect(-40, -PLINTH - 6, 80, 6));
+  const DMX = 210;
+  // The drum motor hangs shaft-down on a bracket beside the drum.
+  const drumMotor = make();
+  drumMotor.addRRect(Skia.RRectXY(Skia.XYWHRect(DMX, DP_Y - 84, 70, 70), 8, 8));
+  const drumMotorBands = make();
+  drumMotorBands.addRect(Skia.XYWHRect(DMX, DP_Y - 76, 70, 4));
+  drumMotorBands.addRect(Skia.XYWHRect(DMX, DP_Y - 26, 70, 4));
+  const drumMotorMount = make();
+  drumMotorMount.addRect(Skia.XYWHRect(DMX + 74, DP_Y - 80, 6, -PLINTH - DP_Y + 80));
+  drumMotorMount.addRect(Skia.XYWHRect(DMX + 66, -PLINTH - 6, 40, 6));
+  drumMotorMount.addRect(Skia.XYWHRect(DMX + 66, DP_Y - 60, 14, 6));
+  const drumMotorPulley = make();
+  drumMotorPulley.addRect(Skia.XYWHRect(DMX + 32, DP_Y - 14, 6, 14));
+  drumMotorPulley.addOval(Skia.XYWHRect(DMX + 17, DP_Y - 5, 36, 10));
+  const drumBelt = make();
+  drumBelt.moveTo(0, DP_Y - 2);
+  drumBelt.lineTo(DMX + 35, DP_Y - 2);
+  drumBelt.moveTo(0, DP_Y + 2);
+  drumBelt.lineTo(DMX + 35, DP_Y + 2);
 
   // PLAN (u = z, v = x; the front at the bottom).
   const planWalls = (which: 'upper' | 'lower') => {
@@ -339,6 +481,13 @@ function buildAll() {
   const bell2 = bell.copy();
   bell2.transform(m);
   bells.addPath(bell2);
+  // A lit edge along each bell (light from the upper left), rotating with it.
+  const bellLit = make();
+  bellLit.moveTo(-BELL_THROAT / 2 + 3, HUB_R);
+  bellLit.cubicTo(-BELL_THROAT / 2 + 3, REACH * 0.55, -BELL_MOUTH * 0.3 + 3, REACH * 0.8, -BELL_MOUTH / 2 + 5, REACH - 3);
+  const lit2 = bellLit.copy();
+  lit2.transform(m);
+  bellLit.addPath(lit2);
   const mouths = make();
   mouths.moveTo(-BELL_MOUTH / 2 + 4, REACH - 2);
   mouths.lineTo(BELL_MOUTH / 2 - 4, REACH - 2);
@@ -358,7 +507,7 @@ function buildAll() {
   const scoopMouth = make();
   scoopMouth.moveTo(Math.sin(-half) * DRUM_R, Math.cos(half) * DRUM_R);
   scoopMouth.lineTo(Math.sin(half) * DRUM_R, Math.cos(half) * DRUM_R);
-  return { body, cap, plinth, upperWin, lowerWin, upperSlats, lowerSlats, panelLine, interior, shelves, walls, driver, throat, woofer, wMagnet, wFrame, chassis, drumBody, drumTopOval, drumBotOval, drumTop, drumBot, spindle, planUpper, planLower, planFloor, bells, mouths, plug, drumRim, deflector, scoopMouth };
+  return { body, cap, plinth, upperWin, lowerWin, upperSlats, lowerSlats, panelLine, grain, frames, slatLit, slatShade, panelLit, panelShade, capLip, glides, interior, shelves, walls, neck, driverFlange, driverPot, driverRib, driverStand, terminal, throat, manifold, pulley, MX, motors, motorBands, motorShaft, motorPulley, bracket, belt, XL, xoBoard, xoCoil, xoFlanges, xoCaps, ampY, ampBox, ampTrans, ampTubes, ampTubePlates, wallCleats, drumBody, drumTopOval, drumMouth, drumBotOval, drumBands, drumTop, drumBot, drumPulley, spindle, bearing, drumMotor, drumMotorBands, drumMotorMount, drumMotorPulley, drumBelt, planUpper, planLower, planFloor, bells, bellLit, mouths, plug, drumRim, deflector, scoopMouth };
 }
 function getBuilt(): Built {
   return (built ??= buildAll());
@@ -428,18 +577,45 @@ function FrontElevation({ rig, inside, mics }: { rig: LeslieRig; inside: boolean
           <Path path={b.interior}>
             <RadialGradient c={vec(-W2 * 0.5, -H * 0.85)} r={H} colors={['rgba(255,214,160,0.08)', 'rgba(255,214,160,0)']} />
           </Path>
-          {/* the far horn bell (facing away), the driver, the near bell */}
+          {/* horn motors on their wall bracket, the belt to the rotor's pulley */}
+          <Path path={b.bracket} color="#5d616c" />
+          <Path path={b.motors}>
+            <LinearGradient start={vec(b.MX, 0)} end={vec(b.MX + 70, 0)} colors={['#3a3d45', '#9aa0ab', '#4a4e57', '#1d1e22']} positions={[0, 0.3, 0.7, 1]} />
+          </Path>
+          <Path path={b.motorBands} color="#1d1e22" opacity={0.8} />
+          <Path path={b.motors} style="stroke" strokeWidth={1.2} color="#08080a" />
+          <Path path={b.motorShaft} color="#c8ccd4" />
+          <Path path={b.motorPulley} color="#8a8f99" />
+          {/* the compression driver on its stand, its neck up into the throat */}
+          <Path path={b.driverStand} color="#4a4e57" />
+          <Path path={b.driverPot}>
+            <LinearGradient start={vec(-58, 0)} end={vec(58, 0)} colors={['#2a2c32', '#8f949f', '#4a4e57', '#15161a']} positions={[0, 0.3, 0.7, 1]} />
+          </Path>
+          <Path path={b.driverRib} style="stroke" strokeWidth={2} color="#08080a" opacity={0.6} />
+          <Path path={b.driverPot} style="stroke" strokeWidth={1.4} color="#08080a" />
+          <Path path={b.terminal} color="#b8452f" />
+          <Path path={b.driverFlange}>
+            <LinearGradient start={vec(-46, 0)} end={vec(46, 0)} colors={['#5d616c', '#d6dae1', '#6a6f7a']} />
+          </Path>
+          <Path path={b.driverFlange} style="stroke" strokeWidth={1} color="#08080a" />
+          <Path path={b.neck} color="#3a3d45" />
+          <Path path={b.throat}>
+            <LinearGradient start={vec(-12, 0)} end={vec(12, 0)} colors={['#4a4e57', '#c8ccd4', '#3a3d45']} />
+          </Path>
+          {/* the far horn bell (facing away), the belt and pulley, the hub, the near bell */}
           <Path path={farBell}>
             <LinearGradient start={vec(-REACH, HORN_Y - 46)} end={vec(REACH, HORN_Y + 46)} colors={['#2c2e34', '#15161a', '#0a0a0c']} />
           </Path>
-          <Path path={b.throat} color="#2a2c32" />
-          <Path path={b.driver}>
-            <LinearGradient start={vec(-58, HORN_Y + 60)} end={vec(58, HORN_Y + 210)} colors={['#8f949f', '#3e424b', '#1b1c20']} />
+          <Path path={farBell} style="stroke" strokeWidth={1.2} color="#08080a" />
+          <Path path={b.belt} style="stroke" strokeWidth={2.6} color="#5a4636" />
+          <Path path={b.pulley}>
+            <LinearGradient start={vec(-60, 0)} end={vec(60, 0)} colors={['#3a3d45', '#c8ccd4', '#4a4e57']} />
           </Path>
-          <Path path={b.driver} style="stroke" strokeWidth={1.4} color="#08080a" />
-          <Circle cx={0} cy={HORN_Y} r={HUB_R}>
-            <RadialGradient c={vec(-12, HORN_Y - 12)} r={HUB_R * 1.4} colors={['#e3e6ec', '#8a8f99', '#3a3d45']} />
-          </Circle>
+          <Path path={b.pulley} style="stroke" strokeWidth={1} color="#08080a" />
+          <Path path={b.manifold}>
+            <LinearGradient start={vec(-34, HORN_Y - 28)} end={vec(34, HORN_Y + 28)} colors={['#c8ccd4', '#6a6f7a', '#2a2c32']} />
+          </Path>
+          <Path path={b.manifold} style="stroke" strokeWidth={1.2} color="#08080a" />
           <Path path={nearBell}>
             <LinearGradient start={vec(-REACH, HORN_Y - 46)} end={vec(REACH, HORN_Y + 46)} colors={['#4a4e57', '#24262c', '#101114']} />
           </Path>
@@ -447,56 +623,98 @@ function FrontElevation({ rig, inside, mics }: { rig: LeslieRig; inside: boolean
           <Path path={mouth} color="#030304" />
           <Path path={mouth} style="stroke" strokeWidth={2.2} color="#9aa0ab" opacity={0.6} />
           <Circle cx={0} cy={HORN_Y} r={6} color="#d4d8e0" opacity={shaftHi} />
-          {/* shelves, the woofer facing down, the electronics, the drum */}
+          {/* the motor board and the woofer board (cut), the woofer firing DOWN */}
           <Path path={b.shelves}>
             <LinearGradient start={vec(0, SHELF_Y)} end={vec(0, SHELF_Y + WALL)} colors={WOOD_CUT} />
           </Path>
-          <Path path={b.wFrame} style="stroke" strokeWidth={9} strokeCap="round" color="#3a3d45" />
-          <Path path={b.wFrame} style="stroke" strokeWidth={3} strokeCap="round" color="#9aa0ab" opacity={0.6} />
-          <Path path={b.wMagnet}>
-            <LinearGradient start={vec(-78, WOOF_Y - 160)} end={vec(78, WOOF_Y - 78)} colors={['#c8ccd4', '#5a5d66', '#26282e', '#111215']} />
+          <Path path={b.shelves} style="stroke" strokeWidth={1} color="#08080a" opacity={0.7} />
+          <Group transform={[{ translateY: WOOF_Y + WALL }, { rotate: Math.PI / 2 }]}>
+            <SpeakerCut nominal={15} />
+          </Group>
+          {/* crossover over the amplifier chassis, on the left wall */}
+          <Path path={b.wallCleats} color="#5c3417" />
+          <Path path={b.xoBoard} color="#6b4a26" />
+          <Path path={b.xoCoil}>
+            <LinearGradient start={vec(0, SHELF_Y)} end={vec(0, SHELF_Y + 90)} colors={['#e0a060', '#b8743a', '#6b3d1c']} />
           </Path>
-          <Path path={b.wMagnet} style="stroke" strokeWidth={1.4} color="#08080a" />
-          <Path path={b.woofer}>
-            <LinearGradient start={vec(0, WOOF_Y - 78)} end={vec(0, WOOF_Y + WALL)} colors={['#14110e', '#2a241f', '#4f4740']} />
+          <Path path={b.xoFlanges} color="#1d1e22" />
+          <Path path={b.xoCaps}>
+            <LinearGradient start={vec(b.XL + 60, 0)} end={vec(b.XL + 124, 0)} colors={['#5d616c', '#c8ccd4', '#3a3d45']} />
           </Path>
-          <Path path={b.woofer} style="stroke" strokeWidth={2} color="#0d0b09" />
-          <Path path={b.chassis}>
-            <LinearGradient start={vec(-W2, SHELF_Y)} end={vec(-W2 + 180, SHELF_Y + 200)} colors={['#6b707b', '#33363d', '#1a1b20']} />
+          <Path path={b.xoCaps} style="stroke" strokeWidth={1} color="#08080a" />
+          <Path path={b.ampTrans}>
+            <LinearGradient start={vec(b.XL, 0)} end={vec(b.XL + 138, 0)} colors={['#3a3d45', '#1d1e22', '#3a3d45', '#15161a']} />
           </Path>
-          <Path path={b.chassis} style="stroke" strokeWidth={1.2} color="#08080a" />
+          <Path path={b.ampTubePlates} color="#3a3d45" />
+          <Path path={b.ampTubes}>
+            <LinearGradient start={vec(b.XL + 50, 0)} end={vec(b.XL + 94, 0)} colors={['rgba(240,244,250,0.4)', 'rgba(200,210,225,0.12)', 'rgba(120,130,145,0.3)']} />
+          </Path>
+          <Path path={b.ampTubes} style="stroke" strokeWidth={1} color="#c9d2de" opacity={0.6} />
+          <Path path={b.ampBox}>
+            <LinearGradient start={vec(0, b.ampY - 34)} end={vec(0, b.ampY)} colors={['#d6dae1', '#8a8f99', '#4a4e57']} />
+          </Path>
+          <Path path={b.ampBox} style="stroke" strokeWidth={1.2} color="#08080a" />
+          {/* the low rotor: the drum (open at the top), its window, pulley, motor */}
+          <Path path={b.drumBelt} style="stroke" strokeWidth={2.6} color="#5a4636" />
+          <Path path={b.spindle} color="#9aa0ab" />
+          <Path path={b.bearing} color="#4a4e57" />
+          <Path path={b.drumMotorMount} color="#5d616c" />
+          <Path path={b.drumMotor}>
+            <LinearGradient start={vec(210, 0)} end={vec(280, 0)} colors={['#3a3d45', '#9aa0ab', '#4a4e57', '#1d1e22']} positions={[0, 0.3, 0.7, 1]} />
+          </Path>
+          <Path path={b.drumMotorBands} color="#1d1e22" opacity={0.8} />
+          <Path path={b.drumMotor} style="stroke" strokeWidth={1.2} color="#08080a" />
+          <Path path={b.drumMotorPulley} color="#8a8f99" />
+          <Path path={b.drumPulley}>
+            <LinearGradient start={vec(-115, 0)} end={vec(115, 0)} colors={['#3a3d45', '#c8ccd4', '#4a4e57']} />
+          </Path>
+          <Path path={b.drumPulley} style="stroke" strokeWidth={1} color="#08080a" />
           <Path path={b.drumBody}>
-            <LinearGradient start={vec(-DRUM_R, 0)} end={vec(DRUM_R, 0)} colors={['#3b2614', '#a06a38', '#6b4220', '#24160a']} positions={[0, 0.3, 0.7, 1]} />
+            <LinearGradient start={vec(-DRUM_R, 0)} end={vec(DRUM_R, 0)} colors={['#3b2614', '#b07a44', '#7a4c24', '#24160a']} positions={[0, 0.3, 0.7, 1]} />
           </Path>
-          <Path path={scoop} color="#050403" />
+          <Path path={b.drumBands} style="stroke" strokeWidth={1.2} color="#2a190b" opacity={0.6} />
+          <Path path={scoop} color="#0b0806" />
           <Path path={scoop} style="stroke" strokeWidth={2} color="#c79a62" opacity={0.6} />
           <Path path={b.drumTopOval}>
-            <LinearGradient start={vec(-DRUM_R, 0)} end={vec(DRUM_R, 0)} colors={['#c48f52', '#8a5426']} />
+            <LinearGradient start={vec(-DRUM_R, 0)} end={vec(DRUM_R, 0)} colors={['#d9a766', '#8a5426']} />
           </Path>
+          <Path path={b.drumMouth} color="#0a0705" />
+          <Path path={b.drumTopOval} style="stroke" strokeWidth={1.2} color="#08080a" />
           <Path path={b.drumBotOval} style="stroke" strokeWidth={1.4} color="#08080a" />
           <Path path={b.drumBody} style="stroke" strokeWidth={1.4} color="#08080a" />
-          <Path path={b.spindle} color="#9aa0ab" />
           <Path path={b.walls}>
             <LinearGradient start={vec(-W2, 0)} end={vec(-W2 + WALL, 0)} colors={WOOD_CUT} />
           </Path>
+          <Path path={b.walls} style="stroke" strokeWidth={1} color="#08080a" opacity={0.7} />
         </>
       ) : (
         <>
-          <Path path={b.panelLine} style="stroke" strokeWidth={2.4} color="#2b170a" opacity={0.7} />
+          <Path path={b.grain} style="stroke" strokeWidth={1.4} color="#2b170a" opacity={0.13} />
+          <Path path={b.panelLit} style="stroke" strokeWidth={3} color="#d9a766" opacity={0.45} />
+          <Path path={b.panelShade} style="stroke" strokeWidth={3} color="#1a0f07" opacity={0.6} />
+          <Path path={b.panelLine} style="stroke" strokeWidth={1.2} color="#2b170a" opacity={0.8} />
+          <Path path={b.frames}>
+            <LinearGradient start={vec(-310, LESLIE.upperLouvers.y0)} end={vec(310, LESLIE.lowerOpenings.y1)} colors={['#b07a44', '#6b3d1c', '#3c210e']} />
+          </Path>
+          <Path path={b.frames} style="stroke" strokeWidth={1.2} color="#1a0f07" />
           <Path path={b.upperWin} color="#0a0705" />
-          <Path path={b.upperSlats}>
-            <LinearGradient start={vec(0, LESLIE.upperLouvers.y0)} end={vec(0, LESLIE.upperLouvers.y1)} colors={['#a06a38', '#5c3417']} />
-          </Path>
           <Path path={b.lowerWin} color="#0a0705" />
-          <Path path={b.lowerSlats}>
-            <LinearGradient start={vec(0, LESLIE.lowerOpenings.y0)} end={vec(0, LESLIE.lowerOpenings.y1)} colors={['#a06a38', '#5c3417']} />
+          <Path path={b.upperSlats}>
+            <LinearGradient start={vec(0, LESLIE.upperLouvers.y0)} end={vec(0, LESLIE.upperLouvers.y1)} colors={['#a06a38', '#7a4a20']} />
           </Path>
+          <Path path={b.lowerSlats}>
+            <LinearGradient start={vec(0, LESLIE.lowerOpenings.y0)} end={vec(0, LESLIE.lowerOpenings.y1)} colors={['#a06a38', '#7a4a20']} />
+          </Path>
+          <Path path={b.slatLit} style="stroke" strokeWidth={1.6} color="#e2b679" opacity={0.55} />
+          <Path path={b.slatShade} style="stroke" strokeWidth={2} color="#1a0f07" opacity={0.7} />
         </>
       )}
       <Path path={b.cap}>
         <LinearGradient start={vec(-W2, -H)} end={vec(W2, -H + 24)} colors={['#c48f52', '#7a4a20', '#3a220e']} />
       </Path>
+      <Path path={b.capLip} style="stroke" strokeWidth={2} color="#1a0f07" opacity={0.7} />
       <Path path={b.plinth} color="#120c08" />
+      <Path path={b.glides} color="#2a2c32" />
       <Path path={b.body} style="stroke" strokeWidth={2} color="#08080a" />
       {/* mics (end-on in this view, or beside the cabinet for side mics) */}
       {mics.map((mm) => (
@@ -547,10 +765,14 @@ function PlanPanel({ rig, level, mics }: { rig: LeslieRig; level: 'upper' | 'low
       <Path path={w.slats} style="stroke" strokeWidth={5} strokeCap="round" color="#a06a38" />
       {level === 'upper' ? (
         <>
+          {/* the rotor's belt pulley (Ø120) under the bells */}
+          <Circle cx={0} cy={0} r={60} color="#2a2c32" />
+          <Circle cx={0} cy={0} r={60} style="stroke" strokeWidth={3} color="#8a8f99" opacity={0.7} />
           <Group transform={rot}>
             <Path path={b.bells}>
               <LinearGradient start={vec(-40, -REACH)} end={vec(40, REACH)} colors={['#5a5e68', '#2a2c32', '#121316']} />
             </Path>
+            <Path path={b.bellLit} style="stroke" strokeWidth={2.4} color="#aab0ba" opacity={0.55} />
             <Path path={b.bells} style="stroke" strokeWidth={2} color="#08080a" />
             <Path path={b.mouths} style="stroke" strokeWidth={7} strokeCap="round" color="#030304" />
             <Path path={b.mouths} style="stroke" strokeWidth={2} color="#9aa0ab" opacity={0.7} />
@@ -706,7 +928,9 @@ export function LeslieDisplay({ w, h, rig, view, mics = [], accessibilityLabel, 
   const ex = ext((m) => m.x, HALF_D) + (mics.some((m) => m.level === 'room') ? 120 : 0);
   const sideMics = mics.some((m) => Math.abs(m.z) > W2);
   const wide = view === 'inside' ? 470 : sideMics ? ez - W2 : 90;
-  const frontBox = { u0: -W2 - wide, u1: W2 + wide, v0: -H - 60, v1: 40 };
+  // Inside view (round 2): the same width, the cabinet set to the left so
+  // every label sits in the clear right margin, never on the drawing.
+  const frontBox = view === 'inside' ? { u0: -W2 - 80, u1: W2 + 2 * wide - 80, v0: -H - 60, v1: 40 } : { u0: -W2 - wide, u1: W2 + wide, v0: -H - 60, v1: 40 };
   const planBox = { u0: -ez, u1: ez, v0: -ex, v1: ex + 60 };
   // Two plan panels: stacked on a tall glass, side by side on a wide one —
   // whichever draws them larger.
@@ -728,7 +952,7 @@ export function LeslieDisplay({ w, h, rig, view, mics = [], accessibilityLabel, 
   }, [view, w, gh, top, ez, ex, wide, stacked]);
   const slowed = TIME_BASES.find((b) => b.id === rig.timeBase)!;
   const room = mics.some((m) => m.level === 'room');
-  const labels: StaticLabel[][] = useMemo(() => {
+  const labels: (StaticLabel & { leader?: { u: number; v: number } })[][] = useMemo(() => {
     if (view === 'plan') {
       return [
         [
@@ -741,12 +965,13 @@ export function LeslieDisplay({ w, h, rig, view, mics = [], accessibilityLabel, 
         ],
       ];
     }
-    const out: StaticLabel[] = view === 'inside'
+    const out: (StaticLabel & { leader?: { u: number; v: number } })[] = view === 'inside'
       ? [
           { id: 'horn', text: 'HORN ROTOR (ONE BELL SOUNDS)', short: 'HORN ROTOR', u: W2 + 10, v: HORN_Y - 10, align: 'left', tone: 'amber' },
-          { id: 'driver', text: 'HORN DRIVER', short: 'DRIVER', u: 70, v: HORN_Y + 140, align: 'left', tone: 'muted' },
+          // Round 2 (2026-10-10): every label sits OFF the drawing, on the right margin, a thin leader to its part.
+          { id: 'driver', text: 'HORN DRIVER', short: 'DRIVER', u: W2 + 10, v: HORN_Y + 150, align: 'left', tone: 'muted', leader: { u: 58, v: HORN_Y + 116 } },
           { id: 'woofer', text: 'WOOFER, FACING DOWN', short: 'WOOFER', u: W2 + 10, v: WOOF_Y - 70, align: 'left', tone: 'muted' },
-          { id: 'xo', text: `CROSSOVER ${CROSSOVER_HZ} Hz · AMP`, short: `${CROSSOVER_HZ} Hz · AMP`, u: -W2 - 10, v: SHELF_Y + 110, align: 'right', tone: 'muted' },
+          { id: 'xo', text: `CROSSOVER ${CROSSOVER_HZ} Hz · AMP`, short: `${CROSSOVER_HZ} Hz · AMP`, u: W2 + 10, v: SHELF_Y + 50, align: 'left', tone: 'muted', leader: { u: -W2 + WALL + 160, v: SHELF_Y + WALL + 60 } },
           { id: 'drum', text: 'LOW ROTOR (DRUM)', short: 'LOW ROTOR', u: W2 + 10, v: DRUM_Y, align: 'left', tone: 'blue' },
           { id: 'never', text: 'INSIDE VIEW · NEVER OPEN THE CABINET', short: 'INSIDE VIEW · NEVER OPEN IT', u: 0, v: -H - 30, align: 'center', tone: 'illustrative' },
         ]

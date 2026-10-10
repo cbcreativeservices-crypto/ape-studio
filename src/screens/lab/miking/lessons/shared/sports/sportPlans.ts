@@ -22,7 +22,7 @@
  * and said ONLY as "typical clear zone — check your event's rules", with no
  * rulebook named — sport clearances, never mic positions.
  */
-import { CLEAR_ZONE_WORDS, bandAround, p2, type Badge, type KeepClear, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
+import { CLEAR_ZONE_WORDS, bandAround, basketballMarkings, p2, type Badge, type KeepClear, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
 import { ARENA_BUILD, type ArenaSportId } from './arenaPlans.ts';
 
 /** Yards and feet in metres (exact, international). */
@@ -33,6 +33,41 @@ export type SportId = 'football' | 'soccer' | 'rugby' | 'baseball' | 'softball' 
 
 const rect = (r: PlanRect): P2[] => [p2(r.x0, r.y0), p2(r.x1, r.y0), p2(r.x1, r.y1), p2(r.x0, r.y1)];
 const line = (...pts: P2[]) => ({ pts });
+/** An arc of radius r about c from a0 to a1 degrees (frame P, from +x toward +y). */
+const arc = (c: P2, r: number, a0: number, a1: number, n = 24): P2[] =>
+  Array.from({ length: n + 1 }, (_, i) => {
+    const a = ((a0 + ((a1 - a0) * i) / n) * Math.PI) / 180;
+    return p2(c.x + r * Math.cos(a), c.y + r * Math.sin(a));
+  });
+const spot = (c: P2, r = 0.2) => ({ pts: [], circle: { c, r } });
+
+/*
+ * MARKINGS at the common published dimensions (metres; drawing defaults, see
+ * the header — never printed):
+ *   soccer      goal area 5.5 × 18.32, penalty area 16.5 × 40.32, penalty
+ *               spot 11, centre circle and penalty arc 9.15, corner arc 1
+ *   football    a yard line every 5 yd between the goal lines; goalposts on
+ *               the end lines, crossbar 18 ft 6 in (5.64) wide
+ *   rugby       22 m lines, 10 m lines and 5 m lines (dashed), posts 5.6 wide
+ *   baseball    90 ft paths; foul poles 325 ft (99.1), centre field 400 ft
+ *               (121.9); infield arc 95 ft from the pitcher's plate (60 ft
+ *               6 in from home), mound Ø 18 ft, home circle Ø 26 ft
+ *   softball    60 ft paths; fence 200 ft (61) at the poles, 220 ft (67) in
+ *               centre; pitcher's circle r 8 ft; infield arc 60 ft from the
+ *               pitcher's plate (43 ft)
+ *   basketball  FIBA 28 × 15: three-point line r 6.75 from the basket centre
+ *               (1.575 from the end line), 0.9 from the sidelines; key 5.8 ×
+ *               4.9; free-throw circle r 1.8; no-charge arc r 1.25;
+ *               backboard 1.8 wide, 1.2 in; ring Ø 0.45
+ *   tennis      23.77 × 10.97, singles lines 1.37 in, service lines 6.40
+ *               from the net, centre service line and centre marks
+ *   badminton   13.4 × 6.1, short service 1.98, doubles long service 0.76
+ *               in, singles sidelines 0.46 in, centre lines
+ *   ice hockey  60 × 30, corner r 8.5, goal lines 4 from the ends (red), blue
+ *               lines, red centre line, blue centre circle r 4.5, end-zone
+ *               face-off circles r 4.5 (spots 6 out from the goal line, 7
+ *               either side of centre), goal crease r 1.8, goal 1.83 wide
+ */
 
 function band(id: string, r: PlanRect, w: number, label: string, basis: KeepClear['basis'], note: string): KeepClear[] {
   return bandAround(r, w).map((poly, i) => ({ id: `${id}.${i}`, label, short: 'KEEP CLEAR', poly, basis, note }));
@@ -55,7 +90,26 @@ function soccer(): VenueScene {
     blurb: 'Kicks, close challenges and footfalls near the touchline; the middle of the pitch is mostly atmosphere.',
     play: rect(f),
     surface: 'grass',
-    markings: [{ pts: rect(f), closed: true }, line(p2(L / 2, 0), p2(L / 2, W)), { pts: [], circle: { c: p2(L / 2, W / 2), r: 9.15 } }, { pts: pen(0, 1), closed: true }, { pts: pen(L, -1), closed: true }, { pts: goal(0, 1), closed: true }, { pts: goal(L, -1), closed: true }],
+    markings: [
+      { pts: rect(f), closed: true },
+      line(p2(L / 2, 0), p2(L / 2, W)),
+      { pts: [], circle: { c: p2(L / 2, W / 2), r: 9.15 } },
+      spot(p2(L / 2, W / 2)),
+      { pts: pen(0, 1), closed: true },
+      { pts: pen(L, -1), closed: true },
+      { pts: rect({ x0: 0, y0: W / 2 - 9.16, x1: 5.5, y1: W / 2 + 9.16 }), closed: true },
+      { pts: rect({ x0: L - 5.5, y0: W / 2 - 9.16, x1: L, y1: W / 2 + 9.16 }), closed: true },
+      spot(p2(11, W / 2)),
+      spot(p2(L - 11, W / 2)),
+      { pts: arc(p2(11, W / 2), 9.15, -53.05, 53.05) },
+      { pts: arc(p2(L - 11, W / 2), 9.15, 126.95, 233.05) },
+      { pts: arc(p2(0, 0), 1, 0, 90, 6) },
+      { pts: arc(p2(L, 0), 1, 90, 180, 6) },
+      { pts: arc(p2(L, W), 1, 180, 270, 6) },
+      { pts: arc(p2(0, W), 1, 270, 360, 6) },
+      { pts: goal(0, 1), closed: true },
+      { pts: goal(L, -1), closed: true },
+    ],
     keepClear: band('runoff', f, 4, 'the run-off round the pitch', 'drawing', 'Players, assistant referees, ball attendants and warm-ups use it. A mic, a stand or an operator stays out of it.'),
     routes: [
       { id: 'ar', label: 'the assistant referee’s run along the touchline', short: 'OFFICIAL', pts: [p2(2, -1.2), p2(L - 2, -1.2)], kind: 'officials' },
@@ -89,7 +143,16 @@ function football(): VenueScene {
     blurb: 'Cadence and calls where permitted, snap and contact, kicks — brief, moving sources; a midfield view is not coverage of the whole field.',
     play: rect(f),
     surface: 'grass',
-    markings: [{ pts: rect(f), closed: true }, line(p2(ez, 0), p2(ez, W)), line(p2(L - ez, 0), p2(L - ez, W)), line(p2(L / 2, 0), p2(L / 2, W))],
+    markings: [
+      { pts: rect(f), closed: true },
+      line(p2(ez, 0), p2(ez, W)),
+      line(p2(L - ez, 0), p2(L - ez, W)),
+      // A yard line every 5 yards between the goal lines (the 50 among them).
+      ...Array.from({ length: 19 }, (_, k) => line(p2(ez + (k + 1) * 5 * YD, 0), p2(ez + (k + 1) * 5 * YD, W))),
+      // The goalposts on the end lines: the crossbar, 18 ft 6 in wide.
+      { ...line(p2(0, W / 2 - 2.82), p2(0, W / 2 + 2.82)), ink: 'yellow' as const },
+      { ...line(p2(L, W / 2 - 2.82), p2(L, W / 2 + 2.82)), ink: 'yellow' as const },
+    ],
     keepClear: band('side', f, 4, 'the restricted area along the sidelines and end lines', 'drawing', 'The event assigns the clearances and crew lanes; nothing stands inside them.'),
     routes: [
       { id: 'teamN', label: 'the team area and its lane', short: 'TEAM AREA', pts: [p2(L / 2 - 23, -5), p2(L / 2 + 23, -5)], kind: 'bench' },
@@ -122,7 +185,23 @@ function rugby(): VenueScene {
     blurb: 'Boot-to-ball, permitted calls, lineouts, scrums and rucks — a cluster of bodies changes what a distant mic can hear.',
     play: rect(f),
     surface: 'grass',
-    markings: [{ pts: rect(f), closed: true }, line(p2(0, 0), p2(0, W)), line(p2(L, 0), p2(L, W)), line(p2(L / 2, 0), p2(L / 2, W)), line(p2(22, 0), p2(22, W)), line(p2(L - 22, 0), p2(L - 22, W))],
+    markings: [
+      { pts: rect(f), closed: true },
+      line(p2(0, 0), p2(0, W)),
+      line(p2(L, 0), p2(L, W)),
+      line(p2(L / 2, 0), p2(L / 2, W)),
+      line(p2(22, 0), p2(22, W)),
+      line(p2(L - 22, 0), p2(L - 22, W)),
+      { ...line(p2(L / 2 - 10, 0), p2(L / 2 - 10, W)), dashed: true },
+      { ...line(p2(L / 2 + 10, 0), p2(L / 2 + 10, W)), dashed: true },
+      { ...line(p2(5, 0), p2(5, W)), dashed: true },
+      { ...line(p2(L - 5, 0), p2(L - 5, W)), dashed: true },
+      // The posts on the try lines, 5.6 m apart.
+      spot(p2(0, W / 2 - 2.8), 0.3),
+      spot(p2(0, W / 2 + 2.8), 0.3),
+      spot(p2(L, W / 2 - 2.8), 0.3),
+      spot(p2(L, W / 2 + 2.8), 0.3),
+    ],
     keepClear: band('perim', f, 5, 'the perimeter round the ground', 'rule', `A ${CLEAR_ZONE_WORDS}: about 5 m where it can be, at least 3.5 m for the men’s game and 3 m for the women’s. A ground dimension — not a safe mic distance, and not space a crew may occupy.`),
     routes: [
       { id: 'sub', label: 'the substitution and medical route', short: 'MEDICAL', pts: [p2(L / 2 - 6, -9), p2(L / 2 - 6, -0.5)], kind: 'medical' },
@@ -153,9 +232,18 @@ function diamond(id: 'baseball' | 'softball', path: number): VenueScene {
   const first = p2(s, s);
   const second = p2(0, 2 * s);
   const third = p2(-s, s);
-  const reach = id === 'baseball' ? 60 : 40;
+  // The fence: at the foul poles and in centre field (see MARKINGS above).
+  const reach = id === 'baseball' ? 99.1 : 61;
+  const centre = id === 'baseball' ? 121.9 : 67;
   const foulR = p2(reach / Math.SQRT2, reach / Math.SQRT2);
   const foulL = p2(-reach / Math.SQRT2, reach / Math.SQRT2);
+  // The outfield fence from the right-field pole round to the left-field pole.
+  const fence: P2[] = Array.from({ length: 25 }, (_, i) => {
+    const a = 45 + (90 * i) / 24;
+    const k = 1 - Math.abs(a - 90) / 45;
+    const r = reach + (centre - reach) * Math.sin((k * Math.PI) / 2);
+    return p2(r * Math.cos((a * Math.PI) / 180), r * Math.sin((a * Math.PI) / 180));
+  });
   const back = id === 'baseball' ? -16 : -11;
   const out = 6 / Math.SQRT2;
   // Foul territory: outside the foul lines and behind the plate, up to the backstop.
@@ -171,7 +259,7 @@ function diamond(id: 'baseball' | 'softball', path: number): VenueScene {
     id,
     label: id === 'baseball' ? 'Baseball' : 'Softball',
     blurb: id === 'baseball' ? 'Bat contact, glove transients and selected footfalls; the plate, the bases and the outfield are separate pickup zones.' : 'Name the code first — fast pitch, slow pitch, age group — then test the plate, the bases and the outfield separately.',
-    play: [home, foulR, p2(0, reach * 1.25), foulL],
+    play: [home, ...fence],
     surface: 'diamond',
     markings: [
       { pts: [home, first, second, third], closed: true },
@@ -180,23 +268,24 @@ function diamond(id: 'baseball' | 'softball', path: number): VenueScene {
       ...(id === 'softball' ? [{ pts: [], circle: { c: p2(0, s), r: 8 * FT } }] : []),
     ],
     keepClear: [live],
-    routes: [{ id: 'dug', label: 'the route to the dugout', short: 'DUGOUT', pts: [p2(-reach * 0.32, reach * 0.1), p2(-reach * 0.5, -2)], kind: 'bench' }],
+    routes: [{ id: 'dug', label: 'the route to the dugout', short: 'DUGOUT', pts: [p2(-s * 0.9, s * 0.55), p2(-s * 1.25, -1)], kind: 'bench' }],
     footprints: [
       { id: 'back', label: 'a protected position behind the backstop screen', short: 'APPROVED', rect: { x0: -4, y0: back - 3, x1: 4, y1: back - 1 } },
       { id: 'well', label: 'an approved camera well', short: 'CAMERA WELL', rect: { x0: s + 6, y0: back + 1.5, x1: s + 10, y1: back + 3.5 } },
     ],
     cameras: [{ id: 'cam', label: 'a camera behind the plate', p: p2(-2.2, back - 2), dirDeg: 0, halfDeg: 18, reach: 24 }],
-    sectors: [crowd('cr.home', 'the crowd behind the plate', { x0: -reach * 0.5, y0: back - 9, x1: reach * 0.5, y1: back - 4 })],
+    sectors: [crowd('cr.home', 'the crowd behind the plate', { x0: -s * 1.4, y0: back - 9, x1: s * 1.4, y1: back - 4 })],
     targets: [],
     marks: [],
     badges: [{ id: 'net', label: 'the backstop netting and fences', short: 'APPROVAL ONLY', p: p2(0, back), kind: 'approvalOnly' }, { id: 'foulB', label: 'foul territory', short: 'LIVE BALL', p: p2(s + 4, 3), kind: 'liveBall' }],
     barriers: [{ id: 'backstop', label: 'the backstop screen', pts: [p2(back * 0.9, back + 4), p2(back * 0.5, back), p2(-back * 0.5, back), p2(-back * 0.9, back + 4)] }],
-    frame: { x0: -reach * 0.78, y0: back - 11, x1: reach * 0.78, y1: reach * 1.12 },
+    frame: { x0: -reach / Math.SQRT2 - 8, y0: back - 11, x1: reach / Math.SQRT2 + 8, y1: centre + 5 },
     defaults: [id === 'baseball' ? '90 ft base paths' : '60 ft base paths', ...(id === 'softball' ? ['pitcher’s circle radius'] : []), 'foul territory', 'backstop distance', 'footprints', 'camera', 'crowd', 'outfield'],
   };
 }
 
 /* ── court, racket and ice sports (B14) ── */
+
 
 function basketball(): VenueScene {
   const L = 28;
@@ -208,7 +297,7 @@ function basketball(): VenueScene {
     blurb: 'Bounce, shoes, rim and net — the basket is a repeatable place, the dribble travels the whole floor.',
     play: rect(f),
     surface: 'court',
-    markings: [{ pts: rect(f), closed: true }, line(p2(L / 2, 0), p2(L / 2, W)), { pts: [], circle: { c: p2(L / 2, W / 2), r: 1.8 } }, { pts: rect({ x0: 0, y0: W / 2 - 2.45, x1: 5.8, y1: W / 2 + 2.45 }), closed: true }, { pts: rect({ x0: L - 5.8, y0: W / 2 - 2.45, x1: L, y1: W / 2 + 2.45 }), closed: true }],
+    markings: basketballMarkings(L, W),
     keepClear: band('lane', f, 2, 'the clear band round the court', 'rule', `A ${CLEAR_ZONE_WORDS}: no obstruction within about 2 m of the court. A clearance, not a crew strip.`),
     routes: [
       { id: 'bench', label: 'the team benches and the substitutes’ route', short: 'BENCH', pts: [p2(L / 2 - 8, -2.8), p2(L / 2 + 8, -2.8)], kind: 'bench' },
@@ -274,7 +363,17 @@ function tennis(): VenueScene {
     blurb: 'Racket contact, bounce and shoes; baseline and net play need different coverage.',
     play: rect(f),
     surface: 'court',
-    markings: [{ pts: rect(f), closed: true }, line(p2(L / 2, -0.9), p2(L / 2, W + 0.9)), line(p2(0, 1.37), p2(L, 1.37)), line(p2(0, W - 1.37), p2(L, W - 1.37)), line(p2(L / 2 - 6.4, 1.37), p2(L / 2 - 6.4, W - 1.37)), line(p2(L / 2 + 6.4, 1.37), p2(L / 2 + 6.4, W - 1.37))],
+    markings: [
+      { pts: rect(f), closed: true },
+      line(p2(L / 2, -0.9), p2(L / 2, W + 0.9)),
+      line(p2(0, 1.37), p2(L, 1.37)),
+      line(p2(0, W - 1.37), p2(L, W - 1.37)),
+      line(p2(L / 2 - 6.4, 1.37), p2(L / 2 - 6.4, W - 1.37)),
+      line(p2(L / 2 + 6.4, 1.37), p2(L / 2 + 6.4, W - 1.37)),
+      line(p2(L / 2 - 6.4, W / 2), p2(L / 2 + 6.4, W / 2)),
+      line(p2(0, W / 2), p2(0.1, W / 2)),
+      line(p2(L - 0.1, W / 2), p2(L, W / 2)),
+    ],
     keepClear: [
       { id: 'ro.0', label: 'the run-off', short: 'KEEP CLEAR', poly: [p2(runoff.x0, runoff.y0), p2(runoff.x1, runoff.y0), p2(runoff.x1, 0), p2(runoff.x0, 0)], basis: 'drawing', note: 'Lateral recovery, deep pursuit, ball persons and the chair: nothing creeps into it.' },
       { id: 'ro.1', label: 'the run-off', short: 'KEEP CLEAR', poly: [p2(runoff.x0, W), p2(runoff.x1, W), p2(runoff.x1, runoff.y1), p2(runoff.x0, runoff.y1)], basis: 'drawing', note: 'Lateral recovery, deep pursuit, ball persons and the chair: nothing creeps into it.' },
@@ -310,7 +409,18 @@ function badminton(): VenueScene {
     blurb: 'Racket and shuttle contact, shoes and calls — quiet detail, high overhead contacts and low net exchanges.',
     play: rect(f),
     surface: 'court',
-    markings: [{ pts: rect(f), closed: true }, line(p2(L / 2, -0.4), p2(L / 2, W + 0.4)), line(p2(L / 2 - 1.98, 0), p2(L / 2 - 1.98, W)), line(p2(L / 2 + 1.98, 0), p2(L / 2 + 1.98, W))],
+    markings: [
+      { pts: rect(f), closed: true },
+      line(p2(L / 2, -0.4), p2(L / 2, W + 0.4)),
+      line(p2(L / 2 - 1.98, 0), p2(L / 2 - 1.98, W)),
+      line(p2(L / 2 + 1.98, 0), p2(L / 2 + 1.98, W)),
+      line(p2(0.76, 0), p2(0.76, W)),
+      line(p2(L - 0.76, 0), p2(L - 0.76, W)),
+      line(p2(0, 0.46), p2(L, 0.46)),
+      line(p2(0, W - 0.46), p2(L, W - 0.46)),
+      line(p2(0, W / 2), p2(L / 2 - 1.98, W / 2)),
+      line(p2(L / 2 + 1.98, W / 2), p2(L, W / 2)),
+    ],
     keepClear: band('ro', f, 2, 'the space round the court', 'drawing', 'Racket reach, lunge recovery and the shuttle overhead: keep mics out of all three.'),
     routes: [{ id: 'umpire', label: 'the umpire’s and service judge’s places', short: 'OFFICIALS', pts: [p2(L / 2 - 1.2, -1.4), p2(L / 2 + 1.2, -1.4)], kind: 'officials' }],
     footprints: [{ id: 'end', label: 'an approved perimeter position', short: 'APPROVED', rect: { x0: L + 2.6, y0: W / 2 - 0.8, x1: L + 4.2, y1: W / 2 + 0.8 } }],
@@ -347,7 +457,21 @@ function hockey(): VenueScene {
     blurb: 'Puck and stick, skate cuts and board impacts — the nearest boards sound close, centre ice does not.',
     play: pts,
     surface: 'ice',
-    markings: [line(p2(L / 2, 0), p2(L / 2, W)), line(p2(L / 2 - 8.5, 0), p2(L / 2 - 8.5, W)), line(p2(L / 2 + 8.5, 0), p2(L / 2 + 8.5, W)), line(p2(4, 3.5), p2(4, W - 3.5)), line(p2(L - 4, 3.5), p2(L - 4, W - 3.5)), { pts: [], circle: { c: p2(L / 2, W / 2), r: 4.5 } }],
+    markings: [
+      { ...line(p2(L / 2, 0), p2(L / 2, W)), ink: 'red' as const },
+      { ...line(p2(L / 2 - 8.5, 0), p2(L / 2 - 8.5, W)), ink: 'blue' as const },
+      { ...line(p2(L / 2 + 8.5, 0), p2(L / 2 + 8.5, W)), ink: 'blue' as const },
+      // The goal lines run board to board (the boards' corner arcs meet them 1.3 m in).
+      { ...line(p2(4, r - Math.sqrt(r * r - (r - 4) ** 2)), p2(4, W - r + Math.sqrt(r * r - (r - 4) ** 2))), ink: 'red' as const },
+      { ...line(p2(L - 4, r - Math.sqrt(r * r - (r - 4) ** 2)), p2(L - 4, W - r + Math.sqrt(r * r - (r - 4) ** 2))), ink: 'red' as const },
+      { pts: [], circle: { c: p2(L / 2, W / 2), r: 4.5 }, ink: 'blue' as const },
+      // End-zone face-off circles, the goal creases and the goals.
+      ...[10, L - 10].flatMap((x) => [W / 2 - 7, W / 2 + 7].map((y) => ({ pts: [], circle: { c: p2(x, y), r: 4.5 }, ink: 'red' as const }))),
+      { pts: arc(p2(4, W / 2), 1.8, -90, 90, 12), ink: 'red' as const },
+      { pts: arc(p2(L - 4, W / 2), 1.8, 90, 270, 12), ink: 'red' as const },
+      { pts: rect({ x0: 3, y0: W / 2 - 0.915, x1: 4, y1: W / 2 + 0.915 }), closed: true, ink: 'red' as const },
+      { pts: rect({ x0: L - 4, y0: W / 2 - 0.915, x1: L - 3, y1: W / 2 + 0.915 }), closed: true, ink: 'red' as const },
+    ],
     keepClear: [],
     routes: [
       { id: 'bench', label: 'the players’ benches and gates', short: 'BENCH · GATES', pts: [p2(L / 2 - 12, -1.6), p2(L / 2 + 12, -1.6)], kind: 'bench' },

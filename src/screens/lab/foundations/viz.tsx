@@ -68,7 +68,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
-import { FigureHeadAt } from '../../../features/lab/figureHead';
+import { FigureStandingAt, STANDING_H_MM } from '../../../features/lab/figureHead';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
@@ -751,6 +751,20 @@ export function SpeakerConeView({
     const topEdge = Skia.Path.Make();
     topEdge.moveTo(apexX, cy - apexHalf);
     topEdge.quadTo(midX, cy - ctrl, mouthX, cy - mh);
+    // The cone's two section walls only (art pass 2026-10-10): the mouth is
+    // open air, so no edge is stroked across it.
+    const walls = Skia.Path.Make();
+    walls.moveTo(apexX, cy - apexHalf);
+    walls.quadTo(midX, cy - ctrl, mouthX, cy - mh);
+    walls.moveTo(apexX, cy + apexHalf);
+    walls.quadTo(midX, cy + ctrl, mouthX, cy + mh);
+    // Dust cap: a dome glued over the apex on the cone's FRONT, bulging
+    // forward (it was a full disc reaching back into the coil former).
+    const cap = Skia.Path.Make();
+    cap.moveTo(apexX + 1, cy - apexHalf - 2);
+    cap.cubicTo(apexX + 5, cy - apexHalf - 2, apexX + 8, cy - 4, apexX + 8, cy);
+    cap.cubicTo(apexX + 8, cy + 4, apexX + 5, cy + apexHalf + 2, apexX + 1, cy + apexHalf + 2);
+    cap.close();
     // Voice-coil former = the bobbin walls that ride OUTSIDE the centre pole:
     // a TOP wall and a BOTTOM wall, with the static pole showing between them
     // (owner 2026-08-05 — the coil wraps the pole, it is not under it).
@@ -765,7 +779,7 @@ export function SpeakerConeView({
       windings.moveTo(x, cy + poleHalf + 1);
       windings.lineTo(x, cy + coilOuter - 1);
     }
-    return { cone, topEdge, former, windings };
+    return { cone, topEdge, walls, cap, former, windings };
   }, [apexX, coneDepth, mouthX, cy, mh, gapX, coilLen, apexHalf, coilOuter, poleHalf]);
 
   // CORRUGATED SPIDER (reference: the yellow accordion suspension) — links the
@@ -829,19 +843,21 @@ export function SpeakerConeView({
       <RoundedRect x={3} y={cy - h * 0.3} width={motor.backW} height={h * 0.6} r={2}>
         <LinearGradient start={vec(3, cy - h * 0.3)} end={vec(3, cy + h * 0.3)} colors={[METAL_MID, METAL_LO]} />
       </RoundedRect>
-      <RoundedRect x={3 + motor.backW} y={cy - h * 0.24} width={motor.ringW} height={h * 0.48} r={2}>
-        <LinearGradient
-          start={vec(3 + motor.backW, cy - h * 0.24)}
-          end={vec(3 + motor.backW, cy + h * 0.24)}
-          colors={['#8a5a20', '#3a2410']}
-        />
+      {/* The magnet RING in section: two blocks, the centre pole passing
+          through its bore (art pass 2026-10-10 — one solid block hid the pole). */}
+      <RoundedRect x={3 + motor.backW} y={cy - h * 0.24} width={motor.ringW} height={h * 0.24 - poleHalf * 2.2} r={2}>
+        <LinearGradient start={vec(3 + motor.backW, cy - h * 0.24)} end={vec(3 + motor.backW, cy)} colors={['#8a5a20', '#3a2410']} />
       </RoundedRect>
-      <RoundedRect x={3 + motor.backW + motor.ringW} y={cy - h * 0.3} width={motor.poleW} height={h * 0.6} r={2}>
-        <LinearGradient
-          start={vec(3 + motor.backW + motor.ringW, cy - h * 0.3)}
-          end={vec(3 + motor.backW + motor.ringW, cy + h * 0.3)}
-          colors={[METAL_HI, METAL_MID, METAL_LO]}
-        />
+      <RoundedRect x={3 + motor.backW} y={cy + poleHalf * 2.2} width={motor.ringW} height={h * 0.24 - poleHalf * 2.2} r={2}>
+        <LinearGradient start={vec(3 + motor.backW, cy)} end={vec(3 + motor.backW, cy + h * 0.24)} colors={['#8a5a20', '#3a2410']} />
+      </RoundedRect>
+      {/* The front (top) plate in section: a ring whose bore clears the
+          voice coil — the gap the coil rides in (art pass 2026-10-10). */}
+      <RoundedRect x={3 + motor.backW + motor.ringW} y={cy - h * 0.3} width={motor.poleW} height={h * 0.3 - coilOuter - 1} r={2}>
+        <LinearGradient start={vec(0, cy - h * 0.3)} end={vec(0, cy)} colors={[METAL_HI, METAL_MID]} />
+      </RoundedRect>
+      <RoundedRect x={3 + motor.backW + motor.ringW} y={cy + coilOuter + 1} width={motor.poleW} height={h * 0.3 - coilOuter - 1} r={2}>
+        <LinearGradient start={vec(0, cy)} end={vec(0, cy + h * 0.3)} colors={[METAL_MID, METAL_LO]} />
       </RoundedRect>
       {/* Basket struts out to the fixed mounting rim. */}
       <Path path={motor.struts} color="#3a3a42" style="stroke" strokeWidth={1.6} />
@@ -867,9 +883,9 @@ export function SpeakerConeView({
           the cone/coil slides fully OUT there is a visible GAP past the pole's
           right end — proving the core is STATIC while the coil moves over it. */}
       <RoundedRect
-        x={3 + motor.backW + motor.ringW}
+        x={3 + motor.backW}
         y={cy - poleHalf}
-        width={poleRight - (3 + motor.backW + motor.ringW)}
+        width={poleRight - (3 + motor.backW)}
         height={poleHalf * 2}
         r={1.5}
       >
@@ -881,7 +897,7 @@ export function SpeakerConeView({
         />
       </RoundedRect>
       <SkLine
-        p1={{ x: 3 + motor.backW + motor.ringW, y: cy - poleHalf + 1 }}
+        p1={{ x: 3 + motor.backW, y: cy - poleHalf + 1 }}
         p2={{ x: poleRight, y: cy - poleHalf + 1 }}
         color="#ffffff"
         strokeWidth={0.7}
@@ -903,12 +919,13 @@ export function SpeakerConeView({
             positions={[0, 0.5, 1]}
           />
         </Path>
-        <Path path={coneParts.cone} color="#14151a" style="stroke" strokeWidth={1} opacity={0.8} />
+        <Path path={coneParts.walls} color="#14151a" style="stroke" strokeWidth={1} opacity={0.8} />
         <Path path={coneParts.topEdge} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={0.22} />
         {/* Dust cap: radial-gradient dome over the apex, lit from upper-left. */}
-        <Circle cx={apexX + 3} cy={cy} r={6.5}>
-          <RadialGradient c={vec(apexX + 1, cy - 2.5)} r={10} colors={['#9ba0ac', '#3f424b']} />
-        </Circle>
+        <Path path={coneParts.cap}>
+          <RadialGradient c={vec(apexX + 3, cy - 3)} r={10} colors={['#9ba0ac', '#3f424b']} />
+        </Path>
+        <Path path={coneParts.cap} color="#14151a" style="stroke" strokeWidth={0.8} opacity={0.8} />
       </Group>
 
       {/* FLEXING surround roll — a THIN elastic band bridging the moving cone
@@ -1818,29 +1835,14 @@ export function WavelengthRulerView({
     return p;
   }, [w, floorY]);
 
-  // Human scale figure — a line-art body (uniform stroke, rounded caps,
-  // organic curves) with the figure's own skin-silhouette head (head fix
-  // 2026-10-08: a head on a body is never a circle and never the line-art
-  // icon). Garnish — vertical is NOT to the metre scale.
+  // Human scale figure (figure polish 2026-10-10 — it was a line-art stick
+  // body at half scale): the shared standing FIGURE (shirt, trousers, shoes,
+  // real hands, the figure's own skin-silhouette head) at the RULER's true
+  // scale — w px per 7 m, so an adult of 1.75 m stands 1/4 of the room
+  // tall — feet on the floor at the 7 m end; capped only if the stage is too
+  // short to hold a true-size adult.
   const personX = w - 26;
-  const person = useMemo(() => {
-    const p = Skia.Path.Make();
-    const px = w - 26;
-    const fy = floorY;
-    p.moveTo(px, fy - 36.2); // torso: gentle S from neck to hips
-    p.cubicTo(px + 0.8, fy - 32, px - 0.8, fy - 26, px, fy - 21);
-    p.moveTo(px - 6, fy - 33.5); // shoulders sloping naturally
-    p.quadTo(px, fy - 36.5, px + 6, fy - 33.5);
-    p.moveTo(px - 6, fy - 33.5); // arms relaxed at the sides
-    p.cubicTo(px - 7.5, fy - 28, px - 7, fy - 23, px - 6, fy - 18.5);
-    p.moveTo(px + 6, fy - 33.5);
-    p.cubicTo(px + 7.5, fy - 28, px + 7, fy - 23, px + 6, fy - 18.5);
-    p.moveTo(px, fy - 21); // legs with a slight stance
-    p.cubicTo(px - 2, fy - 14, px - 3.5, fy - 7, px - 4.5, fy);
-    p.moveTo(px, fy - 21);
-    p.cubicTo(px + 2, fy - 14, px + 4, fy - 7, px + 5, fy);
-    return p;
-  }, [w, floorY]);
+  const personPx = Math.min(w / (RULER_ROOM_M * 1000), (floorY - 4) / STANDING_H_MM);
 
   const bracketMidX = (8 + Math.min(w - 8, 8 + lambdaPx)) / 2;
   return (
@@ -1874,16 +1876,7 @@ export function WavelengthRulerView({
         <Path path={room} color="#46474f" style="stroke" strokeWidth={1.6} />
         {/* λ bracket — glowing amber measure (still EXACTLY 343/f, to scale). */}
         <GlowStroke path={bracket} color={WAVE} width={2.2} />
-        <Path
-          path={person}
-          color="#d7dbe2"
-          style="stroke"
-          strokeWidth={1.5}
-          strokeCap="round"
-          strokeJoin="round"
-          opacity={0.85}
-        />
-        <FigureHeadAt view="front" cx={personX} cy={floorY - 41} h={9.6} neckTo={floorY - 35} />
+        <FigureStandingAt cx={personX} floorY={floorY} pxPerMm={personPx} />
         <Vignette w={w} h={h} />
         </Group>
       </Canvas>
@@ -3382,6 +3375,15 @@ export function SignalPathView({
     return p;
   }, [clock, mid, micX, visHz]);
 
+  const micHandle = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(micX + 6, mid - 9.9);
+    p.lineTo(barrelRight + 6, mid - 5.4);
+    p.lineTo(barrelRight + 6, mid + 5.4);
+    p.lineTo(micX + 6, mid + 9.9);
+    p.close();
+    return p;
+  }, [micX, mid, barrelRight]);
   // Wire-mesh grille crosshatch (micspeaker handheld-mic idiom, scaled down).
   const micMesh = useMemo(() => {
     const p = Skia.Path.Make();
@@ -3411,11 +3413,15 @@ export function SignalPathView({
         <Circle cx={micX} cy={mid} r={17} color={ACCENT_GREEN} opacity={0.1}>
           <BlurMask blur={10} style="normal" />
         </Circle>
-        <RoundedRect x={micX + 5} y={mid - 8} width={barrelRight - (micX + 5)} height={16} r={4}>
-          <LinearGradient start={vec(micX + 5, mid - 8)} end={vec(micX + 5, mid + 8)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
-        </RoundedRect>
-        {/* barrel body seam lines so it reads as a mic barrel */}
-        <SkLine p1={{ x: micX + 12, y: mid - 8 }} p2={{ x: micX + 12, y: mid + 8 }} color="#0d0d10" strokeWidth={1} opacity={0.5} />
+        {/* The handle of a handheld dynamic (grille Ø51 → 22 px here, so
+            0.43 px/mm): it TAPERS from Ø46 at the grille collar toward Ø25
+            at the connector end, which runs out of the frame (art pass
+            2026-10-10 — it was a straight 16-px tube). */}
+        <Path path={micHandle}>
+          <LinearGradient start={vec(micX + 5, mid - 10)} end={vec(micX + 5, mid + 10)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
+        </Path>
+        <RoundedRect x={micX + 9.5} y={mid - 9.8} width={3.5} height={19.6} r={1.2} color="#2a2c33" />
+        <SkLine p1={{ x: micX + 10, y: mid - 9.2 }} p2={{ x: barrelRight, y: mid - 5.6 }} color="#ffffff" strokeWidth={0.8} opacity={0.18} />
         <Circle cx={micX} cy={mid} r={11}>
           <RadialGradient c={vec(micX - 4, mid - 4)} r={19} colors={['#dde0e7', '#8a8c94', '#33343c']} />
         </Circle>

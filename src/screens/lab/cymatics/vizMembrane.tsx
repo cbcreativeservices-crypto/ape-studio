@@ -3,8 +3,9 @@
  * Phase 3). ONLY loaded through skiaGate.requireVizMembrane().
  *
  * VISUAL STANDARDS (2026-07-29): illustrated real objects — a drum shell with
- * its hoop and tension rods and a translucent head; a loudspeaker cutaway
- * with magnet, basket, spider, voice coil, cone, surround and dust cap —
+ * its hoop and tension rods and a translucent head; a loudspeaker half-section
+ * with its motor stack, basket, spider, voice coil, cone walls, surround and
+ * dust cap (a dome tweeter in its own section) —
  * never coloured discs. Motion is real and strobed: the real head moves at
  * the drive frequency (too fast to see), so the display shows the SAME
  * motion at a few hertz and says so.
@@ -116,6 +117,24 @@ export type MembraneViewProps = {
   /** LOUDSPEAKER view: the cone's read + profile grid at the drive frequency. */
   cone?: { read: ConeRead; grid: Float32Array; driver: Driver; hz: number };
 };
+
+/**
+ * One point of the cone's section profile (s = 0 at the neck, 1 at the
+ * mouth; sign −1 upper wall, +1 lower). Displacement along the cone varies by
+ * draw mode — piston = uniform; flex = centre leads the rim; radial = rim
+ * lobes (opposite sign top/bottom); breakup = wobble. Shared by the far-side
+ * surface, the section walls, the dust cap and the surround so they agree.
+ */
+function coneProfile(s: number, sign: number, t: number, mode: number, travel: number, coilX: number, mouthX: number, cyL: number, half: number): { x: number; y: number } {
+  'worklet';
+  let w = 1;
+  if (mode === 1) w = 1 - 0.65 * s * s;
+  else if (mode >= 2 && mode <= 4) w = 1 - 0.5 * s + sign * 0.5 * s * s * Math.cos(t * 2 * Math.PI * 0.5 + mode);
+  else if (mode === 5) w = 0.7 + 0.5 * Math.sin(s * 9 + t * 2 * Math.PI * 1.3) * s;
+  const x = coilX + s * (mouthX - coilX) + travel * w;
+  const y = cyL + sign * (half * 0.18 + s * (half - half * 0.18));
+  return { x, y };
+}
 
 export function MembraneView(p: MembraneViewProps) {
   const { width: boxW, height: boxH, spec, grid, N, view } = p;
@@ -336,19 +355,38 @@ export function MembraneView(p: MembraneViewProps) {
 
   // ── LOUDSPEAKER cutaway ──────────────────────────────────────────────────
   // Layout: cutaway on the left 58 %, front view of the cone on the right.
+  //
+  // ART PASS 2026-10-10 — a true half-section of a cone driver, firing right,
+  // drawn in template millimetres (an 8" / 200 mm-class woofer) and scaled by
+  // `u` px per mm to fit the glass:
+  //   frame Ø205 (flange r 93–102.5, 6 thick) · cone mouth Ø165, neck Ø30,
+  //   cone depth ≈ 0.38 × mouth Ø · half-roll surround r 82.5–93 · dust cap
+  //   Ø36, 9 high · 25 mm (1") voice coil on a former reaching ≈ 22 mm back
+  //   into the gap · corrugated spider r 14–56 · ferrite motor: back plate
+  //   Ø100 × 7 with a Ø23 vented pole, magnet ring Ø100/Ø48 × 17, top plate
+  //   Ø100/Ø31.6 × 8 · cast basket arms from the top plate to the flange.
+  // The cone is drawn as its two section WALLS over a faint far-side surface
+  // (not a solid wedge), the dust cap as the dome on the cone's front, and
+  // the motor as the real stack. The 25 mm dome tweeter gets its own section
+  // (faceplate, dome, coil, neodymium motor, rear chamber).
+  const isDome = p.cone?.driver.id === 'tweeter25';
   const spk = useMemo(() => {
     const L = width * 0.58;
     const cxL = L / 2 + 6;
     const cyL = height / 2 + 4;
-    const coneH = Math.min(height * 0.76, L * 0.78); // cone mouth height
-    const depth = coneH * 0.42; // cone depth (mouth → coil)
-    const mouthX = cxL + depth * 0.55;
-    const coilX = mouthX - depth;
-    const magnetX = coilX - coneH * 0.16;
+    // Fit: the 205 mm frame inside the glass between the labels, the
+    // ≈ 120 mm-long assembly inside the left 58 %.
+    const u = Math.max(0.2, Math.min((height - 46) / 205, (L - 18) / 122));
+    const coneH = 165 * u; // cone mouth diameter, px
+    const depth = coneH * (p.cone?.driver.id === 'full100' ? 0.3 : 0.38); // mouth → neck
+    const mouthX = cxL + (depth + 38 * u) / 2;
+    const coilX = mouthX - depth; // the cone's neck, where the coil former joins
+    const gapC = coilX - 22 * u; // centre of the magnetic gap (coil windings at rest)
+    const magnetX = gapC - 4 * u; // the magnet's front face (top plate behind it)
     const fx = width * 0.58 + (width * 0.42) / 2;
     const fR = Math.min(height * 0.36, width * 0.17);
-    return { cxL, cyL, coneH, depth, mouthX, coilX, magnetX, fx, fy: height / 2 + 4, fR };
-  }, [width, height]);
+    return { cxL, cyL, coneH, depth, mouthX, coilX, magnetX, gapC, u, fx, fy: height / 2 + 4, fR };
+  }, [width, height, p.cone?.driver.id]);
   const coneGridSV = useSharedValue(p.cone?.grid ?? new Float32Array(0));
   const coneExcSV = useSharedValue(p.cone?.read.excursion ?? 0);
   const coneModeSV = useSharedValue(p.cone?.read.drawMode ?? 0);
@@ -358,7 +396,7 @@ export function MembraneView(p: MembraneViewProps) {
     coneModeSV.value = p.cone?.read.drawMode ?? 0;
   }, [p.cone, coneGridSV, coneExcSV, coneModeSV]);
   const coneN = 40; // finer than the head grid so the masked disc edge does not stair-step
-  /** The moving assembly (cone profile + dust cap + coil) as one path. */
+  /** The cone's far-side inner surface (cone profile closed at the mouth). */
   const conePath = useDerivedValue(() => {
     const path = Skia.Path.Make();
     const t = clock.value;
@@ -366,43 +404,197 @@ export function MembraneView(p: MembraneViewProps) {
     const exc = coneExcSV.value * ampSV.value;
     const mode = coneModeSV.value;
     const travel = z * exc * spk.depth * 0.32; // strobed excursion, px
-    const { cyL, coneH, mouthX, coilX } = spk;
-    const half = coneH / 2;
     const steps = 18;
-    // Upper profile: coil → mouth (straight cone), then mirror.
-    const prof = (s: number, sign: number) => {
-      // s = 0 at the coil, 1 at the mouth. Displacement varies along the cone
-      // by draw mode: piston = uniform; flex = centre leads the rim; radial =
-      // rim lobes (opposite sign top/bottom); breakup = wobble.
-      let w = 1;
-      if (mode === 1) w = 1 - 0.65 * s * s;
-      else if (mode >= 2 && mode <= 4) w = 1 - 0.5 * s + sign * 0.5 * s * s * Math.cos(t * 2 * Math.PI * 0.5 + mode);
-      else if (mode === 5) w = 0.7 + 0.5 * Math.sin(s * 9 + t * 2 * Math.PI * 1.3) * s;
-      const x = coilX + s * (mouthX - coilX) + travel * w;
-      const y = cyL + sign * (half * 0.18 + s * (half - half * 0.18));
-      return { x, y };
-    };
     let first = true;
     for (let k = 0; k <= steps; k++) {
-      const q = prof(k / steps, -1);
+      const q = coneProfile(k / steps, -1, t, mode, travel, spk.coilX, spk.mouthX, spk.cyL, spk.coneH / 2);
       if (first) {
         path.moveTo(q.x, q.y);
         first = false;
       } else path.lineTo(q.x, q.y);
     }
     for (let k = steps; k >= 0; k--) {
-      const q = prof(k / steps, 1);
+      const q = coneProfile(k / steps, 1, t, mode, travel, spk.coilX, spk.mouthX, spk.cyL, spk.coneH / 2);
       path.lineTo(q.x, q.y);
     }
     path.close();
     return path;
   }, [spk]);
-  const dustCap = useDerivedValue(() => {
+  /** The moving parts as section lines — the two cone walls, the dust cap,
+   *  the surround roll, the coil former + windings and the spider — each its
+   *  own derived path on the one strobed travel, the cone's own profile from
+   *  `coneProfile` (the same physics the far-side surface uses). */
+  const coneWalls = useDerivedValue(() => {
     const t = clock.value;
-    const z = Math.sin(t * 2 * Math.PI);
-    const travel = z * coneExcSV.value * ampSV.value * spk.depth * 0.32;
-    return { x: spk.coilX + travel, y: spk.cyL };
+    const travel = Math.sin(t * 2 * Math.PI) * coneExcSV.value * ampSV.value * spk.depth * 0.32;
+    const mode = coneModeSV.value;
+    const walls = Skia.Path.Make();
+    for (const sign of [-1, 1]) {
+      for (let k = 0; k <= 18; k++) {
+        const q = coneProfile(k / 18, sign, t, mode, travel, spk.coilX, spk.mouthX, spk.cyL, spk.coneH / 2);
+        if (k === 0) walls.moveTo(q.x, q.y);
+        else walls.lineTo(q.x, q.y);
+      }
+    }
+    return walls;
   }, [spk]);
+  // dust cap: a dome glued to the cone's front at r = 18 mm, 9 mm high
+  const capPath = useDerivedValue(() => {
+    const t = clock.value;
+    const travel = Math.sin(t * 2 * Math.PI) * coneExcSV.value * ampSV.value * spk.depth * 0.32;
+    const mode = coneModeSV.value;
+    const { u, cyL } = spk;
+    const half = spk.coneH / 2;
+    const capS = Math.max(0, (18 * u - half * 0.18) / (half - half * 0.18));
+    const a = coneProfile(capS, -1, t, mode, travel, spk.coilX, spk.mouthX, cyL, half);
+    const b = coneProfile(capS, 1, t, mode, travel, spk.coilX, spk.mouthX, cyL, half);
+    const cap = Skia.Path.Make();
+    cap.moveTo(a.x, a.y);
+    cap.cubicTo(a.x + 6 * u, a.y, a.x + 9 * u, cyL - 9 * u, a.x + 9 * u, cyL);
+    cap.cubicTo(a.x + 9 * u, cyL + 9 * u, b.x + 6 * u, b.y, b.x, b.y);
+    return cap;
+  }, [spk]);
+  // surround: a half-roll from the moving cone edge to the fixed flange
+  const rollPath = useDerivedValue(() => {
+    const t = clock.value;
+    const travel = Math.sin(t * 2 * Math.PI) * coneExcSV.value * ampSV.value * spk.depth * 0.32;
+    const mode = coneModeSV.value;
+    const { u, cyL } = spk;
+    const half = spk.coneH / 2;
+    const top = coneProfile(1, -1, t, mode, travel, spk.coilX, spk.mouthX, cyL, half);
+    const bot = coneProfile(1, 1, t, mode, travel, spk.coilX, spk.mouthX, cyL, half);
+    const fixX = spk.mouthX + 1.5 * u;
+    const roll = Skia.Path.Make();
+    roll.moveTo(top.x, top.y);
+    roll.cubicTo(top.x + 7 * u, top.y, fixX + 7 * u, cyL - 93 * u, fixX, cyL - 93 * u);
+    roll.moveTo(bot.x, bot.y);
+    roll.cubicTo(bot.x + 7 * u, bot.y, fixX + 7 * u, cyL + 93 * u, fixX, cyL + 93 * u);
+    return roll;
+  }, [spk]);
+  // voice-coil former (moving tube, r 12.2–13 mm) from the gap to the neck
+  const formerPath = useDerivedValue(() => {
+    const travel = Math.sin(clock.value * 2 * Math.PI) * coneExcSV.value * ampSV.value * spk.depth * 0.32;
+    const { u, cyL } = spk;
+    const x0 = spk.gapC - 7 * u + travel;
+    const len = spk.coilX - spk.gapC + 7 * u;
+    const f = Skia.Path.Make();
+    f.addRect(Skia.XYWHRect(x0, cyL - 13 * u, len, 0.8 * u + 0.4));
+    f.addRect(Skia.XYWHRect(x0, cyL + 12.2 * u - 0.4, len, 0.8 * u + 0.4));
+    return f;
+  }, [spk]);
+  // the copper windings, 12 mm long, sitting in the gap at rest
+  const windPath = useDerivedValue(() => {
+    const travel = Math.sin(clock.value * 2 * Math.PI) * coneExcSV.value * ampSV.value * spk.depth * 0.32;
+    const { u, cyL } = spk;
+    const w = Skia.Path.Make();
+    w.addRect(Skia.XYWHRect(spk.gapC - 6 * u + travel, cyL - 15.2 * u, 12 * u, 2.2 * u));
+    w.addRect(Skia.XYWHRect(spk.gapC - 6 * u + travel, cyL + 13 * u, 12 * u, 2.2 * u));
+    return w;
+  }, [spk]);
+  // spider: corrugated, inner edge on the former (moving), outer on the basket seat
+  const spiderPath = useDerivedValue(() => {
+    const travel = Math.sin(clock.value * 2 * Math.PI) * coneExcSV.value * ampSV.value * spk.depth * 0.32;
+    const { u, cyL } = spk;
+    const sx = spk.coilX - 9 * u;
+    const sp = Skia.Path.Make();
+    for (const sign of [-1, 1]) {
+      for (let i = 0; i <= 6; i++) {
+        const f = i / 6;
+        const x = sx + travel * (1 - f) + (i % 2 === 0 ? 0 : 2.4 * u);
+        const y = cyL + sign * (13.5 * u + f * (56 - 13.5) * u);
+        if (i === 0) sp.moveTo(x, y);
+        else sp.lineTo(x, y);
+      }
+    }
+    return sp;
+  }, [spk]);
+  /** The static half-section: ferrite motor stack, cast basket, flange. */
+  const motorArt = useMemo(() => {
+    const { cyL, u, gapC, coilX, mouthX } = spk;
+    const rect = (x: number, y: number, w: number, h: number) => Skia.XYWHRect(x, y, w, h);
+    const steel = Skia.Path.Make();
+    const topPlateX = gapC - 4 * u;
+    // top plate: r 15.8 → 50, 8 thick (centred on the gap)
+    steel.addRect(rect(topPlateX, cyL - 50 * u, 8 * u, (50 - 15.8) * u));
+    steel.addRect(rect(topPlateX, cyL + 15.8 * u, 8 * u, (50 - 15.8) * u));
+    // back plate Ø100 × 7 and the Ø23 pole up to the top plate's front face
+    const backX = topPlateX - 17 * u - 7 * u;
+    steel.addRect(rect(backX, cyL - 50 * u, 7 * u, 100 * u));
+    steel.addRect(rect(backX + 7 * u, cyL - 11.5 * u, gapC + 4 * u - (backX + 7 * u), 23 * u));
+    const magnet = Skia.Path.Make();
+    magnet.addRect(rect(topPlateX - 17 * u, cyL - 50 * u, 17 * u, 26 * u));
+    magnet.addRect(rect(topPlateX - 17 * u, cyL + 24 * u, 17 * u, 26 * u));
+    const vent = Skia.Path.Make();
+    vent.addRect(rect(backX, cyL - 3 * u, gapC + 4 * u - backX, 6 * u));
+    // basket arms: top-plate rim → spider seat → flange
+    const basket = Skia.Path.Make();
+    for (const sign of [-1, 1]) {
+      basket.moveTo(topPlateX + 8 * u, cyL + sign * 48 * u);
+      basket.lineTo(coilX - 9 * u, cyL + sign * 58 * u);
+      basket.lineTo(mouthX - 2 * u, cyL + sign * 94 * u);
+    }
+    const flange = Skia.Path.Make();
+    flange.addRect(rect(mouthX - 2 * u, cyL - 102.5 * u, 6 * u, 9.5 * u));
+    flange.addRect(rect(mouthX - 2 * u, cyL + 93 * u, 6 * u, 9.5 * u));
+    const seat = Skia.Path.Make();
+    seat.addRect(rect(coilX - 10.5 * u, cyL - 60 * u, 3 * u, 5 * u));
+    seat.addRect(rect(coilX - 10.5 * u, cyL + 55 * u, 3 * u, 5 * u));
+    return { steel, magnet, vent, basket, flange, seat, backX };
+  }, [spk]);
+  /** The 25 mm dome tweeter in section (template mm, faceplate Ø100 mapped to
+   *  the frame's 205): faceplate, dome + roll surround, coil, neodymium motor
+   *  and the damped rear chamber. Its dome moves with the same strobed travel,
+   *  scaled to a tweeter's tiny excursion. */
+  const domeArt = useMemo(() => {
+    const { cyL, u } = spk;
+    const k = (205 / 100) * u; // px per tweeter-mm
+    const fx0 = spk.cxL + 6 * k; // faceplate front face
+    const rect = (x: number, y: number, w: number, h: number) => Skia.XYWHRect(x, y, w, h);
+    const face = Skia.Path.Make();
+    face.addRect(rect(fx0 - 4 * k, cyL - 50 * k, 4 * k, (50 - 15.5) * k));
+    face.addRect(rect(fx0 - 4 * k, cyL + 15.5 * k, 4 * k, (50 - 15.5) * k));
+    const steel = Skia.Path.Make();
+    steel.addRect(rect(fx0 - 8 * k, cyL - 30 * k, 4 * k, (30 - 13.8) * k)); // top plate
+    steel.addRect(rect(fx0 - 8 * k, cyL + 13.8 * k, 4 * k, (30 - 13.8) * k));
+    steel.addRect(rect(fx0 - 20 * k, cyL - 30 * k, 4 * k, 60 * k)); // back plate
+    steel.addRect(rect(fx0 - 16 * k, cyL - 12 * k, 12 * k, 24 * k)); // pole
+    const magnet = Skia.Path.Make();
+    magnet.addRect(rect(fx0 - 16 * k, cyL - 30 * k, 8 * k, 16 * k));
+    magnet.addRect(rect(fx0 - 16 * k, cyL + 14 * k, 8 * k, 16 * k));
+    const chamber = Skia.Path.Make();
+    chamber.addRRect(Skia.RRectXY(rect(fx0 - 32 * k, cyL - 22 * k, 12 * k, 44 * k), 4 * k, 4 * k));
+    return { face, steel, magnet, chamber, fx0, k };
+  }, [spk]);
+  const domeFx0 = domeArt.fx0;
+  const domeK = domeArt.k;
+  const domePath = useDerivedValue(() => {
+    const travel = Math.sin(clock.value * 2 * Math.PI) * coneExcSV.value * ampSV.value * domeK * 1.6; // ≤ ±1.6 mm, strobed
+    const cyL = spk.cyL;
+    const x = domeFx0 + travel;
+    const d = Skia.Path.Make();
+    d.moveTo(x, cyL - 12.8 * domeK);
+    d.cubicTo(x + 5 * domeK, cyL - 12.8 * domeK, x + 7.5 * domeK, cyL - 6 * domeK, x + 7.5 * domeK, cyL);
+    d.cubicTo(x + 7.5 * domeK, cyL + 6 * domeK, x + 5 * domeK, cyL + 12.8 * domeK, x, cyL + 12.8 * domeK);
+    return d;
+  }, [spk, domeFx0, domeK]);
+  const domeRoll = useDerivedValue(() => {
+    const travel = Math.sin(clock.value * 2 * Math.PI) * coneExcSV.value * ampSV.value * domeK * 1.6;
+    const cyL = spk.cyL;
+    const r = Skia.Path.Make();
+    for (const sign of [-1, 1]) {
+      r.moveTo(domeFx0 + travel, cyL + sign * 12.8 * domeK);
+      r.cubicTo(domeFx0 + 1.8 * domeK + travel, cyL + sign * 13.2 * domeK, domeFx0 + 1.8 * domeK, cyL + sign * 15.4 * domeK, domeFx0, cyL + sign * 15.6 * domeK);
+    }
+    return r;
+  }, [spk, domeFx0, domeK]);
+  const domeCoil = useDerivedValue(() => {
+    const travel = Math.sin(clock.value * 2 * Math.PI) * coneExcSV.value * ampSV.value * domeK * 1.6;
+    const cyL = spk.cyL;
+    const c = Skia.Path.Make();
+    c.addRect(Skia.XYWHRect(domeFx0 - 6 * domeK + travel, cyL - 13.5 * domeK, 6 * domeK, 1.2 * domeK));
+    c.addRect(Skia.XYWHRect(domeFx0 - 6 * domeK + travel, cyL + 12.3 * domeK, 6 * domeK, 1.2 * domeK));
+    return c;
+  }, [spk, domeFx0, domeK]);
   const frontMesh = useMemo(() => {
     if (!p.cone) return null;
     const G = p.cone.grid;
@@ -562,27 +754,57 @@ export function MembraneView(p: MembraneViewProps) {
 
         {isSpeaker && p.cone ? (
           <Group>
-            {/* Magnet (dark steel), back plate, pole piece */}
-            <Rect x={spk.magnetX - spk.coneH * 0.22} y={spk.cyL - spk.coneH * 0.26} width={spk.coneH * 0.22} height={spk.coneH * 0.52} color="#2d2d33" />
-            <Rect x={spk.magnetX - spk.coneH * 0.22} y={spk.cyL - spk.coneH * 0.26} width={spk.coneH * 0.22} height={spk.coneH * 0.52} style="stroke" strokeWidth={1} color="#4a4a52" />
-            <Rect x={spk.magnetX - spk.coneH * 0.06} y={spk.cyL - spk.coneH * 0.11} width={spk.coneH * 0.26} height={spk.coneH * 0.22} color="#3a3a42" />
-            {/* Basket struts to the frame */}
-            <SkLine p1={vec(spk.magnetX, spk.cyL - spk.coneH * 0.26)} p2={vec(spk.mouthX + 4, spk.cyL - spk.coneH / 2 - 8)} color="#55555e" strokeWidth={3} />
-            <SkLine p1={vec(spk.magnetX, spk.cyL + spk.coneH * 0.26)} p2={vec(spk.mouthX + 4, spk.cyL + spk.coneH / 2 + 8)} color="#55555e" strokeWidth={3} />
-            {/* Spider (corrugated) */}
-            <SkLine p1={vec(spk.coilX + 6, spk.cyL - spk.coneH * 0.2)} p2={vec(spk.coilX + 6, spk.cyL + spk.coneH * 0.2)} color="#8a6a3a" strokeWidth={2} />
-            {/* Frame flange at the mouth */}
-            <Rect x={spk.mouthX + 2} y={spk.cyL - spk.coneH / 2 - 14} width={6} height={spk.coneH + 28} color="#55555e" />
-            {/* The moving assembly: cone + surround + dust cap + voice coil */}
-            <Path path={conePath} color="#8f7a58">
-              <LinearGradient start={vec(spk.coilX, spk.cyL)} end={vec(spk.mouthX, spk.cyL)} colors={['#6f5d42', '#a08a62']} />
-            </Path>
-            <Path path={conePath} style="stroke" strokeWidth={1.5} color="#d9c9a4" />
-            <Circle c={dustCap} r={spk.coneH * 0.11} color="#3a3a42" />
-            <Circle c={dustCap} r={spk.coneH * 0.11} style="stroke" strokeWidth={1.2} color="#8e8e96" />
-            {/* Surround: the half-roll at the mouth */}
-            <Circle cx={spk.mouthX} cy={spk.cyL - spk.coneH / 2 - 4} r={6} style="stroke" strokeWidth={2.5} color="#2b2b30" />
-            <Circle cx={spk.mouthX} cy={spk.cyL + spk.coneH / 2 + 4} r={6} style="stroke" strokeWidth={2.5} color="#2b2b30" />
+            {isDome ? (
+              <Group>
+                {/* 25 mm dome tweeter, half-section: rear chamber, neodymium
+                    motor (back plate + pole, magnet ring, top plate), the
+                    faceplate, then the moving coil, roll surround and dome. */}
+                <Path path={domeArt.chamber} color="#1d1d22" />
+                <Path path={domeArt.chamber} style="stroke" strokeWidth={1} color="#4a4a52" />
+                <Path path={domeArt.magnet} color="#5a5f68" />
+                <Path path={domeArt.steel}>
+                  <LinearGradient start={vec(0, spk.cyL - 30 * domeK)} end={vec(0, spk.cyL + 30 * domeK)} colors={['#8a8e98', '#3a3c44', '#6a6e78']} />
+                </Path>
+                <Path path={domeArt.face} color="#2b2c32" />
+                <Path path={domeArt.face} style="stroke" strokeWidth={1} color="#6a6e78" />
+                <Path path={domeCoil} color="#c9772e" />
+                <Path path={domeRoll} style="stroke" strokeWidth={2} color="#1c1d23" />
+                <Path path={domePath} style="stroke" strokeWidth={2.4} color="#c9ced8" />
+                <Path path={domePath} style="stroke" strokeWidth={0.8} color="#ffffff" opacity={0.5} />
+              </Group>
+            ) : (
+              <Group>
+                {/* Motor, half-section: steel back plate + vented pole, the
+                    ferrite magnet ring, the steel top plate around the gap. */}
+                <Path path={motorArt.magnet} color="#34343b" />
+                <Path path={motorArt.magnet} style="stroke" strokeWidth={0.8} color="#4f4f58" />
+                <Path path={motorArt.steel}>
+                  <LinearGradient start={vec(0, spk.cyL - 50 * spk.u)} end={vec(0, spk.cyL + 50 * spk.u)} colors={['#8a8e98', '#3a3c44', '#6a6e78']} />
+                </Path>
+                <Path path={motorArt.steel} style="stroke" strokeWidth={0.8} color="#22232a" />
+                <Path path={motorArt.vent} color="#0b0b0e" />
+                {/* Cast basket: arms from the top plate to the spider seat and
+                    on to the mounting flange. */}
+                <Path path={motorArt.basket} style="stroke" strokeWidth={Math.max(2, 3.2 * spk.u)} strokeJoin="round" color="#55555e" />
+                <Path path={motorArt.seat} color="#55555e" />
+                <Path path={motorArt.flange} color="#5d5e67" />
+                <Path path={motorArt.flange} style="stroke" strokeWidth={0.8} color="#8a8e98" />
+                {/* The moving assembly: far-side cone surface, coil former and
+                    windings in the gap, spider, the cone's section walls, the
+                    dust cap, and the surround roll. */}
+                <Path path={conePath} opacity={0.55}>
+                  <LinearGradient start={vec(spk.coilX, spk.cyL)} end={vec(spk.mouthX, spk.cyL)} colors={['#4a3f2d', '#7a6849']} />
+                </Path>
+                <Path path={formerPath} color="#b9a57a" />
+                <Path path={windPath} color="#c9772e" />
+                <Path path={spiderPath} style="stroke" strokeWidth={1.6} strokeJoin="round" color="#a8862e" />
+                <Path path={coneWalls} style="stroke" strokeWidth={Math.max(2, 2.6 * spk.u)} strokeCap="round" color="#d9c9a4" />
+                <Path path={capPath} color="#2f2f36" />
+                <Path path={capPath} style="stroke" strokeWidth={1.4} color="#8e8e96" />
+                <Path path={rollPath} style="stroke" strokeWidth={Math.max(2.4, 3.4 * spk.u)} strokeCap="round" color="#1c1d23" />
+                <Path path={rollPath} style="stroke" strokeWidth={0.8} color="#ffffff" opacity={0.18} />
+              </Group>
+            )}
             {/* Front view: the cone's displacement field */}
             <Circle cx={spk.fx} cy={spk.fy + 4} r={spk.fR + 10} color="rgba(0,0,0,0.5)" />
             <Circle cx={spk.fx} cy={spk.fy} r={spk.fR + 10} color="#3a3a42" />

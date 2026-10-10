@@ -919,15 +919,19 @@ export function VuMeterView(p: {
   // ── Printed face: arcs, ticks, red wedge, label anchors (static) ──────────
   const G = useMemo(() => {
     const pt = (ang: number, r: number) => ({ x: cx + Math.sin(ang) * r, y: py - Math.cos(ang) * r });
-    const majors = [-20, -10, -7, -5, -3, -1, 0, 1, 2, 3];
-    const minors = [-18, -15, -12, -9, -8, -6, -4, -2, -0.5, 0.5, 1.5, 2.5];
+    // The STANDARD VU scale (art pass round 2, 2026-10-10): graduations and
+    // numerals at −20, −10, −7, −5, −3, −2, −1, 0, +1, +2, +3 and nothing
+    // else — the old face carried invented minor ticks (−18 … −4, ±0.5 …)
+    // and no −2 numeral, which a working engineer spots at once. Red from 0 up.
+    const majors = [-20, -10, -7, -5, -3, -2, -1, 0, 1, 2, 3];
+    const minors: number[] = [];
     const tickB = Skia.Path.Make();
     const tickR = Skia.Path.Make();
     for (const d of majors) {
       const a = angDb(d);
       const p0 = pt(a, R + 2 * ts);
       const p1 = pt(a, R + 13 * ts);
-      const tp = d >= 0.5 ? tickR : tickB;
+      const tp = d >= 0 ? tickR : tickB;
       tp.moveTo(p0.x, p0.y);
       tp.lineTo(p1.x, p1.y);
     }
@@ -935,7 +939,7 @@ export function VuMeterView(p: {
       const a = angDb(d);
       const p0 = pt(a, R + 2 * ts);
       const p1 = pt(a, R + 8 * ts);
-      const tp = d >= 0.5 ? tickR : tickB;
+      const tp = d >= 0 ? tickR : tickB;
       tp.moveTo(p0.x, p0.y);
       tp.lineTo(p1.x, p1.y);
     }
@@ -948,12 +952,12 @@ export function VuMeterView(p: {
     const rI = R + 2 * ts;
     const oO = Skia.XYWHRect(cx - rO, py - rO, 2 * rO, 2 * rO);
     const oI = Skia.XYWHRect(cx - rI, py - rI, 2 * rI, 2 * rI);
-    // Red is the over-0 zone: start the FILL a touch above 0 (angDb(0.3)) so the
-    // 0 tick is the clean boundary and the "0" numeral — now CENTERED on its own
-    // 0 tick (below) — keeps clear daylight from the red.
-    const a0 = angDb(0.3) / DEG - 90;
+    // Red is the 0-and-over zone, as on a standard VU face: the band starts AT
+    // the 0 graduation; the "0" numeral (centred on its tick, seated further
+    // out radially — below) clears the band in red ink.
+    const a0 = angDb(0) / DEG - 90;
     const a1 = angDb(3) / DEG - 90;
-    const st = pt(angDb(0.3), rO);
+    const st = pt(angDb(0), rO);
     wedge.moveTo(st.x, st.y);
     wedge.arcToOval(oO, a0, a1 - a0, false);
     const ie = pt(angDb(3), rI);
@@ -1296,7 +1300,7 @@ export function VuMeterView(p: {
           w={28}
           size={l.d === 0 ? 14 : 12}
           font={fonts.oswaldSemiBold}
-          color={l.d >= 1 ? '#b3271e' : '#2e2618'}
+          color={l.d >= 0 ? '#b3271e' : '#2e2618'}
         >
           {l.d > 0 ? `+${l.d}` : `${l.d}`}
         </Lbl>

@@ -21,6 +21,8 @@ import { straightBar, type BarGeom } from '../shared/metal/metalFigures';
 import type { FrontArt } from '../shared/metal/metalPages';
 import { BAR_TOP, barsOf, BC, P0, RAIL_Y, type Bar } from './model.ts';
 import { STAND } from './geometry.ts';
+import { Hand } from '../shared/smallperc/Hand';
+import { dorsalFlat, type Placement } from '../shared/smallperc/hands.ts';
 
 const HALF = BC.rail.mm / 2;
 const D = BC.barD.mm;
@@ -141,18 +143,25 @@ export function barChimesHitTest(view: ViewId, _variant: VariantId, u: number, v
 
 const FU = (z: number) => -z;
 
-/** An open hand from the front, line art, its fingertips at (u, v). */
-function handOpen(u: number, v: number) {
-  const p = make();
-  p.moveTo(u - 26, v + 95);
-  p.cubicTo(u - 34, v + 50, u - 30, v + 20, u - 20, v);
-  for (const dx of [-12, -2, 8, 18]) {
-    p.moveTo(u + dx, v + 40);
-    p.lineTo(u + dx + 1, v - 2);
-  }
-  p.moveTo(u + 26, v + 95);
-  p.cubicTo(u + 32, v + 60, u + 40, v + 45, u + 52, v + 30); // thumb
-  return p;
+/** The sweeping hand seen from the audience: the back of the player's LEFT
+ *  hand, fingers together pointing up, the thumb to the outside — an
+ *  anatomical hand at true size (smallperc/hands.ts dorsalFlat: ≈ 190 mm
+ *  wrist to fingertip, ≈ 85 mm across the knuckles), its middle fingertip at
+ *  (u, v), the forearm down out of the drawing. */
+const SWEEP_HAND = dorsalFlat(0);
+const TIP = SWEEP_HAND.fingers.find((f) => f.layer === 2)!.tip;
+function handAtTip(u: number, v: number): { pl: Placement; arm: { from: readonly [number, number]; w: number; sleeve: number } } {
+  const at: [number, number] = [u - TIP[1], v + TIP[0]];
+  return { pl: { at, angle: -90, mirror: true }, arm: { from: [at[0] + 40, at[1] + 520], w: 54, sleeve: 300 } };
+}
+function SweepHand({ u, v, glow }: { u: number; v: number; glow?: boolean }): ReactElement {
+  const h = useMemo(() => handAtTip(u, v), [u, v]);
+  return (
+    <Group>
+      {glow ? <Circle cx={u} cy={v + 90} r={110} color={HIGHLIGHT} opacity={0.3} /> : null}
+      <Hand geo={SWEEP_HAND} pl={h.pl} forearm={h.arm} />
+    </Group>
+  );
 }
 
 function FrontImpl({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
@@ -172,7 +181,7 @@ function FrontImpl({ variant, highlight }: { variant: VariantId; highlight: stri
       {hl('bc.filament') ? <Path path={polyPath([[FU(-HALF), BAR_TOP - 8], [FU(HALF), BAR_TOP - 8]])} style="stroke" strokeWidth={24} color={HIGHLIGHT} opacity={0.35} /> : null}
       {hl('bc.rail') ? <RoundedRect x={FU(HALF) - 12} y={RAIL_Y - 30} width={2 * HALF + 24} height={60} r={10} color={HIGHLIGHT} opacity={0.3} /> : null}
       <Rail u0={FU(HALF)} u1={FU(-HALF)} />
-      <Path path={handOpen(handAt[0], handAt[1])} style="stroke" strokeWidth={3.4} strokeCap="round" strokeJoin="round" color={hl('bc.hand') ? HIGHLIGHT : '#9aa0ad'} opacity={0.85} />
+      <SweepHand u={handAt[0]} v={handAt[1]} glow={hl('bc.hand')} />
     </Group>
   );
 }
@@ -195,7 +204,7 @@ function frontLabels(_v: VariantId): ArtLabel[] {
 function frontHit(v: VariantId, u: number, vv: number, tol: number): string | null {
   if (Math.abs(vv - RAIL_Y) <= BC.railH.mm / 2 + tol && Math.abs(u) <= HALF + tol) return 'bc.rail';
   const hand: [number, number] = [FU(-HALF) + 30, P0.y - 10];
-  if (Math.abs(u - hand[0]) <= 45 + tol && vv >= hand[1] - 10 && vv <= hand[1] + 100) return 'bc.hand';
+  if (Math.abs(u - hand[0]) <= 50 + tol && vv >= hand[1] - 10 && vv <= hand[1] + 200) return 'bc.hand';
   if (vv > RAIL_Y && vv < BAR_TOP + 4 && Math.abs(u) <= HALF) return 'bc.filament';
   for (const b of barsOf(v)) if (Math.abs(u - FU(b.z)) <= D + tol * 0.5 && vv >= BAR_TOP && vv <= BAR_TOP + b.L + tol) return 'bc.bars';
   if (Math.abs(u - FU(STAND.z)) <= STAND.r + tol && vv >= RAIL_Y && vv <= 0) return 'bc.stand';
@@ -227,7 +236,6 @@ export function BarChimesStrike({ w, h, variant, shown, accessibilityLabel }: { 
   const bars = barsOf(variant);
   const sw = swingAt(bars, shown);
   const handZ = shown <= 1 ? -HALF - 40 : shown === 2 ? 0 : HALF + 50;
-  const hand = handOpen(FU(handZ), P0.y - 30);
   const arcs = useMemo(() => {
     const p = make();
     for (const r of [60, 110]) {
@@ -257,7 +265,7 @@ export function BarChimesStrike({ w, h, variant, shown, accessibilityLabel }: { 
             </Group>
           ))}
           <Rail u0={FU(HALF)} u1={FU(-HALF)} />
-          <Path path={hand} style="stroke" strokeWidth={3.4} strokeCap="round" strokeJoin="round" color="#c8ccd4" opacity={0.9} />
+          <SweepHand u={FU(handZ)} v={P0.y - 30} />
         </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />

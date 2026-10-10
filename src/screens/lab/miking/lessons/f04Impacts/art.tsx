@@ -30,35 +30,81 @@ import { F04_ZONES } from './model.ts';
 
 const TOP = F04_MODEL.views.top!;
 
-/** A small jug pouring (side view): the jug tilted above the basin, the stream into the entry. */
+/**
+ * A small jug pouring (art pass 2026-10-10; it was a six-point parallelogram).
+ * A 1-litre stainless jug: base Ø 104 mm, belly Ø 116, mouth Ø 100, 190 mm to
+ * the rim, a pinched pouring lip, a C handle on the back (drawing defaults of
+ * the class). Side: tipped 100° toward the basin (a pour needs the lip below the base), the right hand (the pose's
+ * grip, about (−150, −290)) on the handle, the lip over the entry, the stream
+ * falling to it. Top: the round body, the lip toward the entry, the handle back.
+ */
+const JUG = { rBase: 52, rBelly: 58, rMouth: 50, h: 190, lip: 20, tilt: 100, grip: { u: -150, v: -290 } } as const;
 function Jug({ view }: { view: ViewId }) {
   const g = useMemo(() => {
-    const jug = make();
+    const body = make();
+    const handle = make();
+    const mouth = make();
     const stream = make();
+    const { rBase, rBelly, rMouth, h, lip } = JUG;
     if (view === 'side') {
-      jug.moveTo(-240, -380);
-      jug.lineTo(-130, -420);
-      jug.lineTo(-90, -320);
-      jug.lineTo(-60, -300);
-      jug.lineTo(-90, -290);
-      jug.lineTo(-180, -270);
-      jug.close();
-      stream.moveTo(-62, -298);
-      stream.cubicTo(-30, -250, -8, -150, 0, 0);
+      // The jug upright in its own frame (x toward the lip, y down from the base at 0).
+      body.moveTo(-rBase, 0);
+      body.cubicTo(-rBelly - 4, -40, -rBelly, -90, -rMouth - 2, -150);
+      body.lineTo(-rMouth, -h);
+      body.lineTo(rMouth - 6, -h);
+      body.quadTo(rMouth + lip * 0.6, -h - 4, rMouth + lip, -h + 6); // the lip
+      body.quadTo(rMouth + 2, -h + 14, rMouth + 2, -150);
+      body.cubicTo(rBelly, -90, rBelly + 4, -40, rBase, 0);
+      body.close();
+      // The C handle: outer and inner curves (14 mm strap).
+      handle.moveTo(-rMouth + 2, -170);
+      handle.cubicTo(-rMouth - 60, -175, -rMouth - 66, -70, -rBelly + 2, -50);
+      handle.lineTo(-rBelly + 4, -64);
+      handle.cubicTo(-rMouth - 48, -82, -rMouth - 46, -158, -rMouth + 2, -156);
+      handle.close();
+      mouth.addOval(Skia.XYWHRect(-rMouth + 4, -h - 7, 2 * rMouth - 8, 14));
+      const m = Skia.Matrix();
+      const t = (JUG.tilt * Math.PI) / 180;
+      // Place it so the handle's middle sits in the grip.
+      const hx = -rMouth - 50;
+      const hy = -110;
+      const rx = hx * Math.cos(t) - hy * Math.sin(t);
+      const ry = hx * Math.sin(t) + hy * Math.cos(t);
+      m.translate(JUG.grip.u - rx, JUG.grip.v - ry);
+      m.rotate(t);
+      for (const q of [body, handle, mouth]) q.transform(m);
+      const lx = rMouth + lip;
+      const ly = -h + 6;
+      const tip = { u: JUG.grip.u - rx + lx * Math.cos(t) - ly * Math.sin(t), v: JUG.grip.v - ry + lx * Math.sin(t) + ly * Math.cos(t) };
+      stream.moveTo(tip.u, tip.v);
+      // A pour leaves the lip near-level and falls as a parabola: (x/2, y0) is its control.
+      stream.quadTo(tip.u / 2, tip.v, 0, 0);
     } else {
-      jug.addOval(Skia.XYWHRect(-230, -60, 150, 120));
-      stream.moveTo(-80, 0);
+      const c = -150;
+      body.addCircle(c, 0, rBelly);
+      body.moveTo(c + rMouth - 6, -14);
+      body.quadTo(c + rMouth + lip, 0, c + rMouth - 6, 14);
+      body.close();
+      mouth.addCircle(c, 0, rMouth - 6);
+      handle.addRRect(Skia.RRectXY(Skia.XYWHRect(c - rBelly - 46, -8, 52, 16), 8, 8));
+      stream.moveTo(c + rMouth + lip, 0);
       stream.lineTo(0, 0);
     }
-    return { jug, stream };
+    return { body, handle, mouth, stream };
   }, [view]);
   return (
     <Group>
       <Path path={g.stream} style="stroke" strokeWidth={9} strokeCap="round" color="#7fbde6" opacity={0.85} />
-      <Path path={g.jug}>
-        <LinearGradient start={vec(-240, -420)} end={vec(-60, -270)} colors={['#e9edf1', '#a9b1ba', '#5e666f']} />
+      <Path path={g.handle}>
+        <LinearGradient start={vec(-260, -420)} end={vec(-60, -200)} colors={['#dfe4ea', '#8d959f', '#4a5058']} />
       </Path>
-      <Path path={g.jug} style="stroke" strokeWidth={2.2} color="#22262b" />
+      <Path path={g.handle} style="stroke" strokeWidth={2.2} color="#22262b" />
+      <Path path={g.body}>
+        <LinearGradient start={vec(-260, -420)} end={vec(-20, -180)} colors={['#f2f5f8', '#b9c0c8', '#6a727b', '#3e444b']} />
+      </Path>
+      <Path path={g.body} style="stroke" strokeWidth={2.2} color="#22262b" />
+      <Path path={g.mouth} color="#2a2f35" />
+      <Path path={g.mouth} style="stroke" strokeWidth={2} color="#e9edf1" />
     </Group>
   );
 }

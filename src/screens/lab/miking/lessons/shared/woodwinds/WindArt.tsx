@@ -430,7 +430,9 @@ export function playerPose(L: Layout, view: ViewId): PlayerPose {
   const front = view === 'side';
   const handOf = (h: Layout['handL']) => {
     const d2 = prj(view, h.dir);
-    return { wrist: P(h.wrist), dir: Math.atan2(d2[1], d2[0]), kind: front ? ('rest' as const) : ('above' as const) };
+    // From the audience the fingers CLOSE round the tube onto its keys (figure
+    // polish 2026-10-10: an open 'rest' hand read as palms raised beside it).
+    return { wrist: P(h.wrist), dir: Math.atan2(d2[1], d2[0]), kind: front ? ('grip' as const) : ('above' as const) };
   };
   return {
     view: front ? 'front' : 'above',

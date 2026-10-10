@@ -44,7 +44,10 @@ export function c05aZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       radial: { max: 45, prov: ill('"center of head": within 4.5 cm of the centre line') },
       aimAtR: { r: 70, prov: ill('aimed at the head near its centre') },
       micTypeIds: STAND,
-      start: { d: 76 },
+      // 7.6 cm out, 4.2 cm toward the neck from the head's centre line (inside
+      // the 4.5 cm "centre" allowance): the bridge sits a third of the way in
+      // from the tail rim, so the centre is under the picking fingers (round 2).
+      start: { d: 76, dx: 42 },
       tendency: 'Note attack and the head’s projection, close and clear. Too close can overstate the head or the pick’s transients; a small move changes it a lot.',
       checks: ['Clear of the picking hand and the forearm on the rim', 'A hard, papery head sound', 'How it changes as the player moves'],
     },
@@ -95,7 +98,10 @@ export function c05aZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       aimAtR: { r: 45, prov: ill('aiming at the bridge: the axis reaches the bridge’s plane within 4.5 cm of it'), surface: 'bridge' },
       micTypeIds: ['clipCond'],
       boxG: { min: { x: cx - R + 40, y: -40, z: 30 }, max: { x: cx - 30, y: 40, z: 70 }, prov: ill('between the tailpiece and the head’s centre: the lab’s drawing') },
-      start: { dx: cx - R + 85, d: 45, aimAt: { x: 0, y: 0, z: 10 } },
+      // At the tailpiece's end (it reaches to ~35 mm behind the bridge), 4.5 cm
+      // over the head, aimed along it at the bridge (round 2: was cx − R + 85,
+      // 7 mm past the old tailpiece's end).
+      start: { dx: cx - R + 55, d: 45, aimAt: { x: 0, y: 0, z: 10 } },
       tendency: 'Close, steady and moving with the banjo — a stage option. It hears a small, bright view; check it is not all bridge and pick.',
       checks: ['An approved clip, with the player’s OK — never on the strings, bridge or head', 'The picking hand', 'The cable, strain-relieved'],
     },

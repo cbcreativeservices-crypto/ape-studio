@@ -2581,6 +2581,41 @@ function SideSpeakerGlyph({ x, y, s }: { x: number; y: number; s: number }) {
   );
 }
 
+/** A PA top in true SIDE ELEVATION, front toward +x (art pass 2026-10-10):
+ *  a 12" two-way top is ≈ 380 W × 600 H × 350 D mm, so from the side it is
+ *  its side panel — 16 s tall, ≈ 9.3 s deep — with the grille edge on the
+ *  front, a recessed carry handle, and the pole-mount cup underneath. The
+ *  side scenes (diffraction, refraction) use this one; a face-on woofer drawn
+ *  in a side view was the wrong projection. (x, y) = the acoustic centre. */
+function SideElevationSpeakerGlyph({ x, y, s }: { x: number; y: number; s: number }) {
+  const parts = useMemo(() => {
+    const side = Skia.Path.Make();
+    side.addRRect(Skia.RRectXY(Skia.XYWHRect(-8.65 * s, -8 * s, 9.3 * s, 16 * s), 1.2 * s, 1.2 * s));
+    const grille = Skia.Path.Make();
+    grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-0.25 * s, -7.6 * s, 1.0 * s, 15.2 * s), 0.4 * s, 0.4 * s));
+    const handle = Skia.Path.Make();
+    handle.addRRect(Skia.RRectXY(Skia.XYWHRect(-6.1 * s, -5.4 * s, 4.2 * s, 1.5 * s), 0.7 * s, 0.7 * s));
+    const cup = Skia.Path.Make();
+    cup.moveTo(-5 * s, 8 * s);
+    cup.lineTo(-3 * s, 8 * s);
+    cup.lineTo(-3.3 * s, 9.6 * s);
+    cup.lineTo(-4.7 * s, 9.6 * s);
+    cup.close();
+    return { side, grille, handle, cup };
+  }, [s]);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }]}>
+      <Path path={parts.side}>
+        <LinearGradient start={vec(-8.65 * s, -8 * s)} end={vec(0.65 * s, 8 * s)} colors={[BODY_HI, BODY_LO]} />
+      </Path>
+      <Path path={parts.side} color="#5a5e6a" style="stroke" strokeWidth={1} />
+      <Path path={parts.grille} color="#101116" />
+      <Path path={parts.handle} color="#0d0e12" />
+      <Path path={parts.cup} color="#3c4049" />
+    </Group>
+  );
+}
+
 /** Diffraction module: side view — source, knife-edge barrier, shadow zone. */
 export function BarrierSceneView(p: {
   width: number;
@@ -2788,7 +2823,7 @@ export function BarrierSceneView(p: {
         <Circle cx={sx - 4 * spkS} cy={sy} r={12 * spkS} color={BG} opacity={0.85}>
           <BlurMask blur={3 * spkS} style="normal" />
         </Circle>
-        <SideSpeakerGlyph x={sx} y={sy} s={spkS} />
+        <SideElevationSpeakerGlyph x={sx} y={sy} s={spkS} />
         {/* Listener level halo — the bezel's LOSS on the loudness ramp. */}
         <Circle cx={lx} cy={headY} r={0.55 * ppm} color={levelColor(listenerLevel)} opacity={0.28 + 0.5 * listenerLevel}>
           <BlurMask blur={0.25 * ppm} style="normal" />
@@ -3017,7 +3052,7 @@ export function GradientSceneView(p: {
         <Floor w={w} y={groundY} h={h - groundY} />
         {/* Source: small PA on a pole, near the ground at left. */}
         <SkLine p1={{ x: x0px, y: groundY - h0 * ppmY + 9 * ts }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2 * ts} />
-        <SideSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
+        <SideElevationSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
         {/* The distant listener. */}
         <HeadIcon view="side" anchor="neck" x={listenerHead.x} y={groundY} size={listenerHead.size} facing="left" plate minStroke={1.2 * ts} />
       </Canvas>

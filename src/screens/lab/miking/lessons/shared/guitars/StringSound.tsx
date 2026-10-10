@@ -250,6 +250,127 @@ function endPost(x: number) {
   return p;
 }
 
+/**
+ * A banjo pot in true cross-section through its centre line (round 2,
+ * 2026-10-10: was a plain U-box). The section frame is x along the strings
+ * and z UP (the canvas flips y); the head's plane is z = 0. Drawing
+ * defaults, sized to the spec's pot (Ø 285, 70 deep) and resonator (Ø 330,
+ * 40 behind the pot):
+ *   RIM        a laminated maple ring, 16 mm thick, cut through at both ends;
+ *   TONE RING  a brass ring, 12 × 14 mm, seated on the rim's top edge; the
+ *              HEAD is stretched over it and pulled down by the
+ *   TENSION HOOP (nickel) outside it, the hooks running down the rim's
+ *              outside to the
+ *   FLANGE     (resonator banjo) a nickel plate out from the rim ~40 % down,
+ *              its edge carrying the
+ *   RESONATOR  a mahogany bowl: a side wall and a domed back, 40 mm behind
+ *              the rim's foot; the open back has neither, only the
+ *   DOWEL      (coordinator rod) through the pot from the neck heel.
+ * The bridge stands on the head at x = 0 and rides with it; the strings run
+ * from the tailpiece over the bridge toward the neck. `headZ` is the head's
+ * height at x (its lowest motion, drawn larger).
+ */
+function BanjoSection({ sc, headZ }: { sc: GuitarScene; headZ: (x: number) => number }) {
+  const sp = sc.g.spec;
+  const pot = sp.body.pot!;
+  const D = sc.g.depth;
+  const cx = pot.cx.mm;
+  const R = pot.d.mm / 2;
+  const reso = sp.resonatorBack;
+  const p = useMemo(() => {
+    const T = 16; // rim thickness
+    const TR = 14; // tone ring height
+    const rim = Skia.Path.Make();
+    const ring = Skia.Path.Make();
+    const hoop = Skia.Path.Make();
+    const hooks = Skia.Path.Make();
+    for (const s of [-1, 1]) {
+      const xo = cx + s * R; // the rim's outer face
+      const xi = cx + s * (R - T);
+      rim.addRect(Skia.XYWHRect(Math.min(xo, xi), -D, T, D - TR));
+      // The tone ring: a rounded brass section on the rim's top edge.
+      ring.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(xo, xi) + 2, -TR, T - 4, TR - 1), 5, 5));
+      // The tension hoop: outside the rim's top, pressing the head's skirt down.
+      hoop.addRRect(Skia.RRectXY(Skia.XYWHRect(s < 0 ? xo - 9 : xo, -TR - 2, 9, TR + 6), 2, 2));
+      // A hook down the rim's outside to the flange (or the bracket band).
+      hooks.moveTo(xo + s * 5, -TR + 2);
+      hooks.lineTo(xo + s * 5, reso ? -D * 0.42 : -D * 0.3);
+    }
+    // The head: over the tone ring, its skirt turned down inside the hoop.
+    const skirt = Skia.Path.Make();
+    for (const s of [-1, 1]) {
+      const xo = cx + s * R;
+      skirt.moveTo(xo - s * 8, 0);
+      skirt.quadTo(xo + s * 1, 1, xo + s * 1, -TR);
+    }
+    let flange: ReturnType<typeof Skia.Path.Make> | null = null;
+    let bowl: ReturnType<typeof Skia.Path.Make> | null = null;
+    if (reso) {
+      const rr = reso.d.mm / 2;
+      const fz = -D * 0.42;
+      flange = Skia.Path.Make();
+      for (const s of [-1, 1]) flange.addRect(Skia.XYWHRect(Math.min(cx + s * R, cx + s * rr), fz - 3, Math.abs(rr - R), 6));
+      // The resonator: side wall from the flange's edge, curving into a domed back.
+      const zb = -D - reso.depth.mm;
+      bowl = Skia.Path.Make();
+      const w = 9;
+      bowl.moveTo(cx - rr, fz);
+      bowl.lineTo(cx - rr, zb + 26);
+      bowl.cubicTo(cx - rr, zb + 4, cx - rr * 0.8, zb - 4, cx, zb - 6);
+      bowl.cubicTo(cx + rr * 0.8, zb - 4, cx + rr, zb + 4, cx + rr, zb + 26);
+      bowl.lineTo(cx + rr, fz);
+      bowl.lineTo(cx + rr - w, fz);
+      bowl.lineTo(cx + rr - w, zb + 26);
+      bowl.cubicTo(cx + rr - w, zb + 4 + w, cx + rr * 0.8 - w, zb - 4 + w, cx, zb - 6 + w);
+      bowl.cubicTo(cx - rr * 0.8 + w, zb - 4 + w, cx - rr + w, zb + 4 + w, cx - rr + w, zb + 26);
+      bowl.lineTo(cx - rr + w, fz);
+      bowl.close();
+    }
+    // The dowel stick through the pot, from the neck heel to the tail side.
+    const dowel = Skia.Path.Make();
+    dowel.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - R - 14, -D * 0.6, 2 * R + 28, 12), 4, 4));
+    const heel = Skia.Path.Make();
+    heel.moveTo(cx + R, -6);
+    heel.lineTo(cx + R + 60, 8);
+    heel.lineTo(cx + R + 60, 22);
+    heel.lineTo(cx + R, 22);
+    heel.close();
+    return { rim, ring, hoop, hooks, skirt, flange, bowl, dowel, heel };
+  }, [cx, R, D, reso]);
+  const zb = headZ(0);
+  const bridge = Skia.Path.Make();
+  bridge.moveTo(-5, zb);
+  bridge.lineTo(5, zb);
+  bridge.lineTo(1.5, zb + 16);
+  bridge.lineTo(-1.5, zb + 16);
+  bridge.close();
+  const strings = Skia.Path.Make();
+  strings.moveTo(cx - R + 60, 10);
+  strings.lineTo(0, zb + 16);
+  strings.lineTo(cx + R + 60, 22);
+  return (
+    <Group>
+      {p.bowl ? (
+        <Path path={p.bowl}>
+          <LinearGradient start={vec(cx, -D)} end={vec(cx, -D - 60)} colors={['#8a5229', '#5a3216', '#3a1f0d']} />
+        </Path>
+      ) : null}
+      {p.flange ? <Path path={p.flange} color="#c8ccd4" /> : null}
+      <Path path={p.dowel} color="#a77d47" />
+      <Path path={p.rim}>
+        <LinearGradient start={vec(cx, 0)} end={vec(cx, -D)} colors={['#e2b97c', '#c8955a', '#9a6a36']} />
+      </Path>
+      <Path path={p.hooks} style="stroke" strokeWidth={3} color="#9aa0ab" />
+      <Path path={p.ring} color="#d9b45a" />
+      <Path path={p.hoop} color="#d9dce3" />
+      <Path path={p.skirt} style="stroke" strokeWidth={3} color="#e9e2cf" />
+      <Path path={p.heel} color="#5d2e15" />
+      <Path path={strings} style="stroke" strokeWidth={1.6} color="#e4e8ef" />
+      <Path path={bridge} color="#e7c48a" />
+    </Group>
+  );
+}
+
 /* ── where it leaves: the face with a region lit, and a simplified section ── */
 function WhereCanvas({ sc, w, h, regionId, swing, label }: { sc: GuitarScene; w: number; h: number; regionId: string; swing: number; label: string }) {
   const g = sc.g;
@@ -259,7 +380,7 @@ function WhereCanvas({ sc, w, h, regionId, swing, label }: { sc: GuitarScene; w:
   const xf = useMemo(() => fitXform('side', box, w, faceH, 6), [box.u0, box.u1, box.v0, box.v1, w, faceH]); // eslint-disable-line react-hooks/exhaustive-deps
   const secH = h - faceH;
   const D = g.depth;
-  const secBox = { u0: box.u0, u1: box.u1, v0: -D - 40, v1: 110 };
+  const secBox = { u0: box.u0, u1: box.u1, v0: -D - (sp.resonatorBack ? sp.resonatorBack.depth.mm + 22 : 40), v1: 110 };
   const xs = useMemo(() => fitXform('top', secBox, w, secH, 6), [w, secH, secBox.u0, secBox.u1]); // eslint-disable-line react-hooks/exhaustive-deps
   const textScale = useStageTextScale();
   const topC = sp.body.pot ? sp.body.pot.cx.mm : sp.cone ? sp.cone.x.mm : sp.bridge.x.mm;
@@ -326,7 +447,11 @@ function WhereCanvas({ sc, w, h, regionId, swing, label }: { sc: GuitarScene; w:
       <View style={{ position: 'absolute', left: 0, top: faceH, width: w, height: secH }}>
         <Canvas style={{ width: w, height: secH }} accessible accessibilityRole="image" accessibilityLabel={`A simplified section of the body: the ${sp.body.pot ? "head" : "top"} bowing in its lowest motion${holeOpen ? ", the air moving in and out through the hole" : ""}.`}>
           <Group transform={[{ translateX: xs.ox }, { translateY: xs.oy }, { scale: xs.s }, { scaleY: -1 }]}>
-            <Path path={section.back} style="stroke" strokeWidth={5} color="#8a5229" />
+            {sp.body.pot ? (
+              <BanjoSection sc={sc} headZ={(x) => 26 * swing * Math.exp(-(((x - topC) / spread) ** 2)) * Math.sin((Math.PI * (x - g.tail)) / (g.edge - g.tail))} />
+            ) : (
+              <Path path={section.back} style="stroke" strokeWidth={5} color="#8a5229" />
+            )}
             <Path path={section.top} style="stroke" strokeWidth={6} color={BLUE} strokeCap="round" />
             {holeOpen ? (
               <Group>

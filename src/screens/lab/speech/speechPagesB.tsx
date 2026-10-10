@@ -73,12 +73,31 @@ export function PopFilterDiagram({ withFilter, controls }: { withFilter: boolean
             <SvgText x={fx} y={110} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>pop filter</SvgText>
           </>
         ) : null}
-        {/* microphone: body, grille, diaphragm */}
-        <Rect x={cx} y={14} width={78} height={82} rx={12} fill="#1c1c22" stroke={colors.textMuted} strokeWidth={1} />
-        <Rect x={cx + 6} y={22} width={62} height={66} rx={9} fill="#121216" stroke="#3a3a42" strokeWidth={1} />
-        {[30, 38, 46, 54, 62, 70, 78].map((y) => <Line key={y} x1={cx + 10} y1={y} x2={cx + 64} y2={y} stroke="#2a2a32" strokeWidth={1} />)}
-        <Line x1={cx + 14} y1={30} x2={cx + 14} y2={80} stroke={withFilter ? colors.cyanBright : colors.orange} strokeWidth={2.5} strokeLinecap="round" />
-        <SvgText x={cx + 39} y={110} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>capsule</SvgText>
+        {/* microphone (art pass 2026-10-10): a side-address large-diaphragm
+            condenser seen from the side, ~1 viewBox unit per mm — headbasket
+            Ø55 × 64 mm with its mesh, the 1-inch (Ø34 mm) capsule inside
+            standing edge-on to the talker so its front diaphragm faces the
+            mouth, the Ø50 body continuing below. */}
+        <Path d={`M ${cx + 3} ${H} L ${cx + 3} 92 Q ${cx + 3} 88 ${cx + 7} 88 L ${cx + 49} 88 Q ${cx + 53} 88 ${cx + 53} 92 L ${cx + 53} ${H} Z`} fill="#1c1c22" stroke={colors.textMuted} strokeWidth={1} />
+        <Rect x={cx + 4} y={84} width={48} height={5} rx={1.5} fill="#2c2c33" stroke="#3a3a42" strokeWidth={0.8} />
+        <Rect x={cx} y={20} width={56} height={66} rx={26} fill="#121216" stroke={colors.textMuted} strokeWidth={1.2} />
+        {[28, 36, 44, 52, 60, 68, 76].map((y) => {
+          // mesh rows clipped to the basket's stadium outline (r 26, straight between y 46…60)
+          const dy = y < 46 ? 46 - y : y > 60 ? y - 60 : 0;
+          const hw = 2 + Math.sqrt(Math.max(0, 25 * 25 - dy * dy));
+          return <Line key={`h${y}`} x1={cx + 28 - hw + 1} y1={y} x2={cx + 28 + hw - 1} y2={y} stroke="#2a2a32" strokeWidth={0.9} />;
+        })}
+        {[12, 20, 28, 36, 44].map((x) => {
+          const dx = Math.abs(x - 28) - 2;
+          const hh = 7 + Math.sqrt(Math.max(0, 25 * 25 - Math.max(0, dx) ** 2));
+          return <Line key={`v${x}`} x1={cx + x} y1={53 - hh + 1} x2={cx + x} y2={53 + hh - 1} stroke="#2a2a32" strokeWidth={0.9} />;
+        })}
+        {/* the capsule edge-on: its ring, the backplate, the front diaphragm (lit by what arrives) */}
+        <Rect x={cx + 24} y={36} width={8} height={34} rx={2} fill="#2e2e36" stroke="#4a4a54" strokeWidth={0.8} />
+        <Line x1={cx + 28} y1={38} x2={cx + 28} y2={68} stroke="#5a5a64" strokeWidth={1} />
+        <Line x1={cx + 24} y1={37} x2={cx + 24} y2={69} stroke={withFilter ? colors.cyanBright : colors.orange} strokeWidth={2.5} strokeLinecap="round" />
+        <Line x1={cx + 33} y1={53} x2={cx + 60} y2={53} stroke={colors.textMuted} strokeWidth={0.6} />
+        <SvgText x={cx + 62} y={56} fontSize={9} fill={colors.textMuted} textAnchor="start" fontFamily={F}>capsule</SvgText>
         {/* legend */}
         <SvgText x={64} y={14} fontSize={9} fill={colors.orange} fontFamily={F}>— air jet</SvgText>
         <SvgText x={118} y={14} fontSize={9} fill={colors.cyanBright} fontFamily={F}>) sound</SvgText>

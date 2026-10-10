@@ -7,7 +7,7 @@
  * from the upper left. Paths are built once (useMemo); nothing moves (D8).
  */
 import { useMemo } from 'react';
-import { BlurMask, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { smoothPathD, tubeOutline, type Pt } from './hands.ts';
 import { SKIN, SKIN_RIM, SLEEVE, SLEEVE_RIM } from './Hand';
 import { PLAYER } from './geom.ts';
@@ -116,27 +116,73 @@ export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
 /**
  * An arm in a view: the upper arm in a T-shirt sleeve (shoulder → most of the
  * way to the elbow), then skin to the wrist, tapering. Points in view mm.
+ *
+ * Figure polish 2026-10-10 (owner: "high-end drawings … my peers are my
+ * critics"; the sleeve was a pill — a tube with a round cap over the
+ * shoulder and a round end over the arm): the sleeve is now cut like a
+ * T-shirt's — a cap that rounds over the DELTOID (≈ 110 mm deep over the
+ * joint, tapering to the arm), an open hem cut square across the arm ≈ 72 %
+ * of the way to the elbow; the upper arm leaves the hem narrower than it,
+ * the elbow ≈ 74 mm, the wrist ≈ 56 mm. The arm is OPAQUE: a far arm that
+ * recedes (`opacity` < 1) is drawn darker, never see-through.
  */
 export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?: number }) {
   const g = useMemo(() => {
     const k = 0.72;
-    const sl: Pt = [s[0] + (e[0] - s[0]) * k, s[1] + (e[1] - s[1]) * k];
-    return { upper: tube(s, e, 88, 74), fore: tube(e, w, 74, 56), sleeve: tube(s, sl, 108, 98) };
+    const len = Math.hypot(e[0] - s[0], e[1] - s[1]) || 1;
+    const ax = Math.atan2(e[1] - s[1], e[0] - s[0]);
+    const A = (al: number, ac: number): Pt => [s[0] + Math.cos(ax) * al - Math.sin(ax) * ac, s[1] + Math.sin(ax) * al + Math.cos(ax) * ac];
+    const hem = len * k;
+    // The sleeve: deltoid cap, then straight sides to a square hem.
+    const cap = fromD(smoothPathD([A(-50, 0), A(-36, 46), A(8, 56), A(hem * 0.6, 52), A(hem + 30, 50), A(hem + 30, -50), A(hem * 0.6, -52), A(8, -56), A(-36, -48)]));
+    const cut = Skia.Path.Make();
+    const c0 = A(hem, -200);
+    const c1 = A(hem, 200);
+    const c2 = A(hem + 400, 200);
+    const c3 = A(hem + 400, -200);
+    cut.moveTo(c0[0], c0[1]);
+    cut.lineTo(c1[0], c1[1]);
+    cut.lineTo(c2[0], c2[1]);
+    cut.lineTo(c3[0], c3[1]);
+    cut.close();
+    const sleeve = Skia.Path.MakeFromOp(cap, cut, PathOp.Difference) ?? cap;
+    const upper = tube(s, e, 84, 74);
+    const fore = tube(e, w, 74, 56);
+    const skin = Skia.Path.MakeFromOp(upper, fore, PathOp.Union) ?? upper;
+    // The hem's shadow on the arm just below it.
+    const hemShade = Skia.Path.MakeFromOp(skin, (() => {
+      const q = Skia.Path.Make();
+      const h0 = A(hem - 4, -120);
+      const h1 = A(hem - 4, 120);
+      const h2 = A(hem + 26, 120);
+      const h3 = A(hem + 26, -120);
+      q.moveTo(h0[0], h0[1]);
+      q.lineTo(h1[0], h1[1]);
+      q.lineTo(h2[0], h2[1]);
+      q.lineTo(h3[0], h3[1]);
+      q.close();
+      return q;
+    })(), PathOp.Intersect);
+    const all = Skia.Path.MakeFromOp(skin, sleeve, PathOp.Union) ?? skin;
+    return { skin, sleeve, hemShade, all };
   }, [s, e, w]);
+  const shade = Math.min(0.6, (1 - Math.max(0, Math.min(1, opacity))) * 1.6);
   return (
-    <Group opacity={opacity}>
-      <Path path={g.upper}>
-        <LinearGradient start={vec(s[0] - 60, s[1] - 60)} end={vec(e[0] + 60, e[1] + 60)} colors={SKIN} />
+    <Group>
+      <Path path={g.skin}>
+        <LinearGradient start={vec(s[0] - 60, s[1] - 60)} end={vec(w[0] + 60, w[1] + 60)} colors={SKIN} />
       </Path>
-      <Path path={g.upper} style="stroke" strokeWidth={2} color={SKIN_RIM} />
-      <Path path={g.fore}>
-        <LinearGradient start={vec(e[0] - 40, e[1] - 50)} end={vec(w[0] + 40, w[1] + 50)} colors={SKIN} />
-      </Path>
-      <Path path={g.fore} style="stroke" strokeWidth={2} color={SKIN_RIM} />
+      {g.hemShade ? (
+        <Path path={g.hemShade} color="#000" opacity={0.28}>
+          <BlurMask blur={6} style="normal" />
+        </Path>
+      ) : null}
+      <Path path={g.skin} style="stroke" strokeWidth={2} color={SKIN_RIM} />
       <Path path={g.sleeve}>
         <LinearGradient start={vec(s[0] - 60, s[1] - 60)} end={vec(e[0] + 60, e[1] + 60)} colors={SLEEVE} />
       </Path>
       <Path path={g.sleeve} style="stroke" strokeWidth={2.2} color={SLEEVE_RIM} />
+      {shade > 0 ? <Path path={g.all} color="#000" opacity={shade} /> : null}
     </Group>
   );
 }

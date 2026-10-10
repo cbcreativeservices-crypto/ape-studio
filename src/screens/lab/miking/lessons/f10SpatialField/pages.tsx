@@ -1175,12 +1175,22 @@ function DestArt({ d, px }: { d: Destination; px: number }) {
   const head = useMemo(() => headAbove(pt(0, 0), 114), []);
   return (
     <Group>
-      <Group transform={[{ rotate: -Math.PI / 2 }]}>
+      {/* The listener faces the front of the layout (up), toward the speakers at 0° (round 2: it faced sideways). */}
+      <Group transform={[{ rotate: Math.PI }]}>
         <FigureHead fill={head.fill} />
       </Group>
-      {d === 'headphones'
-        ? [-1, 1].map((s) => <RoundedRect key={s} x={-60} y={s > 0 ? 96 : -136} width={100} height={40} r={16} color="#2a2c32" />)
-        : spk.map((a) => {
+      {d === 'headphones' ? (
+        // Round 2 (2026-10-10): the two earcups (about 100 × 40 mm seen edge-on
+        // from above) joined by the headband over the crown.
+        <Group>
+          {[-1, 1].map((s) => (
+            <RoundedRect key={s} x={s > 0 ? 96 : -136} y={-40} width={40} height={100} r={16} color="#2a2c32" />
+          ))}
+          <RoundedRect x={-118} y={-6} width={236} height={30} r={12} color="#1d1f24" />
+          <RoundedRect x={-118} y={-6} width={236} height={30} r={12} style="stroke" strokeWidth={2 * px} color="#6c717b" />
+        </Group>
+      ) : (
+        spk.map((a) => {
             const r = ((a - 90) * Math.PI) / 180;
             const x = Math.cos(r) * 820;
             const y = Math.sin(r) * 820;
@@ -1189,11 +1199,15 @@ function DestArt({ d, px }: { d: Destination; px: number }) {
                 <RoundedRect x={-110} y={-80} width={220} height={160} r={18}>
                   <LinearGradient start={vec(-110, -80)} end={vec(110, 80)} colors={['#4a4e57', '#1d1e23', '#0b0c0e']} />
                 </RoundedRect>
-                <Circle cx={0} cy={60} r={46} color="#121317" />
-                <Circle cx={0} cy={60} r={46} style="stroke" strokeWidth={2 * px} color="#6c717b" />
+                {/* From above a driver cannot be seen (round 2): the grille's edge
+                    along the front (toward the listener), the woofer's surround
+                    just proud of it. */}
+                <RoundedRect x={-104} y={62} width={208} height={18} r={6} color="#3a3d44" />
+                <RoundedRect x={-70} y={78} width={140} height={7} r={3} color="#16171b" />
               </Group>
             );
-          })}
+          })
+      )}
     </Group>
   );
 }

@@ -422,42 +422,100 @@ function layerBox(i: number) {
   return { u0: EX.u, u1: EX.u + L, v0: y, v1: y + LAYERS[i].t * SCALE, dx: D * OB.dx, dy: D * OB.dy };
 }
 
+/*
+ * A 10-hole diatonic harmonica, real-world (drawn here 1.9x): 102 mm long,
+ * 28 mm deep, about 26 mm tall. The comb about 10 mm thick, its ten
+ * channels about 5.5 mm wide at a 7.3 mm pitch (holes 1-10 span about
+ * 72 mm, a solid end of about 15 mm each side for the fixings); two brass
+ * reed plates about 1.2 mm thick, ten slots each, the slots shortening
+ * from hole 1 (about 16 mm) to hole 10 (about 8 mm), each reed tongue
+ * riveted on one face and seen through its slot; two stamped steel covers,
+ * their front edge rolled, held by a screw at each end. Generic, no maker.
+ */
+const HOLE0 = 0.14; // hole 1's left edge, as a fraction of the length
+const HOLE_P = 0.072; // the hole pitch (7.3 mm of 102)
+const HOLE_W = 0.054; // a hole's width (5.5 mm)
+const FIX = [0.06, 0.94]; // the end fixings (screws), as length fractions
+
 function Layer({ i, hi }: { i: number; hi: string | null }): ReactElement {
   const b = layerBox(i);
   const kind = LAYERS[i].kind;
+  const L = b.u1 - b.u0;
+  /** A point on the layer's TOP face: fu along the length, fd into the depth. */
+  const P = (fu: number, fd: number): [number, number] => [b.u0 + L * fu + b.dx * fd, b.v0 + b.dy * fd];
+  /** A quad on the top face from (fu0, fd0) to (fu1, fd1). */
+  const quad = (fu0: number, fd0: number, fu1: number, fd1: number): SkPath => {
+    const p = make();
+    const a = P(fu0, fd0);
+    p.moveTo(a[0], a[1]);
+    for (const q of [P(fu1, fd0), P(fu1, fd1), P(fu0, fd1)]) p.lineTo(q[0], q[1]);
+    p.close();
+    return p;
+  };
+  /** A small ellipse on the top face (a screw head or a hole, foreshortened). */
+  const dot = (fu: number, fd: number, r: number): SkPath => {
+    const p = make();
+    const c = P(fu, fd);
+    p.addOval(Skia.XYWHRect(c[0] - r, c[1] - r * 0.62, r * 2, r * 1.24));
+    return p;
+  };
   const pal = kind === 'cover' ? CHROME : kind === 'plate' ? [BRASS[0], BRASS[1], BRASS[3]] : COMB;
-  const front = rr(b.u0, b.v0, b.u1, b.v1, 1.5);
-  const topFace = make();
-  topFace.moveTo(b.u0, b.v0);
-  topFace.lineTo(b.u0 + b.dx, b.v0 + b.dy);
-  topFace.lineTo(b.u1 + b.dx, b.v0 + b.dy);
-  topFace.lineTo(b.u1, b.v0);
-  topFace.close();
+  const front = rr(b.u0, b.v0, b.u1, b.v1, kind === 'cover' ? 2.4 : 1.2);
+  const topFace = quad(0, 0, 1, 1);
   const endFace = make();
   endFace.moveTo(b.u1, b.v0);
   endFace.lineTo(b.u1 + b.dx, b.v0 + b.dy);
   endFace.lineTo(b.u1 + b.dx, b.v1 + b.dy);
   endFace.lineTo(b.u1, b.v1);
   endFace.close();
-  const L = b.u1 - b.u0;
-  const pitch = L / 10;
-  const marks = make();
-  if (kind === 'comb') {
-    // The ten holes on the mouth side.
-    for (let k = 0; k < 10; k++) marks.addRRect(Skia.RRectXY(Skia.XYWHRect(b.u0 + k * pitch + pitch * 0.22, b.v0 + (b.v1 - b.v0) * 0.22, pitch * 0.56, (b.v1 - b.v0) * 0.56), 2, 2));
-  }
-  const reeds = make();
-  if (kind === 'plate') {
-    // Ten reed slots seen on the plate's top face, each with its tongue.
-    for (let k = 0; k < 10; k++) {
-      const s0 = 0.15 + k * 0.083;
-      const ua = b.u0 + L * s0;
-      const len = 0.72 - k * 0.028;
-      reeds.moveTo(ua + b.dx * 0.15, b.v0 + b.dy * 0.15);
-      reeds.lineTo(ua + b.dx * (0.15 + len), b.v0 + b.dy * (0.15 + len));
-    }
-  }
   const on = hi === LAYERS[i].id;
+  const holeU = (k: number) => HOLE0 + k * HOLE_P + (HOLE_P - HOLE_W) / 2;
+  const detail: ReactElement[] = [];
+  if (kind === 'cover') {
+    // The rolled front edge catches the light; a soft shade toward the open back.
+    detail.push(<Path key="roll" path={quad(0, 0, 1, 0.13)} color="#ffffff" opacity={0.55} />);
+    detail.push(<Path key="back" path={quad(0, 0.8, 1, 1)} color="#4a515c" opacity={0.28} />);
+    detail.push(<Path key="rollLine" path={quad(0.004, 0.13, 0.996, 0.135)} color="#7d8592" opacity={0.6} />);
+    for (const fu of FIX) {
+      detail.push(<Path key={`s${fu}`} path={dot(fu, 0.5, 3.4)} color="#3a3f48" />);
+      detail.push(<Path key={`h${fu}`} path={dot(fu - 0.004, 0.46, 2.1)} color="#e8ecf2" />);
+      const slot = make();
+      const a = P(fu - 0.012, 0.5);
+      const c = P(fu + 0.012, 0.5);
+      slot.moveTo(a[0], a[1]);
+      slot.lineTo(c[0], c[1]);
+      detail.push(<Path key={`k${fu}`} path={slot} style="stroke" strokeWidth={0.9} color="#3a3f48" />);
+    }
+  } else if (kind === 'plate') {
+    // Ten slots, longest at hole 1; the reed tongue seen in each slot.
+    for (let k = 0; k < 10; k++) {
+      const u0 = holeU(k) + HOLE_W * 0.28;
+      const u1 = holeU(k) + HOLE_W * 0.72;
+      const len = 0.58 - k * 0.03;
+      const d0 = 0.2;
+      detail.push(<Path key={`sl${k}`} path={quad(u0, d0, u1, d0 + len)} color="#2a1c07" />);
+      detail.push(<Path key={`rd${k}`} path={quad(u0 + 0.003, d0 + 0.04, u1 - 0.003, d0 + len - 0.03)} color={BRASS[2]} />);
+      detail.push(<Path key={`rh${k}`} path={quad(u0 + 0.003, d0 + 0.04, u0 + 0.008, d0 + len - 0.03)} color={BRASS[0]} opacity={0.75} />);
+    }
+    for (const fu of FIX) detail.push(<Path key={`f${fu}`} path={dot(fu, 0.5, 2.6)} color="#2a1c07" />);
+  } else {
+    // The comb: wood grain along its length; ten channels open on its top
+    // face (the reed plates close them), each running back from its hole.
+    const grain = make();
+    for (const fd of [0.12, 0.31, 0.47, 0.66, 0.88]) {
+      const a = P(0.01, fd);
+      const c = P(0.99, fd + 0.03);
+      grain.moveTo(a[0], a[1]);
+      grain.lineTo(c[0], c[1]);
+    }
+    detail.push(<Path key="grain" path={grain} style="stroke" strokeWidth={0.7} color="#a07a52" opacity={0.35} />);
+    for (let k = 0; k < 10; k++) detail.push(<Path key={`ch${k}`} path={quad(holeU(k), 0, holeU(k) + HOLE_W, 0.86)} color="#140d07" />);
+    const holes = make();
+    const fh = b.v1 - b.v0;
+    for (let k = 0; k < 10; k++) holes.addRRect(Skia.RRectXY(Skia.XYWHRect(b.u0 + L * holeU(k), b.v0 + fh * 0.16, L * HOLE_W, fh * 0.68), 1.4, 1.4));
+    for (const fu of FIX) detail.push(<Path key={`f${fu}`} path={dot(fu, 0.5, 2.6)} color="#140d07" />);
+    detail.push(<Path key="holesFront" path={holes} color="#0b0805" />);
+  }
   return (
     <Group>
       <Path path={topFace}>
@@ -467,10 +525,10 @@ function Layer({ i, hi }: { i: number; hi: string | null }): ReactElement {
       <Path path={front}>
         <LinearGradient start={vec(b.u0, b.v0)} end={vec(b.u0, b.v1)} colors={[pal[1], pal[2]]} />
       </Path>
-      {kind === 'comb' ? <Path path={marks} color="#0b0805" /> : null}
-      {kind === 'plate' ? <Path path={reeds} style="stroke" strokeWidth={2.4} strokeCap="round" color={BRASS[4]} /> : null}
+      {detail}
       <Path path={topFace} style="stroke" strokeWidth={0.8} color="#2b2f36" opacity={0.7} />
       <Path path={front} style="stroke" strokeWidth={0.8} color="#2b2f36" opacity={0.8} />
+      <Path path={endFace} style="stroke" strokeWidth={0.8} color="#2b2f36" opacity={0.6} />
       {on ? <Path path={rr(b.u0 - 8, b.v0 + b.dy - 8, b.u1 + b.dx + 8, b.v1 + 8, 6)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
     </Group>
   );

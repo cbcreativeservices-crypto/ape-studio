@@ -178,7 +178,12 @@ describe('PORT GEOMETRY — a hole IN the head (lead finding, 2026-10-04)', () =
     assert.match(art, /ported \? g\.frontPorted : g\.front/);
     assert.doesNotMatch(art, /addCircle\([^)]*PORT/);
     const scene = read('src/screens/lab/miking/engine/scene/PlacementScene.tsx');
-    assert.doesNotMatch(scene.slice(scene.indexOf('const STAND_ART'), scene.indexOf('function MountPath')), /baseTop\.addCircle/, 'the stand base in plan is a tripod, not a disc that reads as the port');
+    // Art pass 2026-10-10: the stand is drawn in MountPath itself (STAND_ART retired):
+    // from above, three tripod legs and only a small hub — never a disc that reads as the port.
+    const mount = scene.slice(scene.indexOf('function MountPath'), scene.indexOf('function PoleMount'));
+    assert.match(mount, /From above the upright is a point: the tripod's three legs/);
+    assert.match(mount, /for \(let k = 0; k < 3; k\+\+\)/);
+    assert.doesNotMatch(mount, /addCircle\(bu, bv, (?:[3-9]\d|\d{3})/, 'the stand base in plan is a tripod, not a disc that reads as the port');
   });
   it('every inside stand zone: the boom passes THROUGH the port opening (clear) — and an intact head blocks the same mount', () => {
     const ported = compileScene(m, 'ported');

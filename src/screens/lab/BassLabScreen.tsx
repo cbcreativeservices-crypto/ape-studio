@@ -601,25 +601,31 @@ const LABELS_H = 20; // NUT / fractions / BRIDGE label strip under the board
 /** String rows drawn TAB-style: G on top … E on the bottom. */
 const ROW_TO_STRING = [3, 2, 1, 0] as const;
 
-// Instrument look behind the strings (owner request 2026-07-26, RAISED per the
-// visual standards 2026-07-29): a wood-grain gradient neck meeting a sunburst
-// blue body with edge binding, a round sound hole, and a bridge with saddle +
-// pins. Frets get a specular metal pass; inlays are gradient pearl. Geometry
-// (fret positions, string rows, tap mapping) is untouched — this is a re-skin.
-const GRAIN = '#1f1206'; // wood-grain streak lines over the neck gradient
-const ROSETTE = '#0f3a68'; // outer decorative ring around the hole
-const ROSETTE_PEARL = '#cfc8b8'; // fine pearl inlay ring inside the rosette
+// Instrument look behind the strings — an ELECTRIC bass, as the lab says
+// (art pass 2026-10-10; it was an acoustic body with a sound hole, rosette and
+// bridge pins, which no electric bass has). Drawn to a 34" (864 mm) scale on
+// the board's own nut → bridge width: a rosewood fingerboard as wide as the
+// fret wire, its frets running on past 12 to the 20th (the lesson's frets
+// 0–12 stay the bright, tappable ones), the neck entering the body at the
+// 20th fret; a three-tone sunburst body with its two horns; a three-ply
+// pickguard; the split-coil pickup centred ≈ 165 mm from the saddles (the
+// low-string half toward the neck, two pole pieces per string); and a bent-
+// steel bridge plate with four barrel saddles. The strings are drawn evenly
+// spaced (parallel rows to tap) — the one simplification of a real neck taper.
+// Geometry (fret positions, string rows, tap mapping) is unchanged.
+const GRAIN = '#1f1206'; // wood-grain streak lines over the fingerboard
 const FRET_BASE = '#4b4b53'; // fret wire body (dark nickel)
 const FRET_SPEC = '#d8d8e0'; // fret wire specular highlight
-const BINDING = '#e8dfc8'; // cream edge binding on the body
 const STRING_STEEL = '#8d8d99';
 const STRING_SPEC = '#eceef4';
 const STRING_SEL = '#e6b84e'; // selected string — amber-tinted steel
 const NODE_GREEN = '#5bff85'; // harmonic node markers — shared with the NODE fader/bezel tint
-// Static pseudo-random grain rows (fractions of svgH) — drawn once, cheap.
+// Static pseudo-random grain rows (fractions of the fingerboard height).
 const GRAIN_ROWS = [0.12, 0.27, 0.41, 0.57, 0.72, 0.88] as const;
-// The neck→body seam sits just past the 12th fret (fretPos(12) = 0.5).
-const BODY_START_FRAC = 0.52;
+/** 34" bass scale, mm — the board's full nut → bridge width. */
+const SCALE_MM = 864;
+/** The neck enters the body at the 20th fret (a classic 20-fret bolt-on). */
+const NECK_FRETS = 20;
 
 /** The tappable fretboard: 4 strings, frets 0–12 at true positions, fret
  *  markers, and the selected string's standing wave. Tap maps to the nearest
@@ -731,10 +737,31 @@ function Fretboard({
   // Instrument background geometry: wood neck on the left, blue body + sound
   // hole toward the bridge (right). The hole is centered on the 4 strings so
   // they cross over it ("behind the strings").
-  const bodyStart = BODY_START_FRAC * w;
-  const holeCX = bodyStart + (w - bodyStart) * 0.52;
-  const holeCY = stringTop + 1.5 * STRING_GAP;
-  const holeR = Math.min(46, (w - bodyStart) * 0.42);
+  const mm = w / SCALE_MM; // px per millimetre of the real bass
+  const fbTop = stringTop - 18; // fingerboard edges = the fret-wire ends
+  const fbBot = stringTop + 3 * STRING_GAP + 18;
+  const fbEnd = fretPos(NECK_FRETS + 0.55) * w; // end of the fingerboard
+  const bodyStart = fretPos(NECK_FRETS) * w; // the neck pocket
+  // Horns: the long (bass-side, bottom row = E) horn reaches to ≈ fret 12,
+  // the treble-side horn to ≈ fret 16, curving away from the neck edges.
+  const hornLow = fretPos(12.4) * w;
+  const hornHigh = fretPos(15.6) * w;
+  const bodyPath =
+    `M${bodyStart} ${fbTop} C${bodyStart - 6} ${fbTop - 6} ${hornHigh + 14} ${fbTop - 10} ${hornHigh} ${Math.max(2, fbTop - 16)} ` +
+    `C${hornHigh - 8} ${-4} ${bodyStart + 20} ${-2} ${bodyStart + 40} ${-2} L${w + 2} ${-2} L${w + 2} ${svgH + 2} L${bodyStart + 40} ${svgH + 2} ` +
+    `C${bodyStart} ${svgH + 2} ${hornLow - 10} ${svgH + 4} ${hornLow} ${Math.min(svgH - 2, fbBot + 16)} ` +
+    `C${hornLow + 12} ${fbBot + 8} ${bodyStart - 6} ${fbBot + 6} ${bodyStart} ${fbBot} Z`;
+  // Split-coil pickup, centred 165 mm in front of the saddles.
+  const pickupX = w - 165 * mm;
+  const coilW = Math.max(5, 21 * mm); // each half's width along the strings
+  const halfOffset = Math.max(4, 12 * mm); // E/A half toward the neck, D/G toward the bridge
+  // Pickguard: three-ply, from the fingerboard end around the pickup.
+  const pgL = fbEnd - 2;
+  const pgR = pickupX + halfOffset + coilW / 2 + 26 * mm;
+  const pgPath =
+    `M${pgL} ${fbTop - 10} C${pgL + 10} ${2} ${pgR - 30} ${4} ${pgR} ${fbTop - 2} ` +
+    `C${pgR + 10} ${(fbTop + fbBot) / 2} ${pgR + 4} ${fbBot} ${pgR - 18} ${fbBot + 10} ` +
+    `C${pgR - 40} ${svgH - 2} ${pgL + 6} ${svgH - 4} ${pgL} ${fbBot + 12} Z`;
 
   return (
     <View>
@@ -757,18 +784,19 @@ function Fretboard({
                 <Stop offset="82%" stopColor="#2f1d0d" />
                 <Stop offset="100%" stopColor="#241608" />
               </LinearGradient>
-              {/* Body: blue sunburst — bright near the hole, deep at the rim. */}
-              <RadialGradient id="fbBody" cx="45%" cy="40%" r="90%">
-                <Stop offset="0%" stopColor="#2f6fb8" />
-                <Stop offset="55%" stopColor="#1e5290" />
-                <Stop offset="100%" stopColor="#0d2c50" />
+              {/* Body: three-tone sunburst — amber centre, red, dark edge. */}
+              <RadialGradient id="fbBody" cx="70%" cy="50%" r="75%">
+                <Stop offset="0%" stopColor="#d9973a" />
+                <Stop offset="45%" stopColor="#b5671f" />
+                <Stop offset="72%" stopColor="#7a2410" />
+                <Stop offset="100%" stopColor="#1c0d07" />
               </RadialGradient>
-              {/* Sound hole bore: near-black with a lit inner rim (depth). */}
-              <RadialGradient id="fbHole" cx="42%" cy="38%" r="70%">
-                <Stop offset="0%" stopColor="#020203" />
-                <Stop offset="78%" stopColor="#08080a" />
-                <Stop offset="100%" stopColor="#171207" />
-              </RadialGradient>
+              {/* Chrome: bridge plate and saddles. */}
+              <LinearGradient id="fbChrome" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0%" stopColor="#f2f4f8" />
+                <Stop offset="50%" stopColor="#9a9ea8" />
+                <Stop offset="100%" stopColor="#5a5e68" />
+              </LinearGradient>
               <RadialGradient id="fbPearl" cx="35%" cy="30%" r="80%">
                 <Stop offset="0%" stopColor="#fdf9ee" />
                 <Stop offset="60%" stopColor="#cfc8b8" />
@@ -790,43 +818,74 @@ function Fretboard({
                 <Stop offset="100%" stopColor={colors.amber} stopOpacity={0.3} />
               </LinearGradient>
             </Defs>
-            {/* WOOD neck (gradient + static grain streaks) → sunburst body. */}
-            <Rect x={0} y={0} width={w} height={svgH} fill="url(#fbWood)" />
-            {GRAIN_ROWS.map((g, i) => (
-              <Path
-                key={`grain${i}`}
-                d={`M0 ${(g * svgH).toFixed(1)} Q ${(bodyStart * 0.5).toFixed(1)} ${(g * svgH + (i % 2 === 0 ? -4 : 4)).toFixed(1)} ${bodyStart.toFixed(1)} ${(g * svgH).toFixed(1)}`}
-                stroke={GRAIN}
-                strokeWidth={i % 2 === 0 ? 1.2 : 0.7}
-                opacity={0.4}
-                fill="none"
-              />
+            {/* Off the instrument: the dark stage. */}
+            <Rect x={0} y={0} width={w} height={svgH} fill="#0d0d10" />
+            {/* The body (sunburst, both horns) behind the neck. */}
+            <Path d={bodyPath} fill="url(#fbBody)" stroke="#120804" strokeWidth={1.2} />
+            {/* Three-ply pickguard: white top, black bevel line. */}
+            <Path d={pgPath} fill="#ece7da" stroke="#151515" strokeWidth={1.4} />
+            <Path d={pgPath} fill="none" stroke="#ffffff" strokeWidth={0.5} opacity={0.5} />
+            {/* Rosewood fingerboard: nut → just past the 20th fret, as wide
+                as the fret wire; static grain streaks along it. */}
+            <Rect x={0} y={fbTop} width={fbEnd} height={fbBot - fbTop} fill="url(#fbWood)" />
+            {GRAIN_ROWS.map((g, i) => {
+              const gy = fbTop + g * (fbBot - fbTop);
+              return (
+                <Path
+                  key={`grain${i}`}
+                  d={`M0 ${gy.toFixed(1)} Q ${(fbEnd * 0.5).toFixed(1)} ${(gy + (i % 2 === 0 ? -3 : 3)).toFixed(1)} ${fbEnd.toFixed(1)} ${gy.toFixed(1)}`}
+                  stroke={GRAIN}
+                  strokeWidth={i % 2 === 0 ? 1.2 : 0.7}
+                  opacity={0.4}
+                  fill="none"
+                />
+              );
+            })}
+            <Line x1={0} y1={fbTop + 0.6} x2={fbEnd} y2={fbTop + 0.6} stroke="#ffffff" strokeWidth={0.7} opacity={0.12} />
+            {/* The upper frets, 13–20 (the lesson uses 0–12): dimmer wire,
+                single dots at 15, 17 and 19. */}
+            {Array.from({ length: NECK_FRETS - NUM_FRETS }, (_, i) => {
+              const n = NUM_FRETS + 1 + i;
+              const x = fretPos(n) * w;
+              return <Line key={`uf${n}`} x1={x} y1={fbTop} x2={x} y2={fbBot} stroke={FRET_BASE} strokeWidth={2.2} opacity={0.75} />;
+            })}
+            {[15, 17, 19].map((n) => (
+              <Circle key={`ud${n}`} cx={((fretPos(n - 1) + fretPos(n)) / 2) * w} cy={stringTop + 1.5 * STRING_GAP} r={2.6} fill="url(#fbPearl)" opacity={0.85} />
             ))}
-            <Rect x={bodyStart} y={0} width={w - bodyStart} height={svgH} fill="url(#fbBody)" />
-            {/* Cream edge binding along the body rim + the neck→body seam. */}
-            <Line x1={bodyStart} y1={1} x2={w} y2={1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
-            <Line x1={bodyStart} y1={svgH - 1} x2={w} y2={svgH - 1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
-            <Line x1={w - 1} y1={0} x2={w - 1} y2={svgH} stroke={BINDING} strokeWidth={2} opacity={0.4} />
-            <Line x1={bodyStart} y1={0} x2={bodyStart} y2={svgH} stroke="#0a0a0c" strokeWidth={2} />
-            {/* Sound hole: rosette + fine pearl rings + shaded bore. */}
-            <Circle cx={holeCX} cy={holeCY} r={holeR + 4} fill="none" stroke={ROSETTE} strokeWidth={5} />
-            <Circle cx={holeCX} cy={holeCY} r={holeR + 6} fill="none" stroke={ROSETTE_PEARL} strokeWidth={0.8} opacity={0.65} />
-            <Circle cx={holeCX} cy={holeCY} r={holeR + 1.5} fill="none" stroke={ROSETTE_PEARL} strokeWidth={0.8} opacity={0.65} />
-            <Circle cx={holeCX} cy={holeCY} r={holeR} fill="url(#fbHole)" />
-            {/* Bridge: ebony base, bone saddle, pearl-ringed string pins. */}
-            <Rect x={w - 13} y={stringTop - 24} width={10} height={3 * STRING_GAP + 48} rx={5} fill="#150f08" />
-            <Line x1={w - 8} y1={stringTop - 18} x2={w - 8} y2={stringTop + 3 * STRING_GAP + 18} stroke="#e8e2d2" strokeWidth={2} />
-            {ROW_TO_STRING.map((si, row) => (
-              <Circle
-                key={`pin${si}`}
-                cx={w - 4}
-                cy={stringTop + row * STRING_GAP}
-                r={1.8}
-                fill="#0c0c0f"
-                stroke={ROSETTE_PEARL}
-                strokeWidth={0.7}
-              />
-            ))}
+            {/* Split-coil pickup: two black covers, two pole pieces per string. */}
+            {[
+              { rows: [2, 3], dx: -halfOffset / 2 },
+              { rows: [0, 1], dx: halfOffset / 2 },
+            ].map((half, hi) => {
+              const cx = pickupX + half.dx;
+              const yA = stringTop + half.rows[0] * STRING_GAP - STRING_GAP * 0.42;
+              const yB = stringTop + half.rows[1] * STRING_GAP + STRING_GAP * 0.42;
+              return (
+                <Fragment key={`pu${hi}`}>
+                  <Rect x={cx - coilW / 2 - 1.5} y={yA - 1.5} width={coilW + 3} height={yB - yA + 3} rx={coilW / 2 + 1.5} fill="#1a1a1e" />
+                  <Rect x={cx - coilW / 2} y={yA} width={coilW} height={yB - yA} rx={coilW / 2} fill="#0b0b0d" stroke="#3a3a40" strokeWidth={0.8} />
+                  {half.rows.map((row) =>
+                    [-1, 1].map((sg) => (
+                      <Circle key={`pole${row}${sg}`} cx={cx} cy={stringTop + row * STRING_GAP + sg * STRING_GAP * 0.17} r={Math.max(1.3, coilW * 0.16)} fill="#b9bcc4" stroke="#55585f" strokeWidth={0.5} />
+                    )),
+                  )}
+                </Fragment>
+              );
+            })}
+            {/* Bridge: bent-steel plate under four barrel saddles; each
+                string breaks over its saddle crest at the board's right edge. */}
+            <Rect x={w - 16 * mm - 4} y={stringTop - STRING_GAP * 0.55} width={16 * mm + 6} height={3 * STRING_GAP + STRING_GAP * 1.1} rx={2} fill="url(#fbChrome)" stroke="#3a3c44" strokeWidth={0.8} />
+            {ROW_TO_STRING.map((si, row) => {
+              const y = stringTop + row * STRING_GAP;
+              const sh = STRING_GAP * 0.38;
+              return (
+                <Fragment key={`sad${si}`}>
+                  <Rect x={w - 7} y={y - sh / 2} width={6} height={sh} rx={2.4} fill="url(#fbChrome)" stroke="#4a4e58" strokeWidth={0.6} />
+                  <Circle cx={w - 4} cy={y - sh * 0.32} r={0.9} fill="#2a2c33" />
+                  <Circle cx={w - 4} cy={y + sh * 0.32} r={0.9} fill="#2a2c33" />
+                </Fragment>
+              );
+            })}
             {/* Frets: dark nickel wire + specular highlight (0 = bone nut). */}
             {Array.from({ length: NUM_FRETS + 1 }, (_, n) => {
               const x = fretPos(n) * w;

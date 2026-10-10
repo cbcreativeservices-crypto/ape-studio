@@ -210,7 +210,8 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
       }
       under.lineTo(X - 10, belt - 10);
       // Round the waist to the pack at the back of the belt.
-      under.cubicTo(X - 40, belt + 4, pack.x + 80, belt + 4, pack.x + 20, pack.y - 20);
+      // … and up into the input connector on the pack's top (BeltPack).
+      under.cubicTo(X - 40, belt + 4, pack.x + 70, belt - 10, pack.x + 2, pack.y - BODY_DIMS.packH.mm / 2 - 7);
       if (tug) {
         pull.moveTo(u0 + 22, v0 + 40);
         pull.lineTo(u0 + 22, v0 + 90);
@@ -241,36 +242,61 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
   );
 }
 
-/** A bodypack transmitter on the back of the belt, its antenna hanging. */
+/*
+ * A bodypack transmitter (real dimensions, mm — BODY_DIMS: 64 wide × 86 tall
+ * × 22 deep): worn upright on the back of the belt, its spring belt clip on
+ * the face against the body; on its top the locking mic-input connector
+ * (where the lav cable arrives) and the whip antenna, about 110 mm, standing
+ * up beside it; a small status LED.
+ */
+/** A bodypack transmitter on the back of the belt, its antenna up. */
 export function BeltPack({ view, at }: { view: ViewId; at: Vec3 }) {
   const p = useMemo(() => {
     const box = make();
     const ant = make();
+    const clip = make();
+    const jack = make();
     const W = BODY_DIMS.packW.mm;
     const H = BODY_DIMS.packH.mm;
     const D = BODY_DIMS.packD.mm;
     if (view === 'side') {
-      box.addRRect(Skia.RRectXY(Skia.XYWHRect(at.x - D / 2, at.y - H / 2, D, H), 5, 5));
-      ant.moveTo(at.x, at.y + H / 2);
-      ant.cubicTo(at.x - 4, at.y + H / 2 + 30, at.x + 4, at.y + H / 2 + 60, at.x, at.y + H / 2 + 80);
+      const top = at.y - H / 2;
+      box.addRRect(Skia.RRectXY(Skia.XYWHRect(at.x - D / 2, top, D, H), 5, 5));
+      // The clip on the body side (+x), from the top down most of the pack.
+      clip.addRRect(Skia.RRectXY(Skia.XYWHRect(at.x + D / 2, top + 4, 3, H * 0.72), 1.5, 1.5));
+      jack.addRRect(Skia.RRectXY(Skia.XYWHRect(at.x - 2, top - 7, 9, 7), 2, 2));
+      ant.moveTo(at.x - D / 2 + 5, top);
+      ant.lineTo(at.x - D / 2 + 5, top - 110);
     } else {
       box.addRRect(Skia.RRectXY(Skia.XYWHRect(at.x - D / 2, at.z - W / 2, D, W), 4, 4));
+      clip.addRRect(Skia.RRectXY(Skia.XYWHRect(at.x + D / 2, at.z - W * 0.3, 3, W * 0.6), 1.5, 1.5));
+      jack.addCircle(at.x + 2, at.z + W * 0.22, 4.5);
+      ant.addCircle(at.x - D / 2 + 5, at.z - W * 0.3, 3);
     }
-    return { box, ant };
+    return { box, ant, clip, jack };
   }, [view, at]);
   const b = p.box.getBounds();
   return (
     <Group>
-      <Path path={p.ant} style="stroke" strokeWidth={2.4} strokeCap="round" color="#121317" />
+      {view === 'side' ? (
+        <>
+          <Path path={p.ant} style="stroke" strokeWidth={4.2} strokeCap="round" color="#060607" />
+          <Path path={p.ant} style="stroke" strokeWidth={2.6} strokeCap="round" color="#2a2c31" />
+        </>
+      ) : null}
       <Group transform={[{ translateX: -3 }, { translateY: 4 }]}>
         <Path path={p.box} color="#000" opacity={0.35}>
           <BlurMask blur={5} style="normal" />
         </Path>
       </Group>
+      <Path path={p.clip} color="#8a8f99" />
       <Path path={p.box}>
         <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={['#5a5e68', '#2c2e34', '#15161a']} />
       </Path>
       <Path path={p.box} style="stroke" strokeWidth={1.4} color="#08080a" />
+      <Path path={p.jack} color="#9aa0aa" />
+      <Path path={p.jack} style="stroke" strokeWidth={1} color="#08080a" />
+      {view === 'top' ? <Path path={p.ant} color="#2a2c31" /> : null}
     </Group>
   );
 }

@@ -19,15 +19,19 @@ import { FRONT, SPEC, UP } from './model.ts';
 export function uprightLabels(s: BrassScene, view: 'side' | 'top'): LabelSpot[] {
   const up = s.orient === 'up';
   const valvesAt = s.valves[1].c;
-  const bow = s.tubes.find((t) => t.id === 'bottomBow')!;
-  const slideAt = s.tubes.find((t) => t.id === 'slide1')!.pts[3];
+  // The leader for the body goes to the bottom bow as drawn.
+  const bow = s.tubes.find((t) => t.id === 'bowArt') ?? s.tubes.find((t) => t.id === 'bottomBow')!;
+  // The leader goes to the 3rd valve slide's crook (the longest loop drawn
+  // out of the valve block), where the slides read best from either view.
+  const v3 = s.tubes.find((t) => t.id === 'vslide3');
+  const slideAt = v3 ? v3.pts[Math.floor(v3.pts.length / 2)] : s.tubes.find((t) => t.id === 'slide1')!.pts[3];
   if (view === 'side') {
     return [
       { id: 'bell', text: up ? 'BELL — POINTS UP' : 'BELL — FACES FRONT', short: 'BELL', at: s.bell.rim, du: up ? 330 : 120, dv: up ? -60 : -s.bell.R - 120, align: 'left', alts: [{ du: -300, dv: -80, align: 'right' }] },
       { id: 'valves', text: 'PISTON VALVES', short: 'VALVES', at: valvesAt, du: 260, dv: -40, align: 'left' },
       { id: 'body', text: 'BODY AND BOWS', short: 'BODY', at: bow.pts[Math.floor(bow.pts.length / 2)], du: 330, dv: 120, align: 'left' },
       { id: 'mouth', text: 'MOUTHPIECE', at: s.J.mouth, du: -150, dv: -170, align: 'right' },
-      { id: 'slides', text: 'TUNING SLIDES', short: 'SLIDES', at: slideAt, du: 250, dv: 60, align: 'left' },
+      { id: 'slides', text: 'TUNING SLIDES', short: 'SLIDES', at: slideAt, du: 110, dv: 70, align: 'left' },
     ];
   }
   return [

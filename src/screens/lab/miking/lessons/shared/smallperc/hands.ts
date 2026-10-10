@@ -37,6 +37,11 @@ export type HandGeo = {
   hold: Pt | null;
   /** The four knuckles (local), for the dorsal highlights. */
   knuckles: Pt[];
+  /** Nails drawn as given (a hand seen from its BACK: centred, elongated
+   *  plates on each finger's last bone) instead of the side-view tip nails;
+   *  `nailAlpha` softens them (a nail seen flat is barely lighter than skin). */
+  nails?: Pt[][];
+  nailAlpha?: number;
 };
 
 const D = Math.PI / 180;
@@ -188,10 +193,13 @@ export function dorsalFist(): HandGeo {
 }
 
 /** A flat hand, fingers together and gently curved toward the palm by `curl`
- *  degrees in all (0 = straight). Seen from the side (thumb side up). */
-export function openHand(curl = 12): HandGeo {
+ *  degrees in all (0 = straight). Seen from the side (thumb side up).
+ *  `fromUlnar` sees it from the LITTLE-finger side instead: the little finger
+ *  nearest (with its nail), the index farthest (draw the thumb with
+ *  `farThumb`, behind the body). */
+export function openHand(curl = 12, fromUlnar = false): HandGeo {
   const fingers: FingerGeo[] = [];
-  [3, 2, 1, 0].forEach((k, layer) => {
+  (fromUlnar ? [0, 1, 2, 3] : [3, 2, 1, 0]).forEach((k, layer) => {
     const f = FINGERS[k];
     const y0 = 2 - layer * 1.5;
     const base: Pt = [92, y0];
@@ -248,6 +256,152 @@ export function cradle(r: number, curl = 110): HandGeo {
   ];
   const creases: Pt[][] = [[[46, 4], [66, 2]]];
   return { body, fingers, thumb, creases, hold: c, knuckles: [] };
+}
+
+/**
+ * The BACK of a flat hand seen from above (a right hand, palm down): the
+ * wrist at the origin, +x toward the fingertips, −y toward the thumb. Four
+ * fingers together across the knuckle row, the thumb relaxed along the index
+ * side. True size: wrist crease to the middle fingertip ≈ 190 mm, the palm
+ * ≈ 85 mm across the knuckles (typical adult proportions). `curl` (deg, 0 =
+ * flat) bends the fingers down at their joints, so from above they shorten
+ * (foreshortened) — a cupped slap, fingertips on the head. Knuckle creases at
+ * each finger's two joints; a nail on every finger and the thumb.
+ */
+export function dorsalFlat(curl = 0): HandGeo {
+  const kx = 90;
+  const ys = [-28.5, -9.5, 9, 26.5];
+  const fan = [-2.5, 0, 2, 5]; // the fingers fan very slightly (deg)
+  const fingers: FingerGeo[] = [];
+  const creases: Pt[][] = [];
+  const knuckles: Pt[] = [];
+  ys.forEach((y, i) => {
+    const f = FINGERS[i];
+    const base: Pt = [kx - 12 - (i === 3 ? 6 : 0), y];
+    const pts: Pt[] = [base];
+    let p: Pt = [kx - (i === 3 ? 6 : 0), y];
+    pts.push(p);
+    let bend = 0;
+    f.seg.forEach((sLen, j) => {
+      bend += curl / 3;
+      const proj = sLen * Math.cos(bend * D); // seen from above: foreshortened
+      const a = fan[i] * D;
+      p = [p[0] + proj * Math.cos(a), p[1] + proj * Math.sin(a)];
+      pts.push(p);
+      if (j < 2) {
+        // the joint's creases across the back of the finger (PIP: two, DIP: one)
+        const hw = (f.w * (1 - 0.1 * (j + 1))) / 2;
+        for (const dx of j === 0 ? [-2.5, 1.5] : [0]) creases.push([[p[0] + dx, p[1] - hw * 0.55], [p[0] + dx + 1.2, p[1]], [p[0] + dx, p[1] + hw * 0.55]]);
+      }
+    });
+    // little finger first, so the drawing order overlaps toward the index
+    fingers.push(finger(pts, f.w, f.w * 0.82, 3 - i, true));
+    knuckles.push([kx - (i === 3 ? 6 : 0), y]);
+  });
+  const thumb = finger([[16, -30], [44, -46], [70, -55], [94, -58]], 25, 18.5, 5, true);
+  const body: Pt[] = [
+    [-4, -28],
+    [26, -38],
+    [kx - 6, -40],
+    [kx + 2, -22],
+    [kx + 4, 0],
+    [kx, 20],
+    [kx - 10, 36],
+    [44, 40],
+    [-4, 30],
+  ];
+  // the extensor tendons, faint, from the wrist toward each knuckle
+  for (const y of ys) creases.push([[20, y * 0.55], [kx - 22, y * 0.95]]);
+  // Nails seen from the back: a rounded plate centred on each last bone
+  // (≈ half its length, ≈ ¾ of the fingertip's width), ending short of the tip.
+  const nails: Pt[][] = [...fingers, thumb].map((f) => {
+    const [dx, dy] = f.tipDir;
+    const L = f === thumb ? 15 : 12;
+    const hw = f.w1 * 0.36;
+    const c: Pt = [f.tip[0] - dx * (L / 2 + 2.5), f.tip[1] - dy * (L / 2 + 2.5)];
+    const out: Pt[] = [];
+    for (let k = 0; k < 16; k++) {
+      const t = (k / 16) * 2 * Math.PI;
+      const cu = Math.cos(t);
+      const sv = Math.sin(t);
+      // a squarish oval: flatter at the cuticle, rounder at the free edge
+      const u = Math.sign(cu) * Math.pow(Math.abs(cu), 0.7) * (L / 2);
+      const v = Math.sign(sv) * Math.pow(Math.abs(sv), 0.8) * hw;
+      out.push([c[0] + dx * u - dy * v, c[1] + dy * u + dx * v]);
+    }
+    return out;
+  });
+  return { body, fingers, thumb, creases, hold: null, knuckles, nails, nailAlpha: 0.45 };
+}
+
+/** Nails seen from the SIDE: a thin plate along the back (−y side) of each
+ *  nailed finger's last bone — not a disc on the tip. */
+export function sideNails(fingers: readonly FingerGeo[]): Pt[][] {
+  return fingers.filter((f) => f.nail).map((f) => {
+    const [dx, dy] = f.tipDir;
+    const nx = dy; // the back of the finger (−y for a finger along +x)
+    const ny = -dx;
+    const L = 12;
+    const t = f.w1 * 0.16;
+    const c: Pt = [f.tip[0] - dx * (L / 2 + 2) + nx * f.w1 * 0.36, f.tip[1] - dy * (L / 2 + 2) + ny * f.w1 * 0.36];
+    const out: Pt[] = [];
+    for (let k = 0; k < 14; k++) {
+      const a = (k / 14) * 2 * Math.PI;
+      const u = Math.cos(a) * (L / 2);
+      const v = Math.sin(a) * t;
+      out.push([c[0] + dx * u + nx * v, c[1] + dy * u + ny * v]);
+    }
+    return out;
+  });
+}
+
+/**
+ * A PINCH, seen from the thumb side: the index finger bent down at its three
+ * joints and the thumb's pad meeting its pad — a strap or a loop held between
+ * them (`hold` is the pinch). The other three fingers curl loosely into the
+ * palm behind. Local frame as the others (+y toward the palm). True size
+ * (≈ 190 mm hand).
+ */
+export function pinchHand(): HandGeo {
+  const fingers: FingerGeo[] = [];
+  // The middle finger just behind the index, a little more bent; the ring
+  // and little fingers fold into the palm (part of the body's outline).
+  const spec: [number, Pt, number[]][] = [
+    [1, [86, 4], [46, 92, 122]],
+    [0, [88, 0], [38, 78, 105]],
+  ];
+  spec.forEach(([k, mcp, angs], layer) => {
+    const f = FINGERS[k];
+    let p: Pt = mcp;
+    const pts: Pt[] = [[mcp[0] - 10, mcp[1] - 1], p];
+    f.seg.forEach((sLen, j) => {
+      const a = angs[j] * D;
+      p = [p[0] + sLen * Math.cos(a), p[1] + sLen * Math.sin(a)];
+      pts.push(p);
+    });
+    fingers.push(finger(pts, f.w, f.w * 0.82, layer, k === 0));
+  });
+  const idx = fingers[1];
+  // the index's pad: just short of its tip, on the inside of its curl
+  const [dx, dy] = idx.tipDir;
+  const pad: Pt = [idx.tip[0] - dx * 6 - dy * idx.w1 * 0.45, idx.tip[1] - dy * 6 + dx * idx.w1 * 0.45];
+  // the thumb: from the thenar pad down and forward, its pad on the index's pad
+  const thumb = finger([[34, 16], [64, 36], [88, 56], [pad[0] - 6, pad[1] + 9]], 24, 18, 5, true);
+  const body: Pt[] = [
+    [-4, -22],
+    [40, -20],
+    [86, -12],
+    [99, 2],
+    [100, 22], // the ring and little fingers folded into the palm
+    [90, 42],
+    [68, 46],
+    [44, 34],
+    [-4, 24],
+  ];
+  // (no crease marks: the thumb crosses the knuckle line in this view)
+  const creases: Pt[][] = [];
+  const nails = sideNails([idx, thumb]);
+  return { body, fingers, thumb, creases, hold: [pad[0] - 2, pad[1] + 3], knuckles: [[88, -2]], nails, nailAlpha: 0.35 };
 }
 
 /* ── placing a hand in a view ── */

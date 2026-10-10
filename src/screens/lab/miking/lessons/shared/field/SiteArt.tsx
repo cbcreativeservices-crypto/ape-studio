@@ -453,7 +453,35 @@ function Hedge({ f, view }: { f: Extract<SiteFeature, { kind: 'hedge' }>; view: 
 
 function Bench({ f, view }: { f: Extract<SiteFeature, { kind: 'bench' }>; view: ViewId }) {
   const [x, z] = f.c;
-  if (view === 'side') return <Path path={rectP(make(), x - 250, -450, x + 250, -380)} color="#7a5a3a" />;
+  if (view === 'side') {
+    // Seen end-on (art pass 2026-10-10 — it was a plank floating in the air):
+    // a park bench of the usual class, seat 450 mm up and 450 deep, its back
+    // raked to 820 mm, on a cast end frame (front leg, rear leg rising into
+    // the back support, armrest); the slats cut across, facing +x.
+    const frame = make();
+    frame.addPath(polyPath([[x + 170, 0], [x + 215, 0], [x + 235, -450], [x + 195, -450]]));
+    frame.addPath(polyPath([[x - 215, 0], [x - 170, 0], [x - 200, -450], [x - 270, -830], [x - 305, -825], [x - 245, -450]]));
+    frame.addPath(polyPath([[x - 240, -430], [x + 240, -430], [x + 240, -395], [x - 235, -395]]));
+    frame.addPath(polyPath([[x - 225, -640], [x + 220, -630], [x + 225, -605], [x + 215, -440], [x + 190, -440], [x + 195, -605], [x - 220, -612]]));
+    const slats = make();
+    for (let k = 0; k < 4; k++) rectP(slats, x - 230 + k * 120, -470, x - 230 + k * 120 + 95, -432, 8);
+    for (let k = 0; k < 3; k++) {
+      const t = 0.2 + k * 0.3;
+      const cx = x - 215 - t * 70;
+      const cy = -480 - t * 340;
+      slats.addPath(polyPath([[cx - 22, cy - 45], [cx + 14, cy - 50], [cx + 26, cy + 45], [cx - 10, cy + 50]]));
+    }
+    return (
+      <Group>
+        <Path path={frame} color="#2b2d31" />
+        <Path path={frame} style="stroke" strokeWidth={10} color={INK} opacity={0.7} />
+        <Path path={slats}>
+          <LinearGradient start={vec(x - 250, -850)} end={vec(x + 250, -400)} colors={['#a57b4e', '#6e4d2d']} />
+        </Path>
+        <Path path={slats} style="stroke" strokeWidth={8} color={INK} opacity={0.7} />
+      </Group>
+    );
+  }
   const slats = make();
   for (let k = 0; k < 4; k++) rectP(slats, x - 250 + k * 130, z - f.len / 2, x - 250 + k * 130 + 100, z + f.len / 2, 20);
   return (
@@ -469,10 +497,22 @@ function Bench({ f, view }: { f: Extract<SiteFeature, { kind: 'bench' }>; view: 
 function Cone({ c, view }: { c: XZ; view: ViewId }) {
   const [x, z] = c;
   if (view === 'side') {
+    // A 700 mm traffic cone (art pass 2026-10-10): the square base 360 mm
+    // across, the tapered body to a rounded tip, two reflective collars.
+    const body = polyPath([[x - 140, -40], [x - 34, -680], [x - 20, -700], [x + 20, -700], [x + 34, -680], [x + 140, -40]]);
+    const collars = make();
+    collars.addPath(polyPath([[x - 110, -290], [x - 82, -460], [x + 82, -460], [x + 110, -290]]));
+    collars.addPath(polyPath([[x - 66, -540], [x - 54, -610], [x + 54, -610], [x + 66, -540]]));
     return (
       <Group>
-        <Path path={polyPath([[x - 160, 0], [x - 40, -700], [x + 40, -700], [x + 160, 0]])} color="#f07a2c" />
-        <Path path={rectP(make(), x - 110, -420, x + 110, -300)} color="#eceae4" />
+        <Path path={rectP(make(), x - 180, -40, x + 180, 0, 6)} color="#2a2a2a" />
+        <Path path={body}>
+          <LinearGradient start={vec(x - 140, 0)} end={vec(x + 140, 0)} colors={['#ffb070', '#f07a2c', '#b8501a']} />
+        </Path>
+        <Path path={collars}>
+          <LinearGradient start={vec(x - 110, 0)} end={vec(x + 110, 0)} colors={['#ffffff', '#e4e2dc', '#a9a7a2']} />
+        </Path>
+        <Path path={body} style="stroke" strokeWidth={8} color={INK} opacity={0.6} />
       </Group>
     );
   }

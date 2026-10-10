@@ -46,42 +46,87 @@ function smoothClosed(pts: readonly [number, number][]): SkPath {
   return p;
 }
 
-/** The held jacket (side: folded over the hands and hanging; top: gathered across the hands). */
+/**
+ * The held jacket (side: held up by the shoulders and hanging; top: gathered
+ * across the hands). Art pass 2026-10-10 — the side view was a rounded sack
+ * with a tail. A leather jacket of the usual cut (chest 560 mm flat, 650 mm
+ * collar to hem, sleeve 640 mm; drawing defaults of the class), held at the
+ * shoulders and partly gathered, so it hangs JACKET.hangs below the hands.
+ * From the artist's right it is seen edge-on: the stand collar, the near
+ * shoulder, the body's two panels hanging apart toward the hem, the zipped
+ * front edge (toward the artist's front, +x), the knitted-look waistband, and
+ * the near sleeve hanging from its shoulder seam with its cuff zip.
+ */
 export function HeldJacket({ view }: { view: ViewId }) {
   const g = useMemo(() => {
     if (view === 'side') {
+      const H = JACKET.hangs;
       const body = smoothClosed([
-        [-70, -40],
-        [-10, -62],
-        [70, -36],
-        [92, 60],
-        [80, 200],
-        [96, JACKET.hangs],
-        [20, JACKET.hangs + 20],
-        [-60, JACKET.hangs - 10],
-        [-90, 180],
-        [-96, 40],
+        [-44, -54],
+        [10, -66],
+        [58, -40],
+        [84, 40],
+        [104, 170],
+        [118, H - 10],
+        [120, H + 8],
+        [-74, H + 14],
+        [-78, H - 10],
+        [-84, 180],
+        [-70, 50],
       ]);
+      // The waistband: a 40 mm band across the hem.
+      const band = make();
+      band.moveTo(-78, H - 22);
+      band.quadTo(20, H - 12, 119, H - 26);
+      band.lineTo(122, H + 12);
+      band.quadTo(20, H + 26, -76, H + 16);
+      band.close();
+      // The stand collar, folded over the hands' grip.
+      const collar = smoothClosed([
+        [-50, -60],
+        [-10, -92],
+        [46, -82],
+        [62, -50],
+        [20, -40],
+        [-30, -40],
+      ]);
+      // The near sleeve from its shoulder seam: 150 mm at the top, 105 at
+      // the cuff, an elbow bend, the cuff band.
+      // (Hung behind the zipped front edge, which stays in view.)
       const sleeve = smoothClosed([
-        [40, 40],
-        [90, 70],
-        [140, 260],
-        [150, 400],
-        [110, 410],
-        [92, 270],
-        [50, 120],
+        [-12, -20],
+        [44, -24],
+        [62, 90],
+        [68, 200],
+        [80, 300],
+        [86, H + 70],
+        [-14, H + 76],
+        [-12, 300],
+        [-22, 190],
+        [-32, 80],
       ]);
+      const cuff = make();
+      cuff.moveTo(-13, H + 34);
+      cuff.lineTo(85, H + 30);
       const folds = make();
-      folds.moveTo(-60, 10);
-      folds.quadTo(0, 40, 70, 0);
-      folds.moveTo(-70, 120);
-      folds.quadTo(-10, 150, 60, 110);
-      folds.moveTo(-50, 230);
-      folds.quadTo(10, 260, 70, 240);
+      folds.moveTo(0, 60);
+      folds.quadTo(26, 110, 30, 170);
+      folds.moveTo(6, 220);
+      folds.quadTo(36, 250, 72, 240);
+      folds.moveTo(-60, 90);
+      folds.quadTo(-40, 160, -50, 240);
+      folds.moveTo(-6, -30);
+      folds.quadTo(30, -8, 70, -18); // the shoulder seam
       const zip = make();
-      zip.moveTo(-20, -50);
-      zip.cubicTo(-30, 100, -10, 220, 0, JACKET.hangs + 10);
-      return { body, sleeve, folds, zip };
+      zip.moveTo(58, -42);
+      zip.cubicTo(84, 40, 104, 170, 118, H - 22);
+      const cuffZip = make();
+      cuffZip.moveTo(80, H + 36);
+      cuffZip.lineTo(84, H + 70); // the cuff zip
+      const pull = make();
+      pull.addRRect(Skia.RRectXY(Skia.XYWHRect(56, -40, 10, 24), 3, 3));
+      cuff.addPath(cuffZip);
+      return { body, sleeve, folds, zip, band, collar, cuff, pull };
     }
     const A = JACKET.across;
     const body = smoothClosed([
@@ -109,18 +154,43 @@ export function HeldJacket({ view }: { view: ViewId }) {
     const zip = make();
     zip.moveTo(-70, 0);
     zip.lineTo(66, 0);
-    return { body, sleeve, folds, zip };
+    return { body, sleeve, folds, zip, band: null, collar: null, cuff: null, pull: null };
   }, [view]);
   const b = g.body.getBounds();
   return (
     <Group>
-      <Path path={g.sleeve}>
-        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={['#6e4527', '#432410', '#2a1608']} />
-      </Path>
-      <Path path={g.sleeve} style="stroke" strokeWidth={2.4} color={SEAM} />
+      {g.collar ? null : (
+        <>
+          <Path path={g.sleeve}>
+            <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={['#6e4527', '#432410', '#2a1608']} />
+          </Path>
+          <Path path={g.sleeve} style="stroke" strokeWidth={2.4} color={SEAM} />
+        </>
+      )}
       <Path path={g.body}>
         <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={LEATHER} />
       </Path>
+      <Path path={g.body} style="stroke" strokeWidth={2.6} color={SEAM} />
+      {g.band ? (
+        <>
+          <Path path={g.band} color="#2e190b" />
+          <Path path={g.band} style="stroke" strokeWidth={2} color={SEAM} />
+        </>
+      ) : null}
+      {g.collar ? (
+        <>
+          {/* Side: the near sleeve hangs over the body from its shoulder seam. */}
+          <Path path={g.sleeve}>
+            <LinearGradient start={vec(0, -30)} end={vec(130, JACKET.hangs + 80)} colors={['#946240', '#6a3f20', '#45250f', '#2a1608']} />
+          </Path>
+          <Path path={g.sleeve} style="stroke" strokeWidth={2.4} color={SEAM} />
+          <Path path={g.cuff!} style="stroke" strokeWidth={2.2} color={SEAM} />
+          <Path path={g.collar}>
+            <LinearGradient start={vec(-50, -92)} end={vec(60, -40)} colors={['#7a4c2c', '#4a2912', '#2a1608']} />
+          </Path>
+          <Path path={g.collar} style="stroke" strokeWidth={2.2} color={SEAM} />
+        </>
+      ) : null}
       <Path path={g.folds} style="stroke" strokeWidth={5} strokeCap="round" color="#1f1006" opacity={0.6} />
       <Group transform={[{ translateX: -2 }, { translateY: -3 }]}>
         <Path path={g.folds} style="stroke" strokeWidth={2.4} strokeCap="round" color="#c89a6e" opacity={0.45} />
@@ -128,7 +198,7 @@ export function HeldJacket({ view }: { view: ViewId }) {
       <Path path={g.zip} style="stroke" strokeWidth={3.2} color="#c7ccd4" opacity={0.75}>
         <DashPathEffect intervals={[5, 3]} />
       </Path>
-      <Path path={g.body} style="stroke" strokeWidth={2.6} color={SEAM} />
+      {g.pull ? <Path path={g.pull} color="#c7ccd4" /> : null}
     </Group>
   );
 }

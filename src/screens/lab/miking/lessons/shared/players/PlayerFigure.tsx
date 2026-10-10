@@ -350,6 +350,55 @@ export function FigureHead({ fill }: { fill: SkPath }) {
 
 type HandShape = { path: SkPath; lines: SkPath; pick: SkPath | null; bar: SkPath | null; thumbBehind: SkPath | null };
 
+/**
+ * THE HAND (figure polish 2026-10-10, owner: "high-end drawings everywhere …
+ * my peers are my critics" — the old hands were flat mittens). Built from
+ * the adult hand's real parts, in its own frame (x along the hand from the
+ * wrist crease, y across; −y the thumb side):
+ *   • adult hand ≈ 180 mm wrist crease → middle fingertip (≈ 0.79 of the
+ *     228 mm head), palm ≈ 100 mm, breadth across the knuckles ≈ 84 mm;
+ *   • four fingers, each three phalanges ≈ 45 / 28 / 22 % of its length —
+ *     index 70, middle 78, ring 73, little 57 mm — ≈ 22 mm wide at the base,
+ *     tapering to ≈ 16 mm at the tip; the knuckles (MCP) on an arc, the
+ *     middle finger's furthest out;
+ *   • the thumb from the base of the palm (its metacarpal inside the thenar
+ *     mass), two phalanges, ≈ 22 mm wide;
+ *   • the wrist ≈ 56 mm wide, narrower than the cuff it leaves.
+ * Each kind poses those parts round what it holds: a relaxed open hand
+ * (back), a fist round a pick or a stick, fingers arched over a fingerboard,
+ * fingers curved down onto keys, a hand over a steel bar.
+ */
+const FINGERS = [
+  // knuckle (x, y), splay (rad), phalanges (mm), radii base → tip (mm)
+  { x: 95, y: -27, a: -0.07, seg: [32, 20, 16], r: [11.0, 10.2, 9.2, 8.0] },
+  { x: 100, y: -8.5, a: -0.02, seg: [35, 22, 18], r: [11.4, 10.6, 9.6, 8.3] },
+  { x: 97, y: 9.5, a: 0.04, seg: [33, 21, 17], r: [10.8, 10.0, 9.0, 7.9] },
+  { x: 88, y: 26, a: 0.12, seg: [26, 16, 13], r: [9.6, 8.9, 8.0, 7.0] },
+] as const;
+/** The proximal phalanx of each finger in a fist (mm). */
+const FIST_LEN = [33, 36, 34, 28] as const;
+
+/** A digit through joints from (x0, y0) in the hand frame: each phalanx
+ *  turned by its bend; returns the outline and the joints. */
+function digit(L: (x: number, y: number) => Pt, x0: number, y0: number, a0: number, seg: readonly number[], bends: readonly number[], r: readonly number[]) {
+  let x = x0;
+  let y = y0;
+  let a = a0;
+  const joints: Pt[] = [L(x, y)];
+  for (let i = 0; i < seg.length; i++) {
+    a += bends[i] ?? 0;
+    x += Math.cos(a) * seg[i];
+    y += Math.sin(a) * seg[i];
+    joints.push(L(x, y));
+  }
+  return { path: limb(joints, [...r]), joints };
+}
+
+/** The wrist leaving the cuff: a short tapered column into the palm. */
+function wristOf(L: (x: number, y: number) => Pt): SkPath {
+  return capsule(L(-22, 0), L(26, 0), 26, 30);
+}
+
 /** A hand (in its own frame), as one outline plus its knuckle and finger
  *  lines; `pick` adds a pick's tip. Exported for art with its own figure. */
 export function handShape(h: Hand): HandShape {
@@ -357,21 +406,32 @@ export function handShape(h: Hand): HandShape {
   const W = BODY.handW / 2;
   const lines = make();
   if (h.kind === 'pick' || h.kind === 'grip') {
-    // A loose fist: the palm, the curled fingers' knuckles, the thumb along
-    // the top (holding the pick against the side of the index finger, or
-    // wrapped round a stick).
-    const palm = smooth([L(0, -W * 0.72), L(60, -W * 0.95), L(98, -W * 0.82), L(112, -W * 0.2), L(108, W * 0.55), L(82, W * 0.92), L(36, W * 0.86), L(0, W * 0.7)], 0.6);
-    const ys = [-0.62, -0.2, 0.22, 0.6];
-    const knuckles = ys.map((y, i) => capsule(L(96 - i * 3, y * W), L(118 - i * 6, y * W * 1.02), 13, 12));
-    const thumb = capsule(L(38, -W * 0.9), L(104, -W * 0.98), 15, 12);
-    // The gaps between the curled fingers, and the knuckle line.
+    // A loose FIST seen from its back: the palm, the four proximal phalanges
+    // running forward to a row of rounded middle knuckles (the rest of each
+    // finger folded under, its middle phalanx peeking below), the thumb along
+    // the top pressing the pick against the side of the index finger (or
+    // wrapped round the stick).
+    const palm = smooth([L(-6, -27), L(36, -36), L(78, -40), L(96, -36), L(102, -10), L(100, 14), L(92, 34), L(62, 38), L(24, 32), L(-6, 26)], 0.55);
+    const fist = FINGERS.map((f, i) => capsule(L(f.x - 4, f.y), L(f.x - 4 + FIST_LEN[i], f.y + f.a * FIST_LEN[i] * 0.4), f.r[0], f.r[0] + 0.6));
+    const folded = FINGERS.map((f, i) => capsule(L(f.x + FIST_LEN[i] - 6, f.y + 7), L(f.x + FIST_LEN[i] - 22, f.y + 11), f.r[0] - 1.4, f.r[0] - 2));
+    const thumb = digit(L, 16, -30, -0.5, [40, 30, 24], [0, 0.42, 0.12], [15, 13, 11.5, 9.6]);
+    // The gaps between the knuckles of the curled fingers.
     for (let i = 0; i < 3; i++) {
-      const y = ((ys[i] + ys[i + 1]) / 2) * W;
-      lines.addPath(curve([L(100 - i * 3, y), L(118 - i * 5, y * 1.02)]));
+      const f0 = FINGERS[i];
+      const f1 = FINGERS[i + 1];
+      const y = (f0.y + f1.y) / 2;
+      lines.addPath(curve([L(f0.x + 6, y), L(f0.x + 30, y + 1)]));
     }
-    lines.addPath(curve([L(84, -W * 0.7), L(90, 0), L(80, W * 0.78)]));
-    // The thumb's crease.
-    lines.addPath(curve([L(60, -W * 0.82), L(74, -W * 0.92)]));
+    // The knuckle row (MCP) across the back, and each middle knuckle's crease.
+    lines.addPath(curve([L(92, -36), L(99, -9), L(96, 12), L(86, 32)]));
+    FINGERS.forEach((f, i) => {
+      const x = f.x + FIST_LEN[i];
+      lines.addPath(curve([L(x - 8, f.y - f.r[0] * 0.55), L(x - 3, f.y), L(x - 8, f.y + f.r[0] * 0.55)]));
+    });
+    // The thumb's joint crease and its nail.
+    const tj = thumb.joints;
+    lines.addPath(crease(tj[1], tj[2], 0.92, 9, 2));
+    lines.addPath(crease(tj[2], tj[3], 0.62, 6, -1.5));
     let pick: SkPath | null = null;
     if (h.kind === 'pick') {
       const tip = L(122, -W * 1.08);
@@ -383,54 +443,60 @@ export function handShape(h: Hand): HandShape {
       pick.lineTo(tip.u + Math.cos(h.dir) * 14, tip.v + Math.sin(h.dir) * 14);
       pick.close();
     }
-    return { path: union(palm, thumb, ...knuckles), lines, pick, bar: null, thumbBehind: null };
+    return { path: union(wristOf(L), palm, ...folded, ...fist, thumb.path), lines, pick, bar: null, thumbBehind: null };
   }
   if (h.kind === 'fret' && h.board) {
-    // The back of the hand below the neck, the fingers arching over the
-    // board's edge onto the strings just behind four frets; the thumb's tip
-    // shows over the top edge (it is behind the neck).
+    // Seen from the front: the heel of the palm below the neck, the fingers
+    // rising from a knuckle row ≈ 21 mm apart and FANNING to their frets,
+    // each curled — the knuckle below the board's edge, the middle joint over
+    // the edge, the tip down on its string; the thumb's tip shows over the top
+    // edge (it is behind the neck).
     const bd = h.board;
     const lowEdge = bd.v + bd.half;
     const tips = bd.tips;
-    // Fingertips on the strings (index on a middle string, the others
-    // spread across), each finger curled: knuckle below the board's edge, the
-    // middle joint over the edge, the tip down onto its string.
     const tipVs = [-0.3, 0.05, 0.32, -0.08].map((t) => bd.v + t * bd.half);
-    const knuckleV = lowEdge + 16;
+    const knuckleV = lowEdge + 18;
     const lo = Math.min(...tips);
     const hi = Math.max(...tips);
+    const cu = (lo + hi) / 2 + 4;
+    const dirU = Math.sign(tips[tips.length - 1] - tips[0]) || 1;
+    const ku = tips.map((_, i) => cu + (i - 1.5) * 21 * dirU);
+    const kLo = Math.min(...ku);
+    const kHi = Math.max(...ku);
+    const w = h.wrist;
     const palm = smooth(
       [
-        pt(h.wrist.u - 34, h.wrist.v + 4),
-        pt(lo - 6, knuckleV + 30),
-        pt(lo - 2, knuckleV + 2),
-        pt((lo + hi) / 2, knuckleV - 6),
-        pt(hi + 4, knuckleV),
-        pt(hi + 14, knuckleV + 26),
-        pt(h.wrist.u + 30, h.wrist.v - 2),
+        pt(w.u - 26, w.v - 2),
+        pt(kLo - 14, knuckleV + 30),
+        pt(kLo - 8, knuckleV + 2),
+        pt(cu, knuckleV - 6),
+        pt(kHi + 8, knuckleV + 2),
+        pt(kHi + 16, knuckleV + 30),
+        pt(w.u + 26, w.v - 2),
+        pt(w.u, w.v + 4),
       ],
       0.55,
     );
+    const wrist = capsule(w, lerp(w, pt(cu, knuckleV + 20), 0.45), 26, 30);
     const fingers = tips.map((tu, i) => {
-      const ku = tu + 4 + (i - 1.5) * 1.5;
-      const k = pt(ku, knuckleV);
-      const mid = pt(tu + 3, lowEdge + 1);
+      const k = pt(ku[i], knuckleV);
+      const mid = pt(lerp(k, pt(tu, 0), 0.62).u, lowEdge + 1);
       const tip = pt(tu, tipVs[i]);
-      const r = i === 3 ? 6.4 : 7.4;
+      const f = FINGERS[i] ?? FINGERS[3];
       // The middle joint's crease and the nail's edge at the tip.
-      lines.addPath(crease(k, mid, 0.85, r * 0.8, 2));
-      lines.addPath(crease(mid, tip, 0.78, r * 0.55, -1.5));
-      return limb([k, mid, tip], [r + 1.6, r + 0.4, r - 0.8]);
+      lines.addPath(crease(k, mid, 0.85, f.r[1] * 0.75, 2));
+      lines.addPath(crease(mid, tip, 0.78, f.r[2] * 0.6, -1.5));
+      return limb([k, mid, tip], [f.r[0], f.r[1], f.r[3] + 0.2]);
     });
     // The knuckle row across the back of the hand.
-    lines.addPath(curve([pt(lo - 4, knuckleV + 10), pt((lo + hi) / 2, knuckleV + 4), pt(hi + 8, knuckleV + 10)]));
+    lines.addPath(curve([pt(kLo - 6, knuckleV + 12), pt(cu, knuckleV + 6), pt(kHi + 8, knuckleV + 12)]));
     const tu = (tips[0] + tips[1]) / 2 + 10;
-    const thumb = capsule(pt(tu - 8, bd.v - bd.half + 6), pt(tu + 6, bd.v - bd.half - 14), 11, 10);
-    return { path: union(palm, ...fingers), lines, pick: null, bar: null, thumbBehind: thumb };
+    const thumb = capsule(pt(tu - 8, bd.v - bd.half + 6), pt(tu + 6, bd.v - bd.half - 16), 11.5, 10);
+    return { path: union(wrist, palm, ...fingers), lines, pick: null, bar: null, thumbBehind: thumb };
   }
   if (h.kind === 'bar' && h.board) {
-    // A steel bar across the strings, the hand resting over it, the fingers
-    // curled down in front.
+    // A steel bar across the strings, the hand resting over it, three fingers
+    // curled down in front (the fourth behind them).
     const bu = h.board.tips[0];
     const bv = h.board.v;
     const bar =
@@ -442,30 +508,58 @@ export function handShape(h: Hand): HandShape {
             return p;
           })();
     const centre = h.board.half > 20 ? pt(bu + 8, bv - 2) : pt(bu, bv - 34);
-    const palm = limb([h.wrist, lerp(h.wrist, centre, 0.55), centre], [31, 38, 36]);
-    const fingersEnd = h.board.half > 20 ? pt(bu + 48, bv + 24) : pt(bu + 34, bv + 6);
-    const fingers = limb([pt(centre.u + 18, centre.v - 6), fingersEnd], [17, 13]);
-    lines.addPath(crease(pt(centre.u + 18, centre.v - 6), fingersEnd, 0.35, 12, 2));
-    lines.addPath(crease(pt(centre.u + 18, centre.v - 6), fingersEnd, 0.7, 10, 2));
-    return { path: union(palm, fingers), lines, pick: null, bar, thumbBehind: null };
+    const palm = limb([h.wrist, lerp(h.wrist, centre, 0.55), centre], [27, 36, 38]);
+    const fingersEnd = h.board.half > 20 ? pt(bu + 46, bv + 22) : pt(bu + 32, bv + 6);
+    const root = pt(centre.u + 16, centre.v - 6);
+    const fingers = [-12, 0, 12].map((o) => {
+      const a = pt(root.u, root.v + o);
+      const b = pt(fingersEnd.u, fingersEnd.v + o * 0.8);
+      return limb([a, lerp(a, b, 0.55), b], [10, 9, 7.5]);
+    });
+    lines.addPath(crease(root, fingersEnd, 0.55, 16, 2));
+    return { path: union(palm, ...fingers), lines, pick: null, bar, thumbBehind: null };
   }
-  if (h.kind === 'keys') {
+  if (h.kind === 'keys' || h.kind === 'wrap') {
     // Seen from the side: the back of the hand arched over the keys, the
-    // fingers curving down to the key tops, the thumb along the near edge.
-    const palm = smooth([L(0, -W * 0.42), L(56, -W * 0.62), L(104, -W * 0.5), L(118, -W * 0.05), L(100, W * 0.42), L(48, W * 0.48), L(0, W * 0.4)], 0.6);
-    const fingers = limb([L(100, -W * 0.3), L(146, -W * 0.05), L(170, W * 0.5)], [17, 14, 11]);
-    lines.addPath(crease(L(100, -W * 0.3), L(146, -W * 0.05), 0.15, 13, 2));
-    lines.addPath(crease(L(146, -W * 0.05), L(170, W * 0.5), 0.1, 11, 2));
-    const thumb = capsule(L(30, W * 0.3), L(96, W * 0.62), 14, 11);
-    return { path: union(palm, fingers, thumb), lines, pick: null, bar: null, thumbBehind: null };
+    // fingers curving down at each joint to the key tops (three show, each a
+    // little behind the last), the thumb along the near edge. 'wrap': the
+    // same fingers curled round a neck or a tube, the thumb behind it. The
+    // fingers always curl toward the floor, whichever way the hand points.
+    const flip = Math.cos(h.dir) >= 0 ? 1 : -1;
+    const K = (x: number, y: number) => L(x, y * flip);
+    const palm = smooth([K(-10, -24), K(40, -32), K(92, -26), K(108, -10), K(104, 12), K(60, 22), K(-10, 20)], 0.55);
+    const fingers = [
+      { dx: 0, dy: 0, k: 1 },
+      { dx: -6, dy: -5, k: 0.94 },
+      { dx: -13, dy: -9, k: 0.8 },
+    ].map((o, i) => {
+      const d = digit(K, 98 + o.dx, -12 + o.dy, -0.05, [34 * o.k, 22 * o.k, 17 * o.k], [0.28, 0.6, 0.42], [10, 9.2, 8.2, 7]);
+      if (i === 0) {
+        lines.addPath(crease(d.joints[0], d.joints[1], 0.95, 8, 2));
+        lines.addPath(crease(d.joints[1], d.joints[2], 0.95, 7, 2));
+        lines.addPath(crease(d.joints[2], d.joints[3], 0.6, 5, -1.5));
+      }
+      return d.path;
+    });
+    lines.addPath(curve([K(96, -24), K(104, -10)]));
+    if (h.kind === 'wrap') return { path: union(wristOf(K), palm, ...fingers), lines, pick: null, bar: null, thumbBehind: null };
+    const thumb = digit(K, 18, 10, 0.32, [40, 28, 20], [0, -0.2, 0.25], [14, 12, 10.5, 9]);
+    return { path: union(wristOf(K), palm, ...fingers, thumb.path), lines, pick: null, bar: null, thumbBehind: null };
   }
-  // 'above' / 'rest': the hand seen from its back, fingers together.
-  const palm = smooth([L(0, -W * 0.62), L(70, -W * 0.92), L(118, -W * 0.7), L(150, -W * 0.25), L(152, W * 0.28), L(122, W * 0.72), L(66, W * 0.9), L(0, W * 0.64)], 0.6);
-  const thumb = capsule(L(30, -W * 0.8), L(82, -W * 1.18), 15, 12);
-  // The gaps between the four fingers and the knuckle row.
-  for (const y of [-0.42, 0.02, 0.44]) lines.addPath(curve([L(112, y * W * 0.9), L(150, y * W * 0.62)]));
-  lines.addPath(curve([L(100, -W * 0.74), L(108, 0), L(100, W * 0.74)]));
-  return { path: union(palm, thumb), lines, pick: null, bar: null, thumbBehind: null };
+  // 'above' / 'rest': the relaxed hand seen from its back — the palm, four
+  // fingers lying nearly together (a hair of space between them), slightly
+  // fanned, the thumb apart along the side.
+  const palm = smooth([L(-6, -26), L(36, -35), L(74, -40), L(95, -37), L(101, -10), L(98, 12), L(88, 33), L(60, 37), L(22, 31), L(-6, 25)], 0.55);
+  const fingers = FINGERS.map((f) => digit(L, f.x - 6, f.y, f.a, [f.seg[0] + 6, f.seg[1], f.seg[2]], [0, 0.03, 0.03], f.r));
+  const thumb = digit(L, 18, -28, -0.4, [40, 30, 24], [0, 0.24, 0.1], [15.5, 13.5, 11.5, 9.6]);
+  // The knuckle row and each finger's two joint creases; the thumb's crease.
+  lines.addPath(curve([L(90, -36), L(98, -9), L(95, 11), L(85, 32)]));
+  for (const d of fingers) {
+    lines.addPath(crease(d.joints[1], d.joints[2], 0.06, 5.5, 1.5));
+    lines.addPath(crease(d.joints[2], d.joints[3], 0.08, 4.5, 1.2));
+  }
+  lines.addPath(crease(thumb.joints[2], thumb.joints[3], 0.06, 7, 1.5));
+  return { path: union(wristOf(L), palm, ...fingers.map((d) => d.path), thumb.path), lines, pick: null, bar: null, thumbBehind: null };
 }
 
 /* ── the parts ── */
@@ -505,6 +599,46 @@ function joined(...ps: SkPath[]): SkPath {
   return p;
 }
 
+/**
+ * A SLEEVED ARM (figure polish 2026-10-10: the old arm was one capsule per
+ * bone — a tube with round caps, the same thickness shoulder to wrist). Adult
+ * arm in a shirt sleeve: upper arm ≈ 94 mm across at the deltoid/biceps,
+ * ≈ 76 mm at the elbow, the forearm ≈ 80 mm just below the elbow (the
+ * muscle bellies), ≈ 62 mm at the cuff; the sleeve ends FLAT at the cuff,
+ * square to the forearm, and the hand's narrower wrist leaves it. `root`:
+ * where the upper arm starts (the shoulder joint, or a little under it so
+ * no cap rises above the shoulder line); `cap`: a deltoid mass joined to it.
+ */
+function sleeveArm(root: Pt, e: Pt, w: Pt, cap: SkPath | null = null): SkPath {
+  const upper = limb([root, lerp(root, e, 0.3), e], [44, 47, 38]);
+  const fore = limb([e, lerp(e, w, 0.26), w], [38, 40, 31]);
+  const arm = union(cap, upper, fore);
+  // The cuff: everything past the wrist, square to the forearm, cut away.
+  const th = Math.atan2(w.v - e.v, w.u - e.u);
+  const tx = Math.cos(th);
+  const ty = Math.sin(th);
+  const nx = -ty;
+  const ny = tx;
+  const cut = make();
+  const at = (a: number, b: number) => pt(w.u + tx * a + nx * b, w.v + ty * a + ny * b);
+  const c0 = at(2, -120);
+  const c1 = at(2, 120);
+  const c2 = at(200, 120);
+  const c3 = at(200, -120);
+  cut.moveTo(c0.u, c0.v);
+  cut.lineTo(c1.u, c1.v);
+  cut.lineTo(c2.u, c2.v);
+  cut.lineTo(c3.u, c3.v);
+  cut.close();
+  return Skia.Path.MakeFromOp(arm, cut, PathOp.Difference) ?? arm;
+}
+
+/** The cuff's seam: a line across the sleeve 36 mm up from its end. */
+function cuffSeam(e: Pt, w: Pt): SkPath {
+  const L = Math.max(1, dist(e, w));
+  return crease(e, w, Math.max(0, 1 - 36 / L), 31, 2);
+}
+
 /** Sleeve folds for one arm, kept few and soft: one crease at the inside
  *  of the elbow, one pull fold down the forearm from it. */
 function sleeveFolds(_s: Pt, e: Pt, w: Pt): SkPath {
@@ -533,33 +667,45 @@ function buildFront(pose: PlayerPose): Built {
   const sL = pose.shoulderL;
   const hipV = (pose.hipR.v + pose.hipL.v) / 2;
   const waistV = n.v + (hipV - n.v) * 0.68;
-  // The shirt's body: shoulders sloping from the collar, rounded deltoids,
-  // a chest tapering to the waist, the hem over the hips.
+  // The shirt's body (figure polish 2026-10-10): the trapezius sloping
+  // ≈ 17° from the side of the neck down to the point of the shoulder, the
+  // deltoid rounding over the joint (the shoulder's outer contour ≈ 234 mm
+  // from the midline: an adult's ≈ 470 mm across the deltoids), the side of
+  // the chest under the arm, the waist, the hem over the hips.
+  const S = (s: Pt, o: number) => (x: number, y: number) => pt(s.u + o * x, s.v + y);
+  const R = S(sR, -1);
+  const Lf = S(sL, 1);
   const torso = smooth(
     [
-      pt(n.u - 50, n.v - 6),
-      pt(sR.u + 40, sR.v - 24),
-      pt(sR.u - 26, sR.v + 8),
-      pt(sR.u - 34, sR.v + 70),
-      pt(sR.u + 14, sR.v + 170),
+      pt(n.u - 54, n.v - 46),
+      R(-70, -50),
+      R(8, -38),
+      R(46, 4),
+      R(40, 80),
+      R(-14, 170),
       pt(n.u - BODY.waistHalf, waistV),
       pt(pose.hipR.u - 62, hipV + 8),
       pt(n.u, hipV + 30),
       pt(pose.hipL.u + 62, hipV + 8),
       pt(n.u + BODY.waistHalf, waistV),
-      pt(sL.u - 14, sL.v + 170),
-      pt(sL.u + 34, sL.v + 70),
-      pt(sL.u + 26, sL.v + 8),
-      pt(sL.u - 40, sL.v - 24),
-      pt(n.u + 50, n.v - 6),
+      Lf(-14, 170),
+      Lf(40, 80),
+      Lf(46, 4),
+      Lf(8, -38),
+      Lf(-70, -50),
+      pt(n.u + 54, n.v - 46),
       pt(n.u, n.v + 14),
     ],
     0.5,
   );
-  // The fretting arm (behind the neck): upper arm and forearm, one sleeve.
-  const armL = limb([sL, pose.elbowL, pose.handL.wrist], [BODY.upperArmR, BODY.elbowR, BODY.wristR + 2]);
+  // Each arm hangs from its DELTOID — a cap that follows the shoulder's own
+  // outline (so no round tube end rises over the shoulder line) with the
+  // sleeve's set-in seam on its inner side — then a tapered sleeve.
+  const deltoid = (P: (x: number, y: number) => Pt) => smooth([P(-66, -48), P(8, -37), P(45, 4), P(43, 70), P(-4, 96), P(-40, 30)], 0.5);
+  // The fretting arm (behind the neck).
+  const armL = sleeveArm(pt(sL.u, sL.v + 12), pose.elbowL, pose.handL.wrist, deltoid(Lf));
   // The picking arm (over the body).
-  const armR = limb([pt(sR.u + 6, sR.v + 6), pose.elbowR, pose.handR.wrist], [BODY.upperArmR, BODY.elbowR, BODY.wristR + 2]);
+  const armR = sleeveArm(pt(sR.u, sR.v + 12), pose.elbowR, pose.handR.wrist, deltoid(R));
   // Legs: thighs toward the viewer (seated: the lap and the knees), shins
   // down to the shoes.
   const seated = pose.posture !== 'standing';
@@ -686,8 +832,8 @@ function buildAbove(pose: PlayerPose): Built {
     ],
     0.5,
   );
-  const armL = limb([sL, pose.elbowL, pose.handL.wrist], [BODY.upperArmR, BODY.elbowR, BODY.wristR + 2]);
-  const armR = limb([pt(sR.u + 8, sR.v + 10), pose.elbowR, pose.handR.wrist], [BODY.upperArmR, BODY.elbowR, BODY.wristR + 2]);
+  const armL = sleeveArm(sL, pose.elbowL, pose.handL.wrist);
+  const armR = sleeveArm(pt(sR.u + 8, sR.v + 10), pose.elbowR, pose.handR.wrist);
   const seated = pose.posture !== 'standing';
   const thighs = seated ? union(limb([pose.hipR, pose.kneeR], [BODY.thighR, BODY.kneeR + 2]), limb([pose.hipL, pose.kneeL], [BODY.thighR, BODY.kneeR + 2])) : null;
   const shoes = [pose.footR, pose.footL].map((f) => smooth([pt(f.u - 44, f.v - 150), pt(f.u + 44, f.v - 150), pt(f.u + 50, f.v - 40), pt(f.u + 30, f.v + 14), pt(f.u - 30, f.v + 14), pt(f.u - 50, f.v - 40)], 0.5));
@@ -786,8 +932,19 @@ function buildSide(pose: PlayerPose): Built {
   const legNear = union(pelvis, leg(pose.hipR, pose.kneeR, pose.footR));
   // Shoes in profile: the heel behind the ankle, the toe forward.
   const shoe = (foot: Pt) => smooth([pt(foot.u - f * 96, foot.v - 2), pt(foot.u - f * 100, foot.v - 64), pt(foot.u - f * 44, foot.v - 92), pt(foot.u + f * 40, foot.v - 62), pt(foot.u + f * 140, foot.v - 34), pt(foot.u + f * 150, foot.v - 4)], 0.45);
-  const armFar = limb([pose.shoulderL, pose.elbowL, pose.handL.wrist], [BODY.upperArmR - 2, BODY.elbowR, BODY.wristR + 2]);
-  const armNear = limb([sh, pose.elbowR, pose.handR.wrist], [BODY.upperArmR, BODY.elbowR, BODY.wristR + 2]);
+  // The arms: tapered sleeves from each shoulder, cut square at the cuff.
+  const armFar = sleeveArm(pose.shoulderL, pose.elbowL, pose.handL.wrist);
+  // The near arm hangs from its DELTOID: in profile the shoulder is ≈ 110 mm
+  // deep front to back over the joint, so the sleeve's cap is a teardrop
+  // along the upper arm — broad over the joint, tapering to the arm's own
+  // width ≈ 110 mm down (where the deltoid inserts) — never a tube's round
+  // end; it is kept inside the shirt's outline, so it never rises over the
+  // shoulder line.
+  const armAx = Math.atan2(pose.elbowR.v - sh.v, pose.elbowR.u - sh.u);
+  const A = (al: number, ac: number) => pt(sh.u + Math.cos(armAx) * al - Math.sin(armAx) * ac, sh.v + Math.sin(armAx) * al + Math.cos(armAx) * ac);
+  const deltoidRaw = smooth([A(-52, 0), A(-36, 46), A(10, 55), A(70, 48), A(112, 46.5), A(112, -46.5), A(70, -48), A(10, -56), A(-36, -48)], 0.5);
+  const deltoid = Skia.Path.MakeFromOp(deltoidRaw, torso, PathOp.Intersect) ?? deltoidRaw;
+  const armNear = sleeveArm(sh, pose.elbowR, pose.handR.wrist, deltoid);
   const head = headProfile(pose.head.c, pose.head.r, n.v + 10, f);
   const hR = handShape(pose.handR);
   const hL = handShape(pose.handL);

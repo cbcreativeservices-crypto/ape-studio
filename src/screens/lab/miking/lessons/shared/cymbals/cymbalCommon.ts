@@ -57,7 +57,7 @@ export function practiceSheet(name: string, plans: readonly string[], aimWords: 
 export const COMMON_UNKNOWNS: Lesson['unknowns'] = [
   { text: 'Every kit position and height is a drawing default of the shared kit — so no HEIGHT-above-floor readout is shown.', dims: ['yFloor'] },
   { text: 'The cymbals’ swing (± 60 mm at the edge) and the hi-hats’ opening travel, drawn as keep-outs — values for the owner to approve.', dims: ['cym'] },
-  { text: 'The cymbal profiles (8 % rise, 20 % bell), felts, sleeves, wing nuts, tilters, stands and booms — the shared cymbal family’s drawing defaults.', dims: [] },
+  { text: 'The cymbal profiles (8 % rise, 32 % bell), felts, sleeves, wing nuts, tilters, stands and booms — the shared cymbal family’s drawing defaults.', dims: [] },
   { text: 'The stick’s side of each cymbal (± 80° about the throne, a stick’s 406.4 mm up) — drawn illustratively.', dims: [] },
   { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front, square to the cymbal’s edge plane, rounded to ≈ 5 mm.', dims: [] },
 ];

@@ -6,7 +6,8 @@
  *
  * Every drawing lives in a normalized 100×150 space and is scaled to the
  * requested size, so one set of coordinates serves cards, chips and the
- * challenge list. Static geometry only — no animation.
+ * challenge list. Static geometry only — no animation. (Art pass 2026-10-10:
+ * every kind is drawn to a real mic of its class, its proportions noted.)
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -20,35 +21,8 @@ import { CondenserMic as SharedLdcMic, HandheldMic } from '../../../features/lab
 import type { MicKind } from './micSelectData';
 import { allMicImageUrls, micImageUrl } from './micImages';
 
-const BODY_HI = '#6e7482';
-const BODY_MID = '#3b3f49';
 const BODY_LO = '#15161b';
-const GRILLE_HI = '#8b909c';
-const GRILLE_LO = '#23252c';
-const MESH = '#565b66';
 const RIM = 'rgba(255,255,255,0.35)';
-const ACCENT = '#ffc64d';
-const CABLE = '#2a2c33';
-
-/** Vertical metal-sheen gradient (light from upper-left). */
-function BodyGrad({ x, w }: { x: number; w: number }) {
-  return <LinearGradient start={vec(x, 0)} end={vec(x + w, 0)} colors={[BODY_HI, BODY_MID, BODY_LO]} positions={[0, 0.42, 1]} />;
-}
-function GrilleGrad({ x, w }: { x: number; w: number }) {
-  return <LinearGradient start={vec(x, 0)} end={vec(x + w, 0)} colors={[GRILLE_HI, GRILLE_LO]} />;
-}
-
-/** Horizontal mesh lines inside a grille area. */
-function Mesh({ x, y, w, h, n = 4 }: { x: number; y: number; w: number; h: number; n?: number }) {
-  return (
-    <>
-      {Array.from({ length: n }, (_, i) => {
-        const yy = y + ((i + 1) * h) / (n + 1);
-        return <Line key={i} p1={vec(x, yy)} p2={vec(x + w, yy)} color={MESH} strokeWidth={1.4} />;
-      })}
-    </>
-  );
-}
 
 // The two mic types the owner named (2026-08-28) draw from the SHARED canonical
 // art in features/lab/micDrawings.tsx, so the catalogue entry and the Mic
@@ -68,202 +42,406 @@ function LdcMic() {
   );
 }
 
-function SdcMic() {
+/*
+ * The other ten kinds (art pass 2026-10-10): each drawn to a real mic of its
+ * CLASS, its real proportions written above it (mm), scaled into the 100 × 150
+ * design space (`mm` = design units per mm). Capsule end UP, cable end down.
+ */
+
+/** A vertical body of revolution from (y, radius) stations: a side silhouette. */
+function lathe(cx: number, stations: readonly (readonly [number, number])[]) {
+  const p = Skia.Path.Make();
+  stations.forEach(([y, r], i) => (i ? p.lineTo(cx + r, y) : p.moveTo(cx + r, y)));
+  for (let i = stations.length - 1; i >= 0; i--) p.lineTo(cx - stations[i][1], stations[i][0]);
+  p.close();
+  return p;
+}
+/** Horizontal metal sheen across a vertical body (light from the upper left). */
+function Sheen({ x0, x1, dark = false }: { x0: number; x1: number; dark?: boolean }) {
+  return <LinearGradient start={vec(x0, 0)} end={vec(x1, 0)} colors={dark ? ['#4a4e57', '#2a2c32', '#141519', '#0b0b0d'] : ['#9aa0ab', '#e6e9ee', '#8a909b', '#3a3d45']} positions={[0, 0.3, 0.62, 1]} />;
+}
+/** A fine wire-mesh cross-hatch clipped to a path. */
+function MeshOver({ clip, x0, y0, x1, y1, step = 2.4, color = '#1b1c20', opacity = 0.5 }: { clip: ReturnType<typeof Skia.Path.Make>; x0: number; y0: number; x1: number; y1: number; step?: number; color?: string; opacity?: number }) {
+  const m = Skia.Path.Make();
+  for (let x = x0 - (y1 - y0); x < x1; x += step) {
+    m.moveTo(x, y1);
+    m.lineTo(x + (y1 - y0), y0);
+    m.moveTo(x, y0);
+    m.lineTo(x + (y1 - y0), y1);
+  }
+  return (
+    <Group clip={clip}>
+      <Path path={m} style="stroke" strokeWidth={0.5} color={color} opacity={opacity} />
+    </Group>
+  );
+}
+/** The XLR end: a slightly narrower ring, the connector's dark socket insert. */
+function XlrTail({ cx, y, r }: { cx: number; y: number; r: number }) {
   return (
     <>
-      <RoundedRect x={43} y={30} width={14} height={112} r={6}>
-        <BodyGrad x={43} w={14} />
+      <RoundedRect x={cx - r} y={y} width={2 * r} height={r * 0.9} r={1.2}>
+        <Sheen x0={cx - r} x1={cx + r} dark />
       </RoundedRect>
-      <RoundedRect x={43} y={10} width={14} height={18} r={6}>
-        <GrilleGrad x={43} w={14} />
-      </RoundedRect>
-      <Mesh x={44} y={11} w={12} h={15} n={3} />
-      <RoundedRect x={42} y={30} width={16} height={5} r={2} color={ACCENT} opacity={0.65} />
-      <Line p1={vec(45, 34)} p2={vec(45, 138)} color={RIM} strokeWidth={1.2} opacity={0.5} />
+      <Oval x={cx - r * 0.8} y={y + r * 0.62} width={r * 1.6} height={r * 0.5} color="#050506" />
     </>
   );
 }
 
-function RibbonMic() {
-  return (
-    <>
-      <RoundedRect x={28} y={14} width={44} height={102} r={20}>
-        <BodyGrad x={28} w={44} />
-      </RoundedRect>
-      <RoundedRect x={34} y={20} width={32} height={90} r={14}>
-        <GrilleGrad x={34} w={32} />
-      </RoundedRect>
-      {/* vertical ribbon-grille slots */}
-      {[40, 46, 52, 58, 64].map((x) => (
-        <Line key={x} p1={vec(x, 26)} p2={vec(x, 104)} color={BODY_LO} strokeWidth={2.2} />
-      ))}
-      {/* the ribbon glint down the center */}
-      <Line p1={vec(50, 30)} p2={vec(50, 100)} color={ACCENT} strokeWidth={1.2} opacity={0.55} />
-      <RoundedRect x={44} y={116} width={12} height={26} r={4}>
-        <BodyGrad x={44} w={12} />
-      </RoundedRect>
-      <Line p1={vec(30, 20)} p2={vec(30, 110)} color={RIM} strokeWidth={1.4} opacity={0.45} />
-    </>
-  );
-}
-
+// END-ADDRESS studio condenser (medium diaphragm): a Ø 42 mesh head, 46 long
+// with a domed top, over a Ø 34 × 120 nickel body, a ring at the joint, the
+// XLR end; 170 overall. mm = 0.8.
 function CondenserMic() {
+  const k = 0.8;
+  const cx = 50;
+  const top = 8;
+  const Rh = 21 * k;
+  const R = 17 * k;
+  const hL = 46 * k;
+  const head = Skia.Path.Make();
+  head.moveTo(cx - Rh, top + hL);
+  head.lineTo(cx - Rh, top + Rh * 0.55);
+  head.cubicTo(cx - Rh, top - 2, cx + Rh, top - 2, cx + Rh, top + Rh * 0.55);
+  head.lineTo(cx + Rh, top + hL);
+  head.close();
+  const body = lathe(cx, [[top + hL, R], [top + hL + 110 * k, R], [top + hL + 120 * k, R * 0.9]]);
   return (
     <>
-      <RoundedRect x={31} y={40} width={38} height={98} r={12}>
-        <BodyGrad x={31} w={38} />
-      </RoundedRect>
-      <RoundedRect x={31} y={12} width={38} height={32} r={12}>
-        <GrilleGrad x={31} w={38} />
-      </RoundedRect>
-      <Mesh x={34} y={14} w={32} h={28} n={4} />
-      <RoundedRect x={31} y={46} width={38} height={5} r={2} color={ACCENT} opacity={0.55} />
-      <Circle cx={50} cy={70} r={3.4} color={ACCENT} opacity={0.75} />
-      <Line p1={vec(34, 46)} p2={vec(34, 134)} color={RIM} strokeWidth={1.3} opacity={0.5} />
-    </>
-  );
-}
-
-function ElectretMic() {
-  const cable = Skia.Path.Make();
-  cable.moveTo(50, 74);
-  cable.cubicTo(50, 100, 34, 108, 36, 140);
-  return (
-    <>
-      <Path path={cable} style="stroke" strokeWidth={3} color={CABLE} />
-      <Circle cx={50} cy={48} r={20}>
-        <LinearGradient start={vec(32, 30)} end={vec(68, 66)} colors={[BODY_HI, BODY_LO]} />
-      </Circle>
-      <Circle cx={50} cy={48} r={20} color={RIM} style="stroke" strokeWidth={1.2} opacity={0.4} />
-      {/* port hole */}
-      <Circle cx={50} cy={44} r={6} color={GRILLE_LO} />
-      <Circle cx={50} cy={44} r={6} color={MESH} style="stroke" strokeWidth={1} />
-      <RoundedRect x={44} y={64} width={12} height={12} r={3}>
-        <BodyGrad x={44} w={12} />
-      </RoundedRect>
-    </>
-  );
-}
-
-function LavMic() {
-  const cable = Skia.Path.Make();
-  cable.moveTo(50, 52);
-  cable.cubicTo(52, 84, 34, 96, 40, 142);
-  const clip = Skia.Path.Make();
-  clip.moveTo(58, 40);
-  clip.lineTo(74, 30);
-  clip.lineTo(74, 56);
-  clip.lineTo(58, 48);
-  clip.close();
-  return (
-    <>
-      <Path path={cable} style="stroke" strokeWidth={2.6} color={CABLE} />
-      <Path path={clip}>
-        <LinearGradient start={vec(58, 30)} end={vec(74, 56)} colors={[BODY_MID, BODY_LO]} />
+      <Path path={body}>
+        <Sheen x0={cx - R} x1={cx + R} />
       </Path>
-      <RoundedRect x={40} y={22} width={20} height={32} r={9}>
-        <LinearGradient start={vec(40, 22)} end={vec(60, 54)} colors={[BODY_HI, BODY_LO]} />
+      <Path path={head}>
+        <LinearGradient start={vec(cx - Rh, 0)} end={vec(cx + Rh, 0)} colors={['#8a909b', '#dfe3e9', '#7d828c', '#2a2c32']} positions={[0, 0.3, 0.62, 1]} />
+      </Path>
+      <MeshOver clip={head} x0={cx - Rh} y0={top - 2} x1={cx + Rh} y1={top + hL} step={2.2} color="#16171b" opacity={0.55} />
+      <Path path={head} style="stroke" strokeWidth={0.8} color="#3a3d45" />
+      <RoundedRect x={cx - Rh} y={top + hL - 2} width={2 * Rh} height={5} r={1.5}>
+        <Sheen x0={cx - Rh} x1={cx + Rh} dark />
       </RoundedRect>
-      <Circle cx={50} cy={28} r={5} color={GRILLE_LO} />
-      <Circle cx={50} cy={28} r={5} color={MESH} style="stroke" strokeWidth={1} />
-      <Line p1={vec(43, 26)} p2={vec(43, 50)} color={RIM} strokeWidth={1.1} opacity={0.5} />
+      <Line p1={vec(cx - R * 0.5, top + hL + 8)} p2={vec(cx - R * 0.5, top + hL + 112 * k)} color={RIM} strokeWidth={1} opacity={0.45} />
+      <XlrTail cx={cx} y={top + hL + 120 * k} r={R * 0.9} />
     </>
   );
 }
 
+// Electret CAPSULE (the "engine" itself), magnified: Ø 9.7 × 4.5 mm can, the
+// felt-covered port on its face, two solder pads and leads at the back. mm = 6.
+function ElectretMic() {
+  const k = 6;
+  const cx = 50;
+  const cy = 52;
+  const R = 4.85 * k;
+  const ry = R * 0.42; // the face, seen at an angle
+  const h = 4.5 * k;
+  const can = Skia.Path.Make();
+  can.addRect(Skia.XYWHRect(cx - R, cy, 2 * R, h));
+  const leads = Skia.Path.Make();
+  leads.moveTo(cx - 9, cy + h + ry * 0.6);
+  leads.cubicTo(cx - 12, cy + h + 30, cx - 22, cy + h + 40, cx - 18, 146);
+  const leads2 = Skia.Path.Make();
+  leads2.moveTo(cx + 9, cy + h + ry * 0.6);
+  leads2.cubicTo(cx + 12, cy + h + 30, cx + 20, cy + h + 42, cx + 14, 146);
+  return (
+    <>
+      <Path path={leads} style="stroke" strokeWidth={2.4} color="#b03a2e" />
+      <Path path={leads2} style="stroke" strokeWidth={2.4} color="#1c1d22" />
+      {/* the can's back edge, its side, its rolled front lip and the face */}
+      <Oval x={cx - R} y={cy + h - ry} width={2 * R} height={2 * ry} color="#3a3d45" />
+      <Path path={can}>
+        <Sheen x0={cx - R} x1={cx + R} />
+      </Path>
+      <Oval x={cx - R} y={cy - ry} width={2 * R} height={2 * ry}>
+        <LinearGradient start={vec(cx - R, cy - ry)} end={vec(cx + R, cy + ry)} colors={['#e6e9ee', '#9aa0ab', '#5a5e68']} />
+      </Oval>
+      <Oval x={cx - R * 0.78} y={cy - ry * 0.78} width={2 * R * 0.78} height={2 * ry * 0.78} color="#16171b" />
+      <Oval x={cx - R * 0.78} y={cy - ry * 0.78} width={2 * R * 0.78} height={2 * ry * 0.78} color="#2a2c32" style="stroke" strokeWidth={1} />
+      {/* solder pads under the can (seen at its lower rim) */}
+      <Circle cx={cx - 9} cy={cy + h + ry * 0.55} r={2.6} color="#d9c49a" />
+      <Circle cx={cx + 9} cy={cy + h + ry * 0.55} r={2.6} color="#d9c49a" />
+    </>
+  );
+}
+
+// Side-address RIBBON (figure-8): a pill-shaped body 64 W × 200 H with a
+// slotted two-layer grille window both sides, the corrugated ribbon between
+// its magnet pole pieces, a U-yoke with side knobs, XLR at the base. mm = 0.68.
+function RibbonMic() {
+  const k = 0.68;
+  const cx = 50;
+  const W = 64 * k;
+  const H = 168 * k;
+  const y0 = 8;
+  const body = Skia.Path.Make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - W / 2, y0, W, H), W / 2, W / 2));
+  const win = Skia.Path.Make();
+  win.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - W / 2 + 5, y0 + 8, W - 10, H - 30), W / 2 - 5, W / 2 - 5));
+  const ribbon = Skia.Path.Make();
+  for (let y = y0 + 14; y < y0 + H - 28; y += 3) {
+    ribbon.moveTo(cx - 2.2, y);
+    ribbon.lineTo(cx + 2.2, y + 1.5);
+  }
+  const yoke = Skia.Path.Make();
+  yoke.moveTo(cx - W / 2 - 6, y0 + H * 0.5);
+  yoke.lineTo(cx - W / 2 - 6, y0 + H + 10);
+  yoke.lineTo(cx + W / 2 + 6, y0 + H + 10);
+  yoke.lineTo(cx + W / 2 + 6, y0 + H * 0.5);
+  return (
+    <>
+      <Path path={yoke} style="stroke" strokeWidth={4} strokeJoin="round" color="#2a2c32" />
+      <RoundedRect x={cx - 5} y={y0 + H + 8} width={10} height={20} r={2}>
+        <Sheen x0={cx - 5} x1={cx + 5} dark />
+      </RoundedRect>
+      <Path path={body}>
+        <Sheen x0={cx - W / 2} x1={cx + W / 2} dark />
+      </Path>
+      <Path path={win} color="#0b0b0d" />
+      {/* magnet pole pieces either side of the ribbon */}
+      <RoundedRect x={cx - 12} y={y0 + 12} width={7} height={H - 38} r={2}>
+        <Sheen x0={cx - 12} x1={cx - 5} />
+      </RoundedRect>
+      <RoundedRect x={cx + 5} y={y0 + 12} width={7} height={H - 38} r={2}>
+        <Sheen x0={cx + 5} x1={cx + 12} />
+      </RoundedRect>
+      <Path path={ribbon} style="stroke" strokeWidth={0.9} color="#d9c49a" />
+      <MeshOver clip={win} x0={cx - W / 2} y0={y0} x1={cx + W / 2} y1={y0 + H} step={3} color="#8a909b" opacity={0.35} />
+      <Path path={win} style="stroke" strokeWidth={1.4} color="#5a5e68" />
+      {/* the yoke's locking knobs */}
+      <Circle cx={cx - W / 2 - 6} cy={y0 + H * 0.5} r={5} color="#16171b" />
+      <Circle cx={cx + W / 2 + 6} cy={y0 + H * 0.5} r={5} color="#16171b" />
+      <Circle cx={cx - W / 2 - 6} cy={y0 + H * 0.5} r={5} style="stroke" strokeWidth={1} color="#8a909b" />
+      <Circle cx={cx + W / 2 + 6} cy={y0 + H * 0.5} r={5} style="stroke" strokeWidth={1} color="#8a909b" />
+    </>
+  );
+}
+
+// SMALL-DIAPHRAGM ("pencil") condenser: Ø 21 × 125 mm; the capsule head 24
+// long with its side slots and top mesh, a thin ring, the body, XLR. mm = 1.1.
+function SdcMic() {
+  const k = 1.1;
+  const cx = 50;
+  const top = 4;
+  const R = 10.5 * k;
+  const head = lathe(cx, [[top, R - 2.5], [top + 2.5, R], [top + 24 * k, R]]);
+  const body = lathe(cx, [[top + 24 * k, R], [top + 120 * k, R * 0.96]]);
+  const slots = Skia.Path.Make();
+  for (let i = 0; i < 3; i++) slots.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - R * 0.7 + i * R * 0.5, top + 10 * k, R * 0.32, 11 * k), 1.5, 1.5));
+  return (
+    <>
+      <Path path={body}>
+        <Sheen x0={cx - R} x1={cx + R} />
+      </Path>
+      <Path path={head}>
+        <Sheen x0={cx - R} x1={cx + R} />
+      </Path>
+      <Path path={slots} color="#16171b" />
+      <MeshOver clip={lathe(cx, [[top, R - 2.5], [top + 5, R]])} x0={cx - R} y0={top} x1={cx + R} y1={top + 5} step={1.8} />
+      <RoundedRect x={cx - R - 0.5} y={top + 24 * k - 1.5} width={2 * R + 1} height={3} r={1} color="#2a2c32" />
+      <Line p1={vec(cx - R * 0.5, top + 30 * k)} p2={vec(cx - R * 0.5, top + 114 * k)} color={RIM} strokeWidth={1} opacity={0.4} />
+      <XlrTail cx={cx} y={top + 120 * k} r={R * 0.96} />
+    </>
+  );
+}
+
+// LAVALIER, magnified: a Ø 5 × 12 mm capsule with its mesh cap, held in a
+// tie-clip (≈ 30 mm), the Ø 1.6 mm cable looping down. mm = 2.6.
+function LavMic() {
+  const k = 2.6;
+  const cx = 44;
+  const top = 18;
+  const R = 2.5 * k;
+  const cap = lathe(cx, [[top, R - 1.5], [top + 1.5, R], [top + 12 * k, R]]);
+  const clip = Skia.Path.Make();
+  clip.moveTo(cx + R, top + 16);
+  clip.lineTo(cx + R + 30, top + 8);
+  clip.lineTo(cx + R + 34, top + 14);
+  clip.lineTo(cx + R + 6, top + 26);
+  clip.close();
+  const jaw = Skia.Path.Make();
+  jaw.moveTo(cx + R, top + 24);
+  jaw.lineTo(cx + R + 36, top + 30);
+  jaw.lineTo(cx + R + 34, top + 36);
+  jaw.lineTo(cx + R, top + 30);
+  jaw.close();
+  const cable = Skia.Path.Make();
+  cable.moveTo(cx, top + 12 * k);
+  cable.cubicTo(cx, top + 70, cx + 26, top + 70, cx + 18, top + 96);
+  cable.cubicTo(cx + 12, top + 116, cx - 10, 128, cx - 4, 146);
+  return (
+    <>
+      <Path path={cable} style="stroke" strokeWidth={2.2} color="#1c1d22" />
+      <Path path={jaw}>
+        <LinearGradient start={vec(cx, top + 24)} end={vec(cx + 36, top + 36)} colors={['#4a4e57', '#16171b']} />
+      </Path>
+      <Path path={clip}>
+        <LinearGradient start={vec(cx, top + 8)} end={vec(cx + 34, top + 26)} colors={['#5a5e68', '#22242a']} />
+      </Path>
+      <Path path={cap}>
+        <Sheen x0={cx - R} x1={cx + R} dark />
+      </Path>
+      <MeshOver clip={lathe(cx, [[top, R - 1.5], [top + 7, R]])} x0={cx - R} y0={top} x1={cx + R} y1={top + 7} step={1.4} color="#8a909b" opacity={0.6} />
+      <Line p1={vec(cx - R * 0.45, top + 9)} p2={vec(cx - R * 0.45, top + 12 * k - 2)} color={RIM} strokeWidth={0.8} opacity={0.5} />
+    </>
+  );
+}
+
+// HEADWORN: an ear-hook (fits behind the ear) with the thin boom (≈ 110 mm)
+// curving forward to a Ø 5 mm capsule under a small foam windscreen at the
+// mouth; the cable down from the ear piece. No head drawn. mm = 0.62.
 function HeadwornMic() {
   const hook = Skia.Path.Make();
-  hook.moveTo(66, 26);
-  hook.cubicTo(88, 34, 88, 78, 64, 84);
+  hook.moveTo(70, 30);
+  hook.cubicTo(88, 26, 92, 60, 82, 82);
+  hook.cubicTo(78, 92, 70, 96, 66, 92);
   const boom = Skia.Path.Make();
-  boom.moveTo(64, 82);
-  boom.cubicTo(48, 92, 34, 100, 26, 112);
-  return (
-    <>
-      <Path path={hook} style="stroke" strokeWidth={5.5} color={BODY_MID} />
-      <Path path={hook} style="stroke" strokeWidth={1.4} color={RIM} opacity={0.45} />
-      <Path path={boom} style="stroke" strokeWidth={3.4} color={BODY_MID} />
-      {/* capsule at the boom tip */}
-      <Circle cx={24} cy={114} r={7}>
-        <LinearGradient start={vec(17, 107)} end={vec(31, 121)} colors={[BODY_HI, BODY_LO]} />
-      </Circle>
-      <Circle cx={23} cy={113} r={2.6} color={GRILLE_LO} />
-    </>
-  );
-}
-
-function ShotgunMic() {
-  return (
-    <>
-      <RoundedRect x={44} y={8} width={12} height={104} r={6}>
-        <BodyGrad x={44} w={12} />
-      </RoundedRect>
-      {/* interference-tube slots */}
-      {Array.from({ length: 9 }, (_, i) => (
-        <Line key={i} p1={vec(46.5, 16 + i * 10)} p2={vec(53.5, 16 + i * 10)} color={BODY_LO} strokeWidth={2.4} />
-      ))}
-      <RoundedRect x={42} y={112} width={16} height={30} r={6}>
-        <BodyGrad x={42} w={16} />
-      </RoundedRect>
-      <RoundedRect x={42} y={112} width={16} height={5} r={2} color={ACCENT} opacity={0.55} />
-      <Line p1={vec(46, 12)} p2={vec(46, 108)} color={RIM} strokeWidth={1.1} opacity={0.5} />
-    </>
-  );
-}
-
-function BoundaryMic() {
-  const wedge = Skia.Path.Make();
-  wedge.moveTo(22, 102);
-  wedge.lineTo(50, 74);
-  wedge.lineTo(78, 102);
-  wedge.close();
-  return (
-    <>
-      {/* the boundary surface itself */}
-      <Oval x={8} y={96} width={84} height={26}>
-        <LinearGradient start={vec(8, 96)} end={vec(92, 122)} colors={[BODY_MID, BODY_LO]} />
-      </Oval>
-      <Path path={wedge}>
-        <LinearGradient start={vec(22, 74)} end={vec(78, 102)} colors={[BODY_HI, BODY_LO]} />
-      </Path>
-      {/* capsule slot at the front lip */}
-      <RoundedRect x={38} y={94} width={24} height={6} r={3} color={GRILLE_LO} />
-      <Mesh x={39} y={93} w={22} h={7} n={1} />
-      <Line p1={vec(24, 100)} p2={vec(50, 76)} color={RIM} strokeWidth={1.2} opacity={0.5} />
-    </>
-  );
-}
-
-function MeasurementMic() {
-  return (
-    <>
-      <RoundedRect x={46} y={26} width={8} height={116} r={4}>
-        <BodyGrad x={46} w={8} />
-      </RoundedRect>
-      {/* slim tip capsule */}
-      <RoundedRect x={46.6} y={12} width={6.8} height={14} r={3.2}>
-        <GrilleGrad x={46.6} w={6.8} />
-      </RoundedRect>
-      {/* calibration ring */}
-      <RoundedRect x={45} y={40} width={10} height={4} r={2} color={ACCENT} opacity={0.7} />
-      <Line p1={vec(47.4, 30)} p2={vec(47.4, 138)} color={RIM} strokeWidth={1} opacity={0.45} />
-    </>
-  );
-}
-
-function ContactMic() {
+  boom.moveTo(70, 36);
+  boom.cubicTo(52, 48, 34, 74, 26, 104);
   const cable = Skia.Path.Make();
-  cable.moveTo(68, 74);
-  cable.cubicTo(88, 82, 78, 112, 62, 140);
+  cable.moveTo(80, 86);
+  cable.cubicTo(84, 110, 74, 126, 78, 146);
   return (
     <>
-      <Path path={cable} style="stroke" strokeWidth={3} color={CABLE} />
-      <Circle cx={50} cy={66} r={24}>
-        <LinearGradient start={vec(28, 44)} end={vec(72, 88)} colors={[BODY_HI, BODY_MID, BODY_LO]} positions={[0, 0.5, 1]} />
-      </Circle>
-      <Circle cx={50} cy={66} r={15} color={BODY_LO} style="stroke" strokeWidth={2.4} />
-      <Circle cx={50} cy={66} r={6} color={ACCENT} opacity={0.5} />
-      <Circle cx={43} cy={59} r={24} color={RIM} style="stroke" strokeWidth={1.2} opacity={0.4} />
+      <Path path={cable} style="stroke" strokeWidth={2} color="#1c1d22" />
+      <Path path={hook} style="stroke" strokeWidth={5.5} strokeCap="round" color="#2a2c32" />
+      <Path path={hook} style="stroke" strokeWidth={1.2} strokeCap="round" color={RIM} opacity={0.45} />
+      {/* the ear piece where the boom pivots */}
+      <RoundedRect x={64} y={26} width={14} height={18} r={6}>
+        <LinearGradient start={vec(64, 26)} end={vec(78, 44)} colors={['#5a5e68', '#16171b']} />
+      </RoundedRect>
+      <Path path={boom} style="stroke" strokeWidth={2.6} strokeCap="round" color="#3a3d45" />
+      <Path path={boom} style="stroke" strokeWidth={0.8} strokeCap="round" color={RIM} opacity={0.5} />
+      {/* the capsule under its foam windscreen */}
+      <Oval x={18} y={100} width={14} height={11} color="#1b1c20" />
+      <Oval x={20} y={102} width={6} height={4} color="#3a3d45" opacity={0.8} />
+    </>
+  );
+}
+
+// SHOTGUN (interference tube): Ø 21 × 250 mm; the slotted tube over the
+// front two-thirds under its fine mesh, the capsule section, the body, XLR.
+// mm = 0.56.
+function ShotgunMic() {
+  const k = 0.56;
+  const cx = 50;
+  const top = 3;
+  const R = 10.5 * k * 1.4; // drawn a touch wider so the slots read; proportions ~ 1 : 9
+  const tubeL = 165 * k;
+  const tube = lathe(cx, [[top, R - 1], [top + 1.5, R], [top + tubeL, R]]);
+  const body = lathe(cx, [[top + tubeL, R], [top + 250 * k, R * 0.96]]);
+  const slots = Skia.Path.Make();
+  for (let i = 0; i < 9; i++) slots.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - R * 0.45, top + 6 + i * (tubeL - 12) / 9, R * 0.9, (tubeL - 12) / 9 - 3), 1.2, 1.2));
+  return (
+    <>
+      <Path path={body}>
+        <Sheen x0={cx - R} x1={cx + R} dark />
+      </Path>
+      <Path path={tube}>
+        <Sheen x0={cx - R} x1={cx + R} dark />
+      </Path>
+      <Path path={slots} color="#050506" />
+      <MeshOver clip={slots} x0={cx - R} y0={top} x1={cx + R} y1={top + tubeL} step={1.6} color="#6a6f7a" opacity={0.6} />
+      <RoundedRect x={cx - R - 0.4} y={top + tubeL - 1.5} width={2 * R + 0.8} height={3} r={1} color="#5a5e68" />
+      <Line p1={vec(cx - R * 0.6, top + 4)} p2={vec(cx - R * 0.6, top + 240 * k)} color={RIM} strokeWidth={0.8} opacity={0.35} />
+      <XlrTail cx={cx} y={top + 250 * k} r={R * 0.96} />
+    </>
+  );
+}
+
+// BOUNDARY (plate type): a low plate ≈ 110 × 80 × 18 mm, the capsule's slot
+// at its front lip, flush with the surface; three-quarter view, its cable out
+// of the back. mm = 0.7.
+function BoundaryMic() {
+  const plate = Skia.Path.Make();
+  plate.moveTo(14, 100);
+  plate.lineTo(86, 100);
+  plate.lineTo(74, 74);
+  plate.lineTo(26, 74);
+  plate.close();
+  const lip = Skia.Path.Make();
+  lip.moveTo(14, 100);
+  lip.lineTo(86, 100);
+  lip.lineTo(86, 106);
+  lip.lineTo(14, 106);
+  lip.close();
+  const cable = Skia.Path.Make();
+  cable.moveTo(50, 74);
+  cable.cubicTo(50, 50, 72, 44, 80, 20);
+  return (
+    <>
+      {/* the surface it rests on */}
+      <Oval x={2} y={96} width={96} height={24} color="#1b1c20" opacity={0.8} />
+      <Path path={cable} style="stroke" strokeWidth={2.6} color="#1c1d22" />
+      <Path path={plate}>
+        <LinearGradient start={vec(26, 74)} end={vec(86, 100)} colors={['#6a6f7a', '#3a3d45', '#1b1c20']} />
+      </Path>
+      <Path path={lip}>
+        <LinearGradient start={vec(0, 100)} end={vec(0, 106)} colors={['#3a3d45', '#16171b']} />
+      </Path>
+      {/* the capsule's grille slot at the front lip */}
+      <RoundedRect x={36} y={92} width={28} height={6} r={3} color="#0b0b0d" />
+      <RoundedRect x={36} y={92} width={28} height={6} r={3} color="#8a909b" style="stroke" strokeWidth={0.8} />
+      <Line p1={vec(27, 75)} p2={vec(73, 75)} color={RIM} strokeWidth={1} opacity={0.5} />
+    </>
+  );
+}
+
+// MEASUREMENT: a ½ in (Ø 13.2) capsule with its protective grid on a slim
+// tapering preamp body Ø 20 × 190 mm, the XLR end. mm = 0.7.
+function MeasurementMic() {
+  const k = 0.7;
+  const cx = 50;
+  const top = 4;
+  const rc = 6.6 * k * 1.2;
+  const R = 10 * k * 1.2;
+  const cap = lathe(cx, [[top, rc - 1], [top + 1, rc], [top + 14 * k, rc]]);
+  const body = lathe(cx, [[top + 14 * k, rc], [top + 30 * k, R], [top + 190 * k, R]]);
+  return (
+    <>
+      <Path path={body}>
+        <Sheen x0={cx - R} x1={cx + R} />
+      </Path>
+      <Path path={cap}>
+        <Sheen x0={cx - rc} x1={cx + rc} />
+      </Path>
+      {/* the protective grid's slots round the capsule */}
+      {[0, 1, 2].map((i) => (
+        <RoundedRect key={i} x={cx - rc * 0.75 + i * rc * 0.55} y={top + 3} width={rc * 0.3} height={14 * k - 5} r={0.8} color="#16171b" />
+      ))}
+      <RoundedRect x={cx - R - 0.4} y={top + 60 * k} width={2 * R + 0.8} height={2.4} r={1} color="#5a5e68" />
+      <Line p1={vec(cx - R * 0.5, top + 32 * k)} p2={vec(cx - R * 0.5, top + 184 * k)} color={RIM} strokeWidth={0.9} opacity={0.4} />
+      <XlrTail cx={cx} y={top + 190 * k} r={R} />
+    </>
+  );
+}
+
+// CONTACT: a piezo disc pickup — a Ø 27 mm brass disc with its Ø 20 mm
+// ceramic element and the electrode on top, two leads soldered on, seen at
+// an angle; the cable away. mm = 2.6.
+function ContactMic() {
+  const k = 2.6;
+  const cx = 50;
+  const cy = 60;
+  const R = 13.5 * k;
+  const r = 10 * k;
+  const t = 0.38; // the disc's tilt (ellipse ratio)
+  const red = Skia.Path.Make();
+  red.moveTo(cx - 6, cy - 2);
+  red.cubicTo(cx + 10, cy + 30, cx + 30, cy + 40, cx + 24, 146);
+  const black = Skia.Path.Make();
+  black.moveTo(cx + R * 0.82, cy + 4);
+  black.cubicTo(cx + R + 10, cy + 30, cx + 34, cy + 50, cx + 30, 146);
+  return (
+    <>
+      <Oval x={cx - R} y={cy - R * t + 3} width={2 * R} height={2 * R * t} color="#4a3510" />
+      <Oval x={cx - R} y={cy - R * t} width={2 * R} height={2 * R * t}>
+        <LinearGradient start={vec(cx - R, cy - R * t)} end={vec(cx + R, cy + R * t)} colors={['#f2d58a', '#c9a24a', '#7a5a1c']} />
+      </Oval>
+      <Oval x={cx - r} y={cy - r * t} width={2 * r} height={2 * r * t}>
+        <LinearGradient start={vec(cx - r, cy - r * t)} end={vec(cx + r, cy + r * t)} colors={['#f4f6fa', '#c3c8d0', '#8a909b']} />
+      </Oval>
+      <Oval x={cx - r} y={cy - r * t} width={2 * r} height={2 * r * t} style="stroke" strokeWidth={0.8} color="#6a6f7a" />
+      <Path path={red} style="stroke" strokeWidth={2.2} color="#b03a2e" />
+      <Path path={black} style="stroke" strokeWidth={2.2} color="#1c1d22" />
+      <Circle cx={cx - 6} cy={cy - 2} r={3} color="#c8ccd4" />
+      <Circle cx={cx + R * 0.82} cy={cy + 4} r={3} color="#c8ccd4" />
     </>
   );
 }
