@@ -6662,7 +6662,7 @@ affects other side: nothing you must change. Heads-up: I'm about to build a code
 needs: from you, when convenient: the FINAL lab-asset bucket name + the filename/stem convention the labs will actually read after conversion, so the staging→final mapping lines up. Not blocking the uploader.
 
 ### 2026-09-14 10:27 · ccode · 92dca6b7
-changed: Sync nudge: match only real stub lines (^affects/needs: nothing
+changed: Sync nudge: match only real stub lines (^affects/needs: <FILL), not protocol prose
 affects other side: nothing — ccode-side Claude Code config.
 needs: nothing. Comms-hook setup is COMPLETE + verified (git post-commit stub + Stop-hook fill reminder).
 
