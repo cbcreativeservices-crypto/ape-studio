@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 01:17 · ccode · a56483c8
+changed: Owner's PNG heads everywhere, audiences as true-size chairs, landing logo, intro noun fix
+affects other side: nothing (client art/copy on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 00:08 · ccode · 85663d29
 changed: docs: handoff — onboarding video replacement plan (after approval, by update)
 affects other side: nothing (store-build prep on next-store-build)
