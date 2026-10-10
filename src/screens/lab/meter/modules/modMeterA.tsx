@@ -249,16 +249,8 @@ function VuHost({
   gainDb: number;
 }) {
   const phase = viz.usePhaseClock(focused, 0.7);
-  return (
-    <viz.VuMeterView
-      width={width}
-      height={height}
-      signal={signal}
-      gain={gainLin(gainDb)}
-      phase={phase}
-      showPeakLed
-    />
-  );
+  // The SPL tool's photoreal VU face (owner 2026-10-10: the two must look the same).
+  return <viz.VuSkinView width={width} height={height} signal={signal} gain={gainLin(gainDb)} phase={phase} running={focused} />;
 }
 
 function LoudnessHost({

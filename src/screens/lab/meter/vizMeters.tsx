@@ -31,6 +31,7 @@ import {
 } from '@shopify/react-native-skia';
 import Animated, {
   useAnimatedProps,
+  useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
   type SharedValue,
@@ -51,6 +52,7 @@ import {
 import { fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { useStageTextScale } from '../rack/stageAspect';
+import { SkinnedVu } from '../../tools/SkinnedVu';
 
 /** LED ramp for the peak meter: top of the column (0 dBFS) = pos 0 = red,
  *  bottom (−60 dBFS) = MIDI-0 blue — LOUDNESS_STOPS as-is. */
@@ -3527,4 +3529,58 @@ export function VuGlyph({ size = 40 }: { size?: number }) {
       </RNText>
     </View>
   );
+}
+
+/**
+ * THE LAB'S VU, DRAWN WITH THE SPL TOOL'S FACE (owner 2026-10-10: "this VU should
+ * reuse the VU meter in the SPL meter — they should look the same"). The same
+ * photoreal SkinnedVu the SPL Meter shows, driven by the teaching signal: the
+ * loop's windowed RMS feeds its rmsDb (its own ANSI 300 ms ballistics move the
+ * needle), and the loop's fast peak feeds its peakDb, scaled so the PEAK lamp
+ * lights exactly where the old LED did (|x| ≥ 0.72 of full scale). `rms0` reads
+ * 0 VU, as before.
+ */
+export function VuSkinView(p: { width: number; height?: number; signal?: SignalKey; gain?: number; phase: SharedValue<number>; rms0?: number; running?: boolean }) {
+  const w = p.width;
+  const h = p.height ?? 230;
+  const gain = p.gain ?? 1;
+  const RMS0 = p.rms0 ?? 0.42;
+  const sig: SignalKey = p.signal ?? 'sine';
+  const series = useMemo(() => {
+    const n = 2048;
+    const buf = renderSignal(sig, n).map((v) => v * gain);
+    const winR = Math.max(16, Math.floor(n / 16));
+    const winP = Math.max(8, Math.floor(n / 64));
+    const rmsDb = new Array<number>(RES);
+    const pkDb = new Array<number>(RES);
+    for (let i = 0; i < RES; i++) {
+      const c0 = Math.floor((i * n) / RES);
+      let s = 0;
+      for (let k = 0; k < winR; k++) {
+        const v = buf[(c0 + k) % n];
+        s += v * v;
+      }
+      let m = 0;
+      for (let k = 0; k < winP; k++) m = Math.max(m, Math.abs(buf[(c0 + k) % n]));
+      rmsDb[i] = 20 * Math.log10(Math.max(1e-6, Math.sqrt(s / winR)));
+      // The lamp lights at ≥ −0.1 "dBFS"; the lesson's LED lit at 0.72 FS.
+      pkDb[i] = 20 * Math.log10(Math.max(1e-6, m / 0.72)) - 0.1;
+    }
+    return { rmsDb, pkDb };
+  }, [sig, gain]);
+  const rmsDb = useSharedValue(-120);
+  const peakDb = useSharedValue(-120);
+  const rA = series.rmsDb;
+  const pA = series.pkDb;
+  useAnimatedReaction(
+    () => p.phase.value,
+    (ph) => {
+      const i = Math.min(RES - 1, Math.floor(frac01(ph) * RES));
+      rmsDb.value = rA[i];
+      peakDb.value = pA[i];
+    },
+    [rA, pA],
+  );
+  const live = useMemo(() => ({ rmsDb, peakDb }), [rmsDb, peakDb]);
+  return <SkinnedVu width={w} height={h} live={live} live0Db={20 * Math.log10(RMS0)} running={p.running ?? true} />;
 }
