@@ -117,11 +117,10 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
       <Polygon points={`${PAD},${FLOOR_Y} ${W - PAD},${FLOOR_Y} ${W - PAD - 14},${FLOOR_Y + 16} ${PAD + 14},${FLOOR_Y + 16}`} fill="#0c0d11" />
       <Line x1={PAD} y1={FLOOR_Y} x2={W - PAD} y2={FLOOR_Y} stroke="#3a4150" strokeWidth={1.2} />
 
-      {/* WINDOW — framed, with a sill in slight perspective */}
+      {/* WINDOW — framed, no sill (owner 2026-10-10: the sill looked odd) */}
       <Rect x={28} y={50} width={34} height={36} rx={2} fill={FILL} stroke={INK} strokeWidth={1.5} />
       <Line x1={45} y1={50} x2={45} y2={86} stroke={INK} strokeWidth={1} />
       <Line x1={28} y1={68} x2={62} y2={68} stroke={INK} strokeWidth={1} />
-      <Polygon points={`25,86 65,86 69,91 21,91`} fill={FILL2} stroke={INK} strokeWidth={1} strokeLinejoin="round" />
 
       {/* CHAIR — at the room's scale (≈ 37.7 units/m, from the 1.75 m
           figure): seat 450 mm high × 450 wide, backrest top at 900 mm;
