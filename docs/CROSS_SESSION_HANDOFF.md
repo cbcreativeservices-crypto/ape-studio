@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 18:32 · ccode · 5a1cf80c
+changed: Harmonograph: the sound follows the figure on stereo engines — both pendulums raised by one factor into hearing (lower tone 220 Hz), exact ratio incl. detune (heard as beating); PLAY always works; caption shows the sound Hz (owner 2026-10-09)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 16:11 · ccode · 87239426
 changed: Android: block ACTIVITY_RECOGNITION + READ_MEDIA_IMAGES/VIDEO/VISUAL_USER_SELECTED (Play Health + Photo/video policy); Android SAVE opens the Share sheet instead of the media library (owner + Comp A 2026-10-09). NOTE: app.json change moves the iOS fingerprint; iOS OTAs to build 36 must publish with these lines temporarily removed.
 affects other side: nothing (store-build prep on next-store-build)
