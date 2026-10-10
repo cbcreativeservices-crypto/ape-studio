@@ -10,12 +10,12 @@
  * Skia-only: load it only from modules that are themselves Skia-gated.
  */
 import { useMemo } from 'react';
-import { BlurMask, Group, Path, Skia } from '@shopify/react-native-skia';
+import { Blur, ColorMatrix, Group, Image as SkImageNode, Path, Skia, type SkImage } from '@shopify/react-native-skia';
+import { useSafeSkiaImage } from '../../lib/skiaSafeAssets';
 import {
-  ABOVE_CANON,
   HEAD_ICON_LINE,
   HEAD_ICON_PLATE,
-  SIDE_CANON,
+  HEAD_PNG_BOX,
   SIDE_CENTER,
   SIDE_NECK,
   appendHeadIcon,
@@ -113,7 +113,8 @@ export function HeadIcon({
 }: HeadIconProps) {
   const s = scale ?? headIconScale(view, size ?? 24);
   const parts = useMemo(() => buildHeadIcon(view, s), [view, s]);
-  const lw = Math.max(minStroke, (view === 'side' ? SIDE_CANON.stroke : ABOVE_CANON.stroke) * s);
+  const image = useHeadPng(view);
+  void speaking; void minStroke; // the owner's PNG is drawn as-is (2026-10-10)
   const transform =
     view === 'side'
       ? [
@@ -128,54 +129,109 @@ export function HeadIcon({
   return (
     <Group transform={transform} opacity={opacity}>
       {plate ? <Path path={parts.plate} color={HEAD_ICON_PLATE} /> : null}
-      {glow && tint ? (
-        <Path path={parts.lines} color={tint} style="stroke" strokeWidth={lw * 3.4} strokeCap="round" strokeJoin="round" opacity={0.3}>
-          <BlurMask blur={3 * s} style="normal" />
-        </Path>
-      ) : null}
-      <Path path={parts.lines} color={color} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" />
-      {tint ? (
-        <Path path={parts.lines} color={tint} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" opacity={tintOpacity} />
-      ) : null}
-      {speaking && parts.open ? (
-        <Path path={parts.open} color={color} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" />
-      ) : null}
+      {glow && tint ? <HeadPng image={image} view={view} s={s} color={tint} opacity={0.3} blur={3 * s} /> : null}
+      <HeadPng image={image} view={view} s={s} color={color} />
+      {tint ? <HeadPng image={image} view={view} s={s} color={tint} opacity={tintOpacity} /> : null}
     </Group>
   );
 }
 
-/** Many PLACED icons as ONE stroked path (+ one plate path) — a row of
- *  listeners, an audience — built once (module cache or useMemo). */
+/* ── THE OWNER'S PNGs (owner 2026-10-10) ──────────────────────────────────
+ * The visible head is the owner's own art, never a redrawn vector. The
+ * geometry above only shapes the dark readability plates. */
+const HEAD_PNG = {
+  side: require('../../../assets/icons/head-side.png'),
+  above: require('../../../assets/icons/head-above.png'),
+} as const;
+
+/** The owner's head PNG for a view, decoded once per mount (null while loading). */
+export function useHeadPng(view: HeadIconView): SkImage | null {
+  return useSafeSkiaImage(HEAD_PNG[view]);
+}
+
+/** Recolour every pixel to `hex`, keeping the art's own alpha. */
+function tintMatrix(hex: string): number[] | null {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) return null;
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return [0, 0, 0, 0, r, 0, 0, 0, 0, g, 0, 0, 0, 0, b, 0, 0, 0, 1, 0];
+}
+
+/** One head PNG in head units × `s`, in the caller's (already placed) frame. */
+function HeadPng({ image, view, s, color, opacity = 1, blur }: { image: SkImage | null; view: HeadIconView; s: number; color?: string; opacity?: number; blur?: number }) {
+  if (!image) return null;
+  const box = HEAD_PNG_BOX[view];
+  const m = color && color.toLowerCase() !== HEAD_ICON_LINE ? tintMatrix(color) : null;
+  return (
+    <SkImageNode image={image} x={box.x * s} y={box.y * s} width={box.w * s} height={box.h * s} fit="fill" opacity={opacity}>
+      {m ? <ColorMatrix matrix={m} /> : null}
+      {blur ? <Blur blur={blur} /> : null}
+    </SkImageNode>
+  );
+}
+
+type HeadPlacement = { x: number; y: number; rotation?: number; facing?: 'left' | 'right'; anchor?: 'origin' | 'neck' };
+
+/** Many PLACED icons — a row of listeners, an audience — built once (module
+ *  cache or useMemo): ONE plate path plus each head's placement, drawn by
+ *  HeadIconPaths as the owner's PNG. */
 export function makeHeadIconPaths(
   view: HeadIconView,
   size: number,
-  at: readonly { x: number; y: number; rotation?: number; facing?: 'left' | 'right'; anchor?: 'origin' | 'neck' }[],
-): { lines: SkPath; plate: SkPath } {
-  const lines = Skia.Path.Make();
+  at: readonly HeadPlacement[],
+): { plate: SkPath; view: HeadIconView; size: number; at: readonly HeadPlacement[] } {
+  const lines = Skia.Path.Make(); // stroke geometry is no longer drawn
   const plate = Skia.Path.Make();
   for (const a of at) appendHeadIcon(lines, plate, view, a.x, a.y, size, { rotation: a.rotation, facing: a.facing, anchor: a.anchor });
-  return { lines, plate };
+  return { plate, view, size, at };
 }
 
-/** Draw paths from makeHeadIconPaths: the plate (optional), then the one
- *  uniform stroke with round caps and joins. */
+/** Draw a set from makeHeadIconPaths: the plate (optional), then the owner's
+ *  PNG at every placement. */
 export function HeadIconPaths({
-  lines,
-  plate,
-  strokeWidth,
+  heads,
+  plate = true,
   color = HEAD_ICON_LINE,
   opacity = 1,
 }: {
-  lines: SkPath;
-  plate?: SkPath | null;
-  strokeWidth: number;
+  heads: ReturnType<typeof makeHeadIconPaths>;
+  plate?: boolean;
   color?: string;
   opacity?: number;
 }) {
   return (
     <Group opacity={opacity}>
-      {plate ? <Path path={plate} color={HEAD_ICON_PLATE} /> : null}
-      <Path path={lines} color={color} style="stroke" strokeWidth={strokeWidth} strokeCap="round" strokeJoin="round" />
+      {plate ? <Path path={heads.plate} color={HEAD_ICON_PLATE} /> : null}
+      <HeadPngRow view={heads.view} size={heads.size} at={heads.at} color={color} />
+    </Group>
+  );
+}
+
+/** The same placement appendHeadIcon uses, as a Skia transform. */
+export function headTransform(view: HeadIconView, a: HeadPlacement, s: number) {
+  const neck = view === 'side' && a.anchor === 'neck';
+  return [
+    { translateX: a.x },
+    { translateY: a.y },
+    { rotate: a.rotation ?? 0 },
+    ...(view === 'side' ? [{ scaleX: (a.facing ?? 'right') === 'right' ? -1 : 1 }] : []),
+    ...(neck ? [{ translateX: -SIDE_NECK[0] * s }, { translateY: -SIDE_NECK[1] * s }] : []),
+  ];
+}
+
+/** A row of the owner's PNG heads at given placements (no plate path) — for
+ *  callers that build their own plates. */
+export function HeadPngRow({ view, size, at, color, opacity = 1 }: { view: HeadIconView; size: number; at: readonly HeadPlacement[]; color?: string; opacity?: number }) {
+  const image = useHeadPng(view);
+  const s = headIconScale(view, size);
+  return (
+    <Group opacity={opacity}>
+      {at.map((a, i) => (
+        <Group key={i} transform={headTransform(view, a, s)}>
+          <HeadPng image={image} view={view} s={s} color={color} />
+        </Group>
+      ))}
     </Group>
   );
 }

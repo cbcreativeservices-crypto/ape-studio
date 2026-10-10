@@ -21,7 +21,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { DockParam } from '../../rack/rackTypes';
 import type { ViewId } from '../engine/model/types.ts';
-import { copyOf } from '../engine/model/copy.ts';
+import { copyOf, ownInstrumentWord } from '../engine/model/copy.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { InstrumentFigure } from '../engine/scene/InstrumentFigure';
@@ -95,7 +95,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'read',
       body: (
         <>
-          <Body>{journeyIntro(lesson.noun, C.words.instrument)}</Body>
+          <Body>{journeyIntro(lesson.noun, ownInstrumentWord(lesson))}</Body>
           <JourneyMap met={journey.met} here="meet" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}

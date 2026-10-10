@@ -60,7 +60,8 @@ import { useStageTextScale } from '../rack/stageAspect';
 import { fonts } from '../../../theme/tokens';
 import { heatColor } from '../../../features/tools/levelColor';
 import { CondenserMic, HandheldMic } from '../../../features/lab/micDrawings';
-import { HEAD_ICON_PLATE, HeadIcon, SIDE_CANON, appendHeadIcon, headIconStroke } from '../../../features/lab/headIcons';
+import { HeadIcon } from '../../../features/lab/headIcons';
+import { ChairsSide, makeChairsSide } from '../../../features/lab/audienceChairs';
 import { FigureHeadAt } from '../../../features/lab/figureHead';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
@@ -106,7 +107,6 @@ export const SCENE_SCALE = 0.73;
 const M_HUMAN = 1.7; // standing human, metres (the scale reference)
 const M_CAB = 0.6; //   loudspeaker cabinet height, metres
 const M_BOX = 0.3; //   line-array box height, metres
-const M_BUST = 0.95; //  seated head+shoulders visible height, metres
 // Authored drawn heights (in local px at scale 1) of the reusable builders,
 // used to convert a metric size into the `scale` each one expects.
 const CAB_DRAWN_H = 18; // CabinetSide spans y −9…+9
@@ -3609,8 +3609,6 @@ export function SideCoverageView({
   const MPP = HUMAN_PX / M_HUMAN; // pixels per metre
   const cabScale = (M_CAB * MPP) / CAB_DRAWN_H; // ~0.6 m cabinet
   const boxScale = (M_BOX * MPP) / CAB_DRAWN_H; // ~0.3 m line-array box
-  // A seated listener's head icon, crown → neck base = the old bust height.
-  const seatHeadPx = ((M_BUST * MPP) * SIDE_CANON.height) / (SIDE_CANON.neckBase - SIDE_CANON.crown);
   const guitaristScale = (M_HUMAN * MPP) / 46; // 46-unit canonical figure
 
   // Line-array hang: N boxes down from the fly point with progressive splay —
@@ -3715,20 +3713,16 @@ export function SideCoverageView({
       rearWedge.close();
     }
 
-    // Seats: fixed-spacing GRAY listeners from the front edge to past the right
-    // of the display. The audience is ALWAYS gray (owner 2026-08-05) — coverage
-    // is read from the heat map, not from tinting the people. Head fix
-    // 2026-10-08: each is the owner's SIDE head icon (a lone head, never a
-    // bust), facing the stage, its neck standing on the floor line exactly
-    // where the old bust stood, and the same footprint (crown → neck base =
-    // the old bust's height), so the layout and scale are unchanged.
-    const seats = Skia.Path.Make();
-    const seatPlates = Skia.Path.Make();
+    // Seats: fixed-spacing GRAY empty chairs from the front edge to past the
+    // right of the display, facing the stage, at TRUE size (owner 2026-10-10:
+    // an audience is its chairs, never heads). The audience is ALWAYS gray
+    // (owner 2026-08-05) — coverage is read from the heat map.
+    const seatAt: { x: number; y: number }[] = [];
     const SEAT_DX = Math.max(20, MPP * 0.95);
     for (let sx = audFront; sx < w + SEAT_DX; sx += SEAT_DX) {
       const t = Math.min(1, Math.max(0, (sx - audFront) / Math.max(1, w - audFront)));
       const rise = sloped ? t * 30 : 0;
-      appendHeadIcon(seats, seatPlates, 'side', sx, floorY - rise, seatHeadPx, { facing: 'left', anchor: 'neck' });
+      seatAt.push({ x: sx, y: floorY - rise });
     }
     return {
       wedgeFill,
@@ -3738,8 +3732,7 @@ export function SideCoverageView({
       stage,
       delayWedge,
       rearWedge,
-      seats,
-      seatPlates,
+      seats: makeChairsSide(seatAt, MPP),
       dlyX,
       dlyY,
       rearX,
@@ -3764,7 +3757,6 @@ export function SideCoverageView({
     rearDelayOn,
     arrayBoxes,
     arrayMidY,
-    seatHeadPx,
   ]);
 
   // Side-plane heat map (stage front → rear wall, ceiling → floor): the same
@@ -3933,9 +3925,8 @@ export function SideCoverageView({
             <CabinetSide x={geo.rearX} y={geo.rearY} tiltDeg={62} scale={cabScale * 0.86} />
           </Group>
         ) : null}
-        {/* The audience: the owner's side head icon, facing the stage, always gray. */}
-        <Path path={geo.seatPlates} color={HEAD_ICON_PLATE} />
-        <Path path={geo.seats} color={SEAT_LINE.gray} style="stroke" strokeWidth={headIconStroke('side', seatHeadPx, 1.1)} strokeCap="round" strokeJoin="round" />
+        {/* The audience: empty chairs at true size, facing the stage, always gray. */}
+        <ChairsSide path={geo.seats} color={SEAT_LINE.gray} strokeWidth={Math.max(1.1, 0.03 * MPP)} />
         {/* Delay-alignment race to the rear rows (conceptual timing). */}
         {rearDelayOn ? (
           <AlignmentOverlay

@@ -395,6 +395,15 @@ export const NEUTRAL_COPY: LessonCopy = {
   words: DRUM_WORDS,
 };
 
+/** The instrument word a lesson ITSELF gives (its words or terms), or
+ *  undefined — never the drum default, so a lesson with no word set of its
+ *  own is named by its noun ("the guitar amp itself", not "the drum itself";
+ *  owner 2026-10-10). */
+export function ownInstrumentWord(lesson: { copy?: Partial<LessonCopy> }): string | undefined {
+  const c = lesson.copy;
+  return c?.words?.instrument ?? (c?.terms ? termsToWords(c.terms).instrument : undefined);
+}
+
 /** The lesson's copy over the neutral words (one level deep per section). */
 export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy & { words: FamilyWords } {
   const c = lesson.copy;

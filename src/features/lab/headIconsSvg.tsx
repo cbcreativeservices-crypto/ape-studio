@@ -10,12 +10,12 @@
  * Returns a <G>: render it inside the caller's <Svg>, whose root already
  * carries the accessibility hiding (a11y ratchet).
  */
-import Svg, { G, Path } from 'react-native-svg';
+import Svg, { G, Image as SvgImage, Path } from 'react-native-svg';
 import {
-  ABOVE_CANON,
   HEAD_ABOVE_SVG,
   HEAD_ICON_LINE,
   HEAD_ICON_PLATE,
+  HEAD_PNG_BOX,
   HEAD_SIDE_SVG,
   SIDE_CANON,
   SIDE_CENTER,
@@ -65,24 +65,28 @@ export function HeadIconSvg({
   opacity = 1,
 }: HeadIconSvgProps) {
   const s = headIconScale(view, size);
-  const lwPx = Math.max(minStroke, (view === 'side' ? SIDE_CANON.stroke : ABOVE_CANON.stroke) * s);
-  const lw = lwPx / s; // in unit space (the group scales it back)
   const deg = (rotation * 180) / Math.PI;
   const flip = view === 'side' && facing === 'right' ? -1 : 1;
   const at = anchor === 'center' ? SIDE_CENTER : anchor === 'neck' ? SIDE_NECK : null;
   const shift = view === 'side' && at ? ` translate(${-at[0]} ${-at[1]})` : '';
   const transform = `translate(${x} ${y}) rotate(${deg}) scale(${flip * s} ${s})${shift}`;
   const d = view === 'side' ? HEAD_SIDE_SVG : HEAD_ABOVE_SVG;
-  const stroke = { fill: 'none', strokeWidth: lw, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const box = HEAD_PNG_BOX[view];
+  // The owner's PNG itself (owner 2026-10-10). Its pixels carry their own
+  // colour, so color / tint / speaking / minStroke no longer change the drawing.
+  void color; void tint; void tintOpacity; void speaking; void minStroke;
   return (
     <G transform={transform} opacity={opacity}>
       {plate ? <Path d={d.plate} fill={HEAD_ICON_PLATE} /> : null}
-      <Path d={d.lines} stroke={color} {...stroke} />
-      {tint ? <Path d={d.lines} stroke={tint} strokeOpacity={tintOpacity} {...stroke} /> : null}
-      {speaking && view === 'side' ? <Path d={HEAD_SIDE_SVG.open} stroke={color} {...stroke} /> : null}
+      <SvgImage href={view === 'side' ? HEAD_SIDE_PNG : HEAD_ABOVE_PNG} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none" />
     </G>
   );
 }
+
+/** The owner's own head art, drawn as-is — never redrawn (HEAD_PNG_BOX in
+ *  headIconGeometry.ts says where each sits). */
+const HEAD_SIDE_PNG = require('../../../assets/icons/head-side.png');
+const HEAD_ABOVE_PNG = require('../../../assets/icons/head-above.png');
 
 /** Side icon's crown→chin size that fits its whole drawing (nose tip →
  *  occiput, crown → neck base: 43.8 × 56 head units) in a `box` square. */

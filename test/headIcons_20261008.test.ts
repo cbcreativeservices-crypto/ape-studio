@@ -106,7 +106,7 @@ describe('head fix 2026-10-08 — one shared head-icon module', () => {
 
 /** Lone heads → the owner's icon (Skia HeadIcon / SVG HeadIconSvg / glyph). */
 const LONE: [string, RegExp][] = [
-  ['src/screens/lab/micspeaker/viz.tsx', /<HeadIcon key=\{px\} view="above"[\s\S]*appendHeadIcon\(seats, seatPlates, 'side'/],
+  ['src/screens/lab/micspeaker/viz.tsx', /<HeadIcon key=\{px\} view="above"/],
   ['src/screens/lab/wave/vizWave.tsx', /<HeadIcon view="above"[\s\S]*<HeadIcon view="side"/],
   ['src/screens/lab/BinauralLabScreen.tsx', /<HeadIconSvg view="above"/],
   ['src/screens/lab/roomdesign/RoomPlanView.tsx', /<HeadIconSvg view="above"/],
@@ -119,10 +119,7 @@ const LONE: [string, RegExp][] = [
   ['src/screens/lab/speech/speechPagesB.tsx', /<HeadIconSvg view="side" facing="right" speaking/],
   ['src/screens/lab/miking/lessons/shared/brass/BrassSoundArt.tsx', /<HeadIcon view="above"/],
   ['src/screens/lab/miking/lessons/shared/lowbrass/LowBrassSoundArt.tsx', /<HeadIcon view="above"/],
-  ['src/screens/lab/miking/lessons/shared/speakers/StagePlan.tsx', /makeHeadIconPaths\('above'/],
-  ['src/screens/lab/miking/lessons/shared/speakers/BacklinePlan.tsx', /makeHeadIconPaths\('above'/],
-  ['src/screens/lab/miking/lessons/shared/keys/KeysPlan.tsx', /makeHeadIconPaths\('above'/],
-  ['src/screens/lab/miking/lessons/shared/hand/HandPlan.tsx', /makeHeadIconPaths\(\s*'above'[\s\S]*makeHeadIconPaths\(\s*'above'/],
+  ['src/screens/lab/miking/lessons/shared/hand/HandPlan.tsx', /makeHeadIconPaths\(\s*'above'/],
 ];
 
 /** Bodies → the figure's own head (FigureHead / FigureHeadAt / FigureHeadSvg / PlayerHead). */
@@ -212,6 +209,31 @@ describe('head fix 2026-10-08 — every site on the right head', () => {
   });
   it('the old circle / ellipse / stand-in heads are gone', () => {
     for (const [f, re] of GONE) assert.doesNotMatch(code(f), re, f);
+  });
+  it('an audience is its empty chairs at true size, never heads (owner 2026-10-10)', () => {
+    const AUD: [string, RegExp][] = [
+      ['src/screens/lab/micspeaker/viz.tsx', /makeChairsSide\(seatAt, MPP\)[\s\S]*<ChairsSide path=\{geo\.seats\}/],
+      ['src/screens/lab/miking/lessons/shared/speakers/StagePlan.tsx', /makeChairsTop\(chairRowFacingStage\(/],
+      ['src/screens/lab/miking/lessons/shared/speakers/BacklinePlan.tsx', /makeChairsTop\(chairRowFacingStage\(/],
+      ['src/screens/lab/miking/lessons/shared/keys/KeysPlan.tsx', /makeChairsTop\(chairRowFacingStage\(/],
+      ['src/screens/lab/miking/lessons/shared/hand/HandPlan.tsx', /const audience = makeChairsTop\(chairRowFacingStage\(/],
+    ];
+    for (const [f, re] of AUD) assert.match(code(f), re, f);
+    for (const f of ['src/screens/lab/micspeaker/viz.tsx', 'src/screens/lab/miking/lessons/shared/keys/KeysPlan.tsx', 'src/screens/lab/miking/lessons/shared/speakers/StagePlan.tsx', 'src/screens/lab/miking/lessons/shared/speakers/BacklinePlan.tsx'])
+      assert.doesNotMatch(code(f), /HeadPngRow|appendHeadIcon\(|AUDIENCE_HEAD_MM|seatHeadPx/, f);
+    const c = read('src/features/lab/audienceChairs.tsx');
+    assert.match(c, /w: 460, seatD: 430, backD: 60, seatH: 450, backH: 880/);
+  });
+  it("the visible head is the owner's PNG itself, never a redrawn outline (owner 2026-10-10)", () => {
+    const svg = code('src/features/lab/headIconsSvg.tsx');
+    const sk = code('src/features/lab/headIcons.tsx');
+    for (const s of [svg, sk]) {
+      assert.match(s, /assets\/icons\/head-side\.png/);
+      assert.match(s, /assets\/icons\/head-above\.png/);
+      assert.doesNotMatch(s, /d\.lines|parts\.lines|path=\{lines\}/, 'the traced stroke must not be drawn');
+    }
+    assert.match(svg, /<SvgImage href=/);
+    assert.match(sk, /<SkImageNode image=/);
   });
   it('a standalone head glyph decides its accessibility (a11y ratchet)', () => {
     const s = read('src/features/lab/headIconsSvg.tsx');

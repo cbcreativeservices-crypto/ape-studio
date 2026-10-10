@@ -56,7 +56,7 @@ const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: number; blu
 // truncated mid-sentence is a weakened badge (design pass 2026-08-31). The
 // caveat detail lives in the guided lesson.
 const TOP_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION';
-const SIDE_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE, NOT SPL · head tint = does the vertical pattern reach them';
+const SIDE_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE, NOT SPL';
 
 // Heat-map legend, SAMPLED FROM THE MAP'S OWN COLORMAP.
 //
@@ -85,8 +85,7 @@ function Legend() {
         </View>
       ))}
       <Text style={styles.caption}>
-        Overlapping speakers read as hot ridges where their beams cross. (Side-view audience
-        busts keep their own green/yellow/red/gray tint: does the vertical pattern reach that row?)
+        Overlapping speakers read as hot ridges where their beams cross.
       </Text>
     </View>
   );

@@ -18,12 +18,11 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from './speakerModel.ts';
 import { bassHead } from './ampModel.ts';
-import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
-const AUDIENCE_HEAD_MM = 230;
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -117,16 +116,12 @@ function build(who: Backline) {
   const wedge = rr(-150, -280, 150, 280, 18);
   const wedgeGrille = rr(-40, -258, 136, 258, 14);
   const pa = rr(-300, -300, 300, 300, 20);
-  // The audience: each listener the owner's ABOVE head icon (a lone head in a
-  // plan), turned to face the stage (−u).
-  const crowd: { x: number; y: number; rotation: number }[] = [];
-  const faceStage = aboveRotation(-1, 0);
-  for (let v = -2100; v <= 2100; v += 420) crowd.push({ x: BACKLINE_POS.audience, y: v, rotation: faceStage });
-  for (let v = -1890; v <= 1890; v += 420) crowd.push({ x: BACKLINE_POS.audience + 330, y: v, rotation: faceStage });
-  const heads = makeHeadIconPaths('above', AUDIENCE_HEAD_MM, crowd);
+  // The audience: one row of true-size empty chairs facing the stage (−u) —
+  // an audience is its chairs, never heads (owner 2026-10-10).
+  const chairs = makeChairsTop(chairRowFacingStage(BACKLINE_POS.audience, -2100, 2100));
   const room = rr(-950, -2150, 3050, 2250, 40);
   const deck = rr(BACKLINE_BOX.stage.u0, BACKLINE_BOX.stage.v0, BACKLINE_POS.audience - 450, BACKLINE_BOX.stage.v1, 0);
-  return { amp, ampFront, head, handle, shoulders, headTop, inst, strings, keep, board, stomp, di, other, drums, wedge, wedgeGrille, pa, heads, room, deck };
+  return { amp, ampFront, head, handle, shoulders, headTop, inst, strings, keep, board, stomp, di, other, drums, wedge, wedgeGrille, pa, chairs, room, deck };
 }
 
 export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; who: Backline; scene: BacklineScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
@@ -262,7 +257,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
                     </Path>
                   </Group>
                 ))}
-                <HeadIconPaths lines={g.heads.lines} plate={g.heads.plate} strokeWidth={Math.max(headIconStroke('above', AUDIENCE_HEAD_MM), 1 / xf.s)} color="#7d828d" />
+                <ChairsTop seats={g.chairs.seats} backs={g.chairs.backs} color="#7d828d" />
               </>
             ) : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}

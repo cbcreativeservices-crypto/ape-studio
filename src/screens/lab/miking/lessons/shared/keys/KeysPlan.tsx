@@ -26,12 +26,11 @@ import { cabLayout } from '../speakers/speakerModel.ts';
 import { RHODES, WURLI } from './keysSpec.ts';
 import { C_BASS, C_TREBLE, W } from './wurliModel.ts';
 import { KEYS } from './KeysArt';
-import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
-const AUDIENCE_HEAD_MM = 230;
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -164,17 +163,13 @@ function build(rig: KeysRig) {
   const wedge = rr(-150, -280, 150, 280, 18);
   const wedgeGrille = rr(-40, -258, 136, 258, 14);
   const pa = rr(-300, -300, 300, 300, 20);
-  // The audience: each listener the owner's ABOVE head icon (a lone head in a
-  // plan), turned to face the stage (−u).
-  const crowd: { x: number; y: number; rotation: number }[] = [];
-  const faceStage = aboveRotation(-1, 0);
-  for (let v = -2100; v <= 2100; v += 420) crowd.push({ x: KEYS_POS.audience, y: v, rotation: faceStage });
-  for (let v = -1890; v <= 1890; v += 420) crowd.push({ x: KEYS_POS.audience + 330, y: v, rotation: faceStage });
-  const heads = makeHeadIconPaths('above', AUDIENCE_HEAD_MM, crowd);
+  // The audience: one row of true-size empty chairs facing the stage (−u) —
+  // an audience is its chairs, never heads (owner 2026-10-10).
+  const chairs = makeChairsTop(chairRowFacingStage(KEYS_POS.audience, -2100, 2100));
   const B = KEYS_BOX[rig];
   const deck = rr(B.stage.u0, B.stage.v0, KEYS_POS.audience - 450, B.stage.v1, 0);
   const room = rr(B.studio.u0 + 50, B.studio.v0 + 50, B.studio.u1 - 50, B.studio.v1 - 50, 40);
-  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, other, drums, wedge, wedgeGrille, pa, heads, deck, room };
+  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, other, drums, wedge, wedgeGrille, pa, chairs, deck, room };
 }
 
 export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; rig: KeysRig; scene: KeysScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
@@ -317,7 +312,7 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
                     </Path>
                   </Group>
                 ))}
-                <HeadIconPaths lines={g.heads.lines} plate={g.heads.plate} strokeWidth={Math.max(headIconStroke('above', AUDIENCE_HEAD_MM), 1 / xf.s)} color="#7d828d" />
+                <ChairsTop seats={g.chairs.seats} backs={g.chairs.backs} color="#7d828d" />
               </>
             ) : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}

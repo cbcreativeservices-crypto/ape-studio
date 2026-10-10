@@ -152,6 +152,16 @@ function Glyph({ method, glow, color, off }: { method: MethodKey; glow?: boolean
   }
 }
 
+/** The neon glyph alone, no tile — for inline use inside a button. */
+export function MethodGlyph({ method, size = 20 }: { method: MethodKey; size?: number }) {
+  return (
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
+      <Glyph method={method} glow />
+      <Glyph method={method} />
+    </Svg>
+  );
+}
+
 export function MethodIcon({
   method,
   size = 44,

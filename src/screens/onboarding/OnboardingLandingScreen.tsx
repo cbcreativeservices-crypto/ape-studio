@@ -15,7 +15,8 @@
  * Academy menu and opens the destination from there, so Back from any of them
  * returns to the menu, never here. "Watch again" swaps this page for the video.
  */
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -27,9 +28,10 @@ import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { ResetIcon } from '../../components/ResetIcon';
 import { HomeIcon } from '../../components/HomeIcon';
-import { BookIcon } from '../../components/BookIcon';
+import { MethodGlyph } from '../../components/MethodIcon';
 import { LabsIcon } from '../../components/LabsIcon';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
+import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
 
@@ -48,6 +50,13 @@ export type OnboardingChoice =
 export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: OnboardingChoice) => void }) {
   const insets = useSafeAreaInsets();
   const upsell = useUpsellAllowed();
+  // The logo matches the title block's measured height (owner 2026-10-10).
+  const [titleH, setTitleH] = useState(0);
+  // Logo + gap + title must fit the column: the row is ~9.5 × fontSize + 41 wide.
+  const { width } = useWindowDimensions();
+  // Smallest phones (< 360 wide): no logo, the original centred title (owner 2026-10-10).
+  const showLogo = width >= 360;
+  const titleSize = showLogo ? Math.min(32, Math.floor((Math.min(width - 40, 560) - 41) / 9.5)) : 32;
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -95,10 +104,15 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
       contentContainerStyle={[styles.content, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 28 }]}
     >
       <View style={styles.column}>
-        <Text style={styles.eyebrow}>WELCOME TO THE ACADEMY</Text>
-        <Text style={styles.title} accessibilityRole="header">
-          {'Where would you\nlike to begin?'}
-        </Text>
+        <View style={styles.header}>
+          {showLogo && titleH > 0 ? <BrandLogo size={titleH} /> : null}
+          <View style={showLogo ? styles.headerText : null} onLayout={(e) => setTitleH(Math.round(e.nativeEvent.layout.height))}>
+            <Text style={[styles.eyebrow, showLogo && styles.left]}>WELCOME TO THE ACADEMY</Text>
+            <Text style={[styles.title, showLogo && styles.left, { fontSize: titleSize, lineHeight: Math.round(titleSize * 1.25) }]} accessibilityRole="header">
+              {'Where would you\nlike to begin?'}
+            </Text>
+          </View>
+        </View>
 
         {upsell ? (
           <View style={styles.block}>
@@ -122,7 +136,7 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
         <Text style={[styles.eyebrow, styles.sectionEyebrow]}>OR JUMP RIGHT IN</Text>
         <View style={styles.grid}>
           <View style={styles.cell}>
-            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<BookIcon color={colors.blue} filled size={18} />} onPress={() => choose('glossary')} />
+            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<MethodGlyph method="glossary" size={22} />} onPress={() => choose('glossary')} />
           </View>
           <View style={styles.cell}>
             <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} icon={<Text style={styles.sigma}>Σ</Text>} onPress={() => choose('calculators')} />
@@ -193,8 +207,10 @@ const styles = StyleSheet.create({
     color: colors.amber,
     textAlign: 'center',
     marginTop: 8,
-    marginBottom: 22,
   },
+  header: { flexDirection: 'row', alignItems: 'center', alignSelf: 'center', marginBottom: 22 },
+  headerText: { marginLeft: 16 },
+  left: { textAlign: 'left' },
   block: { marginTop: 14 },
   caption: {
     fontFamily: fonts.barlowRegular,

@@ -22,12 +22,11 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout, LESLIE } from './speakerModel.ts';
-import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
-const AUDIENCE_HEAD_MM = 230;
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -113,22 +112,18 @@ function build() {
   // A floor wedge from above (sloped grille facing `faces`).
   const wedge = rr(make(), -150, -280, 150, 280, 18);
   const wedgeGrille = rr(make(), -40, -258, 136, 258, 14);
-  // PA stack from above, and two audience rows: each listener the owner's
-  // ABOVE head icon (a lone head in a plan), turned to face the stage (−u).
+  // PA stack from above, and the audience: one row of true-size empty chairs
+  // facing the stage (−u) — never heads (owner 2026-10-10).
   const pa = rr(make(), -300, -300, 300, 300, 20);
   const paHorn = rr(make(), 140, -140, 300, 140, 12);
-  const crowd: { x: number; y: number; rotation: number }[] = [];
-  const faceStage = aboveRotation(-1, 0);
-  for (let v = -2400; v <= 2400; v += 420) crowd.push({ x: POS.audience, y: v, rotation: faceStage });
-  for (let v = -2190; v <= 2190; v += 420) crowd.push({ x: POS.audience + 330, y: v, rotation: faceStage });
-  const heads = makeHeadIconPaths('above', AUDIENCE_HEAD_MM, crowd);
+  const chairs = makeChairsTop(chairRowFacingStage(POS.audience, -2400, 2400));
   // The studio room's walls.
   const room = rr(make(), -1300, -2200, 3200, 2900, 40);
   const playerSpace = make();
   playerSpace.addCircle(POS.player.u, POS.player.v, 520);
   const organSpace = rr(make(), POS.organ.u - 300, POS.organ.v - 720, POS.bench.u + 420, POS.organ.v + 720, 60);
   const deck = rr(make(), PLAN_BOX.stage.u0, PLAN_BOX.stage.v0, POS.audience - 450, PLAN_BOX.stage.v1, 0);
-  return { cab, cabGrille, handle, shoulders, head, guitar, di, drums, organ, keys, keyLines, pedals, bench, leslie, louvers, wedge, wedgeGrille, pa, paHorn, heads, room, playerSpace, organSpace, deck };
+  return { cab, cabGrille, handle, shoulders, head, guitar, di, drums, organ, keys, keyLines, pedals, bench, leslie, louvers, wedge, wedgeGrille, pa, paHorn, chairs, room, playerSpace, organSpace, deck };
 }
 function getBuilt(): Built {
   return (built ??= build());
@@ -297,7 +292,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
                     <Path path={b.paHorn} color="#0b0b0d" />
                   </Group>
                 ))}
-                <HeadIconPaths lines={b.heads.lines} plate={b.heads.plate} strokeWidth={Math.max(headIconStroke('above', AUDIENCE_HEAD_MM), 1 / xf.s)} color="#7d828d" />
+                <ChairsTop seats={b.chairs.seats} backs={b.chairs.backs} color="#7d828d" />
               </>
             ) : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={30} color={AMBER} /> : null}

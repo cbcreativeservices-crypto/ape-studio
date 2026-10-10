@@ -28,7 +28,7 @@ import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Body, Card, KeyButton, Landing, Note, OrderTaskCard, Point, PredictCard, ScenarioList, SetupTaskCard } from '../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard, type JourneyProps } from '../../engine/journeyKit';
 import { journeyIntro } from '../../engine/journey.ts';
-import { copyOf } from '../../engine/model/copy.ts';
+import { copyOf, ownInstrumentWord } from '../../engine/model/copy.ts';
 import { PolarCompare } from '../../engine/scene/PolarCompare';
 import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../../engine/physics/polar.ts';
 import { fmtAngle, fmtDb, fmtIdealPickup, fmtLen, isDeepNull } from '../../engine/model/units.ts';
@@ -51,7 +51,7 @@ export function startStep(lesson: Lesson, journey: JourneyProps, _intro: string,
     layout: 'read',
     body: (
       <>
-        <Body>{own ?? journeyIntro(lesson.noun, copyOf(lesson).words.instrument)}</Body>
+        <Body>{own ?? journeyIntro(lesson.noun, ownInstrumentWord(lesson))}</Body>
         <JourneyMap met={journey.met} here="meet" />
         <PathChooser journey={journey} />
         {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}

@@ -17,7 +17,8 @@ import { fitXform, unproject } from '../../../engine/geometry/frame.ts';
 import type { VariantId, ViewBox, Wedge } from '../../../engine/model/types.ts';
 import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
-import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { HeadIconPaths, aboveRotation, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 
 export type HandScene = 'stage' | 'studio';
 /** An item on the plan: its tap/highlight box (plan mm) and where it shows. */
@@ -108,12 +109,9 @@ export function HandPlan({ w, h, art, variant, scene, wedges, items, labelOf, hi
     const pa = make();
     rr(pa, AUD_U - 200, -1500, AUD_U + 200, -1100, 30);
     rr(pa, AUD_U - 200, 1250, AUD_U + 200, 1650, 30);
-    // The audience: a row of the same icons, facing the stage (−u).
-    const audience = makeHeadIconPaths(
-      'above',
-      PLAN_HEAD_MM,
-      Array.from({ length: 8 }, (_, i) => ({ x: AUD_U + 330, y: (i - 3) * 330 - 120, rotation: aboveRotation(-1, 0) })),
-    );
+    // The audience: one row of true-size empty chairs facing the stage (−u) —
+    // an audience is its chairs, never heads (owner 2026-10-10).
+    const audience = makeChairsTop(chairRowFacingStage(AUD_U + 330, -1110, 1200));
     return { band, amp, room, pa, audience };
   }, [box]);
   const hi = shown.find((i) => i.id === highlight);
@@ -137,12 +135,12 @@ export function HandPlan({ w, h, art, variant, scene, wedges, items, labelOf, hi
               <Path path={g.room} style="stroke" strokeWidth={26} color="#3a3d45" />
             ) : (
               <>
-                <HeadIconPaths lines={g.band.lines} plate={g.band.plate} strokeWidth={Math.max(headIconStroke('above', PLAN_HEAD_MM), 1 / xf.s)} color={GREY} opacity={0.75} />
+                <HeadIconPaths heads={g.band} color={GREY} opacity={0.75} />
                 <Path path={g.amp} color="#24262d" />
                 <Path path={g.amp} style="stroke" strokeWidth={6} color={GREY} opacity={0.6} />
                 <Path path={g.pa} color="#1b1c21" />
                 <Path path={g.pa} style="stroke" strokeWidth={8} color={GREY} />
-                <HeadIconPaths lines={g.audience.lines} plate={g.audience.plate} strokeWidth={Math.max(headIconStroke('above', PLAN_HEAD_MM), 1 / xf.s)} color={GREY} opacity={0.6} />
+                <ChairsTop seats={g.audience.seats} backs={g.audience.backs} color={GREY} opacity={0.8} />
               </>
             )}
             <Instrument view="top" variant={variant} />

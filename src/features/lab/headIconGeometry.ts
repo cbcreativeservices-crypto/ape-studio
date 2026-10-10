@@ -346,3 +346,26 @@ export const SIDE_CENTER: XY = [(SIDE_CANON.noseTip + SIDE_CANON.occiput) / 2, (
 /** The side icon's neck-base centre (head units, before facing): anchor
  *  'neck' stands the icon on a floor line. */
 export const SIDE_NECK: XY = [15.5, SIDE_CANON.neckBase];
+
+/**
+ * THE OWNER'S PNGs ARE WHAT IS DRAWN (owner 2026-10-10: the vector tracing
+ * read as "crazy other versions"). The paths above now only shape the dark
+ * readability plates; the visible head is the owner's art itself:
+ *   side  → assets/icons/head-side.png  (320×283, faces LEFT, art 77..257 × 29..246)
+ *   above → assets/icons/head-above.png (256×320, chin DOWN, art 7..249 × 7..313;
+ *           made 2026-10-10 from assets/Head_icon_above.PNG, luminance → alpha)
+ * Each box is the whole PNG in head units, placed so its art covers the same
+ * footprint the tracing did (side: art box ↔ nose tip→occiput × crown→neck
+ * base; above: art box ↔ crown→chin, centred), so no layout moves.
+ */
+const SIDE_PX_UNIT = (SIDE_CANON.neckBase - SIDE_CANON.crown + SIDE_CANON.stroke) / (246 - 29);
+const ABOVE_PX_UNIT = (ABOVE_CANON.height + ABOVE_CANON.stroke) / (313 - 7);
+export const HEAD_PNG_BOX: Record<HeadIconView, { x: number; y: number; w: number; h: number }> = {
+  side: {
+    x: SIDE_CENTER[0] - ((77 + 257) / 2) * SIDE_PX_UNIT,
+    y: SIDE_CENTER[1] - ((29 + 246) / 2) * SIDE_PX_UNIT,
+    w: 320 * SIDE_PX_UNIT,
+    h: 283 * SIDE_PX_UNIT,
+  },
+  above: { x: -128 * ABOVE_PX_UNIT, y: -160 * ABOVE_PX_UNIT, w: 256 * ABOVE_PX_UNIT, h: 320 * ABOVE_PX_UNIT },
+};
