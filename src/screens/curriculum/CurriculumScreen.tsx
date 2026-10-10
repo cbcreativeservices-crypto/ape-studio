@@ -15,7 +15,6 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
-import { Modal } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '../../data/v3Curriculum';
 import { subjectMeta } from '../../data/subjectMeta';
@@ -36,15 +35,10 @@ import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { TopicDetailModal, type TopicDetail } from './TopicDetailModal';
 import { InsideStats, fmt, lighten, SILVER, type InsideStat } from './InsideStats';
-// (fmt is still used by the Career Finder blurb and the subject term totals.)
+// (fmt formats the subject term totals.)
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
-import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
-import { FAMILY_COUNT } from '../../features/careerfinder/families';
-import { computeResult } from '../../features/careerfinder/scoring';
-import { useCareerFinder, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { readingColumn } from '../../theme/readingColumn';
-import { useGuestWording, useUpsellAllowed } from '../../features/commercial/useTier';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 
 /**
  * What the Academy sets out to do.
@@ -131,9 +125,6 @@ export const CurriculumView = memo(function CurriculumView({
   // A screen pushed over this one (AwardProgress, Final Exam…) leaves it mounted.
   const isFocused = useIsFocused();
   const [open, setOpen] = useState<number | null>(null);
-  // The Career Finder entry is a button beside SUBJECTS (owner 2026-09-04):
-  // tapping it opens the green container as a popup.
-  const [showFinder, setShowFinder] = useState(false);
   // Members never see "free" marketing (owner 2026-09-29) — and neither does
   // anyone whose tier is not KNOWN yet (tier sweep 2026-10-03): `resolved`
   // also flips on a FAILED read, and a member with no remembered tier then
@@ -175,30 +166,6 @@ export const CurriculumView = memo(function CurriculumView({
   // that same order: 'az' = the flat A–Z TOPICS tab, 'tree' = the SUBJECTS
   // tab's topics flattened in display sequence.
   const [viewTopic, setViewTopic] = useState<{ gs: number; name: string; list: 'az' | 'tree' } | null>(null);
-  // The Career Finder card speaks to where THIS person is: a first pitch, a
-  // "you're at question n", or their own top family (the cheapest re-entry
-  // into family → topic → membership).
-  const finderRec = useCareerFinder();
-  // "Your answers are saved" only when they are (final round A, 2026-10-02).
-  const finderSaving = useCareerFinderSaving();
-  // A guest's answers are erased at close (owner 2026-10-04) — never "saved".
-  const finderGuest = useGuestWording().guest;
-  const finder = useMemo((): { blurb: string; pill: string; a11y: string; route: 'CareerFinder' | 'CareerFinderResults' | 'CareerFinderQuiz' } => {
-    const answered = QUESTIONS.filter((q) => q.id in finderRec.responses).length;
-    if (finderRec.completed && answered > 0) {
-      // Returning user: the RESULTS pill lands on their results directly (back
-      // from there returns here to Explore), not on the intro pitch.
-      const top = computeResult(finderRec.responses, familyFieldOf).top[0]?.family.name;
-      return top
-        ? { blurb: `Your top match: ${top} — and four more.`, pill: 'RESULTS ›', a11y: `Audio Career Finder. Your top match: ${top}. Opens your results.`, route: 'CareerFinderResults' }
-        : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder. Opens your results.', route: 'CareerFinderResults' };
-    }
-    if (answered > 0) {
-      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. ${finderSaving ? (finderGuest ? 'Your answers are kept until you close the app.' : 'Your answers are saved.') : 'Your answers could not be saved on this phone.'}`, pill: 'CONTINUE ›', a11y: `Audio Career Finder. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
-    }
-    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${upsell ? 'Free, ' : ''}about five minutes.`, route: 'CareerFinder' };
-  }, [finderRec, finderSaving, finderGuest, upsell]);
-
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
   const [credCounts, setCredCounts] = useState<{ programs: number; certs: number }>({ programs: 0, certs: 0 });
@@ -432,18 +399,6 @@ export const CurriculumView = memo(function CurriculumView({
         live={onScreen && isFocused}
       />
 
-      {/* Audio Career Finder — its own thin full-width row below the hero
-          (owner 2026-09-15). */}
-      <Pressable
-        hitSlop={6}
-        style={styles.finderContainer}
-        onPress={() => setShowFinder(true)}
-        accessibilityRole="button"
-        accessibilityLabel={finder.a11y}
-      >
-        <Text style={styles.finderContainerText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{`Career Finder - ${fmt(CAREER_COUNT)} possible Careers in audio - click here`}</Text>
-      </Pressable>
-
       {/* Curriculum section head — an amber eyebrow with a rule sets the
           section off from the hero module above (redesign 2026-09-15). */}
       <View style={styles.introBlock}>
@@ -464,8 +419,8 @@ export const CurriculumView = memo(function CurriculumView({
       </View>
 
       {/* Amber "Subjects" subtitle above the list (user request 2026-07-22).
-          The Audio Career Finder moved up to its own full-width container
-          (owner 2026-09-15), so this row is now just the SUBJECTS heading. */}
+          The Career Finder lives on its own Home card (owner 2026-10-10), not
+          on Explore. */}
       {/* Curriculum split tabs (owner 2026-09-15): TOPICS (flat list) |
           SUBJECTS (expandable tree). */}
       <View style={styles.curTabs} onLayout={(e) => { tabsY.current = e.nativeEvent.layout.y; }}>
@@ -631,32 +586,6 @@ export const CurriculumView = memo(function CurriculumView({
       </View>
     </ScrollView>
 
-    {/* Audio Career Finder popup (owner 2026-09-04): the green container, shown
-        from the SUBJECTS-row button. The button navigates to the Lab at the
-        screen the pill names (start / continue / results). */}
-    <Modal accessibilityViewIsModal visible={showFinder} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setShowFinder(false)}>
-      <View style={styles.finderBackdrop}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowFinder(false)} accessibilityRole="button" accessibilityLabel="Dismiss" />
-        <View style={styles.finderModal}>
-          <View style={styles.finderEyebrowRow}>
-            <Text style={styles.finderEyebrow}>{upsell ? 'CAREER DISCOVERY LAB · FREE' : 'CAREER DISCOVERY LAB'}</Text>
-          </View>
-          <Text style={styles.finderTitle}>Audio Career Finder</Text>
-          <Text style={styles.finderBlurb}>{finder.blurb}</Text>
-          <Pressable
-            style={styles.finderStart}
-            onPress={() => { setShowFinder(false); (navigation as { navigate: (name: typeof finder.route) => void }).navigate(finder.route); }}
-            accessibilityRole="button"
-            accessibilityLabel={finder.a11y}
-          >
-            <Text style={styles.finderStartText}>{finder.pill}</Text>
-          </Pressable>
-          <Pressable style={styles.finderClose} onPress={() => setShowFinder(false)} accessibilityRole="button" accessibilityLabel="Not now">
-            <Text style={styles.finderCloseText}>NOT NOW</Text>
-          </Pressable>
-        </View>
-      </View>
-    </Modal>
     {/* Topic expanded view (owner 2026-09-15): image + term coverage + subject/
         field + where the skills apply. View-only, no links. */}
     <TopicDetailModal
@@ -728,49 +657,16 @@ const styles = StyleSheet.create({
   // cue retires once About is viewed.
   aboutCtaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.amber, textAlign: 'center' },
 
-  // Audio Career Finder entry card (owner brief 2026-09-03). Same card grammar
-  // as the subject cards below, with the amber accent on the left edge so it
-  // reads as a destination rather than another expandable subject.
-  // SUBJECTS label + the Audio Career Finder button on one row (owner
-  // 2026-09-04). The negative bottom margin that tucked SUBJECTS against the
-  // tree now lives on the row.
+  // The SUBJECTS row. The negative bottom margin tucks SUBJECTS against the tree.
   subjectsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: -10 },
-  // The green-outlined entry button — the one non-browsing action on Explore,
-  // so it takes the green the app reserves for a primary action.
   // The overview sentences (owner 2026-09-15) were consolidated INTO the hero
   // grid's labels on the owner's same-day revision — see ./InsideStats.
-  // Audio Career Finder full-width container (owner 2026-09-15): green chip
-  // grammar (matches the old button's colours) at full width above the
-  // curriculum, label left, arrow right.
-  finderContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 34,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.green,
-    backgroundColor: '#173021',
-  },
-  finderContainerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.4, color: colors.green, textAlign: 'center' },
   // Curriculum split tabs (owner 2026-09-15): TOPICS | SUBJECTS segmented row.
   curTabs: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#2c2c2c' },
   curTab: { flex: 1, alignItems: 'center', paddingVertical: 10, borderBottomWidth: 2, borderBottomColor: 'transparent' },
   curTabActive: { borderBottomColor: colors.amber },
   curTabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.textSub },
   curTabTextActive: { color: colors.amber },
-  // Career Finder popup — the green container, shown from the button.
-  finderBackdrop: { flex: 1, backgroundColor: 'rgba(8,8,10,0.72)', alignItems: 'center', justifyContent: 'center', padding: 26 },
-  finderModal: { width: '100%', maxWidth: 360, backgroundColor: '#17171b', borderRadius: 14, borderWidth: 1, borderColor: colors.green, padding: 18, gap: 10 },
-  finderEyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  finderEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
-  finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textPrimary, letterSpacing: 0.3 },
-  finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
-  finderStart: { marginTop: 4, minHeight: 50, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', alignItems: 'center', justifyContent: 'center' },
-  finderStartText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.green },
-  finderClose: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  finderCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
 
   // Tree.
   // Amber "SUBJECTS" subtitle above the subject list (user request 2026-07-22);

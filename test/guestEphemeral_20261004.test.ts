@@ -372,7 +372,5 @@ describe('3. a guest touches only Pro Audio Safety and DAW Fundamentals', () => 
 
 it('Career Finder never tells a guest their answers are "saved" (lead, 2026-10-04)', () => {
   const quiz = readFileSync(new URL('../src/screens/careerfinder/CareerFinderQuizScreen.tsx', import.meta.url), 'utf8');
-  const cur = readFileSync(new URL('../src/screens/curriculum/CurriculumScreen.tsx', import.meta.url), 'utf8');
   assert.match(quiz, /guest \? 'Leave the questions\. Your answers are kept until you close the app\.'/);
-  assert.match(cur, /finderGuest \? 'Your answers are kept until you close the app\.'/);
 });

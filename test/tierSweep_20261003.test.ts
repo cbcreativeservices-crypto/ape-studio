@@ -99,7 +99,9 @@ describe('2. Home + Curriculum — upsell only via useUpsellAllowed', () => {
   it('Curriculum: Membership link, the FREE eyebrow and the a11y "Free,"', () => {
     assert.match(cur, /const upsell = useUpsellAllowed\(\);/);
     assert.doesNotMatch(cur, /tierResolved && !isMember|isMember \? '' : 'Free, '/);
-    assert.match(cur, /\$\{upsell \? 'Free, ' : ''\}about five minutes\./);
+    // Owner 2026-10-10: the Career Finder has its own Home card, so Explore
+    // no longer carries the green Career Finder bar or its popup.
+    assert.doesNotMatch(cur, /features\/careerfinder|finderContainer|setShowFinder|navigate\(finder/);
   });
 });
 

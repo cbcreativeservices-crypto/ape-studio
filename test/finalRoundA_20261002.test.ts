@@ -115,7 +115,6 @@ describe('3. Career Finder store', () => {
     // (guestEphemeral 2026-10-04: a known guest's answers are erased at the
     // next launch, so they read "kept until you close the app" instead.)
     assert.match(read('src/screens/careerfinder/CareerFinderScreen.tsx'), /\{saving \? \(guest \? 'kept until you close the app' : 'saved on this phone'\) : 'not saved on this phone'\}/);
-    assert.match(read('src/screens/curriculum/CurriculumScreen.tsx'), /\$\{finderSaving \? \(finderGuest \? 'Your answers are kept until you close the app\.' : 'Your answers are saved\.'\) : 'Your answers could not be saved on this phone\.'\}/);
   });
 });
 

@@ -28,7 +28,6 @@ test('Home card eyebrows: plain labels for members', () => {
 test('every other surface branches its free / membership copy on membership', () => {
   const cases: [string, RegExp][] = [
     ['src/screens/about/AboutHomeSheet.tsx', /!\(!upsell && FREE_TIER_LINES\.has\(p\)\)/],
-    ['src/screens/curriculum/CurriculumScreen.tsx', /upsell \? 'CAREER DISCOVERY LAB · FREE' : 'CAREER DISCOVERY LAB'/],
     ['src/screens/enrollment/EnrollmentScreen.tsx', /free && !isCore && !paid \? '  ·  Free'/],
     ['src/screens/lab/AudioLearningScreen.tsx', /locked \? INTRO : INTRO_MEMBER/],
     ['src/screens/lab/EarLabScreen.tsx', /isMember \? '' : sec\.note/],
