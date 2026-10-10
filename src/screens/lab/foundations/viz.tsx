@@ -975,6 +975,12 @@ export function PressureGraphView({
   // compression bands above.
   const N = 90;
   const mid = h / 2;
+  // Clash sweep 2026-10-10: with no speaker on the left (originX < the label
+  // column) the trace ran THROUGH the "+/− PRESSURE" labels. The plot now
+  // starts right of a label gutter (a y-axis), so labels never sit on the
+  // trace. Crest positions are unchanged (same x → same phase), so the peaks
+  // still line up with the air window's compression bands above.
+  const plotFrom = originX >= PRESSURE_LABEL_GUTTER ? 0 : PRESSURE_LABEL_GUTTER;
   const fullA = h * 0.36; // pixel excursion at full scale (amp = 1) — the MIDI
   // gradient maps over ±fullA so a quiet wave stays blue and a loud one reaches red.
 
@@ -986,7 +992,7 @@ export function PressureGraphView({
     const mid = h / 2;
     const a = amp * (h * 0.36);
     for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
+      const x = plotFrom + (i / N) * (w - plotFrom);
       let y: number;
       if (x < originX) {
         y = mid; // atmospheric — the wave hasn't been created here yet
@@ -1002,7 +1008,7 @@ export function PressureGraphView({
       else p.lineTo(x, y);
     }
     return p;
-  }, [clock, visHz, amp, mode, w, h, lambda, originX]);
+  }, [clock, visHz, amp, mode, w, h, lambda, originX, plotFrom]);
 
   // Gradient underfill: the SAME p ∝ cos(ωt − kx) samples, closed back to the
   // atmospheric zero line (styling only — identical pressure law).
@@ -1013,9 +1019,9 @@ export function PressureGraphView({
     const p = Skia.Path.Make();
     const mid = h / 2;
     const a = amp * (h * 0.36);
-    p.moveTo(0, mid);
+    p.moveTo(plotFrom, mid);
     for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
+      const x = plotFrom + (i / N) * (w - plotFrom);
       let y: number;
       if (x < originX) {
         y = mid;
@@ -1030,7 +1036,7 @@ export function PressureGraphView({
     p.lineTo(w, mid);
     p.close();
     return p;
-  }, [clock, visHz, amp, mode, w, h, lambda, originX]);
+  }, [clock, visHz, amp, mode, w, h, lambda, originX, plotFrom]);
 
   // Styled axis ticks along the zero line (static chrome).
   const ticks = useMemo(() => {
@@ -1053,6 +1059,8 @@ export function PressureGraphView({
       <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
       {/* Atmospheric-pressure zero line — brighter than the grid (reference). */}
       <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.4 * ts} />
+      {/* the y-axis at the plot's left edge when the label gutter is in use */}
+      {plotFrom > 0 ? <SkLine p1={{ x: plotFrom, y: h * 0.1 }} p2={{ x: plotFrom, y: h * 0.9 }} color={GRID} strokeWidth={1 * ts} /> : null}
       {/* Trace: glow + crisp, BOTH coloured by the MIDI amplitude gradient
           (owner 2026-08-05: level shown in the MIDI scheme). Stroke weights ride
           the stage text scale so the line stays the same weight relative to the
@@ -1072,6 +1080,10 @@ export function PressureGraphView({
     </View>
   );
 }
+
+/** Width (px) of the "+ PRESSURE" / "− PRESSURE" label column: 9 pt Oswald
+ *  with 0.8 letter-spacing ≈ 58 px + the 4 px inset + a 4 px gap. */
+const PRESSURE_LABEL_GUTTER = 66;
 
 const pgStyles = StyleSheet.create({
   pLabel: {
@@ -1841,8 +1853,10 @@ export function WavelengthRulerView({
   // scale — w px per 7 m, so an adult of 1.75 m stands 1/4 of the room
   // tall — feet on the floor at the 7 m end; capped only if the stage is too
   // short to hold a true-size adult.
-  const personX = w - 26;
   const personPx = Math.min(w / (RULER_ROOM_M * 1000), (floorY - 4) / STANDING_H_MM);
+  // Standing ~ 45 cm in from the end wall so the whole figure (shoulders and
+  // arms ≈ ± 25 cm) shows inside the frame (owner 2026-10-10).
+  const personX = w - 6 - 450 * personPx;
 
   const bracketMidX = (8 + Math.min(w - 8, 8 + lambdaPx)) / 2;
   return (
