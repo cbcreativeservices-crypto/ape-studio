@@ -11,9 +11,9 @@
  *     crescent on its upper-left edge (the rim light), a soft core shadow on
  *     its lower-right edge, a darker contour; a soft contact shadow where it
  *     rests and where the near arm lies over the instrument;
- *   • clothing FOLDS suggested simply: creases at the inside of each elbow and
- *     knee, a pull fold along each sleeve, the drape from the armpits to the
- *     belt — each a dark crease with a lit edge beside it;
+ *   • clothing: shirt and sleeves by their shading alone — no stroked folds
+ *     (owner 2026-10-10: crease lines on the arm read as welts); a soft crease
+ *     below each knee only;
  *   • hands with fingers: knuckles and the gaps between fingers drawn, a
  *     picking hand round a pick, a fretting hand's fingers arched over the
  *     board onto the strings (thumb behind the neck), a hand on a steel bar, a
@@ -224,9 +224,14 @@ export function FigureMass({ path, tone, far = false, contour = 2.2 }: { path: S
           <BlurMask blur={t.coreW * 0.45} style="normal" />
         </Path>
       </Group>
-      <Path path={look.rim} opacity={0.7}>
-        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width * 0.7, b.y + b.height * 0.7)} colors={[t.rim, 'rgba(255,255,255,0)']} />
-      </Path>
+      {/* The lit edge as a soft glow inside the outline — a crisp strip read
+          as a line (a "welt") along sleeves (owner 2026-10-10). */}
+      <Group clip={path}>
+        <Path path={look.rim} opacity={0.55}>
+          <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width * 0.7, b.y + b.height * 0.7)} colors={[t.rim, 'rgba(255,255,255,0)']} />
+          <BlurMask blur={t.rimW * 0.9} style="normal" />
+        </Path>
+      </Group>
       {far ? <Path path={path} color="#000" opacity={0.3} /> : null}
       <Path path={path} style="stroke" strokeWidth={contour} color={t.edge} opacity={0.95} />
     </Group>
@@ -611,7 +616,7 @@ function joined(...ps: SkPath[]): SkPath {
  */
 function sleeveArm(root: Pt, e: Pt, w: Pt, cap: SkPath | null = null): SkPath {
   const upper = limb([root, lerp(root, e, 0.3), e], [44, 47, 38]);
-  const fore = limb([e, lerp(e, w, 0.26), w], [38, 40, 31]);
+  const fore = limb([e, lerp(e, w, 0.26), w], [38, 37, 31]); // smooth taper — a swell below the elbow read as a welt (owner 2026-10-10)
   const arm = union(cap, upper, fore);
   // The cuff: everything past the wrist, square to the forearm, cut away.
   const th = Math.atan2(w.v - e.v, w.u - e.u);
@@ -639,17 +644,10 @@ function cuffSeam(e: Pt, w: Pt): SkPath {
   return crease(e, w, Math.max(0, 1 - 36 / L), 31, 2);
 }
 
-/** Sleeve folds for one arm, kept few and soft: one crease at the inside
- *  of the elbow, one pull fold down the forearm from it. */
-function sleeveFolds(_s: Pt, e: Pt, w: Pt): SkPath {
-  const p = make();
-  p.addPath(crease(e, w, 0.08, BODY.elbowR * 0.42, 4));
-  const th = Math.atan2(w.v - e.v, w.u - e.u);
-  const off = BODY.elbowR * 0.18;
-  const a = lerp(e, w, 0.16);
-  const b = lerp(e, w, 0.42);
-  p.addPath(curve([pt(a.u - Math.sin(th) * off, a.v + Math.cos(th) * off), pt(b.u - Math.sin(th) * off * 0.3, b.v + Math.cos(th) * off * 0.3)]));
-  return p;
+/** Sleeve folds: none drawn (owner 2026-10-10 — stroked creases on the
+ *  sleeve read as welts on the arm); the sleeve's form comes from its shading. */
+function sleeveFolds(_s: Pt, _e: Pt, _w: Pt): SkPath {
+  return make();
 }
 
 /** Trouser folds for one leg: a soft crease below the knee, a short one down
@@ -731,14 +729,8 @@ function buildFront(pose: PlayerPose): Built {
     const r = BODY.wristR + 6;
     return curve([pt(c.u - Math.cos(a) * r, c.v - Math.sin(a) * r), pt(c.u + Math.cos(a) * r, c.v + Math.sin(a) * r)]);
   };
-  lines.addPath(cuff(pose.handL.wrist, pose.elbowL));
   const linesFront = make();
-  linesFront.addPath(cuff(pose.handR.wrist, pose.elbowR));
-  // The drape: from under each arm toward the belt.
-  const drape = make();
-  drape.addPath(curve([pt(sR.u - 20, sR.v + 150), pt(sR.u + 34, waistV - 70), pt(n.u - 70, waistV - 8)]));
-  drape.addPath(curve([pt(sL.u + 20, sL.v + 150), pt(sL.u - 34, waistV - 70), pt(n.u + 70, waistV - 8)]));
-  drape.addPath(curve([pt(n.u - 40, n.v + 90), pt(n.u - 60, n.v + 160)]));
+  void cuff; // no cuff seam stroke (owner 2026-10-10: read as a welt)
   // The belt across the waist (the shirt tucked in), over the hips.
   const beltV = hipV - 38;
   const beltBand = make();
@@ -787,7 +779,7 @@ function buildFront(pose: PlayerPose): Built {
       : null;
   const foldsBehind = [
     { path: joined(legFolds(pose.hipR, pose.kneeR, ankle(pose.footR)), legFolds(pose.hipL, pose.kneeL, ankle(pose.footL))), light: TROUSER_LIGHT, clip: trousers },
-    { path: drape, light: SHIRT_LIGHT, clip: shirt },
+    // (no drape fold strokes — owner 2026-10-10: lines beside the arm read as welts)
     { path: sleeveFolds(sL, pose.elbowL, pose.handL.wrist), light: SHIRT_LIGHT, clip: armL },
   ];
   const foldsFront = [{ path: sleeveFolds(sR, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }];
@@ -984,11 +976,7 @@ function buildSide(pose: PlayerPose): Built {
   const shirt = Skia.Path.MakeFromOp(torso, tuck, PathOp.Difference) ?? torso;
   const linesFront = make();
   const cuffAt = lerp(pose.handR.wrist, pose.elbowR, 40 / Math.max(40, dist(pose.handR.wrist, pose.elbowR)));
-  linesFront.addPath(crease(pose.elbowR, pose.handR.wrist, dist(pose.elbowR, cuffAt) / Math.max(1, dist(pose.elbowR, pose.handR.wrist)), BODY.wristR + 6, 3));
-  // The drape: from under the arm to the belt, and the chest's fold.
-  const drape = make();
-  drape.addPath(curve([along(0.78, -40), along(0.5, -10), along(0.2, 20)]));
-  drape.addPath(curve([along(0.8, 70), along(0.62, 90)]));
+  void cuffAt; // no cuff seam stroke (owner 2026-10-10: read as a welt)
   const shadow =
     pose.floor !== null
       ? (() => {
@@ -1018,7 +1006,7 @@ function buildSide(pose: PlayerPose): Built {
       { path: shoe(pose.footR), tone: pose.posture === 'floor' ? 'skin' : 'shoe' },
     ],
     foldsBehind: [
-      { path: drape, light: SHIRT_LIGHT, clip: shirt },
+      // (no drape fold strokes — owner 2026-10-10: lines beside the arm read as welts)
       { path: legFolds(pose.hipR, pose.kneeR, ankle(pose.footR)), light: TROUSER_LIGHT, clip: legNear },
     ],
     foldsFront: [{ path: sleeveFolds(sh, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }],
