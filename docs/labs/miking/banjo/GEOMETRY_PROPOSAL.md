@@ -1,5 +1,10 @@
 # C05a Banjo: GEOMETRY PROPOSAL (medium depth)
 
+> **Superseded numbers (owner 2026-10-10).** The lab now draws a STANDARD 5-string, not the museum banjo:
+> head Ø 279.4 mm (11 in), scale 666.75 mm (26¼ in), fifth string 499.5 mm, bridge one third of the head
+> in from the tail-side rim (pot centre +46.6 mm from the bridge). Live values: `shared/guitars/guitarSpec.ts`
+> and `c05aBanjo/model.ts`. The figures below (Ø 285 / 720 / 555, centre −95) are the original proposal.
+
 Guitar-body family variant `banjo pot` (`acoustic_guitar/GEOMETRY_PROPOSAL.md` §7), frame G with the
 origin at the **bridge foot on the head** (the banjo bridge floats on the head; Deering).
 

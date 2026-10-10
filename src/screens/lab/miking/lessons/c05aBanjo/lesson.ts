@@ -399,7 +399,7 @@ export const C05A_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A string instrument whose top is a drumhead: a thin membrane stretched over a round pot. Five strings press a light bridge onto the head, and the head radiates the sound. A resonator bowl behind the pot throws sound forward; an open back does not.', src: 'DEERING' },
     { title: 'WHERE YOU MEET IT', text: 'Bluegrass, old-time and folk music, and beyond — on stage, often in a band sharing one or two mics, and in the studio.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Fast rolls with fingerpicks, or the gentler clawhammer stroke on an open back; bright, cutting fills. Ask how they play, whether they use a mute, and whether they step in to a shared mic.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'This lab draws a head about 28.5 cm (11.25 in) across, a 72 cm long string from bridge to nut, and the short fifth string about 55.5 cm long.', src: 'MET-BANJO' },
+    { title: 'ITS SIZE', text: 'This lab draws a head about 28 cm (11 in) across, a 67 cm (26¼ in) long string from bridge to nut, and the short fifth string about 50 cm long.', src: 'LESSON' },
   ],
   sound: {
     stages: [
@@ -410,7 +410,7 @@ export const C05A_LESSON: Lesson = {
     ],
     attack: 'The start of the note: the pick or nail on the string, and the head’s quick response. Close in front of the head a mic hears more of it — and of the playing noises.',
     body: 'The ring: the head and the strings, short-lived. At the neck junction a mic hears a blend of it with the strings and fingers. Both are tendencies, and banjos vary.',
-    head: { diameterMm: 285, rods: 24, label: 'banjo head, from the front', strikeSrc: 'MET-BANJO', hoop: 'metal' },
+    head: { diameterMm: 279, rods: 24, label: 'banjo head, from the front', strikeSrc: 'MET-BANJO', hoop: 'metal' },
   },
   setting: {
     items: [
@@ -440,7 +440,7 @@ export const C05A_LESSON: Lesson = {
   unknowns: [
     { text: 'The player’s standing posture and reach, and the height on the strap (the strings 1.08 m above the floor): drawing defaults. No HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The head’s, the strings’ and the bridge’s keep-off margins: illustrative.', dims: ['reso', 'open'] },
-    { text: 'The pot’s depth (70 mm), the resonator (Ø 330, 40 mm deep), the bridge’s place on the head (a third of Ø in from the tail-side rim), the hooks (24), the tailpiece, the peghead and the fingerboard — drawing defaults; the head Ø 285 and the string lengths are a museum banjo’s.', dims: [] },
+    { text: 'The pot’s depth (70 mm), the resonator (Ø 330, 40 mm deep), the bridge’s place on the head (a third of Ø in from the tail-side rim), the hooks (24), the tailpiece, the peghead and the fingerboard — drawing defaults; the head (Ø 11 in) and the 26¼ in scale are a standard modern five-string’s (owner 2026-10-10), the fifth string’s length derived from the 5th fret.', dims: [] },
     { text: 'The 30–40 cm neck-junction start reads DPA’s two-omni “distance” as a one-mic distance (it may mean the spacing); the 3 in rows are drawn as 6–9.5 cm; which head edge is not stated.', dims: [] },
     { text: 'The clip’s capsule height and reach, the mic sizes, the wedge, the shared mic and the band’s positions — drawing defaults.', dims: [] },
   ],

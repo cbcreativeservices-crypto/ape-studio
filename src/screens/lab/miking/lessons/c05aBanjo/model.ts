@@ -1,8 +1,9 @@
 /**
  * C05a BANJO — the technical truth (charter §2 layer 1). A five-string banjo
  * (banjo/GEOMETRY_PROPOSAL.md: the frame's origin at the bridge foot on the
- * head; the head Ø 285 and the 72 cm / 55.5 cm string lengths from a museum
- * banjo, TRIAL for a modern one), with a resonator or open back, played
+ * head; round 3, owner 2026-10-10: a standard modern five-string — an 11 in
+ * head and a 26¼ in scale, the fifth string from the 5th fret; the bridge a
+ * third of Ø in from the tail-side rim), with a resonator or open back, played
  * standing on a strap (a drawing default).
  *
  * Starting points (banjo/SOURCES.md): about 3 in from the head's centre and

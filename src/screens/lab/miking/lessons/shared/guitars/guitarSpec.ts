@@ -30,6 +30,8 @@ const T = (mm: number, s: string, note: string): Dim => ({ mm, prov: trial(s, no
 /** A drawing default, not a published figure. */
 export const dd = (mm: number, needed: string): Dim => ({ mm, prov: unk(needed), placeholder: true });
 const derived = (mm: number, how: string): Dim => ({ mm, prov: { kind: 'illustrative', reason: `DERIVED: ${how}` } });
+/** A standard size the owner set (2026-10-10): a modern instrument's usual figure, not a placeholder. */
+const std = (mm: number, what: string): Dim => ({ mm, prov: { kind: 'illustrative', reason: `STANDARD (owner 2026-10-10): ${what}` } });
 
 /** Fret n's distance from the SADDLE (PHYS-ET): L·2^(−n/12). */
 export function fretX(L: number, n: number): number {
@@ -238,37 +240,42 @@ export const RESO_ROUND: GuitarSpec = { ...RESO_SINGLE, id: 'resoRound', name: '
 /* ── C05a banjo (banjo/GEOMETRY_PROPOSAL.md): origin at the bridge foot ── */
 // The pot's centre, from the bridge (round 2, 2026-10-10): the bridge sits a
 // third of the head's diameter in from the TAIL-side rim, as on a played
-// banjo — so the centre is Ø/6 = +47.5 toward the neck, the neck-side rim at
-// +190 and the 22nd fret (202.6 from the bridge) just over it. Was −95, which
+// banjo — so the centre is Ø/6 (+46.6) toward the neck, the neck-side rim at
+// +186.3 and the 22nd fret (187.6 from the bridge) right at it. Was −95, which
 // put the bridge a sixth of Ø in from the NECK-side rim (the proposal's words,
 // "toward the tail", with the sign flipped).
-const BANJO_D = 285;
+// Round 3 (owner, 2026-10-10): a standard modern five-string — an 11 in head
+// (279.4 mm) and a 26¼ in scale (666.75 mm); the fifth string runs from the
+// 5th fret, so its length is the scale × 2^(−5/12) ≈ 499.5 mm. Was the
+// museum banjo's Ø 285 / 720 / 555.
+const BANJO_D = 11 * IN;
 const BANJO_POT_CX = BANJO_D / 6;
+const BANJO_L = 26.25 * IN;
 export const BANJO_5: GuitarSpec = {
   id: 'banjo',
   name: 'five-string banjo with a resonator',
-  scale: S(720, 'MET-BANJO', 'String length: longest: ca. 72 cm'),
+  scale: std(BANJO_L, 'a standard five-string scale, 26¼ in'),
   edgeX: derived(BANJO_POT_CX + BANJO_D / 2, 'the pot centre + its radius (the neck meets the rim)'),
   frets: 22,
   outline: 'round',
   body: {
-    length: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm'),
-    lower: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm'),
-    waist: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm'),
-    upper: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm'),
+    length: std(BANJO_D, 'a standard 11 in head'),
+    lower: std(BANJO_D, 'a standard 11 in head'),
+    waist: std(BANJO_D, 'a standard 11 in head'),
+    upper: std(BANJO_D, 'a standard 11 in head'),
     depth: dd(70, 'pot (rim) depth'),
     xLower: dd(BANJO_POT_CX, 'pot centre'),
     xWaist: dd(BANJO_POT_CX, 'pot centre'),
     xUpper: dd(BANJO_POT_CX, 'pot centre'),
-    pot: { cx: dd(BANJO_POT_CX, 'pot centre (the bridge a third of Ø in from the tail-side rim)'), d: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm') },
+    pot: { cx: dd(BANJO_POT_CX, 'pot centre (the bridge a third of Ø in from the tail-side rim)'), d: std(BANJO_D, 'a standard 11 in head') },
   },
-  opening: { kind: 'head', x: dd(BANJO_POT_CX, 'pot centre'), d: S(BANJO_D, 'MET-BANJO', 'Head Diameter ca. 28.5 cm') },
+  opening: { kind: 'head', x: dd(BANJO_POT_CX, 'pot centre'), d: std(BANJO_D, 'a standard 11 in head') },
   bridge: { kind: 'banjo', x: dd(0, 'bridge foot (the frame origin)'), w: dd(80, 'banjo bridge width'), l: dd(8, 'banjo bridge thickness') },
   pickguard: false,
   neck: { nutW: dd(32, 'banjo nut width'), edgeW: dd(38, 'fingerboard width at the pot'), head: 'banjo', headLen: dd(170, 'peghead length'), tuners: 2 },
   strings: { courses: 5, perCourse: 1, nylon: false, spreadSaddle: dd(38, 'outer string spread at the bridge'), wound: 1 },
   stringH: { saddle: dd(16, 'string height over the head at the bridge'), edge: dd(14, 'string height at the rim') },
-  fifth: S(555, 'MET-BANJO', 'shortest: ca. 55.5 cm'),
+  fifth: derived(Math.round(BANJO_L * Math.pow(2, -5 / 12) * 10) / 10, 'the fifth string from the 5th fret: the scale × 2^(−5/12)'),
   hooks: dd(24, 'head hooks (brackets) round the pot'),
   resonatorBack: { d: dd(330, 'resonator diameter'), depth: dd(40, 'resonator depth behind the pot') },
 };
