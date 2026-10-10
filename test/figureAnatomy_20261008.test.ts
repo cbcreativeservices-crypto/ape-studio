@@ -42,6 +42,14 @@ import { standPoses } from '../src/screens/lab/miking/lessons/shared/broadcast/s
 import { operatorSide, operatorTop } from '../src/screens/lab/miking/lessons/shared/measure/measureModel.ts';
 import { FH, TP } from '../src/screens/lab/miking/lessons/a01Trumpet/geometry.ts';
 import { TB } from '../src/screens/lab/miking/lessons/a02Trombone/geometry.ts';
+import { STANDING as VIOLIN_STANDING } from '../src/screens/lab/miking/lessons/c09aViolin/geometry.ts';
+import { POSTURE as CELLO } from '../src/screens/lab/miking/lessons/c09cCello/model.ts';
+import { standing as bowedStanding } from '../src/screens/lab/miking/lessons/shared/bowed/posture.ts';
+import { BASS as DOUBLE_BASS } from '../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts';
+
+const BASS_BOW = bowedStanding(DOUBLE_BASS, 'bow');
+const add3 = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => ({ x: a.x + b.x, y: a.y + b.y, z: a.z + b.z });
+const sc3 = (a: { x: number; y: number; z: number }, k: number) => ({ x: a.x * k, y: a.y * k, z: a.z * k });
 
 const d = (a: Pt, b: Pt) => Math.hypot(a.u - b.u, a.v - b.v);
 const mid = (a: Pt, b: Pt): Pt => ({ u: (a.u + b.u) / 2, v: (a.v + b.v) / 2 });
@@ -318,6 +326,60 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const bongo = read('m04bBongos/art.tsx');
     assert.match(bongo, /path: limb\(\[hip, knee, ankle\], \[82, 62, 40\]\), tone: 'trousers'/);
     assert.doesNotMatch(bongo, /opacity=\{ghost \? 0\.38 : 1\}/);
+  });
+
+  // Owner 2026-10-10: the profile BACK read as a hump (kyphosis). A healthy
+  // back: nearly straight from the nape to the seat, the shoulder blade a
+  // shallow curve — no point of the back more than 35 mm behind the
+  // nape → seat chord (PlayerFigure) / behind the shoulders–hips line (the
+  // bowed and brass 3-D figure).
+  it('profile backs are healthy: no hump behind the shoulders (shared side figure; bowed/brass 3-D figure)', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    const side = src.slice(src.indexOf('function buildSide('), src.indexOf('const cache = new WeakMap'));
+    const list = side.slice(side.indexOf('const torso = smooth('), side.indexOf('0.5,', side.indexOf('const torso = smooth(')));
+    const back = [...list.matchAll(/along\((-?[\d.]+), (-?[\d.]+)\)/g)].map((m) => ({ t: Number(m[1]), off: Number(m[2]) })).filter((p) => p.off < 0).sort((a, b) => a.t - b.t);
+    assert.ok(back.length >= 5, 'the back is drawn through enough points');
+    const lo = back[0];
+    const hi = back[back.length - 1];
+    for (const p of back) {
+      const chord = lo.off + ((p.t - lo.t) / (hi.t - lo.t)) * (hi.off - lo.off);
+      const bulge = chord - p.off; // behind the chord (more negative = further back)
+      assert.ok(bulge <= 35, `PlayerFigure back at t=${p.t}: ${bulge.toFixed(0)} mm behind the nape→seat line`);
+    }
+    // The bowed/brass figure: the torso is the hull of discs; read their sizes and forward shifts from the source.
+    const bowed = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
+    assert.match(bowed, /circlePts\(q\(add\(s\.chest, scale\(fw, 28\)\)\), 104\)/);
+    assert.match(bowed, /scale\(fw, 20\)\)\), 96\)/);
+    assert.match(bowed, /circlePts\(q\(add\(s\.hipL, scale\(fw, -8\)\)\), 96\)/);
+    const bulgeOf = (pl: { face: { x: number; z: number }; chest: V; pelvis: V; shoulderR: V; shoulderL: V; hipR: V; hipL: V }) => {
+      const L = Math.hypot(pl.face.x, pl.face.z) || 1;
+      const f = { x: pl.face.x / L, z: pl.face.z / L };
+      // In the side view (u = x): how far each disc reaches BEHIND (against the facing's x).
+      const sgn = Math.sign(f.x) || 1;
+      const behind = (c: V, fwd: number, r: number) => -sgn * (c.x + f.x * fwd) + r;
+      const mid = { x: pl.chest.x * 0.4 + pl.pelvis.x * 0.6, y: 0, z: 0 };
+      const shoulders = Math.max(behind(pl.shoulderR, 0, 70), behind(pl.shoulderL, 0, 70));
+      const hips = Math.max(behind(pl.hipR, -8, 96), behind(pl.hipL, -8, 96));
+      const trunk = Math.max(behind(pl.chest, 28, 104), behind(mid, 20, 96));
+      return trunk - Math.max(shoulders, hips);
+    };
+    type V = { x: number; y: number; z: number };
+    for (const [n, P] of [['violin', VIOLIN_STANDING], ['cello', CELLO], ['bass', BASS_BOW], ['trumpet', TP], ['trombone', TB]] as const) {
+      const b = bulgeOf(P.player as never);
+      assert.ok(b <= 35, `${n}: the back bulges ${b.toFixed(0)} mm behind the shoulders/hips`);
+    }
+  });
+
+  // Owner 2026-10-10: the bow hand HOLDS the bow at the frog (it was open, palm up, beside the stick).
+  it('bowed players: the right hand holds the bow at the frog (a grip on the stick, square to it)', () => {
+    const bowed = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
+    assert.match(bowed, /hands: \{ L: neckHold\(P, view, instDepth\), R: bowHold\(P, view\) \}/);
+    assert.match(bowed, /return \{ kind: 'grip', dir, at \};/);
+    for (const P of [VIOLIN_STANDING, CELLO, BASS_BOW]) {
+      const f = add3(P.bow.frog, sc3(P.bow.up, 29));
+      const d = Math.hypot(P.player.handR.x - f.x, P.player.handR.y - f.y, P.player.handR.z - f.z);
+      assert.ok(d <= 12, `the hand point sits on the stick at the frog (${d.toFixed(1)} mm)`);
+    }
   });
 
   // Round 4 (2026-10-10): a brass player's elbows HANG (from above the raised

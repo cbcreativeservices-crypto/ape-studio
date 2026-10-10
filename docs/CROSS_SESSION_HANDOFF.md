@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 10:07 · ccode · 9a631131
+changed: Room Design: caption names the SIDE VIEW button
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 09:44 · ccode · 183fe858
 changed: Meter lab VU: the SPL tool's photoreal face, driven by the teaching signal (owner)
 affects other side: nothing (client lab UI on next-store-build; unpublished)

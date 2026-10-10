@@ -283,7 +283,11 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   const VP = 36 * k;
   const vx0 = P0.x - 5 * k;
   const nTop = d.side ? 3 : spec.valves.n;
-  const vz = P0.z + 50 * k;
+  // The valve cluster sits on the NEAR (player's right) side of the body,
+  // clear of the bell branch (its near surface at about z = top.z + 0.9 rT
+  // high up): the casings' centre line just beyond it, so from the player's
+  // right the order is body (far) -> cluster and slides -> right arm (near).
+  const vz = top.z + 0.25 * d.rT;
   const valves: Valve[] = Array.from({ length: nTop }, (_, i) => ({ c: v(vx0 + i * VP, P0.y, vz), axis: v(0, -1, 0), r: 15 * k, h: 120 * k, kind: 'piston' as const }));
   // The euphonium's fourth valve sits at the side, under the left hand.
   if (d.side) valves.push({ c: v(250, -930 + 20 * (1 - k), 52), axis: v(0, 0, -1), r: 15 * k, h: 70, kind: 'piston' });
@@ -298,9 +302,10 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   const bowArt: Tube = { id: 'bowArt', pts: spline([v(backX, d.bottomY - 10, 95), v(backX + 8, bowLow - 30 * k, 105), v((backX + bellX) / 2, bowLow, 125), v(bellX - 8, bowLow - 30 * k, 150), v(bellX, d.bottomY + 4, 165)], 7), r: 46 * k, rr: [0.5 * rT, 0.56 * rT], art: true };
   const backArt: Tube = {
     id: 'backArt',
-    pts: spline([v(xs[0] - 8 * k, P0.y - 20 * k, vz - 20), v(xs[0] - 45 * k, P0.y - 42 * k, 100), v(240, P0.y - 52 * k, 90), v(backX + 25, P0.y - 30 * k, 85), v(backX + 4, P0.y + 60 * k, 88), v(backX, d.bottomY - 10, 95)], 8),
+    // Behind the bell branch (the far side) from the valve section down.
+    pts: spline([v(262, P0.y - 52 * k, 95), v(backX + 25, P0.y - 30 * k, 88), v(backX + 4, P0.y + 60 * k, 88), v(backX, d.bottomY - 10, 95)], 8),
     r: d.branchR[0],
-    rr: [0.22 * rT, 0.5 * rT],
+    rr: [0.26 * rT, 0.5 * rT],
     art: true,
   };
   let bell: Bell;
@@ -334,9 +339,34 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   const ms0 = xf + 50 * k;
   const ms1 = xf + 104 * k;
   const msLow = P0.y + 130 * k;
-  const leadArt: Tube = { id: 'leadArt', pts: spline([mp1, v(270, -1118, 45), v(xs[1], P0.y - 128 * k, vz - 40), v(ms0 - 10 * k, P0.y - 70 * k, vz + 10), v(ms0, P0.y - 20 * k, vz + 20)], 8), r: 11 * k, rr: [6 * k, 11.5 * k], art: true };
+  // The MOUTHPIECE sits in the leadpipe's receiver: from the lips it points
+  // out to the player's right, and the leadpipe (tapering about 12 -> 23 mm)
+  // runs out on the NEAR side of the bell branch, over the right hand, and
+  // down in front of the cluster into the main tuning slide. (The model's
+  // own mouthpiece and leadpipe keep-outs are unchanged.)
+  const mpEnd = v(mp0.x + 18, mp0.y + 10, mp0.z + 80);
+  const mpArt: Tube = { id: 'mpArt', pts: [mp0, mpEnd], r: 8, tone: 'silver', art: true };
+  // Its route clears the near arm: it rises from the receiver over the
+  // wrist (yHi, about 35 mm above the wrist's top), passes the bell stack on
+  // its near side (zClear), then drops in BEHIND the hand (z just beyond the
+  // cluster, nearer the body than the hand) and comes down in front of the
+  // cluster: no part of it is ever drawn over the right forearm or hand.
+  const yHi = P0.y - 199 * k;
+  const zClear = top.z + rT + 22;
+  const leadArt: Tube = {
+    id: 'leadArt',
+    pts: spline([mpEnd, v(mpEnd.x - 4, mpEnd.y + 2, 200), v(mpEnd.x + 2, yHi + 15, top.z + 0.6 * rT), v(180, yHi - 4, zClear), v(262, yHi - 4, zClear), v(xs[0], yHi + 4, vz + 30), v(xs[2], yHi + 22 * k, vz), v(xf + 22 * k, P0.y - 120 * k, vz), v(ms0 - 10 * k, P0.y - 70 * k, vz + 16), v(ms0, P0.y - 20 * k, vz + 20)], 8),
+    r: 11 * k,
+    rr: [6 * k, 11.5 * k],
+    art: true,
+  };
+  // The valve section's tubing leaves the rear casing and passes behind the
+  // bell branch to the back branch.
+  const valveExit: Tube = { id: 'valveExit', pts: [v(xs[0] - 10 * k, P0.y - 24 * k, vz - 10), v(xs[0] - 34 * k, P0.y - 30 * k, vz - 52)], r: 10 * k, art: true };
   const art: Tube[] = [
+    mpArt,
     leadArt,
+    valveExit,
     { id: 'mainSlide', pts: [...vLoop(ms0, ms1, P0.y - 20 * k, msLow, vz + 20).slice(0, -1), v(ms1, P0.y - 40 * k, vz + 20), v(ms1 - 12 * k, P0.y - 66 * k, vz + 14), v(xf + 22 * k, P0.y - 62 * k, vz + 6), v(xf + 12 * k, P0.y - 45 * k, vz)], r: 12 * k, art: true },
     // Valve slides hanging below the cluster, nearest-the-viewer last.
     { id: 'vslide1', pts: vLoop(xs[0] - 13 * k, xs[0] + 13 * k, yb - 6 * k, yb + 110 * k, vz + 26), r: tr, art: true },
@@ -356,11 +386,18 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   art.push(stay('stayB', v(bellX + 10, yb + 95 * k, vz + 10), v(xs[nTop - 1] - 8 * k, yb + 95 * k, vz + 14)));
   art.push(stay('stayC', v(ms0, msLow - 40 * k, vz + 20), v(xf + 22 * k, msLow - 40 * k, vz + 18)));
   // The right hand rests with its fingertips on the four buttons.
-  const handR = add(P0, v(35 * k + 5, -(60 + 46) * k, 50));
+  // The fingertips' point: ON the pearl button tops (button top at 94 mm
+  // above the casing's centre on the tuba), over valve 3, so the fingers
+  // arch forward over valves 1-3 with the little finger free by the 4th.
+  const handR = v(xs[Math.min(2, nTop - 1)], P0.y - (94 - 7) * k, vz);
   const J: Joints = {
     ...BASE,
-    elbowR: v(150, -870, 335),
-    wristR: add(handR, v(-40, 30, 70)),
+    // The right arm comes round on the near side, in front of the body,
+    // the hand over the buttons.
+    elbowR: v(150, -870, top.z + 1.2 * d.rT),
+    // The wrist slightly above and behind the buttons (where the shared
+    // keys hand puts it), out on the near side, clear of the bell branch.
+    wristR: add(handR, v(-151, -28, 85)),
     handR,
     elbowL: v(95, -830, -195),
     wristL: d.side ? v(205, -905, 0) : v(185, -985, 10),
@@ -372,7 +409,7 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
     J,
     chair: CHAIR,
     bell,
-    tubes: [bow, back, branch, backArt, bowArt, branchArt, neck, valveLoop, ...slides, ...art, leadpipe, { id: 'mouthpiece', pts: [mp0, mp1], r: 8, tone: 'silver' }],
+    tubes: [bow, back, branch, backArt, bowArt, branchArt, neck, valveLoop, ...slides, ...art, leadpipe, { id: 'mouthpiece', pts: [mp0, mp1], r: 8, tone: 'silver', draw: false }],
     valves,
     centre: v(255, (d.bottomY + d.topY) / 2 - 60, 175),
     bellHand: null,

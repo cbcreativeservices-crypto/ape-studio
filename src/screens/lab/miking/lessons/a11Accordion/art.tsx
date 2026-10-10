@@ -209,7 +209,9 @@ function TrebleFront({ hi }: { hi: string | null }): ReactElement {
   );
 }
 
-function BassFront({ top, bottom, hi }: { top: number; bottom: number; hi: string | null }): ReactElement {
+/** `part`: the box (drawn under the player) or the bass STRAP alone (drawn
+ *  over the player: the left hand goes UNDER the strap). */
+function BassFront({ top, bottom, hi, part = 'box' }: { top: number; bottom: number; hi: string | null; part?: 'box' | 'strap' }): ReactElement {
   const b = bassBoxAt(top, bottom);
   const P = (q: { z: number; y: number }) => [-q.z, q.y] as [number, number];
   const face = poly([P(b.it), P(b.ib), P(b.ob), P(b.ot)]);
@@ -260,6 +262,21 @@ function BassFront({ top, bottom, hi }: { top: number; bottom: number; hi: strin
   const bk = at(0.13, 0.24);
   const buckle = rr(bk[0] - 13, bk[1] - 9, bk[0] + 13, bk[1] + 9, 3);
   const air = at(0.05, 0.3);
+  if (part === 'strap') {
+    return (
+      <Group>
+        <Path path={strap} style="stroke" strokeWidth={30} strokeCap="butt" color="#120c07" />
+        <Path path={strap} style="stroke" strokeWidth={26} strokeCap="butt">
+          <LinearGradient start={vec(s0[0], s0[1])} end={vec(s1[0], s1[1])} colors={['#7a5634', '#4a2f18', '#2c1b0d']} />
+        </Path>
+        <Path path={stitch} style="stroke" strokeWidth={1.2} color="#c9a36e" opacity={0.75}>
+          <DashPathEffect intervals={[5, 4]} />
+        </Path>
+        <Path path={buckle} style="stroke" strokeWidth={3.2} color="#d9dde4" />
+        {hi === 'ac.strap' ? <Path path={strap} style="stroke" strokeWidth={46} strokeCap="round" color={HIGHLIGHT} opacity={0.5} /> : null}
+      </Group>
+    );
+  }
   return (
     <Group>
       <Path path={endFace}>
@@ -271,17 +288,8 @@ function BassFront({ top, bottom, hi }: { top: number; bottom: number; hi: strin
       </Path>
       <Path path={endFace} style="stroke" strokeWidth={2} color="#e1e4ea" opacity={0.55} />
       <Lacquer path={face} box={{ u0: fb.x, v0: fb.y, u1: fb.x + fb.width, v1: fb.y + fb.height }} hi={hi === 'ac.bassSide'} />
-      <Path path={strap} style="stroke" strokeWidth={30} strokeCap="butt" color="#120c07" />
-      <Path path={strap} style="stroke" strokeWidth={26} strokeCap="butt">
-        <LinearGradient start={vec(s0[0], s0[1])} end={vec(s1[0], s1[1])} colors={['#7a5634', '#4a2f18', '#2c1b0d']} />
-      </Path>
-      <Path path={stitch} style="stroke" strokeWidth={1.2} color="#c9a36e" opacity={0.75}>
-        <DashPathEffect intervals={[5, 4]} />
-      </Path>
-      <Path path={buckle} style="stroke" strokeWidth={3.2} color="#d9dde4" />
       <Circle cx={air[0]} cy={air[1]} r={8} color="#d9dde4" />
       <Circle cx={air[0] - 2} cy={air[1] - 2} r={4} color="#ffffff" opacity={0.8} />
-      {hi === 'ac.strap' ? <Path path={strap} style="stroke" strokeWidth={46} strokeCap="round" color={HIGHLIGHT} opacity={0.5} /> : null}
     </Group>
   );
 }
@@ -298,9 +306,10 @@ function frontPose(top: number, bottom: number): PlayerPose {
     shoulderR: { u: -190, v: -320 },
     shoulderL: { u: 190, v: -320 },
     elbowR: { u: -280, v: -60 },
-    elbowL: { u: Math.max(300, bassU - 120), v: -40 },
+    // The left hand lies on the bass box's END face, under the bass strap.
+    elbowL: { u: Math.max(300, bassU - 60), v: -40 },
     handR: { wrist: { u: -250, v: 70 }, dir: -0.25, kind: 'rest' },
-    handL: { wrist: { u: bassU + 70, v: 40 }, dir: Math.PI + 0.1, kind: 'rest' },
+    handL: { wrist: { u: bassU + 150, v: 40 }, dir: Math.PI + 0.1, kind: 'rest' },
     hipR: { u: -110, v: 160 },
     hipL: { u: 110, v: 160 },
     kneeR: { u: -110, v: 640 },
@@ -342,6 +351,7 @@ export function AccordionFront({ top, bottom, hi = null, sound = 0 }: { top: num
       <TrebleFront hi={hi} />
       {hi === 'ac.bellows' ? <Path path={poly([[-TREBLE.z0, TREBLE.y0], [-b.it.z, b.it.y], [-b.ib.z, b.ib.y], [-TREBLE.z0, TREBLE.y1]])} style="stroke" strokeWidth={8} color={HIGHLIGHT} /> : null}
       <PlayerInFront pose={pose} />
+      <BassFront top={top} bottom={bottom} hi={hi} part="strap" />
       {sound ? (
         <Group>
           <Path path={arcs} style="stroke" strokeWidth={4} color={AIR} opacity={0.55}>

@@ -903,11 +903,17 @@ function buildSide(pose: PlayerPose): Built {
       along(0.32, 96), // the belly
       along(0.06, 104), // the lap's front at the hip
       along(-0.1, 40),
-      along(-0.06, -128), // the seat
-      along(0.24, -118), // the small of the back
-      along(0.62, -120), // the shoulder blade
-      along(0.9, -92),
-      along(1.02, -48), // the nape
+      // THE BACK — a healthy adult's (owner 2026-10-10: the old line bulged
+      // into a hump behind the shoulders and cut in hard at the waist): from
+      // the nape the back runs nearly straight down the thoracic spine, the
+      // shoulder blade adding only a shallow convex curve, then a gentle
+      // lumbar hollow into the seat. Offsets behind the hip → neck axis (mm).
+      along(-0.06, -112), // the seat (under the trousers)
+      along(0.24, -90), // the small of the back (the lumbar hollow)
+      along(0.45, -98),
+      along(0.7, -100), // the shoulder blade
+      along(0.9, -82),
+      along(1.02, -52), // the nape
     ],
     0.5,
   );
@@ -920,7 +926,7 @@ function buildSide(pose: PlayerPose): Built {
   // shirt is tucked in at the belt, and below it one trouser mass — a FLAT
   // front no further forward than the thigh, the seat behind, the crotch
   // under — joined to the near leg, so the hips read the way the face looks.
-  const pelvis = smooth([along(0.15, 92), along(0.02, 88), along(-0.1, 80), along(-0.17, 20), along(-0.16, -64), along(-0.06, -104), along(0.06, -110), along(0.15, -108)], 0.5);
+  const pelvis = smooth([along(0.15, 92), along(0.02, 88), along(-0.1, 80), along(-0.17, 20), along(-0.16, -64), along(-0.06, -106), along(0.06, -112), along(0.15, -100)], 0.5);
   const legNear = union(pelvis, leg(pose.hipR, pose.kneeR, pose.footR));
   // Shoes in profile: the heel behind the ankle, the toe forward.
   const shoe = (foot: Pt) => smooth([pt(foot.u - f * 96, foot.v - 2), pt(foot.u - f * 100, foot.v - 64), pt(foot.u - f * 44, foot.v - 92), pt(foot.u + f * 40, foot.v - 62), pt(foot.u + f * 140, foot.v - 34), pt(foot.u + f * 150, foot.v - 4)], 0.45);

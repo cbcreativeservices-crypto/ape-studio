@@ -575,13 +575,19 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   limb('footL', s.ankleL, s.toeL, 42, 34, SHOE);
   limb('footR', s.ankleR, s.toeR, 42, 34, SHOE);
   // Torso: the hull of shoulders, chest, waist and hips.
+  // A HEALTHY BACK (owner 2026-10-10: a chest disc of r 122 centred on the
+  // spine bulged a hump behind the shoulders): the chest and the waist sit
+  // FORWARD of the spine (chest ≈ 210 mm deep, waist ≈ 190), the hips' discs
+  // a little back for the seat — so the back runs nearly straight from the
+  // shoulder blades to the seat (bulge ≤ 35 mm) and the front keeps its line.
+  const fw = Math.hypot(s.face.x, s.face.z) > 1e-6 ? scale({ x: s.face.x, y: 0, z: s.face.z }, 1 / Math.hypot(s.face.x, s.face.z)) : { x: 1, y: 0, z: 0 };
   const tc: P2[] = [
     ...circlePts(q(s.shoulderL), 70),
     ...circlePts(q(s.shoulderR), 70),
-    ...circlePts(q(s.chest), 122),
-    ...circlePts(q(add(scale(s.chest, 0.4), scale(s.pelvis, 0.6))), 112),
-    ...circlePts(q(s.hipL), 92),
-    ...circlePts(q(s.hipR), 92),
+    ...circlePts(q(add(s.chest, scale(fw, 28))), 104),
+    ...circlePts(q(add(add(scale(s.chest, 0.4), scale(s.pelvis, 0.6)), scale(fw, 20))), 96),
+    ...circlePts(q(add(s.hipL, scale(fw, -8))), 96),
+    ...circlePts(q(add(s.hipR, scale(fw, -8))), 96),
   ];
   const torso = hull(tc);
   g.push({ key: 'torso', depth: depthOf(view, s.chest), items: [{ path: polyPath(torso), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(torso), rim: 1.6, tone: 'shirt' }] });
@@ -730,11 +736,50 @@ function neckHold(P: Posture, view: ViewId, instDepth: number): HandHold | undef
   return { kind: 'wrap', dir: Math.atan2(b[1] - a[1], b[0] - a[0]), at: b, depth: instDepth - 1 };
 }
 
+/**
+ * The right hand HOLDS THE BOW at the frog (owner 2026-10-10: the bow hand
+ * was drawn open, palm up, the bow a separate line beside it). The bow hold:
+ * the hand over the stick at the frog, the fingers draped over the stick and
+ * curled round it, the thumb bent under it — the stick passing THROUGH the
+ * hand's grip. The hand lands on the skeleton's own hand point (the stick
+ * just over the frog, posture.ts: frog + 28–30 mm along the bow's up), so the
+ * bow, the keep-outs and the mic positions are untouched; the hand crosses
+ * the stick square to it, coming from the forearm's side. A plucking hand
+ * (the bass, pizzicato) keeps its open hand.
+ */
+function bowHold(P: Posture, view: ViewId): HandHold | undefined {
+  if (!P.player || !P.strokes.length) return undefined;
+  const atFrog = add(P.bow.frog, scale(P.bow.up, 29));
+  const h = P.player.handR;
+  if (Math.hypot(h.x - atFrog.x, h.y - atFrog.y, h.z - atFrog.z) > 12) return undefined;
+  const a = prj(view, P.bow.frog);
+  const b = prj(view, add(P.bow.frog, scale(P.bow.dir, 100)));
+  const at = prj(view, h);
+  const e = prj(view, P.player.elbowR);
+  const fx = at[0] - e[0];
+  const fy = at[1] - e[1];
+  const bx = b[0] - a[0];
+  const by = b[1] - a[1];
+  const bl = Math.hypot(bx, by);
+  // Square to the stick, on the forearm's side; a stick seen end-on: along the forearm.
+  let dir = Math.atan2(fy, fx);
+  if (bl > 25) {
+    let px = -by / bl;
+    let py = bx / bl;
+    if (px * fx + py * fy < 0) {
+      px = -px;
+      py = -py;
+    }
+    dir = Math.atan2(py, px);
+  }
+  return { kind: 'grip', dir, at };
+}
+
 /** All the groups for a view, far to near. */
 export function sceneGroups(P: Posture, view: ViewId, opts: { player?: boolean; bow?: boolean } = {}): Group3[] {
   const groups: Group3[] = [];
   const instDepth = depthOf(view, { x: 0, y: 0, z: 0 });
-  if (opts.player !== false) groups.push(...playerGroups(P, view, true, { hands: { L: neckHold(P, view, instDepth) } }));
+  if (opts.player !== false) groups.push(...playerGroups(P, view, true, { hands: { L: neckHold(P, view, instDepth), R: bowHold(P, view) } }));
   const inst = instrumentItems(P, view);
   // The bow lies on the strings: right after the instrument when its top
   // faces the camera, before it when the back does.

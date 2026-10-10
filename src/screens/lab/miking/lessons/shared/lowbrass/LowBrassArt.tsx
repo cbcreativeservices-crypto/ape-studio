@@ -304,7 +304,7 @@ function mouthpieceItems(t: Tube, view: ViewId, rimR: number): Item[] {
 function tubeItems(t: Tube, view: ViewId, s?: BrassScene): Item[] {
   if (t.draw === false) return [];
   const tone = t.tone === 'silver' ? SILVER : BRASS;
-  if (t.id === 'mouthpiece' && s) return mouthpieceItems(t, view, s.spec.id === 'horn' ? 12.5 : s.spec.id === 'tuba' ? 23 : 19);
+  if ((t.id === 'mouthpiece' || t.id === 'mpArt') && s) return mouthpieceItems(t, view, s.spec.id === 'horn' ? 12.5 : s.spec.id === 'tuba' ? 23 : 19);
   if (t.rr) return coneItems(t, view, tone);
   // A leadpipe widens from the mouthpiece receiver.
   if (t.id === 'leadpipe') return coneItems({ ...t, rr: [t.r * 0.62, t.r] }, view, tone);
@@ -507,7 +507,11 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   limb('footL', J.ankleL, J.toeL, 44, 36, SHOE);
   limb('footR', J.ankleR, J.toeR, 44, 36, SHOE);
   // The torso: the hull of the shoulders, chest, waist and hips.
-  const tc: P2[] = [...circ(q(J.shoulderL), 66), ...circ(q(J.shoulderR), 66), ...circ(q(J.chest), 125), ...circ(q(add(scale(J.chest, 0.4), scale(J.pelvis, 0.6))), 112), ...circ(q(J.hipL), 92), ...circ(q(J.hipR), 92)];
+  // A healthy back (owner 2026-10-10: the chest disc on the spine bulged a
+  // hump): chest and waist forward of the spine (the player faces +x), the
+  // hips a little back for the seat — the back nearly straight.
+  const FW = { x: 1, y: 0, z: 0 };
+  const tc: P2[] = [...circ(q(J.shoulderL), 66), ...circ(q(J.shoulderR), 66), ...circ(q(add(J.chest, scale(FW, 28))), 106), ...circ(q(add(add(scale(J.chest, 0.4), scale(J.pelvis, 0.6)), scale(FW, 20))), 96), ...circ(q(add(J.hipL, scale(FW, -8))), 96), ...circ(q(add(J.hipR, scale(FW, -8))), 96)];
   const torso = hull(tc);
   out.push({ key: 'torso', depth: depthOf(view, J.chest), node: <Lit key="torso" path={poly(torso)} pts={torso} ramp={SHIRT} /> });
   // The arms and HANDS (figure polish 2026-10-10: the hands were capsules —
