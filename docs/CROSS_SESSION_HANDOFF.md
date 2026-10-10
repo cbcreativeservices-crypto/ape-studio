@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-09 20:59 · ccode · 62e9d31d
+changed: docs: session handoff for 2026-10-10 (both stores submitted)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 19:38 · ccode · 2c948385
 changed: Android: CameraX 1.3.4 -> 1.4.2 in ape-optical (16 KB page-size aligned libimage_processing_util_jni.so; Google Play 16 KB requirement) (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
