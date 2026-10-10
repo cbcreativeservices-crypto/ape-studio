@@ -1375,6 +1375,10 @@ export function ProximityApproachView({
   // against the 57.5-px mic. The cranium reaches y ≈ mid − 63, so it just
   // clears the top of this panel; the nose tip lands at headX + 20.
   const headS = headScaleForMic(GR, LEN);
+  // The drawn lips: the icon's origin IS the front of the lips (lips-anchor
+  // fix 2026-10-10, headIconGeometry SIDE_LIPS_PX). Ripples and the GAP
+  // line start here.
+  const lipsX = headX;
   // Map inches → on-screen gap (mouth → grille), then EASE toward it. The
   // 26-px floor is the closest the grille may come before it would touch the
   // (now correctly sized) nose.
@@ -1499,14 +1503,14 @@ export function ProximityApproachView({
   const ripples = useDerivedValue(() => {
     const p = Skia.Path.Make();
     const ph = phase.value;
-    const maxR = Math.max(20, micX.value - GR - headX);
+    const maxR = Math.max(12, micX.value - GR - lipsX);
     for (let i = 0; i < 3; i++) {
       const f = (ph / (2 * Math.PI) + i / 3) % 1;
-      const r = 6 + f * maxR;
-      p.addArc({ x: headX - r, y: mid - r, width: 2 * r, height: 2 * r }, -56, 112);
+      const r = 2 + f * maxR;
+      p.addArc({ x: lipsX - r, y: mid - r, width: 2 * r, height: 2 * r }, -56, 112);
     }
     return p;
-  }, [phase, micX, headX, mid]);
+  }, [phase, micX, lipsX, mid]);
 
   // Bass arcs: LF energy swelling at the capsule as the mic closes in.
   const bassArcs = useDerivedValue(() => {
@@ -1514,12 +1518,16 @@ export function ProximityApproachView({
     if (warm.value <= 0.2) return p;
     const gx = micX.value;
     const pulse = 1 + 0.05 * Math.sin(phase.value * 2);
+    // Each arc's leftmost point (gx − GR − 2r) stays in the air in front of
+    // the lips — at 1 in they used to sweep back over the nose and mouth.
+    const rRoom = (gx - GR - lipsX - 2) / 2;
     for (let i = 1; i <= 3; i++) {
-      const r = (10 + i * 8) * pulse;
+      const r = Math.min((10 + i * 8) * pulse, rRoom);
+      if (r < 3) continue;
       p.addArc({ x: gx - GR - r, y: mid - r, width: 2 * r, height: 2 * r }, 128, 104);
     }
     return p;
-  }, [warm, micX, phase, mid]);
+  }, [warm, micX, phase, mid, lipsX]);
   const bassOp = useDerivedValue(() => Math.min(0.55, warm.value * 0.055), [warm]);
   const bassWidth = useDerivedValue(() => 1.4 + warm.value * 0.22, [warm]);
   // Warm LF glow at the capsule: radius carried BY THE PATH (rebuilt per
@@ -1534,8 +1542,8 @@ export function ProximityApproachView({
   // Gap annotation: a dimension line with end ticks, riding the eased mic.
   const dimLine = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const x0 = headX + 2;
-    const x1 = micX.value - 12;
+    const x0 = lipsX;
+    const x1 = micX.value - GR;
     const yD = mid + 42; // clear of the (now full-size) neck column
     if (x1 - x0 > 10) {
       p.moveTo(x0, yD - 5);
@@ -1546,7 +1554,7 @@ export function ProximityApproachView({
       p.lineTo(x1, yD + 5);
     }
     return p;
-  }, [micX, headX, mid]);
+  }, [micX, lipsX, mid]);
 
   return (
     <View style={{ width, height }}>

@@ -187,6 +187,23 @@ export function wurliModel(id: string, name: string): InstrumentModel {
     yFloor: { mm: 0, prov: { kind: 'unknown', needed: 'the instrument stands on its own legs: key-top height a drawing default (720)' }, placeholder: true },
     interior: { x0: W.caseBackX + 20, x1: FACE_TOP.x, rIn: 60, c: { x: 0, y: (W.caseTopY + W.faceFootY) / 2, z: 0 } },
     ports: { lid: null },
+    // The stand's route (owner 2026-10-10: the stand stood in the player's
+    // lap — the pole through the thigh, the boom across the forearm, the
+    // tripod on the sustain pedal). From the mic's tail the boom rises clear
+    // above the lid and comes back over it, past the case's back, then along
+    // the back to the BASS end; the stand drops at the case's back bass
+    // corner — away from the player's knees and pedal, and from the side it
+    // stands behind the instrument, never through it. The mics, their aims
+    // and every zone are unchanged — only the hardware's path (ILLUSTRATIVE).
+    boomRoute: {
+      lid: {
+        legs: [
+          { dir: { x: 0, y: -1, z: 0 }, past: -W.caseTopY + 150 },
+          { dir: { x: -1, y: 0, z: 0 }, past: -W.caseBackX + 250 },
+          { dir: { x: 0, y: 0, z: -1 }, past: W.halfW },
+        ],
+      },
+    },
   };
 }
 

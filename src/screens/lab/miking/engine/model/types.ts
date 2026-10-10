@@ -376,7 +376,7 @@ export type CompiledScene = {
   rims: Rim[];
   yFloor: number;
   /** Illustrative mount geometry (`route`: the variant's BoomRoute). */
-  boom: { radius: number; outside: number; behind: number; route?: BoomRoute | null };
+  boom: { radius: number; outside: number; behind: number; route?: BoomRoute | null; low?: LowBoomRoute | null };
   standRadius: number;
   /** The model's boom rule (InstrumentModel.mountRule), when it has one. */
   mountRule?: MountRule;
@@ -412,6 +412,14 @@ export type MountRule = {
  */
 export type BoomLeg = { dir: Vec3; past: number; back?: number };
 export type BoomRoute = { legs: readonly BoomLeg[] };
+/**
+ * A route for a mic placed LOW (owner 2026-10-10, M05's bottom mic: two
+ * stands' bases landed on one spot). When the mic's tail is nearer the floor
+ * than `minY` (frame y, down +) it takes `route` instead of the model's
+ * usual rule — a short, kick-style stand to the side, its boom running in
+ * low. Drawing and assembly only: the mic's position and aim never change.
+ */
+export type LowBoomRoute = { minY: number; route: BoomRoute };
 
 /* ── derived (never stored) ── */
 export type Readouts = {
@@ -534,6 +542,8 @@ export type InstrumentModel = {
   /** How a stand's boom is routed, per variant (none = straight behind the
    *  mic, the drums' rule). */
   boomRoute?: Partial<Record<VariantId, BoomRoute>>;
+  /** A low mic's own route, per variant (LowBoomRoute). */
+  lowBoomRoute?: Partial<Record<VariantId, LowBoomRoute>>;
   /** Where the glass's mini inset of the other view sits (default 'top',
    *  top-right). 'bottom' puts it bottom-right — per variant if need be: a
    *  long instrument framed edge to edge (the guitar family) puts its

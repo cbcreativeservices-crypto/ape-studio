@@ -107,9 +107,17 @@ export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
     const legs: SkPath[] = [];
     const shoes: SkPath[] = [];
     if (f.seat === 'chair') {
+      // Seated, seen from the front (owner review 2026-10-10: the legs read as
+      // tombstones): each thigh comes toward us, so its KNEE shows as a
+      // rounded cap (≈ 124 mm across) over the shin, which tapers to the
+      // ankle (≈ 80 mm), the trouser leg one mass; a shoe on the floor, its
+      // toe toward us.
       for (const k of [ep(view, f.kneeR), ep(view, f.kneeL)]) {
-        legs.push(smooth([[k[0] - 62, k[1] - 40], [k[0] + 62, k[1] - 40], [k[0] + 52, floor - 34], [k[0] - 52, floor - 34]]));
-        shoes.push(rr(k[0] - 70, floor - 40, k[0] + 64, floor, 18));
+        const knee = Skia.Path.Make();
+        knee.addOval(Skia.XYWHRect(k[0] - 64, k[1] - 46, 128, 92));
+        const shin = limbPath([{ u: k[0], v: k[1] }, { u: k[0] - 2, v: floor - 86 }], [60, 40]);
+        legs.push(Skia.Path.MakeFromOp(knee, shin, PathOp.Union) ?? shin);
+        shoes.push(smooth([[k[0] - 52, floor - 4], [k[0] - 46, floor - 62], [k[0], floor - 80], [k[0] + 46, floor - 62], [k[0] + 54, floor - 4]]));
       }
     } else {
       // Cross-legged: the knees out to the sides, the shins crossing in front.
@@ -162,6 +170,44 @@ export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
   );
 }
 
+/** The fretting hand's wrist in view coords: below the neck (in the neck's
+ *  own frame: 34 along, half the neck + 82 across). */
+function fretWrist(at: Pt, dir: Pt, across: number): Pt {
+  const l = Math.hypot(dir[0], dir[1]) || 1;
+  const d: Pt = [dir[0] / l, dir[1] / l];
+  const n: Pt = [-d[1], d[0]];
+  const k = 0.9;
+  const x = 34 * k;
+  const y = 82 * k;
+  return [at[0] + d[0] * x + n[0] * y, at[1] + d[1] * x + n[1] * y];
+}
+
+/**
+ * The FRETTING hand (owner review 2026-10-10: a whole open hand was drawn
+ * under the neck and a second set of fingers across it): ONE hand, the shared
+ * 'fret' hand — the heel of the palm under the neck, the four fingers rising
+ * from the knuckle row and curling over onto the strings at four stops, the
+ * thumb behind the neck (hidden) — laid along the neck at `at`.
+ */
+function FretHand({ at, dir, across }: { at: Pt; dir: Pt; across: number }) {
+  const a = Math.atan2(dir[1], dir[0]);
+  const hs = useMemo(() => {
+    const k = 0.9;
+    const half = across / 2 / k;
+    // The fit's fret-hand point sits just under the neck's centre line (the
+    // old finger stroke spanned it ±0.65 of the neck): the board's centre is
+    // half a neck above it.
+    const bv = -half;
+    return handShape({ wrist: { u: 34, v: bv + half + 82 }, dir: -Math.PI / 2, kind: 'fret', board: { v: bv, half, tips: [-52, -18, 16, 50] } });
+  }, [across]);
+  return (
+    <Group transform={[{ translateX: at[0] }, { translateY: at[1] }, { rotate: a }, { scale: 0.9 }]}>
+      <FigureMass path={hs.path} tone="skin" contour={2} />
+      <Path path={hs.lines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
+    </Group>
+  );
+}
+
 /** Drawn AFTER the instrument: both forearms and hands. `fretDir` is the
  *  neck's direction in this view; `across` the neck's width there. */
 export function PlayerHands({ sc, view, fretDir, across, pluckRot = 25 }: { sc: LuteScene; view: ViewId; fretDir: Pt; across: number; pluckRot?: number }) {
@@ -174,9 +220,8 @@ export function PlayerHands({ sc, view, fretDir, across, pluckRot = 25 }: { sc: 
     <Group opacity={0.95}>
       <Limb pts={[eR, [pH[0] - 18, pH[1] - 8]]} w={74} />
       <Hand x={pH[0]} y={pH[1]} r={40} rot={pluckRot} />
-      <Limb pts={[eL, [fH[0] + 4, fH[1] + across * 0.55]]} w={66} />
-      <Hand x={fH[0] + 6} y={fH[1] + across * 0.55} r={36} rot={-10} />
-      <Fingers at={fH} dir={fretDir} across={across * 1.3} />
+      <Limb pts={[eL, fretWrist(fH, fretDir, across)]} w={66} />
+      <FretHand at={fH} dir={fretDir} across={across} />
     </Group>
   );
 }

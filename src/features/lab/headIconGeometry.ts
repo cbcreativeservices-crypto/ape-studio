@@ -127,14 +127,19 @@ export function buildSideOpenMouth(open: PathSink, s: number): void {
   open.close();
 }
 
-/** Readability plate: the silhouette + the neck column (fill only). */
+/**
+ * The owner's side PNG's own FILLED silhouette (head + neck column), in head
+ * units with the front of the lips at the origin (2026-10-10, lips-anchor
+ * fix): traced from the alpha channel of assets/icons/head-side.png — per
+ * 3-px row, the outermost edge on each side — so the dark readability plate
+ * sits exactly under the art. (The old plate reused the vector tracing, which
+ * missed the PNG's nose and lips and left a gap at the neck.)
+ */
+const SIDE_PNG_SILHOUETTE: readonly (readonly [number, number])[] = [[18.83, -37.39], [14.59, -36.6], [12.46, -35.8], [10.61, -35.01], [9.28, -34.21], [8.22, -33.42], [7.16, -32.62], [6.36, -31.82], [5.83, -31.03], [5.04, -30.23], [4.51, -29.44], [3.98, -28.64], [3.71, -27.85], [3.18, -27.05], [2.92, -26.26], [2.65, -25.46], [2.39, -24.66], [2.12, -23.87], [2.12, -23.07], [1.59, -22.28], [1.33, -21.48], [1.06, -20.69], [0.8, -19.89], [0.8, -19.09], [1.06, -18.3], [1.33, -17.5], [1.86, -16.71], [2.12, -15.91], [1.59, -15.12], [1.06, -14.32], [0.53, -13.53], [0.0, -12.73], [-0.8, -11.93], [-1.33, -11.14], [-1.86, -10.34], [-2.39, -9.55], [-3.18, -8.75], [-3.45, -7.96], [-3.71, -7.16], [-3.45, -6.36], [-2.65, -5.57], [0.27, -4.77], [0.27, -3.98], [0.0, -3.18], [-0.27, -2.39], [0.0, -1.59], [1.86, -0.8], [3.98, 0.0], [1.33, 0.8], [0.53, 1.59], [0.27, 2.39], [0.53, 3.18], [1.33, 3.98], [2.12, 4.77], [1.86, 5.57], [1.59, 6.36], [1.59, 7.16], [1.86, 7.96], [2.12, 8.75], [2.92, 9.55], [14.32, 10.34], [15.12, 11.14], [15.38, 11.93], [15.65, 12.73], [15.91, 13.53], [15.91, 14.32], [15.91, 15.12], [15.91, 15.91], [15.91, 16.71], [15.91, 17.5], [15.91, 18.3], [15.91, 19.09], [16.44, 19.89], [16.44, 19.89], [36.07, 19.89], [36.07, 19.89], [36.6, 19.09], [36.6, 18.3], [36.33, 17.5], [36.33, 16.71], [36.07, 15.91], [36.07, 15.12], [36.07, 14.32], [35.8, 13.53], [35.8, 12.73], [35.8, 11.93], [35.54, 11.14], [35.54, 10.34], [35.54, 9.55], [35.27, 8.75], [35.27, 7.96], [35.27, 7.16], [35.27, 6.36], [35.27, 5.57], [35.27, 4.77], [35.27, 3.98], [35.54, 3.18], [35.8, 2.39], [36.07, 1.59], [36.33, 0.8], [36.86, 0.0], [37.39, -0.8], [37.92, -1.59], [38.46, -2.39], [38.99, -3.18], [39.52, -3.98], [40.31, -4.77], [40.58, -5.57], [41.11, -6.36], [41.64, -7.16], [41.9, -7.96], [42.43, -8.75], [42.7, -9.55], [42.96, -10.34], [43.23, -11.14], [43.49, -11.93], [43.49, -12.73], [43.76, -13.53], [43.76, -14.32], [43.76, -15.12], [43.76, -15.91], [43.76, -16.71], [43.76, -17.5], [43.76, -18.3], [43.76, -19.09], [43.76, -19.89], [43.49, -20.69], [43.23, -21.48], [43.23, -22.28], [42.96, -23.07], [42.7, -23.87], [42.43, -24.66], [41.9, -25.46], [41.64, -26.26], [41.11, -27.05], [40.58, -27.85], [40.31, -28.64], [39.52, -29.44], [38.99, -30.23], [38.19, -31.03], [37.39, -31.82], [36.6, -32.62], [35.54, -33.42], [34.48, -34.21], [32.89, -35.01], [31.29, -35.8], [28.91, -36.6], [24.93, -37.39]];
+
+/** Readability plate: the PNG's filled silhouette (fill only). */
 export function buildSidePlate(plate: PathSink, s: number): void {
-  appendSideOutline(plate, s);
-  plate.close();
-  plate.moveTo(6.2 * s, 13.2 * s);
-  plate.lineTo(7.6 * s, 20.9 * s);
-  plate.lineTo(23.4 * s, 20.9 * s);
-  plate.lineTo(23.7 * s, 11.1 * s);
+  SIDE_PNG_SILHOUETTE.forEach(([x, y], i) => (i === 0 ? plate.moveTo(x * s, y * s) : plate.lineTo(x * s, y * s)));
   plate.close();
 }
 
@@ -342,10 +347,28 @@ export function headIconStroke(view: HeadIconView, size: number, min = 0): numbe
 /** The side icon's anchor offset (head units, before facing) for
  *  anchor 'center': the middle of its full box (nose tip→occiput,
  *  crown→neck base), so a caller can place it by its centre. */
-export const SIDE_CENTER: XY = [(SIDE_CANON.noseTip + SIDE_CANON.occiput) / 2, (SIDE_CANON.crown + SIDE_CANON.neckBase) / 2];
-/** The side icon's neck-base centre (head units, before facing): anchor
- *  'neck' stands the icon on a floor line. */
-export const SIDE_NECK: XY = [15.5, SIDE_CANON.neckBase];
+/** Head units per PNG pixel (the side art's crown → neck base, plus one
+ *  stroke, spans the canon crown → neck base; unchanged 2026-10-10). */
+const SIDE_PX_UNIT = (SIDE_CANON.neckBase - SIDE_CANON.crown + SIDE_CANON.stroke) / (246 - 29);
+/**
+ * LIPS ANCHOR (2026-10-10): the side origin is the MOUTH — the front of the
+ * drawn lips at x = 0, the lip line at y = 0. Measured on the PNG's alpha
+ * channel (320 × 283, faces left): the lips' front edge at px x ≈ 91 (upper
+ * lip 90, lower 92), the lip line (the notch between them) at px y ≈ 170.
+ * Until this fix the PNG was centred on the canon's bounding box instead, so
+ * the drawn lips sat 9.6 units in FRONT of the origin and 1.5 below it — a
+ * mic, a breath jet or a gap line placed "at the mouth" started inside the
+ * face. Only the placement moved; the PNG and its scale are untouched.
+ */
+const SIDE_LIPS_PX: XY = [91, 170];
+const sidePx = (px: number, py: number): XY => [(px - SIDE_LIPS_PX[0]) * SIDE_PX_UNIT, (py - SIDE_LIPS_PX[1]) * SIDE_PX_UNIT];
+/** The side art box's centre (PNG art 77..256 × 29..245) — anchor 'center'.
+ *  Re-derived from the PNG itself, so centre-placed heads keep their place. */
+export const SIDE_CENTER: XY = sidePx((77 + 256) / 2, (29 + 245) / 2);
+/** The side icon's neck-base centre (head units, before facing): the PNG's
+ *  own neck column (px x 153..226) at its bottom edge (px y 245.5) — anchor
+ *  'neck' stands the icon exactly on a floor line. */
+export const SIDE_NECK: XY = sidePx((153 + 226) / 2, 245.5);
 
 /**
  * THE OWNER'S PNGs ARE WHAT IS DRAWN (owner 2026-10-10: the vector tracing
@@ -354,16 +377,18 @@ export const SIDE_NECK: XY = [15.5, SIDE_CANON.neckBase];
  *   side  → assets/icons/head-side.png  (320×283, faces LEFT, art 77..257 × 29..246)
  *   above → assets/icons/head-above.png (256×320, chin DOWN, art 7..249 × 7..313;
  *           made 2026-10-10 from assets/Head_icon_above.PNG, luminance → alpha)
- * Each box is the whole PNG in head units, placed so its art covers the same
- * footprint the tracing did (side: art box ↔ nose tip→occiput × crown→neck
- * base; above: art box ↔ crown→chin, centred), so no layout moves.
+ * Each box is the whole PNG in head units. Side: scaled so the art's crown →
+ * neck base spans the canon's, and placed by the LIPS (2026-10-10 — the front
+ * of the drawn lips at the origin; see SIDE_LIPS_PX). Above: art box ↔
+ * crown→chin, centred on the origin (measured: art 7..248 × 7..312, centre
+ * exactly (128, 160) — no offset).
  */
-const SIDE_PX_UNIT = (SIDE_CANON.neckBase - SIDE_CANON.crown + SIDE_CANON.stroke) / (246 - 29);
 const ABOVE_PX_UNIT = (ABOVE_CANON.height + ABOVE_CANON.stroke) / (313 - 7);
 export const HEAD_PNG_BOX: Record<HeadIconView, { x: number; y: number; w: number; h: number }> = {
+  // the whole PNG, placed so its lips land on the origin (SIDE_LIPS_PX)
   side: {
-    x: SIDE_CENTER[0] - ((77 + 257) / 2) * SIDE_PX_UNIT,
-    y: SIDE_CENTER[1] - ((29 + 246) / 2) * SIDE_PX_UNIT,
+    x: -SIDE_LIPS_PX[0] * SIDE_PX_UNIT,
+    y: -SIDE_LIPS_PX[1] * SIDE_PX_UNIT,
     w: 320 * SIDE_PX_UNIT,
     h: 283 * SIDE_PX_UNIT,
   },

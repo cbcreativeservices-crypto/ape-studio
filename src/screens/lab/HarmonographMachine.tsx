@@ -856,7 +856,9 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         {/* ── swing-vector annotations (owner 2026-08-23) ─────────────────
             Dashed hinge axes on the table show the plane each shaft rocks in;
             double-headed arrows at the weights show their travel; each
-            pendulum wears its own oscillator setting. */}
+            pendulum wears its own oscillator setting. The tags carry a dark
+            halo (stroke under the fill) so they read over the legs and bobs
+            they sit beside instead of fighting them (clash sweep 2026-10-10). */}
         <Line x1={AXIS_A[0][0]} y1={AXIS_A[0][1]} x2={AXIS_A[1][0]} y2={AXIS_A[1][1]} stroke={COL_A} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.5} />
         <Line x1={AXIS_B[0][0]} y1={AXIS_B[0][1]} x2={AXIS_B[1][0]} y2={AXIS_B[1][1]} stroke={COL_B} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.5} />
         <Line x1={ARROW_A[0][0]} y1={ARROW_A[0][1]} x2={ARROW_A[1][0]} y2={ARROW_A[1][1]} stroke={COL_A} strokeWidth={1.4} strokeOpacity={0.85} />
@@ -866,14 +868,24 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         <Path d={chev(ARROW_B[0], ARROW_B[1])} stroke={COL_B} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
         <Path d={chev(ARROW_B[1], ARROW_B[0])} stroke={COL_B} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
         {hz1Label ? (
-          <SvgText x={LBL_A[0]} y={LBL_A[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_A}>
-            {hz1Label}
-          </SvgText>
+          <>
+            <SvgText x={LBL_A[0]} y={LBL_A[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="none" stroke="#0d0e12" strokeWidth={3.4} strokeLinejoin="round">
+              {hz1Label}
+            </SvgText>
+            <SvgText x={LBL_A[0]} y={LBL_A[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_A}>
+              {hz1Label}
+            </SvgText>
+          </>
         ) : null}
         {hz2Label ? (
-          <SvgText x={LBL_B[0]} y={LBL_B[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_B}>
-            {hz2Label}
-          </SvgText>
+          <>
+            <SvgText x={LBL_B[0]} y={LBL_B[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="none" stroke="#0d0e12" strokeWidth={3.4} strokeLinejoin="round">
+              {hz2Label}
+            </SvgText>
+            <SvgText x={LBL_B[0]} y={LBL_B[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_B}>
+              {hz2Label}
+            </SvgText>
+          </>
         ) : null}
         {rotary ? (
           // The platform pendulum orbits — a dashed ring at its weight plus
@@ -889,9 +901,14 @@ export const HarmonographMachine = memo(function HarmonographMachine({
               strokeLinecap="round"
             />
             {hz3Label ? (
-              <SvgText x={LBL_P[0]} y={LBL_P[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_P}>
-                {hz3Label}
-              </SvgText>
+              <>
+                <SvgText x={LBL_P[0]} y={LBL_P[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="none" stroke="#0d0e12" strokeWidth={3.4} strokeLinejoin="round">
+                  {hz3Label}
+                </SvgText>
+                <SvgText x={LBL_P[0]} y={LBL_P[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_P}>
+                  {hz3Label}
+                </SvgText>
+              </>
             ) : null}
           </>
         ) : null}

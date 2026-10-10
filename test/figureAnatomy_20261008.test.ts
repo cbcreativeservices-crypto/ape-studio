@@ -383,6 +383,11 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const xs = [...ears.matchAll(/P\(s \* (\d+),/g)].map((m) => Number(m[1]));
     assert.ok(Math.max(...xs) <= 90, `the ears reach ${Math.max(...xs)} (skull 80): close to the skull`);
     assert.match(above, /pt\(sR\.u - 40, sR\.v \+ 4\), \/\/ the deltoid/);
+    // OWNER 2026-10-10: a STANDING person from above shows no feet; a foot is drawn only where it truly shows (a stride, a lean, seated feet past the knees).
+    assert.match(above, /shoes: shoes\.filter\(\(_, i\) => dist\(i === 0 \? pose\.footR : pose\.footL, n\) > 260\)/);
+    for (const P of [SINGER_TOP]) {
+      for (const f of [P.footR, P.footL]) assert.ok(Math.hypot(f.u - P.neck.u, f.v - P.neck.v) <= 260, 'an upright singer’s feet stay hidden from above');
+    }
     // Painted UNDER the body from above; a hanging arm is the deltoid's cap, no cut sleeve end.
     assert.match(src, /\.filter\(\(s\) => s\.far \|\| pose\.view === 'above'\)/);
     assert.match(above, /const aboveArm = /);

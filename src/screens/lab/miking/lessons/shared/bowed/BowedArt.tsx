@@ -809,8 +809,28 @@ function bowHold(P: Posture, view: ViewId): HandHold | undefined {
   return { kind: 'grip', dir, at };
 }
 
+/**
+ * The violin/viola as DRAWN (owner review 2026-10-10: mid-stroke, the bow's
+ * tip half rose up behind the player's head — from the side it ran into the
+ * face, from above across it). The picture shows the end of a down-bow
+ * instead: the tip just past the strings, the stick out to the frog in the
+ * hand, the arm reaching forward — the posture's own last stroke position
+ * (strokes[2]), so the bow, the hand and the arm agree. Only the drawing
+ * changes: the keep-outs (the bow's whole sweep), the hit areas and the mic
+ * positions still come from the posture.
+ */
+function drawnPosture(P: Posture): Posture {
+  if (P.kind !== 'underChin' || P.strokes.length < 3 || !P.player) return P;
+  const end = P.strokes[2];
+  const b = P.bow;
+  const frog = add(b.contact, scale(b.dir, b.hair));
+  const tip = sub(frog, scale(b.dir, b.hair + (P.spec.bow.mm - b.hair) * 0.12));
+  return { ...P, bow: { ...b, frog, tip }, player: { ...P.player, handR: end.hand, elbowR: end.elbow } };
+}
+
 /** All the groups for a view, far to near. */
-export function sceneGroups(P: Posture, view: ViewId, opts: { player?: boolean; bow?: boolean } = {}): Group3[] {
+export function sceneGroups(P0: Posture, view: ViewId, opts: { player?: boolean; bow?: boolean } = {}): Group3[] {
+  const P = opts.bow === false ? P0 : drawnPosture(P0);
   const groups: Group3[] = [];
   const instDepth = depthOf(view, { x: 0, y: 0, z: 0 });
   if (opts.player !== false) groups.push(...playerGroups(P, view, true, { hands: { L: neckHold(P, view, instDepth), R: bowHold(P, view) } }));

@@ -1103,8 +1103,12 @@ export function AmplifyView({
     <Canvas style={{ width, height, backgroundColor: BG }}>
       <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
-      {/* The mid line is 0 amplitude → always MIDI-0 blue (owner 2026-07-31). */}
-      <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={MIDLINE_BLUE} strokeWidth={1} />
+      {/* The mid line is 0 amplitude → always MIDI-0 blue (owner 2026-07-31).
+          It is the two GRAPHS' axis, so it stops at the tube's glass on both
+          sides (clash sweep 2026-10-10: it ran straight through the bottle,
+          across the grid and the electron stream). */}
+      <SkLine p1={{ x: 0, y: mid }} p2={{ x: tcx - hw - 2, y: mid }} color={MIDLINE_BLUE} strokeWidth={1} />
+      <SkLine p1={{ x: tcx + hw + 2, y: mid }} p2={{ x: w, y: mid }} color={MIDLINE_BLUE} strokeWidth={1} />
 
       {/* ── The mini triode stage ── */}
       {/* INPUT lead in GRID BLUE, arrowhead aimed at the grid: the signal's

@@ -55,7 +55,8 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
-import { HeadIcon, SIDE_CANON, aboveRotation } from '../../../features/lab/headIcons';
+import { HeadIcon, SIDE_CANON, aboveRotation, buildHeadIcon } from '../../../features/lab/headIcons';
+import { SIDE_NECK, headIconScale } from '../../../features/lab/headIconGeometry';
 import { FigureHeadAt } from '../../../features/lab/figureHead';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
@@ -3019,6 +3020,11 @@ export function GradientSceneView(p: {
   // rays, so a ray printed at ear height visibly reaches the head (proportion
   // audit 2026-09-26). The ear's centre is 29.9 head units above the neck base.
   const listenerHead = { x: x0px + GRAD_LISTENER_M * ppm, size: ((1.6 * ppmY) / 29.9) * SIDE_CANON.height };
+  // An OPAQUE silhouette under the icon (clash sweep 2026-10-10): the icon's
+  // own plate is 62 % dark, so the ray fan showed THROUGH the head. Rays now
+  // pass behind it — the head is a solid thing standing in the field.
+  const headS = headIconScale('side', listenerHead.size);
+  const headSil = useMemo(() => buildHeadIcon('side', headS).plate, [headS]);
 
   // "UNIFORM AIR" must account for wind shear too (fix 2026-08-28) — it was
   // printed over a visibly bent ray fan whenever WIND alone did the bending.
@@ -3054,6 +3060,9 @@ export function GradientSceneView(p: {
         <SkLine p1={{ x: x0px, y: groundY - h0 * ppmY + 9 * ts }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2 * ts} />
         <SideElevationSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
         {/* The distant listener. */}
+        <Group transform={[{ translateX: listenerHead.x }, { translateY: groundY }, { translateX: -SIDE_NECK[0] * headS }, { translateY: -SIDE_NECK[1] * headS }]}>
+          <Path path={headSil} color="#0b0c10" />
+        </Group>
         <HeadIcon view="side" anchor="neck" x={listenerHead.x} y={groundY} size={listenerHead.size} facing="left" plate minStroke={1.2 * ts} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>

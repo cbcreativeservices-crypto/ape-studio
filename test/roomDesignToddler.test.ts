@@ -232,7 +232,10 @@ describe('MONITORING: the side view draws the sub at its driver height (HEIGHT â
 describe('MONITORING: the NEARFIELD / MIDFIELD label never falls off the bottom of the glass', () => {
   it('flips above the head when the listener sits near the rear wall', () => {
     const s = strip(read(`${LAB}RoomPlanView.tsx`));
-    assert.match(s, /const below = lisPx\.y \+ 24 \+ fs \+ 3 \+ 4 <= gh;/);
+    // Clash sweep 2026-10-10: the offset clears the listener's selection ring
+    // (never less than the old 24), and the flip test uses the same offset.
+    assert.match(s, /const lisOff = Math\.max\(24, lisRing \+ 3 \+ fs \* 0\.8\);/);
+    assert.match(s, /const below = lisPx\.y \+ lisOff \+ fs \+ 3 \+ 4 <= gh;/);
   });
 });
 

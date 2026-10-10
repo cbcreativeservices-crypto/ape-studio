@@ -6,8 +6,22 @@
  */
 import type { ViewXform } from '../geometry/frame.ts';
 
+/**
+ * The width a label's words need (px). Measured on the label font (Oswald
+ * Medium, letter-spacing 0.8 px; 2026-10-10 — "SOUNDBOARD" was cut to
+ * "SOUNDBOA…" by a 0.56 em average that left no room for the spacing or for
+ * the 9 pt floor): wide capitals 0.70 em, narrow marks 0.30 em, the rest
+ * 0.57 em (SOUNDBOARD measures 0.548 em a glyph), + 0.8 px a glyph, + 8 px.
+ * The size is the drawn size: never under 9 pt.
+ */
 export function labelWidth(text: string, scale: number, maxX: number): number {
-  return Math.min(maxX - 4, Math.ceil(text.length * 9.5 * scale * 0.56) + 6);
+  const fs = Math.max(9, 9.5 * scale);
+  let em = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    em += c === 'M' || c === 'W' || c === 'm' || c === 'w' ? 0.7 : " .,:;·'’|!Iil1()".includes(c) ? 0.3 : 0.57;
+  }
+  return Math.min(maxX - 4, Math.ceil(em * fs + text.length * 0.8) + 8);
 }
 
 type Align = 'left' | 'center' | 'right';
@@ -84,6 +98,11 @@ export type LabelOpts = {
   /** The glass's usable band (px): labels sit wholly inside it. */
   minY?: number;
   maxY?: number;
+  /** Hardware lines (px) the art cannot hit-test — the mics' stands and
+   *  booms (owner 2026-10-10, M05: WAIST and OPEN FOOT sat on the low
+   *  stand). No label's words sit on one and no leader crosses one; a name
+   *  with no such place at this zoom is left out (it returns zoomed in). */
+  lines?: readonly { x1: number; y1: number; x2: number; y2: number }[];
 };
 
 type Seg = { x1: number; y1: number; x2: number; y2: number };
@@ -130,6 +149,7 @@ export function fitLabels<T extends Fit>(
   // label sits on a leader already drawn (B11's crossing lines, B17's U3 / D).
   const labelRects: PxRect[] = [];
   const segs: Seg[] = [];
+  const hardware: Seg[] = [...(opts.lines ?? [])];
   const rectOf = (p: LabelPlace, text: string): PxRect => {
     const W = labelWidth(text, scale, maxX);
     const x = xf.ox + p.u * xf.s;
@@ -167,7 +187,20 @@ export function fitLabels<T extends Fit>(
     for (const dy of [0, -h * 1.4, h * 1.4, -h * 2.8, h * 2.8]) res.push(P(4, ay + dy, 'left'), P(maxX - 4, ay + dy, 'right'));
     return res;
   };
-  const order = labels.map((l, i) => ({ l, i })).sort((a, b) => (a.l.priority ?? 2) - (b.l.priority ?? 2) || a.i - b.i);
+  // With mic hardware on the glass, a label whose own place lands on a stand
+  // must look elsewhere — it goes AFTER the labels that keep their own
+  // places, so it never takes the place of one that had a clean spot
+  // (regression check 2026-10-10: M01's FLOOR, pushed off the tripod, took
+  // PORT's place). Without hardware the order is the art's, as before.
+  const onHw = (l: T) => {
+    if (!hardware.length) return 0;
+    const r = rectOf({ u: l.u, v: l.v, align: l.align }, l.text);
+    if (hardware.some((sg) => segHitsRect(sg, { x0: r.x0 - 4, x1: r.x1 + 4, y0: r.y0, y1: r.y1 }))) return 1;
+    const at0 = l.at ?? l.lead;
+    const ln = at0 ? leaderLine(r, xf, at0) : null;
+    return ln && hardware.some((sg) => segsCross(sg, ln)) ? 1 : 0;
+  };
+  const order = labels.map((l, i) => ({ l, i, h: onHw(l) })).sort((a, b) => (a.l.priority ?? 2) - (b.l.priority ?? 2) || a.h - b.h || a.i - b.i);
   const placed = new Map<number, T & { leader?: { u: number; v: number } }>();
   for (const { l, i: idx } of order) {
     const places: LabelPlace[] = [{ u: l.u, v: l.v, align: l.align }, ...(l.alts ?? [])];
@@ -195,8 +228,27 @@ export function fitLabels<T extends Fit>(
         if (!near && onGlass) leader = anchor;
       }
       if (lod) {
+        // Words never sit on a stand or a boom (either pass): with no such
+        // place at this zoom the name is left out, like any crowded label.
+        if (hardware.some((sg) => segHitsRect(sg, { x0: r.x0 - 4, x1: r.x1 + 4, y0: r.y0, y1: r.y1 }))) return false;
         if (strict && segs.some((sg) => segHitsRect(sg, r))) return false;
         const line = leader ? leaderLine(r, xf, leader) : null;
+        // …and no leader crosses a stand or a boom (either pass).
+        // (The leader's last 10 px at its part are not tested: a label that
+        // names the stand or clamp itself ends its leader on the hardware.)
+        if (line && hardware.length) {
+          const L = Math.hypot(line.x2 - line.x1, line.y2 - line.y1) || 1;
+          const k = Math.min(1, 10 / L);
+          const cut = { x1: line.x1 + (line.x2 - line.x1) * k, y1: line.y1 + (line.y2 - line.y1) * k, x2: line.x2, y2: line.y2 };
+          // A line the part itself sits on (the label names that stand) is
+          // not an obstacle to its own leader.
+          const near = (sg: Seg) => {
+            const L2 = (sg.x2 - sg.x1) ** 2 + (sg.y2 - sg.y1) ** 2 || 1;
+            const t = Math.max(0, Math.min(1, ((line.x1 - sg.x1) * (sg.x2 - sg.x1) + (line.y1 - sg.y1) * (sg.y2 - sg.y1)) / L2));
+            return Math.hypot(sg.x1 + t * (sg.x2 - sg.x1) - line.x1, sg.y1 + t * (sg.y2 - sg.y1) - line.y1) < 6;
+          };
+          if (hardware.some((sg) => !near(sg) && segsCross(sg, cut))) return false;
+        }
         if (strict && line && (segs.some((sg) => segsCross(sg, line)) || labelRects.some((k) => segHitsRect(line, k)))) return false;
         if (line) segs.push(line);
       }

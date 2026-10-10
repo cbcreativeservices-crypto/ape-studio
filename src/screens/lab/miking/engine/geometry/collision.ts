@@ -75,7 +75,7 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     interiors: model.interiors ?? [],
     rims: (model.rims ?? []).filter((r) => !r.variants || r.variants.includes(variant)),
     yFloor,
-    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: model.mountRule?.length ?? BOOM_BEHIND, route: model.boomRoute?.[variant] ?? null },
+    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: model.mountRule?.length ?? BOOM_BEHIND, route: model.boomRoute?.[variant] ?? null, low: model.lowBoomRoute?.[variant] ?? null },
     standRadius: STAND_RADIUS,
     ...(model.mountRule ? { mountRule: model.mountRule } : {}),
     ...(model.boomHub ? { boomHub: model.boomHub } : {}),
@@ -233,8 +233,9 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     return out;
   }
   let q: Vec3;
-  const rule = scene.mountRule;
-  const route = scene.boom.route;
+  const low = scene.boom.low;
+  const rule = low && tail.y > low.minY ? undefined : scene.mountRule;
+  const route = low && tail.y > low.minY ? low.route : scene.boom.route;
   if (rule && rule.boom === 'level') {
     // Level boom (ILLUSTRATIVE): horizontally away from the tail, or along
     // the model's fallback when the mic points nearly straight up or down.

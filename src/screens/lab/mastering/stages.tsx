@@ -751,6 +751,10 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
       ))}
       {programmeDb.length && !isRef ? <Path d={ref} stroke={ink.dim} strokeWidth={1.2} fill="none" strokeDasharray="3,2" /> : null}
       {programmeDb.length ? <Path d={heard} stroke={system.mono ? colors.orange : ink.amber} strokeWidth={2} fill="none" /> : null}
+      {/* The two-line title on a backing plate (clash sweep 2026-10-10): the
+          programme curve peaks near 0 dB, right where the title sits, and ran
+          through the words. */}
+      <Rect x={x0 + 1} y={top + 1} width={Math.min(x1 - x0 - 90, 150 * bst)} height={14 + lh} rx={2} fill="#0b0b0e" opacity={0.86} />
       <SvgText x={x0 + 4} y={top + 12} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAMME SPECTRUM · as heard on</SvgText>
       <SvgText x={x0 + 4} y={top + 12 + lh} fontSize={fs} fill={system.mono ? colors.orange : ink.amber} fontFamily={fonts.oswaldMedium}>{system.name.toUpperCase()}</SvgText>
       {!isRef ? <SvgText x={x1 - 4} y={top + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>dashed = as mastered</SvgText> : <SvgText x={x1 - 4} y={top + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>the reference</SvgText>}
@@ -908,9 +912,12 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
             {crossfade ? <Rect x={bStart} y={zTop + 2} width={Math.max(1, aEnd - bStart)} height={zBot - zTop - 2} fill={ink.cyan} opacity={0.22} /> : null}
             {!crossfade && gap > 0 ? (
               <G>
-                <Line x1={aEnd} y1={zTop + 14} x2={bStart} y2={zTop + 14} stroke={ink.amber} strokeWidth={1} strokeDasharray="2,2" />
-                <Line x1={aEnd} y1={zTop + 10} x2={aEnd} y2={zTop + 18} stroke={ink.amber} strokeWidth={1} />
-                <Line x1={bStart} y1={zTop + 10} x2={bStart} y2={zTop + 18} stroke={ink.amber} strokeWidth={1} />
+                {/* the gap's dimension bracket, BELOW its "gap 2.0 s" label
+                    (clash sweep 2026-10-10: its end ticks ran up through the
+                    digits) */}
+                <Line x1={aEnd} y1={zTop + 18} x2={bStart} y2={zTop + 18} stroke={ink.amber} strokeWidth={1} strokeDasharray="2,2" />
+                <Line x1={aEnd} y1={zTop + 14} x2={aEnd} y2={zTop + 22} stroke={ink.amber} strokeWidth={1} />
+                <Line x1={bStart} y1={zTop + 14} x2={bStart} y2={zTop + 22} stroke={ink.amber} strokeWidth={1} />
               </G>
             ) : null}
             <SvgText x={(aEnd + bStart) / 2} y={zTop + 10} fontSize={fsS} fill={crossfade ? ink.cyan : gap > 0 ? ink.amber : ink.dim} textAnchor="middle" fontFamily={fonts.mono}>
@@ -1025,7 +1032,10 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
       </G>
       {/* The listener from above: the owner's ABOVE head icon, turned to face
           the speakers (up the screen) — head fix 2026-10-08. */}
-      <HeadIconSvg view="above" x={cx} y={listY} size={21.6} rotation={Math.PI} color="#a7aeb8" minStroke={1.2} /* 17 % smaller (owner 2026-10-10: in proportion to the room) */ />
+      {/* `plate` (clash sweep 2026-10-10): the triangle and reflection paths
+          meet at the listener's ears, so they run UNDER the head's dark
+          plate instead of straight through the drawn head. */}
+      <HeadIconSvg view="above" x={cx} y={listY} size={21.6} rotation={Math.PI} color="#a7aeb8" plate minStroke={1.2} /* 17 % smaller (owner 2026-10-10: in proportion to the room) */ />
       {/* legend */}
       <SvgText x={lx0} y={ry0 + 12} fontSize={FONT} fill={ink.text} fontFamily={fonts.oswaldMedium}>FROM ABOVE</SvgText>
       <Line x1={lx0} y1={ry0 + 26} x2={lx0 + 14} y2={ry0 + 26} stroke={ink.cyan} strokeWidth={1.2} />

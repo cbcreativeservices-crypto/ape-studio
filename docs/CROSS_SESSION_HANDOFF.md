@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 11:37 · ccode · 7b285156
+changed: Clash sweeps + controls-at-the-bottom (owner-reviewed checkpoint)
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 11:03 · ccode · b6b154c2
 changed: EQ camera scene: window without the sill (owner)
 affects other side: nothing (client lab art on next-store-build; unpublished)

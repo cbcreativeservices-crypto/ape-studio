@@ -543,6 +543,72 @@ function outlineOf(len: number, cross: number, fore = 0) {
 
 /* ── per-mic overlays ────────────────────────────────────────────────── */
 
+/*
+ * THE TRIPOD'S TURN (owner 2026-10-10: "on M04a/b/c and M05 a leg runs
+ * under the drum and the player's legs; on two-stand pages one stand's leg
+ * crosses the other's hub"). A real tripod boom stand: three legs at 120°,
+ * feet on a 250–350 mm radius, the hub collar about 190 mm up. The turn is
+ * chosen, not fixed: every 10° of the 120° cycle, at the full 300 mm spread
+ * and then (only if nothing clean is found) 275 and 250 mm, each leg is walked
+ * from the hub to its foot and scored by how far it enters any solid of the
+ * scene (the instrument, the player's keep-out — never the floor) and how
+ * close it comes to another stand's base; the clean turn nearest to "two
+ * legs straddling the boom, one back under the counterweight" wins.
+ * Drawing only: the stand's base, the mic and every keep-out are unchanged.
+ */
+const TRIPOD_HUB = 190;
+function tripodTurn(scene: CompiledScene, base: Vec3, others: readonly Vec3[], boomDir: { x: number; z: number } | null): { a0: number; R: number } {
+  'worklet';
+  // The preferred turn: two legs straddling the boom at ±60°, the third
+  // straight back under the counterweight — no leg runs out under the boom
+  // toward the instrument the mic is on (seen from the side it would cross
+  // the instrument's foot).
+  const pref = boomDir && (boomDir.x !== 0 || boomDir.z !== 0) ? Math.atan2(boomDir.z, boomDir.x) + Math.PI / 3 : Math.PI / 6;
+  let best = { a0: pref, R: 300, pen: Infinity, off: Infinity };
+  const radii = [300, 275, 250];
+  for (let ri = 0; ri < radii.length; ri++) {
+    const R = radii[ri];
+    for (let k = 0; k < 12; k++) {
+      const a0 = pref + (k * Math.PI) / 18;
+      let pen = 0;
+      for (let leg = 0; leg < 3; leg++) {
+        const a = a0 + (leg * 2 * Math.PI) / 3;
+        const cx = Math.cos(a);
+        const cz = Math.sin(a);
+        for (let t = 0.25; t <= 1.0001; t += 0.25) {
+          // Seen from above a leg must not run under anything either: each
+          // point on it is tested up a column to 1 m (an instrument's
+          // overhanging head, a player's knees), not only at the leg itself.
+          for (let hi = 0; hi < 4; hi++) {
+            const lift = hi === 0 ? TRIPOD_HUB * (1 - t) + 8 : hi === 1 ? 250 : hi === 2 ? 600 : 1000;
+            const q = { x: base.x + cx * R * t, y: base.y - lift, z: base.z + cz * R * t };
+            for (let i = 0; i < scene.solids.length; i++) {
+              const so = scene.solids[i];
+              if (so.shape.kind === 'floor') continue;
+              const d = sdf(so.shape, q) - 8;
+              if (d < 0) pen += (hi === 0 ? 3 : 1) * (50 - d);
+            }
+          }
+          const q = { x: base.x + cx * R * t, y: base.y - 8, z: base.z + cz * R * t };
+          for (let j = 0; j < others.length; j++) {
+            const dx = q.x - others[j].x;
+            const dz = q.z - others[j].z;
+            const dd = Math.sqrt(dx * dx + dz * dz);
+            if (dd < 160) pen += 160 - dd;
+            // …and not run across the other stand's own legs: keep out of its footprint.
+            if (dd < R + 40 && t > 0.5) pen += 0.2 * (R + 40 - dd);
+          }
+        }
+      }
+      // The turn's distance from the preferred one (0 at k = 0, the cycle's ends).
+      const off = Math.min(k, 12 - k);
+      if (pen < best.pen - 1e-6 || (Math.abs(pen - best.pen) <= 1e-6 && off < best.off)) best = { a0, R, pen, off };
+    }
+    if (best.pen === 0) break;
+  }
+  return { a0: best.a0, R: best.R };
+}
+
 /**
  * The mic's mount — a real boom stand, drawn from the SAME capsules the
  * collision uses (`assembly`), so the placement geometry and the keep-outs
@@ -658,6 +724,24 @@ function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; s
         out.fx = bu;
         out.fv = bv;
         out.fOn = 1;
+        // The tripod's turn and spread (both views agree): its legs kept
+        // out of the instrument, the player and the other stands
+        // (tripodTurn; owner 2026-10-10).
+        const others3: Vec3[] = [];
+        for (let oi = 0; oi < (shared ? 0 : otherPoses.length); oi++) {
+          const os = assembly(scene, otherPoses[oi].pose.value, otherPoses[oi].body);
+          for (let j = 0; j < os.length; j++) if (os[j].piece === 'stand') others3.push(os[j].b);
+        }
+        // The boom's direction from the stand toward the mic, in plan (3-D, so
+        // the side and top views turn the tripod the same way).
+        let toward: { x: number; z: number } | null = null;
+        for (let j = 0; j < segs.length; j++)
+          if (segs[j].piece === 'boom') {
+            toward = { x: segs[j].a.x - s.b.x, z: segs[j].a.z - s.b.z };
+            break;
+          }
+        const turn = tripodTurn(scene, s.b, others3, toward);
+        const R = turn.R * hk;
         const L = Math.sqrt((bu - au) * (bu - au) + (bv - av) * (bv - av));
         if (view === 'side' && L > 1) {
           // The upright: the outer (lower) tube from the base up to the
@@ -674,15 +758,15 @@ function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; s
           out.cx = cu;
           out.cv = cv;
           out.cOn = 1;
-          // The tripod: legs from a collar on the tube to the floor (one
-          // to each side and one toward the viewer, foreshortened), braces
-          // from a sliding collar lower down to each leg's middle.
-          const R = Math.max(200, Math.min(310, L * 0.32)) * hk;
-          const hubH = Math.min(R * 0.62, clutchH * 0.7);
+          // The tripod: legs from a collar on the tube to the floor, each at
+          // its turned direction seen from the side (u = x), braces from a
+          // sliding collar lower down to each leg's middle.
+          const hubH = Math.min(TRIPOD_HUB * hk, clutchH * 0.7);
           const brH = hubH * 0.32;
           const hub = { u: bu, v: bv - hubH };
-          const toes = [bu - R * 0.87, bu + R * 0.87, bu - R * 0.22];
-          for (const tx of toes) {
+          for (let k = 0; k < 3; k++) {
+            const a = turn.a0 + (k * 2 * Math.PI) / 3;
+            const tx = bu + Math.cos(a) * R;
             legs.moveTo(hub.u, hub.v);
             legs.lineTo(tx, bv - 6 * hk);
             const mu = (hub.u + tx) / 2;
@@ -696,38 +780,21 @@ function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; s
           knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(bu - 15 * hk, bv - hubH - 12 * hk, 30 * hk, 24 * hk), 4 * hk, 4 * hk));
           knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(bu - 13 * hk, bv - brH - 9 * hk, 26 * hk, 18 * hk), 4 * hk, 4 * hk));
         } else {
-          // From above the upright is a point: the tripod's three legs.
-          // Clash sweep 2026-10-10: two stands close together (E01's
-          // two-mic page, 0.27 m apart) crossed their legs. With another
-          // stand within reach, both turn their legs 90°, 210° and 330° from
-          // the line to the other base — the same rule seen from each end
-          // interleaves the two tripods without a crossing (worked out for
-          // bases 0.27–0.6 m apart). The footprint (300 mm legs) is unchanged.
-          const R = 300 * hk;
-          let a0 = Math.PI / 6;
-          let near = 2 * R + 150;
-          for (let oi = 0; oi < (shared ? 0 : otherPoses.length); oi++) {
-            const os = assembly(scene, otherPoses[oi].pose.value, otherPoses[oi].body);
-            for (let j = 0; j < os.length; j++) {
-              if (os[j].piece !== 'stand') continue;
-              const ou = os[j].b.x;
-              const ov = vOf(view, os[j].b);
-              const dd = Math.sqrt((ou - bu) * (ou - bu) + (ov - bv) * (ov - bv));
-              if (dd > 1 && dd < near) {
-                near = dd;
-                a0 = Math.atan2(ov - bv, ou - bu) + Math.PI / 2;
-              }
-            }
-          }
+          // From above the upright is a point: the tripod's three legs splay
+          // from the hub to their rubber feet (the braces to their middles),
+          // and the Ø 25 tube seen end on is a small circle in its collar.
           for (let k = 0; k < 3; k++) {
-            const a = (k * 2 * Math.PI) / 3 + a0;
+            const a = turn.a0 + (k * 2 * Math.PI) / 3;
             const tx = bu + Math.cos(a) * R;
             const tz = bv + Math.sin(a) * R;
-            legs.moveTo(bu, bv);
+            legs.moveTo(bu + Math.cos(a) * 22 * hk, bv + Math.sin(a) * 22 * hk);
             legs.lineTo(tx, tz);
+            braces.moveTo(bu, bv);
+            braces.lineTo(bu + Math.cos(a) * R * 0.5, bv + Math.sin(a) * R * 0.5);
             feet.addCircle(tx, tz, 13 * hk);
           }
-          knobs.addCircle(bu, bv, 20 * hk);
+          knobs.addCircle(bu, bv, 22 * hk);
+          knobs.addCircle(bu, bv, 12.5 * hk);
         }
       }
     }
@@ -758,6 +825,11 @@ function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; s
     return out;
   });
   const boom = useDerivedValue(() => parts.value.boom);
+  // From above, a mic on a LOW route (lowBoomRoute: M05's bottom mic) has its
+  // boom drawn a lighter steel, so where it passes under a higher boom the
+  // two read as two (owner 2026-10-10).
+  const lowR = scene.boom.low;
+  const lowOn = useDerivedValue(() => (view === 'top' && lowR && pose.value.p.y > lowR.minY ? 1 : 0));
   const upper = useDerivedValue(() => parts.value.upper);
   const lower = useDerivedValue(() => parts.value.lower);
   const legs = useDerivedValue(() => parts.value.legs);
@@ -809,6 +881,7 @@ function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; s
       </Path>
       <Path path={counter} style="stroke" strokeWidth={2 * hk} color="#0b0c0f" />
       {tube(boom, boomW)}
+      <Path path={boom} style="stroke" strokeWidth={boomW * 0.7} strokeCap="butt" color="#9aa0ab" opacity={lowOn} />
       {/* The stereo bar across the two clips, a swivel at each (shared stand only). */}
       {tube(bar, 14 * hk)}
       <Path path={swivels} color="#121316" />
@@ -2185,7 +2258,39 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     const tag = { x0: 0, y0: h - tagFs * 1.4 - 4, x1: 8 + tagText.length * (tagFs * 0.6 + 1.2), y1: h };
     // Level of detail (artLabels.ts): only labels that find clear space — off
     // the drawing, off each other, on the glass below the live strip.
-    return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag, ...guideData.map((g) => g.rect)], minY: reserveTop + 1, labels: own, model });
+    // The mics' stands and booms as lines (px) the labels keep off (owner
+    // 2026-10-10, M05: WAIST and OPEN FOOT sat on the low stand): each boom
+    // with its counterweight's run past the clutch, each upright, and (from
+    // the side) the tripod's spread along the floor.
+    const px = (q: Vec3) => ({ x: base.ox + q.x * base.s, y: base.oy + (view === 'side' ? q.y : q.z) * base.s });
+    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+    for (const m of rig.mics) {
+      if (!live.includes(m.slot) || !m.on) continue;
+      const body = rig.body[m.slot];
+      if (body.mount !== 'stand' && body.mount !== 'boom') continue;
+      const sg = assembly(rig.scene, m.pose, body);
+      let lastBoom: (typeof sg)[number] | null = null;
+      for (const g of sg) {
+        if (g.piece !== 'boom' && g.piece !== 'stand') continue;
+        const a = px(g.a);
+        const b2 = px(g.b);
+        lines.push({ x1: a.x, y1: a.y, x2: b2.x, y2: b2.y });
+        if (g.piece === 'boom') lastBoom = g;
+        // From the side, the tripod's two outer legs: hub (190 mm up) to the feet.
+        if (g.piece === 'stand' && view === 'side')
+          for (const sx of [-1, 1]) lines.push({ x1: b2.x, y1: b2.y - 190 * base.s, x2: b2.x + sx * 260 * base.s, y2: b2.y - 2 });
+      }
+      if (lastBoom) {
+        // As MountPath draws it: 200 mm on the glass along the boom's
+        // projected direction, past the clutch.
+        const a = px(lastBoom.a);
+        const b2 = px(lastBoom.b);
+        const l = Math.hypot(b2.x - a.x, b2.y - a.y) || 1;
+        const k = (200 * base.s) / l;
+        lines.push({ x1: b2.x, y1: b2.y, x2: b2.x + (b2.x - a.x) * k, y2: b2.y + (b2.y - a.y) * k });
+      }
+    }
+    return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag, ...guideData.map((g) => g.rect)], minY: reserveTop + 1, labels: own, model, lines });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
   }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, rig.mics, live, guideData, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
   const Instrument = memoArt(art.Instrument);
@@ -2260,7 +2365,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
               {wedge.glyph !== 'none' ? <WedgeGlyph at={wedge.at} view={view} faces={wedge.faces} /> : <Circle cx={wedge.src.x} cy={vOf(view, wedge.src)} r={16} style="stroke" strokeWidth={5} color={AMBER} />}
             </>
           ) : null}
-          {micsShown.map((m) => (
+          {/* From above, the lowest mount first: a higher boom passes OVER a lower one. */}
+          {(view === 'top' ? [...micsShown].sort((a, b) => b.pose.p.y - a.pose.p.y) : micsShown).map((m) => (
             <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={model.hardwareScale ?? 1} others={micsShown.map((q) => q.slot)} />
           ))}
           {micsShown.map((m) => (

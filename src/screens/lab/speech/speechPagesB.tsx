@@ -70,6 +70,7 @@ export function PopFilterDiagram({ withFilter, controls }: { withFilter: boolean
             {[[158, 40, 170, 32], [160, 56, 172, 60], [158, 72, 168, 82], [166, 48, 178, 44], [168, 66, 180, 72], [176, 56, 188, 58]].map(([x1, y1, x2, y2]) => (
               <Line key={`${x1}${y1}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={colors.orange} strokeWidth={1.2} opacity={0.45} strokeLinecap="round" />
             ))}
+            <Rect x={fx - 25} y={101} width={50} height={13} rx={3} fill="#0a0a0c" opacity={0.9} />
             <SvgText x={fx} y={110} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>pop filter</SvgText>
           </>
         ) : null}
@@ -98,9 +99,12 @@ export function PopFilterDiagram({ withFilter, controls }: { withFilter: boolean
         <Line x1={cx + 24} y1={37} x2={cx + 24} y2={69} stroke={withFilter ? colors.cyanBright : colors.orange} strokeWidth={2.5} strokeLinecap="round" />
         <Line x1={cx + 33} y1={53} x2={cx + 60} y2={53} stroke={colors.textMuted} strokeWidth={0.6} />
         <SvgText x={cx + 62} y={56} fontSize={9} fill={colors.textMuted} textAnchor="start" fontFamily={F}>capsule</SvgText>
-        {/* legend */}
-        <SvgText x={64} y={14} fontSize={9} fill={colors.orange} fontFamily={F}>— air jet</SvgText>
-        <SvgText x={118} y={14} fontSize={9} fill={colors.cyanBright} fontFamily={F}>) sound</SvgText>
+        {/* legend — on a backing plate so the wavefronts never run through
+            the words, and ending short of the pop-filter mesh (x 145) (clash
+            sweep 2026-10-10) */}
+        <Rect x={56} y={4} width={84} height={14} rx={3} fill="#0a0a0c" opacity={0.9} />
+        <SvgText x={60} y={14} fontSize={9} fill={colors.orange} fontFamily={F}>— air jet</SvgText>
+        <SvgText x={104} y={14} fontSize={9} fill={colors.cyanBright} fontFamily={F}>) sound</SvgText>
       </Svg>
     </View>
     )} />

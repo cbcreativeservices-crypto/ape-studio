@@ -9,10 +9,14 @@ import { useEffect, type ReactNode } from 'react';
  * Mechanism drawn truthfully: the source feeds the TIP SPRING (a steel leaf —
  * the metal IS the conductor, so the signal rides it as a thin marching
  * overlay). At rest the spring presses on the NORMAL CONTACT, which wires to
- * the destination. An entering plug wedges its tip under the leaf mid-span
- * and lifts it off the contact (the normal BREAKS — descriptive orange, per
- * the lab's color doctrine); the spring now touches the plug and the source
- * rides the cord instead.
+ * the destination. The leaf is FORMED with a contact finger that hangs into
+ * the plug's path (clash sweep 2026-10-10: the plug used to stop 23 units
+ * short of the leaf, which then rose with nothing touching it). The entering
+ * plug's round nose ramps the finger up and the whole leaf pivots about its
+ * anchor, lifting it off the normal contact (the normal BREAKS — descriptive
+ * orange, per the lab's color doctrine); the finger now rides the plug and
+ * the source rides the cord instead. Drawn lift is DERIVED from the plug's
+ * surface under the finger, so the metal always touches what moves it.
  *
  * The exact insertion fraction where a real jack opens varies by design, so
  * the electrical threshold is the engine's CONTACT_OPEN_AT teaching constant,
@@ -32,12 +36,37 @@ const STEEL = '#8a8b93';
 const STEEL_EDGE = '#b0b1ba';
 const CONTACT_X = 172; // the spring's free end + anvil — right of the plug's reach
 
-/** Leaf-tip height. The lift STARTS at the electrical threshold so the first
- *  visible separation coincides with the declared break (cognition pass
- *  2026-09-10 — a slow scrubber must never see the model contradict itself). */
+/** The plug's tip travel (viewBox x of the nose front − 1). */
+const tipXAt = (insertion: number) => 26 + insertion * 122;
+/** Where the leaf's contact finger meets the plug path, and its resting
+ *  height (the dimple's underside). FINGER_X is placed so the nose first
+ *  touches the dimple exactly at CONTACT_OPEN_AT (cognition pass 2026-09-10:
+ *  the first visible separation must coincide with the declared break). */
+const FINGER_REST_Y = 99;
+const FINGER_X = tipXAt(CONTACT_OPEN_AT) + 1 - 9 * ((103 - FINGER_REST_Y) / 11) ** 2;
+/** The plug's TOP surface at FINGER_X (or null when the plug is not under
+ *  it): the round nose (y 92–103 over its last 9 units), the neck groove the
+ *  spring rides at full insertion (y 96), the ring/sleeve barrel (y 92). */
+function plugTopAt(insertion: number): number | null {
+  if (insertion <= 0.02) return null;
+  const tipX = tipXAt(insertion);
+  const rel = FINGER_X - tipX;
+  if (rel > 1) return null;
+  if (rel >= -8) return 103 - 11 * Math.sqrt(Math.max(0, Math.min(1, (1 - rel) / 9)));
+  if (rel >= -18 && rel <= -13) return 96;
+  return 92;
+}
+/** The dimple's underside: resting, or riding the plug. */
+function fingerY(insertion: number): number {
+  const top = plugTopAt(insertion);
+  return top == null ? FINGER_REST_Y : Math.min(FINGER_REST_Y, top);
+}
+/** Leaf free-end height over the normal contact: the leaf is rigid about its
+ *  anchor (x 292), so the contact end rises by the finger's lift scaled by
+ *  their distances from the anchor. */
 function leafTipY(insertion: number): number {
-  const lift = Math.max(0, Math.min(1, (insertion - CONTACT_OPEN_AT) / 0.2));
-  return 104 - lift * 20;
+  const lift = FINGER_REST_Y - fingerY(insertion);
+  return 104 - (lift * (292 - CONTACT_X)) / (292 - FINGER_X);
 }
 
 export function JackCutaway({ insertion, reduceMotion, showConductors, controls }: {
@@ -62,8 +91,15 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
       open ? 'Contacts open, normal broken' : 'Contacts touching, normal intact',
     );
   }, [open]);
-  const tipX = 26 + insertion * 122; // plug tip travel; max 148 — wedges under the leaf mid-span
+  const tipX = tipXAt(insertion); // plug tip travel; max 148 — under the contact finger
   const leafY = leafTipY(insertion);
+  const fy = fingerY(insertion);
+  // The formed finger: from the leaf's free end, cranked up and back over the
+  // plug path, then a rounded dimple whose underside sits at `fy`.
+  const fingerShape =
+    `M ${CONTACT_X + 1} ${leafY - 2.4} L ${FINGER_X + 6} ${fy - 6.2} Q ${FINGER_X + 3.5} ${fy - 7.4} ${FINGER_X + 2.4} ${fy - 4}` +
+    ` Q ${FINGER_X} ${fy + 0.6} ${FINGER_X - 2.4} ${fy - 4} Q ${FINGER_X - 3.4} ${fy - 6.6} ${FINGER_X - 1.4} ${fy - 8.4}` +
+    ` L ${FINGER_X + 1.2} ${fy - 9.6} L ${CONTACT_X + 1} ${leafY + 1.6} Z`;
   const phase = useFlowPhase(true, reduceMotion);
 
   const a11y = `Jack cutaway at ${Math.round(insertion * 100)} percent insertion. ` +
@@ -121,12 +157,15 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
         <Rect x={290} y={54} width={10} height={14} rx={2} fill={STEEL} stroke={STEEL_EDGE} strokeWidth={0.8} />
 
         {/* TIP SPRING — steel leaf with a leader-line callout (no label overlap) */}
+        <Path d={fingerShape} fill={STEEL} stroke={STEEL_EDGE} strokeWidth={0.8} />
         <Path d={leafShape} fill={STEEL} stroke={STEEL_EDGE} strokeWidth={0.8} />
         <Circle cx={CONTACT_X} cy={leafY} r={3.2} fill={STEEL} stroke={STEEL_EDGE} strokeWidth={0.8} />
         {/* the signal rides the metal: thin marching overlay along the leaf */}
         <FlowPath d={leafCenter} flowing phase={phase} reduceMotion={reduceMotion} color={open ? PB.cord : PB.flow} width={1.6} />
-        <SvgText x={316} y={97} fontSize={9} fill={colors.textSecondary} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>TIP SPRING</SvgText>
-        <Line x1={292} y1={87} x2={286} y2={72} stroke="#5a5b63" strokeWidth={1} />
+        {/* label above the leaf's middle, clear of the source label and of
+            NORMAL BROKEN below (leader to the leaf's top edge) */}
+        <SvgText x={196} y={68} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium} letterSpacing={1}>TIP SPRING</SvgText>
+        <Line x1={244} y1={66} x2={250} y2={74} stroke="#5a5b63" strokeWidth={1} />
 
         {/* NORMAL CONTACT anvil + wire to the destination */}
         <Rect x={CONTACT_X - 8} y={108} width={16} height={8} rx={2} fill={open ? '#3a3b41' : STEEL} stroke={open ? '#4a4b52' : STEEL_EDGE} strokeWidth={0.8} />
@@ -140,9 +179,11 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
             above the anvil, clear of the plug tip (which stops left of it) */}
         {open ? (
           <G>
-            <Line x1={CONTACT_X - 6} y1={leafY + 7} x2={CONTACT_X + 6} y2={104} stroke={PB.break} strokeWidth={2.2} strokeLinecap="round" />
-            <Line x1={CONTACT_X + 6} y1={leafY + 7} x2={CONTACT_X - 6} y2={104} stroke={PB.break} strokeWidth={2.2} strokeLinecap="round" />
-            <SvgText x={CONTACT_X + 14} y={98} fontSize={9} fill={PB.break} fontFamily={fonts.oswaldSemiBold} letterSpacing={1.2}>NORMAL BROKEN</SvgText>
+            {/* the ✕ is a fixed-size mark on the gap (the honest gap is a few
+                units — a real normal opens by about a millimetre) */}
+            <Line x1={CONTACT_X - 4.5} y1={(leafY + 108) / 2 - 4.5} x2={CONTACT_X + 4.5} y2={(leafY + 108) / 2 + 4.5} stroke={PB.break} strokeWidth={2.2} strokeLinecap="round" />
+            <Line x1={CONTACT_X + 4.5} y1={(leafY + 108) / 2 - 4.5} x2={CONTACT_X - 4.5} y2={(leafY + 108) / 2 + 4.5} stroke={PB.break} strokeWidth={2.2} strokeLinecap="round" />
+            <SvgText x={CONTACT_X + 14} y={128} fontSize={9} fill={PB.break} fontFamily={fonts.oswaldSemiBold} letterSpacing={1.2}>NORMAL BROKEN</SvgText>
           </G>
         ) : null}
 

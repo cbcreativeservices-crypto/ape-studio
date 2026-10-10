@@ -69,6 +69,16 @@ export const DJ_MODEL: InstrumentModel = {
   interior: { x0: 0, x1: 0, rIn: 0, c: { x: 0, y: 0, z: 0 } },
   ports: { floor: null, raised: null },
   mountRule: { boom: 'level', fallback: { x: 1, y: 0, z: 0 }, length: 300 },
+  // A LOW mic (raised: beside or under the opening) hangs from its own short,
+  // kick-style boom stand (owner 2026-10-10: on the two-mic page its stand's
+  // base landed on the top mic's). From the mic's tail the boom rises out to
+  // the drum's side (−z), about 26° up, to an upright ≈ 330 mm tall whose
+  // base stands ≈ 0.6 m to the side — clear of the foot, the foam blocks, the
+  // player (behind the drum, −x) and the top mic's stand (+x). Route only:
+  // the capsules, aims, zones and keep-outs are unchanged (ILLUSTRATIVE).
+  lowBoomRoute: {
+    raised: { minY: 0, route: { legs: [{ dir: { x: 0, y: -0.45, z: -0.893 }, past: 596 }] } },
+  },
   rims: [rimOf(DJEMBE)],
 };
 

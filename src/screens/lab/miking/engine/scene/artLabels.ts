@@ -139,9 +139,9 @@ export function layoutArtLabels(
   scale: number,
   w: number,
   h: number,
-  more: { avoid?: { x0: number; y0: number; x1: number; y1: number }; obstacles?: { x0: number; y0: number; x1: number; y1: number }[]; minY?: number; labels?: ArtLabel[]; model?: InstrumentModel } = {},
+  more: { avoid?: { x0: number; y0: number; x1: number; y1: number }; obstacles?: { x0: number; y0: number; x1: number; y1: number }[]; minY?: number; labels?: ArtLabel[]; model?: InstrumentModel; lines?: readonly { x1: number; y1: number; x2: number; y2: number }[] } = {},
 ) {
   const occ = occupancy(art, view, variant, frame, more.model ? bodyOf(more.model, variant) : []);
-  const opts: LabelOpts = { clearOf: occ.clearOf, minY: more.minY ?? 1, maxY: h - 1 };
+  const opts: LabelOpts = { clearOf: occ.clearOf, minY: more.minY ?? 1, maxY: h - 1, ...(more.lines ? { lines: more.lines } : {}) };
   return fitLabels(more.labels ?? art.labels(view, variant).filter((l) => !l.withMics), xf, scale, w, more.avoid, more.obstacles, opts);
 }

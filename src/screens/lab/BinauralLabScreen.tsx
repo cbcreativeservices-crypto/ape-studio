@@ -608,18 +608,20 @@ function Stage({
             fill="none"
           />
         ))}
-        <SvgText x={c + 4} y={c - rMax + 12} fill="#4a4a52" fontSize={fs}>
+        <SvgText x={c + 4} y={c - rMax + 12} fill="#4a4a52" fontSize={fs} fontFamily={fonts.oswaldMedium}>
           4 m
         </SvgText>
         {/* Front axis + FRONT/BEHIND labels. */}
         <Line x1={c} y1={c - rMax} x2={c} y2={c + rMax} stroke="#1e1e24" strokeWidth={1} />
-        <SvgText x={c} y={12} fill={colors.textSub} fontSize={fs} textAnchor="middle">
+        <SvgText x={c} y={12} fill={colors.textSub} fontSize={fs} textAnchor="middle" fontFamily={fonts.oswaldMedium}>
           FRONT 0°
         </SvgText>
-        <SvgText x={c} y={STAGE_U - 4} fill={colors.textSub} fontSize={fs} textAnchor="middle">
+        <SvgText x={c} y={STAGE_U - 4} fill={colors.textSub} fontSize={fs} textAnchor="middle" fontFamily={fonts.oswaldMedium}>
           BEHIND ±180°
         </SvgText>
-        <SvgText x={STAGE_U - 6} y={c + 3} fill={colors.textSub} fontSize={fs} textAnchor="end">
+        {/* Just inside the 4 m ring (clash sweep 2026-10-10: at the stage's
+            right edge the ring ran through the label); the house font. */}
+        <SvgText x={c + rMax - 4} y={c + 3} fill={colors.textSub} fontSize={fs} textAnchor="end" fontFamily={fonts.oswaldMedium}>
           +90°
         </SvgText>
         {/* The listener's head — the owner's ABOVE head icon, turned to face

@@ -881,7 +881,11 @@ function buildAbove(pose: PlayerPose): Built {
   return {
     behind,
     front,
-    shoes: seated ? [] : shoes.map((path) => ({ path, tone: 'shoe' as const })),
+    // OWNER 2026-10-10: a STANDING person from above shows no feet — the
+    // head and shoulders read as the person. A foot is drawn only where it
+    // truly shows beyond the body: a stride, a lean, a seated player's feet
+    // out past the knees (the foot well clear of the neck, > 260 mm).
+    shoes: shoes.filter((_, i) => dist(i === 0 ? pose.footR : pose.footL, n) > 260).map((path) => ({ path, tone: 'shoe' as const })),
     foldsBehind: [
       { path: blades, light: SHIRT_LIGHT, clip: torso },
       { path: sleeveFolds(sL, pose.elbowL, pose.handL.wrist), light: SHIRT_LIGHT, clip: armL },

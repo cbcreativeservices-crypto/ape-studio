@@ -40,13 +40,18 @@ export const BH = CAJ_DIMS.h.mm;
 export const PORT_R = CAJ_DIMS.port.mm / 2;
 
 /** The SEATED player (ILLUSTRATIVE, proposal Frame J): hips on the top,
- *  torso leaning forward, knees either side of the plate, feet on the floor. */
+ *  torso leaning forward SLIGHTLY, knees either side of the plate, feet on
+ *  the floor. Owner review 2026-10-10: from above the head covered the front
+ *  plate between the hands — a player sitting ON the box keeps the head over
+ *  its back half (shoulders ≈ 65 mm ahead of the hips, ≈ 9° of lean; the
+ *  head ≈ 40 mm ahead of the shoulders), the arms reaching forward and down
+ *  to the front edge. */
 export const SEAT = {
   hip: v3(-150, -525, 0),
   hipZ: 105,
-  shoulder: v3(0, -930, 0),
+  shoulder: v3(-85, -930, 0),
   shoulderZ: 185,
-  head: v3(60, -1095, 0),
+  head: v3(-45, -1110, 0),
   knee: v3(235, -480, 0),
   kneeZ: 190,
   ankle: v3(260, -75, 0),

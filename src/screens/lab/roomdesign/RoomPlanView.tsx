@@ -307,9 +307,13 @@ export function RoomPlanView({
   // The angle and the NEARFIELD / MIDFIELD line sit under the head; with the
   // listener near the rear wall on a short glass they ran off the bottom and
   // the number was cropped (toddler pass 2026-10-01) — then both go above.
-  const below = lisPx.y + 24 + fs + 3 + 4 <= gh;
-  const angleY = below ? lisPx.y + 24 : lisPx.y - 22 - (fs + 3);
-  const fieldY = below ? lisPx.y + 24 + fs + 3 : lisPx.y - 22;
+  // Clear of the listener's selection ring (ListenerTop: r = icon/2 + 6) —
+  // the angle's digits sat on the ring (clash sweep 2026-10-10).
+  const lisRing = (Math.max(MIN_GLYPH, 0.22 * T.k) * 1.35) / 2 + 6;
+  const lisOff = Math.max(24, lisRing + 3 + fs * 0.8);
+  const below = lisPx.y + lisOff + fs + 3 + 4 <= gh;
+  const angleY = below ? lisPx.y + lisOff : lisPx.y - Math.max(22, lisRing + 3) - (fs + 3);
+  const fieldY = below ? lisPx.y + lisOff + fs + 3 : lisPx.y - Math.max(22, lisRing + 3);
   const labelMode = (sp: Speaker): 'inside' | 'above' | 'none' => (multi ? 'inside' : frontEdgeDist(sp) * T.k < 22 ? 'none' : 'above');
 
   return (
@@ -734,9 +738,28 @@ function FeatureGlyph({ f, T, fs, selected, draggable }: { f: RoomDesign['room']
         // The desk's name sits in its front-left corner, clear of the
         // displays and the keyboard drawn on it.
         f.kind === 'desk' ? (
-          <SvgText x={q.x + 4} y={q.y + D - 4} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="start">
-            {label}
-          </SvgText>
+          // Clash sweep 2026-10-10: on a narrow desk (or a small glass) the
+          // name ran onto the keyboard. It stays in the front-left corner only
+          // when it clears the keyboard's left end (DeskTopItems: 0.44 m wide,
+          // centred 0.04 m left); otherwise it sits just outside the desk's
+          // left edge (or right edge, against a wall), on the floor.
+          (() => {
+            const labelW = fs * 2.1;
+            const kbLeft = q.x + W / 2 - 0.22 * k - 0.04 * k;
+            if (q.x + 4 + labelW + 3 <= kbLeft) {
+              return (
+                <SvgText x={q.x + 4} y={q.y + D - 4} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="start">
+                  {label}
+                </SvgText>
+              );
+            }
+            const outLeft = q.x - labelW - 6 > 2;
+            return (
+              <SvgText x={outLeft ? q.x - 4 : q.x + W + 4} y={q.y + D / 2 + fs * 0.35} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={outLeft ? 'end' : 'start'}>
+                {label}
+              </SvgText>
+            );
+          })()
         ) : (
           <SvgText x={q.x + W / 2} y={q.y + D / 2 + fs * 0.35} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
             {label}
