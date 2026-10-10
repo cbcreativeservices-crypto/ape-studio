@@ -49,7 +49,7 @@ const MIC = { len: 104, r: 10.5 };
  *  distance from the rig's centre to that point (a shared mic to a mouth). */
 export type StageRig = RigSpec & { key: string; label?: string; lit?: boolean; dimTo?: Vec3 };
 /** The mic drawings a single can use (features/lab/micDrawings MikingMicArt). */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc';
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'ribbon';
 export type StageSingle = {
   key: string;
   p: Vec3;

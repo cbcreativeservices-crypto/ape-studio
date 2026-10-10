@@ -66,8 +66,29 @@ const FORE = 360;
 /** Standing heights above the floor (mm) — a drawing default adult. */
 const H_ = { lips: 1550, head: 1630, neck: 1475, shoulder: 1420, chest: 1270, pelvis: 965, hip: 950, knee: 510, ankle: 82, toe: 24 };
 
-/** The player standing, lips at `lips`, facing +x; the hands supplied. */
-function standingPlayer(lips: Vec3, floorY: number, zMid: number, handL: Vec3, handR: Vec3, shoulderFwd: number, poleL: Vec3, poleR: Vec3): Skeleton {
+/**
+ * A HANGING elbow (figure polish 2026-10-10, orchestrator review: from above
+ * the raised elbows made the arms a picture frame round the head). A brass
+ * player's upper arm hangs down and a little forward and out — ≈ 45° below
+ * horizontal: the elbow ≈ 215 mm below the shoulder joint, ≈ 170 mm in front
+ * of it and ≈ 85 mm outboard (|upper arm| ≈ 290 mm) — and the forearm rises
+ * from there to the hand on the horn (elbow → fingers ≈ 400–460 mm: forearm
+ * 270 + the hand). From above the upper arm is foreshortened and the
+ * forearms converge on the horn. `out` = +1 toward +z (the right side), −1
+ * the left. If a hand is out of reach the elbow slides toward it.
+ */
+function hangingElbow(shoulder: Vec3, hand: Vec3, out: 1 | -1): Vec3 {
+  const e0 = add(shoulder, v(170, 215, 85 * out));
+  const toHand = sub(hand, e0);
+  const d = Math.hypot(toHand.x, toHand.y, toHand.z);
+  const REACH = 460;
+  return d > REACH ? add(e0, scale(toHand, 1 - REACH / d)) : e0;
+}
+
+/** The player standing, lips at `lips`, facing +x; the hands supplied.
+ *  `hang`: which elbows hang at the player's sides (hangingElbow) rather
+ *  than being solved toward a pole (the trombone's slide arm reaches out). */
+function standingPlayer(lips: Vec3, floorY: number, zMid: number, handL: Vec3, handR: Vec3, shoulderFwd: number, poleL: Vec3, poleR: Vec3, hang: { L?: boolean; R?: boolean } = {}): Skeleton {
   const Y = (h: number) => floorY - h;
   const x0 = lips.x;
   const head = v(x0 - 78, Y(H_.head), zMid);
@@ -76,8 +97,8 @@ function standingPlayer(lips: Vec3, floorY: number, zMid: number, handL: Vec3, h
   const pelvis = v(x0 - 150, Y(H_.pelvis), zMid);
   const shoulderL = v(x0 - 130, Y(H_.shoulder), zMid - 185);
   const shoulderR = v(x0 - 130 + shoulderFwd, Y(H_.shoulder), zMid + 185);
-  const elbowL = elbowOf(shoulderL, handL, UPPER, FORE, poleL);
-  const elbowR = elbowOf(shoulderR, handR, UPPER, FORE, poleR);
+  const elbowL = hang.L ? hangingElbow(shoulderL, handL, -1) : elbowOf(shoulderL, handL, UPPER, FORE, poleL);
+  const elbowR = hang.R ? hangingElbow(shoulderR, handR, 1) : elbowOf(shoulderR, handR, UPPER, FORE, poleR);
   return {
     head,
     headR: 105,
@@ -180,7 +201,7 @@ export function valvedPose(spec: BrassSpec): HornPose {
   // fingers lie on the buttons from the right.
   const handL = H(v(xv - 4, yv + 30, -34));
   const handR = H(v(xv - 18, yv - hv - 10, 46));
-  const player = standingPlayer(lips, floorY, lips.z, handL, handR, 0, v(0.25, 1, -0.7), v(0.15, 1, 0.75));
+  const player = standingPlayer(lips, floorY, lips.z, handL, handR, 0, v(0.25, 1, -0.7), v(0.15, 1, 0.75), { L: true, R: true });
   return {
     spec,
     H,
@@ -257,7 +278,7 @@ export function slidePose(spec: BrassSpec, s = 0): HornPose {
   // The left hand holds the bell brace and the inner slide, near the mouthpiece.
   const handL = v(recX + 52, (yU + 4) / 2 + 30, (zS + 2) / 2);
   const poleR = v(0, 1, 0.9);
-  const player = standingPlayer(lips, floorY, lips.z, handL, handFor(s), 130, v(0.2, 1, -0.6), poleR);
+  const player = standingPlayer(lips, floorY, lips.z, handL, handFor(s), 130, v(0.2, 1, -0.6), poleR, { L: true });
   const slideArm = [0, slideTravel(4), SLIDE_7TH].map((t) => {
     const hand = handFor(t);
     return { hand, elbow: elbowOf(player.shoulderR, hand, UPPER, FORE, poleR), s: t };

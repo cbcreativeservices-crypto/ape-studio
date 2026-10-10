@@ -11,7 +11,7 @@ import type { SeatingId } from './seating.ts';
 import type { ArrayParams, ArrayPlacement, ArrayPresetId } from './stereoArray.ts';
 /** A single mic's drawing (a subset of EnsembleStage.MicArtId, repeated here
  *  so this file stays pure): group 5's dynamics and ribbon, group 2's handheld. */
-export type SingleArt = 'sdc' | 'smallDynamic' | 'instDynamic' | 'sideLdc' | 'vocalDynamic';
+export type SingleArt = 'sdc' | 'smallDynamic' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'ribbon';
 
 /** How an array is held (ArrayArt.tsx): a tall stand under the bar, or a
  *  boom stand `reach` mm behind it (toward the hall). */

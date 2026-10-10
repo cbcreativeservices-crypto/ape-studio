@@ -275,7 +275,11 @@ export type MountKind = 'stand' | 'surface' | 'clip' | 'boom' | 'pole';
 /* Lab 7b group 1 (speech in sport): 'headsetBoom' — a close-talk headset
  *  boom's capsule in its foam ball; 'lipRibbon' — a lip-guarded ribbon held to
  *  the mouth; 'flagHandheld' — a handheld interview mic with its flag. */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic' | 'dish' | 'headsetBoom' | 'lipRibbon' | 'flagHandheld';
+/* s9 art pass round 2 (2026-10-10): 'ribbon' — a side-address figure-8
+ *  ribbon (long body, mesh window on both faces with the ribbon motor seen
+ *  through it, a U-yoke); same frame as 'sideLdc' (features/lab/
+ *  micDrawingsRibbon.tsx). */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic' | 'dish' | 'headsetBoom' | 'lipRibbon' | 'flagHandheld' | 'ribbon';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never

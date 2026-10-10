@@ -40,6 +40,8 @@ import { SINGER_SIDE, SINGER_TOP } from '../src/screens/lab/miking/lessons/share
 import { SEATED_SIDE, SEATED_TOP, poseOnTalker } from '../src/screens/lab/miking/lessons/shared/broadcast/talkerPose.ts';
 import { standPoses } from '../src/screens/lab/miking/lessons/shared/broadcast/standing.ts';
 import { operatorSide, operatorTop } from '../src/screens/lab/miking/lessons/shared/measure/measureModel.ts';
+import { FH, TP } from '../src/screens/lab/miking/lessons/a01Trumpet/geometry.ts';
+import { TB } from '../src/screens/lab/miking/lessons/a02Trombone/geometry.ts';
 
 const d = (a: Pt, b: Pt) => Math.hypot(a.u - b.u, a.v - b.v);
 const mid = (a: Pt, b: Pt): Pt => ({ u: (a.u + b.u) / 2, v: (a.v + b.v) / 2 });
@@ -316,5 +318,26 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const bongo = read('m04bBongos/art.tsx');
     assert.match(bongo, /path: limb\(\[hip, knee, ankle\], \[82, 62, 40\]\), tone: 'trousers'/);
     assert.doesNotMatch(bongo, /opacity=\{ghost \? 0\.38 : 1\}/);
+  });
+
+  // Round 4 (2026-10-10): a brass player's elbows HANG (from above the raised
+  // elbows framed the head). Upper arm ≈ 40–55° below horizontal: the elbow
+  // 150–250 mm below the shoulder, 80–200 mm in front, 30–120 mm outboard.
+  it('brass players: the elbows hang beside the body (trumpet, flugelhorn; the trombone’s left arm)', () => {
+    const check = (name: string, s: { x: number; y: number; z: number }, e: { x: number; y: number; z: number }, out: 1 | -1) => {
+      const down = e.y - s.y;
+      const fwd = e.x - s.x;
+      const side = (e.z - s.z) * out;
+      assert.ok(down >= 150 && down <= 250, `${name}: elbow ${down.toFixed(0)} mm below the shoulder`);
+      assert.ok(fwd >= 80 && fwd <= 200, `${name}: elbow ${fwd.toFixed(0)} mm in front`);
+      assert.ok(side >= 30 && side <= 120, `${name}: elbow ${side.toFixed(0)} mm outboard`);
+      const ang = (Math.atan2(down, Math.hypot(fwd, side)) * 180) / Math.PI;
+      assert.ok(ang >= 38 && ang <= 58, `${name}: upper arm ${ang.toFixed(0)}° below horizontal`);
+    };
+    for (const [n, P] of [['trumpet', TP], ['flugelhorn', FH]] as const) {
+      check(`${n} R`, P.player.shoulderR, P.player.elbowR, 1);
+      check(`${n} L`, P.player.shoulderL, P.player.elbowL, -1);
+    }
+    check('trombone L', TB.player.shoulderL, TB.player.elbowL, -1);
   });
 });

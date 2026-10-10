@@ -616,6 +616,11 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   if (view === 'top') {
     armTop('upperL', s.shoulderL, s.elbowL, s.handL, wL.wrist);
     if (withRightArm) armTop('upperR', s.shoulderR, s.elbowR, s.handR, wR.wrist);
+    // The shoulder girdle seen from above (deltoids and trapezius, the
+    // highest part of the body under the head): the upper arms leave from
+    // UNDER it, as a hanging arm does, so they read short and foreshortened.
+    const cap = hull([...circlePts(q(s.shoulderL), 66), ...circlePts(q(s.shoulderR), 66), ...circlePts(q(s.neck), 72)]);
+    g.push({ key: 'shoulderCap', depth: depthOf(view, s.neck) - 1, items: [{ path: polyPath(cap), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(cap), rim: 1.6, tone: 'shirt' }] });
   } else {
     limb('upperL', s.shoulderL, s.elbowL, 54, 44, CLOTH);
     fore('foreL', s.elbowL, s.handL, wL.wrist, wL.depth);

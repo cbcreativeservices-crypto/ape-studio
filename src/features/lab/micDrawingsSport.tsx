@@ -100,15 +100,25 @@ function buildLipRibbon(r: number, len: number) {
   const hh = Math.min(len * 0.3, r * 3);
   const head: SkPathT = make();
   head.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gd, r * 2, hh), r * 0.3, r * 0.3));
+  // ART PASS s9 (2026-10-10): the RIBBON MOTOR seen through the window — two
+  // magnet pole pieces along the head and, between them, the corrugated
+  // aluminium ribbon (≈ 2.5 mm wide on a 40 mm head), behind a fine grille of
+  // vertical bars (the slots).
   const slots: SkPathT = make();
-  const n = 7;
+  const n = 11;
   for (let k = 0; k < n; k++) {
-    const x = -r * 0.72 + (k * (r * 1.44)) / (n - 1);
-    slots.moveTo(x, gd + hh * 0.14);
-    slots.lineTo(x, gd + hh * 0.86);
+    const x = -r * 0.8 + (k * (r * 1.6)) / (n - 1);
+    slots.moveTo(x, gd + hh * 0.1);
+    slots.lineTo(x, gd + hh * 0.9);
   }
+  const win: SkPathT = make();
+  win.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.68, gd + hh * 0.07, r * 1.36, hh * 0.86), r * 0.12, r * 0.12));
+  const poles: SkPathT = make();
+  for (const s of [-1, 1]) poles.addRect(Skia.XYWHRect(s * r * 0.17 - (s > 0 ? 0 : r * 0.42), gd + hh * 0.08, r * 0.42, hh * 0.84));
   const ribbon: SkPathT = make();
-  ribbon.addRect(Skia.XYWHRect(-r * 0.08, gd + hh * 0.1, r * 0.16, hh * 0.8));
+  const zz = Math.max(0.5, hh * 0.035);
+  ribbon.moveTo(-r * 0.09, gd + hh * 0.1);
+  for (let y = gd + hh * 0.1, i = 0; y < gd + hh * 0.9; y += zz, i++) ribbon.lineTo(i % 2 ? -r * 0.09 : r * 0.09, y);
   // The handle: tapering to the cable boot.
   const y0 = gd + hh;
   const handle: SkPathT = make();
@@ -122,7 +132,7 @@ function buildLipRibbon(r: number, len: number) {
   const shadow: SkPathT = make();
   shadow.addPath(head);
   shadow.addPath(handle);
-  return { guard, struts, head, slots, ribbon, handle, sw, shadow, gd };
+  return { guard, struts, head, slots, win, poles, ribbon, handle, sw, shadow, gd };
 }
 
 /** A lip-guarded ribbon commentator's mic, the guard bar at the front. */
@@ -147,8 +157,12 @@ export function LipRibbonMic({ r, len, tint }: { r: number; len: number; tint?: 
         <LinearGradient start={lit.start} end={lit.end} colors={['#9ea3ad', '#5e626c', '#2f3238', '#17181c']} positions={[0, 0.3, 0.7, 1]} />
       </Path>
       <Group clip={p.head}>
-        <Path path={p.ribbon} color="#b9912f" opacity={0.45} />
-        <Path path={p.slots} style="stroke" strokeWidth={Math.max(0.6, r * 0.09)} strokeCap="round" color="#0b0c0f" opacity={0.85} />
+        <Path path={p.win} color="#050506" opacity={0.95} />
+        <Path path={p.poles}>
+          <LinearGradient start={lit.start} end={lit.end} colors={['#5a5e67', '#2e3036', '#16171b']} />
+        </Path>
+        <Path path={p.ribbon} style="stroke" strokeWidth={Math.max(0.3, r * 0.05)} color="#d9c08a" opacity={0.95} />
+        <Path path={p.slots} style="stroke" strokeWidth={Math.max(0.4, r * 0.06)} strokeCap="round" color="#2a2c32" opacity={0.8} />
       </Group>
       <Path path={p.struts} style="stroke" strokeWidth={Math.max(0.8, r * 0.12)} strokeCap="round" color="#2a2c32" />
       <Path path={p.guard} style="stroke" strokeWidth={Math.max(1.4, r * 0.2)} strokeCap="round" color="#0b0c0f" />

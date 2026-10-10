@@ -32,7 +32,7 @@ export const LOW_BRASS_MIC_TYPES = {
     power: 'none needed for a passive ribbon — check the model’s own manual before sending phantom power',
     mount: 'stand',
     examples: [{ model: 'a figure-8 spot over the horn (session account); ribbons on solo brass (maker’s brass page)', fact: 'figure-8: equal front and back, deep nulls at the sides; the body size is a drawing default', src: 'IHS-ROSTRUP' }],
-    art: 'sideLdc',
+    art: 'ribbon',
     blurb: 'A ribbon hears equally from its front and back and rejects its SIDES — aim a side at what you do not want. Ribbons are delicate: keep them out of a bell’s blast of air and follow the maker’s rules on phantom power.',
   },
   lbLdc: {

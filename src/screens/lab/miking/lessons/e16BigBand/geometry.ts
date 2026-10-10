@@ -219,12 +219,12 @@ export const E16_WEDGES: Wedge[] = [
 ];
 
 /* ── STARTING SETUPS ── */
-type Art = 'instDynamic' | 'smallDynamic' | 'sdc' | 'sideLdc';
+type Art = 'instDynamic' | 'smallDynamic' | 'sdc' | 'sideLdc' | 'ribbon';
 const sgl = (key: string, s: Spot, label: string, o: { pattern?: 'cardioid' | 'supercardioid' | 'figure8'; art?: Art; foot?: Vec3 } = {}) => {
   const art = o.art ?? 'instDynamic';
-  return { key, p: s.p, aim: s.aim, pattern: o.pattern ?? ('cardioid' as const), label, art, len: art === 'sdc' ? 104 : art === 'sideLdc' ? 60 : 150, cross: art === 'sdc' ? 21 : art === 'sideLdc' ? 160 : 38, ...(o.foot ? { foot: o.foot } : {}) };
+  return { key, p: s.p, aim: s.aim, pattern: o.pattern ?? ('cardioid' as const), label, art, len: art === 'sdc' ? 104 : art === 'sideLdc' || art === 'ribbon' ? 60 : 150, cross: art === 'sdc' ? 21 : art === 'sideLdc' || art === 'ribbon' ? 160 : 38, ...(o.foot ? { foot: o.foot } : {}) };
 };
-const ribbon = { pattern: 'figure8' as const, art: 'sideLdc' as const };
+const ribbon = { pattern: 'figure8' as const, art: 'ribbon' as const };
 const SAX_IDS = ['T1', 'A2', 'A1', 'T2', 'BARI'];
 const BB_SAX_M = BB_SAX.map((s, i) => sgl(`sx${i}`, s, `SAX ${SAX_IDS[i]}`, { pattern: 'supercardioid', art: 'smallDynamic' }));
 const BB_TBN_M = BB_TBN.map((s, i) => sgl(`tb${i}`, s, `TBN ${['2', '1', '3', '4'][i]}`, ribbon));
