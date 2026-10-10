@@ -120,11 +120,18 @@ export function ChannelStrip({ selected, onTap }: { selected: StripStation; onTa
       <Box x={RX} y={preY - 10} w={RW} h={BH} label="AUX 1–4 · PRE" on={sel('sends')} onPress={() => onTap('sends')} a11y={`Pre-fader aux sends to the wedges${sel('sends') ? ', selected' : ''}`} />
       <Arrow x1={cx + 4} y1={postY} x2={RX - 2} y2={postY} color={sel('sends') ? colors.cyanBright : CABLE_COLORS.line} />
       <Box x={RX} y={postY - 10} w={RW} h={BH} label="AUX 5 · POST" on={sel('sends')} onPress={() => onTap('sends')} a11y={`Post-fader aux send to the reverb${sel('sends') ? ', selected' : ''}`} />
-      <Path d={`M ${cx + 4} ${postY + 2} C ${cx + 70} ${postY + 2} ${cx + 60} ${postY + 28} ${RX - 2} ${postY + 28}`} stroke={sel('direct') ? colors.cyanBright : CABLE_COLORS.line} strokeWidth={1.6} fill="none" strokeDasharray="3 3" />
+      {/* The direct out tees off the post-fader send line PAST the strip
+          (clash sweep 2026-10-10: the old curve left the POST node and cut
+          through the ASSIGN block on its way down). */}
+      <Path d={`M ${X + BW + 20} ${postY} C ${X + BW + 30} ${postY} ${X + BW + 28} ${postY + 28} ${RX - 2} ${postY + 28}`} stroke={sel('direct') ? colors.cyanBright : CABLE_COLORS.line} strokeWidth={1.6} fill="none" strokeDasharray="3 3" />
       <Box x={RX} y={postY + 18} w={RW} h={BH} label="DIRECT OUT" on={sel('direct')} onPress={() => onTap('direct')} a11y={`Direct output${sel('direct') ? ', selected' : ''}`} dashed />
       {/* controls with no audio in them */}
       <Box x={RX} y={54} w={RW} h={BH + 4} label="DCA · MUTE GROUP" on={false} tone="#3a3f4a" dashed />
-      <Arrow x1={RX} y1={72} x2={X + BW + 4} y2={146} color="#5a5f6a" dashed width={1.2} />
+      {/* Control line DCA → fader, routed down the right margin and in
+          BETWEEN the two send boxes (clash sweep 2026-10-10: the old diagonal
+          crossed the PRE send arrow). */}
+      <Path d={`M ${RX + RW} 66 L ${RX + RW + 8} 66 L ${RX + RW + 8} 148 L ${RX - 4} 148`} stroke="#5a5f6a" strokeWidth={1.2} fill="none" strokeDasharray="3 3" />
+      <Arrow x1={RX - 4} y1={148} x2={X + BW + 4} y2={148} color="#5a5f6a" dashed width={1.2} />
       {/* assignment outputs: one or the other */}
       <Line x1={X + 31} y1={212} x2={X + 103} y2={212} stroke={CABLE_COLORS.line} strokeWidth={2} />
       <Line x1={X + 31} y1={212} x2={X + 31} y2={218} stroke={CABLE_COLORS.line} strokeWidth={2} />

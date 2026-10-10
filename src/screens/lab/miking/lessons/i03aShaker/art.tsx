@@ -18,7 +18,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { arrow, make } from '../shared/concert/paths.ts';
 import { Hand } from '../shared/smallperc/Hand';
-import { dorsalFist, placeBetween, profileFist, type Pt } from '../shared/smallperc/hands.ts';
+import { dorsalFist, dorsalFlat, openHand, placeBetween, profileFist, type Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { ShakerTube } from '../shared/smallperc/objects';
 import { P0 } from '../shared/smallperc/geom.ts';
@@ -26,6 +26,14 @@ import { HALF, R_SHELL, SHK_DIMS, stateOf } from './model.ts';
 
 const FIST = profileFist(R_SHELL);
 const BACK = dorsalFist();
+/** TOWARD: the shell points at the mic and the forearm comes from behind, so
+ *  the shell lies ALONG the fingers (held from its right side, the fingers
+ *  slightly curled round it, the thumb on top) — never through a closed fist
+ *  (clash sweep 2026-10-10: the shell ran lengthwise through the folded
+ *  fingers). From the side: the back of that hand, fingers forward along the
+ *  shell. From above: the hand's thumb side beside the shell, palm against it. */
+const ALONG_BACK = dorsalFlat(50);
+const ALONG_EDGE = openHand(22);
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
 
@@ -52,14 +60,18 @@ export function ShakerArt({ view, variant }: { view: ViewId; variant: VariantId 
   const d = SHK_DIMS.d.mm;
   if (view === 'top') {
     const along = s.id === 'toward';
-    const pl = placeBetween(BACK, top(a.W), top(a.G));
+    // TOWARD from above: the thumb-side view beside the shell (palm toward −z,
+    // up the screen: mirrored), its wrist on the arm's wrist, along the shell.
+    // (the palm on the shell's side: the wrist drawn just beside it)
+    const wTop: Pt = along ? [a.W.x, R_SHELL + 21] : top(a.W);
+    const pl = along ? { at: wTop, angle: 0, scale: 0.95, mirror: true } : placeBetween(BACK, top(a.W), top(a.G));
     const reach = SHK_DIMS.sweep.mm;
     return (
       <Group>
         <PlayerTop />
         <MotionMark a={along ? [P0.x - reach - 40, P0.z - 70] : [P0.x + 130, -reach - 40]} b={along ? [P0.x + reach + 40, P0.z - 70] : [P0.x + 130, reach + 40]} />
-        <Arm2D s={top(a.S)} e={top(a.E)} w={top(a.W)} />
-        <Hand geo={BACK} pl={pl} heldBehind held={<ShakerTube c={top(P0)} angle={along ? 0 : 90} len={len} d={d} />} />
+        <Arm2D s={top(a.S)} e={top(a.E)} w={wTop} />
+        <Hand geo={along ? ALONG_EDGE : BACK} pl={pl} heldBehind held={<ShakerTube c={top(P0)} angle={along ? 0 : 90} len={len} d={d} />} />
       </Group>
     );
   }
@@ -71,7 +83,7 @@ export function ShakerArt({ view, variant }: { view: ViewId; variant: VariantId 
       <MotionMark a={along ? [P0.x - reach - 40, P0.y - 110] : [P0.x + 140, P0.y - 120]} b={along ? [P0.x + reach + 40, P0.y - 110] : [P0.x + 140, P0.y - 120]} />
       <Arm2D s={side(a.S)} e={side(a.E)} w={side(a.W)} />
       {along ? (
-        <Hand geo={BACK} pl={placeBetween(BACK, side(a.W), side(a.G))} heldBehind held={<ShakerTube c={side(P0)} angle={0} len={len} d={d} />} />
+        <Hand geo={ALONG_BACK} pl={{ at: side(a.W), angle: 0, scale: 0.92 }} heldBehind held={<ShakerTube c={side(P0)} angle={0} len={len} d={d} />} />
       ) : (
         <Hand geo={FIST} pl={placeBetween(FIST, side(a.W), side(a.G))} farThumb held={<ShakerTube c={side(P0)} angle={0} len={len} d={d} endOn />} />
       )}
@@ -92,7 +104,7 @@ export function shakerLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   return [
     { id: 'shell', text: along ? 'SHAKER' : 'SHAKER (END-ON)', short: 'SHAKER', u: along ? P0.x + HALF + 24 : P0.x + 50, v: along ? P0.y + 50 : P0.y + 70, align: 'left' },
     { id: 'motion', text: along ? '↔ THE SHAKE' : '⊙ SHAKEN ACROSS', short: '↔', u: along ? P0.x : P0.x + 170, v: P0.y - 160, align: along ? 'center' : 'left', tone: 'illustrative' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted', point: { u: -6000, v: -900 } },
   ];
 }
 

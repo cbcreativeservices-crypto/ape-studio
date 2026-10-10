@@ -18,13 +18,17 @@ const PATH_Z = { z0: -2500, z1: -1900 };
 
 function buildSide() {
   const b = F12_VIEWS.side;
-  const soil = rectP(make(), b.u0 - 500, 0, b.u1 + 500, b.v1 + 400);
+  // The ground runs well past the lesson's frame: the receivers page frames a
+  // wider section (−9.6 m … 11 m), and the house stood half over nothing
+  // (clash sweep 2026-10-10).
+  const G0 = Math.min(b.u0, -12000) - 500;
+  const soil = rectP(make(), G0, 0, Math.max(b.u1, 12000) + 500, b.v1 + 400);
   const grass = make();
-  for (let x = b.u0 - 400; x < ROAD.x0; x += 90) {
+  for (let x = G0 + 100; x < ROAD.x0; x += 90) {
     grass.moveTo(x, 0);
     grass.lineTo(x + 25, -70 - ((x * 7) % 50));
   }
-  const road = rectP(make(), ROAD.x0, 0, b.u1 + 500, 140);
+  const road = rectP(make(), ROAD.x0, 0, Math.max(b.u1, 12000) + 500, 140);
   const kerb = rectP(make(), ROAD.x0 - 160, -140, ROAD.x0, 60, 20);
   // The house in section: the side wall with siding, a foundation band, two storeys of windows, a gable roof.
   const wall = rectP(make(), HOUSE.x0, -HOUSE.eaves, HOUSE.x1, 0);
@@ -81,7 +85,9 @@ function buildSide() {
 }
 
 function buildTop() {
-  const b = F12_VIEWS.top;
+  // The ground past the frame too (the receivers page frames a wider plan).
+  const t = F12_VIEWS.top;
+  const b = { u0: Math.min(t.u0, -12000), u1: Math.max(t.u1, 12000), v0: Math.min(t.v0, -8000), v1: Math.max(t.v1, 6000) };
   const lawn = rectP(make(), b.u0 - 500, b.v0 - 500, ROAD.x0, b.v1 + 500);
   const stripes = make();
   for (let z = b.v0 - 500; z < b.v1 + 500; z += 1200) rectP(stripes, b.u0 - 500, z, ROAD.x0 - 200, z + 600);

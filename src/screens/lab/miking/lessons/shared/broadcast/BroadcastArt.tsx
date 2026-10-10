@@ -23,7 +23,7 @@
  *   AcousticPanels soft panels on a booth wall (illustrated; no numbers).
  */
 import { useMemo, type ReactNode } from 'react';
-import { BlurMask, Circle, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, LinearGradient, Paint, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { FigureHead, PlayerBehind, PlayerInFront, figureCovers, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt, type PlayerPose } from '../players/playerPose.ts';
@@ -105,11 +105,14 @@ export function Headphones({ view }: { view: ViewId }) {
 
 /** A seated talker. `part`: 'lower' draws the legs only (from above, under
  *  the desk), 'upper' the rest; default both. */
-export function SeatedTalker({ view, t, phones = false, headless = false, part = 'all', dim = 1 }: { view: ViewId; t: Talker; phones?: boolean; headless?: boolean; part?: 'all' | 'lower' | 'upper'; dim?: number }) {
-  const pose = talkerPose(view, t, headless);
+export function SeatedTalker({ view, t, phones = false, headless = false, part = 'all', dim = 1, leftHandIn = 0 }: { view: ViewId; t: Talker; phones?: boolean; headless?: boolean; part?: 'all' | 'lower' | 'upper'; dim?: number; /** From above: the left hand rests this many mm nearer the midline (clear of a gooseneck's base beside it). */ leftHandIn?: number }) {
+  const base = talkerPose(view, t, headless);
+  // From above the pose is authored round the neck, the left hand at +u
+  // (PlayerFigure turns it): toward the midline is −u.
+  const pose = view === 'top' && leftHandIn ? { ...base, handL: { ...base.handL, wrist: pt(base.handL.wrist.u - leftHandIn, base.handL.wrist.v) } } : base;
   if (part === 'lower') return <PlayerBehind pose={pose} part="legs" dim={dim} />;
   return (
-    <Group opacity={dim}>
+    <Group layer={dim < 1 ? <Paint opacity={dim} /> : undefined}>
       <PlayerBehind pose={pose} part={view === 'top' ? (part === 'all' ? 'all' : 'upper') : 'all'} />
       <PlayerInFront pose={pose} hands />
       {view === 'side' && !headless ? (
@@ -245,6 +248,34 @@ function deskPaths(view: ViewId, d: DeskBox, floor: number, skirt: boolean) {
     if (skirt) drape.addRect(Skia.XYWHRect(d.max.x - 10, d.min.z, 22, d.max.z - d.min.z));
   }
   return { top, edge, legs, drape };
+}
+
+/** The desk's NEAR legs (the side view, from the talker's right): the pair on
+ *  the viewer's edge stands in front of a seated talker's thighs, so a scene
+ *  draws them again after the talker (clash sweep 2026-10-10: the thigh was
+ *  drawn over the near leg). A skirted desk repeats only the talker's end —
+ *  its audience-end leg is behind the skirt. */
+export function DeskNearLegs({ box, floor, skirt = false }: { box: DeskBox; floor: number; skirt?: boolean }) {
+  const legs = useMemo(() => {
+    const xs = skirt ? [box.min.x + 50] : [box.min.x + 50, box.max.x - 70];
+    return xs.map((x) => {
+      const p = make();
+      p.addRRect(Skia.RRectXY(Skia.XYWHRect(x, box.max.y, 22, floor - box.max.y), 6, 6));
+      return { x, p };
+    });
+  }, [box, floor, skirt]);
+  return (
+    <Group>
+      {legs.map(({ x, p }) => (
+        <Group key={x}>
+          <Path path={p}>
+            <LinearGradient start={vec(x, 0)} end={vec(x + 22, 0)} colors={['#a9aeb8', '#575b65', '#22242a']} />
+          </Path>
+          <Path path={p} style="stroke" strokeWidth={1.6} color="#0c0d10" opacity={0.8} />
+        </Group>
+      ))}
+    </Group>
+  );
 }
 
 /** A desk or table top (a box: its top face at min.y) on slim legs; a
@@ -689,8 +720,10 @@ export type StandSpec = { c: Vec3; tiltDeg: number; w: number; h: number; floor:
  * 297) side by side on it; the desk on a tilt bracket at the back of its
  * middle; a Ø 12 inner tube in a Ø 20 outer tube with a thumb-screw collar;
  * three Ø 10 legs hinged at a hub 330 mm up, feet on a 300 mm radius — one
- * toward the reader, two back at ±60° (from the side: one 300 mm toward the
- * reader, the two back ones overlapping 150 mm behind).
+ * straight away from the reader, two toward the reader at ±60° either side of
+ * their feet (from the side: one 300 mm away, the two near ones overlapping
+ * 150 mm toward the reader). Clash sweep 2026-10-10: a single leg pointed at
+ * the reader and its foot landed on the reader's toes.
  */
 const MSTAND = { thick: 10, ledge: 35, lip: 15, inner: 12, outer: 20, leg: 10, hub: 330, footR: 300, paperW: 420, paperH: 297 } as const;
 
@@ -743,7 +776,7 @@ export function ScriptStand({ view, s }: { view: ViewId; s: StandSpec }) {
       metal.addRRect(Skia.RRectXY(Skia.XYWHRect(colX - 14, collar - 8, 28, 18), 4, 4));
       metal.addRRect(Skia.RRectXY(Skia.XYWHRect(colX + 12, collar - 5, 18, 10), 4, 4));
       metal.addRRect(Skia.RRectXY(Skia.XYWHRect(colX - 16, hub - 12, 32, 30), 5, 5));
-      for (const fx of [-MSTAND.footR, MSTAND.footR * Math.cos(60 * DEG)]) {
+      for (const fx of [MSTAND.footR, -MSTAND.footR * Math.cos(60 * DEG)]) {
         legs.moveTo(colX, hub + 10);
         legs.lineTo(colX + fx, s.floor - 4);
       }
@@ -756,7 +789,7 @@ export function ScriptStand({ view, s }: { view: ViewId; s: StandSpec }) {
       paper.addRRect(Skia.RRectXY(Skia.XYWHRect(x0 + 2, s.c.z + 2, Math.max(8, pd - 4), MSTAND.paperW / 2 - 2), 2, 2));
       // The ledge's lip along the reader's edge.
       metal.addRRect(Skia.RRectXY(Skia.XYWHRect(x0 - Math.cos(a) * MSTAND.ledge, s.c.z - s.w / 2 + 4, 6, s.w - 8), 2, 2));
-      for (const deg of [180, 60, -60]) {
+      for (const deg of [0, 120, -120]) {
         const t = deg * DEG;
         legs.moveTo(colX, s.c.z);
         legs.lineTo(colX + Math.cos(t) * MSTAND.footR, s.c.z + Math.sin(t) * MSTAND.footR);

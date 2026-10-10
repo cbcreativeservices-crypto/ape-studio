@@ -329,10 +329,12 @@ export function headAbove(c: Pt, r: number): HeadPaths {
   const skull = smooth([P(0, -98), P(62, -80), P(80, -10), P(70, 60), P(36, 92), P(0, 98), P(-36, 92), P(-70, 60), P(-80, -10), P(-62, -80)], 0.55);
   const line = make();
   line.addPath(skull);
-  for (const s of [-1, 1]) line.addPath(curve([P(s * 78, -14), P(s * 94, 0), P(s * 92, 22), P(s * 76, 30)]));
+  for (const s of [-1, 1]) line.addPath(curve([P(s * 76, -12), P(s * 86, -4), P(s * 88, 14), P(s * 78, 24)]));
   line.addPath(curve([P(-12, 92), P(0, 114), P(12, 92)]));
-  // Seen from above: the cranium, the ears and the tip of the nose.
-  const ears = [-1, 1].map((s) => smooth([P(s * 72, -16), P(s * 92, -6), P(s * 94, 18), P(s * 78, 30)], 0.6));
+  // Seen from above: the cranium, the ears and the tip of the nose. The ears
+  // (owner 2026-10-10: they stood out as lobes wider than the skull) lie
+  // close to the skull: ≈ 8 mm out, ≈ 35 mm long, angled a little back.
+  const ears = [-1, 1].map((s) => smooth([P(s * 72, -14), P(s * 86, -6), P(s * 88, 14), P(s * 76, 24)], 0.6));
   const nose = smooth([P(-12, 88), P(0, 114), P(12, 88)], 0.5);
   return { line, fill: union(skull, ...ears, nose) };
 }
@@ -806,29 +808,55 @@ function buildAbove(pose: PlayerPose): Built {
   const n = pose.neck;
   const sR = pose.shoulderR;
   const sL = pose.shoulderL;
-  // The shoulders and back from above: a broad rounded girdle, the chest
-  // forward (+v), the shoulder blades behind.
+  // The shoulders and back from above (owner 2026-10-10: it read as a
+  // pointed lens): a ROUNDED RECTANGLE ≈ 456 mm across the deltoids and
+  // ≈ 236 mm deep — the back nearly flat across the shoulder blades, the
+  // deltoids rounded at the sides, the chest a little fuller than the back
+  // (forward, +v).
   const torso = smooth(
     [
-      pt(sR.u - 40, sR.v - 6),
-      pt(sR.u - 10, sR.v - 62),
-      pt(n.u - 90, n.v - 112),
-      pt(n.u + 90, n.v - 112),
-      pt(sL.u + 10, sL.v - 62),
-      pt(sL.u + 40, sL.v - 6),
-      pt(sL.u + 4, sL.v + 56),
-      pt(n.u + 120, n.v + 108),
-      pt(n.u, n.v + 122),
-      pt(n.u - 120, n.v + 108),
-      pt(sR.u - 4, sR.v + 56),
+      pt(n.u, n.v - 112), // the upper back, behind the neck
+      pt(sR.u + 70, n.v - 108),
+      pt(sR.u + 10, sR.v - 88),
+      pt(sR.u - 34, sR.v - 50),
+      pt(sR.u - 40, sR.v + 4), // the deltoid
+      pt(sR.u - 30, sR.v + 52),
+      pt(sR.u + 14, sR.v + 84),
+      pt(n.u - 90, n.v + 116), // the chest
+      pt(n.u, n.v + 124),
+      pt(n.u + 90, n.v + 116),
+      pt(sL.u - 14, sL.v + 84),
+      pt(sL.u + 30, sL.v + 52),
+      pt(sL.u + 40, sL.v + 4),
+      pt(sL.u + 34, sL.v - 50),
+      pt(sL.u - 10, sL.v - 88),
+      pt(sL.u - 70, n.v - 108),
     ],
     0.5,
   );
-  const armL = sleeveArm(sL, pose.elbowL, pose.handL.wrist);
-  const armR = sleeveArm(pt(sR.u + 8, sR.v + 10), pose.elbowR, pose.handR.wrist);
+  // An arm HANGING at the side is seen end-on from above: it is under the
+  // shoulder's own rounded deltoid (the torso outline), so nothing more is
+  // drawn (owner review 2026-10-10: the cut sleeve end of a foreshortened arm
+  // stuck out as a pointed wing, then as a separate ball). A reaching arm is
+  // the sleeve.
+  const aboveArm = (s0: Pt, e: Pt, w: Pt) => (dist(s0, w) < 150 && dist(s0, e) < 150 ? make() : sleeveArm(s0, e, w));
+  const armL = aboveArm(sL, pose.elbowL, pose.handL.wrist);
+  const armR = aboveArm(pt(sR.u + 8, sR.v + 10), pose.elbowR, pose.handR.wrist);
   const seated = pose.posture !== 'standing';
   const thighs = seated ? union(limb([pose.hipR, pose.kneeR], [BODY.thighR, BODY.kneeR + 2]), limb([pose.hipL, pose.kneeL], [BODY.thighR, BODY.kneeR + 2])) : null;
-  const shoes = [pose.footR, pose.footL].map((f) => smooth([pt(f.u - 44, f.v - 150), pt(f.u + 44, f.v - 150), pt(f.u + 50, f.v - 40), pt(f.u + 30, f.v + 14), pt(f.u - 30, f.v + 14), pt(f.u - 50, f.v - 40)], 0.5));
+  // Shoes from above (owner 2026-10-10: they pointed BACKWARD): the same
+  // shoe as the profile's (buildSide: the foot point at the ball of the foot,
+  // the heel 96 mm behind it, the toe 150 mm ahead) — the heel just behind
+  // the ankle, the toe forward (+v, the way the body faces), ≈ 100 mm wide at
+  // the ball, the toe a little narrower.
+  // The toes turn out a little (≈ 8° each), as a relaxed stance does.
+  const shoes = [pose.footR, pose.footL].map((f, i) => {
+    const th = i === 0 ? 0.14 : -0.14; // R (−u) outward toward −u, L toward +u
+    const c = Math.cos(th);
+    const sn = Math.sin(th);
+    const P = (du: number, dv: number) => pt(f.u + du * c - dv * sn, f.v + du * sn + dv * c);
+    return smooth([P(-34, -96), P(34, -96), P(46, -20), P(48, 60), P(34, 128), P(0, 150), P(-34, 128), P(-48, 60), P(-46, -20)], 0.5);
+  });
   const head = headAbove(pose.head.c, pose.head.r);
   const hR = handShape(pose.handR);
   const hL = handShape(pose.handL);
@@ -1090,14 +1118,16 @@ export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose
           <BlurMask blur={14} style="normal" />
         </Path>
       ) : null}
+      {/* From above the feet are UNDER the body (owner review 2026-10-10): every
+          shoe is painted first, so only its toe cap shows past the chest. */}
       {(legs ? b.shoes : [])
-        .filter((s) => s.far)
+        .filter((s) => s.far || pose.view === 'above')
         .map((s, i) => (
-          <FigureMass key={`shoeF${i}`} path={s.path} tone={s.tone} far />
+          <FigureMass key={`shoeF${i}`} path={s.path} tone={s.tone} far={s.far} />
         ))}
       {b.behind.map((m, i) => ((isLeg(m.tone) ? legs : upper) ? <FigureMass key={`b${i}`} path={m.path} tone={m.tone} far={m.far} /> : null))}
       {(legs ? b.shoes : [])
-        .filter((s) => !s.far)
+        .filter((s) => !s.far && pose.view !== 'above')
         .map((s, i) => (
           <FigureMass key={`shoe${i}`} path={s.path} tone={s.tone} />
         ))}

@@ -19,18 +19,20 @@
  * deliberately locked. (Corrected 2026-08-28 — this comment used
  * to claim pan worked in EVERY mode, which the code has never done.)
  *
- * RACK evaluated 2026-08-23 — KEPT CLASSIC: the lesson's display is TWO
- * pixel-aligned panels (scene 168 + response 116 ≈ 284) that outgrow even the
- * L stage, and the FIXED stage LOCKS both controls — a dock lane that refuses
- * to move contradicts the rack's always-live fader grammar.
+ * RACK (2026-10-10, owner rule: every lab control lives in the bottom dock):
+ * the two pixel-aligned panels are the rack's display, held to their own
+ * shape and centred in the L glass; EQ TYPE / PAN / ZOOM are dock keys, and
+ * the FIXED stage shows PAN and ZOOM as LOCKED keys with their reason (the
+ * rack's `locked` fader) instead of a lane that refuses to move.
  */
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, Line, Path, Polygon, Rect } from 'react-native-svg';
 import { FigureStandingFrontSvg } from '../../../../features/lab/figureBodySvg';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
-import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
-import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF, qFromBwOct } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
@@ -206,114 +208,91 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
 
   const meta = STAGE_META[stage];
 
-  // The live readout (frequency · Q · bandwidth) — on the panel head AND at
-  // the top of the FULL SCREEN dock (parity pass 2026-09-26). Same element.
-  const readout = (
-    <Text style={styles.readout}>
-      {stage === 0
-        ? `${fmtHz(eqFreq)} — FIXED`
-        : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
-    </Text>
-  );
-
-  // EQ-type buttons and the two camera sliders — on the page AND docked inside
-  // FULL SCREEN (legibility pass 2026-09-26), same elements, same state.
-  const stageChips = (
-    <View style={styles.chipRow}>
-      {STAGE_META.map((s, i) => (
-        <Pressable
-          key={s.label}
-          onPress={() => setStage(i as Stage)}
-          hitSlop={6}
-          accessibilityRole="button"
-          accessibilityLabel={`${s.label} stage`}
-          accessibilityState={{ selected: stage === i }}
-          aria-pressed={stage === i}
-          style={[styles.chip, stage === i && styles.chipActive]}
-        >
-          <Text style={[styles.chipText, stage === i && styles.chipTextActive]}>{s.label}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-  // FIXED locks BOTH controls (owner 2026-08-07) — a bolted-down camera has no
-  // pan handle to grab.
-  const cameraSliders = (
-    <View style={styles.sliders}>
-      {panActive ? (
-        <DragSlider label="PAN THE CAMERA" value={pan} onChange={setPan} readout={fmtHz(cameraF)} />
-      ) : (
-        <View style={styles.lockedRow}>
-          <Text style={styles.lockedLabel}>PAN THE CAMERA</Text>
-          <Text style={styles.lockedNote}>locked — bolted to the tripod</Text>
-        </View>
-      )}
-      {zoomActive ? (
-        <DragSlider
-          label="ZOOM THE CAMERA"
-          value={zoom}
-          onChange={setZoom}
-          readout={`Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
-        />
-      ) : (
-        <View style={styles.lockedRow}>
-          <Text style={styles.lockedLabel}>ZOOM THE CAMERA</Text>
-          <Text style={styles.lockedNote}>locked — this lens cannot zoom</Text>
-        </View>
-      )}
-    </View>
-  );
+  // THE DOCK (owner rule 2026-10-10: every lab control lives in the bottom
+  // dock). EQ TYPE replaces the three buttons that sat above the display;
+  // PAN and ZOOM are the camera's two faders. A control the chosen EQ type
+  // does not have stays on the dock as a LOCKED key with its reason — the
+  // fixed EQ's camera is bolted to the tripod; only the fully parametric lens
+  // zooms (owner 2026-08-07).
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'type',
+      label: 'EQ TYPE',
+      valueLabel: STAGE_SHORT[stage],
+      valueA11y: meta.label.toLowerCase(),
+      options: STAGE_META.map((m, i) => ({ id: String(i), label: m.label, blurb: `${m.camera} ${m.eq}` })),
+      selectedId: String(stage),
+      onSelect: (id) => setStage(Number(id) as Stage),
+      sticky: true,
+    },
+    {
+      kind: 'fader',
+      id: 'pan',
+      label: 'PAN',
+      value: pan,
+      onChange: setPan,
+      format: () => `pan the camera · ${fmtHz(cameraF)}`,
+      formatShort: () => fmtHz(cameraF),
+      locked: panActive ? undefined : 'a FIXED EQ is bolted to the tripod — pick SEMI or FULLY PARAMETRIC',
+    },
+    {
+      kind: 'fader',
+      id: 'zoom',
+      label: 'ZOOM',
+      value: zoom,
+      onChange: setZoom,
+      format: () => `zoom the camera · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`,
+      formatShort: () => `Q${q.toFixed(1)}`,
+      locked: zoomActive ? undefined : 'this lens cannot zoom — only FULLY PARAMETRIC sets Q',
+    },
+  ];
 
   return (
-    <View style={styles.root}>
+    <RackUnit
+      initialParam="pan"
+      params={params}
+      stage={{
+        size: 'L',
+        fullScreen: true,
+        badge: 'REAL PEAKING RESPONSE AT A FIXED +9 dB — GAIN IS NOT PART OF THE ANALOGY',
+        bezel: [
+          { k: 'EQ TYPE', v: STAGE_SHORT[stage], flex: 1.1 },
+          { k: 'FREQ', v: fmtHz(eqFreq) },
+          { k: 'Q', v: stage === 0 ? 'FIXED' : q.toFixed(1) },
+          { k: 'WIDTH', v: stage === 0 ? 'FIXED' : `${bwOct.toFixed(2)} oct` },
+        ],
+        // One figure, two pixel-aligned panels: the room over the response, on
+        // a shared log-frequency axis — held to its own shape and centred so
+        // the camera's view stays over the bell at every glass size.
+        render: (w, h) => {
+          const fw = Math.max(120, Math.min(w, h * FIG_ASPECT));
+          const fh = fw / FIG_ASPECT;
+          const sceneH = SCENE_H * (fw / W);
+          return (
+            <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: fw, height: fh }}>
+                <RoomScene aimX={aimX} halfW={halfW} width={fw} />
+                <ResponseCurveGraph curves={curves} dbRange={12} width={fw} totalHeight={Math.max(40, fh - sceneH)} mainColor={gc} />
+              </View>
+            </View>
+          );
+        },
+      }}
+    >
       <GlossaryText style={styles.body}>
         Imagine a camera in a room. What the camera can DO — stay bolted down, pan, or pan and
         zoom — is exactly the difference between fixed, semi-parametric, and fully parametric EQ.
+        Open EQ TYPE to switch between them.
       </GlossaryText>
 
       <Text style={styles.stageCamera}>{meta.camera}</Text>
       <Text style={styles.stageEq}>→ {meta.eq}</Text>
-
-      {/* EQ-type buttons sit JUST ABOVE the display (owner 2026-08-07). */}
-      {stageChips}
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text accessibilityRole="header" style={styles.panelEyebrow}>THE ROOM</Text>
-          {readout}
-        </View>
-        {/* One figure, two pixel-aligned panels: the room over the response, on
-            a shared log-frequency axis. FULL SCREEN enlarges both together. */}
-        <ExpandableFigure
-          width={Math.max(120, p.width)}
-          aspect={FIG_ASPECT}
-          title="THE ROOM"
-          badge="REAL PEAKING RESPONSE AT A FIXED +9 dB — GAIN IS NOT PART OF THE ANALOGY"
-          render={(w, h) => {
-            const sceneH = SCENE_H * (w / W);
-            return (
-              <View style={{ width: w, height: h }}>
-                <RoomScene aimX={aimX} halfW={halfW} width={w} />
-                <ResponseCurveGraph curves={curves} dbRange={12} width={w} totalHeight={Math.max(40, h - sceneH)} mainColor={gc} />
-              </View>
-            );
-          }}
-          controls={
-            <View style={styles.controls}>
-              <View style={styles.dockReadout}>{readout}</View>
-              {stageChips}
-              {cameraSliders}
-            </View>
-          }
-        />
-        <Text style={styles.honest}>
-          {stage === 0
-            ? 'Locked on the lamp at 2 kHz. Nothing you do moves it — that is what “fixed” means.'
-            : 'The bell = the real peaking response at a fixed +9 dB — gain is NOT part of this analogy.'}
-        </Text>
-      </View>
-
-      {cameraSliders}
+      <Text style={styles.honest}>
+        {stage === 0
+          ? 'Locked on the lamp at 2 kHz. Nothing you do moves it — that is what “fixed” means.'
+          : 'The bell = the real peaking response at a fixed +9 dB — gain is NOT part of this analogy.'}
+      </Text>
 
       <View style={styles.banner}>
         <Text style={styles.bannerText}>MOVE THE CAMERA = FREQUENCY</Text>
@@ -325,32 +304,19 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
       </Text>
 
       <CheckQuestion spec={CHECK} />
-    </View>
+    </RackUnit>
   );
 }
 
+/** EQ TYPE on the narrow key and the bezel. */
+const STAGE_SHORT = ['FIXED', 'SEMI', 'FULL'] as const;
+
 const styles = StyleSheet.create({
-  root: { gap: 12 },
-  sliders: { gap: 12 },
-  controls: { gap: 10 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#17171c' },
-  chipActive: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1d1708' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSecondary },
-  chipTextActive: { color: colors.amber },
   stageCamera: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   stageEq: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19, color: colors.amber },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
-  readout: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.amber },
-  dockReadout: { alignItems: 'center' },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
-  lockedRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', paddingHorizontal: 12, paddingVertical: 12, opacity: 0.6 },
-  lockedLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
-  lockedNote: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub },
   banner: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#17130a', padding: 12, gap: 4, alignItems: 'center' },
   bannerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
 });

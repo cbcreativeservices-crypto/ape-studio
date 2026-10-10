@@ -270,7 +270,9 @@ export function ShellSide(props: ShellSideProps) {
 
 /* ── a HEAD seen from above (top view), with its rim and lug tabs ── */
 export type HeadLook = 'rawhide' | 'goat' | 'film';
-export function HeadTop({ d, look, lugs = 0, seed = 7, rimColors = CHROME, rimWidth }: { d: HandDrum; look: HeadLook; lugs?: number; seed?: number; rimColors?: string[]; rimWidth?: number }) {
+/** `phaseDeg`: where the first lug sits (deg, y down; 90 = +z). A pair set
+ *  side by side turns one drum so their lugs never meet in the gap. */
+export function HeadTop({ d, look, lugs = 0, seed = 7, rimColors = CHROME, rimWidth, phaseDeg = 90 }: { d: HandDrum; look: HeadLook; lugs?: number; seed?: number; rimColors?: string[]; rimWidth?: number; phaseDeg?: number }) {
   const g = useMemo(() => {
     const cx = d.c.x;
     const cz = d.c.z;
@@ -295,7 +297,7 @@ export function HeadTop({ d, look, lugs = 0, seed = 7, rimColors = CHROME, rimWi
     const tabs = make();
     const hooks = make();
     for (let k = 0; k < lugs; k++) {
-      const a = Math.PI / 2 + (k * 2 * Math.PI) / lugs;
+      const a = (phaseDeg * Math.PI) / 180 + (k * 2 * Math.PI) / lugs;
       const c = Math.cos(a);
       const s = Math.sin(a);
       const pt = (rad: number, w: number) => [cx + c * rad - s * w, cz + s * rad + c * w] as const;
@@ -309,7 +311,7 @@ export function HeadTop({ d, look, lugs = 0, seed = 7, rimColors = CHROME, rimWi
       tabs.close();
     }
     return { cx, cz, rr, mottle, fibres, tabs, hooks };
-  }, [d, look, lugs, seed, rimWidth]);
+  }, [d, look, lugs, seed, rimWidth, phaseDeg]);
   const skin = look === 'rawhide' ? RAWHIDE : look === 'goat' ? GOAT : FILM;
   return (
     <Group>

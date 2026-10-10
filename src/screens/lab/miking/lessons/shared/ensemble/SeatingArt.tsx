@@ -35,7 +35,7 @@ import { DIMS, headTop, isVoice, sectionBox, BASS_DRUM_STATION, TIMPANI_SET, typ
 // the drum kit (one kind for groups 4 and 5) is Lab 1's shared kit, whole.
 import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPlan, bandPlanInstrument, bandPlanWhole, gearBehind, type BandTools } from './BandArt';
 // group 5 (sections): the mallet rows, the congas — reused, never redrawn from scratch.
-import { KIND, STAND_LIFT } from './seating.ts';
+import { KIND, STAND_LIFT, TBN_MOUTH_AHEAD, TBN_TILT_DEG } from './seating.ts';
 import { isNatural, ROWS } from '../mallets/malletSpec.ts';
 import { CONGA_DIMS } from '../../m04aCongas/model.ts';
 // group 2: the voices' sizes (a child is the adult figure at its scale).
@@ -1258,9 +1258,13 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
     case 'trumpet':
     case 'trombone': {
       const tb = k === 'trombone';
+      // A trombone tipped up TBN_TILT_DEG about its mouthpiece (seating.ts);
+      // a trumpet level. `up(f)`: the rise f mm along the horn.
+      const tilt = tb ? (TBN_TILT_DEG * Math.PI) / 180 : 0;
+      const up = (f: number) => (f - TBN_MOUTH_AHEAD) * Math.tan(tilt);
       const mouth = Q(tb ? -60 : 0, 110, 1150 + lift);
-      const bellAt = Q(tb ? -80 : 0, tb ? 520 : 560, 1120 + lift);
-      const { d, k: kf } = dirOf(0, 0, 1);
+      const bellAt = Q(tb ? -80 : 0, tb ? 520 : 560, 1120 + lift + (tb ? up(520) : 0));
+      const { d, k: kf } = dirOf(0, Math.sin(tilt), Math.cos(tilt));
       if (kf < 0.35) {
         // The bell toward the viewer, seen end-on.
         const R = tb ? 110 : 62;
@@ -1270,26 +1274,31 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
         // the hands are painted last, so the bell's disc is cut out of them below.
         before = ellipse(bellAt, R, R);
         if (tb) {
-          const sc = Q(-10, 900, 1080 + lift);
+          const sc = Q(-10, 900, 1080 + lift + up(900));
           before = Skia.Path.MakeFromOp(before, rr(sc.u - 62, sc.v - 16, sc.u + 62, sc.v + 16, 16), PathOp.Union) ?? before;
         }
         // The slide, also pointing at the viewer: its end crook seen end-on —
         // the two tubes (about 100 mm apart) joined by the bow, under the mouth.
         if (tb) {
-          const sc = Q(-10, 900, 1080 + lift);
+          const sc = Q(-10, 900, 1080 + lift + up(900));
           b.mat.brass.addPath(rr(sc.u - 62, sc.v - 16, sc.u + 62, sc.v + 16, 16));
           b.holes.addPath(ellipse(P(sc.u - 48, sc.v), 7, 7));
           b.holes.addPath(ellipse(P(sc.u + 48, sc.v), 7, 7));
         }
       } else {
         const L = tb ? 900 : 470;
-        b.mat.brass.addPath(capsule(mouth, P(mouth.u + d.u * L * kf, mouth.v + 20), tb ? 16 : 18));
-        b.mat.brass.addPath(flare(P(mouth.u + d.u * (tb ? 200 : 300) * kf, mouth.v + 6), P(mouth.u + d.u * (tb ? 420 : 470) * kf, mouth.v + 6), 20, tb ? 110 : 62));
+        // Along the horn: d is the tilted direction on screen (u and v).
+        const along = (f: number, dv: number) => P(mouth.u + d.u * f * kf, mouth.v + d.v * f * kf + dv);
+        b.mat.brass.addPath(capsule(mouth, along(L, 20), tb ? 16 : 18));
+        b.mat.brass.addPath(flare(along(tb ? 200 : 300, 6), along(tb ? 420 : 470, 6), 20, tb ? 110 : 62));
       }
-      arm([shL, Q(-170, 150, 1000 + lift), Q(-30, 280, 1130 + lift)]);
-      arm([shR, Q(170, 150, 980 + lift), Q(30, tb ? 560 : 280, 1110 + lift)]);
-      hand(Q(-30, 280, 1130 + lift));
-      hand(Q(30, tb ? 560 : 280, 1110 + lift));
+      // The hands ride the tilted horn: the left at the bell brace, the right on the slide.
+      const hL = Q(-30, 280, 1130 + lift + (tb ? up(280) : 0));
+      const hR = Q(30, tb ? 560 : 280, 1110 + lift + (tb ? up(560) : 0));
+      arm([shL, Q(-170, 150, 1000 + lift), hL]);
+      arm([shR, Q(170, 150, 980 + lift), hR]);
+      hand(hL);
+      hand(hR);
       break;
     }
     case 'tuba': {
@@ -1605,8 +1614,16 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       // Hands free, arms at the sides (group 2).
       arm([shL, Q(-232, 10, 1150), Q(-244, 30, 870)]);
       arm([shR, Q(232, 10, 1150), Q(244, 30, 870)]);
-      hand(Q(-246, 34, 830));
-      hand(Q(246, 34, 830));
+      if (!front && Math.abs(rightU) < 0.5) {
+        // In profile the hanging hand is seen edge-on beside the thigh: a
+        // narrow hand from the cuff down, fingers toward the floor (clash
+        // sweep 2026-10-10: a round 84 mm blob on the trousers read as a
+        // stray hand at the groin). Both hands coincide here; one is drawn.
+        addFig(b, 'skin', capsule(Q(0, 30, 880), Q(0, 42, 735), 30));
+      } else {
+        hand(Q(-246, 34, 830));
+        hand(Q(246, 34, 830));
+      }
       break;
     }
     case 'chorister': {

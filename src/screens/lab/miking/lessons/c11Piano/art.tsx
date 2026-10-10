@@ -78,8 +78,13 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'bass', text: 'BASS', u: 60, v: -520, align: 'left', tone: 'muted' },
       { id: 'hole', text: 'SOUND HOLE', short: 'HOLE', u: g.holes[0].c.x + 70, v: g.holes[0].c.z + 10, align: 'left' },
       { id: 'hammer', text: 'HAMMER LINE', short: 'HAMMERS', u: 12, v: KEYS_Z0 - 70, align: 'left' },
-      { id: 'keys', text: 'KEYS', u: g.xKey + 75, v: -KEYS_Z0 + 90, align: 'center', tone: 'muted' },
-      { id: 'pianist', text: 'PIANIST', u: PIANIST_AT.grand.xKey - 450, v: 330, align: 'center', tone: 'illustrative' },
+      // CLASH SWEEP 2026-10-10 (owner at 3×): v 330 lies on the bench, so
+      // PIANIST always fell to free space — a leader across the whole case
+      // that crossed the SOUND HOLE and KEYS leaders. Its places are now
+      // just clear of the bench (≈ 760 mm long), the bass side first; KEYS
+      // gets a second row below the treble end before free space.
+      { id: 'keys', text: 'KEYS', u: g.xKey + 75, v: -KEYS_Z0 + 90, align: 'center', tone: 'muted', alts: [{ u: g.xKey + 75, v: -KEYS_Z0 + 170, align: 'center' }, { u: g.xKey - 30, v: -KEYS_Z0 + 70, align: 'right' }] },
+      { id: 'pianist', text: 'PIANIST', u: PIANIST_AT.grand.xKey - 450, v: -460, align: 'center', tone: 'illustrative', alts: [{ u: PIANIST_AT.grand.xKey - 450, v: 460, align: 'center' }] },
       { id: 'curve', text: 'CURVED SIDE', short: 'CURVE', u: g.curve.p.x + 140, v: g.curve.p.z + 120, align: 'left', tone: 'muted' },
     ];
   }
@@ -99,8 +104,8 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'open', text: 'OPEN TOP', u: -80, v: -u.hw - 70, align: 'center' },
     { id: 'strings', text: 'STRINGS', u: 20, v: u.hw - 20, align: 'left', tone: 'muted' },
     { id: 'wall', text: 'WALL', u: u.wallX + 30, v: -880, align: 'center', tone: 'muted' },
-    { id: 'keys', text: 'KEYS', u: u.xKey + 75, v: -KEYS_Z0 + 90, align: 'center', tone: 'muted' },
-    { id: 'pianist', text: 'PIANIST', u: u.xKey - 450, v: 330, align: 'center', tone: 'illustrative' },
+    { id: 'keys', text: 'KEYS', u: u.xKey + 75, v: -KEYS_Z0 + 90, align: 'center', tone: 'muted', alts: [{ u: u.xKey + 75, v: -KEYS_Z0 + 170, align: 'center' }] },
+    { id: 'pianist', text: 'PIANIST', u: u.xKey - 450, v: -460, align: 'center', tone: 'illustrative', alts: [{ u: u.xKey - 450, v: 460, align: 'center' }] },
   ];
 }
 

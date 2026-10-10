@@ -22,7 +22,7 @@
  * and said ONLY as "typical clear zone — check your event's rules", with no
  * rulebook named — sport clearances, never mic positions.
  */
-import { CLEAR_ZONE_WORDS, bandAround, basketballMarkings, p2, type Badge, type KeepClear, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
+import { CLEAR_ZONE_WORDS, bandAround, basketballMarkings, p2, type Badge, type FieldNumeral, type KeepClear, type Marking, type P2, type PlanRect, type Sector, type VenueScene } from './venuePlan.ts';
 import { ARENA_BUILD, type ArenaSportId } from './arenaPlans.ts';
 
 /** Yards and feet in metres (exact, international). */
@@ -132,6 +132,44 @@ function soccer(): VenueScene {
   };
 }
 
+/*
+ * FOOTBALL FIELD PAINT (NFL layout, drawing defaults): yard numerals 6 ft
+ * tall × 4 ft wide, tops 9 yd from the sideline (bottoms 7 yd), the yard line
+ * running between the two digits (1 ft clear each side); direction arrows —
+ * a triangle with 36 in sides on an 18 in base — beside each number but the
+ * 50, pointing to the nearer goal line; hash marks 2 ft long, every yard,
+ * inner ends 70 ft 9 in from the sidelines; sideline marks 2 ft long, 4 in in.
+ */
+function footballYardTicks(ez: number, W: number): Marking[] {
+  const out: Marking[] = [];
+  const hash = 70.75 * FT;
+  const len = 2 * FT;
+  const inset = 4 / 12 * FT;
+  for (let k = 1; k < 100; k++) {
+    if (k % 5 === 0) continue;
+    const x = ez + k * YD;
+    for (const [a, b] of [
+      [inset, inset + len],
+      [hash - len, hash],
+      [W - hash, W - hash + len],
+      [W - inset - len, W - inset],
+    ] as const)
+      out.push({ pts: [p2(x, a), p2(x, b)], tick: true });
+  }
+  return out;
+}
+function footballNumerals(ez: number, W: number): FieldNumeral[] {
+  const out: FieldNumeral[] = [];
+  for (let yd = 10; yd <= 90; yd += 10) {
+    const n = yd <= 50 ? yd : 100 - yd;
+    const x = ez + yd * YD;
+    const arrow: 1 | -1 | undefined = yd < 50 ? -1 : yd > 50 ? 1 : undefined;
+    out.push({ text: String(n), at: p2(x, 7 * YD), up: 1, arrow });
+    out.push({ text: String(n), at: p2(x, W - 7 * YD), up: -1, arrow });
+  }
+  return out;
+}
+
 function football(): VenueScene {
   const L = 120 * YD;
   const W = (160 / 3) * YD;
@@ -143,12 +181,23 @@ function football(): VenueScene {
     blurb: 'Cadence and calls where permitted, snap and contact, kicks — brief, moving sources; a midfield view is not coverage of the whole field.',
     play: rect(f),
     surface: 'grass',
+    zones: [
+      { pts: rect({ x0: 0, y0: 0, x1: ez, y1: W }), kind: 'endzone' },
+      { pts: rect({ x0: L - ez, y0: 0, x1: L, y1: W }), kind: 'endzone' },
+    ],
+    mowing: { x0: ez, w: 5 * YD },
+    numerals: footballNumerals(ez, W),
     markings: [
       { pts: rect(f), closed: true },
-      line(p2(ez, 0), p2(ez, W)),
-      line(p2(L - ez, 0), p2(L - ez, W)),
+      // The goal lines: 8 in wide, twice a yard line's 4 in.
+      { ...line(p2(ez, 0), p2(ez, W)), weight: 2 },
+      { ...line(p2(L - ez, 0), p2(L - ez, W)), weight: 2 },
       // A yard line every 5 yards between the goal lines (the 50 among them).
       ...Array.from({ length: 19 }, (_, k) => line(p2(ez + (k + 1) * 5 * YD, 0), p2(ez + (k + 1) * 5 * YD, W))),
+      // The yard marks between them, 2 ft long: the inbound lines (hash marks,
+      // inner ends 70 ft 9 in from each sideline — 18 ft 6 in apart, the
+      // crossbar's width) and the sideline marks (4 in in from each sideline).
+      ...footballYardTicks(ez, W),
       // The goalposts on the end lines: the crossbar, 18 ft 6 in wide.
       { ...line(p2(0, W / 2 - 2.82), p2(0, W / 2 + 2.82)), ink: 'yellow' as const },
       { ...line(p2(L, W / 2 - 2.82), p2(L, W / 2 + 2.82)), ink: 'yellow' as const },
@@ -170,7 +219,7 @@ function football(): VenueScene {
     badges: [],
     barriers: [],
     frame: { x0: -12, y0: -18, x1: L + 12, y1: W + 17 },
-    defaults: ['120 × 53⅓ yd field', 'end zones', 'sideline restricted area', 'team areas', 'crew lanes', 'camera', 'crowd', 'PA'],
+    defaults: ['120 × 53⅓ yd field', 'end zones', 'hash marks and yard numbers (NFL layout)', 'sideline restricted area', 'team areas', 'crew lanes', 'camera', 'crowd', 'PA'],
   };
 }
 

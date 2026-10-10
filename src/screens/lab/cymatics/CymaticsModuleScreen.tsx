@@ -46,7 +46,7 @@ export type CymaticsModuleProps = {
 };
 
 /** Modules that declare a Rack Unit (see rackLayout.tsx). */
-const RACK_MODULES = new Set<CymaticsModuleId>(['nodes', 'harmony', 'systems', 'change']);
+const RACK_MODULES = new Set<CymaticsModuleId>(['nodes', 'harmonics', 'harmony', 'systems', 'change']);
 
 const COMPONENTS: Record<CymaticsModuleId, (p: CymaticsModuleProps) => React.JSX.Element> = {
   intro: IntroModule,

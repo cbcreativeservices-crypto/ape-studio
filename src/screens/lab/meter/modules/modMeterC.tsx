@@ -569,8 +569,8 @@ export function ScopeModule(p: MeterModuleProps) {
   ];
 
   const bezel: BezelItem[] = [
-    // MODE cell taps to flip TIME ↔ X-Y (PK-HOLD-style tap cell).
-    { k: 'MODE', v: xy ? 'X-Y' : 'TIME', onPress: () => setXy((v) => !v), helpKey: 'lissajous' },
+    // Read-only (owner rule 2026-10-10): the X-Y dock key flips TIME ↔ X-Y.
+    { k: 'MODE', v: xy ? 'X-Y' : 'TIME', helpKey: 'lissajous' },
     { k: 'SIGNAL', v: xy ? '—' : sigLabel, helpKey: 'oscilloscope' },
     { k: 'CORR', v: xy ? `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` : '—', helpKey: 'lissajous' },
     { k: 'WIDTH', v: xy ? `${Math.round(widthV * 100)} %` : '—', helpKey: 'lissajous' },

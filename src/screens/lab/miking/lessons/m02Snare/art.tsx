@@ -97,7 +97,7 @@ export function snareLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'hihat', text: 'HI-HAT (ABOVE)', short: 'HI-HAT', u: NB.hihat.c.x - 60, v: NB.hihat.c.z - NB.hihat.d / 2 + 20, align: 'center', tone: 'muted' },
     { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: NB.crash1.c.x + 120, v: NB.crash1.c.z - 150, align: 'center', tone: 'muted' },
     { id: 'tom', text: 'RACK TOM', short: 'TOM', u: NB.tom1.c.x, v: NB.tom1.c.z + 175, align: 'center', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: -330, v: 200, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -330, v: 200, align: 'center', tone: 'muted', point: { u: -6000, v: 200 } },
   ];
 }
 

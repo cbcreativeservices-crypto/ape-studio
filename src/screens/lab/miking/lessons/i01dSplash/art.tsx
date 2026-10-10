@@ -16,7 +16,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, StickTo, stickFigureAt, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
 import { PiggybackSide, PiggybackTop, SplashArmSide, SplashArmTop } from '../shared/cymbals/CymbalFxArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
@@ -29,6 +29,18 @@ const isPig = (v: VariantId) => v === 'piggy';
 const C1 = KIT.cymbals.crash1;
 const C2 = KIT.cymbals.crash2;
 
+/** The stick as drawn, per view and setup (also the labels' occupancy). */
+function stickSeg(view: ViewId, variant: VariantId) {
+  if (isPig(variant)) {
+    return view === 'side'
+      ? { from: { x: STRIKE_PIG.x - 280, y: STRIKE_PIG.y - 230 }, to: { x: STRIKE_PIG.x - 4, y: STRIKE_PIG.y - 4 } }
+      : { from: { x: STRIKE_PIG.x - 250, y: STRIKE_PIG.z - 150 }, to: { x: STRIKE_PIG.x - 4, y: STRIKE_PIG.z } };
+  }
+  return view === 'side'
+    ? { from: { x: STRIKE_ARM.x - 280, y: STRIKE_ARM.y - 220 }, to: { x: STRIKE_ARM.x - 4, y: STRIKE_ARM.y - 4 } }
+    : { from: { x: STRIKE_ARM.x - 250, y: STRIKE_ARM.z + 120 }, to: { x: STRIKE_ARM.x - 4, y: STRIKE_ARM.z } };
+}
+
 export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   if (isPig(variant)) {
     const near: Partial<Record<KitPiece, number>> = { tom1: 0.4, kick: 0.5, holder: 0.5, tom2: 0.75, floor: 0.5, ride: 0.45 };
@@ -39,7 +51,7 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
           <PlateGlow c={PIGGY.c} tiltDeg={PIGGY.tiltDeg} R={R8} rise={PIGGY.spec.rise.mm} />
           <BoomStandSide id="crash2" />
           <PiggybackSide splash={PIGGY} swing />
-          <StickTo from={{ x: STRIKE_PIG.x - 280, y: STRIKE_PIG.y - 230 }} to={{ x: STRIKE_PIG.x - 4, y: STRIKE_PIG.y - 4 }} />
+          <StickTo {...stickSeg('side', variant)} />
         </Group>
       );
       return <KitAround view="side" show={around} own={own} ownZ={C2.c.z} />;
@@ -49,7 +61,7 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
         <KitAround view="top" show={around} />
         <BoomStandTop id="crash2" />
         <PiggybackTop splash={PIGGY} />
-        <StickTo from={{ x: STRIKE_PIG.x - 250, y: STRIKE_PIG.z - 150 }} to={{ x: STRIKE_PIG.x - 4, y: STRIKE_PIG.z }} />
+        <StickTo {...stickSeg('top', variant)} />
       </Group>
     );
   }
@@ -60,7 +72,7 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
       <Group>
         <PlateGlow c={ARM.c} tiltDeg={ARM.tiltDeg} R={R10} rise={ARM.spec.rise.mm} />
         <SplashArmSide place={ARM} swing />
-        <StickTo from={{ x: STRIKE_ARM.x - 280, y: STRIKE_ARM.y - 220 }} to={{ x: STRIKE_ARM.x - 4, y: STRIKE_ARM.y - 4 }} />
+        <StickTo {...stickSeg('side', variant)} />
       </Group>
     );
     return (
@@ -74,7 +86,7 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
     <Group>
       <KitAround view="top" show={around} />
       <SplashArmTop place={ARM} />
-      <StickTo from={{ x: STRIKE_ARM.x - 250, y: STRIKE_ARM.z + 120 }} to={{ x: STRIKE_ARM.x - 4, y: STRIKE_ARM.z }} />
+      <StickTo {...stickSeg('top', variant)} />
       <KitAround view="top" show={{ crash1: 0.42 }} />
     </Group>
   );
@@ -92,7 +104,7 @@ export function splashLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     }
     return [
       { id: 'splash', text: 'SPLASH ON THE CRASH', short: 'SPLASH', u: PIGGY.c.x, v: PIGGY.c.z + C2.d / 2 + 50, align: 'center' },
-      { id: 'player', text: '← PLAYER', u: PIGGY.c.x - 260, v: PIGGY.c.z - 280, align: 'center', tone: 'muted' },
+      { id: 'player', text: '← PLAYER', u: PIGGY.c.x - 260, v: PIGGY.c.z - 280, align: 'center', tone: 'muted', point: { u: -6000, v: PIGGY.c.z - 280 } },
     ];
   }
   const a = splashArmPoints();
@@ -101,15 +113,17 @@ export function splashLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'splash', text: '10 IN SPLASH', short: 'SPLASH', u: ARM.c.x - R10 - 30, v: ARM.c.y - 30, align: 'right' },
       { id: 'arm', text: 'ARM', u: (a.up.x + a.elbow.x) / 2, v: a.up.y + 34, align: 'center' },
       { id: 'clamp', text: 'CLAMP', u: a.clamp.x + 40, v: a.clamp.y + 10, align: 'left', tone: 'muted' },
-      { id: 'crash', text: '16 IN CRASH', short: 'CRASH', u: C1.c.x - 120, v: C1.c.y - 70, align: 'center', tone: 'muted' },
-      { id: 'tom', text: '10 IN TOM', short: 'TOM', u: KIT.drums.tom1.c.x + 30, v: KIT.drums.tom1.c.y + 130, align: 'center', tone: 'muted' },
+      // leaders to their parts, clear of the stick and the splash's leader
+      // (clash sweep 2026-10-10: the stick ran through this name)
+      { id: 'crash', text: '16 IN CRASH', short: 'CRASH', u: C1.c.x + 60, v: C1.c.y - 90, align: 'left', tone: 'muted', at: { u: C1.c.x + (C1.d / 2) * 0.5 * Math.cos(C1.tiltDeg * DEG), v: C1.c.y - (C1.d / 2) * 0.5 * Math.sin(C1.tiltDeg * DEG) } },
+      { id: 'tom', text: '10 IN TOM', short: 'TOM', u: KIT.drums.tom1.c.x + 30, v: KIT.drums.tom1.c.y + 130, align: 'center', tone: 'muted', at: { u: KIT.drums.tom1.c.x, v: KIT.drums.tom1.c.y + 60 } },
       { id: 'stick', text: 'STICK', u: STRIKE_ARM.x - 240, v: STRIKE_ARM.y - 250, align: 'center', tone: 'illustrative' },
     ];
   }
   return [
     { id: 'splash', text: 'SPLASH', u: ARM.c.x, v: ARM.c.z + R10 + 46, align: 'center' },
     { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: C1.c.x, v: C1.c.z - 120, align: 'center', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: ARM.c.x - 330, v: ARM.c.z + 200, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: ARM.c.x - 330, v: ARM.c.z + 200, align: 'center', tone: 'muted', point: { u: -6000, v: ARM.c.z + 200 } },
   ];
 }
 
@@ -141,6 +155,7 @@ export const SPLASH_ART: LessonArt = {
   Instrument: SplashArt,
   labels: splashLabels,
   hitTest: splashHitTest,
+  figureAt: stickFigureAt(stickSeg),
   plan: { own: 'cymbal.own' },
   SettingPlan: CymbalSettingPlan('splash'),
   pages: CYMBAL_PAGES,

@@ -67,6 +67,10 @@ function FloorLine({ u0, u1 }: { u0: number; u1: number }) {
   );
 }
 
+/** The sticks from above (the same strikes as the side views). */
+const RACK_STICK_TOP = { from: { x: TOM2.c.x - 330, y: TOM2.c.z + 90 }, to: { x: TOM2.c.x - 14, y: TOM2.c.z - 4 } };
+const FLOOR_STICK_TOP = { from: { x: FLOOR.c.x - 300, y: FLOOR.c.z - 120 }, to: { x: FLOOR.c.x - 14, y: FLOOR.c.z - 4 } };
+
 /** The stick, from the player's side to the strike at a drum's centre. */
 function stickTo(c: { x: number; y: number }) {
   return { from: { x: c.x - 360, y: c.y - 150 }, to: { x: c.x - 6, y: c.y - 9 } };
@@ -78,6 +82,9 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
       const st = stickTo(TOM2.c);
       return (
         <Group>
+          {/* the far crash's own stand (it hung in the air: clash sweep
+              2026-10-10), behind everything */}
+          <BoomStandSide foot={PLAN_HARDWARE.booms.crash1.u} top={C1.c.y + 140} cym={{ x: C1.c.x, y: C1.c.y }} floorY={FLOOR_Y} dim={0.25} />
           <BoomStandSide foot={PLAN_HARDWARE.booms.crash2.u} top={C2.c.y + 140} cym={{ x: C2.c.x, y: C2.c.y }} floorY={FLOOR_Y} dim={0.35} />
           <CymbalSide cx={C1.c.x} cy={C1.c.y} d={C1.d} tiltDeg={C1.tiltDeg} dim={0.55} />
           <CymbalSide cx={C2.c.x} cy={C2.c.y} d={C2.d} tiltDeg={C2.tiltDeg} dim={0.8} />
@@ -102,7 +109,7 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
         <Group transform={topTransform(TOM2)}>
           <DrumPlan drum={TOM2} />
         </Group>
-        <Stick from={{ x: TOM2.c.x - 330, y: TOM2.c.z + 90 }} to={{ x: TOM2.c.x - 14, y: TOM2.c.z - 4 }} />
+        <Stick from={RACK_STICK_TOP.from} to={RACK_STICK_TOP.to} />
         <CymbalPlan cx={C1.c.x} cz={C1.c.z} d={C1.d} tiltDeg={C1.tiltDeg} dim={0.42} />
         <CymbalPlan cx={C2.c.x} cz={C2.c.z} d={C2.d} tiltDeg={C2.tiltDeg} dim={0.42} />
       </Group>
@@ -129,7 +136,7 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
       <Group transform={topTransform(FLOOR)}>
         <DrumPlan drum={FLOOR} />
       </Group>
-      <Stick from={{ x: FLOOR.c.x - 300, y: FLOOR.c.z - 120 }} to={{ x: FLOOR.c.x - 14, y: FLOOR.c.z - 4 }} />
+      <Stick from={FLOOR_STICK_TOP.from} to={FLOOR_STICK_TOP.to} />
       <CymbalPlan cx={RIDE.c.x} cz={RIDE.c.z} d={RIDE.d} tiltDeg={RIDE.tiltDeg} dim={0.42} />
     </Group>
   );
@@ -150,12 +157,15 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       ];
     }
     return [
-      { id: 'tom2', text: '12 IN', u: TOM2.c.x, v: TOM2.c.z + 40, align: 'center' },
-      { id: 'tom1', text: '10 IN', u: TOM1.c.x, v: TOM1.c.z + 30, align: 'center' },
-      { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: C2.c.x + 60, v: C2.c.z - 10, align: 'center', tone: 'muted' },
-      { id: 'crash1', text: 'CRASH (ABOVE)', short: 'CRASH', u: C1.c.x + 60, v: C1.c.z + 150, align: 'center', tone: 'muted' },
-      { id: 'kick', text: 'KICK (BELOW)', short: 'KICK', u: 420, v: 240, align: 'center', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: -170, v: 300, align: 'center', tone: 'muted' },
+      // Each leader lands ON its part (clash sweep 2026-10-10: some pointed
+      // at empty glass); the player cue is an arrow only.
+      // (on the head above the stick: below centre it sat on the stick)
+      { id: 'tom2', text: '12 IN', u: TOM2.c.x + 20, v: TOM2.c.z - 70, align: 'center', at: { u: TOM2.c.x + 20, v: TOM2.c.z - 70 } },
+      { id: 'tom1', text: '10 IN', u: TOM1.c.x, v: TOM1.c.z + 30, align: 'center', at: { u: TOM1.c.x, v: TOM1.c.z + 30 } },
+      { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: C2.c.x + 60, v: C2.c.z - 10, align: 'center', tone: 'muted', at: { u: C2.c.x + 60, v: C2.c.z + C2.d * 0.3 } },
+      { id: 'crash1', text: 'CRASH (ABOVE)', short: 'CRASH', u: C1.c.x + 60, v: C1.c.z + 150, align: 'center', tone: 'muted', at: { u: C1.c.x + C1.d * 0.3, v: C1.c.z + C1.d * 0.15 } },
+      { id: 'kick', text: 'KICK (BELOW)', short: 'KICK', u: 420, v: 240, align: 'center', tone: 'muted', at: { u: 420, v: 200 } },
+      { id: 'player', text: '← PLAYER', u: -170, v: 300, align: 'center', tone: 'muted', point: { u: -1400, v: 300 } },
     ];
   }
   if (view === 'side') {
@@ -240,10 +250,17 @@ function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: numb
  *  the floor tom's legs — so the part labels keep off it too (label
  *  occupancy only; taps are unchanged). */
 export function tomsDrawnAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (view !== 'side') return false;
+  // From above: the stick (a name sat on it, clash sweep 2026-10-10).
+  if (view !== 'side') {
+    const st = isRack(variant) ? RACK_STICK_TOP : FLOOR_STICK_TOP;
+    return segDist(u, v, st.from, st.to) <= 9 + tol;
+  }
   if (isRack(variant)) {
     const st = stickTo(TOM2.c);
     if (segDist(u, v, st.from, st.to) <= 9 + tol) return true;
+    const foot1 = PLAN_HARDWARE.booms.crash1.u;
+    if (Math.abs(u - foot1) <= 20 + tol && v >= C1.c.y + 130) return true;
+    if (segDist(u, v, { x: foot1, y: C1.c.y + 140 }, { x: C1.c.x, y: C1.c.y + 24 }) <= 14 + tol) return true;
     const foot = PLAN_HARDWARE.booms.crash2.u;
     if (Math.abs(u - foot) <= 20 + tol && v >= C2.c.y + 130) return true;
     return segDist(u, v, { x: foot, y: C2.c.y + 140 }, { x: C2.c.x, y: C2.c.y + 24 }) <= 14 + tol;

@@ -1000,7 +1000,32 @@ export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarS
       // On the player's chest (the head may be cropped by the frame).
       const f = sc.fit;
       const chest = f.head.c.y + f.head.r * 0.92 + 70;
-      out.push({ id: 'player', text: 'PLAYER', u: f.head.c.x + 70, v: vIn(chest), align: 'center', tone: 'muted', alts: [{ u: f.head.c.x - 150, v: vIn(chest), align: 'center' }] });
+      // A label never sits ON the player (artLabels), so the words go off the
+      // body beside a shoulder with a leader to the chest — before, both
+      // places were on the chest, the label always fell to free space and
+      // its leader could run through another label (C05C, clash sweep
+      // 2026-10-10).
+      const pz = playerPoseOf(sc, 'side');
+      out.push({
+        id: 'player',
+        text: 'PLAYER',
+        // Beside the head, then beside a shoulder: words right next to the
+        // figure need no leader, so none is drawn (a leader from the chest
+        // ran through the NECK JOINT words on the ukulele).
+        u: f.head.c.x + f.head.r + 40,
+        v: vIn(f.head.c.y + f.head.r * 0.3),
+        align: 'left',
+        tone: 'muted',
+        alts: [
+          { u: pz.shoulderL.u + 70, v: vIn(pz.neck.v + 30), align: 'left' },
+          { u: pz.shoulderR.u - 70, v: vIn(pz.neck.v + 30), align: 'right' },
+          // At the frame's right edge, level with the collar (a small body —
+          // the ukulele — fills the shoulder places with part names).
+          ...(box ? [{ u: box.u1 - 8, v: vIn(pz.neck.v + 30), align: 'right' as const }] : []),
+          { u: f.head.c.x + 70, v: vIn(chest), align: 'center' },
+          { u: f.head.c.x - 150, v: vIn(chest), align: 'center' },
+        ],
+      });
     } else {
       out.push({ id: 'player', text: 'PLAYER', u: sc.fit.head.c.x, v: vIn(sc.fit.head.c.y + 40), align: 'center', tone: 'muted' });
     }
@@ -1008,11 +1033,24 @@ export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarS
     const D = g.depth;
     if (!lap) {
       const tz = sp.opening.kind === 'head' ? 'HEAD' : 'TOP';
-      out.push(partLabel('top', tz, undefined, { u: g.tail + 30, v: 0 }, [{ u: g.tail - 14, v: 0, align: 'right' }, { u: g.tail + 40, v: vIn(26), align: 'left' }, { u: g.tail + 40, v: vIn(80), align: 'left' }]));
-      out.push(partLabel('back', 'BACK', undefined, { u: g.tail + 30, v: -D }, [{ u: g.tail - 14, v: -D, align: 'right' }, { u: g.tail + 40, v: vIn(-D - 22), align: 'left' }], 'muted'));
+      // TOP and BACK beside the tail, one row apart: on a shallow body (a
+      // mandolin, a ukulele) the two rows collide, so each steps OUTWARD
+      // (TOP down, BACK up) before going anywhere else — the BACK leader ran
+      // across the TOP leader, or the whole neck and the fretting hand
+      // (clash sweep 2026-10-10).
+      // From above the player's keep-outs (lap, torso, feet) reach past the
+      // tail and labels keep off them (artLabels.occupancy), so the second
+      // places stand just beyond the nearest of them, the two rows a line
+      // apart.
+      const f = sc.fit;
+      const lx = Math.min(g.tail - 14, f.legs.min.x - 16, f.torso.min.x - 16, f.feet ? f.feet.min.x - 16 : Infinity);
+      out.push(partLabel('top', tz, undefined, { u: g.tail + 30, v: 0 }, [{ u: g.tail - 14, v: 0, align: 'right' }, { u: lx, v: vIn(12), align: 'right' }, { u: lx, v: vIn(44), align: 'right' }, { u: g.tail + 40, v: vIn(26), align: 'left' }, { u: g.tail + 40, v: vIn(80), align: 'left' }]));
+      // BACK names the back a little farther along than TOP names the top:
+      // when the layout has to set BACK below the instrument, its leader then
+      // passes clear of the end of TOP's leader instead of through it.
+      out.push(partLabel('back', 'BACK', undefined, { u: g.tail + 80, v: -D }, [{ u: g.tail - 14, v: -D, align: 'right' }, { u: lx, v: vIn(-D - 40), align: 'right' }, { u: lx, v: vIn(-D - 70), align: 'right' }, { u: g.tail + 40, v: vIn(-D - 22), align: 'left' }], 'muted'));
       const sx = (g.edge + g.L) / 2;
       out.push(partLabel('strings', 'STRINGS', undefined, { u: sx, v: g.h(sx) }, [{ u: sx, v: vIn(g.h(g.edge) + 26), align: 'center' }, { u: sx, v: vIn(-50), align: 'center' }, { u: sx, v: vIn(g.h(g.edge) + 96), align: 'center' }]));
-      const f = sc.fit;
       out.push({ id: 'player', text: 'PLAYER', u: f.head.c.x - f.head.r - 14, v: vIn(f.head.c.z), align: 'right', tone: 'muted', alts: [{ u: f.head.c.x + f.head.r + 14, v: vIn(f.head.c.z), align: 'left' }] });
       out.push({ id: 'audience', text: 'AUDIENCE ↓', short: '↓ AUDIENCE', u: box ? box.u1 - 20 : g.L + 60, v: box ? box.v1 - 22 : 560, align: 'right', tone: 'muted' });
     } else {

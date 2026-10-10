@@ -98,7 +98,7 @@ export function cowbellLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'bell', text: 'COWBELL', u: s.c.x + (s.ax.x > 0 ? 0 : 20), v: s.c.y + BELL_DIMS.mouthH.mm / 2 - 180, align: 'center', at: { u: s.c.x, v: s.c.y } },
     { id: 'mouth', text: 'MOUTH', u: mouth.x + (s.ax.x > 0 ? 24 : -24), v: s.c.y + 4, align: s.ax.x > 0 ? 'left' : 'right', tone: 'muted' },
     { id: 'stick', text: 'STICK', u: (s.stick.hand.x + s.stick.tip.x) / 2, v: (s.stick.hand.y + s.stick.tip.y) / 2 - 40, align: 'left', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -800, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -800, align: 'center', tone: 'muted', point: { u: -6000, v: -800 } },
   ];
   if (s.id === 'mounted') out.push({ id: 'mount', text: 'CLAMP · STAND', u: s.c.x + L / 2 + 50, v: s.c.y + 160, align: 'left', tone: 'illustrative' });
   return out;

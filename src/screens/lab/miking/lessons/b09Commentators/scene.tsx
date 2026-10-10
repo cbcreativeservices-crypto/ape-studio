@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { ArmClamp, Desk, Laptop, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { ArmClamp, Desk, DeskNearLegs, Laptop, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
 import { BoothWindow, CrowdStand, SeatedHolding } from '../shared/broadcast/SportSpeechArt';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
@@ -40,6 +40,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
         {/* The analyst sits beside the commentator, nearer the viewer: from
             the side they would cover the commentator — shown from above. */}
         {open || holding ? <SeatedHolding view="side" t={CALLER} phones /> : <SeatedTalker view="side" t={CALLER} phones headless={headless} />}
+        <DeskNearLegs box={DESK} floor={SEATED_FLOOR} />
       </Group>
     );
   }
@@ -80,11 +81,11 @@ export function b09Labels(view: ViewId, variant: VariantId): ArtLabel[] {
   }
   const out: ArtLabel[] = [
     { id: 'v.mouth', text: 'MOUTH', u: 160, v: -200, align: 'left', at: { u: 2, v: 0 }, alts: [{ u: 160, v: 200, align: 'left' }] },
-    { id: 'b9.notes', text: 'NOTES', u: NOTES.x, v: NOTES.z - 220, align: 'center', tone: 'muted', at: { u: NOTES.x, v: NOTES.z - 120 } },
+    { id: 'b9.notes', text: 'NOTES', u: NOTES.x, v: NOTES.z - 220, align: 'center', tone: 'muted', at: { u: NOTES.x, v: NOTES.z - 120 }, alts: [{ u: NOTES.x + 260, v: NOTES.z - 60, align: 'left' }] },
     { id: 'b9.crowd', text: open ? 'CROWD' : 'THE FIELD', u: FRONT_X + 700, v: open ? 700 : DESK.max.z + 160, align: 'center', tone: 'muted' },
   ];
   if (open) out.push({ id: 'b9.pa', text: 'PA CLUSTER', short: 'PA', u: PA_C.x, v: PA_C.z + 420, align: 'center', at: { u: PA_C.x, v: PA_C.z + 200 } });
-  if (!open) out.push({ id: 'b9.screen', text: 'SCREEN', u: SCREEN.x + 30, v: SCREEN.z - 290, align: 'center', tone: 'muted', at: { u: SCREEN.x, v: SCREEN.z - 170 } });
+  if (!open) out.push({ id: 'b9.screen', text: 'SCREEN', u: SCREEN.x + 30, v: SCREEN.z - 290, align: 'center', tone: 'muted', at: { u: SCREEN.x, v: SCREEN.z - 170 }, alts: [{ u: SCREEN.x + 240, v: SCREEN.z, align: 'left' }] });
   if (b) out.push({ id: 'b9B.head', text: 'ANALYST', u: ANALYST.lip.x - 120, v: ANALYST.lip.z + 330, align: 'center', at: { u: ANALYST.lip.x + HEAD_C.x, v: ANALYST.lip.z } });
   return out;
 }

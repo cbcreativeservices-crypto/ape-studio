@@ -137,7 +137,7 @@ export function maracasLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'head', text: 'HEADS (SEEDS INSIDE)', short: 'HEADS', u: R.head.x + 55, v: R.head.y - 20, align: 'left' },
     { id: 'handle', text: 'HANDLE', u: R.head.x + 40, v: R.head.y + HH / 2 + 130, align: 'left', tone: 'muted' },
     { id: 'arc', text: '↶ THE STROKE', short: '↶', u: R.head.x, v: R.head.y - 125, align: 'center', tone: 'illustrative' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted', point: { u: -6000, v: -900 } },
   ];
   if (s.id === 'singer') out.push({ id: 'vocal', text: 'VOCAL MIC', u: VOCAL.front.x + 60, v: VOCAL.front.y - 60, align: 'left', tone: 'illustrative' });
   return out;

@@ -66,7 +66,10 @@ function facadeLabels(): ArtLabel[] {
   const P = DIVISIONS.pedal;
   return [
     { id: 'swell', text: 'SWELL · SHUTTERS', short: 'SWELL', u: 0, v: DIVISIONS.swell.y0 - 500, align: 'center', at: { u: 0, v: DIVISIONS.swell.y0 + 200 } },
-    { id: 'great', text: 'GREAT', u: 0, v: -3150, align: 'center', tone: 'muted' },
+    // In the dark bay left of the Great's flat, a short leader into its pipes
+    // (clash sweep 2026-10-10: the words sat on the impost moulding under the
+    // pipe feet, grey on gilt).
+    { id: 'great', text: 'GREAT', u: -1680, v: -4300, align: 'right', tone: 'muted', at: { u: -1100, v: -4300 } },
     { id: 'pedalL', text: 'PEDAL', u: -(P.z0 + P.z1) / 2, v: -500, align: 'center', tone: 'muted' },
     { id: 'pedalR', text: 'PEDAL', u: (P.z0 + P.z1) / 2, v: -500, align: 'center', tone: 'muted' },
     { id: 'positive', text: 'POSITIVE', u: 0, v: 400, align: 'center', at: { u: 0, v: -1000 } },

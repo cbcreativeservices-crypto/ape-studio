@@ -279,7 +279,7 @@ export function StickSvg({ x, y, deg, len, k }: { x: number; y: number; deg: num
  * rods at their true angles (`lugs` per head from `phaseDeg`, foreshortened).
  * `yHead` is the batter head plane; the resonant head is D mm below.
  */
-export function ExteriorDrum({ cx, yHead, dIn, depthIn, k, lugs, phaseDeg, legs = 0, mount = null }: { cx: number; yHead: number; dIn: number; depthIn: number; k: number; lugs: number; phaseDeg: number; legs?: number; mount?: { from: [number, number]; to: [number, number] } | null }) {
+export function ExteriorDrum({ cx, yHead, dIn, depthIn, k, lugs, phaseDeg, legs = 0, mount = null }: { cx: number; yHead: number; dIn: number; depthIn: number; k: number; lugs: number; phaseDeg: number; legs?: number; mount?: { from: [number, number]; to: [number, number]; floorV?: number } | null }) {
   const R = (dIn * 25.4) / 2;
   const D = depthIn * 25.4;
   const X = (mm: number) => cx + mm * k;
@@ -309,6 +309,8 @@ export function ExteriorDrum({ cx, yHead, dIn, depthIn, k, lugs, phaseDeg, legs 
       );
     }
   }
+  // the stand's floor under the rack tom's arm (mm below the head)
+  const fv = mount?.floorV;
   const legEls: ReactNode[] = [];
   if (legs > 0) {
     // Floor-tom legs: Ø 10.5 mm, from brackets ≈ 30 % down the shell, splayed
@@ -341,6 +343,22 @@ export function ExteriorDrum({ cx, yHead, dIn, depthIn, k, lugs, phaseDeg, legs 
           <Line x1={X(mount.from[0])} y1={Y(mount.from[1])} x2={X(mount.to[0])} y2={Y(mount.to[1])} stroke="#2a2c32" strokeWidth={16 * k} strokeLinecap="round" />
           <Line x1={X(mount.from[0])} y1={Y(mount.from[1])} x2={X(mount.to[0])} y2={Y(mount.to[1])} stroke="#a3a8b2" strokeWidth={10.5 * k} strokeLinecap="round" />
           <Rect x={X(mount.from[0] - 22)} y={Y(mount.from[1] - 22)} width={44 * k} height={44 * k} rx={6 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
+          {fv != null ? (
+            <G>
+              {/* the arm's clamp on a stand (Ø 25 tube to a tripod on the
+                  floor): the tom never hangs in the air (clash sweep 2026-10-10) */}
+              <Line x1={X(mount.to[0])} y1={Y(mount.to[1] - 40)} x2={X(mount.to[0])} y2={Y(fv - 4)} stroke="#2a2c32" strokeWidth={30 * k} strokeLinecap="round" />
+              <Line x1={X(mount.to[0])} y1={Y(mount.to[1] - 40)} x2={X(mount.to[0])} y2={Y(fv - 4)} stroke="#a3a8b2" strokeWidth={24 * k} strokeLinecap="round" />
+              {[-1, 1].map((sd) => (
+                <G key={sd}>
+                  <Line x1={X(mount.to[0])} y1={Y(fv - 70)} x2={X(mount.to[0] + sd * 62)} y2={Y(fv - 5)} stroke="#2a2c32" strokeWidth={14 * k} strokeLinecap="round" />
+                  <Line x1={X(mount.to[0])} y1={Y(fv - 70)} x2={X(mount.to[0] + sd * 62)} y2={Y(fv - 5)} stroke="#a3a8b2" strokeWidth={9 * k} strokeLinecap="round" />
+                  <Rect x={X(mount.to[0] + sd * 62 - 9)} y={Y(fv - 10)} width={18 * k} height={10 * k} rx={3 * k} fill="#141518" />
+                </G>
+              ))}
+              <Rect x={X(mount.to[0] - 24)} y={Y(mount.to[1] - 30)} width={48 * k} height={56 * k} rx={6 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
+            </G>
+          ) : null}
         </G>
       ) : null}
       {parts}

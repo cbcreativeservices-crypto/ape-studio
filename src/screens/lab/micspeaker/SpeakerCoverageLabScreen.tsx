@@ -290,14 +290,8 @@ export function SpeakerCoverageLabScreen() {
         k: 'EDIT',
         v: fillsTarget ? 'FILLS' : `SPK ${spkEditable2 ? 2 : 1}`,
         helpKey: 'second_speaker',
-        // Tap to cycle the slider through whatever is on stage.
-        onPress:
-          twoOn || fills
-            ? () =>
-                setEditTarget((t) =>
-                  t === 'spk1' ? (twoOn ? 'spk2' : 'fills') : t === 'spk2' && fills ? 'fills' : 'spk1',
-                )
-            : undefined,
+        // Read-only (owner rule 2026-10-10): the SPKR 1 / SPKR 2 / FILLS dock
+        // keys choose what the slider edits.
       },
       {
         k: 'POS',

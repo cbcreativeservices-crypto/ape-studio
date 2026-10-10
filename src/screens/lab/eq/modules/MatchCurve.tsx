@@ -155,27 +155,25 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       formatShort: () => `Q${sel.q.toFixed(1)}`,
     },
     { kind: 'action', id: 'score', label: showScore ? 'HIDE' : 'SCORE', onPress: () => setShowScore((v) => !v) },
+    // Level 5 gives two bands: the BAND key steps which one the faders edit
+    // (was a tap on the BAND bezel cell — owner rule 2026-10-10: the bezel is
+    // read-only; controls dock).
+    ...(bands.length > 1
+      ? ([{ kind: 'action', id: 'band', label: `BAND ${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}`, onPress: () => setSelIdx((i) => (i + 1) % bands.length) }] satisfies DockParam[])
+      : []),
     { kind: 'action', id: 'new', label: 'NEW', onPress: newTarget },
   ];
 
   const bezel: BezelItem[] = [
-    // The check-yourself toggle: tap the MATCH window to reveal/hide the score.
+    // The score (read-only — the SCORE / HIDE dock key reveals or hides it;
+    // owner rule 2026-10-10).
     {
       k: 'MATCH',
       v: showScore ? `${live}%` : 'HIDDEN',
       tint: showScore ? (live >= 90 ? colors.green : undefined) : '#7a7f8a',
-      onPress: () => setShowScore((v) => !v),
     },
     { k: 'BANDS', v: String(target.length) },
-    ...(bands.length > 1
-      ? [
-          {
-            k: 'BAND',
-            v: `${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}`,
-            onPress: () => setSelIdx((i) => (i + 1) % bands.length),
-          },
-        ]
-      : []),
+    ...(bands.length > 1 ? [{ k: 'BAND', v: `${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}` }] : []),
   ];
 
   return (
@@ -199,7 +197,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
         <Text style={styles.body}>
           Recreate the dim TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
           required — this is pure understanding of frequency, gain and Q.
-          {bands.length > 1 ? ' Tap the BAND window on the bezel to switch bands.' : ''}
+          {bands.length > 1 ? ' Tap the BAND key to switch bands.' : ''}
         </Text>
         <Text style={styles.honest}>
           Target uses {target.length} hidden band{target.length > 1 ? 's' : ''} — you have the same

@@ -261,6 +261,10 @@ function MembraneStudio() {
   const viz = skiaAvailable ? requireVizMembrane() : null;
   const note = nearestNote(freq);
 
+  // The nearest driven mode (drum view) — the FREQ tray's LAND ON button.
+  const drivenModes = isSpeaker ? [] : modes.filter((m) => m.drive > 0.05);
+  const nearestDriven = drivenModes.length ? drivenModes.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)) : null;
+
   // ── dock ─────────────────────────────────────────────────────────────────
   const modeOptions = isSpeaker
     ? [
@@ -296,6 +300,9 @@ function MembraneStudio() {
           const o = modeOptions.find((x) => x.id === id);
           if (o) land(o.hz);
         },
+        // Land on the nearest driven mode — was a tap on the RESPONSE bezel
+        // cell (owner rule 2026-10-10: the bezel is read-only; controls dock).
+        onReset: nearestDriven && st.strength <= 0.5 ? { label: `LAND ON ${nearestDriven.label.split(' · ')[0]} · ${formatHz(nearestDriven.hz)}`, onPress: () => land(nearestDriven.hz) } : undefined,
       },
     },
     {
@@ -435,8 +442,8 @@ function MembraneStudio() {
         { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
         { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2 },
         { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes' },
-        // Tap the cell to land on the nearest driven mode (the bezel-cell verb).
-        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance', onPress: ex.length && st.strength <= 0.5 ? () => land(ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).hz) : undefined },
+        // Read-only (owner rule 2026-10-10): LAND ON is in the FREQ tray.
+        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance' },
       ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());

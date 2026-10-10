@@ -23,7 +23,7 @@
  *   KeepOutRegion   a hatched "never mount here" region (a helmet, pads).
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, PathOp, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Paint, Path, PathOp, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { Shape3, Vec3, ViewId } from '../../../engine/model/types.ts';
 import { FigureMass, PlayerBehind, PlayerInFront, figureCovers, handShape } from '../players/PlayerFigure';
 import { Headphones, OnTalker, talkerPose } from './BroadcastArt';
@@ -77,8 +77,10 @@ function KeptHand({ pose, arm }: { pose: PlayerPose; arm: 'R' | 'L' }) {
 export function StandingTalker({ view, t, phones = false, headless = false, arm, dim = 1 }: { view: ViewId; t: Stander; phones?: boolean; headless?: boolean; arm?: 'R' | 'L'; dim?: number }) {
   const poses = standingPoses(t, { headless, arm });
   const pose = view === 'side' ? poses.side : poses.top;
+  // A faded talker is faded as ONE layer: no part shows through another
+  // (clash sweep 2026-10-10).
   return (
-    <Group opacity={dim}>
+    <Group layer={dim < 1 ? <Paint opacity={dim} /> : undefined}>
       <PlayerBehind pose={pose} />
       <PlayerInFront pose={pose} hands={view === 'side' && !arm} />
       {arm && view === 'side' ? <KeptHand pose={pose} arm={arm} /> : null}
@@ -491,7 +493,7 @@ export function HeldArmArt({ view, shoulder, p, aim, len, dim = 1 }: { view: Vie
   }, [shoulder.x, shoulder.y, shoulder.z, e.x, e.y, e.z, f.x, f.y, f.z, view]); // eslint-disable-line react-hooks/exhaustive-deps
   const fc = uv(f);
   return (
-    <Group opacity={dim}>
+    <Group layer={dim < 1 ? <Paint opacity={dim} /> : undefined}>
       <Path path={path} style="stroke" strokeWidth={96} strokeCap="round" strokeJoin="round" color="#12151c" />
       <Path path={path} style="stroke" strokeWidth={90} strokeCap="round" strokeJoin="round" color="#55617b" />
       <Group transform={[{ translateX: -6 }, { translateY: -9 }]}>

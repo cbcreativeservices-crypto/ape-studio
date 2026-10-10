@@ -213,21 +213,20 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
       // "Try a new signal" = the round reset, in-container (reset-in-container rule).
       onReset: { label: 'NEW SIGNAL', onPress: () => newRound(level) },
     },
+    // Level 5 gives two bands: the BAND key steps which one the faders edit
+    // (was a tap on the BAND bezel cell — owner rule 2026-10-10: the bezel is
+    // read-only; controls dock).
+    ...(bands.length > 1
+      ? ([{ kind: 'action', id: 'band', label: `BAND ${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}`, onPress: () => setSelIdx((i) => (i + 1) % bands.length) }] satisfies DockParam[])
+      : []),
     { kind: 'action', id: 'check', label: 'CHECK', onPress: () => setVerdict(judge(hidden, bands)) },
   ];
 
   const bezel: BezelItem[] = [
     { k: 'LVL', v: String(level) },
-    // Level 5 gives two bands — the BAND window is the switcher (tap cycles).
-    ...(bands.length > 1
-      ? [
-          {
-            k: 'BAND',
-            v: `${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}`,
-            onPress: () => setSelIdx((i) => (i + 1) % bands.length),
-          },
-        ]
-      : []),
+    // Level 5 gives two bands — which one the faders edit (read-only; the
+    // BAND dock key switches).
+    ...(bands.length > 1 ? [{ k: 'BAND', v: `${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}` }] : []),
     {
       k: 'RESULT',
       v: verdict ? (verdict.pass ? 'PASS' : 'MISS') : '—',
@@ -257,7 +256,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         <Text style={styles.body}>
           Something is wrong with this signal. Ride the FREQ / GAIN / Q lanes to match the amber
           spectrum back onto the dim reference — then CHECK.
-          {bands.length > 1 ? ' Tap the BAND window on the bezel to switch bands.' : ''}
+          {bands.length > 1 ? ' Tap the BAND key to switch bands.' : ''}
         </Text>
 
         {eqAuditionAvailable() ? (

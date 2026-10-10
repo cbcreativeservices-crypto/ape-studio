@@ -8,7 +8,8 @@ import { CABINETS, SPEAKER_12, type CabKind } from './speakerModel.ts';
 import { cabDraw, cutDrivers, frontDrivers, speakerSection, type Back } from './cabGeometry.ts';
 
 export type CabView = 'side' | 'top' | 'front';
-export type CabLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative'; at?: { u: number; v: number } };
+type CabAlign = 'left' | 'center' | 'right';
+export type CabLabel = { id: string; text: string; short?: string; u: number; v: number; align: CabAlign; tone?: 'muted' | 'illustrative'; at?: { u: number; v: number }; alts?: { u: number; v: number; align: CabAlign }[] };
 
 export function cabLabels(kind: CabKind, back: Back, view: CabView): CabLabel[] {
   const c = cabDraw(kind, back);
@@ -30,9 +31,16 @@ export function cabLabels(kind: CabKind, back: Back, view: CabView): CabLabel[] 
   const out: CabLabel[] = [
     { id: 'grille', text: 'GRILLE CLOTH', short: 'GRILLE', u: c.grilleX + 14, v: Math.min(v1 - 40, s.rCut + 48), align: 'left' },
     // Behind the cabinet, a leader to the magnet: a label inside the box sits on the cabinet's air.
-    { id: 'speaker', text: 'SPEAKER', u: c.box.x0 - 14, v: (v0 + v1) / 2 - 60, align: 'right', tone: 'muted', at: { u: s.xMagnetBack, v: 0 } },
-    { id: 'back', text: back === 'open' ? 'OPEN BACK' : 'CLOSED BACK', short: back === 'open' ? 'OPEN' : 'BACK', u: c.box.x0 - 14, v: (v0 + v1) / 2 + 60, align: 'right', tone: 'muted' },
-    { id: 'axis', text: 'CONE AXIS', u: 820, v: -26, align: 'right', tone: 'illustrative' },
+    // CLASH SWEEP 2026-10-10 (owner at 3×): at a small drawing scale 14 mm
+    // behind the back panel is inside the words' air, so both labels fell to
+    // free space IN FRONT — SPEAKER on the mic, its arrow and the suggested
+    // starting points. Each now steps farther out behind the box first.
+    { id: 'speaker', text: 'SPEAKER', u: c.box.x0 - 14, v: (v0 + v1) / 2 - 60, align: 'right', tone: 'muted', at: { u: s.xMagnetBack, v: 0 }, alts: [{ u: c.box.x0 - 40, v: (v0 + v1) / 2 - 60, align: 'right' }, { u: c.box.x0 - 40, v: v0 + 40, align: 'right' }] },
+    { id: 'back', text: back === 'open' ? 'OPEN BACK' : 'CLOSED BACK', short: back === 'open' ? 'OPEN' : 'BACK', u: c.box.x0 - 14, v: (v0 + v1) / 2 + 60, align: 'right', tone: 'muted', alts: [{ u: c.box.x0 - 40, v: (v0 + v1) / 2 + 60, align: 'right' }, { u: c.box.x0 - 40, v: v1 - 40, align: 'right' }] },
+    // Off the stand: in the section the boom runs at or just above the axis
+    // (the words go under it); from above a tripod leg runs out under the
+    // axis, so the words go well above the boom and its counterweight.
+    { id: 'axis', text: 'CONE AXIS', u: 820, v: view === 'top' ? -64 : 30, align: 'right', tone: 'illustrative' },
   ];
   if (view === 'side') out.push({ id: 'floor', text: 'FLOOR', u: 980, v: c.floorY - 22, align: 'right', tone: 'illustrative' });
   return out;

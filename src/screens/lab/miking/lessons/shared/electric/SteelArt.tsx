@@ -308,7 +308,14 @@ function SteelSide({ hi }: { hi: string | null }) {
  * seat (a steel player's seat case ≈ 440 × 300). */
 /** The pedal steel itself from above (no seat or pedals): also drawn in the
  *  backline plan. Local frame as SteelTop. */
-export function SteelBodyTop({ barAt = null }: { barAt?: number | null }) {
+/** A 180° turn (owner 2026-10-10: a face-on necked instrument reads body
+ *  left, head right, as the audience sees it) also turns the light: these
+ *  put the lit end of a gradient and the drop shadow back where the light
+ *  comes from on SCREEN (upper left) when the drawing sits inside the turn. */
+const lin = (turned: boolean, a: ReturnType<typeof vec>, b: ReturnType<typeof vec>) => (turned ? { start: b, end: a } : { start: a, end: b });
+const about = (turned: boolean, c: { u: number; v: number }, mid: { u: number; v: number }) => (turned ? vec(2 * mid.u - c.u, 2 * mid.v - c.v) : vec(c.u, c.v));
+
+export function SteelBodyTop({ barAt = null, turned = false }: { barAt?: number | null; turned?: boolean }) {
   const body = rr(0, -DEPTH / 2, LEN, DEPTH / 2, 14);
   const board = rr(STEEL.nutU - 6, -78, STEEL.changerU - 30, 78, 4);
   const markers = make();
@@ -338,16 +345,16 @@ export function SteelBodyTop({ barAt = null }: { barAt?: number | null }) {
   // The near (player's) side: the pedal bar and pedals under, the seat, the legs zone.
   return (
     <Group>
-      <Path path={rr(10, -DEPTH / 2 + 14, LEN + 20, DEPTH / 2 + 18, 18)} color="#000" opacity={0.5}>
+      <Path path={turned ? rr(-20, -DEPTH / 2 - 18, LEN - 10, DEPTH / 2 - 14, 18) : rr(10, -DEPTH / 2 + 14, LEN + 20, DEPTH / 2 + 18, 18)} color="#000" opacity={0.5}>
         <BlurMask blur={14} style="normal" />
       </Path>
       <Path path={body}>
-        <RadialGradient c={vec(LEN * 0.3, -DEPTH * 0.4)} r={LEN * 0.9} colors={['#c98b4a', '#8a5426', '#4a2a10']} />
+        <RadialGradient c={about(turned, { u: LEN * 0.3, v: -DEPTH * 0.4 }, { u: LEN / 2, v: 0 })} r={LEN * 0.9} colors={['#c98b4a', '#8a5426', '#4a2a10']} />
       </Path>
       <Path path={body} style="stroke" strokeWidth={2.4} color="#f2c9a0" opacity={0.18} />
       <Path path={body} style="stroke" strokeWidth={1.2} color={EL.ink} />
       <Path path={board}>
-        <LinearGradient start={vec(0, -78)} end={vec(0, 78)} colors={['#2a2b30', '#16171a', '#0b0b0d']} />
+        <LinearGradient {...lin(turned, vec(0, -78), vec(0, 78))} colors={['#2a2b30', '#16171a', '#0b0b0d']} />
       </Path>
       <Path path={markers} style="stroke" strokeWidth={1.4} color="#d6d9df" opacity={0.75} />
       {dots.map((d, i) =>
@@ -365,29 +372,29 @@ export function SteelBodyTop({ barAt = null }: { barAt?: number | null }) {
         <Group key={`k${i}`}>
           <Line p1={vec(k.u + 6, k.v)} p2={vec(-30, k.v)} color="#9aa0ab" strokeWidth={3} />
           <Path path={rr(k.u - 8, k.v - 6, k.u + 6, k.v + 6, 4)}>
-            <LinearGradient start={vec(k.u - 8, k.v - 6)} end={vec(k.u + 6, k.v + 6)} colors={['#f2f4f8', '#9aa0ab', '#3a3d45']} />
+            <LinearGradient {...lin(turned, vec(k.u - 8, k.v - 6), vec(k.u + 6, k.v + 6))} colors={['#f2f4f8', '#9aa0ab', '#3a3d45']} />
           </Path>
         </Group>
       ))}
       <Path path={keyhead}>
-        <LinearGradient start={vec(-30, -92)} end={vec(40, 92)} colors={[...EL.chrome]} />
+        <LinearGradient {...lin(turned, vec(-30, -92), vec(40, 92))} colors={[...EL.chrome]} />
       </Path>
       <Path path={keyhead} style="stroke" strokeWidth={1} color={EL.ink} />
       {posts.map((p, i) => (
         <Circle key={`po${i}`} cx={p.u} cy={p.v} r={4} color="#2a2c32" />
       ))}
       <Path path={nut}>
-        <LinearGradient start={vec(0, -74)} end={vec(0, 74)} colors={['#f2f4f8', '#9aa0ab', '#5d616c']} />
+        <LinearGradient {...lin(turned, vec(0, -74), vec(0, 74))} colors={['#f2f4f8', '#9aa0ab', '#5d616c']} />
       </Path>
       <Path path={pickup}>
-        <LinearGradient start={vec(0, -82)} end={vec(0, 82)} colors={[...EL.pickup]} />
+        <LinearGradient {...lin(turned, vec(0, -82), vec(0, 82))} colors={[...EL.pickup]} />
       </Path>
       <Path path={pickup} style="stroke" strokeWidth={1} color="#5d616c" />
       {poles.map((v, i) => (
         <Circle key={`pl${i}`} cx={STEEL.pickupU} cy={v} r={2.6} color="#9aa0ab" />
       ))}
       <Path path={changer}>
-        <LinearGradient start={vec(LEN - 60, -96)} end={vec(LEN + 24, 96)} colors={[...EL.chrome]} />
+        <LinearGradient {...lin(turned, vec(LEN - 60, -96), vec(LEN + 24, 96))} colors={[...EL.chrome]} />
       </Path>
       <Path path={changer} style="stroke" strokeWidth={1} color={EL.ink} />
       <Path path={fingers} color="#5d616c" />
@@ -395,11 +402,11 @@ export function SteelBodyTop({ barAt = null }: { barAt?: number | null }) {
       <Path path={strings} style="stroke" strokeWidth={1.3} color={EL.string} />
       {bar ? (
         <>
-          <Path path={rr((barAt ?? 0) - 9, -96, (barAt ?? 0) + 15, 104, 12)} color="#000" opacity={0.35}>
+          <Path path={turned ? rr((barAt ?? 0) - 15, -104, (barAt ?? 0) + 9, 96, 12) : rr((barAt ?? 0) - 9, -96, (barAt ?? 0) + 15, 104, 12)} color="#000" opacity={0.35}>
             <BlurMask blur={5} style="normal" />
           </Path>
           <Path path={bar}>
-            <LinearGradient start={vec((barAt ?? 0) - 11, 0)} end={vec((barAt ?? 0) + 11, 0)} colors={['#4a4e57', '#f2f4f8', '#9aa0ab', '#3a3d45']} positions={[0, 0.3, 0.65, 1]} />
+            <LinearGradient {...lin(turned, vec((barAt ?? 0) - 11, 0), vec((barAt ?? 0) + 11, 0))} colors={['#4a4e57', '#f2f4f8', '#9aa0ab', '#3a3d45']} positions={[0, 0.3, 0.65, 1]} />
           </Path>
           <Path path={bar} style="stroke" strokeWidth={1} color={EL.ink} />
         </>
@@ -408,7 +415,7 @@ export function SteelBodyTop({ barAt = null }: { barAt?: number | null }) {
   );
 }
 
-function SteelTop({ hi, barAt }: { hi: string | null; barAt: number | null }) {
+function SteelTop({ hi, barAt, turned = false }: { hi: string | null; barAt: number | null; turned?: boolean }) {
   const rack = rr(STEEL.legsU[0], DEPTH / 2 + 60, STEEL.legsU[1], DEPTH / 2 + 84, 12);
   const pedals = STEEL.pedalsU.map((u) => rr(u - 23, DEPTH / 2 + 84, u + 23, DEPTH / 2 + 240, 8));
   const seat = rr(270, DEPTH / 2 + 300, 710, DEPTH / 2 + 600, 40);
@@ -448,12 +455,12 @@ function SteelTop({ hi, barAt }: { hi: string | null; barAt: number | null }) {
         </Group>
       ))}
       <Path path={seat}>
-        <RadialGradient c={vec(420, DEPTH / 2 + 380)} r={320} colors={['#4b3a2c', '#2a2018', '#15100c']} />
+        <RadialGradient c={about(turned, { u: 420, v: DEPTH / 2 + 380 }, { u: 490, v: DEPTH / 2 + 450 })} r={320} colors={['#4b3a2c', '#2a2018', '#15100c']} />
       </Path>
       <Path path={seatSeam} style="stroke" strokeWidth={2} color="#6b5440" opacity={0.6}>
         <DashPathEffect intervals={[8, 6]} />
       </Path>
-      <SteelBodyTop barAt={barAt} />
+      <SteelBodyTop barAt={barAt} turned={turned} />
       {hiPath ? <Path path={hiPath} style="stroke" strokeWidth={5} color={AMBER} /> : null}
     </Group>
   );
@@ -466,7 +473,7 @@ function SteelTop({ hi, barAt }: { hi: string | null; barAt: number | null }) {
  * the sides), a bone nut, a fretboard plate with fret lines and markers, a
  * single-coil pickup with six poles, a through-body bridge/tailpiece, volume
  * and tone knobs Ø24 on the near side, the bar resting at the 7th fret. */
-function LapTop({ hi }: { hi: string | null }) {
+function LapTop({ hi, turned = false }: { hi: string | null; turned?: boolean }) {
   const s = LAP_STEEL;
   const len = s.bodyLen;
   const Ls = s.scale.mm;
@@ -528,20 +535,22 @@ function LapTop({ hi }: { hi: string | null }) {
           <DashPathEffect intervals={[14, 10]} />
         </Path>
       ))}
-      <Path path={body} color="#000" opacity={0.5}>
-        <BlurMask blur={12} style="normal" />
-      </Path>
+      <Group transform={[{ translateX: turned ? -10 : 10 }, { translateY: turned ? -14 : 14 }]}>
+        <Path path={body} color="#000" opacity={0.5}>
+          <BlurMask blur={12} style="normal" />
+        </Path>
+      </Group>
       {/* Tuners: the keys stand out to the sides of the head. */}
       {tuners.map((t, i) => (
         <Group key={`t${i}`}>
           <Line p1={vec(t.u, t.v)} p2={vec(t.u, t.v + t.side * 16)} color="#9aa0ab" strokeWidth={3} />
           <Path path={rr(t.u - 7, t.v + t.side * 14 - 6, t.u + 7, t.v + t.side * 14 + 8, 4)}>
-            <LinearGradient start={vec(t.u - 7, 0)} end={vec(t.u + 7, 0)} colors={['#f2f4f8', '#9aa0ab', '#3a3d45']} />
+            <LinearGradient {...lin(turned, vec(t.u - 7, 0), vec(t.u + 7, 0))} colors={['#f2f4f8', '#9aa0ab', '#3a3d45']} />
           </Path>
         </Group>
       ))}
       <Path path={body}>
-        <RadialGradient c={vec(len * 0.3, -W)} r={len * 0.9} colors={[...EL.body]} />
+        <RadialGradient c={about(turned, { u: len * 0.3, v: -W }, { u: (len - 44) / 2, v: 0 })} r={len * 0.9} colors={[...EL.body]} />
       </Path>
       <Path path={body} style="stroke" strokeWidth={2.4} color={EL.rim} opacity={0.22} />
       <Path path={body} style="stroke" strokeWidth={1.2} color={EL.ink} />
@@ -549,7 +558,7 @@ function LapTop({ hi }: { hi: string | null }) {
         <Circle key={`tp${i}`} cx={t.u} cy={t.side * 30} r={4.5} color="#c8ccd4" />
       ))}
       <Path path={board}>
-        <LinearGradient start={vec(0, -34)} end={vec(0, 34)} colors={['#2a2b30', '#16171a', '#0b0b0d']} />
+        <LinearGradient {...lin(turned, vec(0, -34), vec(0, 34))} colors={['#2a2b30', '#16171a', '#0b0b0d']} />
       </Path>
       <Path path={markers} style="stroke" strokeWidth={1.4} color="#d6d9df" opacity={0.7} />
       {dots.map((u, i) => (
@@ -557,30 +566,30 @@ function LapTop({ hi }: { hi: string | null }) {
       ))}
       <Path path={nut} color="#efe8d6" />
       <Path path={pu}>
-        <LinearGradient start={vec(0, -38)} end={vec(0, 38)} colors={[...EL.pickup]} />
+        <LinearGradient {...lin(turned, vec(0, -38), vec(0, 38))} colors={[...EL.pickup]} />
       </Path>
       {Array.from({ length: 6 }, (_, i) => (
         <Circle key={`pp${i}`} cx={puU} cy={-22 + i * 8.8} r={2.4} color="#9aa0ab" />
       ))}
       <Path path={bridge}>
-        <LinearGradient start={vec(brU, -34)} end={vec(brU + 24, 34)} colors={[...EL.chrome]} />
+        <LinearGradient {...lin(turned, vec(brU, -34), vec(brU + 24, 34))} colors={[...EL.chrome]} />
       </Path>
       <Path path={bridge} style="stroke" strokeWidth={0.8} color={EL.ink} />
       {knobs.map((k, i) => (
         <Group key={`kb${i}`}>
-          <Circle cx={k.u + 2} cy={k.v + 3} r={12} color="#000" opacity={0.35} />
+          <Circle cx={k.u + (turned ? -2 : 2)} cy={k.v + (turned ? -3 : 3)} r={12} color="#000" opacity={0.35} />
           <Circle cx={k.u} cy={k.v} r={12}>
-            <RadialGradient c={vec(k.u - 4, k.v - 5)} r={16} colors={['#fbf8f0', '#d8d0bf', '#8f8775']} />
+            <RadialGradient c={about(turned, { u: k.u - 4, v: k.v - 5 }, k)} r={16} colors={['#fbf8f0', '#d8d0bf', '#8f8775']} />
           </Circle>
           <Line p1={vec(k.u, k.v)} p2={vec(k.u - 4, k.v - 9)} color="#2a2420" strokeWidth={1.6} />
         </Group>
       ))}
       <Path path={strings} style="stroke" strokeWidth={1.3} color={EL.string} />
-      <Path path={rr(nutU + fretU(7, Ls) - 9, -42, nutU + fretU(7, Ls) + 15, 50, 12)} color="#000" opacity={0.35}>
+      <Path path={turned ? rr(nutU + fretU(7, Ls) - 15, -50, nutU + fretU(7, Ls) + 9, 42, 12) : rr(nutU + fretU(7, Ls) - 9, -42, nutU + fretU(7, Ls) + 15, 50, 12)} color="#000" opacity={0.35}>
         <BlurMask blur={5} style="normal" />
       </Path>
       <Path path={bar}>
-        <LinearGradient start={vec(nutU + fretU(7, Ls) - 11, 0)} end={vec(nutU + fretU(7, Ls) + 11, 0)} colors={['#4a4e57', '#f2f4f8', '#9aa0ab', '#3a3d45']} positions={[0, 0.3, 0.65, 1]} />
+        <LinearGradient {...lin(turned, vec(nutU + fretU(7, Ls) - 11, 0), vec(nutU + fretU(7, Ls) + 11, 0))} colors={['#4a4e57', '#f2f4f8', '#9aa0ab', '#3a3d45']} positions={[0, 0.3, 0.65, 1]} />
       </Path>
       <Path path={bar} style="stroke" strokeWidth={0.8} color={EL.ink} />
       {hi === 'ls.body' ? <Path path={body} style="stroke" strokeWidth={5} color={AMBER} /> : null}
@@ -588,10 +597,12 @@ function LapTop({ hi }: { hi: string | null }) {
   );
 }
 
-export function SteelDrawing({ view, highlight, barAt = null }: { view: SteelView; highlight?: string | null; barAt?: number | null }) {
+/** `turned`: drawn inside a 180° turn (the face views, body left, head
+ *  right — ElectricExplorer); the light still falls from the upper left. */
+export function SteelDrawing({ view, highlight, barAt = null, turned = false }: { view: SteelView; highlight?: string | null; barAt?: number | null; turned?: boolean }) {
   if (view === 'side') return <SteelSide hi={highlight ?? null} />;
-  if (view === 'top') return <SteelTop hi={highlight ?? null} barAt={barAt} />;
-  return <LapTop hi={highlight ?? null} />;
+  if (view === 'top') return <SteelTop hi={highlight ?? null} barAt={barAt} turned={turned} />;
+  return <LapTop hi={highlight ?? null} turned={turned} />;
 }
 
 /** The part under (u, v) in a view, tol in mm. */

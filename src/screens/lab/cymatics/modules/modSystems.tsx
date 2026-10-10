@@ -7,7 +7,7 @@
  * ticks never re-render the rack.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Circle, Defs, G, Line, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
@@ -423,13 +423,13 @@ const SYSTEMS: {
   /** What the drawing on the stage is showing, for the MODE / NODES readouts. */
   modeLabel?: string;
   nodesLabel?: string;
-  link?: { label: string; go: (nav: NativeStackNavigationProp<RootStackParamList>) => void };
+  link?: { label: string; /** The dock key's short label. */ dock: string; go: (nav: NativeStackNavigationProp<RootStackParamList>) => void };
 }[] = [
   { id: 'string', title: 'A string', short: 'Strng', vibrates: 'the string itself, transversely, fixed at both ends', pattern: 'the standing wave: still points (nodes) and swinging loops (antinodes) along its length', family: 'harmonic series f, 2f, 3f… — this is why a string has a pitch', harmonic: true, label: 'CALCULATED — standing wave on the amplitude ramp' },
   { id: 'pipe', title: 'An air column', short: 'Pipe', vibrates: 'the air inside a pipe, longitudinally — pressure rising and falling', pattern: 'pressure nodes and antinodes along the pipe; a flame or cork dust along the tube shows them', family: 'harmonic (open pipe) or odd harmonics only (closed at one end)', harmonic: true, label: 'CALCULATED — pressure standing wave, open pipe' },
-  { id: 'water', title: 'A water surface', short: 'Water', vibrates: 'the free surface of a liquid, driven vertically', pattern: 'Faraday standing waves at HALF the drive frequency once a threshold is passed', family: 'container modes or a bulk lattice — the Liquid Studio', harmonic: false, label: 'CALCULATED / APPROXIMATED — in the Liquid Studio', modeLabel: 'Faraday f/2', nodesLabel: '7', link: { label: 'Open the Liquid Studio ›', go: (nav) => goToCymatics(nav, 'CymaticsLiquidStudio', {}) } },
-  { id: 'speaker', title: 'A loudspeaker with particles on it', short: 'Spkr', vibrates: 'a stiff cone meant to move as one piston — and, above breakup, the cone flexing in modes', pattern: 'grains on a cone dance in the antinodes and gather where the cone is still; below breakup that is nowhere', family: 'piston, then bell-like radial modes — the Membrane & Loudspeaker Studio', harmonic: false, label: 'ILLUSTRATIVE / CALCULATED — in the Loudspeaker view', modeLabel: 'breakup', nodesLabel: 'rim·mid·apex', link: { label: 'Open the Loudspeaker ›', go: (nav) => goToCymatics(nav, 'CymaticsMembraneStudio', { preset: 'speaker-breakup' }) } },
-  { id: 'bells', title: 'Bells, gongs and cymbals', short: 'Bells', vibrates: 'a curved shell — plate-like modes wrapped around a curve', pattern: 'nodal meridians and circles; a bell’s hum, prime, tierce, quint and nominal are its lowest modes', family: 'inharmonic, tuned by the founder toward near-harmonic partials — try the bell plate and the ring in the Plate Studio', harmonic: false, label: 'APPROXIMATED — bell plate and ring in the Plate Studio', modeLabel: '(2,0) hum', nodesLabel: '4 meridians', link: { label: 'Open the Plate Studio ›', go: (nav) => goToCymatics(nav, 'CymaticsPlateStudio', {}) } },
+  { id: 'water', title: 'A water surface', short: 'Water', vibrates: 'the free surface of a liquid, driven vertically', pattern: 'Faraday standing waves at HALF the drive frequency once a threshold is passed', family: 'container modes or a bulk lattice — the Liquid Studio', harmonic: false, label: 'CALCULATED / APPROXIMATED — in the Liquid Studio', modeLabel: 'Faraday f/2', nodesLabel: '7', link: { label: 'Open the Liquid Studio ›', dock: 'LIQUID ›', go: (nav) => goToCymatics(nav, 'CymaticsLiquidStudio', {}) } },
+  { id: 'speaker', title: 'A loudspeaker with particles on it', short: 'Spkr', vibrates: 'a stiff cone meant to move as one piston — and, above breakup, the cone flexing in modes', pattern: 'grains on a cone dance in the antinodes and gather where the cone is still; below breakup that is nowhere', family: 'piston, then bell-like radial modes — the Membrane & Loudspeaker Studio', harmonic: false, label: 'ILLUSTRATIVE / CALCULATED — in the Loudspeaker view', modeLabel: 'breakup', nodesLabel: 'rim·mid·apex', link: { label: 'Open the Loudspeaker ›', dock: 'SPEAKER ›', go: (nav) => goToCymatics(nav, 'CymaticsMembraneStudio', { preset: 'speaker-breakup' }) } },
+  { id: 'bells', title: 'Bells, gongs and cymbals', short: 'Bells', vibrates: 'a curved shell — plate-like modes wrapped around a curve', pattern: 'nodal meridians and circles; a bell’s hum, prime, tierce, quint and nominal are its lowest modes', family: 'inharmonic, tuned by the founder toward near-harmonic partials — try the bell plate and the ring in the Plate Studio', harmonic: false, label: 'APPROXIMATED — bell plate and ring in the Plate Studio', modeLabel: '(2,0) hum', nodesLabel: '4 meridians', link: { label: 'Open the Plate Studio ›', dock: 'PLATES ›', go: (nav) => goToCymatics(nav, 'CymaticsPlateStudio', {}) } },
   { id: 'levitation', title: 'Acoustic levitation', short: 'Levit', vibrates: 'the air between a transducer and a reflector, as a standing wave', pattern: 'small beads hang at the pressure nodes, a half-wavelength apart', family: 'a one-dimensional standing wave — the same nodes as the pipe', harmonic: null, label: 'ILLUSTRATIVE — a 40 kHz standing wave, beads at the nodes', modeLabel: '5 nodes', nodesLabel: '4 beads' },
 ];
 
@@ -466,6 +466,9 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
           } as DockParam,
         ]
       : []),
+    // The way into the full studio for this system — was a button drawn
+    // inside the display (owner rule 2026-10-10: controls live in the dock).
+    ...(s.link ? [{ kind: 'action', id: 'open', label: s.link.dock, onPress: () => s.link!.go(navigation), leavesFull: true } as DockParam] : []),
   ];
 
   return (
@@ -497,40 +500,24 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
           // row) and centred — 1× is the glass picture, larger; the zoom
           // steps scale that box. On the glass itself this is a no-op.
           const dh = Math.min(h, Math.round(w * 0.57));
-          const dhF = Math.min(h - 34, Math.round(w * 0.47));
-          return sys === 'string' || sys === 'pipe' || sys === 'levitation' ? (
+          // The pointer to the full studio is a DOCK key now (owner rule
+          // 2026-10-10: no buttons drawn inside the display), so every system
+          // gets the whole glass proportion — the old footer row is gone.
+          return (
             <View style={{ width: w, height: h, justifyContent: 'center' }}>
               {sys === 'string' ? (
                 <StringDemo w={w} h={dh} n={n} running={focused} />
               ) : sys === 'pipe' ? (
                 <PipeDemo w={w} h={dh} n={n} running={focused} />
-              ) : (
+              ) : sys === 'levitation' ? (
                 <LevitationDemo w={w} h={dh} running={focused} />
+              ) : sys === 'water' ? (
+                <WaterDemo w={w} h={dh} running={focused} />
+              ) : sys === 'speaker' ? (
+                <SpeakerDemo w={w} h={dh} running={focused} />
+              ) : (
+                <BellDemo w={w} h={dh} running={focused} />
               )}
-            </View>
-          ) : (
-            // The drawing takes the stage; the pointer to the full studio sits
-            // under it rather than in place of it.
-            <View style={{ width: w, height: h }}>
-              <View style={{ flex: 1, justifyContent: 'center' }}>
-                {sys === 'water' ? (
-                  <WaterDemo w={w} h={dhF} running={focused} />
-                ) : sys === 'speaker' ? (
-                  <SpeakerDemo w={w} h={dhF} running={focused} />
-                ) : (
-                  <BellDemo w={w} h={dhF} running={focused} />
-                )}
-              </View>
-              {s.link ? (
-                <Pressable
-                  onPress={() => s.link!.go(navigation)}
-                  style={[styles.go, styles.goStage]}
-                  accessibilityRole="button"
-                  accessibilityLabel={s.link.label}
-                >
-                  <Text style={styles.goText}>{s.link.label.toUpperCase()}</Text>
-                </Pressable>
-              ) : null}
             </View>
           );
         },
@@ -560,9 +547,3 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  go: { borderRadius: 9, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.10)', paddingHorizontal: 14, paddingVertical: 9 },
-  /** On the stage the link is a footer under the drawing, not a centred button. */
-  goStage: { alignSelf: 'center', paddingVertical: 6, marginBottom: 4 },
-  goText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.1, color: colors.amber },
-});

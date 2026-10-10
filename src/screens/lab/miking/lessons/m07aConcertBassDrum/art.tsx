@@ -196,16 +196,18 @@ export function ConcertBassDrumArt({ view }: { view: ViewId; variant: VariantId 
 
 export function concertBassDrumLabels(view: ViewId): ArtLabel[] {
   const out: ArtLabel[] = [
-    { id: 'playing', text: 'PLAYING HEAD', short: 'PLAYING', u: 30, v: -HOOP.rOut - 40, align: 'left' },
-    { id: 'far', text: 'FAR HEAD', short: 'FAR', u: -D - 30, v: -HOOP.rOut - 40, align: 'right' },
+    // Leaders land on their parts; the player cue is an arrow only (clash
+    // sweep 2026-10-10: the PLAYER leader crossed the whole drum to empty glass).
+    { id: 'playing', text: 'PLAYING HEAD', short: 'PLAYING', u: 30, v: -HOOP.rOut - 40, align: 'left', at: { u: 2, v: -HOOP.rOut * 0.8 } },
+    { id: 'far', text: 'FAR HEAD', short: 'FAR', u: -D - 30, v: -HOOP.rOut - 40, align: 'right', at: { u: -D - 2, v: -HOOP.rOut * 0.8 } },
   ];
   if (view === 'side') {
     out.push({ id: 'stand', text: 'STAND (BRAKES LOCKED)', short: 'STAND', u: MID_X, v: FLOOR_Y - 120, align: 'center', tone: 'illustrative' });
-    out.push({ id: 'mallet', text: 'MALLET', u: 600, v: -300, align: 'center', tone: 'illustrative' });
-    out.push({ id: 'player', text: 'PLAYER →', u: 960, v: 220, align: 'right', tone: 'muted' });
-    out.push({ id: 'pivot', text: 'PIVOT', u: MID_X + 40, v: 36, align: 'left', tone: 'muted' });
+    out.push({ id: 'mallet', text: 'MALLET', u: 600, v: -300, align: 'center', tone: 'illustrative', at: { u: (MALLET.head.x + MALLET.grip.x) / 2 + 40, v: (MALLET.head.y + MALLET.grip.y) / 2 - 18 } });
+    out.push({ id: 'player', text: 'PLAYER →', u: 960, v: 220, align: 'right', tone: 'muted', point: { u: 2400, v: 220 } });
+    out.push({ id: 'pivot', text: 'PIVOT', u: MID_X + 40, v: 36, align: 'left', tone: 'muted', at: { u: MID_X, v: 0 } });
   } else {
-    out.push({ id: 'player', text: 'PLAYER →', u: 960, v: -560, align: 'right', tone: 'muted' });
+    out.push({ id: 'player', text: 'PLAYER →', u: 960, v: -560, align: 'right', tone: 'muted', point: { u: 2400, v: -560 } });
     out.push({ id: 'cond', text: 'CONDUCTOR ↓', short: 'COND. ↓', u: MID_X, v: 1080, align: 'center', tone: 'muted' });
     out.push({ id: 'rods', text: 'RODS ON BOTH HEADS', short: 'RODS', u: MID_X, v: HOOP.rOut + 110, align: 'center', tone: 'illustrative' });
   }

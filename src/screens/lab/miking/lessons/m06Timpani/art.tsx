@@ -16,7 +16,7 @@ import { TimpanoSide, TimpanoTop } from '../shared/concert/TimpaniArt';
 import { TIMPANO_DRAW } from '../shared/concert/timpanoSpec.ts';
 import { Mallet } from '../shared/concert/Mallets';
 import { FLOOR, make, rect, seg } from '../shared/concert/paths.ts';
-import { HEAD_Y, R26, R29, TIMPANI, type Timpano } from './model.ts';
+import { drumOf, HEAD_Y, R26, R29, TIMPANI, type Timpano } from './model.ts';
 
 /** The mallets as drawn (illustrative: one about to strike, one raised). */
 export const MALLETS = {
@@ -75,18 +75,22 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
 export function timpaniLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const four = variant === 'four';
   if (view === 'top') {
-    const out: ArtLabel[] = shown(variant).map((t) => ({ id: `d${t.inch}`, text: `${t.inch} IN`, u: t.c.x + t.d.mm / 2 + 70, v: t.c.z, align: 'left' as const }));
-    out.push({ id: 'player', text: '← PLAYER', u: -900, v: four ? -40 : -40, align: 'center', tone: 'muted' });
+    const out: ArtLabel[] = shown(variant).map((t) => ({ id: `d${t.inch}`, text: `${t.inch} IN`, u: t.c.x + t.d.mm / 2 + 70, v: t.c.z, align: 'left' as const, at: { u: t.c.x + t.d.mm * 0.3, v: t.c.z } }));
+    out.push({ id: 'player', text: '← PLAYER', u: -900, v: four ? -40 : -40, align: 'center', tone: 'muted', point: { u: -6000, v: -40 } });
     out.push({ id: 'cond', text: 'CONDUCTOR →', short: 'CONDUCTOR', u: 930, v: four ? 1420 : 820, align: 'right', tone: 'muted' });
-    out.push({ id: 'pedals', text: 'PEDALS', u: -R29 - 140, v: four ? -760 : -650, align: 'center', tone: 'illustrative' });
+    // its leader to the 29 in drum's pedal (it ended in empty glass: clash sweep 2026-10-10)
+    out.push({ id: 'pedals', text: 'PEDALS', u: -R29 - 140, v: four ? -760 : -650, align: 'center', tone: 'illustrative', at: { u: -R29 - 140, v: drumOf('t29').c.z } });
     return out;
   }
   return [
     { id: 'heads', text: four ? 'HEADS (FOUR DRUMS)' : 'HEADS (29 AND 26 IN)', short: 'HEADS', u: 40, v: HEAD_Y - TIMPANO_DRAW.hoopUp - 40, align: 'left' },
-    { id: 'bowl', text: 'BOWLS (KETTLES)', short: 'BOWLS', u: R26 + 80, v: HEAD_Y + 240, align: 'left' },
-    { id: 'pedal', text: 'PEDAL', u: -R29 - 160, v: -120, align: 'center', tone: 'illustrative' },
-    { id: 'mallets', text: 'MALLETS', u: -560, v: -1250, align: 'center', tone: 'illustrative' },
-    { id: 'player', text: '← PLAYER', u: -930, v: -560, align: 'center', tone: 'muted' },
+    // Each leader lands ON its part; the player cue is an arrow only (clash
+    // sweep 2026-10-10: the PLAYER, MALLETS, BOWLS and PEDAL leaders ended
+    // in empty glass).
+    { id: 'bowl', text: 'BOWLS (KETTLES)', short: 'BOWLS', u: R26 + 80, v: HEAD_Y + 240, align: 'left', at: { u: R26 * 0.55, v: HEAD_Y + 170 } },
+    { id: 'pedal', text: 'PEDAL', u: -R29 - 160, v: -120, align: 'center', tone: 'illustrative', at: { u: -R29 - 140, v: -30 } },
+    { id: 'mallets', text: 'MALLETS', u: -560, v: -1250, align: 'center', tone: 'illustrative', at: { u: (MALLETS.side[1].grip.x + MALLETS.side[1].head.x) / 2, v: (MALLETS.side[1].grip.y + MALLETS.side[1].head.y) / 2 } },
+    { id: 'player', text: '← PLAYER', u: -930, v: -560, align: 'center', tone: 'muted', point: { u: -6000, v: -560 } },
     { id: 'cond', text: 'CONDUCTOR →', short: 'COND. →', u: 930, v: -560, align: 'right', tone: 'muted' },
     { id: 'floor', text: 'FLOOR', u: 930, v: -24, align: 'right', tone: 'illustrative' },
   ];

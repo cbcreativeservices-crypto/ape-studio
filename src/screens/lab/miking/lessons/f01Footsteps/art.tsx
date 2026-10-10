@@ -42,7 +42,10 @@ export function FootstepsArt({ view, variant }: { view: ViewId; variant: Variant
         <PitPlan surface={surface} tapeBox={TAPE} />
         {live ? <BoothArt view="top" rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
         <PlayerBehind pose={WALKER_TOP} />
-        <PlayerInFront pose={WALKER_TOP} />
+        {/* From above, the swinging hands hang below the cuffs, edge-on: the
+            plan draws the sleeves without them (clash sweep 2026-10-10 — they
+            were open palms facing up, as if raised). */}
+        <PlayerInFront pose={WALKER_TOP} hands={false} />
       </Group>
     );
   }

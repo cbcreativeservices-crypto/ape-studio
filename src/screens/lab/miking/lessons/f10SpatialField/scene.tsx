@@ -18,7 +18,7 @@
  *                not a range).
  */
 import { useMemo, type ReactElement } from 'react';
-import { DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { DashPathEffect, Group, LinearGradient, Paint, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, Vec3, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { PlayerBehind, PlayerInFront, figureCovers } from '../shared/players/PlayerFigure';
@@ -145,10 +145,11 @@ export const PERFORMER_POSES = facingBack(EVENT.perfMouth);
 
 function Person({ view, poses, dim = 0.92 }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number }) {
   const pose = view === 'side' ? poses.side : poses.top;
+  // Faded as one layer, so no part shows through another (clash sweep 2026-10-10).
   return (
-    <Group>
-      <PlayerBehind pose={pose} dim={dim} />
-      <PlayerInFront pose={pose} dim={dim} hands={view === 'side'} />
+    <Group layer={<Paint opacity={dim} />}>
+      <PlayerBehind pose={pose} />
+      <PlayerInFront pose={pose} hands={view === 'side'} />
     </Group>
   );
 }

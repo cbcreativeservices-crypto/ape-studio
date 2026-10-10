@@ -1956,7 +1956,13 @@ export function ShockMountView({
   const AMP = 12;
 
   // ── Fixed scene geometry ─────────────────────────────────────────────────
-  const CAP_TRACK_Y = 18; // capsule excursion readout
+  // Readout tracks (clash sweep 2026-10-10): the range bars used to sit ABOVE
+  // their track lines, i.e. on top of the "AT THE CAPSULE …" / "STAND SHAKE …"
+  // labels. Tracks now sit clear of the text with the bar just BELOW the line:
+  // top label caps ≈ y 5–14, capsule track 24 (ticks 20–28, bar 26–30, mic
+  // top 40); floor 238, stand track 242 (ticks 238–246, bar 244–248), bottom
+  // label from y 249.
+  const CAP_TRACK_Y = 24; // capsule excursion readout
   // Mic — SMALLER, same slim SM-class proportions (owner 2026-08-05).
   const MIC_TOP = 40; // top of the head basket
   const BASKET_BOT = 62; // basket 22 px tall
@@ -1973,7 +1979,7 @@ export function ShockMountView({
   const CLUTCH_Y = 150;
   const SHAFT_TOP = 168;
   const FLOOR_Y = 238;
-  const STAND_TRACK_Y = 250;
+  const STAND_TRACK_Y = 242;
 
   // Stand: tripod + shaft, riding the FULL excursion.
   const standPath = useDerivedValue(() => {
@@ -2095,12 +2101,12 @@ export function ShockMountView({
   const capBar = useMemo(() => {
     const p = Skia.Path.Make();
     const half = Math.max(0.6, AMP * damp);
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - half, CAP_TRACK_Y - 8, half * 2, 5), 2, 2));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - half, CAP_TRACK_Y + 2, half * 2, 4), 2, 2));
     return p;
   }, [cx, damp]);
   const standBar = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - AMP, STAND_TRACK_Y - 8, AMP * 2, 5), 2, 2));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - AMP, STAND_TRACK_Y + 2, AMP * 2, 4), 2, 2));
     return p;
   }, [cx]);
   const capMarker = useDerivedValue(() => {
@@ -2209,7 +2215,7 @@ export function ShockMountView({
       <RNText style={[label, { top: 3 * s, color: capColor }]}>
         {`AT THE CAPSULE — ${pct}% OF THE SHAKE`}
       </RNText>
-      <RNText style={[label, { top: (h - 15) * s, color: ACCENT_RED }]}>
+      <RNText style={[label, { top: (h - 13) * s, color: ACCENT_RED }]}>
         STAND SHAKE — 100% (THE SOURCE)
       </RNText>
     </View>

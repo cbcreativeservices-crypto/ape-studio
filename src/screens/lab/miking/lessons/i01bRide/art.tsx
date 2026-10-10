@@ -16,7 +16,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, SwingFan, kitShow, plateTransform } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, StickTo, stickFigureAt, SwingFan, kitShow, plateTransform } from '../shared/cymbals/CymbalKitArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -26,6 +26,13 @@ import { AREAS, FLOOR, RIDE, RIDE_R, RIDE_RISE, STRIKE_BOW } from './model.ts';
 const C = RIDE.c;
 const CR2 = KIT.cymbals.crash2;
 const DEG = Math.PI / 180;
+
+/** The stick as drawn, per view (also the labels' occupancy). */
+function stickSeg(view: ViewId, _variant: VariantId) {
+  return view === 'side'
+    ? { from: { x: STRIKE_BOW.x - 300, y: STRIKE_BOW.y - 250 }, to: { x: STRIKE_BOW.x - 4, y: STRIKE_BOW.y - 6 } }
+    : { from: { x: STRIKE_BOW.x - 260, y: STRIKE_BOW.z - 200 }, to: { x: STRIKE_BOW.x - 4, y: STRIKE_BOW.z - 3 } };
+}
 
 export function RideArt({ view }: { view: ViewId; variant: VariantId }) {
   if (view === 'side') {
@@ -37,7 +44,7 @@ export function RideArt({ view }: { view: ViewId; variant: VariantId }) {
           <SwingFan R={RIDE_R} rise={RIDE_RISE} />
         </Group>
         <CymbalSide spec={RIDE.spec} cx={C.x} cy={C.y} tiltDeg={RIDE.tiltDeg} />
-        <StickTo from={{ x: STRIKE_BOW.x - 300, y: STRIKE_BOW.y - 250 }} to={{ x: STRIKE_BOW.x - 4, y: STRIKE_BOW.y - 6 }} />
+        <StickTo {...stickSeg('side', 'x')} />
       </Group>
     );
     return <KitAround view="side" show={{ floor: 0.8, crash2: 0.5, tom2: 0.35, kick: 0.3 }} own={own} ownZ={C.z} />;
@@ -47,7 +54,7 @@ export function RideArt({ view }: { view: ViewId; variant: VariantId }) {
       <KitAround view="top" show={kitShow(['ride', 'crash1', 'crash2', 'hihat'], { floor: 0.85 })} />
       <BoomStandTop id="ride" />
       <CymbalTop spec={RIDE.spec} cx={C.x} cz={C.z} tiltDeg={RIDE.tiltDeg} areas dim={0.92} />
-      <StickTo from={{ x: STRIKE_BOW.x - 260, y: STRIKE_BOW.z - 200 }} to={{ x: STRIKE_BOW.x - 4, y: STRIKE_BOW.z - 3 }} />
+      <StickTo {...stickSeg('top', 'x')} />
       <KitAround view="top" show={{ hihat: 0.3, crash1: 0.3, crash2: 0.42 }} />
     </Group>
   );
@@ -69,9 +76,9 @@ export function rideLabels(view: ViewId): ArtLabel[] {
   return [
     { id: 'ride', text: 'RIDE', u: C.x, v: C.z + RIDE_R + 50, align: 'center' },
     { id: 'bell', text: 'BELL', u: C.x, v: C.z - 70, align: 'center', tone: 'muted' },
-    { id: 'floor', text: 'FLOOR TOM (BELOW)', short: 'FLOOR', u: FLOOR.c.x - 120, v: FLOOR.c.z - 30, align: 'center', tone: 'muted' },
+    { id: 'floor', text: 'FLOOR TOM (BELOW)', short: 'FLOOR', u: FLOOR.c.x - 120, v: FLOOR.c.z - 30, align: 'center', tone: 'muted', at: { u: FLOOR.c.x - FLOOR.spec.d.mm * 0.3, v: FLOOR.c.z - FLOOR.spec.d.mm * 0.3 } },
     { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: CR2.c.x + 40, v: CR2.c.z - 150, align: 'center', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: C.x - 520, v: C.z - 280, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: C.x - 520, v: C.z - 280, align: 'center', tone: 'muted', point: { u: -6000, v: C.z - 280 } },
   ];
 }
 
@@ -99,6 +106,7 @@ export const RIDE_ART: LessonArt = {
   Instrument: RideArt,
   labels: (view) => rideLabels(view),
   hitTest: rideHitTest,
+  figureAt: stickFigureAt(stickSeg),
   plan: { own: 'ride' },
   SettingPlan: CymbalSettingPlan('ride'),
   pages: CYMBAL_PAGES,

@@ -527,6 +527,23 @@ export function pluckPath(P: Posture, view: ViewId): SkPath {
 }
 
 /* ── the player ── */
+/** A smooth closed outline through view points (Catmull-Rom as cubics). */
+function smoothClosedP2(pts: P2[]): SkPath {
+  const p = Skia.Path.Make();
+  const n = pts.length;
+  const at = (i: number) => pts[(i + n) % n];
+  p.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 0; i < n; i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const k = 1 / 6;
+    p.cubicTo(p1[0] + (p2[0] - p0[0]) * k, p1[1] + (p2[1] - p0[1]) * k, p2[0] - (p3[0] - p1[0]) * k, p2[1] - (p3[1] - p1[1]) * k, p2[0], p2[1]);
+  }
+  p.close();
+  return p;
+}
 /** The player figure (shared: the brass family draws its players with it). */
 /**
  * How one hand holds (figure polish 2026-10-10): its shape, which way it
@@ -589,8 +606,28 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
     ...circlePts(q(add(s.hipL, scale(fw, -8))), 96),
     ...circlePts(q(add(s.hipR, scale(fw, -8))), 96),
   ];
-  const torso = hull(tc);
-  g.push({ key: 'torso', depth: depthOf(view, s.chest), items: [{ path: polyPath(torso), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(torso), rim: 1.6, tone: 'shirt' }] });
+  if (view === 'top') {
+    // FROM ABOVE (owner review 2026-10-10: the hull read as a hard octagon):
+    // the shared figure's shoulder outline (PlayerFigure.buildAbove) — a
+    // smooth ROUNDED RECTANGLE ≈ 456 mm across the deltoids, ≈ 236 mm deep,
+    // the back nearly flat, the deltoids rounded, the chest a little fuller —
+    // laid along the facing; the hanging upper arms leave from under it.
+    const n2 = q(s.neck);
+    const f2 = prj(view, fw);
+    const fl = Math.hypot(f2[0], f2[1]) || 1;
+    const fx = f2[0] / fl;
+    const fy = f2[1] / fl;
+    const OUT: P2[] = [[0, -112], [118, -108], [178, -66], [222, -28], [228, 26], [218, 74], [174, 106], [90, 116], [0, 124], [-90, 116], [-174, 106], [-218, 74], [-228, 26], [-222, -28], [-178, -66], [-118, -108]];
+    const pts: P2[] = OUT.map(([a, b]) => [n2[0] + a * -fy + b * fx, n2[1] + a * fx + b * fy]);
+    const path = smoothClosedP2(pts);
+    // Just over the arms (their roots go under it), never over an instrument
+    // held above the chest.
+    const armD = Math.min(depthOf(view, add(scale(s.elbowL, 0.5), scale(s.handL, 0.5))), depthOf(view, add(scale(s.elbowR, 0.5), scale(s.handR, 0.5))));
+    g.push({ key: 'torso', depth: Math.max(depthOf(view, s.chest), armD + 0.5), items: [{ path, fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(pts), rim: 1.6, tone: 'shirt' }] });
+  } else {
+    const torso = hull(tc);
+    g.push({ key: 'torso', depth: depthOf(view, s.chest), items: [{ path: polyPath(torso), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(torso), rim: 1.6, tone: 'shirt' }] });
+  }
   // Hands with fingers (the shared hand), each HOLDING what it holds (figure
   // polish 2026-10-10): its wrist, from where the hand lands.
   const wristOf2 = (h: Vec3, elbow: Vec3, hold: HandHold | undefined): { wrist: P2; dir: number; kind: HandKind; depth?: number } => {
@@ -616,17 +653,14 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   const armTop = (key: string, sh: Vec3, el: Vec3, h: Vec3, w2: P2) => {
     const S2 = q(sh);
     const E2 = q(el);
-    const path = Skia.Path.MakeFromOp(limbPath(S2, E2, 56, 44), limbPath(E2, w2, 44, 31), PathOp.Union) ?? limbPath(S2, E2, 56, 44);
+    // Slim, as a hanging arm seen from above: the upper arm ≈ 90 mm across
+    // (foreshortened, short), the forearm ≈ 76 mm tapering to the wrist.
+    const path = Skia.Path.MakeFromOp(limbPath(S2, E2, 46, 40), limbPath(E2, w2, 38, 30), PathOp.Union) ?? limbPath(S2, E2, 46, 40);
     g.push({ key, depth: depthOf(view, add(scale(el, 0.5), scale(h, 0.5))), items: [{ path, fill: CLOTH, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([S2, E2, w2]), rim: 1.4, tone: 'shirt' }] });
   };
   if (view === 'top') {
     armTop('upperL', s.shoulderL, s.elbowL, s.handL, wL.wrist);
     if (withRightArm) armTop('upperR', s.shoulderR, s.elbowR, s.handR, wR.wrist);
-    // The shoulder girdle seen from above (deltoids and trapezius, the
-    // highest part of the body under the head): the upper arms leave from
-    // UNDER it, as a hanging arm does, so they read short and foreshortened.
-    const cap = hull([...circlePts(q(s.shoulderL), 66), ...circlePts(q(s.shoulderR), 66), ...circlePts(q(s.neck), 72)]);
-    g.push({ key: 'shoulderCap', depth: depthOf(view, s.neck) - 1, items: [{ path: polyPath(cap), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(cap), rim: 1.6, tone: 'shirt' }] });
   } else {
     limb('upperL', s.shoulderL, s.elbowL, 54, 44, CLOTH);
     fore('foreL', s.elbowL, s.handL, wL.wrist, wL.depth);

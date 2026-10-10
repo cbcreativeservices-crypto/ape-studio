@@ -77,11 +77,11 @@ const LABELS = {
     { id: 'spk.tweeter', text: 'TWEETER', u: 60, v: -200, align: 'left' as const, at: { u: 10, v: -140 } },
     { id: 'spk.woofer', text: 'WOOFER', u: 60, v: 150, align: 'left' as const, at: { u: 15, v: 55 } },
     { id: 'spk.stand', text: 'STAND', u: -125, v: 760, align: 'center' as const },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: F11_OP.x, v: F11_GROUND - 1900, align: 'center' as const },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: F11_OP.x, v: F11_GROUND - 1900, align: 'center' as const, at: { u: F11_OP.x, v: F11_GROUND - 1640 }, alts: [{ u: F11_OP.x - 420, v: F11_GROUND - 1300, align: 'right' as const }] },
   ],
   top: [
     { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -260, align: 'center' as const },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: F11_OP.x, v: F11_OP.z - 420, align: 'center' as const },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: F11_OP.x, v: F11_OP.z - 420, align: 'center' as const, at: { u: F11_OP.x, v: F11_OP.z }, alts: [{ u: F11_OP.x - 380, v: F11_OP.z, align: 'right' as const }, { u: F11_OP.x, v: F11_OP.z + 420, align: 'center' as const }] },
   ],
 };
 

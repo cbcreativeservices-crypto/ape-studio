@@ -531,11 +531,16 @@ export function rhodesLabels(view: 'front' | 'top'): StaticLabel[] {
   if (view === 'front') {
     const F = RHODES_FRONT;
     return [
+      // CLASH SWEEP 2026-10-10 (owner at 3×): CONTROLS sat on the harp
+      // cover and KEYS on the key slip, and SUSTAIN PEDAL ran onto the right
+      // leg. CONTROLS now stands a row above the cover with a leader down to
+      // the knobs, KEYS under the case (left of the pedal rod), and the
+      // pedal's words left of the pedal.
       { id: 'lid', text: 'HARP COVER · THE TINES ARE UNDER IT', short: 'HARP COVER', u: 0, v: F.top - 34, align: 'center' },
-      { id: 'ctl', text: 'CONTROLS · OUTPUT JACK', short: 'CONTROLS', u: F.knobs[0] - 30, v: F.nameRail.v0 - 34, align: 'left', tone: 'muted' },
-      { id: 'keys', text: 'KEYS', u: 120, v: F.keyFace.v1 + 34, align: 'center', tone: 'muted' },
+      { id: 'ctl', text: 'CONTROLS · OUTPUT JACK', short: 'CONTROLS', u: F.knobs[0] - 30, v: F.top - 94, align: 'left', tone: 'muted', at: { u: F.knobs[0], v: (F.nameRail.v0 + F.nameRail.v1) / 2 } },
+      { id: 'keys', text: 'KEYS', u: -150, v: F.bottom + 34, align: 'center', tone: 'muted', at: { u: -150, v: F.keyFace.v0 + 6 } },
       { id: 'legs', text: 'LEGS', u: F.legs[0] + 40, v: -190, align: 'left', tone: 'muted' },
-      { id: 'pedal', text: 'SUSTAIN PEDAL', short: 'PEDAL', u: F.pedal.u + 70, v: -30, align: 'left', tone: 'amber' },
+      { id: 'pedal', text: 'SUSTAIN PEDAL', short: 'PEDAL', u: F.pedal.u - 70, v: -30, align: 'right', tone: 'amber' },
     ];
   }
   const T = RHODES_TOP;
@@ -723,7 +728,9 @@ export function wurliFrontLabels(): StaticLabel[] {
   const F = WURLI_FRONT;
   return [
     { id: 'g', text: 'TWO OVAL GRILLES · FACING YOU', short: 'GRILLES', u: 0, v: F.face.v0 - 34, align: 'center', tone: 'amber' },
-    { id: 'keys', text: 'KEYS', u: 0, v: F.keyFace.v1 + 34, align: 'center', tone: 'muted' },
+    // Under the case, not on it (clash sweep 2026-10-10: the words sat on
+    // the case front below the keys), with a leader up to the keys.
+    { id: 'keys', text: 'KEYS', u: -150, v: F.body.v1 + 34, align: 'center', tone: 'muted', at: { u: -150, v: F.keyFace.v0 + 4 } },
     { id: 'ctl', text: 'VOLUME · VIBRATO', short: 'CONTROLS', u: -F.half - 6, v: F.face.v0 - 34, align: 'left', tone: 'muted' },
     { id: 'pedal', text: 'SUSTAIN PEDAL', short: 'PEDAL', u: F.pedal.u + 70, v: -36, align: 'left', tone: 'muted' },
   ];

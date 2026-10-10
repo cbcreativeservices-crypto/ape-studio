@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { Desk, GooseBase, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { Desk, DeskNearLegs, GooseBase, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
 import { Jacket } from '../shared/broadcast/BodyWornArt';
 import { BroadcastCameraRig, FrameWedge } from '../shared/broadcast/CameraArt';
 import { cameraBody } from '../shared/broadcast/cameraFrame.ts';
@@ -39,6 +39,7 @@ export function B02Scene({ view, variant, headless = false, camera = true, base 
         <Script view="side" at={{ x: 420, y: DESK_TOP_Y, z: 160 }} />
         <SeatedTalker view="side" t={ANCHOR} headless={headless} />
         <Jacket view="side" standing={false} />
+        <DeskNearLegs box={DESK} floor={SEATED_FLOOR} skirt />
         {camera ? <BroadcastCameraRig view="side" cam={cam} floor={SEATED_FLOOR} /> : null}
       </Group>
     );
@@ -56,7 +57,8 @@ export function B02Scene({ view, variant, headless = false, camera = true, base 
       <Script view="top" at={{ x: 420, y: DESK_TOP_Y, z: GUEST.lip.z + 160 }} turn={0.05} />
       {base ? <GooseBase view="top" at={GOOSE_BASE} /> : null}
       <SeatedTalker view="top" t={GUEST} part="upper" />
-      <SeatedTalker view="top" t={ANCHOR} part="upper" headless={headless} />
+      {/* The left hand rests inside the gooseneck's base (it lay on it). */}
+      <SeatedTalker view="top" t={ANCHOR} part="upper" headless={headless} leftHandIn={75} />
       {camera ? <BroadcastCameraRig view="top" cam={cam} floor={SEATED_FLOOR} /> : null}
     </Group>
   );

@@ -38,7 +38,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
 import type { EngineState } from '../../../../features/tools/engine/useDspEngine';
 import { LabChip, CollapsibleSection } from '../../LabShell';
-import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -659,16 +659,83 @@ export function SamplingModule(p: DigitalModuleProps) {
             ))}
           </View>
           <Badge text="DEMO MODES: SAMPLE RATE SET RELATIVE TO THE INPUT FREQUENCY — FOR VISUALIZATION, NOT A REAL CONVERTER SETTING" />
+          {/* RECONSTRUCTED curve — was its own RECON key; folded in here so
+              the dock keeps five whole keys now that ALIAS and CUTOFF joined
+              it (owner rule 2026-10-10: every lab control lives in the dock). */}
+          <View style={dstyles.chipRow}>
+            <LabChip label={recon ? 'RECONSTRUCTED · ON' : 'RECONSTRUCTED · OFF'} selected={recon} onPress={() => setRecon(!recon)} onLongPress={() => p.help('nyquist')} />
+          </View>
         </View>
       ),
     },
     {
-      kind: 'toggle',
-      id: 'recon',
-      label: 'RECON',
-      value: recon,
-      onToggle: () => setRecon(!recon),
-      helpKey: 'nyquist',
+      // HEAR THE FOLD + the ANTI-ALIASING FILTER — the controls that used to
+      // sit in the well's two panels (owner rule 2026-10-10). The tray stays
+      // open with the FREQ lane above it, so you can hold the alias and ride
+      // the input through Nyquist.
+      kind: 'group',
+      id: 'alias',
+      label: 'ALIAS',
+      valueLabel: filterOn ? `AA ${slope}` : 'AA OFF',
+      valueA11y: filterOn ? `anti-aliasing filter on, ${slope} dB per octave` : 'anti-aliasing filter off',
+      helpKey: 'aliasing',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <Text style={dstyles.eyebrow}>HEAR THE FOLD</Text>
+          {!engineReady ? (
+            <EngineGate state={gate} />
+          ) : (
+            <View style={{ gap: 8 }}>
+              <GlassButton
+                label={playing === 'input' ? 'STOP' : `PLAY INPUT — ${fmtHz(f)}`}
+                tint="green"
+                height={46}
+                fontSize={13.5}
+                disabled={!canInput && playing !== 'input' /* armed-and-quiet must still stop */}
+                onPress={() => (playing === 'input' ? stop() : play('input', f))}
+              />
+              <GlassButton
+                label={playing === 'alias' ? 'STOP' : `PLAY PREDICTED ALIAS — ${fmtHz(alias)}`}
+                tint={aliased ? 'gold' : 'green'}
+                height={46}
+                fontSize={13.5}
+                disabled={!canAlias && playing !== 'alias' /* armed-and-quiet must still stop */}
+                onPress={() => (playing === 'alias' ? stop() : play('alias', alias))}
+              />
+              {tone.error ? <Text style={[dstyles.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
+            </View>
+          )}
+          <Text style={dstyles.eyebrow}>ANTI-ALIASING FILTER</Text>
+          <View style={dstyles.chipRow}>
+            <LabChip label="FILTER OFF" selected={!filterOn} onPress={() => setFilterOn(false)} onLongPress={() => p.help('aa_filter')} />
+            <LabChip label="FILTER ON" selected={filterOn} onPress={() => setFilterOn(true)} onLongPress={() => p.help('aa_filter')} />
+            {SLOPE_CHIPS.map((sl) => (
+              <LabChip
+                key={sl}
+                label={`${sl} dB/OCT`}
+                selected={filterOn && slope === sl}
+                onPress={() => {
+                  setSlope(sl);
+                  setFilterOn(true);
+                }}
+                onLongPress={() => p.help('aa_filter')}
+              />
+            ))}
+          </View>
+          <Text style={dstyles.caption}>The CUTOFF key sets where the filter starts rolling off.</Text>
+        </View>
+      ),
+    },
+    {
+      kind: 'fader',
+      id: 'cutoff',
+      label: 'CUTOFF',
+      value: cutV,
+      onChange: setCutV,
+      format: () => `${fmtHz(cutoffHz)} · ${(cutoffHz / nyq).toFixed(2)}×Nyquist`,
+      formatShort: () => fmtHzShort(cutoffHz),
+      locked: filterOn ? undefined : 'the anti-aliasing filter is off — turn it on under ALIAS',
+      helpKey: 'aa_filter',
     },
   ];
 
@@ -751,7 +818,7 @@ export function SamplingModule(p: DigitalModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>ALIAS AUDIO — HEAR THE FOLD</Text>
           <Text style={dstyles.body}>
-            Play the input tone, then the alias the math predicts for it. Hold PLAY PREDICTED ALIAS
+            Open ALIAS in the dock: play the input tone, then the alias the math predicts for it. Hold PLAY PREDICTED ALIAS
             and ride the FREQ lane up through Nyquist — the pitch folds back down while the
             input keeps rising.
           </Text>
@@ -759,22 +826,8 @@ export function SamplingModule(p: DigitalModuleProps) {
             <EngineGate state={gate} />
           ) : (
             <View style={{ gap: 8 }}>
-              <GlassButton
-                label={playing === 'input' ? 'STOP' : `PLAY INPUT — ${fmtHz(f)}`}
-                tint="green"
-                height={46}
-                fontSize={13.5}
-                disabled={!canInput && playing !== 'input' /* armed-and-quiet must still stop */}
-                onPress={() => (playing === 'input' ? stop() : play('input', f))}
-              />
-              <GlassButton
-                label={playing === 'alias' ? 'STOP' : `PLAY PREDICTED ALIAS — ${fmtHz(alias)}`}
-                tint={aliased ? 'gold' : 'green'}
-                height={46}
-                fontSize={13.5}
-                disabled={!canAlias && playing !== 'alias' /* armed-and-quiet must still stop */}
-                onPress={() => (playing === 'alias' ? stop() : play('alias', alias))}
-              />
+              {/* The two PLAY buttons are in the ALIAS dock tray now (owner
+                  rule 2026-10-10: every lab control lives in the dock). */}
               {tone.error ? <Text style={[dstyles.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
               {!aliased ? (
                 <Text style={dstyles.caption}>
@@ -800,39 +853,8 @@ export function SamplingModule(p: DigitalModuleProps) {
             sampled data above. Filter on: the input is attenuated before measurement — the alias is
             gone, and honest cost: real signal near the cutoff is attenuated too.
           </Text>
-          <View style={dstyles.chipRow}>
-            <LabChip
-              label="FILTER OFF"
-              selected={!filterOn}
-              onPress={() => setFilterOn(false)}
-              onLongPress={() => p.help('aa_filter')}
-            />
-            <LabChip
-              label="FILTER ON"
-              selected={filterOn}
-              onPress={() => setFilterOn(true)}
-              onLongPress={() => p.help('aa_filter')}
-            />
-            {SLOPE_CHIPS.map((s) => (
-              <LabChip
-                key={s}
-                label={`${s} dB/OCT`}
-                selected={filterOn && slope === s}
-                onPress={() => {
-                  setSlope(s);
-                  setFilterOn(true);
-                }}
-                onLongPress={() => p.help('aa_filter')}
-              />
-            ))}
-          </View>
-          <DragSlider
-            value={cutV}
-            onChange={setCutV}
-            label="CUTOFF"
-            readout={`${fmtHz(cutoffHz)} · ${(cutoffHz / nyq).toFixed(2)}×Nyquist`}
-            onHelp={() => p.help('aa_filter')}
-          />
+          {/* FILTER ON/OFF, the slopes and CUTOFF are dock controls now (ALIAS
+              tray + CUTOFF key — owner rule 2026-10-10). */}
           {viz ? (
             <viz.AAFilterView
               width={p.width}
@@ -859,7 +881,7 @@ export function SamplingModule(p: DigitalModuleProps) {
 
         <MythReality
           myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
-          reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
+          reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED (in the RATE tray) at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
         />
         <CheckQuestion spec={CHECK_ALIAS} />
         <CheckQuestion spec={CHECK_AA} />

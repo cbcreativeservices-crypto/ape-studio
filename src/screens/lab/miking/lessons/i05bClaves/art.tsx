@@ -94,7 +94,7 @@ export function clavesLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'rest', text: 'SUPPORTED CLAVE (END-ON)', short: 'SUPPORTED', u: s.rest.x + 30, v: s.rest.y + 110, align: 'left' },
     { id: 'striker', text: 'STRIKER', u: s.striker.b.x + 20, v: s.striker.b.y - 30, align: 'left' },
     { id: 'hollow', text: 'HAND’S HOLLOW', u: s.rest.x - 40, v: s.rest.y + 110, align: 'center', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -880, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -880, align: 'center', tone: 'muted', point: { u: -6000, v: -880 } },
   ];
 }
 

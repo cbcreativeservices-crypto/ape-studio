@@ -6,7 +6,7 @@
  * section of a band or orchestra on the shared plan (positions ILLUSTRATIVE).
  */
 import type { MalletArt } from '../shared/mallets/family.ts';
-import { malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
+import { malletDrawnAt, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
 import { malletPlanFor, type MalletPlanSpec } from '../shared/mallets/MalletPlan';
 import { MALLET_PAGES } from '../shared/mallets/pages';
 import { XYLO_FAM } from './model.ts';
@@ -28,6 +28,7 @@ export const I09_ART: MalletArt = {
   Instrument: malletInstrument(XYLO_FAM),
   labels: malletLabels(XYLO_FAM),
   hitTest: malletHitTest(XYLO_FAM),
+  figureAt: malletDrawnAt(XYLO_FAM),
   pages: MALLET_PAGES,
   stepCounts: { sound: 4 },
   SettingPlan: malletPlanFor(XYLO_FAM, XYLO_PLAN),

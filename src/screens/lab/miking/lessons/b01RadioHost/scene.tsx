@@ -9,7 +9,7 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { ArmClamp, Desk, Laptop, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { ArmClamp, Desk, DeskNearLegs, Laptop, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { DESK, GRIP_A, GRIP_B, HOST_A, HOST_B, LAPTOP_A, LAPTOP_B, PA_C, SCRIPT_A } from './geometry.ts';
@@ -26,7 +26,6 @@ export function B01Scene({ view, variant, headless = false, phones }: { view: Vi
       <Group>
         {variant === 'live' ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR} /> : null}
         <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} on="side" />
-        {two ? <ArmClamp view="side" grip={GRIP_B} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
         <StudioChair view="side" t={HOST_A} />
         {two ? <StudioChair view="side" t={HOST_B} /> : null}
         {two ? <SeatedTalker view="side" t={HOST_B} phones={ph} /> : null}
@@ -35,6 +34,10 @@ export function B01Scene({ view, variant, headless = false, phones }: { view: Vi
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} />
         <Script view="side" at={SCRIPT_A} />
         <SeatedTalker view="side" t={HOST_A} phones={ph} headless={headless} />
+        {/* Nearest the viewer: the desk's near legs, and the second host's
+            clamp on the near side edge (over the desk's edge). */}
+        <DeskNearLegs box={DESK} floor={SEATED_FLOOR} />
+        {two ? <ArmClamp view="side" grip={GRIP_B} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
       </Group>
     );
   }

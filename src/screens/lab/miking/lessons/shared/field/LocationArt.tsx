@@ -20,7 +20,7 @@
  *                  (the conductors themselves are above the drawing).
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Paint, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { pt, type PlayerPose } from '../players/playerPose.ts';
@@ -95,11 +95,15 @@ function buildCamera(view: ViewId, c: CameraSpec) {
     }
   } else {
     finder.addRRect(Skia.RRectXY(Skia.XYWHRect(max.x - 70, vMax - 6, 60, 40), 8, 8));
+    // The legs spread from the head under the camera's body (clash sweep
+    // 2026-10-10: they were centred on z = 0, so a camera set to one side —
+    // B03's — stood off its own tripod).
     const hx = (bodyX0 + max.x) / 2;
+    const hz = (vMin + vMax) / 2;
     for (let i = 0; i < 3; i++) {
       const a = Math.PI + (i * 2 * Math.PI) / 3;
-      legs.moveTo(hx, 0);
-      legs.lineTo(hx + Math.cos(a) * c.spread, Math.sin(a) * c.spread);
+      legs.moveTo(hx, hz);
+      legs.lineTo(hx + Math.cos(a) * c.spread, hz + Math.sin(a) * c.spread);
     }
   }
   return { body, lens, glass, finder, handle, legs, lower, clamps, spreader, pan, head };
@@ -306,9 +310,12 @@ export function BoomOperator({ view, poses, dim = 0.82, stub }: { view: ViewId; 
     }
     return p;
   }, [stub, view]);
+  // The whole operator is faded as ONE layer (clash sweep 2026-10-10: each
+  // part faded on its own let the far arm and the torso show through the
+  // near arm and the head).
   return (
-    <Group>
-      <PlayerBehind pose={pose} dim={dim} />
+    <Group layer={<Paint opacity={dim} />}>
+      <PlayerBehind pose={pose} />
       {stub ? (
         <>
           <Path path={pole} style="stroke" strokeWidth={36} strokeCap="round" color="#0b0c0f" />
@@ -318,7 +325,7 @@ export function BoomOperator({ view, poses, dim = 0.82, stub }: { view: ViewId; 
           </Group>
         </>
       ) : null}
-      <PlayerInFront pose={pose} dim={dim} />
+      <PlayerInFront pose={pose} />
     </Group>
   );
 }

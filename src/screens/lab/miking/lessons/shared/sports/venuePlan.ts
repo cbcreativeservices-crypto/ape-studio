@@ -187,7 +187,16 @@ export type Badge = { id: string; label: string; short: string; p: P2; kind: 'no
  *  white), open or closed. `ink` paints it another colour where the sport does
  *  (an ice rink's red centre and goal lines, its blue lines; goalposts);
  *  `dashed` for a broken line (rugby's 10 m and 5 m lines). */
-export type Marking = { pts: readonly P2[]; closed?: boolean; circle?: { c: P2; r: number }; ink?: 'white' | 'red' | 'blue' | 'yellow' | 'orange'; dashed?: boolean };
+export type Marking = { pts: readonly P2[]; closed?: boolean; circle?: { c: P2; r: number }; ink?: 'white' | 'red' | 'blue' | 'yellow' | 'orange'; dashed?: boolean; /** Line weight against the sport's plain line (a football goal line: 2). */ weight?: number; /** A short tick (hash marks): drawn at the real 4 in width, not the plan's visible line width. */ tick?: boolean };
+/** A painted area tinted apart from the field of play (a football end zone,
+ *  with its diagonal stripes). */
+export type PaintedZone = { pts: readonly P2[]; kind: 'endzone' };
+/** Painted field numerals (a football field's yard numbers), drawn as glyph
+ *  shapes at their real size — a few pixels tall on a phone, so never text.
+ *  `at`: where the yard line meets the numerals' bottom edge; `up`: which way
+ *  (+y or −y) the numerals' tops point (they read from the nearer sideline);
+ *  `arrow`: the plan x direction to the nearer goal (none at the 50). */
+export type FieldNumeral = { text: string; at: P2; up: 1 | -1; arrow?: 1 | -1 };
 
 export type VenueScene = {
   id: string;
@@ -199,6 +208,13 @@ export type VenueScene = {
   /** The surface: grass, a diamond's dirt, a hard court, ice, a mock area. */
   surface: 'grass' | 'diamond' | 'court' | 'ice' | 'mock' | SurfaceG3;
   markings: readonly Marking[];
+  /** Painted areas tinted apart from the field of play (football end zones). */
+  zones?: readonly PaintedZone[];
+  /** Painted yard numbers (football). */
+  numerals?: readonly FieldNumeral[];
+  /** Mowing stripes: where the first band starts and how wide each is (m) —
+   *  a football field is mown on its 5-yard lines. Default: 5 m from the left. */
+  mowing?: { x0: number; w: number };
   keepClear: readonly KeepClear[];
   routes: readonly Route[];
   footprints: readonly Footprint[];

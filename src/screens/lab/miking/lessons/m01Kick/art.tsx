@@ -38,6 +38,7 @@
  */
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
+import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { KICK_ANCHORS, KICK_GEOM as G, portOpening, silhouetteRods } from './geometry.ts';
 
 const PORT = KICK_ANCHORS['bd.port.center'];
@@ -94,9 +95,17 @@ function buildHardware(view: ViewId): Hardware {
   const ho = G.hoopOut;
   const hi = G.hoopIn;
   const rRod = ho + 10; // the rod clears the hoop's outside
-  const sides = new Set(silhouetteRods(view).map((r) => r.sgn));
-  for (const sgn of sides) {
-    const v = (rho: number) => sgn * rho;
+  // Each rod sits 18° off the view's silhouette, behind the cut: it projects
+  // at ρ·|cos 18°| (0.95 ρ), not at ρ — drawn at ρ, the bottom lugs, rods and
+  // claws ran ~15 mm through the floor the drum stands on (clash sweep
+  // 2026-10-10). This is also why no lug sits at bottom centre on a real kick.
+  const sides = new Map<1 | -1, number>();
+  for (const r of silhouetteRods(view)) {
+    const a = (r.phi * Math.PI) / 180;
+    sides.set(r.sgn, Math.abs(view === 'side' ? Math.cos(a) : Math.sin(a)));
+  }
+  for (const [sgn, k] of sides) {
+    const v = (rho: number) => sgn * rho * k;
     for (const end of [0, 1] as const) {
       // Batter end as drawn; the front end mirrored about the drum's middle.
       const X = (x: number) => (end === 0 ? x : G.L - x);
@@ -576,25 +585,28 @@ function SidePedal({ ped }: { ped: ReturnType<typeof pedalSideParts> }) {
 }
 
 /* ── labels and taps (mm, from the same anchors) ── */
-export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
+// The scenes' label type (it carries `at` / `point` / `alts` for leaders).
+export type { ArtLabel };
 
 export function kickLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
-    { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 14, v: -G.hoopOut - 46, align: 'right' },
+    // Moved names point back at their parts (clash sweep 2026-10-10: the
+    // batter's leader ended in empty glass; PILLOW sat on the rest beater).
+    { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 14, v: -G.hoopOut - 46, align: 'right', at: { u: 0, v: -G.R * 0.6 } },
     // Right-aligned to the front hoop: the top-right corner is the inset's.
     { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', short: 'FRONT', u: G.L + 30, v: -G.hoopOut - 46, align: 'right' },
   ];
   if (view === 'side') {
-    out.push({ id: 'beater', text: 'PEDAL', short: 'PEDAL', u: -230, v: -170, align: 'center', tone: 'illustrative' });
-    out.push({ id: 'pillow', text: 'PILLOW', u: 150, v: G.pillow.top + 50, align: 'center', tone: 'muted' });
+    out.push({ id: 'beater', text: 'PEDAL', short: 'PEDAL', u: -230, v: -170, align: 'center', tone: 'illustrative', at: { u: G.beater.axle.x, v: G.beater.axle.y }, alts: [{ u: -330, v: G.yFloor - 150, align: 'center' }] });
+    out.push({ id: 'pillow', text: 'PILLOW', u: 150, v: G.pillow.top + 50, align: 'center', tone: 'muted', at: { u: G.L * 0.55, v: (G.pillow.top + G.pillow.bottom) / 2 }, alts: [{ u: G.L * 0.55, v: G.yFloor + 40, align: 'center' }, { u: G.L + 40, v: G.pillow.top - 20, align: 'left' }] });
     out.push({ id: 'floor', text: 'FLOOR', short: 'FLOOR', u: 895, v: G.yFloor - 24, align: 'right', tone: 'illustrative' });
   } else {
     out.push({ id: 'pedal', text: 'PEDAL', short: 'PEDAL', u: -230, v: 110, align: 'center', tone: 'illustrative' });
     // Low on the cushion: the mic zones sit over its middle.
-    out.push({ id: 'pillow', text: 'PILLOW (BELOW)', short: 'PILLOW', u: 150, v: G.pillow.halfW - 40, align: 'center', tone: 'muted' });
-    out.push({ id: 'player', text: '← PLAYER', u: -300, v: -170, align: 'center', tone: 'muted' });
+    out.push({ id: 'pillow', text: 'PILLOW (BELOW)', short: 'PILLOW', u: 150, v: G.pillow.halfW - 40, align: 'center', tone: 'muted', at: { u: G.L * 0.5, v: 0 }, alts: [{ u: G.L + 40, v: -G.R * 0.35, align: 'left' }] });
+    out.push({ id: 'player', text: '← PLAYER', u: -300, v: -170, align: 'center', tone: 'muted', point: { u: -6000, v: -170 } });
     // The hardware's sourced COUNT, said in words (the cut shows only 2 per head).
-    out.push({ id: 'rods', text: '10 RODS PER HEAD', short: '10 RODS/HEAD', u: G.spurs[1].top.x + 40, v: G.hoopOut + 46, align: 'left', tone: 'illustrative' });
+    out.push({ id: 'rods', text: '10 RODS PER HEAD', short: '10 RODS/HEAD', u: G.spurs[1].top.x + 40, v: G.hoopOut + 46, align: 'left', tone: 'illustrative', at: { u: G.L - 60, v: G.R * 0.95 + 12 } });
     out.push({ id: 'spur', text: 'SPURS', short: 'SPURS', u: G.spurs[1].foot.x + 30, v: G.spurs[1].foot.z + 2, align: 'left', tone: 'illustrative' });
   }
   if (variant === 'ported') out.push({ id: 'port', text: 'PORT', short: 'PORT', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });

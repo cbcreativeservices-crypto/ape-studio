@@ -114,12 +114,15 @@ const ROUTE_SEGS: Record<string, Record<string, CiArtSeg[]>> = {
     'over-grid': [
       { d: 'M44 156 V144 H70 V84', len: 98 },
       { d: 'M70 84 V82.5 Q94 85 118 82.5 Q142 85 166 82.5 Q190 85 214 82.5 Q232 85 244 83 V84', len: 182, hidden: true },
-      { d: 'M244 84 V92', len: 8 },
+      // Ends ON the top box's rear (input) panel at x 247 — the line array
+      // hangs x 247–261 (routeArt LineArraySide); it used to stop 3 units
+      // short of the cabinet in mid-air (clash sweep 2026-10-10).
+      { d: 'M244 84 V96 H247', len: 15 },
     ],
     'duct-ride': [
       { d: 'M36 156 V140 H80 V84', len: 116 },
       { d: 'M80 84 V54.5 H242 V84', len: 221, hidden: true },
-      { d: 'M242 84 V92', len: 8 },
+      { d: 'M242 84 V97.5 H247', len: 18.5 },
     ],
   },
 };

@@ -555,14 +555,38 @@ export function EdgeStage({ width, height, profile }: { width: number; height: n
       {[10, 20, 30, 40, 50, 60].map((d) => (
         <Line key={d} x1={wallX + d} y1={topY + 36} x2={wallX + d} y2={botY - 2} stroke={ink.ply} strokeWidth={0.5} />
       ))}
-      {/* the head film draped over the edge, its collar down the outside */}
-      <Path d={`M${wallX - 30} ${topY + 2} L${wallX + wallW + 20} ${topY + 2}`} stroke={ink.head} strokeWidth={3} strokeLinecap="round" />
-      <Path d={`M${wallX - 30} ${topY + 2} Q${wallX - 44} ${topY + 2} ${wallX - 44} ${topY + 16} L${wallX - 44} ${topY + 34}`} stroke={ink.head} strokeWidth={3} fill="none" />
-      {/* hoop pulling the collar down, a rod and the lug */}
-      <Rect x={wallX - 56} y={topY + 20} width={14} height={16} rx={2} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
-      <Line x1={wallX - 49} y1={topY + 36} x2={wallX - 49} y2={botY - 30} stroke={ink.metal} strokeWidth={2.4} />
-      <Rect x={wallX - 53} y={topY + 14} width={8} height={5} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
-      <Rect x={wallX - 56} y={botY - 44} width={14} height={30} rx={4} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
+      {/* The hardware beside the wall, in true ORDER though not to the wall's
+          scale (clash sweep 2026-10-10: the lug floated off the shell and the
+          flesh hoop sat on top of the hoop). Real parts: a 7 mm wall; the head's
+          collar 2–3 mm outside the shell; the flesh hoop at the collar's foot;
+          the hoop's shelf pressing DOWN on the flesh hoop, its rim standing
+          above the head; a 5.5 mm rod from the hoop's ear into the lug; the lug
+          screwed to the shell's outer face through the wall. */}
+      {/* the head film over the edge, its collar down the outside of the
+          shell to the flesh hoop */}
+      <Path d={`M${wallX - 10} ${topY + 2} L${wallX + wallW + 20} ${topY + 2}`} stroke={ink.head} strokeWidth={3} strokeLinecap="round" />
+      <Path d={`M${wallX - 10} ${topY + 2} Q${wallX - 16} ${topY + 2} ${wallX - 16} ${topY + 9} L${wallX - 16} ${topY + 26}`} stroke={ink.head} strokeWidth={3} fill="none" />
+      <Rect x={wallX - 21} y={topY + 24} width={10} height={9} rx={2.5} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
+      {/* the hoop: rim above the head, its wall outside the flesh hoop, the
+          shelf bearing on the flesh hoop, the ear out at its foot */}
+      <Path
+        d={`M${wallX - 36} ${topY - 5} Q${wallX - 34} ${topY - 10} ${wallX - 28} ${topY - 9} L${wallX - 25} ${topY - 9} L${wallX - 25} ${topY + 20} L${wallX - 15} ${topY + 20} L${wallX - 15} ${topY + 24} L${wallX - 25} ${topY + 24} L${wallX - 25} ${topY + 40} L${wallX - 29} ${topY + 40} L${wallX - 29} ${topY - 5} Z`}
+        fill={ink.metal}
+        stroke={ink.metalDark}
+        strokeWidth={0.6}
+      />
+      <Rect x={wallX - 50} y={topY + 38} width={25} height={7} rx={2} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
+      {/* the rod: its square head on a washer on the ear, down into the lug */}
+      <Line x1={wallX - 39} y1={topY + 45} x2={wallX - 39} y2={botY - 46} stroke={ink.metal} strokeWidth={2.4} />
+      <Rect x={wallX - 44} y={topY + 35} width={10} height={3} rx={1} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
+      <Rect x={wallX - 42.5} y={topY + 28} width={7} height={7} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.5} />
+      {/* the lug: its body round the rod's nut, its base screwed flat to the
+          shell's outer face (a gasket between), the screw through the wall */}
+      <Rect x={wallX - 33} y={botY - 46} width={33} height={28} rx={3} fill={ink.metalDark} stroke={ink.metalDark} strokeWidth={0.6} />
+      <Rect x={wallX - 48} y={botY - 50} width={18} height={36} rx={5} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
+      <Line x1={wallX - 2} y1={botY - 45} x2={wallX - 2} y2={botY - 19} stroke="#151517" strokeWidth={2.5} />
+      <Line x1={wallX - 14} y1={botY - 32} x2={wallX + wallW} y2={botY - 32} stroke={ink.metalDark} strokeWidth={1.6} />
+      <Rect x={wallX + wallW} y={botY - 36} width={3} height={8} rx={1} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.4} />
       {/* contact zone */}
       <Line x1={peakX - contactW / 2} y1={topY + 4.5} x2={peakX + contactW / 2} y2={topY + 4.5} stroke={ink.amber} strokeWidth={2.5} />
       <SvgText x={peakX} y={topY - 8} fontSize={fs} fill={ink.amber} textAnchor="middle" fontFamily={fonts.barlowMedium}>contact</SvgText>
@@ -980,7 +1004,7 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
     const y = 150 - h;
     return (
       <G>
-        <ExteriorDrum cx={cx} yHead={y} dIn={dIn} depthIn={depthIn} k={KIT_K} lugs={legs ? 8 : 6} phaseDeg={legs ? 22.5 : 30} legs={legs ? 3 : 0} mount={legs ? null : { from: [-70, depthIn * 25.4 * 0.45], to: [-171, depthIn * 25.4 + 95] }} />
+        <ExteriorDrum cx={cx} yHead={y} dIn={dIn} depthIn={depthIn} k={KIT_K} lugs={legs ? 8 : 6} phaseDeg={legs ? 22.5 : 30} legs={legs ? 3 : 0} mount={legs ? null : { from: [-70, depthIn * 25.4 * 0.45], to: [-176, depthIn * 25.4 + 30], floorV: depthIn * 25.4 + 104 }} />
         <SvgText x={cx} y={y - 10} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
         <SvgText x={cx} y={y + h + (legs ? 34 : 16)} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
       </G>

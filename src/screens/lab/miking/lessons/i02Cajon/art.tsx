@@ -20,13 +20,29 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { INK, make, oval, rrect } from '../shared/concert/paths.ts';
 import { Hand, SKIN, SLEEVE, SLEEVE_RIM } from '../shared/smallperc/Hand';
-import { openHand, placeBetween, smoothPathD, tubeOutline, type Pt } from '../shared/smallperc/hands.ts';
+import { dorsalFlat, openHand, placeBetween, smoothPathD, tubeOutline, type Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D } from '../shared/smallperc/Player';
 import { FigureHead, headAbove, headProfile } from '../shared/players/PlayerFigure';
 import { pt } from '../shared/players/playerPose';
 import { BH, CAJ_DIMS, HX, HZ, PORT_R, SEAT, stateOf, type CajState } from './model.ts';
 
 const OPEN = openHand(14);
+/** From above, each hand lies flat on the plate's vertical face, fingers
+ *  down, its back toward the audience: seen from above it is the back of the
+ *  hand foreshortened to a strip ≈ 30 mm deep in front of the plate (a 190 mm
+ *  hand tilted ≈ 80° from the view: × 0.17). It was an open hand pointing
+ *  forward into the air past the box (clash sweep 2026-10-10). */
+const BACK = dorsalFlat(8);
+const FORESHORTEN = 0.17;
+function HandOnPlate({ x, z, right }: { x: number; z: number; right: boolean }) {
+  // the right hand's thumb toward −z (inward), the left's toward +z
+  const pl = { at: [x, z] as Pt, angle: 0, mirror: !right };
+  return (
+    <Group transform={[{ translateX: x }, { scaleX: FORESHORTEN }, { translateX: -x }]}>
+      <Hand geo={BACK} pl={pl} />
+    </Group>
+  );
+}
 const fromD = (d: string) => Skia.Path.MakeFromSVGString(d) ?? Skia.Path.Make();
 const tube = (pts: Pt[], w0: number, w1: number) => fromD(smoothPathD(tubeOutline(pts, w0, w1)));
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
@@ -259,9 +275,9 @@ export function CajonArt({ view, variant }: { view: ViewId; variant: VariantId }
         <BoxTop s={s} />
         <SeatedTop />
         <Arm2D s={top(s.L.S)} e={top(s.L.E)} w={top(s.L.W)} />
-        <Hand geo={OPEN} pl={plL} />
+        <HandOnPlate x={s.plateX + 1} z={s.L.W.z} right={false} />
         <Arm2D s={top(s.R.S)} e={top(s.R.E)} w={top(s.R.W)} />
-        <Hand geo={OPEN} pl={plR} />
+        <HandOnPlate x={s.plateX + 1} z={s.R.W.z} right />
       </Group>
     );
   }
@@ -285,14 +301,16 @@ export function cajonLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const front = s.id === 'frontport';
   if (view === 'top') {
     return [
-      { id: 'plate', text: 'FRONT PLATE', short: 'PLATE', u: s.plateX + 20, v: -HZ - 40, align: 'left' },
+      { id: 'plate', text: 'FRONT PLATE', short: 'PLATE', u: s.plateX + 20, v: -HZ - 40, align: 'left', at: { u: s.plateX, v: -HZ + 12 } },
       front ? { id: 'port', text: 'PORT (FACING UP)', short: 'PORT ↑', u: s.port.x + 60, v: HZ + 50, align: 'left', tone: 'muted' } : { id: 'port', text: 'PORT (ON THE BACK)', short: 'PORT', u: -HX - 20, v: HZ + 50, align: 'right', tone: 'muted' },
       { id: 'player', text: 'PLAYER (SEATED)', short: 'PLAYER', u: -200, v: -300, align: 'center', tone: 'muted' },
     ];
   }
   return [
-    { id: 'plate', text: 'FRONT PLATE', short: 'PLATE', u: s.plateX + 30, v: -BH + 40, align: 'left' },
-    { id: 'snares', text: 'SNARE WIRES (INSIDE)', short: 'SNARES', u: s.plateX + 30, v: -BH + 100, align: 'left', tone: 'muted' },
+    // The leaders land on the plate below the hands and on the wires inside
+    // (they landed on the player's fingers: clash sweep 2026-10-10).
+    { id: 'plate', text: 'FRONT PLATE', short: 'PLATE', u: s.plateX + 30, v: -BH + 40, align: 'left', at: { u: s.plateX - 2, v: (front ? -CAJ_DIMS.ledgeH.mm : 0) - 70 } },
+    { id: 'snares', text: 'SNARE WIRES (INSIDE)', short: 'SNARES', u: s.plateX + 30, v: -BH + 100, align: 'left', tone: 'muted', at: { u: s.plateX - 23, v: -BH + 40 } },
     front ? { id: 'port', text: 'PORT ↑ (ON THE LEDGE)', short: 'PORT ↑', u: HX + 30, v: -CAJ_DIMS.ledgeH.mm + 10, align: 'left', tone: 'muted' } : { id: 'port', text: 'PORT (ON THE BACK) →', short: 'PORT →', u: -HX - 20, v: s.port.y, align: 'right', tone: 'muted' },
     { id: 'player', text: 'PLAYER, SEATED ON THE BOX', short: 'PLAYER', u: -260, v: -1250, align: 'center', tone: 'muted' },
   ];

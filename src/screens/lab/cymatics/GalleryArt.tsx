@@ -167,8 +167,10 @@ export function GalleryArt({
   const bezel: BezelItem[] = [
     { k: 'REGIONS', v: String(analysis.regions.count), helpKey: 'art_fill' },
     { k: 'FILLED', v: `${filled}`, helpKey: 'art_fill', tint: filled > 0 ? colors.amber : colors.textSub },
-    { k: 'UNDO', v: '‹', tint: canUndo ? colors.amber : colors.textSub, onPress: canUndo ? undo : undefined, helpKey: 'art_fill' },
-    { k: 'REDO', v: '›', tint: canRedo ? colors.amber : colors.textSub, onPress: canRedo ? redo : undefined, helpKey: 'art_fill' },
+    // Read-only (owner rule 2026-10-10: the bezel is a READOUT; every control
+    // lives in the dock) — the steps you can undo / redo (FILL tray).
+    { k: 'UNDO', v: String(hist.i), tint: canUndo ? colors.amber : colors.textSub, helpKey: 'art_fill' },
+    { k: 'REDO', v: String(hist.list.length - 1 - hist.i), tint: canRedo ? colors.amber : colors.textSub, helpKey: 'art_fill' },
   ];
 
   const params: DockParam[] = [
@@ -200,6 +202,15 @@ export function GalleryArt({
           <View style={styles.chips}>
             <LabChip label="Custom colour…" selected={false} onPress={() => setPickerOpen(true)} onLongPress={() => onHelp('art_fill')} />
             <LabChip label={erase ? 'Erase ON — tap a region' : 'Erase'} selected={erase} onPress={() => setErase((e) => !e)} onLongPress={() => onHelp('art_fill')} />
+          </View>
+          {/* Undo / redo / clear — moved off the bezel and out of the well
+              (owner rule 2026-10-10: every control lives in the dock). Here in
+              the FILL tray, beside the fills they step through. */}
+          <Text style={styles.trayHead}>UNDO · REDO · CLEAR</Text>
+          <View style={styles.chips}>
+            <LabChip label={canUndo ? `‹ Undo (${hist.i})` : '‹ Undo — nothing to undo'} selected={false} onPress={canUndo ? undo : () => {}} onLongPress={() => onHelp('art_fill')} />
+            <LabChip label={canRedo ? `Redo (${hist.list.length - 1 - hist.i}) ›` : 'Redo — nothing to redo ›'} selected={false} onPress={canRedo ? redo : () => {}} onLongPress={() => onHelp('art_fill')} />
+            <LabChip label="Clear all fills" selected={false} onPress={() => patch({ fills: [] })} onLongPress={() => onHelp('art_fill')} />
           </View>
           <Text style={styles.trayBlurb}>Tap a region on the figure to fill it with this colour. Regions are the areas between nodal lines — the parts of the plate that move together.</Text>
         </View>
@@ -285,9 +296,8 @@ export function GalleryArt({
         onHelp={onHelp}
       >
         <View style={styles.well}>
-          <Text style={styles.caption}>Tap a region to fill it. Nodal lines are the still lines of the figure — a fill never crosses one. UNDO and REDO are on the bezel.</Text>
+          <Text style={styles.caption}>Tap a region to fill it. Nodal lines are the still lines of the figure — a fill never crosses one. UNDO, REDO and CLEAR are in the FILL tray.</Text>
           <View style={styles.chips}>
-            <LabChip label="Clear all fills" selected={false} onPress={() => patch({ fills: [] })} />
             <LabChip label={saveState === 'saved' ? 'Artwork saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save failed — retry'} selected={false} onPress={retrySave} />
           </View>
           <ExportPanel subject={{ kind: 'pattern', pattern, geometry, artwork: art }} onHelp={onHelp} />

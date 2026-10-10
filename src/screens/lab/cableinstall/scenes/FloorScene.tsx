@@ -439,11 +439,15 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
         <DrumKitTop x={drumCx} y={drumCy} />
       </G>
       <StageBoxTop x={RISER.x + 2} y={RISER.y + 4} />
-      <PlanLabel x={drumCx} y={RISER.y + RISER.h - 2} text="DRUMS" size={9.6} />
+      {/* Label on clear deck just right of the riser's step (clash sweep
+          2026-10-10: it used to sit ON the kit — over the kick and floor toms). */}
+      <PlanLabel x={RISER.x + RISER.w + 6} y={70} text="DRUMS" anchor="start" size={9.6} />
       <G transform={`rotate(180 290 52)`}>
         <KeysTop x={262} y={44} w={56} h={16} />
       </G>
-      <PerformerTop x={290} y={38} m={PLOT.m} />
+      {/* Head centre ≈ 0.3 m upstage of the keyboard's player edge (y 44) —
+          it used to overlap the instrument (clash sweep 2026-10-10). */}
+      <PerformerTop x={290} y={35} m={PLOT.m} />
       <DiBoxTop x={323} y={56} />
       <PlanLabel x={290} y={72} text="KEYS · DI" size={9.6} />
       <GtrAmpTop x={40} y={30} />

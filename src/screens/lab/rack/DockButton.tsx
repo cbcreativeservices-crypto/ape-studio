@@ -30,6 +30,7 @@ export function DockButton({
   onPress,
   onLongPress,
   a11y,
+  dim,
 }: {
   label: string;
   /** Current value (mono amber). Key-variant buttons pass ''. */
@@ -56,6 +57,8 @@ export function DockButton({
   onLongPress?: () => void;
   /** Full accessibility sentence, e.g. "ROOM WIDTH: 8.4 m. Tap to adjust." */
   a11y: string;
+  /** A LOCKED control (rackTypes fader `locked`): drawn dimmed. */
+  dim?: boolean;
 }) {
   const isKey = variant === 'key';
   // Toggles and actions share the flat KEY skin; only a toggle carries an LED.
@@ -104,6 +107,7 @@ export function DockButton({
         // Every key now answers the finger.
         pressed && styles.btnPressed,
         fired && styles.btnFired,
+        dim && { opacity: 0.45 },
       ]}
       onPress={handlePress}
       onLongPress={onLongPress}

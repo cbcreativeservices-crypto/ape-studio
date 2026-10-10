@@ -188,7 +188,7 @@ export function tambourineLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     const out: ArtLabel[] = [
       { id: 'head', text: 'HEAD', u: p.c.x, v: -24, align: 'center' },
       { id: 'jingles', text: 'JINGLE PAIRS', short: 'JINGLES', u: p.c.x + 40, v: R + 60, align: 'center' },
-      { id: 'player', text: '← PLAYER', u: -330, v: -380, align: 'center', tone: 'muted' },
+      { id: 'player', text: '← PLAYER', u: -330, v: -380, align: 'center', tone: 'muted', point: { u: -6000, v: -380 } },
     ];
     if (variant === 'shaken') out.push({ id: 'shake', text: '↕ SHAKE', u: p.c.x - 170, v: -R - 150, align: 'center', tone: 'illustrative' });
     return out;
@@ -196,7 +196,7 @@ export function tambourineLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
     { id: 'head', text: 'HEAD (FRONT FACE)', short: 'HEAD', u: p.c.x + p.n.x * 70 - 20, v: p.c.y + p.n.y * 70 - 20, align: 'right' },
     { id: 'jingles', text: 'JINGLE PAIRS', short: 'JINGLES', u: p.c.x + p.e1.x * (R + 40) + 30, v: p.c.y + p.e1.y * (R + 40) + 10, align: 'left' },
-    { id: 'player', text: '← PLAYER', u: -330, v: -1420, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -330, v: -1420, align: 'center', tone: 'muted', point: { u: -6000, v: -1420 } },
   ];
   if (mounted) out.push({ id: 'mount', text: 'MOUNT', u: p.c.x - R - 60, v: -800, align: 'right', tone: 'illustrative' });
   else out.push({ id: 'hold', text: 'HELD AT 45°', u: p.c.x - 60, v: p.c.y + 170, align: 'right', tone: 'muted' });

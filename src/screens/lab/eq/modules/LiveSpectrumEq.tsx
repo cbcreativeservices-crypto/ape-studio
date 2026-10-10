@@ -372,6 +372,14 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
           <View style={styles.btnRow}>
             <MiniBtn label={bellOn ? 'BAND ON' : 'BAND OFF'} active={bellOn} onPress={() => setBellOn((v) => !v)} />
           </View>
+          {/* Mic capture on/off — was a tap on the MIC bezel cell (owner rule
+              2026-10-10: the bezel is read-only; controls dock). In this tray
+              so the dock keeps five whole keys on a phone; tapping the glass
+              still toggles it too (standing rule 2026-07-31). */}
+          <Text style={styles.trayHead}>MICROPHONE</Text>
+          <View style={styles.btnRow}>
+            <MiniBtn label={state === 'running' ? 'MIC LIVE — PAUSE' : 'MIC PAUSED — RESUME'} active={state === 'running'} onPress={state === 'running' ? onStop : onStart} />
+          </View>
         </View>
       ),
     },
@@ -395,7 +403,6 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
             k: 'MIC',
             v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
             tint: state === 'running' ? undefined : '#7a7f8a',
-            onPress: state === 'running' ? onStop : onStart,
           },
         ],
         render: (w, h) => (

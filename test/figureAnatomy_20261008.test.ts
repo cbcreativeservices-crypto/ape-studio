@@ -370,6 +370,29 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     }
   });
 
+  // Owner 2026-10-10 (views from above): shoes point the way the body faces;
+  // ears lie close to the skull; the shoulders are a rounded rectangle.
+  it('views from above: shoes toe-forward, ears close to the skull, shoulders a rounded rectangle', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    const above = src.slice(src.indexOf('function buildAbove('), src.indexOf('function buildSide('));
+    const shoe = above.slice(above.indexOf('const shoes ='), above.indexOf('});', above.indexOf('const shoes =')));
+    const vs = [...shoe.matchAll(/P\((-?\d+), (-?\d+)\)/g)].map((m) => Number(m[2]));
+    assert.ok(Math.max(...vs) >= 140 && Math.min(...vs) >= -100, `the toe ${Math.max(...vs)} mm ahead, the heel ${Math.min(...vs)} mm behind the foot point`);
+    const head = src.slice(src.indexOf('export function headAbove('), src.indexOf('export function FigureHead('));
+    const ears = head.slice(head.indexOf('const ears ='), head.indexOf(';', head.indexOf('const ears =')));
+    const xs = [...ears.matchAll(/P\(s \* (\d+),/g)].map((m) => Number(m[1]));
+    assert.ok(Math.max(...xs) <= 90, `the ears reach ${Math.max(...xs)} (skull 80): close to the skull`);
+    assert.match(above, /pt\(sR\.u - 40, sR\.v \+ 4\), \/\/ the deltoid/);
+    // Painted UNDER the body from above; a hanging arm is the deltoid's cap, no cut sleeve end.
+    assert.match(src, /\.filter\(\(s\) => s\.far \|\| pose\.view === 'above'\)/);
+    assert.match(above, /const aboveArm = /);
+    // The bowed/brass figure from above: the same rounded outline, slim arms.
+    const bowedSrc = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
+    assert.match(bowedSrc, /const path = smoothClosedP2\(pts\);/);
+    assert.match(bowedSrc, /limbPath\(S2, E2, 46, 40\), limbPath\(E2, w2, 38, 30\)/);
+    assert.match(above, /pt\(n\.u, n\.v - 112\), \/\/ the upper back/);
+  });
+
   // Owner 2026-10-10: the bow hand HOLDS the bow at the frog (it was open, palm up, beside the stick).
   it('bowed players: the right hand holds the bow at the frog (a grip on the stick, square to it)', () => {
     const bowed = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');

@@ -87,7 +87,6 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
     setGoal(gl);
     reseed(gl, gDrum);
   };
-  const cycleGoal = () => pickGoal(GOALS[(GOALS.findIndex((x) => x.id === goal) + 1) % GOALS.length].id);
   const pickDrum = (d: DrumKind) => {
     setGDrum(d);
     reseed(goal, d);
@@ -222,13 +221,10 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
             size: 'L',
             badge: RENDER_BADGE,
             bezel: [
-              // GOAL is a tap-to-cycle bezel cell (the PK-HOLD tap-cell
-              // pattern, as Chapter 7's VIEW): SHORT → OPEN → LOW → BEND. It
-              // changes four times in the whole exercise, while BATTER, RESO
-              // and DAMPING are ridden all the time — so the dock keeps five
-              // keys with ✓ CHECK on it. The well's feedback line carries the
-              // goal's start and hint.
-              { k: 'GOAL', v: goalInfo.short, tint: colors.amber, onPress: cycleGoal, flex: 1.15 },
+              // The bezel is READ-ONLY (owner rule 2026-10-10): GOAL is chosen
+              // on the dock (its GOAL key); here it is the readout. The well's
+              // feedback line carries the goal's start and hint.
+              { k: 'GOAL', v: goalInfo.short, tint: colors.amber, flex: 1.15 },
               { k: 'PITCH', v: `${gBatter} Hz`, tint: colors.cyan },
               { k: 'SUSTAIN', v: fmtS(g.rendered?.t60), tint: colors.green },
               { k: 'BEND', v: fmtCents(gBend), tint: colors.amber },
@@ -238,6 +234,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               faderParam({ id: 'gb', label: 'BATTER', value: gBatter, min: Math.round(gSpec.usefulHz[0] * 0.85), max: Math.round(gSpec.usefulHz[1] * 1.15), step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGBatter) }),
               faderParam({ id: 'gr', label: 'RESO', value: gReso, min: Math.round(gSpec.usefulHz[0] * 0.7), max: Math.round(gSpec.usefulHz[1] * 1.4), step: 1, format: (v) => `resonant head ${v.toFixed(0)} Hz · ${(12 * Math.log2(v / gBatter)).toFixed(1)} st vs batter`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGReso) }),
               faderParam({ id: 'gd', label: 'DAMPING', value: gDamp, min: 0, max: 1, step: 0.05, format: (v) => (v < 0.05 ? 'none' : v < 0.35 ? `${Math.round(v * 100)} % · gel` : v < 0.7 ? `${Math.round(v * 100)} % · felt` : `${Math.round(v * 100)} % · pillow`), formatShort: (v) => `${Math.round(v * 100)} %`, onChange: touch(setGDamp) }),
+              optionsParam({ id: 'goal', label: 'GOAL', value: goal, options: GOALS.map((x) => ({ key: x.id, label: x.label, short: x.short, blurb: x.start })), onChange: pickGoal }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: g.play },
               { kind: 'action', id: 'check', label: '✓ CHECK', onPress: check, tint: colors.amber },
             ],
@@ -246,12 +243,12 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="your hit against the goal; the shaded zone is where the green died-away mark has to land." prompt="Tap GOAL on the bezel to pick one, tune and damp, ▶ STRIKE, then ✓ CHECK." />
-              <DrumStatus playing={g.playing} pending={g.pending} failed={g.failed} rendering={g.status === 'rendering'} idle="stopped · tap GOAL on the bezel, tune and damp, ▶ STRIKE, then ✓ CHECK" label="the strike" />
+              <Landing looking="your hit against the goal; the shaded zone is where the green died-away mark has to land." prompt="Pick a GOAL below, tune and damp, ▶ STRIKE, then ✓ CHECK." />
+              <DrumStatus playing={g.playing} pending={g.pending} failed={g.failed} rendering={g.status === 'rendering'} idle="stopped · pick a GOAL below, tune and damp, ▶ STRIKE, then ✓ CHECK" label="the strike" />
               <Feedback tone="info">{`${goalInfo.label}. ${goalInfo.start} ${goalInfo.hint}`}</Feedback>
               {verdict ? <Feedback tone={verdict.met ? 'ok' : 'warn'}>{`${verdict.met ? 'Goal met. ' : 'Not yet. '}${verdict.lines.join(' ')}`}</Feedback> : null}
               <Card>
-                <Point title="Credit">Meet two of the four goals (MET on the bezel; tap GOAL there to move to the next). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
+                <Point title="Credit">Meet two of the four goals (MET on the bezel; pick the next with GOAL below). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
                 <Point title="Practice drum">{`${gSpec.name}. Pick another below (the goal re-seeds for it):`}</Point>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {DRUM_LIST.map((d) => (

@@ -22,7 +22,7 @@
  * on the current dev client, stated in the tray).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
@@ -355,6 +355,12 @@ function LiquidStudio() {
       formatShort: () => `${accel.toFixed(2)}g`,
       level: true,
       helpKey: 'acceleration',
+      // Fine steps under the lane (were buttons in the well — owner rule
+      // 2026-10-10: every lab control lives in the dock).
+      nudges: [
+        { label: '‹ −5%', onPress: () => setAccel((a) => Math.max(A_MIN, Math.round(a * 0.95 * 1000) / 1000)), a11y: 'Shake a little less' },
+        { label: '+5% ›', onPress: () => setAccel((a) => Math.min(A_MAX, Math.round(a * 1.05 * 1000) / 1000)), a11y: 'Shake a little more' },
+      ],
     },
     {
       kind: 'group',
@@ -649,14 +655,6 @@ function LiquidStudio() {
             <Text style={styles.readK}>
               THRESHOLD ≈ {fr.thresholdG > 2.5 ? `${fr.thresholdG.toFixed(0)} g (out of range)` : `${fr.thresholdG.toFixed(2)} g`} · NOW {accel.toFixed(2)} g
             </Text>
-            <View style={styles.nudgeRow}>
-              <Pressable onPress={() => setAccel((a) => Math.max(A_MIN, Math.round(a * 0.95 * 1000) / 1000))} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Shake a little less">
-                <Text style={styles.nudgeText}>‹ −5%</Text>
-              </Pressable>
-              <Pressable onPress={() => setAccel((a) => Math.min(A_MAX, Math.round(a * 1.05 * 1000) / 1000))} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Shake a little more">
-                <Text style={styles.nudgeText}>+5% ›</Text>
-              </Pressable>
-            </View>
           </View>
           <Text style={styles.readK}>
             damping: bulk {Math.round((fr.damping.bulk / dampTotal) * 100)} % · bottom {Math.round((fr.damping.bottom / dampTotal) * 100)} % · rim {Math.round((fr.damping.contact / dampTotal) * 100)} % · pattern: {FAMILY_LABEL[st.family]}
@@ -721,9 +719,6 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, flexShrink: 1 },
-  nudgeRow: { flexDirection: 'row', gap: 8 },
-  nudge: { borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 10, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
-  nudgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
   savedRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' },

@@ -6,7 +6,7 @@
  * (positions ILLUSTRATIVE).
  */
 import type { MalletArt } from '../shared/mallets/family.ts';
-import { malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
+import { malletDrawnAt, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
 import { malletPlanFor, type MalletPlanSpec } from '../shared/mallets/MalletPlan';
 import { MALLET_PAGES } from '../shared/mallets/pages';
 import { MARIMBA_FAM } from './model.ts';
@@ -28,6 +28,7 @@ export const I08_ART: MalletArt = {
   Instrument: malletInstrument(MARIMBA_FAM),
   labels: malletLabels(MARIMBA_FAM),
   hitTest: malletHitTest(MARIMBA_FAM),
+  figureAt: malletDrawnAt(MARIMBA_FAM),
   pages: MALLET_PAGES,
   stepCounts: { sound: 4 },
   SettingPlan: malletPlanFor(MARIMBA_FAM, MARIMBA_PLAN),

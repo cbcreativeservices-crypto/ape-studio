@@ -7,7 +7,8 @@
  * ScrollView). The meter IS the module, so the viz PINS on the stage glass
  * (size L, height-parametric); the REAL engine numbers (meterEngine only —
  * peakOf/rmsOf/dcOf/db/crestDb/vuStep/simulateLoudness) read on the BEZEL
- * (PK HOLD taps to reset — the tools' tap-to-reset idiom); GAIN/DC ride the
+ * (PK HOLD is a readout; the RESET HOLD dock key clears it — owner rule
+ * 2026-10-10: the bezel is read-only); GAIN/DC ride the
  * dock LANE; the SIGNAL collection opens a STICKY tray (A/B while the meter
  * reacts). Only teaching prose, mistakes and CheckQuestions scroll — each
  * well ends in its own guided-lesson entry row (the host row does not render
@@ -507,7 +508,7 @@ export function PeakModule(p: MeterModuleProps) {
       v: peakHold === -Infinity ? '—' : peakHold >= 0 ? `+${peakHold.toFixed(1)} OVR` : fmtDbC(peakHold),
       tint: peakHold >= 0 ? RED : undefined,
       helpKey: 'peak_hold',
-      onPress: () => setPeakHold(rawPeakDb), // tap = reset the latch
+      // Read-only (owner rule 2026-10-10): the RESET HOLD dock key clears it.
       flex: 1.1,
     },
     { k: 'OVERS', v: `${overs}`, tint: overs > 0 ? RED : undefined, helpKey: 'peak_meter', flex: 0.7 },
@@ -529,6 +530,9 @@ export function PeakModule(p: MeterModuleProps) {
       helpKey: 'peak_hold',
     },
     signalParam(signal, setSignal, PEAK_SIGNALS, p.help, PEAK_HELP, 'peak_meter'),
+    // Reset the peak-hold latch (was a tap on the PK HOLD bezel cell — owner
+    // rule 2026-10-10: the bezel is read-only; controls dock).
+    { kind: 'action', id: 'pkreset', label: 'RESET HOLD', onPress: () => setPeakHold(rawPeakDb) },
   ];
 
   return (
@@ -552,8 +556,8 @@ export function PeakModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and drive the columns into the OVER lamp; tap the PK HOLD readout to
-          reset its latch, and A/B the SIGNAL tray while the meter reacts.
+          Ride the GAIN lane and drive the columns into the OVER lamp; tap RESET HOLD to clear
+          the PK HOLD latch, and A/B the SIGNAL tray while the meter reacts.
         </Text>
 
         <CollapsibleSection title="SAMPLE-BY-SAMPLE, THEN A MEMORY">

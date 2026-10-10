@@ -7,7 +7,7 @@
  * ILLUSTRATIVE).
  */
 import type { MalletArt } from '../shared/mallets/family.ts';
-import { malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
+import { malletDrawnAt, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
 import { malletPlanFor, type MalletPlanSpec } from '../shared/mallets/MalletPlan';
 import { MALLET_PAGES } from '../shared/mallets/pages';
 import { VIBE_FAM } from './model.ts';
@@ -33,6 +33,7 @@ export const I07_ART: MalletArt = {
   Instrument: malletInstrument(VIBE_FAM),
   labels: malletLabels(VIBE_FAM),
   hitTest: malletHitTest(VIBE_FAM),
+  figureAt: malletDrawnAt(VIBE_FAM),
   pages: MALLET_PAGES,
   // HOW IT SOUNDS has the fans as a fourth rack step.
   stepCounts: { sound: 5 },

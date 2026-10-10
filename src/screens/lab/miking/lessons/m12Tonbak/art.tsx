@@ -239,7 +239,10 @@ export function tonbakLabels(view: ViewId): ArtLabel[] {
       { id: 'bowl', text: 'BOWL', u: radiusAt(sb) + 20, v: zOf(sb), align: 'left', tone: 'muted' },
       { id: 'neck', text: 'NECK', u: radiusAt(0.62 * T_LEN) + 20, v: zOf(0.62 * T_LEN), align: 'left', tone: 'muted' },
       { id: 'foot', text: 'FOOT · OPENING', short: 'OPENING', u: radiusAt(T_LEN) + 20, v: zOf(T_LEN) + 4, align: 'left', tone: 'muted' },
-      { id: 'player', text: 'PLAYER', u: -470, v: 160, align: 'center', tone: 'muted' },
+      // In free space at the glass's top-left, beside the figure, its leader to the body (it was set
+      // on the arm and moved out with a leader the length of the figure:
+      // clash sweep 2026-10-10).
+      { id: 'player', text: 'PLAYER', u: -690, v: -420, align: 'left', tone: 'muted', at: { u: -590, v: -250 }, alts: [{ u: -690, v: 420, align: 'left' }] },
     ];
   }
   return [

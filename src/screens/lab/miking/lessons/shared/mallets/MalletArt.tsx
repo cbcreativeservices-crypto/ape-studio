@@ -837,18 +837,63 @@ export function malletLabels(fam: MalletFamily) {
       if (ex.lid) out.push({ id: 'lid', text: 'LID (OPEN, SEEN THROUGH)', short: 'LID', u: 0, v: L.yNat - 2 * (L.row.Dlow.mm / 2) + 50, align: 'center', tone: 'muted' });
       if (ex.table) out.push({ id: 'table', text: 'TABLE', u: L.xLow - 60, v: L.yNat + CASE.base + 90, align: 'right', tone: 'muted' });
       out.push({ id: 'floor', text: 'FLOOR', u: L.xLow + 150, v: yF - 18, align: 'right', tone: 'illustrative' });
-      out.push({ id: 'player', text: 'PLAYER (BEHIND)', short: 'PLAYER', u: 0, v: yF - 1820, align: 'center', tone: 'illustrative' });
+      // Its leader to the player's chest (a moved name pointed at a mallet
+      // head on the bars: clash sweep 2026-10-10).
+      out.push({ id: 'player', text: 'PLAYER (BEHIND)', short: 'PLAYER', u: 0, v: yF - 1820, align: 'center', tone: 'illustrative', at: { u: 0, v: yF - 1300 } });
     } else {
       const n = L.naturals[Math.floor(L.naturals.length * 0.25)];
       const a = L.accidentals[Math.floor(L.accidentals.length * 0.2)];
-      out.push({ id: 'nat', text: 'NATURALS', u: n.x, v: L.zNat - n.L / 2 - 30, align: 'center' });
+      // The naturals' row is nearest the player, so a name above it lands on
+      // the player's arms and mallets (clash sweep 2026-10-10): it sits off
+      // the row's high end first, its leader on a natural.
+      const byX = [...L.naturals].sort((p, q) => p.x - q.x);
+      const nHi = byX[0];
+      const nAt = byX[Math.floor(byX.length * 0.2)];
+      out.push({ id: 'nat', text: 'NATURALS', u: n.x, v: L.zNat - n.L / 2 - 30, align: 'center', at: { u: nAt.x, v: L.zNat - nAt.L * 0.3 }, alts: [{ u: nHi.x - nHi.w / 2, v: L.zNat - nHi.L / 2 - 45, align: 'left' }, { u: nHi.x - nHi.w / 2 - 70, v: L.zNat, align: 'right' }] });
       out.push({ id: 'acc', text: 'ACCIDENTALS', short: 'SHARPS', u: a.x, v: L.zAcc + a.L / 2 + 40, align: 'center' });
-      out.push({ id: 'player', text: 'PLAYER', u: 330, v: L.zPlayer, align: 'left', tone: 'muted' });
+      // moved, its leader goes to the player's head, not to empty glass (clash sweep 2026-10-10)
+      out.push({ id: 'player', text: 'PLAYER', u: 330, v: L.zPlayer, align: 'left', tone: 'muted', point: { u: 60, v: L.zPlayer } });
       out.push({ id: 'aud', text: 'AUDIENCE ↓', u: 0, v: G.boom + 100, align: 'center', tone: 'muted' });
       out.push({ id: 'low', text: 'LOW END →', short: 'LOW →', u: L.xLow - 10, v: L.halfDepth(L.xLow) + 60, align: 'right', tone: 'muted' });
       if (ex.motor && ex.motor.kind === 'box') out.push({ id: 'motor', text: 'MOTOR', u: (ex.motor.min.x + ex.motor.max.x) / 2, v: ex.motor.max.z + 40, align: 'center', tone: 'muted' });
     }
     return out;
+  };
+}
+
+/** Distance from (u, v) to the segment a–b (mm). */
+function segDist(u: number, v: number, ax: number, av: number, bx: number, bv: number): number {
+  const dx = bx - ax;
+  const dv = bv - av;
+  const t = Math.max(0, Math.min(1, ((u - ax) * dx + (v - av) * dv) / (dx * dx + dv * dv || 1)));
+  return Math.hypot(u - (ax + t * dx), v - (av + t * dv));
+}
+
+/** The drawn player from above (shoulders, arms, mallets), which the hit test
+ *  does not name, so the part labels keep off it (label occupancy only; taps
+ *  unchanged — clash sweep 2026-10-10: NATURALS sat on the player's arm). The
+ *  same anchors buildTop draws from. */
+export function malletDrawnAt(fam: MalletFamily) {
+  const G = malletGeom(fam);
+  return function drawnAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
+    if (view === 'side') return false;
+    const vv = G.layouts[variant] ? variant : fam.variants[0].row.id;
+    const L = G.layouts[vv];
+    const zP = L.zPlayer;
+    if (((u / (240 + tol)) ** 2) + (((v - zP) / (125 + tol)) ** 2) <= 1) return true;
+    // the arms (≈ 70 mm across), shoulder → elbow bend → hand
+    for (const [a, b, c] of [
+      [[-190, zP + 30], [-224, zP + 150], [-170, zP + 260]],
+      [[190, zP + 30], [232, zP + 140], [190, zP + 250]],
+    ] as const) {
+      if (segDist(u, v, a[0], a[1], b[0], b[1]) <= 38 + tol || segDist(u, v, b[0], b[1], c[0], c[1]) <= 38 + tol) return true;
+    }
+    // the mallets, hand → head
+    const midA = L.naturals[Math.floor(L.naturals.length * 0.62)];
+    const midB = L.accidentals[Math.floor(L.accidentals.length * 0.35)];
+    if (segDist(u, v, -170, zP + 260, midA.x, midA.z) <= 8 + tol) return true;
+    if (segDist(u, v, 190, zP + 250, midB.x, midB.z - midB.L * 0.15) <= 8 + tol) return true;
+    return false;
   };
 }
 

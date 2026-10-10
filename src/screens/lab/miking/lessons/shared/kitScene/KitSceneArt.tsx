@@ -288,7 +288,10 @@ let holderTop: SkPath | null = null;
  * shoulder's x and z, the snare S0, the pedals) — the keep-outs the mic is
  * stopped by are unchanged (kitSceneModel.ts).
  */
-type DrummerDrawn = { pose: PlayerPose; sticks: SkPath };
+/** `sticks` the right hand's (over the hi-hat), `farSticks` the left hand's
+ *  (on the snare): drawn in separate layers so each fist closes OVER its own
+ *  stick (clash sweep 2026-10-10: a stick lay across the far hand's fingers). */
+type DrummerDrawn = { pose: PlayerPose; sticks: SkPath; farSticks: SkPath };
 const drummerCache = new Map<ViewId, DrummerDrawn>();
 function drummerOf(view: ViewId): DrummerDrawn {
   const hit = drummerCache.get(view);
@@ -303,12 +306,15 @@ function drummerOf(view: ViewId): DrummerDrawn {
   const tipHH = { x: hh.c.x + 50, y: hh.c.y - 14, z: hh.c.z + hhR - 30 };
   const tipSn = { x: S0.x + 40, y: S0.y - 8, z: S0.z + 10 };
   const sticks = make();
+  const farSticks = make();
   let pose: PlayerPose;
   if (view === 'side') {
     const seatY = yAt(t.seatH);
     const hip = pt(t.c.u + 10, seatY - 90);
     const kneeR = pt(hip.u + 420, yAt(520));
-    const wristR = pt(head.x + 214, yAt(980));
+    // The right wrist a little back and up from the hi-hat, so the stick
+    // shows between the fist and the cymbal (it hid behind the hand).
+    const wristR = pt(head.x + 176, yAt(995));
     const wristL = pt(head.x + 184, yAt(840));
     const dirR = Math.atan2(tipHH.y - wristR.v, tipHH.x - wristR.u);
     const dirL = Math.atan2(tipSn.y - wristL.v, tipSn.x - wristL.u);
@@ -332,13 +338,10 @@ function drummerOf(view: ViewId): DrummerDrawn {
       footL: pt(KIT.hihatPedal.u0 + 100, KIT_FLOOR_Y),
       floor: KIT_FLOOR_Y,
     };
-    // The sticks: from just behind each fist to its tip.
-    for (const [w, d, tip] of [
-      [wristR, dirR, tipHH],
-      [wristL, dirL, tipSn],
-    ] as const) {
-      seg(sticks, w.u + Math.cos(d) * 30, w.v + Math.sin(d) * 30, tip.x, tip.y);
-    }
+    // The sticks: from inside each fist (its butt hidden in the hand and
+    // under the forearm) to its tip.
+    seg(sticks, wristR.u + Math.cos(dirR) * 20, wristR.v + Math.sin(dirR) * 20, tipHH.x, tipHH.y);
+    seg(farSticks, wristL.u + Math.cos(dirL) * 20, wristL.v + Math.sin(dirL) * 20, tipSn.x, tipSn.y);
   } else {
     // From above, authored chest toward +v round the neck, turned to face +x
     // (`facing` 0): (right, fwd) lands at world (neck + fwd, neck + right),
@@ -371,15 +374,15 @@ function drummerOf(view: ViewId): DrummerDrawn {
       footL: L(-190, 470),
       floor: null,
     };
-    for (const [w, tip] of [
-      [wR, tipHH],
-      [wL, tipSn],
+    for (const [w, tip, path] of [
+      [wR, tipHH, sticks],
+      [wL, tipSn, farSticks],
     ] as const) {
       const a = Math.atan2(tip.z - w.z, tip.x - w.x);
-      seg(sticks, w.x + Math.cos(a) * 30, w.z + Math.sin(a) * 30, tip.x, tip.z);
+      seg(path, w.x + Math.cos(a) * 20, w.z + Math.sin(a) * 20, tip.x, tip.z);
     }
   }
-  const d = { pose, sticks };
+  const d = { pose, sticks, farSticks };
   drummerCache.set(view, d);
   return d;
 }
@@ -405,6 +408,8 @@ function DrummerSide() {
   const d = drummerOf('side');
   return (
     <Group>
+      {/* the left stick under the far fist, the right one under the near fist */}
+      <Sticks path={d.farSticks} />
       <PlayerBehind pose={d.pose} />
       <Sticks path={d.sticks} />
       <PlayerInFront pose={d.pose} />
@@ -419,9 +424,13 @@ function DrummerTop({ part }: { part: 'legs' | 'upper' }) {
   if (part === 'legs') return <PlayerBehind pose={d.pose} part="legs" />;
   return (
     <Group>
+      {/* From above the fists close over their sticks (palms down): the
+          left stick, the left arm, the right stick (it crosses higher), the
+          right arm. */}
+      <Sticks path={d.farSticks} />
       <PlayerBehind pose={d.pose} part="upper" />
-      <PlayerInFront pose={d.pose} />
       <Sticks path={d.sticks} />
+      <PlayerInFront pose={d.pose} />
     </Group>
   );
 }
@@ -613,14 +622,25 @@ export function kitLabels(view: ViewId, opts: { drummer?: boolean } = {}): ArtLa
   const c = KIT_PLACED_CYMBALS;
   const R = (id: 'hihat' | 'crash1' | 'crash2' | 'ride') => c[id].spec.d.mm / 2;
   if (view === 'side') {
+    // A point ON a cymbal seen edge-on (d mm along it from its centre, + toward
+    // the audience), for the leaders: a moved name points at its cymbal, never
+    // at the drummer in front of it (clash sweep 2026-10-10: HI-HATS pointed
+    // at the drummer's shoulder, SNARE at the floor tom).
+    const on = (id: 'hihat' | 'crash1' | 'crash2' | 'ride', d: number) => {
+      const t = (c[id].tiltDeg * Math.PI) / 180;
+      return { u: c[id].c.x + d * Math.cos(t), v: c[id].c.y - d * Math.sin(t) };
+    };
+    const snR = KIT_DRUMS.snare.spec.d.mm / 2;
     const out: ArtLabel[] = [
-      { id: 'ride', text: '20 IN RIDE', short: 'RIDE', u: c.ride.c.x, v: c.ride.c.y - 90, align: 'center' },
-      { id: 'crash2', text: '18 IN CRASH', short: 'CRASH', u: c.crash2.c.x + 120, v: c.crash2.c.y - 110, align: 'center' },
-      { id: 'crash1', text: '16 IN CRASH', short: 'CRASH', u: c.crash1.c.x - 160, v: c.crash1.c.y - 120, align: 'center' },
-      { id: 'hihat', text: 'HI-HATS', short: 'HATS', u: c.hihat.c.x - R('hihat') - 20, v: c.hihat.c.y - 40, align: 'right' },
+      { id: 'ride', text: '20 IN RIDE', short: 'RIDE', u: c.ride.c.x, v: c.ride.c.y - 90, align: 'center', at: on('ride', R('ride') * 0.55) },
+      { id: 'crash2', text: '18 IN CRASH', short: 'CRASH', u: c.crash2.c.x + 120, v: c.crash2.c.y - 110, align: 'center', at: on('crash2', -R('crash2') * 0.35) },
+      { id: 'crash1', text: '16 IN CRASH', short: 'CRASH', u: c.crash1.c.x - 160, v: c.crash1.c.y - 250, align: 'center', at: on('crash1', -R('crash1') * 0.6) },
+      // The hi-hat's left half is behind the drummer: its name above the hands,
+      // the leader down to the half that shows.
+      { id: 'hihat', text: 'HI-HATS', short: 'HATS', u: c.hihat.c.x + 60, v: c.hihat.c.y - 380, align: 'center', at: on('hihat', R('hihat') * 0.6) },
       { id: 'kick', text: 'KICK', u: KICK_GEOM.L / 2, v: 40, align: 'center' },
       { id: 'floor', text: 'FLOOR TOM', short: 'FLOOR', u: KIT_DRUMS.floor.c.x, v: KIT_DRUMS.floor.c.y + KIT_DRUMS.floor.spec.depth.mm / 2, align: 'center' },
-      { id: 'snare', text: 'SNARE', u: S0.x - 210, v: S0.y + 30, align: 'right' },
+      { id: 'snare', text: 'SNARE', u: S0.x - 210, v: S0.y + 30, align: 'right', at: { u: S0.x + snR * 0.75, v: S0.y - 6 } },
     ];
     if (opts.drummer !== false) out.push({ id: 'drummer', text: 'DRUMMER', u: DRUMMER.headTop.x, v: DRUMMER.headTop.y + 120, align: 'center', tone: 'illustrative' });
     return out;

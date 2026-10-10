@@ -58,8 +58,13 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
     const g = sc.oud!;
     if (view === 'side') {
       out.push(L('roseMain', 'MAIN ROSE', [OUD.roseMainX.mm, -OUD.roseMainD.mm / 2 - 26]));
-      out.push(L('roseSmall', 'SMALL ROSES', [OUD.roseSmallX.mm, OUD.roseSmallY.mm + 46], 'center', { short: 'ROSES' }));
-      out.push(L('bridge', 'BRIDGE', [-6, OUD.bridgeW.mm / 2 + 30]));
+      out.push(L('roseSmall', 'SMALL ROSES', [OUD.roseSmallX.mm, OUD.roseSmallY.mm + 46], 'center', { short: 'ROSES', ...at([OUD.roseSmallX.mm, OUD.roseSmallY.mm]), alts: [{ u: 650, v: 170, align: 'left' }] }));
+      // CLASH SWEEP 2026-10-10: the place under the bridge is on the face
+      // and everything below the face is the lap's keep-out, so BRIDGE fell
+      // to free space and its leader crossed SMALL ROSES'. Both now stack in
+      // the clear column right of the fretting arm, BRIDGE (the higher part)
+      // on the higher row, so the two leaders never cross.
+      out.push(L('bridge', 'BRIDGE', [-6, OUD.bridgeW.mm / 2 + 30], 'center', { ...at([-6, OUD.bridgeW.mm / 2 - 6]), alts: [{ u: 650, v: 112, align: 'left' }] }));
       out.push(L('board', 'FRETLESS NECK', [(g.joint + g.nut) / 2, -g.boardHalf(g.joint) - 26], 'center', { short: 'NECK' }));
       out.push(L('pegbox', 'PEGBOX', [g.pegboxEnd.x + 10, -96]));
       out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
@@ -94,7 +99,12 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
     const res = V(g.bowl.cx, 0, g.bowl.zc - g.bowl.c - 40);
     out.push(L('resonator', 'RESONATOR', [res[0] + 190, res[1] - 120], 'left', at([res[0] + 60, res[1] - 90])));
     out.push(L('frets', 'FRETS ON WAX', V(420, g.neck.half + 60, 70), 'center', { short: 'FRETS', ...at(V(420, 0, 6)) }));
-    out.push(L('gourd', 'GOURD (SUPPORT)', V(g.gourd.x, 0, g.gourd.z - g.gourd.r - 40), 'center', { short: 'GOURD' }));
+    // CLASH SWEEP 2026-10-10: the place above the gourd is under the neck,
+    // so the words fell below it with a leader to an empty spot on the
+    // floor. They now name the gourd itself, from beside it.
+    const gR = V(g.gourd.x + g.gourd.r + 30, 0, g.gourd.z);
+    const gL = V(g.gourd.x - g.gourd.r - 30, 0, g.gourd.z + g.gourd.r * 0.4);
+    out.push(L('gourd', 'GOURD (SUPPORT)', V(g.gourd.x, 0, g.gourd.z - g.gourd.r - 40), 'center', { short: 'GOURD', ...at(V(g.gourd.x + g.gourd.r * 0.55, 0, g.gourd.z)), alts: [{ u: gR[0], v: gR[1], align: 'left' }, { u: gL[0], v: gL[1], align: 'right' }] }));
     out.push(L('yali', 'YALI', V(930, g.neck.half + 50, 70), 'center', at(V(930, 0, -40))));
     out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
   } else {

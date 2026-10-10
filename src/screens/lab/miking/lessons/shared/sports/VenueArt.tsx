@@ -100,7 +100,12 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
     // Mowing stripes (grass) or boards (a court): bands across x.
     const stripes = make();
     if (scene.surface === 'grass' || scene.surface === 'diamond') {
-      for (let u = b.u0, k = 0; u < b.u1; u += 5000, k++) if (k % 2 === 0) stripes.addRect(Skia.XYWHRect(u, b.v0, 5000, b.v1 - b.v0));
+      // Bands across x, 5 m from the left edge by default; a football field is
+      // mown on its 5-yard lines (scene.mowing), so the bands meet the lines.
+      const mw = (scene.mowing?.w ?? 5) * 1000;
+      const m0 = scene.mowing ? scene.mowing.x0 * 1000 : b.u0;
+      const first = m0 - Math.ceil((m0 - b.u0) / mw) * mw;
+      for (let u = first, k = Math.round((first - m0) / mw); u < b.u1; u += mw, k++) if (((k % 2) + 2) % 2 === 0) stripes.addRect(Skia.XYWHRect(u, b.v0, mw, b.v1 - b.v0));
     } else if (scene.surface === 'court') {
       for (let v = b.v0; v < b.v1; v += 600) {
         stripes.moveTo(b.u0, v);
@@ -149,6 +154,7 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
       <Group clip={g.play}>
         {s.stripe ? <Path path={g.stripes} color={s.stripe} opacity={0.35} /> : <Path path={g.stripes} style="stroke" strokeWidth={Math.max(20, 0.6 * px)} color="#5a3a1c" opacity={0.35} />}
       </Group>
+      <ZonesArt scene={scene} />
       {scene.surface === 'diamond' ? (
         <Group clip={g.play}>
           <Path path={g.dirt}>
@@ -167,18 +173,117 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
   );
 }
 
+/** Painted areas apart from the field of play: a football end zone — a
+ *  deeper turf tone with the classic diagonal stripes (2 yd bands at 45°),
+ *  logo-free. */
+function ZonesArt({ scene }: { scene: VenueScene }) {
+  const g = useMemo(() => {
+    const fill = make();
+    const stripes = make();
+    for (const z of scene.zones ?? []) {
+      const p = polyPath(z.pts);
+      fill.addPath(p);
+      const b = bounds(z.pts);
+      const gap = 2 * 914.4;
+      const h = b.v1 - b.v0;
+      const band = make();
+      for (let u = b.u0 - h; u < b.u1; u += 2 * gap) {
+        band.moveTo(u, b.v1);
+        band.lineTo(u + gap, b.v1);
+        band.lineTo(u + gap + h, b.v0);
+        band.lineTo(u + h, b.v0);
+        band.close();
+      }
+      stripes.addPath(band);
+    }
+    return { fill, stripes, b: bounds((scene.zones ?? []).flatMap((z) => z.pts)) };
+  }, [scene]);
+  if (!scene.zones?.length) return null;
+  return (
+    <Group>
+      <Path path={g.fill}>
+        <LinearGradient start={vec(g.b.u0, g.b.v0)} end={vec(g.b.u1, g.b.v1)} colors={['#2f5a3a', '#244a2e']} />
+      </Path>
+      <Group clip={g.fill}>
+        <Path path={g.stripes} color="#3d6e47" opacity={0.75} />
+      </Group>
+    </Group>
+  );
+}
+
+/*
+ * Field numerals as glyph shapes (a few pixels tall on a phone: never text).
+ * Each digit in its own 4 × 6 ft box (x right, y up from the bottom), drawn as
+ * a 1 ft stroke on the centre line of the block numeral, square-ended.
+ */
+const DIGIT: Record<string, readonly (readonly [number, number])[][]> = {
+  '0': [[[0.5, 0.5], [3.5, 0.5], [3.5, 5.5], [0.5, 5.5], [0.5, 0.5]]],
+  '1': [[[1.2, 4.6], [2.4, 5.5], [2.4, 0.5]]],
+  '2': [[[0.5, 5.5], [3.5, 5.5], [3.5, 3.0], [0.5, 3.0], [0.5, 0.5], [3.5, 0.5]]],
+  '3': [[[0.5, 5.5], [3.5, 5.5], [3.5, 0.5], [0.5, 0.5]], [[1.2, 3.0], [3.5, 3.0]]],
+  '4': [[[2.7, 5.5], [0.5, 2.0], [3.6, 2.0]], [[2.7, 5.5], [2.7, 0.5]]],
+  '5': [[[3.5, 5.5], [0.5, 5.5], [0.5, 3.2], [3.5, 3.2], [3.5, 0.5], [0.5, 0.5]]],
+};
+function NumeralsArt({ scene }: { scene: VenueScene }) {
+  const g = useMemo(() => {
+    const strokes = make();
+    const arrows = make();
+    const FT_MM = 304.8;
+    for (const n of scene.numerals ?? []) {
+      // Local frame in feet: X along the yard line's normal (the field's x
+      // as read from the nearer sideline), Y up the numeral; the yard line at X = 0.
+      const s = n.up;
+      const at = (X: number, Y: number) => uv({ x: n.at.x + s * X * 0.3048, y: n.at.y + s * Y * 0.3048 });
+      const digits = n.text.split('');
+      digits.forEach((d, i) => {
+        // 1 ft clear of the yard line in paint; 1.5 ft here, because the plan
+        // draws its lines wider than their 4 in so they read at phone size.
+        const left = digits.length === 1 ? -2 : i === 0 ? -5.5 : 1.5;
+        for (const stroke of DIGIT[d] ?? []) {
+          stroke.forEach(([x, y], k) => {
+            const o = at(left + x, y);
+            if (k === 0) strokes.moveTo(o.u, o.v);
+            else strokes.lineTo(o.u, o.v);
+          });
+        }
+      });
+      if (n.arrow) {
+        // Beside the outer digit on the goal side, near the numerals' top.
+        const dir = n.arrow * s;
+        const base = 6.0;
+        const a = at(dir * base, 4.0);
+        const b = at(dir * base, 5.5);
+        const tip = at(dir * (base + 2.9), 4.75);
+        arrows.moveTo(a.u, a.v);
+        arrows.lineTo(tip.u, tip.v);
+        arrows.lineTo(b.u, b.v);
+        arrows.close();
+      }
+    }
+    return { strokes, arrows, w: FT_MM };
+  }, [scene]);
+  if (!scene.numerals?.length) return null;
+  return (
+    <Group opacity={0.88}>
+      <Path path={g.strokes} style="stroke" strokeWidth={g.w} strokeCap="square" strokeJoin="miter" color={WHITE} />
+      <Path path={g.arrows} color={WHITE} />
+    </Group>
+  );
+}
+
 const INK = { white: WHITE, red: '#c43b3b', blue: '#2f5fb3', yellow: '#f2c230', orange: '#e8742c' } as const;
 function Markings({ scene, px }: { scene: VenueScene; px: number }) {
   const groups = useMemo(() => {
-    // One path per ink and dash: an ice rink's lines default to red, every other surface's to white.
+    // One path per ink, dash and weight: an ice rink's lines default to red, every other surface's to white.
     const fallback: keyof typeof INK = scene.surface === 'ice' ? 'red' : 'white';
-    const out = new Map<string, { ink: keyof typeof INK; dashed: boolean; path: SkPath }>();
+    const out = new Map<string, { ink: keyof typeof INK; dashed: boolean; weight: number; tick: boolean; path: SkPath }>();
     for (const m of scene.markings) {
       const ink = m.ink ?? fallback;
-      const key = `${ink}:${m.dashed ? 1 : 0}`;
+      const weight = m.weight ?? 1;
+      const key = `${ink}:${m.dashed ? 1 : 0}:${weight}:${m.tick ? 1 : 0}`;
       let g = out.get(key);
       if (!g) {
-        g = { ink, dashed: !!m.dashed, path: make() };
+        g = { ink, dashed: !!m.dashed, weight, tick: !!m.tick, path: make() };
         out.set(key, g);
       }
       if (m.circle) {
@@ -192,7 +297,7 @@ function Markings({ scene, px }: { scene: VenueScene; px: number }) {
   return (
     <Group>
       {groups.map((g) => (
-        <Path key={`${g.ink}${g.dashed}`} path={g.path} style="stroke" strokeWidth={g.ink === 'yellow' ? w * 1.6 : w} color={INK[g.ink]} opacity={0.88}>
+        <Path key={`${g.ink}${g.dashed}${g.weight}${g.tick}`} path={g.path} style="stroke" strokeWidth={(g.ink === 'yellow' ? w * 1.6 : g.tick ? w * 0.6 : w) * g.weight} color={INK[g.ink]} opacity={0.88}>
           {g.dashed ? <DashPathEffect intervals={[Math.max(900, 6 * px), Math.max(600, 4 * px)]} /> : null}
         </Path>
       ))}
@@ -509,6 +614,7 @@ export function VenuePlan({ scene, px, show, activeFootprint, highlight }: { sce
     <Group>
       <Surface scene={scene} px={px} />
       <Markings scene={scene} px={px} />
+      <NumeralsArt scene={scene} />
       <TokensArt scene={scene} px={px} />
       {on('keepClear') ? <KeepClearArt scene={scene} px={px} /> : null}
       {on('sectors') ? <SectorsArt scene={scene} px={px} /> : null}

@@ -129,8 +129,13 @@ export function ampLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     const out: ArtLabel[] = [
       { id: 'grille', text: 'GRILLE', u: GRILLE_X + 40, v: b.y0 + 40, align: 'left' },
-      { id: 'cone', text: 'SPEAKER CONE', short: 'CONE', u: -70, v: R + 40, align: 'center' },
-      { id: 'dust', text: 'DUST CAP', u: GRILLE_X + 40, v: 0, align: 'left', tone: 'muted' },
+      // CLASH SWEEP 2026-10-10 (owner at 3×): SPEAKER CONE's place is inside
+      // the cabinet, so the words fell onto the floor with a leader to the
+      // cabinet's bottom panel; DUST CAP sat on the dashed axis line. The cone
+      // label now names the cone (`at`) from behind the box; DUST CAP sits
+      // just under the axis.
+      { id: 'cone', text: 'SPEAKER CONE', short: 'CONE', u: -70, v: R + 40, align: 'center', at: { u: -45, v: R * 0.6 }, alts: [{ u: b.x0 - 30, v: b.y1 - 50, align: 'right' }] },
+      { id: 'dust', text: 'DUST CAP', u: GRILLE_X + 40, v: 26, align: 'left', tone: 'muted' },
       { id: 'back', text: b.open ? 'OPEN BACK' : 'CLOSED BACK', u: b.x0 - 30, v: b.open ? (b.openY0 + b.openY1) / 2 : 0, align: 'right', tone: 'muted' },
     ];
     if (b.chassis) out.push({ id: 'chassis', text: 'CHASSIS · TUBES', short: 'TUBES', u: (b.x0 + b.x1) / 2, v: b.y0 - 60, align: 'center', tone: 'muted' });
@@ -139,7 +144,7 @@ export function ampLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   return [
     { id: 'grille', text: 'GRILLE', u: GRILLE_X + 40, v: b.z0 + 40, align: 'left' },
     { id: 'cab', text: 'CABINET', u: (b.x0 + b.x1) / 2, v: b.z1 + 60, align: 'center' },
-    { id: 'spk', text: 'SPEAKER', u: -70, v: R + 60, align: 'center', tone: 'muted' },
+    { id: 'spk', text: 'SPEAKER', u: -70, v: R + 60, align: 'center', tone: 'muted', at: { u: -45, v: R * 0.6 }, alts: [{ u: b.x0 - 30, v: b.z1 - 50, align: 'right' }] },
   ];
 }
 

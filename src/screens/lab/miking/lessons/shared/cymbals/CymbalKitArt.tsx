@@ -21,7 +21,7 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { BlurMask, Circle, DashPathEffect, FillType, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import type { ViewId } from '../../../engine/model/types.ts';
+import type { VariantId, ViewId } from '../../../engine/model/types.ts';
 import { KIT, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanModel.ts';
 import { DrumExterior, DrumPlan, FloorTomLegsSide, KickFromAbove, KickSideNeighbour, SnareStandSide, Stick, sideTransform, topTransform } from '../drums/DrumArt';
 import { KICK_22x18, frameOf, pointOn } from '../drums/drumSpec.ts';
@@ -412,6 +412,22 @@ export function AirRing({ view, cx, cy, cz, R, width, above, below }: { view: Vi
 }
 
 /** The stick, from the player's side to a strike point (side or top view). */
+type Pt2 = { x: number; y: number };
+/** A lesson's drawn stick (its from → to in the view, or null), as label
+ *  occupancy (LessonArt.figureAt): the part labels keep off the stick — they
+ *  sat on it and its leaders ran through it (clash sweep 2026-10-10). Taps are
+ *  unchanged. */
+export function stickFigureAt(seg: (view: ViewId, variant: VariantId) => { from: Pt2; to: Pt2 } | null) {
+  return (view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean => {
+    const s = seg(view, variant);
+    if (!s) return false;
+    const dx = s.to.x - s.from.x;
+    const dy = s.to.y - s.from.y;
+    const t = Math.max(0, Math.min(1, ((u - s.from.x) * dx + (v - s.from.y) * dy) / (dx * dx + dy * dy || 1)));
+    return Math.hypot(u - (s.from.x + t * dx), v - (s.from.y + t * dy)) <= 10 + tol;
+  };
+}
+
 export function StickTo({ to, from, dim = 1 }: { to: { x: number; y: number }; from: { x: number; y: number }; dim?: number }) {
   return <Stick from={from} to={to} dim={dim} />;
 }

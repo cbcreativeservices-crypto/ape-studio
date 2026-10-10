@@ -9,7 +9,7 @@
  *  6 · Multiple Gain Stages — real-gear honesty preserved: X-Ray OFF shows each
  *      column's SIG/CLIP LEDs only (that's all hardware gives you); the X-RAY
  *      dock key reveals the meter inside every box at once. TEST YOURSELF —
- *      RANDOM scrambles the chain for the student to correct.
+ *      RANDOM (LEVELS tray) scrambles the chain for the student to correct.
  *  7 · Free Practice — same rig, plus the SOURCE is yours (the one thing module
  *      6 never hands over) and nothing is graded.
  *  8 · Troubleshooting — real life: you DON'T get meters at every stage. Every
@@ -137,6 +137,12 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
           {traySlider('fad', 'CHANNEL FADER')}
           {traySlider('bus', 'BUS')}
           {traySlider('out', 'MASTER OUTPUT')}
+          {/* TEST YOURSELF / RESET — were buttons in the well (owner rule
+              2026-10-10: every lab control lives in the bottom dock). */}
+          <View style={styles.btnRow}>
+            <GainBtn label="TEST YOURSELF — RANDOM" onPress={() => setG(randomGains())} />
+            <GainBtn label="RESET" onPress={() => setG(MULTI_START)} />
+          </View>
         </View>
       ),
     },
@@ -184,10 +190,6 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
           The source is a quiet instrument/source — fixed. The preamp rides the dock lane; the rest
           of the chain lives in the PROCESS and LEVELS trays.
         </Text>
-        <View style={styles.btnRow}>
-          <GainBtn label="TEST YOURSELF — RANDOM" onPress={() => setG(randomGains())} />
-          <GainBtn label="RESET" onPress={() => setG(MULTI_START)} />
-        </View>
         <View style={[styles.note, healthy && styles.noteGood]}>
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>
             {healthy
@@ -272,6 +274,12 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
           {traySlider('fad', 'CHANNEL FADER')}
           {traySlider('bus', 'BUS')}
           {traySlider('out', 'MASTER OUTPUT')}
+          {/* TEST YOURSELF / RESET — were buttons in the well (owner rule
+              2026-10-10: every lab control lives in the bottom dock). */}
+          <View style={styles.btnRow}>
+            <GainBtn label="TEST YOURSELF — RANDOM" onPress={() => { setSource(rnd(-40, -2)); setG(randomGains()); }} />
+            <GainBtn label="RESET" onPress={() => { setSource(-30); setG(FREE_START); }} />
+          </View>
         </View>
       ),
     },
@@ -314,10 +322,6 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
           Feed the rig a whisper or a scream, make deliberate mistakes, recover cleanly. Nothing is
           graded; the chain just tells the truth.
         </GlossaryText>
-        <View style={styles.btnRow}>
-          <GainBtn label="TEST YOURSELF — RANDOM" onPress={() => { setSource(rnd(-40, -2)); setG(randomGains()); }} />
-          <GainBtn label="RESET" onPress={() => { setSource(-30); setG(FREE_START); }} />
-        </View>
       </View>
     </RackUnit>
   );

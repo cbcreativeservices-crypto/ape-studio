@@ -109,11 +109,15 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
         {/* jack body + front bushing */}
         <Rect x={62} y={30} width={262} height={134} rx={8} fill="#101013" stroke="#34353b" strokeWidth={1.4} />
         <Rect x={42} y={80} width={20} height={44} rx={3} fill="#1a1b1f" stroke="#3d3e44" strokeWidth={1.4} />
-        <SvgText x={193} y={44} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>INSIDE THE JACK — CUTAWAY</SvgText>
+        {/* Labels kept OFF the metal they name (clash sweep 2026-10-10): the
+            title moved left of the source label, the source label clear of
+            the anchor block, TIP SPRING below the leaf (it sat on it), and
+            "← PLUG OUT" above the bushing (it ran across it). */}
+        <SvgText x={146} y={44} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>INSIDE THE JACK — CUTAWAY</SvgText>
 
         {/* SOURCE feed from the rear into the spring anchor block */}
         <FlowPath d={`M 326 61 L 298 61`} flowing phase={phase} reduceMotion={reduceMotion} color={PB.source} width={2.4} />
-        <SvgText x={320} y={54} fontSize={9} fill={PB.source} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>FROM SOURCE · REAR</SvgText>
+        <SvgText x={320} y={49} fontSize={9} fill={PB.source} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>FROM SOURCE · REAR</SvgText>
         <Rect x={290} y={54} width={10} height={14} rx={2} fill={STEEL} stroke={STEEL_EDGE} strokeWidth={0.8} />
 
         {/* TIP SPRING — steel leaf with a leader-line callout (no label overlap) */}
@@ -121,8 +125,8 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
         <Circle cx={CONTACT_X} cy={leafY} r={3.2} fill={STEEL} stroke={STEEL_EDGE} strokeWidth={0.8} />
         {/* the signal rides the metal: thin marching overlay along the leaf */}
         <FlowPath d={leafCenter} flowing phase={phase} reduceMotion={reduceMotion} color={open ? PB.cord : PB.flow} width={1.6} />
-        <SvgText x={314} y={82} fontSize={9} fill={colors.textSecondary} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>TIP SPRING</SvgText>
-        <Line x1={286} y1={78} x2={272} y2={70} stroke="#5a5b63" strokeWidth={1} />
+        <SvgText x={316} y={97} fontSize={9} fill={colors.textSecondary} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>TIP SPRING</SvgText>
+        <Line x1={292} y1={87} x2={286} y2={72} stroke="#5a5b63" strokeWidth={1} />
 
         {/* NORMAL CONTACT anvil + wire to the destination */}
         <Rect x={CONTACT_X - 8} y={108} width={16} height={8} rx={2} fill={open ? '#3a3b41' : STEEL} stroke={open ? '#4a4b52' : STEEL_EDGE} strokeWidth={0.8} />
@@ -168,7 +172,7 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
             ) : null}
           </G>
         ) : (
-          <SvgText x={10} y={106} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>← PLUG OUT</SvgText>
+          <SvgText x={6} y={73} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.4}>← PLUG OUT</SvgText>
         )}
       </Svg>
       </View>

@@ -106,7 +106,7 @@ export function woodblockLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
     { id: 'slot', text: 'SLOT (OPENING)', short: 'SLOT', u: s.slot.x + 40, v: s.slot.y, align: 'left' },
     { id: 'mallet', text: 'MALLET', u: (s.mallet.hand.x + s.mallet.head.x) / 2, v: (s.mallet.hand.y + s.mallet.head.y) / 2 - 40, align: 'left', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -800, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -800, align: 'center', tone: 'muted', point: { u: -6000, v: -800 } },
   ];
   if (s.id === 'table') out.push({ id: 'foam', text: 'FOAM PAD', u: s.c.x + 70, v: s.c.y + H / 2 - 10, align: 'left', tone: 'illustrative' });
   return out;

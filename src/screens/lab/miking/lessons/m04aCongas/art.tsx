@@ -48,7 +48,9 @@ export function CongaArt({ view, variant }: { view: ViewId; variant: VariantId }
             <StandLegs key={d.id} legs={standLegs(d)} view="top" ring={{ cx: d.c.x, cv: d.c.z, r: 0 }} />
           ))
         : null}
-      <HeadTop d={CONGA} look="rawhide" lugs={LUGS} seed={11} />
+      {/* the conga turned half a lug pitch, so its lugs sit between the
+          tumba's across the gap instead of meeting them (clash sweep 2026-10-10) */}
+      <HeadTop d={CONGA} look="rawhide" lugs={LUGS} seed={11} phaseDeg={90 + 180 / LUGS} />
       <HeadTop d={TUMBA} look="rawhide" lugs={LUGS} seed={29} />
     </Group>
   );
@@ -66,19 +68,19 @@ export function congaLabels(view: ViewId, variant: VariantId): ArtLabel[] {
         ...[160, 420].map((dv) => ({ u: TUMBA.R * (1 + BELLY.out) + 40, v: top + dv, align: 'left' as const })),
         ...[300, 160].map((dv) => ({ u: -TUMBA.R * (1 + BELLY.out) - 40, v: top + dv, align: 'right' as const })),
       ] },
-      { id: 'bottom', text: 'OPEN LOWER END', short: 'OPEN END', u: TUMBA.rBottom + 30, v: -40, align: 'left', tone: 'muted' },
+      { id: 'bottom', text: 'OPEN LOWER END', short: 'OPEN END', u: TUMBA.rBottom + 30, v: -40, align: 'left', tone: 'muted', at: { u: TUMBA.rBottom - 10, v: TUMBA.bottomY - 14 } },
       { id: 'floor', text: 'FLOOR', u: CONGA_MODEL.views.side!.u1 - 20, v: (CONGA_MODEL.floorByVariant?.[variant] ?? 0) - 24, align: 'right', tone: 'muted' },
       // A direction cue, not a part: wholly on the glass at the left edge, so
       // it is never moved off with a leader to empty space.
-      { id: 'player', text: '← PLAYER', u: CONGA_MODEL.views.side!.u0 + 20, v: top - 30, align: 'left', tone: 'muted', point: { u: CONGA_MODEL.views.side!.u0 - 400, v: top - 30 }, alts: [{ u: -TUMBA.R * (1 + BELLY.out) - 60, v: top - 30, align: 'right' }, { u: -TUMBA.R * (1 + BELLY.out) - 60, v: top + 120, align: 'right' }] },
+      { id: 'player', text: '← PLAYER', u: CONGA_MODEL.views.side!.u0 + 20, v: top - 30, align: 'left', tone: 'muted', point: { u: CONGA_MODEL.views.side!.u0 - 6000, v: top - 30 }, alts: [{ u: -TUMBA.R * (1 + BELLY.out) - 60, v: top - 30, align: 'right' }, { u: -TUMBA.R * (1 + BELLY.out) - 60, v: top + 120, align: 'right' }] },
     ];
     if (variant === 'raised') out.push({ id: 'stand', text: 'STAND', u: -TUMBA.rBottom - 140, v: 60, align: 'right', tone: 'muted' });
     return out;
   }
   return [
-    { id: 'conga', text: 'CONGA', u: CONGA.c.x, v: CONGA.c.z - CONGA.R - 52, align: 'center' },
-    { id: 'tumba', text: 'TUMBA', u: TUMBA.c.x, v: TUMBA.c.z + TUMBA.R + 40, align: 'center' },
-    { id: 'player', text: '← PLAYER', u: CONGA_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: CONGA_MODEL.views.top!.u0 - 400, v: 0 } },
+    { id: 'conga', text: 'CONGA', u: CONGA.c.x, v: CONGA.c.z - CONGA.R - 52, align: 'center', at: { u: CONGA.c.x - CONGA.R * 0.45, v: CONGA.c.z - CONGA.R * 0.55 } },
+    { id: 'tumba', text: 'TUMBA', u: TUMBA.c.x, v: TUMBA.c.z + TUMBA.R + 40, align: 'center', at: { u: TUMBA.c.x - TUMBA.R * 0.45, v: TUMBA.c.z + TUMBA.R * 0.55 } },
+    { id: 'player', text: '← PLAYER', u: CONGA_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: CONGA_MODEL.views.top!.u0 - 6000, v: 0 } },
     { id: 'aud', text: 'AUDIENCE →', u: CONGA_MODEL.views.top!.u1 - 20, v: CONGA_MODEL.views.top!.v1 - 40, align: 'right', tone: 'muted' },
   ];
 }

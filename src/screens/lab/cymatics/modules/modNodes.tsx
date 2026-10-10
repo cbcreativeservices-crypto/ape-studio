@@ -76,6 +76,9 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
           const m = modes.find((x) => x.id === id);
           if (m) land(m.hz);
         },
+        // Land on the nearest mode — was a tap on the RES bezel cell (owner
+        // rule 2026-10-10: the bezel is read-only; controls dock).
+        onReset: res.state !== 'at' && res.next ? { label: `LAND ON ${res.next.label} · ${formatHz(res.next.hz)}`, onPress: () => land(res.next!.hz) } : undefined,
       },
     },
     {
@@ -125,8 +128,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
             v: res.state.toUpperCase(),
             tint: RES_TINT[res.state],
             helpKey: 'resonance',
-            // Tap the cell to land on the nearest mode (the panel's bezel-cell verb).
-            onPress: res.state !== 'at' && res.next ? () => land(res.next!.hz) : undefined,
+            // Read-only (owner rule 2026-10-10): LAND ON is in the FREQ tray.
             flex: 1.2,
           },
         ],
@@ -158,7 +160,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
           ),
         params,
       }}
-      caption="Ride FREQ onto a mode and watch the figure snap in; ride away and watch it dissolve. Tap RES to land on the nearest one."
+      caption="Ride FREQ onto a mode and watch the figure snap in; ride away and watch it dissolve. Or open FREQ and tap LAND ON to land on the nearest one."
     >
       <Text style={P.body}>
         Each stable Chladni figure is one <Text style={P.strong}>normal mode</Text> of the plate. Nodal lines are where the plate does not move; the

@@ -373,7 +373,7 @@ export function HarmonographLabScreen() {
     setFrozen(false);
     setEpoch((e) => e + 1);
   };
-  // ⟲ RESET (glass corner): back to the opening defaults + a fresh sheet.
+  // ⟲ RESET ALL (SHAPE tray): back to the opening defaults + a fresh sheet.
   // Member ink stays — customization isn't a setting of the machine.
   const resetAll = () => {
     setN1(1.5 / BASE_F0);
@@ -419,8 +419,9 @@ export function HarmonographLabScreen() {
           fullScreen: true,
           badge: 'RIGID-BODY MACHINE — DRAWN FROM THE EQUATIONS',
           onGuide: () => openLesson('display'),
-          // OSC readouts now live ON the machine (each pendulum wears its own
-          // tag); the bezel gains the pen controls — FREEZE and a fresh sheet.
+          // OSC readouts live ON the machine (each pendulum wears its own
+          // tag). The bezel is READ-ONLY (owner rule 2026-10-10): the pen
+          // controls — FREEZE and a fresh sheet — are in the SHAPE tray.
           bezel: [
             { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock' },
             { k: 'INTERVAL', v: ratio.interval, flex: 1.5, helpKey: 'ratio_lock' },
@@ -428,10 +429,8 @@ export function HarmonographLabScreen() {
               k: 'PEN',
               v: frozen ? 'FROZEN' : 'DRAWING',
               tint: frozen ? '#7fd4ff' : undefined,
-              onPress: () => setFrozen((f) => !f),
               helpKey: 'damping',
             },
-            { k: 'PAGE', v: '⟲ NEW', onPress: newDrawing, helpKey: 'damping' },
           ],
           render: (_w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same
@@ -443,7 +442,7 @@ export function HarmonographLabScreen() {
                   : undefined
               }
               // NOT announced as a button. It wraps the machine, which draws its
-              // own FULLSCREEN and RESET buttons — so as a labelled button this
+              // own tappable DRAWING inset — so as a labelled button this
               // nested <button> in <button> and, worse, its label REPLACED the
               // children, hiding both of those controls from a screen reader.
               // The play/stop action is not lost: the header key does the same
@@ -470,7 +469,9 @@ export function HarmonographLabScreen() {
                   freezeFracRef.current = f;
                 }}
                 onInsetPress={() => setViewerOpen(true)}
-                onResetPress={resetAll}
+                // No ⟲ RESET pill on the glass any more (owner rule
+                // 2026-10-10: no buttons drawn inside the display) — RESET
+                // ALL is in the SHAPE tray's PEN · PAPER row.
               />
             </Pressable>
           ),
@@ -597,6 +598,17 @@ export function HarmonographLabScreen() {
                     }}
                     onLongPress={() => openLesson('mode')}
                   />
+                </View>
+                {/* The pen controls — moved off the bezel (owner rule
+                    2026-10-10: the bezel is read-only; controls dock). In this
+                    tray so the dock keeps whole keys with PLAT showing:
+                    FREEZE holds the machine mid-draw; NEW SHEET pulls a fresh
+                    page. */}
+                <Text style={styles.sectionHead}>PEN · PAPER</Text>
+                <View style={styles.chipRow}>
+                  <LabChip label={frozen ? 'FROZEN — tap to draw on' : 'FREEZE'} selected={frozen} onPress={() => setFrozen((f) => !f)} onLongPress={() => openLesson('damping')} />
+                  <LabChip label="⟲ NEW SHEET" selected={false} onPress={newDrawing} onLongPress={() => openLesson('damping')} />
+                  <LabChip label="⟲ RESET ALL" selected={false} onPress={resetAll} onLongPress={() => openLesson('damping')} />
                 </View>
               </View>
             ),

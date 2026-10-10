@@ -37,7 +37,7 @@ import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabChip, LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -406,23 +406,20 @@ export function SignalChainLabScreen() {
           ],
           render: (_w, h) => (
             <View style={[styles.stageInner, { height: h }]}>
-              {/* THE CHAIN — the hero. Tap a module to toggle it LIVE. */}
+              {/* THE CHAIN — the hero, a READOUT (owner rule 2026-10-10: no
+                  buttons drawn on the display). The MODULES dock key toggles
+                  each module live; a long-press here still opens the lesson. */}
               <View style={{ gap: 6 }}>
-                <Text style={styles.stageHead}>THE CHAIN — CANONICAL ORDER (tap a module to toggle it)</Text>
+                <Text style={styles.stageHead}>THE CHAIN — CANONICAL ORDER (MODULES key toggles each)</Text>
                 <View style={styles.chainWrap}>
                   <Text style={styles.chainEnd}>SRC</Text>
                   {MODULES.map((m) => (
                     <View key={m.id} style={styles.chainSeg}>
                       <Text style={styles.chainArrow}>→</Text>
                       <Pressable
-                        onPress={() => toggleModule(m.id)}
                         onLongPress={() => openLesson('module_toggle')}
                         delayLongPress={350}
-                        hitSlop={{ top: 8, bottom: 8 }}
                         style={[styles.node, enabled[m.id] && styles.nodeOn]}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: !!enabled[m.id] }}
-                        aria-pressed={!!enabled[m.id]}
                         accessibilityLabel={`${m.label} ${enabled[m.id] ? 'in the chain' : 'bypassed'}`}
                       >
                         <Text style={[styles.nodeText, enabled[m.id] && styles.nodeTextOn]}>{m.label}</Text>
@@ -437,7 +434,7 @@ export function SignalChainLabScreen() {
                     buttons. NEW COPY — owner review. */}
                 {chainCount === 0 ? (
                   <Text style={styles.emptyHint}>
-                    CHAIN EMPTY — TAP A MODULE, OR START FROM A SCENARIO BELOW
+                    CHAIN EMPTY — OPEN MODULES OR SCENARIO BELOW
                   </Text>
                 ) : null}
               </View>
@@ -471,6 +468,26 @@ export function SignalChainLabScreen() {
           ),
         },
         params: [
+          {
+            // Toggle each module live — was a tap on the module pills drawn on
+            // the display (owner rule 2026-10-10: controls live in the dock).
+            kind: 'group',
+            id: 'modules',
+            label: 'MODULES',
+            valueLabel: `${chainCount}/9`,
+            valueA11y: `${chainCount} of 9 modules in the chain`,
+            helpKey: 'module_toggle',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.stageHead}>MODULES — TAP TO PUT IN / BYPASS (LIVE)</Text>
+                <View style={styles.chainWrap}>
+                  {MODULES.map((m) => (
+                    <LabChip key={m.id} label={m.label} selected={!!enabled[m.id]} onPress={() => toggleModule(m.id)} onLongPress={() => openLesson('module_toggle')} />
+                  ))}
+                </View>
+              </View>
+            ),
+          },
           {
             kind: 'options',
             id: 'scenario',

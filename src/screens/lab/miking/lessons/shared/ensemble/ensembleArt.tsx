@@ -27,5 +27,8 @@ export function ensembleLessonArt(byVariant: Readonly<Record<VariantId, Seating>
       const id = stageHit(of(variant), sv(view), u, v, tol);
       return id ? sectionPartId(variant, id === 'cond' ? 'podium' : id) : null;
     },
+    // A section name over the mic steps back (clash sweep 2026-10-10: SAXES
+    // sat under E16's main pair, VOCAL under E09's vocal mic).
+    labelsYieldToMic: true,
   };
 }

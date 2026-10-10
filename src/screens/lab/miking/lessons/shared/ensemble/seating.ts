@@ -190,6 +190,15 @@ export const TIMPANI_HEAD_H = 820;
  *  facing the player's left and right. */
 export const BASS_DRUM_STATION = { R: (36 * 25.4) / 2, depth: 16 * 25.4, ahead: 625, up: 760 } as const;
 
+/** A seated trombonist holds the horn tipped up a little (clash sweep
+ *  2026-10-10: level, a big band's slides ran at the saxophonists' head
+ *  height, 1.4 m ahead). 8°: the bells and slides carry over the sax row,
+ *  the way players sit in a standard big-band setup (the risers unchanged).
+ *  The tilt is about the mouthpiece; the drawing and bellOf share it. */
+export const TBN_TILT_DEG = 8;
+/** The trombone's mouthpiece, ahead of the player (mm) — the tilt's pivot. */
+export const TBN_MOUTH_AHEAD = 110;
+
 export const DIMS = {
   /** The podium: 0.9 m square, 0.2 m high, its centre 1.3 m downstage of the
    *  front row's line. */

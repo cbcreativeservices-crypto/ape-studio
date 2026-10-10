@@ -27,7 +27,7 @@
  */
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
-import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Paint, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -560,9 +560,18 @@ function outlineOf(len: number, cross: number, fore = 0) {
  *   at the mic: the boom's threaded end into the clip's swivel (Ø 24).
  * The cable runs taped along the boom (its run is ILLUSTRATIVE).
  */
-function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; /* lab6 group 2: hardwareScale */ hk?: number }) {
+function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; /* lab6 group 2: hardwareScale */ hk?: number; /** The other shown mics (their stands' bases set this tripod's turn from above). */ others?: readonly MicSlot[] }) {
   const scene = rig.scene;
   const body = rig.body[slot];
+  // The other stands' poses and bodies (plain data and shared values: safe in the worklet).
+  const otherPoses = others.filter((o) => o !== slot && (rig.body[o].mount === 'stand' || rig.body[o].mount === 'boom')).map((o) => ({ pose: rig.pose[o], body: rig.body[o] }));
+  // A STEREO BAR (owner 2026-10-10, E01's two-mic page): two floor-stand
+  // mics whose stands would stand within 0.5 m of each other share ONE stand,
+  // a bar across their clip points carrying both. The first slot draws the
+  // shared stand; the partner draws nothing while they share. Each mic's own
+  // pose, aim and keep-outs are unchanged (the collision model is per mic).
+  const partnerSlot = body.mount === 'stand' ? others.find((o) => o !== slot && rig.body[o].mount === 'stand') : undefined;
+  const partner = partnerSlot ? { pose: rig.pose[partnerSlot], body: rig.body[partnerSlot], lead: slot < partnerSlot } : null;
   const heavy = body.mount === 'boom';
   const lowerW = (heavy ? 32 : 25) * hk;
   const upperW = (heavy ? 25 : 19) * hk;
@@ -577,9 +586,52 @@ function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot;
     const counter = Skia.Path.Make();
     const counterRod = Skia.Path.Make();
     const knobs = Skia.Path.Make();
-    const out = { boom, upper, lower, legs, braces, feet, counter, counterRod, knobs, jx: 0, jv: 0, jOn: 0, tx: 0, tv: 0, tOn: 0, cx: 0, cv: 0, cOn: 0, fx: 0, fv: 0, fOn: 0 };
+    const bar = Skia.Path.Make();
+    const swivels = Skia.Path.Make();
+    const out = { boom, upper, lower, legs, braces, feet, counter, counterRod, knobs, bar, swivels, jx: 0, jv: 0, jOn: 0, tx: 0, tv: 0, tOn: 0, cx: 0, cv: 0, cOn: 0, fx: 0, fv: 0, fOn: 0 };
     if (body.mount !== 'stand' && body.mount !== 'boom') return out;
-    const segs = assembly(scene, pose.value, body);
+    let segs = assembly(scene, pose.value, body);
+    // The stereo bar (real dimensions, mm — a common bar: a flat bar 200–300
+    // long, a swivel at each mic's clip, one centre mount on the boom's 5/8
+    // thread). Shared only while it is realistic: the clips at most 350 mm
+    // apart and 150 mm apart in height, the stands' bases within 500 mm.
+    let shared = false;
+    if (partner) {
+      const os = assembly(scene, partner.pose.value, partner.body);
+      let mb: (typeof segs)[number] | null = null;
+      let ms: (typeof segs)[number] | null = null;
+      let pb: (typeof segs)[number] | null = null;
+      let ps: (typeof segs)[number] | null = null;
+      for (let i = 0; i < segs.length; i++) {
+        if (segs[i].piece === 'boom' && !mb) mb = segs[i];
+        if (segs[i].piece === 'stand') ms = segs[i];
+      }
+      for (let i = 0; i < os.length; i++) {
+        if (os[i].piece === 'boom' && !pb) pb = os[i];
+        if (os[i].piece === 'stand') ps = os[i];
+      }
+      if (mb && ms && pb && ps) {
+        const ta = mb.a;
+        const tb = pb.a;
+        const clipGap = Math.sqrt((ta.x - tb.x) * (ta.x - tb.x) + (ta.y - tb.y) * (ta.y - tb.y) + (ta.z - tb.z) * (ta.z - tb.z));
+        const baseGap = Math.sqrt((ms.b.x - ps.b.x) * (ms.b.x - ps.b.x) + (ms.b.z - ps.b.z) * (ms.b.z - ps.b.z));
+        if (clipGap <= 350 && Math.abs(ta.y - tb.y) <= 150 && baseGap <= 500) {
+          shared = true;
+          if (!partner.lead) return out;
+          const C = { x: (ta.x + tb.x) / 2, y: (ta.y + tb.y) / 2, z: (ta.z + tb.z) / 2 };
+          const F = { x: (ms.b.x + ps.b.x) / 2, y: (ms.b.y + ps.b.y) / 2, z: (ms.b.z + ps.b.z) / 2 };
+          const S = { x: F.x, y: (ms.a.y + ps.a.y) / 2, z: F.z };
+          segs = [
+            { a: C, b: S, r: mb.r, piece: 'boom' },
+            { a: S, b: F, r: ms.r, piece: 'stand' },
+          ];
+          bar.moveTo(ta.x, vOf(view, ta));
+          bar.lineTo(tb.x, vOf(view, tb));
+          swivels.addCircle(ta.x, vOf(view, ta), 14 * hk);
+          swivels.addCircle(tb.x, vOf(view, tb), 14 * hk);
+        }
+      }
+    }
     let first = true;
     let lastA = { u: 0, v: 0 };
     let lastB = { u: 0, v: 0 };
@@ -645,9 +697,30 @@ function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot;
           knobs.addRRect(Skia.RRectXY(Skia.XYWHRect(bu - 13 * hk, bv - brH - 9 * hk, 26 * hk, 18 * hk), 4 * hk, 4 * hk));
         } else {
           // From above the upright is a point: the tripod's three legs.
+          // Clash sweep 2026-10-10: two stands close together (E01's
+          // two-mic page, 0.27 m apart) crossed their legs. With another
+          // stand within reach, both turn their legs 90°, 210° and 330° from
+          // the line to the other base — the same rule seen from each end
+          // interleaves the two tripods without a crossing (worked out for
+          // bases 0.27–0.6 m apart). The footprint (300 mm legs) is unchanged.
           const R = 300 * hk;
+          let a0 = Math.PI / 6;
+          let near = 2 * R + 150;
+          for (let oi = 0; oi < (shared ? 0 : otherPoses.length); oi++) {
+            const os = assembly(scene, otherPoses[oi].pose.value, otherPoses[oi].body);
+            for (let j = 0; j < os.length; j++) {
+              if (os[j].piece !== 'stand') continue;
+              const ou = os[j].b.x;
+              const ov = vOf(view, os[j].b);
+              const dd = Math.sqrt((ou - bu) * (ou - bu) + (ov - bv) * (ov - bv));
+              if (dd > 1 && dd < near) {
+                near = dd;
+                a0 = Math.atan2(ov - bv, ou - bu) + Math.PI / 2;
+              }
+            }
+          }
           for (let k = 0; k < 3; k++) {
-            const a = (k * 2 * Math.PI) / 3 + Math.PI / 6;
+            const a = (k * 2 * Math.PI) / 3 + a0;
             const tx = bu + Math.cos(a) * R;
             const tz = bv + Math.sin(a) * R;
             legs.moveTo(bu, bv);
@@ -693,6 +766,8 @@ function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot;
   const counter = useDerivedValue(() => parts.value.counter);
   const counterRod = useDerivedValue(() => parts.value.counterRod);
   const knobs = useDerivedValue(() => parts.value.knobs);
+  const bar = useDerivedValue(() => parts.value.bar);
+  const swivels = useDerivedValue(() => parts.value.swivels);
   const jx = useDerivedValue(() => parts.value.jx);
   const jv = useDerivedValue(() => parts.value.jv);
   const jOn = useDerivedValue(() => parts.value.jOn);
@@ -734,6 +809,10 @@ function MountPath({ rig, slot, pose, view, hk = 1 }: { rig: Rig; slot: MicSlot;
       </Path>
       <Path path={counter} style="stroke" strokeWidth={2 * hk} color="#0b0c0f" />
       {tube(boom, boomW)}
+      {/* The stereo bar across the two clips, a swivel at each (shared stand only). */}
+      {tube(bar, 14 * hk)}
+      <Path path={swivels} color="#121316" />
+      <Path path={swivels} style="stroke" strokeWidth={2 * hk} color="#6c717c" />
       {/* The cable, taped along the boom (its run is ILLUSTRATIVE). */}
       <Group transform={[{ translateX: 0 }, { translateY: boomW * 0.6 }]}>
         <Path path={boom} style="stroke" strokeWidth={5 * hk} strokeCap="round" color="#0e0f12" />
@@ -876,7 +955,15 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
         const e = heldElbowOf(segs[i].b, f, elbow.a, elbow.b);
         p.moveTo(geo.value.bx, geo.value.bv);
         p.lineTo(e.x, vOf(view, e));
-        p.lineTo(f.x, vOf(view, f));
+        // The sleeve stops at the wrist, short of the fist (clash sweep
+        // 2026-10-10: faded, the sleeve showed through the fist drawn over it).
+        const fu = f.x;
+        const fv = vOf(view, f);
+        const eu = e.x;
+        const ev = vOf(view, e);
+        const fl = Math.sqrt((fu - eu) * (fu - eu) + (fv - ev) * (fv - ev));
+        const cut = fl > 170 ? 85 / fl : 0;
+        p.lineTo(fu + (eu - fu) * cut, fv + (ev - fv) * cut);
       }
       return p;
     }
@@ -1006,8 +1093,10 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
     // cannot reach. The fist is drawn over the handle (HeldFistGlyph). From
     // the side the holder usually stands beyond the person the mic serves:
     // the arm is drawn a little faded there (a 2-D drawing has no depth).
+    // Faded as ONE layer: the contour, sleeve and rim light never show
+    // through each other (clash sweep 2026-10-10).
     return (
-      <Group opacity={view === 'side' ? 0.62 : 1}>
+      <Group layer={view === 'side' ? <Paint opacity={0.62} /> : undefined}>
       <Group opacity={on}>
         <Path path={path} style="stroke" strokeWidth={96} strokeCap="round" strokeJoin="round" color="#12151c" />
         <Path path={path} style="stroke" strokeWidth={90} strokeCap="round" strokeJoin="round" color="#55617b" />
@@ -1137,7 +1226,7 @@ function HeldFistGlyph({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pos
   const on = useDerivedValue(() => geo.value.on);
   if (body.mount !== 'clip' || body.armStyle !== 'held') return null;
   return (
-    <Group opacity={view === 'side' ? 0.62 : 1}>
+    <Group layer={view === 'side' ? <Paint opacity={0.62} /> : undefined}>
     <Group opacity={on} transform={tf}>
       <Circle cx={0} cy={0} r={42} color="#2a201a" />
       <Circle cx={0} cy={0} r={38}>
@@ -2172,7 +2261,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             </>
           ) : null}
           {micsShown.map((m) => (
-            <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={model.hardwareScale ?? 1} />
+            <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={model.hardwareScale ?? 1} others={micsShown.map((q) => q.slot)} />
           ))}
           {micsShown.map((m) => (
             <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={model.hardwareScale ?? 1} />

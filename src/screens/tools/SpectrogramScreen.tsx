@@ -559,8 +559,9 @@ export function SpectrogramScreen({ navigation }: Props) {
   const canSave = state === 'running' && history.length > 0;
 
   // Full-screen readouts: the stat row, printed on the house bezel strip (peak
-  // numbers on the level ramp, flat #ff5a48 before there is a level; MIC taps
-  // to pause/resume like the RTA's).
+  // numbers on the level ramp, flat #ff5a48 before there is a level). READ-
+  // ONLY (owner rule 2026-10-10): capture pause/resume is the MIC key in the
+  // control bar.
   const peakTint = (db: number | null | undefined) => (db != null && Number.isFinite(db) ? levelColorForDb(db) : '#ff5a48');
   const fsBezel: BezelItem[] = [
     { k: 'OBS MAX', v: `${fmtDb(observedMax)} dB`, tint: peakTint(observedMax), helpKey: readoutKey('OBS MAX') },
@@ -570,7 +571,6 @@ export function SpectrogramScreen({ navigation }: Props) {
       k: 'MIC',
       v: state === 'running' ? (frozen ? 'FROZEN' : 'LIVE') : micPaused ? 'PAUSED' : '—',
       tint: state === 'running' ? undefined : '#7a7f8a',
-      onPress: state === 'running' ? onStop : onStart,
       flex: 0.9,
     },
   ];
@@ -902,6 +902,14 @@ export function SpectrogramScreen({ navigation }: Props) {
             active={frozen}
             onPress={toggleFreeze}
             a11y={frozen ? 'Resume scrolling' : 'Freeze display'}
+          />,
+          <FsKey
+            key="mic"
+            label="MIC"
+            value={state === 'running' ? 'LIVE' : 'PAUSED'}
+            active={state === 'running'}
+            onPress={state === 'running' ? onStop : onStart}
+            a11y={state === 'running' ? 'Microphone live. Tap to pause.' : 'Microphone paused. Tap to resume.'}
           />,
         ]}
         renderDisplay={renderFsSpectro}

@@ -29,11 +29,14 @@ export function B03Scene({ view, variant }: { view: ViewId; variant: VariantId }
   return (
     <Group>
       {street(variant) ? <Roadway view={view} x0={ROAD_X0} x1={KERB_X} z0={ROAD_Z.z0} z1={ROAD_Z.z1} floor={FLOOR} /> : null}
-      {variant === 'event' ? <PaSpeaker view={view} c={PA_C} faces={1} floor={FLOOR} /> : null}
+      {variant === 'event' && !side ? <PaSpeaker view={view} c={PA_C} faces={1} floor={FLOOR} /> : null}
       {!side && street(variant) ? <DirArrow a={{ u: -1500, v: -1300 }} b={{ u: -800, v: -900 }} color="#8fbcff" w={10} /> : null}
       <StandingTalker view={view} t={GUEST} />
       <StandingTalker view={view} t={REPORTER} arm="R" />
       <CameraRig view={view} spec={CAMERA} />
+      {/* From the side the loudspeaker (z 1.3 m, nearer the viewer than the
+          camera at 0.7–0.8 m) stands in front of the camera's tripod. */}
+      {variant === 'event' && side ? <PaSpeaker view={view} c={PA_C} faces={1} floor={FLOOR} /> : null}
     </Group>
   );
 }

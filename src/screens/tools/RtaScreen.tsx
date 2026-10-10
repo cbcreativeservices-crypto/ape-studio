@@ -53,14 +53,15 @@
  *    GONE — the stage sits outside any ScrollView, so a scroll-touch can no
  *    longer read as a tap; tap-glass pause/resume (the original affordance) is
  *    restored. Badge carries the honesty line verbatim.
- *  - BEZEL: LEVEL (tap cycles C/A/Z weighting) · PK HOLD (tap resets; latches
- *    red after a clip) · BANDS · MIC LIVE/PAUSED (tap pauses/resumes).
- *  - DOCK (5 keys): BANDING sticky tray (A/B while the glass reacts) · AVG
+ *  - BEZEL (read-only, owner rule 2026-10-10): LEVEL · PK HOLD (latches red
+ *    after a clip) · BANDS · MIC LIVE/PAUSED.
+ *  - DOCK (5 keys): BANDS sticky tray (A/B while the glass reacts) · AVG
  *    group tray (averaging α + STD/HI-RES resolution — they interact on
- *    response speed) · RST PK action · DISPLAY group tray (COLORS toggle,
- *    member-gated colour wheel, PIANO toggle) · SAVE action (exact §7 flow).
- *    No continuous param exists, so initialParam names the teaching-central
- *    BANDING tray and the lane hides itself.
+ *    response speed — and the PEAK HOLD reset) · VIEW group tray (COLORS toggle,
+ *    member-gated colour wheel, LEVEL weighting Z/A/C, PIANO toggle) · MIC
+ *    toggle (pause/resume; a tap on the glass too) · SAVE action (exact §7
+ *    flow). No continuous param exists, so initialParam names the
+ *    teaching-central BANDS tray and the lane hides itself.
  *  - WELL: EngineGate, library link, and every notice/advisory at the BOTTOM
  *    (owner tools rule). Mic lifecycle unchanged: useDspEngine +
  *    useToolAutoStart; stops still route through the hook's debounced
@@ -309,7 +310,7 @@ const fmtDb = (v: number | undefined) =>
 // so the honest unit is dBFS(A)/dBFS(C), never bare dBA/dBC. Reads the engine's
 // Fast weighted level from the same meter frame the PEAK cells use.
 type Weighting = 'Z' | 'A' | 'C';
-const WEIGHTINGS: readonly Weighting[] = ['C', 'A', 'Z'] as const; // bezel LEVEL cell tap-cycle order
+const WEIGHTINGS: readonly Weighting[] = ['C', 'A', 'Z'] as const; // full-screen LEVEL key tap-cycle order
 /** Level unit per weighting (owner rev 24: dBA/dBC, never default dBFS). Z is
  *  unweighted → plain relative dB. Honesty (uncalibrated, relative, not SPL)
  *  lives in the accuracy note + subtitle, not in a confusing dBFS unit. */
@@ -1207,15 +1208,17 @@ export function RtaScreen({ navigation }: Props) {
   const levelDb = weightedFastDb(meter, weighting);
   const avgLabel = AVG_CHOICES.find((c) => c.alpha === alpha)?.label ?? `α ${alpha.toFixed(2)}`;
 
-  /** Bezel: the old stat grid, printed on the display. LEVEL taps to cycle
-   *  C/A/Z; PK HOLD taps to reset (clip latch tints it red until reset); MIC
-   *  taps to pause/resume (LiveSpectrumEq idiom). Long-press = guided lesson. */
+  /** Bezel: the old stat grid, printed on the display — READ-ONLY (owner
+   *  rule 2026-10-10: every control lives in the bottom dock). Weighting is
+   *  chosen in the VIEW tray (and the full screen's LEVEL key), PK HOLD is
+   *  cleared by RESET PEAK HOLD in the AVG tray (clip latch tints it red until reset), and capture
+   *  pauses/resumes with the MIC key or a tap on the glass. Long-press =
+   *  guided lesson. */
   const bezel: BezelItem[] = [
     {
       k: 'LEVEL',
       v: `${fmtDb(levelDb)} ${weightUnit(weighting)}`,
       tint: levelDb != null && Number.isFinite(levelDb) ? levelColorForDb(levelDb) : undefined,
-      onPress: cycleWeighting,
       helpKey: readoutKey('LEVEL'),
       flex: 1.25,
     },
@@ -1227,7 +1230,6 @@ export function RtaScreen({ navigation }: Props) {
         : meter != null && Number.isFinite(meter.peakHoldDb)
           ? levelColorForDb(meter.peakHoldDb)
           : undefined,
-      onPress: onResetPeak,
       helpKey: readoutKey('PEAK HOLD'),
     },
     { k: 'BANDS', v: String(mode), helpKey: readoutKey('BANDS'), flex: 0.7 },
@@ -1235,7 +1237,6 @@ export function RtaScreen({ navigation }: Props) {
       k: 'MIC',
       v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
       tint: state === 'running' ? undefined : '#7a7f8a',
-      onPress: state === 'running' ? onStop : onStart,
     },
   ];
 
@@ -1246,7 +1247,9 @@ export function RtaScreen({ navigation }: Props) {
     {
       kind: 'options',
       id: 'banding',
-      label: 'BANDING',
+      // 'BANDS' / 'VIEW' (were BANDING / DISPLAY): the shorter names keep
+      // every key whole on a 375-wide phone (bezel read-only rule 2026-10-10).
+      label: 'BANDS',
       valueLabel: String(mode),
       options: BAND_MODES.map((m) => ({ id: String(m), label: String(m), blurb: BAND_BLURBS[m] })),
       selectedId: String(mode),
@@ -1286,6 +1289,15 @@ export function RtaScreen({ navigation }: Props) {
               a11yLabel="High resolution — reveals lower frequencies, slower response"
             />
           </View>
+          {/* Peak hold has no on/off in this tool — the control is RESET (spec
+              §10). It lives here, beside the settings that also restart it, so
+              the dock keeps five keys on a 375-wide phone now that MIC joined
+              it (bezel read-only rule 2026-10-10); the full screen keeps its
+              own PEAK HOLD · RESET key. */}
+          <Text style={styles.trayHead}>PEAK HOLD</Text>
+          <View style={styles.trayRow}>
+            <Chip label="RESET PEAK HOLD" active={false} onPress={onResetPeak} a11yLabel="Reset peak hold" />
+          </View>
           <Text style={styles.settingsNote}>
             Changing banding, averaging, or resolution restarts the band average and peak hold (new
             settings epoch). HI-RES doubles the FFT for finer low-frequency detail (down to ~30 Hz) at
@@ -1294,13 +1306,10 @@ export function RtaScreen({ navigation }: Props) {
         </View>
       ),
     },
-    // Peak hold has no on/off in this tool — the control is RESET (spec §10),
-    // kept as a plain action key; the PK HOLD bezel cell also taps to reset.
-    { kind: 'action', id: 'rstpeak', label: 'RST PK', onPress: onResetPeak },
     {
       kind: 'group',
       id: 'display',
-      label: 'DISPLAY',
+      label: 'VIEW',
       valueLabel: `${colorsOn ? 'MIDI' : rtaColor ? 'CUST' : 'LED'}${pianoOn ? '·♪' : ''}`,
       render: () => (
         <View style={styles.trayCol}>
@@ -1333,6 +1342,14 @@ export function RtaScreen({ navigation }: Props) {
               size={22}
             />
           </View>
+          {/* LEVEL readout weighting — was a tap-to-cycle on the LEVEL bezel
+              cell (owner rule 2026-10-10: the bezel is read-only). */}
+          <Text style={styles.trayHead}>LEVEL READOUT WEIGHTING</Text>
+          <View style={styles.trayRow}>
+            {(['Z', 'A', 'C'] as const).map((w) => (
+              <Chip key={w} label={`${w}-WEIGHTED`} active={weighting === w} onPress={() => setWeighting(w)} a11yLabel={`Level readout ${w}-weighted`} />
+            ))}
+          </View>
           <Text style={styles.trayHead}>PIANO MAP</Text>
           <View style={styles.trayRow}>
             <Chip
@@ -1345,6 +1362,9 @@ export function RtaScreen({ navigation }: Props) {
         </View>
       ),
     },
+    // Capture pause/resume (was a tap on the MIC bezel cell — owner rule
+    // 2026-10-10); a tap on the glass does the same.
+    { kind: 'toggle', id: 'mic', label: 'MIC', value: state === 'running', onToggle: state === 'running' ? onStop : onStart },
     // SAVE TRACE — exact §7 flow (onSaveTrace guards on running+bands itself).
     { kind: 'action', id: 'save', label: justSaved ? 'SAVED ✓' : saveGate.label('SAVE'), onPress: onSaveTrace },
   ];
@@ -1477,6 +1497,8 @@ export function RtaScreen({ navigation }: Props) {
           <FsKey key="colors" label="COLORS" value={colorsOn ? 'ON' : 'OFF'} active={colorsOn} onPress={() => setColorsOn(!colorsOn)} a11y={colorsOn ? 'Colors, on' : 'Colors, off'} />,
           <FsKey key="piano" label="PIANO" value={pianoOn ? 'ON' : 'OFF'} active={pianoOn} onPress={() => setPianoOn((v) => !v)} a11y={pianoOn ? 'Piano map, on' : 'Piano map, off'} />,
           <FsKey key="rst" label="PEAK HOLD" value="RESET" onPress={onResetPeak} a11y="Reset peak hold" />,
+          <FsKey key="wt" label="LEVEL" value={`${weighting}-WT`} onPress={cycleWeighting} a11y={`Level readout ${weighting}-weighted. Tap to change.`} />,
+          <FsKey key="mic" label="MIC" value={state === 'running' ? 'LIVE' : 'PAUSED'} active={state === 'running'} onPress={state === 'running' ? onStop : onStart} a11y={state === 'running' ? 'Microphone live. Tap to pause.' : 'Microphone paused. Tap to resume.'} />,
         ]}
         renderDisplay={(w, h) => renderGlass(w, h, fsTextScale(w, h))}
         footer={<Text style={styles.fsBadge} numberOfLines={1}>relative dB · uncalibrated approximate</Text>}
@@ -1562,7 +1584,7 @@ const styles = StyleSheet.create({
   chipTextActive: { color: colors.amber },
   settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted, ...readingText },
 
-  // Discreet colour-wheel button in the DISPLAY tray (owner rule 2026-08-20).
+  // Discreet colour-wheel button in the VIEW tray (owner rule 2026-08-20).
   rtaColorBtn: {
     height: 30,
     borderRadius: 7,

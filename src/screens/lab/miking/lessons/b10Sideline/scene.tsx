@@ -60,7 +60,7 @@ export function B10Scene({ view, variant, reporter = true }: { view: ViewId; var
   return (
     <Group>
       {sideline ? <PlayAreaHatch view={view} x={TOUCHLINE_X} depth={-420} z0={-1500} z1={1900} floor={FLOOR} /> : null}
-      {sideline ? <PaSpeaker view={view} c={PA_C} faces={-1} floor={FLOOR} /> : null}
+      {sideline && !side ? <PaSpeaker view={view} c={PA_C} faces={-1} floor={FLOOR} /> : null}
       {post ? <Backdrop view={view} x={BACKDROP_X} z0={-1050} z1={1050} h={2300} floor={FLOOR} /> : null}
       {!side && variant !== 'postEvent' ? <DirArrow a={{ u: -200, v: EXIT_Z }} b={{ u: 1700, v: EXIT_Z }} color="#5bff85" w={12} /> : null}
       {!side && sideline ? <DirArrow a={{ u: -1500, v: -1350 }} b={{ u: -900, v: -1000 }} color="#8fbcff" w={10} /> : null}
@@ -73,6 +73,9 @@ export function B10Scene({ view, variant, reporter = true }: { view: ViewId; var
       {reporter && side && h.reporter ? <StandingTalker view={view} t={REPORTER} arm="R" phones={sideline} dim={REPORTER_FAINT} /> : null}
       {post ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
       <CameraRig view={view} spec={CAMERA} />
+      {/* From the side the PA (1.5 m nearer the viewer than the camera) and
+          its pole stand in front of the camera (clash sweep 2026-10-10). */}
+      {sideline && side ? <PaSpeaker view={view} c={PA_C} faces={-1} floor={FLOOR} /> : null}
     </Group>
   );
 }

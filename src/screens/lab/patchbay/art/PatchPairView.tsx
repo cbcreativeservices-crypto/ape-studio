@@ -179,7 +179,9 @@ function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bott
       {bottomPlugged ? <Path d={`M ${CX} ${ROW_BOT} C ${CX + 60} ${ROW_BOT + 8}, ${W - 90} ${FACE_H - 6}, ${W - 24} ${FACE_H - 8}`} stroke={PB.cord} strokeWidth={2.2} fill="none" strokeLinecap="round" /> : null}
       <SvgText x={W - 30} y={ROW_TOP + 3} fontSize={9} fill={PB.source} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>TOP · SOURCES</SvgText>
       <SvgText x={W - 30} y={ROW_BOT + 3} fontSize={9} fill={PB.dest} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>BTM · DESTINATIONS</SvgText>
-      <SvgText x={20} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>FRONT PANEL</SvgText>
+      {/* ends ≈ 7 units short of the featured column's frame (x 78) — it ran
+          into it (clash sweep 2026-10-10) */}
+      <SvgText x={15} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL</SvgText>
     </Svg>
   );
 }

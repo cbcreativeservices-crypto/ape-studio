@@ -39,7 +39,10 @@ function labelsFor(show: ElectricShow): StaticLabel[] {
     return [
       { id: 'ch', text: 'CHANGER', u: STEEL.changerU, v: -790, align: 'center' },
       { id: 'kh', text: 'KEYHEAD', u: 0, v: -790, align: 'center', tone: 'muted' },
-      { id: 'kn', text: 'KNEE LEVERS', short: 'KNEES', u: STEEL.kneeU[3] + 40, v: -480, align: 'left', tone: 'amber' },
+      // Just under the right-hand pair of levers, clear of the pedal pull
+      // rods and both legs (clash sweep 2026-10-10: to the right of the last
+      // lever the words ran onto the right leg).
+      { id: 'kn', text: 'KNEE LEVERS', short: 'KNEES', u: STEEL.kneeU[3], v: -395, align: 'center', tone: 'amber' },
       { id: 'pd', text: 'PEDALS', u: 450, v: 30, align: 'center', tone: 'amber' },
       { id: 'vp', text: 'VOLUME PEDAL', short: 'VOLUME', u: STEEL.volumeU[0] + 50, v: -120, align: 'center', tone: 'muted' },
     ];
@@ -66,7 +69,13 @@ export function ElectricExplorer({ w, h, show, highlight, pickupLit, barAt, onTa
   // Guitar and bass face-on are TURNED 180° (owner 2026-10-10): body on the
   // left, headstock to the right — how a right-handed player is seen from the
   // front. A turn (not a mirror) keeps it right-handed. Labels and taps follow.
-  const turned = !!s;
+  // The pedal steel and the lap steel FROM ABOVE turn too (clash sweep
+  // 2026-10-10, the owner's rule for every face-on necked instrument): the
+  // changer / bridge end on the left, the keyhead / head to the right, the
+  // player on the far side (the top of the glass, as in every other view
+  // from above). The pedal steel from the seat is an elevation on its legs:
+  // a turn would stand it on its head, so it stays as drawn.
+  const turned = !!s || show === 'steelTop' || show === 'lap';
   const uc = (box.u0 + box.u1) / 2;
   const vc = (box.v0 + box.v1) / 2;
   const labels = useMemo(() => {
@@ -93,7 +102,13 @@ export function ElectricExplorer({ w, h, show, highlight, pickupLit, barAt, onTa
               <Group transform={[{ translateX: uc }, { translateY: vc }, { rotate: Math.PI }, { translateX: -uc }, { translateY: -vc }]}>
                 <ElectricFront s={s} fretless={show === 'bassFretless'} highlight={highlight} pickupLit={pickupLit} turned />
               </Group>
-            ) : <SteelDrawing view={show === 'steelSide' ? 'side' : show === 'steelTop' ? 'top' : 'lap'} highlight={highlight} barAt={barAt ?? (show === 'steelTop' ? STEEL.nutU + 260 : null)} />}
+            ) : turned ? (
+              <Group transform={[{ translateX: uc }, { translateY: vc }, { rotate: Math.PI }, { translateX: -uc }, { translateY: -vc }]}>
+                <SteelDrawing view={show === 'steelTop' ? 'top' : 'lap'} highlight={highlight} barAt={barAt ?? (show === 'steelTop' ? STEEL.nutU + 260 : null)} turned />
+              </Group>
+            ) : (
+              <SteelDrawing view="side" highlight={highlight} barAt={barAt ?? null} />
+            )}
           </Group>
         </Canvas>
         <StaticLabels labels={labels} xf={xf} scale={ts} w={w} />

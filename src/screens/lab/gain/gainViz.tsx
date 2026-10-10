@@ -368,29 +368,6 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
 
 // ───────────────────────────────────────────── device cards (M6–M8) ─────────
 /** Clip LED pair — all a real device shows you from the outside. */
-/**
- * ⛔ THE CLIP THAT ALREADY HAPPENED.
- *
- * A live `stageClipped` answers "is it clipping RIGHT NOW", and in the field
- * that is almost never the question. Overload is intermittent: the singer
- * pushes one line, the LED blinks once, and by the time you look up the meter
- * is innocent again. Every console ever built latches that event for exactly
- * this reason, and learning to notice the latch is the skill.
- *
- * So the LED flashes live AND latches, and it counts. Tapping it clears the
- * count — peak-hold reset grammar, the same gesture as the hardware.
- */
-function useClipLatch(stageClipped: boolean) {
-  const [count, setCount] = useState(0);
-  const was = useRef(false);
-  useEffect(() => {
-    // Count EDGES, not frames: a stage that sits clipped for two seconds
-    // overloaded once, not sixty times.
-    if (stageClipped && !was.current) setCount((c) => c + 1);
-    was.current = stageClipped;
-  }, [stageClipped]);
-  return { latched: count > 0, count, reset: () => setCount(0) };
-}
 
 /**
  * Peak hold — the thin tick that stays at the highest level reached.
@@ -405,39 +382,6 @@ function usePeakHold(fill: number) {
     setPeak((p) => (fill > p ? fill : p));
   }, [fill]);
   return { peak, reset: () => setPeak(fill) };
-}
-
-export function DeviceLeds({ node }: { node: ChainNode }) {
-  const sig = node.level > LOW_EDGE;
-  const clip = node.stageClipped;
-  const { latched, count, reset } = useClipLatch(clip);
-  return (
-    <View style={styles.ledRow}>
-      <View style={styles.ledItem}>
-        <View style={[styles.led, sig && styles.ledSig]} />
-        <Text style={styles.ledLabel}>SIG</Text>
-      </View>
-      <Pressable
-        onPress={reset}
-        disabled={count === 0}
-        hitSlop={8}
-        accessibilityRole="button"
-        accessibilityLabel={
-          count === 0
-            ? 'Clip indicator. No overloads recorded.'
-            : `Clip indicator. ${count} overload${count === 1 ? '' : 's'} recorded. Double tap to clear.`
-        }
-        style={styles.ledItem}
-      >
-        {/* Live red while it is happening; a dimmer amber dot AFTER, which is
-            the state you are actually likely to catch. */}
-        <View style={[styles.led, latched && styles.ledClipHeld, clip && styles.ledClip]} />
-        <Text style={[styles.ledLabel, latched && styles.ledLabelHeld]}>
-          {count > 0 ? `CLIP ×${count}` : 'CLIP'}
-        </Text>
-      </Pressable>
-    </View>
-  );
 }
 
 /** One stage row (owner 2026-08-10 layout): the left ¾ is the data panel —
@@ -722,19 +666,11 @@ const styles = StyleSheet.create({
   cableSheen: { position: 'absolute', left: 1.6, top: 2, bottom: 2, width: 1.2, borderRadius: 0.6, backgroundColor: '#5a5f6a', opacity: 0.55 },
   cableTracer: { position: 'absolute', left: 3, top: 2, bottom: 2, width: 1, backgroundColor: '#c23a2d', opacity: 0.7 },
 
-  // device LEDs — inline in the header (compact) so no separate row
-  ledRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-  ledItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   led: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#23252d', borderWidth: 1, borderColor: '#0c0c0f' },
-  /* Held: the overload is over, the evidence is not. Amber, dimmer than the
-     live red — you are meant to notice it, not be alarmed by it. */
-  ledClipHeld: { backgroundColor: '#8a5a12', borderColor: 'rgba(255,180,0,0.75)' },
-  ledLabelHeld: { color: colors.amber },
-  /* Peak hold: a hairline, the same red as an overload, spanning the track. */
-  vPeak: { position: 'absolute', left: 0, right: 0, height: 1.5, backgroundColor: '#ff5f4e' },
   ledSig: { backgroundColor: '#3fae52' },
   ledClip: { backgroundColor: '#ff3b2a' },
-  ledLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub },
+  /* Peak hold: a hairline, the same red as an overload, spanning the track. */
+  vPeak: { position: 'absolute', left: 0, right: 0, height: 1.5, backgroundColor: '#ff5f4e' },
 
   // horizontal device meter
   hWrap: { gap: 3 },

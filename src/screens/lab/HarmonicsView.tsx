@@ -90,7 +90,7 @@
  *    qualifying harmonics) and SPACING (ticks + the even-spacing teaching
  *    line; LIN shows it visually, LOG bunches musically).
  *  - MEASUREMENTS: THD % / crest factor / dB-per-octave slope now read on
- *    the BEZEL (tap THD for the breakdown sheet with the actual formula and
+ *    the BEZEL (the THD CALC dock key opens the breakdown sheet with the formula and
  *    every per-harmonic component). THD+N is shown as "live measurement
  *    required" — the analytic model has no noise, so a number would be
  *    fabricated.
@@ -1625,8 +1625,8 @@ export function HarmonicsView({
     />
   );
 
-  /** Bezel readouts — model: the Build B measurements (tap THD for the
-   *  breakdown sheet); live: capture/tone state + the observed maximum
+  /** Bezel readouts — model: the Build B measurements (the THD CALC dock key
+   *  opens the breakdown sheet); live: capture/tone state + the observed maximum
    *  (a real measured figure; '—' until frames arrive). */
   const bezel: BezelItem[] =
     view === 'model'
@@ -1635,10 +1635,8 @@ export function HarmonicsView({
           {
             k: 'THD',
             v: modelThd.pct != null ? `${modelThd.pct.toFixed(1)} %` : '—',
-            onPress: () => setThdOpen(true),
-            // hunt 13: the breakdown sheet is a Modal — in full screen the
-            // rack leaves full screen first (never Modal over Modal).
-            leavesFull: true,
+            // Read-only (owner rule 2026-10-10): the breakdown sheet opens
+            // from the THD CALC dock key.
           },
           {
             k: 'CREST',
@@ -1686,6 +1684,17 @@ export function HarmonicsView({
             sticky: true, // A/B waveshapes while the glass redraws — the lesson
             onReset: { label: 'RESTORE PRESET', onPress: () => pickPreset(presetRef.current) },
             helpKey: 'wave_shape',
+          },
+          {
+            // The THD breakdown sheet — was a tap on the bezel's THD cell
+            // (owner rule 2026-10-10: the bezel is read-only; controls dock).
+            // hunt 13: the sheet is a Modal — in full screen the rack leaves
+            // full screen first (never Modal over Modal).
+            kind: 'action',
+            id: 'thd',
+            label: 'THD CALC',
+            onPress: () => setThdOpen(true),
+            leavesFull: true,
           },
         ] satisfies DockParam[])
       : []),
@@ -1852,7 +1861,7 @@ export function HarmonicsView({
             />
           ) : null}
           <Text style={styles.thdnDim}>
-            THD / CREST / SLOPE read on the display bezel — tap THD for the calculation. THD+N —
+            THD / CREST / SLOPE read on the display bezel — tap THD CALC for the calculation. THD+N —
             live measurement required (the model has no noise).
           </Text>
 
@@ -2022,7 +2031,7 @@ export function HarmonicsView({
 
       {/* THD BREAKDOWN SHEET — the actual calculation components (spec §2.I):
           the formula, each harmonic's aₙ/a₁ contribution, and the honest
-          THD+N placeholder. Opened from the bezel's THD cell. */}
+          THD+N placeholder. Opened from the THD CALC dock key. */}
       {thdOpen ? (
         <Modal accessibilityViewIsModal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => setThdOpen(false)}>
           <View style={styles.sheetBackdrop}>

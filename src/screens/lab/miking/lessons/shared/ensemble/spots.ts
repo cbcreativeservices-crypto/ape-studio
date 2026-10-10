@@ -15,7 +15,7 @@
  */
 import type { MicPose, Vec3 } from '../../../engine/model/types.ts';
 import { add, aimOf, DEG, dist, mul, planDir, sub, unit, v3 } from './frameS.ts';
-import { KIND, soundPoint, STAND_LIFT, type Seat } from './seating.ts';
+import { KIND, soundPoint, STAND_LIFT, TBN_MOUTH_AHEAD, TBN_TILT_DEG, type Seat } from './seating.ts';
 
 /** A seat's frame: ahead, to the player's right, up (unit vectors, frame S). */
 export function frameOf(s: Seat): { fwd: Vec3; right: Vec3; up: Vec3 } {
@@ -35,7 +35,9 @@ export const liftOf = (s: Seat): number => (s.posture === 'standing' && KIND[s.k
 export function bellOf(s: Seat): Vec3 {
   if (s.kind === 'trombone') {
     const f = frameOf(s);
-    return add(add(add(s.p, mul(f.fwd, 520)), mul(f.right, -75)), v3(0, -(KIND.trombone.sound + liftOf(s)), 0));
+    // The bell 520 mm ahead, raised by the horn's tilt about the mouthpiece.
+    const rise = (520 - TBN_MOUTH_AHEAD) * Math.tan((TBN_TILT_DEG * Math.PI) / 180);
+    return add(add(add(s.p, mul(f.fwd, 520)), mul(f.right, -75)), v3(0, -(KIND.trombone.sound + liftOf(s) + rise), 0));
   }
   if (s.kind === 'tuba') {
     // The drawn bell's mouth: 120 mm ahead, 70 mm to the right, 1.5 m up (SeatingArt).

@@ -280,7 +280,6 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
       ? optionsParam({ id: 'where', label: 'WHERE?', value: '', options: c.areas.map((a) => ({ key: a, label: a, short: a.split(' ')[0].toUpperCase() })), onChange: nameArea, sticky: false })
       : optionsParam({ id: 'fix', label: 'FIX', value: lastFix ?? '', options: c.fixes.map((f) => ({ key: f.id, label: f.label, short: f.id.toUpperCase() })), onChange: applyFix, sticky: false });
   const VIEW_ORDER: StageView[] = ['drum', 'wave', 'partials'];
-  const cycleView = () => setView((v) => VIEW_ORDER[(VIEW_ORDER.indexOf(v) + 1) % VIEW_ORDER.length]);
 
   return (
     <ChapterSteps
@@ -316,9 +315,9 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             size: 'L',
             badge: view === 'wave' ? RENDER_BADGE : MODEL_BADGE,
             bezel: [
-              // VIEW is a tap-to-cycle bezel cell (the PK-HOLD tap-cell
-              // pattern) so the dock keeps five keys: DRUM → WAVE → PARTIALS.
-              { k: 'VIEW', v: view === 'drum' ? 'DRUM' : view === 'wave' ? 'WAVE' : 'PARTS', tint: colors.cyan, onPress: cycleView },
+              // The bezel is READ-ONLY (owner rule 2026-10-10): VIEW is chosen
+              // on the dock (its VIEW key); here it is the readout.
+              { k: 'VIEW', v: view === 'drum' ? 'DRUM' : view === 'wave' ? 'WAVE' : 'PARTS', tint: colors.cyan },
               { k: 'SPREAD', v: `${spread.toFixed(0)} ¢`, tint: spread <= 12 ? colors.green : colors.red },
               { k: 'BEAT', v: beat < 0.05 ? 'none' : `${beat.toFixed(1)} Hz`, tint: beat < 0.05 ? colors.green : colors.amber },
               { k: 'SUSTAIN', v: fmtS(t60), tint: colors.green },
@@ -330,6 +329,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             params: [
               optionsParam({ id: 'case', label: 'CASE', value: caseId, options: SYMPTOMS.map((s) => ({ key: s.id, label: `${s.title} · ${DRUMS[s.drum].name}`, short: s.id.toUpperCase(), blurb: s.symptom })), onChange: (id) => { setCaseId(id); setLastFix(null); setLug(0); setWhereNote(null); }, sticky: false }),
               faderParam({ id: 'lug', label: 'LUG', value: lug, min: 0, max: spec.lugs - 1, step: 1, format: (v) => `tap at lug ${Math.round(v) + 1} · ${lugTapHz(sim.batter, Math.round(v), spec.diameterIn, spec.sigmaBatter).toFixed(0)} Hz${sim.tapped.includes(Math.round(v)) ? ' · tapped' : ''}`, formatShort: (v) => `#${Math.round(v) + 1}`, onChange: (v) => setLug(Math.round(v)) }),
+              optionsParam({ id: 'view', label: 'VIEW', value: view, options: VIEW_ORDER.map((v) => ({ key: v, label: v === 'drum' ? 'The drum from above' : v === 'wave' ? 'The waveform' : 'The partials', short: v === 'drum' ? 'DRUM' : v === 'wave' ? 'WAVE' : 'PARTS' })), onChange: setView }),
               { kind: 'action', id: 'strike', label: caseId === 'snare' ? '▶ SOFTLY' : '▶ STRIKE', onPress: strikeNow },
               { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tapNow },
               stageKey,
@@ -339,7 +339,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
           },
           well: (
             <>
-              <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (tap VIEW on the bezel for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP round the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
+              <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (use VIEW below for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP round the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
               <DrumStatus playing={pb.playing || tap.playing} pending={pb.pending || tap.pending} failed={pb.failed || tap.failed} rendering={pb.status === 'rendering' || tap.status === 'rendering'} idle={`stopped · ${!struck ? 'press ▶ STRIKE to begin' : !tappedEnough ? `▶ TAP ${c.tapsNeeded - sim.tapped.length} more lug${c.tapsNeeded - sim.tapped.length === 1 ? '' : 's'}` : !hypothesised ? 'open WHERE? and name the area' : 'pick a FIX and strike again'}`} label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
               <Feedback tone="warn">{`${c.title}: ${c.symptom} (cleared ${cleared.size} of ${SYMPTOMS.length})`}</Feedback>
               {whereNote && !fixInfo ? <Feedback tone={sim.hypothesisRight === false ? 'warn' : 'info'}>{whereNote}</Feedback> : null}

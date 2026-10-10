@@ -56,9 +56,11 @@ const RACK_MODULES = new Set<EqModuleId>([
   'findFreq',
   'matchCurve',
   'fixSignal',
+  // camera joined the rack 2026-10-10 (owner rule: every lab control lives in
+  // the bottom dock — its two panels are held to their shape in the L glass).
+  'camera',
   // Kept classic (each carries a dated in-file note): whyEq (beginner chip
-  // co-visibility), camera (two pixel-aligned panels outgrow the glass),
-  // challenges (no continuous teaching parameter).
+  // co-visibility), challenges (no continuous teaching parameter).
 ]);
 
 const COMPONENTS: Record<EqModuleId, (p: EqModuleComponentProps) => React.JSX.Element> = {

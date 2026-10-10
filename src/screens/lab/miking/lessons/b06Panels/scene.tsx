@@ -14,7 +14,7 @@ import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { VoiceFigure, voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
 import { PlayerBehind, PlayerInFront, figureCovers } from '../shared/players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP } from '../shared/voice/voicePose.ts';
-import { Desk, GooseBase, Lectern, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { Desk, DeskNearLegs, GooseBase, Lectern, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS, poseOnTalker } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { ASKER, FOCUS, LECTERN, P1, P3, P4, PA_C, STAND_FLOOR, TABLE, gooseBase } from './geometry.ts';
@@ -64,6 +64,7 @@ export function B06Scene({ view, variant, headless = false, bases = true }: { vi
         {bases ? <GooseBase view="side" at={gooseBase(FOCUS)} /> : null}
         <Script view="side" at={{ x: 330, y: DESK_TOP_Y, z: 150 }} />
         <SeatedTalker view="side" t={FOCUS} headless={headless} />
+        <DeskNearLegs box={TABLE} floor={SEATED_FLOOR} skirt />
       </Group>
     );
   }

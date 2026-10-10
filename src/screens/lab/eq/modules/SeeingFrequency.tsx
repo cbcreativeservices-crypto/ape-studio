@@ -330,6 +330,10 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
       onChange: (t) => setHpfHz(HPF_STEPS[Math.round(Math.max(0, Math.min(1, t)) * lastStep)]),
       format: () => (hpfHz == null ? 'OFF' : `${hpfHz} Hz`),
     },
+    // Mic capture on/off (was a tap on the MIC bezel cell — owner rule
+    // 2026-10-10: the bezel is read-only; controls dock). Tapping the glass
+    // still toggles it too (standing rule 2026-07-31).
+    { kind: 'toggle', id: 'mic', label: 'MIC', value: state === 'running', onToggle: state === 'running' ? onStop : onStart },
   ];
 
   return (
@@ -351,7 +355,6 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
             k: 'MIC',
             v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
             tint: state === 'running' ? undefined : '#7a7f8a',
-            onPress: state === 'running' ? onStop : onStart,
           },
         ],
         render: (w, h) => (

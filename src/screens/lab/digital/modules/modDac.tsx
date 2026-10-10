@@ -33,7 +33,7 @@ import {
   dstyles,
   type ViewMode,
 } from '../bits';
-import { CheckQuestion, DragSlider, VizUnavailableCard } from '../../foundations/bits';
+import { CheckQuestion, VizUnavailableCard } from '../../foundations/bits';
 import { LabChip } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -167,6 +167,42 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
         </View>
       ),
     },
+    // The well panels' controls (owner rule 2026-10-10: every lab control
+    // lives in the bottom dock). Their pictures stay in the well — SPECTRAL
+    // IMAGES & OVERSAMPLING and the INTER-SAMPLE PEAK EXPLORER.
+    {
+      kind: 'options',
+      id: 'os',
+      // 'OS RATE' — "OVERSAMP" lost a letter to the tray glyph on a 390 phone.
+      label: 'OS RATE',
+      valueLabel: `${os}×`,
+      valueA11y: `oversampling ${os} times`,
+      options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves to ${c * 48} kHz, so the analog filter can be gentler.` })),
+      selectedId: String(os),
+      onSelect: (id) => setOs(Number(id) as 1 | 2 | 4 | 8),
+      sticky: true,
+      helpKey: 'oversampling',
+    },
+    {
+      kind: 'fader',
+      id: 'ispf',
+      label: 'ISP FREQ',
+      value: ratio01,
+      onChange: setRatio01,
+      format: () => `inter-sample peak · ${(ratio * 48).toFixed(1)} kHz (${ratio.toFixed(3)} · fs)`,
+      formatShort: () => `${(ratio * 48).toFixed(1)}k`,
+      helpKey: 'isp',
+    },
+    {
+      kind: 'fader',
+      id: 'isph',
+      label: 'PHASE',
+      value: phase01,
+      onChange: setPhase01,
+      format: () => `inter-sample peak · sample phase ${phaseDeg.toFixed(0)}°`,
+      formatShort: () => `${phaseDeg.toFixed(0)}°`,
+      helpKey: 'isp',
+    },
   ];
 
   return (
@@ -236,18 +272,9 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             In the frequency domain, sampling mirrored the audio spectrum around every multiple of the
             sample rate. The reconstruction filter's job is to remove those images. Oversample and the
             images slide far away — so the analog filter can relax from a cliff into a gentle slope.
+            Pick an oversampling rate with OS RATE in the dock.
           </Text>
-          <View style={dstyles.chipRow}>
-            {OS_CHOICES.map((c) => (
-              <LabChip
-                key={c}
-                label={`${c}×`}
-                selected={os === c}
-                onPress={() => setOs(c)}
-                onLongPress={() => help('oversampling')}
-              />
-            ))}
-          </View>
+          {/* The oversampling choice is the OVERSAMP dock key now. */}
           {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
           <ReadoutGrid
             help={help}
@@ -271,23 +298,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
           <Text style={dstyles.body}>
             A near-Nyquist sine, its samples normalized to −0.1 dBFS — every stored value is legal, and
             a sample-peak meter approves. But the continuous waveform the DAC must reconstruct arcs
-            ABOVE 0 dBFS between the samples. Drag the phase and watch the true peak swing while the
+            ABOVE 0 dBFS between the samples. Ride PHASE in the dock and watch the true peak swing while the
             samples never move past the line.
           </Text>
-          <DragSlider
-            label="FREQUENCY"
-            value={ratio01}
-            onChange={setRatio01}
-            readout={`${(ratio * 48).toFixed(1)} kHz (${ratio.toFixed(3)} · fs)`}
-            onHelp={() => help('isp')}
-          />
-          <DragSlider
-            label="SAMPLE PHASE"
-            value={phase01}
-            onChange={setPhase01}
-            readout={`${phaseDeg.toFixed(0)}°`}
-            onHelp={() => help('isp')}
-          />
+          {/* FREQUENCY and SAMPLE PHASE are the ISP FREQ and PHASE dock keys now. */}
           {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
           <ReadoutGrid
             help={help}

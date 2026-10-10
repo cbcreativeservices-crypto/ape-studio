@@ -21,7 +21,8 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { C20 } from '../../../engine/physics/twoMic.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 
-export type ArrivalSource = { id: string; label: string; p: Vec3; color: string };
+/** `labelDv`: where the source's name sits, px below the source (negative = above; default 12). */
+export type ArrivalSource = { id: string; label: string; p: Vec3; color: string; labelDv?: number };
 /** `short`: the dock chip's value (defaults to the label's first word). */
 export type ArrivalPoint = { id: string; label: string; short?: string; p: Vec3 };
 export type ArrivalImage = { id: string; label: string; p: Vec3; of: string; color: string };
@@ -77,7 +78,7 @@ export function ArrivalsScene({
   }, [point, view, px]);
   const labels: StaticLabel[] = [
     { id: 'pt', text: point.label, u: point.p.x + 12 * px, v: vOf(view, point.p) - 8 * px, align: 'left', tone: 'amber' },
-    ...sources.map((s) => ({ id: `s:${s.id}`, text: s.label.toUpperCase(), u: s.p.x, v: vOf(view, s.p) + 12 * px, align: 'center' as const, tone: 'muted' as const })),
+    ...sources.map((s) => ({ id: `s:${s.id}`, text: s.label.toUpperCase(), u: s.p.x, v: vOf(view, s.p) + (s.labelDv ?? 12) * px, align: 'center' as const, tone: 'muted' as const })),
     ...extraLabels,
   ];
   return (

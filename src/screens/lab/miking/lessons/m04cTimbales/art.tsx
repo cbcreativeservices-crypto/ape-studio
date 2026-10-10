@@ -92,7 +92,9 @@ export function TimbaleArt({ view, variant }: { view: ViewId; variant: VariantId
   return (
     <Group>
       <StandLegs legs={legs.slice(1)} view="top" ring={{ cx: 0, cv: 0, r: 0 }} />
-      <HeadTop d={SMALL} look="film" lugs={LUGS} seed={3} rimColors={['#ffffff', '#c8ccd4', '#8a8f99', '#3a3d45']} />
+      {/* the 14 in turned half a lug pitch: the pair's lugs sit between each
+          other across the gap, never meeting (clash sweep 2026-10-10) */}
+      <HeadTop d={SMALL} look="film" lugs={LUGS} seed={3} rimColors={['#ffffff', '#c8ccd4', '#8a8f99', '#3a3d45']} phaseDeg={90 + 180 / LUGS} />
       <HeadTop d={LARGE} look="film" lugs={LUGS} seed={9} rimColors={['#ffffff', '#c8ccd4', '#8a8f99', '#3a3d45']} />
       {bell ? (
         <>
@@ -108,19 +110,22 @@ export function timbaleLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const top = rimTopY(LARGE);
   if (view === 'side') {
     const out: ArtLabel[] = [
-      { id: 'large', text: '15 IN (IN FRONT)', short: '15 IN', u: LARGE.R + 30, v: top - 26, align: 'left' },
-      { id: 'small', text: '14 IN BEHIND IT', short: '14 IN', u: LARGE.R + 30, v: top + 60, align: 'left', tone: 'muted' },
-      { id: 'shell', text: 'BRASS SHELL', short: 'SHELL', u: LARGE.R + 30, v: LARGE.bottomY + 4, align: 'left', tone: 'muted' },
-      { id: 'stand', text: 'STAND', u: 60, v: -420, align: 'left', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: TIMB_MODEL.views.side!.u0 + 20, v: top - 26, align: 'left', tone: 'muted', point: { u: TIMB_MODEL.views.side!.u0 - 400, v: top - 26 } },
+      // Leaders land on their parts (clash sweep 2026-10-10: moved names
+      // pointed at the empty glass beside the drum); the 14 in is right behind
+      // the 15 in, so its leader lands on the 15 in's shell.
+      { id: 'large', text: '15 IN (IN FRONT)', short: '15 IN', u: LARGE.R + 30, v: top - 26, align: 'left', at: { u: LARGE.R + LARGE.rim.t - 4, v: top + 6 } },
+      { id: 'small', text: '14 IN BEHIND IT', short: '14 IN', u: LARGE.R + 30, v: top + 60, align: 'left', tone: 'muted', at: { u: LARGE.R * 0.35, v: (LARGE.headY + LARGE.bottomY) / 2 } },
+      { id: 'shell', text: 'BRASS SHELL', short: 'SHELL', u: LARGE.R + 30, v: LARGE.bottomY + 4, align: 'left', tone: 'muted', at: { u: LARGE.R * 0.75, v: LARGE.bottomY - 30 } },
+      { id: 'stand', text: 'STAND', u: 60, v: -420, align: 'left', tone: 'muted', at: { u: 0, v: -420 } },
+      { id: 'player', text: '← PLAYER', u: TIMB_MODEL.views.side!.u0 + 20, v: top - 26, align: 'left', tone: 'muted', point: { u: TIMB_MODEL.views.side!.u0 - 6000, v: top - 26 } },
     ];
-    if (variant === 'bell') out.push({ id: 'bell', text: 'COWBELL', u: BELL.x - 120, v: BELL.y - 60, align: 'right', tone: 'muted' });
+    if (variant === 'bell') out.push({ id: 'bell', text: 'COWBELL', u: BELL.x - 120, v: BELL.y - 60, align: 'right', tone: 'muted', at: { u: BELL.x - 60, v: BELL.y } });
     return out;
   }
   const out: ArtLabel[] = [
     { id: 'small', text: '14 IN', u: SMALL.c.x, v: SMALL.c.z - SMALL.R - 44, align: 'center' },
     { id: 'large', text: '15 IN', u: LARGE.c.x, v: LARGE.c.z + LARGE.R + 34, align: 'center' },
-    { id: 'player', text: '← PLAYER', u: TIMB_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: TIMB_MODEL.views.top!.u0 - 400, v: 0 } },
+    { id: 'player', text: '← PLAYER', u: TIMB_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: TIMB_MODEL.views.top!.u0 - 6000, v: 0 } },
     { id: 'aud', text: 'AUDIENCE →', u: TIMB_MODEL.views.top!.u1 - 20, v: TIMB_MODEL.views.top!.v1 - 36, align: 'right', tone: 'muted' },
   ];
   return out;

@@ -240,7 +240,7 @@ export function tambourineLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
     { id: 'jingles', text: 'JINGLE PAIRS', short: 'JINGLES', u: p.c.x + p.e1.x * (R + 40) + 30, v: p.c.y + p.e1.y * (R + 40) + 10, align: 'left' },
     { id: 'frame', text: s.crescent ? 'CRESCENT FRAME' : 'FRAME (NO HEAD)', short: 'FRAME', u: p.c.x + p.n.x * 70 + 10, v: p.c.y + p.n.y * 70 - 16, align: 'left' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -880, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -880, align: 'center', tone: 'muted', point: { u: -6000, v: -880 } },
   ];
   if (s.id === 'struck') out.push({ id: 'otherHand', text: 'OTHER HAND', u: p.c.x + p.n.x * 230, v: p.c.y + p.n.y * 230 - 20, align: 'left', tone: 'illustrative' });
   if (s.id === 'mounted') out.push({ id: 'mount', text: 'STAND CLAMP', u: -R - 60, v: -700, align: 'right', tone: 'illustrative' });

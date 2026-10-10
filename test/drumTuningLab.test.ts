@@ -305,20 +305,24 @@ describe('rack + full screen on every live page', () => {
       const landings = (s.match(/<Landing looking=/g) ?? []).length;
       assert.equal(landings, racks, `${f}: a Landing line per rack page`);
       assert.doesNotMatch(s, /label: '■ STOP'/, `${f}: no STOP key on the dock`);
-      // Docks: at most FIVE keys (rack/RackUnit: "≤ 5 keys reads best on a
-      // 375-wide phone"); a sixth control becomes a bezel tap-cell.
+      // Docks: at most SIX keys. Five reads best on a 375-wide phone
+      // (rack/RackUnit), but every control lives on the dock — the bezel is
+      // read-only (owner rule 2026-10-10) — so Chapter 5 (GOAL) and Chapter 7
+      // (VIEW) carry a sixth.
       for (const b of s.split(/params: \[/).slice(1)) {
         const list = b.slice(0, b.indexOf('initialParam:'));
         const keys = (list.match(/^\s{14}(faderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
-        assert.ok(keys <= 5, `${f}: a dock with ${keys} keys`);
+        assert.ok(keys <= 6, `${f}: a dock with ${keys} keys`);
       }
+      // The bezel is read-only: no bezel cell takes a tap.
+      assert.doesNotMatch(s, /\{ k: '[^']*'[^\n]*onPress:/, `${f}: a bezel cell with onPress`);
     }
     const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
     assert.match(ch2, /id: 'reveal', label: revealed \? '✓ KEY SHOWN' : '✓ REVEAL KEY'/, 'REVEAL KEY is a dock action');
     assert.match(ch2, /<ExpandableFigure[^\n]*controls=\{hardwareChips\}/, 'the inline figure docks its controls in full screen');
     const ch5 = strip(read(`${DIR}/modules/ch5Types.tsx`));
     assert.match(ch5, /id: 'check', label: '✓ CHECK'/, 'CHECK is a dock action');
-    assert.match(ch5, /k: 'GOAL'[^\n]*onPress: cycleGoal/, 'GOAL is a tap-to-cycle bezel cell, keeping the dock at five keys with CHECK on it');
+    assert.match(ch5, /optionsParam\(\{ id: 'goal', label: 'GOAL'/, 'GOAL is chosen on the dock (the bezel is read-only)');
     // Dock key labels: a key has ~10 characters of room at Oswald 12 (rackTypes).
     for (const f of MODULES) {
       for (const b of strip(read(`${DIR}/modules/${f}`)).split(/params: \[/).slice(1)) {
@@ -443,7 +447,7 @@ describe('guest rules, persistence and credit', () => {
     assert.match(ch7, /const investigated = struck && tappedEnough;/, 'Chapter 7: strike (and tap) before a hypothesis');
     assert.match(ch7, /!investigated\s*\?[\s\S]*?: !hypothesised\s*\?[\s\S]*?optionsParam\(\{ id: 'where'/, 'then WHERE, then FIX');
     assert.match(ch7, /label: !struck \? 'HIT 1ST'/, 'the FIX slot is locked until the drum has been struck');
-    assert.match(ch7, /k: 'VIEW'[^\n]*onPress: cycleView/, 'VIEW is a tap-to-cycle bezel cell, keeping the dock at five keys');
+    assert.match(ch7, /optionsParam\(\{ id: 'view', label: 'VIEW'/, 'VIEW is chosen on the dock (the bezel is read-only)');
     assert.match(ch7, /hypothesisRight/);
     assert.match(ch7, /evidence\(\)/, 'the reply quotes the evidence');
     assert.match(ch7, /RESET CASE puts it back/, 'a wrong fix names what it left behind');

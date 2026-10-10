@@ -316,6 +316,111 @@ function rowLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, s
   return best!.out.filter((_, i) => !best!.failed.has(i));
 }
 
+/**
+ * PLAN LABELS (clash sweep 2026-10-10 — E14's plan had leaders crossing and
+ * words on the players): the same rules as the elevation rows, with places
+ * round each part instead of rows. A label tries its own authored place and
+ * its alts first, then a ring of places round its part (eight directions,
+ * four distances). A place is taken only when its words keep off every label
+ * already set and off the players (clearOf), no leader runs through the
+ * words, and its own leader crosses no leader and passes no other part's dot.
+ * A name with no clean place at this zoom is left out (the house
+ * level-of-detail rule); it appears when zoomed in, and a tap still names it.
+ */
+function planLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, reverse: boolean): { out: StaticLabel[]; failed: Set<number> } {
+  const hpx = 9.5 * scale * 1.25;
+  const taken: LabelRect[] = [...(corner ? [corner] : []), ...fixed.map((l) => labelRect(l, xf, scale, maxX))];
+  const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  const overlaps = (a: LabelRect, b: LabelRect) => a.x0 < b.x1 + 3 && a.x1 > b.x0 - 3 && a.y0 < b.y1 + 1 && a.y1 > b.y0 - 1;
+  const inMm = (r: LabelRect) => clearOf((r.x0 - LABEL_AIR - xf.ox) / xf.s, (r.y0 - LABEL_AIR - xf.oy) / xf.s, (r.x1 + LABEL_AIR - xf.ox) / xf.s, (r.y1 + LABEL_AIR - xf.oy) / xf.s);
+  const dots = labels.filter((l) => l.at).map((l) => ({ x: xf.ox + l.at!.u * xf.s, y: xf.oy + l.at!.v * xf.s }));
+  const passes = (sg: { x1: number; y1: number; x2: number; y2: number }, d: { x: number; y: number }) => {
+    if (Math.hypot(sg.x1 - d.x, sg.y1 - d.y) < 1) return false;
+    const L2 = (sg.x2 - sg.x1) ** 2 + (sg.y2 - sg.y1) ** 2 || 1;
+    const t = Math.max(0, Math.min(1, ((d.x - sg.x1) * (sg.x2 - sg.x1) + (d.y - sg.y1) * (sg.y2 - sg.y1)) / L2));
+    return Math.hypot(sg.x1 + t * (sg.x2 - sg.x1) - d.x, sg.y1 + t * (sg.y2 - sg.y1) - d.y) < 5;
+  };
+  const idx = labels.map((l, i) => ({ l, i }));
+  const order = reverse ? idx.reverse() : idx;
+  const out = [...labels];
+  const failed = new Set<number>();
+  // Directions (screen: +x right, +y down) — sideways first, then the diagonals, then up and down.
+  const DIRS = [0, 180, -30, 30, 150, -150, -60, 60, 120, -120, -90, 90].map((d) => (d * Math.PI) / 180);
+  // Two passes: every label that fits its own authored place keeps it;
+  // only then do the rest look further (so a far place never steals a
+  // label's own clean spot).
+  const place = (l: StaticLabel, i: number, ownOnly: boolean): boolean => {
+    if (!l.at) {
+      // A label with no part: its own place, if clean.
+      const r = labelRect(l, xf, scale, maxX);
+      if (!taken.some((t) => overlaps(r, t))) taken.push(r);
+      return true;
+    }
+    const at = l.at;
+    const ax = xf.ox + at.u * xf.s;
+    const ay = xf.oy + at.v * xf.s;
+    let done = false;
+    for (const text of l.short ? [l.text, l.short] : [l.text]) {
+      // The order (clash sweep): its own authored place and alts; then the
+      // near ring (short leaders, shortest first); then the margins level
+      // with the part (a horizontal leader, the plan's own style); then the
+      // far ring.
+      const own: StaticLabel[] = [{ ...l, text }, ...(l.alts ?? []).map((a) => ({ ...l, text, u: a.u, v: a.v, align: a.align }))];
+      const ring = (ks: number[]) => {
+        const out2: StaticLabel[] = [];
+        for (const dpx of ks.map((k) => k * hpx))
+          for (const a of DIRS) {
+            const cx = ax + Math.cos(a) * dpx;
+            const cy = ay + Math.sin(a) * dpx;
+            const align = Math.cos(a) > 0.3 ? ('left' as const) : Math.cos(a) < -0.3 ? ('right' as const) : ('center' as const);
+            // labelRect: top = v·s − 7·scale; centre the words on cy.
+            out2.push({ ...l, text, u: (cx - xf.ox) / xf.s, v: (cy + 7 * scale - hpx / 2 - xf.oy) / xf.s, align });
+          }
+        return out2;
+      };
+      const lenOf = (c: StaticLabel) => {
+        const ln = leaderLine(labelRect(c, xf, scale, maxX), xf, at);
+        return ln ? Math.hypot(ln.x2 - ln.x1, ln.y2 - ln.y1) : 0;
+      };
+      const near = ring([1.6, 2.8]).sort((p, q) => Math.round(lenOf(p) / hpx) - Math.round(lenOf(q) / hpx));
+      const margins: StaticLabel[] = [];
+      for (const dy of [0, -1, 1, -2, 2]) {
+        const v = (ay + dy * hpx + 7 * scale - hpx / 2 - xf.oy) / xf.s;
+        const side = ax < maxX / 2 ? [0, 1] : [1, 0];
+        for (const k of side) margins.push({ ...l, text, u: ((k ? maxX - 4 : 4) - xf.ox) / xf.s, v, align: k ? 'right' : 'left' });
+      }
+      const ranked = (ownOnly ? own : [...own, ...near, ...margins, ...ring([4.2, 6])]).map((c) => ({ c }));
+      for (const { c: cand } of ranked) {
+        const r = labelRect(cand, xf, scale, maxX);
+        if (r.y0 < 1 || r.y1 > maxY - 1) continue;
+        if (taken.some((t) => overlaps(r, t)) || !inMm(r)) continue;
+        const fat = { x0: r.x0 - 5, x1: r.x1 + 5, y0: r.y0 - 3, y1: r.y1 + 3 };
+        if (lines.some((sg) => segHitsRect(sg, fat))) continue;
+        const ln = leaderLine(r, xf, at);
+        if (ln && (taken.some((t) => segHitsRect(ln, { x0: t.x0 - 5, x1: t.x1 + 5, y0: t.y0 - 3, y1: t.y1 + 3 })) || lines.some((sg) => segsCross(sg, ln)) || dots.some((d) => passes(ln, d)))) continue;
+        if (lines.some((sg) => passes(sg, { x: ax, y: ay }))) continue;
+        taken.push(r);
+        if (ln) lines.push(ln);
+        // The place is final: fitLabels keeps it (no alts to wander to).
+        out[i] = { ...cand, alts: undefined };
+        done = true;
+        break;
+      }
+      if (done) break;
+    }
+    return done;
+  };
+  const rest = order.filter(({ l, i }) => !place(l, i, true));
+  for (const { l, i } of rest) if (!place(l, i, false)) failed.add(i);
+  return { out, failed };
+}
+function planLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null): StaticLabel[] {
+  const a = planLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, false);
+  const b = a.failed.size ? planLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, true) : a;
+  const best = b.failed.size < a.failed.size ? b : a;
+  return best.out.filter((_, i) => !best.failed.has(i));
+}
+
 export function EnsembleStage(p: EnsembleStageProps) {
   const { w, h, seating, view, hi = null, rigs = NONE, singles = NONE, zones = NONE, radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = NONE, spill = NONE, rings = NONE, onTapSection } = p;
   const textScale = useStageTextScale();
@@ -544,7 +649,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
     };
     const fixed: StaticLabel[] = [...(dimG?.lab ?? []), ...singlesG.flatMap((q) => (q.dim ? [q.dim.label] : [])), ...extraLabels];
     const heads = seating.seats.filter((q) => view !== 'section' || Math.abs(q.p.x) <= slice).map((q) => uv(view, q.p).v - headTop(q));
-    const planned = view === 'plan' ? art : rowLayout(art, fixed, xf, textScale, w, h, clearOf, corner ?? null, Math.min(...heads, 0), 0);
+    const planned = view === 'plan' ? planLayout(art, fixed, xf, textScale, w, h, clearOf, corner ?? null) : rowLayout(art, fixed, xf, textScale, w, h, clearOf, corner ?? null, Math.min(...heads, 0), 0);
     return fitLabels([...fixed, ...planned], xf, textScale, w, undefined, corner ? [corner] : undefined, { clearOf, minY: 1, maxY: h - 1 });
   }, [labels, seating, view, slice, hi, dimG, singlesG, extraLabels, xf, textScale, w, h, corner, p.focus, rigs]);
 

@@ -289,10 +289,15 @@ export function tablaPose(view: ViewId): PlayerPose {
       neck: pt(-577, -845),
       shoulderR: pt(-572, -795),
       shoulderL: pt(-586, -805),
-      elbowR: pt(-430, -560),
-      elbowL: pt(-446, -575),
-      handR: { wrist: pt(-230, -490), dir: 0.12, kind: 'rest' },
-      handL: { wrist: pt(-250, -430), dir: 0.3, kind: 'rest' },
+      // Each hand lies ON its head (clash sweep 2026-10-10: the right hand
+      // floated ~90 mm above the dayan and the left one's fingers ran into
+      // the bayan's body): along the head's tilt (dayan 15°, bayan 10°), the
+      // fingertips over the head's middle, the heel by the player's rim; the
+      // elbows solved for the figure's 300 / 265 mm arm from each shoulder.
+      elbowR: pt(-379, -566),
+      elbowL: pt(-434, -547),
+      handR: { wrist: pt(-145, -441), dir: 0.262, kind: 'rest' },
+      handL: { wrist: pt(-182, -464), dir: 0.175, kind: 'rest' },
       hipR: hip,
       hipL: pt(hip.u - 10, hip.v - 4),
       kneeR: pt(-250, -120),
@@ -359,7 +364,10 @@ export function tablaLabels(view: ViewId): ArtLabel[] {
     return [
       { id: 'dayan', text: 'DAYAN · PATCH CENTRED', short: 'DAYAN', u: DAYAN.H.x, v: DAYAN.H.z + DAYAN.maxR + 50, align: 'center' },
       { id: 'bayan', text: 'BAYAN · PATCH OFF-CENTRE', short: 'BAYAN', u: BAYAN.H.x, v: BAYAN.H.z - BAYAN.maxR - 40, align: 'center' },
-      { id: 'player', text: 'PLAYER', u: -570, v: 140, align: 'center', tone: 'muted' },
+      // In the free space between the arms, its leader to the chest, its leader to the body (it
+      // was set on the arm and moved out with a leader across the dayan:
+      // clash sweep 2026-10-10).
+      { id: 'player', text: 'PLAYER', u: -270, v: 12, align: 'center', tone: 'muted', at: { u: -470, v: 0 }, alts: [{ u: -750, v: -385, align: 'left' }, { u: -750, v: 370, align: 'left' }] },
     ];
   }
   return [

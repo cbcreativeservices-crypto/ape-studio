@@ -54,12 +54,12 @@ const HITS: SceneHits = {
 const LABELS = {
   side: [
     { id: 'fan.guard', text: 'GUARD', u: 230, v: HUB.y - 330, align: 'left' as const, at: { u: FAN.guardRim + 10, v: HUB.y - FAN.guardR } },
-    { id: 'fan.motor', text: 'MOTOR', u: -560, v: HUB.y - 300, align: 'right' as const, at: { u: MX, v: HUB.y - FAN.motorR } },
+    { id: 'fan.motor', text: 'MOTOR', u: -400, v: HUB.y - 300, align: 'right' as const, at: { u: MX, v: HUB.y - FAN.motorR } },
     { id: 'sensor', text: 'CONTACT SENSOR', short: 'SENSOR', u: -560, v: HUB.y - 560, align: 'right' as const, at: { u: MX, v: HUB.y - FAN.motorR - 34 } },
     { id: 'zone', text: 'EXCLUSION ZONE', short: 'ZONE', u: 0, v: HUB.y - R - 90, align: 'center' as const },
     { id: 'airflow', text: 'AIRFLOW', u: 1300, v: S.y - RE - 70, align: 'center' as const },
     { id: 'table', text: 'TABLE', u: 620, v: 420, align: 'left' as const, at: { u: TABLE.half, v: 300 } },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP15.x, v: TABLE.floor - 1900, align: 'center' as const },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP15.x, v: TABLE.floor - 1900, align: 'center' as const, at: { u: OP15.x, v: TABLE.floor - 1640 }, alts: [{ u: OP15.x - 420, v: TABLE.floor - 1300, align: 'right' as const }] },
   ],
   top: [
     { id: 'zone', text: 'EXCLUSION ZONE', short: 'ZONE', u: 0, v: -R - 90, align: 'center' as const },

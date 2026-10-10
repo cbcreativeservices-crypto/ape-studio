@@ -136,7 +136,9 @@ export function BongoArt({ view, variant }: { view: ViewId; variant: VariantId }
     <Group>
       {onStand ? <StandLegs legs={legs} view="top" ring={{ cx: 0, cv: 0, r: 0 }} /> : <Legs view="top" which="both" />}
       <Block view="top" />
-      <HeadTop d={MACHO} look="rawhide" lugs={RODS} seed={5} />
+      {/* the macho turned half a lug pitch: its hooks sit either side of the
+          centre block instead of meeting the hembra's (clash sweep 2026-10-10) */}
+      <HeadTop d={MACHO} look="rawhide" lugs={RODS} seed={5} phaseDeg={90 + 180 / RODS} />
       <HeadTop d={HEMBRA} look="rawhide" lugs={RODS} seed={17} />
     </Group>
   );
@@ -146,18 +148,24 @@ export function bongoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const top = rimTopY(HEMBRA);
   if (view === 'side') {
     const out: ArtLabel[] = [
-      { id: 'hembra', text: 'HEMBRA (IN FRONT)', short: 'HEMBRA', u: HEMBRA.R + 30, v: top - 26, align: 'left' },
-      { id: 'macho', text: 'MACHO BEHIND IT', short: 'MACHO BEHIND', u: HEMBRA.R + 30, v: top + 60, align: 'left', tone: 'muted' },
-      { id: 'bottom', text: 'OPEN LOWER ENDS', short: 'OPEN ENDS', u: HEMBRA.R + 30, v: HEMBRA.bottomY + 10, align: 'left', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: BONGO_MODEL.views.side!.u0 + 20, v: top - 26, align: 'left', tone: 'muted', point: { u: BONGO_MODEL.views.side!.u0 - 400, v: top - 26 } },
+      // Every leader lands on its part (clash sweep 2026-10-10: moved names
+      // pointed at the empty glass beside the drum). The macho is hidden right
+      // behind the hembra, so its leader lands on the hembra's shell.
+      { id: 'hembra', text: 'HEMBRA (IN FRONT)', short: 'HEMBRA', u: HEMBRA.R + 30, v: top - 26, align: 'left', at: { u: HEMBRA.R + HEMBRA.rim.t - 4, v: top + 6 } },
+      { id: 'macho', text: 'MACHO BEHIND IT', short: 'MACHO BEHIND', u: HEMBRA.R + 30, v: top + 60, align: 'left', tone: 'muted', at: { u: HEMBRA.R * 0.6, v: (HEMBRA.headY + HEMBRA.bottomY) / 2 } },
+      { id: 'bottom', text: 'OPEN LOWER ENDS', short: 'OPEN ENDS', u: HEMBRA.R + 30, v: HEMBRA.bottomY + 10, align: 'left', tone: 'muted', at: { u: HEMBRA.R - 10, v: HEMBRA.bottomY - 6 } },
+      { id: 'player', text: '← PLAYER', u: BONGO_MODEL.views.side!.u0 + 20, v: top - 26, align: 'left', tone: 'muted', point: { u: BONGO_MODEL.views.side!.u0 - 6000, v: top - 26 } },
     ];
-    if (variant === 'knees') out.push({ id: 'legs', text: 'PLAYER’S LEGS', short: 'LEGS', u: 130, v: -300, align: 'left', tone: 'muted' });
+    const shin = LEGS.shinL;
+    if (variant === 'knees') out.push({ id: 'legs', text: 'PLAYER’S LEGS', short: 'LEGS', u: 130, v: -300, align: 'left', tone: 'muted', ...(shin.kind === 'box' ? { at: { u: (shin.min.x + shin.max.x) / 2, v: (shin.min.y + shin.max.y) / 2 } } : {}) });
     return out;
   }
   return [
-    { id: 'macho', text: 'MACHO', u: MACHO.c.x, v: MACHO.c.z - MACHO.R - 46, align: 'center' },
-    { id: 'hembra', text: 'HEMBRA', u: HEMBRA.c.x, v: HEMBRA.c.z + HEMBRA.R + 36, align: 'center' },
-    { id: 'player', text: '← PLAYER', u: BONGO_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: BONGO_MODEL.views.top!.u0 - 400, v: 0 } },
+    // Right of each drum, clear of the thighs, a leader to its rim (they
+    // pointed at the thighs: clash sweep 2026-10-10).
+    { id: 'macho', text: 'MACHO', u: MACHO.c.x + MACHO.R + 70, v: MACHO.c.z, align: 'left', at: { u: MACHO.c.x + MACHO.R * 0.6, v: MACHO.c.z - MACHO.R * 0.6 } },
+    { id: 'hembra', text: 'HEMBRA', u: HEMBRA.c.x + HEMBRA.R + 70, v: HEMBRA.c.z, align: 'left', at: { u: HEMBRA.c.x + HEMBRA.R * 0.6, v: HEMBRA.c.z + HEMBRA.R * 0.6 } },
+    { id: 'player', text: '← PLAYER', u: BONGO_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: BONGO_MODEL.views.top!.u0 - 6000, v: 0 } },
     { id: 'aud', text: 'AUDIENCE →', u: BONGO_MODEL.views.top!.u1 - 20, v: BONGO_MODEL.views.top!.v1 - 36, align: 'right', tone: 'muted' },
   ];
 }

@@ -24,7 +24,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, ModeChips, MythReality, PanelCard, ReadoutGrid, dstyles, type ViewMode } from '../bits';
-import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizChain, type VizChainModule } from '../skiaGate';
@@ -359,6 +359,20 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       onToggle: () => setTrim(!trim),
       helpKey: 'gain_above_zero',
     },
+    {
+      // The float visualizer's VALUE — was a slider in the well (owner rule
+      // 2026-10-10: every lab control lives in the bottom dock). Its picture
+      // stays in the well: ride the lane and watch HOW A FLOAT NUMBER WORKS.
+      kind: 'fader',
+      id: 'value',
+      label: 'VALUE',
+      value: value01,
+      onChange: setValue01,
+      format: () => `float value · ${formatFloatReadout(value01)}`,
+      formatShort: () => formatFloatReadout(value01),
+      home: 0.5,
+      helpKey: 'float_vs_int',
+    },
   ];
 
   return (
@@ -431,9 +445,8 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
           <Text style={dstyles.eyebrow}>HOW A FLOAT NUMBER WORKS</Text>
           {viz ? <viz.FloatView width={width} value01={value01} /> : <VizUnavailableCard />}
           <Badge text="SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields (1 sign · 8 exponent · 23 mantissa bits)" />
-          <DragSlider value={value01} onChange={setValue01} label="VALUE" readout={formatFloatReadout(value01)} onHelp={() => help('float_vs_int')} />
           <Text style={dstyles.caption}>
-            Drag through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps
+            Ride the VALUE key in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps
             decade to decade while the MANTISSA slides smoothly between steps. The exponent is why
             float can represent both whispers and explosions: the ruler itself rescales.
           </Text>

@@ -267,18 +267,20 @@ export function DjembeArt({ view, variant }: { view: ViewId; variant: VariantId 
 export function djembeLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     const out: ArtLabel[] = [
-      { id: 'head', text: 'SKIN HEAD', short: 'HEAD', u: R + 30, v: HEAD_Y - 24, align: 'left' },
-      { id: 'ropes', text: 'ROPE TUNING', short: 'ROPES', u: profileR(LOW_RING_Y) + 30, v: (TOP_RING_Y + LOW_RING_Y) / 2, align: 'left', tone: 'muted' },
-      { id: 'waist', text: 'WAIST', u: R_FOOT + 30, v: WAIST_Y, align: 'left', tone: 'muted' },
-      { id: 'open', text: 'OPEN FOOT', short: 'OPENING', u: R_FOOT + 30, v: -24, align: 'left', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: DJ_MODEL.views.side!.u0 + 20, v: HEAD_Y - 24, align: 'left', tone: 'muted', point: { u: DJ_MODEL.views.side!.u0 - 400, v: HEAD_Y - 24 } },
+      // Leaders land on their parts; the player cue is an arrow only, its
+      // point far off the glass (clash sweep 2026-10-10: a leader crossed the drum).
+      { id: 'head', text: 'SKIN HEAD', short: 'HEAD', u: R + 30, v: HEAD_Y - 24, align: 'left', at: { u: R * 0.7, v: HEAD_Y - 2 } },
+      { id: 'ropes', text: 'ROPE TUNING', short: 'ROPES', u: profileR(LOW_RING_Y) + 30, v: (TOP_RING_Y + LOW_RING_Y) / 2, align: 'left', tone: 'muted', at: { u: profileR((TOP_RING_Y + LOW_RING_Y) / 2) - 12, v: (TOP_RING_Y + LOW_RING_Y) / 2 } },
+      { id: 'waist', text: 'WAIST', u: R_FOOT + 30, v: WAIST_Y, align: 'left', tone: 'muted', at: { u: profileR(WAIST_Y) - 8, v: WAIST_Y } },
+      { id: 'open', text: 'OPEN FOOT', short: 'OPENING', u: R_FOOT + 30, v: -24, align: 'left', tone: 'muted', at: { u: R_FOOT - 14, v: -10 } },
+      { id: 'player', text: '← PLAYER', u: DJ_MODEL.views.side!.u0 + 20, v: HEAD_Y - 24, align: 'left', tone: 'muted', point: { u: DJ_MODEL.views.side!.u0 - 6000, v: HEAD_Y - 24 } },
     ];
     if (variant === 'raised') out.push({ id: 'blocks', text: 'FOAM BLOCKS', short: 'FOAM', u: -R_FOOT - 40, v: SUPPORT - 30, align: 'right', tone: 'muted' });
     return out;
   }
   return [
-    { id: 'head', text: 'DJEMBE', u: 0, v: R + 46, align: 'center' },
-    { id: 'player', text: '← PLAYER', u: DJ_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: DJ_MODEL.views.top!.u0 - 400, v: 0 } },
+    { id: 'head', text: 'DJEMBE', u: 0, v: R + 46, align: 'center', at: { u: 0, v: R * 0.7 } },
+    { id: 'player', text: '← PLAYER', u: DJ_MODEL.views.top!.u0 + 20, v: 0, align: 'left', tone: 'muted', point: { u: DJ_MODEL.views.top!.u0 - 6000, v: 0 } },
     { id: 'aud', text: 'AUDIENCE →', u: DJ_MODEL.views.top!.u1 - 20, v: DJ_MODEL.views.top!.v1 - 36, align: 'right', tone: 'muted' },
   ];
 }

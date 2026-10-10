@@ -6,7 +6,7 @@
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
-import { F13_FLOOR, PA13, ROOM13, ROWS, SRC_R } from './geometry.ts';
+import { F13_FLOOR, PA13, ROOM13, ROWS, SEATS_Z, SRC_R } from './geometry.ts';
 import { RoomArt13 } from './RoomArt';
 import { F13_PAGES, F13_STEP_COUNTS } from './pages';
 
@@ -48,7 +48,7 @@ const LABELS = {
     { id: 'src', text: 'OMNI TEST SOURCE', short: 'SOURCE', u: 0, v: -900, align: 'center' as const, at: { u: 0, v: -SRC_R }, variants: ['room'] },
     { id: 'pa', text: 'INSTALLED PA', short: 'PA', u: PA13.x, v: -1700, align: 'center' as const, at: { u: PA13.x - 150, v: -PA13.z + 200 }, variants: ['pa'] },
     { id: 'curtains', text: 'CURTAINS', u: 1200, v: ROOM13.half - 600, align: 'right' as const, at: { u: 1500, v: ROOM13.half - 120 } },
-    { id: 'seats', text: 'SEATS', u: 1300, v: 0, align: 'right' as const, at: { u: ROWS[0] - 240, v: 0 } },
+    { id: 'seats', text: 'SEATS', u: 1300, v: 0, align: 'right' as const, at: { u: ROWS[0] - 200, v: SEATS_Z[4] - 150 } },
   ],
 };
 

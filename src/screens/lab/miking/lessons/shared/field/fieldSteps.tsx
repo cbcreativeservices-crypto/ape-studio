@@ -215,11 +215,18 @@ export function useBalanceStep(spec: BalanceSpec): MikingStep {
           box={spec.box}
           orient="frontUp"
           label={spec.a11y(x)}
-          labels={(map) => [
-            { id: 'lp', text: 'LISTENING POINT', short: 'YOU', ...map({ x: x - 1600, z: 0 }), align: 'center', tone: 'amber' },
-            { id: 'm', text: `${spec.words.mainKey} ${fmtMetres(r.rM)}`, short: fmtMetres(r.rM), ...map({ x: (x + r.m.x) / 2, z: (r.m.z + 0) / 2 - 1500 }), align: 'right', tone: 'blue' },
-            { id: 'o', text: `${spec.words.otherKey} ${fmtMetres(r.rO)}`, short: fmtMetres(r.rO), ...map({ x: (x + r.o.x) / 2, z: r.o.z / 2 + 1400 }), align: 'left', tone: 'amber' },
-          ]}
+          labels={(map) => {
+            // Each distance sits on the OUTER side of its own sight line, away
+            // from the other line (clash sweep 2026-10-10: with the birds on
+            // the water's left, each word sat beside the other's line).
+            const side = r.m.z / 2 >= r.o.z / 2 ? 1 : -1;
+            return [
+              // Beside the point, not on the line that runs back from it.
+              { id: 'lp', text: 'LISTENING POINT', short: 'YOU', ...map({ x: x - 900, z: -side * 900 }), align: side > 0 ? 'right' : 'left', tone: 'amber' },
+              { id: 'm', text: `${spec.words.mainKey} ${fmtMetres(r.rM)}`, short: fmtMetres(r.rM), ...map({ x: (x + r.m.x) / 2, z: r.m.z / 2 + side * 1500 }), align: side > 0 ? 'left' : 'right', tone: 'blue' },
+              { id: 'o', text: `${spec.words.otherKey} ${fmtMetres(r.rO)}`, short: fmtMetres(r.rO), ...map({ x: (x + r.o.x) / 2, z: r.o.z / 2 - side * 1400 }), align: side > 0 ? 'right' : 'left', tone: 'amber' },
+            ];
+          }}
         >
           {(px) => (
             <Group>

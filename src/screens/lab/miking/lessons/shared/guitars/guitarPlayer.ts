@@ -86,9 +86,18 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
     const shoulderR = pt(hx - BODY.shoulderHalf, hz + 22);
     const shoulderL = pt(hx + BODY.shoulderHalf, hz + 22);
     const elbowR = pt(f.arm.a.x, 24);
-    const handR = handAt(elbowR, pt(f.arm.b.x + 6, f.arm.b.z + 26), 'above');
+    // CLASH SWEEP 2026-10-10 (owner at 3×): the strumming hand is a loose
+    // fist holding the pick (the front view's hand), seen from above — its
+    // pick side on the strings, not an open hand 6–13 cm out in the air.
+    // The fist is ≈ 86 mm across (BODY.handW): its centre half that in front
+    // of the top, so the pick edge meets the strings' plane.
+    const handR = handAt(elbowR, pt(f.arm.b.x + 6, f.arm.b.z - 8), 'pick');
     const elbowL = pt(Math.max(shoulderL.u + 40, tipMid - 120), hz + 190);
-    const handL: Hand = { wrist: pt(tipMid + 20, -g.depth * 0.25 - 70), dir: Math.PI / 2, kind: 'above', board: { v: 0, half: 26, tips } };
+    // The fretting hand from above: the palm behind the neck, the fingers
+    // over its edge, the fingertips STOPPING on the strings at the board
+    // (the 'above' hand reaches ≈ 180 mm from its wrist to the fingertips) —
+    // they ran ≈ 7 cm past the fingerboard into the air before.
+    const handL: Hand = { wrist: pt(tipMid + 20, g.h(tipMid) + 2 - 180), dir: Math.PI / 2, kind: 'above', board: { v: 0, half: 26, tips } };
     const seated = sc.variant.posture === 'seated';
     const hipR = pt(hx - 106, hz + 70);
     const hipL = pt(hx + 106, hz + 70);

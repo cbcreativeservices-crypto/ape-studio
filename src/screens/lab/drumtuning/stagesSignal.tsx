@@ -162,6 +162,45 @@ function PartialBar({ x, y, w, h, color, loss, seconds, progress, playing, s }: 
 /** The strike's partials on a log frequency axis: height by amplitude,
  *  colour on the ramp, split pairs drawn as two bars with the beat rate.
  *  While the strike sounds, every bar fades with its own decay. */
+type Box = { x0: number; x1: number; y0: number; y1: number };
+/** Each loud mode's name above its own bar, nudged up (then sideways) until
+ *  its box is clear of every bar, every name already placed and the given
+ *  boxes; a name with no clear place in the plot is left out. Pure. */
+export function layoutModeLabels(
+  bars: readonly { x: number; y: number; w: number; a: number; label: string }[],
+  fsS: number,
+  plot: { x0: number; x1: number; top: number; bot: number },
+  avoid: readonly Box[],
+): { x: number; y: number; text: string }[] {
+  const hit = (a: Box, b: Box) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+  const barBoxes: Box[] = bars.map((b) => ({ x0: b.x - 0.5, x1: b.x + b.w + 0.5, y0: b.y, y1: plot.bot }));
+  const placed: Box[] = [];
+  const out: { x: number; y: number; text: string }[] = [];
+  // the loudest first: they get the places nearest their bars
+  const order = bars.map((b, i) => ({ b, i })).filter((o) => o.b.a > 0.28).sort((p, q) => q.b.a - p.b.a);
+  for (const { b } of order) {
+    const tw = b.label.length * fsS * 0.6;
+    const cx = b.x + b.w / 2;
+    let done = false;
+    for (const dx of [0, tw / 2 + 4, -(tw / 2 + 4)]) {
+      for (let k = 0; k < 6 && !done; k++) {
+        const y = b.y - 4 - k * (fsS + 1);
+        const x = Math.max(plot.x0 + tw / 2 + 1, Math.min(plot.x1 - tw / 2 - 1, cx + dx));
+        const box = { x0: x - tw / 2 - 1, x1: x + tw / 2 + 1, y0: y - fsS * 0.82, y1: y + 2 };
+        // (the tallest bar reaches the plot's top: its name may sit in the
+        // margin above the plot, never off the glass)
+        if (box.y0 < 2) break;
+        if (barBoxes.some((bb) => hit(bb, box)) || placed.some((p) => hit(p, box)) || avoid.some((p) => hit(p, box))) continue;
+        placed.push(box);
+        out.push({ x, y, text: b.label });
+        done = true;
+      }
+      if (done) break;
+    }
+  }
+  return out;
+}
+
 export function PartialsStage({ width, height, partials, fb, label, progress, playing, seconds }: { width: number; height: number; partials: readonly Partial[]; fb: number; label: string; progress?: SharedValue<number>; playing?: boolean; seconds?: number }) {
   // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
   const bst = textBoost(width);
@@ -184,6 +223,13 @@ export function PartialsStage({ width, height, partials, fb, label, progress, pl
     const h = Math.max(2, a * (bot - top - 6));
     return { x: xOf(p.hz) - 2.5, y: bot - h, w: 5, h, a, color: levelColor(a), loss: p.loss, label: p.label.replace(/[ab]$/, '') };
   });
+  const modeLabels = layoutModeLabels(bars, fsS, { x0, x1, top, bot }, [
+    // the batter's pitch note (end-anchored left of its line) and the line itself
+    { x0: xOf(fb) - 3 - `batter ${fb.toFixed(0)} Hz`.length * fsS * 0.6, x1: xOf(fb) - 3, y0: top + 12 - fsS, y1: top + 14 },
+    { x0: xOf(fb) - 1, x1: xOf(fb) + 1, y0: top, y1: bot },
+    // the split / even note at the top right
+    ...(pairs.length === 0 ? [{ x0: x1 - 4 - 'no split pairs · even head'.length * fs * 0.6, x1: x1 - 4, y0: top + 12 - fs, y1: top + 14 }] : pairs.slice(0, 2).map((_, k) => ({ x0: x1 - 4 - 30 * fs * 0.6, x1: x1 - 4, y0: top + 12 + k * 13 - fs, y1: top + 14 + k * 13 }))),
+  ]);
   return (
     <View style={{ width, height }}>
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${PART_H}`}>
@@ -195,7 +241,6 @@ export function PartialsStage({ width, height, partials, fb, label, progress, pl
           <SvgText x={xOf(hz)} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{hz >= 1000 ? `${hz / 1000}k` : hz}</SvgText>
         </G>
       ))}
-      {bars.map((b, i) => (b.a > 0.28 ? <SvgText key={i} x={b.x + 2.5} y={b.y - 4} fontSize={fsS} fill={ink.text} textAnchor="middle" fontFamily={fonts.mono}>{b.label}</SvgText> : null))}
       {/* beat annotations: one per split pair */}
       {pairs.filter((p) => p.pairHz > 0).slice(0, 2).map((p, k) => (
         <SvgText key={k} x={x1 - 4} y={top + 12 + k * 13} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.mono}>
@@ -206,6 +251,12 @@ export function PartialsStage({ width, height, partials, fb, label, progress, pl
       <Line x1={xOf(fb)} y1={top} x2={xOf(fb)} y2={bot} stroke={ink.cyan} strokeWidth={0.8} strokeDasharray="3,2" />
       {/* the batter's own pitch, to the LEFT of its line so it never meets the split notes on the right */}
       <SvgText x={xOf(fb) - 3} y={top + 12} fontSize={fsS} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>batter {fb.toFixed(0)} Hz</SvgText>
+      {/* the mode names, each in free space above its bar: never on another
+          bar (the bars are drawn OVER the glass), the batter line or another
+          name (clash sweep 2026-10-10: "(0,1)" sat struck through) */}
+      {modeLabels.map((l, i) => (
+        <SvgText key={i} x={l.x} y={l.y} fontSize={fsS} fill={ink.text} textAnchor="middle" fontFamily={fonts.mono}>{l.text}</SvgText>
+      ))}
       {tiny ? null : <SvgText x={x0} y={PART_H - 18} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>}
       {tiny ? null : <SvgText x={x0} y={PART_H - 5} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowMedium}>height = how loud it starts · bars fade with the hit</SvgText>}
     </Svg>

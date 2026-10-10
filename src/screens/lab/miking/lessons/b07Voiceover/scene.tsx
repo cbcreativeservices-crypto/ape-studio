@@ -13,7 +13,7 @@ import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { VoiceFigure, voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP, SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
-import { AcousticPanels, ArmClamp, Desk, Headphones, PaSpeaker, ScriptStand, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { AcousticPanels, ArmClamp, Desk, DeskNearLegs, Headphones, PaSpeaker, ScriptStand, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { BOOTH_FLOOR, DESK, GRIP_G, GRIP_H, GUEST, MONITOR_C, READER, STAND, WALL_X } from './geometry.ts';
@@ -48,13 +48,14 @@ export function B07Scene({ view, variant, headless = false }: { view: ViewId; va
     return (
       <Group>
         <ArmClamp view="side" grip={GRIP_H} deskTop={DESK_TOP_Y} on="side" />
-        {g ? <ArmClamp view="side" grip={GRIP_G} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
         <StudioChair view="side" t={READER} />
         {g ? <StudioChair view="side" t={GUEST} /> : null}
         {g ? <SeatedTalker view="side" t={GUEST} phones /> : null}
         <PaSpeaker view="side" c={MONITOR_C} faces={-1} h={260} d={200} w={160} floor={SEATED_FLOOR} pole={false} />
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} />
         <SeatedTalker view="side" t={READER} phones headless={headless} />
+        <DeskNearLegs box={DESK} floor={SEATED_FLOOR} />
+        {g ? <ArmClamp view="side" grip={GRIP_G} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
       </Group>
     );
   }
@@ -85,7 +86,7 @@ export function b07Labels(view: ViewId, variant: VariantId): ArtLabel[] {
         { id: 'v.mouth', text: 'MOUTH', u: 130, v: -170, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 150, v: 120, align: 'left' }] },
         { id: 'b7.stand', text: 'SCRIPT STAND', short: 'SCRIPT', u: STAND.c.x + 120, v: STAND.c.y + 200, align: 'left', at: { u: STAND.c.x, v: STAND.c.y } },
         { id: 'b7.phones', text: 'HEADPHONES', short: 'PHONES', u: -300, v: -260, align: 'right', at: { u: -60, v: -60 } },
-        { id: 'b7.panels', text: 'SOFT PANELS', short: 'PANELS', u: WALL_X + 80, v: -470, align: 'left', tone: 'muted', at: { u: WALL_X + 30, v: -300 } },
+        { id: 'b7.panels', text: 'SOFT PANELS', short: 'PANELS', u: WALL_X + 80, v: -470, align: 'left', tone: 'muted', at: { u: WALL_X + 30, v: -300 }, alts: [{ u: WALL_X + 80, v: 300, align: 'left' }, { u: WALL_X + 80, v: 650, align: 'left' }] },
       ];
     return [
       { id: 'v.mouth', text: 'MOUTH', u: 150, v: -150, align: 'left', at: { u: 2, v: 0 } },

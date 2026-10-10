@@ -61,14 +61,88 @@ const APath = Animated.createAnimatedComponent(Path);
 const X = { voice: 28, mic: 90, mixer: 180, speaker: 274, listener: 338 } as const;
 const CY = 76;
 
-/** Cable geometry: a drooping quadratic from one device's output to the next's input. */
-const CABLES = {
-  cableA: { x0: 108, x1: 154, y: 88, sag: 20 },
-  cableB: { x0: 206, x1: 252, y: 88, sag: 20 },
-} as const;
+/**
+ * Cable geometry (clash sweep 2026-10-10). Every cable now ENDS IN the gear it
+ * connects — nothing floats beside a device:
+ *  - cable A leaves the vocal mic's tail along the mic's own drawn cable loop
+ *    (gearArt VocalMic: tail (45.6, 38.7) → floor (36.6, 58.6) in its 64-unit
+ *    box, here ×0.75 at (66, 52)), lies on the floor and rises into the mixer's
+ *    left side; its plug tucks BEHIND the desk (drawn before it).
+ *  - cable B leaves from behind the mixer's right side, lies on the floor and
+ *    rises into the speaker's (rear) input, plug tucked behind the cabinet.
+ * Gear edges in this viewBox: mixer x 152.8–207.2, speaker x 258.6–306.
+ * Floor ≈ y 97–101; the cables lie at ≈ 99.5, ABOVE the IN / OUT tags (y ≥ 104).
+ * Each cable is a list of cubic segments [c1, c2, end] from `start`.
+ */
+type Pt = readonly [number, number];
+type CableGeom = { start: Pt; segs: readonly (readonly [Pt, Pt, Pt])[] };
+const CABLES: Record<'cableA' | 'cableB', { on: CableGeom; pulled: CableGeom; jack: Pt }> = {
+  cableA: {
+    on: {
+      start: [100.2, 81],
+      segs: [
+        [[102.45, 84.85], [99.45, 88.75], [95.55, 90.85]],
+        [[92.55, 92.5], [91.2, 94.3], [93.45, 95.95]],
+        [[97, 98.6], [110, 99.6], [124, 99.3]],
+        [[138, 99], [147.5, 95], [153, 88]],
+      ],
+    },
+    // unplugged: the plug end lies on the floor, short of the mixer
+    pulled: {
+      start: [100.2, 81],
+      segs: [
+        [[102.45, 84.85], [99.45, 88.75], [95.55, 90.85]],
+        [[92.55, 92.5], [91.2, 94.3], [93.45, 95.95]],
+        [[97, 98.6], [110, 99.6], [124, 99.4]],
+        [[131, 99.3], [136, 99.5], [140, 99.6]],
+      ],
+    },
+    jack: [154.6, 88],
+  },
+  cableB: {
+    on: {
+      start: [207, 88],
+      segs: [
+        [[211, 95], [215, 99.5], [226, 99.6]],
+        [[238, 99.7], [252.5, 98.5], [259.5, 88]],
+      ],
+    },
+    pulled: {
+      start: [207, 88],
+      segs: [
+        [[211, 95], [215, 99.5], [226, 99.6]],
+        [[233, 99.7], [239, 99.6], [244, 99.6]],
+      ],
+    },
+    jack: [260.4, 88],
+  },
+};
 
-const cablePath = (c: { x0: number; x1: number; y: number; sag: number }) =>
-  `M ${c.x0} ${c.y} Q ${(c.x0 + c.x1) / 2} ${c.y + c.sag * 2} ${c.x1} ${c.y}`;
+const cablePath = (g: CableGeom) =>
+  `M ${g.start[0]} ${g.start[1]} ` + g.segs.map(([a, b, e]) => `C ${a[0]} ${a[1]} ${b[0]} ${b[1]} ${e[0]} ${e[1]}`).join(' ');
+const cableEnd = (g: CableGeom): Pt => g.segs[g.segs.length - 1][2];
+
+/** The connected cable sampled by arc length, so a signal pulse can ride it. */
+function sampleCable(g: CableGeom, perSeg = 16): { xs: number[]; ys: number[]; ls: number[] } {
+  const xs = [g.start[0]];
+  const ys = [g.start[1]];
+  const ls = [0];
+  let p0: Pt = g.start;
+  for (const [a, b, e] of g.segs) {
+    for (let k = 1; k <= perSeg; k++) {
+      const u = k / perSeg;
+      const v = 1 - u;
+      const x = v * v * v * p0[0] + 3 * v * v * u * a[0] + 3 * v * u * u * b[0] + u * u * u * e[0];
+      const y = v * v * v * p0[1] + 3 * v * v * u * a[1] + 3 * v * u * u * b[1] + u * u * u * e[1];
+      ls.push(ls[ls.length - 1] + Math.hypot(x - xs[xs.length - 1], y - ys[ys.length - 1]));
+      xs.push(x);
+      ys.push(y);
+    }
+    p0 = e;
+  }
+  return { xs, ys, ls };
+}
+const SAMPLES = { cableA: sampleCable(CABLES.cableA.on), cableB: sampleCable(CABLES.cableB.on) };
 
 /** Tap regions in viewBox units: [x0, y0, x1, y1]. */
 const STATION_BOX: Record<StationId, [number, number, number, number]> = {
@@ -99,10 +173,10 @@ const STATION_LABELS: { id: StationId; x: number; text: string }[] = [
 ];
 
 const JACKS: { id: MatchTarget; x: number; text: 'IN' | 'OUT' }[] = [
-  { id: 'mic.out', x: 108, text: 'OUT' },
-  { id: 'mixer.in', x: 154, text: 'IN' },
-  { id: 'mixer.out', x: 206, text: 'OUT' },
-  { id: 'speaker.in', x: 252, text: 'IN' },
+  { id: 'mic.out', x: 104, text: 'OUT' },
+  { id: 'mixer.in', x: 153, text: 'IN' },
+  { id: 'mixer.out', x: 207, text: 'OUT' },
+  { id: 'speaker.in', x: 259, text: 'IN' },
 ];
 
 const ORDER: StationId[] = ['voice', 'mic', 'cableA', 'mixer', 'cableB', 'speaker', 'listener'];
@@ -169,20 +243,24 @@ export function SignalPathArt({
   const live = (id: StationId) => stationLive(id, unplug) && visible(id);
 
   // A pulse riding each cable (quadratic Bézier evaluated on the UI thread).
-  const pulseProps = (c: { x0: number; x1: number; y: number; sag: number }, phase: number) =>
+  const pulseProps = (smp: { xs: number[]; ys: number[]; ls: number[] }, phase: number) =>
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useAnimatedProps(() => {
       const u = (t.value + phase) % 1;
-      const cx = (c.x0 + c.x1) / 2;
-      const cy = c.y + c.sag * 2;
-      const x = (1 - u) * (1 - u) * c.x0 + 2 * (1 - u) * u * cx + u * u * c.x1;
-      const y = (1 - u) * (1 - u) * c.y + 2 * (1 - u) * u * cy + u * u * c.y;
+      const total = smp.ls[smp.ls.length - 1];
+      const target = u * total;
+      let i = 1;
+      while (i < smp.ls.length - 1 && smp.ls[i] < target) i++;
+      const seg = smp.ls[i] - smp.ls[i - 1];
+      const f = seg > 0 ? (target - smp.ls[i - 1]) / seg : 0;
+      const x = smp.xs[i - 1] + (smp.xs[i] - smp.xs[i - 1]) * f;
+      const y = smp.ys[i - 1] + (smp.ys[i] - smp.ys[i - 1]) * f;
       return { cx: x, cy: y, opacity: 0.35 + 0.65 * Math.sin(Math.PI * u) };
     });
-  const pA0 = pulseProps(CABLES.cableA, 0);
-  const pA1 = pulseProps(CABLES.cableA, 0.5);
-  const pB0 = pulseProps(CABLES.cableB, 0);
-  const pB1 = pulseProps(CABLES.cableB, 0.5);
+  const pA0 = pulseProps(SAMPLES.cableA, 0);
+  const pA1 = pulseProps(SAMPLES.cableA, 0.5);
+  const pB0 = pulseProps(SAMPLES.cableB, 0);
+  const pB1 = pulseProps(SAMPLES.cableB, 0.5);
   // Air arcs breathe outward: each arc's opacity peaks in turn.
   const arcProps = (k: number) =>
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -216,33 +294,36 @@ export function SignalPathArt({
     const on = live(id);
     const hl = highlight === id;
     const mark = marks?.[id];
-    const d = pulled
-      ? // Unplugged: the far end hangs loose and short of the jack.
-        `M ${c.x0} ${c.y} Q ${(c.x0 + c.x1) / 2 - 4} ${c.y + c.sag * 2.2} ${c.x1 - 12} ${c.y + 22}`
-      : cablePath(c);
+    const g = pulled ? c.pulled : c.on;
+    const d = cablePath(g);
+    const [ex, ey] = cableEnd(g);
+    // Cable A starts AT the mic's tail (no plug body there: the mic's own
+    // connector is the tail); cable B starts with its plug tucked behind the
+    // mixer's right side. Drawn BEFORE the gear they enter, so each plug goes
+    // in behind the device's edge instead of floating in front of / beside it.
     return (
       <G key={id} opacity={visible(id) ? 1 : 0.3}>
         {hl || mark ? (
-          <Path d={d} stroke={mark === 'wrong' ? RED : mark === 'right' ? GREEN : AMBER} strokeWidth={9} strokeLinecap="round" fill="none" opacity={0.28} />
+          <Path d={d} stroke={mark === 'wrong' ? RED : mark === 'right' ? GREEN : AMBER} strokeWidth={8} strokeLinecap="round" fill="none" opacity={0.28} />
         ) : null}
         {/* the jacket, then a highlight line for a round-cable look */}
-        <Path d={d} stroke="#07080a" strokeWidth={5.2} strokeLinecap="round" fill="none" />
-        <Path d={d} stroke={on ? '#2b3a52' : '#26282e'} strokeWidth={3.4} strokeLinecap="round" fill="none" />
-        <Path d={d} stroke="#fff" strokeWidth={0.8} strokeLinecap="round" fill="none" opacity={0.18} transform="translate(0,-0.8)" />
-        {/* plug bodies at both ends (the loose one hangs free) */}
-        <Rect x={c.x0 - 3} y={c.y - 4} width={6} height={8} rx={1.4} fill="#8d939c" stroke="#000" strokeWidth={0.5} />
+        <Path d={d} stroke="#07080a" strokeWidth={3.6} strokeLinecap="butt" fill="none" />
+        <Path d={d} stroke={on ? '#2b3a52' : '#26282e'} strokeWidth={2.3} strokeLinecap="butt" fill="none" />
+        <Path d={d} stroke="#fff" strokeWidth={0.6} strokeLinecap="butt" fill="none" opacity={0.18} transform="translate(0,-0.6)" />
+        {/* plug bodies: cable B's source plug (behind the mixer) and the far
+            end — in its jack, or lying loose on the floor when unplugged */}
+        {id === 'cableB' ? (
+          <Rect x={g.start[0] - 3} y={g.start[1] - 3.5} width={6} height={7} rx={1.4} fill="#8d939c" stroke="#000" strokeWidth={0.5} />
+        ) : null}
         {pulled ? (
-          <G>
-            <Rect x={c.x1 - 15} y={c.y + 18} width={6} height={8} rx={1.4} fill="#8d939c" stroke="#000" strokeWidth={0.5} />
-            <Circle cx={c.x1} cy={c.y} r={2.2} fill="#07080a" stroke={RED} strokeWidth={1} />
-          </G>
+          <Rect x={ex} y={ey - 2.3} width={8} height={4.6} rx={1.4} fill="#8d939c" stroke="#000" strokeWidth={0.5} />
         ) : (
-          <Rect x={c.x1 - 3} y={c.y - 4} width={6} height={8} rx={1.4} fill="#8d939c" stroke="#000" strokeWidth={0.5} />
+          <Rect x={ex - 3} y={ey - 3.5} width={6} height={7} rx={1.4} fill="#8d939c" stroke="#000" strokeWidth={0.5} />
         )}
         {on && !pulled ? (
           <>
-            <ACircle r={2.6} fill={BLUE} animatedProps={id === 'cableA' ? pA0 : pB0} />
-            <ACircle r={2.6} fill={BLUE} animatedProps={id === 'cableA' ? pA1 : pB1} />
+            <ACircle r={2.1} fill={BLUE} animatedProps={id === 'cableA' ? pA0 : pB0} />
+            <ACircle r={2.1} fill={BLUE} animatedProps={id === 'cableA' ? pA1 : pB1} />
           </>
         ) : null}
       </G>
@@ -308,10 +389,18 @@ export function SignalPathArt({
         </G>
         <G opacity={visible('mic') ? 1 : 0.3}>{airArcs(52, soundLeftOn && visible('mic'), 'airA')}</G>
         <GearInSvg kind="vocalMic" id="sh-mic" x={X.mic} y={CY} size={48} dim={!visible('mic')} />
+        {/* cables before the mixer and the speaker: their plugs go in BEHIND
+            the gear's side (rear-panel jacks), never in front of it */}
         {cable('cableA')}
-        <GearInSvg kind="console" id="sh-mixer" x={X.mixer} y={CY} size={60} dim={!visible('mixer')} />
         {cable('cableB')}
+        <GearInSvg kind="console" id="sh-mixer" x={X.mixer} y={CY} size={60} dim={!visible('mixer')} />
         <GearInSvg kind="poweredSpeaker" id="sh-spk" x={X.speaker} y={CY} size={62} dim={!visible('speaker')} />
+        {/* an unplugged cable leaves an EMPTY jack, marked on the device edge */}
+        {(['cableA', 'cableB'] as const).map((cid) =>
+          unplug === cid ? (
+            <Circle key={`open-${cid}`} cx={CABLES[cid].jack[0]} cy={CABLES[cid].jack[1]} r={2.2} fill="#07080a" stroke={RED} strokeWidth={1} opacity={visible(cid) ? 1 : 0.3} />
+          ) : null,
+        )}
         <G opacity={visible('listener') ? 1 : 0.3}>{airArcs(298, soundRightOn, 'airB')}</G>
         <G opacity={visible('listener') ? (soundRightOn ? 1 : 0.55) : 0.3}>
           <HeadIconSvg view="side" facing="left" anchor="center" x={X.listener} y={CY} size={HEAD_PX} color={HEAD_GLYPH_INK} minStroke={1.4} />
@@ -341,8 +430,8 @@ export function SignalPathArt({
               const col = mark === 'wrong' ? RED : mark === 'right' ? GREEN : hl ? AMBER : j.text === 'IN' ? '#9fd0ff' : '#ffd98a';
               return (
                 <G key={j.id}>
-                  <Rect x={j.x - 12} y={100} width={24} height={14} rx={3} fill="#0b0c10" stroke={col} strokeWidth={hl || mark ? 1.6 : 1} opacity={0.95} />
-                  <SvgText x={j.x} y={110.5} fill={col} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={0.6}>
+                  <Rect x={j.x - 12} y={104} width={24} height={14} rx={3} fill="#0b0c10" stroke={col} strokeWidth={hl || mark ? 1.6 : 1} opacity={0.95} />
+                  <SvgText x={j.x} y={114.5} fill={col} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={0.6}>
                     {j.text}
                   </SvgText>
                 </G>

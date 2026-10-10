@@ -36,8 +36,11 @@ import { SiteArt } from './SiteArt';
 const CAR: Vec3 = { x: (ROAD.x0 + ROAD.x1) / 2, y: -500, z: 0 };
 const UNIT: Vec3 = { x: (HVAC.x0 + HVAC.x1) / 2, y: -HVAC.h, z: (HVAC.z0 + HVAC.z1) / 2 };
 const SOURCES: ArrivalSource[] = [
-  { id: 'car', label: 'a car', p: CAR, color: '#6fa8ff' },
-  { id: 'unit', label: 'the air unit', p: UNIT, color: '#7fe0c0' },
+  // The names clear of their markers (clash sweep 2026-10-10: they sat on
+  // the air unit's body and on the car's ground-reflection marker). The
+  // car's goes under that marker: above it, RECEIVER A's words took the place.
+  { id: 'car', label: 'a car', p: CAR, color: '#6fa8ff', labelDv: 34 },
+  { id: 'unit', label: 'the air unit', p: UNIT, color: '#7fe0c0', labelDv: -22 },
 ];
 const POINTS: ArrivalPoint[] = [
   { id: 'A', label: 'RECEIVER A · IN THE OPEN', short: 'A · OPEN', p: F12_START.A },

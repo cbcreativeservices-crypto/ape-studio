@@ -421,9 +421,15 @@ export function harpLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     return [
       { id: 'pillar', text: 'PILLAR', u: g.pillar.a[0] + 70 * k, v: (g.pillar.a[1] + g.pillar.b[1]) / 2, align: 'left' },
       { id: 'neck', text: 'NECK', u: (g.crown.c[0] + g.b1[0]) / 2, v: g.crown.top - 40, align: 'center' },
-      { id: 'board', text: 'SOUNDBOARD', short: 'BOARD', u: mid[0] + 60 * k, v: mid[1] + 10, align: 'left' },
-      { id: 'strings', text: 'STRINGS', u: g.strings[Math.floor(g.strings.length * 0.3)].x + 20, v: g.boardAt(0.5)[1] - 520 * k, align: 'left', tone: 'muted' },
-      { id: 'holes', text: 'SOUND HOLES (ON THE BACK)', short: 'HOLES', u: hole.c[0] - 40 * k, v: hole.c[1] + 120 * k, align: 'right', tone: 'muted' },
+      // CLASH SWEEP 2026-10-10 (owner at 3×): these three places lie on the
+      // strings or the harpist, so the words fell to free space with leaders
+      // back to those places — SOUNDBOARD's leader ran through PILLAR's
+      // words. Each now names its part (`at`) and has places in the clear
+      // column right of the pillar, stacked so the leaders never cross:
+      // STRINGS highest, SOUNDBOARD, PILLAR (its own place), SOUND HOLES.
+      { id: 'board', text: 'SOUNDBOARD', short: 'BOARD', u: mid[0] + 60 * k, v: mid[1] + 10, align: 'left', at: { u: mid[0], v: mid[1] }, alts: [{ u: g.pillar.a[0] + 70 * k, v: mid[1] - 260 * k, align: 'left' }, { u: g.pillar.a[0] + 70 * k, v: mid[1] - 330 * k, align: 'left' }] },
+      { id: 'strings', text: 'STRINGS', u: g.strings[Math.floor(g.strings.length * 0.3)].x + 20, v: g.boardAt(0.5)[1] - 520 * k, align: 'left', tone: 'muted', at: { u: g.strings[Math.floor(g.strings.length * 0.3)].x, v: g.boardAt(0.5)[1] - 520 * k }, alts: [{ u: g.pillar.a[0] + 70 * k, v: g.boardAt(0.5)[1] - 560 * k, align: 'left' }] },
+      { id: 'holes', text: 'SOUND HOLES (ON THE BACK)', short: 'HOLES', u: hole.c[0] - 40 * k, v: hole.c[1] + 120 * k, align: 'right', tone: 'muted', at: { u: hole.c[0], v: hole.c[1] }, alts: [{ u: g.pillar.a[0] + 70 * k, v: hole.c[1] - 40 * k, align: 'left' }, { u: g.pillar.a[0] + 70 * k, v: hole.c[1] + 60 * k, align: 'left' }] },
       ...(g.pedals ? [{ id: 'pedals', text: 'PEDALS', u: g.base.x0 - 40, v: -150, align: 'center' as const, tone: 'muted' as const }] : [{ id: 'levers', text: 'LEVERS ON THE NECK', short: 'LEVERS', u: g.crown.c[0] + 90 * k, v: g.crown.top + 30, align: 'left' as const, tone: 'muted' as const }]),
       { id: 'harpist', text: 'HARPIST', u: h.head.x, v: h.head.y - 170, align: 'center', tone: 'illustrative' },
     ];
@@ -470,11 +476,14 @@ export function harpHitTest(view: ViewId, variant: VariantId, u: number, v: numb
   return null;
 }
 
-export const HARP_BASE_ART: Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'figureAt'> = {
+export const HARP_BASE_ART: Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'figureAt' | 'labelsYieldToMic'> = {
   Instrument: HarpArt,
   labels: harpLabels,
   hitTest: harpHitTest,
   // The drawn harpist, so the part labels keep off the figure too.
   figureAt: (view, _variant, u, v, tol) => figureCovers(harpistPose(view), u, v, tol),
+  // The column right of the pillar is where the mic works: a label the mic
+  // sits under steps back (clash sweep 2026-10-10: SOUNDBOARD on the boom).
+  labelsYieldToMic: true,
 };
 

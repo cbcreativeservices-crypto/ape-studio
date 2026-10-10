@@ -216,7 +216,6 @@ const ALLOW: Record<string, string> = {
     'the metered read is de-duplicated by gatewayInFlightRef; the share sheet is one state slot',
   'src/screens/lab/calc/CalcWorkflowRunScreen.tsx#persist': 'saveRun upserts by run id — a second tap rewrites the same draft',
   'src/screens/lab/calc/CalcWorkflowRunScreen.tsx#saveResult': 'saveResult upserts by summary id — one record either way',
-  'src/screens/lab/cymatics/modules/modHarmonics.tsx#play': 'sound start: useDriveTone fences its own start (P4)',
   'src/screens/lab/drumtuning/DrumTuningLabScreen.tsx#onDeleteNote': 'callback prop; the module (ch6Kit) latches its buttons',
   'src/screens/lab/drumtuning/DrumTuningLabScreen.tsx#onSaveNote': 'callback prop; ch6Kit save() is latched on saving.current',
   'src/screens/lab/production/AcceptConditionSheet.tsx#record': 'acceptCondition replaces by ruleId — one accepted condition either way',

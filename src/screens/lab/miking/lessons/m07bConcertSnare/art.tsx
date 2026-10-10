@@ -22,10 +22,12 @@ import { D, FLOOR_Y, HOOP, R, RIM_Y, SPEC } from './model.ts';
 
 const DEG = Math.PI / 180;
 
-/** The sticks as drawn (illustrative: one about to strike, one raised). */
+/** The sticks as drawn (illustrative: one about to strike, one raised).
+ *  A 16 in (406 mm) stick: the striking one comes down at ≈ 56° (it lay at
+ *  18°, across the throw-off's name: clash sweep 2026-10-10). */
 export const STICKS = {
   side: [
-    { grip: { x: -470, y: -150 }, head: { x: -52, y: -12 } },
+    { grip: { x: -279, y: -349 }, head: { x: -52, y: -12 } },
     { grip: { x: -500, y: -250 }, head: { x: -170, y: -370 } },
   ],
   top: [
@@ -90,20 +92,41 @@ export function ConcertSnareArt({ view, variant }: { view: ViewId; variant: Vari
 export function concertSnareLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'top') {
     return [
-      { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 0, v: -HOOP.rOut - 60, align: 'center' },
-      { id: 'player', text: '← PLAYER', u: -560, v: -230, align: 'center', tone: 'muted' },
+      // Leaders land on their parts; the player cue is an arrow only (clash
+      // sweep 2026-10-10: leaders pointed at empty glass).
+      { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 0, v: -HOOP.rOut - 60, align: 'center', at: { u: 40, v: -R * 0.6 } },
+      { id: 'player', text: '← PLAYER', u: -560, v: -230, align: 'center', tone: 'muted', point: { u: -6000, v: -230 } },
       { id: 'rods', text: '10 RODS PER HEAD', short: '10 RODS', u: R + 60, v: HOOP.rOut + 70, align: 'left', tone: 'illustrative' },
-      { id: 'sticks', text: 'STICKS', u: -330, v: 170, align: 'center', tone: 'illustrative' },
+      { id: 'sticks', text: 'STICKS', u: -330, v: 170, align: 'center', tone: 'illustrative', at: { u: (STICKS.top[1].grip.x + STICKS.top[1].head.x) / 2, v: (STICKS.top[1].grip.y + STICKS.top[1].head.y) / 2 } },
     ];
   }
   return [
-    { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 40, v: RIM_Y - 40, align: 'left' },
-    { id: 'snareHead', text: 'SNARE-SIDE HEAD', short: 'SNARE HEAD', u: R + 50, v: D + 4, align: 'left' },
-    { id: 'snares', text: variant === 'off' ? 'SNARES (OFF)' : 'SNARES (ON)', short: 'SNARES', u: 0, v: snaresY(variant !== 'off') + 46, align: 'center' },
-    { id: 'throw', text: 'THROW-OFF', u: -R - 50, v: D * 0.5, align: 'right', tone: 'illustrative' },
-    { id: 'stand', text: 'STAND', u: 40, v: 380, align: 'left', tone: 'illustrative' },
-    { id: 'sticks', text: 'STICKS', u: -400, v: -400, align: 'center', tone: 'illustrative' },
+    // Each name in free space with a leader that lands on its part, laid out
+    // so no leader crosses another (clash sweep 2026-10-10: the SNARES leader
+    // ran down through the drum across the THROW-OFF's).
+    { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 40, v: RIM_Y - 40, align: 'left', at: { u: R * 0.55, v: 0 } },
+    { id: 'snareHead', text: 'SNARE-SIDE HEAD', short: 'SNARE HEAD', u: R + 50, v: D + 4, align: 'left', at: { u: R - 10, v: D }, alts: [{ u: R * 0.35, v: D + 150, align: 'left' }] },
+    { id: 'snares', text: variant === 'off' ? 'SNARES (OFF)' : 'SNARES (ON)', short: 'SNARES', u: R + 50, v: D + 70, align: 'left', at: { u: R * 0.6, v: snaresY(variant !== 'off') + 2 }, alts: [{ u: R * 0.35, v: D + 230, align: 'left' }] },
+    { id: 'throw', text: 'THROW-OFF', u: -R - 90, v: D * 0.55, align: 'right', tone: 'illustrative', at: { u: -R - 16, v: D * 0.6 }, alts: [{ u: -R - 40, v: D + 95, align: 'right' }] },
+    { id: 'stand', text: 'STAND', u: 40, v: 380, align: 'left', tone: 'illustrative', at: { u: 0, v: 380 } },
+    { id: 'sticks', text: 'STICKS', u: -400, v: -400, align: 'center', tone: 'illustrative', at: { u: (STICKS.side[1].grip.x + STICKS.side[1].head.x) / 2, v: (STICKS.side[1].grip.y + STICKS.side[1].head.y) / 2 } },
   ];
+}
+
+/** Distance from (u, v) to the segment a–b (mm). */
+function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: number; y: number }): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const t = Math.max(0, Math.min(1, ((u - a.x) * dx + (v - a.y) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(u - (a.x + t * dx), v - (a.y + t * dy));
+}
+
+/** The sticks, which the hit test does not name, so the part labels keep off
+ *  them (label occupancy only; taps unchanged — clash sweep 2026-10-10: the
+ *  THROW-OFF name sat on a stick). */
+export function concertSnareDrawnAt(view: ViewId, _variant: VariantId, u: number, v: number, tol: number): boolean {
+  const list = view === 'top' ? STICKS.top : STICKS.side;
+  return list.some((s) => segDist(u, v, s.grip, s.head) <= 10 + tol);
 }
 
 /** The part under a model point (u, v) in this view; `tol` in mm. */

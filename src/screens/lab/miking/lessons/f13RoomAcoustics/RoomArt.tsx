@@ -67,9 +67,13 @@ function buildTop() {
   rectP(walls, ROOM13.back - WALL, -ROOM13.half, ROOM13.back, ROOM13.half);
   rectP(walls, ROOM13.front, -ROOM13.half, ROOM13.front + WALL, ROOM13.door.z0);
   rectP(walls, ROOM13.front, ROOM13.door.z1, ROOM13.front + WALL, ROOM13.half);
+  // The door leaf ajar 30° on its hinge (clash sweep 2026-10-10: drawn wide
+  // open along the wall, it ran through the last row's aisle seat).
   const leaf = make();
+  const dw = ROOM13.door.z1 - ROOM13.door.z0;
+  const ajar = (30 * Math.PI) / 180;
   leaf.moveTo(ROOM13.front, ROOM13.door.z1);
-  leaf.lineTo(ROOM13.front - (ROOM13.door.z1 - ROOM13.door.z0), ROOM13.door.z1);
+  leaf.lineTo(ROOM13.front - dw * Math.sin(ajar), ROOM13.door.z1 - dw * Math.cos(ajar));
   // The curtains along the right-hand side wall: a folded line.
   const curtain = make();
   curtain.moveTo(1500, ROOM13.half - 60);

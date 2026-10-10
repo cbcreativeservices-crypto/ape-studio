@@ -147,7 +147,10 @@ export function RackUnit({
   children: ReactNode | ((api: RackUnitApi) => ReactNode);
 }) {
   const labNav = useLabNavContext();
-  const faders = useMemo(() => params.filter((p) => p.kind === 'fader'), [params]);
+  // A LOCKED fader never binds the lane (rackTypes `locked`).
+  const faders = useMemo(() => params.filter((p): p is Extract<DockParam, { kind: 'fader' }> => p.kind === 'fader' && !p.locked), [params]);
+  /** The locked key last tapped — its reason prints under the keys. */
+  const [lockedNoteId, setLockedNoteId] = useState<string | null>(null);
   const validInitial = faders.some((f) => f.id === initialParam);
   const [boundId, setBoundId] = useState(validInitial ? initialParam : (faders[0]?.id ?? ''));
   const [openTrayId, setOpenTrayId] = useState<string | null>(null);
@@ -373,11 +376,54 @@ export function RackUnit({
           home={bound.home}
         />
       ) : null}
+      {/* The bound fader's fine-step buttons (owner rule 2026-10-10: the
+          well's nudge buttons moved into the dock, under their own lane). */}
+      {bound?.nudges?.length && !(trayParam?.kind === 'group' && trayParam.hideLane) ? (
+        <View style={styles.nudgeRow}>
+          {bound.nudges.map((n) => (
+            <Pressable
+              key={n.label}
+              onPress={n.onPress}
+              onLongPress={n.onLongPress}
+              hitSlop={6}
+              style={({ pressed }) => [styles.nudge, pressed && styles.nudgePressed]}
+              accessibilityRole="button"
+              accessibilityLabel={n.a11y}
+            >
+              <Text style={styles.nudgeText} {...fitValue(12)}>{n.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+      {/* A tapped LOCKED key's reason (rackTypes fader `locked`). */}
+      {(() => {
+        const lp = lockedNoteId ? params.find((p) => p.id === lockedNoteId) : null;
+        return lp && lp.kind === 'fader' && lp.locked ? (
+          <Text style={styles.lockedNote} accessibilityLiveRegion="polite">
+            {lp.label} — locked: {lp.locked}
+          </Text>
+        ) : null;
+      })()}
       <View style={styles.strip}>
         {params.map((p) => {
           if (inFull && (p.kind === 'toggle' || p.kind === 'options') && p.hideInFull) return null;
           switch (p.kind) {
             case 'fader':
+              if (p.locked) {
+                return (
+                  <DockButton
+                    key={p.id}
+                    label={p.label}
+                    value="LOCKED"
+                    glyph="▪"
+                    dim
+                    selected={lockedNoteId === p.id}
+                    onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
+                    onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
+                    a11y={`${p.label}: locked — ${p.locked}.`}
+                  />
+                );
+              }
               return (
                 <DockButton
                   key={p.id}
@@ -389,6 +435,7 @@ export function RackUnit({
                   frameTint={p.tint}
                   selected={effBoundId === p.id || openTrayId === p.id}
                   onPress={() => {
+                    setLockedNoteId(null);
                     if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
                     if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
                     else setBoundId(p.id);
@@ -410,7 +457,10 @@ export function RackUnit({
                   value={p.valueLabel}
                   glyph="▸"
                   selected={openTrayId === p.id}
-                  onPress={() => setOpenTrayId((cur) => (cur === p.id ? null : p.id))}
+                  onPress={() => {
+                    setLockedNoteId(null);
+                    setOpenTrayId((cur) => (cur === p.id ? null : p.id));
+                  }}
                   onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={`${p.label}: ${p.valueA11y ?? p.valueLabel}. Tap to open the chooser.`}
                 />
@@ -426,7 +476,10 @@ export function RackUnit({
                   variant="key"
                   led={p.value}
                   labelLines={p.labelLines}
-                  onPress={p.onToggle}
+                  onPress={() => {
+                    setLockedNoteId(null);
+                    p.onToggle();
+                  }}
                   onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={`${p.label}: ${p.value ? 'on' : 'off'}. Tap to toggle.`}
                 />
@@ -723,4 +776,19 @@ const styles = StyleSheet.create({
   },
   dockInner: { width: '100%', maxWidth: READING_MAX_W, alignSelf: 'center', gap: 7 },
   strip: { flexDirection: 'row', gap: 6 },
+  nudgeRow: { flexDirection: 'row', gap: 6, justifyContent: 'flex-end' },
+  lockedNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, textAlign: 'center', paddingHorizontal: 6 },
+  nudge: {
+    minHeight: 34,
+    minWidth: 76,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+    backgroundColor: '#17171c',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nudgePressed: { backgroundColor: '#23232a', borderColor: '#3a3a44' },
+  nudgeText: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
 });

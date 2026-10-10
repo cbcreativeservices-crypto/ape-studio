@@ -96,6 +96,16 @@ export type TrayOption = {
 };
 
 /** The dock grammar. */
+/** One fine-step button under the bound lane (see the fader's `nudges`). */
+export type LaneNudge = {
+  label: string;
+  onPress: () => void;
+  /** Optional coarser step on a long-press. */
+  onLongPress?: () => void;
+  /** Spoken name, e.g. "Fine down 0.1 percent; hold for half a percent". */
+  a11y: string;
+};
+
 export type DockParam =
   | {
       kind: 'fader';
@@ -146,6 +156,15 @@ export type DockParam =
          *  when each option carries its own value. */
         onReset?: { label: string; onPress: () => void };
       };
+      /** Fine-step buttons shown in a slim row UNDER the lane while this
+       *  fader is bound (owner rule 2026-10-10: every lab control lives in
+       *  the bottom dock — the well's old "‹ −0.1% / +0.1% ›" nudges moved
+       *  here). Keep the labels short; 2–4 buttons. */
+      nudges?: LaneNudge[];
+      /** The control exists but is LOCKED in this state (e.g. a FIXED EQ's
+       *  camera cannot pan): the key shows LOCKED, dimmed, and never binds the
+       *  lane; tapping it prints this reason under the keys. */
+      locked?: string;
       helpKey?: string;
     }
   | {

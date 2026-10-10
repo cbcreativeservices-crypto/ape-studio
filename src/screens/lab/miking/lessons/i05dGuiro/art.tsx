@@ -99,7 +99,7 @@ export function guiroLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'body', text: 'GÜIRO (END-ON)', short: 'GÜIRO', u: s.c.x + GR + 30, v: s.c.y + 20, align: 'left' },
     { id: 'ridges', text: 'RIDGES ON TOP', short: 'RIDGES', u: s.c.x + GR + 30, v: s.c.y - GR - 10, align: 'left', tone: 'muted' },
     { id: 'scraper', text: 'SCRAPER', u: (s.scraper.a.x + s.scraper.b.x) / 2 + 30, v: (s.scraper.a.y + s.scraper.b.y) / 2 - 50, align: 'left', tone: 'muted' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -880, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -880, align: 'center', tone: 'muted', point: { u: -6000, v: -880 } },
   ];
 }
 

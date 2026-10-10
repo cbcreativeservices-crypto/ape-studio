@@ -190,7 +190,7 @@ const LABELS = {
     { id: 'spk.tweeter', text: 'TWEETER', u: 90, v: -1420, align: 'left' as const, at: { u: 12, v: -1340 }, variants: B },
     { id: 'spk.woofer', text: 'WOOFER', u: 110, v: -1030, align: 'left' as const, at: { u: 18, v: -1145 }, variants: B },
     { id: 'spk.stand', text: 'STAND', u: -125, v: -380, align: 'center' as const, variants: B },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP14.x, v: -1900, align: 'center' as const, variants: B },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP14.x, v: -1900, align: 'center' as const, variants: B, at: { u: OP14.x, v: -1640 }, alts: [{ u: OP14.x - 420, v: -1300, align: 'right' as const }] },
     { id: 'mainL', text: 'LEFT MAIN', short: 'MAIN', u: M.front - M.depth / 2, v: M.top - 260, align: 'center' as const, at: { u: M.front - M.depth / 2, v: M.top }, variants: VN },
     { id: 'fill', text: 'FRONT FILL', short: 'FILL', u: 300, v: -1500, align: 'left' as const, at: { u: V.fill.x - 100, v: -V.stage.deck - V.fill.h }, variants: VN },
     { id: 'sub', text: 'SUB', u: (V.sub.x0 + V.sub.x1) / 2 + 900, v: -900, align: 'left' as const, at: { u: V.sub.x1, v: -V.sub.h }, variants: VN },
@@ -203,7 +203,7 @@ const LABELS = {
   ],
   top: [
     { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -330, align: 'center' as const, variants: B },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP14.x, v: OP14.z - 420, align: 'center' as const, variants: B },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP14.x, v: OP14.z - 420, align: 'center' as const, variants: B, at: { u: OP14.x, v: OP14.z }, alts: [{ u: OP14.x - 380, v: OP14.z, align: 'right' as const }, { u: OP14.x, v: OP14.z + 420, align: 'center' as const }] },
     { id: 'mainL', text: 'LEFT MAIN', short: 'MAIN', u: -1700, v: -3700, align: 'center' as const, at: { u: M.front - M.depth / 2, v: -V.main.z }, variants: VN },
     { id: 'fill', text: 'FRONT FILL', short: 'FILL', u: -1700, v: -700, align: 'center' as const, at: { u: V.fill.x - 100, v: 0 }, variants: VN },
     { id: 'sub', text: 'SUB', u: 1650, v: 0, align: 'center' as const, at: { u: V.sub.x1, v: 0 }, variants: VN },

@@ -13,7 +13,7 @@ import type { ReactElement } from 'react';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import type { MalletArt } from '../shared/mallets/family.ts';
-import { ConflictBand, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
+import { ConflictBand, malletDrawnAt, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
 import { malletPlanFor, type MalletPlanSpec } from '../shared/mallets/MalletPlan';
 import { MALLET_PAGES } from '../shared/mallets/pages';
 import { CLOSE_EXAMPLE, GLOCK_FAM } from './model.ts';
@@ -56,6 +56,7 @@ export const I10_ART: MalletArt = {
   Instrument: GlockInstrument,
   labels: glockLabels,
   hitTest: malletHitTest(GLOCK_FAM),
+  figureAt: malletDrawnAt(GLOCK_FAM),
   pages: MALLET_PAGES,
   stepCounts: { sound: 4 },
   SettingPlan: malletPlanFor(GLOCK_FAM, GLOCK_PLAN),

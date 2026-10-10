@@ -7,7 +7,7 @@
  *   BEZEL  Hz · nearest note + cents · dominant mode · RESONANCE state.
  *   DOCK   FREQ (lane + jump-to-mode chooser) · LEVEL · PLATE · DRIVE ·
  *          VIEW · SAND.
- *   WELL   description, resonance strength meter, fine ± nudge, actions
+ *   WELL   description, resonance strength meter, actions (the fine ± nudges ride under the FREQ lane)
  *          (sweep · reset sand · slow motion · silent drive), the honesty
  *          note, experiments / theory links, the guided-lesson entry.
  *
@@ -22,7 +22,7 @@
  * only on the current dev client, stated in the tray.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
@@ -310,6 +310,12 @@ function PlateStudio() {
       format: () => `${formatHz(freq)} · ${note.label} ${note.centsLabel}`,
       formatShort: () => (freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : `${Math.round(freq)}Hz`),
       helpKey: 'frequency',
+      // Fine steps under the lane (were buttons in the well — owner rule
+      // 2026-10-10: every lab control lives in the dock).
+      nudges: [
+        { label: '‹ −0.1%', onPress: () => nudge(-0.001), onLongPress: () => nudge(-0.005), a11y: 'Fine down 0.1 percent; hold for half a percent' },
+        { label: '+0.1% ›', onPress: () => nudge(0.001), onLongPress: () => nudge(0.005), a11y: 'Fine up 0.1 percent; hold for half a percent' },
+      ],
       chooser: {
         title: 'JUMP TO A MODE',
         options: modeOptions,
@@ -321,6 +327,9 @@ function PlateStudio() {
             setFreq(Math.round(m.hz * 10) / 10);
           }
         },
+        // Land on the nearest resonance — moved here from a tappable RES bezel
+        // cell (owner rule 2026-10-10: the bezel is read-only; controls dock).
+        onReset: res.state !== 'at' && res.next ? { label: `LAND ON ${res.next.label} · ${formatHz(res.next.hz)}`, onPress: () => land(res.next!.hz) } : undefined,
       },
     },
     {
@@ -542,8 +551,9 @@ function PlateStudio() {
     { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
     { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response },
     { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode },
-    // Tap the RES cell to land on the nearest mode (the bezel-cell verb; no control in the scroller).
-    { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res, onPress: res.state !== 'at' && res.next ? () => land(res.next!.hz) : undefined },
+    // Read-only (owner rule 2026-10-10). Landing on the nearest mode is the
+    // FREQ key's tray button now.
+    { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
@@ -680,18 +690,10 @@ function PlateStudio() {
                 ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
                 : res.state === 'below'
                   ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate only flexes as a whole.`
-                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)} — tap RES on the bezel to land on it.` : ''}`}
+                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
           </Text>
           <View style={styles.rowBetween}>
             <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {tone.running && freqB ? `B: ${formatHz(freqB)} ${resB?.state ?? ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>
-            <View style={styles.nudgeRow}>
-              <Pressable onPress={() => nudge(-0.001)} onLongPress={() => nudge(-0.005)} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Fine down 0.1 percent; hold for half a percent">
-                <Text style={styles.nudgeText}>‹ −0.1%</Text>
-              </Pressable>
-              <Pressable onPress={() => nudge(0.001)} onLongPress={() => nudge(0.005)} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Fine up 0.1 percent; hold for half a percent">
-                <Text style={styles.nudgeText}>+0.1% ›</Text>
-              </Pressable>
-            </View>
           </View>
         </View>
 
@@ -750,12 +752,9 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
-  nudgeRow: { flexDirection: 'row', gap: 8 },
   // 44pt: the smallest control in the lab and a precision one used one-handed
   // (a11y worklist / design review #15). hitSlop stays as well.
-  nudge: { borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 10, paddingVertical: 6, minHeight: 44, justifyContent: 'center' },
   compareHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary, marginTop: 6 },
-  nudgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
   savedRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' },

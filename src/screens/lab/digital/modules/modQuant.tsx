@@ -27,7 +27,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { LabChip, CollapsibleSection } from '../../LabShell';
+import { CollapsibleSection } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizQuant } from '../skiaGate';
@@ -190,6 +190,25 @@ export function QuantModule(p: DigitalModuleProps) {
       onToggle: () => setErrorOnly(!errorOnly),
       helpKey: 'quant_error',
     },
+    {
+      // The DITHER panel's choice — was four chips in the well (owner rule
+      // 2026-10-10: every lab control lives in the bottom dock). The panel's
+      // picture stays in the well.
+      kind: 'options',
+      id: 'dither',
+      label: 'DITHER',
+      valueLabel: dither === 'none' ? 'NONE' : dither === 'shaped' ? 'SHAPED' : dither.toUpperCase(),
+      options: [
+        { id: 'none', label: 'NO DITHER', blurb: 'The rounding error locks to the signal — correlated spikes.' },
+        { id: 'rpdf', label: 'RPDF', blurb: 'Flat ±½-step noise: decorrelates the error values; its power still tracks the signal.' },
+        { id: 'tpdf', label: 'TPDF', blurb: 'Triangular ±1-step noise: error value AND power independent of the signal — the standard.' },
+        { id: 'shaped', label: 'NOISE-SHAPED', blurb: 'TPDF with the noise pushed up the spectrum, where hearing is least sensitive.' },
+      ],
+      selectedId: dither,
+      onSelect: (id) => setDither(id as DitherMode),
+      sticky: true,
+      helpKey: 'dither',
+    },
   ];
 
   return (
@@ -270,12 +289,8 @@ export function QuantModule(p: DigitalModuleProps) {
             the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
             quantization and preserves low-level behavior at the cost of a controlled noise increase.
           </Text>
-          <View style={dstyles.chipRow}>
-            <LabChip label="NO DITHER" selected={dither === 'none'} onPress={() => setDither('none')} onLongPress={() => p.help('dither')} />
-            <LabChip label="RPDF" selected={dither === 'rpdf'} onPress={() => setDither('rpdf')} onLongPress={() => p.help('dither')} />
-            <LabChip label="TPDF" selected={dither === 'tpdf'} onPress={() => setDither('tpdf')} onLongPress={() => p.help('dither')} />
-            <LabChip label="NOISE-SHAPED" selected={dither === 'shaped'} onPress={() => setDither('shaped')} onLongPress={() => p.help('noise_shaping')} />
-          </View>
+          {/* The dither choice is the DITHER dock key now (owner rule
+              2026-10-10: every lab control lives in the bottom dock). */}
           {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
           <Badge text="REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT AN FFT" />
           <Text style={dstyles.caption}>
@@ -400,6 +415,9 @@ export function BinaryModule(p: DigitalModuleProps) {
       formatShort: () => `#${sel}`,
       helpKey: 'binary_sample',
     },
+    // The register panel's RESET — was a chip in the well (owner rule
+    // 2026-10-10: every lab control lives in the bottom dock).
+    { kind: 'action', id: 'regreset', label: 'RESET REG', onPress: () => setReg(16384) },
   ];
 
   return (
@@ -503,9 +521,7 @@ export function BinaryModule(p: DigitalModuleProps) {
               { k: 'LEVEL', v: fmtDb(sampleDb(reg)) },
             ]}
           />
-          <View style={dstyles.chipRow}>
-            <LabChip label="RESET (+16,384 · −6 dBFS)" selected={false} onPress={() => setReg(16384)} />
-          </View>
+          {/* RESET is the dock's RESET key now (owner rule 2026-10-10). */}
         </PanelCard>
 
         <CheckQuestion spec={CHECK_MSB} />

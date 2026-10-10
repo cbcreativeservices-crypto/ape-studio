@@ -112,8 +112,12 @@ export const SEATED_SIDE: PlayerPose = {
   shoulderL: pt(N.x - 18, N.y + 48),
   elbowR: pt(N.x + 60, ELBOW_Y),
   elbowL: pt(N.x + 44, ELBOW_Y - 6),
-  handR: { wrist: pt(WRIST_X, DESK_TOP_Y - 26), dir: 0.06, kind: 'rest' },
-  handL: { wrist: pt(WRIST_X - 20, DESK_TOP_Y - 30), dir: 0.06, kind: 'rest' },
+  // The wrists 35 mm short of WRIST_X in profile (clash sweep 2026-10-10:
+  // the fingertips reached the desk arm's riser on the far side edge, 39 cm
+  // back from the desk's edge, and read as touching it); the forearm is then
+  // ≈ 250 mm, an adult's. The plan and the collision solids keep WRIST_X.
+  handR: { wrist: pt(WRIST_X - 35, DESK_TOP_Y - 26), dir: 0.06, kind: 'rest' },
+  handL: { wrist: pt(WRIST_X - 55, DESK_TOP_Y - 30), dir: 0.06, kind: 'rest' },
   hipR: pt(N.x - 10, SEAT_Y - 70),
   hipL: pt(N.x - 22, SEAT_Y - 74),
   kneeR: pt(N.x + 430, SEAT_Y - 60),

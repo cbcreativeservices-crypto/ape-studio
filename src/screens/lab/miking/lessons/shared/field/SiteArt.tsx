@@ -15,7 +15,7 @@
  * Static (D8): nothing moves by itself. Mm throughout; strokes in mm.
  */
 import { useMemo, type ReactElement } from 'react';
-import { Circle, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Circle, DashPathEffect, Group, LinearGradient, Paint, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId } from '../../../engine/model/types.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { operatorSide, operatorTop } from '../measure/measureModel.ts';
@@ -777,17 +777,17 @@ function Person({ f, view }: { f: Extract<SiteFeature, { kind: 'person' }>; view
   if (view === 'side') {
     const pose = operatorSide(x, 0, Math.cos(f.heading * DEG) >= 0 ? 1 : -1);
     return (
-      <Group>
-        <PlayerBehind pose={pose} dim={dim} />
-        <PlayerInFront pose={pose} dim={dim} />
+      <Group layer={<Paint opacity={dim} />}>
+        <PlayerBehind pose={pose} />
+        <PlayerInFront pose={pose} />
       </Group>
     );
   }
   const pose = operatorTop(x, z, 1);
   return (
-    <Group transform={[{ translateX: x }, { translateY: z }, { rotate: f.heading * DEG }, { translateX: -x }, { translateY: -z }]}>
-      <PlayerBehind pose={pose} dim={dim} />
-      <PlayerInFront pose={pose} dim={dim} />
+    <Group transform={[{ translateX: x }, { translateY: z }, { rotate: f.heading * DEG }, { translateX: -x }, { translateY: -z }]} layer={<Paint opacity={dim} />}>
+      <PlayerBehind pose={pose} />
+      <PlayerInFront pose={pose} />
     </Group>
   );
 }

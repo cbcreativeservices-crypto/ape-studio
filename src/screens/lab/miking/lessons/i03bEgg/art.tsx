@@ -104,7 +104,7 @@ export function eggLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   return [
     { id: 'egg', text: s.eggs.length > 1 ? 'EGGS (ONE IN EACH HAND)' : 'EGG SHAKER', short: 'EGG', u: r.c.x + 50, v: r.c.y + 70, align: 'left' },
     { id: 'shake', text: '↔ THE SHAKE', short: '↔', u: r.c.x, v: r.c.y - 115, align: 'center', tone: 'illustrative' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted' },
+    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted', point: { u: -6000, v: -900 } },
   ];
 }
 
