@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 15:42 · ccode · eeb713f7
+changed: Bowed: BOW label names the stick as drawn (was the old mid-stroke tip at the head)
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
+### 2026-10-10 15:17 · ccode · 854c32aa
+changed: Figures: sleeve grows out of the shoulder (no knob), straight upper-arm taper (owner)
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 11:37 · ccode · 7b285156
 changed: Clash sweeps + controls-at-the-bottom (owner-reviewed checkpoint)
 affects other side: nothing (client lab art on next-store-build; unpublished)

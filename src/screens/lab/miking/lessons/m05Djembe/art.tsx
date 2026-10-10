@@ -272,7 +272,11 @@ export function djembeLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'head', text: 'SKIN HEAD', short: 'HEAD', u: R + 30, v: HEAD_Y - 24, align: 'left', at: { u: R * 0.7, v: HEAD_Y - 2 } },
       { id: 'ropes', text: 'ROPE TUNING', short: 'ROPES', u: profileR(LOW_RING_Y) + 30, v: (TOP_RING_Y + LOW_RING_Y) / 2, align: 'left', tone: 'muted', at: { u: profileR((TOP_RING_Y + LOW_RING_Y) / 2) - 12, v: (TOP_RING_Y + LOW_RING_Y) / 2 } },
       { id: 'waist', text: 'WAIST', u: R_FOOT + 30, v: WAIST_Y, align: 'left', tone: 'muted', at: { u: profileR(WAIST_Y) - 8, v: WAIST_Y } },
-      { id: 'open', text: 'OPEN FOOT', short: 'OPENING', u: R_FOOT + 30, v: -24, align: 'left', tone: 'muted', at: { u: R_FOOT - 14, v: -10 } },
+      // Raised: the low mic's stand stands on the right, so the name sits
+      // just LEFT of the foot (a short leader, not one dragged across the glass).
+      variant === 'raised'
+        ? { id: 'open', text: 'OPEN FOOT', short: 'OPENING', u: -R_FOOT - 40, v: -80, align: 'right', tone: 'muted', at: { u: -R_FOOT + 14, v: -10 } }
+        : { id: 'open', text: 'OPEN FOOT', short: 'OPENING', u: R_FOOT + 30, v: -24, align: 'left', tone: 'muted', at: { u: R_FOOT - 14, v: -10 } },
       { id: 'player', text: '← PLAYER', u: DJ_MODEL.views.side!.u0 + 20, v: HEAD_Y - 24, align: 'left', tone: 'muted', point: { u: DJ_MODEL.views.side!.u0 - 6000, v: HEAD_Y - 24 } },
     ];
     if (variant === 'raised') out.push({ id: 'blocks', text: 'FOAM BLOCKS', short: 'FOAM', u: -R_FOOT - 40, v: SUPPORT - 30, align: 'right', tone: 'muted' });
