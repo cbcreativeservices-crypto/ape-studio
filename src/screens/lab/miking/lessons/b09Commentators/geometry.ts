@@ -47,8 +47,8 @@ export const FRONT_X = DESK.max.x + 220;
 /** The screen on the desk between the two, facing them; the notes in front of the caller. */
 export const SCREEN = v3(560, DESK_TOP_Y, MIDZ);
 export const NOTES = v3(330, DESK_TOP_Y, -60);
-/** The desk arm (studio): its clamp on the desk's front edge, 35 cm to the caller's left. */
-export const GRIP_A = v3(DESK.min.x + 20, DESK_TOP_Y - 120, -350);
+/** The desk arm (studio): its clamp on the desk's left SIDE edge, 39 cm back, reaching forward over the desk (owner 2026-10-10). */
+export const GRIP_A = v3(DESK.min.x + 390, DESK_TOP_Y - 120, DESK.min.z + 20);
 /** The PA cluster (open): high to the front-left of the position, facing the crowd. */
 export const PA_C = v3(1800, -1600, -3000);
 

@@ -39,10 +39,13 @@ export const DESK = { min: v3(SEATED.deskEdge.mm, DESK_TOP_Y, -650), max: v3(HOS
 /** The desk top as a reflecting plate (deskReflection.ts). */
 export const DESK_PLATE = deskPlate(DESK_TOP_Y, DESK.min.x, DESK.max.x, DESK.min.z, DESK.max.z);
 
-/** The arm clamps on the desk's front edge, 35 cm to each host's left; the
- *  grip is the riser post's top, 12 cm above the desk. */
-export const GRIP_A = v3(DESK.min.x + 20, DESK_TOP_Y - 120, -350);
-export const GRIP_B = v3(DESK.max.x - 20, DESK_TOP_Y - 120, 350);
+/** Each arm clamps on the desk's SIDE edge to the host's left, 39 cm back
+ *  from the front edge, and reaches forward over the desk to the mouth (owner
+ *  2026-10-10: not rising in front of the chest); the grip is the riser post's
+ *  top, 12 cm above the desk. */
+export const ARM_BACK = 390;
+export const GRIP_A = v3(DESK.min.x + ARM_BACK, DESK_TOP_Y - 120, DESK.min.z + 20);
+export const GRIP_B = v3(DESK.max.x - ARM_BACK, DESK_TOP_Y - 120, DESK.max.z - 20);
 
 /** A laptop beside each host (its screen facing them), and the eyes' line to it. */
 export const LAPTOP_A = v3(660, DESK_TOP_Y, -380);

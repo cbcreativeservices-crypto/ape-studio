@@ -57,8 +57,9 @@ export const WALL_X = -620;
 
 /* ── the desk ── */
 export const DESK = { min: v3(SEATED.deskEdge.mm, DESK_TOP_Y, -650), max: v3(GUEST.lip.x - SEATED.deskEdge.mm, DESK_TOP_Y + SEATED.deskThick.mm, 650) };
-export const GRIP_H = v3(DESK.min.x + 20, DESK_TOP_Y - 120, -350);
-export const GRIP_G = v3(DESK.max.x - 20, DESK_TOP_Y - 120, 350);
+/** Desk arms clamp on the desk's SIDE edge, 39 cm back, and reach forward over the desk (owner 2026-10-10). */
+export const GRIP_H = v3(DESK.min.x + 390, DESK_TOP_Y - 120, DESK.min.z + 20);
+export const GRIP_G = v3(DESK.max.x - 390, DESK_TOP_Y - 120, DESK.max.z - 20);
 /** The monitor loudspeaker on the desk, to the host's left, facing them. */
 export const MONITOR_C = v3(900, DESK_TOP_Y - 150, -480);
 

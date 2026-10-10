@@ -287,7 +287,7 @@ export function Desk({ view, box, floor, skirt = false }: { view: ViewId; box: D
  * tube up to the arm's pivot (the grip) with a set-screw knob. `edge` is the
  * side the desk's edge faces (−1: toward −x, the near edge; +1: the far edge).
  */
-export function ArmClamp({ view, grip, deskTop, thick = 30, edge = -1 }: { view: ViewId; grip: Vec3; deskTop: number; thick?: number; edge?: 1 | -1 }) {
+export function ArmClamp({ view, grip, deskTop, thick = 30, edge = -1, on = 'front' }: { view: ViewId; grip: Vec3; deskTop: number; thick?: number; edge?: 1 | -1; /** Which desk edge it grips: the front edge (jaws along x) or a SIDE edge (jaws along z; `edge` −1 = the −z side). */ on?: 'front' | 'side' }) {
   const p = useMemo(() => {
     const post = make();
     const steel = make();
@@ -302,6 +302,29 @@ export function ArmClamp({ view, grip, deskTop, thick = 30, edge = -1 }: { view:
     const xi = gu - e * 30; // the jaws' inner end
     const lo = Math.min(xs, xi);
     const jaw = Math.abs(xs - xi);
+    if (on === 'side') {
+      // Clamped on a SIDE edge: the jaws run along z. From the side we see the
+      // spine face-on; from above, the C reaches in from the side edge.
+      const under = deskTop + thick;
+      if (view === 'side') {
+        post.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 11, gv, 22, deskTop - 12 - gv), 5, 5));
+        steel.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 27, deskTop - 12, 54, under + 32 - (deskTop - 12)), 4, 4));
+        pad.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 27, deskTop - 12, 54, 12), 3, 3));
+        screw.moveTo(gu, under + 32);
+        screw.lineTo(gu, under + 56);
+        knob.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 20, under + 52, 40, 16), 5, 5));
+        knob.addRRect(Skia.RRectXY(Skia.XYWHRect(gu + 11, gv + (deskTop - gv) * 0.45, 14, 12), 3, 3));
+      } else {
+        const zs = gv + e * 34;
+        const zi = gv - e * 30;
+        const lz = Math.min(zs, zi);
+        steel.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 27, lz, 54, Math.abs(zs - zi)), 6, 6));
+        pad.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 27, e < 0 ? lz : zs - 12, 54, 12), 3, 3));
+        post.addCircle(gu, gv, 11);
+        knob.addRRect(Skia.RRectXY(Skia.XYWHRect(gu + 11, gv - 5, 12, 10), 2, 2));
+      }
+      return { post, steel, screw, knob, pad };
+    }
     if (view === 'side') {
       const under = deskTop + thick;
       post.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 11, gv, 22, deskTop - 12 - gv), 5, 5));
@@ -331,7 +354,7 @@ export function ArmClamp({ view, grip, deskTop, thick = 30, edge = -1 }: { view:
       knob.addRRect(Skia.RRectXY(Skia.XYWHRect(gu - 5, gv + 11, 10, 12), 2, 2));
     }
     return { post, steel, screw, knob, pad };
-  }, [view, grip.x, grip.y, grip.z, deskTop, thick, edge]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [view, grip.x, grip.y, grip.z, deskTop, thick, edge, on]); // eslint-disable-line react-hooks/exhaustive-deps
   const gu = grip.x;
   return (
     <Group>

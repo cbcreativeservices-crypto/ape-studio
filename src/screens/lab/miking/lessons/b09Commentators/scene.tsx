@@ -32,7 +32,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
         {open ? <CrowdStand view="side" x0={FRONT_X + 500} dx={2200} z0={-3000} z1={3000} floor={SEATED_FLOOR + 900} rows={3} /> : null}
         {open ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR + 900} pole={false} /> : null}
         <BoothWindow view="side" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={zs.z0} z1={zs.z1} sillY={open ? DESK_TOP_Y - 150 : DESK_TOP_Y - 60} open={open} />
-        {studio ? <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} /> : null}
+        {studio ? <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} on="side" /> : null}
         <StudioChair view="side" t={CALLER} />
         {!open ? <Laptop view="side" at={SCREEN} toward={-1} /> : null}
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} />
@@ -55,7 +55,7 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} />
       <Script view="top" at={NOTES} turn={-0.08} />
       {!open ? <Laptop view="top" at={SCREEN} toward={-1} /> : null}
-      {studio ? <ArmClamp view="top" grip={GRIP_A} deskTop={DESK_TOP_Y} /> : null}
+      {studio ? <ArmClamp view="top" grip={GRIP_A} deskTop={DESK_TOP_Y} on="side" /> : null}
       {b ? <SeatedTalker view="top" t={analyst} part="upper" phones /> : null}
       {open || holding ? <SeatedHolding view="top" t={CALLER} part="upper" phones /> : <SeatedTalker view="top" t={CALLER} part="upper" phones headless={headless} />}
     </Group>
