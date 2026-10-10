@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 00:08 · ccode · 85663d29
+changed: docs: handoff — onboarding video replacement plan (after approval, by update)
+affects other side: nothing (store-build prep on next-store-build)
+needs: nothing
+
+
 ### 2026-10-09 20:59 · ccode · 62e9d31d
 changed: docs: session handoff for 2026-10-10 (both stores submitted)
 affects other side: nothing (store-build prep on next-store-build)
