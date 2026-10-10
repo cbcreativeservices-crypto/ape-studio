@@ -36,7 +36,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, G, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
@@ -395,7 +395,7 @@ export function BassLabScreen() {
         stage: {
           size: 'L', // the fretboard IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
-          badge: 'TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS',
+          badge: 'TRUE FRET GEOMETRY — BRIDGE ← NUT · DRAWN FROM THE EQUATIONS',
           onGuide: () => openLesson('display'),
           bezel:
             mode === 'fretted'
@@ -667,8 +667,9 @@ function Fretboard({
       // Web preview: locationX/Y can arrive undefined → NaN row → the whole
       // app unmounted (no root error boundary). Reproduced 2026-08-31.
       if (w <= 0 || !Number.isFinite(px) || !Number.isFinite(py)) return;
-      const x = px / ts;
-      const y = py / ts;
+      // The board is drawn turned 180° — map the tap back into its frame.
+      const x = w - px / ts;
+      const y = svgH - py / ts;
       // Row → string (clamped).
       const row = Math.min(3, Math.max(0, Math.round((y - stringTop) / STRING_GAP)));
       const si = ROW_TO_STRING[row] ?? 0;
@@ -818,6 +819,10 @@ function Fretboard({
                 <Stop offset="100%" stopColor={colors.amber} stopOpacity={0.3} />
               </LinearGradient>
             </Defs>
+            {/* TURNED 180° (owner 2026-10-10): body on the left, headstock to the right,
+                low E on top — a right-handed bass as seen from the front. Drawn in
+                the nut→bridge frame below; a turn (not a mirror) keeps it right-handed. */}
+            <G transform={`rotate(180 ${w / 2} ${svgH / 2})`}>
             {/* Off the instrument: the dark stage. */}
             <Rect x={0} y={0} width={w} height={svgH} fill="#0d0d10" />
             {/* The body (sunburst, both horns) behind the neck. */}
@@ -1001,6 +1006,7 @@ function Fretboard({
                 <Circle cx={(1 / harmonicN) * w} cy={selY} r={7} fill="none" stroke={colors.amber} strokeWidth={2} />
               </>
             ) : null}
+            </G>
           </Svg>
         </Pressable>
       ) : (
@@ -1008,13 +1014,13 @@ function Fretboard({
       )}
       {/* Nut/bridge + fraction labels under the board. */}
       <View style={[styles.fbLabels, ts !== 1 ? { marginTop: 3 * ts, paddingHorizontal: 8 * ts } : null]}>
-        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>NUT</Text>
+        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>BRIDGE</Text>
         {mode === 'fretted' ? (
           <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>5 ≈ ¾ · 7 ≈ ⅔ · 12 = ½</Text>
         ) : (
           <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>nodes at ½ · ⅓ · ¼ · ⅕</Text>
         )}
-        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>BRIDGE</Text>
+        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>NUT</Text>
       </View>
     </View>
   );

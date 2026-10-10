@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 10:30 · ccode · 0f938519
+changed: Mastering room plan: listener head 17% smaller (owner)
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 10:07 · ccode · 9a631131
 changed: Room Design: caption names the SIDE VIEW button
 affects other side: nothing (client lab art on next-store-build; unpublished)

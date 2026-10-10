@@ -68,7 +68,8 @@ test('RN text laid over a drawing grows with the scale', () => {
 
 test('Bass: a tap in full screen is divided back to glass units before the fret/row snap', () => {
   const src = read('BassLabScreen.tsx');
-  assert.match(src, /const x = px \/ ts;\s*const y = py \/ ts;/);
+  // The board is drawn turned 180° (owner 2026-10-10): still divided by ts, then mapped back.
+  assert.match(src, /const x = w - px \/ ts;\s*const y = svgH - py \/ ts;/);
 });
 
 test('Autotune: the stage hands its width in (no blank first frame in full screen)', () => {
