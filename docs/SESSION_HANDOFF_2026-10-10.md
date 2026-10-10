@@ -54,6 +54,16 @@ Owner: Cháno. **Launch: Tuesday, October 13, 2026.** Both stores were SUBMITTED
 - **Comp C:** technical-accuracy audit of ALL Miking + Mixing copy. The brief and the package are in Downloads (`2026-10-09_COMP_C_TECH_ACCURACY_AUDIT_BRIEF.md` + `…_AUDIT_PACKAGE.zip`). It comes back as `2026-10-09_COMP_C_TECH_AUDIT_FINDINGS.csv` (location_id → corrected_text). ccode applies the fixes by update (iOS with the strip trick).
 - **Comp A:** the license-test purchase; launch-day guidance; the password-reset template check; `certificate_requires_exam` → TRUE after launch.
 
+## Owner plan: onboarding video replacement (AFTER both stores approve)
+- The owner will send an **edited cut** of the onboarding video. It's silent like the current one and only fixes an error.
+- Steps:
+  1. Convert it like the others: ffmpeg at `C:\Users\profe\tools\ffmpeg\bin\ffmpeg.exe`, 1080x1920 H.264, 30 fps, faststart, no audio track.
+  2. Add it as `assets/onboarding/intro_v2_1080p30.mp4`, and point `INTRO_VIDEO` in `src/screens/onboarding/IntroVideoScreen.tsx` at it.
+  3. Publish by update: iOS 36 with the blockedPermissions strip trick, then Android 20.
+- **No resubmission.** The player stays muted.
+- New users get the new cut. People who already watched see it only via Replay intro, unless the owner asks to re-arm the seen-flag.
+- **Do NOT swap it during review.**
+
 ## Launch day (Tue Oct 13)
 1. Owner: Apple **Release this version**; Google **Publishing overview → Publish**.
 2. **ccode:**
