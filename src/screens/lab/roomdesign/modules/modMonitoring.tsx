@@ -256,7 +256,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.monitoring, bezel, params, initialParam: 'spread', hideDragTag: true }}
-      caption="Drag the speakers and the listener on the plan (tap VIEW for heights in the side view), or ride SPREAD, FRONT, LISTENER and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
+      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD, FRONT, LISTENER and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
       captionFirst
       wellTop={
         <View style={{ gap: 6 }}>
