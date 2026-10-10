@@ -140,13 +140,13 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
 
   const bezel: BezelItem[] = st
     ? [
-        { k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE', onPress: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
+        { k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE' },
         { k: 'DIST L', v: fmtLen(st.distL, units), flex: 1.1 },
         { k: 'DIST R', v: fmtLen(st.distR, units), flex: 1.1 },
         { k: 'ANGLE', v: `${st.angleDeg.toFixed(0)}°` },
         { k: 'L−R', v: fmtDelta(st.distL - st.distR, units), tint: st.pathDiff > SYM_TOL ? '#ff5a48' : colors.green, flex: 1.1 },
       ]
-    : [{ k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE', onPress: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) }];
+    : [{ k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE' }];
 
   const heightVal = heightTarget === 'ears' ? lay.listener.earZ : heightTarget === 'sub' ? (SUB?.z ?? 0.25) : (L?.z ?? 1.2);
   const setHeight = (z: number) =>
@@ -160,6 +160,9 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const H_MAX = Math.max(1.2, room.height - 0.1);
 
   const params: DockParam[] = [
+    // A plain SIDE VIEW switch in the dock (owner 2026-10-10: the bezel's VIEW
+    // cell was too easy to miss) — the same switch the Miking lessons use.
+    { kind: 'toggle', id: 'view', label: 'SIDE VIEW', value: view === 'side', onToggle: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
     {
       kind: 'fader',
       id: 'spread',

@@ -103,7 +103,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   const fmtU = (m: number) => fmtLen(m, units);
 
   const bezel: BezelItem[] = [
-    { k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE', onPress: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
+    { k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE' },
     { k: 'AREA', v: units === 'metric' ? `${analysis.area.toFixed(1)} m²` : `${(analysis.area / 0.09290304).toFixed(0)} ft²`, flex: 1.2 },
     { k: 'VOLUME', v: units === 'metric' ? `${analysis.volume.toFixed(1)} m³` : `${(analysis.volume / 0.028316846592).toFixed(0)} ft³`, flex: 1.2 },
     { k: 'L:W:H', v: ratioText(b.length, b.width, analysis.modalDims.H), flex: 1.3 },
@@ -129,6 +129,9 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   };
 
   const params: DockParam[] = [
+    // A plain SIDE VIEW switch in the dock (owner 2026-10-10: the bezel's VIEW
+    // cell was too easy to miss) — the same switch the Miking lessons use.
+    { kind: 'toggle', id: 'view', label: 'SIDE VIEW', value: view === 'side', onToggle: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
     {
       kind: 'fader',
       id: 'length',
