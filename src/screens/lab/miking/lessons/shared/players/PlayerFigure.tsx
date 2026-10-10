@@ -210,10 +210,19 @@ function lookOf(path: SkPath, tone: FigureTone): Look {
  * contour. `far`: the far limb in a profile, a little darker. Shared with the
  * art that builds its own figure geometry (bowed, lutes).
  */
-export function FigureMass({ path, tone, far = false, contour = 2.2 }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number }) {
+export function FigureMass({ path, tone, far = false, contour = 2.2, quiet = null }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number; quiet?: SkPath | null }) {
   const t = FIGURE_TONES[tone];
   const look = useMemo(() => lookOf(path, tone), [path, tone]);
   const b = useMemo(() => path.getBounds(), [path]);
+  // `quiet`: where this mass melts into the one behind it (the near arm's top
+  // inside the shoulder) — no rim light and no contour there, so the sleeve
+  // grows out of the shoulder instead of sitting on it as a knob (owner 2026-10-10).
+  const keep = useMemo(() => {
+    if (!quiet) return null;
+    const r = make();
+    r.addRect(Skia.XYWHRect(b.x - 50, b.y - 50, b.width + 100, b.height + 100));
+    return Skia.Path.MakeFromOp(r, quiet, PathOp.Difference) ?? null;
+  }, [quiet, b]);
   return (
     <Group>
       <Path path={path}>
@@ -226,14 +235,16 @@ export function FigureMass({ path, tone, far = false, contour = 2.2 }: { path: S
       </Group>
       {/* The lit edge as a soft glow inside the outline — a crisp strip read
           as a line (a "welt") along sleeves (owner 2026-10-10). */}
-      <Group clip={path}>
+      <Group clip={keep ? (Skia.Path.MakeFromOp(path, keep, PathOp.Intersect) ?? path) : path}>
         <Path path={look.rim} opacity={0.55}>
           <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width * 0.7, b.y + b.height * 0.7)} colors={[t.rim, 'rgba(255,255,255,0)']} />
           <BlurMask blur={t.rimW * 0.9} style="normal" />
         </Path>
       </Group>
       {far ? <Path path={path} color="#000" opacity={0.3} /> : null}
-      <Path path={path} style="stroke" strokeWidth={contour} color={t.edge} opacity={0.95} />
+      <Group clip={keep ?? undefined}>
+        <Path path={path} style="stroke" strokeWidth={contour} color={t.edge} opacity={0.95} />
+      </Group>
     </Group>
   );
 }
@@ -571,7 +582,7 @@ export function handShape(h: Hand): HandShape {
 
 /* ── the parts ── */
 
-type Mass = { path: SkPath; tone: FigureTone; far?: boolean };
+type Mass = { path: SkPath; tone: FigureTone; far?: boolean; quiet?: SkPath | null };
 
 type Built = {
   behind: Mass[];
@@ -617,7 +628,7 @@ function joined(...ps: SkPath[]): SkPath {
  * no cap rises above the shoulder line); `cap`: a deltoid mass joined to it.
  */
 function sleeveArm(root: Pt, e: Pt, w: Pt, cap: SkPath | null = null): SkPath {
-  const upper = limb([root, lerp(root, e, 0.3), e], [44, 47, 38]);
+  const upper = limb([root, lerp(root, e, 0.3), e], [44, 43, 38]); // straight taper — a biceps swell read as a bulge (owner 2026-10-10)
   const fore = limb([e, lerp(e, w, 0.26), w], [38, 37, 31]); // smooth taper — a swell below the elbow read as a welt (owner 2026-10-10)
   const arm = union(cap, upper, fore);
   // The cuff: everything past the wrist, square to the forearm, cut away.
@@ -972,7 +983,7 @@ function buildSide(pose: PlayerPose): Built {
   // shoulder line.
   const armAx = Math.atan2(pose.elbowR.v - sh.v, pose.elbowR.u - sh.u);
   const A = (al: number, ac: number) => pt(sh.u + Math.cos(armAx) * al - Math.sin(armAx) * ac, sh.v + Math.sin(armAx) * al + Math.cos(armAx) * ac);
-  const deltoidRaw = smooth([A(-52, 0), A(-36, 46), A(10, 55), A(70, 48), A(112, 46.5), A(112, -46.5), A(70, -48), A(10, -56), A(-36, -48)], 0.5);
+  const deltoidRaw = smooth([A(-44, 0), A(-30, 40), A(10, 45), A(70, 44), A(112, 43), A(112, -43), A(70, -44), A(10, -45), A(-30, -40)], 0.5); // no wider than the sleeve — a swell here read as a bulge (owner 2026-10-10)
   const deltoid = Skia.Path.MakeFromOp(deltoidRaw, torso, PathOp.Intersect) ?? deltoidRaw;
   const armNear = sleeveArm(sh, pose.elbowR, pose.handR.wrist, deltoid);
   const head = headProfile(pose.head.c, pose.head.r, n.v + 10, f);
@@ -1031,8 +1042,14 @@ function buildSide(pose: PlayerPose): Built {
     { path: legNear, tone: 'trousers' },
     { path: shirt, tone: 'shirt' },
   ];
+  // The sleeve's top inside the shoulder melts into the shirt (no knob).
+  const shoulderQuiet = (() => {
+    const d = make();
+    d.addCircle(sh.u, sh.v, 80);
+    return Skia.Path.MakeFromOp(d, torso, PathOp.Intersect);
+  })();
   const front: Mass[] = [
-    { path: armNear, tone: 'shirt' },
+    { path: armNear, tone: 'shirt', quiet: shoulderQuiet },
     { path: hR.path, tone: 'skin' },
   ];
   return {
@@ -1187,7 +1204,7 @@ export function PlayerInFront({ pose, dim = 1, hands = true }: { pose: PlayerPos
               <BlurMask blur={12} style="normal" />
             </Path>
           ) : null}
-          <FigureMass path={m.path} tone={m.tone} far={m.far} />
+          <FigureMass path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} />
           {i === 0
             ? b.foldsFront.map((fo, j) => (
                 <Folds key={`ff${j}`} path={fo.path} light={fo.light} clip={m.path} />
