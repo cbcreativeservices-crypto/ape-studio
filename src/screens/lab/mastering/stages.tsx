@@ -1025,7 +1025,7 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
       </G>
       {/* The listener from above: the owner's ABOVE head icon, turned to face
           the speakers (up the screen) — head fix 2026-10-08. */}
-      <HeadIconSvg view="above" x={cx} y={listY} size={26} rotation={Math.PI} color="#a7aeb8" minStroke={1.2} />
+      <HeadIconSvg view="above" x={cx} y={listY} size={21.6} rotation={Math.PI} color="#a7aeb8" minStroke={1.2} /* 17 % smaller (owner 2026-10-10: in proportion to the room) */ />
       {/* legend */}
       <SvgText x={lx0} y={ry0 + 12} fontSize={FONT} fill={ink.text} fontFamily={fonts.oswaldMedium}>FROM ABOVE</SvgText>
       <Line x1={lx0} y1={ry0 + 26} x2={lx0 + 14} y2={ry0 + 26} stroke={ink.cyan} strokeWidth={1.2} />
