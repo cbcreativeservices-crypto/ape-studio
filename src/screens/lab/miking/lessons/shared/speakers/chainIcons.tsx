@@ -137,7 +137,7 @@ function ElectricIcon({ s, S, out }: { s: ElectricSpec; S: number; out: 'right' 
   return (
     <Group>
       <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: th }, { scale: k }, { translateX: -uc }]}>
-        <ElectricFront s={s} px={1 / k} />
+        <ElectricFront s={s} px={1 / k} turned />
       </Group>
       {/* The instrument cable: its straight plug seen end-on in the face jack. */}
       <Path path={cable} style="stroke" strokeWidth={3.4} strokeCap="round" color={INK} />

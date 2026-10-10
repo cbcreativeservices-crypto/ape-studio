@@ -337,7 +337,7 @@ export function electricExtent(s: ElectricSpec) {
 
 /** The instrument face-on. `pickupLit` rings one pickup in amber. `px`: mm per
  *  screen pixel (hairlines stay at least ~0.3 px when drawn small). */
-export function ElectricFront({ s, fretless = false, highlight, pickupLit, px = 0 }: { s: ElectricSpec; fretless?: boolean; highlight?: string | null; pickupLit?: string | null; px?: number }) {
+export function ElectricFront({ s, fretless = false, highlight, pickupLit, px = 0, turned = false }: { s: ElectricSpec; fretless?: boolean; highlight?: string | null; pickupLit?: string | null; px?: number; /** Drawn inside a 180° turn (headstock to the viewer's right, owner 2026-10-10): the shadow and the body's light are placed so they still read from the upper left on screen. */ turned?: boolean }) {
   const b = buildElectric(s, fretless);
   const bass = s.id === 'bass';
   const L = s.scale.mm;
@@ -348,17 +348,17 @@ export function ElectricFront({ s, fretless = false, highlight, pickupLit, px = 
   return (
     <Group>
       {/* Drop shadow, then the body: a deep finish lit from the upper left, a rim highlight. */}
-      <Group transform={[{ translateX: 10 }, { translateY: 14 }]}>
+      <Group transform={[{ translateX: turned ? -10 : 10 }, { translateY: turned ? -14 : 14 }]}>
         <Path path={b.body} color="#000" opacity={0.55}>
           <BlurMask blur={16} style="normal" />
         </Path>
       </Group>
       <Path path={b.body}>
-        <RadialGradient c={vec(s.bodyU0 + s.bodyLen * 0.38, -W * 0.45)} r={s.bodyLen * 0.85} colors={[...bodyCols]} />
+        <RadialGradient c={turned ? vec(s.bodyU0 + s.bodyLen * 0.62, W * 0.45) : vec(s.bodyU0 + s.bodyLen * 0.38, -W * 0.45)} r={s.bodyLen * 0.85} colors={[...bodyCols]} />
       </Path>
       {/* The edge's round-over catches the light on the upper (treble) edge. */}
       <Group clip={b.body}>
-        <Group transform={[{ translateX: 5 }, { translateY: 7 }]}>
+        <Group transform={[{ translateX: turned ? -5 : 5 }, { translateY: turned ? -7 : 7 }]}>
           <Path path={b.body} style="stroke" strokeWidth={lw(16, 1)} color="#000" opacity={0.35} />
         </Group>
       </Group>

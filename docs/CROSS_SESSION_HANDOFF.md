@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 08:41 · ccode · 81ba8d3e
+changed: Banjo: standard 5-string (11 in head, 26 1/4 in scale), drawing and text together
+affects other side: nothing (client lesson geometry/copy on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 05:18 · ccode · 65ce44c3
 changed: Overnight art pass (final): microphones, ribbon mic, brass posture
 affects other side: nothing (client lab art on next-store-build; unpublished)

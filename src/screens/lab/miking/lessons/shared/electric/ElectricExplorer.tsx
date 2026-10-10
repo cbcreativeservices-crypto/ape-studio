@@ -63,11 +63,23 @@ export function ElectricExplorer({ w, h, show, highlight, pickupLit, barAt, onTa
   const s = specOf(show);
   const box = s ? electricBox(s) : steelBox(show === 'steelSide' ? 'side' : show === 'steelTop' ? 'top' : 'lap');
   const xf = useMemo(() => fitXform('side', box, w, h, 6), [w, h, box.u0, box.u1, box.v0, box.v1]); // eslint-disable-line react-hooks/exhaustive-deps
-  const labels = useMemo(() => labelsFor(show), [show]);
+  // Guitar and bass face-on are TURNED 180° (owner 2026-10-10): body on the
+  // left, headstock to the right — how a right-handed player is seen from the
+  // front. A turn (not a mirror) keeps it right-handed. Labels and taps follow.
+  const turned = !!s;
+  const uc = (box.u0 + box.u1) / 2;
+  const vc = (box.v0 + box.v1) / 2;
+  const labels = useMemo(() => {
+    const L0 = labelsFor(show);
+    if (!turned) return L0;
+    return L0.map((l) => ({ ...l, u: 2 * uc - l.u, v: 2 * vc - l.v, align: l.align === 'left' ? ('right' as const) : l.align === 'right' ? ('left' as const) : l.align }));
+  }, [show, turned, uc, vc]);
   const tap = (x: number, y: number) => {
     if (!onTapPart) return;
-    const u = (x - xf.ox) / xf.s;
-    const v = (y - xf.oy) / xf.s;
+    const uv = (x - xf.ox) / xf.s;
+    const vv = (y - xf.oy) / xf.s;
+    const u = turned ? 2 * uc - uv : uv;
+    const v = turned ? 2 * vc - vv : vv;
     const tol = 22 / xf.s;
     const id = s ? electricHit(s, u, v, tol) : steelHit(show === 'steelSide' ? 'side' : show === 'steelTop' ? 'top' : 'lap', u, v, tol);
     if (id) onTapPart(id);
@@ -77,7 +89,11 @@ export function ElectricExplorer({ w, h, show, highlight, pickupLit, barAt, onTa
       <View pointerEvents="none" style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-            {s ? <ElectricFront s={s} fretless={show === 'bassFretless'} highlight={highlight} pickupLit={pickupLit} /> : <SteelDrawing view={show === 'steelSide' ? 'side' : show === 'steelTop' ? 'top' : 'lap'} highlight={highlight} barAt={barAt ?? (show === 'steelTop' ? STEEL.nutU + 260 : null)} />}
+            {s ? (
+              <Group transform={[{ translateX: uc }, { translateY: vc }, { rotate: Math.PI }, { translateX: -uc }, { translateY: -vc }]}>
+                <ElectricFront s={s} fretless={show === 'bassFretless'} highlight={highlight} pickupLit={pickupLit} turned />
+              </Group>
+            ) : <SteelDrawing view={show === 'steelSide' ? 'side' : show === 'steelTop' ? 'top' : 'lap'} highlight={highlight} barAt={barAt ?? (show === 'steelTop' ? STEEL.nutU + 260 : null)} />}
           </Group>
         </Canvas>
         <StaticLabels labels={labels} xf={xf} scale={ts} w={w} />
