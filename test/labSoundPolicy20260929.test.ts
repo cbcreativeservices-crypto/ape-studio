@@ -185,8 +185,11 @@ test('safety paths are untouched: background + shake still silence every voice a
   // on). Both stop every voice; see test/muteAudioOnLeave20261001.test.ts.
   assert.match(
     gate,
-    /if \(state === 'background'\) \{[\s\S]{0,900}?\n\s+onLeaveApp\(muteOnLeaveEnabled\(\), \{ panicMute: panicMuteAudio, stopAllSound \}\);\n\s+return;/,
+    /if \(state === 'background'\) \{[\s\S]{0,1800}?\n\s+onLeaveApp\(muteOnLeaveEnabled\(\), \{ panicMute: panicMuteAudio, stopAllSound \}\);\n\s+return;/,
   );
+  // 2026-10-09 (owner: Save auto-muted the Pixel): the app's OWN share sheet is
+  // not leaving — but only for a bounded window, after which the same rule runs.
+  assert.match(gate, /const sheetMs = systemSheetMsLeft\(\);\s*if \(sheetMs > 0\) \{\s*setTimeout\(\(\) => \{\s*if \(AppState\.currentState !== 'active'\) onLeaveApp\(muteOnLeaveEnabled\(\), \{ panicMute: panicMuteAudio, stopAllSound \}\);\s*\}, sheetMs\);/);
   const panic = read('src/features/audio/panicMute.ts');
   assert.match(panic, /stopAllFilePlayers\(\);/);
 });

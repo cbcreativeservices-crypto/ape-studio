@@ -8,6 +8,7 @@
  * failures return false so the caller can say "needs the next app build" and
  * point at share-as-text — never a dead or lying control.
  */
+import { expectSystemSheet } from '../../../features/audio/leaveAppMute';
 import { Platform, Share } from 'react-native';
 import { optionalModule } from '../../../features/tools/capture/optionalModule';
 
@@ -64,7 +65,13 @@ export async function captureAndShare(ref: unknown, dialogTitle: string, message
     }
     const ok = await sh.isAvailableAsync();
     if (!ok) return false;
-    await sh.shareAsync(uri, { mimeType: 'image/png', dialogTitle, UTI: 'public.png' });
+    // The sheet is ours: opening it is not leaving the app (no auto-mute).
+    const endSheet = expectSystemSheet();
+    try {
+      await sh.shareAsync(uri, { mimeType: 'image/png', dialogTitle, UTI: 'public.png' });
+    } finally {
+      endSheet();
+    }
     return true;
   } catch {
     return false;

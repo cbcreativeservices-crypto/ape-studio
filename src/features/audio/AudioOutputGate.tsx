@@ -74,7 +74,7 @@ import {
 } from './audioOutputStore';
 import { panicMuteAudio, stopAllSound } from './panicMute';
 import { flushPendingRelease } from '../tools/engine/micSession';
-import { enableAudioBody, muteOnLeaveEnabled, onLeaveApp } from './leaveAppMute';
+import { enableAudioBody, muteOnLeaveEnabled, onLeaveApp, systemSheetMsLeft } from './leaveAppMute';
 import { authEventReMute } from './authReMute';
 import { ApeDsp, onOutputLost } from '../../../modules/ape-dsp';
 
@@ -313,6 +313,16 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
         // A mic release already scheduled runs NOW, not when iOS next wakes
         // us (Sentry APE-STUDIO-T — see flushPendingRelease in micSession).
         flushPendingRelease();
+        // Our own share / save sheet is not leaving (owner 2026-10-09). If the
+        // person really goes elsewhere from it, the rule applies once the
+        // sheet's window has run out and the app is still not in front.
+        const sheetMs = systemSheetMsLeft();
+        if (sheetMs > 0) {
+          setTimeout(() => {
+            if (AppState.currentState !== 'active') onLeaveApp(muteOnLeaveEnabled(), { panicMute: panicMuteAudio, stopAllSound });
+          }, sheetMs);
+          return;
+        }
         onLeaveApp(muteOnLeaveEnabled(), { panicMute: panicMuteAudio, stopAllSound });
         return;
       }

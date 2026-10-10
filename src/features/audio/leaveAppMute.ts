@@ -23,6 +23,25 @@ export const MUTE_ON_LEAVE_DEFAULT = true;
 let muteOnLeave = MUTE_ON_LEAVE_DEFAULT;
 
 /** Read by the AppState handler — synchronous, never awaits storage. */
+/**
+ * A system sheet WE opened (owner 2026-10-09: "pressing the save button auto
+ * muted the Pixel"). Android's share sheet is another app's window, so the app
+ * reads 'background' and the leave-the-app mute fired. While a sheet the app
+ * itself opened is up, that background is not "leaving". Bounded: after
+ * `maxMs` the normal leave rule applies again (AudioOutputGate re-checks).
+ */
+let sheetUntil = 0;
+export function expectSystemSheet(maxMs = 60_000): () => void {
+  sheetUntil = Date.now() + maxMs;
+  return () => {
+    sheetUntil = 0;
+  };
+}
+/** ms left on an open system sheet (0 = none). */
+export function systemSheetMsLeft(): number {
+  return Math.max(0, sheetUntil - Date.now());
+}
+
 export function muteOnLeaveEnabled(): boolean {
   return muteOnLeave;
 }

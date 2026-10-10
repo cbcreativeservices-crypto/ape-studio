@@ -58,7 +58,8 @@ describe('APE-STUDIO-D — no reload of the live runtime outside the background-
 describe('APE-STUDIO-T — an already-decided mic stop runs before iOS suspends the app', () => {
   it('a pending debounced release flushes on background (the root audio gate does it)', () => {
     const gate = read('src/features/audio/AudioOutputGate.tsx');
-    assert.match(gate, /if \(state === 'background'\) \{[\s\S]*?flushPendingRelease\(\);\s*onLeaveApp\(/);
+    // The mic release still runs FIRST on every background (2026-10-09: the own-sheet window comes after it).
+    assert.match(gate, /if \(state === 'background'\) \{[\s\S]*?flushPendingRelease\(\);[\s\S]{0,700}?onLeaveApp\(/);
     assert.match(read('src/features/tools/engine/micSession.ts'), /export function flushPendingRelease\(\): boolean \{\s*if \(!releaseTimer\) return false;\s*doStop\(\);/);
   });
 
