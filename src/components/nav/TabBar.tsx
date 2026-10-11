@@ -6,7 +6,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { NavIcon, type NavIconName } from './NavIcon';
 import { useFootnote } from '../../lib/footnote';
@@ -30,6 +30,11 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   const footnote = useFootnote();
   const inbox = useCommunityInbox();
   const inboxLabel = badgeA11y(inbox);
+
+  // No bottom nav while the Glossary is open (owner 2026-10-11) — its header
+  // HOME key is the way out.
+  const activeTab = state.routes[state.index];
+  if (activeTab && getFocusedRouteNameFromRoute(activeTab) === 'Glossary') return null;
 
   return (
     // Original black nav bar (matches the other screens, Booth 2026-07-11).

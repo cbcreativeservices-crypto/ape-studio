@@ -37,7 +37,7 @@ import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { MethodIcon } from '../../components/MethodIcon';
+import { NavIcon } from '../../components/nav/NavIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
@@ -3854,7 +3854,9 @@ ${COPY.glossaryFreeAllowance}`,
   return (
     <ImageBackground
       source={loading ? BG_GLOSSARY : undefined}
-      style={[styles.root, { paddingTop: insets.top }]}
+      // paddingBottom: the bottom nav (which carried the home-indicator inset)
+      // is hidden on this screen since 2026-10-11.
+      style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
       imageStyle={styles.bgImage}
       // resizeMode as a PROP (owner 2026-09-29, tablet pass): react-native-web
       // ignores it inside imageStyle, so the art sat as a narrow strip on a
@@ -3863,11 +3865,17 @@ ${COPY.glossaryFreeAllowance}`,
     >
       {glossaryHelp.sheet}
       <View style={styles.header}>
-        {/* Decorative glossary mark (owner 2026-08-05): no longer a link — just
-            the icon, a touch larger. */}
-        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <MethodIcon method="glossary" size={42} />
-        </View>
+        {/* HOME key (owner 2026-10-11) in place of the glossary book mark —
+            the bottom nav is hidden while the Glossary is open, so this is
+            the way back to Home. */}
+        <Pressable
+          onPress={() => (navigation as any).navigate('Home')}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Home"
+        >
+          <NavIcon icon="Home" lit />
+        </Pressable>
         <Text style={styles.title} numberOfLines={1}>GLOSSARY</Text>
         {/* Cards/List toggle lives here now — always visible, both modes, so it
             stays reachable even while a term/popup is expanded (Booth 2026-07-09b). */}
