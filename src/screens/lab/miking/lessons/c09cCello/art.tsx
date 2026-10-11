@@ -21,7 +21,8 @@ const LABELS = {
   side: {
     bridge: { du: 70, dv: -30 },
     fb: { du: 90, dv: -30 },
-    scroll: { du: 70, dv: -20 },
+    // No SCROLL here: seated tall, the cellist's head hides the scroll from
+    // the player's right (owner 2026-10-10) — it stays named from above.
     tail: { du: 90, dv: 30 },
     endpin: { du: 40, dv: -60 },
     player: { du: -140, dv: 60, align: 'right' as const },

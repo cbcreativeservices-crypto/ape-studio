@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 18:51 · ccode · 92c2ed9a
+changed: Labs: traceable cable lanes + pro dressing (Cable Install, Sound Systems), 2-way stage wedges app-wide, MON->snake return; Patchbay on the Rack Unit (12 modules); neck hands fixed + cellist raised; shared anatomical arms on low brass, small perc, lutes, keys, ensembles, sax, free reed; guitar fretting wrist <= 70 deg
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 17:34 · ccode · 03c39c9b
 changed: Figures: anatomical arm (one outline, elbow point + crook, forearm swell, bare wrist, cuff), 70° wrist limit, real bow hold, violin/viola neck hold from above, fretting hands (owner approved)
 affects other side: nothing (client lab art on next-store-build; unpublished)
