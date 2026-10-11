@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-11 12:02 · ccode · cffe01d3
+changed: Enrolling is members-only: one shared gate on every add into My Enrollments (owner 2026-10-11)
+affects other side: nothing — client-only (useEnrollGate in front of every add; seeding, server sync and the DB mask untouched). Store listing / website copy that says anyone can enroll would now be out of date (Comp A's lane). Rides the held production OTA.
+needs: nothing
+
+
 ### 2026-10-11 11:43 · ccode · 9ec4cdb0
 changed: Splash: official tagline 'The whole craft of audio. Right in your pocket'; Home: blue PROFESSIONAL AUDIO GLOSSARY line removed (owner 2026-10-11)
 affects other side: new official tagline — store listing copy / website may want it (Comp A's lane). App-only otherwise; rides the held production OTA.
