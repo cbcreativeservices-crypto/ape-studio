@@ -1824,7 +1824,6 @@ export function CourseSelectionScreen() {
             Pro Audio <Text style={styles.heroAccent}>Training Academy</Text>
           </Text>
         </Pressable>
-        {compactHeader ? null : <Text style={styles.heroEyebrow} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>PROFESSIONAL AUDIO GLOSSARY</Text>}
       </View>
 
       {/* Two links above the course carousel (user request 2026-07-17): the
@@ -2132,15 +2131,6 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(255,180,0,.4)',
     textShadowRadius: 8,
     textShadowOffset: { width: 0, height: 0 },
-  },
-  heroEyebrow: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12,
-    letterSpacing: 2.6,
-    // Glossary blue — matches the glossary card's border frame (Booth 2026-07-09d).
-    color: '#5bb0ff',
-    textAlign: 'center',
-    marginTop: -4,
   },
   // Sized to match the AWARDS label and dropped lower / closer to the cards
   // below it (Booth 2026-07-15).

@@ -141,7 +141,7 @@ export function SplashScreen({ navigation }: Props) {
           TRAINING ACADEMY
         </Text>
         <Text style={styles.glossary} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-          PROFESSIONAL AUDIO GLOSSARY
+          The whole craft of audio. Right in your pocket
         </Text>
       </Animated.View>
     </View>
@@ -175,10 +175,12 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
     textShadowOffset: { width: 0, height: 0 },
   },
+  // The official tagline (owner 2026-10-11). Mixed case, so a tighter
+  // tracking than the all-caps wordmark lines above.
   glossary: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 10,
-    letterSpacing: 2.7,
+    letterSpacing: 1,
     color: '#777',
     marginTop: 12,
   },

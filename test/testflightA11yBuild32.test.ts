@@ -39,7 +39,7 @@ describe('T1 — Splash and Home hold at the largest standard text size', () => 
 
   test('every Splash wordmark line is capped and kept on one line', () => {
     const s = code(SPLASH);
-    for (const word of ['PRO AUDIO', 'TRAINING ACADEMY', 'PROFESSIONAL AUDIO GLOSSARY']) {
+    for (const word of ['PRO AUDIO', 'TRAINING ACADEMY', 'The whole craft of audio\\. Right in your pocket']) {
       const re = new RegExp(
         `maxFontSizeMultiplier=\\{BRAND_MAX_FONT_SCALE\\} numberOfLines=\\{1\\} adjustsFontSizeToFit minimumFontScale=\\{[\\d.]+\\}>\\s*${word}\\s*</Text>`,
       );
@@ -80,10 +80,10 @@ describe('T1 — Splash and Home hold at the largest standard text size', () => 
     }
   });
 
-  test('the wordmark, glossary line and deck headline never wrap', () => {
+  test('the wordmark and deck headline never wrap; the glossary line is gone (owner 2026-10-11)', () => {
     const s = code(HOME);
     assert.match(s, /<Text style=\{styles\.heroWordmark\} maxFontSizeMultiplier=\{HOME_MAX\} numberOfLines=\{1\} adjustsFontSizeToFit/);
-    assert.match(s, /<Text style=\{styles\.heroEyebrow\} maxFontSizeMultiplier=\{HOME_MAX\} numberOfLines=\{1\} adjustsFontSizeToFit/);
+    assert.doesNotMatch(s, /PROFESSIONAL AUDIO GLOSSARY/);
     assert.match(s, /styles\.academyTitle\} accessibilityLiveRegion="polite" maxFontSizeMultiplier=\{HOME_MAX\} numberOfLines=\{1\} adjustsFontSizeToFit/);
   });
 
