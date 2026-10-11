@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-11 11:43 · ccode · 9ec4cdb0
+changed: Splash: official tagline 'The whole craft of audio. Right in your pocket'; Home: blue PROFESSIONAL AUDIO GLOSSARY line removed (owner 2026-10-11)
+affects other side: new official tagline — store listing copy / website may want it (Comp A's lane). App-only otherwise; rides the held production OTA.
+needs: nothing
+
+
 ### 2026-10-10 19:31 · ccode · e2e0c921
 changed: docs: governance D67-D74, lessons 2026-10-10, AGENTS house rules, session handoff for 2026-10-11
 affects other side: A: read docs/APE_GOVERNANCE_DECISIONS_2026_10_10.md (D74: no production OTA during store review; topic-tiles upload after approval)

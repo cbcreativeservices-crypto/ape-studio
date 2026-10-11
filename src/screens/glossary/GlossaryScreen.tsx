@@ -491,6 +491,9 @@ async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
   return out;
 }
 
+/** The equations filter's title — listed A–Z with the topics (owner 2026-10-11). */
+const EQUATIONS_TITLE = 'Terms with Equations & Formulas';
+
 /** Formula map for the "Equations & Formulas" filter: id → the term's symbolic
  *  formula (+ plain-language words). A term counts as an equation/formula when
  *  its `formula_symbolic` is non-empty. Loaded in ONE isolated, NON-FATAL paged
@@ -2593,10 +2596,29 @@ ${COPY.glossaryFreeAllowance}`,
     setSelTopicId(null); // a clean cross-topic view — no lingering topic selection
     setTopicPickerOpen(false);
   }, []);
+  // Sits IN the A–Z topic list under its full title, with the T's (owner
+  // 2026-10-11) — no longer pinned at the top. Index of the first topic that
+  // sorts after it; -1 = it goes last.
+  const equationsAt = useMemo(
+    () => topicsAZ.findIndex((t) => t.name.localeCompare(EQUATIONS_TITLE) > 0),
+    [topicsAZ],
+  );
+  const equationsRow = (
+    <Pressable
+      key="__equations"
+      style={styles.equationsRow}
+      onPress={selectEquations}
+      accessibilityRole="button"
+      accessibilityLabel={`${EQUATIONS_TITLE}, ${equationCount} term${equationCount === 1 ? '' : 's'}`}
+    >
+      <Text style={styles.equationsRowText}>∑  {EQUATIONS_TITLE}</Text>
+      <Text style={styles.equationsCount}>{equationCount}</Text>
+    </Pressable>
+  );
 
   const filterLabel =
     filter === 'equations'
-      ? 'Equations & Formulas'
+      ? EQUATIONS_TITLE
       : filter === 'all'
       ? 'All'
       : filter === 'topic'
@@ -4435,20 +4457,12 @@ ${COPY.glossaryFreeAllowance}`,
               </View>
               <Text style={styles.topicLockHint}>{upsell ? COPY.upgradePhrase : tierUnconfirmedCopy}</Text>
               <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
-                {/* Equations & Formulas is a free cross-topic reference list, so
-                    it stays SELECTABLE even here where per-topic links are
-                    member-locked (user request 2026-07-26). */}
-                <Pressable
-                  style={styles.equationsRow}
-                  onPress={selectEquations}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Equations & Formulas, ${equationCount} term${equationCount === 1 ? '' : 's'}`}
-                >
-                  <Text style={styles.equationsRowText}>∑  Equations &amp; Formulas</Text>
-                  <Text style={styles.equationsCount}>{equationCount}</Text>
-                </Pressable>
                 {topicsUnreadable && topicsAZ.length === 0 ? <Text style={styles.empty}>{TOPICS_UNREADABLE}</Text> : null}
-                {topicsAZ.map((t) => (
+                {/* Terms with Equations & Formulas is a free cross-topic
+                    reference list, so it stays SELECTABLE even here where
+                    per-topic links are member-locked (user request 2026-07-26). */}
+                {topicsAZ.map((t, i) => [
+                  i === equationsAt ? equationsRow : null,
                   <Pressable
                     key={t.id}
                     style={styles.topicRow}
@@ -4464,29 +4478,22 @@ ${COPY.glossaryFreeAllowance}`,
                   >
                     <Text style={styles.topicRowText}>{t.name}</Text>
                     {upsell ? <Text style={styles.topicMembersTag}>🔒 MEMBERS</Text> : null}
-                  </Pressable>
-                ))}
+                  </Pressable>,
+                ])}
+                {equationsAt === -1 ? equationsRow : null}
               </ScrollView>
             </View>
           ) : (
             <View style={styles.topicOverlay}>
               <Text style={styles.topicOverlayTitle}>SELECT A TOPIC · A–Z</Text>
               <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
-                {/* Pinned cross-topic filter: only the terms that ARE
-                    equations/formulas, alphabetical. Not member-gated. */}
-                <Pressable
-                  style={styles.equationsRow}
-                  onPress={selectEquations}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Equations & Formulas, ${equationCount} term${equationCount === 1 ? '' : 's'}`}
-                >
-                  <Text style={styles.equationsRowText}>∑  Equations &amp; Formulas</Text>
-                  <Text style={styles.equationsCount}>{equationCount}</Text>
-                </Pressable>
                 {topicsUnreadable && topicsAZ.length === 0 ? <Text style={styles.empty}>{TOPICS_UNREADABLE}</Text> : null}
-                {topicsAZ.map((t) => {
+                {/* The cross-topic filter (only the terms that ARE
+                    equations/formulas) sits A–Z with the T's. Not member-gated. */}
+                {topicsAZ.map((t, i) => {
                   const active = selTopicId === t.id;
-                  return (
+                  return [
+                    i === equationsAt ? equationsRow : null,
                     <Pressable
                       key={t.id}
                       style={[styles.topicRow, active && styles.topicRowActive]}
@@ -4499,9 +4506,10 @@ ${COPY.glossaryFreeAllowance}`,
                       aria-pressed={active}
                     >
                       <Text style={[styles.topicRowText, active && { color: colors.amber }]}>{t.name}</Text>
-                    </Pressable>
-                  );
+                    </Pressable>,
+                  ];
                 })}
+                {equationsAt === -1 ? equationsRow : null}
               </ScrollView>
             </View>
           )
@@ -4788,7 +4796,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1a1a1a',
   },
   topicRowActive: { backgroundColor: '#1d1607' },
-  // Pinned "Equations & Formulas" row at the top of the topic picker — PURPLE
+  // "Terms with Equations & Formulas" row, A–Z in the topic picker — PURPLE
   // accent (owner 2026-08-07: equations/calculator = purple), so it reads as a
   // special cross-topic filter, not a topic.
   equationsRow: {
