@@ -392,6 +392,9 @@ const styles = StyleSheet.create({
     top: 3,
     fontFamily: fonts.mono,
     fontSize: 12.5,
+    // A long readout shrinks/ends in "…" inside its own half — it never runs
+    // over the lane's name (C12 "1 of 5 · the tangent presses…" sat on STEP).
+    maxWidth: '50%',
   },
   textBacked: { backgroundColor: 'rgba(15,15,18,0.72)', paddingHorizontal: 4, borderRadius: 4, overflow: 'hidden' },
 });

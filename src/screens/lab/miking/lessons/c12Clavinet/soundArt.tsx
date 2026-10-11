@@ -3,20 +3,24 @@
  *
  * KEY TO SIGNAL (one key, one string, cut open; HOH-D6 p.5 — corrected from
  * the old lesson's "a hammer presses a string against a pickup-facing
- * surface", CORRECTIONS_LOG C12-01): ① the key goes down and the tangent
- * (a small plunger) rises; ② it presses the string onto the ANVIL; ③ the
- * string rings between the anvil and the bridge; ④ the PICKUPS at that end
- * turn its motion into a small voltage, out to the amp; ⑤ the key comes up,
- * the tangent drops, and the yarn-wound part of the string mutes it.
+ * surface", CORRECTIONS_LOG C12-01; the action re-drawn 2026-10-10 for audit
+ * rows F0338–F0340): ① the key, pivoted at its BACK, goes down, and the
+ * tangent (a hard-rubber tip in a holder UNDER the key) presses down onto the
+ * string; ② it presses the string DOWN onto the ANVIL beneath it; ③ the
+ * string rings between the anvil and the bridge; ④ the PICKUPS — one below
+ * the strings, one above them — turn its motion into a small voltage, out to
+ * the amp; ⑤ the key comes up, the tangent lifts off, and the yarn woven round
+ * the string's short end mutes it.
  *
  * SIGNAL PATH ("Where it leaves"): the clavinet makes almost no sound in
  * the air — its sound leaves as a SIGNAL. The chain drawn as real objects:
  * clavinet → pedals → amp → speaker → mic → console, and a direct (DI) tap
  * before or after the pedals.
  *
- * HONESTY: one string drawn straight and NOT to scale; motion drawn many
- * times larger; the pickups drawn as two bars (the leaflet: "Magnetic
- * pick-ups are situated at the other end of the string"). One value,
+ * HONESTY: one key and its string in one section (a real string runs
+ * diagonally under the keys); the parts at about true proportion, but the
+ * string's thickness and every motion drawn many times larger; the pickups
+ * drawn in section, one under and one over the string. One value,
  * `reveal` (1 … 5), drives every part; nothing loops (D8).
  */
 import { useMemo, type ReactNode } from 'react';
@@ -37,22 +41,56 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 
 /* ── key to signal ── */
-const PIN = 60;
-const ANVIL = 280;
-const BRIDGE = 940;
-const SY = 200; // the string at rest
-const TRAVEL = 36;
-const LIFT = 24; // the string pressed up onto the anvil (drawn larger)
-const PIVOT = 170;
-const KEY_Y = 330;
-const SWING = 26;
-const BOX = { u0: 0, u1: 1010, v0: 40, v1: 430 };
+/*
+ * One key and its string, cut open, seen from the player's right (the player
+ * on the left). TRUE PROPORTIONS for the parts, ≈ 2.2 units per mm (code
+ * comment only; typical sizes, not a measured drawing of one instrument):
+ * the case ≈ 440 deep × 140 high; the key ≈ 245 long and 14 thick, pivoted on
+ * a pin at its BACK end (≈ 240 from the front) with a return spring just in
+ * front of the pivot — a lever with the tangent between the finger and the
+ * pivot, so the tangent travels ≈ 0.6 × the key front; under the key a metal
+ * holder grips the hard-rubber TANGENT (≈ 7 wide), just above the string;
+ * under the string, the steel ANVIL stud on its rail; the string runs from
+ * the tuning pin at the front, through the YARN weave, over the anvil, to the
+ * bridge at the back (sounding length here ≈ 300; real ones run ≈ 120–700
+ * across the 60 notes); the two pickups (bar coils in epoxy, ≈ 12 × 22 in
+ * section) — one BELOW the strings toward the middle of the sounding length,
+ * one ABOVE them close to the bridge.
+ * Drawn LARGER than life: the string's thickness, the tangent's travel
+ * (≈ 9 mm drawn), the gap to the anvil and the string's swing.
+ */
+const KX = 2.2; // units per mm
+const X0 = 20; // the case's front face
+const mm = (v: number) => X0 + v * KX;
+const FLOOR = 388; // the inside of the case bottom
+const up = (v: number) => FLOOR - v * KX; // height above the case bottom, mm → v
+const PIN = mm(30);
+const ANVIL = mm(105);
+const BRIDGE = mm(410);
+const PX = mm(240); // the key's pivot pin
+const KEY_FRONT = mm(8);
+const KEY_BACK = mm(252);
+const KEY_TOP = up(110);
+const KEY_BOT = KEY_TOP + 14 * KX;
+const PY = KEY_TOP + 7 * KX; // the pivot pin, mid-thickness
+const SY = up(70); // the string at rest
+const SR = 2.25; // the string's drawn half-thickness
+const GAP = 6; // tangent tip → string at rest (drawn larger)
+const TT = 20; // the tangent's travel at the anvil (drawn larger)
+const DROP = TT - GAP; // how far the tangent presses the string down
+const ANVIL_TOP = SY + DROP + SR;
+const SWING = 8; // the string's swing (drawn larger; real: a fraction of a mm)
+const PU_LO = mm(290); // the pickup below the strings
+const PU_HI = mm(385); // the pickup above the strings
+const SPRING_X = mm(220);
+const JACK = { x: 983, y: 345 };
+const BOX = { u0: 0, u1: 1010, v0: 40, v1: 440 };
 
 const clamp01 = (x: number) => {
   'worklet';
   return Math.max(0, Math.min(1, x));
 };
-/** The tangent's travel (0 at rest … 1 pressed onto the anvil). */
+/** The tangent's travel (0 at rest … 1 pressing the string onto the anvil). */
 const tangentT = (r: number) => {
   'worklet';
   return r < 2 ? clamp01(r - 1) : r < 4.5 ? 1 : clamp01(1 - (r - 4.5) * 2.5);
@@ -61,13 +99,74 @@ const swingS = (r: number) => {
   'worklet';
   return r < 2.5 ? 0 : r < 4.5 ? clamp01((r - 2.5) * 3) : clamp01(1 - (r - 4.5) * 4);
 };
+/** How far the string is pressed down at the anvil (0 … DROP). */
+const pressD = (r: number) => {
+  'worklet';
+  return Math.max(0, Math.min(DROP, TT * tangentT(r) - GAP));
+};
+
+/** The key turns about its back pivot: the front and the tangent go DOWN. */
+function keyRot(r: number) {
+  'worklet';
+  const d = TT * tangentT(r);
+  const sn = -d / (PX - ANVIL);
+  return { sn, cs: Math.sqrt(1 - sn * sn) };
+}
+function poly(pts: number[], r: number): SkPath {
+  'worklet';
+  const { sn, cs } = keyRot(r);
+  const p = Skia.Path.Make();
+  for (let i = 0; i < pts.length; i += 2) {
+    const dx = pts[i] - PX;
+    const dy = pts[i + 1] - PY;
+    const x = PX + dx * cs - dy * sn;
+    const y = PY + dx * sn + dy * cs;
+    if (i === 0) p.moveTo(x, y);
+    else p.lineTo(x, y);
+  }
+  p.close();
+  return p;
+}
+/** The key's wooden body (it moves as one piece with the tangent). */
+function keyBodyPath(r: number): SkPath {
+  'worklet';
+  return poly([KEY_FRONT, KEY_TOP + 6, KEY_BACK, KEY_TOP + 6, KEY_BACK, KEY_BOT, KEY_FRONT, KEY_BOT], r);
+}
+/** The key's white top over its playing part. */
+function keyCapPath(r: number): SkPath {
+  'worklet';
+  return poly([KEY_FRONT - 2, KEY_TOP, mm(150), KEY_TOP, mm(150), KEY_TOP + 6, KEY_FRONT - 2, KEY_TOP + 7], r);
+}
+/** The metal holder screwed under the key. */
+function holderPath(r: number): SkPath {
+  'worklet';
+  const b = SY - SR - GAP - 16;
+  return poly([ANVIL - 10, KEY_BOT, ANVIL + 10, KEY_BOT, ANVIL + 10, b + 6, ANVIL + 8, b + 6, ANVIL + 8, b, ANVIL - 8, b, ANVIL - 8, b + 6, ANVIL - 10, b + 6], r);
+}
+/** The hard-rubber tangent in the holder's jaws; its tip just above the string. */
+function padPath(r: number): SkPath {
+  'worklet';
+  const t = SY - SR - GAP;
+  return poly([ANVIL - 7, t - 18, ANVIL + 7, t - 18, ANVIL + 7, t - 3, ANVIL + 4, t, ANVIL - 4, t, ANVIL - 7, t - 3], r);
+}
+/** The return spring between the key frame and the key, just in front of the pivot. */
+function springPath(r: number): SkPath {
+  'worklet';
+  const { sn, cs } = keyRot(r);
+  const top = PY + (SPRING_X - PX) * sn + (KEY_BOT - PY) * cs;
+  const bot = KEY_BOT + 22;
+  const p = Skia.Path.Make();
+  const n = 7;
+  p.moveTo(SPRING_X, bot);
+  for (let i = 1; i < n; i++) p.lineTo(SPRING_X + (i % 2 ? -6 : 6), bot + ((top - bot) * i) / n);
+  p.lineTo(SPRING_X, top);
+  return p;
+}
 
 function stringPath(r: number, sign: number): SkPath {
   'worklet';
   const p = Skia.Path.Make();
-  const t = tangentT(r);
-  const top = SY + 12 - (TRAVEL * t);
-  const yc = Math.min(SY, top);
+  const yc = SY + pressD(r);
   const s = swingS(r) * sign;
   p.moveTo(PIN, SY);
   p.lineTo(ANVIL, yc);
@@ -80,41 +179,18 @@ function stringPath(r: number, sign: number): SkPath {
   }
   return p;
 }
-function keyPath(r: number): SkPath {
+/** The yarn woven round the string's short end: it rides with the string. */
+function yarnPath(r: number): SkPath {
   'worklet';
   const p = Skia.Path.Make();
-  const t = tangentT(r);
-  const d = TRAVEL * t;
-  // A seesaw about the pivot: the front goes down, the tangent's end goes up.
-  p.moveTo(PIN - 20, KEY_Y + d * ((PIVOT - PIN + 20) / (ANVIL - PIVOT)));
-  p.lineTo(ANVIL + 30, KEY_Y - d * ((ANVIL + 30 - PIVOT) / (ANVIL - PIVOT)));
-  // The tangent: a post from the key up toward the string.
-  p.moveTo(ANVIL, KEY_Y - d);
-  p.lineTo(ANVIL, SY + 12 - d);
+  const yc = SY + pressD(r);
+  for (let x = mm(40); x < mm(95); x += 9) {
+    const y = SY + ((yc - SY) * (x + 4 - PIN)) / (ANVIL - PIN);
+    p.addOval(Skia.XYWHRect(x, y - 9, 8, 18));
+  }
   return p;
 }
 
-/** The tangent's rubber tip, riding on top of the tangent post. */
-function tipPath(r: number): SkPath {
-  'worklet';
-  const p = Skia.Path.Make();
-  const d = TRAVEL * tangentT(r);
-  p.addRRect(Skia.RRectXY(Skia.XYWHRect(ANVIL - 10, SY + 12 - d, 20, 9), 3, 3));
-  return p;
-}
-
-/*
- * One key and its string, cut open — what the parts are, drawn as the real
- * parts (not to scale along the string; the sounding length of a real one
- * runs ≈ 120–700 mm across the 60 notes): the tuning pin in its wooden pin
- * block; the band of yarn woven round the string's short end; the steel
- * anvil rail with its hardened edge just above the string; the key on its
- * balance rail with the tangent post and its rubber tip (Ø ≈ 8) at the back;
- * the two pickups (≈ 60 × 50 in section: a steel pole blade on a wound coil,
- * in a moulded housing) under the far end of the string, on their rail; the
- * bridge and the hitch pin; the output jack in the case's end. The case:
- * wooden walls, a lid on top, the keybed below.
- */
 type Built = Record<string, SkPath>;
 let seqCache: Built | null = null;
 function seqPaths(): Built {
@@ -125,76 +201,105 @@ function seqPaths(): Built {
     p.addRRect(Skia.RRectXY(Skia.XYWHRect(x, y, w, h), r, r));
     return p;
   };
-  o.case = rr(20, 100, 970, 292, 16);
-  o.inside = rr(34, 114, 942, 262, 8);
-  o.pinBlock = rr(30, 166, 64, 72, 6);
-  o.pin = rr(54, 150, 12, 64, 3);
-  o.pinTop = rr(52, 144, 16, 11, 2);
+  // The case cut open: the bottom, the low front rail under the keys, the
+  // back wall, and the lid over the back part (the keys stand in front of it).
+  o.inside = rr(X0 + 4, 104, 960, FLOOR - 104, 6);
+  o.walls = make();
+  o.walls.addRRect(Skia.RRectXY(Skia.XYWHRect(X0, FLOOR, 968, 16), 4, 4));
+  o.walls.addRRect(Skia.RRectXY(Skia.XYWHRect(X0, up(42), 18, FLOOR - up(42) + 8), 4, 4));
+  o.walls.addRRect(Skia.RRectXY(Skia.XYWHRect(970, 92, 18, FLOOR - 84), 4, 4));
+  o.walls.addRRect(Skia.RRectXY(Skia.XYWHRect(mm(155), 92, 988 - mm(155), 18), 4, 4));
+  // the pin block and the tuning pin, the string wound round it
+  o.pinBlock = rr(PIN - 22, SY + 4, 44, FLOOR - SY - 4, 4);
+  o.pin = rr(PIN - 6, SY - 16, 12, 34, 3);
+  o.pinTop = rr(PIN - 8, SY - 20, 16, 7, 2);
   o.pinWind = make();
-  for (const y of [194, 199, 204]) o.pinWind.addOval(Skia.XYWHRect(PIN - 8, y - 2, 16, 4));
-  o.yarnBand = rr(104, SY - 11, 152, 22, 6);
-  o.yarn = make();
-  for (let x = 106; x < ANVIL - 32; x += 11) o.yarn.addOval(Skia.XYWHRect(x, SY - 10, 9, 20));
-  o.anvilBar = rr(ANVIL - 70, SY - LIFT - 62, 140, 16, 3);
+  for (const y of [SY - 6, SY - 1, SY + 4]) o.pinWind.addOval(Skia.XYWHRect(PIN - 8, y - 2, 16, 4));
+  // the anvil: a hardened steel stud on its rail, on a wooden support
+  o.anvilSup = rr(ANVIL - 15, ANVIL_TOP + 30, 30, FLOOR - ANVIL_TOP - 30, 3);
+  o.anvilRail = rr(ANVIL - 26, ANVIL_TOP + 16, 52, 14, 3);
   o.anvil = make();
-  o.anvil.moveTo(ANVIL - 14, SY - LIFT - 46);
-  o.anvil.lineTo(ANVIL + 14, SY - LIFT - 46);
-  o.anvil.lineTo(ANVIL + 4, SY - LIFT);
-  o.anvil.lineTo(ANVIL - 4, SY - LIFT);
+  o.anvil.moveTo(ANVIL - 9, ANVIL_TOP + 16);
+  o.anvil.lineTo(ANVIL - 5, ANVIL_TOP + 2);
+  o.anvil.quadTo(ANVIL, ANVIL_TOP - 1.5, ANVIL + 5, ANVIL_TOP + 2);
+  o.anvil.lineTo(ANVIL + 9, ANVIL_TOP + 16);
   o.anvil.close();
-  // the bridge (wood, a brass saddle) and the string's tail to its hitch pin
-  o.bridge = rr(BRIDGE - 20, SY + 6, 40, 56, 4);
+  // the key frame's back rail, the pivot bracket and pin
+  o.keyRail = rr(SPRING_X - 14, KEY_BOT + 22, PX - SPRING_X + 40, 22, 3);
+  o.bracket = rr(PX - 6, PY - 2, 12, KEY_BOT + 24 - PY, 2);
+  o.pivotPin = make();
+  o.pivotPin.addCircle(PX, PY, 5);
+  // the bridge (wood, a steel saddle) and the string's tail to its hitch pin
+  o.bridge = rr(BRIDGE - 12, SY + SR, 24, FLOOR - SY - SR, 3);
   o.saddle = make();
-  o.saddle.moveTo(BRIDGE - 10, SY + 7);
-  o.saddle.lineTo(BRIDGE, SY);
-  o.saddle.lineTo(BRIDGE + 10, SY + 7);
+  o.saddle.moveTo(BRIDGE - 8, SY + SR + 5);
+  o.saddle.lineTo(BRIDGE, SY + SR - 1);
+  o.saddle.lineTo(BRIDGE + 8, SY + SR + 5);
   o.saddle.close();
   o.tail = make();
   o.tail.moveTo(BRIDGE, SY);
-  o.tail.lineTo(962, SY + 10);
+  o.tail.lineTo(BRIDGE + 30, SY + 12);
+  o.hitchBlock = rr(BRIDGE + 14, SY + 14, 26, FLOOR - SY - 14, 3);
   o.hitch = make();
-  o.hitch.addCircle(962, SY + 12, 5);
-  // the two pickups under the far end, on their rail
-  o.puRail = rr(728, SY + 72, 164, 14, 3);
+  o.hitch.addCircle(BRIDGE + 30, SY + 14, 4.5);
+  // the two pickups: below the string toward the middle, above it near the bridge
+  const PW = 12 * KX;
+  const PH = 22 * KX;
+  const loTop = SY + 16;
+  const hiBot = SY - 10;
   o.pickups = make();
-  o.poles = make();
+  o.pickups.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_LO - PW / 2, loTop, PW, PH), 5, 5));
+  o.pickups.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_HI - PW / 2, hiBot - PH, PW, PH), 5, 5));
   o.coils = make();
-  for (const x of [770, 850]) {
-    o.pickups.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 30, SY + 22, 60, 50), 7, 7));
-    o.poles.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 26, SY + 22, 52, 6), 2, 2));
-    o.coils.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 21, SY + 32, 42, 30), 3, 3));
-  }
+  o.coils.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_LO - PW / 2 + 5, loTop + 9, PW - 10, PH - 14), 2, 2));
+  o.coils.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_HI - PW / 2 + 5, hiBot - PH + 5, PW - 10, PH - 14), 2, 2));
   o.winding = make();
-  for (const x of [770, 850])
-    for (let i = 1; i < 8; i++) {
-      o.winding.moveTo(x - 21 + (42 * i) / 8, SY + 33);
-      o.winding.lineTo(x - 21 + (42 * i) / 8 + 1, SY + 61);
+  for (const [x, y0] of [[PU_LO, loTop + 9], [PU_HI, hiBot - PH + 5]] as const)
+    for (let i = 1; i < 9; i++) {
+      o.winding.moveTo(x - PW / 2 + 5, y0 + ((PH - 14) * i) / 9);
+      o.winding.lineTo(x + PW / 2 - 5, y0 + ((PH - 14) * i) / 9 + 1);
     }
-  // the balance rail under the key
-  o.pivot = rr(PIVOT - 16, KEY_Y + 9, 32, 30, 3);
-  o.felt = rr(PIVOT - 9, KEY_Y + 6, 18, 4, 1);
-  o.cable = make();
-  o.cable.moveTo(850, SY + 72);
-  o.cable.cubicTo(860, 330, 940, 330, 970, 330);
+  // the pole blades, each on the face toward the string
+  o.poles = make();
+  o.poles.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_LO - PW / 2 + 2, loTop, PW - 4, 5), 1.5, 1.5));
+  o.poles.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_HI - PW / 2 + 2, hiBot - 5, PW - 4, 5), 1.5, 1.5));
+  o.puMounts = make();
+  o.puMounts.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_LO - 22, loTop + PH, 44, 8), 2, 2));
+  o.puMounts.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_LO - 7, loTop + PH + 8, 14, FLOOR - loTop - PH - 8), 2, 2));
+  o.puMounts.addRRect(Skia.RRectXY(Skia.XYWHRect(PU_HI - 22, hiBot - PH - 8, 970 - PU_HI + 22, 8), 2, 2));
+  // the leads to the output jack in the back wall
+  o.leads = make();
+  o.leads.moveTo(PU_LO + 11, loTop + PH + 8);
+  o.leads.lineTo(PU_LO + 11, FLOOR - 22);
+  o.leads.quadTo(PU_LO + 11, FLOOR - 10, PU_LO + 24, FLOOR - 10);
+  o.leads.lineTo(950, FLOOR - 10);
+  o.leads.quadTo(966, FLOOR - 10, 966, JACK.y + 14);
+  o.leads.quadTo(966, JACK.y, JACK.x - 12, JACK.y);
+  o.leads.moveTo(PU_HI + PW / 2, hiBot - PH + 10);
+  o.leads.cubicTo(950, hiBot - PH + 10, 966, hiBot - PH + 20, 966, 240);
+  o.leads.lineTo(966, JACK.y - 12);
+  o.leads.quadTo(966, JACK.y, JACK.x - 12, JACK.y);
   o.jack = make();
   for (let i = 0; i < 6; i++) {
     const a = (i * Math.PI) / 3 + Math.PI / 6;
-    if (i === 0) o.jack.moveTo(976 + 9 * Math.cos(a), 330 + 9 * Math.sin(a));
-    else o.jack.lineTo(976 + 9 * Math.cos(a), 330 + 9 * Math.sin(a));
+    if (i === 0) o.jack.moveTo(JACK.x + 8 * Math.cos(a), JACK.y + 8 * Math.sin(a));
+    else o.jack.lineTo(JACK.x + 8 * Math.cos(a), JACK.y + 8 * Math.sin(a));
   }
   o.jack.close();
+  // the finger's push on the key front
+  const fx = KEY_FRONT + 26;
   o.push = make();
-  o.push.moveTo(PIN - 10, KEY_Y - 70);
-  o.push.lineTo(PIN - 10, KEY_Y - 22);
-  o.push.moveTo(PIN - 26, KEY_Y - 44);
-  o.push.lineTo(PIN - 10, KEY_Y - 22);
-  o.push.lineTo(PIN + 6, KEY_Y - 44);
+  o.push.moveTo(fx, KEY_TOP - 54);
+  o.push.lineTo(fx, KEY_TOP - 10);
+  o.push.moveTo(fx - 15, KEY_TOP - 30);
+  o.push.lineTo(fx, KEY_TOP - 10);
+  o.push.lineTo(fx + 15, KEY_TOP - 30);
   o.out = make();
-  o.out.moveTo(880, 330);
-  o.out.lineTo(985, 330);
-  o.out.moveTo(960, 314);
-  o.out.lineTo(985, 330);
-  o.out.lineTo(960, 346);
+  o.out.moveTo(JACK.x - 40, JACK.y);
+  o.out.lineTo(1004, JACK.y);
+  o.out.moveTo(982, JACK.y - 15);
+  o.out.lineTo(1004, JACK.y);
+  o.out.lineTo(982, JACK.y + 15);
   seqCache = o;
   return o;
 }
@@ -210,115 +315,140 @@ export function ClavinetSequence({ w, h, reveal, shown, accessibilityLabel }: { 
   const sB = useDerivedValue(() => stringPath(reveal.value, -1));
   const sBOn = useDerivedValue(() => (swingS(reveal.value) > 0.02 ? 0.5 : 0));
   const ringOn = useDerivedValue(() => (swingS(reveal.value) > 0.02 ? 0.9 : 0));
-  const key = useDerivedValue(() => keyPath(reveal.value));
-  const tip = useDerivedValue(() => tipPath(reveal.value));
+  const keyBody = useDerivedValue(() => keyBodyPath(reveal.value));
+  const keyCap = useDerivedValue(() => keyCapPath(reveal.value));
+  const holder = useDerivedValue(() => holderPath(reveal.value));
+  const pad = useDerivedValue(() => padPath(reveal.value));
+  const spring = useDerivedValue(() => springPath(reveal.value));
+  const yarn = useDerivedValue(() => yarnPath(reveal.value));
   const pushOn = useDerivedValue(() => (reveal.value < 2.2 ? 1 : 0.25));
   const pickOn = useDerivedValue(() => (reveal.value >= 3.6 && reveal.value < 4.8 ? 1 : 0));
   const muteOn = useDerivedValue(() => clamp01((reveal.value - 4.5) * 2));
   const labels: StaticLabel[] = [];
-  const at = { u: BOX.u0 + 30, v: BOX.v0 + 10 };
-  if (shown === 1) labels.push({ id: 'e1', text: '① KEY DOWN · THE TANGENT RISES', short: '① TANGENT RISES', ...at, align: 'left', tone: 'amber' });
+  const at = { u: BOX.u0 + 30, v: BOX.v0 + 12 };
+  if (shown === 1) labels.push({ id: 'e1', text: '① KEY DOWN · THE TANGENT PRESSES DOWN', short: '① TANGENT DOWN', ...at, align: 'left', tone: 'amber' });
   if (shown === 2) labels.push({ id: 'e2', text: '② IT PRESSES THE STRING ONTO THE ANVIL', short: '② ONTO THE ANVIL', ...at, align: 'left', tone: 'amber' });
   if (shown === 3) labels.push({ id: 'e3', text: '③ THE STRING RINGS, ANVIL TO BRIDGE', short: '③ IT RINGS', ...at, align: 'left', tone: 'blue' });
   if (shown === 4) labels.push({ id: 'e4', text: '④ THE PICKUPS MAKE A SMALL VOLTAGE', short: '④ A SIGNAL', ...at, align: 'left', tone: 'blue' });
   if (shown === 5) labels.push({ id: 'e5', text: '⑤ KEY UP · THE YARN MUTES IT', short: '⑤ MUTED', ...at, align: 'left', tone: 'amber' });
   labels.push(
-    { id: 'anvil', text: 'ANVIL', u: ANVIL + 84, v: SY - LIFT - 52, align: 'left' },
-    { id: 'yarn', text: 'YARN', u: 180, v: SY + 40, align: 'center', tone: 'muted' },
-    { id: 'tangent', text: 'TANGENT', u: ANVIL + 30, v: 285, align: 'left', tone: 'muted' },
-    { id: 'key', text: 'KEY', u: PIN + 20, v: KEY_Y + 50, align: 'center', tone: 'muted' },
-    { id: 'pick', text: 'PICKUPS', u: 810, v: SY + 100, align: 'center' },
-    { id: 'bridge', text: 'BRIDGE', u: BRIDGE, v: SY - 50, align: 'center', tone: 'muted' },
-    { id: 'out', text: 'TO THE AMP', u: 990, v: 375, align: 'right', tone: 'amber' },
-    { id: 'big', text: 'NOT TO SCALE · MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: 600, v: BOX.v1 - 20, align: 'center', tone: 'illustrative' },
+    { id: 'key', text: 'KEY', u: KEY_FRONT + 90, v: KEY_TOP - 24, align: 'center', tone: 'muted' },
+    { id: 'tangent', text: 'TANGENT', u: ANVIL + 22, v: SY - 20, align: 'left', tone: 'muted' },
+    { id: 'anvil', text: 'ANVIL', u: ANVIL + 34, v: ANVIL_TOP + 22, align: 'left' },
+    { id: 'yarn', text: 'YARN', u: mm(68), v: SY + 42, align: 'center', tone: 'muted' },
+    { id: 'puHi', text: 'PICKUP · ABOVE', short: 'PICKUP', u: PU_HI - 30, v: SY - 46, align: 'right' },
+    { id: 'puLo', text: 'PICKUP · BELOW', short: 'PICKUP', u: PU_LO + 24, v: SY + 52, align: 'left' },
+    { id: 'bridge', text: 'BRIDGE', u: BRIDGE - 20, v: SY + 102, align: 'right', tone: 'muted' },
+    { id: 'out', text: 'TO THE AMP', u: 1004, v: JACK.y + 34, align: 'right', tone: 'amber' },
+    { id: 'big', text: 'NOT TO SCALE · MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: 520, v: BOX.v1 - 14, align: 'center', tone: 'illustrative' },
   );
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          {/* the case cut open: wooden walls, the lid above, the keybed below; the dim inside */}
-          <Path path={o.case}>
-            <LinearGradient start={vec(20, 100)} end={vec(990, 392)} colors={['#5a3a20', '#3e2814', '#24160b']} />
-          </Path>
+          {/* the case cut open: the dim inside, then its wooden walls, bottom and lid */}
           <Path path={o.inside}>
-            <LinearGradient start={vec(0, 114)} end={vec(0, 376)} colors={['#1d1714', '#15110e', '#0c0a08']} />
+            <LinearGradient start={vec(0, 104)} end={vec(0, FLOOR)} colors={['#1d1714', '#15110e', '#0c0a08']} />
           </Path>
-          <Path path={o.case} style="stroke" strokeWidth={2} color="#08080a" />
+          <Path path={o.walls}>
+            <LinearGradient start={vec(20, 92)} end={vec(990, 404)} colors={['#5a3a20', '#3e2814', '#24160b']} />
+          </Path>
+          <Path path={o.walls} style="stroke" strokeWidth={2} color="#08080a" />
           {/* the pin block and the tuning pin, the string wound round it */}
           <Path path={o.pinBlock}>
-            <LinearGradient start={vec(30, 166)} end={vec(94, 238)} colors={WOOD} />
+            <LinearGradient start={vec(PIN - 22, 0)} end={vec(PIN + 22, 0)} colors={WOOD} />
           </Path>
           <Path path={o.pin}>
-            <LinearGradient start={vec(54, 0)} end={vec(66, 0)} colors={STEEL} />
+            <LinearGradient start={vec(PIN - 6, 0)} end={vec(PIN + 6, 0)} colors={STEEL} />
           </Path>
           <Path path={o.pinTop}>
-            <LinearGradient start={vec(52, 0)} end={vec(68, 0)} colors={STEEL} />
+            <LinearGradient start={vec(PIN - 8, 0)} end={vec(PIN + 8, 0)} colors={STEEL} />
           </Path>
-          <Path path={o.pinWind} style="stroke" strokeWidth={1.6} color="#c9ccd3" />
-          {/* the anvil rail and its edge */}
-          <Path path={o.anvilBar}>
-            <LinearGradient start={vec(0, SY - LIFT - 62)} end={vec(0, SY - LIFT - 46)} colors={STEEL} />
+          {/* the anvil under the string: its wooden support, its rail, its hardened stud */}
+          <Path path={o.anvilSup}>
+            <LinearGradient start={vec(ANVIL - 15, 0)} end={vec(ANVIL + 15, 0)} colors={WOOD} />
+          </Path>
+          <Path path={o.anvilRail}>
+            <LinearGradient start={vec(0, ANVIL_TOP + 16)} end={vec(0, ANVIL_TOP + 30)} colors={STEEL} />
           </Path>
           <Path path={o.anvil}>
-            <LinearGradient start={vec(ANVIL - 14, 0)} end={vec(ANVIL + 14, 0)} colors={['#d9dde3', '#8d939d', '#565b63']} />
+            <LinearGradient start={vec(ANVIL - 9, 0)} end={vec(ANVIL + 9, 0)} colors={['#d9dde3', '#8d939d', '#565b63']} />
           </Path>
           <Path path={o.anvil} style="stroke" strokeWidth={1.2} color="#08080a" opacity={0.6} />
-          {/* the pickups on their rail */}
-          <Path path={o.puRail}>
-            <LinearGradient start={vec(0, SY + 72)} end={vec(0, SY + 86)} colors={WOOD} />
+          {/* the pickups: their mounts, epoxy housings, coils and pole blades */}
+          <Path path={o.puMounts}>
+            <LinearGradient start={vec(0, 140)} end={vec(0, FLOOR)} colors={STEEL} />
           </Path>
           <Path path={o.pickups}>
-            <LinearGradient start={vec(740, SY + 22)} end={vec(880, SY + 72)} colors={['#3d4048', '#1d1e22', '#0b0b0d']} />
+            <LinearGradient start={vec(PU_LO - 20, 150)} end={vec(PU_HI + 20, 320)} colors={['#3d4048', '#1d1e22', '#0b0b0d']} />
           </Path>
           <Path path={o.coils}>
-            <LinearGradient start={vec(0, SY + 32)} end={vec(0, SY + 62)} colors={['#c27a3a', '#8a4a1a', '#4a2408']} />
+            <LinearGradient start={vec(0, 150)} end={vec(0, 320)} colors={['#c27a3a', '#8a4a1a', '#4a2408']} />
           </Path>
           <Path path={o.winding} style="stroke" strokeWidth={0.8} color="#3a1a06" opacity={0.7} />
           <Path path={o.poles}>
-            <LinearGradient start={vec(0, SY + 22)} end={vec(0, SY + 28)} colors={STEEL} />
+            <LinearGradient start={vec(0, SY - 16)} end={vec(0, SY + 21)} colors={STEEL} />
           </Path>
-          <Path path={o.cable} style="stroke" strokeWidth={6} color="#2a2b30" />
+          <Path path={o.leads} style="stroke" strokeWidth={5} color="#2a2b30" />
           <Path path={o.jack}>
-            <LinearGradient start={vec(968, 322)} end={vec(984, 338)} colors={STEEL} />
+            <LinearGradient start={vec(JACK.x - 8, JACK.y - 8)} end={vec(JACK.x + 8, JACK.y + 8)} colors={STEEL} />
           </Path>
           <Group opacity={pickOn}>
-            <Path path={o.pickups} style="stroke" strokeWidth={6} color={BLUE} />
-            <Path path={o.cable} style="stroke" strokeWidth={8} color={AMBER} />
-            <Path path={o.out} style="stroke" strokeWidth={8} color={AMBER} strokeCap="round" strokeJoin="round" />
+            <Path path={o.pickups} style="stroke" strokeWidth={5} color={BLUE} />
+            <Path path={o.leads} style="stroke" strokeWidth={7} color={AMBER} />
           </Group>
           {/* the bridge, its saddle, the hitch pin */}
           <Path path={o.bridge}>
-            <LinearGradient start={vec(BRIDGE - 20, 0)} end={vec(BRIDGE + 20, 0)} colors={WOOD} />
+            <LinearGradient start={vec(BRIDGE - 12, 0)} end={vec(BRIDGE + 12, 0)} colors={WOOD} />
           </Path>
-          <Path path={o.saddle} color="#c7a466" />
+          <Path path={o.hitchBlock}>
+            <LinearGradient start={vec(BRIDGE + 14, 0)} end={vec(BRIDGE + 40, 0)} colors={WOOD} />
+          </Path>
+          <Path path={o.saddle} color="#c9ccd3" />
           <Path path={o.tail} style="stroke" strokeWidth={3} color="#9aa0ab" />
           <Path path={o.hitch} color="#c9ccd3" />
-          {/* the balance rail and the key with its tangent post and rubber tip */}
-          <Path path={o.pivot}>
-            <LinearGradient start={vec(PIVOT - 16, 0)} end={vec(PIVOT + 16, 0)} colors={WOOD} />
+          {/* the key frame's back rail, the return spring, the pivot bracket */}
+          <Path path={o.keyRail}>
+            <LinearGradient start={vec(0, KEY_BOT + 22)} end={vec(0, KEY_BOT + 44)} colors={WOOD} />
           </Path>
-          <Path path={o.felt} color="#8e2f28" />
-          <Path path={key} style="stroke" strokeWidth={15} strokeCap="butt" color="#2b170a" />
-          <Path path={key} style="stroke" strokeWidth={11} strokeCap="butt" color="#e8e2d0" />
-          <Path path={tip} color="#3a3b41" />
-          <Path path={tip} style="stroke" strokeWidth={2} color="#08080a" />
+          <Path path={spring} style="stroke" strokeWidth={2.4} color="#c9ccd3" strokeJoin="round" />
+          <Path path={o.bracket}>
+            <LinearGradient start={vec(PX - 6, 0)} end={vec(PX + 6, 0)} colors={STEEL} />
+          </Path>
           {/* the string (steel): its other extreme drawn as a ghost; blue while it rings */}
           <Group opacity={sBOn}>
             <Path path={sB} style="stroke" strokeWidth={3} color={BLUE}>
               <DashPathEffect intervals={[10, 8]} />
             </Path>
           </Group>
-          <Path path={sA} style="stroke" strokeWidth={4.5} color="#c9ccd3" />
+          <Path path={sA} style="stroke" strokeWidth={SR * 2} color="#c9ccd3" />
           <Group opacity={ringOn}>
-            <Path path={sA} style="stroke" strokeWidth={4.5} color={BLUE} />
-          </Group>
-          {/* the yarn woven round the string's short end */}
-          <Path path={o.yarnBand} color="#6a1f19" opacity={0.55} />
-          <Path path={o.yarn} style="stroke" strokeWidth={3.4} color="#b8483c" />
-          <Group opacity={muteOn}>
-            <Path path={o.yarn} style="stroke" strokeWidth={6} color={AMBER} />
+            <Path path={sA} style="stroke" strokeWidth={SR * 2} color={BLUE} />
           </Group>
           <Path path={o.pinWind} style="stroke" strokeWidth={1.6} color="#e6e9ef" />
+          {/* the yarn woven round the string's short end */}
+          <Path path={yarn} style="stroke" strokeWidth={3.4} color="#b8483c" />
+          <Group opacity={muteOn}>
+            <Path path={yarn} style="stroke" strokeWidth={6} color={AMBER} />
+          </Group>
+          {/* the key on its pivot pin, the holder and the rubber tangent under it */}
+          <Path path={holder}>
+            <LinearGradient start={vec(ANVIL - 10, 0)} end={vec(ANVIL + 10, 0)} colors={STEEL} />
+          </Path>
+          <Path path={pad} color="#2e2f35" />
+          <Path path={pad} style="stroke" strokeWidth={1.5} color="#08080a" />
+          <Path path={keyBody}>
+            <LinearGradient start={vec(0, KEY_TOP)} end={vec(0, KEY_BOT)} colors={['#b07a44', '#8a5a2c', '#5e3a18']} />
+          </Path>
+          <Path path={keyBody} style="stroke" strokeWidth={1.5} color="#1a0e05" />
+          <Path path={keyCap}>
+            <LinearGradient start={vec(0, KEY_TOP)} end={vec(0, KEY_TOP + 7)} colors={['#fbfbf8', '#e6e3dc', '#b9b6ad']} />
+          </Path>
+          <Path path={o.pivotPin} color="#e6e9ef" />
+          <Path path={o.pivotPin} style="stroke" strokeWidth={1.2} color="#08080a" />
+          <Group opacity={pickOn}>
+            <Path path={o.out} style="stroke" strokeWidth={8} color={AMBER} strokeCap="round" strokeJoin="round" />
+          </Group>
           <Group opacity={pushOn}>
             <Path path={o.push} style="stroke" strokeWidth={8} color={AMBER} strokeCap="round" strokeJoin="round" />
           </Group>

@@ -34,19 +34,19 @@ const SOUND = makeStringSoundPage({
   looking: { combo: 'Side view · one key and its string, cut open', cab: 'Side view · one key and its string, cut open' },
   cells: [
     { k: 'KEY', at: ['DOWN', 'DOWN', 'DOWN', 'DOWN', 'UP'], flex: 0.9 },
-    { k: 'TANGENT', at: ['RISES', 'ON ANVIL', 'HOLDS', 'HOLDS', 'DROPS'], flex: 1.1 },
+    { k: 'TANGENT', at: ['PRESSES', 'ON ANVIL', 'HOLDS', 'HOLDS', 'LIFTS'], flex: 1.1 },
     { k: 'STRING', at: ['STILL', 'PRESSED', 'RINGS', 'RINGS', 'MUTED'], flex: 1 },
     { k: 'OUTPUT', at: ['—', '—', 'SIGNAL', 'TO THE AMP', '—'], flex: 1.2 },
   ],
   badge: 'The order of events, not their speed · one string, not to scale · motion drawn much larger · silent',
   reveal: 'The string moves almost no air: the PICKUPS turn its motion into a small voltage, and only a speaker turns that back into sound a mic can hear.',
-  after: 'Release the key and the tangent drops: the yarn-wound part of the string, released, mutes it at once — that is why a clavinet sounds so short and percussive.',
+  after: 'Release the key and the tangent lifts off the string: the yarn-wound part of the string, released, mutes it at once — that is why a clavinet sounds so short and percussive.',
   shapes: {
     word: 'PICKUP',
     phrase: 'the pickup',
     role: 'sense',
     points: [
-      { id: 'near', label: 'NEAR THE BRIDGE', frac: 0.06, blurb: 'Close to the bridge end, where the clavinet’s pickups sit: it hears almost every shape — a bright, biting signal.' },
+      { id: 'near', label: 'NEAR THE BRIDGE', frac: 0.06, blurb: 'Close to the bridge end, where one of the clavinet’s pickups sits: it hears almost every shape — a bright, biting signal.' },
       { id: 'tenth', label: 'A TENTH ALONG', frac: 0.1, blurb: 'A little farther along the string.' },
       { id: 'quarter', label: 'A QUARTER ALONG', frac: 0.25, blurb: 'A quarter of the way along — for comparison: shape 4 has a still point here.' },
     ],

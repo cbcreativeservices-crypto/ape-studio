@@ -96,7 +96,7 @@ export const CLAV_COPY: LessonCopy = {
     looking: 'From above · the mic at the amp',
     prompt: 'The keyboardist’s wedge is the loudest monitor near the amp. Turn the MIC (AIM) or change its PATTERN until the wedge sits IN the rejection — aim the null TOWARD it — while the mic still faces the speaker.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Facing the speaker, its rear points out toward the stage — turn it until the wedge sits on that rear axis. Aim the null TOWARD the loudest monitor, never away from it.',
     shieldNote: 'Mute or lower the channel before moving a mic, then retest the gain before feedback. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'cv.ctx.studio',

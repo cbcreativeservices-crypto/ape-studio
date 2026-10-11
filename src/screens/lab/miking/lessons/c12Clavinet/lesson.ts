@@ -94,7 +94,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A clavinet key goes down. What makes the string sound?',
     options: ['A felt hammer strikes it once and falls back, as in a piano', 'A tangent presses it onto an anvil, and it rings past that point', 'A small plectrum plucks it, as in a harpsichord'],
     correct: 'A tangent presses it onto an anvil, and it rings past that point',
-    explain: 'A small plunger — the tangent — under the string presses it onto an anvil; the string rings between the anvil and the bridge, where the pickups are.',
+    explain: 'A small plunger — the tangent — under the key presses the string down onto an anvil; the string rings between the anvil and the bridge, where the pickups are.',
     why: {
       'A felt hammer strikes it once and falls back, as in a piano': 'There is no felt hammer: the tangent stays pressed while the key is down.',
       'A small plectrum plucks it, as in a harpsichord': 'Nothing plucks it: the tangent presses it onto the anvil.',
@@ -104,9 +104,9 @@ const scenarios: MikingScenario[] = [
     id: 'cv.snd.3',
     page: 'sound',
     prompt: 'What stops the note when the key comes up?',
-    options: ['A felt damper that falls back onto the string', 'The yarn-wound part of the string, freed as the tangent drops', 'The pickups, which switch off for a moment until the next key is played'],
-    correct: 'The yarn-wound part of the string, freed as the tangent drops',
-    explain: 'Part of each string is wound with yarn. While the tangent holds the string on the anvil, that part is cut off; when it drops, the yarn mutes the string at once.',
+    options: ['A felt damper that falls back onto the string', 'The yarn-wound part of the string, freed as the tangent lifts', 'The pickups, which switch off for a moment until the next key is played'],
+    correct: 'The yarn-wound part of the string, freed as the tangent lifts',
+    explain: 'Part of each string is wound with yarn. While the tangent holds the string on the anvil, that part is cut off; when it lifts away, the yarn mutes the string at once.',
     why: {
       'A felt damper that falls back onto the string': 'That is a piano. On a clavinet the yarn on the string itself mutes it.',
       'The pickups, which switch off for a moment until the next key is played': 'The pickups stay on; the string stops moving.',
@@ -202,10 +202,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'You try a small condenser at the grille, with a fuzz pedal on. What do you check first?',
     options: ['Nothing: a condenser stays cleaner than a dynamic at high levels', 'Its maximum level, and the preamp’s headroom on the loudest peaks', 'That phantom power is off, since the speaker powers it'],
     correct: 'Its maximum level, and the preamp’s headroom on the loudest peaks',
-    explain: 'Fuzz and boost pedals raise the level at the speaker; check the mic’s and the preamp’s headroom on the strongest playing. A condenser still needs its phantom power.',
+    explain: 'Fuzz and boost pedals raise the level at the speaker; check the mic’s and the preamp’s headroom on the strongest playing. The condenser still needs its phantom power.',
     why: {
       'Nothing: a condenser stays cleaner than a dynamic at high levels': 'A condenser has its own maximum level, and the preamp can clip too.',
-      'That phantom power is off, since the speaker powers it': 'A speaker powers nothing: a condenser needs its phantom power.',
+      'That phantom power is off, since the speaker powers it': 'A speaker powers nothing: the condenser needs its phantom power.',
     },
   },
   {
@@ -392,9 +392,9 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mix.2',
     page: 'practice',
     prompt: 'A wedge sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most', 'Strong rejection on paper; in reality less, and least in the lows'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less, and least at low frequencies.',
+    options: ['Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most', 'Strong rejection on paper; in reality less, and often least in the lows'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less, and often least at low frequencies.',
     why: {
       'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper.',
       'More wedge than straight behind the mic, where it rejects the most': 'A supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
@@ -573,7 +573,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'At the end of the strings away from the anvil',
     explain: 'The tangent presses each string onto an anvil at one end; magnetic pickups sit at the other end.',
     why: {
-      'Under each key, right where the player presses it down': 'The keys move the tangents; the pickups are under the strings’ far end.',
+      'Under each key, right where the player presses it down': 'The keys move the tangents; the pickups sit toward the strings’ far end, one above the strings and one below.',
       'Inside the amplifier, beside the speaker': 'The pickups are in the clavinet; the amp only amplifies.',
     },
   },
@@ -674,11 +674,11 @@ export const C12_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The key goes down', text: 'The key is a lever: its front goes down and, behind the pivot, a small plunger — the tangent — rises toward the string.' },
-      { title: 'The tangent presses the string onto the anvil', text: 'The tangent presses the string up onto a metal anvil and holds it there while the key is down. The anvil marks one end of the sounding string.' },
+      { title: 'The key goes down', text: 'The key is a lever pivoted at its back: its front goes down and, beneath the key, a small plunger — the tangent — moves down onto the string.' },
+      { title: 'The tangent presses the string onto the anvil', text: 'The tangent presses the string down onto a metal anvil and holds it there while the key is down. The anvil marks one end of the sounding string.' },
       { title: 'The string rings', text: 'Between the anvil and the bridge at the far end, the string rings (drawn many times larger). It makes almost no sound in the air on its own.' },
       { title: 'The pickups make a signal', text: 'Magnetic pickups at the bridge end turn the string’s motion into a small voltage: out of the clavinet, through any pedals, to the amp — and only its speaker makes a sound a mic can hear.' },
-      { title: 'The key comes up — the yarn mutes it', text: 'The tangent drops away. The yarn-wound part of the string, held off while the string was pressed, can move again, and mutes it at once: a short, percussive note.' },
+      { title: 'The key comes up — the yarn mutes it', text: 'The tangent lifts away. The yarn-wound part of the string, held off while the string was pressed, can move again, and mutes it at once: a short, percussive note.' },
     ],
     attack: 'The start of the sound: the tangent pressing the string onto the anvil — a sharp, percussive attack. A direct signal keeps it most precisely; a close mic near the speaker’s centre tends to hear it brightest.',
     body: 'The rest: the string ringing until the key comes up and the yarn mutes it, shaped by the pickup switches, the pedals, the amp and the speaker — and, for a mic, the cabinet and the room. These are tendencies; every chain differs.',
