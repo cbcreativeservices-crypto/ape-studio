@@ -26,7 +26,9 @@ Each one closes a bug class app-wide, and a ratchet test fails if you bypass it.
 - A popup that must wait for another surface (intro, welcome) → a `hold` prop plus `rootModalHoldMs`; never present during a dismiss (`useScreenIntro().owed`).
 - Design and lab builds run on Opus 5.5 at HIGH effort, only after the owner's explicit go (D56).
 - Human figures (D60): the owner's head ICONS only for a lone head, never on a body; bodies use PlayerFigure/FigureHead; anatomy + decency ratchet test/figureAnatomy_20261008.test.ts.
-- Miking/Mixing copy (D58): "suggested starting points, not rules"; "suggest" not "recommend"; no build notes in learner text; no brands except "Hammond".
+- Lab art (D67–D70, 2026-10-10): true dimensions + anatomy, no clashes at 3×; necked instruments body-left/headstock-right; every control in the bottom dock, bezel read-only; every cable its own traceable lane, dressed states pro-run; monitor wedges = shared `wedge2Way`. A shared layout-rule change needs a per-scene regression diff.
+- No production OTA while a store build is in review (D74); the topic-tiles bucket upload is a publish.
+- Miking/Mixing copy (D58, D71): "suggested starting points, not rules"; "suggest" not "recommend"; no build notes in learner text; no mic/gear maker or model names — everyday industry names (Hammond, Clavinet, Dobro, 808…) allowed.
 - Line endings: normalise TEXT files only (.ts .tsx .js .cjs .json .md) — never binaries; never `git commit -a` after a tree-wide rewrite; never change shared git config (use `-c`). See APE_ENGINEERING_LESSONS 2026-10-08.
 - Large read-everything audits go to Comp B as a brief + exported files in Downloads (Comp B has no app/DB access). Agents: targeted tests while working, the full suite once at the end.
 Run the tests with `node --test --test-timeout=120000 "test/**/*.test.ts"`. Never edit package.json scripts (fingerprint risk). Catalog: docs/bughunt/PATTERN_CATALOG_2026_10_02.md.

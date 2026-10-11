@@ -854,3 +854,15 @@ process is running.
 - **A ScrollView steals taps.** A few pixels of finger movement cancel a child Pressable. Detect a still tap at the list level and dedupe with the press (Mixing Guides).
 - **Read figure geometry, not just pictures.** The F04 "mirrored legs + groin arm" came from a side figure with no hips and an unclamped arm chain. The anatomy ratchet now checks orientation, shoulder roots, reach, elbow direction and a groin box.
 - **Comp B has no app or DB access.** Hand audits over as files: app strings exported by script (100k unique strings), DB text via a Comp A export.
+
+## 2026-10-10 — art pass, owner browser review, Comp C audits
+
+- **A shared layout rule change needs a regression sweep across every scene.** Making mic hardware an obstacle for labels (labelLayout) first dropped 193 labels that had nothing to do with hardware; C11 top went from 8 names to 0. Diff the label count per lesson × view × size against the previous commit before accepting any change to a shared layout rule.
+- **Swapping art can move its anchor.** Drawing the owner's head PNG in place of the vector put the lips 9.6 head units in front of the mouth anchor, so every mic, breath line and gap line placed "at the mouth" started inside the face. When art is replaced, re-derive its anchors from the new art (the alpha channel), not from the old canon.
+- **Quiz option order is seeded by the option TEXT.** A one-word wording fix moved the correct answer's slot and broke the Lab 4 slot-balance ratchet. After copy edits to quiz options, run mikingItemBalance and mikingLab4Review; a wording that keeps the meaning can restore the balance.
+- **Agents sharing one worktree.** Edit-tool-only edits let several agents work at once. One agent briefly restored committed files to take "before" shots, which is risky with others editing; have agents take before shots FIRST. Commit selectively (exclude files an agent still owns), and run the full suite once all agents are done.
+- **Images that arrive half-copied.** The Comp C folder stopped at item 42 and that file was truncated. Validate every image with `Image.open(p).load()` before building a picker or installing, and report what's missing against the sender's index.
+- **Topic tiles are served from Supabase Storage (`topic-tiles`), not bundled.** Replacing `assets/topic-images-webp` changes nothing for users until `scripts/upload-topic-tiles.mjs` runs. That upload is live for every version at once, so treat it as a publish.
+- **A production OTA reaches store reviewers.** Both store builds listen on `production`. Hold production publishes during review (D74); the preview channel is safe.
+- **The built-in browser pane can't open file:// pages.** Check generated HTML with headless Chrome (`--headless=new --screenshot`, own `--user-data-dir`) instead.
+- **A push to the website branch counts as a production deploy to the permission classifier.** The owner ran it; hand over the one exact command when blocked.
