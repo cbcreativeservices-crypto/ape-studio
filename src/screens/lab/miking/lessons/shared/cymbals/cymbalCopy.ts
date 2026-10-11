@@ -40,7 +40,7 @@ export function underPatterns(typeId: string): { id: PatternId; label: string; t
 
 export const CYM_CONTEXT_WORDS: Pick<LessonCopy['context'], 'deepNull' | 'cardioidReveal' | 'shieldNote' | 'activityDone' | 'learn'> = {
   activityDone: 'done — the monitor sat in a null by your aim or pattern',
-  deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence — and some of the kit in a cymbal mic belongs to the kit sound.',
+  deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence — and some of the kit in a cymbal mic belongs to the kit sound.',
   cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Pointing UP at a cymbal, its rear faces the floor — toward the monitors and the drums below.',
   shieldNote: 'Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
   learn: {
@@ -56,7 +56,7 @@ export const CYM_CONTEXT_WORDS: Pick<LessonCopy['context'], 'deepNull' | 'cardio
   },
 };
 
-export const CYM_TWO_WARN = 'The two mics hear DIFFERENT faces of the plate, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.';
+export const CYM_TWO_WARN = 'The two mics hear DIFFERENT faces of the plate, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference and the polarity; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.';
 
 export const CYM_LINKS = {
   overheads: 'The Drum Overheads lesson (Lab 1) shows the pair above the kit that usually carries every cymbal first — start there, then add a close cymbal mic only for what it is missing.',

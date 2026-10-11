@@ -37,7 +37,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
     kitA11y: 'The drum kit from above: the splash drawn in its place and ringed in amber — on its arm over the 10 in tom, or on top of the 18 in crash; the drums, cymbals and throne around it.',
     kitLanding: 'Tap anything around the splash — or step through ITEM — to see what it means for a splash mic. There is nothing to answer yet.',
     kitIdle: 'A splash goes wherever the player can reach it quickly — here on an arm between the toms and the crash, or stacked on a crash. It sits among loud neighbours.',
-    leftHanded: 'Left-handed players set the kit up mirrored — the splash moves with the rest.',
+    leftHanded: 'Many left-handed players set the kit up mirrored — the splash moves with the rest.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
     stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side.',
@@ -131,7 +131,7 @@ export const SPLASH_CYM: CymbalExtra = {
     stages: [
       { title: 'The stick strikes', text: 'The stick strikes near the edge. A small, thin plate responds at once: a quick, bright ATTACK — an accent, a “splash”.' },
       { title: 'The plate bends', text: 'The small plate bends under the stick, the felts holding its centre. Drawn many times larger than it really moves.' },
-      { title: 'It rings, briefly, and swings', text: 'The whole plate rings — high and short, because it is small and thin — and it swings on its felts.', byVariant: { piggy: 'Upside down on the crash, it rings with the crash under it: the two plates sound and swing together.' } },
+      { title: 'It rings, briefly, and swings', text: 'The whole plate rings — high because it is small, short because it is small and thin — and it swings on its felts.', byVariant: { piggy: 'Upside down on the crash, it rings with the crash under it: the two plates sound and swing together.' } },
       { title: 'Sound leaves both faces', text: 'Sound leaves both faces, up toward the overheads and down toward the tom below — and dies away soon.' },
     ],
     cells: [
@@ -139,7 +139,7 @@ export const SPLASH_CYM: CymbalExtra = {
       { k: 'SOUND', at: ['ATTACK', 'ATTACK', 'SHORT WASH', 'UP AND DOWN'], flex: 1.2 },
     ],
     marks: ['1 · STICK NEAR THE EDGE', '2 · THE PLATE BENDS', '3 · RINGS, BRIEFLY', '4 · UP, TO THE OVERHEADS', 'AND DOWN, TO THE TOM'],
-    reveal: 'A splash speaks fast and fades soon: small and thin, it rings high and short — and it swings a lot for its size.',
+    reveal: 'A splash speaks fast and fades soon: small, it rings high; small and thin, it rings short — and it swings a lot for its size.',
     after: 'Then it fades quickly — the BODY is short. That is the point of a splash: a quick accent, often one cue in a song.',
   },
   shapes: {

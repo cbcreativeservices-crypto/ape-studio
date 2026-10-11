@@ -145,7 +145,7 @@ export const KICK_ZONES: DocumentedZone[] = [
   {
     id: 'out.edge',
     label: 'Just outside, toward the edge of the front head',
-    band: 'Start about 2–15 cm (1–6 in) outside the front head, toward its edge.',
+    band: 'Start about 2–15 cm (0.8–6 in) outside the front head, toward its edge.',
     kind: 'sourced',
     src: 'DPA-KICK',
     quote: 'Sometimes placing a kick drum mic just outside the drum, on the edge of the resonator head, gives more impact.',
@@ -157,7 +157,7 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['sdc', 'kickDynCard', 'kickDynSuper'] },
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: L + 60, y: -220, z: 0 }, az: 0, el: 0 },
-    tendency: 'Sometimes more impact. A natural choice when the front head has no port. You will hear more of the kit around the drum, too.',
+    tendency: 'Sometimes more impact. A natural choice when the front head has no port. It tends to hear more of the kit around the drum, too.',
     checks: ['The head’s contribution', 'The surrounding kit sound', 'Any acoustic gain needed live'],
   },
   {

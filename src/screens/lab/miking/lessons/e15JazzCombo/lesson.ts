@@ -86,7 +86,7 @@ const scenarios: MikingScenario[] = [
     correct: 'From the bell and the open tone holes',
     explain: 'A sax radiates beyond its bell: the open tone holes along the body sound too. A mic only into the bell hears part of it.',
     why: {
-      'From the bell alone, straight ahead': 'The holes along the body radiate as well, especially on the lower notes.',
+      'From the bell alone, straight ahead': 'The holes along the body radiate as well, especially on the middle and upper notes.',
       'From the mouthpiece at the player’s lips': 'The reed starts the sound; it leaves from the holes and the bell.',
     },
   },

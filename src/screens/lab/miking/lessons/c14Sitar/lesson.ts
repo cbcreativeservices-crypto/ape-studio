@@ -89,7 +89,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.snd.2`,
     page: 'sound',
-    prompt: 'A sympathetic string is never plucked. When does it ring?',
+    prompt: 'A sympathetic string is not normally plucked. When does it ring?',
     options: ['Whenever a string is played, whatever note it happens to be', 'When a played note lines up with one of its own shapes', 'Only when the player strikes it with the back of the mizrab'],
     correct: 'When a played note lines up with one of its own shapes',
     explain: 'The bridge passes it the played string’s motion. It builds up only where one of its shapes sits at the same pitch as one of the played note’s — so it rings after some notes and stays quiet after others.',
@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.3`,
     page: 'placement',
-    prompt: 'One account has a close omni about 20 cm below the bridge in a noisy hall. What does that tell you?',
+    prompt: 'One account has a close omni about 20 cm from the board, below the bridge, in a noisy hall. What does that tell you?',
     options: ['The best sitar position, to be copied in whatever room you use', 'That omnis are the only mics that work on a sitar', 'A choice for that room: getting close; not a rule for every room'],
     correct: 'A choice for that room: getting close; not a rule for every room',
     explain: 'Close placement raised the sitar above the hall’s noise in that session. In a quiet, good room a farther view may represent the instrument better. Compare in your own room.',
@@ -329,8 +329,8 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic low toward the bridge and body, about 18–20 cm', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Listen for the decay.' },
       { id: 'b', label: 'Instrument dynamic 25–45 cm from the lower board, across the bridge', ok: true, power: 'none', feedback: 'A suggested start a little farther back; it needs no phantom.' },
-      { id: 'c', label: 'Small condenser low toward the bridge, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
-      { id: 'd', label: 'Small condenser with its omni capsule below the bridge', ok: false, power: 'phantom', feedback: 'A suggested spot in a quiet room — but a condenser needs phantom power, which this input does not have.' },
+      { id: 'c', label: 'Small condenser low toward the bridge, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
+      { id: 'd', label: 'Small condenser with its omni capsule below the bridge', ok: false, power: 'phantom', feedback: 'A suggested spot in a quiet room — but this condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting on the board beside the bridge', ok: false, power: 'none', feedback: 'Never rest a mic on the instrument: it damps the board and can mark it.' },
     ],
     reasons: [DOC_REASON, clearReason(CLEAR), POWER_REASON, { id: 'r.decay', label: 'I will judge the sympathetic decay as well as the strong strokes', role: 'optional', feedback: 'A fair studio reason: the decay is part of the sitar.' }, brandReason(SITAR_N), LOUD_REASON],
@@ -351,7 +351,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What are a sitar’s sympathetic strings?',
     options: ['Extra melody strings that the player plucks for the highest notes', 'Strings under the frets that ring when matching notes are played', 'Strings that tie the frets onto the neck so they cannot slide'],
     correct: 'Strings under the frets that ring when matching notes are played',
-    explain: 'They run under the arched frets to small pegs along the neck, and are never plucked: they ring in sympathy with notes — or overtones — that match their tuning. Some sitars have none.',
+    explain: 'They run under the arched frets to small pegs along the neck, and are not normally plucked: they ring in sympathy with notes — or overtones — that match their tuning. Some sitars have none.',
     why: {
       'Extra melody strings that the player plucks for the highest notes': 'The melody strings run over the frets and are plucked; the sympathetic ones are not.',
       'Strings that tie the frets onto the neck so they cannot slide': 'The frets are tied on with cord; the sympathetic strings are strings in their own right.',

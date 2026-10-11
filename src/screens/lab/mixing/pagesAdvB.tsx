@@ -258,9 +258,9 @@ function PagePhase({ ctx }: { ctx: PageCtx }) {
         question="Snare top and bottom mics: summed, the drum goes thin and papery. Flipping Ø on the bottom mic makes it full again. Why did that work?"
         options={['The bottom mic was broken and the flip repaired it', 'Top and bottom captured the head moving opposite ways — near-mirror signals cancelled', 'The flip added a small delay that aligned the two mics', 'Thin snares always need polarity flips as a default move']}
         correct={1}
-        explain="A snare’s bottom head moves away while the top moves toward — near-mirror waveforms. Summed, they cancel; one flip turns the cancellation into reinforcement. Classic polarity, zero time involved."
+        explain="As a snare’s top head moves away from its mic, the bottom head moves toward its mic — near-mirror waveforms. Summed, they cancel; one flip turns the cancellation into reinforcement. Classic polarity, zero time involved."
         wrong={[
-          'Nothing was broken — both mics told the truth from opposite sides of one moving head.',
+          'Nothing was broken — both mics told the truth from opposite sides of one moving drum.',
           undefined,
           'Ø adds NO time — it mirrors. Delay problems need alignment, and this was not one.',
           'It worked because of the geometry, not a rule of thumb — always CHECK, never assume.',

@@ -97,7 +97,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'At a front seat, which usually arrives first?',
     options: ['The sound from the nearest source', 'The sound from the loudest source', 'The bounce off the rear wall'],
     correct: 'The sound from the nearest source',
-    explain: 'Arrival time is the path ÷ the speed of sound: the nearest loudspeaker — here the front fill — arrives first, whatever its level.',
+    explain: 'Arrival time is the path ÷ the speed of sound, plus any processing delay: with no delay set, the nearest loudspeaker — here the front fill — arrives first, whatever its level.',
     why: {
       'The sound from the loudest source': 'Level does not move an arrival: the main may be louder and still arrive later than the nearer fill.',
       'The bounce off the rear wall': 'A bounce off the far wall travels much farther: at the front it arrives long after the direct sound.',
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sy.ctx.1',
     page: 'context',
-    prompt: 'A 5 ms window keeps the floor’s bounce out. What does it lose?',
+    prompt: 'A 5 ms window keeps the later bounces out. What does it lose?',
     options: ['Detail below about 200 Hz', 'Detail above about 5 kHz', 'Nothing: shorter is cleaner'],
     correct: 'Detail below about 200 Hz',
     explain: 'A window of T resolves frequency steps of about 1 ÷ T: 5 ms gives about 200 Hz — nothing finer, and nothing below it is described.',
@@ -563,7 +563,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'At a front seat, which usually arrives first?',
     options: ['The nearest source', 'The loudest source', 'The rear wall’s bounce'],
     correct: 'The nearest source',
-    explain: 'Arrival time is the path ÷ the speed of sound, whatever the level.',
+    explain: 'Arrival time is the path ÷ the speed of sound, plus any processing delay — whatever the level.',
     why: {
       'The loudest source': 'Level does not move an arrival in time.',
       'The rear wall’s bounce': 'It travels much farther and arrives later.',

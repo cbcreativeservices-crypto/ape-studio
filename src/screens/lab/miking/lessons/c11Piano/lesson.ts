@@ -200,7 +200,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The dynamic: it needs no power',
     explain: 'A dynamic needs no power. The small condenser needs phantom power wherever it is placed.',
     why: {
-      'The small condenser, if it is close': 'How close it is does not change what it needs: a condenser needs phantom power.',
+      'The small condenser, if it is close': 'How close it is does not change what it needs: this condenser needs phantom power.',
       'Either one, with a shorter cable': 'Cable length does not power a condenser. Only the dynamic works without phantom.',
     },
   },
@@ -354,7 +354,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic under the grand’s soundboard and one over the strings sound thin together. What do you try first?',
     options: ['Boost the low end on the under mic until the blend sounds full', 'Move the under mic farther away so it is quieter in the blend', 'Each alone, then mono, then this mic’s polarity both ways'],
     correct: 'Each alone, then mono, then this mic’s polarity both ways',
-    explain: 'The board pushes air up as it pulls air down, so the two start out roughly opposite in the lows. Compare both polarity states in mono at matched levels; the delay between them is still there.',
+    explain: 'As the board pushes on the air above, it pulls on the air below, so the two start out roughly opposite in the lows. Compare both polarity states in mono at matched levels; the delay between them is still there.',
     why: {
       'Boost the low end on the under mic until the blend sounds full': 'EQ cannot undo a cancellation between mics; it boosts what is left of it. Check the polarity first.',
       'Move the under mic farther away so it is quieter in the blend': 'Quieter hides the thinning a little; the two still start out opposite. Compare both polarity states.',
@@ -400,9 +400,9 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mix.2',
     page: 'practice',
     prompt: 'A side-fill sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Silence from the side-fill, because it sits in the null', 'Strong rejection on paper; in reality less, and least in the lows', 'More side-fill than straight behind the mic, where it rejects most'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Silence from the side-fill, because it sits in the null', 'Strong rejection on paper; in reality less, and often least in the lows', 'More side-fill than straight behind the mic, where it rejects most'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
       'Silence from the side-fill, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less.',
       'More side-fill than straight behind the mic, where it rejects most': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
@@ -516,7 +516,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from — the strings, the curve, the top.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the strings, dampers, lid and the pianist', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a piano', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -545,7 +545,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A dynamic just over the open top, between bass and treble, checked across the keyboard', ok: true, power: 'none', feedback: 'A suggested starting point over the top; a dynamic needs no phantom.' },
       { id: 'b', label: 'A dynamic about 20 cm behind the soundboard, moved to find the sweet spot', ok: true, power: 'none', feedback: 'A suggested rear starting point — with time to listen for the sweet spot; no phantom needed.' },
-      { id: 'c', label: 'A small condenser inside the open top, aimed toward the hammers', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser inside the open top, aimed toward the hammers', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A dynamic squeezed between the piano’s back and the wall', ok: false, power: 'none', feedback: 'Pressed against the wall there is no usable space: pull the piano out (its owner moves it) or choose the top.' },
       { id: 'e', label: 'The upper front panel taken off by you, a dynamic at the hammers', ok: false, power: 'none', feedback: 'Panel removal is the owner’s or a technician’s job, never an operator default.' },
     ],
@@ -726,8 +726,8 @@ export const C11_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A keyboard instrument with struck strings: each key throws a felt hammer at its strings, and a soundboard turns their vibration into sound. A grand lies flat with a lid that opens; an upright stands its strings on end. 88 keys, from the lowest note, about 27.5 Hz, to the highest, about 4.19 kHz — with harmonics and attacks well above that.', src: 'DPA-PIANO' },
     { title: 'WHERE YOU MEET IT', text: 'Solo recitals and recording studios, bands and pits, churches, schools and clubs — a concert grand on a stage, a baby grand in a lounge, an upright against a wall. This lesson covers studio recording and live sound.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody, harmony and rhythm at once, over the widest range of any common instrument: soft playing to fortissimo chords, staccato to sustained notes held by the pedal. Ask for the actual piece — low, middle and high passages — before choosing a mic.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'Grands run from about 1.5 m long (a baby grand) to about 2.7 m (a concert grand), all about 1.5 m wide; uprights about 1.3 m tall and 1.5 m wide. This lab draws a 2.1 m grand, a 1.55 m baby grand and a 1.32 m upright.', src: 'SW-B' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody, harmony and rhythm at once, over one of the widest ranges of any instrument: soft playing to fortissimo chords, staccato to sustained notes held by the pedal. Ask for the actual piece — low, middle and high passages — before choosing a mic.', src: 'LESSON' },
+    { title: 'ITS SIZE', text: 'Grands run from about 1.5 m long (a baby grand) to about 2.7 m (a concert grand), all about 1.5 m wide; uprights about 1–1.3 m tall and 1.5 m wide. This lab draws a 2.1 m grand, a 1.55 m baby grand and a 1.32 m upright.', src: 'SW-B' },
   ],
   sound: {
     stages: [

@@ -299,7 +299,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Hear the main pickup first. A spot earns its place by a stated balance need — then bring it in gently and check the mono sum and the depth.',
     why: {
       'Whenever the piccolo plays, as a rule': 'A spot by habit adds a delay and a combining check for nothing.',
-      'When the piccolo is quieter than the flutes': 'The piccolo is rarely quiet — and level comes from the balance, not another mic.',
+      'When the piccolo is quieter than the flutes': 'The piccolo is seldom quiet, except low in its range — and level comes from the balance, not another mic.',
     },
   },
   {
@@ -538,7 +538,7 @@ const copy: Partial<LessonCopy> = {
     looking: 'Top view · mic close above the piccolo',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the piccolo.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Close above the piccolo and aimed down at it, its rear points up and away — the wedge down on the floor in front is off that line, so turning and tilting both matter.',
     shieldNote: 'The player and the piccolo can reflect stage sound into a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'pc.ctx.studio',
@@ -664,7 +664,7 @@ export const A07_LESSON: WindLesson = {
     soundSubject: 'A piccolo stood on end, keys toward you, its air column drawn open',
     breath: 'The jet blows out across the embouchure hole and past the lips: a capsule in it hears wind and pops. Keep the capsule off the jet; a windscreen helps after that.',
     keys: 'Small keys close together: clicks are loud within a few centimetres; a farther view or behind the head hears them less.',
-    directivity: 'Measured round a player in a quiet room: the lowest notes spread in much the same directions as the flute’s, and around 2 kHz the piccolo sends a fairly strong share to the front.',
+    directivity: 'Measured round a player in an anechoic (echoless) room: the lowest notes spread in much the same directions as the flute’s, and around 2 kHz the piccolo sends a fairly strong share to the front.',
     noteDefault: 9,
   }),
 };

@@ -79,12 +79,12 @@ const scenarios: MikingScenario[] = [
     id: 'clv.snd.1',
     page: 'sound',
     prompt: 'Why is the supported clave struck in its middle?',
-    options: ['The middle swings most in its lowest bending shape', 'The middle is where the wood is at its very thickest', 'The middle is farthest from the player’s supporting fingers'],
-    correct: 'The middle swings most in its lowest bending shape',
-    explain: 'An unclamped bar’s lowest shape moves most at its middle (and ends) and stays put at two points about a fifth of the way in — a strike there drives the ring strongly.',
+    options: ['The middle swings strongly in its lowest bending shape', 'The middle is where the wood is at its very thickest', 'The middle is farthest from the player’s supporting fingers'],
+    correct: 'The middle swings strongly in its lowest bending shape',
+    explain: 'An unclamped bar’s lowest shape swings at its middle (and most at its ends) and stays put at two points about a fifth of the way in — a strike there drives the ring strongly.',
     why: {
       'The middle is where the wood is at its very thickest': 'A clave is a uniform rod; the shape of its bending is the reason.',
-      'The middle is farthest from the player’s supporting fingers': 'The fingers support it near its still points; the middle is where it swings most.',
+      'The middle is farthest from the player’s supporting fingers': 'The fingers support it near its still points; between them, the middle is where it swings most.',
     },
   },
   {
@@ -392,7 +392,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A small dynamic near the station, aimed at the striking area, a null toward the wedge', ok: true, power: 'none', feedback: 'A directional spot close enough for useful direct sound, outside the striker; a dynamic needs no phantom.' },
       { id: 'b', label: 'The station’s shared percussion mic, if positions and levels suit', ok: true, power: 'none', feedback: 'Fair if it carries the pulse: fewer open mics.' },
-      { id: 'c', label: 'A small condenser on the claves', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser on the claves', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'An omni between the drum kit and the player', ok: false, power: 'none', feedback: 'An omni there hears the kit and the wedges as much as the claves.' },
       { id: 'e', label: 'Turn the clave channel up until it beats the cymbals', ok: false, power: 'none', feedback: 'More gain raises the cymbals and the feedback risk too.' },
     ],
@@ -450,9 +450,9 @@ const diagnostic: DiagnosticItem[] = [
     id: 'clv.q.4',
     covers: 'sound',
     prompt: 'Where is the supported clave struck — and why?',
-    options: ['The middle, where its lowest shape swings most', 'Near one end, so the strike reaches its still points', 'Anywhere: a clave sounds the same everywhere'],
-    correct: 'The middle, where its lowest shape swings most',
-    explain: 'The middle swings most in the lowest bending shape: the strike drives it well.',
+    options: ['The middle, where its lowest shape swings strongly', 'Near one end, so the strike reaches its still points', 'Anywhere: a clave sounds the same everywhere'],
+    correct: 'The middle, where its lowest shape swings strongly',
+    explain: 'Between the still points, the middle swings most in the lowest bending shape: the strike drives it well.',
     why: {
       'Near one end, so the strike reaches its still points': 'Striking a still point drives that shape least.',
       'Anywhere: a clave sounds the same everywhere': 'Where it is struck changes what rings.',
@@ -494,7 +494,7 @@ export const I05B_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'Two cylindrical sticks of hard wood that make a clear, resonant sound when struck together: one supported, one striking — idiophones. (Clave is also a rhythm; this lesson is about the instrument.)', src: 'PAS-ECV02' },
     { title: 'WHERE YOU MEET IT', text: 'In Latin and Afro-Caribbean music, at percussion stations, in ensembles — sometimes in a singer’s hands.', src: 'LESSON-CLAVES' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A short, cutting pulse: a fast click and a short woody ring. Solid and hollowed pairs differ in pitch character; the grip decides whether it rings at all.', src: 'MEINL-CL1' },
-    { title: 'ITS SIZE', text: 'This lab draws a pair 20 cm long and 2.5 cm across — a drawing; no maker prints a size.', src: 'LESSON-CLAVES' },
+    { title: 'ITS SIZE', text: 'This lab draws a pair 20 cm long and 2.5 cm across — a drawing; sizes vary by maker.', src: 'LESSON-CLAVES' },
   ],
   sound: {
     stages: [

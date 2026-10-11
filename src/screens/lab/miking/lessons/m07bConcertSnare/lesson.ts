@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The small dynamic: it needs no power to work',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power wherever it is placed.',
     why: {
-      'The small condenser, if it stays well back from the drum': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The small condenser, if it stays well back from the drum': 'Distance does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   },
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — its deepest rejection is off the rear axis',
     explain: 'A supercardioid has a small rear lobe; its deepest rejection is toward the rear but off the axis. Aim nulls by the actual pattern.',
     why: {
-      'Yes — a directional mic rejects most at its back': 'Only a cardioid rejects most directly behind. A supercardioid has a small rear lobe.',
+      'Yes — a directional mic rejects most at its back': 'A cardioid rejects most directly behind; a supercardioid has a small rear lobe there.',
       'Yes, as long as the mic is close to the drum': 'Distance does not move a pattern’s nulls; aim and pattern do.',
     },
   },
@@ -536,7 +536,7 @@ export const M07B_LESSON: Lesson = {
       { id: 'timpani', label: 'the timpani', short: 'TIMPANI', note: 'Loud and low, a few metres along the row. A snare mic hears them — and the timpani spot hears the snare.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud, close to the snare. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'table', label: 'the trap table', short: 'TABLE', note: 'Where the sticks, mallets and small instruments wait. The player turns to it between passages: keep stands and cables out of that path.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'KEEP CLEAR', scene: 'kit' },
-      { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Trombones and tuba just downstage of the percussion, bells toward the conductor. Loud, and heard by every percussion mic.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Trombones and tuba just downstage of the percussion, the trombones’ bells toward the conductor and the tuba’s pointing up. Loud, and heard by every percussion mic.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'downstage', label: 'a floor wedge downstage of the percussion', short: 'WEDGE', note: 'On the audience side of the drum, facing back toward the percussion. A loud source a spot can turn its rejection toward.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'fill', label: 'the percussion section’s own monitor', short: 'SECTION MON.', note: 'Behind the players, facing them. A spot aimed at the drum faces it — no pattern rejects it there; the drum itself lies in the way.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'conductor', label: 'the conductor', short: 'CONDUCTOR', note: 'At the front, facing the orchestra. The player needs a clear sightline to the conductor: no stand or boom across it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SIGHTLINE', scene: 'stage' },

@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One small dynamic for the station, aimed at the playing area, a null toward the wedge', ok: true, power: 'none', feedback: 'One directional station mic; a dynamic needs no phantom. Check spill and feedback with the operator.' },
       { id: 'b', label: 'A small dynamic about 30 cm in front of the shaker’s playing area', ok: true, power: 'none', feedback: 'A fair start for the shaker; a dynamic needs no phantom. Check the tambourine is covered too.' },
-      { id: 'c', label: 'A small condenser in front of the station', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser in front of the station', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'An omni in the middle of the station, to catch everything', ok: false, power: 'none', feedback: 'On a loud stage an omni hears every monitor and the band — spill and early feedback.' },
       { id: 'e', label: 'The drum overheads only, turned up for the shakers', ok: false, power: 'none', feedback: 'Turning the overheads up raises the cymbals and monitors with the shaker.' },
     ],

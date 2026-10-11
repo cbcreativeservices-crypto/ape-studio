@@ -225,10 +225,10 @@ describe('the sections lessons', () => {
         assert.ok(zones.some((z) => c.x >= z.box.min.x && c.x <= z.box.max.x && c.y >= z.box.min.y && c.y <= z.box.max.y && c.z >= z.box.min.z && c.z <= z.box.max.z), `${L.id}/${v.id}`);
       }
   });
-  it('the unsourced 140 dB is gone; the brass peak is said as about 130 dB close to the bell', () => {
+  it('the brass peak close to the bell is said as exceeding 140 dB (audit 2026-10-10: sourced; "about 130 dB" understated it)', () => {
     const text = JSON.stringify(lessonById('E10'));
-    assert.doesNotMatch(text, /140 dB/);
-    assert.match(text, /about 130 dB SPL/);
+    assert.doesNotMatch(text, /about 130 dB/);
+    assert.match(text, /can exceed 140 dB SPL/);
   });
   it('the area mics sit 1–1.5 m from the sources they cover', () => {
     for (const a of [E12.LG_AREA_F, E12.LG_AREA_B]) {

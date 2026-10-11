@@ -22,13 +22,13 @@ const pages: LessonPages = {
     title: 'Meet the finger cymbals',
     goal: 'Get to know finger cymbals — what they are, where you meet them, what they do in the music, their parts and the two ways they are played — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A pair of small brass cymbals, about 5 cm across, sounding when one strikes the other. Held still and dropped edge-first, or worn on the thumbs and fingers of a dancer — two different sources for a mic.',
+    takeaway: 'A pair of small brass or bronze cymbals, about 5 cm across, sounding when one strikes the other. Held still and dropped edge-first, or worn on the thumbs and fingers of a dancer — two different sources for a mic.',
   },
   sound: {
     title: 'How they make their sound',
     goal: 'See how a stroke becomes sound — edge meets edge, they part, both ring — and why letting them part matters.',
     credit: { scenarios: ['fc.snd.1', 'fc.snd.2', 'fc.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'Two small plates struck together: a bright attack where the edges meet, then both ring in shapes whose pitches are not whole-number steps apart. Pressed together they choke; released, they ring on.',
+    takeaway: 'Two small plates struck together: a bright attack where the edges meet, then both ring in shapes whose pitches are not whole-number multiples of the lowest. Pressed together they choke; released, they ring on.',
   },
   setting: {
     title: 'Where they sit',
@@ -86,7 +86,7 @@ const scenarios: MikingScenario[] = [
     explain: 'They are concussion idiophones: the metal itself vibrates. Edge meets edge — the attack — and both small plates ring.',
     why: {
       'Air trapped between them is pushed out in a puff': 'The metal plates themselves vibrate; there is no air chamber to speak of.',
-      'A thin wire inside each cymbal rattles when shaken': 'There is no wire: each cymbal is a solid brass plate.',
+      'A thin wire inside each cymbal rattles when shaken': 'There is no wire: each cymbal is a solid metal plate.',
     },
   },
   {
@@ -105,8 +105,8 @@ const scenarios: MikingScenario[] = [
     id: 'fc.snd.3',
     page: 'sound',
     prompt: 'Why does a finger cymbal shimmer rather than sound one plain note?',
-    options: ['Its plate rings in many shapes at pitches not in whole-number steps', 'The leather strap keeps buzzing against the metal as it rings out', 'The dancer’s movement through the room keeps changing its pitch'],
-    correct: 'Its plate rings in many shapes at pitches not in whole-number steps',
+    options: ['Its plate rings in many shapes at pitches not in whole-number ratios', 'The leather strap keeps buzzing against the metal as it rings out', 'The dancer’s movement through the room keeps changing its pitch'],
+    correct: 'Its plate rings in many shapes at pitches not in whole-number ratios',
     explain: 'A struck plate rings in many shapes at once; their pitches are not 1 : 2 : 3, so the ear hears a bright, piercing shimmer.',
     why: {
       'The leather strap keeps buzzing against the metal as it rings out': 'A strap that buzzes is a fault to check; the shimmer is the plate’s own shapes.',
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The spare channel has no phantom power. Which of this page’s mics can you use?',
     options: ['The small dynamic: it needs no power', 'The small condenser, if it sits farther back', 'Either, as long as the gain is turned up'],
     correct: 'The small dynamic: it needs no power',
-    explain: 'A dynamic needs no power. A condenser needs phantom power wherever it is placed.',
+    explain: 'A dynamic needs no power. The condenser here needs phantom power wherever it is placed.',
     why: {
       'The small condenser, if it sits farther back': 'Distance does not change what a condenser needs.',
       'Either, as long as the gain is turned up': 'Gain cannot power a condenser.',
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Should the finger-cymbal channel go into the player’s monitor?',
     options: ['Low or out, unless the player actually needs it', 'Yes, loud, so the player hears each stroke', 'Yes — monitors stop finger cymbals feeding back'],
     correct: 'Low or out, unless the player actually needs it',
-    explain: 'The bright attack raises the feedback risk in a monitor. The player usually hears the cymbals acoustically; send only what they need.',
+    explain: 'A cymbal send in the monitor eats into the feedback margin. The player usually hears the cymbals acoustically; send only what they need.',
     why: {
       'Yes, loud, so the player hears each stroke': 'A loud send raises the feedback risk — and the player is right beside the cymbals.',
       'Yes — monitors stop finger cymbals feeding back': 'Monitors are where feedback starts, not a cure for it.',
@@ -517,7 +517,7 @@ export const I06B_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT THEY ARE', text: 'A pair of small brass cymbals, each with a strap or loop through its centre. They sound when one strikes the other — the metal itself vibrates. (Crotales, a tuned keyboard of small cymbals, and the drum-kit cymbals are other instruments.)', src: 'MET-TAL' },
+    { title: 'WHAT THEY ARE', text: 'A pair of small brass or bronze cymbals, each with a strap or loop through its centre. They sound when one strikes the other — the metal itself vibrates. (Crotales, a tuned keyboard of small cymbals, and the drum-kit cymbals are other instruments.)', src: 'MET-TAL' },
     { title: 'WHERE YOU MEET THEM', text: 'In music and dance traditions where they are worn on the fingers, and in orchestras and percussion sections — in the studio and on stage. (Dance and whole-ensemble setups come later, in Lab 5.)', src: 'PAS-ECV0220' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Bright, piercing accents, quick rhythms, and a shimmering ring after each stroke. Held still and struck edge-first, or played in rhythm by a dancer — two very different sources for a mic.', src: 'PAS-ECV0220' },
     { title: 'THEIR SIZE', text: 'Small: about 5 cm across. This lab draws a measured pair of 5.5 and 4.8 cm (about 2 in), 2.4 cm high. Thin and thick pairs exist; one maker describes its thin pair as lower-pitched than its thick — compare the real pairs.', src: 'MET-TAL' },

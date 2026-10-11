@@ -377,7 +377,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     looking: 'Top view',
     prompt: 'Turn the mic or change its pattern until the unwanted source sits in the rejection.',
     activityDone: 'done — the source sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°).',
     shieldNote: 'Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: '',

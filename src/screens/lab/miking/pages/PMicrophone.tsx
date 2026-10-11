@@ -158,7 +158,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
           <Landing looking={`${t.label} · ${patLabel}`} prompt="Move SOURCE ANGLE round the back. Where does the pickup fall furthest?" />
-          {deep || nearNullNow ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
+          {deep || nearNullNow ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'supercardioid' ? (
               <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small inverted lobe directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid ${lesson.noun.one} mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>

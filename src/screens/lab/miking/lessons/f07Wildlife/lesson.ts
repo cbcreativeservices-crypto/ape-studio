@@ -571,10 +571,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'wl.q.5',
     covers: 'setting',
     prompt: 'Thunder is heard. Where do you go?',
-    options: ['A building or hard-topped car', 'Under a big tree that is nearby', 'Into a rain shelter by you'],
-    correct: 'A building or hard-topped car',
+    options: ['A substantial building or hard-topped car', 'Under a big tree that is close by', 'Into a rain shelter right beside you'],
+    correct: 'A substantial building or hard-topped car',
     explain: 'A substantial building or a hard-topped vehicle; wait 30 minutes after the last lightning or thunder.',
-    why: { 'Under a big tree that is nearby': 'A tree is not shelter from lightning.', 'Into a rain shelter by you': 'Rain shelters are not safe in lightning.' },
+    why: { 'Under a big tree that is close by': 'A tree is not shelter from lightning.', 'Into a rain shelter right beside you': 'Rain shelters are not safe in lightning.' },
   },
   {
     id: 'wl.q.6',

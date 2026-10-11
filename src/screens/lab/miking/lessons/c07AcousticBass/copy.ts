@@ -67,7 +67,7 @@ export const C07_COPY = stringsCopy({
       { title: 'SPILL', text: 'The bass’s acoustic level can be modest next to drums and amps. On a stage, isolation is a performance and room decision as much as a mic choice.' },
       { title: 'MOVEMENT', text: 'A clip moves with the bass; a stand mic hears the player turning. Mark a comfortable position and test the whole performance.' },
     ],
-    body: 'With a wedge in front, a pattern’s rejection is a tool to aim. Low frequencies are where every pattern rejects least — so expect more wedge low end than the picture suggests.',
+    body: 'With a wedge in front, a pattern’s rejection is a tool to aim. Low frequencies are where most patterns reject least — so expect more wedge low end than the picture suggests.',
     studioId: 'ab.ctx.studio',
     studioPrompt: 'A studio session in a good room: what is the room worth to this bass?',
     studioNote: 'In a quiet studio a farther mic blends the bass with the room — and with the room’s low-end build-up. Repeated trials are practical when the player stops. Switch back to LIVE for the wedge exercise.',

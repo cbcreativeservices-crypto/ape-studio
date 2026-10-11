@@ -497,7 +497,7 @@ const copy: Partial<LessonCopy> = {
     looking: 'Top view · mic in front of the oboe',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the oboe.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the oboe, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
     shieldNote: 'The player’s body and the oboe can reflect stage sound into the front of a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'ob.ctx.studio',
@@ -623,7 +623,7 @@ export const A09A_LESSON: WindLesson = {
     soundSubject: 'An oboe on its side, keys toward you, its air column drawn open',
     breath: 'Breath and reed edge are heard close to the reed; the oboe sends little air out of its holes, so wind noise at a body-facing mic is rarely a problem.',
     keys: 'The oboe’s dense keywork — rings, plates, pads closing — is easy to hear within a few centimetres of the body: back off, or change the angle.',
-    directivity: 'Measured round a player in a quiet room: below about 400 Hz the oboe spreads its sound fairly evenly; above about 1 kHz the sound narrows into a beam toward the bell, and it is more than 12 dB quieter behind the player than in front.',
+    directivity: 'Measured round a player in an anechoic (echoless) room: below about 400 Hz the oboe spreads its sound fairly evenly through the lower half of the space round it; above about 1 kHz the sound narrows into a beam toward the bell, and it is more than 12 dB quieter behind the player than in front.',
     noteDefault: 9,
   }),
 };

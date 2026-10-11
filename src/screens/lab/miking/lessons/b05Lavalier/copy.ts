@@ -86,7 +86,7 @@ export const B05_COPY: Partial<LessonCopy> = {
       vocHeadset: 'Ideas to try with a headset: the capsule where its maker says, beside the corner of the mouth and out of the breath — then leave it there.',
       hsCard: 'Ideas to try with a directional headset: aim it as its maker says, then check where its rear points against the PA and the monitors.',
       bcGoose: 'Ideas to try with the lectern gooseneck: about 25–36 cm from the lips, a little off the mouth’s line — and muted whenever the body mic is live.',
-      bcGooseSuper: 'Ideas to try with a supercardioid gooseneck: its rejection is toward the rear, a little to one side — check where the PA sits.',
+      bcGooseSuper: 'Ideas to try with a supercardioid gooseneck: its rejection is toward the rear, well to one side — check where the PA sits.',
     },
     note: 'Ask first: the mic goes on a person only with their agreement, and they can take it off. Nothing is taped to skin except with an adhesive made for skin; wardrobe approves any change to the clothes.',
     learn: {

@@ -104,7 +104,7 @@ export const HORN_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['lbLdc', 'sdcCard'] },
     draw: coneDraw(CENTRE, X, DOWN, 400, 700, 20, 60),
     start: poseAt(CENTRE, FRONT_DOWN, 550),
-    tendency: 'A front view with a little more body than the mic above. Compare the two at matched level — a different balance, not a better one.',
+    tendency: 'A front view that may give a little more body than the mic above. Compare the two at matched level — a different balance, not a better one.',
     checks: ['The knees, the feet and the stand’s base', 'Floor reflections and stage rumble', 'Matched level when you compare'],
   },
 ];

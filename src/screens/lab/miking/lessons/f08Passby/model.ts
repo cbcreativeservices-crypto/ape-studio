@@ -101,7 +101,7 @@ export const F08_ZONES: DocumentedZone[] = [
     quote: 'From a safe fixed crew position, swivel an appropriate directional mic smoothly to follow the subject, without walking into its route (L21)',
     bandProv: ill('the station and the pole are drawing defaults'),
     start: walkAim(TRACK_P, 0),
-    tendency: 'It holds the walker in focus across the pass — but flattens the stationary listener’s level arc, and handling or off-axis colour can creep in.',
+    tendency: 'It holds the walker in focus across the pass — its level still follows distance, without a fixed mic’s off-axis fall — but handling or off-axis colour can creep in.',
     checks: ['Feet planted: the operator never steps toward the route', 'A smooth swing, no handling noise', 'The take labelled as a tracked, focused perspective'],
   }),
   pbZone({

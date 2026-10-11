@@ -381,7 +381,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Set gain on the quietest handling and the loudest slam', early: 'Gain is set once the mic is connected and powered.' },
       { text: 'Then compare an aimed view of the part that sounds', early: 'Compare only once the whole action is covered and the level is safe.' },
     ],
-    explain: 'A sensible order. Phantom: mute the outputs and lower the monitoring before switching it, and follow the mic’s manual. Gain: watch the peaks — a brief slam can overload a slow meter’s reading.',
+    explain: 'A sensible order. Phantom: mute the outputs and lower the monitoring before switching it, and follow the mic’s manual. Gain: watch the peaks — a slow meter under-reads a brief slam, which can clip before the meter shows it.',
   },
 ];
 

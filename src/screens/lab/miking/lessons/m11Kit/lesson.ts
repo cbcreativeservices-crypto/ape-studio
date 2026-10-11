@@ -35,7 +35,7 @@ const pages: LessonPages = {
     title: 'Choose the microphones',
     goal: 'Choose a mic for each channel’s role by its properties — pattern, power, size and mount — not by brand.',
     credit: { scenarios: ['kt.mic.1', 'kt.mic.2', 'kt.mic.3', 'kt.mic.4', 'kt.rec.1'], note: 'Answer the five checks (one reaches back to how the kit sounds).' },
-    takeaway: 'Each channel’s role sets its mic: a kick mic for weight, small dynamics close to drums; small condensers are common over the cymbals and in the room. Count whatever condensers you choose: each needs phantom power.',
+    takeaway: 'Each channel’s role sets its mic: a kick mic for weight, small dynamics close to drums; small condensers are common over the cymbals and in the room. Count whatever condensers you choose: most need phantom power.',
   },
   placement: {
     title: 'Channel plans',
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your plan has two small-condenser overheads, a pair of condenser room mics and a hi-hat condenser. How many inputs need phantom power?',
     options: ['Five — every condenser in the plan', 'Two — only the overheads use it', 'None — phantom is for the PA only'],
     correct: 'Five — every condenser in the plan',
-    explain: 'Each condenser needs phantom power: count them when you plan the inputs, and mute the outputs before switching it.',
+    explain: 'Each of these condensers needs phantom power: count them when you plan the inputs, and mute the outputs before switching it.',
     why: {
       'Two — only the overheads use it': 'The room mics and the hi-hat mic are condensers too.',
       'None — phantom is for the PA only': 'Phantom power feeds condenser microphones through their cables.',
@@ -187,9 +187,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your phantom-powered inputs are all used up. Which channels can still be added?',
     options: ['Dynamic spot mics, which need no power', 'More condenser overheads, which use little', 'Room condensers, as long as they stand far enough away'],
     correct: 'Dynamic spot mics, which need no power',
-    explain: 'Dynamics need no power. Every condenser needs phantom, wherever it stands.',
+    explain: 'Dynamics need no power. These condensers need phantom, wherever they stand.',
     why: {
-      'More condenser overheads, which use little': 'Little is not none: a condenser needs phantom power.',
+      'More condenser overheads, which use little': 'Little is not none: these condensers need phantom power.',
       'Room condensers, as long as they stand far enough away': 'Distance does not change what a condenser needs.',
     },
   },

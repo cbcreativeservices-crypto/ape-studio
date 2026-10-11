@@ -64,7 +64,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
     looking: 'Top view · mic in front of the cello',
     prompt: 'The cellist’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the cello.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — which is where the cello’s lowest notes are. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — which is where the cello’s lowest notes are. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Aimed back at the cello, its rear faces the audience side — a wedge down on the floor in front sits below that line, so tilting the mic matters as much as turning it.',
     shieldNote: 'The cello’s large body also REFLECTS a monitor or a nearby drum kit back into the front of the mic, even when the mic points away from it — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'vc.ctx.studio',

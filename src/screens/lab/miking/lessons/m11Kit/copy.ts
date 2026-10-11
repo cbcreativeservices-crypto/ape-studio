@@ -25,7 +25,7 @@ export const M11_COPY: Partial<LessonCopy> = {
     kitA11y: 'The drum kit from above: the kick in the middle, the snare and hi-hat to the player’s left, the floor tom and ride to the right, the rack toms over the kick and the crashes above them.',
     kitLanding: 'Tap anything on the kit — or step through ITEM — to see what it means for a channel plan. There is nothing to answer yet.',
     kitIdle: 'Every source on the kit reaches every open mic — closer ones louder and sooner. A plan chooses which sources get their own channel.',
-    leftHanded: 'Left-handed players set the kit up mirrored: the plan mirrors with it.',
+    leftHanded: 'Many left-handed players set the kit up mirrored: the plan mirrors with it.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill monitor beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
     stageIdle: 'Two floor monitors and a PA: on a stage every open mic hears them, so a plan uses the channels the audience needs.',

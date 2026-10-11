@@ -255,7 +255,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial pop masters usually land around −9 to −7 LUFS-I (chart pop ranges from about −10.7 to −6 LUFS). Aim for a true peak of −1 dBTP, or −2 dBTP if the master is louder than −14 LUFS, to avoid codec distortion. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters are turned down and only gain density, not extra volume. A PLR (peak-to-loudness ratio) of around 7–9 dB is typical. Ballads can sit at −11 to −10 LUFS."
+      "text": "Commercial pop masters usually land around −9 to −7 LUFS-I (chart pop ranges from about −10.7 to −6 LUFS). Aim for a true peak of −1 dBTP, or −2 dBTP if the master is louder than −14 LUFS, to avoid codec distortion. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters are turned down and only gain density, not extra volume. A PLR (peak-to-loudness ratio) of around 7–9 dB is typical (at −2 dBTP that means a master at about −9 LUFS-I or quieter). Ballads can sit at −11 to −10 LUFS."
     }
   ],
   "liveStudio": {
@@ -348,7 +348,7 @@ export const GUIDE: MixingGuide = {
   "references": [
     "Michael Jackson — “Billie Jean” (1982)",
     "Taylor Swift — “Shake It Off” (2014)",
-    "Bruno Mars — “Uptown Funk” (with Mark Ronson, 2014)",
+    "Mark Ronson feat. Bruno Mars — “Uptown Funk” (2014)",
     "Billie Eilish — “bad guy” (2019)",
     "Dua Lipa — “Levitating” (2020)",
     "The Weeknd — “Blinding Lights” (2019)",

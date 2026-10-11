@@ -296,7 +296,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A hypercardioid rejects most about 110° off its front, with a rear lobe behind. Aim by the actual pattern — and a real null is shallower than the drawing.',
     why: {
       'Directly in front of the boom mic': 'In front is its pickup, not its rejection.',
-      'Square to its side, at 90° to the front exactly': 'At 90° it still hears well; the deepest dip lies farther round.',
+      'Square to its side, at 90° to the front exactly': 'At 90° it is already about 12 dB down on the ideal pattern; the deepest dip lies farther round.',
     },
   },
   {
@@ -638,9 +638,9 @@ export const B04_LESSON: Lesson = {
       { title: 'Breath from the lungs', text: 'The lungs push air up the windpipe — the power behind every word, quiet or emphatic.' },
       { title: 'The vocal folds buzz', text: 'In the voice box, low in the throat, two small folds come together and the breath sets them buzzing. That buzz is the raw sound of the voice.' },
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue, the lips and the open mouth shape the buzz into vowels and words; the tongue, the teeth and the lips add the consonants.' },
-      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng partly through the nose. That is where every distance here is measured from: the lips.' },
+      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng it leaves through the nose instead. That is where every distance here is measured from: the lips.' },
     ],
-    attack: 'P and B push a puff of air straight out of the lips; S and T send a narrow hiss forward. A boom above and in front is out of that path; wind at the capsule outdoors is a bigger enemy.',
+    attack: 'P, B and T push a puff of air straight out of the lips; S sends a narrow hiss forward. A boom above and in front is out of that path; wind at the capsule outdoors is a bigger enemy.',
     body: 'The vowels carry most of the level and the tone. A boom above hears a natural voice with the room around it; the farther the frame pushes it, the more room. Tendencies, to check by ear.',
     head: { diameterMm: 0, rods: 0, label: 'the mouth', strikeSrc: 'LESSON' },
   },

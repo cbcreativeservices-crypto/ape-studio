@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Live, the egg is buried once the band comes in. Turning its channel up does what?',
     options: ['Raises the spill and the feedback risk with the egg', 'Brings the egg forward, with nothing else in the mix changing', 'Makes the egg louder on stage for the player'],
     correct: 'Raises the spill and the feedback risk with the egg',
-    explain: 'A weak egg in a loud setting cannot be rescued by its spot: the spot raises everything it hears. Move the source, choose a louder egg, or lower the stage.',
+    explain: 'A weak egg in a loud setting cannot be rescued by its spot: the spot raises everything it hears. Move the source, choose a louder egg, or lower the stage level.',
     why: {
       'Brings the egg forward, with nothing else in the mix changing': 'The channel also carries the cymbals and monitors; they rise with it.',
       'Makes the egg louder on stage for the player': 'The channel level does not change the acoustic egg; it raises what the mic hears.',
@@ -392,7 +392,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One small dynamic aimed between the eggs, a null toward the wedge', ok: true, power: 'none', feedback: 'One mic for two close eggs; a dynamic needs no phantom. Check spill and feedback with the operator.' },
       { id: 'b', label: 'A small dynamic about 30 cm in front of the hands, with a louder egg pair', ok: true, power: 'none', feedback: 'Fair: the source chosen for the setting, a dynamic that needs no phantom.' },
-      { id: 'c', label: 'A small condenser between the eggs', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser between the eggs', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'An omni in front of the player, to catch both hands', ok: false, power: 'none', feedback: 'On a loud stage an omni hears every monitor and the kit — spill and early feedback.' },
       { id: 'e', label: 'A close mic on each egg, both turned well up', ok: false, power: 'none', feedback: 'Two close mics, turned up, raise the kit spill and the feedback risk.' },
     ],

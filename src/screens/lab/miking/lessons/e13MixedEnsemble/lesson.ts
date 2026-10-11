@@ -71,7 +71,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A grand piano’s lid is open. Where does much of its sound go?',
     options: ['Off the lid toward the open side', 'Straight down into the floor beneath it', 'Back toward the pianist only'],
     correct: 'Off the lid toward the open side',
-    explain: 'The soundboard and strings radiate under the lid, and the open lid throws much of it toward the open side — usually the hall. Lid height changes the balance before any mic does.',
+    explain: 'The soundboard radiates under the lid, and the open lid throws much of it toward the open side — usually the hall. Lid height changes the balance before any mic does.',
     why: {
       'Straight down into the floor beneath it': 'Some goes down, but the lid sends much of it out to the side.',
       'Back toward the pianist only': 'The pianist hears it, but the open side carries most of it.',

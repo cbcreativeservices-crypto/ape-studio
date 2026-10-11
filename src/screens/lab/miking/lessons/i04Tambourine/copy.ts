@@ -20,7 +20,7 @@ export const TMB_COPY: LessonCopy = spCopy({
     figureLabel: 'Side view of a player holding a headless tambourine edge-on at about 45 degrees by its frame: a wooden ring with pairs of metal jingles in slots, and nothing across the middle.',
     partsBadge: 'A headless tambourine · tap a part to name it',
     partsLooking: { side: 'Side view · the ring edge-on', top: 'From above · the open ring' },
-    partsIdle: 'A frame with loose metal jingles and NO head: the jingles are the whole sound. (A headed tambourine adds a drum’s body — it has its own lesson in Lab 1.) The next page shows how the jingles sound.',
+    partsIdle: 'A frame with loose metal jingles and NO head: the jingles make almost all of the sound. (A headed tambourine adds a drum’s body — it has its own lesson in Lab 1.) The next page shows how the jingles sound.',
     variantNotes: {
       struck: 'STRUCK INTO THE HAND: a stronger, less continuous accent than a shake — set gain for the strongest planned hit.',
       crescent: 'CRESCENT: a half-ring with a grip — the same jingles, a different hold and reach.',
@@ -35,7 +35,7 @@ export const TMB_COPY: LessonCopy = spCopy({
       { k: 'JINGLES', at: ['AT REST', 'LAG', 'CLASH', 'RINGING'], flex: 1.1 },
       { k: 'SOUND', at: ['—', '—', 'ATTACK', 'ALL ROUND'], flex: 1 },
     ],
-    reveal: 'The frame moves; the loose jingle pairs lag, then clash against each other and their pins. There is no head: the jingles’ brief, bright clashes are the whole sound.',
+    reveal: 'The frame moves; the loose jingle pairs lag, then clash against each other and their pins. There is no head: the jingles’ brief, bright clashes are almost all of the sound.',
     after: 'Then the jingles shimmer for a moment. Their metal, the rows and the player’s motion set the balance — and their peaks are much higher than the sound’s average.',
     shapesNotes: ['A headless tambourine has no head tone to capture: a mic aimed at a missing “skin” cannot find a low body that is not there.'],
     coupledSubject: 'The headless ring edge-on',

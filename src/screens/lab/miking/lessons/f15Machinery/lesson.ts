@@ -88,7 +88,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The pressure at that point, at that load',
     explain: 'A fixed position describes what is heard at that point under that operating state. Sound power and a personal dose need their own methods.',
     why: {
-      'The fan’s sound power in all directions': 'Sound power is estimated over a defined surface under a method — not from one point.',
+      'The fan’s sound power in all directions': 'Sound power is estimated under a method — over a defined surface or in a qualified room — not from one point.',
       'The user’s whole daily noise dose at work': 'A dose needs the exposure method, the duration and the work pattern: a short sample at one point is not one.',
     },
   },
@@ -155,7 +155,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mp.mic.1',
     page: 'microphone',
-    prompt: 'The recorder peaks at −6 dBFS on the start-up. What do you know about the level?',
+    prompt: 'The recorder peaks at −6 dBFS on the start-up. What do you know about the sound-pressure level?',
     options: ['Nothing in dB SPL yet', 'It is 6 dB below the limit', 'It is a safe 94 dB'],
     correct: 'Nothing in dB SPL yet',
     explain: 'A waveform peak in dBFS is relative to the recorder’s own maximum — not a sound-pressure level without a calibrated chain.',
@@ -489,7 +489,7 @@ const setupTasks: SetupTask[] = [
       R('same', 'The same position, gain and cycle before and after', 'required', 'Only the blade may change.'),
       R('label', 'The result is labelled relative', 'required', 'No calibrated chain: relative is the honest word.'),
       R('repeat', 'Each run repeated, with a return to A', 'optional', 'It shows the setup did not drift.'),
-      R('power', 'The result is reported as the fan’s sound power', 'wrong', 'Sound power needs a method, a surface and a qualifying room.'),
+      R('power', 'The result is reported as the fan’s sound power', 'wrong', 'Sound power needs a method, a qualifying room and that method’s surface or positions.'),
     ],
     explain: 'Either plan passes: one change at a time and an honest label.',
   },
@@ -566,7 +566,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The pressure there',
     explain: 'One point, one operating state: the pressure there, not a property of the fan or a personal dose.',
     why: {
-      'The fan’s sound power': 'That needs a defined surface under a method.',
+      'The fan’s sound power': 'That needs a method: a defined surface or a qualified room.',
       'The user’s daily dose': 'That needs an exposure method and a work pattern.',
     },
   },

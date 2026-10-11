@@ -67,7 +67,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Gospel has wide macro-dynamics: a quiet piano-and-voice opening at 75–80 dBA can grow into a full choir-and-band vamp at 100 dBA — roughly 15–20 dB of range within one song. Preserve that arc; it is the emotional engine of the service. Control the micro-dynamics instead: soloists swing from whispers to full belts with long held notes, and drummers hit hard. Ride the lead, push the choir on its answers, and lift the mix at each modulation. Save the last 3–4 dB for the climax."
+      "text": "Gospel has wide macro-dynamics: a quiet piano-and-voice opening at 75–80 dBA can grow into a full choir-and-band vamp at 100 dBA — roughly 20–25 dB of range within one song. Preserve that arc; it is the emotional engine of the service. Control the micro-dynamics instead: soloists swing from whispers to full belts with long held notes, and drummers hit hard. Ride the lead, push the choir on its answers, and lift the mix at each modulation. Save the last 3–4 dB for the climax."
     }
   ],
   "balance": [
@@ -276,7 +276,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB and loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
+      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
     }
   ],
   "liveStudio": {

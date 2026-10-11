@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why does a pluck close to the bridge tend to sound brighter?',
     options: ['It makes the vibrating string shorter, so it is higher', 'It moves the top less, so only the hole is heard', 'It sets the upper shapes moving relatively more'],
     correct: 'It sets the upper shapes moving relatively more',
-    explain: 'Near the end of the string the upper shapes move almost as much as the lowest, so they start relatively stronger — a brighter balance. The pitch does not change: the string length is the same.',
+    explain: 'Near the end of the string the lowest shape barely moves while the upper shapes move more, so they start relatively stronger — a brighter balance. The pitch does not change: the string length is the same.',
     why: {
       'It makes the vibrating string shorter, so it is higher': 'Where you pluck does not change the vibrating length — only a fret does. It changes the mix of shapes.',
       'It moves the top less, so only the hole is heard': 'The bridge still drives the top. What changes is the balance of the string’s shapes.',
@@ -268,7 +268,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Toward the rear, off to one side of the axis',
     explain: 'A supercardioid’s deepest rejection is off the rear axis (near 125°); straight behind it has a small rear lobe. Aim by the actual pattern.',
     why: {
-      'Directly behind the mic, right on its rear axis': 'Only a cardioid rejects most straight behind. A supercardioid has a small rear lobe there.',
+      'Directly behind the mic, right on its rear axis': 'A cardioid rejects most straight behind; a supercardioid has a small rear lobe there.',
       'Beside the mic, square to its front': 'At 90° the pickup is still fair. The rejection deepens toward the rear, off the axis.',
     },
   },
@@ -384,9 +384,9 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mix.2',
     page: 'practice',
     prompt: 'The wedge sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the wedge, because it sits in the null', 'More wedge than straight behind it, which is where it rejects most'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — and the guitar’s top can reflect the wedge back in. Use the null to aim, not to promise silence.',
+    options: ['Strong rejection on paper; in reality less, and often least in the lows', 'Silence from the wedge, because it sits in the null', 'More wedge than straight behind it, which is where it rejects most'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — and the guitar’s top can reflect the wedge back in. Use the null to aim, not to promise silence.',
     why: {
       'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less.',
       'More wedge than straight behind it, which is where it rejects most': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
@@ -500,7 +500,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the arm, the hands and the player’s view', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on acoustic guitar', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -529,7 +529,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic, 15–30 cm out from the 12th fret (here, the neck joint)', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check that the soft notes sit above the noise.' },
       { id: 'b', label: 'Instrument dynamic, 15–30 cm out from the sound hole, listening for boom', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Compare it with the 12th fret.' },
-      { id: 'c', label: 'Small condenser, cardioid, near the 12th fret', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser, cardioid, near the 12th fret', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic 2 cm over the strings at the 12th fret, for detail', ok: false, power: 'none', feedback: 'That is in the fretting hand’s path, and it magnifies finger noise. Start out in front.' },
     ],

@@ -269,7 +269,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP for very loud masters to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads benefit from a PLR of 9–11 dB; “ao vivo” releases keep more loudness range (6–9 LU) so the crowd moments land."
+      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP for very loud masters to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads benefit from a PLR of 9–11 dB (about −10 to −12 LUFS-I at −1 dBTP); “ao vivo” releases keep more loudness range (6–9 LU) so the crowd moments land."
     }
   ],
   "liveStudio": {

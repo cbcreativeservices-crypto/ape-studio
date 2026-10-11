@@ -190,7 +190,7 @@ export function useShotStep(spec: ShotSpec): MikingStep {
           </Point>
         </Card>
         {shotsSeen >= spec.shots.length && fromSeen >= Math.min(2, spec.from.length) ? <Note tone="ok">{spec.words.done}</Note> : null}
-        <Body>A shotgun does not zoom: pointing it does not bring a distant voice closer. Distance decides how much voice there is against the room — a wider picture keeps the boom farther away, and a camera moved back takes its own mic back with it. The light and its shadows are another limit: check them in the real scene.</Body>
+        <Body>A shotgun does not zoom: pointing it does not bring a distant voice closer. For a given mic, distance decides how much voice there is against the room — a wider picture keeps the boom farther away, and a camera moved back takes its own mic back with it. The light and its shadows are another limit: check them in the real scene.</Body>
       </>
     ),
   };

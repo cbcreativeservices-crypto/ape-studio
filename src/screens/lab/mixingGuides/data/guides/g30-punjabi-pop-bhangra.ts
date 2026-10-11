@@ -262,7 +262,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern Punjabi pop masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (or −2 dBTP when louder than −14, a common streaming recommendation). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so extreme loudness costs dhol transients for no gain. Aim for a PLR of about 8–10 dB."
+      "text": "Modern Punjabi pop masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (or −2 dBTP when louder than −14, a common streaming recommendation). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so extreme loudness costs dhol transients for no gain. Aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above)."
     }
   ],
   "liveStudio": {

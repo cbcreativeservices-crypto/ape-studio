@@ -475,7 +475,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               onSelect: (id) => setConeBack(id as Back),
               options: [
                 { id: 'open', label: 'OPEN BACK', blurb: 'As on many guitar combos: the back of the cone sounds out behind, opposite in polarity.' },
-                { id: 'closed', label: 'CLOSED BACK', blurb: 'As on many bass cabinets: the sound from the back of the cone stays in the box.' },
+                { id: 'closed', label: 'CLOSED BACK', blurb: 'As on a sealed cabinet: the sound from the back of the cone stays in the box.' },
               ],
             },
           ],
@@ -1016,8 +1016,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             <Landing looking={`Top view · a mic in front of the speaker · ${wedge.short.toLowerCase()}`} prompt={`The monitor stays where the player needs it. Turn the MIC (AIM) or change its PATTERN until ${first.label.split(',')[0]} sits in the rejection.`} />
             <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? 'done — the monitor sat in a null by your aim or pattern' : 'not yet'}.`}</Body>
             {wedge.id !== first.id ? <Note tone="warn">{wedge.note}</Note> : null}
-            {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
-            {tried ? (pattern === 'cardioid' ? <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°). A super- or hypercardioid rejects most off to each side of the rear, and picks up a little straight behind — so “put the monitor directly behind it” suits a cardioid, not every pattern.</Note> : <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and picks up a little directly behind (${fmtDb(gainDb(pattern, 180))}). Aim by the mic’s real pattern, not by a rule.`}</Note>) : null}
+            {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
+            {tried ? (pattern === 'cardioid' ? <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°). A super- or hypercardioid rejects most off to each side of the rear, and still picks up straight behind — a hypercardioid only about 6 dB down on the ideal pattern — so “put the monitor directly behind it” suits a cardioid, not every pattern.</Note> : <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and picks up a little directly behind (${fmtDb(gainDb(pattern, 180))}). Aim by the mic’s real pattern, not by a rule.`}</Note>) : null}
             <Note>{spec.notes.context}</Note>
           </>
         ) : (

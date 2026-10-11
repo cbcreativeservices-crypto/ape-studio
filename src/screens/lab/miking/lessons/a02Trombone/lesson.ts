@@ -119,7 +119,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The bass trombone has the same tube length as the tenor. What helps it reach lower notes?',
     options: ['Valves that add loops of tubing', 'A slide that is twice as long', 'A smaller bell and a narrower bore'],
     correct: 'Valves that add loops of tubing',
-    explain: 'Its valves — often an F and a G♭ — bring in extra tubing for the lowest notes, worked by the left thumb. Its bore is wider and its bell larger, too. Configurations vary: ask the player.',
+    explain: 'Its valves — often an F and a G♭ — bring in extra tubing for the lowest notes, worked by the left hand. Its bore is wider and its bell larger, too. Configurations vary: ask the player.',
     why: {
       'A slide that is twice as long': 'The slide is the same reach; the extra length comes from the valves’ loops.',
       'A smaller bell and a narrower bore': 'It is the other way round: a wider bore and a larger bell.',
@@ -243,7 +243,7 @@ const scenarios: MikingScenario[] = [
     correct: 'About half a metre farther out',
     explain: 'Seven positions, each about a semitone: the slide travels a little over half a metre from 1st to 7th, with the hand and arm. Watch the real player’s reach — positions are found by ear.',
     why: {
-      'A few centimetres at most': 'Each position is several centimetres; seven of them add up to over half a metre.',
+      'A few centimetres at most': 'Each step is several centimetres; the six steps from 1st to 7th add up to over half a metre.',
       'It does not move past the bell': 'Even closed, the slide reaches past the bell — and farther as it extends.',
     },
   },
@@ -358,7 +358,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic on the bell’s axis — or overloading? Compare off axis at matched level; check the mic’s headroom.',
     options: ['Compare off axis at matched level; check headroom', 'Cut the treble on the channel until it smooths out', 'Ask the player to play everything more softly'],
     correct: 'Compare off axis at matched level; check headroom',
-    explain: 'On the axis the mic hears the bright beam; an overloaded capsule smears too. Move the angle first — still clear of the slide — then check the mic takes the peaks.',
+    explain: 'On the axis the mic hears the bright beam; an overloaded mic smears too. Move the angle first — still clear of the slide — then check the mic takes the peaks.',
     why: {
       'Cut the treble on the channel until it smooths out': 'EQ dulls the horn and cannot undo overload. Fix the angle and the headroom first.',
       'Ask the player to play everything more softly': 'The dynamics are the music. The mic should take them.',

@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A fixed mic hears a car’s tone change as it passes. What is the likeliest reason?',
     options: ['Distance, angle and engine state all change', 'The mic is faulty and needs replacing now', 'Ignition noise getting into the mic’s cable'],
     correct: 'Distance, angle and engine state all change',
-    explain: 'A stationary mic hears the distance and the angle change as well as the engine’s operating state: an apparent tone change is not automatically a mic fault.',
+    explain: 'A stationary mic hears the distance and the angle change, the Doppler drop in pitch as the car passes, and the engine’s operating state: an apparent tone change is not automatically a mic fault.',
     why: {
       'The mic is faulty and needs replacing now': 'The change is expected from the geometry and the engine — check those first.',
       'Ignition noise getting into the mic’s cable': 'Interference is possible but is not the first explanation for a passing tone change.',
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mo.mic.1',
     page: 'microphone',
-    prompt: 'Can a dynamic mic’s capsule overload beside a very loud car?',
+    prompt: 'Can a dynamic mic’s chain overload beside a very loud car?',
     options: ['Yes: no type is immune by itself', 'No: dynamics cannot be overloaded', 'Only if its preamp gain is too low'],
     correct: 'Yes: no type is immune by itself',
     explain: 'A dynamic mic is not automatically immune to overload, and a condenser is not automatically unsuitable for loud events. Check the stated limits of the whole chain.',
@@ -617,7 +617,7 @@ export const B16_LESSON: Lesson = {
       { id: 'pass', label: 'the nearest pass', short: 'NEAREST PASS', note: 'The loudest, windiest moment, with grit or spray: give it input margin at every stage, from a protected permitted place — never approach to test it.', prov: { kind: 'illustrative', reason: 'the lesson L67–L69, L90' }, tag: 'PEAKS', scene: 'all' },
       { id: 'barrier', label: 'barriers, fences and obstacles', short: 'BARRIERS', note: 'They screen the path, reflect sound and carry vibration. Nothing projects through a safety barrier, and nothing changes a fence.', prov: { kind: 'illustrative', reason: 'the lesson L73–L75, L128' }, tag: 'IN THE WAY', scene: 'all' },
       { id: 'animals', label: 'horses', short: 'HORSES', note: 'No mic on a horse, its tack or its rider; no flash, loud test tones or abrupt movement nearby. Follow the stewards.', prov: { kind: 'illustrative', reason: 'the lesson L133–L134' }, tag: 'WELFARE', scene: 'all' },
-      { id: 'water', label: 'water, splash and wet decks', short: 'WATER', note: 'Splash can overload a capsule or wet its protection; the deck’s officiating systems come first. Wet-area electrics are a qualified person’s review.', prov: { kind: 'illustrative', reason: 'the lesson L167–L169, L238' }, tag: 'WET', scene: 'all' },
+      { id: 'water', label: 'water, splash and wet decks', short: 'WATER', note: 'Splash can overload a mic or wet its protection; the deck’s officiating systems come first. Wet-area electrics are a qualified person’s review.', prov: { kind: 'illustrative', reason: 'the lesson L167–L169, L238' }, tag: 'WET', scene: 'all' },
       { id: 'pa', label: 'commentary loudspeakers and music', short: 'PA · MUSIC', note: 'A loudspeaker on the axis is heard with the action; a supplied music feed stays separately controllable, its delay known.', prov: { kind: 'illustrative', reason: 'the lesson L71, L137' }, tag: 'SPILL', scene: 'all' },
       { id: 'weather', label: 'wind, rain, heat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing; a rain cover meant for between takes is not for recording. Check each component’s limits.', prov: { kind: 'illustrative', reason: 'the lesson L217–L218' }, tag: 'WIND', scene: 'all' },
     ],
@@ -644,6 +644,6 @@ export const B16_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every course, arena and pool is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue plans, the car and the horse are typical drawings; ranges, levels and delays along the walk are calculated from the drawing, and no pitch or speed is ever calculated. Safety is exact: never into a course, a run-off, an arena or a deck route; no mic on a horse, its tack or its rider; wet-area electrics by a qualified person; with thunder, shelter at once and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every course, arena and pool is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue plans, the car and the horse are typical drawings; ranges, levels and delays along the walk are calculated from the drawing, and no pitch or speed is ever calculated. Safety is exact: never into a course, a run-off, an arena or a deck route; hearing protection near loud engines; no mic on a horse, its tack or its rider; wet-area electrics by a qualified person; with thunder, shelter at once and wait 30 minutes after the last thunder.',
   copy: B16_COPY,
 };

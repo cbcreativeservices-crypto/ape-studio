@@ -185,7 +185,7 @@ export function malletModel(fam: MalletFamily): InstrumentModel {
     const highBar = L.naturals[L.naturals.length - 1];
     const midBar = L.naturals[Math.floor(L.naturals.length / 2)];
     const top = (b: Layout['bars'][number]): Vec3 => ({ x: b.x, y: b.yTop, z: b.z });
-    regions.push({ id: `r.low.${id}`, partId: `${p}.nat.${id}`, label: `lowest bar (${lowBar.note})`, anchor: top(lowBar), prov: r.prov.range, variants: only, note: 'The lowest note: the longest, widest bar, at the right-hand end as the audience sees it.' });
+    regions.push({ id: `r.low.${id}`, partId: `${p}.nat.${id}`, label: `lowest bar (${lowBar.note})`, anchor: top(lowBar), prov: r.prov.range, variants: only, note: 'The lowest note: the longest bar, at the right-hand end as the audience sees it.' });
     regions.push({ id: `r.mid.${id}`, partId: `${p}.nat.${id}`, label: `a middle bar (${midBar.note})`, anchor: top(midBar), prov: r.prov.range, variants: only, note: 'A bar near the middle of the keyboard.' });
     regions.push({ id: `r.high.${id}`, partId: `${p}.nat.${id}`, label: `highest bar (${highBar.note})`, anchor: top(highBar), prov: r.prov.range, variants: only, note: 'The highest note: the shortest bar, at the left-hand end as the audience sees it.' });
     if (L.tubes.length && R.resonators) {

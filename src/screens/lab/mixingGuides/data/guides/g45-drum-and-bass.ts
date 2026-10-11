@@ -268,11 +268,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC; a C-minus-A gap above about 20–25 dB means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbours and MC stage clarity. Expect dB and dBC caps at late-night or residential venues. Offer earplugs; common hearing-safety guidance allows only about 15 minutes a day at 100 dBA unprotected."
+      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC; a C-minus-A gap above about 20–25 dB means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbours and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; common hearing-safety guidance allows only about 15 minutes a day at 100 dBA unprotected."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Streaming normalizes to about −14 LUFS; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a low PLR (6–8 dB) in drops but needs breakdown-to-drop contrast."
+      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Streaming normalizes to about −14 LUFS; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a low PLR (6–8 dB; at −2 dBTP that means a master at about −8 LUFS-I or quieter) in drops but needs breakdown-to-drop contrast."
     }
   ],
   "liveStudio": {
@@ -345,10 +345,10 @@ export const GUIDE: MixingGuide = {
     "Roni Size & Reprazent, “Brown Paper Bag”, 1997",
     "Ed Rush & Optical, “Wormhole” (album), 1998",
     "Shy FX & T Power, “Shake Ur Body”, 2002",
-    "High Contrast, “If We Ever”, 2004",
+    "High Contrast, “If We Ever”, 2007",
     "Pendulum, “Slam”, 2005",
     "Noisia, “Split the Atom”, 2010",
-    "Sub Focus, “Rock It”, 2008"
+    "Sub Focus, “Rock It”, 2009"
   ],
   "empty": []
 };

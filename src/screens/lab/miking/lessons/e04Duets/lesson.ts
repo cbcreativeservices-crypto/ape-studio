@@ -291,7 +291,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'How do you set preamp gain for a duet?',
     options: ['From the loudest singer’s loudest passage', 'From the quietest line anywhere in the song', 'From a single spoken word each'],
     correct: 'From the loudest singer’s loudest passage',
-    explain: 'Set gain from the loudest singer and the loudest passage, with conservative headroom; compression is not a fix for clipping before the preamp.',
+    explain: 'Set gain from the loudest singer and the loudest passage, with conservative headroom; compression is not a fix for clipping at the preamp.',
     why: {
       'From the quietest line anywhere in the song': 'The first loud chorus would then clip.',
       'From a single spoken word each': 'Speech hides the sung peaks.',
@@ -333,7 +333,7 @@ const symptoms: Symptom[] = [
     options: ['A screen, a small angle, a set distance', 'Cut the low end until the pops stop', 'Ask them to avoid the P sounds'],
     correct: 'A screen, a small angle, a set distance',
     explain: 'Get the capsule out of the direct breath and rehearse a controlled distance; a screen breaks up the air — it does not fix a poorly aimed mic.',
-    why: { 'Cut the low end until the pops stop': 'A deep cut thins the voices and still lets the capsule overload.', 'Ask them to avoid the P sounds': 'The words are the song: move the mic.' },
+    why: { 'Cut the low end until the pops stop': 'A deep cut thins the voices and still lets the mic overload.', 'Ask them to avoid the P sounds': 'The words are the song: move the mic.' },
   },
   {
     id: 'du.s.words',
@@ -389,8 +389,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live duet beside a band; a wedge in front of the singers; both voices need their own level.',
     setups: [
-      { id: 'a', label: 'A handheld each, within 10 cm, the wedge behind them', ok: true, power: 'none', feedback: 'Control and margin; check the wedge against each pattern.' },
-      { id: 'b', label: 'Supercardioid handhelds, the wedge a little to one side', ok: true, power: 'none', feedback: 'Fair beside a loud band, with the wedge near the nulls.' },
+      { id: 'a', label: 'A handheld each, within 10 cm, the wedge behind the mics', ok: true, power: 'none', feedback: 'Control and margin; check the wedge against each pattern.' },
+      { id: 'b', label: 'Supercardioid handhelds, the wedge well to one side of the rear', ok: true, power: 'none', feedback: 'Fair beside a loud band, with the wedge near the nulls.' },
       { id: 'c', label: 'A figure-8 between them on the stage', ok: false, power: 'phantom', feedback: 'Its back lobe hears the band and the wedge: a studio choice.' },
       { id: 'd', label: 'One handheld passed between them, live', ok: false, power: 'none', feedback: 'A live mic passed around is handling noise and a risk.' },
       { id: 'e', label: 'Monitors up until it rings, then down a bit', ok: false, power: 'none', feedback: 'Never provoke feedback: up only to the agreed level.' },
@@ -520,7 +520,7 @@ export const E04_LESSON: EnsembleLesson = {
     items: [
       { id: 'singers', label: 'the singers’ feet, faces and moves', short: 'SINGERS', note: 'Stable stands, secure cable paths and clear movement areas; nobody covering a grille, pointing a handheld at a monitor or passing a live mic.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'Do not allow singers to cover the grille, point a handheld capsule toward a monitor, or share a microphone by passing it while the channel is live (L54)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'other', label: 'the other singer', short: 'THE OTHER VOICE', note: 'Each open mic hears the other singer too — later and quieter. Keep separate mics at least three times their distance to their singers apart, and check mono.', prov: { kind: 'sourced', src: 'S-LIVE', quote: 'if two microphones are each placed one foot from their sound sources, the distance between the microphones should be at least three feet' }, tag: 'SPILL', scene: 'all' },
-      { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'Out of each mic’s most sensitive direction: a cardioid tolerates a wedge straight in front of the singer, a supercardioid a little to one side — from the real polar plot.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'Out of each mic’s most sensitive direction: a cardioid tolerates a wedge straight in front of the singer, a supercardioid well to one side — from the real polar plot.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band and the PA', short: 'BAND · PA', note: 'The fewest open mics that give the clarity needed; directional handhelds reject more of the band.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'begin with the minimum number of open microphones that achieves the required clarity (L52)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'phones', label: 'the headphones', short: 'HEADPHONES', note: 'Each singer’s mix low enough that the mic does not capture the headphone spill.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'Keep each singer’s monitor level low enough that the microphone does not capture loud headphone spill (L46)' }, tag: 'SPILL', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'ROOM', note: 'One mic, a figure-8 or a pair hears the room as part of the duet: a controlled, flattering room.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'when the room is suitable and a coherent blend is wanted (L10)' }, tag: 'PART OF THE SOUND', scene: 'studio' },

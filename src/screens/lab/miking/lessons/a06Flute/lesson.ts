@@ -154,7 +154,7 @@ const scenarios: MikingScenario[] = [
     explain: 'With no directional design, an omni has no proximity boost and tends to handle breath better up close. It does hear more room and stage — it rejects nothing.',
     why: {
       'It rejects the room better than a cardioid does': 'An omni rejects nothing: it hears more room, not less.',
-      'It needs no phantom power, unlike a cardioid': 'A condenser needs phantom power whatever its pattern.',
+      'It needs no phantom power, unlike a cardioid': 'These condensers need phantom power whatever their pattern.',
     },
   },
   {
@@ -172,7 +172,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'fl.mic.3',
     page: 'microphone',
-    prompt: 'Your only spare input has no phantom power. Can the headset run from it?',
+    prompt: 'Your only spare input has no phantom power. Can the wired headset run from it?',
     options: ['Yes — a headset is powered by the player’s battery pack', 'No — like the stand condenser, it needs phantom power', 'Yes, if the cable is kept short enough'],
     correct: 'No — like the stand condenser, it needs phantom power',
     explain: 'The stand condenser, the clip miniature and the headset are all condensers that need phantom power (the miniatures through their adapters). Find a powered input.',
@@ -545,7 +545,7 @@ const copy: Partial<LessonCopy> = {
     looking: 'Top view · mic close above the flute',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the flute.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Close above the flute and aimed down at it, its rear points up and away — the wedge down on the floor in front is off that line, so turning and tilting the mic both matter.',
     shieldNote: 'The player and the flute can reflect stage sound into a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'fl.ctx.studio',
@@ -614,7 +614,7 @@ export const A06_LESSON: WindLesson = {
     { title: 'WHAT IT IS', text: 'A transverse flute: a tube open at both ends, held out to the player’s right. The player blows an air jet across the embouchure hole; there is no reed. Identify the design first: a keyed concert flute — metal, or the same design in wood — or a simple-system wooden flute with open finger holes.', src: 'Y-FL-MECH2' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras and wind bands, chamber music, jazz, folk and traditional music (often the simple-system flute), studio sessions and stages. This lesson covers one flute: a studio solo, a moving player on a loud stage, and a spot in a group.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It sings melodies and fast runs with a breathy, airy character the player shapes. Ask what the music needs: an intimate, airy close sound, a natural room sound, or a separated line over a band.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'A concert flute is about 66 cm long and about 19 mm across; its lowest note is about 262 Hz (C4). The simple-system flute drawn here is about 60 cm. This lab draws a standing player, the flute at the lips.', src: 'PL-2010' },
+    { title: 'ITS SIZE', text: 'A concert flute is about 66 cm long and about 19 mm across; its lowest note is about 262 Hz (C4), or about 247 Hz (B3) with a B foot. The simple-system flute drawn here is about 60 cm. This lab draws a standing player, the flute at the lips.', src: 'PL-2010' },
   ],
   sound: {
     stages: [
@@ -671,7 +671,7 @@ export const A06_LESSON: WindLesson = {
     soundSubject: 'A flute stood on end, keys toward you, its air column drawn open',
     breath: 'The air jet blows out across the embouchure hole and on past the lips: a capsule in its path hears wind and pops. Some breath is part of a flute’s voice — choose how much with angle and distance.',
     keys: 'Key clicks and pads: loud within a few centimetres of the body; a mic a metre away, or behind the head, hears them less.',
-    directivity: 'Measured round a player in a quiet room: the strongest sound goes to the front and downward, and to the player’s right — and different notes radiate in noticeably different directions.',
+    directivity: 'Measured round a player in an anechoic (echoless) room: the strongest sound goes to the front and downward, and to the player’s right — and different notes radiate in noticeably different directions.',
     noteDefault: 9,
   }),
 };

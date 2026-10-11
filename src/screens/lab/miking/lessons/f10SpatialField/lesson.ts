@@ -99,11 +99,11 @@ const scenarios: MikingScenario[] = [
     id: 'sp.meet.3',
     page: 'meet',
     prompt: 'A walker passes on the listener’s left. What tells a listener’s ears where it is?',
-    options: ['The left ear hears it a little earlier and louder', 'Only the right ear hears it, while the left is shaded', 'Both ears hear it at the same time and level'],
+    options: ['The left ear hears it a little earlier and louder', 'Only the left ear hears it, while the right is shaded', 'Both ears hear it at the same time and level'],
     correct: 'The left ear hears it a little earlier and louder',
     explain: 'Time and level differences between the ears, and the outer ears’ shaping, carry direction. A binaural head keeps those cues; a fixed head keeps one point of view.',
     why: {
-      'Only the right ear hears it, while the left is shaded': 'The far ear still hears it — later and quieter, shaded by the head.',
+      'Only the left ear hears it, while the right is shaded': 'The far ear still hears it — later and quieter, shaded by the head.',
       'Both ears hear it at the same time and level': 'That is a sound straight ahead or behind, not one to the side.',
     },
   },
@@ -233,7 +233,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'There is a power line overhead near your spot. How far must the stands and mics stay?',
     options: ['At least 3 m (10 ft), farther if unsure', 'About 1 m, as long as nothing is touching', 'Closer is fine if the stand is a short one'],
     correct: 'At least 3 m (10 ft), farther if unsure',
-    explain: 'Keep poles, stands and every mic at least 3 m (10 ft) from overhead power lines — farther if you do not know the voltage.',
+    explain: 'Keep poles, stands and every mic at least 3 m (10 ft) from overhead power lines — farther for higher voltages or if you do not know the voltage.',
     why: {
       'About 1 m, as long as nothing is touching': 'Electricity can jump a gap. At least 3 m (10 ft).',
       'Closer is fine if the stand is a short one': 'A stand can be raised, tipped or carried: at least 3 m (10 ft).',
@@ -564,7 +564,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'How far must stands and mics stay from an overhead power line?',
     options: ['At least 3 m (10 ft), farther if unsure', 'About 1 m, as long as nothing is touching', 'Closer is fine for a short stand'],
     correct: 'At least 3 m (10 ft), farther if unsure',
-    explain: 'At least 3 m (10 ft) — farther if you do not know the voltage.',
+    explain: 'At least 3 m (10 ft) — farther for higher voltages or if you do not know the voltage.',
     why: { 'About 1 m, as long as nothing is touching': 'Electricity can jump a gap.', 'Closer is fine for a short stand': 'A stand can be raised or tipped.' },
   },
   {

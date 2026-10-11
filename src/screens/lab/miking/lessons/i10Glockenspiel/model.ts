@@ -18,7 +18,7 @@ import { slantZone, type MalletFamily } from '../shared/mallets/malletModel.ts';
 
 export const GLOCK_FAM: MalletFamily = {
   p: 'gl',
-  name: 'glockenspiel (orchestral bells), C5–E8',
+  name: 'glockenspiel (orchestral bells), sounding C5–E8',
   variants: [
     { row: ROWS.glockPedal, label: 'ON A FRAME', blurb: 'A concert model on its own frame: 41 steel bars, tubes under them, a damper pedal, and height-adjusting legs.', phrase: 'a pedal and a frame' },
     { row: ROWS.glockCase, label: 'IN A CASE', blurb: 'A case model on a table: 32 steel bars in a wooden case, its lid open behind them; the player damps with the hand.', phrase: 'a case on a table' },
@@ -26,7 +26,7 @@ export const GLOCK_FAM: MalletFamily = {
   roles: {
     naturals: 'Steel bars, all the same width, nearest the player. A hard mallet strikes; the bar rings bright and long.',
     accidentals: 'The sharps and flats in the far row, a little higher — laid out like the piano’s black keys.',
-    resonators: 'Short tubes under the bars, open at the top and closed at the bottom — only under the sharps and flats that need one. The highest are barely longer than a fingertip.',
+    resonators: 'Short tubes under the naturals and under only the sharps and flats that need one, open at the top and closed at the bottom. The highest are barely longer than a fingertip.',
     cords: 'The bars hang on strings through holes drilled in their sides, at their still points. Nothing clamps to a bar or a damper.',
     frame: 'The frame and its legs: a gas spring sets the height. Never strike or open the gas spring; lower the instrument before it is rolled.',
     damper: 'A damper under the bars, worked by the pedal: up, it stops the notes; down, they ring.',

@@ -78,7 +78,7 @@ export function noPhantom(w: SpWords, page: SourcePageId = 'microphone', id = `$
     correct: 'The small dynamic: it needs no power to work',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power wherever it is placed.',
     why: {
-      'The small condenser, if it sits a little farther back': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The small condenser, if it sits a little farther back': 'Distance does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   };
@@ -149,11 +149,11 @@ export function cardioidNull(w: SpWords, id = `${w.p}.mix.2`): MikingScenario {
     id,
     page: 'practice',
     prompt: 'A floor monitor sits directly behind a cardioid spot mic. What can you expect from that null?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the monitor, because it sits right inside the null itself', 'More pickup than at the sides, because the rear is open'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Strong rejection on paper; in reality less, and often least in the lows', 'Silence from the monitor, because it sits right inside the null itself', 'More pickup than at the sides, because the rear is open'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
-      'Silence from the monitor, because it sits right inside the null itself': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the monitor, because it sits right inside the null itself': 'A null is infinitely deep only on paper. Real mics reject far less, and often least in the lows.',
       'More pickup than at the sides, because the rear is open': 'A cardioid rejects most directly behind. The point is that real rejection is shallower than the picture.',
     },
   };
@@ -238,7 +238,7 @@ export function setupOrder(w: SpWords, first: { text: string; early: string }, l
   };
 }
 
-export const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+export const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 export const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, stand and cable stay clear of the player’s whole motion', role: 'required', feedback: 'Clearance — of the player’s whole motion, not a still pose — is part of every passing setup.' };
 export const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on this instrument', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 export const TECH_REASON: SetupReason = { id: 'r.tech', label: 'The player can change their grip or stroke to suit the mic', role: 'wrong', feedback: 'The player’s technique is never changed for a mic.' };

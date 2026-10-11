@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (Toolroom- and Dirtybird-style tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to −14 LUFS, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy."
+      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (Toolroom- and Dirtybird-style tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to −14 LUFS, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy (at −2 dBTP that means a master at about −9 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {

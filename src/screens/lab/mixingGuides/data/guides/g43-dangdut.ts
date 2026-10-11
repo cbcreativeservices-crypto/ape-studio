@@ -267,7 +267,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang punch. A PLR of 8–11 dB and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
+      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP) and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
     }
   ],
   "liveStudio": {

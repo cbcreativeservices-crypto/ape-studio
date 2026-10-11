@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know where the viola sits — under the chin, the bow’s sweep and the bow arm, the neighbours in a quartet — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['va.set.1', 'va.set.2', 'va.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The bow sweeps out to the player’s right and the bow arm with it; the head is at the chin rest. In a group, the violas sit between the violins and the cellos. Ask the player first, and protect your hearing.',
+    takeaway: 'The bow sweeps out to the player’s right and the bow arm with it; the head is at the chin rest. In a group, the violas often sit between the violins and the cellos. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',

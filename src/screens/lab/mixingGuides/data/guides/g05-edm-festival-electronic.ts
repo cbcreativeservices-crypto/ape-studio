@@ -220,7 +220,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club and commercial EDM masters commonly hit −7 to −5 LUFS short-term at the drop (roughly −8 to −6 LUFS integrated); a “dynamic” approach of −9 to −11 short-term is also used. Streaming services normalize to about −14 LUFS, so over-limiting gives no loudness advantage there. A common streaming recommendation is below −1 dBTP, or below −2 dBTP for masters louder than −14 LUFS. Many club masters run near −0.2 to −0.5 dBFS sample-peak ceilings for DJ use; supply a −1 dBTP version for streaming. The genre tolerates very little short-term dynamic range (PLR ~6–8 dB at the drop) but needs macro contrast between sections."
+      "text": "Club and commercial EDM masters commonly hit −7 to −5 LUFS short-term at the drop (roughly −8 to −6 LUFS integrated); a “dynamic” approach of −9 to −11 short-term is also used. Streaming services normalize to about −14 LUFS, so over-limiting gives no loudness advantage there. A common streaming recommendation is below −1 dBTP, or below −2 dBTP for masters louder than −14 LUFS. Many club masters run near −0.2 to −0.5 dBFS sample-peak ceilings for DJ use; supply a version at or below −2 dBTP for streaming. The genre tolerates very little short-term dynamic range (PLR ~6–8 dB at the drop) but needs macro contrast between sections."
     }
   ],
   "liveStudio": {
@@ -265,7 +265,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Start the mix with kick and sub alone; set them around −10 dBFS on the faders and build everything else around them.",
+      "text": "Start the mix with kick and sub alone; set them around −10 dBFS on the meters and build everything else around them.",
       "bullet": true
     },
     {
@@ -306,9 +306,9 @@ export const GUIDE: MixingGuide = {
     "Avicii — “Levels” (2011)",
     "Martin Garrix — “Animals” (2013)",
     "Hardwell — “Spaceman” (2012)",
-    "Alesso — “Calling (Lose My Mind)” (2012)",
+    "Sebastian Ingrosso & Alesso ft. Ryan Tedder — “Calling (Lose My Mind)” (2012)",
     "Zedd ft. Foxes — “Clarity” (2012)",
-    "Dimitri Vegas & Like Mike vs Tujamo & Felguk — “Fireworks” (2013)",
+    "Dimitri Vegas & Like Mike vs Tujamo & Felguk — “Nova” (2014)",
     "Martin Garrix & Brooks — “Byte” (2017)"
   ],
   "empty": []

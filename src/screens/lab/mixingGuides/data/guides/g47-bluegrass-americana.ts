@@ -72,7 +72,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal (and harmony stack in choruses); the featured soloist during a break; upright bass; guitar; mandolin chop; banjo rolls (tucked, they read easily); fiddle fills; dobro fills; reverb. There is no kick drum in traditional bluegrass, so the upright bass owns the low end alone—roughly 60–250 Hz for fundamentals, 700 Hz–1.5 kHz for the attack that lets it be heard on small speakers. In Americana with drums, keep the kick small and soft (60–80 Hz thump, little click) under the bass. In the studio, pan to mirror the stage line (banjo and fiddle 30–50% opposite, mandolin and guitar inside, bass and vocal center). Live, most engineers run near-mono."
+      "text": "Hierarchy, loudest to quietest: lead vocal (and harmony stack in choruses); the featured soloist during a break; upright bass; guitar; mandolin chop; banjo rolls (tucked, they read easily); fiddle fills; dobro fills; reverb. There is no kick drum in traditional bluegrass, so the upright bass owns the low end alone—roughly 40–250 Hz for fundamentals, 700 Hz–1.5 kHz for the attack that lets it be heard on small speakers. In Americana with drums, keep the kick small and soft (60–80 Hz thump, little click) under the bass. In the studio, pan to mirror the stage line (banjo and fiddle 30–50% opposite, mandolin and guitar inside, bass and vocal center). Live, most engineers run near-mono."
     }
   ],
   "eq": {
@@ -262,7 +262,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Bluegrass and acoustic records commonly land at −14 to −11 LUFS-I, Americana band records at −11 to −9, with true peak at −1 dBTP. Aim for a PLR of 11–15 dB and a loudness range of at least 6 LU; heavy limiting smears picking transients and makes banjos harsh."
+      "text": "Bluegrass and acoustic records commonly land at −14 to −11 LUFS-I, Americana band records at −11 to −9, with true peak at −1 dBTP. Aim for a PLR of 11–15 dB (at −1 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of at least 6 LU; heavy limiting smears picking transients and makes banjos harsh."
     }
   ],
   "liveStudio": {

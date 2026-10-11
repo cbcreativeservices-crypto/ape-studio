@@ -86,7 +86,7 @@ export const F09_COPY: Partial<LessonCopy> = {
       locPlant: 'Ideas to try with a planted mic: aim it across the action, keep it out of sight and out of reach, and check the whole blocking — it covers one place only.',
       locCamCap: 'Ideas to try with the camera mic: use it as a reference; compare it with the boom or the body mic at the talker — then move a mic closer rather than raising its gain.',
       vocDynCard: 'Ideas to try with a handheld: coach one steady distance and angle; closer adds low end, farther adds the PA and the room. Keep the grille open.',
-      vocDynSuper: 'Ideas to try with a supercardioid: its rear lobe means the wedge goes a little to one side of its rear — check the actual pattern.',
+      vocDynSuper: 'Ideas to try with a supercardioid: its rear lobe means the wedge goes well to one side of its rear — check the actual pattern.',
       vocHeadset: 'Ideas to try with a headset: place the capsule where its maker says, near the corner of the mouth and out of the breath; then leave it there.',
     },
     note: 'Clearance comes first: nothing touches the talker, the pole and its shadow stay out of the shot, cables stay out of the walking path, and outdoors nothing comes within 3 m (10 ft) of a power line. Ask before putting anything on a person.',

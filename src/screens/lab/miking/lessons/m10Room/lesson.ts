@@ -284,7 +284,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The room mic is in a null of the PA on paper. Can it now be turned up safely in the house mix?',
     options: ['No — real nulls are shallow, and reflections arrive all round', 'Yes — a null removes the PA from the mic', 'Yes, as long as it stays a supercardioid aimed at the kit the whole time'],
     correct: 'No — real nulls are shallow, and reflections arrive all round',
-    explain: 'A null is infinitely deep only on paper; real mics reject far less, least in the lows, and the room returns the PA from every side. Do not assume it is safe in the house system.',
+    explain: 'A null is infinitely deep only on paper; real mics reject far less, often least in the lows, and the room returns the PA from every side. Do not assume it is safe in the house system.',
     why: {
       'Yes — a null removes the PA from the mic': 'A null reduces one direct path, a little; the room still brings the PA back.',
       'Yes, as long as it stays a supercardioid aimed at the kit the whole time': 'The pattern helps a little; it does not make a distant mic safe to push in the PA.',
@@ -392,7 +392,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The PA sits in the room mic’s null on paper. What can you expect?',
     options: ['Less PA than without it, but far from silence', 'Silence from the PA in the room mic', 'More PA than it would hear if the mic faced the PA'],
     correct: 'Less PA than without it, but far from silence',
-    explain: 'Real nulls are shallow, least in the lows, and the room reflects the PA from every side.',
+    explain: 'Real nulls are shallow, often least in the lows, and the room reflects the PA from every side.',
     why: {
       'Silence from the PA in the room mic': 'A null is deep only on paper; the room brings the PA back from other directions.',
       'More PA than it would hear if the mic faced the PA': 'Facing away, the direct sound of the PA is turned down — just not to silence.',

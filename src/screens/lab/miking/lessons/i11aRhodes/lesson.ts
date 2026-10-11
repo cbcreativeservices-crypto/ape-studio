@@ -116,7 +116,7 @@ const scenarios: MikingScenario[] = [
     explain: 'At low pitches the whole cone moves as one. Higher up, the cone flexes, and more of the high-frequency sound comes from the middle, near the voice coil. Close in, the spot the mic faces tilts the balance — a tendency to check on each speaker.',
     why: {
       'The outer part of the cone moves too slowly to make the high notes': 'Speed is not the reason: at higher pitches the middle of the cone simply does more of the work.',
-      'The dust cap adds high notes of its own': 'The dust cap moves with the cone; it adds nothing. More of the highs come from the middle.',
+      'The dust cap adds high notes of its own': 'The dust cap moves with the middle of the cone; its material can colour the highs, but the main reason is that more of the highs come from the middle.',
     },
   },
   {
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The keyboard has an XLR output. Can you assume it is line level?',
     options: ['No — check its manual; some are meant for mic-level inputs', 'Yes, an XLR output is line level by definition', 'Yes, as long as the cable you use is a balanced, shielded one'],
     correct: 'No — check its manual; some are meant for mic-level inputs',
-    explain: 'A connector does not tell you the level. Some electric pianos have balanced XLR outputs made for mic-level inputs; a ¼-inch jack is not a speaker output either. Read the model’s own manual before you patch it.',
+    explain: 'A connector does not tell you the level. Some electric pianos have balanced XLR outputs made for mic-level inputs, and a ¼-inch jack can be an instrument, line or even a speaker output. Read the model’s own manual before you patch it.',
     why: {
       'Yes, an XLR output is line level by definition': 'The connector says nothing about the level. Check the model’s manual.',
       'Yes, as long as the cable you use is a balanced, shielded one': 'A balanced cable carries whatever level the output gives. Check the manual.',
@@ -197,9 +197,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The channel has no phantom power. Which of this page’s mic types can you use?',
     options: ['The instrument dynamic: it needs no power', 'The small condenser, set a little farther back', 'The small condenser, if the amp is switched on'],
     correct: 'The instrument dynamic: it needs no power',
-    explain: 'A dynamic needs no power. A condenser needs phantom power from the desk wherever it is placed — the amp powers its speaker, not the mic.',
+    explain: 'A dynamic needs no power. The condenser here needs phantom power from the desk wherever it is placed — the amp powers its speaker, not the mic.',
     why: {
-      'The small condenser, set a little farther back': 'Distance does not change what a condenser needs: phantom power.',
+      'The small condenser, set a little farther back': 'Distance does not change what this condenser needs: phantom power.',
       'The small condenser, if the amp is switched on': 'The amp does not power the mic. The condenser needs phantom from the desk.',
     },
   },
@@ -515,7 +515,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the grille, the vents and the pedal foot', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the mic most engineers use on this instrument', role: 'wrong', feedback: 'A brand or a habit is not part of passing: choose by properties.' };

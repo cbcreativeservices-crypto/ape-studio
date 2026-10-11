@@ -27,7 +27,7 @@ const pages: LessonPages = {
     title: 'Meet the harmonica',
     goal: 'Get to know the harmonica — what it is, where you meet it, what it does in the music, its parts and the hands round it — and the harp amp it can play through, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A small reed instrument, about 10 cm long: ten holes, twenty brass reeds, covers open at the back. The hands round it are part of its sound. Amplified, a harp mic is cupped with it and played through an amp.',
+    takeaway: 'A small reed instrument; the common diatonic is about 10 cm long: ten holes, twenty reeds (usually brass), covers open at the back. The hands round it are part of its sound. Amplified, a harp mic is cupped with it and played through an amp.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -45,7 +45,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic by its properties — pattern, power, impedance, size and mount — for the path you want: a stand mic for the acoustic harmonica, a harp mic for the hands, a close mic for the amp.',
     credit: { scenarios: ['hm.mic.1', 'hm.mic.2', 'hm.mic.3', 'hm.mic.4', 'hm.rec.1'], note: 'Answer the five checks (one reaches back to how the harmonica sounds).' },
-    takeaway: 'A directional stand mic helps isolate on a stage; an omni can suit a quiet room. A harp mic is an omni made to be cupped and to feed a high-impedance amp input. Check the real pattern, the impedance and the manual — not the connector.',
+    takeaway: 'A directional stand mic helps isolate on a stage; an omni can suit a quiet room. Many harp mics are omnis made to be cupped and to feed a high-impedance amp input. Check the real pattern, the impedance and the manual — not the connector.',
   },
   placement: {
     title: 'Placement Studio',
@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hm.snd.3',
     page: 'sound',
-    prompt: 'A 10-hole harmonica has twenty reeds. Why two in each hole?',
+    prompt: 'A 10-hole diatonic harmonica has twenty reeds. Why two in each hole?',
     options: ['One sounds when you blow, the other when you draw', 'Two reeds make each note twice as loud as one', 'The second is a spare, used when the first breaks'],
     correct: 'One sounds when you blow, the other when you draw',
     explain: 'Each channel has a blow reed and a draw reed on opposite plates: the air’s direction decides which one is pushed into its slot and sounds.',
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hm.mic.1',
     page: 'microphone',
-    prompt: 'A cupped harp mic is omni. Where can a floor wedge go to avoid feedback?',
+    prompt: 'This cupped harp mic is omni. Where can a floor wedge go to avoid feedback?',
     options: ['No null helps: distance, level and angle do the work', 'Directly behind the mic, where its rear null would sit', 'Off to its side, where a pickup pattern is weakest'],
     correct: 'No null helps: distance, level and angle do the work',
     explain: 'An omni picks up all round, so there is no rear null to aim. Place the wedge on an assumption of no rejection, keep levels down and keep the cupped mic away from loudspeakers.',
@@ -291,9 +291,9 @@ const scenarios: MikingScenario[] = [
     id: 'hm.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Is a cupped dedicated harp mic the same as a cupped vocal mic?',
-    options: ['No — the harp mic is omni and made to be cupped', 'Yes — cupping changes both of them the same way', 'Yes, as long as both mics are dynamics'],
-    correct: 'No — the harp mic is omni and made to be cupped',
-    explain: 'A dedicated harp mic is an omni shaped for the hands; cupping is its intended use. Covering a directional vocal mic’s grille reduces its rejection and invites feedback.',
+    options: ['No — the harp mic is made to be cupped', 'Yes — cupping changes both of them the same way', 'Yes, as long as both mics are dynamics'],
+    correct: 'No — the harp mic is made to be cupped',
+    explain: 'A dedicated harp mic is shaped for the hands — often an omni; cupping is its intended use. Covering a directional vocal mic’s grille reduces its rejection and invites feedback.',
     why: {
       'Yes — cupping changes both of them the same way': 'A directional mic loses rejection when covered; an omni has none to lose.',
       'Yes, as long as both mics are dynamics': 'Being dynamic says nothing about the pattern or what cupping does to it.',
@@ -447,7 +447,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Small dynamic 2.5–5 cm from the grille, at the dust cap’s edge', ok: true, power: 'none', feedback: 'On the real speaker, at a dependable first spot; a dynamic needs no phantom.' },
       { id: 'b', label: 'Small dynamic at the same distance, a little toward the cone’s edge', ok: true, power: 'none', feedback: 'A softer top end; fair if the player’s tone is bright.' },
       { id: 'c', label: 'The amp’s speaker output patched into the desk', ok: false, power: 'none', feedback: 'Never: a speaker output goes to a speaker only. Mic the speaker.' },
-      { id: 'd', label: 'Small condenser in front of the speaker', ok: false, power: 'phantom', feedback: 'This input has no phantom, and a condenser needs it.' },
+      { id: 'd', label: 'Small condenser in front of the speaker', ok: false, power: 'phantom', feedback: 'This input has no phantom, and this condenser needs it.' },
       { id: 'e', label: 'The harp mic straight into a desk mic input, no checks', ok: false, power: 'none', feedback: 'A high-impedance harp mic may need a matching transformer — check first. And the brief asks for the amp’s sound.' },
     ],
     reasons: [SPEAKER_REASON, POWER_REASON, { id: 'r.clr', label: 'The mic is off the grille, the cable out of walkways', role: 'required', feedback: 'Clear of the grille and the moving cone; cables out of the way.' }, FEEDBACK_REASON, BRAND_REASON, PLAYER_REASON],
@@ -457,7 +457,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what turns the breath into a note?', options: ['Reeds chopping the air', 'The breath whistling', 'The covers ringing'], after: 'Now STEP through the reed (or PLAY ONCE), then try its shapes and the hands’ chamber.' },
-  microphone: { prompt: 'Before you move anything: a harp mic is omni. Where does it pick up LEAST?', options: ['Nowhere: much the same all round', 'Straight behind it', 'At its sides'], after: 'Sweep SOURCE ANGLE round a cardioid, then choose the harp mic’s TYPE and sweep again.' },
+  microphone: { prompt: 'Before you move anything: this harp mic is omni. Where does it pick up LEAST?', options: ['Nowhere: much the same all round', 'Straight behind it', 'At its sides'], after: 'Sweep SOURCE ANGLE round a cardioid, then choose the harp mic’s TYPE and sweep again.' },
   placement: { prompt: 'Predict: you move the stand mic from 15 cm back to 30 cm. What changes most?', options: ['More room, less breath and detail', 'More breath', 'Nothing'], after: 'Rest the mic in two zones — switch PATH to try the amp — and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the stand mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION. Then pick the harp amp as the MONITOR.' },
   twoMic: { prompt: 'A close speaker mic and one 75 cm back. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -545,7 +545,7 @@ export const A10_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A small reed instrument: ten holes and, behind them, twenty brass reeds — in each hole one sounds when you blow and one when you draw. The lips cover the holes; the hands hold it and shape its sound.', src: 'HOH-ROCKET' },
+    { title: 'WHAT IT IS', text: 'A small reed instrument; the common diatonic has ten holes and, behind them, twenty reeds, usually brass — in each hole one sounds when you blow and one when you draw. The lips cover the holes; the hands hold it and shape its sound.', src: 'HOH-ROCKET' },
     { title: 'WHERE YOU MEET IT', text: 'Blues, folk, rock, country and pop — on stage and in the studio, often played by a singer or a guitarist, sometimes from a neck holder. Played acoustically, or cupped round a harp mic through an amplifier.', src: 'LESSON-HM' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody, answering phrases and fills, rhythmic chords; through a harp amp, a driven, gritty lead voice. The player changes harmonicas to change key.', src: 'LESSON-HM' },
     { title: 'ITS SIZE', text: 'About 10 cm (4 in) long — small enough to disappear in the hands. That is why the hands matter so much to its sound.', src: 'HOH-SP20' },

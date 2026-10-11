@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The starting point is 20–40 cm. Why is 20 cm not automatically safe?',
     options: ['The stick’s path and rebound may reach that close', 'Twenty centimetres is too far away for a cowbell spot', 'The bell’s ring overloads a mic placed inside 20 cm of it'],
     correct: 'The stick’s path and rebound may reach that close',
-    explain: 'The near end is under the common 30 cm minimum for percussion and may sit in some stick paths: the stick defines the minimum.',
+    explain: 'The near end is closer than one general tip for percussion (a gap of about 30 cm or more) and may sit in some stick paths: the stick defines the minimum.',
     why: {
       'Twenty centimetres is too far away for a cowbell spot': 'It is a close spot; the question is the stick’s reach.',
       'The bell’s ring overloads a mic placed inside 20 cm of it': 'Overload depends on the mic and the hit; clearance is the issue here.',
@@ -392,7 +392,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Overheads only — check the bell sits well in them', ok: true, power: 'none', feedback: 'Fair if the overheads carry it in balance: no extra open mic.' },
       { id: 'b', label: 'A compact dynamic on a secure stand, outside the stick’s path, a null toward the wedge', ok: true, power: 'none', feedback: 'A dedicated spot; a dynamic needs no phantom. Check its spill with the full kit.' },
-      { id: 'c', label: 'A condenser spot on the bell', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A condenser spot on the bell', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A spot clamped to the bell’s own mount, touching it', ok: false, power: 'none', feedback: 'It would pass every knock and may turn into the stick’s path.' },
       { id: 'e', label: 'Turn the wedge up so the drummer hears the bell', ok: false, power: 'none', feedback: 'The bell is already loud beside the drummer; more wedge means more spill.' },
     ],
@@ -534,7 +534,7 @@ export const I05A_LESSON: SpLesson = {
   unknowns: [
     { text: 'The mouth (100 × 60 mm) and closed end (70 × 40 mm) sections of the 177.8 mm bell — drawing defaults.', dims: ['mouthW', 'mouthH', 'endW', 'endH'] },
     { text: 'The mounted height (h 1000), the stick’s rise (300 mm) and sector, the left hand’s grip and the player’s posture — drawing defaults and ILLUSTRATIVE.', dims: ['rise', 'mountH'] },
-    { text: 'The 20–40 cm band is the lesson’s own audition range, measured from the bell’s centre; its near end is under the common 30 cm minimum.', dims: [] },
+    { text: 'The 20–40 cm band is the lesson’s own audition range, measured from the bell’s centre; its near end is closer than one general percussion tip of about 30 cm or more.', dims: [] },
   ],
   live: { wedges: standingWedges('the bell') },
   accuracyDetail:

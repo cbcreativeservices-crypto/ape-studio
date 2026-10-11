@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim a mic in front of a front bell so its rejection faces the player’s wedge — and know what a pattern cannot do in the lowest octaves, and when a close mic is not needed.',
     credit: { scenarios: ['tu.ctx.1', 'tu.ctx.2', 'tu.ctx.studio', 'tu.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A cardioid rejects most behind; a supercardioid off to each side of the rear. In the tuba’s lowest octaves every pattern widens toward omni — check the subwoofers and the stage with the player silent.',
+    takeaway: 'A cardioid rejects most behind; a supercardioid off to each side of the rear. In the tuba’s lowest octaves most patterns widen toward omni — check the subwoofers and the stage with the player silent.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where do a tuba’s lowest notes spread?',
     options: ['Nearly all round, a little weaker away from the bell', 'Only straight along the bell’s axis, nowhere else', 'Only forward, toward the audience and the PA'],
     correct: 'Nearly all round, a little weaker away from the bell',
-    explain: 'In the lowest octaves the tuba radiates nearly all round — which is also where a mic’s pattern rejects least. Expect the low end of the stage in an open tuba mic.',
+    explain: 'In the lowest octaves the tuba radiates nearly all round — which is also where a mic’s pattern often rejects least. Expect the low end of the stage in an open tuba mic.',
     why: {
       'Only straight along the bell’s axis, nowhere else': 'That is the trend for the upper overtones. The lowest notes spread nearly all round.',
       'Only forward, toward the audience and the PA': 'The lowest notes go every way, the stage and the mics included.',
@@ -543,7 +543,7 @@ export const A04A_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The tuba is the largest and lowest brass instrument, played by buzzing the lips into a large mouthpiece. Its long, widening tube is folded into a big body that rests on the player’s lap; four piston valves under the right hand add lengths of tube. Tubas are built in B♭, C, E♭ and F, and with the bell pointing up, to the front, or — on older military tubas — back.', src: 'Y-HUB-TUBA' },
+    { title: 'WHAT IT IS', text: 'The tuba is the largest and lowest brass instrument, played by buzzing the lips into a large mouthpiece. Its long, widening tube is folded into a big body that rests on the player’s lap; three to six valves — piston or rotary, most under the right hand — add lengths of tube. Tubas are built in B♭, C, E♭ and F, and with the bell pointing up, to the front, or — on older military tubas — back.', src: 'Y-HUB-TUBA' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras, wind and brass bands, brass quintets, jazz and second-line bands (often on the sousaphone, whose bell wraps round to face forward), film sessions and studio overdubs. This lesson covers one seated concert tuba, in the studio and live.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It is the bass foundation: long notes under the ensemble, rhythmic bass lines, and now and then a featured solo. Its attacks and upper harmonics are what let a listener follow its low notes among a kick drum, a bass guitar or other low brass.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A B♭ tuba has about 5.5 m of tube; this lab draws one with a 44 cm bell. Its lowest notes reach below 40 Hz — but the part, not a table, decides the lowest note a mic must keep.', src: 'Y-YBB321' },

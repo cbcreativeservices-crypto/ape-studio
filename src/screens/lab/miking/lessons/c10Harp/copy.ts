@@ -97,7 +97,7 @@ export const HARP_COPY: LessonCopy = {
     looking: 'Side view · the mic in front of the harp',
     prompt: 'The harpist’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still looks at the soundboard.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Up at the harp, looking down at the soundboard, its rear points up and out — the wedge on the floor in front arrives from below, about 105° off the axis, nowhere near that rear. A supercardioid or hypercardioid rejects most toward the rear but off the axis, nearer where this wedge sits: aim by the actual pattern, or move the wedge.',
     shieldNote: 'Reduce the level before moving a mic, then retest the gain before feedback. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'hp.ctx.studio',

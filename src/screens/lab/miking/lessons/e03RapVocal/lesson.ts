@@ -117,7 +117,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why might a mic a little below the mouth line hear softer S sounds?',
     options: ['The hiss of an S travels forward along the axis', 'An S sound comes out of the nose, above the mouth', 'A lower mic turns the whole voice down evenly'],
     correct: 'The hiss of an S travels forward along the axis',
-    explain: 'An S or T sends a narrow hiss straight ahead. Out of that straight line the mic hears less of it while the words still reach it — a tendency to check by ear.',
+    explain: 'An S sends a narrow hiss straight ahead. Out of that straight line the mic hears less of it while the words still reach it — a tendency to check by ear.',
     why: {
       'An S sound comes out of the nose, above the mouth': 'S is shaped by the tongue and the teeth: it leaves through the mouth, ahead.',
       'A lower mic turns the whole voice down evenly': 'A small move changes the balance — less hiss, much the same words — not just the level.',

@@ -253,7 +253,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão and bruxaria are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at −1 dBTP at most; −2 dBTP is recommended for masters louder than −14 LUFS. Normalization to −14 LUFS turns hot masters down, so the clipping must sound intentional. PLR of 5–8 dB and LRA of 2–4 LU are normal."
+      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão and bruxaria are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at −1 dBTP at most; −2 dBTP is recommended for masters louder than −14 LUFS. Normalization to −14 LUFS turns hot masters down, so the clipping must sound intentional. PLR of 5–8 dB and LRA of 2–4 LU are normal (at −2 dBTP that PLR means a master at about −7 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {

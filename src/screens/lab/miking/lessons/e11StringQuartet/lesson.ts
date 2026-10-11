@@ -69,9 +69,9 @@ const scenarios: MikingScenario[] = [
     id: 'sq.meet.1',
     page: 'meet',
     prompt: 'Where does a violin’s sound leave the instrument?',
-    options: ['The body, strings and bow together', 'Only the two f-holes, and nowhere else', 'Only the scroll at the far end'],
-    correct: 'The body, strings and bow together',
-    explain: 'The whole body radiates, with the strings and the bow’s contact: a complex, extended source. A close mic hears the part nearest it; a little distance hears it whole.',
+    options: ['The whole body, driven by the strings', 'Only the two f-holes, and nowhere else', 'Only the scroll at the far end'],
+    correct: 'The whole body, driven by the strings',
+    explain: 'The whole body radiates, driven by the strings and the bow’s contact: a complex, extended source. A close mic hears the part nearest it; a little distance hears it whole.',
     why: {
       'Only the two f-holes, and nowhere else': 'The f-holes are one part; the top and back plates radiate too.',
       'Only the scroll at the far end': 'The scroll is the tuning end; the body does the radiating.',
@@ -414,7 +414,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What is a bowed string, as a sound source?',
     options: ['A large, complex radiating body', 'A small point at the bridge', 'A sound that leaves from the scroll end'],
     correct: 'A large, complex radiating body',
-    explain: 'The body, the strings and the bow together, radiating in a complex way: a mic’s view of it changes with position.',
+    explain: 'The body radiates in a complex way, driven by the strings and the bow: a mic’s view of it changes with position.',
     why: { 'A small point at the bridge': 'The bridge drives the body; the body radiates.', 'A sound that leaves from the scroll end': 'The scroll is the tuning end; the body radiates.' },
   },
   {
@@ -498,7 +498,7 @@ export const E11_LESSON: EnsembleLesson = {
   ],
   sound: {
     stages: [
-      { title: 'The whole body radiates', text: 'Each instrument radiates from its body, its strings and the bow’s contact — a complex, extended source.' },
+      { title: 'The whole body radiates', text: 'Each instrument radiates from its body, driven by its strings and the bow’s contact — a complex, extended source.' },
       { title: 'Position changes the mix', text: 'Close in, the bow and the nearest part of the body; farther away, the whole instrument with the room.' },
       { title: 'The room blends them', text: 'Reflections join the four into one sound — the perspective a main pair hears.' },
     ],

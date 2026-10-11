@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "70–100 BPM for romantic ballads; 100–130 BPM for dance and “item” numbers; qawwali-style builds accelerate to 140+",
     "ensemble": "Studio: programmed bed plus session players and string sections; live: 8–20 piece band (drums, Indian percussion, keys, guitars, bass, flute/strings) with 2–4 singers and tracks",
     "priority": "The playback vocal — melody and lyric — clear, polished and in front at all times",
-    "liveSpl": "95–102 dBA LAeq-15 in arenas and stadiums; 110–120 dBC; outdoor shows in India face 75 dB(A) boundary limits and a 10 pm curfew",
+    "liveSpl": "95–102 dBA LAeq-15 in arenas and stadiums; 110–120 dBC; outdoor shows in India face boundary limits of 75 dB(A) or lower and a 10 pm curfew",
     "studioLoudness": "Masters commonly −9 to −6 LUFS-I (ballads −11 to −9); streaming normalizes to about −14"
   },
   "purpose": [
@@ -186,7 +186,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-ess female vocals at 6–9 kHz and male at 5–7 kHz for 3–5 dB; Hindi, Urdu and Punjabi fricatives (sh, s, ch) can be pronounced. Gate kit toms live (30–50 ms hold); avoid gating tabla — it loses its ring and resonant glides. Mastering limiters on dance numbers often do 3–5 dB; keep ballads to 1–3 dB."
+        "text": "De-ess female vocals at 6–9 kHz and male at 5–7 kHz for 3–5 dB; Hindi, Urdu and Punjabi sibilants (s, sh, ch) can be pronounced. Gate kit toms live (30–50 ms hold); avoid gating tabla — it loses its ring and resonant glides. Mastering limiters on dance numbers often do 3–5 dB; keep ballads to 1–3 dB."
       }
     ]
   },
@@ -249,7 +249,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Large Bollywood tours in arenas and stadiums typically run 95–102 dBA LAeq-15 at FOH, with peaks near 110 dBA and 110–120 dBC on dance numbers. Crowd sing-alongs add several dB, so leave vocal headroom. India’s Noise Pollution Rules, 2000 cap loudspeakers at the boundary at 10 dB(A) above ambient or 75 dB(A) and ban outdoor amplified sound 10 pm–6 am except on limited festival nights; courts have enforced this on major concerts. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes — offer earplugs to crew. Watch a C-minus-A gap above 20 dB, which signals too much sub."
+      "text": "Large Bollywood tours in arenas and stadiums typically run 95–102 dBA LAeq-15 at FOH, with peaks near 110 dBA and 110–120 dBC on dance numbers. Crowd sing-alongs add several dB, so leave vocal headroom. India’s Noise Pollution Rules, 2000 cap loudspeakers at the boundary at 10 dB(A) above the area’s ambient standard or 75 dB(A), whichever is lower, and ban outdoor amplified sound 10 pm–6 am except on limited festival nights; courts have enforced this on major concerts. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes — offer earplugs to crew. Watch a C-minus-A gap above 20 dB, which signals too much sub."
     },
     {
       "label": "Studio / streaming:",
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "95–102 dBA LAeq, 75 dB(A) boundary and curfew in India",
+        "live": "95–102 dBA LAeq, boundary limit of 75 dB(A) or lower and curfew in India",
         "studio": "−9 to −6 LUFS-I, −1 dBTP"
       }
     ],

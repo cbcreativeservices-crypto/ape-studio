@@ -212,7 +212,7 @@ const scenarios: MikingScenario[] = [
     explain: 'For an acoustic-electric instrument, a pickup or DI often gives the stable foundation, with a microphone blended for natural detail when the stage allows.',
     why: {
       'The exact sound of the guitar in the room': 'A direct tone may not match the acoustic picture.',
-      'Nothing a microphone does not already give': 'It hears no stage spill and feeds back far less.',
+      'Nothing a microphone does not already give': 'It hears much less stage spill and feeds back far less.',
     },
   },
   {
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Do not assume a polarity switch or a digital delay fixes poor geometry; check with all mics on, in mono.',
     why: {
       'That the delay between them is gone': 'A polarity flip never moves an arrival in time.',
-      'That each note now sums well in mono': 'A comb filter’s notches move with the notes; one flip suits some, not all.',
+      'That each note now sums well in mono': 'A comb filter’s notches fall on some notes and not others; one flip suits some, not all.',
     },
   },
   {

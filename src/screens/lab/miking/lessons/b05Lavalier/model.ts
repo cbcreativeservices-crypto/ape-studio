@@ -55,7 +55,7 @@ const STERNUM_Z = chestZone({
   micTypeIds: ['locLav'],
   mount: 'clip',
   at: STERNUM,
-  tendency: 'A steady, natural voice at one distance from the mouth, however wide the shot — a little chest-heavy, and quieter when the head turns or reads down. It hears clothing and cable taps.',
+  tendency: 'A steady, natural voice at one distance from the mouth, however wide the shot — a little chest-heavy, and quieter when the head turns. It hears clothing and cable taps.',
   checks: ['Turns both ways, reading down, sitting and standing', 'Rubbing, a tie, a necklace or hair on the capsule', 'The broadcast loop and the cable secured lower down'],
 });
 

@@ -275,7 +275,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A supercardioid rejects most toward the rear sides and has a small pickup directly behind. A narrower front pattern is not automatic protection from feedback: check the real pattern.',
     why: {
       'Toward its rear sides, where it rejects most of all': 'That is where it rejects MOST — a good place for a wedge.',
-      'Anywhere except straight in front of the mic’s grille': 'A supercardioid still picks up well at its sides; only its rear sides reject strongly.',
+      'Anywhere except straight in front of the mic’s grille': 'A supercardioid still picks up at its sides (about −9 dB on the ideal pattern); only its rear sides reject strongly.',
     },
   },
   {
@@ -383,18 +383,18 @@ const scenarios: MikingScenario[] = [
     explain: 'Compare a different target, axis or distance. Keep the change only if the quiet and ringing strokes stay distinct.',
     why: {
       'Ask the player to play the dayan with softer fingers': 'The player’s sound is the goal: move the mic.',
-      'A high-pass filter set as for a kick drum': 'A filter does not soften clicks — and never import another drum’s settings.',
+      'A high-pass filter set as for a kick drum': 'A high-pass filter does not soften clicks — and never import another drum’s settings.',
     },
   },
   {
     id: 'ta.mix.2',
     page: 'practice',
     prompt: 'Live, your wedge sits about 120° off a supercardioid’s front. What can you expect?',
-    options: ['Strong rejection on paper; less in reality, least in the lows', 'Silence from the wedge, because it sits right in the null', 'More pickup than straight behind, where it rejects most'],
-    correct: 'Strong rejection on paper; less in reality, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Strong rejection on paper; less in reality, often least in the lows', 'Silence from the wedge, because it sits right in the null', 'More pickup than straight behind, where it rejects most'],
+    correct: 'Strong rejection on paper; less in reality, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
-      'Silence from the wedge, because it sits right in the null': 'Real nulls are shallow, and shallowest in the lows.',
+      'Silence from the wedge, because it sits right in the null': 'Real nulls are shallow, and often shallowest in the lows.',
       'More pickup than straight behind, where it rejects most': 'Straight behind, a supercardioid has a small rear lobe; it rejects most toward the rear sides.',
     },
   },
@@ -505,7 +505,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channels give the mics the power they need (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channels give the mics the power they need (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the heads', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mics, stands and cables stay clear of both hands, the knees and the supports', role: 'required', feedback: 'Clearance is part of every passing setup — the bayan hand moves all the time.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers use on tabla', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };

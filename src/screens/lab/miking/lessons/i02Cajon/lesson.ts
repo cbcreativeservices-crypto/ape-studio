@@ -142,7 +142,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which mic types appear in working cajón setups?',
     options: ['A cardioid condenser, or a low-frequency dynamic', 'Only one specific model — no other will do', 'Only an omni mic, because the box is a large, spread-out source'],
     correct: 'A cardioid condenser, or a low-frequency dynamic',
-    explain: 'A cardioid condenser in one demonstration; a low-frequency dynamic in another maker’s cajón package. No model is mandatory.',
+    explain: 'A cardioid condenser in one demonstration; a low-frequency dynamic from another maker’s drum-mic package, described for cajón too. No model is mandatory.',
     why: {
       'Only one specific model — no other will do': 'No model is mandatory: choose by properties.',
       'Only an omni mic, because the box is a large, spread-out source': 'Cardioids appear in working setups; the room decides.',
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A low-frequency dynamic in front, offset from the upward port', ok: true, power: 'none', feedback: 'The port is in front on this model; a dynamic needs no phantom.' },
       { id: 'b', label: 'A dynamic in front of the plate, angled down, a null toward the wedge', ok: true, power: 'none', feedback: 'One practical mic; a dynamic needs no phantom.' },
       { id: 'c', label: 'A mic behind the player, aimed at the back', ok: false, power: 'none', feedback: 'This model has no rear port — revise the port position.' },
-      { id: 'd', label: 'A small condenser in front of the plate', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'd', label: 'A small condenser in front of the plate', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'e', label: 'A mic straight down the port’s axis, 5 cm away', ok: false, power: 'none', feedback: 'Square in the port’s air: pops and boom.' },
     ],
     reasons: [{ id: 'r.doc', label: 'It is at the side the port really is, offset from its air, outside the player’s motion', role: 'required', feedback: 'Say where the port is — and how the mic stays clear.' }, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Fewer open mics keep spill and feedback down', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, TECH_REASON],

@@ -146,7 +146,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 19,
     "title": "Heavy Metal",
     "line": "Note definition in the low end: kick, palm-muted guitars and bass must stay distinct at speed, with the vocal still audible on top",
-    "origin": "Birmingham, England, around 1970 (Black Sabbath); New Wave of British Heavy Metal late 1970s; thrash in the US Bay Area and Germany in the 1980s; death metal in Florida and Sweden; metalcore and djent (Sweden, US, UK) from the late 1990s–2000s"
+    "origin": "Birmingham, England, around 1970 (Black Sabbath); New Wave of British Heavy Metal late 1970s; thrash in the US Bay Area and Germany in the 1980s; death metal in Florida and Sweden; metalcore (US) from the early 1990s and djent (Sweden, US, UK) from the late 1990s–2000s"
   },
   {
     "id": "gospel",
@@ -209,7 +209,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 28,
     "title": "Reggae",
     "line": "Drum and bass: a deep, round, melodic bass line locked to a dry one-drop kick, with the lead vocal clear on top",
-    "origin": "Kingston, Jamaica, late 1960s (out of ska and rocksteady); roots and dub through the 1970s; lovers rock and UK sound-system culture in London from the mid-1970s"
+    "origin": "Kingston, Jamaica, late 1960s (out of ska and rocksteady); roots and dub through the 1970s; UK sound systems in London from the mid-1950s and lovers rock there from the mid-1970s"
   },
   {
     "id": "sertanejo",

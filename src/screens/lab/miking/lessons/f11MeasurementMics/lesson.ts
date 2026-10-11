@@ -265,7 +265,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'At a live show, the engineer asks to put your measurement mic through the PA to hear it. What do you say?',
     options: ['Keep it on the analyzer, away from the PA', 'Route it low, where the audience barely hears it', 'Route it, then mute it before the next reading'],
     correct: 'Keep it on the analyzer, away from the PA',
-    explain: 'A measurement mic is routed to a recording or analyzer input, never returned to the PA — it would feed back, and it would change the very sound being measured.',
+    explain: 'A measurement mic is routed to a recording or analyzer input, never returned to the PA — it could feed back, and it would change the very sound being measured.',
     why: {
       'Route it low, where the audience barely hears it': 'At any level it is in the loop it measures, and it can feed back.',
       'Route it, then mute it before the next reading': 'Even briefly, it changes what is being measured and risks feedback.',

@@ -342,7 +342,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic on the bell’s axis — or overloading? Compare a little off axis at matched level; check the mic’s headroom.',
     options: ['Compare off axis at matched level; check headroom', 'Cut the treble on the channel until it smooths out', 'Ask the player to play everything more softly'],
     correct: 'Compare off axis at matched level; check headroom',
-    explain: 'On the axis the mic hears the bright beam; an overloaded capsule smears too. Move the angle first, then check the mic can take the peaks — before EQ.',
+    explain: 'On the axis the mic hears the bright beam; an overloaded mic smears too. Move the angle first, then check the mic can take the peaks — before EQ.',
     why: {
       'Cut the treble on the channel until it smooths out': 'EQ dulls the horn and cannot undo overload. Fix the angle and the headroom first.',
       'Ask the player to play everything more softly': 'The dynamics are the music. The mic should take them.',
@@ -420,7 +420,7 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'A mic beside the valves, out of the bell’s way', ok: false, power: 'none', feedback: 'The valves are where the hands work — and the sound leaves the bell, not the valves.' },
     ],
     reasons: [docReason('the centre of the bell’s rim'), clearReason('the bell’s movement, the mutes and the valve hands'), DYN_POWER_REASON, { id: 'r.room', label: 'In a good room, a little distance lets the room join the sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON('trumpet'), LOUD_REASON],
-    explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point measured from the bell, clearance from what moves, and the power the mic needs (a dynamic needs none; a condenser needs phantom).',
+    explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point measured from the bell, clearance from what moves, and the power the mic needs (a dynamic needs none; the condensers here need phantom).',
   },
   {
     id: 'tp.prac.setup2',
@@ -453,9 +453,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What mainly sets a flugelhorn apart from a trumpet?',
     options: ['A wider, more conical tube and a larger bell', 'It has five valves where a trumpet has three', 'It is played with a reed in the mouthpiece'],
     correct: 'A wider, more conical tube and a larger bell',
-    explain: 'Both are buzzed-lip brass with three valves; the flugelhorn’s tube widens more gradually and its bell is larger — part of its mellower, rounder sound.',
+    explain: 'Both are buzzed-lip brass, usually with three valves; the flugelhorn’s tube widens more gradually and its bell is larger — part of its mellower, rounder sound.',
     why: {
-      'It has five valves where a trumpet has three': 'A flugelhorn has three valves, like a trumpet.',
+      'It has five valves where a trumpet has three': 'A flugelhorn usually has three valves, like a trumpet.',
       'It is played with a reed in the mouthpiece': 'No brass instrument has a reed: the lips buzz.',
     },
   },
@@ -551,7 +551,7 @@ export const A01_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The trumpet is a brass instrument: the player buzzes their lips into a cup mouthpiece, and the air column in about 1.4 m of tube, wound into a loop, sets the note. Three valves add extra loops of tube for the notes between. The flugelhorn is its close relative: the same three valves, a wider, more gradually widening tube and a larger bell — a rounder, mellower sound.', src: 'PL-2010' },
+    { title: 'WHAT IT IS', text: 'The trumpet is a brass instrument: the player buzzes their lips into a cup mouthpiece, and the air column in about 1.4 m of tube, wound into a loop, sets the note. Three valves add extra loops of tube for the notes between. The flugelhorn is its close relative: usually the same three valves, a wider, more gradually widening tube and a larger bell — a rounder, mellower sound.', src: 'PL-2010' },
     { title: 'WHERE YOU MEET IT', text: 'Jazz and big bands, horn sections in pop, soul, funk and Latin music, orchestras and brass bands, solos and studio overdubs — and players often switch between trumpet and flugelhorn within one set. This lesson covers one horn: a studio overdub, a live solo, and a spot in a section.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries melodies and bright accents and can be very loud. Ask what the part needs: a focused solo, more edge, a softer blend, a muted colour — and remember the player moves and turns with the music.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A trumpet’s bell is about 12 cm across; a flugelhorn’s about 15 cm. A trumpet’s lowest note is around 165 Hz, but its sound reaches far higher — and its peaks close to the bell are very loud. This lab draws both horns about that size, played standing.', src: 'Y-YTR2330' },

@@ -252,7 +252,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −9 to −6 LUFS-I with a true peak of −1 dBTP (hard techno often runs −6 to −5). Vinyl cuts work best around −9 LUFS short-term max with strictly mono lows. Streaming normalizes to about −14 LUFS (some services about −16), so a master at −6 gets turned down and loses punch next to a −9 master with intact kick transients. Keep a PLR of about 7–10 dB, so the kick still hits after limiting."
+      "text": "Club masters typically land at −9 to −6 LUFS-I with a true peak of −1 dBTP (hard techno often runs −6 to −5). Vinyl cuts work best around −9 LUFS short-term max with strictly mono lows. Streaming normalizes to about −14 LUFS (some services about −16), so a master at −6 gets turned down and loses punch next to a −9 master with intact kick transients. Keep a PLR of about 7–10 dB, so the kick still hits after limiting (at −1 dBTP that means a master at about −8 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {

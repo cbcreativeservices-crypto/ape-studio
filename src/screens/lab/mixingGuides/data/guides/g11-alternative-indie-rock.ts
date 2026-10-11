@@ -264,7 +264,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Indie vocals are personal and characterful—breathy, deadpan, conversational or yelped—and the mix should flatter the singer’s quirks rather than standardize them. Sit the lead roughly level with the main guitar and slightly into the band; in shoegaze, tuck it further and let reverb carry it. Pitch correction should be minimal and inaudible; some producers avoid heavy comping altogether because syllable-level editing kills the performance. Doubles and harmonies, sometimes sung by two people around one mic, are tucked 6–10 dB under the lead or panned wide. A distinctive trick is splitting the vocal to a guitar amp and blending it back for midrange bite. Live, singer-guitarists stand close to loud amps: use a tight-pattern dynamic (a supercardioid dynamic or condenser capsule chosen for background rejection), work the HPF, and keep EQ narrow to protect gain-before-feedback."
+      "text": "Indie vocals are personal and characterful—breathy, deadpan, conversational or yelped—and the mix should flatter the singer’s quirks rather than standardize them. Sit the lead roughly level with the main guitar and slightly into the band; in shoegaze, tuck it further and let reverb carry it. Pitch correction should be minimal and inaudible; some producers avoid heavy comping altogether because syllable-level editing kills the performance. Doubles and harmonies, sometimes sung by two people around one mic, are tucked 6–10 dB under the lead or panned wide. A distinctive trick is splitting the vocal to a guitar amp and blending it back for midrange bite. Live, singer-guitarists stand close to loud amps: use a tight-pattern mic (a supercardioid dynamic or condenser capsule chosen for background rejection), work the HPF, and keep EQ narrow to protect gain-before-feedback."
     }
   ],
   "loudness": [
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern indie masters typically land at −11 to −8 LUFS-I, with lo-fi, folk-leaning or audiophile releases at −14 to −11. Use −1 dBTP for masters near −14 LUFS and around −2 dBTP for louder ones, a common streaming recommendation. The genre tolerates and rewards dynamics: aim for a PLR of 10–13 dB and a loudness range of 6–10 LU so quiet-loud songs keep their impact after normalization. Tape saturation is often preferred to hard digital limiting."
+      "text": "Modern indie masters typically land at −11 to −8 LUFS-I, with lo-fi, folk-leaning or audiophile releases at −14 to −11. Use −1 dBTP for masters near −14 LUFS and around −2 dBTP for louder ones, a common streaming recommendation. The genre tolerates and rewards dynamics: aim for a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of 6–10 LU so quiet-loud songs keep their impact after normalization. Tape saturation is often preferred to hard digital limiting."
     }
   ],
   "liveStudio": {

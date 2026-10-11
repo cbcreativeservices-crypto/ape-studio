@@ -159,9 +159,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The channel you are given has no phantom power. Which of this page’s mics can you use?',
     options: ['The compact dynamic: it needs no power to work', 'The condenser, if it sits higher above the bars', 'Either one, as long as the channel gain is turned up'],
     correct: 'The compact dynamic: it needs no power to work',
-    explain: 'Dynamic mics need no power. A condenser needs phantom power wherever it is placed.',
+    explain: 'Dynamic mics need no power. The condensers here need phantom power wherever they are placed.',
     why: {
-      'The condenser, if it sits higher above the bars': 'Height does not change what a condenser needs: it still needs phantom power.',
+      'The condenser, if it sits higher above the bars': 'Height does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   },
@@ -261,7 +261,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Cardioid, supercardioid, hypercardioid: do they share the same rear and side rejection?',
     options: ['No — confirm the particular mic and the stage', 'Yes — all directional mics reject sound alike from behind', 'Yes, as long as they are aimed at the bars'],
     correct: 'No — confirm the particular mic and the stage',
-    explain: 'Their nulls sit in different places, and the tighter patterns pick up a little behind. Aim the real pattern’s rejection at wedges and loud neighbours.',
+    explain: 'Their nulls sit in different places, and the tighter patterns pick up some sound from behind — a hypercardioid more than a supercardioid. Aim the real pattern’s rejection at wedges and loud neighbours.',
     why: {
       'Yes — all directional mics reject sound alike from behind': 'The nulls differ between patterns.',
       'Yes, as long as they are aimed at the bars': 'The aim at the bars is the same; the rejection elsewhere is not.',
@@ -646,7 +646,7 @@ export const I10_LESSON: MalletLesson = {
     { title: 'WHAT IT IS', text: 'Orchestral bells: small tuned steel bars laid out like a piano keyboard, ringing bright and long. Some stand on a frame with tubes under the bars and a damper pedal; others sit in a case, damped by the player’s hand.', src: 'YMH-YG2500-OM' },
     { title: 'WHERE YOU MEET IT', text: 'In the percussion section of orchestras, concert bands and marching bands, in pit bands and on recordings.', src: 'LESSON-GLK' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Sparkling melodies and accents above the ensemble; long ringing notes or crisp damped ones. Mallets — rubber, plastic or metal — and damping are the player’s choices.', src: 'YMH-CHOOSE' },
-    { title: 'ITS SIZE', text: 'A concert model covers about three and a third octaves (C5 to E8): 41 steel bars, each 32.5 mm wide, about 106 × 56 cm. A case model covers two and a half octaves in a 79 × 48 cm case. This lab draws both.', src: 'YMH-YG2500-OM' },
+    { title: 'ITS SIZE', text: 'A concert model covers about three and a third octaves (sounding C5 to E8, usually written two octaves lower): 41 steel bars, each 32.5 mm wide, about 106 × 56 cm. A case model covers two and a half octaves in a 79 × 48 cm case. This lab draws both.', src: 'YMH-YG2500-OM' },
   ],
   sound: {
     stages: words.sound.stages.map((s) => ({ title: s.title, text: s.text })),

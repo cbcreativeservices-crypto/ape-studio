@@ -23,7 +23,7 @@ const pages: LessonPages = {
     title: 'Meet the China',
     goal: 'Get to know the China cymbal — a squarer cup and an upturned edge, upright or turned over — where you meet it and what it does in the music, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A China has a squarer cup and an upturned lip; turned over, its valley becomes a raised ring. Players crash it turned over, and some ride a large one upright. Its mount is the player’s choice.',
+    takeaway: 'A China has a squarer cup and an upturned lip; turned over, its valley becomes a raised ring. Most players crash it turned over, and some ride a large one upright. Its mount is the player’s choice.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a China mic by its properties — pattern, power, size and mount — after deciding whether it needs its own mic at all.',
     credit: { scenarios: ['ch.mic.1', 'ch.mic.power', 'ch.mic.spill', 'ch.rec.1'], note: 'Answer the four checks (one reaches back to how the China sounds).' },
-    takeaway: 'The overheads usually carry a China. When it needs its own mic, a small condenser or dynamic above, or a mic underneath (a side-address one can do this too), can serve. Condensers need phantom power.',
+    takeaway: 'The overheads usually carry a China. When it needs its own mic, a small condenser or dynamic above, or a mic underneath (a side-address one can do this too), can serve. The condensers here need phantom power.',
   },
   placement: {
     title: 'Placement Studio',
@@ -108,7 +108,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The side of the shoulder, about an inch above the valley',
     explain: 'Where the shoulder comes down into the valley, about an inch above it: the side of the shoulder rides with a controlled sound.',
     why: {
-      'The very centre of the cup, with the stick’s shoulder': 'The cup gives hard accents. Riding is done on the shoulder.',
+      'The very centre of the cup, with the stick’s shoulder': 'The cup gives hard accents. Riding is done on the shoulder, or lightly out at the edge.',
       'Underneath the lip, reaching up from below the plate': 'The stick plays the top face. The shoulder, above the valley, is the ride spot.',
     },
   },
@@ -346,7 +346,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'No China mic: the overheads already carry it', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
       { id: 'b', label: 'A small dynamic above the China on the far side, aimed at the shoulder', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
-      { id: 'c', label: 'A small condenser under the China, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
+      { id: 'c', label: 'A small condenser under the China, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'd', label: 'A side-address condenser under the China', ok: false, power: 'phantom', feedback: 'A fair idea — but it needs phantom power, and this input has none.' },
       { id: 'e', label: 'Turn the China upright so it is quieter in the overheads', ok: false, power: 'none', feedback: 'How it is mounted is the player’s choice. Mic it as it is.' },
     ],
@@ -385,7 +385,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Turned over to crash it; some jazz players ride a large one upright.',
     why: {
       'Flat on the floor beside the kick': 'A cymbal needs to hang loosely on a stand.',
-      'Upright, clamped tight to its stand': 'Clamped tight, any cymbal chokes. Turned over is the crashing mount.',
+      'Upright, clamped tight to its stand': 'Clamped tight, any cymbal chokes. Turned over is the usual crashing mount.',
     },
   },
   {
@@ -446,7 +446,7 @@ export const I01E_LESSON: CymbalLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A cymbal with an upturned edge and a squarer cup — an “effect” cymbal with a trashy, cutting sound. Players crash it turned over; some jazz players ride a large one upright.', src: 'SAB-101' },
+    { title: 'WHAT IT IS', text: 'A cymbal with an upturned edge and a squarer cup — an “effect” cymbal with a trashy, cutting sound. Most players crash it turned over; some jazz players ride a large one upright.', src: 'SAB-101' },
     { title: 'WHERE YOU MEET IT', text: 'On many rock and metal kits, and some jazz kits — often high or far out. Here it takes the 18 in crash’s stand on the right.', src: 'SAB-JH' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Cutting accents, and sometimes a trashy ride. Ask the player how it is used — crashed or ridden, turned over or upright — and whether the overheads already carry it.', src: 'SAB-101' },
     { title: 'ITS SIZE', text: 'Chinas come in about the same sizes as crashes; 16 and 18 in are popular. An 18 in (45.7 cm) is drawn here — its shape is a drawing, not a measured cymbal.', src: 'SAB-101' },

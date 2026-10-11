@@ -68,7 +68,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
     looking: 'Top view · a mic in front of a front bell',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still faces the bell.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Facing back at a front bell, its rear points at the audience side — a wedge down on the floor in front sits below that line, so tilting the mic matters as much as turning it.',
     shieldNote: 'Real patterns change with pitch, and a mic that sounds good solo may be full of drums once the band plays. Test at performance level, with the full band.',
     studioId: 'eu.ctx.studio',

@@ -82,7 +82,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     reveal: 'Closer tends to bring more bass, breath and pops and less of the room; farther, more room and more of the other host; a little above the mouth’s line, softer pops. Hosts and rooms vary, so “it depends on this host” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       bcDynArm: 'Ideas to try with the broadcast dynamic: speak into its END; start about 10–15 cm away, then move a little closer and farther with the host sitting naturally, comparing at matched loudness.',
-      bcDynSuper: 'Ideas to try with a supercardioid: its rear lobe means a loudspeaker behind it goes a little to one side of its rear — check the actual pattern.',
+      bcDynSuper: 'Ideas to try with a supercardioid: its rear lobe means a loudspeaker behind it goes well to one side of its rear — check the actual pattern.',
       bcLdcArm: 'Ideas to try with the studio condenser: front mark toward the mouth, a pop screen at least 10 cm in front of it, about 15–20 cm from the lips; listen for the room and the desk.',
     },
     note: 'Clearance comes first: nothing touches the host, the arm stays out of the sight line and the page turns, and the clamp holds within its rating.',

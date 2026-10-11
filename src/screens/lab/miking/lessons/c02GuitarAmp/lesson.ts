@@ -25,7 +25,7 @@ const pages: LessonPages = {
     title: 'Meet the guitar and its amp',
     goal: 'Get to know the electric guitar’s chain — strings, pickups, pedals, amp and speaker — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The strings start the sound, the pickups turn it into a small signal, and the amp and its speaker make the sound you mic. Find the speaker itself — on a combo it is not in the middle of the grille.',
+    takeaway: 'The strings start the sound, the pickups turn it into a small signal, and the amp and its speaker make the sound you mic. Find the speaker itself — on many combos it is not in the middle of the grille.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -163,9 +163,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The guitar channel has no phantom power. Which of this page’s mic types can you still use?',
     options: ['The small condenser, kept a little back from the grille', 'The two dynamics: neither needs power to work', 'The small condenser, as long as the amp is switched on'],
     correct: 'The two dynamics: neither needs power to work',
-    explain: 'Dynamic mics need no power. A condenser needs phantom power from the desk wherever it is placed. A ribbon mic needs its own maker’s rules about phantom — check them before connecting.',
+    explain: 'Dynamic mics need no power. The condenser here needs phantom power from the desk wherever it is placed. A ribbon mic needs its own maker’s rules about phantom — check them before connecting.',
     why: {
-      'The small condenser, kept a little back from the grille': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The small condenser, kept a little back from the grille': 'Distance does not change what this condenser needs: it still needs phantom power.',
       'The small condenser, as long as the amp is switched on': 'The amp powers the speaker, not the mic. The condenser needs phantom from the desk.',
     },
   },
@@ -211,7 +211,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “1.5–5 cm (½–2 in)”. Measured from what?',
     options: ['From the middle of the grille, wherever the speaker is', 'From the back of the cone, measured inside the amp', 'From the grille cloth, in front of the speaker itself'],
     correct: 'From the grille cloth, in front of the speaker itself',
-    explain: 'The grille is the surface you can see and measure from — and the number belongs to the speaker that is really sounding. On a combo the speaker sits off-centre, so the middle of the grille is the wrong place to start.',
+    explain: 'The grille is the surface you can see and measure from — and the number belongs to the speaker that is really sounding. On many combos the speaker sits off-centre, so the middle of the grille can be the wrong place to start.',
     why: {
       'From the middle of the grille, wherever the speaker is': 'The middle of the grille is not the middle of the speaker on many amps. Find the speaker first.',
       'From the back of the cone, measured inside the amp': 'Nothing is measured from inside the amp: you cannot see or reach it. The grille is the reference.',
@@ -271,7 +271,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The guitarist’s wedge is downstage, facing back toward them — behind your cardioid amp mic. Where does a cardioid reject most?',
     options: ['At its sides, about ninety degrees off its axis', 'In front of it, toward the speaker it faces', 'Directly behind it, where that wedge sits'],
     correct: 'Directly behind it, where that wedge sits',
-    explain: 'A cardioid rejects most at 180°. The mic faces the amp, so its back faces downstage — toward that wedge. Real nulls are shallower than the simplified pattern, and shallowest in the lows.',
+    explain: 'A cardioid rejects most at 180°. The mic faces the amp, so its back faces downstage — toward that wedge. Real nulls are shallower than the simplified pattern, and often shallowest in the lows.',
     why: {
       'At its sides, about ninety degrees off its axis': 'At 90° a cardioid still picks up about half (−6 dB). Its deepest rejection is directly behind.',
       'In front of it, toward the speaker it faces': 'That is where it picks up MOST — the speaker it is aimed at.',
@@ -528,7 +528,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille in front of the speaker', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the grille, the vents and the player’s pedals', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a guitar amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -631,7 +631,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The desk is short of inputs. Can the amp’s speaker output go straight into a desk input?',
     options: ['No — a speaker output goes only to a speaker', 'Yes, through the input pad on the desk’s channel', 'Yes, if the amp is turned down low first'],
     correct: 'No — a speaker output goes only to a speaker',
-    explain: 'A speaker output carries high power. It goes to a speaker, by a speaker cable — never to a mic, line or DI input. Use the amp’s own direct output only as its manual describes.',
+    explain: 'A speaker output carries high power. It goes to a speaker, by a speaker cable — never to a mic, line or ordinary DI input. Use the amp’s own direct output only as its manual describes.',
     why: {
       'Yes, through the input pad on the desk’s channel': 'An input pad is not made for speaker-level power. The connection itself is the danger.',
       'Yes, if the amp is turned down low first': 'Turning down does not make the connection safe — and some amps must never run without their speaker.',

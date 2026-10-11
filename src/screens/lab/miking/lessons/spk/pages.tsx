@@ -1142,7 +1142,7 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
           <Landing looking={`Top view · a mic in front of the speaker · ${wedge.short.toLowerCase()}`} prompt="The monitor stays where the player needs it. Turn the MIC (AIM) or change its PATTERN until the guitarist’s wedge sits in the rejection." />
           <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? 'done — the wedge sat in a null by your aim or pattern' : 'not yet'}.`}</Body>
           {wedge.id === 'sideFill' ? <Note tone="warn">{wedge.note}</Note> : null}
-          {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
+          {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
           {tried ? (pattern === 'cardioid' ? <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°) — exactly where a mic facing the cabinet points its back at a downstage wedge.</Note> : <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and picks up a little directly behind (${fmtDb(gainDb(pattern, 180))}). With the wedge straight behind, the cardioid suits it better here.`}</Note>) : null}
         </>
       ) : (

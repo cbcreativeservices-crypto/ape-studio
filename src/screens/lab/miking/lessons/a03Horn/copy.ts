@@ -67,7 +67,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
     looking: 'Top view · a mic behind and beside the bell',
     prompt: 'The side-fill behind the horn stays where it is. Turn the MIC (AIM) or change its PATTERN until the fill sits in the rejection — while the mic still faces toward the bell.',
     activityDone: 'done — the side-fill sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). A mic behind the horn faces forward, toward the bell, so its rear points at the back of the stage — where a side-fill or a drum kit may be. The player’s own wedge, in FRONT of the mic, sits where no null can reach.',
     shieldNote: 'Real patterns change with pitch, and the wall behind the player reflects the stage back into the mic — the free-field pattern cannot show that. Test with the full band playing.',
     studioId: 'hn.ctx.studio',

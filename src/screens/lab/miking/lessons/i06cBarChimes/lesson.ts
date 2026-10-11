@@ -56,9 +56,9 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'Put a mic at each end of the row: see how each bar reaches them at different times, what polarity does and does not change, and judge the pair in mono.',
+    goal: 'Put a mic at each end of the row: see how the bars reach them at different times, what polarity does and does not change, and judge the pair in mono.',
     credit: { scenarios: ['bc.two.1', 'bc.two.2', 'bc.two.3', 'bc.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each bar reaches two end mics at different times — a different delay for every bar along the sweep. Polarity flips the sign; it does not remove a delay. Check width and mono; start with one mic.',
+    takeaway: 'Almost every bar reaches two end mics at different times — a different delay for every bar along the sweep; only a bar midway between them arrives at both at once. Polarity flips the sign; it does not remove a delay. Check width and mono; start with one mic.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The spare channel has no phantom power. Which of this page’s mics can you use?',
     options: ['The small dynamic: it needs no power', 'The small condenser, if it sits farther back', 'Either, as long as the gain is turned up'],
     correct: 'The small dynamic: it needs no power',
-    explain: 'A dynamic needs no power. A condenser needs phantom power wherever it is placed.',
+    explain: 'A dynamic needs no power. The condenser here needs phantom power wherever it is placed.',
     why: {
       'The small condenser, if it sits farther back': 'Distance does not change what a condenser needs.',
       'Either, as long as the gain is turned up': 'Gain cannot power a condenser.',
@@ -302,7 +302,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two mics, one at each end of the row. Does that give an even, wide image by itself?',
     options: ['Not by itself — check the width and the mono sum', 'Yes — two end mics will give an even, wide image by themselves', 'Yes, as long as both are the same model'],
     correct: 'Not by itself — check the width and the mono sum',
-    explain: 'Each bar reaches the two mics at different times — a different delay for every bar. Listen to the stereo width and the mono sum; start with one mic.',
+    explain: 'Almost every bar reaches the two mics at different times — a different delay for every bar; only a bar midway between them arrives at both at once. Listen to the stereo width and the mono sum; start with one mic.',
     why: {
       'Yes — two end mics will give an even, wide image by themselves': 'Every bar has its own delay to the two mics; check the result by ear, in mono.',
       'Yes, as long as both are the same model': 'Matched mics do not remove the different arrival times.',
@@ -416,7 +416,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small dynamic about 45 cm in front of the row, outside the swing, its back to the wedge', ok: true, power: 'none', feedback: 'A directional spot clear of the gesture; a dynamic needs no phantom.' },
       { id: 'b', label: 'Move the chimes away from the cymbals, and rely on the overheads', ok: true, power: 'none', feedback: 'Fair, if the overheads carry the sweep once the layout changes.' },
-      { id: 'c', label: 'Small condenser in front of the row', ok: false, power: 'phantom', feedback: 'This input has no phantom, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser in front of the row', ok: false, power: 'phantom', feedback: 'This input has no phantom, and this condenser needs it.' },
       { id: 'd', label: 'A mic in the swing, as close as the bars allow', ok: false, power: 'none', feedback: 'The bars swing after every strike — clearance comes first.' },
       { id: 'e', label: 'Ask the player to sweep harder so the chimes cut through', ok: false, power: 'none', feedback: 'A harder sweep changes the music; fix the balance instead.' },
     ],

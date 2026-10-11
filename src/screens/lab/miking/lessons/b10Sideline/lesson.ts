@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A headset steadies the reporter’s questions at one distance; the guest still needs a handheld, a body mic or a boom.',
     why: {
       'Nothing: the headset hears both of them clearly': 'The guest is far from the reporter’s mouth corner: distant and crowd-heavy.',
-      'The crowd: the headset cancels it': 'The crowd has its own mics; a headset cancels nothing.',
+      'The crowd: the headset cancels it': 'The crowd has its own mics; a headset does not cancel it.',
     },
   },
   {
@@ -262,7 +262,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does almost all of the guest’s voice leave?',
     options: ['The mouth — distances start at the lips', 'The throat, low in the neck where the folds are', 'The chest, behind the breastbone, where it resonates'],
     correct: 'The mouth — distances start at the lips',
-    explain: 'The voice is made in the throat but leaves through the mouth (on m, n and ng partly the nose). Distances are read from the lips.',
+    explain: 'The voice is made in the throat but leaves through the mouth (on m, n and ng through the nose instead). Distances are read from the lips.',
     why: {
       'The throat, low in the neck where the folds are': 'The folds start the sound; it leaves through the mouth.',
       'The chest, behind the breastbone, where it resonates': 'The chest is not where the voice leaves a talker.',
@@ -630,7 +630,7 @@ export const B10_LESSON: Lesson = {
       { title: 'Breath from the lungs', text: 'The lungs push air up the windpipe — after play, often out of breath, in short bursts.' },
       { title: 'The vocal folds buzz', text: 'In the voice box, low in the throat, two small folds come together and the breath sets them buzzing. That buzz is the raw sound of the voice.' },
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue, the lips and the open mouth shape the buzz into vowels and words; the tongue, the teeth and the lips add the consonants.' },
-      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng partly through the nose. That is where every distance here is measured from: the speaking person’s lips.' },
+      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng through the nose instead. That is where every distance here is measured from: the speaking person’s lips.' },
     ],
     attack: 'P and B push a puff of air straight out of the lips, and a breathless guest pushes harder. A handheld a little below the mouth, still aimed at it, keeps the capsule out of the worst of it.',
     body: 'The vowels carry most of the level and the tone. Close to a directional mic they gain low end (the proximity effect); farther, more of the crowd, the wind and the other voice join in. Tendencies, to check by ear.',

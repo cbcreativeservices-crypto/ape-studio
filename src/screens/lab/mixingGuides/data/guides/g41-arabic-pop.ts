@@ -285,7 +285,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Up-tempo masters commonly reach −9 to −6 LUFS-I, ballads −11 to −9, with true peak at −1 dBTP (−2 dBTP when louder than −14 LUFS). Services normalize to about −14 LUFS, so over-limiting gains nothing and costs string swells and darbuka punch. A PLR of 8–11 dB and loudness range of 5–9 LU keep the intro-to-chorus contrast."
+      "text": "Up-tempo masters commonly reach −9 to −6 LUFS-I, ballads −11 to −9, with true peak at −1 dBTP (−2 dBTP when louder than −14 LUFS). Services normalize to about −14 LUFS, so over-limiting gains nothing and costs string swells and darbuka punch. A PLR of 8–11 dB (at −2 dBTP that means a master at about −10 LUFS-I or quieter) and loudness range of 5–9 LU keep the intro-to-chorus contrast."
     }
   ],
   "liveStudio": {

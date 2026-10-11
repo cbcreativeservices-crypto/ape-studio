@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The three dynamics: none of them needs power',
     explain: 'Dynamic mics need no power. The rim condenser needs phantom power, wherever it is mounted.',
     why: {
-      'The rim condenser, as long as it is clamped on': 'How it is mounted does not change what it needs: a condenser needs phantom power.',
+      'The rim condenser, as long as it is clamped on': 'How it is mounted does not change what it needs: this condenser needs phantom power.',
       'All of them, provided the cable run is short': 'Cable length does not power a condenser. Only the dynamics work without phantom.',
     },
   },
@@ -385,8 +385,8 @@ const scenarios: MikingScenario[] = [
     id: 'tm.mix.2',
     page: 'practice',
     prompt: 'The crash sits about 125° off a supercardioid tom mic’s axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the crash, because it sits in the null', 'More crash than straight behind it, which is where it rejects most'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
+    options: ['Strong rejection on paper; in reality less, and often least in the lows', 'Silence from the crash, because it sits in the null', 'More crash than straight behind it, which is where it rejects most'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
     explain: 'A null is infinitely deep only on paper. Real mics reject far less there — and a crash is loud. Use the null to aim, not to promise silence.',
     why: {
       'Silence from the crash, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less.',
@@ -474,7 +474,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Check mic and input headroom, physical contact and hardware noise, then model specifications and gain.',
     options: ['Where it starts — mic, input or rattling hardware — then gain', 'Pull the channel fader down until the hits sound cleaner', 'Cut the low end with EQ so the channel has more headroom'],
     correct: 'Where it starts — mic, input or rattling hardware — then gain',
-    explain: 'A lowered fader does not undo clipping at the input, and EQ after an overloaded capsule cannot restore it. Find where it starts.',
+    explain: 'A lowered fader does not undo clipping at the input, and EQ after an overloaded mic cannot restore it. Find where it starts.',
     why: {
       'Pull the channel fader down until the hits sound cleaner': 'The fader comes after the input; a clipped input stays clipped.',
       'Cut the low end with EQ so the channel has more headroom': 'EQ after the input cannot undo clipping at the input.',
@@ -501,7 +501,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each channel gives its mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each channel gives its mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'Each mic starts at a suggested starting point, from its own head', role: 'required', feedback: 'Say why each position is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mics, mounts and cables stay out of the sticks’ path and the cymbals’ swing', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand of tom mic most engineers use', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -530,7 +530,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'No tom mics: the overheads already carry the toms clearly', ok: true, power: 'none', feedback: 'A fair plan when the overheads carry the toms — fewer open mics, nothing to power.' },
       { id: 'b', label: 'One dynamic between the two rack toms, 2.5 to 7.5 cm above them, the floor tom left to the overheads', ok: true, power: 'none', feedback: 'A suggested shared position, powered by what this input can supply.' },
-      { id: 'c', label: 'A rim condenser on the floor tom for detail', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A rim condenser on the floor tom for detail', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Three tom mics, one per drum, on the one spare channel', ok: false, power: 'none', feedback: 'Three mics need three channels. One channel means none, or a shared mic.' },
       { id: 'e', label: 'Remove the floor tom’s bottom head so a mic can go inside', ok: false, power: 'none', feedback: 'That changes the drum. Never take a head off to suit a mic plan — it is the player’s call.' },
     ],
@@ -676,7 +676,7 @@ export const M03_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT THEY ARE', text: 'Toms are the kit’s tuned drums: two rack toms on a holder over the kick, and a floor tom standing on its own legs at the player’s right. Each has a batter head on top, struck with sticks, and a resonant head below — no wires.', src: 'S-REC' },
+    { title: 'WHAT THEY ARE', text: 'Toms are the kit’s drums tuned from high to low: two rack toms on a holder over the kick, and a floor tom standing on its own legs at the player’s right. Each has a batter head on top, struck with sticks, and a resonant head below — no wires.', src: 'S-REC' },
     { title: 'WHERE YOU MEET THEM', text: 'In most drum kits, on stage and in the studio — though some styles leave them to the overhead mics. This lesson covers studio recording and live sound.', src: 'DPA-TOMS' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Fills and accents, tuned from high to low between the snare and the kick. Ask the player: should the toms blend into a natural kit picture, or stand out with their own channels?', src: 'S-REC' },
     { title: 'THEIR SIZES', text: 'A common 5-piece kit pairs a 10 × 7 in and a 12 × 8 in rack tom with a 16 in floor tom (16 × 16 in here; some are 15 in deep). This lab draws that kit.', src: 'YMH-TC' },

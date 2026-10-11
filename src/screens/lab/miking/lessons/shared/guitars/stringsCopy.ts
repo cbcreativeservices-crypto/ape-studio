@@ -135,7 +135,7 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
       looking: o.context.looking,
       prompt: `The wedge stays where the player needs it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the ${n.one}.`,
       activityDone: 'done — the wedge sat in a null by your aim or pattern',
-      deepNull: `On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence — and the ${n.one} can still reflect stage sound back into the mic.`,
+      deepNull: `On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence — and the ${n.one} can still reflect stage sound back into the mic.`,
       cardioidReveal: `What you just saw: a cardioid rejects most directly behind (180°). Aimed at the ${n.one}, its rear faces out toward the floor in front — near the wedge.`,
       shieldNote: `Moving a mic for isolation changes the ${n.one}’s tone, too: check both. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.`,
       studioId: o.context.studioId,

@@ -193,7 +193,7 @@ export const M09_ZONES: DocumentedZone[] = [
     box: { min: { x: -1300, y: -2000, z: -1200 }, max: { x: 900, y: 300, z: S0.z - 200 }, prov: ill('the hi-hat side of the snare') },
     drawn: { side: { u0: AB_HAT.x - 160, u1: AB_HAT.x + 160, v0: AB_HAT.y - 110, v1: AB_HAT.y + 110 }, top: { u0: AB_HAT.x - 160, u1: AB_HAT.x + 160, v0: AB_HAT.z - 160, v1: AB_HAT.z + 160 } },
     start: { p: AB_HAT, az: 0, el: -90 },
-    tendency: 'Width and a wider view of the kit. Arrival times differ for every source but the snare, so listen to the pair in mono as well as in stereo.',
+    tendency: 'Width and a wider view of the kit. Arrival times can differ for every source but the snare, so listen to the pair in mono as well as in stereo.',
     checks: ['The same distance to the snare as its partner', 'Above the crashes’ swing', 'The pair in mono, not only in stereo'],
   },
   {

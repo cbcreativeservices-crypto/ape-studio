@@ -199,7 +199,7 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
         question="Your bounce plays fine for 3:40 of its 3:55 — then silence. Most likely story?"
         options={['The exported file is corrupt; export again and hope', 'The export range ended early and truncated the tail', 'Fifteen seconds of end silence is normal in WAV files', 'The mastering stage will restore the missing ending']}
         correct={1}
-        explain="A truncated tail almost always means the export selection ended early — the reverb’s last two bars were outside the range. It is the single most common export bug, and the END-check exists precisely for it."
+        explain="A truncated tail almost always means the export selection ended early — the last fifteen seconds were outside the range. It is one of the most common export bugs, and the END-check exists precisely for it."
         wrong={[
           'Corruption usually refuses to play at all — a file that plays fine and then stops points at a setting, not damage.',
           undefined,

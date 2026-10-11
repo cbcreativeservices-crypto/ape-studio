@@ -29,7 +29,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how pipes speak — why an open and a stopped pipe differ, and why 16′ and 32′ name a pitch — how the divisions arrive at a listener at different times, and how the room shapes the pedal notes.',
     credit: { scenarios: ['org.snd.1', 'org.snd.2', 'org.snd.3'], interactive: 'soundPath', note: 'Listen from all three positions on the second step, and answer the three checks.' },
-    takeaway: 'Each pipe is an air column: open sounds about c ÷ 2L, stopped an octave lower. The divisions sound from different places and arrive at different times; the room’s low resonances make the pedal change over a short move.',
+    takeaway: 'Each flue pipe is an air column: open sounds about c ÷ 2L, stopped an octave lower. The divisions sound from different places and arrive at different times; the room’s low resonances make the pedal change over a short move.',
   },
   setting: {
     title: 'Where it sits',
@@ -241,7 +241,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · An antiphonal division sits at the far end. Can the main pair still hear it?',
     options: ['Yes — from the body of the room, it can', 'No — only a spot beside it can hear it', 'No, the main pair hears only the façade'],
     correct: 'Yes — from the body of the room, it can',
-    explain: 'A pair in the body of the room hears the organ from wherever it sounds — including a far division. A spot on the main case cannot.',
+    explain: 'A pair in the body of the room hears the organ from wherever it sounds — including a far division. A spot on the main case hears it only faintly.',
     why: {
       'No — only a spot beside it can hear it': 'A spot would add control, but the main pair hears it too.',
       'No, the main pair hears only the façade': 'The pair hears the whole room, divisions far and near.',
@@ -549,7 +549,7 @@ export const A12_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'Wind', text: 'A blower fills the wind chests; pressing a key with a stop drawn lets the wind into one pipe of each chosen rank.' },
-      { title: 'The pipe speaks', text: 'At the mouth, the wind sets the air column inside the pipe swinging: its length sets the pitch — open about c ÷ 2L, stopped about c ÷ 4L.' },
+      { title: 'The pipe speaks', text: 'At a flue pipe’s mouth, the wind sets the air column inside the pipe swinging: its length sets the pitch — open about c ÷ 2L, stopped about c ÷ 4L.' },
       { title: 'Many places', text: 'The divisions stand in different places — towers, a shuttered box, a division in front, sometimes one far away — so their sounds arrive at a listener at different times.' },
       { title: 'The room answers', text: 'The direct sound, the early reflections and the long reverberation together are what a listener hears — and the room’s low resonances shape the pedal.' },
     ],
@@ -564,7 +564,7 @@ export const A12_LESSON: Lesson = {
       { id: 'pews', label: 'the pews', short: 'PEWS', note: 'Where the congregation sits — and where a main pair usually listens from, on a stand in a clear row. In a service, only where the venue agrees.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'LISTENING POSITIONS', scene: 'all' },
       { id: 'aisles', label: 'the aisles', short: 'AISLES', note: 'The ways in and out: never a stand or a cable across them.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'exits', label: 'the side passages, exits and wheelchair route', short: 'EXITS', note: 'Kept clear at all times, and especially during a service.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'gallery', label: 'the rear gallery and its antiphonal division', short: 'GALLERY', note: 'A division at the far end of the room: a spot on the main case cannot hear it; the main pair may. The gallery is the venue’s to open.', prov: { kind: 'sourced', src: 'S-HOW', quote: 'located on opposite sides of the worship facility, as is the case with antiphonal ranks' }, tag: 'A FAR DIVISION', scene: 'all' },
+      { id: 'gallery', label: 'the rear gallery and its antiphonal division', short: 'GALLERY', note: 'A division at the far end of the room: a spot on the main case hears it only faintly; the main pair may. The gallery is the venue’s to open.', prov: { kind: 'sourced', src: 'S-HOW', quote: 'located on opposite sides of the worship facility, as is the case with antiphonal ranks' }, tag: 'A FAR DIVISION', scene: 'all' },
       { id: 'pa', label: 'the PA loudspeakers on the chancel arch', short: 'PA', note: 'In a service the PA carries speech. Room mics hear it too: never send a distant room pair back into it at high gain.', prov: { kind: 'illustrative', reason: 'a typical position: a drawing default' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
     stage: 'A SERVICE: the congregation in the pews, the aisles and exits in use, the PA on. A room pair for the stream, separate closer feeds for control; the organ kept out of the PA unless the room needs it.',

@@ -204,8 +204,8 @@ export function practiceChecks(p: string, n: Noun, refExample: { quote: string; 
       id: `${p}.mix.2`,
       page: 'practice',
       prompt: 'The wedge sits about 125° off a supercardioid’s front axis. What can you expect?',
-      options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the wedge, because it sits right in the null', 'More wedge than straight behind it, which is where it rejects most'],
-      correct: 'Strong rejection on paper; in reality less, and least in the lows',
+      options: ['Strong rejection on paper; in reality far less, often least in the lows', 'Silence from the wedge, because it sits right in the null', 'More wedge than straight behind it, which is where it rejects most'],
+      correct: 'Strong rejection on paper; in reality far less, often least in the lows',
       explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
       why: {
         'Silence from the wedge, because it sits right in the null': 'A null is infinitely deep only on paper. Real mics reject far less.',
@@ -288,7 +288,7 @@ export function setupOrder(p: string, n: Noun, placeStep: string): OrderTask {
   };
 }
 
-export const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+export const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 export const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 export const clearReason = (what: string): SetupReason => ({ id: 'r.clear', label: `The mic, mount and cable stay clear of ${what}`, role: 'required', feedback: 'Clearance is part of every passing setup.' });
 export const brandReason = (n: Noun): SetupReason => ({ id: 'r.brand', label: `It is the brand most engineers reach for on ${n.one}s`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' });

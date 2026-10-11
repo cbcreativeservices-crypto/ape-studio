@@ -97,7 +97,7 @@ export const C01_COPY: LessonCopy = {
     typeNotes: {
       sdcCard: 'Ideas to try: start near the 12th fret, then move one thing at a time — toward the hole, toward the bridge, a little farther back — and listen at matched levels.',
       instDynCard: 'Ideas to try with a dynamic: it is often brought a little closer than a condenser. Watch the bass that proximity adds, and the hands’ clearance.',
-      clipCond: 'Ideas to try with a clip-on: keep the capsule over the top between the neck joint and the hole; turning it toward the hole gives more level — and more boom.',
+      clipCond: 'Ideas to try with a clip-on: keep the capsule over the top between the neck joint and the hole; turning it toward the hole tends to give more level — and more boom.',
     },
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, stand or cable anywhere the strumming arm, the fretting hand or the neck can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
@@ -130,7 +130,7 @@ export const C01_COPY: LessonCopy = {
     looking: 'From above · mic near the 12th fret',
     prompt: 'The wedge stays where the player needs it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the guitar.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence — and the guitar’s top can still reflect the wedge back into the mic.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence — and the guitar’s top can still reflect the wedge back into the mic.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Aimed at the guitar, its rear faces out toward the floor in front — near the wedge.',
     shieldNote: 'Moving a mic for isolation changes the guitar’s tone, too: check both. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'ag.ctx.studio',

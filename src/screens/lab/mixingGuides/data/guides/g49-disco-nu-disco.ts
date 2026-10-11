@@ -281,7 +281,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Classic disco catalog and remasters land around −12 to −9 LUFS-I; modern disco-pop and nu-disco commonly −9 to −6 LUFS-I. Streaming normalizes to about −14 LUFS-I; keep true peak below −1 dBTP (−2 dBTP for masters louder than −14). Aim for a PLR of roughly 8–11 dB so the kick transient survives; DJ-focused club masters often run louder but should keep the kick from clipping. Deliver extended/club mixes alongside radio edits."
+      "text": "Classic disco catalog and remasters land around −12 to −9 LUFS-I; modern disco-pop and nu-disco commonly −9 to −6 LUFS-I. Streaming normalizes to about −14 LUFS-I; keep true peak below −1 dBTP (−2 dBTP for masters louder than −14). Aim for a PLR of roughly 8–11 dB so the kick transient survives (at −2 dBTP that means a master at about −10 LUFS-I or quieter); DJ-focused club masters often run louder but should keep the kick from clipping. Deliver extended/club mixes alongside radio edits."
     }
   ],
   "liveStudio": {

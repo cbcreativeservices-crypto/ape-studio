@@ -23,7 +23,7 @@ export const A02_COPY: Partial<LessonCopy> = {
     partsBadge: 'A trombone played standing · tap a part to name it',
     partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
     partsIdle: 'The lips buzz in the mouthpiece; the slide changes the tube’s length; the bell sends the sound out — the next page shows how. The slide is drawn closed: at 7th position it reaches about 56 cm farther out.',
-    variantNotes: { bass: 'BASS: the same tube length, a wider bore and a larger bell — and two valves in the bell section, worked by the left thumb, for the lowest notes. Switch TROMBONE to see the tenor.' },
+    variantNotes: { bass: 'BASS: the same tube length, a wider bore and a larger bell — and two valves in the bell section, worked by the left hand, for the lowest notes. Switch TROMBONE to see the tenor.' },
   },
   placement: {
     workedZone: { tenor: 'tb.off', bass: 'tb.off' },
@@ -68,7 +68,7 @@ export const A02_COPY: Partial<LessonCopy> = {
     looking: 'Top view · mic beside the bell, clear of the slide',
     prompt: 'The player’s wedge stays where they need it — beyond the slide’s reach. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the bell.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — and a trombone’s lows are strong. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — and a trombone’s lows are strong. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). A mic beside the bell, aimed across it, has its rear toward the audience side — the wedge, down on the floor in front, sits below and to the side of that line, so tilting the mic matters as much as turning it.',
     shieldNote: 'The bell and the player reflect stage sound too, and the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'tb.ctx.studio',

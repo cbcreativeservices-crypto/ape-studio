@@ -154,10 +154,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'The only spare input has no phantom power. Which of this page’s mic types can you still use?',
     options: ['The two compact dynamics: neither needs power', 'The slim condenser, since it is a small one', 'The slim condenser, if you keep it farther away'],
     correct: 'The two compact dynamics: neither needs power',
-    explain: 'Dynamic mics need no power. A condenser needs phantom power — check its powering and peak input requirements before choosing it.',
+    explain: 'Dynamic mics need no power. The slim condenser needs phantom power — check its powering and peak input requirements before choosing it.',
     why: {
-      'The slim condenser, since it is a small one': 'Size does not decide power: a condenser still needs phantom power.',
-      'The slim condenser, if you keep it farther away': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The slim condenser, since it is a small one': 'Size does not decide power: the slim condenser still needs phantom power.',
+      'The slim condenser, if you keep it farther away': 'Distance does not change what this condenser needs: it still needs phantom power.',
     },
   },
   {
@@ -346,7 +346,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Typical strokes sit well below the overload light, but the strongest bass and slaps light it. What do you do?',
     options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader well down until the loudest slaps sound clean', 'Ask the player to play the slaps softer during the show'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
-    explain: 'Set gain and any pad using the strongest expected bass and slap, checking both the mic and the input stages. A pad after a distorted capsule cannot undo it.',
+    explain: 'Set gain and any pad using the strongest expected bass and slap, checking both the mic and the input stages. A pad after an overloaded mic cannot undo it.',
     why: {
       'Pull the channel fader well down until the loudest slaps sound clean': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
       'Ask the player to play the slaps softer during the show': 'Set gain for the strongest strokes the player intends to play.',
@@ -380,11 +380,11 @@ const scenarios: MikingScenario[] = [
     id: 'k.mix.2',
     page: 'practice',
     prompt: 'Your floor wedge sits about 110° off a hypercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; less in reality, least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
-    correct: 'Strong rejection on paper; less in reality, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — where the djembe’s bass lives.',
+    options: ['Strong rejection on paper; less in reality, often least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
+    correct: 'Strong rejection on paper; less in reality, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — where the djembe’s bass lives.',
     why: {
-      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and often least in the lows.',
       'More pickup than from straight behind, where it rejects the most': 'Straight behind, a hypercardioid has a rear lobe; its deepest rejection is off the rear axis.',
     },
   },
@@ -496,7 +496,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, measured from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of hands, knees, feet and the drum’s movement', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on djembe', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };

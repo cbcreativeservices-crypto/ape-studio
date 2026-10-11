@@ -21,7 +21,7 @@ export const VIBE_FAM: MalletFamily = {
   ],
   roles: {
     naturals: 'The bars of the naturals, nearest the player: metal (an aluminium alloy), graduated — longest and widest at the low end. A mallet strikes; the bar rings.',
-    accidentals: 'The sharps and flats, in the far row, a little higher than the naturals — the piano’s black keys, laid out the same way.',
+    accidentals: 'The sharps and flats, in the far row, level with the naturals — the piano’s black keys, laid out the same way.',
     resonators: 'A tube under every bar, open at the top and closed at the bottom; the lower the note, the longer the tube. The air inside rings with the bar and makes the note fuller.',
     cords: 'A cord runs through each bar where it does not move as it rings, held by posts on the rails, so the bar rings freely. Nothing clamps to a bar, a cord or a tube.',
     frame: 'The frame: two end assemblies on locking casters, joined by rails and a low stretcher. Lock the wheels before any stand goes near it.',

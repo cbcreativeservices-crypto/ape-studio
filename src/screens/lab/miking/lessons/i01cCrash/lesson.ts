@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a crash mic by its properties — pattern, power, size and mount — and decide first whether the crash needs its own mic at all.',
     credit: { scenarios: ['cr.mic.1', 'cr.mic.power', 'cr.mic.spill', 'cr.rec.1'], note: 'Answer the four checks (one reaches back to how the crash sounds).' },
-    takeaway: 'The overheads usually carry the crashes first. When a crash needs its own mic, a small condenser is a common choice; a small dynamic works too. Condensers need phantom power. Max SPL is not a hearing limit.',
+    takeaway: 'The overheads usually carry the crashes first. When a crash needs its own mic, a small condenser is a common choice; a small dynamic works too. The condenser here needs phantom power. Max SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
@@ -345,8 +345,8 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'No crash mic: the overheads already carry the crashes', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
       { id: 'b', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
-      { id: 'c', label: 'A small condenser under the crash, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
-      { id: 'd', label: 'A small condenser above the crash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser under the crash, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
+      { id: 'd', label: 'A small condenser above the crash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'e', label: 'Tighten the crash’s wing nut so it cannot swing into a close mic', ok: false, power: 'none', feedback: 'A cymbal must move freely — over-tightening chokes it and can crack it. Move the mic.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the crash’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],

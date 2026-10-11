@@ -174,7 +174,7 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
           <Landing looking={H.context.looking} prompt={H.context.prompt} />
           <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? 'done — the wedge sat in a null by your aim or pattern' : 'not yet'}.`}</Body>
           {wedge.id !== first ? <Note tone="warn">{wedge.note}</Note> : null}
-          {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
+          {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pattern === 'cardioid' ? (
               <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°). Aimed at the drum, its back points up into the air — not at a wedge on the floor in front.</Note>

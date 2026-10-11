@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Which of these is NOT created by panning?',
     options: ['A Doppler pitch shift', 'Movement across the image', 'A change from one side to the other'],
     correct: 'A Doppler pitch shift',
-    explain: 'Panning moves the image; the pitch shift comes only from real relative motion during the recording.',
+    explain: 'Panning moves the image; the pitch shift comes from real relative motion during the recording, or a separate pitch effect — never from the pan.',
     why: {
       'Movement across the image': 'That is exactly what panning creates.',
       'A change from one side to the other': 'Panning does move a sound from one side to the other.',
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     explain: 'An omni hears about equally all round: the level follows distance alone, with no off-axis change. A directional mic aimed at the crossing is the other fair choice.',
     why: {
       'A narrow shotgun aimed at one spot': 'A narrow mic can lose the ends of the pass off its axis.',
-      'A figure-8 with its side to the path': 'Its sides are its nulls: the pass would sit in the rejection.',
+      'A figure-8 with its side to the path': 'Its sides are its nulls: the crossing would sit in its rejection.',
     },
   },
   {
@@ -192,9 +192,9 @@ const scenarios: MikingScenario[] = [
     id: 'pb.mic.3',
     page: 'microphone',
     prompt: 'A tracked shotgun follows the walker. What tends to change?',
-    options: ['It holds the walker, but flattens the arc', 'It adds a Doppler shift of its very own', 'It turns the pass into a real stereo image'],
-    correct: 'It holds the walker, but flattens the arc',
-    explain: 'Kept on its axis, the walker stays present; the stationary listener’s level arc is flattened, and handling or off-axis colour can creep in.',
+    options: ['It holds the walker; handling can creep in', 'It adds a Doppler shift of its very own', 'It turns the pass into a real stereo image'],
+    correct: 'It holds the walker; handling can creep in',
+    explain: 'Kept on its axis, the walker stays present: the level follows distance alone, with no off-axis fall, and handling or off-axis colour can creep in.',
     why: {
       'It adds a Doppler shift of its very own': 'The operator turns but does not travel: no added pitch shift.',
       'It turns the pass into a real stereo image': 'One tracked mic is still mono: the mix decides where it sits.',
@@ -581,10 +581,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'pb.q.6',
     covers: 'sound',
     prompt: 'Does panning a mono track create a pitch shift?',
-    options: ['Only real motion does that', 'A wide enough pan will do it', 'A fast enough pan does'],
-    correct: 'Only real motion does that',
+    options: ['Real motion does; a pan does not', 'A wide enough pan will do it', 'A fast enough pan does it'],
+    correct: 'Real motion does; a pan does not',
     explain: 'Panning moves the image; a Doppler shift needs real relative motion.',
-    why: { 'A wide enough pan will do it': 'Width does not change pitch.', 'A fast enough pan does': 'A fast pan moves faster across the speakers — no pitch shift.' },
+    why: { 'A wide enough pan will do it': 'Width does not change pitch.', 'A fast enough pan does it': 'A fast pan moves faster across the speakers — no pitch shift.' },
   },
 ];
 

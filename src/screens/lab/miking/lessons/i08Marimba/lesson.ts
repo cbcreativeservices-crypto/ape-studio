@@ -26,13 +26,13 @@ const pages: LessonPages = {
     title: 'Meet the marimba',
     goal: 'Get to know the marimba — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Wooden (or synthetic) bars in two rows, longer and wider toward the low end, each over its own pipe; the lowest notes over boxes. A five-octave instrument is about 2.5 m long — the part decides how much of it you must cover.',
+    takeaway: 'Wooden (or synthetic) bars in two rows, longer and wider toward the low end, each over its own pipe; here the lowest notes over boxes. A five-octave instrument is about 2.5 m long — the part decides how much of it you must cover.',
   },
   sound: {
     title: 'How it makes its sound',
     goal: 'See how a mallet stroke becomes a note — the bar’s shapes, the pipe under it, the boxes under the lowest notes — and where the sound leaves.',
     credit: { scenarios: ['mr.snd.1', 'mr.snd.2', 'mr.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The bar rings about two still points the cord passes through; the pipe under it — a quarter wavelength long — rings with it and helps the note develop. A straight pipe for the lowest notes would be taller than the bars are high: they get boxes.',
+    takeaway: 'The bar rings about two still points the cord passes through; the pipe under it — a quarter wavelength long — rings with it and helps the note develop. A straight pipe for the lowest notes would be taller than the bars are high: this model gives them boxes; some makers bend the pipes.',
   },
   setting: {
     title: 'Where it sits',
@@ -56,7 +56,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know how the studio decision differs.',
     credit: { scenarios: ['mr.ctx.1', 'mr.ctx.2', 'mr.ctx.studio', 'mr.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the side fill sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Aim nulls by the real pattern; real nulls are shallowest in the lows, where a marimba’s bass lives. In a quiet hall the main pickup may be enough.',
+    takeaway: 'Aim nulls by the real pattern; real nulls are often shallowest in the lows, where a marimba’s bass lives. In a quiet hall the main pickup may be enough.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -82,7 +82,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mr.snd.1',
     page: 'sound',
-    prompt: 'Why do the lowest marimba notes have boxes under them instead of long pipes?',
+    prompt: 'Why do this marimba’s lowest notes have boxes under them instead of long pipes?',
     options: ['A straight pipe would be taller than the bars are high', 'Boxes make the lowest notes much louder than long pipes could', 'Wood bars must not hang over metal pipes'],
     correct: 'A straight pipe would be taller than the bars are high',
     explain: 'A pipe is about a quarter wavelength of its note: for the lowest C, about 1.3 m — more than the bars’ height above the floor. A wide box resonates in less height.',
@@ -158,9 +158,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The channel you are given has no phantom power. Which of this page’s mics can you use?',
     options: ['The compact dynamic: it needs no power to work', 'The condenser, if it sits higher above the bars', 'Either one, as long as the channel gain is turned up'],
     correct: 'The compact dynamic: it needs no power to work',
-    explain: 'Dynamic mics need no power. A condenser needs phantom power wherever it is placed.',
+    explain: 'Dynamic mics need no power. The condensers here need phantom power wherever they are placed.',
     why: {
-      'The condenser, if it sits higher above the bars': 'Height does not change what a condenser needs: it still needs phantom power.',
+      'The condenser, if it sits higher above the bars': 'Height does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   },
@@ -182,7 +182,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On a loud stage, why a directional pattern over the marimba?',
     options: ['It rejects part of the louder neighbours off its axis', 'It makes the marimba louder for the audience on its own', 'It stops the low notes from reaching the mic at all'],
     correct: 'It rejects part of the louder neighbours off its axis',
-    explain: 'A directional pattern can reduce some spill; never all of it, and least in the lows. Placing the instrument well helps as much.',
+    explain: 'A directional pattern can reduce some spill; never all of it, and often least in the lows. Placing the instrument well helps as much.',
     why: {
       'It makes the marimba louder for the audience on its own': 'A mic does not change the instrument’s level; it changes what the channel hears.',
       'It stops the low notes from reaching the mic at all': 'The marimba’s low notes are what you want the mic to hear.',
@@ -264,9 +264,9 @@ const scenarios: MikingScenario[] = [
     id: 'mr.ctx.2',
     page: 'context',
     prompt: 'The side fill sits in a hypercardioid’s null on paper. What should you expect from the marimba’s low notes?',
-    options: ['Less rejection than the picture shows, least in the lows', 'Complete silence from the side fill, low and high alike', 'More rejection in the low notes than in the high ones'],
-    correct: 'Less rejection than the picture shows, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies.',
+    options: ['Less rejection than the picture shows, often least in the lows', 'Complete silence from the side fill, low and high alike', 'More rejection in the low notes than in the high ones'],
+    correct: 'Less rejection than the picture shows, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies.',
     why: {
       'Complete silence from the side fill, low and high alike': 'Real rejection is partial.',
       'More rejection in the low notes than in the high ones': 'The reverse: real patterns usually reject least at low frequencies.',
@@ -290,7 +290,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why might a straight pipe be impossible for the lowest marimba note?',
     options: ['Its quarter wavelength is longer than the bars are high', 'Wooden bars cannot drive a resonator pipe that long', 'The frame has no rail at the low end to hang them from'],
     correct: 'Its quarter wavelength is longer than the bars are high',
-    explain: 'About 1.3 m for the lowest C — more than the bar height. The low notes get boxes.',
+    explain: 'About 1.3 m for the lowest C — more than the bar height. Here the low notes get boxes.',
     why: {
       'Wooden bars cannot drive a resonator pipe that long': 'The problem is room under the bars, not the bar’s strength.',
       'The frame has no rail at the low end to hang them from': 'The frame carries the low end too; the length is the issue.',
@@ -429,7 +429,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What is under each marimba bar?',
     options: ['A pipe (or a box for the lowest notes)', 'A felt damper worked by a foot pedal, as on vibes', 'A small fan on a turning shaft'],
     correct: 'A pipe (or a box for the lowest notes)',
-    explain: 'One pipe per bar, open at the top and closed at the bottom; boxes under the lowest notes.',
+    explain: 'One pipe per bar, open at the top and closed at the bottom; on this model, boxes under the lowest notes.',
     why: { 'A felt damper worked by a foot pedal, as on vibes': 'That is a vibraphone’s damper; a marimba is damped by the player.', 'A small fan on a turning shaft': 'Fans belong to a vibraphone with a motor.' },
   },
   {
@@ -438,7 +438,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Why are the pipes under the low notes longer?',
     options: ['Each is about a quarter wavelength of its note', 'Longer bars are heavier and need more support', 'To make the low notes the loudest ones'],
     correct: 'Each is about a quarter wavelength of its note',
-    explain: 'A lower note has a longer wavelength, so its pipe is longer — until it no longer fits, and a box takes over.',
+    explain: 'A lower note has a longer wavelength, so its pipe is longer — until a straight one no longer fits; here a box takes over.',
     why: { 'Longer bars are heavier and need more support': 'The cords hold the bars; the pipes hold air.', 'To make the low notes the loudest ones': 'The length follows the pitch.' },
   },
   {
@@ -580,7 +580,7 @@ const copy: Partial<LessonCopy> = {
     looking: 'One mic above the middle · the side fill at stage left',
     prompt: 'The monitors stay where the stage needs them. Turn the MIC (AIM) or change its PATTERN until the side fill sits in the rejection.',
     activityDone: 'done — the side fill sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — where a marimba’s bass lives. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — where a marimba’s bass lives. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°) — straight up, for a mic looking down. The side fill sits almost level with it: try the other patterns.',
     shieldNote: 'Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction. Work out the real positions with the system operator.',
     studioId: 'mr.ctx.studio',

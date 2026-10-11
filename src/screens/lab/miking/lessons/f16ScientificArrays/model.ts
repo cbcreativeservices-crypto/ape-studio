@@ -110,7 +110,7 @@ export const F16_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: OMNI },
     aim: AIM,
     start: toward(S.R2),
-    tendency: 'With the wider left end, a 1 m baseline: twice the time difference for the same source.',
+    tendency: 'With the wider left end, a 1 m baseline: about twice the time difference for the same source.',
     checks: ['The new baseline written down', 'Both ends on one clock', 'The origin unchanged'],
   },
   {

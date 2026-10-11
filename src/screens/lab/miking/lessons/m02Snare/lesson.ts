@@ -198,7 +198,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The three dynamics: none of them needs power',
     explain: 'Dynamic mics need no power. The rim condenser is a condenser: it needs phantom power, wherever it is mounted.',
     why: {
-      'The rim condenser, as long as it is clamped on': 'How it is mounted does not change what it needs: a condenser needs phantom power.',
+      'The rim condenser, as long as it is clamped on': 'How it is mounted does not change what it needs: this condenser needs phantom power.',
       'All of them, provided the cable run is short': 'Cable length does not power a condenser. Only the dynamics work without phantom.',
     },
   },
@@ -270,7 +270,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Toward the rear, off to one side of the axis',
     explain: 'A supercardioid’s deepest rejection is off the rear axis (near 125°); straight behind it has a small rear lobe. Aim by the actual pattern.',
     why: {
-      'Directly behind the mic, right on its rear axis': 'Only a cardioid rejects most straight behind. A supercardioid has a small rear lobe there.',
+      'Directly behind the mic, right on its rear axis': 'A cardioid rejects most straight behind; a supercardioid has a small rear lobe there.',
       'Beside the mic, square to its front': 'At 90° the pickup is still fair. The rejection deepens toward the rear, off the axis.',
     },
   },
@@ -295,7 +295,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The crack starts where the stick meets the batter head, so a top mic aimed at it tends to hear more of it; the buzz leaves mostly downward.',
     why: {
       'The wires’ buzz from underneath the drum': 'The buzz leaves mostly downward, from the snare-side head: a bottom mic hears more of it.',
-      'The air leaving through the shell': 'The shell is closed; the heads move the air. Above the drum, it is the batter head’s crack.',
+      'The air leaving through the shell': 'Apart from a small vent hole, the shell is closed; the heads move the air. Above the drum, it is the batter head’s crack.',
     },
   },
   {
@@ -330,7 +330,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Not yet: match the levels, then compare both states in mono',
     explain: `${OPPOSITE_SIDES_POLARITY} A louder state sounds “better” at first: compare at matched level, with the kit.`,
     why: {
-      'Inverted is the correct setting for snare drums, so keep it': 'Flipping is a common first thing to try, not a law: the delay between the mics decides which state is better.',
+      'Inverted is the correct setting for snare drums, so keep it': 'Flipping is a common first thing to try, not a law: the heads’ opposite start and the delay between the mics together decide which state is better.',
       'Normal polarity was wrong, because it was quieter': 'Quieter is not wrong. Match levels, then judge which state keeps the snare’s body.',
     },
   },
@@ -386,9 +386,9 @@ const scenarios: MikingScenario[] = [
     id: 'sn.mix.2',
     page: 'practice',
     prompt: 'The hi-hat sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the hi-hat, because it sits in the null', 'More hi-hat than straight behind it, which is where it rejects most'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Strong rejection on paper; in reality less, and often least in the lows', 'Silence from the hi-hat, because it sits in the null', 'More hi-hat than straight behind it, which is where it rejects most'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
       'Silence from the hi-hat, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less.',
       'More hi-hat than straight behind it, which is where it rejects most': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
@@ -475,7 +475,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Determine whether the microphone, input stage, or vibrating hardware is responsible; set suitable gain, check overload indicators and specifications.',
     options: ['Where it starts — mic, input or rattling hardware — then gain', 'Pull the channel fader down until the hits sound cleaner', 'Cut the low end with EQ so the channel has more headroom'],
     correct: 'Where it starts — mic, input or rattling hardware — then gain',
-    explain: 'A lowered fader does not undo clipping at the input, and EQ after an overloaded capsule cannot restore it. Find where it starts.',
+    explain: 'A lowered fader does not undo clipping at the input, and EQ after an overloaded mic cannot restore it. Find where it starts.',
     why: {
       'Pull the channel fader down until the hits sound cleaner': 'The fader comes after the input; a clipped input stays clipped, only quieter.',
       'Cut the low end with EQ so the channel has more headroom': 'EQ after the input cannot undo clipping at the input. Lower gain there first.',
@@ -502,7 +502,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and whether it is measured from the rim or a head.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay out of the sticks’ path, rimshots and the hi-hat', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a snare', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -531,7 +531,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small dynamic just below the bottom rim, aimed up at the head and wires, then check polarity with the top mic', ok: true, power: 'none', feedback: 'A suggested starting point below the drum; a dynamic needs no phantom; the polarity check follows.' },
       { id: 'b', label: 'Clip-on dynamic on the bottom hoop, aimed up, then check polarity with the top mic', ok: true, power: 'none', feedback: 'A suggested starting point, clear of the stand; a dynamic needs no phantom.' },
-      { id: 'c', label: 'Rim condenser on the bottom hoop, aimed up at the wires', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Rim condenser on the bottom hoop, aimed up at the wires', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Small dynamic pressed against the wires, for the most sizzle', ok: false, power: 'none', feedback: 'The wires move: a mic touching them rattles and damps them. Keep it clear.' },
       { id: 'e', label: 'A second top mic just above the first, aimed at the wires through the head', ok: false, power: 'none', feedback: 'A top mic faces the batter head; the wires’ sound leaves mostly downward. A bottom mic is the way to get more of it.' },
     ],

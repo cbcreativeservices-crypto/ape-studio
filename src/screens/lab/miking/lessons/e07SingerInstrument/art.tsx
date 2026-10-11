@@ -85,7 +85,7 @@ export const E07_ART: LessonArt = {
       air: {
         vowel: { title: 'A vowel: sound only', text: 'An open vowel sends sound out of the mouth and round the front of the singer — toward the vocal mic, and down toward the instrument too.' },
         plosive: { title: 'P or B: a puff of air', text: 'The lips hold the air and let it go at once: a puff shoots straight out along the mouth’s axis — at the vocal mic, not down at the instrument.' },
-        sibilant: { title: 'S or T: a narrow hiss', text: 'Air forced past the tongue and the teeth makes a narrow hiss straight ahead. A vocal mic dead on the axis hears the most of it.' },
+        sibilant: { title: 'S: a narrow hiss', text: 'Air forced past the tongue and the teeth makes a narrow hiss straight ahead. A vocal mic dead on the axis hears the most of it.' },
       },
       highs: 'The voice’s highest frequencies go out ahead of the mouth, the lows spread round the head — so an instrument mic below and in front of the singer hears a duller voice than the vocal mic does. The shape of that spread is not drawn here, only its direction.',
       silentNote: 'This lab never plays a sound and draws no frequency curve: how a real performance sounds depends on the performer, the instrument, the mics and the room. The pictures show where the sounds come from.',

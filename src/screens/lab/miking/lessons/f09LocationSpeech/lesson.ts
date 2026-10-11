@@ -201,7 +201,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A short hypercardioid, at the same distance',
     explain: 'Indoors, reflections reach a shotgun from all round; a short directional mic with a smoother off-axis sound often does as well or better. Compare the two at the same distance.',
     why: {
-      'A longer shotgun, so the room drops away more': 'A longer tube narrows only the higher frequencies; it does not make reflections drop away indoors.',
+      'A longer shotgun, so the room drops away more': 'A longer tube narrows down to somewhat lower pitches, not the lows; it does not make reflections drop away indoors.',
       'An omni, for a more focused voice': 'An omni hears the room from every side — the opposite of focus.',
     },
   },
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Just above the breastbone is a usual start, with the wearer’s agreement; the clothing decides the details. Hiding deeper is not an improvement in itself — it can muffle the voice and add rubbing.',
     why: {
       'Deep under two layers, where nothing can see it': 'Deeper often means muffled and noisier. Hide only as much as the shot needs.',
-      'On the collar at the back of the neck, out of view': 'Behind the neck the mic faces away from the mouth.',
+      'On the collar at the back of the neck, out of view': 'Behind the neck the head shadows the mouth: the voice’s highs drop.',
     },
   },
   {
@@ -259,7 +259,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Outdoors there is a power line overhead behind the talker. How far must the pole stay?',
     options: ['At least 3 m (10 ft) — farther if unsure', 'About 1 m, so long as the pole is not touching', 'Closer is fine, while the mic is not raised high'],
     correct: 'At least 3 m (10 ft) — farther if unsure',
-    explain: 'Keep the pole, the stands and every mic at least 3 m (10 ft) from overhead power lines — farther if you do not know the voltage. If you cannot be sure of the clearance, do not raise the pole.',
+    explain: 'Keep the pole, the stands and every mic at least 3 m (10 ft) from overhead power lines — farther for higher voltages or if you do not know the voltage. If you cannot be sure of the clearance, do not raise the pole.',
     why: {
       'About 1 m, so long as the pole is not touching': 'Electricity can jump a gap: 1 m is far too close. At least 3 m (10 ft).',
       'Closer is fine, while the mic is not raised high': 'The pole’s whole length counts. At least 3 m (10 ft) from the line, and if unsure, keep it down.',
@@ -401,7 +401,7 @@ const symptoms: Symptom[] = [
     explain: 'Distance decides the voice against the room. Close the gap the frame allows; if the shot is too wide for that, the body mic takes over those moments.',
     why: {
       'Turn the boom channel up in the mix': 'Gain raises the room as much as the voice.',
-      'Swap it for a longer shotgun from farther': 'A longer tube narrows the highs only; it does not reach farther.',
+      'Swap it for a longer shotgun from farther': 'A longer tube narrows down to somewhat lower pitches, not the lows; it does not reach farther.',
     },
   },
   {
@@ -544,7 +544,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Outdoors, how far must the boom pole and mic stay from an overhead power line?',
     options: ['At least 3 m (10 ft), farther if unsure', 'About 1 m, as long as nothing is touching', 'Only clear enough to avoid the wires'],
     correct: 'At least 3 m (10 ft), farther if unsure',
-    explain: 'Keep the pole, the stands and every mic at least 3 m (10 ft) from overhead power lines — farther if you do not know the voltage; if you cannot be sure, keep the pole down.',
+    explain: 'Keep the pole, the stands and every mic at least 3 m (10 ft) from overhead power lines — farther for higher voltages or if you do not know the voltage; if you cannot be sure, keep the pole down.',
     why: {
       'About 1 m, as long as nothing is touching': 'Electricity can jump a gap. At least 3 m (10 ft).',
       'Only clear enough to avoid the wires': 'Clear of the wires is not enough: at least 3 m (10 ft).',
@@ -620,7 +620,7 @@ export const F09_LESSON: Lesson = {
       { title: 'Breath from the lungs', text: 'The lungs push air up the windpipe — the power behind every word, quiet or loud.' },
       { title: 'The vocal folds buzz', text: 'In the voice box, low in the throat, two small folds come together and the breath sets them buzzing. That buzz is the raw sound of the voice.' },
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue, the lips and the open mouth shape the buzz into vowels and words; the tongue, the teeth and the lips add the consonants.' },
-      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng partly through the nose. That is where every distance here is measured from: the lips.' },
+      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng it leaves through the nose instead. That is where every distance here is measured from: the lips.' },
     ],
     attack: 'P, B, T, K, S and F are short and sharp: a P or B pushes a puff of air straight out of the lips, an S sends a narrow hiss forward. A mic close in their path — a handheld, a headset — hears pops and harsh S sounds; a boom above the frame is out of their way.',
     body: 'The vowels carry most of the level and the tone. The voice’s highest frequencies go out ahead of the mouth, so a mic off the mouth’s axis — or a head turned away — hears a duller voice. Tendencies, to check by ear.',

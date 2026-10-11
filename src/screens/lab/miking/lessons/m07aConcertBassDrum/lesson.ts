@@ -48,7 +48,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know what the main pickup already carries.',
     credit: { scenarios: ['cbd.ctx.1', 'cbd.ctx.2', 'cbd.ctx.studio', 'cbd.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Aim nulls by the real pattern; real nulls are shallowest in the lows, where a bass drum lives. Recorded, the main pickup carries much of the low end and a spot adds the transient.',
+    takeaway: 'Aim nulls by the real pattern; real nulls are often shallowest in the lows, where a bass drum lives. Recorded, the main pickup carries much of the low end and a spot adds the transient.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -167,7 +167,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The small dynamic: it needs no power to work',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power wherever it is placed.',
     why: {
-      'The small condenser, if it sits farther from the head': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The small condenser, if it sits farther from the head': 'Distance does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   },
@@ -259,9 +259,9 @@ const scenarios: MikingScenario[] = [
     id: 'cbd.ctx.2',
     page: 'context',
     prompt: 'The downstage wedge sits in a null on paper. What should you expect from a bass drum’s lowest notes?',
-    options: ['Less rejection than the picture shows, least in the lows', 'Complete silence from the wedge, low and high alike', 'More rejection in the low notes than in the high ones, by far'],
-    correct: 'Less rejection than the picture shows, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — where low-frequency feedback lives.',
+    options: ['Less rejection than the picture shows, often least in the lows', 'Complete silence from the wedge, low and high alike', 'More rejection in the low notes than in the high ones, by far'],
+    correct: 'Less rejection than the picture shows, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — where low-frequency feedback lives.',
     why: {
       'Complete silence from the wedge, low and high alike': 'A null is infinitely deep only on paper; real rejection is partial.',
       'More rejection in the low notes than in the high ones, by far': 'The reverse: real patterns usually reject least at low frequencies.',
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small dynamic above the playing head, closer than 45 cm, looking down at it', ok: true, power: 'none', feedback: 'A stable, directional spot as near as safely useful; a dynamic needs no phantom.' },
       { id: 'b', label: 'Small dynamic about 45 cm from the playing head, looking diagonally down', ok: true, power: 'none', feedback: 'The suggested starting point; check its gain before feedback with the operator.' },
-      { id: 'c', label: 'Small condenser at the 45 cm spot', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser at the 45 cm spot', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A room mic two metres away to catch the whole drum', ok: false, power: 'none', feedback: 'On a loud amplified stage a far mic hears more bleed and gives less gain before feedback.' },
       { id: 'e', label: 'Tilt the drum toward the audience so it needs no mic', ok: false, power: 'none', feedback: 'The drum is not moved for sound; that is the player’s and crew’s call, under the stand’s manual.' },
     ],

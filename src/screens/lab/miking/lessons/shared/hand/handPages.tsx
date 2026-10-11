@@ -634,7 +634,7 @@ function HandContext(spec: HandSpec) {
             <Landing looking={`${C.looking} · ${wedge.short.toLowerCase()}`} prompt={C.prompt} />
             <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? 'done — the wedge sat in a null by your aim or pattern' : 'not yet'}.`}</Body>
             {wedge.id !== C.creditWedge ? <Note tone="warn">{wedge.note}</Note> : null}
-            {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
+            {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
             {tried ? (
               pattern === 'cardioid' ? (
                 <Note tone="ok">{spec.words?.cardioidTried ?? 'What you just saw: a cardioid rejects most directly behind (180°). A mic aimed down at a drum points its back UP and away — a floor wedge often sits below that.'}</Note>

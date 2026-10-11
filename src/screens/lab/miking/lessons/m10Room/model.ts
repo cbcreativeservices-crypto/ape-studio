@@ -139,7 +139,7 @@ export const M10_ZONES: DocumentedZone[] = [
   {
     id: 'rm.corner',
     label: 'Far out, in a front corner of the room',
-    band: 'One production example, not a rule: a pair about 4.6 m (15 ft) from the kit, in the room’s corners, about 30 cm from both walls.',
+    band: 'One production example, not a rule: a pair about 4.6 m (15 ft) from the kit, in the room’s corners — drawn here about 30 cm from both walls.',
     kind: 'sourced',
     src: 'UA-STEREO',
     quote: 'an ambient pair about 15 feet away in the corners of the room',

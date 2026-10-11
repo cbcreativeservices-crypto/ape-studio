@@ -58,7 +58,7 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two receivers, one clock',
-    goal: 'Read the descriptors from a level history at two receivers — LAeq, LAFmax, L10, L50, L90 — and see why the plain mean of the dB is not an average.',
+    goal: 'Read the descriptors from a level history at two receivers — LAeq, LAFmax, L10, L50, L90 — and see why the plain mean of the dB is not the energy average.',
     credit: { scenarios: ['sl.two.1', 'sl.two.2', 'sl.two.3'], interactive: 'descriptors', note: 'Look at both receivers and a shorter window, and answer the three checks.' },
     takeaway: 'LAeq is the energy average over a stated window. Two meters share one clock and keep two records. Keep every original history and a reason for anything you leave out.',
   },

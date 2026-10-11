@@ -28,7 +28,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a stroke becomes sound in a splash — fast, high and short — and who on the kit hears it.',
     credit: { scenarios: ['sp.snd.1', 'sp.snd.2', 'sp.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'A splash speaks at once and fades soon; small and thin, it rings higher than a crash and swings a lot. On top of a crash, the two sound and move together.',
+    takeaway: 'A splash speaks at once and fades soon; smaller than a crash, it rings higher, and small and thin, it swings a lot. On top of a crash, the two sound and move together.',
   },
   setting: {
     title: 'Where it sits',
@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a splash mic by its properties — pattern, power, size and mount — after deciding whether the cue needs its own mic at all.',
     credit: { scenarios: ['sp.mic.1', 'sp.mic.power', 'sp.mic.spill', 'sp.rec.1'], note: 'Answer the four checks (one reaches back to how the splash sounds).' },
-    takeaway: 'The overheads usually carry a splash. When a cue needs its own mic, a small condenser, a small dynamic or a tiny clip-on under it can serve. Condensers need phantom power.',
+    takeaway: 'The overheads usually carry a splash. When a cue needs its own mic, a small condenser, a small dynamic or a tiny clip-on under it can serve. The condensers here need phantom power.',
   },
   placement: {
     title: 'Placement Studio',
@@ -79,8 +79,8 @@ const scenarios: MikingScenario[] = [
     id: 'sp.snd.1',
     page: 'sound',
     prompt: 'Compared with a crash, why does a splash speak fast and fade so soon?',
-    options: ['It is smaller and thinner, so it rings higher and shorter', 'It is struck much harder, so it uses up all its energy at once', 'It is held tightly on its stand, so it cannot ring on'],
-    correct: 'It is smaller and thinner, so it rings higher and shorter',
+    options: ['It is smaller and thinner, so it responds fast and rings short', 'It is struck much harder, so it uses up all its energy at once', 'It is held tightly on its stand, so it cannot ring on'],
+    correct: 'It is smaller and thinner, so it responds fast and rings short',
     explain: 'A small, thin plate rings in the same kinds of shapes as a crash, but higher, and gives its energy away quickly — a short accent.',
     why: {
       'It is struck much harder, so it uses up all its energy at once': 'Splashes are often struck lightly. Their size and thinness make them short.',
@@ -154,10 +154,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a tiny clip-on condenser suit a splash on an arm?',
     options: ['It holds on the arm, under the plate, out of the stick’s way', 'It is the only type that can hear such a small cymbal at all', 'It needs no power, so whichever input is spare will do'],
     correct: 'It holds on the arm, under the plate, out of the stick’s way',
-    explain: 'Small and light, it can hold on the arm under the splash, out of the way. It needs phantom power, like any condenser.',
+    explain: 'Small and light, it can hold on the arm under the splash, out of the way. Like the other condensers here, it needs phantom power.',
     why: {
       'It is the only type that can hear such a small cymbal at all': 'Any of these mics hears a splash. Its size and mount are the reasons.',
-      'It needs no power, so whichever input is spare will do': 'A condenser needs phantom power, however small.',
+      'It needs no power, so whichever input is spare will do': 'This condenser needs phantom power, however small.',
     },
   },
   powerCheck(W, 'the small dynamic'),
@@ -345,7 +345,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'No splash mic: the overheads already carry the stacked cymbals', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
       { id: 'b', label: 'A small dynamic above the splash on the far side, hearing both plates', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
-      { id: 'c', label: 'A small condenser above the splash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser above the splash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A clip-on condenser between the splash and the crash', ok: false, power: 'phantom', feedback: 'No room there, and no phantom power on this input.' },
       { id: 'e', label: 'Take the splash off the crash so a mic can go between them', ok: false, power: 'none', feedback: 'The stack is the player’s choice. Mic it as it is.' },
     ],
@@ -393,7 +393,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Compared with a crash, a splash rings…',
     options: ['Higher and shorter', 'Lower and much longer', 'Exactly the same'],
     correct: 'Higher and shorter',
-    explain: 'Smaller and thinner: higher, and it fades soon.',
+    explain: 'Smaller, so higher; small and thin, so it fades soon.',
     why: {
       'Lower and much longer': 'A smaller plate rings higher and shorter.',
       'Exactly the same': 'Size and weight change its sound a lot.',

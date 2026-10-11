@@ -364,7 +364,7 @@ const symptoms: Symptom[] = [
     explain: 'Distance, an off-axis angle or an f-hole aim can each dull the sound. Change the geometry first — then check what the stage adds.',
     why: {
       'Boost the treble on the channel until the detail comes back': 'EQ adds hiss and spill along with the detail. Fix the angle first.',
-      'Swap to an omni mic, the brighter-sounding pattern on a violin up close': 'A pattern does not decide brightness; position and aim do.',
+      'Swap to an omni mic, the brighter-sounding pattern on a violin up close': 'A pattern swap is not the first fix: here the distance and aim caused it.',
     },
   },
   {
@@ -463,7 +463,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Violin and fiddle are the same instrument named in different musical settings; the mic follows the music and the setting.',
     why: {
       'A fiddle has five strings and no f-holes': 'A fiddle is a violin: four strings, two f-holes.',
-      'A fiddle is held on the right shoulder, not the left': 'Fiddlers hold it like violinists, under the chin on the left.',
+      'A fiddle is held on the right shoulder, not the left': 'Most fiddlers hold it like violinists, under the chin on the left.',
     },
   },
   {

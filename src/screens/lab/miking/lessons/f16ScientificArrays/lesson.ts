@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'Specialist kit and claims',
     goal: 'Look at the specialist kit as objects — an acoustic camera, an ultrasonic detector, a hydrophone and its units — then judge which claims each setup can support.',
     credit: { scenarios: ['ar.two.1', 'ar.two.2', 'ar.two.3'], interactive: 'kitClaims', note: 'In THE SPECIALIST KIT look at all three; on THE CLAIM LADDER judge every claim right for one setup; and answer the three checks.' },
-    takeaway: 'A hot spot is an estimate; a sample-rate label is not a response; water and air levels are not comparable by subtracting. Each claim no bigger than the setup behind it.',
+    takeaway: 'A hot spot is an estimate; a sample-rate label is not a response; water and air levels are not directly comparable. Each claim no bigger than the setup behind it.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A uniform line, elements 60 mm apart. Up to about what frequency is it clear of aliasing?',
     options: ['About 2.9 kHz', 'About 29 kHz or so', 'About 290 Hz or so'],
     correct: 'About 2.9 kHz',
-    explain: 'f_max = c ÷ 2d = 343 m/s ÷ 0.12 m ≈ 2.9 kHz. Above that, ambiguous lobes appear.',
+    explain: 'f_max = c ÷ 2d = 343 m/s ÷ 0.12 m ≈ 2.9 kHz. Above that, ambiguous lobes can appear.',
     why: {
       'About 29 kHz or so': 'Ten times too high: half a wavelength at 29 kHz is about 6 mm.',
       'About 290 Hz or so': 'Ten times too low: half a wavelength at 290 Hz is about 59 cm.',
@@ -313,9 +313,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'An underwater level in dB re 1 µPa and an airborne one in dB re 20 µPa. How do you compare them?',
     options: ['Report each with its medium', 'Subtract 26 dB from the water', 'Add 26 dB to the airborne one'],
     correct: 'Report each with its medium',
-    explain: 'The references differ, and water and air carry sound differently: the numbers are not directly comparable, and no fixed subtraction makes them so.',
+    explain: 'The references differ, and water and air carry sound differently: the numbers are not directly comparable, and the 26 dB between the references is only part of it.',
     why: {
-      'Subtract 26 dB from the water': 'The references account for only part of the difference: no fixed amount makes the two comparable.',
+      'Subtract 26 dB from the water': 'The references account for only part of the difference; water and air also carry sound differently.',
       'Add 26 dB to the airborne one': 'The same mistake the other way round: report each with its own medium and reference.',
     },
   },
@@ -397,10 +397,10 @@ const symptoms: Symptom[] = [
   {
     id: 'ar.sym.2',
     observation: 'Every run shows the right element first, whatever the side',
-    firstChecks: 'The channel map, with a known source',
-    options: ['The channel map: L and R swapped', 'The right mic, which is louder', 'The baseline, which is too short'],
-    correct: 'The channel map: L and R swapped',
-    explain: 'A swapped or offset channel always favours one side. Check the map and the timing with a known source.',
+    firstChecks: 'The channel map and timing, with a known source',
+    options: ['The timing: one channel offset', 'The right mic, which is louder', 'The baseline, which is too short'],
+    correct: 'The timing: one channel offset',
+    explain: 'An offset channel favours one side whatever the source; a swapped one reverses every order. Check the map and the timing with a known source.',
     why: {
       'The right mic, which is louder': 'Loudness does not move an arrival in time.',
       'The baseline, which is too short': 'A short baseline shrinks the difference; it does not fix its sign.',
@@ -632,7 +632,7 @@ export const F16_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'clock', label: 'the recorder and its clock', short: 'ONE CLOCK', note: 'Every element on one synchronized recorder; two recorders drift apart.', prov: { kind: 'sourced', src: 'F16-LESSON', quote: 'An ordinary stereo pair with two independent, drifting recorders is not automatically a coherent measurement array (F16 L6)' }, tag: 'ONE CLOCK', scene: 'all' },
+      { id: 'clock', label: 'the recorder and its clock', short: 'ONE CLOCK', note: 'Every element on one synchronized recorder; two independent recorders drift apart.', prov: { kind: 'sourced', src: 'F16-LESSON', quote: 'An ordinary stereo pair with two independent, drifting recorders is not automatically a coherent measurement array (F16 L6)' }, tag: 'ONE CLOCK', scene: 'all' },
       { id: 'walls', label: 'walls and obstacles', short: 'REFLECTIONS', note: 'A reflection can arrive stronger than the direct sound and fool an arrival order: note the walls and obstacles near the array.', prov: { kind: 'sourced', src: 'F16-LESSON', quote: 'reflections can create a misleading arrival (F16 L13)' }, tag: 'REFLECTIONS', scene: 'all' },
       { id: 'machines', label: 'running machinery nearby', short: 'KEEP CLEAR', note: 'No probe or mic through a guard or into moving, hot or energized machinery; arrays stay outside turbulent airflow.', prov: { kind: 'sourced', src: 'F16-LESSON', quote: 'They do not insert a probe through guards or into moving, hot or energized machinery (F16 L27)' }, tag: 'KEEP CLEAR', scene: 'studio' },
       { id: 'water', label: 'water, permissions and wildlife', short: 'PERMISSIONS', note: 'Under water or in the field, the site’s permissions, the survey protocol and the non-disturbance rules come first.', prov: { kind: 'sourced', src: 'F16-LESSON', quote: 'follow the species survey protocol, site permissions, weather and non-disturbance rules (F16 L39)' }, tag: 'PERMISSIONS', scene: 'stage' },

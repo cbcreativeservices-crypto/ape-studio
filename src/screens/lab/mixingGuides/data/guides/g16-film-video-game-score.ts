@@ -276,7 +276,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Cinema is calibrated to 85 dBC per channel at reference; mixes rely on dialogue level, and many theaters play below reference. A major streaming delivery spec asks for −27 LKFS dialogue-gated (±2 LU) with −2 dBTP and a mix loudness range of 4–18 LU, mixed near-field at around 79 dB SPL. Games target −24 LUFS integrated (±2 LU) on console and −16 to −18 LUFS on mobile, −1 dBTP, measured over at least 30 minutes of representative play. Soundtrack albums commonly land −16 to −12 LUFS-I (hybrid action scores up to about −10); streaming normalizes to about −14 LUFS with −1 dBTP recommended."
+      "text": "Cinema screen channels are calibrated to 85 dBC each at reference (surrounds lower, usually 82 dBC); mixes rely on dialogue level, and many theaters play below reference. A major streaming delivery spec asks for −27 LKFS dialogue-gated (±2 LU) with −2 dBTP and a mix loudness range of 4–18 LU, mixed near-field at around 79 dB SPL. Games target −24 LUFS integrated (±2 LU) on console and −16 to −18 LUFS on mobile, −1 dBTP, measured over at least 30 minutes of representative play. Soundtrack albums commonly land −16 to −12 LUFS-I (hybrid action scores up to about −10); streaming normalizes to about −14 LUFS with −1 dBTP recommended."
     }
   ],
   "liveStudio": {

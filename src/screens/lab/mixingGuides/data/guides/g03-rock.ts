@@ -264,11 +264,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater rock typically runs 96–102 dBA LAeq-15 at FOH, arenas and festivals 100–105 dBA, with C-weighted levels around 115–125 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 105 dBA LAeq-15 at FOH, with peak caps around 115 dBA. Rock needs moderate sub, not EDM-level sub. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes—offer earplugs and protect your own ears."
+      "text": "Club and theater rock typically runs 96–102 dBA LAeq-15 at FOH, arenas and festivals 100–105 dBA, with C-weighted levels around 115–125 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at FOH, with peak caps around 115 dBA. Rock needs moderate sub, not EDM-level sub. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes—offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary rock masters typically land at −10 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP if mastering louder than −14 to avoid codec clipping). Most streaming services normalize to about −14 LUFS, so very loud masters gain nothing on playback and lose punch. Rock tolerates and benefits from a PLR (peak-to-loudness ratio) of roughly 9–12 dB; a loudness range of 5–8 LU keeps verse/chorus contrast alive."
+      "text": "Contemporary rock masters typically land at −10 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP if mastering louder than −14 to avoid codec clipping). Most streaming services normalize to about −14 LUFS, so very loud masters gain nothing on playback and lose punch. Rock tolerates and benefits from a PLR (peak-to-loudness ratio) of roughly 9–12 dB (about −11 to −14 LUFS-I at −2 dBTP, quieter than the range above); a loudness range of 5–8 LU keeps verse/chorus contrast alive."
     }
   ],
   "liveStudio": {

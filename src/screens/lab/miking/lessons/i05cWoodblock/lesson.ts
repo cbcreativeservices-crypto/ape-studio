@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The starting point is 25–50 cm. When is the near end fair?',
     options: ['Only where the mallet’s path and isolation allow', 'Whenever the block sounds a little too quiet', 'Only for a held block, not for one resting on a table'],
     correct: 'Only where the mallet’s path and isolation allow',
-    explain: 'A common minimum for percussion is about 30 cm; a closer live spot may work only when clearance and isolation are confirmed.',
+    explain: 'One general tip for percussion is a gap of about 30 cm or more; a closer live spot may work only when clearance and isolation are confirmed.',
     why: {
       'Whenever the block sounds a little too quiet': 'Quiet is a gain or source question; clearance decides the distance.',
       'Only for a held block, not for one resting on a table': 'It depends on the mallet’s path, not the support.',
@@ -392,7 +392,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A small dynamic on its own stand near the block, a null toward the wedge', ok: true, power: 'none', feedback: 'A dedicated spot nearer the block than the cymbals; a dynamic needs no phantom.' },
       { id: 'b', label: 'The station’s shared overhead, if it carries the block in balance', ok: true, power: 'none', feedback: 'Fair if it serves: fewer open mics.' },
-      { id: 'c', label: 'A condenser spot on the block', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A condenser spot on the block', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A mic clamped to the kit’s hardware, aimed at the block', ok: false, power: 'none', feedback: 'It would carry every knock from the kit’s hardware.' },
       { id: 'e', label: 'Turn the block’s channel up until it beats the cymbals', ok: false, power: 'none', feedback: 'More gain raises the cymbals and the feedback risk too.' },
     ],
@@ -494,7 +494,7 @@ export const I05C_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'A solid hardwood block with a slot cut into it, struck with a mallet: its vibrating body makes the sound — an idiophone. Sets of two or three blocks are common; synthetic blocks are a different instrument.', src: 'LESSON-WOODBLOCK' },
     { title: 'WHERE YOU MEET IT', text: 'On trap tables in orchestras and bands, at percussion stations, beside drum kits — often under a percussion overhead.', src: 'DPA-VET' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A hollow, woody knock — a clock-tick, a gallop, an accent. Struck just off the middle toward the opening with a rubber, plastic or hard-cord mallet.', src: 'PAS-ECV02' },
-    { title: 'ITS SIZE', text: 'Blocks come small to large. This lab draws one about 19 cm long — a drawing; no maker prints a size.', src: 'LESSON-WOODBLOCK' },
+    { title: 'ITS SIZE', text: 'Blocks come small to large. This lab draws one about 19 cm long — a drawing, not one maker’s size.', src: 'LESSON-WOODBLOCK' },
   ],
   sound: {
     stages: [
@@ -534,7 +534,7 @@ export const I05C_LESSON: SpLesson = {
   unknowns: [
     { text: 'The block (190 × 65 × 70 mm), its slot (140 × 8 mm, 45 mm deep), the foam (25 mm) and the trap table (h 900) — drawing defaults.', dims: ['len', 'depth', 'h', 'slotLen', 'slotT', 'slotDepth', 'foamT', 'tableH'] },
     { text: 'The mallet (350 mm), its stroke (±30° from the wrist) with a 60 mm rebound margin, and the player’s posture — drawing defaults and ILLUSTRATIVE.', dims: ['mallet'] },
-    { text: 'The 25–50 cm band is the lesson’s own audition range; its near end is under the common 30 cm minimum and only fair where clearance allows.', dims: [] },
+    { text: 'The 25–50 cm band is the lesson’s own audition range; its near end is closer than one general percussion tip of about 30 cm or more, and only fair where clearance allows.', dims: [] },
   ],
   live: { wedges: standingWedges('the woodblock') },
   accuracyDetail:

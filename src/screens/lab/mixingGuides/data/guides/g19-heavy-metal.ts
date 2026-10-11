@@ -11,8 +11,8 @@ export const GUIDE: MixingGuide = {
   "title": "Heavy Metal",
   "expects": "Audiences headbang, mosh, crowd-surf and form circle pits; they want to feel the kick drum in their chest and hear every riff articulated, even at 200 BPM.",
   "glance": {
-    "origin": "Birmingham, England, around 1970 (Black Sabbath); New Wave of British Heavy Metal late 1970s; thrash in the US Bay Area and Germany in the 1980s; death metal in Florida and Sweden; metalcore and djent (Sweden, US, UK) from the late 1990s–2000s",
-    "tempo": "80–220+ BPM (doom 50–80; traditional 100–150; thrash 160–220; blast beats feel like 200–280+; djent often mid-tempo 90–140 with odd-meter riffs)",
+    "origin": "Birmingham, England, around 1970 (Black Sabbath); New Wave of British Heavy Metal late 1970s; thrash in the US Bay Area and Germany in the 1980s; death metal in Florida and Sweden; metalcore (US) from the early 1990s and djent (Sweden, US, UK) from the late 1990s–2000s",
+    "tempo": "50–220+ BPM (doom 50–80; traditional 100–150; thrash 160–220; blast beats feel like 200–280+; djent often mid-tempo 90–140 with odd-meter riffs)",
     "ensemble": "4–6 piece: drums (usually double kick), bass, 1–2 rhythm/lead guitars, lead vocal (sung, screamed or growled), sometimes keys or backing tracks",
     "priority": "Note definition in the low end: kick, palm-muted guitars and bass must stay distinct at speed, with the vocal still audible on top",
     "liveSpl": "100–106 dBA Leq (LAeq-15 min); roughly 118–128 dBC; large open-air festivals have run near 110 dBA at FOH",
@@ -266,7 +266,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern metal masters typically land at −8 to −5 LUFS-I, with PLR as low as 6–8 dB; traditional and doom records sit more naturally around −10 to −8. Keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14 LUFS to avoid codec clipping. Streaming normalizes to around −14 LUFS, so extreme loudness brings no playback advantage and costs punch."
+      "text": "Modern metal masters typically land at −8 to −5 LUFS-I, with PLR as low as 6–8 dB (at −2 dBTP that means a master at about −8 LUFS-I or quieter); traditional and doom records sit more naturally around −10 to −8. Keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14 LUFS to avoid codec clipping. Streaming normalizes to around −14 LUFS, so extreme loudness brings no playback advantage and costs punch."
     }
   ],
   "liveStudio": {

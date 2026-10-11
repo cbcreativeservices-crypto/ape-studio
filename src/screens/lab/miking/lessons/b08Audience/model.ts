@@ -197,7 +197,7 @@ export const B08_SETUPS: SportSetup[] = [
     role: 'ANOTHER START',
     core: false,
     title: 'A near-coincident pair at the same place',
-    type: 'two small cardioids a hand’s width apart, angled out',
+    type: 'two small cardioids about 17 cm apart, angled out',
     start: 'At the raised place on the bar: more width than XY with some mono compatibility — audition the mono sum.',
     line: 'Wider than XY; small time differences between the capsules — check the mono sum before trusting it.',
     mics: [m('nl', 'compact', 'near pair, left', { x: STUDIO.M.x - 0.085, y: STUDIO.M.y }, STUDIO.hBar, { x: -3, y: 7 }, FACE_H, 'cardioid'), m('nr', 'compact', 'near pair, right', { x: STUDIO.M.x + 0.085, y: STUDIO.M.y }, STUDIO.hBar, { x: 3, y: 7 }, FACE_H, 'cardioid')],

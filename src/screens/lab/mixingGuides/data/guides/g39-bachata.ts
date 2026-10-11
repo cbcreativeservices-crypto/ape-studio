@@ -263,7 +263,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Urban bachata masters typically land at −10 to −8 LUFS-I, traditional and acoustic bachata nearer −12 to −10, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Services normalize to about −14 LUFS, so very loud masters gain nothing and lose the requinto’s transient detail. A PLR of about 9–12 dB and a loudness range of 4–7 LU suit the style."
+      "text": "Urban bachata masters typically land at −10 to −8 LUFS-I, traditional and acoustic bachata nearer −12 to −10, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Services normalize to about −14 LUFS, so very loud masters gain nothing and lose the requinto’s transient detail. A PLR of about 9–12 dB (at −2 dBTP that means a master at about −11 LUFS-I or quieter) and a loudness range of 4–7 LU suit the style."
     }
   ],
   "liveStudio": {

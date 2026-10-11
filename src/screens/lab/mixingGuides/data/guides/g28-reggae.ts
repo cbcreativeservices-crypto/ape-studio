@@ -11,7 +11,7 @@ export const GUIDE: MixingGuide = {
   "title": "Reggae",
   "expects": "Audiences expect bass felt in the chest but never boomy, a relaxed groove behind the beat, and words they can follow.",
   "glance": {
-    "origin": "Kingston, Jamaica, late 1960s (out of ska and rocksteady); roots and dub through the 1970s; lovers rock and UK sound-system culture in London from the mid-1970s",
+    "origin": "Kingston, Jamaica, late 1960s (out of ska and rocksteady); roots and dub through the 1970s; UK sound systems in London from the mid-1950s and lovers rock there from the mid-1970s",
     "tempo": "60–85 BPM half-time feel (120–170 counted in double time); lovers rock 65–80",
     "ensemble": "6–10 piece band: drums, bass, rhythm (skank) guitar, lead guitar, organ, piano/keys, percussion, 2–3 horns, lead vocal plus 2–3 harmony singers",
     "priority": "Drum and bass: a deep, round, melodic bass line locked to a dry one-drop kick, with the lead vocal clear on top",
@@ -257,7 +257,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, true peak −1 dBTP (−2 if louder than −14). Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light (PLR 10–13 dB) and distortion low so the bass stays round. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
+      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, true peak −1 dBTP (−2 if louder than −14). Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light (PLR 10–13 dB, about −12 to −14 LUFS-I at −2 dBTP) and distortion low so the bass stays round. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
     }
   ],
   "liveStudio": {

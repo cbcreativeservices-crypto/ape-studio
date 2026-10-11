@@ -429,7 +429,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small dynamic about 40 cm from the boss, at a safe offset, its back to the wedge', ok: true, power: 'none', feedback: 'A directional view toward the boss from outside the swing; a dynamic needs no phantom.' },
       { id: 'b', label: 'Small dynamic about 80 cm in front of the face, its null toward the wedge', ok: true, power: 'none', feedback: 'A broader front view; check feedback with the operator.' },
-      { id: 'c', label: 'Small condenser in front of the face', ok: false, power: 'phantom', feedback: 'This input has no phantom, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser in front of the face', ok: false, power: 'phantom', feedback: 'This input has no phantom, and this condenser needs it.' },
       { id: 'd', label: 'A mic right on the boss, as close as possible', ok: false, power: 'none', feedback: 'Inside the swing and the mallet’s path — and it exaggerates the impact.' },
       { id: 'e', label: 'An omni and a room pair, all open on stage', ok: false, power: 'none', feedback: 'Too many open mics, and an omni hears the whole stage.' },
     ],

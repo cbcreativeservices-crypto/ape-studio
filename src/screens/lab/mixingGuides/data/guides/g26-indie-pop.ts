@@ -263,7 +263,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, so loud masters gain nothing. A PLR of 10–14 dB and a loudness range of 5–9 LU suit the style."
+      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, so loud masters gain nothing. A PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of 5–9 LU suit the style."
     }
   ],
   "liveStudio": {

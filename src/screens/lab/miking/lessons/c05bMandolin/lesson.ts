@@ -395,7 +395,7 @@ export const C05B_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A small, bright string instrument with eight steel strings in four pairs over a carved top. A floating bridge drives the top. A-style bodies are teardrops, often with an oval hole; F-style bodies have a scroll, points and f-holes.', src: 'EASTMAN' },
+    { title: 'WHAT IT IS', text: 'A small, bright string instrument with eight steel strings in four pairs over a carved top. A floating bridge drives the top. A-style bodies are teardrops, often with an oval hole; F-style bodies have a scroll and points, often with f-holes.', src: 'EASTMAN' },
     { title: 'WHERE YOU MEET IT', text: 'Bluegrass, folk, country and classical music, on stage — often round a shared mic — and in the studio.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The percussive offbeat chop, tremolo melodies, fast single-note leads. Ask which they will play, and at what level.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a mandolin about 66 cm (26 in) long and 26 cm (10 in) across the body, about 4.5 cm deep (drawn sizes for the depth and string length).', src: 'MET-A4' },

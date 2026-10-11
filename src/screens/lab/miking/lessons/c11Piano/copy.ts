@@ -106,7 +106,7 @@ export const PIANO_COPY: LessonCopy = {
     looking: 'From above · mic under the short-stick lid',
     prompt: 'The side-fill speaker stays where the band needs it. Turn the MIC (AIM) or change its PATTERN until the side-fill sits in the rejection — while the mic still looks down at the strings.',
     activityDone: 'done — the side-fill sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence — and inside the case the lid and rim change the picture too.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence — and inside the case the lid and rim change the picture too.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Looking down into the piano, its rear points up at the lid — a side-fill out beside the piano sits well off that, so only a pattern with its null off to the side reaches it.',
     shieldNote: 'Lowering the lid changes both the tone and the spill; reduce the level before moving a mic or the lid, then retest the gain before feedback. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'pn.ctx.studio',

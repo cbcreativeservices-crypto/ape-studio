@@ -631,7 +631,7 @@ export const B11_LESSON: Lesson = {
       { title: 'Breath from the lungs', text: 'The lungs push air up the windpipe — hard and fast during exertion, in shouts and calls.' },
       { title: 'The vocal folds buzz', text: 'In the voice box, low in the throat, two small folds come together and the breath sets them buzzing. That buzz is the raw sound of the voice.' },
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue, the lips and the open mouth shape the buzz into vowels and words; the tongue, the teeth and the lips add the consonants.' },
-      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng partly through the nose. That is where every distance here is measured from: the lips — a chest mic sits below them.' },
+      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng through the nose instead. That is where every distance here is measured from: the lips — a chest mic sits below them.' },
     ],
     attack: 'P and B push a puff of air out of the lips, and exertion pushes harder. A headset capsule at the outside corner of the mouth stays out of most of it; a chest mic is below the breath.',
     body: 'The vowels carry most of the level and the tone. A chest mic hears a fuller, chestier voice, duller as the head turns; a headset boom hears the mouth, and more breath. Tendencies, to check by ear.',

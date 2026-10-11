@@ -278,7 +278,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Open-air theatres and arenas run around 96–102 dBA LAeq-15 at FOH, about 112–120 dBC, peaking at 108–112 dBA in dance breaks. Club, gazino and wedding gigs are often 92–98 dBA with the vocal very hot. Sub is moderate except on EDM-influenced tracks; keep the C-minus-A gap under about 18 dB. European festivals often cap at 100 dBA over 60 minutes or 105 dBA LAeq-15. Singing crowds add several dB up front; offer earplugs and protect string players seated near drums and wedges."
+      "text": "Open-air theatres and arenas run around 96–102 dBA LAeq-15 at FOH, about 112–120 dBC, peaking at 108–112 dBA in dance breaks. Club, gazino and wedding gigs are often 92–98 dBA with the vocal very hot. Sub is moderate except on EDM-influenced tracks; keep the C-minus-A gap under about 18 dB. European festivals often cap at 100 dBA over 60 minutes or 102–103 dBA LAeq-15. Singing crowds add several dB up front; offer earplugs and protect string players seated near drums and wedges."
     },
     {
       "label": "Studio / streaming:",

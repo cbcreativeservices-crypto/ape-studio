@@ -171,7 +171,7 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
           <Landing looking={`${t.label} · ${patLabel}`} prompt="Move SOURCE ANGLE round the back. Where does the pickup fall furthest?" />
-          {deep ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
+          {deep ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'cardioid' ? (
               <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°), and still picks up about half (−6 dB) at its sides.</Note>

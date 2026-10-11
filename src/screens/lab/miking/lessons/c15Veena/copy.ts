@@ -71,7 +71,7 @@ const base = stringsCopy({
       { title: 'STUDIO', text: 'Hear the plate start before adding channels; compare a farther view if the room helps. Include the melody and the drone — one bass note does not represent the instrument.' },
       { title: 'A PICKUP', text: 'A built-in pickup is labelled separately and tested in the actual rig — its level, its input and its feedback — and it does not exactly represent the air sound.' },
     ],
-    body: 'With a monitor on the side, a pattern’s rejection is a tool to aim — and patterns reject least at low frequencies.',
+    body: 'With a monitor on the side, a pattern’s rejection is a tool to aim — and patterns often reject least at low frequencies.',
     studioId: 'vn.ctx.studio',
     studioPrompt: 'A quiet studio, solo veena: what do you hear before adding a second mic?',
     studioNote: 'In a quiet room a farther view blends the veena with the room. Repeated trials are practical when the player stops. Switch back to LIVE for the side-fill exercise.',

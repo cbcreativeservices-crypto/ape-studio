@@ -85,7 +85,7 @@ export const B02_COPY: Partial<LessonCopy> = {
       shotgunShort: 'Ideas to try with the fixed boom’s short shotgun: its tube’s tip just outside the widest frame, aimed at the mouth; distances read to its capsule.',
       compactHyper: 'Ideas to try with a compact hypercardioid on the boom: the same place, matched loudness — often smoother among a studio’s reflections.',
       bcGoose: 'Ideas to try with a gooseneck: its capsule raised toward the mouth, a little below its line; the base away from the papers.',
-      bcGooseSuper: 'Ideas to try with a supercardioid gooseneck: its rejection toward the rear, a little to one side — check where the PA sits.',
+      bcGooseSuper: 'Ideas to try with a supercardioid gooseneck: its rejection toward the rear, well to one side — check where the PA sits.',
       bcBoundaryDesk: 'Ideas to try with a boundary on the desk: its front toward the anchor, its opening clear, nothing on it — and check its actual pattern.',
     },
     note: 'Ask first: a lav goes on a person only with their agreement and wardrobe’s; nothing on skin except an adhesive made for skin. A fixed boom over a seated person is rigged by qualified crew.',

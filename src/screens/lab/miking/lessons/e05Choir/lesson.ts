@@ -127,7 +127,7 @@ const scenarios: MikingScenario[] = [
     correct: 'They hear well from a few feet away',
     explain: 'A directional condenser has the sensitivity and detail to cover a section from a few feet away; the tall stand puts it a little above the heads. It needs phantom power.',
     why: {
-      'They need no power on a stage': 'Condensers need phantom power; dynamics are the ones that do not.',
+      'They need no power on a stage': 'The condensers here need phantom power; dynamics are the ones that do not.',
       'They reject the whole of the room behind them': 'A directional pattern rejects some of the room behind — never all of it.',
     },
   },
@@ -175,7 +175,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The outer sections sound weak in the 17 cm pair. A likely reason?',
     options: ['They sit outside its 95° angle', 'The pair is too high above them', 'The pair has no phantom power'],
     correct: 'They sit outside its 95° angle',
-    explain: 'The 17 cm pair images what lies inside its 95° recording angle. Close in, the outer sections fall outside it: move the pair back until the choir fills the angle, or bring the group in.',
+    explain: 'The 17 cm pair spreads what lies inside its 95° recording angle between the loudspeakers. Close in, the outer sections fall outside it — pushed to the edges, and farther from the pair than the centre: move the pair back until the choir fills the angle, or bring the group in.',
     why: {
       'The pair is too high above them': 'Height changes the rows’ balance; the width the pair takes in is set by its distance.',
       'The pair has no phantom power': 'Then nothing would be heard — the outer sections would not stand out.',

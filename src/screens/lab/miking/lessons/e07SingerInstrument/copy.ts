@@ -94,7 +94,7 @@ export const E07_COPY: Partial<LessonCopy> = {
     looking: 'The singer-guitarist · the vocal mic in front of the mouth, the guitar below it',
     prompt: 'The guitar is right below the vocal mic. Tilt or turn the MIC (AIM), or change its PATTERN, until the guitar sits in the rejection — while the mic still faces the singer.',
     activityDone: 'done — the guitar sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — and the guitar is a large source, not a point. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — and the guitar is a large source, not a point. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: the guitar sits almost square below a level vocal mic — about 90° off its front, where a cardioid still hears a good deal. Tilting the mic’s front up turns its rear toward the guitar; a supercardioid’s rejection, off its rear, reaches the guitar with less tilt.',
     shieldNote: 'The singer’s body and the guitar reflect sound too, and the free-field pattern cannot show that. Listen to each mic alone, then the pair in mono.',
     studioId: 'sw.ctx.studio',

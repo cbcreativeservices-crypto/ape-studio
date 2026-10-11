@@ -43,7 +43,7 @@ export type VoiceSoundSpec = {
   useExtra?: (p: PageProps) => MikingStep | null;
 };
 
-const AIR_LABEL: Record<AirKind, string> = { vowel: 'A VOWEL', plosive: 'P OR B', sibilant: 'S OR T' };
+const AIR_LABEL: Record<AirKind, string> = { vowel: 'A VOWEL', plosive: 'P, B OR T', sibilant: 'S' };
 const AIR_WORD: Record<AirKind, string> = { vowel: 'SOUND ONLY', plosive: 'A PUFF', sibilant: 'A HISS' };
 
 export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
@@ -123,11 +123,11 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
         },
         well: (
           <>
-            <Landing looking="Side view · the singer from the right" prompt="Switch SOUND: a vowel, a P or B, an S or T. What leaves the lips besides the sound?" />
+            <Landing looking="Side view · the singer from the right" prompt="Switch SOUND: a vowel, a P, B or T, an S. What leaves the lips besides the sound?" />
             <Card>
               <Point title={spec.air[kind].title.toUpperCase()}>{spec.air[kind].text}</Point>
             </Card>
-            {tried.size === 3 ? <Note tone="ok">A vowel sends out sound only; a P or B also pushes a puff of air straight out along the mouth’s axis; an S or T sends a narrow hiss forward. The air and the hiss both travel along the axis — off it, much less of them.</Note> : null}
+            {tried.size === 3 ? <Note tone="ok">A vowel sends out sound only; a P, B or T also pushes a puff of air straight out along the mouth’s axis; an S sends a narrow hiss forward. The air and the hiss both travel along the axis — off it, much less of them.</Note> : null}
           </>
         ),
       },

@@ -51,7 +51,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim a bass-cabinet mic so its rejection faces a monitor — and know why live sound often leans on the DI.',
     credit: { scenarios: ['ba.ctx.1', 'ba.ctx.2', 'ba.ctx.3', 'ba.ctx.studio', 'ba.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the bassist’s wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
-    takeaway: 'Live, a DI often carries the dependable low end and the mic adds the cabinet’s character. A close, directional mic rejects more of the stage — but real nulls are shallowest in the lows.',
+    takeaway: 'Live, a DI often carries the dependable low end and the mic adds the cabinet’s character. A close, directional mic rejects more of the stage — but real nulls are often shallowest in the lows.',
   },
   twoMic: {
     title: 'Mic and DI',
@@ -179,9 +179,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'No phantom power on the bass channel. Which of this page’s mic types can you still use?',
     options: ['The small condenser, kept a little farther back', 'The two dynamics: neither needs power', 'The small condenser, while the head is switched on'],
     correct: 'The two dynamics: neither needs power',
-    explain: 'Dynamics need no power. A condenser needs phantom power from the desk wherever it is placed.',
+    explain: 'Dynamics need no power. The condenser here needs phantom power from the desk wherever it is placed.',
     why: {
-      'The small condenser, kept a little farther back': 'Distance does not change what a condenser needs: it still needs phantom.',
+      'The small condenser, kept a little farther back': 'Distance does not change what this condenser needs: it still needs phantom.',
       'The small condenser, while the head is switched on': 'The head powers the speakers, not the mic.',
     },
   },
@@ -275,7 +275,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The bassist’s wedge sits downstage, behind your cardioid cabinet mic. Where does the cardioid reject most?',
     options: ['At its sides, about ninety degrees off its axis', 'Directly behind it, where that wedge sits', 'In front of it, toward the woofer it faces'],
     correct: 'Directly behind it, where that wedge sits',
-    explain: 'A cardioid rejects most at 180°. Real nulls are shallower than the simplified pattern — shallowest in the lows, which is where a bass wedge is loudest.',
+    explain: 'A cardioid rejects most at 180°. Real nulls are shallower than the simplified pattern — often shallowest in the lows, which is where a bass wedge is loudest.',
     why: {
       'At its sides, about ninety degrees off its axis': 'At 90° a cardioid still picks up about half (−6 dB). Its deepest rejection is behind.',
       'In front of it, toward the woofer it faces': 'That is where it picks up MOST.',
@@ -470,9 +470,9 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is it the cabinet, the room, the mic position or a monitor? Compare notes, move the cabinet or mic, and check the DI on its own.',
     options: ['Compare notes, move mic or cabinet, check the DI alone', 'Boost the quiet notes with a narrow EQ and move on', 'Turn the whole bass up so the quiet notes come through'],
     correct: 'Compare notes, move mic or cabinet, check the DI alone',
-    explain: 'If the DI is even and the mic is not, the room or the position is the cause: move the mic, or the cabinet, and compare again.',
+    explain: 'If the DI is even and the mic is not, the cabinet, the room or the position is the cause: move the mic, or the cabinet, and compare again.',
     why: {
-      'Boost the quiet notes with a narrow EQ and move on': 'A room or position problem moves when the player moves; find the cause first.',
+      'Boost the quiet notes with a narrow EQ and move on': 'A room or position problem changes when the mic or the cabinet moves; find the cause first.',
       'Turn the whole bass up so the quiet notes come through': 'The loud notes get louder too — the unevenness stays.',
     },
   },

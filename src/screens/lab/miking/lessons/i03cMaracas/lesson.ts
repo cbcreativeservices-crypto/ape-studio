@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Close to a moving head, each stroke changes the distance by a large share: the level leaps.',
     why: {
       'The seeds inside get louder as they warm up': 'The seeds do not change; the distance does.',
-      'The mic’s pickup pattern widens when the head comes near': 'A pattern does not change with distance; the level does.',
+      'The mic’s pickup pattern widens when the head comes near': 'The pattern does not widen near a source; the level changes with the distance.',
     },
   },
   {
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One small dynamic for the maracas, centred and a little above them', ok: true, power: 'none', feedback: 'A dynamic needs no phantom; check the vocal mic and the spot together, and the wedge in the null.' },
       { id: 'b', label: 'No maraca spot: the vocal mic and the band mics carry them, checked at soundcheck', ok: true, power: 'none', feedback: 'Fair if they are heard well enough: fewer open mics on a loud stage.' },
-      { id: 'c', label: 'A small condenser on the maracas', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser on the maracas', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A maraca spot turned up to pull the rattle out of the vocal', ok: false, power: 'none', feedback: 'A spot cannot remove what the vocal mic already hears.' },
       { id: 'e', label: 'Ask the singer to hold the maracas away from the face', ok: false, power: 'none', feedback: 'The singer’s gestures are theirs; rehearse and place the mics for them.' },
     ],
@@ -466,7 +466,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Close to a moving head, each stroke changes the distance by a large share.',
     why: {
       'The seeds get louder with each stroke': 'The seeds do not change; the distance does.',
-      'The mic’s pattern narrows near a source': 'A pattern does not change with distance.',
+      'The mic’s pattern narrows near a source': 'The leap comes from the changing distance, not from the pattern.',
     },
   },
   {

@@ -24,7 +24,7 @@ const pages: LessonPages = {
     title: 'Meet the double bass',
     goal: 'Get to know the upright (double) bass — what it is, where you meet it, what it does in the music, and its parts — before any microphone. This lesson is the plucked bass; the bowed bass has its own.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The fingers pull the strings and let go; the bridge carries their vibration into the large carved body. The bassist stands behind it, and the bass is heavy, valuable and easy to knock over.',
+    takeaway: 'The fingers pull the strings and let go; the bridge carries their vibration into the large hollow body. The bassist stands behind it, and the bass is heavy, valuable and easy to knock over.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -54,7 +54,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s rejection faces the drum kit — and know why the bass body reflects the kit anyway, and what a pickup adds on a loud stage.',
     credit: { scenarios: [`${P}.ctx.1`, `${P}.ctx.2`, `${P}.ctx.studio`, `${P}.rec.3`], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the kit sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Rejection is weakest in the lows, and the bass body reflects the kit into the mic. On a loud stage a pickup carries the low end and the mic adds detail as far as feedback allows — each on its own channel.',
+    takeaway: 'Rejection is often weakest in the lows, and the bass body reflects the kit into the mic. On a loud stage a pickup carries the low end and the mic adds detail as far as feedback allows — each on its own channel.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -259,7 +259,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The bass body reflects the kit back into the mic’s front',
     explain: 'The bass’s large surface reflects drum and PA sound toward the front of a mic aimed away from them. If the pattern alone fails, move the bassist, the drummer, the amp or the mic.',
     why: {
-      'The mic is faulty: aiming away removes the kit completely': 'Rejection is partial — least in the lows — and reflections arrive from the front.',
+      'The mic is faulty: aiming away removes the kit completely': 'Rejection is partial — often least in the lows — and reflections arrive from the front.',
       'The bass is too quiet, so the mic has stopped working': 'The mic works; the kit reaches it by reflection and through its pattern.',
     },
   },
@@ -293,7 +293,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A four-string bass’s lowest open note is about…',
     options: ['65 Hz, like a cello’s C', '196 Hz, like a violin’s G', '41 Hz, the open E'],
     correct: '41 Hz, the open E',
-    explain: 'The open E is about 41 Hz (instruments with an extension or a fifth string go lower) — the region where patterns reject least and rooms boom most.',
+    explain: 'The open E is about 41 Hz (instruments with an extension or a fifth string go lower) — the region where patterns often reject least and rooms boom most.',
     why: {
       '65 Hz, like a cello’s C': 'That is the cello’s lowest; the bass goes lower.',
       '196 Hz, like a violin’s G': 'That is the violin’s lowest; the bass is far lower.',
@@ -472,7 +472,7 @@ const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: once the finger lets go, what does the string do?', options: ['It stops at once', 'It swings back and rings on', 'It holds its pulled shape'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic a little higher, toward the fingerboard. What changes?', options: ['More finger and pitch', 'More body', 'It depends on this bass'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
-  context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
+  context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — often least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 

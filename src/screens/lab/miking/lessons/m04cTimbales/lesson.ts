@@ -19,7 +19,7 @@ const pages: LessonPages = {
     title: 'Meet the timbales',
     goal: 'Get to know a pair of timbales — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Two shallow, single-headed brass drums on a stand, played with sticks on the heads, the rims and the shells — often with a bell on a bracket. Ask which surfaces the part uses.',
+    takeaway: 'Two shallow, single-headed drums with metal shells (brass here) on a stand, played with sticks on the heads, the rims and the shells — often with a bell on a bracket. Ask which surfaces the part uses.',
   },
   sound: {
     title: 'How they make their sound',
@@ -37,7 +37,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the pair by its properties — pattern, power, size, mount and the level it can take — not by its brand.',
     credit: { scenarios: ['tb.mic.1', 'tb.mic.2', 'tb.mic.3', 'tb.mic.4', 'tb.rec.1'], note: 'Answer the five checks (one reaches back to how the timbales sound).' },
-    takeaway: 'A transducer class does not guarantee warmth, isolation, peak handling or safety from a stick. A pad after an overloaded capsule cannot repair it — check the strongest rimshot and bell.',
+    takeaway: 'A transducer class does not guarantee warmth, isolation, peak handling or safety from a stick. A pad after an overloaded mic cannot repair it — check the strongest rimshot and bell.',
   },
   placement: {
     title: 'Placement Studio',
@@ -157,16 +157,16 @@ const scenarios: MikingScenario[] = [
     explain: 'Dynamic mics need no power. The clip-on mic and the slim condenser are condensers and need phantom power.',
     why: {
       'The clip-on mic, since it is so small and light': 'Size does not decide power: the clip-on mic is a condenser and needs phantom power through its adapter.',
-      'The slim condenser, if you keep it farther away': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The slim condenser, if you keep it farther away': 'Distance does not change what this condenser needs: it still needs phantom power.',
     },
   },
   {
     id: 'tb.mic.2',
     page: 'microphone',
     prompt: 'A sharp rimshot distorts. You add a pad on the desk channel. Is it fixed?',
-    options: ['Not if the mic’s capsule is overloading — a later pad cannot repair it', 'Yes — a pad on the desk channel removes the distortion that came before it', 'Yes, as long as the fader is also pulled down a little'],
-    correct: 'Not if the mic’s capsule is overloading — a later pad cannot repair it',
-    explain: 'Set gain and pads for the strongest real rimshot and bell, checking the mic, the preamp and later stages. A pad after an overloaded capsule cannot repair distortion made there.',
+    options: ['Not if the mic itself is overloading — a later pad cannot repair it', 'Yes — a pad on the desk channel removes the distortion that came before it', 'Yes, as long as the fader is also pulled down a little'],
+    correct: 'Not if the mic itself is overloading — a later pad cannot repair it',
+    explain: 'Set gain and pads for the strongest real rimshot and bell, checking the mic, the preamp and later stages. A pad after an overloaded mic cannot repair distortion made there.',
     why: {
       'Yes — a pad on the desk channel removes the distortion that came before it': 'A pad lowers what reaches the next stage; it cannot undo distortion that already happened in the mic.',
       'Yes, as long as the fader is also pulled down a little': 'The fader comes later still: it makes distortion quieter, not cleaner.',
@@ -380,11 +380,11 @@ const scenarios: MikingScenario[] = [
     id: 'k.mix.2',
     page: 'practice',
     prompt: 'Your floor wedge sits about 110° off a hypercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; less in reality, least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
-    correct: 'Strong rejection on paper; less in reality, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies.',
+    options: ['Strong rejection on paper; less in reality, often least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
+    correct: 'Strong rejection on paper; less in reality, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies.',
     why: {
-      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and often least in the lows.',
       'More pickup than from straight behind, where it rejects the most': 'Straight behind, a hypercardioid has a rear lobe; its deepest rejection is off the rear axis.',
     },
   },
@@ -446,7 +446,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Mic rating, pad location, preamp gain, actual peak.',
     options: ['The mic’s rating, where the pad is, the gain and the real peak', 'Pull the channel fader well down until the rimshot sounds clean', 'Ask the player to leave the rimshots out'],
     correct: 'The mic’s rating, where the pad is, the gain and the real peak',
-    explain: 'Reduce input gain or use the appropriate pre-capsule pad or model per the manual; recheck the strongest hits.',
+    explain: 'Reduce input gain or use the mic’s own pad or an appropriate model per the manual; recheck the strongest hits.',
     why: {
       'Pull the channel fader well down until the rimshot sounds clean': 'The fader comes after the distortion; it only makes it quieter.',
       'Ask the player to leave the rimshots out': 'The rimshots are part of the music. Set the gain for them.',
@@ -496,7 +496,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, for the surfaces the part uses', role: 'required', feedback: 'Say why it is a good place to begin, and which surfaces it favours.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay out of every stick path', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on timbales', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };

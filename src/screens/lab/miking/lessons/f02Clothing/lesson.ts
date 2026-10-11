@@ -177,7 +177,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why does the close detail start use the small supercardioid, not the shotgun?',
     options: ['Its body sits behind its capsule', 'It is more sensitive than a shotgun is', 'A shotgun cannot be used for cloth at all'],
     correct: 'Its body sits behind its capsule',
-    explain: 'A shotgun’s tube reaches about 20 cm ahead of its capsule, toward the fabric. Close up, a small supercardioid keeps its body behind its capsule — and is smoother off its axis. Both are fair choices farther back.',
+    explain: 'This shotgun’s tube reaches about 20 cm ahead of its capsule, toward the fabric. Close up, a small supercardioid keeps its body behind its capsule — and is smoother off its axis. Both are fair choices farther back.',
     why: {
       'It is more sensitive than a shotgun is': 'Sensitivity varies by model; the reason here is the tube’s reach.',
       'A shotgun cannot be used for cloth at all': 'Many cloth passes use a shotgun — the garment start is drawn with one.',

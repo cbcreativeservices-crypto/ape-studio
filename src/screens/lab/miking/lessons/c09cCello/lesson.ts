@@ -567,7 +567,7 @@ export const C09C_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The cello is the large bowed string instrument played seated, held between the knees with its endpin on the floor. Four strings — C, G, D, A — run from the tailpiece over a thin bridge to the scroll. The bow, or a plucking finger, sets them vibrating; the bridge passes that into the hollow wooden body.', src: 'DPA-VC' },
+    { title: 'WHAT IT IS', text: 'The cello is the large bowed string instrument played seated, held between the knees with its endpin on the floor. Four strings — C, G, D, A — run from the tailpiece over a thin bridge to the pegs below the scroll. The bow, or a plucking finger, sets them vibrating; the bridge passes that into the hollow wooden body.', src: 'DPA-VC' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras and string quartets, solo recitals, studio sessions and film scores — and more and more in pop, folk and jazz on stage. This lesson covers one cello, bowed and plucked, in the studio, as a spot in an ensemble, and live.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries bass lines and melodies alike: the low C string gives weight under an ensemble, the A string sings. Ask the cellist what the part needs — long notes, pizzicato, fast passages — because that decides how much bow and how much body the mic should catch.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A full-size cello’s body is about 75 cm long, about 1.2 m with the neck and scroll. Its lowest note, the open C, is about 65 Hz. This lab draws a cello about that size, played seated, leaning back toward the player.', src: 'MET-VUILL' },

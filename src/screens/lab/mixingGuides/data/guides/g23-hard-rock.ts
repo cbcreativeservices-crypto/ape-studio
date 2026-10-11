@@ -77,7 +77,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare",
         "cut": "HPF 80–100 Hz; narrow −3 dB at ring (500 Hz–1 kHz)",
         "boost": "+2–4 dB at 180–250 Hz (body); +2–3 dB at 4–6 kHz (crack)",
-        "notes": "Bottom mic phase-flipped, 6–10 dB under top for rattle"
+        "notes": "Bottom mic polarity-flipped, 6–10 dB under top for rattle"
       },
       {
         "source": "Toms",
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern active rock masters land around −9 to −6 LUFS-I; a recent rock/alternative chart analysis averaged about −8 LUFS-I with loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); services normalize to about −14, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting."
+      "text": "Modern active rock masters land around −9 to −6 LUFS-I; a recent rock/alternative chart analysis averaged about −8 LUFS-I with loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); services normalize to about −14, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting (at −2 dBTP that means a master at about −10 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {

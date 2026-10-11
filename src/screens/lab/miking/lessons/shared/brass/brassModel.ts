@@ -76,7 +76,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
     'br.bell': { label: 'bell', short: 'bell', role: '' },
     'br.leadpipe': { label: 'leadpipe', short: 'leadpipe', role: 'The tube the mouthpiece fits into: the air column starts here.' },
     'br.slides': { label: 'tuning and valve slides', short: 'slides', role: 'Short U-shaped slides set the tuning; the valve slides are the extra lengths each valve brings in. Players pull them out to tune — keep clips and cables clear.' },
-    'br.valves': { label: slide ? 'valve section' : 'valves', short: slide ? 'valves' : 'valves', role: slide ? 'Two rotary valves in the bell section, worked by the left thumb: each brings in an extra loop of tube for the lowest notes.' : 'Three piston valves. Pressing one sends the air round an extra loop of tube, lowering the pitch.' },
+    'br.valves': { label: slide ? 'valve section' : 'valves', short: slide ? 'valves' : 'valves', role: slide ? 'Two rotary valves in the bell section, worked by the left hand: each brings in an extra loop of tube for the lowest notes.' : 'Three piston valves. Pressing one sends the air round an extra loop of tube, lowering the pitch.' },
     'br.slide': { label: 'slide', short: 'slide', role: 'The long U of tube the right hand moves: out to make the tube longer and the pitch lower — seven positions from 1st (closed) to 7th (out at arm’s length). It is precision tubing: never let anything touch it.' },
   };
   for (const t of P.tubes) {
@@ -161,7 +161,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
       id: 'br.thumb',
       label: 'the left thumb at the valve triggers',
       short: 'triggers',
-      role: 'The left thumb works the valve triggers beside the mouthpiece, all the time in low passages. Keep cables and clips away from the triggers and their linkage.',
+      role: 'The left thumb and, on many horns, a finger work the valve triggers beside the mouthpiece, all the time in low passages. Keep cables and clips away from the triggers and their linkage.',
       moving: true,
       prov: ill('env.btb.leftHand: a 100 × 80 × 80 box at the triggers (proposal drawing default)'),
       solid: { kind: 'box', min: { x: Math.min(...tx) - 40, y: Math.min(...ty) - 40, z: Math.min(...tz) - 40 }, max: { x: Math.max(...tx) + 40, y: Math.max(...ty) + 40, z: Math.max(...tz) + 40 } },

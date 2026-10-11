@@ -87,7 +87,7 @@ export const B10_COPY: Partial<LessonCopy> = {
       bcFlagOmni: 'Ideas to try with the omni handheld: keep it close and follow the mouth; it forgives a little aim, not distance.',
       bcFlagCard: 'Ideas to try with a cardioid handheld: keep its front on the speaking mouth — a mouth off its front is a duller, quieter voice.',
       bcFlagSuper: 'Ideas to try with a supercardioid handheld: aim carefully, and check where the PA sits against its small rear lobe.',
-      bcHeadsetBoom: 'Ideas to try with the reporter’s headset: the capsule at the outside corner of their mouth, out of the breath; it does not hear the guest.',
+      bcHeadsetBoom: 'Ideas to try with the reporter’s headset: the capsule at the outside corner of their mouth, out of the breath; it hears the guest only distantly.',
       locLav: 'Ideas to try with a body mic: only with approval; the capsule clear of fabric, straps and gear; listen through a walk, a turn and the breathing after exertion.',
       locBoomSgCap: 'Ideas to try with the boom: as close as the frame allows, re-aimed as the guest turns; the pole’s sweep inside the approved area.',
     },

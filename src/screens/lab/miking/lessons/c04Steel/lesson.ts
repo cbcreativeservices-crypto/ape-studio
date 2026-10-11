@@ -182,7 +182,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The channel has no phantom power. Which of this page’s mic types can you still use?',
     options: ['The small condenser, kept a little farther back', 'The two dynamics: neither needs power', 'The small condenser, while the amp is switched on'],
     correct: 'The two dynamics: neither needs power',
-    explain: 'Dynamics need no power; a condenser needs phantom from the desk wherever it is placed.',
+    explain: 'Dynamics need no power; the condenser here needs phantom from the desk wherever it is placed.',
     why: {
       'The small condenser, kept a little farther back': 'Distance does not change what a condenser needs.',
       'The small condenser, while the amp is switched on': 'The amp powers its speaker, not the mic.',
@@ -280,7 +280,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Yes — near 125° each side; a small lobe sits straight behind',
     explain: 'A supercardioid rejects most near 125° each side, with a small lobe straight behind. Aim by the mic’s real pattern.',
     why: {
-      'No — a directional mic rejects most of all straight behind itself': 'Only a cardioid rejects most at 180°. So “put the monitor directly behind it” suits a cardioid, not this mic.',
+      'No — a directional mic rejects most of all straight behind itself': 'A cardioid rejects most at 180°; this supercardioid has a small lobe there. So “put the monitor directly behind it” suits a cardioid, not this mic.',
       'No, it rejects the same all the way round the back': 'The rejection changes with angle: deepest near 125° each side, with a small lobe straight behind.',
     },
   },
@@ -614,7 +614,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Pitch goes with the square root of tension: a whole tone (× 1.12) needs about × 1.26 the tension.',
     why: {
       'About twice as tight': 'Twice the tension raises the pitch by about six semitones, not two.',
-      'About one-tenth tighter than before': 'That is closer to a semitone’s change in frequency than a whole tone’s tension.',
+      'About one-tenth tighter than before': 'One-tenth more tension raises the pitch by less than a semitone, not a whole tone.',
     },
   },
   {
@@ -674,7 +674,7 @@ export const C04_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The pedal steel: strings over a neck on legs, played seated with a steel bar, with floor pedals and knee levers that change chosen strings’ pitch. The lap steel: a simpler instrument across the knees, played with a bar, usually without pedals. Both are electric: a pickup feeds an amp.', src: 'SGF-MAP / LESSON L6-L7' },
+    { title: 'WHAT IT IS', text: 'The pedal steel: strings over a neck on legs, played seated with a steel bar, with floor pedals and knee levers that change chosen strings’ pitch. The lap steel: a simpler instrument across the knees, played with a bar, usually without pedals. Here both are electric: a pickup feeds an amp.', src: 'SGF-MAP / LESSON L6-L7' },
     { title: 'WHERE YOU MEET IT', text: 'Country, western swing, gospel, Hawaiian, blues and rock — on stage and in the studio, through an amp the player brings.', src: 'LESSON L4' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Gliding melodies, swelling chords and bends no fretted guitar can make: the bar slides, the pedals and knee levers move notes within a chord, and the volume pedal swells the sound.', src: 'LESSON L7' },
     { title: 'ITS PARTS', text: 'The neck or necks and their strings, the changer at the bridge end, the pickup, the bar, the pedals and their rods, the knee levers and the volume pedal. The sound you mic comes from the amp’s speaker.', src: 'SGF-MAP' },

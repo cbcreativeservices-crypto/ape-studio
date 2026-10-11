@@ -639,7 +639,7 @@ export const E09_LESSON: EnsembleLesson = {
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin with the drum pair — each mic about 1–1.4 m from the snare over the kit — or, in a good room, a low pair about 1 m in front of the kick. Places to start and compare, not measurements of a best place.',
       'Change one thing at a time — height, then where it sits over the kit — and compare at a consistent level on the same passage.',
-      'Keep the two mics the same distance from the snare as you move them, so the snare stays centred and the pair sums well in mono.',
+      'Keep the two mics the same distance from the snare as you move them, so the snare stays centred and sums cleanly in mono.',
     ],
     plot: true,
     placeAxes: { h: { lo: 300, hi: 3000 }, z: { lo: -4800, hi: 1200 }, x: { lo: -2500, hi: 2500 } },

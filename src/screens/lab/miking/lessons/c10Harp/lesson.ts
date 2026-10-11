@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Through the sound holes in the back of the soundbox',
     explain: 'The air inside the soundbox is pushed and pulled too; it leaves through the holes in the box’s back — toward the harpist.',
     why: {
-      'Out of the top of the pillar, above the neck': 'The pillar is a solid column. The air inside the soundbox leaves through the holes in its back.',
+      'Out of the top of the pillar, above the neck': 'The pillar has no sound holes. The air inside the soundbox leaves through the holes in its back.',
       'Through the pedals, down into the floor': 'Pedals change the strings’ pitches. Air leaves through the sound holes.',
     },
   },
@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You plan a miniature at a sound hole for a concert. What does it need?',
     options: ['Nothing: miniatures are dynamic mics, so they need no power at all', 'Tape, so that it stays firmly on the soundboard', 'Phantom power, an approved holder and the owner’s agreement'],
     correct: 'Phantom power, an approved holder and the owner’s agreement',
-    explain: 'A miniature is a condenser: it needs phantom power, often through its own adapter. It goes on a holder the owner approves — never forced in, never taped to the finish.',
+    explain: 'This miniature is a condenser: it needs phantom power, often through its own adapter. It goes on a holder the owner approves — never forced in, never taped to the finish.',
     why: {
       'Nothing: miniatures are dynamic mics, so they need no power at all': 'Miniatures like this are condensers: they need phantom power.',
       'Tape, so that it stays firmly on the soundboard': 'Tape can damage the finish. Use an approved holder.',
@@ -389,9 +389,9 @@ const scenarios: MikingScenario[] = [
     id: 'hp.mix.2',
     page: 'practice',
     prompt: 'A wedge sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most', 'Strong rejection on paper; in reality less, and least in the lows'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less, and least at low frequencies.',
+    options: ['Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most', 'Strong rejection on paper; in reality less, and often least in the lows'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less, and often least at low frequencies.',
     why: {
       'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper.',
       'More wedge than straight behind the mic, where it rejects the most': 'A supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
@@ -504,7 +504,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the harpist’s hands, feet, view and head', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a harp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -559,7 +559,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The holes are in the soundbox’s back, facing the harpist; the soundboard is its front, where the strings are anchored.',
     why: {
       'In the soundboard itself, under the strings': 'The soundboard carries the strings; the holes are in the back.',
-      'In the pillar, up near the crown at the top': 'The pillar is a solid column at the front.',
+      'In the pillar, up near the crown at the top': 'The pillar at the front has no sound holes.',
     },
   },
   {
@@ -677,7 +677,7 @@ export const C10_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The finger pulls the string', text: 'The harpist’s finger pulls a string aside: it bends at the finger into two straight lengths, its ends held by the soundboard and the neck.' },
-      { title: 'It lets go — the string swings', text: 'Released, the string swings back and forth (drawn many times larger, and in the picture’s plane — a harp string swings mostly across the row of strings).' },
+      { title: 'It lets go — the string swings', text: 'Released, the string swings back and forth (drawn many times larger, and in the picture’s plane — a harp string swings mostly along the row of strings, partly across it).' },
       { title: 'It pulls on the soundboard', text: 'Anchored in the soundboard, the swinging string tugs on it; the thin board bows in and out with it. The air inside the soundbox is pushed and pulled too.' },
       { title: 'Sound leaves the harp', text: 'The soundboard sends sound out from its face — toward the strings and the room in front — and air from inside the box leaves through the holes in its back, toward the harpist.' },
       { title: 'A hand stops it', text: 'The string rings on until the harpist stops it with a hand. Dampings and pedal or lever changes are part of the performance — and of what a close mic hears.' },

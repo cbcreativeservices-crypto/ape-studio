@@ -514,7 +514,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the grille of the speaker that sounds best', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay off the lid and clear of the keys, the player and the pedal', role: 'required', feedback: 'Clearance — of the instrument and the player — is part of every passing setup.' };
 const STEREO_REASON: SetupReason = { id: 'r.stereo', label: 'Two grilles make it a stereo instrument', role: 'wrong', feedback: 'Two grilles usually carry the same signal: not stereo.' };

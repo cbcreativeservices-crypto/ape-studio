@@ -38,7 +38,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     kitA11y: 'The drum kit from above: the hi-hats on the player’s left, ringed in amber, the snare beside them, the crash above, the throne behind.',
     kitLanding: 'Tap anything around the hi-hats — or step through ITEM — to see what it means for a hat mic. There is nothing to answer yet.',
     kitIdle: 'The hats stand on the player’s left, right beside the snare and a little higher; the crash hangs above their audience side. The player’s left foot works the pedal.',
-    leftHanded: 'Left-handed players set the kit up mirrored — the hi-hats on the right.',
+    leftHanded: 'Many left-handed players set the kit up mirrored — the hi-hats on the right.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
     stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side. On a loud stage, the snare is still the hats’ loudest neighbour.',
@@ -58,7 +58,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     typeNotes: {
       sdcCard: 'Ideas to try: keep the height and slide the aim from the edge toward the cup; then, separately, change the height. Keep the snare on the far side of the pair. Within about 10 cm (4 in) of the cymbals is a common place to begin — outside the air burst.',
       smallDynCard: 'Ideas to try: a dynamic over the outer edge on the far side, aimed down. Listen as the pair closes: a thump or wind noise means the air is reaching it — move it up or round, then use a high-pass filter only if the low end is unwanted.',
-      standClip: 'Ideas to try: clamp the clip low on the stand, out of the pedal’s way, then turn the capsule a little toward the bow. From below there tends to be less stick and a warmer top cymbal.',
+      standClip: 'Ideas to try: clamp the clip low on the stand, out of the pedal’s way, then turn the capsule a little toward the bow. From below there tends to be less stick, and the top cymbal’s warmer tones are softer.',
     },
     note: 'Clearance comes first: stop the drummer before moving a real mic. Watch the pair open fully, the stick crossing over, and the air at the edges — check the whole motion, not one stroke.',
     availableLead: 'Starting points for this mic on the hats',
@@ -66,7 +66,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the cymbal it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every pair of hats is different.',
       separate: 'Height above the top cymbal, the position over the plate (edge, bow or toward the cup) and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the cymbal, and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side of the pair, the air at the edges, the clutch and rod, the crash above and the player’s left arm and foot. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
-      tendencies: 'Toward the edge tends to bring more of the lower tones; toward the cup more of the high overtones. From below, less stick and a warmer top cymbal. Two ways to handle the snare: keep it off the mic’s front with the pair shading it — or, when channels are short, angle the snare mic a little toward the hats and use one mic for both. Tendencies, checked by ear.',
+      tendencies: 'Toward the edge tends to bring more of the lower tones; toward the cup more of the high overtones. From below, less stick, and the top cymbal’s warmer tones are softer. Two ways to handle the snare: keep it off the mic’s front with the pair shading it — or, when channels are short, angle the snare mic a little toward the hats and use one mic for both. Tendencies, checked by ear.',
     },
   },
   context: {
@@ -100,7 +100,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
       note: 'One mic above the pair and one below it face opposite sides of the plates: as the cymbals move up, toward the top mic, they move away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plates’ lowest motion: check both polarity states, no setting is required.',
     },
     learn: [
-      'A mic under the hats hears a warmer top cymbal and less stick: a different perspective, kept only if it helps the hats in the whole kit.',
+      'A mic under the hats tends to hear less stick and less of the top cymbal’s warmer tones: a different perspective, kept only if it helps the hats in the whole kit.',
       'The same check applies whenever two mics hear one cymbal — above and below, or a close mic and the overheads: bring in one channel at a time, compare both polarity states in mono at matched levels, and move or leave out a mic if the hats go thin. The polarity switch flips the sign; it does not remove a delay.',
     ],
     warn: CYM_TWO_WARN,

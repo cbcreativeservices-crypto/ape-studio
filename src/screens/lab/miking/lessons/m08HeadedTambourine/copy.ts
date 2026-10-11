@@ -24,7 +24,7 @@ export const TAMB_COPY: LessonCopy = {
     partsLooking: { side: 'Side view · the tambourine edge-on', top: 'Top view · the head from above' },
     partsIdle: 'A skin head on a wooden frame, with pairs of metal jingles round it — a drum and a set of jingles in one instrument. The next page shows how each part sounds.',
     variantNotes: {
-      shaken: 'SHAKEN: the same hold, swung side to side or rolled by thumb or finger. The jingles lead — and the frame moves, so its distance to a fixed mic changes.',
+      shaken: 'SHAKEN: the same hold, swung side to side or rolled by thumb or finger. The jingles lead — and in a shake the frame moves, so its distance to a fixed mic changes.',
       mounted: 'MOUNTED: flat on a compatible mount, struck with sticks. The instrument stays put — but the mount can add noises of its own, and only a mount made for it is used.',
     },
   },
@@ -51,7 +51,7 @@ export const TAMB_COPY: LessonCopy = {
       'This is a simplified head on a closed rim. A real tambourine’s back is open and its frame is held in a hand, so these numbers shift — the next step shows the head and the jingles together.',
     ],
     coupledSubject: 'The tambourine edge-on',
-    coupledNote: 'One instrument, two sources: the head (a drum) and the jingles (metal). Striking favours the head; shaking favours the jingles — a mic hears whatever it is closer to and faces.',
+    coupledNote: 'One instrument, two sources: the head (a drum) and the jingles (metal). Striking favours the head; shaking favours the jingles — a mic hears more of whichever it is closer to and faces.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real tambourine sounds depends on its head, its jingles, how it is held and the player. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'Head and jingles',

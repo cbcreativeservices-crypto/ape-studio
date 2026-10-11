@@ -20,7 +20,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Cumbia is dance music first: couples turning in circles at weddings, quinceañeras, block parties, bailes in rented halls and sonidero street dances in Iztapalapa, Tepito, Monterrey, Lima or the conurbano of Buenos Aires. It carries regional and class identity: Colombian coastal heritage (national intangible heritage, 2022), Mexico City’s working-class sonideros (city heritage, 2024), chicha’s migrant stories and villera’s street swagger. Audiences expect a relaxed but unstoppable sway, a melody they can sing back, and the lead line (accordion, keyboard or guitar) bright and present. They will say “that sounded wrong” if the güiro disappears, the bass is boomy and loses its bounce, the accordion turns shrill, or the vocals are unintelligible. At sonidero events the saludos (dedications read over the music, drenched in echo) matter as much as the record itself."
+      "text": "Cumbia is dance music first: couples turning in circles at weddings, quinceañeras, block parties, bailes in rented halls and sonidero street dances in Iztapalapa, Tepito, Monterrey, Lima or the conurbano of Buenos Aires. It carries regional and class identity: Colombian coastal heritage (national intangible heritage, 2022), Mexico City’s working-class sonideros (city heritage, 2023), chicha’s migrant stories and villera’s street swagger. Audiences expect a relaxed but unstoppable sway, a melody they can sing back, and the lead line (accordion, keyboard or guitar) bright and present. They will say “that sounded wrong” if the güiro disappears, the bass is boomy and loses its bounce, the accordion turns shrill, or the vocals are unintelligible. At sonidero events the saludos (dedications read over the music, drenched in echo) matter as much as the record itself."
     }
   ],
   "instruments": [
@@ -286,7 +286,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern cumbia and tecnocumbia masters land around −10 to −8 LUFS-I, with true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so very loud masters gain nothing. A PLR of 9–11 dB keeps the bass bounce and güiro transients alive. Vintage-style productions (Ondatrópica, chicha revival) sit happily at −12 to −11."
+      "text": "Modern cumbia and tecnocumbia masters land around −10 to −8 LUFS-I, with true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so very loud masters gain nothing. A PLR of 9–11 dB keeps the bass bounce and güiro transients alive (at −2 dBTP that means a master at about −11 LUFS-I or quieter). Vintage-style productions (Ondatrópica, chicha revival) sit happily at −12 to −11."
     }
   ],
   "liveStudio": {

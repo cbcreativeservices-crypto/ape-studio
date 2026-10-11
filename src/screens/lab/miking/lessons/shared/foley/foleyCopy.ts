@@ -110,7 +110,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
       looking: o.live.looking,
       prompt: o.live.prompt,
       activityDone: 'done — the wedge sat in a null by your aim or pattern',
-      deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — and a shotgun’s rejection changes with pitch. Use the null to aim, not to promise silence.',
+      deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — and a shotgun’s rejection changes with pitch. Use the null to aim, not to promise silence.',
       cardioidReveal: o.live.cardioidReveal,
       shieldNote: o.live.shieldNote,
       studioId: o.studio.id,

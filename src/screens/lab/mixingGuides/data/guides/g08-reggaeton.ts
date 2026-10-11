@@ -257,11 +257,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq-15 at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure, worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–105 dBA LAeq-15 at festivals) and protect your own ears across long sets."
+      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq-15 at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure, worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at festivals) and protect your own ears across long sets."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial reggaeton masters typically land at −8 to −5 LUFS-I, with short-term loudness of −6 to −4 LUFS in the coros; Latin trap is a little more open (−9 to −6). Use −1 dBTP for masters at or below −14 LUFS and −2 dBTP for louder ones, since dense, limited dembow overshoots in lossy codecs. Most streaming services normalize to −14 LUFS, so extreme loudness buys nothing there. The genre tolerates a low PLR (6–9 dB) and a loudness range of 3–6 LU, but keep the drop contrast."
+      "text": "Commercial reggaeton masters typically land at −8 to −5 LUFS-I, with short-term loudness of −6 to −4 LUFS in the coros; Latin trap is a little more open (−9 to −6). Use −1 dBTP for masters at or below −14 LUFS and −2 dBTP for louder ones, since dense, limited dembow overshoots in lossy codecs. Most streaming services normalize to −14 LUFS, so extreme loudness buys nothing there. The genre tolerates a low PLR (6–9 dB; at −2 dBTP that means a master at about −8 LUFS-I or quieter) and a loudness range of 3–6 LU, but keep the drop contrast."
     }
   ],
   "liveStudio": {

@@ -390,7 +390,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A dynamic on its own stand near the station, a null toward the wedge', ok: true, power: 'none', feedback: 'A spot near a predictable station; a dynamic needs no phantom.' },
       { id: 'b', label: 'The station’s shared area mic, if it carries the güiro in balance', ok: true, power: 'none', feedback: 'Fair if it serves: fewer open mics.' },
-      { id: 'c', label: 'A condenser spot on the güiro', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A condenser spot on the güiro', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A mic held close by the player’s other hand', ok: false, power: 'none', feedback: 'The holding hand is busy — and the mic would sit in the stroke.' },
       { id: 'e', label: 'Turn the güiro’s channel up until it beats the cymbals', ok: false, power: 'none', feedback: 'More gain raises the cymbals and the feedback risk too.' },
     ],

@@ -199,7 +199,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       explain: 'Dynamic mics need no power. The bell clip’s miniature and the large condenser are both condensers and need phantom power — the miniature through its adapter.',
       why: {
         'The bell clip, because its capsule is so very small': 'Size does not change what a condenser needs: the miniature still needs phantom power, through its adapter.',
-        'The large condenser, if it stays well back from the bell': 'Distance does not change what a condenser needs: it still needs phantom power.',
+        'The large condenser, if it stays well back from the bell': 'Distance does not change what this condenser needs: it still needs phantom power.',
       },
     }),
     sc('mic.2', 'microphone', {
@@ -376,9 +376,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     }),
     sc('mix.2', 'practice', {
       prompt: 'A wedge sits about 125° off a supercardioid’s front. What can you expect?',
-      options: ['Strong rejection on paper; less in reality, least in the lows', 'Silence from the wedge, because it sits right in the null', 'More of it than from straight behind, where it rejects the most'],
-      correct: 'Strong rejection on paper; less in reality, least in the lows',
-      explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+      options: ['Strong rejection on paper; less in reality, often least in the lows', 'Silence from the wedge, because it sits right in the null', 'More of it than from straight behind, where it rejects the most'],
+      correct: 'Strong rejection on paper; less in reality, often least in the lows',
+      explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
       why: {
         'Silence from the wedge, because it sits right in the null': 'A null is infinitely deep only on paper. Real mics reject far less.',
         'More of it than from straight behind, where it rejects the most': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis, near 125°.',
@@ -644,7 +644,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       looking: 'Top view · the mic above the bell, the wedge in front',
       prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the horn.',
       activityDone: 'done — the wedge sat in a null by your aim or pattern',
-      deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+      deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
       cardioidReveal: c.cardioidReveal ?? 'What you just saw: a cardioid rejects most directly behind (180°). Above the bell and aimed down at the body, its rear looks up and forward — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
       shieldNote: 'The bell and the body REFLECT stage sound back toward a mic close to them — the free-field pattern cannot show that. Listen with the monitors on.',
       studioId: id('ctx.studio'),

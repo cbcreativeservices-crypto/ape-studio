@@ -157,7 +157,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Dynamic mics need no power. The clip-on mic and the slim condenser are condensers and need phantom power.',
     why: {
       'The clip-on mic, since it is so small and light': 'Size does not decide power: the clip-on mic is a condenser and needs phantom power through its adapter.',
-      'The slim condenser, if you keep it farther away': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The slim condenser, if you keep it farther away': 'Distance does not change what this condenser needs: it still needs phantom power.',
     },
   },
   {
@@ -307,7 +307,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bg.two.2',
     page: 'twoMic',
-    prompt: 'Spot B hears a macho stroke 1 ms after spot A. Summed at equal level, same polarity: the first notch (simplified model)?',
+    prompt: 'Spot A hears a macho stroke 1 ms after spot B. Summed at equal level, same polarity: the first notch (simplified model)?',
     options: ['500 Hz, then 1.5 kHz, 2.5 kHz …', '1 kHz, then 2 kHz, 3 kHz, 4 kHz …', '250 Hz, then 750 Hz, 1.25 kHz …'],
     correct: '500 Hz, then 1.5 kHz, 2.5 kHz …',
     explain: 'The first cancellation is where the delay is half a period: f = 1 ÷ (2 × 0.001 s) = 500 Hz, then odd multiples. Inverted, the notches sit at 0, 1 kHz, 2 kHz … instead.',
@@ -380,11 +380,11 @@ const scenarios: MikingScenario[] = [
     id: 'k.mix.2',
     page: 'practice',
     prompt: 'Your floor wedge sits about 110° off a hypercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; less in reality, least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
-    correct: 'Strong rejection on paper; less in reality, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies.',
+    options: ['Strong rejection on paper; less in reality, often least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
+    correct: 'Strong rejection on paper; less in reality, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies.',
     why: {
-      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and often least in the lows.',
       'More pickup than from straight behind, where it rejects the most': 'Straight behind, a hypercardioid has a rear lobe; its deepest rejection is off the rear axis.',
     },
   },
@@ -496,7 +496,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is read from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the fingers, palms and legs', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on bongos', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };

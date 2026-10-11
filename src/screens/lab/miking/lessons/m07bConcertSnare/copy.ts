@@ -113,7 +113,7 @@ export const CSN_COPY: LessonCopy = {
     looking: 'Top view · the mic angled down at the snare',
     prompt: 'The monitor stays where the stage needs it. Turn the MIC (AIM) or change its PATTERN until the downstage wedge sits in the rejection.',
     activityDone: 'done — the downstage wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The wedge sits behind the mic but below it too — and a mic angled down at the drum cannot also point its back at a floor wedge. Try the other patterns.',
     shieldNote: 'Real patterns change with pitch, and the stage reflects sound — this is the reasoning, not a prediction. Work out the real mic and monitor positions with the system operator.',
     studioId: 'cs.ctx.studio',

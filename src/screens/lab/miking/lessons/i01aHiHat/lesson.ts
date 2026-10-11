@@ -44,7 +44,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a hi-hat mic by its properties — pattern, power, size and mount — not by its brand, and not by the cymbal’s name.',
     credit: { scenarios: ['hh.mic.1', 'hh.mic.power', 'hh.mic.spill', 'hh.rec.1'], note: 'Answer the four checks (one reaches back to how the hats sound).' },
-    takeaway: 'A small condenser is a common first choice over the hats; a small dynamic serves on a loud stage; a tiny clip-on can sit underneath. Condensers need phantom power. Max SPL is not a hearing limit.',
+    takeaway: 'A small condenser is a common first choice over the hats; a small dynamic serves on a loud stage; a tiny clip-on can sit underneath. The condensers here need phantom power. Max SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A slim condenser catches the stick’s detail and fits over the pair without crowding the player. A small dynamic works too — especially on a loud stage — and a tiny clip-on can sit underneath.',
     why: {
       'It is the only type of mic that can be aimed straight down at a cymbal': 'Any of these mics can point down. Its detail and size are the reasons.',
-      'It needs no power, unlike the dynamics on this page': 'The reverse: a condenser needs phantom power; a dynamic needs none.',
+      'It needs no power, unlike the dynamics on this page': 'The reverse: this condenser needs phantom power; a dynamic needs none.',
     },
   },
   powerCheck(W, 'the small dynamic'),
@@ -288,9 +288,9 @@ const scenarios: MikingScenario[] = [
     id: 'hh.prac.3',
     page: 'practice',
     prompt: 'When could a second hat mic — under the pair — be worth its channel?',
-    options: ['When the music wants the warmer underside beside the stick', 'Whenever the overheads are up, to balance them out across the kit', 'To cancel the snare spill by flipping its polarity'],
-    correct: 'When the music wants the warmer underside beside the stick',
-    explain: 'Underneath, less stick and a warmer top cymbal: a second perspective worth keeping only if it helps — checked in mono with the top mic and the overheads.',
+    options: ['When the music wants the underside’s different sound beside the stick', 'Whenever the overheads are up, to balance them out across the kit', 'To cancel the snare spill by flipping its polarity'],
+    correct: 'When the music wants the underside’s different sound beside the stick',
+    explain: 'Underneath, less stick and softer warm tones from the top cymbal: a second perspective worth keeping only if it helps — checked in mono with the top mic and the overheads.',
     why: {
       'Whenever the overheads are up, to balance them out across the kit': 'The overheads are no reason on their own. The sound the music needs is.',
       'To cancel the snare spill by flipping its polarity': 'Polarity cannot remove one source from a mic. Aim and the pair’s shading do more.',
@@ -356,8 +356,8 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'No hat mic: the overheads already carry the hats clearly', ok: true, power: 'none', feedback: 'A fair plan when the overheads carry the hats — fewer open mics, nothing to power.' },
       { id: 'b', label: 'A small dynamic over the far edge, aimed down, the snare on the far side of the pair', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
-      { id: 'c', label: 'A small condenser 5–10 cm above the bow, away from the snare', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
-      { id: 'd', label: 'A clip-on condenser under the bottom cymbal', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
+      { id: 'c', label: 'A small condenser 5–10 cm above the bow, away from the snare', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
+      { id: 'd', label: 'A clip-on condenser under the bottom cymbal', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'e', label: 'A mic straight over the clutch, touching the pull rod to hold it still', ok: false, power: 'none', feedback: 'Never on the rod or the clutch: they move with the pedal. Keep the mic clear.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the hi-hat’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],

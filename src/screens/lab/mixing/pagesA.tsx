@@ -115,7 +115,7 @@ function PagePrepare({ ctx }: { ctx: PageCtx }) {
         wrong={[
           'A compressor CAN even it out — but then it works hard all mix long on a problem an earlier, simpler stage removes in one move.',
           undefined,
-          'A fader ride fixes one pass, and nothing upstream sees the fix — your sends and inserts still get the lopsided signal.',
+          'A fader ride fixes one pass, and nothing upstream sees the fix — your inserts and any pre-fader sends still get the lopsided signal.',
           'Mastering polishes a finished stereo mix. It cannot reach one vocal clip inside your session.',
         ]}
         onCorrect={() => setCheckDone(true)}
@@ -284,7 +284,7 @@ function PageGainStaging({ ctx }: { ctx: PageCtx }) {
           'Close to zero is not professional — it is out of room. Headroom is space to work.',
           undefined,
           'Pulling the master down later hides that individual stages are already slamming. Fix levels where they are made.',
-          'Louder always FEELS better — that is the bias this page exists to disarm.',
+          'Louder usually FEELS better — that is the bias this page exists to disarm.',
         ]}
         onCorrect={() => setCheckDone(true)}
       />

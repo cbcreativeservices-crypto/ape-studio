@@ -107,9 +107,9 @@ export const nullOnPaper = (id: string, target: string): MikingScenario => ({
   id,
   page: 'practice',
   prompt: `The ${target} sits about 125° off a supercardioid’s front axis. What can you expect?`,
-  options: ['Strong rejection on paper; less in reality, least in the lows', `Silence from the ${target}, because it sits right in the null`, 'More of it than straight behind, where the rejection is deepest'],
-  correct: 'Strong rejection on paper; less in reality, least in the lows',
-  explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+  options: ['Strong rejection on paper; less in reality, often least in the lows', `Silence from the ${target}, because it sits right in the null`, 'More of it than straight behind, where the rejection is deepest'],
+  correct: 'Strong rejection on paper; less in reality, often least in the lows',
+  explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
   why: {
     [`Silence from the ${target}, because it sits right in the null`]: 'A null is infinitely deep only on paper. Real mics reject far less.',
     'More of it than straight behind, where the rejection is deepest': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',

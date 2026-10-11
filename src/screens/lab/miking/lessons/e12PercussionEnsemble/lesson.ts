@@ -19,7 +19,7 @@ const pages: LessonPages = {
     title: 'Meet it — where the sound comes from',
     goal: 'Meet a percussion ensemble in brief — hand drums, mallet keyboards, small percussion, timpani and concert drums at their stations — and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['pe.meet.1', 'pe.meet.2', 'pe.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
-    takeaway: 'A percussion ensemble is an extended source: drums speak from their heads, mallet keyboards from their bars and tubes, metal from its edges, shakers from wherever they move. A mic that favours one cymbal or one end of a marimba misrepresents the group.',
+    takeaway: 'A percussion ensemble is an extended source: drums speak from their heads, mallet keyboards from their bars and tubes, cymbals from both faces, shakers from wherever they move. A mic that favours one cymbal or one end of a marimba misrepresents the group.',
   },
   setups: {
     title: 'Starting setups',
@@ -517,7 +517,7 @@ export const E12_LESSON: EnsembleLesson = {
   ],
   sound: {
     stages: [
-      { title: 'Heads, bars and edges', text: 'Drums speak from their heads (a conga also from its open lower end), mallet keyboards from their bars and the tubes under them, cymbals from their edges.' },
+      { title: 'Heads, bars and edges', text: 'Drums speak from their heads (a conga also from its open lower end), mallet keyboards from their bars and the tubes under them, cymbals from both faces.' },
       { title: 'An extended source', text: 'The instruments spread over the stage, near and far, loud and quiet: a mic hears the nearest ones most.' },
       { title: 'Movement', text: 'Shakers, maracas and a moving player change where the sound comes from during the piece — a fixed mic cannot follow an instrument swung out of its pickup.' },
     ],
@@ -561,7 +561,7 @@ export const E12_LESSON: EnsembleLesson = {
       figureTitle: 'A PERCUSSION ENSEMBLE',
       figureBadge: 'From above, as the audience faces it · a typical layout, not a particular group',
       sectionsNote: 'A hand-drum station, a marimba and a small-percussion table with a cymbal. Switch SEATING for two rows with vibraphone, timpani and concert drums. Tap a station.',
-      soundNote: 'The arcs show WHERE each instrument’s sound leaves it — never how loud. Heads up and out, bars and tubes, metal from its edges; a main array hears the blend the room makes of them.',
+      soundNote: 'The arcs show WHERE each instrument’s sound leaves it — never how loud. Heads up and out, bars and tubes, cymbals from both faces; a main array hears the blend the room makes of them.',
       mainAt: TR_C,
     },
     before: [

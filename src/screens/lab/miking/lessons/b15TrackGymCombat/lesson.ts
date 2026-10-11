@@ -593,7 +593,7 @@ export const B15_LESSON: Lesson = {
     stages: [
       { title: 'Brief and moving', text: 'A start, a landing, a glove: short, and in a different place each time. A mic on one region hears the next one farther away and off its axis.' },
       { title: 'Air and structure', text: 'Apparatus, rings and platforms carry their own rattles and rumble. A mic touching them hears the structure; an independent mic hears the air.' },
-      { title: 'Everything else', text: 'Bells, whistles, start cues, routine music and the PA can be louder than the action you want — and they share the same axis.' },
+      { title: 'Everything else', text: 'Bells, whistles, start cues, routine music and the PA can be louder than the action you want — and they can share the same axis.' },
     ],
     attack: 'A block departure, a landing, a glove — short transients, the clearest cue of where the action is.',
     body: 'The venue and its crowd — the continuous bed under every action.',

@@ -169,9 +169,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The spare channel has no phantom power. Which of this page’s mics can you use?',
     options: ['The small dynamic: it needs no power', 'The small condenser, if it sits farther back', 'Either, as long as the gain is turned up'],
     correct: 'The small dynamic: it needs no power',
-    explain: 'A dynamic needs no power. A condenser needs phantom power wherever it is placed.',
+    explain: 'A dynamic needs no power. The condenser here needs phantom power wherever it is placed.',
     why: {
-      'The small condenser, if it sits farther back': 'Distance does not change what a condenser needs: it still needs phantom.',
+      'The small condenser, if it sits farther back': 'Distance does not change what this condenser needs: it still needs phantom.',
       'Either, as long as the gain is turned up': 'Gain cannot power a condenser.',
     },
   },
@@ -429,7 +429,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small dynamic about 35 cm in front and to one side, outside the beater’s path, its back to the wedge', ok: true, power: 'none', feedback: 'A closer directional spot, clear of the gesture; a dynamic needs no phantom.' },
       { id: 'b', label: 'No triangle spot: rely on the shared percussion mic, with the stage levels balanced', ok: true, power: 'none', feedback: 'Fair, if the shared mic carries it once the stage balance is fixed.' },
-      { id: 'c', label: 'Small condenser in front of the triangle', ok: false, power: 'phantom', feedback: 'This input has no phantom, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser in front of the triangle', ok: false, power: 'phantom', feedback: 'This input has no phantom, and this condenser needs it.' },
       { id: 'd', label: 'A mic in the beater’s path, as close as it can get', ok: false, power: 'none', feedback: 'Never in the beater’s path — clearance comes first.' },
       { id: 'e', label: 'Ask the player to strike much harder so the mic hears it', ok: false, power: 'none', feedback: 'Harder strokes change the music; fix the balance instead.' },
     ],

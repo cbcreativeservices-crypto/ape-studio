@@ -131,7 +131,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A handheld dynamic is made for close, loud voices and handling; its ball grille is its windscreen, and it needs no phantom power.',
     why: {
       'It hears the room behind the singer best': 'A cardioid handheld rejects most behind it — the point on a loud stage.',
-      'It needs phantom power to work properly': 'A dynamic makes its own signal; condensers need phantom power.',
+      'It needs phantom power to work properly': 'A dynamic makes its own signal; the condensers here need phantom power.',
     },
   },
   {
@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · The 3:1 guideline is measured between…',
     options: ['The two mics', 'A mic and the next singer', 'The singer and the floor'],
     correct: 'The two mics',
-    explain: 'Mic to mic: at least three times each mic’s distance to its own singer. Measured from a mic to the neighbouring SINGER, it is a different, smaller number.',
+    explain: 'Mic to mic: at least three times each mic’s distance to its own singer. Measured from a mic to the neighbouring SINGER, it is a different number.',
     why: {
       'A mic and the next singer': 'That is not the guideline: it is measured between the mics.',
       'The singer and the floor': 'The floor plays no part in 3:1.',
@@ -265,7 +265,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Every open mic hears every voice. At 1.1 m against 6 cm the neighbour’s copy is far quieter and a few milliseconds late: the comb in the sum is shallow.',
     why: {
       'No, a cardioid hears only its own singer': 'A cardioid favours its front; it still hears the singer beside it.',
-      'Yes, as loud as in their own mic': 'Twenty times farther away, it arrives far quieter.',
+      'Yes, as loud as in their own mic': 'About eighteen times farther away, it arrives far quieter.',
     },
   },
   polarityDelay('bv.two.2'),
@@ -372,7 +372,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A pop band: three backing singers beside the drums, a wedge in front of each, harmony entries that need their own levels.',
     setups: [
       { id: 'a', label: 'A handheld each, 4–8 cm from the lips, the wedge behind it', ok: true, power: 'none', feedback: 'A suggested start: close, separate, each part on its own fader; check the wedge against the pattern.' },
-      { id: 'b', label: 'A supercardioid handheld each, the wedge a little to one side', ok: true, power: 'none', feedback: 'Fair beside loud drums, with the wedge near its null.' },
+      { id: 'b', label: 'A supercardioid handheld each, the wedge well to one side of its rear', ok: true, power: 'none', feedback: 'Fair beside loud drums, with the wedge near its null.' },
       { id: 'c', label: 'One condenser a metre in front of all three', ok: false, power: 'phantom', feedback: 'It hears the drums almost as much as the voices, and no part has its own level.' },
       { id: 'd', label: 'Handhelds the singers cup to sound louder', ok: false, power: 'none', feedback: 'Cupping muffles the voice and brings feedback closer.' },
       { id: 'e', label: 'Wedges up until it rings, then back a little', ok: false, power: 'none', feedback: 'Never provoke feedback; bring them up only to the agreed level.' },
@@ -513,7 +513,7 @@ export const E02_LESSON: EnsembleLesson = {
     items: [
       { id: 'singers', label: 'the singers’ feet, faces and moves', short: 'SINGERS', note: 'Stable stands and secured cables so the singers can move without tripping or striking a mic; known approach and exit paths at a shared mic.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Use stable stands and secure cables so singers can move without tripping (L71)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'neighbour', label: 'the singer beside each mic', short: 'NEIGHBOURS', note: 'Every open mic hears the next singer too — later and quieter. Space separate mics at least three times their distance to their own singers apart.', prov: { kind: 'sourced', src: 'S-CHOIR', quote: 'a second microphone should be placed three times the distance from the first microphone as the first microphone distance is from the sound source' }, tag: 'SPILL', scene: 'all' },
-      { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'In front of each singer, facing back: behind a handheld aimed at the mouth — a cardioid rejects it straight behind, a supercardioid a little to one side.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'In front of each singer, facing back: behind a handheld aimed at the mouth — a cardioid rejects it straight behind, a supercardioid well to one side of its rear.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band and the PA', short: 'BAND · PA', note: 'The drums and amps reach every backing mic: close, directional mics keep the voices ahead of them.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Live backing vocals need enough direct-to-stage ratio to compete with instruments while preserving feedback margin (L36)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'phones', label: 'the headphone mix', short: 'HEADPHONES', note: 'The same reference for every singer, loud enough to stay in tune without shouting — and not leaking into a close mic.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Give each singer the same reference track and enough headphone level to stay in tune without shouting (L32)' }, tag: 'SPILL', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'ROOM', note: 'A shared mic or an omni circle hears the room as much as the singers: use one that flatters them, quiet.', prov: { kind: 'sourced', src: 'LESSON-BV', quote: 'Use a quiet, flattering room (L33)' }, tag: 'PART OF THE SOUND', scene: 'studio' },

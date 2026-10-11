@@ -266,7 +266,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Ballads master around −11 to −9 LUFS-I with a PLR of roughly 10–13 dB; dance and idol tracks −8 to −6 LUFS-I. Aim for −1 dBTP, or −2 dBTP when mastering louder than −14 LUFS, as streaming services advise."
+      "text": "Ballads master around −11 to −9 LUFS-I, which at −2 dBTP allows a PLR of about 7–9 dB; dance and idol tracks −8 to −6 LUFS-I. Aim for −1 dBTP, or −2 dBTP when mastering louder than −14 LUFS, as streaming services advise."
     }
   ],
   "liveStudio": {

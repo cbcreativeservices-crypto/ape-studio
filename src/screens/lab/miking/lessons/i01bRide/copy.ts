@@ -33,7 +33,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     kitA11y: 'The drum kit from above: the ride on the player’s right, ringed in amber, over the floor tom; the larger crash beside it, the throne behind.',
     kitLanding: 'Tap anything around the ride — or step through ITEM — to see what it means for a ride mic. There is nothing to answer yet.',
     kitIdle: 'The ride hangs over the floor tom on the player’s right, with the larger crash beside it. The player’s right arm reaches out to it all song long.',
-    leftHanded: 'Left-handed players set the kit up mirrored — the ride on the left.',
+    leftHanded: 'Many left-handed players set the kit up mirrored — the ride on the left.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
     stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side. The fill sits close to the ride’s side of the kit.',
@@ -94,7 +94,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
       note: 'One mic over the ride and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states, no setting is required.',
     },
     learn: [
-      'A mic under the ride hears less stick and more of the wash — and its rear faces the floor. A second perspective, kept only if it helps the ride in the whole kit.',
+      'A mic under the ride tends to hear less stick and more of the wash — and its rear faces the floor. A second perspective, kept only if it helps the ride in the whole kit.',
       'The same check applies whenever two mics hear one cymbal — over and under, or a spot and the overheads (or the floor-tom mic below): bring in one channel at a time, compare both polarity states in mono at matched levels, and move or leave out a mic if the ride goes thin. The polarity switch flips the sign; it does not remove a delay.',
     ],
     warn: CYM_TWO_WARN,

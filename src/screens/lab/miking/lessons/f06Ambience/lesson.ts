@@ -133,11 +133,11 @@ const scenarios: MikingScenario[] = [
     id: 'amb.set.2',
     page: 'setting',
     prompt: 'Thunder rumbles while a storm ambience records. Where do you go?',
-    options: ['A building or a hard-topped car', 'Under a rain shelter by the mic', 'Into a small shed beside the stand'],
-    correct: 'A building or a hard-topped car',
+    options: ['A substantial building or a hard-topped car', 'Under the rain shelter beside the mic', 'Into a small shed beside the stand'],
+    correct: 'A substantial building or a hard-topped car',
     explain: 'If you hear thunder you are likely within striking distance: go into a substantial building or a hard-topped vehicle — rain shelters, small sheds and open vehicles are not safe. Wait 30 minutes after the last lightning or thunder.',
     why: {
-      'Under a rain shelter by the mic': 'A rain shelter is not safe in lightning. Go into a substantial building or a hard-topped vehicle.',
+      'Under the rain shelter beside the mic': 'A rain shelter is not safe in lightning. Go into a substantial building or a hard-topped vehicle.',
       'Into a small shed beside the stand': 'Small sheds are not safe in lightning. A substantial building or a hard-topped vehicle is.',
     },
   },
@@ -195,7 +195,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What is the figure-8 for in an M/S pair?',
     options: ['The Side, facing left and right', 'The Mid, facing toward the scene', 'A spare, in case the Mid fails'],
     correct: 'The Side, facing left and right',
-    explain: 'The forward Mid is a cardioid; the figure-8 faces sideways as the Side. Left = Mid + Side, Right = Mid − Side — and in mono the Side cancels.',
+    explain: 'The forward Mid is usually a cardioid; the figure-8 faces sideways as the Side. Left = Mid + Side, Right = Mid − Side — and in mono the Side cancels.',
     why: {
       'The Mid, facing toward the scene': 'The Mid is the forward-facing mic; the figure-8 faces the sides.',
       'A spare, in case the Mid fails': 'It is half of the pair: without it there is no width at all.',

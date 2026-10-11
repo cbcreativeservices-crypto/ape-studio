@@ -33,7 +33,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     kitA11y: 'The drum kit from above: a crash ringed in amber over a rack tom; the hi-hats, the snare, the ride and the throne around it.',
     kitLanding: 'Tap anything around the crash — or step through ITEM — to see what it means for a crash mic. There is nothing to answer yet.',
     kitIdle: 'The crashes hang high over the rack toms, one on each side. The player reaches up to strike the edge with a glancing blow that follows through.',
-    leftHanded: 'Left-handed players set the kit up mirrored — the crashes swap sides with everything else.',
+    leftHanded: 'Many left-handed players set the kit up mirrored — the crashes swap sides with everything else.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
     stageIdle: 'Two floor monitors: the drummer’s fill beside the throne and another player’s wedge on the audience side. Crashes are loud and spread widely: every open mic on stage hears them.',

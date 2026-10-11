@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The strings move little air. They drive the broad bridge, the bridge drives the top plate, and the plate over the resonator radiates most of the sound — in the measured radiation it mattered most.',
     why: {
       'The gourd under the neck, which works as a second soundboard': 'The gourd mainly supports the neck on the thigh. Do not expect it to radiate like the top plate.',
-      'The carved yali, which rings like a bell at the neck’s end': 'The yali is a carved head — decoration and a handhold, not a radiator.',
+      'The carved yali, which rings like a bell at the neck’s end': 'The yali is a carved head — decoration, not a radiator.',
     },
   },
   {
@@ -202,7 +202,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A study measured a veena’s radiation with mics 25 cm from the top plate. Does that make 25 cm the place to put your mic?',
     options: ['It does: the study found 25 cm is the best musical distance', 'It does, but only for a mic of exactly the same model as the study’s', 'No: it was where the study measured, not a recommendation'],
     correct: 'No: it was where the study measured, not a recommendation',
-    explain: 'The study mapped the plate’s radiation at 25, 50 and 75 cm and found it changes with pitch, direction and distance. It supports comparing positions around the face — not one best distance.',
+    explain: 'The study mapped the plate’s radiation at 25, 50, 75 and 100 cm and found it changes with pitch, direction and distance. It supports comparing positions around the face — not one best distance.',
     why: {
       'It does: the study found 25 cm is the best musical distance': 'The study names no best musical distance; it measured at several radii.',
       'It does, but only for a mic of exactly the same model as the study’s': 'Measurement radius is not a musical recommendation, whatever the mic.',
@@ -352,7 +352,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed between the bridge and the body', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic at the same distance, turned toward the bridge', ok: true, power: 'none', feedback: 'A suggested start for articulation; it needs no phantom.' },
-      { id: 'c', label: 'Small condenser over the plate, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser over the plate, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Instrument dynamic with its grille removed, 25 cm from the plate', ok: false, power: 'none', feedback: 'Keep a mic’s protective parts on unless its maker allows otherwise — and 25 cm was a study’s radius, not a rule.' },
       { id: 'e', label: 'Instrument dynamic resting against the gourd under the neck', ok: false, power: 'none', feedback: 'The gourd is a support on the player’s thigh: nothing rests on it, and it is not the soundboard.' },
     ],
@@ -466,7 +466,7 @@ export const C15_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'player', label: 'the player and the veena', short: 'PLAYER', note: 'Seated cross-legged, the resonator on the floor at the right, the neck across the lap to the left thigh, the face tilted up and partly toward the player. The hands, the gamakas, the gourd on the thigh and the player’s view are theirs.', prov: { kind: 'illustrative', reason: 'the proposal’s posture (holding guide unread)' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'player', label: 'the player and the veena', short: 'PLAYER', note: 'Seated cross-legged, the resonator on the floor at the right, the neck across the lap to the left thigh, the face tilted up. The hands, the gamakas, the gourd on the thigh and the player’s view are theirs.', prov: { kind: 'illustrative', reason: 'the proposal’s posture (holding guide unread)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'rug', label: 'the rug or riser', short: 'RUG', note: 'The performers sit on a rug, often on a low riser. Keep cables clear of the crossed legs, the instrument’s support and the way on and off.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'FLOOR SPACE', scene: 'all' },
       { id: 'mridangam', label: 'the mridangam', short: 'MRIDANGAM', note: 'Beside the veena: a loud two-headed drum. Its sound reaches the veena mic — distance, balance and the drum’s own mics do more than a null.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'tanpura', label: 'the tanpura (the drone)', short: 'TANPURA', note: 'Behind, sustaining the drone. Quiet but continuous; it belongs in the blend.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },

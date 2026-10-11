@@ -87,7 +87,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Where the bar stays still as it rings, so it rings freely',
     explain: 'A struck bar rings in its lowest shape about two still points, a little under a quarter of the way in from each end. Held there, the support takes almost nothing from the ring.',
     why: {
-      'Through the exact middle, where the bar is the strongest': 'The middle moves the most in the lowest shape; held there, the bar would be damped.',
+      'Through the exact middle, where the bar is the strongest': 'The middle moves a lot in the lowest shape; held there, the bar would be damped.',
       'At the very ends, so the mallet has more room in the middle': 'The ends move too. The still points are a little in from each end.',
     },
   },
@@ -112,7 +112,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Turning on their shafts, the fans repeatedly open and close the tubes; the sound is louder when the tubes are open. Faster motor, faster pulsing. A motor left running when the music wants a still sound changes the source.',
     why: {
       'They blow air across the bars so the notes ring longer': 'The fans sit in the tube tops; they change how open the tubes are, not how long the bars ring.',
-      'They change the pitch of the bars a little up and down': 'The bars’ pitch stays put. The fans change the level — open, louder; closed, softer.',
+      'They change the pitch of the bars a little up and down': 'The bars are not retuned: the fans mainly change the level — open, louder; closed, softer — with at most a slight pitch wobble.',
     },
   },
   {
@@ -158,9 +158,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The channel you are given has no phantom power. Which of this page’s mics can you use?',
     options: ['The compact dynamic: it needs no power to work', 'The condenser, if it sits higher above the bars', 'Either one, as long as the channel gain is turned up'],
     correct: 'The compact dynamic: it needs no power to work',
-    explain: 'Dynamic mics need no power. A condenser needs phantom power wherever it is placed.',
+    explain: 'Dynamic mics need no power. The condensers here need phantom power wherever they are placed.',
     why: {
-      'The condenser, if it sits higher above the bars': 'Height does not change what a condenser needs: it still needs phantom power.',
+      'The condenser, if it sits higher above the bars': 'Height does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   },
@@ -170,7 +170,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On a loud stage, why choose a directional pattern over the vibraphone?',
     options: ['It rejects part of the drums and speakers off its axis', 'It makes the vibraphone itself louder on the stage for everyone', 'It removes the motor’s noise from the sound'],
     correct: 'It rejects part of the drums and speakers off its axis',
-    explain: 'A directional pattern can reduce some spill; it never removes it all, and least in the lows. Where you can, place the vibraphone away from loud speakers and drums too.',
+    explain: 'A directional pattern can reduce some spill; it never removes it all, and often least in the lows. Where you can, place the vibraphone away from loud speakers and drums too.',
     why: {
       'It makes the vibraphone itself louder on the stage for everyone': 'A mic does not change how loud the instrument is; it changes what the channel hears.',
       'It removes the motor’s noise from the sound': 'The motor is part of the instrument, right under the mic’s view. A pattern cannot remove it.',
@@ -264,9 +264,9 @@ const scenarios: MikingScenario[] = [
     id: 'vb.ctx.2',
     page: 'context',
     prompt: 'The side fill sits in a hypercardioid’s null on paper. What should you expect?',
-    options: ['Less rejection than the picture shows, least in the lows', 'Complete silence from the side fill, low and high alike', 'More rejection in the low notes than in the high ones'],
-    correct: 'Less rejection than the picture shows, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies. Soundcheck the actual pattern and the monitors.',
+    options: ['Less rejection than the picture shows, often least in the lows', 'Complete silence from the side fill, low and high alike', 'More rejection in the low notes than in the high ones'],
+    correct: 'Less rejection than the picture shows, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies. Soundcheck the actual pattern and the monitors.',
     why: {
       'Complete silence from the side fill, low and high alike': 'A null is infinitely deep only on paper; real rejection is partial.',
       'More rejection in the low notes than in the high ones': 'The reverse: real patterns usually reject least at low frequencies.',
@@ -407,7 +407,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One compact dynamic about 45–75 cm above the middle, aimed down, clear of the mallets', ok: true, power: 'none', feedback: 'One safe directional mic above the range; it needs no phantom. Check the low and high notes at band level.' },
       { id: 'b', label: 'The vibraphone moved away from the drums, then one compact dynamic above its middle', ok: true, power: 'none', feedback: 'Layout first, then the mic — a fair live answer.' },
-      { id: 'c', label: 'One condenser above the middle', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'One condenser above the middle', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A spaced pair panned hard left and right', ok: false, power: 'none', feedback: 'One channel and a mono PA: a pair has nowhere to go, and it would comb in mono.' },
       { id: 'e', label: 'A dynamic close over the bars, inside the mallets’ reach, for more level', ok: false, power: 'none', feedback: 'Inside the mallets’ travel — the player would strike it.' },
     ],
@@ -441,9 +441,9 @@ const diagnostic: DiagnosticItem[] = [
     id: 'vb.q.2',
     covers: 'instrument',
     prompt: 'Which row of bars is the vibraphone’s sharps and flats?',
-    options: ['The far row, a little higher than the near one', 'The near row, the one closest to the player’s body', 'The bars at the left-hand end'],
-    correct: 'The far row, a little higher than the near one',
-    explain: 'Like a piano’s black keys: the naturals in the near row, the sharps and flats in the far row, raised.',
+    options: ['The far row, away from the player', 'The near row, the one closest to the player’s body', 'The bars at the left-hand end'],
+    correct: 'The far row, away from the player',
+    explain: 'Like a piano’s black keys: the naturals in the near row, the sharps and flats in the far row, level with them.',
     why: {
       'The near row, the one closest to the player’s body': 'The near row is the naturals.',
       'The bars at the left-hand end': 'The ends are the high and low notes, not the sharps and flats.',
@@ -493,7 +493,7 @@ const words: MalletWords = {
     stages: [
       { title: 'The mallet lands', text: 'A yarn-wrapped mallet lands on the middle of a bar. That brief contact is the ATTACK — softer mallets and touch make it rounder, harder ones brighter.' },
       { title: 'The bar bends and rings', text: 'The bar bends — the middle down, both ends up — and springs back, again and again: its lowest shape, drawn far larger than it moves. Two points a little under a quarter of the way in from each end stay still: the cord passes through them, so the bar rings freely.' },
-      { title: 'The air in the tube rings with it', text: 'Under the bar hangs a tube, open at the top and closed at the bottom, a quarter wavelength long for this note. Its air rings with the bar and makes the note fuller and longer. The fan in its top can open and close it.', byVariant: { nomotor: 'Under the bar hangs a tube, open at the top and closed at the bottom, a quarter wavelength long for this note. Its air rings with the bar and makes the note fuller and longer. Without a motor, the tube stays open: no pulsing.' } },
+      { title: 'The air in the tube rings with it', text: 'Under the bar hangs a tube, open at the top and closed at the bottom, a quarter wavelength long for this note. Its air rings with the bar and makes the note fuller and louder — at some cost to how long it rings. The fan in its top can open and close it.', byVariant: { nomotor: 'Under the bar hangs a tube, open at the top and closed at the bottom, a quarter wavelength long for this note. Its air rings with the bar and makes the note fuller and louder — at some cost to how long it rings. Without a motor, the tube stays open: no pulsing.' } },
       { title: 'Sound leaves — up and out', text: 'Sound leaves the bar and the tube’s mouth, up and out around the keyboard. Pedal down, the note rings on; the fans, turning, make it pulse; the felt damper, when the pedal is released, stops it.', byVariant: { nomotor: 'Sound leaves the bar and the tube’s mouth, up and out around the keyboard. Pedal down, the note rings on; the felt damper, when the pedal is released, stops it.' } },
     ],
     cells: [
@@ -543,7 +543,7 @@ const copy: Partial<LessonCopy> = {
   axes: malletAxes(VIBE_FAM),
   instrument: {
     figureBadge: 'A three-octave vibraphone, from the audience',
-    figureLabel: 'Front view of a vibraphone from the audience: two rows of metal bars seen end-on, the higher far row nearest you, a tube hanging under every bar — long at the low end on the right, short at the high end on the left — the fan shafts across the tube tops, the motor under the low end, the frame on casters, the pedal at the player’s feet, and the player behind with two mallets.',
+    figureLabel: 'Front view of a vibraphone from the audience: two rows of metal bars seen end-on, the far row nearest you, a tube hanging under every bar — long at the low end on the right, short at the high end on the left — the fan shafts across the tube tops, the motor under the low end, the frame on casters, the pedal at the player’s feet, and the player behind with two mallets.',
     partsBadge: 'A three-octave vibraphone · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience · low end on the right', top: 'From above · the player at the top, the audience below' },
     partsIdle: 'The mallet strikes a bar; the tube under it rings with it; the fans make it pulse; the pedal decides how long it rings. The next page shows how.',
@@ -612,7 +612,7 @@ const copy: Partial<LessonCopy> = {
     looking: 'One mic above the middle · the side fill at stage left',
     prompt: 'The monitors stay where the stage needs them. Turn the MIC (AIM) or change its PATTERN until the side fill sits in the rejection.',
     activityDone: 'done — the side fill sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°) — straight up, for a mic looking down. The side fill sits almost level with it, off to the side: try the other patterns.',
     shieldNote: 'Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction. Work out the real positions with the system operator.',
     studioId: 'vb.ctx.studio',
@@ -626,7 +626,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE STUDIO', text: 'A room suited to the decay; the same phrase and monitor level for each comparison; the motor on and off if it is used; the pedal release and the decay in the room.' },
         { title: 'THE ENSEMBLE', text: 'The mains may already carry a vibraphone picture. Add a spot or a pair only for a clear musical need — each open mic adds spill.' },
       ],
-      body: 'On stage, the monitors stay where the player needs them: turn the mic or choose its pattern so that a null faces a loud unwanted source — and remember that real nulls are shallowest at low frequencies.',
+      body: 'On stage, the monitors stay where the player needs them: turn the mic or choose its pattern so that a null faces a loud unwanted source — and remember that real nulls are often shallowest at low frequencies.',
       warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. If the gain before feedback is not enough, improve the source and speaker layout or lower the stage level before boosting the channel. Never create feedback deliberately.',
     },
   },
@@ -695,7 +695,7 @@ export const I07_LESSON: MalletLesson = {
     items: [
       { id: 'vibe', label: 'the vibraphone (and its player)', short: 'VIBRAPHONE', note: 'The player stands behind it, facing the audience, with the pedal at their feet. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical small-group layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUMS', note: 'Loud and close: every mic over the bars hears it. Where you can, keep the vibraphone away from the drums.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
-      { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low and loud. A directional mic rejects only part of it — least at low frequencies.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
+      { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low and loud. A directional mic rejects only part of it — often least at low frequencies.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'piano', label: 'the piano', short: 'PIANO', note: 'Another pitched instrument in the same range: it blends into the vibraphone mics.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'front', label: 'a floor wedge in front of the vibraphone', short: 'WEDGE', note: 'On the floor in front, facing the player — and facing a mic above the bars from below its front. No pattern null reaches it: keep its level only as high as the player needs.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'a side fill at stage left', short: 'SIDE FILL', note: 'On a stand at about head height beyond the low end, firing across the stage. Almost level with a mic above the bars and off to its side — a pattern’s null can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

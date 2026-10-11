@@ -54,7 +54,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces the floor wedge — and know what a pattern cannot do.',
     credit: { scenarios: ['cg.ctx.1', 'cg.ctx.2', 'cg.ctx.studio', 'cg.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: tilt the mic (or change its pattern) until the floor wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A cardioid rejects most directly behind; a supercardioid or hypercardioid rejects most off the rear axis and has a rear lobe. Real nulls are shallower than the picture, and shallowest in the lows. No mic position alone prevents feedback.',
+    takeaway: 'A cardioid rejects most directly behind; a supercardioid or hypercardioid rejects most off the rear axis and has a rear lobe. Real nulls are shallower than the picture, and often shallowest in the lows. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -165,7 +165,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Dynamic mics need no power. The clip-on mic and the slim condenser are condensers and need phantom power.',
     why: {
       'The clip-on mic, since it is so small and light': 'Size does not decide power: the clip-on mic is a condenser and needs phantom power through its adapter.',
-      'The slim condenser, if you keep it farther away': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The slim condenser, if you keep it farther away': 'Distance does not change what this condenser needs: it still needs phantom power.',
     },
   },
   {
@@ -198,7 +198,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You choose between a cardioid and a hypercardioid compact dynamic for a loud stage. What difference matters here?',
     options: ['Where each rejects most — so where a monitor can go', 'The hypercardioid makes the congas louder', 'The cardioid has no rejection at its rear'],
     correct: 'Where each rejects most — so where a monitor can go',
-    explain: 'A cardioid rejects most directly behind; a hypercardioid is narrower, rejects most toward the rear sides and has a small rear lobe. Place monitors by the actual pattern.',
+    explain: 'A cardioid rejects most directly behind; a hypercardioid is narrower, rejects most toward the rear sides and has a rear lobe, about 6 dB down on the ideal pattern. Place monitors by the actual pattern.',
     why: {
       'The hypercardioid makes the congas louder': 'A pattern decides what a mic rejects, not how loud the drums are.',
       'The cardioid has no rejection at its rear': 'The reverse: a cardioid rejects most directly behind it.',
@@ -388,11 +388,11 @@ const scenarios: MikingScenario[] = [
     id: 'k.mix.2',
     page: 'practice',
     prompt: 'Your floor wedge sits about 110° off a hypercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; less in reality, least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
-    correct: 'Strong rejection on paper; less in reality, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Strong rejection on paper; less in reality, often least in the lows', 'Silence from the wedge, because it sits in the null', 'More pickup than from straight behind, where it rejects the most'],
+    correct: 'Strong rejection on paper; less in reality, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
-      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the wedge, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and often least in the lows.',
       'More pickup than from straight behind, where it rejects the most': 'Straight behind, a hypercardioid has a rear lobe; its deepest rejection is off the rear axis.',
     },
   },
@@ -504,7 +504,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the hands, wrists, knees and the open ends', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on congas', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };

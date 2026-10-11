@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a ride mic by its properties — pattern, power, size and mount — and by its job: a spot on the ride, or a mic for all the cymbals.',
     credit: { scenarios: ['rd.mic.1', 'rd.mic.power', 'rd.mic.spill', 'rd.rec.1'], note: 'Answer the four checks (one reaches back to how the ride sounds).' },
-    takeaway: 'A small condenser is a common choice, as a spot or as a mic over all the cymbals; a small dynamic can spot it too. Condensers need phantom power. Max SPL is not a hearing limit.',
+    takeaway: 'A small condenser is a common choice, as a spot or as a mic over all the cymbals; a small dynamic can spot it too. The condenser here needs phantom power. Max SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
@@ -346,8 +346,8 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'No ride mic: the overheads and the floor-tom mic already carry it', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
       { id: 'b', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
-      { id: 'c', label: 'A small condenser a foot or two above, for all the cymbals', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
-      { id: 'd', label: 'A small condenser under the ride, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but a condenser needs phantom power, and this input has none.' },
+      { id: 'c', label: 'A small condenser a foot or two above, for all the cymbals', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
+      { id: 'd', label: 'A small condenser under the ride, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Never on the cymbal or its mount: it swings and is struck. Use a stand.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the ride’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],

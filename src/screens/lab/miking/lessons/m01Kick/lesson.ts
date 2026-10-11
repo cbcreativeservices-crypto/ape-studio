@@ -55,7 +55,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know what a pattern cannot do.',
     credit: { scenarios: ['k.ctx.1', 'k.ctx.2', 'k.ctx.studio', 'k.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A cardioid rejects most directly behind; a supercardioid has a rear lobe and rejects most off the rear axis. Real nulls are shallower than the simplified picture, and shallowest in the lows. No mic position alone prevents feedback.',
+    takeaway: 'A cardioid rejects most directly behind; a supercardioid has a rear lobe and rejects most off the rear axis. Real nulls are shallower than the simplified picture, and often shallowest in the lows. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -229,7 +229,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Dynamic mics need no power. The boundary plate and the condenser are both condensers and need phantom power.',
     why: {
       'The boundary plate, since it rests inside the drum': 'Where it rests does not matter: the boundary plate is a condenser and needs phantom power.',
-      'The condenser, if you keep it at a distance from the head': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The condenser, if you keep it at a distance from the head': 'Distance does not change what this condenser needs: it still needs phantom power.',
     },
   },
   {
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Partly: near a head a directional mic boosts lows, but drums vary',
     explain: 'A directional mic close to a radiating head boosts its own lows (proximity effect). Which surface it faces, the mic and the drum all matter — check it.',
     why: {
-      'Right — the inside of the drum is simply where all the bass is': 'The starting point with the most low end is close to the batter head: proximity effect, not a rule about depth.',
+      'Right — the inside of the drum is simply where all the bass is': 'A starting point close to the batter head can give the most low end: proximity effect, not a rule about depth.',
       'Wrong — the outside of the front head is where the bass really is': 'That is the same oversimplification the other way round. The surface faced, the mic and the drum all matter.',
     },
   },
@@ -288,7 +288,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — it hears a little behind; its nulls are off the rear axis',
     explain: 'A supercardioid has a small rear pickup lobe; its deepest rejection is toward the rear but off the axis. Aim nulls by the actual pattern.',
     why: {
-      'Yes — a directional mic rejects most of all directly at its back': 'Only a cardioid rejects most directly behind. A supercardioid has a small rear lobe.',
+      'Yes — a directional mic rejects most of all directly at its back': 'A cardioid rejects most directly behind; a supercardioid has a small rear lobe there.',
       'Yes, as long as the mic is placed inside the drum, behind the head': 'Inside, the shell shields the mic, but that does not move the pattern’s nulls.',
     },
   },
@@ -392,11 +392,11 @@ const scenarios: MikingScenario[] = [
     id: 'k.mix.2',
     page: 'practice',
     prompt: 'Your monitor sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the monitor, because it sits in the null', 'More pickup than straight behind, which is where it rejects the most'],
-    correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Strong rejection on paper; in reality less, and often least in the lows', 'Silence from the monitor, because it sits in the null', 'More pickup than straight behind, which is where it rejects the most'],
+    correct: 'Strong rejection on paper; in reality less, and often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
-      'Silence from the monitor, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the monitor, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and often least in the lows.',
       'More pickup than straight behind, which is where it rejects the most': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
     },
   },
@@ -446,7 +446,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Determine whether it starts in the mic, preamp or interface, or at a rattling part of the drum or stand; lower gain where appropriate before changing tonal controls.',
     options: ['Where it starts — mic, preamp, interface or a rattle — then gain', 'Pull the channel fader down until the distorted hits sound cleaner', 'Cut the low end with EQ so the channel has more headroom left'],
     correct: 'Where it starts — mic, preamp, interface or a rattle — then gain',
-    explain: 'A lowered fader does not undo earlier clipping, and attenuation after an overloaded capsule cannot restore its sound.',
+    explain: 'A lowered fader does not undo earlier clipping, and attenuation after an overloaded mic cannot restore its sound.',
     why: {
       'Pull the channel fader down until the distorted hits sound cleaner': 'The fader comes after the preamp; if the preamp already clipped, a lower fader just makes the distortion quieter.',
       'Cut the low end with EQ so the channel has more headroom left': 'EQ after the input cannot undo clipping at the input. Find where it starts, and lower gain there first.',
@@ -509,7 +509,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of heads, beater, damping and pedal', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a kick', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -538,7 +538,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Cardioid kick dynamic outside, at the level of the front head', ok: true, power: 'none', feedback: 'A suggested starting point with a more resonant tendency; a dynamic needs no phantom.' },
       { id: 'b', label: 'Supercardioid kick dynamic just outside, near the edge of the front head', ok: true, power: 'none', feedback: 'Outside pickup suits a front head with no port, and a dynamic needs no phantom.' },
-      { id: 'c', label: 'Condenser just outside the front head, near its edge', ok: false, power: 'phantom', feedback: 'Outside suits an intact head, but this input has no phantom power and a condenser needs it.' },
+      { id: 'c', label: 'Condenser just outside the front head, near its edge', ok: false, power: 'phantom', feedback: 'Outside suits an intact head, but this input has no phantom power and this condenser needs it.' },
       { id: 'd', label: 'Boundary plate resting on the pillow inside the drum', ok: false, power: 'phantom', feedback: 'There is no way in without taking the head off — and this input has no phantom power.' },
       { id: 'e', label: 'Cut a small port so a kick dynamic can go inside', ok: false, power: 'none', feedback: 'The drum is the player’s: work with it as it is rather than altering it to match a diagram.' },
     ],
@@ -607,7 +607,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The batter head squeezes the air inside, and the air pushes the front head outward: the two heads are coupled through the air (with a port, some air also rushes out).',
     why: {
       'Pulls it inward, toward the beater': 'The batter head moving in squeezes the air; squeezed air pushes on the front head, so it moves outward.',
-      'Nothing — the air escapes through the shell': 'The shell is closed wood. The air is squeezed and pushes the front head outward; only a port lets some out.',
+      'Nothing — the air escapes through the shell': 'The shell is closed wood, apart from small vent holes. The air is squeezed and pushes the front head outward; a port lets some of it out.',
     },
   },
   {

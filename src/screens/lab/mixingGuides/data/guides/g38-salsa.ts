@@ -275,7 +275,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary salsa masters usually land at −10 to −8 LUFS-I with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Fania-era reissues sit around −13 to −10 LUFS-I. Most streaming services normalize to −14 LUFS, so very loud masters gain nothing and lose horn and percussion snap. A PLR of 10–13 dB and a loudness range of 5–8 LU keep transients and mambo lift alive."
+      "text": "Contemporary salsa masters usually land at −10 to −8 LUFS-I with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Fania-era reissues sit around −13 to −10 LUFS-I. Most streaming services normalize to −14 LUFS, so very loud masters gain nothing and lose horn and percussion snap. A PLR of 10–13 dB (about −12 to −14 LUFS-I at −2 dBTP, quieter than contemporary masters) and a loudness range of 5–8 LU keep transients and mambo lift alive."
     }
   ],
   "liveStudio": {

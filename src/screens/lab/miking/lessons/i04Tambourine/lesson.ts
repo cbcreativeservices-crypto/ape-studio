@@ -22,7 +22,7 @@ const pages: LessonPages = {
     title: 'Meet the headless tambourine',
     goal: 'Get to know the headless tambourine and its jingles — what it is, where you meet it, what it does in the music and how it is played — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A frame of loose metal jingles with no head: the jingles are the whole sound. Shaken, struck into the hand, or mounted — and it moves while it plays.',
+    takeaway: 'A frame of loose metal jingles with no head: the jingles make almost all of the sound. Shaken, struck into the hand, or mounted — and it moves while it plays.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -283,7 +283,7 @@ const scenarios: MikingScenario[] = [
     explain: 'When more than one mic hears a moving instrument, the arrival times keep changing — and so does the comb. Check each alone and the sum in mono.',
     why: {
       'The jingles change pitch as they move': 'The pitch is the same; the paths to the two mics change.',
-      'The mics’ patterns widen as the jingles approach': 'A pattern does not change; the arrival times do.',
+      'The mics’ patterns widen as the jingles approach': 'The patterns do not widen; the arrival times change.',
     },
   },
   louderIsNotBetter(W),
@@ -394,7 +394,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One small dynamic for the station, aimed at the playing area, a null toward the wedge', ok: true, power: 'none', feedback: 'A dedicated directional mic for the station; a dynamic needs no phantom.' },
       { id: 'b', label: 'A small dynamic about 25 cm from the tambourine as played, channel muted while placed', ok: true, power: 'none', feedback: 'A dedicated spot; a dynamic needs no phantom. Check the shakers are covered too.' },
-      { id: 'c', label: 'A small condenser over the station', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'A small condenser over the station', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A close mic on each instrument, all left open', ok: false, power: 'none', feedback: 'Every open mic adds spill and feedback risk.' },
       { id: 'e', label: 'Ask the player to stay at the tambourine for the whole set', ok: false, power: 'none', feedback: 'The player’s moves are the music; cover them.' },
     ],
@@ -445,7 +445,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Brief, bright peaks far above the average: use a peak indication and set headroom from the loudest passage.',
     why: {
       'Its sound is far too low for a slow meter to read': 'It is the peaks — high and brief — that the meter misses.',
-      'Its jingles confuse the meter’s pitch sensing': 'A level meter does not sense pitch; it averages.',
+      'Its jingles confuse the meter’s pitch sensing': 'A slow meter does not sense pitch; it averages.',
     },
   },
   {

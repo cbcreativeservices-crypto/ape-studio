@@ -265,7 +265,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Streaming normalizes to about −14 LUFS, so over-limiting gains nothing and softens the kick. Aim for a PLR around 7–10 dB; the genre tolerates density but needs kick transients."
+      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Streaming normalizes to about −14 LUFS, so over-limiting gains nothing and softens the kick. Aim for a PLR around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the genre tolerates density but needs kick transients."
     }
   ],
   "liveStudio": {

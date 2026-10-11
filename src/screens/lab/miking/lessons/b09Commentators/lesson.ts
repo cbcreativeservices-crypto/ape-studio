@@ -260,7 +260,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does almost all of the commentator’s voice leave?',
     options: ['The mouth — every distance starts at the lips', 'The throat, low in the neck where the folds are', 'The chest, behind the breastbone, where it resonates'],
     correct: 'The mouth — every distance starts at the lips',
-    explain: 'The voice is made in the throat but leaves through the mouth (on m, n and ng partly the nose). Distances are read from the lips.',
+    explain: 'The voice is made in the throat but leaves through the mouth (on m, n and ng through the nose instead). Distances are read from the lips.',
     why: {
       'The throat, low in the neck where the folds are': 'The folds start the sound; it leaves through the mouth.',
       'The chest, behind the breastbone, where it resonates': 'The chest is not where the voice leaves a talker.',
@@ -639,7 +639,7 @@ export const B09_LESSON: Lesson = {
       { title: 'Breath from the lungs', text: 'The lungs push air up the windpipe — the power behind every word, the quiet ones and the goal call.' },
       { title: 'The vocal folds buzz', text: 'In the voice box, low in the throat, two small folds come together and the breath sets them buzzing. That buzz is the raw sound of the voice.' },
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue, the lips and the open mouth shape the buzz into vowels and words; the tongue, the teeth and the lips add the consonants.' },
-      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng partly through the nose. That is where every distance here is measured from: the lips.' },
+      { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng it leaves through the nose instead. That is where every distance here is measured from: the lips.' },
     ],
     attack: 'P and B push a puff of air straight out of the lips, and an excited call pushes harder. A capsule straight in front of the mouth sits in that path; beside the mouth corner, still aimed at it, the air passes by.',
     body: 'The vowels carry most of the level and the tone. Close to a directional mic they gain low end (the proximity effect); farther, more of the crowd, the PA and the partner join in. Tendencies, to check by ear.',

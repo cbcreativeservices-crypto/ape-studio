@@ -32,7 +32,7 @@ const base = stringsCopy({
   shapesNote2: 'This is an ideal string between rigid ends. A real sitar string grazes the broad, curved top of its bridge as it swings, which adds brightness and buzz the ideal string does not have — the jawari sound, set by the player, never by a mic.',
   coupledNote: 'The board bows in and out round the bridge over the gourd’s air — a simplified picture of the lowest motion. A close mic hears the part of the board, the bridge or the neck it faces most.',
   setting: {
-    kitA11y: 'The sitar player from above, seated on a rug: the gourd at the right foot, the neck rising to the left past the shoulder; the tabla player beside, a tanpura player behind.',
+    kitA11y: 'The sitar player from above, seated on a rug: the gourd on the left foot, the neck rising to the left past the shoulder; the tabla player beside, a tanpura player behind.',
     kitIdle: 'The space round a seated sitar player is theirs: the mizrab hand over the board, the left hand travelling a long neck and pulling strings sideways for bends, the gourd on the foot, the crossed legs, and their view.',
     leftHanded: 'A left-handed player holds the sitar mirrored: the neck rises the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A concert stage from above: the sitar player on a rug with a floor wedge in front, the tabla beside, a tanpura behind, the PA at the front corners and the audience edge.',
@@ -68,7 +68,7 @@ const base = stringsCopy({
       { title: 'STUDIO', text: 'Build the sound with one mic, then compare a farther view or a pair if the room supports the music. Judge the quiet opening and the decay, not only the strong strokes.' },
       { title: 'A PICKUP', text: 'If one air mic cannot give the level the stage needs, a pickup can be a separately labelled path or blend — checked for its own fitting and input.' },
     ],
-    body: 'With a wedge in front, a pattern’s rejection is a tool to aim — and patterns reject least at low frequencies.',
+    body: 'With a wedge in front, a pattern’s rejection is a tool to aim — and patterns often reject least at low frequencies.',
     studioId: 'st.ctx.studio',
     studioPrompt: 'A quiet studio with a good room and tabla in the same session: what do you weigh first?',
     studioNote: 'In a good room a farther mic, or a pair, can carry the sitar’s bloom and decay. Repeated trials are practical when the player stops. Switch back to LIVE for the wedge exercise.',

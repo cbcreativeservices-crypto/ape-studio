@@ -69,7 +69,7 @@ const base = stringsCopy({
       { title: 'STUDIO', text: 'Start on the upper face, then try farther back if the room is good. Check the slides, the quiet ornaments and the loudest phrase.' },
       { title: 'MOVEMENT', text: 'A stand mic hears the player turn. Mark the chair and its angle so the session can be repeated.' },
     ],
-    body: 'With a wedge in front, a pattern’s rejection is a tool to aim — and patterns reject least at low frequencies.',
+    body: 'With a wedge in front, a pattern’s rejection is a tool to aim — and patterns often reject least at low frequencies.',
     studioId: 'oud.ctx.studio',
     studioPrompt: 'A quiet studio with a pleasing room: what is the room worth to this oud?',
     studioNote: 'In a quiet room a farther mic blends the oud with the room. Repeated trials are practical when the player stops. Switch back to LIVE for the wedge exercise.',

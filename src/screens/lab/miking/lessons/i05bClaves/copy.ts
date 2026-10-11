@@ -33,7 +33,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     ],
     reveal: 'The strike in the middle drives the clave’s lowest bending shape — its middle and ends swing; two still points about a fifth of the way in from each end stay put. Supported near them, it rings; the hollow beneath rings with it.',
     after: 'The fast click is the strike; the short woody ring is the clave and the hollow. Squeeze the supported clave into the palm and the ring is choked — a mic close to a choked pair only hears a louder choked pair.',
-    shapesNotes: ['The bend is the lowest shape of an ideal unclamped bar, drawn much larger than it moves; its next shape sits about 2.8 times higher — not a whole-number overtone, part of why a clave sounds like a click with a note.'],
+    shapesNotes: ['The bend is the lowest shape of an ideal unclamped bar, drawn much larger than it moves; the next shape a middle strike drives sits about 5.4 times higher — not a whole-number overtone, part of why a clave sounds like a click with a note.'],
     coupledSubject: 'The supported clave, drawn large',
     coupledNote: 'The grip is part of the instrument. A dead tick usually means the supported clave is pressed into the palm — a microphone cannot restore the missing resonance.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how real claves sound depends on the wood, the pair, the grip and the player. The pictures show where the sound comes from and where it leaves.',
@@ -90,7 +90,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     typeNotes: { smallDynCard: 'A dynamic may also suit if its response and the available gain serve the part; a small condenser can show the short decay. Compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never between the two claves. Watch PEAK meters for the strongest accent.',
     learn: {
-      intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the striking area, aimed at it, is where we suggest you begin; a common minimum for percussion is about 30 cm. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the striking area, aimed at it, is where we suggest you begin; one general tip for percussion is a gap of about 30 cm or more. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time, with both hands moving. If the player changes the grip, the mic may need reassessing.',
       clearance: 'Clearance comes first: never between the sticks, outside the striker’s whole path. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'A sharp click with little wood? Compare the grip and the pair first, then a little more distance or another safe angle. Buried by the room? Closer — outside both hands. All tendencies to check by ear.',

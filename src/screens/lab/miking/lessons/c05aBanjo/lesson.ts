@@ -301,7 +301,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic about 3 in from the head’s edge, compared with the junction', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom.' },
-      { id: 'c', label: 'Small omni condenser near the neck junction, for the room', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Small omni condenser near the neck junction, for the room', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Clip-on mini by the tailpiece', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic behind the open back, assumed to give the deepest tone', ok: false, power: 'none', feedback: 'Behind, the player’s body obstructs it: audition a rear view, never assume it.' },
     ],

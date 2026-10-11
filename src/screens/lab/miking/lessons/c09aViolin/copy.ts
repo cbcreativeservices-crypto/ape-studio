@@ -67,7 +67,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     looking: 'Top view · mic in front of the violin',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the violin.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the violin, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
     shieldNote: 'Even a small violin’s top REFLECTS stage sound into the front of a mic aimed away from it — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'vn.ctx.studio',

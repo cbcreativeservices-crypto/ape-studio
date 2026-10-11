@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hs.mic.2',
     page: 'microphone',
-    prompt: 'Brass peaks close to a bell can reach about 130 dB SPL. So what?',
+    prompt: 'Brass peaks close to a bell can exceed 140 dB SPL. So what?',
     options: ['Check the mic and preamp on the loudest passage', 'A dynamic copes anyway, so skip the check', 'Turn the trims up so the quiet parts show'],
     correct: 'Check the mic and preamp on the loudest passage',
     explain: 'Do not risk a delicate mic or preamp by guessing. Set gain on the loudest passage; engage a pad only where it sits before the stage that overloads.',
@@ -584,7 +584,7 @@ export const E10_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E10_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A horn section has no single right setup: hear the players, rehearse the balance, start with a minimal plan and expand only for a stated need. Every section, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Brass peaks close to a bell can reach about 130 dB SPL: protect the mics, the preamps and your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A horn section has no single right setup: hear the players, rehearse the balance, start with a minimal plan and expand only for a stated need. Every section, room and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical layouts, ideal patterns, straight paths and distances read from the drawing. Brass peaks close to a bell can exceed 140 dB SPL: protect the mics, the preamps and your hearing.',
   copy: { words: ensembleWords('horn section') },
   ensemble: {
     seatings: { line: 'horns.line', arc: 'horns.arc' },
@@ -604,7 +604,7 @@ export const E10_LESSON: EnsembleLesson = {
       { title: 'LET THE PLAYERS BALANCE', text: 'Stronger instruments a little farther from a section mic, weaker or darker ones closer, bells aimed consistently — before moving any mic.' },
       { title: 'CHOOSE MINIMAL OR EXPANDED', text: 'One section mic or pair favours blend; a close mic on each player gives control but acts as one multi-mic system.' },
     ],
-    safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can reach about 130 dB SPL. Never lift a protective mains earth to cure hum; never provoke feedback.',
+    safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can exceed 140 dB SPL. Never lift a protective mains earth to cure hum; never provoke feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a horn section: one section pair in front of the players, a little above, before any close mic — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the line, clear of the slides at full extension and of the players’ way in and out; its cable dressed flat and out of the walkways.',

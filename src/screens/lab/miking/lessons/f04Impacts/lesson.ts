@@ -131,7 +131,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Mark the likely splash footprint with the mic absent, then set the stand outside it — power supplies, recorder, cables and connectors away from the wet area too.',
     why: {
       'Put the mic up first and watch where it gets wet': 'Water inside a mic can cause fire or electric shock. Find the splash before any equipment is there.',
-      'Use a rain cover and place the mic anywhere': 'A rain cover is for between takes, not while recording; it does not make a mic splash-proof.',
+      'Use a rain cover and place the mic anywhere': 'Some rain covers are for between takes only, and a rain cover does not make a mic splash-proof.',
     },
   },
   {

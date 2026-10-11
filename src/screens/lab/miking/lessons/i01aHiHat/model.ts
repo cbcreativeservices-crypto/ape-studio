@@ -137,7 +137,7 @@ export const HAT_ZONES: DocumentedZone[] = [
     drawn: bandDrawn(HAT, BAND.underC),
     start: toward(BAND.underC, { r: 0.5, th: 0.5, h: 0.45 }, at(HAT, 95, 0, -(GAP.closed + 10))),
     tendency: 'Out of the way, and out of the stick’s path. From below there tends to be less of the stick’s attack, and the warmer tones of the top cymbal are softer — a different hi-hat, not a worse one.',
-    checks: ['The clip fits the stand and holds', 'Clear of the pedal, the player’s foot and the pull rod', 'Less stick, warmer: is that what the music wants?'],
+    checks: ['The clip fits the stand and holds', 'Clear of the pedal, the player’s foot and the pull rod', 'Less stick, softer warm tones: is that what the music wants?'],
   },
   {
     id: 'hh.underOpen',
@@ -157,7 +157,7 @@ export const HAT_ZONES: DocumentedZone[] = [
     drawn: bandDrawn(HAT, BAND.underO),
     start: toward(BAND.underO, { r: 0.5, th: 0.5, h: 0.45 }, at(HAT, 95, 0, -(GAP.open + 10))),
     tendency: 'Out of the way, and out of the stick’s path. From below there tends to be less of the stick’s attack, and the warmer tones of the top cymbal are softer.',
-    checks: ['The clip fits the stand and holds', 'Clear of the pedal and the player’s foot', 'Less stick, warmer: is that what the music wants?'],
+    checks: ['The clip fits the stand and holds', 'Clear of the pedal and the player’s foot', 'Less stick, softer warm tones: is that what the music wants?'],
   },
 ];
 

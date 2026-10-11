@@ -29,7 +29,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   zones: BARITONE_ZONES,
   use: { worked: 'bs.above', live: 'bs.above', twoA: 'bs.above', twoB: 'bs.triangle', twoBType: 'saxLdc' },
   orient: [
-    { title: 'WHAT IT IS', text: 'The baritone saxophone, pitched in E♭, is the largest and lowest of the four common saxophones. Its long conical tube is folded: a loop at the top of the neck, a long body, the bow and an upturned bell. Many modern baritones have a low A key, one note lower than the others.', src: 'Y-HUB-SAX' },
+    { title: 'WHAT IT IS', text: 'The baritone saxophone, pitched in E♭, is the largest and lowest of the four common saxophones. Its long conical tube is folded: a loop at the top of the body, just below the neck, then the long body, the bow and an upturned bell. Many modern baritones have a low A key, one note lower than the others.', src: 'Y-HUB-SAX' },
     { title: 'WHERE YOU MEET IT', text: 'Big bands and horn sections, jazz, R&B and rock, concert bands and saxophone quartets — often doubling the bass line.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The bottom of the section: weight, punch and the bass line, and a gruff solo voice. Ask for the lowest notes the part uses before you set any filter.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'About a metre tall. Its lowest notes sound near 69 Hz (a D♭), or 65 Hz (a C) with a low A key. It hangs on a harness at the hip, standing or seated — this lab draws one with a low A.', src: 'DPA-TABLE' },

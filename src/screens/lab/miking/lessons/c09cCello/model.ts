@@ -106,7 +106,7 @@ export const CELLO_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['strMini'] },
     draw: { side: zoneDisc('side', UNDER, 32), top: zoneDisc('top', UNDER, 32) },
     start: aimAt(UNDER, B(0, 0, (archAt(SPEC, 62) + stringZ(SPEC, 62)) / 2 - 6)),
-    tendency: 'A close, steady view of the strings and top that moves with the player — clear of spill, but a narrower, more coloured picture of the cello.',
+    tendency: 'A close, steady view of the strings and top that moves with the player — with less spill, but a narrower, more coloured picture of the cello.',
     checks: ['A clip made for this cello, with the player’s agreement', 'Nothing touches the bridge, and the bow never meets the gooseneck', 'The cable’s route away from the endpin, the chair and the feet'],
   },
   {

@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s rejection faces the floor wedge — and know what a pattern cannot do, especially in the low end.',
     credit: { scenarios: [`${P}.ctx.1`, `${P}.ctx.2`, `${P}.ctx.studio`, `${P}.rec.3`], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Patterns reject least at low frequencies, and a bass is all low frequencies. On a loud stage the pickup often carries the level and a mic adds character. No mic position alone prevents feedback.',
+    takeaway: 'Patterns often reject least at low frequencies, and a bass is all low frequencies. On a loud stage the pickup often carries the level and a mic adds character. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -220,8 +220,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · Why can a pattern’s rejection disappoint on a bass?',
-    options: ['A bass makes no sound behind the mic at all', 'Real patterns reject least at low frequencies', 'Patterns only work on instruments with strings'],
-    correct: 'Real patterns reject least at low frequencies',
+    options: ['A bass makes no sound behind the mic at all', 'Real patterns often reject least at low frequencies', 'Patterns only work on instruments with strings'],
+    correct: 'Real patterns often reject least at low frequencies',
     explain: 'A real mic’s rejection is weakest in the low end — exactly where a bass and a wedge carrying it are loudest. Use the null to aim, not to promise silence.',
     why: {
       'A bass makes no sound behind the mic at all': 'Sound reaches the mic from everywhere; the issue is how little a real null rejects low notes.',
@@ -300,7 +300,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic 20–45 cm out from the neck joint, angled to the top and strings', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check the lowest notes.' },
       { id: 'b', label: 'Instrument dynamic about 30 cm from the treble side of the upper bout', ok: true, power: 'none', feedback: 'A borrowed starting point worth trying; it needs no phantom.' },
-      { id: 'c', label: 'Small condenser at the neck joint, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser at the neck joint, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic pressed against the top under the bridge', ok: false, power: 'none', feedback: 'Never press a mic on the instrument: it rattles, damps the top and can mark the finish.' },
     ],
@@ -322,7 +322,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'On this acoustic bass, where does the neck meet the body?',
     options: ['At the 12th fret, the same as a classical guitar', 'At the 17th fret — the 12th is far out on the neck', 'At the sound hole, where the fingerboard ends'],
     correct: 'At the 17th fret — the 12th is far out on the neck',
-    explain: 'This cutaway body meets its 34 in neck at the 17th fret, so “the 12th fret” and “the neck joint” are far apart here.',
+    explain: 'This cutaway body meets its neck at the 17th fret (a 34 in scale), so “the 12th fret” and “the neck joint” are far apart here.',
     why: {
       'At the 12th fret, the same as a classical guitar': 'That is a classical body. This bass joins at the 17th fret.',
       'At the sound hole, where the fingerboard ends': 'The fingerboard runs on over the body; the neck joins at the 17th fret.',
@@ -417,7 +417,7 @@ export const C07_LESSON: Lesson = {
       { id: 'chair', label: 'the chair', short: 'CHAIR', note: 'Behind the player. Keep stand legs clear of the chair’s and the player’s feet.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'FLOOR SPACE', scene: 'kit' },
       { id: 'vocal', label: 'the vocal mic (a singing bassist)', short: 'VOCAL MIC', note: 'Above the bass, in front of the mouth. The voice reaches the bass mic and the bass reaches the vocal mic: plan both.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'di', label: 'DI box and pickup cable', short: 'DI', note: 'The pickup’s path: an electrical signal, not a microphone. On a loud stage it often carries the bass’s level. Route its cable clear of the feet.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGNAL PATH', scene: 'kit' },
-      { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front, facing back at the player. Its low end reaches a bass mic easily — patterns reject least in the lows.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front, facing back at the player. Its low end reaches a bass mic easily — patterns often reject least in the lows.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band: amp and drums', short: 'BAND', note: 'Upstage. A kick drum and a bass share the low end: a mic on the acoustic bass hears the kick too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience. Its low end fills the stage and can feed back through the bass’s body.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage', planIds: ['paL', 'paR'] },
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge. The stage level decides how close a mic must be — or whether the pickup carries the bass.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },

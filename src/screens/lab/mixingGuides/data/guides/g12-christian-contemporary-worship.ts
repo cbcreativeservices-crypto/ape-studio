@@ -204,7 +204,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Group processing (vocals, band, tracks) simplifies volunteer mixing and adds glue. De-ess vocals at 5–8 kHz for 2–4 dB. Gate toms gently live (or leave them open on electronic kits). On the stream bus, add a final limiter at −1 to −0.5 dBFS ceiling."
+        "text": "Group processing (vocals, band, tracks) simplifies volunteer mixing and adds glue. De-ess vocals at 5–8 kHz for 2–4 dB. Gate toms gently live (or leave them open on electronic kits). On the stream bus, add a final true-peak limiter with a −1 dBTP ceiling."
       }
     ]
   },
@@ -342,7 +342,7 @@ export const GUIDE: MixingGuide = {
     "Hillsong Worship, “Shout to the Lord”, 1994",
     "Chris Tomlin, “How Great Is Our God”, 2004",
     "Hillsong United, “Oceans (Where Feet May Fail)”, 2013",
-    "Bethel Music & Brian Johnson, “No Longer Slaves”, 2015",
+    "Bethel Music, Jonathan David & Melissa Helser, “No Longer Slaves”, 2015",
     "Lauren Daigle, “You Say”, 2018",
     "Elevation Worship & Maverick City Music, “Jireh”, 2021",
     "Phil Wickham, “Battle Belongs”, 2020",

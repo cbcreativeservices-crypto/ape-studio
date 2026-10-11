@@ -38,7 +38,7 @@ export const BELL_COPY: LessonCopy = spCopy({
     after: 'The shell, its shape and alloy, the mount, the stick and the strike spot all change the attack and the ring — so soundcheck the soft touch and the forceful one.',
     shapesNotes: ['The bell is struck metal, not a horn: a brass instrument’s “aim into the bell” does not carry over. The pictures show where the sound starts — never its level.'],
     coupledSubject: 'The cowbell from the side',
-    coupledNote: 'A ring too long for the part? Try the instrument and a secure, compatible mute before any processing — a mute changes the pitch and the level, not only the decay.',
+    coupledNote: 'A ring too long for the part? Try the instrument and a secure, compatible mute before any processing — a mute can change the pitch and the level, not only the decay.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: “low pitch” or “tuned to G” are model descriptions, not pure tones. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'Open or muted',
@@ -93,7 +93,7 @@ export const BELL_COPY: LessonCopy = spCopy({
     typeNotes: { smallDynCard: 'A cardioid dynamic or a condenser can both work; listen through full-volume playing and move back when needed.' },
     note: 'Clearance comes first: stop the player before moving a real mic — the stick’s path and rebound set the minimum gap, not the bell. Watch PEAK meters: close strikes can overload an input.',
     learn: {
-      intro: 'What you just did, in words. After our research, a mic about 20–40 cm (8–16 in) from a useful side or top view of the bell is where we suggest you begin — a common minimum for percussion is about 30 cm, so the near end of that range must still clear every stroke. Starting points, not rules.',
+      intro: 'What you just did, in words. After our research, a mic about 20–40 cm (8–16 in) from a useful side or top view of the bell is where we suggest you begin — one general tip for percussion is a gap of about 30 cm or more, so the near end of that range must still clear every stroke. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time. Do not assume a mic pointed into the mouth is fuller or brighter — the whole body radiates.',
       clearance: 'Clearance comes first. The stick’s path, its rebound and every fill define the minimum; rehearse them after every clamp or mic adjustment. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'Painfully sharp? A little more distance, another safe angle, or a bell, beater or mute that fits the part. Too far back against the cymbals? Improve the bell-to-mic versus cymbal-to-mic relationship by placement and pattern. All tendencies to check by ear.',

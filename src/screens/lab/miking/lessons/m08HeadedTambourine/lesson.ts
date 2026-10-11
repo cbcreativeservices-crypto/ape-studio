@@ -169,7 +169,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The small dynamic: it needs no power to work',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power wherever it is placed.',
     why: {
-      'The small condenser, if it sits farther back': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The small condenser, if it sits farther back': 'Distance does not change what this condenser needs: it still needs phantom power.',
       'Either one, as long as the channel gain is turned up': 'Gain cannot power a condenser. It needs phantom power from the desk.',
     },
   },
@@ -415,7 +415,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'One small dynamic for the station, aimed where the tambourine is played, outside the motion', ok: true, power: 'none', feedback: 'One directional station mic; a dynamic needs no phantom. Check spill and feedback with the operator.' },
       { id: 'b', label: 'Small dynamic about 25 cm in front of the tambourine, level with it', ok: true, power: 'none', feedback: 'The integrated starting point; a dynamic needs no phantom.' },
-      { id: 'c', label: 'Small condenser in front of the tambourine', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and a condenser needs it.' },
+      { id: 'c', label: 'Small condenser in front of the tambourine', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A close mic on each small instrument at the station', ok: false, power: 'none', feedback: 'Each extra open mic adds spill and feedback risk; one station mic can cover them.' },
       { id: 'e', label: 'A fixed mic, and ask the player not to move between instruments', ok: false, power: 'none', feedback: 'The player’s movement is the music; choose coverage that fits it.' },
     ],

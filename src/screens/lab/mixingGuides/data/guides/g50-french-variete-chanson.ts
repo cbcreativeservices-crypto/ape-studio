@@ -263,11 +263,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six), and venues over 300 capacity must record and display levels at the desk, offer free earplugs and provide rest zones. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theatres."
+      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the desk. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theatres."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Acoustic chanson and piano-voice records sound best at −14 to −11 LUFS-I with a PLR of 12–16 dB and LRA of 8–12 LU; modern variété-pop is mastered around −10 to −8 LUFS-I. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so a dynamic chanson master loses nothing and keeps its emotion."
+      "text": "Acoustic chanson and piano-voice records sound best at −14 to −11 LUFS-I with a PLR of 12–16 dB (at −2 dBTP that means a master at about −14 LUFS-I or quieter) and LRA of 8–12 LU; modern variété-pop is mastered around −10 to −8 LUFS-I. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so a dynamic chanson master loses nothing and keeps its emotion."
     }
   ],
   "liveStudio": {

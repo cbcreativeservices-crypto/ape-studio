@@ -38,7 +38,7 @@ const BASE = standingVoiceCopy({
   studio: {
     id: 'b3.ctx.studio',
     prompt: 'A controlled studio interview, two people seated, time to prepare. What is a fair first setup?',
-    note: 'In a studio there is time and access: seated lavs or a boom give each person their own channel and no handoff. A field report often has neither — that is when a rugged handheld earns its place. Switch to LIVE EVENT for the loudspeaker exercise.',
+    note: 'In a studio there is time and access: a seated lav or a boom for each person gives each their own channel and no handoff. A field report often has neither — that is when a rugged handheld earns its place. Switch to LIVE EVENT for the loudspeaker exercise.',
   },
   contextPoints: [
     { title: 'ONE MIC OR TWO', text: 'One rugged handheld is quick to set up and makes the speaking turns plain on camera. A mic each — a handheld and a lav — avoids the rushed handoff, but adds a channel, open-mic spill and routing work.' },

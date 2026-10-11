@@ -65,7 +65,7 @@ export const VIOLA_COPY: Partial<LessonCopy> = {
     looking: 'Top view · mic in front of the viola',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the viola.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — where the viola’s C string lives. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — where the viola’s C string lives. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). A supercardioid’s deepest rejection is off to the side of its rear — it has a small rear lobe, so a wedge straight behind it is not automatically the best place.',
     shieldNote: 'The viola’s body also reflects stage sound into the front of a mic aimed away from it — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'va.ctx.studio',

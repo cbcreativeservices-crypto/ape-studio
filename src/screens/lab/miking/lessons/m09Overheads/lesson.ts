@@ -114,7 +114,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A stroke drives a shape as much as the plate moves where the stick lands. The shapes a centre-held cymbal rings in barely move near the centre. The bell still has a sound of its own — a tendency to hear, not a rule.',
     why: {
       'The bell is a separate part, so its motion stays out of the plate': 'The bell is part of the same plate. It sits near the held centre, where the ringing shapes barely move.',
-      'A stroke on the bell is harder, which stops the plate ringing': 'How hard the stroke is changes the level, not which shapes it can drive. Where it lands is what matters here.',
+      'A stroke on the bell is harder, which stops the plate ringing': 'In this simple plate model, how hard the stroke is changes the level, not which shapes it can drive. Where it lands is what matters here.',
     },
   },
   {
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     correct: 'None of these: each needs phantom power',
     explain: 'Both types here are condensers and need phantom power. Find powered inputs, or choose another kind of mic.',
     why: {
-      'The large one, since its capsule is bigger': 'A bigger capsule does not remove the need for power: a condenser needs phantom power.',
+      'The large one, since its capsule is bigger': 'A bigger capsule does not remove the need for power: this condenser needs phantom power.',
       'The pencils, as they draw so little power': 'Little is not none: without phantom power these condensers will not work.',
     },
   },
@@ -341,7 +341,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A coincident X/Y pair, capsules together',
     explain: 'Coincident capsules hear each source at the same moment, so the pair itself adds no time difference — no comb filtering between them. It can still colour off-axis sources through each capsule’s off-axis response, and it does not fix differences with the close mics.',
     why: {
-      'A spaced pair, each 1.2 m from the snare': 'Equal snare distance lines up the snare only; every other source arrives at two times, which can colour the mono sum.',
+      'A spaced pair, each 1.2 m from the snare': 'Equal snare distance lines up only the snare; other sources can arrive at two times, which can colour the mono sum.',
       'The floor-tom method’s mic above and side mic': 'Matched to the snare, but far apart: the kick, toms and cymbals arrive at different times.',
     },
   },
@@ -397,9 +397,9 @@ const scenarios: MikingScenario[] = [
     id: 'oh.mix.2',
     page: 'practice',
     prompt: 'A cardioid side mic’s rear faces the drum fill. What can you expect?',
-    options: ['Some rejection, less than the picture, least in the lows', 'Silence from the fill, since it sits right behind the mic', 'More of the fill than of the snare it is aimed at'],
-    correct: 'Some rejection, less than the picture, least in the lows',
-    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, least at low frequencies — use the null to aim, not to promise silence.',
+    options: ['Some rejection, less than the picture, often least in the lows', 'Silence from the fill, since it sits right behind the mic', 'More of the fill than of the snare it is aimed at'],
+    correct: 'Some rejection, less than the picture, often least in the lows',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
       'Silence from the fill, since it sits right behind the mic': 'Real rejection is limited, and the stage reflects the fill’s sound from other directions too.',
       'More of the fill than of the snare it is aimed at': 'Facing away, the fill is turned down — just not to silence.',
@@ -645,7 +645,7 @@ export const M09_LESSON: Lesson = {
   zones: M09_ZONES,
   // Review 2026-10-07 (R12-A02): the spaced pair is drawn as a PAIR on
   // STARTING SETUPS, never as two lone mics (its own two zones).
-  setupPairs: [{ label: 'A spaced pair over the kit', A: { zone: 'oh.ab.hat', typeId: 'ohPencil', pattern: 'cardioid' }, B: { zone: 'oh.ab.ride', typeId: 'ohPencil', pattern: 'cardioid' }, line: 'Width and a wide view of the kit, each mic the same distance from the snare. Arrival times differ for every source but the snare — listen to the pair in mono as well as in stereo.' }],
+  setupPairs: [{ label: 'A spaced pair over the kit', A: { zone: 'oh.ab.hat', typeId: 'ohPencil', pattern: 'cardioid' }, B: { zone: 'oh.ab.ride', typeId: 'ohPencil', pattern: 'cardioid' }, line: 'Width and a wide view of the kit, each mic the same distance from the snare. Arrival times can differ for every source but the snare — listen to the pair in mono as well as in stereo.' }],
   pages,
   scenarios,
   symptoms,
@@ -677,9 +677,9 @@ export const M09_LESSON: Lesson = {
       { id: 'ride', label: 'the ride', short: 'RIDE', tag: 'PLAYED ON', note: 'Over the floor tom, played all the time on its bow and bell. An overhead on that side — and the floor-tom side mic — hears it strongly.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'hihat', label: 'the hi-hats', short: 'HI-HATS', tag: 'LOUD, CLOSE', note: 'To the player’s left: often one of the loudest things in an overhead on that side. Air puffs out sideways as the pair closes.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'snare', label: 'the snare', short: 'SNARE', tag: 'REFERENCE', note: 'The overheads’ usual reference: their distances are measured to its centre, so its sound reaches each mic at the same moment.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
-      { id: 'kick', label: 'the kick', short: 'KICK', tag: 'FARTHEST', note: 'Low and in the middle: an overhead hears it last and weakest. The line from the kick through the snare is a useful centre line for a pair.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
+      { id: 'kick', label: 'the kick', short: 'KICK', tag: 'FARTHEST', note: 'Low and in the middle: an overhead above the kit usually hears it last and weakest. The line from the kick through the snare is a useful centre line for a pair.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'toms', label: 'the rack toms', short: 'TOMS', planIds: ['tom1', 'tom2'], tag: 'UNDER CRASHES', note: 'Under the crashes. Moving a pair toward the front of the kit brings the rack toms and the cymbals closer.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan positions' } },
-      { id: 'floor', label: 'the floor tom', short: 'FLOOR TOM', tag: 'SIDE MIC', note: 'The floor-tom method’s side mic sits just beyond it, about a hand’s width above its rim, outside the player’s reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
+      { id: 'floor', label: 'the floor tom', short: 'FLOOR TOM', tag: 'SIDE MIC', note: 'The floor-tom method’s side mic sits just beyond it, about 15 cm (6 in) above its rim, outside the player’s reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'throne', label: 'the player’s space', short: 'PLAYER', tag: 'KEEP OUT', note: 'The drummer’s head, shoulders and sticks. Nothing hangs over the player without a sturdy, counterweighted stand, and nothing goes in the sticks’ reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'drawing defaults for the drummer’s envelope' } },
       { id: 'fill', label: 'the drummer’s fill monitor', short: 'DRUM FILL', tag: 'BELOW THE MICS', note: 'Beside the throne, aimed at the drummer. Overheads point down at the kit, so the stage below them — this monitor included — is part of what they hear.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage position' } },
       { id: 'downstage', label: 'another player’s wedge', short: 'DOWNSTAGE', tag: 'SPILL', note: 'Downstage of the kit, aimed upstage at another player — loud, and in front of a mic beside the kit.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage position' } },

@@ -307,7 +307,7 @@ export const PIANO_ZONES: DocumentedZone[] = [
   {
     id: 'up.top',
     label: 'Just over the open top',
-    band: 'Start just above the open top, about 5–25 cm (2–10 in) up, one mic over the treble strings and one over the bass for a split pair.',
+    band: 'Start just above the open top, about 3–25 cm (1–10 in) up, one mic over the treble strings and one over the bass for a split pair.',
     kind: 'sourced',
     src: 'S-REC',
     quote: 'Just over open top, above treble strings / … above bass strings',

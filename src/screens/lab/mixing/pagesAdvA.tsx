@@ -45,7 +45,7 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
         <>
           <Card tone="note">
             <Eyebrow>TWO WAYS IN</Eyebrow>
-            <Body>Finish the Beginning Mixing lab (recommended — this lab leans on it constantly), or prove the foundations right here with three checks.</Body>
+            <Body>Finish the Beginning Mixing lab (suggested — this lab leans on it constantly), or prove the foundations right here with three checks.</Body>
             <OpenLabLink route="BeginningMixingLab" label="OPEN BEGINNING MIXING" />
           </Card>
           <UnderstandingCheck
@@ -65,9 +65,9 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
             question="Comparing a processed mix against bypass, the processed one is 2 dB louder. The comparison is…"
             options={['Fine — the processing earned the level', 'Invalid until the two are level-matched', 'Fine if the processing is subtle', 'Better done on headphones']}
             correct={1}
-            explain="Louder reads as better in everyone, every time. Match the loudness, then judge — the foundation rule this whole lab stands on."
+            explain="Louder usually reads as better, to almost everyone. Match the loudness, then judge — the foundation rule this whole lab stands on."
             wrong={[
-              'Louder always grades better — that is the bias at work, not a verdict.',
+              'Louder usually grades better — that is the bias at work, not a verdict.',
               undefined,
               'Subtle processing is exactly where the loudness bias does the most damage.',
               'Headphones change the speakers, not the bias.',
@@ -299,7 +299,7 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
           'Route a reverb send through both setups and listen — identical is not what you will hear.',
           undefined,
           '“Cleaner” is not the axis — WHERE the gain happens is.',
-          'A VCA is pure gain; tone changes only happen where audio passes through processing.',
+          'On its own a VCA is pure gain — it changes tone only by feeding processing further down, such as a subgroup compressor, less hard.',
         ]}
         onCorrect={() => setCheckDone(true)}
       />

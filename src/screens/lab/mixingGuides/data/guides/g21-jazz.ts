@@ -52,7 +52,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "A small group sets up tight around the drums: bass beside the ride cymbal, piano curving around them, horns in front. The form is head (melody) → solos in turn → trading fours with the drums → head out, and the drummer and bassist drop down behind bass and piano solos."
+      "text": "A small group sets up tight around the drums: bass beside the ride cymbal, piano curving around them, horns in front. The form is head (melody) → solos in turn → trading fours with the drums → head out, and the accompanists drop down behind bass and piano solos."
     },
     {
       "text": "A big band sits in three rows: saxes in front (lead alto center, bari on the end), trombones on risers behind, trumpets on the highest risers at the back, rhythm section stage left. Arrangements move between section writing, soli passages, full-band shout choruses and soloists who stand or come forward to a solo mic. Lead trumpet and lead alto define the top of the ensemble."

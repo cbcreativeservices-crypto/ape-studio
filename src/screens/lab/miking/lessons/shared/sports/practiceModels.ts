@@ -112,10 +112,10 @@ export function smallModel(id: string, src: string): InstrumentModel {
     parts: [
       { id: 'area', label: 'the source area (the walking line)', short: 'source area', role: 'Where the source participant walks, claps and speaks — only there. No stand, cable or windshield reaches into it.', lesson: true },
       { id: 'A', label: 'source point A (0, 0)', short: 'A', role: 'One end of the line: about 2.83 m from M1.', lesson: true },
-      { id: 'B', label: 'source point B (0, 2)', short: 'B', role: 'The middle: 2 m from M1, straight ahead of it.', lesson: true },
-      { id: 'C', label: 'source point C (0, 4)', short: 'C', role: 'The other end: about 2.83 m from M1.', lesson: true },
+      { id: 'B', label: 'source point B (2, 0)', short: 'B', role: 'The middle: 2 m from M1, straight ahead of it.', lesson: true },
+      { id: 'C', label: 'source point C (4, 0)', short: 'C', role: 'The other end: about 2.83 m from M1.', lesson: true },
       { id: 'M1', label: 'mic mark M1 (2, 2)', short: 'M1', role: 'The first equipment area: the fixed detail mic, aimed at B.', lesson: true },
-      { id: 'M2', label: 'mic mark M2 (−2, 2)', short: 'M2', role: 'The second equipment area, across the line: the overlap and fallback trials.', lesson: true },
+      { id: 'M2', label: 'mic mark M2 (2, −2)', short: 'M2', role: 'The second equipment area, across the line: the overlap and fallback trials.', lesson: true },
     ],
     views: { side: { u0: -1900, u1: 10200, v0: -2000, v1: 300 }, top: { u0: -1900, u1: 10200, v0: -3400, v1: 5200 } },
   });

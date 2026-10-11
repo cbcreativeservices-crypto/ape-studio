@@ -81,7 +81,7 @@ const HEADSET: VoiceZoneSpec = {
   mount: 'clip',
   variant: 'sideline',
   start: { d: [Math.hypot(HF, HS), 38, 40, 34, 44], deg: (Math.atan2(HS, HF) * 180) / Math.PI, spread: 12, at: 'mouth' },
-  tendency: 'The reporter’s questions at one steady distance as they move. It does not hear the guest: the guest still needs a mic.',
+  tendency: 'The reporter’s questions at one steady distance as they move. It hears the guest only distantly: the guest still needs a mic.',
   checks: ['Fit, wind and how it looks on camera', 'The cable or pack secured', 'Only the reporter’s mic open while they ask'],
 };
 

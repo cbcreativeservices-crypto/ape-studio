@@ -25,7 +25,7 @@ const pages: LessonPages = {
     title: 'Meet the double bass',
     goal: 'Get to know the upright (double) bass and its bow — what it is, where you meet it bowed, what it does in the music, and its parts — before any microphone. This lesson is the bowed bass; the plucked bass has its own.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The bow grips and releases the string many times a second, and the bridge carries the vibration into the large carved body. The bow sweeps out to both sides of the strings — and the bass is heavy, valuable and easy to knock over.',
+    takeaway: 'The bow grips and releases the string many times a second, and the bridge carries the vibration into the large hollow body. The bow sweeps out to both sides of the strings — and the bass is heavy, valuable and easy to knock over.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -55,7 +55,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s rejection faces the loudest neighbour — and know why the bass body reflects it anyway, and what a spot mic is for in a group.',
     credit: { scenarios: [`${P}.ctx.1`, `${P}.ctx.2`, `${P}.ctx.studio`, `${P}.rec.3`], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the kit sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Rejection is weakest in the lows, and the bass body reflects its neighbours into the mic. In a group, a bass spot supports the main pickup — brought in gradually, checked in mono.',
+    takeaway: 'Rejection is often weakest in the lows, and the bass body reflects its neighbours into the mic. In a group, a bass spot supports the main pickup — brought in gradually, checked in mono.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -260,7 +260,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The bass body reflects the kit back into the mic’s front',
     explain: 'The bass’s large surface reflects drum and PA sound toward the front of a mic aimed away from them. If the pattern alone fails, move the players or the mic.',
     why: {
-      'The mic is faulty: aiming away removes the kit completely': 'Rejection is partial — least in the lows — and reflections arrive from the front.',
+      'The mic is faulty: aiming away removes the kit completely': 'Rejection is partial — often least in the lows — and reflections arrive from the front.',
       'The bow’s noise is masking the mic’s rejection': 'Bow noise does not change a pattern; the kit arrives by reflection.',
     },
   },
@@ -473,7 +473,7 @@ const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: while the bow moves, what does the string do?', options: ['It is struck once, then rings', 'It is gripped and released, again and again', 'It is held still'], after: 'Now STEP through (or PLAY ONCE) and watch the bow, the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the front mic closer to where the bow plays. What changes?', options: ['More bow scrape', 'More body', 'It depends on this bass'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
-  context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
+  context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — often least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 

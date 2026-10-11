@@ -27,7 +27,7 @@ const pages: LessonPages = {
     title: 'Meet the speakers',
     goal: 'Get to know what a mic on a speaker really hears — the cone, the cabinet and the rotary cabinet — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A mic on a cabinet hears the AIR the speaker moves: one speaker, its box and the room. Find the speaker that is really sounding before you place anything. A rotary cabinet is two turning speakers in one box, and it stays closed.',
+    takeaway: 'A mic on a cabinet hears the AIR the speaker moves: one speaker, its box and the room. Find the speaker that is really sounding before you place anything. A rotary cabinet has a turning horn and a turning drum in one box, and it stays closed.',
   },
   sound: {
     title: 'How a speaker sounds',
@@ -165,9 +165,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The guitar channel has no phantom power. Which of this page’s mic types can you still use?',
     options: ['The two dynamics: neither needs power to work', 'The small condenser, kept a little back from the grille', 'The small condenser, as long as the amp is switched on'],
     correct: 'The two dynamics: neither needs power to work',
-    explain: 'Dynamic mics need no power. A condenser needs phantom power from the desk, wherever it is placed.',
+    explain: 'Dynamic mics need no power. This condenser needs phantom power from the desk, wherever it is placed.',
     why: {
-      'The small condenser, kept a little back from the grille': 'Distance does not change what a condenser needs: it still needs phantom power.',
+      'The small condenser, kept a little back from the grille': 'Distance does not change what this condenser needs: it still needs phantom power.',
       'The small condenser, as long as the amp is switched on': 'The amp powers the speaker, not the mic. The condenser needs phantom from the desk.',
     },
   },
@@ -273,7 +273,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The guitarist’s wedge is downstage, facing back toward them — behind your cardioid cabinet mic. Where does a cardioid reject most?',
     options: ['Directly behind it, where that wedge sits', 'At its sides, about ninety degrees off its axis', 'In front of it, toward the speaker it faces'],
     correct: 'Directly behind it, where that wedge sits',
-    explain: 'A cardioid rejects most at 180°. The mic faces the cabinet, so its back faces downstage — toward that wedge. Real nulls are shallower than the simplified pattern, and shallowest in the lows.',
+    explain: 'A cardioid rejects most at 180°. The mic faces the cabinet, so its back faces downstage — toward that wedge. Real nulls are shallower than the simplified pattern, and often shallowest in the lows.',
     why: {
       'At its sides, about ninety degrees off its axis': 'At 90° a cardioid still picks up about half (−6 dB). Its deepest rejection is directly behind.',
       'In front of it, toward the speaker it faces': 'That is where it picks up MOST — the speaker it is aimed at.',
@@ -333,7 +333,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the rear mic’s polarity. What happens to the arrival-time difference between the two mics?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up', 'It doubles, because the copy is now inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity inversion reverses the signal’s sign. Only moving a mic changes when the sound arrives: the notches move, the delay does not.',
+    explain: 'Polarity inversion reverses the signal’s sign: the notches move, the delay does not. Only moving a mic changes when the sound arrives.',
     why: {
       'It drops to zero, so the two arrivals line up': 'The mics are still the same distance from the cone: the delay stays.',
       'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position changes the delay.',
@@ -518,7 +518,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right reference', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from — the grille, or the cabinet’s outside.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay outside, clear of the grille, vents and walkways', role: 'required', feedback: 'Clearance is part of every passing setup — and nothing goes inside a cabinet.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };

@@ -516,7 +516,7 @@ const copy: Partial<LessonCopy> = {
     looking: 'Top view · mic in front of the clarinet',
     prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the clarinet.',
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
-    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the clarinet, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
     shieldNote: 'The player’s body and the clarinet can reflect stage sound into the front of a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'cl.ctx.studio',
@@ -585,7 +585,7 @@ export const A08A_LESSON: WindLesson = {
     { title: 'WHAT IT IS', text: 'A woodwind with a single cane reed on a mouthpiece, a long, nearly cylindrical wooden tube with about twenty tone holes and a flared bell. Its keys let the fingers open and close the holes; a register key lifts every fingering a twelfth.', src: 'Y-CL-MECH' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras, wind bands, chamber groups, jazz and klezmer bands, studio sessions. This lesson covers one B♭ clarinet (the A clarinet is the same in every way that matters here): a studio solo, a loud stage and a spot in a section.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It sings melodies and runs over a wide range — dark low notes, bright high ones, very soft entries. Ask what the music needs: a blended orchestral colour, an intimate solo, or a separated line over a band.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'About 63 cm without its mouthpiece, about 72 cm with it. Its lowest note sounds at about 147 Hz. This lab draws a clarinet about that size, held 35° out from the body — seated, or standing.', src: 'MET-CL' },
+    { title: 'ITS SIZE', text: 'About 63 cm without its mouthpiece, about 66 cm with it. Its lowest note sounds at about 147 Hz. This lab draws a clarinet about that size, held 35° out from the body — seated, or standing.', src: 'MET-CL' },
   ],
   sound: {
     stages: [
@@ -642,7 +642,7 @@ export const A08A_LESSON: WindLesson = {
     soundSubject: 'A B♭ clarinet held by a seated player, seen from the audience, its bore drawn open',
     breath: 'The player’s breath and the tonguing are heard close to the mouthpiece; a clarinet sends little air out of its holes, so wind noise is rarely the problem a flute’s jet is.',
     keys: 'Key clicks, pads closing and the thumbs on the register key and the rings: strongest within a few centimetres of the keywork.',
-    directivity: 'Measured round a player in a quiet room: up to about 1 kHz the sound spreads fairly evenly, strongest toward the front; by 2 kHz more of it beams out of the bell, and behind the player it is about 13 dB quieter than in front.',
+    directivity: 'Measured round a player in an anechoic (echoless) room: up to about 1 kHz the sound spreads fairly evenly, strongest toward the front; by 2 kHz more of it beams out of the bell, and behind the player it is about 13 dB quieter than in front.',
     noteDefault: 9,
   }),
 };
