@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 19:31 · ccode · e2e0c921
+changed: docs: governance D67-D74, lessons 2026-10-10, AGENTS house rules, session handoff for 2026-10-11
+affects other side: A: read docs/APE_GOVERNANCE_DECISIONS_2026_10_10.md (D74: no production OTA during store review; topic-tiles upload after approval)
+needs: nothing
+
+
 ### 2026-10-10 19:11 · ccode · 0d9b086a
 changed: Topic tiles: 24 owner-accepted Comp C replacements (2026-10-10 picker; 18 rejected -> redo brief)
 affects other side: nothing
