@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-11 12:16 · ccode · 33a50500
+changed: Glossary: bottom nav hidden while open; header book mark replaced by a HOME key back to Home; bottom safe-area inset now on the screen (owner 2026-10-11)
+affects other side: nothing — client-only UI change
+needs: nothing
+
+
 ### 2026-10-11 12:02 · ccode · cffe01d3
 changed: Enrolling is members-only: one shared gate on every add into My Enrollments (owner 2026-10-11)
 affects other side: nothing — client-only (useEnrollGate in front of every add; seeding, server sync and the DB mask untouched). Store listing / website copy that says anyone can enroll would now be out of date (Comp A's lane). Rides the held production OTA.
