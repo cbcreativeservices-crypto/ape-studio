@@ -39,7 +39,13 @@ export type HandKind =
   | 'keys'
   /** Fingers curled round a neck or a tube, seen from the fingers' side, the
    *  thumb hidden behind it (a bass player's left hand from the right). */
-  | 'wrap';
+  | 'wrap'
+  /** THE BOW HOLD seen from the side (owner 2026-10-10): the hand pronated
+   *  over the stick, the back of the hand and its knuckles toward the viewer,
+   *  the fingers draped over the stick and curled round it, the little finger
+   *  arched with its tip on top, the thumb bent under the stick opposite the
+   *  middle finger. The stick crosses at the hand's grip point. */
+  | 'bow';
 
 export type Hand = {
   /** The wrist joint. */

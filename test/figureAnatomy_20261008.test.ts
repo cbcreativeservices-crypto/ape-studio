@@ -276,13 +276,26 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(src, /const thumb = digit\(L, /, 'every hand has a jointed thumb');
     // No mitten: no hand kind is a palm plus a single 'fingers' blob.
     assert.doesNotMatch(src, /const fingers = limb\(\[L\(/);
-    // The arm: a tapered sleeve — upper arm thicker than the elbow, the
-    // forearm's belly thicker than the cuff — cut square at the cuff.
-    const up = src.match(/const upper = limb\(\[root, lerp\(root, e, 0\.3\), e\], \[(\d+), (\d+), (\d+)\]\)/);
-    const fo = src.match(/const fore = limb\(\[e, lerp\(e, w, 0\.26\), w\], \[(\d+), (\d+), (\d+)\]\)/);
-    assert.ok(up && fo, 'sleeveArm builds the upper arm and forearm');
-    assert.ok(Number(up![2]) > Number(up![3]) && Number(fo![2]) > Number(fo![3]) && Number(up![2]) > Number(fo![2]) && Number(fo![3]) < Number(up![3]), 'upper arm > elbow > forearm belly > cuff');
-    assert.match(src, /return Skia\.Path\.MakeFromOp\(arm, cut, PathOp\.Difference\) \?\? arm;/, 'the sleeve ends square at the cuff');
+    // The arm (owner 2026-10-10 at 3×: "arm, elbow, wrist and hand need to be
+    // more anatomically correct"): ONE outline — the upper arm tapering to a
+    // narrower elbow, the forearm swelling in its upper third and tapering to
+    // a ≈ 62 mm cuff that stops short of the wrist crease; cut square there.
+    const arm = src.match(/export const ARM = \{ root: (\d+), upper: (\d+), elbow: (\d+), belly: (\d+), cuff: (\d+), cuffGap: (\d+) \}/);
+    assert.ok(arm, 'the arm widths are one table');
+    const [root, upper, elbow, belly, cuff, gap] = arm!.slice(1).map(Number);
+    assert.ok(root >= upper && upper > elbow && belly > elbow && belly > cuff, 'deltoid ≥ upper arm > elbow < forearm belly > cuff');
+    assert.ok(cuff * 2 >= 58 && cuff * 2 <= 66, `cuff ${cuff * 2} mm across`);
+    assert.ok(gap >= 8 && gap <= 25, `the bare wrist shows ${gap} mm below the cuff`);
+    const ap = src.slice(src.indexOf('export function armPath('), src.indexOf('function sleeveArm('));
+    assert.match(ap, /THE CROOK/, 'the elbow’s inner side is a soft concave fold');
+    assert.match(ap, /olecranon/, 'the elbow’s outer side shows its point');
+    assert.match(ap, /const ring = \[\.\.\.side\(1\)\.reverse\(\), \.\.\.cap, \.\.\.side\(-1\)\];/, 'one outline: up one side, round the shoulder, down the other; the cuff a straight edge');
+    assert.match(src, /function sleeveArm\(root: Pt, e: Pt, w: Pt, cap: SkPath \| null = null\): SkPath \{\s*return union\(cap, armPath\(root, e, w\)\);/);
+    // The wrist: narrower than the cuff and the heel of the hand, trimmed square at the cuff (no skin over the sleeve).
+    const wr = src.slice(src.indexOf('function wristOf('), src.indexOf('function trimAtCuff('));
+    assert.match(wr, /capsule\(M\(0, 0\), L\(18, 0\), half, half \+ 4\.5\)/, 'the heel of the hand is wider than the wrist');
+    assert.match(wr, /return trimAtCuff\(col, w, f\);/);
+    assert.ok(27.5 * 2 >= 52 && 27.5 * 2 <= 60 && 27.5 * 2 < cuff * 2, 'the wrist (55 mm) is narrower than the cuff');
     assert.doesNotMatch(src, /const arm(L|R|Near|Far) = limb\(/, 'no arm is a bare capsule chain');
     for (const v of ['buildFront(', 'buildAbove(', 'buildSide(']) {
       const body = src.slice(src.indexOf(`function ${v}`), src.indexOf('\n}\n', src.indexOf(`function ${v}`)));
@@ -306,8 +319,9 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const bowed = read('shared/bowed/BowedArt.tsx');
     const scene = bowed.slice(bowed.indexOf('export function BowedScene('));
     assert.doesNotMatch(scene, /<Paint opacity=\{0\.(5|78)\} \/>/, 'the bowed player is opaque');
-    assert.match(bowed, /export type HandHold = \{ kind: HandKind;/);
-    assert.match(bowed, /fore\('foreL', s\.elbowL, s\.handL, wL\.wrist, wL\.depth\)/, 'the forearm ends at the hand’s own wrist');
+    assert.match(bowed, /export type HandHold = \{\s*kind: HandKind;/);
+    assert.match(bowed, /arm\('L', s\.shoulderL, s\.elbowL, s\.handL, wL\.wrist, wL\.depth\)/, 'the forearm ends at the hand’s own wrist');
+    assert.match(bowed, /const path = armPath\(P2pt\(S2\), P2pt\(E2\), P2pt\(w2\), view === 'top' \? TOP_ARM : SIDE_ARM\);/, 'each bowed/brass arm is ONE outline (a readable elbow), never two capsules');
     assert.match(bowed, /return \{ kind: 'wrap', dir: Math\.atan2\(b\[1\] - a\[1\], b\[0\] - a\[0\]\), at: b, depth: instDepth - 1 \};/, 'the left hand wraps the neck from behind it');
     const brass = read('shared/brass/BrassArt.tsx');
     assert.doesNotMatch(brass, /<Paint opacity=\{0\.62\} \/>/, 'the brass player is opaque');
@@ -394,7 +408,7 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     // The bowed/brass figure from above: the same rounded outline, slim arms.
     const bowedSrc = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
     assert.match(bowedSrc, /const path = smoothClosedP2\(pts\);/);
-    assert.match(bowedSrc, /limbPath\(S2, E2, 46, 40\), limbPath\(E2, w2, 38, 30\)/);
+    assert.match(bowedSrc, /const TOP_ARM = \{ root: 46, upper: 42, elbow: 37, belly: 38, cuff: 30, cuffGap: 16 \} as const;/);
     assert.match(above, /pt\(n\.u, n\.v - 112\), \/\/ the upper back/);
   });
 
@@ -402,7 +416,14 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
   it('bowed players: the right hand holds the bow at the frog (a grip on the stick, square to it)', () => {
     const bowed = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
     assert.match(bowed, /hands: \{ L: neckHold\(P, view, instDepth\), R: bowHold\(P, view\) \}/);
-    assert.match(bowed, /return \{ kind: 'grip', dir, at \};/);
+    // From above: the pronated hand on top of the stick, the fingers slanting toward the tip.
+    assert.match(bowed, /return \{ kind: 'grip', dir, at, over: true \};/);
+    // From the side (owner 2026-10-10 at 3×: "a flat paw"): the bow hold — the fingers draped over the
+    // stick, the thumb bent under it (painted behind the stick).
+    assert.match(bowed, /return \{ kind: 'bow', dir: f \+ 0\.08 \* \(Math\.cos\(f\) >= 0 \? 1 : -1\), at \};/);
+    assert.match(bowed, /if \(hs\.thumbBehind && \(w\.kind === 'bow' \|\| w\.frame\)\)/);
+    // A wrist never bends past ≈ 70° from the forearm.
+    assert.match(bowed, /const lim = wristLimit\(/);
     for (const P of [VIOLIN_STANDING, CELLO, BASS_BOW]) {
       const f = add3(P.bow.frog, sc3(P.bow.up, 29));
       const d = Math.hypot(P.player.handR.x - f.x, P.player.handR.y - f.y, P.player.handR.z - f.z);

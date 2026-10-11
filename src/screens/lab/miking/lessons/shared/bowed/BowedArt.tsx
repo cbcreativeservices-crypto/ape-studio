@@ -24,8 +24,8 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
-import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headProfile, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
-import type { HandKind } from '../players/playerPose.ts';
+import { armPath, BOW_GRIP, FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headProfile, wristLimit, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
+import type { Hand, HandKind } from '../players/playerPose.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { archAt, fbHalf, fingerboardZ, halfWidth, outline, stationsOf, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
 import { anchorsOf, toB, toLesson, type BPoint, type BowPose, type Posture } from './posture.ts';
@@ -553,14 +553,37 @@ function smoothClosedP2(pts: P2[]): SkPath {
  * `grip` lands the fist's grip there; `rest`/`above` the palm. The forearm is
  * drawn to the hand's wrist, so it never crosses what the fingers rest on.
  */
-export type HandHold = { kind: HandKind; dir?: number; at?: P2; /** Paint depth for the hand and its forearm (e.g. just behind the instrument). */ depth?: number };
+export type HandHold = {
+  kind: HandKind;
+  dir?: number;
+  at?: P2;
+  /** Paint depth for the hand and its forearm (e.g. just behind the instrument). */ depth?: number;
+  /** The hand (not its forearm) paints over the instrument (a hand on top of the stick or the strings, seen from above). */
+  over?: boolean;
+  /** A hand built in its own frame (a fretting hand laid along a neck seen from above): `hand` in local mm, placed by
+   *  view = o + rotate(ang)·(u, mirror ? −v : v). Its wrist is where the forearm ends. */
+  frame?: { o: P2; ang: number; mirror: boolean; hand: Hand };
+};
 export type PlayerOpts = { hands?: { L?: HandHold; R?: HandHold } };
 
 /** The point of a hand (its own frame) that lands on what it holds. */
 function holdAnchor(kind: HandKind, dir: number): P2 {
   if (kind === 'keys' || kind === 'wrap') return [151, Math.cos(dir) >= 0 ? 28 : -28];
+  if (kind === 'bow') return [BOW_GRIP.x, Math.cos(dir) >= 0 ? BOW_GRIP.y : -BOW_GRIP.y];
   if (kind === 'grip' || kind === 'pick') return [100, 0];
   return [70, 0];
+}
+
+type HandAt = { wrist: P2; dir: number; kind: HandKind; depth?: number; fore: number; over?: boolean; frame?: HandHold['frame'] };
+/** A hand's own frame → the view (HandHold.frame). */
+function frameMatrix(f: NonNullable<HandHold['frame']>) {
+  return Skia.Matrix().translate(f.o[0], f.o[1]).rotate(f.ang).scale(1, f.mirror ? -1 : 1);
+}
+function frameAt(f: NonNullable<HandHold['frame']>, p: P2): P2 {
+  const c = Math.cos(f.ang);
+  const sn = Math.sin(f.ang);
+  const v = f.mirror ? -p[1] : p[1];
+  return [f.o[0] + p[0] * c - v * sn, f.o[1] + p[0] * sn + v * c];
 }
 
 export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId, withRightArm = true, opts: PlayerOpts = {}): Group3[] {
@@ -630,49 +653,93 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   }
   // Hands with fingers (the shared hand), each HOLDING what it holds (figure
   // polish 2026-10-10): its wrist, from where the hand lands.
-  const wristOf2 = (h: Vec3, elbow: Vec3, hold: HandHold | undefined): { wrist: P2; dir: number; kind: HandKind; depth?: number } => {
-    const c = hold?.at ?? q(h);
+  // A wrist never bends past ≈ 70° from the forearm (owner 2026-10-10:
+  // anatomy): the hand turns about what it holds until it is within that.
+  const wristOf2 = (h: Vec3, elbow: Vec3, hold: HandHold | undefined): HandAt => {
     const e = q(elbow);
-    const dir = hold?.dir ?? Math.atan2(c[1] - e[1], c[0] - e[0]);
+    if (hold?.frame) {
+      const w = frameAt(hold.frame, [hold.frame.hand.wrist.u, hold.frame.hand.wrist.v]);
+      return { wrist: w, dir: hold.frame.hand.dir, kind: hold.kind, depth: hold.depth, fore: Math.atan2(w[1] - e[1], w[0] - e[0]), over: hold.over, frame: hold.frame };
+    }
+    const c = hold?.at ?? q(h);
+    let dir = hold?.dir ?? Math.atan2(c[1] - e[1], c[0] - e[0]);
     const kind = hold?.kind ?? 'rest';
-    const [ax, ay] = holdAnchor(kind, dir);
-    const co = Math.cos(dir);
-    const si = Math.sin(dir);
-    return { wrist: [c[0] - (ax * co - ay * si), c[1] - (ax * si + ay * co)], dir, kind, depth: hold?.depth };
+    const place = (d: number): P2 => {
+      const [ax, ay] = holdAnchor(kind, d);
+      return [c[0] - (ax * Math.cos(d) - ay * Math.sin(d)), c[1] - (ax * Math.sin(d) + ay * Math.cos(d))];
+    };
+    let wrist = place(dir);
+    for (let i = 0; i < 4; i++) {
+      const lim = wristLimit(Math.atan2(wrist[1] - e[1], wrist[0] - e[0]), dir);
+      if (Math.abs(lim - dir) < 1e-3) break;
+      dir = lim;
+      wrist = place(dir);
+    }
+    return { wrist, dir, kind, depth: hold?.depth, fore: Math.atan2(wrist[1] - e[1], wrist[0] - e[0]), over: hold?.over };
   };
   const wL = wristOf2(s.handL, s.elbowL, opts.hands?.L);
   const wR = wristOf2(s.handR, s.elbowR, opts.hands?.R);
-  // Arms: tapered sleeves, the forearm to the hand's own wrist.
-  const fore = (key: string, a: Vec3, b: Vec3, w2: P2, depth?: number) => {
-    const A2 = q(a);
-    g.push({ key, depth: depth !== undefined ? depth - 1 : depthOf(view, add(scale(a, 0.5), scale(b, 0.5))), items: [{ path: limbPath(A2, w2, 42, 31), fill: CLOTH, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([A2, w2]), rim: 1.4, tone: 'shirt' }] });
-  };
-  // From above, each arm is ONE sleeve (shoulder → elbow → wrist, tapering
-  // 112 → 88 → 62 mm), so the bent arm reads as an arm, never two bars
-  // meeting at a corner.
-  const armTop = (key: string, sh: Vec3, el: Vec3, h: Vec3, w2: P2) => {
+  // Arms (owner 2026-10-10 at 3×: a readable elbow, a forearm with its
+  // muscle, a wrist): each arm is ONE outline (PlayerFigure.armPath) —
+  // shoulder → elbow → the hand's own wrist. The upper arm and the forearm
+  // still paint at their own depths (an instrument can pass between them):
+  // the farther part paints the whole arm, the nearer part the same arm
+  // clipped to its side of the elbow, so no seam is ever drawn across it.
+  const P2pt = (a: P2) => ({ u: a[0], v: a[1] });
+  const SIDE_ARM = { root: 48, upper: 43, elbow: 37, belly: 40, cuff: 31, cuffGap: 16 } as const;
+  const TOP_ARM = { root: 46, upper: 42, elbow: 37, belly: 38, cuff: 30, cuffGap: 16 } as const;
+  const arm = (side: 'L' | 'R', sh: Vec3, el: Vec3, h: Vec3, w2: P2, depth?: number) => {
     const S2 = q(sh);
     const E2 = q(el);
-    // Slim, as a hanging arm seen from above: the upper arm ≈ 90 mm across
-    // (foreshortened, short), the forearm ≈ 76 mm tapering to the wrist.
-    const path = Skia.Path.MakeFromOp(limbPath(S2, E2, 46, 40), limbPath(E2, w2, 38, 30), PathOp.Union) ?? limbPath(S2, E2, 46, 40);
-    g.push({ key, depth: depthOf(view, add(scale(el, 0.5), scale(h, 0.5))), items: [{ path, fill: CLOTH, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([S2, E2, w2]), rim: 1.4, tone: 'shirt' }] });
-  };
-  if (view === 'top') {
-    armTop('upperL', s.shoulderL, s.elbowL, s.handL, wL.wrist);
-    if (withRightArm) armTop('upperR', s.shoulderR, s.elbowR, s.handR, wR.wrist);
-  } else {
-    limb('upperL', s.shoulderL, s.elbowL, 54, 44, CLOTH);
-    fore('foreL', s.elbowL, s.handL, wL.wrist, wL.depth);
-    if (withRightArm) {
-      limb('upperR', s.shoulderR, s.elbowR, 54, 44, CLOTH);
-      fore('foreR', s.elbowR, s.handR, wR.wrist, wR.depth);
+    const path = armPath(P2pt(S2), P2pt(E2), P2pt(w2), view === 'top' ? TOP_ARM : SIDE_ARM);
+    const box = bbox([S2, E2, w2]);
+    const dUp = depthOf(view, add(scale(sh, 0.5), scale(el, 0.5)));
+    const dFore = depth !== undefined ? depth - 1 : depthOf(view, add(scale(el, 0.5), scale(h, 0.5)));
+    const mass = (clip?: SkPath): Item => ({ path, fill: CLOTH, box, rim: 1.4, tone: 'shirt', clip });
+    if (view === 'top') {
+      g.push({ key: `upper${side}`, depth: depthOf(view, add(scale(el, 0.5), scale(h, 0.5))), items: [mass()] });
+      return;
     }
-  }
-  const hand = (key: string, h: Vec3, w: { wrist: P2; dir: number; kind: HandKind; depth?: number }) => {
-    const hs = handShape({ wrist: { u: w.wrist[0], v: w.wrist[1] }, dir: w.dir, kind: w.kind });
+    // The elbow's dividing line: square to the arm's mean direction there.
+    const d1 = [E2[0] - S2[0], E2[1] - S2[1]];
+    const d2 = [w2[0] - E2[0], w2[1] - E2[1]];
+    const l1 = Math.hypot(d1[0], d1[1]) || 1;
+    const l2 = Math.hypot(d2[0], d2[1]) || 1;
+    let m = [d1[0] / l1 + d2[0] / l2, d1[1] / l1 + d2[1] / l2];
+    const lm = Math.hypot(m[0], m[1]);
+    m = lm > 1e-3 ? [m[0] / lm, m[1] / lm] : [-d1[1] / l1, d1[0] / l1];
+    const half = (toWrist: boolean): SkPath => {
+      const s = toWrist ? 1 : -1;
+      const n = [-m[1], m[0]];
+      const B = 4000;
+      const at = (a: number, b: number): P2 => [E2[0] + m[0] * a + n[0] * b, E2[1] + m[1] * a + n[1] * b];
+      return polyPath([at(0, -B), at(0, B), at(s * B, B), at(s * B, -B)]);
+    };
+    const foreNear = dFore >= dUp;
+    g.push({ key: `upper${side}`, depth: dUp, items: [mass(foreNear ? undefined : half(false))] });
+    g.push({ key: `fore${side}`, depth: dFore, items: [mass(foreNear ? half(true) : undefined)] });
+  };
+  arm('L', s.shoulderL, s.elbowL, s.handL, wL.wrist, wL.depth);
+  if (withRightArm) arm('R', s.shoulderR, s.elbowR, s.handR, wR.wrist, wR.depth);
+  const instDepth = depthOf(view, { x: 0, y: 0, z: 0 });
+  const hand = (key: string, h: Vec3, w: HandAt) => {
+    let hs: ReturnType<typeof handShape>;
+    if (w.frame) {
+      hs = handShape(w.frame.hand);
+      const m = frameMatrix(w.frame);
+      for (const p of [hs.path, hs.lines, hs.thumbBehind]) p?.transform(m);
+    } else {
+      hs = handShape({ wrist: { u: w.wrist[0], v: w.wrist[1] }, dir: w.dir, kind: w.kind }, w.fore);
+    }
     const b = hs.path.getBounds();
-    g.push({ key, depth: w.depth ?? depthOf(view, h) + 25, items: [{ path: hs.path, fill: SKIN, box: { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height }, tone: 'skin', lines: hs.lines }] });
+    const depth = w.over ? instDepth + 0.5 : (w.depth ?? depthOf(view, h) + 25);
+    g.push({ key, depth, items: [{ path: hs.path, fill: SKIN, box: { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height }, tone: 'skin', lines: hs.lines }] });
+    if (hs.thumbBehind && (w.kind === 'bow' || w.frame)) {
+      // The thumb is on the far side of what the hand holds (under the bow's
+      // stick; behind the neck): painted just behind the instrument group.
+      const t = hs.thumbBehind.getBounds();
+      g.push({ key: `${key}Thumb`, depth: instDepth - 0.01, items: [{ path: hs.thumbBehind, fill: SKIN, box: { u0: t.x, v0: t.y, u1: t.x + t.width, v1: t.y + t.height }, tone: 'skin' }] });
+    }
   };
   hand('handL', s.handL, wL);
   if (withRightArm) hand('handR', s.handR, wR);
@@ -762,12 +829,51 @@ export function PaintItem({ it }: { it: Item }) {
  * instrument, never across the strings. From above: the back of the hand.
  */
 function neckHold(P: Posture, view: ViewId, instDepth: number): HandHold | undefined {
-  if (view !== 'side' || !P.player) return undefined;
+  if (!P.player) return undefined;
+  if (view === 'top') return neckHoldAbove(P, view);
   const hb = toB(P.ax, P.player.handL);
   const face = toLesson(P.ax, { x: hb.x, y: hb.y, z: stringZ(P.spec, hb.x) + 10 });
   const a = prj(view, P.player.handL);
   const b = prj(view, face);
   return { kind: 'wrap', dir: Math.atan2(b[1] - a[1], b[0] - a[0]), at: b, depth: instDepth - 1 };
+}
+
+/**
+ * The left hand on the neck FROM ABOVE (owner 2026-10-10 at 3×: it was an
+ * open hand splayed over the scroll): the fingering hand seen over the
+ * fingerboard — the fingers rising from the knuckle row beside the neck and
+ * arching over it, each fingertip down on a string at its own stop, the
+ * thumb behind the neck (its tip at the far edge), the back of the hand and
+ * the wrist beside the neck on the elbow's side. Built as the shared
+ * fretting hand ('fret') in a frame laid along the projected neck.
+ */
+function neckHoldAbove(P: Posture, view: ViewId): HandHold | undefined {
+  const pl = P.player;
+  if (!pl) return undefined;
+  const { spec, st } = P;
+  const at3 = (x: number) => toLesson(P.ax, { x, y: 0, z: fingerboardZ(spec, x) });
+  const o = prj(view, at3(st.nutX));
+  const a = prj(view, at3(st.nutX - 100));
+  const ang = Math.atan2(a[1] - o[1], a[0] - o[0]); // local +u: from the nut toward the bridge
+  const sU = Math.hypot(a[0] - o[0], a[1] - o[1]) / 100; // the neck's foreshortening
+  // The neck steep (cello, bass) is nearly end-on from above: no board to lay the fingers along; the open hand stays.
+  if (sU < 0.7) return undefined;
+  const n: P2 = [-Math.sin(ang), Math.cos(ang)];
+  const e = prj(view, pl.elbowL);
+  const side = (e[0] - o[0]) * n[0] + (e[1] - o[1]) * n[1] >= 0 ? 1 : -1;
+  // The board's projected half-width where the hand is.
+  const hb = toB(P.ax, pl.handL);
+  const xh = Math.max(st.nutX * 0.55, Math.min(st.nutX - 20, hb.x));
+  const edge = prj(view, toLesson(P.ax, { x: xh, y: fbHalf(spec, xh), z: fingerboardZ(spec, xh) }));
+  const mid = prj(view, at3(xh));
+  const half = Math.max(8, Math.abs((edge[0] - mid[0]) * n[0] + (edge[1] - mid[1]) * n[1]));
+  // Four stops: a hand's span (≈ 25–40 mm apart, wider on the larger instruments), the index nearest the nut.
+  const gap = Math.min(40, Math.max(24, st.nutX * 0.075));
+  const c = Math.min(st.nutX - 1.5 * gap - 12, xh);
+  const tips = [1.5, 0.5, -0.5, -1.5].map((k) => (st.nutX - (c + k * gap)) * sU);
+  const cu = (tips[0] + tips[3]) / 2;
+  const hand: Hand = { wrist: { u: cu + 20, v: half + 96 }, dir: Math.atan2(-1, -0.22), kind: 'fret', board: { v: 0, half, tips } };
+  return { kind: 'fret', over: true, frame: { o, ang, mirror: side < 0, hand } };
 }
 
 /**
@@ -792,6 +898,15 @@ function bowHold(P: Posture, view: ViewId): HandHold | undefined {
   const e = prj(view, P.player.elbowR);
   const fx = at[0] - e[0];
   const fy = at[1] - e[1];
+  if (view === 'side') {
+    // From the player's right the stick runs away across the body, so the
+    // fingers curl round it in the picture's plane: the BOW HOLD seen from
+    // the side (owner 2026-10-10 at 3×: the hand read as a flat paw) — the
+    // hand carries on the forearm's line, the wrist barely flexed (the hand
+    // settling onto the stick), and the stick crosses under the fingers.
+    const f = Math.atan2(fy, fx);
+    return { kind: 'bow', dir: f + 0.08 * (Math.cos(f) >= 0 ? 1 : -1), at };
+  }
   const bx = b[0] - a[0];
   const by = b[1] - a[1];
   const bl = Math.hypot(bx, by);
@@ -805,8 +920,14 @@ function bowHold(P: Posture, view: ViewId): HandHold | undefined {
       py = -py;
     }
     dir = Math.atan2(py, px);
+    // The fingers cross the stick slanting toward its tip (≈ 25° off square),
+    // never square across it like a fist round a rod.
+    // (P.bow.dir runs from the tip toward the frog, so the tip lies along −(bx, by).)
+    const tipSide = Math.sign(-(Math.cos(dir) * by - Math.sin(dir) * bx)) || 1;
+    dir += 0.42 * tipSide;
   }
-  return { kind: 'grip', dir, at };
+  // Seen from above the pronated hand is ON TOP of the stick.
+  return { kind: 'grip', dir, at, over: true };
 }
 
 /**
