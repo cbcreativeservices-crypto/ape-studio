@@ -106,6 +106,7 @@ export function CredentialDetailModal({
   overlay,
   onClose,
   isEnrolled,
+  enrollLocked,
 }: {
   credential: CredentialDetail | null;
   /** Amber for certificates, purple for programs. */
@@ -131,6 +132,10 @@ export function CredentialDetailModal({
   onClose: () => void;
   /** Whether this credential is already enrolled (parent-owned, reactive). */
   isEnrolled?: (c: CredentialDetail) => boolean;
+  /** A KNOWN non-member ('locked', useEnrollGate): ENROLL reads as members-only
+   *  up front (owner 2026-10-11). The tap still goes to `onEnroll`, whose gate
+   *  shows the members-only popup and changes nothing. */
+  enrollLocked?: boolean;
   /** IGNORED since TestFlight build 32 (owner report 2026-09-30) — the
    *  horizontal swipe pager is gone from this popup; see "NO SIDEWAYS SWIPE"
    *  in the header. Kept in the type so the callers still compile. */
@@ -169,8 +174,12 @@ export function CredentialDetailModal({
   const enrollLabel = enrolled
     ? 'ENROLLED ✓'
     : credential?.kind === 'certificate'
-      ? 'ENROLL IN THIS CERTIFICATE ›'
-      : 'ENROLL IN THIS PROGRAM ›';
+      ? enrollLocked
+        ? '🔒 ENROLL · MEMBERS ONLY'
+        : 'ENROLL IN THIS CERTIFICATE ›'
+      : enrollLocked
+        ? '🔒 ENROLL · MEMBERS ONLY'
+        : 'ENROLL IN THIS PROGRAM ›';
 
   // One credential's content = art head + identity + readout + topic list, in
   // its own vertical ScrollView (nested inside the horizontal pager on Android).
@@ -340,7 +349,7 @@ export function CredentialDetailModal({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ checked: enrolled }}
-                  accessibilityLabel={enrolled ? `Enrolled in ${credential.name}` : `Enroll in ${credential.name}`}
+                  accessibilityLabel={enrolled ? `Enrolled in ${credential.name}` : enrollLocked ? `Enroll in ${credential.name}, members only` : `Enroll in ${credential.name}`}
                 >
                   <Text style={styles.enrollBtnText}>{enrollLabel}</Text>
                 </Pressable>

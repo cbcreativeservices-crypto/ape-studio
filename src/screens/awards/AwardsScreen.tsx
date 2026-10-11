@@ -12,7 +12,6 @@
  * topics, info readout and the ENROLL / VIEW PROGRESS actions. No inline
  * expand/collapse. The ✕ glyph appears only inside the full-screen art viewer.
  */
-import { COPY } from '../../lib/copy';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
@@ -26,7 +25,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import { BrandLogo } from '../../components/BrandLogo';
-import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { Modal } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
@@ -34,6 +32,7 @@ import { DirectoryView } from '../directory/DirectoryScreen';
 import { EnrollmentView } from '../enrollment/EnrollmentScreen';
 import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
+import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import {
   awardPage,
@@ -569,17 +568,12 @@ export function AwardsScreen({ navigation, route }: Props) {
   // optimistically: a guest must leave no local preference behind (no-tracking
   // promise). Instead the pick is re-persisted by the effect below the moment
   // the tier resolves to a real account.
-  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  const { entitlement, resolved, tierReadFailed } = useEntitlement();
   const hasAccount = resolved && entitlement !== 'anonymous';
   // The popup's STUDY NOW / GO TO MY ENROLLMENTS are navigation, not a write:
   // a signed-in member whose membership read FAILED keeps them (tidy hunt 5,
   // 2026-10-03). The persistence above stays on `hasAccount`.
   const showStudyNav = hasAccount || tierReadFailed;
-  // The "won't be saved without an account" prompt is an identity CLAIM, so it
-  // waits for a KNOWN tier (tier sweep 2026-10-03): `resolved` also flips when
-  // the membership read FAILED, and a signed-in member with no remembered tier
-  // then reads 'anonymous' — they were told they have no account.
-  const knownGuest = tierKnown && entitlement === 'anonymous';
 
   // Builder selections (user request 2026-07-18): a Specialization Certificate
   // (Level 1) + an Academy Program Certificate (Level 2) — each chosen from its
@@ -805,48 +799,12 @@ export function AwardsScreen({ navigation, route }: Props) {
     [specCert, programPath],
   );
 
-  // ENROLL (user request 2026-07-22): add the award's topics to the enrollment
-  // list, close the picker, and jump to the Enrollment page for EVERYONE. A free
-  // user with NO account (anonymous) also gets an "account needed to save" prompt.
-  const [payPrompt, setPayPrompt] = useState<{ label: string } | null>(null);
-  const enrollTopics = useCallback(
-    (gsList: number[], label: string, kind?: BundleKind) => {
-      // Selecting a certificate/program = the "ADD ALL" action in the Enrollment
-      // browser (user request 2026-07-22): record the bundle container AND enroll
-      // its topics (added, not loaded onto the Dashboard until LOAD).
-      if (kind) {
-        addBundle(kind, label, gsList);
-        // Only the NEW topics go in unloaded; a shared topic already loaded for
-        // another credential stays loaded (bug hunt 2026-09-29).
-        addTopicsUnloaded(gsList);
-        // The required cores join the list on the first cert/program (user
-        // request 2026-07-22).
-        addTopics([...COREQ_TOPIC_GS]);
-      } else {
-        addTopics(gsList);
-      }
-      setDetail(null); // close the credential popup
-      setPicker(null); // close the cert/program picker modal
-      // Landing on Enrollments locks the swipe (exit via Home); instant jump so
-      // it doesn't flash through the Directory page en route — both in goToIndex.
-      goToIndex(ENROLLMENT_IDX);
-      // `resolved` matters here: EntitlementProvider defaults to 'anonymous',
-      // and this screen has no top-level resolved guard, so it is interactive
-      // the instant it mounts. Without this check a paying member who picks a
-      // certificate before the entitlement read lands is told their choices
-      // "won't be saved without an account" — false, and alarming. (The pick
-      // itself was never at risk; the re-persist effect below already rewrites
-      // it once the tier resolves.)
-      if (knownGuest) setPayPrompt({ label });
-    },
-    [knownGuest, goToIndex],
-  );
-
-  // Popup actions (2026-09-15) — the SAME calls the inline card buttons made.
-  const enrollFromDetail = useCallback(
-    (c: CredentialDetail) => enrollTopics(c.topics, c.name, c.kind === 'certificate' ? 'cert' : 'program'),
-    [enrollTopics],
-  );
+  // ENROLLING IS FOR MEMBERS (owner 2026-10-11). The old ENROLL-for-EVERYONE
+  // path (enrollTopics / enrollFromDetail, unused since the 2026-09-16 in-place
+  // toggle) and its guest "won't be saved without an account" prompt are gone:
+  // a non-member's ENROLL now changes nothing and the members-only popup says
+  // why, at the tap (useEnrollGate).
+  const { guardEnroll, locked: enrollLocked } = useEnrollGate();
 
   // In-place enrol/unenrol for the credential popup (owner 2026-09-16): toggle
   // the credential WITHOUT closing the popup or navigating to Enrollments —
@@ -867,12 +825,13 @@ export function AwardsScreen({ navigation, route }: Props) {
         removeBundle(credKey(c));
         return;
       }
-      addBundle(kind, c.name, c.topics);
-      addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
-      addTopics([...COREQ_TOPIC_GS]);
-      if (knownGuest) setPayPrompt({ label: c.name });
+      guardEnroll(() => {
+        addBundle(kind, c.name, c.topics);
+        addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
+        addTopics([...COREQ_TOPIC_GS]);
+      }, c.topics);
     },
-    [bundleKeys, credKey, knownGuest],
+    [bundleKeys, credKey, guardEnroll],
   );
   /**
    * STUDY NOW / GO TO MY ENROLLMENTS — the two onward doors that open once a
@@ -1159,22 +1118,7 @@ export function AwardsScreen({ navigation, route }: Props) {
           onProgress={progressFromDetail}
           onStudy={showStudyNav ? studyFromDetail : undefined}
           onEnrollments={showStudyNav ? enrollmentsFromDetail : undefined}
-          /* INSIDE the Modal on purpose: a sibling Modal attaches to the
-             activity window and is drawn BENEATH this card on Android.
-             See components/PrePaywallPrompt. */
-          overlay={
-            <PrePaywallPrompt
-              embedded
-              visible={!!payPrompt}
-              onClose={() => setPayPrompt(null)}
-              title="Heads up"
-              lines={[
-                'Your choices won’t be saved without an account.',
-                COPY.enrollFreeLine,
-                COPY.membershipCoversLine,
-              ]}
-            />
-          }
+          enrollLocked={enrollLocked}
           onClose={() => setDetail(null)}
         />
       </Modal>
@@ -1252,48 +1196,11 @@ export function AwardsScreen({ navigation, route }: Props) {
           onProgress={progressFromDetail}
           onStudy={showStudyNav ? studyFromDetail : undefined}
           onEnrollments={showStudyNav ? enrollmentsFromDetail : undefined}
-          /* INSIDE the Modal on purpose: a sibling Modal attaches to the
-             activity window and is drawn BENEATH this card on Android.
-             See components/PrePaywallPrompt. */
-          overlay={
-            <PrePaywallPrompt
-              embedded
-              visible={!!payPrompt}
-              onClose={() => setPayPrompt(null)}
-              title="Heads up"
-              lines={[
-                'Your choices won’t be saved without an account.',
-                COPY.enrollFreeLine,
-                COPY.membershipCoversLine,
-              ]}
-            />
-          }
+          enrollLocked={enrollLocked}
           onClose={() => setDetail(null)}
         />
       </Modal>
 
-      {/* Anonymous ENROLL → brief "won't be saved" notice (user request
-          2026-07-22). Dismiss-only; no account/plans link. */}
-      {/* Root level: ONLY for the trigger that fires with no detail card open
-          (picking a credential straight from the pager). When a detail card is
-          open the embedded copy inside it shows instead — never both. */}
-      <PrePaywallPrompt
-        /* ⛔ ...AND ONLY WHEN NO PICKER IS OPEN EITHER. `!detail` alone was not
-           enough: close the detail card with a prompt still pending and this
-           root copy became visible while the PICKER Modal was still open — a
-           sibling Modal, which on Android attaches to the activity window and is
-           drawn BENEATH the picker. The notice would be invisible and
-           unreachable, the exact failure recorded in components/PrePaywallPrompt.
-           It shows once the picker closes. (2026-09-23) */
-        visible={!!payPrompt && !detail && picker === null}
-        onClose={() => setPayPrompt(null)}
-        title="Heads up"
-        lines={[
-          'Your choices won’t be saved without an account.',
-          COPY.enrollFreeLine,
-                COPY.membershipCoversLine,
-        ]}
-      />
     </View>
   );
 }

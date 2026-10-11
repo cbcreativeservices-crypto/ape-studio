@@ -81,9 +81,13 @@ describe('the shared rule (pure)', () => {
 describe('1. Awards — "won\'t be saved without an account" needs a KNOWN guest', () => {
   const s = read('src/screens/awards/AwardsScreen.tsx');
   it('both prompts read knownGuest', () => {
-    assert.match(s, /const knownGuest = tierKnown && entitlement === 'anonymous';/);
-    assert.equal((s.match(/if \(knownGuest\) setPayPrompt\(/g) ?? []).length, 2);
+    // 2026-10-11 (owner: enrolling is for members): both prompts are GONE — a
+    // non-member's ENROLL changes nothing. The "not signed in" claim moved to
+    // the shared members-only popup, which reads useGuestWording (KNOWN guest).
+    assert.doesNotMatch(s, /setPayPrompt\(/);
     assert.doesNotMatch(s, /resolved && entitlement === 'anonymous'\) setPayPrompt/);
+    assert.match(s, /guardEnroll\(/);
+    assert.match(read('src/features/enrollment/useEnrollGate.ts'), /const \{ guest \} = useGuestWording\(\);/);
   });
 });
 

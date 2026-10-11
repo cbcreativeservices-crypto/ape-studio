@@ -117,11 +117,16 @@ describe('an overlay raised inside an open Modal is in-tree', () => {
   });
 
   test('a root-level notice is not shown while its own sheet is open', () => {
-    // The stale-prompt window: close the detail card with a prompt pending and
-    // the ROOT copy became a sibling Modal of a still-open sheet/picker.
+    // 2026-10-11 (owner: enrolling is for members): the guest "won't be saved"
+    // ENROLL notices this guarded are GONE — a non-member's ENROLL now changes
+    // nothing and the shared members-only popup (MembershipGate / AppDialog,
+    // both hosted inside an open Modal) says why. No root sibling notice is left
+    // to show over the picker or the sheet.
     const awards = stripComments(readFileSync(join(SRC, 'screens', 'awards', 'AwardsScreen.tsx'), 'utf8'));
-    assert.match(awards, /!!payPrompt && !detail && picker === null/, 'the Awards root notice can show over an open picker again');
+    assert.doesNotMatch(awards, /payPrompt/, 'a root-level Awards enroll notice came back');
     const explore = stripComments(readFileSync(join(SRC, 'screens', 'courses', 'StudyAreaExplore.tsx'), 'utf8'));
-    assert.match(explore, /!!payPrompt && !detail && !visible/, 'the Study Area root notice can show over its own open sheet again');
+    assert.doesNotMatch(explore, /payPrompt/, 'a root-level Study Area enroll notice came back');
+    assert.match(awards, /guardEnroll\(/);
+    assert.match(explore, /guardEnroll\(/);
   });
 });

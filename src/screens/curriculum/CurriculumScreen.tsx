@@ -22,6 +22,7 @@ import { topicCopy } from '../../data/topicCopy';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
 import { useAcademyStats } from '../../features/curriculum/academyStats';
 import { addTopic, isFreeEnrollGs, removeTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { notify } from '../../lib/confirm';
@@ -219,8 +220,17 @@ export const CurriculumView = memo(function CurriculumView({
   // The topic popup's checkbox used to remove a locked co-requisite core or a
   // free topic — both stay, same rule as Enrollments (bug hunt 2026-09-29).
   const coreProg = useEnrollmentProgress(COREQ_TOPIC_GS);
+  const { guardEnroll } = useEnrollGate();
   const toggleEnrollTopic = (gs: number) => {
-    if (!enrolledGs.has(gs)) return addTopic(gs);
+    // Adding is for members (owner 2026-10-11): a non-member's tick changes
+    // nothing and the members-only popup says why. Removing is never gated.
+    if (!enrolledGs.has(gs)) {
+      let write: Promise<boolean> | undefined;
+      guardEnroll(() => {
+        write = addTopic(gs);
+      }, [gs]);
+      return write as Promise<boolean> | undefined;
+    }
     const coreLocked = COREQ_TOPIC_GS.includes(gs) && (coreProg.get(gs)?.pct ?? 0) < 100;
     if (coreLocked || isFreeEnrollGs(gs)) {
       notify(

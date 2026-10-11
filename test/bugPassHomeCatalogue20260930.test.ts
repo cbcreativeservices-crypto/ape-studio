@@ -33,7 +33,8 @@ test('Home Setup: a prompt left from the last visit is cleared on open', () => {
 
 test('Enrollments: un-enrolled requirement rows are not dead controls', () => {
   const s = src('src/screens/enrollment/EnrollmentScreen.tsx');
-  assert.match(s, /const toggleDeck = \(\) => \(isEnrolled \? toggleActive\(e\.gs\) : void addTopics\(\[e\.gs\]\)\);/);
+  // 2026-10-11: the add half goes through the members-only gate (guardEnroll).
+  assert.match(s, /const toggleDeck = \(\) => \(isEnrolled \? toggleActive\(e\.gs\) : void guardEnroll\(\(\) => addTopics\(\[e\.gs\]\), \[e\.gs\]\)\);/);
   assert.equal((s.match(/unlessLifted\(toggleDeck\)/g) ?? []).length, 2, 'both LOAD pills use toggleDeck');
   assert.doesNotMatch(s, /unlessLifted\(\(\) => toggleActive\(e\.gs\)\)/);
   assert.match(s, /\{!coreLocked && isEnrolled \? \(\s*\n\s*<HoldToRemove/);

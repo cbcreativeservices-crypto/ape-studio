@@ -18,7 +18,8 @@ import { sendFeedback } from '../../lib/feedback';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
-import { isFreeEnrollGs, toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { isFreeEnrollGs, removeTopic, toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { notify } from '../../lib/confirm';
@@ -80,6 +81,7 @@ export function CareerFamilyScreen() {
   const coreGsHere = useMemo(() => (familyView(params.id)?.topicGs ?? []).filter((gs) => COREQ_TOPIC_GS.includes(gs)), [params.id]);
   const coreProg = useEnrollmentProgress(coreGsHere);
   const lastRowTap = useRef<{ gs: number; at: number }>({ gs: -1, at: 0 });
+  const { guardEnroll } = useEnrollGate();
   const tapTopic = (gs: number) => {
     const coreLocked = COREQ_TOPIC_GS.includes(gs) && (coreProg.get(gs)?.pct ?? 0) < 100;
     if (enrolledGs.has(gs) && (coreLocked || isFreeEnrollGs(gs))) {
@@ -94,7 +96,10 @@ export function CareerFamilyScreen() {
     const now = Date.now();
     if (lastRowTap.current.gs === gs && now - lastRowTap.current.at < ROW_REPEAT_MS) return;
     lastRowTap.current = { gs, at: now };
-    toggleTopic(gs);
+    // Removing is never gated; ADDING is for members (owner 2026-10-11) — a
+    // non-member's tap changes nothing and the members-only popup says why.
+    if (enrolledGs.has(gs)) removeTopic(gs);
+    else guardEnroll(() => toggleTopic(gs), [gs]);
   };
 
   if (!fam) {

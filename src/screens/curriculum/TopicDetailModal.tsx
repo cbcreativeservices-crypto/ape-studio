@@ -296,6 +296,10 @@ export function TopicDetailModal({
                           needsMembership && !isFreeEnrollGs(topic.gs)
                           ?'Saved to your list — studying this topic needs Academy membership.'
                           : 'Added to My Enrollments'
+                        : needsMembership && !isFreeEnrollGs(topic.gs)
+                        ? // Up front, before the tap (owner 2026-10-11): adding is
+                          // for members; the tap shows the members-only popup.
+                          '🔒 Members only — add this topic to My Enrollments'
                         : 'Add this topic to My Enrollments'}
                     </Text>
                   </Pressable>

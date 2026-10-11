@@ -15,19 +15,18 @@
  * AwardsScreen gives it (bundle store + cores + the no-account heads-up).
  * Nested inside the picker modal so iOS layers it on top (AwardsScreen grammar).
  */
-import { COPY } from '../../lib/copy';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { CardArt } from '../../components/CardArt';
-import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { colors, fonts } from '../../theme/tokens';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { STUDY_AREA_CREDENTIALS } from '../../data/studyAreaCredentials';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs, flattenV3, type V3Credential } from '../../data/v3Curriculum';
 import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
+import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { trackEvent } from '../../features/telemetry/telemetry';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
@@ -88,8 +87,10 @@ export function StudyAreaExplore({
   const { height } = useWindowDimensions();
   const [catalog, setCatalog] = useState<Awaited<ReturnType<typeof loadCatalog>> | null>(null);
   const [detail, setDetail] = useState<CredentialDetail | null>(null);
-  const [payPrompt, setPayPrompt] = useState<{ label: string } | null>(null);
-  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  const { entitlement, resolved, tierReadFailed } = useEntitlement();
+  // ENROLLING IS FOR MEMBERS (owner 2026-10-11): ENROLL goes through the one
+  // shared gate; the old guest "won't be saved" heads-up is gone with it.
+  const { guardEnroll, locked: enrollLocked } = useEnrollGate();
   /** Can this account actually HOLD an enrollment? Gates the two onward doors:
    *  an anonymous pick does not survive, so offering "my enrollments" would
    *  send them to a list their choice will never appear in. */
@@ -161,17 +162,13 @@ export function StudyAreaExplore({
         removeBundle(credKey(c));
         return;
       }
-      addBundle(kind, c.name, c.topics);
-      addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
-      addTopics([...COREQ_TOPIC_GS]);
-      // "Won't be saved without an account" asserts an identity, so it waits
-      // for a tier a read actually PRODUCED (tierKnown — hunt 4, 2026-10-03):
-      // on `resolved` alone a signed-in member whose membership read failed
-      // reads 'anonymous' and was told they have no account, plus the
-      // membership line (no marketing to members). A real guest is known.
-      if (tierKnown && entitlement === 'anonymous') setPayPrompt({ label: c.name });
+      guardEnroll(() => {
+        addBundle(kind, c.name, c.topics);
+        addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
+        addTopics([...COREQ_TOPIC_GS]);
+      }, c.topics);
     },
-    [bundleKeys, tierKnown, entitlement],
+    [bundleKeys, guardEnroll],
   );
 
   // ‹ › neighbours within THIS area's list (clamped, no wrap).
@@ -336,40 +333,9 @@ export function StudyAreaExplore({
               : undefined
           }
           onClose={closeDetail}
-          /* The notice must render INSIDE this Modal. As a sibling it lands on
-             the activity window, i.e. BEHIND this card on Android — which is
-             exactly what it did until 2026-09-19. */
-          overlay={
-            <PrePaywallPrompt
-              embedded
-              visible={!!payPrompt}
-              onClose={() => setPayPrompt(null)}
-              title="Heads up"
-              lines={[
-                'Your choices won’t be saved without an account.',
-                COPY.enrollFreeLine,
-          COPY.membershipCoversLine,
-              ]}
-            />
-          }
+          enrollLocked={enrollLocked}
         />
       </Modal>
-      {/* Only when NO detail card is open — otherwise the embedded copy above
-          is the one that shows. Never both.
-          ⛔ AND only when this sheet itself is closed: close the detail card with
-          a prompt still pending and this copy became a SIBLING Modal of the open
-          sheet, drawn beneath it on Android and therefore invisible. It shows
-          once the sheet closes. (2026-09-23) */}
-      <PrePaywallPrompt
-        visible={!!payPrompt && !detail && !visible}
-        onClose={() => setPayPrompt(null)}
-        title="Heads up"
-        lines={[
-          'Your choices won’t be saved without an account.',
-          COPY.enrollFreeLine,
-          COPY.membershipCoversLine,
-        ]}
-      />
     </>
   );
 }

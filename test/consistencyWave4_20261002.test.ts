@@ -222,7 +222,9 @@ test('4 · TopicDetailModal says "Added" only from the write result', () => {
   assert.ok(claim.indexOf("topicWrite === 'failed'") < claim.indexOf("'Added to My Enrollments'"));
   assert.ok(claim.indexOf("topicWrite === 'failed'") < claim.indexOf("'Saved to your list"));
   const cur = code('screens/curriculum/CurriculumScreen.tsx');
-  assert.match(cur, /if \(!enrolledGs\.has\(gs\)\) return addTopic\(gs\);/, 'the parent hands the write result back');
+  // 2026-10-11: the add goes through the members-only gate; the write result
+  // still comes back (undefined when the gate refused — nothing was written).
+  assert.match(cur, /guardEnroll\(\(\) => \{\s*write = addTopic\(gs\);\s*\}, \[gs\]\);\s*return write as Promise<boolean> \| undefined;/, 'the parent hands the write result back');
 });
 
 /* ───────────────────────── 5. stale comments ───────────────────────── */

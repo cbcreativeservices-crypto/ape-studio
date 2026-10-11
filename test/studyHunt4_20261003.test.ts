@@ -106,10 +106,12 @@ test('1. full disk + offline: flush and stop resolve, and the lost batch is repo
  */
 test('2. StudyAreaExplore: the no-account prompt waits for a tier a read produced', () => {
   const src = readFileSync(new URL('../src/screens/courses/StudyAreaExplore.tsx', import.meta.url), 'utf8');
-  const raises = src.split('\n').filter((l) => /setPayPrompt\(\{/.test(l));
-  assert.ok(raises.length >= 1, 'the prompt is still raised for a guest');
-  for (const l of raises) {
-    assert.match(l, /tierKnown && entitlement === 'anonymous'/, `gated on tierKnown: ${l.trim()}`);
-    assert.doesNotMatch(l, /resolved && entitlement === 'anonymous'/, l.trim());
-  }
+  // 2026-10-11 (owner: enrolling is for members): the guest "won't be saved"
+  // prompt is GONE — a non-member's ENROLL changes nothing. The "not signed in"
+  // claim now lives in the shared members-only popup, which takes it from
+  // useGuestWording (a KNOWN guest only) — the same rule this test held.
+  assert.doesNotMatch(src, /setPayPrompt\(/, 'the old enroll-anyway prompt came back');
+  assert.match(src, /guardEnroll\(/);
+  const gate = readFileSync(new URL('../src/features/enrollment/useEnrollGate.ts', import.meta.url), 'utf8');
+  assert.match(gate, /const \{ guest \} = useGuestWording\(\);/);
 });

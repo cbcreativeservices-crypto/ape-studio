@@ -91,6 +91,7 @@ import {
   useEnrollment,
   useEnrollmentReadState,
 } from '../../features/enrollment/enrollmentStore';
+import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';
@@ -802,6 +803,8 @@ export function DashboardScreen() {
   // non-member. 'checking' / 'unconfirmed' keep the member-favouring state.
   const memberGate = useMemberGate();
   const tierKnown = memberGate === 'open' || memberGate === 'locked';
+  // Adding to My Enrollments is for members (owner 2026-10-11) — STUDY NOW below.
+  const { guardEnroll } = useEnrollGate();
   // The tier the topic terms are cached under (perf decisions 2026-10-04):
   // common_mistakes is membership-masked, so the session cache is keyed by it.
   // A ref, so a tier landing mid-session never reloads the deck.
@@ -1491,7 +1494,16 @@ export function DashboardScreen() {
     // still offered STUDY NOW, but gs3000 was neither active nor inactive and
     // the inactive-only switch never fired. ensureStudyTopic enrols it or switches it
     // on, after the stored list has loaded (studyFocusAction).
-    if (typeof focusGs === 'number') void ensureStudyTopic(focusGs);
+    // ⛔ …BUT ONLY A MEMBER IS ENROLLED THIS WAY (owner 2026-10-11: adding to My
+    // Enrollments is for members). A KNOWN non-member asking to study a members
+    // topic that is not in their list gets the members-only popup and no add; a
+    // free topic still goes in for everyone. Checking / unconfirmed keep the old
+    // behaviour: this is the STUDY NOW hand-off, not an enroll tap, and a member
+    // at cold start must not lose it to a read still landing.
+    if (typeof focusGs === 'number') {
+      if (memberGate === 'locked') guardEnroll(() => void ensureStudyTopic(focusGs), [focusGs]);
+      else void ensureStudyTopic(focusGs);
+    }
     // The same dead wait for a topic the learner REMOVED from the deck (the ✕
     // in the deck manager): it is loaded but filtered out of the carousel, so
     // STUDY NOW for it landed on whatever was showing. Asking for it puts it

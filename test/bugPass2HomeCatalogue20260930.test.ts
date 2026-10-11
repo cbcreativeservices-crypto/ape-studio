@@ -93,7 +93,8 @@ test('Topic popup: a double tap on the enrol box does not enrol-then-remove', ()
 test('Enrollments browse: a double tap on a topic row does not add-then-remove', () => {
   const s = src('src/screens/enrollment/EnrollmentScreen.tsx');
   const i = s.indexOf('lastRowTap.current = { gs, at: now };');
-  const j = s.indexOf('toggleTopic(gs);');
+  // 2026-10-11: the add goes through the members-only gate (guardEnroll).
+  const j = s.indexOf('guardEnroll(() => toggleTopic(gs), [gs]);');
   assert.ok(i > 0 && j > i, 'toggleTopic must run after the per-row repeat guard');
   assert.match(s, /lastRowTap\.current\.gs === gs && now - lastRowTap\.current\.at < BULK_REPEAT_MS/);
 });

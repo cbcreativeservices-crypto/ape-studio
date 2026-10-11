@@ -42,6 +42,7 @@ import {
   addTopics,
   addTopicsUnloaded,
   getEnrollment,
+  isEnrolled as isEnrolledNow,
   isFreeEnrollGs,
   moveTopic,
   pruneInvalidGs,
@@ -55,6 +56,7 @@ import {
   type EnrollTopic,
 } from '../../features/enrollment/enrollmentStore';
 import { removableOnBundleDrop } from '../../features/enrollment/enrollmentPlan';
+import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
 import {
   addBundle,
   bundleKey,
@@ -407,6 +409,8 @@ export const EnrollmentView = memo(function EnrollmentView({
   // the strict `paidResolved` still guards the Dashboard bypass below).
   const { isMember: paidResolved } = useEntitlement();
   const paid = useMemberGate() !== 'locked';
+  // The one enrollment gate (owner 2026-10-11: adding is for members).
+  const { guardEnroll, locked: enrollLocked } = useEnrollGate();
 
   const enrolled = useEnrollment();
   // An unread list is not "No topics yet" (D51, hunt 7 2026-10-03).
@@ -944,28 +948,36 @@ export const EnrollmentView = memo(function EnrollmentView({
   // Adding the first cert/program also brings in the other required cores
   // (Grounding & Electrical + Workplace Skills join Safety) — user request
   // 2026-07-22. addTopics is idempotent, so repeat adds are harmless.
-  const ensureCores = () => addTopics([...COREQ_TOPIC_GS]);
-  const addWholeCert = (name: string, topics: number[]) => {
-    addBundle('cert', name, topics);
-    // NEW topics only, not loaded onto the Dashboard until LOAD; a shared topic
-    // already loaded for another credential keeps its state (bug hunt 2026-09-29).
-    addTopicsUnloaded(topics);
-    ensureCores();
-  };
-  const addWholeProgram = (name: string, topics: number[]) => {
-    addBundle('program', name, topics);
-    addTopicsUnloaded(topics);
-    ensureCores();
-  };
+  //
+  // ⛔ ADDING IS FOR MEMBERS (owner 2026-10-11) — this reverses "All ungated to
+  // ADD (free users build a list)" above. Every ADD ALL goes through the one
+  // shared gate: a non-member's tap changes nothing and the members-only popup
+  // says why. REMOVE ALL is never gated.
+  const addWholeCert = (name: string, topics: number[]) =>
+    guardEnroll(() => {
+      addBundle('cert', name, topics);
+      // NEW topics only, not loaded onto the Dashboard until LOAD; a shared topic
+      // already loaded for another credential keeps its state (bug hunt 2026-09-29).
+      addTopicsUnloaded(topics);
+      addTopics([...COREQ_TOPIC_GS]);
+    }, topics);
+  const addWholeProgram = (name: string, topics: number[]) =>
+    guardEnroll(() => {
+      addBundle('program', name, topics);
+      addTopicsUnloaded(topics);
+      addTopics([...COREQ_TOPIC_GS]);
+    }, topics);
   // Whole SUBJECT — all its topics as one amber subject bundle (user request
   // 2026-07-22), mirroring cert/program add-all.
-  const addWholeSubject = (name: string, topics: number[]) => {
-    addBundle('subject', name, topics);
-    addTopicsUnloaded(topics);
-  };
+  const addWholeSubject = (name: string, topics: number[]) =>
+    guardEnroll(() => {
+      addBundle('subject', name, topics);
+      addTopicsUnloaded(topics);
+    }, topics);
   // Whole FIELD — enroll its topics (owner 2026-08-18). Fields do NOT create a
   // bundle card (unlike subjects); toggle state derives from enrollment.
-  const addWholeField = (topics: number[]) => { addTopicsUnloaded(topics); };
+  const addWholeField = (topics: number[]) => guardEnroll(() => { addTopicsUnloaded(topics); }, topics);
+  const addAllLabel = enrollLocked ? '🔒 ADD ALL' : 'ADD ALL';
   // A required co-requisite under 100% — the same lock the topic row applies
   // ("Required co-requisites stay in your list until you complete them").
   const coreLockedNow = (gs: number) => COREQ_TOPIC_GS.includes(gs) && pctFor(gs) < 100;
@@ -1261,8 +1273,8 @@ export const EnrollmentView = memo(function EnrollmentView({
     () => v3Subjects.flatMap((s) => s.topics.map((t) => ({ gs: t.gs, name: t.name }))).sort((a, b) => a.name.localeCompare(b.name)),
     [v3Subjects],
   );
-  // One add/remove topic row (shared by every browse tab). Ungated — free users
-  // build their list too (user request 2026-07-22).
+  // One add/remove topic row (shared by every browse tab). ADDING is members-only
+  // since 2026-10-11 (useEnrollGate); it was ungated from 2026-07-22.
   //
   // PERF (2026-10-03): the row is a memoised <TopicAddRow> with STABLE press
   // handlers, so tapping one topic re-renders that row, not all ~170 in the
@@ -1283,7 +1295,11 @@ export const EnrollmentView = memo(function EnrollmentView({
     const now = Date.now();
     if (lastRowTap.current.gs === gs && now - lastRowTap.current.at < BULK_REPEAT_MS) return;
     lastRowTap.current = { gs, at: now };
-    toggleTopic(gs);
+    // Removing is never gated; ADDING is for members (owner 2026-10-11).
+    // guardEnroll is stable, so this handler keeps its [] deps.
+    if (isEnrolledNow(gs)) removeTopic(gs);
+    else guardEnroll(() => toggleTopic(gs), [gs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- guardEnroll is stable (useEnrollGate)
   }, []);
   const topicAddRow = (gs: number, label?: string) => {
     const on = enrolledGs.has(gs);
@@ -1675,7 +1691,7 @@ export const EnrollmentView = memo(function EnrollmentView({
           // A synthesised (not enrolled) requirement row's UNLOADED pill was a
           // dead control: toggleActive only flips topics already in the list.
           // Tapping it now enrols the topic LOADED (bug pass 2026-09-30).
-          const toggleDeck = () => (isEnrolled ? toggleActive(e.gs) : void addTopics([e.gs]));
+          const toggleDeck = () => (isEnrolled ? toggleActive(e.gs) : void guardEnroll(() => addTopics([e.gs]), [e.gs]));
           // Reorder (custom order only): hold 2 s to lift, drag to sort. The
           // gesture lives on the container wrapper via containerPan/reorderTouch.
           const tid = `t:${e.gs}`;
@@ -2629,7 +2645,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                         </Text>
                       </Pressable>
                       <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWhole('cert', c.name, c.specializationTopics) : addWholeCert(c.name, c.specializationTopics)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${c.name}` : `Add whole ${c.name}`}>
-                        <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
+                        <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : addAllLabel}</Text>
                       </Pressable>
                     </View>
                     {open ? c.specializationTopics.map((gs) => topicAddRow(gs)) : null}
@@ -2655,7 +2671,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                           </Text>
                         </Pressable>
                         <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWhole('program', p.name, p.requiredTopics) : addWholeProgram(p.name, p.requiredTopics)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${p.name}` : `Add whole ${p.name}`}>
-                          <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
+                          <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : addAllLabel}</Text>
                         </Pressable>
                       </View>
                       {open ? p.requiredTopics.map((gs) => topicAddRow(gs)) : null}
@@ -2678,7 +2694,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                             <Text style={[styles.subjectName, { color: colors.green }]} numberOfLines={2}>{f.name}</Text>
                           </Pressable>
                           <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWholeField(fieldGs) : addWholeField(fieldGs)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all topics in ${f.name}` : `Add all topics in ${f.name}`}>
-                            <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
+                            <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : addAllLabel}</Text>
                           </Pressable>
                         </View>
                         {open ? f.topics.map((t) => topicAddRow(t.gs, t.name)) : null}
@@ -2710,7 +2726,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                             </Text>
                           </Pressable>
                           <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWhole('subject', s.name, subjectGs) : addWholeSubject(s.name, subjectGs)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${s.name}` : `Add all topics in ${s.name}`}>
-                            <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
+                            <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : addAllLabel}</Text>
                           </Pressable>
                         </View>
                         {open ? s.topics.map((t) => topicAddRow(t.gs, t.name)) : null}

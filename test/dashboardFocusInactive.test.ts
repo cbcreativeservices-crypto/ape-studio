@@ -23,7 +23,8 @@ test('a focused topic that is inactive OR not enrolled at all is brought onto th
   // (studyFocusEnroll.test.ts). ensureStudyTopic covers both.
   assert.match(
     src,
-    /if \(typeof focusGs === 'number'\) void ensureStudyTopic\(focusGs\);/,
+    // 2026-10-11: a KNOWN non-member goes through the members-only enroll gate.
+    /if \(typeof focusGs === 'number'\) \{\s*if \(memberGate === 'locked'\) guardEnroll\(\(\) => void ensureStudyTopic\(focusGs\), \[focusGs\]\);\s*else void ensureStudyTopic\(focusGs\);/,
     'STUDY NOW on a switched-off or un-enrolled credential topic would again land on the wrong topic',
   );
 });

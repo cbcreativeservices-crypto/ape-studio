@@ -130,6 +130,7 @@ describe('6. Enrollments browse rows are memoised', () => {
     const i = s.indexOf('const onTopicRowPress');
     const body = s.slice(i, s.indexOf('}, []);', i));
     assert.ok(body.indexOf("'This topic stays'") > 0);
-    assert.ok(body.indexOf('lastRowTap.current = { gs, at: now };') < body.indexOf('toggleTopic(gs);'));
+    // 2026-10-11: the add goes through the members-only gate (guardEnroll).
+    assert.ok(body.indexOf('lastRowTap.current = { gs, at: now };') < body.indexOf('guardEnroll(() => toggleTopic(gs), [gs]);'));
   });
 });
