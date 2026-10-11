@@ -9,15 +9,22 @@ import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
-import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row, useMarkWhen } from '../tuning/components/primitives';
+import { Body, Card, Eyebrow, Lead, Prompt, useMarkWhen } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { PatchPairView } from './art/PatchPairView';
-import { StudioBayView } from './art/StudioBayView';
+import type { DockParam } from '../rack/rackTypes';
+import { PATCH_PAIR_GLASS_ASPECT, PATCH_PAIR_GLASS_ASPECT_BARE, PB, PairStatus, PatchPairDrawing, PatchPairView } from './art/PatchPairView';
+import { BAY_ASPECT, BayLegend, StudioBayDrawing } from './art/StudioBayView';
 import { resolvePair } from './engine/patchbay';
 import { STUDIO_PAIRS, WRONG_PATCH_CASES } from './engine/scenariosB';
 import { GoalChips, MantraCard, useStationState, useVisitGoals } from './bits';
+import { DRAWING_W, PatchbayRack, jackKeys, pairBezel } from './rackLayout';
 
 /* ── 14 · From one pair to a whole bay (§16) ────────────────────────────── */
+
+/** The bay over the selected pair's schematic: one drawing on the glass. */
+const BAY_GAP = 8; // viewBox units between the two
+const BAY_PAIR_ASPECT = DRAWING_W / (DRAWING_W / BAY_ASPECT + BAY_GAP + DRAWING_W / PATCH_PAIR_GLASS_ASPECT_BARE);
+const nn = (n: number) => String(n).padStart(2, '0');
 
 function PageStudioBay({ ctx }: { ctx: PageCtx }) {
   const [selected, setSelected] = useState<number>(1);
@@ -47,54 +54,87 @@ function PageStudioBay({ ctx }: { ctx: PageCtx }) {
     touchedRef.current = true;
     setPlugState((prev) => (jack === 'top' ? { ...prev, top: !prev.top } : { ...prev, bottom: !prev.bottom }));
   };
-  // Built once, shared by the page and both figures' docks (full-screen pass
-  // 2026-09-30). In the PAIR's full screen the bay is off-screen, so a row of
-  // pair keys docks there too — the learner can walk every column without
-  // leaving the enlarged drawing. (No `key={selected}` on the pair any more:
-  // a remount would close the full screen on every selection.)
   const chips = <GoalChips goals={goals} latched={latched} />;
-  const pairKeys = (
-    <Row>
-      {STUDIO_PAIRS.map((p) => (
-        <Btn key={p.n} label={String(p.n).padStart(2, '0')} tone={selected === p.n ? 'primary' : 'plain'} selected={selected === p.n} onPress={() => select(p.n)} a11y={`Select pair ${p.n}: ${p.sourceLabel} over ${p.destLabel}`} />
-      ))}
-    </Row>
-  );
+  // Rack page (owner 2026-10-10): the bay over the selected pair, pinned on
+  // the glass (the column and jack taps still work there). The dock walks the
+  // columns — PAIR is a chooser-fader: ride it through 01–08 or tap it for the
+  // list (it was a row of pair keys docked in full screen) — and patches the
+  // selected pair's jacks.
+  const idx = Math.max(0, STUDIO_PAIRS.findIndex((p) => p.n === selected));
+  const last = STUDIO_PAIRS.length - 1;
+  const pairParam: DockParam = {
+    kind: 'fader',
+    id: 'pair',
+    label: 'PAIR',
+    value: idx / last,
+    onChange: (v) => {
+      const p = STUDIO_PAIRS[Math.round(Math.max(0, Math.min(1, v)) * last)];
+      if (p && p.n !== selected) select(p.n);
+    },
+    // The pair number only: a longer readout ran under the lane's thumb at
+    // the right-hand pairs. The bezel and the well name the devices.
+    format: (v) => nn((STUDIO_PAIRS[Math.round(Math.max(0, Math.min(1, v)) * last)] ?? pair).n),
+    chooser: {
+      title: 'PAIR',
+      options: STUDIO_PAIRS.map((p) => ({ id: String(p.n), label: `${nn(p.n)} · ${p.sourceLabel} → ${p.destLabel}` })),
+      selectedId: String(selected),
+      onSelect: (id) => select(Number(id)),
+    },
+  };
+  const pb = pairBezel(state, pair.sourceLabel, pair.destLabel);
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: BAY_PAIR_ASPECT,
+        draw: (w) => (
+          <View style={{ width: w, gap: (w * BAY_GAP) / DRAWING_W }}>
+            <StudioBayDrawing
+              w={w}
+              h={w / BAY_ASPECT}
+              pairs={STUDIO_PAIRS}
+              selected={selected}
+              onSelect={select}
+              reduceMotion={ctx.reduceMotion}
+              // cords patched below mirror as stubs up here — the zoom loop closes
+              plugs={{ [selected]: { top: plugState.top, bottom: plugState.bottom } }}
+            />
+            <PatchPairDrawing
+              glass
+              hideFaceplate
+              w={w}
+              state={state}
+              sourceLabel={pair.sourceLabel}
+              destLabel={pair.destLabel}
+              topPatchLabel="YOUR CABLE"
+              bottomPatchLabel="YOUR CABLE"
+              onToggleJack={toggle}
+              reduceMotion={ctx.reduceMotion}
+            />
+          </View>
+        ),
+        bezel: [{ k: 'PAIR', v: `${nn(pair.n)} ${pair.config === 'thru' ? 'THRU' : 'HALF'}`, tint: colors.cyanBright }, ...pb.slice(2)],
+        params: [pairParam, ...jackKeys(state, toggle)],
+        initialParam: 'pair',
+      }}
+    >
       <Lead>
         Part two. You mastered one vertical pair — now here are EIGHT of them side by side: a real (small) studio bay. Every
         column is exactly the pair you already know. Tap columns to inspect them; two of these pairs pass NOTHING with an
         empty bay — find them.
       </Lead>
-      <StudioBayView
-        pairs={STUDIO_PAIRS}
-        selected={selected}
-        onSelect={select}
-        reduceMotion={ctx.reduceMotion}
-        // cords patched below mirror as stubs up here — the zoom loop closes
-        plugs={{ [selected]: { top: plugState.top, bottom: plugState.bottom } }}
-        controls={chips}
-      />
-      <PatchPairView
+      <BayLegend />
+      <PairStatus
         state={state}
         sourceLabel={pair.sourceLabel}
         destLabel={pair.destLabel}
-        topPatchLabel="YOUR CABLE"
-        bottomPatchLabel="YOUR CABLE"
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
-        hideFaceplate
         caption={`PAIR ${String(pair.n).padStart(2, '0')} · ${pair.config === 'thru' ? 'THRU' : 'HALF-NORMAL (COMMON)'} — same rules as always.`}
-        controls={<>{pairKeys}{chips}</>}
-        fsTitle={`PAIR ${String(pair.n).padStart(2, '0')}`}
       />
       {chips}
       <Body>
         Notice the layout logic: recording paths, mic pres, and monitoring live on half-normal pairs. The two processor pairs
         are wired THRU — a later page shows exactly why that choice is a safety rule, not a style.
       </Body>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -112,21 +152,28 @@ function PageZeroCables({ ctx }: { ctx: PageCtx }) {
   useMarkWhen(revealed && solved, () => {
     if (!ctx.isDone) ctx.markDone();
   });
-  // The reveal key, built once: on the page and docked under the bay in
-  // full screen (full-screen pass 2026-09-30).
-  const revealBtn = (
-    <Row>
-      <Btn label={reveal ? 'HIDE THE NORMALS' : 'SHOW THE INVISIBLE NORMALS'} tone="primary" onPress={() => setReveal((v) => !v)} />
-    </Row>
-  );
+  // Rack page (owner 2026-10-10): the bay on the glass; the reveal is the
+  // dock's switch (it was a button under the bay).
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        size: 'S',
+        aspect: BAY_ASPECT,
+        draw: (w) => <StudioBayDrawing w={w} h={w / BAY_ASPECT} pairs={STUDIO_PAIRS} showNormals={reveal} reduceMotion={ctx.reduceMotion} />,
+        bezel: [
+          { k: 'PAIRS', v: String(STUDIO_PAIRS.length) },
+          { k: 'FRONT CORDS', v: '0', flex: 1.3 },
+          { k: 'NORMALS', v: reveal ? 'SHOWN' : 'HIDDEN', tint: reveal ? PB.flow : colors.textSub },
+        ],
+        params: [{ kind: 'toggle', id: 'reveal', label: 'SHOW THE INVISIBLE NORMALS', value: reveal, onToggle: () => setReveal((v) => !v) }],
+        initialParam: 'reveal',
+      }}
+    >
       <Lead>
         Look at this bay: not one patch cord anywhere. And yet — recording runs, the pres feed the console, the monitors play.
         Where are the connections?
       </Lead>
-      <StudioBayView pairs={STUDIO_PAIRS} showNormals={reveal} reduceMotion={ctx.reduceMotion} controls={revealBtn} />
-      {revealBtn}
+      <BayLegend />
       <Card tone="math">
         <Text style={local.big}>A properly designed normalled patchbay runs its standard signal path with ZERO front-panel cables.</Text>
         <Body>
@@ -153,7 +200,7 @@ function PageZeroCables({ ctx }: { ctx: PageCtx }) {
         onCorrect={() => setSolved(true)}
       />
       {!revealed ? <Prompt>The page completes once you have also pressed SHOW THE INVISIBLE NORMALS — see them for yourself.</Prompt> : null}
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -166,7 +213,17 @@ function PageOverpatch({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   const chips = <GoalChips goals={goals} latched={latched} />;
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing glass w={w} state={state} sourceLabel="CONSOLE OUT 1" destLabel="INTERFACE IN 1" topPatchLabel="YOUR CABLE" bottomPatchLabel="SYNTH (SOURCE C)" onToggleJack={toggle} reduceMotion={ctx.reduceMotion} />
+        ),
+        bezel: pairBezel(state, 'CONSOLE OUT 1', 'INTERFACE IN 1'),
+        params: jackKeys(state, toggle),
+        initialParam: 'top',
+      }}
+    >
       <Lead>Two professional words for what you have been doing all along:</Lead>
       <Card tone="math">
         <Eyebrow>NORMAL PATH</Eyebrow>
@@ -174,28 +231,22 @@ function PageOverpatch({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>OVERPATCH</Eyebrow>
         <Body>A patch cord that CHANGES that normal path — C now feeds B instead of A.</Body>
       </Card>
-      <PatchPairView
+      <PairStatus
         state={state}
         sourceLabel="CONSOLE OUT 1"
         destLabel="INTERFACE IN 1"
-        topPatchLabel="YOUR CABLE"
-        bottomPatchLabel="SYNTH (SOURCE C)"
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
         caption={
           flow.destinationHears === 'patch'
             ? 'OVERPATCHED — C feeds B; the normal path is on hold until the cord comes out.'
             : 'The NORMAL PATH — A feeds B automatically. Now overpatch: put source C into the BOTTOM jack.'
         }
-        controls={chips}
-        fsTitle="OVERPATCH"
       />
       {chips}
       <Body>
         In a larger studio you will hear it exactly like this: “the tape returns are NORMALLED to the monitor path — OVERPATCH
         line 3 if you need the drum machine.” You now speak the language.
       </Body>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -204,6 +255,9 @@ function PageOverpatch({ ctx }: { ctx: PageCtx }) {
 function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
   const [inserted, setInserted] = useState(false);
   const [serviceSolved, setServiceSolved] = useState(false);
+  // Which of the two pairs the glass shows (rack conversion 2026-10-10: the
+  // two schematics cannot share one glass at a legible size — see below).
+  const [view, setView] = useState<'vocal' | 'proc'>('vocal');
   // Render-time ref latches (house pattern): inserted once; bypassed AFTER.
   const sawIn = useRef(false);
   const sawOut = useRef(false);
@@ -220,55 +274,71 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
   // Compressor pair: THRU — it only joins the chain by cable. Its OUT is only
   // alive while the chain feeds its IN (sourceLive keeps the diagram honest).
   const compState = { config: 'thru' as const, topPlugged: inserted, bottomPlugged: inserted };
-  // The insert/bypass key and the chips, built once: on the page and docked
-  // under BOTH pair drawings in full screen (full-screen pass 2026-09-30).
-  const insertBtn = (
-    <Row>
-      <Btn label={inserted ? '⏏ BYPASS PROCESSOR' : '● INSERT COMPRESSOR'} tone="primary" onPress={() => setInserted((v) => !v)} />
-    </Row>
-  );
   const chips = <GoalChips goals={goals} latched={latched} />;
-  const dock = <>{insertBtn}{chips}</>;
+  // Rack page (owner 2026-10-10). The two pair drawings used to stack on the
+  // page; two schematics on one glass would draw their labels near 5 pt, so
+  // the glass shows ONE — the dock's VIEW key flips between the vocal pair and
+  // the processor pair — and the well keeps both pairs' readouts. INSERT is
+  // the dock's switch (it was a button between the drawings).
+  const vocal = view === 'vocal';
+  const viewed = vocal
+    ? { state: vocalState, sourceLabel: 'VOCAL OUT', destLabel: 'CONSOLE IN 2', topPatchLabel: '① SEND ▸ COMP IN', bottomPatchLabel: '② RETURN ◂ COMP OUT', sourceLive: true }
+    : { state: compState, sourceLabel: 'COMPRESSOR OUT', destLabel: 'COMPRESSOR IN', topPatchLabel: '② RETURN ▸ CONSOLE IN 2', bottomPatchLabel: '① SEND ◂ VOCAL OUT', sourceLive: inserted };
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT_BARE,
+        draw: (w) => <PatchPairDrawing glass hideFaceplate w={w} {...viewed} reduceMotion={ctx.reduceMotion} />,
+        bezel: [
+          { k: 'COMPRESSOR', v: inserted ? 'IN' : 'BYPASSED', tint: inserted ? PB.cord : colors.textSub, flex: 1.3 },
+          ...pairBezel(viewed.state, viewed.sourceLabel, viewed.destLabel, viewed.sourceLive).slice(2),
+        ],
+        params: [
+          { kind: 'toggle', id: 'insert', label: 'INSERT COMPRESSOR', value: inserted, onToggle: () => setInserted((v) => !v) },
+          {
+            kind: 'options',
+            id: 'view',
+            label: 'VIEW',
+            valueLabel: vocal ? 'VOCAL' : 'PROCESSOR',
+            valueA11y: vocal ? 'the vocal pair' : 'the processor pair',
+            options: [
+              { id: 'vocal', label: 'VOCAL PAIR' },
+              { id: 'proc', label: 'PROCESSOR PAIR' },
+            ],
+            selectedId: view,
+            onSelect: (id) => setView(id === 'proc' ? 'proc' : 'vocal'),
+          },
+        ],
+        initialParam: 'insert',
+      }}
+    >
       <Lead>
         The classic patch every engineer learns first: put an outboard compressor INTO an existing path — then take it out
         again without re-wiring anything. TWO cables make the chain: ① SEND and ② RETURN — follow their numbers through both
         diagrams.
       </Lead>
-      <PatchPairView
+      <PairStatus
+        title="VOCAL PAIR"
         state={vocalState}
         sourceLabel="VOCAL OUT"
         destLabel="CONSOLE IN 2"
-        topPatchLabel="① SEND ▸ COMP IN"
-        bottomPatchLabel="② RETURN ◂ COMP OUT"
-        reduceMotion={ctx.reduceMotion}
-        hideFaceplate
         caption={
           inserted
             ? 'The vocal leaves on ① SEND (top tap), and the processed signal returns on ② RETURN (bottom — breaking the normal).'
             : 'BYPASSED — no cords: the vocal rides its normal straight to the console.'
         }
-        controls={dock}
-        fsTitle="VOCAL PAIR"
       />
-      {insertBtn}
-      <PatchPairView
+      <PairStatus
+        title="PROCESSOR PAIR"
         state={compState}
         sourceLabel="COMPRESSOR OUT"
         destLabel="COMPRESSOR IN"
-        topPatchLabel="② RETURN ▸ CONSOLE IN 2"
-        bottomPatchLabel="① SEND ◂ VOCAL OUT"
-        reduceMotion={ctx.reduceMotion}
-        hideFaceplate
         sourceLive={inserted}
         caption={
           inserted
             ? 'The THRU processor pair, cabled in: ① feeds COMP IN below; COMP OUT rides ② back to the console.'
             : 'The processor pair at rest: THRU, nothing connected, its output idle — the compressor waits until it is invited.'
         }
-        controls={dock}
-        fsTitle="PROCESSOR PAIR"
       />
       {chips}
       <Body>
@@ -293,7 +363,7 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
         ]}
         onCorrect={() => setServiceSolved(true)}
       />
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -343,10 +413,10 @@ function PageWrongPatch({ ctx }: { ctx: PageCtx }) {
 }
 
 export const PATCHBAY_PAGES_C: PageDef[] = [
-  { title: 'From one pair to a whole bay', short: 'BAY', Component: PageStudioBay, manualDone: true },
-  { title: 'The studio works with no cables', short: 'ZERO', Component: PageZeroCables, manualDone: true },
-  { title: 'Overpatching', short: 'OVER', Component: PageOverpatch, manualDone: true },
-  { title: 'The processor chain', short: 'CHAIN', Component: PageProcessorChain, manualDone: true },
+  { title: 'From one pair to a whole bay', short: 'BAY', Component: PageStudioBay, manualDone: true, rack: true },
+  { title: 'The studio works with no cables', short: 'ZERO', Component: PageZeroCables, manualDone: true, rack: true },
+  { title: 'Overpatching', short: 'OVER', Component: PageOverpatch, manualDone: true, rack: true },
+  { title: 'The processor chain', short: 'CHAIN', Component: PageProcessorChain, manualDone: true, rack: true },
   { title: 'What’s wrong with this patch?', short: 'FIX-IT', Component: PageWrongPatch, manualDone: true },
 ];
 

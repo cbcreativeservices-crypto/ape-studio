@@ -44,7 +44,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { JacketPath, shade, tint as lighten } from '../svgArt';
-import { CeilingDefects, CorrectedExisting, GridAndTiles, JHookDrop, OtherTrades, PlenumStructure, TRAY, WallSleeve } from './ceilingArt';
+import { CeilingDefects, CorrectedExisting, GREEN_LANE_DY, GREEN_TRAY_Y, GridAndTiles, JHookDrop, OtherTrades, PlenumStructure, TRAY, WallSleeve } from './ceilingArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -109,7 +109,7 @@ const SLEEVE_X = 342;
 const SLEEVE_Y = 126;
 /** Over-estimated path length for the install draw (over-estimate is safe). */
 const RUN_LEN = 230;
-const LEAD_LEN = 200;
+const LEAD_LEN = 260;
 
 const PATH_OPTS: { id: string; label: string; good: boolean; short: string }[] = [
   {
@@ -515,6 +515,18 @@ function FinishedRods({ hookUnits }: { hookUnits: number[] }) {
 /** FINISHED VIEW before Exercise 2 is confirmed: where the new run (and the
  *  green pair that will share its supports) goes, as a dashed outline — no
  *  pathway, no hook positions. */
+/** Service loops, each in its own cable's lane and part of that cable's own
+ *  path (owner 2026-10-10): the cable runs in, makes one flat loop lying in
+ *  the tray, and runs on. The violet loop sits where the green is not yet in
+ *  the tray; the green's sits clear of the violet's. */
+const trayLoop = (x: number, y: number, len: number, h: number) =>
+  `H${x} C${x} ${y - h} ${x + len} ${y - h} ${x + len} ${y} C${x + len} ${y + h} ${x} ${y + h} ${x} ${y} `;
+/** The violet run's lead-in along the tray, its loop near the tray's start. */
+const VIOLET_LEAD_D = `M0 ${RUN_Y} ${trayLoop(20, RUN_Y, 24, 2.6)}H${SPAN_X0}`;
+/** The green pair in the finished view: along the tray in its own lane,
+ *  its loop lying in the tray, on to x. */
+const GREEN_TRAY_D = (x: number) => `M0 ${GREEN_TRAY_Y} ${trayLoop(92, GREEN_TRAY_Y, 22, 1.5)}H${x}`;
+
 function FinishedPlaceholder() {
   const x0 = SPAN_X0 - 2;
   const x1 = SLEEVE_X - 12;
@@ -523,8 +535,7 @@ function FinishedPlaceholder() {
       <WallSleeve />
       {/* the green pair's service loop, moved off the duct into the tray
           (cd-8) — its run beyond the tray end waits for your supports */}
-      <JacketPath d="M92 129.6 C92 126.8 114 126.8 114 129.6 C114 132.2 92 132.2 92 129.6" color="#37d97b" width={2} />
-      <JacketPath d={`M114 ${RUN_Y} H${x0}`} color="#37d97b" width={2.4} />
+      <JacketPath d={GREEN_TRAY_D(x0)} color="#37d97b" width={2.4} />
       <Rect x={x0} y={RUN_Y - 7} width={x1 - x0} height={18} rx={4} fill="rgba(199,125,255,0.07)" stroke="#c77dff" strokeWidth={1} strokeDasharray="4 3" />
       <SvgText x={(x0 + x1) / 2} y={RUN_Y + 5.4} fill="#d9b8ff" fontSize={9.6} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={0.4}>
         YOUR RUN · EXERCISE 2
@@ -541,18 +552,17 @@ function FinishedPlaceholder() {
 function FinishedRun({ hookUnits }: { hookUnits: number[] }) {
   const ys = sagProfile(hookUnits);
   const runD = profileD(ys);
-  let greenD = `M${TRAY.x1} ${RUN_Y} `;
-  for (let i = 1; i < ys.length; i++) greenD += `L${RUN_XS[i].toFixed(1)} ${(ys[i] - 2.4).toFixed(1)} `;
-  greenD += `L${SLEEVE_X} ${SLEEVE_Y - 2.4}`;
+  // the green pair rides the same hooks one lane above the violet run
+  let greenD = `${GREEN_TRAY_D(TRAY.x1)} `;
+  for (let i = 1; i < ys.length; i++) greenD += `L${RUN_XS[i].toFixed(1)} ${(ys[i] - GREEN_LANE_DY).toFixed(1)} `;
+  greenD += `L${SLEEVE_X} ${SLEEVE_Y - GREEN_LANE_DY}`;
   const green = '#37d97b';
   const violet = '#c77dff';
   return (
     <>
       <WallSleeve />
-      <JacketPath d="M92 129.6 C92 126.8 114 126.8 114 129.6 C114 132.2 92 132.2 92 129.6" color={green} width={2} />
       <JacketPath d={greenD} color={green} width={2.4} />
-      <JacketPath d={`M0 ${RUN_Y} H${SPAN_X0}`} color={violet} width={2.6} />
-      <JacketPath d="M136 129.6 C136 126.6 160 126.6 160 129.6 C160 132.4 136 132.4 136 129.6" color={violet} width={2} />
+      <JacketPath d={VIOLET_LEAD_D} color={violet} width={2.6} />
       <JacketPath d={runD} color={violet} width={2.6} />
       {hookUnits.map((u) => (
         <JHookDrop key={u} x={SPAN_X0 + u * UNIT_PX} cradleY={HOOK_SADDLE} w={HOOK_W} back={7} top={HOOK_ARM_TOP} />
@@ -709,8 +719,7 @@ function AboveSvg({
           <>
             {/* the bundle arrives in the tray, with a dressed service loop
                 left lying in it where a lifted tile reaches it */}
-            <InstalledRun d="M0 129.6 H178" len={LEAD_LEN} color="#c77dff" width={2.6} />
-            <InstalledRun d="M136 129.6 C136 126.6 160 126.6 160 129.6 C160 132.4 136 132.4 136 129.6" len={70} color="#c77dff" width={2} delay={CI_MOTION.base} />
+            <InstalledRun d={VIOLET_LEAD_D} len={LEAD_LEN} color="#c77dff" width={2.6} />
             <SagRun
               fromArr={fromArr}
               toArr={toArr}

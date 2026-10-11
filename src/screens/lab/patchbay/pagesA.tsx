@@ -17,12 +17,16 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { ControlSlider } from '../amp/kit';
 import { useRef, useState } from 'react';
-import { PatchPairView } from './art/PatchPairView';
-import { JackCutaway } from './art/JackCutaway';
+import { PATCH_PAIR_GLASS_ASPECT, PairStatus, PatchPairDrawing, PatchPairView } from './art/PatchPairView';
+import { JACK_ASPECT, JACK_BADGE, JackCutawayDrawing, useContactAnnounce } from './art/JackCutaway';
 import { contactsOpen, resolvePair } from './engine/patchbay';
 import { GoalChips, MantraCard, useStationState, useVisitGoals } from './bits';
+import { PatchbayRack, cutawayBezel, insertionFader, jackKeys, pairBezel } from './rackLayout';
+
+/** The single pair most pages teach on. */
+const SRC = 'CONSOLE OUT 1';
+const DST = 'INTERFACE IN 1';
 
 /* ── 1 · Signal falls downhill ──────────────────────────────────────────── */
 
@@ -61,28 +65,36 @@ function PagePair({ ctx }: { ctx: PageCtx }) {
   // touch must NOT show a normal — that reveal belongs to page 4, after thru
   // has established the problem normalling solves.
   const { state, toggle } = useStationState('thru');
+  // Rack page (owner 2026-10-10): the pair pinned on the glass, the jacks in
+  // the dock (the jack taps on the drawing still work), the status in the well.
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing glass w={w} state={state} sourceLabel={SRC} destLabel={DST} topPatchLabel="YOUR CABLE" bottomPatchLabel="YOUR CABLE" onToggleJack={toggle} reduceMotion={ctx.reduceMotion} />
+        ),
+        bezel: pairBezel(state, SRC, DST),
+        params: jackKeys(state, toggle),
+        initialParam: 'top',
+      }}
+    >
       <Lead>
         This is ONE vertical pair — the smallest unit of any patchbay. You will always see it two ways at once: the physical
         front panel on top (your pair is the outlined column), and the signal path underneath. Learning to translate between
         them is the whole game.
       </Lead>
-      <PatchPairView
+      <PairStatus
         state={state}
-        sourceLabel="CONSOLE OUT 1"
-        destLabel="INTERFACE IN 1"
-        topPatchLabel="YOUR CABLE"
-        bottomPatchLabel="YOUR CABLE"
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
+        sourceLabel={SRC}
+        destLabel={DST}
         caption="Marching dashes = signal flowing now. Dim dots = a possible path that is inactive. Gold = a patch cord."
       />
       <Prompt>Tap the TOP and BOTTOM jacks and just watch what changes — panel above, path below. No wrong moves here.</Prompt>
       <Body>
         The visual language you just read stays identical through the whole lab: it never changes meaning between pages.
       </Body>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -97,29 +109,37 @@ function PageThru({ ctx }: { ctx: PageCtx }) {
     { label: 'COMPLETE THE ROUTE (both jacks)', hit: routed },
   ];
   const latched = useVisitGoals(ctx, goals);
-  // The goal chips are built ONCE and handed to the page AND to the figure's
-  // docked controls (full-screen pass 2026-09-30) — they share state.
   const chips = <GoalChips goals={goals} latched={latched} />;
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing
+            glass
+            w={w}
+            state={state}
+            sourceLabel={SRC}
+            destLabel={DST}
+            // The top cord's far-end label is honest about the dead end until the
+            // route is actually completed (cognition pass 2026-09-10 — the picture
+            // must never claim a connection the status denies).
+            topPatchLabel={routed ? 'TO BOTTOM JACK' : 'FAR END NOT CONNECTED'}
+            bottomPatchLabel={routed ? 'FROM TOP JACK' : 'YOUR CABLE'}
+            onToggleJack={toggle}
+            reduceMotion={ctx.reduceMotion}
+          />
+        ),
+        bezel: pairBezel(state, SRC, DST),
+        params: jackKeys(state, toggle),
+        initialParam: 'top',
+      }}
+    >
       <Lead>
         We start with the simplest wiring: THRU. Top rear connects only to the top front. Bottom rear connects only to the
         bottom front. There is NO internal path between them.
       </Lead>
-      <PatchPairView
-        state={state}
-        sourceLabel="CONSOLE OUT 1"
-        destLabel="INTERFACE IN 1"
-        // The top cord's far-end label is honest about the dead end until the
-        // route is actually completed (cognition pass 2026-09-10 — the picture
-        // must never claim a connection the status denies).
-        topPatchLabel={routed ? 'TO BOTTOM JACK' : 'FAR END NOT CONNECTED'}
-        bottomPatchLabel={routed ? 'FROM TOP JACK' : 'YOUR CABLE'}
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
-        controls={chips}
-        fsTitle="THRU PAIR"
-      />
+      <PairStatus state={state} sourceLabel={SRC} destLabel={DST} />
       {chips}
       <Prompt>
         First patch ONLY the top jack, and before reading the status line, answer for yourself: where does the console’s
@@ -129,7 +149,7 @@ function PageThru({ ctx }: { ctx: PageCtx }) {
         A thru pair is honest and dumb: if the engineer does nothing, nothing is connected — a patch cord is the ONLY way from
         top to bottom. Remember that feeling; the next page changes it.
       </Body>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -195,25 +215,34 @@ function PageContact({ ctx }: { ctx: PageCtx }) {
     { label: 'RESTORE IT (pull the plug back out)', hit: wasOpenRef.current && !open },
   ];
   const latched = useVisitGoals(ctx, goals);
-  // Slider + chips built once: on the page and docked under the cutaway in
-  // full screen, so the plug can be driven there (full-screen pass 2026-09-30).
-  const slider = <ControlSlider label="PLUG INSERTION" value={insertion} min={0} max={1} step={0.01} onChange={setInsertion} format={(v) => `${Math.round(v * 100)}%`} />;
+  useContactAnnounce(open);
+  // Rack page (owner 2026-10-10): the cutaway pinned on the glass, the plug
+  // driven by the PLUG INSERTION fader in the dock (it was a slider under the
+  // drawing), the % / contacts readout on the bezel.
   const chips = <GoalChips goals={goals} latched={latched} />;
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: JACK_ASPECT,
+        draw: (w) => <JackCutawayDrawing insertion={insertion} reduceMotion={ctx.reduceMotion} w={w} h={w / JACK_ASPECT} />,
+        badge: JACK_BADGE,
+        bezel: cutawayBezel(insertion),
+        params: [insertionFader(insertion, setInsertion)],
+        initialParam: 'insertion',
+        hideDragTag: true,
+      }}
+    >
       <Lead>
         Why does plugging in change the routing? Because a normal is not software. It is a spring contact — and the plug
         physically moves it. Drive the plug in slowly and watch the metal.
       </Lead>
-      <JackCutaway insertion={insertion} reduceMotion={ctx.reduceMotion} controls={<>{slider}{chips}</>} />
-      {slider}
       {chips}
       <Body>
         At rest, the tip spring presses on the normal contact and the source flows to the destination. As the plug seats, its
         tip wedges under the spring and lifts it off — the normal is BROKEN, and the spring now touches the plug instead: the
         source rides your patch cord. It isn’t magic and it isn’t a menu setting. A switch opened.
       </Body>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -242,26 +271,25 @@ function PageFullStates({ ctx }: { ctx: PageCtx }) {
           : 'D — both patched: the pair no longer behaves as a pair. Two independent reroutes.';
   const chips = <GoalChips goals={goals} latched={latched} />;
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing glass w={w} state={state} sourceLabel={SRC} destLabel={DST} topPatchLabel="ANALYZER" bottomPatchLabel="DRUM MACHINE" onToggleJack={toggle} reduceMotion={ctx.reduceMotion} />
+        ),
+        bezel: pairBezel(state, SRC, DST),
+        params: jackKeys(state, toggle),
+        initialParam: 'top',
+      }}
+    >
       <Lead>
         FULL-NORMAL: inserting into EITHER front jack breaks the normal. From here on, the ✕ in the diagram marks exactly that
         — a normal that exists but is being held open by a plug. A full-normal pair has exactly four states — visit all four
         and read each one as you make it.
       </Lead>
-      <PatchPairView
-        state={state}
-        sourceLabel="CONSOLE OUT 1"
-        destLabel="INTERFACE IN 1"
-        topPatchLabel="ANALYZER"
-        bottomPatchLabel="DRUM MACHINE"
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
-        caption={stateCaption}
-        controls={chips}
-        fsTitle="FULL-NORMAL"
-      />
+      <PairStatus state={state} sourceLabel={SRC} destLabel={DST} caption={stateCaption} />
       {chips}
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -278,7 +306,31 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   const chips = <GoalChips goals={goals} latched={latched} />;
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing
+            glass
+            w={w}
+            state={state}
+            sourceLabel={SRC}
+            destLabel={DST}
+            topPatchLabel="ANALYZER"
+            bottomPatchLabel="DRUM MACHINE"
+            // The jacks stay INERT until the prediction is committed — the whole
+            // point of predict-first is that the commitment precedes the evidence
+            // (cognition pass 2026-09-10).
+            onToggleJack={predicted ? toggle : undefined}
+            reduceMotion={ctx.reduceMotion}
+          />
+        ),
+        bezel: pairBezel(state, SRC, DST),
+        // …and so are their dock keys: they appear once the prediction is in.
+        params: predicted ? jackKeys(state, toggle) : [],
+        initialParam: 'top',
+      }}
+    >
       <Lead>
         Same untouched starting picture as full-normal: source flowing to destination through the normal. But this bay is
         HALF-NORMALLED. So — what’s different? Commit to a prediction before you touch anything.
@@ -300,17 +352,10 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
         ]}
         onCorrect={() => setPredicted(true)}
       />
-      <PatchPairView
+      <PairStatus
         state={state}
-        sourceLabel="CONSOLE OUT 1"
-        destLabel="INTERFACE IN 1"
-        topPatchLabel="ANALYZER"
-        bottomPatchLabel="DRUM MACHINE"
-        // The jacks stay INERT until the prediction is committed — the whole
-        // point of predict-first is that the commitment precedes the evidence
-        // (cognition pass 2026-09-10).
-        onToggleJack={predicted ? toggle : undefined}
-        reduceMotion={ctx.reduceMotion}
+        sourceLabel={SRC}
+        destLabel={DST}
         caption={
           !predicted
             ? 'Commit to your prediction above first — then the jacks unlock.'
@@ -318,8 +363,6 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
               ? 'The normal DID NOT break. One source, two destinations — this is the split.'
               : 'Jacks unlocked — now patch the TOP and watch the normal.'
         }
-        controls={chips}
-        fsTitle="HALF-NORMAL"
       />
       {chips}
       {flow.isSplit ? (
@@ -333,18 +376,18 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
           <MantraCard />
         </>
       ) : null}
-    </View>
+    </PatchbayRack>
   );
 }
 
 export const PATCHBAY_PAGES_A: PageDef[] = [
   { title: 'Signal falls downhill', short: 'TOP↓BTM', Component: PageDirection },
-  { title: 'One pair, two pictures', short: 'PAIR', Component: PagePair },
-  { title: 'Thru: nothing is connected yet', short: 'THRU', Component: PageThru, manualDone: true },
+  { title: 'One pair, two pictures', short: 'PAIR', Component: PagePair, rack: true },
+  { title: 'Thru: nothing is connected yet', short: 'THRU', Component: PageThru, manualDone: true, rack: true },
   { title: 'What “normal” means', short: 'NORMAL', Component: PageNormal, manualDone: true },
-  { title: 'The switching contact', short: 'CONTACT', Component: PageContact, manualDone: true },
-  { title: 'Full-normal: the four states', short: 'FULL', Component: PageFullStates, manualDone: true },
-  { title: 'Half-normal: the surprise', short: 'HALF', Component: PageHalfSurprise, manualDone: true },
+  { title: 'The switching contact', short: 'CONTACT', Component: PageContact, manualDone: true, rack: true },
+  { title: 'Full-normal: the four states', short: 'FULL', Component: PageFullStates, manualDone: true, rack: true },
+  { title: 'Half-normal: the surprise', short: 'HALF', Component: PageHalfSurprise, manualDone: true, rack: true },
 ];
 
 const local = StyleSheet.create({

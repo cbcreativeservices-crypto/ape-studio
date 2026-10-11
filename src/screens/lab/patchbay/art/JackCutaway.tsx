@@ -69,28 +69,35 @@ function leafTipY(insertion: number): number {
   return 104 - (lift * (292 - CONTACT_X)) / (292 - FINGER_X);
 }
 
-export function JackCutaway({ insertion, reduceMotion, showConductors, controls }: {
-  insertion: number;
-  reduceMotion: boolean;
-  /** §23 (Phase B): label the plug's TIP / RING / SLEEVE bands — the reveal
-   *  that "one line" has been a balanced circuit all along. */
-  showConductors?: boolean;
-  /** The page's PLUG INSERTION slider (+ goal chips), docked under the
-   *  drawing in FULL SCREEN so the plug can be driven there (D35,
-   *  full-screen pass 2026-09-30). The % / contacts readout rides on top. */
-  controls?: ReactNode;
-}) {
-  const open = contactsOpen(insertion);
+/** The cutaway's aspect (viewBox W ÷ H) — the rack glass fits it with StageFit. */
+export const JACK_ASPECT = W / H;
 
-  // W16 (2026-09-18): Android-only live region; silent on iOS. `insertion` is a DRAG,
-  // so this keys on the derived boolean: the contacts opening is the event,
-  // not the millimetre. Nothing is said while sliding between states.
+/** The honesty badge (a CONCEPTUAL MODEL) — on the page card and, for a rack
+ *  page, silk-screened under the glass. */
+export const JACK_BADGE = `CONCEPTUAL MODEL — this one opens at ${Math.round(CONTACT_OPEN_AT * 100)}% in; real jacks open partway, the exact point varies by design.`;
+
+/** W16 (2026-09-18): Android-only live region; silent on iOS. `insertion` is a DRAG,
+ *  so this keys on the derived boolean: the contacts opening is the event,
+ *  not the millimetre. Nothing is said while sliding between states. */
+export function useContactAnnounce(open: boolean) {
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(
       open ? 'Contacts open, normal broken' : 'Contacts touching, normal intact',
     );
   }, [open]);
+}
+
+/** The cutaway drawing alone at (w, h) — the Rack Unit's glass and the page
+ *  figure both draw this. */
+export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w, h }: {
+  insertion: number;
+  reduceMotion: boolean;
+  showConductors?: boolean;
+  w: number;
+  h: number;
+}) {
+  const open = contactsOpen(insertion);
   const tipX = tipXAt(insertion); // plug tip travel; max 148 — under the contact finger
   const leafY = leafTipY(insertion);
   const fy = fingerY(insertion);
@@ -112,34 +119,7 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
   const leafShape = `M 292 57 Q 226 ${leafY - 15} ${CONTACT_X} ${leafY - 2.6} L ${CONTACT_X} ${leafY + 2.6} Q 228 ${leafY - 7} 292 66 Z`;
   const leafCenter = `M 292 61 Q 227 ${leafY - 11} ${CONTACT_X} ${leafY}`;
 
-  const badge = `CONCEPTUAL MODEL — real jacks open partway through insertion; the exact point varies by design (this model opens at ${Math.round(CONTACT_OPEN_AT * 100)}%).`;
-  // The readout row is the figure's READOUT: under the drawing on the page
-  // and at the top of the docked controls in full screen — one element.
-  const readout = (
-    <View style={styles.readoutRow}>
-      <Text style={styles.pct}>{Math.round(insertion * 100)}%</Text>
-      <Text style={[styles.state, { color: open ? PB.break : PB.flow }]} accessibilityLiveRegion="polite">
-        {open ? 'CONTACTS OPEN — NORMAL BROKEN' : 'CONTACTS TOUCHING — NORMAL INTACT'}
-      </Text>
-    </View>
-  );
-
   return (
-    <View style={styles.wrap}>
-      {/* The accessible image node is the DRAWING, not the card: an accessible
-          card would flatten the FULL SCREEN button (and the docked slider)
-          away from screen readers. */}
-      <ExpandableFigure
-        aspect={W / H}
-        title="INSIDE THE JACK"
-        badge={badge}
-        controls={
-          <View style={styles.dock}>
-            {readout}
-            {controls}
-          </View>
-        }
-        render={(w, h) => (
       <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         {/* jack body + front bushing */}
@@ -217,7 +197,51 @@ export function JackCutaway({ insertion, reduceMotion, showConductors, controls 
         )}
       </Svg>
       </View>
-        )}
+  );
+}
+
+export function JackCutaway({ insertion, reduceMotion, showConductors, controls }: {
+  insertion: number;
+  reduceMotion: boolean;
+  /** §23 (Phase B): label the plug's TIP / RING / SLEEVE bands — the reveal
+   *  that "one line" has been a balanced circuit all along. */
+  showConductors?: boolean;
+  /** The page's PLUG INSERTION slider (+ goal chips), docked under the
+   *  drawing in FULL SCREEN so the plug can be driven there (D35,
+   *  full-screen pass 2026-09-30). The % / contacts readout rides on top. */
+  controls?: ReactNode;
+}) {
+  const open = contactsOpen(insertion);
+
+  useContactAnnounce(open);
+  const badge = JACK_BADGE;
+  // The readout row is the figure's READOUT: under the drawing on the page
+  // and at the top of the docked controls in full screen — one element.
+  const readout = (
+    <View style={styles.readoutRow}>
+      <Text style={styles.pct}>{Math.round(insertion * 100)}%</Text>
+      <Text style={[styles.state, { color: open ? PB.break : PB.flow }]} accessibilityLiveRegion="polite">
+        {open ? 'CONTACTS OPEN — NORMAL BROKEN' : 'CONTACTS TOUCHING — NORMAL INTACT'}
+      </Text>
+    </View>
+  );
+
+  return (
+    <View style={styles.wrap}>
+      {/* The accessible image node is the DRAWING, not the card: an accessible
+          card would flatten the FULL SCREEN button (and the docked slider)
+          away from screen readers. */}
+      <ExpandableFigure
+        aspect={W / H}
+        title="INSIDE THE JACK"
+        badge={badge}
+        controls={
+          <View style={styles.dock}>
+            {readout}
+            {controls}
+          </View>
+        }
+        render={(w, h) => <JackCutawayDrawing insertion={insertion} reduceMotion={reduceMotion} showConductors={showConductors} w={w} h={h} />}
       />
       {readout}
       <Text style={styles.badge}>{badge}</Text>

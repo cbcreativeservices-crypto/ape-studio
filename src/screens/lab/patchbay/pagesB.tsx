@@ -10,10 +10,11 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt, useMarkWhen } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { PatchPairView } from './art/PatchPairView';
+import { PATCH_PAIR_GLASS_ASPECT, PairStatus, PatchPairDrawing, PatchPairView } from './art/PatchPairView';
 import { resolvePair, type PairKind } from './engine/patchbay';
 import { DETECTIVE_CASES, PREDICT_SCENARIOS, afterAction } from './engine/scenarios';
 import { GoalChips, MantraCard, useStationState, useVisitGoals } from './bits';
+import { PatchbayRack, jackKeys, pairBezel } from './rackLayout';
 
 /* ── 8 · Why it is called HALF-normal ───────────────────────────────────── */
 
@@ -60,26 +61,25 @@ function PageTap({ ctx }: { ctx: PageCtx }) {
     { label: 'REPLACE THE SOURCE (bottom — normal breaks)', hit: flow.destinationHears === 'patch' },
   ];
   const latched = useVisitGoals(ctx, goals);
-  // Built once: on the page and docked under the pair in full screen
-  // (full-screen pass 2026-09-30).
   const chips = <GoalChips goals={goals} latched={latched} />;
+  // Rack page (owner 2026-10-10): the pair on the glass, the jacks in the dock.
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing glass w={w} state={state} sourceLabel="CONSOLE OUT 1" destLabel="INTERFACE IN 1" topPatchLabel="ANALYZER" bottomPatchLabel="DRUM MACHINE" onToggleJack={toggle} reduceMotion={ctx.reduceMotion} />
+        ),
+        bezel: pairBezel(state, 'CONSOLE OUT 1', 'INTERFACE IN 1'),
+        params: jackKeys(state, toggle),
+        initialParam: 'top',
+      }}
+    >
       <Lead>
         The working scenario: Console Out 1 is recording into Interface In 1. Mid-take, you want to feed an analyzer WITHOUT
         touching the recording. On a half-normal bay, you just patch the top.
       </Lead>
-      <PatchPairView
-        state={state}
-        sourceLabel="CONSOLE OUT 1"
-        destLabel="INTERFACE IN 1"
-        topPatchLabel="ANALYZER"
-        bottomPatchLabel="DRUM MACHINE"
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
-        controls={chips}
-        fsTitle="THE TAP"
-      />
+      <PairStatus state={state} sourceLabel="CONSOLE OUT 1" destLabel="INTERFACE IN 1" />
       {chips}
       <Card>
         <Eyebrow>WORDS YOU WILL HEAR FOR THE TOP-JACK TRICK</Eyebrow>
@@ -87,9 +87,9 @@ function PageTap({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Prompt>
         Now pull the top cord and instead patch the DRUM MACHINE into the BOTTOM. Before you look at the readout, answer for
-        yourself: what just happened to the console’s signal? Then check the status line under the diagram against your answer.
+        yourself: what just happened to the console’s signal? Then check the status readout under the display against your answer.
       </Prompt>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -276,7 +276,7 @@ function PageWrap(_: { ctx: PageCtx }) {
 
 export const PATCHBAY_PAGES_B: PageDef[] = [
   { title: 'Why it is called HALF-normal', short: 'WHY½', Component: PageWhyHalf, manualDone: true },
-  { title: 'The tap — and the side that breaks', short: 'TAP', Component: PageTap, manualDone: true },
+  { title: 'The tap — and the side that breaks', short: 'TAP', Component: PageTap, manualDone: true, rack: true },
   { title: 'Full vs Half vs Thru — the table', short: 'TABLE', Component: PageCompare, manualDone: true },
   { title: 'Predict before patching', short: 'PREDICT', Component: PagePredict, manualDone: true },
   { title: 'Patchbay detective', short: 'DETECT', Component: PageDetective, manualDone: true },

@@ -17,6 +17,7 @@
 import { useMemo, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from './wedge2Way';
 import { useStageTextScale } from '../../../rack/stageAspect';
 import type { SettingItem, VariantId, Vec3, Wedge } from '../../engine/model/types.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
@@ -168,33 +169,14 @@ function TomMountPlan() {
   );
 }
 
-/** A floor wedge from above: cabinet, sloped grille facing `faces`, corners. */
+/** A 2-way floor wedge from above, at true size (shared/wedge2Way.tsx):
+ *  its sloped baffle — woofer and horn behind the grille — facing `faces`,
+ *  the flat top panel and rear input at the back. */
 export function WedgePlan({ at, faces, hi }: { at: Vec3; faces: Vec3; hi: boolean }) {
   const ang = Math.atan2(faces.z, faces.x);
-  const parts = useMemo(() => {
-    const cab = rr(-150, -280, 300, 560, 18);
-    const grille = rr(-40, -258, 176, 516, 14);
-    const holes = Skia.Path.Make();
-    for (let x = -26; x < 128; x += 20) for (let z = -244; z < 250; z += 20) holes.addCircle(x, z, 4.2);
-    const recess = rr(-128, -70, 50, 140, 14);
-    return { cab, grille, holes, recess };
-  }, []);
   return (
     <Group transform={[{ translateX: at.x }, { translateY: at.z }, { rotate: ang }]}>
-      <Group transform={[{ translateX: 14 }, { translateY: 18 }]}>
-        <Path path={parts.cab} color="#000" opacity={0.6}>
-          <BlurMask blur={22} style="normal" />
-        </Path>
-      </Group>
-      <Path path={parts.cab}>
-        <LinearGradient start={vec(-150, -280)} end={vec(150, 280)} colors={['#3b3e46', '#24262c', '#15161a']} />
-      </Path>
-      <Path path={parts.grille} color="#0c0d10" />
-      <Path path={parts.holes} color="#4a4e57" opacity={0.9} />
-      <Path path={parts.grille} style="stroke" strokeWidth={3} color="#5d616c" />
-      <Path path={parts.recess} color="#0e0f12" />
-      <Path path={parts.cab} style="stroke" strokeWidth={4} color="#70747f" opacity={0.9} />
-      {hi ? <Path path={parts.cab} style="stroke" strokeWidth={14} color={AMBER} opacity={0.9} /> : null}
+      <Wedge2WayTop shadow highlight={hi ? AMBER : undefined} highlightW={14} />
     </Group>
   );
 }

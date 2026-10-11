@@ -25,6 +25,7 @@
  */
 import type { ReactElement } from 'react';
 import { Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { wedgeParts } from '../wedge2Way';
 import type { Vec3 } from '../../../engine/model/types.ts';
 import { KitSide, KitTop } from '../kitScene/KitSceneArt';
 import { DrumExterior } from '../drums/DrumArt';
@@ -469,8 +470,18 @@ export function bandGearPlan(b: BandBatch, g: Gear, T: BandTools) {
       break;
     }
     case 'wedge': {
-      put(b.mat.tolex, T.rr(-w, -d, w, d, 26));
-      put(b.mat.cloth, T.rr(-w + 26, -d + 18, w - 26, d * 0.35, 14));
+      // A 2-way floor wedge (shared/wedge2Way.tsx), drawn in this gear's
+      // footprint: the parts are built front +x, so turned to front −y.
+      const q = wedgeParts(S.w, S.d);
+      const turn = (p: SkPath) => {
+        const c = p.copy();
+        c.transform(Skia.Matrix().rotate(-Math.PI / 2));
+        return c;
+      };
+      put(b.mat.tolex, turn(q.cab));
+      put(b.mat.steel, turn(q.top));
+      put(b.mat.cloth, turn(q.baffle));
+      for (const k of ['woofer', 'horn', 'handles', 'panel'] as const) put(b.holes, turn(q[k]));
       break;
     }
     case 'di': {

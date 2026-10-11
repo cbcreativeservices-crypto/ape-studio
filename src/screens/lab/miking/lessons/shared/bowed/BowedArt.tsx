@@ -24,7 +24,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
-import { armPath, BOW_GRIP, FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headProfile, wristLimit, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
+import { armPath, BOW_GRIP, FIGURE_TONES, FigureMass, handShape, neckHand, FigureHead, headAbove, headProfile, wristLimit, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
 import type { Hand, HandKind } from '../players/playerPose.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { archAt, fbHalf, fingerboardZ, halfWidth, outline, stationsOf, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
@@ -563,6 +563,9 @@ export type HandHold = {
   /** A hand built in its own frame (a fretting hand laid along a neck seen from above): `hand` in local mm, placed by
    *  view = o + rotate(ang)·(u, mirror ? −v : v). Its wrist is where the forearm ends. */
   frame?: { o: P2; ang: number; mirror: boolean; hand: Hand };
+  /** The left hand on the NECK (PlayerFigure.neckHand): the four stops on the strings (index first), the neck's
+   *  direction toward the scroll and the side its strings face, in the view. */
+  neck?: { tips: P2[]; a: P2; b: P2; palmOver?: boolean };
 };
 export type PlayerOpts = { hands?: { L?: HandHold; R?: HandHold } };
 
@@ -574,7 +577,7 @@ function holdAnchor(kind: HandKind, dir: number): P2 {
   return [70, 0];
 }
 
-type HandAt = { wrist: P2; dir: number; kind: HandKind; depth?: number; fore: number; over?: boolean; frame?: HandHold['frame'] };
+type HandAt = { wrist: P2; dir: number; kind: HandKind; depth?: number; fore: number; over?: boolean; frame?: HandHold['frame']; neck?: ReturnType<typeof neckHand>; palmOver?: boolean };
 /** A hand's own frame → the view (HandHold.frame). */
 function frameMatrix(f: NonNullable<HandHold['frame']>) {
   return Skia.Matrix().translate(f.o[0], f.o[1]).rotate(f.ang).scale(1, f.mirror ? -1 : 1);
@@ -657,6 +660,12 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   // anatomy): the hand turns about what it holds until it is within that.
   const wristOf2 = (h: Vec3, elbow: Vec3, hold: HandHold | undefined): HandAt => {
     const e = q(elbow);
+    if (hold?.neck) {
+      const P2p = (z: P2) => ({ u: z[0], v: z[1] });
+      const nh = neckHand(hold.neck.tips.map(P2p), P2p(hold.neck.a), P2p(hold.neck.b), P2p(e));
+      const w: P2 = [nh.wrist.u, nh.wrist.v];
+      return { wrist: w, dir: nh.dir, kind: hold.kind, depth: hold.depth, fore: Math.atan2(w[1] - e[1], w[0] - e[0]), neck: nh, palmOver: hold.neck.palmOver };
+    }
     if (hold?.frame) {
       const w = frameAt(hold.frame, [hold.frame.hand.wrist.u, hold.frame.hand.wrist.v]);
       return { wrist: w, dir: hold.frame.hand.dir, kind: hold.kind, depth: hold.depth, fore: Math.atan2(w[1] - e[1], w[0] - e[0]), over: hold.over, frame: hold.frame };
@@ -723,6 +732,17 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
   if (withRightArm) arm('R', s.shoulderR, s.elbowR, s.handR, wR.wrist, wR.depth);
   const instDepth = depthOf(view, { x: 0, y: 0, z: 0 });
   const hand = (key: string, h: Vec3, w: HandAt) => {
+    if (w.neck) {
+      // The palm behind the neck (over its own forearm), the arched fingers over the board.
+      const bb = (p: SkPath) => {
+        const r = p.getBounds();
+        return { u0: r.x, v0: r.y, u1: r.x + r.width, v1: r.y + r.height };
+      };
+      // (From above, a neck seen end-on: the back of the hand lies beside it, in view.)
+      g.push({ key: `${key}Palm`, depth: w.palmOver ? instDepth + 0.4 : instDepth - 0.5, items: [{ path: w.neck.behind, fill: SKIN, box: bb(w.neck.behind), tone: 'skin' }] });
+      g.push({ key, depth: instDepth + 0.5, items: [{ path: w.neck.front, fill: SKIN, box: bb(w.neck.front), tone: 'skin', lines: w.neck.lines }] });
+      return;
+    }
     let hs: ReturnType<typeof handShape>;
     if (w.frame) {
       hs = handShape(w.frame.hand);
@@ -830,12 +850,48 @@ export function PaintItem({ it }: { it: Item }) {
  */
 function neckHold(P: Posture, view: ViewId, instDepth: number): HandHold | undefined {
   if (!P.player) return undefined;
-  if (view === 'top') return neckHoldAbove(P, view);
-  const hb = toB(P.ax, P.player.handL);
-  const face = toLesson(P.ax, { x: hb.x, y: hb.y, z: stringZ(P.spec, hb.x) + 10 });
-  const a = prj(view, P.player.handL);
-  const b = prj(view, face);
-  return { kind: 'wrap', dir: Math.atan2(b[1] - a[1], b[0] - a[0]), at: b, depth: instDepth - 1 };
+  if (view === 'top') return neckHoldAbove(P, view, instDepth);
+  return neckHoldAlong(P, view, instDepth);
+}
+
+/** The four stops a hand in first position covers near the skeleton's hand
+ *  (B frame x, index nearest the nut): a hand's span, wider on the larger
+ *  instruments. */
+function stopsOf(P: Posture): number[] {
+  const { st } = P;
+  const hb = toB(P.ax, P.player!.handL);
+  const gap = Math.min(40, Math.max(24, st.nutX * 0.075));
+  const c = Math.min(st.nutX - 1.5 * gap - 12, Math.max(st.nutX * 0.55, hb.x));
+  return [1.5, 0.5, -0.5, -1.5].map((k) => c + k * gap);
+}
+
+/**
+ * The left hand on the neck in the SIDE view (owner 2026-10-10: the violin's
+ * left hand was upside down; the cello, viola and bass the same): the palm
+ * facing the neck on its far side with the thumb behind it, the wrist
+ * straight with the forearm, the fingers rising from behind the board and
+ * arching OVER it, tips pressing down onto the strings — PlayerFigure.neckHand.
+ */
+function neckHoldAlong(P: Posture, view: ViewId, instDepth: number): HandHold | undefined {
+  const { spec, st } = P;
+  const onStrings = (x: number) => prj(view, toLesson(P.ax, { x, y: 0, z: stringZ(spec, x) }));
+  const xs = stopsOf(P);
+  const tips = xs.map(onStrings);
+  const n0 = onStrings(st.nutX);
+  const n1 = onStrings(st.nutX - 100);
+  const al = Math.hypot(n0[0] - n1[0], n0[1] - n1[1]);
+  if (al < 30) return undefined; // the neck end-on: nothing to arch over
+  const a: P2 = [(n0[0] - n1[0]) / al, (n0[1] - n1[1]) / al];
+  // The side the strings face, square to the neck in the picture.
+  const c = (xs[1] + xs[2]) / 2;
+  const up = prj(view, toLesson(P.ax, { x: c, y: 0, z: stringZ(spec, c) + 100 }));
+  const base = onStrings(c);
+  let b: P2 = [up[0] - base[0], up[1] - base[1]];
+  const along = b[0] * a[0] + b[1] * a[1];
+  b = [b[0] - a[0] * along, b[1] - a[1] * along];
+  const bl = Math.hypot(b[0], b[1]);
+  b = bl > 5 ? [b[0] / bl, b[1] / bl] : [a[1], -a[0]][1] < 0 ? [a[1], -a[0]] : [-a[1], a[0]];
+  return { kind: 'wrap', neck: { tips, a, b }, depth: instDepth - 1 };
 }
 
 /**
@@ -847,7 +903,7 @@ function neckHold(P: Posture, view: ViewId, instDepth: number): HandHold | undef
  * the wrist beside the neck on the elbow's side. Built as the shared
  * fretting hand ('fret') in a frame laid along the projected neck.
  */
-function neckHoldAbove(P: Posture, view: ViewId): HandHold | undefined {
+function neckHoldAbove(P: Posture, view: ViewId, instDepth: number): HandHold | undefined {
   const pl = P.player;
   if (!pl) return undefined;
   const { spec, st } = P;
@@ -856,8 +912,10 @@ function neckHoldAbove(P: Posture, view: ViewId): HandHold | undefined {
   const a = prj(view, at3(st.nutX - 100));
   const ang = Math.atan2(a[1] - o[1], a[0] - o[0]); // local +u: from the nut toward the bridge
   const sU = Math.hypot(a[0] - o[0], a[1] - o[1]) / 100; // the neck's foreshortening
-  // The neck steep (cello, bass) is nearly end-on from above: no board to lay the fingers along; the open hand stays.
-  if (sU < 0.7) return undefined;
+  // The neck steep (cello, bass) is nearly end-on from above: the hand seen
+  // from above wraps it — the palm on the elbow's side, the fingers round
+  // onto the strings' face (the same hand, its four stops stacked down the neck).
+  if (sU < 0.7) return neckHoldEndOn(P, view, instDepth);
   const n: P2 = [-Math.sin(ang), Math.cos(ang)];
   const e = prj(view, pl.elbowL);
   const side = (e[0] - o[0]) * n[0] + (e[1] - o[1]) * n[1] >= 0 ? 1 : -1;
@@ -874,6 +932,31 @@ function neckHoldAbove(P: Posture, view: ViewId): HandHold | undefined {
   const cu = (tips[0] + tips[3]) / 2;
   const hand: Hand = { wrist: { u: cu + 20, v: half + 96 }, dir: Math.atan2(-1, -0.22), kind: 'fret', board: { v: 0, half, tips } };
   return { kind: 'fret', over: true, frame: { o, ang, mirror: side < 0, hand } };
+}
+
+/** The neck nearly end-on from above (cello, bass): the strings' face points
+ *  `b` (the projected board normal), the fingers arch round to it from the
+ *  elbow's side. */
+function neckHoldEndOn(P: Posture, view: ViewId, instDepth: number): HandHold | undefined {
+  const pl = P.player!;
+  const { spec } = P;
+  const xs = stopsOf(P);
+  const c = (xs[1] + xs[2]) / 2;
+  const base = prj(view, toLesson(P.ax, { x: c, y: 0, z: stringZ(spec, c) }));
+  const up = prj(view, toLesson(P.ax, { x: c, y: 0, z: stringZ(spec, c) + 100 }));
+  const bl = Math.hypot(up[0] - base[0], up[1] - base[1]);
+  if (bl < 20) return undefined;
+  const b: P2 = [(up[0] - base[0]) / bl, (up[1] - base[1]) / bl];
+  // "Along the neck" in the picture: across, toward the elbow's side, so the palm lies there.
+  const e = prj(view, pl.elbowL);
+  let a: P2 = [-b[1], b[0]];
+  if ((e[0] - base[0]) * a[0] + (e[1] - base[1]) * a[1] < 0) a = [-a[0], -a[1]];
+  // The four tips stack down the neck: from above they nearly coincide, a few millimetres apart across it.
+  const tips = xs.map((x, i) => {
+    const t = prj(view, toLesson(P.ax, { x, y: 0, z: stringZ(spec, x) }));
+    return [t[0] - a[0] * (i * 7), t[1] - a[1] * (i * 7)] as P2;
+  });
+  return { kind: 'wrap', neck: { tips, a, b, palmOver: true }, depth: instDepth - 1 };
 }
 
 /**

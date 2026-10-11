@@ -28,7 +28,6 @@ import {
   FloorProtector,
   JHook,
   ZipTieSide,
-  catenary,
 } from './cableArt';
 
 const VW = 360;
@@ -85,30 +84,35 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
 
   const rTray1 = useReveal({ delay: 210, dur: 760 }, run, reduce);
   const rTray2 = useReveal({ delay: 280, dur: 760 }, run, reduce);
-  const rDrop = useReveal({ delay: 620, dur: 300 }, run, reduce);
   const rRaceway = useReveal({ delay: 360, dur: 420 }, run, reduce);
   const rFloor = useReveal({ delay: 430, dur: 620 }, run, reduce);
   const rFloor2 = useReveal({ delay: 600, dur: 420 }, run, reduce);
   const rPower = useReveal({ delay: 740, dur: 620 }, run, reduce);
 
   // Routes, authored as waypoints so every turn has a real bend radius.
+  // Two lanes in the tray, straight and a lane apart (owner 2026-10-10: every
+  // cable its own traceable line, dressed as a pro would): over the rack's
+  // top edge, each turns down concentrically onto its OWN patch jack — the
+  // lower (inner) lane onto jack 1, the upper lane onto jack 2.
   const trayRunA = useMemo(
     () => [
-      { x: 40, y: 34 },
-      { x: 140, y: 35.5 },
-      { x: 250, y: 34 },
-      { x: 276, y: 36 },
-      { x: 292, y: 48 },
+      { x: 40, y: 32.5 },
+      { x: 150, y: 32.5 },
+      { x: 262, y: 32.5 },
+      { x: 294, y: 35.5 },
+      { x: 305, y: 46 },
+      { x: 306, y: 59 },
     ],
     [],
   );
   const trayRunB = useMemo(
     () => [
       { x: 40, y: 41 },
-      { x: 140, y: 42.5 },
-      { x: 248, y: 41 },
-      { x: 280, y: 44 },
-      { x: 300, y: 58 },
+      { x: 150, y: 41 },
+      { x: 258, y: 41 },
+      { x: 288, y: 43.5 },
+      { x: 298.4, y: 51 },
+      { x: 299, y: 59 },
     ],
     [],
   );
@@ -155,8 +159,6 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
     ],
     [],
   );
-  // A service loop at the rack — slack left on purpose for the next technician.
-  const serviceLoop = useMemo(() => catenary({ x: 292, y: 48 }, { x: 300, y: 58 }, 9, 6), []);
 
   return (
     <Canvas accessible
@@ -254,12 +256,11 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
         </Group>
 
         {/* ── the runs, installing themselves in work order ── */}
-        <Cable points={trayRunA} d={7.5} jacket="mic" reveal={rTray1} shadow={false} />
-        <Cable points={trayRunB} d={6.5} jacket="network" reveal={rTray2} shadow={false} />
+        <Cable points={trayRunA} d={5.6} jacket="mic" reveal={rTray1} shadow={false} />
+        <Cable points={trayRunB} d={5.2} jacket="network" reveal={rTray2} shadow={false} />
         <Cable points={racewayRun} d={6.5} jacket="line" reveal={rRaceway} shadow={false} />
         <Cable points={floorRun} d={8.5} jacket="line" reveal={rFloor} />
         <Cable points={floorRun2} d={8.5} jacket="line" reveal={rFloor2} />
-        <Cable points={serviceLoop} d={6} jacket="mic" reveal={rDrop} shadow={false} />
         <Cable points={powerRun} d={7.5} jacket="power" matte reveal={rPower} shadow={false} />
 
         {/* the raceway's front lip, closing over the seated run */}
@@ -271,9 +272,10 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
 
         {/* dressed at the tray, exactly as the lab will teach it */}
         <Group opacity={fProtect}>
-          <ZipTieSide cx={92} cy={38} halfH={7.5} strap={2.6} tail="trimmed" />
-          <ZipTieSide cx={186} cy={38} halfH={7.5} strap={2.6} tail="trimmed" />
-          <ZipTieSide cx={244} cy={38} halfH={7.5} strap={2.6} tail="trimmed" />
+          {/* ties at even intervals along the tray */}
+          {[70, 130, 190, 250].map((cx) => (
+            <ZipTieSide key={cx} cx={cx} cy={36.75} halfH={7.6} strap={2.6} tail="trimmed" />
+          ))}
           {/* protection where the floor run crosses the walkway */}
           <FloorProtector x={168} y={158} w={54} h={11} />
           {/* terminations — nothing in this lab ends in mid-air */}

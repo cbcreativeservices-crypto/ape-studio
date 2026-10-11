@@ -12,6 +12,7 @@
 import { useMemo, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from '../wedge2Way';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { VariantId } from '../../../engine/model/types.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
@@ -168,7 +169,12 @@ function Thing({ t, Drums, variant }: { t: PlanThing; Drums: (p: { view: 'top'; 
     case 'sidefill':
       return cabinet(t.u, t.v, 520, 420, t.face ?? 0);
     case 'wedge':
-      return cabinet(t.u, t.v, 560, 300, t.face ?? 0);
+      // a 2-way floor wedge at true size, not an amp box (shared/wedge2Way.tsx)
+      return (
+        <Group transform={[{ translateX: t.u }, { translateY: t.v }, { rotate: t.face ?? 0 }]}>
+          <Wedge2WayTop shadow />
+        </Group>
+      );
     case 'keys': {
       const keys = make();
       for (let k = 0; k < 18; k++) keys.addRect(Skia.XYWHRect(t.u - 440 + k * 49, t.v - 60, 44, 120));

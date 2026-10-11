@@ -87,17 +87,51 @@ function PlanSub({ id, lit }: { id: string; lit: boolean }) {
   );
 }
 
-/** A floor wedge from above: the sloped top reads by its shading — light at
- *  the tall back edge, dark at the low front lip, a horn slot on the face. */
-function PlanWedge({ id, lit }: { id: string; lit: boolean }) {
+/**
+ * A 2-way floor wedge (12" + 1") from above, in true proportion — 600 mm
+ * wide × 420 mm deep (owner 2026-10-10: a stage wedge, not a guitar amp).
+ * Local frame: centred on (0, 0), `w` wide, FRONT toward −y (the performer).
+ * The baffle slopes up toward the performer at ~45°, so from above it fills
+ * the front ~70 % of the footprint, foreshortened: the woofer reads as an
+ * ellipse, the HF horn's rectangular mouth sits above it on the high side,
+ * all behind a framed grille. The flat top panel is the rear strip, with
+ * the recessed input panel and its connector at (0, wedgeJackY(w)) — where
+ * the feed lands. Handle recesses in both sides.
+ */
+export const wedgeDepth = (w: number) => w * 0.7;
+export const wedgeJackY = (w: number) => wedgeDepth(w) / 2 - w * 0.07;
+export function Wedge2WayPlan({ w, stroke = '#000', lit = false }: { w: number; stroke?: string; lit?: boolean }) {
+  const d = wedgeDepth(w);
+  const x0 = -w / 2;
+  const y0 = -d / 2;
+  const k = w / 19.2; // drawn on the 600 mm = 19.2 unit module
+  const top = y0 + d * 0.7;
+  const jy = wedgeJackY(w);
   return (
     <G>
-      <Ellipse cx={32} cy={48} rx={16} ry={3} fill="#000" opacity={0.35} />
-      <Polygon points="19,16 45,16 43,46 21,46" fill={`url(#${id}-slope)`} stroke="#000" strokeWidth={0.7} />
-      <Line x1={19.6} y1={16.6} x2={44.4} y2={16.6} stroke="#fff" strokeWidth={0.9} opacity={0.22} />
-      <Rect x={26} y={34} width={12} height={4} rx={1} fill="#0b0c0f" />
-      <Rect x={20.5} y={44} width={23} height={2.4} fill="#0b0c0f" />
-      {lit ? <Circle cx={40} cy={20} r={1.2} fill={INK.blue} /> : null}
+      <Rect x={x0 + 0.8 * k} y={y0 + 1.1 * k} width={w} height={d} rx={1.2 * k} fill="#000" opacity={0.4} />
+      <Rect x={x0} y={y0} width={w} height={d} rx={1.2 * k} fill="#1d1f24" stroke={stroke} strokeWidth={0.7 * k} />
+      <Rect x={x0 + 0.5 * k} y={top} width={w - 1 * k} height={y0 + d - top - 0.5 * k} rx={0.8 * k} fill="#30333a" />
+      <Rect x={x0 + 0.9 * k} y={y0 + 0.7 * k} width={w - 1.8 * k} height={top - y0 - 1.1 * k} rx={0.8 * k} fill="#131418" stroke="#4d5159" strokeWidth={0.55 * k} />
+      <Ellipse cx={0} cy={y0 + 3.9 * k} rx={4.6 * k} ry={3.1 * k} fill="#0b0c0f" stroke="#3d4148" strokeWidth={0.45 * k} />
+      <Ellipse cx={0} cy={y0 + 3.9 * k} rx={1.5 * k} ry={1 * k} fill="#24262c" />
+      <Rect x={-3.6 * k} y={y0 + 7.2 * k} width={7.2 * k} height={1.9 * k} rx={0.3 * k} fill="#0b0c0f" stroke="#3d4148" strokeWidth={0.4 * k} />
+      <Rect x={x0 - 0.1 * k} y={-1.4 * k} width={1 * k} height={3.4 * k} rx={0.4 * k} fill="#050506" />
+      <Rect x={x0 + w - 0.9 * k} y={-1.4 * k} width={1 * k} height={3.4 * k} rx={0.4 * k} fill="#050506" />
+      <Rect x={-2.4 * k} y={jy - 1.4 * k} width={4.8 * k} height={2.9 * k} rx={0.4 * k} fill="#0d0e11" stroke="#4a4e56" strokeWidth={0.35 * k} />
+      <Circle cx={0} cy={jy} r={0.95 * k} fill="#050506" stroke="#8d9199" strokeWidth={0.3 * k} />
+      {lit ? <Circle cx={w / 2 - 2.6 * k} cy={top + 1.6 * k} r={0.6 * k} fill={INK.blue} /> : null}
+    </G>
+  );
+}
+
+/** A floor wedge in the 64-unit glyph box: the 2-way wedge, FRONT toward +y
+ *  in the box (the plot turns it to face its performer), rear input panel
+ *  at the box's upper middle, where its feed arrives. */
+function PlanWedge({ lit }: { id: string; lit: boolean }) {
+  return (
+    <G transform="translate(32 31) rotate(180)">
+      <Wedge2WayPlan w={26} lit={lit} />
     </G>
   );
 }

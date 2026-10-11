@@ -8,15 +8,14 @@
  */
 import { useMemo } from 'react';
 import { BlurMask, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
-import { smoothPathD, tubeOutline, type Pt } from './hands.ts';
+import { smoothPathD, type Pt } from './hands.ts';
 import { SKIN, SKIN_RIM, SLEEVE, SLEEVE_RIM } from './Hand';
 import { PLAYER } from './geom.ts';
-import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { armPath, BARE_ARM, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 const fromD = (d: string) => Skia.Path.MakeFromSVGString(d) ?? Skia.Path.Make();
 const TROUSER = ['#3a3f4a', '#23272f', '#14161b'];
-const tube = (a: Pt, b: Pt, w0: number, w1: number) => fromD(smoothPathD(tubeOutline([a, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], b], w0, w1)));
 
 /** The standing player seen from the right: legs, torso, neck, head. The
  *  near (right) arm is drawn separately (Arm2D), over the torso. */
@@ -146,9 +145,9 @@ export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?:
     cut.lineTo(c3[0], c3[1]);
     cut.close();
     const sleeve = Skia.Path.MakeFromOp(cap, cut, PathOp.Difference) ?? cap;
-    const upper = tube(s, e, 84, 74);
-    const fore = tube(e, w, 74, 56);
-    const skin = Skia.Path.MakeFromOp(upper, fore, PathOp.Union) ?? upper;
+    // The bare arm: the shared anatomical outline (owner 2026-10-10) — the
+    // elbow's point and crook, the forearm's swell, the narrow wrist.
+    const skin = armPath(pt(s[0], s[1]), pt(e[0], e[1]), pt(w[0], w[1]), BARE_ARM);
     // The hem's shadow on the arm just below it.
     const hemShade = Skia.Path.MakeFromOp(skin, (() => {
       const q = Skia.Path.Make();

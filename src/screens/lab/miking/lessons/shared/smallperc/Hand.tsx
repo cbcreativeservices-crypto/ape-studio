@@ -13,7 +13,8 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import { FIGURE_SKIN } from '../players/PlayerFigure';
+import { FIGURE_SKIN, forearmPath } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 import { nailOutline, placePt, smoothPathD, tubeOutline, type HandGeo, type Placement, type Pt } from './hands.ts';
 
 /** Skin, lit from the upper left: the SHARED figure skin, the tone the
@@ -102,13 +103,13 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
   const b = useMemo(() => build(geo, pl), [geo, pl]);
   const arm = useMemo(() => {
     if (!forearm) return null;
-    const p = Skia.Path.Make();
-    p.moveTo(forearm.from[0], forearm.from[1]);
-    // End just inside the wrist so the hand's body covers the cap.
+    // The forearm: the shared anatomical forearm (owner 2026-10-10) — its
+    // swell in the upper third, tapering to the wrist; it ends just inside
+    // the wrist so the hand's body covers it.
+    const p = forearmPath(pt(forearm.from[0], forearm.from[1]), pt(pl.at[0], pl.at[1]), forearm.w);
     const dx = pl.at[0] - forearm.from[0];
     const dy = pl.at[1] - forearm.from[1];
     const l = Math.hypot(dx, dy) || 1;
-    p.lineTo(pl.at[0] + (dx / l) * 6, pl.at[1] + (dy / l) * 6);
     const sl = forearm.sleeve ?? 0;
     const sleeve = Skia.Path.Make();
     if (sl > 0) {
@@ -132,10 +133,10 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
       {heldBehind ? held : null}
       {arm ? (
         <>
-          <Path path={arm.p} style="stroke" strokeWidth={arm.w + 3.2} strokeCap="round" color={SKIN_RIM} />
-          <Path path={arm.p} style="stroke" strokeWidth={arm.w} strokeCap="round">
+          <Path path={arm.p}>
             <LinearGradient start={vec(arm.from[0], arm.from[1] - arm.w)} end={vec(arm.to[0], arm.to[1] + arm.w)} colors={SKIN} />
           </Path>
+          <Path path={arm.p} style="stroke" strokeWidth={1.6} color={SKIN_RIM} />
           {arm.sl > 0 ? (
             <>
               <Path path={arm.sleeve} style="stroke" strokeWidth={arm.w + 14} strokeCap="butt" color={SLEEVE_RIM} />

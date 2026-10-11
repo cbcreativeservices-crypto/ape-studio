@@ -16,7 +16,7 @@ import { useMemo } from 'react';
 import type { ViewId } from '../../../engine/model/types.ts';
 import type { LuteScene } from './luteModel.ts';
 import { DEG, ep, make, PAL, rr, smooth, type Pt, type SkPath } from './luteDraw';
-import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headFront, limb as limbPath } from '../players/PlayerFigure';
+import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headFront, limb as limbPath, splitArm } from '../players/PlayerFigure';
 
 /** The figure's own head (FigureHead: one skin mass, the same look as the
  *  body). Front: facing the audience, its neck down to `neckY` (default just
@@ -38,15 +38,15 @@ export function Limb({ pts, w }: { pts: Pt[]; w: number }) {
 }
 
 /** A hand seen from its back, the fingers together, pointing `rot`°. */
-export function Hand({ x, y, r, rot = 0 }: { x: number; y: number; r: number; rot?: number }) {
+export function Hand({ x, y, r, rot = 0, fore }: { x: number; y: number; r: number; rot?: number; /** The forearm's direction in the view (rad): the wrist leaves its cuff. */ fore?: number }) {
   const h = useMemo(() => {
     const dir = rot * DEG;
     // The shared hand is true size (about 15 cm long): scaled to this
     // figure's hand radius so the drawing's proportions are kept.
     const k = r / 40;
-    const hs = handShape({ wrist: { u: -70, v: 0 }, dir: 0, kind: 'rest' });
+    const hs = handShape({ wrist: { u: -70, v: 0 }, dir: 0, kind: 'rest' }, fore === undefined ? undefined : fore - dir);
     return { hs, k, dir };
-  }, [r, rot]);
+  }, [r, rot, fore]);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: h.dir }, { scale: h.k }]}>
       <FigureMass path={h.hs.path} tone="skin" contour={2} />
@@ -82,11 +82,52 @@ export function Fingers({ at, dir, across, n = 3 }: { at: Pt; dir: Pt; across: n
   );
 }
 
+/* ═══════════════════════ the arms ═══════════════════════ */
+
+/** The pluck hand's wrist in the view (the Hand's wrist at −70 mm along it). */
+function pluckWrist(pH: Pt, rot: number): Pt {
+  const a = rot * DEG;
+  return [pH[0] - 70 * Math.cos(a), pH[1] - 70 * Math.sin(a)];
+}
+
+/**
+ * Both ARMS as the shared anatomical arm (owner 2026-10-10: the lute players'
+ * arms were tubes): shoulder → elbow → the hand's own wrist, one outline each
+ * (the elbow's point and crook, the forearm's swell, the cuff short of the
+ * wrist). The upper arm is painted behind the instrument (PlayerBack, the
+ * whole outline) and the forearm over it (PlayerHands, the outline clipped
+ * to the forearm's side of the elbow) — no seam.
+ */
+export type LuteArmOpts = { fretDir: Pt; across: number; pluckRot: number };
+function luteArms(sc: LuteScene, view: ViewId, o: LuteArmOpts) {
+  const f = sc.fit;
+  const sR = ep(view, f.shoulderR);
+  const sL = ep(view, f.shoulderL);
+  const eR = ep(view, f.elbowR);
+  const eL = ep(view, f.elbowL);
+  const pH = ep(view, f.pluckHand);
+  const fH = ep(view, f.fretHand);
+  const z0 = f.torso.min.z;
+  const z1 = f.torso.max.z;
+  const rootR: Pt = view === 'side' ? [sR[0] - 5, sR[1] + 20] : [sR[0] + 10, (z0 + z1) / 2];
+  const rootL: Pt = view === 'side' ? [sL[0] + 5, sL[1] + 20] : [sL[0] - 10, (z0 + z1) / 2];
+  const wR = pluckWrist(pH, o.pluckRot);
+  const wL = fretWrist(fH, o.fretDir, o.across);
+  const P = (q: Pt) => ({ u: q[0], v: q[1] });
+  return {
+    R: splitArm(P(rootR), P(eR), P(wR)),
+    L: splitArm(P(rootL), P(eL), P(wL)),
+    foreR: Math.atan2(wR[1] - eR[1], wR[0] - eR[0]),
+    foreL: Math.atan2(wL[1] - eL[1], wL[0] - eL[0]),
+  };
+}
+
 /* ═══════════════════════ the figure behind the instrument ═══════════════════════ */
 
 /** Drawn BEFORE the instrument: torso, legs, the upper arms, the head. */
-export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
+export function PlayerBack({ sc, view, arms }: { sc: LuteScene; view: ViewId; arms?: LuteArmOpts }) {
   const f = sc.fit;
+  const A = arms ? luteArms(sc, view, arms) : null;
   const hc = ep(view, f.head.c);
   const sR = ep(view, f.shoulderR);
   const sL = ep(view, f.shoulderL);
@@ -134,8 +175,17 @@ export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
         {shoes.map((p, i) => (
           <FigureMass key={`shoe${i}`} path={p} tone="shoe" />
         ))}
-        <Limb pts={[[sR[0] - 5, sR[1] + 20], eR]} w={88} />
-        <Limb pts={[[sL[0] + 5, sL[1] + 20], eL]} w={88} />
+        {A ? (
+          <>
+            <FigureMass path={A.R.path} tone="shirt" />
+            <FigureMass path={A.L.path} tone="shirt" />
+          </>
+        ) : (
+          <>
+            <Limb pts={[[sR[0] - 5, sR[1] + 20], eR]} w={88} />
+            <Limb pts={[[sL[0] + 5, sL[1] + 20], eL]} w={88} />
+          </>
+        )}
         <Head cx={hc[0]} cy={hc[1]} r={f.head.r} neckY={sR[1] - 26} />
       </Group>
     );
@@ -163,8 +213,17 @@ export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
         <Fig key={`th${i}`} path={p} tone="trousers" />
       ))}
       <Fig path={shoulders} />
-      <Limb pts={[[sR[0] + 10, (z0 + z1) / 2], eR]} w={82} />
-      <Limb pts={[[sL[0] - 10, (z0 + z1) / 2], eL]} w={82} />
+      {A ? (
+        <>
+          <FigureMass path={A.R.path} tone="shirt" />
+          <FigureMass path={A.L.path} tone="shirt" />
+        </>
+      ) : (
+        <>
+          <Limb pts={[[sR[0] + 10, (z0 + z1) / 2], eR]} w={82} />
+          <Limb pts={[[sL[0] - 10, (z0 + z1) / 2], eL]} w={82} />
+        </>
+      )}
       <Head cx={hc[0]} cy={hc[1]} r={f.head.r * 0.95} above />
     </Group>
   );
@@ -189,7 +248,7 @@ function fretWrist(at: Pt, dir: Pt, across: number): Pt {
  * from the knuckle row and curling over onto the strings at four stops, the
  * thumb behind the neck (hidden) — laid along the neck at `at`.
  */
-function FretHand({ at, dir, across }: { at: Pt; dir: Pt; across: number }) {
+function FretHand({ at, dir, across, fore }: { at: Pt; dir: Pt; across: number; fore?: number }) {
   const a = Math.atan2(dir[1], dir[0]);
   const hs = useMemo(() => {
     const k = 0.9;
@@ -198,8 +257,8 @@ function FretHand({ at, dir, across }: { at: Pt; dir: Pt; across: number }) {
     // old finger stroke spanned it ±0.65 of the neck): the board's centre is
     // half a neck above it.
     const bv = -half;
-    return handShape({ wrist: { u: 34, v: bv + half + 82 }, dir: -Math.PI / 2, kind: 'fret', board: { v: bv, half, tips: [-52, -18, 16, 50] } });
-  }, [across]);
+    return handShape({ wrist: { u: 34, v: bv + half + 82 }, dir: -Math.PI / 2, kind: 'fret', board: { v: bv, half, tips: [-52, -18, 16, 50] } }, fore === undefined ? undefined : fore - a);
+  }, [across, fore, a]);
   return (
     <Group transform={[{ translateX: at[0] }, { translateY: at[1] }, { rotate: a }, { scale: 0.9 }]}>
       <FigureMass path={hs.path} tone="skin" contour={2} />
@@ -212,16 +271,19 @@ function FretHand({ at, dir, across }: { at: Pt; dir: Pt; across: number }) {
  *  neck's direction in this view; `across` the neck's width there. */
 export function PlayerHands({ sc, view, fretDir, across, pluckRot = 25 }: { sc: LuteScene; view: ViewId; fretDir: Pt; across: number; pluckRot?: number }) {
   const f = sc.fit;
-  const eR = ep(view, f.elbowR);
-  const eL = ep(view, f.elbowL);
   const pH = ep(view, f.pluckHand);
   const fH = ep(view, f.fretHand);
+  const A = luteArms(sc, view, { fretDir, across, pluckRot });
   return (
     <Group opacity={0.95}>
-      <Limb pts={[eR, [pH[0] - 18, pH[1] - 8]]} w={74} />
-      <Hand x={pH[0]} y={pH[1]} r={40} rot={pluckRot} />
-      <Limb pts={[eL, fretWrist(fH, fretDir, across)]} w={66} />
-      <FretHand at={fH} dir={fretDir} across={across} />
+      <Group clip={A.R.foreSide}>
+        <FigureMass path={A.R.path} tone="shirt" />
+      </Group>
+      <Hand x={pH[0]} y={pH[1]} r={40} rot={pluckRot} fore={A.foreR} />
+      <Group clip={A.L.foreSide}>
+        <FigureMass path={A.L.path} tone="shirt" />
+      </Group>
+      <FretHand at={fH} dir={fretDir} across={across} fore={A.foreL} />
     </Group>
   );
 }

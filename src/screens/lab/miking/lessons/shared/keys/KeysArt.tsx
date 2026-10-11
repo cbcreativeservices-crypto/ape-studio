@@ -29,7 +29,7 @@ import { SPK } from '../speakers/SpeakerArt';
 import { OVAL_SPOTS, SPEAKER_OVAL_4x8 as OV } from './keysSpec.ts';
 import { RHODES_FRONT, RHODES_TOP, WURLI_FRONT, type KeyRects, type Rect } from './keysGeometry.ts';
 import { C_BASS, C_TREBLE, FACE_TOP, OVAL_SECTION, PLAYER, W, onSpeaker } from './wurliModel.ts';
-import { FigureHead, FigureMass, headAbove, headProfile, limb, type FigureTone } from '../players/PlayerFigure';
+import { armPath, FIGURE_TONES, FigureHead, FigureMass, handShape, headAbove, headProfile, limb, type FigureTone } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -755,7 +755,7 @@ type Built = {
   playerLine: SkPath;
   /** The seated player's body masses in the house figure style (round 2,
    *  2026-10-10; it was stick line art): drawn far → near. */
-  masses: { path: SkPath; tone: FigureTone; far?: boolean }[];
+  masses: { path: SkPath; tone: FigureTone; far?: boolean; lines?: SkPath }[];
   bench: SkPath;
   /** The player's head (PlayerFigure skin silhouette) at the origin, and
    *  where it sits (rot: radians, the from-above head's nose to −x). */
@@ -990,15 +990,29 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
     // a shoe ≈ 270 on the pedal): far arm first, then the torso, the near
     // leg and the near arm.
     const S = (x: number, y: number) => pt(x, y);
+    // The arms and hands (owner 2026-10-10): the shared anatomical arm —
+    // the elbow's point and crook, the forearm's swell, the cuff short of the
+    // wrist — and the shared hand, its fingers curved down onto the keys
+    // where the old hand ended (the fingertips at the front of the keys).
+    const keysHand = (tip: ReturnType<typeof pt>, elbow: ReturnType<typeof pt>) => {
+      const d = Math.PI; // toward the keys (−x)
+      const wrist = S(tip.u + 151, tip.v - 28);
+      return { wrist, hs: handShape({ wrist, dir: d, kind: 'keys' }, Math.atan2(wrist.v - elbow.v, wrist.u - elbow.u)) };
+    };
+    const farE = S(P.elbow.x + 10, P.elbow.y - 10);
+    const nearE = S(P.elbow.x, P.elbow.y);
+    const farH = keysHand(S(P.hand.x - 60, P.hand.y + 4), farE);
+    const nearH = keysHand(S(P.hand.x - 70, P.hand.y + 12), nearE);
     const masses: Built['masses'] = [
-      { path: limb([S(P.shoulder.x - 10, P.shoulder.y + 25), S(P.elbow.x + 10, P.elbow.y - 10), S(P.hand.x + 30, P.hand.y - 15)], [46, 38, 30]), tone: 'shirt', far: true },
+      { path: armPath(S(P.shoulder.x - 10, P.shoulder.y + 25), farE, farH.wrist), tone: 'shirt', far: true },
+      { path: farH.hs.path, tone: 'skin', far: true },
       { path: limb([S(P.hip.x + 10, P.hip.y), S(P.knee.x, P.knee.y), S(P.foot.x + 20, P.foot.y - 20)], [80, 58, 44]), tone: 'trousers', far: true },
       { path: limb([S(P.head.x + 5, P.head.y + 60), S(P.shoulder.x + 5, P.shoulder.y - 20)], [36, 44]), tone: 'skin' },
       { path: limb([S(P.shoulder.x + 5, P.shoulder.y + 10), S(P.hip.x + 15, P.hip.y - 10)], [118, 112]), tone: 'shirt' },
       { path: limb([S(P.hip.x, P.hip.y + 5), S(P.knee.x, P.knee.y), S(P.foot.x, P.foot.y - 25)], [84, 60, 46]), tone: 'trousers' },
       { path: limb([S(P.foot.x + 95, P.foot.y - 30), S(P.foot.x - 120, -78)], [42, 30]), tone: 'shoe' },
-      { path: limb([S(P.shoulder.x - 15, P.shoulder.y + 35), S(P.elbow.x, P.elbow.y), S(P.hand.x + 20, P.hand.y - 5)], [50, 40, 32]), tone: 'shirt' },
-      { path: limb([S(P.hand.x + 20, P.hand.y - 5), S(P.hand.x - 70, P.hand.y + 12)], [30, 22]), tone: 'skin' },
+      { path: armPath(S(P.shoulder.x - 15, P.shoulder.y + 35), nearE, nearH.wrist), tone: 'shirt' },
+      { path: nearH.hs.path, tone: 'skin', lines: nearH.hs.lines },
     ];
     const bench = make();
     rr(bench, 470, -500, 800, -470, 6);
@@ -1095,11 +1109,20 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
     // From above: the shoulders (≈ 450 × 220), the arms to the keys, the
     // hands, the thighs under them, in the house figure style.
     const T = (x: number, z: number) => pt(x, z);
+    // From above: the shared arm to the back of the shared hand over the keys.
+    const topArm = (sg: number) => {
+      const e = T(P.elbow.x, sg * P.elbow.z);
+      // The fingertips where the old hand ended (P.hand.x − 70): the hand goes no further over the keys.
+      const wrist = T(P.hand.x + 105, sg * P.hand.z);
+      const hs = handShape({ wrist, dir: Math.PI, kind: 'above' }, Math.atan2(wrist.v - e.v, wrist.u - e.u));
+      return { arm: armPath(T(P.shoulder.x - 10, sg * 180), e, wrist), hs };
+    };
+    const arms = [-1, 1].map(topArm);
     const masses: Built['masses'] = [
       ...[-1, 1].map((sg) => ({ path: limb([T(P.hip.x - 30, sg * 110), T(P.knee.x, sg * P.knee.z)], [82, 62]), tone: 'trousers' as FigureTone })),
       { path: limb([T(P.shoulder.x, -118), T(P.shoulder.x, 118)], [108, 108]), tone: 'shirt' },
-      ...[-1, 1].map((sg) => ({ path: limb([T(P.shoulder.x - 10, sg * 180), T(P.elbow.x, sg * P.elbow.z), T(P.hand.x + 20, sg * P.hand.z)], [50, 40, 32]), tone: 'shirt' as FigureTone })),
-      ...[-1, 1].map((sg) => ({ path: limb([T(P.hand.x + 20, sg * P.hand.z), T(P.hand.x - 70, sg * (P.hand.z - 10))], [30, 22]), tone: 'skin' as FigureTone })),
+      ...arms.map((a) => ({ path: a.arm, tone: 'shirt' as FigureTone })),
+      ...arms.map((a) => ({ path: a.hs.path, tone: 'skin' as FigureTone, lines: a.hs.lines })),
     ];
     const bench = rr(make(), 470, -380, 800, 380, 14);
     out = { floor: make(), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk, slots, player, playerLine, masses, bench, head, headAt: { x: P.head.x + 10, y: 0, rot: Math.PI / 2 }, act: actTop };
@@ -1128,7 +1151,10 @@ export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { v
           <Path path={g.bench} color="#2a2b31" opacity={0.85} />
           {/* The seated player in the house figure style (round 2: was stick line art). */}
           {g.masses.map((m, i) => (
-            <FigureMass key={i} path={m.path} tone={m.tone} far={m.far} contour={4} />
+            <Group key={i}>
+              <FigureMass path={m.path} tone={m.tone} far={m.far} contour={4} />
+              {m.lines ? <Path path={m.lines} style="stroke" strokeWidth={2.4} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} /> : null}
+            </Group>
           ))}
           <Group transform={[{ translateX: g.headAt.x }, { translateY: g.headAt.y }, { rotate: g.headAt.rot }]}>
             <FigureHead fill={g.head} />

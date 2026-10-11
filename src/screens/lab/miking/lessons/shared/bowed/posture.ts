@@ -237,6 +237,10 @@ export function underChin(spec: BowedSpec, tailDrop = 0, seat = false): Posture 
 }
 
 /* ── SEATED (cello) ── */
+/** The seated cellist sits TALL (mm): the collar, the shoulders and the head
+ *  raised over the hips (crown ≈ 950 mm over the seat) — owner 2026-10-10. */
+const SIT_UP = 110;
+
 export function seated(spec: BowedSpec): Posture {
   const st = stationsOf(spec);
   const D = Math.PI / 180;
@@ -265,7 +269,14 @@ export function seated(spec: BowedSpec): Posture {
   // The chest just behind the upper back.
   const back = B({ x: xu - 40, y: 0, z: -rib - spec.archBack.mm - 40 });
   const chest = v(back.x - 105, back.y + 15, 0);
-  const neck = v(chest.x + 15, chest.y - 290, 8);
+  // Sitting TALL (owner 2026-10-10: the scroll stood ≈ 115 mm over the crown
+  // and the neck crossed the face): the collar, and with it the shoulders and
+  // the head, SIT_UP higher; the cello, the bow and the mics stay where they
+  // are. Not moved BACK: the cello's neck leans back toward the player, so a
+  // head further back puts the neck across the face in the side view — here
+  // the neck passes just in front of the ear and the scroll is level with the
+  // top of the head, beside it.
+  const neck = v(chest.x + 15, chest.y - 290 - SIT_UP, 8);
   const head = v(neck.x + 30, neck.y - 165, 28);
   const shoulderL = v(neck.x - 15, neck.y + 45, -182);
   const shoulderR = v(neck.x - 15, neck.y + 45, 182);

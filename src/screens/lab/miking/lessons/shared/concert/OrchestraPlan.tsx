@@ -18,6 +18,7 @@
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from '../wedge2Way';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { SettingItem, Wedge } from '../../../engine/model/types.ts';
 import type { SettingPlanProps } from '../../../engine/scene/sceneTypes.ts';
@@ -308,25 +309,14 @@ function PaStack({ at, hi }: { at: PlanPt; hi: boolean }) {
   );
 }
 
-/** A floor wedge from above: cabinet, sloped grille toward `faces`. */
+/** A 2-way floor wedge from above, at true size (shared/wedge2Way.tsx):
+ *  its sloped baffle — woofer and horn behind the grille — facing `faces`,
+ *  the flat top panel and rear input at the back. */
 function WedgePlan({ at, faces, hi }: { at: PlanPt; faces: PlanPt; hi: boolean }) {
   const ang = Math.atan2(faces.v, faces.u);
-  const g = useMemo(() => {
-    const cab = rrect(make(), -150, -280, 150, 280, 18);
-    const grille = rrect(make(), -40, -258, 136, 258, 14);
-    const holes = make();
-    for (let x = -26; x < 128; x += 20) for (let z = -244; z < 250; z += 20) oval(holes, x, z, 4.2, 4.2);
-    return { cab, grille, holes };
-  }, []);
   return (
     <Group transform={[{ translateX: at.u }, { translateY: at.v }, { rotate: ang }]}>
-      <Path path={g.cab}>
-        <LinearGradient start={vec(-150, -280)} end={vec(150, 280)} colors={['#3b3e46', '#24262c', '#15161a']} />
-      </Path>
-      <Path path={g.grille} color="#0c0d10" />
-      <Path path={g.holes} color="#4a4e57" opacity={0.9} />
-      <Path path={g.cab} style="stroke" strokeWidth={6} color="#70747f" opacity={0.9} />
-      {hi ? <Path path={g.cab} style="stroke" strokeWidth={22} color={AMBER} opacity={0.9} /> : null}
+      <Wedge2WayTop highlight={hi ? AMBER : undefined} highlightW={22} />
     </Group>
   );
 }

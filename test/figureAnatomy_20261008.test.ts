@@ -322,7 +322,16 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(bowed, /export type HandHold = \{\s*kind: HandKind;/);
     assert.match(bowed, /arm\('L', s\.shoulderL, s\.elbowL, s\.handL, wL\.wrist, wL\.depth\)/, 'the forearm ends at the hand’s own wrist');
     assert.match(bowed, /const path = armPath\(P2pt\(S2\), P2pt\(E2\), P2pt\(w2\), view === 'top' \? TOP_ARM : SIDE_ARM\);/, 'each bowed/brass arm is ONE outline (a readable elbow), never two capsules');
-    assert.match(bowed, /return \{ kind: 'wrap', dir: Math\.atan2\(b\[1\] - a\[1\], b\[0\] - a\[0\]\), at: b, depth: instDepth - 1 \};/, 'the left hand wraps the neck from behind it');
+    // The left hand on the neck (owner 2026-10-10: "upside down"): the palm behind the neck, the wrist straight
+    // with the forearm, the fingers arching OVER the board and down onto the strings (side, and the cello/bass
+    // from above).
+    assert.match(bowed, /return \{ kind: 'wrap', neck: \{ tips, a, b \}, depth: instDepth - 1 \};/, 'the left hand wraps the neck from behind it');
+    const fig = read('shared/players/PlayerFigure.tsx');
+    const nh = fig.slice(fig.indexOf('export function neckHand('), fig.indexOf('/* ── the parts ── */'));
+    assert.match(nh, /const W = pt\(km\.u - d\.u \* 96, km\.v - d\.v \* 96\);/, 'the wrist on the elbow→knuckles line (straight)');
+    assert.match(nh, /const front = Skia\.Path\.MakeFromOp\(all, q, PathOp\.Intersect\)/, 'the fingers rise from behind the board');
+    assert.match(bowed, /depth: w\.palmOver \? instDepth \+ 0\.4 : instDepth - 0\.5, items: \[\{ path: w\.neck\.behind/, 'the palm is painted behind the instrument');
+    assert.match(bowed, /depth: instDepth \+ 0\.5, items: \[\{ path: w\.neck\.front/, 'the fingers over it');
     const brass = read('shared/brass/BrassArt.tsx');
     assert.doesNotMatch(brass, /<Paint opacity=\{0\.62\} \/>/, 'the brass player is opaque');
     assert.match(brass, /R: \{ kind: 'keys', dir: along - 1\.05, at: \[mid\[0\], mid\[1\] \+ 2\] \}/, 'the valve hand’s fingers on the buttons');
@@ -330,7 +339,10 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const low = read('shared/lowbrass/LowBrassArt.tsx');
     assert.doesNotMatch(low, /opacity=\{playerKeys\.has\(it\.key\) \? 0\.82 : 1\}/);
     assert.doesNotMatch(low, /limb\('hand[LR]', J\.wrist[LR], J\.hand[LR], 30, 36, SKIN\)/, 'no capsule (mitten) hands');
-    assert.match(low, /const hs = handShape\(\{ wrist: pt\(wrist\[0\], wrist\[1\]\), dir, kind \}\);/);
+    assert.match(low, /const hs = handShape\(\{ wrist: pt\(wrist\[0\], wrist\[1\]\), dir, kind \}, Math\.atan2\(wrist\[1\] - E\[1\], wrist\[0\] - E\[0\]\)\);/);
+    // Low brass arms are the shared anatomical arm (no tube arms, no round elbow knob).
+    assert.match(low, /const a = splitArm\(/);
+    assert.doesNotMatch(low, /limb\('upper[LR]'/);
     // Woodwinds: from the audience the fingers close round the tube.
     assert.match(read('shared/woodwinds/WindArt.tsx'), /kind: front \? \('grip' as const\) : \('above' as const\)/);
     // Boom operator (B04 B10 B11 F09): the elbow raised beside the head, never under the chin.

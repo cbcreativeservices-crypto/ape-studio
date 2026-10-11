@@ -186,6 +186,106 @@ function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bott
   );
 }
 
+/**
+ * Schematic geometry (Patchbay rack conversion, owner 2026-10-10). PAGE is
+ * the original drawing the document pages show; GLASS is the SAME picture
+ * re-flowed shorter for the Rack Unit's pinned glass — every element, label
+ * and colour is kept, only the vertical spacing tightens — so that at 340
+ * viewBox units it fits a ~300 pt glass at ≥ 1× (every label ≥ 9 pt on a
+ * 390-wide phone; the PAGE stack is 394 units tall and would have drawn its
+ * labels at ~6.6 pt on the glass).
+ */
+type PairGeo = { H: number; TOP_Y: number; BOT_Y: number; SRC_Y: number; DEST_Y: number };
+const GEO_PAGE: PairGeo = { H, TOP_Y, BOT_Y, SRC_Y: 10, DEST_Y: H - 44 };
+const GEO_GLASS: PairGeo = { H: 204, TOP_Y: 64, BOT_Y: 132, SRC_Y: 4, DEST_Y: 160 };
+/** The glass drawing's aspect, faceplate + gap + schematic. */
+export const PATCH_PAIR_GLASS_ASPECT = W / (FACE_H + FACE_GAP + GEO_GLASS.H);
+export const PATCH_PAIR_GLASS_ASPECT_BARE = W / GEO_GLASS.H;
+/** Height of the glass schematic for a drawing `w` wide (stacking helper). */
+export const pairGlassHeight = (w: number, hideFaceplate?: boolean) =>
+  (w * ((hideFaceplate ? 0 : FACE_H + FACE_GAP) + GEO_GLASS.H)) / W;
+
+/** The pair's status line — factual, derived from the resolved flow (the four
+ *  questions). An idle source gets an honest status: connections may exist,
+ *  signal doesn't. Shared by the page figure and the rack's readout. */
+export function pairStatus(state: PairState, sourceLabel: string, destLabel: string, sourceLive = true) {
+  const flow = resolvePair(state);
+  // RED only for the genuine hazard: a normal broken AND the destination left
+  // silent (see the color doctrine above). A silent-anyway source can't be
+  // silenced — no hazard when it's idle.
+  const hazard = flow.normalBroken && flow.destinationHears === 'nothing' && sourceLive;
+  const status = !sourceLive
+    ? flow.bottomFeedsDestination
+      ? `PATCHED — the cord feeds ${destLabel}; ${sourceLabel} itself is idle`
+      : `${flow.normalActive ? 'NORMAL CONNECTED' : flow.normalBroken ? 'NORMAL BROKEN' : 'NO CONNECTION'} — ${sourceLabel} is idle, nothing flows`
+    : flow.isSplit
+      ? `SPLIT — ${sourceLabel} feeds ${destLabel} AND the patch cord`
+      : flow.isMerge
+        ? `PARALLEL — ${destLabel} receives the normal AND the patch`
+        : flow.normalActive
+          ? `NORMAL INTACT — ${sourceLabel} → ${destLabel}, no cord required`
+          : flow.normalBroken
+            ? flow.destinationHears === 'patch'
+              ? `NORMAL BROKEN — the patch now feeds ${destLabel}`
+              : `NORMAL BROKEN — ${destLabel} hears nothing`
+            : flow.destinationHears === 'patch'
+              ? `PATCHED — the cord feeds ${destLabel}`
+              : flow.topFeedsPatch
+                ? `PATCHED — ${sourceLabel} goes only into the cord`
+                : `NO CONNECTION — thru pair, nothing patched`;
+  return { flow, status, hazard };
+}
+
+/** W16 (2026-09-18): Android-only live region. This status line is the answer
+ *  to the whole patchbay exercise — what is connected to what, and whether
+ *  anything is actually flowing — and on iOS it was silent. `status` is
+ *  derived from the resolved flow booleans, so it only changes when a cord
+ *  actually moves; keying on the string is enough. */
+function useAnnounceStatus(status: string) {
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(status);
+  }, [status]);
+}
+
+function StatusText({ status, flow, hazard }: ReturnType<typeof pairStatus>) {
+  return (
+    <Text
+      style={[
+        styles.status,
+        flow.isSplit && { color: PB.flow },
+        flow.normalBroken && { color: hazard ? PB.hazard : PB.break },
+      ]}
+      accessibilityLiveRegion="polite"
+    >
+      {status}
+    </Text>
+  );
+}
+
+/** The pair's READOUT for a rack page (the status line + the page's caption),
+ *  placed in the well where the figure's own status used to sit. One per
+ *  pair on the page — it announces the status. */
+export function PairStatus({ state, sourceLabel, destLabel, sourceLive = true, caption, title }: {
+  state: PairState;
+  sourceLabel: string;
+  destLabel: string;
+  sourceLive?: boolean;
+  caption?: string;
+  /** An eyebrow naming the pair when a page carries two (the processor chain). */
+  title?: string;
+}) {
+  const s = pairStatus(state, sourceLabel, destLabel, sourceLive);
+  useAnnounceStatus(s.status);
+  return (
+    <View style={styles.readout}>
+      {title ? <Text style={styles.readoutTitle}>{title}</Text> : null}
+      <StatusText {...s} />
+      {caption ? <Text style={styles.caption}>{caption}</Text> : null}
+    </View>
+  );
+}
+
 export type PatchPairViewProps = {
   state: PairState;
   /** Device names on the pair's rear — e.g. "CONSOLE OUT 1" / "INTERFACE IN 1". */
@@ -216,11 +316,21 @@ export type PatchPairViewProps = {
   fsTitle?: string;
 };
 
-export function PatchPairView({
-  state, sourceLabel, destLabel, topPatchLabel = 'PATCH DESTINATION', bottomPatchLabel = 'ALTERNATE SOURCE',
-  onToggleJack, reduceMotion, hideFaceplate, caption, sourceLive = true, controls, fsTitle = 'PATCH PAIR',
-}: PatchPairViewProps) {
-  const flow = resolvePair(state);
+export type PatchPairDrawingProps = Omit<PatchPairViewProps, 'caption' | 'controls' | 'fsTitle'> & {
+  /** Drawing width; the height follows from the geometry. */
+  w: number;
+  /** The shorter GLASS geometry (the Rack Unit's pinned display). */
+  glass?: boolean;
+};
+
+/** The drawing alone — faceplate + schematic at width `w`, jack taps included
+ *  — for the Rack Unit's glass (and inside PatchPairView's figure). */
+export function PatchPairDrawing({
+  w, glass, state, sourceLabel, destLabel, topPatchLabel = 'PATCH DESTINATION', bottomPatchLabel = 'ALTERNATE SOURCE',
+  onToggleJack, reduceMotion, hideFaceplate, sourceLive = true,
+}: PatchPairDrawingProps) {
+  const { H, TOP_Y, BOT_Y, SRC_Y, DEST_Y } = glass ? GEO_GLASS : GEO_PAGE;
+  const { flow, status, hazard } = pairStatus(state, sourceLabel, destLabel, sourceLive);
   const anythingFlowing = ((flow.normalActive || flow.topFeedsPatch) && sourceLive) || flow.bottomFeedsDestination;
   const phase = useFlowPhase(anythingFlowing, reduceMotion);
 
@@ -245,86 +355,19 @@ export function PatchPairView({
     touchedRef.current[jack] = true;
     onToggleJack?.(jack);
   };
+  // A cord moved from the dock counts as touched too (the pulse is an
+  // invitation, and the jack has been used).
+  if (state.topPlugged) touchedRef.current.top = true;
+  if (state.bottomPlugged) touchedRef.current.bottom = true;
 
-  // The break is descriptive orange; RED only for the genuine hazard: a normal
-  // broken AND the destination left silent (see the color doctrine above). A
-  // silent-anyway source can't be silenced — no hazard when it's idle.
-  const hazard = flow.normalBroken && flow.destinationHears === 'nothing' && sourceLive;
   const breakColor = hazard ? PB.hazard : PB.break;
-
   const midY = (TOP_Y + BOT_Y) / 2;
-  // Status line — factual, derived from the resolved flow (the four questions).
-  // An idle source gets an honest status: connections may exist, signal doesn't.
-  const status = !sourceLive
-    ? flow.bottomFeedsDestination
-      ? `PATCHED — the cord feeds ${destLabel}; ${sourceLabel} itself is idle`
-      : `${flow.normalActive ? 'NORMAL CONNECTED' : flow.normalBroken ? 'NORMAL BROKEN' : 'NO CONNECTION'} — ${sourceLabel} is idle, nothing flows`
-    : flow.isSplit
-      ? `SPLIT — ${sourceLabel} feeds ${destLabel} AND the patch cord`
-      : flow.isMerge
-        ? `PARALLEL — ${destLabel} receives the normal AND the patch`
-        : flow.normalActive
-          ? `NORMAL INTACT — ${sourceLabel} → ${destLabel}, no cord required`
-          : flow.normalBroken
-            ? flow.destinationHears === 'patch'
-              ? `NORMAL BROKEN — the patch now feeds ${destLabel}`
-              : `NORMAL BROKEN — ${destLabel} hears nothing`
-            : flow.destinationHears === 'patch'
-              ? `PATCHED — the cord feeds ${destLabel}`
-              : flow.topFeedsPatch
-                ? `PATCHED — ${sourceLabel} goes only into the cord`
-                : `NO CONNECTION — thru pair, nothing patched`;
-
-  // W16 (2026-09-18): Android-only live region. This status line is the answer
-  // to the whole patchbay exercise — what is connected to what, and whether
-  // anything is actually flowing — and on iOS it was silent. `status` is
-  // derived from the resolved flow booleans, so it only changes when a cord
-  // actually moves; keying on the string is enough.
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return;
-    AccessibilityInfo.announceForAccessibility(status);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
 
   const a11y =
     `Patch pair, ${state.config === 'thru' ? 'thru' : state.config === 'full' ? 'full normal' : 'half normal'} configuration. ` +
     `Top jack ${state.topPlugged ? 'has a patch cord' : 'empty'}, bottom jack ${state.bottomPlugged ? 'has a patch cord' : 'empty'}. ${status}.`;
 
-  // The status line (and the page's caption) are the pair's READOUTS: under
-  // the drawing on the page, and at the top of the docked controls in FULL
-  // SCREEN — the same elements, so they can never disagree.
-  const statusEl = (
-    <Text
-      style={[
-        styles.status,
-        flow.isSplit && { color: PB.flow },
-        flow.normalBroken && { color: hazard ? PB.hazard : PB.break },
-      ]}
-      accessibilityLiveRegion="polite"
-    >
-      {status}
-    </Text>
-  );
-  const captionEl = caption ? <Text style={styles.caption}>{caption}</Text> : null;
-
   return (
-    <View style={styles.wrap}>
-      {/* Faceplate + schematic are ONE fixed-aspect drawing through
-          ExpandableFigure: the same taps at the page width and at the zoomed
-          size, "⤢ FULL SCREEN" under it, the page's controls docked there
-          (full-screen pass 2026-09-30). The gap between the two SVGs is in
-          viewBox units so the stack keeps its aspect at every zoom. */}
-      <ExpandableFigure
-        aspect={hideFaceplate ? PATCH_PAIR_ASPECT_BARE : PATCH_PAIR_ASPECT}
-        title={fsTitle}
-        controls={
-          <View style={styles.dock}>
-            {statusEl}
-            {captionEl}
-            {controls}
-          </View>
-        }
-        render={(w) => (
       <View style={{ width: w, gap: (w * FACE_GAP) / W }}>
       {!hideFaceplate ? <Faceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} w={w} /> : null}
       <View style={{ width: w, height: (w * H) / W }}>
@@ -333,8 +376,8 @@ export function PatchPairView({
             flatten them away). */}
         <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={(w * H) / W} viewBox={`0 0 ${W} ${H}`}>
           {/* SOURCE device and its permanent rear wiring down to the TOP jack */}
-          <DeviceBox y={10} label={sourceLabel} sub="SOURCE · OUTPUT" accent={PB.source} />
-          <FlowPath d={`M ${CX} 44 L ${CX} ${TOP_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
+          <DeviceBox y={SRC_Y} label={sourceLabel} sub="SOURCE · OUTPUT" accent={PB.source} />
+          <FlowPath d={`M ${CX} ${SRC_Y + 34} L ${CX} ${TOP_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
 
           {/* The internal normal zone between the jacks */}
           {state.config === 'thru' ? (
@@ -405,7 +448,7 @@ export function PatchPairView({
 
           {/* DESTINATION device fed (or not) from the BOTTOM jack's rear */}
           <FlowPath
-            d={`M ${CX} ${BOT_Y + 11} L ${CX} ${H - 46}`}
+            d={`M ${CX} ${BOT_Y + 11} L ${CX} ${DEST_Y - 2}`}
             flowing={
               flow.destinationHears === 'patch' || flow.destinationHears === 'both'
                 ? true // an external patched-in source has its own life
@@ -415,7 +458,7 @@ export function PatchPairView({
             reduceMotion={reduceMotion}
             color={flow.destinationHears === 'patch' ? PB.cord : PB.flow}
           />
-          <DeviceBox y={H - 44} label={destLabel} sub="DESTINATION · INPUT" accent={PB.dest} />
+          <DeviceBox y={DEST_Y} label={destLabel} sub="DESTINATION · INPUT" accent={PB.dest} />
         </Svg>
 
         {/* 44pt tap overlays aligned to the jacks (percent of the viewBox) —
@@ -424,13 +467,13 @@ export function PatchPairView({
           <>
             <Pressable
               onPress={() => toggle('top')}
-              style={[styles.jackTap, { top: `${((TOP_Y - 26) / H) * 100}%` }]}
+              style={[styles.jackTap, { top: `${((TOP_Y - 26) / H) * 100}%`, height: `${(52 / H) * 100}%` }]}
               accessibilityRole="button"
               accessibilityLabel={state.topPlugged ? 'Remove the patch cord from the top jack' : 'Insert a patch cord into the top jack'}
             />
             <Pressable
               onPress={() => toggle('bottom')}
-              style={[styles.jackTap, { top: `${((BOT_Y - 26) / H) * 100}%` }]}
+              style={[styles.jackTap, { top: `${((BOT_Y - 26) / H) * 100}%`, height: `${(52 / H) * 100}%` }]}
               accessibilityRole="button"
               accessibilityLabel={state.bottomPlugged ? 'Remove the patch cord from the bottom jack' : 'Insert a patch cord into the bottom jack'}
             />
@@ -438,6 +481,52 @@ export function PatchPairView({
         ) : null}
       </View>
       </View>
+  );
+}
+
+export function PatchPairView({
+  state, sourceLabel, destLabel, topPatchLabel = 'PATCH DESTINATION', bottomPatchLabel = 'ALTERNATE SOURCE',
+  onToggleJack, reduceMotion, hideFaceplate, caption, sourceLive = true, controls, fsTitle = 'PATCH PAIR',
+}: PatchPairViewProps) {
+  const s = pairStatus(state, sourceLabel, destLabel, sourceLive);
+  useAnnounceStatus(s.status);
+
+  // The status line (and the page's caption) are the pair's READOUTS: under
+  // the drawing on the page, and at the top of the docked controls in FULL
+  // SCREEN — the same elements, so they can never disagree.
+  const statusEl = <StatusText {...s} />;
+  const captionEl = caption ? <Text style={styles.caption}>{caption}</Text> : null;
+
+  return (
+    <View style={styles.wrap}>
+      {/* Faceplate + schematic are ONE fixed-aspect drawing through
+          ExpandableFigure: the same taps at the page width and at the zoomed
+          size, "⤢ FULL SCREEN" under it, the page's controls docked there
+          (full-screen pass 2026-09-30). The gap between the two SVGs is in
+          viewBox units so the stack keeps its aspect at every zoom. */}
+      <ExpandableFigure
+        aspect={hideFaceplate ? PATCH_PAIR_ASPECT_BARE : PATCH_PAIR_ASPECT}
+        title={fsTitle}
+        controls={
+          <View style={styles.dock}>
+            {statusEl}
+            {captionEl}
+            {controls}
+          </View>
+        }
+        render={(w) => (
+          <PatchPairDrawing
+            w={w}
+            state={state}
+            sourceLabel={sourceLabel}
+            destLabel={destLabel}
+            topPatchLabel={topPatchLabel}
+            bottomPatchLabel={bottomPatchLabel}
+            onToggleJack={onToggleJack}
+            reduceMotion={reduceMotion}
+            hideFaceplate={hideFaceplate}
+            sourceLive={sourceLive}
+          />
         )}
       />
       {statusEl}
@@ -458,6 +547,9 @@ const styles = StyleSheet.create({
    *  ⚠️ The dev harness caps itself at maxWidth 480 — BELOW the break-even — so
    *  this is structurally invisible on the one surface a developer can drive. */
   jackTap: { position: 'absolute', left: 0, width: '52%', height: `${(52 / H) * 100}%`, minHeight: 44 },
+  /** The rack's readout block in the well (status + caption). */
+  readout: { gap: 4 },
+  readoutTitle: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.6 },
   /** The full-screen dock: readouts (status, caption) then the page's controls. */
   dock: { paddingHorizontal: 12, gap: 8 },
   status: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },

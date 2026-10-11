@@ -22,6 +22,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { Canvas, DashPathEffect, FillType, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from '../wedge2Way';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import type { SettingItem, ViewBox, Wedge } from '../../../engine/model/types.ts';
@@ -314,26 +315,14 @@ export function Kit() {
   );
 }
 
-/** A floor wedge from above: the sloped baffle (facing `faces`) behind a grille. */
+/** A 2-way floor wedge from above, at true size (shared/wedge2Way.tsx):
+ *  its sloped baffle — woofer and horn behind the grille — facing `faces`,
+ *  the flat top panel and rear input at the back. */
 export function WedgeTop({ at, faces }: { at: { x: number; z: number }; faces: { x: number; z: number } }) {
   const ang = Math.atan2(faces.z, faces.x);
-  const p = useMemo(() => {
-    const cab = make();
-    cab.addRRect(Skia.RRectXY(Skia.XYWHRect(-150, -280, 300, 560), 18, 18));
-    const grille = make();
-    grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-40, -258, 176, 516), 14, 14));
-    const holes = make();
-    for (let x = -26; x < 128; x += 20) for (let z = -244; z < 250; z += 20) holes.addCircle(x, z, 4.2);
-    return { cab, grille, holes };
-  }, []);
   return (
     <Group transform={[{ translateX: at.x }, { translateY: at.z }, { rotate: ang }]}>
-      <Path path={p.cab}>
-        <LinearGradient start={vec(-150, -280)} end={vec(150, 280)} colors={['#3b3e46', '#24262c', '#15161a']} />
-      </Path>
-      <Path path={p.grille} color="#0c0d10" />
-      <Path path={p.holes} color="#4a4e57" opacity={0.9} />
-      <Path path={p.cab} style="stroke" strokeWidth={4} color="#70747f" opacity={0.9} />
+      <Wedge2WayTop />
     </Group>
   );
 }

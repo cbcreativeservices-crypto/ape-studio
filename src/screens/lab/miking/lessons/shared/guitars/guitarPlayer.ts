@@ -40,6 +40,64 @@ const handAt = (elbow: Pt, centre: Pt, kind: Hand['kind'], back = BODY.handLen *
   return { wrist: pt(centre.u - Math.cos(dir) * back, centre.v - Math.sin(dir) * back), dir, kind };
 };
 
+/** The elbow of an arm from `s` to the wrist `w` (upper arm `U`, forearm `F`,
+ *  mm in the view), bent DOWNWARD (toward +v): the two-bone solution; a wrist
+ *  out of reach straightens the arm toward it. */
+export function hangingElbow(s: Pt, w: Pt, U: number, F: number, flip = false): Pt {
+  const dx = w.u - s.u;
+  const dy = w.v - s.v;
+  const d = Math.hypot(dx, dy);
+  if (d < 1) return pt(s.u, s.v + U);
+  const ux = dx / d;
+  const uy = dy / d;
+  if (d >= U + F - 1) return pt(s.u + ux * U, s.v + uy * U);
+  const a = (U * U - F * F + d * d) / (2 * d);
+  const h = Math.sqrt(Math.max(0, U * U - a * a));
+  // The perpendicular pointing down (+v).
+  let px = -uy;
+  let py = ux;
+  if ((py < 0) !== flip) {
+    px = -px;
+    py = -py;
+  }
+  return pt(s.u + ux * a + px * h, s.v + uy * a + py * h);
+}
+
+/** The angle (deg) between two directions (rad). */
+const bendDeg = (a: number, b: number) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b))) * (180 / Math.PI);
+
+/**
+ * The FRETTING ARM for a hand whose knuckle row is at `k` (owner 2026-10-10:
+ * the wrist bent ≈ 130°). The hand on the neck is fixed by the board; the
+ * palm runs a palm's length (95 mm) from the knuckle row to the wrist, and
+ * the elbow hangs from the shoulder (adult upper arm and forearm, bent down).
+ * The palm's direction is chosen so the wrist bends ≈ 50° from the forearm
+ * (the least bend when no direction reaches that).
+ */
+export function fretArm(s: Pt, k: Pt): { wrist: Pt; elbow: Pt; bend: number } {
+  let best: { wrist: Pt; elbow: Pt; bend: number; cost: number } | null = null;
+  for (let deg = -160; deg <= -5; deg += 5) {
+    const d = (deg * Math.PI) / 180;
+    const wrist = pt(k.u - Math.cos(d) * 95, k.v - Math.sin(d) * 95);
+    // The elbow: the two-bone solutions, or hanging by the side with the arm
+    // coming toward the viewer (both bones then shorter in the picture).
+    const elbows = [hangingElbow(s, wrist, 285, 255, false), hangingElbow(s, wrist, 285, 255, true)];
+    for (const du of [-40, 0, 40, 80]) for (const dv of [200, 240, 280]) {
+      const e = pt(s.u + du, s.v + dv);
+      if (Math.hypot(du, dv) <= 285 && Math.hypot(wrist.u - e.u, wrist.v - e.v) <= 255) elbows.push(e);
+    }
+    for (const elbow of elbows) {
+      const bend = bendDeg(d, angleOf(elbow, wrist));
+      // ≈ 50° of bend; the elbow hanging (below the shoulder) and never
+      // across the chest (the player's left arm is on the viewer's right);
+      // among equals, the palm nearer pointing up the neck.
+      const cost = Math.abs(bend - 50) + 0.15 * Math.abs(deg + 100) + (elbow.v < s.v + 180 ? 60 : 0) + (elbow.u < s.u - 120 ? 60 : 0) + (elbow.u > s.u + 160 ? 60 : 0);
+      if (!best || cost < best.cost) best = { wrist, elbow, bend, cost };
+    }
+  }
+  return best!;
+}
+
 export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerPose {
   const f = sc.fit;
   const g = sc.g;
@@ -63,9 +121,25 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
     const edgeV = sp.body.pot ? -Math.sqrt(Math.max(0, (sp.body.pot.d.mm / 2) ** 2 - (ex - sp.body.pot.cx.mm) ** 2)) : -g.halfW(ex, 'bass');
     const elbowR = pt(ex, Math.max(edgeV - 16, sv + 80));
     const handR = handAt(elbowR, pt(f.arm.b.x + 8, f.arm.b.y + 6), 'pick');
-    // The fretting arm hangs from the shoulder; the elbow below the neck.
-    const elbowL = toward(shoulderL, pt(shoulderL.u + 60, Math.max(sv + 300, half + 60)), 300);
-    const handL: Hand = { wrist: pt(tipMid + 34, half + 82), dir: -Math.PI / 2 - 0.22, kind: 'fret', board: { v: 0, half, tips } };
+    // The fretting arm (owner 2026-10-10: the wrist bent ≈ 130°, the forearm
+    // coming down to a hand pointing straight up). The hand ON the neck stays
+    // — the four fingertips on their frets and the knuckle row under the
+    // board's edge (the 'fret' hand builds them from the board) — while the
+    // elbow and forearm move: the elbow hangs from the shoulder (an adult
+    // upper arm, bent down), and the palm lies under the neck from the
+    // knuckle row back toward the body, its wrist a palm's length (95 mm)
+    // away, turned ≈ 55° from the forearm — never past 70°.
+    const knuckles = pt(tipMid + 4, half + 32); // the 'fret' hand's knuckle-row centre, 20 mm under it
+    const arm = fretArm(shoulderL, knuckles);
+    // A short neck held close in front of the shoulder (mandolin, soprano
+    // ukulele): no elbow an adult arm can reach gets the wrist under 70° in
+    // this flat picture (the forearm comes toward the viewer) — the drawing
+    // keeps its earlier arm there.
+    const ok = arm.bend <= 70;
+    const handL: Hand = ok
+      ? { wrist: arm.wrist, dir: angleOf(arm.wrist, knuckles), kind: 'fret', board: { v: 0, half, tips } }
+      : { wrist: pt(tipMid + 34, half + 82), dir: -Math.PI / 2 - 0.22, kind: 'fret', board: { v: 0, half, tips } };
+    const elbowL = ok ? arm.elbow : toward(shoulderL, pt(shoulderL.u + 60, Math.max(sv + 300, half + 60)), 300);
     const seated = sc.variant.posture === 'seated';
     const hipV = neck.v + (seated ? 470 : 500);
     const floor = sc.floorY;

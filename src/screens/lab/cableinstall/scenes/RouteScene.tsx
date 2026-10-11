@@ -94,13 +94,15 @@ const ROUTE_SEGS: Record<string, Record<string, CiArtSeg[]>> = {
   // Geometry in the 20 units = 1 m sections of routeArt.tsx.
   'stage-to-rack': {
     'mech-shortcut': [
-      { d: 'M112.6 163 H114.2', len: 2 },
-      { d: 'M114.2 163 V88 H340 V147', len: 363, hidden: true },
+      // A and B share the stud-wall cavity as two lanes (114.6 / 112.2),
+      // never one stroke (owner 2026-10-10: every run traceable)
+      { d: 'M112.6 163 H114.6', len: 2 },
+      { d: 'M114.6 163 V88 H340 V147', len: 363, hidden: true },
       { d: 'M340 147 V176 H332', len: 37 },
     ],
     'tray-route': [
-      { d: 'M112.6 166 H113', len: 1 },
-      { d: 'M113 166 V138 H322 V147', len: 237, hidden: true },
+      { d: 'M112.6 166 H112.2', len: 1 },
+      { d: 'M112.2 166 V138 H322 V147', len: 250, hidden: true },
       { d: 'M322 147 V156', len: 9 },
     ],
     'floor-shortcut': [{ d: 'M110 170 V194 H318', len: 232 }],

@@ -158,7 +158,11 @@ const A_ROWS: { r: number; j: string }[] = [
   { r: 1, j: JACKET.mic },
   { r: 0, j: JACKET.black },
 ];
-const A_PITCH = 3.3;
+/* Line-diagram lanes (owner 2026-10-10): centres ≈1.5× OD apart so every
+   cable reads on its own; even the over-cinched tie only squeezes the lanes
+   to just over one OD — touching, never drawn on top of one another. */
+const A_PITCH = 6.4;
+const A_TIE_SQUEEZE = 1 - (OD * 1.06) / A_PITCH;
 
 function loomRow(r: number, bite: number): Pt[] {
   const pts: Pt[] = [];
@@ -166,7 +170,7 @@ function loomRow(r: number, bite: number): Pt[] {
     let pinch = 0;
     for (const tx of A_TIES) pinch += Math.exp(-(((x - tx) / 11) ** 2));
     pinch = Math.min(1, pinch);
-    pts.push({ x, y: A_YC + r * A_PITCH * (1 - 0.5 * bite * pinch) });
+    pts.push({ x, y: A_YC + r * A_PITCH * (1 - A_TIE_SQUEEZE * bite * pinch) });
   }
   return pts;
 }
@@ -250,7 +254,7 @@ function ShowpieceArt({ run, revealed }: { run: boolean; revealed: boolean }) {
               <CableTie x={x} y={A_YC} k={K} halfH={(2 * A_PITCH + OD / 2) / K} />
             </Fade>
             <Fade run={run} delay={1350} dur={420}>
-              <CableTie x={x} y={A_YC} k={K} halfH={(2 * A_PITCH * 0.5 + OD / 2) / K} bite={1} />
+              <CableTie x={x} y={A_YC} k={K} halfH={(2 * A_PITCH * (1 - A_TIE_SQUEEZE) + OD / 2) / K} bite={1} />
             </Fade>
           </G>
         </Fade>
@@ -264,7 +268,7 @@ function ShowpieceArt({ run, revealed }: { run: boolean; revealed: boolean }) {
         <G>
           {A_TIES.map((x) => (
             <Breathe key={x} run={run}>
-              <Ellipse cx={x} cy={A_YC} rx={9} ry={14} fill="none" stroke={INK.bad} strokeWidth={1.2} />
+              <Ellipse cx={x} cy={A_YC} rx={9} ry={16} fill="none" stroke={INK.bad} strokeWidth={1.2} />
             </Breathe>
           ))}
           <Callout x={160} y={136} text="TIES CUT IN — JACKETS CRUSHED OVAL" color={INK.bad} size={10} border={INK.bad} />
@@ -277,7 +281,12 @@ function ShowpieceArt({ run, revealed }: { run: boolean; revealed: boolean }) {
 /* ══ B — THE PROFESSIONAL ══════════════════════════════════════════════════ */
 
 const B_BAR_Y = 39;
-const B_ROW_Y = [44, 40, 36, 32]; // bottom row peels off first → no crossings
+/** Lanes ≈1.5× OD apart (owner 2026-10-10: every cable its own line). The
+ *  bottom row peels off first → no crossings; the corner off the manager is
+ *  concentric about B_TURN, so the lanes keep their spacing round the bend. */
+const B_PITCH = 6.2;
+const B_ROW_Y = [48, 48 - B_PITCH, 48 - 2 * B_PITCH, 48 - 3 * B_PITCH];
+const B_TURN = { cx: 46, cy: 20 } as const;
 const B_JACK_X = [118, 146, 174, 202];
 const B_JACK_Y = 116;
 const B_DEV_Y = 88;
@@ -287,11 +296,14 @@ function proRun(i: number): Pt[] {
   const jx = B_JACK_X[i];
   // arrives down the left-hand manager, turns onto the bar on a wide radius,
   // then peels off DOWN to its jack on a radius well over 4× OD
+  const r = y - B_TURN.cy;
+  const x0 = B_TURN.cx - r;
+  const arc: Pt[] = [0.25, 0.5, 0.75].map((f) => ({ x: B_TURN.cx - r * Math.cos((f * Math.PI) / 2), y: B_TURN.cy + r * Math.sin((f * Math.PI) / 2) }));
   return [
-    { x: 16 + i * 4.6, y: -6 },
-    { x: 17 + i * 4.6, y: y - 22 },
-    { x: 30 + i * 4.6, y: y - 1.5 },
-    { x: 46, y },
+    { x: x0, y: -6 },
+    { x: x0, y: B_TURN.cy },
+    ...arc,
+    { x: B_TURN.cx, y },
     { x: jx - 34, y },
     { x: jx - 12, y: y + 5 },
     { x: jx - 1.5, y: y + 24 },
@@ -458,7 +470,8 @@ function PileArt({ run, revealed }: { run: boolean; revealed: boolean }) {
 
 /* ══ D — THE BLOCKADE ══════════════════════════════════════════════════════ */
 
-const D_LOOM_Y = [58, 62, 66, 70];
+/** Lanes ≈1.5× OD apart around the y-64 ties (owner 2026-10-10). */
+const D_LOOM_Y = [54.4, 60.8, 67.2, 73.6];
 
 function BlockadeArt({ run, revealed }: { run: boolean; revealed: boolean }) {
   const geos = useMemo(
@@ -505,7 +518,7 @@ function BlockadeArt({ run, revealed }: { run: boolean; revealed: boolean }) {
       ))}
       {[66, 150, 236].map((x, i) => (
         <Fade key={x} run={run} delay={820 + i * 90}>
-          <CableTie x={x} y={64} k={K} halfH={(12 + OD) / 2 / K} />
+          <CableTie x={x} y={64} k={K} halfH={(D_LOOM_Y[3] - D_LOOM_Y[0] + OD) / 2 / K} />
         </Fade>
       ))}
       {revealed ? (

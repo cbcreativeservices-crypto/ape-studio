@@ -39,7 +39,7 @@ export function LuteSceneArt({ sc, view }: { sc: LuteScene; view: ViewId }) {
   return (
     <Group>
       {view === 'side' ? <FloorLine y={sc.floorY} u0={-1400} u1={1900} rug={sc.fit.seat === 'floor'} /> : null}
-      <PlayerBack sc={sc} view={view} />
+      <PlayerBack sc={sc} view={view} arms={{ fretDir: nd.dir, across: nd.across, pluckRot: sc.kind === 'sitar' ? -20 : 25 }} />
       <LuteInstrument sc={sc} view={view} />
       <PlayerHands sc={sc} view={view} fretDir={nd.dir} across={nd.across} pluckRot={sc.kind === 'sitar' ? -20 : 25} />
     </Group>

@@ -104,27 +104,339 @@ function xy(slot: SlotId) {
   return { x: s.x, y: s.y };
 }
 
-/** Cables follow the room. A run to or from FRONT OF HOUSE rides the snake
- *  loom along the stage-left wall; a rack-to-loudspeaker tail or a stage
- *  patch is a short curve. */
-function cablePath(a: Placed, b: Placed): string {
-  const pa = xy(a.slot);
-  const pb = xy(b.slot);
-  const fohEnd = a.slot === 'foh' ? 'a' : b.slot === 'foh' ? 'b' : null;
-  if (fohEnd) {
-    const stageEnd = fohEnd === 'a' ? pb : pa;
-    const foh = fohEnd === 'a' ? pa : pb;
-    const wallX = 354;
-    const backY = 268;
-    return `M ${stageEnd.x} ${stageEnd.y} L ${wallX - 8} ${stageEnd.y} Q ${wallX} ${stageEnd.y} ${wallX} ${stageEnd.y + 8} L ${wallX} ${backY - 8} Q ${wallX} ${backY} ${wallX - 8} ${backY} L ${foh.x + 26} ${backY} Q ${foh.x + 18} ${backY} ${foh.x + 14} ${backY + 6} L ${foh.x} ${foh.y}`;
+/** Centre-to-centre spacing of cables that share a route or a device: 2× the
+ *  2-unit stroke, so the floor shows between them (owner 2026-10-10: every
+ *  cable stays its own line, like a wiring drawing). */
+const CABLE_GAP = 4;
+/** The wall loom's outer lane, hard on the stage-left wall, and the back
+ *  run's outer lane just above front of house. */
+const LOOM_WALL_X = 355;
+const LOOM_BACK_Y = 266;
+/** The stage runs. RISER FRONT: just downstage of the riser and its label,
+ *  through the stage-left masking gap (y 58–72) into the wing; lanes step
+ *  downstage. LIP: along the downstage edge behind the wedges, lanes step
+ *  upstage from the lip. */
+const RISER_LANE_Y = 66;
+const LIP_LANE_Y = 105;
+/** The RISER label (x 180, baseline 64.5): no drop is run through it. */
+const RISER_LABEL = { x0: 152, x1: 208, y0: 52, y1: 67 };
+/** The plot's printed words (SL, LIP, RISER, BARRIER): a run never lies
+ *  along one. */
+const LABEL_BOXES = [
+  { x0: 310, x1: 336, y0: 14, y1: 27 },
+  { x0: 92, x1: 130, y0: 113, y1: 126 },
+  RISER_LABEL,
+  { x0: 268, x1: 336, y0: 163, y1: 176 },
+];
+const alongLabel = (vertical: boolean, c: number, a: number, b: number) =>
+  LABEL_BOXES.some((r) => (vertical ? c > r.x0 && c < r.x1 && Math.max(a, b) > r.y0 && Math.min(a, b) < r.y1 : c > r.y0 && c < r.y1 && Math.max(a, b) > r.x0 && Math.min(a, b) < r.x1));
+/** The stage-RIGHT wall loom and the upstage crossover that reaches it: a
+ *  rack or stagebox feed to a house-left loudspeaker crosses behind the
+ *  stage and comes down the far wall, never across the deck or the seats. */
+const SR_WALL_X = 5;
+const CROSSOVER_Y = 6;
+/** Ordinary bend radius at a square turn. */
+const BEND = 5;
+
+const f1 = (n: number) => Math.round(n * 10) / 10;
+
+type Pt = { x: number; y: number };
+
+export type CableRoutes = {
+  /** Path per link, keyed `${from}-${to}`. */
+  paths: Map<string, string>;
+  /** Tape / tie marks across bundled lanes, at even intervals. */
+  ties: string[];
+};
+
+type Zone = 'foh' | 'wing' | 'box' | 'stage' | 'house';
+function zoneOf(slot: SlotId): Zone {
+  if (slot === 'foh') return 'foh';
+  if (slot === 'stageBox') return 'box';
+  const { x, y } = xy(slot);
+  if (y >= LIP_Y) return 'house';
+  if (x >= 294) return 'wing';
+  return 'stage';
+}
+
+/** An orthogonal run through `pts`, each square turn eased by a bend radius
+ *  (shortened where a leg is too short to take it). */
+function squarePath(pts: readonly Pt[], r = BEND): string {
+  const p: Pt[] = [];
+  for (const q of pts) {
+    const last = p[p.length - 1];
+    if (last && Math.abs(last.x - q.x) < 0.05 && Math.abs(last.y - q.y) < 0.05) continue;
+    p.push(q);
   }
-  const mx = (pa.x + pb.x) / 2;
-  const my = (pa.y + pb.y) / 2;
-  const dx = pb.x - pa.x;
-  const dy = pb.y - pa.y;
-  const len = Math.max(1, Math.hypot(dx, dy));
-  const bow = Math.min(10, len * 0.12);
-  return `M ${pa.x} ${pa.y} Q ${mx - (dy / len) * bow} ${my + (dx / len) * bow} ${pb.x} ${pb.y}`;
+  if (p.length < 2) return '';
+  let d = `M ${f1(p[0].x)} ${f1(p[0].y)}`;
+  for (let i = 1; i < p.length - 1; i++) {
+    const a = p[i - 1];
+    const c = p[i];
+    const b = p[i + 1];
+    const lin = Math.hypot(c.x - a.x, c.y - a.y);
+    const lout = Math.hypot(b.x - c.x, b.y - c.y);
+    const rr = Math.min(r, lin / 2, lout / 2);
+    const s = { x: c.x - ((c.x - a.x) / lin) * rr, y: c.y - ((c.y - a.y) / lin) * rr };
+    const e = { x: c.x + ((b.x - c.x) / lout) * rr, y: c.y + ((b.y - c.y) / lout) * rr };
+    d += ` L ${f1(s.x)} ${f1(s.y)} Q ${f1(c.x)} ${f1(c.y)} ${f1(e.x)} ${f1(e.y)}`;
+  }
+  const z = p[p.length - 1];
+  return `${d} L ${f1(z.x)} ${f1(z.y)}`;
+}
+
+/** Tape across parallel lanes, every `step` units wherever two or more ride
+ *  together, kept clear of each lane's ends and bends. */
+function tieMarks(lanes: readonly { c: number; a: number; b: number }[], vertical: boolean, step = 34): string[] {
+  if (lanes.length < 2) return [];
+  const lo = Math.min(...lanes.map((l) => l.a));
+  const hi = Math.max(...lanes.map((l) => l.b));
+  const out: string[] = [];
+  for (let s = lo + step / 2; s < hi; s += step) {
+    const on = lanes.filter((l) => s > l.a + 7 && s < l.b - 7);
+    if (on.length < 2) continue;
+    const c0 = Math.min(...on.map((l) => l.c)) - 2.2;
+    const c1 = Math.max(...on.map((l) => l.c)) + 2.2;
+    out.push(vertical ? `M ${f1(c0)} ${f1(s)} L ${f1(c1)} ${f1(s)}` : `M ${f1(s)} ${f1(c0)} L ${f1(s)} ${f1(c1)}`);
+  }
+  return out;
+}
+
+/** Cables follow the room the way a stage tech dresses them (owner
+ *  2026-10-10: every cable its own traceable line, run professionally):
+ *
+ *   · WALL LOOM — every run to or from FRONT OF HOUSE, and every rack or
+ *     stagebox feed to a house loudspeaker, rides the stage-left wall in
+ *     parallel lanes; a FOH run continues along the back of the house and
+ *     drops into the console on its own point (both corners concentric), a
+ *     loudspeaker feed peels off square at its own row.
+ *   · FAR WALL — a feed to a house-left loudspeaker rises out of the rack,
+ *     crosses upstage behind the deck and comes down the stage-right wall.
+ *   · STAGE RUNS — stage devices reach the stagebox and the stage-left racks
+ *     along the riser front (through the masking gap) or along the lip behind
+ *     the wedges, so every feed leaves from the same side as the stagebox;
+ *     each drops square onto its lane and rises square into its own jack.
+ *   · Anything else is a square L between the two devices; a radio link is
+ *     not a cable and stays a dashed arc.
+ *
+ *  No two cables share a line: lanes in a bundle are CABLE_GAP apart, each
+ *  end takes its own connector (offset across the device until its leg is
+ *  clear of every other leg), and bundles carry tape at even intervals. */
+export function routeCables(placed: readonly Placed[], links: readonly Link[]): CableRoutes {
+  const byId = new Map(placed.map((x) => [x.id, x]));
+  const key = (l: Link) => `${l.from}-${l.to}`;
+  const paths = new Map<string, string>();
+  const ties: string[] = [];
+
+  /* every straight leg drawn so far, to keep the next one off it */
+  type Seg = { v: boolean; c: number; a: number; b: number };
+  const segs: Seg[] = [];
+  const clash = (v: boolean, c: number, a: number, b: number) => {
+    const lo = Math.min(a, b);
+    const hi = Math.max(a, b);
+    return alongLabel(v, c, lo, hi) || segs.some((s) => s.v === v && Math.abs(s.c - c) < CABLE_GAP - 0.5 && Math.min(s.b, hi) - Math.max(s.a, lo) > 0.5);
+  };
+  const addLegs = (pts: readonly Pt[]) => {
+    for (let i = 1; i < pts.length; i++) {
+      const p = pts[i - 1];
+      const q = pts[i];
+      if (Math.abs(p.x - q.x) < 0.05 && Math.abs(p.y - q.y) > 0.05) segs.push({ v: true, c: p.x, a: Math.min(p.y, q.y), b: Math.max(p.y, q.y) });
+      else if (Math.abs(p.y - q.y) < 0.05 && Math.abs(p.x - q.x) > 0.05) segs.push({ v: false, c: p.y, a: Math.min(p.x, q.x), b: Math.max(p.x, q.x) });
+    }
+  };
+  /* each device's connectors in use, per axis */
+  const used = new Map<string, { x: number[]; y: number[] }>();
+  const OFFSETS = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5].map((k) => k * CABLE_GAP);
+  const port = (dev: Placed, axis: 'x' | 'y', base: number, ok: (c: number) => boolean = () => true): number => {
+    const u = used.get(dev.id) ?? { x: [], y: [] };
+    used.set(dev.id, u);
+    const taken = u[axis];
+    const free = (c: number) => taken.every((t) => Math.abs(t - c) >= CABLE_GAP - 0.5);
+    const pick = OFFSETS.map((o) => base + o).find((c) => free(c) && ok(c)) ?? OFFSETS.map((o) => base + o).find(free) ?? base;
+    taken.push(pick);
+    return pick;
+  };
+
+  type Run = { l: Link; a: Placed; b: Placed };
+  type WallRun = { l: Link; top: Placed; foh: Placed | null; house: Placed | null };
+  type StageRun = { l: Link; s: Placed; f: Placed; lip: boolean };
+  const wall: WallRun[] = [];
+  const farWall: WallRun[] = [];
+  const stageRuns: StageRun[] = [];
+  const ls: Run[] = [];
+  const radio: Run[] = [];
+  const side = (z: Zone) => z === 'wing' || z === 'box';
+  for (const l of links) {
+    const a = byId.get(l.from);
+    const b = byId.get(l.to);
+    if (!a || !b) continue;
+    if (l.level === 'wireless') {
+      radio.push({ l, a, b });
+      continue;
+    }
+    const za = zoneOf(a.slot);
+    const zb = zoneOf(b.slot);
+    if ((za === 'foh') !== (zb === 'foh')) {
+      const foh = za === 'foh' ? a : b;
+      wall.push({ l, top: foh === a ? b : a, foh, house: null });
+    } else if ((side(za) && zb === 'house') || (side(zb) && za === 'house')) {
+      const top = side(za) ? a : b;
+      const house = top === a ? b : a;
+      (xy(house.slot).x < 170 ? farWall : wall).push({ l, top, foh: null, house });
+    }
+    else if (za === 'stage' && side(zb)) stageRuns.push({ l, s: a, f: b, lip: xy(a.slot).y >= 90 });
+    else if (zb === 'stage' && side(za)) stageRuns.push({ l, s: b, f: a, lip: xy(b.slot).y >= 90 });
+    else ls.push({ l, a, b });
+  }
+
+  /* ── the wall loom ── */
+  {
+    const exitOf = (w: WallRun) => (w.house ? xy(w.house.slot).y : Infinity);
+    // Lanes: the longest runs (down to front of house) outermost; then by where they join.
+    const lanes = [...wall].sort((p, q) => exitOf(q) - exitOf(p) || xy(p.top.slot).y - xy(q.top.slot).y);
+    const nf = lanes.filter((w) => w.foh).length;
+    const laneK = new Map(lanes.map((w, k) => [w, k]));
+    // Rows: each joins the wall on its own row, top to bottom.
+    const rows = [...wall].sort((p, q) => xy(p.top.slot).y - xy(q.top.slot).y || xy(q.top.slot).x - xy(p.top.slot).x);
+    let lastRow = -Infinity;
+    const rTop = 6;
+    const rMin = 5;
+    const vLanes: { c: number; a: number; b: number }[] = [];
+    const hLanes: { c: number; a: number; b: number }[] = [];
+    for (const w of rows) {
+      const t = xy(w.top.slot);
+      const k = laneK.get(w)!;
+      const x = LOOM_WALL_X - CABLE_GAP * k;
+      const rowY = port(w.top, 'y', Math.max(t.y, lastRow + CABLE_GAP), (c) => c >= lastRow + CABLE_GAP - 0.5 && !clash(false, c, t.x, x));
+      lastRow = rowY;
+      const start: Pt[] = Math.abs(rowY - t.y) <= 10 ? [{ x: t.x, y: rowY }] : [t, { x: t.x, y: rowY }];
+      if (w.foh) {
+        const foh = xy(w.foh.slot);
+        const y = LOOM_BACK_Y - CABLE_GAP * k;
+        const rk = rMin + CABLE_GAP * (nf - 1 - k);
+        const endX = foh.x + 2 + CABLE_GAP * ((nf - 1) / 2 - k);
+        const rd = rMin + CABLE_GAP * k;
+        const s0 = start[0];
+        const d =
+          `M ${f1(s0.x)} ${f1(s0.y)}${start.length > 1 ? ` L ${f1(start[1].x)} ${f1(start[1].y)}` : ''}` +
+          ` L ${f1(x - rTop)} ${f1(rowY)} Q ${f1(x)} ${f1(rowY)} ${f1(x)} ${f1(rowY + rTop)}` +
+          ` L ${f1(x)} ${f1(y - rk)} A ${f1(rk)} ${f1(rk)} 0 0 1 ${f1(x - rk)} ${f1(y)}` +
+          ` L ${f1(endX + rd)} ${f1(y)} A ${f1(rd)} ${f1(rd)} 0 0 0 ${f1(endX)} ${f1(y + rd)} L ${f1(endX)} ${f1(foh.y)}`;
+        paths.set(key(w.l), d);
+        addLegs([...start, { x, y: rowY }, { x, y }, { x: endX, y }, { x: endX, y: foh.y }]);
+        vLanes.push({ c: x, a: rowY + rTop, b: y - rk });
+        hLanes.push({ c: y, a: endX + rd, b: x - rk });
+      } else {
+        const h = w.house!;
+        const hp = xy(h.slot);
+        const exitY = port(h, 'y', hp.y, (c) => !clash(false, c, hp.x, x) && !clash(true, x, rowY, c));
+        const pts: Pt[] = [...start, { x, y: rowY }, { x, y: exitY }, { x: hp.x, y: exitY }];
+        paths.set(key(w.l), squarePath(pts, rTop));
+        addLegs(pts);
+        vLanes.push({ c: x, a: rowY + rTop, b: exitY - rTop });
+      }
+    }
+    ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
+  }
+
+  /* ── the far wall: up from the rack, across upstage, down stage right ── */
+  {
+    // Outer lane (top of the crossover, hard on the wall) to the longest run.
+    const lanes = [...farWall].sort((p, q) => xy(q.house!.slot).y - xy(p.house!.slot).y || xy(q.top.slot).x - xy(p.top.slot).x);
+    const rT = 6;
+    const vLanes: { c: number; a: number; b: number }[] = [];
+    const hLanes: { c: number; a: number; b: number }[] = [];
+    lanes.forEach((w, k) => {
+      const t = xy(w.top.slot);
+      const h = w.house!;
+      const hp = xy(h.slot);
+      const cy = CROSSOVER_Y + CABLE_GAP * k;
+      const wx = SR_WALL_X + CABLE_GAP * k;
+      const ux = port(w.top, 'x', t.x, (c) => !clash(true, c, t.y, cy));
+      const exitY = port(h, 'y', hp.y, (c) => !clash(false, c, wx, hp.x) && !clash(true, wx, cy, c));
+      const pts: Pt[] = [{ x: ux, y: t.y }, { x: ux, y: cy }, { x: wx, y: cy }, { x: wx, y: exitY }, { x: hp.x, y: exitY }];
+      paths.set(key(w.l), squarePath(pts, rT));
+      addLegs(pts);
+      hLanes.push({ c: cy, a: wx + rT, b: ux - rT });
+      vLanes.push({ c: wx, a: cy + rT, b: exitY - rT });
+    });
+    ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
+  }
+
+  /* ── stage runs: riser front and lip, out to stage left ── */
+  const throughLabel = (x: number, y0: number, y1: number) => x > RISER_LABEL.x0 && x < RISER_LABEL.x1 && Math.max(y0, y1) > RISER_LABEL.y0 && Math.min(y0, y1) < RISER_LABEL.y1;
+  for (const lip of [false, true]) {
+    const runs = stageRuns.filter((r) => r.lip === lip);
+    if (!runs.length) continue;
+    const base = lip ? LIP_LANE_Y : RISER_LANE_Y;
+    const sy = (r: StageRun) => xy(r.s.slot).y;
+    const sx = (r: StageRun) => xy(r.s.slot).x;
+    // Top to bottom: drops from upstage (the later the join, the higher the
+    // lane), then drops from downstage (the later the join, the lower).
+    const above = runs.filter((r) => sy(r) < base).sort((p, q) => sx(q) - sx(p));
+    const below = runs.filter((r) => sy(r) >= base).sort((p, q) => sx(p) - sx(q));
+    const order = [...above, ...below];
+    const n = order.length;
+    const hLanes: { c: number; a: number; b: number }[] = [];
+    order.forEach((r, i) => {
+      const y = lip ? base - CABLE_GAP * (n - 1 - i) : base + CABLE_GAP * i;
+      const s = xy(r.s.slot);
+      const f = xy(r.f.slot);
+      const pts: Pt[] = [];
+      if (!lip && throughLabel(s.x, s.y, y)) {
+        // Off the riser beside its label, never through it: along the riser
+        // to its stage-left side, then down.
+        const py = port(r.s, 'y', s.y, (c) => !clash(false, c, s.x, RISER_LABEL.x1 + 2));
+        let jx = RISER_LABEL.x1 + 2;
+        while (clash(true, jx, py, y)) jx += CABLE_GAP;
+        pts.push({ x: s.x, y: py }, { x: jx, y: py }, { x: jx, y });
+      } else {
+        const px = port(r.s, 'x', s.x, (c) => !clash(true, c, s.y, y) && !throughLabel(c, s.y, y));
+        pts.push({ x: px, y: s.y }, { x: px, y });
+      }
+      const xs = pts[pts.length - 1].x;
+      const fx = port(r.f, 'x', f.x, (c) => !clash(true, c, y, f.y));
+      pts.push({ x: fx, y }, { x: fx, y: f.y });
+      paths.set(key(r.l), squarePath(pts));
+      addLegs(pts);
+      hLanes.push({ c: y, a: Math.min(xs, fx) + BEND, b: Math.max(xs, fx) - BEND });
+    });
+    ties.push(...tieMarks(hLanes, false));
+  }
+
+  /* ── square Ls between neighbours ── */
+  for (const { l, a, b } of ls) {
+    const pa = xy(a.slot);
+    const pb = xy(b.slot);
+    let pts: Pt[];
+    if (Math.abs(pa.y - pb.y) < 0.5) {
+      const y = port(a, 'y', pa.y, (c) => !clash(false, c, pa.x, pb.x));
+      port(b, 'y', y);
+      pts = [{ x: pa.x, y }, { x: pb.x, y }];
+    } else if (Math.abs(pa.x - pb.x) < 0.5) {
+      const x = port(a, 'x', pa.x, (c) => !clash(true, c, pa.y, pb.y));
+      port(b, 'x', x);
+      pts = [{ x, y: pa.y }, { x, y: pb.y }];
+    } else {
+      const y = port(a, 'y', pa.y, (c) => !clash(false, c, pa.x, pb.x));
+      const x = port(b, 'x', pb.x, (c) => !clash(true, c, y, pb.y));
+      pts = [{ x: pa.x, y }, { x, y }, { x, y: pb.y }];
+    }
+    paths.set(key(l), squarePath(pts));
+    addLegs(pts);
+  }
+
+  /* ── radio: no cable, a dashed arc ── */
+  for (const { l, a, b } of radio) {
+    const pa = xy(a.slot);
+    const pb = xy(b.slot);
+    const dx = pb.x - pa.x;
+    const dy = pb.y - pa.y;
+    const len = Math.max(1, Math.hypot(dx, dy));
+    const bow = Math.min(10, len * 0.12);
+    paths.set(key(l), `M ${f1(pa.x)} ${f1(pa.y)} Q ${f1((pa.x + pb.x) / 2 - (dy / len) * bow)} ${f1((pa.y + pb.y) / 2 + (dx / len) * bow)} ${f1(pb.x)} ${f1(pb.y)}`);
+  }
+  return { paths, ties };
 }
 
 function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: number, halfDeg: number): string {
@@ -154,6 +466,7 @@ export function VenueView(p: VenueViewProps) {
   const beams = p.beams ?? [];
   const animate = p.animate ?? true;
   const byId = useMemo(() => new Map(placed.map((x) => [x.id, x])), [placed]);
+  const routes = useMemo(() => routeCables(placed, links), [placed, links]);
   // The field's inputs as one string. Pages rebuild their beams array on
   // every render (a fader step, a card opening), so keying on array identity
   // recomputed the ~780-cell field for nothing — on the alignment page every
@@ -351,16 +664,25 @@ export function VenueView(p: VenueViewProps) {
           if (!a || !b) return null;
           const live = !p.liveIds || p.liveIds.has(b.id);
           const col = LEVEL_COLOR[l.level];
-          const d = cablePath(a, b);
+          const d = routes.paths.get(`${l.from}-${l.to}`);
+          if (!d) return null;
           return (
             <G key={`${l.from}-${l.to}`}>
-              <Path d={d} stroke="#000" strokeWidth={3.6} fill="none" opacity={0.45} />
+              <Path d={d} stroke="#000" strokeWidth={3} fill="none" opacity={0.45} />
               <Path d={d} stroke={col} strokeWidth={2} fill="none" opacity={live ? 0.95 : 0.35} strokeDasharray={l.level === 'wireless' ? '3 4' : undefined} strokeLinecap="round" strokeLinejoin="round" />
               {live && l.level !== 'wireless' ? <Path d={d} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} /> : null}
               {p.onTapLink ? <Path d={d} stroke="transparent" strokeWidth={14} fill="none" onPress={() => p.onTapLink?.(l)} accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level — tap to remove`} /> : null}
             </G>
           );
         })}
+
+        {/* tape across bundled lanes — the runs are bundled, each still its own line */}
+        {routes.ties.map((d) => (
+          <G key={d}>
+            <Path d={d} stroke="#000" strokeWidth={2.6} opacity={0.5} strokeLinecap="round" />
+            <Path d={d} stroke="#c9ccd4" strokeWidth={1.4} opacity={0.85} strokeLinecap="round" />
+          </G>
+        ))}
 
         {/* target slots */}
         {(p.targets ?? []).map((s) => {

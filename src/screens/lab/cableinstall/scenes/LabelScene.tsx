@@ -83,12 +83,26 @@ const PERM_A = [2, 0, 3, 1]; // cable i → patch lane (crossings by design)
 const PERM_B = [1, 3, 0, 2]; // cable i → wall-plate lane
 const PERM_C = [2, 0, 3, 1]; // cable i → stage jack
 
+/**
+ * Each cable changes lane at its OWN x (owner 2026-10-10: cables shown
+ * independently, like a line diagram). The crossings stay — they are the
+ * lesson — but they are pairwise and steep, never a knot where all four run
+ * through one point, so any one cable can still be followed end to end.
+ */
+const PW_X = [164, 172, 180, 188]; // patch → wall-plate lane change, per cable
+const WS_X = [228, 234, 240, 246]; // wall-plate → stage-jack lane change, per cable
+/** Label flags: over the patch-panel face, and just short of each stage jack
+ *  — never over a lane change, so a flag never hides a cable. */
+const FLAG_P_X = 118;
+const FLAG_S_X = 249.5;
 function cablePath(i: number): string {
   const r = RACK_Y[i];
   const p = P_Y[PERM_A[i]];
   const wy = W_Y[PERM_B[i]];
   const s = S_Y[PERM_C[i]];
-  return `M66 ${r} H76 C86 ${r} 82 ${p} 92 ${p} H156 C176 ${p} 176 ${wy} 196 ${wy} H224 C240 ${wy} 240 ${s} 256 ${s} h8`;
+  const a = PW_X[i];
+  const b = WS_X[i];
+  return `M66 ${r} H76 C86 ${r} 82 ${p} 92 ${p} H${a - 5} C${a} ${p} ${a} ${wy} ${a + 5} ${wy} H${b - 3} C${b} ${wy} ${b} ${s} ${b + 3} ${s} H264`;
 }
 /** Over-estimated run length for the trace draw (over-estimating is safe). */
 const CABLE_LEN = 280;
@@ -272,12 +286,12 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
             const tint = isTarget ? colors.green : '#6f7378';
             return (
               <G key={i}>
-                <LabelFlag x={156} y={p - 13} w={36} h={12} tint={tint} delay={i * 80} reduce={m.reduce}>
-                  <SvgText x={174} y={p - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#17181b" textAnchor="middle">
+                <LabelFlag x={FLAG_P_X} y={p - 13} w={36} h={12} tint={tint} delay={i * 80} reduce={m.reduce}>
+                  <SvgText x={FLAG_P_X + 18} y={p - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#17181b" textAnchor="middle">
                     {CABLE_FLAGS[i]}
                   </SvgText>
                 </LabelFlag>
-                <LabelFlag x={246} y={s - 9} w={9} h={6} tint={tint} delay={i * 80 + 45} reduce={m.reduce} />
+                <LabelFlag x={FLAG_S_X} y={s - 9} w={9} h={6} tint={tint} delay={i * 80 + 45} reduce={m.reduce} />
               </G>
             );
           })
@@ -287,12 +301,12 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       {found ? (
         <>
           <TraceBeam d={cablePath(TARGET_CABLE)} />
-          <LabelFlag x={156} y={P_Y[PERM_A[TARGET_CABLE]] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
-            <SvgText x={174} y={P_Y[PERM_A[TARGET_CABLE]] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#0b3d1d" textAnchor="middle">
+          <LabelFlag x={FLAG_P_X} y={P_Y[PERM_A[TARGET_CABLE]] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
+            <SvgText x={FLAG_P_X + 18} y={P_Y[PERM_A[TARGET_CABLE]] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#0b3d1d" textAnchor="middle">
               {CABLE_FLAGS[TARGET_CABLE]}
             </SvgText>
           </LabelFlag>
-          <LabelFlag x={246} y={S_Y[PERM_C[TARGET_CABLE]] - 9} w={9} h={6} tint={colors.green} delay={560} reduce={m.reduce} />
+          <LabelFlag x={FLAG_S_X} y={S_Y[PERM_C[TARGET_CABLE]] - 9} w={9} h={6} tint={colors.green} delay={560} reduce={m.reduce} />
         </>
       ) : null}
       {/* node names */}

@@ -28,6 +28,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Paint, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from '../../lessons/shared/wedge2Way';
 import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -2424,6 +2425,20 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
 /** A floor monitor wedge (generic), standing on the floor at `at`, its
  *  sloped baffle facing `faces` (plan: rotated; side: mirrored). */
 function WedgeGlyph({ at, view, faces }: { at: Vec3; view: ViewId; faces: Vec3 }) {
+  if (view === 'top') {
+    // from above: the 2-way wedge at true size (lessons/shared/wedge2Way.tsx)
+    const a = Math.atan2(faces.z, faces.x);
+    return (
+      <Group transform={[{ translateX: at.x }, { translateY: vOf(view, at) }, { rotate: a }]}>
+        <Wedge2WayTop shadow />
+      </Group>
+    );
+  }
+  return <WedgeSide at={at} view={view} faces={faces} />;
+}
+
+/** The wedge's side profile (the elevation views). */
+function WedgeSide({ at, view, faces }: { at: Vec3; view: ViewId; faces: Vec3 }) {
   const u = at.x;
   const v = vOf(view, at);
   const ang = Math.atan2(faces.z, faces.x);

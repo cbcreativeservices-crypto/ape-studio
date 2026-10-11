@@ -22,6 +22,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { GearInSvg, INK } from './gearArt';
+import { Wedge2WayPlan, wedgeJackY } from './planArt';
 import { HeadIconSvg, aboveRotation } from '../../../../features/lab/headIconsSvg';
 import { CABLE_COLORS } from './VenueView';
 
@@ -46,6 +47,24 @@ function Arrow({ x1, y1, x2, y2, color, dashed, width = 1.6 }: { x1: number; y1:
       <Polygon points={`${x2},${y2} ${hx - uy * 3},${hy + ux * 3} ${hx + uy * 3},${hy - ux * 3}`} fill={color} />
     </G>
   );
+}
+
+/** A cable as a wiring drawing runs it: square turns eased by a small bend
+ *  (owner 2026-10-10 — every cable its own line, run professionally). */
+function sqPath(pts: readonly { x: number; y: number }[], r = 5): string {
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const a = pts[i - 1];
+    const c = pts[i];
+    const b = pts[i + 1];
+    const lin = Math.hypot(c.x - a.x, c.y - a.y);
+    const lout = Math.hypot(b.x - c.x, b.y - c.y);
+    const rr = Math.min(r, lin / 2, lout / 2);
+    if (rr <= 0) continue;
+    d += ` L ${c.x - ((c.x - a.x) / lin) * rr} ${c.y - ((c.y - a.y) / lin) * rr} Q ${c.x} ${c.y} ${c.x + ((b.x - c.x) / lout) * rr} ${c.y + ((b.y - c.y) / lout) * rr}`;
+  }
+  const z = pts[pts.length - 1];
+  return `${d} L ${z.x} ${z.y}`;
 }
 
 function Box({ x, y, w, h, label, on, tone = '#2b2f37', onPress, a11y, dashed }: { x: number; y: number; w: number; h: number; label: string; on?: boolean; tone?: string; onPress?: () => void; a11y?: string; dashed?: boolean }) {
@@ -162,7 +181,15 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
     const a = ((180 - d) * Math.PI) / 180; // θ = 0 → −x
     pts.push(`${mic.x + Math.cos(a) * r},${mic.y + Math.sin(a) * r}`);
   }
-  const wedgeAt = wedge === 'null' ? { x: mic.x + 58 * S, y: mic.y, rot: -90 } : { x: mic.x + 24 * S, y: mic.y + 52 * S, rot: -150 };
+  // the wedge's baffle faces the singer's microphone (owner 2026-10-10)
+  const wPos = wedge === 'null' ? { x: mic.x + 58 * S, y: mic.y } : { x: mic.x + 24 * S, y: mic.y + 52 * S };
+  const aim = { x: mic.x - 6 * S - wPos.x, y: mic.y - wPos.y };
+  const wedgeAt = { ...wPos, rot: (Math.atan2(aim.x, -aim.y) * 180) / Math.PI };
+  /** the rear input connector, in plot coordinates (front = local −y) */
+  const WEDGE_W = 24;
+  const jr = wedgeJackY(WEDGE_W);
+  const ra = (wedgeAt.rot * Math.PI) / 180;
+  const wJack = { x: wedgeAt.x - jr * Math.sin(ra), y: wedgeAt.y + jr * Math.cos(ra) };
   const loopColor = ringing ? colors.red : colors.textMuted;
   const con = { x: 286, y: compact ? 30 : 34 };
   const amp = { x: 286, y: compact ? 76 : 104 };
@@ -180,8 +207,7 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
       <Circle cx={mic.x - 6 * S} cy={mic.y} r={4 * S} fill={INK.metalMid} stroke="#000" strokeWidth={0.5} />
       {/* the wedge */}
       <G transform={`translate(${wedgeAt.x} ${wedgeAt.y}) rotate(${wedgeAt.rot})`}>
-        <Polygon points="-9,-7 9,-7 12,7 -12,7" fill="#2b2f37" stroke={ringing ? colors.red : '#000'} strokeWidth={0.9} />
-        <Rect x={-11} y={4} width={22} height={3} fill="#0b0c0f" />
+        <Wedge2WayPlan w={WEDGE_W} stroke={ringing ? colors.red : '#000'} />
       </G>
       <SvgText x={wedgeAt.x} y={wedgeAt.y + 23} fontSize={FS} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>WEDGE</SvgText>
       {/* the loop: mic → console → amp → wedge → (air) → mic */}
@@ -189,7 +215,7 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
       <GearInSvg kind="console" id="fl-con" x={con.x} y={con.y} size={compact ? 30 : 38} />
       <Line x1={con.x} y1={con.y + (compact ? 14 : 18)} x2={amp.x} y2={amp.y - (compact ? 12 : 16)} stroke={CABLE_COLORS.line} strokeWidth={1.6} />
       <GearInSvg kind="amp" id="fl-amp" x={amp.x} y={amp.y} size={compact ? 30 : 38} />
-      <Path d={`M ${amp.x - 20} ${amp.y} C ${amp.x - 60} ${amp.y} ${wedgeAt.x + 40} ${wedgeAt.y + 10} ${wedgeAt.x + 12} ${wedgeAt.y + 4}`} stroke={CABLE_COLORS.speaker} strokeWidth={1.6} fill="none" />
+      <Path d={`M ${amp.x - 20} ${amp.y} C ${amp.x - 60} ${amp.y} ${wJack.x + 28} ${wJack.y + 6} ${wJack.x} ${wJack.y}`} stroke={CABLE_COLORS.speaker} strokeWidth={1.6} fill="none" />
       {/* the acoustic return: the part of the loop the room owns */}
       <Path d={`M ${wedgeAt.x - 10} ${wedgeAt.y - 4} C ${wedgeAt.x - 30} ${wedgeAt.y - 14 * S} ${mic.x + 20 * S} ${mic.y + 8 * S} ${mic.x + 4 * S} ${mic.y + 3}`} stroke={loopColor} strokeWidth={ringing ? 2 : 1.2} fill="none" strokeDasharray="2 3" />
       {ringing ? <Circle cx={mic.x - 6 * S} cy={mic.y} r={11 * S} fill="none" stroke={colors.red} strokeWidth={1.2} opacity={0.8} /> : null}
@@ -310,7 +336,8 @@ export function SplitDiagram({ mode, gainMove, gainDb = 6 }: { mode: 'analog' | 
       {[30, 82, 134].map((y, i) => (
         <G key={y}>
           <GearInSvg kind={i === 1 ? 'di' : 'vocalMic'} id={`sp-src-${i}`} x={34} y={y} size={30} />
-          <Line x1={52} y1={y} x2={mid.x - 30} y2={mid.y} stroke={CABLE_COLORS.mic} strokeWidth={1.6} />
+          {/* each microphone on its own line into its own input: square turns, no shared run */}
+          <Path d={sqPath([{ x: 52, y }, { x: 112, y }, { x: 112, y: mid.y + (i - 1) * (mode === 'analog' ? 10 : 6) }, { x: mid.x - (mode === 'analog' ? 28 : 22), y: mid.y + (i - 1) * (mode === 'analog' ? 10 : 6) }])} stroke={CABLE_COLORS.mic} strokeWidth={1.6} fill="none" />
         </G>
       ))}
       {mode === 'analog' ? (
@@ -322,8 +349,8 @@ export function SplitDiagram({ mode, gainMove, gainDb = 6 }: { mode: 'analog' | 
           <Line x1={150} y1={83} x2={186} y2={83} stroke={INK.metalHi} strokeWidth={0.8} />
           <Path d="M 152 92 q 4 -5 8 0 q 4 5 8 0 q 4 -5 8 0" stroke={INK.metalHi} strokeWidth={1.2} fill="none" />
           <SvgText x={mid.x} y={mid.y + 30} fontSize={FS} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>ISOLATED SPLITTER</SvgText>
-          <Line x1={mid.x + 28} y1={mid.y - 8} x2={foh.x - 22} y2={foh.y} stroke={CABLE_COLORS.mic} strokeWidth={1.6} />
-          <Line x1={mid.x + 28} y1={mid.y + 8} x2={mon.x - 22} y2={mon.y} stroke={CABLE_COLORS.mic} strokeWidth={1.6} />
+          <Path d={sqPath([{ x: mid.x + 28, y: mid.y - 8 }, { x: 230, y: mid.y - 8 }, { x: 230, y: foh.y }, { x: foh.x - 22, y: foh.y }])} stroke={CABLE_COLORS.mic} strokeWidth={1.6} fill="none" />
+          <Path d={sqPath([{ x: mid.x + 28, y: mid.y + 8 }, { x: 230, y: mid.y + 8 }, { x: 230, y: mon.y }, { x: mon.x - 22, y: mon.y }])} stroke={CABLE_COLORS.mic} strokeWidth={1.6} fill="none" />
           <SvgText x={foh.x} y={foh.y - 24} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>OWN PREAMP</SvgText>
           <SvgText x={W - 8} y={mon.y - 24} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={0.6}>OWN PREAMP{gainMove ? ` · +${gainDb} dB` : ''}</SvgText>
           {gainMove ? <SvgText x={foh.x} y={foh.y + 34} fontSize={FS} fill={colors.greenBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>UNCHANGED</SvgText> : null}
@@ -332,8 +359,8 @@ export function SplitDiagram({ mode, gainMove, gainDb = 6 }: { mode: 'analog' | 
         <>
           <GearInSvg kind="stagebox" id="sp-box" x={mid.x} y={mid.y} size={44} />
           <SvgText x={mid.x} y={mid.y + 32} fontSize={FS} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>ONE PREAMP PER MIC</SvgText>
-          <Line x1={mid.x + 22} y1={mid.y - 6} x2={foh.x - 22} y2={foh.y} stroke={CABLE_COLORS.digital} strokeWidth={1.6} strokeDasharray="3 3" />
-          <Line x1={mid.x + 22} y1={mid.y + 6} x2={mon.x - 22} y2={mon.y} stroke={CABLE_COLORS.digital} strokeWidth={1.6} strokeDasharray="3 3" />
+          <Path d={sqPath([{ x: mid.x + 22, y: mid.y - 6 }, { x: 230, y: mid.y - 6 }, { x: 230, y: foh.y }, { x: foh.x - 22, y: foh.y }])} stroke={CABLE_COLORS.digital} strokeWidth={1.6} fill="none" strokeDasharray="3 3" />
+          <Path d={sqPath([{ x: mid.x + 22, y: mid.y + 6 }, { x: 230, y: mid.y + 6 }, { x: 230, y: mon.y }, { x: mon.x - 22, y: mon.y }])} stroke={CABLE_COLORS.digital} strokeWidth={1.6} fill="none" strokeDasharray="3 3" />
           <SvgText x={W - 8} y={mon.y - 24} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={0.6}>OWNS THE GAIN{gainMove ? ` · +${gainDb} dB` : ''}</SvgText>
           <SvgText x={W - 8} y={foh.y - 24} fontSize={FS} fill={gainMove ? colors.cyanBright : colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={0.6}>{gainMove ? `GAIN COMP · TRIM −${gainDb} dB` : 'GAIN COMPENSATION ON'}</SvgText>
           {gainMove ? <SvgText x={foh.x} y={foh.y + 34} fontSize={FS} fill={colors.greenBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>MIX UNCHANGED</SvgText> : null}

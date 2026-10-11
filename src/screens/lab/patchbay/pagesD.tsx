@@ -14,12 +14,12 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Lead, Row, useMarkWhen } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { ControlSlider } from '../amp/kit';
-import { PatchPairView } from './art/PatchPairView';
-import { JackCutaway } from './art/JackCutaway';
-import { resolvePair, type PairKind } from './engine/patchbay';
+import { PATCH_PAIR_GLASS_ASPECT, PairStatus, PatchPairDrawing, PatchPairView } from './art/PatchPairView';
+import { JACK_ASPECT, JACK_BADGE, JackCutawayDrawing, useContactAnnounce } from './art/JackCutaway';
+import { contactsOpen, resolvePair, type PairKind } from './engine/patchbay';
 import { ASSESSMENT_ITEMS, DESIGN_ROWS } from './engine/scenariosB';
 import { GoalChips, MantraCard, useStationState, useVisitGoals } from './bits';
+import { PatchbayRack, cutawayBezel, insertionFader, jackKeys, pairBezel } from './rackLayout';
 
 /* ── 19 · Half-normal is directional (§22) ──────────────────────────────── */
 
@@ -31,30 +31,33 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
     { label: 'SEE THE PARALLEL (bottom on this bay)', hit: flow.isMerge },
   ];
   const latched = useVisitGoals(ctx, goals);
-  // Built once: on the page and docked under the pair in full screen
-  // (full-screen pass 2026-09-30).
   const chips = <GoalChips goals={goals} latched={latched} />;
+  // Rack page (owner 2026-10-10): the pair on the glass, the jacks in the dock.
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: PATCH_PAIR_GLASS_ASPECT,
+        draw: (w) => (
+          <PatchPairDrawing glass w={w} state={state} sourceLabel="TAPE OUT 1" destLabel="CONSOLE TAPE RTN 1" topPatchLabel="YOUR CABLE" bottomPatchLabel="ALT SOURCE" onToggleJack={toggle} reduceMotion={ctx.reduceMotion} />
+        ),
+        bezel: pairBezel(state, 'TAPE OUT 1', 'CONSOLE TAPE RTN 1'),
+        params: jackKeys(state, toggle),
+        initialParam: 'top',
+      }}
+    >
       <Lead>
-        A professional caution: “half-normal” does not by itself say WHICH side breaks. The bay below is a genuine
+        A professional caution: “half-normal” does not by itself say WHICH side breaks. The bay above is a genuine
         half-normalled-TOP design — everything you learned, mirrored.
       </Lead>
-      <PatchPairView
+      <PairStatus
         state={state}
         sourceLabel="TAPE OUT 1"
         destLabel="CONSOLE TAPE RTN 1"
-        topPatchLabel="YOUR CABLE"
-        bottomPatchLabel="ALT SOURCE"
-        onToggleJack={toggle}
-        reduceMotion={ctx.reduceMotion}
         caption={
           flow.isMerge
             ? 'PARALLEL — on a top-breaking bay the bottom does NOT break: two feeds arrive at once. One reason the common bay breaks on the bottom instead.'
             : 'This bay breaks on the TOP. Try both jacks and compare against the common bay you know.'
         }
-        controls={chips}
-        fsTitle="TOP-BREAKING"
       />
       {chips}
       <Card tone="warn">
@@ -65,7 +68,7 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
           like page twelve) before a session depends on it.
         </Body>
       </Card>
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -73,17 +76,26 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
 
 function PageConductors({ ctx }: { ctx: PageCtx }) {
   const [insertion, setInsertion] = useState(0.9);
-  // The slider, built once: on the page and docked under the cutaway in
-  // full screen (full-screen pass 2026-09-30).
-  const slider = <ControlSlider label="PLUG INSERTION" value={insertion} min={0} max={1} step={0.01} onChange={setInsertion} format={(v) => `${Math.round(v * 100)}%`} />;
+  useContactAnnounce(contactsOpen(insertion));
+  // Rack page (owner 2026-10-10): the cutaway with its T · R · S bands on the
+  // glass, the plug driven by the dock's PLUG INSERTION fader (it was a slider
+  // under the drawing), the % / contacts readout on the bezel.
   return (
-    <View style={{ gap: 12 }}>
+    <PatchbayRack
+      rack={{
+        aspect: JACK_ASPECT,
+        draw: (w) => <JackCutawayDrawing insertion={insertion} reduceMotion={ctx.reduceMotion} showConductors w={w} h={w / JACK_ASPECT} />,
+        badge: JACK_BADGE,
+        bezel: cutawayBezel(insertion),
+        params: [insertionFader(insertion, setInsertion)],
+        initialParam: 'insertion',
+        hideDragTag: true,
+      }}
+    >
       <Lead>
         One more layer of honesty. Every “one line” in this lab has really been THREE conductors — a balanced audio circuit.
         The plug you have been driving carries them as its metal bands.
       </Lead>
-      <JackCutaway insertion={insertion} reduceMotion={ctx.reduceMotion} showConductors controls={slider} />
-      {slider}
       <Card>
         <Eyebrow>T · R · S</Eyebrow>
         <Body>
@@ -110,7 +122,7 @@ function PageConductors({ ctx }: { ctx: PageCtx }) {
           if (!ctx.isDone) ctx.markDone();
         }}
       />
-    </View>
+    </PatchbayRack>
   );
 }
 
@@ -300,8 +312,8 @@ function PageAssessment({ ctx }: { ctx: PageCtx }) {
 }
 
 export const PATCHBAY_PAGES_D: PageDef[] = [
-  { title: 'Half-normal is directional', short: 'TOP-BRK', Component: PageDirectional, manualDone: true },
-  { title: 'Inside the cord: T · R · S', short: 'TRS', Component: PageConductors, manualDone: true },
+  { title: 'Half-normal is directional', short: 'TOP-BRK', Component: PageDirectional, manualDone: true, rack: true },
+  { title: 'Inside the cord: T · R · S', short: 'TRS', Component: PageConductors, manualDone: true, rack: true },
   { title: 'Phantom power + patchbays', short: '⚠48V', Component: PagePhantom, manualDone: true },
   { title: 'Design your own bay', short: 'DESIGN', Component: PageDesign, manualDone: true },
   { title: 'Final proficiency assessment', short: 'FINAL', Component: PageAssessment, manualDone: true },

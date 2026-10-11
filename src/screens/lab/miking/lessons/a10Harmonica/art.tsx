@@ -26,7 +26,7 @@ import { BRASS, STEEL } from '../shared/metal/metalArt';
 import { ampExtras, ampLessonArt } from '../shared/speakers/ampArt';
 import { CabFront } from '../shared/speakers/SpeakerArt';
 import { cabFrontHit, frontBox } from '../shared/speakers/cabLabels.ts';
-import { PlayerBehind } from '../shared/players/PlayerFigure';
+import { armPath, PlayerBehind } from '../shared/players/PlayerFigure';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
 import { limb, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_FAR, SKIN_RIM, type Pt } from '../shared/freereed/PlayerProfile';
 import { BULLET, HARMONICA } from '../shared/freereed/freeReedSpec.ts';
@@ -276,7 +276,8 @@ const ABOVE: PlayerPose = {
   floor: null,
 };
 /** The near (right) arm from above, in the turned frame (world mm). */
-const ARM_R_TOP = limb([pt(H0.x - 130, H0.z + 188), pt(H0.x - 30, H0.z + 214), pt(H0.x + 6, H0.z + 118)], [50, 41, 30]);
+// The shared anatomical arm (owner 2026-10-10: the tube arms).
+const ARM_R_TOP = armPath(pt(H0.x - 130, H0.z + 188), pt(H0.x - 30, H0.z + 214), pt(H0.x + 6, H0.z + 118));
 
 function PlayerTop(): ReactElement {
   return (

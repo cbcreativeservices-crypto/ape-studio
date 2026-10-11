@@ -12,7 +12,7 @@
  * vehicle-rated protector (yellow lids, black ramps). Labels use the lab's
  * fonts (Oswald) — the plans used the browser's default serif before.
  */
-import { Circle, Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Callout, useUid } from '../svgArt';
 import { HeadIconSvg } from '../../../../features/lab/headIconsSvg';
 
@@ -206,18 +206,53 @@ export function PerformerTop({ x, y, m }: { x: number; y: number; m: number }) {
   return <HeadIconSvg view="above" x={x} y={y} size={0.4 * m} color="#b4bac6" plate minStroke={1} />;
 }
 
-/** A wedge monitor from above (0.6 × 0.4 m), its grille face toward the
- *  performer (upstage); `angle` toes it in toward its performer. */
+/**
+ * A 2-way floor wedge (12" + 1") from above, at true size on the plot's
+ * 32 units/m: 600 mm wide × 420 mm deep (owner 2026-10-10: a stage wedge,
+ * not a guitar amp). The baffle slopes up toward the performer at ~45°, so
+ * from above it fills the FRONT ~70 % of the footprint, foreshortened (×0.7):
+ * the 12" woofer reads as an ellipse, the HF horn's rectangular mouth sits
+ * above it on the high side, all behind a grille with its edge frame. The
+ * flat top panel is the rear strip; the input panel is recessed into the
+ * rear edge (WEDGE_JACK_DX/DY from the centre), where the feed lands. Handle
+ * recesses on both sides. The front faces −y (upstage, at the performer);
+ * `angle` toes it in toward its performer's mic.
+ */
+export const WEDGE_W = 19.2;
+export const WEDGE_D = 13.4;
+/** The rear input connector, relative to the wedge centre (angle 0). */
+export const WEDGE_JACK_DX = 6;
+export const WEDGE_JACK_DY = 5.3;
 export function WedgeTop({ x, y, angle = 0 }: { x: number; y: number; angle?: number }) {
-  const w = 19;
-  const h = 13;
+  const w = WEDGE_W;
+  const h = WEDGE_D;
+  const x0 = x - w / 2;
+  const y0 = y - h / 2;
+  const top = y0 + h * 0.7; // baffle (front) | top panel (rear)
+  const jx = x + WEDGE_JACK_DX;
+  const jy = y + WEDGE_JACK_DY;
   return (
     <G transform={`rotate(${angle} ${x} ${y})`}>
-      <Rect x={x - w / 2 + 0.8} y={y - h / 2 + 1.2} width={w} height={h} rx={1.2} fill="rgba(0,0,0,0.5)" />
-      <Rect x={x - w / 2} y={y - h / 2} width={w} height={h} rx={1.2} fill="#1d1f24" stroke="#0a0a0c" strokeWidth={0.6} />
-      <Rect x={x - w / 2 + 1.2} y={y - h / 2 + 0.8} width={w - 2.4} height={3.2} rx={0.5} fill="#3a3c42" />
-      <Path d={[0, 1, 2, 3, 4, 5, 6].map((i) => `M${x - w / 2 + 2.4 + i * 2.4} ${y - h / 2 + 1.2} v2.4`).join('')} stroke="#141518" strokeWidth={0.5} />
-      <Circle cx={x} cy={y + 2.2} r={3.4} fill="none" stroke="#3a3c42" strokeWidth={0.6} />
+      <Rect x={x0 + 0.8} y={y0 + 1.2} width={w} height={h} rx={1.2} fill="rgba(0,0,0,0.5)" />
+      {/* the cabinet, then the flat top panel at the back (catching light) */}
+      <Rect x={x0} y={y0} width={w} height={h} rx={1.2} fill="#1d1f24" stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={x0 + 0.5} y={top} width={w - 1} height={y0 + h - top - 0.5} rx={0.8} fill="#2e3138" />
+      <Line x1={x0 + 1} y1={top + 0.3} x2={x0 + w - 1} y2={top + 0.3} stroke="#4a4e56" strokeWidth={0.5} />
+      {/* the sloped baffle: grille with its edge frame */}
+      <Rect x={x0 + 0.9} y={y0 + 0.7} width={w - 1.8} height={top - y0 - 1.1} rx={0.8} fill="#131418" stroke="#4d5159" strokeWidth={0.55} />
+      <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => `M${x0 + 1.6} ${y0 + 1.3 + i * 0.95} H${x0 + w - 1.6}`).join('')} stroke="#1c1e23" strokeWidth={0.35} />
+      {/* 12" woofer, foreshortened by the slope */}
+      <Ellipse cx={x} cy={y0 + 3.9} rx={4.6} ry={3.1} fill="#0b0c0f" stroke="#3d4148" strokeWidth={0.45} />
+      <Ellipse cx={x} cy={y0 + 3.9} rx={1.5} ry={1} fill="#24262c" />
+      {/* the HF horn's rectangular mouth, above it on the high side */}
+      <Rect x={x - 3.6} y={y0 + 7.2} width={7.2} height={1.9} rx={0.3} fill="#0b0c0f" stroke="#3d4148" strokeWidth={0.4} />
+      <Path d={`M${x - 3.2} ${y0 + 7.5} L${x - 0.6} ${y0 + 8.15} M${x + 3.2} ${y0 + 7.5} L${x + 0.6} ${y0 + 8.15}`} stroke="#2a2c31" strokeWidth={0.3} />
+      {/* handle recesses in both side panels */}
+      <Rect x={x0 - 0.1} y={y - 1.4} width={1} height={3.4} rx={0.4} fill="#050506" />
+      <Rect x={x0 + w - 0.9} y={y - 1.4} width={1} height={3.4} rx={0.4} fill="#050506" />
+      {/* the recessed rear input panel and its connector */}
+      <Rect x={jx - 2.4} y={jy - 1.4} width={4.8} height={2.9} rx={0.4} fill="#0d0e11" stroke="#4a4e56" strokeWidth={0.35} />
+      <Circle cx={jx} cy={jy} r={0.95} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
     </G>
   );
 }

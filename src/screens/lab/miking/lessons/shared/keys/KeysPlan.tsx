@@ -18,6 +18,7 @@
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from '../wedge2Way';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
@@ -160,8 +161,6 @@ function build(rig: KeysRig) {
     { u: 520, v: 120, r: 228, kind: 'cym' },
     { u: 80, v: -480, r: 203, kind: 'cym' },
   ];
-  const wedge = rr(-150, -280, 150, 280, 18);
-  const wedgeGrille = rr(-40, -258, 136, 258, 14);
   const pa = rr(-300, -300, 300, 300, 20);
   // The audience: one row of true-size empty chairs facing the stage (−u) —
   // an audience is its chairs, never heads (owner 2026-10-10).
@@ -169,7 +168,7 @@ function build(rig: KeysRig) {
   const B = KEYS_BOX[rig];
   const deck = rr(B.stage.u0, B.stage.v0, KEYS_POS.audience - 450, B.stage.v1, 0);
   const room = rr(B.studio.u0 + 50, B.studio.v0 + 50, B.studio.u1 - 50, B.studio.v1 - 50, 40);
-  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, other, drums, wedge, wedgeGrille, pa, chairs, deck, room };
+  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, other, drums, pa, chairs, deck, room };
 }
 
 export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; rig: KeysRig; scene: KeysScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
@@ -295,10 +294,8 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
                   const a = wedgeAt(wd);
                   return (
                     <Group key={wd.id} transform={[{ translateX: a.u }, { translateY: a.v }, { rotate: a.a }]}>
-                      <Path path={g!.wedge}>
-                        <LinearGradient start={vec(-150, 0)} end={vec(150, 0)} colors={['#1d1e22', '#3a3b41', '#55585f']} />
-                      </Path>
-                      <Path path={g!.wedgeGrille} color="#2b2d33" />
+                      {/* a 2-way floor wedge at true size (shared/wedge2Way.tsx) */}
+                      <Wedge2WayTop />
                     </Group>
                   );
                 })

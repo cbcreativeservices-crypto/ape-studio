@@ -539,21 +539,23 @@ export function handShape(h: Hand, fore?: number): HandShape {
     const kLo = Math.min(...ku);
     const kHi = Math.max(...ku);
     const w = h.wrist;
+    // The wrist's frame, toward the knuckle row: the palm's heel just past the crease.
+    const toK = angleOf(w, pt(cu, knuckleV + 20));
+    const Lk = local({ ...h, dir: toK });
+    const yk = Math.sin(toK) <= 0 ? 1 : -1; // −u side of the heel
     const palm = smooth(
       [
-        pt(w.u - 26, w.v - 2),
+        Lk(12, -27 * yk),
         pt(kLo - 14, knuckleV + 30),
         pt(kLo - 8, knuckleV + 2),
         pt(cu, knuckleV - 6),
         pt(kHi + 8, knuckleV + 2),
         pt(kHi + 16, knuckleV + 30),
-        pt(w.u + 26, w.v - 2),
-        pt(w.u, w.v + 4),
+        Lk(12, 27 * yk),
       ],
       0.55,
     );
     // The wrist out of the cuff, along the hand toward the knuckle row.
-    const toK = angleOf(w, pt(cu, knuckleV + 20));
     const wrist = wristOf(local({ ...h, dir: toK }), { ...h, dir: toK }, fore);
     const fingers = tips.map((tu, i) => {
       const k = pt(ku[i], knuckleV);
@@ -676,6 +678,67 @@ export function handShape(h: Hand, fore?: number): HandShape {
   }
   lines.addPath(crease(thumb.joints[2], thumb.joints[3], 0.06, 7, 1.5));
   return { path: union(wristOf(L, h, fore), palm, ...fingers.map((d) => d.path), thumb.path), lines, pick: null, bar: null, thumbBehind: null };
+}
+
+/**
+ * THE LEFT HAND ON A BOWED INSTRUMENT'S NECK, seen from the side (owner
+ * 2026-10-10: "left hand on the neck of the violin though is upside down";
+ * the cello, viola and bass the same). Real anatomy: the palm faces the neck
+ * (not touching it) on its far side, the thumb behind the neck, the wrist
+ * straight in line with the forearm; the fingers come up from behind the
+ * board, arch OVER it and press DOWN onto the strings, tips pointing into
+ * the board, the knuckles toward the scroll. In the picture:
+ *   • `behind` — the wrist, the palm and the finger roots, painted BEHIND the
+ *     instrument (only what shows past the neck is seen);
+ *   • `front` — the arched fingers, painted over the instrument but cut at the
+ *     strings' line, so each finger rises from behind the board.
+ * `tips`: the four stops on the strings, index (nearest the scroll) first;
+ * `a`: along the neck toward the scroll; `b`: off the board's face (the side
+ * the strings face); `elbow`: where the forearm comes from.
+ */
+export function neckHand(tips: Pt[], a: Pt, b: Pt, elbow: Pt): { wrist: Pt; dir: number; behind: SkPath; front: SkPath; lines: SkPath } {
+  const V = (p: Pt, da: number, db: number) => pt(p.u + a.u * da + b.u * db, p.v + a.v * da + b.v * db);
+  const lines = make();
+  const fingers = tips.map((t, i) => {
+    const f = FINGERS[i] ?? FINGERS[3];
+    const k = V(t, 15, -14); // the knuckle, behind the board's edge, toward the scroll
+    const pip = V(t, 10, 19); // the middle joint, up over the board
+    const dip = V(t, 2, 15);
+    const tip = V(t, 0, 2); // the tip down on its string
+    lines.addPath(crease(pip, dip, 0.2, f.r[1] * 0.7, 1.5));
+    return { path: limb([k, pip, dip, tip], [f.r[0], f.r[1], f.r[2], f.r[3] + 0.3]), k };
+  });
+  const km = pt(fingers.reduce((q, f) => q + f.k.u, 0) / fingers.length, fingers.reduce((q, f) => q + f.k.v, 0) / fingers.length);
+  // The wrist on the line from the elbow to the knuckles (a straight wrist), a palm's length short of them.
+  const L0 = Math.max(1, dist(elbow, km));
+  const d = pt((km.u - elbow.u) / L0, (km.v - elbow.v) / L0);
+  const W = pt(km.u - d.u * 96, km.v - d.v * 96);
+  const dir = Math.atan2(d.v, d.u);
+  const h: Hand = { wrist: W, dir, kind: 'rest' };
+  const H = local(h);
+  // The palm from the wrist to the knuckle row (wherever along it the knuckles fall).
+  const ys = fingers.map((f) => (f.k.u - W.u) * -Math.sin(dir) + (f.k.v - W.v) * Math.cos(dir));
+  const y0 = Math.min(...ys) - 11;
+  const y1 = Math.max(...ys) + 11;
+  const palm = smooth([H(4, -27), H(44, Math.min(-33, y0 * 0.8)), H(90, y0), H(100, y0 + 8), H(100, y1 - 8), H(90, y1), H(44, Math.max(33, y1 * 0.8)), H(4, 27)], 0.5);
+  const roots = fingers.map((f, i) => capsule(H(80, ys[i] * 0.85), f.k, 11, (FINGERS[i] ?? FINGERS[3]).r[0]));
+  const behind = union(wristOf(H, h, Math.atan2(W.v - elbow.v, W.u - elbow.u)), palm, ...roots);
+  // The fingers only from the strings' line out (they rise from behind the board).
+  const tm = pt(tips.reduce((q, t) => q + t.u, 0) / tips.length, tips.reduce((q, t) => q + t.v, 0) / tips.length);
+  const o = V(tm, 0, -1);
+  const q = make();
+  const c0 = V(o, -2000, 0);
+  const c1 = V(o, 2000, 0);
+  const c2 = V(o, 2000, 2000);
+  const c3 = V(o, -2000, 2000);
+  q.moveTo(c0.u, c0.v);
+  q.lineTo(c1.u, c1.v);
+  q.lineTo(c2.u, c2.v);
+  q.lineTo(c3.u, c3.v);
+  q.close();
+  const all = union(...fingers.map((f) => f.path));
+  const front = Skia.Path.MakeFromOp(all, q, PathOp.Intersect) ?? all;
+  return { wrist: W, dir, behind, front, lines };
 }
 
 /* ── the parts ── */
@@ -817,6 +880,73 @@ export function armPath(root: Pt, e: Pt, w: Pt, R: { root: number; upper: number
   p.close();
   // A deeply bent arm folds its inner edges over each other: one clean outline.
   return Skia.Path.MakeFromOp(p, p, PathOp.Union) ?? p;
+}
+
+/** A BARE ARM's widths (half-widths, mm; a T-shirt's short sleeve leaves it):
+ *  narrower than the sleeved arm, the wrist ≈ 56 mm; the outline runs a
+ *  little past the wrist crease so the hand drawn over it covers its end. */
+export const BARE_ARM = { root: 42, upper: 40, elbow: 35, belly: 38, cuff: 28, cuffGap: -10 } as const;
+
+/**
+ * A FOREARM alone (close-ups that show only it, from the elbow's side to the
+ * wrist): the muscle's swell in its upper third tapering to the wrist, one
+ * smooth outline (owner 2026-10-10: a straight tube is not a forearm).
+ * `w`: the width at the wrist (mm); the outline runs 6 mm past the wrist so
+ * the hand covers its end.
+ */
+export function forearmPath(from: Pt, to: Pt, w: number): SkPath {
+  const L = Math.max(1, dist(from, to));
+  const d = pt((to.u - from.u) / L, (to.v - from.v) / L);
+  const n = pt(-d.v, d.u);
+  const rW = w / 2;
+  const rB = rW * 1.38; // the belly
+  const rE = rW * 1.28; // toward the elbow
+  const at = (a: number, r: number) => [pt(from.u + d.u * a + n.u * r, from.v + d.v * a + n.v * r), pt(from.u + d.u * a - n.u * r, from.v + d.v * a - n.v * r)] as const;
+  const st = [
+    [0, rE],
+    [L * 0.22, rB],
+    [L * 0.5, rB * 0.9],
+    [L * 0.8, rW * 1.05],
+    [L + 6, rW],
+  ] as const;
+  const left = st.map(([a, r]) => at(a, r)[0]);
+  const right = st.map(([a, r]) => at(a, r)[1]);
+  const back = pt(from.u - d.u * rE, from.v - d.v * rE);
+  return smooth([back, ...left, ...right.reverse()], 0.5);
+}
+
+/**
+ * ONE ARM PAINTED AT TWO DEPTHS (an instrument passing between the upper arm
+ * and the forearm): the arm's outline plus the two half-planes either side
+ * of the elbow (square to the arm's mean direction there). Paint the farther
+ * part with the whole outline and the nearer part with the same outline
+ * clipped to its half — so no seam is ever drawn across the arm.
+ */
+export function splitArm(root: Pt, e: Pt, w: Pt, R: Parameters<typeof armPath>[3] = ARM): { path: SkPath; upperSide: SkPath; foreSide: SkPath } {
+  const path = armPath(root, e, w, R);
+  const l1 = Math.max(1e-6, dist(root, e));
+  const l2 = Math.max(1e-6, dist(e, w));
+  let mu = (e.u - root.u) / l1 + (w.u - e.u) / l2;
+  let mv = (e.v - root.v) / l1 + (w.v - e.v) / l2;
+  const lm = Math.hypot(mu, mv);
+  if (lm > 1e-3) {
+    mu /= lm;
+    mv /= lm;
+  } else {
+    mu = -(e.v - root.v) / l1;
+    mv = (e.u - root.u) / l1;
+  }
+  const half = (s: number) => {
+    const B = 4000;
+    const at = (a: number, b: number) => pt(e.u + mu * a - mv * b, e.v + mv * a + mu * b);
+    const p = make();
+    const c = [at(0, -B), at(0, B), at(s * B, B), at(s * B, -B)];
+    p.moveTo(c[0].u, c[0].v);
+    for (const q of c.slice(1)) p.lineTo(q.u, q.v);
+    p.close();
+    return p;
+  };
+  return { path, upperSide: half(-1), foreSide: half(1) };
 }
 
 /**

@@ -15,6 +15,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Canvas, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Wedge2WayTop } from '../shared/wedge2Way';
 import { useStageTextScale } from '../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../rack/rackTypes';
 import type { SettingItem, ViewBox, ViewId } from '../../engine/model/types.ts';
@@ -90,6 +91,19 @@ function hit(ms: Mark[], u: number, v: number, tol: number): boolean {
 /** A floor monitor wedge, illustrated: the cabinet, its sloped grille facing
  *  `faces`, lit from the upper left (the stage's monitors on this plan). */
 function FloorWedge({ view, at, faces }: { view: ViewId; at: { x: number; y: number; z: number }; faces: { x: number; z: number } }) {
+  if (view === 'top') {
+    // from above: the 2-way wedge at true size (shared/wedge2Way.tsx)
+    return (
+      <Group transform={[{ translateX: at.x }, { translateY: at.z }, { rotate: Math.atan2(faces.z, faces.x) }]}>
+        <Wedge2WayTop />
+      </Group>
+    );
+  }
+  return <FloorWedgeSide view={view} at={at} faces={faces} />;
+}
+
+/** The wedge's side profile (the elevation views). */
+function FloorWedgeSide({ view, at, faces }: { view: ViewId; at: { x: number; y: number; z: number }; faces: { x: number; z: number } }) {
   const parts = useMemo(() => {
     const cab = Skia.Path.Make();
     const grille = Skia.Path.Make();

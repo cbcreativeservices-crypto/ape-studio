@@ -561,6 +561,21 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
   const H = RIG_H;
   const cabs = Array.from({ length: count }, (_, i) => i);
   const wire = verdict === 'unsafe' ? colors.red : verdict === 'marginal' ? colors.gold : '#ff7a5c';
+  // Each cabinet on its own cable from its own output (owner 2026-10-10:
+  // every cable its own line, run like a wiring drawing): up off the amp,
+  // over the cabinets in parallel lanes, square down into each. The run to
+  // the farthest cabinet takes the top output, nested so no two
+  // cross: top output, innermost riser, highest lane.
+  const portY = (i: number) => 52 + 4 * (count - 1 - i);
+  const runs = cabs.map((i) => {
+    const k = count - 1 - i;
+    const py = portY(i);
+    const rx = 84 + 4 * k;
+    const ly = 20 + 4 * k;
+    const cx = 120 + i * 46;
+    const r = 3;
+    return `M 78 ${py} L ${rx - r} ${py} Q ${rx} ${py} ${rx} ${py - r} L ${rx} ${ly + r} Q ${rx} ${ly} ${rx + r} ${ly} L ${cx - r} ${ly} Q ${cx} ${ly} ${cx} ${ly + r} L ${cx} 40`;
+  });
   return (
     <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on one amplifier channel${bridged ? ', bridged' : ''}; the load is ${verdict}`}>
       <GearInSvg kind="amp" id="lr-amp" x={44} y={58} size={70} power={verdict === 'unsafe' ? 'off' : 'on'} />
@@ -570,15 +585,17 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
         const y = 56;
         return (
           <G key={i}>
-            <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke={wire} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-            <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} />
+            <Path d={runs[i]} stroke={wire} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+            <Path d={runs[i]} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} />
             <GearInSvg kind="passiveSpeaker" id={`lr-cab-${i}`} x={x} y={y} size={46} />
             <SvgText x={x} y={y + 34} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.mono}>{ohms} Ω</SvgText>
           </G>
         );
       })}
       {count > 1 ? <SvgText x={120 + (count - 1) * 23} y={16} fontSize={8.5} fill={INK.metalHi} textAnchor="middle" fontFamily={fonts.oswaldMedium}>IN PARALLEL</SvgText> : null}
-      <Circle cx={78} cy={58} r={2.5} fill={wire} />
+      {cabs.map((i) => (
+        <Circle key={`p${i}`} cx={78} cy={portY(i)} r={2} fill={wire} />
+      ))}
     </Svg>
   );
 }

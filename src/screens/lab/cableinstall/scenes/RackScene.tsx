@@ -170,7 +170,8 @@ const HMGR_XS = Array.from({ length: 14 }, (_, i) => 66 + i * 16);
 const DSP_JACK_XS = [70, 94, 118, 142, 166, 190, 214, 238];
 const IFACE_XS = [70, 92, 114, 136, 158, 180];
 const DISTRO_XS = Array.from({ length: 8 }, (_, i) => 64 + i * 19);
-const TIE_YS = [60, 118, 176, 234, 292, 336];
+/** Hook-and-loop wraps down the vertical managers, at even ~1.3U intervals. */
+const TIE_YS = Array.from({ length: 10 }, (_, i) => 60 + i * 29);
 
 /* ── motion timing for this scene (see the header note) ──────────────────── */
 /** Stagger between rack bands as the chassis assembles, top-to-bottom. */
@@ -191,65 +192,123 @@ const TRACE_DUR = 780;
 /** "Signal just came alive" — a few marching cycles, then rest. */
 const FLOW_MS = 2600;
 
-/** Where each group's loom enters at the top slot (per group index). */
-const ENTRY_XS = [221, 156, 169, 208, 182, 195];
-/** Plausible terminating gear height per group. */
-const DEST_Y: Record<string, number> = {
-  'g-ac': PDU.y + 19.5,
-  'g-analog': 107,
-  // the horizontals turn in behind the jacks-to-rear patch panel
-  'g-net': PATCH.y + 14,
-  'g-spk': AMP.nl4Y,
-  'g-ctl': 102.6,
-  'g-fib': 84.8,
+/* ── LINE-DIAGRAM LANES (owner 2026-10-10: "cables need to stay shown
+   independently like in a line diagram drawing" + "we are teaching
+   professional cabling"). A loom is never one fat stroke: every cable in it
+   is its own lane, from the top entry, along the top duct, down its vertical
+   manager and onto its own connector. Lanes sit ≈1.5× the stroke apart,
+   keep their order the whole way, and every corner is CONCENTRIC (one centre
+   per bend, the radius growing lane by lane), so no two lanes ever cross or
+   lie on top of one another inside a loom. Each side's lanes are allocated
+   by GROUP, never by assignment order, so reassigning one group never
+   shuffles another group's route. ──────────────────────────────────────── */
+type LaneCable = { gid: string; key: string; w: number };
+/** Signal cables (analog, control, network, fiber) are drawn thin so a whole
+ *  side fits the 1U top duct as separate lanes; power and speaker cable are
+ *  heavier, as they are in the rack. */
+const W_SIG = 1;
+const W_BY_GROUP: Record<string, number> = { 'g-ac': 2, 'g-spk': 2.4 };
+const laneW = (gid: string) => W_BY_GROUP[gid] ?? W_SIG;
+/** Centre-to-centre spacing between two neighbouring lanes. */
+const lanePitch = (a: number, b: number) => 0.75 * (a + b);
+/** Every cable each group brings to its manager, in the order its lanes
+ *  stack (INNER → OUTER, i.e. nearest the rail first). Inner lanes turn in
+ *  highest, so the cable that leaves the loom first is always on its edge. */
+function groupCables(gid: string, isL: boolean): string[] {
+  if (gid === 'g-analog') {
+    // the harness peels its bottom lane off first: on the left that is DSP
+    // input 1 (nearest the rail), on the right DSP input 8
+    const k = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `in${n}`);
+    return isL ? k.reverse() : k;
+  }
+  if (gid === 'g-net') return ['h1', 'h2', 'h3', 'h4'];
+  if (gid === 'g-spk') return isL ? ['o2', 'o1'] : ['o1', 'o2'];
+  return ['c'];
+}
+/** Inner → outer group order per side. The plan's own groups sit inside, in
+ *  the order they turn in (top to bottom); a group dressed to the wrong side
+ *  rides outside them. */
+const SIDE_ORDER = {
+  L: ['g-net', 'g-fib', 'g-ctl', 'g-analog', 'g-spk', 'g-ac'],
+  R: ['g-spk', 'g-ac', 'g-net', 'g-fib', 'g-ctl', 'g-analog'],
+} as const;
+/** The rail height where each group's INNER lane turns in. */
+const TURN_Y: Record<string, number> = {
+  'g-net': PATCH.y + 9.5, // behind the jacks-to-rear patch panel
+  'g-fib': 84.8, // over the switch's top lip, to the SFP cage
+  'g-ctl': 101.2, // the top lane of the DSP harness
+  'g-analog': 102.7, // the DSP harness proper, under the switch ports
+  'g-spk': AMP.y - 13, // straddling the rear lacing bar over the amp
+  'g-ac': PDU.y + 19.5, // into the PDU's own inlet
 };
-
-/** Honest loom paths — gentle bends, per-loom wobble, terminating at gear. */
-/** Every loom drops through the entry INTO the top horizontal duct, runs
- *  along it, crosses the rail and turns down the vertical manager — never
- *  over the cabinet's top edge (that is Phase A's ri-9). */
-function dLeft(ex: number, lane: number, ty: number, wob: number): string {
-  const yd = 29 + wob;
-  if (ty - yd < 44) {
-    // a short drop (the horizontals to the patch panel, one U below the duct)
-    return (
-      `M${ex} 4 C${ex} 16 ${ex - 2} ${yd} ${ex - 12} ${yd} ` +
-      `L${lane + 14} ${yd} C${lane + 4} ${yd} ${lane} ${yd + 4} ${lane} ${yd + 10} ` +
-      `L${lane} ${ty - 8} C${lane} ${ty - 2} ${lane + 4} ${ty} ${lane + 12} ${ty} L58 ${ty}`
-    );
+type Lane = LaneCable & { off: number; off0: number };
+function sideLanes(isL: boolean): Lane[] {
+  const out: Lane[] = [];
+  let d = 0;
+  let prevW = 0;
+  for (const gid of SIDE_ORDER[isL ? 'L' : 'R']) {
+    const w = laneW(gid);
+    let d0 = -1;
+    for (const key of groupCables(gid, isL)) {
+      if (out.length) d += lanePitch(prevW, w);
+      if (d0 < 0) d0 = d;
+      out.push({ gid, key, w, off: d, off0: d0 });
+      prevW = w;
+    }
   }
-  return (
-    `M${ex} 4 C${ex} 16 ${ex - 2} ${yd} ${ex - 12} ${yd} ` +
-    `L${lane + 22} ${yd} C${lane + 6} ${yd} ${lane} ${yd + 8} ${lane} ${yd + 20} ` +
-    `L${lane} ${ty - 24} C${lane} ${ty - 10 + wob} ${lane + 6} ${ty} ${lane + 20} ${ty} L58 ${ty}`
-  );
+  return out;
 }
-function dRight(ex: number, lane: number, ty: number, wob: number): string {
-  const yd = 29 + wob;
-  if (ty - yd < 44) {
-    return (
-      `M${ex} 4 C${ex} 16 ${ex + 2} ${yd} ${ex + 12} ${yd} ` +
-      `L${lane - 14} ${yd} C${lane - 4} ${yd} ${lane} ${yd + 4} ${lane} ${yd + 10} ` +
-      `L${lane} ${ty - 8} C${lane} ${ty - 2} ${lane - 4} ${ty} ${lane - 12} ${ty} L282 ${ty}`
-    );
+const LANES = { L: sideLanes(true), R: sideLanes(false) } as const;
+/** The bend geometry (see the header): entry drops, duct row, manager lane. */
+const DUCT_IN_Y = 38.5; // the innermost lane's row in the top duct
+const C1_Y = 7.5; // centre height of the entry bends
+const C2_Y = DUCT_IN_Y + 3; // centre height of the duct → manager bends
+const L_GEO = { ex: 179.5, lane: 44.5 } as const; // inner lane, left side
+const R_GEO = { ex: 201, lane: 295.5 } as const; // inner lane, right side
+const RAIL_XL = 58;
+const RAIL_XR = 282;
+/** One lane's run, entry → duct → manager → rail, ending at the rail. */
+function laneRun(l: Lane, isL: boolean): { d: string; railY: number } {
+  const yd = DUCT_IN_Y - l.off;
+  const r1 = yd - C1_Y;
+  const r2 = 3 + l.off;
+  const r3 = 3 + (l.off - l.off0);
+  const ty = TURN_Y[l.gid] + (l.off - l.off0);
+  if (isL) {
+    const ex = L_GEO.ex - l.off;
+    const lane = L_GEO.lane - l.off;
+    return {
+      railY: ty,
+      d:
+        `M${ex} 4 V${C1_Y} A${r1} ${r1} 0 0 1 ${ex - r1} ${yd} ` +
+        `H${lane + r2} A${r2} ${r2} 0 0 0 ${lane} ${yd + r2} ` +
+        `V${ty - r3} A${r3} ${r3} 0 0 0 ${lane + r3} ${ty} H${RAIL_XL}`,
+    };
   }
-  return (
-    `M${ex} 4 C${ex} 16 ${ex + 2} ${yd} ${ex + 12} ${yd} ` +
-    `L${lane - 22} ${yd} C${lane - 6} ${yd} ${lane} ${yd + 8} ${lane} ${yd + 20} ` +
-    `L${lane} ${ty - 24} C${lane} ${ty - 10 + wob} ${lane - 6} ${ty} ${lane - 20} ${ty} L282 ${ty}`
-  );
+  const ex = R_GEO.ex + l.off;
+  const lane = R_GEO.lane + l.off;
+  return {
+    railY: ty,
+    d:
+      `M${ex} 4 V${C1_Y} A${r1} ${r1} 0 0 0 ${ex + r1} ${yd} ` +
+      `H${lane - r2} A${r2} ${r2} 0 0 1 ${lane} ${yd + r2} ` +
+      `V${ty - r3} A${r3} ${r3} 0 0 1 ${lane - r3} ${ty} H${RAIL_XR}`,
+  };
 }
-
-/** Approximate path length in viewBox units — the dash-reveal budget. Always
- *  OVER-estimated: a short estimate would leave a gap at the tail. */
-const loomLen = (ex: number, lane: number, ty: number) => Math.round((Math.abs(ex - lane) + Math.abs(ty - 4) + 60) * 1.14);
-
-/** Lanes are allocated by GROUP INDEX, never by assignment order, so
- *  reassigning one group can never shuffle another group's route (which would
- *  set five looms re-installing at once). */
-const laneFor = (gi: number, left: boolean) => (left ? MGR_L.x + 10 + gi * 4 : MGR_R.x + MGR_R.w - 10 - gi * 4);
-const hmgrY = (gi: number) => 24 + gi * 2.4;
-const entryCx = (gi: number) => 188 + gi * 3;
+/** Over-estimated run length (the dash-reveal budget). */
+const runLen = (ty: number) => Math.round((ty + 300) * 1.1);
+/** A group's lanes on one side: key → its run and rail height. */
+function groupRuns(gid: string, isL: boolean) {
+  return LANES[isL ? 'L' : 'R']
+    .filter((l) => l.gid === gid)
+    .map((l) => ({ ...l, ...laneRun(l, isL) }));
+}
+const railYOf = (gid: string, isL: boolean, key: string) => groupRuns(gid, isL).find((r) => r.key === key)?.railY ?? TURN_Y[gid];
+/** Wrong-zone placements (the entry coil, the horizontal-manager dangle) keep
+ *  their cables as separate lanes too: a fixed row per group. */
+const hmgrY = (gi: number) => 21 + gi * 3.2;
+const entryCx = (gi: number) => 172 + gi * 7;
+const groupSize = (gid: string) => groupCables(gid, true).length;
 
 /* ── the dressed rack's TERMINATIONS (owner 2026-09-28: the dressed rack must
    read as a finished professional rack — every device cabled, not six looms
@@ -257,10 +316,6 @@ const entryCx = (gi: number) => 188 + gi * 3;
    height; its tail fans out to every connector it serves, cables stacked as a
    flat harness that peels off one cable per connector, each seated in its
    plug. ───────────────────────────────────────────────────────────────── */
-/** Where each group's loom crosses the rail (the harness height). */
-const ANALOG_Y = 107;
-/** The fiber patch rides the switch's top lip at this height. */
-const NET_Y = 87;
 /** The rear lacing bar just above the amp (on the rear rails, over the
  *  blank): the speaker loom is retained on it and drops onto the NL4s. */
 const LACE_Y = AMP.y - 10;
@@ -282,13 +337,13 @@ function harnessD(x0: number, yb: number, jx: number, jy: number): string {
  *  amp inputs down across the lacing bar. */
 function AnalogTail({ isL }: { isL: boolean }) {
   const A = CI_CLASS_TINTS.analog;
-  const x0 = isL ? 58 : 282;
-  // the cable that peels off first rides lowest (closest to the jacks)
-  const order = DSP_JACK_XS.map((jx, i) => ({ jx, i })).sort((a, b) => Math.abs(a.jx - x0) - Math.abs(b.jx - x0));
+  const x0 = isL ? RAIL_XL : RAIL_XR;
+  // each input's own lane, at the height its loom lane reached the rail —
+  // the lowest lane is the one that peels off first (closest to the rail)
   return (
     <G>
-      {order.map(({ jx }, k) => (
-        <JacketPath key={jx} d={harnessD(x0, ANALOG_Y + 2.8 - k * 0.8, jx, DSP.jackY)} color={A} width={2.2} shadow={k === 0} />
+      {DSP_JACK_XS.map((jx, i) => (
+        <JacketPath key={jx} d={harnessD(x0, railYOf('g-analog', isL, `in${i + 1}`), jx, DSP.jackY)} color={A} width={W_SIG} shadow={false} />
       ))}
       {DSP_JACK_XS.map((jx) => (
         <PlugRearView key={`p${jx}`} x={jx} y={DSP.jackY} k={RK} />
@@ -306,7 +361,7 @@ function AnalogTail({ isL }: { isL: boolean }) {
         <HookLoopWrap key={`w${x}`} x={x} y={SIG_LACE_Y} k={RK} halfH={3.6} width={6} />
       ))}
       {/* a hook-and-loop wrap retains the harness just past the rail */}
-      <HookLoopWrap x={isL ? 64 : 276} y={ANALOG_Y} k={RK} halfH={4.6} width={5} />
+      <HookLoopWrap x={isL ? 64 : 276} y={(TURN_Y['g-ctl'] + TURN_Y['g-analog'] + 10.5) / 2} k={RK} halfH={6.6 / RK} width={4} />
     </G>
   );
 }
@@ -315,10 +370,10 @@ function AnalogTail({ isL }: { isL: boolean }) {
  *  the DSP's NET (control) port. */
 function ControlTail({ isL }: { isL: boolean }) {
   const C = CI_CLASS_TINTS.control;
-  const x0 = isL ? 58 : 282;
+  const x0 = isL ? RAIL_XL : RAIL_XR;
   return (
     <G>
-      <JacketPath d={harnessD(x0, ANALOG_Y - 4.4, DSP.netX, DSP.jackY)} color={C} width={2.2} />
+      <JacketPath d={harnessD(x0, railYOf('g-ctl', isL, 'c'), DSP.netX, DSP.jackY)} color={C} width={W_SIG} shadow={false} />
       <Rj45PlugRear cx={DSP.netX} cy={DSP.jackY} color={C} />
     </G>
   );
@@ -364,14 +419,14 @@ function NetTail() {
  *  LC clip seen end-on at its real size (~12.5 × 9 mm). */
 function FiberTail({ isL }: { isL: boolean }) {
   const F = CI_CLASS_TINTS.fiber;
-  const x0 = isL ? 58 : 282;
+  const x0 = isL ? RAIL_XL : RAIL_XR;
   const cx = SFP_CX[0];
   const cy = SWITCH.portCy;
   const w = 12.5 * RK;
   const h = 9 * RK;
   return (
     <G>
-      <JacketPath d={harnessD(x0, NET_Y - 2.2, cx, cy)} color={F} width={1.8} />
+      <JacketPath d={harnessD(x0, railYOf('g-fib', isL, 'c'), cx, cy)} color={F} width={W_SIG} shadow={false} />
       {/* duplex LC plug end-on: two latched ferrule bodies in their clip */}
       <Rect x={cx - w / 2} y={cy - h / 2} width={w} height={h} rx={0.6} fill="#d9d6ca" stroke="#6b6a63" strokeWidth={0.35} />
       <Rect x={cx - w / 2 + 0.7} y={cy - h / 2 + 0.7} width={w / 2 - 1.1} height={h - 1.4} rx={0.4} fill={shade(F, 0.2)} />
@@ -382,12 +437,16 @@ function FiberTail({ isL }: { isL: boolean }) {
 
 /** Loudspeaker: both NL4 outputs, dressed along the lacing bar across the
  *  open bay (never over the intake), each seated plug locked. */
-function SpeakerTail() {
+function SpeakerTail({ isL }: { isL: boolean }) {
   const S = CI_CLASS_TINTS.speaker;
   const [o1, o2] = AMP.nl4Xs;
+  const x0 = isL ? RAIL_XL : RAIL_XR;
   return (
     <G>
-      <JacketPath d={`M${o2 + 8} ${LACE_Y} H${o1 + 5} Q${o1} ${LACE_Y} ${o1} ${LACE_Y + 5} V${AMP.nl4Y}`} color={S} width={3.2} />
+      {/* each NL4 output its own cable, from the rail along the lacing bar —
+          the lower lane peels down first, onto the jack nearer the rail */}
+      <JacketPath d={harnessD(x0, railYOf('g-spk', isL, 'o1'), o1, AMP.nl4Y)} color={S} width={laneW('g-spk')} shadow={false} />
+      <JacketPath d={harnessD(x0, railYOf('g-spk', isL, 'o2'), o2, AMP.nl4Y)} color={S} width={laneW('g-spk')} shadow={false} />
       <Nl4PlugRear x={o1} y={AMP.nl4Y} />
       <Nl4PlugRear x={o2} y={AMP.nl4Y} />
       {[200, 250].map((x) => (
@@ -411,7 +470,7 @@ function AcTail() {
     <G>
       <JacketPath d={`M${o1} ${boot} V${boot + 4} Q${o1} ${boot + 8} ${o1 + 4} ${boot + 8} H318 Q322 ${boot + 8} 322 ${boot + 4} V${dspBoot.y + 4.3} Q322 ${dspBoot.y + 0.3} 318 ${dspBoot.y + 0.3} H${dspBoot.x}`} color={P} width={3} />
       {/* the PDU's own feed, up from the right manager into its inlet */}
-      <JacketPath d={`M282 ${PDU.y + 19.5} H273.6`} color={P} width={3.6} />
+      <JacketPath d={`M${RAIL_XR} ${TURN_Y['g-ac']} H273.6`} color={P} width={laneW('g-ac')} />
       <JacketPath d={`M${o2} ${boot} C${o2} ${boot + 12} ${ampBoot.x} ${boot + 12} ${ampBoot.x} ${boot - 6} V${ampBoot.y}`} color={P} width={3} />
       <C13Plug x={DISTRO_XS[0]} y={PDU.outY} />
       <C13Plug x={DISTRO_XS[1]} y={PDU.outY} />
@@ -427,14 +486,17 @@ function GroupTail({ id, isL }: { id: string; isL: boolean }) {
   if (id === 'g-ctl') return <ControlTail isL={isL} />;
   if (id === 'g-net') return <NetTail />;
   if (id === 'g-fib') return <FiberTail isL={isL} />;
-  if (id === 'g-spk') return <SpeakerTail />;
+  if (id === 'g-spk') return <SpeakerTail isL={isL} />;
   return <AcTail />;
 }
 
 /** Phase-C trace: line A-07 from the rack entry, along the top duct, down
  *  the left manager, into the analog harness and off it at DSP INPUT 7 —
  *  exactly the path the dressed analog loom takes. */
-const TRACE_D = `${dLeft(ENTRY_XS[1], laneFor(1, true), ANALOG_Y, 0)} L58 105 H209 Q214 105 214 110 V${DSP.jackY}`;
+const TRACE_RUN = groupRuns('g-analog', true).find((r) => r.key === 'in7')!;
+const TRACE_D = `${TRACE_RUN.d} ${harnessD(RAIL_XL, TRACE_RUN.railY, DSP_JACK_XS[6], DSP.jackY).replace(/^M[^H]*/, '')}`;
+/** Where line A-07 drops through the top entry (its A-007 tag). */
+const TRACE_EX = L_GEO.ex - TRACE_RUN.off;
 /** Over-estimated length of TRACE_D (see loomLen). */
 const TRACE_LEN = 640;
 /** Length of the travelling head that leads the beam down the cable. */
@@ -722,6 +784,29 @@ const Chassis = memo(function Chassis({ dress, enter }: { dress: boolean; enter:
  * draws itself in, deliberately out of order, because that is how this
  * cabling was installed. Delays are hand-scattered.
  */
+/** ri-10/ri-14: the four AC cords' run under the PDU (each its own line). */
+const AC_RUN_Y = [349, 353.2, 357.4, 361.6] as const;
+const AC_MID = (AC_RUN_Y[0] + AC_RUN_Y[3]) / 2;
+/** The analog line's weave across those cords: half-waves alternately over
+ *  and under the run, so it reads as twisted through them. */
+const WEAVE: { d: string; over: boolean }[] = (() => {
+  const out: { d: string; over: boolean }[] = [];
+  const x0 = 176;
+  const x1 = 298;
+  const half = 24;
+  for (let a = x0, i = 0; a < x1; a += half, i++) {
+    const b = Math.min(x1, a + half);
+    const pts: string[] = [];
+    for (let s = 0; s <= 8; s++) {
+      const x = a + ((b - a) * s) / 8;
+      const y = AC_MID + 8.2 * Math.sin(((x - x0) / (2 * half)) * Math.PI * 2);
+      pts.push(`${s ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`);
+    }
+    out.push({ d: pts.join(' '), over: i % 2 === 0 });
+  }
+  return out;
+})();
+
 const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; found?: ReadonlySet<string> }) {
   /** Inspector's red strain marks are ANNOTATIONS: they appear only once the
    *  learner has documented that defect — the cable geometry carries it first. */
@@ -741,7 +826,8 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
     `M${ex} 0 V13.6 L${(ex + (cx - ex) * 0.08).toFixed(1)} 17.4 C${(ex + (cx - ex) * 0.5).toFixed(1)} 30 ${cx} 30 ${cx} ${PATCH.y - 0.5}`;
 
   /* ri-7 — six-pair loom, crushed to an hourglass at two over-tight ties */
-  const crush = (x: number) => 1 - 0.68 * Math.exp(-((x - 226) * (x - 226)) / 48) - 0.68 * Math.exp(-((x - 268) * (x - 268)) / 48);
+  // squeezed to just over one OD at each tie — touching, never drawn on top of each other
+  const crush = (x: number) => 1 - 0.4 * Math.exp(-((x - 226) * (x - 226)) / 48) - 0.4 * Math.exp(-((x - 268) * (x - 268)) / 48);
   /** each pair of the loom lands in its own interface input (3–6) */
   const loomD = (off: number, jx: number) => {
     let d = '';
@@ -801,7 +887,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-8 · Cat6 out of switch port 1, folded 180° round the rail edge
           into the manager — a crease where the jacket gave */}
-      <DrawPath d={`M${SW_CX[0]} 97.3 H${RAIL_L_X + 3} C${RAIL_L_X - 2} 97.3 ${RAIL_L_X - 2} 104 ${RAIL_L_X + 3} 104 L${RAIL_L_X + 11} 104 C${RAIL_L_X + 15} 104 ${RAIL_L_X + 15} 110 ${RAIL_L_X + 12} 116 C${RAIL_L_X + 7} 128 ${RAIL_L_X - 1} 134 ${RAIL_L_X - 13} 140 C${RAIL_L_X - 16} 142 ${RAIL_L_X - 17} 146 ${RAIL_L_X - 17} 152 V346`} len={320} color={N} width={3} enter={enter} delay={at(250)} />
+      <DrawPath d={`M${SW_CX[0]} 97.3 H${RAIL_L_X + 3} C${RAIL_L_X - 2} 97.3 ${RAIL_L_X - 2} 104 ${RAIL_L_X + 3} 104 L${RAIL_L_X + 11} 104 C${RAIL_L_X + 15} 104 ${RAIL_L_X + 15} 110 ${RAIL_L_X + 12} 116 C${RAIL_L_X + 7} 128 ${RAIL_L_X - 1} 134 ${RAIL_L_X - 13} 140 C${RAIL_L_X - 14} 142 ${RAIL_L_X - 14.7} 146 ${RAIL_L_X - 14.7} 152 V346`} len={320} color={N} width={3} enter={enter} delay={at(250)} />
       <SvgIn enter={enter} delay={at(420)}>
         <Rj45PlugRear cx={SW_CX[0]} cy={SWITCH.portCy} color={N} />
         <Kink x={RAIL_L_X - 0.8} y={100.6} angle={-90} />
@@ -810,16 +896,29 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       {/* ── ri-2 · three XLRs in DSP inputs 6–8, the cables pulled away at an
           angle straight from the boot and bundled into a loom that hangs its
           whole weight on the three connectors */}
-      <DrawPath d={`M${DSP_JACK_XS[5]} ${DSP.jackY} C192 134 214 144 246 150`} len={80} color={A} width={3.2} enter={enter} delay={at(160)} />
-      <DrawPath d={`M${DSP_JACK_XS[6]} ${DSP.jackY} C216 132 232 146 250 150`} len={60} color={A} width={3.2} enter={enter} delay={at(200)} />
-      <DrawPath d={`M${DSP_JACK_XS[7]} ${DSP.jackY} C240 134 246 144 254 150`} len={45} color={A} width={3.2} enter={enter} delay={at(240)} />
-      <DrawPath d="M250 150 C254 172 282 186 298 172 V210" len={110} color={A} width={6.5} enter={enter} delay={at(300)} />
+      {/* one line per input, all the way: pulled off at an angle, then bunched
+          tight (touching, never drawn as one) down into the right manager */}
+      {[
+        `M${DSP_JACK_XS[5]} ${DSP.jackY} C192 134 214 144 246 150`,
+        `M${DSP_JACK_XS[6]} ${DSP.jackY} C216 132 232 146 250 150`,
+        `M${DSP_JACK_XS[7]} ${DSP.jackY} C240 134 246 144 254 150`,
+      ].map((pull, k) => (
+        <DrawPath
+          key={k}
+          d={`${pull} V172 A${14 - 4 * k} ${14 - 4 * k} 0 0 0 260 ${186 - 4 * k} H302 A${4 + 4 * k} ${4 + 4 * k} 0 0 1 ${306 + 4 * k} 190 V214`}
+          len={190}
+          color={A}
+          width={3.2}
+          enter={enter}
+          delay={at(160 + k * 40)}
+        />
+      ))}
       <SvgIn enter={enter} delay={at(460)}>
         {DSP_JACK_XS.slice(5).map((cx) => (
           <PlugRearView key={cx} x={cx} y={DSP.jackY} k={RK} />
         ))}
-        <G transform="rotate(-18 256 152)">
-          <CableTie x={256} y={152} k={RK} halfH={7} black />
+        <G transform="rotate(90 250 160)">
+          <CableTie x={250} y={160} k={RK} halfH={7.6 / RK} black />
         </G>
         {flag('ri-2')
           ? DSP_JACK_XS.slice(5).map((cx) => <StrainFlag key={`f${cx}`} x={cx + 1} y={DSP.jackY + 9} angle={180} />)
@@ -829,7 +928,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       {/* ── ri-12 · two interface lines pulled bowstring-tight to the manager:
           dead straight, no slack, the plugs carrying the load */}
       <DrawPath d={`M${IFACE_XS[0]} ${IFACE.jackY} L26 212 V346`} len={210} color={A} width={3.2} enter={enter} delay={at(70)} />
-      <DrawPath d={`M${IFACE_XS[1]} ${IFACE.jackY} L32 216 V346`} len={220} color={A} width={3.2} enter={enter} delay={at(130)} />
+      <DrawPath d={`M${IFACE_XS[1]} ${IFACE.jackY} L31 216 V346`} len={220} color={A} width={3.2} enter={enter} delay={at(130)} />
       <SvgIn enter={enter} delay={at(340)}>
         <TrsPlugRear x={IFACE_XS[0]} y={IFACE.jackY} />
         <TrsPlugRear x={IFACE_XS[1]} y={IFACE.jackY} />
@@ -858,8 +957,10 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-11 · service loops cinched hard against the rail with two ties,
           in the corner beside the amp — slack no hand can reach */}
-      <DrawPath d="M46 254 C42 246 32 240 26 230 V120" len={160} color={A} width={3.2} enter={enter} delay={at(380)} />
-      <DrawPath d="M48 257 C42 250 30 244 22 236 V130" len={150} color={N} width={3} enter={enter} delay={at(400)} />
+      {/* each its own lane up the manager (x 12 / 17), clear of the bowstring
+          interface lines (26 / 31) and the hairpinned Cat6 (36.5) */}
+      <DrawPath d="M46 254 C42 246 26 240 12 228 V120" len={170} color={A} width={3.2} enter={enter} delay={at(380)} />
+      <DrawPath d="M48 257 C42 250 28 246 17 236 V130" len={160} color={N} width={3} enter={enter} delay={at(400)} />
       <SvgIn enter={enter} delay={at(440)}>
         <JacketPath d="M41 262 a12 9.5 0 1 0 24 0 a12 9.5 0 1 0 -24 0" color={A} width={3.2} />
         <JacketPath d="M45 263 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0" color={N} width={3} />
@@ -873,7 +974,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
             them, so the slack sits in the corner no hand reaches */}
         <RackRail x={RAIL_L_X} y0={250} y1={276} k={RK} uTop={U_TOP} flange={RAIL_FLANGE_MM} />
       </SvgIn>
-      <DrawPath d="M46 270 C40 280 36 292 36 310 V346" len={90} color={A} width={3.2} enter={enter} delay={at(470)} />
+      <DrawPath d="M46 270 C44 280 41.5 292 41.5 310 V346" len={90} color={A} width={3.2} enter={enter} delay={at(470)} />
 
       {/* ── ri-7 · the loom out of the right manager, cinched to an hourglass
           at two over-tightened ties, then down into the bay behind the amp */}
@@ -910,12 +1011,18 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
         <HookLoopWrap x={262} y={303} k={RK} halfH={12} width={16} />
       </SvgIn>
 
+      <SvgIn enter={enter} delay={at(540)}>
+        {WEAVE.map((seg, i) => (seg.over ? null : <JacketPath key={i} d={seg.d} color={A} width={3.2} shadow={false} />))}
+      </SvgIn>
       {/* ── ri-10 · three C13 plugs levered sideways because their cords are
           hauled to the right into one tight tie */}
-      <DrawPath d={`M${DISTRO_XS[0] + 7.5} 347 C80 355 112 353 150 350`} len={90} color={P} width={4} enter={enter} delay={at(440)} />
-      <DrawPath d={`M${DISTRO_XS[1] + 7.5} 347 C100 356 126 354 150 351.5`} len={70} color={P} width={4} enter={enter} delay={at(460)} />
-      <DrawPath d={`M${DISTRO_XS[2] + 7.5} 347 C118 356 136 355 150 353`} len={52} color={P} width={4} enter={enter} delay={at(480)} />
-      <DrawPath d={`M135.5 ${AMP.y + 65.2} C135.5 334 146 344 150 350`} len={50} color={P} width={4} enter={enter} delay={at(470)} />
+      {/* four cords hauled into one tie and on to the right as a tight run —
+          tight, but each cord still its own line (AC_RUN_Y, top to bottom:
+          the amp's cord, then outlets 3, 2, 1) */}
+      <DrawPath d={`M${DISTRO_XS[0] + 7.5} 347 C76 360 110 362 150 ${AC_RUN_Y[3]} H298`} len={260} color={P} width={4} enter={enter} delay={at(440)} />
+      <DrawPath d={`M${DISTRO_XS[1] + 7.5} 347 C95 357 120 357.6 150 ${AC_RUN_Y[2]} H298`} len={240} color={P} width={4} enter={enter} delay={at(460)} />
+      <DrawPath d={`M${DISTRO_XS[2] + 7.5} 347 C113 353 132 353.4 150 ${AC_RUN_Y[1]} H298`} len={220} color={P} width={4} enter={enter} delay={at(480)} />
+      <DrawPath d={`M135.5 ${AMP.y + 65.2} C135.5 336 142 ${AC_RUN_Y[0]} 150 ${AC_RUN_Y[0]} H298`} len={200} color={P} width={4} enter={enter} delay={at(470)} />
       <SvgIn enter={enter} delay={at(520)}>
         {/* static transforms — evaluated at render time, never animated */}
         <C13Plug x={128} y={AMP.y + 50} />
@@ -925,18 +1032,16 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
           </G>
         ))}
         {flag('ri-10') ? [0, 1, 2].map((i) => <StrainFlag key={i} x={DISTRO_XS[i] + 12} y={PDU.outY - 1} angle={30} />) : null}
-        <G transform="rotate(-8 152 351.5)">
-          <CableTie x={152} y={351.5} k={RK} halfH={8} black />
-        </G>
+        <CableTie x={152} y={(AC_RUN_Y[0] + AC_RUN_Y[3]) / 2} k={RK} halfH={(AC_RUN_Y[3] - AC_RUN_Y[0] + 4.4) / 2 / RK} black />
       </SvgIn>
 
-      {/* ── ri-14 · the AC feeds run on as one cord bundle and are plaited
-          through the amp's analog input line under the PDU */}
-      <DrawPath d="M152 351.5 C160 352.5 168 353.5 176 354" len={40} color={P} width={6} enter={enter} delay={at(500)} />
-      <DrawPath d={`M${AMP.inXs[0]} ${AMP.nl4Y} C140 306 148 320 156 326 L166 344 C170 350 172 353 176 354`} len={110} color={A} width={3.2} enter={enter} delay={at(170)} />
+      {/* ── ri-14 · the amp's analog input line woven over and under the AC
+          cords under the PDU (power in with signal, no plan) — the cords stay
+          separate lines, the analog line crosses them */}
+      <DrawPath d={`M${AMP.inXs[0]} ${AMP.nl4Y} C140 306 148 320 156 326 L166 344 C170 350 172 ${AC_MID} 176 ${AC_MID}`} len={110} color={A} width={3.2} enter={enter} delay={at(170)} />
       <SvgIn enter={enter} delay={at(540)}>
         <PlugRearView x={AMP.inXs[0]} y={AMP.nl4Y} k={RK} />
-        <Plait x0={176} x1={298} y={354} amp={3.4} period={48} colors={[P, A]} widths={[6, 3.2]} />
+        {WEAVE.map((seg, i) => (seg.over ? <JacketPath key={i} d={seg.d} color={A} width={3.2} /> : null))}
       </SvgIn>
     </>
   );
@@ -944,7 +1049,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
 /** The outgoing route, pulled back out of the manager. Dash offset GROWS, so
  *  the loom withdraws destination-first, back toward the entry. */
-function Retract({ d, len, tint, width }: { d: string; len: number; tint: string; width: number }) {
+function Retract({ lanes, len, tint }: { lanes: readonly LoomLane[]; len: number; tint: string }) {
   const p = useSharedValue(1);
   useEffect(() => {
     p.value = withTiming(0, { duration: RETRACT_MS, easing: CI_EASE.inOut });
@@ -953,19 +1058,27 @@ function Retract({ d, len, tint, width }: { d: string; len: number; tint: string
   }, []);
   const ap = useAnimatedProps(() => ({ strokeDashoffset: len * (1 - p.value), opacity: 0.2 + 0.65 * p.value }));
   return (
-    <APath
-      d={d}
-      stroke={tint}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      opacity={0.85}
-      strokeDasharray={len}
-      strokeDashoffset={0}
-      animatedProps={ap}
-    />
+    <AG>
+      {lanes.map((l, i) => (
+        <APath
+          key={i}
+          d={l.d}
+          stroke={tint}
+          strokeWidth={l.w}
+          fill="none"
+          strokeLinecap="round"
+          opacity={0.85}
+          strokeDasharray={len}
+          strokeDashoffset={0}
+          animatedProps={ap}
+        />
+      ))}
+    </AG>
   );
 }
+
+/** One cable of a loom: its own path and jacket width. */
+type LoomLane = { d: string; w: number };
 
 /**
  * ONE learner-assigned loom — THE PHASE-B SIGNATURE MOVE.
@@ -980,20 +1093,19 @@ function Retract({ d, len, tint, width }: { d: string; len: number; tint: string
  * trace, and the BEFORE strip must be complete on its first paint.
  */
 function Loom({
-  d,
+  lanes,
   len,
   tint,
-  width,
   install,
   wrong,
   wrongShape,
   flowRun,
   tail,
 }: {
-  d: string;
+  /** Every cable of the loom, each its own lane (never one fat stroke). */
+  lanes: readonly LoomLane[];
   len: number;
   tint: string;
-  width: number;
   install: boolean;
   wrong: boolean;
   wrongShape: ReactNode;
@@ -1001,13 +1113,14 @@ function Loom({
   tail?: ReactNode;
 }) {
   const m = useCiMotion();
-  const prev = useRef<{ d: string; len: number } | null>(null);
-  const [leaving, setLeaving] = useState<{ d: string; len: number } | null>(null);
+  const d = lanes.map((l) => l.d).join('|');
+  const prev = useRef<{ d: string; len: number; lanes: readonly LoomLane[] } | null>(null);
+  const [leaving, setLeaving] = useState<{ d: string; len: number; lanes: readonly LoomLane[] } | null>(null);
   const [landed, setLanded] = useState(!install);
 
   useEffect(() => {
     const was = prev.current;
-    prev.current = { d, len };
+    prev.current = { d, len, lanes };
     if (!was || was.d === d || !install || m.reduce) return;
     setLanded(false);
     setLeaving(was);
@@ -1023,20 +1136,25 @@ function Loom({
 
   return (
     <G>
-      <JacketCable d={d} len={len} p={install ? draw.progress : null} color={tint} width={width} opacity={0.96} />
-      {leaving ? <Retract d={leaving.d} len={leaving.len} tint={tint} width={width} /> : null}
-      {flowRun ? (
-        <APath
-          d={d}
-          stroke="#f4fbff"
-          strokeWidth={Math.max(1.4, width - 2.2)}
-          fill="none"
-          strokeLinecap="round"
-          opacity={0.72}
-          strokeDasharray={flow.dashArray}
-          animatedProps={flow.animatedProps}
-        />
-      ) : null}
+      {lanes.map((l, i) => (
+        <JacketCable key={i} d={l.d} len={len} p={install ? draw.progress : null} color={tint} width={l.w} opacity={0.96} />
+      ))}
+      {leaving ? <Retract lanes={leaving.lanes} len={leaving.len} tint={tint} /> : null}
+      {flowRun
+        ? lanes.map((l, i) => (
+            <APath
+              key={`f${i}`}
+              d={l.d}
+              stroke="#f4fbff"
+              strokeWidth={Math.max(0.5, l.w * 0.45)}
+              fill="none"
+              strokeLinecap="round"
+              opacity={0.72}
+              strokeDasharray={flow.dashArray}
+              animatedProps={flow.animatedProps}
+            />
+          ))
+        : null}
       {tail ? (
         <SvgToggle show={landed} dur={CI_MOTION.quick}>
           {tail}
@@ -1076,91 +1194,105 @@ function Looms({
         const zone = assigns[g.id];
         if (!zone) return null;
         const tint = CI_CLASS_TINTS[g.tintKey];
-        const ex = ENTRY_XS[gi];
         const wrong = !!wrongIds && wrongIds.includes(g.id);
         const flowRun = flowOn && !!wrongIds && !wrongIds.includes(g.id);
+        const w = laneW(g.id);
+        const n = groupSize(g.id);
+        const flag = (lanes: readonly LoomLane[]) => (
+          <G>
+            {lanes.map((l, i) => (
+              <Path key={i} d={l.d} stroke="#ff5a48" strokeWidth={Math.min(1.6, l.w)} fill="none" strokeDasharray="5 4" />
+            ))}
+          </G>
+        );
 
         if (zone === 'z-left' || zone === 'z-right') {
           const isL = zone === 'z-left';
-          const lane = laneFor(gi, isL);
-          // The speaker loom lands ON the amp's NL4 output: it crosses on the
-          // lacing bar just above the amp's top edge and drops onto the jack —
-          // it used to end on the fan grille, the very defect Phase A
-          // teaches (QA 2026-09-26).
-          const spk = g.id === 'g-spk';
-          const bayY = LACE_Y;
-          const ty = spk ? bayY : DEST_Y[g.id];
-          const wob = ((gi % 3) - 1) * 3;
-          const dBase = isL ? dLeft(ex, lane, ty, wob) : dRight(ex, lane, ty, wob);
-          const d = spk ? `${dBase.replace(/L(58|282) \d+$/, `L${AMP.nl4Xs[1]} ${bayY}`)} L${AMP.nl4Xs[1]} ${AMP.nl4Y}` : dBase;
+          // The speaker lanes land ON the amp's NL4 outputs along the lacing
+          // bar just above the amp — never on the fan grille, the very defect
+          // Phase A teaches (QA 2026-09-26); see SpeakerTail.
+          const runs = groupRuns(g.id, isL);
+          const lanes = runs.map((r) => ({ d: r.d, w: r.w }));
           return (
             <Loom
               key={g.id}
-              d={d}
-              len={loomLen(ex, lane, ty) + (spk ? 200 : 0)}
+              lanes={lanes}
+              len={runLen(Math.max(...runs.map((r) => r.railY)))}
               tint={tint}
-              width={4.2}
               install={install}
               wrong={wrong}
               flowRun={flowRun}
               tail={<GroupTail id={g.id} isL={isL} />}
-              wrongShape={<Path d={d} stroke="#ff5a48" strokeWidth={1.6} fill="none" strokeDasharray="5 4" />}
+              wrongShape={flag(lanes)}
             />
           );
         }
 
+        // the entry stub: each cable drops through the entry and coils on
+        // itself above the duct — every coil its own cable's coil
+        const ex0 = 160 + gi * 10;
         if (zone === 'z-entry') {
           const cx = entryCx(gi);
+          const lanes = Array.from({ length: n }, (_, k) => {
+            const ex = ex0 + k * lanePitch(w, w);
+            const rx = 9 + k * lanePitch(w, w);
+            const ry = 3.5 + k * lanePitch(w, w) * 0.5;
+            return { d: `M${ex} 4 C${ex} 10 ${cx + rx} 22 ${cx + rx} 28 A${rx} ${ry} 0 1 1 ${cx + rx - 0.01} 28.4`, w };
+          });
           return (
             <Loom
               key={g.id}
-              d={`M${ex} 4 C${ex} 10 ${ex - 4} 16 ${cx} 22`}
-              len={48}
+              lanes={lanes}
+              len={140}
               tint={tint}
-              width={4}
               install={install}
               wrong={wrong}
               flowRun={flowRun}
-              tail={
-                <>
-                  <Ellipse cx={cx} cy={28} rx={17} ry={7} stroke={tint} strokeWidth={3.5} fill="none" />
-                  <Ellipse cx={cx} cy={28} rx={11} ry={4.5} stroke={tint} strokeWidth={3} fill="none" opacity={0.85} />
-                </>
-              }
               wrongShape={<Ellipse cx={cx} cy={28} rx={21} ry={10} stroke="#ff5a48" strokeWidth={1.5} strokeDasharray="5 4" fill="none" />}
             />
           );
         }
 
-        const yRun = hmgrY(gi);
-        const dh =
-          `M${ex} 4 C${ex} 12 ${ex + 30} ${yRun - 4} 252 ${yRun - 2} ` +
-          `C246 ${yRun} 236 ${yRun} 224 ${yRun} L86 ${yRun} Q76 ${yRun} 76 ${yRun + 9}`;
+        const lanes = Array.from({ length: n }, (_, k) => {
+          const p = k * lanePitch(w, w);
+          const ex = ex0 + p;
+          const yRun = hmgrY(gi) + p * 0.6;
+          return {
+            d:
+              `M${ex} 4 C${ex} 12 ${ex + 30} ${yRun - 4} 252 ${yRun - 2} ` +
+              `C246 ${yRun} 236 ${yRun} 224 ${yRun} L${86 + p} ${yRun} Q${76 + p} ${yRun} ${76 + p} ${yRun + 9}`,
+            w,
+          };
+        });
         return (
           <Loom
             key={g.id}
-            d={dh}
+            lanes={lanes}
             len={360}
             tint={tint}
-            width={4}
             install={install}
             wrong={wrong}
             flowRun={flowRun}
-            wrongShape={<Path d={dh} stroke="#ff5a48" strokeWidth={1.6} strokeDasharray="5 4" fill="none" />}
+            wrongShape={flag(lanes)}
           />
         );
       })}
-      {/* hook-and-loop wraps retaining the looms in the managers */}
-      {TIE_YS.map((y) => (
-        <G key={y}>
-          <G transform={`rotate(90 ${MGR_L.x + MGR_L.w / 2} ${y})`}>
-            <HookLoopWrap x={MGR_L.x + MGR_L.w / 2} y={y} k={RK} halfH={15 / RK} width={16} />
+      {/* hook-and-loop wraps at even intervals, around each manager's lanes
+          and only where that manager actually carries cable */}
+      {([true, false] as const).map((isL) => {
+        const here = CI_RACK_GROUPS.filter((g) => assigns[g.id] === (isL ? 'z-left' : 'z-right'));
+        if (!here.length) return null;
+        const runs = here.flatMap((g) => groupRuns(g.id, isL));
+        const yMax = Math.max(...runs.map((r) => r.railY - 3 - (r.off - r.off0)));
+        const offMax = Math.max(...runs.map((r) => r.off + r.w / 2));
+        const inner = isL ? L_GEO.lane + 0.5 : R_GEO.lane - 0.5;
+        const cx = isL ? inner - offMax / 2 : inner + offMax / 2;
+        return TIE_YS.filter((y) => y > C2_Y + 4 && y < yMax).map((y) => (
+          <G key={`${isL ? 'l' : 'r'}${y}`} transform={`rotate(90 ${cx} ${y})`}>
+            <HookLoopWrap x={cx} y={y} k={RK} halfH={(offMax / 2 + 1.6) / RK} width={5} />
           </G>
-          <G transform={`rotate(90 ${MGR_R.x + MGR_R.w / 2} ${y})`}>
-            <HookLoopWrap x={MGR_R.x + MGR_R.w / 2} y={y} k={RK} halfH={15 / RK} width={16} />
-          </G>
-        </G>
-      ))}
+        ));
+      })}
     </AG>
   );
 }
@@ -1232,7 +1364,7 @@ function TraceBeam({ run }: { run: boolean }) {
         animatedProps={headProps}
       />
       <SvgToggle show={run} delay={TRACE_DELAY + 120}>
-        <Circle cx={ENTRY_XS[1]} cy={11} r={6.5} stroke={colors.amber} strokeWidth={2} fill="none" />
+        <Circle cx={TRACE_EX} cy={11} r={6.5} stroke={colors.amber} strokeWidth={2} fill="none" />
         <Rect x={112} y={4} width={40} height={14} rx={2} fill="#26262c" stroke={colors.amber} strokeWidth={0.8} />
         <SvgText x={132} y={14.6} fontSize={9.5} fill={colors.amber} fontFamily={fonts.mono} textAnchor="middle">
           A-007

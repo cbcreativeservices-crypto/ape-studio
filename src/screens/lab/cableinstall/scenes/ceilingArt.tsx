@@ -38,6 +38,11 @@ export const TILE_Y = 163;
 const TILE_T = 1.2;
 /** Where cable lies in the tray / the level of the supported run. */
 export const TRAY_CABLE_Y = 128;
+/** The green pair's lane in the tray and on the shared hooks: one lane
+ *  (≈1.5× the stroke) above the new violet run, never on top of it (owner
+ *  2026-10-10: every cable its own traceable line). */
+export const GREEN_LANE_DY = 3.8;
+export const GREEN_TRAY_Y = 129.6 - GREEN_LANE_DY;
 /** The grid module: 0.61 m, tees placed so one module holds the troffer. */
 const MODULE = 0.61 * CM;
 const TEE_XS = Array.from({ length: 9 }, (_, i) => 14.6 + i * MODULE).filter((x) => x < 334);
@@ -254,7 +259,6 @@ function TrayWithCables() {
       {Array.from({ length: 10 }, (_, i) => 10 + i * 18).map((x) => (
         <Line key={x} x1={x} y1={top + 0.5} x2={x} y2={bottom - 0.5} stroke="#6d737b" strokeWidth={1.1} />
       ))}
-      <JacketPath d={`M${x0 + 2} ${TRAY_CABLE_Y + 1.6} L${x1} ${TRAY_CABLE_Y + 1.6}`} color="#37d97b" width={2.2} shadow={false} />
       <Rect x={x0 - 1} y={top} width={x1 - x0 + 2} height={bottom - top} fill={`url(#${id}z)`} stroke="#3a3d43" strokeWidth={0.35} opacity={0.42} />
       <Line x1={x0 - 1} y1={top} x2={x1 + 1} y2={top} stroke="#dfe3e8" strokeWidth={0.6} />
       <Line x1={x0 - 1} y1={bottom} x2={x1 + 1} y2={bottom} stroke="#2c2f34" strokeWidth={0.6} />
@@ -344,10 +348,20 @@ export function JHookDrop({ x, top = 14, cradleY, w = 4.5, back = 8, lip = 2.6 }
   );
 }
 
-/** A bundle of other tenants' runs through a hook — horizontal, stacked. */
+/** A bundle of other tenants' runs through a hook — horizontal, stacked as
+ *  separate lanes STACK_P apart (≈1.5× the stroke), bottom lane first. */
 const BUNDLE = ['#5d6068', '#2d5f9e', '#5d6068', '#c4692a', '#2d5f9e', '#5d6068'];
 /** The shared route's saddle (the bottom cable's underside). */
 const BUNDLE_BASE = 69;
+const STACK_W = 1.9;
+const STACK_P = 2.8;
+const laneY = (i: number) => BUNDLE_BASE - 1 - i * STACK_P;
+/** The two runs that spill over the undersized hook's lip (cd-6), as loops
+ *  hanging below it — each loop is that one cable's own loop. */
+const SPILL: Record<number, (y: number) => string> = {
+  3: (y) => `H188 C194 ${y} 200 ${y + 1.5} 201 ${y + 7.5} C202 ${y + 15.5} 196 ${y + 19.5} 193 ${y + 15.5} C191 ${y + 12.5} 196 ${y + 5.5} 206 ${y}`,
+  4: (y) => `H186 C193 ${y} 203 ${y + 1.4} 204 ${y + 10.4} C205 ${y + 22.4} 196 ${y + 26.4} 191 ${y + 20.4} C188 ${y + 15.4} 196 ${y + 5.4} 208 ${y}`,
+};
 
 /** The previous contractor's work — every wrong detail, drawn as real cable
  *  at real positions (the markers in data/scenarios.ts sit on these). */
@@ -360,26 +374,34 @@ export function CeilingDefects() {
           the stack; the middle one (cd-6) is a small hook that holds only the
           bottom of it — the rest rides above its lip and two runs have
           spilled over the front */}
-      <Tag x={100} y={46} text="J-HOOKS" />
-      <Line x1={114} y1={50} x2={124} y2={57} stroke="#6f7378" strokeWidth={0.6} />
-      {BUNDLE.map((c, i) => (
-        <JacketPath key={i} d={`M0 ${BUNDLE_BASE - 1 - i * 1.9} H262 C300 ${BUNDLE_BASE - 1 - i * 1.9} 326 84 334 104`} color={c} width={2} shadow={i === 0} />
-      ))}
+      <Tag x={100} y={39} text="J-HOOKS" />
+      <Line x1={114} y1={41} x2={122} y2={45.5} stroke="#6f7378" strokeWidth={0.6} />
+      {/* every run its own lane, all the way into the ragged hole — where
+          they dive at the wall each still lands on its own spot */}
+      {BUNDLE.map((c, i) => {
+        const y = laneY(i);
+        const spill = SPILL[i] ? SPILL[i](y) : '';
+        return (
+          <JacketPath
+            key={i}
+            d={`M0 ${y} ${spill} H262 C300 ${y} ${326 + i * 2.3} 84 ${335 + i * 2.3} 106`}
+            color={c}
+            width={STACK_W}
+            shadow={i === 0}
+          />
+        );
+      })}
       {/* the hooks drawn over the stack, so the saddle reads as carrying it */}
-      <JHookDrop x={66} cradleY={BUNDLE_BASE + 0.4} w={6.6} lip={9} back={6} />
-      <JHookDrop x={132} cradleY={BUNDLE_BASE + 0.4} w={6.6} lip={9} back={6} />
+      <JHookDrop x={66} cradleY={BUNDLE_BASE + 0.4} w={6.6} lip={12} back={14} />
+      <JHookDrop x={132} cradleY={BUNDLE_BASE + 0.4} w={6.6} lip={12} back={14} />
       <JHookDrop x={197} cradleY={BUNDLE_BASE + 0.4} w={3} lip={1.6} back={9} />
-      <JHookDrop x={262} cradleY={BUNDLE_BASE + 0.4} w={6.6} lip={9} back={6} />
-      {/* the spill at the undersized hook: two runs fallen over its front lip,
-          hanging in a loop below it */}
-      <JacketPath d="M188 58.5 C194 58.5 200 60 201 66 C202 74 196 78 193 74 C191 71 196 64 206 58.5" color="#c4692a" width={2} shadow={false} />
-      <JacketPath d="M186 56.6 C193 56.6 203 58 204 67 C205 79 196 83 191 77 C188 72 196 62 208 56.6" color="#2d5f9e" width={2} shadow={false} />
+      <JHookDrop x={262} cradleY={BUNDLE_BASE + 0.4} w={6.6} lip={12} back={14} />
 
       {/* cd-2 → cd-4 → cd-1: the cyan audio pair leaving the stuffed hook
           LEFT — draped over the sprinkler main, resting on the light fixture
           housing, ending across the tiles at a bare connector */}
       <JacketPath
-        d={`M193 58 Q180 58 174 66 Q170 74 170 ${SPRINKLER.y - 1.4} L148 ${SPRINKLER.y - 1.4} Q142 96 138 112 Q126 136 116 ${TROFFER.top - 1} Q104 ${TROFFER.top - 1} 96 ${TROFFER.top + 4} Q86 ${TILE_Y - 1} 72 ${TILE_Y - 1} H30`}
+        d={`M193 ${laneY(BUNDLE.length)} Q178 ${laneY(BUNDLE.length)} 174 62 Q170 72 170 ${SPRINKLER.y - 1.4} L148 ${SPRINKLER.y - 1.4} Q142 96 138 112 Q126 136 116 ${TROFFER.top - 1} Q104 ${TROFFER.top - 1} 96 ${TROFFER.top + 4} Q86 ${TILE_Y - 1} 72 ${TILE_Y - 1} H30`}
         color={cyan}
         width={2.4}
       />
@@ -389,23 +411,24 @@ export function CeilingDefects() {
       {/* cd-5 → cd-7: the cyan pair leaving RIGHT on top of the bundle,
           folded hard at 90° down (the defect), swept at the bottom, then
           through a ragged, unsleeved hole in the wall */}
-      <JacketPath d="M201 58 H274 V100 Q274 106 280 106 H334" color={cyan} width={2.4} />
-      <Path d="M270.6 55.4 L277.4 55.4 L277.4 62.2" stroke="#f2f4f6" strokeWidth={0.7} fill="none" />
+      <JacketPath d={`M201 ${laneY(BUNDLE.length)} H274 V100 Q274 106 280 106 H334`} color={cyan} width={2.4} />
+      <Path d={`M270.6 ${laneY(BUNDLE.length) - 2.6} L277.4 ${laneY(BUNDLE.length) - 2.6} L277.4 ${laneY(BUNDLE.length) + 4.2}`} stroke="#f2f4f6" strokeWidth={0.7} fill="none" />
       <Path d="M334 99 L346 97.4 L347.6 112.6 L335 114 Z" fill="#070708" stroke="#6f6b62" strokeWidth={0.9} />
 
       {/* cd-3: the green pair leaves the tray with no support until a hook
           2 m away — it hangs in a deep sag just above the tiles */}
       <JHookDrop x={300} cradleY={140.4} />
-      <JacketPath d={`M${TRAY.x1} ${TRAY_CABLE_Y + 1.6} Q240 180 300 139.2`} color={green} width={2.4} />
+      <JacketPath d={`M${TRAY.x1} ${GREEN_TRAY_Y} Q240 180 300 139.2`} color={green} width={2.4} />
       <JacketPath d="M300 139.2 C314 139.2 326 124 330 112 L334 106" color={green} width={2.4} />
 
       {/* cd-8: the green pair's service loop, coiled and tied on TOP of the
           insulated duct — no tile below it gives access */}
-      <JacketPath d="M0 64 Q22 64 34 70" color={green} width={2.4} />
+      <JacketPath d="M0 72.6 H33" color={green} width={2.4} />
       <JacketPath d="M33 72.4 a10 3.8 0 1 0 20 0 a10 3.8 0 1 0 -20 0" color={green} width={2.4} />
       <JacketPath d="M36 72.6 a7 2.6 0 1 0 14 0 a7 2.6 0 1 0 -14 0" color={green} width={2.2} shadow={false} />
       <CableTie x={43} y={72.5} k={0.8} halfH={5} black />
-      <JacketPath d={`M53 73 C62 76 64 100 62 ${TRAY_CABLE_Y + 1.6}`} color={green} width={2.4} />
+      {/* …down into the tray, and along it in its own lane to the tray end */}
+      <JacketPath d={`M53 73 C62 76 64 100 62 ${GREEN_TRAY_Y - 6} Q62 ${GREEN_TRAY_Y} 68 ${GREEN_TRAY_Y} H${TRAY.x1}`} color={green} width={2.4} />
     </G>
   );
 }
@@ -445,24 +468,23 @@ export function CorrectedExisting() {
   const cyan = '#4fd0e0';
   /** the shared route, now carrying both audio pairs on top of the stack */
   const stack = [...BUNDLE, cyan, cyan];
-  const topY = BUNDLE_BASE - 1 - (stack.length - 1) * 1.9;
+  const topY = laneY(stack.length - 1);
   return (
     <G>
-      <Tag x={100} y={46} text="J-HOOKS" />
-      <Line x1={114} y1={50} x2={124} y2={57} stroke="#6f7378" strokeWidth={0.6} />
+      <Tag x={100} y={39} text="J-HOOKS" />
+      <Line x1={114} y1={41} x2={122} y2={45.5} stroke="#6f7378" strokeWidth={0.6} />
       {/* the wall entry at the route's own elevation — a sleeve through the
           masonry, bushed — so the bundle runs level straight into it, clear
           of the sprinkler main below (as found it dived past the main into
           a ragged hole) */}
       <Rect x={332} y={topY - 2.6} width={22} height={BUNDLE_BASE - topY + 3.6} rx={1} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
-      {stack.map((c, i) => {
-        const y = BUNDLE_BASE - 1 - i * 1.9;
-        return <JacketPath key={i} d={`M0 ${y} H344`} color={c} width={2} shadow={i === 0} />;
-      })}
+      {stack.map((c, i) => (
+        <JacketPath key={i} d={`M0 ${laneY(i)} H344`} color={c} width={STACK_W} shadow={i === 0} />
+      ))}
       <Rect x={331} y={topY - 4} width={2.6} height={BUNDLE_BASE - topY + 6.4} rx={0.8} fill="#c5c9cf" stroke="#2c2f34" strokeWidth={0.4} />
       {/* every hook sized for the stack it carries */}
       {[66, 132, 197, 262].map((x) => (
-        <JHookDrop key={x} x={x} cradleY={BUNDLE_BASE + 0.4} w={7} lip={11} back={5} />
+        <JHookDrop key={x} x={x} cradleY={BUNDLE_BASE + 0.4} w={7} lip={16} back={20} />
       ))}
     </G>
   );

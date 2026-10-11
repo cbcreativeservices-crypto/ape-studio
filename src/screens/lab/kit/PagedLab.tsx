@@ -70,6 +70,13 @@ export type PageDef = {
    *  disabled until it had; since owner 2026-09-29 it opens the what's-left
    *  screen, which lists the unmarked page instead.) */
   manualDone?: boolean;
+  /** ADDITIVE (2026-10-10, Patchbay rack conversion — the branch
+   *  soundsystems/SsPagedLab carried locally): the page renders a RackUnit,
+   *  so the shell gives it the FULL HEIGHT and no ScrollView of its own. The
+   *  rack pins the display and the dock, owns the scroll well between them,
+   *  and draws the in-flow NEXT / FINISH at the well's end (LabNavContext).
+   *  The calibration note rides the header as the compact chip. */
+  rack?: boolean;
 };
 
 /**
@@ -448,7 +455,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} />
+        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={def.rack && !ending ? <AccuracyNote compact /> : undefined} />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {/* Before a guest begins (owner 2026-10-04): progress here is not
@@ -468,6 +475,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
             onDone={() => safeGoBack(navigation)}
             bottomInset
           />
+        ) : def.rack ? (
+          // Rack page (PageDef.rack): full height, no scroll of its own — its
+          // RackUnit owns the well (and its scroll lock) and the in-flow NEXT.
+          <View style={styles.rackFill}>{holdPageBody ? null : <Page ctx={ctx} />}</View>
         ) : (
           <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
             <ScrollLockProvider value={setDragLocked}>
@@ -503,4 +514,5 @@ const styles = StyleSheet.create({
   accuracy: { marginTop: 6, marginBottom: 4, alignSelf: 'flex-start' },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
+  rackFill: { flex: 1 },
 });

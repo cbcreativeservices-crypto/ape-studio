@@ -23,7 +23,7 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { FigureHead, FigureMass, headAbove, headFront, headProfile, limb } from '../players/PlayerFigure';
+import { armPath, FigureHead, FigureMass, handShape, headAbove, headFront, headProfile, limb } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose.ts';
 import { outline, BOWED, fbHalf, fingerboardZ, halfWidth, stationsOf, stringYs, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
 import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
@@ -423,6 +423,42 @@ export const GRAND_LID_DEG = 45;
  * Built once.
  */
 let GRAND_PLAN: { body: SkPath; board: SkPath; plate: SkPath; cutouts: SkPath; strings: SkPath; whites: SkPath; blacks: SkPath } | null = null;
+
+/**
+ * The ensemble players' ARMS and HANDS (owner 2026-10-10): the shared
+ * anatomical arm (one outline: the elbow's point and crook, the forearm's
+ * swell, the cuff) from shoulder to elbow to the hand, and the shared hand —
+ * a loose fist round what it holds, its wrist leaving the cuff — in place of
+ * the tube arms and the oval mitten hands. `arm` records where each arm ends
+ * so `hand` turns the hand along that forearm.
+ */
+function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void) {
+  const ends: { end: P2; dir: number }[] = [];
+  const PALM = 50; // the fist's grip point from the wrist (mm)
+  const arm = (pts: P2[]) => {
+    const [a, e, w] = pts;
+    const dir = Math.atan2(w.v - e.v, w.u - e.u);
+    ends.push({ end: w, dir });
+    const wrist = pt(w.u - Math.cos(dir) * PALM, w.v - Math.sin(dir) * PALM);
+    addShirt(armPath(pt(a.u, a.v), pt(e.u, e.v), wrist));
+  };
+  const hand = (c: P2, ellipseOf: (c: P2) => SkPath) => {
+    let best: { end: P2; dir: number } | null = null;
+    let bd = 120;
+    for (const q of ends) {
+      const dd = Math.hypot(q.end.u - c.u, q.end.v - c.v);
+      if (dd < bd) {
+        bd = dd;
+        best = q;
+      }
+    }
+    if (!best) return addSkin(ellipseOf(c));
+    const wrist = pt(c.u - Math.cos(best.dir) * PALM, c.v - Math.sin(best.dir) * PALM);
+    addSkin(handShape({ wrist, dir: best.dir, kind: 'grip' }, best.dir).path);
+  };
+  return { arm, hand };
+}
+
 export function grandPlan() {
   if (GRAND_PLAN) return GRAND_PLAN;
   const W = GRAND.W;
@@ -732,8 +768,9 @@ function planSeat(b: Batch, s: Seat) {
   // Shoulders and torso from above.
   put(b.fig.shirt, ellipse(P(0, 40), 228, 118));
   // Arms and the instrument, by kind (local: x right, y back, forward −y).
-  const arm = (pts: P2[]) => put(b.fig.shirt, limb(pts.map((q) => pt(q.u, q.v)), pts.map((_, i) => (i === 0 ? 60 : i === pts.length - 1 ? 40 : 50))));
-  const hand = (c: P2) => put(b.fig.skin, ellipse(c, 42, 50));
+  const fa = figureArms((p) => put(b.fig.shirt, p), (p) => put(b.fig.skin, p));
+  const arm = fa.arm;
+  const hand = (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 50));
   const LS = P(-185, 30);
   const RS = P(185, 30);
   switch (k) {
@@ -1160,8 +1197,9 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   if (front) addFig(b, 'shirt', poly([P(o.u - 160, g - hipUp + 30), P(o.u + 160, g - hipUp + 30), P(o.u + 215, g - sh), P(o.u - 215, g - sh)]));
   else addFig(b, 'shirt', poly([P(o.u - 120, g - hipUp + 30), P(o.u + 120, g - hipUp + 30), P(o.u + 115, g - sh), P(o.u - 115, g - sh)]));
   addFig(b, 'shirt', ellipse(P(o.u, g - sh), front ? 225 : 125, 70));
-  const arm = (pts: P2[]) => addFig(b, 'shirt', limb(pts.map((q) => pt(q.u, q.v)), pts.map((_, i) => (i === 0 ? 58 : i === pts.length - 1 ? 40 : 48))));
-  const hand = (c: P2) => addFig(b, 'skin', ellipse(c, 42, 48));
+  const fa = figureArms((p) => addFig(b, 'shirt', p), (p) => addFig(b, 'skin', p));
+  const arm = fa.arm;
+  const hand = (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 48));
   const shL = Q(-200, 0, sh - 40);
   const shR = Q(200, 0, sh - 40);
   /** A part that hides the head and hands behind it (a bell seen end-on). */

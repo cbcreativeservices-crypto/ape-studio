@@ -28,7 +28,7 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { basis, brassScene, flareR, ring, type Bell, type BrassScene, type Tube, type Valve } from './lowBrassScene.ts';
 import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
-import { FIGURE_SKIN, FigureHead, FigureMass, handShape, headAbove, headProfile } from '../players/PlayerFigure';
+import { FIGURE_SKIN, FigureHead, FigureMass, handShape, headAbove, headProfile, splitArm } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -526,12 +526,14 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   //     fingers on the rotor levers (horn).
   const rotary = s.valves.some((vl) => vl.kind === 'rotary');
   const side = view === 'side';
-  const handAt = (key: string, kind: 'keys' | 'grip' | 'above', tip: P2, dir: number, depth: number): P2 => {
+  const handAt = (key: string, kind: 'keys' | 'grip' | 'above', tip: P2, dir: number, depth: number, elbow: Vec3): P2 => {
     const [ax, ay] = kind === 'keys' ? [151, Math.cos(dir) >= 0 ? 28 : -28] : kind === 'grip' ? [100, 0] : [70, 0];
     const co = Math.cos(dir);
     const si = Math.sin(dir);
     const wrist: P2 = [tip[0] - (ax * co - ay * si), tip[1] - (ax * si + ay * co)];
-    const hs = handShape({ wrist: pt(wrist[0], wrist[1]), dir, kind });
+    const E = q(elbow);
+    // The shared hand with its wrist out of the arm's cuff (the forearm's direction).
+    const hs = handShape({ wrist: pt(wrist[0], wrist[1]), dir, kind }, Math.atan2(wrist[1] - E[1], wrist[0] - E[0]));
     out.push({
       key,
       depth,
@@ -544,29 +546,41 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
     });
     return wrist;
   };
-  const fore2 = (key: string, a: Vec3, w2: P2, depth: number) => {
-    const pts = limbPts(q(a), w2, 42, 31);
-    out.push({ key, depth, node: <Lit key={key} path={poly(pts)} pts={pts} ramp={SHIRT} /> });
+  // Each ARM is the shared anatomical arm (owner 2026-10-10: the tube arms
+  // and the round elbow knob): one outline — the elbow's point and crook, the
+  // forearm's swell, the cuff short of the wrist — its upper arm and forearm
+  // painted at their own depths (the farther part whole, the nearer clipped
+  // to its side of the elbow: no seam).
+  const arm = (side: 'L' | 'R', sh: Vec3, el: Vec3, w2: P2, dUp: number, dFore: number) => {
+    const S2 = q(sh);
+    const E2 = q(el);
+    const a = splitArm(pt(S2[0], S2[1]), pt(E2[0], E2[1]), pt(w2[0], w2[1]));
+    const pts: P2[] = [S2, E2, w2];
+    const foreNear = dFore >= dUp;
+    const part = (key: string, depth: number, clip: SkPath | null) =>
+      out.push({ key, depth, node: <Group key={key} clip={clip ?? undefined}><Lit path={a.path} pts={pts} ramp={SHIRT} /></Group> });
+    part(`upper${side}`, dUp, foreNear ? null : a.upperSide);
+    part(`fore${side}`, dFore, foreNear ? a.foreSide : null);
   };
   const dirOf = (a: Vec3, b: Vec3) => {
     const A = q(a);
     const B = q(b);
     return Math.atan2(B[1] - A[1], B[0] - A[0]);
   };
-  limb('upperL', J.shoulderL, J.elbowL, 52, 42, SHIRT);
-  limb('upperR', J.shoulderR, J.elbowR, 52, 42, SHIRT);
+  const dUpper = (sh: Vec3, el: Vec3) => depthOf(view, scale(add(sh, el), 0.5));
   {
     const kind = rotary ? 'keys' : 'grip';
     const dir = dirOf(J.elbowL, J.handL);
-    const wL = handAt('handL', kind, q(J.handL), dir, depthOf(view, J.handL) + 25);
-    fore2('foreL', J.elbowL, wL, depthOf(view, scale(add(J.elbowL, J.wristL), 0.5)));
+    const wL = handAt('handL', kind, q(J.handL), dir, depthOf(view, J.handL) + 25, J.elbowL);
+    arm('L', J.shoulderL, J.elbowL, wL, dUpper(J.shoulderL, J.elbowL), depthOf(view, scale(add(J.elbowL, J.wristL), 0.5)));
   }
   if (!s.bellHand) {
     const dir = side ? 0 : dirOf(J.wristR, J.handR);
-    const wR = handAt('handR', side ? 'keys' : 'above', q(J.handR), dir, depthOf(view, J.handR) + 25);
-    fore2('foreR', J.elbowR, wR, depthOf(view, scale(add(J.elbowR, J.wristR), 0.5)));
+    const wR = handAt('handR', side ? 'keys' : 'above', q(J.handR), dir, depthOf(view, J.handR) + 25, J.elbowR);
+    arm('R', J.shoulderR, J.elbowR, wR, dUpper(J.shoulderR, J.elbowR), depthOf(view, scale(add(J.elbowR, J.wristR), 0.5)));
   } else {
-    limb('foreR', J.elbowR, J.wristR, 42, 31, SHIRT);
+    // The hand inside the bell: the sleeve to the wrist, the hand out of sight.
+    arm('R', J.shoulderR, J.elbowR, q(J.wristR), dUpper(J.shoulderR, J.elbowR), depthOf(view, scale(add(J.elbowR, J.wristR), 0.5)));
   }
   // The neck, and the head: the SHARED figure head (head fix 2026-10-08 —
   // PlayerFigure headProfile / headAbove + FigureHead, the same skin

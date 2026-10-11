@@ -28,12 +28,10 @@ const STEP = 39; // column spacing
 
 export type BayPlugs = Record<number, { top?: boolean; bottom?: boolean } | undefined>;
 
-export function StudioBayView({
-  pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, controls,
-}: {
-  /** The page's controls (reveal button, goal chips), docked under the bay
-   *  in FULL SCREEN (D35, full-screen pass 2026-09-30). */
-  controls?: ReactNode;
+/** The bay's aspect (viewBox W ÷ H). */
+export const BAY_ASPECT = W / H;
+
+export type StudioBayDrawingProps = {
   pairs: StudioPair[];
   selected?: number | null;
   onSelect?: (n: number) => void;
@@ -42,7 +40,13 @@ export function StudioBayView({
   /** Per-pair front-jack cords to draw (gold stubs). */
   plugs?: BayPlugs;
   reduceMotion?: boolean;
-}) {
+  w: number;
+  h: number;
+};
+
+/** The bay drawing alone at (w, h), column taps included — the Rack Unit's
+ *  glass and the page figure both draw this. */
+export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, w, h }: StudioBayDrawingProps) {
   const phase = useFlowPhase(!!showNormals, reduceMotion);
   const a11y =
     `Studio patchbay, eight vertical pairs. ` +
@@ -50,22 +54,7 @@ export function StudioBayView({
       .map((p) => `Pair ${p.n}: ${p.sourceLabel} over ${p.destLabel}, ${p.config === 'thru' ? 'thru' : 'half-normal'}.`)
       .join(' ') +
     (showNormals ? ' Internal normals shown flowing on pairs one to six; the processor pairs are thru — no internal connection.' : '');
-  const legend = <Text style={styles.legend}>TOP ROW = SOURCES · BOTTOM ROW = DESTINATIONS</Text>;
   return (
-    <View style={styles.wrap}>
-      {/* The bay through ExpandableFigure: the same column taps at the page
-          width and at the zoomed size, the legend and the page's controls
-          docked under it in full screen. */}
-      <ExpandableFigure
-        aspect={W / H}
-        title="STUDIO BAY"
-        controls={
-          <View style={styles.dock}>
-            {legend}
-            {controls}
-          </View>
-        }
-        render={(w, h) => (
       <View style={{ width: w, height: h }}>
         <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           {/* the faceplate (art pass 2026-10-10): brushed panel, a lit top
@@ -141,7 +130,46 @@ export function StudioBayView({
           </View>
         ) : null}
       </View>
-        )}
+  );
+}
+
+/** The row legend as real text (the SVG header stays short + readable) — under
+ *  the page figure, and in a rack page's well. */
+export function BayLegend() {
+  return <Text style={styles.legend}>TOP ROW = SOURCES · BOTTOM ROW = DESTINATIONS</Text>;
+}
+
+export function StudioBayView({
+  pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, controls,
+}: {
+  /** The page's controls (reveal button, goal chips), docked under the bay
+   *  in FULL SCREEN (D35, full-screen pass 2026-09-30). */
+  controls?: ReactNode;
+  pairs: StudioPair[];
+  selected?: number | null;
+  onSelect?: (n: number) => void;
+  /** Reveal the internal normals (§17's "show all invisible connections"). */
+  showNormals?: boolean;
+  /** Per-pair front-jack cords to draw (gold stubs). */
+  plugs?: BayPlugs;
+  reduceMotion?: boolean;
+}) {
+  const legend = <BayLegend />;
+  return (
+    <View style={styles.wrap}>
+      {/* The bay through ExpandableFigure: the same column taps at the page
+          width and at the zoomed size, the legend and the page's controls
+          docked under it in full screen. */}
+      <ExpandableFigure
+        aspect={W / H}
+        title="STUDIO BAY"
+        controls={
+          <View style={styles.dock}>
+            {legend}
+            {controls}
+          </View>
+        }
+        render={(w, h) => <StudioBayDrawing pairs={pairs} selected={selected} onSelect={onSelect} showNormals={showNormals} plugs={plugs} reduceMotion={reduceMotion} w={w} h={h} />}
       />
       {/* Row legend as real text (the SVG header stays short + readable). */}
       {legend}

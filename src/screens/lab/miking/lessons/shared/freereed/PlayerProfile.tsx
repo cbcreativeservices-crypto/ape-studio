@@ -23,7 +23,7 @@
  * once per pose.
  */
 import { BlurMask, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { FIGURE_SKIN, FigureHead, headProfile as figureHeadProfile } from '../players/PlayerFigure';
+import { armPath, FIGURE_SKIN, FigureHead, headProfile as figureHeadProfile } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -190,8 +190,10 @@ function build(p: ProfilePose): Built {
   const pelvis = smooth([pt(h.u + 88, h.v - 60), pt(h.u + 96, h.v + 30), pt(h.u + 60, h.v + 80), pt(h.u - 70, h.v + 70), pt(h.u - 104, h.v + 10), pt(h.u - 96, h.v - 64)], 0.5);
   const legNear = limb([pt(h.u + 6, h.v + 10), p.kneeNear, p.ankleNear], [90, 62, 40]);
   const legFar = limb([pt(h.u - 6, h.v + 10), p.kneeFar, p.ankleFar], [86, 58, 38]);
-  const armFar = limb([pt(s.u + 10, s.v + 4), p.elbowFar, p.wristFar], [48, 40, 31]);
-  const armNear = limb([pt(s.u, s.v + 6), p.elbowNear, p.wristNear], [52, 42, 32]);
+  // The arms (owner 2026-10-10): the shared anatomical arm — the elbow's
+  // point and crook, the forearm's swell, the cuff short of the wrist.
+  const armFar = armPath(pt(s.u + 10, s.v + 4), p.elbowFar, p.wristFar);
+  const armNear = armPath(pt(s.u, s.v + 6), p.elbowNear, p.wristNear);
   const deltoid = capsule(pt(s.u - 6, s.v - 10), pt(s.u + 4, s.v + 40), 58, 52);
   const lines = make();
   // The collar and the placket, a cuff on each arm.
@@ -204,7 +206,7 @@ function build(p: ProfilePose): Built {
     const r = 38;
     return curve([pt(c.u - Math.cos(a) * r, c.v - Math.sin(a) * r), pt(c.u + Math.cos(a) * r, c.v + Math.sin(a) * r)]);
   };
-  lines.addPath(cuff(p.wristNear, p.elbowNear));
+  void cuff; // no cuff seam stroke (owner 2026-10-10: a line across the sleeve read as a welt)
   const shadow = make();
   shadow.addOval(Skia.XYWHRect(h.u - 260, p.floor - 20, 600, 40));
   let strap: SkPath | null = null;

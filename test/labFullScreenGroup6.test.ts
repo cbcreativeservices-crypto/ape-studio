@@ -56,32 +56,51 @@ test('JackCutaway + StudioBayView draw through ExpandableFigure with the page co
   assert.match(bay, /<Svg accessible accessibilityRole="image" accessibilityLabel=\{a11y\} width=\{w\} height=\{h\}/);
 });
 
-test('every interactive patchbay page docks its controls under the figure', () => {
+// Rack conversion (owner 2026-10-10: "convert the patchbay lab, all 23
+// modules, to the rack layout"): every patchbay page that is OPERATED is a
+// rack page — the drawing pinned on the glass, every control in the dock,
+// the readouts on the bezel; full screen is the rack's own working surface.
+// The pages kept as documents (reading, quizzes, the static normal on page 4
+// and the after-answer pictures) still draw through ExpandableFigure above.
+test('every interactive patchbay page is a rack page: drawing on the glass, every control in the dock', () => {
   const a = read('patchbay/pagesA.tsx');
   const b = read('patchbay/pagesB.tsx');
   const c = read('patchbay/pagesC.tsx');
   const d = read('patchbay/pagesD.tsx');
-  // pages 3, 6, 7 (pairs) + page 5 (cutaway)
-  assert.equal(count(a, /controls=\{chips\}/g), 3, 'pagesA: thru, full-normal, half-normal pairs dock their goal chips');
-  assert.match(a, /<JackCutaway insertion=\{insertion\} reduceMotion=\{ctx\.reduceMotion\} controls=\{<>\{slider\}\{chips\}<\/>\} \/>/);
-  // page 9
-  assert.equal(count(b, /controls=\{chips\}/g), 1);
-  // page 14 (bay + pair with pair keys), 15 (reveal), 16, 17 (both pairs)
-  assert.match(c, /<StudioBayView[\s\S]*?controls=\{chips\}/, 'page 14 bay docks the chips');
-  assert.match(c, /controls=\{<>\{pairKeys\}\{chips\}<\/>\}/, 'page 14 pair docks pair keys + chips');
-  assert.doesNotMatch(c, /<PatchPairView\s+key=\{selected\}/, 'no remount on selection (it would close the full screen)');
-  assert.match(c, /controls=\{revealBtn\}/, 'page 15 docks the reveal key');
-  assert.equal(count(c, /controls=\{dock\}/g), 2, 'page 17: both pairs dock insert/bypass + chips');
-  assert.equal(count(c, /controls=\{chips\}/g), 2, 'page 14 bay + page 16');
-  // pages 19 + 20
-  assert.equal(count(d, /controls=\{chips\}/g), 1);
-  assert.match(d, /showConductors controls=\{slider\}/);
-  // Controls are built ONCE per page (shared state with the dock), never duplicated JSX.
+  // pages 2, 3, 5, 6, 7 · 9 · 14, 15, 16, 17 · 19, 20
+  assert.equal(count(a, /rack: true \}/g), 5, 'pagesA: pair, thru, contact, full, half');
+  assert.equal(count(b, /rack: true \}/g), 1, 'pagesB: the tap');
+  assert.equal(count(c, /rack: true \}/g), 4, 'pagesC: bay, zero cables, overpatch, chain');
+  assert.equal(count(d, /rack: true \}/g), 2, 'pagesD: directional, T·R·S');
   for (const [name, src] of [['pagesA', a], ['pagesB', b], ['pagesC', c], ['pagesD', d]] as const) {
+    const code = stripComments(src);
+    // No control left inline: no slider, no docked-under-the-figure controls.
+    assert.doesNotMatch(code, /ControlSlider/, `${name}: the plug is the dock's fader now`);
+    assert.doesNotMatch(code, /controls=\{/, `${name}: no controls handed to an inline figure`);
+    // Controls are built ONCE per page (shared state), the chips placed in the well.
     const chipDefs = count(src, /const chips = <GoalChips goals=\{goals\} latched=\{latched\} \/>;/g);
     const chipUses = count(src, /\{chips\}/g);
     assert.ok(chipUses >= chipDefs, `${name}: every chips element is placed on the page too`);
   }
+  // The jacks are dock switches on every pair page (page 7 only once the prediction is in).
+  assert.equal(count(a, /params: jackKeys\(state, toggle\),/g), 3, 'pages 2, 3, 6');
+  assert.match(a, /params: predicted \? jackKeys\(state, toggle\) : \[\],/, 'page 7: the jacks unlock with the prediction');
+  assert.match(b, /params: jackKeys\(state, toggle\),/);
+  assert.match(d, /params: jackKeys\(state, toggle\),/);
+  // The plug is the PLUG INSERTION fader, bound on mount (pages 5 + 20).
+  assert.match(a, /params: \[insertionFader\(insertion, setInsertion\)\],\s*initialParam: 'insertion',/);
+  assert.match(d, /params: \[insertionFader\(insertion, setInsertion\)\],\s*initialParam: 'insertion',/);
+  // Page 14: the pair chooser-fader + the jacks; 15: the reveal switch; 16: the jacks;
+  // 17: INSERT switch + VIEW options (one pair on the glass at a time).
+  assert.match(c, /params: \[pairParam, \.\.\.jackKeys\(state, toggle\)\],/);
+  assert.match(c, /kind: 'toggle', id: 'reveal', label: 'SHOW THE INVISIBLE NORMALS'/);
+  assert.match(c, /kind: 'toggle', id: 'insert', label: 'INSERT COMPRESSOR'/);
+  assert.match(c, /kind: 'options',\s*id: 'view',/);
+  assert.doesNotMatch(stripComments(c), /<Btn/, 'no buttons left in the bay / chain wells');
+  // The shared host gives a rack page the full height (kit/PagedLab `rack`).
+  const host = read('kit/PagedLab.tsx');
+  assert.match(host, /rack\?: boolean;/);
+  assert.match(host, /\) : def\.rack \? \(/);
 });
 
 /* ── Connectors & Cable Selection ─────────────────────────────────────── */

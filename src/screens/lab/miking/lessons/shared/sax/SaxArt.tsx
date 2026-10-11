@@ -33,7 +33,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
-import { FIGURE_SKIN, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { armPath, FIGURE_SKIN, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
@@ -322,6 +322,17 @@ export function saxItems(P: Placed, view: ViewId, f: Pick<Fingering, 'open' | 'o
 
 type Group3 = { key: string; items: Item[] };
 
+/** A whole ARM, shoulder → elbow → wrist: the shared anatomical arm (owner
+ *  2026-10-10: the tube arms) — the elbow's point and crook, the forearm's
+ *  swell, the cuff short of the wrist; one outline, no seam. */
+function armItem(view: ViewId, s: Vec3, e: Vec3, w: Vec3): Item {
+  const S = prj(view, s);
+  const E = prj(view, e);
+  const W = prj(view, w);
+  const path = armPath(pt(S[0], S[1]), pt(E[0], E[1]), pt(W[0], W[1]));
+  return { path, fill: { colors: SHIRT }, stroke: { color: SHIRT_EDGE, w: 2 }, box: bbox([S, E, W]), rim: 2.2 };
+}
+
 function limbItem(view: ViewId, a: Vec3, b: Vec3, ra: number, rb: number, fill: Fill, edge = SHIRT_EDGE): Item {
   const pts = limb2(prj(view, a), prj(view, b), ra, rb);
   return { path: smooth(pts, true, 0.35), fill, stroke: { color: edge, w: 2 }, box: bbox(pts), rim: 2.2 };
@@ -373,7 +384,7 @@ export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; f
   };
   behind.push({ key: 'legL', items: leg('L').map((it) => ({ ...it, opacity: 0.85 })) });
   // The far arm (the left), behind the torso and the horn.
-  const armL = [limbItem(view, s.shoulderL, s.elbowL, 52, 42, { colors: SHIRT }), limbItem(view, s.elbowL, s.wristL, 42, 31, { colors: SHIRT })];
+  const armL = [armItem(view, s.shoulderL, s.elbowL, s.wristL)];
   behind.push({ key: 'armL', items: armL.map((it) => ({ ...it, opacity: 0.9 })) });
   // The torso.
   if (view === 'side') {
@@ -434,14 +445,15 @@ export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; f
   const handItems = (side: 'L' | 'R'): Item[] => {
     const w = side === 'L' ? s.wristL : s.wristR;
     const h = side === 'L' ? s.handL : s.handR;
-    const palm = limbItem(view, w, h, 30, 34, { colors: SKIN }, SKIN_EDGE);
+    // The wrist (≈ 54 mm) narrower than the heel of the hand, out of the cuff.
+    const palm = limbItem(view, add(w, scale(sub(h, w), -0.12)), h, 27, 36, { colors: SKIN }, SKIN_EDGE);
     const tips = pearlsOf(P, view).filter((p) => p.hand === side);
     const fingers = tips.map((t) => limbItem(view, add(h, scale(sub(t.p3, h), 0.2)), t.p3, 11, 8.5, { colors: SKIN }, SKIN_EDGE));
     return [palm, ...fingers];
   };
   behind.push({ key: 'handL', items: handItems('L') });
   // In front of the horn: the right arm and hand (the camera side).
-  front.push({ key: 'armR', items: [limbItem(view, s.shoulderR, s.elbowR, 52, 42, { colors: SHIRT }), limbItem(view, s.elbowR, s.wristR, 42, 31, { colors: SHIRT })] });
+  front.push({ key: 'armR', items: [armItem(view, s.shoulderR, s.elbowR, s.wristR)] });
   front.push({ key: 'handR', items: handItems('R') });
   const hc = q(s.head);
   const head = view === 'side' ? { ...headSide(hc, s.headR), c: hc, r: s.headR } : { ...headTop(hc, s.headR), c: hc, r: s.headR };

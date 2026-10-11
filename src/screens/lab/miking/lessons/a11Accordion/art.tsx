@@ -23,7 +23,7 @@ import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels'
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import type { FrontArt } from '../shared/metal/metalPages';
-import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { armPath, handShape, PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
 import { limb, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_RIM, type ProfilePose, type Pt } from '../shared/freereed/PlayerProfile';
 import { BODY, bassBoxAt, FLOOR_Y, GRILLE, KEYS, stateOf, TREBLE } from './model.ts';
@@ -509,10 +509,18 @@ function SceneTop({ variant, hi }: { variant: VariantId; hi: string | null }): R
   const bassEnd = poly([[TREBLE.x0, b.ot.z], [TREBLE.x1, b.ot.z], [TREBLE.x1, b.ob.z], [TREBLE.x0, b.ob.z]]);
   const lowFan = poly([[TREBLE.x0 + 8, b.it.z], [TREBLE.x1 - 8, b.it.z], [TREBLE.x1 - 8, b.ib.z], [TREBLE.x0 + 8, b.ib.z]]);
   // The arms from above (the turned frame: world mm).
-  const armR = limb([pt(BODY.headC.x - 50, 190), pt(TREBLE.x0 - 40, 300), pt(TREBLE.x0 + 70, TREBLE.z1 + 40)], [50, 41, 30]);
-  const handR = limb([pt(TREBLE.x0 + 70, TREBLE.z1 + 40), pt(TREBLE.x0 + 140, TREBLE.z1 + 20)], [32, 26]);
-  const armL = limb([pt(BODY.headC.x - 50, -190), pt(TREBLE.x0 - 30, Math.min(-300, b.ot.z + 40)), pt(TREBLE.x0 + 60, b.ob.z - 20)], [50, 41, 30]);
-  const handL = limb([pt(TREBLE.x0 + 60, b.ob.z - 20), pt(TREBLE.x0 + 130, b.ob.z - 10)], [32, 26]);
+  // The arms and hands from above (owner 2026-10-10): the shared anatomical
+  // arm to the back of the shared hand (the old hands were capsules).
+  const topArm = (s0: Pt, e: Pt, w: Pt, toward: Pt) => {
+    const dir = Math.atan2(toward.v - w.v, toward.u - w.u);
+    return { arm: armPath(s0, e, w), hand: handShape({ wrist: w, dir, kind: 'above' }, Math.atan2(w.v - e.v, w.u - e.u)).path };
+  };
+  const R = topArm(pt(BODY.headC.x - 50, 190), pt(TREBLE.x0 - 40, 300), pt(TREBLE.x0 + 40, TREBLE.z1 + 46), pt(TREBLE.x0 + 140, TREBLE.z1 + 20));
+  const Lh = topArm(pt(BODY.headC.x - 50, -190), pt(TREBLE.x0 - 30, Math.min(-300, b.ot.z + 40)), pt(TREBLE.x0 + 30, b.ob.z - 24), pt(TREBLE.x0 + 130, b.ob.z - 10));
+  const armR = R.arm;
+  const handR = R.hand;
+  const armL = Lh.arm;
+  const handL = Lh.hand;
   return (
     <Group>
       <Group transform={[{ translateX: BODY.headC.x }, { translateY: 0 }, { rotate: -Math.PI / 2 }]}>

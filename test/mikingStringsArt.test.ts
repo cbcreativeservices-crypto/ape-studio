@@ -119,6 +119,17 @@ describe('the shared player: joints from the model, at true size (guitarPlayer.t
             assert.ok(inBox(sc.fit.fret, t, 0, 'y'), 'inside the fretting hand’s keep-out');
           }
         });
+        it(`${lesson.id}/${v.id}: the fretting wrist bends ≤ 70° from the forearm; adult arm lengths (owner 2026-10-10)`, () => {
+          const w = front.handL.wrist;
+          const e = front.elbowL;
+          const fore = Math.atan2(w.v - e.v, w.u - e.u);
+          const bend = Math.abs(Math.atan2(Math.sin(front.handL.dir - fore), Math.cos(front.handL.dir - fore))) * (180 / Math.PI);
+          // A short neck close in front of the shoulder (C05B mandolin, C05C soprano ukulele) cannot reach 70° in
+          // the flat picture with an adult arm; those keep their earlier arm (guitarPlayer.ts) — owner to decide.
+          const close = lesson.id === 'C05B' || lesson.id === 'C05C';
+          assert.ok(close || bend <= 70.5, `wrist bent ${bend.toFixed(0)}°`);
+          assert.ok(Math.hypot(e.u - front.shoulderL.u, e.v - front.shoulderL.v) <= 300 && Math.hypot(w.u - e.u, w.v - e.v) <= 270, 'adult arm lengths');
+        });
         it(`${lesson.id}/${v.id}: the picking hand is drawn round the picking envelope's far end, over the strings`, () => {
           const c = { u: front.handR.wrist.u + Math.cos(front.handR.dir) * BODY.handLen * 0.42, v: front.handR.wrist.v + Math.sin(front.handR.dir) * BODY.handLen * 0.42 };
           assert.ok(Math.hypot(c.u - sc.fit.arm.b.x, c.v - sc.fit.arm.b.y) < 20);

@@ -184,7 +184,7 @@ function art(id: string, p: Ids): ReactNode {
           ))}
           <Rect x={2} y={12} width={92} height={6} rx={0.6} fill={p.zv} stroke="#2c2f34" strokeWidth={0.45} />
           <Rect x={2} y={54} width={92} height={6} rx={0.6} fill={p.zv} stroke="#2c2f34" strokeWidth={0.45} />
-          {[26.5, 31, 35.5, 40, 44.5].map((y, i) => (
+          {[23, 29, 35, 41, 47].map((y, i) => (
             <Run key={y} pts={[{ x: -2, y }, { x: 48, y: y + (i % 2 ? 0.4 : -0.3) }, { x: 98, y }]} d={4} i={i} />
           ))}
         </G>
@@ -329,7 +329,7 @@ function art(id: string, p: Ids): ReactNode {
       return (
         <G>
           <Wall />
-          {[33, 38, 43].map((y, i) => (
+          {[31.6, 38, 44.4].map((y, i) => (
             <Run key={y} pts={[{ x: -2, y }, { x: 48, y }, { x: 98, y }]} d={4.4} i={i} />
           ))}
           {/* a wide two-hole saddle: big bearing surface, no pinch */}
