@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 19:11 · ccode · 0d9b086a
+changed: Topic tiles: 24 owner-accepted Comp C replacements (2026-10-10 picker; 18 rejected -> redo brief)
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-10-10 18:51 · ccode · 92c2ed9a
 changed: Labs: traceable cable lanes + pro dressing (Cable Install, Sound Systems), 2-way stage wedges app-wide, MON->snake return; Patchbay on the Rack Unit (12 modules); neck hands fixed + cellist raised; shared anatomical arms on low brass, small perc, lutes, keys, ensembles, sax, free reed; guitar fretting wrist <= 70 deg
 affects other side: nothing (client lab art on next-store-build; unpublished)
