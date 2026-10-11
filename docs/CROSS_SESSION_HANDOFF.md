@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-10 17:34 · ccode · 03c39c9b
+changed: Figures: anatomical arm (one outline, elbow point + crook, forearm swell, bare wrist, cuff), 70° wrist limit, real bow hold, violin/viola neck hold from above, fretting hands (owner approved)
+affects other side: nothing (client lab art on next-store-build; unpublished)
+needs: nothing
+
+
 ### 2026-10-10 17:23 · ccode · d675ff77
 changed: Comp C technical-accuracy audit applied (Miking Labs 1-7, shared, Mixing Guides, Mixing Labs)
 affects other side: nothing (client lab copy/art on next-store-build; unpublished)

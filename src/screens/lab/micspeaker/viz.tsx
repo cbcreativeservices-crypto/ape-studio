@@ -3670,13 +3670,20 @@ export function SideCoverageView({
     const boxDrawnH = CAB_DRAWN_H * boxScale + 1.5;
     const N = 4; // owner 2026-08-05: 4-box array
     const out: { x: number; y: number; tilt: number }[] = [];
+    // Trimmed like a real flown array (owner 2026-10-10, "raise it"): the
+    // BOTTOM box clears the performer's head (1.7 m) by at least 1 m, at every
+    // HEIGHT setting — never lower than the single box's own hang, never above
+    // the ceiling's rigging. The boxes are the level model's sources, so the
+    // array's coverage follows the trim (correct physics for a trimmed hang).
+    const clearTop = stageTop - (M_HUMAN + 1.0) * MPP - (N - 1) * boxDrawnH - 9 * boxScale;
+    const y0 = Math.max(ceilY + 12 + 9 * boxScale, Math.min(spkY, clearTop));
     let a = tiltDeg - 2;
     for (let i = 0; i < N; i++) {
-      out.push({ x: spkX, y: spkY + i * boxDrawnH, tilt: a });
+      out.push({ x: spkX, y: y0 + i * boxDrawnH, tilt: a });
       a += 2.4 + i * 1.3;
     }
     return out;
-  }, [spkX, spkY, tiltDeg, boxScale]);
+  }, [spkX, spkY, tiltDeg, boxScale, stageTop, MPP, ceilY]);
   const arrayMidY = arrayBoxes.length ? arrayBoxes[Math.floor(arrayBoxes.length / 2)].y : spkY;
 
   const geo = useMemo(() => {
