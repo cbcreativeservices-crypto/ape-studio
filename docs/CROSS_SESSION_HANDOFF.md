@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-12 08:07 · ccode · 75ffe141
+changed: Tagline everywhere: 'The whole craft of audio in your pocket' (splash, About, Dashboard header, glossary share) — owner 2026-10-12
+affects other side: nothing — client-only text
+needs: nothing
+
+
 ### 2026-10-11 16:16 · ccode · 057c8946
 changed: Certificate squares: 20 owner-accepted Comp C round-3 images (live-mixing option B refused: not square -> redo)
 affects other side: nothing — client-only images
