@@ -141,7 +141,7 @@ export function SplashScreen({ navigation }: Props) {
           TRAINING ACADEMY
         </Text>
         <Text style={styles.glossary} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-          The whole craft of audio. Right in your pocket
+          The whole craft of audio in your pocket
         </Text>
       </Animated.View>
     </View>

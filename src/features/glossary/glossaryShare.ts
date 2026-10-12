@@ -61,7 +61,7 @@ const COMPANY = BRAND.name; // "Pro Audio Training Academy" — no ® on shares 
 export const WEBSITE = websiteUrl();
 export const GLOSSARY_TAGLINE = 'Free Professional Audio Glossary';
 const SINGLE_SOURCE = `${COMPANY} Glossary`;
-const MULTI_HEADER_LINE2 = 'Professional Audio Glossary';
+const MULTI_HEADER_LINE2 = 'The whole craft of audio in your pocket';
 
 // --- Heading casing ---------------------------------------------------------
 // Term headings are upper-cased, but audio UNIT tokens keep their real casing —

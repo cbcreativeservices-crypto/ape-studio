@@ -34,7 +34,7 @@ export function AboutScreen({ navigation }: Props) {
           <Text style={styles.appName}>
             Pro Audio <Text style={styles.appNameAccent}>Training Academy</Text>
           </Text>
-          <Text style={styles.tagline}>PROFESSIONAL AUDIO GLOSSARY</Text>
+          <Text style={styles.tagline}>THE WHOLE CRAFT OF AUDIO IN YOUR POCKET</Text>
           <Text style={styles.version}>Version {Constants.expoConfig?.version ?? '0.0.0'}</Text>
         </View>
 

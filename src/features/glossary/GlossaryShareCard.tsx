@@ -75,7 +75,7 @@ export const GlossaryShareCard = forwardRef<
           <Text style={styles.company} accessibilityRole="header">
             {BRAND.name.toUpperCase()}
           </Text>
-          <Text style={styles.sourceLine}>Professional Audio Glossary</Text>
+          <Text style={styles.sourceLine}>The whole craft of audio in your pocket</Text>
         </>
       ) : (
         <>

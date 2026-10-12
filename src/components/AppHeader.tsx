@@ -36,7 +36,7 @@ export function AppHeader({
           <Text style={styles.wordmark}>
             Pro Audio <Text style={styles.wordmarkAccent}>Training Academy</Text>
           </Text>
-          <Text style={styles.eyebrow}>PROFESSIONAL AUDIO GLOSSARY</Text>
+          <Text style={styles.eyebrow}>THE WHOLE CRAFT OF AUDIO IN YOUR POCKET</Text>
         </View>
       </View>
       {right}

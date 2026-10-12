@@ -39,7 +39,7 @@ describe('T1 — Splash and Home hold at the largest standard text size', () => 
 
   test('every Splash wordmark line is capped and kept on one line', () => {
     const s = code(SPLASH);
-    for (const word of ['PRO AUDIO', 'TRAINING ACADEMY', 'The whole craft of audio\\. Right in your pocket']) {
+    for (const word of ['PRO AUDIO', 'TRAINING ACADEMY', 'The whole craft of audio in your pocket']) {
       const re = new RegExp(
         `maxFontSizeMultiplier=\\{BRAND_MAX_FONT_SCALE\\} numberOfLines=\\{1\\} adjustsFontSizeToFit minimumFontScale=\\{[\\d.]+\\}>\\s*${word}\\s*</Text>`,
       );
