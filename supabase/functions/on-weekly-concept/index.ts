@@ -1,11 +1,13 @@
 // supabase/functions/on-weekly-concept/index.ts
 // AP&E — Weekly Concept notification (push + email transports)
-// Triggered by pg_cron every 15 minutes via net.http_post
+// Triggered by pg_cron every 10 minutes via net.http_post (dispatch_weekly_concept)
 // Spec: APE_NOTIFICATIONS_WEEKLY_CONCEPT_SPEC_2026_08_27.md
 // Email setup: APE_EMAIL_WEEKLY_CONCEPT_2026_08_29.md
 //
-// Cron (when Booth activates it) POSTs with Authorization: Bearer <service role>.
-// Do not run the cron until concept sequence is reviewed.
+// Cron POSTs with Authorization: Bearer <service role> (Vault key; live since
+// 2026-10-04). service_role needs SELECT on notification_preferences and
+// SELECT/INSERT/UPDATE on notification_concept_deliveries — without them every
+// user is skipped as "No prefs found" and the reply is {"sent":0} (2026-10-11).
 //
 // Transports are independent, both gated by notify_weekly_concept:
 //   push  — push_enabled + expo_push_token          (teaser; full card in data)
@@ -95,6 +97,24 @@ function conceptEmailText(c: Concept): string {
   ].join("\n");
 }
 
+// The cron sends the legacy service-role JWT from Vault. With verify_jwt on,
+// the gateway has already checked its signature, so accepting it by its
+// role claim is safe. A plain string compare fails whenever the runtime's
+// SUPABASE_SERVICE_ROLE_KEY is a different (newer-format) key: that 401'd
+// every run on 2026-10-04 (Comp A).
+function isServiceRoleJwt(auth: string): boolean {
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const part = token.split(".")[1];
+  if (!part) return false;
+  try {
+    const b64 = part.replace(/-/g, "+").replace(/_/g, "/");
+    const claims = JSON.parse(atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4)));
+    return claims?.role === "service_role" && claims?.ref === "yjgolswjggmlpeowvtxr";
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST" && req.method !== "GET") {
     return json({ error: "method_not_allowed" }, 405);
@@ -105,7 +125,7 @@ Deno.serve(async (req) => {
   if (!service || !url) return json({ error: "misconfigured" }, 500);
 
   const auth = req.headers.get("Authorization") ?? "";
-  if (auth !== `Bearer ${service}`) {
+  if (auth !== `Bearer ${service}` && !isServiceRoleJwt(auth)) {
     return json({ error: "unauthorized" }, 401);
   }
 
@@ -121,7 +141,8 @@ Deno.serve(async (req) => {
   const supabase = createClient(url, service);
   const now = new Date();
 
-  // 1. Subscriptions due in ±7 minutes (user TZ), not yet fired today.
+  // 1. Subscriptions due from 7 minutes before their send time to 24 hours
+  //    after (catch-up window, user TZ), not yet fired this week.
   const { data: subRows, error: subErr } = await supabase.rpc(
     "get_due_concept_subscriptions",
     { check_time: now.toISOString() },
