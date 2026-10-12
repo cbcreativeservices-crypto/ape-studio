@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-11 16:16 · ccode · 057c8946
+changed: Certificate squares: 20 owner-accepted Comp C round-3 images (live-mixing option B refused: not square -> redo)
+affects other side: nothing — client-only images
+needs: nothing
+
+
+### 2026-10-11 15:54 · ccode · 7a9dc442
+changed: Images: 18 owner-accepted Comp C round-2 replacements (9 topic tiles, 9 certificate squares; 2026-10-11 picker)
+affects other side: nothing — client-only images
+needs: nothing
+
+
 ### 2026-10-11 12:16 · ccode · 33a50500
 changed: Glossary: bottom nav hidden while open; header book mark replaced by a HOME key back to Home; bottom safe-area inset now on the screen (owner 2026-10-11)
 affects other side: nothing — client-only UI change
