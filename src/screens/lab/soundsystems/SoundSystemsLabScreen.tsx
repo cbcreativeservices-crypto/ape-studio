@@ -25,6 +25,9 @@ import { isPagedProgressUnreadable, loadPagedProgress, savePagedProgress } from 
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { UNDERSTANDING_UNIT } from '../../../features/lab/understanding';
+import { SS_OPERATE_EXERCISES, SS_ROUTE_EXERCISES, soundSystemsLabComplete } from '../../../features/soundsystems/labComplete';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { useSoundSystemsProgress, useSoundSystemsProgressUnreadable } from '../../../features/soundsystems/progress';
 import { CAPSTONES } from '../../../features/soundsystems/capstones';
 import { FAULTS } from '../../../features/soundsystems/faults';
@@ -46,8 +49,8 @@ const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   troubleshoot: 'vocalMic',
 };
 
-const ROUTE_EXERCISES = 8;
-const OPERATE_EXERCISES = 5;
+const ROUTE_EXERCISES = SS_ROUTE_EXERCISES;
+const OPERATE_EXERCISES = SS_OPERATE_EXERCISES;
 
 type Row = { id: SsModeId; label: string; done: number; total: number; hint: string };
 
@@ -103,7 +106,14 @@ export function SoundSystemsLabScreen() {
     { id: 'troubleshoot', label: 'TROUBLESHOOT · faults solved', done: progress.faults.length, total: FAULTS.length, hint: `${progress.forward.length} solved with a source-forward walk.` },
   ];
   const outstanding = rows.filter((r) => r.done < r.total);
-  const allDone = outstanding.length === 0 && checkPassed;
+  // The shared rule (features/soundsystems/labComplete.ts) — the same one the
+  // certificate credit uses, so the panel and the credit never disagree.
+  const allDone = soundSystemsLabComplete(pages.learn, progress, checkPassed);
+  // CERTIFICATE CREDIT (owner 2026-10-13): the whole lab, once complete and
+  // the records were actually read (never from a stand-in copy).
+  useEffect(() => {
+    if (known && allDone) reportTrainingComplete(trainingKeyFor('SoundSystemsLab'));
+  }, [known, allDone]);
 
   const go = (route: string) => navigation.navigate(route as never);
 

@@ -40,6 +40,8 @@ import {
   EAR_SOURCES, earSourceById, programFromClip, resolveEarSource, type EarSourceId,
 } from '../../../features/ear/earPrograms';
 import type { EarProgram } from '../../../features/ear/earTypes';
+import { REQUIRED_EAR_LEVEL, earModuleKey } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 
 const FATIGUE_MS = 15 * 60 * 1000;
 const TOP_LEVEL_REPLAYS = 2;
@@ -415,6 +417,10 @@ export function EarModuleScreen() {
       s.modules[mod.id] = next;
       stateRef.current = s;
       void saveEarProgress(s);
+      // CERTIFICATE CREDIT (owner 2026-10-13): a module counts once its
+      // mastered level reaches REQUIRED_EAR_LEVEL (trainingLabKeys — why 2).
+      // Preview earns nothing; a guest's report is held for the sign-in hand-off.
+      if (next.mastered >= REQUIRED_EAR_LEVEL) reportTrainingComplete(earModuleKey(mod.id));
       setStreak(next.streak);
       setAccuracy(recentAccuracy(next));
       setLevel(next.level);

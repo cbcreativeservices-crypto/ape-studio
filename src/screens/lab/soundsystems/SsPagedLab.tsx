@@ -40,6 +40,8 @@ import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import { trainingKeyForCheck } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import type { PageCtx } from '../kit/PagedLab';
 import { LabEndScreen, type LabEndUnit } from '../kit/LabEndScreen';
@@ -92,6 +94,9 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
                     ctx.markDone();
                     registerLabUnits(labId as never, [UNDERSTANDING_UNIT]);
                     markLabUnit(labId as never, UNDERSTANDING_UNIT);
+                    // Certificate credit (owner 2026-10-13): the lab's tr_ key, when this
+                    // check is what completes a whole training lab (trainingLabKeys).
+                    reportTrainingComplete(trainingKeyForCheck(labId));
                   }}
                 />
               ),

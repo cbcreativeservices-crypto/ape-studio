@@ -27,6 +27,7 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
 const HERO_N = 48;
 
@@ -192,6 +193,9 @@ export function CymaticsHomeScreen() {
           <ModuleAccordionRow key={m.id} num={i + 1} name={m.title} blurb={m.blurb} expanded={openId === m.id} onToggle={() => setOpenId(openId === m.id ? null : m.id)} onOpen={() => open(m.id)} />
         ))}
         </TabletGrid>
+        {/* Certificate credit (owner 2026-10-13): the check renders only once
+            questions are authored for this lab (trainingLabKeys UNDERSTANDING_LAB_IDS). */}
+        <LabUnderstandingBlock labId="cymatics" labTitle="Cymatics Lab" />
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         {PLANNED_AREAS.length > 0 ? <Text style={styles.sectionTitle}>PLANNED AREAS</Text> : null}

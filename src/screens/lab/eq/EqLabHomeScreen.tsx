@@ -24,6 +24,7 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
@@ -111,6 +112,9 @@ export function EqLabHomeScreen() {
             </View>
           );
         })}
+        {/* Certificate credit (owner 2026-10-13): the check renders only once
+            questions are authored for this lab (trainingLabKeys UNDERSTANDING_LAB_IDS). */}
+        <LabUnderstandingBlock labId="eq" labTitle="EQ Lab" />
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         <Text style={styles.sectionTitle}>RELATED TOOLS</Text>

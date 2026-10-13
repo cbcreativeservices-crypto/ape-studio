@@ -27,7 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from '../study/sync';
 import { getLabPreview } from './labPreviewStore';
-import { holdSessionWork, onSessionCarrySettled, registerSessionCarry, sessionWipePending } from './sessionCarry';
+import { flushSessionWork, holdSessionWork, onSessionCarrySettled, registerSessionCarry, sessionHasNoAccount, sessionIsSettledAccount, sessionWipePending } from './sessionCarry';
 import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import { WAVE_MODULES } from '../../screens/lab/wave/modules/registry';
 import { DIGITAL_MODULES } from '../../screens/lab/digital/modules/registry';
@@ -232,8 +232,44 @@ export function registerLabUnits(labKey: LabKey, unitIds: readonly string[]): vo
   });
 }
 
+/**
+ * TRAINING CREDIT (owner 2026-10-13: "tie the labs into the certificates").
+ * Every key in trainingLabKeys (tr_ / mk_ / mxb_ / mxa_ / ear_) rides THIS
+ * store: one unit, TRAINING_DONE_UNIT, recorded when the lab's own store says
+ * it is complete (the completion rule lives with each source — see
+ * trainingCompletion.ts). Same blob, same sent/unsent queue, same preview
+ * rule, guest carry and account wipe as the af_* labs — one reporting path.
+ */
+export const TRAINING_DONE_UNIT = 'done';
+
+/**
+ * The SHAPE of a training key (tr_ / mk_ / mxb_ / mxa_ / ear_). Shape only, on
+ * purpose: this store is in the app-START graph (clearLocalAccountData), and
+ * importing trainingLabKeys here would grow it (test/perfStartTrim). The exact
+ * lists are enforced where keys are made — trainingSignal refuses anything
+ * trainingLabKeys.isTrainingKey does not know, and the backfill only builds
+ * keys from those lists. test/trainingCompletion_20261013 pins that every
+ * real key matches this shape and that no af_* key or labId does.
+ */
+const TRAINING_KEY_SHAPE = /^(?:tr|mk|mxb|mxa|ear)_[A-Za-z0-9_]+$/;
+export function isTrainingKeyShape(key: string): boolean {
+  return TRAINING_KEY_SHAPE.test(key);
+}
+const isTrainingKey = isTrainingKeyShape;
+const TRAINING_UNITS: readonly string[] = [TRAINING_DONE_UNIT];
+
 function unitsFor(labKey: string): readonly string[] | undefined {
-  return dynamicUnits[labKey] ?? LAB_UNITS[labKey as LabKey];
+  return dynamicUnits[labKey] ?? LAB_UNITS[labKey as LabKey] ?? (isTrainingKey(labKey) ? TRAINING_UNITS : undefined);
+}
+
+/** Keys the server's `labs` table can hold: the af_* fundamentals and the
+ *  training keys. Units banked under any other id (a PagedLab/LabShell
+ *  `labId` whose understanding check was passed — 'sound-systems-learn',
+ *  'envelope', …) are device-local records only; sending them could only
+ *  ever answer lab_not_found, forever. Their credit reaches the server as the
+ *  lab's tr_ key (trainingKeyForCheck). */
+function isServerLabKey(labKey: string): boolean {
+  return Object.prototype.hasOwnProperty.call(LAB_UNITS, labKey) || isTrainingKey(labKey);
 }
 
 /** Whether every required unit for a lab has been cleared locally. */
@@ -350,6 +386,15 @@ async function fireComplete(labKey: string): Promise<void> {
   // guest's units are replayed by the ledger after the wipe and sent then.
   if (sessionWipePending()) return;
   const gen = completionGen;
+  // Only keys the server can hold (see isServerLabKey).
+  if (!isServerLabKey(labKey)) return;
+  // TRAINING CREDIT: GUESTS NEVER SEND (owner 2026-10-13). A KNOWN no-account
+  // session's call could only answer user_not_found; the unit stays unsent,
+  // the guest carry replays it into the account signed into in this session,
+  // and `onSessionCarrySettled` sends it then. An UNKNOWN session (the
+  // launch's first auth answer still out) is not a guest (D57). The af_* labs
+  // keep their existing behaviour.
+  if (isTrainingKey(labKey) && sessionHasNoAccount()) return;
   try {
     const { data, error } = await supabase.rpc('mark_lab_complete', { p_lab_key: labKey });
     // The account changed while the call was out: that answer was about the
@@ -357,8 +402,10 @@ async function fireComplete(labKey: string): Promise<void> {
     // account's record, whose own completion would then never be sent.
     if (gen !== completionGen) return;
     if (error) {
-      // user_not_found (not signed in) or lab_not_found (seed missing/typo):
-      // leave UNSENT so it retries on the next markUnit / next app boot / login.
+      // user_not_found (not signed in) or lab_not_found (seed missing/typo —
+      // or a training key whose `labs` row the backend has not added YET:
+      // the app can ship before the rows land): leave UNSENT so it retries on
+      // the next markUnit / next app boot / login. Never dropped.
       console.warn('[lab-complete] rpc rejected', labKey, error.message);
       return;
     }
@@ -374,11 +421,19 @@ async function fireComplete(labKey: string): Promise<void> {
   }
 }
 
-/** Retry mark_lab_complete for every lab that is locally complete but unsent. */
+/** Retry mark_lab_complete for every lab that is locally complete but unsent:
+ *  the af_* labs AND every training key recorded on this device (owner
+ *  2026-10-13 — not only LAB_UNITS). */
 async function retryUnsent(): Promise<void> {
-  for (const labKey of Object.keys(LAB_UNITS)) {
+  const keys = [...Object.keys(LAB_UNITS), ...Object.keys(cleared).filter(isTrainingKey)];
+  for (const labKey of keys) {
     if (isLabComplete(labKey) && !sent.has(labKey)) await fireComplete(labKey);
   }
+}
+
+/** Tests / the backfill: send whatever is complete and unsent now. */
+export function retryUnsentLabCredit(): Promise<void> {
+  return hydrate().then(retryUnsent);
 }
 
 // A completion held back while an identity's wipe was pending (fireComplete)
@@ -450,11 +505,84 @@ function recordUnit(labKey: string, unitId: string): Promise<void> {
     if (isLabComplete(labKey)) {
       void fireComplete(labKey);
       // Store-review eligibility (launch readiness, 2026-09-06): a completed
-      // lab is one of the genuine successes that may lead to a prompt.
-      void noteHighValueEvent('lab_completed');
+      // lab is one of the genuine successes that may lead to a prompt. One
+      // Mixing PAGE is not a finished lab.
+      if (!/^mx[ab]_/.test(labKey)) void noteHighValueEvent('lab_completed');
     }
   });
 }
+
+/**
+ * A training lab / Miking lesson / Mixing page / Ear module is complete on
+ * this device (the sink of trainingSignal.reportTrainingComplete). The same
+ * rules as markLabUnit: a members-only PREVIEW earns nothing; a guest's
+ * completion is held for the sign-in hand-off and never sent while they are a
+ * guest. A key that is not a training key is ignored. Idempotent.
+ */
+export function markTrainingDone(key: string): void {
+  if (!isTrainingKey(key)) return;
+  markLabUnit(key as LabKey, TRAINING_DONE_UNIT);
+}
+
+/**
+ * The BACKFILL's entry (trainingCompletion.ts): a completion read from a lab
+ * store the signed-in account already holds — earned before this update, so
+ * outside any preview (the stores refuse preview writes themselves) and not a
+ * guest's (the backfill runs only for a settled account). Recorded and sent;
+ * nothing to hold. Resolves once recorded (or found already recorded).
+ */
+export function recordTrainingDone(key: string): Promise<void> {
+  if (!isTrainingKey(key)) return Promise.resolve();
+  return recordUnit(key, TRAINING_DONE_UNIT);
+}
+
+/** Whether a unit is banked for a lab id (read after `hydrateLabCompletion`) —
+ *  the backfill reads passed understanding checks this way. */
+export function hasLabUnit(labKey: string, unitId: string): boolean {
+  return !!cleared[labKey]?.has(unitId);
+}
+
+/** Load the stored units (resolves on a failed read too — see
+ *  isLabCompletionUnreadable). */
+export function hydrateLabCompletion(): Promise<void> {
+  return hydrate();
+}
+
+/** Whether mark_lab_complete has succeeded for this key on this device. */
+export function isLabCreditSent(labKey: string): boolean {
+  return sent.has(labKey);
+}
+
+// Every completion source reports through trainingSignal, which loads this
+// store on its first report and uses markTrainingDone as its sink (so the lab
+// stores never import this module, and this module imports neither).
+// the lab stores never import this module); this store is its sink.
+
+/**
+ * THE BACKFILL TRIGGER (owner 2026-10-13: learners who finished labs before
+ * this update get the credit). Each time a SIGNED-IN account's device is
+ * settled — the launch's first auth answer, and every sign-in — after the
+ * hand-off has written any guest work carried into it, every lab store is
+ * scanned and whatever is already complete is recorded and sent
+ * (trainingCompletion.backfillTrainingCompletion). Never for a guest; never
+ * while a wipe is pending. The scan pulls in every lab store and content list,
+ * so it is required LAZILY — it is not in the app-start graph.
+ */
+onSessionCarrySettled(() => {
+  void Promise.resolve()
+    // Joins the settle's own flush of held guest work (called right after
+    // the listeners) rather than starting another pass.
+    .then(() => flushSessionWork())
+    .then(() => {
+      if (!sessionIsSettledAccount() || typeof require !== 'function') return;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const m = require('./trainingCompletion') as typeof import('./trainingCompletion');
+      return m.backfillTrainingCompletion();
+    })
+    .catch(() => {
+      // a failed scan runs again on the next launch / sign-in
+    });
+});
 
 /** Explicit "Mark reviewed" for the read-through / sandbox labs. */
 export function markLabReviewed(labKey: LabKey): void {

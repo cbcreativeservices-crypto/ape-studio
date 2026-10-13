@@ -1412,13 +1412,13 @@ export const EnrollmentView = memo(function EnrollmentView({
    * learner only needs one good reason to accept the requirement.
    */
   const { labReqExtra, labReqFor } = useMemo(() => {
-    const byKey = new Map<string, { labKey: string; why?: string }>();
+    const byKey = new Map<string, { key: string; why?: string }>();
     const names: string[] = [];
     for (const b of bundles) {
       const slug = slugByName.get(b.name) ?? null;
       if (!slug) continue;
       names.push(b.name);
-      for (const r of labRequirementsFor(slug)) if (!byKey.has(r.labKey)) byKey.set(r.labKey, r);
+      for (const r of labRequirementsFor(slug)) if (!byKey.has(r.key)) byKey.set(r.key, r);
     }
     return {
       labReqExtra: [...byKey.values()],

@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { DEV_NOTE } from '../labCatalog';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -80,6 +81,8 @@ export function SmartProcessorsLabScreen() {
             {f.route ? <Text style={styles.chev}>›</Text> : null}
           </Pressable>
         ))}
+        {/* Certificate credit (owner 2026-10-13): renders only once questions are authored. */}
+        <LabUnderstandingBlock labId="smart-processors" labTitle="Smart Processors Lab" />
       </ScrollView>
     </View>
   );

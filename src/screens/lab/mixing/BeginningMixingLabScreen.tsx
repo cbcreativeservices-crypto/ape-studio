@@ -14,6 +14,8 @@
  */
 import { useEffect } from 'react';
 import { PagedLab } from '../kit/PagedLab';
+import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { retainSessionStems } from './audio/mixAudio';
 import { MIX_MANTRA } from './kit';
 import { MIXING_PAGES_A } from './pagesA';
@@ -23,6 +25,11 @@ import { MIXING_PAGES_D } from './pagesD';
 
 const PAGES = [...MIXING_PAGES_A, ...MIXING_PAGES_B, ...MIXING_PAGES_C, ...MIXING_PAGES_D];
 
+// CERTIFICATE CREDIT, PAGE BY PAGE (owner 2026-10-13): each page marked done
+// reports its stable server key (trainingLabKeys MIXING_BEG_PAGE_IDS, in page order).
+// PagedLab fires this once per newly-done REAL page (never the check page).
+const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('beg', index));
+
 export function BeginningMixingLabScreen() {
   // Leaving the lab releases the ~15.4 MB of synthesized stems (owner ruling
   // 2026-09-11). Counted rather than a bare release, because the Advanced lab
@@ -31,5 +38,5 @@ export function BeginningMixingLabScreen() {
   // shows; it was 7.1 s before classicWave became a wavetable, which is why
   // this was not wired until now.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote />;
+  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} />;
 }

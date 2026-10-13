@@ -27,6 +27,7 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
 export function AmpLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -202,6 +203,9 @@ export function AmpLabHomeScreen() {
             Modules {built.length + 1}–{AMP_MODULES.length} are on the bench.
           </Text>
         ) : null}
+        {/* Certificate credit (owner 2026-10-13): the check renders only once
+            questions are authored for this lab (trainingLabKeys UNDERSTANDING_LAB_IDS). */}
+        <LabUnderstandingBlock labId="amp" labTitle="Amp Lab" />
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         <Text style={styles.safety}>

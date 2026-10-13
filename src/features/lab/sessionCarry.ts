@@ -227,6 +227,20 @@ export function sessionWipePending(): boolean {
   return syncPending;
 }
 
+/** KNOWN to have no account right now: a guest (or anonymous device-key)
+ *  session, or after a sign-out. NOT while the first auth answer of the
+ *  launch is still out (that is unknown, never treated as a guest — D57).
+ *  Training credit is never sent from here (owner 2026-10-13). */
+export function sessionHasNoAccount(): boolean {
+  return owner === '' || owner === null;
+}
+
+/** A real account owns this device and its wipe has finished: the moment the
+ *  training-credit backfill may scan the lab stores (they are this account's). */
+export function sessionIsSettledAccount(): boolean {
+  return isAccount(owner) && !syncPending;
+}
+
 const settledListeners = new Set<() => void>();
 /** Runs each time a settle ends the wait (see `sessionWipePending`).
  *  Registered once, at module load; returns an unsubscribe. */

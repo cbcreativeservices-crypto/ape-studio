@@ -27,7 +27,10 @@ import { holdSessionWork, registerSessionCarry, releaseSessionWork } from '../..
 import { createLocalStore } from '../../../../../features/storage/localStore';
 import type { PageId, SourcePageId } from '../model/types.ts';
 import { journeyPageOf, type LearnerPath, type QuickCheckResult } from '../journey.ts';
-import { isStoredPage } from './creditMap.ts';
+import { creditedCount, isStoredPage } from './creditMap.ts';
+import { PAGE_IDS } from '../model/types.ts';
+import { mikingLessonKey } from '../../../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../../../features/lab/trainingSignal';
 
 export const MIKING_KEY = 'ape:miking:v1';
 const CARRY_KEY = 'miking';
@@ -160,7 +163,22 @@ function withLesson(p: MikingProgress, id: string, fn: (l: LessonProgress) => Le
 }
 
 export function bankPage(lessonId: string, page: PageId): Promise<boolean> {
-  return change((p) => withLesson(p, lessonId, (l) => (l.done.includes(page) ? l : { ...l, done: [...l.done, page] })));
+  const out = change((p) => withLesson(p, lessonId, (l) => (l.done.includes(page) ? l : { ...l, done: [...l.done, page] })));
+  // CERTIFICATE CREDIT (owner 2026-10-13: Miking is required LESSON BY
+  // LESSON). The lesson counts once every journey page is credited — the
+  // hub's ✓ (creditedCount === PAGE_IDS.length). Read from the view, so a
+  // guest's session pages count too (the report is then held for the sign-in
+  // hand-off, never sent as a guest); a preview changed nothing, so nothing
+  // new completes. Reported once the write (or hold) has been applied.
+  void out.then(() => reportIfLessonComplete(lessonId));
+  return out;
+}
+
+/** Report mk_<lessonId> when the lesson's journey is fully credited. */
+export function reportIfLessonComplete(lessonId: string): void {
+  if (getLabPreview().active) return;
+  const l = view().lessons[lessonId];
+  if (l && creditedCount(l.done) === PAGE_IDS.length) reportTrainingComplete(mikingLessonKey(lessonId));
 }
 export function recordAnswer(lessonId: string, id: string, firstRight: boolean): Promise<boolean> {
   return change((p) => withLesson(p, lessonId, (l) => (id in l.answers ? l : { ...l, answers: { ...l.answers, [id]: firstRight } })));

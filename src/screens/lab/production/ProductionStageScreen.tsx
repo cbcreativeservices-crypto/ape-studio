@@ -25,6 +25,9 @@ import { valueKey } from '../../../features/production/types';
 import { authoredStage, labDef } from '../../../features/production/labs';
 import { FieldRow, STATE_TINT } from './FieldRow';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { productionProjectComplete } from '../../../features/production/complete';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionStage'>;
@@ -73,6 +76,14 @@ export function ProductionStageScreen() {
       alive = false;
     };
   }, [lab, projectId]);
+
+  // CERTIFICATE CREDIT (owner 2026-10-13): Pre/Post-Production count once
+  // ONE project has every stage complete (production/complete). Checked on
+  // every change to the project this screen edits. Preview earns nothing; a
+  // guest's report is held for the sign-in hand-off (labCompletion).
+  useEffect(() => {
+    if (project && productionProjectComplete(lab, project)) reportTrainingComplete(trainingKeyFor(lab === 'preprod' ? 'PreProdLab' : 'PostProdLab'));
+  }, [lab, project]);
 
   const authored = authoredStage(lab, stageId);
   // The WHOLE lab resolves together (2026-10-04): a condition can name a field

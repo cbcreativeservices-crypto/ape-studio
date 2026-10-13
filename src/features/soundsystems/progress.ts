@@ -174,6 +174,11 @@ export function getSoundSystemsProgress(): SoundSystemsProgress {
   return view();
 }
 
+/** Load the stored record (the training-credit backfill reads it after). */
+export function hydrateSoundSystemsProgress(): Promise<void> {
+  return store.hydrate();
+}
+
 /** True while the stored record could not be READ (owner 2026-10-03, "do 2"):
  *  the hub's counts are this session's work on an empty copy, not the
  *  learner's record. Read-only. */

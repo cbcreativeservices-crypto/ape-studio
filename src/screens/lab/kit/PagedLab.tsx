@@ -99,6 +99,8 @@ function useOsReduceMotion(): boolean {
 
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import { trainingKeyForCheck } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, type LabKey } from '../../../features/lab/labCompletion';
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
@@ -160,6 +162,9 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
                     // so an offline pass is retried rather than lost.
                     registerLabUnits(labId as never, [UNDERSTANDING_UNIT]);
                     markLabUnit(labId as never, UNDERSTANDING_UNIT);
+                    // Certificate credit (owner 2026-10-13): the lab's tr_ key, when this
+                    // check is what completes a whole training lab (trainingLabKeys).
+                    reportTrainingComplete(trainingKeyForCheck(labId));
                   }}
                 />
               ),

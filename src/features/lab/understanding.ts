@@ -28,6 +28,8 @@
  */
 
 import { SOUND_SYSTEMS_CHECK, SOUND_SYSTEMS_LEARN_ID } from '../soundsystems/check';
+// ⏸ HOLD — owner review required before release (owner 2026-10-13).
+import { PRACTICE_LAB_CHECKS } from './understandingChecks';
 
 export type UnderstandingQuestion = {
   /** Stable within its lab; used as the per-question progress key. */
@@ -53,6 +55,9 @@ export type UnderstandingQuestion = {
  */
 export const UNDERSTANDING_CHECKS: Record<string, readonly UnderstandingQuestion[]> = {
   [SOUND_SYSTEMS_LEARN_ID]: SOUND_SYSTEMS_CHECK,
+  // Practice labs (TRAINING_LABS completion 'understanding'), 2026-10-13 —
+  // keyed by runtime labId; see understandingChecks.ts. ⏸ HOLD for owner review.
+  ...PRACTICE_LAB_CHECKS,
 };
 
 /** The check for a lab, or null when none is authored yet. */

@@ -14,6 +14,8 @@
  */
 import { useEffect } from 'react';
 import { PagedLab } from '../kit/PagedLab';
+import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { retainSessionStems } from './audio/mixAudio';
 import { MIX_MANTRA } from './kit';
 import { MIXING_ADV_PAGES_A } from './pagesAdvA';
@@ -23,10 +25,15 @@ import { MIXING_ADV_PAGES_D } from './pagesAdvD';
 
 const PAGES = [...MIXING_ADV_PAGES_A, ...MIXING_ADV_PAGES_B, ...MIXING_ADV_PAGES_C, ...MIXING_ADV_PAGES_D];
 
+// CERTIFICATE CREDIT, PAGE BY PAGE (owner 2026-10-13): each page marked done
+// reports its stable server key (trainingLabKeys MIXING_ADV_PAGE_IDS, in page order).
+// PagedLab fires this once per newly-done REAL page (never the check page).
+const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('adv', index));
+
 export function AdvancedMixingLabScreen() {
   // Same release valve as the Beginning lab, and deliberately the same COUNTED
   // one: the two labs share a single stems cache, so neither may drop it while
   // the other is still on screen. See retainSessionStems in audio/mixAudio.ts.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote />;
+  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} />;
 }

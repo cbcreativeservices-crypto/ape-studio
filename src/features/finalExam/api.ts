@@ -171,6 +171,10 @@ export type ExamStartError =
   | 'already_earned'
   | 'award_content_incomplete'
   | 'award_incomplete'
+  /** The training labs this credential requires are not all complete on the
+   *  server (owner 2026-10-13: required labs UNLOCK the Final Exam, checked
+   *  server-side like topics — student_lab_progress). */
+  | 'labs_incomplete'
   | 'award_not_found'
   | 'invalid_award_type'
   | 'pool_too_small'
@@ -195,6 +199,7 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   already_earned: 'You have already earned this credential.',
   award_content_incomplete: 'This award is not open for examination yet — its topics are still being published.',
   award_incomplete: 'Complete every required topic and the Audio Fundamentals labs before taking the Final Exam.',
+  labs_incomplete: "Finish the labs this certificate requires first — they're listed on the certificate.",
   award_not_found: 'That award could not be found.',
   invalid_award_type: 'That award type is not recognized.',
   pool_too_small: 'This Final Exam is not available yet — email info@proaudiotrainingacademy.com so we can look at it.',
@@ -210,6 +215,7 @@ const KNOWN_ERRORS: ExamStartError[] = [
   'already_earned',
   'award_content_incomplete',
   'award_incomplete',
+  'labs_incomplete',
   'award_not_found',
   'invalid_award_type',
   'pool_too_small',

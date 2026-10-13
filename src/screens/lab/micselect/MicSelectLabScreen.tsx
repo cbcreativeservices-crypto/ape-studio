@@ -69,6 +69,7 @@ import {
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
 const STEP_KEY = 'ape:micSelStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -1085,6 +1086,9 @@ export function MicSelectLabScreen() {
           onPracticeAgain={() => goTo(0)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
+          // Certificate credit (owner 2026-10-13): the understanding check, shown
+          // only once questions are authored for this lab.
+          extra={<LabUnderstandingBlock labId="micselect" labTitle="Microphone Selection Lab" />}
         />
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>

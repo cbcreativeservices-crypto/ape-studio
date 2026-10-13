@@ -44,6 +44,7 @@ import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -939,6 +940,9 @@ export function VacuumTubeLabScreen() {
             onPracticeAgain={() => openSection(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
+            // Certificate credit (owner 2026-10-13): the understanding check, shown
+            // only once questions are authored for this lab.
+            extra={<LabUnderstandingBlock labId="tube" labTitle="Vacuum Tube Fundamentals" />}
           />
         ) : (
           <s.Comp key={s.key} {...sectionProps} />

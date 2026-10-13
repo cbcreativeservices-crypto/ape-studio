@@ -34,6 +34,8 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 
 // The store marks the lab done when a sign-in hand-off completes the set.
 setTuningChapterCount(CHAPTER_COUNT);
@@ -181,6 +183,14 @@ export function TuningLabScreen() {
       if (next.mathView !== base.mathView) holdTuningProgress({ mathView: next.mathView });
     }
   }, []);
+
+  // CERTIFICATE CREDIT (owner 2026-10-13): the whole lab counts once every
+  // chapter is complete (the store's `done`). Preview earns nothing; a guest's
+  // report is held for the sign-in hand-off (labCompletion).
+  const allChaptersDone = progress?.done === true;
+  useEffect(() => {
+    if (allChaptersDone) reportTrainingComplete(trainingKeyFor('TuningLab'));
+  }, [allChaptersDone]);
 
   const goTo = useCallback(
     (idx: number) => {

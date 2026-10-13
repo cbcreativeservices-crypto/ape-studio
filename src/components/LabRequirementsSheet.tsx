@@ -78,7 +78,7 @@ export function LabRequirementsSheet({
             {member.length > 0 ? (
               <>
                 <Text style={s.groupHead}>REQUIRED FOR THIS CREDENTIAL</Text>
-                <Text style={s.groupNote}>Member labs this credential needs on top of the fundamentals.</Text>
+                <Text style={s.groupNote}>Training labs and lessons this credential needs on top of the fundamentals.</Text>
                 <LabChecklist rows={member} onOpen={onOpenLab} unreadable={progressUnreadable} />
                 {/* ⚠️ Say it rather than let the dashes puzzle them. Member
                     labs record no progress yet, so the summary above counts
@@ -95,7 +95,7 @@ export function LabRequirementsSheet({
               /* Say it plainly. Silence here reads as "the list failed to
                  load" rather than "there is nothing more to do". */
               <Text style={s.noneNote}>
-                This credential needs no member labs beyond the Audio Fundamentals above.
+                This credential needs no training labs beyond the Audio Fundamentals above.
               </Text>
             )}
           </ScrollView>

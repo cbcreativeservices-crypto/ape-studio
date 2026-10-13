@@ -36,6 +36,8 @@ import { LabHeader } from './kit/LabNavBar';
 import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
+import { trainingKeyForCheck } from '../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabDone } from '../../features/lab/labCompletion';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 
@@ -668,6 +670,9 @@ export function LabShell({
                     setJustPassed(true);
                     registerLabUnits(labId as never, [UNDERSTANDING_UNIT]);
                     markLabUnit(labId as never, UNDERSTANDING_UNIT);
+                    // Certificate credit (owner 2026-10-13): the lab's tr_ key, when this
+                    // check is what completes a whole training lab (trainingLabKeys).
+                    reportTrainingComplete(trainingKeyForCheck(labId));
                   }}
                 />
               </View>

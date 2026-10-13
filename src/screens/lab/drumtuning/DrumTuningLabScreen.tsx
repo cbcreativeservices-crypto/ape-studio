@@ -50,6 +50,8 @@ import { StepHostContext, type StepHost } from './steps';
 import type { NoteDeleteResult, NoteSaveResult } from './modules/shared';
 import { TakeawayCard } from './kit';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 
 export const DRUM_LAB_TITLE = 'Drum Tuning Lab';
 const SUBTITLE = 'Prepare, tune, listen, troubleshoot';
@@ -329,6 +331,14 @@ export function DrumTuningLabScreen() {
   useEffect(() => {
     if (loaded && complete && !done) bank();
   }, [loaded, complete, done, bank]);
+
+  // CERTIFICATE CREDIT (owner 2026-10-13): the whole lab counts once every
+  // chapter is banked — reported from what this screen shows as banked (the
+  // stored chapters plus this visit's). Preview earns nothing; a guest's report
+  // is held for the sign-in hand-off (labCompletion).
+  useEffect(() => {
+    if (loaded && DRUM_CHAPTERS.every((m) => doneIds.has(m.id))) reportTrainingComplete(trainingKeyFor('DrumTuningLab'));
+  }, [loaded, doneIds]);
 
   const setStep = useCallback((i: number) => {
     if (!loadedRef.current) movedRef.current = true;
