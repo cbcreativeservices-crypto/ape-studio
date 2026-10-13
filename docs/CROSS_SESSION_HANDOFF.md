@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-13 16:45 · ccode · f743665e
+changed: Training labs count toward certificates — client half (owner 2026-10-13; post-approval OTA)
+affects other side: YES — backend half: 212 `labs` rows, `credential_lab_requirements` table + seed (540 rows), `award_required_labs` RPC, and a `labs_incomplete` gate in `start_final_exam` behind a switch left OFF until the post-approval OTA. Full spec: Downloads\2026-10-13_COMP_A_LAB_CERT_REQUIREMENTS_HANDOFF.md + Downloads\2026-10-13_LAB_CERT_REQUIREMENTS_SEED.sql (map is HOLD pending owner review — re-run the seed if it changes).
+needs: Comp A builds steps 1–4 with the gate OFF, then reports the switch name and the two verify-query counts here.
+
+
 ### 2026-10-13 14:52 · ccode · ab74b6f7
 changed: Android emulator pass fixes (owner 2026-10-13; ship with the post-approval OTA)
 affects other side: nothing — client-only UI/meter logic
