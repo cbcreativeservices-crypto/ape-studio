@@ -236,13 +236,16 @@ test('no-signal verdict: only after NO_SIGNAL_MS of running with no live frame',
   assert.equal(noSignalVerdict(0, t0, false), false, 'not running, no verdict');
 });
 
-test('useDspEngine exposes noSignal, checks until the first live frame, resets per start', () => {
+test('useDspEngine exposes noSignal, keeps the no-frame rule, resets per start', () => {
   const e = read('src/features/tools/engine/useDspEngine.ts');
   const block = e.slice(e.indexOf('const [noSignal, setNoSignal] = useState(false);'), e.indexOf('return {\n    state,'));
   assert.ok(block.length > 0);
   assert.match(block, /if \(state !== 'running'\) \{\n\s*setNoSignal\(false\);/);
-  assert.match(block, /if \(frameIsLive\(m\)\) \{\n\s*setNoSignal\(false\);\n\s*clearInterval\(id\);/);
-  assert.match(block, /noSignalVerdict\(since, Date\.now\(\), false\)/);
+  // Since the 2026-10-13 emulator pass the check keeps running after the first
+  // live frame (digital silence raises the same card) — see
+  // test/digitalSilenceNoSignal_20261013.test.ts. The no-frame rule is kept:
+  assert.match(block, /if \(frameIsLive\(m\)\) \{\n\s*sawLive = true;/);
+  assert.match(block, /if \(!sawLive && noSignalVerdict\(since, now, false\)\) setNoSignal\(true\);/);
   assert.match(block, /return \(\) => clearInterval\(id\);/);
   assert.match(e, /\n    noSignal,\n/);
 });

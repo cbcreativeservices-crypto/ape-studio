@@ -81,3 +81,22 @@ export function noSignalVerdict(runningSinceMs: number, nowMs: number, sawLive: 
   if (sawLive || runningSinceMs <= 0) return false;
   return nowMs - runningSinceMs >= NO_SIGNAL_MS;
 }
+
+/**
+ * DIGITAL SILENCE (emulator pass 2026-10-13). The native meters floor at
+ * −120 dBFS for an all-zero buffer. A real microphone never gets near that —
+ * its own self-noise sits roughly at −90…−70 dBFS — so a peak at the floor
+ * means NOTHING is reaching the app (another app holds the mic, a privacy
+ * switch, a dead input), not a quiet room. The SPL meter was turning that
+ * into "16 dB SPL · below monitoring". After NO_SIGNAL_MS of it, the same
+ * NO SOUND FROM THE MICROPHONE card shows; the first real sound clears it.
+ */
+export const DIGITAL_SILENCE_DB = -115;
+export function isDigitalSilence(peakDb: number): boolean {
+  return !(peakDb > DIGITAL_SILENCE_DB);
+}
+/** True once the input has been digital silence for NO_SIGNAL_MS since the
+ *  last real sound (or since the start, if none yet). */
+export function silentInputVerdict(silentSinceMs: number, nowMs: number): boolean {
+  return silentSinceMs > 0 && nowMs - silentSinceMs >= NO_SIGNAL_MS;
+}

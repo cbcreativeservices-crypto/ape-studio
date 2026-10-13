@@ -1020,7 +1020,9 @@ export function AmplitudeLabScreen() {
           detail="This lab teaches how amplitude and level RELATE — the ramps and colours are a teaching scale, not a calibrated one, and your phone’s screen and output are both uncalibrated. Learn the relationship here; read real levels on real meters."
         />
       </View>
-      <ScrollView contentContainerStyle={styles.gateScroll}>
+      {/* + the bottom inset (emulator pass 2026-10-13): on Android's three-button
+          bar the last key, UNDERSTOOD — CONTINUE, sat half under the bar. */}
+      <ScrollView contentContainerStyle={[styles.gateScroll, { paddingBottom: 30 + insets.bottom }]}>
         {/* One completion control (design pass 2026-08-31): the old stacked
             pair — green CTA + a separate MARK AS REVIEWED card — let students
             press the obvious button and never earn the R6c credit below it.

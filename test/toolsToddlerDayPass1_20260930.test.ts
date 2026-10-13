@@ -128,7 +128,10 @@ test('7 — RT60 axis labels are at least 9 pt', () => {
 
 test('9 — EngineGate: iOS denied retries on return to the app, focused only', () => {
   const src = read('screens/tools/EngineGate.tsx');
-  assert.match(src, /const retryOnReturn = Platform\.OS === 'ios' && state === 'denied' && !!onRetry;/);
+  // Android joined 2026-10-13 (emulator pass) — but only after a SILENT
+  // granted-check, so a still-denied return never pops the OS prompt.
+  assert.match(src, /const retryOnReturn = \(Platform\.OS === 'ios' \|\| Platform\.OS === 'android'\) && state === 'denied' && !!onRetry;/);
+  assert.match(src, /PermissionsAndroid\.check\(PermissionsAndroid\.PERMISSIONS\.RECORD_AUDIO\)[\s\S]{0,80}if \(!granted\) return;/);
   assert.match(src, /if \(navRef\.current && !navRef\.current\.isFocused\(\)\) return;/);
   // Hooks run before the early return (rules of hooks).
   assert.ok(src.indexOf('useEffect(() => {\n    if (!retryOnReturn)') < src.indexOf("if (state === 'idle' || state === 'starting' || state === 'running') return null;"));

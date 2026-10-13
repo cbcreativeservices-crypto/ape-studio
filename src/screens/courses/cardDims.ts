@@ -47,24 +47,41 @@ function dims(w: number, h: number): CardDims {
 /** The phone card — the same arithmetic as `CARD_W` / `CARD_H` in the screen, from
  *  whichever box the app actually has (see the note there). Exported for the
  *  Android large-screen test. */
-export function phoneCardDims(windowW: number, windowH: number, screenW: number, screenH: number): CardDims {
+/**
+ * A SOLID ANDROID BUTTON BAR (emulator pass 2026-10-13, owner "yes fix it").
+ * The 394 pt chrome was measured on an iPhone SE, which has no bottom bar.
+ * Android's three-button bar (back · home · recents) is a ~48 pt bottom inset
+ * the budget never had, so on a 16:9 Android phone (Nexus 5X, 412 × 731) every
+ * Home card's button sat half under the dot row. An inset this tall is only
+ * ever that bar — iPhones (34) and gesture-nav Android (~16–24) stay below it,
+ * so no other phone changes. The extra 32 pt was MEASURED on that phone
+ * (Android 16, 1080 × 1920, three-button bar): with the bar alone taken off,
+ * the card's eyebrow and its bottom edge were still clipped by ~22 pt; 24 still grazed the card's bottom corners.
+ */
+const SOLID_NAV_BAR_MIN = 40;
+const SOLID_NAV_BAR_EXTRA = 32;
+export function phoneCardDims(windowW: number, windowH: number, screenW: number, screenH: number, bottomInset = 0): CardDims {
   const sShort = Math.min(screenW, screenH);
   const sLong = Math.max(screenW, screenH);
   const wShort = Math.min(windowW, windowH);
   const fillsScreen = fillsScreenFor(windowW, windowH, screenW, screenH);
   const short = fillsScreen ? sShort : wShort;
-  // Full screen: the screen's long edge, exactly as before. Windowed: the
-  // window's HEIGHT — a wide desktop window has its room vertically.
-  const room = fillsScreen ? sLong : windowH;
+  // Full screen: the screen's long edge, less a solid button bar. Windowed:
+  // the window's HEIGHT — a wide desktop window has its room vertically.
+  const navBar = bottomInset >= SOLID_NAV_BAR_MIN ? bottomInset + SOLID_NAV_BAR_EXTRA : 0;
+  const room = fillsScreen ? sLong - navBar : windowH;
   const w = Math.min(Math.round(short * 0.7 * 0.93), CARD_MAX_W);
   return dims(w, Math.max(200, Math.min(409, room - deckChrome(isCompactHeader(windowW, windowH, screenW, screenH)))));
 }
-export function cardDimsFor(windowW: number, windowH: number, screenW: number, screenH: number): CardDims {
-  const phone = phoneCardDims(windowW, windowH, screenW, screenH);
+export function cardDimsFor(windowW: number, windowH: number, screenW: number, screenH: number, bottomInset = 0): CardDims {
+  const phone = phoneCardDims(windowW, windowH, screenW, screenH, bottomInset);
   if (!isTabletWindow(windowW, windowH)) return phone;
   const tallest = Math.max(300, Math.min(TABLET_CARD_MAX_H, windowH - deckChrome(isCompactHeader(windowW, windowH, screenW, screenH))));
   const w = Math.max(phone.w, Math.min(Math.round(tallest / PHONE_CARD_RATIO), Math.round(windowW * 0.46)));
-  return dims(w, Math.round(w * PHONE_CARD_RATIO));
+  // Never taller than the room (emulator pass 2026-10-13): the phone-width
+  // floor above made a 1280 × 800 tablet's card 409 tall in 406 of room, so
+  // every card's button sat on the card's bottom edge.
+  return dims(w, Math.min(Math.round(w * PHONE_CARD_RATIO), tallest));
 }
 
 /**

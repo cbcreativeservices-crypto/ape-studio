@@ -226,7 +226,8 @@ function useCardDims(): CardDims {
   const { width, height } = useWindowDimensions();
   // Read the screen LIVE (a foldable's screen changes under a running app).
   const screen = Dimensions.get('screen');
-  return useMemo(() => cardDimsFor(width, height, screen.width, screen.height), [width, height, screen.width, screen.height]);
+  const { bottom } = useSafeAreaInsets(); // a solid Android button bar (cardDims.ts)
+  return useMemo(() => cardDimsFor(width, height, screen.width, screen.height, bottom), [width, height, screen.width, screen.height, bottom]);
 }
 /**
  * The line above the carousel names what the CENTRED card is for (TestFlight

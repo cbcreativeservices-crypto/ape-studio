@@ -91,15 +91,33 @@ test('Home deck: a window smaller than the screen sizes from the WINDOW', () => 
   assert.deepEqual({ w: zero.w, h: zero.h }, oldPhoneCard(390, 844));
   // A tablet in full screen is unchanged by the pass (the iPad-pass rule:
   // never smaller than the phone card).
+  // (Capped at its room since the 2026-10-13 emulator pass: 800 − 394 = 406.)
   const tab = cardDimsFor(1280, 800, 1280, 800);
-  assert.deepEqual({ w: tab.w, h: tab.h }, { w: 280, h: 409 });
+  assert.deepEqual({ w: tab.w, h: tab.h }, { w: 280, h: 406 });
+});
+
+test('Home deck: a solid Android button bar comes off the card (emulator pass 2026-10-13)', () => {
+  // Nexus 5X, Android 7: 412 × 731 screen, 48 pt three-button bar.
+  const old = oldPhoneCard(412, 731);
+  const bar = cardDimsFor(412, 731, 412, 731, 48);
+  assert.equal(bar.h, old.h - 48 - 32, 'the bar height (+ the measured 32) leaves the card');
+  assert.equal(bar.w, old.w, 'width unchanged');
+  // iPhone home indicator (34) and gesture-nav Android (~24): no change.
+  for (const inset of [0, 24, 34]) {
+    const d = cardDimsFor(390, 844, 390, 844, inset);
+    assert.deepEqual({ w: d.w, h: d.h }, oldPhoneCard(390, 844), `inset ${inset}`);
+  }
+  // A tablet card never exceeds the room under the deck chrome.
+  for (const [w, h] of [[1280, 800], [800, 1280], [673, 841], [1024, 768]]) {
+    assert.ok(cardDimsFor(w, h, w, h).h <= h - 394, `${w}×${h}`);
+  }
 });
 
 test('Home deck: the card size is read LIVE, not from module scope', () => {
   const src = code('src/screens/courses/CourseSelectionScreen.tsx');
   assert.doesNotMatch(src, /IS_TABLET/, 'no boot-time tablet flag');
   assert.match(src, /function useCardDims\(\)[\s\S]{0,200}useWindowDimensions\(\)[\s\S]{0,200}Dimensions\.get\('screen'\)/);
-  assert.match(src, /cardDimsFor\(width, height, screen\.width, screen\.height\)/);
+  assert.match(src, /cardDimsFor\(width, height, screen\.width, screen\.height, bottom\)/);
 });
 
 test('no NEW module-scope Dimensions read decides layout', () => {

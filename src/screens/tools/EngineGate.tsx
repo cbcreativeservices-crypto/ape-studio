@@ -15,7 +15,7 @@
  * needed. Copy adapts to which controls are actually present.
  */
 import { useContext, useEffect, useRef } from 'react';
-import { AppState, Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, Linking, PermissionsAndroid, Platform, StyleSheet, Text, View } from 'react-native';
 import { NavigationContext } from '@react-navigation/native';
 import { GlassButton } from '../../components/GlassButton';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -79,13 +79,27 @@ export function EngineGate({
   navRef.current = nav;
   const retryRef = useRef(onRetry);
   retryRef.current = onRetry;
-  const retryOnReturn = Platform.OS === 'ios' && state === 'denied' && !!onRetry;
+  // ANDROID (emulator pass 2026-10-13): after switching the microphone ON in
+  // Settings the card still read MICROPHONE ACCESS IS OFF until ALLOW was
+  // tapped. Retry on return only when a SILENT check says the mic is now
+  // granted — so a still-denied return never pops the OS prompt.
+  const retryOnReturn = (Platform.OS === 'ios' || Platform.OS === 'android') && state === 'denied' && !!onRetry;
   useEffect(() => {
     if (!retryOnReturn) return undefined;
     const sub = AppState.addEventListener('change', (s) => {
       if (s !== 'active') return;
       if (navRef.current && !navRef.current.isFocused()) return;
-      retryRef.current?.();
+      if (Platform.OS !== 'android') {
+        retryRef.current?.();
+        return;
+      }
+      PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO)
+        .then((granted) => {
+          if (!granted) return;
+          if (navRef.current && !navRef.current.isFocused()) return;
+          retryRef.current?.();
+        })
+        .catch(() => {});
     });
     return () => sub.remove();
   }, [retryOnReturn]);

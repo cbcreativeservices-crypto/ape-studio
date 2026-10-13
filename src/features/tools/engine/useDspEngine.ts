@@ -29,7 +29,7 @@ import { micReleaseOnBackgroundEnabled } from '../../settings/store';
 import { acquireMic, micAcquireSeq, releaseMic, releaseMicNow } from './micSession';
 import { releaseOnSupersede } from './startSupersede';
 import type { WarningFlag } from '../measure/types';
-import { createClipBaseline, noSignalVerdict, type ClipBaseline } from './clipBaseline';
+import { createClipBaseline, isDigitalSilence, noSignalVerdict, silentInputVerdict, type ClipBaseline } from './clipBaseline';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
  *  module). Returns true if granted. No-op → true on non-Android. */
@@ -306,6 +306,8 @@ export function useDspEngine(config: EngineConfig, poll: {
       return undefined;
     }
     const since = Date.now();
+    let sawLive = false;
+    let lastSound = 0;
     const id = setInterval(() => {
       let m: MeterFrame | null = null;
       try {
@@ -313,12 +315,22 @@ export function useDspEngine(config: EngineConfig, poll: {
       } catch {
         m = null; // a failed read is not a live frame
       }
+      const now = Date.now();
       if (frameIsLive(m)) {
-        setNoSignal(false);
-        clearInterval(id);
+        sawLive = true;
+        // DIGITAL SILENCE (emulator pass 2026-10-13): live frames of pure
+        // zeros — mic held by a call/assistant/recorder, or blocked — read as
+        // "16 dB SPL · below monitoring". Same card, same TRY AGAIN.
+        if (!isDigitalSilence(m.peakDb)) {
+          lastSound = now;
+          setNoSignal(false);
+        } else if (silentInputVerdict(lastSound || since, now)) {
+          setNoSignal(true);
+        }
         return;
       }
-      if (noSignalVerdict(since, Date.now(), false)) setNoSignal(true);
+      // After a live frame, staleness is the screens' own rule (as before).
+      if (!sawLive && noSignalVerdict(since, now, false)) setNoSignal(true);
     }, 500);
     return () => clearInterval(id);
   }, [state]);
@@ -329,7 +341,8 @@ export function useDspEngine(config: EngineConfig, poll: {
     start,
     stop,
     lastError,
-    /** RUNNING but no live frame ever arrived — pass to EngineGate `noSignal`. */
+    /** RUNNING but no live frame ever arrived, or only digital silence for
+     *  NO_SIGNAL_MS — pass to EngineGate `noSignal`. */
     noSignal,
     meterFlags,
     resetPeakHold: ApeDsp.resetPeakHold,
