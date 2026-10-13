@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-13 14:52 · ccode · ab74b6f7
+changed: Android emulator pass fixes (owner 2026-10-13; ship with the post-approval OTA)
+affects other side: nothing — client-only UI/meter logic
+needs: nothing
+
+
 ### 2026-10-12 08:07 · ccode · 75ffe141
 changed: Tagline everywhere: 'The whole craft of audio in your pocket' (splash, About, Dashboard header, glossary share) — owner 2026-10-12
 affects other side: nothing — client-only text
