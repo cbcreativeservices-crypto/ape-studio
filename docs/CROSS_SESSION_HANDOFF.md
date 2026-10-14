@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-14 09:55 · ccode · 6f70d52c
+changed: fix(lab): lane worklets resolve cap width in the body, not a default parameter
+affects other side: nothing (client-only, JS; ships with the post-approval OTA)
+needs: nothing
+
+
 ### 2026-10-14 09:25 · ccode · a709ae6f
 changed: Lab slider pass 2026-10-14 — every dock fader does something, moves evenly, follows the finger
 affects other side: nothing — client-only
