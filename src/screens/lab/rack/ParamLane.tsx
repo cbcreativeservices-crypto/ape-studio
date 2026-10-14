@@ -368,11 +368,24 @@ export function ParamLane({
       .onFinalize((e) => {
         'worklet';
         touching.value = false;
+        const wasArmed = armed.value;
         armed.value = false;
-        // A tap (the pan never activated) or a taken touch: settle with the
-        // last value. A completed drag already released in onEnd.
+        // A completed drag already released in onEnd.
         if (ended.value) return;
-        scheduleOnRN(onRelease, null, moved.value, e.state === CANCELLED);
+        const cancelled = e.state === CANCELLED;
+        // A FLICK whose lift arrived before the pan activated (a busy UI
+        // thread batches the moves — Harmonograph, live emulator retest
+        // 2026-10-14): the finger still travelled, so land where it lifted.
+        // It used to settle as a tap at the touch-down point.
+        if (wasArmed && !cancelled && !IS_WEB && Math.abs(e.x - grabX.value) > TAP_SLOP) {
+          const v = valueAtX(e.x);
+          capV.value = v;
+          scheduleOnRN(onRelease, v, true, false);
+          return;
+        }
+        // A tap (the pan never activated) or a taken touch: settle with the
+        // last value.
+        scheduleOnRN(onRelease, null, moved.value, cancelled);
       });
     // WEB (the owner's browser preview; worklets run on the JS thread there):
     // Gesture Handler's web pan does not track the pointer on the move that

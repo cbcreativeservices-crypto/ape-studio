@@ -90,7 +90,8 @@ describe('ParamLane uses the feed and a UI-thread cap', () => {
     // gesture's onEnd / onFinalize worklets hand it over with scheduleOnRN).
     assert.match(s, /if \(final != null\) feed\.move\(final\);\n\s*settle\(\);/);
     assert.match(s, /scheduleOnRN\(onRelease, v, moved\.value, false\);/);
-    assert.match(s, /scheduleOnRN\(onRelease, null, moved\.value, e\.state === CANCELLED\);/);
+    assert.match(s, /const cancelled = e\.state === CANCELLED;/);
+    assert.match(s, /scheduleOnRN\(onRelease, null, moved\.value, cancelled\);/);
     assert.doesNotMatch(s, /onChangeRef\.current\(laneDragValue/);
   });
   it('a preview lane (onCommit) commits once on release and prints the finger value live', () => {

@@ -245,7 +245,8 @@ describe('5. ParamLane: the cap follows the finger on the UI thread', () => {
     assert.match(web, /\.onTouchesUp\(\(e\) => \{\n\s*'worklet';[\s\S]*liftX\.value = t\.x;/);
     assert.match(s, /if \(final != null\) feed\.move\(final\);\n\s*settle\(\);/);
     // A tap / a taken touch still settles; a cancel never counts as a tap.
-    assert.match(cb('onFinalize'), /if \(ended\.value\) return;\n\s*scheduleOnRN\(onRelease, null, moved\.value, e\.state === CANCELLED\);/);
+    assert.match(cb('onFinalize'), /if \(ended\.value\) return;\n\s*const cancelled = e\.state === CANCELLED;/);
+    assert.match(cb('onFinalize'), /scheduleOnRN\(onRelease, null, moved\.value, cancelled\);/);
     assert.match(s, /if \(!wasMoved && !cancelled\) \{/);
   });
 
@@ -301,5 +302,14 @@ describe('chooser tray on a short phone (live emulator retest 2026-10-14)', () =
     assert.match(s, /const trayTop = rootH > 0 \? Math\.max\(0, Math\.min\(stageBlockH, rootH - bottom - dockH - 12 - TRAY_MIN\)\) : stageBlockH;/);
     assert.match(s, /const trayRoom = rootH - trayTop - dockH - bottom - 12;/);
     assert.match(s, /styles\.trayLayer, \{ top: trayTop, bottom: dockH \+ bottom \}/);
+  });
+});
+
+describe('a flick whose lift beats the pan activation (live emulator retest 2026-10-14)', () => {
+  it('onFinalize lands an un-activated touch that travelled at the lift point, not the touch-down', () => {
+    const s = read('src/screens/lab/rack/ParamLane.tsx');
+    assert.match(s, /const wasArmed = armed\.value;\n\s*armed\.value = false;/);
+    assert.match(s, /if \(wasArmed && !cancelled && !IS_WEB && Math\.abs\(e\.x - grabX\.value\) > TAP_SLOP\) \{\n\s*const v = valueAtX\(e\.x\);\n\s*capV\.value = v;\n\s*scheduleOnRN\(onRelease, v, true, false\);/);
+    assert.match(s, /scheduleOnRN\(onRelease, null, moved\.value, cancelled\);/, 'a tap or a taken touch still settles on the last value');
   });
 });
