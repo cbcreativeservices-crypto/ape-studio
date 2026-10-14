@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-14 00:35 · ccode · 263ed835
+changed: Live emulator toddler pass fixes (2026-10-13)
+affects other side: client-only fixes; backend follow-ups are owner-HOLD items (Downloads6-10-14_TODDLER_BUG_HUNT_REPORT.md §3: Play acknowledge in validate-purchase, app-account tag on purchases, contact_message_send client id, contact_report repeat merge, account_standing_mine expiry, register_commercial_user failure) — do nothing until the owner rules
+needs: nothing yet
+
+
+### 2026-10-13 23:35 · ccode · 2231295a
+changed: Toddler bug hunt 2026-10-13 — fixes across accounts, membership, community, all labs, study, glossary
+affects other side: nothing — client-only
+needs: nothing yet
+
+
 ### 2026-10-13 22:12 · ccode · d2d37511
 changed: Lab checks + lab-cert map: owner APPROVED 2026-10-13 (HOLD markers → APPROVED)
 affects other side: the seed SQL header now reads APPROVED (no data change) — run it as-is
