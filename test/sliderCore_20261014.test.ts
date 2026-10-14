@@ -277,3 +277,17 @@ describe('5. ParamLane: the cap follows the finger on the UI thread', () => {
     assert.match(s, /\) : null\}\n\s*<\/View>/, 'non-level: nothing in the slot');
   });
 });
+
+describe('worklet capture (live emulator retest 2026-10-14)', () => {
+  // A worklet captures what its BODY reads, never a default-parameter
+  // expression: `capW = LANE_CAP_W` threw "Property 'LANE_CAP_W' doesn't
+  // exist" on the UI thread the first time a lane was touched.
+  it('no laneEdgeGuard worklet reads a module constant in a default parameter', () => {
+    const s = read('src/screens/lab/rack/laneEdgeGuard.ts');
+    const fns = [...s.matchAll(/export function (\w+)\(([^)]*)\)[^{]*\{\s*'worklet';/g)];
+    assert.ok(fns.length >= 5, 'the five touch-math worklets are found');
+    for (const [, name, params] of fns) {
+      assert.doesNotMatch(params, /=/, `${name}: no default parameters in a worklet`);
+    }
+  });
+});

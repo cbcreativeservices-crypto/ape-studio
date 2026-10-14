@@ -86,8 +86,12 @@ export function sameInsets(a: LaneInsets, b: LaneInsets): boolean {
 }
 
 /** The cap's travel in dp (lane width less the insets and the cap). */
-export function laneTravel(laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+export function laneTravel(laneW: number, ins: LaneInsets, capWIn?: number): number {
   'worklet';
+  // A worklet captures what its BODY reads, never a default-parameter
+  // expression: `capW = LANE_CAP_W` threw "Property 'LANE_CAP_W' doesn't
+  // exist" on the UI thread (live emulator retest 2026-10-14).
+  const capW = capWIn ?? LANE_CAP_W;
   return Math.max(1, laneW - ins.l - ins.r - capW);
 }
 
@@ -97,8 +101,9 @@ function clamp01(v: number): number {
 }
 
 /** Jump-to-finger: the value under a touch at `locationX` (lane-local). */
-export function laneValueAt(locationX: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+export function laneValueAt(locationX: number, laneW: number, ins: LaneInsets, capWIn?: number): number {
   'worklet';
+  const capW = capWIn ?? LANE_CAP_W; // see laneTravel
   return clamp01((locationX - ins.l - capW / 2) / laneTravel(laneW, ins, capW));
 }
 
@@ -111,19 +116,22 @@ export function laneValueAt(locationX: number, laneW: number, ins: LaneInsets, c
  * under the finger at every point: the cap waits until the finger reaches
  * it, then rides under it.
  */
-export function laneRawAt(locationX: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+export function laneRawAt(locationX: number, laneW: number, ins: LaneInsets, capWIn?: number): number {
   'worklet';
+  const capW = capWIn ?? LANE_CAP_W; // see laneTravel
   return (locationX - ins.l - capW / 2) / laneTravel(laneW, ins, capW);
 }
 
 /** Riding the lane: the value after the grabbing finger moved `dx`. */
-export function laneDragValue(base: number, dx: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+export function laneDragValue(base: number, dx: number, laneW: number, ins: LaneInsets, capWIn?: number): number {
   'worklet';
+  const capW = capWIn ?? LANE_CAP_W; // see laneTravel
   return clamp01(base + dx / laneTravel(laneW, ins, capW));
 }
 
 /** The cap's left edge, lane-local, at value `v`. */
-export function capLeftAt(v: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+export function capLeftAt(v: number, laneW: number, ins: LaneInsets, capWIn?: number): number {
   'worklet';
+  const capW = capWIn ?? LANE_CAP_W; // see laneTravel
   return ins.l + clamp01(v) * laneTravel(laneW, ins, capW);
 }
