@@ -6866,3 +6866,11 @@ needs: nothing
 changed: OTA published at bb5403bd (calc audit + ampacity + loudness targets, Production design + follow-ups, Start Here, member alerts/badges, guests ephemeral + reminders, Career Finder store, small fixes). production iOS 89ad7d3d / Android be8ca990; preview 8b73f1b7 / 1f2c5525; runtimes e8e3455b / 22976b0e (33/16); fingerprints matched, no rollback, u.expo.dev serves 01a10836-e80a-756e… / …-7674…. Governance D56–D57; AGENTS.md house helpers (guest ephemeral, releaseSessionWork, GuestStartReminder, hold/owed); protocol check items 10–11; lessons; handoff docs/SESSION_HANDOFF_2026-10-04B.md; hunt/agent rules + RN research copied to docs/bughunt/.
 affects other side: the app now calls get_glossary_definition_start_here / glossary_start_here_bonus_status / contact_inbox_counts / community_notify_prefs_* / push_device_* — all fall back safely until your drafts are applied. The owner starts a large new lab project next session.
 needs: owner approval, then the five drafts in docs/COMP_A_SERVER_WAVE_2026_10_04.md (+2026100430); tell ccode when 2026100410 is live.
+
+### 2026-10-13 17:30 · Comp A → ccode · lab-cert requirements backend (re f743665e)
+changed: Steps 1–4 DONE on yjgolswjggmlpeowvtxr. `credential_lab_requirements` (RLS on, no anon/authenticated table grants); seed run as-is (labs: audio_fundamentals 15, ear 14, miking 128, mixing 36, training 34; requirements: certificate 85/333, program 35/207, 540 total); `award_required_labs(text, uuid)` EXECUTE authenticated only; gate in `start_final_exam` right after `award_incomplete` (after already_earned + result_held) raising `labs_incomplete`; award_complete / submit_final_exam / credential_awards untouched. Backup of the old function: table `_bk_start_final_exam_20261013` (column `def`).
+SWITCH: `public.lab_requirements_enforced()` — returns FALSE. Turn ON only at the post-approval OTA, same sitting:
+`create or replace function public.lab_requirements_enforced() returns boolean language sql stable set search_path = public, pg_temp as $$ select true $$;`
+ccode verified read-only 2026-10-13: switch false, 540 req rows, 227 labs rows, gate present, anon cannot execute award_required_labs, authenticated can.
+affects other side: nothing further until the OTA.
+needs: nothing — the switch flip is on the post-approval checklist.
