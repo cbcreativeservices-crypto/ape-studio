@@ -704,7 +704,7 @@ export function ScenariosScreen({ route }: Props) {
 
         {item.term ? <Text style={styles.termTag}>{item.term.toUpperCase()}</Text> : null}
 
-        {item.media?.kind === 'audio' && <AudioPlayer uri={item.media.url} />}
+        {item.media?.kind === 'audio' && <AudioPlayer key={item.id} uri={item.media.url} />}
         {item.media?.kind === 'image' && (
           <Image accessible
               source={{ uri: item.media.url }}

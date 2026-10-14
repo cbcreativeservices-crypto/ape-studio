@@ -118,7 +118,8 @@ describe('the family tiles (owner 2026-10-06: a tile per family on the Labs menu
   });
   it('each lesson tile keeps ✓, "n of N pages" (never cut short), the D51 note and the starting-points note', () => {
     assert.match(hub, /`\$\{all \? '✓ ' : ''\}\$\{ls\.title\}`/);
-    assert.match(hub, /\{\.\.\.fitValue\(12\)\}>\{`\$\{n\} of \$\{PAGE_IDS\.length\} pages`\}/);
+    // `count` = n once the record is read, '—' before / when unreadable (2026-10-13).
+    assert.match(hub, /\{\.\.\.fitValue\(12\)\}>\{`\$\{count\} of \$\{PAGE_IDS\.length\} pages`\}/);
     assert.match(hub, /\{unreadable \? <ProgressUnreadableNote \/> : null\}/);
     assert.match(hub, /starting points, not rules/);
   });

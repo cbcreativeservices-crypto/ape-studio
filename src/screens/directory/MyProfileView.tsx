@@ -45,6 +45,7 @@ import {
 } from '../../features/directory/api';
 import { alreadyMigrated, buildLegacyDraft, markMigrated, type LegacyDraft } from '../../features/directory/legacyMigration';
 import { ProfileSetupFlow } from './ProfileSetupFlow';
+import { localStoreWipeCount } from '../../features/storage/localStoreRegistry';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 import { cardColumn } from '../../theme/readingColumn';
 
@@ -142,6 +143,18 @@ export function MyProfileView() {
   /** True once the server's profile has been read. Before that the editor
    *  holds the EMPTY default, which must never be flushed over a real profile. */
   const hydrated = useRef(false);
+  /**
+   * WHOSE PROFILE THIS IS (toddler pass 2026-10-13, P3). Saves are QUEUED
+   * behind each other (saveChain), and the flush-on-leave below runs on
+   * unmount — i.e. on sign-out. A save still waiting in that queue when the
+   * account wipe ran, then a quick sign-in to another account, sent the
+   * departing member's whole profile under the NEXT member's session. Every
+   * queued server write checks the wipe count captured when this view mounted.
+   */
+  const wipeAtMount = useRef(localStoreWipeCount());
+  const stale = () => wipeAtMount.current !== localStoreWipeCount();
+  /** Newest re-read wins — see refresh(). */
+  const refreshTicket = useRef(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -273,6 +286,7 @@ export function MyProfileView() {
     setSaving(true);
     const seq = ++saveSeq.current;
     const run = saveChain.current.then(async () => {
+      if (stale()) return false; // the account changed while this waited (P3)
       const res = await saveCommunityProfile(next);
       if (seq !== saveSeq.current) return res.ok; // a newer save owns the outcome
       setSaving(false);
@@ -298,13 +312,20 @@ export function MyProfileView() {
     () => () => {
       if (hydrated.current && pRef.current !== lastSent.current) {
         const latest = pRef.current;
-        saveChain.current = saveChain.current.then(() => saveCommunityProfile(latest)).catch(() => {});
+        saveChain.current = saveChain.current
+          .then(() => (stale() ? undefined : saveCommunityProfile(latest)))
+          .catch(() => {});
       }
     },
     [],
   );
 
+  // FROM pRef, NOT THE RENDER'S `p` (toddler pass 2026-10-13, P12) — the same
+  // fix the featured-credential chips got in final round B: two chip taps
+  // landing before a re-render both built on the old profile, and the second
+  // save (the whole profile) quietly dropped the first tap.
   const toggleArea = (slug: string) => {
+    const p = pRef.current;
     const has = p.areas.includes(slug);
     const areas = has ? p.areas.filter((a) => a !== slug) : [...p.areas, slug];
     if (!has && areas.length > LIMITS.areas) return;
@@ -322,9 +343,10 @@ export function MyProfileView() {
     });
   };
 
-  const setPrimary = (slug: string) => void persist({ ...p, primaryArea: slug });
+  const setPrimary = (slug: string) => void persist({ ...pRef.current, primaryArea: slug });
 
   const toggleIn = (key: 'specialties' | 'roles' | 'openTo', slug: string, cap: number) => {
+    const p = pRef.current;
     const cur = p[key];
     const has = cur.includes(slug);
     const next = has ? cur.filter((x) => x !== slug) : [...cur, slug];
@@ -362,8 +384,8 @@ export function MyProfileView() {
     // straight from the display-name box blurs it into a save, and the publish
     // raced it — the server checked a profile that did not have the name yet.
     void saveChain.current
-      .then(() => publishCommunityProfile(on, adult))
-      .then((r) => (r.ok ? refresh() : setErr(r.error)))
+      .then(() => (stale() ? null : publishCommunityProfile(on, adult)))
+      .then((r) => (r === null ? undefined : r.ok ? refresh() : setErr(r.error)))
       .finally(() => {
         publishing.current = false;
       });
@@ -415,9 +437,14 @@ export function MyProfileView() {
     // attempt starts (sendPublish / the two switches), never here: by now a
     // save refused during this attempt has set its own message, and clearing
     // it hid the refusal (evening hunt 2, 2026-10-02; pass 1 cleared it here).
+    // NEWEST RE-READ WINS (toddler pass 2026-10-13, P2): a publish and a
+    // switch, or two switches, each end in a re-read, and an older read
+    // landing last put the switches back to a state the server has left.
+    const ticket = ++refreshTicket.current;
     await saveChain.current;
     const seq = saveSeq.current;
     const mine = await fetchMyCommunityProfile();
+    if (ticket !== refreshTicket.current) return;
     if (mine.status === 'ok' && (seq !== saveSeq.current || pRef.current !== lastSent.current)) {
       const s = mine.profile;
       const clean = pRef.current === lastSent.current;
@@ -443,6 +470,24 @@ export function MyProfileView() {
     // showing what we last knew — say so rather than let a stale row look live.
     else if (mine.status === 'error') setErr(mine.error);
   }, []);
+
+  /**
+   * ONE WRITE PER SWITCH AT A TIME (toddler pass 2026-10-13, P9). The two
+   * visibility switches do not move until the server answers and the re-read
+   * lands, so a toddler tapping "Show in search" four times sent four writes
+   * and four overlapping re-reads; tapping it back mid-flight raced ON against
+   * OFF. Taps on a switch whose write is still out are dropped — the switch
+   * itself still shows the last state the server confirmed.
+   */
+  const switching = useRef(new Set<'discoverable' | 'contact'>());
+  const flipSwitch = (key: 'discoverable' | 'contact', write: () => Promise<{ ok: true } | { ok: false; error: string }>) => {
+    if (switching.current.has(key) || stale()) return;
+    switching.current.add(key);
+    setErr(null);
+    void write()
+      .then((r) => (r.ok ? refresh() : setErr(r.error)))
+      .finally(() => switching.current.delete(key));
+  };
 
   const applyLegacy = () => {
     if (!legacy) return;
@@ -795,7 +840,7 @@ export function MyProfileView() {
           on={p.discoverable}
           disabled={!p.published}
           label="Include me in the Audio Community Directory"
-          onChange={(v) => { setErr(null); void setDiscoverable(v).then((r) => (r.ok ? refresh() : setErr(r.error))); }}
+          onChange={(v) => flipSwitch('discoverable', () => setDiscoverable(v))}
         />
       </View>
       <Helper>
@@ -809,7 +854,7 @@ export function MyProfileView() {
           on={p.contactEnabled}
           disabled={!p.published}
           label="Let members contact me"
-          onChange={(v) => { setErr(null); void setContactEnabled(v).then((r) => (r.ok ? refresh() : setErr(r.error))); }}
+          onChange={(v) => flipSwitch('contact', () => setContactEnabled(v))}
         />
       </View>
       <Helper>
@@ -831,7 +876,8 @@ export function MyProfileView() {
               // Behind any save still out (bug hunt 2026-09-30): the blur of
               // a text box into this button queued a save, and it could land
               // AFTER the delete and re-create the profile just removed.
-              void saveChain.current.then(() => deleteCommunityProfile()).then((r) => {
+              void saveChain.current.then(() => (stale() ? null : deleteCommunityProfile())).then((r) => {
+                if (r === null) return;
                 if (!r.ok) return setErr(r.error);
                 guideDefault.current = null;
                 featuredOk.current = null;

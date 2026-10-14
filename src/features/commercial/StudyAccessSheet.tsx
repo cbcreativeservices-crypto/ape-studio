@@ -19,7 +19,9 @@
  * saved progress — a guest's progress is on-device only, which the Dashboard's
  * own banner states.
  */
+import { useEffect, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemberGate } from './useTier';
 import { Modal } from '../../components/DimModal';
 import { GlassButton } from '../../components/GlassButton';
 import { colors, fonts } from '../../theme/tokens';
@@ -50,6 +52,21 @@ export function StudyAccessSheet({
   /** Open the first free topic on the Dashboard. Omitted → offer hidden. */
   onTryFree?: () => void;
 }) {
+  /**
+   * BECAME A MEMBER WITH THE SHEET UP (toddler pass 2026-10-13): an Ask to Buy
+   * approval or a purchase the root listener finished landed under an open
+   * "Membership required" sheet, which kept offering UNLOCK to a member. Close
+   * it on the change to 'open' (only then — never for a sheet opened as one).
+   */
+  const memberGate = useMemberGate();
+  const prevMemberGate = useRef(memberGate);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  useEffect(() => {
+    const was = prevMemberGate.current;
+    prevMemberGate.current = memberGate;
+    if (visible && was !== 'open' && memberGate === 'open') closeRef.current();
+  }, [memberGate, visible]);
   const offerFree = !!onTryFree && freeTopicNames.length > 0;
   const names =
     freeTopicNames.length > 1

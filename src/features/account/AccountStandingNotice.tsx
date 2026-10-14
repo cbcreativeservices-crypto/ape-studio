@@ -26,10 +26,11 @@
  * already true. `null` from the read means "nothing to say" and must leave
  * the app fully usable — a dropped request must never look like a ban.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
-import { fetchMyStanding, type MyStanding } from '../moderation/api';
+import { readMyStanding, type MyStanding } from '../moderation/api';
 
 /**
  * The stored reason is the REPORTER'S chip value (`spam` | `harassment` |
@@ -62,15 +63,26 @@ function until(iso: string | null): string {
 export function AccountStandingNotice() {
   const [standing, setStanding] = useState<MyStanding | null>(null);
 
-  useEffect(() => {
-    let alive = true;
-    void fetchMyStanding().then((s) => {
-      if (alive) setStanding(s);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
+  // RE-READ ON EVERY VISIT (toddler pass 2026-10-13). Profile is a TAB and
+  // stays mounted, so this read once per app run: a member suspended mid-
+  // session was refused with "See the notice on your Profile for the reason"
+  // (directory readableError) and Profile showed no notice; a lifted
+  // suspension kept its notice until the app was killed. Newest read wins; a
+  // FAILED re-read keeps what was last known — a dropped request must neither
+  // look like a ban nor erase one.
+  const ticket = useRef(0);
+  useFocusEffect(
+    useCallback(() => {
+      const mine = ++ticket.current;
+      void readMyStanding().then((r) => {
+        if (mine === ticket.current && r.ok) setStanding(r.standing);
+      });
+      return () => {
+        // Leaving: an answer still out must not land on an unmounted notice.
+        if (ticket.current === mine) ticket.current++;
+      };
+    }, []),
+  );
 
   if (!standing || standing.status === 'active') return null;
 

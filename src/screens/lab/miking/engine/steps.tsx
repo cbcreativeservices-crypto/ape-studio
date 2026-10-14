@@ -15,7 +15,7 @@
  * step is on screen (`inactive`) — the part stays mounted, so its state
  * survives, and still reports its step titles.
  */
-import { createContext, useContext, useEffect, type ReactNode } from 'react';
+import { createContext, Fragment, useContext, useEffect, type ReactNode } from 'react';
 import { ScrollView } from 'react-native';
 import { MikingRack, type MikingRackSpec } from './rack/MikingRack';
 
@@ -80,5 +80,7 @@ export function PageSteps({ steps: all }: { steps: MikingStep[] }) {
       {tail}
     </>
   );
-  return host ? <>{host.readWrap(body)}</> : <ScrollView key={s.key}>{body}</ScrollView>;
+  // Keyed by step (toddler pass 2026-10-13): unkeyed, NEXT from one read
+  // step to the next reused the host's scroller and opened it scrolled down.
+  return host ? <Fragment key={s.key}>{host.readWrap(body)}</Fragment> : <ScrollView key={s.key}>{body}</ScrollView>;
 }

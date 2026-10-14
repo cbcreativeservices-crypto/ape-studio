@@ -36,7 +36,7 @@ import { LabHeader } from '../kit/LabNavBar';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { PAGE_IDS } from './engine/model/types.ts';
 import { creditedCount } from './engine/progress/creditMap.ts';
-import { lessonProgress, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
+import { lessonProgress, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { lessonsOf, readyLabs, type MikingLabMeta } from './data/registry';
 
 export function MikingHubScreen() {
@@ -53,6 +53,10 @@ export function MikingHubScreen() {
   const one = shown.length === 1 ? shown[0] : undefined;
   const progress = useMikingProgress();
   const unreadable = useMikingUnreadable();
+  // THREE FACES (toddler pass 2026-10-13; D51): before the record is read, or
+  // when it cannot be, the count is not "0 of 8" — never "nothing saved".
+  const hydrated = useMikingHydrated();
+  const known = hydrated && !unreadable;
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <LabHeader
@@ -72,18 +76,19 @@ export function MikingHubScreen() {
                 // restructure counts its instrument / sound / setting as the page
                 // built from them (never more than the eight pages).
                 const n = creditedCount(lp.done);
-                const all = n === PAGE_IDS.length;
+                const all = known && n === PAGE_IDS.length;
+                const count = known ? String(n) : '—';
                 return (
                   <GlassTile
                     key={ls.id}
                     style={tablet ? styles.tileThird : styles.tileHalf}
                     glassStyle={styles.tileFace}
                     onPress={() => navigation.navigate('MikingLesson', { id: ls.id })}
-                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${n} of ${PAGE_IDS.length} pages done.`}
+                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${known ? `${n} of ${PAGE_IDS.length} pages done.` : 'Progress not read yet.'}`}
                   >
                     <Text style={styles.tileName}>{`${all ? '✓ ' : ''}${ls.title}`}</Text>
                     <Text style={styles.tileSub}>{ls.subtitle}</Text>
-                    <Text style={[styles.count, all && { color: colors.green }]} {...fitValue(12)}>{`${n} of ${PAGE_IDS.length} pages`}</Text>
+                    <Text style={[styles.count, all && { color: colors.green }]} {...fitValue(12)}>{`${count} of ${PAGE_IDS.length} pages`}</Text>
                   </GlassTile>
                 );
               })}

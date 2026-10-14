@@ -60,7 +60,9 @@ test('paywall: CONTINUE and Restore are guarded by a synchronous in-flight ref',
 
 test('paywall: a cancelled or already-reported buyPlan rejection shows no second dialog', () => {
   const cont = paywall.slice(paywall.indexOf('const onContinue'), paywall.indexOf('const onRestore'));
-  assert.match(cont, /if \(!wasInFlight \|\| isCancel\(err\?\.code\) \|\| isCancel\(err\?\.message\)\) return;/);
+  // Toddler pass 2026-10-13: cancel → storeErrorMessage returns null (silent).
+  assert.match(cont, /if \(!wasInFlight\) return;/);
+  assert.match(cont, /const message = storeErrorMessage\(err\);\s*if \(message\) notify\('Purchase', message\);/);
 });
 
 test('auth: every account action goes through the in-flight guard', () => {

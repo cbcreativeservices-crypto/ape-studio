@@ -187,6 +187,43 @@ export function ProductionStageScreen() {
    * state; earlier ones are superseded by definition.
    */
   const writeSeqRef = useRef(0);
+  /** Writes still out (the focus re-read below never lands over one). */
+  const pendingWritesRef = useRef(0);
+
+  /**
+   * RE-READ ON RETURN (toddler pass 2026-10-13). The packet's "what's left"
+   * rows open this stage as a SECOND screen on top of the packet; answers
+   * given there were missing here on BACK, and the next edit here (a table
+   * row, a chip, more typing) wrote the whole field from this screen's older
+   * copy — erasing them. A later focus re-reads the stored project, unless
+   * one of this screen's own writes is still out.
+   */
+  useEffect(() => {
+    // Only a focus that follows a BLUR is a return (the mount's own read is
+    // the effect above, whether or not the first focus event reaches here).
+    let left = false;
+    const offBlur = navigation.addListener('blur', () => {
+      left = true;
+    });
+    const offFocus = navigation.addListener('focus', () => {
+      if (!left) return;
+      left = false;
+      if (pendingWritesRef.current > 0) return;
+      const seq = writeSeqRef.current;
+      void projectStore()
+        .tryLoad(lab)
+        .then((all) => {
+          if (!all || pendingWritesRef.current > 0 || seq !== writeSeqRef.current) return;
+          const p = all.find((x) => x.id === projectId);
+          if (p) setProject(p);
+        })
+        .catch(() => {});
+    });
+    return () => {
+      offBlur();
+      offFocus();
+    };
+  }, [navigation, lab, projectId]);
 
   const setValue = useCallback(
     async (fieldId: string, v: FieldValue) => {
@@ -194,7 +231,10 @@ export function ProductionStageScreen() {
       const my = ++writeSeqRef.current;
       // Optimistic: the field must feel immediate, and the store is the record.
       setProject((cur) => (cur ? { ...cur, values: { ...cur.values, [valueKey(stageId, fieldId)]: v } } : cur));
-      const saved = await projectStore().setValue(lab, project.id, stageId, fieldId, v);
+      pendingWritesRef.current++;
+      const saved = await projectStore().setValue(lab, project.id, stageId, fieldId, v).finally(() => {
+        pendingWritesRef.current--;
+      });
       if (saved) {
         if (my !== writeSeqRef.current) return; // a newer write is in flight
         setProject(saved);
@@ -210,7 +250,10 @@ export function ProductionStageScreen() {
     async (fieldId: string, reason: string) => {
       if (!project) return;
       const my = ++writeSeqRef.current;
-      const saved = await projectStore().setNa(lab, project.id, stageId, fieldId, reason);
+      pendingWritesRef.current++;
+      const saved = await projectStore().setNa(lab, project.id, stageId, fieldId, reason).finally(() => {
+        pendingWritesRef.current--;
+      });
       if (saved) {
         if (my !== writeSeqRef.current) return; // a newer write is in flight
         setProject(saved);

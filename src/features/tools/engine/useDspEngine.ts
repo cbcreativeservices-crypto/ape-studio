@@ -96,6 +96,13 @@ export function useDspEngine(config: EngineConfig, poll: {
   });
   const freshStartRef = useRef(opts?.freshStart ?? false);
   freshStartRef.current = opts?.freshStart ?? false;
+  // TRY AGAIN on the NO SOUND card (toddler pass 2026-10-13): a capture that
+  // delivers live frames of digital silence is ALIVE, so a plain start()
+  // re-adopted the very same silent stream (micSession captureAlive → adopt)
+  // and the card came back 4 s later — a dead key. A start() made while the
+  // card is up (noSignalRef) takes a one-shot forceRestart.
+  const noSignalRef = useRef(false);
+  const retryFreshRef = useRef(false);
   const [frames, setFrames] = useState<DspPoll>({ meter: null, bands: null, pitch: null, waveform: [] });
   const [lastError, setLastError] = useState('');
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -136,6 +143,8 @@ export function useDspEngine(config: EngineConfig, poll: {
     // A start is already opening and nothing has superseded it — join it.
     const pending = inFlightRef.current;
     if (pending && pending.gen === genRef.current) return pending.promise;
+    // Read BEFORE setState('starting') resets the card.
+    retryFreshRef.current = noSignalRef.current;
     const gen = ++genRef.current;
     latestStartRef.current = gen;
     let settle: () => void = () => {};
@@ -167,7 +176,9 @@ export function useDspEngine(config: EngineConfig, poll: {
       // Dev timing (owner 2026-09-05): warm adopt should be ~0 ms; a cold HAL
       // open is the documented 5-10 s — the Metro line says which one happened.
       const acquireAt = Date.now();
-      const acquiring = acquireMic(configRef.current, freshStartRef.current);
+      const forceFresh = freshStartRef.current || retryFreshRef.current;
+      retryFreshRef.current = false;
+      const acquiring = acquireMic(configRef.current, forceFresh);
       const mySeq = micAcquireSeq(); // read synchronously — see micAcquireSeq
       await acquiring;
       // Dev-only timing log, required lazily so devTiming stays out of the
@@ -334,6 +345,8 @@ export function useDspEngine(config: EngineConfig, poll: {
     }, 500);
     return () => clearInterval(id);
   }, [state]);
+  // Mirrored for start() (declared above it) — see retryFreshRef.
+  noSignalRef.current = state === 'running' && noSignal;
 
   return {
     state,

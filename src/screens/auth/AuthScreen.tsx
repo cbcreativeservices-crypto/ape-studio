@@ -119,6 +119,12 @@ export function AuthScreen({ navigation }: Props) {
    *  session from the first verify is still live, so skip straight to the
    *  update. Cleared whenever a new code is sent or recovery is cancelled. */
   const verifiedFor = useRef<string | null>(null);
+  /** A verified recovery code has left a LIVE session on this device (toddler
+   *  pass 2026-10-13). Kept apart from `verifiedFor`, which RESEND CODE clears
+   *  (the new code must be verified again) — Cancel read that cleared ref as
+   *  "nothing verified" and left the recovery session signed in behind the
+   *  sign-in screen. Cleared only once the session is signed out or goes in. */
+  const recoverySession = useRef(false);
 
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -565,6 +571,7 @@ export function AuthScreen({ navigation }: Props) {
           return;
         }
         verifiedFor.current = addr;
+        recoverySession.current = true;
       }
       const updateErr = await updatePassword(newPassword);
       if (updateErr) {
@@ -573,6 +580,7 @@ export function AuthScreen({ navigation }: Props) {
       }
       // verifyOtp left an active session; the password is now updated → go in.
       verifiedFor.current = null;
+      recoverySession.current = false; // going in (a takeover Cancel signs it out)
       setMode('main');
       await claimAndProceed(toMain); // single-device claim on recovery sign-in
     } catch {
@@ -587,7 +595,8 @@ export function AuthScreen({ navigation }: Props) {
     // Cancelling kept it: the person stood on the sign-in screen actually
     // signed in, and the next launch took them into the account with no new
     // password set and no single-device claim. Cancel means not signed in.
-    if (verifiedFor.current !== null) {
+    if (verifiedFor.current !== null || recoverySession.current) {
+      recoverySession.current = false;
       markIntentionalSignOut();
       // Bounded + forced local (night bug pass 2) — see the takeover Cancel.
       void signOutThisDevice().finally(end);

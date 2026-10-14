@@ -199,7 +199,10 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   already_earned: 'You have already earned this credential.',
   award_content_incomplete: 'This award is not open for examination yet — its topics are still being published.',
   award_incomplete: 'Complete every required topic and the Audio Fundamentals labs before taking the Final Exam.',
-  labs_incomplete: "Finish the labs this certificate requires first — they're listed on the certificate.",
+  // "credential", not "certificate": programs hit this too. And say WHERE the
+  // list is — no certificate screen lists labs; the Lab Requirements sheet in
+  // My Enrollment does (toddler pass 2026-10-13).
+  labs_incomplete: "Finish the labs this credential requires first — they're listed under Lab Requirements in My Enrollment.",
   award_not_found: 'That award could not be found.',
   invalid_award_type: 'That award type is not recognized.',
   pool_too_small: 'This Final Exam is not available yet — email info@proaudiotrainingacademy.com so we can look at it.',

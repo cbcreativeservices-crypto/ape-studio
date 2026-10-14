@@ -134,7 +134,7 @@ export function GainModuleScreen() {
               </View>
             ) : (
               <ScrollView
-                contentContainerStyle={[styles.scroll, readingColumn]}
+                contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 30 + insets.bottom }]}
                 keyboardShouldPersistTaps="handled"
                 scrollEnabled={overflows && !scrollLocked}
                 onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}

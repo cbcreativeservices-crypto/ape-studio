@@ -66,7 +66,8 @@ describe('community directory', () => {
 
   test('C3: deleting marks the blank profile as already sent', () => {
     // Chained behind queued saves since the day pass (see the D3 guard).
-    const del = between(editor, 'deleteCommunityProfile()).then(', 'setP(EMPTY_COMMUNITY_PROFILE);');
+    // Wipe-fenced since the toddler pass 2026-10-13 (`stale() ? null : …`).
+    const del = between(editor, 'deleteCommunityProfile())).then(', 'setP(EMPTY_COMMUNITY_PROFILE);');
     assert.match(del, /lastSent\.current = EMPTY_COMMUNITY_PROFILE/);
     assert.match(del, /pRef\.current = EMPTY_COMMUNITY_PROFILE/);
   });

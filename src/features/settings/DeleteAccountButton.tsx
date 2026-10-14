@@ -85,6 +85,11 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
 
   const runDelete = async () => {
     setBusy(true);
+    /** The server has erased the account (toddler pass 2026-10-13). From here a
+     *  local step that throws must not say "Could not delete account" — a
+     *  retry would call delete with no session and fail for ever, while the
+     *  person sat in Settings already signed out. The device goes on out. */
+    let erased = false;
     try {
       /**
        * ⛔ BOUNDED (2026-09-23 overnight hunt). Unbounded, a stall left the
@@ -103,6 +108,7 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
         'delete_my_account',
       );
       if (error) throw error;
+      erased = true;
       markIntentionalSignOut();
       /**
        * softDeadline, NOT withDeadline. If the server delete succeeded and the
@@ -127,6 +133,10 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
       resetAllLocalStores();
       onDeleted();
     } catch {
+      if (erased) {
+        onDeleted();
+        return;
+      }
       setBusy(false);
       notify(
         'Could not delete account',

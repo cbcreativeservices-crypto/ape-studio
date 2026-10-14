@@ -465,7 +465,7 @@ export function CableInstallLabScreen() {
       // Drag-vs-scroll lock (bug hunt 2026-09-30): the Mech / Label / EMI
       // DragSliders lock through ScrollLockCtx, and this host provided none, so
       // a slightly diagonal drag scrolled the page instead of the slider.
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled" scrollEnabled={!dragLocked}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 40 + insets.bottom }]} keyboardShouldPersistTaps="handled" scrollEnabled={!dragLocked}>
         <ScrollLockProvider value={setDragLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {myth ? (

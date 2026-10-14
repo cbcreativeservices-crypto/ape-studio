@@ -69,7 +69,7 @@ export function WaveLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         {/* Before a guest begins (owner 2026-10-04): once per lab per session
             (the modules share it), inline in Low-Light, nothing for others. */}
         <GuestStartReminder activity="lab:af_wave_physics" />

@@ -71,7 +71,8 @@ test('the Rack Unit glass grows on a tablet, never below the phone rule, never f
 /** [file, what must appear] — each measured edge to edge at 1024 before. */
 const CAPPED: Array<[string, RegExp]> = [
   // Lab shells and lab pages.
-  ['src/screens/lab/LabShell.tsx', /contentContainerStyle=\{\[styles\.scroll, readingColumn\]\}/],
+  // `, scrollPad` = the bottom inset (toddler pass 2026-10-13); the cap is readingColumn.
+  ['src/screens/lab/LabShell.tsx', /contentContainerStyle=\{\[styles\.scroll, readingColumn(, scrollPad)?\]\}/],
   ['src/screens/lab/kit/PagedLab.tsx', /styles\.scroll, readingColumn,/],
   ['src/screens/lab/soundsystems/SsPagedLab.tsx', /styles\.scroll, readingColumn,/],
   ['src/screens/lab/tuning/TuningLabScreen.tsx', /styles\.scroll, readingColumn,/],

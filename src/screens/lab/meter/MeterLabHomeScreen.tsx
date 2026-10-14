@@ -72,7 +72,7 @@ export function MeterLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         <Text style={styles.body}>
           Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
           phase, scope — tells a story to the engineer who can read it. The Academy’s measurement

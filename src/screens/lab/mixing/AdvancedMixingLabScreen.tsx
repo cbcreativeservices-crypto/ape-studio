@@ -29,11 +29,14 @@ const PAGES = [...MIXING_ADV_PAGES_A, ...MIXING_ADV_PAGES_B, ...MIXING_ADV_PAGES
 // reports its stable server key (trainingLabKeys MIXING_ADV_PAGE_IDS, in page order).
 // PagedLab fires this once per newly-done REAL page (never the check page).
 const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('adv', index));
+// The same keys, so a page banked to the account reads CREDITED after START
+// OVER (PRACTICE) — credit is never shown as missing (toddler pass 2026-10-13).
+const PAGE_KEYS = PAGES.map((_, i) => mixingPageKeyAt('adv', i));
 
 export function AdvancedMixingLabScreen() {
   // Same release valve as the Beginning lab, and deliberately the same COUNTED
   // one: the two labs share a single stems cache, so neither may drop it while
   // the other is still on screen. See retainSessionStems in audio/mixAudio.ts.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} />;
+  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} />;
 }

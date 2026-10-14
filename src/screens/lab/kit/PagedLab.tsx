@@ -101,13 +101,15 @@ import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
 import { trainingKeyForCheck } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
-import { markLabUnit, registerLabUnits, useLabClearedUnits, type LabKey } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabKeysDone, type LabKey } from '../../../features/lab/labCompletion';
+
+const NO_KEYS: readonly string[] = [];
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, proNote = false }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -121,6 +123,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  `p<n>` (1-based — the Patchbay / Connector Select convention). Banked
    *  pages read CREDITED on the end screen even after START OVER (PRACTICE). */
   creditLabKey?: LabKey;
+  /** ADDITIVE (toddler pass 2026-10-13): a lab whose credit is ONE KEY PER
+   *  PAGE (Mixing: mxb_/mxa_, in page order — a STABLE module-level array).
+   *  A page whose key is done reads CREDITED after START OVER (PRACTICE),
+   *  exactly like creditLabKey's `p<n>` units. */
+  pageCreditKeys?: readonly string[];
   /** ADDITIVE (owner 2026-10-07): a Mixing-family lab — shows the "Knowing When
    *  to Bring In a Pro" note on first open (once per device, shared flag) and a
    *  small link to it on the first page (src/features/lab/ProNote.tsx). */
@@ -228,10 +235,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   }, [awaitingRestore]);
   const bankedPages = useLabClearedUnits(creditLabKey ?? labId);
   const bankedCheck = useLabClearedUnits(labId);
+  const bankedPageKeys = useLabKeysDone(pageCreditKeys);
   // The banked credit (Patchbay / Connector Select pages, a passed check)
   // could not be read either — the same note, never a missing ✓ as "not done".
   const creditUnreadable = useLabCompletionUnreadable();
-  const unreadable = pagesUnreadable || ((!!creditLabKey || !!check) && creditUnreadable);
+  const unreadable = pagesUnreadable || ((!!creditLabKey || !!check || pageCreditKeys.length > 0) && creditUnreadable);
   // Drag-vs-scroll lock (owner device pass 2026-09-11): the mixing console's
   // fader and pan pot live INSIDE this page scroller, and on device the native
   // scroll view steals a vertical gesture before any JS responder can argue -
@@ -423,7 +431,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   pagesWithCheck.forEach((_, i) => {
     const banked = check && i === pages.length
       ? bankedCheck.has(UNDERSTANDING_UNIT)
-      : !!creditLabKey && bankedPages.has(`p${i + 1}`);
+      : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
     if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
   });
 

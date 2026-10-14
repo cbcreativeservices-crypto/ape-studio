@@ -149,7 +149,7 @@ export function CableLabScreen() {
         <LabHeader title="CABLE & CONNECTOR FUNDAMENTALS" subtitle="Identify it. Understand it. Connect it safely." right={<AccuracyNote compact />} />
         <LabNavBar nav={nav} />
 
-        <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
+        <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
           <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
           <View style={styles.tagRow}>
             <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>

@@ -199,6 +199,7 @@ export function RoomDesignLabScreen() {
             onJump={(id) => go(ROOM_MODULES.findIndex((m) => m.id === id))}
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}
+            bottomInset
           />
         ) : mod.rack ? (
           // The rack takes the rest of the height; its well scrolls and ends
@@ -206,7 +207,7 @@ export function RoomDesignLabScreen() {
           // revisit starts its own view state fresh — the design is shared.
           <View style={styles.rackFill}>{body(mod.id)}</View>
         ) : (
-          <ScrollView contentContainerStyle={[styles.scroll, readingColumn]} keyboardShouldPersistTaps="handled">
+          <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 28 + insets.bottom }]} keyboardShouldPersistTaps="handled">
             {body(mod.id)}
           </ScrollView>
         )}

@@ -17,6 +17,8 @@
  */
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
+import { safeSession } from '../../lib/getSessionSafe';
+import { isRealAccount } from './realAccount';
 import { optionalModule } from '../tools/capture/optionalModule';
 import {
   INAPP_SKUS,
@@ -81,6 +83,39 @@ export function isCancel(code: unknown): boolean {
   return String(code ?? '').toLowerCase().includes('cancel');
 }
 
+/** The store accepted the purchase but is waiting on someone else — Ask to
+ *  Buy (a parent approves later) or a slow payment method. OpenIAP codes
+ *  'deferred-payment' / 'pending' (older builds: E_DEFERRED_PAYMENT / E_PENDING). */
+export function isDeferred(code: unknown): boolean {
+  const c = String(code ?? '').toLowerCase();
+  return c.includes('deferred') || c === 'pending' || c === 'e_pending';
+}
+
+/** OpenIAP 'already-owned' (older: E_ALREADY_OWNED) — Play holds this item for
+ *  the store account already. */
+function isAlreadyOwned(code: unknown): boolean {
+  return String(code ?? '').toLowerCase().replace(/_/g, '-').includes('already-owned');
+}
+
+/** Play says the store account already owns it — most often a purchase whose
+ *  verification failed earlier (offline right after paying). Restore validates
+ *  and acknowledges it; buying again cannot (toddler pass 2026-10-13). */
+export const ALREADY_OWNED_MESSAGE =
+  'This store account already owns this purchase. Tap Restore purchases to apply it to your account — you don’t need to buy again.';
+
+/**
+ * What to tell the person about a store error (toddler pass 2026-10-13).
+ * null = say nothing (they cancelled). Ask to Buy used to surface the store's
+ * raw "deferred" text — which reads as a failure and invites a second purchase —
+ * and a re-tap after a failed verification showed Play's raw "already owned".
+ */
+export function storeErrorMessage(err: { code?: unknown; message?: unknown } | null | undefined): string | null {
+  if (isCancel(err?.code) || isCancel(err?.message)) return null;
+  if (isDeferred(err?.code)) return PENDING_MESSAGE;
+  if (isAlreadyOwned(err?.code)) return ALREADY_OWNED_MESSAGE;
+  return typeof err?.message === 'string' && err.message ? err.message : 'The purchase could not be completed.';
+}
+
 /**
  * The server's answer, with the REASON kept.
  *
@@ -93,7 +128,36 @@ export function isCancel(code: unknown): boolean {
  */
 type ValidationResult = { ok: true } | { ok: false; reason: string | null };
 
+/** HTTP status of a functions.invoke error (FunctionsHttpError carries the Response). */
+function invokeStatus(error: unknown): number | null {
+  const s = (error as { context?: { status?: unknown } } | null)?.context?.status;
+  return typeof s === 'number' ? s : null;
+}
+
+/**
+ * One retry when the server said "not signed in" but this device IS signed in
+ * (toddler pass 2026-10-13). The store re-delivers an unfinished purchase the
+ * moment the listener starts — at a COLD START, after the app was killed
+ * mid-purchase — and the first calls after a cold start can leave before the
+ * session's token is ready (reference: cold-start auth race; the study reads
+ * got the same getSession()-then-retry-once fix). The paid purchase then
+ * failed verification silently on every launch. Never retried for a guest,
+ * never more than once.
+ */
 async function validateWithServer(p: IapPurchase): Promise<ValidationResult> {
+  const first = await validateRequest(p);
+  if (first.result.ok || first.status !== 401) return first.result;
+  try {
+    const { data } = await safeSession(supabase.auth.getSession(), 'validate-purchase/retry');
+    if (!isRealAccount(data.session)) return first.result;
+  } catch {
+    return first.result;
+  }
+  console.warn('[iap] validate-purchase 401 with a session — retrying once');
+  return (await validateRequest(p)).result;
+}
+
+async function validateRequest(p: IapPurchase): Promise<{ status: number | null; result: ValidationResult }> {
   try {
     // BOUNDED (bug pass 3, 2026-09-30). The connection dropping mid-purchase
     // is the ordinary case for this call — the store sheet has just taken the
@@ -117,14 +181,14 @@ async function validateWithServer(p: IapPurchase): Promise<ValidationResult> {
     );
     if (error) {
       console.warn('[iap] validate-purchase failed:', error.message);
-      return { ok: false, reason: null };
+      return { status: invokeStatus(error), result: { ok: false, reason: null } };
     }
     const body = data as { ok?: boolean; error?: string } | null;
-    if (body?.ok) return { ok: true };
-    return { ok: false, reason: body?.error ?? null };
+    if (body?.ok) return { status: 200, result: { ok: true } };
+    return { status: 200, result: { ok: false, reason: body?.error ?? null } };
   } catch (e) {
     console.warn('[iap] validate-purchase threw:', (e as Error).message);
-    return { ok: false, reason: null };
+    return { status: null, result: { ok: false, reason: null } };
   }
 }
 
@@ -252,11 +316,7 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
     );
     listeners.push(
       iap.purchaseErrorListener((err) => {
-        if (isCancel(err?.code)) {
-          handlers?.onError(null);
-          return;
-        }
-        handlers?.onError(err?.message ?? 'The purchase could not be completed.');
+        handlers?.onError(storeErrorMessage(err));
       }),
     );
   }
@@ -348,7 +408,7 @@ export async function buyPlan(planId: PlanId): Promise<void> {
  *  - 'unavailable' IAP native module missing in this build (needs a rebuild)
  *  - 'linked'      verified, but already linked to ANOTHER account (not an error to retry)
  */
-export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable' | 'linked';
+export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable' | 'linked' | 'pending';
 
 /** The linked-receipt copy, for the Paywall's restore result. */
 export const LINKED_MESSAGE = purchaseErrorMessage('receipt_already_linked');
@@ -379,8 +439,16 @@ export async function restorePurchases(): Promise<RestoreResult> {
     // account" (bug pass 3, 2026-09-30). That is not a connection problem, and
     // "check your connection and try again" sent the person round in circles.
     let linkedOnly = true;
+    // A purchase still waiting on payment (Play 'pending') cannot verify yet —
+    // sending it made the server refuse it and the person was told the STORE
+    // was unreachable (toddler pass 2026-10-13). It is 'pending', not 'error'.
+    let pendingSeen = false;
     for (const p of purchases) {
       if (!p.productId || !planIdForSku(p.productId)) continue;
+      if (p.purchaseState === 'pending') {
+        pendingSeen = true;
+        continue;
+      }
       const v = await validateWithServer(p);
       if (!v.ok && v.reason !== 'receipt_already_linked') linkedOnly = false;
       if (v.ok) {
@@ -395,6 +463,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
       }
     }
     if (restored) return 'restored';
+    if (pendingSeen && !validationFailed) return 'pending';
     if (validationFailed && linkedOnly) return 'linked';
     return validationFailed ? 'error' : 'none';
   } catch (e) {

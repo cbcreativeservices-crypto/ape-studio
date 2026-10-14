@@ -133,19 +133,33 @@ export async function resolveReport(id: string, outcome: 'dismissed' | 'open', n
  * from a ban, which is the opposite of what this is for.
  */
 export async function fetchMyStanding(): Promise<MyStanding | null> {
+  const r = await readMyStanding();
+  return r.ok ? r.standing : null;
+}
+
+/**
+ * The same read, telling "nothing to say" from "could not ask" (toddler pass
+ * 2026-10-13). The Profile notice now re-reads on every visit, and a dropped
+ * re-read must keep what it last knew rather than hide a real restriction.
+ */
+export async function readMyStanding(): Promise<{ ok: true; standing: MyStanding | null } | { ok: false }> {
   try {
     // No session, no standing to read — and the RPC would only answer 401.
-    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyStanding'))) return null;
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyStanding'))) return { ok: true, standing: null };
     const { data, error } = await supabase.rpc('account_standing_mine');
+    if (error) return { ok: false };
     const r = (data as Record<string, unknown>[] | null)?.[0];
-    if (error || !r) return null;
+    if (!r) return { ok: true, standing: null };
     return {
-      status: (r.status as AccountStatus) ?? 'active',
-      until: (r.until as string) ?? null,
-      publicNote: (r.public_note as string) ?? null,
-      reasonCode: String(r.reason_code ?? ''),
+      ok: true,
+      standing: {
+        status: (r.status as AccountStatus) ?? 'active',
+        until: (r.until as string) ?? null,
+        publicNote: (r.public_note as string) ?? null,
+        reasonCode: String(r.reason_code ?? ''),
+      },
     };
   } catch {
-    return null;
+    return { ok: false };
   }
 }

@@ -17,7 +17,7 @@
  * the title); tokens over magic hex; 48pt targets; SR labels + header role.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { Modal, rootModalHoldMs } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -138,6 +138,9 @@ export function GlossaryLockView({
           only exits are the two buttons. The backdrop View captures all touches,
           so nothing beneath can be scrolled, searched, or tapped. */}
       <View style={styles.backdrop}>
+        {/* Scrolls at the largest text sizes (toddler pass 2026-10-13): the card
+            outgrew the screen and its only exits went off-screen (iOS trap). */}
+        <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={styles.card}>
           <LockGlyph />
           <Text style={styles.kicker}>PRO AUDIO GLOSSARY</Text>
@@ -179,6 +182,7 @@ export function GlossaryLockView({
             <Text style={styles.btnSecondaryText}>EXIT TO MENU</Text>
           </Pressable>
         </View>
+        </ScrollView>
       </View>
     </Modal>
   );

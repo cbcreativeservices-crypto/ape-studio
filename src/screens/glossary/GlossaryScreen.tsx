@@ -3344,7 +3344,11 @@ ${COPY.glossaryFreeAllowance}`,
       if (item.kind === 'empty') {
         return (
           <Text style={styles.tlEmpty}>
-            {loadError
+            {/* Loading face first (toddler pass 2026-10-13): entries are [] until
+                the corpus loads, which read as "no bookmarks". */}
+            {loading
+              ? 'Your terms are still loading — open this list again in a moment.'
+              : loadError
               ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
               : bmUnreadable
                 ? BOOKMARKS_UNREADABLE
@@ -3368,7 +3372,7 @@ ${COPY.glossaryFreeAllowance}`,
     // ctxName is a plain per-render closure over topicsById; it is covered by
     // bmSwitcherRows/topicsById upstream, so it is deliberately not a dep.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [bmCtx, openTermFromBm, switchBmCtx, topicsById, bmUnreadable, loadError],
+    [bmCtx, openTermFromBm, switchBmCtx, topicsById, bmUnreadable, loadError, loading],
   );
 
   // Confirm-on-close (task 4): if ≥1 term was removed from the currently-shown
@@ -4592,7 +4596,9 @@ ${COPY.glossaryFreeAllowance}`,
               ListEmptyComponent={
                 // Empty state as help (Pillar C): each list says how it fills.
                 <Text style={styles.tlEmpty}>
-                  {loadError
+                  {loading
+                    ? 'Your terms are still loading — open this list again in a moment.'
+                    : loadError
                     ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
                     : termListModal?.kind === 'recent' && recentUnreadable
                       ? RECENT_UNREADABLE

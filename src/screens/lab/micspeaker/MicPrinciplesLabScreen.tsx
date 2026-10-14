@@ -374,8 +374,11 @@ type SectionProps = {
 
 function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
   const [width, setWidth] = useState(0);
+  // + the bottom inset (toddler pass 2026-10-13): the in-flow NEXT sat under
+  // Android's three-button bar.
+  const insets = useSafeAreaInsets();
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
+    <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 30 + insets.bottom }]}>
       {wellTop}
       {/* panelCard consumes 24 padding + 2 border → content box is −26. */}
       <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
@@ -1446,8 +1449,9 @@ function CutawayViz({ viz, width, blocked }: { viz: MsVizModule; width: number; 
 function MistakesSection({ viz, help, wellTop, wellBottom }: SectionProps) {
   const [width, setWidth] = useState(0);
   const cardW = Math.max(200, width - 44);
+  const insets = useSafeAreaInsets(); // NEXT clears the three-button bar (2026-10-13)
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
+    <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 30 + insets.bottom }]}>
       {wellTop}
       {/* panelCard consumes 24 padding + 2 border → content box is −26. */}
       <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>

@@ -13,7 +13,7 @@
  * open right now", two different reasons.
  */
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 // ⛔ DimModal, not react-native's Modal — otherwise this surface lights a
 //    dark control room to full brightness in Low-Light Production Mode.
 import { Modal } from '../../components/DimModal';
@@ -68,6 +68,9 @@ export function GlossaryDeviceKeyView({
       onRequestClose={onExit}
     >
       <View style={styles.backdrop}>
+        {/* Scrolls at the largest text sizes (toddler pass 2026-10-13): the card
+            outgrew the screen and its only exits went off-screen (iOS trap). */}
+        <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={styles.card}>
           <KeyGlyph />
           <Text style={styles.kicker}>PRO AUDIO GLOSSARY</Text>
@@ -101,6 +104,7 @@ export function GlossaryDeviceKeyView({
             <Text style={styles.btnSecondaryText}>EXIT TO MENU</Text>
           </Pressable>
         </View>
+        </ScrollView>
       </View>
     </Modal>
   );

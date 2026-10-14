@@ -1262,6 +1262,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const closeFullscreen = useCallback(() => {
     setFullscreen(false);
     setReviewMode(false);
+    setShowFsGuide(false); // toddler pass 2026-10-13: never reopen with a stale guide up
   }, []);
 
   /** Mark known = server credit (known:true) + local hide + global ✓ tag.
@@ -1284,7 +1285,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         session.current?.addEvent({ item: card.id, kind: 'known', value: true });
         setStates((prev) => ({ ...prev, [card.id]: { ...prev[card.id], known: true } }));
       }
-      if (!showKnown) {
+      // Bookmarked/Starred-only views keep known cards (toddler pass 2026-10-13):
+      // the card did not leave, so do not jump back a card.
+      if (!showKnown && !bookmarkedOnly && !starredOnly) {
         setLevel(0);
         setRevealedThisVisit(new Set());
         setIdx((i) => Math.max(0, Math.min(i, deck.length - 2)));
@@ -1292,7 +1295,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }
     setHidden(next);
     persistHidden(next);
-  }, [card, hidden, knownList, states, showKnown, deck.length, persistHidden]);
+  }, [card, hidden, knownList, states, showKnown, bookmarkedOnly, starredOnly, deck.length, persistHidden]);
 
   // Reconcile "known" marked in ANY popup list (TermSelectIcons → the global
   // knownList) into THIS method's progress (user request 2026-08-13): a ✓ Known in
@@ -1383,7 +1386,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     // DEV BYPASS (Booth 2026-07-18): guide shows every time, counter untouched.
     const alwaysIntro = devBypass('alwaysShowIntros');
     // The guide's "tap to flip" copy doesn't apply to the Study Sheet — skip it there.
-    if (!studyMode && fsReviewed.current === 2 && (alwaysIntro || fsGuideCount.current < 2)) {
+    if (!studyMode && !overlaysSuppressed && fsReviewed.current === 2 && (alwaysIntro || fsGuideCount.current < 2)) {
       setShowFsGuide(true);
       if (!alwaysIntro) {
         fsGuideCount.current += 1;
@@ -1909,7 +1912,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           it. Only the term / definition — no nav, no prev/next, no progress bar.
           Tap flips, swipe changes term, scroll for long text, X closes. The same
           filtered deck (card/level) is shown. */}
-      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={fullscreen} animationType="fade" onRequestClose={closeFullscreen}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={fullscreen} animationType="fade" onRequestClose={() => {
+        // BACK closes the TOP layer first (toddler pass 2026-10-13).
+        if (linkedTerm) closeLinkedTerm();
+        else if (showFsGuide) setShowFsGuide(false);
+        else closeFullscreen();
+      }}>
         {/* fsPan (not pan): full screen uses the looser swipe thresholds. */}
         <View
           style={[styles.fsRoot, { paddingTop: insets.top }]}

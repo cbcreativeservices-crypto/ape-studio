@@ -244,7 +244,8 @@ describe('skipping never inflates credit', () => {
   });
   it('lesson complete still needs every page, for both learners', () => {
     const hub = read('src/screens/lab/miking/MikingHubScreen.tsx');
-    assert.match(hub, /const all = n === PAGE_IDS\.length;/);
+    // `known &&` (toddler pass 2026-10-13): no ✓ from a record not yet read.
+    assert.match(hub, /const all = known && n === PAGE_IDS\.length;/);
   });
   it('the what’s-left screen says a skipped foundation is still to earn', () => {
     const host = read('src/screens/lab/miking/MikingLessonScreen.tsx');

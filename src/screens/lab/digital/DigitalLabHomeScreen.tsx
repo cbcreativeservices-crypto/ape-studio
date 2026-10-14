@@ -87,7 +87,7 @@ export function DigitalLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         <SignalPathBanner />
         <Text style={styles.body}>
           Follow the complete chain — acoustic sound → microphone → analog voltage → anti-aliasing

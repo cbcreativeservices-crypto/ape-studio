@@ -63,8 +63,12 @@ describe('evening pass 2 — community / careers / awards', () => {
     const refresh = v.slice(v.indexOf('const refresh = useCallback(async () => {'));
     const head = refresh.slice(0, refresh.indexOf('await saveChain.current;'));
     assert.doesNotMatch(head, /setErr\(null\)/, 'refresh cleared AFTER the chained save had set its refusal');
+    // Both switches go through flipSwitch since the toddler pass 2026-10-13
+    // (one write per switch at a time); it still clears at the tap.
     for (const fn of ['setDiscoverable', 'setContactEnabled']) {
-      assert.match(v, new RegExp(`onChange=\\{\\(v\\) => \\{ setErr\\(null\\); void ${fn}\\(v\\)\\.then\\(\\(r\\) => \\(r\\.ok \\? refresh\\(\\) : setErr\\(r\\.error\\)\\)\\); \\}\\}`), `${fn}: cleared at the tap`);
+      assert.match(v, new RegExp(`onChange=\\{\\(v\\) => flipSwitch\\('\\w+', \\(\\) => ${fn}\\(v\\)\\)\\}`), `${fn}: through flipSwitch`);
     }
+    const flip = v.slice(v.indexOf('const flipSwitch = '));
+    assert.match(flip, /switching\.current\.add\(key\);\s*setErr\(null\);\s*void write\(\)\s*\.then\(\(r\) => \(r\.ok \? refresh\(\) : setErr\(r\.error\)\)\)/, 'cleared at the tap');
   });
 });

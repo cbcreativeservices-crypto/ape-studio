@@ -19,6 +19,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 //    dark control room to full brightness in Low-Light Production Mode.
 import { Modal, rootModalHoldMs, setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
 import { navigationRef } from '../../navigation/navigationRef';
+import { useMemberGate } from './useTier';
 import { colors, fonts } from '../../theme/tokens';
 
 export type MembershipGatePayload = {
@@ -103,6 +104,20 @@ function setPaywallPending(v: PaywallRequest | null): void {
 export function MembershipGateHost() {
   const focused = useIsFocused();
   const gate = useMembershipGate();
+  /**
+   * BECAME A MEMBER WITH THE CARD UP (toddler pass 2026-10-13). An Ask to Buy
+   * approval, a purchase finished by the root listener, or a code redeemed on
+   * another device lands while the card is open — and it kept selling GET
+   * MEMBERSHIP to a member. Close it on the change to 'open' only, so a card
+   * opened while already a member (the dev visual index) is left alone.
+   */
+  const memberGate = useMemberGate();
+  const prevMemberGate = useRef(memberGate);
+  useEffect(() => {
+    const was = prevMemberGate.current;
+    prevMemberGate.current = memberGate;
+    if (was !== 'open' && memberGate === 'open') closeMembershipGate(); // (one line — source tests anchor on the CTA's close)
+  }, [memberGate]);
 
   /**
    * ⛔ THE GATE ASKED FOR WHILE ANOTHER MODAL IS OPEN (bug hunt 2026-09-30) —

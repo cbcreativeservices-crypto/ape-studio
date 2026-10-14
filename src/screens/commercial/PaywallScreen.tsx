@@ -26,9 +26,10 @@ import {
   buyPlan,
   detachPaywallHandlers,
   initPurchases,
-  isCancel,
   LINKED_MESSAGE,
+  PENDING_MESSAGE,
   restorePurchases,
+  storeErrorMessage,
 } from '../../features/commercial/purchase';
 import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
@@ -275,8 +276,11 @@ export function PaywallScreen({ navigation }: Props) {
       inFlight.current = false;
       setBusy(false);
       const err = e as { code?: unknown; message?: string } | null;
-      if (!wasInFlight || isCancel(err?.code) || isCancel(err?.message)) return;
-      notify('Purchase', err?.message ?? 'The purchase could not be started.');
+      if (!wasInFlight) return;
+      // Same words as the listener (toddler pass 2026-10-13): Ask to Buy and
+      // "already owned" are not raw store errors to the person.
+      const message = storeErrorMessage(err);
+      if (message) notify('Purchase', message);
     });
   };
 
@@ -340,6 +344,11 @@ export function PaywallScreen({ navigation }: Props) {
           case 'linked':
             // Verified, but on another account — not a connection problem.
             notify('Restore didn’t finish', LINKED_MESSAGE);
+            return;
+          case 'pending':
+            // The store holds it but the payment has not completed — not a
+            // connection problem either (toddler pass 2026-10-13).
+            notify('Purchase', PENDING_MESSAGE);
             return;
           case 'unavailable':
             notify(

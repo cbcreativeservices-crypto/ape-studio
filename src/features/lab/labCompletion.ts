@@ -360,6 +360,29 @@ export function useLabClearedUnits(labKey: string): ReadonlySet<string> {
   return v;
 }
 
+/** Reactive: which of `keys` are done (isLabDone) — a lab whose credit is one
+ *  KEY PER PAGE (the Mixing labs' mxb_/mxa_ keys) reads its banked pages with
+ *  this, so START OVER (PRACTICE) never shows banked credit as missing.
+ *  Unchanged ⇒ the same Set (no re-render). Pass a stable `keys` array. */
+export function useLabKeysDone(keys: readonly string[]): ReadonlySet<string> {
+  const read = () => new Set(keys.filter(isLabDone));
+  const [v, setV] = useState<ReadonlySet<string>>(read);
+  useEffect(() => {
+    const l = () => setV((prev) => keepIfSameSet(prev, read()));
+    listeners.add(l);
+    let live = true;
+    void hydrate().then(() => {
+      if (live) l();
+    });
+    return () => {
+      live = false;
+      listeners.delete(l);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keys]);
+  return v;
+}
+
 /** Reactive "Audio Fundamentals credit earned" flag (Dashboard banner). */
 export function useAudioFundamentalsComplete(): boolean {
   const [v, setV] = useState(afComplete);
@@ -374,7 +397,27 @@ export function useAudioFundamentalsComplete(): boolean {
   return v;
 }
 
-async function fireComplete(labKey: string): Promise<void> {
+/** One mark_lab_complete per key in flight (toddler pass 2026-10-13): the
+ *  unit's own fire, the hydrate retry, the settle retry and the backfill's
+ *  retry all run within moments of a sign-in, and each saw the key "not sent
+ *  yet" while the first call was still out — the same key went 2–4 times
+ *  (×212 keys for a learner with everything done). Keyed by the account
+ *  generation, so a call left over from a departing account never stands in
+ *  for the next account's own. */
+const inFlight = new Map<string, Promise<void>>();
+function fireComplete(labKey: string): Promise<void> {
+  if (sent.has(labKey)) return Promise.resolve();
+  const id = `${completionGen}:${labKey}`;
+  const running = inFlight.get(id);
+  if (running) return running;
+  const p = fireCompleteOnce(labKey).finally(() => {
+    inFlight.delete(id);
+  });
+  inFlight.set(id, p);
+  return p;
+}
+
+async function fireCompleteOnce(labKey: string): Promise<void> {
   if (sent.has(labKey)) return;
   // NOT WHILE A NEW IDENTITY'S WIPE IS PENDING (guest wave, 2026-10-04; owner
   // "not if they sign out or close app first"). Between a sign-in and its
@@ -486,14 +529,15 @@ registerSessionCarry<HeldUnits>(CARRY_KEY, async (held) => {
   return true;
 });
 
-function recordUnit(labKey: string, unitId: string): Promise<void> {
+function recordUnit(labKey: string, unitId: string, gen: number = completionGen, quiet = false): Promise<void> {
   // The account it was earned under (shared hunt 12, 2026-10-04): a unit
   // whose device read was still out when the account wipe ran belongs to the
   // departing account. Recorded after the wipe it landed in the NEXT
   // account's units — and a lab it completed fired mark_lab_complete for
   // them. A guest's units are held by the ledger and replayed after the wipe
   // (under the new generation), so nothing they earned is lost.
-  const gen = completionGen;
+  // `gen` is passed by the backfill: the generation its SCAN started under.
+  if (gen !== completionGen) return Promise.resolve();
   return hydrate().then(() => {
     if (gen !== completionGen) return;
     const set = cleared[labKey] ?? new Set<string>();
@@ -506,8 +550,10 @@ function recordUnit(labKey: string, unitId: string): Promise<void> {
       void fireComplete(labKey);
       // Store-review eligibility (launch readiness, 2026-09-06): a completed
       // lab is one of the genuine successes that may lead to a prompt. One
-      // Mixing PAGE is not a finished lab.
-      if (!/^mx[ab]_/.test(labKey)) void noteHighValueEvent('lab_completed');
+      // Mixing PAGE is not a finished lab. Nor is a backfill at sign-in
+      // (`quiet`): old work credited in one burst is no success moment, and
+      // up to 212 concurrent calls raced the review store's read-modify-write.
+      if (!quiet && !/^mx[ab]_/.test(labKey)) void noteHighValueEvent('lab_completed');
     }
   });
 }
@@ -531,9 +577,16 @@ export function markTrainingDone(key: string): void {
  * guest's (the backfill runs only for a settled account). Recorded and sent;
  * nothing to hold. Resolves once recorded (or found already recorded).
  */
-export function recordTrainingDone(key: string): Promise<void> {
+export function recordTrainingDone(key: string, gen: number = completionGen): Promise<void> {
   if (!isTrainingKey(key)) return Promise.resolve();
-  return recordUnit(key, TRAINING_DONE_UNIT);
+  return recordUnit(key, TRAINING_DONE_UNIT, gen, true);
+}
+
+/** The account generation (bumped by the account wipe). The backfill reads
+ *  it before its scan: keys read from the departing account's stores are
+ *  never recorded for the account signed into while the scan ran. */
+export function labCompletionGeneration(): number {
+  return completionGen;
 }
 
 /** Whether a unit is banked for a lab id (read after `hydrateLabCompletion`) —

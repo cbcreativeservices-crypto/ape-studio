@@ -45,7 +45,7 @@ import { isPagedProgressUnreadable, loadPagedProgress } from './pagedProgress';
 import { projectStore } from '../production/projectStore';
 import { productionProjectComplete } from '../production/complete';
 import { UNDERSTANDING_UNIT } from './understanding';
-import { hasLabUnit, hydrateLabCompletion, isLabCompletionUnreadable, recordTrainingDone, retryUnsentLabCredit } from './labCompletion';
+import { hasLabUnit, hydrateLabCompletion, isLabCompletionUnreadable, labCompletionGeneration, recordTrainingDone, retryUnsentLabCredit } from './labCompletion';
 import {
   EAR_MODULE_IDS,
   MIXING_ADV_PAGE_IDS,
@@ -163,23 +163,42 @@ export async function collectCompletedTrainingKeys(): Promise<string[]> {
   return [...out];
 }
 
-let running: Promise<void> | null = null;
+let running: { gen: number; done: Promise<void> } | null = null;
 /**
  * Record every completed training key and send the unsent ones. Callers make
  * sure a settled signed-in account owns the device (labCompletion's settle
  * listener).
- * One run at a time; a call during a run joins it.
+ * One run at a time; a call during a run FOR THE SAME ACCOUNT joins it.
+ *
+ * ACCOUNT SWITCH MID-SCAN (toddler pass 2026-10-13): the scan reads a dozen
+ * stores; a sign-out → sign-in while it ran used to record the keys read
+ * from the departing account's stores into the NEXT account (recordUnit
+ * took the generation current at record time) — and the new account's own
+ * settle joined that run, so its own scan never happened. Now the keys are
+ * recorded under the generation the scan started in (a wipe since → none
+ * are), and a call from a newer account runs its own scan after.
  */
 export function backfillTrainingCompletion(): Promise<void> {
-  if (running) return running;
-  running = (async () => {
-    const keys = await collectCompletedTrainingKeys();
-    for (const k of keys) await recordTrainingDone(k);
-    // A key recorded on an earlier launch but never accepted (offline, or
-    // lab_not_found before the backend rows landed) goes again.
-    await retryUnsentLabCredit();
-  })().finally(() => {
-    running = null;
-  });
-  return running;
+  const gen = labCompletionGeneration();
+  if (running && running.gen === gen) return running.done;
+  const before = running?.done ?? Promise.resolve();
+  const run = {
+    gen,
+    done: before
+      .catch(() => {})
+      .then(async () => {
+        if (gen !== labCompletionGeneration()) return; // another wipe since this call
+        const keys = await collectCompletedTrainingKeys();
+        for (const k of keys) await recordTrainingDone(k, gen);
+        if (gen !== labCompletionGeneration()) return;
+        // A key recorded on an earlier launch but never accepted (offline, or
+        // lab_not_found before the backend rows landed) goes again.
+        await retryUnsentLabCredit();
+      })
+      .finally(() => {
+        if (running === run) running = null;
+      }),
+  };
+  running = run;
+  return run.done;
 }

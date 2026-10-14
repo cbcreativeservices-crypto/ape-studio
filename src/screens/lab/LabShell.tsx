@@ -38,7 +38,7 @@ import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
 import { trainingKeyForCheck } from '../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../features/lab/trainingSignal';
-import { markLabUnit, registerLabUnits, useLabDone } from '../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../features/lab/labCompletion';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
@@ -429,6 +429,10 @@ export function LabShell({
   children: ReactNode | ((api: LabShellExploreApi) => ReactNode);
 }) {
   const insets = useSafeAreaInsets();
+  // Every scroll here ends on a key (the CHECK's answers, GUIDED LESSON):
+  // + the bottom inset so Android's three-button bar never covers it
+  // (toddler pass 2026-10-13). The rack's well pads itself (RackUnit).
+  const scrollPad = { paddingBottom: 28 + insets.bottom };
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
@@ -441,8 +445,15 @@ export function LabShell({
    * initializer reads it before it is loaded and answers `false` on every cold
    * start — re-asking a learner for a check they had already passed. The hook
    * exists precisely because the store is async and subscribes to it.
+   *
+   * ⛔ And the UNIT, not `useLabDone` (toddler pass 2026-10-13): a LabShell
+   * labId ('compression', 'cymatics', …) has no static unit list — its
+   * [UNDERSTANDING_UNIT] is registered only in onPassed, i.e. never on a cold
+   * start — and is never "sent" (not a server key), so `useLabDone` answered
+   * false on every relaunch and re-asked a passed check. The banked unit is
+   * the record (LabUnderstandingBlock reads it the same way).
    */
-  const alreadyPassed = useLabDone(labId);
+  const alreadyPassed = useLabClearedUnits(labId).has(UNDERSTANDING_UNIT);
   const [justPassed, setJustPassed] = useState(false);
   const checkPassed = alreadyPassed || justPassed;
   // Drag editors lock the ScrollView while dragging so the gesture wins over
@@ -660,7 +671,7 @@ export function LabShell({
           {mode === 'check' ? (
             // LEARN and CHECK are pure reading: the tablet reading column
             // (owner 2026-09-29, tablet pass). No-op on a phone.
-            <ScrollView contentContainerStyle={[styles.scroll, readingColumn]}>
+            <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>
               <View style={styles.panel}>
                 <LabUnderstandingCheck
                   labTitle={title}
@@ -679,7 +690,7 @@ export function LabShell({
             </ScrollView>
           ) : null}
           {mode === 'learn' ? (
-            <ScrollView contentContainerStyle={[styles.scroll, readingColumn]}>
+            <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>
               <View style={styles.panel}>
                 <Text style={styles.caption}>
                   What this lab teaches — definitions, common mistakes, pro tips, and the formula.
@@ -727,7 +738,7 @@ export function LabShell({
         </>
       ) : (
         <ScrollLockCtx.Provider value={setScrollLocked}>
-          <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
+          <ScrollView contentContainerStyle={[styles.scroll, scrollPad]} scrollEnabled={!scrollLocked}>
             {mode === 'learn' ? (
               <View style={styles.panel}>
                 <Text style={styles.caption}>

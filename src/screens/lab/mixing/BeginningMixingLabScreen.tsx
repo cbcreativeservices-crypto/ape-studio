@@ -29,6 +29,9 @@ const PAGES = [...MIXING_PAGES_A, ...MIXING_PAGES_B, ...MIXING_PAGES_C, ...MIXIN
 // reports its stable server key (trainingLabKeys MIXING_BEG_PAGE_IDS, in page order).
 // PagedLab fires this once per newly-done REAL page (never the check page).
 const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('beg', index));
+// The same keys, so a page banked to the account reads CREDITED after START
+// OVER (PRACTICE) — credit is never shown as missing (toddler pass 2026-10-13).
+const PAGE_KEYS = PAGES.map((_, i) => mixingPageKeyAt('beg', i));
 
 export function BeginningMixingLabScreen() {
   // Leaving the lab releases the ~15.4 MB of synthesized stems (owner ruling
@@ -38,5 +41,5 @@ export function BeginningMixingLabScreen() {
   // shows; it was 7.1 s before classicWave became a wavetable, which is why
   // this was not wired until now.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} />;
+  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} />;
 }

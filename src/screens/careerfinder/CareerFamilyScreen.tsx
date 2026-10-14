@@ -203,10 +203,12 @@ export function CareerFamilyScreen() {
                 default view of every single family showed zero free topics under
                 a line promising some. Adding to the study list IS free and does
                 work for everyone, which is what the sentence now says and all it
-                says. */}
+                says. ⛔ SUPERSEDED 2026-10-11: enrolling is members-only
+                (useEnrollGate) — "adding is free" became untrue; toddler pass
+                2026-10-13 rewrote the line. */}
             <Body muted>{!upsell
               ?'These Academy topics lead into this family. Tap one to add it to your study list.'
-              : 'These Academy topics lead into this family. Tap one to add it to your study list — adding is free, and studying a topic needs Academy membership unless it is marked free.'}</Body>
+              : 'These Academy topics lead into this family. Adding topics to your study list is for Academy members.'}</Body>
             <Text style={styles.startHere}>START HERE</Text>
             {topicsToShow.map((gs) => {
               const on = enrolledGs.has(gs);

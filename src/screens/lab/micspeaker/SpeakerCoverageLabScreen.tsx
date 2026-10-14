@@ -676,7 +676,7 @@ export function SpeakerCoverageLabScreen() {
         </RackUnit>
       ) : (
         // ── READING IT — pure prose: the whole page may scroll. ─────────────
-        <ScrollView contentContainerStyle={styles.scroll}>
+        <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 30 + insets.bottom }]}>
           <Text style={styles.sectionTitle}>{s.title}</Text>
           <Text style={styles.body}>{s.blurb}</Text>
           <ConceptsSection help={help} />

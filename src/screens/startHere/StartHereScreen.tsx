@@ -36,7 +36,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useGuestWording } from '../../features/commercial/useTier';
-import { heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
+import { forgetHeldPaged, heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
 import { ProgressUnreadableNote } from '../lab/kit/ProgressUnreadableNote';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import { useAnimationsAllowed } from '../../features/settings/a11y';
@@ -312,7 +312,12 @@ export function StartHereScreen() {
     setProgress(fresh);
     setPage(0);
     setListOpen(false);
-    void resetPagedProgress(START_HERE_ID);
+    // A GUEST's reset (toddler pass 2026-10-13 — PagedLab's 2026-10-01 rule):
+    // let go of the ticks HELD for the sign-in hand-off, or a sign-in later
+    // this session wrote the pre-reset ticks into the account; and never
+    // remove the device copy (it is the previous account's, not theirs).
+    if (noAccountRef.current || loadedAsGuestRef.current) forgetHeldPaged(START_HERE_ID);
+    else void resetPagedProgress(START_HERE_ID);
   };
   const confirmReset = () => {
     const message = 'Clears your place and the ticks in Start Here only.';

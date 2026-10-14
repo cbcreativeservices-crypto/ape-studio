@@ -9,7 +9,7 @@
  * way forward is the shared LabNextButton: RackUnit appends it to a rack
  * well; the host's readWrap appends it to a read step.
  */
-import { createContext, useContext, useEffect, type ReactNode } from 'react';
+import { createContext, Fragment, useContext, useEffect, type ReactNode } from 'react';
 import { ScrollView } from 'react-native';
 import { MasteringRack, type MasteringRackSpec } from './MasteringRack';
 
@@ -61,5 +61,7 @@ export function ModuleSteps({ steps }: { steps: MasteringStep[] }) {
       {tail}
     </>
   );
-  return host ? <>{host.readWrap(body)}</> : <ScrollView key={s.key}>{body}</ScrollView>;
+  // Keyed by step (toddler pass 2026-10-13): unkeyed, NEXT from one reading
+  // step to the next reused the same scroller and opened it scrolled down.
+  return host ? <Fragment key={s.key}>{host.readWrap(body)}</Fragment> : <ScrollView key={s.key}>{body}</ScrollView>;
 }

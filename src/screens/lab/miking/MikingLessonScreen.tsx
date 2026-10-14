@@ -376,7 +376,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     </>
   );
   const readWrap = (body: ReactNode) => (
-    <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
       {body}
       <LabNextButton />
     </ScrollView>

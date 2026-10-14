@@ -63,7 +63,7 @@ test('keyed lab hooks: a hydrate that lands after the key changed is dropped', (
   const done = code(read('src/features/lab/labCompletion.ts'));
   const visits = code(read('src/features/lab/labVisits.ts'));
   const SHAPE = /let live = true;\s*void hydrate\(\)\.then\(\(\) => \{\s*if \(live\) l\(\);\s*\}\);\s*return \(\) => \{\s*live = false;/g;
-  assert.equal((done.match(SHAPE) ?? []).length, 3, 'useLabDone + useLabClearedUnits + useLabCompletion');
+  assert.equal((done.match(SHAPE) ?? []).length, 4, 'useLabDone + useLabClearedUnits + useLabKeysDone (2026-10-13) + useLabCompletion');
   assert.equal((visits.match(SHAPE) ?? []).length, 1, 'useLabVisits');
   // The raw listener is handed to hydrate only by the []-deps
   // useAudioFundamentalsComplete (no key to go stale).

@@ -87,17 +87,23 @@ export function LabUnderstandingCheck({
       setPicked((p) => ({ ...p, [q.id]: option }));
       if (option !== q.correct) return;
       setCorrect((prev) => {
+        if (prev.has(q.id)) return prev;
         const next = new Set(prev);
         next.add(q.id);
-        if (next.size === questions.length && !fired) {
-          setFired(true);
-          onPassed();
-        }
         return next;
       });
     },
-    [correct, questions.length, fired, onPassed],
+    [correct],
   );
+  // The pass fires from an EFFECT, once (toddler pass 2026-10-13): it used to
+  // run inside the setCorrect updater — a parent state change (PagedLab's
+  // markDone, the credit bank) during this component's render, and fired
+  // twice wherever React replays an updater.
+  useEffect(() => {
+    if (!done || fired) return;
+    setFired(true);
+    onPassed();
+  }, [done, fired, onPassed]);
 
   return (
     <View style={s.wrap}>

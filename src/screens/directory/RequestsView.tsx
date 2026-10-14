@@ -7,7 +7,7 @@
  * No email address appears anywhere in this screen, in either direction.
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AppState, FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -289,12 +289,29 @@ export function RequestsView({
   // A linked conversation (member alert tap): open it once the list knows it.
   const onOpenedRef = useRef(onOpenedThread);
   onOpenedRef.current = onOpenedThread;
+  /**
+   * The link this view's list is FRESH for (toddler pass 2026-10-13). A member
+   * alert tapped while Requests was already open was matched against the list
+   * loaded earlier: a conversation accepted since then was not in it, so the
+   * tap opened nothing; and the conversation already open was handed back as
+   * the same object, so its sheet never re-read and the new message did not
+   * appear. A link that arrives after the first load re-reads the list first.
+   * The link the view MOUNTED with is answered by the first load itself.
+   */
+  const freshFor = useRef<string | null>(openThreadId);
   useEffect(() => {
     if (!openThreadId || threads === null) return;
+    if (freshFor.current !== openThreadId) {
+      freshFor.current = openThreadId;
+      void load();
+      return;
+    }
     const hit = threads.find((t) => t.id === openThreadId);
     if (hit && hit.status === 'accepted') setOpen(hit);
+    // Consumed: the same conversation linked again later re-reads again.
+    freshFor.current = null;
     onOpenedRef.current?.();
-  }, [openThreadId, threads]);
+  }, [openThreadId, threads, load]);
 
   // One answer at a time, until the list has reloaded (bug hunt 2026-09-29):
   // the buttons stayed live while the answer was out, so a double-tap sent
@@ -690,6 +707,32 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     void load();
   }, [load]);
 
+  // BACK FROM THE BACKGROUND, RE-READ (toddler pass 2026-10-13). There is no
+  // live feed: a reply that arrived while the app was in the background — the
+  // very thing a member alert tells you about — never appeared in the open
+  // conversation until it was closed and reopened.
+  useEffect(() => {
+    if (!threadId) return;
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') void load();
+    });
+    return () => sub.remove();
+  }, [threadId, load]);
+
+  /**
+   * FOLLOW THE NEWEST MESSAGE (toddler pass 2026-10-13). The list opened at the
+   * OLDEST message and never moved, so in a long conversation the reply you
+   * came for — and the message you had just sent — landed below the fold with
+   * nothing to say it was there. Pinned to the end on open and after your own
+   * SEND; a drag up to read history unpins it, so a re-read never yanks the
+   * reader away from what they are reading.
+   */
+  const listRef = useRef<FlatList<ThreadMessage>>(null);
+  const pinToEnd = useRef(true);
+  useEffect(() => {
+    pinToEnd.current = true;
+  }, [threadId]);
+
   if (!thread) return null;
   return (
     /**
@@ -734,6 +777,13 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
             // nothing to its height and the conversation laid out ZERO tall
             // between the header and the reply box.
             style={{ flexShrink: 1 }}
+            ref={listRef}
+            onContentSizeChange={() => {
+              if (pinToEnd.current) listRef.current?.scrollToEnd({ animated: false });
+            }}
+            onScrollBeginDrag={() => {
+              pinToEnd.current = false;
+            }}
             // Drag the conversation to put the keyboard away — the second
             // escape route, since a multiline Return cannot dismiss it.
             keyboardDismissMode="interactive"
@@ -831,6 +881,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
                   if (!r.ok) return setErr(r.error);
                   setErr(null);
                   setBody(unsent);
+                  pinToEnd.current = true; // show the message just sent
                   await load();
                 }),
               );

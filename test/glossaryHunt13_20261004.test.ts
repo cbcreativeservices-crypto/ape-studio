@@ -76,7 +76,8 @@ describe('2 · Custom and Bookmarks: unreadable is not empty', () => {
   it('the bookmark popup says so before "No bookmarks in this list yet"', () => {
     assert.match(SCREEN, /: bmUnreadable\s*\? BOOKMARKS_UNREADABLE\s*: 'No bookmarks in this list yet/);
     // …and its row renderer repaints when that answer changes.
-    assert.match(SCREEN, /\[bmCtx, openTermFromBm, switchBmCtx, topicsById, bmUnreadable, loadError\]/);
+    // (+ `loading` since the 2026-10-13 toddler pass: a loading face before "empty".)
+    assert.match(SCREEN, /\[bmCtx, openTermFromBm, switchBmCtx, topicsById, bmUnreadable, loadError, loading\]/);
   });
 });
 

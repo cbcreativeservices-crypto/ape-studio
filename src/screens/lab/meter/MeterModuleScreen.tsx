@@ -155,7 +155,7 @@ export function MeterModuleScreen() {
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
         </View>
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, readingColumn]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+      <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 30 + insets.bottom }]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
         </View>

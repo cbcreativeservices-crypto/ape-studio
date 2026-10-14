@@ -204,7 +204,8 @@ describe('1. guest lab credit carries only within the session', () => {
 
   it('the wiring: fireComplete waits on the pending wipe, and retries on settle', () => {
     const s = read('src/features/lab/labCompletion.ts');
-    assert.match(s, /async function fireComplete\(labKey: string\): Promise<void> \{\s*if \(sent\.has\(labKey\)\) return;[\s\S]{0,900}?if \(sessionWipePending\(\)\) return;\s*const gen = completionGen;/);
+    // fireCompleteOnce: the body behind the 2026-10-13 one-call-in-flight guard.
+    assert.match(s, /async function fireCompleteOnce\(labKey: string\): Promise<void> \{\s*if \(sent\.has\(labKey\)\) return;[\s\S]{0,900}?if \(sessionWipePending\(\)\) return;\s*const gen = completionGen;/);
     assert.match(s, /^onSessionCarrySettled\(\(\) => \{\s*void retryUnsent\(\);\s*\}\);/m);
     const c = read('src/features/lab/sessionCarry.ts');
     assert.match(c, /syncPending = false;\s*for \(const l of \[\.\.\.settledListeners\]\)/);

@@ -304,7 +304,13 @@ export function SettingsScreen({ navigation }: Props) {
   // in that window started its own flush and raised its own "Log out?", and
   // the dialog queue replayed each one after the first was answered.
   const logoutPending = useRef(false);
+  /** A confirmed Log out is still signing out (toddler pass 2026-10-13). Up to
+   *  4 s + 15 s with nothing on screen, so the row was tapped again: a second
+   *  flush, a second "Log out?", a second signOut racing the first and, offline,
+   *  two "Couldn't log out" notices. Held until the sign-out answers. */
+  const logoutRunning = useRef(false);
   const confirmLogout = useCallback(() => {
+    if (logoutRunning.current) return;
     if (logoutPending.current) return;
     logoutPending.current = true;
     // confirmDialog: Alert.alert is a no-op on RN-web — Log out was a dead
@@ -370,7 +376,10 @@ ${LOCAL_LOSS}`
           : `Your progress and credentials are safe on your account. But ${LOCAL_LOSS.charAt(0).toLowerCase()}${LOCAL_LOSS.slice(1)}`,
         'Log out',
         () => {
+          if (logoutRunning.current) return;
+          logoutRunning.current = true;
           void (async () => {
+            try {
             markIntentionalSignOut();
             // Stop this account's member alerts reaching this phone while the
             // session can still say so (owner 2026-10-04). Best effort and
@@ -378,6 +387,7 @@ ${LOCAL_LOSS}`
             // first launch releases or takes over this phone anyway
             // (communityPush.syncCommunityDevice).
             await softDeadline(() => releaseCommunityDevice(), false, 'logout/releaseDevice', 4000);
+            markIntentionalSignOut(); // re-marked: the 8 s marker can lapse (toddler 10-13)
             /**
              * ⛔ OFFLINE, signOut() DOES NOT SIGN OUT (2026-09-30 bug pass).
              * supabase-js revokes on the server first and, when that request
@@ -409,6 +419,9 @@ ${LOCAL_LOSS}`
               return;
             }
             navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+            } finally {
+              logoutRunning.current = false;
+            }
           })();
         },
         { destructive: true },

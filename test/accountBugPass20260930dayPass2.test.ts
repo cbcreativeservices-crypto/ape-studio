@@ -45,7 +45,8 @@ test('Guest Mode refuses to go in while an ACCOUNT session survived a failed sig
 
 test('cancelling recovery after a verified code signs that recovery session out', () => {
   const cancel = auth.slice(auth.indexOf('const cancelRecovery = () => {'), auth.indexOf('setMode(\'main\');\n    setError(null);'));
-  assert.match(cancel, /if \(verifiedFor\.current !== null\) \{\s*markIntentionalSignOut\(\);\s*(\/\/[^\n]*\n\s*)*void signOutThisDevice\(\)/);
+  // `|| recoverySession.current` + its reset added by toddlerAccounts_20261013 (RESEND then Cancel).
+  assert.match(cancel, /if \(verifiedFor\.current !== null( \|\| recoverySession\.current)?\) \{\s*(recoverySession\.current = false;\s*)?markIntentionalSignOut\(\);\s*(\/\/[^\n]*\n\s*)*void signOutThisDevice\(\)/);
 });
 
 test('Settings NOTIFICATIONS never upsells a member whose tier is not known yet', () => {

@@ -16,6 +16,7 @@
  * same tick the lab itself set.
  */
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from './DimModal';
 import { LabChecklist, LabChecklistSummary } from './LabChecklist';
 import { StudioButton } from './StudioButton';
@@ -49,10 +50,15 @@ export function LabRequirementsSheet({
   // an empty copy, and the summary told a learner with every lab done
   // "15 still to finish before this counts toward your credit".
   const progressUnreadable = useLabCompletionUnreadable();
+  // ⛔ BOTTOM INSET (toddler pass 2026-10-13). The sheet docks to the screen's
+  // bottom edge with only its 16 pt padding, so "Go to labs" / "Close" sat
+  // under an Android three-button bar (~48 pt) and in the iPhone home-
+  // indicator strip. Same rule as StudyAreaExplore's sheet.
+  const insets = useSafeAreaInsets();
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.backdrop}>
-        <View style={s.sheet}>
+        <View style={[s.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 6 }]}>
           <View style={s.head}>
             <View style={{ flex: 1 }}>
               <Text style={s.eyebrow}>LAB REQUIREMENTS</Text>

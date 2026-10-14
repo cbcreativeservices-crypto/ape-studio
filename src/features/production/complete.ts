@@ -20,7 +20,13 @@ export function productionProjectComplete(lab: LabKind, project: ProductionProje
     const resolved = resolveLab(def.stages, project.pathway, project.values);
     if (resolved.length === 0) return false;
     const hidden = labHiddenKeys(resolved);
-    return resolved.every((s) => readStage(s, project, now, hidden).state === 'complete');
+    // A stage the learner marked wholly NOT APPLICABLE (every field N/A with
+    // a reason) reads done everywhere else — the meter, the packet's
+    // "Nothing is left" — so it is done here too (toddler pass 2026-10-13: it
+    // blocked the credit while every screen said nothing was left). At least
+    // one stage must be genuinely complete: an all-N/A plan is no project.
+    const states = resolved.map((s) => readStage(s, project, now, hidden).state);
+    return states.every((st) => st === 'complete' || st === 'na') && states.includes('complete');
   } catch {
     return false; // a project that cannot be read is not complete
   }

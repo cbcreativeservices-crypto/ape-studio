@@ -59,8 +59,9 @@ describe('community profile editor', () => {
 
   test('D3: publish and delete run behind the save chain', () => {
     const pub = between(editor, 'const sendPublish = (', 'const onPublish');
-    assert.match(pub, /saveChain\.current\s*\.then\(\(\) => publishCommunityProfile\(on, adult\)\)/);
-    assert.match(editor, /saveChain\.current\.then\(\(\) => deleteCommunityProfile\(\)\)/);
+    // Wipe-fenced since the toddler pass 2026-10-13: still behind the chain.
+    assert.match(pub, /saveChain\.current\s*\.then\(\(\) => \(stale\(\) \? null : publishCommunityProfile\(on, adult\)\)\)/);
+    assert.match(editor, /saveChain\.current\.then\(\(\) => \(stale\(\) \? null : deleteCommunityProfile\(\)\)\)/);
   });
 
   test('D4: featured-credential writes are chained and roll back to the last accepted list', () => {

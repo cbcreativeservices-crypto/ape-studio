@@ -1062,7 +1062,9 @@ export function AmplitudeOrientationGatePage() {
           detail="This lab teaches how amplitude and level RELATE — the ramps and colours are a teaching scale, not a calibrated one, and your phone’s screen and output are both uncalibrated. Learn the relationship here; read real levels on real meters."
         />
       </View>
-      <ScrollView contentContainerStyle={styles.gateScroll}>
+      {/* + the bottom inset (toddler pass 2026-10-13): the gate's UNDERSTOOD —
+          CONTINUE sat under Android's three-button bar, as the lab page's did. */}
+      <ScrollView contentContainerStyle={[styles.gateScroll, { paddingBottom: 30 + insets.bottom }]}>
         <AmplitudeColorBody />
       </ScrollView>
     </View>
