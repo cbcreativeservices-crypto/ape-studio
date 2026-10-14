@@ -94,6 +94,8 @@ const DOUBLE_TAP_MS = 320;
 const LANE_TICK_MS = 16;
 /** A touch that travelled no further than this is a TAP (double-tap → home). */
 const TAP_SLOP = 5;
+/** A preview lane's cap waits at most this long for its commit to land. */
+const HOLD_MS = 1500;
 /** Gesture Handler's CANCELLED state (the system or a second finger took the
  *  touch): settle, but never count it as a tap. A plain number for the worklet. */
 const CANCELLED: number = State.CANCELLED;
@@ -193,6 +195,19 @@ export function ParamLane({
   const formatRef = useRef(format);
   formatRef.current = format;
   const [live, setLive] = useState<string | null>(null);
+  // A preview lane's commit can land LATER than the release: the miking rig
+  // glides a far move over a few frames and commits when the mic arrives.
+  // The cap holds where the finger let go until the page's value moves (or
+  // HOLD_MS passes) — it used to snap back to the old value for the whole
+  // glide and then jump forward, so a flick read as lost (live emulator
+  // retest 2026-10-14).
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  const held = useRef<{ from: number; t: ReturnType<typeof setTimeout> } | null>(null);
+  const releaseHold = useRef(() => {
+    if (held.current) clearTimeout(held.current.t);
+    held.current = null;
+  }).current;
   const feed = useRef(
     createLaneFeed({
       deliver: (v) => {
@@ -212,7 +227,17 @@ export function ParamLane({
   const settle = useRef(() => {
     feed.end();
     const last = feed.latest();
-    if (onCommitRef.current && last != null) onCommitRef.current(last);
+    if (onCommitRef.current && last != null) {
+      releaseHold();
+      held.current = {
+        from: valueRef.current,
+        t: setTimeout(() => {
+          held.current = null;
+          setRest((n) => n + 1);
+        }, HOLD_MS),
+      };
+      onCommitRef.current(last);
+    }
     dragging.current = false;
     setLive(null);
     setRest((n) => n + 1);
@@ -226,12 +251,17 @@ export function ParamLane({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => () => {
     if (dragging.current) settle();
+    releaseHold();
   }, []);
   // At rest the cap is the page's value. `touching` closes the gap between a
-  // touch-down on the UI thread and its grant reaching the JS thread.
+  // touch-down on the UI thread and its grant reaching the JS thread; `held`
+  // keeps a preview lane's cap at the release until its commit lands.
   useEffect(() => {
-    if (!dragging.current && !touching.value) capV.value = Math.max(0, Math.min(1, value));
-  }, [value, rest, capV, touching]);
+    if (dragging.current || touching.value) return;
+    if (held.current && value === held.current.from) return;
+    releaseHold();
+    capV.value = Math.max(0, Math.min(1, value));
+  }, [value, rest, capV, touching, releaseHold]);
   const capStyle = useAnimatedStyle(() => ({ left: capV.value * Math.max(0, travelW.value - CAP_W) }));
   // The LEVEL lane's lit groove follows the CAP (capV), not the page value,
   // so the fill and the cap never separate mid-drag. The ramp spans the
@@ -243,6 +273,7 @@ export function ParamLane({
   // ── The JS side of a touch (called from the worklets via scheduleOnRN) ──
   /** Touch-down: the cap already jumped on the UI thread; tell the page now. */
   const onGrant = useRef((v: number | null) => {
+    releaseHold();
     onActiveRef.current?.(true);
     dragging.current = true;
     if (v != null) feed.grant(v);

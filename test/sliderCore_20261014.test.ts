@@ -151,7 +151,7 @@ describe('4. sources', () => {
   it('ParamLane anchors the drag unclamped and settles on an unmount mid-drag', () => {
     const s = read('src/screens/lab/rack/ParamLane.tsx');
     assert.match(s, /base\.value = laneRawAt\(e\.x, w, g\);/);
-    assert.match(s, /useEffect\(\(\) => \(\) => \{\n\s*if \(dragging\.current\) settle\(\);\n\s*\}, \[\]\);/);
+    assert.match(s, /useEffect\(\(\) => \(\) => \{\n\s*if \(dragging\.current\) settle\(\);\n\s*releaseHold\(\);\n\s*\}, \[\]\);/);
   });
   it('DragSlider: unclamped anchor; the cap rides a shared value, the page value only at rest', () => {
     const s = read('src/screens/lab/foundations/bits.tsx');

@@ -244,7 +244,7 @@ describe('a far tap on a placement lane never blocks the JS thread', () => {
 
   it('useRig.preview glides the rest on following macrotasks and commits on arrival', () => {
     const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8');
-    assert.match(s, /const preview = useCallback\([\s\S]{0,900}constrainMove\(scene, body\[slot\], sv\.value, target, bounds, MOVE_WORK\)[\s\S]{0,400}g\.h = runSoon\(more\)/);
+    assert.match(s, /const preview = useCallback\([\s\S]{0,900}constrainMove\(scene, body\[slot\], live\.current\[slot\]\?\.pose \?\? sv\.value, target, bounds, MOVE_WORK\)[\s\S]{0,1200}g\.h = runSoon\(more\)/);
     assert.match(s, /const commit = useCallback\(\s*\(slot: MicSlot\) => \{\s*const g = glide\.current\[slot\];\s*if \(g\.h\) \{\s*g\.owed = true;/);
     for (const fn of ['moveTo', 'jumpTo', 'settle']) assert.match(s, new RegExp(`const ${fn} = useCallback\\(\\s*\\([^)]*\\) => \\{\\s*stopGlide\\(slot\\);`), `${fn} stops a glide first`);
   });
@@ -336,5 +336,36 @@ describe('the collision broad phase is exact', () => {
       }
     }
     assert.ok(poses > 500 && hits > 50, `${poses} poses, ${hits} of them blocked`);
+  });
+});
+
+describe('fader commit lands where the finger let go (live emulator retest 2026-10-14)', () => {
+  // A shared value written from JS reaches the UI runtime a moment later, but
+  // a JS read is synchronous from the UI runtime: commitNow read poseA back
+  // straight after preview wrote it and committed the OLD pose (a tap or a
+  // flick on POSITION was saved where the mic had been).
+  it('useRig commits the JS-side mirror of the last preview, not a read-back of the shared value', () => {
+    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8');
+    assert.match(s, /const l = live\.current\[slot\];\n\s*live\.current\[slot\] = null;\n\s*write\(slot, l \? l\.pose :/);
+    assert.match(s, /constrainMove\(scene, body\[slot\], live\.current\[slot\]\?\.pose \?\? sv\.value, target, bounds, MOVE_WORK\)/);
+    assert.equal((s.match(/live\.current\[slot\] = \{ pose: [rq]\.pose, blocked: [rq]\.blocked \}/g) ?? []).length, 2, 'preview and the glide both update the mirror');
+  });
+  it('the glide spends a time slice per macrotask, not one fixed work slice', () => {
+    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8');
+    assert.match(s, /const GLIDE_SLICE_MS = 10;/);
+    assert.match(s, /while \(!q\.done && Date\.now\(\) - t0 < GLIDE_SLICE_MS\)/);
+  });
+  it('a preview lane holds its cap at the release until the commit lands', () => {
+    const s = readFileSync('src/screens/lab/rack/ParamLane.tsx', 'utf8');
+    assert.match(s, /if \(held\.current && value === held\.current\.from\) return;/);
+    assert.match(s, /const HOLD_MS = 1500;/);
+    assert.match(s, /const onGrant = useRef\(\(v: number \| null\) => \{\n\s*releaseHold\(\);/, 'a new touch drops the hold');
+  });
+});
+
+describe('shared-value read-after-write (audit 2026-10-14)', () => {
+  it('Harmonograph: a fresh sheet times its draw from 0, not a read-back of progress', () => {
+    const s = readFileSync('src/screens/lab/HarmonographMachine.tsx', 'utf8');
+    assert.match(s, /const cur = sameRun \? Math\.min\(1, Math\.max\(0, progress\.value\)\) : 0;/);
   });
 });

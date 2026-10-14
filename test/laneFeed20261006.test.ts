@@ -94,7 +94,7 @@ describe('ParamLane uses the feed and a UI-thread cap', () => {
     assert.doesNotMatch(s, /onChangeRef\.current\(laneDragValue/);
   });
   it('a preview lane (onCommit) commits once on release and prints the finger value live', () => {
-    assert.match(s, /if \(onCommitRef\.current && last != null\) onCommitRef\.current\(last\);/);
+    assert.match(s, /if \(onCommitRef\.current && last != null\) \{[\s\S]{0,300}onCommitRef\.current\(last\);\n\s*\}/);
     assert.match(s, /const readout = live \?\? pageReadout;/);
     const rack = readFileSync(new URL('../src/screens/lab/rack/RackUnit.tsx', import.meta.url), 'utf8');
     assert.match(rack, /onCommit=\{bound\.onCommit\}/);
@@ -109,6 +109,6 @@ describe('ParamLane uses the feed and a UI-thread cap', () => {
   });
   it('the cap is drawn from a shared value, synced to the page value at rest', () => {
     assert.match(s, /style=\{\[styles\.cap, capStyle\]\}/);
-    assert.match(s, /if \(!dragging\.current && !touching\.value\) capV\.value =/);
+    assert.match(s, /if \(dragging\.current \|\| touching\.value\) return;\n\s*if \(held\.current && value === held\.current\.from\) return;\n\s*releaseHold\(\);\n\s*capV\.value =/);
   });
 });

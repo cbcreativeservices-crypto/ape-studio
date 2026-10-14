@@ -23,6 +23,9 @@ import { micBodyOf } from '../model/validate.ts';
 import { micType } from '../../data/micTypes.ts';
 import { withStop } from './readoutText.ts';
 
+/** A far move's glide spends at most this long per macrotask (see preview). */
+const GLIDE_SLICE_MS = 10;
+
 export type SurfacePin = { top: { min: Vec3; max: Vec3 }; halfWidth: number } | null;
 
 export type Rig = {
@@ -149,7 +152,16 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
 
   // The far-tap glide per slot (see preview).
   const glide = useRef<Record<MicSlot, { h: SoonHandle | null; owed: boolean }>>({ A: { h: null, owed: false }, B: { h: null, owed: false } });
+  // The fader's latest move as the JS side knows it. A shared value's write
+  // from JS reaches the UI runtime a moment later, but its read is
+  // synchronous FROM the UI runtime — so reading poseA right after writing it
+  // returned the OLD pose: a tap or a flick committed where the mic had been,
+  // and the lane, strip and bezel stayed there while the canvas moved (live
+  // emulator retest 2026-10-14). preview/glide write here too; commitNow
+  // reads it first and clears it.
+  const live = useRef<Record<MicSlot, { pose: MicPose; blocked: Blocked } | null>>({ A: null, B: null });
   const stopGlide = useCallback((slot: MicSlot) => {
+    live.current[slot] = null;
     const g = glide.current[slot];
     g.h?.cancel();
     g.h = null;
@@ -197,8 +209,10 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   // mic arrives (glide.owed).
   const commitNow = useCallback(
     (slot: MicSlot) => {
-      write(slot, (slot === 'A' ? poseA : poseB).value);
-      setStopOf(slot, (slot === 'A' ? blockedA : blockedB).value);
+      const l = live.current[slot];
+      live.current[slot] = null;
+      write(slot, l ? l.pose : (slot === 'A' ? poseA : poseB).value);
+      setStopOf(slot, l ? l.blocked : (slot === 'A' ? blockedA : blockedB).value);
       setVersion((v) => v + 1);
     },
     [poseA, poseB, blockedA, blockedB, write, setStopOf],
@@ -215,14 +229,22 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       g.h?.cancel();
       g.h = null;
       g.owed = false;
-      const r = constrainMove(scene, body[slot], sv.value, target, bounds, MOVE_WORK);
+      const r = constrainMove(scene, body[slot], live.current[slot]?.pose ?? sv.value, target, bounds, MOVE_WORK);
       sv.value = r.pose;
       bv.value = r.blocked;
+      live.current[slot] = { pose: r.pose, blocked: r.blocked };
       if (!r.done) {
         const more = () => {
-          const q = constrainMove(scene, body[slot], sv.value, target, bounds, MOVE_WORK);
+          // Up to GLIDE_SLICE_MS of checks per macrotask, not one MOVE_WORK
+          // slice: each runSoon waits for the next frame, so a fixed slice
+          // made a far move crawl on a slower phone (2 s+ on the emulator,
+          // live retest 2026-10-14).
+          const t0 = Date.now();
+          let q = constrainMove(scene, body[slot], live.current[slot]?.pose ?? sv.value, target, bounds, MOVE_WORK);
+          while (!q.done && Date.now() - t0 < GLIDE_SLICE_MS) q = constrainMove(scene, body[slot], q.pose, target, bounds, MOVE_WORK);
           sv.value = q.pose;
           bv.value = q.blocked;
+          live.current[slot] = { pose: q.pose, blocked: q.blocked };
           if (!q.done) {
             g.h = runSoon(more);
             return;

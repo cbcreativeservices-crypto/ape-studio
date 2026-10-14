@@ -518,7 +518,11 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     const sameRun = runKeyRef.current.every((v, i) => v === key[i]) && runKeyRef.current.length === 3;
     runKeyRef.current = key;
     if (!sameRun) progress.value = 0;
-    const cur = Math.min(1, Math.max(0, progress.value));
+    // A fresh sheet starts at 0 by definition: reading progress back here
+    // returned the OLD fraction (a JS write lands on the UI runtime a moment
+    // later), so a new drawing ran (1 − old) as long — far too fast, or
+    // finished at once (shared-value audit 2026-10-14).
+    const cur = sameRun ? Math.min(1, Math.max(0, progress.value)) : 0;
     // a LIVING machine: draw at the real rate, hold the finished art ~3 s,
     // then a fresh sheet and draw again — whenever you look, it moves.
     progress.value = withSequence(
