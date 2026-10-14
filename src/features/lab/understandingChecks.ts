@@ -1,4 +1,4 @@
-// ⏸ HOLD — owner review required before release (owner 2026-10-13).
+// ✅ APPROVED by the owner 2026-10-13 (content review done; ships with the post-approval OTA).
 /**
  * Understanding checks for the PRACTICE labs — the labs whose completion in
  * TRAINING_LABS (trainingLabKeys.ts) is 'understanding'. Owner ruling

@@ -48,7 +48,7 @@ export async function buildSeedSql() {
     '--',
     '-- ⛔ GENERATED — do not edit by hand. Source: src/data/labRequirements.ts',
     '-- Regenerate: node scripts/gen-lab-cert-seed.mjs   (ratchet: test/labCertRequirements_20261013.test.ts)',
-    '-- STATUS: PROPOSED — HOLD until the owner approves the map',
+    '-- STATUS: APPROVED by the owner 2026-10-13 — ready to run.',
     '-- (Downloads\\2026-10-13_LAB_CERT_REQUIREMENTS_MAP.md).',
     '--',
     '-- Assumes (Comp A creates them):',

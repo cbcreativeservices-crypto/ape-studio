@@ -6,7 +6,7 @@
  * authored check of 3–5 questions; every question has 3–5 distinct options,
  * exactly one correct option (matched by value) and an explanation; ids are
  * unique per lab; no brand or model names; the checks are registered in
- * UNDERSTANDING_CHECKS. ⏸ The content is on HOLD for owner review.
+ * UNDERSTANDING_CHECKS. ✅ Owner-approved 2026-10-13.
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -69,10 +69,10 @@ test('no brand or model names in any question text', () => {
   }
 });
 
-test('the checks are registered in UNDERSTANDING_CHECKS and the file carries the HOLD marker', () => {
+test('the checks are registered in UNDERSTANDING_CHECKS and the file carries the APPROVED marker', () => {
   const reg = readFileSync('src/features/lab/understanding.ts', 'utf8');
   assert.match(reg, /import \{ PRACTICE_LAB_CHECKS \} from '\.\/understandingChecks';/);
   assert.match(reg, /\.\.\.PRACTICE_LAB_CHECKS,/);
   const data = readFileSync('src/features/lab/understandingChecks.ts', 'utf8');
-  assert.ok(data.startsWith('// ⏸ HOLD — owner review required before release (owner 2026-10-13).'));
+  assert.ok(data.startsWith('// ✅ APPROVED by the owner 2026-10-13'));
 });

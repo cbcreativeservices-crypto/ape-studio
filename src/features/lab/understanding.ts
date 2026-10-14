@@ -28,7 +28,7 @@
  */
 
 import { SOUND_SYSTEMS_CHECK, SOUND_SYSTEMS_LEARN_ID } from '../soundsystems/check';
-// ⏸ HOLD — owner review required before release (owner 2026-10-13).
+// ✅ APPROVED by the owner 2026-10-13 (content review done; ships with the post-approval OTA).
 import { PRACTICE_LAB_CHECKS } from './understandingChecks';
 
 export type UnderstandingQuestion = {
@@ -56,7 +56,7 @@ export type UnderstandingQuestion = {
 export const UNDERSTANDING_CHECKS: Record<string, readonly UnderstandingQuestion[]> = {
   [SOUND_SYSTEMS_LEARN_ID]: SOUND_SYSTEMS_CHECK,
   // Practice labs (TRAINING_LABS completion 'understanding'), 2026-10-13 —
-  // keyed by runtime labId; see understandingChecks.ts. ⏸ HOLD for owner review.
+  // keyed by runtime labId; see understandingChecks.ts. ✅ owner-approved 2026-10-13.
   ...PRACTICE_LAB_CHECKS,
 };
 
