@@ -17,7 +17,7 @@
  * the audio session the tools share.
  */
 import { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { AppState, StyleSheet, View } from 'react-native';
 import { useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -74,6 +74,32 @@ export function IntroVideoScreen({ navigation, route }: Props) {
     }, LOAD_TIMEOUT_MS);
     return () => clearTimeout(t);
   }, [finish]);
+
+  // HOME → return froze the video for good (live toddler pass 2026-10-13): the
+  // OS pauses playback in the background and nothing resumed it, and with no
+  // skip and BACK swallowed the learner was trapped. Resume on return; if it
+  // still is not playing a few seconds later, leave for the landing page (a
+  // finish(false) never retires the first-run flag, so the intro can replay).
+  useEffect(() => {
+    let stall: ReturnType<typeof setTimeout> | null = null;
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st !== 'active' || doneRef.current) return;
+      try {
+        if (!player.playing) player.play();
+      } catch {
+        finish(false);
+        return;
+      }
+      if (stall) clearTimeout(stall);
+      stall = setTimeout(() => {
+        if (!doneRef.current && !player.playing) finish(false);
+      }, 4000);
+    });
+    return () => {
+      sub.remove();
+      if (stall) clearTimeout(stall);
+    };
+  }, [player, finish]);
 
   // No skip: Android back is consumed while the video plays.
   useBackWhileFocused(true, useCallback(() => true, []));

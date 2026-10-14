@@ -161,7 +161,10 @@ export function HelpScreen() {
           {searching ? (
             <View style={[styles.panel, styles.supportPanel]}>
               <Text style={styles.supportBody}>
-                You’re seeing only the entries that match your search — the full manual covers accounts, studying, tools, and troubleshooting.
+                {/* Live toddler pass 2026-10-13: said "only the entries that match" after a search that matched nothing. */}
+                {noResults
+                  ? 'Nothing matched that search — the full manual covers accounts, studying, tools, and troubleshooting.'
+                  : 'You’re seeing only the entries that match your search — the full manual covers accounts, studying, tools, and troubleshooting.'}
               </Text>
               <Pressable
                 style={styles.row}

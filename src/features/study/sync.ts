@@ -374,6 +374,22 @@ export class StudySession {
   }
 
   private async flushOnce(): Promise<void> {
+    // A GUEST's device key cannot record progress (live toddler pass
+    // 2026-10-13: "permission denied for function record_study_progress",
+    // re-queued and retried every 30 s for as long as the app stayed open).
+    // Guest study is ephemeral by rule (D57) — never queue or send it. Only a
+    // session that DEFINITELY is anonymous counts; an unknown/absent session
+    // (the cold-start race) still queues, so a real member never loses work.
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user?.is_anonymous === true) {
+        this.events.splice(0);
+        this.seconds = 0;
+        return;
+      }
+    } catch {
+      // Unreadable session — fall through to the normal, durable path.
+    }
     /**
      * Drain the offline queue first so coalesced history lands in order.
      *

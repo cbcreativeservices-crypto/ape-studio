@@ -7,6 +7,7 @@
  */
 import { Fragment } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '../../components/GlassButton';
 import { COPY } from '../../lib/copy';
 import { colors, fonts } from '../../theme/tokens';
@@ -26,6 +27,9 @@ export function UpgradeSheet({
   /** Present on post-auth surfaces → the paywall (CM7). */
   onSeePlans?: () => void;
 }) {
+  // NOT NOW sat under Android's three-button bar (live toddler pass 2026-10-13):
+  // a tap there hit HOME. The sheet is pinned to bottom:0, so add the inset.
+  const insets = useSafeAreaInsets();
   if (!visible) return null;
   return (
     // accessibilityViewIsModal keeps VoiceOver inside the sheet (pass 5, W1):
@@ -33,7 +37,7 @@ export function UpgradeSheet({
     // past the sheet into the screen the sheet is covering.
     <View style={styles.backdrop} accessibilityViewIsModal>
       <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
-      <View style={styles.sheet}>
+      <View style={[styles.sheet, { paddingBottom: 28 + insets.bottom }]}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.upgradePhrase}</Text>
         {/* The allowance runs INLINE at the end of the first paragraph — the
