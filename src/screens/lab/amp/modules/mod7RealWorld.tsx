@@ -326,7 +326,10 @@ export function Mod7RealWorld() {
 
               {/* ── watts vs loudness ── */}
               <SectionTitle>5 · WATTS AND LOUDNESS</SectionTitle>
-              <ControlSlider label="Power ratio P2 ÷ P1" value={ratio} min={0.25} max={10} step={0.25} format={(v) => `${v.toFixed(2)}×`} onChange={setRatio} />
+              {/* Driven in log2 (slider pass 2026-10-14): a linear 0.25–10× lane
+                  crammed ½×, 1× and 2× into the first eighth. Steps of 1/12
+                  octave land exactly on 0.5 / 1 / 2 / 4 and the top is 10×. */}
+              <ControlSlider label="Power ratio P2 ÷ P1" value={Math.log2(ratio)} min={-2} max={Math.log2(10)} step={1 / 12} format={(v) => `${(2 ** v).toFixed(2)}×`} onChange={(v) => setRatio(+(2 ** v).toFixed(3))} />
               <FormulaCard
                 title="Level change = 10 · log10(P2 / P1)"
                 lines={[`${ratio.toFixed(2)}× the power = ${deltaDb >= 0 ? '+' : ''}${deltaDb.toFixed(2)} dB`, '2× power ≈ +3.01 dB · 10× power = +10 dB · 0.5× power ≈ −3.01 dB']}

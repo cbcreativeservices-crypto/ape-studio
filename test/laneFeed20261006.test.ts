@@ -86,8 +86,11 @@ describe('ParamLane uses the feed and a UI-thread cap', () => {
     assert.match(s, /feed\.grant\(v\);/);
     assert.match(s, /feed\.move\(v\);/);
     assert.match(s, /const settle = useRef\(\(\) => \{\n\s*feed\.end\(\);/);
-    assert.match(s, /onPanResponderRelease: \(\) => \{\n\s*settle\(\);/);
-    assert.match(s, /onPanResponderTerminate: \(\) => settle\(\),/);
+    // Release and cancel both reach settle through onRelease (2026-10-14: the
+    // gesture's onEnd / onFinalize worklets hand it over with scheduleOnRN).
+    assert.match(s, /if \(final != null\) feed\.move\(final\);\n\s*settle\(\);/);
+    assert.match(s, /scheduleOnRN\(onRelease, v, moved\.value, false\);/);
+    assert.match(s, /scheduleOnRN\(onRelease, null, moved\.value, e\.state === CANCELLED\);/);
     assert.doesNotMatch(s, /onChangeRef\.current\(laneDragValue/);
   });
   it('a preview lane (onCommit) commits once on release and prints the finger value live', () => {
@@ -106,6 +109,6 @@ describe('ParamLane uses the feed and a UI-thread cap', () => {
   });
   it('the cap is drawn from a shared value, synced to the page value at rest', () => {
     assert.match(s, /style=\{\[styles\.cap, capStyle\]\}/);
-    assert.match(s, /if \(!dragging\.current\) capV\.value =/);
+    assert.match(s, /if \(!dragging\.current && !touching\.value\) capV\.value =/);
   });
 });

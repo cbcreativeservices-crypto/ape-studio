@@ -87,7 +87,7 @@ describe('1. Awards — "won\'t be saved without an account" needs a KNOWN guest
     assert.doesNotMatch(s, /setPayPrompt\(/);
     assert.doesNotMatch(s, /resolved && entitlement === 'anonymous'\) setPayPrompt/);
     assert.match(s, /guardEnroll\(/);
-    assert.match(read('src/features/enrollment/useEnrollGate.ts'), /const \{ guest \} = useGuestWording\(\);/);
+    assert.match(read('src/features/commercial/MembershipGate.tsx'), /const \{ guest \} = useGuestWording\(\);/);
   });
 });
 

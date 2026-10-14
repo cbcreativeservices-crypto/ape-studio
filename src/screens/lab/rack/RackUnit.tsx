@@ -160,6 +160,25 @@ export function RackUnit({
     wellRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
   }, []);
   const [laneActive, setLaneActive] = useState(false);
+  // autoBind faders (rackTypes): bind the lane when one APPEARS; while a
+  // finger is on the lane the switch waits for it to lift (never rebinds
+  // mid-drag).
+  const seenFaderIds = useRef<Set<string>>(new Set(faders.map((f) => f.id)));
+  const pendingAutoBind = useRef<string | null>(null);
+  useEffect(() => {
+    const appeared = faders.find((f) => f.autoBind && !seenFaderIds.current.has(f.id));
+    seenFaderIds.current = new Set(faders.map((f) => f.id));
+    if (!appeared) return;
+    if (laneActive) pendingAutoBind.current = appeared.id;
+    else setBoundId(appeared.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faders]);
+  useEffect(() => {
+    if (laneActive || pendingAutoBind.current == null) return;
+    const id = pendingAutoBind.current;
+    pendingAutoBind.current = null;
+    if (faders.some((f) => f.id === id)) setBoundId(id);
+  }, [laneActive, faders]);
   const [glassW, setGlassW] = useState(0);
   const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
   const [dockH, setDockH] = useState(0); // tray overlay bottom edge (inline)

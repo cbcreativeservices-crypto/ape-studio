@@ -18,6 +18,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
+import { ECHO_SPAN_MS, RESPONSE_SAMPLES, bandwidthOctFromQ, responseSampleFreqs } from './sliderMaps';
 
 const FS = 48000; // display-eval sample rate (matches the engine default)
 const PI = Math.PI;
@@ -253,7 +254,9 @@ export function ResponseCurveGraph({
   totalHeight,
   width,
   mainColor,
-  samples = 96,
+  samples = RESPONSE_SAMPLES,
+  focusHz,
+  band,
 }: {
   curves: ResponseCurve[];
   dbRange?: number;
@@ -270,9 +273,17 @@ export function ResponseCurveGraph({
   /** Overrides the amber of the MAIN trace + its underfill (EQ Lab MIDI level
    *  colouring, owner 2026-08-07). Omitted ⇒ the house amber. */
   mainColor?: string;
-  /** Points along the log axis (default 96). A comb with notches every few
-   *  hundred Hz needs more or its notches alias away. */
+  /** Points along the log axis (default 384, was 96 — a narrow notch fell
+   *  between samples). A comb with notches every few hundred Hz needs more
+   *  or its notches alias away. */
   samples?: number;
+  /** Exact frequencies to sample as well (band centres), so a notch or a
+   *  narrow bell draws its full depth at every FREQ (slider pass 2026-10-14). */
+  focusHz?: readonly number[];
+  /** The edited band's marker (slider pass 2026-10-14): a vertical line at
+   *  `f` and, with `q`, its −3 dB bandwidth shaded — so FREQ and Q visibly
+   *  move something even at 0 dB gain (the start state). */
+  band?: { f: number; q?: number; color?: string };
 }) {
   const [measured, setMeasured] = useState(0);
   const gw = width ?? measured;
@@ -287,10 +298,10 @@ export function ResponseCurveGraph({
   const paths = useMemo(
     () =>
       curves.map((c) => {
-        const N = samples;
+        const freqs = responseSampleFreqs(samples, focusHz); // 20 → 20k log (+ band centres)
         let d = '';
-        for (let i = 0; i <= N; i++) {
-          const f = 20 * Math.pow(1000, i / N); // 20 → 20k log
+        for (let i = 0; i < freqs.length; i++) {
+          const f = freqs[i];
           const x = xAt(f);
           d += `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${yAt(c.at(f)).toFixed(1)}`;
         }
@@ -299,7 +310,7 @@ export function ResponseCurveGraph({
         return { d, fill };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [curves, dbRange, H, gw, samples],
+    [curves, dbRange, H, gw, samples, focusHz?.join(',')],
   );
   if (!gw) {
     // Reserve the box, measure once, paint on the next frame.
@@ -340,6 +351,20 @@ export function ResponseCurveGraph({
           )
         ) : null,
       )}
+      {band && band.f >= 20 && band.f <= 20000 ? (() => {
+        // The edited band: −3 dB bandwidth shaded (f·2^(±bw/2)), centre line dashed.
+        const bc = band.color ?? AMBER;
+        const half = band.q != null ? bandwidthOctFromQ(band.q) / 2 : 0;
+        const x0 = xAt(Math.max(20, band.f / Math.pow(2, half)));
+        const x1 = xAt(Math.min(20000, band.f * Math.pow(2, half)));
+        const xc = xAt(band.f);
+        return (
+          <>
+            {half > 0 ? <Rect x={x0} y={4 * ts} width={Math.max(1, x1 - x0)} height={H - 8 * ts} fill={bc} fillOpacity={0.1} /> : null}
+            <Line x1={xc} y1={4 * ts} x2={xc} y2={H - 4 * ts} stroke={bc} strokeWidth={1.2 * ts} strokeOpacity={0.75} strokeDasharray={`${4 * ts} ${3 * ts}`} />
+          </>
+        );
+      })() : null}
       {/* 0 dB reference — deliberately brighter than the rest of the graticule */}
       <Line x1={padL} y1={H / 2} x2={gw - padR} y2={H / 2} stroke={AXIS} strokeWidth={1.1 * ts} />
       {curves.map((c, i) =>
@@ -596,12 +621,14 @@ export function EchoTimelineGraph({
   pingpong: boolean;
 }) {
   const H = 120;
-  const spanMs = Math.max(timeMs * 6.5, 500);
+  // A FIXED window (slider pass 2026-10-14): a window that followed TIME kept
+  // the spacing constant for every TIME ≥ 77 ms — the lane did nothing visible.
+  const spanMs = ECHO_SPAN_MS;
   const xAt = (ms: number) => 10 + (ms / spanMs) * (W - 20);
   const taps = useMemo(() => {
     const out: { ms: number; amp: number; side: 'L' | 'R' | 'C' }[] = [];
     let amp = mix;
-    for (let n = 1; n <= 12 && amp > 0.02; n++) {
+    for (let n = 1; n <= 12 && amp > 0.02 && n * timeMs <= spanMs; n++) {
       out.push({ ms: n * timeMs, amp, side: pingpong ? (n % 2 === 1 ? 'L' : 'R') : 'C' });
       amp *= feedback;
     }

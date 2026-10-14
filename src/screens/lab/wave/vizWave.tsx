@@ -25,7 +25,7 @@
  *
  * ONLY this file imports Skia (via wave/skiaGate.requireWaveViz()).
  */
-import { useContext, useEffect, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text as RNText, View } from 'react-native';
 import {
   BlurMask,
@@ -60,6 +60,7 @@ import { SIDE_NECK, headIconScale } from '../../../features/lab/headIconGeometry
 import { FigureHeadAt } from '../../../features/lab/figureHead';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
+import { HEAT_SETTLE_MS, heatGridDims } from './heatGrid';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import {
@@ -1373,13 +1374,24 @@ export function RoomSceneView(p: RoomSceneProps) {
   // Memoized per (rounded scene, freq, mode, nx, ny) — NEVER per frame. Grid
   // ≤176×140 cells scaled to the room; ≤32 quantized buckets, one Path per
   // bucket, horizontal run-length merging (see addFieldRow).
+  // COARSE WHILE MOVING (slider audit 2026-10-14): a fader rides these inputs
+  // every frame, and a full map costs far more than a frame — the picture
+  // trailed the finger, then jumped. While they change, draw the coarse grid;
+  // once they hold still for HEAT_SETTLE_MS, redraw at full detail (heatGrid.ts).
+  const heatSig = `${key}|${freq}|${mode}|${nx}|${ny}`;
+  const [heatSettledSig, setHeatSettledSig] = useState(heatSig);
+  useEffect(() => {
+    if (heatSig === heatSettledSig) return;
+    const t = setTimeout(() => setHeatSettledSig(heatSig), HEAT_SETTLE_MS);
+    return () => clearTimeout(t);
+  }, [heatSig, heatSettledSig]);
+  const heatCoarse = heatSig !== heatSettledSig;
   const heat = useMemo(() => {
     if (!p.layers.heat) return null;
     // ~2.6 px cells at every zoom step: the cap grows with the stage scale (to
     // 2.2× the glass grid) so FULL SCREEN stays smooth instead of blocky
     // (walkthrough 2026-09-26). Rebuilt only on a parameter change.
-    const COLS = Math.min(Math.round(176 * Math.min(2.2, Math.max(1, ts))), Math.max(64, Math.round(geo.wPx / 2.6)));
-    const ROWS = Math.min(Math.round(140 * Math.min(2.2, Math.max(1, ts))), Math.max(48, Math.round(geo.hPx / 2.6)));
+    const { cols: COLS, rows: ROWS } = heatGridDims(geo.wPx, geo.hPx, ts, heatCoarse);
     const buckets: SkPathT[] = Array.from({ length: BUCKET_N }, () => Skia.Path.Make());
     const cw = geo.wPx / COLS;
     const ch = geo.hPx / ROWS;
@@ -1413,7 +1425,7 @@ export function RoomSceneView(p: RoomSceneProps) {
     }
     return buckets;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, freq, mode, nx, ny, geo, p.layers.heat]);
+  }, [key, freq, mode, nx, ny, geo, p.layers.heat, heatCoarse]);
 
   // Modal maps BREATHE with the phase clock when the pressure layer is on —
   // physically true: standing-wave pressure = pattern × cos(ωt). Colouring by

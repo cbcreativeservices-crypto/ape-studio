@@ -139,10 +139,13 @@ describe('ParamLane follows the finger that grabbed it', () => {
     // identifier 0 (react-native-web's mouse touch) is a real identifier.
     assert.equal(lane.laneFingerDx({ touches: [{ identifier: 0, pageX: 25 }] }, lane.laneFingerAt({ identifier: 0, pageX: 5 }), 99), 20);
   });
-  it('source: ParamLane records the grabbing finger and moves by ITS travel, not g.dx', () => {
+  it('source: ParamLane is one-finger and moves by ITS OWN x, never a centroid', () => {
+    // Since 2026-10-14 the lane is a Gesture Handler pan (UI thread): one
+    // pointer only, and the drag reads the handler's own view-local x.
     const s = read('src/screens/lab/rack/ParamLane.tsx');
-    assert.match(s, /fingerRef\.current = laneFingerAt\(e\.nativeEvent\);/);
-    assert.match(s, /const dx = laneFingerDx\(e\.nativeEvent, fingerRef\.current, g\.dx\);\n\s*if \(dx === 'lifted'\) return;/);
-    assert.doesNotMatch(s, /baseRef\.current \+ g\.dx/);
+    assert.match(s, /Gesture\.Pan\(\)[\s\S]{0,300}\.maxPointers\(1\)/);
+    assert.match(s, /const dx = x - grabX\.value;/);
+    assert.match(s, /rideTo\(e\.x\);/);
+    assert.doesNotMatch(s, /PanResponder\.create|g\.dx/);
   });
 });

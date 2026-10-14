@@ -21,7 +21,7 @@ import {
 import { renderNotes, renderPartials } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Card, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, useMarkWhen, usePreloadClips } from '../components/primitives';
-import { BEATS_H, BEATS_W, BeatingModel, HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
+import { BEATS_H, BEATS_W, BeatingModel, HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
@@ -147,8 +147,9 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
           soundCell(status),
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={LADDER_W / LADDER_H}>
+          <StageFit w={w} h={h} aspect={LADDER_METER_ASPECT}>
             <HarmonicComparison fit readout={false} isolate={mode === 'partials'} rootHz={f} upperHz={thirdHz} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="major third E" />
+            <DeviationMeter fit bare cents={fromJust} rangeCents={25} label="Alignment meter · cents from 5/4" />
           </StageFit>
         ),
         params,
@@ -212,7 +213,6 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
       <Body>This frequency difference can produce audible beating when both partials are present and sufficiently strong. Real instruments differ in harmonic content, and audibility also depends on register, duration, phase, the room, playback and hearing.</Body>
 
       <Prompt>Ride THIRD until the two compared harmonics align.</Prompt>
-      <DeviationMeter cents={fromJust} rangeCents={25} label="Alignment meter · cents from 5/4" />
 
       {/* NEW COPY — options rebalanced (the correct one was twice the length
           of the others) + per-distractor feedback. */}

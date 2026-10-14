@@ -39,6 +39,8 @@ const THICK_MAX = 0.4;
 const SIZE_MIN = 0.4;
 const SIZE_MAX = 2.4;
 const FLASH_MS = 1000;
+/** THICK / SIZE with no item in the room (slider audit 2026-10-14). */
+export const NO_ITEM_LOCK = 'nothing to resize yet — ADD a treatment item first';
 
 /** The reflection ABSORB NEXT would treat: the earliest untreated path the
  *  kit can reach (never the desk bounce), inside 20 ms first. */
@@ -188,6 +190,9 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)} · to ${down}`;
     },
     formatShort: (v) => fmtLen(laneVal(v, THICK_MIN, THICK_MAX, 0.005), units, { small: true }),
+    // Nothing to resize until an item exists: LOCKED with its reason, not a
+    // lane that moves and changes nothing (slider audit 2026-10-14).
+    locked: sel ? undefined : NO_ITEM_LOCK,
   };
 
   const params: DockParam[] = [
@@ -203,6 +208,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       },
       format: (v) => (sel ? `${TREATMENT_INFO[sel.kind].short} ${fmtLen(laneVal(v, SIZE_MIN, SIZE_MAX, 0.05), units)} wide` : 'ADD an item first'),
       formatShort: (v) => fmtLen(laneVal(v, SIZE_MIN, SIZE_MAX, 0.05), units),
+      locked: sel ? undefined : NO_ITEM_LOCK,
     },
     {
       kind: 'group',

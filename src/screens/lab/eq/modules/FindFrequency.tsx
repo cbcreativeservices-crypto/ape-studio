@@ -189,6 +189,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
       level: true,
       value: (sel.g + 18) / 36,
       onChange: (t) => setSel({ g: Math.round((t * 36 - 18) * 2) / 2 }),
+      home: 0.5, // 0 dB — the lane centre; double-tap returns to flat
       format: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`,
       formatShort: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)}`,
       tint: gainColor(sel.g, 18),
@@ -246,7 +247,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-            <ResponseCurveGraph curves={curves} dbRange={24} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} />
+            <ResponseCurveGraph curves={curves} dbRange={24} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} band={{ f: sel.f, q: sel.q }} focusHz={[sel.f]} />
           </View>
         ),
       }}

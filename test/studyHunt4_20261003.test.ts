@@ -112,6 +112,6 @@ test('2. StudyAreaExplore: the no-account prompt waits for a tier a read produce
   // useGuestWording (a KNOWN guest only) — the same rule this test held.
   assert.doesNotMatch(src, /setPayPrompt\(/, 'the old enroll-anyway prompt came back');
   assert.match(src, /guardEnroll\(/);
-  const gate = readFileSync(new URL('../src/features/enrollment/useEnrollGate.ts', import.meta.url), 'utf8');
+  const gate = readFileSync(new URL('../src/features/commercial/MembershipGate.tsx', import.meta.url), 'utf8');
   assert.match(gate, /const \{ guest \} = useGuestWording\(\);/);
 });

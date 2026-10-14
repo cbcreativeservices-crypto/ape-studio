@@ -10,13 +10,17 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { harmonicFrequency, partialDifferenceHz, ratioToCents } from '../../../../features/tuning/tuningMath';
-import { ROLE } from './primitives';
+import { METER_H, METER_W, ROLE } from './primitives';
 
 const W = 340;
 const H = 150;
 /** The ladders' viewBox — a stage declares `aspect = LADDER_W / LADDER_H`. */
 export const LADDER_W = W;
 export const LADDER_H = H;
+/** The ladders with the DeviationMeter strip under them at the same width
+ *  (2026-10-14): the ladder moves only a few points across a fine-tune lane,
+ *  so the meter rides on the glass where the drag is visible. */
+export const LADDER_METER_ASPECT = W / (H + (W * METER_H) / METER_W);
 
 export function HarmonicComparison({
   rootHz, upperHz, rootHarmonic, upperHarmonic, rootLabel = 'root', upperLabel = 'major third', fit, readout = true, isolate = false,

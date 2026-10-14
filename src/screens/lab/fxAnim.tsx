@@ -54,6 +54,7 @@ import { usePhaseClock } from './foundations/viz';
 import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
+import { echoSpacingFrac } from '../../features/lab/sliderMaps';
 
 // Shared lab grammar (fxViz palette): amber = processed, dim = dry/reference,
 // blue = the effect's internal copy (delayed/shifted voice).
@@ -457,8 +458,9 @@ function EchoFlow({
   const phase = usePhaseClock(active, 0.16);
   const dPx = useMemo(() => {
     const outSpan = w - stageX - 12;
-    const spanMs = Math.max(timeMs * 6.5, 500);
-    return (timeMs * outSpan) / spanMs;
+    // A FIXED window (slider pass 2026-10-14): max(time × 6.5, 500) kept the
+    // spacing constant for every TIME ≥ 77 ms. Echoes past the edge are not drawn.
+    return echoSpacingFrac(timeMs) * outSpan;
   }, [w, stageX, timeMs]);
   const dG = useGlide(dPx);
   const fbG = useGlide(feedback);

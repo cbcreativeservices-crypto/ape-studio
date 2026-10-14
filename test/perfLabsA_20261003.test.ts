@@ -96,8 +96,10 @@ describe('5. ControlSlider drops same-step drag frames', () => {
   const s = src('src/screens/lab/amp/kit.tsx');
   it('dedupes moves, always reports the touch-down', () => {
     assert.match(s, /if \(!always && next === valueRef\.current\) return;/);
-    assert.match(s, /onPanResponderGrant: \(e\) => setRef\.current\(e\.nativeEvent\.locationX, true\)/);
-    assert.match(s, /onPanResponderMove: \(e\) => setRef\.current\(e\.nativeEvent\.locationX\),/);
+    assert.match(s, /setRef\.current\(e\.nativeEvent\.locationX, true\);/);
+    // Moves reach set() through the feed, anchored to the grab (slider audit 2026-10-14).
+    assert.match(s, /deliver: \(x\) => setRef\.current\(x\),/);
+    assert.match(s, /feed\.move\(grabXRef\.current \+ dx\);/);
   });
 });
 

@@ -108,20 +108,37 @@ export function SpectrumColorPicker({
   const thumbX = CX + MIDR * Math.cos(rad(hue));
   const thumbY = CX + MIDR * Math.sin(rad(hue));
 
+  // Anchored drags (slider audit 2026-10-14, the ParamLane/DragSlider
+  // recipe): the touch-down point is read ONCE, then every move is that point
+  // plus the gesture's dx/dy. `locationX` on a move re-bases to whatever view
+  // is under the finger (the thumb circle, a ring segment, or nothing once the
+  // finger leaves the bar), so the thumb jumped instead of following. The
+  // Svgs below are pointerEvents="none" so the grant point is always in the
+  // container's own coordinates. A parent scroller may not steal a drag.
+  const wheelStart = useRef({ x: 0, y: 0 });
+  const barStart = useRef(0);
   const wheelPan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => updateHue(e.nativeEvent.locationX, e.nativeEvent.locationY),
-      onPanResponderMove: (e) => updateHue(e.nativeEvent.locationX, e.nativeEvent.locationY),
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: (e) => {
+        wheelStart.current = { x: e.nativeEvent.locationX, y: e.nativeEvent.locationY };
+        updateHue(wheelStart.current.x, wheelStart.current.y);
+      },
+      onPanResponderMove: (_e, g) => updateHue(wheelStart.current.x + g.dx, wheelStart.current.y + g.dy),
     }),
   ).current;
   const barPan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => updateLight(e.nativeEvent.locationX),
-      onPanResponderMove: (e) => updateLight(e.nativeEvent.locationX),
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: (e) => {
+        barStart.current = e.nativeEvent.locationX;
+        updateLight(barStart.current);
+      },
+      onPanResponderMove: (_e, g) => updateLight(barStart.current + g.dx),
     }),
   ).current;
 
@@ -165,7 +182,7 @@ export function SpectrumColorPicker({
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => stepHue(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
       >
-        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={SIZE} height={SIZE}>
+        <Svg pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={SIZE} height={SIZE}>
           {ring.map((p, i) => (
             <Path key={i} d={p.d} fill={p.fill} />
           ))}
@@ -191,7 +208,7 @@ export function SpectrumColorPicker({
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => stepLight(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
       >
-        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={barW} height={26}>
+        <Svg pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={barW} height={26}>
           <Defs>
             <SvgGrad id="lgrad" x1="0" y1="0" x2="1" y2="0">
               <Stop offset="0%" stopColor={hslToHex(hue, 1, L_MIN)} />

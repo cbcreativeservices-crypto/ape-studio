@@ -166,6 +166,10 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
       onChange: (v) => setXyAngle(Math.round(90 + v * 45)),
       format: () => (pid === 'xy' ? `${xyAngle}° between the capsules` : 'X/Y only — choose X/Y under PAIR'),
       formatShort: () => `${xyAngle}°`,
+      // Only the X/Y pair has an included angle to set: on any other pair the
+      // lane moved nothing in the picture (slider audit 2026-10-14), so the
+      // key is LOCKED there and says why.
+      locked: pid === 'xy' ? undefined : 'the angle is for the X/Y pair — choose X/Y under PAIR.',
     },
     {
       kind: 'options',

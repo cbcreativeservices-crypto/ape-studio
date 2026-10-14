@@ -129,17 +129,21 @@ describe('both endpoints stay reachable', () => {
 describe('ParamLane source uses the guard', () => {
   const s = read('src/screens/lab/rack/ParamLane.tsx');
   it('touch math goes through the guarded travel, never the raw lane width', () => {
-    assert.match(s, /laneValueAt\(e\.nativeEvent\.locationX, wRef\.current, insRef\.current\)/);
-    assert.match(s, /laneDragValue\(baseRef\.current, dx, wRef\.current, insRef\.current\)/);
-    assert.doesNotMatch(s, /wRef\.current - CAP_W\)/);
+    // The gesture worklets read the width and insets as UI-thread copies
+    // (2026-10-14).
+    assert.match(s, /const g = \{ l: insL\.value, r: insR\.value \};\n\s*const v = laneValueAt\(e\.x, w, g\);/);
+    assert.match(s, /laneDragValue\(base\.value, dx, laneW\.value, \{ l: insL\.value, r: insR\.value \}\)/);
+    assert.match(s, /insL\.value = ins\.l;\n\s*insR\.value = ins\.r;/);
+    assert.doesNotMatch(s, /laneW\.value - CAP_W\)/);
   });
   it('slot, scale and cap are drawn inside the inset travel', () => {
     assert.match(s, /style=\{\[styles\.travel, \{ left: ins\.l, right: ins\.r \}\]\}/);
     assert.match(s, /useEdgeGuard\(\{ capW: CAP_W, fallback: FALLBACK_INSETS \}\)/);
     assert.match(read('src/screens/lab/rack/useEdgeGuard.ts'), /measureInWindow/);
   });
-  it('the finger-follow contract is untouched', () => {
-    assert.match(s, /fingerRef\.current = laneFingerAt\(e\.nativeEvent\);/);
-    assert.match(s, /const dx = laneFingerDx\(e\.nativeEvent, fingerRef\.current, g\.dx\);\n\s*if \(dx === 'lifted'\) return;/);
+  it('the finger-follow contract is untouched (one finger, its own x)', () => {
+    assert.match(s, /\.maxPointers\(1\)/);
+    assert.match(s, /const dx = x - grabX\.value;/);
+    assert.match(s, /rideTo\(e\.x\);/);
   });
 });

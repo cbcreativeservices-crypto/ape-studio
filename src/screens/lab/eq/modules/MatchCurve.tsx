@@ -141,6 +141,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       level: true,
       value: (sel.g + 15) / 30,
       onChange: (t) => setSel({ g: Math.round((t * 30 - 15) * 2) / 2 }),
+      home: 0.5, // 0 dB — the lane centre; double-tap returns to flat
       format: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`,
       formatShort: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)}`,
       tint: gainColor(sel.g, 15),
@@ -188,7 +189,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-            <ResponseCurveGraph curves={curves} dbRange={15} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} />
+            <ResponseCurveGraph curves={curves} dbRange={15} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} band={{ f: sel.f, q: sel.q }} focusHz={[sel.f]} />
           </View>
         ),
       }}

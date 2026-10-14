@@ -141,8 +141,12 @@ export function faderParam(o: {
     value: (o.value - o.min) / span,
     onChange: (t) => {
       const raw = o.min + Math.max(0, Math.min(1, t)) * span;
-      const snapped = Math.round(raw / step) * step;
-      o.onChange(Math.min(o.max, Math.max(o.min, snapped)));
+      const snapped = Math.min(o.max, Math.max(o.min, Math.round(raw / step) * step));
+      // Same step as now → no call (slider pass 2026-10-14): the lane hands the
+      // page a value every frame, and a handler that counts or builds objects
+      // (Drum ch1's "you turned a rod N times") ran ~60×/s for no change.
+      if (Math.abs(snapped - o.value) < step * 1e-6) return;
+      o.onChange(snapped);
     },
     format: () => o.format(o.value),
     formatShort: o.formatShort ? () => o.formatShort!(o.value) : undefined,

@@ -278,9 +278,83 @@ export type Blocked = { partId: string; label: string; piece: 'body' | 'boom' | 
 
 /** The first solid the assembly enters, or null when it is clear. A clamp's
  *  arm is not tested against the hoop it grips; it may not be longer than
- *  the clamp's reach (CLIP_REACH). */
-export function checkAssembly(scene: CompiledScene, pose: MicPose, body: MicBody): Blocked {
+ *  the clamp's reach (CLIP_REACH).
+ *
+ *  BROAD PHASE (2026-10-14, exact): each capsule's samples are tested in runs
+ *  of up to CULL_RUN; a solid is skipped for a run when its distance from the
+ *  run's middle, less the run's half-length, already exceeds the capsule's
+ *  radius plus the part’s clearance. Every culled `sdf` is 1-Lipschitz (exact
+ *  distances, and max/min/rotations of them), so a skipped solid could not
+ *  have been entered by any sample of the run: the answer — including WHICH
+ *  part is named first — is the same as testing every sample against every
+ *  solid, at a fraction of the cost in a big scene (an orchestra: 60+ parts).
+ *  ('sweep' solids are never culled — see below.) Held to the brute-force
+ *  check over every lesson zone by test/sliderMiking_20261014.test.ts.
+ *  `meter` (optional) counts the `sdf` evaluations made (constrainMove's budget). */
+const CULL_RUN = 16;
+/** The meter's units: one plain sdf; a prism costs one per polygon corner;
+ *  a check's own set-up (building the assembly) about CHECK_COST of them. */
+const CHECK_COST = 600;
+export function checkAssembly(scene: CompiledScene, pose: MicPose, body: MicBody, meter?: { n: number }): Blocked {
   'worklet';
+  const segs = assembly(scene, pose, body);
+  const solids = scene.solids;
+  let evals = 0;
+  let out: Blocked = null;
+  const near: number[] = [];
+  for (let si = 0; si < segs.length && !out; si++) {
+    const sg = segs[si];
+    if (sg.piece === 'arm') {
+      const ax = sg.b.x - sg.a.x;
+      const ay = sg.b.y - sg.a.y;
+      const az = sg.b.z - sg.a.z;
+      if (Math.sqrt(ax * ax + ay * ay + az * az) > (body.reach ?? CLIP_REACH)) out = { partId: 'clamp', label: 'the clamp’s reach', piece: 'arm' };
+      continue;
+    }
+    const dx = sg.b.x - sg.a.x;
+    const dy = sg.b.y - sg.a.y;
+    const dz = sg.b.z - sg.a.z;
+    const sl = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const step = Math.max(sg.r, 4);
+    const n = Math.max(1, Math.ceil(sl / step));
+    for (let k0 = 0; k0 <= n && !out; k0 += CULL_RUN) {
+      const k1 = Math.min(n, k0 + CULL_RUN - 1);
+      const tm = (k0 + k1) / (2 * n);
+      const mid = { x: sg.a.x + dx * tm, y: sg.a.y + dy * tm, z: sg.a.z + dz * tm };
+      const half = ((k1 - k0) / (2 * n)) * sl;
+      near.length = 0;
+      for (let i = 0; i < solids.length; i++) {
+        const so = solids[i];
+        if (body.mount === 'surface' && so.partId === body.surfacePartId) continue;
+        if (sg.piece === 'stand' && so.shape.kind === 'floor') continue; // a stand stands ON the floor
+        // A 'sweep' reads its angle straight from atan2 (no wrap), so its
+        // field can jump across ±180°: never culled, always tested in full.
+        if (so.shape.kind !== 'sweep') {
+          evals += so.shape.kind === 'prism' ? so.shape.pts.length : 1;
+          if (sdf(so.shape, mid) - half - sg.r - so.clearance > 1e-6) continue;
+        }
+        near.push(i);
+      }
+      for (let k = k0; k <= k1 && !out; k++) {
+        const t = k / n;
+        const q = { x: sg.a.x + dx * t, y: sg.a.y + dy * t, z: sg.a.z + dz * t };
+        for (let j = 0; j < near.length; j++) {
+          const so = solids[near[j]];
+          evals += so.shape.kind === 'prism' ? so.shape.pts.length : 1;
+          if (sdf(so.shape, q) - sg.r - so.clearance < 0) {
+            out = { partId: so.partId, label: so.label, piece: sg.piece };
+            break;
+          }
+        }
+      }
+    }
+  }
+  if (meter) meter.n += evals + CHECK_COST;
+  return out;
+}
+
+/** checkAssembly without the broad phase — the reference the tests hold it to. */
+export function checkAssemblyBrute(scene: CompiledScene, pose: MicPose, body: MicBody): Blocked {
   const segs = assembly(scene, pose, body);
   for (let si = 0; si < segs.length; si++) {
     const sg = segs[si];
@@ -341,13 +415,40 @@ export const SUBSTEP_MM = 4;
 export const SUBSTEP_DEG = 3;
 
 /**
+ * A WORK BUDGET for one JS-thread move (slider audit 2026-10-14, owner: "the
+ * slider… never causes the user any pause"). A far tap on a placement lane
+ * delivered one long move and the whole sweep ran at once: p95 69 ms, up to
+ * 1.5 s on desktop Node (the orchestra), 3–4× that on a phone. A budgeted
+ * move stops once its checks have made MOVE_WORK `sdf` evaluations (about
+ * 2 ms on desktop) at the last pose it reached, `done: false`, and the
+ * caller continues toward the same target on the next macrotask
+ * (useRig.preview). Every sub-step is still checked: chunking never lets the
+ * mic pass through a part.
+ */
+export const MOVE_WORK = 60_000;
+
+/**
  * Move from `from` toward `to`, never through a solid (blueprint §4.4):
  * walk in sub-steps of ≤ 4 mm / 3°; a blocked sub-step tries each axis on its
  * own (the mic SLIDES along the obstacle), else stops. `blocked` names the
  * obstacle the last attempted step ran into (null when the full move landed).
+ *
+ * `work` (optional, JS thread): stop once that many `sdf` evaluations are
+ * spent (MOVE_WORK) — always after at least one sub-step — at the last pose
+ * reached, `done: false`; calling again from that pose toward the same `to`
+ * continues the move. `spent` reports the evaluations this call made.
+ * Without `work` (the drag's worklet) the whole move runs, as before.
  */
-export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose, to: MicPose, bounds: Bounds): { pose: MicPose; blocked: Blocked } {
+export function constrainMove(
+  scene: CompiledScene,
+  body: MicBody,
+  from: MicPose,
+  to: MicPose,
+  bounds: Bounds,
+  work?: number,
+): { pose: MicPose; blocked: Blocked; done: boolean; spent: number } {
   'worklet';
+  const meter = { n: 0 };
   const tp = clampP(to.p, bounds);
   const d = sub(tp, from.p);
   const dAng = Math.max(Math.abs(to.az - from.az), Math.abs(to.el - from.el));
@@ -364,10 +465,13 @@ export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose
   // sub-step was "blocked" in every direction (owner, Pixel 2026-10-06:
   // "many of them their sliders are not working"; the piano's dynamic over
   // the bass strings, the lid on the short stick).
-  let escaping = checkAssembly(scene, from, body) != null;
+  let escaping = checkAssembly(scene, from, body, meter) != null;
   for (let i = 0; i < n; i++) {
+    // Out of budget (a long move): stop at the last pose reached — every
+    // sub-step so far was checked; the caller continues from here.
+    if (work != null && i > 0 && meter.n >= work) return { pose: cur, blocked, done: false, spent: meter.n };
     const full: MicPose = { p: add(cur.p, step), az: cur.az + dAz, el: cur.el + dEl };
-    const hit = checkAssembly(scene, full, body);
+    const hit = checkAssembly(scene, full, body, meter);
     if (!hit) {
       cur = full;
       blocked = null;
@@ -391,7 +495,7 @@ export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose
       const cm = comps[c];
       if (Math.abs(cm.x) + Math.abs(cm.y) + Math.abs(cm.z) < 1e-9) continue;
       const cand: MicPose = { p: add(cur.p, cm), az: cur.az, el: cur.el };
-      if (!checkAssembly(scene, cand, body)) {
+      if (!checkAssembly(scene, cand, body, meter)) {
         cur = cand;
         moved = true;
         break;
@@ -399,7 +503,7 @@ export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose
     }
     if (!moved) break;
   }
-  return { pose: cur, blocked };
+  return { pose: cur, blocked, done: true, spent: meter.n };
 }
 
 /**

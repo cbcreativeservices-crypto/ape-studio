@@ -56,7 +56,7 @@ import {
   type EnrollTopic,
 } from '../../features/enrollment/enrollmentStore';
 import { removableOnBundleDrop } from '../../features/enrollment/enrollmentPlan';
-import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
+import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import {
   addBundle,
   bundleKey,

@@ -25,6 +25,9 @@ import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { NO_INSETS, laneValueAt } from '../rack/laneEdgeGuard';
 import { useEdgeGuard } from '../rack/useEdgeGuard';
+import { createLaneFeed } from '../rack/laneFeed';
+import { laneFingerAt, laneFingerDx, type LaneFinger } from '../rack/laneFinger';
+import { useScrollLock } from '../scrollLock';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
 import { hashSeed, shuffledIndices, type FaultId } from '../../../features/amp/ampModel';
@@ -206,6 +209,8 @@ export function FaultBanner({ primary, secondary }: { primary: FaultId | null; s
  *  inset by half of it at each end, or the touch map stops being the inverse of
  *  the cap position. */
 const CAP_W = 24;
+/** One delivery tick about a frame long (laneFeed; same as DragSlider). */
+const DRAG_TICK_MS = 16;
 
 export function ControlSlider({
   label, value, min, max, step = 0.01, unit = '', onChange, format, disabled, level,
@@ -277,14 +282,69 @@ export function ControlSlider({
   setRef.current = set;
   const disabledRef = useRef(!!disabled);
   disabledRef.current = !!disabled;
+  // SLIDER AUDIT 2026-10-14 — the DragSlider / ParamLane recipe, which this
+  // slider had never taken:
+  //  • ANCHORED: every move read `locationX`, which re-bases against whatever
+  //    is under the pointer once it leaves the track (react-native-web), so
+  //    the cap could whip to the far end. The grab's x plus THE GRABBING
+  //    FINGER's travel (laneFinger) is the finger's x in track space — the
+  //    same map, never re-based, and a second finger never moves it.
+  //  • FED: moves keep the newest x and reach the lab at most once a tick
+  //    (laneFeed); the grab and the release land at once.
+  //  • SCROLL LOCK: the host page's scroll is held for the drag (and released
+  //    if the slider unmounts mid-drag), so a slightly diagonal drag rides
+  //    the slider instead of scrolling the page out from under it.
+  const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
+  const grabXRef = useRef(0);
+  const ctxLock = useScrollLock();
+  const ctxLockRef = useRef(ctxLock);
+  ctxLockRef.current = ctxLock;
+  const heldRef = useRef(false);
+  const lockRef = useRef((v: boolean) => {
+    if (heldRef.current === v) return;
+    heldRef.current = v;
+    ctxLockRef.current?.(v);
+  });
+  const feed = useRef(
+    createLaneFeed({
+      deliver: (x) => setRef.current(x),
+      // A timer, not a rAF (the motion ratchets read a cancelled rAF as a loop).
+      schedule: (cb) => setTimeout(cb, DRAG_TICK_MS),
+      cancel: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
+    }),
+  ).current;
+  // []-deps: unmount only (the G6 rule — `feed` and `lockRef` are created once).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => {
+    feed.end();
+    lockRef.current(false);
+  }, []);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => !disabledRef.current,
       onMoveShouldSetPanResponder: (_e, g) => !disabledRef.current && Math.abs(g.dx) > Math.abs(g.dy),
       // Once a horizontal drag is ours, the parent ScrollView must not take it back.
       onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: (e) => setRef.current(e.nativeEvent.locationX, true),
-      onPanResponderMove: (e) => setRef.current(e.nativeEvent.locationX),
+      onPanResponderGrant: (e) => {
+        lockRef.current(true);
+        fingerRef.current = laneFingerAt(e.nativeEvent);
+        grabXRef.current = e.nativeEvent.locationX;
+        feed.end(); // nothing of an earlier drag is left to land late
+        setRef.current(e.nativeEvent.locationX, true);
+      },
+      onPanResponderMove: (e, g) => {
+        const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
+        if (dx === 'lifted') return;
+        feed.move(grabXRef.current + dx);
+      },
+      onPanResponderRelease: () => {
+        feed.end();
+        lockRef.current(false);
+      },
+      onPanResponderTerminate: () => {
+        feed.end();
+        lockRef.current(false);
+      },
     }),
   ).current;
   const frac = (value - min) / (max - min || 1);

@@ -29,6 +29,7 @@ import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Polyline, Rect, Stop,
 import { colors, fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { PATH_MAIN, PATH_SIDECHAIN, toDb, type Frame, type Processed } from '../../../features/deesser/deEsserModel';
+import { DEESSER_GR_SCALE_DB, grDepthFrac } from '../../../features/lab/sliderMaps';
 
 const F = fonts.barlowMedium;
 /** The drawing width every viewBox is authored at. */
@@ -213,7 +214,10 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
   const n = processed.length, plotW = W - 46, slot = plotW / n;
   const lo = -40, hi = 0;
   const yA = (db: number) => botA - ((Math.max(lo, Math.min(hi, db)) - lo) / (hi - lo)) * (botA - topA);
-  const yB = (gr: number) => topB + (Math.min(rangeDb, gr) / Math.max(1, rangeDb)) * (botB - topB);
+  // FIXED 24 dB scale (slider pass 2026-10-14): scaling to Range made raising
+  // Range SHRINK the bars. Range is drawn as a dashed cap line on the scale.
+  const yB = (gr: number) => topB + grDepthFrac(Math.min(rangeDb, gr)) * (botB - topB);
+  const capY = topB + grDepthFrac(rangeDb) * (botB - topB);
   const cx = (i: number) => 10 + i * slot + slot / 2;
   const pts = processed.map((p, i) => `${cx(i).toFixed(1)},${yA(p.detectorDb).toFixed(1)}`).join(' ');
   const thrY = yA(thresholdDb);
@@ -245,8 +249,11 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
         <SvgText x={10 + plotW - 2} y={thrLabelY} fontSize={LBL} fill={colors.gold} textAnchor="end" fontFamily={fonts.oswaldMedium}>THRESHOLD {thresholdDb.toFixed(0)} dB</SvgText>
         <SvgText x={12} y={topB - 6} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>GAIN REDUCTION · dB, drawn downward · range {rangeDb} · conceptual</SvgText>
         <Line x1={10} y1={topB} x2={10 + plotW} y2={topB} stroke="rgba(255,255,255,0.18)" />
-        <SvgText x={W - 10} y={topB + 4} fontSize={LBL} fill={colors.textMuted} textAnchor="end" fontFamily={F}>0</SvgText>
-        <SvgText x={W - 10} y={botB + 3} fontSize={LBL} fill={colors.textMuted} textAnchor="end" fontFamily={F}>−{rangeDb}</SvgText>
+        {capY - topB >= 10 ? <SvgText x={W - 10} y={topB + 4} fontSize={LBL} fill={colors.textMuted} textAnchor="end" fontFamily={F}>0</SvgText> : null}
+        {botB - capY >= 10 ? <SvgText x={W - 10} y={botB + 3} fontSize={LBL} fill={colors.textMuted} textAnchor="end" fontFamily={F}>−{DEESSER_GR_SCALE_DB}</SvgText> : null}
+        {/* Range = the cap: no S is reduced past this line. */}
+        <Line x1={10} y1={capY} x2={10 + plotW} y2={capY} stroke={colors.orange} strokeOpacity={0.7} strokeWidth={1.2} strokeDasharray="4,3" />
+        <SvgText x={W - 10} y={capY + 3} fontSize={LBL} fill={colors.orange} textAnchor="end" fontFamily={fonts.oswaldMedium}>−{rangeDb}</SvgText>
         {processed.map((p, i) => {
           if (p.grDb <= 0) return null;
           const tip = yB(p.grDb);

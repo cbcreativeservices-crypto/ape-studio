@@ -52,3 +52,16 @@ export function formatHz(hz: number): string {
   if (hz >= 100) return `${hz.toFixed(0)} Hz`;
   return `${hz.toFixed(1)} Hz`;
 }
+
+/**
+ * "1033.4 Hz" — the FREQ lane / DRIVE bezel readout on the Chladni studios
+ * (slider pass 2026-10-14). Inside a mode's slow zone the fader walks only
+ * ±1/Q (a few Hz at 1 kHz), so formatHz's "1.03 kHz" froze for the whole
+ * zone; 0.1 Hz resolution up to 10 kHz shows every step of the finger.
+ * `tight` drops the space ("1033.4Hz") so the bezel DRIVE cell still fits
+ * at 390 wide (test/cymaticsFreqFader.test.ts).
+ */
+export function formatHzPrecise(hz: number, tight = false): string {
+  if (hz >= 10000) return formatHz(hz);
+  return `${hz.toFixed(1)}${tight ? '' : ' '}Hz`;
+}

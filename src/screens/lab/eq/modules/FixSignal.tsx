@@ -140,6 +140,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       level: true,
       value: (band.g + 18) / 36,
       onChange: (t) => moveBand((b) => ({ ...b, g: Math.round((t * 36 - 18) * 2) / 2 })),
+      home: 0.5, // 0 dB — the lane centre; double-tap returns to flat
       format: () => `${band.g >= 0 ? '+' : ''}${band.g.toFixed(1)} dB`,
       formatShort: () => `${band.g >= 0 ? '+' : ''}${band.g.toFixed(1)}`,
       tint: gainColor(band.g, 18),
@@ -189,7 +190,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-            <ResponseCurveGraph curves={curves} dbRange={24} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} />
+            <ResponseCurveGraph curves={curves} dbRange={24} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} band={{ f: band.f, q: band.q }} focusHz={[band.f]} />
           </View>
         ),
       }}

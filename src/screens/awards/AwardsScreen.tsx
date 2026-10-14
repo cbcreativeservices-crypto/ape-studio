@@ -32,7 +32,7 @@ import { DirectoryView } from '../directory/DirectoryScreen';
 import { EnrollmentView } from '../enrollment/EnrollmentScreen';
 import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
-import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
+import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import {
   awardPage,

@@ -17,32 +17,14 @@
  * (FREE_ENROLL_GS — Pro Audio Safety + DAW Fundamentals), which are seeded for
  * everyone and may be added back by anyone.
  */
-import type { MemberGate } from '../commercial/tier';
-
-export type EnrollDecision = 'add' | 'locked' | 'checking' | 'unconfirmed';
-
-/** Only 'open' (academy standing) adds — or a request made up ENTIRELY of free
- *  topics. Everything else changes nothing and explains why. */
-export function enrollDecisionOf(
-  gate: MemberGate,
-  gsList: readonly number[] | undefined,
-  isFree: (gs: number) => boolean,
-): EnrollDecision {
-  if (gate === 'open') return 'add';
-  if (gsList && gsList.length > 0 && gsList.every(isFree)) return 'add';
-  return gate;
-}
-
-export const ENROLL_GATE_TITLE = 'MEMBERS ONLY';
-
-/** The members-only popup's body. `guest` = a KNOWN guest (useGuestWording). */
-export function enrollLockedBody(guest: boolean): string {
-  const core =
-    'Enrolling — adding topics, certificates and programs to My Enrollments — is for Academy members only.';
-  const free = 'Pro Audio Safety and DAW Fundamentals stay open to everyone.';
-  return guest ? `You’re not signed in. ${core} ${free}` : `${core} ${free}`;
-}
-
-export const ENROLL_CHECKING_TITLE = 'Checking your account…';
-export const ENROLL_CHECKING_BODY = 'We’re still confirming your membership. Try again in a moment.';
-export const ENROLL_UNCONFIRMED_TITLE = 'Membership not confirmed';
+// Moved into src/features/commercial/tier.ts (2026-10-14, start-graph cap): this
+// file only re-exports, for node tests and any non-start-path importer.
+export {
+  ENROLL_CHECKING_BODY,
+  ENROLL_CHECKING_TITLE,
+  ENROLL_GATE_TITLE,
+  ENROLL_UNCONFIRMED_TITLE,
+  enrollDecisionOf,
+  enrollLockedBody,
+  type EnrollDecision,
+} from '../commercial/tier.ts';

@@ -11,11 +11,12 @@
  * Every move goes through `constrainMove`, so a pose can never be inside a
  * solid — from a drag, a fader, or "go to zone".
  */
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 import type { CompiledScene, Lesson, MicBody, MicPattern, MicPose, MicSlot, MicState, Readouts, VariantId, Vec3 } from '../model/types.ts';
 import { lineFor, viewsOf } from '../model/types.ts';
-import { checkAssembly, compileScene, constrainMove, nearestClear, pinToSurface, type Blocked, type Bounds } from '../geometry/collision.ts';
+import { checkAssembly, compileScene, constrainMove, MOVE_WORK, nearestClear, pinToSurface, type Blocked, type Bounds } from '../geometry/collision.ts';
+import { runSoon, type SoonHandle } from '../../../../../lib/afterInteractions.ts';
 import { deriveReadouts, type ReadoutCtx } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { micBodyOf } from '../model/validate.ts';
@@ -146,8 +147,25 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
     setMics((prev) => prev.map((m) => (m.slot === slot ? { ...m, pose: p } : m)));
   }, []);
 
+  // The far-tap glide per slot (see preview).
+  const glide = useRef<Record<MicSlot, { h: SoonHandle | null; owed: boolean }>>({ A: { h: null, owed: false }, B: { h: null, owed: false } });
+  const stopGlide = useCallback((slot: MicSlot) => {
+    const g = glide.current[slot];
+    g.h?.cancel();
+    g.h = null;
+    g.owed = false;
+  }, []);
+  useEffect(
+    () => () => {
+      glide.current.A.h?.cancel();
+      glide.current.B.h?.cancel();
+    },
+    [],
+  );
+
   const moveTo = useCallback(
     (slot: MicSlot, to: MicPose) => {
+      stopGlide(slot);
       const sv = slot === 'A' ? poseA : poseB;
       const pn = pin[slot];
       const target = pn ? pinToSurface(to, pn.top, body[slot], pn.halfWidth) : to;
@@ -159,7 +177,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       setVersion((v) => v + 1);
       return r;
     },
-    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds, write, setStopOf],
+    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds, write, setStopOf, stopGlide],
   );
 
   // A FADER's move while the finger rides the lane: the same constrained
@@ -168,21 +186,63 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   // drag's own contract, blueprint §5.1). The lane's release calls `commit`.
   // (Owner, Pixel 2026-10-06, "sliders not working": a POSITION / AIM move
   // re-rendered the whole page, 60–350 ms a move in the web preview.)
+  //
+  // A FAR TAP (slider audit 2026-10-14, owner: "never causes the user any
+  // pause"): ParamLane jumps the cap to the finger and delivers one long
+  // move. The move is BUDGETED (constrainMove's MOVE_WORK, a few ms): the
+  // mic goes as far as the budget proves clear, and the rest continues on
+  // following macrotasks (runSoon) — the JS thread never blocks, the mic
+  // glides there, and every sub-step is still checked. A new delivery
+  // replaces the pending target; a release during the glide commits when the
+  // mic arrives (glide.owed).
+  const commitNow = useCallback(
+    (slot: MicSlot) => {
+      write(slot, (slot === 'A' ? poseA : poseB).value);
+      setStopOf(slot, (slot === 'A' ? blockedA : blockedB).value);
+      setVersion((v) => v + 1);
+    },
+    [poseA, poseB, blockedA, blockedB, write, setStopOf],
+  );
   const preview = useCallback(
     (slot: MicSlot, to: MicPose) => {
       const sv = slot === 'A' ? poseA : poseB;
+      const bv = slot === 'A' ? blockedA : blockedB;
       const pn = pin[slot];
       const target = pn ? pinToSurface(to, pn.top, body[slot], pn.halfWidth) : to;
-      const r = constrainMove(scene, body[slot], sv.value, target, bounds);
+      const g = glide.current[slot];
+      // A new delivery is a new drag's (or the same drag's) — its own
+      // release commits, so an older owed commit is dropped with its glide.
+      g.h?.cancel();
+      g.h = null;
+      g.owed = false;
+      const r = constrainMove(scene, body[slot], sv.value, target, bounds, MOVE_WORK);
       sv.value = r.pose;
-      (slot === 'A' ? blockedA : blockedB).value = r.blocked;
+      bv.value = r.blocked;
+      if (!r.done) {
+        const more = () => {
+          const q = constrainMove(scene, body[slot], sv.value, target, bounds, MOVE_WORK);
+          sv.value = q.pose;
+          bv.value = q.blocked;
+          if (!q.done) {
+            g.h = runSoon(more);
+            return;
+          }
+          g.h = null;
+          if (g.owed) {
+            g.owed = false;
+            commitNow(slot);
+          }
+        };
+        g.h = runSoon(more);
+      }
       return r;
     },
-    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds],
+    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds, commitNow],
   );
 
   const jumpTo = useCallback(
     (slot: MicSlot, to: MicPose) => {
+      stopGlide(slot);
       const sv = slot === 'A' ? poseA : poseB;
       const pn = pin[slot];
       const target = pn ? pinToSurface(to, pn.top, body[slot], pn.halfWidth) : to;
@@ -196,22 +256,27 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       setVersion((v) => v + 1);
       return hit;
     },
-    [poseA, poseB, blockedA, blockedB, pin, body, scene, write, setStopOf],
+    [poseA, poseB, blockedA, blockedB, pin, body, scene, write, setStopOf, stopGlide],
   );
 
+  // A release while a far tap is still gliding commits when the mic arrives.
   const commit = useCallback(
     (slot: MicSlot) => {
-      write(slot, (slot === 'A' ? poseA : poseB).value);
-      setStopOf(slot, (slot === 'A' ? blockedA : blockedB).value);
-      setVersion((v) => v + 1);
+      const g = glide.current[slot];
+      if (g.h) {
+        g.owed = true;
+        return;
+      }
+      commitNow(slot);
     },
-    [poseA, poseB, blockedA, blockedB, write, setStopOf],
+    [commitNow],
   );
 
   /** A pose valid for a (new) type/variant: pinned, or the nearest clear
    *  pose reached from a safe spot, else unchanged with its block shown. */
   const settle = useCallback(
     (slot: MicSlot, typeId: string, sc: CompiledScene) => {
+      stopGlide(slot);
       const sv = slot === 'A' ? poseA : poseB;
       const t = micType(typeId);
       const b = micBodyOf(t);
@@ -238,7 +303,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       setStopOf(slot, hit);
       return p;
     },
-    [poseA, poseB, blockedA, blockedB, lesson, setStopOf],
+    [poseA, poseB, blockedA, blockedB, lesson, setStopOf, stopGlide],
   );
 
   const setType = useCallback(

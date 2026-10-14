@@ -19,10 +19,10 @@ import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useScrollLock } from '../LabShell';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
-import { NO_INSETS, laneDragValue, laneValueAt } from '../rack/laneEdgeGuard';
+import { NO_INSETS, laneDragValue, laneRawAt, laneValueAt } from '../rack/laneEdgeGuard';
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
 import { laneFingerAt, laneFingerDx, type LaneFinger } from '../rack/laneFinger';
@@ -199,11 +199,23 @@ export function DragSlider({
   // terminate ever fires for a slider that is gone, and the page stayed
   // frozen (bug pass 2 2026-09-30).
   const draggingRef = useRef(false);
+  // The CAP follows the finger on the UI thread while it rides the track
+  // (slider audit 2026-10-14 — the ParamLane recipe): drawn from the page's
+  // `value`, it waited for the lab's re-render every tick and trailed the
+  // finger on a heavy page. At rest it is the page's own value again, so a
+  // stepped lab settles the cap on its step.
+  const capV = useSharedValue(Math.max(0, Math.min(1, value)));
+  const [rest, setRest] = useState(0);
   const setLock = (v: boolean) => {
     draggingRef.current = v;
+    if (!v) setRest((n) => n + 1);
     lockRef.current.ctx?.(v);
     lockRef.current.prop?.(v);
   };
+  useEffect(() => {
+    if (!draggingRef.current) capV.value = Math.max(0, Math.min(1, value));
+  }, [value, rest, capV]);
+  const capStyle = useAnimatedStyle(() => ({ left: `${capV.value * 100}%` as `${number}%` }));
   useEffect(
     () => () => {
       if (!draggingRef.current) return;
@@ -262,7 +274,10 @@ export function DragSlider({
           // the exact inverse of the cap position (same contract as
           // ParamLane and ControlSlider).
           const v = laneValueAt(e.nativeEvent.locationX, wRef.current, insRef.current, CAP_W);
-          baseRef.current = v;
+          // Anchored UNCLAMPED (laneRawAt) so a grab at an end never leaves
+          // the cap riding ahead of the finger.
+          baseRef.current = laneRawAt(e.nativeEvent.locationX, wRef.current, insRef.current, CAP_W);
+          capV.value = v;
           feed.grant(v);
         }
       },
@@ -270,7 +285,9 @@ export function DragSlider({
         const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
         if (dx === 'lifted') return;
         if (wRef.current > 0) {
-          feed.move(laneDragValue(baseRef.current, dx, wRef.current, insRef.current, CAP_W));
+          const v = laneDragValue(baseRef.current, dx, wRef.current, insRef.current, CAP_W);
+          capV.value = v;
+          feed.move(v);
         }
       },
       onPanResponderRelease: () => {
@@ -354,9 +371,9 @@ export function DragSlider({
             back into a coloured pill, and an opacity pulse on the body fades
             the metal itself. Both are owner rulings from 2026-09-11. */}
         <View pointerEvents="none" style={styles.sliderCapTravel}>
-          <View style={[styles.sliderCap, { left: `${value * 100}%` }]}>
+          <Animated.View style={[styles.sliderCap, capStyle]}>
             <Animated.View style={[styles.sliderCapLine, accent ? { backgroundColor: accent } : null, pulseStyle]} />
-          </View>
+          </Animated.View>
         </View>
         </View>
       </View>

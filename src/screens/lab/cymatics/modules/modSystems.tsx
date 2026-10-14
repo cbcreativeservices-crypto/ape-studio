@@ -458,8 +458,11 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
             kind: 'fader',
             id: 'harmonic',
             label: 'HARMONIC',
-            value: (n - 1) / 4,
-            onChange: (v: number) => setN(1 + Math.round(Math.max(0, Math.min(1, v)) * 4)),
+            // Even travel (slider pass 2026-10-14): each of the five harmonics
+            // owns 20 % of the lane and the thumb rests mid-band — rounding
+            // gave the two ends half a band each.
+            value: (n - 0.5) / 5,
+            onChange: (v: number) => setN(1 + Math.min(4, Math.floor(Math.max(0, Math.min(1, v)) * 5))),
             format: () => (n === 1 ? 'fundamental · 1 loop' : `${n}f · ${n} loops · ${n + 1} nodes`),
             formatShort: () => (n === 1 ? 'fund' : `${n}f`),
             helpKey: 'systems',

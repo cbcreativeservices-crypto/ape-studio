@@ -23,6 +23,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicPattern, MicPose, PatternId, ViewBox, ViewId, Vec3 } from '../engine/model/types.ts';
 import { useRig } from '../engine/scene/useRig.ts';
+import { previewMemo, stopWordOf } from '../engine/scene/placementDock.ts';
 import { PlacementScene } from '../engine/scene/PlacementScene';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { solidOnPath } from '../engine/geometry/collision.ts';
@@ -91,6 +92,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const a0 = aimAxis === 'az' ? z.start.az : z.start.el;
   const a = Math.round((aimAxis === 'az' ? pose.az : pose.el) - a0);
   const lim = aimAxis === 'az' ? AZ_MAX : EL_MAX;
+  const aimHeld = previewMemo();
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -103,16 +105,19 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       onChange: (v) => {
         const ang = a0 + Math.round((v * 2 - 1) * lim);
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
-        rig.preview('A', to);
+        aimHeld.note(v, rig.preview('A', to));
       },
       onCommit: () => {
         rig.commit('A');
         setAimed(true);
       },
-      // Short: the lane prints this beside its label.
+      // Short: the lane prints this beside its label. While the finger rides,
+      // where the mic really turned to (a stop first), not the finger.
       format: (v) => {
-        const x = Math.round((v * 2 - 1) * lim);
-        return x === 0 ? C.words.facing : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`;
+        const h = aimHeld.at(v);
+        const sw = h ? stopWordOf(rig, h.blocked) : '';
+        const x = h ? Math.round((aimAxis === 'az' ? h.pose.az : h.pose.el) - a0) : Math.round((v * 2 - 1) * lim);
+        return `${sw ? `${sw} · ` : ''}${x === 0 ? C.words.facing : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`}`;
       },
       formatShort: () => fmtAngle(a),
       chooser: {

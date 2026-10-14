@@ -61,6 +61,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { scopeCyclesFor, sineScopeCycles } from '../../features/lab/sliderMaps';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignalGen'>;
 
@@ -159,9 +160,9 @@ const hashNoise = (i: number) => {
   return 2 * (x - Math.floor(x)) - 1;
 };
 
-/** Map a frequency to a representative on-screen cycle count (log scale). */
-const cyclesFor = (hz: number) =>
-  Math.max(1, Math.min(12, 1 + Math.log10(Math.max(20, hz) / 20) * 2.2));
+/** Map a frequency to a representative on-screen cycle count (log scale) —
+ *  shared with the tests (src/features/lab/sliderMaps.ts). */
+const cyclesFor = scopeCyclesFor;
 
 /** Unit-amplitude (−1..1) sample array illustrating the SHAPE of `mode`. */
 function unitShape(
@@ -224,7 +225,9 @@ function unitShape(
   }
 
   // sine / burst
-  const cycles = Math.round(cyclesFor(freq) * 1.2);
+  // Continuous in FREQ (slider pass 2026-10-14): rounding gave the whole
+  // sweep ~6 visual states, so most of the lane changed nothing on the scope.
+  const cycles = sineScopeCycles(freq);
   for (let i = 0; i < N; i++) {
     const x = i / (N - 1);
     let v = Math.sin(2 * Math.PI * cycles * x);

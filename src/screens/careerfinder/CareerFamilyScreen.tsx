@@ -19,7 +19,7 @@ import { officialTopicName } from '../../data/officialTopicNames';
 import { furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
 import { isFreeEnrollGs, removeTopic, toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
-import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
+import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { notify } from '../../lib/confirm';

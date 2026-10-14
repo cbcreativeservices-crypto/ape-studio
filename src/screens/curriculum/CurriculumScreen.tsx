@@ -22,7 +22,7 @@ import { topicCopy } from '../../data/topicCopy';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
 import { useAcademyStats } from '../../features/curriculum/academyStats';
 import { addTopic, isFreeEnrollGs, removeTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
-import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
+import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { notify } from '../../lib/confirm';

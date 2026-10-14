@@ -35,7 +35,7 @@ import type { DockParam } from '../rack/rackTypes';
 import { MATERIALS, type MaterialId } from '../../../features/cymatics/materials';
 import { DEFAULT_PLATE, effectiveQ, plateAspect, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { LIBRARY_SHAPES, isLibraryShape, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
-import { formatHz, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
+import { formatHz, formatHzPrecise, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
 import { newPattern, patternStore } from '../../../features/cymatics/patternStore';
 import { notify } from '../../../lib/confirm';
@@ -307,7 +307,7 @@ function PlateStudio() {
         setSweeping(false);
         setFreq(fader.hzAt(v));
       },
-      format: () => `${formatHz(freq)} · ${note.label} ${note.centsLabel}`,
+      format: () => `${formatHzPrecise(freq)} · ${note.label} ${note.centsLabel}`,
       formatShort: () => (freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : `${Math.round(freq)}Hz`),
       helpKey: 'frequency',
       // Fine steps under the lane (were buttons in the well — owner rule
@@ -548,7 +548,7 @@ function PlateStudio() {
   // Compact words + weighted cells (plateBezel.ts, TestFlight build 32): the
   // full mode labels and APPROACHING were cut to an ellipsis on a 390 phone.
   const bezel = [
-    { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
+    { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
     { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response },
     { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode },
     // Read-only (owner rule 2026-10-10). Landing on the nearest mode is the

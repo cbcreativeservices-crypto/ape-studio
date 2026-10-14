@@ -25,6 +25,7 @@ import type { DockParam } from '../../rack/rackTypes';
 import { biquadMagDb, fFromNorm, fmtHz, gainColor, normFromF, rbjNotch } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
+import { laneFromQ, qFromLane, qLaneMin } from '../../../../features/lab/sliderMaps';
 
 type ShapeKey = 'bell' | 'lowShelf' | 'highShelf' | 'highPass' | 'lowPass' | 'notch';
 
@@ -72,7 +73,7 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
   const curves = useMemo<ResponseCurve[]>(() => {
     const at =
       shape === 'notch'
-        ? (f: number) => biquadMagDb(rbjNotch(freq, Math.max(1, q)), f)
+        ? (f: number) => biquadMagDb(rbjNotch(freq, Math.max(qLaneMin(true), q)), f)
         : shape === 'bell'
           ? (f: number) => eqResponseDb([{ type: 'peak', freq, q, gainDb }], f)
           : shape === 'lowShelf' || shape === 'highShelf'
@@ -102,19 +103,24 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
       level: true,
       value: (gainDb + 18) / 36,
       onChange: (t) => setGainDb(Math.round((t * 36 - 18) * 2) / 2),
+      home: 0.5, // 0 dB — the lane centre; double-tap returns to flat
       format: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`,
       formatShort: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)}`,
       tint: gc,
     });
   }
   if (hasQ) {
+    // The notch is drawn with Q ≥ 1, so on NOTCH the lane spans 1–12 (slider
+    // pass 2026-10-14): a 0.3 floor left the bottom third of the lane dead.
+    const qMin = qLaneMin(shape === 'notch');
+    const qShown = Math.max(qMin, q);
     params.push({
       kind: 'fader',
       id: 'q',
       label: 'Q',
-      value: Math.log(q / 0.3) / Math.log(12 / 0.3),
-      onChange: (t) => setQ(0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t)))),
-      format: () => `Q ${q.toFixed(1)}`,
+      value: laneFromQ(q, qMin),
+      onChange: (t) => setQ(qFromLane(t, qMin)),
+      format: () => `Q ${qShown.toFixed(1)}`,
     });
   }
   params.push({
@@ -149,11 +155,11 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
             v: hasGain ? `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB` : '—',
             tint: hasGain ? gc : '#7a7f8a',
           },
-          { k: 'Q', v: hasQ ? q.toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
+          { k: 'Q', v: hasQ ? Math.max(qLaneMin(shape === 'notch'), q).toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} />
+            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} focusHz={[freq]} />
           </View>
         ),
       }}

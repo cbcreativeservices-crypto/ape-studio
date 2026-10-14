@@ -341,7 +341,7 @@ export function EquationStage({ steps, title, reduceMotion, autoAdvance }: { ste
 export const METER_W = 300;
 export const METER_H = 40;
 
-export function DeviationMeter({ cents, rangeCents = 30, label, fit }: { cents: number; rangeCents?: number; label?: string; /** Fill the box at the viewBox's shape (rack stage / ExpandableFigure). */ fit?: boolean }) {
+export function DeviationMeter({ cents, rangeCents = 30, label, fit, bare }: { cents: number; rangeCents?: number; label?: string; /** Fill the box at the viewBox's shape (rack stage / ExpandableFigure). */ fit?: boolean; /** Rack-stage strip (2026-10-14): the drawing only — no eyebrow, no text readout (the bezel carries the number); the label stays the accessibility label. */ bare?: boolean }) {
   const w = METER_W, h = METER_H;
   const x = 150 + (Math.max(-rangeCents, Math.min(rangeCents, cents)) / rangeCents) * 140;
   const exact = Math.abs(cents) < 0.05;
@@ -351,7 +351,7 @@ export function DeviationMeter({ cents, rangeCents = 30, label, fit }: { cents: 
   const state = exact ? 'exact' : cents > 0 ? 'wider' : 'narrower';
   return (
     <View accessible accessibilityLabel={`${label ?? 'Deviation'}: ${exact ? 'exact' : `${cents > 0 ? '+' : ''}${cents.toFixed(2)} cents, ${state}`}`} style={{ gap: 3 }}>
-      {label ? <Eyebrow>{label}</Eyebrow> : null}
+      {label && !bare ? <Eyebrow>{label}</Eyebrow> : null}
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : h} style={fit ? { aspectRatio: w / h } : undefined} viewBox={`0 0 ${w} ${h}`}>
         <Rect x={0} y={0} width={w} height={h} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={h / 2} x2={w - 10} y2={h / 2} stroke="rgba(255,255,255,0.15)" />
@@ -361,9 +361,11 @@ export function DeviationMeter({ cents, rangeCents = 30, label, fit }: { cents: 
         <SvgText x={w - 12} y={h - 3} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>WIDER +{rangeCents} ¢</SvgText>
         <Polygon points={`${x},${h / 2 - 9} ${x - 6},${h / 2 + 3} ${x + 6},${h / 2 + 3}`} fill={ROLE[role]} />
       </Svg>
-      <Text style={[styles.meterText, { color: ROLE[role] }]}>
-        {exact ? '● EXACT' : `${cents > 0 ? '+' : ''}${cents.toFixed(2)} ¢ · ${state.toUpperCase()}`}
-      </Text>
+      {bare ? null : (
+        <Text style={[styles.meterText, { color: ROLE[role] }]}>
+          {exact ? '● EXACT' : `${cents > 0 ? '+' : ''}${cents.toFixed(2)} ¢ · ${state.toUpperCase()}`}
+        </Text>
+      )}
     </View>
   );
 }

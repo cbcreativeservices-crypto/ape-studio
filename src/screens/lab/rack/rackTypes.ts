@@ -165,6 +165,13 @@ export type DockParam =
        *  camera cannot pan): the key shows LOCKED, dimmed, and never binds the
        *  lane; tapping it prints this reason under the keys. */
       locked?: string;
+      /** Bind the lane to this fader the moment it APPEARS in the dock (opt-in,
+       *  slider pass 2026-10-14). For a fader that a flip-through key reveals
+       *  (Tuning: PART → Part C shows FIFTH): without it the lane stayed on
+       *  PART, so the learner's next drag flipped the part instead of tuning —
+       *  "the slider didn't change anything". Never rebinds mid-drag: the
+       *  switch waits for the finger to lift. */
+      autoBind?: boolean;
       helpKey?: string;
     }
   | {

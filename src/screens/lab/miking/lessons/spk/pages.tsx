@@ -33,6 +33,7 @@ import { PageSteps, type MikingStep } from '../../engine/steps';
 import { PairComb } from '../shared/speakers/PairComb';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../engine/kit';
 import { useRig, type Rig } from '../../engine/scene/useRig.ts';
+import { previewMemo, stopWordOf } from '../../engine/scene/placementDock.ts';
 import { DualView } from '../../engine/scene/DualView';
 import { PlacementScene } from '../../engine/scene/PlacementScene';
 import { placementBezel, lenCell, stopShortOf } from '../../engine/scene/readoutText.ts';
@@ -1057,6 +1058,7 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
   }, [pattern, rig]);
   const a = aimAxis === 'az' ? pose.az : pose.el;
   const lim = aimAxis === 'az' ? AZ_MAX : EL_MAX;
+  const aimHeld = previewMemo();
   const FLOOR = L['1x12'].model.yFloor.mm;
   const PLAN: ViewBox = wedge.id === 'sideFill' ? { u0: -500, u1: 2250, v0: -1850, v1: 650 } : { u0: -500, u1: 2250, v0: -800, v1: 800 };
   const SIDE: ViewBox = { u0: -500, u1: 2250, v0: -520, v1: FLOOR + 40 };
@@ -1071,15 +1073,18 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
       // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * lim);
-        rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+        aimHeld.note(v, rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang }));
       },
       onCommit: () => {
         rig.commit('A');
         setAimed(true);
       },
       format: (v) => {
-        const x = Math.round((v * 2 - 1) * lim);
-        return x === 0 ? 'facing the speaker' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`;
+        // Where the mic really turned to (a stop first), not the finger.
+        const h = aimHeld.at(v);
+        const sw = h ? stopWordOf(rig, h.blocked) : '';
+        const x = h ? Math.round(aimAxis === 'az' ? h.pose.az : h.pose.el) : Math.round((v * 2 - 1) * lim);
+        return `${sw ? `${sw} · ` : ''}${x === 0 ? 'facing the speaker' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`}`;
       },
       formatShort: () => fmtAngle(a),
       chooser: {

@@ -19,7 +19,7 @@ import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen, useStableShuffle, type RailMarker } from '../components/primitives';
 import { OctaveElevator } from '../components/octaveElevator';
-import { HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
+import { HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
@@ -113,8 +113,9 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   const stage =
     figure === 'fold' ? (w: number, h: number) => <OctaveElevator value={c1} history={c1Hist} reduceMotion={ctx.reduceMotion} box={{ w, h }} />
     : figure === 'third' ? (w: number, h: number) => (
-        <StageFit w={w} h={h} aspect={LADDER_W / LADDER_H}>
+        <StageFit w={w} h={h} aspect={LADDER_METER_ASPECT}>
           <HarmonicComparison fit readout={false} rootHz={root} upperHz={frequencyFromRatio(root, thirdRatio)} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="your third" />
+          <DeviationMeter fit bare cents={thirdErr} rangeCents={45} label="cents from 5/4" />
         </StageFit>
       )
     : (w: number, h: number) => (
@@ -137,6 +138,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
           {
             kind: 'fader',
             id: 'third',
+            autoBind: true,
             label: 'THIRD',
             value: lanePos(thirdCents, MIN, MAX),
             // 0.1 ¢ steps + a quarter-cent snap onto 5/4 (review 2026-09-30;
@@ -219,7 +221,6 @@ export function Ch13Apply({ ctx }: ChapterProps) {
       <Prompt>Adjust the major third until 4 × third ratio = 5 — FIGURE 4 · THIRD, then ride THIRD.</Prompt>
       <Card tone={done[3] ? 'ok' : 'plain'}>
         <MathLine>third = {thirdCents.toFixed(2)} ¢ → ratio {thirdRatio.toFixed(6)} → 4 × ratio = {(4 * thirdRatio).toFixed(4)}</MathLine>
-        <DeviationMeter cents={thirdErr} rangeCents={25} label="cents from 5/4" />
         {done[3] ? <Text style={styles.ok}>✓ 5/4 — the fourth harmonic of the third meets the fifth harmonic of the root.</Text> : null}
       </Card>
 

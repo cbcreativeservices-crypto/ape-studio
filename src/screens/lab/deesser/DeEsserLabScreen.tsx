@@ -300,7 +300,7 @@ function PageFrequency({ ctx }: { ctx: PageCtx }) {
   const aim = (
     <View style={{ gap: 12 }}>
       <ControlSlider label="Detector frequency" value={Math.log(s.freqHz)} min={logMin} max={logMax} step={0.01} format={(v) => kHz(Math.exp(v))} onChange={(v) => { set({ freqHz: Math.round(Math.exp(v) / 50) * 50 }); setHint(null); touch(ctx); }} />
-      <ControlSlider label="Band width" value={s.q} min={0.7} max={4} step={0.1} format={(v) => (v < 1.2 ? 'wide' : v < 2.5 ? 'medium' : 'narrow')} onChange={(v) => { set({ q: v }); touch(ctx); }} />
+      <ControlSlider label="Band width" value={s.q} min={0.7} max={4} step={0.1} format={(v) => `Q ${v.toFixed(1)} · ${v < 1.2 ? 'wide' : v < 2.5 ? 'medium' : 'narrow'}`} onChange={(v) => { set({ q: v }); touch(ctx); }} />
       <Row>
         {SIB.map((i) => <Btn key={i} label={`“${PHRASE[i].label}” · ${(PHRASE[i].hissHz / 1000).toFixed(1)}k`} tone={pick === i ? 'primary' : 'plain'} selected={pick === i} onPress={() => { setPick(i); touch(ctx); }} a11y={`Sibilant ${PHRASE[i].label}, hiss near ${PHRASE[i].hissHz} hertz`} />)}
       </Row>

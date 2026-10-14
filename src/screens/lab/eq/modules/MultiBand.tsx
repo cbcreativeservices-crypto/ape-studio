@@ -261,6 +261,9 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
 
   // ---- Dock declaration: the selected band's params ride the lane (exact
   //      pre-rack DragSlider mappings) — GAIN/Q only exist for bells.
+  // A fader on an OFF band moved nothing you could see or hear (slider pass
+  // 2026-10-14): it is LOCKED with the reason until BAND switches it on.
+  const offLock = selOn ? undefined : 'This band is OFF — switch it on in BAND';
   const freqParam: DockParam = {
     kind: 'fader',
     id: 'freq',
@@ -269,6 +272,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
     onChange: (t) => setSelF(fFromNorm(t)),
     format: () => fmtHz(selF),
     tint: selMeta.color,
+    locked: offLock,
   };
   const bellParams: DockParam[] = selBell
     ? [
@@ -285,6 +289,8 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
                 k === bellIdx ? { ...b, g: Math.round((t * 2 * DB_RANGE - DB_RANGE) * 2) / 2 } : b,
               ),
             })),
+          home: 0.5, // 0 dB — the lane centre; double-tap returns to flat
+          locked: offLock,
           format: () => `${selBell.g >= 0 ? '+' : ''}${selBell.g.toFixed(1)} dB`,
           formatShort: () => `${selBell.g >= 0 ? '+' : ''}${selBell.g.toFixed(1)}`,
           tint: gainColor(selBell.g, DB_RANGE),
@@ -301,6 +307,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
                 k === bellIdx ? { ...b, q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) } : b,
               ),
             })),
+          locked: offLock,
           format: () => `Q ${selBell.q.toFixed(2)} · ${bwOctFromQ(selBell.q).toFixed(2)} oct`,
           formatShort: () => `Q${selBell.q.toFixed(1)}`,
         },

@@ -16,6 +16,7 @@
 import * as Crypto from 'expo-crypto';
 import { AppState, type AppStateStatus } from 'react-native';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import type { StudySnapshot } from './api';
 import { sendCoalescedChunk } from './replayChunk';
 import { armSaveFailureReport } from '../storage/saveFailureNotice';
@@ -381,7 +382,8 @@ export class StudySession {
     // session that DEFINITELY is anonymous counts; an unknown/absent session
     // (the cold-start race) still queues, so a real member never loses work.
     try {
-      const { data } = await supabase.auth.getSession();
+      // Bounded (house rule: auth reads never hang a flush).
+      const { data } = await safeSession(supabase.auth.getSession(), 'study-sync guest check');
       if (data.session?.user?.is_anonymous === true) {
         this.events.splice(0);
         this.seconds = 0;

@@ -33,6 +33,7 @@ import { PolarCompare } from '../../engine/scene/PolarCompare';
 import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../../engine/physics/polar.ts';
 import { fmtAngle, fmtDb, fmtIdealPickup, fmtLen, isDeepNull } from '../../engine/model/units.ts';
 import type { Rig } from '../../engine/scene/useRig.ts';
+import { previewMemo, reachOf, stopWordOf } from '../../engine/scene/placementDock.ts';
 import { saveObservation, useObservations } from '../../engine/progress/observations';
 import { MIC_TYPES, micType } from '../../data/micTypes';
 import type { PageProps } from '../../pages/pageTypes';
@@ -345,11 +346,19 @@ export function posParams(o: { rig: Rig; slot: MicSlot; posAxis: PosAxis; setPos
   const { rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis, words, aimWords } = o;
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
   const pose: MicPose = m.pose;
-  const lo = rig.bounds.min[posAxis];
-  const hi = rig.bounds.max[posAxis];
+  // The lane spans what the mic can really reach (placementDock reachOf,
+  // slider audit 2026-10-14) — no stretch of travel that moves nothing.
+  const pr = reachOf(rig, m.slot, pose, posAxis, rig.bounds.min[posAxis], rig.bounds.max[posAxis]);
+  const fits = pr.hi - pr.lo >= 1;
+  const lo = fits ? pr.lo : rig.bounds.min[posAxis];
+  const hi = fits ? pr.hi : rig.bounds.max[posAxis];
+  const posEnd = (x: number) => (!fits ? null : Math.abs(x - lo) < 0.5 ? pr.loStop : Math.abs(x - hi) < 0.5 ? pr.hiStop : null);
   const cur = pose.p[posAxis];
-  const block = rig.stop[slot];
-  const stopWord = block ? `✕ ${rig.lesson.model.parts.find((p) => p.id === block.partId)?.short ?? block.label}` : '';
+  const stopWord = stopWordOf(rig, rig.stop[slot]);
+  // The readout names where the mic IS while the finger rides (a stop first),
+  // not where the finger is (placementDock.ts previewMemo, audit 2026-10-14).
+  const posHeld = previewMemo();
+  const aimHeld = previewMemo();
   const azC = o.azCentre ?? 0;
   const a = aimAxis === 'az' ? pose.az - azC : pose.el;
   return [
@@ -361,12 +370,19 @@ export function posParams(o: { rig: Rig; slot: MicSlot; posAxis: PosAxis; setPos
       // Preview while the finger rides the lane, commit on release (the
       // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
-        rig.preview(slot, { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } });
+        posHeld.note(v, rig.preview(slot, { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } }));
       },
       onCommit: () => rig.commit(slot),
       format: (v) => {
+        const h = posHeld.at(v);
+        if (h) {
+          const sw = stopWordOf(rig, h.blocked ?? posEnd(h.pose.p[posAxis]));
+          const got = h.pose.p[posAxis];
+          return sw ? `${sw} · ${fmtLen(Math.abs(got))}` : words[posAxis].fmt(got);
+        }
         const at = lo + v * (hi - lo);
-        return Math.abs(at - cur) < 0.5 ? (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur))}` : words[posAxis].fmt(cur)) : words[posAxis].fmt(at);
+        const sw = stopWord || stopWordOf(rig, posEnd(cur));
+        return Math.abs(at - cur) < 0.5 ? (sw ? `${sw} · ${fmtLen(Math.abs(cur))}` : words[posAxis].fmt(cur)) : words[posAxis].fmt(at);
       },
       formatShort: () => words[posAxis].short,
       chooser: {
@@ -384,10 +400,16 @@ export function posParams(o: { rig: Rig; slot: MicSlot; posAxis: PosAxis; setPos
       home: 0.5,
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * AIM_MAX);
-        rig.preview(slot, aimAxis === 'az' ? { ...pose, az: ang + azC } : { ...pose, el: ang });
+        aimHeld.note(v, rig.preview(slot, aimAxis === 'az' ? { ...pose, az: ang + azC } : { ...pose, el: ang }));
       },
       onCommit: () => rig.commit(slot),
       format: (v) => {
+        const h = aimHeld.at(v);
+        if (h) {
+          const sw = stopWordOf(rig, h.blocked);
+          const x = Math.round(aimAxis === 'az' ? h.pose.az - azC : h.pose.el);
+          return `${sw ? `${sw} · ` : ''}${aimAxis === 'az' ? (x >= 0 ? 'turned right' : 'turned left') : x >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(x))}`;
+        }
         const want = Math.round((v * 2 - 1) * AIM_MAX);
         const live = Math.abs(want - a) >= 1;
         const x = live ? want : a;

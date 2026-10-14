@@ -29,7 +29,11 @@
  * fallback of zero (its position is not known before it is measured).
  *
  * Pure (no React Native) so it is tested directly; useEdgeGuard.ts is the
- * React hook that measures and feeds it.
+ * React hook that measures and feeds it. The touch-math functions (laneTravel,
+ * laneValueAt, laneRawAt, laneDragValue, capLeftAt) carry a 'worklet'
+ * directive: ParamLane runs them inside its Gesture Handler callbacks on the
+ * UI thread (2026-10-14). In plain JS (tests, DragSlider, ControlSlider) the
+ * directive is an inert string.
  */
 
 /** The cap's outer edge stays at least this far from either window edge. */
@@ -83,22 +87,43 @@ export function sameInsets(a: LaneInsets, b: LaneInsets): boolean {
 
 /** The cap's travel in dp (lane width less the insets and the cap). */
 export function laneTravel(laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+  'worklet';
   return Math.max(1, laneW - ins.l - ins.r - capW);
 }
 
-const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+function clamp01(v: number): number {
+  'worklet';
+  return Math.max(0, Math.min(1, v));
+}
 
 /** Jump-to-finger: the value under a touch at `locationX` (lane-local). */
 export function laneValueAt(locationX: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+  'worklet';
   return clamp01((locationX - ins.l - capW / 2) / laneTravel(laneW, ins, capW));
+}
+
+/**
+ * The UNCLAMPED lane position under a touch — the drag's anchor (slider
+ * audit 2026-10-14). A grab in an end zone (the edge-guard inset, or the
+ * half-cap at either end) reads 0 or 1 via laneValueAt, but anchoring the
+ * drag to that CLAMPED value put the cap up to ~45 dp ahead of the finger
+ * for the whole drag. Anchored here, `laneDragValue` is exactly the value
+ * under the finger at every point: the cap waits until the finger reaches
+ * it, then rides under it.
+ */
+export function laneRawAt(locationX: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+  'worklet';
+  return (locationX - ins.l - capW / 2) / laneTravel(laneW, ins, capW);
 }
 
 /** Riding the lane: the value after the grabbing finger moved `dx`. */
 export function laneDragValue(base: number, dx: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+  'worklet';
   return clamp01(base + dx / laneTravel(laneW, ins, capW));
 }
 
 /** The cap's left edge, lane-local, at value `v`. */
 export function capLeftAt(v: number, laneW: number, ins: LaneInsets, capW = LANE_CAP_W): number {
+  'worklet';
   return ins.l + clamp01(v) * laneTravel(laneW, ins, capW);
 }

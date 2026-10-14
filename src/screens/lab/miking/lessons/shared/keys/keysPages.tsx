@@ -405,7 +405,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
     const mechParams: DockParam[] = [
       { kind: 'fader', id: 'step', label: 'STEP', value: (mShown - 1) / (MECH_STEPS - 1), onChange: (v) => mGo(1 + Math.round(v * (MECH_STEPS - 1))), format: () => `${mShown} of ${MECH_STEPS} · ${mechTitles[mShown - 1].toLowerCase()}`, formatShort: () => `${mShown} / ${MECH_STEPS}` },
       { kind: 'action', id: 'play', label: mPlaying ? 'PAUSE' : mShown >= MECH_STEPS ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: mPlay, tint: colors.green },
-      { kind: 'fader', id: 'swing', label: 'SWING', value: swing, home: 0, onChange: (v) => setSwing(Math.round(v * 60) / 60), format: () => (mShown >= 3 ? 'move the bar through its swing by hand — the scope draws the signal' : 'step to ③ first, then swing the bar by hand'), formatShort: () => `${Math.round(swing * 100)}%` },
+      { kind: 'fader', id: 'swing', label: 'SWING', value: swing, home: 0, onChange: (v) => setSwing(Math.round(v * 60) / 60), format: () => (mShown >= 3 ? 'move the bar through its swing by hand — the scope draws the signal' : 'step to ③ first, then swing the bar by hand'), formatShort: () => `${Math.round(swing * 100)}%`, locked: mShown >= 3 ? undefined : 'step to ③ first — the bar only swings once it has been struck.' },
       ...(!rhodes ? [{ kind: 'toggle' as const, id: 'trem', label: tremolo ? 'VIBRATO ON' : 'VIBRATO OFF', value: tremolo, onToggle: () => setTremolo((x) => !x) }] : []),
     ];
     const steps: MikingStep[] = [

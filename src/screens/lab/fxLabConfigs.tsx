@@ -48,6 +48,7 @@ import {
 } from '../../features/lab/fxViz';
 import type { CheckSpec } from './foundations/bits';
 import { FxLabScreen, type FxLabConfig } from './FxLabScreen';
+import { fmt2sig, snap2sig } from '../../features/lab/sliderMaps';
 
 const P = FX_PARAM;
 const ANALYTIC = 'DESIGNED RESPONSE — ANALYTIC, NOT A MEASUREMENT';
@@ -331,7 +332,9 @@ const reverbConfig: FxLabConfig = {
       ],
       initial: 1.5,
       // The teaching fader: booth → cavern on one log sweep, tail growing live.
-      fader: { min: 0.4, max: 6, log: true, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v.toFixed(1)} s` },
+      // Two significant figures below 1 s (slider pass 2026-10-14): a 0.1 s
+      // snap stepped the low end of the lane in 25 % jumps.
+      fader: { min: 0.4, max: 6, log: true, snap: snap2sig, format: (v) => `${fmt2sig(v)} s` },
     },
     {
       label: 'PRE-DELAY', short: 'PRE-DLY', paramId: P.preDelayMs, lessonKey: 'pre_delay',
@@ -550,7 +553,7 @@ const flangerConfig: FxLabConfig = {
         { label: '5 ms', value: 5 },
       ],
       initial: 2,
-      fader: { min: 0.5, max: 5, log: true, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms` },
+      fader: { min: 0.5, max: 5, log: true, snap: snap2sig, format: (v) => `${fmt2sig(v)} ms` },
     },
     {
       label: 'RATE', paramId: P.rateHz, lessonKey: 'rate',

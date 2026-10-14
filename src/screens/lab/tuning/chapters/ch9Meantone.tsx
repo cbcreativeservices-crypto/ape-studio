@@ -21,7 +21,7 @@ import {
 import { renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Card, CentsRail, CENTS_RAIL_W, DeviationMeter, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, useMarkWhen, usePreloadClips, type RailMarker } from '../components/primitives';
-import { HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
+import { HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
@@ -105,8 +105,9 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
     part === 'A' ? rail(toneMarkers)
     : part === 'B' ? rail(fourFifths)
     : part === 'C' ? (w: number, h: number) => (
-        <StageFit w={w} h={h} aspect={LADDER_W / LADDER_H}>
+        <StageFit w={w} h={h} aspect={LADDER_METER_ASPECT}>
           <HarmonicComparison fit readout={false} rootHz={root} upperHz={hz(slider.third)} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="E from four fifths" />
+          <DeviationMeter fit bare cents={slider.err} rangeCents={35} label="Major-third distance from 5/4" />
         </StageFit>
       )
     : part === 'D' ? rail(scaleMarkers)
@@ -167,6 +168,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
           {
             kind: 'fader',
             id: 'fifth',
+            autoBind: true,
             label: 'FIFTH',
             value: lanePos(fifthCents, MIN, MAX),
             // 0.1 ¢ steps on the lane, and a gentle snap onto ⁴√5 (review
@@ -189,6 +191,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
           {
             kind: 'fader',
             id: 'notes',
+            autoBind: true,
             label: 'NOTES',
             value: (revealed - 1) / (MT.notes.length - 1),
             onChange: (p) => setRevealed(1 + Math.round(p * (MT.notes.length - 1))),
@@ -294,7 +297,6 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
             <MathLine>÷ 4 (two octaves down): g⁴/4 = {slider.third.toFixed(6)} → {slider.thirdCents.toFixed(2)} ¢</MathLine>
             <MathLine emphasis>{exact ? 'g⁴/4 = 5/4 — the major third is pure' : `vs 5/4 at ${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢: ${slider.err > 0 ? '+' : ''}${slider.err.toFixed(2)} ¢ ${slider.err > 0 ? 'wide' : 'narrow'}`}</MathLine>
           </Card>
-          <DeviationMeter cents={slider.err} rangeCents={25} label="Major-third distance from 5/4" />
         </>
       ) : null}
 

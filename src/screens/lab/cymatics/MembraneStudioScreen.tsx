@@ -54,7 +54,7 @@ import {
   type HeadId,
   type MembraneSpec,
 } from '../../../features/cymatics/membrane';
-import { formatHz, nearestNote } from '../../../features/cymatics/music';
+import { formatHz, formatHzPrecise, nearestNote } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, MEMBRANE_PRESET_BY_ID } from '../../../features/cymatics/presets';
 import { newPattern, patternStore } from '../../../features/cymatics/patternStore';
 import { notify } from '../../../lib/confirm';
@@ -289,7 +289,7 @@ function MembraneStudio() {
         setSweeping(false);
         setFreq(Math.round(hzFromPos(v) * 10) / 10);
       },
-      format: () => `${formatHz(freq)} · ${note.label} ${note.centsLabel}`,
+      format: () => `${formatHzPrecise(freq)} · ${note.label} ${note.centsLabel}`,
       formatShort: () => (freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : `${Math.round(freq)}Hz`),
       helpKey: 'frequency',
       chooser: {
@@ -433,13 +433,13 @@ function MembraneStudio() {
   const ex = modes.filter((m) => m.drive > 0.05);
   const bezel = isSpeaker
     ? [
-        { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
+        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
         { k: 'f_s', v: formatHz(driver.fs), helpKey: 'cone' },
         { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone' },
         { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1 },
       ]
     : [
-        { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
+        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
         { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2 },
         { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes' },
         // Read-only (owner rule 2026-10-10): LAND ON is in the FREQ tray.

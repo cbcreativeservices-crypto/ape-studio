@@ -733,6 +733,8 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
   const [visited, setVisited] = useState<ReadonlySet<string>>(() => new Set());
   const [predicted, setPredicted] = useState<string | null>(null);
   const atRef = useRef(at);
+  const liveStep = useRef<number | null>(null);
+  const liveAim = useRef<number | null>(null);
   atRef.current = at;
   const hRef = useRef(h);
   hRef.current = h;
@@ -776,12 +778,22 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
       id: 'move',
       label: 'MOVE',
       value: Math.max(0, Math.min(1, (axisVal - lo[0]) / (lo[1] - lo[0]))),
+// A PREVIEW lane: the lane prints format(v) while the finger rides it; the
+      // page state (and its picture) moves once, on release (onCommit) — a
+      // setState here re-rendered the whole page every frame (slider audit 2026-10-14).
+      // LIVE but cheap (2026-10-14, after the lane cap moved to the UI thread): the
+      // picture follows the finger, and the page re-renders only when the
+      // SNAPPED step changes — not every frame. onCommit still settles once.
       onChange: (v) => {
-        const n = apply(snap(v));
+        const x = snap(v);
+        if (x === liveStep.current) return;
+        liveStep.current = x;
+        const n = apply(x);
         setAt(n.at);
         setH(n.h);
       },
       onCommit: (v) => {
+        liveStep.current = null;
         const n = apply(snap(v));
         setAt(n.at);
         setH(n.h);
@@ -800,8 +812,20 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
       id: 'aim',
       label: 'AIM',
       value: (aim + 60) / 120,
-      onChange: (v) => setAim(Math.round(v * 120 - 60)),
+// A PREVIEW lane: the lane prints format(v) while the finger rides it; the
+      // page state (and its picture) moves once, on release (onCommit) — a
+      // setState here re-rendered the whole page every frame (slider audit 2026-10-14).
+      // LIVE but cheap (2026-10-14, after the lane cap moved to the UI thread): the
+      // picture follows the finger, and the page re-renders only when the
+      // SNAPPED step changes — not every frame. onCommit still settles once.
+      onChange: (v) => {
+        const a = Math.round(v * 120 - 60);
+        if (a === liveAim.current) return;
+        liveAim.current = a;
+        setAim(a);
+      },
       onCommit: (v) => {
+        liveAim.current = null;
         const a = Math.round(v * 120 - 60);
         setAim(a);
         setRest({ at: atRef.current, h: hRef.current, aim: a });

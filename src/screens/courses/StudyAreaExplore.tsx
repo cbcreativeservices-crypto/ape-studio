@@ -26,7 +26,7 @@ import { STUDY_AREA_CREDENTIALS } from '../../data/studyAreaCredentials';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs, flattenV3, type V3Credential } from '../../data/v3Curriculum';
 import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
-import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
+import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { trackEvent } from '../../features/telemetry/telemetry';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';

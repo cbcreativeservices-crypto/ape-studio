@@ -20,45 +20,6 @@
  * `locked` is for the up-front 🔒 on enroll buttons — 'locked' only, never a
  * lock while checking (D52).
  */
-import { useCallback, useRef } from 'react';
-import { notify } from '../../lib/confirm';
-import { openMembershipGate } from '../commercial/MembershipGate';
-import { MEMBERSHIP_NOT_CONFIRMED, type MemberGate } from '../commercial/tier';
-import { useGuestWording, useMemberGate, useUpsellAllowed } from '../commercial/useTier';
-import {
-  ENROLL_CHECKING_BODY,
-  ENROLL_CHECKING_TITLE,
-  ENROLL_GATE_TITLE,
-  ENROLL_UNCONFIRMED_TITLE,
-  enrollDecisionOf,
-  enrollLockedBody,
-} from './enrollGate';
-import { isFreeEnrollGs } from './enrollmentStore';
-
-export function useEnrollGate(): {
-  guardEnroll: (add: () => void, gsList?: readonly number[]) => boolean;
-  locked: boolean;
-  gate: MemberGate;
-} {
-  const gate = useMemberGate();
-  const upsell = useUpsellAllowed();
-  const { guest } = useGuestWording();
-  const latest = useRef({ gate, upsell, guest });
-  latest.current = { gate, upsell, guest };
-
-  const guardEnroll = useCallback((add: () => void, gsList?: readonly number[]): boolean => {
-    const { gate: g, upsell: u, guest: isGuest } = latest.current;
-    const decision = enrollDecisionOf(g, gsList, isFreeEnrollGs);
-    if (decision === 'add') {
-      add();
-      return true;
-    }
-    if (decision === 'checking') notify(ENROLL_CHECKING_TITLE, ENROLL_CHECKING_BODY);
-    else if (decision === 'unconfirmed') notify(ENROLL_UNCONFIRMED_TITLE, MEMBERSHIP_NOT_CONFIRMED);
-    else if (u) openMembershipGate({ title: ENROLL_GATE_TITLE, body: enrollLockedBody(isGuest) });
-    else notify('Members only', enrollLockedBody(isGuest));
-    return false;
-  }, []);
-
-  return { guardEnroll, locked: gate === 'locked', gate };
-}
+// Moved into src/features/commercial/MembershipGate.tsx (2026-10-14, start-graph
+// cap 260): screens import it from there; this file only re-exports.
+export { useEnrollGate } from '../commercial/MembershipGate';

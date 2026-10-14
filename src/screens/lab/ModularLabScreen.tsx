@@ -229,6 +229,19 @@ export function ModularLabScreen() {
     [pushPatch, running],
   );
 
+  /** CUTOFF lane (2026-10-14): one bridge call per tick — the single native
+   *  target that moved — not the whole ~50-call patch push, and no side effect
+   *  inside the state updater. Presets and ▶ still push the whole patch. */
+  const setCutoff = useCallback(
+    (hz: number) => {
+      ApeDsp.modSet(MOD_PARAM.cutoff, hz);
+      if (running) noteAudioActivity();
+      setPatch((prev) => (prev.cutoff === hz ? prev : { ...prev, cutoff: hz }));
+      setPatchKey(null);
+    },
+    [running],
+  );
+
   // Generation guard (fix 2026-08-28) — see BinauralLabScreen: backing out while
   // modStart() was still in flight left the sequencer sounding with no stop
   // affordance. Same pattern as BassLabScreen/AutotuneLabScreen.
@@ -371,7 +384,7 @@ export function ModularLabScreen() {
             // Log sweep 250 Hz → 8 kHz; the native cutoff target ramps, so the
             // lane IS the filter-sweep lesson (audible live while running).
             value: cutPosFromHz(patch.cutoff),
-            onChange: (v) => update({ cutoff: cutFromPos(v) }),
+            onChange: (v) => setCutoff(cutFromPos(v)),
             format: () => fmtCut(patch.cutoff),
             formatShort: () => fmtCutShort(patch.cutoff),
             helpKey: 'vcf',
@@ -774,7 +787,14 @@ function PatchDiagram({
             <Rect x={xs[i]} y={topY} width={boxW} height={boxH} rx={7} fill="url(#mdPlate)" stroke={colors.amber} strokeWidth={1.4} />
             <Rect x={xs[i] + 1.5} y={topY + 1.5} width={boxW - 3} height={boxH - 3} rx={5.5} fill="none" stroke="#ffffff" strokeOpacity={0.07} strokeWidth={1} />
             {screws(xs[i], topY, `as${i}`)}
-            {label(xs[i] + boxW / 2, topY + boxH / 2 + 4, name, colors.textPrimary, `al${i}`)}
+            {label(xs[i] + boxW / 2, i === 1 ? topY + 15 : topY + boxH / 2 + 4, name, colors.textPrimary, `al${i}`)}
+            {i === 1 ? (
+              // The CUTOFF lane's value on the VCF plate (2026-10-14) — the
+              // drag is visible on the glass, not only in the bezel.
+              <SvgText x={xs[i] + boxW / 2} y={topY + boxH - 6} fill={colors.amber} fontSize={10} fontWeight="bold" textAnchor="middle">
+                {fmtCut(patch.cutoff)}
+              </SvgText>
+            ) : null}
           </G>
         ))}
         {/* Mod boxes (ENV doubles as the real env meter while running; SEQ

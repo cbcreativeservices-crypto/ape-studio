@@ -1056,6 +1056,8 @@ export function HarmonicsView({
   const [soloN, setSoloN] = useState<number | null>(null);
   const [f0, setF0] = useState(DEFAULT_F0);
   const f0Ref = useRef(DEFAULT_F0); // read inside the poll interval
+  /** The F0 the live history was last cleared for (the F0 lane clears once on release). */
+  const historyF0Ref = useRef(DEFAULT_F0);
   const [genRunning, setGenRunning] = useState(false);
   const [genError, setGenError] = useState('');
   /** True while the sounding tone IS the additive model (engine v3 only) —
@@ -1387,11 +1389,16 @@ export function HarmonicsView({
     setView(v);
   };
 
-  const pickF0 = (hz: number) => {
+  const pickF0 = (hz: number, clearHistory = true) => {
     setF0(hz);
     f0Ref.current = hz;
     // Axis rescales with f0 — old columns would lie about their frequency.
-    setHistory([]);
+    // The F0 LANE clears once on release instead (2026-10-14): clearing per
+    // tick blanked the live spectrogram for the whole drag.
+    if (clearHistory) {
+      historyF0Ref.current = hz;
+      setHistory([]);
+    }
     // A solo tone is pinned to n×(the OLD f0) — stop it rather than sound a
     // frequency the display no longer describes; a plain fundamental retunes.
     // The ADDITIVE model retunes through the live funnel instead (its deps
@@ -1666,8 +1673,16 @@ export function HarmonicsView({
       label: 'F0',
       // LOG sweep over the old preset span 60 → 300 Hz, rounded to whole Hz.
       value: f0Pos(f0),
-      onChange: (v) => pickF0(f0FromPos(v)),
-      format: () => `${f0} Hz`,
+      onChange: (v) => pickF0(f0FromPos(v), false),
+      // Release: one clear for the settled value (not one per tick).
+      onCommit: (v) => {
+        const hz = f0FromPos(v);
+        if (hz !== historyF0Ref.current) {
+          historyF0Ref.current = hz;
+          setHistory([]);
+        }
+      },
+      format: (v) => `${f0FromPos(v)} Hz`,
       formatShort: () => `${f0}Hz`,
       helpKey: 'frequency',
     },

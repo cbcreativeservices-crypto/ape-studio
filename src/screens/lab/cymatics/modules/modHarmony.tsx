@@ -46,6 +46,10 @@ const B_MAX = 440;
 const bFromPos = (v: number) => B_MIN * Math.pow(B_MAX / B_MIN, Math.max(0, Math.min(1, v)));
 const posFromB = (b: number) => Math.log(Math.max(B_MIN, Math.min(B_MAX, b)) / B_MIN) / Math.log(B_MAX / B_MIN);
 const DETUNE_MAX = 0.03;
+/** Below this the pair counts as locked (0.005 %). Was 0.05 %, which on the
+ *  square-taper DETUNE lane (slider pass 2026-10-14) left the first 13 % of
+ *  travel reading "locked"; now it is the first ~4 % — a detent, not a dead start. */
+const DETUNE_LOCK = 0.00005;
 /** The pair plays at −18 dBFS; on the meters' −60…0 window that is this fraction — the bars show THAT level. */
 const LEVEL_FRAC = (60 - 18) / 60;
 
@@ -80,7 +84,7 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   const engineReady = ApeDsp.isAvailable() && ApeDsp.engineVersion() >= 2;
   const additiveReady = engineReady && ApeDsp.engineVersion() >= 3;
   const dualReady = engineReady && ApeDsp.engineVersion() >= 8;
-  const detuned = detune > 0.0005;
+  const detuned = detune > DETUNE_LOCK;
   const playable = detuned ? dualReady : additiveReady;
   const [running, setRunning] = useState(false);
   // Something else can silence this lab — backgrounding, shake-to-mute, the
@@ -241,7 +245,7 @@ function LissajousStage({ w: boxW, h: boxH, n1, n2, detune, running }: { w: numb
   const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const [phase, setPhase] = useState(0);
   useEffect(() => {
-    if (!running || detune <= 0.0005) return;
+    if (!running || detune <= DETUNE_LOCK) return;
     const id = setInterval(() => setPhase((t) => (t + 0.05) % 1), 100);
     return () => clearInterval(id);
   }, [running, detune]);
@@ -358,10 +362,16 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
       kind: 'fader',
       id: 'detune',
       label: 'DETUNE',
-      value: detune / DETUNE_MAX,
-      onChange: (v) => setDetune(Math.round(Math.max(0, Math.min(1, v)) * DETUNE_MAX * 1000) / 1000),
-      format: () => (detune > 0.0005 ? `+${(detune * 100).toFixed(1)} % on B → beats at ${beatHz.toFixed(1)} Hz` : 'locked — no beats'),
-      formatShort: () => (detune > 0.0005 ? `+${(detune * 100).toFixed(1)}%` : 'lock'),
+      // Square taper + 0.001 % steps (slider pass 2026-10-14): the linear lane
+      // had 30 coarse 0.1 % steps, a dead start and a thumb that snapped on
+      // release. The slow beats live near zero, so the lane spends travel there.
+      value: Math.sqrt(Math.max(0, detune) / DETUNE_MAX),
+      onChange: (v) => {
+        const t = Math.max(0, Math.min(1, v));
+        setDetune(Math.round(t * t * DETUNE_MAX * 1e5) / 1e5);
+      },
+      format: () => (detune > DETUNE_LOCK ? `+${(detune * 100).toFixed(2)} % on B → beats at ${beatHz.toFixed(2)} Hz` : 'locked — no beats'),
+      formatShort: () => (detune > DETUNE_LOCK ? `+${(detune * 100).toFixed(2)}%` : 'lock'),
       home: 0,
       helpKey: 'beats',
     },

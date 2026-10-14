@@ -31,6 +31,7 @@ import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/component
 import { UnderstandingCheck } from '../tuning/components/check';
 import { ControlSlider } from '../amp/kit';
 import { CHART_HONESTY, EnvelopeChart } from './EnvelopeChart';
+import { envLogMs, envToLog, fmtEnvMs } from '../../../features/lab/sliderMaps';
 
 /** Preset handed from the gallery to the explorer (module-local, consumed once on arrival). */
 let handoff: { name: string; adsr: Adsr } | null = null;
@@ -53,7 +54,8 @@ const WORDS_TRANSIENT: [string, string][] = [
 
 /* ── shared helpers ─────────────────────────────────────────────────────── */
 
-const fmtMs = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(v >= 10000 ? 0 : 1)} s` : `${Math.round(v)} ms`);
+/** A fractional time below 10 ms keeps one decimal (the log lanes' 0.1 ms steps). */
+const fmtMs = fmtEnvMs;
 /** Never prints "-0.0 dB". */
 const fmtDb = (v: number) => { const r = Math.round(v * 10) / 10; return `${r === 0 ? '0.0' : r.toFixed(1)} dB`; };
 
@@ -93,8 +95,11 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   // Log sliders with an honest zero: position 0 IS 0 ms (a snare has no
   // release at all), then 1 ms … 2000 ms. Without it a gallery preset with
   // release 0 showed "1 ms" on the slider and "0 ms" in the readout.
-  const logMs = (v: number) => (v <= 0 ? 0 : Math.round(Math.pow(10, v)));
-  const toLog = (m: number) => (m <= 0 ? 0 : Math.log10(Math.max(1, m)));
+  // Below 10 ms the value keeps 0.1 ms resolution (slider pass 2026-10-14):
+  // whole ms snapped the thumb to 0 and read "1 ms" against a "0 ms" value.
+  const logMs = envLogMs;
+  const toLog = envToLog;
+  const laneMs = (v: number) => { const m = logMs(v); return m < 1000 ? fmtEnvMs(m) : `${m} ms`; };
   const rise = riseTimeMs(adsr);
   const snap = adsr.attackShape === 'exponential';
   const natural = adsr.decayShape === 'exponential';
@@ -106,10 +111,10 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   const explorerRead = <Text style={styles.read}>attack {fmtMs(adsr.attackMs)} → rise time (10→90 %) {rise.toFixed(1)} ms · total duration {fmtMs(adsrTotalMs(adsr))}</Text>;
   const adsrSliders = (
     <>
-      <ControlSlider label="Attack" value={toLog(adsr.attackMs)} min={0} max={3.3} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('attackMs')(logMs(v))} />
-      <ControlSlider label="Decay" value={toLog(adsr.decayMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('decayMs')(logMs(v))} />
+      <ControlSlider label="Attack" value={toLog(adsr.attackMs)} min={0} max={3.3} step={0.02} format={laneMs} onChange={(v) => set('attackMs')(logMs(v))} />
+      <ControlSlider label="Decay" value={toLog(adsr.decayMs)} min={0} max={3.5} step={0.02} format={laneMs} onChange={(v) => set('decayMs')(logMs(v))} />
       <ControlSlider level label="Sustain level" value={adsr.sustain} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)} %`} onChange={set('sustain')} />
-      <ControlSlider label="Release" value={toLog(adsr.releaseMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('releaseMs')(logMs(v))} />
+      <ControlSlider label="Release" value={toLog(adsr.releaseMs)} min={0} max={3.5} step={0.02} format={laneMs} onChange={(v) => set('releaseMs')(logMs(v))} />
     </>
   );
   return (

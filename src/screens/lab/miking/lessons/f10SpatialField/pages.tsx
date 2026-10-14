@@ -797,6 +797,7 @@ function F10Placement(p: PageProps) {
   const [predicted, setPredicted] = useState<string | null>(null);
   const cRef = useRef(c);
   cRef.current = c;
+  const liveStep = useRef<number | null>(null);
   const pickStart = (id: string) => {
     const q = starts.find((s) => s.id === id);
     if (!q) return;
@@ -837,8 +838,20 @@ function F10Placement(p: PageProps) {
       id: 'move',
       label: 'MOVE',
       value: Math.max(0, Math.min(1, (axisVal - A.lo) / (A.hi - A.lo))),
-      onChange: (v) => setC((q) => withAxis(q, snap(v))),
+// A PREVIEW lane: the lane prints format(v) while the finger rides it; the
+      // page state (and its picture) moves once, on release (onCommit) — a
+      // setState here re-rendered the whole page every frame (slider audit 2026-10-14).
+      // LIVE but cheap (2026-10-14, after the lane cap moved to the UI thread): the
+      // picture follows the finger, and the page re-renders only when the
+      // SNAPPED step changes — not every frame. onCommit still settles once.
+      onChange: (v) => {
+        const x = snap(v);
+        if (x === liveStep.current) return;
+        liveStep.current = x;
+        setC(withAxis(cRef.current, x));
+      },
       onCommit: (v) => {
+        liveStep.current = null;
         const n = withAxis(cRef.current, snap(v));
         setC(n);
         setRest(n);

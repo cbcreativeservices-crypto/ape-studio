@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { BezelItem, DockParam } from '../../../../../rack/rackTypes';
 import type { MicPattern, MicPose, PatternId, ViewBox, ViewId, Vec3 } from '../../../../engine/model/types.ts';
 import { useRig } from '../../../../engine/scene/useRig.ts';
+import { previewMemo, stopWordOf } from '../../../../engine/scene/placementDock.ts';
 import { PlacementScene } from '../../../../engine/scene/PlacementScene';
 import { sceneLabel } from '../../../../engine/scene/sceneWords.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../../../engine/physics/polar.ts';
@@ -81,27 +82,34 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const a = aimAxis === 'az' ? pose.az : pose.el;
   const lo = aimAxis === 'az' ? -AZ_MAX : EL_MIN;
   const hi = aimAxis === 'az' ? AZ_MAX : EL_MAX;
+  const aimHeld = previewMemo();
   const params: DockParam[] = [
     {
       kind: 'fader',
       id: 'aim',
       label: 'AIM',
       value: (a - lo) / (hi - lo),
-      home: (H.context.pose.el - EL_MIN) / (EL_MAX - EL_MIN),
+      // Home = where this lane's OWN axis started (slider audit 2026-10-14:
+      // the LEFT–RIGHT lane's double-tap used the tilt's home and swung the
+      // mic to the wrong place).
+      home: ((aimAxis === 'az' ? H.context.pose.az : H.context.pose.el) - lo) / (hi - lo),
       // Preview while the finger rides the lane, commit on release (the
       // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
         const ang = Math.round(lo + v * (hi - lo));
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
-        rig.preview('A', to);
+        aimHeld.note(v, rig.preview('A', to));
       },
       onCommit: () => {
         rig.commit('A');
         setAimed(true);
       },
       format: (v) => {
-        const x = Math.round(lo + v * (hi - lo));
-        return aimAxis === 'el' ? `tilted ${x <= 0 ? 'down' : 'up'} ${fmtAngle(Math.abs(x))}` : x === 0 ? 'straight back across the head' : `${fmtAngle(Math.abs(x))} ${x > 0 ? 'right' : 'left'}`;
+        // Where the mic really turned to (a stop first), not the finger.
+        const h = aimHeld.at(v);
+        const sw = h ? stopWordOf(rig, h.blocked) : '';
+        const x = h ? Math.round(aimAxis === 'az' ? h.pose.az : h.pose.el) : Math.round(lo + v * (hi - lo));
+        return (sw ? `${sw} · ` : '') + (aimAxis === 'el' ? `tilted ${x <= 0 ? 'down' : 'up'} ${fmtAngle(Math.abs(x))}` : x === 0 ? 'straight back across the head' : `${fmtAngle(Math.abs(x))} ${x > 0 ? 'right' : 'left'}`);
       },
       formatShort: () => fmtAngle(a),
       chooser: {

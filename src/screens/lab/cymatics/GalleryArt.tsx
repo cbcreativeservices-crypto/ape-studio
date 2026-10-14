@@ -26,6 +26,7 @@ import { WAVE_COLOR_SWATCHES } from '../../../features/tools/waveColorPref';
 import { analyse, applyFill, domainPoint, fitFrame, regionAtPx, FIG_PAD } from '../../../features/cymatics/figure';
 import type { PatternGeometry } from '../../../features/cymatics/patternField';
 import { patternStore, type Artwork, type FillStyle, type SavedPattern } from '../../../features/cymatics/patternStore';
+import { posOfWeight, weightOfPos } from '../../../features/cymatics/lineWeightLane';
 import { LabChip } from '../LabShell';
 import { notify } from '../../../lib/confirm';
 import { RackUnit } from '../rack/RackUnit';
@@ -37,7 +38,6 @@ const SWATCHES: string[] = [...WAVE_COLOR_SWATCHES, '#000000'];
 const SYMS = [1, 2, 3, 4, 6, 8];
 const LINE_COLORS = ['#ffffff', '#000000', '#ffc64d', '#1d1d22'];
 const HIST_CAP = 60;
-const MAX_W = 4; // px at the reference width
 
 export function GalleryArt({
   pattern,
@@ -243,11 +243,14 @@ export function GalleryArt({
       kind: 'fader',
       id: 'weight',
       label: 'WEIGHT',
-      value: Math.max(0, Math.min(1, art.lineWeight / MAX_W)),
-      onChange: (v) => patchLive({ lineWeight: Math.round(v * MAX_W * 10) / 10 }),
-      format: (v) => (v * MAX_W < 0.05 ? 'lines hidden' : `lines ${(v * MAX_W).toFixed(1)} px`),
-      formatShort: (v) => (v * MAX_W < 0.05 ? 'off' : `${(v * MAX_W).toFixed(1)}px`),
-      home: 1.5 / MAX_W,
+      // OFF detent, then 0.5 → 4 px evenly (lineWeightLane.ts, slider pass
+      // 2026-10-14): the plain 0..4 px lane drew the same 0.5-px hairline
+      // over its bottom ~10 %.
+      value: posOfWeight(art.lineWeight),
+      onChange: (v) => patchLive({ lineWeight: weightOfPos(v) }),
+      format: (v) => (weightOfPos(v) <= 0 ? 'lines hidden' : `lines ${weightOfPos(v).toFixed(1)} px`),
+      formatShort: (v) => (weightOfPos(v) <= 0 ? 'off' : `${weightOfPos(v).toFixed(1)}px`),
+      home: posOfWeight(1.5),
       helpKey: 'art_weight',
     },
     {

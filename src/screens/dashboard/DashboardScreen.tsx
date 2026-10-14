@@ -91,7 +91,7 @@ import {
   useEnrollment,
   useEnrollmentReadState,
 } from '../../features/enrollment/enrollmentStore';
-import { useEnrollGate } from '../../features/enrollment/useEnrollGate';
+import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';

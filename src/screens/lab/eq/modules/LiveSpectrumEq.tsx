@@ -32,6 +32,7 @@ import { MiniBtn } from './eqBits';
 import { butterworthHpDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
+import { RESPONSE_SAMPLES } from '../../../../features/lab/sliderMaps';
 
 const FFT_SIZE = 8192;
 const HPF_CHOICES = [40, 80, 120] as const;
@@ -165,16 +166,23 @@ function SpectrumGlass({
   const eqPath = useMemo(() => {
     if (barW <= 0 || chartW <= 0) return null;
     if (hpfHz == null && !bellOn) return null;
-    const PTS = 96;
+    // 384 points (was 96) plus the bell's exact centre, so a narrow band
+    // draws its full height at every FREQ (slider pass 2026-10-14).
+    const PTS = RESPONSE_SAMPLES;
+    const freqs: number[] = [];
+    for (let k = 0; k <= PTS; k++) freqs.push(20 * Math.pow(2, (10 * k) / PTS));
+    if (bellOn) {
+      freqs.push(bellF);
+      freqs.sort((a, b) => a - b);
+    }
     let d = '';
-    for (let k = 0; k <= PTS; k++) {
-      const f = 20 * Math.pow(2, (10 * k) / PTS);
+    freqs.forEach((f, k) => {
       const y = Math.min(floorY, yForDb(Math.min(8, eqAt(f))));
       d += `${k === 0 ? 'M' : 'L'}${xForHz(f).toFixed(1)} ${y.toFixed(1)}`;
-    }
+    });
     return d;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bands, barW, chartW, xForHz, eqAt, hpfHz, bellOn, floorY]);
+  }, [bands, barW, chartW, xForHz, eqAt, hpfHz, bellOn, bellF, floorY]);
 
   const showBars = mode !== 'eq';
   const showCurve = mode !== 'spectrum';
@@ -297,8 +305,11 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
   const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);
 
   // Riding any band lane IS turning the band on (cause→effect, zero taps).
+  // …and in SPECTRUM ONLY view it brings the curve back (slider pass
+  // 2026-10-14): the band faders otherwise moved nothing on the glass.
   const bellFader = (set: (v: number) => void) => (v: number) => {
     if (!bellOn) setBellOn(true);
+    if (mode === 'spectrum') setMode('combined');
     set(v);
   };
 
@@ -319,6 +330,7 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
       level: true,
       value: (bellG + 18) / 36,
       onChange: bellFader((t) => setBellG(Math.round((t * 36 - 18) * 2) / 2)),
+      home: 0.5, // 0 dB — double-tap returns the band to flat
       format: () => `${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)} dB`,
       formatShort: () => `${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)}`,
       tint: gainColor(bellG, 18),

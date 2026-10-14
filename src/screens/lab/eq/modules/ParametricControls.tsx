@@ -72,6 +72,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
       level: true,
       value: (gainDb + GAIN_RANGE) / (2 * GAIN_RANGE),
       onChange: (t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2),
+      home: 0.5, // 0 dB — the lane centre; double-tap returns to flat
       format: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`,
       formatShort: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)}`,
       tint: gc,
@@ -104,7 +105,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} />
+            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} focusHz={[freq]} />
           </View>
         ),
       }}

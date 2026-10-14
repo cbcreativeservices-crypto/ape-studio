@@ -250,6 +250,12 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
       format: (p) => `${laneVal(p, 0, 300, 1)} ms set · ${need.toFixed(1)} ms needed`,
       formatShort: (p) => `${laneVal(p, 0, 300, 1)} ms`,
       tint: aligned && setMs > 0 ? colors.greenBright : colors.cyanBright,
+      // The ±2 ms goal is ~5 px of a 300 ms lane on a phone — a thumb
+      // overshoots it. Fine steps finish the job (slider audit 2026-10-14).
+      nudges: [
+        { label: '‹ −1 ms', onPress: () => setSetMs((ms) => Math.max(0, ms - 1)), a11y: 'Delay 1 millisecond shorter' },
+        { label: '+1 ms ›', onPress: () => setSetMs((ms) => Math.min(300, ms + 1)), a11y: 'Delay 1 millisecond longer' },
+      ],
     },
     {
       kind: 'options',

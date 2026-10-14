@@ -266,13 +266,48 @@ export function HarmonicStems({
 
   // Phase slider responder (detail sheet — inside a Modal, no scroll rivalry).
   const phaseStartRef = useRef(0);
+  // Phase edits batch per frame like queueAmp (2026-10-14), and a move whose
+  // ROUNDED degree is unchanged sends nothing — each setPhase re-renders the
+  // set and re-sends the additive tone.
+  const pendingPhaseRef = useRef<{ n: number; deg: number } | null>(null);
+  const lastPhaseRef = useRef<{ n: number; deg: number } | null>(null);
+  const phaseRafRef = useRef<number | null>(null);
+  const flushPhase = () => {
+    if (phaseRafRef.current != null) {
+      cancelAnimationFrame(phaseRafRef.current);
+      phaseRafRef.current = null;
+    }
+    const p = pendingPhaseRef.current;
+    if (p) {
+      pendingPhaseRef.current = null;
+      liveRef.current.onSetPhase(p.n, p.deg);
+    }
+  };
+  const queuePhase = (n: number, deg: number) => {
+    const last = pendingPhaseRef.current ?? lastPhaseRef.current;
+    if (last && last.n === n && last.deg === deg) return;
+    pendingPhaseRef.current = { n, deg };
+    lastPhaseRef.current = { n, deg };
+    if (phaseRafRef.current == null)
+      phaseRafRef.current = requestAnimationFrame(() => {
+        phaseRafRef.current = null;
+        flushPhase();
+      });
+  };
+  useEffect(
+    () => () => {
+      if (phaseRafRef.current != null) cancelAnimationFrame(phaseRafRef.current);
+    },
+    [],
+  );
   const phasePan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt) => {
-        const { detailN: n, phaseTrackW: w, onSetPhase: setPhase } = liveRef.current;
+        const { detailN: n, phaseTrackW: w } = liveRef.current;
         if (n == null) return;
+        lastPhaseRef.current = { n, deg: Math.round(liveRef.current.set[n - 1].phaseDeg) };
         // The thumb renders over w − PHASE_THUMB_W (its left edge spans that
         // range) — map touches over the SAME span, centered on the thumb, so
         // finger and visual agree at the ends of the range.
@@ -285,18 +320,21 @@ export function HarmonicStems({
             Math.min(360, ((evt.nativeEvent.locationX - PHASE_THUMB_W / 2) / span) * 360),
           );
           phaseStartRef.current = p;
-          setPhase(n, Math.round(p));
+          queuePhase(n, Math.round(p));
         } else {
           phaseStartRef.current = liveRef.current.set[n - 1].phaseDeg;
         }
       },
       onPanResponderMove: (_evt, g) => {
-        const { detailN: n, phaseTrackW: w, onSetPhase: setPhase } = liveRef.current;
+        const { detailN: n, phaseTrackW: w } = liveRef.current;
         const span = w - PHASE_THUMB_W;
         if (n == null || span <= 0) return;
         const p = Math.max(0, Math.min(360, phaseStartRef.current + (g.dx / span) * 360));
-        setPhase(n, Math.round(p));
+        queuePhase(n, Math.round(p));
       },
+      // Release never drops the final position the finger reached.
+      onPanResponderRelease: () => flushPhase(),
+      onPanResponderTerminate: () => flushPhase(),
     }),
   ).current;
 

@@ -396,7 +396,9 @@ function GridSection(p: SectionProps) {
       label: 'GRID V',
       value: v,
       onChange: setV,
-      format: (x) => word(x),
+      // Percentage first (slider pass 2026-10-14): the word alone sat still
+      // over 70 % of the travel, so the lane looked dead.
+      format: (x) => `${pct(x)} · ${word(x)}`,
       formatShort: (x) => pct(x),
       helpKey: 'grid_voltage',
     },
@@ -679,7 +681,7 @@ function BiasSection(p: SectionProps) {
       label: 'BIAS',
       value: b,
       onChange: setB,
-      format: (x) => (x < 0.22 ? 'too negative' : x > 0.8 ? 'too positive' : 'correct'),
+      format: (x) => `${pct(x)} · ${x < 0.22 ? 'too negative' : x > 0.8 ? 'too positive' : 'correct'}`,
       formatShort: (x) => pct(x),
       tint: bad ? '#ff6b5e' : undefined,
       helpKey: 'bias',
@@ -738,7 +740,7 @@ function SaturationSection(p: SectionProps) {
       level: true,
       value: drive,
       onChange: setDrive,
-      format: (x) => (x < 0.3 ? 'clean — straight-line region' : x < 0.7 ? 'warming — peaks rounding' : 'saturated — soft clipping'),
+      format: (x) => `${pct(x)} · ${x < 0.3 ? 'clean — straight-line region' : x < 0.7 ? 'warming — peaks rounding' : 'saturated — soft clipping'}`,
       formatShort: (x) => pct(x),
       helpKey: 'saturation',
     },

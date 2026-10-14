@@ -21,6 +21,7 @@ import type { DocumentedZone, MicPattern, MicPose, MicSlot, SourcePageId, Patter
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../engine/kit';
 import { useRig, type Rig } from '../../../engine/scene/useRig.ts';
+import { previewMemo, stopWordOf } from '../../../engine/scene/placementDock.ts';
 import { DualView } from '../../../engine/scene/DualView';
 import { PlacementScene } from '../../../engine/scene/PlacementScene';
 import { CombPanel } from '../../../engine/scene/CombPanel';
@@ -552,6 +553,7 @@ function HandContext(spec: HandSpec) {
     const centre = aimAxis === 'az' ? C.pose.az : C.pose.el;
     const a = (aimAxis === 'az' ? pose.az : pose.el) - centre;
     const lim = aimAxis === 'az' ? AZ_MAX : EL_MAX;
+    const aimHeld = previewMemo();
     const params: DockParam[] = [
       {
         kind: 'fader',
@@ -563,15 +565,18 @@ function HandContext(spec: HandSpec) {
         // engine's fader contract, 2026-10-06: no page re-render per move).
         onChange: (v) => {
           const ang = Math.round((v * 2 - 1) * lim) + centre;
-          rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+          aimHeld.note(v, rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang }));
         },
         onCommit: () => {
           rig.commit('A');
           setAimed(true);
         },
         format: (v) => {
-          const x = Math.round((v * 2 - 1) * lim);
-          return Math.abs(x) < 0.5 ? 'as it started' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'} of where it started`;
+          // Where the mic really turned to (a stop first), not the finger.
+          const h = aimHeld.at(v);
+          const sw = h ? stopWordOf(rig, h.blocked) : '';
+          const x = h ? Math.round((aimAxis === 'az' ? h.pose.az : h.pose.el) - centre) : Math.round((v * 2 - 1) * lim);
+          return `${sw ? `${sw} · ` : ''}${Math.abs(x) < 0.5 ? 'as it started' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'} of where it started`}`;
         },
         formatShort: () => fmtAngle(a),
         chooser: {

@@ -80,6 +80,12 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
   const viewKind = viewItem.vib != null ? 'vib' : viewItem.id;
 
   const setTurn = (v: number) => {
+    // The lane delivers every frame while the finger rides it, mostly the
+    // SAME eighth-turn. Only a real change counts (slider audit 2026-10-14):
+    // without this the "turned N times" count climbed ~60 a second and the
+    // trend line ("That turn made it less even") flashed for one frame, then
+    // vanished, because prevSpread was re-read from the already-turned head.
+    if (Math.abs(v - (head.turns[lug] ?? 0)) < 1e-6) return;
     setPrevSpread(spreadCents(head));
     setTurned((n) => n + 1);
     setHead((h) => ({ ...h, turns: h.turns.map((t, i) => (i === lug ? v : t)) }));

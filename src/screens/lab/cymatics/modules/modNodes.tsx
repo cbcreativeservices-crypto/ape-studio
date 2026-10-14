@@ -10,7 +10,8 @@
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
-import { formatHz, nearestNote } from '../../../../features/cymatics/music';
+import { formatHz, formatHzPrecise, nearestNote } from '../../../../features/cymatics/music';
+import { makeFreqFader } from '../../../../features/cymatics/freqFader';
 import type { DockParam } from '../../rack/rackTypes';
 import type { PlateViewMode } from '../vizPlate';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
@@ -24,8 +25,6 @@ import { START_LEVEL_01 } from '../../../../features/audio/startLevel';
 const F_MIN = 30;
 const F_MAX = 3000;
 const N = 48;
-const hzFromPos = (v: number) => F_MIN * Math.pow(F_MAX / F_MIN, Math.max(0, Math.min(1, v)));
-const posFromHz = (hz: number) => Math.log(Math.max(F_MIN, Math.min(F_MAX, hz)) / F_MIN) / Math.log(F_MAX / F_MIN);
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The still lines of the nearest mode — the Chladni figure that would form. Fades between resonances.' },
   { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — neighbours across a nodal line move in opposite directions. Neither colour is on the amplitude ramp: this is direction, not level.' },
@@ -41,6 +40,10 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   const modes = useMemo(() => excitableModes(spec, 24).slice(0, 8), [spec]);
   const allModes = useMemo(() => plateModes(spec, 14), [spec]);
   const Q = useMemo(() => effectiveQ(spec.material, spec.damping), [spec]);
+  // Warped around each mode, as on the Plate Studio (freqFader.ts; slider
+  // pass 2026-10-14): the plain log lane stepped over every resonance — 0 of
+  // 301 lane positions read AT RESONANCE on the square plate.
+  const fader = useMemo(() => makeFreqFader(F_MIN, F_MAX, allModes, Q), [allModes, Q]);
   const [hz, setHz] = useState(() => Math.round((modes[0]?.hz ?? 300) * 10) / 10);
   const [view, setView] = useState<PlateViewMode>('nodes');
   const [silent, setSilent] = useState(false);
@@ -62,9 +65,10 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       kind: 'fader',
       id: 'freq',
       label: 'FREQ',
-      value: posFromHz(hz),
-      onChange: (v) => setHz(Math.round(hzFromPos(v) * 10) / 10),
-      format: () => `${formatHz(hz)} · ${note.label} ${note.centsLabel}`,
+      // Not rounded to 0.1 Hz: inside a mode's zone that is half the bandwidth.
+      value: fader.posOf(hz),
+      onChange: (v) => setHz(fader.hzAt(v)),
+      format: () => `${formatHzPrecise(hz)} · ${note.label} ${note.centsLabel}`,
       formatShort: () => (hz >= 1000 ? `${(hz / 1000).toFixed(1)}k` : `${Math.round(hz)}Hz`),
       helpKey: 'modes',
       chooser: {

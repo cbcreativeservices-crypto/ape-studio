@@ -43,6 +43,7 @@ import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSignal, type VizSignalModule } from '../skiaGate';
+import { samplingZoom } from '../samplingZoom';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
@@ -582,9 +583,9 @@ export function SamplingModule(p: DigitalModuleProps) {
   const sweepBlocked = rateMode.kind === 'abs' && fMax < nyq;
 
   // ZOOM: individual-samples-visible → looks-continuous (dots merge).
-  const nShownTarget = 12 + zoomV * 408;
-  const cycles = Math.min(60, Math.max(0.3, nShownTarget / spc));
-  const nShown = Math.round(cycles * spc);
+  // The lane spans only the reachable window, so no travel is dead near
+  // Nyquist (slider audit 2026-10-14 — see samplingZoom.ts).
+  const { cycles, nShown } = samplingZoom(zoomV, spc);
 
   // Alias-audio engine gate — same probe FoundationsCourseScreen uses.
   const [gate] = useState<EngineState>(() => {

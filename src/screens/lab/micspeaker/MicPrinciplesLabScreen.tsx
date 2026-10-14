@@ -795,7 +795,10 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       label: 'DISTANCE',
       value: d01,
       onChange: setD01,
-      format: () => (inches >= 12 ? '12 in · no boost' : `${inches} in · +${boostDb} dB low-shelf`),
+      // OMNI has no proximity effect: the lane said "+N dB low-shelf" over a
+      // flat curve and a FLAT bezel (slider audit 2026-10-14).
+      format: () =>
+        !directional ? `${inches} in · omni — no boost` : inches >= 12 ? '12 in · no boost' : `${inches} in · +${boostDb} dB low-shelf`,
       formatShort: () => `${inches} in`,
       helpKey: 'proximity',
     },

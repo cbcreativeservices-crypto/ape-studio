@@ -12,14 +12,26 @@
  * FEATURE card: dimmed scrim, dark card, amber title, GET MEMBERSHIP
  * glass-adjacent CTA → Paywall, quiet NOT NOW.
  */
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 // ⛔ DimModal, not react-native's Modal — otherwise this surface lights a
 //    dark control room to full brightness in Low-Light Production Mode.
 import { Modal, rootModalHoldMs, setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
 import { navigationRef } from '../../navigation/navigationRef';
-import { useMemberGate } from './useTier';
+import { useGuestWording, useMemberGate, useUpsellAllowed } from './useTier';
+import { notify } from '../../lib/confirm';
+import { isFreeEnrollGs } from '../enrollment/enrollmentStore';
+import {
+  ENROLL_CHECKING_BODY,
+  ENROLL_CHECKING_TITLE,
+  ENROLL_GATE_TITLE,
+  ENROLL_UNCONFIRMED_TITLE,
+  MEMBERSHIP_NOT_CONFIRMED,
+  enrollDecisionOf,
+  enrollLockedBody,
+  type MemberGate,
+} from './tier';
 import { colors, fonts } from '../../theme/tokens';
 
 export type MembershipGatePayload = {
@@ -264,3 +276,54 @@ const styles = StyleSheet.create({
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
   dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },
 });
+
+/**
+ * useEnrollGate — the ONE gate in front of every user-initiated ADD into My
+ * Enrollments (owner 2026-10-11; ruling in tier.ts ENROLL GATE). Lives here since
+ * 2026-10-14 (start-graph cap); features/enrollment/useEnrollGate.ts re-exports it.
+ *
+ *   const { guardEnroll, locked } = useEnrollGate();
+ *   onPress={() => guardEnroll(() => addTopic(gs), [gs])}
+ *
+ * - 'open'        → runs the add.
+ * - 'locked'      → changes NOTHING; the centred members-only popup at once
+ *                   (MembershipGate's card with GET MEMBERSHIP when upsell copy
+ *                   is allowed, otherwise a plain notice).
+ * - 'checking'    → "Checking your account…" notice, nothing changes.
+ * - 'unconfirmed' → MEMBERSHIP_NOT_CONFIRMED notice, nothing changes.
+ *
+ * Pass the topic gs list being added when it is known: a request made only of
+ * the free topics (FREE_ENROLL_GS) goes through for everyone.
+ *
+ * `guardEnroll` is STABLE (it reads the latest state from a ref), so a memoised
+ * row handler with `[]` deps can call it. Returns whether the add ran.
+ * `locked` is for the up-front 🔒 on enroll buttons — 'locked' only, never a
+ * lock while checking (D52).
+ */
+export function useEnrollGate(): {
+  guardEnroll: (add: () => void, gsList?: readonly number[]) => boolean;
+  locked: boolean;
+  gate: MemberGate;
+} {
+  const gate = useMemberGate();
+  const upsell = useUpsellAllowed();
+  const { guest } = useGuestWording();
+  const latest = useRef({ gate, upsell, guest });
+  latest.current = { gate, upsell, guest };
+
+  const guardEnroll = useCallback((add: () => void, gsList?: readonly number[]): boolean => {
+    const { gate: g, upsell: u, guest: isGuest } = latest.current;
+    const decision = enrollDecisionOf(g, gsList, isFreeEnrollGs);
+    if (decision === 'add') {
+      add();
+      return true;
+    }
+    if (decision === 'checking') notify(ENROLL_CHECKING_TITLE, ENROLL_CHECKING_BODY);
+    else if (decision === 'unconfirmed') notify(ENROLL_UNCONFIRMED_TITLE, MEMBERSHIP_NOT_CONFIRMED);
+    else if (u) openMembershipGate({ title: ENROLL_GATE_TITLE, body: enrollLockedBody(isGuest) });
+    else notify('Members only', enrollLockedBody(isGuest));
+    return false;
+  }, []);
+
+  return { guardEnroll, locked: gate === 'locked', gate };
+}

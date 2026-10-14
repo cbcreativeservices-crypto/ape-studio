@@ -49,7 +49,7 @@ test('the popup says members only, and only a known guest is told they are not s
 });
 
 test('the hook uses the house helpers and adds only on the add decision', () => {
-  const src = readFileSync('src/features/enrollment/useEnrollGate.ts', 'utf8');
+  const src = readFileSync('src/features/commercial/MembershipGate.tsx', 'utf8');
   assert.match(src, /useMemberGate\(\)/);
   assert.match(src, /useUpsellAllowed\(\)/);
   assert.match(src, /useGuestWording\(\)/);

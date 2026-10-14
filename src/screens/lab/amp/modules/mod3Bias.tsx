@@ -16,7 +16,7 @@ import {
   simulateSingleDeviceBias, conductionCurrent, simulateLinearClass, sineCycle, WAVE_N,
 } from '../../../../features/amp/ampModel';
 import { rigStatusBezel, type RigPicture } from '../AmpRig';
-import { faderParam } from '../AmpRack';
+import { faderParam, optionsParam } from '../AmpRack';
 import { AmpModuleSteps } from '../steps';
 import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, SectionTitle } from '../kit';
 
@@ -165,9 +165,24 @@ export function Mod3Bias() {
               { k: 'CLASS', v: angle === 360 ? 'A' : angle === 180 ? 'B' : angle === 270 ? 'AB' : 'C', tint: colors.textSecondary },
               ...rigStatusBezel(condPic, ['supply', 'heat']),
             ],
-            // Snapped to the four taught angles, so the explanation below
-            // always describes the picture on the glass.
-            params: [faderParam({ id: 'angle', label: 'ANGLE', value: angle, min: 90, max: 360, step: 90, format: (v) => `${v}°`, onChange: setAngle })],
+            // The four taught angles, so the explanation below always
+            // describes the picture on the glass. An options key, not a fader
+            // (slider pass 2026-10-14): four values on a lane gave the two
+            // ends half the travel of the middle two.
+            params: [
+              optionsParam<number>({
+                id: 'angle',
+                label: 'ANGLE',
+                value: angle,
+                options: [
+                  { key: 90, label: '90° · C', short: '90°' },
+                  { key: 180, label: '180° · B', short: '180°' },
+                  { key: 270, label: '270° · AB', short: '270°' },
+                  { key: 360, label: '360° · A', short: '360°' },
+                ],
+                onChange: setAngle,
+              }),
+            ],
             initialParam: 'angle',
           },
           well: (

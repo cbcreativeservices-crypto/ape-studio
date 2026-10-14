@@ -146,3 +146,35 @@ export function guestWordingOf(
   if (!isGuestTier(tier)) return { guest };
   return { guest: false, account: tierReadFailed ? 'unconfirmed' : 'checking' };
 }
+
+// ── ENROLL GATE (pure half) — moved here from features/enrollment/enrollGate.ts
+// 2026-10-14 so the members-only enrol gate adds no app-start module (start
+// graph cap 260, test/perfStartTrim_20261004). enrollGate.ts re-exports these.
+
+export type EnrollDecision = 'add' | 'locked' | 'checking' | 'unconfirmed';
+
+/** Only 'open' (academy standing) adds — or a request made up ENTIRELY of free
+ *  topics. Everything else changes nothing and explains why. */
+export function enrollDecisionOf(
+  gate: MemberGate,
+  gsList: readonly number[] | undefined,
+  isFree: (gs: number) => boolean,
+): EnrollDecision {
+  if (gate === 'open') return 'add';
+  if (gsList && gsList.length > 0 && gsList.every(isFree)) return 'add';
+  return gate;
+}
+
+export const ENROLL_GATE_TITLE = 'MEMBERS ONLY';
+
+/** The members-only popup's body. `guest` = a KNOWN guest (useGuestWording). */
+export function enrollLockedBody(guest: boolean): string {
+  const core =
+    'Enrolling — adding topics, certificates and programs to My Enrollments — is for Academy members only.';
+  const free = 'Pro Audio Safety and DAW Fundamentals stay open to everyone.';
+  return guest ? `You’re not signed in. ${core} ${free}` : `${core} ${free}`;
+}
+
+export const ENROLL_CHECKING_TITLE = 'Checking your account…';
+export const ENROLL_CHECKING_BODY = 'We’re still confirming your membership. Try again in a moment.';
+export const ENROLL_UNCONFIRMED_TITLE = 'Membership not confirmed';

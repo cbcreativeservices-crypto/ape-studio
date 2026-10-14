@@ -237,7 +237,13 @@ export function Mod4Classes() {
                 options: (['A', 'B', 'AB', 'C'] as Explorable[]).map((k) => ({ key: k, label: `Class ${k}`, short: k, blurb: CLASS_FACTS[k].principle })),
                 onChange: setCls,
               }),
-              faderParam({ id: 'drive', label: 'LEVEL', value: drive, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setDrive, level: true }),
+              // Class A with SIGNAL off drives nothing (effDrive = 0), so the
+              // LEVEL lane would move without effect — lock it and say why
+              // (slider pass 2026-10-14).
+              {
+                ...faderParam({ id: 'drive', label: 'LEVEL', value: drive, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setDrive, level: true }),
+                locked: cls === 'A' && !signalOn ? 'SIGNAL is off — turn it on to ride LEVEL.' : undefined,
+              } as DockParam,
               ...(classParam ? [classParam] : []),
             ],
             initialParam: 'drive',

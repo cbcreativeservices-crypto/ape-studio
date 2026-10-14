@@ -154,3 +154,45 @@ test('the studio uses the compact bezel words, the weights, and opts into the ra
   for (const k of ['drive', 'response', 'mode', 'res']) assert.match(src, new RegExp(`flex: PLATE_BEZEL_FLEX\.${k}`));
   assert.match(src, /fullScreen: true/);
 });
+
+// Slider pass 2026-10-14: Module 2 (Nodes, Antinodes & Modes) drove the same
+// plate on a plain log lane rounded to 0.1 Hz — 0 of 301 lane positions read
+// AT RESONANCE on its square plate. It now uses the studio's warp.
+test('Module 2 (modNodes): its FREQ lane lands on every resonance of its own plates', () => {
+  for (const shape of ['square', 'circle'] as const) {
+    const spec = { ...DEFAULT_PLATE, shape, exciter: shape === 'circle' ? { x: 0.85, y: 0.5 } : { x: 0.5, y: 0.5 } } as PlateSpec;
+    const modes = plateModes(spec, 14);
+    const Q = effectiveQ(spec.material, spec.damping);
+    const fader = makeFreqFader(F_MIN, F_MAX, modes, Q);
+    let atNew = 0;
+    let atOld = 0;
+    for (let i = 0; i <= LANE; i++) {
+      if (readResonance(fader.hzAt(i / LANE), modes, Q).state === 'at') atNew++;
+      if (readResonance(Math.round(F_MIN * Math.pow(F_MAX / F_MIN, i / LANE) * 10) / 10, modes, Q).state === 'at') atOld++;
+    }
+    if (shape === 'square') assert.equal(atOld, 0, 'the regression this pins: the old lane never hit a mode on the square plate');
+    assert.ok(atNew >= 20, `${shape}: warped lane AT on ${atNew} positions`);
+    const ex = modes.filter((m) => m.drive > 0.05 && m.hz > F_MIN * 1.05 && m.hz < F_MAX / 1.05 && readResonance(m.hz, modes, Q).dominant?.id === m.id && readResonance(m.hz, modes, Q).state === 'at');
+    for (const m of ex) {
+      let n = 0;
+      for (let i = 0; i <= LANE; i++) {
+        const r = readResonance(fader.hzAt(i / LANE), modes, Q);
+        if (r.state === 'at' && r.dominant && Math.abs(r.dominant.hz / m.hz - 1) < 1e-3) n++;
+      }
+      assert.ok(n >= 3, `${shape}: mode ${m.label} at ${m.hz.toFixed(1)} Hz is AT on only ${n} lane positions`);
+    }
+  }
+  const src = readFileSync(new URL('../src/screens/lab/cymatics/modules/modNodes.tsx', import.meta.url), 'utf8');
+  assert.match(src, /makeFreqFader\(F_MIN, F_MAX, allModes, Q\)/);
+  assert.match(src, /value: fader\.posOf\(hz\)/);
+  assert.match(src, /setHz\(fader\.hzAt\(v\)\)/);
+  assert.doesNotMatch(src, /hzFromPos|posFromHz/);
+});
+
+test('the precise DRIVE readout fits the plate bezel cell at 390 wide', async () => {
+  const { formatHzPrecise } = await import('../src/features/cymatics/music.ts');
+  for (let i = 0; i <= 200; i++) {
+    const f = F_MIN * Math.pow(F_MAX / F_MIN, i / 200);
+    assert.ok(fitsCell('drive', formatHzPrecise(f, true)), formatHzPrecise(f, true));
+  }
+});

@@ -603,6 +603,7 @@ export function EnsemblePlacement(p: PageProps) {
   const [predicted, setPredicted] = useState<string | null>(null);
   const cRef = useRef(c);
   cRef.current = c;
+  const liveStep = useRef<number | null>(null);
   const face = start?.rig?.place.face ?? 0;
   const tilt = start?.rig?.place.tilt ?? 25;
   const mount: ArrayMount = useMemo(() => start?.rig?.mount ?? { kind: 'stand' }, [start]);
@@ -651,7 +652,6 @@ export function EnsemblePlacement(p: PageProps) {
   const axisVal = axis === 'h' ? -c.y : axis === 'z' ? c.z : c.x;
   const A = AX[axis];
   const withAxis = (q: Vec3, v: number) => (axis === 'h' ? v3(q.x, -v, q.z) : axis === 'z' ? v3(q.x, q.y, v) : v3(v, q.y, q.z));
-  const setAxisVal = (v: number) => setC((q) => withAxis(q, v));
   const presets = [...new Set(list.map((q) => q.rig!.id))];
   const def = ARRAYS[preset];
   const geom = def.spacing ? { key: 'spacing' as const, r: def.spacing, unit: 'mm', label: 'SPACING' } : def.angle ? { key: 'angle' as const, r: def.angle, unit: '°', label: 'ANGLE' } : def.turn ? { key: 'turn' as const, r: def.turn, unit: '°', label: 'TURN OUT' } : null;
@@ -662,8 +662,20 @@ export function EnsemblePlacement(p: PageProps) {
       id: 'move',
       label: 'MOVE',
       value: Math.max(0, Math.min(1, (axisVal - A.lo) / (A.hi - A.lo))),
-      onChange: (v) => setAxisVal(Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50),
+// A PREVIEW lane: the lane prints format(v) while the finger rides it; the
+      // page state (and its picture) moves once, on release (onCommit) — a
+      // setState here re-rendered the whole page every frame (slider audit 2026-10-14).
+      // LIVE but cheap (2026-10-14, after the lane cap moved to the UI thread): the
+      // picture follows the finger, and the page re-renders only when the
+      // SNAPPED step changes — not every frame. onCommit still settles once.
+      onChange: (v) => {
+        const x = Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50;
+        if (x === liveStep.current) return;
+        liveStep.current = x;
+        setC(withAxis(cRef.current, x));
+      },
       onCommit: (v) => {
+        liveStep.current = null;
         const n = withAxis(cRef.current, Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50);
         setC(n);
         setRest(n);
