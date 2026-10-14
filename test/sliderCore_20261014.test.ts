@@ -291,3 +291,15 @@ describe('worklet capture (live emulator retest 2026-10-14)', () => {
     }
   });
 });
+
+describe('chooser tray on a short phone (live emulator retest 2026-10-14)', () => {
+  // 640 dp window under the Miking stage: the gap between the stage block and
+  // the dock was ~25 dp and the AIM chooser opened as an EMPTY sliver.
+  it('an open tray rises over the foot of the stage when the gap is under TRAY_MIN', () => {
+    const s = read('src/screens/lab/rack/RackUnit.tsx');
+    assert.match(s, /const TRAY_MIN = 168;/);
+    assert.match(s, /const trayTop = rootH > 0 \? Math\.max\(0, Math\.min\(stageBlockH, rootH - bottom - dockH - 12 - TRAY_MIN\)\) : stageBlockH;/);
+    assert.match(s, /const trayRoom = rootH - trayTop - dockH - bottom - 12;/);
+    assert.match(s, /styles\.trayLayer, \{ top: trayTop, bottom: dockH \+ bottom \}/);
+  });
+});

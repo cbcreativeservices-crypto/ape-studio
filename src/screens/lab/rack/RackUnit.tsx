@@ -532,7 +532,14 @@ export function RackUnit({
   // needs no safe-area inset of its own.
   // …and the card may use ALL of that room (6 dp margins): on a 667 pt phone
   // the old 86% cap clipped a two-row tray under the fold.
-  const trayRoom = rootH - stageBlockH - dockH - bottom - 12;
+  // The tray covers the well between the stage block and the dock. On a
+  // short phone under a tall stage (Miking: two-line bezel + badge, 640 dp
+  // window) that gap was ~25 dp and a chooser opened as an EMPTY sliver — its
+  // options clipped away (live emulator retest 2026-10-14). The open tray
+  // then rises over the foot of the stage just far enough to fit TRAY_MIN;
+  // everywhere else it starts at the stage block, as before.
+  const trayTop = rootH > 0 ? Math.max(0, Math.min(stageBlockH, rootH - bottom - dockH - 12 - TRAY_MIN)) : stageBlockH;
+  const trayRoom = rootH - trayTop - dockH - bottom - 12;
   // A tray chip's own long-press (a reference photo — LabPhotoLightbox, a
   // sibling Modal) leaves full screen first, like `help` above.
   const trayRouted = useMemo(
@@ -691,7 +698,7 @@ export function RackUnit({
           2026-09-27: "the user should always be able to adjust controls
           without having to open and close" — the full-screen rule of
           2026-09-26, inline). */}
-      <View style={[styles.trayLayer, { top: stageBlockH, bottom: dockH + bottom }]} pointerEvents="box-none">
+      <View style={[styles.trayLayer, { top: trayTop, bottom: dockH + bottom }]} pointerEvents="box-none">
         {trayNode}
       </View>
 
@@ -721,6 +728,9 @@ export function RackUnit({
     </View>
   );
 }
+
+/** The least room an open tray gets: its title and two full-size rows. */
+const TRAY_MIN = 168;
 
 const styles = StyleSheet.create({
   root: { flex: 1 },

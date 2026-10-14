@@ -80,7 +80,8 @@ describe('the lab display can collapse for reading', () => {
 });
 
 test('an open tray covers the well only — the dock stays live beneath it (owner 2026-09-27)', () => {
-  assert.match(code, /styles\.trayLayer, \{ top: stageBlockH, bottom: dockH \+ bottom \}/, 'the tray layer no longer stops at the dock');
+  // top = the stage block, or higher on a short phone (TRAY_MIN, 2026-10-14)
+  assert.match(code, /styles\.trayLayer, \{ top: trayTop, bottom: dockH \+ bottom \}/, 'the tray layer no longer stops at the dock');
   assert.match(code, /trayParam \? null : <View style=\{styles\.filler\}/, 'the dock no longer drops to the bottom while a tray is open');
 });
 
