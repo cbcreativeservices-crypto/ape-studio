@@ -59,6 +59,28 @@ const ACADEMIC_GOALS: string[] = [
 ];
 
 const CURRICULUM_INTRO_TITLE = 'Explore the Academy Curriculum';
+
+/** The three "what is this?" cards under the glance graphic (owner 2026-10-14). */
+const WHAT_CARDS: { key: 'specialization' | 'program' | 'directory'; title: string; body: string; tone: string }[] = [
+  {
+    key: 'specialization',
+    title: 'SPECIALIST CERTIFICATES',
+    body: 'Focused credentials in one area of audio. Complete the topics and labs, then pass the final exam.',
+    tone: colors.blue,
+  },
+  {
+    key: 'program',
+    title: 'PROGRAM CERTIFICATES',
+    body: 'Career-path credentials across many subjects. Complete every part, then pass the final exam.',
+    tone: colors.purple,
+  },
+  {
+    key: 'directory',
+    title: 'PRO REGISTRY',
+    body: 'Your opt-in professional profile: certificate record, networking and messaging, and employer verification.',
+    tone: '#ffffff',
+  },
+];
 const CURRICULUM_INTRO =
   'Progress is built one topic at a time. Every subject below expands to show its topics, term coverage, and where those skills apply in a professional audio career.';
 
@@ -119,7 +141,7 @@ export const CurriculumView = memo(function CurriculumView({
   onScreen?: boolean;
   /** Tapping the Certificates / Programs stat tiles jumps the Awards pager to
    *  that page (user request 2026-07-22). */
-  onOpenCategory?: (key: 'specialization' | 'program') => void;
+  onOpenCategory?: (key: 'specialization' | 'program' | 'directory') => void;
 }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -409,6 +431,27 @@ export const CurriculumView = memo(function CurriculumView({
         live={onScreen && isFocused}
       />
 
+      {/* What each credential page is (owner 2026-10-14): three short cards
+          under the glance graphic — brief, low, each opens its page. */}
+      <View style={styles.whatList}>
+        {WHAT_CARDS.map((c) => (
+          <Pressable
+            key={c.key}
+            onPress={onOpenCategory ? () => onOpenCategory(c.key) : undefined}
+            disabled={!onOpenCategory}
+            style={[styles.whatCard, { borderLeftColor: c.tone }]}
+            accessibilityRole={onOpenCategory ? 'button' : undefined}
+            accessibilityLabel={`${c.title}. ${c.body}`}
+          >
+            <View style={styles.whatHead}>
+              <Text style={[styles.whatTitle, { color: c.tone }]}>{c.title}</Text>
+              {onOpenCategory ? <Text style={styles.whatGo}>›</Text> : null}
+            </View>
+            <Text style={styles.whatBody}>{c.body}</Text>
+          </Pressable>
+        ))}
+      </View>
+
       {/* Curriculum section head — an amber eyebrow with a rule sets the
           section off from the hero module above (redesign 2026-09-15). */}
       <View style={styles.introBlock}>
@@ -647,6 +690,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // The three "what is this?" cards under the hero (owner 2026-10-14): low and brief.
+  whatList: { gap: 6 },
+  whatCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderLeftWidth: 3, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 11 },
+  whatHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  whatTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1 },
+  whatGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub },
+  whatBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 17, color: colors.textSecondary, marginTop: 2 },
   // About + Membership: a thin two-up row above the hero (owner 2026-09-15).
   aboutRow: { flexDirection: 'row', alignItems: 'stretch', justifyContent: 'space-between' },
   halfFlex: { width: '48.5%' },
