@@ -36,7 +36,7 @@ export function CredentialBlurb({ kind, onPress }: { kind: BlurbKey; onPress?: (
     <Pressable
       onPress={onPress}
       disabled={!onPress}
-      style={[styles.card, { borderLeftColor: c.tone }]}
+      style={styles.card}
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={`${c.title}. ${c.body}`}
     >
@@ -50,7 +50,7 @@ export function CredentialBlurb({ kind, onPress }: { kind: BlurbKey; onPress?: (
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderLeftWidth: 3, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 11 },
+  card: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 11 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1 },
   go: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub },
