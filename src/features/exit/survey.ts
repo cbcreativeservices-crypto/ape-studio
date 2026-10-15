@@ -43,13 +43,26 @@ export const REASONS: readonly Choice<ReasonCode>[] = [
 
 export const REASON_CODES: readonly ReasonCode[] = REASONS.map((r) => r.code);
 
+/**
+ * Deletion asks a SHORTER question (owner 2026-10-15: "too many options and
+ * too long to read"): five reasons; the three "it didn't work for me" reasons
+ * fold into one, split by its follow-up. Same stable reason codes.
+ */
+export const DELETE_REASONS: readonly Choice<ReasonCode>[] = [
+  { code: 'budget', label: 'It does not fit my budget right now' },
+  { code: 'temporary_break', label: 'I am taking a break' },
+  { code: 'goal_completed', label: 'I got what I needed' },
+  { code: 'expectations', label: 'The app did not work well for me' },
+  { code: 'privacy', label: 'I want my personal information removed' },
+] as const;
+
 export function reasonsFor(flow: ExitFlow): readonly Choice<ReasonCode>[] {
-  return flow === 'delete' ? REASONS : REASONS.filter((r) => r.code !== 'privacy');
+  return flow === 'delete' ? DELETE_REASONS : REASONS.filter((r) => r.code !== 'privacy');
 }
 
 export const Q1_PROMPT: Record<ExitFlow, string> = {
   cancel: 'What is the main reason you are considering ending your paid membership?',
-  delete: 'What is the main reason you are considering deleting your account?',
+  delete: 'Why are you leaving? (optional)',
 };
 
 export type FollowUpId = 'technical' | 'content' | 'usability' | 'return' | 'expectations' | 'privacy';
@@ -145,6 +158,21 @@ export function followUpFor(reason: ReasonCode | null): FollowUp {
   }
 }
 
+/** Deletion follow-up: only "did not work well" asks one more thing (owner 2026-10-15). */
+export const DELETE_WHAT_WENT_WRONG: FollowUp = {
+  id: 'expectations',
+  prompt: 'What went wrong? (optional)',
+  choices: [
+    { code: 'technical_problem', label: 'Technical problems' },
+    { code: 'usability', label: 'Hard to use' },
+    { code: 'content_gap', label: 'Missing what I needed' },
+    { code: 'overall_value', label: 'Not worth the price' },
+  ],
+};
+export function deleteFollowUpFor(reason: ReasonCode | null): FollowUp | null {
+  return reason === 'expectations' ? DELETE_WHAT_WENT_WRONG : null;
+}
+
 /** Question 3 — optional comment. */
 export const COMMENT_MAX = 500;
 export const Q3_PROMPT = 'What is one thing we could improve?';
@@ -208,18 +236,17 @@ export function thankYou(firstName: string | null | undefined, gaveFeedback: boo
 
 // ── Deletion copy (spec §6 + owner decisions) ───────────────────────────────
 export const D1_TITLE = 'Delete your account and personal data';
-export const D1_BODY =
-  'This will remove your account and saved learning data, including progress, favorites, and custom lists. Once deletion is complete, that learning data cannot be restored. If you only want to stop future membership payments, you can cancel your membership and keep your account.';
+// Shortened (owner 2026-10-15: "too long to read").
+export const D1_BODY = 'This removes your account, progress, favorites and custom lists. It cannot be undone.';
 export const D1_CONTINUE = 'Continue with account deletion';
-export const D1_KEEP_ACCOUNT = 'Cancel membership and keep my account';
+export const D1_KEEP_ACCOUNT = 'Only want to stop paying? Cancel your membership instead';
 
 export type KeepChoice = 'delete_all' | 'keep_record';
 export const CERT_CHOICES: readonly Choice<KeepChoice>[] = [
-  { code: 'delete_all', label: 'Delete everything. We will no longer be able to confirm that you earned any certificate.' },
+  { code: 'delete_all', label: 'Delete everything. No one can verify your certificates afterwards.' },
   {
     code: 'keep_record',
-    label:
-      'Keep a verification record: your name, certificate title, date earned and verification code stay so employers can still confirm it. Everything else is deleted. You can ask us to remove it at any time.',
+    label: 'Keep a verification record: only your name, certificate, date and code stay, so employers can still check it.',
   },
 ] as const;
 // INVENTED COPY.

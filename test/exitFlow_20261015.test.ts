@@ -121,8 +121,15 @@ describe('survey content', () => {
       survey.CERT_CHOICES.map((c: { code: string }) => c.code),
       ['delete_all', 'keep_record'],
     );
-    assert.match(survey.CERT_CHOICES[0].label, /^Delete everything\. We will no longer be able to confirm/);
-    assert.match(survey.CERT_CHOICES[1].label, /^Keep a verification record: your name, certificate title, date earned and verification code/);
+    // Shortened 2026-10-15 (owner: the delete screen was too long to read).
+    assert.match(survey.CERT_CHOICES[0].label, /^Delete everything\. No one can verify your certificates afterwards\.$/);
+    assert.match(survey.CERT_CHOICES[1].label, /^Keep a verification record: only your name, certificate, date and code stay/);
+  });
+  it('deletion asks five reasons, and a follow-up only for "did not work well"', () => {
+    assert.equal(survey.reasonsFor('delete').length, 5);
+    assert.equal(survey.deleteFollowUpFor('budget'), null);
+    assert.equal(survey.deleteFollowUpFor(null), null);
+    assert.equal(survey.deleteFollowUpFor('expectations').choices.length, 4);
   });
 });
 

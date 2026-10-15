@@ -60,7 +60,7 @@ import {
   D3_TITLE,
   EXIT_FLOW_VERSION,
   Q1_PROMPT,
-  followUpFor,
+  deleteFollowUpFor,
   reasonsFor,
   subscriptionWarning,
   thankYou,
@@ -127,7 +127,7 @@ export function DeleteAccountFlowScreen({ navigation }: Props) {
     : membership.state === 'failed'
       ? [Platform.OS === 'ios' ? 'apple' : 'google']
       : [];
-  const fu = reason ? followUpFor(reason) : null;
+  const fu = deleteFollowUpFor(reason);
 
   const done = useCallback(() => {
     navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
