@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 14:12 · ccode · 6ba9b349
+changed: Android 3-button nav bar: bottom content clears the bar on 32 root-stack screens (2026-10-15)
+affects other side: nothing (app only, JS layout; ships with the post-approval OTA)
+needs: nothing
+
+
 ### 2026-10-15 11:20 · ccode · e9edce3f
 changed: Home: tapping HOME resets the card carousel to the default card; the dot row can be dragged to move through the cards (UX review 2026-10-15)
 affects other side: nothing (app only)
