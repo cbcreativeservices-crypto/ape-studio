@@ -22,10 +22,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import { BrandLogo } from '../../components/BrandLogo';
-import { Modal } from '../../components/DimModal';
+import { Modal, useAfterModalsClose } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
 import { DirectoryView } from '../directory/DirectoryScreen';
@@ -346,7 +346,7 @@ function ChooserHeader({
         accessibilityLabel={`Back to ${backTo}`}
         style={({ pressed }) => [styles.backBtn, pressed && styles.backBtnPressed]}
       >
-        <Text style={[styles.backChevron, { color: backTint }]}>‹</Text>
+        <Text style={[styles.backChevron, { color: backTint }]} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         <BackSweep label={`BACK TO ${backTo.toUpperCase()}`} tint={backTint} />
       </Pressable>
       <Text accessibilityRole="header" style={[styles.chooserTitle, { color: accent }]}>
@@ -844,7 +844,17 @@ export function AwardsScreen({ navigation, route }: Props) {
    * `focusGs` takes the credential's FIRST topic: the dashboard opens already
    * loaded rather than on whatever was last viewed, which is the whole point
    * of the button.
+   *
+   * ⛔ LEAVE ONLY ONCE BOTH MODALS HAVE GONE (TestFlight build 36, iOS,
+   * 2026-10-09: "Frozen screen. Can't get back to home. Must restart app" on
+   * the Dashboard and on the Program / Certificate progress pages these two
+   * buttons open). The popup is a Modal INSIDE the chooser Modal; closing both
+   * in one tap and leaving in the same tick stranded the chooser's empty iOS
+   * view controller over the whole app. DimModal now closes the pair in an
+   * order UIKit can follow; `afterClose` waits for that before navigating —
+   * popTo unmounts this screen, Modals and all. See DimModal <nestedClose>.
    */
+  const afterClose = useAfterModalsClose();
   const studyFromDetail = useCallback(
     (c: CredentialDetail) => {
       setDetail(null);
@@ -856,12 +866,14 @@ export function AwardsScreen({ navigation, route }: Props) {
       /* popTo, not navigate — same rule the rest of this screen follows. RN7
          pushes a SECOND tab shell on a navigate to a non-focused route, so
          Back returns to a duplicate Awards pager instead of leaving. */
-      (navigation as unknown as { popTo: (name: string, params?: object) => void }).popTo('Main', {
-        screen: 'Study',
-        params: { screen: 'Dashboard', params: first != null ? { focusGs: first } : undefined },
-      });
+      afterClose(() =>
+        (navigation as unknown as { popTo: (name: string, params?: object) => void }).popTo('Main', {
+          screen: 'Study',
+          params: { screen: 'Dashboard', params: first != null ? { focusGs: first } : undefined },
+        }),
+      );
     },
-    [navigation],
+    [navigation, afterClose],
   );
 
   const enrollmentsFromDetail = useCallback(() => {
@@ -875,13 +887,16 @@ export function AwardsScreen({ navigation, route }: Props) {
     (c: CredentialDetail) => {
       setDetail(null);
       setPicker(null); // close the picker modal so the pushed screen is visible
-      navigation.navigate('AwardProgress', {
-        awardType: c.kind,
-        awardId: c.id,
-        awardName: c.name,
-      });
+      // After both Modals have gone — see studyFromDetail.
+      afterClose(() =>
+        navigation.navigate('AwardProgress', {
+          awardType: c.kind,
+          awardId: c.id,
+          awardName: c.name,
+        }),
+      );
     },
-    [navigation],
+    [navigation, afterClose],
   );
 
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {

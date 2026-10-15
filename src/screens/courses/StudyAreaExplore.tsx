@@ -18,7 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Modal } from '../../components/DimModal';
+import { Modal, useAfterModalsClose } from '../../components/DimModal';
 import { CardArt } from '../../components/CardArt';
 import { colors, fonts } from '../../theme/tokens';
 import { officialTopicName } from '../../data/officialTopicNames';
@@ -181,7 +181,20 @@ export function StudyAreaExplore({
   };
 
   const single = list.length === 1;
-  const closeDetail = () => (single ? onClose() : setDetail(null));
+  /**
+   * ⛔ THE POPUP IS A MODAL INSIDE THIS SHEET'S MODAL (TestFlight build 36,
+   * iOS: "Frozen screen … Must restart app"). Closing the sheet while the
+   * popup was still up left the sheet's empty iOS view controller over the
+   * whole app — see DimModal <nestedClose>. Every way out closes the popup in
+   * the same tap (DimModal then closes the sheet after it), and the parent's
+   * navigation runs only once both have gone (`afterClose`).
+   */
+  const afterClose = useAfterModalsClose();
+  const closeAll = () => {
+    setDetail(null);
+    onClose();
+  };
+  const closeDetail = () => (single ? closeAll() : setDetail(null));
   const visible = !!area && list.length > 0;
   const sheetMax = Math.round(height * 0.72);
 
@@ -313,22 +326,22 @@ export function StudyAreaExplore({
           onEnroll={toggleEnroll}
           isEnrolled={isCredEnrolled}
           onProgress={(c) => {
-            onClose();
-            onProgress(c);
+            closeAll();
+            afterClose(() => onProgress(c));
           }}
           onStudy={
             showStudyNav
               ? (c) => {
-                  onClose();
-                  onStudy(c);
+                  closeAll();
+                  afterClose(() => onStudy(c));
                 }
               : undefined
           }
           onEnrollments={
             showStudyNav
               ? () => {
-                  onClose();
-                  onEnrollments();
+                  closeAll();
+                  afterClose(() => onEnrollments());
                 }
               : undefined
           }

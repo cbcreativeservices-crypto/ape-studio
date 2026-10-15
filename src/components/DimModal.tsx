@@ -20,9 +20,11 @@
  */
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
   useSyncExternalStore,
   type ReactNode,
@@ -202,6 +204,142 @@ export function rootModalHoldMs(now = Date.now()): number {
   return Math.max(0, lastHostClosedAt + HOST_DISMISS_MS - now);
 }
 
+// <nestedClose> — pure; unit-tested by test/nestedModalClose_20261015.test.ts,
+// which transpiles exactly this block.
+/**
+ * ⛔ A MODAL MUST NOT CLOSE WHILE A MODAL INSIDE IT IS STILL UP — iOS FREEZES
+ * FOR GOOD (TestFlight build 36, 2026-10-09: ten "Frozen Screen" / "Can't get
+ * back to home. Must restart app" reports from one tester in one evening, on
+ * the Study Dashboard and the Program / Certificate progress pages).
+ *
+ * A DimModal opened inside another DimModal (the credential popup inside the
+ * Certificates / Programs chooser; the same popup inside Home's Study Area
+ * EXPLORE sheet) is presented by UIKit FROM the outer one's view controller.
+ * React Native closes a Modal with `[modalVC dismissViewControllerAnimated:]`,
+ * and UIKit's rule for that call on a controller that is itself presenting
+ * something is: dismiss the CHILD, keep yourself. So when the outer Modal is
+ * closed in the same tap as the inner one (STUDY NOW, VIEW PROGRESS, GO TO MY
+ * ENROLLMENTS), or while the inner one is still up (closing a one-credential
+ * EXPLORE sheet), only the inner popup goes away. The outer controller stays
+ * presented over the whole app with its React content already gone: a clear,
+ * full-screen sheet that swallows every touch. The screen underneath — the
+ * Dashboard or the progress page the button navigated to — looks normal and
+ * nothing on it answers, the tab bar included, until the app is killed.
+ * Android draws each Modal in its own window and closes them independently,
+ * which is why it never showed there.
+ *
+ * So on iOS an outer DimModal that is asked to close while a nested one is
+ * still open, or still animating away, STAYS presented until the nested one
+ * has gone (its native onDismiss, or NESTED_CLOSE_CAP_MS at the latest), and
+ * only then closes itself — the order UIKit can follow.
+ */
+export type NestedKid = { id: number; parent: number; closingSince: number | null };
+/** UIKit's own dismissal is ~0.3–0.5 s; this is only the fallback for an
+ *  onDismiss that never arrives. */
+export const NESTED_CLOSE_CAP_MS = 1000;
+/** Where the modals nested in `parent` stand: 'open' (one is still up),
+ *  'closing' (all asked to close, one is still animating away) or 'none'. */
+export function nestedKidState(kids: readonly NestedKid[], parent: number): 'open' | 'closing' | 'none' {
+  let closing = false;
+  for (const k of kids) {
+    if (k.parent !== parent) continue;
+    if (k.closingSince == null) return 'open';
+    closing = true;
+  }
+  return closing ? 'closing' : 'none';
+}
+/** Whether a Modal must stay presented although its owner asked it to close:
+ *  only one that is ON SCREEN now (never re-opens a closed one) with a nested
+ *  modal not yet gone. */
+export function holdForNested(wantVisible: boolean, shownNow: boolean, kidState: 'open' | 'closing' | 'none'): boolean {
+  return !wantVisible && shownNow && kidState !== 'none';
+}
+/** `afterModalsClose`: ms still to wait, or -1 while a Modal is still up. */
+export function modalsSettleWaitMs(openModals: number, pendingKids: number, holdMs: number): number {
+  return openModals > 0 || pendingKids > 0 ? -1 : Math.max(0, holdMs);
+}
+// </nestedClose>
+
+/** iOS only: Android and the web close nested modals independently. */
+const NESTED_HOLD = Platform.OS === 'ios';
+let nestedKids: NestedKid[] = [];
+/** Every DimModal on screen, nested or not (openHosts counts overlay hosts
+ *  only) — afterModalsClose waits for this to reach zero. */
+let presentedCount = 0;
+function kidOpened(id: number, parent: number): void {
+  nestedKids = [...nestedKids.filter((k) => k.id !== id), { id, parent, closingSince: null }];
+  emit();
+}
+function kidClosing(id: number): void {
+  const now = Date.now();
+  if (!nestedKids.some((k) => k.id === id && k.closingSince == null)) return;
+  nestedKids = nestedKids.map((k) => (k.id === id ? { ...k, closingSince: now } : k));
+  emit();
+  // Fallback for a dismissal whose onDismiss never arrives.
+  setTimeout(() => {
+    if (nestedKids.some((k) => k.id === id && k.closingSince === now)) kidGone(id);
+  }, NESTED_CLOSE_CAP_MS);
+}
+function kidGone(id: number): void {
+  if (!nestedKids.some((k) => k.id === id && k.closingSince != null)) return;
+  nestedKids = nestedKids.filter((k) => k.id !== id);
+  emit();
+}
+
+/**
+ * Run `next` once every DimModal has closed AND had HOST_DISMISS_MS to animate
+ * away — for a button inside a popup that closes it and then LEAVES the screen
+ * (popTo / navigate). Leaving at once unmounts or covers Modals UIKit is still
+ * presenting or dismissing; see <nestedClose> above for what that does on iOS.
+ * `maxMs` caps the wait, so an unrelated popup can never strand the step.
+ * Returns a cancel.
+ */
+export function afterModalsClose(next: () => void, maxMs = 2000): () => void {
+  const started = Date.now();
+  let done = false;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  const finish = () => {
+    done = true;
+    unsubscribe();
+    if (timer) clearTimeout(timer);
+    next();
+  };
+  const check = () => {
+    if (done) return;
+    if (timer) clearTimeout(timer);
+    timer = null;
+    const pending = nestedKids.length;
+    const wait = modalsSettleWaitMs(presentedCount, pending, rootModalHoldMs());
+    if (wait === 0 || Date.now() - started >= maxMs) {
+      finish();
+      return;
+    }
+    timer = setTimeout(check, wait > 0 ? wait : 60);
+  };
+  const unsubscribe = subscribe(check);
+  // After the tap's own commit, so the Modals it closed have unregistered.
+  timer = setTimeout(check, 0);
+  return () => {
+    done = true;
+    unsubscribe();
+    if (timer) clearTimeout(timer);
+  };
+}
+
+/** `afterModalsClose` for a screen: one pending step at a time, dropped if the
+ *  screen unmounts first. */
+export function useAfterModalsClose(): (next: () => void) => void {
+  const cancelRef = useRef<(() => void) | null>(null);
+  useEffect(() => () => cancelRef.current?.(), []);
+  return useCallback((next: () => void) => {
+    if (cancelRef.current) return; // a double tap is one step
+    cancelRef.current = afterModalsClose(() => {
+      cancelRef.current = null;
+      next();
+    });
+  }, []);
+}
+
 /** Hand a card to the topmost open DimModal (or clear it with null). `key`
  *  names the publisher, so two publishers never overwrite each other. */
 export function setHostedOverlay(overlay: HostedOverlay | null, key = 'gate'): void {
@@ -259,6 +397,9 @@ function useWebBox(active: boolean): WebBox | null {
 
 /** Nesting depth, so a Modal opened inside another's tree ranks above it. */
 const HostDepth = createContext(0);
+/** The id of the DimModal this one is rendered inside (0 = none) — the
+ *  nested-close hold (see <nestedClose>). */
+const ParentHost = createContext(0);
 
 export function Modal({
   children,
@@ -282,8 +423,34 @@ export function Modal({
   overlayPublisher?: boolean | string;
 }) {
   const depth = useContext(HostDepth) + 1;
+  const parentId = useContext(ParentHost);
   const [id] = useState(() => ++hostSeq);
-  const registered = hostsOverlays && !!rest.visible;
+  // ⛔ NESTED CLOSE (see <nestedClose>): on iOS this Modal stays presented
+  // while a Modal nested in it is still up or animating away, even though its
+  // owner has asked it to close, and closes the moment that one has gone.
+  const kidState = useSyncExternalStore(
+    subscribe,
+    () => (NESTED_HOLD ? nestedKidState(nestedKids, id) : 'none'),
+    () => 'none' as const,
+  );
+  const shownRef = useRef(false);
+  const visible = !!rest.visible || (NESTED_HOLD && holdForNested(!!rest.visible, shownRef.current, kidState));
+  useLayoutEffect(() => {
+    shownRef.current = visible;
+  });
+  // As a nested Modal: tell the parent while this one is up, and when it has
+  // gone (onDismiss below, or the cap).
+  useLayoutEffect(() => {
+    if (!visible) return;
+    presentedCount += 1;
+    if (NESTED_HOLD && parentId !== 0) kidOpened(id, parentId);
+    return () => {
+      presentedCount -= 1;
+      if (NESTED_HOLD && parentId !== 0) kidClosing(id);
+      else emit();
+    };
+  }, [visible, id, parentId]);
+  const registered = hostsOverlays && visible;
   const publisher: string | false = overlayPublisher === true ? 'publisher' : overlayPublisher || false;
 
   // Layout effect: registered before any native onShow can arrive for it.
@@ -306,12 +473,19 @@ export function Modal({
     () => NO_OVERLAYS,
   );
   const topOverlay = mine.length ? mine[mine.length - 1] : null;
-  const webBox = useWebBox(!!rest.visible);
+  const webBox = useWebBox(visible);
 
-  const { onRequestClose, onShow } = rest;
+  const { onRequestClose, onShow, onDismiss } = rest;
   return (
     <RNModal supportedOrientations={supportedOrientations}
       {...rest}
+      visible={visible}
+      onDismiss={() => {
+        // iOS: the native dismissal has finished — a parent held for this
+        // nested Modal may close now (see <nestedClose>).
+        kidGone(id);
+        onDismiss?.();
+      }}
       onRequestClose={(e) => {
         if (topOverlay) topOverlay.onBack();
         else onRequestClose?.(e);
@@ -325,12 +499,14 @@ export function Modal({
         const body = (
           <>
             <HostDepth.Provider value={depth}>
-              {children}
-              {mine.map((o) => (
-                <View key={o.key} style={StyleSheet.absoluteFill} pointerEvents="box-none">
-                  {o.node}
-                </View>
-              ))}
+              <ParentHost.Provider value={id}>
+                {children}
+                {mine.map((o) => (
+                  <View key={o.key} style={StyleSheet.absoluteFill} pointerEvents="box-none">
+                    {o.node}
+                  </View>
+                ))}
+              </ParentHost.Provider>
             </HostDepth.Provider>
             {/* Last child, so it washes over the modal's own content. It is
                 pointerEvents="none", so nothing below it loses a touch. */}

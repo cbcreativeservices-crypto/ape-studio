@@ -75,7 +75,7 @@ import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { TopicAboutPanel, hasTopicAbout } from '../../components/TopicAboutPanel';
 import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
-import { colors, fonts, spacing } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, colors, fonts, spacing } from '../../theme/tokens';
 import {
   fetchEnrollmentDashboard,
   getLastTopic,
@@ -2188,7 +2188,11 @@ export function DashboardScreen() {
                     sit beside the number wherever the number lands. */}
                 <View style={styles.pctBlock}>
                   <View style={styles.pctTextCol}>
-                    <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                    {/* A small letter-spaced LABEL in a narrow column: at the
+                        accessibility text sizes it broke mid-word ("PROGRES /
+                        S", build 36 tester with Larger Text). It follows the OS
+                        size up to the brand cap and holds there. */}
+                    <Text style={styles.pctLabel} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE}>OVERALL TOPIC PROGRESS</Text>
                     <Text style={styles.pctBig}>{dispOverallPct}%</Text>
                   </View>
                   <View style={styles.topicNavArrows}>
