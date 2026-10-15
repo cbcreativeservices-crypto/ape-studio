@@ -392,3 +392,38 @@ export async function lookUpDeletedAccount(): Promise<AccountLookup> {
     return 'unknown';
   }
 }
+
+/**
+ * Re-check the SIGNED-IN person's password before an account deletion (exit
+ * flow D2, 2026-10-15). Sign-in is email + password only, so recent
+ * authentication is signInWithPassword with the current session's own email.
+ *
+ * Bounded by boundedSignIn, but its late-success sign-out (right for the login
+ * form) is switched off for this call by superseding the attempt: the person
+ * is already signed in, and a slow re-check must never log them out. Same
+ * user id or it is refused. Never rejects. Returns null on success, else the
+ * person-facing reason.
+ */
+export async function confirmCurrentPassword(password: string): Promise<string | null> {
+  try {
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'confirmCurrentPassword');
+    if (timedOut) return friendlyAuthError({ message: 'timeout' });
+    const user = result?.data?.session?.user;
+    if (!user?.email) return 'We couldn’t confirm who is signed in. Sign out, sign back in, and try again.';
+    const res = await boundedSignIn(
+      () => supabase.auth.signInWithPassword({ email: user.email!, password }),
+      'reauth',
+    );
+    // This attempt is now settled for the person. A re-check that timed out and
+    // answers later must NOT trigger boundedSignIn's late-success sign-out —
+    // they were signed in all along — so mark it superseded.
+    signInAttempt += 1;
+    if (res.error) return friendlyAuthError(res.error);
+    if (res.data?.user?.id && res.data.user.id !== user.id) {
+      return 'We couldn’t confirm who is signed in. Sign out, sign back in, and try again.';
+    }
+    return null;
+  } catch (e) {
+    return friendlyAuthError({ message: (e as Error)?.message ?? 'timeout' }) ?? 'Something went wrong. Try again.';
+  }
+}

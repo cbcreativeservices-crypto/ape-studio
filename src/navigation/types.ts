@@ -73,6 +73,12 @@ export type RootStackParamList = {
   PublicGlossary: { query?: string } | undefined;
   /** CM7: academy upgrade paywall (UI only; store wiring pending ruling). */
   Paywall: undefined;
+  /** Exit flow (2026-10-15, behind EXIT_FLOW_ENABLED): Settings › Membership and billing. */
+  MembershipBilling: undefined;
+  /** Exit flow: cancel a store subscription (C1→C4). The provider is the VERIFIED billing source. */
+  CancelMembership: { provider: 'apple' | 'google'; endsAt: string | null };
+  /** Exit flow: Settings › Account and privacy › Delete account and personal data (D1→D3). */
+  DeleteAccountFlow: undefined;
   Main: NavigatorScreenParams<MainTabParamList> | undefined;
   // Root-level (bottom nav hidden — S7 is modal per the locked spec):
   Results: ResultsParams;

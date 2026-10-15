@@ -410,6 +410,10 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   OscillatorLab: [true, 'Oscillators'],
   PatchbayLab: [true, 'Patchbay Signal Flow & Normalling'],
   Paywall: [false, null],
+  // Exit flow (2026-10-15): account screens, never lab routes.
+  MembershipBilling: [false, null],
+  CancelMembership: [false, null],
+  DeleteAccountFlow: [false, null],
   PhaseLab: [true, 'Phase'],
   PhaserLab: [true, 'Phaser'],
   PostProdLab: [true, 'Audio Post-Production'],
