@@ -1641,9 +1641,64 @@ export function CourseSelectionScreen() {
   const dotFit = dotRowFit(displayDeck?.length ?? 0, windowW);
 
 
+  // Dot-row scrub: a finger's x along the row picks the card under it.
+  const dotRowRef = useRef<View>(null);
+  const dotRowBox = useRef({ x: 0, w: 0 });
+  const scrubIdx = useRef(-1);
+  const scrubDots = (pageX: number) => {
+    const n = deckRef.current?.length ?? 0;
+    const { x, w } = dotRowBox.current;
+    if (n < 2 || w <= 0) return;
+    const contentW = n * dotFit.size + 11 + (n - 1) * dotFit.gap;
+    const start = x + Math.max(0, (w - contentW) / 2);
+    const idx = Math.min(n - 1, Math.max(0, Math.floor(((pageX - start) / Math.min(w, contentW)) * n)));
+    if (idx === scrubIdx.current) return;
+    scrubIdx.current = idx;
+    setActiveIdx(idx);
+    listRef.current?.scrollToIndex({ index: idx, animated: false });
+  };
+
   // Latest deck for the (stable) onViewableItemsChanged callback to read.
   const deckRef = useRef(displayDeck);
   deckRef.current = displayDeck;
+
+  // The DEFAULT card: the paid user's chosen Home default, else their
+  // latest-added Home card (homeGs appends, so the last entry is the newest),
+  // else Glossary. Shared by the cold-start landing and the HOME tab reset.
+  const defaultLandingIdx = useCallback(
+    (deck: Card[]) => {
+      const findId = (id: string) => deck.findIndex((c) => c.id === id);
+      let target = Math.max(0, deck.findIndex((c) => c.kind === 'glossary'));
+      if (defaultHomeGs != null) {
+        const i = findId(`home-${defaultHomeGs}`);
+        if (i >= 0) target = i;
+      } else if (homeGs.length > 0) {
+        const i = findId(`home-${homeGs[homeGs.length - 1]}`);
+        if (i >= 0) target = i;
+      }
+      return Math.min(target, deck.length - 1);
+    },
+    [defaultHomeGs, homeGs],
+  );
+
+  // Tapping HOME in the tab bar resets the carousel to the default card (UX
+  // review 2026-10-15). Already on Home → scroll there now; coming from another
+  // tab → re-arm the cold-start landing, which runs when the menu reloads on focus.
+  useEffect(() => {
+    const unsub = (navigation as any).addListener?.('tabPress', () => {
+      lastCenteredId = null;
+      if (!(navigation as any).isFocused?.()) {
+        sessionLanded = false;
+        return;
+      }
+      const deck = deckRef.current;
+      if (!deck || deck.length === 0) return;
+      const target = defaultLandingIdx(deck);
+      setActiveIdx(target);
+      listRef.current?.scrollToIndex({ index: target, animated: true });
+    });
+    return () => unsub?.();
+  }, [navigation, defaultLandingIdx]);
 
   // Landing card (owner 2026-07-30). `load()` re-runs on every focus and rebuilds
   // `cards`, so this effect fires on focus/reload. We branch on `sessionLanded`:
@@ -1670,17 +1725,7 @@ export function CourseSelectionScreen() {
     if (!resolved) return;
     let target: number;
     if (!sessionLanded) {
-      target = glossaryIdx;
-      if (defaultHomeGs != null) {
-        const i = findId(`home-${defaultHomeGs}`);
-        if (i >= 0) target = i;
-      } else if (homeGs.length > 0) {
-        // Paid user with no explicit default → their LATEST-added Home card
-        // (homeGs appends, so the last entry is the newest). Stays until they
-        // move another there (a new add) or pick one in Home Setup.
-        const i = findId(`home-${homeGs[homeGs.length - 1]}`);
-        if (i >= 0) target = i;
-      }
+      target = defaultLandingIdx(deck);
       sessionLanded = true;
     } else {
       const i = lastCenteredId ? findId(lastCenteredId) : -1;
@@ -2087,7 +2132,20 @@ export function CourseSelectionScreen() {
       {/* The dots are a page indicator: ONE accessible element that says the
           position, instead of ~30 unlabelled views (APE-STUDIO-W/R/S). */}
       <View
+        ref={dotRowRef}
         style={[styles.dots, { gap: dotFit.gap }]}
+        // Drag along the dots to move through the cards (UX review 2026-10-15).
+        hitSlop={{ top: 14, bottom: 8 }}
+        onStartShouldSetResponder={() => (displayDeck?.length ?? 0) > 1}
+        onResponderGrant={(e) => {
+          const px = e.nativeEvent.pageX;
+          scrubIdx.current = -1;
+          dotRowRef.current?.measureInWindow((x, _y, w) => {
+            dotRowBox.current = { x, w };
+            scrubDots(px);
+          });
+        }}
+        onResponderMove={(e) => scrubDots(e.nativeEvent.pageX)}
         accessible={!!displayDeck?.length}
         accessibilityElementsHidden={!displayDeck?.length}
         accessibilityLabel={displayDeck?.length ? `Card ${activeIdx + 1} of ${displayDeck.length}` : undefined}

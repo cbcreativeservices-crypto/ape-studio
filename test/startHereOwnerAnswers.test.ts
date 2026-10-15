@@ -30,6 +30,7 @@ test('every open lands on Glossary, the first one included (owner 2026-10-04)', 
   // Replaces the 2026-09-29 "first open lands on Start Here" — see
   // test/startHereDecisions_20261004.test.ts for the receipt.
   const home = readFileSync('src/screens/courses/CourseSelectionScreen.tsx', 'utf8');
-  assert.match(home, /if \(!sessionLanded\) \{\s*target = glossaryIdx;/);
+  assert.match(home, /if \(!sessionLanded\) \{\s*target = defaultLandingIdx\(deck\);/);
+  assert.match(home, /let target = Math\.max\(0, deck\.findIndex\(\(c\) => c\.kind === 'glossary'\)\);/);
   assert.doesNotMatch(home, /isFirstAppOpen|firstOpen/);
 });

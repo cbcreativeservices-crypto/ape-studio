@@ -78,13 +78,15 @@ const read = (p: string) => readFileSync(p, 'utf8');
 describe('decision 1 — every open lands on the Glossary, the first one included', () => {
   it('[R2] the first landing of a session is the Glossary card; no first-open flag is consulted', () => {
     const home = read('src/screens/courses/CourseSelectionScreen.tsx');
-    assert.match(home, /if \(!sessionLanded\) \{\s*target = glossaryIdx;/);
+    // The default card now comes from defaultLandingIdx (shared with the HOME tab reset, 2026-10-15).
+    assert.match(home, /if \(!sessionLanded\) \{\s*target = defaultLandingIdx\(deck\);/);
+    assert.match(home, /let target = Math\.max\(0, deck\.findIndex\(\(c\) => c\.kind === 'glossary'\)\);/);
     assert.doesNotMatch(home, /isFirstAppOpen|firstOpen|startHereIdx/);
     assert.equal(existsSync('src/features/startHere/firstOpen.ts'), false, 'the first-open module is gone');
   });
   it('a member\'s own Home default still wins (unchanged)', () => {
     const home = read('src/screens/courses/CourseSelectionScreen.tsx');
-    assert.match(home, /target = glossaryIdx;\s*if \(defaultHomeGs != null\)/);
+    assert.match(home, /let target = Math\.max\(0, deck\.findIndex\(\(c\) => c\.kind === 'glossary'\)\);\s*if \(defaultHomeGs != null\)/);
   });
 });
 
