@@ -483,6 +483,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 14:02 · ccode · ad30bb94
+changed: web: public /delete-account page (Play account-deletion requirement)
+affects other side: nothing yet (branch web-delete-account, NOT pushed, not live). Once the owner gives the go and it is live, A registers https://www.proaudiotrainingacademy.com/delete-account in Play Console › Data safety (brief HOLD 1).
+needs: exit-flow brief item 7 (delete_my_account(p_keep_credentials) + retained_credentials) logged live here before WEB_DELETE_ENABLED is switched on; item 8 backup window for the page copy.
+
+
 ### 2026-10-08 08:55 · ccode · b4b6138c
 changed: web: subline on two lines with a hard break (phones too)
 affects other side: nothing (website copy; requested by Comp A)
