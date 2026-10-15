@@ -6,7 +6,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { AccessibilityInfo, Animated, StyleSheet, Text, useWindowDimensions } from 'react-native';
-import { fonts } from '../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, fonts } from '../theme/tokens';
 import { POPUP_MAX_W } from '../theme/readingColumn';
 
 export function CoachMark({
@@ -63,7 +63,8 @@ export function CoachMark({
       ]}
       accessibilityRole="alert"
     >
-      <Text style={styles.text}>{text}</Text>
+      {/* A hint never grows past the brand cap — at large text it covered the content (TestFlight build 36, 2026-10-15). */}
+      <Text style={styles.text} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE}>{text}</Text>
     </Animated.View>
   );
 }
