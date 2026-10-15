@@ -648,8 +648,8 @@ needs: nothing
 
 ### 2026-10-15 10:37 · ccode · 946b6163
 changed: Enrollments uses the screen better: smaller gap under the title; on phones the selection card's art is smaller and STUDY / LOAD ALL sit side by side (card ~25% shorter) (owner 2026-10-15)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app only)
+needs: nothing
 
 
 ### 2026-10-15 10:17 · ccode · b6c3c9c2
