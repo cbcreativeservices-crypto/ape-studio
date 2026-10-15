@@ -36,7 +36,7 @@ import {
   COREQ_TOPIC_GS,
 } from '../awards/awardsData';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useMemberGate } from '../../features/commercial/useTier';
+import { useGuestWording, useMemberGate } from '../../features/commercial/useTier';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import {
   addTopics,
@@ -630,7 +630,25 @@ export const EnrollmentView = memo(function EnrollmentView({
    * opened stays open when they navigate away and back, while anything newly
    * enrolled still arrives closed.
    */
+  /**
+   * A KNOWN GUEST (owner 2026-10-14): their list is only the two free topics
+   * (Pro Audio Safety, DAW Fundamentals) and they cannot add to it, so those
+   * open EXPANDED, and no 🔒 "required until completed" mark shows — to a
+   * guest it read as "locked", when both are free to use and complete.
+   */
+  const { guest } = useGuestWording();
   useEffect(() => {
+    if (guest) {
+      // Open them (a guest's earlier collapse, if any, is undone too).
+      setCollapsed((prev) => {
+        const keys = enrolled.map((e) => `t:${e.gs}`);
+        if (!keys.some((k) => prev.has(k))) return prev;
+        const next = new Set(prev);
+        for (const k of keys) next.delete(k);
+        return next;
+      });
+      return;
+    }
     const seen = new Set(enrollUi.collapseSeeded);
     const fresh = enrolled.map((e) => `t:${e.gs}`).filter((k) => !seen.has(k));
     if (fresh.length === 0) return;
@@ -640,7 +658,7 @@ export const EnrollmentView = memo(function EnrollmentView({
       for (const k of fresh) next.add(k);
       return next;
     });
-  }, [enrolled]);
+  }, [enrolled, guest]);
   // MY RECORD folder — the completion archive at the bottom (user request
   // 2026-07-23). Collapsed by default.
   const [recordOpen, setRecordOpen] = useState(enrollUi.recordOpen);
@@ -1734,7 +1752,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   and cannot be removed until it is complete — not another
                   control inside it. pointerEvents none so it never steals the
                   press that expands the row. */}
-              {isCore ? (
+              {isCore && !guest ? (
                 <Text style={styles.coreLock} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no">
                   🔒
                 </Text>
@@ -1745,7 +1763,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   reader; they now ride on the row as custom actions, and the
                   label says the row's state instead of only "Expand …". */}
               <Pressable
-                style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]}
+                style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, isCore && guest && styles.cardCoreFlush, styles.collapsedCard]}
                 onPress={unlessLifted(() => toggleCollapse(tid))}
                 accessibilityRole="button"
                 accessibilityLabel={`${nameFor(e.gs)}, ${pctText(e.gs)}, ${coreLocked ? 'locked in your study deck' : showActive ? 'in your study deck' : 'not in your study deck'}`}
@@ -1818,7 +1836,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 and cannot be removed until it is complete — not another
                 control inside it. pointerEvents none so it never steals the
                 press that expands the row. */}
-            {isCore ? (
+            {isCore && !guest ? (
                 <Text style={styles.coreLock} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no">
                   🔒
                 </Text>
@@ -1828,6 +1846,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 styles.card,
                 !e.active && styles.cardInactive,
                 isCore && styles.cardCore,
+                isCore && guest && styles.cardCoreFlush,
               ]}
             >
               {isCore ? <RowTint color={COREQ_TINT} /> : null}
@@ -1858,7 +1877,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 {isCore ? (
                   <View style={styles.reqBadge}>
                     <Text style={styles.requiredTag}>Required</Text>
-                    {coreLocked ? (
+                    {coreLocked && !guest ? (
                       <Text style={styles.lockCaption} numberOfLines={1}>
                         🔒 until completed
                       </Text>
@@ -3211,6 +3230,8 @@ const styles = StyleSheet.create({
      `marginLeft` opens the gutter the lock lives in — the indent IS what
      separates a requirement from a topic you chose, before any icon is read. */
   cardCore: { backgroundColor: '#212124', marginLeft: CORE_INDENT },
+  // A guest's rows carry no lock, so no lock gutter: flush with the free topic (owner 2026-10-14).
+  cardCoreFlush: { marginLeft: 0 },
   // The 4th requisite Foundations LAB container (owner 2026-07-30): green like a
   // core, a hair brighter border to read as a link, no 3-card deck icon.
   // Lifted (held) card during reorder — pops out with a shadow (user request 2026-07-23).
