@@ -24,8 +24,16 @@
  * DRONE) stays the compact HeaderPlayButton via LabShell's headerAction.
  */
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Modal } from '../../components/DimModal';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../features/lab/labCompletion';
+import { UNDERSTANDING_UNIT } from '../../features/lab/understanding';
+import { safeGoBack } from '../../lib/safeGoBack';
+import { runSoon } from '../../lib/afterInteractions';
+import { LabEndLink, LabEndScreen } from './kit/LabEndScreen';
+import type { LabEndUnit } from './kit/labEnd';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, MOD_PARAM } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -319,6 +327,7 @@ export function ModularLabScreen() {
   // LFO state for the bezel/MOD key — a routing only exists with depth > 0.
   const lfoLive = patch.lfoDepth > 0 && patch.lfoDest > 0;
   const lfoShort = lfoLive ? ['OFF', '→PIT', '→CUT', '→AMP'][patch.lfoDest] : 'OFF';
+  const resShort = patch.res >= 1 ? 'MAX' : patch.res > 0 ? '½' : '0';
 
   // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────
   // The live diagram pins on the stage (env meter + step LEDs are the REAL
@@ -332,6 +341,7 @@ export function ModularLabScreen() {
       subtitle="VCO · VCF · VCA · LFO · Envelope · Sequencer"
       intro={INTRO}
       exploreCaption="Route the modulators and listen to what each patch cable does — the diagram is the live signal flow."
+      checkEnd={<ModularLabEnd onOpen={stop} />}
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -356,6 +366,9 @@ export function ModularLabScreen() {
               helpKey: patchIdea ? `patch_${patchIdea.key}` : 'display',
             },
             { k: 'VCO', v: shapeLabel, helpKey: 'vco' },
+            // RES on the bezel (emulator pass 2026-10-14): it was readable only
+            // inside the MOD tray, unlike every other patch setting.
+            { k: 'RES', v: resShort, helpKey: 'vcf' },
             { k: 'LFO', v: lfoShort, tint: lfoLive ? LFO_COLOR : undefined, helpKey: 'lfo' },
             {
               k: 'SEQ',
@@ -527,16 +540,25 @@ export function ModularLabScreen() {
                     onPress={() => update({ seqOn: !patch.seqOn })}
                     onLongPress={() => openLesson('sequencer')}
                   />
-                  {SEQ_RATES.map((r) => (
-                    <LabChip
-                      key={r}
-                      label={`${r}/s`}
-                      selected={patch.seqRate === r}
-                      onPress={() => update({ seqRate: r })}
-                      onLongPress={() => openLesson('sequencer')}
-                    />
-                  ))}
+                  {/* A rate is a SEQ-ON choice (emulator pass 2026-10-14): while
+                      OFF no rate is lit (a lit "4/s" beside SEQ OFF read as
+                      running), the rates sit dimmed, and tapping one turns the
+                      sequencer ON at that rate — never a silent tap. */}
+                  <View style={[styles.chipRow, !patch.seqOn && styles.dimmed]}>
+                    {SEQ_RATES.map((r) => (
+                      <LabChip
+                        key={r}
+                        label={`${r}/s`}
+                        selected={patch.seqOn && patch.seqRate === r}
+                        onPress={() => update({ seqOn: true, seqRate: r })}
+                        onLongPress={() => openLesson('sequencer')}
+                      />
+                    ))}
+                  </View>
                 </View>
+                {!patch.seqOn ? (
+                  <Text style={styles.caption}>Sequencer OFF — the voice is a steady drone. Tap a rate to turn it on at that speed.</Text>
+                ) : null}
                 <View style={styles.stepRow}>
                   {patch.steps.map((s, i) => (
                     <View key={i} style={{ flex: 1 }}>
@@ -620,6 +642,8 @@ export function ModularLabScreen() {
         }}
       />
 
+      <ModularLabEnd onOpen={stop} />
+
       <GuidedLessonSheet
         visible={lessonOpen}
         lesson={getLabLesson('modular')}
@@ -631,6 +655,71 @@ export function ModularLabScreen() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+/** The lab's one credited unit: LabShell's understanding check (CHECK tab). */
+const MODULAR_END_UNITS: LabEndUnit[] = [
+  {
+    id: UNDERSTANDING_UNIT,
+    label: 'Understanding check',
+    detail: 'The CHECK tab at the top of this lab — every answer correct, retry until you are.',
+    kind: 'check',
+  },
+];
+
+/**
+ * The "what's left" END SCREEN (owner hard rule: every lab ends on one;
+ * emulator pass 2026-10-14 — this lab ended on the CHECK's "Lab complete"
+ * card with no DONE / BACK TO LABS / practise-again). Same shape as
+ * kit/ReviewLabEnd: a FINISH · SEE WHAT'S LEFT link at the foot of the well
+ * opens the shared LabEndScreen as a full-screen layer, so the patch stays as
+ * left underneath. The unit is the understanding check, read from the banked
+ * record (never cleared — practising again only returns to the lab). Nothing
+ * auto-appears (Low-Light): only a tap opens it.
+ */
+function ModularLabEnd({ onOpen }: { onOpen: () => void }) {
+  const [open, setOpen] = useState(false);
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const cleared = useLabClearedUnits('modular');
+  const unreadable = useLabCompletionUnreadable();
+  const close = () => setOpen(false);
+  return (
+    <>
+      <LabEndLink
+        onPress={() => {
+          onOpen();
+          setOpen(true);
+        }}
+      />
+      <Modal visible={open} animationType="none" onRequestClose={close} statusBarTranslucent>
+        <View style={[styles.endRoot, { paddingTop: insets.top + 8 }]}>
+          <View style={styles.endHeader}>
+            <Pressable onPress={close} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to the Modular Synth lab">
+              <Text style={styles.endBack}>‹ BACK TO THE LAB</Text>
+            </Pressable>
+            <Text style={styles.endTitle} accessibilityRole="header">Where you are</Text>
+          </View>
+          <LabEndScreen
+            labTitle="Modular Synth Lab"
+            units={MODULAR_END_UNITS}
+            cleared={cleared}
+            unreadable={unreadable}
+            mode="credit"
+            noun="check"
+            onJump={close}
+            onPracticeAgain={close}
+            onDone={() => {
+              close();
+              // Off this tap, once the layer is closing (never two screens at once).
+              runSoon(() => safeGoBack(navigation));
+            }}
+            bottomInset
+          />
+        </View>
+      </Modal>
+    </>
+  );
+}
 
 // Routing identity colors — shared by the cables/boxes AND the bezel tints.
 const LFO_COLOR = '#6fa8ff';
@@ -719,12 +808,20 @@ function PatchDiagram({
    *  hangs below the straight run, staying between the rows), color-coded,
    *  glow-stroked — every drawn cable IS an active routing — with jack plugs
    *  at both ends. Same endpoints as before the re-skin. */
+  //  OWN LANES (D69 "every cable its own traceable lane", emulator pass
+  //  2026-10-14): ACID BASS drew ENV→VCF and ENV→VCA out of ONE jack, so the
+  //  two cables merged at the source. Each cable now has its own jack at both
+  //  ends — an output jack per destination on the source plate (left→right in
+  //  destination order, so a source's cables fan out without crossing) and an
+  //  input jack per source on the destination plate (LFO left, ENV centre, SEQ
+  //  right) — and its own sag depth, so two cables never share a point.
   const cable = (mi: number, ai: number, color: string, key: string) => {
-    const x1 = cx(mi, false);
+    const jack = Math.min(10, boxW / 7);
+    const x1 = cx(mi, false) + (ai - 1.5) * jack;
     const y1 = botY;
-    const x2 = cx(ai, true);
+    const x2 = cx(ai, true) + (mi - 1) * jack * 1.2;
     const y2 = topY + boxH;
-    const sagY = (y1 + y2) / 2 + 14;
+    const sagY = Math.min(y1 - 2, (y1 + y2) / 2 + 8 + mi * 6 + ai * 2);
     const d = `M${x1} ${y1} C ${x1 + (x2 - x1) * 0.2} ${sagY}, ${x1 + (x2 - x1) * 0.8} ${sagY}, ${x2} ${y2}`;
     return (
       <Fragment key={key}>
@@ -875,4 +972,9 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   whyText: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
+  dimmed: { opacity: 0.55 },
+  endRoot: { flex: 1, backgroundColor: colors.screenBg },
+  endHeader: { paddingHorizontal: 16, paddingBottom: 4, gap: 4 },
+  endBack: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, minHeight: 44, textAlignVertical: 'center', paddingTop: 12 },
+  endTitle: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1 },
 });

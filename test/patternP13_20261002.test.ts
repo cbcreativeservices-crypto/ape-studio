@@ -196,7 +196,6 @@ const NOT_A_MODULE_LAB: Record<string, string> = {
   'FxLabScreen.tsx': 'single-page instrument on LabShell',
   'HarmonicLabScreen.tsx': 'single-page instrument on LabShell',
   'HarmonographLabScreen.tsx': 'single-page instrument on LabShell',
-  'ModularLabScreen.tsx': 'single-page instrument on LabShell',
   'NoiseLabScreen.tsx': 'single-page instrument on LabShell',
   'OscillatorLabScreen.tsx': 'single-page instrument on LabShell',
   'SignalChainLabScreen.tsx': 'single-page instrument on LabShell ("MODULES" are the chain processors)',

@@ -22,27 +22,40 @@ import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
 import type { DockParam } from './rackTypes';
+import { trayReleaseIsTap } from './trayTap';
 
 /** In-tray option chip — LabChip's semantics (selected state, 📷 photoHint,
  *  long-press lesson) in the tools' PopupOpt skin. Own component (not LabChip)
  *  so the rack kit never imports LabShell (import-cycle kill). */
+// TAP vs SCROLL (emulator pass 2026-10-14): a swipe that starts on a chip
+// scrolls the tray and never picks the chip — see trayTap.ts.
 function TrayChip({
   label,
   selected,
   onPress,
   onLongPress,
   photoHint,
+  lastScrollAt,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
   onLongPress?: () => void;
   photoHint?: boolean;
+  /** The tray's last scroll time (ms), shared by every chip — see TRAY_TAP_SLOP. */
+  lastScrollAt: { current: number };
 }) {
+  const downRef = useRef<{ x: number; y: number; at: number } | null>(null);
   return (
     <Pressable
       style={({ pressed }) => [styles.opt, selected && styles.optSel, pressed && styles.optPressed]}
-      onPress={() => {
+      onPressIn={(e) => {
+        downRef.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, at: Date.now() };
+      }}
+      onPress={(e) => {
+        const down = downRef.current;
+        downRef.current = null;
+        if (!trayReleaseIsTap(down, { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY }, lastScrollAt.current)) return;
         // Selecting an option is the main verb in a tray — it should be felt
         // as well as seen (the dock keys got the same treatment).
         if (hapticsEnabled()) void Haptics.selectionAsync().catch(() => {});
@@ -128,7 +141,27 @@ export function DockTray({
   const [contentH, setContentH] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const trayId = param?.id;
-  useEffect(() => setScrollY(0), [trayId]);
+  /** When the tray last scrolled (TRAY_TAP_SLOP): a chip released after it
+   *  is a scroll's end, not a pick. */
+  const lastScrollAt = useRef(0);
+  /** HEIGHT STAYS PUT WHILE OPEN (emulator pass 2026-10-14): toggling a
+   *  chip swapped in a longer or shorter blurb, the card grew or shrank, the
+   *  list flipped between its two orders (blurb above / below the chips) —
+   *  and the next chip moved under the finger. For as long as THIS tray is
+   *  open, the card never shrinks (minHeight = the tallest it has been) and
+   *  once it has overflowed it keeps the overflow order and the "more" line.
+   *  A different tray (or a re-open) starts fresh. */
+  const [tallestH, setTallestH] = useState(0);
+  const [overflowLatched, setOverflowLatched] = useState(false);
+  useEffect(() => {
+    setScrollY(0);
+    setTallestH(0);
+    setOverflowLatched(false);
+  }, [trayId]);
+  const overflowsNow = contentH - viewH > 4;
+  useEffect(() => {
+    if (overflowsNow && param) setOverflowLatched(true);
+  }, [overflowsNow, param]);
 
   if (!param) return null;
   const blurbSel = param.kind === 'options' ? param.options.find((o) => o.id === param.selectedId) : undefined;
@@ -138,8 +171,8 @@ export function DockTray({
       <Text style={styles.blurbText}>{blurbSel.blurb}</Text>
     </View>
   ) : null;
-  const overflows = contentH - viewH > 4;
-  const moreBelow = overflows && scrollY + viewH < contentH - 4;
+  const overflows = overflowsNow || overflowLatched;
+  const moreBelow = overflowsNow && scrollY + viewH < contentH - 4;
   const sticky = param.kind === 'group' || param.sticky === true;
 
   return (
@@ -152,7 +185,19 @@ export function DockTray({
         accessibilityRole="button"
         accessibilityLabel="Close the tray"
       />
-      <View style={[styles.card, { bottom: 6 + bottomInset }, maxHeight != null && maxHeight > 0 && { maxHeight }]} onLayout={onCardLayout ? (e) => onCardLayout(Math.round(e.nativeEvent.layout.height)) : undefined}>
+      <View
+        style={[
+          styles.card,
+          { bottom: 6 + bottomInset },
+          maxHeight != null && maxHeight > 0 && { maxHeight },
+          tallestH > 0 && { minHeight: maxHeight != null && maxHeight > 0 ? Math.min(tallestH, maxHeight) : tallestH },
+        ]}
+        onLayout={(e) => {
+          const h = Math.round(e.nativeEvent.layout.height);
+          if (h > tallestH) setTallestH(h);
+          onCardLayout?.(h);
+        }}
+      >
         <View style={styles.head}>
           <Text style={styles.title} numberOfLines={1}>
             {param.label}
@@ -162,6 +207,9 @@ export function DockTray({
             <Text style={styles.close}>✕</Text>
           </Pressable>
         </View>
+        {/* Takes the slack while the card is held at its tallest (above), so
+            the chips keep their place against the card's anchored bottom. */}
+        <View style={styles.slack} />
         <View style={styles.bodyWrap}>
         <ScrollView
           key={param.id}
@@ -170,8 +218,15 @@ export function DockTray({
           contentContainerStyle={styles.bodyContent}
           onLayout={(e) => setViewH(e.nativeEvent.layout.height)}
           onContentSizeChange={(_w, h) => setContentH(h)}
-          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
+          onScroll={(e) => {
+            lastScrollAt.current = Date.now();
+            setScrollY(e.nativeEvent.contentOffset.y);
+          }}
+          onScrollBeginDrag={() => {
+            lastScrollAt.current = Date.now();
+          }}
           scrollEventThrottle={32}
+          keyboardShouldPersistTaps="handled"
         >
           {/* WHAT-AM-I-CHANGING readout (owner 2026-08-28): the open tray
               COVERS the lab's teaching prose, so the tray itself explains the
@@ -193,6 +248,7 @@ export function DockTray({
                   label={o.label}
                   selected={param.selectedId === o.id}
                   photoHint={o.photoHint}
+                  lastScrollAt={lastScrollAt}
                   onPress={() => {
                     param.onSelect(o.id);
                     if (!sticky) onClose();
@@ -250,8 +306,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#2b2b33',
     backgroundColor: '#141418',
-    padding: 12,
-    gap: 10,
+    // 10 / 8 (was 12 / 10 — emulator pass 2026-10-14): a few more dp of
+    // chips in the same room on a short phone, without rising any further
+    // over the stage than RackUnit's TRAY_MIN rule already does.
+    padding: 10,
+    gap: 8,
   },
   head: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   title: {
@@ -264,6 +323,7 @@ const styles = StyleSheet.create({
   stickyNote: { fontSize: 12, letterSpacing: 0.3, color: colors.textSub },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, paddingHorizontal: 4 },
   bodyWrap: { flexShrink: 1, minHeight: 0 },
+  slack: { flexGrow: 1, flexShrink: 0, marginTop: -8 },
   body: { flexGrow: 0 },
   moreText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: '#9aa0a8', textAlign: 'center', marginTop: -4 },
   bodyContent: { gap: 10 },

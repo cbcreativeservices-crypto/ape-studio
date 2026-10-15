@@ -24,6 +24,13 @@ export type SeeIt =
        *  first trace's own 1 kHz level (noise-colour trials) — the learner
        *  reads which guide the measured trace follows. */
       slopeGuides?: boolean;
+      /** A second, MEASURED plot under the overlay: the power ratio of clip
+       *  `of` to clip `ref` (dB per FFT bin, Welch-averaged over the same
+       *  frames), on a LINEAR 0…maxHz axis. For a filter applied to the same
+       *  source (M13's comb) the source's own spectrum cancels and what is
+       *  left is the filter's response — evenly spaced notches read as a comb.
+       *  Computed from the two buffers the ear heard; nothing is drawn in. */
+      difference?: { of: number; ref: number; maxHz: number };
       caption: string;
     }
   | {

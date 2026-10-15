@@ -235,7 +235,11 @@ describe('MONITORING: the NEARFIELD / MIDFIELD label never falls off the bottom 
     // Clash sweep 2026-10-10: the offset clears the listener's selection ring
     // (never less than the old 24), and the flip test uses the same offset.
     assert.match(s, /const lisOff = Math\.max\(24, lisRing \+ 3 \+ fs \* 0\.8\);/);
-    assert.match(s, /const below = lisPx\.y \+ lisOff \+ fs \+ 3 \+ 4 <= gh;/);
+    // Android pass 2026-10-14: the room under the head is the glass OR the
+    // rear-wall label's row, whichever ends first; never below when the
+    // speakers are behind the seat.
+    assert.match(s, /const roomBelow = Math\.min\(gh, /);
+    assert.match(s, /const below = !spkBehind && lisPx\.y \+ lisOff \+ fs \+ 3 \+ 4 <= roomBelow;/);
   });
 });
 

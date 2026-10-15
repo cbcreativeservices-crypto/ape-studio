@@ -118,13 +118,22 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
   const [os, setOs] = useState<1 | 2 | 4 | 8>(1);
   const [ratio01, setRatio01] = useState(0.55);
   const [phase01, setPhase01] = useState(0.35);
+  // Which picture the PINNED display shows (emulator pass 2026-10-14): ISP
+  // FREQ and PHASE drove only the INTER-SAMPLE PEAK EXPLORER down the well,
+  // so riding them changed nothing on the glass. The glass now shows the
+  // picture of the control last moved — ISP FREQ / PHASE → the ISP view;
+  // MODE / LAYERS → the reconstruction hero.
+  const [stageView, setStageView] = useState<'recon' | 'isp'>('recon');
 
   const ratio = 0.4 + ratio01 * 0.09; // 0.40..0.49 · fs
   const phaseDeg = phase01 * 180;
   const isp = useMemo(() => ispStats(ratio, phaseDeg), [ratio, phaseDeg]);
   const vw = width - 26; // PanelCard padding + border
 
-  const toggleLayer = (k: LayerKey) => setLayers((s) => ({ ...s, [k]: !s[k] }));
+  const toggleLayer = (k: LayerKey) => {
+    setLayers((s) => ({ ...s, [k]: !s[k] }));
+    setStageView('recon');
+  };
   const showZoh = layers.zoh && mode !== 'simple'; // SIMPLIFIED hides the intermediate
   const layerCount =
     (layers.samples ? 1 : 0) + (showZoh ? 1 : 0) + (layers.recon ? 1 : 0) + (layers.original ? 1 : 0);
@@ -141,7 +150,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
         { id: 'xray', label: 'X-RAY', blurb: 'Everything exposed: samples, held steps, filter ringing — how the smooth wave is actually rebuilt.' },
       ],
       selectedId: mode,
-      onSelect: (id) => setMode(id as ViewMode),
+      onSelect: (id) => {
+        setMode(id as ViewMode);
+        setStageView('recon');
+      },
       sticky: true, // A/B the views while the hero reacts
       helpKey: 'reconstruction',
     },
@@ -188,7 +200,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       id: 'ispf',
       label: 'ISP FREQ',
       value: ratio01,
-      onChange: setRatio01,
+      onChange: (v) => {
+        setRatio01(v);
+        setStageView('isp');
+      },
       format: () => `inter-sample peak · ${(ratio * 48).toFixed(1)} kHz (${ratio.toFixed(3)} · fs)`,
       formatShort: () => `${(ratio * 48).toFixed(1)}k`,
       helpKey: 'isp',
@@ -198,7 +213,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       id: 'isph',
       label: 'PHASE',
       value: phase01,
-      onChange: setPhase01,
+      onChange: (v) => {
+        setPhase01(v);
+        setStageView('isp');
+      },
       format: () => `inter-sample peak · sample phase ${phaseDeg.toFixed(0)}°`,
       formatShort: () => `${phaseDeg.toFixed(0)}°`,
       helpKey: 'isp',
@@ -213,15 +231,35 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the four-layer hero IS the module
-        badge: 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
-        onGuide: () => help('reconstruction'),
-        bezel: [
-          { k: 'FS', v: '48 kHz', helpKey: 'reconstruction' },
-          { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
-          { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction' },
-        ],
+        badge:
+          stageView === 'isp'
+            ? 'EXACT SINE MATH · 16 SAMPLES NORMALIZED TO −0.1 dBFS · THE CONTINUOUS CURVE IS WHAT THE DAC OUTPUTS'
+            : 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
+        onGuide: () => help(stageView === 'isp' ? 'isp' : 'reconstruction'),
+        bezel:
+          stageView === 'isp'
+            ? [
+                { k: 'SAMPLE PK', v: `${isp.samplePeakDb.toFixed(2)} dBFS`, helpKey: 'isp' },
+                {
+                  k: 'TRUE PK',
+                  v: `${isp.truePeakDb >= 0 ? '+' : ''}${isp.truePeakDb.toFixed(2)} dBTP`,
+                  tint: isp.clipRisk ? colors.red : undefined,
+                  helpKey: 'isp',
+                },
+                { k: 'MISSED', v: `${isp.missDb.toFixed(2)} dB`, helpKey: 'isp' },
+              ]
+            : [
+                { k: 'FS', v: '48 kHz', helpKey: 'reconstruction' },
+                { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
+                { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction' },
+              ],
         render: (w, h) =>
-          viz ? (
+          viz && stageView === 'isp' ? (
+            <View style={[local.stageSwap, { width: w, height: h }]}>
+              <Text style={local.stageSwapHead}>INTER-SAMPLE PEAKS · pick MODE or LAYERS to see the reconstruction again</Text>
+              <viz.IspView width={w} height={Math.max(120, h - 36)} running={focused} ratio={ratio} phaseDeg={phaseDeg} />
+            </View>
+          ) : viz ? (
             <viz.ReconstructionView
               width={w}
               height={h}
@@ -609,4 +647,8 @@ const local = StyleSheet.create({
   riskOn: { borderColor: 'rgba(255,75,58,.55)', backgroundColor: '#170f0e' },
   riskOff: { borderColor: 'rgba(55,224,95,.45)', backgroundColor: '#0e130f' },
   riskText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  // The pinned display's swapped-in ISP picture: its name on top, the
+  // picture in the glass's remaining height.
+  stageSwap: { backgroundColor: '#0c0c0f', justifyContent: 'center', gap: 4 },
+  stageSwapHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.9, color: colors.amber, textAlign: 'center', paddingHorizontal: 8 },
 });

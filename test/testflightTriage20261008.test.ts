@@ -49,7 +49,11 @@ test('#18 DragSlider hands the lab at most one value per frame â€” the newest â€
   assert.match(body, /schedule: \(cb\) => setTimeout\(cb, DRAG_TICK_MS\)/);
   assert.match(body, /feed\.grant\(v\)/, 'a tap still lands at once');
   assert.match(body, /feed\.move\(/, 'a move only records the newest value');
-  assert.match(body, /onPanResponderRelease: \(\) => \{\s*feed\.end\(\);/, 'the release delivers what is pending');
+  // 2026-10-14: the release first lands the lift point (a fast flick), then
+  // delivers what is pending.
+  const rel = body.slice(body.indexOf('onPanResponderRelease'), body.indexOf('onPanResponderTerminate'));
+  assert.match(rel, /laneFingerLiftDx\(e\.nativeEvent, fingerRef\.current\)/);
+  assert.match(rel, /feed\.end\(\);\s*setLock\(false\);/, 'the release delivers what is pending');
   assert.match(body, /onPanResponderTerminate: \(\) => \{\s*feed\.end\(\);/);
   const move = body.slice(body.indexOf('onPanResponderMove'), body.indexOf('onPanResponderRelease'));
   assert.doesNotMatch(move, /onChangeRef\.current\(/, 'no direct per-move delivery to the lab');

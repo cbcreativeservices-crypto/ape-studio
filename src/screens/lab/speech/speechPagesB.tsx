@@ -346,7 +346,10 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>Seven checks, one per idea, in a fresh order each visit. Wrong picks explain themselves — read the note, then try again.</Lead>
-      <Text style={styles.foot} accessibilityLiveRegion="polite">{n} of {FINAL_CHECKS.length} correct{ctx.isDone ? ' · page complete' : ` · ${PASS_MARK} completes the page`}</Text>
+      {/* The count is THIS visit's (the cards reshuffle and start fresh each
+          visit); the page mark is saved. So a page completed earlier reads
+          "0 of 7 correct this visit · page complete" — practice, nothing lost. */}
+      <Text style={styles.foot} accessibilityLiveRegion="polite">{n} of {FINAL_CHECKS.length} correct this visit{ctx.isDone ? ' · page complete' : ` · ${PASS_MARK} completes the page`}</Text>
       {FINAL_CHECKS.map((c) => <SpeechCheckCard key={c.id} id={c.id} onCorrect={bump} />)}
     </View>
   );

@@ -18,8 +18,11 @@ import {
   isEarProgressUnreadable, loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
-import { useLabEndGuest } from '../kit/LabEndScreen';
+import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader } from '../kit/LabNavBar';
+import { safeGoBack } from '../../../lib/safeGoBack';
+import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
+import { earCreditedIds, earEndUnits, earModuleCredited, earModuleTried } from './earLabEnd';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -58,6 +61,24 @@ export function EarTrainingLabScreen() {
   );
 
   const unreadable = !!progress && isEarProgressUnreadable(progress);
+  /**
+   * WHAT'S LEFT (emulator pass 2026-10-14; owner hard rule: every lab ends
+   * with a "what's left" screen). The FINISH link at the foot of the list
+   * swaps the shared LabEndScreen in for the list (the Cymatics / Meter hub
+   * idiom). It uses the lab's EXISTING credit rule only (earLabEnd: mastered
+   * ≥ REQUIRED_EAR_LEVEL); a module merely tried reads as practice.
+   */
+  const [ending, setEnding] = useState(false);
+  // Android BACK on the end screen returns to the module list.
+  const closeEnd = useCallback(() => {
+    setEnding(false);
+    return true;
+  }, []);
+  useBackWhileFocused(ending, closeEnd);
+  const openModule = (id: string) => {
+    setEnding(false);
+    navigation.navigate('EarModule', { id: id as (typeof EAR_MODULES)[number]['id'] });
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -68,6 +89,21 @@ export function EarTrainingLabScreen() {
         subtitle="Hear a change · then see it measured"
         right={<AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />}
       />
+      {ending ? (
+        <LabEndScreen
+          labTitle="Ear Training Lab"
+          // UNREADABLE is not "not tried" (D51): no per-row state is claimed.
+          units={unreadable || !progress ? EAR_MODULES.map((m) => ({ id: m.id, label: m.title })) : earEndUnits(EAR_MODULES, progress?.modules)}
+          cleared={unreadable ? new Set<string>() : earCreditedIds(EAR_MODULES, progress?.modules)}
+          unreadable={unreadable}
+          mode="credit"
+          noun="module"
+          onJump={openModule}
+          onPracticeAgain={() => openModule(EAR_MODULES[0].id)}
+          onDone={() => safeGoBack(navigation)}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           Every drill here renders real signals, plays them, and then shows you the same buffers
@@ -89,8 +125,11 @@ export function EarTrainingLabScreen() {
         {EAR_MODULES.map((m) => {
           const p = unreadable ? undefined : progress?.modules[m.id];
           const acc = p ? recentAccuracy(p) : null;
-          const stat = p
-            ? `L${Math.min(p.level, m.levels)}${acc != null ? ` · ${Math.round(acc * 100)}%` : ''}`
+          // Progress marks (emulator pass 2026-10-14): ✓ = the module already
+          // counts (the lab's existing rule, earLabEnd); a tried module shows
+          // its level + recent accuracy as practice.
+          const stat = p && earModuleTried(p)
+            ? `L${Math.min(p.level, m.levels)}${acc != null ? ` · ${Math.round(acc * 100)}%` : ''}${earModuleCredited(p) ? '' : ' · tried'}`
             : null;
           return (
             <ModuleAccordionRow
@@ -99,7 +138,7 @@ export function EarTrainingLabScreen() {
               name={stat ? `${m.title}   ·  ${stat}` : m.title}
               blurb={`${m.blurb}\n${m.phones === 'required' ? '🎧 Headphones REQUIRED. ' : m.phones === 'recommended' ? '🎧 Headphones recommended. ' : ''}${m.playbackNote}`}
               expanded={openId === m.id}
-              done={(p?.mastered ?? 0) >= m.levels}
+              done={earModuleCredited(p)}
               onToggle={() => setOpenId(openId === m.id ? null : m.id)}
               onOpen={() => navigation.navigate('EarModule', { id: m.id })}
             />
@@ -110,7 +149,9 @@ export function EarTrainingLabScreen() {
           All fourteen modules are live. Emulated processors and rendered program beds are
           labeled as such throughout.
         </Text>
+        <LabEndLink onPress={() => setEnding(true)} />
       </ScrollView>
+      )}
     </View>
   );
 }

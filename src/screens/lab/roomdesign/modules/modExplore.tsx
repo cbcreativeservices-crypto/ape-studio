@@ -20,7 +20,7 @@ import { PLAN_LEGEND, RoomPlanView, type PlanLayers, type Trace } from '../RoomP
 import { Body, Caption, SAFETY_LEVEL_POINTER, TrayButton, TrayHeading } from '../bits';
 import {
   analyze,
-  capLayoutHeights,
+  editActiveLayout,
   clampInside,
   diffLayouts,
   fmtHz,
@@ -82,7 +82,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   const first = analysis.reflections[0];
 
   // Every position write ends under the local ceiling (capLayoutHeights).
-  const setLayout = (fn: (l: Layout) => Layout) => update((d) => ({ ...d, layouts: d.layouts.map((l, i) => (i === d.active ? capLayoutHeights(fn(l), d.room) : l)) }));
+  const setLayout = (fn: (l: Layout) => Layout) => update((d) => editActiveLayout(d, fn));
   const onDrag = (id: string, p: Pt) =>
     setLayout((l) => {
       if (id === 'listener') return { ...l, listener: { ...l.listener, ...clampInside(p, room, l.listener) } };
@@ -138,7 +138,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
       short: (t) => shortName(t.name),
       title: 'KEPT POSITIONS',
       sticky: true,
-      blurb: () => 'Flip between kept positions while the plan and the readouts follow. START is where the positions began; SAVE copies what is on the plan into OPTION A, OPTION B or back into START.',
+      blurb: () => 'Flip between kept positions while the plan and the readouts follow. START is where the positions began and stays that way: moving anything while START is showing goes into EDITED. SAVE copies what is on the plan into OPTION A, OPTION B or back into START.',
     }),
     {
       kind: 'fader',
@@ -284,7 +284,7 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           <TrayButton key={n} label={n.toUpperCase()} onPress={() => update((d) => saveLayoutAs(d, n))} />
         ))}
       </View>
-      <Caption>{`START is the baseline the diff reads from; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
+      <Caption>{`START is the baseline the diff reads from — a move made while START is showing lands in EDITED, so START only changes when you save into it; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
       <TrayHeading>SAVE THE WHOLE DESIGN</TrayHeading>
       <TrayButton
         label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : account ? 'SAVE (NOT KEPT YET)' : 'SAVE (SIGN IN TO KEEP IT)') : 'SAVE DESIGN TO THIS DEVICE'}

@@ -153,10 +153,15 @@ export const M13_COMB: EarModule = {
         answers: [{ label: 'X is A' }, { label: 'X is B' }],
         correct: xIsA ? 0 : 1,
         reveal: `${aIsDry ? 'B' : 'A'} was comb filtered. ${notchInfo}`,
+        // The lower plot is the measured ratio combed ÷ dry (same frames, so
+        // the source's own spectrum cancels): the comb's notches, evenly
+        // spaced on a linear axis (emulator pass 2026-10-14 — on the log
+        // overlay alone they were all but invisible on the drum clip).
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],
-          caption: 'The comb’s evenly spaced notches — the Wave lab’s interference module shows why.',
+          difference: { of: aIsDry ? 1 : 0, ref: aIsDry ? 0 : 1, maxHz: 5000 },
+          caption: `Top: both clips. Below: combed ÷ dry, measured, on a linear axis — a dip every ${(1000 / delayMs).toFixed(0)} Hz. The Wave lab’s interference module shows why.`,
         },
       };
     }
@@ -173,7 +178,8 @@ export const M13_COMB: EarModule = {
       seeIt: {
         kind: 'spectrum',
         clips: [0, 1],
-        caption: 'Evenly spaced notches on a linear grid look log-squeezed here — that “phasey” sound has a shape.',
+        difference: { of: combFirst ? 0 : 1, ref: combFirst ? 1 : 0, maxHz: 5000 },
+        caption: `Top: both clips (a log axis crowds the notches). Below: combed ÷ dry, measured, on a linear axis — a dip every ${(1000 / delayMs).toFixed(0)} Hz.`,
       },
     };
   },

@@ -169,7 +169,8 @@ describe('4. sources', () => {
     assert.match(move, /laneFingerDx\(e\.nativeEvent, fingerRef\.current, g\.dx\)/);
     assert.doesNotMatch(move, /locationX/, 'a move never reads locationX (it re-bases off the track)');
     assert.match(body, /createLaneFeed\(\{/);
-    assert.match(body, /onPanResponderRelease: \(\) => \{\n\s*feed\.end\(\);\n\s*lockRef\.current\(false\);/);
+    // Release lands at the lift point, then ends the feed and frees the scroll (emulator pass 2026-10-14).
+    assert.match(body, /onPanResponderRelease: \(e\) => \{[\s\S]*?laneFingerLiftDx\(e\.nativeEvent, fingerRef\.current\)[\s\S]*?feed\.end\(\);\n\s*lockRef\.current\(false\);/);
     assert.match(body, /onPanResponderTerminate: \(\) => \{\n\s*feed\.end\(\);\n\s*lockRef\.current\(false\);/);
     assert.match(body, /const ctxLock = useScrollLock\(\);/);
   });

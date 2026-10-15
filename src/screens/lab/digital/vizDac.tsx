@@ -708,9 +708,11 @@ export function JitterView({
     [xs, amount, mode],
   );
 
-  const yIdeal = 16;
-  const yJit = 44;
-  const waveTop = 72;
+  // Strips moved down 6 (emulator pass 2026-10-14): the 9 pt "IDEAL CLOCK"
+  // label (top 0) was drawn over the ideal ticks (they started at y 10).
+  const yIdeal = 22;
+  const yJit = 48;
+  const waveTop = 74;
   const mid = waveTop + (h - waveTop - 10) / 2;
   const amp = (h - waveTop - 10) * 0.42;
   const k = (2 * Math.PI * 1.7) / (w - 20);
@@ -782,7 +784,7 @@ export function JitterView({
         </Group>
       </Canvas>
       <SText style={[tiny, { left: x0, top: 0, color: withAlpha(GREEN, 0.8) }]}>IDEAL CLOCK</SText>
-      <SText style={[tiny, { left: x0, top: 54, color: withAlpha(RED, 0.85) }]}>WITH JITTER (EXAGGERATED)</SText>
+      <SText style={[tiny, { left: x0, top: 56, color: withAlpha(RED, 0.85) }]}>WITH JITTER (EXAGGERATED)</SText>
       {/* Bottom-right under the wave: at 9 pt the old spot (top: waveTop − 12)
           ran into "WITH JITTER (EXAGGERATED)" on a 390-wide phone (bug pass 2
           2026-09-30). */}

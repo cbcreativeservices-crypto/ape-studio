@@ -63,7 +63,9 @@ const SHORT: Record<string, string> = {
 const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';
 
 const fmtDb = (v: number) => `${v >= 0 ? '+' : ''}${v} dB`;
-const fmtG = (v: number) => `${v >= 0 ? '+' : ''}${v}`;
+// The dock KEY carries the unit too (emulator pass 2026-10-14: the key read
+// "+0" while its fader read "+0 dB"). "+40 dB" is 6 chars — inside the key.
+const fmtG = fmtDb;
 const fmtLv = (lv: number) => `${Math.round(lv)} dB`;
 
 const rnd = (lo: number, hi: number) => Math.round(lo + Math.random() * (hi - lo));
@@ -238,7 +240,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       value: (source + 40) / 38,
       onChange: (t) => setSource(Math.round(-40 + t * 38)),
       format: () => `${source} dB`,
-      formatShort: () => `${source}`,
+      formatShort: () => `${source} dB`,
       tint: stageTint(nodes[0]),
     },
     {

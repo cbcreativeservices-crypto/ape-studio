@@ -12,7 +12,8 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -22,13 +23,16 @@ import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { isStereo } from '../../../features/ear/earDsp';
-import { earModuleById } from '../../../features/ear/modules/registry';
-import type { EarTrial } from '../../../features/ear/earTypes';
+import { EAR_MODULES, earModuleById } from '../../../features/ear/modules/registry';
+import type { EarModuleId, EarTrial } from '../../../features/ear/earTypes';
+import { safeGoBack } from '../../../lib/safeGoBack';
+import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
+import { earCreditedIds, earEndUnits } from './earLabEnd';
 import {
-  applyTrial, emptyModuleProgress, loadEarProgress, recentAccuracy, saveEarProgress, setEarSaveBlocked,
+  applyTrial, emptyModuleProgress, isEarProgressUnreadable, loadEarProgress, recentAccuracy, saveEarProgress, setEarSaveBlocked,
   type EarProgressState,
 } from '../../../features/ear/earProgress';
-import { useLabEndGuest } from '../kit/LabEndScreen';
+import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { SeeItView } from './SeeItView';
@@ -100,6 +104,7 @@ export function EarModuleScreen() {
   // its answer grid keeps fixed cells instead of stretching to the edges.
   const isTablet = useIsTablet();
   const route = useRoute<RouteProp<RootStackParamList, 'EarModule'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mod = earModuleById(route.params.id);
   const { requestAudioOutput } = useAudioOutputGate();
   // HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out guest's
@@ -458,6 +463,36 @@ export function EarModuleScreen() {
 
   const roundDone = roundAnswered >= ROUND;
 
+  /**
+   * WHAT'S LEFT (emulator pass 2026-10-14): rounds used to loop on NEXT ROUND
+   * with no end. FINISH · SEE WHAT'S LEFT (always offered at feedback, never
+   * required) swaps the shared LabEndScreen in for the drill; the drill keeps
+   * its state underneath, so CARRY ON returns to it as left. The
+   * rows come from THIS screen's ladder (stateRef — a guest's session ladder
+   * included) through the lab's existing credit rule (earLabEnd).
+   */
+  const [ending, setEnding] = useState(false);
+  const openEnd = useCallback(() => {
+    playTokenRef.current++;
+    playerRef.current?.stop();
+    setPlaying(null);
+    setEnding(true);
+  }, []);
+  // Android BACK on the end screen returns to the drill (not out of the lab).
+  const closeEnd = useCallback(() => {
+    setEnding(false);
+    return true;
+  }, []);
+  useBackWhileFocused(ending, closeEnd);
+  const jumpTo = useCallback(
+    (id: string) => {
+      setEnding(false);
+      if (!mod || id === mod.id) return;
+      navigation.replace('EarModule', { id: id as EarModuleId });
+    },
+    [mod, navigation],
+  );
+
   const onNext = useCallback(() => {
     if (!mod || busyRef.current) return;
     if (roundDone) {
@@ -559,6 +594,33 @@ export function EarModuleScreen() {
         }
       />
 
+      {ending ? (
+        <View style={{ flex: 1 }}>
+          {(() => {
+            const s = stateRef.current;
+            const unread = !s || isEarProgressUnreadable(s);
+            return (
+              <LabEndScreen
+                labTitle="Ear Training Lab"
+                units={unread ? EAR_MODULES.map((m) => ({ id: m.id, label: m.title })) : earEndUnits(EAR_MODULES, s.modules)}
+                cleared={unread ? new Set<string>() : earCreditedIds(EAR_MODULES, s.modules)}
+                unreadable={!!s && unread}
+                mode="credit"
+                noun="module"
+                // The way back to the drill as it was left (also: this
+                // module's own row, and Android BACK). The header ‹ still
+                // leaves to the module list, as everywhere.
+                extra={<LabEndLink label={`CARRY ON · ${mod.title.toUpperCase()} ›`} onPress={() => setEnding(false)} />}
+                onJump={jumpTo}
+                onPracticeAgain={() => jumpTo(EAR_MODULES[0].id)}
+                onDone={() => safeGoBack(navigation)}
+                doneLabel="DONE · BACK TO THE MODULE LIST"
+                bottomInset
+              />
+            );
+          })()}
+        </View>
+      ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         {needsAck ? (
           <View style={styles.ackCard}>
@@ -732,6 +794,9 @@ export function EarModuleScreen() {
                     >
                       <Text style={styles.nextText}>{roundDone ? 'NEXT ROUND ›' : 'NEXT TRIAL ›'}</Text>
                     </Pressable>
+                    {/* Every lab ends with a "what's left" screen — offered
+                        here at every reveal, never required. */}
+                    <LabEndLink onPress={openEnd} />
                   </View>
                 ) : null}
               </>
@@ -739,6 +804,7 @@ export function EarModuleScreen() {
           </>
         )}
       </ScrollView>
+      )}
     </View>
   );
 }
@@ -826,8 +892,7 @@ const styles = StyleSheet.create({
     marginTop: 10, minHeight: 48, borderRadius: 12, backgroundColor: '#173021',
     borderWidth: 1, borderColor: colors.green, alignItems: 'center', justifyContent: 'center',
   },
-  nextText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 2 },
-  ackCard: {
+  nextText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 2 },  ackCard: {
     marginTop: 20, borderRadius: 14, borderWidth: 1, borderColor: colors.steelBorder,
     backgroundColor: '#131315', padding: 18, gap: 10,
   },

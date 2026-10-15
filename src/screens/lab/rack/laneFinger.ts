@@ -37,6 +37,32 @@ export function laneFingerDx(ne: LaneTouch, f: LaneFinger, fallbackDx: number): 
   return t.pageX - f.px;
 }
 
+/** A touch-END event: the lifted touch itself (identifier/pageX on the event)
+ *  and/or the list of touches that changed. */
+export type LaneLift = LaneTouch & { changedTouches?: readonly { identifier?: number | string; pageX: number }[] };
+
+/**
+ * Where the grabbing finger LIFTED, as x travel since it went down — or null
+ * when the lift was some other finger (the grabbing one already left) or the
+ * event carries no position.
+ *
+ * WHY (emulator pass 2026-10-14, Gain Staging M6 EQ GAIN): a fast flick on a
+ * PanResponder slider delivers few moves, and PanResponder's gestureState is
+ * NOT updated on release — the slider settled on the last MOVE, short of where
+ * the finger lifted (−8/−10 dB for a flick to −12). The release event carries
+ * the lift point; DragSlider lands there, as ParamLane does in onEnd.
+ */
+export function laneFingerLiftDx(ne: LaneLift, f: LaneFinger): number | null {
+  const list = ne.changedTouches;
+  if (f.id != null && Array.isArray(list) && list.length > 0) {
+    const t = list.find((x) => x.identifier === f.id);
+    if (t) return t.pageX - f.px;
+  }
+  if (typeof ne.pageX !== 'number') return null;
+  if (f.id != null && ne.identifier != null && ne.identifier !== f.id) return null;
+  return ne.pageX - f.px;
+}
+
 // ── The vertical twin (TestFlight triage 2026-10-08) ─────────────────────────
 // Faders that travel UP and DOWN (the EQ board's VerticalFader, the mixing
 // desk's GearFader) read `g.dy` — the same centroid, so a second finger on the

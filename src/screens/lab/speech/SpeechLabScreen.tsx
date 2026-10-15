@@ -18,7 +18,11 @@ const PAGES: PageDef[] = [
   { title: 'The Distance Effect', short: 'Distance', Component: PageDistance },
   { title: 'Voices Differ', short: 'Voices', Component: PageVoices },
   { title: 'Speech Problem Simulator', short: 'Problems', Component: PageProblems },
-  { title: 'Check Yourself', short: 'Check', Component: PageSpeechChecks },
+  // manualDone (emulator pass 2026-10-14): the page marks ITSELF done at 5
+  // correct (PageSpeechChecks). Without it, FINISH's beforeAdvance marked it
+  // done on the learner's behalf with 0 answered — so WHAT'S LEFT read ✓ DONE
+  // and the page then said "page complete". A mark already saved is kept.
+  { title: 'Check Yourself', short: 'Check', Component: PageSpeechChecks, manualDone: true },
 ];
 
 export function SpeechLabScreen() {

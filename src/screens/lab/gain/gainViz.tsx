@@ -76,7 +76,18 @@ export function sourceDesc(node: ChainNode): string {
 const VM_H = 118;
 const VM_W = 18;
 
-export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?: number }) {
+export function StageMeterV({
+  node,
+  height = VM_H,
+  shortLabel,
+}: {
+  node: ChainNode;
+  height?: number;
+  /** The glass has no room for a two-line region word: "QUIET SOURCE" drops
+   *  to "QUIET" so the readout / FIXED tag under the column stays on the
+   *  glass (a cropped readout drops its label, never its number). */
+  shortLabel?: boolean;
+}) {
   const fill = meterFill(node.level);
   const col = levelColor(fill);
   const { peak, reset: resetPeak } = usePeakHold(fill);
@@ -119,7 +130,9 @@ export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?:
         // always did. Bug pass 3: pass 2's 64 let QUIET SOURCE run ~52 pt on
         // one line, into the PREAMP column's label on a 7-column X-Ray chain
         // at 360 wide (column pitch ~45 pt).
-        <Text style={[s.vRegion, s.vRegionUnder, { color: col }]}>{regionLabelFor(node)}</Text>
+        <Text style={[s.vRegion, s.vRegionUnder, { color: col }]}>
+          {shortLabel ? regionLabelFor(node).split(' ')[0] : regionLabelFor(node)}
+        </Text>
       )}
     </View>
   );
@@ -275,6 +288,19 @@ export type StageColSpec = {
   active?: boolean;
 };
 
+/** Glass height (pt, unscaled) taken by everything but the meter track,
+ *  at real line heights (Oswald ≈ 1.48 × size): glass padding 12 · path
+ *  header 19 (the 13-pt ▸) · gap 6 · column border+padding 6 · icon 20 ·
+ *  gap 4 · name 14 · gap 4 · meter gap 3 · one region line 13 · gap 4 ·
+ *  FIXED tag 19 = 124, +2 slack. It was 110, so every column already ran
+ *  ~7 pt past each edge of the glass (stageCols centres it) — the bottom
+ *  readout under the bezel strip, the X-Ray column's highlight over the
+ *  INPUT header (emulator pass 2026-10-14). */
+const METER_CHROME = 126;
+/** One more 9-pt region-word line (the second line of "QUIET SOURCE"). */
+const REGION_LINE = 14;
+const MIN_METER = 44;
+
 /** The pinned chain display for the Rack Unit stage: the whole signal path as
  *  columns inside the glass, height-parametric. Faders live on the dock — the
  *  columns show only what the signal is DOING at each point. */
@@ -285,7 +311,16 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
   // height scale by hand. 1 on the glass = exactly as before.
   const ts = useStageTextScale();
   const s = useScaledStyles(styles);
-  const meterH = Math.max(44, h / ts - 110) * ts;
+  // A quiet SOURCE's region word "QUIET SOURCE" wraps to two lines under its
+  // 44-wide meter; the budget below assumed one, so the column ran ~14 pt
+  // past the glass and its readout (−30 dB) / FIXED tag sat under the bezel
+  // strip on every Gain page with a quiet source (emulator pass 2026-10-14).
+  // Reserve the second line; where even the floor meter leaves no room for
+  // it, the word drops to "QUIET" — the number below always stays.
+  const twoLineLabel = cols.some((c) => (c.display ?? 'meter') === 'meter' && regionLabelFor(c.node).includes(' ') && !c.node.stageClipped && !c.node.distorted);
+  const room = h / ts - METER_CHROME;
+  const shortLabel = twoLineLabel && room - REGION_LINE < MIN_METER;
+  const meterH = Math.max(MIN_METER, room - (twoLineLabel && !shortLabel ? REGION_LINE : 0)) * ts;
   return (
     <View style={[s.stageGlass, { width: w, height: h }]}>
       {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
@@ -306,7 +341,7 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
                 {c.name}
               </Text>
               {display === 'meter' ? (
-                <StageMeterV node={c.node} height={meterH} />
+                <StageMeterV node={c.node} height={meterH} shortLabel={shortLabel} />
               ) : display === 'leds' ? (
                 <View style={s.slotWrap}>
                   <View style={[s.slotBox, { height: meterH }]}>

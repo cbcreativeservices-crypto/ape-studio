@@ -311,7 +311,14 @@ export function RoomPlanView({
   // the angle's digits sat on the ring (clash sweep 2026-10-10).
   const lisRing = (Math.max(MIN_GLYPH, 0.22 * T.k) * 1.35) / 2 + 6;
   const lisOff = Math.max(24, lisRing + 3 + fs * 0.8);
-  const below = lisPx.y + lisOff + fs + 3 + 4 <= gh;
+  // Below the head unless (a) the glass ends first, (b) the rear-wall
+  // distance label needs that room (it sits just inside the rear wall), or
+  // (c) the speakers are BEHIND the seat — then "below" lands on the
+  // cabinets (Android pass 2026-10-14: NEARFIELD hidden under the speakers).
+  const rearPx = analysis.stereo ? T.toPx({ x: lay.listener.x, y: lay.listener.y + analysis.stereo.listenerRear }).y : gh;
+  const roomBelow = Math.min(gh, layers.boundaries ? rearPx - fs - 4 : gh);
+  const spkBehind = !!(Lsp && Rsp) && (T.toPx(Lsp).y + T.toPx(Rsp).y) / 2 > lisPx.y;
+  const below = !spkBehind && lisPx.y + lisOff + fs + 3 + 4 <= roomBelow;
   const angleY = below ? lisPx.y + lisOff : lisPx.y - Math.max(22, lisRing + 3) - (fs + 3);
   const fieldY = below ? lisPx.y + lisOff + fs + 3 : lisPx.y - Math.max(22, lisRing + 3);
   const labelMode = (sp: Speaker): 'inside' | 'above' | 'none' => (multi ? 'inside' : frontEdgeDist(sp) * T.k < 22 ? 'none' : 'above');
@@ -378,15 +385,17 @@ export function RoomPlanView({
           <G>
             <Polyline
               points={`${T.toPx(Lsp).x},${T.toPx(Lsp).y} ${lisPx.x},${lisPx.y} ${T.toPx(Rsp).x},${T.toPx(Rsp).y} ${T.toPx(Lsp).x},${T.toPx(Lsp).y}`}
-              fill="rgba(127,212,255,0.05)"
-              stroke={CYAN}
+              fill={analysis.stereo && !analysis.stereo.inFront ? 'none' : 'rgba(127,212,255,0.05)'}
+              stroke={analysis.stereo && !analysis.stereo.inFront ? '#ff5a48' : CYAN}
               strokeWidth={1}
               strokeDasharray="4 3"
               opacity={0.8}
             />
             {analysis.stereo ? (
-              <SvgText x={lisPx.x} y={angleY} fill={CYAN} fontSize={fs + 1} fontFamily={fonts.mono} textAnchor="middle">
-                {`${analysis.stereo.angleDeg.toFixed(0)}°`}
+              // No angle when the seat is not in front of both speakers: two
+              // speakers behind the head make no listening triangle.
+              <SvgText x={lisPx.x} y={angleY} fill={analysis.stereo.inFront ? CYAN : '#ff5a48'} fontSize={fs + 1} fontFamily={analysis.stereo.inFront ? fonts.mono : fonts.oswaldSemiBold} textAnchor="middle">
+                {analysis.stereo.inFront ? `${analysis.stereo.angleDeg.toFixed(0)}°` : 'NO TRIANGLE'}
               </SvgText>
             ) : null}
             {/* The listening-distance class under the angle: the SETUP tray's
@@ -945,9 +954,14 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
   const v = room.vertices;
   const units = room.units;
   const lines: ReactNode[] = [];
-  // The label sits at the WALL end of the leader, just outside the outline,
-  // so it never lands on the speaker's letter or cabinet (cognitive review 10).
-  const dim = (from: Pt, to: Pt, text: string, key: string, col = '#9aa0ad') => {
+  // The label sits at the WALL end of the leader, never on the speaker's
+  // letter or cabinet (cognitive review 10). INSIDE the room beside the
+  // leader whenever the leader has the room for it (Android pass 2026-10-14):
+  // outside the outline every front-wall label shared one row with the room
+  // WIDTH ("2.84 m 90 cm 4.00 m 90 cm 2.84 m") and a side label sat on the
+  // rotated LENGTH ("49 cm" over "5.00 m"). Outside is the fallback for a
+  // leader too short to hold its text. `clear` = the object's own half-size.
+  const dim = (from: Pt, to: Pt, text: string, key: string, col = '#9aa0ad', clear = Math.max(MIN_GLYPH, 0.28 * T.k) / 2 + 4, atWall = false) => {
     const a = T.toPx(from);
     const bq = T.toPx(to);
     const dx = bq.x - a.x;
@@ -955,10 +969,31 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
     const len = Math.hypot(dx, dy) || 1;
     const ux = dx / len;
     const uy = dy / len;
-    // Past the wall by ~1.2 line heights along the leader's direction.
-    const tx = bq.x + ux * (fs * 1.2);
-    const ty = bq.y + uy * (fs * 1.2) + fs * 0.35;
-    const anchor = Math.abs(ux) > 0.5 ? (ux > 0 ? 'start' : 'end') : 'middle';
+    const sideways = Math.abs(ux) > 0.5;
+    const textW = text.length * fs * 0.62;
+    const free = len - clear;
+    let tx: number;
+    let ty: number;
+    let anchor: 'start' | 'middle' | 'end';
+    if (sideways && free >= textW + 6) {
+      // Just inside the side wall, over the leader, running back toward the object.
+      tx = bq.x - ux * 3;
+      ty = bq.y - 3;
+      anchor = ux > 0 ? 'end' : 'start';
+    } else if (!sideways && free >= fs + 4) {
+      // Beside the leader, half way between the wall and the object — or,
+      // `atWall`, just inside the wall (the listener's rear label: the angle
+      // and NEARFIELD lines own the room under the head).
+      const m = atWall ? len - 3 - fs * 0.35 : (len + clear) / 2;
+      tx = a.x + ux * m + 5;
+      ty = a.y + uy * m + fs * 0.35;
+      anchor = 'start';
+    } else {
+      // Past the wall by ~1.2 line heights along the leader's direction.
+      tx = bq.x + ux * (fs * 1.2);
+      ty = bq.y + uy * (fs * 1.2) + fs * 0.35;
+      anchor = sideways ? (ux > 0 ? 'start' : 'end') : 'middle';
+    }
     lines.push(
       <G key={key}>
         <Line x1={a.x} y1={a.y} x2={bq.x} y2={bq.y} stroke={col} strokeWidth={0.9} strokeDasharray="3 2" />
@@ -970,9 +1005,16 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
   };
   for (const sp of lay.speakers) {
     if (sp.role === 'SUB') continue;
-    // front wall (edge 0) and the nearest side wall
+    // Front wall (edge 0) for the front speakers; the nearest side wall for
+    // L, R and the surrounds. The CENTRE has no side-wall label: its leader
+    // ran to the same wall as R's and its "2.00 m" covered R's own distance
+    // (Android pass 2026-10-14). The surrounds' front-wall leaders crossed
+    // the whole room to a label on the top row; their placement is judged by
+    // angle (the BS.775 line), not by the front wall.
+    const surround = sp.role === 'LS' || sp.role === 'RS';
     const f = distToEdge(sp, v, 0);
-    if (f.t >= 0 && f.t <= 1) dim(sp, f.foot, fmtLen(f.dist, units, { small: true }), `${sp.role}-front`);
+    if (!surround && f.t >= 0 && f.t <= 1) dim(sp, f.foot, fmtLen(f.dist, units, { small: true }), `${sp.role}-front`);
+    if (sp.role === 'C') continue;
     let best: { dist: number; foot: Pt } | null = null;
     for (let i = 1; i < v.length; i++) {
       const a = v[i];
@@ -987,7 +1029,7 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
   const s = analysis.stereo;
   if (s) {
     const rear = { x: lay.listener.x, y: lay.listener.y + s.listenerRear };
-    dim(lay.listener, rear, fmtLen(s.listenerRear, units, { small: true }), 'lis-rear', GREEN);
+    dim(lay.listener, rear, fmtLen(s.listenerRear, units, { small: true }), 'lis-rear', GREEN, (Math.max(MIN_GLYPH, 0.22 * T.k) * 1.35) / 2 + 4, true);
   }
   return <G>{lines}</G>;
 }

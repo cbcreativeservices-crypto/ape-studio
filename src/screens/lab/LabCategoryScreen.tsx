@@ -135,6 +135,9 @@ export function LabCategoryScreen({ navigation, route }: Props) {
             </TabletGrid>
           </View>
         ) : null}
+        {/* Bottom safe-area inset (emulator pass 2026-10-14): the last card sat
+            under Android's three-button bar. */}
+        <View style={{ height: insets.bottom }} />
       </ScrollView>
     </View>
   );

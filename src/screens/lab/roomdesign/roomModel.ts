@@ -75,8 +75,33 @@ export function fmtLen(m: number, units: Units, opts: { small?: boolean } = {}):
 
 /** Signed difference for symmetry readouts: "+12 cm" / "−0.4″". */
 export function fmtDelta(m: number, units: Units): string {
-  const s = m > 0 ? '+' : m < 0 ? '−' : '';
-  return `${s}${fmtLen(Math.abs(m), units, { small: true })}`;
+  const body = fmtLen(Math.abs(m), units, { small: true });
+  // No sign on a difference that ROUNDS to zero: never "−0 cm" / "+0.0″".
+  const s = parseFloat(body) === 0 ? '' : m > 0 ? '+' : m < 0 ? '−' : '';
+  return `${s}${body}`;
+}
+
+/** A decay change in seconds, two decimals, signed — never "−0.00" / "+0.00"
+ *  (Android pass 2026-10-14): a change that rounds to zero reads "±0.00 s". */
+export function signedSeconds(ds: number): string {
+  if (!Number.isFinite(ds)) return '—';
+  const r = Math.round(ds * 100) / 100;
+  if (r === 0) return '±0.00 s';
+  return `${r > 0 ? '+' : '−'}${Math.abs(r).toFixed(2)} s`;
+}
+
+/** The room ratio in the acoustics convention: the three dimensions SORTED
+ *  smallest → largest and divided by the smallest — with which dimension is
+ *  which, e.g. "1 : 1.60 : 2.00 (height : width : length)". Not L : W : H. */
+export function roomRatioLine(L: number, W: number, H: number): string {
+  if (!(H > 0) || !(L > 0) || !(W > 0)) return '';
+  const dims = [
+    { n: 'length', v: L },
+    { n: 'width', v: W },
+    { n: 'height', v: H },
+  ].sort((a, b) => a.v - b.v);
+  const base = dims[0].v;
+  return `Room ratio, smallest : middle : largest — 1 : ${(dims[1].v / base).toFixed(2)} : ${(dims[2].v / base).toFixed(2)} (${dims.map((d) => d.n).join(' : ')})`;
 }
 
 export function fmtHz(f: number): string {
@@ -728,6 +753,27 @@ export function capLayoutHeights(l: Layout, room: Room): Layout {
   return changed ? { ...l, speakers, listener } : l;
 }
 
+/** The working slot a position edit lands in while START is active (Android
+ *  pass 2026-10-14): START is the baseline the diff reads from and LAYOUT →
+ *  START must bring it back exactly, so a drag or a lane never writes into it.
+ *  SAVE → START is the one way to change it. */
+export const EDITED_LAYOUT = 'Edited';
+
+/** Apply a position edit to the active layout — or, when START is active, to
+ *  a copy of START in the EDITED slot (created or overwritten), which becomes
+ *  active. Heights end under the local ceiling (capLayoutHeights). */
+export function editActiveLayout(d: RoomDesign, fn: (l: Layout) => Layout): RoomDesign {
+  const i = Math.max(0, Math.min(d.layouts.length - 1, d.active));
+  const src = d.layouts[i];
+  if (!src) return d;
+  if (src.name !== START_LAYOUT) return { ...d, layouts: d.layouts.map((l, j) => (j === i ? capLayoutHeights(fn(l), d.room) : l)) };
+  const copy: Layout = { ...src, name: EDITED_LAYOUT, speakers: src.speakers.map((s) => ({ ...s })), listener: { ...src.listener } };
+  const edited = capLayoutHeights(fn(copy), d.room);
+  const idx = d.layouts.findIndex((l) => l.name === EDITED_LAYOUT);
+  const layouts = idx >= 0 ? d.layouts.map((l, j) => (j === idx ? edited : l)) : [...d.layouts, edited];
+  return { ...d, layouts, active: idx >= 0 ? idx : layouts.length - 1 };
+}
+
 /** The centre height a ceiling cloud is DRAWN at: its own z, but hung under
  *  the LOCAL ceiling (toddler pass 2, 2026-10-01). A cloud is placed at the
  *  high point less 25 cm and keeps that z when dragged or when the ceiling
@@ -1329,7 +1375,17 @@ export type StereoGeometry = {
   /** Tweeter height minus ear height (mean of L/R), metres. */
   heightDiff: number;
   spread: number;
+  /** The listener sits IN FRONT of both L and R (at least `SEAT_AHEAD_M`
+   *  further into the room) and inside each speaker's front half (less than
+   *  90° off its aim). False = there is no stereo triangle: the angle and the
+   *  L/R match must not be reported as a valid setup (Android pass
+   *  2026-10-14: speakers behind the seat read "25°, within tolerance"). */
+  inFront: boolean;
 };
+
+/** How far into the room the seat must be from the speakers' line before
+ *  the pair counts as "in front" — the same margin placementConflicts uses. */
+export const SEAT_AHEAD_M = 0.3;
 
 export const SYM_TOL = 0.05; // 5 cm ≈ 2 in: beyond this the image starts to pull
 
@@ -1387,6 +1443,7 @@ export function stereoGeometry(room: Room, lay: Layout): StereoGeometry | null {
     listenerSide: sideDist(lis),
     heightDiff: (L.z + R.z) / 2 - lis.earZ,
     spread: Math.hypot(R.x - L.x, R.y - L.y),
+    inFront: [L, R].every((s) => s.y < lis.y - SEAT_AHEAD_M && offAxisDeg(s, lis.x - s.x, lis.y - s.y, 0) < 90),
   };
 }
 
@@ -1607,7 +1664,9 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
     if (sideDiff > 0.15) {
       out.push({ tier: 'CALCULATED', level: 'check', text: `The left speaker is ${len(s.wallL.side)} from its side wall and the right is ${len(s.wallR.side)}: the side-wall reflections will arrive at different times and levels on each side. Equal wall distances are worth testing.` });
     }
-    if (s.angleDeg < 50 || s.angleDeg > 70) {
+    if (!s.inFront) {
+      out.push({ tier: 'CALCULATED', level: 'check', text: 'The listening position is not in front of both speakers — they face away from the seat, so there is no stereo triangle to judge. Move the seat into the room ahead of the speakers, or the speakers toward the front wall.' });
+    } else if (s.angleDeg < 50 || s.angleDeg > 70) {
       out.push({ tier: 'CALCULATED', level: 'try', text: `The listening angle is ${s.angleDeg.toFixed(0)}°. The classic equilateral triangle gives 60° — a starting point, not a law; try it and compare the width of the image.` });
     }
     if (Math.abs(s.heightDiff) > 0.1) {

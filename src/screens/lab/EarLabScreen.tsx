@@ -293,6 +293,9 @@ export function EarLabScreen({ navigation, route }: Props) {
             </View>
           );
         })}
+        {/* Bottom safe-area inset (emulator pass 2026-10-14): on Android's
+            three-button bar the last card (Speech) ended under the bar. */}
+        <View style={{ height: insets.bottom }} />
       </ScrollView>
     </View>
   );

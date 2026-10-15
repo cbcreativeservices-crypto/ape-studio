@@ -151,7 +151,10 @@ test('Speech page 2: the stage strip draws through ExpandableFigure, compact in 
 test('SeeItView: spectrum, waveform and goniometer draw through ExpandableFigure; levels stay inline', () => {
   const src = read('eartraining/SeeItView.tsx');
   assert.match(src, /import \{ ExpandableFigure \} from '\.\.\/kit\/ExpandableFigure'/);
-  assert.equal(count(src, /<ExpandableFigure\b/g), 3);
+  // 4 since 2026-10-14: the M13 comb's measured DIFFERENCE plot is its own
+  // expandable figure under the spectrum.
+  assert.equal(count(src, /<ExpandableFigure\b/g), 4);
+  assert.match(src, /<ExpandableFigure aspect=\{W \/ DIFF_H\} title=\{`\$\{nameOf\} RELATIVE TO \$\{nameRef\}`\} controls=\{controls\}/);
   assert.match(src, /<ExpandableFigure aspect=\{W \/ H\} title="SPECTRUM" controls=\{controls\}/);
   assert.match(src, /<ExpandableFigure aspect=\{W \/ Hw\} title="WAVEFORM" controls=\{controls\}/);
   assert.match(src, /<ExpandableFigure aspect=\{GW \/ GH\} title="GONIOMETER" controls=\{controls\}/);

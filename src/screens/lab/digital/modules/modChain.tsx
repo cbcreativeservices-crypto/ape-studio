@@ -331,6 +331,11 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
   const [value01, setValue01] = useState(0.78);
   const [gain01, setGain01] = useState(1);
   const [trim, setTrim] = useState(false);
+  // Which picture the PINNED display shows (emulator pass 2026-10-14): the
+  // VALUE fader drove only the float panel far down the well, so riding it
+  // changed nothing on the glass. The glass now shows the picture of the
+  // control last moved — VALUE → the float number; GAIN / TRIM → the bus.
+  const [stageView, setStageView] = useState<'bus' | 'float'>('bus');
 
   const gainDb = 12 * gain01;
   const busDb = -6 + gainDb;
@@ -346,6 +351,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       onChange: (v) => {
         setGain01(v);
         setTrim(false); // a new gain move re-poses the question
+        setStageView('bus');
       },
       format: () => `${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)} dBFS bus peak`,
       formatShort: () => `${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)}`,
@@ -356,18 +362,24 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       id: 'trim',
       label: 'TRIM',
       value: trim,
-      onToggle: () => setTrim(!trim),
+      onToggle: () => {
+        setTrim(!trim);
+        setStageView('bus');
+      },
       helpKey: 'gain_above_zero',
     },
     {
       // The float visualizer's VALUE — was a slider in the well (owner rule
-      // 2026-10-10: every lab control lives in the bottom dock). Its picture
-      // stays in the well: ride the lane and watch HOW A FLOAT NUMBER WORKS.
+      // 2026-10-10: every lab control lives in the bottom dock). Riding it
+      // swaps the pinned display to HOW A FLOAT NUMBER WORKS (stageView).
       kind: 'fader',
       id: 'value',
       label: 'VALUE',
       value: value01,
-      onChange: setValue01,
+      onChange: (v) => {
+        setValue01(v);
+        setStageView('float');
+      },
       format: () => `float value · ${formatFloatReadout(value01)}`,
       formatShort: () => formatFloatReadout(value01),
       home: 0.5,
@@ -383,16 +395,33 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the two-fates bus is the star
-        badge: 'ILLUSTRATIVE MODEL — one drawn bus; the fixed path clamps at full scale exactly as a 24-bit render does',
-        onGuide: () => help('gain_above_zero'),
-        bezel: [
-          { k: 'FLOAT BUS', v: `${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)}`, helpKey: 'gain_above_zero' },
-          { k: 'FIXED', v: busDb > 0 ? '0.0 CLIP' : fixedDb.toFixed(1), tint: busDb > 0 ? '#ff6b5e' : undefined, helpKey: 'gain_above_zero' },
-          { k: 'TRIM', v: trim ? `−${gainDb.toFixed(1)} dB` : 'OFF', helpKey: 'gain_above_zero' },
-        ],
+        badge:
+          stageView === 'float'
+            ? 'SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields'
+            : 'ILLUSTRATIVE MODEL — one drawn bus; the fixed path clamps at full scale exactly as a 24-bit render does',
+        onGuide: () => help(stageView === 'float' ? 'float_vs_int' : 'gain_above_zero'),
+        bezel:
+          stageView === 'float'
+            ? [
+                { k: 'FLOAT VALUE', v: formatFloatReadout(value01), flex: 1.4, helpKey: 'float_vs_int' },
+                { k: 'FLOAT BUS', v: `${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)}`, helpKey: 'gain_above_zero' },
+                { k: 'TRIM', v: trim ? `−${gainDb.toFixed(1)} dB` : 'OFF', helpKey: 'gain_above_zero' },
+              ]
+            : [
+                { k: 'FLOAT BUS', v: `${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)}`, helpKey: 'gain_above_zero' },
+                { k: 'FIXED', v: busDb > 0 ? '0.0 CLIP' : fixedDb.toFixed(1), tint: busDb > 0 ? '#ff6b5e' : undefined, helpKey: 'gain_above_zero' },
+                { k: 'TRIM', v: trim ? `−${gainDb.toFixed(1)} dB` : 'OFF', helpKey: 'gain_above_zero' },
+              ],
         render: (w, h) =>
           viz ? (
-            <HeadroomViz viz={viz} width={w} height={h} focused={focused} gainDb={gainDb} trim={trim} />
+            stageView === 'float' ? (
+              <View style={[styles.stageSwap, { width: w, height: h }]}>
+                <Text style={styles.stageSwapHead}>HOW A FLOAT NUMBER WORKS · move GAIN or TRIM to see the bus again</Text>
+                <viz.FloatView width={w} value01={value01} />
+              </View>
+            ) : (
+              <HeadroomViz viz={viz} width={w} height={h} focused={focused} gainDb={gainDb} trim={trim} />
+            )
           ) : (
             <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
               <VizUnavailableCard />
@@ -518,4 +547,8 @@ const styles = StyleSheet.create({
   infoGuide: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.amber },
   infoIo: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 16, color: colors.textSecondary },
   infoFail: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#ff8d7a' },
+  // The pinned display's swapped-in picture (M6 VALUE, M7 ISP): its name on
+  // top, the picture centred in the glass's remaining height.
+  stageSwap: { backgroundColor: '#0c0c0f', justifyContent: 'center', gap: 6 },
+  stageSwapHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.9, color: colors.amber, textAlign: 'center', paddingHorizontal: 8 },
 });

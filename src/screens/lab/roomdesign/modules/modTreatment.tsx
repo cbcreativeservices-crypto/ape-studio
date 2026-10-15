@@ -21,6 +21,7 @@ import {
   depthLimitHz,
   fmtHz,
   fmtLen,
+  signedSeconds,
   moveTreatment,
   newId,
   reflectionSurfaceName,
@@ -166,7 +167,10 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     { k: 'RT60 500', v: Number.isFinite(mid(now)) ? `${mid(now).toFixed(2)} s` : '—' },
     // "≈": indicative only — 125 Hz sits under the Schroeder frequency (audio review 13).
     { k: 'RT60 125 ≈', v: Number.isFinite(low(now)) ? `${low(now).toFixed(2)} s` : '—' },
-    { k: 'VS NONE', v: Number.isFinite(mid(now)) && Number.isFinite(mid(bare)) ? `${(mid(now) - mid(bare) >= 0 ? '+' : '')}${(mid(now) - mid(bare)).toFixed(2)} s` : '—' },
+    // The 500 Hz decay against the same room with NO treatment. Rounded
+    // first, so a tiny negative never prints "−0.00" (Android pass
+    // 2026-10-14); an unchanged room reads "±0.00 s".
+    { k: 'VS BARE', v: Number.isFinite(mid(now)) && Number.isFinite(mid(bare)) ? signedSeconds(mid(now) - mid(bare)) : '—' },
   ];
   const fmtS = (x: number) => (Number.isFinite(x) ? `${x.toFixed(2)} s` : '—');
 
@@ -234,6 +238,9 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       kind: 'toggle',
       id: 'ab',
       label: sel ? (sel.enabled ? 'ITEM ON' : 'ITEM OFF') : 'ADD FIRST',
+      // Two short lines: on one line "ADD FIRST" was cut to "ADD FI…" on a
+      // 411 dp phone (Android pass 2026-10-14).
+      labelLines: 2,
       value: !!sel?.enabled,
       // Flip the LATEST state: a fast double tap read the same render twice
       // and landed one toggle instead of two (bug pass 2026-10-01).

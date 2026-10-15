@@ -129,7 +129,10 @@ test('the Gain ChainStage and its meters scale every px with the stage', () => {
   const stage = body(file, 'ChainStage');
   assert.match(stage, /const ts = useStageTextScale\(\);/);
   assert.match(stage, /const s = useScaledStyles\(styles\);/);
-  assert.match(stage, /Math\.max\(44, h \/ ts - 110\) \* ts/, 'meter height scales from the glass rule');
+  // 2026-10-14: the chrome budget is named (METER_CHROME, real line heights)
+  // and a two-line "QUIET SOURCE" reserves its second line.
+  assert.match(stage, /const room = h \/ ts - METER_CHROME;/, 'meter height scales from the glass rule');
+  assert.match(stage, /Math\.max\(MIN_METER, room - [^;]*\) \* ts;/);
   assert.match(stage, /<StageIcon kind=\{c\.kind\} size=\{20 \* ts\} \/>/);
   assert.doesNotMatch(stage, /styles\./, 'ChainStage never reads the unscaled sheet');
   const meter = body(file, 'StageMeterV');

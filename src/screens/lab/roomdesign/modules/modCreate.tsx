@@ -29,6 +29,7 @@ import {
   polygonIsValidRoom,
   resizeDesign,
   ROOM_MAX_M,
+  roomRatioLine,
   roomVolume,
   shapeVertices,
   SURFACES,
@@ -67,6 +68,8 @@ const H_MIN = 2;
 const H_MAX = 6;
 const SHAPE_SHORT: Record<WallShape, string> = { rect: 'RECT', angled: 'ANGLD', irregular: 'IRREG', curved: 'CURVD' };
 const FLASH_MS = 1000;
+/** Three typed-dimension fields + units on one row inside a 411 dp tray. */
+const DIM_FIELD_W = 74;
 
 export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   const { design, update, analysis, units } = ctx;
@@ -106,7 +109,10 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
     { k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE' },
     { k: 'AREA', v: units === 'metric' ? `${analysis.area.toFixed(1)} m²` : `${(analysis.area / 0.09290304).toFixed(0)} ft²`, flex: 1.2 },
     { k: 'VOLUME', v: units === 'metric' ? `${analysis.volume.toFixed(1)} m³` : `${(analysis.volume / 0.028316846592).toFixed(0)} ft³`, flex: 1.2 },
-    { k: 'L:W:H', v: ratioText(b.length, b.width, analysis.modalDims.H), flex: 1.3 },
+    // The room-ratio convention: the three dimensions SORTED smallest →
+    // largest, normalised to the smallest — NOT length : width : height
+    // (Android pass 2026-10-14: a 5 × 4 × 2.5 m room read "L:W:H 1:1.6:2.0").
+    { k: 'RATIO S:M:L', v: ratioText(b.length, b.width, analysis.modalDims.H), flex: 1.3 },
   ];
 
   const onDrag = (id: string, p: Pt) => {
@@ -131,7 +137,8 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   const params: DockParam[] = [
     // A plain SIDE VIEW switch in the dock (owner 2026-10-10: the bezel's VIEW
     // cell was too easy to miss) — the same switch the Miking lessons use.
-    { kind: 'toggle', id: 'view', label: 'SIDE VIEW', value: view === 'side', onToggle: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
+    // Two lines: one line cut it to "SIDE …" on a 411 dp phone.
+    { kind: 'toggle', id: 'view', label: 'SIDE VIEW', labelLines: 2, value: view === 'side', onToggle: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
     {
       kind: 'fader',
       id: 'length',
@@ -156,7 +163,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
       label: 'CEILING',
       value: lanePos(room.height, H_MIN, H_MAX),
       onChange: (v) => {
-        // A ceiling height is invisible on the plan (only VOLUME and L:W:H
+        // A ceiling height is invisible on the plan (only VOLUME and RATIO
         // would move): riding CEILING shows the side view, where the ceiling
         // line follows the finger — every lane changes the picture. The same
         // rule the ceiling SHAPE already follows (onCeiling).
@@ -193,6 +200,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
     );
 
   const notRect = !analysis.rectangular;
+  const ratio = roomRatioLine(b.length, b.width, analysis.modalDims.H);
 
   return (
     <RoomRackLayout
@@ -206,7 +214,8 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
           <Text style={styles.summaryLine}>
             {`Floor ${SURFACES[room.floor].label} · walls ${SURFACES[room.walls].label} · ceiling ${SURFACES[room.ceilingMat].label} · ${room.openings.length} opening${room.openings.length === 1 ? '' : 's'} · ${room.features.length} object${room.features.length === 1 ? '' : 's'}`}
           </Text>
-          {notRect ? <Text style={styles.warn}>{room.ceiling !== 'flat' && room.shape === 'rect' ? `A ${room.ceiling} ceiling: the mode estimates later use the mean ceiling height and are LESS reliable.` : 'Not a rectangle: the mode estimates later use the bounding box and are LESS reliable.'}</Text> : null}
+          {ratio ? <Text style={styles.summaryLine}>{`${ratio}.`}</Text> : null}
+          {notRect ?<Text style={styles.warn}>{room.ceiling !== 'flat' && room.shape === 'rect' ? `A ${room.ceiling} ceiling: the mode estimates later use the mean ceiling height and are LESS reliable.` : 'Not a rectangle: the mode estimates later use the bounding box and are LESS reliable.'}</Text> : null}
         </View>
       }
     >
@@ -214,7 +223,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
         Build the room you actually have. Start from the quick rectangle and set its length, width and ceiling, or choose an angled, irregular or curved plan and drag the corners to match. Doors, windows and large objects matter: a window is a hard, slightly bass-leaky surface; an open doorway absorbs everything that reaches it; a desk is a reflecting shelf under the speakers — the model draws that bounce.
       </Body>
       <Body>
-        The numbers on the bezel — area, volume, the length : width : height ratio — are plain arithmetic from your entries. Ratios near 1 : 1 : 1 or 2 : 1 stack room modes on the same frequencies; the famous "good ratios" (for example 1 : 1.4 : 1.9) spread them out. You cannot usually move walls, but knowing the ratio tells you what to expect in the bass.
+        The numbers on the bezel — area, volume and the room ratio — are plain arithmetic from your entries. The ratio follows the usual convention: the three dimensions sorted smallest : middle : largest (S:M:L), each divided by the smallest — usually height : width : length. Ratios near 1 : 1 : 1 or 1 : 2 stack room modes on the same frequencies; the famous "good ratios" (for example 1 : 1.4 : 1.9) spread them out. You cannot usually move walls, but knowing the ratio tells you what to expect in the bass.
       </Body>
       <Caption>Units convert exactly (1 ft = 0.3048 m, 1 in = 25.4 mm). Dimension entry accepts decimals in the chosen unit.</Caption>
     </RoomRackLayout>
@@ -287,13 +296,14 @@ function ShapeTray({
     });
   return (
     <View style={{ gap: 10 }}>
-      <TrayHeading>UNITS</TrayHeading>
-      <Chips items={UNITS} value={room.units} onPick={(id) => setRoom((r) => ({ ...r, units: id }))} />
+      {/* The typed dimensions come FIRST, on one row (Android pass
+          2026-10-14): under UNITS on a 411 × 731 dp phone they sat at the
+          bottom of the short tray and the keyboard covered them. */}
       <TrayHeading>TYPE THE DIMENSIONS</TrayHeading>
       <View style={styles.numRow}>
-        <NumField label="LENGTH" value={fromMetres(b.length, units)} unit={u} onCommit={(v) => setDims(b.width, clampLen(toMetres(v, units)))} />
-        <NumField label="WIDTH" value={fromMetres(b.width, units)} unit={u} onCommit={(v) => setDims(clampLen(toMetres(v, units)), b.length)} />
-        <NumField label="CEILING" value={fromMetres(room.height, units)} unit={u} onCommit={(v) =>
+        <NumField label="LENGTH" width={DIM_FIELD_W} value={fromMetres(b.length, units)} unit={u} onCommit={(v) => setDims(b.width, clampLen(toMetres(v, units)))} />
+        <NumField label="WIDTH" width={DIM_FIELD_W} value={fromMetres(b.width, units)} unit={u} onCommit={(v) => setDims(clampLen(toMetres(v, units)), b.length)} />
+        <NumField label="CEILING" width={DIM_FIELD_W} value={fromMetres(room.height, units)} unit={u} onCommit={(v) =>
             setRoom((r) => {
               // Typed like the CEILING lane: the low point stays under the
               // high point (a typed 2.0 m over a 2.2 m low point inverted a
@@ -304,6 +314,8 @@ function ShapeTray({
           }
         />
       </View>
+      <TrayHeading>UNITS</TrayHeading>
+      <Chips items={UNITS} value={room.units} onPick={(id) => setRoom((r) => ({ ...r, units: id }))} />
       <TrayHeading>WALL SHAPE</TrayHeading>
       <Chips items={SHAPES} value={room.shape} onPick={pickShape} />
       <Caption>Angled splays the front wall; irregular adds an alcove; curved bows the rear wall. Drag any corner afterwards to match your room — a corner cannot cross another wall or shrink the plan under 1 m².</Caption>

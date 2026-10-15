@@ -69,8 +69,13 @@ describe('CORRECTION (zCapAt): a plan drag or a FRONT / LISTENER lane keeps heig
   it('MONITORING and EXPLORE route every position write through it', () => {
     for (const m of ['modMonitoring', 'modExplore']) {
       const s = strip(read(`${LAB}modules/${m}.tsx`));
-      assert.match(s, /const setLayout = \(fn: \(l: Layout\) => Layout\) => update\(\(d\) => \(\{ \.\.\.d, layouts: d\.layouts\.map\(\(l, i\) => \(i === d\.active \? capLayoutHeights\(fn\(l\), d\.room\) : l\)\) \}\)\);/, m);
+      // Since 2026-10-14 through editActiveLayout (START stays the baseline),
+      // which caps every write it makes.
+      assert.match(s, /const setLayout = \(fn: \(l: Layout\) => Layout\) => update\(\(d\) => editActiveLayout\(d, fn\)\);/, m);
     }
+    const model = strip(read(`${LAB}roomModel.ts`));
+    const body = model.slice(model.indexOf('export function editActiveLayout'), model.indexOf('export function cloudHangZ'));
+    assert.equal((body.match(/capLayoutHeights\(fn\(/g) ?? []).length, 2, 'both branches cap the edited layout');
   });
 });
 

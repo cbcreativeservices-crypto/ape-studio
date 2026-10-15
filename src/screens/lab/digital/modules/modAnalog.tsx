@@ -219,6 +219,9 @@ export function AnalogModule(p: DigitalModuleProps) {
       onChange: setFreqV,
       format: () => (wave === 'noise' ? 'broadband' : `${freq} Hz`),
       formatShort: () => (wave === 'noise' ? 'BB' : fmtHzShort(freq)),
+      // D75 (emulator pass 2026-10-14): with WHITE NOISE the fader moved and
+      // silently changed a hidden frequency — nothing on the glass followed.
+      locked: wave === 'noise' ? 'white noise has no single frequency — pick SINE, SQUARE or another wave under WAVE to tune it' : undefined,
       helpKey: 'source',
     },
     {
@@ -239,8 +242,10 @@ export function AnalogModule(p: DigitalModuleProps) {
       label: 'ZOOM',
       value: zoomV,
       onChange: setZoomV,
-      format: () => `${cycles.toFixed(1)} cycles in view`,
-      formatShort: () => `${cycles.toFixed(1)}cyc`,
+      // Noise has no cycles to count: the same zoom reads as a time window
+      // (relative — 1× = the widest view).
+      format: () => (wave === 'noise' ? `time window ×${(7 / cycles).toFixed(1)} zoom` : `${cycles.toFixed(1)} cycles in view`),
+      formatShort: () => (wave === 'noise' ? `×${(7 / cycles).toFixed(1)}` : `${cycles.toFixed(1)}cyc`),
       helpKey: 'waveform_view',
     },
     {
@@ -293,7 +298,9 @@ export function AnalogModule(p: DigitalModuleProps) {
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the three phase-locked views ARE the lesson
         badge:
-          'ILLUSTRATIVE MODEL — SLOWED FOR VISIBILITY · ONE EVENT, THREE PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · AMPLITUDE COLOR = MIDI LOUDNESS RAMP (blue quiet → red full scale)',
+          // Shortened (emulator pass 2026-10-14): the two-line strip cut the
+          // old wording after "(blue quiet →", losing the colour key's end.
+          'ILLUSTRATIVE MODEL, SLOWED · ONE EVENT, 3 PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · COLOR = LOUDNESS (blue quiet → red full scale)',
         onGuide: () => p.help('waveform_view'),
         bezel: [
           { k: 'FREQ', v: wave === 'noise' ? 'broadband' : `${freq} Hz`, helpKey: 'source' },

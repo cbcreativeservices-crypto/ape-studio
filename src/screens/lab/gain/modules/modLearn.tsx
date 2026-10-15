@@ -28,7 +28,9 @@ const mk = (key: string, name: string, kind: Stage['kind'], gain: number, min: n
 const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';
 
 const fmtDb = (v: number) => `${v >= 0 ? '+' : ''}${v} dB`;
-const fmtG = (v: number) => `${v >= 0 ? '+' : ''}${v}`;
+// The dock KEY carries the unit too (emulator pass 2026-10-14: the key read
+// "+0" while its fader read "+0 dB"). "+40 dB" is 6 chars — inside the key.
+const fmtG = fmtDb;
 const fmtLv = (lv: number) => `${Math.round(lv)} dB`;
 
 /** The too-low / healthy / overload legend, shown once up top. */

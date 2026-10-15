@@ -26,7 +26,7 @@ import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { NO_INSETS, laneValueAt } from '../rack/laneEdgeGuard';
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
-import { laneFingerAt, laneFingerDx, type LaneFinger } from '../rack/laneFinger';
+import { laneFingerAt, laneFingerDx, laneFingerLiftDx, type LaneFinger } from '../rack/laneFinger';
 import { useScrollLock } from '../scrollLock';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
@@ -296,6 +296,7 @@ export function ControlSlider({
   //    the slider instead of scrolling the page out from under it.
   const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
   const grabXRef = useRef(0);
+  const movedRef = useRef(false);
   const ctxLock = useScrollLock();
   const ctxLockRef = useRef(ctxLock);
   ctxLockRef.current = ctxLock;
@@ -329,15 +330,22 @@ export function ControlSlider({
         lockRef.current(true);
         fingerRef.current = laneFingerAt(e.nativeEvent);
         grabXRef.current = e.nativeEvent.locationX;
+        movedRef.current = false;
         feed.end(); // nothing of an earlier drag is left to land late
         setRef.current(e.nativeEvent.locationX, true);
       },
       onPanResponderMove: (e, g) => {
         const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
         if (dx === 'lifted') return;
+        if (Math.abs(dx) > 5) movedRef.current = true;
         feed.move(grabXRef.current + dx);
       },
-      onPanResponderRelease: () => {
+      onPanResponderRelease: (e) => {
+        // Land where the finger LIFTED (emulator pass 2026-10-14, as DragSlider):
+        // PanResponder gives no release move, so a fast flick stopped short.
+        const lift = laneFingerLiftDx(e.nativeEvent, fingerRef.current);
+        if (lift != null && (movedRef.current || Math.abs(lift) > 5)) feed.move(grabXRef.current + lift);
+        movedRef.current = false;
         feed.end();
         lockRef.current(false);
       },

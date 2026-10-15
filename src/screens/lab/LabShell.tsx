@@ -394,9 +394,13 @@ export function LabShell({
   exploreCaption,
   headerAction,
   rack,
+  checkEnd,
   children,
 }: {
   labId: LabId;
+  /** Drawn under the CHECK — the lab's "what's left" link, so CHECK never
+   *  ends on a dead card (every lab ends with a what's-left screen). */
+  checkEnd?: ReactNode;
   title: string;
   subtitle: string;
   intro: string;
@@ -686,6 +690,7 @@ export function LabShell({
                     reportTrainingComplete(trainingKeyForCheck(labId));
                   }}
                 />
+                {checkEnd ?? null}
               </View>
             </ScrollView>
           ) : null}

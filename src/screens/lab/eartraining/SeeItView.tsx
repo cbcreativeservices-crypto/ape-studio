@@ -20,8 +20,9 @@ import { LinearGradient as RnLinearGradient } from 'expo-linear-gradient';
 import Svg, { Defs, G, Line, LinearGradient, Polygon, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
-import { powerSpectrumDb, sumToMono, isStereo, rmsDb, SR, type Buf, type Mono } from '../../../features/ear/earDsp';
+import { sumToMono, isStereo, rmsDb, SR, type Buf, type Mono } from '../../../features/ear/earDsp';
 import type { EarTrial, SeeIt } from '../../../features/ear/earTypes';
+import { powerRatioDb, welchPower } from './seeItMath';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 
 const W = 320;
@@ -79,15 +80,9 @@ const clipName = (label: string) => (label === '▶' ? 'the clip' : `clip ${labe
  * slope is honestly the PSD-per-Hz slope the "flat / −3 / −6 dB per octave"
  * labels refer to. Still the same samples the ear heard.
  */
-function logSpectrum(x: Mono): { hz: Float32Array; db: Float32Array } {
-  const usable = x.length - FFT - 960;
-  const nFrames = usable > 0 ? Math.min(8, 1 + Math.floor(usable / (FFT / 2))) : 1;
-  const acc = new Float64Array(FFT / 2);
-  for (let f = 0; f < nFrames; f++) {
-    const offset = usable > 0 ? 480 + Math.floor((f * usable) / Math.max(1, nFrames - 1)) : 0;
-    const { db } = powerSpectrumDb(x, FFT, offset);
-    for (let i = 0; i < acc.length; i++) acc[i] += Math.pow(10, db[i] / 10);
-  }
+function logSpectrum(x: Mono, maxFrames = 8): { hz: Float32Array; db: Float32Array; acc: Float64Array } {
+  // Welch frames: seeItMath (8 by default; up to 48 for a difference view).
+  const { acc, nFrames } = welchPower(x, maxFrames, FFT);
   const binHz = SR / FFT;
   const hz = new Float32Array(COLS);
   const db = new Float32Array(COLS);
@@ -113,7 +108,91 @@ function logSpectrum(x: Mono): { hz: Float32Array; db: Float32Array } {
     if (db[c] > max) max = db[c];
   }
   for (let c = 0; c < COLS; c++) db[c] -= max + 6;
-  return { hz, db };
+  return { hz, db, acc };
+}
+
+/** Difference plot geometry (linear Hz, dB of power ratio). */
+const DIFF_H = 120;
+const DIFF_B = DIFF_H - 20;
+const DIFF_TOP = 10;
+const DIFF_BOT = -30;
+// The ratio itself (with its no-energy gaps): seeItMath.powerRatioDb.
+
+function DifferenceSeeIt({
+  spec,
+  trial,
+  accs,
+  controls,
+}: {
+  spec: Extract<SeeIt, { kind: 'spectrum' }>;
+  trial: EarTrial;
+  accs: Float64Array[];
+  controls?: ReactNode;
+}) {
+  const d = spec.difference!;
+  const iOf = spec.clips.indexOf(d.of);
+  const iRef = spec.clips.indexOf(d.ref);
+  const ratio = useMemo(
+    () => (iOf >= 0 && iRef >= 0 ? powerRatioDb(accs[iOf], accs[iRef], d.maxHz, FFT) : null),
+    [accs, iOf, iRef, d.maxHz],
+  );
+  if (!ratio) return null;
+  const xL = (hz: number) => PLOT_L + (hz / d.maxHz) * (PLOT_R - PLOT_L);
+  const yD = (db: number) => PLOT_T + ((DIFF_TOP - Math.max(DIFF_BOT, Math.min(DIFF_TOP, db))) / (DIFF_TOP - DIFF_BOT)) * (DIFF_B - PLOT_T);
+  // Gaps (null) split the trace — no line is drawn across a bin with no energy.
+  const segs: string[] = [];
+  let cur: string[] = [];
+  ratio.db.forEach((v, k) => {
+    if (v == null) {
+      if (cur.length > 1) segs.push(cur.join(' '));
+      cur = [];
+      return;
+    }
+    cur.push(`${xL(ratio.hz[k]).toFixed(1)},${yD(v).toFixed(1)}`);
+  });
+  if (cur.length > 1) segs.push(cur.join(' '));
+  const nameOf = trial.clips[d.of]?.label ?? '';
+  const nameRef = trial.clips[d.ref]?.label ?? '';
+  const kTicks: number[] = [];
+  for (let f = 1000; f <= d.maxHz; f += 1000) kTicks.push(f);
+  const a11y = `Measured power of ${clipName(nameOf)} relative to ${clipName(nameRef)}, 0 to ${d.maxHz / 1000} kilohertz on a linear axis`;
+  return (
+    <ExpandableFigure aspect={W / DIFF_H} title={`${nameOf} RELATIVE TO ${nameRef}`} controls={controls} render={(w, h) => (
+      <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${DIFF_H}`}>
+          <Rect x={0} y={0} width={W} height={DIFF_H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
+          {[0, -10, -20].map((v) => (
+            <Line key={`g${v}`} x1={PLOT_L} y1={yD(v)} x2={PLOT_R} y2={yD(v)} stroke={v === 0 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)'} />
+          ))}
+          {kTicks.map((f) => (
+            <Line key={`k${f}`} x1={xL(f)} y1={PLOT_T} x2={xL(f)} y2={DIFF_B} stroke="rgba(255,255,255,0.07)" />
+          ))}
+          {segs.map((pts, i) => (
+            <Polyline key={i} points={pts} fill="none" stroke={TRACE_COLORS[0]} strokeWidth={1.2} strokeLinejoin="round" />
+          ))}
+          {[0, -10, -20].map((v) => (
+            <SvgText key={`t${v}`} x={PLOT_L - 3} y={yD(v) + 3} fontSize={AXIS_PX} fontFamily={AXIS_FONT} fill={colors.textMuted} textAnchor="end">
+              {v}
+            </SvgText>
+          ))}
+          <SvgText x={PLOT_L + 4} y={PLOT_T + 10} fontSize={AXIS_PX} fontFamily={LABEL_FONT} fill={colors.textSub}>
+            {`${nameOf} ÷ ${nameRef} · linear Hz`}
+          </SvgText>
+          <SvgText x={2} y={DIFF_H - 7} fontSize={AXIS_PX} fontFamily={AXIS_FONT} fill={colors.textMuted}>
+            dB
+          </SvgText>
+          <SvgText x={PLOT_L} y={DIFF_H - 7} fontSize={AXIS_PX} fontFamily={AXIS_FONT} fill={colors.textMuted} textAnchor="middle">
+            0
+          </SvgText>
+          {kTicks.map((f) => (
+            <SvgText key={`kt${f}`} x={xL(f)} y={DIFF_H - 7} fontSize={AXIS_PX} fontFamily={AXIS_FONT} fill={colors.textMuted} textAnchor="middle">
+              {`${f / 1000}k`}
+            </SvgText>
+          ))}
+        </Svg>
+      </View>
+    )} />
+  );
 }
 
 /** The page's transport (play A / play B) + the caption, docked under the
@@ -122,7 +201,11 @@ function logSpectrum(x: Mono): { hz: Float32Array; db: Float32Array } {
 type Dock = { controls?: ReactNode };
 
 function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'spectrum' }>; trial: EarTrial } & Dock) {
-  const traces = useMemo(() => spec.clips.map((ci) => logSpectrum(mono(trial.clips[ci].buf))), [spec, trial]);
+  const traces = useMemo(
+    () => spec.clips.map((ci) => logSpectrum(mono(trial.clips[ci].buf), spec.difference ? 48 : 8)),
+    [spec, trial],
+  );
+  const accs = useMemo(() => traces.map((t) => t.acc), [traces]);
   const points = useMemo(
     () =>
       traces.map((t) => {
@@ -167,6 +250,7 @@ function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind:
     (spec.slopeGuides ? ', with 0, minus 3 and minus 6 dB per octave slope guides' : '');
 
   return (
+    <>
     <ExpandableFigure aspect={W / H} title="SPECTRUM" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
@@ -284,6 +368,8 @@ function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind:
       </Svg>
     </View>
     )} />
+    {spec.difference ? <DifferenceSeeIt spec={spec} trial={trial} accs={accs} controls={controls} /> : null}
+    </>
   );
 }
 

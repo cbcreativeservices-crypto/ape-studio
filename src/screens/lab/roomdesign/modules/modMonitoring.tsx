@@ -17,7 +17,7 @@ import { RoomSideView } from '../RoomSideView';
 import { Body, Caption, Chips, SAFETY_LEVEL_NOTE, TrayHeading } from '../bits';
 import {
   bounds,
-  capLayoutHeights,
+  editActiveLayout,
   channelGeometry,
   clampInside,
   fmtDelta,
@@ -98,7 +98,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   // LOCAL ceiling where the speaker or the ears now stand (toddler pass 2:
   // only the side drag and HEIGHT were capped, so a plan drag under a sloped
   // ceiling left a tweeter above the drawn ceiling).
-  const setLayout = (fn: (l: Layout) => Layout) => update((d) => ({ ...d, layouts: d.layouts.map((l, i) => (i === d.active ? capLayoutHeights(fn(l), d.room) : l)) }));
+  const setLayout = (fn: (l: Layout) => Layout) => update((d) => editActiveLayout(d, fn));
   const L = lay.speakers.find((s) => s.role === 'L');
   const R = lay.speakers.find((s) => s.role === 'R');
   const SUB = lay.speakers.find((s) => s.role === 'SUB');
@@ -143,7 +143,9 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
         { k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE' },
         { k: 'DIST L', v: fmtLen(st.distL, units), flex: 1.1 },
         { k: 'DIST R', v: fmtLen(st.distR, units), flex: 1.1 },
-        { k: 'ANGLE', v: `${st.angleDeg.toFixed(0)}°` },
+        // No triangle when the seat is not in front of both speakers: the
+        // angle between two speakers behind the head is not a listening angle.
+        st.inFront ? { k: 'ANGLE', v: `${st.angleDeg.toFixed(0)}°` } : { k: 'ANGLE', v: 'NONE', tint: '#ff5a48' },
         { k: 'L−R', v: fmtDelta(st.distL - st.distR, units), tint: st.pathDiff > SYM_TOL ? '#ff5a48' : colors.green, flex: 1.1 },
       ]
     : [{ k: 'VIEW', v: view === 'plan' ? 'PLAN' : 'SIDE' }];
@@ -162,7 +164,8 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const params: DockParam[] = [
     // A plain SIDE VIEW switch in the dock (owner 2026-10-10: the bezel's VIEW
     // cell was too easy to miss) — the same switch the Miking lessons use.
-    { kind: 'toggle', id: 'view', label: 'SIDE VIEW', value: view === 'side', onToggle: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
+    // Two lines: one line cut it to "SIDE …" on a 411 dp phone.
+    { kind: 'toggle', id: 'view', label: 'SIDE VIEW', labelLines: 2, value: view === 'side', onToggle: () => setView((v) => (v === 'plan' ? 'side' : 'plan')) },
     {
       kind: 'fader',
       id: 'spread',
@@ -174,9 +177,14 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
           const l0 = l.speakers.find((x) => x.role === 'L');
           const r0 = l.speakers.find((x) => x.role === 'R');
           if (!l0 || !r0) return l;
-          const mx = (l0.x + r0.x) / 2;
+          // SPREAD sets the PAIR symmetrically about the room's centre line,
+          // level with each other (Android pass 2026-10-14: it kept the pair's
+          // own midpoint, so after one speaker was dragged no lane could bring
+          // it back to centre). Level, the lane's value IS the L–R distance.
+          const mx = (b.minX + b.maxX) / 2;
+          const y = (l0.y + r0.y) / 2;
           // Every lane write lands inside the polygon (cognitive review 2).
-          return { ...l, speakers: l.speakers.map((x) => (x.role === 'L' ? { ...x, ...clampInside({ x: mx - s / 2, y: x.y }, room, x) } : x.role === 'R' ? { ...x, ...clampInside({ x: mx + s / 2, y: x.y }, room, x) } : x)) };
+          return { ...l, speakers: l.speakers.map((x) => (x.role === 'L' ? { ...x, ...clampInside({ x: mx - s / 2, y }, room, x) } : x.role === 'R' ? { ...x, ...clampInside({ x: mx + s / 2, y }, room, x) } : x)) };
         });
       },
       format: (v) => `${fmtLen(laneVal(v, 0.6, Math.max(1.2, b.width - 0.4), 0.01), units)} between L and R`,
@@ -197,7 +205,9 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
     {
       kind: 'fader',
       id: 'listen',
-      label: 'LISTENER',
+      // SEAT, not LISTENER: a fader key fits ~7 characters on a 411 dp phone
+      // and "LISTENE…" was cut (Android pass 2026-10-14).
+      label: 'SEAT',
       value: lanePos(listenY, 0.4, Math.max(0.8, b.length - 0.3)),
       onChange: (v) => {
         const y = b.minY + laneVal(v, 0.4, Math.max(0.8, b.length - 0.3), 0.01);
@@ -256,11 +266,15 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.monitoring, bezel, params, initialParam: 'spread', hideDragTag: true }}
-      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD, FRONT, LISTENER and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
+      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD (it sets the pair evenly about the room's centre line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
       captionFirst
       wellTop={
         <View style={{ gap: 6 }}>
-          {st ? (
+          {st && !st.inFront ? (
+            <Text style={styles.warn}>
+              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Ride SEAT further into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
+            </Text>
+          ) : st ? (
             <Text style={styles.line}>
               {`Listening angle ${st.angleDeg.toFixed(0)}° · L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} · difference ${fmtLen(st.pathDiff, units, { small: true })} ${st.pathDiff > SYM_TOL ? '— beyond the ' + fmtLen(SYM_TOL, units, { small: true }) + ' tolerance, the centre image pulls' : '— within tolerance'}.`}
             </Text>
@@ -352,6 +366,7 @@ function SetupTray({ ctx }: { ctx: RoomLabCtx }) {
 
 const styles = StyleSheet.create({
   line: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
+  warn: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#ff8a5c' },
   conflicts: { gap: 4, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,90,72,0.45)', backgroundColor: '#1a1110', padding: 8 },
   conflictHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.3, color: '#ff8a5c' },
   conflict: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
