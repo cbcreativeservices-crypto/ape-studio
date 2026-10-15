@@ -108,7 +108,7 @@ const PAGE_TITLE: Record<PageKey, string> = {
   specialization: 'Specialize. Learn. Earn the Certificate.',
   program: 'Complete Certificate Programs',
   directory: 'Get Discovered',
-  enrollment: 'Manage My Learning',
+  enrollment: 'My Enrollments Dashboard',
 };
 
 function pageLabel(key: PageKey): string {

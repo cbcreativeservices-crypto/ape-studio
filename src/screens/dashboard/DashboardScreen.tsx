@@ -878,12 +878,17 @@ export function DashboardScreen() {
    * live list changes, so a recovered read clears it.
    */
   const [starredUnreadable, setStarredUnreadable] = useState(false);
+  /** The stored ★ list has been READ (so 0 really means empty, not "not loaded yet"). */
+  const [starredRead, setStarredRead] = useState(false);
   useEffect(() => {
     if (!customOnDashboard) return undefined;
     let alive = true;
     readTermList('starred').then(
       () => {
-        if (alive) setStarredUnreadable(false);
+        if (alive) {
+          setStarredUnreadable(false);
+          setStarredRead(true);
+        }
       },
       () => {
         if (alive) setStarredUnreadable(true);
@@ -2317,6 +2322,14 @@ export function DashboardScreen() {
                 }}
               />
             </View>
+            {/* EMPTY, AND HOW TO FILL IT (owner 2026-10-14). Only once the stored
+                list has really been read — never over a list still loading. */}
+            {starredRead && !starredUnreadable && starred.size === 0 ? (
+              <Text style={styles.customEmpty}>
+                Your custom list is empty. Add terms with the ★ star in the Glossary, or on any term while you study a
+                topic's Flashcards.
+              </Text>
+            ) : null}
           </ElevatedFrame>
         ) : (
           <>
@@ -3363,6 +3376,8 @@ const styles = StyleSheet.create({
   // method row so it seats flush in the rack.
   customRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 4 },
   customDeck: { width: 48, alignItems: 'center', justifyContent: 'center' },
+  // Empty custom list: what it is and how to fill it (owner 2026-10-14).
+  customEmpty: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, marginTop: 10 },
   customCount: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 13,

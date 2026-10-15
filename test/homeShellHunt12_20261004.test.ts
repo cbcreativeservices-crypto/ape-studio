@@ -51,7 +51,8 @@ test('1. Dashboard: an unreadable enrollment list is not "nothing enrolled"', ()
 
 test('2. Dashboard: an unreadable ★ Custom List is not "0 TERMS"', () => {
   const src = strip(read(DASH));
-  assert.match(src, /readTermList\('starred'\)\.then\(\s*\(\) => \{\s*if \(alive\) setStarredUnreadable\(false\);\s*\},\s*\(\) => \{\s*if \(alive\) setStarredUnreadable\(true\);/);
+  // A successful read also marks the list as READ (owner 2026-10-14: the empty-list message waits for it).
+  assert.match(src, /readTermList\('starred'\)\.then\(\s*\(\) => \{\s*if \(alive\) \{\s*setStarredUnreadable\(false\);\s*setStarredRead\(true\);\s*\}\s*\},\s*\(\) => \{\s*if \(alive\) setStarredUnreadable\(true\);/);
   assert.match(src, /\}, \[customOnDashboard, starred\]\);/, 're-asked when the live list changes');
   assert.match(src, /const starredCount = starredUnreadable\s*\?\s*'TERMS COULD NOT BE READ'/);
   // No count printed straight from the placeholder set any more.

@@ -251,12 +251,13 @@ export function useIsBookmarked(ctx: string, id: string): boolean {
 /* ---- "Show my Custom List on the Dashboard" toggle ----
  * A device-local boolean on the same store. Controls whether the user's
  * Custom List appears as a synthetic current-topic on the Dashboard. Default
- * false. Stored as the words 'true' / 'false' (unchanged on disk). */
+ * TRUE (owner 2026-10-14: loaded by default, like the two free topics); an
+ * explicit OFF is kept. Stored as the words 'true' / 'false' (unchanged on disk). */
 const CUSTOM_ON_DASHBOARD_KEY = 'ape:customOnDashboard';
 
 const customOnDashboard = createLocalStore<boolean>({
   key: CUSTOM_ON_DASHBOARD_KEY,
-  empty: () => false,
+  empty: () => true,
   parse: (p) => p === true || p === 'true',
   serialize: (v) => (v ? 'true' : 'false'),
 });
