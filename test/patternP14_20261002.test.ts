@@ -184,7 +184,7 @@ const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
   'screens/dashboard/TopicDeckSheet.tsx': { n: 2, why: 'topic names' },
   'screens/directory/DirectoryScreen.tsx': { n: 1, why: 'verify-URL caption' },
   'screens/directory/RequestsView.tsx': { n: 1, why: 'website name' },
-  'screens/enrollment/EnrollmentScreen.tsx': { n: 13, why: 'topic / certificate / subject names and fixed labels' },
+  'screens/enrollment/EnrollmentScreen.tsx': { n: 11, why: 'topic / certificate / subject names and fixed labels' },
   'screens/enrollment/EnrollmentSelection.tsx': { n: 1, why: 'LOAD ALL / UNLOAD ALL' },
   'screens/enrollment/HomeSetupSheet.tsx': { n: 4, why: 'names and subjects' },
   'screens/exam/FinalExamScreen.tsx': { n: 1, why: 'award name' },

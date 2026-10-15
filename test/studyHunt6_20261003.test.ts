@@ -63,6 +63,7 @@ test('Enrollments LoadPill breathes only while the page is showing', () => {
   assert.match(s, /function LoadPill\(\{ on, small, dim, live = true \}/);
   assert.match(s, /const animate = !on && !suppressed && decorative && live;/);
   const pills = s.match(/<LoadPill [^>]*\/>/g) ?? [];
-  assert.ok(pills.length >= 3, 'expected the three LoadPill sites');
+  // The My Custom List bar's pill went with the bar (owner 2026-10-14).
+  assert.ok(pills.length >= 2, 'expected the two LoadPill sites');
   for (const p of pills) assert.match(p, /live=\{sweepLive\}/, `LoadPill without live: ${p}`);
 });

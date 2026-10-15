@@ -26,6 +26,7 @@ import { Image, Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from
 import { useState } from 'react';
 import { CredentialThumb } from '../awards/CredentialThumb';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
+import { DeckIcon } from '../../components/DeckIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { colors, fonts } from '../../theme/tokens';
 import { actionsFitBesideIdentity, artSideLen } from './selectionLayout';
@@ -37,6 +38,8 @@ const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 export const CERT_BLUE = '#2f9bff';
 export const PROGRAM_PURPLE = '#b06cff';
+/** My Custom List's own accent (owner 2026-10-14) — not the certificate blue. */
+export const CUSTOM_CYAN = '#3fd3e6';
 
 /**
  * One selectable thing. `kind: 'topics'` is ALL TOPICS and is always first;
@@ -44,7 +47,7 @@ export const PROGRAM_PURPLE = '#b06cff';
  */
 export type CarouselCard = {
   key: string;
-  kind: 'topics' | 'cert' | 'program' | 'subject' | 'placeholder';
+  kind: 'topics' | 'cert' | 'program' | 'subject' | 'placeholder' | 'custom';
   title: string;
   /** Credential slug for the artwork; null for ALL TOPICS and subjects. */
   slug: string | null;
@@ -57,6 +60,7 @@ export type CarouselCard = {
 
 export function accentFor(kind: CarouselCard['kind']): string {
   if (kind === 'placeholder') return colors.textSub;
+  if (kind === 'custom') return CUSTOM_CYAN;
   return kind === 'program' ? PROGRAM_PURPLE : kind === 'cert' ? CERT_BLUE : colors.amber;
 }
 
@@ -72,7 +76,9 @@ export function accentFor(kind: CarouselCard['kind']): string {
 function labelFor(kind: CarouselCard['kind']): string {
   return kind === 'topics'
     ? 'TOPICS AVAILABLE FOR LOADING IN YOUR STUDY DASHBOARD'
-    : kind === 'program'
+    : kind === 'custom'
+      ? 'YOUR ★ STARRED TERMS AS ONE STUDY DECK'
+      : kind === 'program'
       ? 'PROGRAM'
       : kind === 'cert'
         ? 'CERTIFICATE'
@@ -135,6 +141,9 @@ export function EnrollmentSelection({
   if (!card) return null;
   const accent = accentFor(card.kind);
   const isTopics = card.kind === 'topics';
+  /** My Custom List (owner 2026-10-14): one deck of starred TERMS — STUDY / LOAD act on it as one. */
+  const isCustom = card.kind === 'custom';
+  const single = isTopics || isCustom;
 
   /**
    * A member with no credentials yet would otherwise see nothing here and not
@@ -214,7 +223,11 @@ export function EnrollmentSelection({
                 ICON here, not as artwork, and at 0.92 it filled its box far
                 more heavily than the credential photographs beside it
                 (owner 2026-09-20, "37% smaller"). */}
-            <MyTopicsIcon size={Math.round(sideLen * 0.58)} />
+            {isCustom ? (
+              <DeckIcon color={CUSTOM_CYAN} size={Math.round(sideLen * 0.58)} fill="#9fe9f2" />
+            ) : (
+              <MyTopicsIcon size={Math.round(sideLen * 0.58)} />
+            )}
           </View>
         )}
 
@@ -224,12 +237,12 @@ export function EnrollmentSelection({
               together, away from the two that concern the credential. */}
           <View style={[s.topRow, !actionsBeside && s.topRowStacked]}>
             <View style={s.identity}>
-              <Text style={[s.kind, isTopics && s.kindLong, { color: accent }]}>{labelFor(card.kind)}</Text>
+              <Text style={[s.kind, single && s.kindLong, { color: accent }]}>{labelFor(card.kind)}</Text>
               <Text style={s.title} numberOfLines={2}>
                 {card.title}
               </Text>
               <Text style={s.count}>
-                {card.topicCount} topic{card.topicCount === 1 ? '' : 's'}
+                {card.topicCount} {isCustom ? 'term' : 'topic'}{card.topicCount === 1 ? '' : 's'}
                 {summary ? ` · ${summary}` : ''}
               </Text>
             </View>
@@ -243,11 +256,13 @@ export function EnrollmentSelection({
                 accessibilityLabel={
                   isTopics
                     ? 'Study — open your dashboard'
-                    : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your dashboard`
+                    : isCustom
+                      ? 'Study my custom list'
+                      : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your dashboard`
                 }
               >
                 <Image source={STUDY_ICON} style={s.studyIcon} resizeMode="contain" />
-                <Text style={s.studyText}>{isTopics ? 'STUDY' : 'STUDY ALL'}</Text>
+                <Text style={s.studyText}>{single ? 'STUDY' : 'STUDY ALL'}</Text>
               </Pressable>
 
               {/* ONE CONTROL, NO SEPARATE READOUT (owner 2026-09-21). A lamp
@@ -263,9 +278,13 @@ export function EnrollmentSelection({
                 accessibilityState={{ selected: card.allLoaded }}
                 aria-pressed={card.allLoaded}
                 accessibilityLabel={
-                  card.allLoaded
-                    ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
-                    : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
+                  isCustom
+                    ? card.allLoaded
+                      ? 'Unload my custom list from the study dashboard'
+                      : 'Load my custom list into the study dashboard'
+                    : card.allLoaded
+                      ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
+                      : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
                 }
               >
                 {/* "ALL" stays in the label (owner 2026-09-20): the bare verb
@@ -278,7 +297,7 @@ export function EnrollmentSelection({
                     undo of something already done — the text stays amber so it
                     is plainly the same control, but it wears no frame. */}
                 <Text style={s.loadText} numberOfLines={1}>
-                  {card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
+                  {isCustom ? (card.allLoaded ? 'UNLOAD' : 'LOAD') : card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
                 </Text>
               </Pressable>
             </View>
@@ -335,12 +354,15 @@ export function EnrollmentSelection({
           that used to sit below carried a second copy of exactly this
           (owner: "the LED is a repeat of the LED above it"), so that
           panel is gone and its two buttons moved up here. */}
+      {/* No meter on My Custom List: starred terms have no completion %. */}
+      {isCustom ? null : (
       <View style={s.meterRow}>
         <View style={{ flex: 1 }}>
           <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
         </View>
         <Text style={s.pct}>{card.pct}%</Text>
     </View>
+      )}
     </View>
   );
 }

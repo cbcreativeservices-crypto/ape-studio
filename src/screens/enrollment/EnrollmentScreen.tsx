@@ -80,12 +80,12 @@ import {
   useHomeBundles,
   useHomeGs,
 } from '../../features/home/homeCardsStore';
-import { FLAGGED_TOPIC_ID, readTermList, setCustomOnDashboard, useCustomOnDashboard } from '../../features/flags/flaggedStore';
+import { FLAGGED_TOPIC_ID, FLAGGED_TOPIC_NAME, readTermList, setCustomOnDashboard, useCustomOnDashboard, useTermList } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
-import { CERT_BLUE, EnrollmentSelection, PROGRAM_PURPLE, type CarouselCard } from './EnrollmentSelection';
+import { CERT_BLUE, CUSTOM_CYAN, EnrollmentSelection, PROGRAM_PURPLE, type CarouselCard } from './EnrollmentSelection';
 import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
 import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
 import { LabScopeSweep } from './LabScopeSweep';
@@ -1114,6 +1114,8 @@ export const EnrollmentView = memo(function EnrollmentView({
 
   // Whether the user's "My Custom List" rides the Dashboard as a current topic.
   const customOnDash = useCustomOnDashboard();
+  /** The ★ list, for the MY CUSTOM LIST selection's count (owner 2026-10-14). */
+  const starredTerms = useTermList('starred');
 
   // SEE & EDIT → a term-list popup of the custom list (like a flashcards filter's
   // held list); the TermSelectIcons row lets the user edit membership inline.
@@ -1484,7 +1486,21 @@ export const EnrollmentView = memo(function EnrollmentView({
       topicCount: 0,
       allLoaded: false,
     };
-    if (credentials.length === 0) return [all, ghost];
+    /**
+     * MY CUSTOM LIST — a selection of its own, always LAST (owner 2026-10-14:
+     * "add my custom list as another MY ENROLLMENT category"). It replaced the
+     * blue "My Custom List" bar that used to sit above the area.
+     */
+    const custom: CarouselCard = {
+      key: '__custom__',
+      kind: 'custom',
+      title: FLAGGED_TOPIC_NAME,
+      slug: null,
+      pct: 0,
+      topicCount: starredTerms.size,
+      allLoaded: customOnDash,
+    };
+    if (credentials.length === 0) return [all, ghost, custom];
     // (ghost is otherwise unused — a deck with credentials never shows it)
     return [
       all,
@@ -1500,8 +1516,9 @@ export const EnrollmentView = memo(function EnrollmentView({
         allLoaded: b.topics.length > 0 && b.topics.every((gs) => activeGs.has(gs)),
         derived,
       })),
+      custom,
     ];
-  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName]);
+  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName, starredTerms, customOnDash]);
 
   /**
    * ⛔ CLAMP IN RENDER, NOT IN AN EFFECT. An effect resetting this runs one
@@ -1512,6 +1529,11 @@ export const EnrollmentView = memo(function EnrollmentView({
   const safeDeckIndex = Math.min(Math.max(deckIndex, 0), Math.max(0, deckCards.length - 1));
   /** The deck's shape, for the chips' jump targets. */
   const deckKinds = useMemo(() => deckCards.map((c) => c.kind), [deckCards]);
+  /** How many the learner ENROLLED in, for the chips (owner 2026-10-14) — not the derived ones. */
+  const enrolledProgramCount = bundles.filter((b) => b.kind === 'program').length;
+  const enrolledCertCount = bundles.filter((b) => b.kind === 'cert').length;
+  /** The centred selection is My Custom List. */
+  const customCentred = deckCards[safeDeckIndex]?.kind === 'custom';
   /**
    * Is there a REAL credential to step to? A deck with none is `[topics,
    * ghost]` — the ghost being the "Your certificates and programs" placeholder
@@ -1531,10 +1553,11 @@ export const EnrollmentView = memo(function EnrollmentView({
     // the same weight the fixed green had — only the hue changes.
     if (kind === 'program') return 'rgba(176,108,255,.6)'; // #b06cff
     if (kind === 'cert') return 'rgba(47,155,255,.6)'; // #2f9bff
+    if (kind === 'custom') return 'rgba(63,211,230,.6)'; // CUSTOM_CYAN #3fd3e6
     return 'rgba(55,224,95,.55)';
   }, [deckKinds, safeDeckIndex]);
   const hasCredentialCard = useMemo(
-    () => deckKinds.some((k) => k !== 'topics' && k !== 'placeholder'),
+    () => deckKinds.some((k) => k !== 'topics' && k !== 'placeholder' && k !== 'custom'),
     [deckKinds],
   );
 
@@ -2043,88 +2066,9 @@ export const EnrollmentView = memo(function EnrollmentView({
             header, but sticky-header touch handling was intercepting taps on the
             tab buttons (user report 2026-07-22) — so it now scrolls normally. */}
         <View style={styles.topBlock}>
-        {/* "My Custom List" — the user's ★ starred terms as a study deck. The
-            large deck icon + name IS the Custom List; the small deck icon toggles
-            whether it appears on the Dashboard as a current topic; the blue Study
-            icon opens the Dashboard with it present. Placed ABOVE Continue
-            Learning (owner 2026-08-05). */}
-        {/* OFF state: gray border, dimmed background, gray toggle + study icons
-            (study not pressable). The large deck icon, title, and SEE & EDIT stay
-            NORMAL in both states (user request 2026-07-24). */}
-        <View style={[styles.customBar, !customOnDash && styles.customBarOff]}>
-          <View style={styles.customIcon}>
-            <DeckIcon color={colors.blue} size={34} fill={BLUE} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.customName} numberOfLines={1}>
-              My Custom List
-            </Text>
-          </View>
-          {/* SEE & EDIT → the custom-list terms popup (edit membership inline). */}
-          <Pressable
-            onPress={openCustomList}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="See and edit my custom list"
-          >
-            <Text style={styles.customSeeEdit}>SEE &amp; EDIT</Text>
-          </Pressable>
-          {/* Small deck toggle: show/hide the Custom List on the Dashboard. */}
-          <Pressable hitSlop={6}
-            style={styles.bookToggle}
-            onPress={() => setCustomOnDashboard(!customOnDash)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: customOnDash }}
-            aria-pressed={customOnDash}
-            accessibilityLabel={customOnDash ? 'Remove my custom list from the dashboard' : 'Show my custom list on the dashboard'}
-          >
-            <LoadPill on={customOnDash} live={sweepLive} />
-          </Pressable>
-          {/* Study → only when ON (grayed + unpressable when OFF). */}
-          <Pressable hitSlop={6}
-            style={styles.studyNavBtn}
-            onPress={customOnDash ? () => goStudy(FLAGGED_TOPIC_ID) : undefined}
-            disabled={!customOnDash}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: !customOnDash }}
-            aria-disabled={!customOnDash}
-            accessibilityLabel="Study my custom list"
-          >
-            <NavIcon icon="Study" lit={customOnDash} />
-          </Pressable>
-        </View>
-
-        {/* Slim "Continue Learning" banner — notification height. */}
-        {resume ? (
-          <Pressable style={styles.continueBar} onPress={resumeLastOrDashboard} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
-            <View style={styles.continueText}>
-              <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {pctText(resume.gs)}</Text>
-              <Text style={styles.continueName} numberOfLines={1}>
-                Resume {nameFor(resume.gs)}
-              </Text>
-            </View>
-            {/* A meter where the number already is (owner 2026-09-20). Every
-                other row on this screen shows its progress as an LED strip, and
-                the one row that says "continue" — the row most about how far
-                along you are — said it only as a figure in the eyebrow. Small
-                and segWidth 3, matching the requirement rows rather than the
-                full-width card meter. */}
-            <LedMeter
-              filled={segmentsForPct(resume.pct)}
-              segWidth={3}
-              a11yLabel={prog.has(resume.gs) ? `${resume.pct} percent complete` : 'Progress not loaded'}
-              // Without this the announced VALUE is re-derived from the segment
-              // count while the label carries the real number — the same split
-              // fixed in LedMeterWell. 12% announced as 14.
-              a11yPct={resume.pct}
-            />
-            {/* Blue bottom-nav STUDY icon — in the shared studyNavBtn slot so it
-                aligns with the other rows' study icons (user request 2026-07-24). */}
-            <View style={styles.studyNavBtn}>
-              <NavIcon icon="Study" lit />
-            </View>
-          </Pressable>
-        ) : null}
+        {/* The "My Custom List" bar and the "Continue Learning" banner that sat
+            here were removed (owner 2026-10-14): My Custom List is now a
+            selection inside MY ENROLLMENT, which is the very top of the screen. */}
 
         {/* The standalone "REQUIRED CORE COURSES" section was removed (user
             request 2026-07-22) — the cores now live in the My Enrollment list
@@ -2197,12 +2141,18 @@ export const EnrollmentView = memo(function EnrollmentView({
              re-typed. Two hex strings for one meaning is how a palette
              comes apart.
           */}
+          {/* Four chips (owner 2026-10-14) wrap into their own block so the ‹ ›
+              beside them never leave the screen. */}
+          <View style={styles.deckChips}>
           {([
             // "All" alone read as "all of everything" beside Programs and
             // Certificates; it jumps to the ALL TOPICS card (owner 2026-09-20).
-            { k: 'all', label: 'All Topics', tint: GREEN },
-            { k: 'program', label: 'Programs', tint: PROGRAM_PURPLE },
-            { k: 'cert', label: 'Certificates', tint: CERT_BLUE },
+            // Each chip names HOW MANY the learner is enrolled in, and My
+            // Custom List is the fourth (owner 2026-10-14).
+            { k: 'all', label: `${enrolled.length} Topics`, tint: GREEN, name: 'All Topics' },
+            { k: 'program', label: `${enrolledProgramCount} Program${enrolledProgramCount === 1 ? '' : 's'}`, tint: PROGRAM_PURPLE, name: 'Programs' },
+            { k: 'cert', label: `${enrolledCertCount} Certificate${enrolledCertCount === 1 ? '' : 's'}`, tint: CERT_BLUE, name: 'Certificates' },
+            { k: 'custom', label: `${starredTerms.size} Custom List`, tint: CUSTOM_CYAN, name: 'My Custom List' },
           ] as const).map((t) => {
             /**
              * A JUMP, and a readout of where you are — not a filter. The chip
@@ -2229,7 +2179,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 accessibilityRole="button"
                 accessibilityState={{ selected: on, disabled: none }}
                 aria-pressed={on}
-                accessibilityLabel={none ? `No ${t.label.toLowerCase()} yet` : `Jump to ${t.label}`}
+                accessibilityLabel={none ? `No ${t.name.toLowerCase()} yet` : `Jump to ${t.name}, ${t.label}`}
               >
                 {/* ⚠️ The disabled chip keeps its colour and only loses
                     brightness — the 0.4 on the container does that. Greying
@@ -2240,7 +2190,7 @@ export const EnrollmentView = memo(function EnrollmentView({
               </Pressable>
             );
           })}
-          <View style={{ flex: 1 }} />
+          </View>
           {/* ── THE ONLY WAY THROUGH (owner 2026-09-19) ──────────────────
               With the carousel gone these are not a convenience any more —
               they are how you move between selections, so they are large,
@@ -2314,7 +2264,7 @@ export const EnrollmentView = memo(function EnrollmentView({
             the frame, since every other control that acts on the area moved
             out and leaving these behind read as though they belonged to the
             deck. */}
-        {centredBundle ? null : (
+        {centredBundle || customCentred ? null : (
         <View style={styles.filterRow}>
           {FILTER_CHIPS.map((c) => {
             const on = filters.has(c.key);
@@ -2422,6 +2372,10 @@ export const EnrollmentView = memo(function EnrollmentView({
            * missed.
            */
           onToggleLoad={(card) => {
+            if (card.kind === 'custom') {
+              setCustomOnDashboard(!customOnDash);
+              return;
+            }
             if (card.kind === 'topics') {
               setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
               return;
@@ -2429,6 +2383,13 @@ export const EnrollmentView = memo(function EnrollmentView({
             if (centredBundle) setBundleLoad(centredBundle, !card.allLoaded);
           }}
           onStudy={(card) => {
+            if (card.kind === 'custom') {
+              // Studying it puts it on the dashboard (the old bar's study icon
+              // only worked once it was ON).
+              if (!customOnDash) setCustomOnDashboard(true);
+              goStudy(FLAGGED_TOPIC_ID);
+              return;
+            }
             if (card.kind === 'topics') {
               // The first topic the Dashboard will actually SHOW: active, and
               // not the lab-proxy it never decks (see `resume`). enrolled[0]
@@ -2506,7 +2467,26 @@ export const EnrollmentView = memo(function EnrollmentView({
           </>
         ) : null}
 
-        {centredBundle ? null : displayed.length === 0 && displayedBundles.length === 0 ? (
+        {/* MY CUSTOM LIST selected (owner 2026-10-14): its terms, not topics. */}
+        {customCentred ? (
+          <View style={styles.customPanel}>
+            <Text style={styles.customPanelText}>
+              {starredTerms.size === 0
+                ? 'No terms yet. Tap ★ on any glossary term or flashcard to add it here.'
+                : `${starredTerms.size} starred term${starredTerms.size === 1 ? '' : 's'}. LOAD puts this list on your study dashboard as one deck.`}
+            </Text>
+            <Pressable
+              style={styles.customPanelBtn}
+              onPress={openCustomList}
+              accessibilityRole="button"
+              accessibilityLabel="See and edit my custom list"
+            >
+              <Text style={styles.customPanelBtnText}>SEE &amp; EDIT TERMS ›</Text>
+            </Pressable>
+          </View>
+        ) : null}
+
+        {centredBundle || customCentred ? null : displayed.length === 0 && displayedBundles.length === 0 ? (
           <Text style={styles.empty}>
             {enrolled.length === 0 && bundles.length === 0
               ? enrollRead === 'unreadable'
@@ -3090,6 +3070,11 @@ const styles = StyleSheet.create({
   customEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.4, color: BLUE },
   customName: { fontFamily: fonts.oswaldMedium, fontSize: 13, color: colors.textPrimary },
   customSeeEdit: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },
+  // MY CUSTOM LIST selected inside MY ENROLLMENT (owner 2026-10-14).
+  customPanel: { gap: 10, paddingVertical: 4 },
+  customPanelText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  customPanelBtn: { alignSelf: 'flex-start', borderWidth: 1, borderColor: CUSTOM_CYAN, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 14 },
+  customPanelBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: CUSTOM_CYAN },
   // OFF state: gray border + dimmed (de-blued) background.
   customBarOff: { borderColor: 'rgba(255,255,255,.18)', backgroundColor: '#141619' },
   // SEE & EDIT term-list popup.
@@ -3120,6 +3105,7 @@ const styles = StyleSheet.create({
   filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 12 },
   /* Deck navigation — frameless, above the green container it drives. */
   deckNav: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12 },
+  deckChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   deckNavBtn: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 9, backgroundColor: '#131313', paddingVertical: 6, paddingHorizontal: 11, minHeight: 36, justifyContent: 'center' },
   deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
   /* Nothing of that kind enrolled yet — the chip has nowhere to jump, so it

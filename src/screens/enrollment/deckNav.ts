@@ -29,9 +29,9 @@
  * under All with everything else, and inventing a fourth chip for it would
  * push the ‹ › off the row on a phone. It answers 'all', like the ghost.
  */
-export type DeckCardKind = 'topics' | 'program' | 'cert' | 'subject' | 'placeholder';
+export type DeckCardKind = 'topics' | 'program' | 'cert' | 'subject' | 'placeholder' | 'custom';
 /** The three jump targets, in the order the chips are drawn. */
-export type DeckChip = 'all' | 'program' | 'cert';
+export type DeckChip = 'all' | 'program' | 'cert' | 'custom';
 
 /**
  * Where a chip jumps to, or -1 when the deck holds nothing of that kind.
@@ -54,7 +54,7 @@ export function firstIndexOfKind(kinds: readonly DeckCardKind[], chip: DeckChip)
  * yet, so lighting Programs or Certificates over it would claim one exists.
  */
 export function chipForKind(kind: DeckCardKind | undefined): DeckChip {
-  return kind === 'program' || kind === 'cert' ? kind : 'all';
+  return kind === 'program' || kind === 'cert' || kind === 'custom' ? kind : 'all';
 }
 
 /**
