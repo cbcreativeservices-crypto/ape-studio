@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-14 17:16 · ccode · a4412ab3
+changed: feat(lab): owner's slider-pass HOLD decisions (defaults) + Sound Systems map speed-up
+affects other side: nothing (client-only, JS; ships with the post-approval OTA)
+needs: nothing
+
+
 ### 2026-10-14 16:16 · ccode · e989f3b1
 changed: fix(lab): a fast flick whose lift beats the pan activation lands where the finger lifted
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
