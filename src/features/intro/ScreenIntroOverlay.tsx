@@ -9,7 +9,7 @@
  * tutorial designs can replace the content without touching the wiring.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -187,9 +187,13 @@ export function IntroSheet({
           {copy.placeholder !== false ? (
             <Text style={styles.tag}>INTRO / TUTORIAL — PLACEHOLDER</Text>
           ) : null}
-          <Text style={styles.title}>{copy.title}</Text>
-          <View style={styles.rule} />
-          <Text style={styles.body}>{copy.body}</Text>
+          {/* A long intro scrolls inside the card; the title and the button
+              always stay on screen (owner's Enrollments text, 2026-10-15). */}
+          <ScrollView style={styles.scroll} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator>
+            <Text style={styles.title}>{copy.title}</Text>
+            <View style={styles.rule} />
+            <Text style={styles.body}>{copy.body}</Text>
+          </ScrollView>
           {/* The dismiss affordance is there from the first frame — there is
               nothing to wait for any more. */}
           {!copy.button || /^tap /i.test(copy.button) ? (
@@ -250,6 +254,8 @@ const styles = StyleSheet.create({
     // already cap here. Without it this card stretched to 934pt on an iPad —
     // and this one is the FIRST thing a new tablet user sees.
     maxWidth: 460,
+    // Never taller than the screen: the body scrolls instead (2026-10-15).
+    maxHeight: '90%',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(255,180,0,.5)',
@@ -257,6 +263,7 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 10,
   },
+  scroll: { flexGrow: 0, flexShrink: 1 },
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 2, color: '#b98a20' },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, color: colors.textPrimary },
   rule: { width: 44, height: 2, backgroundColor: colors.amber, borderRadius: 1 },

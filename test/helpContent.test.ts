@@ -210,6 +210,10 @@ function helpKeyTerms(): { term: string; file: string }[] {
         for (const m of src.matchAll(/<HelpKey\s+search="([^"]*)"/g)) {
           out.push({ term: m[1], file: p });
         }
+        // The Enrollments ? menu opens Help itself (owner 2026-10-15).
+        for (const m of src.matchAll(/navigate\('Help', \{ search: '([^']*)' \}/g)) {
+          out.push({ term: m[1], file: p });
+        }
       }
     }
   };

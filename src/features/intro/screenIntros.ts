@@ -22,6 +22,7 @@ export type IntroKey =
   | 'flashcardsPower' // T3 — first category long-press, or ~45s in
   | 'glossary'
   | 'awards'
+  | 'enrollments' // My Enrollments Dashboard — first open (owner 2026-10-15); also from its ? menu
   | 'mixingProNote' // Mixing family (Beginning/Advanced Mixing, Mastering, Mixing Guides) — first open
   | 'introVideo'; // onboarding video, first Academy menu visit (owner 2026-10-09) — never drawn as a sheet
 
@@ -138,6 +139,20 @@ export const SCREEN_INTROS: Record<
       'Whether you’re just beginning or already working in the industry, this glossary is designed to help you better understand the language of professional audio.\n\n' +
       'Our content is continually reviewed, expanded, and updated as new technologies, standards, and terminology evolve.\n\n' +
       'Thank you for using the Pro Audio Training Academy Glossary. We hope it becomes a trusted resource throughout your audio journey.',
+  },
+  enrollments: {
+    // Owner-written copy, 2026-10-15. Shown once, on the first open of My
+    // Enrollments Dashboard, and again any time from that page's ? menu.
+    placeholder: false,
+    title: 'Understand What You’ll Encounter',
+    body:
+      'To work confidently in audio, you need to recognize what’s in front of you, know what it’s called, and understand how it works.\n\n' +
+      'That’s why our learning starts with the glossary.\n\n' +
+      'Each topic organizes the language of that field into a foundation of knowledge—from essential concepts and familiar equipment to specialized terms and less common situations.\n\n' +
+      'You’ll learn more than definitions. You’ll explore what things do, why and where they’re used, common mistakes, and how related ideas connect. Flashcards, matching, fill-in-the-blank activities, and scenario questions help you practice and strengthen that understanding.\n\n' +
+      'The goal is to make your field more familiar, so you can identify equipment, understand conversations, recognize potential problems, and approach hands-on training better prepared.\n\n' +
+      'Start with a topic. Build your knowledge. Work toward certificates and program certificates.',
+    button: 'Continue',
   },
   awards: {
     // Ratified by the owner 2026-09-13 (plan §3; rewritten for Achievements

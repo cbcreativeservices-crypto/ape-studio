@@ -15,7 +15,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { HelpKey } from '../../components/HelpKey';
+import { EnrollmentHelpMenu } from '../enrollment/EnrollmentHelpMenu';
+import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -934,11 +935,17 @@ export function AwardsScreen({ navigation, route }: Props) {
         {/* Consistent per-screen help (Pillar C), Enrollments page only —
             lands in the hub with the enrollment answers surfaced (LOADED/
             UNLOADED, add/remove, reorder, meters, HOME SETUP). */}
-        {currentKey === 'enrollment' ? <HelpKey search="enroll" /> : null}
+        {/* Enrollments' ? is a small menu: the intro again, or Help (owner 2026-10-15). */}
+        {currentKey === 'enrollment' ? <EnrollmentHelpMenu /> : null}
       </Pressable>
+      {/* First open of My Enrollments Dashboard: the owner's intro, once (2026-10-15). */}
+      {currentKey === 'enrollment' ? <ScreenIntroOverlay introKey="enrollments" /> : null}
 
       {/* Category buttons (user request 2026-07-18): CURRICULUM · SPECIALIZATION
           · PROGRAM — tap to switch between the three side-by-side pages. */}
+      {/* No page-button row on My Enrollments Dashboard (owner 2026-10-15): it is
+          its own destination now (Home's card); HOME leaves it. */}
+      {currentKey === 'enrollment' ? null : (
       <View style={styles.tabRow} accessibilityRole="tablist">
         {PAGE_ORDER.map((c, i) => {
           const active = i === idx;
@@ -972,6 +979,7 @@ export function AwardsScreen({ navigation, route }: Props) {
           );
         })}
       </View>
+      )}
 
       <FlatList
         ref={listRef}

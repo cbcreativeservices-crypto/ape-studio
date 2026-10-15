@@ -63,7 +63,7 @@ const REACT = mod(`
   }
   export default { useState, useRef, useCallback, useEffect };`);
 const JSX = mod(`export const jsx = () => null; export const jsxs = () => null; export const Fragment = 'F';`);
-const RN = mod(`export const Pressable = 'P'; export const Text = 'T'; export const View = 'V'; export const StyleSheet = { create: (s) => s };`);
+const RN = mod(`export const Pressable = 'P'; export const Text = 'T'; export const View = 'V'; export const ScrollView = 'SV'; export const StyleSheet = { create: (s) => s };`);
 const NAV = mod(`export const useIsFocused = () => true;`);
 const FAKE_AS = mod(`
   const s = globalThis.__HSE2_AS__;
