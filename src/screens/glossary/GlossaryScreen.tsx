@@ -4044,7 +4044,21 @@ ${COPY.glossaryFreeAllowance}`,
         <HelpDot onPress={glossaryHelp.open} label="Help — using the glossary" />
       </View>
 
-      {/* No search field in full-screen (card) view (owner 2026-10-14). */}
+      {/* No search field in full-screen (card) view (owner 2026-10-14) — but a
+          search still filtering the cards says so, with a way to clear it. */}
+      {cardView && search.trim() !== '' ? (
+        <Pressable
+          style={styles.cardSearchPill}
+          onPress={clearSearch}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`Showing results for ${search.trim()}. Clear the search`}
+        >
+          <Text style={styles.cardSearchPillText}>
+            Results for “{search.trim()}”  ✕
+          </Text>
+        </Pressable>
+      ) : null}
       {cardView ? null : (
       <View style={styles.searchBox}>
         {/* Search glyph always on the left (Booth 2026-07-15). */}
@@ -4829,6 +4843,9 @@ const styles = StyleSheet.create({
   // In the filter row: the chips' fixed height and type (owner 2026-10-14).
   rowToggle: { height: 40, paddingVertical: 0, paddingHorizontal: 14, justifyContent: 'center' },
   rowToggleText: { fontSize: 13 },
+  /** Card view: the active search, shown small with a clear ✕ (2026-10-15). */
+  cardSearchPill: { alignSelf: 'flex-start', marginTop: 8, borderWidth: 1, borderColor: colors.hairline, borderRadius: 14, paddingVertical: 5, paddingHorizontal: 12, backgroundColor: '#161616' },
+  cardSearchPillText: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSecondary },
   /** Full screen / ✕ wears the Flashcards green (owner 2026-10-14). */
   cardsToggleGreen: { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,0.10)' },
   /** The mode that is NOT live, on the BEG/ADV key. */
