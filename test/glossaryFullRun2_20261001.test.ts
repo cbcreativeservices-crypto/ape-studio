@@ -55,8 +55,10 @@ test('the detail body read is bounded, and both callers use it', () => {
   const helper = src.slice(src.indexOf('async function readStudyDetail'), src.indexOf('function sessionCache'));
   assert.match(helper, /await softDeadline</);
   assert.match(helper, /\{ data: null \},\s*'glossary_study_v detail',\s*DETAIL_DEADLINE_MS/);
-  // glossary_study_v is read only inside the helper now.
-  assert.equal((src.match(/\.from\('glossary_study_v'\)/g) ?? []).length, 1);
+  // glossary_study_v is read in the helper, plus the bounded BEG preview read
+  // (owner 2026-10-14) — also through softDeadline.
+  assert.equal((src.match(/\.from\('glossary_study_v'\)/g) ?? []).length, 2);
+  assert.match(src, /'glossary_study_v plain previews',\s*DETAIL_DEADLINE_MS/);
   const fd = src.slice(src.indexOf('const fetchDetails = useCallback('), src.indexOf('const retryDetails'));
   assert.match(fd, /const data = await readStudyDetail\(id\);[\s\S]*if \(!data\) \{\s*setDetailErrs/);
   const gd = src.slice(src.indexOf('const getDetail = useCallback('), src.indexOf('const buildShareTerm'));

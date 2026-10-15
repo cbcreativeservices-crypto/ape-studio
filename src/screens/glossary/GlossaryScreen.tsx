@@ -122,6 +122,9 @@ import { useInFlightLatch } from '../../lib/latch';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
+import { ExitFullscreenIcon, FullscreenIcon } from '../../components/FullscreenIcon';
+import { MethodIcon } from '../../components/MethodIcon';
+import { CUSTOM_CYAN } from '../enrollment/EnrollmentSelection';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { softDeadline } from '../../lib/boundedCall';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
@@ -2788,6 +2791,64 @@ ${COPY.glossaryFreeAllowance}`,
   const defTier: 'member' | 'free' | null = resolved ? (isMember ? 'member' : 'free') : null;
   const defTierRef = useRef(defTier);
   defTierRef.current = defTier;
+
+  /**
+   * BEG PREVIEWS (owner 2026-10-14: "when BEG/ADV changes, the definitions
+   * below show their preview correctly"). The corpus never carries
+   * plain_english (see loadAllEntries), so a collapsed row always previewed the
+   * official definition. While BEG is on, the plain-English text of the rows on
+   * screen is fetched in one coalesced read and kept here. Every term HAS one
+   * (all 32,119, checked 2026-10-14); the study view returns it to members and,
+   * for everyone, on the two free topics — other rows answer NULL and keep
+   * their definition.
+   */
+  const [plainById, setPlainById] = useState<ReadonlyMap<string, string>>(() => new Map());
+  const plainAskedRef = useRef<Set<string>>(new Set());
+  const plainPendingRef = useRef<Set<string>>(new Set());
+  const plainTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const plainGenRef = useRef(0);
+  const queuePlain = useCallback((id: string) => {
+    if (!defTierRef.current) return; // entitlement not resolved yet
+    if (plainAskedRef.current.has(id) || plainPendingRef.current.has(id)) return;
+    plainPendingRef.current.add(id);
+    if (plainTimerRef.current) return;
+    plainTimerRef.current = setTimeout(() => {
+      plainTimerRef.current = null;
+      const ids = [...plainPendingRef.current];
+      plainPendingRef.current.clear();
+      for (const i of ids) plainAskedRef.current.add(i);
+      const gen = plainGenRef.current;
+      void softDeadline<{ data: { glossary_id: string; plain_english: string | null }[] | null }>(
+        async () => ({
+          data: (
+            await supabase.from('glossary_study_v').select('glossary_id, plain_english').in('glossary_id', ids)
+          ).data as { glossary_id: string; plain_english: string | null }[] | null,
+        }),
+        { data: null },
+        'glossary_study_v plain previews',
+        DETAIL_DEADLINE_MS,
+      ).then(({ data }) => {
+        if (gen !== plainGenRef.current) return;
+        if (!data) {
+          for (const i of ids) plainAskedRef.current.delete(i); // retry when redrawn
+          return;
+        }
+        const found = data.filter((r) => r.plain_english);
+        if (!found.length) return;
+        setPlainById((prev) => {
+          const next = new Map(prev);
+          for (const r of found) next.set(r.glossary_id, r.plain_english as string);
+          return next;
+        });
+      });
+    }, 60);
+  }, []);
+  // A different reader never keeps the last one's plain-English text.
+  useEffect(() => {
+    plainGenRef.current += 1;
+    plainAskedRef.current = new Set();
+    setPlainById(new Map());
+  }, [defTier, readerUid]);
   /**
    * ⛔ THE DEVICE COPY IS RE-TAGGED ONLY ON A SETTLED TIER (wrap-up 2026-10-04).
    * A member whose membership read FAILED with no remembered tier resolves as
@@ -3536,6 +3597,7 @@ ${COPY.glossaryFreeAllowance}`,
     ({ item }: { item: Entry }) => {
       // Ask for this row's definition the first time it is drawn.
       if (!item.definition) queueDefinition(item.id);
+      if (ttsBeg) queuePlain(item.id);
       // List view expands INLINE; card view stays compact and opens the
       // popup overlay instead (below).
       const expanded = !cardView && expandedIds.has(item.id);
@@ -3669,7 +3731,7 @@ ${COPY.glossaryFreeAllowance}`,
             // BEG order (Booth 2026-07-11): plain-English on top.
             <>
               <LinkedText
-                text={ttsBeg ? item.plain_english || item.definition : item.definition}
+                text={ttsBeg ? plainById.get(item.id) || details[item.id]?.plain_english || item.plain_english || item.definition : item.definition}
                 style={[styles.definition, ttsBeg && styles.definitionBeg]}
                 selfId={item.id}
                 index={termIndex}
@@ -3711,7 +3773,7 @@ ${COPY.glossaryFreeAllowance}`,
               style={[styles.definition, ttsBeg && styles.definitionBeg]}
               numberOfLines={collapsedDefinitionLines(cardView, capped)}
             >
-              {highlightNodes(ttsBeg ? item.plain_english || item.definition : item.definition, hq)}
+              {highlightNodes(ttsBeg ? plainById.get(item.id) || details[item.id]?.plain_english || item.plain_english || item.definition : item.definition, hq)}
             </Text>
           )}
 
@@ -3762,7 +3824,7 @@ ${COPY.glossaryFreeAllowance}`,
     // `defRev`: definitions merge INTO the entry objects, so the bump is the
     // only signal that a row's text changed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, shareTerm, toggleFav, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, defRev],
+    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, plainById, queuePlain, shareTerm, toggleFav, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, defRev],
   );
 
   // Help for this screen (internal-help pass, owner 2026-09-08).
@@ -3794,8 +3856,8 @@ ${COPY.glossaryFreeAllowance}`,
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, plainById, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    [expandedIds, focusedId, details, cardView, ttsBeg, plainById, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -3860,12 +3922,13 @@ ${COPY.glossaryFreeAllowance}`,
 
   /** CARDS/LIST and ADV/BEG — rendered in the filter row (owner 2026-10-14), or in
    *  the header while a card popup hides that row. */
-  const viewToggles = (inRow: boolean) => (
+  // Σ (the Calculator Laboratory shortcut) was removed from the Glossary (owner 2026-10-14).
+  const cardsToggle = (inRow: boolean) => (
     <>
           {/* Cards/List toggle lives here now — always visible, both modes, so it
               stays reachable even while a term/popup is expanded (Booth 2026-07-09b). */}
           <Pressable
-            style={[styles.headerToggle, inRow && styles.rowToggle]}
+            style={[styles.headerToggle, inRow && styles.rowToggle, styles.cardsToggleGreen]}
             onPress={() => {
               // Toggle the view ONLY — keep the focused term (Booth 2026-07-09c).
               // Popup trail ⇄ inline list expansion carry the focused term.
@@ -3890,8 +3953,18 @@ ${COPY.glossaryFreeAllowance}`,
             accessibilityRole="button"
             accessibilityLabel={cardView ? 'Switch to list view' : 'Switch to cards view'}
           >
-            <Text style={[styles.headerToggleText, inRow && styles.rowToggleText]}>{cardView ? 'LIST' : 'CARDS'}</Text>
+            {/* The Flashcards full-screen glyph to open card view, inward arrows to leave it
+              (owner 2026-10-14, replacing the CARDS / LIST words). */}
+          {cardView ? (
+            <ExitFullscreenIcon color={colors.green} size={20} />
+          ) : (
+            <FullscreenIcon color={colors.green} size={20} />
+          )}
           </Pressable>
+    </>
+  );
+  const begToggle = (inRow: boolean) => (
+    <>
           {/* Which definition the speakers read (Booth 2026-07-10):
               ADV = official definition (default) · BEG = plain English. */}
           <Pressable
@@ -3917,7 +3990,12 @@ ${COPY.glossaryFreeAllowance}`,
           >
             {/* BEG/ADV label now uses the standard amber header colour — the
                 purple/blue tinting was removed (user request 2026-07-22). */}
-            <Text style={[styles.headerToggleText, inRow && styles.rowToggleText]}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
+            {/* Both modes named, the live one lit (owner 2026-10-14: "BEG/ADV"). */}
+          <Text style={[styles.headerToggleText, inRow && styles.rowToggleText]}>
+            <Text style={ttsBeg ? null : styles.toggleOff}>BEG</Text>
+            <Text style={styles.toggleOff}>/</Text>
+            <Text style={ttsBeg ? styles.toggleOff : null}>ADV</Text>
+          </Text>
           </Pressable>
     </>
   );
@@ -3947,22 +4025,18 @@ ${COPY.glossaryFreeAllowance}`,
           <NavIcon icon="Home" lit />
         </Pressable>
         <Text style={styles.title} numberOfLines={1}>GLOSSARY</Text>
-        {/* CARDS / ADV sit in the filter row (owner 2026-10-14); they come up
-            here only while a CARD popup hides that row, so LIST is always reachable. */}
-        {popupTrail.length > 0 ? viewToggles(false) : null}
-        {/* Σ — jump straight to the Audio Calculator Laboratory (owner
-            2026-07-29). Opened from the glossary, so its own ‹ back (goBack)
-            returns the user HERE, not to the lab menu. Purple to distinguish it
-            from the amber view toggles. */}
-        <Pressable
-          style={styles.sigmaBtn}
-          onPress={() => (navigation as any).navigate('CalcLab')}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel="Open the Audio Calculator Laboratory"
-        >
-          <Text style={styles.sigmaText}>Σ</Text>
-        </Pressable>
+        {/* The blue glossary book mark, right of the title (owner 2026-10-14). Decorative. */}
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <MethodIcon method="glossary" size={34} />
+        </View>
+        {/* BEG/ADV and full screen sit in the filter row (owner 2026-10-14); they
+            come up here only while a CARD popup hides that row, so LIST is always reachable. */}
+        {popupTrail.length > 0 ? (
+          <>
+            {begToggle(false)}
+            {cardsToggle(false)}
+          </>
+        ) : null}
         <View style={{ flex: 1 }} />
         {/* The term count lives ONLY above the list now (single source of truth).
             The duplicate header count was removed (owner 2026-09-14) — it could
@@ -3970,6 +4044,8 @@ ${COPY.glossaryFreeAllowance}`,
         <HelpDot onPress={glossaryHelp.open} label="Help — using the glossary" />
       </View>
 
+      {/* No search field in full-screen (card) view (owner 2026-10-14). */}
+      {cardView ? null : (
       <View style={styles.searchBox}>
         {/* Search glyph always on the left (Booth 2026-07-15). */}
         <Text style={styles.searchGlyph}>⌕</Text>
@@ -4005,6 +4081,7 @@ ${COPY.glossaryFreeAllowance}`,
             Absent until a build bundles the speech-recognition native module. */}
         {GlossaryDictation ? <GlossaryDictation onText={onSearchChange} /> : null}
       </View>
+      )}
 
       {/* Filters never scroll — they wrap in place (Booth 2026-07-09b). In LIST
           mode they stay visible even while a definition is expanded (the term
@@ -4012,6 +4089,7 @@ ${COPY.glossaryFreeAllowance}`,
       {popupTrail.length === 0 && (
         <>
       <View style={styles.chipRow}>
+        {begToggle(true)}
         <Chip
           label="All"
           accent="#37e05f"
@@ -4056,15 +4134,16 @@ ${COPY.glossaryFreeAllowance}`,
         />
         {/* Custom list (★ starred) filter — new (user request 2026-07-22). */}
         <Chip
-          label="Custom"
-          accent="#2f9bff"
+          label="Custom Study List"
+          accent={CUSTOM_CYAN}
           active={filter === 'custom'}
           icon={(c) => (
             // "CUSTOM" + the 3-card deck glyph; count removed (shown in the
             // top-right "# Terms" readout, user request 2026-07-24).
             <View style={styles.chipIconWrap}>
-              <Text style={[styles.chipText, { color: c }]}>CUSTOM</Text>
-              <DeckIcon color={c} size={16} fill={filter === 'custom' ? `${c}33` : 'none'} />
+              <Text style={[styles.chipText, { color: c }]}>CUSTOM STUDY LIST</Text>
+              {/* The deck stays cyan, as on Enrollments, lit or not (owner 2026-10-14). */}
+              <DeckIcon color={CUSTOM_CYAN} size={16} fill={filter === 'custom' ? `${CUSTOM_CYAN}33` : 'none'} />
             </View>
           )}
           onPress={() => {
@@ -4083,7 +4162,7 @@ ${COPY.glossaryFreeAllowance}`,
             setTopicPickerOpen(false);
           }}
         />
-        {viewToggles(true)}
+        {cardsToggle(true)}
       </View>
 
         </>
@@ -4361,6 +4440,15 @@ ${COPY.glossaryFreeAllowance}`,
                           </Pressable>
                         ) : null}
                         <SpeakButton text={speakTextFor(item, ttsBeg)} size={24} />
+                        {/* Share from the open card too, not only the list (owner 2026-10-14). */}
+                        <Pressable
+                          onPress={() => void shareTerm(item)}
+                          hitSlop={14}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Share ${item.term}`}
+                        >
+                          <ShareIcon size={22} color={colors.textMuted} />
+                        </Pressable>
                       </View>
                       {/* Media image right after the term (user request 2026-07-18). */}
                       {mediaById[item.id] ? (
@@ -4386,7 +4474,7 @@ ${COPY.glossaryFreeAllowance}`,
                           own; the escape gesture goes back one hop. */}
                       <Pressable onPress={popupBack} accessible={false} onAccessibilityEscape={popupBack}>
                         <LinkedText
-                          text={ttsBeg ? item.plain_english || item.definition : item.definition}
+                          text={ttsBeg ? plainById.get(item.id) || details[item.id]?.plain_english || item.plain_english || item.definition : item.definition}
                           style={styles.cardPopupDef}
                           selfId={item.id}
                           index={termIndex}
@@ -4729,7 +4817,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingTop: 16 },
   // flexShrink so the GLOSSARY title yields FIRST when the row is tight — the
   // right-side "N Terms" count stays fully anchored on the right (owner 2026-08-01).
-  title: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
+  title: { flexShrink: 1, marginLeft: 10, fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   headerToggle: {
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -4741,6 +4829,12 @@ const styles = StyleSheet.create({
   // In the filter row: the chips' fixed height and type (owner 2026-10-14).
   rowToggle: { height: 40, paddingVertical: 0, paddingHorizontal: 14, justifyContent: 'center' },
   rowToggleText: { fontSize: 13 },
+  /** Full screen / ✕ wears the Flashcards green (owner 2026-10-14). */
+  cardsToggleGreen: { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,0.10)' },
+  /** The mode that is NOT live, on the BEG/ADV key. */
+  toggleOff: { opacity: 0.38 },
+  /** ✕ = leave card view (the Flashcards full-screen close). */
+  cardViewClose: { fontSize: 16, letterSpacing: 0 },
   headerToggleText: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
