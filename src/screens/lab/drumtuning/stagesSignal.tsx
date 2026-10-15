@@ -26,13 +26,17 @@ import { F2, FONT, FONT_S, W, ink } from './stagesDrum';
 
 /* ── the strike on its time base ─────────────────────────────────────────── */
 
-export const WAVE_H = 200;
+export const WAVE_H = 220;
 export const WAVE_ASPECT = W / WAVE_H;
 
 /**
  * The rendered hit: min/max columns over the clip's real seconds, coloured
- * per column on the amplitude ramp; the measured RMS envelope (dB) drawn
- * over it; the T60 marker; the playhead riding the sounding clip.
+ * per column on the amplitude ramp — ONE clean signal, no dB numbers on its
+ * axis. The measured RMS envelope (dB) lives in its OWN strip under it, on
+ * its own 0 … −60 dB scale and the same time axis, with the T60 marker
+ * (owner 2026-10-15: drawn over the wave, the loudness line read as part of
+ * the wave and its −6/−12 labels read as waveform values). The playhead
+ * rides the sounding clip through both.
  */
 /** A GOAL drawn on the time axis (Chapter 5): the sustain the goal asks for,
  *  as a shaded zone the T60 mark has to land in. */
@@ -57,10 +61,16 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
   const fs = FONT * bst;
   const fsS = FONT_S * bst;
   const f2 = F2 * bst;
-  const top = 22;
-  const bot = 150;
+  // The waveform box (most of the height) …
+  const top = 8;
+  const bot = 104;
   const mid = (top + bot) / 2;
   const half = (bot - top) / 2;
+  // … and the loudness strip under it: its own dB scale, same time axis.
+  const lTop = 120;
+  const lBot = 162;
+  const DB_TICKS = [0, -20, -40, -60];
+  const dbY = (db: number) => lBot - Math.max(0, Math.min(1, (db + 60) / 60)) * (lBot - lTop);
   const x0 = 30;
   const x1 = W - 8;
   const cols = ov?.hi.length ?? 0;
@@ -70,11 +80,11 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
     transform: [{ translateX: (x0 + progress.value * (x1 - x0)) * s }],
     opacity: playing ? 1 : 0,
   }));
-  // Envelope line: dB (0 … −60) → y over the lower half of the box.
+  // Envelope line: dB (0 … −60) → y over the loudness strip only.
   const envPath = useMemo(() => {
     if (!envDb || !envDb.length) return '';
     const n = envDb.length;
-    return envDb.map((db, i) => `${i === 0 ? 'M' : 'L'}${(x0 + (i / (n - 1)) * (x1 - x0)).toFixed(1)} ${(bot - Math.max(0, Math.min(1, (db + 60) / 60)) * (bot - top)).toFixed(1)}`).join('');
+    return envDb.map((db, i) => `${i === 0 ? 'M' : 'L'}${(x0 + (i / (n - 1)) * (x1 - x0)).toFixed(1)} ${(lBot - Math.max(0, Math.min(1, (db + 60) / 60)) * (lBot - lTop)).toFixed(1)}`).join('');
   }, [envDb]);
   const t60X = t60 != null ? x0 + Math.min(1, t60 / seconds) * (x1 - x0) : null;
   const ticks = Math.max(1, Math.floor(seconds * 2));
@@ -84,25 +94,38 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
     <View style={{ width, height }}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${WAVE_H}`}>
         <Rect x={0} y={0} width={W} height={WAVE_H} fill={ink.bg} />
+        {/* WAVEFORM box: one clean signal, no dB numbers on its axis */}
         <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
-        {/* the goal zone: where the T60 mark has to land */}
-        {target && tX != null ? (
-          <G>
-            <Rect x={target.kind === 'max' ? x0 : tX} y={top} width={target.kind === 'max' ? tX - x0 : x1 - tX} height={bot - top} fill={tTint} opacity={0.1} />
-            <Line x1={tX} y1={top} x2={tX} y2={bot} stroke={tTint} strokeWidth={0.9} strokeDasharray="2,2" />
-            <SvgText x={target.kind === 'max' ? Math.max(x0 + 3, tX - 3) : Math.min(tX + 3, x1 - 90)} y={bot - 5} fontSize={fsS} fill={tTint} textAnchor={target.kind === 'max' ? 'end' : 'start'} fontFamily={fonts.barlowMedium}>{target.label}</SvgText>
-          </G>
-        ) : null}
-        {[0, -6, -12].map((db) => {
-          const dy = half * Math.pow(10, db / 20);
+        {/* LOUDNESS strip: its own dB scale, same time axis */}
+        <Rect x={x0} y={lTop} width={x1 - x0} height={lBot - lTop} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
+        {/* time gridlines through both boxes, so a moment above lines up with its loudness below */}
+        {Array.from({ length: ticks - 1 }, (_, k) => {
+          const x = x0 + ((k + 1) / ticks) * (x1 - x0);
           return (
-            <G key={db}>
-              <Line x1={x0} y1={mid - dy} x2={x1} y2={mid - dy} stroke="#1f1f24" strokeWidth={0.6} />
-              <Line x1={x0} y1={mid + dy} x2={x1} y2={mid + dy} stroke="#1f1f24" strokeWidth={0.6} />
-              <SvgText x={x0 - 3} y={mid - dy + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
+            <G key={`g${k}`}>
+              <Line x1={x} y1={top} x2={x} y2={bot} stroke="#1f1f24" strokeWidth={0.6} />
+              <Line x1={x} y1={lTop} x2={x} y2={lBot} stroke="#1f1f24" strokeWidth={0.6} />
             </G>
           );
         })}
+        {/* the goal zone: where the T60 mark has to land (shaded through both boxes; the T60 mark is on the strip) */}
+        {target && tX != null ? (
+          <G>
+            <Rect x={target.kind === 'max' ? x0 : tX} y={top} width={target.kind === 'max' ? tX - x0 : x1 - tX} height={bot - top} fill={tTint} opacity={0.1} />
+            <Rect x={target.kind === 'max' ? x0 : tX} y={lTop} width={target.kind === 'max' ? tX - x0 : x1 - tX} height={lBot - lTop} fill={tTint} opacity={0.1} />
+            <Line x1={tX} y1={top} x2={tX} y2={bot} stroke={tTint} strokeWidth={0.9} strokeDasharray="2,2" />
+            <Line x1={tX} y1={lTop} x2={tX} y2={lBot} stroke={tTint} strokeWidth={0.9} strokeDasharray="2,2" />
+            <SvgText x={target.kind === 'max' ? Math.max(x0 + 3, tX - 3) : Math.min(tX + 3, x1 - 90)} y={bot - 5} fontSize={fsS} fill={tTint} textAnchor={target.kind === 'max' ? 'end' : 'start'} fontFamily={fonts.barlowMedium}>{target.label}</SvgText>
+          </G>
+        ) : null}
+        {/* the strip's own dB scale (fewer ticks when the 9 pt floor boosts the text) */}
+        {(fsS > 13 ? [0, -30, -60] : DB_TICKS).map((db) => (
+          <G key={`db${db}`}>
+            {db !== 0 && db !== -60 ? <Line x1={x0} y1={dbY(db)} x2={x1} y2={dbY(db)} stroke="#1f1f24" strokeWidth={0.6} /> : null}
+            <SvgText x={x0 - 3} y={dbY(db) + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
+          </G>
+        ))}
+        {tiny ? null : <SvgText x={x0} y={lTop - 4} fontSize={fsS} fill={colors.textPrimary} opacity={0.85} fontFamily={fonts.barlowMedium}>LOUDNESS (dB)</SvgText>}
         {/* ⛔ ZERO LINE BEHIND THE WAVEFORM, faint (owner 2026-10-14). Drawn on
             top it cut through every swing and read as a second wave. */}
         <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={0.9} opacity={0.5} />
@@ -117,9 +140,9 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
         {envPath ? <Path d={envPath} stroke={colors.textPrimary} strokeWidth={1.1} fill="none" opacity={0.85} /> : null}
         {t60X != null && ov ? (
           <G>
-            <Line x1={t60X} y1={top} x2={t60X} y2={bot} stroke={ink.green} strokeWidth={0.9} strokeDasharray="3,2" />
-            {/* the label never runs off the glass: it flips to the left of the mark near the right edge */}
-            <SvgText x={t60X > x1 - 78 ? t60X - 3 : t60X + 3} y={top + 11} fontSize={fs} fill={ink.green} textAnchor={t60X > x1 - 78 ? 'end' : 'start'} fontFamily={fonts.mono}>T60 ≈ {t60!.toFixed(2)} s</SvgText>
+            <Line x1={t60X} y1={lTop} x2={t60X} y2={lBot} stroke={ink.green} strokeWidth={0.9} strokeDasharray="3,2" />
+            {/* on the loudness strip; the label never runs off the glass: it flips to the left of the mark near the right edge */}
+            <SvgText x={t60X > x1 - 78 ? t60X - 3 : t60X + 3} y={lTop + 11} fontSize={fs} fill={ink.green} textAnchor={t60X > x1 - 78 ? 'end' : 'start'} fontFamily={fonts.mono}>T60 ≈ {t60!.toFixed(2)} s</SvgText>
           </G>
         ) : null}
         {/* time axis; the last tick's label is anchored to its end so it stays on the glass */}
@@ -129,15 +152,15 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
           const last = k === ticks;
           return (
             <G key={k}>
-              <Line x1={x} y1={bot} x2={x} y2={bot + 4} stroke={ink.dim} strokeWidth={0.8} />
-              <SvgText x={x} y={bot + 14} fontSize={fsS} fill={ink.dim} textAnchor={last ? 'end' : k === 0 ? 'start' : 'middle'} fontFamily={fonts.mono}>{t.toFixed(1)}s</SvgText>
+              <Line x1={x} y1={lBot} x2={x} y2={lBot + 4} stroke={ink.dim} strokeWidth={0.8} />
+              <SvgText x={x} y={lBot + 14} fontSize={fsS} fill={ink.dim} textAnchor={last ? 'end' : k === 0 ? 'start' : 'middle'} fontFamily={fonts.mono}>{t.toFixed(1)}s</SvgText>
             </G>
           );
         })}
         {tiny ? null : <SvgText x={x0} y={WAVE_H - 20} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>}
-        {tiny ? null : <SvgText x={x0} y={WAVE_H - 5} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowMedium}>real time base · white = loudness · green = gone</SvgText>}
+        {tiny ? null : <SvgText x={x0} y={WAVE_H - 5} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowMedium}>real time base · loudness (dB) below · green = gone</SvgText>}
       </Svg>
-      <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: top * s, width: Math.max(1, 1.2 * s), height: (bot - top) * s, backgroundColor: colors.textPrimary }, headStyle]} />
+      <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: top * s, width: Math.max(1, 1.2 * s), height: (lBot - top) * s, backgroundColor: colors.textPrimary }, headStyle]} />
     </View>
   );
 }

@@ -204,7 +204,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="one hit, left to right in real time; the white line is how loud it is." prompt="▶ STRIKE, then change STRIKE and DAMPING and strike again." />
+              <Landing looking="one hit, left to right in real time; the white line in the strip below is how loud it is." prompt="▶ STRIKE, then change STRIKE and DAMPING and strike again." />
               <DrumStatus playing={qual.playing} pending={qual.pending} failed={qual.failed} rendering={qual.status === 'rendering'} idle="stopped · press ▶ STRIKE; ride STRIKE and DAMPING and press again" label="the strike" />
               <Card>
                 <Point title="The four things a tuner listens for">PITCH is the note you hear first. OVERTONES are the notes above it (the share of the hit above three times the pitch). SUSTAIN is how long the note lasts — the time it takes to fall 60 dB, which the lab calls T60. BEND is how sharp the note starts before it glides down.</Point>
