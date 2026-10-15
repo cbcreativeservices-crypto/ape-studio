@@ -70,9 +70,10 @@ describe('T1 — Splash and Home hold at the largest standard text size', () => 
     assert.match(g, /textAlign: 'center'/);
   });
 
-  test('the five chips shrink to fit at the cap instead of truncating', () => {
+  // Four chips since 2026-10-14: Enrollments became its own Home card.
+  test('the four chips shrink to fit at the cap instead of truncating', () => {
     const s = code(HOME);
-    for (const label of ['Explore', 'Certificates', 'Programs', 'Pro Registry', 'Enrollments']) {
+    for (const label of ['Explore', 'Certificates', 'Programs', 'Pro Registry']) {
       const re = new RegExp(
         `maxFontSizeMultiplier=\\{HOME_MAX\\}\\s+numberOfLines=\\{1\\}\\s+adjustsFontSizeToFit\\s+minimumFontScale=\\{0\\.6\\}\\s*>\\s*${label}\\s*</Text>`,
       );

@@ -20,6 +20,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  ImageBackground,
   Pressable,
   StyleSheet,
   Text,
@@ -67,6 +68,9 @@ import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markE
 type Card =
   | { kind: 'tools'; id: 'tools' }
   | { kind: 'glossary'; id: 'glossary' }
+  /** MY ENROLLMENTS (owner 2026-10-14): right of the Glossary card — the way into
+   *  the Enrollments screen from Home (it replaced the green ENROLLMENTS button). */
+  | { kind: 'enrollments'; id: 'enrollments' }
   /** Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner request
    *  2026-07-26; was right of tools/glossary). Opens the 'AudioLearning' fork
    *  (Fundamentals vs Training Labs) → 'EarLab' (NOT a ToolsHub tile). */
@@ -248,6 +252,8 @@ export function deckHeadline(kind: Card['kind'] | undefined): string {
       return 'Find Your Audio Career';
     case 'glossary':
       return 'Look Up a Term';
+    case 'enrollments':
+      return 'Manage Your Learning';
     case 'startHere':
       return 'Begin Here';
     case 'freeTopic':
@@ -400,6 +406,8 @@ function rawCardTitle(item: Card): string | null {
       return 'Measurement and Analysis Tools';
     case 'glossary':
       return 'Professional Audio Glossary';
+    case 'enrollments':
+      return 'My Enrollments Dashboard';
     case 'lab':
       return 'Audio Fundamentals & Advanced Training Labs';
     case 'startHere':
@@ -428,6 +436,7 @@ function dotColorFor(card: Card): string {
   switch (card.kind) {
     case 'tools':
     case 'glossary':
+    case 'enrollments':
     case 'lab':
     case 'startHere':
     case 'careerFinder':
@@ -461,6 +470,17 @@ const LAB_PROXY_GS = 3081;
  *  own card beside it. The remaining two stay enrolled and studyable, just not
  *  advertised here. */
 const CAROUSEL_HIDDEN_PREREQ_GS: readonly number[] = [3070, 4370];
+
+/** The Enrollments first-run cue (after Explore, until the first enrolment) —
+ *  moved from the removed green ENROLLMENTS button to the card's button
+ *  (owner 2026-10-14). Its own component so the hook is not conditional. */
+function EnrollmentsCue() {
+  const attract = useHomeAttract();
+  return <AttractRing active={attract.enrollments} variant="green" />;
+}
+
+/** MY ENROLLMENTS card art (owner 2026-10-14) — bundled, see the card. */
+const ENROLLMENTS_CARD_ART = require('../../../assets/home-cards/enrollments_card.webp');
 
 function cardImageUrl(key: string): string | null {
   const f = CARD_IMAGE[key];
@@ -656,6 +676,7 @@ function CourseCardView({
   onOpenStartHere,
   onOpenCalculators,
   onOpenCareerFinder,
+  onOpenEnrollments,
   onOpenPublic,
   onLockedPress,
   onOpenMore,
@@ -675,6 +696,8 @@ function CourseCardView({
   onOpenCalculators: () => void;
   /** Open the Audio Career Finder. */
   onOpenCareerFinder: () => void;
+  /** Open My Enrollments Dashboard (the Enrollments page of the pager). */
+  onOpenEnrollments: () => void;
   /** CM6: open a public course → its commercial dashboard. `isFreeTopic` marks
    *  the free-topic taster cards, which a guest may open (paid cards are gated). */
   onOpenPublic: (order: number, isFreeTopic?: boolean, focusGs?: number) => void;
@@ -958,6 +981,52 @@ function CourseCardView({
   // image-backed language as Start Here. Calculators wear the calculators'
   // PURPLE; the Career Finder GREEN (free). Owner art: calc_lab.webp /
   // career_finder.webp in the course-cards bucket.
+  // MY ENROLLMENTS (owner 2026-10-14) — same image-backed language as the
+  // Calculators / Career Finder cards, Enrollments GREEN. The art ships inside
+  // the app (assets/home-cards) rather than the course-cards bucket: an upload
+  // is a publish, and none happens while a store build is in review (D74).
+  if (item.kind === 'enrollments') {
+    const color = '#5bff85';
+    const border = 'rgba(55,224,95,.6)';
+    const inner = (
+      <>
+        <LinearGradient
+          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          locations={[0, 0.3, 0.58, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{displayCardTitle(item)}</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ width: cd.btnW }}>
+            {/* The first-run "open your enrollments" cue the green button used to carry. */}
+            <EnrollmentsCue />
+            <GlassButton maxFontSizeMultiplier={HOME_MAX}
+              label="OPEN ENROLLMENTS"
+              tint="green"
+              height={50}
+              fontSize={13}
+              onPress={onOpenEnrollments}
+            />
+          </View>
+        </View>
+      </>
+    );
+    return (
+      <View style={[styles.cardOuter, cd.outer]}>
+        <View style={styles.cardAbove}>
+          <Eyebrow color={color} w={cd.w} text="YOUR ENROLLMENTS" />
+          <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
+        </View>
+        <Pressable onPress={onOpenEnrollments} accessible={false}>
+          <ImageBackground source={ENROLLMENTS_CARD_ART} style={[styles.card, cd.card, { borderColor: border }]} imageStyle={styles.cardImg}>
+            {inner}
+          </ImageBackground>
+        </Pressable>
+      </View>
+    );
+  }
   if (item.kind === 'calculators' || item.kind === 'careerFinder') {
     const calc = item.kind === 'calculators';
     const url = cardImageUrl(item.kind);
@@ -1380,6 +1449,8 @@ export function CourseSelectionScreen() {
         // Finder between Glossary and Start Here — each its own card.
         { kind: 'calculators', id: 'calculators' },
         { kind: 'glossary', id: 'glossary' },
+        // MY ENROLLMENTS (owner 2026-10-14): right of the Glossary card.
+        { kind: 'enrollments', id: 'enrollments' },
         { kind: 'careerFinder', id: 'careerFinder' },
         // START HERE (owner 2026-09-29: "next to Pro Audio Safety") — the free
         // beginner experience, first of the free run so a new learner meets
@@ -1636,6 +1707,11 @@ export function CourseSelectionScreen() {
     (navigation as any).navigate('CareerFinder');
   }, [navigation]);
 
+  // MY ENROLLMENTS card (owner 2026-10-14) — what the green ENROLLMENTS button did.
+  const openEnrollments = useCallback(() => {
+    (navigation as any).navigate('Awards', { category: 'enrollment' });
+  }, [navigation]);
+
   const openLab = useCallback(() => {
     // The HOME lab card now opens the Audio Learning fork (free Fundamentals vs
     // members-only Training Labs) before the combined list (owner 2026-08-02).
@@ -1886,33 +1962,8 @@ export function CourseSelectionScreen() {
               Pro Registry
             </Text>
           </Pressable>
-          {/* Enrollments — GREEN when the user has paid (academy) standing. */}
-          <Pressable
-            style={[
-              styles.awardBtn,
-              (entitlement === 'academy' || attract.enrollments || attract.enrolledOnce) && styles.enrollBtnOn,
-            ]}
-            onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
-            accessibilityRole="button"
-            accessibilityState={{ selected: entitlement === 'academy' }}
-            aria-pressed={entitlement === 'academy'}
-            accessibilityLabel="Enrollments"
-          >
-            {/* Ring animates only during the cue; the green frame+text persists. */}
-            <AttractRing active={attract.enrollments} variant="green" />
-            <Text
-              style={[
-                styles.awardBtnText,
-                (entitlement === 'academy' || attract.enrollments || attract.enrolledOnce) && styles.enrollBtnTextOn,
-              ]}
-              maxFontSizeMultiplier={HOME_MAX}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.6}
-            >
-              Enrollments
-            </Text>
-          </Pressable>
+          {/* The green ENROLLMENTS button moved to its own Home card, right of the
+              Glossary card (owner 2026-10-14). */}
         </View>
       </View>
 
@@ -1959,6 +2010,7 @@ export function CourseSelectionScreen() {
               onOpenStartHere={openStartHere}
               onOpenCalculators={openCalculators}
               onOpenCareerFinder={openCareerFinder}
+              onOpenEnrollments={openEnrollments}
               onOpenPublic={openPublicCourse}
               onLockedPress={openUpgrade}
               onOpenMore={openMore}
