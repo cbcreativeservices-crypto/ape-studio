@@ -1123,6 +1123,8 @@ function CourseCardView({
             />
             <View>
               <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
+              {/* What EXPLORE opens (owner 2026-10-14), amber. */}
+              <Text style={[styles.cardStudyTopic, styles.cardAreaSub]} maxFontSizeMultiplier={HOME_MAX}>Explore Certificate Programs</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <View style={{ width: cd.btnW }}>
@@ -2320,6 +2322,8 @@ const styles = StyleSheet.create({
   },
   // The gold key word inside a card title (owner 2026-10-14).
   cardTitleKey: { color: colors.gold },
+  // "Explore Certificate Programs" under each Study Area title — amber (owner 2026-10-14).
+  cardAreaSub: { color: colors.amber },
   // "Study Topic" under the two free topic titles (owner 2026-10-14).
   cardStudyTopic: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.6, color: colors.gold, marginTop: 2, textShadowColor: 'rgba(0,0,0,0.75)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
   cardTitle: {
