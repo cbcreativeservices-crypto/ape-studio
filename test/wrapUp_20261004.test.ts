@@ -29,7 +29,7 @@ const read = (...p: string[]) => readFileSync(join(process.cwd(), 'src', ...p), 
 describe('1 · Paywall: no offer to a maybe-member', () => {
   const src = read('screens', 'commercial', 'PaywallScreen.tsx');
   const settle = src.indexOf("if (!(tierKnown || gate === 'locked')) {");
-  const plans = src.indexOf('{PLANS.map(');
+  const plans = src.indexOf('{plans.map('); // localized plan cards (2026-10-15)
   it('reads the house member gate', () => {
     assert.match(src, /import \{ useMemberGate \} from '\.\.\/\.\.\/features\/commercial\/useTier';/);
     assert.match(src, /const gate = useMemberGate\(\);/);

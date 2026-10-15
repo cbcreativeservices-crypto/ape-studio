@@ -6,7 +6,7 @@
  * generic "account deleted" page (no personal info).
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
@@ -17,6 +17,16 @@ import { runAfterAccountSync } from '../account/accountLocalSync';
 import { colors, fonts } from '../../theme/tokens';
 
 const HOLD_MS = 5000;
+
+/**
+ * Billing is the store's, not ours (Apple account-deletion guidance,
+ * 2026-10-15): erasing the account does not stop a store subscription, so the
+ * final confirm says so and says where to cancel. One sentence per platform.
+ */
+const STORE_BILLING_NOTE =
+  Platform.OS === 'android'
+    ? 'Deleting your account does not cancel a subscription bought through Google Play — cancel it first in your Google Play subscription settings.'
+    : 'Deleting your account does not cancel a subscription bought through the App Store — cancel it first in your App Store subscription settings.';
 
 export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
   const progress = useRef(new Animated.Value(0)).current;
@@ -77,7 +87,8 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
     Animated.timing(progress, { toValue: 0, duration: 140, useNativeDriver: false }).start();
     confirmDialog(
       'Delete account permanently?',
-      'This erases your account and all personal records for good, including every certificate you have earned. Any verification code or QR you have already given to an employer will stop working. It cannot be undone.',
+      'This erases your account and all personal records for good, including every certificate you have earned. Any verification code or QR you have already given to an employer will stop working. It cannot be undone.\n\n' +
+        STORE_BILLING_NOTE,
       'Delete forever',
       runDelete,
       { destructive: true },

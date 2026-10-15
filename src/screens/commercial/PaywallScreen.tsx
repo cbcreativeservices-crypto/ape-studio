@@ -27,11 +27,13 @@ import {
   detachPaywallHandlers,
   initPurchases,
   LINKED_MESSAGE,
+  loadStoreProducts,
   PENDING_MESSAGE,
   restorePurchases,
   storeErrorMessage,
 } from '../../features/commercial/purchase';
-import type { PlanId } from '../../features/commercial/iapProducts';
+import { PLANS as IAP_PLANS, type PlanId } from '../../features/commercial/iapProducts';
+import { localizePlans, type PlanCopy } from '../../features/commercial/storePrices';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -39,8 +41,11 @@ import { armLandingReturn, takeLandingReturn } from '../../features/onboarding/l
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
-type Plan = { id: 'lifetime' | 'annual' | 'monthly'; name: string; price: string; sub: string; badge?: string };
-// Illustrative — real products come from the store config (governance).
+type Plan = PlanCopy;
+// FALLBACK copy only (Apple 3.1.2, 2026-10-15): once the store answers, each
+// plan shows the store's localized price instead — localizePlans() in
+// features/commercial/storePrices.ts. These USD strings show only when the
+// store fetch fails or returns nothing.
 const PLANS: Plan[] = [
   // Matches `public.products.name` exactly — the store listing and this card
   // must not name the same product two different things.
@@ -59,6 +64,8 @@ export function PaywallScreen({ navigation }: Props) {
   // Whether in-app purchasing is usable in THIS build (native module present +
   // store connection). Assume true until init says otherwise.
   const [available, setAvailable] = useState(true);
+  // Plan cards: USD fallback until the store's localized prices arrive.
+  const [plans, setPlans] = useState<Plan[]>(PLANS);
   /**
    * A purchase or restore is IN FLIGHT (2026-09-30 bug pass). `busy` swaps
    * CONTINUE for a spinner, but only after a re-render — two taps in the same
@@ -167,7 +174,14 @@ export function PaywallScreen({ navigation }: Props) {
         if (message) notify('Purchase', message);
       },
     }).then((ok) => {
-      if (alive) setAvailable(ok);
+      if (!alive) return;
+      setAvailable(ok);
+      if (!ok) return;
+      // The buyer's own currency and locale, straight from the store. Empty on
+      // failure → the fallback copy stays.
+      void loadStoreProducts().then((products) => {
+        if (alive) setPlans(localizePlans(PLANS, products, IAP_PLANS));
+      });
     });
     return () => {
       alive = false;
@@ -537,7 +551,7 @@ export function PaywallScreen({ navigation }: Props) {
         ))}
 
         <View style={styles.plans}>
-          {PLANS.map((p) => {
+          {plans.map((p) => {
             const active = selected === p.id;
             return (
               <Pressable
@@ -556,7 +570,7 @@ export function PaywallScreen({ navigation }: Props) {
                 </View>
                 <Text style={styles.planPrice}>{p.price}</Text>
                 {/* Annual's sub is the savings cue → green; others muted. */}
-                <Text style={[styles.planSub, p.id === 'annual' && styles.planSubSave]}>{p.sub}</Text>
+                <Text style={[styles.planSub, p.id === 'annual' && !!p.badge && styles.planSubSave]}>{p.sub}</Text>
                 {/* Per-card end-of-year deadline consolidated to ONE note under
                     the plans (owner 2026-08-21) — was repeated on all 3 tiers. */}
                 <View style={[styles.radio, active && styles.radioOn]}>

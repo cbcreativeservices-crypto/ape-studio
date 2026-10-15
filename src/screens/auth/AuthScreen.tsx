@@ -16,6 +16,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   ActivityIndicator,
+  Linking,
   Platform,
   Pressable,
   StyleSheet,
@@ -676,6 +677,17 @@ export function AuthScreen({ navigation }: Props) {
   }, [mode]);
   useBackWhileFocused(mode === 'recovery', onRecoveryBack);
 
+  // Terms / Privacy on the academy site — the same pages and fallback words as
+  // the Paywall's links (PaywallScreen openPolicy).
+  const openPolicy = (path: 'terms' | 'privacy') => {
+    Linking.openURL(`https://www.proaudiotrainingacademy.com/${path}`).catch(() => {
+      notify(
+        'Page unavailable',
+        `We couldn’t open the page — visit proaudiotrainingacademy.com/${path} in your browser.`,
+      );
+    });
+  };
+
   // ANDROID BACK while a request is in flight = wait (night bug pass 2) — the
   // twin of hiding RETURN above.
   useBackWhileFocused(busy, swallowBack);
@@ -847,6 +859,31 @@ export function AuthScreen({ navigation }: Props) {
               </View>
             )}
 
+            {/* Sign-up terms (Apple 1.2, 2026-10-15): agreeing to the Terms is
+                part of creating an account. Same academy-site pages the Paywall
+                links; each is its own accessible link. */}
+            <View style={styles.termsRow}>
+              <Text style={styles.termsText}>By creating an account you agree to the </Text>
+              <Pressable
+                onPress={() => openPolicy('terms')}
+                hitSlop={8}
+                accessibilityRole="link"
+                accessibilityLabel="Terms of Use"
+              >
+                <Text style={[styles.termsText, styles.footerLink]}>Terms of Use</Text>
+              </Pressable>
+              <Text style={styles.termsText}> and </Text>
+              <Pressable
+                onPress={() => openPolicy('privacy')}
+                hitSlop={8}
+                accessibilityRole="link"
+                accessibilityLabel="Privacy Policy"
+              >
+                <Text style={[styles.termsText, styles.footerLink]}>Privacy Policy</Text>
+              </Pressable>
+              <Text style={styles.termsText}>.</Text>
+            </View>
+
             {/* Footer — password reset */}
             {/* A11Y (2026-09-06): the reset link was a nested Text tap with no
                 role and a ~19 pt target. A real Pressable with hitSlop now. */}
@@ -934,5 +971,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
+  termsRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' },
+  termsText: { textAlign: 'center', fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
   guestNote: { textAlign: 'center', fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted },
 });
