@@ -147,9 +147,10 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>Five stages, always in this order. Air becomes a buzz, the buzz becomes a vowel, movement turns vowels into words.</Lead>
-      <ExpandableFigure aspect={340 / 56} title="STAGES" controls={<View style={{ gap: 8, paddingHorizontal: 12 }}>{readout}{nav}</View>} render={(w, h) => (
-        <View style={{ width: w, height: h }} accessible accessibilityLabel={`The five stages of speech production in order: ${PRODUCTION.map((s, i) => `${i + 1} ${s.name}`).join(', ')}. Stage ${step + 1}, ${st.name}, is selected.`}>{stripAt(w, h)}</View>
-      )} />
+      {/* ONE full screen on this page (owner 2026-10-14): the strip is a plain
+          picker row here; full screen belongs to the head drawing, whose dock
+          already carries the strip, the readout and the stage keys. */}
+      <View accessible accessibilityLabel={`The five stages of speech production in order: ${PRODUCTION.map((s, i) => `${i + 1} ${s.name}`).join(', ')}. Stage ${step + 1}, ${st.name}, is selected.`}>{stripAt('100%', 56)}</View>
       <HeadCrossSection selected={null} onSelect={goPart} highlight={STAGE_PARTS[st.id]} controls={dock} fsTitle="SEQUENCE" stage={st.id} reduceMotion={ctx.reduceMotion} />
       <Card tone="math">
         <Eyebrow>{step + 1} · {st.name.toUpperCase()}</Eyebrow>

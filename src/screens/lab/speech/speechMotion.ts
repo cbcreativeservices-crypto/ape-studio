@@ -10,11 +10,14 @@
 import { useEffect } from 'react';
 import { useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
+import { useIsFocused } from '@react-navigation/native';
 
 /** Seconds since start, wrapped at `period`; frozen at `still` when motion is off. */
 export function useLoopClock(period: number, still: number, running = true): { t: SharedValue<number>; moving: boolean } {
   const motion = useDecorativeMotion();
-  const moving = motion && running;
+  // Paused while the screen is not showing (owner 2026-10-14).
+  const focused = useIsFocused();
+  const moving = motion && running && focused;
   const t = useSharedValue(moving ? 0 : still);
   const cb = useFrameCallback((info) => {
     const dt = info.timeSincePreviousFrame;

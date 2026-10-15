@@ -13,6 +13,7 @@
  * aspect), so the SVG box keeps its viewBox ratio; every label is authored at
  * ≥ 9 and never renders below 1 : 1 on a 375-wide phone.
  */
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -82,10 +83,12 @@ function VocalFoldsSvg({ voiced, reduceMotion, w, h }: { voiced: boolean; reduce
     if (c > 6000) c -= 6000; // whole cycles: the phase is unchanged
     cyc.value = c;
   }, false);
+  // Paused while the screen is not showing (owner 2026-10-14).
+  const focused = useIsFocused();
   useEffect(() => {
-    clock.setActive(!reduceMotion);
+    clock.setActive(!reduceMotion && focused);
     if (reduceMotion) cyc.value = VF_STILL_PHASE;
-  }, [reduceMotion, clock, cyc]);
+  }, [reduceMotion, focused, clock, cyc]);
   useEffect(() => {
     const target = voiced ? 0 : 1;
     ab.value = reduceMotion ? target : withTiming(target, { duration: 700, easing: Easing.inOut(Easing.cubic) });

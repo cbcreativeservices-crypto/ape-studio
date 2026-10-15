@@ -352,7 +352,7 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
       />
       <Notice>The pitch pills nearly touch and real voices spill past their edges — the gaps between them are an artefact of averaging, not a rule.</Notice>
       <Notice>The thin ticks across each formant band are that voice's harmonics at its typical pitch: packed close for a low voice, far apart for a child. The mouth can only boost harmonics that are there.</Notice>
-      <Card tone="warn">
+      <Card tone="note">
         <Eyebrow>TYPICAL, NOT FIXED</Eyebrow>
         {/* NEW COPY ("a tenor speaks above many women" replaced — true of singing range, not speaking pitch) */}
         <Body>These are population averages for speaking pitch. Real voices overlap freely: a low female voice sits inside the male band, a high male voice reaches into the female band, and a child's range depends on age. Treat the bands as starting points for gain and EQ, never as rules about the person.</Body>

@@ -137,13 +137,13 @@ test('the connectors pages dock their readouts and controls', () => {
 
 /* ── Speech page 2 ────────────────────────────────────────────────────── */
 
-test('Speech page 2: the stage strip draws through ExpandableFigure, compact in the head dock', () => {
+test('Speech page 2: ONE full screen — the stage strip is a plain row; the head drawing dock carries it (owner 2026-10-14)', () => {
   const src = read('speech/speechPagesA.tsx');
   assert.match(src, /const stripAt = \(w: number \| string, h: number\) => \(\s*<Svg(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")? width=\{w\} height=\{h\} viewBox="0 0 340 56">/);
-  assert.match(src, /<ExpandableFigure aspect=\{340 \/ 56\} title="STAGES" controls=\{<View[^>]*>\{readout\}\{nav\}<\/View>\} render=\{\(w, h\) => \(/);
-  assert.match(src, /\{stripAt\(w, h\)\}/);
+  assert.doesNotMatch(src, /title="STAGES"/, 'no second FULL SCREEN for the strip');
+  assert.match(src, /\{stripAt\('100%', 56\)\}<\/View>/);
   assert.match(src, /const strip = stripAt\('100%', 56\);/, 'the head drawing keeps the compact strip in its own dock');
-  assert.equal(count(src, /\{readout\}/g), 2, 'the readout is built once for both docks');
+  assert.equal(count(src, /\{readout\}/g), 1, 'the readout lives in the head drawing dock');
 });
 
 /* ── Ear Training SEE IT ──────────────────────────────────────────────── */

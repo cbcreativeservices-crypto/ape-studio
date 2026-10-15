@@ -20,6 +20,7 @@
  * rings, the tongue tip and lips articulate. One UI-thread clock; geometry
  * built once; no per-frame React state.
  */
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -222,7 +223,9 @@ function HeadSvg({ w, h, selected, onSelect, highlight, stage, reduceMotion }: {
   const hi = (id: string) => selected === id || (highlight?.includes(id) ?? false);
   const decorative = useDecorativeMotion();
   const si = stage ? STAGES.indexOf(stage as (typeof STAGES)[number]) : -1;
-  const playing = si >= 0 && decorative && !reduceMotion;
+  // Paused while the screen is not showing (owner 2026-10-14).
+  const focused = useIsFocused();
+  const playing = si >= 0 && decorative && !reduceMotion && focused;
   const clk = useSharedValue(0);
   const st = useSharedValue(si);
   useEffect(() => { st.value = playing ? si : -1; }, [si, playing, st]);
