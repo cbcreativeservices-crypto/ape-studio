@@ -39,6 +39,9 @@ import { ReadinessMeter, StageProgressRow, stageSignalLabel } from './ReadinessM
 import { AcceptConditionSheet } from './AcceptConditionSheet';
 import { STATE_TINT } from './FieldRow';
 import { isActivityProject } from '../../../features/production/activities';
+import { productionProjectComplete } from '../../../features/production/complete';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -84,6 +87,11 @@ export function ProductionLabScreen() {
     // the exercises are still reachable from where they belong.
     const own = list.filter((p) => !isActivityProject(p));
     setProjects(own);
+    // CREDIT AT ONCE (owner ruling 2026-10-14, #18): the last item finished
+    // HERE (an accepted condition) completes the project on the home itself —
+    // report it now, from the STORED copy just read, not on the next stage
+    // visit or launch. Exercises never count; reporting is idempotent.
+    if (own.some((p) => productionProjectComplete(lab, p))) reportTrainingComplete(trainingKeyFor(lab === 'preprod' ? 'PreProdLab' : 'PostProdLab'));
     // PICK UP WHERE YOU LEFT OFF (2026-10-04, design review #5): with nothing
     // chosen yet, open the project worked on most recently — not whichever
     // happened to be created last.

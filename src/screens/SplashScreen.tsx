@@ -17,6 +17,19 @@ import { clearPendingLink } from '../navigation/pendingLink';
 import { splashBase } from '../navigation/splashRoute';
 import { safeSessionResult } from '../lib/getSessionSafe';
 import { warmCardArt } from './courses/CourseSelectionScreen';
+import { softDeadline } from '../lib/boundedCall';
+import { notify } from '../lib/confirm';
+import { checkMyAccountRecord, signOutHalfCreatedAccount } from '../features/auth/api';
+import { ACCOUNT_SETUP_UNFINISHED_SIGN_IN } from '../features/auth/authErrorCopy';
+// The reset-in-progress flag, loaded on first use (during the hold, after
+// the first frame): the app-start module graph is capped (test/perfStartTrim).
+type ResetFlag = typeof import('../features/auth/passwordResetPending');
+const resetFlag = (): ResetFlag => require('../features/auth/passwordResetPending') as ResetFlag;
+const isPasswordResetPending = () => resetFlag().isPasswordResetPending();
+const clearPasswordResetPending = () => resetFlag().clearPasswordResetPending();
+
+/** What the launch does with a signed-in session (see launchVerdict below). */
+type LaunchVerdict = 'proceed' | 'resetUnfinished' | 'setupUnfinished';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -54,9 +67,46 @@ export function SplashScreen({ navigation }: Props) {
         if (!cancelled && splashBase(read) === 'Main') warmCardArt();
       })
       .catch(() => {});
+    // ⛔ TWO SIGNED-IN LAUNCHES THAT MUST NOT GO IN (toddler hunt 2026-10-14,
+    // items 7 + 8, owner-approved) — decided DURING the hold, from the same
+    // session read:
+    //   • a password reset left unfinished (a valid code, app closed before
+    //     the new password was set — features/auth/passwordResetPending);
+    //   • a half-created account: signed in, but the app record was never
+    //     made. Only a DEFINITIVE "no record" counts (checkAccountRecord reads
+    //     twice around getSession() — the cold-start race); an offline or slow
+    //     read goes in as before, so a member is never signed out by a blip.
+    const launchVerdict: Promise<LaunchVerdict> = sessionSafe
+      .then(async (read): Promise<LaunchVerdict> => {
+        const pending = await softDeadline(() => isPasswordResetPending(), false, 'Splash/resetPending', 3000);
+        if (splashBase(read) !== 'Main') {
+          // Nothing signed in to undo; a stale flag is just dropped.
+          if (pending) void clearPasswordResetPending();
+          return 'proceed';
+        }
+        if (pending) return 'resetUnfinished';
+        return (await checkMyAccountRecord()) === 'missing' ? 'setupUnfinished' : 'proceed';
+      })
+      .catch((): LaunchVerdict => 'proceed');
     const timer = setTimeout(async () => {
-      const read = await sessionSafe;
+      let read = await sessionSafe;
       if (cancelled) return;
+      // The record check is given a short extra wait past the hold, then the
+      // launch goes in (an unanswered check is "unknown", never "missing").
+      const verdict = await softDeadline(() => launchVerdict, 'proceed' as LaunchVerdict, 'Splash/launchCheck', 4000);
+      if (cancelled) return;
+      let notice: string | null = null;
+      if (verdict !== 'proceed') {
+        // Bounded, local, never rejects; marked intentional (no expiry bounce).
+        await signOutHalfCreatedAccount();
+        if (verdict === 'resetUnfinished') await clearPasswordResetPending();
+        if (cancelled) return;
+        read = { result: { data: { session: null } }, timedOut: false } as typeof read;
+        notice =
+          verdict === 'resetUnfinished'
+            ? 'Your password reset didn’t finish, so you’ve been signed out. Sign in, or tap “Reset via email” to start again.'
+            : ACCOUNT_SETUP_UNFINISHED_SIGN_IN;
+      }
       // Boot: session → Main (Dashboard), else → the finished login screen.
       // The pre-auth commercial Landing is still WIP, so startup does NOT route
       // to it (owner 2026-08-06) — reinstate that branch when Landing is done.
@@ -105,6 +155,7 @@ export function SplashScreen({ navigation }: Props) {
         index: above.length,
         routes: [baseRoute, ...above],
       });
+      if (notice) notify('Signed out', notice);
       // Hold the intro ~2.5s before advancing (Booth 2026-07-11).
     }, 2500);
 

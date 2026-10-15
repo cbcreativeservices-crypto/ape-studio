@@ -91,17 +91,20 @@ describe('directory sends (F4, F5, F6)', () => {
 
   it('every send goes through useSending', () => {
     // Per-thread lock since night pass 3 (2026-10-01) — still one send at a time per thread.
-    assert.match(req, /runSendIn\(thread\.id, \(\) =>\s*\n\s*sendThreadMessage\(/);
+    // sendOnce() (2026-10-14, #11) wraps sendThreadMessage — still under the lock.
+    assert.match(req, /runSendIn\(thread\.id, \(\) =>\s*\n\s*sendOnce\(\)/);
+    assert.match(req, /const sendOnce = async \(\) => \{[\s\S]*?return sendThreadMessage\(thread\.id, pending\.body\);/);
     assert.match(req, /runReport\(\(\) => reportMember\(/);
     assert.match(req, /runAct\(\(\) =>\s*\n\s*respondToRequest\(/);
     assert.match(dir, /runSend\(\(\) => onSend\(purpose/);
-    assert.match(dir, /runSend\(\(\) => onSend\(reason, detail\)\)/);
+    assert.match(dir, /runSend\(\(\) => onSend\(reason, detail, alsoBlock\)\)/);
     assert.doesNotMatch(dir, /void reportMember\(/);
   });
 
   it('member-sheet BLOCK confirms first and a report is acknowledged', () => {
     assert.match(dir, /onPress=\{\(\) => setConfirmBlock\(true\)\}/);
-    assert.match(dir, /setReported\(true\)/);
+    // 'reported' | 'blocked' since 2026-10-14 (#13, "Also block them").
+    assert.match(dir, /setReported\(b\?\.ok \? 'blocked' : 'reported'\)/);
     assert.doesNotMatch(dir, /onPress=\{\(\) =>\s*\n\s*void blockMember\(/);
   });
 });

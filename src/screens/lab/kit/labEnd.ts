@@ -185,3 +185,11 @@ export function endLead(
     ? `${onlyCheck ? 'Only the check is left' : `${what} still to finish`} before this lab counts toward your credit. Everything you have done is saved — jump straight to any of them.`
     : `${onlyCheck ? 'Only the check is left' : `${what} not done yet`}. Everything you have done is saved on this device — jump straight to any of them.`;
 }
+
+/** The one unit of a MARK AS REVIEWED lab (owner ruling 2026-10-14, #21:
+ *  Amplitude, Sound Playground, Signal Chain get the small what's-left end
+ *  screen — kit/ReviewLabEnd). Cleared once the lab is reviewed. */
+export const REVIEW_UNIT_ID = 'review';
+export function reviewLabUnits(label = 'Work through the lab, then mark it reviewed', detail = 'MARK AS REVIEWED is at the foot of the lab, and here.'): LabEndUnit[] {
+  return [{ id: REVIEW_UNIT_ID, label, detail }];
+}

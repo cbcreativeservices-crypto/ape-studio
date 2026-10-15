@@ -49,6 +49,9 @@ type IapPurchase = {
   platform?: string;
   /** OpenIAP: 'pending' | 'purchased' | 'unknown'. */
   purchaseState?: string;
+  /** Android only: false = Play is still waiting for the acknowledgement that
+   *  finishTransaction sends — refunded automatically after 3 days without it. */
+  isAcknowledgedAndroid?: boolean | null;
 };
 
 export type PurchaseHandlers = {
@@ -384,6 +387,93 @@ export async function loadStoreProducts(): Promise<unknown[]> {
   } catch {
     return [];
   }
+}
+
+/**
+ * An Android purchase Play is still waiting on: paid ('purchased', not a
+ * pending payment), one of our plans, and NOT acknowledged. Only Android
+ * purchases carry `isAcknowledgedAndroid`, so an iOS purchase never matches.
+ */
+export function isUnfinishedAndroidPurchase(p: IapPurchase | null | undefined): boolean {
+  return (
+    !!p &&
+    p.isAcknowledgedAndroid === false &&
+    p.purchaseState === 'purchased' &&
+    !!p.productId &&
+    !!planIdForSku(p.productId)
+  );
+}
+
+/**
+ * RE-CHECK UNFINISHED ANDROID PURCHASES (toddler hunt #2, owner 2026-10-14).
+ *
+ * A Play purchase whose server verification failed (offline right after
+ * paying, the edge function down) is never re-delivered to the purchase
+ * listener — Play only re-delivers through a query — so nothing retried it, it
+ * was never acknowledged, and Google refunded it after 3 days: the member paid,
+ * got nothing, and was refunded without a word. Once per app open (and only
+ * with a signed-in session), this asks the store for purchases still waiting
+ * and runs each through the SAME path as the listener: validate-purchase, then
+ * finishTransaction (which acknowledges it), then re-read the tier.
+ *
+ * Idempotent: a call while one is running gets the same promise, and a second
+ * call for the same `open` does nothing. A run with no signed-in session does
+ * not count, so the next call (once the session is ready) still runs. The
+ * server's validate is idempotent for the same account (an upsert), so a race
+ * with the listener validating the same purchase is harmless. Never rejects.
+ *
+ * @param open which app open this is for (the caller bumps it on each return
+ *   to the app). @returns how many purchases were verified and finished.
+ */
+let recheckInFlight: Promise<number> | null = null;
+let recheckedOpen: number | null = null;
+
+export function recheckUnfinishedAndroidPurchases(open = 0): Promise<number> {
+  if (recheckInFlight) return recheckInFlight;
+  if (recheckedOpen === open) return Promise.resolve(0);
+  const run: Promise<number> = runUnfinishedRecheck()
+    .then((r) => {
+      if (r === 'no-session') return 0;
+      recheckedOpen = open;
+      return r;
+    })
+    .catch(() => 0)
+    .finally(() => {
+      if (recheckInFlight === run) recheckInFlight = null;
+    });
+  recheckInFlight = run;
+  return run;
+}
+
+async function runUnfinishedRecheck(): Promise<number | 'no-session'> {
+  const iap = getIap();
+  if (!iap) return 0;
+  const { data } = await safeSession(supabase.auth.getSession(), 'iap/unfinished');
+  if (!isRealAccount(data.session)) return 'no-session';
+  let purchases: IapPurchase[];
+  try {
+    purchases = (await withDeadline(() => iap.getAvailablePurchases(), 'getAvailablePurchases', 30000)) as IapPurchase[];
+  } catch (e) {
+    console.warn('[iap] unfinished-purchase check could not reach the store:', (e as Error)?.message);
+    return 0;
+  }
+  let finished = 0;
+  for (const p of purchases ?? []) {
+    if (!isUnfinishedAndroidPurchase(p)) continue;
+    const v = await validateWithServer(p);
+    if (!v.ok) {
+      console.warn('[iap] unfinished purchase still not verified:', v.reason ?? 'no reason');
+      continue;
+    }
+    try {
+      await withDeadline(() => iap.finishTransaction({ purchase: p, isConsumable: false }), 'finishTransaction', 15000);
+    } catch (e) {
+      console.warn('[iap] finishTransaction (unfinished re-check) failed:', (e as Error)?.message);
+    }
+    finished += 1;
+  }
+  if (finished > 0) onEntitlementMayHaveChanged?.();
+  return finished;
 }
 
 /** Start the purchase flow for a plan. Result arrives via the listeners. */

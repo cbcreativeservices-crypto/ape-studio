@@ -334,6 +334,25 @@ function WaitingSlot({
     );
   }
 
+  // A guest never chose a credential (toddler hunt 2026-10-14 #31f): naming
+  // the server's nearest one read as "you picked this". A neutral prompt.
+  if (result.kind === 'candidate' && guest) {
+    return (
+      <View
+        style={[styles.row, styles.rowWaiting, { borderLeftColor: `${accent}66` }]}
+        accessible
+        accessibilityLabel={`Next up: choose a ${noun} to work toward. Sign in with a free account to track one.`}
+      >
+        <ProgressRing size={48} progress={null} color={accent} centerLabel="—" />
+        <View style={styles.rowMain}>
+          <Text style={[styles.eyebrow, { color: accent }]}>NEXT UP</Text>
+          <Text style={styles.waitingName}>Choose a {noun} to work toward.</Text>
+          <Text style={styles.waitingMeta}>Sign in with a free account to track one.</Text>
+        </View>
+      </View>
+    );
+  }
+
   if (result.kind === 'candidate') {
     const progress = result.totalCount > 0 ? result.completeCount / result.totalCount : 0;
     return (
@@ -350,7 +369,7 @@ function WaitingSlot({
             {result.name}
           </Text>
           <Text style={styles.waitingMeta}>
-            {guest ? 'Sign in with a free account to track this' : `${result.completeCount} of ${result.totalCount} topics complete`}
+            {`${result.completeCount} of ${result.totalCount} topics complete`}
           </Text>
         </View>
         <Text style={styles.chevron}>›</Text>

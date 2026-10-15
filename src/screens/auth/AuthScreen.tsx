@@ -42,14 +42,17 @@ import { getDeviceId } from '../../features/account/deviceIdentity';
 import { claimThisDevice, getActiveDeviceId } from '../../features/account/singleDevice';
 import {
   EMAIL_RE,
+  checkMyAccountRecord,
   passwordIssue,
   requestPasswordReset,
   signIn,
+  signOutHalfCreatedAccount,
   signOutLocalRefusing,
   signOutThisDevice,
   updatePassword,
   verifyRecoveryOtp,
 } from '../../features/auth/api';
+import { ACCOUNT_SETUP_UNFINISHED_SIGN_IN, normalizeResetCode } from '../../features/auth/authErrorCopy';
 import { supabase } from '../../lib/supabase';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { safeSessionResult } from '../../lib/getSessionSafe';
@@ -69,6 +72,13 @@ import { navigateToPath } from '../../navigation/linking';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
+
+// The reset-in-progress flag, loaded on first use: only password recovery
+// needs it, and the app-start module graph is capped (test/perfStartTrim).
+type ResetFlag = typeof import('../../features/auth/passwordResetPending');
+const resetFlag = (): ResetFlag => require('../../features/auth/passwordResetPending') as ResetFlag;
+const markPasswordResetPending = () => resetFlag().markPasswordResetPending();
+const clearPasswordResetPending = () => resetFlag().clearPasswordResetPending();
 
 /** Android BACK while a request is in flight: hold it (see the busy hook below). */
 const swallowBack = () => true;
@@ -486,6 +496,14 @@ export function AuthScreen({ navigation }: Props) {
         );
         return;
       }
+      // A HALF-CREATED ACCOUNT does not go in (toddler hunt 2026-10-14, item
+      // 7): signed in, but its app record was never made. Only a definitive
+      // "no record" signs out — a failed or uncertain read goes in as before.
+      if ((await checkMyAccountRecord()) === 'missing') {
+        await signOutHalfCreatedAccount();
+        setError(ACCOUNT_SETUP_UNFINISHED_SIGN_IN);
+        return;
+      }
       await claimAndProceed(toMain); // [12] 2026-09-07: toMain lands on Home (MainTabs initialRoute = Course Selection), same as create-account
     } catch {
       setError('Couldn’t reach the Academy — check your connection and try again.');
@@ -547,7 +565,9 @@ export function AuthScreen({ navigation }: Props) {
   const onSubmitNewPassword = async () => {
     setError(null);
     setInfo(null);
-    if (!/^\d{6}$/.test(resetCode.trim())) {
+    // "123 456" pasted from the email is the same code (item 10b).
+    const code = normalizeResetCode(resetCode);
+    if (!/^\d{6}$/.test(code)) {
       setError('Enter the 6-digit code from the email.');
       return;
     }
@@ -559,9 +579,18 @@ export function AuthScreen({ navigation }: Props) {
     if (!begin()) return;
     try {
       const addr = email.trim().toLowerCase();
+      // A RESET IN PROGRESS IS REMEMBERED (toddler hunt 2026-10-14, item 8):
+      // a valid code signs the device in before the new password is set, so
+      // an app closed now must not open into the account next time
+      // (SplashScreen signs it out). Set BEFORE the code is checked (and kept
+      // set on a retry whose code already verified — its session is live).
+      await markPasswordResetPending();
       if (verifiedFor.current !== addr) {
-        const verifyErr = await verifyRecoveryOtp(email.trim(), resetCode);
+        const verifyErr = await verifyRecoveryOtp(email.trim(), code);
         if (verifyErr) {
+          // No recovery session came of it (an earlier verified code's would
+          // still be live): nothing for the next launch to sign out.
+          if (!recoverySession.current) void clearPasswordResetPending();
           // Offline / stalled is not a wrong code (night bug pass 2,
           // 2026-10-01): blaming the code sent the person to request a new
           // one when only the connection had failed.
@@ -579,6 +608,17 @@ export function AuthScreen({ navigation }: Props) {
         return;
       }
       // verifyOtp left an active session; the password is now updated → go in.
+      await clearPasswordResetPending();
+      // A half-created account recovering its password (item 7): no record,
+      // no way in — signed out, with the step that finishes it.
+      if ((await checkMyAccountRecord()) === 'missing') {
+        verifiedFor.current = null;
+        recoverySession.current = false;
+        setMode('main');
+        await signOutHalfCreatedAccount();
+        setError(ACCOUNT_SETUP_UNFINISHED_SIGN_IN);
+        return;
+      }
       verifiedFor.current = null;
       recoverySession.current = false; // going in (a takeover Cancel signs it out)
       setMode('main');
@@ -599,10 +639,16 @@ export function AuthScreen({ navigation }: Props) {
       recoverySession.current = false;
       markIntentionalSignOut();
       // Bounded + forced local (night bug pass 2) — see the takeover Cancel.
-      void signOutThisDevice().finally(end);
+      // The reset is over once that sign-out lands (item 8) — cleared after
+      // it, so a close in between still signs out at the next launch.
+      void signOutThisDevice()
+        .then(() => clearPasswordResetPending())
+        .finally(end);
       // Busy until it lands (bug pass 3): a LOGIN tapped straight after Cancel
       // had its fresh session deleted by this sign-out finishing late.
       hold();
+    } else {
+      void clearPasswordResetPending();
     }
     verifiedFor.current = null;
     setMode('main');

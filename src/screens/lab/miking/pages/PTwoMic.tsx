@@ -15,7 +15,7 @@
  * Credit: polarity flipped BOTH ways and a mic moved (Δt changed) in the same
  * visit + the checks.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
@@ -32,7 +32,7 @@ import { CombPanel } from '../engine/scene/CombPanel';
 import { nowText, sceneLabel } from '../engine/scene/sceneWords.ts';
 import { placementParams, type AimAxis, type PosAxis } from '../engine/scene/placementDock.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Landing, Note, NowLine, PredictCard, ScenarioList } from '../engine/kit';
+import { Body, Landing, Note, NowLine, PredictCard, ScenarioList, useMicMoved } from '../engine/kit';
 import { micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
 
@@ -83,10 +83,10 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   // is null for that), and the ratio would invite "fixing" it (reviews M7/M11).
 
   // CREDIT: polarity both ways AND a moved mic (Δt changed), one visit.
-  const dt0 = useRef(dt);
+  // Changing only the SOURCE moves no mic (owner ruling 2026-10-14, #19).
+  const moved = useMicMoved(dt, srcId);
   const [flips, setFlips] = useState({ toInv: false, toNorm: false });
   const [predicted, setPredicted] = useState<string | null>(null);
-  const moved = Math.abs(dt - dt0.current) > 0.05;
   useEffect(() => {
     if (flips.toInv && flips.toNorm && moved && !interactiveDone.has('polarityVsDelay')) onInteractive('polarityVsDelay');
   }, [flips, moved, interactiveDone, onInteractive]);

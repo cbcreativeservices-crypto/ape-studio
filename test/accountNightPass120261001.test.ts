@@ -48,7 +48,10 @@ test('the device claim that gates sign-in is bounded and fails open', () => {
 
 test('restore and finishTransaction cannot hold the paywall spinner forever', () => {
   assert.match(purchase, /withDeadline\(\s*\(\) => iap\.getAvailablePurchases\(\),/);
-  assert.equal((purchase.match(/withDeadline\(\s*\(\) => iap\.finishTransaction\(/g) ?? []).length, 2);
+  // 3 since toddler hunt #2 (2026-10-14): the unfinished-Android re-check
+  // finishes through the same bound. Every finishTransaction call is bounded.
+  assert.equal((purchase.match(/withDeadline\(\s*\(\) => iap\.finishTransaction\(/g) ?? []).length, 3);
+  assert.equal((purchase.match(/iap\.finishTransaction\(/g) ?? []).length, 3);
 });
 
 test('a restore that finishes after the paywall closed does not pop another screen', () => {

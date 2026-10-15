@@ -271,7 +271,7 @@ describe('the hooks (live completion → reportTrainingComplete)', () => {
     has('src/screens/lab/drumtuning/DrumTuningLabScreen.tsx', "if (loaded && DRUM_CHAPTERS.every((m) => doneIds.has(m.id))) reportTrainingComplete(trainingKeyFor('DrumTuningLab'));");
     has('src/screens/lab/tuning/TuningLabScreen.tsx', 'const allChaptersDone = progress?.done === true;', "if (allChaptersDone) reportTrainingComplete(trainingKeyFor('TuningLab'));");
     has('src/screens/lab/soundsystems/SoundSystemsLabScreen.tsx', 'const allDone = soundSystemsLabComplete(pages.learn, progress, checkPassed);', "if (known && allDone) reportTrainingComplete(trainingKeyFor('SoundSystemsLab'));");
-    has('src/screens/lab/production/ProductionStageScreen.tsx', /if \(project && productionProjectComplete\(lab, project\)\) reportTrainingComplete\(trainingKeyFor\(lab === 'preprod' \? 'PreProdLab' : 'PostProdLab'\)\);/);
+    has('src/screens/lab/production/ProductionStageScreen.tsx', /if \(storedProject && productionProjectComplete\(lab, storedProject\)\) reportTrainingComplete\(trainingKeyFor\(lab === 'preprod' \? 'PreProdLab' : 'PostProdLab'\)\);/);
     has('src/screens/lab/eartraining/EarModuleScreen.tsx', 'if (next.mastered >= REQUIRED_EAR_LEVEL) reportTrainingComplete(earModuleKey(mod.id));');
     has('src/screens/lab/miking/engine/progress/mikingProgress.ts', 'void out.then(() => reportIfLessonComplete(lessonId));', 'creditedCount(l.done) === PAGE_IDS.length) reportTrainingComplete(mikingLessonKey(lessonId))');
   });

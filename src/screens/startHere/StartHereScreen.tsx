@@ -68,6 +68,8 @@ import { safeGoBack } from '../../lib/safeGoBack';
 
 /** Pro Audio Safety (v3 gs 3060) — the free topic beside this card. */
 const SAFETY_GS = 3060;
+/** The end screen ignores taps this long after FINISH shows it (a FINISH double-tap). */
+const END_SETTLE_MS = 600;
 
 /** A guest's work, held for the sign-in hand-off as DELTAS from `base`: the
  *  pages newly ticked, the page reached, Start Here finished. */
@@ -254,6 +256,9 @@ export function StartHereScreen() {
   // (or a route chip + WORDS) tapped together each pushed a screen — two
   // stacked. A second open inside 600 ms of the first is ignored.
   const lastOpenAt = useRef(0);
+  /** When the end screen appeared — taps on it inside END_SETTLE_MS are a FINISH double-tap. */
+  const endShownAt = useRef(0);
+  const endSettled = () => Date.now() - endShownAt.current >= END_SETTLE_MS;
   const claimOpen = () => {
     const now = Date.now();
     if (now - lastOpenAt.current < 600) return false;
@@ -387,9 +392,9 @@ export function StartHereScreen() {
             noun="part"
             completeTitle="YOU’RE READY"
             doneLabel="DONE · BACK TO HOME"
-            onJump={(id) => goTo(firstOpenPage(id, done))}
-            onPracticeAgain={() => goTo(0)}
-            onDone={leave}
+            onJump={(id) => endSettled() && goTo(firstOpenPage(id, done))}
+            onPracticeAgain={() => endSettled() && goTo(0)}
+            onDone={() => endSettled() && leave()}
             bottomInset
             extra={<NextSteps onRoute={env.openRoute} onGlossary={openGlossary} />}
           />
@@ -506,6 +511,12 @@ export function StartHereScreen() {
                 if (!last) goTo(page + 1);
                 else {
                   lastNavAt.current = Date.now();
+                  // A fast second FINISH tap lands on the end screen that
+                  // just replaced this page (toddler hunt 2026-10-14 #31b) —
+                  // it opened the next-steps card under the finger. The end
+                  // screen ignores taps for a moment after it appears.
+                  endShownAt.current = Date.now();
+                  lastOpenAt.current = Date.now();
                   tone.stop();
                   setListOpen(false);
                   setEnding(true);

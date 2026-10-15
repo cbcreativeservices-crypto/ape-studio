@@ -38,6 +38,10 @@ export function ProductionStageScreen() {
   const { lab, projectId, stageId, focus } = useRoute<R>().params;
 
   const [project, setProject] = useState<ProductionProject | null>(null);
+  /** The project AS STORED — set only from a read or a write's result, never
+   *  from the optimistic edit (owner ruling 2026-10-14, #18: an answer that
+   *  failed to save must not count toward credit). */
+  const [storedProject, setStoredProject] = useState<ProductionProject | null>(null);
   /**
    * ⛔ 'STILL LOADING' AND 'NOT ON THIS PHONE' ARE NOT THE SAME THING.
    *
@@ -66,6 +70,7 @@ export function ProductionStageScreen() {
         }
         const p = all.find((x) => x.id === projectId) ?? null;
         setProject(p);
+        setStoredProject(p);
         setLoadState(p ? 'ready' : 'missing');
       })
       .catch(() => {
@@ -82,8 +87,11 @@ export function ProductionStageScreen() {
   // every change to the project this screen edits. Preview earns nothing; a
   // guest's report is held for the sign-in hand-off (labCompletion).
   useEffect(() => {
-    if (project && productionProjectComplete(lab, project)) reportTrainingComplete(trainingKeyFor(lab === 'preprod' ? 'PreProdLab' : 'PostProdLab'));
-  }, [lab, project]);
+    // The STORED copy only: an optimistic answer whose write failed never
+    // counts (owner ruling 2026-10-14, #18). An exercise project never counts
+    // either (productionProjectComplete refuses it).
+    if (storedProject && productionProjectComplete(lab, storedProject)) reportTrainingComplete(trainingKeyFor(lab === 'preprod' ? 'PreProdLab' : 'PostProdLab'));
+  }, [lab, storedProject]);
 
   const authored = authoredStage(lab, stageId);
   // The WHOLE lab resolves together (2026-10-04): a condition can name a field
@@ -215,7 +223,10 @@ export function ProductionStageScreen() {
         .then((all) => {
           if (!all || pendingWritesRef.current > 0 || seq !== writeSeqRef.current) return;
           const p = all.find((x) => x.id === projectId);
-          if (p) setProject(p);
+          if (p) {
+            setProject(p);
+            setStoredProject(p);
+          }
         })
         .catch(() => {});
     });
@@ -235,6 +246,7 @@ export function ProductionStageScreen() {
       const saved = await projectStore().setValue(lab, project.id, stageId, fieldId, v).finally(() => {
         pendingWritesRef.current--;
       });
+      if (saved) setStoredProject(saved);
       if (saved) {
         if (my !== writeSeqRef.current) return; // a newer write is in flight
         setProject(saved);
@@ -254,6 +266,7 @@ export function ProductionStageScreen() {
       const saved = await projectStore().setNa(lab, project.id, stageId, fieldId, reason).finally(() => {
         pendingWritesRef.current--;
       });
+      if (saved) setStoredProject(saved);
       if (saved) {
         if (my !== writeSeqRef.current) return; // a newer write is in flight
         setProject(saved);

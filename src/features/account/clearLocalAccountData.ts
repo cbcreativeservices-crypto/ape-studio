@@ -138,6 +138,10 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   'ape:homeFirstOpenDone', // device's first app open already happened (Start Here landing, owner 2026-09-29)
   'ape:dev:entitlement', // dev-only override
   'ape:devSuppressPopups', // dev-only override
+  // A password reset in progress (toddler hunt 2026-10-14, item 8): verifyOtp's
+  // PASSWORD_RECOVERY wipe must not delete the very flag that makes the next
+  // launch sign an unfinished reset out. Auth state, no user data.
+  'ape:passwordResetPending',
 ]);
 
 /**
@@ -203,6 +207,7 @@ const GUEST_KEEP: ReadonlySet<string> = new Set<string>([
   'ape:finalExamQueue:damaged',
   'ape:dev:entitlement',
   'ape:devSuppressPopups',
+  'ape:passwordResetPending', // an unfinished password reset (see KEEP)
 ]);
 
 /** Does this key survive the wipe? Pure — exported for the receipts. */

@@ -35,7 +35,8 @@ test('takeover Cancel and recovery Cancel sign out bounded and for sure, holding
   assert.match(cancel, /markIntentionalSignOut\(\);[\s\S]*?void signOutThisDevice\(\)\.finally\(end\);[\s\S]*?hold\(\);/);
   assert.doesNotMatch(cancel, /supabase\.auth\.signOut\(/);
   const rec = body(auth, 'const cancelRecovery = () => {', "setMode('main');\n    setError(null);");
-  assert.match(rec, /void signOutThisDevice\(\)\.finally\(end\);[\s\S]*?hold\(\);/);
+  // (2026-10-14 item 8: the reset-pending flag is cleared once the sign-out lands.)
+  assert.match(rec, /void signOutThisDevice\(\)(\s*\.then\(\(\) => clearPasswordResetPending\(\)\))?\s*\.finally\(end\);[\s\S]*?hold\(\);/);
   assert.doesNotMatch(rec, /supabase\.auth\.signOut\(/);
   // signOutThisDevice itself never hangs: every step is softDeadline-bounded.
   const sotd = body(api, 'export async function signOutThisDevice', 'export async function signOutLocalRefusing');

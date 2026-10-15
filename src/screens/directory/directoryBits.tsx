@@ -5,7 +5,9 @@
  */
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
+import { useGuestWording } from '../../features/commercial/useTier';
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
@@ -225,6 +227,54 @@ export function PrimaryButton({
         {label}
       </Text>
     </Pressable>
+  );
+}
+
+/**
+ * The answer can only change by signing in (toddler hunt 2026-10-14, #26).
+ * A KNOWN guest (a read confirmed it — never a tier still loading or a read
+ * that failed), or a server answer that itself says "Sign in" (rules.ts:
+ * "Sign in to use the Audio Community Directory." / "Your session has ended.
+ * Sign in again to continue.").
+ */
+export function needsSignIn(guest: boolean, message: string | null | undefined): boolean {
+  return guest || /\bSign in\b/.test(message ?? '');
+}
+
+/**
+ * The button under a failed directory read. A guest was offered RETRY, which
+ * can never work — every directory read needs an account — so a guest gets
+ * SIGN IN (the existing sign-in screen). A signed-in member whose read failed
+ * on the network still gets RETRY.
+ */
+export function RetryOrSignIn({ message, onRetry }: { message: string | null | undefined; onRetry: () => void }) {
+  const navigation = useNavigation();
+  // A KNOWN guest only (never a tier still loading or a failed read).
+  const { guest } = useGuestWording();
+  if (needsSignIn(guest, message)) {
+    return (
+      <PrimaryButton
+        label="SIGN IN"
+        onPress={() => (navigation as unknown as { navigate: (r: 'Auth') => void }).navigate('Auth')}
+      />
+    );
+  }
+  return <PrimaryButton label="RETRY" onPress={onRetry} />;
+}
+
+/**
+ * "Also block them" beside SEND REPORT — one chip shared by every report
+ * sheet (Requests since 2026-09-19; the Directory member sheet since toddler
+ * hunt 2026-10-14, #13). Apple 1.2 looks for report AND block together, and a
+ * person who has to perform two separate actions usually performs one. On by
+ * default: somebody upset enough to report is rarely hoping to keep hearing
+ * from them.
+ */
+export function AlsoBlockChip({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <ChipWrap>
+      <Chip label={on ? 'Also blocking them ✓' : 'Also block them'} on={on} onPress={onToggle} />
+    </ChipWrap>
   );
 }
 

@@ -45,7 +45,8 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { PAGE_IDS, type Lesson, type PageId, type SourcePageId, type VariantId } from './engine/model/types.ts';
 import { StepHostContext, type StepHost } from './engine/steps';
 import { StandardLine, TakeawayCard } from './engine/kit';
-import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, recordPlace, recordQuickCheck, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
+import { forgetFirstMisses } from './engine/progress/firstTryMemo';
+import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, recordPlace, recordQuickCheck, recordQuickPick, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { creditedPages } from './engine/progress/creditMap.ts';
 import { lessonById } from './data/lessons';
@@ -320,7 +321,9 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     void clearMikingPracticeRun(lesson.id);
     setLocalAnswers({});
     setLocalInteractive(new Set());
-    setLocalQuick(null);
+    // The quick check's FIRST TRY stays (owner ruling 2026-10-14, #19); the
+    // remembered first-try misses go with the answers.
+    forgetFirstMisses();
     setRunId((r) => r + 1);
     goPage(0);
   };
@@ -391,6 +394,10 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     recordQuick: (r) => {
       setLocalQuick((q) => q ?? r);
       void recordQuickCheck(lesson.id, r);
+    },
+    quickPicks: lp.quickPicks,
+    recordQuickPick: (itemId, pick) => {
+      void recordQuickPick(lesson.id, itemId, pick);
     },
     met,
     quickPassed,

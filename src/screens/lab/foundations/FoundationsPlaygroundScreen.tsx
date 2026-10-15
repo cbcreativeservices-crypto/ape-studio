@@ -46,6 +46,7 @@ import { startFenced } from '../../../features/audio/startFenced';
 import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
+import { ReviewLabEnd } from '../kit/ReviewLabEnd';
 import { CheckQuestion } from './bits';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
@@ -732,6 +733,8 @@ export function FoundationsPlaygroundScreen() {
 
         {/* R6c: sandbox — no modules/challenge; explicit review records credit. */}
         <LabReviewButton labKey="af_sound_playground" />
+        {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14, #21). */}
+        <ReviewLabEnd labKey="af_sound_playground" labTitle="Sound Playground" onOpen={stop} />
       </RackUnit>
 
       <GuidedLessonSheet

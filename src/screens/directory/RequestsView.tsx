@@ -11,7 +11,7 @@ import { AppState, FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollVi
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, useSending, useSendingPer } from './directoryBits';
+import { AlsoBlockChip, Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, useSending, useSendingPer } from './directoryBits';
 import {
   blockThread,
   fetchContactThreads,
@@ -30,6 +30,8 @@ import { markThreadSeen, threadUnread } from '../../features/directory/inboxCoun
 import { markThreadRead } from '../../features/directory/inboxApi';
 import { refreshCommunityInbox, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { cardColumn } from '../../theme/readingColumn';
+import * as Crypto from 'expo-crypto';
+import { landedAlready, pendingFor, type PendingSend } from '../../features/directory/sendOnce';
 
 const REASONS: { key: ReportReason; label: string }[] = [
   { key: 'spam', label: 'Spam' },
@@ -385,7 +387,8 @@ export function RequestsView({
     return (
       <ScrollView contentContainerStyle={st.body}>
         <Banner tone="warn">{loadErr}</Banner>
-        <PrimaryButton label="RETRY" onPress={() => void load()} />
+        {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
+        <RetryOrSignIn message={loadErr} onRetry={() => void load()} />
       </ScrollView>
     );
   }
@@ -546,17 +549,8 @@ function ReportLink({
               accessibilityLabel="Report details"
             />
             {/* ── BLOCK IN THE SAME STEP (2026-09-19) ─────────────────────
-                Apple 1.2 looks for report AND block together, and a person who
-                has to perform two separate actions usually performs one. On by
-                default: somebody upset enough to report is rarely hoping to
-                keep hearing from them. */}
-            <ChipWrap>
-              <Chip
-                label={alsoBlock ? 'Also blocking them ✓' : 'Also block them'}
-                on={alsoBlock}
-                onPress={() => setAlsoBlock((v) => !v)}
-              />
-            </ChipWrap>
+                Shared with the Directory member sheet — see AlsoBlockChip. */}
+            <AlsoBlockChip on={alsoBlock} onToggle={() => setAlsoBlock((v) => !v)} />
 
             <PrimaryButton
               label="SEND REPORT"
@@ -652,6 +646,15 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     setBody(t);
     if (threadId) drafts.current.set(threadId, t);
   };
+  /**
+   * ONE COMPOSED MESSAGE, SENT ONCE (toddler hunt 2026-10-14, #11). Per
+   * conversation: the message whose SEND has not yet been answered as sent,
+   * with its client id and the ids on screen before its first attempt — see
+   * features/directory/sendOnce.ts. `msgsFor` says the list on screen is a
+   * real read of THIS conversation (a snapshot of anything else proves nothing).
+   */
+  const pendingSends = useRef(new Map<string, PendingSend>());
+  const msgsFor = useRef<string | null>(null);
 
   // [75] (2026-09-07): a failed message fetch used to render as an empty
   // conversation; surface it instead (the reply box still works).
@@ -682,6 +685,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     }
     setErr(null);
     setMsgs(r.rows);
+    msgsFor.current = id;
     // Same fence as above (no await between, so it still holds).
     if (openId.current === id && seq === loadSeq.current) setAllow(a);
     // Read up to now — only after the messages were actually SHOWN. The badge
@@ -698,6 +702,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   // displayed the FIRST member's messages under the second member's name.
   useEffect(() => {
     setMsgs([]);
+    msgsFor.current = null;
     setErr(null);
     setBody(threadId ? (drafts.current.get(threadId) ?? '') : '');
     setAllow(null);
@@ -865,8 +870,32 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               // next SEND delivered the first message a second time.
               const unsent = (cur: string) =>
                 cur.startsWith(sentRaw) ? cur.slice(sentRaw.length).replace(/^\s+/, '') : cur;
+              // #11: the same text again is a RETRY of the same message — same
+              // client id, and the first attempt's snapshot. A retry re-reads
+              // first: if that attempt already landed (it timed out here but
+              // the server stored it), it is answered as sent, not sent twice.
+              const { pending, retry } = pendingFor(
+                pendingSends.current.get(thread.id),
+                sentRaw.trim(),
+                msgsFor.current === thread.id ? new Set(msgs.map((m) => m.id)) : null,
+                () => Crypto.randomUUID(),
+              );
+              pendingSends.current.set(thread.id, pending);
+              const sendOnce = async () => {
+                if (retry && pending.knownIds) {
+                  const seen = await fetchThreadMessages(thread.id);
+                  if (seen.ok && landedAlready(pending, seen.rows)) return { ok: true } as const;
+                }
+                // `pending.clientId` stays on the device until the RPC takes a
+                // client id (see sendOnce.ts) — an undeclared argument would
+                // make the server refuse every message.
+                return sendThreadMessage(thread.id, pending.body);
+              };
               runSendIn(thread.id, () =>
-                sendThreadMessage(thread.id, sentRaw.trim()).then(async (r) => {
+                sendOnce().then(async (r) => {
+                  if (r.ok && pendingSends.current.get(thread.id) === pending) {
+                    pendingSends.current.delete(thread.id);
+                  }
                   // `thread` is the one this press was made in.
                   const draft = drafts.current.get(thread.id);
                   if (r.ok && draft !== undefined) {

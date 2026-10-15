@@ -58,7 +58,7 @@ const FAKE_PROFILE_API =
   );
 const FAKE_AUTH_API =
   'data:text/javascript,' +
-  encodeURIComponent(`export const AUTH_CALL_MS = 15000; export async function ensureSession() { return null; }`);
+  encodeURIComponent(`export const AUTH_CALL_MS = 15000; export async function ensureSession() { return null; } export async function signOutHalfCreatedAccount() {}`);
 
 registerHooks({
   resolve(specifier, context, nextResolve) {

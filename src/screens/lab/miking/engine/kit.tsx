@@ -21,13 +21,15 @@
  *                   region only (the canvas strip shows the same facts to the
  *                   eye; review M5 cut the sighted duplicate).
  */
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { Card } from '../../mastering/kit';
 import type { DocumentedZone, OrderTask, Prediction, SetupTask, Symptom, WhyWrong } from './model/types.ts';
 import { gradeSetup, type SetupGrade } from './progress/setupGrade.ts';
 import { hashText, optionOrder, shuffled } from './model/itemOrder.ts';
+import { firstTryMissed, noteFirstMiss } from './progress/firstTryMemo.ts';
+import { movedFromBaseline } from './physics/twoMic.ts';
 
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
@@ -48,6 +50,24 @@ export function ZoneCard({ z }: { z: DocumentedZone }) {
 
 export { shuffled } from './model/itemOrder.ts';
 
+/**
+ * "A MIC MOVED" on a two-mic page (owner ruling 2026-10-14, #19). Δt also
+ * changes when only the SOURCE changes, which moves no mic — so the baseline
+ * is re-taken whenever `sourceKey` changes, and only a Δt change away from it
+ * counts. Once counted it stays counted for the visit (a later source change
+ * never un-counts it). Pure rule: physics/twoMic movedFromBaseline.
+ */
+export function useMicMoved(dtMs: number, sourceKey: string): boolean {
+  const base = useRef({ sourceKey, dtMs });
+  if (base.current.sourceKey !== sourceKey) base.current = { sourceKey, dtMs };
+  const movedNow = movedFromBaseline(dtMs, base.current.dtMs);
+  const [latched, setLatched] = useState(false);
+  useEffect(() => {
+    if (movedNow && !latched) setLatched(true);
+  }, [movedNow, latched]);
+  return movedNow || latched;
+}
+
 type Pickable = { id: string; prompt: string; options: readonly string[]; correct: string; explain: string; why?: WhyWrong };
 
 export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; onAnswered: (firstRight: boolean) => void; answered?: boolean }) {
@@ -55,7 +75,8 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
   const [picked, setPicked] = useState<string | null>(answered ? s.correct : null);
   const [wrong, setWrong] = useState<string[]>([]);
   const reported = useRef(!!answered);
-  const firstWrong = useRef(false);
+  // A miss survives a page change (owner ruling 2026-10-14, #19): see firstTryMemo.
+  const firstWrong = useRef(firstTryMissed(s.id));
   const correct = picked === s.correct;
   const whyOf = (o: string) => s.why?.[o] ?? 'Not the best fit here. Choose again.';
   return (
@@ -77,6 +98,7 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
                 if (!ok) {
                   setWrong((w) => (w.includes(o) ? w : [...w, o]));
                   firstWrong.current = true;
+                  noteFirstMiss(s.id);
                 }
                 if (ok && !reported.current) {
                   reported.current = true;
@@ -153,7 +175,7 @@ export function OrderTaskCard({ t, answered, onAnswered }: { t: OrderTask; answe
   const order = useMemo(() => shuffled(t.steps.length, hashText(t.id)), [t]);
   const [placed, setPlaced] = useState(answered ? t.steps.length : 0);
   const [note, setNote] = useState<string | null>(null);
-  const early = useRef(false);
+  const early = useRef(firstTryMissed(t.id));
   const reported = useRef(answered);
   const done = placed >= t.steps.length;
   return (
@@ -187,6 +209,7 @@ export function OrderTaskCard({ t, answered, onAnswered }: { t: OrderTask; answe
                       }
                     } else {
                       early.current = true;
+                      noteFirstMiss(t.id);
                       setNote(`Not yet: ${st.early}`);
                       AccessibilityInfo.announceForAccessibility?.(`Not yet. ${st.early}`);
                     }
@@ -216,7 +239,7 @@ export function SetupTaskCard({ t, answered, onAnswered }: { t: SetupTask; answe
   const [setupId, setSetupId] = useState<string | null>(null);
   const [reasons, setReasons] = useState<ReadonlySet<string>>(() => new Set());
   const [result, setResult] = useState<SetupGrade | null>(null);
-  const tries = useRef(0);
+  const tries = useRef(firstTryMissed(t.id) ? 1 : 0);
   const reported = useRef(answered);
   const toggle = (id: string) => {
     setResult(null);
@@ -268,6 +291,7 @@ export function SetupTaskCard({ t, answered, onAnswered }: { t: SetupTask; answe
           const g = gradeSetup(t, setupId, reasons);
           setResult(g);
           if (setupId) tries.current += 1;
+          if (setupId && !g.pass) noteFirstMiss(t.id);
           if (g.pass && !reported.current) {
             reported.current = true;
             onAnswered(tries.current === 1);

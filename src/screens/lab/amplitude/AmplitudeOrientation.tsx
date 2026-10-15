@@ -58,6 +58,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { readingText } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { ReviewLabEnd } from '../kit/ReviewLabEnd';
 
 /** Full-scale red — top of the canonical ramp (kept SSoT, never hardcoded). */
 const LOUD_RED = LOUDNESS_STOPS[0].color;
@@ -1033,6 +1034,16 @@ export function AmplitudeLabScreen() {
             credit, and a guest's is kept only if they sign in this session. */}
         <GuestStartReminder activity="lab:af_amplitude" />
         <AmplitudeColorBody alsoReviewLab />
+        {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14,
+            #21). The credit here is the ramp check, so the end screen points
+            back to it rather than offering a bare review tap. */}
+        <ReviewLabEnd
+          labKey="af_amplitude"
+          labTitle="Understanding Level & Amplitude"
+          stepLabel="Pass the ramp check, then press UNDERSTOOD — MARK REVIEWED"
+          stepDetail="Both are at the foot of the lab, after the six views."
+          offerReview={false}
+        />
       </ScrollView>
     </View>
   );

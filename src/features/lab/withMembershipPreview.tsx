@@ -165,19 +165,24 @@ export function withMembershipPreview<P extends object>(
      * and arms it again, which is the behaviour that was intended all along.
      */
     const focused = useIsFocused();
+    const lookInside = (route.params as { lookInside?: boolean } | undefined)?.lookInside === true;
 
     useEffect(() => {
       if (gated) {
         // Arm the preview if it isn't already (the Ear Lab arms it BEFORE
         // navigating, so a row tap arrives armed — don't re-arm and flicker).
-        if (focused && !armedForThis) startLabPreview(route.name, labRouteName(route.name) ?? 'This lab');
+        // `lookInside` (Start Here's "FREE LOOK INSIDE", toddler hunt
+        // 2026-10-14 #31g): open UNCOVERED — the upgrade sheet waits for a tap.
+        if (focused && !armedForThis) {
+          startLabPreview(route.name, labRouteName(route.name) ?? 'This lab', { covered: !lookInside });
+        }
         return;
       }
       // Entitled (or unknown, or not a members-only route): clear only a stale
       // preview WE would own for this route — e.g. entitlement upgraded while
       // the lab is open. The LabPreviewOverlay owns the ordinary leave.
       if (memberOnly && armedForThis) endLabPreview();
-    }, [gated, memberOnly, armedForThis, focused, route.name]);
+    }, [gated, memberOnly, armedForThis, focused, route.name, lookInside]);
 
     // Unknown beat: hold rather than flash the paid lab (or a paywall at a
     // member). Non-member: hold until the scrim is actually up, so the lab

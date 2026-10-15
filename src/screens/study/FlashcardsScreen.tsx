@@ -655,6 +655,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
   const card = deck[Math.min(idx, Math.max(0, deck.length - 1))];
 
+  // Where you were in the deck when you opened the KNOWN view; on leaving it
+  // the deck reopens on that card (or the card now in its place).
+  const knownChipPlace = useRef<{ id?: string; idx: number } | null>(null);
+  const restorePlace = useRef<{ id?: string; idx: number } | null>(null);
+  useEffect(() => {
+    const back = restorePlace.current;
+    if (!back) return;
+    restorePlace.current = null;
+    const at = back.id ? deck.findIndex((c) => c.id === back.id) : -1;
+    setIdx(at >= 0 ? at : Math.max(0, Math.min(back.idx, deck.length - 1)));
+  }, [deck]);
+
   // Anti-quick-scroll guard (Booth 2026-07-16): a term must be ON SCREEN for
   // 1.5s before it can be marked known or flagged — rapid swipe-tagging no-ops.
   const cardShownAt = useRef(Date.now());
@@ -1278,6 +1290,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     if (isKnown) {
       next.delete(card.id); // back into the deck; server credit stays
       setInTermList('known', card.id, false);
+      // In the KNOWN-only view the card leaves the list: stay put, so the next
+      // known card slides into place (the last one steps back one), never a
+      // jump to card 1 or past the end (toddler hunt 2026-10-14 #31c).
+      if (showKnown && !bookmarkedOnly && !starredOnly) {
+        setLevel(0);
+        setRevealedThisVisit(new Set());
+        setIdx((i) => Math.max(0, Math.min(i, deck.length - 2)));
+      }
     } else {
       next.add(card.id);
       setInTermList('known', card.id, true);
@@ -1600,7 +1620,15 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             label="KNOWN"
             active={showKnown}
             activeTint="green"
-            onPress={() => { setShowKnown((v) => !v); resetToStart(); }}
+            onPress={() => {
+              // Leaving the KNOWN view goes back to the card you were on in
+              // the deck — not card 1 (toddler hunt 2026-10-14 #31c).
+              if (!showKnown) knownChipPlace.current = { id: card?.id, idx };
+              else if (!bookmarkedOnly && !starredOnly) restorePlace.current = knownChipPlace.current;
+              if (showKnown) knownChipPlace.current = null;
+              setShowKnown((v) => !v);
+              resetToStart();
+            }}
             onLongPress={() => handleChipLongPress('Known terms', 'known')}
           />
           {/* Icon-only BOOKMARK chip (user request 2026-07-18 — replaces the ⚑

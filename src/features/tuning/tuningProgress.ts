@@ -140,6 +140,13 @@ registerSessionCarry<HeldTuning>(CARRY_KEY, async (h) => {
   }
 });
 
+/** Pure: START OVER (PRACTICE) — owner ruling 2026-10-14, #20. The chapter
+ *  marks and the place go; `done` (the lab once completed — its credit is
+ *  banked in labCompletion) and the BASIC/MATH setting stay. */
+export function tuningResetForPractice(p: TuningProgress, firstChapter = 0): TuningProgress {
+  return { completed: [], lastChapter: firstChapter, done: p.done, mathView: p.mathView };
+}
+
 export async function resetTuningProgress(): Promise<void> {
   const reportRefused = armSaveFailureReport();
   try {

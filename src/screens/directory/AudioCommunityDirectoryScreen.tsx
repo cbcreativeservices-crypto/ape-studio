@@ -17,7 +17,7 @@ import { badgeA11y } from '../../features/directory/inboxCounts';
 import { directoryParams } from '../../features/notifications/communityRules';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote, useSending, useSendingPer } from './directoryBits';
+import { AlsoBlockChip, Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote, useSending, useSendingPer } from './directoryBits';
 import { ExploreView } from './ExploreView';
 import { MyProfileView } from './MyProfileView';
 import { RequestsView } from './RequestsView';
@@ -56,14 +56,22 @@ export function AudioCommunityDirectoryScreen() {
   const [openThreadId, setOpenThreadId] = useState<string | null>(linked.thread);
   // A second tap while this screen is already open arrives as new params on
   // the same route (navigateToPath uses `pop: true`).
-  const linkKey = `${linked.requests ? 'r' : ''}:${linked.thread ?? ''}`;
-  const lastLinkKey = useRef(linkKey);
+  // EVERY TAP COUNTS (toddler hunt 2026-10-14, #15). This keyed on the link's
+  // TEXT, so tapping the same alert again — the same thread — matched the last
+  // key and did nothing: no re-read, no new message. Each navigate hands the
+  // route a NEW params object, so the object itself is the tap. RequestsView
+  // hands the id back once used (openThreadId → null), so setting it again is
+  // a change there: it re-reads the list, and the conversation it re-opens
+  // re-reads its messages.
+  const params = route.params;
+  const lastParams = useRef(params);
   useEffect(() => {
-    if (lastLinkKey.current === linkKey) return;
-    lastLinkKey.current = linkKey;
-    if (linked.requests) setTab('requests');
-    if (linked.thread) setOpenThreadId(linked.thread);
-  }, [linkKey, linked.requests, linked.thread]);
+    if (lastParams.current === params) return;
+    lastParams.current = params;
+    const next = directoryParams(params);
+    if (next.requests) setTab('requests');
+    if (next.thread) setOpenThreadId(next.thread);
+  }, [params]);
   const inbox = useCommunityInbox();
   const [memberToken, setMemberToken] = useState<string | null>(null);
   /** The tapped card's display name, so the sheet's title is right from its
@@ -188,8 +196,9 @@ function MemberSheet({
   const [contactOpen, setContactOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [sent, setSent] = useState(false);
-  /** A report went through — acknowledged in the sheet (see the BLOCK note). */
-  const [reported, setReported] = useState(false);
+  /** A report went through — acknowledged in the sheet (see the BLOCK note).
+   *  'blocked' = the "Also block them" block went through too (#13). */
+  const [reported, setReported] = useState<false | 'reported' | 'blocked'>(false);
   /** BLOCK was tapped and is waiting for its confirmation. */
   const [confirmBlock, setConfirmBlock] = useState(false);
   // Per member (night pass 3): this sheet outlives each member, and one shared
@@ -284,7 +293,12 @@ function MemberSheet({
             <>
               {err ? <Banner tone="warn">{err}</Banner> : null}
               {sent ? <Banner tone="good">Request sent. You’ll see the reply under Requests.</Banner> : null}
-              {reported ? (
+              {reported === 'blocked' ? (
+                <Banner tone="good">
+                  Report received. We review reports and act on them. You will not hear from this member
+                  again, and they are not told that you reported them.
+                </Banner>
+              ) : reported ? (
                 <Banner tone="good">
                   Report received. We review reports and act on them. The other member is not told that you
                   reported them.
@@ -343,7 +357,7 @@ function MemberSheet({
                 </>
               ) : null}
 
-              {p.contactEnabled && !sent ? (
+              {p.contactEnabled && !sent && reported !== 'blocked' ? (
                 <PrimaryButton label="SEND A CONTACT REQUEST" tone="green" onPress={() => setContactOpen(true)} />
               ) : null}
 
@@ -356,7 +370,8 @@ function MemberSheet({
                   BEHIND an open <Modal> (see ShareTermSheet), which would make
                   BLOCK a dead button. The report acknowledgement above is an
                   in-sheet banner for the same reason. */}
-              {confirmBlock ? (
+              {/* Blocked through the report: nothing left to block or report. */}
+              {reported === 'blocked' ? null : confirmBlock ? (
                 <View style={{ gap: 10 }}>
                   <Text style={st.credHead}>{`BLOCK ${p.displayName.toUpperCase()}?`}</Text>
                   <Helper>
@@ -427,15 +442,23 @@ function MemberSheet({
               <ReportSheet
                 open={reportOpen}
                 onClose={() => setReportOpen(false)}
-                onSend={(reason, detail) =>
-                  reportMember({ token, reason, detail }).then((r) => {
+                // "Also block them" (toddler hunt 2026-10-14, #13) — the same
+                // step Requests has, only after the report went through. The
+                // block runs even if the sheet closed meanwhile (it is what
+                // the person asked for); only the on-screen answer is fenced
+                // to this member. 'blocked' is what the SERVER did, never what
+                // the chip said; a refused block keeps its own error up.
+                onSend={(reason, detail, alsoBlock) =>
+                  reportMember({ token, reason, detail }).then(async (r) => {
+                    const b = r.ok && alsoBlock ? await blockMember(token, true) : null;
+                    if (b?.ok) onBlocked?.(token);
                     if (liveToken.current !== token) return;
                     setReportOpen(false);
                     if (!r.ok) return setErr(r.error);
                     // A report that vanishes silently reads as one that was
                     // not received (bug hunt 2026-09-29; Requests says so too).
-                    setErr(null);
-                    setReported(true);
+                    setErr(b && !b.ok ? b.error : null);
+                    setReported(b?.ok ? 'blocked' : 'reported');
                   })
                 }
               />
@@ -560,11 +583,13 @@ function ReportSheet({
 }: {
   open: boolean;
   onClose: () => void;
-  onSend: (reason: ReportReason, detail: string) => Promise<unknown>;
+  onSend: (reason: ReportReason, detail: string, alsoBlock: boolean) => Promise<unknown>;
 }) {
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
+  /** On by default, as in Requests — see AlsoBlockChip. */
+  const [alsoBlock, setAlsoBlock] = useState(true);
   const [sending, runSend] = useSending();
   return (
     <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
@@ -590,11 +615,12 @@ function ReportSheet({
             maxLength={1000}
             accessibilityLabel="Report details"
           />
+          <AlsoBlockChip on={alsoBlock} onToggle={() => setAlsoBlock((v) => !v)} />
           <PrimaryButton
             label="SEND REPORT"
             tone="danger"
             disabled={sending}
-            onPress={() => runSend(() => onSend(reason, detail))}
+            onPress={() => runSend(() => onSend(reason, detail, alsoBlock))}
           />
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>

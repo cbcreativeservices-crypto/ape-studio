@@ -17,7 +17,7 @@ import { PagedLab } from '../kit/PagedLab';
 import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { retainSessionStems } from './audio/mixAudio';
-import { MIX_MANTRA } from './kit';
+import { HANDS_ON_DETAIL, MIX_MANTRA } from './kit';
 import { MIXING_PAGES_A } from './pagesA';
 import { MIXING_PAGES_B } from './pagesB';
 import { MIXING_PAGES_C } from './pagesC';
@@ -41,5 +41,5 @@ export function BeginningMixingLabScreen() {
   // shows; it was 7.1 s before classicWave became a wavetable, which is why
   // this was not wired until now.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} />;
+  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

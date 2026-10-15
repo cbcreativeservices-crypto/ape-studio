@@ -108,7 +108,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A court’s rules keep obstructions about 2 m from the playing area. What is that 2 m?',
     options: ['A sport’s clearance, not a mic place', 'The best distance for an action mic', 'A distance the event will then approve'],
     correct: 'A sport’s clearance, not a mic place',
-    explain: 'A rule value is not a microphone permission: it is a clearance, not a recommended capsule distance — and the event may set larger ones. Every mount is still approved on its own.',
+    explain: 'A rule value is not a microphone permission: it is a clearance, not a suggested capsule distance — and the event may set larger ones. Every mount is still approved on its own.',
     why: {
       'The best distance for an action mic': 'A clearance says where nothing may be, not where a mic sounds best.',
       'A distance the event will then approve': 'Each event approves its own places; the rule is only a minimum.',

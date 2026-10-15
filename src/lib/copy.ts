@@ -48,8 +48,17 @@ export const COPY = {
     'Free use includes 14 definitions a week; Academy membership removes the limit.',
   /** The OTHER free-tier cap, which no upgrade surface used to admit to.
    *  ⚠️ 5 mirrors CALC_WEEKLY_LIMIT in features/lab/calcUsage.ts and the
-   *  server's `calc_consume()`. If that constant moves, this moves with it. */
-  calcFreeAllowance: 'Free use also includes 5 calculations a week; membership removes both limits.',
+   *  server's `calc_consume()`. If that constant moves, this moves with it.
+   *  "A free ACCOUNT" (toddler hunt #27, owner 2026-10-14): calculators ask a
+   *  guest to create an account first, so "Free use also includes…" was false
+   *  to a guest. True for a signed-in free account too, so one string serves
+   *  both; it follows `glossaryFreeAllowance` on the Upgrade sheet + Paywall. */
+  calcFreeAllowance: 'A free account also includes 5 calculations a week; membership removes both limits.',
+  /** The lab-preview sheet once the person BECOMES a member while it is open
+   *  (toddler hunt #32, owner 2026-10-14): no more selling — one button that
+   *  closes the sheet and leaves the (now unlocked) lab open. */
+  labPreviewMemberTitle: 'You’re a member — open the lab',
+  labPreviewMemberButton: 'OPEN THE LAB',
   /** The same fact WITHOUT the membership clause, for the Auth screen (owner
    *  2026-09-13). Two reasons it is short there: the full sentence pushed the
    *  guest note to three lines and its tail below the fold on a Pixel, and a

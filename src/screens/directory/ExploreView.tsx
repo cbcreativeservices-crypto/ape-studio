@@ -15,7 +15,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type Dispatch,
 import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
+import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, RetryOrSignIn, SelfReportedNote } from './directoryBits';
 // The country filter has to normalise a typed code exactly the way the profile
 // editor normalises a stored one, or the filter searches for something no
 // profile can hold — so both ends use the editor's single normaliser.
@@ -428,7 +428,8 @@ export function ExploreView({
       {err ? (
         <>
           <Banner tone="warn">{err}</Banner>
-          <PrimaryButton label="RETRY" onPress={() => void run(f)} />
+          {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
+          <RetryOrSignIn message={err} onRetry={() => void run(f)} />
         </>
       ) : null}
 

@@ -11,8 +11,9 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
-import { signOutThisDevice } from '../auth/api';
+import { lookUpDeletedAccount, signOutThisDevice } from '../auth/api';
 import { clearLocalAccountData, resetAllLocalStores } from '../account/clearLocalAccountData';
+import { runAfterAccountSync } from '../account/accountLocalSync';
 import { colors, fonts } from '../../theme/tokens';
 
 const HOLD_MS = 5000;
@@ -102,11 +103,25 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
        * will remove the account for you." It does not claim the account
        * survived, which is right — after a timeout we genuinely do not know.
        */
-      const { error } = await withDeadline(
-        // `async () =>`: the Supabase builder is a thenable, not a Promise.
-        async () => await supabase.rpc('delete_my_account'),
-        'delete_my_account',
-      );
+      let error: unknown = null;
+      try {
+        ({ error } = await withDeadline(
+          // `async () =>`: the Supabase builder is a thenable, not a Promise.
+          async () => await supabase.rpc('delete_my_account'),
+          'delete_my_account',
+        ));
+      } catch (unanswered) {
+        /**
+         * ⛔ A DELETE THAT TIMED OUT MAY STILL HAVE HAPPENED (toddler hunt
+         * 2026-10-14, item 9, owner-approved). The deadline stops waiting; it
+         * cannot stop the server. Erased there, the device stayed signed in to
+         * an account that no longer exists. So ask the auth server: only a
+         * definitive "this user does not exist" counts as erased — then the
+         * normal sign-out + wipe below runs. Still there, or no answer: the
+         * "Could not delete account" notice, as before.
+         */
+        if ((await lookUpDeletedAccount()) !== 'gone') throw unanswered;
+      }
       if (error) throw error;
       erased = true;
       markIntentionalSignOut();
@@ -129,8 +144,14 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
       // in-memory store caches so no stale academic state survives to the next
       // account (user bug 2026-07-26). No JS reload available (expo-updates not
       // installed), so the cache reset is what refreshes live screens.
-      await clearLocalAccountData();
-      resetAllLocalStores();
+      // ON THE WIPE QUEUE (toddler hunt 2026-10-14, item 10c): the sign-out
+      // above queued its own SIGNED_OUT identity wipe (accountLocalSync); two
+      // sweeps running at once can interleave, as Guest Mode's once did. This
+      // one runs after it, like every other wipe.
+      await runAfterAccountSync(async () => {
+        await clearLocalAccountData();
+        resetAllLocalStores();
+      });
       onDeleted();
     } catch {
       if (erased) {

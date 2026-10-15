@@ -116,16 +116,27 @@ export function EngineGate({
     } catch {
       detail = '';
     }
+    // A BANNER, NOT A CARD (owner ruling 2026-10-14, #23). Silence mid-run (a
+    // phone call during a long dosimeter run) raised a tall card that pushed
+    // the display out of view. The display keeps running underneath, so this
+    // is now one slim strip above it: the
+    // title, one line, TRY AGAIN beside it. Same condition, same retry.
     return (
-      <View style={styles.card}>
-        <Text style={styles.title}>NO SOUND FROM THE MICROPHONE</Text>
-        <Text style={styles.body}>
-          {onRetry
-            ? 'The microphone is switched on, but no sound is reaching the app. Tap TRY AGAIN. If it keeps happening, close other apps that use the microphone (calls, recorders, video chat), then try again — restarting the device clears a stuck audio system.'
-            : 'The microphone is switched on, but no sound is reaching the app. Go back and re-open this tool. If it keeps happening, close other apps that use the microphone (calls, recorders, video chat) — restarting the device clears a stuck audio system.'}
-        </Text>
-        {detail ? <Text style={styles.detail}>{detail}</Text> : null}
-        {onRetry ? <GlassButton label="TRY AGAIN" tint="gold" height={46} fontSize={13} onPress={onRetry} /> : null}
+      <View style={styles.banner} accessibilityRole="alert" accessibilityLiveRegion="polite">
+        <View style={styles.bannerText}>
+          <Text style={styles.title}>NO SOUND FROM THE MICROPHONE</Text>
+          <Text style={styles.bannerBody}>
+            {onRetry
+              ? 'No sound is reaching the app — the display keeps running. Tap TRY AGAIN; if it repeats, close other apps using the mic (calls, recorders).'
+              : 'No sound is reaching the app — the display keeps running. Re-open this tool; if it repeats, close other apps using the mic (calls, recorders).'}
+          </Text>
+          {detail ? <Text style={styles.detail}>{detail}</Text> : null}
+        </View>
+        {onRetry ? (
+          <View style={styles.bannerKey}>
+            <GlassButton label="TRY AGAIN" tint="gold" height={44} fontSize={12} onPress={onRetry} />
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -204,5 +215,19 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   detail: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSecondary, opacity: 0.8 },
   actions: { flexDirection: 'row', gap: 10, marginTop: 6 },
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.45)',
+    backgroundColor: '#1a1409',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  bannerText: { flex: 1, gap: 2 },
+  bannerBody: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
+  bannerKey: { width: 112 },
   actionFlex: { flex: 1 },
 });

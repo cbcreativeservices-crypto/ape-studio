@@ -18,9 +18,17 @@ export function UpgradeSheet({
   onSignIn,
   onCreateAccount,
   onSeePlans,
+  onMemberOpen,
 }: {
   visible: boolean;
   onClose: () => void;
+  /**
+   * The person is a member NOW (toddler hunt #32, 2026-10-14): the sheet stops
+   * selling and shows "You're a member — open the lab" with one button that
+   * calls this (and so does a tap on the backdrop). Used by LabPreviewOverlay
+   * when membership lands while the sheet is up over a lab preview.
+   */
+  onMemberOpen?: () => void;
   /** Present on pre-auth surfaces (Landing); omit where the user is signed in. */
   onSignIn?: () => void;
   onCreateAccount?: () => void;
@@ -31,6 +39,27 @@ export function UpgradeSheet({
   // a tap there hit HOME. The sheet is pinned to bottom:0, so add the inset.
   const insets = useSafeAreaInsets();
   if (!visible) return null;
+  if (onMemberOpen) {
+    // No membership copy to a member (house rule): the member face only.
+    return (
+      <View style={styles.backdrop} accessibilityViewIsModal>
+        <Pressable style={{ flex: 1 }} onPress={onMemberOpen} accessibilityRole="button" accessibilityLabel="Dismiss" />
+        <View style={[styles.sheet, { paddingBottom: 28 + insets.bottom }]}>
+          <Text style={styles.eyebrow}>ACADEMY MODE</Text>
+          <Text style={styles.title} accessibilityLiveRegion="polite">
+            {COPY.labPreviewMemberTitle}
+          </Text>
+          <GlassButton
+            label={COPY.labPreviewMemberButton}
+            tint="gold"
+            height={50}
+            fontSize={14}
+            onPress={onMemberOpen}
+          />
+        </View>
+      </View>
+    );
+  }
   return (
     // accessibilityViewIsModal keeps VoiceOver inside the sheet (pass 5, W1):
     // this backdrop is a plain sibling, so without it VoiceOver walks straight

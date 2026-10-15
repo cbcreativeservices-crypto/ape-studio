@@ -33,7 +33,7 @@ import {
   type SpectrumMeta,
   type WaveBucket,
 } from '../../../modules/ape-dsp';
-import { useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { useDspEngine, type EngineState } from '../../features/tools/engine/useDspEngine';
 import { releaseMicNow } from '../../features/tools/engine/micSession';
 // Dev-only capture marks (2026-09-13). The tiles resting when frames stop is
 // correct; WHY frames stop on a healthy phone is not understood, and the
@@ -144,7 +144,16 @@ export type HubPreview = {
   active: boolean;
   /** Call right before navigating into a tool: deterministic mic handoff. */
   stopForNavigation: () => void;
+  /** The mic was refused or there is no capture here — the live tiles show
+   *  their still pictures and must say so ("MIC OFF · DEMO", toddler hunt
+   *  2026-10-14 #29). */
+  micOff: boolean;
 };
+
+/** Engine states in which the hub can never show a live reading. */
+export function micOffState(state: EngineState): boolean {
+  return state === 'denied' || state === 'absent' || state === 'spike' || state === 'error';
+}
 
 /** Dev guard: the module store assumes ONE mounted hub (ApeDsp itself is a
  *  refcount-free singleton, so two hubs would kill each other's capture). */
@@ -329,5 +338,5 @@ export function useHubPreviewEngine(): HubPreview {
     };
   }, [live, stop]);
 
-  return { engineLive: live, active: isFocused && appActive, stopForNavigation };
+  return { engineLive: live, active: isFocused && appActive, stopForNavigation, micOff: micOffState(state) };
 }

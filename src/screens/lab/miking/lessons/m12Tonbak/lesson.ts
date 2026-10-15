@@ -690,5 +690,5 @@ export const M12_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a recommended way to mic the tonbak: these starting points are adapted from how microphones behave, and every drum, player and room is different. Move the mic, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one wooden tonbak, a seated posture the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a published way to mic the tonbak: these starting points are adapted from how microphones behave, and every drum, player and room is different. Move the mic, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one wooden tonbak, a seated posture the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands.',
 };

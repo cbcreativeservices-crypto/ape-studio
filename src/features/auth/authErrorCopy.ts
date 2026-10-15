@@ -87,3 +87,119 @@ export function passwordIssue(pw: string): string | null {
   if (!/[0-9]/.test(pw)) return 'Password must include at least 1 number.';
   return null;
 }
+
+/* ── The account RECORD and the DELETED-account lookup (toddler bug hunt
+ * 2026-10-14, HOLD items 7, 9, 10b — owner-approved) ─────────────────────
+ *
+ * Creating an account is two steps: the auth sign-up, then
+ * register_commercial_user, which writes the public.users row. When the
+ * second step failed, the device kept the auth session — so RETURN, LOGIN or
+ * reopening walked into an account with no record. The device is now signed
+ * out with ACCOUNT_SETUP_UNFINISHED. The rules below decide WHEN that is safe.
+ *
+ * ⛔ A REAL MEMBER MUST NEVER BE SIGNED OUT BY A TRANSIENT FAILURE. The cold-
+ * start auth race (reference_cold_start_auth_race) means the first reads after
+ * a launch can go out as anon: a 42501 denial, or — where RLS filters rather
+ * than refuses — an empty answer that LOOKS like "no row". So:
+ *   • any read ERROR other than an auth denial → unknown (do nothing);
+ *   • an auth denial or an empty answer → wait for getSession() (it settles
+ *     only once the stored session is loaded) and read ONCE more;
+ *   • missing only when that second read, made with the SAME real account's
+ *     session confirmed, also comes back empty with no error.
+ * Pure like the rest of this file: the reads are passed in (api.ts wires
+ * them), pinned by test/toddlerAccountHolds_20261014.test.ts.
+ */
+
+
+/** The message for a half-created account (owner wording, item 7). */
+export const ACCOUNT_SETUP_UNFINISHED = 'Account setup didn’t finish — please try again.';
+
+/** The same, where the person is signing IN (LOGIN, a relaunch): LOGIN again
+ *  would only end here again, so name the step that finishes it. */
+export const ACCOUNT_SETUP_UNFINISHED_SIGN_IN =
+  'Account setup didn’t finish — please try again: tap CREATE ACCOUNT with the same email and password to finish setting it up.';
+
+export type RecordAnswer = 'present' | 'missing' | 'unknown';
+
+/** The stored session as these checks need it. 'unknown' = the read stalled,
+ *  rejected or could not refresh (a member offline) — never "signed out". */
+export type SessionRead = { uid: string | null; real: boolean } | 'unknown';
+
+/** One users-row read: found / not found, or the error it failed with. */
+export type RowRead = { found: boolean } | { error: unknown };
+
+/** 42501 / "permission denied": the request went out without the member's
+ *  token (same rule as features/study/sessionRetry.isAuthDenial). */
+function isAuthDenial(e: unknown): boolean {
+  if (e == null) return false;
+  if ((e as { code?: unknown }).code === '42501') return true;
+  const raw = (e as { message?: unknown }).message;
+  return typeof raw === 'string' && /permission denied/i.test(raw);
+}
+
+/**
+ * Does the signed-in account have its `public.users` row?
+ * 'unknown' for no real account (a guest, an anonymous device key) as well:
+ * there is nothing to judge, and nothing here may sign anyone out.
+ */
+export async function checkAccountRecord(deps: {
+  readSession: () => Promise<SessionRead>;
+  readRow: (uid: string) => Promise<RowRead>;
+}): Promise<RecordAnswer> {
+  const safe = async <T>(f: () => Promise<T>): Promise<T | 'unknown'> => {
+    try {
+      return await f();
+    } catch {
+      return 'unknown';
+    }
+  };
+  const first = await safe(deps.readSession);
+  if (first === 'unknown' || !first.real || !first.uid) return 'unknown';
+  const uid = first.uid;
+
+  const r1 = await safe(() => deps.readRow(uid));
+  if (r1 === 'unknown') return 'unknown';
+  if ('error' in r1) {
+    if (!isAuthDenial(r1.error)) return 'unknown'; // offline, a stall, a 5xx
+  } else if (r1.found) {
+    return 'present';
+  }
+
+  // An auth denial or an empty answer: the race's two faces. getSession()
+  // settles once the stored session is in place — then one more read.
+  const again = await safe(deps.readSession);
+  if (again === 'unknown' || !again.real || again.uid !== uid) return 'unknown';
+  const r2 = await safe(() => deps.readRow(uid));
+  if (r2 === 'unknown' || 'error' in r2) return 'unknown';
+  return r2.found ? 'present' : 'missing';
+}
+
+/**
+ * After `delete_my_account` timed out on the client (item 9): did the server
+ * delete the account anyway? Classifies one `auth.getUser()` answer.
+ *   'gone'    — the auth server says this user no longer exists;
+ *   'present' — it returned the user (the delete did not happen, or not yet);
+ *   'unknown' — no answer we can trust (offline, a stall, a 5xx).
+ */
+export type AccountLookup = 'gone' | 'present' | 'unknown';
+
+export function classifyUserLookup(res: { data?: { user?: unknown } | null; error?: unknown } | null | undefined): AccountLookup {
+  const error = res?.error as { status?: unknown; code?: unknown; message?: unknown; name?: unknown } | null | undefined;
+  if (error) {
+    const status = typeof error.status === 'number' ? error.status : 0;
+    const code = typeof error.code === 'string' ? error.code : '';
+    const msg = typeof error.message === 'string' ? error.message : '';
+    // GoTrue: 403 "User from sub claim in JWT does not exist" (code
+    // user_not_found); 404 on some versions. A network failure has no status.
+    if (code === 'user_not_found') return 'gone';
+    if ((status === 403 || status === 404) && /not exist|not found/i.test(msg)) return 'gone';
+    return 'unknown';
+  }
+  return res?.data?.user ? 'present' : 'unknown';
+}
+
+/** A recovery code pasted as "123 456" (or with a stray newline): the spaces
+ *  are not part of the code (item 10b). */
+export function normalizeResetCode(raw: string): string {
+  return raw.replace(/\s+/g, '');
+}

@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The flute’s 5–10 cm starting point on a piccolo is…',
     options: ['A measured optimum for the piccolo itself', 'A useful comparison to begin with', 'Too close to work at all on a piccolo'],
     correct: 'A useful comparison to begin with',
-    explain: 'The flute-family positions are recommended for variants too, but they were not measured on a piccolo. Copy the relationship — between the lip plate and the first keys, off the jet — and test the whole phrase.',
+    explain: 'The flute-family positions are suggested for variants too, but they were not measured on a piccolo. Copy the relationship — between the lip plate and the first keys, off the jet — and test the whole phrase.',
     why: {
       'A measured optimum for the piccolo itself': 'It is the flute’s figure, transferred; no piccolo-specific measurement exists.',
       'Too close to work at all on a piccolo': 'It works as a start; listen for breath and keys and adjust.',

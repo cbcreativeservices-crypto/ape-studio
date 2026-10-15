@@ -6,7 +6,8 @@
  * free topics. `already_registered` is treated as success (idempotent re-auth).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AUTH_CALL_MS, ensureSession } from '../auth/api';
+import { AUTH_CALL_MS, ensureSession, signOutHalfCreatedAccount } from '../auth/api';
+import { ACCOUNT_SETUP_UNFINISHED } from '../auth/authErrorCopy';
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 
@@ -56,28 +57,37 @@ export async function registerCommercialUser(email: string, password: string): P
   // 2. Registration RPC — creates the users row + seeds free topics.
   const nickname = email.trim().split('@')[0] || 'Student';
   const migration = await collectFavoritesMigration();
-  // BOUNDED (night bug pass 1, 2026-10-01) — a stall REJECTS, and the Auth
-  // screen's catch says "check your connection". The auth account already
-  // exists by now, so the retry resumes it (ensureSession: same email → keep).
-  const { data, error } = await withDeadline(
-    async () =>
-      await supabase.rpc('register_commercial_user', {
-        p_nickname: nickname,
-        p_favorites: migration.favorites,
-      }),
-    'register_commercial_user',
-    AUTH_CALL_MS,
-  );
-  if (error) {
-    console.warn('[commercial] register_commercial_user failed:', error.message);
-    return { success: false, error: 'Could not complete registration. Please try again.' };
+  // BOUNDED (night bug pass 1, 2026-10-01). A stall is caught HERE now (it
+  // used to reject into the Auth screen's "check your connection").
+  let data: unknown = null;
+  let error: { message?: string } | null = null;
+  try {
+    ({ data, error } = await withDeadline(
+      async () =>
+        await supabase.rpc('register_commercial_user', {
+          p_nickname: nickname,
+          p_favorites: migration.favorites,
+        }),
+      'register_commercial_user',
+      AUTH_CALL_MS,
+    ));
+  } catch (e) {
+    error = { message: (e as Error)?.message ?? 'register_commercial_user failed' };
   }
-  const status = (data as { status?: string } | null)?.status;
+  const status = error ? null : (data as { status?: string } | null)?.status;
   // 'already_registered' = an existing commercial user re-authenticating — fine.
   if (status === 'ok' || status === 'already_registered') return { success: true };
-  console.warn('[commercial] register_commercial_user status:', status);
-  return {
-    success: false,
-    error: status === 'nickname_required' ? 'A nickname is required.' : 'Could not complete registration.',
-  };
+  if (error) console.warn('[commercial] register_commercial_user failed:', error.message);
+  else console.warn('[commercial] register_commercial_user status:', status);
+  /**
+   * ⛔ A HALF-CREATED ACCOUNT IS SIGNED OUT (toddler hunt 2026-10-14, item 7,
+   * owner-approved). The auth account and its session exist by now, but the
+   * app record does not (or we cannot tell — a stall). Left signed in, RETURN,
+   * LOGIN or a relaunch walked into an account with no record. The device is
+   * signed out (bounded, local, never rejects) and the person is asked to try
+   * again: CREATE ACCOUNT with the same email signs back in and finishes the
+   * record (ensureSession → "already registered" → sign in → this RPC).
+   */
+  await signOutHalfCreatedAccount();
+  return { success: false, error: ACCOUNT_SETUP_UNFINISHED };
 }

@@ -79,6 +79,16 @@ export const EMPTY_PUBLIC_PROFILE: PublicProfile = {
 
 const KEY = 'ape:publicProfile';
 
+/** The private user name's limit (toddler hunt 2026-10-14, item 10a): the
+ *  field had none. The input carries it as maxLength, and a save clamps it —
+ *  so a paste or an older stored value can never write past it. */
+export const USER_NAME_MAX = 60;
+
+/** The profile with its user name held to USER_NAME_MAX. */
+export function clampUserName(p: PublicProfile): PublicProfile {
+  return p.name.length > USER_NAME_MAX ? { ...p, name: p.name.slice(0, USER_NAME_MAX) } : p;
+}
+
 /**
  * ⛔ A DEVICE READ THAT THREW IS NOT AN EMPTY PROFILE (evening hunt 1,
  * 2026-10-02). The load answered EMPTY_PUBLIC_PROFILE for a read that failed,
@@ -342,7 +352,8 @@ export function resetLocal(): void {
   }
 }
 
-export async function savePublicProfile(p: PublicProfile, unread?: UnreadBaseline | null): Promise<void> {
+export async function savePublicProfile(input: PublicProfile, unread?: UnreadBaseline | null): Promise<void> {
+  const p = clampUserName(input);
   // ProfileScreen calls this on EVERY keystroke as `void savePublicProfile(pub)`,
   // so a rejecting write (storage full, a locked DB on Android) became an
   // unhandled rejection per character typed. The device write is best-effort:

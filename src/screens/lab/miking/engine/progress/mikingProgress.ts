@@ -14,11 +14,12 @@
  *   a members-only PREVIEW         → nothing at all (PREVIEW EARNS NOTHING).
  *
  * CREDIT ONLY GROWS (owner 2026-09-29): `done` is a union; a practice reset
- * clears answers, interactives, the quick check and the resume point, and
- * keeps `done` (and the learner's chosen path — a preference, not progress).
+ * clears answers, interactives and the resume point, and
+ * keeps `done` (the learner's chosen path — a preference, not progress — and
+ * the quick check's FIRST TRY, which is the one that counts: owner 2026-10-14).
  *
  * THE JOURNEY (docs/labs/miking/LESSON_JOURNEY.md §2.4): `path` is NEW or
- * EXPERIENCED; `quick` is this run's quick-check result. Recording a quick
+ * EXPERIENCED; `quick` is the quick check's first-try result. Recording a quick
  * check NEVER touches `done` — skipping cannot inflate credit (tested).
  */
 import { useSyncExternalStore } from 'react';
@@ -48,8 +49,14 @@ export type LessonProgress = {
   lastStep?: number;
   /** NEW or EXPERIENCED (kept through a practice reset). */
   path?: LearnerPath;
-  /** This practice run's quick check (one attempt per run). */
+  /** The quick check's FIRST TRY — the one that counts (owner ruling
+   *  2026-10-14, #19). Kept through a practice reset; a retake after seeing
+   *  the answers is practice and is never recorded. */
   quick?: QuickCheckResult;
+  /** The first try's picks so far, item id → option (first pick per item
+   *  wins). A page change mid-check resumes THIS attempt instead of starting
+   *  a fresh, credited one (#19). Kept through a practice reset too. */
+  quickPicks?: Record<string, string>;
 };
 export type MikingProgress = { v: 1; lessons: Record<string, LessonProgress> };
 
@@ -83,6 +90,8 @@ export function sanitizeMiking(raw: unknown): MikingProgress {
     if (r.path === 'new' || r.path === 'experienced') lp.path = r.path;
     const q = sanitizeQuick(r.quick);
     if (q) lp.quick = q;
+    const picks = sanitizePicks(r.quickPicks);
+    if (picks) lp.quickPicks = picks;
     out.lessons[id] = lp;
   }
   return out;
@@ -95,6 +104,13 @@ function sanitizeQuick(x: unknown): QuickCheckResult | null {
   if (!n(q.right) || !n(q.total) || typeof q.pass !== 'boolean' || (q.right as number) > (q.total as number)) return null;
   const misses = Array.isArray(q.misses) ? [...new Set(q.misses.filter(isPage).map(journeyPageOf))] : [];
   return { right: q.right as number, total: q.total as number, pass: q.pass, misses };
+}
+
+function sanitizePicks(x: unknown): Record<string, string> | null {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return null;
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(x as Record<string, unknown>)) if (shortStr(k) && typeof v === 'string' && v.length > 0 && v.length < 400) out[k] = v;
+  return Object.keys(out).length ? out : null;
 }
 
 /** Pure: stored + held. `done` and `interactive` are unions; the FIRST
@@ -115,6 +131,9 @@ export function mergeMiking(stored: MikingProgress, held: MikingProgress): Mikin
     // One attempt per run: the attempt already on record wins.
     const quick = s.quick ?? h.quick;
     if (quick) out.lessons[id].quick = quick;
+    // The first pick per item wins (the stored one).
+    const picks = { ...h.quickPicks, ...s.quickPicks };
+    if (Object.keys(picks).length) out.lessons[id].quickPicks = picks;
   }
   return out;
 }
@@ -199,13 +218,31 @@ export function withQuickCheck(l: LessonProgress, res: QuickCheckResult): Lesson
 export function recordQuickCheck(lessonId: string, res: QuickCheckResult): Promise<boolean> {
   return change((p) => withLesson(p, lessonId, (l) => withQuickCheck(l, res)));
 }
+/** Pure: one pick of the quick check's FIRST TRY. Ignored once the first try
+ *  is graded, and for an item already picked (the first pick stands). */
+export function withQuickPick(l: LessonProgress, itemId: string, pick: string): LessonProgress {
+  if (l.quick || (l.quickPicks && itemId in l.quickPicks)) return l;
+  return { ...l, quickPicks: { ...l.quickPicks, [itemId]: pick } };
+}
+export function recordQuickPick(lessonId: string, itemId: string, pick: string): Promise<boolean> {
+  return change((p) => withLesson(p, lessonId, (l) => withQuickPick(l, itemId, pick)));
+}
 export function recordPlace(lessonId: string, page: PageId, step: number): Promise<boolean> {
   return change((p) => withLesson(p, lessonId, (l) => ({ ...l, lastPage: page, lastStep: step })));
 }
 
-/** START OVER (PRACTICE): answers, interactives and the place go; credit stays. */
+/** START OVER (PRACTICE): answers, interactives and the place go; credit stays.
+ *  The quick check's FIRST TRY stays too (owner ruling 2026-10-14, #19: the
+ *  first try is the one that counts; a retake is practice). */
 export function clearMikingPracticeRun(lessonId: string): Promise<boolean> {
-  const clear = (l: LessonProgress): LessonProgress => (l.path ? { done: l.done, answers: {}, interactive: [], path: l.path } : { done: l.done, answers: {}, interactive: [] });
+  const clear = (l: LessonProgress): LessonProgress => ({
+    done: l.done,
+    answers: {},
+    interactive: [],
+    ...(l.path ? { path: l.path } : null),
+    ...(l.quick ? { quick: l.quick } : null),
+    ...(l.quickPicks ? { quickPicks: l.quickPicks } : null),
+  });
   setSession(withLesson(session, lessonId, clear));
   releaseSessionWork<MikingProgress>(CARRY_KEY, (prev) => withLesson(prev, lessonId, clear));
   if (getLabPreview().active || saveBlocked) return Promise.resolve(false);

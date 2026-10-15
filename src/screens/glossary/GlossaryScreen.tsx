@@ -894,6 +894,9 @@ const RECENT_UNREADABLE =
 
 /** The Custom (★) and Bookmarks views' faces when the stored list could not be
  *  read (hunt 13, K2 — the same pattern as RECENT_UNREADABLE). */
+/** The Custom tab with nothing on it and nothing searched. */
+const CUSTOM_EMPTY =
+  'Your custom list is empty. Tap the deck icon beside any term to add it here, then this tab shows just those terms.';
 const CUSTOM_UNREADABLE =
   'Your custom list couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
 const BOOKMARKS_UNREADABLE =
@@ -4237,6 +4240,10 @@ ${COPY.glossaryFreeAllowance}`,
               <Text style={styles.empty}>{CUSTOM_UNREADABLE}</Text>
             ) : filter === 'favorites' && bookmarksUnreadable && !search.trim() ? (
               <Text style={styles.empty}>{BOOKMARKS_UNREADABLE}</Text>
+            ) : filter === 'custom' && !search.trim() ? (
+              // An empty Custom list with no search is not a failed search
+              // (toddler hunt 2026-10-14 #31e) — say how to add terms.
+              <Text style={styles.empty}>{CUSTOM_EMPTY}</Text>
             ) : (
               // Empty state as help (Pillar C): say what to do next, and turn a
               // genuinely missing term into a suggestion instead of a dead end.
@@ -4529,7 +4536,10 @@ ${COPY.glossaryFreeAllowance}`,
       </View>
 
       {coach.visible && (
-        <CoachMark text="Tap a term to expand or collapse the complete definition" bottom={18} />
+        // Docked under the list (toddler hunt 2026-10-14 #31d): floating, it
+        // covered the rows; the root's insets.bottom padding keeps it clear of
+        // Android's three-button bar.
+        <CoachMark docked text="Tap a term to expand or collapse the complete definition" bottom={8} />
       )}
 
       {/* Share preview pop-up (user request 2026-07-17). */}

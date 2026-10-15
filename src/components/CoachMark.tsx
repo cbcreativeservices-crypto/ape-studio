@@ -9,7 +9,21 @@ import { AccessibilityInfo, Animated, StyleSheet, Text, useWindowDimensions } fr
 import { fonts } from '../theme/tokens';
 import { POPUP_MAX_W } from '../theme/readingColumn';
 
-export function CoachMark({ text, bottom = 16 }: { text: string; bottom?: number }) {
+export function CoachMark({
+  text,
+  bottom = 16,
+  docked = false,
+}: {
+  text: string;
+  bottom?: number;
+  /**
+   * In the layout flow instead of floating (toddler hunt 2026-10-14 #31d): the
+   * pill takes its own band under the content, so it never sits over text.
+   * The parent's bottom padding (the safe-area inset) keeps it above the
+   * Android three-button bar / home indicator; `bottom` becomes the gap.
+   */
+  docked?: boolean;
+}) {
   const fade = useRef(new Animated.Value(0)).current;
   // Tablet (owner 2026-09-29): the pill stops at the popup width, centred —
   // pinned 40 pt from each edge it ran 1286 pt across a landscape iPad under a
@@ -40,7 +54,13 @@ export function CoachMark({ text, bottom = 16 }: { text: string; bottom?: number
   return (
     <Animated.View
       pointerEvents="none"
-      style={[styles.pill, { bottom, left: side, right: side, opacity: Animated.multiply(fade, 0.9) }]}
+      style={[
+        styles.pill,
+        docked
+          ? { position: 'relative', left: 0, right: 0, marginHorizontal: side, marginTop: 6, marginBottom: bottom }
+          : { bottom, left: side, right: side },
+        { opacity: Animated.multiply(fade, 0.9) },
+      ]}
       accessibilityRole="alert"
     >
       <Text style={styles.text}>{text}</Text>

@@ -699,7 +699,7 @@ export const M04C_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a recommended timbale mic distance, so the starting points here are regions to begin in: out of every stick path, then listen. Every pair, part and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We could not find a published timbale mic distance, so the starting points here are regions to begin in: out of every stick path, then listen. Every pair, part and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: SMALL,
     drums: { small: SMALL, large: LARGE },
@@ -767,7 +767,7 @@ export const M04C_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one on each drum’s far rim, out of the stick path, with the player’s OK. Check for stand or clamp noise, and the bell in both.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a recommended timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
       'The shell-oriented and above-head starting points differ because they favour different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
       'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where; recheck after the full-intensity passage.',
       'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',

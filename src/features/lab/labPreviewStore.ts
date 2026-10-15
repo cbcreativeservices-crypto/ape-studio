@@ -8,9 +8,16 @@
  */
 import { useEffect, useState } from 'react';
 
-type PreviewState = { active: boolean; route: string; name: string; leaving: boolean };
+/**
+ * `covered` — whether the upgrade sheet is drawn over the lab. A "FREE LOOK
+ * INSIDE" entry (toddler hunt 2026-10-14 #31g, owner-approved) opens UNCOVERED:
+ * the lab shows plainly behind a clear touch-catcher with a small bar, and the
+ * sheet rises only on a deliberate tap. Either way the preview is ACTIVE —
+ * muted, earning nothing, not operable.
+ */
+type PreviewState = { active: boolean; route: string; name: string; leaving: boolean; covered: boolean };
 
-let state: PreviewState = { active: false, route: '', name: '', leaving: false };
+let state: PreviewState = { active: false, route: '', name: '', leaving: false, covered: true };
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -18,15 +25,22 @@ function emit() {
 }
 
 /** Enter preview for a specific lab route (call right before navigating to it). */
-export function startLabPreview(route: string, name: string): void {
-  state = { active: true, route, name, leaving: false };
+export function startLabPreview(route: string, name: string, opts?: { covered?: boolean }): void {
+  state = { active: true, route, name, leaving: false, covered: opts?.covered ?? true };
+  emit();
+}
+
+/** Raise the upgrade sheet over an uncovered ("free look") preview. Idempotent. */
+export function coverLabPreview(): void {
+  if (!state.active || state.covered) return;
+  state = { ...state, covered: true };
   emit();
 }
 
 /** Leave preview (dismiss / navigating away). Idempotent. */
 export function endLabPreview(): void {
   if (!state.active) return;
-  state = { active: false, route: '', name: '', leaving: false };
+  state = { active: false, route: '', name: '', leaving: false, covered: true };
   emit();
 }
 

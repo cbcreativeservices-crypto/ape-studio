@@ -39,7 +39,8 @@ test('a successful refreshEntitlement marks the tier known and caches it', () =>
   const end = body.indexOf('setMemberStanding(entitlement');
   const refresh = body.slice(0, end);
   assert.match(refresh, /setTierKnown\(true\)/);
-  assert.match(refresh, /saveLastTier\(uidAtStart, tier\)/);
+  // …with the access end date since toddler hunt #4 (2026-10-14).
+  assert.match(refresh, /saveLastTier\(uidAtStart, tier, endsAtRef\.current\)/);
 });
 
 test('a pending store purchase is reported as pending, never validated or finished', () => {

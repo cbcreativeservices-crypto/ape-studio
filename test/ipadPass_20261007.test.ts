@@ -256,7 +256,8 @@ test('EngineGate states a silent mic plainly, with TRY AGAIN, only while running
   assert.ok(at > 0);
   assert.ok(at < g.indexOf("if (state === 'idle' || state === 'starting' || state === 'running') return null;"));
   assert.match(g, /NO SOUND FROM THE MICROPHONE/);
-  assert.match(g, /onRetry \? <GlassButton label="TRY AGAIN"/);
+  // A slim banner since owner ruling 2026-10-14 (#23) — TRY AGAIN beside the line.
+  assert.match(g, /onRetry \? \(\s*<View style=\{styles\.bannerKey\}>\s*<GlassButton label="TRY AGAIN"[^>]*onPress=\{onRetry\} \/>/);
 });
 
 /** Every live MIC tool hands the verdict to its gate. */

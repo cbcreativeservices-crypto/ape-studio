@@ -40,6 +40,7 @@ import {
   isRegistryStateKnown,
   setRegistryVisible,
   type PublicProfile,
+  USER_NAME_MAX,
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useMemberGate } from '../../features/commercial/useTier';
@@ -781,21 +782,57 @@ export function ProfileScreen() {
   // never disagree — they did on LedMeter, where the label and aria-valuenow
   // were computed separately and drifted apart (2026-09-21).
   const pctClamped = Math.min(100, Math.max(0, profile?.overallPct ?? 0));
+
+  // One header for both faces below (so one Settings door).
+  const headerRow = (
+    <View style={styles.headerRow}>
+      <Text accessibilityRole="header" style={styles.college}>MY PROFILE</Text>
+      <Pressable
+        onPress={() => (navigation as any).navigate('Settings')}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel="Settings"
+        style={styles.gear}
+      >
+        <Text style={styles.gearGlyph}>⚙</Text>
+      </Pressable>
+    </View>
+  );
+
+  // ── A GUEST HAS NO PROFILE (toddler hunt 2026-10-14, #25) ──────────────
+  // A guest opened editable fields that keep nothing, an ID card captioned
+  // "your verified record is still being set up" (there is no record) and
+  // only UPGRADE TO ACADEMY — no way to sign in. A KNOWN guest only
+  // (`registryGuest` is tierKnown-first): a member whose tier is loading or
+  // unread still gets the full screen. No upsell copy here. The device
+  // controls stay — muting is a safety control.
+  if (registryGuest) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
+          {headerRow}
+          <View style={styles.guestCard}>
+            <Text style={styles.guestText}>Sign in or create an account to have a profile.</Text>
+            <GlassButton
+              label="SIGN IN"
+              tint="steel"
+              height={52}
+              fontSize={14}
+              onPress={() => (navigation as any).navigate('Auth')}
+            />
+          </View>
+          <LowLightRow />
+          <AudioOutputRow />
+          {__DEV__ ? <DevVisualIndex /> : null}
+        </KeyboardAwareScrollView>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
-        <View style={styles.headerRow}>
-          <Text accessibilityRole="header" style={styles.college}>MY PROFILE</Text>
-          <Pressable
-            onPress={() => (navigation as any).navigate('Settings')}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="Settings"
-            style={styles.gear}
-          >
-            <Text style={styles.gearGlyph}>⚙</Text>
-          </Pressable>
-        </View>
+        {headerRow}
 
         {/* DIGITAL ID — pinned, never collapsible. Someone shows this at a
             load-in, so it answers three questions in order: who is this, what
@@ -1280,6 +1317,7 @@ export function ProfileScreen() {
             onChangeText={(t) => setPubKey('name', t)}
             placeholder="Your user name"
             placeholderTextColor={colors.textMuted}
+            maxLength={USER_NAME_MAX}
             autoCapitalize="words"
             returnKeyType="done"
             accessibilityLabel="Your user name"
@@ -1667,6 +1705,17 @@ export function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  // #25 — the guest's Profile tab.
+  guestCard: {
+    borderWidth: 1,
+    borderColor: colors.hairlineAlt,
+    backgroundColor: '#141414',
+    borderRadius: 12,
+    padding: 16,
+    gap: 14,
+    marginBottom: 16,
+  },
+  guestText: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 21, color: colors.textSecondary },
   root: { flex: 1, backgroundColor: colors.screenBg },
   // Card column, not the prose column: 760 on a tablet (owner iPad report
   // 2026-09-25 - 560 read as "narrow squeezed"). Phones unchanged.

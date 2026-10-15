@@ -291,7 +291,7 @@ describe('2. the guest save reminder before they begin', () => {
   it('[R2] wired where a guest can begin credited work: the shared lab shells and the free labs', () => {
     const sites: [string, RegExp][] = [
       ['src/screens/lab/LabShell.tsx', /<GuestStartReminder activity=\{`lab:\$\{labId\}`\}/],
-      ['src/screens/lab/kit/PagedLab.tsx', /<GuestStartReminder activity=\{`paged:\$\{labId\}`\} kind=\{creditLabKey \? 'credit' : 'progress'\}/],
+      ['src/screens/lab/kit/PagedLab.tsx', /<GuestStartReminder activity=\{`paged:\$\{labId\}`\} kind=\{creditMode\}/], // creditLabKey OR per-page keys (owner ruling 2026-10-14, #17)
       ['src/screens/lab/wave/WaveLabHomeScreen.tsx', /<GuestStartReminder activity="lab:af_wave_physics" \/>/],
       ['src/screens/lab/wave/WaveModuleScreen.tsx', /<GuestStartReminder activity="lab:af_wave_physics"/],
       ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', /<GuestStartReminder activity=\{`lab:\$\{FOUNDATIONS_LAB_KEY\}`\} \/>/],

@@ -8,12 +8,17 @@
  * must read 'complete' through the same readStage the stage screen shows —
  * with the whole lab's hidden keys, as readProject passes them.
  */
+import { isActivityProject } from './activities';
 import { labDef } from './labs';
 import { readStage } from './readiness';
 import { labHiddenKeys, resolveLab } from './schema';
 import type { LabKind, ProductionProject } from './types';
 
 export function productionProjectComplete(lab: LabKind, project: ProductionProject, now: number = Date.now()): boolean {
+  // PRACTICE NEVER COUNTS (owner ruling 2026-10-14, #18): an exercise project
+  // (seeded by an activity, flagged with scenarioId) is practice material —
+  // it never earns Pre/Post-Production credit. Only the learner's own project.
+  if (isActivityProject(project)) return false;
   const def = labDef(lab);
   if (!def || def.stages.length === 0) return false;
   try {

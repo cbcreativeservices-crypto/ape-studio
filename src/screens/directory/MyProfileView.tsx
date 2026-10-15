@@ -26,6 +26,7 @@ import {
   Helper,
   Loading,
   PrimaryButton,
+  RetryOrSignIn,
   SelfReportedNote,
 } from './directoryBits';
 import {
@@ -517,7 +518,8 @@ export function MyProfileView() {
         <Banner tone="warn">
           {loadErr ?? 'Couldn’t load your community profile. Check your connection and try again.'}
         </Banner>
-        <PrimaryButton label="RETRY" onPress={() => setReloadKey((k) => k + 1)} />
+        {/* A guest gets SIGN IN, not a RETRY that can never work (#26). */}
+        <RetryOrSignIn message={loadErr} onRetry={() => setReloadKey((k) => k + 1)} />
       </ScrollView>
     );
   }

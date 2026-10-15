@@ -676,7 +676,7 @@ export function useDownmixStep({ onInteractive, done }: { onInteractive: (id: st
           {fmt === 'mono' ? (
             <Point title="THE MONO CHECK">Centre speech keeps its level; a cheer in one channel drops about 6 dB; diffuse applause about 3 dB. So a mono check can thin the crowd and leave the speech — or lose a hard-panned effect. Listen at a matched loudness; a meter only helps you find the moment.</Point>
           ) : (
-            <Point title="THE FOLD-DOWN">The centre and the surrounds go into each side about 3 dB down (0.7071). This is one example from a broadcast recommendation — every codec and renderer can differ. Keep headroom on the bus: the fold-down adds channels together.</Point>
+            <Point title="THE FOLD-DOWN">The centre and the surrounds go into each side about 3 dB down (0.7071). This is one example from a broadcast guideline — every codec and renderer can differ. Keep headroom on the bus: the fold-down adds channels together.</Point>
           )}
           <Point title="KEEP THE EVENT IN THE MAIN CHANNELS">The low-frequency effects channel is an optional extra: keep the engine, the impacts and the venue’s body in the main channels, so the event does not depend on it surviving a downmix.</Point>
         </Card>

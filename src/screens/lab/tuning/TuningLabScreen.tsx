@@ -21,7 +21,7 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
-import { holdTuningProgress, isTuningProgressUnreadable, loadTuningProgress, saveTuningProgress, setTuningChapterCount, type TuningProgress } from '../../../features/tuning/tuningProgress';
+import { holdTuningProgress, isTuningProgressUnreadable, loadTuningProgress, saveTuningProgress, setTuningChapterCount, tuningResetForPractice, type TuningProgress } from '../../../features/tuning/tuningProgress';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { peekSessionWork } from '../../../features/lab/sessionCarry';
 import { CHAPTERS, CHAPTER_COUNT } from './chapters';
@@ -211,7 +211,8 @@ export function TuningLabScreen() {
       return;
     }
     const completed = base.completed.includes(chapter) ? base.completed : [...base.completed, chapter].sort((a, b) => a - b);
-    const done = completed.length >= CHAPTER_COUNT;
+    // Sticky (owner ruling 2026-10-14, #20): a practice run never un-does the lab.
+    const done = base.done || completed.length >= CHAPTER_COUNT;
     persist({ completed, done });
   }, [chapter, persist]);
 
@@ -227,12 +228,25 @@ export function TuningLabScreen() {
   // day, the Amp lab's fix). It used to remove the whole key — every
   // completed chapter, this lab's only record of them. Now it starts over
   // from the first chapter and the completed chapters stay complete.
+  //
+  // CHAPTER MARKS CLEAR, CREDIT STAYS (owner ruling 2026-10-14, #20): START
+  // OVER now clears the chapter ✓ marks (the progress display) so the run is a
+  // genuinely fresh one. The lab's certificate credit is the tr_tuning key,
+  // banked in labCompletion the moment every chapter was done — nothing here
+  // touches it — and the store's `done` stays true once reached (sticky, see
+  // tuningResetForPractice), so the backfill can never lose it either.
+  const doReset = () => {
+    const base = progressRef.current;
+    player.stop();
+    if (base) persist(tuningResetForPractice(base, CHAPTERS[0].index));
+    goTo(CHAPTERS[0].index);
+  };
   const confirmReset = () =>
     confirmDialog(
       'Start a fresh practice run?',
-      'Goes back to the first chapter of the Tuning & Temperament Lab. Chapters you have completed stay complete.',
+      'Goes back to the first chapter of the Tuning & Temperament Lab and clears the chapter marks. Credit you have already earned stays.',
       'Start over',
-      () => goTo(CHAPTERS[0].index),
+      doReset,
     );
 
   const def = CHAPTERS.find((c) => c.index === chapter) ?? CHAPTERS[0];
@@ -306,6 +320,9 @@ export function TuningLabScreen() {
           cleared={endCleared}
           mode="progress"
           noun="chapter"
+          // After START OVER the chapter marks are clear but the lab stays
+          // credited (owner ruling 2026-10-14, #20) — said, never implied away.
+          extra={progress?.done && !unreadable ? <Text style={styles.creditKept}>This lab is already credited. Practising again never removes that credit.</Text> : undefined}
           onJump={(id) => goTo(Number(id))}
           onPracticeAgain={() => goTo(CHAPTERS[0].index)}
           onDone={() => safeGoBack(navigation)}
@@ -367,6 +384,7 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
   rackFill: { flex: 1 },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
+  creditKept: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   accuracyNote: { marginBottom: 10, alignSelf: 'flex-start' },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
   objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },

@@ -77,3 +77,25 @@ export function accessEndsAt(
   }
   return end;
 }
+
+/**
+ * OFFLINE GRACE (toddler hunt #4, owner 2026-10-14). The remembered tier
+ * (lastTierCache) and a tier kept through a failed read used to honour a
+ * membership with no time limit: a member who stayed offline kept it forever.
+ * Now the access END DATE is remembered with it, and once the device is past
+ * that date plus this grace WITHOUT reaching the server, the member is no
+ * longer treated as one. Three days covers a renewal the store has charged but
+ * the server has not been able to tell this phone about.
+ *
+ * Only a real, known end date can run out: `null` (a lifetime / no-end grant,
+ * an unreadable expiry — see `accessEndsAt`) and an entry saved before end
+ * dates were remembered (`undefined`) keep access, exactly as before. Nothing
+ * local is wiped and no credit is touched — this only decides the tier, and the
+ * next server answer replaces it either way.
+ */
+export const OFFLINE_GRACE_MS = 3 * 24 * 60 * 60 * 1000;
+
+/** Is this remembered access end date more than OFFLINE_GRACE_MS ago? */
+export function pastOfflineGrace(endsAt: number | null | undefined, now: number = Date.now()): boolean {
+  return typeof endsAt === 'number' && Number.isFinite(endsAt) && now > endsAt + OFFLINE_GRACE_MS;
+}

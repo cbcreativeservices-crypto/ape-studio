@@ -421,7 +421,7 @@ export const SECTIONS: readonly StartSection[] = [
         rack: false,
         lead: 'New to audio? This is the place to begin.',
         paras: [
-          'In about 30 minutes — six short lessons, and you can stop whenever you like — you will learn the handful of ideas the rest of the app is built on: what sound is, how it becomes audio, what the equipment does, and how sound is measured and shown on a screen.',
+          'In about 30 minutes — six short lessons plus one hands-on lab, and you can stop whenever you like — you will learn the handful of ideas the rest of the app is built on: what sound is, how it becomes audio, what the equipment does, and how sound is measured and shown on a screen.',
           'You will not need any equipment. For the few sounds, use headphones if you can — phone speakers cannot play the lowest tones well. Turn your volume down before you press PLAY, then raise it slowly to a comfortable level.',
           'Nothing here is graded and nothing is locked. You can jump ahead or go back whenever you like.',
         ],
@@ -832,8 +832,9 @@ export function kickerFor(sectionId: string): string {
 
 /**
  * How a destination is reached. `free` opens for everyone. `preview` is a
- * members-only lab: a free learner lands in the lab's own free preview with
- * the upgrade sheet over it (withMembershipPreview), never a dead end.
+ * members-only lab: a free learner lands in the lab's own free preview
+ * (withMembershipPreview), never a dead end. `lookInside: true` opens it
+ * UNCOVERED — the upgrade sheet rises only on a tap (toddler hunt 2026-10-14).
  * `tutorial` is a tool's guided tutorial — members-only; a free learner sees
  * what it covers and the upgrade path (ToolLearnScreen's lock card).
  */
@@ -884,7 +885,7 @@ export const NEXT_STEPS: readonly { want: string; steps: readonly NextStep[] }[]
   {
     want: 'How audio systems connect',
     steps: [
-      { id: 'soundSystems', title: 'Sound Systems Lab', blurb: 'Build, wire and run a complete live sound system, from an empty room to a working show.', access: 'preview', to: { kind: 'route', route: 'SoundSystemsLab' } },
+      { id: 'soundSystems', title: 'Sound Systems Lab', blurb: 'Build, wire and run a complete live sound system, from an empty room to a working show.', access: 'preview', to: { kind: 'route', route: 'SoundSystemsLab', params: { lookInside: true } } },
     ],
   },
 ];

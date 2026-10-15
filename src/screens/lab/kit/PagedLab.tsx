@@ -109,7 +109,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type La
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -132,6 +132,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  to Bring In a Pro" note on first open (once per device, shared flag) and a
    *  small link to it on the first page (src/features/lab/ProNote.tsx). */
   proNote?: boolean;
+  /** ADDITIVE (owner ruling 2026-10-14, #16): the what's-left line under a
+   *  HANDS-ON page (`manualDone`, not the check) that is not done yet. NEXT
+   *  still moves on — it just does not count that page — so the end screen
+   *  says plainly why it is still listed. Omitted = no line (as before). */
+  handsOnDetail?: string;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -425,7 +430,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
     check && i === pages.length
       ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
-      : { id: String(i), label: p.title },
+      : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
   );
   const endCleared = new Set<string>();
   pagesWithCheck.forEach((_, i) => {
@@ -434,6 +439,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
     if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
   });
+  // A lab that banks certificate credit — `p<n>` units OR one key per page
+  // (Mixing, owner ruling 2026-10-14 #17) — reads CREDITED, like every other
+  // credit lab; only a device-progress lab reads DONE.
+  const creditMode: 'credit' | 'progress' = creditLabKey || pageCreditKeys.length > 0 ? 'credit' : 'progress';
 
   // ⛔ pagesWithCheck, NOT pages: CONTENTS must list the appended check page
   // too, or it is unreachable except by NEXT off the page before it.
@@ -474,14 +483,14 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         {/* Before a guest begins (owner 2026-10-04): progress here is not
             saved or credited unless they sign in this session. Once per lab
             per session; inline in Low-Light; nothing for anyone else. */}
-        {ending ? null : <GuestStartReminder activity={`paged:${labId}`} kind={creditLabKey ? 'credit' : 'progress'} hold={proNote && proNoteOwed} style={styles.unreadable} />}
+        {ending ? null : <GuestStartReminder activity={`paged:${labId}`} kind={creditMode} hold={proNote && proNoteOwed} style={styles.unreadable} />}
         {ending ? (
           <LabEndScreen
             labTitle={title}
             units={endUnits}
             cleared={endCleared}
             unreadable={unreadable}
-            mode={creditLabKey ? 'credit' : 'progress'}
+            mode={creditMode}
             noun="page"
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}

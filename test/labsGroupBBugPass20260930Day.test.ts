@@ -11,13 +11,17 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'u
 
 // ── credit is never removed (owner 2026-09-29) ──────────────────────────────
 
-test('Tuning: RESET is a practice run — completed chapters are never deleted', () => {
+// Owner ruling 2026-10-14 (#20): START OVER now clears the chapter MARKS (the
+// progress display) — the lab's credit is still never removed: the store key is
+// never deleted and `done` stays true (test/labEndsAndBanner_20261014).
+test('Tuning: RESET is a practice run — credit is never deleted', () => {
   const t = read('src/screens/lab/tuning/TuningLabScreen.tsx');
   assert.doesNotMatch(t, /resetTuningProgress/);
   assert.doesNotMatch(t, /completed: \[\], lastChapter: 0, done: false, mathView \}/);
-  const reset = t.slice(t.indexOf('const confirmReset'), t.indexOf('const def = '));
+  const reset = t.slice(t.indexOf('const doReset'), t.indexOf('const def = '));
   assert.match(reset, /goTo\(CHAPTERS\[0\]\.index\)/);
-  assert.match(reset, /stay complete/);
+  assert.match(reset, /tuningResetForPractice\(base, CHAPTERS\[0\]\.index\)/);
+  assert.match(reset, /Credit you have already earned stays\./);
 });
 
 test('Sound Systems: hub and in-mode RESET keep pages, capstones, exercises and faults', () => {

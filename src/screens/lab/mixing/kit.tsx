@@ -280,6 +280,16 @@ export function MixMantra() {
   );
 }
 
+/**
+ * A Mixing page COUNTS ONLY ONCE ITS HANDS-ON PART IS DONE (owner ruling
+ * 2026-10-14, #16). Every Mixing page is `manualDone` and marks itself through
+ * useVisitGoals below — NEXT never marks it (labs never block navigation: NEXT
+ * still moves on). The what's-left screen lists a page left that way with this
+ * line. Already-banked credit is never removed (pinned by
+ * test/mixingHandsOnCredit_20261014).
+ */
+export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done. NEXT moves on without counting it.';
+
 /** Sticky exploration goals (patchbay pattern): each goal latches once its
  *  predicate has been true; all latched → the page marks itself done. */
 export function useVisitGoals(ctx: PageCtx, goals: { label: string; hit: boolean }[]): boolean[] {
@@ -297,7 +307,8 @@ export function useVisitGoals(ctx: PageCtx, goals: { label: string; hit: boolean
       AccessibilityInfo.announceForAccessibility?.(`Goal complete: ${g.label}`);
     }
   });
-  const all = seen.current.every(Boolean);
+  // A page with NO goals never marks itself on a visit ([].every is true).
+  const all = seen.current.length > 0 && seen.current.every(Boolean);
   useMarkWhen(all, () => {
     if (!ctx.isDone) ctx.markDone();
   });

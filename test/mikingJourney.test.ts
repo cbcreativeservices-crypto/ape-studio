@@ -221,15 +221,41 @@ describe('skipping never inflates credit', () => {
     assert.equal(lp.path, 'experienced');
     assert.equal(lp.quick?.pass, true);
   });
-  it('a practice run clears the check (another try) and keeps the path and every credited page', async () => {
+  // Owner ruling 2026-10-14, #19: the FIRST try is the one that counts — a
+  // practice run keeps it (a retake is practice, never recorded).
+  it('a practice run KEEPS the first try (and its picks), the path and every credited page', async () => {
     await P.bankPage('M01', 'placement');
     await P.recordPath('M01', 'experienced');
+    await P.recordQuickPick('M01', 'q1', 'a');
     await P.recordQuickCheck('M01', pass);
     await P.clearMikingPracticeRun('M01');
     const lp = P.lessonProgress(P.getMikingProgress(), 'M01');
     assert.deepEqual(lp.done, ['placement']);
     assert.equal(lp.path, 'experienced');
-    assert.equal(lp.quick, undefined);
+    assert.equal(lp.quick?.pass, true);
+    assert.deepEqual(lp.quickPicks, { q1: 'a' });
+    assert.deepEqual(lp.answers, {});
+  });
+  it('the first try’s picks are stored as made: first pick per item wins, none after grading', async () => {
+    await P.recordQuickPick('M01', 'q1', 'wrong');
+    await P.recordQuickPick('M01', 'q1', 'right');
+    await P.recordQuickPick('M01', 'q2', 'b');
+    let lp = P.lessonProgress(P.getMikingProgress(), 'M01');
+    assert.deepEqual(lp.quickPicks, { q1: 'wrong', q2: 'b' }, 'going back a page cannot re-pick');
+    await P.recordQuickCheck('M01', { right: 2, total: 6, pass: false, misses: ['meet'] });
+    await P.recordQuickPick('M01', 'q3', 'c');
+    lp = P.lessonProgress(P.getMikingProgress(), 'M01');
+    assert.equal(lp.quickPicks?.q3, undefined, 'a retake after grading is practice — not recorded');
+    assert.equal(lp.quick?.pass, false);
+  });
+  it('withQuickPick (pure) and a damaged picks record on disk', () => {
+    const l = { done: [] as PageId[], answers: {}, interactive: [] };
+    const a = P.withQuickPick(l, 'q1', 'x');
+    assert.deepEqual(a.quickPicks, { q1: 'x' });
+    assert.equal(P.withQuickPick(a, 'q1', 'y'), a);
+    assert.equal(P.withQuickPick({ ...a, quick: pass }, 'q2', 'y').quickPicks?.q2, undefined);
+    const s = P.sanitizeMiking({ lessons: { M01: { done: [], answers: {}, interactive: [], quickPicks: { q1: 'ok', q2: 7, '': 'x' } } } });
+    assert.deepEqual(s.lessons.M01.quickPicks, { q1: 'ok' });
   });
   it('a members-only preview records no path and no check', async () => {
     preview.startLabPreview('MikingLesson', 'Miking Labs');

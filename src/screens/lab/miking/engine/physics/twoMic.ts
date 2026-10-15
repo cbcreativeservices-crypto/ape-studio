@@ -125,3 +125,13 @@ export function oppositeSign(plane: OppositePlane, a: Vec3, b: Vec3): 1 | -1 {
   const db = (b.x - plane.point.x) * n.x + (b.y - plane.point.y) * n.y + (b.z - plane.point.z) * n.z;
   return da * db < 0 ? -1 : 1;
 }
+
+/** The smallest Δt change (ms) the two-mic page counts as "a mic moved". */
+export const MOVED_DT_MS = 0.05;
+
+/** Did a mic move away from the baseline Δt? The page re-takes the baseline
+ *  whenever the SOURCE changes, so a source change alone never counts as a
+ *  moved mic (owner ruling 2026-10-14, #19; test/mikingFirstTry_20261014). */
+export function movedFromBaseline(dtMs: number, baselineMs: number): boolean {
+  return Math.abs(dtMs - baselineMs) > MOVED_DT_MS;
+}

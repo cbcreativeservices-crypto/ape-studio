@@ -393,6 +393,13 @@ function Cell({
 }
 
 /** Repeating rows — input lists, team members, budget lines. */
+/** Put a removed table row back where it was (clamped to the end when rows
+ *  have gone since). Pure — test/productionCreditUndo_20261014. */
+export function restoreTableRow(rows: readonly TableRow[], row: TableRow, index: number): TableRow[] {
+  const at = Math.max(0, Math.min(rows.length, index));
+  return [...rows.slice(0, at), row, ...rows.slice(at)];
+}
+
 function TableEditor({
   field,
   value,
@@ -404,6 +411,10 @@ function TableEditor({
 }) {
   const rows: TableRow[] = Array.isArray(value) ? (value as TableRow[]) : [];
   const cols = field.columns ?? [];
+  /** The row ✕ just took out, so it can be put back (owner ruling
+   *  2026-10-14, #18: a removed row gets an UNDO — the field's own N/A UNDO
+   *  style, inline, no popup). One at a time; a new removal replaces it. */
+  const [removed, setRemoved] = useState<{ row: TableRow; index: number } | null>(null);
 
   const setCell = (i: number, columnId: string, cell: string) => {
     const next = rows.map((r, n) => (n === i ? { ...r, [columnId]: cell } : r));
@@ -412,6 +423,22 @@ function TableEditor({
 
   return (
     <View style={styles.table}>
+      {removed ? (
+        <View style={styles.naBox} accessibilityLiveRegion="polite">
+          <Text style={styles.naText}>Row {removed.index + 1} removed.</Text>
+          <Pressable
+            onPress={() => {
+              onChange(restoreTableRow(rows, removed.row, removed.index));
+              setRemoved(null);
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Undo: put row ${removed.index + 1} back in ${field.label}`}
+          >
+            <Text style={styles.naUndo}>UNDO</Text>
+          </Pressable>
+        </View>
+      ) : null}
       {rows.map((row, i) => (
         <View key={i} style={styles.tableRow}>
           <View style={styles.flex}>
@@ -428,7 +455,10 @@ function TableEditor({
             ))}
           </View>
           <Pressable
-            onPress={() => onChange(rows.filter((_, n) => n !== i))}
+            onPress={() => {
+              onChange(rows.filter((_, n) => n !== i));
+              setRemoved({ row, index: i });
+            }}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={`Remove row ${i + 1}`}
@@ -439,7 +469,10 @@ function TableEditor({
       ))}
       <Pressable
         style={styles.addRow}
-        onPress={() => onChange([...rows, Object.fromEntries(cols.map((c) => [c.columnId, ''])) as TableRow])}
+        onPress={() => {
+          onChange([...rows, Object.fromEntries(cols.map((c) => [c.columnId, ''])) as TableRow]);
+          setRemoved(null);
+        }}
         accessibilityRole="button"
         accessibilityLabel={`Add a row to ${field.label}`}
       >

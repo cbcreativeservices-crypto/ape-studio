@@ -6,7 +6,7 @@
  * tables directly.
  */
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSession, safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { markIntentionalSignOut } from './intentionalSignOut';
 import { softDeadline, withDeadline } from '../../lib/boundedCall';
@@ -64,7 +64,15 @@ async function boundedSignIn<T extends { data: { session?: unknown } | null }>(
 // The pure helpers live in authErrorCopy.ts so they can be unit-tested without
 // standing up the Supabase client. Re-exported here so every existing call site
 // (AuthScreen imports EMAIL_RE / passwordIssue from this module) is unchanged.
-import { friendlyAuthError } from './authErrorCopy';
+import {
+  checkAccountRecord,
+  classifyUserLookup,
+  friendlyAuthError,
+  normalizeResetCode,
+  type AccountLookup,
+  type RecordAnswer,
+  type RowRead,
+} from './authErrorCopy';
 export { friendlyAuthError, EMAIL_RE, passwordIssue } from './authErrorCopy';
 
 /**
@@ -290,7 +298,7 @@ export const resetPassword = requestPasswordReset;
 /** Verify the 6-digit recovery code → recovery session. Returns error or null. */
 export async function verifyRecoveryOtp(email: string, token: string): Promise<string | null> {
   const { error } = await boundedSignIn(
-    () => supabase.auth.verifyOtp({ email, token: token.trim(), type: 'recovery' }),
+    () => supabase.auth.verifyOtp({ email, token: normalizeResetCode(token), type: 'recovery' }),
     'verifyOtp',
   );
   return friendlyAuthError(error);
@@ -326,4 +334,61 @@ export async function updatePassword(newPassword: string): Promise<string | null
   if (!error) updateUnanswered = false;
   else if (/timeout|network|fetch/i.test(error.message ?? '')) updateUnanswered = true;
   return friendlyAuthError(error);
+}
+
+/**
+ * A half-created account (toddler hunt 2026-10-14, item 7): sign THIS device
+ * out — bounded, never rejects, the local session removed even offline.
+ */
+export async function signOutHalfCreatedAccount(): Promise<void> {
+  markIntentionalSignOut();
+  await signOutThisDevice();
+}
+
+/* ── The account record and the deleted-account lookup (toddler hunt
+ * 2026-10-14, items 7 + 9). The rules are pure, in authErrorCopy.ts; these
+ * are the reads they are given. */
+
+/** Is there a users row for this auth uid? Scoped to `auth_id` (never trust
+ *  RLS to leave one row — myUserRow.ts). The error is RETURNED, not
+ *  swallowed: the checker must tell "no row" from "could not read". */
+async function readUsersRowPresence(uid: string): Promise<RowRead> {
+  const { data, error } = await withDeadline(
+    async () => await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle(),
+    'users row check',
+    10000,
+  );
+  if (error) return { error };
+  return { found: !!data };
+}
+
+/**
+ * Does the signed-in ACCOUNT have its app record (the users row)? 'missing'
+ * only on a definitive answer, read twice with the session confirmed in
+ * between (the cold-start race); anything uncertain is 'unknown', which
+ * callers treat as "carry on".
+ */
+export async function checkMyAccountRecord(): Promise<RecordAnswer> {
+  return checkAccountRecord({
+    readSession: async () => {
+      const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'accountRecord');
+      if (timedOut) return 'unknown';
+      const session = result.data.session;
+      return { uid: session?.user?.id ?? null, real: isRealAccount(session) };
+    },
+    readRow: readUsersRowPresence,
+  });
+}
+
+/**
+ * After delete_my_account timed out on the client (item 9): ask the auth
+ * server whether this account still exists. Bounded; never rejects.
+ */
+export async function lookUpDeletedAccount(): Promise<AccountLookup> {
+  try {
+    const res = await withDeadline(async () => await supabase.auth.getUser(), 'getUser after delete', 10000);
+    return classifyUserLookup(res);
+  } catch {
+    return 'unknown';
+  }
 }

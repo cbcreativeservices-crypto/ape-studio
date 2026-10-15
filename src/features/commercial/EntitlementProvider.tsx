@@ -19,7 +19,13 @@ import { DEV_ENTITLEMENT_KEY } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
 import { safeSession, safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
-import { accessEndsAt, classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
+import {
+  OFFLINE_GRACE_MS,
+  accessEndsAt,
+  classifyExpiry,
+  pastOfflineGrace,
+  verdictKeepsAccess,
+} from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { loadLocalSettings } from '../settings/store';
@@ -236,6 +242,9 @@ type EntitlementContextValue = {
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 
+/** Re-reads after the tier goes academy → lapsed in the open app (hunt #5). */
+export const LAPSE_RECHECK_MS = [5 * 60 * 1000, 30 * 60 * 1000] as const;
+
 
 export function EntitlementProvider({ children }: { children: ReactNode }) {
   // Boot routes to the finished login screen (Splash → Auth/Main); the WIP
@@ -297,6 +306,11 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
    *  read had failed, kept every paid route past `expires_at` while the app
    *  stayed open. No-op until the effect has run. */
   const armExpiryRef = useRef<(endsAt: number | null) => void>(() => {});
+  /** When the CURRENT academy access ends (epoch ms) — from the last applied
+   *  server answer or the remembered tier; null = no known end (lifetime, a
+   *  no-end code, or not a member). Set only by `armExpiryRecheck`. Read by the
+   *  offline grace below (toddler hunt #4, 2026-10-14). */
+  const endsAtRef = useRef<number | null>(null);
 
   // Server-driven entitlement (owner 2026-08-06): a no-account guest is
   // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
@@ -321,9 +335,16 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
      * Clamped: a setTimeout past 2^31-1 ms fires at once on some engines.
      */
     let expiryTimer: ReturnType<typeof setTimeout> | null = null;
+    /** OFFLINE GRACE (toddler hunt #4, 2026-10-14): one more re-read when the
+     *  grace after `endsAt` runs out. If it fails too (still offline), the
+     *  failed-read path below stops treating this person as a member. */
+    let graceTimer: ReturnType<typeof setTimeout> | null = null;
     const armExpiryRecheck = (endsAt: number | null) => {
       if (expiryTimer) clearTimeout(expiryTimer);
       expiryTimer = null;
+      if (graceTimer) clearTimeout(graceTimer);
+      graceTimer = null;
+      endsAtRef.current = endsAt;
       if (endsAt === null || !alive) return;
       const delay = Math.min(Math.max(endsAt - Date.now(), 0) + 1000, 2147483647);
       expiryTimer = setTimeout(() => {
@@ -331,6 +352,29 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         if (!alive || devOverrode.current || lastUid.current === null) return;
         void deriveWithRetry(true);
       }, delay);
+      const graceDelay = Math.min(Math.max(endsAt + OFFLINE_GRACE_MS - Date.now(), 0) + 1000, 2147483647);
+      graceTimer = setTimeout(() => {
+        graceTimer = null;
+        if (!alive || devOverrode.current || lastUid.current === null) return;
+        void deriveWithRetry(true);
+      }, graceDelay);
+    };
+    /**
+     * OFFLINE PAST THE END DATE + GRACE (toddler hunt #4, owner 2026-10-14).
+     * A failed read keeps the current tier — but a member whose KNOWN access
+     * end passed more than OFFLINE_GRACE_MS ago, and who still cannot reach the
+     * server, is no longer treated as one: lapsed, and not "known" (it is
+     * this device's conclusion, not a server answer). Never wipes anything; a
+     * lifetime / no-end grant has no end date and is never touched; the next
+     * successful read (a renewal reads academy) replaces it.
+     */
+    const applyOfflineGrace = (gen: number) => {
+      if (!alive || generation !== gen || devOverrode.current) return;
+      if (entitlementRef.current !== 'academy' || !pastOfflineGrace(endsAtRef.current)) return;
+      console.warn('[entitlement] offline past the access end date + grace — no longer treated as a member');
+      entitlementRef.current = 'lapsed';
+      setEntitlementState('lapsed');
+      setTierKnown(false);
     };
     armExpiryRef.current = armExpiryRecheck;
     /**
@@ -398,7 +442,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // REMEMBER IT, so a later boot with no network does not start this
         // member at 'anonymous' and lock them out of everything they paid for.
         // Only ever written from a read the server actually answered.
-        void saveLastTier(lastUid.current, tier);
+        void saveLastTier(lastUid.current, tier, endsAtRef.current);
       }
       return true;
     };
@@ -428,6 +472,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         markKnown();
         return;
       }
+      applyOfflineGrace(mine);
       void (async () => {
         for (const delay of RETRY_DELAYS_MS) {
           await new Promise((r) => setTimeout(r, delay));
@@ -438,6 +483,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
             markKnown();
             return;
           }
+          applyOfflineGrace(mine);
         }
         console.warn('[entitlement] read still failing after retries; tier left unchanged');
         // ⛔ STOP AND SAY SO (owner ruling 2026-10-03). The retries are spent
@@ -537,7 +583,8 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         const bootIdentity = identityOf(data.session);
         if (isRealAccount(data.session)) {
           const uid = data.session?.user?.id ?? null;
-          const remembered = await loadLastTier(uid);
+          let rememberedEnds: number | null = null;
+          const remembered = await loadLastTier(uid, { onEndsAt: (e) => (rememberedEnds = e) });
           // Only while this is still the same person, and only if no server
           // read has answered in the meantime (INITIAL_SESSION runs its own
           // read concurrently): a cache that lands late must neither replace a
@@ -550,6 +597,9 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
             lastUid.current === bootIdentity
           ) {
             setEntitlementState(remembered);
+            // Its end date too (toddler hunt #4): the grace above then also
+            // applies if the app stays open offline past it.
+            armExpiryRecheck(remembered === 'academy' ? rememberedEnds : null);
             // ⚡ FIRST PAINT ON THE REMEMBERED TIER (perf decisions A, owner-
             // approved 2026-10-04). Home waited on `resolved`, which flipped
             // only after the network read below (bounded up to 15 s) even
@@ -693,6 +743,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     });
     return () => {
       alive = false;
+      if (graceTimer) clearTimeout(graceTimer);
       if (expiryTimer) clearTimeout(expiryTimer);
       sub.subscription.unsubscribe();
       appSub.remove();
@@ -780,7 +831,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // And remember it, exactly as the boot read does. Otherwise the cache
         // still holds the PRE-purchase tier ('free'), and the next offline cold
         // start showed a member who had just paid the non-member app.
-        void saveLastTier(uidAtStart, tier);
+        void saveLastTier(uidAtStart, tier, endsAtRef.current);
       }
       return tier;
     } catch (e) {
@@ -815,6 +866,29 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     setMemberStanding(entitlement === 'academy');
     void loadLocalSettings().then((s) => requestLocalNotifSync(s));
   }, [entitlement, tierKnown]);
+
+  /**
+   * A LAPSE SEEN WHILE THE APP IS OPEN IS RE-CHECKED (toddler hunt #5, owner
+   * 2026-10-14). A renewal the store charges a few seconds after `expires_at`
+   * lands on the server AFTER the expiry re-read has already answered 'lapsed',
+   * and nothing asked again until the app was reopened — a renewed member saw
+   * the lapsed app meanwhile. So when the tier goes academy → lapsed, re-read
+   * at +5 and +30 minutes. Cancelled when the tier changes again (a renewal
+   * read, a sign-out, an account switch) and on unmount; a re-read that still
+   * says 'lapsed' leaves the later one standing.
+   */
+  const prevTierRef = useRef<Entitlement>('anonymous');
+  useEffect(() => {
+    const prev = prevTierRef.current;
+    prevTierRef.current = entitlement;
+    if (prev !== 'academy' || entitlement !== 'lapsed') return;
+    const timers = LAPSE_RECHECK_MS.map((ms) =>
+      setTimeout(() => {
+        void refreshEntitlement();
+      }, ms),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [entitlement, refreshEntitlement]);
 
   const setEntitlement = useCallback((state: Entitlement) => {
     if (!__DEV__) return;

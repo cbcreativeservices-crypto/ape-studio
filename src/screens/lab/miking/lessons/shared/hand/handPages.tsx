@@ -19,7 +19,7 @@ import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import type { DocumentedZone, MicPattern, MicPose, MicSlot, SourcePageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
-import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../engine/kit';
+import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard, useMicMoved } from '../../../engine/kit';
 import { useRig, type Rig } from '../../../engine/scene/useRig.ts';
 import { previewMemo, stopWordOf } from '../../../engine/scene/placementDock.ts';
 import { DualView } from '../../../engine/scene/DualView';
@@ -739,10 +739,10 @@ function HandTwoMic(spec: HandSpec) {
     const sEff = effectivePolarity(B.polarity, gA, gB);
     const rearFlip = sEff !== B.polarity;
     const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
-    const dt0 = useRef(dt);
+    // Changing only the SOURCE moves no mic (owner ruling 2026-10-14, #19).
+    const moved = useMicMoved(dt, srcId);
     const [flips, setFlips] = useState({ toInv: false, toNorm: false });
     const [predicted, setPredicted] = useState<string | null>(null);
-    const moved = Math.abs(dt - dt0.current) > 0.05;
     useEffect(() => {
       if (flips.toInv && flips.toNorm && moved && !interactiveDone.has('polarityVsDelay')) onInteractive('polarityVsDelay');
     }, [flips, moved, interactiveDone, onInteractive]);

@@ -33,6 +33,7 @@ import { startFenced } from '../../features/audio/startFenced';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { LabReviewButton } from '../../features/lab/LabReviewButton';
+import { ReviewLabEnd } from './kit/ReviewLabEnd';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -575,6 +576,8 @@ export function SignalChainLabScreen() {
 
       {/* R6c: sandbox capstone — no modules/challenge; explicit review credit. */}
       <LabReviewButton labKey="af_signal_chain" />
+      {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14, #21). */}
+      <ReviewLabEnd labKey="af_signal_chain" labTitle="Signal Chain Builder" onOpen={stop} />
 
       <GuidedLessonSheet
         visible={lessonOpen}

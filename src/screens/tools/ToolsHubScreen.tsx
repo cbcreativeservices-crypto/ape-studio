@@ -311,7 +311,7 @@ const STRIP_LABEL: Record<ToolKey, string> = {
  *  looks like when the mini is NOT drawing.
  *
  *  Absent/spike/denied engines rest — never a frozen frame (no fake meters, §1.7). */
-function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean; index: number }) {
+function ToolStrip({ tool, live, active, ready, index, micOff = false }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean; index: number; micOff?: boolean }) {
   const Strip = TOOL_STRIP[tool];
   const Sim = HUB_SIM_MINIS[tool];
   const Live = HUB_LIVE_MINIS[tool];
@@ -425,6 +425,14 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, { backgroundColor: (POWER_PERSONA[tool]?.bloom?.color ?? 'transparent'), opacity: bloom }]}
       />
+      {/* MIC OFF · DEMO (toddler hunt 2026-10-14 #29, owner-approved): with the
+          mic refused or unavailable, a LIVE tile's colourful still picture read
+          as a working meter. Said on the glass, ≥ 9 pt, on a dark plate. */}
+      {armed && micOff && !Skin && !Sim ? (
+        <View style={styles.micOffChip} accessibilityLabel="Microphone off. This picture is a demo, not a live reading.">
+          <Text style={styles.micOffChipText}>MIC OFF · DEMO</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -795,6 +803,7 @@ const ToolTile = memo(function ToolTile({
   name,
   planned,
   live,
+  micOff = false,
   active,
   ready,
   index,
@@ -805,6 +814,8 @@ const ToolTile = memo(function ToolTile({
   name: string;
   planned?: boolean;
   live: boolean;
+  /** The mic is refused / unavailable — live tiles say MIC OFF · DEMO. */
+  micOff?: boolean;
   active: boolean;
   ready: boolean;
   /** Reading-order position — drives the power-on stagger. */
@@ -879,7 +890,9 @@ const ToolTile = memo(function ToolTile({
       onPressIn={onIn}
       onPressOut={onOut}
       accessibilityRole="button"
-      accessibilityLabel={name}
+      accessibilityLabel={
+        micOff && !HUB_SKIN_MINIS[tool] && !HUB_SIM_MINIS[tool] ? `${name}. Microphone off — the picture is a demo.` : name
+      }
       style={[styles.tileFrame, { width: tile.w, height: tile.totalH }]}
     >
       {/* THE TILE IS THE SCREEN (owner 2026-09-05, see TileChassis.tsx): the
@@ -904,7 +917,7 @@ const ToolTile = memo(function ToolTile({
           </Text>
         </View>
         <View style={styles.stripWrap}>
-          <ToolStrip tool={tool} live={live} active={active} ready={ready} index={index} />
+          <ToolStrip tool={tool} live={live} active={active} ready={ready} index={index} micOff={micOff} />
         </View>
         <TileGlass />
         {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
@@ -1145,6 +1158,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                   name={t.name}
                   planned={t.planned}
                   live={hubPreview.engineLive}
+                  micOff={hubPreview.micOff}
                   active={hubPreview.active && tileVisible(i)}
                   ready={displaysReady}
                   tile={tile}
@@ -1414,6 +1428,18 @@ const styles = StyleSheet.create({
   // Same typeface as the hero "Measurement & Analysis" title (Oswald Medium),
   // just smaller so tiles can be shorter (owner 2026-08-17). Two lines reserved
   // so two-up rows stay aligned regardless of title wrap.
+  micOffChip: {
+    position: 'absolute',
+    left: 6,
+    bottom: 6,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.6)',
+    backgroundColor: 'rgba(0,0,0,.78)',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  micOffChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: '#ffc64d' },
   comingChip: {
     position: 'absolute',
     bottom: 8,

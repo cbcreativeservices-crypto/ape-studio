@@ -84,7 +84,9 @@ describe('conversation sheet', () => {
 
   test('D5b: a SEND only touches the conversation it was sent from', () => {
     // Pass 2 renamed the sent text `sentRaw` (see the pass-2 guards).
-    const send = between(sheet, 'sendThreadMessage(thread.id, sentRaw.trim())', 'await load();');
+    // Since 2026-10-14 (#11) the send goes through sendOnce(), which retries a
+    // composed message once; the answer handler is unchanged.
+    const send = between(sheet, 'sendOnce().then(async (r) => {', 'await load();');
     // Pass 3 drops only the SENT part of the draft (see the pass-3 guards).
     assert.match(send, /if \(r\.ok && draft !== undefined\) \{[\s\S]*drafts\.current\.delete\(thread\.id\);/);
     const guard = send.indexOf('if (openId.current !== thread.id) return;');
