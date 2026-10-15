@@ -39,7 +39,7 @@ const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
 export const CERT_BLUE = '#2f9bff';
 export const PROGRAM_PURPLE = '#b06cff';
 /** My Custom List's own accent (owner 2026-10-14) — not the certificate blue. */
-export const CUSTOM_CYAN = '#3fd3e6';
+export const CUSTOM_CYAN = colors.customList;
 
 /**
  * One selectable thing. `kind: 'topics'` is ALL TOPICS and is always first;

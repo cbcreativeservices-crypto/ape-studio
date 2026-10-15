@@ -3703,9 +3703,9 @@ ${COPY.glossaryFreeAllowance}`,
                 accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
               >
                 <DeckIcon
-                  color={starred.has(item.id) ? colors.blue : colors.textMuted}
+                  color={starred.has(item.id) ? colors.customList : colors.textMuted}
                   size={19}
-                  fill={starred.has(item.id) ? 'rgba(47,155,255,0.22)' : 'none'}
+                  fill={starred.has(item.id) ? 'rgba(63,211,230,0.22)' : 'none'}
                 />
               </HoldHintPressable>
               {/* The +/- expand toggle was removed (user request

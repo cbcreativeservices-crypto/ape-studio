@@ -2296,7 +2296,7 @@ export function DashboardScreen() {
           <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
             <View style={styles.customRow}>
               <View style={styles.customDeck}>
-                <DeckIcon color={colors.blue} size={40} fill="rgba(47,155,255,0.22)" />
+                <DeckIcon color={colors.customList} size={40} fill="rgba(63,211,230,0.22)" />
               </View>
               <View style={styles.methodLeft}>
                 <Text style={styles.customCount}>
@@ -3386,7 +3386,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 13,
     letterSpacing: 1,
-    color: colors.blue,
+    color: colors.customList, // the custom list's teal (owner 2026-10-15)
   },
   // Rack group — panels nearly touching, like real 500-series slots.
   // Rack CHASSIS (Booth 2026-07-11 #5): the topic card's metallic side rails

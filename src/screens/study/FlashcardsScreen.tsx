@@ -221,13 +221,15 @@ function levelText(item: GlossaryItem, level: number, gate: MemberGate): string 
   }
 }
 
-type ChipTint = 'amber' | 'green' | 'orange' | 'blue' | 'purple';
+type ChipTint = 'amber' | 'green' | 'orange' | 'blue' | 'purple' | 'customList';
 const CHIP_TINTS: Record<ChipTint, { bg: [string, string]; border: string; fg: string }> = {
   amber: { bg: ['#2a2008', '#1a1405'], border: 'rgba(255,180,0,.65)', fg: '#ffc64d' },
   green: { bg: ['#0c2412', '#081a0c'], border: 'rgba(55,224,95,.65)', fg: '#5bff85' },
   orange: { bg: ['#2b1c0a', '#1c1206'], border: 'rgba(255,138,30,.7)', fg: '#ffa64d' },
   blue: { bg: ['#0e2033', '#081521'], border: 'rgba(47,155,255,.7)', fg: '#7fbfff' },
   purple: { bg: ['#1e1030', '#140a22'], border: 'rgba(180,91,255,.7)', fg: '#c48cff' },
+  // The custom list's teal (owner 2026-10-15).
+  customList: { bg: ['#0b2a2e', '#071c1f'], border: 'rgba(63,211,230,.7)', fg: '#3fd3e6' },
 };
 
 function FilterChip({
@@ -1673,7 +1675,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             label="Custom list"
             icon={(c) => <DeckIcon color={c} size={17} fill={starredOnly ? `${c}33` : 'none'} />}
             active={starredOnly}
-            activeTint="blue"
+            activeTint="customList"
             onPress={() => { setStarredOnly((v) => !v); resetToStart(); }}
             onLongPress={() => handleChipLongPress('Custom list', 'starred')}
           />
@@ -1729,9 +1731,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   accessibilityLabel={starred.has(card.id) ? 'Remove from custom list' : 'Add to custom list'}
                 >
                   <DeckIcon
-                    color={starred.has(card.id) ? colors.blue : colors.textMuted}
+                    color={starred.has(card.id) ? colors.customList : colors.textMuted}
                     size={21}
-                    fill={starred.has(card.id) ? 'rgba(47,155,255,0.22)' : 'none'}
+                    fill={starred.has(card.id) ? 'rgba(63,211,230,0.22)' : 'none'}
                   />
                 </Pressable>
                 {/* Glossary-link show/hide toggle, LEFT of the custom-list icon

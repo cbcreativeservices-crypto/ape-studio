@@ -15,7 +15,7 @@ import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { DeckIcon } from '../../components/DeckIcon';
-import { fonts } from '../../theme/tokens';
+import { colors, fonts } from '../../theme/tokens';
 import {
   setInTermList,
   toggleBookmark,
@@ -203,7 +203,7 @@ export const TermSelectIcons = memo(function TermSelectIcons({
           <DeckIcon color={c} size={17} fill={isStarred ? `${c}33` : 'none'} />
         )}
         on={isStarred}
-        onColor="#2f9bff"
+        onColor={colors.customList}
         label={isStarred ? 'Remove from custom list' : 'Add to custom list'}
         onPress={() => toggleTermList('starred', id)}
         onLongPress={() => showHint(isStarred ? 'Removes from Custom list' : 'Adds to Custom list')}

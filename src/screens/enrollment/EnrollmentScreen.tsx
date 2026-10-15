@@ -3091,9 +3091,10 @@ const styles = StyleSheet.create({
   // SEE & EDIT term-list popup.
   clBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 20 },
   clCard: { width: '100%', maxWidth: 460, maxHeight: '80%', backgroundColor: '#141414', borderRadius: 12, borderWidth: 1, borderColor: '#2a2a2a', padding: 14, gap: 8 },
-  clTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: BLUE, marginBottom: 2 },
+  // The custom list's teal (owner 2026-10-15) — was the certificate blue.
+  clTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: CUSTOM_CYAN, marginBottom: 2 },
   clRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#1e1e1e' },
-  clItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: '#2f9bff' },
+  clItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: CUSTOM_CYAN },
   clEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textSub, paddingVertical: 10 },
   clClose: { marginTop: 8, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
   clCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },

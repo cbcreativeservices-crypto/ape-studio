@@ -34,6 +34,8 @@ export const colors = {
   // Accent hues (per-domain, from README color table)
   orange: '#ff8a1e', // Home tab, warnings, "continue" method
   blue: '#2f9bff', // Study tab, selected answers, flashcards
+  /** THE custom list colour (owner 2026-10-15): Enrollments, Glossary, Flashcards, Study. */
+  customList: '#3fd3e6',
   cyan: '#5bb0ff',
   cyanBright: '#7fd4ff', // Glossary accent
   green: '#37e05f', // Profile tab, success, ear-training
