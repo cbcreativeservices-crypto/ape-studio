@@ -1123,12 +1123,13 @@ function CourseCardView({
             />
             <View>
               <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
-              {/* What EXPLORE opens (owner 2026-10-14), amber. */}
+              {/* What the button opens (owner 2026-10-14), amber. The button read EXPLORE
+                  until 2026-10-15 (owner: "Explore" is also the top button). */}
               <Text style={[styles.cardStudyTopic, styles.cardAreaSub]} maxFontSizeMultiplier={HOME_MAX}>Explore Certificates &amp; Programs</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <View style={{ width: cd.btnW }}>
-                <GlassButton maxFontSizeMultiplier={HOME_MAX} label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
+                <GlassButton maxFontSizeMultiplier={HOME_MAX} label="CERTIFICATES & PROGRAMS ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
               </View>
             </View>
           </CardArt>

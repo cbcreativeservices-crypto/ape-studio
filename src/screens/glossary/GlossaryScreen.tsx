@@ -38,6 +38,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { NavIcon } from '../../components/nav/NavIcon';
+import { AZIndex, azLetterOf } from '../../features/glossary/AZIndex';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
@@ -2170,6 +2171,10 @@ ${COPY.glossaryFreeAllowance}`,
     prevOpenDefsRef.current = openDefs;
   }, [openDefs, commitmentReached]);
   const commitmentIntro = useScreenIntro('commitment', false, introHold || glossaryIntro.owed || !closedAfterReached);
+  // First tap on CUSTOM STUDY LIST explains it (owner 2026-10-15). Held until
+  // that filter is on and behind the welcome sheet. "Our Commitment" stays owed
+  // for ~4 minutes of reading, so only its being ON SCREEN holds this one.
+  const customIntro = useScreenIntro('glossaryCustom', false, introHold || filter !== 'custom' || glossaryIntro.owed || commitmentIntro.visible);
   const [chooser, setChooser] = useState<string[] | null>(null); // ambiguous sense ids
   const popupScrollRef = useRef<ScrollView>(null);
   const popupScrollY = useRef(0);
@@ -2609,6 +2614,25 @@ ${COPY.glossaryFreeAllowance}`,
     () => topicsAZ.findIndex((t) => t.name.localeCompare(EQUATIONS_TITLE) > 0),
     [topicsAZ],
   );
+
+  // A–Z fast-scroll for the topic list (UX review 2026-10-15): the y of the
+  // first topic of each letter, measured as the rows lay out.
+  const topicScrollRef = useRef<ScrollView>(null);
+  const topicLetterY = useRef<Record<string, number>>({});
+  const { topicLetters, topicFirstOfLetter } = useMemo(() => {
+    const letters = new Set<string>();
+    const first = new Set<string>();
+    for (const t of topicsAZ) {
+      const l = azLetterOf(t.name);
+      if (!letters.has(l)) first.add(t.id);
+      letters.add(l);
+    }
+    return { topicLetters: letters, topicFirstOfLetter: first };
+  }, [topicsAZ]);
+  const jumpToTopicLetter = useCallback((letter: string) => {
+    const y = topicLetterY.current[letter];
+    if (y != null) topicScrollRef.current?.scrollTo({ y, animated: false });
+  }, []);
   const equationsRow = (
     <Pressable
       key="__equations"
@@ -3640,14 +3664,20 @@ ${COPY.glossaryFreeAllowance}`,
                   { flexShrink: 1 },
                   cardView && styles.cardTerm,
                   expanded && styles.termExpanded,
-                  // An equation/calculator term IS purple (owner 2026-08-07):
-                  // every glossary term a Calc Lab workspace covers — so
-                  // purple always implies a real calculator link.
-                  isCalcBackedTerm(item.term) ? styles.termEquation : null,
+                  // Calculator-backed terms used to turn the title purple
+                  // (owner 2026-08-07); a CALCULATOR tag says it in words now
+                  // (UX review 2026-10-15), so the title keeps its normal colour.
                 ]}
               >
                 {highlightNodes(item.term, hq)}
               </Text>
+              {/* Every term a Calc Lab workspace covers carries a CALCULATOR
+                  tag (UX review 2026-10-15) — the calculator link is inside. */}
+              {isCalcBackedTerm(item.term) ? (
+                <View style={styles.calcTag} accessibilityLabel="Calculator available">
+                  <Text style={styles.calcTagText} maxFontSizeMultiplier={1.35}>CALCULATOR</Text>
+                </View>
+              ) : null}
               {/* Danger flag sits right next to the term (Booth 2026-07-15). */}
               {isHazardTerm(item.term) ? <CautionBadge iconOnly /> : null}
               {/* Media icon (user request 2026-07-18) — a term with art
@@ -4589,7 +4619,8 @@ ${COPY.glossaryFreeAllowance}`,
                 </Pressable>
               </View>
               <Text style={styles.topicLockHint}>{upsell ? COPY.upgradePhrase : tierUnconfirmedCopy}</Text>
-              <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
+              <View style={styles.topicListRow}>
+              <ScrollView ref={topicScrollRef} style={{ flex: 1 }} keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
                 {topicsUnreadable && topicsAZ.length === 0 ? <Text style={styles.empty}>{TOPICS_UNREADABLE}</Text> : null}
                 {/* Terms with Equations & Formulas is a free cross-topic
                     reference list, so it stays SELECTABLE even here where
@@ -4599,6 +4630,7 @@ ${COPY.glossaryFreeAllowance}`,
                   <Pressable
                     key={t.id}
                     style={styles.topicRow}
+                    onLayout={topicFirstOfLetter.has(t.id) ? (e) => (topicLetterY.current[azLetterOf(t.name)] = e.nativeEvent.layout.y) : undefined}
                     onPress={() =>
                       upsell
                         ? setTopicGate(true)
@@ -4615,11 +4647,15 @@ ${COPY.glossaryFreeAllowance}`,
                 ])}
                 {equationsAt === -1 ? equationsRow : null}
               </ScrollView>
+              {/* A–Z fast-scroll strip (UX review 2026-10-15). */}
+              {topicsAZ.length > 12 ? <AZIndex present={topicLetters} onPick={jumpToTopicLetter} /> : null}
+              </View>
             </View>
           ) : (
             <View style={styles.topicOverlay}>
               <Text style={styles.topicOverlayTitle}>SELECT A TOPIC · A–Z</Text>
-              <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
+              <View style={styles.topicListRow}>
+              <ScrollView ref={topicScrollRef} style={{ flex: 1 }} keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
                 {topicsUnreadable && topicsAZ.length === 0 ? <Text style={styles.empty}>{TOPICS_UNREADABLE}</Text> : null}
                 {/* The cross-topic filter (only the terms that ARE
                     equations/formulas) sits A–Z with the T's. Not member-gated. */}
@@ -4630,6 +4666,7 @@ ${COPY.glossaryFreeAllowance}`,
                     <Pressable
                       key={t.id}
                       style={[styles.topicRow, active && styles.topicRowActive]}
+                      onLayout={topicFirstOfLetter.has(t.id) ? (e) => (topicLetterY.current[azLetterOf(t.name)] = e.nativeEvent.layout.y) : undefined}
                       onPress={() => {
                         setSelTopicId(t.id);
                         setTopicPickerOpen(false);
@@ -4644,6 +4681,9 @@ ${COPY.glossaryFreeAllowance}`,
                 })}
                 {equationsAt === -1 ? equationsRow : null}
               </ScrollView>
+              {/* A–Z fast-scroll strip (UX review 2026-10-15). */}
+              {topicsAZ.length > 12 ? <AZIndex present={topicLetters} onPick={jumpToTopicLetter} /> : null}
+              </View>
             </View>
           )
         )}
@@ -4819,6 +4859,8 @@ ${COPY.glossaryFreeAllowance}`,
         <IntroSheet introKey="glossary" onDismiss={glossaryIntro.dismiss} />
       ) : commitmentIntro.visible ? (
         <IntroSheet introKey="commitment" onDismiss={commitmentIntro.dismiss} />
+      ) : customIntro.visible ? (
+        <IntroSheet introKey="glossaryCustom" onDismiss={customIntro.dismiss} />
       ) : null}
       {/* Weekly-lookup HARD LOCK over the dimmed glossary (owner 2026-09-10). */}
       {lockOverlay}
@@ -4914,6 +4956,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
   pickerWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingVertical: 2 },
   resultsRegion: { flex: 1 },
+  topicListRow: { flex: 1, flexDirection: 'row' },
   topicOverlay: {
     position: 'absolute',
     top: 0,
@@ -5318,13 +5361,18 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
-  // Equation title = purple (owner 2026-08-07). Placed AFTER termExpanded in the
-  // style array so it wins over the amber expanded color and swaps the glow to
-  // match — an equation reads purple whether collapsed or expanded.
-  termEquation: {
-    color: colors.purple,
-    textShadowColor: 'rgba(168,130,255,.38)',
+  // CALCULATOR tag beside a calculator-backed term (replaced the purple title,
+  // UX review 2026-10-15). Purple = the calculator colour app-wide.
+  calcTag: {
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(168,130,255,.7)',
+    backgroundColor: 'rgba(168,130,255,.12)',
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
   },
+  calcTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.purple },
   // Same text style as the detail sections — the primary definition must not
   // read dimmer than the rest (Booth 2026-07-10). The purple (technical) / blue
   // (plain English) tinting was removed — both now use the standard body colour

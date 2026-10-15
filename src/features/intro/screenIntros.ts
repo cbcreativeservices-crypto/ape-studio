@@ -21,6 +21,7 @@ export type IntroKey =
   | 'flashcardsCustomize' // T2 — after ~5 card views/swipes
   | 'flashcardsPower' // T3 — first category long-press, or ~45s in
   | 'glossary'
+  | 'glossaryCustom' // Glossary CUSTOM STUDY LIST filter — first tap (UX review 2026-10-15)
   | 'awards'
   | 'enrollments' // My Enrollments Dashboard — first open (owner 2026-10-15); also from its ? menu
   | 'mixingProNote' // Mixing family (Beginning/Advanced Mixing, Mastering, Mixing Guides) — first open
@@ -139,6 +140,19 @@ export const SCREEN_INTROS: Record<
       'Whether you’re just beginning or already working in the industry, this glossary is designed to help you better understand the language of professional audio.\n\n' +
       'Our content is continually reviewed, expanded, and updated as new technologies, standards, and terminology evolve.\n\n' +
       'Thank you for using the Pro Audio Training Academy Glossary. We hope it becomes a trusted resource throughout your audio journey.',
+  },
+  glossaryCustom: {
+    // First tap on the Glossary's CUSTOM STUDY LIST filter (owner 2026-10-15,
+    // from the UX review: "the concept of custom isn't clear").
+    placeholder: false,
+    title: 'Your Custom Study List',
+    body:
+      'This is your own study deck, made from any glossary terms you choose.\n\n' +
+      'To add a term, tap the deck icon beside it. Tap it again to take it off. This button shows only the terms you’ve added; press and hold it to see and edit the whole list.\n\n' +
+      'Your deck works like a topic of its own in the Academy’s study system. You can study it with flashcards, matching, fill-in-the-blank and scenario questions, the same way you study any topic.\n\n' +
+      'To start studying it, open My Enrollments Dashboard from the Home menu and load My Custom List into Study.\n\n' +
+      'Use it for terms you find difficult, words from a class or a job, or anything you want to practise.',
+    button: 'Got it',
   },
   enrollments: {
     // Owner-written copy, 2026-10-15. Shown once, on the first open of My

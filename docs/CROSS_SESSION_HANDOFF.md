@@ -634,6 +634,222 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 11:20 · ccode · e9edce3f
+changed: Home: tapping HOME resets the card carousel to the default card; the dot row can be dragged to move through the cards (UX review 2026-10-15)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-15 10:41 · ccode · ede4cc91
+changed: One custom-list colour everywhere (teal colors.customList): Glossary term icon + filter, Flashcards filter chip + card icon, term popups, Study custom card, Enrollments SEE & EDIT list (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 10:37 · ccode · 946b6163
+changed: Enrollments uses the screen better: smaller gap under the title; on phones the selection card's art is smaller and STUDY / LOAD ALL sit side by side (card ~25% shorter) (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 10:17 · ccode · b6c3c9c2
+changed: Enrollments: the loaded/enrolled count moves from under MY ENROLLMENT into the My Enrolled Topics card ('N topics enrolled · N loaded into study') (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 10:11 · ccode · 6c7fd6e5
+changed: My Enrollments Dashboard: no page-button row; first-visit intro 'Understand What You’ll Encounter' (owner text); ? opens a menu — How Your Learning Is Organized / Help with this screen; long intros scroll inside the card (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 09:57 · ccode · 8d336bb2
+changed: Tools hub does far less work: minis re-render only when their picture changes, static plates drawn once, bars as single paths, tuner/RT60 animate off the React render path, off-screen tiles pause (JS thread ~70-95% -> ~6-15% on the emulator; owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 09:45 · ccode · b40ca235
+changed: Home Enrollments card: headline 'Start Studying & Earn Credentials', label 'VIEW YOUR ENROLLMENTS' (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 08:13 · ccode · 6268f673
+changed: Drum Tuning: loudness (dB) in its own strip under the waveform with its own scale; T60 on the strip; waveform is one clean signal (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 08:08 · ccode · 68d002a3
+changed: Tools tile art: waveform centre line moved behind the trace, fainter (owner-approved image edit 2026-10-15); Speech page 12: three repeated questions replaced with off-axis, mouth clicks and breath noise (owner 2026-10-15)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 01:23 · ccode · 6392d5e7
+changed: Hints never grow past the brand text cap (covered the Dashboard 0% at large text); rotary-dial tip says 'Tap' — the small dial opens on tap (TestFlight build 36: 'Rotary dial does not spin')
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 01:21 · ccode · 7cc96e6c
+changed: Large-text and lab follow-ups: back controls never squeezed (cap + no-shrink, Directory uses HomeOrBackKey), Flashcards fit at large text, Career Finder bonus card unnumbered, Glossary title fits; slider release lands correctly when a stale lift point arrives; Room plan labels avoid each other; Modular well usable; Gain group keys show dB
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 01:21 · ccode · 9f8b3fec
+changed: iOS freeze (build 36 TestFlight, 'Frozen Screen' x10): closing a certificate/program popup and its chooser in one tap left the outer Modal presented, invisible, swallowing every touch. DimModal now holds a parent open until nested popups are gone (iOS); STUDY NOW / VIEW PROGRESS / GO TO MY ENROLLMENTS navigate after both close. Dashboard progress label capped at large text.
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:29 · ccode · 53412bd4
+changed: Glossary card view: a search still filtering the cards shows as a small 'Results for …  ✕' pill that clears it
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:26 · ccode · d2ef6483
+changed: Speech lab HOLDs (owner: 'fix what you recommend'): one FULL SCREEN on page 2, amber (not red) caution card on page 9, animations pause when the screen is not showing
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:21 · ccode · c766aad9
+changed: HOME key instead of ‹ on screens one level from Home (Calculator Lab, Award Progress, Career Finder landing, Start Here, Learning Labs), decided by the route underneath (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:14 · ccode · 1ee41ba6
+changed: Home Study Area subtitle reads 'Explore Certificates & Programs' (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:12 · ccode · dd4c06b6
+changed: Home: amber 'Explore Certificate Programs' under every Study Area card title (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:09 · ccode · d5e5fcf5
+changed: Home cards: 'First Steps in Audio' in gold; gold 'Study Topic' under Pro Audio Safety and DAW Fundamentals (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:06 · ccode · 89976b8f
+changed: Home cards: Career Finder key word in gold too; the gold word carries the text-size cap (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:05 · ccode · 81ef41b2
+changed: Home cards: key word in gold — Labs, Calculator, Tools, Glossary, Enrollments (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:02 · ccode · 01097ef3
+changed: Android BACK retraces visited tabs instead of jumping to Home (tab backBehavior was the default 'firstRoute'); Home is the root (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-15 00:02 · ccode · 184f328c
+changed: Home: MY ENROLLMENTS card right of the Glossary card (owner art, bundled — no bucket upload during review) replaces the green Enrollments button; first-run cue moves to the card (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:58 · ccode · bfa33fd3
+changed: Speech & Voice lab: every drawing and animation redone to the current standard — real laryngoscopic vocal folds (decency fixed), head section with staged airflow, vowel mouth views, consonant spectrograms, real 16 kHz waveforms with the zero line behind the trace, pop-filter slow motion, to-scale distance scene; voice-science + learner reviews applied (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:56 · ccode · 8caf90ac
+changed: Glossary: BEG/ADV key left of ALL and BEG previews show plain English; full-screen icon (green) replaces CARDS, inward arrows to leave; Custom Study List (cyan); Σ removed; book mark beside the title; share on the open card; no search field in card view (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:37 · ccode · 447e1e9c
+changed: Glossary: CARDS/LIST and ADV/BEG move into the filter row at chip height; they return to the header only while a card popup hides that row (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:28 · ccode · 8aedb0d1
+changed: My Custom List loaded by default; empty-list message on the Study screen; Enrollments title 'My Enrollments Dashboard' (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:22 · ccode · e946320f
+changed: Enrollments for guests: Pro Audio Safety and DAW Fundamentals open expanded, no lock marks, no lock indent (owner 2026-10-14: both are free for guests)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:17 · ccode · 03d9f6e5
+changed: Waveforms: zero line behind the trace, never across it (Drum Tuning, Mastering x2, Tools hub tile); Envelope follows the wave's peaks (owner 2026-10-14: one signal must read as one)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 23:11 · ccode · fb4b3df7
+changed: Enrollments: My Custom List becomes a MY ENROLLMENT selection; chips show enrolled counts; custom-list bar and Continue Learning banner removed so MY ENROLLMENT is the top (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 22:48 · ccode · 696b4ce6
+changed: Description cards: keep the coloured left edge on Explore only; plain at the top of Certificates/Programs/Pro Registry (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 22:46 · ccode · 8673a40d
+changed: Description cards: drop the coloured left edge (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 22:38 · ccode · 5c046227
+changed: Certificates, Programs, Pro Registry: same short description card at the top as on Explore (shared CredentialBlurb, owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 22:30 · ccode · 95d12f90
+changed: Explore: three brief cards under the glance graphic — Specialist Certificates, Program Certificates, Pro Registry (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 22:16 · ccode · 63b83b9d
+changed: Emulator pass on six members-only labs: fixes (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 19:50 · ccode · 65a631de
+changed: Calculator number fields open the number pad on Android, never the letter keyboard (owner 2026-10-14)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-14 19:50 · ccode · 031601d3
+changed: Toddler hunt: carry out all 32 owner HOLD decisions (owner 2026-10-14, all defaults)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-14 19:02 · ccode · e79f388d
 changed: docs: D75 lab-fader standards + D76 worklet/shared-value rules; engineering lessons 2026-10-14
 affects other side: nothing (docs only)
