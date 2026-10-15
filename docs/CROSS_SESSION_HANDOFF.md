@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 16:48 · ccode · a03d9949
+changed: Store readiness: localized paywall prices, delete-account billing note, sign-up terms line
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 14:12 · ccode · 6ba9b349
 changed: Android 3-button nav bar: bottom content clears the bar on 32 root-stack screens (2026-10-15)
 affects other side: nothing (app only, JS layout; ships with the post-approval OTA)
