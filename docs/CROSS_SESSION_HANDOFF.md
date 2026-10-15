@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-14 18:55 · ccode · d10adb4a
+changed: fix(lab): issues found checking the HOLD changes on the emulator
+affects other side: nothing (client-only, JS; ships with the post-approval OTA)
+needs: nothing
+
+
 ### 2026-10-14 17:16 · ccode · a4412ab3
 changed: feat(lab): owner's slider-pass HOLD decisions (defaults) + Sound Systems map speed-up
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
