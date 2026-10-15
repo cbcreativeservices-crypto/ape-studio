@@ -2931,7 +2931,7 @@ export const EnrollmentView = memo(function EnrollmentView({
 const CORE_INDENT = 26;
 
 const styles = StyleSheet.create({
-  scroll: { paddingHorizontal: 16, paddingTop: 10, gap: 8, ...readingColumn },
+  scroll: { paddingHorizontal: 16, paddingTop: 4, gap: 8, ...readingColumn },
   // Top block above the sticky BROWSE & ADD header — keeps the inter-card rhythm
   // the ScrollView's own gap used to provide (user request 2026-07-22).
   topBlock: { gap: 8 },
@@ -3104,7 +3104,8 @@ const styles = StyleSheet.create({
      the container's content below (scroll 16 + border 2.5 + padding 10).
      marginTop 14 opens 22 above the group against 8 within it, so the four
      rows read as one block instead of three floating bands. */
-  listHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 14, paddingHorizontal: 12 },
+  // marginTop 14 → 2 (owner 2026-10-15: the dark band under the title).
+  listHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2, paddingHorizontal: 12 },
   listCountRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 },
   listCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary },
   // HOME SETUP — amber (user request 2026-07-23).

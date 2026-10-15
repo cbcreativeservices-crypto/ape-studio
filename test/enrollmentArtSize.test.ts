@@ -93,7 +93,10 @@ describe('artSideLen', () => {
     }
   });
 
-  it('gives the art the larger share exactly when the column stacks', () => {
+  // Owner 2026-10-15: on phones (stacked) STUDY and LOAD ALL now sit side by
+  // side in one row, so the art no longer has to fill a tall column — it takes
+  // the SMALLER share (0.30) and the selection card stops owning the screen.
+  it('gives the art its own share in each mode (0.34 beside, 0.30 stacked)', () => {
     /**
      * ⚠️ THE JUMP AT THE RE-FLOW WIDTH IS DELIBERATE, and it was briefly
      * removed. When the art stretched to the row's height one share was
@@ -110,7 +113,7 @@ describe('artSideLen', () => {
       if (actionsFitBesideIdentity(row)) {
         assert.ok(Math.abs(share - 0.34) < 0.005, `row ${row}: side-by-side share ${(share * 100).toFixed(1)}%`);
       } else {
-        assert.ok(Math.abs(share - 0.46) < 0.005, `row ${row}: stacked share ${(share * 100).toFixed(1)}%`);
+        assert.ok(Math.abs(share - 0.3) < 0.005, `row ${row}: stacked share ${(share * 100).toFixed(1)}%`);
       }
     }
   });

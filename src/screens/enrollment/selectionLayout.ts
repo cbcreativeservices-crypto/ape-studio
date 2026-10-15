@@ -54,7 +54,9 @@ const clampSide = (n: number) => Math.max(84, Math.min(240, Math.round(n)));
  * vertical strip and had to be reverted the same day.
  */
 const SHARE_BESIDE = 0.34;
-const SHARE_STACKED = 0.46;
+// Phones (stacked actions): a smaller square so the selection card stops
+// owning ~60% of the screen (owner 2026-10-15). Was 0.46.
+const SHARE_STACKED = 0.3;
 
 export function artSideLen(rowWidth: number): number {
   if (!(rowWidth > 0)) return 96; // pre-measurement; replaced on first layout

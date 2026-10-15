@@ -392,7 +392,8 @@ const s = StyleSheet.create({
   count: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   /* The two controls that move topics, stacked in the corner. */
   deckActions: { alignItems: 'flex-end', gap: 8 },
-  deckActionsStacked: { alignSelf: 'stretch', alignItems: 'stretch' },
+  // Phones: STUDY and LOAD ALL side by side, one row (owner 2026-10-15) — was a column.
+  deckActionsStacked: { alignSelf: 'stretch', alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' },
   studyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
