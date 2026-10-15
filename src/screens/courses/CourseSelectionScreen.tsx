@@ -434,6 +434,7 @@ const TITLE_KEYWORD: Partial<Record<Card['kind'], string>> = {
   tools: 'Tools',
   glossary: 'Glossary',
   enrollments: 'Enrollments',
+  careerFinder: 'Career Finder',
 };
 /** The title text with its key word wrapped in gold (plain when the word is absent). */
 function keyedTitle(text: string, kind: Card['kind']): ReactNode {
@@ -443,7 +444,7 @@ function keyedTitle(text: string, kind: Card['kind']): ReactNode {
   return (
     <>
       {text.slice(0, at)}
-      <Text style={styles.cardTitleKey}>{kw}</Text>
+      <Text style={styles.cardTitleKey} maxFontSizeMultiplier={HOME_MAX}>{kw}</Text>
       {text.slice(at + kw.length)}
     </>
   );
