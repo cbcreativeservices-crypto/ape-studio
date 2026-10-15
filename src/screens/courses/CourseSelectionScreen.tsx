@@ -1124,7 +1124,7 @@ function CourseCardView({
             <View>
               <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
               {/* What EXPLORE opens (owner 2026-10-14), amber. */}
-              <Text style={[styles.cardStudyTopic, styles.cardAreaSub]} maxFontSizeMultiplier={HOME_MAX}>Explore Certificate Programs</Text>
+              <Text style={[styles.cardStudyTopic, styles.cardAreaSub]} maxFontSizeMultiplier={HOME_MAX}>Explore Certificates &amp; Programs</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <View style={{ width: cd.btnW }}>
