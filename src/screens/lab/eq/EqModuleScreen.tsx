@@ -172,7 +172,7 @@ export function EqModuleScreen() {
               </View>
             ) : (
               <ScrollView
-                contentContainerStyle={[styles.scroll, readingColumn]}
+                contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 30 + insets.bottom }]}
                 keyboardShouldPersistTaps="handled"
                 scrollEnabled={!scrollLocked}
               >

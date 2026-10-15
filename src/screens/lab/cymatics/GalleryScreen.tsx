@@ -398,7 +398,7 @@ export function GalleryScreen() {
           onHelp={help}
         />
       ) : (
-        <ScrollView contentContainerStyle={[styles.scroll, cardColumn, tablet && wideColumn]} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.scroll, cardColumn, tablet && wideColumn, { paddingBottom: 32 + insets.bottom }]} keyboardShouldPersistTaps="handled">
           {mode === 'browse' ? (
             <>
               <View style={styles.chips}>

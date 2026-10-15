@@ -55,7 +55,7 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]}>
         {locked ? (
           <ToolAcademyLock what="This concept module" onUpgrade={() => navigation.navigate('Paywall')} />
         ) : gate !== 'open' ? (

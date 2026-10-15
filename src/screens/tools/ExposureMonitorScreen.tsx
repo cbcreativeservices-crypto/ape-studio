@@ -185,7 +185,7 @@ export function ExposureMonitorScreen() {
         />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 30 + insets.bottom }]}>
         <Text style={styles.honesty}>{EXPOSURE_HONESTY_LINE}</Text>
 
         <Section title="CURRENT SESSION">

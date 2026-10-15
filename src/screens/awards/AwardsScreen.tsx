@@ -424,9 +424,10 @@ const AwardPageView = memo(function AwardPageView({
   summaryForTier: (tier: AwardTier) => string | undefined;
 }) {
   const { width: screenW } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   return (
     <View style={{ width: screenW }}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: 44 + insets.bottom }]} showsVerticalScrollIndicator={false}>
         {/* The same short description as on Explore (owner 2026-10-14). */}
         <CredentialBlurb kind={page.key === 'program' ? 'program' : 'specialization'} />
         {page.introTitle ? <Text style={styles.introTitle}>{page.introTitle}</Text> : null}

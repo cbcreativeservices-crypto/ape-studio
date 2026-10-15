@@ -190,7 +190,7 @@ export function EmployerAdminScreen() {
         ))}
       </View>
 
-      <ScrollView contentContainerStyle={s.body}>
+      <ScrollView contentContainerStyle={[s.body, { paddingBottom: 40 + insets.bottom }]}>
         {err ? (
           <View style={s.warn}>
             <Text style={s.warnText}>{err}</Text>

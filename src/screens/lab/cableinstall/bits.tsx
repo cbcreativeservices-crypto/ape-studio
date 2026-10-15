@@ -17,6 +17,7 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../../features/settings/store';
 import { colors, fonts } from '../../../theme/tokens';
@@ -120,12 +121,14 @@ export function SourceSheet({ sourceIds, onClose }: { sourceIds: string[] | null
     return true;
   }, [onClose]);
   useBackWhileFocused(open, onSheetBack);
+  // Clear of the Android 3-button bar (2026-10-15): the card floats over an edge-to-edge screen.
+  const insets = useSafeAreaInsets();
   if (!sourceIds) return null;
   const list = sourceIds.map(sourceById).filter((s): s is NonNullable<typeof s> => !!s);
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <Pressable style={styles.sheetBackdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close sources" />
-      <View style={styles.sheetCard}>
+      <View style={[styles.sheetCard, { bottom: 14 + insets.bottom }]}>
         <View style={styles.sheetHead}>
           <Text style={styles.sheetTitle}>SOURCES / STANDARDS</Text>
           <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close">

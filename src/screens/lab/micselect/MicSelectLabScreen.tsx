@@ -1091,7 +1091,7 @@ export function MicSelectLabScreen() {
           extra={<LabUnderstandingBlock labId="micselect" labTitle="Microphone Selection Lab" />}
         />
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
         <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
         <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${STEPS.length}`}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>

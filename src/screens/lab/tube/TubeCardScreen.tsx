@@ -459,7 +459,7 @@ export function TubeCardScreen() {
   }
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+    <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom }]}>
       {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
       <View style={styles.navBar}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the tube list">

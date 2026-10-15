@@ -273,7 +273,7 @@ export function CalcWorkflowEditScreen() {
           </Text>
         </View>
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 40 + insets.bottom }]} keyboardShouldPersistTaps="handled">
         <Text style={styles.fieldLabel}>WORKFLOW NAME</Text>
         <TextInput
           style={styles.input}

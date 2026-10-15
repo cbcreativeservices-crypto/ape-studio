@@ -1341,7 +1341,7 @@ export function MultiMeterScreen({ navigation }: Props) {
         </>
       )}
 
-      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]} scrollEnabled={scrollEnabled}>
         {/* Honest not-ready card (absent/spike/denied/error). */}
         <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 

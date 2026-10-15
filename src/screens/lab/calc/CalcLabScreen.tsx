@@ -153,7 +153,7 @@ export function CalcLabScreen() {
           <Text style={styles.keyBtnText}>KEY</Text>
         </Pressable>
       </View>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
             2026-08-09). templates + my workflows + new + recent. */}
         <View style={{ gap: 8 }}>

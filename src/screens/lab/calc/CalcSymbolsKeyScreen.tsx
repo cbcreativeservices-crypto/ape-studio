@@ -45,7 +45,7 @@ export function CalcSymbolsKeyScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 34 + insets.bottom }]}>
         {empty ? (
           <View style={styles.emptyCard}>
             <Text style={styles.emptyTitle}>Symbol key unavailable</Text>

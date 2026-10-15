@@ -288,7 +288,7 @@ describe('5 · Saved Results and Saved Projects are FlatLists', () => {
     const i2 = empty.indexOf('Your saved projects could not be read from this device just now — they are not lost');
     const i3 = empty.indexOf('A project stores a venue or rig’s values');
     assert.ok(i1 > 0 && i1 < i2 && i2 < i3, 'loading → unreadable → empty, word for word');
-    assert.match(s, /\) : \(\s*<ScrollView contentContainerStyle=\{\[styles\.scroll, cardColumn\]\} keyboardShouldPersistTaps="handled">\s*<>\s*<Text style=\{styles\.fieldLabel\}>PROJECT NAME<\/Text>/);
+    assert.match(s, /\) : \(\s*<ScrollView contentContainerStyle=\{\[styles\.scroll, cardColumn, \{ paddingBottom: 40 \+ insets\.bottom \}\]\} keyboardShouldPersistTaps="handled">\s*<>\s*<Text style=\{styles\.fieldLabel\}>PROJECT NAME<\/Text>/);
   });
 });
 

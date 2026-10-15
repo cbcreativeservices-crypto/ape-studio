@@ -331,7 +331,7 @@ export function CalcProjectsScreen() {
           key={wide ? 'cols-2' : 'cols-1'}
           numColumns={wide ? 2 : 1}
           columnWrapperStyle={wide ? styles.tabletRow : undefined}
-          contentContainerStyle={[styles.scroll, cardColumn, wide]}
+          contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 40 + insets.bottom }]}
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={!loaded ? (
             <Text style={styles.caption}>Loading your projects…</Text>
@@ -363,7 +363,7 @@ export function CalcProjectsScreen() {
           )}
         />
       ) : (
-        <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 40 + insets.bottom }]} keyboardShouldPersistTaps="handled">
           <>
             <Text style={styles.fieldLabel}>PROJECT NAME</Text>
             <TextInput

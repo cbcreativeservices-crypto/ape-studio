@@ -118,7 +118,7 @@ export function TubeReferenceScreen() {
         ) : null}
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]} keyboardShouldPersistTaps="handled">
         {gate === 'unconfirmed' ? (
           <View style={styles.lockCard}>
             <Text style={styles.lockEyebrow}>MEMBERSHIP NOT CONFIRMED</Text>

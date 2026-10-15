@@ -116,7 +116,7 @@ export function CalcResultsScreen() {
         data={loaded ? results : []}
         keyExtractor={(r) => r.id}
         extraData={openId}
-        contentContainerStyle={[styles.scroll, cardColumn]}
+        contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 34 + insets.bottom }]}
         ListEmptyComponent={!loaded ? (
           <Text style={styles.caption}>Loading saved results…</Text>
         ) : workflowListUnreadable(results) ? (

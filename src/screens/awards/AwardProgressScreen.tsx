@@ -253,7 +253,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
       {headerBar}
 
       <ScrollView
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[styles.scroll, { paddingBottom: 48 + insets.bottom }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.amber} />}
       >
         <Text style={styles.awardName}>{awardName}</Text>

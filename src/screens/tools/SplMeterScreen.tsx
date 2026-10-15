@@ -1542,7 +1542,7 @@ export function SplMeterScreen({ navigation }: Props) {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 32 + insets.bottom }]}>
         {/* Honest not-ready states: absent / spike / denied / error. */}
         <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
@@ -1851,7 +1851,7 @@ export function SplMeterScreen({ navigation }: Props) {
               <Text style={styles.homeNavText}>DIGITAL ›</Text>
             </Pressable>
           </View>
-          <ScrollView contentContainerStyle={styles.vuScroll}>
+          <ScrollView contentContainerStyle={[styles.vuScroll, { paddingBottom: 40 + insets.bottom }]}>
             <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
             {!micPaused && (state === 'idle' || state === 'starting') && (

@@ -140,7 +140,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]}>
         {/* (Owner 2026-08-19) The "MEASUREMENT ENGINE — NOT IN THIS BUILD" intro
             banner was removed: the engine ships in the real builds, and the live
             meter screen still gates honestly via EngineGate if it can't start. */}

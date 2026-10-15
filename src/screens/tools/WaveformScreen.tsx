@@ -631,7 +631,7 @@ export function WaveformScreen({ navigation }: Props) {
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read every level as RELATIVE, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 32 + insets.bottom }]}>
         {/* Honest not-ready states (absent / spike / denied / error). The
             gate's own TRY AGAIN is the retry — this screen used to add a second
             one under it, so 'error' showed two identical keys (2026-09-30). */}

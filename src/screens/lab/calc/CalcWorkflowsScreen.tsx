@@ -303,7 +303,7 @@ export function CalcWorkflowsScreen() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         {dropNote ? <Text style={styles.warnText}>⚠ {dropNote}</Text> : null}
 
         <Text style={[styles.sectionTitle, { color: colors.green }]}>

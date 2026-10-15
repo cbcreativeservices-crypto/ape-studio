@@ -109,7 +109,7 @@ export function AudioLearningScreen({ navigation }: Props) {
         <AccuracyNote compact />
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 32 + insets.bottom }]}>
         {/* Prose keeps the reading measure inside the wide menu (tablet only). */}
         <Text style={[styles.intro, wide && readingText]}>{locked ? INTRO : INTRO_MEMBER}</Text>
         {gate === 'unconfirmed' ? <Text style={[styles.intro, wide && readingText]}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}

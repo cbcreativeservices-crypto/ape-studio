@@ -516,7 +516,7 @@ export function CalcWorkspaceScreen() {
 
       <KeyboardAwareScrollView
         ref={scrollRef}
-        contentContainerStyle={[styles.scroll, cardColumn]}
+        contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 34 + insets.bottom }]}
         keyboardShouldPersistTaps="handled"
         bottomOffset={24}
       >

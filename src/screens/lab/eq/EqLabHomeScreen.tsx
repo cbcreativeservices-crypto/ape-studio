@@ -75,7 +75,7 @@ export function EqLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         <View style={styles.pathRow}>
           {PATH.map((p, i) => (
             <View key={p} style={styles.pathStep}>

@@ -514,7 +514,7 @@ export function Rt60Screen({ navigation }: Props) {
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE, for learning. For accurate room measurements use a calibrated measurement mic and analyzer." />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]}>
         {/* Running, but the mic never delivered a frame (iPad pass 2026-10-07). */}
         {noSignal ? <EngineGate state={state} lastError={lastError} onRetry={start} noSignal /> : null}
         {state === 'absent' || state === 'spike' || state === 'denied' || state === 'error' ? (

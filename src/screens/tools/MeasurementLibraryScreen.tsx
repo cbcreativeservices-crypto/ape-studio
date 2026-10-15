@@ -731,7 +731,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
         key={wide ? 'cols-2' : 'cols-1'}
         numColumns={wide ? 2 : 1}
         columnWrapperStyle={wide ? styles.tabletRow : undefined}
-        contentContainerStyle={[styles.scroll, wide]}
+        contentContainerStyle={[styles.scroll, wide, { paddingBottom: 28 + insets.bottom }]}
         renderItem={({ item }) => {
           const row = (
           <Row

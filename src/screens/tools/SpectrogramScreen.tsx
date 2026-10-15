@@ -658,7 +658,7 @@ export function SpectrogramScreen({ navigation }: Props) {
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read the colours as RELATIVE level, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]}>
         {/* Honest not-ready card (absent/spike/denied/error) — renders nothing
             when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />

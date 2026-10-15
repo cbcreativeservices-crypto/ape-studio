@@ -45,7 +45,7 @@ export function ToolDemoScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]}>
         {locked ? (
           <ToolAcademyLock
             what={`The ${tool.name} demo`}
