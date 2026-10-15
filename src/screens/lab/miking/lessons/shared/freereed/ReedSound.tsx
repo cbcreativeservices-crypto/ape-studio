@@ -42,7 +42,7 @@ export function makeReedSound(spec: ReedSoundSpec) {
     const { lesson, answers, onAnswered, onInteractive, interactiveDone, variant, hidden } = p;
     const S = lesson.sound;
     const n = S.stages.length;
-    const st = useStepper(n, hidden);
+    const st = useStepper(n, hidden, S.stages.map((q) => q.title));
     const [predicted, setPredicted] = useState<string | null>(null);
     useEffect(() => {
       if (st.shown >= n && !interactiveDone.has('soundPath')) onInteractive('soundPath');
@@ -58,18 +58,21 @@ export function makeReedSound(spec: ReedSoundSpec) {
     const [tried, setTried] = useState(false);
     const nodes = useMemo(() => reedNodes(mode), [mode]);
     const shapeParams: DockParam[] = [
+      // Four shapes: tap choices, not a fader (owner 2026-10-14, slider audit #5).
       {
-        kind: 'fader',
+        kind: 'options',
         id: 'shape',
         label: 'SHAPE',
-        value: mode / 3,
-        onChange: (v) => {
-          const m = Math.round(v * 3);
+        valueLabel: `#${mode + 1}`,
+        valueA11y: SHAPE_WORDS[mode],
+        selectedId: String(mode),
+        onSelect: (id) => {
+          const m = Number(id);
           setMode(m);
           if (m > 0) setTried(true);
         },
-        format: () => SHAPE_WORDS[mode],
-        formatShort: () => `#${mode + 1}`,
+        sticky: true,
+        options: SHAPE_WORDS.map((w, i) => ({ id: String(i), label: `#${i + 1}`, blurb: `${w.charAt(0).toUpperCase()}${w.slice(1)}.` })),
       },
       {
         kind: 'fader',
@@ -124,7 +127,7 @@ export function makeReedSound(spec: ReedSoundSpec) {
           badge: 'A simplified picture: an ideal bar held at one end · blue moving up, amber moving down · white dashes = still points',
           bezel: shapeBezel,
           params: shapeParams,
-          initialParam: 'shape',
+          initialParam: 'swing',
         },
         well: (
           <>

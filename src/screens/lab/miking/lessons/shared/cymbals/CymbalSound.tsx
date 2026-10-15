@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import { colors } from '../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
@@ -53,15 +54,21 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
   const stage = W.stages[s.shown - 1];
   const stageText = (i: number) => W.stages[i].byVariant?.[variant] ?? W.stages[i].text;
   const strikeParams: DockParam[] = [
-    {
-      kind: 'fader',
-      id: 'step',
-      label: 'STEP',
-      value: (s.shown - 1) / Math.max(1, n - 1),
-      onChange: (v) => s.goTo(1 + Math.round(v * (n - 1))),
-      format: () => `${s.shown} of ${n} · ${stage.title.toLowerCase()}`,
-      formatShort: () => `${s.shown} / ${n}`,
-    },
+    tapsWhenFew(
+      {
+        kind: 'fader',
+        id: 'step',
+        label: 'STEP',
+        value: (s.shown - 1) / Math.max(1, n - 1),
+        onChange: (v) => s.goTo(1 + Math.round(v * (n - 1))),
+        format: () => `${s.shown} of ${n} · ${stage.title.toLowerCase()}`,
+        formatShort: () => `${s.shown} / ${n}`,
+      },
+      n,
+      s.shown - 1,
+      (i) => `${i + 1} · ${W.stages[i].title}`,
+      (i) => s.goTo(i + 1),
+    ),
     { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: s.play, tint: colors.green },
     ...(variants.length > 1
       ? [

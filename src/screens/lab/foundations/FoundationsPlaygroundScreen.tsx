@@ -65,6 +65,7 @@ import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { fitValue } from '../../../theme/legibility';
 
 const ACTIVITY_MS = 500;
 const SPEED_OF_SOUND = 343;
@@ -496,13 +497,7 @@ export function FoundationsPlaygroundScreen() {
             value={balance}
             onChange={setBalance}
             label="STEREO BALANCE"
-            readout={
-              balance < 0.48
-                ? `L ${Math.round((0.5 - balance) * 200)}%`
-                : balance > 0.52
-                  ? `R ${Math.round((balance - 0.5) * 200)}%`
-                  : 'CENTER'
-            }
+            readout={balanceWords(balance)}
             onHelp={() => help('stereo_balance')}
           />
           <Text style={styles.sectionHead}>DELAY</Text>
@@ -548,8 +543,8 @@ export function FoundationsPlaygroundScreen() {
               build where the user can hear balance/delay and would most expect
               to see them drawn. */}
           <Text style={styles.caption}>
-            EQ shapes the drawings above. BALANCE and DELAY change what you HEAR only — they have
-            no drawn twin yet.
+            EQ shapes the drawings above; BALANCE moves the L–R strip under them. DELAY changes
+            what you HEAR only — it has no drawn twin yet.
             {!fxReady && engineReady ? ' (Their audio needs the v6+ effects build.)' : ''}
           </Text>
         </View>
@@ -627,6 +622,7 @@ export function FoundationsPlaygroundScreen() {
                 level={0.35 + amp01 * 0.65}
                 noiseKind={source === 'noise' ? noise : null}
                 gainDbAt={gainDbAt}
+                balance={balance}
               />
             ) : (
               <View style={styles.unavailWrap}>
@@ -767,6 +763,7 @@ function StageViz({
   level,
   noiseKind,
   gainDbAt,
+  balance,
 }: {
   viz: VizModule;
   w: number;
@@ -783,6 +780,8 @@ function StageViz({
   level: number;
   noiseKind: NoiseKind | null;
   gainDbAt: ((f: number) => number) | null;
+  /** STEREO BALANCE 0 (L) .. 1 (R) — drawn on the L–R strip (HOLD #17). */
+  balance: number;
 }) {
   const clock = viz.useVizClock(running);
   const ts = useStageTextScale(); // pane names grow with the picture in FULL SCREEN
@@ -792,7 +791,9 @@ function StageViz({
   // squeezed to ~59px — below the visual resolution of the effects being
   // taught (harmonic corners, EQ tilt) — while the air row took 40%.
   const rowH = Math.max(56, Math.round(h * 0.3));
-  const paneH = Math.max(30, Math.floor((h - rowH - 2 * (LABEL_H + GAP)) / 2));
+  // The L–R BALANCE strip under the views takes one label row.
+  const BAL_H = LABEL_H + 2;
+  const paneH = Math.max(30, Math.floor((h - rowH - 2 * (LABEL_H + GAP) - (BAL_H + GAP)) / 2));
   // The speaker's share is clamped in glass pixels; the clamp rides the text
   // scale so a doubled stage gives the driver a doubled box (parity pass 2026-09-26).
   const spkW = Math.min(110 * ts, Math.max(84 * ts, Math.round(w * 0.32)));
@@ -816,7 +817,7 @@ function StageViz({
         />
       </View>
       {source === 'sweep' ? (
-        <View style={[styles.sweepPause, { height: h - rowH }]}>
+        <View style={[styles.sweepPause, { height: h - rowH - (BAL_H + GAP) }]}>
           <Text style={styles.sweepPauseText}>
             SWEEP — a moving tone: the waveform and spectrum drawings pause. Watch the air motion
             and the level.
@@ -853,6 +854,50 @@ function StageViz({
           <viz.AnalyticSpectrumView width={w} height={paneH} f0={freq} amps={amps} gainDbAt={gainDbAt} noise={noiseKind} level={level} />
         </>
       )}
+      <BalanceStrip balance={balance} ts={ts} height={BAL_H} gap={GAP} />
+    </View>
+  );
+}
+
+/** STEREO BALANCE readout: L 40% · CENTER · R 25% (same words as the fader). */
+export function balanceWords(balance: number): string {
+  return balance < 0.48
+    ? `L ${Math.round((0.5 - balance) * 200)}%`
+    : balance > 0.52
+      ? `R ${Math.round((balance - 0.5) * 200)}%`
+      : 'CENTER';
+}
+
+/** The STEREO BALANCE fader's drawn twin (slider HOLD #17, owner 2026-10-14):
+ *  an L–R strip under the views — a centre tick and a marker that follows the
+ *  fader, so a balance move is SEEN as well as heard. Read-only display. */
+function BalanceStrip({ balance, ts, height, gap }: { balance: number; ts: number; height: number; gap: number }) {
+  const b = Math.max(0, Math.min(1, balance));
+  const off = Math.abs(b - 0.5) > 0.02;
+  const fs = 9 * ts;
+  return (
+    <View
+      style={[styles.balRow, { height, marginTop: gap }]}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={`Stereo balance: ${balanceWords(b)}.`}
+    >
+      <Text style={[styles.balEnd, { fontSize: fs }]}>L</Text>
+      <View style={styles.balTrack}>
+        <View style={styles.balCentre} />
+        {/* the lean from centre — fills toward the louder side */}
+        <View
+          style={[
+            styles.balLean,
+            b < 0.5 ? { right: '50%', width: `${(0.5 - b) * 100}%` } : { left: '50%', width: `${(b - 0.5) * 100}%` },
+          ]}
+        />
+        <View style={[styles.balMark, { left: `${b * 100}%` }, off ? styles.balMarkOff : null]} />
+      </View>
+      <Text style={[styles.balEnd, { fontSize: fs }]}>R</Text>
+      <Text style={[styles.balValue, { fontSize: fs, minWidth: 64 * ts }]} {...fitValue(fs)}>
+        BAL {balanceWords(b)}
+      </Text>
     </View>
   );
 }
@@ -877,6 +922,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   sweepPause: { justifyContent: 'center', paddingHorizontal: 16 },
+  // STEREO BALANCE strip (HOLD #17)
+  balRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 4 },
+  balEnd: { fontFamily: fonts.oswaldSemiBold, letterSpacing: 1, color: '#9a9ca8' },
+  balTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.10)', justifyContent: 'center' },
+  balCentre: { position: 'absolute', left: '50%', marginLeft: -0.5, width: 1, top: -3, bottom: -3, backgroundColor: '#9a9ca8' },
+  balLean: { position: 'absolute', top: 0, bottom: 0, borderRadius: 3, backgroundColor: 'rgba(255,198,77,0.45)' },
+  balMark: { position: 'absolute', top: -2, marginLeft: -5, width: 10, height: 10, borderRadius: 5, backgroundColor: '#9a9ca8' },
+  balMarkOff: { backgroundColor: colors.amber },
+  balValue: { fontFamily: fonts.oswaldSemiBold, letterSpacing: 1, color: colors.amber, textAlign: 'right' },
   playNudge: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,

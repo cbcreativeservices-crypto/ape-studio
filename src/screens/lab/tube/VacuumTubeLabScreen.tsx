@@ -42,6 +42,7 @@ import type { DockParam } from '../rack/rackTypes';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
+import { gridState, gridWord, plateCurrentFrac } from './gridModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
@@ -386,7 +387,10 @@ const GRID_CHECK: CheckSpec = {
 
 function GridSection(p: SectionProps) {
   const [v, setV] = useState(0.5);
-  const word = (x: number) => (x < 0.15 ? 'very negative — cutoff' : x > 0.85 ? 'barely negative — full flow' : 'partly negative');
+  // At cutoff the readout says "cut off — no current flows" (owner hold #10,
+  // 2026-10-14), and PLATE I and the electrons both read zero there.
+  const word = gridWord;
+  const plateI = plateCurrentFrac(v);
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -416,11 +420,11 @@ function GridSection(p: SectionProps) {
         badge: "CONCEPTUAL — electron view adds the grid's repelling field lines; conduction is illustrative",
         onGuide: () => p.help('grid_voltage'),
         bezel: [
-          { k: 'GRID', v: v < 0.15 ? 'CUTOFF' : v > 0.85 ? 'FULL FLOW' : 'PARTIAL', flex: 1.2, helpKey: 'grid_voltage' },
-          { k: 'PLATE I', v: pct(v), tint: v > 0.9 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage' },
+          { k: 'GRID', v: gridState(v), flex: 1.2, helpKey: 'grid_voltage' },
+          { k: 'PLATE I', v: pct(plateI), tint: plateI === 0 ? colors.textSub : plateI > 0.85 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => (
-          <GridViz viz={viz} width={w} height={h} cond={v} electron={p.electron} running={p.focused} />
+          <GridViz viz={viz} width={w} height={h} cond={v} flow={plateI} electron={p.electron} running={p.focused} />
         )),
       }}
     >
@@ -435,9 +439,9 @@ function GridSection(p: SectionProps) {
     </RackUnit>
   );
 }
-function GridViz({ viz, width, height, cond, electron, running }: { viz: TubeVizModule; width: number; height: number; cond: number; electron: boolean; running: boolean }) {
+function GridViz({ viz, width, height, cond, flow, electron, running }: { viz: TubeVizModule; width: number; height: number; cond: number; flow: number; electron: boolean; running: boolean }) {
   const phase = viz.usePhaseClock(running, 0.6);
-  return <viz.GridControlView phase={phase} width={width} height={height} cond={cond} electronView={electron} />;
+  return <viz.GridControlView phase={phase} width={width} height={height} cond={cond} flow={flow} electronView={electron} />;
 }
 
 // ── 4 · Amplification ───────────────────────────────────────────────────────

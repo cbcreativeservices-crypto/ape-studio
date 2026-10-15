@@ -24,6 +24,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { colors } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
@@ -127,15 +128,21 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
     const refl = reflection(scene.bell.rim, LISTENER, scene.chair.back.min.x - wallBehind);
 
     const strikeParams: DockParam[] = [
-      {
-        kind: 'fader',
-        id: 'step',
-        label: 'STEP',
-        value: (shown - 1) / Math.max(1, n - 1),
-        onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-        format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-        formatShort: () => `${shown} / ${n}`,
-      },
+      tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'step',
+          label: 'STEP',
+          value: (shown - 1) / Math.max(1, n - 1),
+          onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
+          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
+          formatShort: () => `${shown} / ${n}`,
+        },
+        n,
+        shown - 1,
+        (i) => `${i + 1} · ${S.stages[i].title}`,
+        (i) => goTo(i + 1),
+      ),
       { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [

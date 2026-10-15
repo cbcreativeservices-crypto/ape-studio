@@ -27,6 +27,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { colors } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import { fmtHz, fmtMetric } from '../../../engine/model/units.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
@@ -178,15 +179,21 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
     options: lesson.model.variants.map((x) => ({ id: x.id, label: x.label, blurb: x.blurb })),
   };
   const strikeParams: DockParam[] = [
-    {
-      kind: 'fader',
-      id: 'step',
-      label: 'STEP',
-      value: (shown - 1) / Math.max(1, n - 1),
-      onChange: (x) => goTo(1 + Math.round(x * (n - 1))),
-      format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-      formatShort: () => `${shown} / ${n}`,
-    },
+    tapsWhenFew(
+      {
+        kind: 'fader',
+        id: 'step',
+        label: 'STEP',
+        value: (shown - 1) / Math.max(1, n - 1),
+        onChange: (x) => goTo(1 + Math.round(x * (n - 1))),
+        format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
+        formatShort: () => `${shown} / ${n}`,
+      },
+      n,
+      shown - 1,
+      (i) => `${i + 1} · ${W.stages[i].title}`,
+      (i) => goTo(i + 1),
+    ),
     { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
     ...(hasDamper && W.pedal
       ? [
@@ -224,14 +231,17 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
   const sharePct = Math.round(share * 100);
   const stillCount = useMemo(() => barNodes(shapeIdx).length, [shapeIdx]);
   const shapeParams: DockParam[] = [
+    // Three shapes: tap choices, not a fader (owner 2026-10-14, slider audit #5).
     {
-      kind: 'fader',
+      kind: 'options',
       id: 'shape',
       label: 'SHAPE',
-      value: shapeIdx / 2,
-      onChange: (x) => setShapeIdx(Math.round(x * 2)),
-      format: () => `shape ${shapeIdx + 1} · ${barNodes(shapeIdx).length} still points`,
-      formatShort: () => `${shapeIdx + 1} / 3`,
+      valueLabel: `${shapeIdx + 1} / 3`,
+      valueA11y: `shape ${shapeIdx + 1} · ${barNodes(shapeIdx).length} still points`,
+      selectedId: String(shapeIdx),
+      onSelect: (id) => setShapeIdx(Number(id)),
+      sticky: true,
+      options: [0, 1, 2].map((s) => ({ id: String(s), label: `SHAPE ${s + 1} · ${barNodes(s).length} still points` })),
     },
     {
       kind: 'fader',
@@ -371,7 +381,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
         badge: 'A simplified picture: a plain bar of even thickness · still points dashed · motion drawn larger',
         bezel: shapeBezel,
         params: shapeParams,
-        initialParam: 'shape',
+        initialParam: 'swing',
       },
       well: (
         <>

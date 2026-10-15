@@ -540,3 +540,49 @@ export function fitFontBoost(width: number, designW: number, minUnits: number, f
   if (!(k > 0) || k >= 1) return 1;
   return Math.max(1, floorPt / (minUnits * k));
 }
+
+/* ── DRIVE preview while the fader moves (slider HOLD #20, owner 2026-10-14) ─
+   The real render of a new DRIVE only lands after the fader settles; until
+   then the glass showed the OLD drive's waveform beside the new number. This
+   estimates the new picture from the UNDRIVEN render (QUIETER: the same
+   limiter at the same ceiling, 0 dB drive), column by column: undo that
+   column's own gain reduction to recover the input peak, add the drive, and
+   hold it at the ceiling the way a brickwall would. No release, no inter-
+   column smearing — a static ESTIMATE, labelled so on the glass, and replaced
+   by the real render the moment it lands. Pure, node-tested. */
+export function drivePreview(
+  quiet: Overview,
+  quietGrDb: readonly number[] | undefined,
+  driveDb: number,
+  ceilingDb: number,
+): { ov: Overview; grDb: number[]; maxGrDb: number } {
+  const cols = quiet.hi.length;
+  const g = Math.pow(10, driveDb / 20);
+  const ceil = Math.pow(10, ceilingDb / 20);
+  const grN = quietGrDb?.length ?? 0;
+  const hi = new Array<number>(cols);
+  const lo = new Array<number>(cols);
+  const level = new Array<number>(cols);
+  const grDb = new Array<number>(cols);
+  let maxGrDb = 0;
+  for (let c = 0; c < cols; c++) {
+    const qGr = grN ? Math.max(0, quietGrDb![Math.min(grN - 1, Math.floor((c / cols) * grN))] ?? 0) : 0;
+    const pk = Math.max(Math.abs(quiet.hi[c]), Math.abs(quiet.lo[c]));
+    // The limiter's detector peak into the column at 0 dB drive: known from
+    // its own gain reduction where it worked (ceiling × GR); elsewhere the
+    // drawn mono-fold peak (a lower bound — it never worked there).
+    const inPk = qGr > 0 ? ceil * Math.pow(10, qGr / 20) : pk;
+    const gainAt = Math.min(1, ceil / Math.max(1e-9, inPk * g)); // limiter gain at this drive
+    // Undo the 0 dB-drive gain, add the drive, apply the new limiter gain.
+    // Bounded by construction: a working column lands at its drawn 0 dB peak
+    // scaled to the ceiling, an idle one at pk × drive ≤ the ceiling.
+    const f = g * gainAt * Math.pow(10, qGr / 20);
+    hi[c] = quiet.hi[c] * f;
+    lo[c] = quiet.lo[c] * f;
+    level[c] = Math.min(1, Math.max(Math.abs(hi[c]), Math.abs(lo[c])));
+    const gr = inPk * g > ceil ? linToDb((inPk * g) / ceil) : 0;
+    grDb[c] = gr;
+    if (gr > maxGrDb) maxGrDb = gr;
+  }
+  return { ov: { hi, lo, level, seconds: quiet.seconds }, grDb, maxGrDb };
+}

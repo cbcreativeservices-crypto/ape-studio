@@ -18,6 +18,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
+import { tapsWhenFew } from '../engine/rack/fewStops.ts';
 import type { SettingItem } from '../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../engine/kit';
@@ -61,18 +62,24 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
 
   const itemFader = (list: readonly SettingItem[], sel: string | null, pick: (id: string) => void): DockParam => {
     const idx = Math.max(0, list.findIndex((i) => i.id === sel));
-    return {
-      kind: 'fader',
-      id: 'item',
-      label: 'ITEM',
-      value: list.length > 1 ? idx / (list.length - 1) : 0,
-      onChange: (v) => {
-        const it = list[Math.round(v * (list.length - 1))];
-        if (it) pick(it.id);
+    return tapsWhenFew(
+      {
+        kind: 'fader',
+        id: 'item',
+        label: 'ITEM',
+        value: list.length > 1 ? idx / (list.length - 1) : 0,
+        onChange: (v) => {
+          const it = list[Math.round(v * (list.length - 1))];
+          if (it) pick(it.id);
+        },
+        format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
+        formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
       },
-      format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-      formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
-    };
+      list.length,
+      list.findIndex((q) => q.id === sel),
+      (i) => shortOf(list[i].id),
+      (i) => pick(list[i].id),
+    );
   };
   const kitParams: DockParam[] = useMemo(() => [itemFader(kitItems, kitSel, pickKit)], [kitItems, kitSel]); // eslint-disable-line react-hooks/exhaustive-deps
   const wideParams: DockParam[] = [

@@ -159,6 +159,22 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
       <Circle cx={273} cy={70.4} r={1.5} fill={FILL2} stroke={INK} strokeWidth={0.9} />
       <Line x1={270.6} y1={80.4} x2={275.4} y2={80.4} stroke={INK} strokeWidth={0.9} strokeOpacity={0.6} />
 
+      {/* CAMERA field of view — apex at the lens, covering the aimed zone.
+          Restored 2026-10-14 (owner hold #29): the 10-10 art pass dropped it,
+          leaving PAN and ZOOM with nothing to move in the room. The top edge
+          spans aimX ± halfW on the SAME log-frequency axis as the bell below:
+          PAN moves it (frequency), ZOOM narrows it (Q / bandwidth). Drawn
+          before the camera body so the body sits over the apex. */}
+      <Polygon
+        points={`${CAM_APEX[0]},${CAM_APEX[1]} ${aimX - halfW},${FOV_TOP} ${aimX + halfW},${FOV_TOP}`}
+        fill={fov}
+        fillOpacity={0.12}
+        stroke={fov}
+        strokeOpacity={0.6}
+        strokeWidth={1}
+      />
+      <Line x1={aimX - halfW} y1={FOV_TOP} x2={aimX + halfW} y2={FOV_TOP} stroke={fov} strokeWidth={2} strokeOpacity={0.85} />
+
       {/* CAMERA seen from behind, nearest the viewer, on its tripod: body
           with the viewfinder hump on top centre, mode dial and shutter button,
           the right-hand grip, the rear screen; a pan head on three splayed

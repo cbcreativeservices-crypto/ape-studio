@@ -311,7 +311,7 @@ describe('rack + full screen on every live page', () => {
       // (VIEW) carry a sixth.
       for (const b of s.split(/params: \[/).slice(1)) {
         const list = b.slice(0, b.indexOf('initialParam:'));
-        const keys = (list.match(/^\s{14}(faderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
+        const keys = (list.match(/^\s{14}(faderParam|pitchFaderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
         assert.ok(keys <= 6, `${f}: a dock with ${keys} keys`);
       }
       // The bezel is read-only: no bezel cell takes a tap.
@@ -327,12 +327,12 @@ describe('rack + full screen on every live page', () => {
     for (const f of MODULES) {
       for (const b of strip(read(`${DIR}/modules/${f}`)).split(/params: \[/).slice(1)) {
         const list = b.slice(0, b.indexOf('initialParam:'));
-        const keys = (list.match(/^\s{14}(faderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
+        const keys = (list.match(/^\s{14}(faderParam|pitchFaderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
         // Measured 2026-10-01 at 390 wide: "SNARE SIDE" (10) and "RACK TOM"
         // (8, wide letters) ellipsized on a five-key dock; "STRAINER" (8)
         // and "▶ STRIKE" (8) fit. Eight is the ceiling, and wide words less.
         const cap = keys >= 5 ? 8 : 12;
-        for (const m of list.matchAll(/^\s{14}(?:faderParam|optionsParam|flipFader|\{ kind: '\w+')[^\n]*?label: (?:[^,\n]*? )?'([^']+)'/gm)) assert.ok(m[1].length <= cap, `${f}: dock label too long for ${keys} keys: "${m[1]}"`);
+        for (const m of list.matchAll(/^\s{14}(?:faderParam|pitchFaderParam|optionsParam|flipFader|\{ kind: '\w+')[^\n]*?label: (?:[^,\n]*? )?'([^']+)'/gm)) assert.ok(m[1].length <= cap, `${f}: dock label too long for ${keys} keys: "${m[1]}"`);
       }
     }
     assert.match(strip(read(`${DIR}/modules/ch7Trouble.tsx`)), /useState<StageView>\('drum'\)/, 'Chapter 7 lands on the drum');

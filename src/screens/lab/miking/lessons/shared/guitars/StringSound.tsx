@@ -33,6 +33,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { fewStops, tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { copyOf } from '../../../engine/model/copy.ts';
 import { HEAD_SHAPES, strikeShare } from '../../../engine/physics/membrane.ts';
@@ -563,15 +564,21 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
 
     const strikeParams: DockParam[] = useMemo(
       () => [
-        {
-          kind: 'fader',
-          id: 'step',
-          label: 'STEP',
-          value: (shown - 1) / Math.max(1, n - 1),
-          onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-          formatShort: () => `${shown} / ${n}`,
-        },
+        tapsWhenFew(
+          {
+            kind: 'fader',
+            id: 'step',
+            label: 'STEP',
+            value: (shown - 1) / Math.max(1, n - 1),
+            onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
+            format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
+            formatShort: () => `${shown} / ${n}`,
+          },
+          n,
+          shown - 1,
+          (i) => `${i + 1} · ${S.stages[i].title}`,
+          (i) => goTo(i + 1),
+        ),
         { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
         ...(lesson.model.variants.length > 1
           ? [
@@ -656,18 +663,24 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
       },
     ];
     const regParams: DockParam[] = [
-      {
-        kind: 'fader',
-        id: 'region',
-        label: 'REGION',
-        value: regions.length > 1 ? Math.max(0, regions.findIndex((r) => r.id === regId)) / (regions.length - 1) : 0,
-        onChange: (v) => {
-          const r = regions[Math.round(v * (regions.length - 1))];
-          if (r) setRegId(r.id);
+      tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'region',
+          label: 'REGION',
+          value: regions.length > 1 ? Math.max(0, regions.findIndex((r) => r.id === regId)) / (regions.length - 1) : 0,
+          onChange: (v) => {
+            const r = regions[Math.round(v * (regions.length - 1))];
+            if (r) setRegId(r.id);
+          },
+          format: () => reg?.label.toUpperCase() ?? '—',
+          formatShort: () => (reg?.label ?? '').toUpperCase().slice(0, 9),
         },
-        format: () => reg?.label.toUpperCase() ?? '—',
-        formatShort: () => (reg?.label ?? '').toUpperCase().slice(0, 9),
-      },
+        regions.length,
+        regions.findIndex((r) => r.id === reg?.id),
+        (i) => regions[i].label.toUpperCase(),
+        (i) => setRegId(regions[i].id),
+      ),
       {
         kind: 'fader',
         id: 'swing',
@@ -789,7 +802,7 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
             { k: 'SWING', v: `${Math.round(topSwing * 100)} %`, flex: 0.8 },
           ],
           params: regParams,
-          initialParam: 'region',
+          initialParam: fewStops(regions.length) ? 'swing' : 'region',
         },
         well: (
           <>

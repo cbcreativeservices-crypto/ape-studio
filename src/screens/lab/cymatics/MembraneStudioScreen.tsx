@@ -64,6 +64,7 @@ import { ExperimentWell } from './ExperimentWell';
 import { requireVizMembrane, skiaAvailable } from './skiaGate';
 import type { MembraneViewMode } from './vizMembrane';
 import { useDriveTone } from './useDriveTone';
+import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
@@ -505,6 +506,7 @@ function MembraneStudio() {
             fullScreen: true,
             render: (w, h) =>
               viz ? (
+                <View style={{ width: w, height: h }}>
                 <viz.MembraneView
                   width={w}
                   height={h}
@@ -522,6 +524,10 @@ function MembraneStudio() {
                   onSection={setSectionY}
                   cone={{ read: cone, grid: coneGrid, driver, hz: freq }}
                 />
+                {/* HOLD #19: a still head / cone says why — nothing drives it.
+                    Below the speaker view's top labels (CUTAWAY / CONE FROM THE FRONT). */}
+                <DriveHint driving={driving} canPlay={tone.engineReady} what={isSpeaker ? 'cone' : 'drum head'} silentKey="STRIKE › SILENT DRIVE" top={isSpeaker ? 28 : 6} />
+                </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
                   <Text style={styles.noSkiaText}>The drum display needs the current app build (Skia). Controls and readouts still work.</Text>

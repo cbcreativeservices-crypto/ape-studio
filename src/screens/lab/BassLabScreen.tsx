@@ -367,15 +367,16 @@ export function BassLabScreen() {
 
   // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ────────────
   // The fretboard + its readouts pin on the stage/bezel; MODE and STRING are
-  // STICKY trays (A/B while the wave redraws + retunes); the FRET (fretted) or
-  // NODE (harmonics) fader is the pre-bound lane. Only the prose scrolls.
+  // STICKY trays (A/B while the wave redraws + retunes); the FRET fader is the
+  // pre-bound lane in FRETTED mode, and NODE (harmonics) is a sticky tray of
+  // four tap choices. Only the prose scrolls.
   return (
     <LabShell
       labId="bass"
       title="BASS GUITAR LAB"
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
-      exploreCaption="Tap the fretboard (or ride the fader) to choose a note — then read the fraction, watch the standing wave, and play it."
+      exploreCaption="Tap the fretboard (or use the FRET fader / NODE choices) to choose a note — then read the fraction, watch the standing wave, and play it."
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -472,16 +473,25 @@ export function BassLabScreen() {
                 helpKey: 'fret',
               }
             : {
-                kind: 'fader',
+                // Only 4 touch points (½ ⅓ ¼ ⅕), so TAP BUTTONS, not a fader
+                // (slider audit HOLD #6, owner 2026-10-14): a 4-detent lane
+                // snapped on release and read as "the slider jumped". Sticky
+                // so the nodes can be A/B'd while the wave redraws + retunes.
+                kind: 'options',
                 id: 'node',
                 label: 'NODE',
-                // 4 detents (½ ⅓ ¼ ⅕) — step through the touch fractions.
-                value: nodeIdx / (NODES.length - 1),
-                onChange: (v) =>
-                  setNodeIdx(Math.min(NODES.length - 1, Math.max(0, Math.round(v * (NODES.length - 1))))),
-                format: () => `${node.frac} · H${node.n}`,
-                formatShort: () => `${node.frac} H${node.n}`,
-                tint: NODE_GREEN, // matches the node markers on the board
+                valueLabel: `${node.frac} H${node.n}`,
+                valueA11y: `${node.frac} · harmonic ${node.n}`,
+                options: NODES.map((nd) => ({
+                  id: String(nd.n),
+                  label: `${nd.frac} · H${nd.n} · ${nd.interval}`,
+                })),
+                selectedId: String(node.n),
+                onSelect: (id) => {
+                  const i = NODES.findIndex((nd) => String(nd.n) === id);
+                  if (i >= 0) setNodeIdx(i);
+                },
+                sticky: true,
                 helpKey: 'harmonic_node',
               },
         ],
@@ -619,7 +629,7 @@ const FRET_SPEC = '#d8d8e0'; // fret wire specular highlight
 const STRING_STEEL = '#8d8d99';
 const STRING_SPEC = '#eceef4';
 const STRING_SEL = '#e6b84e'; // selected string — amber-tinted steel
-const NODE_GREEN = '#5bff85'; // harmonic node markers — shared with the NODE fader/bezel tint
+const NODE_GREEN = '#5bff85'; // harmonic node markers — shared with the NODE bezel readout tint
 // Static pseudo-random grain rows (fractions of the fingerboard height).
 const GRAIN_ROWS = [0.12, 0.27, 0.41, 0.57, 0.72, 0.88] as const;
 /** 34" bass scale, mm — the board's full nut → bridge width. */

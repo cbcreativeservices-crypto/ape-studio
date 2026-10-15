@@ -27,6 +27,7 @@ import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels'
 import { useStageTextScale } from '../../../rack/stageAspect';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../engine/kit';
 import { PageSteps, type MikingStep } from '../../engine/steps';
+import { tapsWhenFew } from '../../engine/rack/fewStops.ts';
 import type { PageProps } from '../../pages/pageTypes';
 import { makeHandPages, type HandSpec } from '../shared/hand/handPages';
 import { MetalInstrument, VariantChips, VariantContext, type VariantCtx } from '../shared/metal/metalPages';
@@ -83,14 +84,15 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
         ],
         params: [
           { kind: 'options', id: 'compare', label: 'COMPARE', valueLabel: compare === 'samePitch' ? 'SAME PITCH' : 'SAME LENGTH', selectedId: compare, onSelect: (id) => setCompare(id as PipeCompare), sticky: true, options: [{ id: 'samePitch', label: 'SAME PITCH', blurb: 'A stopped pipe half the open pipe’s length sounds the same note.' }, { id: 'sameLength', label: 'SAME LENGTH', blurb: 'At the same length, the stopped pipe sounds an octave lower.' }] },
-          { kind: 'fader', id: 'mode', label: 'HARMONIC', value: (k - 1) / 2, onChange: (v) => setK(1 + Math.round(v * 2)), format: () => `the ${k === 1 ? 'lowest' : k === 2 ? 'second' : 'third'} the pipe can sound — open ×${hOpen}, stopped ×${hStop}`, formatShort: () => `#${k}` },
+          // Three harmonics: tap choices, not a fader (owner 2026-10-14, slider audit #5).
+          { kind: 'options', id: 'mode', label: 'HARMONIC', valueLabel: `#${k}`, valueA11y: `the ${k === 1 ? 'lowest' : k === 2 ? 'second' : 'third'} the pipe can sound — open ×${hOpen}, stopped ×${hStop}`, selectedId: String(k), onSelect: (id) => setK(Number(id)), sticky: true, options: [{ id: '1', label: '#1 LOWEST' }, { id: '2', label: '#2 SECOND' }, { id: '3', label: '#3 THIRD' }] },
         ],
         initialParam: 'compare',
       },
       well: (
         <>
           {lesson.predictions.sound ? <PredictCard p={lesson.predictions.sound} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking="Two flue pipes, cut open · the mouth at the bottom" prompt="Choose COMPARE and step HARMONIC. Where is the pressure still, and which harmonics can each pipe sound?" />
+          <Landing looking="Two flue pipes, cut open · the mouth at the bottom" prompt="Choose COMPARE and tap through HARMONIC. Where is the pressure still, and which harmonics can each pipe sound?" />
           <Card>
             <Point title="WHY 16′ AND 32′ NAME A PITCH">{`An open pipe sounds about c ÷ 2L; a stopped pipe — capped at the top — about c ÷ 4L, an octave lower for the same length, and only the odd harmonics. So a stop labelled 8′ made of stopped pipes is only about 4′ long. The low C of an 8′ open stop is about ${Math.round(f8)} Hz, about ${fmtLen(Lopen * 1000)} long here.`}</Point>
           </Card>
@@ -263,18 +265,24 @@ function OrganSetting(p: PageProps) {
           { k: 'ROOM', v: service ? 'SERVICE' : 'EMPTY' },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'item',
-            label: 'ITEM',
-            value: items.length > 1 ? idx / (items.length - 1) : 0,
-            onChange: (v) => {
-              const q = items[Math.round(v * (items.length - 1))];
-              if (q) setSel(q.id);
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'item',
+              label: 'ITEM',
+              value: items.length > 1 ? idx / (items.length - 1) : 0,
+              onChange: (v) => {
+                const q = items[Math.round(v * (items.length - 1))];
+                if (q) setSel(q.id);
+              },
+              format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${items.length} items`),
+              formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
             },
-            format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${items.length} items`),
-            formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
-          },
+            items.length,
+            items.findIndex((q) => q.id === sel),
+            (i) => items[i].short,
+            (i) => setSel(items[i].id),
+          ),
           { kind: 'options', id: 'room', label: 'ROOM', valueLabel: service ? 'SERVICE' : 'EMPTY', selectedId: variant, onSelect: (id) => setVariant(id), sticky: true, options: lesson.model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })) },
         ],
         initialParam: 'item',

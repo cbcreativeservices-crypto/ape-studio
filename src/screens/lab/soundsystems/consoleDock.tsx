@@ -2,10 +2,13 @@
  * Console controls for the Rack Unit dock — the dB faders ROUTE and OPERATE
  * bind to the shared lane (a channel fader, a send pot, a DCA, a wedge send).
  * The lane is 0..1; these own the dB mapping, the 1 dB snap and the OFF
- * floor the console engine uses.
+ * floor the console engine uses. The mapping is a CONSOLE-FADER TAPER, not
+ * linear in dB (HOLD #7, owner default 2026-10-14): unity about three
+ * quarters up, +10 at the top, the scale closing up toward OFF at the
+ * bottom — see src/features/soundsystems/faderTaper.ts.
  */
 import type { DockParam } from '../rack/rackTypes';
-import { lanePos, laneVal } from './rackLayout';
+import { dbToPos, posToDbSnapped } from '../../../features/soundsystems/faderTaper';
 
 export const fmtDb = (db: number): string => (db <= -60 ? 'OFF' : `${db > 0 ? '+' : ''}${db}`);
 
@@ -26,19 +29,19 @@ export function dbFader(opts: {
   of?: string;
   chooser?: Extract<DockParam, { kind: 'fader' }>['chooser'];
 }): DockParam {
-  const snap = (p: number) => laneVal(p, opts.min, opts.max, 1);
+  const snap = (p: number) => posToDbSnapped(p, opts.min, opts.max, 1);
   return {
     kind: 'fader',
     id: opts.id,
     label: opts.label,
-    value: lanePos(opts.db, opts.min, opts.max),
+    value: dbToPos(opts.db, opts.min, opts.max),
     onChange: (p) => {
       const db = snap(p);
       if (db !== opts.db) opts.onChange(db);
     },
     format: (p) => `${fmtDb(snap(p))}${snap(p) <= -60 ? '' : ' dB'}${opts.of ? ` ${opts.of}` : ''}${opts.home != null && snap(p) === opts.home ? ' · unity' : ''}`,
     formatShort: (p) => (snap(p) <= -60 ? 'OFF' : `${fmtDb(snap(p))} dB`),
-    home: opts.home != null ? lanePos(opts.home, opts.min, opts.max) : undefined,
+    home: opts.home != null ? dbToPos(opts.home, opts.min, opts.max) : undefined,
     level: opts.level,
     tint: opts.tint,
     chooser: opts.chooser,

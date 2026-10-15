@@ -47,7 +47,7 @@ const STROKES = [
 function TonbakSound({ lesson, answers, onAnswered, onInteractive, interactiveDone, variant, hidden }: PageProps) {
   const S = lesson.sound;
   const n = S.stages.length;
-  const st = useStepper(n, hidden);
+  const st = useStepper(n, hidden, S.stages.map((q) => q.title));
   const [predicted, setPredicted] = useState<string | null>(null);
   useEffect(() => {
     if (st.shown >= n && !interactiveDone.has('soundPath')) onInteractive('soundPath');

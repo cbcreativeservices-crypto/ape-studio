@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../../../theme/tokens';
-import { faderParam, optionsParam } from '../DrumRack';
+import { faderParam, optionsParam, pitchFaderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, fmtHz, noteName } from '../kit';
 import { DRUM_KEY_TERMS, GOALS, TYPES_SCENARIOS } from '../drumContent';
@@ -141,7 +141,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
             params: [
               faderParam({ id: 'strainer', label: 'STRAINER', value: strainer, min: 0, max: 1, step: 0.05, format: (v) => (v < 0.1 ? 'thrown off — no wires' : v < 0.4 ? `${Math.round(v * 100)} % · loose: sensitive, buzzy, long` : v < 0.7 ? `${Math.round(v * 100)} % · medium` : `${Math.round(v * 100)} % · tight: less sensitive, choked`), formatShort: (v) => `${Math.round(v * 100)} %`, onChange: setStrainer, home: 0.5 }),
               faderParam({ id: 'side', label: 'BOTTOM', value: snSide, min: -200, max: 900, step: 25, format: (v) => `snare-side head ${v >= 0 ? '+' : ''}${v} ¢ vs the batter (S tick on the glass)`, formatShort: (v) => `${v >= 0 ? '+' : ''}${v} ¢`, onChange: setSnSide, home: 400 }),
-              faderParam({ id: 'snb', label: 'BATTER', value: snBatter, min: DRUMS.snare.usefulHz[0], max: DRUMS.snare.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)} (B tick on the glass)`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setSnBatter, home: 230 }),
+              pitchFaderParam({ id: 'snb', label: 'BATTER', value: snBatter, min: DRUMS.snare.usefulHz[0], max: DRUMS.snare.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)} (B tick on the glass)`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setSnBatter, home: 230 }),
               faderParam({ id: 'snstrike', label: 'STROKE', value: snStrike, min: 0.2, max: 1, step: 0.05, format: (v) => `${Math.round(v * 100)} % — ${v < 0.4 ? 'a ghost note: quiet, may not wake the wires' : v < 0.75 ? 'a backbeat' : 'a rimshot-hard hit: loud, wires wide open'}`, formatShort: (v) => `${Math.round(v * 100)} %`, onChange: setSnStrike, home: 0.7, level: true }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: sn.play },
             ],
@@ -192,7 +192,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
             params: [
               optionsParam({ id: 'front', label: 'FRONT', value: front, options: FRONTS, onChange: setFront }),
               faderParam({ id: 'pillow', label: 'PILLOW', value: pillow, min: 0, max: 1, step: 0.05, format: (v) => (v < 0.05 ? 'nothing inside — open' : v < 0.4 ? `${Math.round(v * 100)} % · a felt strip / small pillow` : `${Math.round(v * 100)} % · a pillow against the batter`), formatShort: (v) => `${Math.round(v * 100)} %`, onChange: setPillow, home: 0 }),
-              faderParam({ id: 'kb', label: 'BATTER', value: kBatter, min: DRUMS.kick.usefulHz[0], max: DRUMS.kick.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)} (the tick on the glass)`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setKBatter, home: 60 }),
+              pitchFaderParam({ id: 'kb', label: 'BATTER', value: kBatter, min: DRUMS.kick.usefulHz[0], max: DRUMS.kick.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)} (the tick on the glass)`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setKBatter, home: 60 }),
               faderParam({ id: 'kstrike', label: 'BEATER', value: kStrike, min: 0.3, max: 1, step: 0.05, format: (v) => `${Math.round(v * 100)} % beater stroke — ${v < 0.5 ? 'soft: quieter, less click' : v < 0.8 ? 'a normal stroke' : 'hard: loud, more click, deeper bend'}`, formatShort: (v) => `${Math.round(v * 100)} %`, onChange: setKStrike, home: 0.9, level: true }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: kick.play },
             ],
@@ -231,8 +231,8 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               { k: 'MET', v: `${met.size} / 4`, tint: met.size >= 2 ? colors.green : colors.textMuted },
             ],
             params: [
-              faderParam({ id: 'gb', label: 'BATTER', value: gBatter, min: Math.round(gSpec.usefulHz[0] * 0.85), max: Math.round(gSpec.usefulHz[1] * 1.15), step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGBatter) }),
-              faderParam({ id: 'gr', label: 'RESO', value: gReso, min: Math.round(gSpec.usefulHz[0] * 0.7), max: Math.round(gSpec.usefulHz[1] * 1.4), step: 1, format: (v) => `resonant head ${v.toFixed(0)} Hz · ${(12 * Math.log2(v / gBatter)).toFixed(1)} st vs batter`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGReso) }),
+              pitchFaderParam({ id: 'gb', label: 'BATTER', value: gBatter, min: Math.round(gSpec.usefulHz[0] * 0.85), max: Math.round(gSpec.usefulHz[1] * 1.15), step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGBatter) }),
+              pitchFaderParam({ id: 'gr', label: 'RESO', value: gReso, min: Math.round(gSpec.usefulHz[0] * 0.7), max: Math.round(gSpec.usefulHz[1] * 1.4), step: 1, format: (v) => `resonant head ${v.toFixed(0)} Hz · ${(12 * Math.log2(v / gBatter)).toFixed(1)} st vs batter`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGReso) }),
               faderParam({ id: 'gd', label: 'DAMPING', value: gDamp, min: 0, max: 1, step: 0.05, format: (v) => (v < 0.05 ? 'none' : v < 0.35 ? `${Math.round(v * 100)} % · gel` : v < 0.7 ? `${Math.round(v * 100)} % · felt` : `${Math.round(v * 100)} % · pillow`), formatShort: (v) => `${Math.round(v * 100)} %`, onChange: touch(setGDamp) }),
               optionsParam({ id: 'goal', label: 'GOAL', value: goal, options: GOALS.map((x) => ({ key: x.id, label: x.label, short: x.short, blurb: x.start })), onChange: pickGoal }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: g.play },

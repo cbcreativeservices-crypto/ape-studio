@@ -26,6 +26,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { colors } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
@@ -137,15 +138,21 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
     const still = pressureNodes(bore, mode).length;
 
     const strikeParams: DockParam[] = [
-      {
-        kind: 'fader',
-        id: 'step',
-        label: 'STEP',
-        value: (shown - 1) / Math.max(1, n - 1),
-        onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-        format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-        formatShort: () => `${shown} / ${n}`,
-      },
+      tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'step',
+          label: 'STEP',
+          value: (shown - 1) / Math.max(1, n - 1),
+          onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
+          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
+          formatShort: () => `${shown} / ${n}`,
+        },
+        n,
+        shown - 1,
+        (i) => `${i + 1} · ${S.stages[i].title}`,
+        (i) => goTo(i + 1),
+      ),
       { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [
@@ -182,14 +189,17 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
       { k: 'UNDER CUTOFF', v: below == null ? '—' : `${below}`, sub: below == null ? 'not measured' : 'partials', flex: 1.1 },
     ];
     const pipeParams: DockParam[] = [
+      // Four resonances: tap choices, not a fader (owner 2026-10-14, slider audit #5).
       {
-        kind: 'fader',
+        kind: 'options',
         id: 'mode',
         label: 'RESONANCE',
-        value: (mode - 1) / 3,
-        onChange: (v) => setMode(1 + Math.round(v * 3)),
-        format: () => `resonance ${mode} · ×${harmonic} the lowest pitch`,
-        formatShort: () => `${mode}`,
+        valueLabel: `${mode}`,
+        valueA11y: `resonance ${mode} · ×${harmonic} the lowest pitch`,
+        selectedId: String(mode),
+        onSelect: (id) => setMode(Number(id)),
+        sticky: true,
+        options: [1, 2, 3, 4].map((m) => ({ id: String(m), label: `${m} · ×${bore === 'closed' ? 2 * m - 1 : m}` })),
       },
       {
         kind: 'fader',
@@ -306,7 +316,7 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
           badge: `An ideal pipe, ${BORE_WORDS[bore].name.toLowerCase()} · the pressure along it beneath · drag SWING by hand · silent`,
           bezel: pipeBezel,
           params: pipeParams,
-          initialParam: 'mode',
+          initialParam: 'swing',
         },
         well: (
           <>

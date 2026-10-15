@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../../engine/rack/fewStops.ts';
 import type { ViewId } from '../../../../engine/model/types.ts';
 import { zonesAvailable } from '../../../../engine/geometry/zones.ts';
 import { useRig } from '../../../../engine/scene/useRig.ts';
@@ -86,15 +87,21 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const partShort = stopShortOf(lesson.model, { gooseneck: 'REACH' });
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
-    {
-      kind: 'fader',
-      id: 'piece',
-      label: 'STEP',
-      value: exStep / (worked.length - 1),
-      onChange: (v) => setExStep(Math.round(v * (worked.length - 1))),
-      format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
-      formatShort: () => `${exStep + 1} / ${worked.length}`,
-    },
+    tapsWhenFew(
+      {
+        kind: 'fader',
+        id: 'piece',
+        label: 'STEP',
+        value: exStep / (worked.length - 1),
+        onChange: (v) => setExStep(Math.round(v * (worked.length - 1))),
+        format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
+        formatShort: () => `${exStep + 1} / ${worked.length}`,
+      },
+      worked.length,
+      exStep,
+      (i) => `${i + 1} · ${worked[i].title}`,
+      setExStep,
+    ),
     ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
   ];
 

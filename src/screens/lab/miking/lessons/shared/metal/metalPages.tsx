@@ -26,6 +26,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { SourcePageId, VariantId, ViewBox } from '../../../engine/model/types.ts';
 import { fitXform, unproject } from '../../../engine/geometry/frame.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
@@ -156,18 +157,24 @@ export function MetalInstrument(spec: MeetSpec) {
             { k: spec.variantKey, v: (vNote?.label ?? variant).split(' ')[0], flex: 1.1 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'part',
-              label: 'PART',
-              value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
-              onChange: (v) => {
-                const q = parts[Math.round(v * (parts.length - 1))];
-                if (q) pick(q.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'part',
+                label: 'PART',
+                value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
+                onChange: (v) => {
+                  const q = parts[Math.round(v * (parts.length - 1))];
+                  if (q) pick(q.id);
+                },
+                format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
               },
-              format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
-              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
-            },
+              parts.length,
+              parts.findIndex((q) => q.id === partId),
+              (i) => parts[i].short.toUpperCase(),
+              (i) => pick(parts[i].id),
+            ),
             ...(vp ? [vp] : []),
           ],
           initialParam: 'part',
@@ -246,7 +253,7 @@ function MetalSound(spec: SoundSpec) {
     const { lesson, answers, onAnswered, onInteractive, interactiveDone, variant, hidden } = p;
     const S = lesson.sound;
     const n = S.stages.length;
-    const st = useStepper(n, hidden);
+    const st = useStepper(n, hidden, S.stages.map((q) => q.title));
     const [predicted, setPredicted] = useState<string | null>(null);
     useEffect(() => {
       if (st.shown >= n && !interactiveDone.has('soundPath')) onInteractive('soundPath');

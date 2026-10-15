@@ -43,6 +43,18 @@ const SLOPES = [12, 24, 48] as const;
 const FLOOR_DB = -90;
 const ZERO_Y = 16;
 const GRID_DBS = [0, -30, -60, FLOOR_DB];
+/** The bell's GAIN range, ± dB (slider audit hold #14, owner 2026-10-14): the
+ *  glass draws at most +8 dB above the 0 dB line (the curve is clamped there),
+ *  so a ±18 dB lane flat-topped at +8 and its top 10 dB of travel moved
+ *  nothing. ±8 dB makes every step of the lane change the drawn curve. */
+const BELL_GAIN_MAX_DB = 8;
+/** Where the 0 dB line sits (px from the top) so the glass's headroom always
+ *  holds +BELL_GAIN_MAX_DB with a 2-unit margin, whatever the glass height —
+ *  a tall FULL SCREEN glass otherwise squeezed +8 dB above its top edge. */
+function zeroLineY(floorY: number, ts: number): number {
+  const fit = (BELL_GAIN_MAX_DB * floorY - FLOOR_DB * 2 * ts) / (BELL_GAIN_MAX_DB - FLOOR_DB);
+  return Math.max(ZERO_Y * ts, fit);
+}
 const GRID_DBS_MINOR = [-15, -45, -75];
 const LABEL_TARGETS = [63, 250, 1000, 4000, 16000] as const;
 const PLOT_BG = '#0c0c0f';
@@ -94,7 +106,7 @@ const CHALLENGES: { title: string; copy: string }[] = [
   { title: 'FIND THE LOW END', copy: 'Watch the spectrum below 100 Hz. What energy exists even when the room seems quiet?' },
   { title: 'TRY A LOW CUT', copy: 'Set the HPF around 80 Hz (LOW CUT key). Compare the designed response with the filter OFF.' },
   { title: 'CHANGE THE SLOPE', copy: 'Keep the cutoff constant. Compare 12, 24 and 48 dB/octave — watch the skirt swing.' },
-  { title: 'FIND A FREQUENCY', copy: 'Ride the FREQ lane with a narrow boost (high Q, +12 dB) — watch which bands sit under the amber bump.' },
+  { title: 'FIND A FREQUENCY', copy: 'Ride the FREQ lane with a narrow boost (high Q, +8 dB) — watch which bands sit under the amber bump.' },
 ];
 
 /** The pinned spectrum+curve glass. Height-parametric copy of the Seeing
@@ -132,8 +144,8 @@ function SpectrumGlass({
   const chartH = Math.max(60, h - LABEL_H - 4);
   // Everything drawn in pixels scales with `ts` too (parity pass 2026-09-26):
   // bar caps, peak ticks, grid weights, curve stroke, corners and margins.
-  const zeroY = ZERO_Y * ts;
   const floorY = chartH - 8 * ts;
+  const zeroY = zeroLineY(floorY, ts);
   const pxPerDb = (floorY - zeroY) / -FLOOR_DB;
   const yForDb = (db: number) => Math.max(2 * ts, zeroY - db * pxPerDb);
 
@@ -177,7 +189,7 @@ function SpectrumGlass({
     }
     let d = '';
     freqs.forEach((f, k) => {
-      const y = Math.min(floorY, yForDb(Math.min(8, eqAt(f))));
+      const y = Math.min(floorY, yForDb(Math.min(BELL_GAIN_MAX_DB, eqAt(f))));
       d += `${k === 0 ? 'M' : 'L'}${xForHz(f).toFixed(1)} ${y.toFixed(1)}`;
     });
     return d;
@@ -328,12 +340,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
       id: 'bellg',
       label: 'GAIN',
       level: true,
-      value: (bellG + 18) / 36,
-      onChange: bellFader((t) => setBellG(Math.round((t * 36 - 18) * 2) / 2)),
+      value: (bellG + BELL_GAIN_MAX_DB) / (2 * BELL_GAIN_MAX_DB),
+      onChange: bellFader((t) => setBellG(Math.round((Math.max(0, Math.min(1, t)) * 2 * BELL_GAIN_MAX_DB - BELL_GAIN_MAX_DB) * 2) / 2)),
       home: 0.5, // 0 dB — double-tap returns the band to flat
       format: () => `${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)} dB`,
       formatShort: () => `${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)}`,
-      tint: gainColor(bellG, 18),
+      tint: gainColor(bellG, BELL_GAIN_MAX_DB),
     },
     {
       kind: 'fader',

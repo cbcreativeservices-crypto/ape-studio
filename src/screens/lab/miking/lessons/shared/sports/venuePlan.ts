@@ -107,11 +107,19 @@ export const wrap180 = (a: number): number => ((((a + 180) % 360) + 360) % 360) 
 export function aimRel(from: P2, to: P2, ahead: P2 = { x: 0, y: 1 }): number {
   return wrap180(degOf({ x: to.x - from.x, y: to.y - from.y }) - degOf(ahead));
 }
-/** "32° left" / "0°" / "12° right" (whole degrees; "0°" within half a degree). */
+/** "32° left of centre" / "centre" / "12° right of centre" (whole degrees;
+ *  "centre" within half a degree). One wording for every direction lane —
+ *  the sports AIM, the audience TURN, the spatial rig's FRONT (owner
+ *  2026-10-14, slider audit #23: "left/right of centre"). */
 export function aimWords(deg: number): string {
   const r = Math.round(deg);
-  if (r === 0) return '0° (straight ahead)';
-  return `${Math.abs(r)}° ${r > 0 ? 'left' : 'right'}`;
+  if (r === 0) return 'centre';
+  return `${Math.abs(r)}° ${r > 0 ? 'left' : 'right'} of centre`;
+}
+/** The short form for a dock key: "32°L" / "0°" / "12°R". */
+export function aimShort(deg: number): string {
+  const r = Math.round(deg);
+  return `${Math.abs(r)}°${r > 0 ? 'L' : r < 0 ? 'R' : ''}`;
 }
 /** The plan angle between a mic's aim (degrees, as `dirFromDeg`) and the
  *  direction from the mic to a point — how far off the mic's axis the point

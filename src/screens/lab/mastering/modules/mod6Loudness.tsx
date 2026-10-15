@@ -21,9 +21,12 @@ import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle
 import { KEY_TERMS, LOUDNESS_SCENARIOS } from '../masteringContent';
 import { PLAYBACK_SYSTEMS, TRANSLATION_ASPECT, TranslationStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
 import { programmeIfRendered, useDrawProgramme, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
+import { drivePreview } from '../masteringEngine';
 import { MODEL_BADGE, RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -1.0;
+/** On the glass while the LOUDER picture is a drivePreview estimate (HOLD #20). */
+const DRIVE_PREVIEW_NOTE = 'ESTIMATE · RENDER FOLLOWS ON RELEASE';
 /** The LISTEN step's index in the steps below (pinned by test/perfDecisionsC_20261004). */
 const LISTEN_STEP = 1;
 const METER_SIGNALS: readonly { id: SignalKey; name: string; blurb: string }[] = [
@@ -94,6 +97,15 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
   // read the old drive's numbers beside the new fader, and after MATCH off
   // the glass still said "played at −x dB · matched" (toddler pass 2).
   const current = pb.current;
+  // DRIVE PREVIEW (slider HOLD #20): between a DRIVE move and its render the
+  // glass drew the OLD drive's waveform. While the shown LOUDER is stale it
+  // is estimated from the undriven QUIETER render (same limiter, same
+  // ceiling) — it follows the fader at the lane's own rate (the rack hands
+  // over ≤ 1 value per frame, same-step moves dropped) and is labelled.
+  const preview = useMemo(
+    () => (!current && shown === 'loud' && q?.overview ? drivePreview(q.overview, q.grDb, drive, CEILING) : null),
+    [current, shown, q, drive],
+  );
   const system = PLAYBACK_SYSTEMS.find((s) => s.id === systemId) ?? PLAYBACK_SYSTEMS[0];
   // The teaching signal's three numbers for the LEARN bezel — the same
   // simulations the meters draw, offset by GAIN, so PEAK, TRUE PK and LUFS
@@ -166,7 +178,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Quieter and louder, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={preview ? preview.ov : (m?.overview ?? null)} grDb={preview ? preview.grDb : m?.grDb} maxGrDb={preview ? preview.maxGrDb : m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} previewNote={preview ? DRIVE_PREVIEW_NOTE : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',

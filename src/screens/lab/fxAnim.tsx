@@ -50,6 +50,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
+import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
 import { usePhaseClock } from './foundations/viz';
 import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
@@ -305,12 +306,16 @@ function FlowScene({
   h,
   label,
   glow,
+  note,
   children,
 }: {
   w: number;
   h: number;
   label: string;
   glow?: SharedValue<number>;
+  /** A small green key at the bottom-left naming what an overlay is (the EQ
+   *  curve). RN text over Skia: its points grow by ts like IN/OUT. */
+  note?: string;
   children: ReactNode;
 }) {
   const stageX = w * STAGE_FRAC;
@@ -352,6 +357,7 @@ function FlowScene({
       >
         {label}
       </Text>
+      {note ? <Text style={[flowStyles.note, { fontSize: 10 * ts, left: 8 * ts, bottom: 3 * ts }]}>{note}</Text> : null}
     </View>
   );
 }
@@ -377,6 +383,28 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
     () => EQ_COMP_FREQS.map((f) => Math.min(Math.pow(10, eqResponseDb(bands, f) / 20), 4)),
     [bands],
   );
+  // THE RESPONSE CURVE on the display (owner hold #27, 2026-10-14: the bell
+  // was only drawn in the well below). Frequency runs 20 Hz → 20 kHz across
+  // the whole panel, 0 dB on the flow's zero line, from eqResponseDb on the
+  // SAME band the DSP runs — so it follows every fader live. The dots mark the
+  // three component frequencies of the travelling wave: the gain the curve
+  // gives each one is exactly how much that component grows or shrinks in OUT.
+  const curve = useMemo(() => {
+    const x0 = 8;
+    const x1 = w - 8;
+    const halfH = h / 2 - 18;
+    const centre = bands.length === 1 ? bands[0].freq : undefined;
+    const pts = eqCurvePoints((f) => eqResponseDb(bands, f), x0, x1, h / 2, halfH, centre);
+    const line = Skia.Path.Make();
+    pts.forEach((pt, i) => (i === 0 ? line.moveTo(pt.x, pt.y) : line.lineTo(pt.x, pt.y)));
+    const area = line.copy();
+    area.lineTo(x1, h / 2);
+    area.lineTo(x0, h / 2);
+    area.close();
+    const dots = Skia.Path.Make();
+    for (const f of EQ_COMP_FREQS) dots.addCircle(eqCurveX(f, x0, x1), eqCurveY(eqResponseDb(bands, f), h / 2, halfH), 2.6);
+    return { line, area, dots };
+  }, [bands, w, h]);
   const g0 = useGlide(gains[0]);
   const g1 = useGlide(gains[1]);
   const g2 = useGlide(gains[2]);
@@ -424,7 +452,10 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
   }, [phase, g0, g1, g2, stageX, w, h]);
 
   return (
-    <FlowScene w={w} h={h} label={label}>
+    <FlowScene w={w} h={h} label={label} note={`EQ CURVE · ${EQ_CURVE_F_MIN} Hz → ${EQ_CURVE_F_MAX / 1000} kHz`}>
+      <Path path={curve.area} color={STAGE_GREEN} opacity={0.08} />
+      <Path path={curve.line} color={STAGE_GREEN} style="stroke" strokeWidth={1.6} strokeJoin="round" opacity={0.75} />
+      <Path path={curve.dots} color={STAGE_GREEN} opacity={0.9} />
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
       <FlowGlow path={outPath} gradH={h} />
     </FlowScene>
@@ -1316,6 +1347,13 @@ const flowStyles = StyleSheet.create({
     color: colors.textPrimary,
     backgroundColor: 'rgba(12,12,15,.72)',
     overflow: 'hidden',
+  },
+  // The overlay key (EQ curve) — green like the stage it describes.
+  note: {
+    position: 'absolute',
+    fontFamily: fonts.oswaldMedium,
+    color: STAGE_GREEN,
+    opacity: 0.9,
   },
   // Processor name along the divider — rotated to run vertically down the bar,
   // green to match it (owner 2026-08-05). Size/spacing set inline × ts.

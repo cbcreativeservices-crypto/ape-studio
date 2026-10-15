@@ -214,6 +214,11 @@ const SPK2_TINT = '#6fa8ff';
 const FILLS_TINT = '#5bff85';
 const heightWord = (h: number) => (h < 0.3 ? 'low' : h > 0.7 ? 'flown high' : 'mid');
 const lowMidHigh = (v: number) => (v < 0.33 ? 'low' : v > 0.66 ? 'high' : 'mid');
+/** The lane's own number beside its word (slider audit HOLD #21, owner
+ *  2026-10-14: "add the number next to the word"). The map has no honest
+ *  metre scale across the stage, so the number is the slider's travel. */
+const pct = (v: number) => `${Math.round(Math.max(0, Math.min(1, v)) * 100)} %`;
+const pctShort = (v: number) => `${Math.round(Math.max(0, Math.min(1, v)) * 100)}%`;
 
 export function SpeakerCoverageLabScreen() {
   const insets = useSafeAreaInsets();
@@ -324,10 +329,11 @@ export function SpeakerCoverageLabScreen() {
     ),
   };
 
-  // Owner 2026-08-31: POS/AIM/PATTERN already read out on the bezel and the
-  // lane, so POSITION and AIM are LABEL-ONLY keys (formatShort ''), and the
-  // SPKRS tray (with its cryptic "E1/E2" = "editing speaker N") is replaced by
-  // direct SPKR 1 / SPKR 2 keys. The slider wears the target's identity:
+  // Owner 2026-08-31: the SPKRS tray (with its cryptic "E1/E2" = "editing
+  // speaker N") is replaced by direct SPKR 1 / SPKR 2 keys. POSITION and AIM were LABEL-ONLY keys
+  // (formatShort ''); the owner reversed that 2026-10-14 (slider audit HOLD
+  // #22: "the value on the dock key is empty — show the value"), so both keys
+  // carry their number again. The slider wears the target's identity:
   // amber = speaker 1, blue = speaker 2, green = the fill pair (which the
   // slider moves in/out from the stage's center line, always symmetric).
   const topParams: DockParam[] = [
@@ -339,9 +345,9 @@ export function SpeakerCoverageLabScreen() {
       onChange: (v) => (fillsTarget ? setFillSpread(v) : setActive({ ...active, x: v })),
       format: () =>
         fillsTarget
-          ? `fills · ${spreadWord(fillSpread)} — in ↔ out from center`
-          : `spk ${spkEditable2 ? 2 : 1} · ${posWord(active.x)}`,
-      formatShort: () => '',
+          ? `fills · ${spreadWord(fillSpread)} · ${pct(fillSpread)} — in ↔ out from center`
+          : `spk ${spkEditable2 ? 2 : 1} · ${posWord(active.x)} · ${pct(active.x)}`,
+      formatShort: () => pctShort(fillsTarget ? fillSpread : active.x),
       tint: fillsTarget ? FILLS_TINT : spkEditable2 ? SPK2_TINT : undefined,
       helpKey: fillsTarget ? 'front_fills' : 'position',
     },
@@ -357,7 +363,7 @@ export function SpeakerCoverageLabScreen() {
             value: (active.aim + 60) / 120,
             onChange: (v: number) => setActive({ ...active, aim: Math.round(v * 120 - 60) }),
             format: () => `spk ${spkEditable2 ? 2 : 1} · ${active.aim}°`,
-            formatShort: () => '',
+            formatShort: () => `${active.aim}°`,
             tint: spkEditable2 ? SPK2_TINT : undefined,
             helpKey: 'aim',
           },
@@ -478,7 +484,7 @@ export function SpeakerCoverageLabScreen() {
       label: 'HEIGHT',
       value: h01,
       onChange: setH01,
-      format: () => heightWord(h01),
+      format: () => `${heightWord(h01)} · ${pct(h01)}`,
       formatShort: () => heightWord(h01).replace('flown ', '').toUpperCase(),
       helpKey: 'height_tilt',
     },
@@ -527,15 +533,15 @@ export function SpeakerCoverageLabScreen() {
       render: () => (
         <View style={{ gap: 10 }}>
           <Text style={styles.trayHead}>ROOM SHAPE</Text>
-          <DragSlider value={stage01} onChange={setStage01} label="STAGE HEIGHT" readout={lowMidHigh(stage01)} onHelp={() => help('room_shape')} />
-          <DragSlider value={ceil01} onChange={setCeil01} label="CEILING HEIGHT" readout={lowMidHigh(ceil01)} onHelp={() => help('room_shape')} />
+          <DragSlider value={stage01} onChange={setStage01} label="STAGE HEIGHT" readout={`${lowMidHigh(stage01)} · ${pct(stage01)}`} onHelp={() => help('room_shape')} />
+          <DragSlider value={ceil01} onChange={setCeil01} label="CEILING HEIGHT" readout={`${lowMidHigh(ceil01)} · ${pct(ceil01)}`} onHelp={() => help('room_shape')} />
           {/* Moves the whole audience block closer to / farther from the stage —
               the audience keeps its size and spacing (owner 2026-08-05). */}
           <DragSlider
             value={depth01}
             onChange={setDepth01}
             label="AUDIENCE DISTANCE"
-            readout={depth01 < 0.35 ? 'near the stage' : depth01 > 0.7 ? 'far from stage' : 'mid'}
+            readout={`${depth01 < 0.35 ? 'near the stage' : depth01 > 0.7 ? 'far from stage' : 'mid'} · ${pct(depth01)}`}
             onHelp={() => help('room_shape')}
           />
           <View style={styles.chipRow}>

@@ -93,7 +93,8 @@ test('the Harmonograph redraw pauses off screen and resumes the same run', () =>
   const eff = s.slice(s.indexOf('const focused = useIsFocused();'), s.indexOf('const M = useDerivedValue('));
   assert.ok(eff.length > 0);
   assert.match(eff, /cancelAnimation\(progress\);\s*if \(!focused\) return;\s*if \(frozen\)/);
-  assert.match(eff, /\}, \[ink, dDrawMs, progress, frozen, epoch, onFreezeFraction, focused\]\);/);
+  // + the ghost's two stable callbacks (slider HOLD #2, 2026-10-14)
+  assert.match(eff, /\}, \[ink, dDrawMs, progress, frozen, epoch, onFreezeFraction, focused, setGhostBoth, dropGhost\]\);/);
 });
 
 test('Ear Lab: the clip-end timer does not set state on a screen that was left', () => {

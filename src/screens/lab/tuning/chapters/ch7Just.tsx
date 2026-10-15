@@ -47,6 +47,12 @@ const SCALE_SPELLING: Record<Tonic, string[]> = {
 const RAIL_H = 128;
 const N = JUST.notes.length; // 8
 
+/** A dock key that holds its slot but is not usable yet (rackTypes fader
+ *  `locked`): it reads LOCKED, never binds the lane, and a tap prints why. */
+function lockedKey(id: string, label: string, reason: string): DockParam {
+  return { kind: 'fader', id, label, locked: reason, value: 0, onChange: () => {}, format: () => '' };
+}
+
 export function Ch7Just({ ctx }: ChapterProps) {
   const [revealed, setRevealed] = useState(1);
   const [arcs, setArcs] = useState(0); // how many pure-third arcs shown
@@ -152,7 +158,15 @@ export function Ch7Just({ ctx }: ChapterProps) {
       },
       formatShort: (p) => `${1 + Math.round(p * (N - 1))}/${N}`,
     },
-    ...(clips.length ? [playTray({ player: ctx.player, last, setLast, clips, short: (c) => c.label.split(' ')[0] })] : []),
+    // Every key holds ONE slot from the first note (slider audit HOLD #28,
+    // owner 2026-10-14: "keep the key fixed"). PLAY, TONIC and RETUNE used to
+    // appear as NOTES revealed more of the mapping, and each new key reflowed
+    // the dock — NOTES shrank and slid under the finger. The ones not usable
+    // yet now sit in their slots LOCKED, with the reason (the rack's
+    // locked-key pattern), and come alive in place.
+    clips.length
+      ? playTray({ player: ctx.player, last, setLast, clips, short: (c) => c.label.split(' ')[0] })
+      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one'),
     ...(keyStage
       ? ([
           {
@@ -167,7 +181,10 @@ export function Ch7Just({ ctx }: ChapterProps) {
           },
           { kind: 'toggle', id: 'retune', label: 'RETUNE', value: mode === 'retune', onToggle: () => setMode((m) => (m === 'keep' ? 'retune' : 'keep')) },
         ] as DockParam[])
-      : []),
+      : [
+          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`),
+          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`),
+        ]),
     stopKey(ctx.player),
   ];
 

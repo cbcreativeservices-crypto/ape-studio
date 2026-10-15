@@ -20,6 +20,7 @@ import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
 
 export { faderParam, optionsParam } from '../amp/AmpRack';
 export { flipFader } from '../soundsystems/rackLayout';
+export { pitchFaderParam } from './pitchTaper';
 
 export type DrumRackSpec = {
   /** The drawing at (w, h) — width-driven, of `aspect` (w ÷ h). */

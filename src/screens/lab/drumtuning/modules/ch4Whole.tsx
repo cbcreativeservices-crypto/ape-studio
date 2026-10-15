@@ -12,7 +12,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { faderParam, optionsParam } from '../DrumRack';
+import { optionsParam, pitchFaderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, fmtHz, noteName } from '../kit';
 import { DRUM_KEY_TERMS, RELATIONSHIPS, RELATIONSHIP_CAVEAT, WHOLE_SCENARIOS, type RelationshipId } from '../drumContent';
@@ -139,8 +139,8 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
               { k: 'LATE SOUND', v: late != null ? `${Math.abs(late) >= PITCH_CLAMP ? '≈' : ''}${fmtCents(late)}` : '—', flex: 1.4, tint: colors.amber },
             ],
             params: [
-              faderParam({ id: 'batter', label: 'BATTER', value: batterHz, min: SPEC.usefulHz[0], max: SPEC.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz (${noteName(v)}) — before the air couples it`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setBatterHz, home: 190 }),
-              faderParam({ id: 'reso', label: 'RESO', value: resoHz, min: Math.round(SPEC.usefulHz[0] * 0.8), max: Math.round(SPEC.usefulHz[1] * 1.3), step: 1, format: (v) => `resonant head's own pitch ${v.toFixed(0)} Hz · ${(12 * Math.log2(v / batterHz)).toFixed(1)} st vs batter`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setResoHz, home: batterHz }),
+              pitchFaderParam({ id: 'batter', label: 'BATTER', value: batterHz, min: SPEC.usefulHz[0], max: SPEC.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz (${noteName(v)}) — before the air couples it`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setBatterHz, home: 190 }),
+              pitchFaderParam({ id: 'reso', label: 'RESO', value: resoHz, min: Math.round(SPEC.usefulHz[0] * 0.8), max: Math.round(SPEC.usefulHz[1] * 1.3), step: 1, format: (v) => `resonant head's own pitch ${v.toFixed(0)} Hz · ${(12 * Math.log2(v / batterHz)).toFixed(1)} st vs batter`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setResoHz, home: batterHz }),
               optionsParam({ id: 'preset', label: 'SET', value: rel, options: RELATIONSHIPS.map((r) => ({ key: r.id, label: r.label, short: r.short, blurb: r.tends })), onChange: preset, sticky: false }),
               optionsParam({ id: 'view', label: 'VIEW', value: view, options: VIEWS, onChange: setView }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: pb.play },

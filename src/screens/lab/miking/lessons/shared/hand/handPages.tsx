@@ -41,6 +41,7 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
 import { HandPlan, type HandPlanItem, type HandScene } from './HandPlan';
 import { viewToggle } from '../../../engine/scene/viewToggle.ts';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 
 export function useFocusedSafe(): boolean {
   try {
@@ -52,7 +53,7 @@ export function useFocusedSafe(): boolean {
 
 /* ── the stepped sequence (HOW IT SOUNDS): STEP, or PLAY ONCE ── */
 const STEP_MS = 1300;
-export function useStepper(n: number, hidden: boolean) {
+export function useStepper(n: number, hidden: boolean, titles?: readonly string[]) {
   const motion = useAnimationsAllowed();
   const focused = useFocusedSafe();
   const reveal = useSharedValue(1);
@@ -95,16 +96,23 @@ export function useStepper(n: number, hidden: boolean) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hidden, focused]);
   useEffect(() => () => cancelAnimation(reveal), []); // eslint-disable-line react-hooks/exhaustive-deps
+  // 3–4 steps: tap choices, not a fader (owner 2026-10-14, slider audit #5).
   const params: DockParam[] = [
-    {
-      kind: 'fader',
-      id: 'step',
-      label: 'STEP',
-      value: (shown - 1) / Math.max(1, n - 1),
-      onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-      format: () => `${shown} of ${n}`,
-      formatShort: () => `${shown} / ${n}`,
-    },
+    tapsWhenFew(
+      {
+        kind: 'fader',
+        id: 'step',
+        label: 'STEP',
+        value: (shown - 1) / Math.max(1, n - 1),
+        onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
+        format: () => `${shown} of ${n}`,
+        formatShort: () => `${shown} / ${n}`,
+      },
+      n,
+      shown - 1,
+      (i) => (titles?.[i] ? `${i + 1} · ${titles[i]}` : `${i + 1} of ${n}`),
+      (i) => goTo(i + 1),
+    ),
     { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
   ];
   return { shown, playing, goTo, play, params };
@@ -190,18 +198,24 @@ function HandInstrument(spec: HandSpec) {
             { k: 'VIEW', v: (model.viewTags?.[view] ?? view).split(' ')[0] === 'FROM' ? (view === 'top' ? 'ABOVE' : 'SIDE') : view.toUpperCase() },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'part',
-              label: 'PART',
-              value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
-              onChange: (v) => {
-                const p = parts[Math.round(v * (parts.length - 1))];
-                if (p) pick(p.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'part',
+                label: 'PART',
+                value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
+                onChange: (v) => {
+                  const p = parts[Math.round(v * (parts.length - 1))];
+                  if (p) pick(p.id);
+                },
+                format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
               },
-              format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
-              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
-            },
+              parts.length,
+              parts.findIndex((p) => p.id === partId),
+              (i) => parts[i].short.toUpperCase(),
+              (i) => pick(parts[i].id),
+            ),
             ...viewToggle({ view: view, setView: setView, stage: 'single', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
           ],
           initialParam: 'part',
@@ -268,18 +282,24 @@ function HandSetting(spec: HandSpec) {
             { k: 'WHERE', v: scene === 'stage' ? 'LIVE' : 'STUDIO' },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'item',
-              label: 'ITEM',
-              value: planItems.length > 1 ? idx / (planItems.length - 1) : 0,
-              onChange: (v) => {
-                const p = planItems[Math.round(v * (planItems.length - 1))];
-                if (p) setSel(p.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'item',
+                label: 'ITEM',
+                value: planItems.length > 1 ? idx / (planItems.length - 1) : 0,
+                onChange: (v) => {
+                  const p = planItems[Math.round(v * (planItems.length - 1))];
+                  if (p) setSel(p.id);
+                },
+                format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${planItems.length} items`),
+                formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
               },
-              format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${planItems.length} items`),
-              formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
-            },
+              planItems.length,
+              planItems.findIndex((q) => q.id === sel),
+              (i) => byId(planItems[i].id)?.short ?? planItems[i].id.toUpperCase(),
+              (i) => setSel(planItems[i].id),
+            ),
             {
               kind: 'options',
               id: 'where',
@@ -453,7 +473,7 @@ function HandPlacement(spec: HandSpec) {
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
-            { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${pieces.length}` },
+            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${pieces.length}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep),
             ...viewToggle({ view: exView, setView: setExView, stage: 'dual', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
           ],
           initialParam: 'piece',

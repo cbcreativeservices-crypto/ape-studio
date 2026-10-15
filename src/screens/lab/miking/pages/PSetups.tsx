@@ -26,6 +26,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
+import { faderUnlessFew } from '../engine/rack/fewStops.ts';
 import type { MicPattern, SettingItem, ViewId } from '../engine/model/types.ts';
 import { copyOf } from '../engine/model/copy.ts';
 import { coreSetups, roleWords, startingSetups, type StartingSetup } from '../engine/setups.ts';
@@ -192,7 +193,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
   const t0 = sel ? micType(sel.mics[0].typeId) : null;
   const params: DockParam[] = useMemo(
     () => [
-      {
+      ...faderUnlessFew(setups.length, {
         kind: 'fader',
         id: 'setup',
         label: 'SETUP',
@@ -211,7 +212,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
           return s ? `${k + 1} of ${setups.length} · ${roleWords(s).toLowerCase()}` : 'no setup';
         },
         formatShort: (v) => `${Math.round(v * (setups.length - 1)) + 1} / ${setups.length}`,
-      },
+      }),
       {
         kind: 'options',
         id: 'pick',

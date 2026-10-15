@@ -12,6 +12,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import type { DockParam } from '../../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../../engine/rack/fewStops.ts';
 import type { Part, ViewId } from '../../../../engine/model/types.ts';
 import { useRig } from '../../../../engine/scene/useRig.ts';
 import { DualView } from '../../../../engine/scene/DualView';
@@ -60,18 +61,24 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
 
   const params: DockParam[] = useMemo(
     () => [
-      {
-        kind: 'fader',
-        id: 'part',
-        label: 'PART',
-        value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
-        onChange: (v) => {
-          const p = parts[Math.round(v * (parts.length - 1))];
-          if (p) pick(p.id);
+      tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'part',
+          label: 'PART',
+          value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
+          onChange: (v) => {
+            const p = parts[Math.round(v * (parts.length - 1))];
+            if (p) pick(p.id);
+          },
+          format: () => (shown ? `${shown.label.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+          formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
         },
-        format: () => (shown ? `${shown.label.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
-        formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
-      },
+        parts.length,
+        parts.findIndex((p) => p.id === partId),
+        (i) => parts[i].short.toUpperCase(),
+        (i) => pick(parts[i].id),
+      ),
       ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
       ...(multi
         ? [

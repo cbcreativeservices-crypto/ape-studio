@@ -45,6 +45,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import type { PlateViewMode } from './vizPlate';
 import { useDriveTone } from './useDriveTone';
+import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
@@ -613,6 +614,7 @@ function PlateStudio() {
             fullScreen: true,
             render: (w, h) =>
               viz ? (
+                <View style={{ width: w, height: h }}>
                 <viz.PlateView
                   width={w}
                   height={h}
@@ -633,6 +635,9 @@ function PlateStudio() {
                   onPlace={(kind, x, y) => patch(kind === 'exciter' ? { exciter: { x, y } } : { support: { x, y } })}
                   onSection={setSectionY}
                 />
+                {/* HOLD #19: a still plate says why — nothing drives it. */}
+                <DriveHint driving={driving} canPlay={tone.engineReady} what="plate" silentKey="DRIVE › SILENT DRIVE" />
+                </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
                   <Text style={styles.noSkiaText}>The plate display needs the current app build (Skia). Controls and readouts still work.</Text>

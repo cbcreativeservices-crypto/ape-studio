@@ -536,7 +536,8 @@ function L3Amp({ ctx: _ctx }: { ctx: PageCtx }) {
         setAmt(v);
         tone.set({ levelDb: levelFor(v) });
       },
-      format: (v) => (v < 0.33 ? 'small → sounds quiet' : v < 0.66 ? 'medium' : 'large → sounds loud'),
+      // Word AND number on the lane (slider audit HOLD #21, owner 2026-10-14).
+      format: (v) => `${v < 0.33 ? 'small → sounds quiet' : v < 0.66 ? 'medium' : 'large → sounds loud'} · ${Math.round(v * 100)} %`,
       formatShort: (v) => `${Math.round(v * 100)}%`,
       tint: levelColor(amt),
     },

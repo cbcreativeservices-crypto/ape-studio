@@ -33,6 +33,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { MicPattern, MicPose, MicSlot, SourcePageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../engine/kit';
@@ -185,18 +186,24 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'VIEW', v: showMeta.label.split(' ')[0], flex: 1.1 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'part',
-              label: 'PART',
-              value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
-              onChange: (v) => {
-                const p = parts[Math.round(v * (parts.length - 1))];
-                if (p) pick(p.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'part',
+                label: 'PART',
+                value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
+                onChange: (v) => {
+                  const p = parts[Math.round(v * (parts.length - 1))];
+                  if (p) pick(p.id);
+                },
+                format: () => (shown ? shown.title : `step through the ${parts.length} parts`),
+                formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
               },
-              format: () => (shown ? shown.title : `step through the ${parts.length} parts`),
-              formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
-            },
+              parts.length,
+              parts.findIndex((p) => p.id === partId),
+              (i) => parts[i].title,
+              (i) => pick(parts[i].id),
+            ),
             ...(spec.shows.length > 1 ? [{ kind: 'options' as const, id: 'view', label: 'VIEW', valueLabel: showMeta.label.split(' ')[0], selectedId: show, onSelect: (id: string) => setShow(id as ElectricShow), sticky: true, options: spec.shows.map((s) => ({ id: s.id, label: s.label, blurb: s.blurb })) }] : []),
           ],
           initialParam: 'part',
@@ -241,18 +248,24 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'AMP', v: CABINETS[kind].short, flex: 1.1 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'part',
-              label: 'PART',
-              value: aParts.length > 1 ? aIdx / (aParts.length - 1) : 0,
-              onChange: (v) => {
-                const p = aParts[Math.round(v * (aParts.length - 1))];
-                if (p) aPick(p.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'part',
+                label: 'PART',
+                value: aParts.length > 1 ? aIdx / (aParts.length - 1) : 0,
+                onChange: (v) => {
+                  const p = aParts[Math.round(v * (aParts.length - 1))];
+                  if (p) aPick(p.id);
+                },
+                format: () => (aShown ? `${aShown.short.toUpperCase()} · ${aSeen.size} of ${aParts.length} looked at` : `step through the ${aParts.length} parts`),
+                formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'STEP'),
               },
-              format: () => (aShown ? `${aShown.short.toUpperCase()} · ${aSeen.size} of ${aParts.length} looked at` : `step through the ${aParts.length} parts`),
-              formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'STEP'),
-            },
+              aParts.length,
+              aParts.findIndex((p) => p.id === aPart),
+              (i) => aParts[i].short.toUpperCase(),
+              (i) => aPick(aParts[i].id),
+            ),
             { kind: 'options', id: 'view', label: 'VIEW', valueLabel: view.toUpperCase(), selectedId: view, onSelect: (id) => setView(id as CabExplorerView), sticky: true, options: viewOpts },
             { kind: 'toggle', id: 'cloth', label: cloth ? 'CLOTH ON' : 'CLOTH OFF', value: !cloth, onToggle: () => setCloth((x) => !x) },
           ],
@@ -465,7 +478,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'BACK AIR', v: shown >= 3 ? (coneBack === 'open' ? 'PULLED · OUT' : 'PULLED · IN BOX') : '—', flex: 1.4 },
           ],
           params: [
-            { kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`, formatShort: () => `${shown} / ${n}` },
+            tapsWhenFew({ kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`, formatShort: () => `${shown} / ${n}` }, n, shown - 1, (i) => `${i + 1} · ${S.stages[i].title}`, (i) => goTo(i + 1)),
             { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
             {
               kind: 'options',
@@ -536,12 +549,13 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'FROM CENTRE', v: lenCell(SPOT_WORDS[spot].r).v, sub: lenCell(SPOT_WORDS[spot].r).sub, flex: 1.3 },
             { k: 'TENDS TO', v: spot === 'centre' ? 'BRIGHTER' : spot === 'boundary' ? 'BETWEEN' : 'DARKER', flex: 1.3 },
           ],
-          params: [{ kind: 'fader', id: 'spot', label: 'SPOT', value: SPOTS.indexOf(spot) / 2, onChange: (v) => setSpot(SPOTS[Math.round(v * 2)]), format: () => SPOT_WORDS[spot].title.toLowerCase(), formatShort: () => (spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE') }],
+          // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
+          params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', valueA11y: SPOT_WORDS[spot].title.toLowerCase(), selectedId: spot, onSelect: (id) => setSpot(id as (typeof SPOTS)[number]), sticky: true, options: SPOTS.map((s) => ({ id: s, label: s === 'centre' ? 'CENTRE' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })) }],
           initialParam: 'spot',
         },
         well: (
           <>
-            <Landing looking="One speaker, face-on" prompt="Step SPOT from the centre to the edge. Each is a place to aim a close mic." />
+            <Landing looking="One speaker, face-on" prompt="Tap SPOT and pick one: the centre, the dust-cap edge or toward the edge. Each is a place to aim a close mic." />
             <Card>
               <Point title={SPOT_WORDS[spot].title}>{SPOT_WORDS[spot].text}</Point>
             </Card>
@@ -619,18 +633,24 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'SPEAKER OUT →', v: patch === 'cab' ? 'CABINET' : 'DESK', sub: verdict === 'ok' ? 'correct' : 'never', tint: verdict === 'ok' ? '#5bff85' : '#ff5a48', flex: 1.3 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'item',
-              label: 'ITEM',
-              value: chainItems.length > 1 ? cIdx / (chainItems.length - 1) : 0,
-              onChange: (v) => {
-                const it = chainItems[Math.round(v * (chainItems.length - 1))];
-                if (it) pickC(it.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'item',
+                label: 'ITEM',
+                value: chainItems.length > 1 ? cIdx / (chainItems.length - 1) : 0,
+                onChange: (v) => {
+                  const it = chainItems[Math.round(v * (chainItems.length - 1))];
+                  if (it) pickC(it.id);
+                },
+                format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
+                formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
               },
-              format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-              formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
-            },
+              chainItems.length,
+              chainItems.findIndex((q) => q.id === cSel),
+              (i) => chainItems[i].short,
+              (i) => pickC(chainItems[i].id),
+            ),
             {
               kind: 'options',
               id: 'patch',
@@ -674,18 +694,24 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'WHERE', v: scene === 'stage' ? 'LIVE' : 'STUDIO' },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'item',
-              label: 'ITEM',
-              value: planItems.length > 1 ? pIdx / (planItems.length - 1) : 0,
-              onChange: (v) => {
-                const it = planItems[Math.round(v * (planItems.length - 1))];
-                if (it) setSel(it.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'item',
+                label: 'ITEM',
+                value: planItems.length > 1 ? pIdx / (planItems.length - 1) : 0,
+                onChange: (v) => {
+                  const it = planItems[Math.round(v * (planItems.length - 1))];
+                  if (it) setSel(it.id);
+                },
+                format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
+                formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
               },
-              format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-              formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
-            },
+              planItems.length,
+              planItems.findIndex((q) => q.id === sel),
+              (i) => planItems[i].short,
+              (i) => setSel(planItems[i].id),
+            ),
             {
               kind: 'options',
               id: 'where',
@@ -840,7 +866,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
-            { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` },
+            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
             ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
           ],
           initialParam: 'piece',

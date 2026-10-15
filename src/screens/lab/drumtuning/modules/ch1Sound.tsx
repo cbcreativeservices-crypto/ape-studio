@@ -13,11 +13,11 @@
  */
 import { useMemo, useState } from 'react';
 import { colors } from '../../../../theme/tokens';
-import { faderParam, flipFader, optionsParam } from '../DrumRack';
+import { faderParam, flipFader, optionsParam, pitchFaderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, fmtHz, levelTint, noteName } from '../kit';
 import { DRUM_KEY_TERMS, SOUND_SCENARIOS } from '../drumContent';
-import { DRUMS, beatRateHz, bendCents, evenHead, evenness, fundamentalHz, lugTapHz, spreadCents, strikePartials, upperRatio, type HeadState, type StrikeParams } from '../drumEngine';
+import { DRUMS, beatRateHz, bendCents, evenHead, evenness, fundamentalHz, lugTapHz, spreadCents, strikePartials, tensionForHz, upperRatio, type HeadState, type StrikeParams } from '../drumEngine';
 import { ANAT_ASPECT, AnatomyStage, DrumTopStage, EDGES, EDGE_ASPECT, EdgeStage, PARTS, TOP_ASPECT, type DrumPart, type EdgeProfile } from '../stagesDrum';
 import { PART_ASPECT, PITCH_ASPECT, PartialsStage, PitchStage, VIB_ASPECT, VibrationStage, WAVE_ASPECT, WaveStage } from '../stagesSignal';
 import { MODEL_BADGE, RENDER_BADGE, VIB_BADGE, fmtCents, fmtS, fmtTurn, soloPair, syncOf, tensionWord, useStrike, useTap, type ChapterProps } from './shared';
@@ -138,7 +138,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
               { k: '1ST OVERTONE', v: `${fmtHz(f0 * 1.594)} Hz`, flex: 1.3 },
             ],
             params: [
-              faderParam({ id: 'tension', label: 'TENSION', value: tension, min: SPEC.tensionRange[0], max: SPEC.tensionRange[1], step: 50, format: (v) => `${tensionWord((v - SPEC.tensionRange[0]) / (SPEC.tensionRange[1] - SPEC.tensionRange[0]))} · pitch ${fundamentalHz(SPEC.diameterIn, v, SPEC.sigmaBatter).toFixed(0)} Hz · ${v.toFixed(0)} N/m`, formatShort: (v) => `${fundamentalHz(SPEC.diameterIn, v, SPEC.sigmaBatter).toFixed(0)} Hz`, onChange: setTension, home: 3000 }),
+              pitchFaderParam({ id: 'tension', label: 'TENSION', value: tension, min: SPEC.tensionRange[0], max: SPEC.tensionRange[1], step: 50, toHz: (v) => fundamentalHz(SPEC.diameterIn, v, SPEC.sigmaBatter), fromHz: (hz) => tensionForHz(SPEC.diameterIn, hz, SPEC.sigmaBatter), format: (v) => `${tensionWord((v - SPEC.tensionRange[0]) / (SPEC.tensionRange[1] - SPEC.tensionRange[0]))} · pitch ${fundamentalHz(SPEC.diameterIn, v, SPEC.sigmaBatter).toFixed(0)} Hz · ${v.toFixed(0)} N/m`, formatShort: (v) => `${fundamentalHz(SPEC.diameterIn, v, SPEC.sigmaBatter).toFixed(0)} Hz`, onChange: setTension, home: 3000 }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: tensionStrike.play },
             ],
             initialParam: 'tension',

@@ -851,6 +851,7 @@ export function GridControlView({
   width,
   height = 190,
   cond,
+  flow,
   electronView,
 }: {
   phase: SharedValue<number>;
@@ -858,8 +859,13 @@ export function GridControlView({
   height?: number;
   /** 0 = grid most negative (cutoff) … 1 = least negative (full flow). */
   cond: number;
+  /** Fraction of electrons that reach the plate (the plate current, 0..1).
+   *  Exactly 0 at cutoff — none cross (owner hold #10, 2026-10-14). Defaults
+   *  to cond for callers without a plate-current model. */
+  flow?: number;
   electronView: boolean;
 }) {
+  const passFrac = flow ?? cond;
   // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
   // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
   // through one <Group> scaled by StageTextScale, so at 2× every bottle,
@@ -907,7 +913,7 @@ export function GridControlView({
     const p = Skia.Path.Make();
     for (let i = 0; i < 26; i++) {
       const y = top + 8 + hashW(i * 23.3) * (bot - top - 16);
-      const passes = hashW(i * 7.7) < cond;
+      const passes = hashW(i * 7.7) < passFrac;
       const f = (ph / (2 * Math.PI) + hashW(i * 41.9)) % 1;
       if (passes) {
         // Gently curved flight through the grid gaps.
@@ -920,7 +926,7 @@ export function GridControlView({
       }
     }
     return p;
-  }, [phase, cathX, gridX, plateX, top, bot, cond]);
+  }, [phase, cathX, gridX, plateX, top, bot, passFrac]);
 
   return (
     <Canvas style={{ width, height, backgroundColor: BG }}>

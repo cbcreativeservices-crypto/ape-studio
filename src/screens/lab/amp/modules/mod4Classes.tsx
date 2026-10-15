@@ -182,6 +182,9 @@ export function Mod4Classes() {
               max: 2,
               step: 0.01,
               home: 1,
+              // Log lane (owner hold #9, 2026-10-14): 0.5× · 1.00× · 2× sit at the
+              // ends and the exact centre — equal slides are equal frequency ratios.
+              scale: 'log',
               format: (v) => `${v.toFixed(2)}× ${Math.abs(v - 1) < 0.03 ? '· TUNED' : '· mistuned'}`,
               formatShort: (v) => `${v.toFixed(2)}×`,
               onChange: setDetune,

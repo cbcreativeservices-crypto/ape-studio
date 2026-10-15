@@ -13,7 +13,7 @@
  * is the register a working engineer uses with a client: plain, technical,
  * no promises. "Live sound reinforcement" throughout.
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
@@ -44,14 +44,18 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
   const [seen, setSeen] = useState<Set<string>>(new Set());
   const [builds, setBuilds] = useState<Set<string>>(new Set(['stagebox-passive']));
   const map = useMemo(() => chapterOneMap(v), [v]);
-  const set = (next: MapVariant) => {
+  // Stable handlers (owner 2026-10-14, "redraw only the station that
+  // changed"): a STATION step hands the map the same onTap, and a station
+  // already seen keeps the same Set — so nothing but the two cards that
+  // swap the selection redraws.
+  const set = useCallback((next: MapVariant) => {
     setV(next);
     setBuilds((b) => new Set(b).add(`${next.input}-${next.house}`));
-  };
-  const tap = (id: string) => {
+  }, []);
+  const tap = useCallback((id: string) => {
     setSel(id);
-    setSeen((s) => new Set(s).add(id));
-  };
+    setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
+  }, []);
   const goals = [
     { label: 'Inspect four stations', hit: seen.size >= 4 },
     { label: 'Inspect the console', hit: seen.has('con') },
@@ -62,7 +66,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
   const node = sel ? map.nodes.find((n) => n.id === sel) : undefined;
   const spec = node && node.kind !== 'listener' ? gearSpec(node.kind) : null;
   const a11y = `The system map, three columns read top to bottom. Stage: a vocal microphone, a bass through a DI and playback into the ${v.input === 'snake' ? 'analog snake' : 'digital stagebox'}, which crosses to the console at the head of the racks column. ${v.house === 'passive' ? 'The main mix goes to the processor, the amplifiers, then passive tops and subs.' : 'The main mix goes straight to powered tops, and the sub takes its own console output.'} A pre-fader aux feeds the monitor amplifier and a wedge; a stereo aux feeds the in-ear transmitter. The tops reach the listener through the air. Tap any station.`;
-  const params: DockParam[] = [
+  const params = useMemo<DockParam[]>(() => [
     flipFader({
       id: 'station',
       label: 'STATION',
@@ -101,7 +105,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
       onSelect: (id) => set({ ...v, house: id as MapVariant['house'] }),
       sticky: true,
     },
-  ];
+  ], [map.nodes, sel, v, tap, set]);
   const inspect = spec ? (
     <Card tone="math">
       <View style={styles.inspectHead}>
@@ -175,13 +179,19 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
   const goals = [{ label: 'Trace source → listener in order', hit: complete }];
   const latched = useVisitGoals(ctx, goals);
   const base = useMemo(() => benchMap({}, {}), []);
-  const nodes: MapNode[] = base.nodes.map((n) => {
-    const i = picked.indexOf(n.id as Station);
-    const state = i < 0 ? 'unknown' : wrongAt >= 0 && i >= wrongAt ? 'flag' : 'ok';
-    return { ...n, state, dark: i < 0 };
-  });
+  // Memoised on the thread, so the map's memo sees the same arrays until a
+  // station is lit (2026-10-14 render pass).
+  const nodes = useMemo<MapNode[]>(
+    () =>
+      base.nodes.map((n) => {
+        const i = picked.indexOf(n.id as Station);
+        const state = i < 0 ? 'unknown' : wrongAt >= 0 && i >= wrongAt ? 'flag' : 'ok';
+        return { ...n, state, dark: i < 0 };
+      }),
+    [base, picked, wrongAt],
+  );
   const reachedOk = wrongAt >= 0 ? wrongAt : picked.length;
-  const edges: MapEdge[] = base.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) >= reachedOk }));
+  const edges = useMemo<MapEdge[]>(() => base.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) >= reachedOk })), [base, reachedOk]);
   const last = picked[picked.length - 1] ?? null;
   const wrongText = wrongAt >= 0 ? `${STATION_LABEL[picked[wrongAt]]} cannot come after ${wrongAt === 0 ? 'the start' : STATION_LABEL[picked[wrongAt - 1]]} — the signal has not reached it yet. Reset and try again.` : null;
   const params: DockParam[] = [

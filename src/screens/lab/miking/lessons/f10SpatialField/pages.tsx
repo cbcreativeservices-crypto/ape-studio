@@ -36,6 +36,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { DashPathEffect, Group, LinearGradient, Path, RoundedRect, Skia, vec, Circle } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../rack/rackTypes';
+import { faderUnlessFew, tapsWhenFew } from '../../engine/rack/fewStops.ts';
 import { ExpandableFigure } from '../../../kit/ExpandableFigure';
 import type { SourcePageId, Vec3, ViewBox, ViewId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
@@ -53,6 +54,7 @@ import { EAR_SEATED, EAR_STANDING, EVENT, LISTENER, PA_BOXES, PLAZA, WALKER_AT }
 import { F10_SETUPS, F10_ZONES, setupsIn, type SpatialRig, type SpatialSetup } from './model.ts';
 import { RigArt, SiteArt, rigCapsules } from './scene';
 import { along } from '../shared/field/spatial.ts';
+import { aimShort, aimWords } from '../shared/sports/venuePlan.ts';
 
 type PageFn = (p: PageProps) => ReactNode;
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -256,15 +258,21 @@ function F10Meet(p: PageProps) {
           { k: 'LOOKED AT', v: `${seen.size} / ${items.length}`, flex: 1 },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'item',
-            label: 'PART',
-            value: items.length > 1 ? k / (items.length - 1) : 0,
-            onChange: (v) => setK(Math.round(v * (items.length - 1))),
-            format: () => `${k + 1} of ${items.length} · ${item?.label ?? ''}`,
-            formatShort: () => item?.short.slice(0, 8) ?? '',
-          },
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'item',
+              label: 'PART',
+              value: items.length > 1 ? k / (items.length - 1) : 0,
+              onChange: (v) => setK(Math.round(v * (items.length - 1))),
+              format: () => `${k + 1} of ${items.length} · ${item?.label ?? ''}`,
+              formatShort: () => item?.short.slice(0, 8) ?? '',
+            },
+            items.length,
+            Math.min(k, items.length - 1),
+            (i) => items[i].short,
+            setK,
+          ),
           ...viewParam(view, setView),
           ...variantParam(p),
         ],
@@ -497,7 +505,7 @@ function F10Setups(p: PageProps) {
           { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
         ],
         params: [
-          {
+          ...faderUnlessFew(list.length, {
             kind: 'fader',
             id: 'setup',
             label: 'SETUP',
@@ -505,7 +513,7 @@ function F10Setups(p: PageProps) {
             onChange: (v) => setIdx(Math.round(v * (list.length - 1))),
             format: () => (sel ? `${i + 1} of ${list.length} · ${sel.role.toLowerCase()}` : 'no setup'),
             formatShort: () => `${i + 1} / ${list.length}`,
-          },
+          }),
           { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? sel.role.split(' ')[0] : '—', selectedId: sel?.id ?? null, onSelect: (id) => setIdx(Math.max(0, list.findIndex((q) => q.id === id))), sticky: true, options: list.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
           ...viewParam(view, setView),
           ...variantParam(p),
@@ -870,8 +878,9 @@ function F10Placement(p: PageProps) {
       label: 'FRONT',
       value: (face + 90) / 180,
       onChange: (v) => setFace(Math.round((v * 180 - 90) / 5) * 5),
-      format: () => (face === 0 ? 'facing the scene front' : `turned ${Math.abs(face)}° to the ${face < 0 ? 'left' : 'right'}`),
-      formatShort: () => `${face}°`,
+      // "left/right of centre" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
+      format: () => (face === 0 ? 'centre: facing the scene front' : aimWords(-face)),
+      formatShort: () => aimShort(-face),
       home: 0.5,
     },
     { kind: 'options', id: 'start', label: 'START', valueLabel: (start?.role ?? '').split(' ')[0], selectedId: startId, onSelect: pickStart, options: starts.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
@@ -915,7 +924,7 @@ function F10Placement(p: PageProps) {
           { k: ex === 2 ? '▸ FRONT' : 'FRONT', v: 'SCENE FRONT', tint: ex === 2 ? AMBER : undefined, flex: 1.2 },
           { k: ex >= 3 ? '▸ FOR' : 'FOR', v: 'HEADPHONES', tint: ex >= 3 ? AMBER : undefined, flex: 1.1 },
         ],
-        params: [{ kind: 'fader', id: 'piece', label: 'STEP', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
         initialParam: 'piece',
       },
       well: (

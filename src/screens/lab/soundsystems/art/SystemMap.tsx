@@ -33,7 +33,7 @@
  * Pure react-native-svg; LEDs animate through Reanimated shared values
  * (primitive props only) and collapse to a steady state under reduced motion.
  */
-import { useMemo } from 'react';
+import { memo, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
@@ -222,40 +222,65 @@ function Led({ x, y, state, dark, programme }: { x: number; y: number; state: Ma
   );
 }
 
-export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = true, columnLabels }: { nodes: readonly MapNode[]; edges: readonly MapEdge[]; selectedId?: string | null; onTap?: (id: string) => void; a11y: string; running?: boolean; columnLabels?: readonly [string, string, string] }) {
-  const programme = useProgrammeLevel(running);
-  const box = useMemo(() => new Map(nodes.map((n) => [n.id, nodeBox(n)])), [nodes]);
-  const cols = columnLabels ?? ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS'];
-  /** Lane per cable that shares a trunk or a gutter (see routeEdge). */
-  const lanes = useMemo(() => {
-    const groups = new Map<string, { i: number; len: number }[]>();
-    edges.forEach((e, i) => {
-      const a = box.get(e.from);
-      const b = box.get(e.to);
-      if (!a || !b) return;
-      const len = Math.abs(b.row - a.row);
-      if (a.col === b.col) {
-        if (len > 1) (groups.get(`t${a.col}`) ?? groups.set(`t${a.col}`, []).get(`t${a.col}`)!).push({ i, len });
-      } else if (len > 0) {
-        const g = `g${Math.min(a.col, b.col)}`;
-        (groups.get(g) ?? groups.set(g, []).get(g)!).push({ i, len });
+/** The default column names — a module constant, so the static layer's memo
+ *  never sees a fresh array per render. */
+const DEFAULT_COLS: readonly [string, string, string] = ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS'];
+
+/** Same station placement (the only node fields the static layer reads). */
+function samePlacement(a: readonly MapNode[], b: readonly MapNode[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i].id !== b[i].id || a[i].col !== b[i].col || a[i].row !== b[i].row) return false;
+  return true;
+}
+
+/** Same cables, field by field — pages rebuild their edge arrays per render
+ *  (a `dead` flag mapped in), so identity alone would redraw every cable. */
+function sameEdges(a: readonly MapEdge[], b: readonly MapEdge[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    const p = a[i];
+    const q = b[i];
+    if (p.from !== q.from || p.to !== q.to || p.level !== q.level || !!p.both !== !!q.both || !!p.dashed !== !!q.dashed || !!p.dead !== !!q.dead || p.label !== q.label) return false;
+  }
+  return true;
+}
+
+/** The STATIC layer: the backplate, the three column zones and every cable.
+ *  None of it depends on the selection, so a STATION step never redraws it
+ *  (owner 2026-10-14: "redraw only the station that changed"). Returns a
+ *  fragment, so the drawn tree is exactly what it was before the split. */
+const MapStatic = memo(
+  function MapStatic({ nodes, edges, c0, c1, c2 }: { nodes: readonly MapNode[]; edges: readonly MapEdge[]; c0: string; c1: string; c2: string }) {
+    const box = useMemo(() => new Map(nodes.map((n) => [n.id, nodeBox(n)])), [nodes]);
+    const cols = [c0, c1, c2];
+    /** Lane per cable that shares a trunk or a gutter (see routeEdge). */
+    const lanes = useMemo(() => {
+      const groups = new Map<string, { i: number; len: number }[]>();
+      edges.forEach((e, i) => {
+        const a = box.get(e.from);
+        const b = box.get(e.to);
+        if (!a || !b) return;
+        const len = Math.abs(b.row - a.row);
+        if (a.col === b.col) {
+          if (len > 1) (groups.get(`t${a.col}`) ?? groups.set(`t${a.col}`, []).get(`t${a.col}`)!).push({ i, len });
+        } else if (len > 0) {
+          const g = `g${Math.min(a.col, b.col)}`;
+          (groups.get(g) ?? groups.set(g, []).get(g)!).push({ i, len });
+        }
+      });
+      const out = new Map<number, number>();
+      for (const [g, list] of groups) {
+        // A trunk: the nearer feed takes the inner lane. A gutter jog: the
+        // farther feed does — either way the runs nest and never cross.
+        list.sort((p, q) => (g.startsWith('t') ? p.len - q.len : q.len - p.len));
+        list.forEach((it, k) => out.set(it.i, k));
       }
-    });
-    const out = new Map<number, number>();
-    for (const [g, list] of groups) {
-      // A trunk: the nearer feed takes the inner lane. A gutter jog: the
-      // farther feed does — either way the runs nest and never cross.
-      list.sort((p, q) => (g.startsWith('t') ? p.len - q.len : q.len - p.len));
-      list.forEach((it, k) => out.set(it.i, k));
-    }
-    return out;
-  }, [edges, box]);
-  /** A cable's label, printed in the card of the station it feeds. */
-  const feedTag = new Map<string, { text: string; color: string }>();
-  for (const e of edges) if (e.label && !feedTag.has(e.to)) feedTag.set(e.to, { text: e.label, color: e.level === 'air' ? '#8a8b93' : CABLE_COLORS[e.level] });
-  return (
-    <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ aspectRatio: MAP_W / MAP_H }}>
+      return out;
+    }, [edges, box]);
+    return (
+      <>
         <Rect x={0} y={0} width={MAP_W} height={MAP_H} rx={12} fill="#0e1015" stroke={colors.hairline} strokeWidth={0.8} />
         {/* the three columns: a faint zone each, its name across the top */}
         {COL_X.map((x0, i) => (
@@ -292,41 +317,107 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
             </G>
           );
         })}
+      </>
+    );
+  },
+  (p, q) => p.c0 === q.c0 && p.c1 === q.c1 && p.c2 === q.c2 && samePlacement(p.nodes, q.nodes) && sameEdges(p.edges, q.edges),
+);
+
+type CardProps = {
+  node: MapNode;
+  selected: boolean;
+  /** The line under the name (a probe's reading or the feeding cable's
+   *  name) — primitives, so the memo compares by value. */
+  tagText?: string;
+  tagColor?: string;
+  programme: SharedValue<number>;
+  /** Stable for the life of the map (see SystemMap), or absent. */
+  onTap?: (id: string) => void;
+};
+
+const sameNode = (a: MapNode, b: MapNode): boolean =>
+  a === b || (a.id === b.id && a.kind === b.kind && a.label === b.label && a.col === b.col && a.row === b.row && a.state === b.state && a.value === b.value && !!a.dark === !!b.dark);
+
+/** One STATION card. Memoised on its own fields + `selected`, so a selection
+ *  step re-renders two cards (the old and the new) instead of every card,
+ *  every glyph and every gradient on the map. The LED keeps its UI-thread
+ *  programme animation whether or not the card re-renders. */
+const MapCard = memo(
+  function MapCard({ node: n, selected: sel, tagText, tagColor, programme, onTap }: CardProps) {
+    const bx = nodeBox(n);
+    const state = n.state ?? 'ok';
+    const ring = state === 'unknown' ? '#3a3f4a' : STATE_COLOR[state];
+    // Owner 2026-09-29: "the green frames are too intense and thick — hard
+    // to read the text". A healthy station is the NORMAL case, so its
+    // frame is quiet: a thin, dim green. Only a station that needs
+    // attention (hot / clip / flag) keeps a strong coloured frame.
+    const frame = state === 'ok' ? OK_FRAME : ring;
+    const frameW = state === 'ok' ? 0.7 : 1.1;
+    const lines = cardLines(mapLabel(n.label), tagText);
+    const textX = bx.x0 + 26;
+    const baseY = lines.length === 1 ? [bx.cy + 3.5] : lines.length === 2 ? [bx.y0 + 12.5, bx.y0 + 24.5] : [bx.y0 + 10.2, bx.y0 + 20.2, bx.y0 + 30.2];
+    return (
+      <G>
+        <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill="#13161d" stroke={sel ? colors.cyanBright : frame} strokeWidth={sel ? 1.6 : frameW} opacity={n.dark ? 0.6 : 1} />
+        {state !== 'ok' && state !== 'unknown' ? <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill={ring} opacity={0.1} /> : null}
+        <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={bx.x0 + 13} y={bx.cy + 1} size={GLYPH} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
+        <Led x={bx.x0 + 1} y={bx.y0 + 1} state={state} dark={!!n.dark} programme={programme} />
+        {lines.map((line, k) => (
+          <SvgText key={k} x={textX} y={baseY[k]} fontSize={MAP_FS} fill={line.tag ? tagColor : sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="start" letterSpacing={line.tag ? 0 : 0.3}>
+            {line.text}
+          </SvgText>
+        ))}
+        {onTap ? <Rect x={bx.x0 - 3} y={bx.y0 - 4} width={CW + 6} height={CH + 8} fill="transparent" onPress={() => onTap(n.id)} accessibilityLabel={`${n.label}${state === 'unknown' ? ', not probed — tap to probe' : `, reads ${state === 'ok' ? 'healthy' : state === 'none' ? 'no signal' : state}`}${n.value ? `, ${n.value}` : ''}${sel ? ', selected' : ''}`} /> : null}
+      </G>
+    );
+  },
+  (p, q) => p.selected === q.selected && p.tagText === q.tagText && p.tagColor === q.tagColor && p.programme === q.programme && p.onTap === q.onTap && sameNode(p.node, q.node),
+);
+
+/** The map. A selection change re-renders this shell (a loop over the nodes),
+ *  the card that lost the selection and the card that gained it — the static
+ *  layer and every other card bail out on their memo. */
+export const SystemMap = memo(function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = true, columnLabels }: { nodes: readonly MapNode[]; edges: readonly MapEdge[]; selectedId?: string | null; onTap?: (id: string) => void; a11y: string; running?: boolean; columnLabels?: readonly [string, string, string] }) {
+  const programme = useProgrammeLevel(running);
+  const cols = columnLabels ?? DEFAULT_COLS;
+  // Pages hand in a fresh onTap arrow every render; the cards get one stable
+  // function that calls the latest, so a new arrow never redraws a card.
+  const tapRef = useRef(onTap);
+  useLayoutEffect(() => {
+    tapRef.current = onTap;
+  });
+  const stableTap = useCallback((id: string) => tapRef.current?.(id), []);
+  /** A cable's label, printed in the card of the station it feeds. */
+  const feedTag = useMemo(() => {
+    const m = new Map<string, { text: string; color: string }>();
+    for (const e of edges) if (e.label && !m.has(e.to)) m.set(e.to, { text: e.label, color: e.level === 'air' ? '#8a8b93' : CABLE_COLORS[e.level] });
+    return m;
+  }, [edges]);
+  return (
+    <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ aspectRatio: MAP_W / MAP_H }}>
+        <MapStatic nodes={nodes} edges={edges} c0={cols[0]} c1={cols[1]} c2={cols[2]} />
         {/* stations */}
         {nodes.map((n) => {
-          const bx = box.get(n.id)!;
-          const sel = selectedId === n.id;
           const state = n.state ?? 'ok';
           const ring = state === 'unknown' ? '#3a3f4a' : STATE_COLOR[state];
-          // Owner 2026-09-29: "the green frames are too intense and thick — hard
-          // to read the text". A healthy station is the NORMAL case, so its
-          // frame is quiet: a thin, dim green. Only a station that needs
-          // attention (hot / clip / flag) keeps a strong coloured frame.
-          const frame = state === 'ok' ? OK_FRAME : ring;
-          const frameW = state === 'ok' ? 0.7 : 1.1;
-          const tag = n.value ? { text: n.value, color: ring } : feedTag.get(n.id);
-          const lines = cardLines(mapLabel(n.label), tag?.text);
-          const textX = bx.x0 + 26;
-          const baseY = lines.length === 1 ? [bx.cy + 3.5] : lines.length === 2 ? [bx.y0 + 12.5, bx.y0 + 24.5] : [bx.y0 + 10.2, bx.y0 + 20.2, bx.y0 + 30.2];
+          const feed = n.value ? undefined : feedTag.get(n.id);
           return (
-            <G key={n.id}>
-              <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill="#13161d" stroke={sel ? colors.cyanBright : frame} strokeWidth={sel ? 1.6 : frameW} opacity={n.dark ? 0.6 : 1} />
-              {state !== 'ok' && state !== 'unknown' ? <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill={ring} opacity={0.1} /> : null}
-              <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={bx.x0 + 13} y={bx.cy + 1} size={GLYPH} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
-              <Led x={bx.x0 + 1} y={bx.y0 + 1} state={state} dark={!!n.dark} programme={programme} />
-              {lines.map((line, k) => (
-                <SvgText key={k} x={textX} y={baseY[k]} fontSize={MAP_FS} fill={line.tag ? tag!.color : sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="start" letterSpacing={line.tag ? 0 : 0.3}>
-                  {line.text}
-                </SvgText>
-              ))}
-              {onTap ? <Rect x={bx.x0 - 3} y={bx.y0 - 4} width={CW + 6} height={CH + 8} fill="transparent" onPress={() => onTap(n.id)} accessibilityLabel={`${n.label}${state === 'unknown' ? ', not probed — tap to probe' : `, reads ${state === 'ok' ? 'healthy' : state === 'none' ? 'no signal' : state}`}${n.value ? `, ${n.value}` : ''}${sel ? ', selected' : ''}`} /> : null}
-            </G>
+            <MapCard
+              key={n.id}
+              node={n}
+              selected={selectedId === n.id}
+              tagText={n.value ? n.value : feed?.text}
+              tagColor={n.value ? ring : feed?.color}
+              programme={programme}
+              onTap={onTap ? stableTap : undefined}
+            />
           );
         })}
       </Svg>
     </View>
   );
-}
+});
 
 /** The text lines of a card: the station's name (broken onto two lines when
  *  it is wider than the card's text area — POWERED CABINET), then the cable

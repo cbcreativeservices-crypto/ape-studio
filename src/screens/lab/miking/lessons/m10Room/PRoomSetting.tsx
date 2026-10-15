@@ -18,6 +18,7 @@ import { Canvas, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-n
 import { Wedge2WayTop } from '../shared/wedge2Way';
 import { useStageTextScale } from '../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../rack/rackTypes';
+import { tapsWhenFew } from '../../engine/rack/fewStops.ts';
 import type { SettingItem, ViewBox, ViewId } from '../../engine/model/types.ts';
 import { copyOf } from '../../engine/model/copy.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
@@ -201,18 +202,24 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
   };
   const fader = (list: readonly SettingItem[], s: string | null, p: (id: string) => void): DockParam => {
     const idx = Math.max(0, list.findIndex((i) => i.id === s));
-    return {
-      kind: 'fader',
-      id: 'item',
-      label: 'ITEM',
-      value: list.length > 1 ? idx / (list.length - 1) : 0,
-      onChange: (v) => {
-        const it = list[Math.round(v * (list.length - 1))];
-        if (it) p(it.id);
+    return tapsWhenFew(
+      {
+        kind: 'fader',
+        id: 'item',
+        label: 'ITEM',
+        value: list.length > 1 ? idx / (list.length - 1) : 0,
+        onChange: (v) => {
+          const it = list[Math.round(v * (list.length - 1))];
+          if (it) p(it.id);
+        },
+        format: () => (s ? `${byId(s)?.short ?? s} · ${byId(s)?.tag ?? ''}` : `step through the ${list.length} items`),
+        formatShort: () => (s ? (byId(s)?.short ?? s).slice(0, 9) : 'STEP'),
       },
-      format: () => (s ? `${byId(s)?.short ?? s} · ${byId(s)?.tag ?? ''}` : `step through the ${list.length} items`),
-      formatShort: () => (s ? (byId(s)?.short ?? s).slice(0, 9) : 'STEP'),
-    };
+      list.length,
+      list.findIndex((q) => q.id === s),
+      (i) => list[i].short,
+      (i) => p(list[i].id),
+    );
   };
   const viewToggle = (v: ViewId, set: (f: (x: ViewId) => ViewId) => void): DockParam => ({ kind: 'toggle', id: 'view', label: v === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: v === 'top', onToggle: () => set((x) => (x === 'side' ? 'top' : 'side')) });
   const bezel = (it: SettingItem | undefined, extra: BezelItem): BezelItem[] => [

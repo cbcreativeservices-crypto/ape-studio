@@ -602,6 +602,9 @@ function LessonCard({ head, body }: { head: string; body: string }) {
 }
 
 /* ── the scene ──────────────────────────────────────────────────────────── */
+/** Why STORED SLACK stops moving once confirmed (slider HOLD #18). */
+const SLACK_LOCK_REASON = 'confirmed — the loop is dressed and sized to the project note.';
+
 export function LabelScene({ width, completed, onComplete, openSources }: CiModuleProps) {
   // A — the frustration
   const [aTapped, setATapped] = useState<Set<number>>(() => new Set(completed ? [0, 1, 2] : []));
@@ -701,15 +704,30 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
      elements are simply rendered twice. ──────────────────────────────────── */
   const slackDock = (
     <View style={{ gap: 8 }}>
-      <DragSlider
-        value={slack}
-        onChange={(v) => {
-          if (!dDone) setSlack(v);
-        }}
-        label="STORED SLACK"
-        readout={ZONE_NAME[zone]}
-        tint={ZONE_TINT[zone]}
-      />
+      {/* LOCKED after CONFIRM (slider HOLD #18, owner 2026-10-14): the cap
+          used to keep riding the finger after the answer was banked. Same
+          idiom as the rack's `locked` fader — dimmed, never takes a touch,
+          the reason printed under it as "LABEL — locked: reason". */}
+      <View
+        pointerEvents={dDone ? 'none' : 'auto'}
+        style={dDone ? styles.slackLocked : null}
+        accessibilityState={{ disabled: dDone }}
+      >
+        <DragSlider
+          value={slack}
+          onChange={(v) => {
+            if (!dDone) setSlack(v);
+          }}
+          label="STORED SLACK"
+          readout={ZONE_NAME[zone]}
+          tint={ZONE_TINT[zone]}
+        />
+      </View>
+      {dDone ? (
+        <Text style={styles.lockedNote} accessibilityLiveRegion="polite">
+          STORED SLACK — locked: {SLACK_LOCK_REASON}
+        </Text>
+      ) : null}
       <View style={{ gap: 3 }}>
         {(['little', 'good', 'much'] as const).map((z) => (
           <Text key={z} style={[styles.zoneNote, zone === z && { color: ZONE_TINT[z], fontFamily: fonts.barlowMedium }]}>
@@ -964,6 +982,9 @@ const styles = StyleSheet.create({
   docRowHot: { backgroundColor: 'rgba(255,198,77,.08)' },
   docCell: { fontFamily: fonts.mono, fontSize: 10.5, lineHeight: 15, color: colors.textSecondary, paddingRight: 8 },
   zoneNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17.5, color: colors.textSub },
+  // STORED SLACK after CONFIRM — the rack's locked-key look (RackUnit lockedNote).
+  slackLocked: { opacity: 0.45 },
+  lockedNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, textAlign: 'center', paddingHorizontal: 6 },
   lessonCard: { gap: 6, borderRadius: 10, borderLeftWidth: 3, borderLeftColor: colors.amber, backgroundColor: '#151310', padding: 12 },
   lessonHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.amber },
   lessonBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },

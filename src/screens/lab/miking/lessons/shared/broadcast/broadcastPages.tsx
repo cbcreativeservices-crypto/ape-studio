@@ -680,7 +680,7 @@ export function makeBroadcastSound(spec: BroadcastSoundSpec): PageFn {
     const { lesson, answers, onAnswered, hidden } = p;
     const S = lesson.sound;
     const n = S.stages.length;
-    const st = useStepper(n, hidden);
+    const st = useStepper(n, hidden, S.stages.map((q) => q.title));
     const [predicted, setPredicted] = useState<string | null>(null);
     const pred = lesson.predictions.sound;
     const stage = S.stages[st.shown - 1];

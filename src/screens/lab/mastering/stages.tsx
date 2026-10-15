@@ -115,7 +115,7 @@ export const WAVE_ASPECT = 360 / 200;
  * gain-reduction trace above, the ceiling marked, the playhead riding the
  * sounding clip (a SharedValue — never React state per frame).
  */
-export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, pending, preparing, onTap }: {
+export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, pending, preparing, onTap, previewNote }: {
   width: number;
   height: number;
   ov: Overview | null;
@@ -136,6 +136,9 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
    *  plays the shown version or stops it — in FULL SCREEN too, where the
    *  same render is drawn. The dock keys stay the named transport. */
   onTap?: () => void;
+  /** The picture is a live ESTIMATE while a fader moves (drivePreview, slider
+   *  HOLD #20): this note says so where the match line sits. */
+  previewNote?: string;
 }) {
   const H = 200;
   const grTop = 14;
@@ -212,7 +215,9 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
           </G>
         ))}
         <SvgText x={x0} y={H - 4} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>
-        {matchDb != null && matchDb !== 0 ? (
+        {previewNote ? (
+          <SvgText x={x1} y={H - 4} fontSize={FONT_S} fill={ink.amber} textAnchor="end" fontFamily={fonts.oswaldMedium}>{previewNote}</SvgText>
+        ) : matchDb != null && matchDb !== 0 ? (
           <SvgText x={x1} y={H - 4} fontSize={FONT} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>played at {matchDb.toFixed(1)} dB · matched</SvgText>
         ) : matchDb === 0 && ov ? (
           <SvgText x={x1} y={H - 4} fontSize={FONT} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>played as rendered</SvgText>

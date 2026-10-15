@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { confirmDialog } from '../../../../lib/confirm';
-import { faderParam } from '../DrumRack';
+import { pitchFaderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, YourRun, noteName } from '../kit';
 import { DRUM_KEY_TERMS, type TuningNote } from '../drumContent';
@@ -207,8 +207,8 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
               { k: 'VERDICT', v: verdict.kind.toUpperCase(), tint: verdict.kind === 'distinct' ? colors.green : verdict.kind === 'close' ? colors.amber : colors.red, flex: 1.4 },
             ],
             params: [
-              faderParam({ id: 'rack', label: 'RACK', value: rackHz, min: 100, max: 300, step: 1, format: (v) => `12" rack tom ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setRackHz, home: 200 }),
-              faderParam({ id: 'floor', label: 'FLOOR', value: floorHz, min: 70, max: 220, step: 1, format: (v) => `16" floor tom ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setFloorHz, home: 110 }),
+              pitchFaderParam({ id: 'rack', label: 'RACK', value: rackHz, min: 100, max: 300, step: 1, format: (v) => `12" rack tom ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setRackHz, home: 200 }),
+              pitchFaderParam({ id: 'floor', label: 'FLOOR', value: floorHz, min: 70, max: 220, step: 1, format: (v) => `16" floor tom ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setFloorHz, home: 110 }),
               { kind: 'action', id: 'r', label: '▶ RACK', onPress: () => { stopAll(); rack.play(); } },
               { kind: 'action', id: 'f', label: '▶ FLOOR', onPress: () => { stopAll(); floor.play(); } },
               { kind: 'action', id: 'b', label: '▶ BOTH', onPress: () => { stopAll(); both.play(); } },

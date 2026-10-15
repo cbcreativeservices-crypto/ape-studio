@@ -32,6 +32,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { faderUnlessFew, tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { Lesson, SourcePageId, Vec3 } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
@@ -232,18 +233,24 @@ export function EnsembleMeet(p: PageProps) {
           { k: 'LOOKED AT', v: `${seen.size} / ${secs.length}`, flex: 1 },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'sec',
-            label: 'SECTION',
-            value: secs.length > 1 ? idx / (secs.length - 1) : 0,
-            onChange: (v) => {
-              const q = secs[Math.round(v * (secs.length - 1))];
-              if (q) pick(q.id);
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'sec',
+              label: 'SECTION',
+              value: secs.length > 1 ? idx / (secs.length - 1) : 0,
+              onChange: (v) => {
+                const q = secs[Math.round(v * (secs.length - 1))];
+                if (q) pick(q.id);
+              },
+              format: () => (sec ? `${sec.short} · ${players.length} ${players.length === 1 ? who : `${who}s`}` : `step through the ${secs.length} sections`),
+              formatShort: () => (sec ? sec.short.slice(0, 9) : 'STEP'),
             },
-            format: () => (sec ? `${sec.short} · ${players.length} ${players.length === 1 ? who : `${who}s`}` : `step through the ${secs.length} sections`),
-            formatShort: () => (sec ? sec.short.slice(0, 9) : 'STEP'),
-          },
+            secs.length,
+            secs.findIndex((q) => q.id === secId),
+            (i) => secs[i].short,
+            (i) => pick(secs[i].id),
+          ),
           ...viewParam(view, setView, VW, viewsFor(lesson)),
           ...variantParam(p),
         ],
@@ -447,7 +454,7 @@ export function EnsembleSetups(p: PageProps) {
         badge: plot ? 'Placed for you · amber dashed = where each mic points · coral dots = the loudest neighbour reaching each close mic · the corner box = the array’s exact shape' : 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
         bezel,
         params: [
-          {
+          ...faderUnlessFew(list.length, {
             kind: 'fader',
             id: 'setup',
             label: 'SETUP',
@@ -455,7 +462,7 @@ export function EnsembleSetups(p: PageProps) {
             onChange: (v) => setIdx(Math.round(v * (list.length - 1))),
             format: () => (sel ? `${i + 1} of ${list.length} · ${sel.role.toLowerCase()}` : 'no setup'),
             formatShort: () => `${i + 1} / ${list.length}`,
-          },
+          }),
           { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? sel.role.split(' ')[0] : '—', selectedId: sel?.id ?? null, onSelect: (id) => setIdx(Math.max(0, list.findIndex((q) => q.id === id))), sticky: true, options: list.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
           ...viewParam(view, setView, VW, viewsFor(lesson)),
           ...variantParam(p),
@@ -740,7 +747,7 @@ export function EnsemblePlacement(p: PageProps) {
           { k: `${exStep === 3 ? '▸ ' : ''}${exC.z >= 0 ? 'IN FRONT' : 'BEHIND'}`, v: fmtM(Math.abs(exC.z)), tint: exStep === 3 ? '#ffc64d' : undefined, flex: 0.9 },
           { k: exStep >= 4 ? '▸ NEAR / FAR' : 'NEAR / FAR', v: `${exBias.toFixed(0)} dB`, tint: exStep >= 4 ? '#ffc64d' : undefined, flex: 1 },
         ],
-        params: [{ kind: 'fader', id: 'piece', label: 'STEP', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1} / ${pieces.length}` }],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1} / ${pieces.length}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep)],
         initialParam: 'piece',
       },
       well: (

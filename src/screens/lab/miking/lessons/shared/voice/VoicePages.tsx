@@ -51,7 +51,7 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
     const { lesson, answers, onAnswered, hidden } = p;
     const S = lesson.sound;
     const n = S.stages.length;
-    const st = useStepper(n, hidden);
+    const st = useStepper(n, hidden, S.stages.map((q) => q.title));
     const [predicted, setPredicted] = useState<string | null>(null);
     const [kind, setKind] = useState<AirKind>('vowel');
     const [tried, setTried] = useState<ReadonlySet<AirKind>>(() => new Set(['vowel']));

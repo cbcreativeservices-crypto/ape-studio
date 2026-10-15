@@ -34,7 +34,7 @@
  *    ARC LENGTH at the current time (head glued to the nib); a wet-ink head
  *    rides the reveal as a short bright dash window.
  */
-import { memo, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { StageAspectReport, StageInFullScreen } from './rack/stageAspect';
@@ -64,6 +64,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { fonts } from '../../theme/tokens';
 
 /** Damping reference: the chips mean "amplitude left after TURNS_REF turns";
@@ -387,6 +388,36 @@ export function drawingPath(
   return d;
 }
 
+/* ── GHOST of the outgoing figure (slider HOLD #2, owner 2026-10-14) ──────
+   A settings change pulls a fresh sheet and the redraw takes up to a minute;
+   the old figure — exactly as far as it had been drawn — stays on the paper
+   at a faint alpha until the new figure completes, then it is dropped. */
+type InkRun = { dP: string; dI: string; sP: number[]; sI: number[]; totP: number; totI: number; N: number };
+type Ghost = { dP: string; dI: string; lenP: number; lenI: number; totP: number; totI: number; frac: number };
+/** Ghost ink opacity — well under the live ink's 0.6 so the new pen reads first. */
+export const GHOST_ALPHA = 0.16;
+/** An outgoing figure drawn less than this is not worth a ghost (a run that
+ *  had only just begun — e.g. mid-drag, a re-render a tick later). */
+export const GHOST_MIN_FRAC = 0.04;
+/** Drawn length along a cumulative-length table at fraction `frac` (0..1). */
+export function inkLenAt(s: number[], N: number, frac: number): number {
+  const f = Math.min(N - 0.001, Math.max(0, frac * N));
+  const i = Math.floor(f);
+  return s[i] + (s[i + 1] - s[i]) * (f - i);
+}
+function ghostOf(run: InkRun, frac: number): Ghost {
+  const full = frac >= 0.999;
+  return {
+    dP: run.dP,
+    dI: run.dI,
+    lenP: full ? run.totP : inkLenAt(run.sP, run.N, frac),
+    lenI: full ? run.totI : inkLenAt(run.sI, run.N, frac),
+    totP: run.totP,
+    totI: run.totI,
+    frac,
+  };
+}
+
 export const HarmonographMachine = memo(function HarmonographMachine({
   n1,
   n2,
@@ -502,6 +533,21 @@ export const HarmonographMachine = memo(function HarmonographMachine({
      sheet; an unfreeze resumes the same drawing. */
   const progress = useSharedValue(0);
   const runKeyRef = useRef<unknown[]>([]);
+  /** The outgoing figure, held faintly while the new one draws (HOLD #2). */
+  const [ghost, setGhost] = useState<Ghost | null>(null);
+  const ghostRef = useRef<Ghost | null>(null);
+  const setGhostBoth = useCallback((g: Ghost | null) => {
+    ghostRef.current = g;
+    setGhost(g);
+  }, []);
+  /** Bumped per fresh sheet: a completion from an older run drops nothing. */
+  const runTokenRef = useRef(0);
+  const dropGhost = useCallback(
+    (token: number) => {
+      if (token === runTokenRef.current && ghostRef.current) setGhostBoth(null);
+    },
+    [setGhostBoth],
+  );
   // PAUSED OFF SCREEN (pattern hunt P10, 2026-10-02): the endless redraw ran
   // on the UI thread behind any pushed screen. Blur holds it in place like
   // FREEZE (same run key → it resumes where it left off) but reports nothing.
@@ -515,9 +561,24 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       return;
     }
     const key = [ink, dDrawMs, epoch];
-    const sameRun = runKeyRef.current.every((v, i) => v === key[i]) && runKeyRef.current.length === 3;
+    const prevKey = runKeyRef.current;
+    const sameRun = prevKey.every((v, i) => v === key[i]) && prevKey.length === 3;
     runKeyRef.current = key;
-    if (!sameRun) progress.value = 0;
+    if (!sameRun) {
+      runTokenRef.current += 1;
+      // GHOST (slider HOLD #2, owner 2026-10-14): a fader move used to wipe
+      // the sheet and the redraw takes up to a minute. The outgoing figure —
+      // as far as it had been drawn — stays faintly under the new pen until
+      // the new figure completes. Read BEFORE the write below (a JS write
+      // lands on the UI runtime later; the read is synchronous). A NEW
+      // DRAWING (epoch bump) is a deliberate clean sheet: no ghost.
+      const outFrac = Math.min(1, Math.max(0, progress.value));
+      if (prevKey.length === 3 && prevKey[2] !== epoch) setGhostBoth(null);
+      else if (prevKey.length === 3 && outFrac >= GHOST_MIN_FRAC && outFrac >= (ghostRef.current?.frac ?? 0)) {
+        setGhostBoth(ghostOf(prevKey[0] as InkRun, outFrac));
+      }
+      progress.value = 0;
+    }
     // A fresh sheet starts at 0 by definition: reading progress back here
     // returned the OLD fraction (a JS write lands on the UI runtime a moment
     // later), so a new drawing ran (1 − old) as long — far too fast, or
@@ -525,8 +586,13 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     const cur = sameRun ? Math.min(1, Math.max(0, progress.value)) : 0;
     // a LIVING machine: draw at the real rate, hold the finished art ~3 s,
     // then a fresh sheet and draw again — whenever you look, it moves.
+    const token = runTokenRef.current;
     progress.value = withSequence(
-      withTiming(1, { duration: (1 - cur) * dDrawMs, easing: Easing.linear }),
+      // The new figure is complete → the ghost of the old one is dropped.
+      withTiming(1, { duration: (1 - cur) * dDrawMs, easing: Easing.linear }, (finished) => {
+        'worklet';
+        if (finished) scheduleOnRN(dropGhost, token);
+      }),
       withRepeat(
         withSequence(
           withDelay(3000, withTiming(0, { duration: 60 })),
@@ -537,7 +603,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       ),
     );
     return () => cancelAnimation(progress);
-  }, [ink, dDrawMs, progress, frozen, epoch, onFreezeFraction, focused]);
+  }, [ink, dDrawMs, progress, frozen, epoch, onFreezeFraction, focused, setGhostBoth, dropGhost]);
 
   const M = useDerivedValue(() => motion(progress.value * thetaMax, mode));
 
@@ -942,6 +1008,17 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             </Defs>
             <Polygon points={`${P2(PLATC[3])} ${P2(PLATC[2])} ${P2(PLATE[1])} ${P2(PLATE[0])}`} fill="#241a0d" />
             <Polygon points={PLATC.map(P2).join(' ')} fill="url(#hmPaperP)" stroke="#b8ad8d" strokeWidth={0.8} />
+            {ghost ? (
+              <Path
+                d={ghost.dP}
+                stroke={inkDim}
+                strokeWidth={1.05}
+                strokeOpacity={GHOST_ALPHA}
+                fill="none"
+                strokeLinejoin="round"
+                strokeDasharray={`${ghost.lenP.toFixed(1)} ${ghost.totP.toFixed(1)}`}
+              />
+            ) : null}
             <APath
               d={ink.dP}
               animatedProps={inkP}
@@ -1012,6 +1089,17 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         <ACircle animatedProps={penCollar} cx={R_pen[0]} cy={R_pen[1] - 1} r={1.2} fill="#c9a25e" />
         <Rect x={IX} y={IY} width={IW} height={IW} rx={8} fill="url(#hmPaperT)" stroke="#26262c" strokeWidth={1.3} />
         <Rect x={IX + 2} y={IY + 2} width={IW - 4} height={IW - 4} rx={6} fill="none" stroke="#b8ad8d" strokeWidth={0.6} strokeOpacity={0.6} />
+        {ghost ? (
+          <Path
+            d={ghost.dI}
+            stroke={inkDim}
+            strokeWidth={0.95}
+            strokeOpacity={GHOST_ALPHA}
+            fill="none"
+            strokeLinejoin="round"
+            strokeDasharray={`${ghost.lenI.toFixed(1)} ${ghost.totI.toFixed(1)}`}
+          />
+        ) : null}
         <APath
           d={ink.dI}
           animatedProps={inkI}

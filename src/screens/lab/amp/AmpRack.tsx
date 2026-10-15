@@ -25,6 +25,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
 import type { BezelItem, DockParam, StageSize, TrayOption } from '../rack/rackTypes';
+import { laneFromValue, valueFromLane, type LaneScale } from './ampLaneMap';
 import { CONCEPT_NOTE, WaveStack, rigAspect, rigLegend, rigPanelCount, useRigPlayhead, type RigPicture } from './AmpRig';
 
 export type AmpRackSpec = {
@@ -131,16 +132,18 @@ export function faderParam(o: {
   /** Neutral position in the page's units (double-tap returns here). */
   home?: number;
   tint?: string;
+  /** Lane scale: 'log' rides a RATIO range (min > 0) logarithmically —
+   *  equal slides = equal ratios (Class C TUNE, slider audit hold #9). */
+  scale?: LaneScale;
 }): DockParam {
-  const span = o.max - o.min || 1;
   const step = o.step ?? 0.01;
   return {
     kind: 'fader',
     id: o.id,
     label: o.label,
-    value: (o.value - o.min) / span,
+    value: laneFromValue(o.value, o.min, o.max, o.scale),
     onChange: (t) => {
-      const raw = o.min + Math.max(0, Math.min(1, t)) * span;
+      const raw = valueFromLane(t, o.min, o.max, o.scale);
       const snapped = Math.min(o.max, Math.max(o.min, Math.round(raw / step) * step));
       // Same step as now → no call (slider pass 2026-10-14): the lane hands the
       // page a value every frame, and a handler that counts or builds objects
@@ -152,7 +155,7 @@ export function faderParam(o: {
     formatShort: o.formatShort ? () => o.formatShort!(o.value) : undefined,
     level: o.level,
     tint: o.tint,
-    home: o.home != null ? (o.home - o.min) / span : undefined,
+    home: o.home != null ? laneFromValue(o.home, o.min, o.max, o.scale) : undefined,
   };
 }
 

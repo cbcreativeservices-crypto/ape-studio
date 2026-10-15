@@ -28,6 +28,7 @@ import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
 import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
+import { createLaneFeed, type LaneFeed } from '../rack/laneFeed';
 import type { PageCtx } from '../kit/PagedLab';
 import { persistAllowed } from '../../../features/commercial/tier';
 import { useTier } from '../../../features/commercial/useTier';
@@ -818,6 +819,55 @@ function stepValue(v: number, delta: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v + delta));
 }
 
+/** A dragged channel fader hands the page at most one value per tick (the
+ *  rack lane's laneFeed rate, 16 ms — a timer, never a rAF). */
+export const STRIP_FADER_TICK_MS = 16;
+
+/**
+ * The channel fader's live PREVIEW (slider HOLD #20, owner 2026-10-14). Every
+ * dB step of a drag went straight to the page, which rebuilds the whole
+ * console, the variant set and the render pipeline — so the cap and its dB
+ * label only caught up when the page did, and on a busy page the fader drew
+ * nothing until the finger stopped. Now the STRIP draws the finger's value at
+ * once (strip-local state: only this strip re-renders) and the page gets the
+ * newest value through the rack's laneFeed — ≤ 1 per tick, the last one never
+ * lost. The preview hands back to the page's value as soon as the page has
+ * caught up, or the moment the page changes it itself (RESET MIX mid-drag).
+ */
+function useFaderPreview(pageDb: number, deliver: (db: number) => void): { shownDb: number; onDrag: (db: number) => void } {
+  const [previewDb, setPreviewDb] = useState<number | null>(null);
+  const deliverRef = useRef(deliver);
+  deliverRef.current = deliver;
+  /** The value most recently handed to the page — a page value equal to it
+   *  is our own drag landing; anything else is the page's own change. */
+  const sentRef = useRef<number | null>(null);
+  const feedRef = useRef<LaneFeed | null>(null);
+  if (feedRef.current == null) {
+    feedRef.current = createLaneFeed({
+      deliver: (v) => {
+        sentRef.current = v;
+        deliverRef.current(v);
+      },
+      schedule: (cb) => setTimeout(cb, STRIP_FADER_TICK_MS),
+      cancel: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
+    });
+  }
+  // Unmount mid-drag (page turn): the last value still reaches the page.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => feedRef.current?.end(), []);
+  useEffect(() => {
+    if (previewDb == null) return;
+    // Caught up — or changed by the page itself (not the value we sent).
+    if (pageDb === previewDb || pageDb !== sentRef.current) setPreviewDb(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only a PAGE change decides
+  }, [pageDb]);
+  const onDrag = useCallback((db: number) => {
+    setPreviewDb(db);
+    feedRef.current?.move(db);
+  }, []);
+  return { shownDb: previewDb ?? pageDb, onDrag };
+}
+
 /** One channel strip — now drawn as GEAR (owner design pass 2026-09-11: "our
  *  console is switches and buttons… it creates no familiarity with the gear").
  *  Same wired state, same 2 dB / 25-step increments, same a11y reach — but the
@@ -852,6 +902,7 @@ function Strip({
   anySolo: boolean;
 }) {
   const t = SESSION_TRACKS.find((x) => x.id === id)!;
+  const fader = useFaderPreview(value.faderDb, (db) => onChange(id, { faderDb: db }));
   return (
     <StripFrame>
       {show.pol ? (
@@ -882,8 +933,8 @@ function Strip({
       {show.fader !== false ? (
         <GearFader
           name={t.name}
-          valueDb={value.faderDb}
-          onChangeDb={(db) => onChange(id, { faderDb: stepValue(db, 0, -60, 12) })}
+          valueDb={fader.shownDb}
+          onChangeDb={(db) => fader.onDrag(stepValue(db, 0, -60, 12))}
         />
       ) : null}
       {/* The tape is also the SOLO switch (owner ruling 2026-09-11) — real

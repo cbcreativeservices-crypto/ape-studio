@@ -32,6 +32,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { SourcePageId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, KeyButton, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
@@ -181,18 +182,24 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             { k: 'VIEW', v: SHORT[view], flex: 1.1 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'part',
-              label: 'PART',
-              value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
-              onChange: (v) => {
-                const p = parts[Math.round(v * (parts.length - 1))];
-                if (p) pick(p.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'part',
+                label: 'PART',
+                value: parts.length > 1 ? pIdx / (parts.length - 1) : 0,
+                onChange: (v) => {
+                  const p = parts[Math.round(v * (parts.length - 1))];
+                  if (p) pick(p.id);
+                },
+                format: () => (shown ? shown.title : `step through the ${parts.length} parts`),
+                formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
               },
-              format: () => (shown ? shown.title : `step through the ${parts.length} parts`),
-              formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
-            },
+              parts.length,
+              parts.findIndex((p) => p.id === partId),
+              (i) => parts[i].title,
+              (i) => pick(parts[i].id),
+            ),
             { kind: 'options', id: 'view', label: 'VIEW', valueLabel: SHORT[view], selectedId: view, onSelect: (id) => setView(id as KeysView['id']), sticky: true, options: spec.views.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })) },
             ...(!rhodes && view === 'side' ? [{ kind: 'toggle' as const, id: 'mount', label: mount === 'lid' ? 'ON THE LID' : 'ON THE RAIL', value: mount === 'rail', onToggle: () => setMount((m) => (m === 'lid' ? 'rail' : 'lid')) }] : []),
           ],
@@ -231,18 +238,24 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             { k: rhodes ? 'AMP' : 'MOUNT', v: rhodes ? 'COMBO' : mount === 'lid' ? 'LID' : 'RAIL', flex: 1.1 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'part',
-              label: 'PART',
-              value: sParts.length > 1 ? sIdx / (sParts.length - 1) : 0,
-              onChange: (v) => {
-                const p = sParts[Math.round(v * (sParts.length - 1))];
-                if (p) sPick(p.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'part',
+                label: 'PART',
+                value: sParts.length > 1 ? sIdx / (sParts.length - 1) : 0,
+                onChange: (v) => {
+                  const p = sParts[Math.round(v * (sParts.length - 1))];
+                  if (p) sPick(p.id);
+                },
+                format: () => (sShown ? `${sShown.title} · ${sSeen.size} of ${sParts.length} looked at` : `step through the ${sParts.length} parts`),
+                formatShort: () => (sShown ? sShown.title.split(' ')[0].slice(0, 9) : 'STEP'),
               },
-              format: () => (sShown ? `${sShown.title} · ${sSeen.size} of ${sParts.length} looked at` : `step through the ${sParts.length} parts`),
-              formatShort: () => (sShown ? sShown.title.split(' ')[0].slice(0, 9) : 'STEP'),
-            },
+              sParts.length,
+              sParts.findIndex((p) => p.id === sPart),
+              (i) => sParts[i].title,
+              (i) => sPick(sParts[i].id),
+            ),
             { kind: 'options', id: 'view', label: 'VIEW', valueLabel: SHORT[sView], selectedId: sView, onSelect: (id) => setSView(id as typeof sView), sticky: true, options: sViews },
             rhodes ? { kind: 'toggle', id: 'cloth', label: cloth ? 'CLOTH ON' : 'CLOTH OFF', value: !cloth, onToggle: () => setCloth((x) => !x) } : { kind: 'toggle', id: 'mount', label: mount === 'lid' ? 'LATER MODEL' : 'EARLIER MODEL', value: mount === 'rail', onToggle: () => setMount((m) => (m === 'lid' ? 'rail' : 'lid')) },
           ],
@@ -454,7 +467,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             { k: 'BACK AIR', v: shown >= 3 ? (coneBack === 'open' ? 'PULLED · OUT' : rhodes ? 'PULLED · IN BOX' : 'INTO THE CASE') : '—', flex: 1.4 },
           ],
           params: [
-            { kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`, formatShort: () => `${shown} / ${n}` },
+            tapsWhenFew({ kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`, formatShort: () => `${shown} / ${n}` }, n, shown - 1, (i) => `${i + 1} · ${lesson.sound.stages[i].title}`, (i) => goTo(i + 1)),
             { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
             ...(spec.backs.length > 1
               ? [
@@ -534,7 +547,8 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                 { k: 'FROM CENTRE', v: lenCell(SPOT_WORDS[spot12].r).v, sub: lenCell(SPOT_WORDS[spot12].r).sub, flex: 1.3 },
                 { k: 'TENDS TO', v: spot12 === 'centre' ? 'BRIGHTER' : spot12 === 'boundary' ? 'BETWEEN' : 'WARMER', flex: 1.3 },
               ],
-              params: [{ kind: 'fader', id: 'spot', label: 'SPOT', value: SPOTS_12.indexOf(spot12) / 2, onChange: (v) => setSpot12(SPOTS_12[Math.round(v * 2)]), format: () => SPOT_WORDS[spot12].title.toLowerCase(), formatShort: () => (spot12 === 'centre' ? 'CENTRE' : spot12 === 'boundary' ? 'CAP EDGE' : 'EDGE') }],
+              // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
+              params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: spot12 === 'centre' ? 'CENTRE' : spot12 === 'boundary' ? 'CAP EDGE' : 'EDGE', valueA11y: SPOT_WORDS[spot12].title.toLowerCase(), selectedId: spot12, onSelect: (id) => setSpot12(id as (typeof SPOTS_12)[number]), sticky: true, options: SPOTS_12.map((s) => ({ id: s, label: s === 'centre' ? 'CENTRE' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })) }],
               initialParam: 'spot',
             }
           : {
@@ -545,12 +559,13 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                 { k: 'FROM CENTRE', v: lenCell(OVAL_WORDS[spotOv].r).v, sub: lenCell(OVAL_WORDS[spotOv].r).sub, flex: 1.3 },
                 { k: 'TENDS TO', v: OVAL_WORDS[spotOv].tends, flex: 1.2 },
               ],
-              params: [{ kind: 'fader', id: 'spot', label: 'SPOT', value: SPOTS_OVAL.indexOf(spotOv) / 2, onChange: (v) => setSpotOv(SPOTS_OVAL[Math.round(v * 2)]), format: () => OVAL_WORDS[spotOv].title.toLowerCase(), formatShort: () => OVAL_WORDS[spotOv].short.slice(0, 9) }],
+              // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
+              params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: OVAL_WORDS[spotOv].short.slice(0, 9), valueA11y: OVAL_WORDS[spotOv].title.toLowerCase(), selectedId: spotOv, onSelect: (id) => setSpotOv(id as OvalSpot), sticky: true, options: SPOTS_OVAL.map((s) => ({ id: s, label: OVAL_WORDS[s].short, blurb: OVAL_WORDS[s].text })) }],
               initialParam: 'spot',
             },
         well: (
           <>
-            <Landing looking={rhodes ? 'One speaker, face-on' : 'One oval speaker, face-on'} prompt="Step SPOT from the centre outward. Each is a place to aim a close mic." />
+            <Landing looking={rhodes ? 'One speaker, face-on' : 'One oval speaker, face-on'} prompt="Tap SPOT and pick one, from the centre outward. Each is a place to aim a close mic." />
             <Card>{rhodes ? <Point title={SPOT_WORDS[spot12].title}>{SPOT_WORDS[spot12].text}</Point> : <Point title={OVAL_WORDS[spotOv].title}>{OVAL_WORDS[spotOv].text}</Point>}</Card>
             <Note>{spec.notes.spots}</Note>
           </>
@@ -630,18 +645,24 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             { k: 'SPEAKER OUT →', v: patch === 'cab' ? 'SPEAKER' : 'DESK', sub: verdict === 'ok' ? 'correct' : 'never', tint: verdict === 'ok' ? '#5bff85' : '#ff5a48', flex: 1.3 },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'item',
-              label: 'ITEM',
-              value: chainItems.length > 1 ? cIdx / (chainItems.length - 1) : 0,
-              onChange: (v) => {
-                const it = chainItems[Math.round(v * (chainItems.length - 1))];
-                if (it) setCSel(it.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'item',
+                label: 'ITEM',
+                value: chainItems.length > 1 ? cIdx / (chainItems.length - 1) : 0,
+                onChange: (v) => {
+                  const it = chainItems[Math.round(v * (chainItems.length - 1))];
+                  if (it) setCSel(it.id);
+                },
+                format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
+                formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
               },
-              format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-              formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
-            },
+              chainItems.length,
+              chainItems.findIndex((q) => q.id === cSel),
+              (i) => chainItems[i].short,
+              (i) => setCSel(chainItems[i].id),
+            ),
             {
               kind: 'options',
               id: 'patch',
@@ -685,18 +706,24 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             { k: 'WHERE', v: scene === 'stage' ? 'LIVE' : 'STUDIO' },
           ],
           params: [
-            {
-              kind: 'fader',
-              id: 'item',
-              label: 'ITEM',
-              value: planItems.length > 1 ? pIdx / (planItems.length - 1) : 0,
-              onChange: (v) => {
-                const it = planItems[Math.round(v * (planItems.length - 1))];
-                if (it) setSel(it.id);
+            tapsWhenFew(
+              {
+                kind: 'fader',
+                id: 'item',
+                label: 'ITEM',
+                value: planItems.length > 1 ? pIdx / (planItems.length - 1) : 0,
+                onChange: (v) => {
+                  const it = planItems[Math.round(v * (planItems.length - 1))];
+                  if (it) setSel(it.id);
+                },
+                format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
+                formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
               },
-              format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-              formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
-            },
+              planItems.length,
+              planItems.findIndex((q) => q.id === sel),
+              (i) => planItems[i].short,
+              (i) => setSel(planItems[i].id),
+            ),
             {
               kind: 'options',
               id: 'where',

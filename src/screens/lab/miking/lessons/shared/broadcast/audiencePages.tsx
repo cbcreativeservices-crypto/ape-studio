@@ -28,7 +28,7 @@ import type { Prediction } from '../../../engine/model/types.ts';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { PlanStage, MicOnPlan, type SportMic } from '../sports/sportsPages';
 import { PlanPath, TargetRing, venueLabels } from '../sports/VenueArt';
-import { degOf, dirFromDeg, fmtM1, planUV, type P2 } from '../sports/venuePlan.ts';
+import { aimShort, aimWords, degOf, dirFromDeg, fmtM1, planUV, type P2 } from '../sports/venuePlan.ts';
 import { CoverageWedge, ImmersiveScene } from './AudienceArt';
 import { DOMINATE_DB, EVENT, EVENT_SCENE, FACE_H, STUDIO, STUDIO_SCENE, VENUES, nearSeatBias, pairReading, paAngle, type VenueId } from './venue.ts';
 
@@ -377,8 +377,9 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
             setTurn(Math.round(v * 180 - 90));
             setTouched(true);
           },
-          format: () => (turn === 0 ? 'aimed at the middle of the section' : `turned ${Math.abs(turn)}° ${turn > 0 ? 'left' : 'right'}`),
-          formatShort: () => `${turn > 0 ? '+' : ''}${turn}°`,
+          // "left/right of centre" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
+          format: () => (turn === 0 ? 'centre: aimed at the middle of the section' : aimWords(turn)),
+          formatShort: () => aimShort(turn),
         },
         {
           kind: 'options',

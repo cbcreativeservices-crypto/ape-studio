@@ -21,6 +21,7 @@ import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { SettingItem, ViewBox } from '../../../engine/model/types.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { copyOf } from '../../../engine/model/copy.ts';
@@ -344,18 +345,24 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
     };
     const fader = (list: readonly SettingItem[], sel: string | null, pick: (id: string) => void): DockParam => {
       const idx = Math.max(0, list.findIndex((i) => i.id === sel));
-      return {
-        kind: 'fader',
-        id: 'item',
-        label: 'ITEM',
-        value: list.length > 1 ? idx / (list.length - 1) : 0,
-        onChange: (v) => {
-          const it = list[Math.round(v * (list.length - 1))];
-          if (it) pick(it.id);
+      return tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'item',
+          label: 'ITEM',
+          value: list.length > 1 ? idx / (list.length - 1) : 0,
+          onChange: (v) => {
+            const it = list[Math.round(v * (list.length - 1))];
+            if (it) pick(it.id);
+          },
+          format: () => (sel ? `${byId(sel)?.short ?? ''} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
+          formatShort: () => (sel ? (byId(sel)?.short ?? '').slice(0, 9) : 'STEP'),
         },
-        format: () => (sel ? `${byId(sel)?.short ?? ''} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-        formatShort: () => (sel ? (byId(sel)?.short ?? '').slice(0, 9) : 'STEP'),
-      };
+        list.length,
+        list.findIndex((q) => q.id === sel),
+        (i) => list[i].short,
+        (i) => pick(list[i].id),
+      );
     };
     const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },

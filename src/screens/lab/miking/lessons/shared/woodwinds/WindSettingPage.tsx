@@ -18,6 +18,7 @@
  */
 import { useMemo, useState, type ReactNode } from 'react';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { SettingItem } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
@@ -61,18 +62,25 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
     );
     const itemFader = (list: readonly SettingItem[], sel: string | null, pick: (id: string) => void): DockParam => {
       const idx = Math.max(0, list.findIndex((i) => i.id === sel));
-      return {
-        kind: 'fader',
-        id: 'item',
-        label: 'ITEM',
-        value: list.length > 1 ? idx / (list.length - 1) : 0,
-        onChange: (v) => {
-          const it = list[Math.round(v * (list.length - 1))];
-          if (it) pick(it.id);
+      // 3–4 items: tap choices, not a fader (owner 2026-10-14, slider audit #5).
+      return tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'item',
+          label: 'ITEM',
+          value: list.length > 1 ? idx / (list.length - 1) : 0,
+          onChange: (v) => {
+            const it = list[Math.round(v * (list.length - 1))];
+            if (it) pick(it.id);
+          },
+          format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
+          formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
         },
-        format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-        formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
-      };
+        list.length,
+        list.findIndex((i) => i.id === sel),
+        (i) => shortOf(list[i].id),
+        (i) => pick(list[i].id),
+      );
     };
     const kitParams: DockParam[] = useMemo(() => [itemFader(kitItems, kitSel, pickKit)], [kitItems, kitSel]); // eslint-disable-line react-hooks/exhaustive-deps
     const wideParams: DockParam[] = [

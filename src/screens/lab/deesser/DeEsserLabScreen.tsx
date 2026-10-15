@@ -45,7 +45,16 @@ function Dock({ children }: { children: ReactNode }) {
  *  module-level object is the source of truth; a page mirrors it into local
  *  state on mount (the shell mounts one page at a time) and every write goes
  *  through it, so a page never merges a patch into a stale copy. */
-let rack: Settings = { ...DEFAULTS };
+/** The Range control's travel, dB (slider audit hold #13, owner 2026-10-14):
+ *  on the lab's phrase at its default threshold the gain computer never asks
+ *  for more than about 7.5 dB, so a 0–24 dB lane did nothing over its top two
+ *  thirds. 0–8 dB keeps every step live and still spans the 4–6 dB the copy
+ *  calls natural. The over-de-essing page keeps its own wide-open range. */
+const RANGE_MAX_DB = 8;
+/** The model's defaults with Range inside the lab's 0–8 dB travel (the model's
+ *  12 dB and 8 dB give identical results at the default threshold). */
+const LAB_DEFAULTS: Settings = { ...DEFAULTS, rangeDb: Math.min(DEFAULTS.rangeDb, RANGE_MAX_DB) };
+let rack: Settings = { ...LAB_DEFAULTS };
 function useRack(): [Settings, (patch: Partial<Settings>) => void] {
   const [s, setS] = useState<Settings>(() => rack);
   const set = (patch: Partial<Settings>) => { rack = { ...rack, ...patch }; setS(rack); };
@@ -359,7 +368,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
   const mean = meanSibilantGr(out);
   const knobs = (
     <View style={{ gap: 12 }}>
-      <ControlSlider label="Range (maximum reduction)" value={s.rangeDb} min={0} max={24} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ rangeDb: v }); touch(ctx); }} />
+      <ControlSlider label="Range (maximum reduction)" value={s.rangeDb} min={0} max={RANGE_MAX_DB} step={0.5} format={(v) => `${v.toFixed(1)} dB`} onChange={(v) => { set({ rangeDb: v }); touch(ctx); }} />
       <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
     </View>
   );
@@ -522,7 +531,7 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
         explain="A lisp is the sound of S’s with their hiss taken away. Back off: raise the threshold or lower the range until the S’s are softened, not deleted."
         onCorrect={() => touch(ctx)}
       />
-      <Row><Btn label="RESET RACK TO DEFAULTS" onPress={() => { set({ ...DEFAULTS }); setAmount(0); }} a11y="Reset every de-esser setting to its default" /></Row>
+      <Row><Btn label="RESET RACK TO DEFAULTS" onPress={() => { set({ ...LAB_DEFAULTS }); setAmount(0); }} a11y="Reset every de-esser setting to its default" /></Row>
     </View>
   );
 }
@@ -572,7 +581,7 @@ const PAGES: PageDef[] = [
 export function DeEsserLabScreen() {
   // A fresh rack every time the lab is opened: settings persist across pages,
   // not across visits (the initializer runs before any page mounts).
-  useState(() => { rack = { ...DEFAULTS }; return true; });
+  useState(() => { rack = { ...LAB_DEFAULTS }; return true; });
   return <PagedLab labId="deesser" title="De-Esser & Sibilance Control" subtitle="A compressor that listens only to the hiss — Smart Processors, V1." pages={PAGES} />;
 }
 

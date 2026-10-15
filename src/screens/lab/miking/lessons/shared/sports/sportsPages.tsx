@@ -33,6 +33,7 @@ import { StyleSheet, Text } from 'react-native';
 import { Circle, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { faderUnlessFew, tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { Lesson, Prediction, ViewBox } from '../../../engine/model/types.ts';
 import type { MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList } from '../../../engine/kit';
@@ -46,6 +47,7 @@ import {
   BADGE_WORDS,
   COVERAGE_WORDS,
   aimRel,
+  aimShort,
   aimWords,
   degOf,
   fmtM1,
@@ -409,19 +411,25 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
         { k: `VS ${ts[0].short}`, v: k === 0 ? '—' : `${db >= 0 ? '−' : '+'}${Math.abs(db).toFixed(1)} dB`, flex: 1 },
       ],
       params: [
-        {
-          kind: 'fader',
-          id: 'target',
-          label: 'TARGET',
-          value: ts.length > 1 ? k / (ts.length - 1) : 0,
-          onChange: (v) => {
-            const i = Math.round(v * (ts.length - 1));
-            setK(i);
-            setSeen((p) => (p.has(ts[i].id) ? p : new Set([...p, ts[i].id])));
+        tapsWhenFew(
+          {
+            kind: 'fader',
+            id: 'target',
+            label: 'TARGET',
+            value: ts.length > 1 ? k / (ts.length - 1) : 0,
+            onChange: (v) => {
+              const i = Math.round(v * (ts.length - 1));
+              setK(i);
+              setSeen((p) => (p.has(ts[i].id) ? p : new Set([...p, ts[i].id])));
+            },
+            format: () => `${k + 1} of ${ts.length} · ${t.label}`,
+            formatShort: () => t.short,
           },
-          format: () => `${k + 1} of ${ts.length} · ${t.label}`,
-          formatShort: () => t.short,
-        },
+          ts.length,
+          k,
+          (i) => ts[i].short,
+          (i) => { setK(i); setSeen((p) => (p.has(ts[i].id) ? p : new Set([...p, ts[i].id]))); },
+        ),
       ],
       initialParam: 'target',
     },
@@ -565,7 +573,7 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
         { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
       ],
       params: [
-        { kind: 'fader', id: 'setup', label: 'SETUP', value: setups.length > 1 ? i / (setups.length - 1) : 0, onChange: (v) => setIdx(Math.round(v * (setups.length - 1))), format: () => (sel ? `${i + 1} of ${setups.length} · ${sel.role.toLowerCase()}` : 'no setup'), formatShort: () => `${i + 1} / ${setups.length}` },
+        ...faderUnlessFew(setups.length, { kind: 'fader', id: 'setup', label: 'SETUP', value: setups.length > 1 ? i / (setups.length - 1) : 0, onChange: (v) => setIdx(Math.round(v * (setups.length - 1))), format: () => (sel ? `${i + 1} of ${setups.length} · ${sel.role.toLowerCase()}` : 'no setup'), formatShort: () => `${i + 1} / ${setups.length}` }),
         { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? roleKey(sel.role) : '—', selectedId: sel?.id ?? null, sticky: true, onSelect: (id) => setIdx(Math.max(0, setups.findIndex((q) => q.id === id))), options: setups.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
       ],
       initialParam: 'setup',
@@ -680,7 +688,7 @@ export function useWorkedStep({ scene, mic, pieces, box, title }: { scene: Venue
       ),
       badge: 'WORKED EXAMPLE · placed for you · the corner box = the mic at its height, to scale',
       bezel: pieces.map((q, i) => ({ k: i === ex ? `▸ ${q.key}` : q.key, v: q.value, tint: i === ex ? AMBER : undefined, flex: 1 })),
-      params: [{ kind: 'fader', id: 'piece', label: 'STEP', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }],
+      params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
       initialParam: 'piece',
     },
     well: (
@@ -832,7 +840,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
         setMoved(true);
       },
       format: (v) => aimWords(Math.round(v * 120 - 60)),
-      formatShort: () => `${Math.abs(aim)}°${aim > 0 ? 'L' : aim < 0 ? 'R' : ''}`,
+      formatShort: () => aimShort(aim),
       home: 0.5,
     },
     { kind: 'options', id: 'target', label: 'TARGET', valueLabel: target?.short ?? '—', selectedId: tid, onSelect: setTid, options: scene.targets.map((t) => ({ id: t.id, label: `Measure to ${t.label}`, blurb: `The readouts measure to ${t.label}.` })) },
@@ -1243,7 +1251,7 @@ export function useTrackStep({ scene, dish, arc, path, fixed, box, onInteractive
   const onAir = hand ? 'FIXED' : 'DISH';
   const dishAt: SportMic = { ...dish, aimAt: { x: dish.at.x - Math.sin((aim * Math.PI) / 180) * 10, y: dish.at.y + Math.cos((aim * Math.PI) / 180) * 10 } };
   const fixedAt: SportMic = { ...fixed, aimAt: fixed.aimAt };
-  const words = `The source ${fmtM1(range)} from the dish, ${aimWords(want)}. ${inArc ? 'Inside the turn arc: the dish follows it.' : 'Outside the turn arc: the operator stops at the edge.'} On air: the ${hand ? 'fixed mic' : 'dish'}.`;
+  const words = `The source ${fmtM1(range)} from the dish, at ${aimWords(want)}. ${inArc ? 'Inside the turn arc: the dish follows it.' : 'Outside the turn arc: the operator stops at the edge.'} On air: the ${hand ? 'fixed mic' : 'dish'}.`;
   return {
     key: 'track',
     title: 'Track, then hand off',
@@ -1273,7 +1281,7 @@ export function useTrackStep({ scene, dish, arc, path, fixed, box, onInteractive
         { k: 'ON AIR', v: onAir, tint: AMBER, flex: 0.9 },
       ],
       params: [
-        { kind: 'fader', id: 'walk', label: 'WALK', value: t, onChange: setT, format: () => `the source ${fmtM1(range)} from the dish, ${aimWords(want)}`, formatShort: () => fmtM1(range) },
+        { kind: 'fader', id: 'walk', label: 'WALK', value: t, onChange: setT, format: () => `the source ${fmtM1(range)} from the dish, at ${aimWords(want)}`, formatShort: () => fmtM1(range) },
         { kind: 'toggle', id: 'hand', label: 'HAND OFF', value: hand, onToggle: () => setHand((x) => !x) },
       ],
       initialParam: 'walk',

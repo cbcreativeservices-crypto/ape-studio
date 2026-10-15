@@ -28,6 +28,7 @@ import { colors, fonts } from '../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../features/settings/a11y';
 import { ExpandableFigure } from '../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../rack/rackTypes';
+import { tapsWhenFew } from '../../engine/rack/fewStops.ts';
 import type { Lesson, MicPattern, MicPose, MicSlot, PatternId, Vec3, ViewBox, ViewId } from '../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { PairComb } from '../shared/speakers/PairComb';
@@ -171,18 +172,24 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
           { k: 'CABINET', v: CABINETS[cab.kind].short, flex: 1.1 },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'part',
-            label: 'PART',
-            value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
-            onChange: (v) => {
-              const p = parts[Math.round(v * (parts.length - 1))];
-              if (p) pick(p.id);
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'part',
+              label: 'PART',
+              value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
+              onChange: (v) => {
+                const p = parts[Math.round(v * (parts.length - 1))];
+                if (p) pick(p.id);
+              },
+              format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
             },
-            format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
-            formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
-          },
+            parts.length,
+            parts.findIndex((p) => p.id === partId),
+            (i) => parts[i].short.toUpperCase(),
+            (i) => pick(parts[i].id),
+          ),
           { kind: 'options', id: 'view', label: 'VIEW', valueLabel: view.toUpperCase(), selectedId: view, onSelect: (id) => setView(id as CabExplorerView), sticky: true, options: viewOpts },
           { kind: 'options', id: 'cab', label: 'CABINET', valueLabel: CABINETS[cab.kind].short, selectedId: cabId, onSelect: setCabId, sticky: true, options: CAB_CHOICES.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb })) },
           { kind: 'toggle', id: 'cloth', label: cloth ? 'CLOTH ON' : 'CLOTH OFF', value: !cloth, onToggle: () => setCloth((x) => !x) },
@@ -371,15 +378,21 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
           { k: 'BACK AIR', v: shown >= 3 ? (back === 'open' ? 'PULLED · OUT' : 'PULLED · IN BOX') : '—', flex: 1.4 },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'step',
-            label: 'STEP',
-            value: (shown - 1) / Math.max(1, n - 1),
-            onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-            format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-            formatShort: () => `${shown} / ${n}`,
-          },
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'step',
+              label: 'STEP',
+              value: (shown - 1) / Math.max(1, n - 1),
+              onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
+              format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
+              formatShort: () => `${shown} / ${n}`,
+            },
+            n,
+            shown - 1,
+            (i) => `${i + 1} · ${S.stages[i].title}`,
+            (i) => goTo(i + 1),
+          ),
           { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
           {
             kind: 'options',
@@ -457,21 +470,24 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
           { k: 'TENDS TO', v: spot === 'centre' ? 'BRIGHTER' : spot === 'boundary' ? 'BETWEEN' : 'MELLOWER', flex: 1.3 },
         ],
         params: [
+          // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
           {
-            kind: 'fader',
+            kind: 'options',
             id: 'spot',
             label: 'SPOT',
-            value: SPOTS.indexOf(spot) / 2,
-            onChange: (v) => setSpot(SPOTS[Math.round(v * 2)]),
-            format: () => SPOT_WORDS[spot].title.toLowerCase(),
-            formatShort: () => (spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE'),
+            valueLabel: spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE',
+            valueA11y: SPOT_WORDS[spot].title.toLowerCase(),
+            selectedId: spot,
+            onSelect: (id) => setSpot(id as (typeof SPOTS)[number]),
+            sticky: true,
+            options: SPOTS.map((s) => ({ id: s, label: s === 'centre' ? 'CENTRE' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })),
           },
         ],
         initialParam: 'spot',
       },
       well: (
         <>
-          <Landing looking="One speaker, face-on" prompt="Step SPOT from the centre to the edge. Each is a place to aim a close mic." />
+          <Landing looking="One speaker, face-on" prompt="Tap SPOT and pick one: the centre, the dust-cap edge or toward the edge. Each is a place to aim a close mic." />
           <Card>
             <Point title={SPOT_WORDS[spot].title}>{SPOT_WORDS[spot].text}</Point>
           </Card>
@@ -596,18 +612,24 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
           { k: 'LOOKED AT', v: `${chainSeen.size} / ${chainItems.length}` },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'item',
-            label: 'ITEM',
-            value: chainItems.length > 1 ? chainIdx / (chainItems.length - 1) : 0,
-            onChange: (v) => {
-              const it = chainItems[Math.round(v * (chainItems.length - 1))];
-              if (it) pickChain(it.id);
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'item',
+              label: 'ITEM',
+              value: chainItems.length > 1 ? chainIdx / (chainItems.length - 1) : 0,
+              onChange: (v) => {
+                const it = chainItems[Math.round(v * (chainItems.length - 1))];
+                if (it) pickChain(it.id);
+              },
+              format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
+              formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
             },
-            format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-            formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
-          },
+            chainItems.length,
+            chainItems.findIndex((q) => q.id === chainSel),
+            (i) => chainItems[i].short,
+            (i) => pickChain(chainItems[i].id),
+          ),
         ],
         initialParam: 'item',
       },
@@ -649,18 +671,24 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
           { k: 'WHERE', v: scene === 'stage' ? 'LIVE' : 'STUDIO' },
         ],
         params: [
-          {
-            kind: 'fader',
-            id: 'item',
-            label: 'ITEM',
-            value: planItems.length > 1 ? planIdx / (planItems.length - 1) : 0,
-            onChange: (v) => {
-              const it = planItems[Math.round(v * (planItems.length - 1))];
-              if (it) setSel(it.id);
+          tapsWhenFew(
+            {
+              kind: 'fader',
+              id: 'item',
+              label: 'ITEM',
+              value: planItems.length > 1 ? planIdx / (planItems.length - 1) : 0,
+              onChange: (v) => {
+                const it = planItems[Math.round(v * (planItems.length - 1))];
+                if (it) setSel(it.id);
+              },
+              format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
+              formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
             },
-            format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-            formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
-          },
+            planItems.length,
+            planItems.findIndex((q) => q.id === sel),
+            (i) => planItems[i].short,
+            (i) => setSel(planItems[i].id),
+          ),
           {
             kind: 'options',
             id: 'where',
@@ -926,7 +954,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: [
-          { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` },
+          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
           ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
         ],
         initialParam: 'piece',

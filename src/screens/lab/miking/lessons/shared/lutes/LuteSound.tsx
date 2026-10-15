@@ -32,6 +32,7 @@ import { colors } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
+import { fewStops, tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { copyOf } from '../../../engine/model/copy.ts';
@@ -524,15 +525,21 @@ export function makeLuteSoundPage(built: BuiltLute) {
 
     const strikeParams: DockParam[] = useMemo(
       () => [
-        {
-          kind: 'fader',
-          id: 'step',
-          label: 'STEP',
-          value: (shown - 1) / Math.max(1, n - 1),
-          onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-          formatShort: () => `${shown} / ${n}`,
-        },
+        tapsWhenFew(
+          {
+            kind: 'fader',
+            id: 'step',
+            label: 'STEP',
+            value: (shown - 1) / Math.max(1, n - 1),
+            onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
+            format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
+            formatShort: () => `${shown} / ${n}`,
+          },
+          n,
+          shown - 1,
+          (i) => `${i + 1} · ${S.stages[i].title}`,
+          (i) => goTo(i + 1),
+        ),
         { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
       ],
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -585,15 +592,21 @@ export function makeLuteSoundPage(built: BuiltLute) {
         sticky: true,
         options: TUNINGS.map((q) => ({ id: q.id, label: q.label, blurb: q.blurb })),
       },
-      {
-        kind: 'fader',
-        id: 'pair',
-        label: 'PAIR',
-        value: pairs.length > 1 ? Math.min(pairIdx, pairs.length - 1) / (pairs.length - 1) : 0,
-        onChange: (v) => setPairIdx(Math.round(v * Math.max(0, pairs.length - 1))),
-        format: () => (pair ? `played shape ${pair.n} ↔ sympathetic shape ${pair.m}` : 'no shapes in step'),
-        formatShort: () => (pair ? `${pair.n}↔${pair.m}` : '—'),
-      },
+      tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'pair',
+          label: 'PAIR',
+          value: pairs.length > 1 ? Math.min(pairIdx, pairs.length - 1) / (pairs.length - 1) : 0,
+          onChange: (v) => setPairIdx(Math.round(v * Math.max(0, pairs.length - 1))),
+          format: () => (pair ? `played shape ${pair.n} ↔ sympathetic shape ${pair.m}` : 'no shapes in step'),
+          formatShort: () => (pair ? `${pair.n}↔${pair.m}` : '—'),
+        },
+        pairs.length,
+        Math.min(pairIdx, pairs.length - 1),
+        (i) => `${pairs[i].n} ↔ ${pairs[i].m}`,
+        setPairIdx,
+      ),
       swingFader('swing', sSwing, setSSwing, 'both passing through straight'),
     ];
     const sympBezel: BezelItem[] = [
@@ -602,18 +615,24 @@ export function makeLuteSoundPage(built: BuiltLute) {
       { k: 'IT ANSWERS', v: answer, flex: 1.4, tint: answer === 'BARELY' ? '#ff6b5e' : undefined },
     ];
     const regParams: DockParam[] = [
-      {
-        kind: 'fader',
-        id: 'region',
-        label: 'REGION',
-        value: regions.length > 1 ? Math.max(0, regions.findIndex((r) => r.id === regId)) / (regions.length - 1) : 0,
-        onChange: (v) => {
-          const r = regions[Math.round(v * (regions.length - 1))];
-          if (r) setRegId(r.id);
+      tapsWhenFew(
+        {
+          kind: 'fader',
+          id: 'region',
+          label: 'REGION',
+          value: regions.length > 1 ? Math.max(0, regions.findIndex((r) => r.id === regId)) / (regions.length - 1) : 0,
+          onChange: (v) => {
+            const r = regions[Math.round(v * (regions.length - 1))];
+            if (r) setRegId(r.id);
+          },
+          format: () => reg?.label.toUpperCase() ?? '—',
+          formatShort: () => (reg?.label ?? '').toUpperCase().slice(0, 9),
         },
-        format: () => reg?.label.toUpperCase() ?? '—',
-        formatShort: () => (reg?.label ?? '').toUpperCase().slice(0, 9),
-      },
+        regions.length,
+        regions.findIndex((r) => r.id === reg?.id),
+        (i) => regions[i].label.toUpperCase(),
+        (i) => setRegId(regions[i].id),
+      ),
       swingFader('swing', topSwing, setTopSwing, 'the board passing through rest'),
     ];
 
@@ -718,7 +737,7 @@ export function makeLuteSoundPage(built: BuiltLute) {
             { k: 'SWING', v: `${Math.round(topSwing * 100)} %`, flex: 0.8 },
           ],
           params: regParams,
-          initialParam: 'region',
+          initialParam: fewStops(regions.length) ? 'swing' : 'region',
         },
         well: (
           <>

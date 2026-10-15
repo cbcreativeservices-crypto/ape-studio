@@ -122,14 +122,17 @@ export function PChannelPlan({ lesson, answers, onAnswered, onInteractive, inter
   const toggle = (id: ChannelId) => setIds((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : CHANNEL_IDS.filter((x) => x === id || cur.includes(x))));
   const plan = PLANS.find((p) => p.id === planId)!;
   const watchParams: DockParam[] = [
+    // Four stages: tap choices, not a fader (owner 2026-10-14, slider audit #5).
     {
-      kind: 'fader',
+      kind: 'options',
       id: 'stage',
       label: 'STAGE',
-      value: stage / (WATCH.length - 1),
-      onChange: (v) => setStage(Math.round(v * (WATCH.length - 1))),
-      format: () => `${stage + 1} of ${WATCH.length} · ${ws.label.toLowerCase()}`,
-      formatShort: () => `${stage + 1} / ${WATCH.length}`,
+      valueLabel: `${stage + 1} / ${WATCH.length}`,
+      valueA11y: `${stage + 1} of ${WATCH.length} · ${ws.label.toLowerCase()}`,
+      selectedId: String(stage),
+      onSelect: (id) => setStage(Number(id)),
+      sticky: true,
+      options: WATCH.map((w, i) => ({ id: String(i), label: `${i + 1} · ${w.label}` })),
     },
     ...viewToggle({ view: wview, setView: setWview, stage: 'single' }),
   ];
