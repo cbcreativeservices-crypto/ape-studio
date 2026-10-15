@@ -54,6 +54,8 @@ export type CarouselCard = {
   /** 0–100 across this selection's topics. */
   pct: number;
   topicCount: number;
+  /** ALL TOPICS only: how many are loaded into the study dashboard. */
+  loadedCount?: number;
   /** Every one of its topics is in the study deck. */
   allLoaded: boolean;
 };
@@ -242,7 +244,9 @@ export function EnrollmentSelection({
                 {card.title}
               </Text>
               <Text style={s.count}>
-                {card.topicCount} {isCustom ? 'term' : 'topic'}{card.topicCount === 1 ? '' : 's'}
+                {isTopics && card.loadedCount != null
+                  ? `${card.topicCount} topic${card.topicCount === 1 ? '' : 's'} enrolled · ${card.loadedCount} loaded into study`
+                  : `${card.topicCount} ${isCustom ? 'term' : 'topic'}${card.topicCount === 1 ? '' : 's'}`}
                 {summary ? ` · ${summary}` : ''}
               </Text>
             </View>

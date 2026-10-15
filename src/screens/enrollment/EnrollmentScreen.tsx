@@ -1468,6 +1468,8 @@ export const EnrollmentView = memo(function EnrollmentView({
       pct: topicPct,
       topicCount: enrolled.length,
       allLoaded: enrolled.length > 0 && enrolled.every((e) => activeGs.has(e.gs)),
+      // Shown under the title (owner 2026-10-15): enrolled + loaded into study.
+      loadedCount: enrolled.filter((e) => activeGs.has(e.gs)).length,
     };
     /**
      * ⛔ ENROLLED **AND** DERIVED (owner 2026-09-19). The derived ones — the
@@ -2104,19 +2106,9 @@ export const EnrollmentView = memo(function EnrollmentView({
         <View style={styles.listHead}>
           <View>
             <Text style={styles.sectionHead}>MY ENROLLMENT</Text>
-            {/* [28] (2026-09-07): name the two figures so it doesn't read as
-                "X of Y are enrolled" (all Y are); completed topics live in MY
-                RECORD, so the visible list is a subset.
-                Owner 2026-09-20: "active" was this screen's own word for it —
-                everywhere else the same state is LOADED, next to the study
-                headphones. The icon carries the meaning and the label matches
-                the pills in the list below. */}
-            <View style={styles.listCountRow}>
-              <NavIcon icon="Study" lit={activeCount > 0} showLabel={false} />
-              <Text style={styles.listCount}>
-                {activeCount} Loaded · {enrolled.length} Topics Enrolled
-              </Text>
-            </View>
+            {/* The "N Loaded · N Topics Enrolled" line and its study icon moved
+                into the My Enrolled Topics card, under its title (owner
+                2026-10-15). */}
           </View>
           <View style={{ flex: 1 }} />
           {/* Jump down to the browse/add list (user request 2026-07-22). */}
