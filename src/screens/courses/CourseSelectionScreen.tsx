@@ -253,7 +253,7 @@ export function deckHeadline(kind: Card['kind'] | undefined): string {
     case 'glossary':
       return 'Look Up a Term';
     case 'enrollments':
-      return 'Manage Your Learning';
+      return 'Start Studying & Earn Credentials';
     case 'startHere':
       return 'Begin Here';
     case 'freeTopic':
@@ -1040,7 +1040,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={color} w={cd.w} text="YOUR ENROLLMENTS" />
+          <Eyebrow color={color} w={cd.w} text="VIEW YOUR ENROLLMENTS" />
           <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
         </View>
         <Pressable onPress={onOpenEnrollments} accessible={false}>
