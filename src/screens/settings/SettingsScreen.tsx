@@ -86,6 +86,7 @@ import type { RootStackParamList } from '../../navigation/types';
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -109,6 +110,7 @@ export function SettingsScreen({ navigation }: Props) {
   const savesMade = useRef(0);
   // The glossary's background save. Read once; the switch writes through.
   const [autoOffline, setAutoOfflineState] = useState(true);
+  const [glossaryLinks, setGlossaryLinks] = useGlossaryLinksPref();
   useEffect(() => {
     let alive = true;
     void autoOfflineEnabled().then((v) => { if (alive) setAutoOfflineState(v); });
@@ -997,6 +999,17 @@ ${LOCAL_LOSS}`
                 else if (isMember) void prefetchGlossary();
               }}
             />
+          </View>
+          {/* The same switch as the Glossary's "Glossary Links" (owner 2026-10-15,
+              from the UX review): one setting, shown in both places. */}
+          <View style={styles.row}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>Glossary links</Text>
+              <Text style={styles.rowHint}>
+                Glossary terms inside a definition become links you can tap to read that term. On by default.
+              </Text>
+            </View>
+            <Toggle on={glossaryLinks} label="Glossary links" onChange={setGlossaryLinks} />
           </View>
         </SettingsSection>
 

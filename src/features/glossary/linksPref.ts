@@ -13,6 +13,10 @@ import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:glossary:showLinks';
 
+// The switch lives in two places (the Glossary and Settings › GLOSSARY, owner
+// 2026-10-15), so a change in one updates every mounted copy at once.
+const listeners = new Set<(v: boolean) => void>();
+
 /** [linksOn, setLinksOn] — persisted; defaults ON until the user changes it. */
 export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
   const [on, setOn] = useState(true); // first-ever = links ON (no stored value yet)
@@ -35,9 +39,20 @@ export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
       alive = false;
     };
   }, []);
+  useEffect(() => {
+    const hear = (v: boolean) => {
+      touchedRef.current = true;
+      setOn(v);
+    };
+    listeners.add(hear);
+    return () => {
+      listeners.delete(hear);
+    };
+  }, []);
   const set = useCallback((v: boolean) => {
     touchedRef.current = true;
     setOn(v);
+    listeners.forEach((l) => l(v));
     const reportRefused = armSaveFailureReport(); // the user's toggle: a refusal is told
     void AsyncStorage.setItem(KEY, v ? '1' : '0').catch(() => reportRefused());
   }, []);

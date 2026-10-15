@@ -34,3 +34,12 @@ test('first tap on CUSTOM STUDY LIST shows its explainer once', () => {
   assert.match(gl, /useScreenIntro\('glossaryCustom', false, introHold \|\| filter !== 'custom'/);
   assert.match(gl, /<IntroSheet introKey="glossaryCustom" onDismiss=\{customIntro\.dismiss\} \/>/);
 });
+
+test('Glossary links: one switch, in the Glossary AND in Settings › GLOSSARY, kept in step', () => {
+  const settings = readFileSync('src/screens/settings/SettingsScreen.tsx', 'utf8');
+  const pref = readFileSync('src/features/glossary/linksPref.ts', 'utf8');
+  assert.match(settings, /const \[glossaryLinks, setGlossaryLinks\] = useGlossaryLinksPref\(\);/);
+  assert.match(settings, /<Toggle on=\{glossaryLinks\} label="Glossary links" onChange=\{setGlossaryLinks\} \/>/);
+  assert.match(pref, /listeners\.forEach\(\(l\) => l\(v\)\);/);
+  assert.match(gl, /useGlossaryLinksPref\(\)/);
+});

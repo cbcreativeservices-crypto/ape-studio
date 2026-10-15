@@ -642,8 +642,8 @@ needs: nothing
 
 ### 2026-10-15 10:41 · ccode · ede4cc91
 changed: One custom-list colour everywhere (teal colors.customList): Glossary term icon + filter, Flashcards filter chip + card icon, term popups, Study custom card, Enrollments SEE & EDIT list (owner 2026-10-15)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app only)
+needs: nothing
 
 
 ### 2026-10-15 10:37 · ccode · 946b6163
