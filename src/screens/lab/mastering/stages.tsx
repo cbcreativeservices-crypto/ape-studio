@@ -191,6 +191,9 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
             </G>
           );
         })}
+        {/* ⛔ ZERO LINE BEHIND THE WAVEFORM, faint (owner 2026-10-14). Drawn on
+            top it cut through every swing and read as a second wave. */}
+        <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={0.9} opacity={0.5} />
         {ov ? ov.hi.map((hi, c) => {
           const lo = ov.lo[c];
           const yT = mid - hi * half;
@@ -199,7 +202,6 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
         }) : (
           <SvgText x={(x0 + x1) / 2} y={mid + 4} fontSize={F2} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{preparing ? 'preparing the audio… ▶ plays as soon as it is ready' : 'press ▶ on a version — the render draws here'}</SvgText>
         )}
-        <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={0.9} />
         {ceilY != null ? (
           <G>
             <Line x1={x0} y1={ceilY} x2={x1} y2={ceilY} stroke={PEAK_RED} strokeWidth={0.8} strokeDasharray="3,2" />
@@ -626,6 +628,8 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       {frame('PLAYBACK & EDITING · fades, tops and tails')}
+      {/* zero line BEHIND the programme, faint (owner 2026-10-14) */}
+      <Line x1={x0 + 4} y1={midY} x2={x1 - 4} y2={midY} stroke={MIDLINE_BLUE} strokeWidth={0.8} opacity={0.5} />
       {ov ? ov.hi.map((hi, c) => {
         const n = ov.hi.length;
         const cw2 = (x1 - x0 - 8) / n;
@@ -635,7 +639,6 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         const yB = midY - ov.lo[c] * fadeG * (bot - top - 40) / 2;
         return <Rect key={c} x={x0 + 4 + c * cw2} y={yT} width={Math.max(0.6, cw2)} height={Math.max(0.6, yB - yT)} fill={levelColor(ov.level[c] * fadeG)} />;
       }) : <SvgText x={(x0 + x1) / 2} y={midY} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>the programme draws here after the first render</SvgText>}
-      <Line x1={x0 + 4} y1={midY} x2={x1 - 4} y2={midY} stroke={MIDLINE_BLUE} strokeWidth={0.8} />
       {fadeSec > 0 ? <Line x1={x1 - 4 - (fadeSec / 10) * (x1 - x0 - 8)} y1={top + 20} x2={x1 - 4} y2={midY} stroke={ink.amber} strokeWidth={1} strokeDasharray="3,2" /> : null}
       <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`fade-out ${fadeSec.toFixed(1)} s`}</SvgText>
       <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>editing the stereo programme: fades, gaps, tops and tails</SvgText>

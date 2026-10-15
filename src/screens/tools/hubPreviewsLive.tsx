@@ -311,10 +311,12 @@ const WAVE_CHROME_UNDER = (
     {[574, 1024, 1474].map((x, i) => (
       <Line key={i} x1={x} y1={104} x2={x} y2={920} stroke="#1b2434" strokeWidth={3} strokeDasharray="8 14" />
     ))}
+    {/* ⛔ Zero line BEHIND the waveform, faint (owner 2026-10-14). It used to
+        draw OVER the trace — a thick flat line through every swing that read
+        as a second wave. It is only the zero reference. */}
+    <Line x1={124} y1={512} x2={1924} y2={512} stroke="#2b7fd4" strokeWidth={5} opacity={0.5} />
   </G>
 );
-/** Center line draws OVER the waveform in the art. */
-const WAVE_CHROME_OVER = <Line x1={124} y1={512} x2={1924} y2={512} stroke="#2b7fd4" strokeWidth={9} />;
 
 /** Build the mirrored envelope points string from newest-first buckets.
  *  Autoscale follows the WaveformScreen contract: scale = max(1.05, observed),
@@ -388,7 +390,6 @@ const HubWaveMini: FC = memo(() => {
             <Polygon points={pts} fill="url(#hpMirWave)" opacity={0.95} />
           </>
         )}
-        {WAVE_CHROME_OVER}
       </Svg>
       <Vignette />
     </LiveShell>

@@ -100,12 +100,17 @@ export function EnvelopeChart({
   const top = 18, bottom = H - 22;
   const total = Math.max(1, adsrTotalMs(adsr));
   const x = (ms: number) => 10 + (ms / total) * (W - 20);
-  const y = (v: number) => bottom - v * (bottom - top);
+  const mid = (top + bottom) / 2;
+  const halfH = (bottom - top) / 2;
+  // ⛔ ONE SIGNAL, ONE SCALE (owner 2026-10-14). With the waveform drawn, the
+  // envelope is ITS outline: level v sits on the wave's own +v peak (zero on
+  // the zero line). On a separate 0-at-the-floor scale it cut straight through
+  // the swings (a sustain of 0.5 lay ON the zero line) and read as a second
+  // wave. Without the waveform it is the plain 0 → 1 level graph.
+  const y = showWave ? (v: number) => mid - v * halfH : (v: number) => bottom - v * (bottom - top);
   const { t, v } = adsrCurve(adsr, 200);
   const env = Array.from(t, (ms, i) => `${x(ms).toFixed(1)},${y(v[i]).toFixed(1)}`).join(' ');
   const wave = showWave ? shapedWave(adsr, 600, Math.max(12, Math.min(80, Math.round(total / 25)))) : null;
-  const mid = (top + bottom) / 2;
-  const halfH = (bottom - top) / 2;
   const wavePts = wave ? Array.from(wave, (s, i) => `${(10 + (i / (wave.length - 1)) * (W - 20)).toFixed(1)},${(mid - s * halfH).toFixed(1)}`).join(' ') : '';
   const aEnd = adsr.attackMs, dEnd = aEnd + adsr.decayMs, sEnd = dEnd + adsr.holdMs;
   const { t10, t90 } = riseTimes(adsr);

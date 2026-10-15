@@ -103,6 +103,9 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
             </G>
           );
         })}
+        {/* ⛔ ZERO LINE BEHIND THE WAVEFORM, faint (owner 2026-10-14). Drawn on
+            top it cut through every swing and read as a second wave. */}
+        <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={0.9} opacity={0.5} />
         {ov ? ov.hi.map((hi, c) => {
           const lo = ov.lo[c];
           const yT = mid - hi * half;
@@ -111,7 +114,6 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
         }) : (
           <SvgText x={(x0 + x1) / 2} y={mid + 4} fontSize={f2} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{idle ?? 'making the sound…'}</SvgText>
         )}
-        <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={0.9} />
         {envPath ? <Path d={envPath} stroke={colors.textPrimary} strokeWidth={1.1} fill="none" opacity={0.85} /> : null}
         {t60X != null && ov ? (
           <G>
