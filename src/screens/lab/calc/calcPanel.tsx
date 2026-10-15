@@ -13,11 +13,19 @@
  *  - formatOutput: sig-figure display with unit cycling offset.
  */
 import { memo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { isRefused, type CalcFunction, type CalcTable, type CalcValues, type FieldDef, type OutputVal } from './calcTypes';
 import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
+
+/** Keyboard for a calculator number field (owner 2026-10-14: numbers only, never
+ *  the letter keyboard). iOS 'numbers-and-punctuation' has no Android
+ *  equivalent — Android fell back to the full letter keyboard — so Android gets
+ *  the number pad (digits, minus, decimal point). List fields stay numeric too. */
+export function calcKeyboard(): KeyboardTypeOptions {
+  return Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric';
+}
 
 export function defaultUnitIdx(f: FieldDef): number {
   if (!f.defaultUnit) return 0;
@@ -212,7 +220,7 @@ export const FieldRow = memo(
             onChangeText={onText}
             placeholder={field.placeholder ?? (isList ? 'e.g. 8, 8, 4' : '0')}
             placeholderTextColor="#4c4d55"
-            keyboardType={isList ? 'default' : 'numbers-and-punctuation'}
+            keyboardType={calcKeyboard()}
             autoCorrect={false}
             onFocus={onFocus}
             accessibilityLabel={field.name}

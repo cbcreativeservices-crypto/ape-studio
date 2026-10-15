@@ -19,6 +19,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
 import { QUANTITIES, fmtCarried, parseQuantity, type QuantityKind } from './calcUnits';
+import { calcKeyboard } from './calcPanel';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowGeneration, workflowListUnreadable, workflowStore } from './workflowStore';
@@ -415,7 +416,7 @@ export function CalcProjectsScreen() {
                       onChangeText={(t) => setVal(i, { raw: t })}
                       placeholder="0"
                       placeholderTextColor="#4c4d55"
-                      keyboardType="numbers-and-punctuation"
+                      keyboardType={calcKeyboard()}
                       autoCorrect={false}
                       accessibilityLabel={`Value ${i + 1} number`}
                     />
