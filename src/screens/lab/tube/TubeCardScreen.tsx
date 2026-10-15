@@ -34,7 +34,7 @@ import {
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useMemberGate } from '../../../features/commercial/useTier';
@@ -406,7 +406,7 @@ export function TubeCardScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
         <View style={styles.lockHeader}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.barTitle}>TUBE REFERENCE</Text>
         </View>
@@ -422,7 +422,7 @@ export function TubeCardScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
         <View style={styles.lockHeader}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.barTitle}>TUBE REFERENCE</Text>
         </View>
@@ -440,7 +440,7 @@ export function TubeCardScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
         <View style={styles.lockHeader}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.barTitle}>TUBE REFERENCE</Text>
         </View>
@@ -463,7 +463,7 @@ export function TubeCardScreen() {
       {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
       <View style={styles.navBar}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the tube list">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.barTitle} numberOfLines={1}>
@@ -482,7 +482,7 @@ export function TubeCardScreen() {
           accessibilityRole="button"
           accessibilityLabel="Previous tube"
         >
-          <Text style={styles.stepArrow}>‹</Text>
+          <Text style={styles.stepArrow} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <Pressable
           onPress={() => goTo(idx + 1)}

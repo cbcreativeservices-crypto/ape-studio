@@ -17,7 +17,7 @@ import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
@@ -203,7 +203,7 @@ export function EarLabScreen({ navigation, route }: Props) {
           from and there would be no way back to the other section. */}
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>{headerTitle}</Text>

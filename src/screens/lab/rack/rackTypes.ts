@@ -54,6 +54,15 @@ export type RackStage = {
    *  700 pt tall) and still clamps it so the dock and the well keep their
    *  room. Labs that do not pass it look exactly as before. */
   phoneHeight?: number;
+  /** The least WELL height (dp) the rack keeps while the display shows
+   *  (opt-in, follow-up 2026-10-15, Modular Synth on a 411 × 731 phone: a
+   *  five-key dock, a five-window bezel and a two-line badge under the tall
+   *  glass left a ~50 dp well, so FINISH · SEE WHAT'S LEFT was reachable only
+   *  after HIDE DISPLAY). Measured, not estimated: the rack reads its own
+   *  chrome and dock heights and lowers the glass just enough — never below
+   *  the S height — to leave this much well. Labs that do not pass it look
+   *  exactly as before. */
+  minWell?: number;
   /** Readouts on the bezel strip under the glass. */
   bezel?: BezelItem[];
   /** Honesty micro-badge over the glass (must stay per-display). */

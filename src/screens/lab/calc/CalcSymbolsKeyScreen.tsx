@@ -13,7 +13,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { SYMBOL_GROUPS } from './symbolsKey';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
@@ -34,7 +34,7 @@ export function CalcSymbolsKeyScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <Text style={styles.glyph} accessibilityElementsHidden importantForAccessibility="no">
           π

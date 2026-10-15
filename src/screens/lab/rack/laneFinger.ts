@@ -63,6 +63,41 @@ export function laneFingerLiftDx(ne: LaneLift, f: LaneFinger): number | null {
   return ne.pageX - f.px;
 }
 
+/**
+ * Where a PanResponder slider should LAND when its touch ends — released OR
+ * cancelled — as x travel since the grab, or null to stay on the last move
+ * already handed over (a tap inside the slop, another finger lifting, an
+ * event with no position, or a lift point that cannot be trusted).
+ *
+ * `lastDx` is the grabbing finger's travel at the last MOVE seen (null when
+ * no move arrived at all).
+ *
+ * ⛔ THE LIFT POINT IS NOT ALWAYS FRESH (follow-up 2026-10-15, the real
+ * cause of "every other fast flick does nothing"). The 2026-10-14 release
+ * landing trusted the end event's position. Caught in the web preview with a
+ * log on every move and release: gesture 1 lifted at x 405 (right); gesture 2
+ * moved to dx −174 and then RELEASED reporting x 352 — its own GRAB point —
+ * so the slider was landed straight back where the finger went down. To the
+ * learner that flick "did nothing", the next one worked; a slow drag right
+ * after a flick was "dropped" the same way. So the lift is used only where it
+ * can only help:
+ *   • no move arrived (a flick delivered as grant → release): the lift is all
+ *     there is — land on it when it is past the tap slop;
+ *   • moves arrived: land on the lift only when it carries the travel ON in
+ *     the direction the finger was going (a fast flick's last move falls
+ *     short of the end). A lift that goes back toward the grab is the stale
+ *     report — the last move stands.
+ * A cancelled touch (the platform taking it; the sliders refuse every JS
+ * termination request) follows the same rule. DragSlider and amp/kit's
+ * ControlSlider both call this.
+ */
+export function laneLandDx(ne: LaneLift | null | undefined, f: LaneFinger, lastDx: number | null, slop: number): number | null {
+  const lift = ne ? laneFingerLiftDx(ne, f) : null;
+  if (lift == null) return null;
+  if (lastDx == null || Math.abs(lastDx) <= slop) return Math.abs(lift) > slop ? lift : null;
+  return (lift - lastDx) * Math.sign(lastDx) > 0 ? lift : null;
+}
+
 // ── The vertical twin (TestFlight triage 2026-10-08) ─────────────────────────
 // Faders that travel UP and DOWN (the EQ board's VerticalFader, the mixing
 // desk's GearFader) read `g.dy` — the same centroid, so a second finger on the

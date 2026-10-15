@@ -21,7 +21,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
 import { ProgressRing } from '../../components/ProgressRing';
@@ -166,7 +166,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <View style={styles.headerRow}>
           <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.title}>{title}</Text>
           <View style={styles.flex} />

@@ -32,6 +32,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
 import { RackUnit, useRackLeaveFull } from './rack/RackUnit';
 import { readingColumn } from '../../theme/readingColumn';
+import { fitValue } from '../../theme/legibility';
 import { LabHeader } from './kit/LabNavBar';
 import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
@@ -90,6 +91,7 @@ export function LabChip({
   onPress,
   onLongPress,
   photoHint,
+  compact,
 }: {
   label: string;
   selected: boolean;
@@ -97,13 +99,17 @@ export function LabChip({
   onLongPress?: () => void;
   /** Show a tiny 📷 to signal "long-press to see a photo" (owner 2026-08-18). */
   photoHint?: boolean;
+  /** A chip in a tight equal-width row (Modular's eight SEQ steps): slim side
+   *  padding and one line — "+12" wrapped to "+1 / 2" in a 42 dp chip
+   *  (follow-up 2026-10-15). Shrinks to fit, never under 9 pt. */
+  compact?: boolean;
 }) {
   // In a full-screen rack tray, a lesson/photo long-press leaves full screen
   // first — a sibling Modal over it is refused on iOS (hunt 13, 2026-10-04).
   const leaveFull = useRackLeaveFull();
   return (
     <Pressable
-      style={[styles.chip, selected && styles.chipSelected]}
+      style={[styles.chip, compact && styles.chipCompact, selected && styles.chipSelected]}
       onPress={onPress}
       onLongPress={onLongPress && leaveFull ? () => leaveFull(onLongPress) : onLongPress}
       delayLongPress={350}
@@ -120,7 +126,7 @@ export function LabChip({
             : label
       }
     >
-      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
+      <Text style={[styles.chipText, compact && styles.chipTextCompact, selected && styles.chipTextSelected]} {...(compact ? fitValue(12) : null)}>
         {label}
         {photoHint ? <Text style={styles.chipPhotoHint}> 📷</Text> : null}
       </Text>
@@ -919,6 +925,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
+  chipCompact: { paddingHorizontal: 3, alignItems: 'center' },
+  chipTextCompact: { letterSpacing: 0.3, textAlign: 'center' },
   chipSelected: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary },
   chipTextSelected: { color: colors.amber },

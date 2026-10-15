@@ -41,7 +41,7 @@ import * as shareImage from '../lab/calc/shareImage';
 import { deleteMeasurement, measurementsLoaded, measurementsUnreadable, useMeasurements } from '../../features/tools/measure/measurementStore';
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { LockedButton, MembershipRequiredNote, ToolGatePending } from './ToolLockUi';
 import { useMemberGate } from '../../features/commercial/useTier';
 import { toolByKey } from './toolsData';
@@ -596,7 +596,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <View style={{ flexShrink: 1 }}>
             <Text style={styles.title}>SAVED MEASUREMENTS</Text>
@@ -615,7 +615,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <View style={{ flexShrink: 1 }}>
             <Text style={styles.title}>SAVED MEASUREMENTS</Text>
@@ -632,7 +632,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={[styles.header, wide]}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>SAVED MEASUREMENTS</Text>

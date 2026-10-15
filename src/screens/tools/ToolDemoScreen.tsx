@@ -15,7 +15,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TOOL_DEMOS } from '../../components/tooldemos';
 import { ToolGatePending } from './ToolLockUi';
 import { useMemberGate } from '../../features/commercial/useTier';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
 import { toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
@@ -37,7 +37,7 @@ export function ToolDemoScreen({ navigation, route }: Props) {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>

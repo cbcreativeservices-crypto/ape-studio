@@ -12,7 +12,7 @@ import { AccessibilityInfo, KeyboardAvoidingView, Platform, Pressable, ScrollVie
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { hiddenNoteText, labHiddenKeys, resolveLab, resolveStage } from '../../../features/production/schema';
@@ -289,7 +289,7 @@ export function ProductionStageScreen() {
     >
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.kicker}>

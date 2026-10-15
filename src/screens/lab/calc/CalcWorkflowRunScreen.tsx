@@ -28,7 +28,7 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -608,7 +608,7 @@ export function CalcWorkflowRunScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{(workflow?.name ?? '').toUpperCase()}</Text>
@@ -643,7 +643,7 @@ export function CalcWorkflowRunScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{(workflow?.name ?? '').toUpperCase()}</Text>
@@ -663,7 +663,7 @@ export function CalcWorkflowRunScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{workflow.name.toUpperCase()}</Text>

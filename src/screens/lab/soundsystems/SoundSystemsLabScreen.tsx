@@ -18,7 +18,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { HelpKey } from '../../../components/HelpKey';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { confirmDialog } from '../../../lib/confirm';
 import { isPagedProgressUnreadable, loadPagedProgress, savePagedProgress } from '../../../features/lab/pagedProgress';
@@ -143,7 +143,7 @@ export function SoundSystemsLabScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>SOUND SYSTEMS LAB</Text>

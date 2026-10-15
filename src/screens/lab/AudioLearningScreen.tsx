@@ -17,7 +17,7 @@ import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
@@ -95,7 +95,7 @@ export function AudioLearningScreen({ navigation }: Props) {
       <View style={styles.header}>
         {backIsHome ? null : (
           <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
         )}
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

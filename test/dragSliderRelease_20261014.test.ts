@@ -44,13 +44,20 @@ describe('laneFingerLiftDx', () => {
 describe('DragSlider applies the release position', () => {
   const s = read('src/screens/lab/foundations/bits.tsx');
   const body = s.slice(s.indexOf('export function DragSlider'), s.indexOf('export function', s.indexOf('export function DragSlider') + 10));
-  const rel = body.slice(body.indexOf('onPanResponderRelease'), body.indexOf('onPanResponderTerminate'));
+  // Release and cancel share one landing (2026-10-15): finishGesture.
+  const rel = body.slice(body.indexOf('const finishGesture'), body.indexOf('const pan = useRef('));
+  it('release and terminate both land through finishGesture', () => {
+    assert.match(body, /onPanResponderRelease: \(e\) => finishGesture\(e\.nativeEvent\),/);
+    assert.match(body, /onPanResponderTerminate: \(e\) => finishGesture\(e\?\.nativeEvent\),/);
+  });
   it('reads the lift point and feeds it before ending', () => {
-    assert.match(rel, /laneFingerLiftDx\(e\.nativeEvent, fingerRef\.current\)/);
+    assert.match(rel, /laneLandDx\(ne, fingerRef\.current, lastDxRef\.current, TAP_SLOP\)/);
     assert.ok(rel.indexOf('feed.move(v)') > -1 && rel.indexOf('feed.move(v)') < rel.indexOf('feed.end()'));
     assert.match(rel, /capV\.value = v/);
   });
   it('a plain tap keeps the grant value (tap slop)', () => {
-    assert.match(rel, /movedRef\.current \|\| Math\.abs\(lift\) > TAP_SLOP/);
+    // laneLandDx(…, lastDx, TAP_SLOP): null inside the slop unless the finger
+    // travelled (and never back toward the grab — emulatorFollowUp_20261015).
+    assert.match(rel, /laneLandDx\(ne, fingerRef\.current, lastDxRef\.current, TAP_SLOP\)/);
   });
 });

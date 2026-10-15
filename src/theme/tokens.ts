@@ -85,6 +85,18 @@ export const colors = {
 export const BRAND_MAX_FONT_SCALE = 1.35;
 
 /**
+ * THE WAY OUT IS NEVER SQUEEZED (tester report, build 36, iPhone 13 Pro with
+ * Larger Text on, Audio Community Directory: "Can't get back to main screen").
+ * The ‹ back glyph is an icon in a fixed ~40×44 key. At the accessibility
+ * sizes (fontScale up to 3.12) it grew past its key and was drawn as a sliver
+ * beside the wrapped title, so there was no usable way back. The glyph follows
+ * the OS size up to the same 1.35 as the brand surfaces and holds there; the
+ * key keeps its full 44-pt target and never shrinks (flexShrink 0) — the title
+ * beside it wraps instead. Ratchet: test/largeTextLayout_20261015.test.ts.
+ */
+export const BACK_GLYPH_MAX_SCALE = BRAND_MAX_FONT_SCALE;
+
+/**
  * Font family names as exported by the @expo-google-fonts/* packages and
  * registered via useFonts() in App.tsx. Reference these — never a raw string —
  * so a rename is caught by the type checker.

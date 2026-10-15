@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -301,7 +301,7 @@ export function CalcProjectsScreen() {
           accessibilityRole="button"
           accessibilityLabel="Back"
         >
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{editing ? (editing.id ? 'EDIT PROJECT' : 'NEW PROJECT') : 'SAVED PROJECTS'}</Text>

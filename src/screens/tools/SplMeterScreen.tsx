@@ -67,7 +67,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../features/tools/measure/types';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { useFullScreenGate, useSaveGate } from './ToolLockUi';
 import { LandscapeRequiredNotice, useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -1518,7 +1518,7 @@ export function SplMeterScreen({ navigation }: Props) {
             meter's own menu), NOT out to the tool intro — owner 2026-08-19.
             Mirrors the hardware-back handler. */}
         <Pressable onPress={() => setView('home')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back to SPL Meter home">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
@@ -1838,7 +1838,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 landing view — without this the user was stuck with no way out.
                 Exits the tool (back to the tool intro). */}
             <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.vuModalBack}>
-              <Text style={styles.back}>‹</Text>
+              <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
             </Pressable>
             <Text style={styles.vuModalTitle}>SPL METER HOME</Text>
             <View style={{ flex: 1 }} />

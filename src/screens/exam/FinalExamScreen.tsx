@@ -36,7 +36,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { clearAttemptDraft, isAttemptDraftUnreadable, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import { ExamBriefing } from './ExamBriefing';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -779,7 +779,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
       <View style={styles.headerBar}>
         <View style={styles.headerLeft}>
           <Pressable onPress={confirmExit} hitSlop={16} accessibilityRole="button" accessibilityLabel="Leave Final Exam">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.headerCounter}>
             {qIdx + 1} OF {payload.items.length}

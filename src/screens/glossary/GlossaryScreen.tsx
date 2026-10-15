@@ -4024,7 +4024,9 @@ ${COPY.glossaryFreeAllowance}`,
         >
           <NavIcon icon="Home" lit />
         </Pressable>
-        <Text style={styles.title} numberOfLines={1}>GLOSSARY</Text>
+        {/* Shrinks to its line rather than "GL…" at the largest text sizes
+            (build 36 tester); at font scale 2 it fits at full size. */}
+        <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>GLOSSARY</Text>
         {/* The blue glossary book mark, right of the title (owner 2026-10-14). Decorative. */}
         <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           <MethodIcon method="glossary" size={34} />

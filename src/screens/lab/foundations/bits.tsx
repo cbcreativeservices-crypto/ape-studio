@@ -25,7 +25,7 @@ import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { NO_INSETS, laneDragValue, laneRawAt, laneValueAt } from '../rack/laneEdgeGuard';
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
-import { laneFingerAt, laneFingerDx, laneFingerLiftDx, type LaneFinger } from '../rack/laneFinger';
+import { laneFingerAt, laneFingerDx, laneLandDx, type LaneFinger, type LaneLift } from '../rack/laneFinger';
 
 export type CheckSpec = {
   question: string;
@@ -250,8 +250,9 @@ export function DragSlider({
   //    the release are delivered at once, so a tap lands where it touched and
   //    the resting value is exactly the finger's last.
   const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
-  /** The grabbing finger travelled past the tap slop during this touch. */
-  const movedRef = useRef(false);
+  /** The grabbing finger's travel at the last move of this touch (null = no
+   *  move yet) — what laneLandDx checks a lift point against. */
+  const lastDxRef = useRef<number | null>(null);
   const feed = useRef(
     createLaneFeed({
       deliver: (v) => onChangeRef.current(v),
@@ -265,6 +266,20 @@ export function DragSlider({
   // []-deps: unmount only (the G6 rule — `feed` is created once anyway).
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => () => feed.end(), []);
+  /** Release OR cancel: land on the finger's last x when it travelled, hand
+   *  over anything pending, free the scroll. Refs only — the PanResponder
+   *  below is created once and keeps this first-render closure. */
+  const finishGesture = (ne: LaneLift | undefined) => {
+    const lift = laneLandDx(ne, fingerRef.current, lastDxRef.current, TAP_SLOP);
+    if (lift != null && wRef.current > 0) {
+      const v = laneDragValue(baseRef.current, lift, wRef.current, insRef.current, CAP_W);
+      capV.value = v;
+      feed.move(v);
+    }
+    lastDxRef.current = null;
+    feed.end();
+    setLock(false);
+  };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -272,7 +287,7 @@ export function DragSlider({
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: (e) => {
         setLock(true);
-        movedRef.current = false;
+        lastDxRef.current = null;
         fingerRef.current = laneFingerAt(e.nativeEvent);
         if (wRef.current > 0) {
           // Read the touch in the INSET lane the cap travels in, so the map is
@@ -289,34 +304,27 @@ export function DragSlider({
       onPanResponderMove: (e, g) => {
         const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
         if (dx === 'lifted') return;
-        if (Math.abs(dx) > TAP_SLOP) movedRef.current = true;
+        lastDxRef.current = dx;
         if (wRef.current > 0) {
           const v = laneDragValue(baseRef.current, dx, wRef.current, insRef.current, CAP_W);
           capV.value = v;
           feed.move(v);
         }
       },
-      onPanResponderRelease: (e) => {
-        // LAND WHERE THE FINGER LIFTED (emulator pass 2026-10-14): a fast
-        // flick delivers few moves and PanResponder does not update `g` on
-        // release, so the slider settled on the last move — a flick to the
-        // end stopped at −8/−10 dB. The release event carries the lift point
-        // (ParamLane reads it in onEnd). A plain tap (no travel) keeps the
-        // grant value.
-        const lift = laneFingerLiftDx(e.nativeEvent, fingerRef.current);
-        if (lift != null && wRef.current > 0 && (movedRef.current || Math.abs(lift) > TAP_SLOP)) {
-          const v = laneDragValue(baseRef.current, lift, wRef.current, insRef.current, CAP_W);
-          capV.value = v;
-          feed.move(v);
-        }
-        movedRef.current = false;
-        feed.end();
-        setLock(false);
-      },
-      onPanResponderTerminate: () => {
-        feed.end();
-        setLock(false);
-      },
+      // LAND WHERE THE FINGER LIFTED (emulator pass 2026-10-14): a fast
+      // flick delivers few moves — logged on the emulator 2026-10-15, often
+      // NONE: grant, then release, nothing between — and PanResponder does
+      // not update `g` on release, so the slider settled on the last move.
+      // The release event carries the lift point (ParamLane reads it in
+      // onEnd). A plain tap (no travel) keeps the grant value.
+      // ⛔ …BUT NOT BLINDLY (follow-up 2026-10-15): that lift point can be
+      // STALE — the grab point itself — and landing on it snapped every
+      // other flick straight back ("does nothing"). laneLandDx uses it only
+      // where it carries the travel on; see laneFinger.ts.
+      // A cancelled touch ends the same way (this slider refuses every
+      // termination request, so a terminate is the platform cancelling it).
+      onPanResponderRelease: (e) => finishGesture(e.nativeEvent),
+      onPanResponderTerminate: (e) => finishGesture(e?.nativeEvent),
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;

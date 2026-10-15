@@ -51,10 +51,12 @@ test('#18 DragSlider hands the lab at most one value per frame â€” the newest â€
   assert.match(body, /feed\.move\(/, 'a move only records the newest value');
   // 2026-10-14: the release first lands the lift point (a fast flick), then
   // delivers what is pending.
-  const rel = body.slice(body.indexOf('onPanResponderRelease'), body.indexOf('onPanResponderTerminate'));
-  assert.match(rel, /laneFingerLiftDx\(e\.nativeEvent, fingerRef\.current\)/);
+  // 2026-10-15: release and cancel share finishGesture.
+  const rel = body.slice(body.indexOf('const finishGesture'), body.indexOf('const pan = useRef('));
+  assert.match(rel, /laneLandDx\(ne, fingerRef\.current, lastDxRef\.current, TAP_SLOP\)/);
   assert.match(rel, /feed\.end\(\);\s*setLock\(false\);/, 'the release delivers what is pending');
-  assert.match(body, /onPanResponderTerminate: \(\) => \{\s*feed\.end\(\);/);
+  assert.match(body, /onPanResponderRelease: \(e\) => finishGesture\(e\.nativeEvent\),/);
+  assert.match(body, /onPanResponderTerminate: \(e\) => finishGesture\(e\?\.nativeEvent\),/);
   const move = body.slice(body.indexOf('onPanResponderMove'), body.indexOf('onPanResponderRelease'));
   assert.doesNotMatch(move, /onChangeRef\.current\(/, 'no direct per-move delivery to the lab');
   assert.match(s, /const DRAG_TICK_MS = 16;/);

@@ -35,7 +35,7 @@ import { createContext, useContext, useEffect, useRef, type ReactNode, type Ref 
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type GestureResponderEvent } from 'react-native';
 import { NavigationContext, useNavigation } from '@react-navigation/native';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { READING_MAX_W } from '../../../theme/readingColumn';
 import { NAV, nextButtonLabel } from './labNav';
 import type { LabNav } from './useLabNav';
@@ -100,7 +100,7 @@ export function LabHeader({
   return (
     <View style={styles.header} ref={headerRef} onTouchStart={onTouchStart}>
       <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Leave the lab">
-        <Text style={styles.back}>‹</Text>
+        <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
       </Pressable>
       <Pressable style={styles.titleBlock} onPress={onTitlePress} accessible={false} disabled={!onTitlePress}>
         <Text style={styles.title} numberOfLines={2}>

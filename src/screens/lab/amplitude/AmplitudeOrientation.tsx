@@ -54,7 +54,7 @@ import {
 import { useOverlaysSuppressed } from '../../../features/dev/popupSuppressStore';
 import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { GlassButton } from '../../../components/GlassButton';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { readingText } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -1008,7 +1008,7 @@ export function AmplitudeLabScreen() {
           accessibilityRole="button"
           accessibilityLabel="Back"
         >
-          <Text style={styles.gateBack}>‹</Text>
+          <Text style={styles.gateBack} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <Text style={styles.labHeaderKicker}>AUDIO FUNDAMENTALS</Text>
         {/* ⛔ THE FIRST FREE LAB A NEW USER OPENS, and it was the one with no
@@ -1063,7 +1063,7 @@ export function AmplitudeOrientationGatePage() {
           accessibilityRole="button"
           accessibilityLabel="Back"
         >
-          <Text style={styles.gateBack}>‹</Text>
+          <Text style={styles.gateBack} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <Text style={styles.gateIntro}>{GATE_INTRO}</Text>
         {/* The standing calibration note (bug hunt 2026-09-30): this gate

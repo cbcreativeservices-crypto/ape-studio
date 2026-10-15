@@ -94,14 +94,20 @@ export function CareerFinderResultsScreen() {
   // family card — chips, examples, buttons — on each keystroke in the feedback
   // note and on every SAVE / feedback tap. Called as a function, the cards are
   // ordinary elements that React updates in place.
-  const familyCard = ({ item, size, why }: { item: FamilyScore; size: 'large' | 'compact'; why?: string }) => {
+  // `ranked: false` — the "one you may not have considered" card (build 36
+  // tester: "it listed DJ as 8"). Its circled number was the family's place in
+  // the full ranking (8th), shown on a card that is picked by a different rule
+  // (it shares your strongest interest outside your top five), so it read as a
+  // rank inside a list of one. That card carries no number; the reason it was
+  // picked is said in words underneath.
+  const familyCard = ({ item, size, why, ranked = true }: { item: FamilyScore; size: 'large' | 'compact'; why?: string; ranked?: boolean }) => {
     const f = item.family;
     const meta = familyMetaOf(f.id);
     const saved = rec.saved.includes(f.id);
     return (
       <Card key={f.id} tone={size === 'large' ? 'raised' : 'plain'} style={{ gap: 8 }}>
         <View style={styles.cardTop}>
-          <RankBadge rank={item.rank} />
+          {ranked ? <RankBadge rank={item.rank} /> : null}
           <Text style={[styles.famName, size === 'compact' && { fontSize: 16, lineHeight: 21 }]} accessibilityRole="header">{f.name}</Text>
           {meta ? <CountTag n={meta.count} /> : null}
         </View>
@@ -230,7 +236,7 @@ export function CareerFinderResultsScreen() {
         <>
           <SectionLabel tone="cyan">ONE YOU MAY NOT HAVE CONSIDERED</SectionLabel>
           <Body>Same strongest interest, a different corner of the audio world. Many of these families are unfamiliar even to people who work in audio — that is part of why the index exists.</Body>
-          {familyCard({ item: result.surprise, size: 'compact', why: lead ? `Shares your strongest interest, ${DIMENSIONS[lead.code].label}, in a field none of your top five touch.` : undefined })}
+          {familyCard({ item: result.surprise, size: 'compact', ranked: false, why: lead ? `Shares your strongest interest, ${DIMENSIONS[lead.code].label}, in a field none of your top five touch.` : undefined })}
         </>
       ) : null}
 

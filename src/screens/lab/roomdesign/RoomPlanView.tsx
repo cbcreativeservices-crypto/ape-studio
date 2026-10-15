@@ -27,6 +27,7 @@ import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelC
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import { fingerAt, fingerOffset, pickHandle, planTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
+import { boxAround, CAPS_W, MONO_W, pickSpot, textBox, type Anchor, type Box } from './planLabels';
 import {
   bounds,
   distToEdge,
@@ -319,9 +320,115 @@ export function RoomPlanView({
   const roomBelow = Math.min(gh, layers.boundaries ? rearPx - fs - 4 : gh);
   const spkBehind = !!(Lsp && Rsp) && (T.toPx(Lsp).y + T.toPx(Rsp).y) / 2 > lisPx.y;
   const below = !spkBehind && lisPx.y + lisOff + fs + 3 + 4 <= roomBelow;
+  // The angle line's baseline; the NEARFIELD line sits one line (fs + 3) under it.
   const angleY = below ? lisPx.y + lisOff : lisPx.y - Math.max(22, lisRing + 3) - (fs + 3);
-  const fieldY = below ? lisPx.y + lisOff + fs + 3 : lisPx.y - Math.max(22, lisRing + 3);
   const labelMode = (sp: Speaker): 'inside' | 'above' | 'none' => (multi ? 'inside' : frontEdgeDist(sp) * T.k < 22 ? 'none' : 'above');
+
+  // ── LABELS KEEP OUT OF EACH OTHER'S WAY (follow-up 2026-10-15, planLabels) ─
+  // Fixed first: the dimension labels, every cabinet (and its letter) and the
+  // head. Then, each taking the first spot clear of all of those and of the
+  // labels placed before it: the desk's name, the angle / NEARFIELD pair,
+  // the boundary distances. A label moves; its number is never dropped.
+  const taken: Box[] = [];
+  const dimG = layers.dims !== false ? dimensionGeom(b, T, units, fs, analysis.rectangular) : null;
+  if (dimG) taken.push(...dimG.boxes);
+  for (const sp of lay.speakers) {
+    const q = T.toPx(sp);
+    if (sp.role === 'SUB') {
+      const sz = Math.max(MIN_GLYPH + 3, 0.38 * T.k);
+      taken.push(boxAround(q.x, q.y, sz / 2 + 1), textBox(q.x, q.y - sz / 2 - 4, 'SUB', fs + 1, 'middle', CAPS_W));
+      continue;
+    }
+    // The cabinet as SpeakerTop draws it: a square of its depth. (Its full
+    // toed-in bounding box is larger only at the corners, where the cabinet
+    // is not; using it pushed the front-wall "90 cm" labels back onto the
+    // dimension row the 2026-10-14 pass took them off.)
+    const wdt = Math.max(MIN_GLYPH, 0.21 * T.k);
+    const dep = wdt * (280 / 210);
+    taken.push(boxAround(q.x, q.y, dep / 2 + 1));
+    if (labelMode(sp) === 'above') taken.push(textBox(q.x, q.y - dep * 0.55 - 4, sp.role, fs + 1, 'middle', CAPS_W));
+  }
+  const frontSpot = dimG ? pickSpot(dimG.frontSpots, taken, gw, gh) : null;
+  if (frontSpot) taken.push(...frontSpot.boxes);
+  taken.push(boxAround(lisPx.x, lisPx.y, lisRing - 4));
+  // The wall numbers on doors and windows ("W2"), as OpeningGlyph places them.
+  for (const o of room.openings) {
+    const wi = o.wall % v.length;
+    const n = inwardNormal(v, wi, centroid);
+    const c = edgePoint(v, wi, o.pos);
+    const tp = T.toPx({ x: c.x + n.x * 0.22, y: c.y + n.y * 0.22 });
+    taken.push(textBox(tp.x, tp.y + fs * 0.35, `W${wi + 1}`, fs, 'middle', CAPS_W));
+  }
+  // Other furniture names are centred on their piece and stay put.
+  for (const f of room.features) {
+    const W = f.w * T.k;
+    if (f.kind === 'desk' || W <= 30) continue;
+    const c = T.toPx(f);
+    taken.push(textBox(c.x, c.y + fs * 0.35, f.kind.toUpperCase(), fs, 'middle', CAPS_W));
+  }
+  const deskSpot: Record<string, LabelSpot> = {};
+  for (const f of room.features) {
+    if (f.kind !== 'desk' || f.w * T.k <= 30) continue;
+    const sp = pickSpot(deskLabelSpots(f, T, fs), taken, gw, gh);
+    deskSpot[f.id] = sp;
+    taken.push(...sp.boxes);
+  }
+  // The angle (or NO TRIANGLE) and the NEARFIELD / MIDFIELD line: two lines,
+  // the field line one line under the angle. Preferred where the rules above
+  // put them (below the head, or above it), then the other side, then beside
+  // the head, then a further line away.
+  const st = analysis.stereo;
+  const angleText = st ? (st.inFront ? `${st.angleDeg.toFixed(0)}°` : 'NO TRIANGLE') : '';
+  const fieldInfo =
+    st && design.monitoring.field !== 'other'
+      ? (() => {
+          const d = (st.distL + st.distR) / 2;
+          const range = FIELD_RANGE_M[design.monitoring.field];
+          const fits = !range || (d >= range[0] && d <= range[1]);
+          return { fits, text: `${design.monitoring.field.toUpperCase()} · ${fmtLen(d, units)}${fits ? '' : ' ?'}` };
+        })()
+      : null;
+  const pairAt = (x: number, y: number, anchor: Anchor): LabelSpot => ({
+    tx: x,
+    ty: y,
+    anchor,
+    boxes: [
+      textBox(x, y, angleText, fs + 1, anchor, st?.inFront ? MONO_W : CAPS_W),
+      ...(fieldInfo ? [textBox(x, y + fs + 3, fieldInfo.text, fs, anchor, CAPS_W)] : []),
+    ],
+  });
+  const belowY = lisPx.y + lisOff;
+  const aboveY = lisPx.y - Math.max(22, lisRing + 3) - (fs + 3);
+  const line2 = 2 * (fs + 3);
+  const pair =
+    layers.triangle && Lsp && Rsp && st
+      ? pickSpot(
+          [
+            pairAt(lisPx.x, angleY, 'middle'),
+            pairAt(lisPx.x, below ? aboveY : belowY, 'middle'),
+            pairAt(lisPx.x + lisRing + 4, lisPx.y - 1, 'start'),
+            pairAt(lisPx.x - lisRing - 4, lisPx.y - 1, 'end'),
+            pairAt(lisPx.x + lisRing + 4, lisPx.y - 1 - (fs + 3), 'start'),
+            pairAt(lisPx.x - lisRing - 4, lisPx.y - 1 - (fs + 3), 'end'),
+            pairAt(lisPx.x + lisRing + 4, lisPx.y - 1 + (fs + 3), 'start'),
+            pairAt(lisPx.x - lisRing - 4, lisPx.y - 1 + (fs + 3), 'end'),
+            pairAt(lisPx.x, belowY + line2, 'middle'),
+            pairAt(lisPx.x, aboveY - line2, 'middle'),
+          ],
+          taken,
+          gw,
+          gh,
+        )
+      : null;
+  if (pair) taken.push(...pair.boxes);
+  const boundary =
+    layers.boundaries && st
+      ? boundaryItems(design, analysis, T, fs).map((item) => {
+          const spot = pickSpot(item.cands, taken, gw, gh);
+          taken.push(...spot.boxes);
+          return { item, spot };
+        })
+      : [];
 
   return (
     <View style={{ width: w, height: h }} {...(edit === 'none' ? {} : pan.panHandlers)} accessible accessibilityLabel={`Room plan, ${fmtLen(b.width, units)} by ${fmtLen(b.length, units)}`}>
@@ -347,7 +454,7 @@ export function RoomPlanView({
 
         {/* Furniture */}
         {room.features.map((f) => (
-          <FeatureGlyph key={f.id} f={f} T={T} fs={fs} selected={selected === `f_${f.id}`} draggable={edit === 'room'} />
+          <FeatureGlyph key={f.id} f={f} T={T} fs={fs} selected={selected === `f_${f.id}`} draggable={edit === 'room'} labelAt={deskSpot[f.id]} />
         ))}
 
         {/* Walls — stroked in the wall material's tint */}
@@ -378,7 +485,7 @@ export function RoomPlanView({
           : null}
 
         {/* Boundary distance lines */}
-        {layers.boundaries && analysis.stereo ? <BoundaryLines design={design} analysis={analysis} T={T} fs={fs} /> : null}
+        {boundary.length ? <BoundaryLines items={boundary} fs={fs} /> : null}
 
         {/* Stereo triangle */}
         {layers.triangle && Lsp && Rsp ? (
@@ -391,28 +498,22 @@ export function RoomPlanView({
               strokeDasharray="4 3"
               opacity={0.8}
             />
-            {analysis.stereo ? (
+            {analysis.stereo && pair ? (
               // No angle when the seat is not in front of both speakers: two
-              // speakers behind the head make no listening triangle.
-              <SvgText x={lisPx.x} y={angleY} fill={analysis.stereo.inFront ? CYAN : '#ff5a48'} fontSize={fs + 1} fontFamily={analysis.stereo.inFront ? fonts.mono : fonts.oswaldSemiBold} textAnchor="middle">
-                {analysis.stereo.inFront ? `${analysis.stereo.angleDeg.toFixed(0)}°` : 'NO TRIANGLE'}
+              // speakers behind the head make no listening triangle. Drawn at
+              // the spot the label placer picked (`pair`, above).
+              <SvgText x={pair.tx} y={pair.ty} fill={analysis.stereo.inFront ? CYAN : '#ff5a48'} fontSize={fs + 1} fontFamily={analysis.stereo.inFront ? fonts.mono : fonts.oswaldSemiBold} textAnchor={pair.anchor}>
+                {angleText}
               </SvgText>
             ) : null}
             {/* The listening-distance class under the angle: the SETUP tray's
                 NEARFIELD / MIDFIELD pick is drawn, amber when the speakers sit
                 outside the distance that class is heard from. */}
-            {analysis.stereo && design.monitoring.field !== 'other'
-              ? (() => {
-                  const d = (analysis.stereo.distL + analysis.stereo.distR) / 2;
-                  const range = FIELD_RANGE_M[design.monitoring.field];
-                  const fits = !range || (d >= range[0] && d <= range[1]);
-                  return (
-                    <SvgText x={lisPx.x} y={fieldY} fill={fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
-                      {`${design.monitoring.field.toUpperCase()} · ${fmtLen(d, units)}${fits ? '' : ' ?'}`}
-                    </SvgText>
-                  );
-                })()
-              : null}
+            {fieldInfo && pair ? (
+              <SvgText x={pair.tx} y={pair.ty + fs + 3} fill={fieldInfo.fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={pair.anchor}>
+                {fieldInfo.text}
+              </SvgText>
+            ) : null}
           </G>
         ) : null}
 
@@ -450,7 +551,7 @@ export function RoomPlanView({
         {trace && layers.reflections ? <TracePulse r={analysis.reflections[trace.index]} progress={trace.progress} T={T} lay={lay} /> : null}
 
         {/* Dimensions */}
-        {layers.dims !== false ? <DimensionLabels b={b} T={T} units={units} fs={fs} rectangular={analysis.rectangular} /> : null}
+        {layers.dims !== false ? <DimensionLabels b={b} T={T} units={units} fs={fs} rectangular={analysis.rectangular} frontAt={frontSpot ?? undefined} /> : null}
 
         {/* Mode caption — two lines on a narrow glass so nothing is cropped */}
         {heat && gw < 300 ? (
@@ -682,7 +783,39 @@ function arcSweep(ux: number, uy: number, n: Pt): 0 | 1 {
   return ux * n.y - uy * n.x > 0 ? 1 : 0;
 }
 
-function FeatureGlyph({ f, T, fs, selected, draggable }: { f: RoomDesign['room']['features'][number]; T: PlanTransform; fs: number; selected: boolean; draggable: boolean }) {
+/**
+ * The desk's name, spots best first. Clash sweep 2026-10-10: on a narrow desk
+ * (or a small glass) the name ran onto the keyboard, so the front-left corner
+ * is used only when it clears the keyboard's left end (DeskTopItems: 0.44 m
+ * wide, centred 0.04 m left) — then the front-right corner the same way;
+ * otherwise just outside the desk's left / right edge, on the floor, then
+ * under or over it. Follow-up 2026-10-15: SPREAD stood the L cabinet on the
+ * name, so the placer now skips any spot a cabinet or a label already holds.
+ */
+function deskLabelSpots(f: RoomDesign['room']['features'][number], T: PlanTransform, fs: number): LabelSpot[] {
+  const q = T.toPx({ x: f.x - f.w / 2, y: f.y - f.d / 2 });
+  const W = f.w * T.k;
+  const D = f.d * T.k;
+  const k = T.k;
+  const label = f.kind.toUpperCase();
+  const at = (tx: number, ty: number, anchor: Anchor): LabelSpot => ({ tx, ty, anchor, boxes: [textBox(tx, ty, label, fs, anchor, CAPS_W)] });
+  const labelW = label.length * fs * CAPS_W;
+  const kbLeft = q.x + W / 2 - 0.22 * k - 0.04 * k;
+  const kbRight = q.x + W / 2 + 0.22 * k - 0.04 * k;
+  const out: LabelSpot[] = [];
+  if (q.x + 4 + labelW + 3 <= kbLeft) out.push(at(q.x + 4, q.y + D - 4, 'start'));
+  if (q.x + W - 4 - labelW - 3 >= kbRight) out.push(at(q.x + W - 4, q.y + D - 4, 'end'));
+  const midY = q.y + D / 2 + fs * 0.35;
+  const left = at(q.x - 4, midY, 'end');
+  const right = at(q.x + W + 4, midY, 'start');
+  // Against a wall, the side that has room first (the 2026-10-10 rule).
+  if (q.x - labelW - 6 > 2) out.push(left, right);
+  else out.push(right, left);
+  out.push(at(q.x + W / 2, q.y + D + fs + 2, 'middle'), at(q.x + W / 2, q.y - 4, 'middle'));
+  return out;
+}
+
+function FeatureGlyph({ f, T, fs, selected, draggable, labelAt }: { f: RoomDesign['room']['features'][number]; T: PlanTransform; fs: number; selected: boolean; draggable: boolean; labelAt?: LabelSpot }) {
   const q = T.toPx({ x: f.x - f.w / 2, y: f.y - f.d / 2 });
   const W = f.w * T.k;
   const D = f.d * T.k;
@@ -744,27 +877,13 @@ function FeatureGlyph({ f, T, fs, selected, draggable }: { f: RoomDesign['room']
         })()
       )}
       {W > 30 ? (
-        // The desk's name sits in its front-left corner, clear of the
-        // displays and the keyboard drawn on it.
+        // The desk's name: the spot planLabels picked (labelAt — clear of the
+        // cabinets, the head and the dimension labels), else its first choice.
         f.kind === 'desk' ? (
-          // Clash sweep 2026-10-10: on a narrow desk (or a small glass) the
-          // name ran onto the keyboard. It stays in the front-left corner only
-          // when it clears the keyboard's left end (DeskTopItems: 0.44 m wide,
-          // centred 0.04 m left); otherwise it sits just outside the desk's
-          // left edge (or right edge, against a wall), on the floor.
           (() => {
-            const labelW = fs * 2.1;
-            const kbLeft = q.x + W / 2 - 0.22 * k - 0.04 * k;
-            if (q.x + 4 + labelW + 3 <= kbLeft) {
-              return (
-                <SvgText x={q.x + 4} y={q.y + D - 4} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="start">
-                  {label}
-                </SvgText>
-              );
-            }
-            const outLeft = q.x - labelW - 6 > 2;
+            const sp = labelAt ?? deskLabelSpots(f, T, fs)[0];
             return (
-              <SvgText x={outLeft ? q.x - 4 : q.x + W + 4} y={q.y + D / 2 + fs * 0.35} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={outLeft ? 'end' : 'start'}>
+              <SvgText x={sp.tx} y={sp.ty} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={sp.anchor}>
                 {label}
               </SvgText>
             );
@@ -948,12 +1067,31 @@ function TracePulseDot({ ax, ay, px, py, lx, ly, col, progress }: { ax: number; 
   );
 }
 
-function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analysis: Analysis; T: PlanTransform; fs: number }) {
+/** One boundary-distance leader and the spots its label may take, best first. */
+type LabelSpot = { tx: number; ty: number; anchor: Anchor; boxes: Box[] };
+type BoundaryItem = { key: string; a: Pt; bq: Pt; text: string; col: string; cands: LabelSpot[] };
+
+function BoundaryLines({ items, fs }: { items: { item: BoundaryItem; spot: LabelSpot }[]; fs: number }) {
+  return (
+    <G>
+      {items.map(({ item, spot }) => (
+        <G key={item.key}>
+          <Line x1={item.a.x} y1={item.a.y} x2={item.bq.x} y2={item.bq.y} stroke={item.col} strokeWidth={0.9} strokeDasharray="3 2" />
+          <SvgText x={spot.tx} y={spot.ty} fill={item.col} fontSize={fs} fontFamily={fonts.mono} textAnchor={spot.anchor}>
+            {item.text}
+          </SvgText>
+        </G>
+      ))}
+    </G>
+  );
+}
+
+function boundaryItems(design: RoomDesign, analysis: Analysis, T: PlanTransform, fs: number): BoundaryItem[] {
   const room = design.room;
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const v = room.vertices;
   const units = room.units;
-  const lines: ReactNode[] = [];
+  const lines: BoundaryItem[] = [];
   // The label sits at the WALL end of the leader, never on the speaker's
   // letter or cabinet (cognitive review 10). INSIDE the room beside the
   // leader whenever the leader has the room for it (Android pass 2026-10-14):
@@ -970,38 +1108,51 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
     const ux = dx / len;
     const uy = dy / len;
     const sideways = Math.abs(ux) > 0.5;
-    const textW = text.length * fs * 0.62;
+    const textW = text.length * fs * MONO_W;
     const free = len - clear;
-    let tx: number;
-    let ty: number;
-    let anchor: 'start' | 'middle' | 'end';
-    if (sideways && free >= textW + 6) {
-      // Just inside the side wall, over the leader, running back toward the object.
-      tx = bq.x - ux * 3;
-      ty = bq.y - 3;
-      anchor = ux > 0 ? 'end' : 'start';
-    } else if (!sideways && free >= fs + 4) {
+    const at = (tx: number, ty: number, anchor: Anchor): LabelSpot => ({ tx, ty, anchor, boxes: [textBox(tx, ty, text, fs, anchor)] });
+    // The spots, best first; planLabels takes the first one clear of the
+    // labels and cabinets already placed (follow-up 2026-10-15: "62 cm" sat
+    // on the rotated "5.00 m").
+    const inside: LabelSpot[] = [];
+    const outside: LabelSpot[] = [];
+    if (sideways) {
+      // Just inside the side wall, over (then under) the leader, running back
+      // toward the object.
+      const anchor: Anchor = ux > 0 ? 'end' : 'start';
+      inside.push(at(bq.x - ux * 3, bq.y - 3, anchor), at(bq.x - ux * 3, bq.y + fs + 1, anchor));
+      // Past the wall by ~1.2 line heights, then nudged up or down the wall.
+      const ox = bq.x + ux * (fs * 1.2);
+      const oy = bq.y + uy * (fs * 1.2) + fs * 0.35;
+      const oa: Anchor = ux > 0 ? 'start' : 'end';
+      for (const k of [0, -1.3, 1.3, -2.6, 2.6, -3.9, 3.9]) outside.push(at(ox, oy + k * fs, oa));
+    } else {
       // Beside the leader, half way between the wall and the object — or,
       // `atWall`, just inside the wall (the listener's rear label: the angle
-      // and NEARFIELD lines own the room under the head).
-      const m = atWall ? len - 3 - fs * 0.35 : (len + clear) / 2;
-      tx = a.x + ux * m + 5;
-      ty = a.y + uy * m + fs * 0.35;
-      anchor = 'start';
-    } else {
-      // Past the wall by ~1.2 line heights along the leader's direction.
-      tx = bq.x + ux * (fs * 1.2);
-      ty = bq.y + uy * (fs * 1.2) + fs * 0.35;
-      anchor = sideways ? (ux > 0 ? 'start' : 'end') : 'middle';
+      // and NEARFIELD lines own the room under the head) — right, then left.
+      // Then further along the same leader (toward the wall, toward the
+      // object), so a label crowded at the midpoint (the head, the desk's
+      // name, the angle pair) still finds room INSIDE before it is sent out
+      // to the dimension row (follow-up 2026-10-15: "4.00 m 4.00 m 4.00 m").
+      const mid = atWall ? len - 3 - fs * 0.35 : (len + clear) / 2;
+      const nearWall = len - 3 - fs * 0.35;
+      const nearObj = Math.min(nearWall, clear + fs + 2);
+      for (const m of [mid, nearWall, nearObj, (mid + nearWall) / 2, (mid + nearObj) / 2]) {
+        inside.push(at(a.x + ux * m + 5, a.y + uy * m + fs * 0.35, 'start'), at(a.x + ux * m - 5, a.y + uy * m + fs * 0.35, 'end'));
+      }
+      // Past the wall by ~1.2 line heights along the leader's direction,
+      // centred, then to either side of the leader.
+      const oy = bq.y + uy * (fs * 1.2) + fs * 0.35;
+      const ox = bq.x + ux * (fs * 1.2);
+      outside.push(at(ox, oy, 'middle'), at(bq.x + 4, oy, 'start'), at(bq.x - 4, oy, 'end'));
+      // …further along the wall, then one line further out (the room's
+      // WIDTH shares this row on the front wall).
+      outside.push(at(bq.x + 4 + textW / 2, oy, 'start'), at(bq.x - 4 - textW / 2, oy, 'end'));
+      const oy2 = oy + uy * (fs + 3);
+      outside.push(at(ox, oy2, 'middle'), at(bq.x + 4, oy2, 'start'), at(bq.x - 4, oy2, 'end'));
     }
-    lines.push(
-      <G key={key}>
-        <Line x1={a.x} y1={a.y} x2={bq.x} y2={bq.y} stroke={col} strokeWidth={0.9} strokeDasharray="3 2" />
-        <SvgText x={tx} y={ty} fill={col} fontSize={fs} fontFamily={fonts.mono} textAnchor={anchor}>
-          {text}
-        </SvgText>
-      </G>,
-    );
+    const roomy = sideways ? free >= textW + 6 : free >= fs + 4;
+    lines.push({ key, a, bq, text, col, cands: roomy ? [...inside, ...outside] : [...outside, ...inside] });
   };
   for (const sp of lay.speakers) {
     if (sp.role === 'SUB') continue;
@@ -1031,27 +1182,48 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
     const rear = { x: lay.listener.x, y: lay.listener.y + s.listenerRear };
     dim(lay.listener, rear, fmtLen(s.listenerRear, units, { small: true }), 'lis-rear', GREEN, (Math.max(MIN_GLYPH, 0.22 * T.k) * 1.35) / 2 + 4, true);
   }
-  return <G>{lines}</G>;
+  return lines;
 }
 
-function DimensionLabels({ b, T, units, fs, rectangular }: { b: ReturnType<typeof bounds>; T: PlanTransform; units: RoomDesign['room']['units']; fs: number; rectangular: boolean }) {
+/** Where the room's WIDTH / LENGTH / FRONT labels sit — one geometry for the
+ *  drawing and for the label placer's obstacle list (planLabels). */
+function dimensionGeom(b: ReturnType<typeof bounds>, T: PlanTransform, units: RoomDesign['room']['units'], fs: number, rectangular: boolean) {
   const tl = T.toPx({ x: b.minX, y: b.minY });
   const tr = T.toPx({ x: b.maxX, y: b.minY });
   const bl = T.toPx({ x: b.minX, y: b.maxY });
   const yTop = tl.y - 9;
   const xLeft = tl.x - 9;
-  const tag = rectangular ? '' : ' (bounding box)';
+  const widthText = `${fmtLen(b.width, units)}${rectangular ? '' : ' (bounding box)'}`;
+  const lengthText = fmtLen(b.length, units);
+  const midY = (tl.y + bl.y) / 2;
+  const lenHalf = (lengthText.length * fs * MONO_W) / 2;
+  const boxes: Box[] = [
+    textBox((tl.x + tr.x) / 2, yTop - 2, widthText, fs, 'middle'),
+    // The length runs up the left margin (rotated −90° about its anchor).
+    { x0: xLeft - 2 - fs * 0.8, y0: midY - lenHalf, x1: xLeft - 2 + fs * 0.22, y1: midY + lenHalf },
+  ];
+  // FRONT names the front wall from just inside it: the left corner first,
+  // then the right corner, then the middle — whichever no cabinet stands on.
+  const fy = tl.y + fs + 2;
+  const front = (x: number, anchor: Anchor): LabelSpot => ({ tx: x, ty: fy, anchor, boxes: [textBox(x, fy, 'FRONT', fs, anchor, CAPS_W)] });
+  const frontSpots = [front(tl.x + 3, 'start'), front(tr.x - 3, 'end'), front((tl.x + tr.x) / 2, 'middle')];
+  return { tl, tr, bl, yTop, xLeft, widthText, lengthText, midY, boxes, frontSpots };
+}
+
+function DimensionLabels({ b, T, units, fs, rectangular, frontAt }: { b: ReturnType<typeof bounds>; T: PlanTransform; units: RoomDesign['room']['units']; fs: number; rectangular: boolean; frontAt?: LabelSpot }) {
+  const { tl, tr, bl, yTop, xLeft, widthText, lengthText, midY, frontSpots } = dimensionGeom(b, T, units, fs, rectangular);
+  const fr = frontAt ?? frontSpots[0];
   return (
     <G>
       <Line x1={tl.x} y1={yTop} x2={tr.x} y2={yTop} stroke={WALL_SOFT} strokeWidth={0.8} />
       <SvgText x={(tl.x + tr.x) / 2} y={yTop - 2} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
-        {`${fmtLen(b.width, units)}${tag}`}
+        {widthText}
       </SvgText>
       <Line x1={xLeft} y1={tl.y} x2={xLeft} y2={bl.y} stroke={WALL_SOFT} strokeWidth={0.8} />
-      <SvgText x={xLeft - 2} y={(tl.y + bl.y) / 2} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle" transform={`rotate(-90 ${xLeft - 2} ${(tl.y + bl.y) / 2})`}>
-        {fmtLen(b.length, units)}
+      <SvgText x={xLeft - 2} y={midY} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle" transform={`rotate(-90 ${xLeft - 2} ${midY})`}>
+        {lengthText}
       </SvgText>
-      <SvgText x={tl.x + 3} y={tl.y + fs + 2} fill="#6d6f78" fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
+      <SvgText x={fr.tx} y={fr.ty} fill="#6d6f78" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={fr.anchor}>
         FRONT
       </SvgText>
     </G>

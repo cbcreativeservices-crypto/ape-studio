@@ -40,7 +40,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import {
@@ -657,7 +657,7 @@ export function QuizScreen({ navigation, route }: Props) {
       <View style={styles.headerBar}>
         <View style={styles.headerLeft}>
           <Pressable onPress={confirmExit} hitSlop={16} accessibilityRole="button" accessibilityLabel="Leave quiz">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.headerCounter}>
             QUESTION {qIdx + 1} OF {payload.questions.length}

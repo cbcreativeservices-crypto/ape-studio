@@ -50,7 +50,7 @@ import { useCoachMark } from '../../lib/coachMark';
 import { isHazardTerm } from '../../lib/hazard';
 import { useShake } from '../../lib/useShake';
 import { CautionBadge } from '../../components/CautionBadge';
-import { colors, fonts } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
 import {
   fetchGlossaryItemsByIds,
@@ -270,7 +270,11 @@ function FilterChip({
         colors={active ? t.bg : ['#222222', '#161616']}
         style={[chipStyles.chip, { borderColor: active ? t.border : '#3a3a3a' }]}
       >
-        {icon ? icon(fg) : <Text style={[chipStyles.text, { color: fg }]}>{label}</Text>}
+        {icon ? icon(fg) : (
+          <Text style={[chipStyles.text, { color: fg }]} maxFontSizeMultiplier={CHIP_MAX_FONT_SCALE}>
+            {label}
+          </Text>
+        )}
       </LinearGradient>
     </Pressable>
   );
@@ -351,6 +355,28 @@ function ShuffleIcon({ color }: { color: string }) {
     </Svg>
   );
 }
+
+/**
+ * LARGE TEXT ON THE FLASHCARD SCREEN (build 36 tester, iPhone 13 Pro with
+ * Larger Text on: "The Flashcard screens are the most difficult for me to
+ * navigate and view."). At the accessibility sizes the chrome around the card
+ * ate the screen: the filter chips broke onto a third row with the full-screen
+ * key alone on a line, the dock keys clipped "BOOKMARK T…", and the term title
+ * ran out of the card and behind ‹ PREV / NEXT ›.
+ *
+ * The chrome follows the OS size to a point and holds there, like the Home
+ * deck (BRAND_MAX_FONT_SCALE): the chip labels (short codes beside icon-only
+ * chips that do not scale at all) to 1.2 so each filter row stays one line on
+ * a 390-pt phone; the dock keys, the progress readouts and the compact
+ * CAUTION strip to 1.35. The TERM keeps growing well past that — to 1.6× its
+ * 29-pt design size (46 pt, about the size of the largest Dynamic Type body
+ * text) — and a long term then shrinks to fit the card instead of spilling.
+ * The definition text, the reading surface, is not capped. The full-screen
+ * card (long-press, or the green key) shows everything at the OS size.
+ */
+const CHIP_MAX_FONT_SCALE = 1.2;
+const DOCK_MAX_FONT_SCALE = BRAND_MAX_FONT_SCALE;
+const TERM_MAX_FONT_SCALE = 1.6;
 
 const chipStyles = StyleSheet.create({
   // 9 px sides (was 12): each filter row now fits ONE line down to a 375-wide
@@ -1526,8 +1552,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           <View style={{ flex: 1 }}>
             <LedMeterWell filled={segmentsForPct(displayPct)} pct={displayPctLabel} label="Flashcards progress" />
           </View>
-          <Text style={styles.ledPct}>{displayPctLabel}%</Text>
-          <Text style={styles.counter}>
+          <Text style={styles.ledPct} maxFontSizeMultiplier={DOCK_MAX_FONT_SCALE}>{displayPctLabel}%</Text>
+          <Text style={styles.counter} maxFontSizeMultiplier={DOCK_MAX_FONT_SCALE}>
             {deck.length === 0 ? 0 : Math.min(idx, deck.length - 1) + 1} / {deck.length}
           </Text>
           {/* Session-timer countdown, when running and set to show (owner 2026-08-13). */}
@@ -1727,7 +1753,15 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 {soloReveal ? (
                   // Open study view: term + primary DEFINITION together.
                   <>
-                    <Text style={styles.levelTerm}>{card.term}</Text>
+                    <Text
+                      style={styles.levelTerm}
+                      maxFontSizeMultiplier={TERM_MAX_FONT_SCALE}
+                      numberOfLines={3}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.6}
+                    >
+                      {card.term}
+                    </Text>
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[0]}</Text>
                     <ScrollView
                       style={{ flex: 1 }}
@@ -1761,8 +1795,15 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                           button role (it wraps four real buttons), so the
                           TERM itself is the screen reader's tap-to-reveal
                           control — the same pattern the Glossary row uses. */}
+                      {/* Large text (build 36): grows to TERM_MAX_FONT_SCALE,
+                          then a long term shrinks to fit four lines instead of
+                          running out of the card behind ‹ PREV / NEXT ›. */}
                       <Text
                         style={styles.term}
+                        maxFontSizeMultiplier={TERM_MAX_FONT_SCALE}
+                        numberOfLines={4}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.5}
                         accessibilityRole="button"
                         accessibilityLabel={card.term}
                         accessibilityHint={soloReveal ? undefined : 'Reveals the definition'}
@@ -1844,10 +1885,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               had them all along, and these are their labels. */}
           <View style={styles.buttonRow}>
             <View style={{ flex: 1 }}>
-              <GlassButton label="‹ PREV" tint="gold" onPress={() => goCard(-1)} disabled={deck.length === 0} />
+              <GlassButton label="‹ PREV" tint="gold" maxFontSizeMultiplier={DOCK_MAX_FONT_SCALE} onPress={() => goCard(-1)} disabled={deck.length === 0} />
             </View>
             <View style={{ flex: 1 }}>
-              <GlassButton label="NEXT ›" tint="green" onPress={() => goCard(1)} disabled={deck.length === 0} />
+              <GlassButton label="NEXT ›" tint="green" maxFontSizeMultiplier={DOCK_MAX_FONT_SCALE} onPress={() => goCard(1)} disabled={deck.length === 0} />
             </View>
           </View>
           <View style={styles.buttonRow}>
@@ -1860,6 +1901,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     : 'MARK KNOWN'
                 }
                 tint="green"
+                maxFontSizeMultiplier={DOCK_MAX_FONT_SCALE}
                 onPress={toggleKnown}
                 disabled={!card}
               />
@@ -1868,6 +1910,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               <GlassButton
                 label={card && bookmarked.has(card.id) ? 'REMOVE BOOKMARK' : 'BOOKMARK TERM'}
                 tint="orange"
+                maxFontSizeMultiplier={DOCK_MAX_FONT_SCALE}
                 onPress={toggleBookmarkTerm}
                 disabled={!card}
               />
@@ -2493,6 +2536,9 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 32,
     gap: 12,
+    // Last guard (build 36, large text): nothing on the card is ever drawn
+    // outside it — over the filter chips or behind ‹ PREV / NEXT ›.
+    overflow: 'hidden',
   },
   // Card flag star (Booth 2026-07-18) — mirrors the Glossary's star.
   cardFlag: { position: 'absolute', top: 8, right: 10, zIndex: 2 },
@@ -2532,7 +2578,7 @@ const styles = StyleSheet.create({
     borderColor: '#222222',
   },
   // Image + title render as one centered group (Booth 2026-07-16).
-  termWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 },
+  termWrap: { flex: 1, minHeight: 0, alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center', gap: 16 },
   termImage: { width: '88%', height: 190, borderRadius: 12 },
   // Larger body copy for the available card real estate (Booth 2026-07-08).
   // Sizes chosen so typical single audio terms still fit one line (no

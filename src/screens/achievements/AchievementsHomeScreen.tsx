@@ -13,7 +13,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { AchievementsStackParamList } from '../../navigation/types';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
@@ -119,7 +119,7 @@ export function AchievementsHomeScreen() {
               accessibilityLabel="Back to profile"
               style={styles.backBtn}
             >
-              <Text style={styles.back}>‹</Text>
+              <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
             </Pressable>
           ) : null}
           <Text style={styles.title}>{TROPHY_CASE_EMPTY.title}</Text>

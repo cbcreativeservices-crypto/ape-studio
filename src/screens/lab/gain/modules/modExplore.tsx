@@ -121,7 +121,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'proc',
       label: 'PROCESS',
-      valueLabel: `${g.eq}·${g.comp}`,
+      valueLabel: `${g.eq}·${g.comp} dB`,
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('eq', 'EQ GAIN')}
@@ -133,7 +133,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'lvl',
       label: 'LEVELS',
-      valueLabel: `${g.fad}·${g.bus}·${g.out}`,
+      valueLabel: `${g.fad}·${g.bus}·${g.out} dB`,
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('fad', 'CHANNEL FADER')}
@@ -258,7 +258,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'proc',
       label: 'PROCESS',
-      valueLabel: `${g.eq}·${g.comp}`,
+      valueLabel: `${g.eq}·${g.comp} dB`,
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('eq', 'EQ GAIN')}
@@ -270,7 +270,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'lvl',
       label: 'LEVELS',
-      valueLabel: `${g.fad}·${g.bus}·${g.out}`,
+      valueLabel: `${g.fad}·${g.bus}·${g.out} dB`,
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('fad', 'CHANNEL FADER')}

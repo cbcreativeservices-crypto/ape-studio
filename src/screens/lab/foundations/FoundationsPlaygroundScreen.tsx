@@ -52,7 +52,7 @@ import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { levelColor } from '../../../features/tools/levelColor';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabChip } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
@@ -577,7 +577,7 @@ export function FoundationsPlaygroundScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>FOUNDATIONS PLAYGROUND</Text>

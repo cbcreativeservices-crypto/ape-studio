@@ -355,6 +355,13 @@ export function ModularLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the live signal path IS the lab — earns the tall glass
+          // …but not at the well's expense (follow-up 2026-10-15): on a
+          // 411 × 731 phone this five-window bezel, two-line badge and
+          // five-key dock left a ~50 dp well — the prose and FINISH · SEE
+          // WHAT'S LEFT reachable only after HIDE DISPLAY, and the SEQ tray's
+          // step chips under its "more ↓". The rack lowers the glass just
+          // enough to keep this much well (and the trays gain the same room).
+          minWell: 132,
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT',
           onGuide: () => openLesson('display'),
@@ -532,7 +539,6 @@ export function ModularLabScreen() {
             helpKey: 'sequencer',
             render: () => (
               <View style={{ gap: 10 }}>
-                <Text style={styles.sectionHead}>SEQUENCER — 8 STEPS (TAP TO CYCLE · ✕ = REST)</Text>
                 <View style={styles.chipRow}>
                   <LabChip
                     label={patch.seqOn ? 'SEQ ON' : 'SEQ OFF'}
@@ -556,13 +562,17 @@ export function ModularLabScreen() {
                     ))}
                   </View>
                 </View>
-                {!patch.seqOn ? (
-                  <Text style={styles.caption}>Sequencer OFF — the voice is a steady drone. Tap a rate to turn it on at that speed.</Text>
-                ) : null}
+                {/* CONTROLS FIRST (follow-up 2026-10-15): the rates, then the
+                    STEPS straight under them, then the words. With the
+                    heading and the OFF note above them the eight step chips
+                    sat under the tray's "more ↓" on a 731 dp phone — the
+                    sequencer's own controls hidden behind its explanation.
+                    The heading now names the row it sits under. */}
                 <View style={styles.stepRow}>
                   {patch.steps.map((s, i) => (
                     <View key={i} style={{ flex: 1 }}>
                       <LabChip
+                        compact
                         label={s < 0 ? '✕' : `+${s}`}
                         selected={running && patch.seqOn && activeStep === i}
                         onPress={() => cycleStep(i)}
@@ -571,6 +581,10 @@ export function ModularLabScreen() {
                     </View>
                   ))}
                 </View>
+                <Text style={styles.sectionHead}>SEQUENCER — 8 STEPS (TAP TO CYCLE · ✕ = REST)</Text>
+                {!patch.seqOn ? (
+                  <Text style={styles.caption}>Sequencer OFF — the voice is a steady drone. Tap a rate to turn it on at that speed.</Text>
+                ) : null}
                 <Text style={styles.caption}>
                   Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO
                   and retriggers the envelope. The lit step (in the tray AND on the diagram's SEQ

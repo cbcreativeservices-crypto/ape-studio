@@ -18,7 +18,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import {
   STARTER_TERMS,
@@ -46,7 +46,7 @@ export function StartHereTermsScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => safeGoBack(navigation)} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to Start Here">
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={styles.kicker}>START HERE · 24 STARTER WORDS</Text>

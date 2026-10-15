@@ -7,7 +7,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { colors, fonts } from '../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../theme/tokens';
 import { safeGoBack } from '../lib/safeGoBack';
 
 export function ReturnButton({ onPress }: { onPress?: () => void }) {
@@ -28,7 +28,7 @@ export function ReturnButton({ onPress }: { onPress?: () => void }) {
         {/* machined top-edge glint */}
         <View pointerEvents="none" style={styles.topGlint} />
         <View style={styles.chevWell}>
-          <Text style={styles.chev}>‹</Text>
+          <Text style={styles.chev} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </View>
         <Text style={styles.text}>RETURN</Text>
       </LinearGradient>

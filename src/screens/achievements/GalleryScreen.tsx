@@ -10,7 +10,7 @@ import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from
 import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { galleryLayout, GALLERY_PHONE_ART } from '../../theme/tablet';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
@@ -194,7 +194,7 @@ export function GalleryScreen() {
               accessibilityLabel="Back"
               style={styles.backBtn}
             >
-              <Text style={styles.back}>‹</Text>
+              <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
             </Pressable>
             <Text style={styles.title}>YOUR GALLERY</Text>
           </View>

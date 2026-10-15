@@ -78,7 +78,7 @@ import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/
 import * as photo from '../../features/tools/capture/photo';
 import * as location from '../../features/tools/capture/location';
 import type { GeoFix } from '../../features/tools/capture/location';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
@@ -1227,7 +1227,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>PRO AUDIO MULTIMETER</Text>

@@ -50,7 +50,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { isGenCapUnlockedThisSession, markGenCapUnlockedThisSession } from '../../features/tools/genCapSession';
 import { useColorModePref } from '../../features/tools/colorModePref';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { confirmDialog } from '../../lib/confirm';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { toolByKey } from './toolsData';
@@ -768,7 +768,7 @@ export function SignalGenScreen({ navigation }: Props) {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>

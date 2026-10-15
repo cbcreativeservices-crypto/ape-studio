@@ -35,6 +35,7 @@ import {
 } from '../../features/directory/api';
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 
 type Tab = 'explore' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
@@ -96,16 +97,17 @@ export function AudioCommunityDirectoryScreen() {
   return (
     <View style={[st.root, { paddingTop: insets.top }]}>
       <View style={st.header}>
-        <Pressable
+        {/* Large text (build 36 tester, "Can't get back to main screen"): the
+            ‹ grew past its fixed key and showed as a sliver. HomeOrBackKey
+            caps the glyph (BACK_GLYPH_MAX_SCALE) and shows HOME when this
+            back step lands on Home; the key never shrinks, the title wraps. */}
+        <HomeOrBackKey
           onPress={() => safeGoBack(navigation)}
           hitSlop={10}
           style={st.back}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Text style={st.backGlyph}>‹</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
+          backStyle={st.backGlyph}
+        />
+        <View style={st.titleCol}>
           <Text accessibilityRole="header" style={st.title}>
             AUDIO COMMUNITY DIRECTORY
           </Text>
@@ -635,7 +637,8 @@ const st = StyleSheet.create({
   pane: { flex: 1 },
   paneHidden: { display: 'none' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 },
-  back: { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
+  back: { minWidth: 44, minHeight: 44, marginRight: 4, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  titleCol: { flex: 1, minWidth: 0 },
   backGlyph: { fontFamily: fonts.oswaldMedium, fontSize: 26, color: colors.textSub },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
   sub: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted, marginTop: 2 },

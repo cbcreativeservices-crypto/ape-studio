@@ -24,7 +24,7 @@ import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { HomeSetupSheet } from './HomeSetupSheet';
 import { DeckIcon } from '../../components/DeckIcon';
@@ -2242,7 +2242,7 @@ export const EnrollmentView = memo(function EnrollmentView({
             accessibilityState={{ disabled: safeDeckIndex <= 0 }}
             accessibilityLabel="Previous"
           >
-            <Text style={[styles.deckStepText, safeDeckIndex <= 0 && styles.deckStepTextOff]}>‹</Text>
+            <Text style={[styles.deckStepText, safeDeckIndex <= 0 && styles.deckStepTextOff]} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Pressable
             style={[styles.deckStep, safeDeckIndex >= deckCards.length - 1 && styles.deckStepOff]}

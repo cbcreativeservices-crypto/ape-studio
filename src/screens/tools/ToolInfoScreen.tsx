@@ -17,7 +17,7 @@ import { useToolUsage } from '../../features/tools/telemetry';
 import { markToolMount } from '../../features/tools/devTiming';
 import { holdMicWarm, releaseMic, releaseMicNow } from '../../features/tools/engine/micSession';
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { MIC_LIMITS, toolByKey, type ToolKey } from './toolsData';
 import { LockedButton, MembershipRequiredNote, ToolGatePending, useToolsLocked } from './ToolLockUi';
 import { useMemberGate } from '../../features/commercial/useTier';
@@ -132,7 +132,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>

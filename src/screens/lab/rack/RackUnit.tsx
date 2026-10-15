@@ -183,6 +183,9 @@ export function RackUnit({
   const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
   const [dockH, setDockH] = useState(0); // tray overlay bottom edge (inline)
   const [rootH, setRootH] = useState(0); // → the inline tray's room
+  /** Everything above the well EXCEPT the glass (stage padding, bezel, badge,
+   *  the HIDE DISPLAY row) — measured, for `stage.minWell`. */
+  const [wellChromeH, setWellChromeH] = useState(0);
   const insets = useSafeAreaInsets();
   const bottom = bottomInset ?? insets.bottom;
 
@@ -309,7 +312,16 @@ export function RackUnit({
   const tabletTarget = Math.min(Math.round(winH * TABLET_STAGE_SHARE[size]), winH - TABLET_RESERVE);
   // Never SMALLER than the phone rule gives the same window (a landscape
   // iPad mini's 744 pt height keeps the phone glass).
-  const targetH = tablet && !fixedStage ? Math.max(phoneTarget, tabletTarget) : phoneTarget;
+  const declaredH = tablet && !fixedStage ? Math.max(phoneTarget, tabletTarget) : phoneTarget;
+  // stage.minWell (opt-in, follow-up 2026-10-15): the 350 dp reserve above is
+  // an estimate, and a lab with a tall bezel/badge and a big dock under a
+  // LabShell header outgrew it (Modular: a ~50 dp well on a 731 dp phone).
+  // With the real chrome and dock heights measured, the glass gives up just
+  // what the well is short of — never below the S height (or the declared
+  // one, if that is already smaller).
+  const fitH =
+    stage.minWell && rootH > 0 && dockH > 0 && wellChromeH > 0 ? rootH - bottom - dockH - wellChromeH - stage.minWell : Infinity;
+  const targetH = Math.max(Math.min(declaredH, STAGE_HEIGHTS.S), Math.min(declaredH, Math.round(fitH)));
   const [glassH, setGlassH] = useState(targetH);
   const interacting = laneActive || trayParam != null;
   useEffect(() => {
@@ -665,7 +677,21 @@ export function RackUnit({
           (owner 2026-08-23) rather than leaving a dead gap in the middle. */}
       {/* …and while a tray is open the well grows too, so the dock sits at
           the bottom and the tray card fills the well above it (below). */}
-      <View style={[styles.wellWrap, (stageCollapsed || trayParam != null) && styles.wellWrapGrow]}>
+      <View
+        style={[styles.wellWrap, (stageCollapsed || trayParam != null) && styles.wellWrapGrow]}
+        // The well's top minus the glass = the fixed chrome above it (read
+        // with the glass height this layout was made with). Only while the
+        // display shows, and only for a lab that asked (stage.minWell).
+        onLayout={
+          stage.minWell
+            ? (e) => {
+                if (stageCollapsed) return;
+                const c = Math.round(e.nativeEvent.layout.y) - glassH;
+                if (c > 0 && c !== wellChromeH) setWellChromeH(c);
+              }
+            : undefined
+        }
+      >
         <ScrollLockProvider value={setWellLocked}>
           <ScrollView
             ref={wellRef}

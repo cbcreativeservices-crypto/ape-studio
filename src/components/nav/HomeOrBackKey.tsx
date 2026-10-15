@@ -21,6 +21,10 @@ import { Pressable, Text, type StyleProp, type TextStyle, type ViewStyle } from 
 import { NavIcon } from './NavIcon';
 import { BACK_HIT_SLOP } from '../backHitSlop';
 import { backLeadsHome } from '../../lib/backLeadsHome';
+import { BACK_GLYPH_MAX_SCALE } from '../../theme/tokens';
+
+/** The way out never gives up width to a long title (build 36, large text). */
+const NEVER_SHRINK: ViewStyle = { flexShrink: 0 };
 
 export function useBackLeadsHome(): boolean {
   const navigation = useNavigation();
@@ -53,14 +57,14 @@ export function HomeOrBackKey({
   const home = useBackLeadsHome();
   if (home) {
     return (
-      <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={style}>
+      <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={[NEVER_SHRINK, style]}>
         <NavIcon icon="Home" lit />
       </Pressable>
     );
   }
   return (
-    <Pressable onPress={onPress} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel={backLabel} style={style}>
-      <Text style={backStyle}>‹</Text>
+    <Pressable onPress={onPress} hitSlop={hitSlop} accessibilityRole="button" accessibilityLabel={backLabel} style={[NEVER_SHRINK, style]}>
+      <Text style={backStyle} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
     </Pressable>
   );
 }

@@ -18,7 +18,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
@@ -268,7 +268,7 @@ function Header({ onBack, title, kicker }: { onBack: () => void; title: string; 
   return (
     <View style={styles.header}>
       <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
-        <Text style={styles.back}>‹</Text>
+        <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
       </Pressable>
       <View style={{ flex: 1 }}>
         {kicker ? <Text style={styles.kicker}>{kicker}</Text> : null}

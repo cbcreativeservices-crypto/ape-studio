@@ -8,7 +8,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MethodIcon, type MethodKey } from '../../components/MethodIcon';
 import { TimerIcon } from '../../components/TimerIcon';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 
 export function StudyHeader({
   method,
@@ -50,10 +50,15 @@ export function StudyHeader({
       >
         <MethodIcon method={method} size={34} />
       </Pressable>
-      <View style={{ flexShrink: 1 }}>
-        <Text style={styles.title}>{title}</Text>
+      {/* Large text (build 36 tester): the title column takes the room that is
+          left and the RETURN key never gives any up. A one-word title shrinks
+          to its line instead of breaking mid-word; the topic gets two lines. */}
+      <View style={styles.titleCol}>
+        <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+          {title}
+        </Text>
         {subtitle ? (
-          <Text style={styles.subtitle} numberOfLines={1}>
+          <Text style={styles.subtitle} numberOfLines={2}>
             {subtitle.toUpperCase()}
           </Text>
         ) : null}
@@ -79,7 +84,7 @@ export function StudyHeader({
           accessibilityRole="button"
           accessibilityLabel="Return to Dashboard"
         >
-          <Text style={styles.returnText}>‹ RETURN</Text>
+          <Text style={styles.returnText} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹ RETURN</Text>
         </Pressable>
       </View>
     </View>
@@ -88,7 +93,8 @@ export function StudyHeader({
 
 const styles = StyleSheet.create({
   row: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: 10 },
-  rightCluster: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 8 },
+  titleCol: { flex: 1, minWidth: 0 },
+  rightCluster: { marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 8 },
   timerBtn: {
     borderWidth: 1,
     borderColor: '#3a3a3a',

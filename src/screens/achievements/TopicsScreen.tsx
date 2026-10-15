@@ -11,7 +11,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { TrophyModal } from '../../components/TrophyModal';
 import { StudioButton } from '../../components/StudioButton';
@@ -170,7 +170,7 @@ export function TopicsScreen() {
             accessibilityLabel="Back"
             style={styles.backBtn}
           >
-            <Text style={styles.back}>‹</Text>
+            <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
           <Text style={styles.title}>TOPICS</Text>
           {/* Not a count until one was READ (hunt 8, 2026-10-03): while

@@ -20,7 +20,7 @@ import { BackHandler, Pressable, ScrollView, StyleSheet, Text, TextInput, View, 
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts } from '../../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { CARD_MAX_W, WIDE_MAX_W, cardColumn, wideColumn } from '../../../theme/readingColumn';
 import { gridColumns, isTabletWindow } from '../../../theme/tablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
@@ -375,7 +375,7 @@ export function GalleryScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={back} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title} numberOfLines={1}>

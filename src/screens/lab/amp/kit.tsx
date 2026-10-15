@@ -26,7 +26,7 @@ import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { NO_INSETS, laneValueAt } from '../rack/laneEdgeGuard';
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
-import { laneFingerAt, laneFingerDx, laneFingerLiftDx, type LaneFinger } from '../rack/laneFinger';
+import { laneFingerAt, laneFingerDx, laneLandDx, type LaneFinger, type LaneLift } from '../rack/laneFinger';
 import { useScrollLock } from '../scrollLock';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
@@ -296,7 +296,8 @@ export function ControlSlider({
   //    the slider instead of scrolling the page out from under it.
   const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
   const grabXRef = useRef(0);
-  const movedRef = useRef(false);
+  /** The finger's travel at the last move (null = none yet) — laneLandDx. */
+  const lastDxRef = useRef<number | null>(null);
   const ctxLock = useScrollLock();
   const ctxLockRef = useRef(ctxLock);
   ctxLockRef.current = ctxLock;
@@ -320,6 +321,14 @@ export function ControlSlider({
     feed.end();
     lockRef.current(false);
   }, []);
+  /** Release OR cancel (refs only — the PanResponder keeps this closure). */
+  const finishGesture = (ne: LaneLift | undefined) => {
+    const lift = laneLandDx(ne, fingerRef.current, lastDxRef.current, 5);
+    if (lift != null) feed.move(grabXRef.current + lift);
+    lastDxRef.current = null;
+    feed.end();
+    lockRef.current(false);
+  };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => !disabledRef.current,
@@ -330,29 +339,24 @@ export function ControlSlider({
         lockRef.current(true);
         fingerRef.current = laneFingerAt(e.nativeEvent);
         grabXRef.current = e.nativeEvent.locationX;
-        movedRef.current = false;
+        lastDxRef.current = null;
         feed.end(); // nothing of an earlier drag is left to land late
         setRef.current(e.nativeEvent.locationX, true);
       },
       onPanResponderMove: (e, g) => {
         const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
         if (dx === 'lifted') return;
-        if (Math.abs(dx) > 5) movedRef.current = true;
+        lastDxRef.current = dx;
         feed.move(grabXRef.current + dx);
       },
-      onPanResponderRelease: (e) => {
-        // Land where the finger LIFTED (emulator pass 2026-10-14, as DragSlider):
-        // PanResponder gives no release move, so a fast flick stopped short.
-        const lift = laneFingerLiftDx(e.nativeEvent, fingerRef.current);
-        if (lift != null && (movedRef.current || Math.abs(lift) > 5)) feed.move(grabXRef.current + lift);
-        movedRef.current = false;
-        feed.end();
-        lockRef.current(false);
-      },
-      onPanResponderTerminate: () => {
-        feed.end();
-        lockRef.current(false);
-      },
+      // Land where the finger LIFTED (emulator pass 2026-10-14, as DragSlider):
+      // PanResponder gives no release move, so a fast flick stopped short.
+      // ⛔ Not blindly (2026-10-15): the lift point can be STALE — the grab
+      // point — and landing on it snapped every other flick back; laneLandDx
+      // uses it only where it carries the travel on. A cancelled touch ends
+      // the same way.
+      onPanResponderRelease: (e) => finishGesture(e.nativeEvent),
+      onPanResponderTerminate: (e) => finishGesture(e?.nativeEvent),
     }),
   ).current;
   const frac = (value - min) / (max - min || 1);

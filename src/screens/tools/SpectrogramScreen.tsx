@@ -52,7 +52,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { useFullScreenGate, useSaveGate } from './ToolLockUi';
 import { FsChooser, FsKey, ToolFullScreenView, fsTextScale, useToolFullScreen, type FsChoiceSection } from './ToolFullScreen';
 import { BezelReadouts } from '../lab/rack/BezelReadouts';
@@ -649,7 +649,7 @@ export function SpectrogramScreen({ navigation }: Props) {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
+          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>SPECTROGRAM</Text>
