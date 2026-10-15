@@ -26,6 +26,7 @@ import { CredentialQr } from '../../components/CredentialQr';
 import { fetchMyCredentials } from '../../features/credentials/api';
 import { readingColumn } from '../../theme/readingColumn';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
+import { CredentialBlurb } from '../curriculum/CredentialBlurb';
 
 const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 
@@ -220,6 +221,8 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
       {/* The tab already labels this "DIRECTORY" in the pager, so the eyebrow
           shows only on the standalone screen. */}
       {showBrand ? <Text style={styles.eyebrow}>ACADEMY DIRECTORY</Text> : null}
+      {/* The same short description as on Explore (owner 2026-10-14). */}
+      <CredentialBlurb kind="directory" />
       {/* Once registered, the "Get Discovered" title becomes the green Registry
           name (user request 2026-07-22). */}
       {hasAccount ? (

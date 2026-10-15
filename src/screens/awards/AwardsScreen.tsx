@@ -29,6 +29,7 @@ import { Modal } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
 import { DirectoryView } from '../directory/DirectoryScreen';
+import { CredentialBlurb } from '../curriculum/CredentialBlurb';
 import { EnrollmentView } from '../enrollment/EnrollmentScreen';
 import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
@@ -425,6 +426,8 @@ const AwardPageView = memo(function AwardPageView({
   return (
     <View style={{ width: screenW }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* The same short description as on Explore (owner 2026-10-14). */}
+        <CredentialBlurb kind={page.key === 'program' ? 'program' : 'specialization'} />
         {page.introTitle ? <Text style={styles.introTitle}>{page.introTitle}</Text> : null}
         <Text style={styles.intro}>{page.intro}</Text>
 
