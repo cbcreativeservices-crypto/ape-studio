@@ -12,7 +12,7 @@
  * Snap-to-center, side peek, dot indicator. Tab bar visible (Home tab — the
  * app's opening tab).
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import {
   AccessibilityInfo,
@@ -427,6 +427,28 @@ function rawCardTitle(item: Card): string | null {
 }
 
 /** Display title after the card renames. */
+/** Each Home card's KEY WORD, coloured gold in its title (owner 2026-10-14). */
+const TITLE_KEYWORD: Partial<Record<Card['kind'], string>> = {
+  lab: 'Labs',
+  calculators: 'Calculator',
+  tools: 'Tools',
+  glossary: 'Glossary',
+  enrollments: 'Enrollments',
+};
+/** The title text with its key word wrapped in gold (plain when the word is absent). */
+function keyedTitle(text: string, kind: Card['kind']): ReactNode {
+  const kw = TITLE_KEYWORD[kind];
+  const at = kw ? text.lastIndexOf(kw) : -1;
+  if (!kw || at < 0) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <Text style={styles.cardTitleKey}>{kw}</Text>
+      {text.slice(at + kw.length)}
+    </>
+  );
+}
+
 function displayCardTitle(item: Card): string {
   const raw = rawCardTitle(item) ?? '';
   return CARD_TITLE_RENAMES[raw] ?? raw;
@@ -922,7 +944,7 @@ function CourseCardView({
             style={StyleSheet.absoluteFill}
           />
           <View>
-            <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>Audio Fundamentals & Advanced Training Labs</Text>
+            <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle('Audio Fundamentals & Advanced Training Labs', 'lab')}</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
             <View style={{ width: cd.btnW }}>
@@ -996,7 +1018,7 @@ function CourseCardView({
           style={StyleSheet.absoluteFill}
         />
         <View>
-          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{displayCardTitle(item)}</Text>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle(displayCardTitle(item), item.kind)}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
@@ -1042,7 +1064,7 @@ function CourseCardView({
           style={StyleSheet.absoluteFill}
         />
         <View>
-          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{displayCardTitle(item)}</Text>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle(displayCardTitle(item), item.kind)}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
@@ -1193,7 +1215,7 @@ function CourseCardView({
           the image + its 15% dim, below the text/button (Booth 2026-07-09c). */}
       {locked && <View style={styles.lockTint} />}
       <View>
-        <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{title}</Text>
+        <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle(title, item.kind)}</Text>
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
         {isTools && upsell ? (
@@ -2292,6 +2314,8 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 1 },
   },
+  // The gold key word inside a card title (owner 2026-10-14).
+  cardTitleKey: { color: colors.gold },
   cardTitle: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 26,
