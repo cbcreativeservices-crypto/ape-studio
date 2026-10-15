@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 13:17 · ccode · f76a8ef9
+changed: Exit flow (app half), behind EXIT_FLOW_ENABLED = false: Membership and billing, Cancel membership (C1-C4), Delete account (D1-D3)
+affects other side: nothing live — branch exit-flow, switch OFF. The app codes against Comp A's planned entitlements.plan/will_renew/renewal_checked_at, submit_exit_feedback(p_flow,p_flow_version,p_reason,p_followup,p_comment,p_platform,p_app_version) and delete_my_account(p_keep_credentials).
+needs: when A builds them — submit_exit_feedback must accept anon callers (deletion answers/comment are sent after sign-out), allow null reason/followup (comment-only rows), and accept the app's Q2 codes in src/features/exit/survey.ts (FOLLOW_UPS).
+
+
 ### 2026-10-15 11:20 · ccode · e9edce3f
 changed: Home: tapping HOME resets the card carousel to the default card; the dot row can be dragged to move through the cards (UX review 2026-10-15)
 affects other side: nothing (app only)
