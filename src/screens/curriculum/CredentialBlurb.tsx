@@ -30,13 +30,14 @@ export const CREDENTIAL_BLURBS: Record<BlurbKey, { title: string; body: string; 
 export const BLURB_ORDER: BlurbKey[] = ['specialization', 'program', 'directory'];
 
 /** One card. With `onPress` it is a button with a › (Explore); without, plain (top of its own page). */
-export function CredentialBlurb({ kind, onPress }: { kind: BlurbKey; onPress?: () => void }) {
+export function CredentialBlurb({ kind, onPress, edge = false }: { kind: BlurbKey; onPress?: () => void; edge?: boolean }) {
   const c = CREDENTIAL_BLURBS[kind];
   return (
     <Pressable
       onPress={onPress}
       disabled={!onPress}
-      style={styles.card}
+      // Coloured left edge on Explore only; plain at the top of each page (owner 2026-10-14).
+      style={[styles.card, edge ? { borderLeftWidth: 3, borderLeftColor: c.tone } : null]}
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={`${c.title}. ${c.body}`}
     >

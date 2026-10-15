@@ -413,7 +413,7 @@ export const CurriculumView = memo(function CurriculumView({
           under the glance graphic — brief, low, each opens its page. */}
       <View style={styles.whatList}>
         {BLURB_ORDER.map((k) => (
-          <CredentialBlurb key={k} kind={k} onPress={onOpenCategory ? () => onOpenCategory(k) : undefined} />
+          <CredentialBlurb key={k} kind={k} edge onPress={onOpenCategory ? () => onOpenCategory(k) : undefined} />
         ))}
       </View>
 
