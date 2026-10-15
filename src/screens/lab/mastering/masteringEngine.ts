@@ -586,3 +586,26 @@ export function drivePreview(
   }
   return { ov: { hi, lo, level, seconds: quiet.seconds }, grDb, maxGrDb };
 }
+
+/** Energy of a picture: the mean square of its column extremes. */
+function overviewEnergy(ov: Overview): number {
+  let e = 0;
+  for (let c = 0; c < ov.hi.length; c++) e += ov.hi[c] * ov.hi[c] + ov.lo[c] * ov.lo[c];
+  return e / Math.max(1, 2 * ov.hi.length);
+}
+
+/**
+ * A drivePreview estimate turned down to the reference's level, as MATCH
+ * plays (and draws) the real LOUDER render. The match gain is estimated from
+ * the two pictures' energy — never a boost above the estimate itself.
+ */
+export function matchPreview<T extends { ov: Overview }>(est: T, reference: Overview): T & { matchDb: number } {
+  const eRef = overviewEnergy(reference);
+  const eEst = overviewEnergy(est.ov);
+  const matchDb = eRef > 0 && eEst > 0 ? Math.min(0, 10 * Math.log10(eRef / eEst)) : 0;
+  const k = Math.pow(10, matchDb / 20);
+  const hi = est.ov.hi.map((v) => v * k);
+  const lo = est.ov.lo.map((v) => v * k);
+  const level = hi.map((v, c) => Math.min(1, Math.max(Math.abs(v), Math.abs(lo[c]))));
+  return { ...est, ov: { ...est.ov, hi, lo, level }, matchDb };
+}

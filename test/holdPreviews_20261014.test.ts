@@ -211,7 +211,7 @@ describe('#20 Mastering: the DRIVE preview estimates the limited render', () => 
 
   it('the LISTEN glass shows the estimate only while LOUDER is stale, and says so', () => {
     const c = code(MOD6);
-    assert.match(c, /!current && shown === 'loud' && q\?\.overview \? drivePreview\(q\.overview, q\.grDb, drive, CEILING\) : null/);
+    assert.match(c, /if \(current \|\| shown !== 'loud' \|\| !q\?\.overview\) return null;\n\s*const est = drivePreview\(q\.overview, q\.grDb, drive, CEILING\);/);
     assert.match(c, /ov=\{preview \? preview\.ov : \(m\?\.overview \?\? null\)\}/);
     assert.match(c, /previewNote=\{preview \? DRIVE_PREVIEW_NOTE : undefined\}/);
     // the note takes the match line's place while the picture is an estimate
@@ -248,5 +248,23 @@ describe('#20 Mixing: the channel fader draws the finger at once, the page gets 
     feed.move(-6);
     feed.end(); // unmount mid-drag
     assert.deepEqual(got, [-4, -6]);
+  });
+});
+
+describe('#20 the DRIVE estimate is drawn at matched level when MATCH is on (emulator check 2026-10-14)', () => {
+  it('matchPreview turns a louder estimate down to the reference energy, never up', async () => {
+    const { matchPreview } = await import('../src/screens/lab/mastering/masteringEngine.ts');
+    const ref = { hi: [0.2, 0.3, 0.25, 0.2], lo: [-0.2, -0.3, -0.25, -0.2], level: [0.2, 0.3, 0.25, 0.2], seconds: 4 };
+    const loud = { ov: { hi: [0.8, 0.9, 0.85, 0.8], lo: [-0.8, -0.9, -0.85, -0.8], level: [0.8, 0.9, 0.85, 0.8], seconds: 4 }, grDb: [0, 0, 0, 0], maxGrDb: 0 };
+    const m = matchPreview(loud, ref);
+    assert.ok(m.matchDb < -10 && m.matchDb > -13, `match ≈ −11.6 dB, got ${m.matchDb}`);
+    const e = (o: { hi: number[]; lo: number[] }) => o.hi.reduce((s, v, i) => s + v * v + o.lo[i] * o.lo[i], 0);
+    assert.ok(Math.abs(e(m.ov) - e(ref)) / e(ref) < 1e-9, 'same energy as the reference');
+    const quieter = matchPreview({ ...loud, ov: ref }, loud.ov);
+    assert.equal(quieter.matchDb, 0, 'never a boost');
+  });
+  it('mod6 applies it only while matched', () => {
+    const s = readFileSync('src/screens/lab/mastering/modules/mod6Loudness.tsx', 'utf8');
+    assert.match(s, /return matched \? matchPreview\(est, q\.overview\) : est;/);
   });
 });

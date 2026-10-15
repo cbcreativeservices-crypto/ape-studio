@@ -313,3 +313,27 @@ describe('a flick whose lift beats the pan activation (live emulator retest 2026
     assert.match(s, /scheduleOnRN\(onRelease, null, moved\.value, cancelled\);/, 'a tap or a taken touch still settles on the last value');
   });
 });
+
+describe('no worklet anywhere reads a module constant in a default parameter (emulator 2026-10-14)', () => {
+  it('scans src for worklet functions whose defaults name an identifier', async () => {
+    const { readdirSync, statSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const walk = (d: string, o: string[] = []): string[] => {
+      for (const n of readdirSync(d)) {
+        const p = join(d, n);
+        if (statSync(p).isDirectory()) walk(p, o);
+        else if (/\.tsx?$/.test(n)) o.push(p);
+      }
+      return o;
+    };
+    const bad: string[] = [];
+    for (const f of walk('src')) {
+      const s = readFileSync(f, 'utf8');
+      for (const m of s.matchAll(/(?:function\s+(\w+)|const\s+(\w+)\s*=\s*)\s*\(([^)]*)\)[^{;]*\{\s*'worklet'/g)) {
+        const ids = [...m[3].matchAll(/=\s*([A-Za-z_][\w.]*)/g)].map((x) => x[1]).filter((x) => !/^(true|false|null|undefined)$/.test(x));
+        if (ids.length) bad.push(`${f} ${m[1] ?? m[2]} -> ${ids.join(',')}`);
+      }
+    }
+    assert.deepEqual(bad, []);
+  });
+});

@@ -94,6 +94,8 @@ const DOUBLE_TAP_MS = 320;
 const LANE_TICK_MS = 16;
 /** A touch that travelled no further than this is a TAP (double-tap → home). */
 const TAP_SLOP = 5;
+/** A lane name this short leaves the readout 70 % of the lane (laneValueWide). */
+const SHORT_LABEL = 8;
 /** A preview lane's cap waits at most this long for its commit to land. */
 const HOLD_MS = 1500;
 /** Gesture Handler's CANCELLED state (the system or a second finger took the
@@ -527,7 +529,7 @@ export function ParamLane({
       <Text pointerEvents="none" style={[styles.laneLabel, styles.textBacked]} numberOfLines={1}>
         {label}
       </Text>
-      <Text pointerEvents="none" style={[styles.laneValue, styles.textBacked, { color: c }]} {...fitValue(12.5)}>
+      <Text pointerEvents="none" style={[styles.laneValue, label.length <= SHORT_LABEL && styles.laneValueWide, styles.textBacked, { color: c }]} {...fitValue(12.5)}>
         {readout}
       </Text>
     </View>
@@ -610,5 +612,9 @@ const styles = StyleSheet.create({
     // over the lane's name (C12 "1 of 5 · the tangent presses…" sat on STEP).
     maxWidth: '50%',
   },
+  // A short lane name ("GRID V", "FREQ") leaves room: the readout may take
+  // 70 % so a long one is not clipped even at the 9 pt floor ("8 % · cut off
+  // — no current flows", live emulator check 2026-10-14).
+  laneValueWide: { maxWidth: '70%' },
   textBacked: { backgroundColor: 'rgba(15,15,18,0.72)', paddingHorizontal: 4, borderRadius: 4, overflow: 'hidden' },
 });

@@ -30,8 +30,12 @@ export function pathDiffMm(src: Vec3, a: Vec3, b: Vec3): number {
 }
 
 /** Δt in ms for a path difference in mm (c in m/s). */
-export function deltaTms(dMm: number, c: number = C20): number {
+export function deltaTms(dMm: number, cIn?: number): number {
   'worklet';
+  // A worklet captures what its BODY reads, never a default-parameter
+  // expression: `c = C20` threw "Property 'C20' doesn't exist" on the UI
+  // thread (two-mic comb panel, live emulator check 2026-10-14).
+  const c = cIn ?? C20;
   return dMm / c; // mm ÷ (m/s) = ms
 }
 

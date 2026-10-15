@@ -21,7 +21,7 @@ import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle
 import { KEY_TERMS, LOUDNESS_SCENARIOS } from '../masteringContent';
 import { PLAYBACK_SYSTEMS, TRANSLATION_ASPECT, TranslationStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
 import { programmeIfRendered, useDrawProgramme, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
-import { drivePreview } from '../masteringEngine';
+import { drivePreview, matchPreview } from '../masteringEngine';
 import { MODEL_BADGE, RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -1.0;
@@ -102,10 +102,16 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
   // is estimated from the undriven QUIETER render (same limiter, same
   // ceiling) — it follows the fader at the lane's own rate (the rack hands
   // over ≤ 1 value per frame, same-step moves dropped) and is labelled.
-  const preview = useMemo(
-    () => (!current && shown === 'loud' && q?.overview ? drivePreview(q.overview, q.grDb, drive, CEILING) : null),
-    [current, shown, q, drive],
-  );
+  // With MATCH on, the real LOUDER render is drawn turned down to the
+  // QUIETER's loudness, so the estimate is too — else the glass showed tall
+  // bars at the ceiling while dragging and dropped to the matched size on
+  // release (live emulator check 2026-10-14). The match gain is estimated
+  // from the two pictures' energy, like the estimate itself.
+  const preview = useMemo(() => {
+    if (current || shown !== 'loud' || !q?.overview) return null;
+    const est = drivePreview(q.overview, q.grDb, drive, CEILING);
+    return matched ? matchPreview(est, q.overview) : est;
+  }, [current, shown, q, drive, matched]);
   const system = PLAYBACK_SYSTEMS.find((s) => s.id === systemId) ?? PLAYBACK_SYSTEMS[0];
   // The teaching signal's three numbers for the LEARN bezel — the same
   // simulations the meters draw, offset by GAIN, so PEAK, TRUE PK and LUFS

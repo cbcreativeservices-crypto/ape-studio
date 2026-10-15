@@ -30,8 +30,11 @@ export const SHOTGUN_TUBE_MM = 200;
 export const HIGH_POWER = 6;
 
 /** The frequency below which the tube "has little effect" (Hz): c / L. */
-export function tubeTransitionHz(tubeMm: number = SHOTGUN_TUBE_MM, c: number = C_SOUND): number {
+export function tubeTransitionHz(tubeMmIn?: number, cIn?: number): number {
   'worklet';
+  // Defaults resolved in the body — see twoMic.ts deltaTms.
+  const tubeMm = tubeMmIn ?? SHOTGUN_TUBE_MM;
+  const c = cIn ?? C_SOUND;
   return c / (tubeMm / 1000);
 }
 
