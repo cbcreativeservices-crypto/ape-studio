@@ -11,7 +11,7 @@ import { TabBar } from '../components/nav/TabBar';
 import { StudyStack } from './StudyStack';
 import { CourseSelectionScreen } from '../screens/courses/CourseSelectionScreen';
 import type { MainTabParamList } from './types';
-import { lazyScreen } from './lazyScreen';
+import { lazyScreen, TAB_HOME, tabBackRouter } from './lazyScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -66,6 +66,14 @@ export function MainTabs() {
       // Booth 2026-07-07: the app opens on Course Selection (glossary-first
       // carousel with persisted position), not the Dashboard.
       initialRouteName="Home"
+      // ANDROID BACK BETWEEN TABS (owner bug 2026-10-14, Pixel: "back jumps
+      // straight to Home"). The tab default is 'firstRoute' — BACK from any tab
+      // with nothing left in its own stack landed on Home. 'history' retraces
+      // the tabs actually visited; tabBackRouter keeps Home the root (arriving
+      // on Home clears the history, so BACK on Home leaves the app) and sends a
+      // tab with nothing behind it Home first. See tabBackRouter in src/navigation/lazyScreen.ts.
+      backBehavior="history"
+      UNSTABLE_router={tabBackRouter(TAB_HOME)}
       // Transition standard (owner 2026-08-16): bottom-nav destination ⇄
       // destination = FADE-THROUGH (~200ms) — content fades, the TabBar stays
       // stationary. No zoom/bounce/shift.
