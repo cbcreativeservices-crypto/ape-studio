@@ -172,7 +172,7 @@ export function CancelMembershipScreen({ navigation, route }: Props) {
   return (
     <KeyboardAvoidingView style={ui.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[ui.root, { paddingTop: insets.top + 8 }]}>
-        <ExitHeader eyebrow="CANCEL MEMBERSHIP" onBack={back} />
+        <ExitHeader eyebrow="CANCEL MEMBERSHIP" onBack={back} stepBack={step === 'c2' || step === 'c3'} />
         <ScrollView ref={scroller} contentContainerStyle={[ui.scroll, { paddingBottom: showCancelControl ? 24 : insets.bottom + 24 }]}>
           {step === 'c1' ? (
             <>

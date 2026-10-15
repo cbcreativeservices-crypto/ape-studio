@@ -7,14 +7,27 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
-import { colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import { COMMENT_MAX, Q3_PROMPT, Q3_WARNING, type Choice } from '../../features/exit/survey';
 
-export function ExitHeader({ eyebrow, onBack }: { eyebrow: string; onBack?: () => void }) {
+/**
+ * `stepBack`: a LATER step of a multi-step flow (owner 2026-10-15: "there is no
+ * back nav in these screens"). The key returns to the previous step, so it is
+ * always the ‹ arrow — never the HOME key, whatever opened the screen.
+ */
+export function ExitHeader({ eyebrow, onBack, stepBack = false }: { eyebrow: string; onBack?: () => void; stepBack?: boolean }) {
   return (
     <View style={ui.header}>
-      {onBack ? <HomeOrBackKey onPress={onBack} backStyle={ui.backGlyph} style={ui.backKey} /> : <View style={ui.backKey} />}
+      {onBack && stepBack ? (
+        <Pressable onPress={onBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to the previous step" style={ui.backKey}>
+          <Text style={ui.backGlyph} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
+        </Pressable>
+      ) : onBack ? (
+        <HomeOrBackKey onPress={onBack} backStyle={ui.backGlyph} style={ui.backKey} />
+      ) : (
+        <View style={ui.backKey} />
+      )}
       <Text style={ui.eyebrow} accessibilityRole="header">
         {eyebrow}
       </Text>

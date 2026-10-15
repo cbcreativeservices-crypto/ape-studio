@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 13:32 · ccode · 37c781a6
+changed: Exit flow: shorter delete screen (owner 2026-10-15: too many options, too long) - two-line intro, five reasons marked optional, one follow-up only for 'did not work well', shorter certificate choices
+affects other side: nothing new (app only; Comp A brief unchanged)
+needs: nothing
+
+
 ### 2026-10-15 13:17 · ccode · f76a8ef9
 changed: Exit flow (app half), behind EXIT_FLOW_ENABLED = false: Membership and billing, Cancel membership (C1-C4), Delete account (D1-D3)
 affects other side: nothing live — branch exit-flow, switch OFF. The app codes against Comp A's planned entitlements.plan/will_renew/renewal_checked_at, submit_exit_feedback(p_flow,p_flow_version,p_reason,p_followup,p_comment,p_platform,p_app_version) and delete_my_account(p_keep_credentials).

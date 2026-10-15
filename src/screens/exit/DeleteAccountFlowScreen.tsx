@@ -224,7 +224,7 @@ export function DeleteAccountFlowScreen({ navigation }: Props) {
   return (
     <KeyboardAvoidingView style={ui.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[ui.root, { paddingTop: insets.top + 8 }]}>
-        <ExitHeader eyebrow="ACCOUNT AND PRIVACY" onBack={step === 'd3' || busy ? undefined : back} />
+        <ExitHeader eyebrow="ACCOUNT AND PRIVACY" onBack={step === 'd3' || busy ? undefined : back} stepBack={step === 'd2'} />
         <ScrollView
           ref={scroller}
           keyboardShouldPersistTaps="handled"
