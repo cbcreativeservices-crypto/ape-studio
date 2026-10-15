@@ -3858,6 +3858,69 @@ ${COPY.glossaryFreeAllowance}`,
     />
   );
 
+  /** CARDS/LIST and ADV/BEG — rendered in the filter row (owner 2026-10-14), or in
+   *  the header while a card popup hides that row. */
+  const viewToggles = (inRow: boolean) => (
+    <>
+          {/* Cards/List toggle lives here now — always visible, both modes, so it
+              stays reachable even while a term/popup is expanded (Booth 2026-07-09b). */}
+          <Pressable
+            style={[styles.headerToggle, inRow && styles.rowToggle]}
+            onPress={() => {
+              // Toggle the view ONLY — keep the focused term (Booth 2026-07-09c).
+              // Popup trail ⇄ inline list expansion carry the focused term.
+              const goingToList = cardView;
+              setCardView((v) => !v);
+              if (goingToList) {
+                const top = popupTrail.length ? popupTrail[popupTrail.length - 1].id : null;
+                if (top) {
+                  setPopupTrail([]);
+                  setExpandedIds((prev) => new Set(prev).add(top));
+                  setFocusedId(top);
+                  void fetchDetails(top);
+                  scrollTermToTop(top);
+                } else if (focusedId) {
+                  scrollTermToTop(focusedId);
+                }
+              } else if (focusedId && popupTrail.length === 0) {
+                openPopupRoot(focusedId); // inline term follows into card view
+              }
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={cardView ? 'Switch to list view' : 'Switch to cards view'}
+          >
+            <Text style={[styles.headerToggleText, inRow && styles.rowToggleText]}>{cardView ? 'LIST' : 'CARDS'}</Text>
+          </Pressable>
+          {/* Which definition the speakers read (Booth 2026-07-10):
+              ADV = official definition (default) · BEG = plain English. */}
+          <Pressable
+            style={[styles.headerToggle, inRow && styles.rowToggle]}
+            onPress={() => {
+              const next = !ttsBeg;
+              setTtsBeg(next);
+              // The user's switch: a refusal is told (owner 2026-10-03).
+              const reportRefused = armSaveFailureReport();
+              void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0').catch(() => reportRefused());
+              // Swapping BEG/ADV changes the open definition's length, which used
+              // to shove it off-screen (owner 2026-08-05). Re-anchor the focused
+              // term to the top so the definition just swaps in place.
+              if (!cardView && focusedId) scrollTermToTop(focusedId);
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={
+              ttsBeg
+                ? 'Beginner mode: plain-English shown first and read aloud. Switch to advanced.'
+                : 'Advanced mode: the official definition shown first and read aloud. Switch to beginner.'
+            }
+          >
+            {/* BEG/ADV label now uses the standard amber header colour — the
+                purple/blue tinting was removed (user request 2026-07-22). */}
+            <Text style={[styles.headerToggleText, inRow && styles.rowToggleText]}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
+          </Pressable>
+    </>
+  );
   return (
     <ImageBackground
       source={loading ? BG_GLOSSARY : undefined}
@@ -3884,63 +3947,9 @@ ${COPY.glossaryFreeAllowance}`,
           <NavIcon icon="Home" lit />
         </Pressable>
         <Text style={styles.title} numberOfLines={1}>GLOSSARY</Text>
-        {/* Cards/List toggle lives here now — always visible, both modes, so it
-            stays reachable even while a term/popup is expanded (Booth 2026-07-09b). */}
-        <Pressable
-          style={styles.headerToggle}
-          onPress={() => {
-            // Toggle the view ONLY — keep the focused term (Booth 2026-07-09c).
-            // Popup trail ⇄ inline list expansion carry the focused term.
-            const goingToList = cardView;
-            setCardView((v) => !v);
-            if (goingToList) {
-              const top = popupTrail.length ? popupTrail[popupTrail.length - 1].id : null;
-              if (top) {
-                setPopupTrail([]);
-                setExpandedIds((prev) => new Set(prev).add(top));
-                setFocusedId(top);
-                void fetchDetails(top);
-                scrollTermToTop(top);
-              } else if (focusedId) {
-                scrollTermToTop(focusedId);
-              }
-            } else if (focusedId && popupTrail.length === 0) {
-              openPopupRoot(focusedId); // inline term follows into card view
-            }
-          }}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={cardView ? 'Switch to list view' : 'Switch to cards view'}
-        >
-          <Text style={styles.headerToggleText}>{cardView ? 'LIST' : 'CARDS'}</Text>
-        </Pressable>
-        {/* Which definition the speakers read (Booth 2026-07-10):
-            ADV = official definition (default) · BEG = plain English. */}
-        <Pressable
-          style={styles.headerToggle}
-          onPress={() => {
-            const next = !ttsBeg;
-            setTtsBeg(next);
-            // The user's switch: a refusal is told (owner 2026-10-03).
-            const reportRefused = armSaveFailureReport();
-            void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0').catch(() => reportRefused());
-            // Swapping BEG/ADV changes the open definition's length, which used
-            // to shove it off-screen (owner 2026-08-05). Re-anchor the focused
-            // term to the top so the definition just swaps in place.
-            if (!cardView && focusedId) scrollTermToTop(focusedId);
-          }}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={
-            ttsBeg
-              ? 'Beginner mode: plain-English shown first and read aloud. Switch to advanced.'
-              : 'Advanced mode: the official definition shown first and read aloud. Switch to beginner.'
-          }
-        >
-          {/* BEG/ADV label now uses the standard amber header colour — the
-              purple/blue tinting was removed (user request 2026-07-22). */}
-          <Text style={styles.headerToggleText}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
-        </Pressable>
+        {/* CARDS / ADV sit in the filter row (owner 2026-10-14); they come up
+            here only while a CARD popup hides that row, so LIST is always reachable. */}
+        {popupTrail.length > 0 ? viewToggles(false) : null}
         {/* Σ — jump straight to the Audio Calculator Laboratory (owner
             2026-07-29). Opened from the glossary, so its own ‹ back (goBack)
             returns the user HERE, not to the lab menu. Purple to distinguish it
@@ -4074,6 +4083,7 @@ ${COPY.glossaryFreeAllowance}`,
             setTopicPickerOpen(false);
           }}
         />
+        {viewToggles(true)}
       </View>
 
         </>
@@ -4728,6 +4738,9 @@ const styles = StyleSheet.create({
     borderColor: colors.amber,
     backgroundColor: 'rgba(216,160,74,0.12)',
   },
+  // In the filter row: the chips' fixed height and type (owner 2026-10-14).
+  rowToggle: { height: 40, paddingVertical: 0, paddingHorizontal: 14, justifyContent: 'center' },
+  rowToggleText: { fontSize: 13 },
   headerToggleText: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
