@@ -29,6 +29,7 @@ import { cardColumn, readingText } from '../../theme/readingColumn';
 import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { useBackLeadsHome } from '../../components/nav/HomeOrBackKey';
 
 // Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
 // carries a LinearGradient scrim so the frame's text and CTA stay legible over
@@ -63,6 +64,7 @@ const TRAIN_DESC =
 
 export function AudioLearningScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const backIsHome = useBackLeadsHome();
   const gate = useMemberGate();
   // Until the first entitlement read lands, don't assert non-membership: a real
   // member would otherwise see the 🔒 / "PREVIEW" framing flash for a frame
@@ -84,15 +86,18 @@ export function AudioLearningScreen({ navigation }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* The shared compact header (owner 2026-09-19). Back stays for the
-          same reason it stays on the Lab Menu below this screen: HOME is not
-          where back leads from here. */}
+      {/* The shared compact header (owner 2026-09-19), with its HOME key.
+          Owner rule 2026-10-14: no ‹ when the back step IS Home — opened from
+          Home's Labs card the bar's HOME is the way back (the Tools hub's
+          rule), so the arrow shows only when back leads somewhere deeper. */}
       <CompactBrandBar />
 
       <View style={styles.header}>
-        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
+        {backIsHome ? null : (
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+        )}
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           {/* Owner 2026-10-09: "Learning Labs", with the official Labs icon. */}
           <View style={styles.titleRow}>

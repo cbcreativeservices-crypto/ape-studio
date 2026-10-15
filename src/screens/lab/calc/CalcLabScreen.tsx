@@ -5,7 +5,6 @@
  * IN DEVELOPMENT ("coming soon") — never presented as available.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
 import { useNavigation } from '@react-navigation/native';
@@ -27,6 +26,7 @@ import { useTier } from '../../../features/commercial/useTier';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
@@ -126,9 +126,9 @@ export function CalcLabScreen() {
       // wide landscape iPad in the preview. The prop works on every platform.
       resizeMode="cover">
       <View style={styles.header}>
-        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
+        {/* HOME key when opened from Home (OPEN CALCULATORS), ‹ when deeper
+            (owner rule 2026-10-14). */}
+        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
         {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches
             the glossary's Σ) — a plain symbol before the title, not a button
             (owner 2026-08-01). */}

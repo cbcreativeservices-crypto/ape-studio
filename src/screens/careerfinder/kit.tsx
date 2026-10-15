@@ -17,6 +17,7 @@ import { DIMENSION_CODES, DIMENSIONS, type DimensionCode } from '../../features/
 import { band, type DimensionScores } from '../../features/careerfinder/scoring';
 import { CENTRALITY, type AudioCentrality } from '../../features/careerfinder/careerIndex';
 import { readingColumn } from '../../theme/readingColumn';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 
 /* ── shell ─────────────────────────────────────────────────────────────── */
 
@@ -36,9 +37,10 @@ export function FinderShell({
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>
-        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={6} accessibilityRole="button" accessibilityLabel={backLabel}>
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
+        {/* HOME key when this Finder screen was opened straight from Home,
+            ‹ deeper in (owner rule 2026-10-14) — decided per screen from the
+            route under it, so Quiz / Results keep the arrow. */}
+        <HomeOrBackKey onPress={onBack} style={styles.backBtn} hitSlop={6} backLabel={backLabel} backStyle={styles.back} />
         <View style={{ flex: 1 }}>
           <Text style={styles.kicker} numberOfLines={1}>{kicker}</Text>
           <Text style={styles.title} numberOfLines={2} accessibilityRole="header">{title}</Text>

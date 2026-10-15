@@ -65,6 +65,7 @@ import { PAGE_COMPONENTS, StartEnvCtx, type StartEnv } from './pages';
 import { TermSheetHost } from './bits';
 import { NextSteps } from './NextSteps';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 
 /** Pro Audio Safety (v3 gs 3060) — the free topic beside this card. */
 const SAFETY_GS = 3060;
@@ -354,9 +355,9 @@ export function StartHereScreen() {
 
   const header = (kicker: string, title: string) => (
     <View style={styles.header}>
-      <Pressable onPress={leave} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Leave Start Here">
-        <Text style={styles.back}>‹</Text>
-      </Pressable>
+      {/* HOME key when opened from Home's Start Here card, ‹ otherwise
+          (owner rule 2026-10-14). `leave` stops the tone either way. */}
+      <HomeOrBackKey onPress={leave} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} backLabel="Leave Start Here" backStyle={styles.back} />
       <View style={{ flex: 1 }}>
         <Text style={styles.kicker} numberOfLines={1}>
           {kicker}

@@ -43,6 +43,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AwardProgress'>;
 
@@ -160,9 +161,9 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   // failed the user still needs the ‹ control, not a bare spinner.
   const headerBar = (
     <View style={styles.headerBar}>
-      <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-        <Text style={styles.back}>‹</Text>
-      </Pressable>
+      {/* HOME key when opened from Home (Study Area EXPLORE), ‹ from the
+          Awards pager (owner rule 2026-10-14). */}
+      <HomeOrBackKey onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} backStyle={styles.back} />
       <Text style={styles.headerKicker}>
         {awardType === 'program' ? 'PROGRAM' : 'CERTIFICATE'}
       </Text>
