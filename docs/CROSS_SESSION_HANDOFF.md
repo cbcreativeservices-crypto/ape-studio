@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-14 19:02 · ccode · e79f388d
+changed: docs: D75 lab-fader standards + D76 worklet/shared-value rules; engineering lessons 2026-10-14
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-14 18:55 · ccode · d10adb4a
 changed: fix(lab): issues found checking the HOLD changes on the emulator
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
