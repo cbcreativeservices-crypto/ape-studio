@@ -9,6 +9,7 @@
  * inverse-square / proximity-effect rules of thumb. All copy is NEW — owner
  * review queue.
  */
+import { SPEECH_SR, highPass, measuredSpectrumDb, plosiveCapture, scaleTo, shapedNoise, sibilantWave, vowelWave } from './speechSignals.ts';
 
 /* ── 1. anatomy ─────────────────────────────────────────────────────────── */
 
@@ -34,17 +35,17 @@ export type AnatomyPart = {
  *  the airway. Page 2 (the production sequence) highlights them in the same
  *  order, so the numbering doubles as the story. */
 export const ANATOMY: AnatomyPart[] = [
-  { id: 'lungs', name: 'Lungs & diaphragm', short: 'Lungs', role: 'The power supply. The diaphragm (the dome of muscle under the lungs) pushes air up and out — no airflow, no voice.', x: 276, y: 304, ax: 214, ay: 296 },
-  { id: 'trachea', name: 'Trachea (windpipe)', short: 'Trachea', role: 'The air pipe from the lungs up to the larynx, held open by rings of cartilage.', x: 276, y: 258, ax: 168, ay: 264 },
-  { id: 'larynx', name: 'Larynx & vocal folds', short: 'Larynx', role: 'The sound source. Two folds of tissue that air blows apart and suction pulls together, hundreds of times a second — the buzz that becomes voice. The leaf above them is the epiglottis, a swallowing flap, not a speech part.', x: 96, y: 258, ax: 134, ay: 240 }, // NEW COPY (epiglottis sentence)
-  { id: 'pharynx', name: 'Pharynx (throat)', short: 'Pharynx', role: 'The first resonating chamber above the folds. Its length and width shape the buzz.', x: 276, y: 166, ax: 186, ay: 178 },
-  { id: 'velum', name: 'Soft palate (velum)', short: 'Soft palate', role: 'A movable flap. Raised, it seals the nose off; lowered, air flows through the nose — that is what makes M, N and NG nasal.', x: 276, y: 118, ax: 166, ay: 154 },
-  { id: 'nasal', name: 'Nasal cavity', short: 'Nasal cavity', role: 'A second resonator, used only when the soft palate lets air in. Too much of it and the voice sounds "nasal".', x: 20, y: 96, ax: 86, ay: 112 },
-  { id: 'palate', name: 'Hard palate', short: 'Hard palate', role: 'The roof of the mouth. The tongue presses or nearly presses against it for T, D, S, SH and Y.', x: 134, y: 46, ax: 134, ay: 138 },
-  { id: 'tongue', name: 'Tongue', short: 'Tongue', role: 'The main articulator. Its height and front-back position set the vowel; its tip and body make most consonants.', x: 112, y: 178, ax: 112, ay: 178 },
-  { id: 'teeth', name: 'Teeth', short: 'Teeth', role: 'The edge that air is forced past for S, Z, F and V — the source of sibilance.', x: 20, y: 196, ax: 64, ay: 170 },
-  { id: 'lips', name: 'Lips', short: 'Lips', role: 'Round for O and U, spread for E; close and burst apart for P and B — the source of plosive pops.', x: 20, y: 150, ax: 50, ay: 152 },
-  { id: 'jaw', name: 'Jaw', short: 'Jaw', role: 'Opens to enlarge the mouth cavity — open vowels like AH need it low.', x: 44, y: 240, ax: 86, ay: 206 },
+  { id: 'lungs', name: 'Lungs & diaphragm', short: 'Lungs', role: 'The power supply. The diaphragm (the dome of muscle under the lungs) draws air in; for speech the lungs\' recoil, helped by the rib and belly muscles, pushes it back out in a steady stream — no airflow, no voice.', x: 252, y: 292, ax: 180, ay: 288 },
+  { id: 'trachea', name: 'Trachea (windpipe)', short: 'Trachea', role: 'The air pipe from the lungs up to the larynx, held open by rings of cartilage.', x: 252, y: 236, ax: 138, ay: 232 },
+  { id: 'larynx', name: 'Larynx & vocal folds', short: 'Larynx', role: 'The sound source. Two folds of tissue that air pressure blows apart and their own springiness (helped by the pressure drop) pulls back together, a hundred or more times a second — the buzz that becomes voice. The leaf above them is the epiglottis, a swallowing flap, not a speech part.', x: 92, y: 222, ax: 128, ay: 196 }, // NEW COPY (epiglottis sentence)
+  { id: 'pharynx', name: 'Pharynx (throat)', short: 'Pharynx', role: 'The first resonating chamber above the folds. Its length and width shape the buzz.', x: 252, y: 170, ax: 152, ay: 156 },
+  { id: 'velum', name: 'Soft palate (velum)', short: 'Soft palate', role: 'A movable flap. Raised, it seals the nose off; lowered, air flows through the nose — that is what makes M, N and NG nasal.', x: 252, y: 118, ax: 136, ay: 132 },
+  { id: 'nasal', name: 'Nasal cavity', short: 'Nasal cavity', role: 'A second resonator, used only when the soft palate lets air in. Too much of it and the voice sounds "nasal".', x: 24, y: 62, ax: 100, ay: 103 },
+  { id: 'palate', name: 'Hard palate', short: 'Hard palate', role: 'The roof of the mouth. The tongue presses or nearly presses against it for T, D, S, SH and Y.', x: 24, y: 106, ax: 100, ay: 118 },
+  { id: 'tongue', name: 'Tongue', short: 'Tongue', role: 'The main articulator. Its height and front-back position set the vowel; its tip and body make most consonants.', x: 110, y: 146, ax: 110, ay: 146 },
+  { id: 'teeth', name: 'Teeth', short: 'Teeth', role: 'The edge that air is forced past for S and Z (the sibilants); the lower lip meets the upper teeth for F and V.', x: 24, y: 150, ax: 72, ay: 130 },
+  { id: 'lips', name: 'Lips', short: 'Lips', role: 'Round for O and U, spread for E; close and burst apart for P and B — the source of plosive pops.', x: 24, y: 194, ax: 64, ay: 140 },
+  { id: 'jaw', name: 'Jaw', short: 'Jaw', role: 'Opens to enlarge the mouth cavity — open vowels like AH need it low.', x: 24, y: 238, ax: 80, ay: 162 },
 ];
 
 /** Minimum centre-to-centre spacing between tap discs: two 22-unit hit
@@ -56,7 +57,7 @@ export const ANATOMY_MIN_SPACING = 44;
 export type Stage = { id: string; name: string; what: string; see: string };
 
 export const PRODUCTION: Stage[] = [
-  { id: 'breath', name: 'Breath', what: 'The diaphragm and rib muscles push air up from the lungs. Airflow is the energy for everything that follows.', see: 'Steady air pressure below the larynx.' },
+  { id: 'breath', name: 'Breath', what: 'The lungs\' elastic recoil, helped by the rib and belly muscles, pushes air up while the diaphragm relaxes under control. Airflow is the energy for everything that follows.', see: 'Steady air pressure below the larynx.' },
   { id: 'phonation', name: 'Vocal folds', what: 'For voiced sounds the folds are brought together; the air pressure blows them apart, the gap closes again, and the cycle repeats — a buzz rich in harmonics.', see: 'A pulse train: the buzz has a fundamental (the pitch) and many harmonics above it.' },
   { id: 'resonance', name: 'Resonance', what: 'The throat, mouth and (sometimes) nose act as tuned cavities that boost some harmonics and swallow others. Those boosted regions are the formants.', see: 'The flat harmonic comb becomes a shape with peaks — the vowel is born here.' },
   { id: 'articulation', name: 'Articulation', what: 'Tongue, lips, teeth, jaw and soft palate move to shape vowels and interrupt the air for consonants.', see: 'Fast changes: bursts, hisses, nasal hums, glides between shapes.' },
@@ -189,19 +190,12 @@ export const CONSONANTS: ConsonantCategory[] = [
 
 /* ── 6–7. plosives & sibilance ─────────────────────────────────────────── */
 
-/** Illustrative time trace (0..1 samples, ±) of a "P" hitting a capsule with
- *  and without a pop filter: the pop is a slow low-frequency pressure hump
- *  the filter removes; the burst click that carries the consonant stays. */
-export function plosiveTrace(n = 240, withFilter: boolean): Float64Array {
-  const out = new Float64Array(n);
-  for (let i = 0; i < n; i++) {
-    const t = i / n; // 0..1 ≈ 60 ms
-    const click = t < 0.08 ? Math.sin(2 * Math.PI * 18 * t) * Math.exp(-t * 40) * 0.5 : 0;
-    const pop = withFilter ? 0 : t > 0.02 && t < 0.6 ? Math.sin(Math.PI * (t - 0.02) / 0.58) * 0.95 : 0;
-    const vowel = t > 0.15 ? 0.25 * Math.sin(2 * Math.PI * 30 * t) * Math.min(1, (t - 0.15) / 0.2) : 0;
-    out[i] = Math.max(-1, Math.min(1, pop + click + vowel));
-  }
-  return out;
+/** A "Pa" at the capsule with and without a pop filter — real audio on a
+ *  real time base (speechSignals.plosiveCapture, 200 ms at 16 kHz): the air
+ *  jet is a slow low-frequency pressure swing the filter removes; the burst,
+ *  the aspiration and the vowel are identical either way. */
+export function plosiveTrace(withFilter: boolean): Float64Array {
+  return plosiveCapture(withFilter);
 }
 
 /* ── 8. distance ───────────────────────────────────────────────────────── */
@@ -352,7 +346,7 @@ export type SpeechProblem = {
 // NEW COPY: every `see` string, the sibilance fix (was "cut less treble" — which reads as the opposite of the intent), the band labels.
 export const PROBLEMS: SpeechProblem[] = [
   { id: 'sibilance', name: 'Sibilance', cause: 'Air forced over the teeth on S, Z and SH makes intense hiss between roughly 4 and 10 kHz; bright mics, close placement and treble EQ make it worse.', hear: 'Piercing "ess" sounds that spit.', see: 'The orange hump above 4 kHz — energy the clean voice (grey) does not have.', fix: 'Angle the mic slightly off-axis, back off a little, go easier on any treble boost — then a de-esser for what remains.', visual: 'spectrum', band: { lo: 4000, hi: 10000, kind: 'excess', label: 'EXCESS' } },
-  { id: 'plosives', name: 'Plosives', cause: 'The air blast from P, B, T and K hits the capsule as a pressure wave far bigger than the sound.', hear: 'Low thumps and pops on P and B.', see: 'One slow, huge swing near the start — the air blast — dwarfing the vowel wiggles that ride on it.', fix: 'A pop filter or foam windscreen, mic slightly above or beside the mouth, high-pass filter for what gets through.', visual: 'trace' },
+  { id: 'plosives', name: 'Plosives', cause: 'The air blast from P, B, T and K hits the capsule as a push of moving air (wind) far bigger than the sound.', hear: 'Low thumps and pops on P and B.', see: 'A short silence and click (the P), then one slow, huge swing — the air blast — dwarfing the voice that rides on it.', fix: 'A pop filter or foam windscreen, mic slightly above or beside the mouth, high-pass filter for what gets through.', visual: 'trace' },
   { id: 'clicks', name: 'Mouth clicks', cause: 'Saliva and a dry mouth make tiny ticks as the tongue and lips separate — a close mic hears every one.', hear: 'Small dry ticks between words.', see: 'Sharp single spikes sitting on the vowel wave — not part of the voice at all.', fix: 'Water before the take, a slightly larger distance, then editing or a de-clicker.', visual: 'trace' },
   { id: 'nasality', name: 'Nasality', cause: 'The soft palate lets too much of the voice resonate through the nose, or the mic sits where the nasal path is loudest.', hear: 'A honky, pinched tone around 800 Hz–1.5 kHz.', see: 'A bump around 1 kHz, and less energy above 2.5 kHz than the clean voice.', fix: 'Reposition the mic lower and closer to the mouth; a narrow EQ cut in the honk region.', visual: 'spectrum', band: { lo: 800, hi: 1500, kind: 'excess', label: 'HONK' } },
   { id: 'muffled', name: 'Muffled', cause: 'Something absorbs or blocks the highs: hand over the grille, mic behind a pop filter that is too dense, talking away from the capsule, a thick blanket over the mic.', hear: 'Dull, indistinct consonants; words blur.', see: 'The right-hand side collapses: everything above about 1.5 kHz falls well below the clean voice.', fix: 'Clear the path to the capsule, aim it at the mouth, gentle presence lift only after the placement is fixed.', visual: 'spectrum', band: { lo: 2000, hi: 12000, kind: 'loss', label: 'LOST' } },
@@ -368,9 +362,10 @@ export function voiceSpectrum(n = 32): { hz: Float64Array; mag: Float64Array } {
   for (let i = 0; i < n; i++) {
     const f = 20 * Math.pow(12000 / 20, (i + 0.5) / n);
     hz[i] = f;
-    // broad hump around 200–400 Hz, ~-6 dB/oct above 1 kHz, weak below 100 Hz
-    const lowRoll = 1 / (1 + Math.pow(90 / f, 2));
-    const highRoll = 1 / Math.sqrt(1 + Math.pow(f / 1000, 2));
+    // long-term average speech spectrum shape: broad peak ~250–500 Hz,
+    // ~-9 dB/oct above ~600 Hz, falling ~12 dB/oct below ~120 Hz
+    const lowRoll = 1 / (1 + Math.pow(120 / f, 2));
+    const highRoll = Math.pow(1 + Math.pow(f / 600, 2), -0.75);
     mag[i] = lowRoll * highRoll;
   }
   return normalize(hz, mag);
@@ -396,19 +391,57 @@ export function problemSpectrum(id: ProblemId, n = 32): { hz: Float64Array; mag:
   return { hz, mag: out };
 }
 
-/** Time trace for the trace-type problems (0..1 samples, ±): a clean vowel
- *  with the defect superimposed. */
-export function problemTrace(id: ProblemId, n = 300): Float64Array {
+/** Length of the problem simulator's waveform window. */
+export const PROBLEM_TRACE_MS = 250;
+/** Where the mouth clicks land, as fractions of the window. */
+export const CLICK_TIMES = [0.18, 0.41, 0.63, 0.86] as const;
+
+/** Waveform for the trace-type problems: REAL audio (16 kHz) of a sustained
+ *  "ah" at 120 Hz with the defect added — the air jet of a plosive (a slow
+ *  pressure swing through the capsule's low-frequency roll-off), mouth clicks
+ *  (sub-millisecond broadband ticks), or a breath (turbulent noise that
+ *  replaces the voice past the middle, then the voice returns). */
+export function problemTrace(id: ProblemId): Float64Array {
+  const sr = SPEECH_SR;
+  const n = Math.round((PROBLEM_TRACE_MS / 1000) * sr);
+  const voice = vowelWave(n / sr, 'a', 120, sr);
+  const breath = id === 'breath' ? shapedNoise(n, [[1400, 1800], [3200, 2200]], 41, sr) : null;
+  const burst = id === 'plosives' ? shapedNoise(n, [[3000, 3000]], 77, sr) : null;
+  let jet: Float64Array | null = null;
+  if (id === 'plosives') {
+    const raw = new Float64Array(n);
+    const a = Math.round(0.22 * n), b = Math.round(0.55 * n); // the slow air lands ~30 ms after the burst
+    for (let i = a; i < b; i++) raw[i] = Math.sin((Math.PI * (i - a)) / (b - a)) ** 2;
+    jet = scaleTo(highPass(raw, 20, sr), 0.85);
+  }
   const out = new Float64Array(n);
   for (let i = 0; i < n; i++) {
     const t = i / n;
-    let s = 0.35 * Math.sin(2 * Math.PI * 24 * t) * (0.7 + 0.3 * Math.sin(2 * Math.PI * 1.3 * t));
-    if (id === 'plosives') { if (t > 0.1 && t < 0.45) s += 0.9 * Math.sin(Math.PI * (t - 0.1) / 0.35); }
-    if (id === 'clicks') { for (const c of [0.18, 0.41, 0.63, 0.86]) if (Math.abs(t - c) < 0.006) s += 0.8 * (t < c ? 1 : -1); }
-    if (id === 'breath') { if (t > 0.55 && t < 0.9) s = 0.5 * (Math.sin(2 * Math.PI * 131 * t) * 0.5 + Math.sin(2 * Math.PI * 211 * t) * 0.5) * Math.sin(Math.PI * (t - 0.55) / 0.35); }
+    let s = 0.32 * voice[i] * (0.85 + 0.15 * Math.sin(2 * Math.PI * 1.3 * t));
+    // a "P" in the middle of speech: the lips close at 6 % (silence), burst at 10 %,
+    // the voice back ~55 ms later — and the air jet swamping all of it
+    if (id === 'plosives' && jet) { s *= t < 0.06 ? Math.min(1, (0.06 - t) / 0.01) : Math.min(1, Math.max(0, (t - 0.32) / 0.04)); if (burst && t >= 0.1 && t < 0.115) s += 0.35 * burst[i] * Math.exp(-(t - 0.1) * 400); s += jet[i]; }
+    if (id === 'clicks') { for (const c of CLICK_TIMES) { const k = i - Math.round(c * n); if (k >= 0 && k < 40) s += 0.75 * Math.exp(-k / 5) * Math.cos((2 * Math.PI * 2600 * k) / sr); } }
+    if (id === 'breath') { if (t > 0.55 && t < 0.9) s = 0.42 * (breath ? breath[i] : 0) * Math.sin(Math.PI * (t - 0.55) / 0.35); }
     out[i] = Math.max(-1, Math.min(1, s));
   }
   return out;
+}
+
+/** A sustained "S" and an "AH" measured as spectra (dB re the vowel's loudest band,
+ *  40 log bands 50 Hz – 12 kHz) from real synthesized audio at 32 kHz. */
+let sibCache: { s: { hz: Float64Array; db: Float64Array }; ah: { hz: Float64Array; db: Float64Array } } | null = null;
+export function sibilanceSpectra(): { s: { hz: Float64Array; db: Float64Array }; ah: { hz: Float64Array; db: Float64Array } } {
+  if (!sibCache) {
+    const sr = 32000;
+    const ah = measuredSpectrumDb(vowelWave(0.5, 'a', 120, sr), 40, 50, 12000, sr);
+    const s = measuredSpectrumDb(sibilantWave(0.5, sr), 40, 50, 12000, sr);
+    // ONE reference for both: 0 dB = the vowel's loudest band; a sustained
+    // "S" peaks roughly 5–10 dB below a vowel's peak, so it sits 6 dB down
+    for (let i = 0; i < s.db.length; i++) s.db[i] -= 6;
+    sibCache = { s, ah };
+  }
+  return sibCache;
 }
 
 function normalize(hz: Float64Array, mag: Float64Array) {

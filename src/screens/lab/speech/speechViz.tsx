@@ -1,34 +1,31 @@
 /**
- * Shared drawings for the Speech & Voice Lab: the head cross-section, the
- * vocal folds, a log-frequency spectrum bar display and a time trace. All
- * data comes from speechModel; nothing is a live meter.
+ * Shared drawings for the Speech & Voice Lab. This file holds the vocal folds
+ * (page 3) and the voices chart (page 9), and re-exports the rest from their
+ * own files (2026-10-14 redraw): the head-and-neck section (headSection),
+ * the vowel pictures (vowelViz), waveforms and spectra (speechCharts).
  *
- * Colour language (design pass 2026-09-02): the head uses ONE palette —
- * skin / air / bone / muscle / mucosa — so a learner can read "air space"
- * versus "tissue" at a glance; selection is always cyan. Time traces (the
- * one place a level axis is drawn) use the app-wide amplitude ramp so a
- * near-full-scale plosive reads hot and the mid line is MIDI-0 blue.
- * Owner standard 2026-09-05: EVERY drawn level rides that ramp — the folds'
- * pulse sketch (unipolar, peak in the orange band), the spectrum bars and
- * the harmonic stems (bar colour = the bar's relative level). Region tints
- * (excess / loss bands) sit behind the bars; the mouth's filter curve is a
- * response, not a level, and stays gold.
+ * Colour language: every drawn LEVEL rides the app-wide amplitude ramp
+ * (levelColor.ts); reference / zero lines are faint guides BEHIND a signal,
+ * never over it; selection is cyan.
  *
- * Legibility pass (owner 2026-09-25, "9 pt minimum" + "full screen should
- * still be interactive"): every drawing is rendered through ExpandableFigure
- * at (w, h = w ÷ aspect), so the SVG box always has its viewBox's ratio and
- * nothing stretches; a "⤢ FULL SCREEN" button sits under each one and the
- * page's own picker (`controls`) docks under the enlarged drawing. Every
- * label is authored at ≥ 9 and the drawing never renders below 1 : 1 on a
- * 375-wide phone, so the smallest rendered text is ≥ 9 pt.
+ * Legibility (owner 2026-09-25, "9 pt minimum" + "full screen should still be
+ * interactive"): every drawing renders through ExpandableFigure at (w, h = w ÷
+ * aspect), so the SVG box keeps its viewBox ratio; every label is authored at
+ * ≥ 9 and never renders below 1 : 1 on a 375-wide phone.
  */
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { Text, View } from 'react-native';
-import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Animated, { Easing, useAnimatedProps, useDerivedValue, useFrameCallback, useSharedValue, withTiming } from 'react-native-reanimated';
+import { VF_AX, VF_H, VF_PALETTE, VF_SHOWN_HZ, VF_SLOWDOWN, VF_STILL_PHASE, VF_TRACE, VF_W, foldsFrame, type FoldsFrame } from './vocalFoldsGeometry';
 import { colors, fonts } from '../../../theme/tokens';
-import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
-import { ANATOMY, VOICE_CHART, formantEnvelope, harmonicAmplitudes, voiceChartLayout, voiceChartX, type VoiceChartLabel, type VoiceRange, type Vowel } from '../../../features/speech/speechModel';
+import { LOUDNESS_STOPS } from '../../../features/tools/levelColor';
+import { VOICE_CHART, voiceChartLayout, voiceChartX, type VoiceChartLabel, type VoiceRange } from '../../../features/speech/speechModel';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
+
+export { SpectrumBars, SpectrumSvg, TraceChart, TraceSvg } from './speechCharts';
+export { HeadCrossSection } from './headSection';
+export { FormantChart, VowelChart } from './vowelViz';
 
 const F = fonts.barlowMedium;
 
@@ -36,348 +33,233 @@ export function Title({ children }: { children: string }) {
   return <Text style={{ color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.5 }}>{children}</Text>;
 }
 
-/* ── head cross-section ─────────────────────────────────────────────────── */
-
-const SKIN = '#17181d';
-const SKIN_EDGE = '#3d3f48';
-const AIR = '#1b2430';
-const AIR_EDGE = '#2c3644';
-const BONE = '#c9c0ae';
-const CARTILAGE = '#8b8b96';
-const MUSCLE = '#a1524f';
-const MUSCLE_EDGE = '#c46a66';
-const MUCOSA = '#d78a80';
-const MUCOSA_DEEP = '#c97b7b';
-const FOLD = '#e8c9b8';
-const LUNG = '#2b3d4a';
-const LUNG_EDGE = '#4a6274';
-const HI = colors.cyanBright;
-
-/** Radius of the invisible hit circle around each numbered disc (viewBox
- *  units; the drawing renders at ≥ 1 pt per unit on a phone, so ≥ 44 pt). */
-const HIT_R = 22;
-const DISC_R = 10;
-
-/**
- * Mid-sagittal head and neck, facing LEFT, with a schematic chest below
- * (the two lungs are drawn face-on because a true sagittal cut would show
- * only one — the drawing says "not to scale" for that reason). Numbered tap
- * discs sit off the structures on leader lines, textbook style; the tongue
- * is the one structure large enough to be labelled in place.
- */
-export function HeadCrossSection({ selected, onSelect, highlight, controls, fsTitle = 'ANATOMY' }: { selected: string | null; onSelect: (id: string) => void; highlight?: string[]; /** The page's picker, docked under the drawing in full screen. */ controls?: ReactNode; fsTitle?: string }) {
-  const hi = (id: string) => selected === id || (highlight?.includes(id) ?? false);
-  const fillFor = (id: string, base: string) => (hi(id) ? HI : base);
-  const airOpacity = (id: string) => (hi(id) ? 0.6 : 1);
-  return (
-    <ExpandableFigure aspect={300 / 320} title={fsTitle} controls={controls} render={(w, h) => (
-    <View accessible accessibilityLabel={`Side-view cross-section of the head, neck and chest with ${ANATOMY.length} numbered structures: ${ANATOMY.map((a, i) => `${i + 1} ${a.name}`).join(', ')}. Use the buttons below the drawing to select one.`} style={{ width: w, height: h }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 300 320">
-        <Rect x={0} y={0} width={300} height={320} rx={10} fill="#0a0a0c" stroke={colors.hairline} />
-
-        {/* ── silhouette: face (left) → crown → nape → shoulders ── */}
-        <Path
-          d="M 66 318 L 66 262 C 66 250 94 246 130 242 C 128 236 124 230 118 222 C 115 217 118 212 112 210 C 96 206 76 204 62 196 C 54 190 54 180 58 174 C 50 168 50 160 58 156 C 50 152 50 144 57 140 C 60 136 58 132 52 130 C 42 128 40 122 46 118 C 52 110 58 100 64 92 C 68 84 74 62 86 32 C 122 2 200 0 238 26 C 262 42 268 90 256 136 C 248 168 238 192 234 212 L 232 242 C 252 248 288 254 290 270 L 290 318 Z"
-          fill={SKIN}
-          stroke={SKIN_EDGE}
-          strokeWidth={1.5}
-          strokeLinejoin="round"
-        />
-        {/* skull vault (bone thickness hint) */}
-        <Path d="M 68 90 C 88 56 134 32 184 34 C 230 38 254 74 252 116" fill="none" stroke={BONE} strokeWidth={3} opacity={0.16} />
-
-        {/* ── airway spaces (drawn first so tissue sits on top) ── */}
-        {/* nasal cavity */}
-        <Path d="M 64 94 C 82 80 118 74 152 82 C 166 88 172 110 170 136 L 62 138 L 52 130 C 50 120 56 106 64 94 Z" fill={fillFor('nasal', AIR)} opacity={airOpacity('nasal')} stroke={AIR_EDGE} strokeWidth={1} />
-        {/* conchae (turbinates) */}
-        {[[110, 124, 24, 5], [120, 110, 20, 5], [130, 98, 13, 4]].map(([cx, cy, rx, ry]) => (
-          <Ellipse key={cy} cx={cx} cy={cy} rx={rx} ry={ry} fill={hi('nasal') ? 'rgba(0,0,0,0.25)' : '#2f3d4d'} transform={`rotate(-8 ${cx} ${cy})`} />
-        ))}
-        {/* oral cavity (mouth space; the tongue covers most of it) */}
-        <Path d="M 63 143 L 146 143 C 156 146 164 152 167 164 L 160 196 L 74 196 Z" fill={AIR} />
-        {/* pharynx */}
-        <Path d="M 170 134 L 188 134 C 192 164 194 200 190 236 L 168 238 C 166 210 166 180 168 162 C 168 150 169 142 170 134 Z" fill={fillFor('pharynx', AIR)} opacity={airOpacity('pharynx')} stroke={AIR_EDGE} strokeWidth={1} />
-        {/* oesophagus (behind the airway — secondary, kept faint) */}
-        <Rect x={170} y={240} width={12} height={78} rx={5} fill="#1a1b20" stroke="#2c2d33" strokeWidth={1} />
-
-        {/* ── mouth ── */}
-        {/* hard palate */}
-        <Path d="M 64 140 C 88 135 118 135 146 140" fill="none" stroke={fillFor('palate', BONE)} strokeWidth={5} strokeLinecap="round" />
-        {/* soft palate + uvula */}
-        <Path d="M 146 140 C 158 142 166 148 168 160" fill="none" stroke={fillFor('velum', MUCOSA_DEEP)} strokeWidth={5} strokeLinecap="round" />
-        <Circle cx={168} cy={162} r={3.5} fill={fillFor('velum', MUCOSA_DEEP)} />
-        {/* tongue */}
-        <Path d="M 70 162 C 78 148 108 140 138 150 C 156 156 160 170 156 184 C 152 198 142 208 130 212 L 96 208 C 78 202 70 182 70 162 Z" fill={fillFor('tongue', MUSCLE)} opacity={hi('tongue') ? 0.8 : 1} stroke={hi('tongue') ? HI : MUSCLE_EDGE} strokeWidth={1} />
-        {/* teeth (upper and lower incisors) */}
-        <Path d="M 61 141 L 70 141 L 68 158 L 63 158 Z" fill={fillFor('teeth', '#efe9dc')} />
-        <Path d="M 62 160 L 69 160 L 69 176 L 63 176 Z" fill={fillFor('teeth', '#efe9dc')} />
-        {/* lips */}
-        <Path d="M 60 140 C 52 141 48 149 58 156 L 61 156 L 61 141 Z" fill={fillFor('lips', MUCOSA)} />
-        <Path d="M 61 157 C 50 158 49 170 60 175 L 63 175 L 62 157 Z" fill={fillFor('lips', MUCOSA)} />
-        {/* jaw (mandible) */}
-        <Path d="M 64 178 C 56 188 58 198 70 204 C 88 210 106 212 122 214" fill="none" stroke={fillFor('jaw', BONE)} strokeWidth={5} strokeLinecap="round" />
-
-        {/* ── larynx ── */}
-        {/* epiglottis */}
-        <Path d="M 134 218 C 140 206 150 196 162 190 C 160 200 150 214 138 222 Z" fill={hi('larynx') ? HI : '#d9a48a'} opacity={hi('larynx') ? 0.7 : 1} />
-        {/* laryngeal cavity */}
-        <Rect x={132} y={214} width={36} height={38} rx={6} fill={fillFor('larynx', AIR)} opacity={airOpacity('larynx')} stroke="#3a3f48" strokeWidth={1} />
-        {/* false fold, true fold, arytenoid */}
-        <Line x1={134} y1={228} x2={152} y2={228} stroke={MUCOSA_DEEP} strokeWidth={3} strokeLinecap="round" />
-        <Line x1={134} y1={236} x2={158} y2={236} stroke={FOLD} strokeWidth={4} strokeLinecap="round" />
-        <Path d="M 158 230 L 166 226 L 166 242 L 158 240 Z" fill={CARTILAGE} />
-        {/* thyroid cartilage (the Adam's apple) and cricoid ring */}
-        <Path d="M 128 212 L 133 214 L 129 248 L 124 246 Z" fill={CARTILAGE} />
-        <Rect x={126} y={249} width={44} height={5} rx={2} fill={CARTILAGE} opacity={0.8} />
-
-        {/* ── trachea → bronchi → lungs → diaphragm ── */}
-        <Line x1={152} y1={284} x2={118} y2={294} stroke="#3d434c" strokeWidth={4} strokeLinecap="round" />
-        <Line x1={152} y1={284} x2={196} y2={294} stroke="#3d434c" strokeWidth={4} strokeLinecap="round" />
-        <Rect x={136} y={255} width={32} height={30} rx={4} fill={fillFor('trachea', AIR)} opacity={airOpacity('trachea')} stroke="#33383f" strokeWidth={1} />
-        {[261, 267, 273, 279].map((y) => <Line key={y} x1={139} y1={y} x2={165} y2={y} stroke="#3d434c" strokeWidth={1.5} />)}
-        <Path d="M 84 296 C 84 282 104 274 120 280 C 132 286 134 298 130 309 L 88 309 C 82 305 82 302 84 296 Z" fill={fillFor('lungs', LUNG)} opacity={airOpacity('lungs')} stroke={LUNG_EDGE} strokeWidth={1} />
-        <Path d="M 230 296 C 230 282 210 274 194 280 C 182 286 180 298 184 309 L 226 309 C 232 305 232 302 230 296 Z" fill={fillFor('lungs', LUNG)} opacity={airOpacity('lungs')} stroke={LUNG_EDGE} strokeWidth={1} />
-        {/* diaphragm dome */}
-        <Path d="M 74 318 C 106 309 208 309 240 318" fill="none" stroke={hi('lungs') ? HI : '#9a8a74'} strokeWidth={2.5} strokeLinecap="round" />
-
-        {/* ── caption ── */}
-        <SvgText x={12} y={14} fontSize={9} fill={colors.textMuted} fontFamily={F}>SIDE VIEW</SvgText>
-        <SvgText x={12} y={26} fontSize={9} fill={colors.textMuted} fontFamily={F}>NOT TO SCALE</SvgText>
-
-        {/* ── numbered tap discs on leader lines ── */}
-        {ANATOMY.map((a, i) => {
-          const on = selected === a.id;
-          const lit = hi(a.id);
-          const inPlace = a.ax === a.x && a.ay === a.y;
-          // leader starts at the disc edge, on the line toward the anchor
-          const dx = a.ax - a.x, dy = a.ay - a.y, len = Math.hypot(dx, dy) || 1;
-          const sx = a.x + (dx / len) * (DISC_R + 1), sy = a.y + (dy / len) * (DISC_R + 1);
-          return (
-            <G key={a.id} onPress={() => onSelect(a.id)}>
-              <Circle cx={a.x} cy={a.y} r={HIT_R} fill="#000" fillOpacity={0.001} />
-              {!inPlace ? (
-                <>
-                  <Line x1={sx} y1={sy} x2={a.ax} y2={a.ay} stroke={lit ? HI : colors.textMuted} strokeWidth={lit ? 1.5 : 1} opacity={lit ? 1 : 0.85} />
-                  <Circle cx={a.ax} cy={a.ay} r={1.8} fill={lit ? HI : colors.textMuted} />
-                </>
-              ) : null}
-              <Circle cx={a.x} cy={a.y} r={DISC_R} fill={on ? HI : 'rgba(12,12,14,0.92)'} stroke={lit ? HI : colors.textSub} strokeWidth={lit ? 1.5 : 1} />
-              <SvgText x={a.x} y={a.y + 3.5} fontSize={9.5} fill={on ? '#000' : colors.textPrimary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{i + 1}</SvgText>
-            </G>
-          );
-        })}
-      </Svg>
-    </View>
-    )} />
-  );
-}
-
 /* ── vocal folds ───────────────────────────────────────────────────────── */
 
 /**
- * Laryngoscope view (looking down the throat, front of the neck at the top).
- * Voiced: the folds meet at both ends and open as a lens in the middle,
- * cycling; unvoiced: they rest apart in the breathing "V", wide at the back.
+ * Laryngoscopic view of the larynx (looking DOWN it, the front of the neck at
+ * the top) — redrawn 2026-10-14 at the current standard; geometry and the
+ * motion model live in vocalFoldsGeometry.ts (read its header).
+ * Voiced: the folds are together and the membranous front two-thirds vibrate
+ * (Rosenberg glottal pulse, mucosal wave rippling outward), shown ~100×
+ * slower; unvoiced: the arytenoids swing the folds apart into the breathing
+ * "V" and air rises out of the open glottis. ONE clock drives the folds and
+ * the WHAT COMES OUT trace, so a puff on the trace is the glottis opening.
+ * Reduced motion: a still frame per state (voiced = part-way open).
  */
 export function VocalFolds({ voiced, reduceMotion, controls }: { voiced: boolean; reduceMotion: boolean; controls?: ReactNode }) {
-  const [phase, setPhase] = useState(0);
-  const animate = voiced && !reduceMotion;
-  useEffect(() => {
-    if (!animate) return;
-    const id = setInterval(() => setPhase((p) => (p + 0.35) % (Math.PI * 2)), 50);
-    return () => clearInterval(id);
-  }, [animate]);
-  const open = voiced ? (animate ? Math.abs(Math.sin(phase)) : 0.5) : 1;
-  // g: mid-glottis opening; b: opening at the back (arytenoids)
-  const g = voiced ? 3 + open * 18 : 16;
-  const b = voiced ? 3 : 34;
-  const W = 340, H = 130, cx = 120, cy = 68;
-  const fold = (s: 1 | -1) =>
-    `M ${cx} 32 C ${cx - s * g * 0.55} 44 ${cx - s * g / 2} 58 ${cx - s * g / 2} ${cy} C ${cx - s * g / 2} 78 ${cx - s * g * 0.55} 92 ${cx - s * b / 2} 104 L ${cx - s * 44} 104 C ${cx - s * 52} 88 ${cx - s * 52} 48 ${cx - s * 40} 32 Z`;
-  const airY = voiced ? [] : [40, 62, 84];
   return (
-    <ExpandableFigure aspect={W / H} title="FOLDS" controls={controls} render={(w, h) => (
-    <View accessible accessibilityLabel={voiced ? 'Vocal folds seen from above, vibrating: they meet along their length and open and close in the middle, producing a buzz.' : 'Vocal folds seen from above, held apart in a V: air passes freely, producing only breath noise.'} style={{ width: w, height: h }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-        <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        <SvgText x={12} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>LOOKING DOWN THE LARYNX · FRONT AT TOP</SvgText>
-        {/* laryngeal inlet, vestibule, epiglottis rim */}
-        <Ellipse cx={cx} cy={cy} rx={58} ry={46} fill="#1a1416" stroke="#3a2c30" strokeWidth={1} />
-        <Ellipse cx={cx} cy={cy} rx={46} ry={38} fill="#8e5450" />
-        <Path d="M 66 44 C 82 18 158 18 174 44 C 158 30 82 30 66 44 Z" fill="#d9a48a" />
-        {/* the airway below the folds shows through the gap */}
-        <Circle cx={cx} cy={cy} r={22} fill="#08080a" />
-        <Circle cx={cx} cy={cy} r={14} fill="none" stroke="#22262c" strokeWidth={1} />
-        <Circle cx={cx} cy={cy} r={7} fill="none" stroke="#22262c" strokeWidth={1} />
-        {/* true folds */}
-        <Path d={fold(1)} fill={FOLD} stroke="#f4dccd" strokeWidth={1} />
-        <Path d={fold(-1)} fill={FOLD} stroke="#f4dccd" strokeWidth={1} />
-        {/* arytenoids (the back) */}
-        <Ellipse cx={cx - 12} cy={107} rx={9} ry={5} fill={MUCOSA_DEEP} />
-        <Ellipse cx={cx + 12} cy={107} rx={9} ry={5} fill={MUCOSA_DEEP} />
-        {airY.map((y) => <Polyline key={y} points={`${cx - 4},${y + 8} ${cx},${y} ${cx + 4},${y + 8}`} fill="none" stroke={colors.cyanBright} strokeWidth={1.5} />)}
-        <SvgText x={cx} y={124} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{voiced ? 'folds meet · gap opens and closes' : 'folds apart · the breathing "V"'}</SvgText>
-        {/* the resulting signal */}
-        <SvgText x={206} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>WHAT COMES OUT</SvgText>
-        {/* unipolar pulse train on the amplitude ramp: baseline MIDI-0 blue, the
-            full pulse in the orange band (never red — a sketch does not clip) */}
-        <Defs>
-          <LinearGradient id="speechGlottalRamp" gradientUnits="userSpaceOnUse" x1={0} y1={70 - 28 / 0.82} x2={0} y2={70}>
-            {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
-          </LinearGradient>
-        </Defs>
-        <Line x1={205} y1={70} x2={330} y2={70} stroke={MIDLINE_BLUE} opacity={0.5} />
-        <Polyline
-          points={Array.from({ length: 80 }, (_, i) => {
-            const t = i / 79;
-            const y = voiced
-              ? 70 - 28 * Math.max(0, Math.sin(2 * Math.PI * 6 * t + phase)) ** 2 * (i % 2 ? 1 : 0.85)
-              : 70 - 12 * (Math.sin(i * 7.3) * 0.6 + Math.sin(i * 2.1) * 0.4);
-            return `${(205 + t * 125).toFixed(1)},${y.toFixed(1)}`;
-          }).join(' ')}
-          fill="none"
-          stroke="url(#speechGlottalRamp)"
-          strokeWidth={1.6}
-        />
-        <SvgText x={267} y={118} fontSize={9} fill={voiced ? colors.gold : colors.textSecondary} textAnchor="middle" fontFamily={F}>{voiced ? 'pulses → pitch + harmonics' : 'turbulence → noise, no pitch'}</SvgText>
-      </Svg>
+    <ExpandableFigure aspect={VF_W / VF_H} title="FOLDS" controls={controls} render={(w, h) => (
+    <View accessible accessibilityLabel={voiced
+      ? `Looking down the larynx, front at the top: the two white vocal folds are together and vibrating, opening and closing the gap between them, shown about ${VF_SLOWDOWN} times slower than a typical voice. Each opening lets a puff of air through, producing a buzz with a pitch.`
+      : 'Looking down the larynx, front at the top: the two white vocal folds are held apart in a V by the arytenoid cartilages at the back. Air rises freely through the open gap, producing only breath noise, no pitch.'} style={{ width: w, height: h }}>
+      <VocalFoldsSvg voiced={voiced} reduceMotion={reduceMotion} w={w} h={h} />
     </View>
     )} />
   );
 }
 
-/* ── spectrum bars ─────────────────────────────────────────────────────── */
+const APath = Animated.createAnimatedComponent(Path);
+const ALine = Animated.createAnimatedComponent(Line);
+const ACircle = Animated.createAnimatedComponent(Circle);
+const AEllipse = Animated.createAnimatedComponent(Ellipse);
+const P = VF_PALETTE;
 
-type SpectrumProps = {
-  hz: Float64Array;
-  mag: Float64Array;
-  /** A second, faint spectrum drawn behind (the "clean" reference). */
-  ghost?: Float64Array;
-  /** Highlighted region [lo, hi] Hz. */
-  band?: [number, number];
-  /** `excess`: energy that is there and should not be (hot tint, orange
-   *  bars). `loss`: energy that is missing (cool tint, bars unchanged). */
-  bandKind?: 'excess' | 'loss';
-  bandLabel?: string;
-  height?: number;
-  a11y: string;
-};
+function VocalFoldsSvg({ voiced, reduceMotion, w, h }: { voiced: boolean; reduceMotion: boolean; w: number; h: number }) {
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+  const id = (k: string) => `vf${k}${uid}`;
+  const cyc = useSharedValue(reduceMotion ? VF_STILL_PHASE : 0);
+  const ab = useSharedValue(voiced ? 0 : 1);
+  // Rest pose for the static props — captured ONCE so a re-render never
+  // snaps an animated element back (the animated props own every later frame).
+  const rest = useRef<FoldsFrame | null>(null);
+  if (!rest.current) rest.current = foldsFrame(reduceMotion ? VF_STILL_PHASE : 0, voiced ? 0 : 1);
+  const r0 = rest.current;
 
-/** The spectrum drawing alone at (w, h) — for a page that hosts several
- *  drawings in ONE ExpandableFigure (the problem simulator swaps a spectrum
- *  for a waveform; one wrapper keeps full screen open across the swap). */
-export function SpectrumSvg({
-  hz, mag, ghost, band, bandKind = 'excess', bandLabel, height = 130, a11y, w, h,
-}: SpectrumProps & { w: number; h: number }) {
-  const W = 340, H = height, top = 18, bottom = H - 20;
-  const n = hz.length;
-  const lo = hz[0] * 0.9, hi = hz[n - 1] * 1.1;
-  const x = (f: number) => 10 + ((Math.log(f) - Math.log(lo)) / (Math.log(hi) - Math.log(lo))) * (W - 20);
-  const bw = (W - 20) / n;
-  const ticks = [50, 100, 200, 500, 1000, 2000, 5000, 10000].filter((t) => t > lo && t < hi);
-  const bandColor = bandKind === 'loss' ? colors.blue : colors.orange;
-  return (
-      <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-        <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        {band ? <Rect x={x(band[0])} y={top - 4} width={Math.max(1, x(band[1]) - x(band[0]))} height={bottom - top + 8} fill={bandColor} opacity={bandKind === 'loss' ? 0.1 : 0.12} /> : null}
-        {band && bandLabel ? <SvgText x={x(band[0]) + 4} y={top + 6} fontSize={9} fill={bandColor} fontFamily={fonts.oswaldMedium}>{bandLabel}</SvgText> : null}
-        {ghost
-          ? Array.from(ghost, (m, i) => <Rect key={`g${i}`} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={m * (bottom - top)} fill={colors.textMuted} opacity={0.35} />)
-          : null}
-        {Array.from(mag, (m, i) => (
-          <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={levelColor(m)} opacity={0.92} />
-        ))}
-        {ticks.map((t) => (
-          <SvgText key={t} x={x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
-        ))}
-        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>relative level · illustrative</SvgText>
-      </Svg>
-      </View>
+  const clock = useFrameCallback((info) => {
+    const dt = info.timeSincePreviousFrame;
+    if (dt == null) return;
+    let c = cyc.value + (VF_SHOWN_HZ * Math.min(dt, 64)) / 1000;
+    if (c > 6000) c -= 6000; // whole cycles: the phase is unchanged
+    cyc.value = c;
+  }, false);
+  useEffect(() => {
+    clock.setActive(!reduceMotion);
+    if (reduceMotion) cyc.value = VF_STILL_PHASE;
+  }, [reduceMotion, clock, cyc]);
+  useEffect(() => {
+    const target = voiced ? 0 : 1;
+    ab.value = reduceMotion ? target : withTiming(target, { duration: 700, easing: Easing.inOut(Easing.cubic) });
+  }, [voiced, reduceMotion, ab]);
+
+  const frame = useDerivedValue(() => foldsFrame(cyc.value, ab.value));
+  const inlet = useAnimatedProps(() => ({ d: frame.value.inlet }));
+  const aeL = useAnimatedProps(() => ({ d: frame.value.aeL }));
+  const aeR = useAnimatedProps(() => ({ d: frame.value.aeR }));
+  const aeHiL = useAnimatedProps(() => ({ d: frame.value.aeHiL }));
+  const aeHiR = useAnimatedProps(() => ({ d: frame.value.aeHiR }));
+  const gap = useAnimatedProps(() => ({ d: frame.value.gap }));
+  const rings = useAnimatedProps(() => ({ d: frame.value.rings, opacity: frame.value.ringsOpacity }));
+  const inter = useAnimatedProps(() => ({ d: frame.value.inter }));
+  const foldL = useAnimatedProps(() => ({ d: frame.value.foldL }));
+  const foldR = useAnimatedProps(() => ({ d: frame.value.foldR }));
+  const crestL = useAnimatedProps(() => ({ d: frame.value.crestL, opacity: 0.85 * frame.value.waveOpacity }));
+  const crestR = useAnimatedProps(() => ({ d: frame.value.crestR, opacity: 0.85 * frame.value.waveOpacity }));
+  const troughL = useAnimatedProps(() => ({ d: frame.value.troughL, opacity: 0.6 * frame.value.waveOpacity }));
+  const troughR = useAnimatedProps(() => ({ d: frame.value.troughR, opacity: 0.6 * frame.value.waveOpacity }));
+  const ventL = useAnimatedProps(() => ({ d: frame.value.ventL }));
+  const ventR = useAnimatedProps(() => ({ d: frame.value.ventR }));
+  const ffL = useAnimatedProps(() => ({ d: frame.value.ffL }));
+  const ffR = useAnimatedProps(() => ({ d: frame.value.ffR }));
+  const aryL = useAnimatedProps(() => ({ d: frame.value.aryL }));
+  const aryR = useAnimatedProps(() => ({ d: frame.value.aryR }));
+  const cornL = useAnimatedProps(() => ({ cx: frame.value.cornLx, cy: frame.value.cornY }));
+  const cornR = useAnimatedProps(() => ({ cx: frame.value.cornRx, cy: frame.value.cornY }));
+  const air0 = useAnimatedProps(() => ({ d: frame.value.air0, opacity: frame.value.airO0 }));
+  const air1 = useAnimatedProps(() => ({ d: frame.value.air1, opacity: frame.value.airO1 }));
+  const air2 = useAnimatedProps(() => ({ d: frame.value.air2, opacity: frame.value.airO2 }));
+  const trace = useAnimatedProps(() => ({ d: frame.value.trace }));
+  const ldFF = useAnimatedProps(() => ({ x2: frame.value.lead.falseFold[0], y2: frame.value.lead.falseFold[1] }));
+  const ldFold = useAnimatedProps(() => ({ x2: frame.value.lead.fold[0], y2: frame.value.lead.fold[1] }));
+  const ldGlot = useAnimatedProps(() => ({ x2: frame.value.lead.glottis[0], y2: frame.value.lead.glottis[1] }));
+  const ldAry = useAnimatedProps(() => ({ x2: frame.value.lead.arytenoid[0], y2: frame.value.lead.arytenoid[1] }));
+  const dotFF = useAnimatedProps(() => ({ cx: frame.value.lead.falseFold[0], cy: frame.value.lead.falseFold[1] }));
+  const dotFold = useAnimatedProps(() => ({ cx: frame.value.lead.fold[0], cy: frame.value.lead.fold[1] }));
+  const dotGlot = useAnimatedProps(() => ({ cx: frame.value.lead.glottis[0], cy: frame.value.lead.glottis[1] }));
+  const dotAry = useAnimatedProps(() => ({ cx: frame.value.lead.arytenoid[0], cy: frame.value.lead.arytenoid[1] }));
+
+  const T = VF_TRACE;
+  const note = voiced
+    ? (reduceMotion ? 'STILL FRAME · ONE MOMENT OF THE CYCLE' : `SLOW MOTION · ABOUT ${VF_SLOWDOWN}× SLOWER`)
+    : '← CYAN: AIR RISING TOWARD YOU';
+  const leaderX = 59;
+  const lab = (y: number, text: string) => (
+    <SvgText x={leaderX - 2} y={y + 3} fontSize={9} fill={colors.textSecondary} textAnchor="end" fontFamily={F}>{text}</SvgText>
   );
-}
-
-export function SpectrumBars({ title, controls, ...rest }: SpectrumProps & { title?: string; controls?: ReactNode }) {
-  const H = rest.height ?? 130;
+  const leaderLine = { stroke: 'rgba(255,255,255,0.55)', strokeWidth: 0.8 } as const;
+  const leaderDot = { r: 1.4, fill: '#ffffff', stroke: '#000000', strokeWidth: 0.5 } as const;
   return (
-    <View style={{ gap: 4 }}>
-      {title ? <Title>{title}</Title> : null}
-      <ExpandableFigure aspect={340 / H} title="SPECTRUM" controls={controls} render={(w, h) => <SpectrumSvg {...rest} w={w} h={h} />} />
-    </View>
-  );
-}
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${VF_W} ${VF_H}`}>
+      <Defs>
+        <RadialGradient id={id('field')} cx={VF_AX} cy={66} rx={70} ry={56} gradientUnits="userSpaceOnUse">
+          <Stop offset={0} stopColor={P.fieldCentre} />
+          <Stop offset={0.62} stopColor={P.fieldMid} />
+          <Stop offset={1} stopColor="#0a0a0c" />
+        </RadialGradient>
+        <RadialGradient id={id('vest')} cx={VF_AX - 6} cy={60} rx={46} ry={48} gradientUnits="userSpaceOnUse">
+          <Stop offset={0} stopColor={P.vestibuleCentre} />
+          <Stop offset={1} stopColor={P.vestibuleEdge} />
+        </RadialGradient>
+        <RadialGradient id={id('gap')} cx={VF_AX} cy={80} rx={22} ry={40} gradientUnits="userSpaceOnUse">
+          <Stop offset={0} stopColor={P.gapCentre} />
+          <Stop offset={1} stopColor={P.gapEdge} />
+        </RadialGradient>
+        <LinearGradient id={id('foldL')} x1={0} y1={0} x2={1} y2={0}>
+          <Stop offset={0} stopColor={P.foldLateral} />
+          <Stop offset={1} stopColor={P.foldMedial} />
+        </LinearGradient>
+        <LinearGradient id={id('foldR')} x1={0} y1={0} x2={1} y2={0}>
+          <Stop offset={0} stopColor={P.foldMedial} />
+          <Stop offset={1} stopColor={P.foldLateral} />
+        </LinearGradient>
+        <LinearGradient id={id('ff')} x1={0} y1={0} x2={0} y2={1}>
+          <Stop offset={0} stopColor={P.falseFoldHi} />
+          <Stop offset={1} stopColor={P.falseFold} />
+        </LinearGradient>
+        <RadialGradient id={id('ary')} cx={0.35} cy={0.3} r={0.75}>
+          <Stop offset={0} stopColor={P.arytenoidHi} />
+          <Stop offset={1} stopColor={P.arytenoid} />
+        </RadialGradient>
+        <LinearGradient id={id('epi')} x1={0} y1={0} x2={0} y2={1}>
+          <Stop offset={0} stopColor={P.epiglottisRim} />
+          <Stop offset={1} stopColor={P.epiglottis} />
+        </LinearGradient>
+        {/* unipolar pulse train on the amplitude ramp: baseline MIDI-0 blue, the
+            full pulse in the orange band (never red — a sketch does not clip) */}
+        <LinearGradient id={id('ramp')} gradientUnits="userSpaceOnUse" x1={0} y1={T.base - T.amp / 0.82} x2={0} y2={T.base}>
+          {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
+        </LinearGradient>
+      </Defs>
+      <Rect x={0} y={0} width={VF_W} height={VF_H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
 
-/* ── formant chart (linear 0–4 kHz: harmonic comb under the mouth's curve) ── */
+      {/* ── the endoscope's lit field: hypopharynx, pyriform sinuses ── */}
+      <Ellipse cx={VF_AX} cy={66} rx={66} ry={52} fill={`url(#${id('field')})`} />
+      <Path d={`M ${VF_AX - 50} 52 C ${VF_AX - 60} 62 ${VF_AX - 60} 84 ${VF_AX - 46} 96 C ${VF_AX - 50} 82 ${VF_AX - 52} 66 ${VF_AX - 50} 52 Z`} fill={P.pyriform} opacity={0.85} />
+      <Path d={`M ${VF_AX + 50} 52 C ${VF_AX + 60} 62 ${VF_AX + 60} 84 ${VF_AX + 46} 96 C ${VF_AX + 50} 82 ${VF_AX + 52} 66 ${VF_AX + 50} 52 Z`} fill={P.pyriform} opacity={0.85} />
 
-export function FormantChart({ v, f0 = 120, height = 140, title, controls }: { v: Vowel; f0?: number; height?: number; title?: string; controls?: ReactNode }) {
-  const W = 340, H = height, top = 20, bottom = H - 20, maxHz = 4000;
-  const x = (f: number) => 10 + (f / maxHz) * (W - 20);
-  const env = formantEnvelope(v, 120, maxHz);
-  const harm = harmonicAmplitudes(v, f0, maxHz);
-  const envPts = Array.from(env.hz, (f, i) => `${x(f).toFixed(1)},${(bottom - env.mag[i] * (bottom - top)).toFixed(1)}`).join(' ');
-  return (
-    <View style={{ gap: 4 }}>
-      {title ? <Title>{title}</Title> : null}
-      <ExpandableFigure aspect={W / H} title="FORMANTS" badge="Typical adult-male values · illustrative, not a measurement" controls={controls} render={(w, h) => (
-      <View accessible accessibilityLabel={`Harmonics of a ${f0} hertz voice shaped by the mouth for ${v.sound}: peaks near ${v.f1}, ${v.f2} and ${v.f3} hertz. Typical adult-male values, illustrative.`} style={{ width: w, height: h }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-        <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        <Polyline points={envPts} fill="none" stroke={colors.gold} strokeWidth={1.5} strokeDasharray="4,3" opacity={0.9} />
-        {Array.from(harm.hz, (f, i) => (
-          <Line key={i} x1={x(f)} y1={bottom} x2={x(f)} y2={bottom - harm.mag[i] * (bottom - top)} stroke={levelColor(harm.mag[i])} strokeWidth={2} />
-        ))}
-        {[['F1', v.f1], ['F2', v.f2], ['F3', v.f3]].map(([l, f]) => (
-          <G key={l as string}>
-            <Line x1={x(f as number)} y1={top - 6} x2={x(f as number)} y2={top + 2} stroke={colors.gold} strokeWidth={1.5} />
-            <SvgText x={x(f as number)} y={top - 9} fontSize={9} fill={colors.gold} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{l}</SvgText>
-          </G>
-        ))}
-        {[0, 1000, 2000, 3000, 4000].map((t) => (
-          <SvgText key={t} x={t === 0 ? 12 : t === 4000 ? W - 12 : x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor={t === 0 ? 'start' : t === 4000 ? 'end' : 'middle'} fontFamily={F}>{t === 0 ? '0 Hz' : `${t / 1000} kHz`}</SvgText>
-        ))}
-      </Svg>
-      </View>
-      )} />
-      <Text style={{ color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11, lineHeight: 15 }}>Cyan: the voice's harmonics at {f0} Hz after the mouth has shaped them. Gold: the mouth's resonance curve. Typical adult-male values — illustrative, not a measurement.</Text>
-    </View>
-  );
-}
+      {/* ── inside the inlet: vestibule, glottis, folds ── */}
+      <APath animatedProps={inlet} d={r0.inlet} fill={`url(#${id('vest')})`} />
+      <APath animatedProps={gap} d={r0.gap} fill={`url(#${id('gap')})`} />
+      <APath animatedProps={rings} d={r0.rings} opacity={r0.ringsOpacity} fill="none" stroke={P.ring} strokeWidth={1.4} strokeLinecap="round" />
+      <APath animatedProps={inter} d={r0.inter} fill={P.interarytenoid} />
+      {/* the back: arytenoids — drawn under the folds so each fold's back end
+          (the vocal process) runs straight into its arytenoid */}
+      <APath animatedProps={aryL} d={r0.aryL} fill={`url(#${id('ary')})`} />
+      <APath animatedProps={aryR} d={r0.aryR} fill={`url(#${id('ary')})`} />
+      <APath animatedProps={foldL} d={r0.foldL} fill={`url(#${id('foldL')})`} />
+      <APath animatedProps={foldR} d={r0.foldR} fill={`url(#${id('foldR')})`} />
+      <APath animatedProps={troughL} d={r0.troughL} opacity={0} fill="none" stroke={P.waveShadow} strokeWidth={0.9} strokeLinecap="round" />
+      <APath animatedProps={troughR} d={r0.troughR} opacity={0} fill="none" stroke={P.waveShadow} strokeWidth={0.9} strokeLinecap="round" />
+      <APath animatedProps={crestL} d={r0.crestL} opacity={0} fill="none" stroke={P.waveCrest} strokeWidth={1.1} strokeLinecap="round" />
+      <APath animatedProps={crestR} d={r0.crestR} opacity={0} fill="none" stroke={P.waveCrest} strokeWidth={1.1} strokeLinecap="round" />
+      <APath animatedProps={ventL} d={r0.ventL} fill="none" stroke={P.ventricle} strokeWidth={1.2} strokeLinecap="round" opacity={0.85} />
+      <APath animatedProps={ventR} d={r0.ventR} fill="none" stroke={P.ventricle} strokeWidth={1.2} strokeLinecap="round" opacity={0.85} />
+      <APath animatedProps={ffL} d={r0.ffL} fill={`url(#${id('ff')})`} />
+      <APath animatedProps={ffR} d={r0.ffR} fill={`url(#${id('ff')})`} />
 
-/* ── time trace ────────────────────────────────────────────────────────── */
+      {/* corniculate tubercles on the arytenoids' tops */}
+      <AEllipse animatedProps={cornL} cx={r0.cornLx} cy={r0.cornY} rx={1.8} ry={1.5} fill={P.corniculate} opacity={0.8} />
+      <AEllipse animatedProps={cornR} cx={r0.cornRx} cy={r0.cornY} rx={1.8} ry={1.5} fill={P.corniculate} opacity={0.8} />
 
-/** A waveform "at the capsule": the vertical axis is level, so the line is
- *  painted with the app-wide amplitude ramp (blue at the mid line → red at
- *  ±full scale) and the mid line is MIDI-0 blue. */
-/** The waveform drawing alone at (w, h) — see SpectrumSvg. */
-export function TraceSvg({ samples, height = 120, a11y, w, h }: { samples: Float64Array; height?: number; a11y: string; w: number; h: number }) {
-  const W = 340, H = height, mid = H / 2, amp = H / 2 - 12;
-  const gid = `trace${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-  const pts = Array.from(samples, (s, i) => `${(10 + (i / (samples.length - 1)) * (W - 20)).toFixed(1)},${(mid - s * amp).toFixed(1)}`).join(' ');
-  return (
-      <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-        <Defs>
-          <LinearGradient id={gid} x1={0} y1={mid - amp} x2={0} y2={mid + amp} gradientUnits="userSpaceOnUse">
-            {WAVE_LEVEL_STOPS.map((s) => <Stop key={s.offset} offset={s.offset} stopColor={s.color} />)}
-          </LinearGradient>
-        </Defs>
-        <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        <Line x1={10} y1={mid - amp} x2={W - 10} y2={mid - amp} stroke="rgba(255,255,255,0.06)" />
-        <Line x1={10} y1={mid + amp} x2={W - 10} y2={mid + amp} stroke="rgba(255,255,255,0.06)" />
-        <Line x1={10} y1={mid} x2={W - 10} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} />
-        <Polyline points={pts} fill="none" stroke={`url(#${gid})`} strokeWidth={1.6} strokeLinejoin="round" />
-        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>time → · full scale at the edges · illustrative</SvgText>
-      </Svg>
-      </View>
-  );
-}
+      {/* ── the rim: aryepiglottic folds, then the epiglottis over the front ── */}
+      <APath animatedProps={aeL} d={r0.aeL} fill="none" stroke={P.aeRim} strokeWidth={3.6} strokeLinecap="round" />
+      <APath animatedProps={aeR} d={r0.aeR} fill="none" stroke={P.aeRim} strokeWidth={3.6} strokeLinecap="round" />
+      <APath animatedProps={aeHiL} d={r0.aeHiL} fill="none" stroke={P.aeRimHi} strokeWidth={1} strokeLinecap="round" opacity={0.55} />
+      <APath animatedProps={aeHiR} d={r0.aeHiR} fill="none" stroke={P.aeRimHi} strokeWidth={1} strokeLinecap="round" opacity={0.3} />
+      {/* epiglottic tubercle (just above the front of the folds) */}
+      <Ellipse cx={VF_AX} cy={35} rx={10} ry={3.6} fill={P.vestibuleCentre} />
+      <Ellipse cx={VF_AX - 1} cy={34.2} rx={6} ry={1.4} fill={P.falseFoldHi} opacity={0.45} />
+      {/* epiglottis: a curled leaf, broad in the middle, its free margin highest */}
+      <Path d={`M ${VF_AX - 38} 40 C ${VF_AX - 36} 14 ${VF_AX + 36} 14 ${VF_AX + 38} 40 L ${VF_AX + 31} 39 C ${VF_AX + 26} 27 ${VF_AX - 26} 27 ${VF_AX - 31} 39 Z`} fill={`url(#${id('epi')})`} />
+      <Path d={`M ${VF_AX - 37.4} 37 C ${VF_AX - 34} 15.4 ${VF_AX + 34} 15.4 ${VF_AX + 37.4} 37`} fill="none" stroke={P.epiglottisRim} strokeWidth={1.1} opacity={0.8} />
+      <Path d={`M ${VF_AX - 22} 26 Q ${VF_AX - 13} 23.6 ${VF_AX - 5} 24.6 M ${VF_AX - 13} 24 Q ${VF_AX - 9} 26 ${VF_AX - 8} 28`} fill="none" stroke={P.vessel} strokeWidth={0.6} opacity={0.45} />
+      <Path d={`M ${VF_AX + 8} 24.4 Q ${VF_AX + 16} 23.8 ${VF_AX + 24} 26.6`} fill="none" stroke={P.vessel} strokeWidth={0.6} opacity={0.4} />
+      {/* wet-mucosa glints, lit from the upper left */}
+      <Ellipse cx={VF_AX - 14} cy={23.2} rx={7} ry={0.9} fill="#ffffff" opacity={0.4} />
+      <Ellipse cx={VF_AX - 44} cy={58} rx={0.9} ry={4} fill="#ffffff" opacity={0.3} />
 
-export function TraceChart({ samples, height = 120, title, a11y, controls }: { samples: Float64Array; height?: number; title?: string; a11y: string; controls?: ReactNode }) {
-  return (
-    <View style={{ gap: 4 }}>
-      {title ? <Title>{title}</Title> : null}
-      <ExpandableFigure aspect={340 / height} title="WAVEFORM" controls={controls} render={(w, h) => <TraceSvg samples={samples} height={height} a11y={a11y} w={w} h={h} />} />
-    </View>
+      {/* ── unvoiced: air rising out of the open glottis toward the viewer ── */}
+      <APath animatedProps={air0} d={r0.air0} opacity={r0.airO0} fill="none" stroke={colors.cyanBright} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
+      <APath animatedProps={air1} d={r0.air1} opacity={r0.airO1} fill="none" stroke={colors.cyanBright} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
+      <APath animatedProps={air2} d={r0.air2} opacity={r0.airO2} fill="none" stroke={colors.cyanBright} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* ── leader labels (each line follows its structure as it moves) ── */}
+      {lab(30, 'epiglottis')}
+      <Line x1={leaderX} y1={30} x2={VF_AX - 32} y2={30} {...leaderLine} />
+      <Circle cx={VF_AX - 32} cy={30} {...leaderDot} />
+      {lab(48, 'false fold')}
+      <ALine animatedProps={ldFF} x1={leaderX} y1={48} x2={r0.lead.falseFold[0]} y2={r0.lead.falseFold[1]} {...leaderLine} />
+      <ACircle animatedProps={dotFF} cx={r0.lead.falseFold[0]} cy={r0.lead.falseFold[1]} {...leaderDot} />
+      {lab(66, 'vocal fold')}
+      <ALine animatedProps={ldFold} x1={leaderX} y1={66} x2={r0.lead.fold[0]} y2={r0.lead.fold[1]} {...leaderLine} />
+      <ACircle animatedProps={dotFold} cx={r0.lead.fold[0]} cy={r0.lead.fold[1]} {...leaderDot} />
+      {lab(86, 'glottis')}
+      <ALine animatedProps={ldGlot} x1={leaderX} y1={86} x2={r0.lead.glottis[0]} y2={r0.lead.glottis[1]} {...leaderLine} />
+      <ACircle animatedProps={dotGlot} cx={r0.lead.glottis[0]} cy={r0.lead.glottis[1]} {...leaderDot} />
+      {lab(104, 'arytenoid')}
+      <ALine animatedProps={ldAry} x1={leaderX} y1={104} x2={r0.lead.arytenoid[0]} y2={r0.lead.arytenoid[1]} {...leaderLine} />
+      <ACircle animatedProps={dotAry} cx={r0.lead.arytenoid[0]} cy={r0.lead.arytenoid[1]} {...leaderDot} />
+
+      <SvgText x={12} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>LOOKING DOWN THE LARYNX · FRONT AT TOP</SvgText>
+      <SvgText x={VF_AX} y={124} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{voiced ? 'folds meet · gap opens and closes' : 'folds apart · the breathing "V"'}</SvgText>
+
+      {/* ── the resulting signal: the airflow puffs through the glottis ── */}
+      <SvgText x={206} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>{voiced ? 'WHAT COMES OUT' : 'WHAT THE MIC HEARS'}</SvgText>
+      {/* zero-flow guide: faint, BEHIND the trace (one signal reads as one signal) */}
+      <Line x1={T.x0} y1={T.base} x2={T.x0 + T.w} y2={T.base} stroke="rgba(255,255,255,0.14)" strokeWidth={0.6} />
+      <APath animatedProps={trace} d={r0.trace} fill="none" stroke={`url(#${id('ramp')})`} strokeWidth={1.6} strokeLinejoin="round" />
+      <SvgText x={T.x0 + T.w / 2} y={96} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{note}</SvgText>
+      <SvgText x={267} y={118} fontSize={9} fill={voiced ? colors.gold : colors.textSecondary} textAnchor="middle" fontFamily={F}>{voiced ? 'pulses → pitch + harmonics' : 'mouth hiss → noise, no pitch'}</SvgText>
+    </Svg>
   );
 }
 
@@ -422,6 +304,12 @@ export function RangeBars({ ranges, colors: cols, a11y }: { ranges: VoiceRange[]
               <Rect x={x(r.f0LoHz)} y={row.pitchY} width={x(r.f0HiHz) - x(r.f0LoHz)} height={row.pitchH} rx={6} fill={c} opacity={0.4} />
               <Line x1={x(r.f0TypicalHz)} y1={row.pitchY - 2} x2={x(r.f0TypicalHz)} y2={row.pitchY + row.pitchH + 2} stroke={c} strokeWidth={2} />
               <Rect x={x(r.fmLoHz)} y={row.formantY} width={x(r.fmHiHz) - x(r.fmLoHz)} height={row.formantH} rx={2.5} fill={c} opacity={0.3} />
+              {/* that voice's harmonics at its typical pitch (every f0 Hz): packed
+                  close for a low voice, far apart for a child — the formants
+                  can only lift the harmonics that are there */}
+              {Array.from({ length: Math.floor(VOICE_CHART.hiHz / r.f0TypicalHz) }, (_, k) => (k + 1) * r.f0TypicalHz).map((f) => (
+                <Line key={`h${f}`} x1={x(f)} y1={row.formantY - 2} x2={x(f)} y2={row.formantY + row.formantH + 2} stroke={c} strokeWidth={0.8} opacity={f >= r.fmLoHz && f <= r.fmHiHz ? 0.95 : 0.4} />
+              ))}
             </G>
           );
         })}

@@ -4,16 +4,21 @@
  * (labels ≥ 9 pt, "⤢ FULL SCREEN" under it) and each page builds its picker
  * ONCE and hands the same element to the page AND to the figure's `controls`,
  * so the learner can change the picture while it is enlarged. */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
-import { ANATOMY, CONSONANTS, PRODUCTION, SPEECH_CHECKS, VOICED_PAIRS, VOWELS, shuffleCheck, type Vowel } from '../../../features/speech/speechModel';
+import { ANATOMY, CONSONANTS, PRODUCTION, SPEECH_CHECKS, VOICED_PAIRS, VOWELS, shuffleCheck } from '../../../features/speech/speechModel';
 import type { PageCtx } from '../kit/PagedLab';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { FormantChart, HeadCrossSection, VocalFolds } from './speechViz';
+import { HeadCrossSection, VocalFolds } from './speechViz';
+import { FormantChart, VowelChart } from './vowelViz';
+import { ConsonantSpectrogram } from './consonantViz';
+import type { ConsonantFamilyId } from '../../../features/speech/speechSignals';
+
+const SYLLABLE_TEXT: Record<string, string> = { plosive: 'pa', fricative: 'sa', affricate: 'cha', nasal: 'ma', liquid: 'la', glide: 'wa' };
 
 const F = fonts.barlowMedium;
 
@@ -63,7 +68,7 @@ export function PageAnatomy({ ctx }: { ctx: PageCtx }) {
             <Body>{part.role}</Body>
           </>
         ) : (
-          <Body>Numbered along the path the air takes: lungs first, lips last, with the jaw that frames the mouth closing the list. Dark blue-grey is air space; red is muscle; cream is bone. A simplified side view, not to scale.</Body> // NEW COPY (was "numbered from the lips back and down to the lungs" — the reverse of the actual order)
+          <Body>Numbered in the order the air meets them, lungs (1) to lips (10); the jaw (11) frames the mouth. Dark blue-grey is air space; red is muscle; cream is bone; pale blue is cartilage; pink is the lining. Head and neck in side view, the chest below from the front — not to scale.</Body> // NEW COPY (was "numbered from the lips back and down to the lungs" — the reverse of the actual order)
         )}
       </Card>
       {picker}
@@ -145,7 +150,7 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
       <ExpandableFigure aspect={340 / 56} title="STAGES" controls={<View style={{ gap: 8, paddingHorizontal: 12 }}>{readout}{nav}</View>} render={(w, h) => (
         <View style={{ width: w, height: h }} accessible accessibilityLabel={`The five stages of speech production in order: ${PRODUCTION.map((s, i) => `${i + 1} ${s.name}`).join(', ')}. Stage ${step + 1}, ${st.name}, is selected.`}>{stripAt(w, h)}</View>
       )} />
-      <HeadCrossSection selected={null} onSelect={goPart} highlight={STAGE_PARTS[st.id]} controls={dock} fsTitle="SEQUENCE" />
+      <HeadCrossSection selected={null} onSelect={goPart} highlight={STAGE_PARTS[st.id]} controls={dock} fsTitle="SEQUENCE" stage={st.id} reduceMotion={ctx.reduceMotion} />
       <Card tone="math">
         <Eyebrow>{step + 1} · {st.name.toUpperCase()}</Eyebrow>
         <Body>{st.what}</Body>
@@ -161,7 +166,8 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
 
 export function PageVoicing({ ctx }: { ctx: PageCtx }) {
   const [voiced, setVoiced] = useState(true);
-  const [pair, setPair] = useState(0);
+  // S/Z first: the pair the lead's "sss … zzz" finger-on-the-throat test uses
+  const [pair, setPair] = useState(() => Math.max(0, VOICED_PAIRS.findIndex((q) => q.unvoiced === 'S')));
   const p = VOICED_PAIRS[pair];
   const toggle = (
     <Row>
@@ -191,65 +197,6 @@ export function PageVoicing({ ctx }: { ctx: PageCtx }) {
 
 /* ── 4 vowels ─────────────────────────────────────────────────────────── */
 
-/** The vowel quadrilateral (front-high top-left, back-high top-right, the
- *  front-low corner pulled inward as on the IPA chart) plus a jaw gauge and
- *  a front view of the lips for the selected vowel. Exported for the design
- *  harness; not used elsewhere. */
-export function VowelChart({ v, controls }: { v: Vowel; controls?: ReactNode }) {
-  const W = 340, H = 150;
-  const x0 = 40, wq = 160, shift = 56;
-  const px = (back: number, height: number) => x0 + back * wq + (1 - height) * (1 - back) * shift;
-  const py = (height: number) => 24 + (1 - height) * 98;
-  const jawOpen = 1 - v.height;
-  // SVG rotate() is clockwise in screen space, so a point LEFT of the hinge
-  // rises under a positive angle — the lower jaw swings with a negative one.
-  const theta = -jawOpen * 28;
-  const hx = 318, hy = 43; // jaw hinge (at the back)
-  const rad = (theta * Math.PI) / 180;
-  const fx = hx + (-46 * Math.cos(rad) - 3 * Math.sin(rad)), fy = hy + (-46 * Math.sin(rad) + 3 * Math.cos(rad));
-  const lipRx = v.rounded ? 9 : 17, lipRy = v.rounded ? 9 : 5;
-  return (
-    <ExpandableFigure aspect={W / H} title="VOWEL" controls={controls} render={(w, h) => (
-    <View accessible accessibilityLabel={`${v.letter}: tongue ${v.height > 0.6 ? 'high' : v.height > 0.3 ? 'mid' : 'low'} and ${v.back > 0.6 ? 'back' : v.back > 0.3 ? 'central' : 'front'}, jaw ${jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}, lips ${v.rounded ? 'rounded' : 'spread'}.`} style={{ width: w, height: h }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-        <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        {/* the tongue space */}
-        <Polygon points={`${px(0, 1)},${py(1)} ${px(1, 1)},${py(1)} ${px(1, 0)},${py(0)} ${px(0, 0)},${py(0)}`} fill="rgba(127,212,255,0.04)" stroke={colors.hairline} />
-        <Line x1={px(0, 0.5)} y1={py(0.5)} x2={px(1, 0.5)} y2={py(0.5)} stroke={colors.hairline} strokeDasharray="3,3" />
-        <SvgText x={px(0, 1)} y={py(1) - 8} fontSize={9} fill={colors.textMuted} fontFamily={F}>FRONT</SvgText>
-        <SvgText x={px(1, 1)} y={py(1) - 8} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>BACK</SvgText>
-        <SvgText x={px(0, 1) - 6} y={py(1) + 4} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>HIGH</SvgText>
-        <SvgText x={px(0, 0) - 6} y={py(0) + 3} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>LOW</SvgText>
-        {/* caption starts at the quadrilateral's left edge so it clears the lips column on the right */}
-        <SvgText x={x0} y={py(0) + 17} fontSize={9} fill={colors.textMuted} fontFamily={F}>tongue position · jaw opens as it drops</SvgText>
-        {VOWELS.map((o) => {
-          const on = o.id === v.id;
-          return (
-            <G key={o.id}>
-              <Circle cx={px(o.back, o.height)} cy={py(o.height)} r={on ? 10 : 7} fill={on ? colors.cyanBright : '#1c1c22'} stroke={on ? colors.cyanBright : colors.textMuted} />
-              <SvgText x={px(o.back, o.height)} y={py(o.height) + 3.5} fontSize={on ? 10 : 9} fill={on ? '#000' : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{o.letter}</SvgText>
-            </G>
-          );
-        })}
-        {/* jaw gauge (side view): fixed upper jaw, lower jaw swings on a hinge at the back */}
-        <SvgText x={296} y={20} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>JAW</SvgText>
-        <Rect x={272} y={30} width={48} height={6} rx={3} fill="#c9c0ae" />
-        <Circle cx={hx} cy={hy} r={2.5} fill={colors.textMuted} />
-        <G transform={`rotate(${theta.toFixed(1)} ${hx} ${hy})`}>
-          <Rect x={272} y={40} width={48} height={6} rx={3} fill="#8b8b96" />
-        </G>
-        <Line x1={274} y1={38} x2={fx.toFixed(1)} y2={fy.toFixed(1)} stroke={colors.cyanBright} strokeWidth={1} strokeDasharray="2,2" opacity={jawOpen > 0.15 ? 0.9 : 0} />
-        <SvgText x={296} y={92} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>{jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}</SvgText>
-        {/* lips (front view) */}
-        <SvgText x={296} y={106} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>LIPS</SvgText>
-        <Ellipse cx={296} cy={122} rx={lipRx} ry={lipRy} fill="#0a0a0c" stroke="#d78a80" strokeWidth={3} />
-        <SvgText x={296} y={143} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>{v.rounded ? 'rounded' : 'spread'}</SvgText>
-      </Svg>
-    </View>
-    )} />
-  );
-}
-
 export function PageVowels({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState('a');
   const v = VOWELS.find((o) => o.id === id)!;
@@ -268,7 +215,7 @@ export function PageVowels({ ctx }: { ctx: PageCtx }) {
       <FormantChart v={v} title={`${v.letter} · ${v.sound.toUpperCase()} · HARMONICS SHAPED BY THE MOUTH`} controls={<View style={{ gap: 8 }}>{formantRead}{picker}</View>} />
       <Card>
         {formantRead}
-        <Body>{v.height > 0.6 ? 'Tongue high, jaw nearly closed → a low first formant.' : 'Tongue low, jaw open → a high first formant.'} {v.back > 0.6 ? 'Tongue back → a low second formant.' : 'Tongue forward → a high second formant.'} {v.rounded ? 'Rounded lips lengthen the tract and pull every formant down a little.' : 'Spread lips keep the tract short.'}</Body>
+        <Body>{v.height > 0.6 ? 'Tongue high, jaw nearly closed → a low first formant.' : 'Tongue low, jaw open → a high first formant.'} {v.back > 0.6 ? 'Tongue back → a low second formant.' : 'Tongue forward → a high second formant.'} {v.rounded ? 'Rounded lips lengthen the tract and pull every formant down a little.' : v.id === 'i' ? 'Spread lips shorten the tract a little, nudging the formants up.' : 'Unrounded lips leave the tract at its natural length.'}</Body>
       </Card>
       <Notice>Step from I (EE) to A (AH): the tongue drops, F1 climbs and F2 falls — the two gold peaks move toward each other.</Notice>
     </View>
@@ -280,9 +227,6 @@ export function PageVowels({ ctx }: { ctx: PageCtx }) {
 export function PageConsonants({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState('plosive');
   const c = CONSONANTS.find((o) => o.id === id)!;
-  const W = 340, H = 62;
-  const lo = 20, hi = 12000;
-  const x = (f: number) => 10 + ((Math.log(f) - Math.log(lo)) / (Math.log(hi) - Math.log(lo))) * (W - 20);
   const picker = (
     <Row>
       {CONSONANTS.map((o) => <Btn key={o.id} label={o.name.split(' ')[0].toUpperCase()} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.name}: ${o.examples}`} />)}
@@ -297,20 +241,12 @@ export function PageConsonants({ ctx }: { ctx: PageCtx }) {
         <Body>{c.how}</Body>
         <Text style={styles.see}>Energy: {c.energy}.</Text>
       </Card>
-      <ExpandableFigure aspect={W / H} title="ENERGY" controls={<View style={{ gap: 8 }}><Text style={styles.readout} numberOfLines={2}>{c.name.toUpperCase()} · {c.examples} — energy: {c.energy}</Text>{picker}</View>} render={(w, h) => (
-      <View accessible accessibilityLabel={`${c.name}: energy mainly between ${c.bandLoHz} and ${c.bandHiHz} hertz, approximate.`} style={{ width: w, height: h }}>
-        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-          <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-          {[50, 100, 200, 500, 1000, 2000, 5000, 10000].map((t) => <Line key={`g${t}`} x1={x(t)} y1={14} x2={x(t)} y2={38} stroke="rgba(255,255,255,0.06)" />)}
-          <Rect x={x(c.bandLoHz)} y={16} width={Math.max(2, x(c.bandHiHz) - x(c.bandLoHz))} height={20} rx={4} fill={colors.orange} opacity={0.45} />
-          {[50, 100, 200, 500, 1000, 2000, 5000, 10000].map((t) => (
-            <SvgText key={t} x={x(t)} y={H - 8} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
-          ))}
-          <SvgText x={W - 8} y={11} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>where the energy sits · approximate</SvgText>
-        </Svg>
-      </View>
-      )} />
-      <Notice>Watch the band jump as you change family: plosives and nasals live low, fricatives and affricates high — that is why one is a pop-filter problem and the other a de-esser problem.</Notice>
+      <ConsonantSpectrogram
+        family={c.id as ConsonantFamilyId}
+        a11y={`Spectrogram of the syllable ${SYLLABLE_TEXT[c.id] ?? ''}, 400 milliseconds, 0 to 8 kilohertz. ${c.name}: ${c.energy}.`}
+        controls={<View style={{ gap: 8 }}><Text style={styles.readout} numberOfLines={2}>{c.name.toUpperCase()} · {c.examples} — energy: {c.energy}</Text>{picker}</View>}
+      />
+      <Notice>Watch where the colour sits as you change family: an S-type hiss fills the top of the picture, a nasal hums only at the bottom, a plosive is silence then a sharp vertical burst. The hiss is a de-esser problem; the plosive's air is a pop-filter problem.</Notice>
       <Card><Body>At the microphone: {c.micNote}</Body></Card>
       <SpeechCheckCard id="nasal-family" />
     </View>

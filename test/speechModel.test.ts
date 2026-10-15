@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   ANATOMY, ANATOMY_MIN_SPACING, PRODUCTION, VOICED_PAIRS, VOWELS, vowelSpectrum, CONSONANTS, plosiveTrace, distanceEffect, proximityBoostDb,
   VOICE_RANGES, VOICE_CHART, voiceChartLayout, voiceLabelSpan, PROBLEMS, voiceSpectrum, problemSpectrum, problemTrace, bandMean, SPEECH_CHECKS, shuffleCheck,
+  PROBLEM_TRACE_MS, CLICK_TIMES,
 } from '../src/features/speech/speechModel.ts';
 
 test('anatomy: 11 tappable structures with unique ids, chip labels and leader anchors inside the drawing', () => {
@@ -63,12 +64,20 @@ test('consonant categories: six, each with examples and a band', () => {
   assert.ok(fric.bandHiHz > nasal.bandHiHz * 5);
 });
 
-test('plosiveTrace: the pop filter removes the slow pressure hump but keeps the click', () => {
-  const raw = plosiveTrace(240, false), filtered = plosiveTrace(240, true);
+test('plosiveTrace: real audio — the pop filter removes the slow pressure swing but keeps the burst', () => {
+  // 2026-10-14 redraw: 200 ms of "pa" at 16 kHz (never a cartoon of a few slow cycles)
+  const raw = plosiveTrace(false), filtered = plosiveTrace(true);
+  assert.equal(raw.length, 3200);
   const peak = (a: Float64Array) => Math.max(...Array.from(a, Math.abs));
-  assert.ok(peak(raw) > 0.9 && peak(filtered) < 0.7);
-  // the very first samples (the click) are the same either way
-  for (let i = 0; i < 4; i++) assert.ok(Math.abs(raw[i] - filtered[i]) < 1e-9);
+  assert.ok(peak(raw) > 0.85 && peak(filtered) < 0.6, `${peak(raw)} vs ${peak(filtered)}`);
+  // closure silence, then the burst at 20 ms — identical either way (the jet arrives 3 ms later)
+  for (let i = 0; i < 16000 * 0.022; i++) assert.ok(Math.abs(raw[i] - filtered[i]) < 1e-9, `sample ${i}`);
+  assert.ok(peak(raw.subarray(0, 16000 * 0.019)) < 0.01, 'silence while the lips are closed');
+  assert.ok(peak(raw.subarray(320, 360)) > 0.1, 'the burst when the lips part');
+  // the voice is real: ~120 Hz pitch → zero crossings far faster than a stylized strip
+  let zc = 0; const tail = filtered.subarray(1600);
+  for (let i = 1; i < tail.length; i++) if ((tail[i - 1] < 0) !== (tail[i] < 0)) zc++;
+  assert.ok(zc / (tail.length / 16000) > 400, `${zc} crossings`);
 });
 
 test('distance: direct sound follows inverse square, plosive energy falls faster, SNR shrinks', () => {
@@ -158,11 +167,16 @@ test('problemSpectrum changes the right region relative to the clean voice', () 
 
 test('problemTrace: clicks add sharp spikes, plosive adds a hump, breath replaces the tail', () => {
   const clean = problemTrace('sibilance'); // no trace defect → clean vowel
+  assert.equal(clean.length, Math.round((PROBLEM_TRACE_MS / 1000) * 16000));
   const clicks = problemTrace('clicks');
-  let diffs = 0; for (let i = 0; i < clean.length; i++) if (Math.abs(clean[i] - clicks[i]) > 0.5) diffs++;
-  assert.ok(diffs >= 4 && diffs <= 16, `clicks touch ${diffs} samples`);
+  let diffs = 0; for (let i = 0; i < clean.length; i++) if (Math.abs(clean[i] - clicks[i]) > 0.3) diffs++;
+  assert.ok(diffs >= CLICK_TIMES.length && diffs <= 40, `clicks touch ${diffs} samples (sub-millisecond ticks)`);
   const plo = problemTrace('plosives');
-  assert.ok(Math.max(...Array.from(plo)) > 0.9 && Math.max(...Array.from(clean)) < 0.5);
+  assert.ok(Math.max(...Array.from(plo)) > 0.8 && Math.max(...Array.from(clean)) < 0.5);
+  const br = problemTrace('breath');
+  const n = br.length;
+  for (let i = 0; i < n * 0.5; i++) assert.equal(br[i], clean[i], 'voice unchanged before the breath');
+  for (let i = Math.ceil(n * 0.9) + 1; i < n; i++) assert.equal(br[i], clean[i], 'voice back after the breath');
 });
 
 // TestFlight build 32 (owner, iPhone 15 Pro Max): "the chart does not go above
