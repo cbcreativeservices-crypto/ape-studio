@@ -435,6 +435,7 @@ const TITLE_KEYWORD: Partial<Record<Card['kind'], string>> = {
   glossary: 'Glossary',
   enrollments: 'Enrollments',
   careerFinder: 'Career Finder',
+  startHere: 'First Steps in Audio',
 };
 /** The title text with its key word wrapped in gold (plain when the word is absent). */
 function keyedTitle(text: string, kind: Card['kind']): ReactNode {
@@ -971,7 +972,7 @@ function CourseCardView({
         />
         <View>
           {/* Owner 2026-09-29: the subtitle on its own line. */}
-          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{'Start Here:\nYour First Steps in Audio'}</Text>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle('Start Here:\nYour First Steps in Audio', 'startHere')}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
@@ -1217,6 +1218,8 @@ function CourseCardView({
       {locked && <View style={styles.lockTint} />}
       <View>
         <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle(title, item.kind)}</Text>
+        {/* The two free topics say what they are (owner 2026-10-14). */}
+        {free ? <Text style={styles.cardStudyTopic} maxFontSizeMultiplier={HOME_MAX}>Study Topic</Text> : null}
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
         {isTools && upsell ? (
@@ -2317,6 +2320,8 @@ const styles = StyleSheet.create({
   },
   // The gold key word inside a card title (owner 2026-10-14).
   cardTitleKey: { color: colors.gold },
+  // "Study Topic" under the two free topic titles (owner 2026-10-14).
+  cardStudyTopic: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.6, color: colors.gold, marginTop: 2, textShadowColor: 'rgba(0,0,0,0.75)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
   cardTitle: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 26,
