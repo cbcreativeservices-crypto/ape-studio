@@ -135,6 +135,13 @@ export function proxy(request: NextRequest) {
     ) {
       return NextResponse.next();
     }
+    // Pages the APP links to (owner 2026-10-15, App Store review audit): the
+    // employer sign-up button and a certificate's QR / share link must not land
+    // a reviewer or an employer on the key screen. Exact match / one-segment
+    // only — no cookie, not a site-wide unlock.
+    if (legalPublic === "/employers/apply" || /^\/registry\/[^/]+$/.test(legalPublic)) {
+      return NextResponse.next();
+    }
   }
 
   // Already unlocked with a valid cookie -> show the site.
