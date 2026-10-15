@@ -866,3 +866,28 @@ process is running.
 - **A production OTA reaches store reviewers.** Both store builds listen on `production`. Hold production publishes during review (D74); the preview channel is safe.
 - **The built-in browser pane can't open file:// pages.** Check generated HTML with headless Chrome (`--headless=new --screenshot`, own `--user-data-dir`) instead.
 - **A push to the website branch counts as a production deploy to the permission classifier.** The owner ran it; hand over the one exact command when blocked.
+
+## 2026-10-14 — lab slider pass, live on the Android emulator
+
+- **A worklet's default parameter is not captured.** `function deltaTms(d, c = C20) { 'worklet'; … }` threw "Property 'C20' doesn't exist" on the UI thread. It crashed the Miking two-mic pages, a bug since 10-04 that is probably in the build under review. The same mistake in laneEdgeGuard crashed every rack lane on first touch after the move to Gesture Handler. Resolve defaults in the body; the ratchet scans all of `src` (D76).
+- **JS write → JS read of a SharedValue returns the OLD value in the same tick.** Miking's commit read `poseA.value` straight after `preview` wrote it, so taps and flicks were saved where the mic had been. Keep a JS mirror. A subagent audit found the same pattern in the Harmonograph timing.
+- **Fast Refresh can leave a stale gesture worklet.** After hot-editing ParamLane, a fader can look "broken" (flick ignored, debug logs silent). Force-stop the dev client and reopen it with the deep link before judging. Two false leads today came from this.
+- **The emulator finds what tests can't.** Source-regex and unit tests passed 10,4xx/10,4xx while the live check found:
+  - a UI-thread crash on first touch;
+  - taps saved at the wrong place;
+  - an empty chooser tray on a 640 dp window;
+  - a clipped readout;
+  - an estimate drawn at the wrong level.
+  Drive every changed control on the emulator before calling it done.
+- **Emulator harness** (`C:Usersprofe	oolsemutestd`):
+  - `ft2.sh`: held drag + taps + edges + flick + double-tap.
+  - `mont.py`: montage.
+  - `go.sh`: open a lab by its exact title.
+  - `find.sh`: scroll to text and tap.
+  - `tapn.sh`: tap the Nth match.
+  - `keepoff.sh`: decline the sound warning only if it is showing.
+  - `reload.sh`: full reload.
+  - `shot.sh`.
+  - `uiautomator dump` hangs on constantly animating pages (Amp), so use screenshots there.
+  - The AVD needs `hw.keyboard = yes` for the owner to type; after a restart, re-run the three-button overlay, `wm size 1080x1920` and `adb reverse tcp:8081`.
+- **Parallel agents on one worktree work when each owns disjoint folders.** Five opus-high agents carried out 19 HOLD items at once. One item sat in a folder nobody owned (Mastering GAP), so it was reported and done by the lead. Give each agent explicit folder boundaries and a "STOP and report" rule for shared files.
