@@ -7,7 +7,7 @@
  * collide with the strips' hand-suffixed ids (amb_bNN/lvl_bNN/… — the
  * .svgrrc.js svgo:false lesson: one global id namespace per screen on web).
  */
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Platform, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 import { LinearGradient as RnLinearGradient } from 'expo-linear-gradient';
 import { LinearGradient, Stop } from 'react-native-svg';
@@ -18,13 +18,13 @@ import { levelColor } from '../../features/tools/levelColor';
  *  space). One shared implementation — copies drift (equality guard, rounding). */
 export function useMeasuredWidth(): [number, (e: LayoutChangeEvent) => void] {
   const [w, setW] = useState(0);
-  return [
-    w,
-    (e: LayoutChangeEvent) => {
-      const width = e.nativeEvent.layout.width;
-      setW((p) => (p === width ? p : width));
-    },
-  ];
+  // Stable handler (perf pass 2026-10-15): the live minis memoise their whole
+  // picture, and a fresh callback every render would defeat that.
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    const width = e.nativeEvent.layout.width;
+    setW((p) => (p === width ? p : width));
+  }, []);
+  return [w, onLayout];
 }
 
 /** RN Animated native driver is unavailable on web (NavIcon caveat). */

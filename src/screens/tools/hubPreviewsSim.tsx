@@ -22,6 +22,7 @@
 import { memo, useEffect, useRef, useState, type FC } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import Reanimated, { useAnimatedProps, useSharedValue } from 'react-native-reanimated';
 import { DemoTag, LvlGrad, MirGrad, NATIVE_DRIVER, useMeasuredWidth, Vignette } from './hubPreviewShared';
 import { STRIP_VIEWBOX, STRIP_WINDOW } from './TileChassis';
 import type { ToolKey } from './toolsData';
@@ -358,61 +359,120 @@ const RT60_HEAD_MS = 70; // head advance tick
 const RT60_HEAD_STEP = 5; // points per tick â†’ full sweep â‰ˆ 4 s
 const RT60_TRAIL = 16; // bright comet-tail length in points
 
+/** The sim's window: the RT60 curve starts at the plot's left edge (x 124);
+ *  owner 2026-09-05 asked for more left margin ("still too snug", second pass),
+ *  so this window sits 64 canvas units further left - the decay starts a clear
+ *  margin in from the glass edge, the flat floor gives up 64 units on the
+ *  right. Same window height, so nothing else shifts. */
+const RT60_VB = `${STRIP_WINDOW.x - 64} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`;
+
+/** Every head position the sweep visits, built ONCE (perf pass 2026-10-15):
+ *  the tick used to rebuild the full curve, its fill and the comet from ~200
+ *  points 14x/s and redraw the whole display; now a tick is an index step and
+ *  a two-node redraw of the comet layer. Same positions, same 70 ms cadence. */
+type Rt60HeadFrame = { seg: string | null; pt: readonly [number, number] | null };
+const RT60_HEAD_FRAMES: ReadonlyArray<Rt60HeadFrame> = (() => {
+  const N = RT60_POINTS.length;
+  const out: Rt60HeadFrame[] = [];
+  // h = 0, STEP, 2·STEP … while h <= N + TRAIL (the old tick's wrap rule).
+  for (let head = 0; head <= N + RT60_TRAIL; head += RT60_HEAD_STEP) {
+    out.push({
+      seg: rt60Segment(head - RT60_TRAIL, head),
+      pt: head >= 2 && head <= N ? RT60_POINTS[Math.min(head, N) - 1] : null,
+    });
+  }
+  return out;
+})();
+
+/** The frames as flat arrays the UI-thread worklets read (captured once). A
+ *  frame with no comet/dot keeps a harmless placeholder at opacity 0. */
+const RT60_FRAME_COUNT = RT60_HEAD_FRAMES.length;
+const RT60_SEG_D: string[] = RT60_HEAD_FRAMES.map((f) => f.seg ?? 'M0 0');
+const RT60_SEG_OP: number[] = RT60_HEAD_FRAMES.map((f) => (f.seg ? 0.9 : 0));
+const RT60_PT_X: number[] = RT60_HEAD_FRAMES.map((f) => (f.pt ? f.pt[0] : 0));
+const RT60_PT_Y: number[] = RT60_HEAD_FRAMES.map((f) => (f.pt ? f.pt[1] : 0));
+const RT60_PT_OP: number[] = RT60_HEAD_FRAMES.map((f) => (f.pt ? 1 : 0));
+const RPath = Reanimated.createAnimatedComponent(Path);
+const RCircle = Reanimated.createAnimatedComponent(Circle);
+
+/** The persistent measurement - fill, decay curve, noise floor and fit line -
+ *  never changes, so it is its own Svg, built once; only the comet layer above
+ *  it redraws on a tick. */
+const RT60_FULL_CURVE = rt60Path(RT60_POINTS.length, false);
+const RT60_STATIC = (
+  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={RT60_VB}>
+    <Defs>
+      <LvlGrad id="hpLvlRt" y1={104} y2={920} />
+      <LinearGradient id="hpFillRt" gradientUnits="userSpaceOnUse" x1="0" y1={104} x2="0" y2={920}>
+        <Stop offset="0" stopColor="#f0a23c" stopOpacity={0.28} />
+        <Stop offset="0.6" stopColor="#34b96e" stopOpacity={0.12} />
+        <Stop offset="1" stopColor="#2166c4" stopOpacity={0} />
+      </LinearGradient>
+    </Defs>
+    <Rect width={2048} height={1024} fill="#060608" />
+    {RT60_CHROME}
+    {/* Persistent measurement: fill + decay curve + noise floor + fit line. */}
+    <Path d={rt60Path(RT60_POINTS.length, true)} fill="url(#hpFillRt)" />
+    <Path d={RT60_FULL_CURVE} fill="none" stroke="url(#hpLvlRt)" strokeWidth={36} opacity={0.2} strokeLinejoin="round" />
+    <Path d={RT60_FULL_CURVE} fill="none" stroke="url(#hpLvlRt)" strokeWidth={16} strokeLinejoin="round" />
+    <Line x1={124} y1={875.1} x2={1924} y2={875.1} stroke="#ff6f22" strokeWidth={14} strokeDasharray="30 24" opacity={0.7} />
+    <Line x1={259} y1={267.2} x2={1204} y2={813.9} stroke="#f5b942" strokeWidth={15} strokeDasharray="34 26" opacity={0.95} />
+  </Svg>
+);
+
 const HubRt60Sim: FC<{ active: boolean }> = memo(({ active }) => {
   // The curve, fitted line, and noise floor are ALWAYS drawn (owner 2026-08-19:
   // no clearing/pausing between measurements). The only motion is a glowing
   // "measurement head" that sweeps down the curve and wraps seamlessly â€” the
   // base curve never blanks, so there is no flash on wrap.
-  const [head, setHead] = useState(0);
-
+  //
+  // NO REACT RENDER PER STEP (perf pass 2026-10-15). The 14 Hz step used to
+  // be setState, i.e. fourteen React renders and commits a second for a
+  // two-node comet; measured on the 2.5 GB emulator that alone held the JS
+  // thread at ~40%. The same 70 ms timer now only writes the frame INDEX into
+  // a shared value; the comet's two nodes read their precomputed props from
+  // it on the UI thread, and React renders this tile once. (A Reanimated
+  // UI-thread clock was tried and rejected: it woke the UI thread on every
+  // display frame for a picture that changes 14 times a second.)
+  const frame = useSharedValue(0);
   useEffect(() => {
-    if (!active) return undefined;
-    let cancelled = false;
-    let h = 0;
-    const N = RT60_POINTS.length;
+    if (!active) return undefined; // holds the current frame, as before
+    let f = 0; // JS mirror — never read the shared value back (D76)
+    frame.value = 0;
     const iv = setInterval(() => {
-      if (cancelled) return;
-      h += RT60_HEAD_STEP;
-      if (h > N + RT60_TRAIL) h = 0; // brief travel past the floor, then restart
-      setHead(h);
+      f = f + 1 >= RT60_FRAME_COUNT ? 0 : f + 1; // brief travel past the floor, then restart
+      frame.value = f;
     }, RT60_HEAD_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(iv);
-    };
-  }, [active]);
+    return () => clearInterval(iv);
+  }, [active, frame]);
 
-  const headSeg = rt60Segment(head - RT60_TRAIL, head);
-  const headPt = head >= 2 && head <= RT60_POINTS.length ? RT60_POINTS[Math.min(head, RT60_POINTS.length) - 1] : null;
-  const fullCurve = rt60Path(RT60_POINTS.length, false);
+  const segProps = useAnimatedProps(() => {
+    const f = frame.value;
+    return { d: RT60_SEG_D[f], opacity: RT60_SEG_OP[f] };
+  });
+  const dotProps = useAnimatedProps(() => {
+    const f = frame.value;
+    return { cx: RT60_PT_X[f], cy: RT60_PT_Y[f], opacity: RT60_PT_OP[f] };
+  });
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      {/* The RT60 curve starts at the plot's left edge (x 124); owner 2026-09-05
-          asked for more left margin ("still too snug", second pass), so this
-          sim's window sits 64 canvas units further left — the decay starts a
-          clear margin in from the glass edge, the flat floor gives up 64
-          units on the right. Same window height, so nothing else shifts. */}
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`${STRIP_WINDOW.x - 64} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`}>
-        <Defs>
-          <LvlGrad id="hpLvlRt" y1={104} y2={920} />
-          <LinearGradient id="hpFillRt" gradientUnits="userSpaceOnUse" x1="0" y1={104} x2="0" y2={920}>
-            <Stop offset="0" stopColor="#f0a23c" stopOpacity={0.28} />
-            <Stop offset="0.6" stopColor="#34b96e" stopOpacity={0.12} />
-            <Stop offset="1" stopColor="#2166c4" stopOpacity={0} />
-          </LinearGradient>
-        </Defs>
-        <Rect width={2048} height={1024} fill="#060608" />
-        {RT60_CHROME}
-        {/* Persistent measurement: fill + decay curve + noise floor + fit line. */}
-        <Path d={rt60Path(RT60_POINTS.length, true)} fill="url(#hpFillRt)" />
-        <Path d={fullCurve} fill="none" stroke="url(#hpLvlRt)" strokeWidth={36} opacity={0.2} strokeLinejoin="round" />
-        <Path d={fullCurve} fill="none" stroke="url(#hpLvlRt)" strokeWidth={16} strokeLinejoin="round" />
-        <Line x1={124} y1={875.1} x2={1924} y2={875.1} stroke="#ff6f22" strokeWidth={14} strokeDasharray="30 24" opacity={0.7} />
-        <Line x1={259} y1={267.2} x2={1204} y2={813.9} stroke="#f5b942" strokeWidth={15} strokeDasharray="34 26" opacity={0.95} />
+      {RT60_STATIC}
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={RT60_VB} style={StyleSheet.absoluteFill}>
         {/* Moving measurement head â€” the sweeping comet. */}
-        {headSeg && <Path d={headSeg} fill="none" stroke="#7ce8a6" strokeWidth={20} strokeLinecap="round" strokeLinejoin="round" opacity={0.9} />}
-        {headPt && <Circle cx={headPt[0]} cy={headPt[1]} r={13} fill="#eafff2" />}
+        {/* Both nodes stay mounted (hidden at the wrap); the UI-thread clock
+            only changes their props. Frame 0 is the resting frame. */}
+        <RPath
+          d={RT60_SEG_D[0]}
+          opacity={RT60_SEG_OP[0]}
+          fill="none"
+          stroke="#7ce8a6"
+          strokeWidth={20}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          animatedProps={segProps}
+        />
+        <RCircle cx={RT60_PT_X[0]} cy={RT60_PT_Y[0]} r={13} fill="#eafff2" opacity={RT60_PT_OP[0]} animatedProps={dotProps} />
       </Svg>
       <Vignette />
       <DemoTag />

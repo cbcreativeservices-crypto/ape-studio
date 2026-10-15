@@ -12,11 +12,14 @@
  * ToolsHubScreen stays Skia-free (dense-screen render rule 2026-08-15; also
  * keeps the hub alive on web + pre-Skia dev clients).
  *
- * Node budget (MultiMeter precedent ≤~700): steady state ≈ 200 dynamic SVG
- * nodes across all five minis (SPL ~40, RTA ~95, waveform 2, spectrogram ≤12
- * batched heat paths, MultiMeter ~75) + frozen chrome. Needles are RN
- * Animated overlays on the native driver (the HzCounterDemo idiom) so needle
- * motion costs zero JS per frame between ticks.
+ * Node budget (MultiMeter precedent ≤~700): since the perf pass 2026-10-15
+ * every data layer is a handful of FIXED nodes (RTA 4 paths, MultiMeter a bar
+ * + 2 paths + 12 heat paths, spectrogram 12 heat paths, waveform 2, SPL 2
+ * lines + lamp) in its own Svg above a static plate Svg, so a tick updates a
+ * few props and redraws one small layer — never mounts bars, never redraws
+ * the chrome. Each mini re-renders only when its PICTURE changes
+ * (useHubPicture). The tuner blade is an RN Animated overlay on the native
+ * driver (the HzCounterDemo idiom), started straight from the store.
  *
  * Data honesty: these components mount ONLY while the hub engine reports
  * running frames — absent/spike/denied rests on the static artwork
@@ -24,7 +27,7 @@
  * pinned userSpaceOnUse to absolute level (fixed-reference rule 2026-08-14);
  * heat cells use the app-wide heatColor ramp with the fixed 0 dBFS anchor.
  */
-import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type FC, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useSyncExternalStore, type FC, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
@@ -61,9 +64,81 @@ import type { ToolKey } from './toolsData';
 const VB = STRIP_VIEWBOX;
 const TICK_SEC = HUB_TICK_MS / 1000;
 
-function useHubData(): HubPreviewData {
-  return useSyncExternalStore(subscribeHubPreview, getHubPreview);
+/** Every mini takes `paused` (perf pass 2026-10-15): the hub sets it for a
+ *  tile scrolled out of the viewport. A paused mini UNSUBSCRIBES from the
+ *  shared tick and keeps the last picture it drew - which nobody can see - so
+ *  a tick re-renders only the tiles on screen. Un-pausing resubscribes and the
+ *  mini catches up on the very next render (the store always holds the newest
+ *  frame and the full spectrogram history, so nothing is lost or stitched). */
+export type HubMiniProps = { paused?: boolean };
+
+const unsubscribeNone = () => {};
+const subscribeNone = () => unsubscribeNone;
+
+/**
+ * SUBSCRIBE TO THE PICTURE, NOT THE FRAME (perf pass 2026-10-15).
+ *
+ * Measured on the 2.5 GB emulator: the minis re-rendering on every 12.5 Hz
+ * tick held the JS thread at ~90% even in a silent room, where not one pixel
+ * changed - React rendered five displays a dozen times a second to arrive at
+ * the same drawing. Now each mini derives its PICTURE (path strings, needle
+ * tip, readout text) from the frame inside the store read, once per frame,
+ * and React re-renders that mini only when the picture differs from the one
+ * on screen. A moving signal redraws exactly as before; silence, a held
+ * note's unchanged readouts, a resting needle cost no render at all.
+ *
+ * `compute` may keep per-instance state (ballistics, autoscale): it runs once
+ * per new frame object, never twice for the same one.
+ */
+function useHubPicture<T>(
+  paused: boolean,
+  compute: (d: HubPreviewData) => T,
+  same: (a: T, b: T) => boolean,
+): T {
+  const box = useRef<{ d: HubPreviewData | null; v: T | null; compute: typeof compute; same: typeof same }>({
+    d: null,
+    v: null,
+    compute,
+    same,
+  });
+  box.current.compute = compute;
+  box.current.same = same;
+  const pick = useCallback((): T => {
+    const b = box.current;
+    const d = getHubPreview();
+    if (d === b.d) return b.v as T;
+    const v = b.compute(d);
+    b.d = d;
+    if (b.v !== null && b.same(b.v, v)) return b.v;
+    b.v = v;
+    return v;
+  }, []);
+  return useSyncExternalStore(paused ? subscribeNone : subscribeHubPreview, pick);
 }
+
+/** Shallow equality for flat pictures (strings / numbers / null). */
+function sameFlat<T extends Record<string, unknown>>(a: T, b: T): boolean {
+  for (const k in a) if (a[k] !== b[k]) return false;
+  return true;
+}
+
+/** Rounded rectangle as path data, with SVG <rect> corner semantics (rx/ry
+ *  clamp to half the width/height independently). Lets a whole row of bars be
+ *  ONE <Path> instead of one <Rect> per bar - the same pixels, but a tick
+ *  updates one native node instead of mounting/unmounting dozens. */
+function rrectD(x: number, y: number, w: number, h: number, r: number): string {
+  const rx = Math.max(0, Math.min(r, w / 2));
+  const ry = Math.max(0, Math.min(r, h / 2));
+  const f = (v: number) => (Math.round(v * 10) / 10).toString();
+  if (rx === 0 || ry === 0) return `M${f(x)} ${f(y)}h${f(w)}v${f(h)}h${f(-w)}Z`;
+  const iw = w - 2 * rx;
+  const ih = h - 2 * ry;
+  const a = (dx: number, dy: number) => `a${f(rx)} ${f(ry)} 0 0 1 ${f(dx)} ${f(dy)}`;
+  return `M${f(x + rx)} ${f(y)}h${f(iw)}${a(rx, ry)}v${f(ih)}${a(-rx, ry)}h${f(-iw)}${a(-rx, -ry)}v${f(-ih)}${a(rx, -ry)}Z`;
+}
+/** A <Path> needs SOME data; an empty group draws nothing and keeps the node
+ *  tree stable (no mount/unmount as bars cross the visibility threshold). */
+const EMPTY_D = 'M0 0';
 
 const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
 /** Guard native dB values: NaN/−Infinity (pre-signal silence) → −120. */
@@ -132,62 +207,85 @@ function heatPaths(
 /** 0 VU anchor in dBFS — the real SPL meter's default (RANGE 60 − offset 100). */
 const SPL_LIVE0 = -40;
 
+/** The skin photo + printed scale never change: their OWN Svg, so a needle
+ *  tick redraws only the small needle layer above, never the photo (perf pass
+ *  2026-10-15). Same viewBox and slice as the needle layer → they register. */
+const SPL_STATIC = (
+  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice">
+    <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
+    {SPL_SCALE}
+  </Svg>
+);
+const SPL_DEFS = (
+  <Defs>
+    <ClipPath id="hpVuFace">
+      <Rect x={VU_FACE.x} y={VU_FACE.y} width={VU_FACE.w} height={VU_FACE.h} rx={VU_FACE.rx} />
+    </ClipPath>
+  </Defs>
+);
+/** Needle-tip rounding: a tenth of a canvas unit is ~1/100 px at tile size. */
+const r1 = (v: number) => Math.round(v * 10) / 10;
+
 /** SPL Reference Meter tile — the skinned VU. Always mounted; the needle rests
  *  at the bottom of the scale when no live signal is flowing. */
-const HubSplSkin: FC = memo(() => {
-  const d = useHubData();
+const HubSplSkin: FC<HubMiniProps> = memo(({ paused = false }) => {
   const vuRef = useRef(0);
   const vuVelRef = useRef(0);
   const lampRef = useRef(0);
   const lastTickRef = useRef(-2);
 
-  const db = dbOr(d.meter?.aFastDb);
-  const peakDb = dbOr(d.meter?.peakDb);
-  // Same TRUE VU ballistic as the tool's SkinnedVu (symmetric 2nd-order, ANSI
-  // C16.5 / IEC 60268-17) so the tile needle behaves EXACTLY like the meter.
-  if (d.tick === 0) {
-    // NOTHING IS MEASURING. `tick` starts at 1 for real frames, so 0 is the
-    // engine's unambiguous empty sentinel — emitted once on teardown and then
-    // never again. The ballistic only advances when the tick CHANGES, so a
-    // needle at 0.90 integrated a single step toward rest (to ~0.40) and then
-    // froze there indefinitely: 40% of scale, in silence, on the one tile that
-    // is always mounted. This tile's own docstring says the needle "rests at
-    // the bottom of the scale when no live signal is flowing" — now it does.
-    lastTickRef.current = d.tick;
-    vuRef.current = 0;
-    vuVelRef.current = 0;
-    lampRef.current = 0;
-  } else if (lastTickRef.current !== d.tick) {
-    lastTickRef.current = d.tick;
-    const target = db <= -119 ? 0 : Math.min(VU_MAX * 1.04, Math.pow(10, (db - SPL_LIVE0) / 20));
-    const W = 16;
-    const Z = 0.72;
-    // Sub-step the 80 ms tick (dt·W would be ~1.3) so the 2nd-order stays accurate.
-    const SUB = 4;
-    const h = TICK_SEC / SUB;
-    for (let i = 0; i < SUB; i++) {
-      const acc = W * W * (target - vuRef.current) - 2 * Z * W * vuVelRef.current;
-      vuVelRef.current += acc * h;
-      vuRef.current = Math.max(0, vuRef.current + vuVelRef.current * h);
+  // The ballistic runs once per frame inside the picture read; the tile
+  // re-renders only when the needle tip or the lamp actually moves.
+  const picture = (d: HubPreviewData) => {
+    const db = dbOr(d.meter?.aFastDb);
+    const peakDb = dbOr(d.meter?.peakDb);
+    // Same TRUE VU ballistic as the tool's SkinnedVu (symmetric 2nd-order, ANSI
+    // C16.5 / IEC 60268-17) so the tile needle behaves EXACTLY like the meter.
+    if (d.tick === 0) {
+      // NOTHING IS MEASURING. `tick` starts at 1 for real frames, so 0 is the
+      // engine's unambiguous empty sentinel — emitted once on teardown and then
+      // never again. The ballistic only advances when the tick CHANGES, so a
+      // needle at 0.90 integrated a single step toward rest (to ~0.40) and then
+      // froze there indefinitely: 40% of scale, in silence, on the one tile that
+      // is always mounted. This tile's own docstring says the needle "rests at
+      // the bottom of the scale when no live signal is flowing" — now it does.
+      lastTickRef.current = d.tick;
+      vuRef.current = 0;
+      vuVelRef.current = 0;
+      lampRef.current = 0;
+    } else if (lastTickRef.current !== d.tick) {
+      lastTickRef.current = d.tick;
+      const target = db <= -119 ? 0 : Math.min(VU_MAX * 1.04, Math.pow(10, (db - SPL_LIVE0) / 20));
+      const W = 16;
+      const Z = 0.72;
+      // Sub-step the 80 ms tick (dt·W would be ~1.3) so the 2nd-order stays accurate.
+      const SUB = 4;
+      const h = TICK_SEC / SUB;
+      for (let i = 0; i < SUB; i++) {
+        const acc = W * W * (target - vuRef.current) - 2 * Z * W * vuVelRef.current;
+        vuVelRef.current += acc * h;
+        vuRef.current = Math.max(0, vuRef.current + vuVelRef.current * h);
+      }
+      // PEAK lamp: ramp toward lit/unlit so the brightness CHANGES smoothly on a
+      // clip (owner rev 19) — same treatment as the tool's SkinnedVu.
+      lampRef.current += ((peakDb >= PEAK_LAMP_DBFS ? 1 : 0) - lampRef.current) * 0.5;
     }
-    // PEAK lamp: ramp toward lit/unlit so the brightness CHANGES smoothly on a
-    // clip (owner rev 19) — same treatment as the tool's SkinnedVu.
-    lampRef.current += ((peakDb >= PEAK_LAMP_DBFS ? 1 : 0) - lampRef.current) * 0.5;
-  }
-  const ang = vuAngle(vuRef.current);
-  const tip = skinPt(ang, VU_NEEDLE_TIP);
-  const lampGlow = lampRef.current; // 0 = dark-red base only, 1 = fully lit
+    const tipPt = skinPt(vuAngle(vuRef.current), VU_NEEDLE_TIP);
+    return {
+      tipX: r1(tipPt.x),
+      tipY: r1(tipPt.y),
+      lampGlow: Math.round(lampRef.current * 100) / 100, // 0 = dark-red base only, 1 = fully lit
+    };
+  };
+  const { tipX, tipY, lampGlow } = useHubPicture(paused, picture, sameFlat);
 
-  return (
+  return useMemo(() => {
+    const tip = { x: tipX, y: tipY };
+    return (
     <View style={StyleSheet.absoluteFill}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice">
-        <Defs>
-          <ClipPath id="hpVuFace">
-            <Rect x={VU_FACE.x} y={VU_FACE.y} width={VU_FACE.w} height={VU_FACE.h} rx={VU_FACE.rx} />
-          </ClipPath>
-        </Defs>
-        <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
-        {SPL_SCALE}
+      {SPL_STATIC}
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice" style={StyleSheet.absoluteFill}>
+        {SPL_DEFS}
         {/* PEAK lamp — the dark-red base is in SPL_SCALE (always red); this
             illuminated layer (halo + bright core + hot centre) fades in with the
             clip so the lamp CHANGES brightness, matching the tool VU (rev 19). */}
@@ -208,7 +306,8 @@ const HubSplSkin: FC = memo(() => {
         </G>
       </Svg>
     </View>
-  );
+    );
+  }, [tipX, tipY, lampGlow]);
 });
 HubSplSkin.displayName = 'HubSplSkin';
 
@@ -238,55 +337,72 @@ const RTA_CHROME_UNDER = (
 );
 /** Bottom rail draws OVER the bars in the art. */
 const RTA_CHROME_OVER = <Line x1={124} y1={923} x2={1924} y2={923} stroke="#2f3d55" strokeWidth={5} />;
+/** Static plate in its own Svg (a tick redraws only the data layer), and the
+ *  data layer's gradient — module elements, so a tick never re-renders them. */
+const RTA_STATIC = (
+  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
+    <Rect width={2048} height={1024} fill="#060608" />
+    {RTA_CHROME_UNDER}
+  </Svg>
+);
+const RTA_DEFS = (
+  <Defs>
+    <LvlGrad id="hpLvlRta" y1={104} y2={920} />
+  </Defs>
+);
 
-const HubRtaMini: FC = memo(() => {
-  const d = useHubData();
+/** The RTA mini's picture: each layer is ONE path (the bars never overlap, so
+ *  a union draws exactly what the per-bar <Rect>s drew — same fill, same
+ *  opacity). Pure: depends on the frame alone. */
+function rtaPicture(d: HubPreviewData): { glow: string; core: string; caps: string; slots: string } {
   const b = d.bands;
   const n = b ? Math.min(RTA_BANDS, b.levelsDb.length) : 0;
-
-  const glow: ReactNode[] = [];
-  const core: ReactNode[] = [];
-  const caps: ReactNode[] = [];
-  const slots: ReactNode[] = [];
+  let glow = '';
+  let core = '';
+  let caps = '';
+  let slots = '';
   for (let i = 0; i < n; i++) {
     const x = RTA_X0 + RTA_PITCH * i;
     if (b!.resolvable[i] === false) {
-      slots.push(
-        <Rect key={i} x={x} y={104} width={RTA_BAR_W} height={816} fill="#55555f" opacity={0.14} />,
-      );
+      slots += rrectD(x, 104, RTA_BAR_W, 816, 0);
       continue;
     }
     const db = dbOr(b!.levelsDb[i], RTA_FLOOR_DB);
     const yTop = rtaYForDb(db);
     const h = 920 - yTop;
     if (h >= 2) {
-      glow.push(
-        <Rect key={i} x={x - 4} y={yTop - 4} width={RTA_BAR_W + 8} height={h + 8} rx={4} />,
-      );
-      core.push(<Rect key={i} x={x} y={yTop} width={RTA_BAR_W} height={h} rx={3} />);
+      glow += rrectD(x - 4, yTop - 4, RTA_BAR_W + 8, h + 8, 4);
+      core += rrectD(x, yTop, RTA_BAR_W, h, 3);
     }
     const pk = dbOr(b!.peakHoldDb[i], RTA_FLOOR_DB);
     if (pk > RTA_FLOOR_DB + 2) {
-      caps.push(
-        <Rect key={i} x={x - 2} y={rtaYForDb(pk) - 5} width={RTA_BAR_W + 4} height={10} rx={3} fill="#e6d5a0" opacity={0.9} />,
-      );
+      caps += rrectD(x - 2, rtaYForDb(pk) - 5, RTA_BAR_W + 4, 10, 3);
     }
   }
+  return { glow, core, caps, slots };
+}
+
+const HubRtaMini: FC<HubMiniProps> = memo(({ paused = false }) => {
+  const { glow, core, caps, slots } = useHubPicture(paused, rtaPicture, sameFlat);
+
+  const dataLayer = useMemo(
+    () => (
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB} style={StyleSheet.absoluteFill}>
+        {RTA_DEFS}
+        <Path d={slots || EMPTY_D} fill="#55555f" opacity={0.14} />
+        <Path d={glow || EMPTY_D} fill="url(#hpLvlRta)" opacity={0.22} />
+        <Path d={core || EMPTY_D} fill="url(#hpLvlRta)" />
+        <Path d={caps || EMPTY_D} fill="#e6d5a0" opacity={0.9} />
+        {RTA_CHROME_OVER}
+      </Svg>
+    ),
+    [slots, glow, core, caps],
+  );
 
   return (
     <LiveShell>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
-        <Defs>
-          <LvlGrad id="hpLvlRta" y1={104} y2={920} />
-        </Defs>
-        <Rect width={2048} height={1024} fill="#060608" />
-        {RTA_CHROME_UNDER}
-        {slots}
-        <G fill="url(#hpLvlRta)" opacity={0.22}>{glow}</G>
-        <G fill="url(#hpLvlRta)">{core}</G>
-        {caps}
-        {RTA_CHROME_OVER}
-      </Svg>
+      {RTA_STATIC}
+      {dataLayer}
       <Vignette />
     </LiveShell>
   );
@@ -316,6 +432,11 @@ const WAVE_CHROME_UNDER = (
         as a second wave. It is only the zero reference. */}
     <Line x1={124} y1={512} x2={1924} y2={512} stroke="#2b7fd4" strokeWidth={5} opacity={0.5} />
   </G>
+);
+const WAVE_DEFS = (
+  <Defs>
+    <MirGrad id="hpMirWave" y1={104} y2={920} />
+  </Defs>
 );
 
 /** Build the mirrored envelope points string from newest-first buckets.
@@ -371,19 +492,27 @@ function buildEnvelope(
   return `${top.join(' ')} ${bot.join(' ')}`;
 }
 
-const HubWaveMini: FC = memo(() => {
-  const d = useHubData();
+const HubWaveMini: FC<HubMiniProps> = memo(({ paused = false }) => {
   const scaleRef = useRef(1.05);
-  const pts = buildEnvelope(d.wave, scaleRef, 124, 1924, WAVE_MID, WAVE_FS_PX, WAVE_WINDOW_BUCKETS, 3, WAVE_ZOOM);
+  // The envelope (and its slow autoscale release) is built once per frame in
+  // the picture read; an identical envelope — silence — renders nothing.
+  const { pts } = useHubPicture(
+    paused,
+    (d) => ({ pts: buildEnvelope(d.wave, scaleRef, 124, 1924, WAVE_MID, WAVE_FS_PX, WAVE_WINDOW_BUCKETS, 3, WAVE_ZOOM) }),
+    sameFlat,
+  );
 
-  return (
+  return useMemo(
+    () => (
     <LiveShell>
+      {/* Static plate (with the zero line, BEHIND the trace) in its own Svg: a
+          tick redraws only the trace layer above it. */}
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
-        <Defs>
-          <MirGrad id="hpMirWave" y1={104} y2={920} />
-        </Defs>
         <Rect width={2048} height={1024} fill="#060608" />
         {WAVE_CHROME_UNDER}
+      </Svg>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB} style={StyleSheet.absoluteFill}>
+        {WAVE_DEFS}
         {pts && (
           <>
             <Polygon points={pts} fill="none" stroke="url(#hpMirWave)" strokeWidth={14} opacity={0.25} />
@@ -393,6 +522,8 @@ const HubWaveMini: FC = memo(() => {
       </Svg>
       <Vignette />
     </LiveShell>
+    ),
+    [pts],
   );
 });
 HubWaveMini.displayName = 'HubWaveMini';
@@ -423,22 +554,46 @@ const SPECTRO_CHROME = (
     ))}
   </G>
 );
+const SPECTRO_STATIC = (
+  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
+    <Rect width={2048} height={1024} fill="#060608" />
+    {SPECTRO_CHROME}
+  </Svg>
+);
 
-const HubSpectroMini: FC = memo(() => {
+const HubSpectroMini: FC<HubMiniProps> = memo(({ paused = false }) => {
   // Slice subscription: the store keeps spectroCols reference-stable between
   // column pushes, so this mini re-renders at ~6 Hz, not every 12.5 Hz tick.
-  const spectroCols = useSyncExternalStore(subscribeHubPreview, () => getHubPreview().spectroCols);
-  const paths = useMemo(() => heatPaths(spectroCols, SPECTRO_GEOM), [spectroCols]);
+  // The heat paths are rebuilt only when a column lands (the store keeps the
+  // history reference stable between pushes); a quiet room's all-dark column
+  // leaves the picture — and the render — unchanged.
+  const colsRef = useRef<HubSpectroCol[] | null>(null);
+  const keyRef = useRef('');
+  const { pathsKey } = useHubPicture(
+    paused,
+    (d) => {
+      if (d.spectroCols !== colsRef.current) {
+        colsRef.current = d.spectroCols;
+        keyRef.current = heatPaths(d.spectroCols, SPECTRO_GEOM).join('|');
+      }
+      return { pathsKey: keyRef.current };
+    },
+    sameFlat,
+  );
 
-  return (
+  return useMemo(
+    () => (
     <LiveShell>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
-        <Rect width={2048} height={1024} fill="#060608" />
-        {SPECTRO_CHROME}
-        {paths.map((p, i) => (p ? <Path key={i} d={p} fill={HEAT_12[i]} /> : null))}
+      {SPECTRO_STATIC}
+      {/* Heat cells in their own layer over the static plate; all twelve
+          bucket paths stay mounted (empty buckets draw nothing). */}
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB} style={StyleSheet.absoluteFill}>
+        {pathsKey.split('|').map((p, i) => <Path key={i} d={p || EMPTY_D} fill={HEAT_12[i]} />)}
       </Svg>
       <Vignette />
     </LiveShell>
+    ),
+    [pathsKey],
   );
 });
 HubSpectroMini.displayName = 'HubSpectroMini';
@@ -503,66 +658,72 @@ const MM_CHROME = (
   </G>
 );
 
-const HubMultiMini: FC = memo(() => {
-  const d = useHubData();
+const HubMultiMini: FC<HubMiniProps> = memo(({ paused = false }) => {
+  const colsRef = useRef<HubSpectroCol[] | null>(null);
+  const sgKeyRef = useRef('');
 
-  // Level bar (lively window; fixed-reference gradient maps absolute level).
-  const db = dbOr(d.meter?.aFastDb);
-  const lvlFrac = clamp((db - MM_LEVEL_FLOOR) / MM_LEVEL_SPAN, 0, 1);
-  const barW = lvlFrac * MM_BAR_TRACK_W;
+  const picture = (d: HubPreviewData) => {
+    // Level bar (lively window; fixed-reference gradient maps absolute level).
+    const db = dbOr(d.meter?.aFastDb);
+    const lvlFrac = clamp((db - MM_LEVEL_FLOOR) / MM_LEVEL_SPAN, 0, 1);
+    // A tenth of a canvas unit of bar is ~1/100 px at tile size.
+    const barWq = Math.round(lvlFrac * MM_BAR_TRACK_W * 10) / 10;
 
-  // RTA — group the 30 native bands to 15 bars (max of each pair).
-  const b = d.bands;
-  const bars: ReactNode[] = [];
-  const caps: ReactNode[] = [];
-  if (b) {
-    const src = b.levelsDb;
-    const pk = b.peakHoldDb;
-    const res = b.resolvable;
-    for (let j = 0; j < MM_RTA_BARS; j++) {
-      const a = 2 * j;
-      const c = Math.min(a + 1, src.length - 1);
-      if (res[a] === false && res[c] === false) continue;
-      const lvl = Math.max(dbOr(src[a], -90), dbOr(src[c], -90));
-      const x = MM_RTA_X0 + MM_RTA_PITCH * j;
-      const yTop = mmRtaY(lvl);
-      const h = MM_RTA_BOT_Y - yTop;
-      if (h >= 2) bars.push(<Rect key={j} x={x} y={yTop} width={MM_RTA_W} height={h} rx={3} />);
-      const pkDb = Math.max(dbOr(pk[a], -90), dbOr(pk[c], -90));
-      if (pkDb > -88) {
-        caps.push(
-          <Rect key={j} x={x - 2} y={mmRtaY(pkDb) - 4.5} width={MM_RTA_W + 4} height={9} rx={3} fill="#e6d5a0" opacity={0.9} />,
-        );
+    // RTA — group the 30 native bands to 15 bars (max of each pair). One path
+    // per layer (the bars never overlap), as in the RTA mini.
+    const b = d.bands;
+    let bars = '';
+    let caps = '';
+    if (b) {
+      const src = b.levelsDb;
+      const pk = b.peakHoldDb;
+      const res = b.resolvable;
+      for (let j = 0; j < MM_RTA_BARS; j++) {
+        const a = 2 * j;
+        const c = Math.min(a + 1, src.length - 1);
+        if (res[a] === false && res[c] === false) continue;
+        const lvl = Math.max(dbOr(src[a], -90), dbOr(src[c], -90));
+        const x = MM_RTA_X0 + MM_RTA_PITCH * j;
+        const yTop = mmRtaY(lvl);
+        const h = MM_RTA_BOT_Y - yTop;
+        if (h >= 2) bars += rrectD(x, yTop, MM_RTA_W, h, 3);
+        const pkDb = Math.max(dbOr(pk[a], -90), dbOr(pk[c], -90));
+        if (pkDb > -88) caps += rrectD(x - 2, mmRtaY(pkDb) - 4.5, MM_RTA_W + 4, 9, 3);
       }
     }
-  }
 
-  // Spectrogram — the newest MM_SG_COLS columns of the shared history, painted
-  // into the RIGHT panel only (slicing keeps it from spilling over the RTA).
-  const spectroCols = useSyncExternalStore(subscribeHubPreview, () => getHubPreview().spectroCols);
-  const sgPaths = useMemo(() => heatPaths(spectroCols.slice(-MM_SG_COLS), MM_SG_GEOM), [spectroCols]);
+    // Spectrogram — the newest MM_SG_COLS columns of the shared history,
+    // painted into the RIGHT panel only (slicing keeps it from spilling over
+    // the RTA). Rebuilt only when a column lands (~6 Hz).
+    if (d.spectroCols !== colsRef.current) {
+      colsRef.current = d.spectroCols;
+      sgKeyRef.current = heatPaths(d.spectroCols.slice(-MM_SG_COLS), MM_SG_GEOM).join('|');
+    }
+    return { barWq, bars, caps, sgKey: sgKeyRef.current };
+  };
+  const { barWq, bars, caps, sgKey } = useHubPicture(paused, picture, sameFlat);
 
-  return (
+  return useMemo(
+    () => (
     <LiveShell>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
-        <Defs>
-          <LvlGrad id="hpLvlMm" y1={MM_RTA_TOP_Y} y2={MM_RTA_BOT_Y} />
-          <HGrad id="hpLvlhMm" />
-        </Defs>
-        <Rect width={2048} height={1024} fill="#060608" />
-        {MM_CHROME}
+      {MM_STATIC}
+      {/* Data layer over the static plate: a tick redraws only this. */}
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB} style={StyleSheet.absoluteFill}>
+        {MM_DEFS}
         {/* Top level bar. */}
-        {barW > 4 && (
-          <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={barW} height={MM_BAR_H} rx={Math.min(MM_BAR_RX, barW / 2)} fill="url(#hpLvlhMm)" />
+        {barWq > 4 && (
+          <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={barWq} height={MM_BAR_H} rx={Math.min(MM_BAR_RX, barWq / 2)} fill="url(#hpLvlhMm)" />
         )}
         {/* LEFT — RTA bars + peak caps. */}
-        <G fill="url(#hpLvlMm)">{bars}</G>
-        {caps}
+        <Path d={bars || EMPTY_D} fill="url(#hpLvlMm)" />
+        <Path d={caps || EMPTY_D} fill="#e6d5a0" opacity={0.9} />
         {/* RIGHT — spectrogram cells. */}
-        {sgPaths.map((p, i) => (p ? <Path key={i} d={p} fill={HEAT_12[i]} /> : null))}
+        {sgKey.split('|').map((p, i) => <Path key={i} d={p || EMPTY_D} fill={HEAT_12[i]} />)}
       </Svg>
       <Vignette />
     </LiveShell>
+    ),
+    [barWq, bars, caps, sgKey],
   );
 });
 HubMultiMini.displayName = 'HubMultiMini';
@@ -581,6 +742,21 @@ function HGrad({ id }: { id: string }) {
     </LinearGradient>
   );
 }
+
+/** The MultiMeter's static plate and its data layer's gradients, as module
+ *  elements so a tick never re-renders them (perf pass 2026-10-15). */
+const MM_STATIC = (
+  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
+    <Rect width={2048} height={1024} fill="#060608" />
+    {MM_CHROME}
+  </Svg>
+);
+const MM_DEFS = (
+  <Defs>
+    <LvlGrad id="hpLvlMm" y1={MM_RTA_TOP_Y} y2={MM_RTA_BOT_Y} />
+    <HGrad id="hpLvlhMm" />
+  </Defs>
+);
 
 /* ================================================================== */
 /* 07 — FREQUENCY COUNTER & TUNER (REAL-TIME live pitch)               */
@@ -664,6 +840,14 @@ const TUNER_CHROME = (
   </G>
 );
 
+/** The printed face as a module element in its own Svg (perf pass 2026-10-15). */
+const TUNER_STATIC = (
+  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
+    <Rect width={2048} height={1024} fill="#060608" />
+    {TUNER_CHROME}
+  </Svg>
+);
+
 /** Cents off the nearest equal-tempered note (A4=440), clamped to the ±30¢
  *  face — the tool's scale. null when out of a sane instrument range. */
 function centsOf(freq: number): number | null {
@@ -683,56 +867,102 @@ function tvuNoteName(freq: number): string | null {
   return `${TVU_NAMES[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
-const HubTunerLive: FC = memo(() => {
-  const d = useHubData();
+/** Voiced + confident + above the noise floor → cents on the ±30¢ face; else
+ *  null (the blade fades out). One gate for the blade, the colour and the
+ *  readouts, as before. */
+function tunerVoiced(p: PitchFrame | null): p is PitchFrame {
+  return !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
+}
+function tunerCents(p: PitchFrame | null): number | null {
+  return tunerVoiced(p) ? centsOf(p.freq) : null;
+}
+/** What React draws for the tuner: the in-tune colour and the two corner
+ *  readouts (owner 2026-09-11: pitch lower-left, Hz lower-right; silence shows
+ *  a dimmed em-dash). */
+function tunerPicture(d: HubPreviewData): { inTune: boolean; cornerNote: string | null; cornerHz: string | null } {
+  const p = d.pitch;
+  const c = tunerCents(p);
+  const cornerNote = tunerVoiced(p) ? tvuNoteName(p.freq) : null;
+  const cornerHz = tunerVoiced(p) && cornerNote != null ? `${p.freq < 100 ? p.freq.toFixed(1) : Math.round(p.freq)} Hz` : null;
+  return { inTune: c != null && Math.abs(c) < 5, cornerNote, cornerHz };
+}
+
+const HubTunerLive: FC<HubMiniProps> = memo(({ paused = false }) => {
   const [w, onLayout] = useMeasuredWidth();
-  const [inTune, setInTune] = useState(false);
   const cents = useRef(new Animated.Value(0)).current;
   const alive = useRef(new Animated.Value(0)).current;
   const lastTickRef = useRef(-1);
+  // The last targets handed to the native driver (perf pass 2026-10-15): a
+  // timing is started only when its target MOVES. Restarting an identical
+  // fade 12.5×/s (the blade's `alive`, in silence, every tick) cost a bridge
+  // round-trip and a native animation each time and drew nothing new.
+  const centsTargetRef = useRef<number | null>(null);
+  const aliveTargetRef = useRef(0);
 
   // Chase the live cents each tick (honesty gate matches the Frequency
   // Counter tool: voiced + confident + above the noise floor). No stable
   // pitch → the blade FADES OUT (owner ruling 2026-09-10: hidden, never a
   // parked ghost that could read as in-tune).
-  if (lastTickRef.current !== d.tick) {
-    lastTickRef.current = d.tick;
-    const p = d.pitch;
-    const voiced = !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
-    const c = voiced ? centsOf(p!.freq) : null;
-    const nowInTune = c != null && Math.abs(c) < 5;
-    if (nowInTune !== inTune) setInTune(nowInTune);
-    if (c != null) {
-      Animated.timing(cents, {
-        toValue: c,
-        duration: HUB_TICK_MS + 50,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: NATIVE_DRIVER,
-      }).start();
-    }
-    Animated.timing(alive, {
-      toValue: c != null ? 1 : 0,
-      duration: 200,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: NATIVE_DRIVER,
-    }).start();
-  }
+  //
+  // The blade is driven STRAIGHT FROM THE STORE, outside React (perf pass
+  // 2026-10-15): the native driver moves it, so moving it never needed a
+  // render. React re-renders this tile only when the words or the in-tune
+  // colour change (the picture below).
+  useEffect(() => {
+    if (paused) return undefined;
+    const drive = () => {
+      const d = getHubPreview();
+      if (lastTickRef.current === d.tick) return;
+      lastTickRef.current = d.tick;
+      const c = tunerCents(d.pitch);
+      // 0.05 ¢ is a thousandth of a pixel of blade travel at tile size.
+      if (c != null && (centsTargetRef.current == null || Math.abs(c - centsTargetRef.current) >= 0.05)) {
+        centsTargetRef.current = c;
+        Animated.timing(cents, {
+          toValue: c,
+          duration: HUB_TICK_MS + 50,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: NATIVE_DRIVER,
+        }).start();
+      }
+      const aliveTo = c != null ? 1 : 0;
+      if (aliveTo !== aliveTargetRef.current) {
+        aliveTargetRef.current = aliveTo;
+        Animated.timing(alive, {
+          toValue: aliveTo,
+          duration: 200,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: NATIVE_DRIVER,
+        }).start();
+      }
+    };
+    drive();
+    return subscribeHubPreview(drive);
+  }, [paused, cents, alive]);
+  const { inTune, cornerNote, cornerHz } = useHubPicture(paused, tunerPicture, sameFlat);
 
   // RN overlays are placed in CANVAS units mapped into the display window
   // (STRIP_WINDOW): scale by the window width, offset by its origin.
   const s = w / STRIP_WINDOW.w;
   const ox = STRIP_WINDOW.x;
   const oy = STRIP_WINDOW.y;
-  const bladeX = cents.interpolate({
-    inputRange: [-TUNER_MAX_C, TUNER_MAX_C],
-    outputRange: [-TVU_HALF * s, TVU_HALF * s],
-  });
-  // The blade's climb samples the SAME parabola as the printed scale (owner
-  // 2026-09-11: a coarse 3-point ramp visibly left the printed curve mid-scale).
-  const bladeY = cents.interpolate({
-    inputRange: [-30, -20, -10, 0, 10, 20, 30],
-    outputRange: [tvuRise(-30) * s, tvuRise(-20) * s, tvuRise(-10) * s, 0, tvuRise(10) * s, tvuRise(20) * s, tvuRise(30) * s],
-  });
+  // Built once per tile size, NOT per tick: a fresh interpolation every render
+  // attached two new native animated nodes 12.5×/s (perf pass 2026-10-15).
+  const { bladeX, bladeY } = useMemo(
+    () => ({
+      bladeX: cents.interpolate({
+        inputRange: [-TUNER_MAX_C, TUNER_MAX_C],
+        outputRange: [-TVU_HALF * s, TVU_HALF * s],
+      }),
+      // The blade's climb samples the SAME parabola as the printed scale (owner
+      // 2026-09-11: a coarse 3-point ramp visibly left the printed curve mid-scale).
+      bladeY: cents.interpolate({
+        inputRange: [-30, -20, -10, 0, 10, 20, 30],
+        outputRange: [tvuRise(-30) * s, tvuRise(-20) * s, tvuRise(-10) * s, 0, tvuRise(10) * s, tvuRise(20) * s, tvuRise(30) * s],
+      }),
+    }),
+    [cents, s],
+  );
   const needleColor = inTune ? '#2fbf5a' : '#1d1208';
   // Corner readouts (owner 2026-09-11): pitch lower-left, Hz lower-right.
   // Same honesty gate as the blade — silence shows a dimmed em-dash.
@@ -742,18 +972,19 @@ const HubTunerLive: FC = memo(() => {
   // 0.4 opacity when nothing is detected — smaller than the CENTS label beside
   // them and effectively invisible, which is why they read as missing. The tile
   // is ~1/11th the size of the viewBox, so anything meant to be READ here has
-  // to be sized for that, not for the artwork's own scale.
-  const p = d.pitch;
-  const cornerVoiced = !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
-  const cornerNote = cornerVoiced ? tvuNoteName(p!.freq) : null;
-  const cornerHz = cornerVoiced && cornerNote != null ? `${p!.freq < 100 ? p!.freq.toFixed(1) : Math.round(p!.freq)} Hz` : null;
+  // to be sized for that, not for the artwork's own scale. (The text itself
+  // comes from tunerPicture, above.)
 
-  return (
+  // Same picture → same element: the blade moves on the native driver, so a
+  // tick whose readouts and colour are unchanged re-renders nothing here.
+  return useMemo(
+    () => (
     <LiveShell>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
-        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB}>
-          <Rect width={2048} height={1024} fill="#060608" />
-          {TUNER_CHROME}
+        {/* The printed face (gradients, scale, legend text) in its own Svg;
+            only the two corner readouts redraw when the pitch changes. */}
+        {TUNER_STATIC}
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={VB} style={StyleSheet.absoluteFill}>
           <SvgText x={252} y={812} fill={TVU_INK} fontSize={TVU_READOUT_PT} fontWeight="700" textAnchor="start" fontFamily="sans-serif" opacity={cornerNote ? 0.92 : 0.5}>
             {cornerNote ?? '—'}
           </SvgText>
@@ -792,6 +1023,8 @@ const HubTunerLive: FC = memo(() => {
         <Vignette />
       </View>
     </LiveShell>
+    ),
+    [onLayout, cornerNote, cornerHz, s, ox, oy, needleColor, alive, bladeX, bladeY],
   );
 });
 HubTunerLive.displayName = 'HubTunerLive';
@@ -802,7 +1035,7 @@ HubTunerLive.displayName = 'HubTunerLive';
  *  the strip is their resting state. That only works where the strip and the
  *  mini are the same instrument: these four are (the art and the live layer
  *  were drawn together). */
-export const HUB_LIVE_MINIS: Partial<Record<ToolKey, FC>> = {
+export const HUB_LIVE_MINIS: Partial<Record<ToolKey, FC<HubMiniProps>>> = {
   rta: HubRtaMini,
   waveform: HubWaveMini,
   spectrogram: HubSpectroMini,
@@ -827,7 +1060,7 @@ export const HUB_LIVE_MINIS: Partial<Record<ToolKey, FC>> = {
  *  or absent engine shows a tuner reading nothing, never a parked ghost that
  *  could be mistaken for a reading (the owner's 2026-09-10 blade ruling, and
  *  the no-fake-meters rule). */
-export const HUB_SKIN_MINIS: Partial<Record<ToolKey, FC>> = {
+export const HUB_SKIN_MINIS: Partial<Record<ToolKey, FC<HubMiniProps>>> = {
   spl: HubSplSkin,
   hzcounter: HubTunerLive,
 };

@@ -311,7 +311,7 @@ const STRIP_LABEL: Record<ToolKey, string> = {
  *  looks like when the mini is NOT drawing.
  *
  *  Absent/spike/denied engines rest — never a frozen frame (no fake meters, §1.7). */
-function ToolStrip({ tool, live, active, ready, index, micOff = false }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean; index: number; micOff?: boolean }) {
+function ToolStrip({ tool, live, active, visible, ready, index, micOff = false }: { tool: ToolKey; live: boolean; active: boolean; visible: boolean; ready: boolean; index: number; micOff?: boolean }) {
   const Strip = TOOL_STRIP[tool];
   const Sim = HUB_SIM_MINIS[tool];
   const Live = HUB_LIVE_MINIS[tool];
@@ -394,7 +394,9 @@ function ToolStrip({ tool, live, active, ready, index, micOff = false }: { tool:
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: lit }]}>
             {Skin ? (
               <View style={StyleSheet.absoluteFill} accessibilityRole="image" accessibilityLabel={STRIP_LABEL[tool]}>
-                <Skin />
+                {/* Scrolled out of view → paused: off the shared tick, holding
+                    a picture nobody can see (perf pass 2026-10-15). */}
+                <Skin paused={!visible} />
               </View>
             ) : Sim ? (
               <View
@@ -412,7 +414,9 @@ function ToolStrip({ tool, live, active, ready, index, micOff = false }: { tool:
                   accessibilityRole="image"
                   accessibilityLabel={STRIP_LABEL[tool]}
                 />
-                {live && Live ? <Live /> : null}
+                {/* Stays MOUNTED while scrolled away (paused), so scrolling
+                    back never replays the power-up fade. */}
+                {live && Live ? <Live paused={!visible} /> : null}
               </>
             )}
           </Animated.View>
@@ -805,6 +809,7 @@ const ToolTile = memo(function ToolTile({
   live,
   micOff = false,
   active,
+  visible,
   ready,
   index,
   tile,
@@ -817,6 +822,9 @@ const ToolTile = memo(function ToolTile({
   /** The mic is refused / unavailable — live tiles say MIC OFF · DEMO. */
   micOff?: boolean;
   active: boolean;
+  /** Inside the scroll viewport (plus margin) — off-screen live/skin minis
+   *  pause their per-tick redraw. */
+  visible: boolean;
   ready: boolean;
   /** Reading-order position — drives the power-on stagger. */
   index: number;
@@ -917,7 +925,7 @@ const ToolTile = memo(function ToolTile({
           </Text>
         </View>
         <View style={styles.stripWrap}>
-          <ToolStrip tool={tool} live={live} active={active} ready={ready} index={index} micOff={micOff} />
+          <ToolStrip tool={tool} live={live} active={active} visible={visible} ready={ready} index={index} micOff={micOff} />
         </View>
         <TileGlass />
         {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
@@ -1160,6 +1168,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                   live={hubPreview.engineLive}
                   micOff={hubPreview.micOff}
                   active={hubPreview.active && tileVisible(i)}
+                  visible={tileVisible(i)}
                   ready={displaysReady}
                   tile={tile}
                   onActivate={openTool}
