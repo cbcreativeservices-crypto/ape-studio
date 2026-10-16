@@ -117,14 +117,31 @@ function trace(x01: number): number {
 }
 
 const N_WAVE = 56;
+/** Peak |trace| over one period — the tone's true peak (≈ 0.86 of the sum
+ *  of the two amplitudes, since the 3rd harmonic's crests fall between the
+ *  fundamental's). Computed, not assumed. */
+const TRACE_PEAK = (() => {
+  let m = 0;
+  for (let i = 0; i < 2000; i++) m = Math.max(m, Math.abs(trace(i / 2000)));
+  return m;
+})();
+/** The waveform card is a DAW overview of the SAME signal: each bar is the
+ *  peak of |envelope × trace| over its column. A steady tone's overview is a
+ *  smooth band that follows the envelope (art grading 2026-10-16: the bars
+ *  rode a pseudo-random |sin(i·1.7)| ripple the signal does not have). */
 const WAVE_BARS: number[] = Array.from({ length: N_WAVE }, (_, i) => {
   const t = i / (N_WAVE - 1);
-  return env(t) * (0.62 + 0.38 * Math.abs(Math.sin(i * 1.7)));
+  return env(t) * TRACE_PEAK; // the scope card's scale (trace × half-height)
 });
 
-/** 15 RTA bands: dominant fundamental (band 3), weaker harmonic (band 8),
- *  sloping noise floor elsewhere. */
-const RTA_MAGS = [0.1, 0.12, 0.3, 0.95, 0.38, 0.16, 0.12, 0.22, 0.45, 0.2, 0.12, 0.09, 0.07, 0.06, 0.05];
+/** 15 RTA bands of 2/3 octave (20 Hz – 20 kHz): the fundamental in band 3
+ *  and its 3rd harmonic log2(3) = 1.58 octaves = 2.4 bands higher — mostly in
+ *  band 5, spilling into band 6 (art grading 2026-10-16: it sat five bands,
+ *  ~3.3 octaves, up). Heights are linear amplitude: the harmonic is 0.30/0.62
+ *  of the fundamental (−6.3 dB), exactly as in trace(); sloping floor elsewhere. */
+const RTA_MAGS = [0.1, 0.12, 0.3, 0.95, 0.3, 0.42, 0.2, 0.12, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.05];
+/** Band-centre position (0..1 across the axis) of RTA band i. */
+const rtaFrac = (i: number) => (i + 0.5) / RTA_MAGS.length;
 
 // Level-bar ramp helpers now live in features/tools/levelColor (rampColors /
 // rampColorsSymmetric) so every visualizer shares the one standard.
@@ -155,9 +172,13 @@ const gaussian = (x: number, mu: number, sig: number) => Math.exp(-((x - mu) * (
 function spectroMag(t: number, fy: number): number {
   const e = env(t);
   let m = 0.03; // faint floor
-  m += 0.95 * e * gaussian(fy, 0.16, 0.045); // fundamental (low)
-  m += 0.5 * e * gaussian(fy, 0.5, 0.055); // 3rd harmonic
-  m += 0.22 * e * gaussian(fy, 0.78, 0.05); // 5th harmonic (faint)
+  // The SAME log-frequency axis and the SAME strengths as the RTA card: at
+  // the sustain level (e = 0.72) each band paints the colour of its RTA bar
+  // (art grading 2026-10-16: the harmonic sat at mid-height and painted as
+  // hot as the fundamental). No 5th harmonic — trace() has none.
+  const k = e / 0.72;
+  m += 0.95 * k * gaussian(fy, rtaFrac(3), 0.03); // fundamental (band 3)
+  m += 0.44 * k * gaussian(fy, rtaFrac(3) + 1.585 / 10, 0.03); // 3rd harmonic, +1.58 oct
   m += 0.78 * gaussian(t, 0.7, 0.022) * (0.6 + 0.4 * fy); // broadband transient
   return m > 1 ? 1 : m;
 }
@@ -187,8 +208,10 @@ function buildSpectroImage() {
 const METER_SEGS = 12;
 // PEAK reads higher and hotter than RMS (the average) for the SAME signal — the
 // crest factor made visible (owner 2026-08-12). Illustrative dBFS values.
-const PEAK_LEVEL = 0.86; // ≈ −3 dBFS
-const RMS_LEVEL = 0.56; // ≈ −14 dBFS
+// Positions on the meter's linear-in-dB scale (0 at the top, −48 at the base).
+const METER_RANGE_DB = 48;
+const PEAK_LEVEL = 1 - 3 / METER_RANGE_DB; // −3 dBFS
+const RMS_LEVEL = 1 - 14 / METER_RANGE_DB; // −14 dBFS
 const SPL_DB = 78;
 const SPL_MIN = 40;
 const SPL_MAX = 100;
@@ -333,10 +356,13 @@ function LevelMeterCard() {
         <AmplitudeArrow w={14} h={72} dir="up" />
       </View>
       <View style={styles.meterTicks}>
+        {/* Equal 12 dB steps for equal spacing (art grading 2026-10-16: the
+            last step was 16 dB on the same spacing). 48 dB over 12 segments. */}
         <Text style={styles.tickText}>0</Text>
         <Text style={styles.tickText}>−12</Text>
         <Text style={styles.tickText}>−24</Text>
-        <Text style={styles.tickText}>−40</Text>
+        <Text style={styles.tickText}>−36</Text>
+        <Text style={styles.tickText}>−48</Text>
       </View>
       <MeterBar level={PEAK_LEVEL} label="PEAK" db="−3" />
       <MeterBar level={RMS_LEVEL} label="RMS" db="−14" />
