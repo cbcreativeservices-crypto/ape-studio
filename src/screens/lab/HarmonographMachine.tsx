@@ -311,14 +311,27 @@ function chev(tip: [number, number], from: [number, number]): string {
     'L' + f(tip[0] - ux * k - px * k * 0.7) + ' ' + f(tip[1] - uy * k - py * k * 0.7)
   );
 }
-const AXIS_A = [pj(26.5, 9, 0), pj(35.8, 9, 0)];
-const AXIS_B = [pj(9, 26.5, 0), pj(9, 35.8, 0)];
 const ARROW_A = [pj(HA[0] - 5.5, HA[1], -WGT), pj(HA[0] + 5.5, HA[1], -WGT)];
 const ARROW_B = [pj(HB[0], HB[1] - 5.5, -WGT), pj(HB[0], HB[1] + 5.5, -WGT)];
-const LBL_A = pj(HA[0], HA[1], -WGT - 6.5);
-const LBL_B = pj(HB[0], HB[1], -WGT - 6.5);
-const LBL_P = pj(HR[0], HR[1], -WGT + 3 - 6.5);
+// The oscillator tags sat under the weights, where the table legs crossed
+// them (art grading 2026-10-16). They now form a colour key in the clear
+// corner under THE DRAWING inset: each tag's swatch is its pendulum's colour
+// (cyan shaft = OSC 1, violet shaft = OSC 2, amber ring = the platform).
+const KEY_X = 262;
+const KEY_Y0 = 166;
+const KEY_DY = 19;
+const KEY_FS = 11;
 const ROTC = pj(HR[0], HR[1], -WGT + 3);
+// The paper platform's shadow on the tabletop straight below it — shows it is
+// carried up on the third pendulum's shaft, not lying on the table.
+const PLAT_SHADOW = [
+  pj(HR[0] - PLATH + 1.2, HR[1] - PLATH + 1.2, 0.05),
+  pj(HR[0] + PLATH + 1.2, HR[1] - PLATH + 1.2, 0.05),
+  pj(HR[0] + PLATH + 1.2, HR[1] + PLATH + 1.2, 0.05),
+  pj(HR[0] - PLATH + 1.2, HR[1] + PLATH + 1.2, 0.05),
+]
+  .map((q) => `${q[0].toFixed(1)},${q[1].toFixed(1)}`)
+  .join(' ');
 
 const APath = Animated.createAnimatedComponent(Path);
 const ALine = Animated.createAnimatedComponent(Line);
@@ -877,6 +890,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             <Ellipse cx={h[0]} cy={h[1]} rx={1.9 * SC} ry={1.9 * SC * SP} fill="none" stroke="#a89468" strokeWidth={0.8} strokeOpacity={0.45} />
           </G>
         ))}
+        <Polygon points={PLAT_SHADOW} fill="#000" opacity={0.38} />
         {/* bearing blocks (knife edges) and the gimbal posts */}
         {BEARINGS.map((b, i) => (
           <G key={`brg${i}`}>
@@ -893,13 +907,26 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         <Line x1={GIMBAL_PINS[2][0]} y1={GIMBAL_PINS[2][1]} x2={GIMBAL_PINS[3][0]} y2={GIMBAL_PINS[3][1]} stroke="#c9ccd4" strokeWidth={1.4} />
         <Line x1={GIMBAL_INNER[0][0]} y1={GIMBAL_INNER[0][1]} x2={GIMBAL_INNER[1][0]} y2={GIMBAL_INNER[1][1]} stroke="#c9ccd4" strokeWidth={1.2} />
         <Line x1={GIMBAL_INNER[2][0]} y1={GIMBAL_INNER[2][1]} x2={GIMBAL_INNER[3][0]} y2={GIMBAL_INNER[3][1]} stroke="#c9ccd4" strokeWidth={1.2} />
+        {/* The platform's post: outlined and lighter than the tabletop so it
+            reads as a shaft standing UP out of the gimbal (it was brown on
+            brown and the paper looked as if it lay on the table). */}
         <ALine
           animatedProps={shaftRAbove}
           x1={R_shaftR_above[0][0]}
           y1={R_shaftR_above[0][1]}
           x2={R_shaftR_above[1][0]}
           y2={R_shaftR_above[1][1]}
-          stroke="#6b4f2c"
+          stroke="#1a130a"
+          strokeWidth={5.2}
+          strokeLinecap="round"
+        />
+        <ALine
+          animatedProps={shaftRAbove}
+          x1={R_shaftR_above[0][0]}
+          y1={R_shaftR_above[0][1]}
+          x2={R_shaftR_above[1][0]}
+          y2={R_shaftR_above[1][1]}
+          stroke="#c09a62"
           strokeWidth={3.4}
           strokeLinecap="round"
         />
@@ -924,42 +951,43 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           strokeLinecap="round"
         />
         {/* ── swing-vector annotations (owner 2026-08-23) ─────────────────
-            Dashed hinge axes on the table show the plane each shaft rocks in;
-            double-headed arrows at the weights show their travel; each
-            pendulum wears its own oscillator setting. The tags carry a dark
-            halo (stroke under the fill) so they read over the legs and bobs
-            they sit beside instead of fighting them (clash sweep 2026-10-10). */}
-        <Line x1={AXIS_A[0][0]} y1={AXIS_A[0][1]} x2={AXIS_A[1][0]} y2={AXIS_A[1][1]} stroke={COL_A} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.5} />
-        <Line x1={AXIS_B[0][0]} y1={AXIS_B[0][1]} x2={AXIS_B[1][0]} y2={AXIS_B[1][1]} stroke={COL_B} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.5} />
+            Double-headed arrows at the weights show their travel; each
+            pendulum's oscillator setting is in the colour key below the inset
+            (2026-10-16: the tags among the legs were crossed by them, and the
+            dashed hinge marks on the tabletop read as unexplained symbols). */}
         <Line x1={ARROW_A[0][0]} y1={ARROW_A[0][1]} x2={ARROW_A[1][0]} y2={ARROW_A[1][1]} stroke={COL_A} strokeWidth={1.4} strokeOpacity={0.85} />
         <Path d={chev(ARROW_A[0], ARROW_A[1])} stroke={COL_A} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
         <Path d={chev(ARROW_A[1], ARROW_A[0])} stroke={COL_A} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
         <Line x1={ARROW_B[0][0]} y1={ARROW_B[0][1]} x2={ARROW_B[1][0]} y2={ARROW_B[1][1]} stroke={COL_B} strokeWidth={1.4} strokeOpacity={0.85} />
         <Path d={chev(ARROW_B[0], ARROW_B[1])} stroke={COL_B} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
         <Path d={chev(ARROW_B[1], ARROW_B[0])} stroke={COL_B} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
-        {hz1Label ? (
-          <>
-            <SvgText x={LBL_A[0]} y={LBL_A[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="none" stroke="#0d0e12" strokeWidth={3.4} strokeLinejoin="round">
-              {hz1Label}
-            </SvgText>
-            <SvgText x={LBL_A[0]} y={LBL_A[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_A}>
-              {hz1Label}
-            </SvgText>
-          </>
-        ) : null}
-        {hz2Label ? (
-          <>
-            <SvgText x={LBL_B[0]} y={LBL_B[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="none" stroke="#0d0e12" strokeWidth={3.4} strokeLinejoin="round">
-              {hz2Label}
-            </SvgText>
-            <SvgText x={LBL_B[0]} y={LBL_B[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_B}>
-              {hz2Label}
-            </SvgText>
-          </>
-        ) : null}
+        {/* The colour key (replaces the tags that sat among the legs). */}
+        {(
+          [
+            [hz1Label, COL_A, 'line'],
+            [hz2Label, COL_B, 'line'],
+            [rotary ? hz3Label : undefined, COL_P, 'ring'],
+          ] as const
+        )
+          .filter((k): k is readonly [string, string, 'line' | 'ring'] => !!k[0])
+          .map(([txt, col, kind], i) => {
+            const y = KEY_Y0 + i * KEY_DY;
+            return (
+              <G key={`key${i}`}>
+                {kind === 'line' ? (
+                  <Line x1={KEY_X} y1={y - 3.6} x2={KEY_X + 12} y2={y - 3.6} stroke={col} strokeWidth={3} strokeLinecap="round" />
+                ) : (
+                  <Ellipse cx={KEY_X + 6} cy={y - 3.6} rx={6} ry={3} fill="none" stroke={col} strokeWidth={1.3} strokeDasharray="3 2" />
+                )}
+                <SvgText x={KEY_X + 18} y={y} fontFamily={fonts.oswaldSemiBold} fontSize={KEY_FS} letterSpacing={0.6} fill={col}>
+                  {txt}
+                </SvgText>
+              </G>
+            );
+          })}
         {rotary ? (
-          // The platform pendulum orbits — a dashed ring at its weight plus
-          // its own oscillator tag (OSC 3 owns the paper's rotation).
+          // The platform pendulum orbits — a dashed ring at its weight (its
+          // oscillator tag is the amber ring in the colour key).
           <>
             <Ellipse cx={ROTC[0]} cy={ROTC[1]} rx={DISC_RX + 5} ry={DISC_RY + 3.2} fill="none" stroke={COL_P} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.6} />
             <Path
@@ -970,16 +998,6 @@ export const HarmonographMachine = memo(function HarmonographMachine({
               strokeOpacity={0.8}
               strokeLinecap="round"
             />
-            {hz3Label ? (
-              <>
-                <SvgText x={LBL_P[0]} y={LBL_P[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="none" stroke="#0d0e12" strokeWidth={3.4} strokeLinejoin="round">
-                  {hz3Label}
-                </SvgText>
-                <SvgText x={LBL_P[0]} y={LBL_P[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_P}>
-                  {hz3Label}
-                </SvgText>
-              </>
-            ) : null}
           </>
         ) : null}
       </Svg>
