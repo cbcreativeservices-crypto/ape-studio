@@ -19,6 +19,7 @@ import {
 import { rigStatusBezel, type RigPicture } from '../AmpRig';
 import { faderParam } from '../AmpRack';
 import { AmpModuleSteps } from '../steps';
+import { SpeakerCabinet } from '../ampSymbols';
 import {
   AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FaultBanner, FigureDock, FormulaCard, HonestyBadge, LearnMore, SectionTitle, SegRow,
 } from '../kit';
@@ -43,8 +44,18 @@ function SignalPathDiagram({ level, clipping, width, height }: { level: number; 
         const isLoad = i === 4;
         return (
           <G key={b.join(' ')}>
-            <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={isLoad ? '#1a2a1e' : '#151518'} stroke={isLoad ? AMP_COLORS.output : colors.steelBorder} strokeWidth={1} />
-            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={colors.textSecondary} />
+            {isLoad ? (
+              // The load is a loudspeaker, drawn (round 3), not a box.
+              <>
+                <SpeakerCabinet cx={x + bw / 2} y={2} h={38} color={AMP_COLORS.output} />
+                <SvgText x={x + bw / 2} y={54} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
+              </>
+            ) : (
+              <>
+                <Rect x={x} y={y} width={bw} height={bh} rx={5} fill="#151518" stroke={colors.steelBorder} strokeWidth={1} />
+                <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={colors.textSecondary} />
+              </>
+            )}
             {i < 4 ? <Path d={`M${x + bw + 1} ${y + bh / 2} l${gap - 2} 0`} stroke={i === 0 ? AMP_COLORS.input : AMP_COLORS.output} strokeWidth={1.5} /> : null}
           </G>
         );

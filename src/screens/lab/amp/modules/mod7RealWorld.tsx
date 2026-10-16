@@ -25,6 +25,7 @@ import {
 import { levelColor } from '../../../../features/tools/levelColor';
 import { faderParam } from '../AmpRack';
 import { AmpModuleSteps } from '../steps';
+import { SpeakerCabinet } from '../ampSymbols';
 import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FormulaCard, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
 
 /** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
@@ -55,8 +56,18 @@ function GainChain({ levels, firstClip, starved, width, height }: { levels: Reco
         const stroke = clip ? AMP_COLORS.fault : starve ? colors.gold : s.key === 'spk' ? AMP_COLORS.output : colors.steelBorder;
         return (
           <G key={s.key}>
-            <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={clip ? '#241012' : '#151518'} stroke={stroke} strokeWidth={clip ? 1.6 : 1} />
-            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={[s.label]} fill={clip ? colors.red : colors.textSecondary} />
+            {s.key === 'spk' ? (
+              // The loudspeaker, drawn (round 3), not a box.
+              <>
+                <SpeakerCabinet cx={x + bw / 2} y={2} h={38} color={AMP_COLORS.output} />
+                <SvgText x={x + bw / 2} y={54} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SPEAKER</SvgText>
+              </>
+            ) : (
+              <>
+                <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={clip ? '#241012' : '#151518'} stroke={stroke} strokeWidth={clip ? 1.6 : 1} />
+                <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={[s.label]} fill={clip ? colors.red : colors.textSecondary} />
+              </>
+            )}
             {i < 4 ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={clip ? AMP_COLORS.fault : AMP_COLORS.input} strokeWidth={1.5} /> : null}
             {lvl != null ? (
               <>

@@ -10,13 +10,14 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { transformer, transformerIdealPowerOk } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
 import { levelColor } from '../../../../features/tools/levelColor';
 import { faderParam, optionsParam } from '../AmpRack';
 import { AmpModuleSteps } from '../steps';
+import { BjtSymbol, DcSupplySymbol, MosfetSymbol, SpeakerSymbol, TriodeSymbol } from '../ampSymbols';
 import {
   AMP_COLORS, Body, Card, DIAGRAM_FONT, FormulaCard, LearnMore, MisconceptionCard, SectionTitle,
 } from '../kit';
@@ -55,23 +56,41 @@ function DeviceDiagram({ device, control, width, height }: { device: Device; con
   const dx = 100, dw = 160, dy = 32, dh = 74;
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${DEV_W} ${DEV_H}`}>
-      {/* supply → device → load power path */}
-      <Rect x={4} y={54} width={62} height={30} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} />
-      <SvgText x={35} y={73} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SUPPLY</SvgText>
-      <Line x1={66} y1={69} x2={dx} y2={69} stroke={AMP_COLORS.supply} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
-      {/* the device */}
-      <Rect x={dx} y={dy} width={dw} height={dh} rx={8} fill="#151518" stroke={colors.steelBorder} />
-      <SvgText x={dx + dw / 2} y={52} fontSize={DIAGRAM_FONT} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{device === 'generic' ? 'ACTIVE DEVICE' : device.toUpperCase()}</SvgText>
-      <SvgText x={dx + dw / 2} y={72} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{t.in}</SvgText>
-      <SvgText x={dx + dw / 2} y={92} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>→ {t.out}</SvgText>
+      {/* supply → device → load power path (round 3: the real parts, not
+          labelled boxes — a DC supply, the device's own symbol, a speaker) */}
+      <DcSupplySymbol x={6} cy={69} w={58} color={AMP_COLORS.supply} />
+      <SvgText x={35} y={100} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SUPPLY</SvgText>
+      <Line x1={64} y1={69} x2={dx} y2={69} stroke={AMP_COLORS.supply} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
+      {/* the device: its schematic symbol (generic = the idea, drawn as a
+          control valve on the flow) between its IN and OUT terminals */}
+      <Rect x={dx} y={dy} width={dw} height={dh} rx={8} fill="#121216" stroke={colors.steelBorder} strokeOpacity={0.6} />
+      <SvgText x={dx + dw / 2} y={dy + 14} fontSize={DIAGRAM_FONT} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{device === 'generic' ? 'ACTIVE DEVICE' : device.toUpperCase()}</SvgText>
+      <Line x1={dx} y1={69} x2={dx + dw / 2 - 18} y2={69} stroke={AMP_COLORS.supply} strokeWidth={1.4} strokeOpacity={0.7} />
+      <Line x1={dx + dw / 2 + 18} y1={69} x2={dx + dw} y2={69} stroke={AMP_COLORS.output} strokeWidth={1.4} strokeOpacity={0.7} />
+      {device === 'bjt' ? (
+        <G transform={`rotate(-90 ${dx + dw / 2} 69)`}><BjtSymbol cx={dx + dw / 2} cy={69} r={16} color={colors.textSecondary} /></G>
+      ) : device === 'mosfet' ? (
+        <G transform={`rotate(-90 ${dx + dw / 2} 69)`}><MosfetSymbol x={dx + dw / 2 + 4} yD={51} yS={87} color={colors.textSecondary} on={0.3 + 0.7 * i} /></G>
+      ) : device === 'tube' ? (
+        <G transform={`rotate(-90 ${dx + dw / 2} 69)`}><TriodeSymbol cx={dx + dw / 2} cy={69} r={17} color={colors.textSecondary} /></G>
+      ) : (
+        // generic: a valve on the flow — the control sets how far it opens
+        <G>
+          <Path d={`M${dx + dw / 2 - 18} 57 L${dx + dw / 2 + 18} 81 V57 L${dx + dw / 2 - 18} 81 Z`} fill="#18181d" stroke={colors.textSecondary} strokeWidth={1.4} strokeLinejoin="round" />
+          <Line x1={dx + dw / 2} y1={dy + 20} x2={dx + dw / 2} y2={69} stroke={colors.textSecondary} strokeWidth={1.4} />
+        </G>
+      )}
+      {/* terminal names on two rows (IN left, OUT right) so they never meet */}
+      <SvgText x={dx + 6} y={dy + dh - 17} fontSize={DIAGRAM_FONT} fill={colors.textMuted} fontFamily={fonts.barlowMedium}>{`${t.in.split(' (')[0]}`}</SvgText>
+      <SvgText x={dx + dw - 6} y={dy + dh - 5} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>{`→ ${t.out}`}</SvgText>
       {/* control input */}
       <Line x1={180} y1={10} x2={180} y2={dy} stroke={AMP_COLORS.input} strokeWidth={1.6} />
       <Circle cx={180} cy={10} r={4} fill={AMP_COLORS.input} />
       <SvgText x={190} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.input} fontFamily={fonts.oswaldMedium}>{t.control} · {Math.round(control * 100)}%</SvgText>
-      {/* controlled current to load */}
+      {/* controlled current to the load — a loudspeaker */}
       <Line x1={dx + dw} y1={69} x2={294} y2={69} stroke={AMP_COLORS.output} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
-      <Rect x={294} y={54} width={62} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
-      <SvgText x={325} y={73} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
+      <SpeakerSymbol x={300} y={58} color={AMP_COLORS.output} />
+      <SvgText x={318} y={110} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
       {/* current meter (relative) */}
       <SvgText x={4} y={134} fontSize={DIAGRAM_FONT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>CONTROLLED CURRENT · relative</SvgText>
       <Rect x={156} y={125} width={200} height={12} rx={6} fill="#0a0a0c" stroke={colors.hairline} />
@@ -92,7 +111,20 @@ function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number;
     ));
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${XF_W} ${XF_H}`}>
-      <Rect x={150} y={18} width={60} height={104} rx={4} fill="#26262b" stroke={colors.steelBorder} />
+      {/* The core: a laminated steel FRAME (two limbs joined top and bottom
+          round a window) — the windings sit on its limbs, the flux runs
+          round the frame (round 3: it was a plain rounded box). */}
+      <Path d="M150 18 H210 V122 H150 Z M162 32 V108 H198 V32 Z" fill="#2a2b31" fillRule="evenodd" stroke={colors.steelBorder} strokeWidth={1.2} />
+      {Array.from({ length: 25 }, (_, k) => 20 + k * 4.2).map((ly) =>
+        ly < 32 || ly > 108 ? (
+          <Line key={ly} x1={151} y1={ly} x2={209} y2={ly} stroke="#1a1b20" strokeWidth={0.8} />
+        ) : (
+          <G key={ly}>
+            <Line x1={151} y1={ly} x2={161} y2={ly} stroke="#1a1b20" strokeWidth={0.8} />
+            <Line x1={199} y1={ly} x2={209} y2={ly} stroke="#1a1b20" strokeWidth={0.8} />
+          </G>
+        ),
+      )}
       <SvgText x={180} y={74} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>CORE</SvgText>
       {coil(150, turnsP, AMP_COLORS.input, 0)}
       {coil(210, turnsS, AMP_COLORS.output, 1)}
@@ -100,8 +132,10 @@ function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number;
       <SvgText x={262} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SECONDARY · Ns {ns}</SvgText>
       <Path d="M30 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.input} strokeWidth={1.5} />
       <Path d="M250 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.output} strokeWidth={1.5} />
-      <Path d="M165 60 q15 -30 30 0" fill="none" stroke={AMP_COLORS.supply} strokeDasharray="3,2" />
-      <Path d="M165 90 q15 30 30 0" fill="none" stroke={AMP_COLORS.supply} strokeDasharray="3,2" />
+      {/* the flux loop, round the frame through both limbs */}
+      <Rect x={156} y={25} width={48} height={90} rx={6} fill="none" stroke={AMP_COLORS.supply} strokeWidth={1.2} strokeDasharray="3,2" />
+      <Path d="M180 25 l-5 -3 v6 z" fill={AMP_COLORS.supply} />
+      <Path d="M180 115 l5 -3 v6 z" fill={AMP_COLORS.supply} />
       <SvgText x={180} y={133} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.barlowMedium}>changing magnetic field</SvgText>
     </Svg>
   );

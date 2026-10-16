@@ -12,7 +12,7 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { simulateClassD } from '../../../../features/amp/ampModel';
@@ -20,6 +20,7 @@ import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
 import { rigStatusBezel, type RigPicture } from '../AmpRig';
 import { faderParam, optionsParam } from '../AmpRack';
 import { AmpModuleSteps } from '../steps';
+import { GroundSymbol, MosfetSymbol, SpeakerCabinet, SpeakerSymbol } from '../ampSymbols';
 import { AMP_COLORS, Body, BoxLabel, Card, DIAGRAM_FONT, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle } from '../kit';
 
 type ViewMode = 'raw' | 'filter' | 'recovered';
@@ -41,8 +42,18 @@ function SignalPath({ width, height }: { width: number; height: number }) {
         const last = i === 4;
         return (
           <G key={b.join(' ')}>
-            <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={last ? '#1a2a1e' : i === 2 ? '#1f1a0e' : '#151518'} stroke={last ? AMP_COLORS.output : i === 2 ? AMP_COLORS.supply : colors.steelBorder} />
-            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={colors.textSecondary} />
+            {last ? (
+              // The loudspeaker itself, not a box (round 3).
+              <>
+                <SpeakerCabinet cx={x + bw / 2} y={2} h={33} color={AMP_COLORS.output} />
+                <SvgText x={x + bw / 2} y={48} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SPEAKER</SvgText>
+              </>
+            ) : (
+              <>
+                <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={i === 2 ? '#1f1a0e' : '#151518'} stroke={i === 2 ? AMP_COLORS.supply : colors.steelBorder} />
+                <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={colors.textSecondary} />
+              </>
+            )}
             {i < 4 ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={i === 0 ? AMP_COLORS.input : i >= 3 ? AMP_COLORS.output : AMP_COLORS.supply} strokeWidth={1.5} /> : null}
           </G>
         );
@@ -51,46 +62,73 @@ function SignalPath({ width, height }: { width: number; height: number }) {
   );
 }
 
-/** Representative half-bridge switching stage: high side, low side, node, filter, load.
- *  The LEVEL fader must change the PICTURE, not only the duty figure (review
- *  2026-09-30): the two devices fill in proportion to their share of a period
- *  at the peak, and one switching period is drawn on the node as the pulse
- *  itself — its high portion IS the duty. */
+/** Representative half-bridge switching stage as a CLOSED circuit (round 3,
+ *  lab-art grading 2026-10-16: the old drawing was three labelled boxes, the
+ *  node wire started in the gap between them, the filter capacitor had no
+ *  ground and the load no return). Now: +RAIL → high-side MOSFET → the
+ *  switching NODE (a junction) → low-side MOSFET → −RAIL; NODE → L → output
+ *  → C to ground, and the loudspeaker from the output back to ground — the
+ *  supply's centre (0 V) between the split rails, where the current returns.
+ *  The LEVEL fader still changes the PICTURE (review 2026-09-30): each
+ *  device's channel lights with its share of a period at the peak, and one
+ *  switching period is drawn over the node wire — its high portion IS the
+ *  duty. */
 function SwitchingStage({ dutyAtPeak, width, height }: { dutyAtPeak: number; width: number; height: number }) {
   const F = DIAGRAM_FONT;
   const d = Math.max(0, Math.min(1, dutyAtPeak));
-  // One switching period drawn on the node: high for d of it, low for the rest.
-  const px0 = 86, pw = 60, pyHi = 56, pyLo = 70;
+  const ink = colors.textSecondary;
+  const DX = 74; // the device column (drains/sources)
+  const NODE_Y = 75;
+  const GND_Y = 128; // the 0 V return
+  // One switching period drawn above the node wire: high for d of it.
+  const px0 = 92, pw = 52, pyHi = 52, pyLo = 64;
   const pulse = `M${px0} ${pyLo} V${pyHi} H${(px0 + pw * d).toFixed(1)} V${pyLo} H${px0 + pw}`;
+  // Output node and the parts hanging from it.
+  const OUT_X = 214;
+  const SPK_X = 270; // the loudspeaker's terminal column
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>
-      <SvgText x={20} y={16} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>+RAIL</SvgText>
-      <SvgText x={20} y={144} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>−RAIL</SvgText>
-      <Line x1={60} y1={12} x2={60} y2={138} stroke={AMP_COLORS.supply} strokeWidth={1.2} strokeDasharray="3,2" />
-      {/* high-side device — filled in proportion to its on-time at the peak */}
-      <Rect x={38} y={26} width={44} height={32} rx={5} fill="#151518" stroke={AMP_COLORS.pos} />
-      <Rect x={38} y={26} width={44} height={32} rx={5} fill={AMP_COLORS.pos} fillOpacity={0.08 + 0.5 * d} />
-      <BoxLabel x={60} y={46} lines={['HIGH', 'SIDE']} fill={AMP_COLORS.pos} />
-      {/* low-side device — the rest of the period */}
-      <Rect x={38} y={92} width={44} height={32} rx={5} fill="#151518" stroke={AMP_COLORS.neg} strokeDasharray="4,2" />
-      <Rect x={38} y={92} width={44} height={32} rx={5} fill={AMP_COLORS.neg} fillOpacity={0.08 + 0.5 * (1 - d)} />
-      <BoxLabel x={60} y={112} lines={['LOW', 'SIDE']} fill={AMP_COLORS.neg} />
-      {/* switching node, with one period of the pulse drawn on it */}
-      <Line x1={82} y1={75} x2={150} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
+      {/* split supply rails */}
+      <SvgText x={8} y={18} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>+RAIL</SvgText>
+      <Line x1={44} y1={14} x2={DX + 10} y2={14} stroke={AMP_COLORS.supply} strokeWidth={2} />
+      <SvgText x={8} y={144} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>−RAIL</SvgText>
+      <Line x1={44} y1={140} x2={DX + 10} y2={140} stroke={AMP_COLORS.supply} strokeWidth={2} />
+      {/* the two devices in series between the rails */}
+      <MosfetSymbol x={DX} yD={14} yS={NODE_Y} color={AMP_COLORS.pos} on={d} />
+      <MosfetSymbol x={DX} yD={NODE_Y} yS={140} color={AMP_COLORS.neg} on={1 - d} dashed />
+      <SvgText x={DX + 6} y={34} fontSize={F} fill={AMP_COLORS.pos} fontFamily={fonts.oswaldMedium}>HIGH SIDE</SvgText>
+      <SvgText x={DX + 6} y={118} fontSize={F} fill={AMP_COLORS.neg} fontFamily={fonts.oswaldMedium}>LOW SIDE</SvgText>
+      {/* the switching node: a real junction, wire out to the filter */}
+      <Line x1={DX} y1={NODE_Y} x2={150} y2={NODE_Y} stroke={ink} strokeWidth={1.5} />
+      <Circle cx={DX} cy={NODE_Y} r={3} fill={ink} />
+      <SvgText x={DX + 6} y={NODE_Y + 13} fontSize={F} fill={colors.textMuted} fontFamily={fonts.barlowMedium}>node</SvgText>
       <Path d={pulse} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
-      <SvgText x={86} y={92} fontSize={F} fill={colors.textMuted} textAnchor="start" fontFamily={fonts.barlowMedium}>one period at the peak</SvgText>
-      {/* filter: inductor + capacitor */}
-      <Path d="M150 75 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0" fill="none" stroke={colors.textSecondary} strokeWidth={1.6} />
-      <Line x1={198} y1={75} x2={250} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
-      <Line x1={220} y1={75} x2={220} y2={100} stroke={colors.textSecondary} strokeWidth={1.5} />
-      <Line x1={210} y1={100} x2={230} y2={100} stroke={colors.textSecondary} strokeWidth={2} />
-      <Line x1={210} y1={106} x2={230} y2={106} stroke={colors.textSecondary} strokeWidth={2} />
-      <SvgText x={148} y={124} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>L  C  low-pass filter</SvgText>
-      {/* load */}
-      <Rect x={250} y={60} width={70} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
-      <SvgText x={285} y={79} fontSize={F} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
-      <SvgText x={285} y={110} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
-      <SvgText x={285} y={124} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>of each period at the peak</SvgText>
+      <SvgText x={px0 + pw / 2} y={pyHi - 5} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>one period</SvgText>
+      {/* L: the series inductor */}
+      <Path d="M150 75 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0" fill="none" stroke={ink} strokeWidth={1.6} />
+      <SvgText x={174} y={62} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>L</SvgText>
+      <Line x1={198} y1={NODE_Y} x2={SPK_X} y2={NODE_Y} stroke={ink} strokeWidth={1.5} />
+      <Circle cx={OUT_X} cy={NODE_Y} r={2.6} fill={ink} />
+      {/* C: output node → plates → the 0 V return */}
+      <Line x1={OUT_X} y1={NODE_Y} x2={OUT_X} y2={98} stroke={ink} strokeWidth={1.5} />
+      <Line x1={OUT_X - 10} y1={98} x2={OUT_X + 10} y2={98} stroke={ink} strokeWidth={2} />
+      <Line x1={OUT_X - 10} y1={104} x2={OUT_X + 10} y2={104} stroke={ink} strokeWidth={2} />
+      <Line x1={OUT_X} y1={104} x2={OUT_X} y2={GND_Y} stroke={ink} strokeWidth={1.5} />
+      <SvgText x={OUT_X - 14} y={105} fontSize={F} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>C</SvgText>
+      {/* the loudspeaker (the LOAD): output → + terminal; − terminal → 0 V */}
+      <Line x1={SPK_X} y1={NODE_Y} x2={SPK_X} y2={88} stroke={ink} strokeWidth={1.5} />
+      <SpeakerSymbol x={SPK_X} y={88} color={AMP_COLORS.output} />
+      <Line x1={SPK_X} y1={110} x2={SPK_X} y2={GND_Y} stroke={ink} strokeWidth={1.5} />
+      <SvgText x={SPK_X + 26} y={96} fontSize={F} fill={AMP_COLORS.output} fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
+      <SvgText x={SPK_X + 26} y={109} fontSize={F} fill={colors.textMuted} fontFamily={fonts.barlowMedium}>speaker</SvgText>
+      {/* the return: C and the speaker both go back to 0 V, the supply centre */}
+      <Line x1={OUT_X} y1={GND_Y} x2={SPK_X} y2={GND_Y} stroke={ink} strokeWidth={1.5} />
+      <Circle cx={OUT_X} cy={GND_Y} r={2.2} fill={ink} />
+      <GroundSymbol x={(OUT_X + SPK_X) / 2} y={GND_Y} color={ink} />
+      <SvgText x={(OUT_X + SPK_X) / 2 + 12} y={GND_Y + 12} fontSize={F} fill={colors.textMuted} fontFamily={fonts.barlowMedium}>0 V</SvgText>
+      {/* the duty, in words */}
+      <SvgText x={282} y={22} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
+      <SvgText x={282} y={36} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>of each period at the peak</SvgText>
     </Svg>
   );
 }

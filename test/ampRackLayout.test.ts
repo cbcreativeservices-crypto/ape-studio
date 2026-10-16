@@ -155,8 +155,10 @@ describe('review pass — readouts answer to the engine, controls change the pic
   test('module 5: LEVEL changes the switching-stage DRAWING — one period of the pulse on the node, devices filled by their on-time', () => {
     const m5 = strip(read(`${AMP}/modules/mod5ClassD.tsx`));
     assert.match(m5, /<Path d=\{pulse\}/, 'the pulse itself is drawn on the switching node');
-    assert.match(m5, /fillOpacity=\{0\.08 \+ 0\.5 \* d\}/, 'high side fills with its duty');
-    assert.match(m5, /fillOpacity=\{0\.08 \+ 0\.5 \* \(1 - d\)\}/, 'low side fills with the rest of the period');
+    // Round 3 (2026-10-16): the devices are MOSFET symbols now; each one's
+    // channel lights with its share of the period.
+    assert.match(m5, /<MosfetSymbol x=\{DX\} yD=\{14\} yS=\{NODE_Y\} color=\{AMP_COLORS\.pos\} on=\{d\} \/>/, 'high side lights with its duty');
+    assert.match(m5, /<MosfetSymbol x=\{DX\} yD=\{NODE_Y\} yS=\{140\} color=\{AMP_COLORS\.neg\} on=\{1 - d\} dashed \/>/, 'low side lights with the rest of the period');
   });
   test('module 8: the challenge waveform follows the CHAIN — a stage that clips upstream arrives at the amplifier flat-topped', () => {
     const m8 = strip(read(`${AMP}/modules/mod8Apply.tsx`));
