@@ -17,31 +17,33 @@
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from './speakerModel.ts';
 import { bassHead } from './ampModel.ts';
-import { chairRowFacingStage } from '../../../../../../features/lab/audienceChairsModel.ts';
+import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
 import { chairFoots, foot, kitPieceFoots, rectAround, rectOfCircle, wedgeFoot, type PlanFoot } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 
 export type Backline = 'guitar' | 'bass' | 'steel';
 export type BacklineScene = 'stage' | 'studio';
 
-/** Typical positions (mm, plan u/v), ILLUSTRATIVE. */
+/** The stage deck's downstage edge (the audience floor beyond). */
+export const DECK_EDGE_U = 2850;
+/** Typical positions (mm, plan u/v), ILLUSTRATIVE. The front row sits
+ *  FRONT_ROW_GAP_MM clear of the deck's lip (owner 2026-10-15: an audience
+ *  only where one fits — never chairs pressed against the stage). */
 export const BACKLINE_POS = {
   guitar: { player: { u: 950, v: 560 }, pedals: { u: 1380, v: 560 }, di: { u: 560, v: 1050 } },
   bass: { player: { u: 1050, v: 620 }, pedals: { u: 1480, v: 620 }, di: { u: 620, v: 1150 } },
   steel: { player: { u: 950, v: 720 }, pedals: { u: 1300, v: 720 }, di: { u: 600, v: 1250 } },
   drums: { u: -350, v: -1550 },
   otherAmp: { u: -60, v: 1750 },
-  audience: 3300,
+  audience: frontRowAt(DECK_EDGE_U),
 } as const;
 /** The plan boxes. The stage reaches upstage far enough for the drum kit at
  *  its true size (the art pass of 2026-10-10 drew the real kit, ≈ 1.8 m). */
-export const BACKLINE_BOX = { stage: { u0: -1250, u1: 3650, v0: -2450, v1: 2150 }, studio: { u0: -1000, u1: 3100, v0: -2200, v1: 2300 } } as const;
+export const BACKLINE_BOX = { stage: { u0: -1400, u1: 4700, v0: -2600, v1: 2350 }, studio: { u0: -1000, u1: 3100, v0: -2200, v1: 2300 } } as const;
 /** Where the shared kit's origin (its kick's batter head) sits on the stage. */
 export const KIT_AT = { u: -250, v: -1600 } as const;
 /** The kit's own centre (its plan box, kitPlanModel PLAN_BOX.kit). */
 export const KIT_MID = { u: -135, v: 20 } as const;
-/** The stage deck's downstage edge (the audience floor beyond). */
-export const DECK_EDGE_U = BACKLINE_POS.audience - 450;
 /** The PA stacks: on the deck's downstage corners (their sub 700 deep). */
 export const PA_AT = [
   { u: DECK_EDGE_U - 400, v: -1950 },

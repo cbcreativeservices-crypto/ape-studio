@@ -29,7 +29,7 @@ import { WindScene } from './WindArt';
 import { WedgePlan } from '../KitPlan';
 import { PlanPaStack } from '../speakers/BacklinePlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces, wedgeFoot, type PlanRect } from '../planFoot.ts';
 import { MAIN_LEG, PLAN_BOX, SLOTS, STAGE, STANDS, STAND_DESK, STAND_LEG, STAND_LEG_ANGLES, STUDIO_ROOM, mainRect, planHit, toPlan, windChairs, windCue, windFoots, windLayouts, windPlayerRect, type SlotId, type WindPlanConfig } from './windPlanModel.ts';
 
@@ -106,7 +106,7 @@ const planIds = (it: SettingItem): readonly string[] => it.planIds ?? [it.id];
 
 function WindPlan({ w, h, scene, variant, items, wedges, highlight, onTap, accessibilityLabel, cfg }: SettingPlanProps & { cfg: WindPlanConfig }) {
   const textScale = useStageTextScale();
-  const box = scene === 'kit' ? PLAN_BOX.section : PLAN_BOX.wide;
+  const box = scene === 'kit' ? PLAN_BOX.section : scene === 'stage' ? PLAN_BOX.wideStage : PLAN_BOX.wide;
   const xf = useMemo(() => fitXform('top', box, w, h, 4), [box, w, h]);
   const f = furnitureOf();
   const own = cfg.own;
@@ -256,7 +256,7 @@ function WindPlan({ w, h, scene, variant, items, wedges, highlight, onTap, acces
             ))}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+        <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, rigs.flatMap(cueCables))} />
       </View>
     </Pressable>
   );

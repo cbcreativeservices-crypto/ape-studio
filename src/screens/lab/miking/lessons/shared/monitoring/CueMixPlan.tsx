@@ -6,9 +6,10 @@
  *     panel with the channel knobs, the master knob and the small display,
  *     clamped on a round-base stand — its front (the phones jack) toward the
  *     performer;
- *   • the performer's closed-back headphones on the head (or resting on the
- *     seat when the plan draws no figure), plugged into that mixer by its own
- *     coiled cord;
+ *   • the performer's closed-back headphones on the head from above — or,
+ *     where the plan draws no figure, resting on the seat drawn FACE-ON
+ *     (band over two cups) so they read as headphones — plugged into that
+ *     mixer by its own cord;
  *   • each mixer's own feed back to the distribution point at the room edge
  *     (CONTROL ROOM), every feed its own traceable lane (D69).
  *
@@ -17,7 +18,7 @@
  */
 import { useMemo } from 'react';
 import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { CUE_MIXER, cueCups, cueFeeds, cueHub, cuePhones, type CueRig, type CueStation, type PlanPt } from './cueMix.ts';
+import { CUE_MIXER, cueCups, cueFeeds, cueHub, cuePhones, PHONES_FRONT, type CueRig, type CueStation, type PlanPt } from './cueMix.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const INK = '#08080a';
@@ -123,6 +124,59 @@ function PhonesTop({ s }: { s: CueStation }) {
   );
 }
 
+/** Closed-back headphones at rest with no one wearing them, drawn FACE-ON
+ *  (owner 2026-10-15: from above, a lone pair is two pills and a bar that
+ *  nobody reads as headphones): the padded band's arc over the two cups,
+ *  the sliders, each cup's shell with its cushion on the inner face — true
+ *  size (PHONES_FRONT), centred where they rest. */
+function PhonesFront({ at }: { at: PlanPt }) {
+  const g = useMemo(() => {
+    const F = PHONES_FRONT;
+    const band = Skia.Path.Make();
+    band.moveTo(-F.cupU, F.cupTop - 18);
+    band.cubicTo(-F.cupU, F.bandTop - 4, F.cupU, F.bandTop - 4, F.cupU, F.cupTop - 18);
+    const pad = Skia.Path.Make();
+    pad.moveTo(-F.cupU * 0.62, F.bandTop + 26);
+    pad.cubicTo(-F.cupU * 0.4, F.bandTop + 8, F.cupU * 0.4, F.bandTop + 8, F.cupU * 0.62, F.bandTop + 26);
+    const cups = [-1, 1].map((k) => {
+      const cx = k * F.cupU;
+      const shell = rr(cx - F.cupW / 2, F.cupTop, cx + F.cupW / 2, F.cupBot, 22);
+      // the cushion on the inner face (toward the other cup)
+      const cushion = rr(k > 0 ? cx - F.cupW / 2 - 6 : cx + F.cupW / 2 - 14, F.cupTop + 8, k > 0 ? cx - F.cupW / 2 + 14 : cx + F.cupW / 2 + 6, F.cupBot - 8, 9);
+      const slider = rr(cx - 6, F.cupTop - 24, cx + 6, F.cupTop + 4, 4);
+      return { shell, cushion, slider, cx };
+    });
+    return { band, pad, cups, F };
+  }, []);
+  return (
+    <Group transform={[{ translateX: at.u }, { translateY: at.v }]}>
+      <Group transform={[{ translateX: 8 }, { translateY: 10 }]} opacity={0.5}>
+        <Path path={g.band} style="stroke" strokeWidth={g.F.bandW + 6} strokeCap="round" color="#000">
+          <BlurMask blur={8} style="normal" />
+        </Path>
+        {g.cups.map((c, i) => (
+          <Path key={i} path={c.shell} color="#000">
+            <BlurMask blur={8} style="normal" />
+          </Path>
+        ))}
+      </Group>
+      <Path path={g.band} style="stroke" strokeWidth={g.F.bandW + 6} strokeCap="round" color={INK} />
+      <Path path={g.band} style="stroke" strokeWidth={g.F.bandW} strokeCap="round" color="#4a4e57" />
+      <Path path={g.pad} style="stroke" strokeWidth={9} strokeCap="round" color="#1b1c20" />
+      {g.cups.map((c, i) => (
+        <Group key={i}>
+          <Path path={c.slider} color="#9aa0ab" />
+          <Path path={c.cushion} color="#1b1c20" />
+          <Path path={c.shell}>
+            <LinearGradient start={vec(c.cx - g.F.cupW / 2, g.F.cupTop)} end={vec(c.cx + g.F.cupW / 2, g.F.cupBot)} colors={['#5a5e68', '#2a2c32', '#121316']} />
+          </Path>
+          <Path path={c.shell} style="stroke" strokeWidth={3} color="#8a8f9a" />
+        </Group>
+      ))}
+    </Group>
+  );
+}
+
 /** The distribution point at the room edge: a wall box with a jack per feed. */
 function HubTop({ rig }: { rig: CueRig }) {
   const r = cueHub(rig).rect;
@@ -139,8 +193,8 @@ function HubTop({ rig }: { rig: CueRig }) {
 /**
  * The whole headphone mix for one studio plan. Draw it AFTER the figures so
  * the headphones sit on the heads; feeds and stands go under the mixers.
- * `phonesOnSeat`: the plan draws no figure — the headphones rest where the
- * player sits.
+ * A station marked `alone` (no figure drawn) gets its headphones face-on,
+ * resting where the player sits (PhonesFront).
  */
 export function CueMixPlan({ rig }: { rig: CueRig }) {
   const feeds = useMemo(() => cueFeeds(rig).map((c) => polyline(c.pts)), [rig]);
@@ -181,9 +235,7 @@ export function CueMixPlan({ rig }: { rig: CueRig }) {
           <Path path={p} style="stroke" strokeWidth={9} strokeCap="round" color={PHONES_COLOR} />
         </Group>
       ))}
-      {rig.stations.map((s) => (
-        <PhonesTop key={`p${s.id}`} s={s} />
-      ))}
+      {rig.stations.map((s) => (s.alone ? <PhonesFront key={`p${s.id}`} at={s.head} /> : <PhonesTop key={`p${s.id}`} s={s} />))}
     </Group>
   );
 }

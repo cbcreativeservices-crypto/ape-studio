@@ -542,11 +542,11 @@ export const I05D_LESSON: SpLesson = {
     strikeTitle: 'Scrape to sound',
     close: { side: { u0: -380, u1: 260, v0: -1400, v1: -900 }, top: { u0: -380, u1: 260, v0: -320, v1: 320 } },
     plan: {
-      box: { u0: -2600, u1: 2700, v0: -2100, v1: 2100 },
+      box: { u0: -3000, u1: 2700, v0: -2500, v1: 2100 },
       things: [
         { id: 'guiro', kind: 'drums', u: 0, v: 0, scene: 'all' },
         { id: 'perc', kind: 'perc', u: -250, v: 1050, scene: 'all' },
-        { id: 'kit', kind: 'kit', u: -1500, v: -1250, scene: 'all' },
+        { id: 'kit', kind: 'kit', u: -1500, v: -1450, scene: 'all' },
         { id: 'amp', kind: 'amp', u: -1900, v: 950, face: 0, scene: 'all' },
         { id: 'vocal', kind: 'micstand', u: 1100, v: -1350, scene: 'all' },
         ...STAGE_THINGS,

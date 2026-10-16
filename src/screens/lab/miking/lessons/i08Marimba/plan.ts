@@ -9,7 +9,7 @@ export const MARIMBA_PLAN: MalletPlanSpec = {
   things: [
     { id: 'marimba', kind: 'drums', u: 0, v: 0, scene: 'all' },
     { id: 'perc', kind: 'perc', u: -1500, v: -2300, scene: 'all' },
-    { id: 'kit', kind: 'kit', u: -1700, v: 2200, scene: 'all' },
+    { id: 'kit', kind: 'kit', u: -1700, v: 2000, scene: 'all' },
     { id: 'front', kind: 'wedge', u: 1500, v: 0, face: Math.PI, scene: 'stage' },
     { id: 'side', kind: 'sidefill', u: 0, v: -2800, face: Math.PI / 2, scene: 'stage' },
     { id: 'audience', kind: 'audience', u: 2700, v: 0, scene: 'stage' },
@@ -20,7 +20,7 @@ export const MARIMBA_PLAN: MalletPlanSpec = {
     hubAt: 1000,
     stations: [
       { of: 'marimba', at: { u: -1000, v: -560 } },
-      { of: 'kit', at: { u: -2260, v: 2660 } },
+      { of: 'kit', at: { u: -2465, v: 2450 } },
     ],
   },
 };

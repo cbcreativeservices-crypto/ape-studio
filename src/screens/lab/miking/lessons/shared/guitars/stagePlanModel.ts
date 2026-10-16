@@ -21,7 +21,7 @@ import type { ViewBox } from '../../../engine/model/types.ts';
 import { shapeBox } from '../../../engine/geometry/contentFrame.ts';
 import type { GuitarScene } from './guitarModel.ts';
 import { guitarPlayerPose } from './guitarPlayer.ts';
-import { foot, rectAround, rectOfCircle, rectOfPts, unionRect, wedgeFoot, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
+import { foot, kitPieceFootsTurned, rectAround, rectOfCircle, rectOfPts, unionRect, wedgeFoot, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 import type { Wedge } from '../../../engine/model/types.ts';
 
@@ -46,7 +46,7 @@ export const GUITAR_PLANS = {
 
 /** The wide (stage / studio) box and the studio's walls (drawn 60 thick,
  *  centred 200 in from the box). */
-export const GUITAR_WIDE: ViewBox = { u0: -2400, u1: 2600, v0: -2500, v1: 2700 };
+export const GUITAR_WIDE: ViewBox = { u0: -2400, u1: 2600, v0: -2750, v1: 2700 };
 export const WALL = { inset: 200, stroke: 60 } as const;
 export const GUITAR_ROOM: PlanRect = { u0: GUITAR_WIDE.u0 + WALL.inset + WALL.stroke / 2, u1: GUITAR_WIDE.u1 - WALL.inset - WALL.stroke / 2, v0: GUITAR_WIDE.v0 + WALL.inset + WALL.stroke / 2, v1: GUITAR_WIDE.v1 - WALL.inset - WALL.stroke / 2 };
 
@@ -76,6 +76,16 @@ export const KIT_CYMBALS = [
 ] as const;
 /** The drum rim drawn round each head. */
 export const KIT_RIM = 12;
+/** The stage kit is the SHARED five-piece kit at true size with its drummer
+ *  (kitScene KitTop), turned to face the audience (+z, down the glass) —
+ *  expert review 2026-10-15: the old stand-in drew the kick as a round head
+ *  from above and had no throne, stands or drummer. `at` = the kit's
+ *  centre; its origin (the kick's batter head) sits here. */
+export const KIT_TURN = Math.PI / 2;
+export function kitOriginAt(at: XZ): { u: number; v: number } {
+  const B = { u: -135, v: 20 }; // kitPlanModel PLAN_BOX.kit's centre, before the turn
+  return { u: at.x + B.v, v: at.z - B.u };
+}
 
 export const STAGE_AT = {
   kit: { x: -900, z: -1700 },
@@ -204,10 +214,7 @@ export function guitarPlanFoots(sc: GuitarScene, parts: readonly { solid?: unkno
     else if (o.kind === 'di') out.push(foot('di', 'dibox', { u0: o.at.x - SIZES.di.hu, u1: o.at.x + SIZES.di.hu, v0: o.at.z - SIZES.di.hv, v1: o.at.z + SIZES.di.hv }));
     else if (o.kind === 'bassAmp') out.push(foot('bassAmp', 'amp', rectAround({ u: o.at.x, v: o.at.z }, 2 * SIZES.amp.hu, 2 * SIZES.amp.hv)));
     else if (o.kind === 'pa') out.push(foot(o.id, 'pa', paRect(o.at)));
-    else if (o.kind === 'kit') {
-      KIT_DRUMS.forEach((d, i) => out.push(foot(`kit:d${i}`, 'kitPiece', rectOfCircle({ u: o.at.x + d.dx, v: o.at.z + d.dz }, d.r + KIT_RIM), { group: 'kit' })));
-      KIT_CYMBALS.forEach((c, i) => out.push(foot(`kit:c${i}`, 'kitPiece', rectOfCircle({ u: o.at.x + c.dx, v: o.at.z + c.dz }, c.r), { group: 'kit' })));
-    }
+    else if (o.kind === 'kit') out.push(...kitPieceFootsTurned(kitOriginAt(o.at), 1, 'kit'));
   }
   if (scene === 'stage') {
     for (const w of wedges) if (w.glyph !== 'none') out.push(wedgeFoot(w));

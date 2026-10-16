@@ -22,8 +22,12 @@ import { ampBox, LAYOUT } from './ampSpec.ts';
 
 export const CLAV_NEAR: ViewBox = { u0: -500, u1: 2000, v0: -1700, v1: 500 };
 export const CLAV_WIDE: ViewBox = { u0: -1150, u1: 3600, v0: -2000, v1: 2600 };
+/** The stage's wide plan reaches past the deck's edge for the AUDIENCE word. */
+export const CLAV_WIDE_STAGE: ViewBox = { ...CLAV_WIDE, u1: 4400 };
 export const CLAV_ROOM = roomOfBox(CLAV_WIDE);
-export const CLAV_AUDIENCE = { text: 'AUDIENCE →', u: 3550, v: 300, align: 'right' as const };
+/** The stage's downstage edge (dashed) just in front of the PA pair; the
+ *  house beyond it is an off-plan direction (owner 2026-10-15). */
+export const CLAV_AUDIENCE = { text: 'AUDIENCE →', u: 3470, v: 300, align: 'left' as const, lip: { axis: 'u' as const, at: 3410 } };
 
 export const clavAmpBox = (v: VariantId) => ampBox(v === 'cab' ? 'cab' : 'combo');
 
@@ -49,7 +53,9 @@ export const CLAV_SPOTS: PlanSpot[] = [
   { item: 'wedge.band', glyph: 'wedge', x: -600, z: 1100, faces: { x: 0, z: 1 }, scene: 'stage', r: 330, label: { du: 0, dv: -400 } },
   // the other players, on the riser the band's wedge faces
   { item: 'band', glyph: 'band', x: -150, z: 1950, half: { u: 950, v: 550 }, scene: 'stage', r: 450 },
-  { item: 'pa', glyph: 'pa', x: 3150, z: -700, faces: { x: 1, z: 0 }, scene: 'stage', r: 380, label: { du: 0, dv: 450 } },
+  // the PA pair on the deck's downstage corners, facing the audience
+  { item: 'pa', glyph: 'pa', x: 3150, z: -1600, faces: { x: 1, z: 0 }, scene: 'stage', r: 380, label: { du: 0, dv: 450 } },
+  { item: 'pa.2', glyph: 'pa', x: 3150, z: 2200, faces: { x: 1, z: 0 }, scene: 'stage', r: 0, text: 'PA', label: { du: 0, dv: -450 } },
   { item: 'di', glyph: 'di', x: CLAV_DI.u, z: CLAV_DI.v, scene: 'studio', r: 240 },
   { item: 'room', glyph: 'mic', x: 1500, z: 900, faces: { x: -1, z: -0.6 }, scene: 'studio', r: 300, label: { du: 0, dv: 380 } },
 ];

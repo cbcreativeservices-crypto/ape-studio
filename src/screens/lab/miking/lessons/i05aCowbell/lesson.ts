@@ -544,10 +544,10 @@ export const I05A_LESSON: SpLesson = {
     strikeTitle: 'Strike to sound',
     close: { side: { u0: -380, u1: 300, v0: -1300, v1: -760 }, top: { u0: -380, u1: 300, v0: -360, v1: 360 } },
     plan: {
-      box: { u0: -2600, u1: 2700, v0: -2100, v1: 2100 },
+      box: { u0: -2800, u1: 2700, v0: -2100, v1: 2300 },
       things: [
         { id: 'cowbell', kind: 'drums', u: 0, v: 0, scene: 'all' },
-        { id: 'kit', kind: 'kit', u: -1450, v: 1100, scene: 'all' },
+        { id: 'kit', kind: 'kit', u: -1650, v: 1000, scene: 'all' },
         { id: 'perc', kind: 'perc', u: -300, v: -1150, scene: 'all' },
         { id: 'amp', kind: 'amp', u: -2000, v: -1100, face: 0, scene: 'all' },
         { id: 'vocal', kind: 'micstand', u: 1150, v: 1350, scene: 'all' },
@@ -558,7 +558,7 @@ export const I05A_LESSON: SpLesson = {
         hubAt: 1500,
         stations: [
           { of: 'cowbell', at: { u: -400, v: -640 }, via: [{ u: -700, v: -640 }] },
-          { of: 'kit', at: { u: -2010, v: 1560 } },
+          { of: 'kit', at: { u: -2415, v: 1450 } },
           { of: 'vocal', at: { u: 300, v: 1350 } },
         ],
       },

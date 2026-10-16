@@ -29,9 +29,9 @@ import { PlanAmpTop, PlanDiBox, PlanInstrumentEdge, PlanPaStack, PlanPlayerTop }
 import { KitTop } from '../kitScene/KitSceneArt';
 import { WedgePlan } from '../KitPlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
-import { CAB, CHAIR_ROW, DI_CABLE, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
+import { CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -120,7 +120,7 @@ function build() {
   const playerSpace = make();
   playerSpace.addCircle(POS.player.u, POS.player.v, PLAYER_SPACE_R);
   const organSpace = rr(make(), ORGAN_SPACE.u0, ORGAN_SPACE.v0, ORGAN_SPACE.u1, ORGAN_SPACE.v1, 60);
-  const deck = rr(make(), PLAN_BOX.stage.u0, PLAN_BOX.stage.v0, POS.audience - 450, PLAN_BOX.stage.v1, 0);
+  const deck = rr(make(), PLAN_BOX.stage.u0, PLAN_BOX.stage.v0, DECK_EDGE_U, PLAN_BOX.stage.v1, 0);
   return { head, organ, lid, cheeks, manuals, keyLines, blackKeys, presets, pedalNat, pedalSharp, pedalFrame, bench, benchLid, leslie, leslieTop, grain, chairs, room, playerSpace, organSpace, deck };
 }
 function getBuilt(): Built {
@@ -177,7 +177,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             {/* the floor: a stage deck, or the studio room with its walls */}
             {scene === 'stage' ? (
               <Path path={b.deck}>
-                <LinearGradient start={vec(box.u0, 0)} end={vec(POS.audience, 0)} colors={['#1a1714', '#211c17', '#15120f']} />
+                <LinearGradient start={vec(box.u0, 0)} end={vec(DECK_EDGE_U, 0)} colors={['#1a1714', '#211c17', '#15120f']} />
               </Path>
             ) : (
               <>
@@ -295,7 +295,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             </Line>
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots)} />
+        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
       </View>
     </Pressable>
   );

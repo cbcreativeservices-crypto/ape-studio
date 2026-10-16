@@ -31,6 +31,7 @@ import type { VariantId, Vec3, Wedge } from '../../../engine/model/types.ts';
 import { bassClarinetLayout, bassoonLayout, fluteLayout, frameAt, straightReedLayout, type Layout } from './windPosture.ts';
 import { BASSOON, CLARINET, OBOE, PICCOLO, bassClarinetSpec, fluteSpec, radiusAt } from './windSpec.ts';
 import { aboveRotation } from '../../../../../../features/lab/headIconGeometry.ts';
+import { frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
 import { chairFoots, foot, wedgeFoot, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { CUE_MIXER, cueFootprints, type CueRig, type CueStation } from '../monitoring/cueMix.ts';
 
@@ -88,8 +89,10 @@ export const STAGE = {
   /** The deck's downstage edge; one row of audience chairs beyond it. */
   deckEdge: 3350,
   audienceV: 3350,
-  chairRowV: 3800,
-  hall: { u0: -3950, u1: 3200, v0: -2850, v1: 4150 },
+  /** The front row: FRONT_ROW_GAP_MM clear of the deck's lip (owner
+   *  2026-10-15: an audience only where one fits). */
+  chairRowV: frontRowAt(3350),
+  hall: { u0: -3950, u1: 3200, v0: -2850, v1: 5150 },
 } as const;
 /** The studio room's inner wall faces (WindPlan draws the wall 70 thick
  *  outside them). */
@@ -97,6 +100,8 @@ export const STUDIO_ROOM = { u0: -3900, u1: 3150, v0: -3150, v1: 3250 } as const
 export const PLAN_BOX = {
   section: { u0: -3750, u1: 3050, v0: -2750, v1: 1150 },
   wide: { u0: -4000, u1: 3250, v0: -3250, v1: 4200 },
+  /** The stage's wide plan reaches past the front row. */
+  wideStage: { u0: -4000, u1: 3250, v0: -3250, v1: 5200 },
 } as const;
 /** The main pair's stand from above: the tripod's feet 380 from the post
  *  (30 behind the bar), the bar 320 across with a mic at each end. */

@@ -33,7 +33,7 @@ import { CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { AMBER, BRONZE, GREY, LACQUER, legs, make, oval, rect, rrect, seg, type SkPath } from './paths.ts';
 import { BASS_STAND, CHAIR, DECK_EDGE_V, FRONT, ORCH_BOX, orchestraCue, orchestraFoots, orchHitTest, orchItemRect, ownPerformer, panelRects, PERC, PERC_STAND, PERC_STANDS, playerSpaces, ROWS, SNARE_STAND, stageWedgesOf, timpaniShown, WALL_T, type OwnInstrument, type PlanPt } from './orchestraPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueHub, cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueHub, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces } from '../planFoot.ts';
 
 type Scene = SettingPlanProps['scene'];
@@ -515,7 +515,7 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue.flatMap(cueCables))} />
     </View>
   );
 }

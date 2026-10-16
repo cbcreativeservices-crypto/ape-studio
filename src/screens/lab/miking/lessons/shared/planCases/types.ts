@@ -27,4 +27,29 @@ export type PlanCase = {
   performers: { id: string; group?: string }[];
   /** Physically real stacking between different objects, with the reason. */
   allow?: { a: string; b: string; why: string }[];
+  /** STAGE only: how the plan marks the audience (owner 2026-10-15: "if you
+   *  are marking an audience area, there actually should — or could fit —
+   *  one there"). `axis` + `dir`: the way to the audience; `lip`: the deck's
+   *  downstage edge on that axis (beyond the plan's edge for a plan that
+   *  shows only the floor round the player); `kind`: 'seats' (true-size
+   *  chairs, the front row ≥ FRONT_ROW_GAP_MM past the lip) or 'direction'
+   *  (the lip and an off-plan word / arrows beyond it); `marks`: the chairs',
+   *  arrows' or words' plan rects. None in a studio. */
+  audience?: PlanAudience;
+  /** STAGE: the stage deck the plan draws (everything but the audience and
+   *  its marks stands on it — expert review 2026-10-15: the kit's drummer
+   *  and a cymbal stand hung off the deck's back corner in C02/C04/C08). */
+  deck?: PlanRect;
 };
+
+/** A word's or an arrow's plan rect round its anchor (mm). */
+export const markAt = (u: number, v: number, hu = 250, hv = 120): PlanRect => ({ u0: u - hu, u1: u + hu, v0: v - hv, v1: v + hv });
+
+/** A plan that shows only the floor round the player: AUDIENCE · PA → is
+ *  printed at the plan's downstage (+u) edge, top corner (BrassPlan, SaxPlan,
+ *  LowBrassPlan, BowedPlan); the deck's edge lies beyond the plan. */
+export function offPlanAudience(wide: PlanRect): PlanAudience {
+  return { axis: 'u', dir: 1, lip: wide.u1, kind: 'direction', offPlan: true, marks: [{ u0: wide.u1 - 40 - 900, u1: wide.u1 - 40, v0: wide.v0 + 60 - 110, v1: wide.v0 + 60 + 60 }] };
+}
+
+export type PlanAudience = { axis: 'u' | 'v'; dir: 1 | -1; lip: number; kind: 'seats' | 'direction'; marks: PlanRect[]; offPlan?: boolean };

@@ -19,6 +19,12 @@ import { M10_WEDGES, PA } from './geometry.ts';
 
 export type M10Where = 'studio' | 'live';
 
+/** LIVE: how far the plan reaches past the stage's open front for the
+ *  AUDIENCE direction (mm; the house itself is off the plan). */
+export const LIVE_HOUSE = 700;
+/** LIVE: the AUDIENCE mark beyond the stage's downstage edge. */
+export const M10_AUDIENCE_MARK: PlanRect = { u0: ROOM.front + 60, u1: ROOM.front + LIVE_HOUSE - 60, v0: -1700, v1: 1700 };
+
 /** The room's inner wall faces (the plan's top view). */
 export const M10_PLAN_ROOM: PlanRect = { u0: ROOM.back, u1: ROOM.front, v0: ROOM.left, v1: ROOM.right };
 

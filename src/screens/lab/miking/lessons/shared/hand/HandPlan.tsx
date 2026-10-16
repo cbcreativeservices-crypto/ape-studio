@@ -27,7 +27,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import { HeadIconPaths, aboveRotation, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { clearOfFoots, labelPlaces, type PlanRect } from '../planFoot.ts';
-import { cueHub, cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueHub, cueLabels } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { WedgePlan } from '../KitPlan';
 import { PlanAmpTop } from '../speakers/BacklinePlan';
@@ -114,7 +114,10 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
       const own = boxOf(i);
       const places = labelPlaces(own, ps);
       const authored = i.label && !OBJECT_IDS.includes(i.id) ? [{ u: i.label.u, v: i.label.v, align: i.label.align ?? ('center' as const) }] : [];
-      const order = i.id === 'audience' && scene === 'stage' ? [{ ...AUDIENCE_LABEL_AT, align: 'center' as const }] : [...authored, ...places];
+      // THE ROOM is named inside the room beside its wall, never on the wall
+      // line (its box is the wall strip: the places across it sit on it)
+      const inside = (own.v0 + own.v1) / 2 > 0 ? [places[3], places[0]] : [places[0], places[3]];
+      const order = i.id === 'audience' && scene === 'stage' ? [{ ...AUDIENCE_LABEL_AT, align: 'center' as const }] : i.id === 'room' ? inside : [...authored, ...places];
       return { id: i.id, text: labelOf(i.id), u: order[0].u, v: order[0].v, align: order[0].align, alts: order.slice(1), point: i.id === 'audience' ? { u: AUDIENCE_ROW.u, v: AUDIENCE_ROW.aisleV } : mid(own), tone: i.id === highlight ? ('amber' as const) : ('muted' as const) };
     }),
     // A monitor the lesson lists no item for (a side fill) still carries its name.
@@ -174,7 +177,7 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
     </View>
   );
 }

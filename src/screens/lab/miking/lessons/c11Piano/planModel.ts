@@ -47,6 +47,11 @@ export const UP_WALL = { u0: UP.wallX, u1: UP.wallX + 120, v0: -1100, v1: 1100 }
 export function pianoBoxes(v: VariantId): { near: ViewBox; wide: ViewBox } {
   return isGrandPlan(v) ? { near: grandNear(grandOf(v)), wide: grandWide(grandOf(v)) } : { near: UP_NEAR, wide: UP_WIDE };
 }
+/** The stage's wide plan reaches past the deck's edge for the AUDIENCE word. */
+export function pianoWideStage(v: VariantId): ViewBox {
+  const w = pianoBoxes(v).wide;
+  return { ...w, v1: w.v1 + (isGrandPlan(v) ? 450 : 500) };
+}
 
 /** The studio room's inner wall faces. At an upright the wall behind the
  *  piano is the room's own wall. */
@@ -56,7 +61,11 @@ export function pianoRoom(v: VariantId): PlanRect {
 }
 
 export function pianoAudience(v: VariantId) {
-  return isGrandPlan(v) ? { text: 'AUDIENCE ↓ (THE CURVED SIDE)', u: grandOf(v).xTail - 200, v: 2780, align: 'center' as const } : { text: 'AUDIENCE ↓', u: 300, v: 2880, align: 'center' as const };
+  // the stage's downstage edge (dashed) just in front of the PA pair; the
+  // house beyond it is an off-plan direction (owner 2026-10-15)
+  return isGrandPlan(v)
+    ? { text: 'AUDIENCE ↓ (THE CURVED SIDE)', u: grandOf(v).xTail - 600, v: 2900, align: 'center' as const, lip: { axis: 'v' as const, at: 2560 } }
+    : { text: 'AUDIENCE ↓', u: -700, v: 3200, align: 'center' as const, lip: { axis: 'v' as const, at: 2860 } };
 }
 
 /** The singer (a near item, so on every plan): beside the piano, facing the
@@ -76,7 +85,9 @@ export function grandSpots(g: Grand): PlanSpot[] {
     { item: 'fill.side', glyph: 'pa', x: 600, z: 2200, faces: { x: 0, z: -1 }, scene: 'stage', r: 360, label: { du: 620, dv: 0 } },
     { item: 'wedge.vocal', glyph: 'wedge', x: -150, z: 2300, faces: { x: 0, z: -1 }, scene: 'stage', r: 330, label: { du: -640, dv: 0 } },
     { item: 'band', glyph: 'band', x: g.xTail + 1300, z: -850, half: { u: 900, v: 1000 }, scene: 'stage', r: 900 },
+    // the PA pair on the deck's downstage corners, facing the audience
     { item: 'pa', glyph: 'pa', x: g.xTail + 1900, z: 2300, faces: { x: 0, z: 1 }, scene: 'stage', r: 380 },
+    { item: 'pa.2', glyph: 'pa', x: -1300, z: 2300, faces: { x: 0, z: 1 }, scene: 'stage', r: 0, text: 'PA', label: { du: 0, dv: -420 } },
     { item: 'pair', glyph: 'pair', x: g.curve.p.x + 800 * g.curve.n.x, z: g.curve.p.z + 800 * g.curve.n.z, faces: { x: -g.curve.n.x, z: -g.curve.n.z }, scene: 'studio', r: 300 },
     { item: 'room', glyph: 'none', x: g.xTail + 1400, z: -1000, scene: 'studio', r: 500, label: { du: 0, dv: 0 } },
   ];
@@ -94,7 +105,9 @@ export function uprightSpots(): PlanSpot[] {
     { item: 'wedge.vocal', glyph: 'wedge', x: s.u, z: 2500, faces: { x: 0, z: -1 }, scene: 'stage', r: 330, label: { du: 640, dv: 0 } },
     // upstage, on the pianist's side of the wall
     { item: 'band', glyph: 'band', x: -1100, z: -1800, half: { u: 1000, v: 500 }, scene: 'stage', r: 800 },
+    // the PA pair on the deck's downstage corners, facing the audience
     { item: 'pa', glyph: 'pa', x: -2200, z: 2600, faces: { x: 0, z: 1 }, scene: 'stage', r: 380 },
+    { item: 'pa.2', glyph: 'pa', x: 600, z: 2600, faces: { x: 0, z: 1 }, scene: 'stage', r: 0, text: 'PA', label: { du: 0, dv: -420 } },
     { item: 'pair', glyph: 'pair', x: -250, z: -1250, faces: { x: 0, z: 1 }, scene: 'studio', r: 300 },
     { item: 'room', glyph: 'none', x: -1700, z: -300, scene: 'studio', r: 500, label: { du: 0, dv: 0 } },
   ];

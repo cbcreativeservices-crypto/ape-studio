@@ -46,7 +46,19 @@ export type CueStation = {
   facing: number;
   /** Optional corner points the feed passes before it drops to its lane. */
   via?: readonly PlanPt[];
+  /** No figure is drawn at this station (an empty chair, a throne, a bench,
+   *  a vocal mic with no singer): the headphones rest there, centred on
+   *  `head`, and are drawn FACE-ON (owner 2026-10-15: phones seen from above
+   *  without a head do not read as headphones) — the band's arc over the two
+   *  cups, the cord from one cup, true size (PHONES_FRONT). */
+  alone?: boolean;
 };
+
+/** Closed-back headphones seen face-on, resting (mm, about the rest point;
+ *  −v = the band's top): the band's arc over the cups, ≈ 190 across the
+ *  cups' outer faces and ≈ 200 from the band's top to the cups' bottom; each
+ *  cup 52 × 96 (a cushion and its shell, seen edge-on to the face). */
+export const PHONES_FRONT = { cupU: 70, cupW: 52, cupTop: -2, cupBot: 94, bandTop: -106, bandW: 16 } as const;
 
 export type CueRig = {
   /** Unique in the plan when a plan has more than one distribution point
@@ -181,6 +193,19 @@ export function cueFeeds(rig: CueRig): PlanCable[] {
 /** The headphone cable: from the mixer's front edge (the phones jack faces
  *  the performer) to the ear cup on the mixer's side, with a gentle sag. */
 export function cuePhones(s: CueStation): PlanCable {
+  if (s.alone) {
+    // face-on phones at rest: the cord leaves the bottom of the cup nearer
+    // the mixer and runs to the mixer's front edge, hanging in a slight sag
+    const F = PHONES_FRONT;
+    const side = s.at.u < s.head.u ? -1 : 1;
+    const cup = { u: s.head.u + side * F.cupU, v: s.head.v + F.cupBot };
+    const du0 = cup.u - s.at.u;
+    const dv0 = cup.v - s.at.v;
+    const l0 = Math.hypot(du0, dv0) || 1;
+    const jack = { u: s.at.u + (du0 / l0) * (CUE_MIXER.d / 2), v: s.at.v + (dv0 / l0) * (CUE_MIXER.d / 2) };
+    const mid = { u: (jack.u + cup.u) / 2, v: Math.max(jack.v, cup.v) + 50 };
+    return { id: `phones:${s.id}`, kind: 'phones', pts: [jack, mid, cup], from: `cueMixer:${s.id}`, to: `head:${s.id}` };
+  }
   const cup = cueCups(s).find((c, i, all) => Math.hypot(c.u - s.at.u, c.v - s.at.v) <= Math.hypot(all[1 - i].u - s.at.u, all[1 - i].v - s.at.v))!;
   const du = cup.u - s.at.u;
   const dv = cup.v - s.at.v;

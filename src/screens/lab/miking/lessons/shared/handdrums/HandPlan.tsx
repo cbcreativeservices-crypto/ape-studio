@@ -16,17 +16,19 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
-import { BlurMask, Canvas, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { Wedge2WayTop } from '../wedge2Way';
+import { KitTop } from '../kitScene/KitSceneArt';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { VariantId } from '../../../engine/model/types.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels } from '../../../engine/scene/StaticLabels';
 import type { PlanThing } from './family.ts';
 import { INK } from './handDrumArt';
-import { AMP_TOP, KEYS_TOP, KIT_TOP, MICSTAND_TOP, PA_TOP, PERC_TOP, PLAYER_TOP, ROOM_WALL, SIDEFILL_TOP, handPlanLabels, keysBench, micLegAngles, paStacks, planCue, planRoom, shownThings, type ArtPlan, type PlanBox, type PlanCueSpec } from './handPlanModel.ts';
+import { AMP_TOP, KEYS_TOP, kitOrigin, MICSTAND_TOP, PA_TOP, PERC_TOP, PLAYER_TOP, ROOM_WALL, SIDEFILL_TOP, handPlanLabels, keysBench, micLegAngles, paStacks, planCue, planRoom, shownThings, type ArtPlan, type PlanBox, type PlanCueSpec } from './handPlanModel.ts';
 import { clearOfFoots } from '../planFoot.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueCables } from '../monitoring/cueMix.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
@@ -39,7 +41,7 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 
 /** How far a tap may land from a thing's anchor and still name it (mm). */
-const REACH: Record<PlanThing['kind'], number> = { kit: 620, amp: 330, perc: 360, micstand: 260, wedge: 330, sidefill: 360, audience: 500, room: 140, player: 330, drums: 420, keys: 520 };
+const REACH: Record<PlanThing['kind'], number> = { kit: 900, amp: 330, perc: 360, micstand: 260, wedge: 330, sidefill: 360, audience: 500, room: 140, player: 330, drums: 420, keys: 520 };
 
 export function planHit(things: readonly PlanThing[], scene: 'kit' | 'stage' | 'studio', u: number, v: number, tol: number, box: { u0: number; u1: number; v0: number; v1: number }): string | null {
   const shown = things.filter((t) => t.scene === 'all' || t.scene === scene);
@@ -159,14 +161,11 @@ function Thing({ t, Drums, variant, box }: { t: PlanThing; Drums: (p: { view: 't
       );
     }
     case 'kit': {
-      const K = KIT_TOP;
+      // the shared five-piece kit at true size, its drummer on the throne
+      const o = kitOrigin(t);
       return (
-        <Group>
-          {K.drums.map((d) => headDisc(t.u + d.u, t.v + d.v, d.r))}
-          {K.cymbals.map((c) => cymbal(t.u + c.u, t.v + c.v, c.r))}
-          <Circle cx={t.u + K.throne.u} cy={t.v + K.throne.v} r={K.throne.r}>
-            <RadialGradient c={vec(t.u + K.throne.u - 50, t.v + K.throne.v - 50)} r={K.throne.r + 60} colors={['#4a4c55', '#22242a', '#101114']} />
-          </Circle>
+        <Group transform={[{ translateX: o.u }, { translateY: o.v }]}>
+          <KitTop keepOuts={false} />
         </Group>
       );
     }
@@ -234,13 +233,27 @@ function Thing({ t, Drums, variant, box }: { t: PlanThing; Drums: (p: { view: 't
       );
     }
     case 'audience': {
-      const band = make();
-      band.addRect(Skia.XYWHRect(t.u, box.v0 - 2000, 6000, box.v1 - box.v0 + 4000));
+      // The deck's downstage edge (dashed) and the way to the house beyond it
+      // (owner 2026-10-15: the audience is an off-plan DIRECTION here — a
+      // half-metre strip past the lip is no audience floor).
+      const lip = make();
+      lip.moveTo(t.u, box.v0 + 40);
+      lip.lineTo(t.u, box.v1 - 40);
+      const arrows = make();
+      const H = box.v1 - box.v0;
+      for (const v of [box.v0 + H * 0.3, box.v1 - H * 0.3]) {
+        arrows.moveTo(t.u + 90, v);
+        arrows.lineTo(t.u + 300, v);
+        arrows.moveTo(t.u + 264, v - 34);
+        arrows.lineTo(t.u + 300, v);
+        arrows.lineTo(t.u + 264, v + 34);
+      }
       return (
         <Group>
-          <Path path={band}>
-            <LinearGradient start={vec(t.u, 0)} end={vec(t.u + 700, 0)} colors={['rgba(111,168,255,0.0)', 'rgba(111,168,255,0.10)']} />
+          <Path path={lip} style="stroke" strokeWidth={8} color="#5d616c">
+            <DashPathEffect intervals={[40, 26]} />
           </Path>
+          <Path path={arrows} style="stroke" strokeWidth={14} color="#aab0bd" strokeCap="round" strokeJoin="round" />
           {/* The PA stacks on the deck's downstage corners, facing the audience. */}
           {paStacks(t, box).map((p) => cabinet(p.u, p.v, PA_TOP.w, PA_TOP.d, 0))}
         </Group>
@@ -320,7 +333,7 @@ export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, s
             {hl && hl.kind === 'room' ? <Path path={walls.inner} style="stroke" strokeWidth={22} color={AMBER} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(blockers)} />
+        <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(blockers, rig ? cueCables(rig) : [])} />
       </View>
     </Pressable>
   );

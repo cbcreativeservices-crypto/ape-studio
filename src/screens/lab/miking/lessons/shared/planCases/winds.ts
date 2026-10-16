@@ -2,7 +2,7 @@
  *  clarinet, A08b bass clarinet, A09a oboe, A09b bassoon — WindPlan). One
  *  case per lesson × scene × variant whose own drawing changes the plan. */
 import { lessonById } from '../../../data/lessons.ts';
-import { SLOTS, STUDIO_ROOM, windCue, windFoots, windLayouts, type SlotId, type WindPlanConfig } from '../woodwinds/windPlanModel.ts';
+import { SLOTS, STAGE, STUDIO_ROOM, windCue, windFoots, windLayouts, type SlotId, type WindPlanConfig } from '../woodwinds/windPlanModel.ts';
 import { cueCables } from '../monitoring/cueMix.ts';
 import type { Layout } from '../woodwinds/windPosture.ts';
 import { A06_PLAN } from '../../a06Flute/plan.ts';
@@ -28,7 +28,9 @@ export function windsCases(): PlanCase[] {
       const variant = lesson.model.variants.length > 1 ? v : undefined;
       const lay = windLayouts(cfg, v);
       const performers = [...(Object.keys(SLOTS) as SlotId[]).map((s) => ({ id: s, group: s })), { id: 'conductor', group: 'conductor' }];
-      out.push({ lesson: id, scene: 'stage', family: 'winds', variant, foots: windFoots(cfg.own, lay, 'stage', lesson.live.wedges), cables: [], cue: [], performers });
+      const stageFoots = windFoots(cfg.own, lay, 'stage', lesson.live.wedges);
+      const audience = { axis: 'v' as const, dir: 1 as const, lip: STAGE.deckEdge, kind: 'seats' as const, marks: stageFoots.filter((f) => f.kind === 'audienceChair') };
+      out.push({ lesson: id, scene: 'stage', family: 'winds', variant, audience, deck: { u0: STAGE.hall.u0, u1: STAGE.hall.u1, v0: STAGE.hall.v0, v1: STAGE.deckEdge }, foots: stageFoots, cables: [], cue: [], performers });
       const cue = windCue(lay);
       out.push({ lesson: id, scene: 'studio', family: 'winds', variant, room: STUDIO_ROOM, foots: windFoots(cfg.own, lay, 'studio', lesson.live.wedges), cables: cue.flatMap(cueCables), cue, performers });
     }

@@ -37,10 +37,10 @@ import { KIT_FLOOR_Y, yAt } from '../shared/kitPlanModel.ts';
 import { CORNER_L, CORNER_R, ROOM } from './model.ts';
 import { M10_VIEWS, M10_WEDGES, PA } from './geometry.ts';
 import { RoomArt } from './RoomArt';
-import { m10Cue, m10Foots } from './roomPlanModel.ts';
+import { LIVE_HOUSE, M10_AUDIENCE_MARK, m10Cue, m10Foots } from './roomPlanModel.ts';
 import { clearOfFoots, labelPlaces, type PlanRect } from '../shared/planFoot.ts';
 import { CueMixPlan } from '../shared/monitoring/CueMixPlan';
-import { cueLabels } from '../shared/monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../shared/monitoring/cueMix.ts';
 
 const AMBER = '#ffc64d';
 type Where = 'studio' | 'live';
@@ -69,7 +69,8 @@ function marksOf(id: string, view: ViewId): Mark[] {
     case 'monitors':
       return M10_WEDGES.filter((w) => w.glyph !== 'none').map((w) => (side ? { kind: 'rect' as const, u0: w.p.x - 220, u1: w.p.x + 220, v0: KIT_FLOOR_Y - 380, v1: KIT_FLOOR_Y } : { kind: 'circle' as const, u: w.p.x, v: w.p.z, r: 330 }));
     case 'audience':
-      return side ? [] : [{ kind: 'rect', u0: ROOM.front - 400, u1: ROOM.front + 40, v0: -1200, v1: 1200 }];
+      // LIVE: beyond the stage's downstage edge (an off-plan direction)
+      return side ? [] : [{ kind: 'rect', ...M10_AUDIENCE_MARK }];
     default:
       return [];
   }
@@ -84,7 +85,7 @@ const LABEL_AT: Record<string, Partial<Record<ViewId, { u: number; v: number; al
   door: { side: { u: ROOM.back + 200, v: yAt(2300), align: 'left' }, top: { u: ROOM.back + 200, v: ROOM.door.z0 - 160, align: 'left' } },
   pa: { side: { u: PA.x, v: yAt(PA.h1) - 160, align: 'center' }, top: { u: PA.x - 300, v: PA.z + 420, align: 'right' } },
   monitors: { side: { u: 400, v: KIT_FLOOR_Y - 520, align: 'center' }, top: { u: 900, v: -800, align: 'center' } },
-  audience: { top: { u: ROOM.front - 200, v: 1400, align: 'right' } },
+  audience: { top: { u: ROOM.front + 90, v: 2250, align: 'left' } },
 };
 
 function markPath(ms: Mark[]) {
@@ -164,7 +165,9 @@ function markRect(m: Mark): PlanRect {
 
 function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; h: number; view: ViewId; where: Where; items: readonly SettingItem[]; sel: string | null; onTap: (id: string) => void; label: string }) {
   const textScale = useStageTextScale();
-  const box: ViewBox = M10_VIEWS[view];
+  // LIVE: the plan reaches past the stage's open front, where the audience
+  // is named (the house is off the plan).
+  const box: ViewBox = useMemo(() => (where === 'live' ? { ...M10_VIEWS[view], u1: M10_VIEWS[view].u1 + LIVE_HOUSE } : M10_VIEWS[view]), [view, where]);
   const xf = useMemo(() => fitXform(view, box, w, h, 6), [view, box, w, h]);
   const ring = useMemo(() => (sel ? markPath(marksOf(sel, view)) : null), [sel, view]);
   // The plan's objects (top view): the words keep clear of them.
@@ -206,7 +209,7 @@ function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; 
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(top ? foots : [])} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(top ? foots : [], cue ? cueCables(cue) : [])} />
     </View>
   );
 }

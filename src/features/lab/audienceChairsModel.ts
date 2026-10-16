@@ -11,6 +11,16 @@ import { aboveRotation } from './headIconGeometry.ts';
 export const CHAIR_MM = { w: 460, seatD: 430, backD: 60, seatH: 450, backH: 880 } as const;
 /** Centre-to-centre spacing of chairs in a row (a seat plus elbow room). */
 export const CHAIR_PITCH_MM = 520;
+/** Clear floor between a stage's downstage lip and the front row's seat
+ *  edges (owner 2026-10-15: an audience is drawn only where one fits — a
+ *  walkway in front of the stage and the PA's throw over the front rows,
+ *  never chairs pressed against the deck). */
+export const FRONT_ROW_GAP_MM = 1200;
+/** The front row's chair-centre depth for a stage whose downstage lip is at
+ *  `lip` (the chairs face the stage, so their seat front is nearest it). */
+export function frontRowAt(lip: number): number {
+  return lip + FRONT_ROW_GAP_MM + CHAIR_MM.seatD / 2;
+}
 
 /** One row of chairs across v ∈ [v0, v1] at depth u, all facing −u (the stage). */
 export function chairRowFacingStage(u: number, v0: number, v1: number): { x: number; y: number; rotation: number }[] {

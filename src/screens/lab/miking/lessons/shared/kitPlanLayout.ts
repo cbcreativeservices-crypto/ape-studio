@@ -92,7 +92,9 @@ export const KIT_CUE_AT: PlanPt = { u: -900, v: 470 };
  *  inner walls; the box on the wall behind the drummer, level with the
  *  mixer, so its feed runs straight back). */
 export function kitCue(room: PlanRect = KITPLAN_ROOM, head: PlanPt = KIT_THRONE_HEAD): CueRig {
-  return { room, wall: 'u0', hubAt: KIT_CUE_AT.v, stations: [{ id: 'drummer', at: KIT_CUE_AT, head, facing: 0 }] };
+  // no drummer drawn on the kit plan: the phones rest on the throne, face-on
+  const alone = head === KIT_THRONE_HEAD;
+  return { room, wall: 'u0', hubAt: KIT_CUE_AT.v, stations: [{ id: 'drummer', at: KIT_CUE_AT, head, facing: 0, ...(alone ? { alone } : {}) }] };
 }
 
 /** The lesson's drawn stage wedges on the plan (its frame moved by `offset`). */

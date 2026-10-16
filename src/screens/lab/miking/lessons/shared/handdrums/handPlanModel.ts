@@ -20,7 +20,9 @@
  */
 import type { InstrumentModel, VariantId } from '../../../engine/model/types.ts';
 import { bodyEnvelope, shapeBox } from '../../../engine/geometry/contentFrame.ts';
-import { foot, labelPlaces, rectAround, rectOfCircle, unionRect, wedgeFoot, type PlanFoot, type PlanPt, type PlanRect } from '../planFoot.ts';
+import { foot, kitPieceFoots, labelPlaces, rectAround, rectOfCircle, unionRect, wedgeFoot, type PlanFoot, type PlanPt, type PlanRect } from '../planFoot.ts';
+import { PLAN_BOX as KIT_PLAN_BOX } from '../kitPlanModel.ts';
+import { DRUMMER } from '../kitScene/kitSceneModel.ts';
 import { cueFootprints, cueLabels, type CueRig, type CueWall } from '../monitoring/cueMix.ts';
 import type { PlanThing } from './family.ts';
 
@@ -54,6 +56,16 @@ export const PLAYER_TOP = { back: 130, half: 230, arm: { u0: 40, u1: 300, v: 190
 /** The band's drum kit from above (the plan's own drawing): the bass drum,
  *  two rack toms, the floor tom, three cymbals and the throne; the drummer
  *  sits on the throne facing +u, the hi-hat on their left (−v). */
+/** The drum kit on these plans is the SHARED five-piece kit at true size
+ *  with its drummer (kitScene KitTop; expert review 2026-10-15: the old
+ *  stand-in drew the kick as a round head from above — a kick lying on its
+ *  side is a long shell from above — with no stands). A 'kit' thing's (u, v)
+ *  is the kit's centre; its origin (the kick's batter head) sits here: */
+export function kitOrigin(t: { u: number; v: number }): PlanPt {
+  const B = KIT_PLAN_BOX.kit;
+  return { u: t.u - (B.u0 + B.u1) / 2, v: t.v - (B.v0 + B.v1) / 2 };
+}
+/** The retired stand-in kit's numbers (kept for reference by nothing drawn). */
 export const KIT_TOP = {
   drums: [
     { id: 'kick', u: 260, v: 0, r: 280 },
@@ -190,7 +202,10 @@ export function planPerformers(things: readonly PlanThing[], scene: PlanScene, a
     const g = groupOf(t);
     if (t.kind === 'drums' && art?.head) out.push({ id: t.id, group: g, head: { u: t.u + art.head.u, v: t.v + art.head.v }, facing: art.facing });
     else if (t.kind === 'player') out.push({ id: t.id, group: g, head: { u: t.u + PLAYER_TOP.headDu, v: t.v }, facing: 0 });
-    else if (t.kind === 'kit') out.push({ id: t.id, group: g, head: { u: t.u + KIT_TOP.throne.u, v: t.v + KIT_TOP.throne.v }, facing: 0 });
+    else if (t.kind === 'kit') {
+      const o = kitOrigin(t);
+      out.push({ id: t.id, group: g, head: { u: o.u + DRUMMER.headTop.x, v: o.v + DRUMMER.headTop.z }, facing: 0 });
+    }
     else if (t.kind === 'keys') out.push({ id: t.id, group: g, head: keysBench(t), facing: Math.PI / 2 });
     else if (isSingerMic(t)) out.push({ id: t.id, group: g, head: { u: t.u + MICSTAND_TOP.singer.du, v: t.v }, facing: 0 });
   }
@@ -213,11 +228,9 @@ export function thingFoots(t: PlanThing, box: PlanBox, art: ArtPlan | null): Pla
       break;
     }
     case 'kit': {
-      for (const d of KIT_TOP.drums) out.push(foot(`${t.id}:${d.id}`, 'kitPiece', rectOfCircle({ u: t.u + d.u, v: t.v + d.v }, d.r + KIT_TOP.hoop), { group: g }));
-      for (const c of KIT_TOP.cymbals) out.push(foot(`${t.id}:${c.id}`, 'kitPiece', rectOfCircle({ u: t.u + c.u, v: t.v + c.v }, c.r), { group: g }));
-      out.push(foot(`${t.id}:throne`, 'kitPiece', rectOfCircle({ u: t.u + KIT_TOP.throne.u, v: t.v + KIT_TOP.throne.v }, KIT_TOP.throne.r), { group: g }));
-      const D = KIT_TOP.drummer;
-      out.push(foot(`${t.id}:drummer`, 'keepClear', { u0: t.u + D.u0, u1: t.u + D.u1, v0: t.v + D.v0, v1: t.v + D.v1 }, { group: g, zone: true }));
+      // the shared kit: every drum, cymbal, stand foot, the throne and the
+      // seated drummer (one group)
+      out.push(...kitPieceFoots(kitOrigin(t), g).map((f) => ({ ...f, id: `${t.id}:${f.id.slice(g.length + 1)}` })));
       break;
     }
     case 'amp':
@@ -287,7 +300,11 @@ export function planCue(things: readonly PlanThing[], box: PlanBox, art: ArtPlan
     layout: spec.layout,
     stations: spec.stations.flatMap((s) => {
       const p = perf.find((q) => q.id === s.of);
-      return p ? [{ id: s.of, at: s.at, head: p.head, facing: p.facing, via: s.via }] : [];
+      // the keyboard's bench and a vocal mic draw no figure:
+      // the phones rest there, face-on
+      const t = things.find((q) => q.id === s.of);
+      const alone = !!t && (t.kind === 'keys' || isSingerMic(t));
+      return p ? [{ id: s.of, at: s.at, head: p.head, facing: p.facing, via: s.via, ...(alone ? { alone } : {}) }] : [];
     }),
   };
 }

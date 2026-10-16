@@ -735,11 +735,11 @@ export const M04C_LESSON: HandLesson = {
     },
     soundReveal: 'The head moving down pushes the air in the shallow shell out of the open end — and the brass shell and rim ring on their own when the stick finds them.',
     plan: {
-      box: { u0: -2200, u1: 2300, v0: -1600, v1: 1300 },
+      box: { u0: -2600, u1: 2300, v0: -2000, v1: 1600 },
       things: [
         { id: 'drums', kind: 'drums', u: 0, v: 0, scene: 'all' },
         { id: 'player', kind: 'player', u: -500, v: 0, scene: 'all' },
-        { id: 'kit', kind: 'kit', u: -1350, v: -750, scene: 'all' },
+        { id: 'kit', kind: 'kit', u: -1550, v: -750, scene: 'all' },
         { id: 'bass', kind: 'amp', u: -1450, v: 900, face: 0, scene: 'all' },
         { id: 'perc', kind: 'perc', u: -420, v: 700, scene: 'all' },
         { id: 'vox', kind: 'micstand', u: 680, v: -680, scene: 'all' },
@@ -753,7 +753,7 @@ export const M04C_LESSON: HandLesson = {
         hubAt: 1200,
         stations: [
           { of: 'player', at: { u: -500, v: -580 }, via: [{ u: -670, v: -580 }] },
-          { of: 'kit', at: { u: -1910, v: -240 }, via: [{ u: -1910, v: 400 }, { u: -1150, v: 400 }] },
+          { of: 'kit', at: { u: -2315, v: -300 } },
           { of: 'vox', at: { u: 230, v: -1130 }, via: [{ u: 1000, v: -1130 }] },
         ],
       },

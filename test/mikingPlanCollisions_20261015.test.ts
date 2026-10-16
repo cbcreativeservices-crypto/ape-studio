@@ -23,8 +23,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import { allPlanCases, PLAN_FAMILIES, type PlanCase } from '../src/screens/lab/miking/lessons/shared/planCases/index.ts';
-import { overlapArea, rectsOverlap, segmentGap, segmentHitsRect, segmentsCross, type PlanFoot } from '../src/screens/lab/miking/lessons/shared/planFoot.ts';
-import { CUE_LANE, cueMixerRect } from '../src/screens/lab/miking/lessons/shared/monitoring/cueMix.ts';
+import { clearOfFoots, overlapArea, rectsOverlap, segmentGap, segmentHitsRect, segmentsCross, type PlanFoot, type PlanRect } from '../src/screens/lab/miking/lessons/shared/planFoot.ts';
+import { FRONT_ROW_GAP_MM } from '../src/features/lab/audienceChairsModel.ts';
+import { CUE_LANE, cueMixerRect, cuePhones, PHONES_FRONT } from '../src/screens/lab/miking/lessons/shared/monitoring/cueMix.ts';
 
 const ROOT = process.cwd();
 const read = (p: string) => readFileSync(join(ROOT, p), 'utf8');
@@ -159,12 +160,105 @@ describe('words never sit on objects: every plan lays its labels out clear of it
     'src/screens/lab/miking/lessons/shared/bowed/BowedSettingPage.tsx',
   ];
   for (const f of FILES) {
-    it(f, () => assert.match(read(f), /clearOf=\{clearOfFoots\(/));
+    // ... and clear of every cable (expert review 2026-10-15: HEADPHONE MIX
+    // and CONTROL ROOM were printed across the feed lanes)
+    it(f, () => assert.match(read(f), /clearOf=\{clearOfFoots\([^)]*(?:\([^)]*\))?[^)]*, [^}]*cueCables[^}]*\)\}/));
   }
+  it('a word box crossed by a cable is not clear', () => {
+    const clear = clearOfFoots([], [{ id: 'k', kind: 'cueFeed', pts: [{ u: 0, v: 50 }, { u: 1000, v: 50 }] }]);
+    assert.equal(clear(100, 0, 300, 100), false);
+    assert.equal(clear(100, 200, 300, 300), true);
+  });
   it('StaticLabels hands clearOf to the level-of-detail layout', () => {
     const src = read('src/screens/lab/miking/engine/scene/StaticLabels.tsx');
     assert.match(src, /clearOf \? fitLabels\(labels, xf, scale, w, undefined, undefined, \{ clearOf/);
   });
+});
+
+describe('headphones with nobody in them are drawn face-on (owner 2026-10-15)', () => {
+  // From above, a lone pair (no head) is two pills and a bar nobody reads as
+  // headphones: where the plan draws no figure the phones rest face-on —
+  // the band's arc over two cups — and the cord leaves the bottom of a cup.
+  const alone = (c: PlanCase) => c.cue.flatMap((r) => r.stations).filter((s) => s.alone).map((s) => s.id);
+  it('the kit plan (no drummer drawn): on the throne', () => {
+    for (const c of CASES.filter((x) => x.family === 'kitPlan' && x.scene === 'studio')) assert.deepEqual(alone(c), ['drummer'], name(c));
+  });
+  it('the orchestra (empty chairs, an empty podium): every pair', () => {
+    for (const c of CASES.filter((x) => x.family === 'orchestra' && x.scene === 'studio')) assert.equal(alone(c).length, c.cue.flatMap((r) => r.stations).length, name(c));
+  });
+  it('the organ bench (no organist drawn)', () => {
+    for (const c of CASES.filter((x) => x.family === 'spk' && x.scene === 'studio')) assert.deepEqual(alone(c), ['organist'], name(c));
+  });
+  it('a drawn drummer wears them (M10)', () => {
+    for (const c of CASES.filter((x) => x.family === 'm10Room' && x.scene === 'studio')) assert.deepEqual(alone(c), [], name(c));
+  });
+  it('the cord leaves the bottom of the cup nearer the mixer', () => {
+    const s = { id: 'x', at: { u: -600, v: 0 }, head: { u: 0, v: 0 }, facing: 0, alone: true };
+    const k = cuePhones(s);
+    const end = k.pts[k.pts.length - 1];
+    assert.deepEqual(end, { u: -PHONES_FRONT.cupU, v: PHONES_FRONT.cupBot });
+    assert.ok(PHONES_FRONT.cupBot - PHONES_FRONT.bandTop >= 180 && PHONES_FRONT.cupBot - PHONES_FRONT.bandTop <= 230, 'true size: ≈ 200 mm from the band to the cups');
+  });
+});
+
+describe('the audience: marked only where one belongs and fits (owner 2026-10-15)', () => {
+  // "make sure if you are marking an audience area, that there actually
+  // should (or could fit) one there": none in a studio; on a stage the marks
+  // lie beyond the deck's downstage edge — true-size chairs a walkway clear
+  // of it, or the edge and an off-plan direction word / arrows — everything
+  // else stands on the deck, and the PA stands on its downstage corners.
+  for (const c of CASES) {
+    it(name(c), () => {
+      const marked = c.foots.filter((f) => /^audience/i.test(f.kind));
+      if (c.scene === 'studio') {
+        assert.equal(c.audience, undefined, `${name(c)}: an audience in a studio`);
+        assert.deepEqual(marked.map((f) => f.id), [], `${name(c)}: audience marks in a studio`);
+        return;
+      }
+      const A = c.audience;
+      assert.ok(A, `${name(c)}: the stage plan does not say where its audience is`);
+      const lo = (r: PlanRect) => (A.dir > 0 ? (A.axis === 'u' ? r.u0 : r.v0) : -(A.axis === 'u' ? r.u1 : r.v1));
+      const hi = (r: PlanRect) => (A.dir > 0 ? (A.axis === 'u' ? r.u1 : r.v1) : -(A.axis === 'u' ? r.u0 : r.v0));
+      const lip = A.dir * A.lip;
+      assert.ok(A.marks.length > 0, `${name(c)}: no audience mark`);
+      const bad: string[] = [];
+      for (const m of A.marks) {
+        if (A.offPlan) {
+          if (!(hi(m) <= lip + 1 && hi(m) >= lip - 400)) bad.push(`an off-plan audience word not at the plan's downstage edge`);
+        } else if (lo(m) < lip - 1) bad.push(`an audience mark ${Math.round(lip - lo(m))} mm upstage of the deck's edge`);
+      }
+      if (A.kind === 'seats') {
+        const gap = Math.min(...A.marks.map(lo)) - lip;
+        if (gap < FRONT_ROW_GAP_MM - 1) bad.push(`the front row only ${Math.round(gap)} mm past the deck's edge (≥ ${FRONT_ROW_GAP_MM})`);
+      }
+      // everything else stands on the deck (off-plan: inside the plan)
+      const limit = lip;
+      const deck = c.foots.filter((f) => !f.zone && !/^audience/i.test(f.kind));
+      for (const f of deck) if (hi(f) > limit + 1) bad.push(`${f.id} (${f.kind}) ${Math.round(hi(f) - limit)} mm past the deck's edge`);
+      // the PA on the deck's downstage corners
+      const pa = deck.filter((f) => f.kind === 'pa');
+      if (pa.length) {
+        const across = (r: PlanRect) => (A.axis === 'u' ? [r.v0, r.v1] : [r.u0, r.u1]);
+        const rest = deck.filter((f) => f.kind !== 'pa');
+        const a0 = Math.min(...deck.map((f) => across(f)[0]));
+        const a1 = Math.max(...deck.map((f) => across(f)[1]));
+        for (const p of pa) {
+          if (lip - hi(p) > 900) bad.push(`${p.id}: ${Math.round(lip - hi(p))} mm upstage of the deck's edge (a PA stands at the edge)`);
+          const mid = (across(p)[0] + across(p)[1]) / 2;
+          const t = (mid - a0) / Math.max(1, a1 - a0);
+          if (t > 0.25 && t < 0.75) bad.push(`${p.id}: mid-stage, not on a downstage corner`);
+        }
+        void rest;
+        if (pa.length !== 2) bad.push(`${pa.length} PA stacks (a pair, one per corner)`);
+      }
+      // the drawn deck holds everything but the audience
+      if (c.deck) {
+        const d = c.deck;
+        for (const f of deck) if (f.u0 < d.u0 - 1 || f.u1 > d.u1 + 1 || f.v0 < d.v0 - 1 || f.v1 > d.v1 + 1) bad.push(`${f.id} (${f.kind}) hangs off the deck`);
+      }
+      assert.deepEqual(bad, [], `${name(c)}: ${bad.join('; ')}`);
+    });
+  }
 });
 
 describe('a rect overlap is an overlap', () => {

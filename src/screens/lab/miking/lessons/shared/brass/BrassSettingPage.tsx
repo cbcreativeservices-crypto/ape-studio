@@ -39,7 +39,7 @@ import { PROJ, hornGroups } from './BrassArt';
 import type { HornPose } from './brassPosture.ts';
 import { brassCue, brassFoots, brassShown, slideReach, type BrassPlanLayout, type BrassPlanObject } from './brassPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, type PlanRect } from '../planFoot.ts';
 import { besideLabel, cuePoint, ownRect } from './hornPlanFoot.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
@@ -237,7 +237,7 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots)} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots, cues.flatMap(cueCables))} />
     </View>
   );
 }

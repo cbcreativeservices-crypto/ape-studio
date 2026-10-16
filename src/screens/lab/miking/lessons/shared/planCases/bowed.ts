@@ -8,7 +8,7 @@ import { cueCables } from '../monitoring/cueMix.ts';
 import { C09A_PLAN } from '../../c09aViolin/plan.ts';
 import { C09B_PLAN } from '../../c09bViola/plan.ts';
 import { C09C_PLAN } from '../../c09cCello/plan.ts';
-import type { PlanCase } from './types.ts';
+import { offPlanAudience, type PlanCase } from './types.ts';
 
 const PLANS: Record<string, BowedPlanLayout> = { C09a: C09A_PLAN, C09b: C09B_PLAN, C09c: C09C_PLAN, C06a: bassPlan('pluck'), C06b: bassPlan('bow') };
 
@@ -18,7 +18,7 @@ export function bowedCases(): PlanCase[] {
     const lesson = lessonById(id);
     if (!lesson) continue;
     const performers = bowedPerformers(L).map((p) => ({ id: p.id, group: p.group }));
-    out.push({ lesson: id, scene: 'stage', family: 'bowed', foots: bowedFoots(L, 'stage', lesson.live.wedges), cables: [], cue: [], performers });
+    out.push({ lesson: id, scene: 'stage', family: 'bowed', audience: offPlanAudience(L.wide), foots: bowedFoots(L, 'stage', lesson.live.wedges), cables: [], cue: [], performers });
     const cue = bowedCue(L);
     out.push({ lesson: id, scene: 'studio', family: 'bowed', room: bowedRoom(L), foots: bowedFoots(L, 'studio', lesson.live.wedges), cables: cueCables(cue), cue: [cue], performers });
   }

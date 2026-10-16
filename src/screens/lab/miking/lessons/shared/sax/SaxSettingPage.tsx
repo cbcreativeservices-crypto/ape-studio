@@ -38,7 +38,7 @@ import { swingShape } from './saxModel.ts';
 import type { SaxPosture } from './saxPosture.ts';
 import { saxCue, saxFoots, saxShown, type SaxPlanLayout, type SaxPlanObject } from './saxPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, type PlanRect } from '../planFoot.ts';
 import { besideLabel, cuePoint, ownRect } from '../brass/hornPlanFoot.ts';
 
@@ -195,7 +195,7 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots)} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots, cues.flatMap(cueCables))} />
     </View>
   );
 }

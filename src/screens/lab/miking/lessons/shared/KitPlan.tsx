@@ -33,7 +33,7 @@ import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE, planLabelAt, type KitDrumId
 import { AUDIENCE_MARK, KITPLAN_BOX, KITPLAN_ROOM, KITPLAN_RUG, KITPLAN_STAGE, kitCue, kitPlanFoots, kitPlanHit, planItemRect, planWedges } from './kitPlanLayout.ts';
 import { clearOfFoots, labelPlaces, type PlanFoot } from './planFoot.ts';
 import { CueMixPlan } from './monitoring/CueMixPlan';
-import { cueLabels } from './monitoring/cueMix.ts';
+import { cueCables, cueLabels } from './monitoring/cueMix.ts';
 import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from './drums/DrumArt';
 import { KICK_22x18 } from './drums/drumSpec.ts';
 
@@ -381,7 +381,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
     </View>
   );
 }

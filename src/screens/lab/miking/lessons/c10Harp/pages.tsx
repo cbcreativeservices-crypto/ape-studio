@@ -14,7 +14,7 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
 import { makeStagePage } from '../shared/strings/PStagePlan';
-import { HARP_AUDIENCE, HARP_NEAR, HARP_ROOM, HARP_WIDE, harpBox, harpCue, harpOwnFoots, harpPlanFoots, harpSpots } from './planModel.ts';
+import { HARP_AUDIENCE, HARP_NEAR, HARP_ROOM, HARP_WIDE, HARP_WIDE_STAGE, harpBox, harpCue, harpOwnFoots, harpPlanFoots, harpSpots } from './planModel.ts';
 import { HARP_BASE_ART, HarpistPlan, HarpPlan } from './art';
 import { HarpPluckSequence, HarpRadiation } from './soundArt';
 
@@ -108,6 +108,7 @@ const SETTING = makeStagePage({
   },
   near: HARP_NEAR,
   wide: () => HARP_WIDE,
+  wideStage: () => HARP_WIDE_STAGE,
   spots: harpSpots,
   foots: harpPlanFoots,
   cue: harpCue,

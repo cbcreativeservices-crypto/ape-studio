@@ -20,7 +20,7 @@
  */
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout, LESLIE } from './speakerModel.ts';
-import { chairRowFacingStage } from '../../../../../../features/lab/audienceChairsModel.ts';
+import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
 import { chairFoots, foot, kitPieceFoots, rectOfCircle, shift, wedgeFoot, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 
@@ -36,10 +36,10 @@ export const POS = {
   organ: { u: 500, v: 1850 },
   bench: { u: 1050, v: 1850 },
   leslie: { u: -150, v: 2450 },
-  audience: 3300,
+  audience: frontRowAt(2850),
 } as const;
 
-export const PLAN_BOX = { stage: { u0: -1500, u1: 3750, v0: -2700, v1: 3000 }, studio: { u0: -1400, u1: 3300, v0: -2300, v1: 3000 } } as const;
+export const PLAN_BOX = { stage: { u0: -1500, u1: 4750, v0: -2700, v1: 3000 }, studio: { u0: -1400, u1: 3300, v0: -2300, v1: 3000 } } as const;
 
 /** The shared five-piece kit's origin on this stage (its kick's batter head)
  *  and its own centre (kitPlanModel PLAN_BOX.kit): the kit at true size,
@@ -48,7 +48,7 @@ export const KIT_AT = { u: -400, v: -1770 } as const;
 export const KIT_MID = { u: -135, v: 20 } as const;
 
 /** The stage deck's downstage edge (the audience floor beyond). */
-export const DECK_EDGE_U = POS.audience - 450;
+export const DECK_EDGE_U = 2850;
 /** The PA stacks: on the deck's downstage corners (their sub 700 deep). */
 export const PA_AT = [
   { u: DECK_EDGE_U - 400, v: PLAN_BOX.stage.v0 + 330 },
@@ -98,7 +98,7 @@ export function spkCue(): CueRig {
     stations: [
       { id: 'guitarist', at: { u: 1000, v: 830 }, head: POS.player, facing: 0 },
       // no figure on the bench: the phones rest on the seat; the organist faces the console (−u)
-      { id: 'organist', at: { u: 1650, v: 1700 }, head: POS.bench, facing: Math.PI },
+      { id: 'organist', at: { u: 1650, v: 1700 }, head: POS.bench, facing: Math.PI, alone: true },
     ],
   };
 }

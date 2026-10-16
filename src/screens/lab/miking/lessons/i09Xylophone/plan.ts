@@ -9,7 +9,7 @@ export const XYLO_PLAN: MalletPlanSpec = {
   things: [
     { id: 'xylo', kind: 'drums', u: 0, v: 0, scene: 'all' },
     { id: 'perc', kind: 'perc', u: -1300, v: -1900, scene: 'all' },
-    { id: 'kit', kind: 'kit', u: -1500, v: 1800, scene: 'all' },
+    { id: 'kit', kind: 'kit', u: -1400, v: 1500, scene: 'all' },
     { id: 'front', kind: 'wedge', u: 1300, v: 0, face: Math.PI, scene: 'stage' },
     { id: 'side', kind: 'sidefill', u: 0, v: -2200, face: Math.PI / 2, scene: 'stage' },
     { id: 'audience', kind: 'audience', u: 2500, v: 0, scene: 'stage' },
@@ -20,7 +20,7 @@ export const XYLO_PLAN: MalletPlanSpec = {
     hubAt: 800,
     stations: [
       { of: 'xylo', at: { u: -950, v: -560 } },
-      { of: 'kit', at: { u: -2060, v: 2260 } },
+      { of: 'kit', at: { u: -2165, v: 1950 } },
     ],
   },
 };

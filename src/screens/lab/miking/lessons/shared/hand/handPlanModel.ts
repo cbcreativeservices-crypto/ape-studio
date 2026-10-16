@@ -21,7 +21,7 @@
  * performer (and a dancer's whole route).
  */
 import type { VariantId, ViewBox, Wedge } from '../../../engine/model/types.ts';
-import { chairRowFacingStage } from '../../../../../../features/lab/audienceChairsModel.ts';
+import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
 import { chairFoots, foot, rectAround, unionRect, wedgeFoot, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig, type CueWall } from '../monitoring/cueMix.ts';
 import { AMP as A10_AMP, H0 as A10_H0 } from '../../a10Harmonica/model.ts';
@@ -35,7 +35,7 @@ export type HandScene = 'stage' | 'studio';
 
 /** The plan boxes (mm). The stage reaches past the front row's chairs and
  *  the side fills' far edges; the studio room holds the whole performer. */
-export const HAND_STAGE_BOX: ViewBox = { u0: -1300, u1: 3050, v0: -1800, v1: 2000 };
+export const HAND_STAGE_BOX: ViewBox = { u0: -1300, u1: 4250, v0: -1800, v1: 2000 };
 /** The stage deck's downstage edge (the audience floor beyond). */
 export const DECK_EDGE_U = 2400;
 /** A head icon in this plan, crown→chin, mm (a real head ≈ 230 mm). */
@@ -55,7 +55,7 @@ export const PA_RECTS: readonly PlanRect[] = [
   { u0: DECK_EDGE_U - 440, u1: DECK_EDGE_U - 40, v0: 1520, v1: 1920 },
 ];
 /** The front row (true-size chairs facing the stage) and its centre aisle. */
-export const AUDIENCE_ROW = { u: 2680, v0: -1500, v1: 1700, aisleV: 100, aisle: 300 } as const;
+export const AUDIENCE_ROW = { u: frontRowAt(DECK_EDGE_U), v0: -1500, v1: 1700, aisleV: 100, aisle: 300 } as const;
 export const outsideAisle = (c: { y: number }) => Math.abs(c.y - AUDIENCE_ROW.aisleV) >= AUDIENCE_ROW.aisle;
 export function handChairs(): { x: number; y: number; rotation: number }[] {
   return chairRowFacingStage(AUDIENCE_ROW.u, AUDIENCE_ROW.v0, AUDIENCE_ROW.v1).filter(outsideAisle);

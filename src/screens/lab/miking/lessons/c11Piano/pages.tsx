@@ -17,7 +17,7 @@ import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStri
 import { makeStagePage } from '../shared/strings/PStagePlan';
 import { GrandPlan, Pianist, UprightPlan } from '../shared/piano/PianoArt';
 import { GB, GS, SETUP, UP, type PianoVariant } from './model.ts';
-import { pianoAudience, pianoBoxes, pianoCue, pianoOwnFoots, pianoPlanFoots, pianoRoom, pianoSpots } from './planModel.ts';
+import { pianoAudience, pianoBoxes, pianoWideStage, pianoCue, pianoOwnFoots, pianoPlanFoots, pianoRoom, pianoSpots } from './planModel.ts';
 import { unionRect } from '../shared/planFoot.ts';
 import { PIANIST_AT } from './geometry.ts';
 import { PIANO_BASE_ART } from './art';
@@ -147,6 +147,7 @@ const SETTING = makeStagePage({
   },
   near: (v) => pianoBoxes(v).near,
   wide: (v) => pianoBoxes(v).wide,
+  wideStage: pianoWideStage,
   spots: pianoSpots,
   foots: pianoPlanFoots,
   cue: pianoCue,

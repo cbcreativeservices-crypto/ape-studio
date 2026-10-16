@@ -21,7 +21,7 @@ import { VIBE_FAM } from '../../i07Vibraphone/model.ts';
 import { MARIMBA_FAM } from '../../i08Marimba/model.ts';
 import { XYLO_FAM } from '../../i09Xylophone/model.ts';
 import { GLOCK_FAM } from '../../i10Glockenspiel/model.ts';
-import type { PlanCase } from './types.ts';
+import { markAt, type PlanCase } from './types.ts';
 
 const HAND = ['M04a', 'M04b', 'M04c', 'M05'];
 const SMALL = ['I02', 'I03a', 'I03b', 'I03c', 'I04', 'I05a', 'I05b', 'I05c', 'I05d'];
@@ -39,7 +39,16 @@ function cases(lesson: Lesson, plan: { box: PlanBox; things: readonly PlanThing[
     for (const scene of ['stage', 'studio'] as const) {
       const a = art(variant);
       const rig = planCue(plan.things, plan.box, a, plan.cue, scene);
+      // the deck's downstage edge (dashed) at the audience thing; its arrows
+      // and words just beyond it (HandPlan)
+      const aud = plan.things.find((t) => t.kind === 'audience');
+      const H = plan.box.v1 - plan.box.v0;
+      const audience =
+        scene === 'stage' && aud
+          ? { axis: 'u' as const, dir: 1 as const, lip: aud.u, kind: 'direction' as const, marks: [markAt(aud.u + 260, aud.v, 160, 90), ...[plan.box.v0 + H * 0.3, plan.box.v1 - H * 0.3].map((v) => ({ u0: aud.u + 90, u1: aud.u + 300, v0: v - 34, v1: v + 34 }))] }
+          : undefined;
       out.push({
+        audience,
         lesson: lesson.id,
         scene,
         family: 'handDrums',

@@ -22,7 +22,7 @@ export const VIBE_PLAN: MalletPlanSpec = {
     hubAt: 600,
     stations: [
       { of: 'vibe', at: { u: -850, v: -560 }, via: [{ u: -1250, v: -560 }] },
-      { of: 'kit', at: { u: -2060, v: -1440 } },
+      { of: 'kit', at: { u: -2265, v: -1450 } },
       { of: 'piano', at: { u: -1000, v: 1520 } },
     ],
   },

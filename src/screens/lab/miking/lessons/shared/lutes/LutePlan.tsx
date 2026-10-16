@@ -33,7 +33,7 @@ import type { BuiltLute } from './luteModel.ts';
 import { LUTE_STAGE, type LutePlanObject } from './lutesContent.ts';
 import { ACCOMPANIST, LUTE_SIZES, LUTE_WALL, LUTE_WIDE, luteCue, lutePlanFoots, lutePlanObjects, luteShownIn, luteSpace, rugRect } from './lutePlanModel.ts';
 import { clearOfFoots, labelPlaces, unionRect, type PlanFoot } from '../planFoot.ts';
-import { cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
+import { cueCables, cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { PAL, poly, rr, smooth, type SkPath } from './luteDraw';
 import { LuteSceneArt } from './LuteArt';
@@ -457,7 +457,7 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
       </View>
     );
   }

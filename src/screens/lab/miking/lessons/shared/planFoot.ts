@@ -86,17 +86,30 @@ export function kitPieceFoots(at: PlanPt, group = 'kit'): PlanFoot[] {
   for (const f of Object.values(PLAN_HARDWARE.booms)) out.push(foot(`${group}:boom${f.u}`, 'kitPiece', rectOfCircle(P(f.u, f.v), 125), { group }));
   return out;
 }
+/** The shared kit's footprints turned a quarter (`quarter` = +1: the drummer
+ *  faces +v, down the screen — the plans with the audience below) about its
+ *  origin, then moved to `at`. */
+export function kitPieceFootsTurned(at: PlanPt, quarter: 1 | -1, group = 'kit'): PlanFoot[] {
+  return kitPieceFoots({ u: 0, v: 0 }, group).map((f) => {
+    const r = quarter > 0 ? { u0: -f.v1, u1: -f.v0, v0: f.u0, v1: f.u1 } : { u0: f.v0, u1: f.v1, v0: -f.u1, v1: -f.u0 };
+    return { ...f, u0: r.u0 + at.u, u1: r.u1 + at.u, v0: r.v0 + at.v, v1: r.v1 + at.v };
+  });
+}
+
 /** The kit's overall plan box (all its pieces), for a quick clearance. */
 export function unionRect(fs: readonly PlanRect[]): PlanRect {
   return { u0: Math.min(...fs.map((f) => f.u0)), u1: Math.max(...fs.map((f) => f.u1)), v0: Math.min(...fs.map((f) => f.v0)), v1: Math.max(...fs.map((f) => f.v1)) };
 }
 
-/** True when the plan rect (mm) holds none of these footprints — the plans'
- *  labels use it (fitLabels `clearOf`) so no word sits on an object. Zones
- *  (floor markings) do not block words. */
-export function clearOfFoots(fs: readonly PlanFoot[]): (u0: number, v0: number, u1: number, v1: number) => boolean {
+/** True when the plan rect (mm) holds none of these footprints and no cable
+ *  runs through it — the plans' labels use it (fitLabels `clearOf`) so no
+ *  word sits on an object or on a cable (expert review 2026-10-15: HEADPHONE
+ *  MIX and CONTROL ROOM were printed across the feed lanes). Zones (floor
+ *  markings) do not block words. */
+export function clearOfFoots(fs: readonly PlanFoot[], cables: readonly PlanCable[] = []): (u0: number, v0: number, u1: number, v1: number) => boolean {
   const solid = fs.filter((f) => !f.zone);
-  return (u0, v0, u1, v1) => !solid.some((f) => u0 < f.u1 && f.u0 < u1 && v0 < f.v1 && f.v0 < v1);
+  const segs = cables.flatMap((k) => k.pts.slice(1).map((q, i) => [k.pts[i], q] as const));
+  return (u0, v0, u1, v1) => !solid.some((f) => u0 < f.u1 && f.u0 < u1 && v0 < f.v1 && f.v0 < v1) && !segs.some(([p, q]) => segmentHitsRect(p, q, { u0, u1, v0, v1 }));
 }
 
 /** Does the segment p→q pass through the rect's interior (shrunk by `inset`)? */

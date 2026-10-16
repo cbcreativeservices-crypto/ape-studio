@@ -30,7 +30,7 @@ import { cabLayout } from '../speakers/speakerModel.ts';
 import { OTHER_AMP } from '../speakers/backlinePlanModel.ts';
 import { RHODES, WURLI } from './keysSpec.ts';
 import { W } from './wurliModel.ts';
-import { chairRowFacingStage } from '../../../../../../features/lab/audienceChairsModel.ts';
+import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
 import { chairFoots, foot, kitPieceFoots, wedgeFoot, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 
@@ -56,7 +56,7 @@ export const KEYS_POS = {
     di: { u: 250, v: -820 },
     otherAmp: { u: -1000, v: 1100 },
   },
-  audience: 3300,
+  audience: frontRowAt(2850),
 } as const;
 /** Where the shared kit's origin (its kick's batter head) sits on each stage,
  *  and the kit's own centre (kitPlanModel PLAN_BOX.kit). */
@@ -64,8 +64,8 @@ export const KEYS_KIT_AT = { rhodes: { u: -350, v: -2150 }, wurli: { u: -1300, v
 export const KIT_MID = { u: -135, v: 20 } as const;
 
 export const KEYS_BOX = {
-  rhodes: { stage: { u0: -1600, u1: 3650, v0: -3150, v1: 2550 }, studio: { u0: -900, u1: 2900, v0: -1300, v1: 2600 } },
-  wurli: { stage: { u0: -2550, u1: 3650, v0: -3250, v1: 2300 }, studio: { u0: -1700, u1: 2600, v0: -1800, v1: 1800 } },
+  rhodes: { stage: { u0: -1600, u1: 4700, v0: -3150, v1: 2550 }, studio: { u0: -900, u1: 2900, v0: -1300, v1: 2600 } },
+  wurli: { stage: { u0: -2550, u1: 4700, v0: -3250, v1: 2300 }, studio: { u0: -1700, u1: 2600, v0: -1800, v1: 1800 } },
 } as const;
 
 /** The studio room as drawn (inset 50 from the box, a 40 mm wall stroke)
@@ -80,7 +80,7 @@ export function keysRoom(rig: KeysRig): PlanRect {
 }
 
 /** The stage deck's downstage edge (the audience floor beyond). */
-export const DECK_EDGE_U = KEYS_POS.audience - 450;
+export const DECK_EDGE_U = 2850;
 /** The PA stacks: on the deck's downstage corners (their sub 700 deep). */
 export function keysPaAt(rig: KeysRig): { u: number; v: number }[] {
   const B = KEYS_BOX[rig].stage;

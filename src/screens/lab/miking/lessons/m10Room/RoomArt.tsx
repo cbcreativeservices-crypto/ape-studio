@@ -26,6 +26,10 @@ const WALL = 120;
 
 const built: Partial<Record<ViewId, ReturnType<typeof buildSide> | ReturnType<typeof buildTop>>> = {};
 
+/* LIVE (owner 2026-10-15): the same kit on a STAGE — no front wall; the
+   stage's front is open to the house, its downstage edge dashed, and the
+   audience lies beyond it (an off-plan direction: the room was never deep
+   enough to seat one in front of the PA). */
 function buildSide() {
   const floor = rect(make(), ROOM.back, KIT_FLOOR_Y, ROOM.front, KIT_FLOOR_Y + 40);
   const boards = make();
@@ -36,12 +40,13 @@ function buildSide() {
   const ceiling = rect(make(), ROOM.back, TOP_Y - 60, ROOM.front, TOP_Y);
   const walls = make();
   rect(walls, ROOM.back - WALL, TOP_Y - 60, ROOM.back, KIT_FLOOR_Y + 40);
-  rect(walls, ROOM.front, TOP_Y - 60, ROOM.front + WALL, KIT_FLOOR_Y + 40);
+  const front = rect(make(), ROOM.front, TOP_Y - 60, ROOM.front + WALL, KIT_FLOOR_Y + 40);
   // Absorber panels on the back and front walls (cosmetic: no source gives them).
   const panels = make();
+  const frontPanels = make();
   for (const h of [700, 1500, 2300]) {
     rect(panels, ROOM.back, yAt(h + 300), ROOM.back + 70, yAt(h - 300), 10);
-    rect(panels, ROOM.front - 70, yAt(h + 300), ROOM.front, yAt(h - 300), 10);
+    rect(frontPanels, ROOM.front - 70, yAt(h + 300), ROOM.front, yAt(h - 300), 10);
   }
   const door = rect(make(), ROOM.back, yAt(2100), ROOM.back + 50, KIT_FLOOR_Y, 4);
   const pa = make();
@@ -53,16 +58,30 @@ function buildSide() {
   paStand.lineTo(PA.x - 260, KIT_FLOOR_Y);
   paStand.moveTo(PA.x, KIT_FLOOR_Y - 120);
   paStand.lineTo(PA.x + 260, KIT_FLOOR_Y);
-  return { kind: 'side' as const, floor, boards, ceiling, walls, panels, door, pa, paStand };
+  return { kind: 'side' as const, floor, boards, ceiling, walls, front, panels, frontPanels, door, pa, paStand };
 }
 
 function buildTop() {
   const walls = make();
-  rect(walls, ROOM.back - WALL, ROOM.left - WALL, ROOM.front + WALL, ROOM.left);
-  rect(walls, ROOM.back - WALL, ROOM.right, ROOM.front + WALL, ROOM.right + WALL);
+  rect(walls, ROOM.back - WALL, ROOM.left - WALL, ROOM.front, ROOM.left);
+  rect(walls, ROOM.back - WALL, ROOM.right, ROOM.front, ROOM.right + WALL);
   rect(walls, ROOM.back - WALL, ROOM.left, ROOM.back, ROOM.door.z0);
   rect(walls, ROOM.back - WALL, ROOM.door.z1, ROOM.back, ROOM.right);
-  rect(walls, ROOM.front, ROOM.left, ROOM.front + WALL, ROOM.right);
+  // the front wall and the side walls' front ends (the studio only)
+  const front = make();
+  rect(front, ROOM.front, ROOM.left - WALL, ROOM.front + WALL, ROOM.right + WALL);
+  // LIVE: the stage's downstage edge, and the way to the house beyond it
+  const lip = make();
+  lip.moveTo(ROOM.front, ROOM.left - WALL);
+  lip.lineTo(ROOM.front, ROOM.right + WALL);
+  const arrows = make();
+  for (const z of [-1500, 0, 1500]) {
+    arrows.moveTo(ROOM.front + 120, z);
+    arrows.lineTo(ROOM.front + 420, z);
+    arrows.moveTo(ROOM.front + 370, z - 50);
+    arrows.lineTo(ROOM.front + 420, z);
+    arrows.lineTo(ROOM.front + 370, z + 50);
+  }
   const floor = rect(make(), ROOM.back, ROOM.left, ROOM.front, ROOM.right);
   const boards = make();
   for (let z = ROOM.left + 160; z < ROOM.right; z += 160) {
@@ -74,7 +93,8 @@ function buildTop() {
     rect(panels, x, ROOM.left, x + 600, ROOM.left + 70, 10);
     rect(panels, x, ROOM.right - 70, x + 600, ROOM.right, 10);
   }
-  for (let z = ROOM.left + 500; z < ROOM.right - 600; z += 1100) rect(panels, ROOM.front - 70, z, ROOM.front, z + 600, 10);
+  const frontPanels = make();
+  for (let z = ROOM.left + 500; z < ROOM.right - 600; z += 1100) rect(frontPanels, ROOM.front - 70, z, ROOM.front, z + 600, 10);
   // The door leaf (open into the room) and its swing.
   const leaf = make();
   leaf.moveTo(ROOM.back, ROOM.door.z1);
@@ -83,7 +103,7 @@ function buildTop() {
   swing.addArc(Skia.XYWHRect(ROOM.back - ROOM.door.swing, ROOM.door.z1 - ROOM.door.swing, 2 * ROOM.door.swing, 2 * ROOM.door.swing), 270, 90);
   const pa = make();
   for (const s of [-1, 1]) rect(pa, PA.x - PA.d / 2, s * PA.z - PA.w / 2, PA.x + PA.d / 2, s * PA.z + PA.w / 2, 14);
-  return { kind: 'top' as const, walls, floor, boards, panels, leaf, swing, pa };
+  return { kind: 'top' as const, walls, front, lip, arrows, floor, boards, panels, frontPanels, leaf, swing, pa };
 }
 
 function sideOf() {
@@ -105,8 +125,15 @@ export function RoomArt({ view, variant }: { view: ViewId; variant: VariantId })
         <Path path={g.walls}>
           <LinearGradient start={vec(ROOM.back - WALL, 0)} end={vec(ROOM.back, 0)} colors={['#1d1e24', '#3a3c46']} />
         </Path>
+        {!live ? (
+          <Path path={g.front}>
+            <LinearGradient start={vec(ROOM.front, 0)} end={vec(ROOM.front + WALL, 0)} colors={['#3a3c46', '#1d1e24']} />
+          </Path>
+        ) : null}
         <Path path={g.panels} color={live ? '#2a2c34' : '#3a3d52'} />
         <Path path={g.panels} style="stroke" strokeWidth={6} color="#5d6a84" opacity={live ? 0.4 : 0.8} />
+        {!live ? <Path path={g.frontPanels} color="#3a3d52" /> : null}
+        {!live ? <Path path={g.frontPanels} style="stroke" strokeWidth={6} color="#5d6a84" opacity={0.8} /> : null}
         <Path path={g.door} color="#4a3524" />
         <Path path={g.floor}>
           <LinearGradient start={vec(0, KIT_FLOOR_Y)} end={vec(0, KIT_FLOOR_Y + 40)} colors={live ? ['#2a2a2e', '#141416'] : ['#8a6238', '#5a3c20']} />
@@ -134,8 +161,23 @@ export function RoomArt({ view, variant }: { view: ViewId; variant: VariantId })
       {!live ? <Path path={g.boards} style="stroke" strokeWidth={6} color="#1e140a" opacity={0.5} /> : null}
       <Path path={g.walls} color="#2e3038" />
       <Path path={g.walls} style="stroke" strokeWidth={6} color="#555a66" />
+      {!live ? (
+        <>
+          <Path path={g.front} color="#2e3038" />
+          <Path path={g.front} style="stroke" strokeWidth={6} color="#555a66" />
+        </>
+      ) : (
+        <>
+          <Path path={g.lip} style="stroke" strokeWidth={14} color="#7a7f8a">
+            <DashPathEffect intervals={[60, 40]} />
+          </Path>
+          <Path path={g.arrows} style="stroke" strokeWidth={22} color="#aab0bd" strokeCap="round" strokeJoin="round" />
+        </>
+      )}
       <Path path={g.panels} color={live ? '#2a2c34' : '#3a3d52'} />
       <Path path={g.panels} style="stroke" strokeWidth={6} color="#5d6a84" opacity={0.8} />
+      {!live ? <Path path={g.frontPanels} color="#3a3d52" /> : null}
+      {!live ? <Path path={g.frontPanels} style="stroke" strokeWidth={6} color="#5d6a84" opacity={0.8} /> : null}
       <Path path={g.leaf} style="stroke" strokeWidth={40} strokeCap="round" color="#6a4a2e" />
       <Path path={g.swing} style="stroke" strokeWidth={10} color="#8a8f9c" opacity={0.7}>
         <DashPathEffect intervals={[50, 40]} />

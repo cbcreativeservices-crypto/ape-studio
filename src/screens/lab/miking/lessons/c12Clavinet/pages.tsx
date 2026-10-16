@@ -18,7 +18,7 @@ import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
 import { makeStagePage } from '../shared/strings/PStagePlan';
 import { ampBox } from './ampSpec.ts';
-import { CLAV_AUDIENCE, CLAV_NEAR, CLAV_PEDALS, CLAV_ROOM, CLAV_SPOTS, CLAV_WIDE, clavCue, clavOwnFoots, clavPlanFoots } from './planModel.ts';
+import { CLAV_AUDIENCE, CLAV_NEAR, CLAV_PEDALS, CLAV_ROOM, CLAV_SPOTS, CLAV_WIDE, CLAV_WIDE_STAGE, clavCue, clavOwnFoots, clavPlanFoots } from './planModel.ts';
 import { unionRect } from '../shared/planFoot.ts';
 import { AmpTop, CLAV_BASE_ART, ClavinetPlan } from './art';
 import { ClavinetPath, ClavinetSequence } from './soundArt';
@@ -113,6 +113,7 @@ const SETTING = makeStagePage({
   },
   near: () => CLAV_NEAR,
   wide: () => CLAV_WIDE,
+  wideStage: () => CLAV_WIDE_STAGE,
   spots: () => CLAV_SPOTS,
   foots: clavPlanFoots,
   cue: clavCue,

@@ -22,8 +22,13 @@ const isLever = (v: VariantId) => v === 'lever';
 
 export const HARP_NEAR = (v: VariantId): ViewBox => (isLever(v) ? { u0: -1250, u1: 900, v0: -950, v1: 750 } : { u0: -1350, u1: 1150, v0: -1050, v1: 800 });
 export const HARP_WIDE: ViewBox = { u0: -1700, u1: 3700, v0: -2500, v1: 1300 };
+/** The stage's wide plan reaches past the deck's edge for the AUDIENCE word. */
+export const HARP_WIDE_STAGE: ViewBox = { ...HARP_WIDE, u1: 4250 };
 export const HARP_ROOM = roomOfBox(HARP_WIDE);
-export const HARP_AUDIENCE = { text: 'AUDIENCE →', u: 3600, v: -250, align: 'right' as const };
+/** The stage's downstage edge (dashed) just in front of the PA pair, and
+ *  the way to the house beyond it — an off-plan direction (owner
+ *  2026-10-15: an audience is marked only where one fits). */
+export const HARP_AUDIENCE = { text: 'AUDIENCE →', u: 3320, v: -600, align: 'left' as const, lip: { axis: 'u' as const, at: 3260 } };
 
 /** The harp's own plan box (the soundbox top to the base's front, the
  *  base's width); `pad` widens it (the tap target). */
@@ -50,7 +55,9 @@ export function harpSpots(v: VariantId): PlanSpot[] {
     { item: 'wedge.other', glyph: 'wedge', x: 1700, z: -1300, faces: { x: -0.8, z: -0.6 }, scene: 'stage', r: 330, label: { du: 0, dv: 420 } },
     // upstage, where the other player's wedge faces; inside the plan
     { item: 'band', glyph: 'band', x: 300, z: -1930, half: { u: 950, v: 520 }, scene: 'stage', r: 650 },
-    { item: 'pa', glyph: 'pa', x: 3000, z: 700, faces: { x: 1, z: 0 }, scene: 'stage', r: 380 },
+    // the PA pair on the deck's downstage corners, facing the audience
+    { item: 'pa', glyph: 'pa', x: 3000, z: 900, faces: { x: 1, z: 0 }, scene: 'stage', r: 380 },
+    { item: 'pa.2', glyph: 'pa', x: 3000, z: -2100, faces: { x: 1, z: 0 }, scene: 'stage', r: 0, text: 'PA', label: { du: 0, dv: 420 } },
     { item: 'pair', glyph: 'pair', x: g.boardAt(0.5)[0] + 2200, z: 300, faces: { x: -1, z: 0 }, scene: 'studio', r: 320 },
     { item: 'room', glyph: 'none', x: 2900, z: -1700, scene: 'studio', r: 500, label: { du: 0, dv: 0 } },
   ];

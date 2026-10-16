@@ -5,7 +5,7 @@
 import { lessonById } from '../../../data/lessons.ts';
 import type { Vec3 } from '../../../engine/model/types.ts';
 import { cueCables } from '../monitoring/cueMix.ts';
-import { fxFoot, kitCue, kitPlanFoots, KITPLAN_ROOM, type FxOwn } from '../kitPlanLayout.ts';
+import { AUDIENCE_MARK, fxFoot, kitCue, kitPlanFoots, KITPLAN_ROOM, KITPLAN_STAGE, type FxOwn } from '../kitPlanLayout.ts';
 import { S0_KIT } from '../../m02Snare/model.ts';
 import type { PlanCase } from './types.ts';
 
@@ -33,7 +33,8 @@ export function kitPlanCases(): PlanCase[] {
     for (const variant of variants) {
       const extra = L.fx && variant ? [fxFoot(L.fx.own, variant)] : [];
       const performers = [{ id: 'drummer', group: 'kit' }];
-      out.push({ lesson: L.id, scene: 'stage', family: 'kitPlan', variant, foots: kitPlanFoots('stage', lesson.live.wedges, L.offset, extra), cables: [], cue: [], performers });
+      const audience = { axis: 'u' as const, dir: 1 as const, lip: KITPLAN_STAGE.lipU, kind: 'direction' as const, marks: [AUDIENCE_MARK] };
+      out.push({ lesson: L.id, scene: 'stage', family: 'kitPlan', variant, audience, foots: kitPlanFoots('stage', lesson.live.wedges, L.offset, extra), cables: [], cue: [], performers });
       const cue = kitCue();
       out.push({ lesson: L.id, scene: 'studio', family: 'kitPlan', variant, room: KITPLAN_ROOM, foots: kitPlanFoots('studio', lesson.live.wedges, L.offset, extra), cables: cueCables(cue), cue: [cue], performers });
     }

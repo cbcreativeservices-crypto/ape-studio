@@ -12,7 +12,7 @@ import { SOPRANO_SAX } from '../../a05aSopranoSax/geometry.ts';
 import { ALTO_SAX } from '../../a05bAltoSax/geometry.ts';
 import { TENOR_SAX } from '../../a05cTenorSax/geometry.ts';
 import { BARITONE_SAX } from '../../a05dBaritoneSax/geometry.ts';
-import type { PlanCase } from './types.ts';
+import { offPlanAudience, type PlanCase } from './types.ts';
 
 const PLANS: Record<string, [SaxPlanLayout, SaxPosture]> = {
   A05a: [A05A_PLAN, SOPRANO_SAX.STANDING],
@@ -27,7 +27,7 @@ export function saxCases(): PlanCase[] {
     const lesson = lessonById(id);
     if (!lesson) continue;
     const wedges = lesson.live.wedges;
-    out.push({ lesson: id, scene: 'stage', family: 'sax', foots: saxFoots(L, P, 'stage', wedges), cables: [], cue: [], performers: saxPerformers(L, 'stage') });
+    out.push({ lesson: id, scene: 'stage', family: 'sax', audience: offPlanAudience(L.wide), foots: saxFoots(L, P, 'stage', wedges), cables: [], cue: [], performers: saxPerformers(L, 'stage') });
     const cue = saxCue(L, P);
     out.push({ lesson: id, scene: 'studio', family: 'sax', room: saxRoom(L), foots: saxFoots(L, P, 'studio', wedges), cables: cue.flatMap(cueCables), cue, performers: saxPerformers(L, 'studio') });
   }

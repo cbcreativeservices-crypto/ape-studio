@@ -37,7 +37,7 @@ import { brassScene } from './lowBrassScene.ts';
 import type { Orient } from './lowBrassSpec.ts';
 import { lowBrassCue, lowBrassFoots, lowBrassShown, PIANO, spaceParts, type LowBrassPlanLayout, type PlanObject } from './lowBrassPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, type PlanRect } from '../planFoot.ts';
 import { besideLabel, cuePoint, ownRect } from '../brass/hornPlanFoot.ts';
 
@@ -334,7 +334,7 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots)} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots, cues.flatMap(cueCables))} />
     </View>
   );
 }

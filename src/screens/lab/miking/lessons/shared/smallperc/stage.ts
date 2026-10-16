@@ -58,7 +58,7 @@ export function stationCue(main: string): PlanCueSpec {
     hubAt: 300,
     stations: [
       { of: main, at: { u: -400, v: -680 } },
-      { of: 'kit', at: { u: -2060, v: -790 }, via: [{ u: -2060, v: -460 }] },
+      { of: 'kit', at: { u: -2265, v: -1000 }, via: [{ u: -2265, v: -420 }] },
       { of: 'vocal', at: { u: 650, v: -1800 } },
     ],
   };

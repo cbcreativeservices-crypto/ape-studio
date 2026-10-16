@@ -40,7 +40,7 @@ import type { Posture } from './posture.ts';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { Pianist } from '../piano/PianoArt';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
 import { PIANIST, bowedCue, bowedFoots, bowedPlayerRect, bowedShown, type BowedPlanLayout } from './bowedPlanModel.ts';
 
@@ -449,7 +449,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
         </Group>
       </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
     </View>
   );
 }

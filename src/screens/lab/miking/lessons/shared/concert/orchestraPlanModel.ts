@@ -362,7 +362,8 @@ export function orchestraCue(own: OwnInstrument, four: boolean): CueRig[] {
   const perf = new Map(orchPerformers().map((p) => [p.id, p]));
   const st = (id: string, at: PlanPt): CueStation => {
     const p = perf.get(id)!;
-    return { id, at, head: p.head, facing: p.facing };
+    // the plan draws empty chairs and an empty podium: the phones rest there, face-on
+    return { id, at, head: p.head, facing: p.facing, alone: true };
   };
   const room = STUDIO_ROOM;
   const rigs: CueRig[] = [];

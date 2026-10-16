@@ -39,7 +39,7 @@ import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { Wedge2WayTop } from '../wedge2Way';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels, type CueRig } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces, rectOfCircle, unionRect, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { GLYPH, roomOfBox, spotAngle, spotFoots, spotsIn, type PlanGlyph, type PlanScene, type PlanSpot } from './pstagePlanModel.ts';
 
@@ -56,6 +56,9 @@ export type StagePlanSpec = {
   ownHit: (variant: VariantId, u: number, v: number) => boolean;
   near: (variant: VariantId) => ViewBox;
   wide: (variant: VariantId) => ViewBox;
+  /** The stage's wide plan when it must reach further (past the deck's edge
+   *  for the AUDIENCE word); default `wide`. */
+  wideStage?: (variant: VariantId) => ViewBox;
   spots: (variant: VariantId) => readonly PlanSpot[];
   /** Every object's footprint on a plan (the lesson's pure planModel.ts):
    *  the words keep clear of them. */
@@ -70,7 +73,7 @@ export type StagePlanSpec = {
   nearBadge: string;
   nearLooking: string;
   /** Where the audience is on the wide plan (its label, plan mm). */
-  audience: (variant: VariantId) => { text: string; u: number; v: number; align: 'left' | 'center' | 'right' };
+  audience: (variant: VariantId) => { text: string; u: number; v: number; align: 'left' | 'center' | 'right'; lip: { axis: 'u' | 'v'; at: number } };
   /** The hearing note on BEFORE ANY MIC (the lesson's numbers, plain words). */
   hearing: string;
 };
@@ -248,6 +251,23 @@ function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
   );
 }
 
+/** The stage's downstage edge: a dashed line across the plan. */
+function StageLip({ box, lip }: { box: ViewBox; lip: { axis: 'u' | 'v'; at: number } }) {
+  const p = Skia.Path.Make();
+  if (lip.axis === 'u') {
+    p.moveTo(lip.at, box.v0 + 40);
+    p.lineTo(lip.at, box.v1 - 40);
+  } else {
+    p.moveTo(box.u0 + 40, lip.at);
+    p.lineTo(box.u1 - 40, lip.at);
+  }
+  return (
+    <Path path={p} style="stroke" strokeWidth={10} color="#5d616c">
+      <DashPathEffect intervals={[40, 26]} />
+    </Path>
+  );
+}
+
 /** The studio room: a 40 mm wall drawn just outside its inner faces. */
 const roomCache = new Map<string, SkPath>();
 function roomPath(r: PlanRect): SkPath {
@@ -263,7 +283,7 @@ function roomPath(r: PlanRect): SkPath {
 
 export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, onTap, accessibilityLabel }: { spec: StagePlanSpec; w: number; h: number; variant: VariantId; scene: PlanScene; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
-  const box = scene === 'near' ? spec.near(variant) : spec.wide(variant);
+  const box = scene === 'near' ? spec.near(variant) : scene === 'stage' && spec.wideStage ? spec.wideStage(variant) : spec.wide(variant);
   const xf = useMemo(() => fitXform('top', box, w, h, 8), [box, w, h]);
   const spots = spotsIn(spec.spots(variant), scene);
   const foots = useMemo(() => spec.foots(variant, scene), [spec, variant, scene]);
@@ -292,7 +312,8 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
     };
   });
   if (scene === 'stage') {
-    const a = spec.audience(variant);
+    const { lip: _lip, ...a } = spec.audience(variant);
+    void _lip;
     labels.push({ id: 'aud', ...a, point: { u: a.u, v: a.v }, tone: 'muted' });
   }
   if (room && !labels.some((l) => l.text === 'THE ROOM')) labels.push({ id: 'room.name', text: 'THE ROOM', u: room.u0 + 200, v: room.v0 + 260, align: 'left', point: { u: room.u0 + 200, v: room.v0 + 260 }, tone: 'muted' });
@@ -310,6 +331,8 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
           {room ? <Path path={roomPath(room)} style="stroke" strokeWidth={40} color="#3a3d45" /> : null}
+          {/* Stage: the deck's downstage edge (dashed), the house beyond it. */}
+          {scene === 'stage' ? <StageLip box={box} lip={spec.audience(variant).lip} /> : null}
           {spots.filter((s) => s.glyph === 'band').map((s) => (
             <Glyph key={s.item} spot={s} lit={highlight === s.item} />
           ))}
@@ -322,7 +345,7 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
         </Group>
       </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
     </View>
   );
 }

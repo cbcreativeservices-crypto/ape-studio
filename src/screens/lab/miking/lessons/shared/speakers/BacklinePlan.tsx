@@ -29,7 +29,7 @@ import { bassHead } from './ampModel.ts';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { BACKLINE_BOX, BACKLINE_POS, KIT_AT, OTHER_AMP, PA_AT, DECK_EDGE_U, backlineCue, inFrontRow, backlineFoots, backlineItems, keepRect, type Backline, type BacklineScene } from './backlinePlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
 import { FigureHead, FigureMass, headAbove, limb } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
@@ -500,7 +500,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots)} />
+        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
       </View>
     </Pressable>
   );

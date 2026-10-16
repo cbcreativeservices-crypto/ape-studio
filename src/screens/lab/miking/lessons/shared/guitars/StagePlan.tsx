@@ -32,9 +32,10 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { WedgePlan, planIdsOf } from '../KitPlan';
 import type { BuiltGuitarModel, GuitarScene } from './guitarModel.ts';
 import { GuitarSceneArt } from './GuitarArt';
-import { GUITAR_WIDE, KIT_CYMBALS, KIT_DRUMS, KIT_RIM, SIZES, WALL, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
+import { KitTop } from '../kitScene/KitSceneArt';
+import { GUITAR_WIDE, KIT_TURN, kitOriginAt, SIZES, WALL, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
 import { clearOfFoots, labelPlaces, unionRect, type PlanFoot } from '../planFoot.ts';
-import { cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
+import { cueCables, cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 
 const AMBER = '#ffc64d';
@@ -146,30 +147,18 @@ function AmpPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
 }
 
 function KitFromAbove({ o, hi }: { o: PlanObject; hi: boolean }) {
-  const drums = KIT_DRUMS;
-  const cymbals = KIT_CYMBALS;
+  // the shared five-piece kit at true size, its drummer facing the audience
+  const at = kitOriginAt(o.at);
   const outline = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(o.at.x - 860, o.at.z - 760, 1720, 1300), 120, 120));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(o.at.x - 960, o.at.z - 960, 1920, 1920), 160, 160));
     return p;
   }, [o.at.x, o.at.z]);
   return (
     <Group>
-      {drums.map((d, i) => (
-        <Group key={`d${i}`}>
-          <Circle cx={o.at.x + d.dx} cy={o.at.z + d.dz} r={d.r + KIT_RIM}>
-            <LinearGradient start={vec(o.at.x + d.dx - d.r, o.at.z + d.dz - d.r)} end={vec(o.at.x + d.dx + d.r, o.at.z + d.dz + d.r)} colors={['#eef1f6', '#9aa0ab', '#4a4e57']} />
-          </Circle>
-          <Circle cx={o.at.x + d.dx} cy={o.at.z + d.dz} r={d.r}>
-            <RadialGradient c={vec(o.at.x + d.dx - d.r * 0.3, o.at.z + d.dz - d.r * 0.3)} r={d.r * 1.2} colors={['#fbf8f0', '#e6dfcd', '#cbbfa5']} />
-          </Circle>
-        </Group>
-      ))}
-      {cymbals.map((c, i) => (
-        <Circle key={`c${i}`} cx={o.at.x + c.dx} cy={o.at.z + c.dz} r={c.r} opacity={0.75}>
-          <RadialGradient c={vec(o.at.x + c.dx - c.r * 0.3, o.at.z + c.dz - c.r * 0.3)} r={c.r * 1.2} colors={['#f6d58f', '#d2a04a', '#9a6a24']} />
-        </Circle>
-      ))}
+      <Group transform={[{ translateX: at.u }, { translateY: at.v }, { rotate: KIT_TURN }]}>
+        <KitTop keepOuts={false} />
+      </Group>
       <Halo path={outline} on={hi} />
     </Group>
   );
@@ -350,7 +339,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
       </View>
     );
   }

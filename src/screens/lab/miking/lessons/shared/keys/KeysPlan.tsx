@@ -37,9 +37,9 @@ import { pt } from '../players/playerPose';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { PlanAmpTop, PlanPaStack } from '../speakers/BacklinePlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
-import { cueLabels } from '../monitoring/cueMix.ts';
+import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
-import { BENCH, CHAIR_ROW, DI, inAisle, KEYS_BOX, KEYS_KIT_AT, KEYS_POS, OTHER_AMP, PEDAL, SHOULDERS, keyboardDims, keysCue, keysFoots, keysItemFootIds, keysItems, keysKeep, keysPaAt, keysRoomDrawn, keysWedgeAt, type KeysRig, type KeysScene } from './keysPlanModel.ts';
+import { BENCH, CHAIR_ROW, DECK_EDGE_U, DI, inAisle, KEYS_BOX, KEYS_KIT_AT, KEYS_POS, OTHER_AMP, PEDAL, SHOULDERS, keyboardDims, keysCue, keysFoots, keysItemFootIds, keysItems, keysKeep, keysPaAt, keysRoomDrawn, keysWedgeAt, type KeysRig, type KeysScene } from './keysPlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -108,7 +108,7 @@ function build(rig: KeysRig) {
   // aisle (2026-10-15).
   const chairs = makeChairsTop(chairRowFacingStage(CHAIR_ROW.u, CHAIR_ROW.v0, CHAIR_ROW.v1).filter(inAisle));
   const B = KEYS_BOX[rig];
-  const deck = rr(B.stage.u0, B.stage.v0, KEYS_POS.audience - 450, B.stage.v1, 0);
+  const deck = rr(B.stage.u0, B.stage.v0, DECK_EDGE_U, B.stage.v1, 0);
   const R = keysRoomDrawn(rig);
   const room = rr(R.u0, R.v0, R.u1, R.v1, 40);
   return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, chairs, deck, room };
@@ -272,7 +272,7 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots)} />
+        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
       </View>
     </Pressable>
   );
