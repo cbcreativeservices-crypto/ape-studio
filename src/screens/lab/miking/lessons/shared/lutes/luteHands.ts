@@ -515,7 +515,7 @@ export function handCases(): {
   sk: HandSkeleton;
   elbow: V3;
   contact: number[];
-  thumb?: "behind" | "free" | string;
+  thumb?: string;
 }[] {
   const out: {
     name: string;

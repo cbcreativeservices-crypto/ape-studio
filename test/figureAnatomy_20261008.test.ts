@@ -66,6 +66,8 @@ import { handCases as bowedHandCases } from '../src/screens/lab/miking/lessons/s
 import { handCases as luteHandCases } from '../src/screens/lab/miking/lessons/shared/lutes/luteHands.ts';
 import { handCases as freeReedHandCases } from '../src/screens/lab/miking/lessons/shared/freereed/freeReedHands.ts';
 import { handCases as percHandCases } from '../src/screens/lab/miking/lessons/shared/smallperc/percHands.ts';
+import { handCases as windHandCases } from '../src/screens/lab/miking/lessons/shared/woodwinds/windHands.ts';
+import { handCases as saxHandCases } from '../src/screens/lab/miking/lessons/shared/sax/saxHands.ts';
 import { sceneOf as guitarSceneOf } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
 import { C01_VARIANTS } from '../src/screens/lab/miking/lessons/c01Guitar/model.ts';
 import { C05A_VARIANTS } from '../src/screens/lab/miking/lessons/c05aBanjo/model.ts';
@@ -826,6 +828,8 @@ describe('figure pass 3 (owner 2026-10-15): hands on instruments — one hand mo
     ['lutes (C13 oud with risha, C14 sitar with mizrab, C15 veena)', luteHandCases(), 6],
     ['free reed (A10 harmonica, A11 accordion)', freeReedHandCases(), 6],
     ['small percussion (I05a cowbell, I05c woodblock: stick and cradle hands)', percHandCases(), 4],
+    ['woodwinds (A06 flute, A07 piccolo, A08a/b clarinets, A09a oboe, A09b bassoon)', windHandCases(), 12],
+    ['saxophones (A05a–d soprano, alto, tenor, baritone)', saxHandCases(), 8],
   ] as const) {
     it(`${fam}: every hand posed`, () => assert.ok(list.length >= min));
     for (const c of list)

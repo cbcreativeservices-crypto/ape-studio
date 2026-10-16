@@ -148,8 +148,10 @@ const line = (s0: number, s1: number, a: Vec3, b: Vec3): Line => ({ kind: 'line'
 const cubic = (s0: number, s1: number, q: Cubic['q']): Cubic => ({ kind: 'cubic', s0, s1, q, lut: lutOf(q) });
 
 /** A hand on the instrument: the wrist, the way the fingers point, and the
- *  station it holds (all drawing defaults). */
-export type HandPose = { s: number; wrist: Vec3; dir: Vec3; elbow: Vec3 };
+ *  station it holds (all drawing defaults). `dorsal`: the way the back of the
+ *  hand faces; `thumbSide`: toward its thumb (figure pass 3 — the 3-D hand,
+ *  windHands.ts, starts from this frame). */
+export type HandPose = { s: number; wrist: Vec3; dir: Vec3; elbow: Vec3; dorsal?: Vec3; thumbSide?: Vec3 };
 
 export type Layout = {
   spec: WindSpec;
@@ -216,12 +218,77 @@ export function oneThirdS(spec: WindSpec): number | null {
 
 const UPPER_ARM = 290;
 const FOREARM = 262;
-function hand(L: Pick<Layout, 'segs' | 'keyHint'>, s: number, off: Vec3, dir: Vec3, shoulder: Vec3, pole: Vec3): HandPose {
-  const p = frameAt(L as Layout, s).p;
-  const wrist = add(p, off);
-  return { s, wrist, dir: norm(dir), elbow: elbowOf(shoulder, wrist, UPPER_ARM, FOREARM, pole) };
-}
 const meanS = (spec: WindSpec, ks: number[]) => ks.reduce((a, k) => a + holeS(spec, k), 0) / ks.length;
+
+/** A direction or offset in the tube's own frame at s: along the tube toward
+ *  its far end (t), out of its key side (n), across it (b). */
+export type TubeLocal = readonly [t: number, n: number, b: number];
+/**
+ * A HAND HELD ON THE TUBE (figure pass 3, owner 2026-10-15): placed by its
+ * knuckle row's centre `K` (tube-local, from the axis at s), the way it points
+ * from the wrist to the knuckles (`along`), the way its back faces (`dorsal`)
+ * and the side its thumb is on (`thumb`), all in the tube's frame at s. The
+ * wrist is a palm's length (95 mm) behind the knuckles; the elbow is the
+ * adult arm's from the shoulder, bent toward `pole`. windHands.ts then turns
+ * the hand about this wrist until every pad is on its key.
+ */
+export type Hold = { K: TubeLocal; along: TubeLocal; dorsal: TubeLocal; thumb: TubeLocal };
+const PALM_TO_KNUCKLES = 95;
+function holdHand(L: Pick<Layout, 'segs' | 'keyHint'>, s: number, h: Hold, shoulder: Vec3, pole: Vec3): HandPose {
+  const f = frameAt(L as Layout, s);
+  const loc = (q: TubeLocal) => add(scale(f.t, q[0]), add(scale(f.n, q[1]), scale(f.b, q[2])));
+  const dir = norm(loc(h.along));
+  const wrist = sub(add(f.p, loc(h.K)), scale(dir, PALM_TO_KNUCKLES));
+  return { s, wrist, dir, elbow: elbowOf(shoulder, wrist, UPPER_ARM, FOREARM, pole), dorsal: norm(loc(h.dorsal)), thumbSide: norm(loc(h.thumb)) };
+}
+
+/**
+ * EACH INSTRUMENT'S TWO HOLDS (tube-local, mm and unit directions; drawing
+ * defaults found by fitting the shared hand to the keys — windHands.ts):
+ *   • flute / piccolo: the LEFT hand's knuckles in front of and under the
+ *     tube near the head joint, its palm turned up toward the player, the
+ *     fingers rising and curling back over the top (the flute on the base of
+ *     the index); the RIGHT hand's knuckles behind and under the tube, the
+ *     fingers arching forward over the top, the back of the hand toward the
+ *     player;
+ *   • clarinet, oboe, bass clarinet: each palm on its own side of the tube
+ *     (the left on the player's left), the fingers wrapping round its front,
+ *     the thumbs behind;
+ *   • bassoon: the left palm beside and behind the wing joint (the fingers
+ *     onto its open side), the right palm on the boot's right side (the
+ *     fingers onto its front face, the thumb onto its back).
+ * Every hand: the index nearest the player's end, the thumb on that side.
+ */
+const HOLDS: Record<'flute' | 'simpleFlute' | 'piccolo' | 'clarinet' | 'oboe' | 'bassClarinet' | 'bassoon', { L: Hold; R: Hold }> = {
+  flute: {
+    L: { K: [10, -25.7, 11.4], along: [0.25, 0.93, 0.28], dorsal: [0.05, -0.3, 0.95], thumb: [-0.97, 0.22, 0.12] },
+    R: { K: [31.8, -21.4, -28.5], along: [0.14, 0.98, 0.14], dorsal: [0.03, 0.14, -0.99], thumb: [-0.99, 0.14, -0.01] },
+  },
+  simpleFlute: {
+    L: { K: [50.3, -30.3, 17.9], along: [0.25, 0.94, 0.25], dorsal: [0.12, -0.28, 0.95], thumb: [-0.96, 0.2, 0.18] },
+    R: { K: [79.9, -23.3, -32.6], along: [0.17, 0.95, 0.25], dorsal: [0.03, 0.25, -0.97], thumb: [-0.99, 0.17, 0.01] },
+  },
+  piccolo: {
+    L: { K: [18.7, -4.6, 32.8], along: [0.32, 0.89, 0.32], dorsal: [0, -0.33, 0.94], thumb: [-0.95, 0.3, 0.11] },
+    R: { K: [37.6, 17.1, -42], along: [0.06, 0.95, 0.3], dorsal: [0, 0.3, -0.95], thumb: [-1, 0.06, 0.02] },
+  },
+  clarinet: {
+    L: { K: [10.2, 3.7, 45.8], along: [0.22, 0.8, -0.56], dorsal: [-0.05, 0.58, 0.81], thumb: [-0.97, 0.15, -0.17] },
+    R: { K: [-4.5, -12.6, -42.6], along: [0.21, 0.81, 0.55], dorsal: [0.4, 0.45, -0.8], thumb: [-0.89, 0.39, -0.23] },
+  },
+  oboe: {
+    L: { K: [17.4, 6, 52], along: [0.15, 0.82, -0.56], dorsal: [0.01, 0.56, 0.83], thumb: [-0.99, 0.13, -0.08] },
+    R: { K: [-23.3, -12.4, -47.7], along: [0.07, 0.92, 0.39], dorsal: [-0.04, 0.39, -0.92], thumb: [-1, 0.04, 0.06] },
+  },
+  bassClarinet: {
+    L: { K: [30, 5.1, 50.1], along: [0.32, 0.77, -0.55], dorsal: [0.29, 0.47, 0.84], thumb: [-0.9, 0.42, 0.07] },
+    R: { K: [10, -6, -49], along: [0.2, 0.83, 0.52], dorsal: [0.25, 0.47, -0.85], thumb: [-0.95, 0.3, -0.12] },
+  },
+  bassoon: {
+    L: { K: [-14.6, 21.9, 75.2], along: [-0.33, 0.81, -0.5], dorsal: [-0.51, 0.29, 0.81], thumb: [-0.8, -0.52, -0.31] },
+    R: { K: [3.8, 56.6, -51], along: [0.22, 0.78, 0.58], dorsal: [0.13, 0.57, -0.81], thumb: [-0.97, 0.25, 0.02] },
+  },
+};
 
 /* ── the instruments' holds ── */
 
@@ -271,8 +338,11 @@ export function fluteLayout(spec: WindSpec, posture: PostureKind): Layout {
   // right hand the lower holes; the right little finger reaches the foot keys.
   const sL = meanS(spec, small ? [9, 10, 11, 12] : [10, 11, 12, 13]);
   const sR = meanS(spec, small ? [4, 5, 6, 7] : [5, 6, 7, 8]);
-  const handL = hand(base, sL, v(10, 58, -36), v(0, -1, 0.42), body.shoulderL, v(-0.15, 1, 0.55));
-  const handR = hand(base, sR, v(8, 58, -30), v(0, -1, 0.48), body.shoulderR, v(-0.55, 1, -0.1));
+  // (figure pass 3) The 3-D hands' holds, found by windHands' fit and kept here.
+  const simple = spec.holes.some((h) => h.kind === 'open');
+  const H = small ? HOLDS.piccolo : simple ? HOLDS.simpleFlute : HOLDS.flute;
+  const handL = holdHand(base, sL, H.L, body.shoulderL, v(-0.15, 1, 0.55));
+  const handR = holdHand(base, sR, H.R, body.shoulderR, v(-0.2, 1, 0));
   return { spec, body, chair: chairOf(body), segs, keyHint, handL, handR, peg: null, strap: null, jet: { a: v(0, 1, 6), dir: norm(add(scale(a, 0.25), v(0, 0.35, 1))), len: 150, half: 15 } };
 }
 
@@ -286,8 +356,9 @@ export function straightReedLayout(spec: WindSpec, posture: PostureKind, deg: nu
   const base = { segs, keyHint };
   const hi = spec.id === 'oboe' ? [12, 13, 14, 15] : [11, 12, 13, 14];
   const lo = spec.id === 'oboe' ? [3, 4, 5, 6] : [3, 4, 5, 6];
-  const handL = hand(base, meanS(spec, hi), v(62, 22, -30), v(-1, 0.18, 0.3), body.shoulderL, v(1, 0.7, -0.35));
-  const handR = hand(base, meanS(spec, lo), v(-62, 22, -26), v(1, 0.18, 0.32), body.shoulderR, v(-1, 0.7, -0.35));
+  const H = spec.id === 'oboe' ? HOLDS.oboe : HOLDS.clarinet;
+  const handL = holdHand(base, meanS(spec, hi), H.L, body.shoulderL, v(0.5, 1, -0.3));
+  const handR = holdHand(base, meanS(spec, lo), H.R, body.shoulderR, v(-0.5, 1, -0.3));
   return { spec, body, chair: chairOf(body), segs, keyHint, handL, handR, peg: null, strap: null, jet: null };
 }
 
@@ -320,8 +391,9 @@ export function bassClarinetLayout(spec: WindSpec): Layout {
   ];
   const keyHint = v(0, -0.12, 1);
   const base = { segs, keyHint };
-  const handL = hand(base, 470, v(70, 18, -26), v(-1, 0.1, 0.32), body.shoulderL, v(1, 0.8, -0.3));
-  const handR = hand(base, (lower.s0 + lower.s1) / 2 + 20, v(-70, 18, -24), v(1, 0.1, 0.34), body.shoulderR, v(-1, 0.8, -0.3));
+  // The right hand's station: its finger plates' (windHands) middle, on the lower joint's upper half.
+  const handL = holdHand(base, 470, HOLDS.bassClarinet.L, body.shoulderL, v(0.5, 1, -0.3));
+  const handR = holdHand(base, lower.s0 + 64, HOLDS.bassClarinet.R, body.shoulderR, v(-0.3, 1, -0.3));
   // The peg: from the bow's lowest point straight down to the floor.
   let lowest = bottom;
   const g = segs[3] as Cubic;
@@ -357,6 +429,7 @@ export function bassoonAxes() {
 /** Bassoon: the reed into the lips from the player's left, the bocal's
  *  S-curve up and over to the wing joint, down the wing joint and the boot,
  *  the U-turn at the boot's bottom, up the long joint to the bell. */
+const BSN_LH_S = 780;
 export function bassoonLayout(posture: PostureKind, spec: WindSpec): Layout {
   const body = bodyOf(posture);
   const { d, w, L, W } = bassoonAxes();
@@ -378,8 +451,8 @@ export function bassoonLayout(posture: PostureKind, spec: WindSpec): Layout {
   const keyHint = norm(add(v(0, 0, 1), scale(w, 0.15)));
   const base = { segs, keyHint };
   void spec;
-  const handL = hand(base, 720, v(64, 26, -40), v(-0.9, 0.1, 0.45), body.shoulderL, v(1, 0.6, -0.2));
-  const handR = hand(base, 1040, v(-58, 30, -46), v(0.9, 0.05, 0.45), body.shoulderR, v(-1, 0.4, -0.5));
+  const handL = holdHand(base, BSN_LH_S, HOLDS.bassoon.L, body.shoulderL, v(1, 0.6, -0.2));
+  const handR = holdHand(base, 1040, HOLDS.bassoon.R, body.shoulderR, v(-0.5, 0.8, -0.45));
   // A seat strap from the chair's front edge up round the boot's bottom; a
   // harness from the boot up round the neck when standing (drawing defaults).
   const cup = add(L(0), scale(w, BSN.gap / 2));

@@ -36,7 +36,6 @@ describe('HF1 — hands wear the shared figure skin (owner 2026-10-08)', () => {
   const SITES: [string, RegExp][] = [
     ['shared/smallperc/Hand.tsx', /export const SKIN = FIGURE_SKIN\.ramp;[\s\S]*export const SKIN_RIM = FIGURE_SKIN\.edge;/],
     ['shared/lowbrass/LowBrassArt.tsx', /const SKIN = FIGURE_SKIN\.ramp;[\s\S]*const SKIN_EDGE = FIGURE_SKIN\.edge;/],
-    ['shared/sax/SaxArt.tsx', /const SKIN = FIGURE_SKIN\.ramp;[\s\S]*const SKIN_EDGE = FIGURE_SKIN\.edge;/],
     ['shared/freereed/PlayerProfile.tsx', /export const SKIN = FIGURE_SKIN\.ramp;[\s\S]*export const SKIN_EDGE = FIGURE_SKIN\.edge;/],
     ['shared/handdrums/handSoundArt.tsx', /const SKIN = FIGURE_SKIN\.ramp;/],
   ];

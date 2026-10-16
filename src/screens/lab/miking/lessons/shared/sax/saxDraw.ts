@@ -176,20 +176,47 @@ export function rodsOf(P: Placed, view: ViewId): { line: P2[]; posts: { c: P2; r
     });
 }
 
+/** Each hand's three pearls' places along the tube (u; index, middle, ring)
+ *  and the holes their keys close. A real horn's touches sit within a hand's
+ *  span even where its cups are spread wider (the tenor, the baritone): the
+ *  three pearls then gather round the middle one, ≤ 40 mm apart (figure pass
+ *  3), each on its key's arm back to its own cup. */
+export function pearlStations(row: Placed['row']): { L: { u: number; hole: number }[]; R: { u: number; hole: number }[] } {
+  const H = holesOf(row).filter((h) => h.on === 'body');
+  const n = H.length;
+  const pick = (i: number) => H[Math.max(0, Math.min(n - 1, i))];
+  const place = (hs: { u: number }[]) => {
+    const raw = hs.map((h) => h.u + 9);
+    const span = Math.abs(raw[2] - raw[0]);
+    if (span <= 84) return hs.map((h, i) => ({ u: raw[i], hole: h.u }));
+    const mid = raw[1];
+    const sgn = Math.sign(raw[2] - raw[0]) || 1;
+    return hs.map((h, i) => ({ u: mid + sgn * (i - 1) * 40, hole: h.u }));
+  };
+  // The left hand's B · A · G; the right hand's F · E · D on three
+  // neighbouring holes (they were spread over four, ≈ 110 mm on an alto).
+  return { L: place([pick(n - 2), pick(n - 4), pick(n - 5)]), R: place([pick(3), pick(2), pick(1)]) };
+}
+
 /** The six pearl touches under the fingertips (the left hand's three on the
  *  upper stack, the right hand's on the lower), on the tube's front. */
 export function pearlsOf(P: Placed, view: ViewId): { c: P2; r: number; hand: 'L' | 'R'; p3: Vec3; base: P2 }[] {
   const H = holesOf(P.row).filter((h) => h.on === 'body');
-  const n = H.length;
-  if (n < 7) return [];
-  const pick = (i: number) => H[Math.max(0, Math.min(n - 1, i))];
-  const L = [pick(n - 2), pick(n - 4), pick(n - 5)];
-  const R = [pick(4), pick(2), pick(1)];
+  if (H.length < 7) return [];
+  const st = pearlStations(P.row);
   const rr = Math.max(5.5, P.row.mpR * 0.55);
-  return [...L.map((h) => ({ h, hand: 'L' as const })), ...R.map((h) => ({ h, hand: 'R' as const }))].map(({ h, hand }) => {
-    const p3 = onTube(P, h.u + 9, -8, 7);
-    return { c: prj(view, p3), r: rr, hand, p3, base: prj(view, onTube(P, h.u + 4, 10, 0)) };
+  return [...st.L.map((q) => ({ q, hand: 'L' as const })), ...st.R.map((q) => ({ q, hand: 'R' as const }))].map(({ q, hand }) => {
+    const p3 = onTube(P, q.u, -8, 7);
+    return { c: prj(view, p3), r: rr, hand, p3, base: prj(view, onTube(P, q.hole + 4, 10, 0)) };
   });
+}
+
+/** Where the right little finger's low C / E♭ spatulas start (u): just below
+ *  the D pearl, where the little finger falls (figure pass 3; they were by
+ *  the bottom of the body, beyond the finger's reach). */
+export function lowSpatulaU(row: Placed['row']): number {
+  const H = holesOf(row).filter((h) => h.on === 'body');
+  return H.length >= 7 ? pearlStations(row).R[2].u + 18 : pathOf(row).bodyEnd - 46;
 }
 
 /** Guards over the bell's lowest cups: a curved plate's outline. */

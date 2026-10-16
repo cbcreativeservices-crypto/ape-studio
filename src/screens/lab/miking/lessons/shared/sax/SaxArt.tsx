@@ -17,27 +17,30 @@
  *     on the neck and the neck's receiver and screw;
  *   • the mouthpiece in dark hard rubber, the metal ligature and the cane
  *     reed; the neck strap;
- *   • the player, a neutral adult figure in profile (side) or from above
- *     (top), with the house line-art head (bald, brows, nose, mouth, ear —
- *     no eyes), the lips round the mouthpiece and the fingers on the pearls.
- *     The player recedes (charter §6): the subject is the instrument.
+ *   • the player, the house figure in profile (side) or from above (top) —
+ *     one shirt, the sleeves out of it at the shoulder — with the shared
+ *     head (its lips round the mouthpiece) and the shared 3-D hands on the
+ *     keys (saxHands.ts: the fingers' pads on the pearls, the thumbs on the
+ *     octave rest and under the thumb hook). Opaque (figure pass 3).
  *
  * Nothing moves (D8). Paths are built once per posture, view and fingering.
  */
 import { useMemo, type ReactElement } from 'react';
 import { View } from 'react-native';
-import { BlurMask, Canvas, Group, LinearGradient, Paint, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
-import { armPath, FIGURE_SKIN, FigureHead, headAbove, headProfile, intoCollar } from '../players/PlayerFigure';
+import { FigureHead, headAbove, headProfile, intoCollar } from '../players/PlayerFigure';
+import { PaintItem as FigurePaint, playerGroups as figureGroups, type HandHold, type Item as FigureItem } from '../bowed/BowedArt';
+import { saxHands, type SaxHand, type SaxTouch } from './saxHands.ts';
 import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
-import { anchorsOf, centre, onTube, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
-import { TO_VIEWER, band, bellGuard, circle2, cupsOf, engraving, pearlsOf, prj, rodsOf, silhouette, tubeSamples, type P2, type Placed, type TubeSample } from './saxDraw.ts';
+import { anchorsOf, centre, onTube, tangent, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
+import { TO_VIEWER, band, bellGuard, circle2, cupsOf, depthOf, engraving, lowSpatulaU, pearlsOf, prj, rodsOf, silhouette, tubeSamples, type P2, type Placed, type TubeSample } from './saxDraw.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -55,18 +58,9 @@ const LEATHER = ['#d8b787', '#a07a48', '#5e4220'];
 const PEARL = ['#fffdf6', '#efe6d4', '#b9ac95'];
 const HOLE = '#140c03';
 const THROAT = ['#5c3d0c', '#2a1904', '#0d0801'];
-/* the player: muted, cool-neutral (PlayerFigure's palette) */
-const SHIRT = ['#5d687e', '#465064', '#2f3645'];
-const SHIRT_EDGE = '#171a21';
-const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
-/** The hands wear the shared figure skin, the head's tone (owner
- *  2026-10-08, HF1 — they were a grey neutral). */
-const SKIN = FIGURE_SKIN.ramp;
-const SKIN_EDGE = FIGURE_SKIN.edge;
-const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
+/* the player wears the house figure (bowed/BowedArt.playerGroups: the shared
+   shirt, trouser, skin and shoe tones); the strap is this family's. */
 const STRAP = ['#3a3f4a', '#1d2027', '#0d0f13'];
-const CHAIR = ['#3a3c43', '#1d1e22', '#0c0c0e'];
-const METAL = ['#d5d9e0', '#8d939e', '#4b5059'];
 
 /* ── path helpers ── */
 const make = () => Skia.Path.Make();
@@ -74,25 +68,6 @@ function poly(pts: readonly P2[], close = true): SkPath {
   const p = make();
   pts.forEach(([u, v], i) => (i === 0 ? p.moveTo(u, v) : p.lineTo(u, v)));
   if (close) p.close();
-  return p;
-}
-/** A smooth curve through points (Catmull-Rom as cubics). */
-function smooth(points: readonly P2[], closed: boolean, tension = 0.5): SkPath {
-  const p = make();
-  const n = points.length;
-  if (n < 2) return p;
-  const at = (i: number) => (closed ? points[(i + n) % n] : points[Math.max(0, Math.min(n - 1, i))]);
-  p.moveTo(points[0][0], points[0][1]);
-  const last = closed ? n : n - 1;
-  for (let i = 0; i < last; i++) {
-    const p0 = at(i - 1);
-    const p1 = at(i);
-    const p2 = at(i + 1);
-    const p3 = at(i + 2);
-    const k = tension / 3;
-    p.cubicTo(p1[0] + (p2[0] - p0[0]) * k, p1[1] + (p2[1] - p0[1]) * k, p2[0] - (p3[0] - p1[0]) * k, p2[1] - (p3[1] - p1[1]) * k, p2[0], p2[1]);
-  }
-  if (closed) p.close();
   return p;
 }
 function bbox(pts: readonly P2[]) {
@@ -107,27 +82,6 @@ function bbox(pts: readonly P2[]) {
     if (v > v1) v1 = v;
   }
   return { u0, v0, u1, v1 };
-}
-/** A tapered limb in 2-D: the hull of two circles. */
-function limb2(a: P2, b: P2, ra: number, rb: number): P2[] {
-  const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
-  if (d < Math.abs(ra - rb) + 0.5) {
-    const c = ra > rb ? a : b;
-    const r = Math.max(ra, rb);
-    return Array.from({ length: 20 }, (_, i) => [c[0] + r * Math.cos((i / 20) * Math.PI * 2), c[1] + r * Math.sin((i / 20) * Math.PI * 2)] as P2);
-  }
-  const th = Math.atan2(b[1] - a[1], b[0] - a[0]);
-  const ph = Math.acos(Math.max(-1, Math.min(1, (ra - rb) / d)));
-  const out: P2[] = [];
-  for (let i = 0; i <= 10; i++) {
-    const t = th + ph + ((2 * Math.PI - 2 * ph) * i) / 10;
-    out.push([a[0] + ra * Math.cos(t), a[1] + ra * Math.sin(t)]);
-  }
-  for (let i = 0; i <= 10; i++) {
-    const t = th - ph + ((2 * ph) * i) / 10;
-    out.push([b[0] + rb * Math.cos(t), b[1] + rb * Math.sin(t)]);
-  }
-  return out;
 }
 
 /* ── the paint list ── */
@@ -188,7 +142,7 @@ function tubeItems(S: TubeSample[], kind: 'brass' | 'rubber' | 'silver' | 'brass
 }
 
 /** The instrument's paint for one view and fingering, far to near. */
-export function saxItems(P: Placed, view: ViewId, f: Pick<Fingering, 'open' | 'octaveKey'> | null): Item[] {
+export function saxItems(P: Placed, view: ViewId, f: Pick<Fingering, 'open' | 'octaveKey'> | null, extra: { hook?: SaxTouch; table?: SaxHand } = {}): Item[] {
   const row = P.row;
   const S = pathOf(row);
   const A = anchorsOf(P);
@@ -284,19 +238,36 @@ export function saxItems(P: Placed, view: ViewId, f: Pick<Fingering, 'open' | 'o
       const c3 = onTube(P, u, -38 - i * 12, 10);
       out.push(item(circle2(view, c3, tubeDir(P, u, -38 - i * 12), 7.5, 14), { colors: ['#fff2c4', '#d9a947', '#6d4710'] }, { color: BRASS_EDGE, w: 1 }));
     }
-    const low = S.bodyEnd - 46;
+    const low = lowSpatulaU(row);
     for (let i = 0; i < 2; i++) {
       const a = onTube(P, low + i * 22, 112, 10);
       const b = onTube(P, low + i * 22 + 16, 112, 10);
       out.push(lineItem([prj(view, a), prj(view, b)], BRASS_EDGE, 11), lineItem([prj(view, a), prj(view, b)], '#e8c46a', 8.4), lineItem([prj(view, a), prj(view, b)], SPEC, 2, 0.6));
     }
-    // The right thumb rest (back of the body) and the left thumb's octave button.
-    const rt = H[3]?.u ?? low - 120;
-    const tA = onTube(P, rt - 14, 182, 3);
-    const tB = onTube(P, rt + 10, 182, 11);
+    // The right thumb hook (back of the body, where the thumb sits under it —
+    // saxHands) and the left thumb's octave button.
+    const rt = extra.hook ? extra.hook.u - 18 : H[3]?.u ?? low - 120;
+    const ra = extra.hook ? extra.hook.ang + 2 : 182;
+    const tA = onTube(P, rt - 14, ra, 3);
+    const tB = onTube(P, rt + 10, ra, 11);
     out.push(lineItem([prj(view, tA), prj(view, tB)], BRASS_EDGE, 6), lineItem([prj(view, tA), prj(view, tB)], '#e3bd60', 3.6));
     const ob = onTube(P, H[H.length - 3].u + 8, 186, 8);
     out.push(item(circle2(view, ob, tubeDir(P, H[H.length - 3].u + 8, 186), 6, 14), { radial: PEARL, c: prj(view, ob), r: 7 }, { color: '#6d6455', w: 0.8 }));
+  }
+  // The left little finger's G♯ / low-key table: its spatulas under the finger's pad.
+  if (extra.table) {
+    const t = extra.table.touches[3];
+    const pad = extra.table.pads[3];
+    if (pad && t) {
+      const m = tubeDir(P, t.u, t.ang);
+      const c3 = sub(pad, scale(m, 7));
+      for (const d of [-9, 9]) {
+        const along = sub(onTube(P, t.u + d + 8, t.ang, t.out), onTube(P, t.u + d - 8, t.ang, t.out));
+        const a = add(c3, add(scale(along, 0.5), scale(tubeDir(P, t.u, t.ang + 90), d * 0.5)));
+        const b = add(c3, add(scale(along, -0.5), scale(tubeDir(P, t.u, t.ang + 90), d * 0.5)));
+        out.push(lineItem([prj(view, a), prj(view, b)], BRASS_EDGE, 9), lineItem([prj(view, a), prj(view, b)], '#e8c46a', 6.6), lineItem([prj(view, a), prj(view, b)], SPEC, 1.6, 0.6));
+      }
+    }
   }
   // The strap ring.
   const ringPts = circle2(view, A.ring, tubeDir(P, S.tenon + 70, 180), 7, 16);
@@ -320,22 +291,74 @@ export function saxItems(P: Placed, view: ViewId, f: Pick<Fingering, 'open' | 'o
 
 /* ── the player ── */
 
-type Group3 = { key: string; items: Item[] };
+/**
+ * THE PLAYER (figure pass 3, owner 2026-10-15: "shoulder transitions from
+ * shirt sleeves to the shirt body look very unnatural … plug and position
+ * interchangeable limbs"): the house figure the bowed and brass families
+ * wear (bowed/BowedArt.playerGroups) — ONE shirt, the near sleeve growing
+ * out of it with the deltoid over the joint and its armhole melting into the
+ * shoulder, the far sleeve a shade darker, the collar, the chest fuller than
+ * the belly, the shirt tucked in at the belt, the house legs and shoes — on
+ * this posture's joints (the same joints the keep-outs use), and the HANDS
+ * the shared 3-D hand posed on the keys (saxHands.ts). Opaque, as every lab
+ * figure is. The head is this family's own (its lips on the mouthpiece).
+ */
+type Group3 = { key: string; depth: number; items: FigureItem[] };
 
-/** A whole ARM, shoulder → elbow → wrist: the shared anatomical arm (owner
- *  2026-10-10: the tube arms) — the elbow's point and crook, the forearm's
- *  swell, the cuff short of the wrist; one outline, no seam. */
-function armItem(view: ViewId, s: Vec3, e: Vec3, w: Vec3): Item {
-  const S = prj(view, s);
-  const E = prj(view, e);
-  const W = prj(view, w);
-  const path = armPath(pt(S[0], S[1]), pt(E[0], E[1]), pt(W[0], W[1]));
-  return { path, fill: { colors: SHIRT }, stroke: { color: SHIRT_EDGE, w: 2 }, box: bbox([S, E, W]), rim: 2.2 };
+/** The horn's silhouette round a hand's station (what hides that hand's far side). */
+function hornAround(P: SaxPosture, view: ViewId, u: number): SkPath {
+  const S = pathOf(P.row);
+  return poly(silhouette(tubeSamples(P, view, Math.max(S.mouthEnd, u - 220), Math.min(S.bellStart, u + 220), 6, (q) => radiusAt(P.row, q) + 8)));
 }
 
-function limbItem(view: ViewId, a: Vec3, b: Vec3, ra: number, rb: number, fill: Fill, edge = SHIRT_EDGE): Item {
-  const pts = limb2(prj(view, a), prj(view, b), ra, rb);
-  return { path: smooth(pts, true, 0.35), fill, stroke: { color: edge, w: 2 }, box: bbox(pts), rim: 2.2 };
+export function playerGroups(P: SaxPosture, view: ViewId): { groups: Group3[]; hornDepth: number; head: { line: SkPath; fill: SkPath; c: P2; r: number } } {
+  const s = P.player;
+  const S = pathOf(P.row);
+  // (The body, the head and the strap always behind the horn — a soprano held in front of the chest included.)
+  const hornDepth = Math.max(depthOf(view, centre(P, (S.tenon + S.bodyEnd) / 2)), depthOf(view, s.chest) + 1.5);
+  const H = saxHands(P);
+  const toV = TO_VIEWER[view];
+  const hold = (h: SaxHand, far: boolean): HandHold => {
+    const t = tangent(P, h.u);
+    const n = sub(toV, scale(t, dot(toV, t)));
+    const nl = Math.hypot(n.x, n.y, n.z);
+    return {
+      kind: 'wrap',
+      // The hand over the horn; its far side (a palm round the far side of the body, a thumb behind it) hidden where the horn covers it.
+      posed: { sk: h.sk, cut: nl > 0.2 ? { p: centre(P, h.u), n: scale(n, 1 / nl) } : undefined, hide: hornAround(P, view, h.u) },
+      depth: hornDepth + 2.5,
+      // The far (left) forearm, seen from the player's right, behind the horn;
+      // the near one in front of it (the arm paints 1 under this depth).
+      armDepth: far && view === 'side' ? hornDepth - 1 : hornDepth + 2,
+    };
+  };
+  const figure = { player: { ...s, face: { x: 1, y: 0, z: 0 } }, chair: P.chair ?? undefined };
+  // The near sleeve melts into the shirt only round the shoulder (≈ 150 mm,
+  // the deltoid); a saxophonist's near arm lies over the shirt all the way to
+  // the wrist in profile, and lower down it keeps its own outline.
+  const sh = prj(view, s.shoulderR);
+  const round = make();
+  round.addCircle(sh[0], sh[1], 150);
+  const nearSoft = (it: FigureItem): FigureItem => (it.soft ? { ...it, soft: Skia.Path.MakeFromOp(it.soft, round, PathOp.Intersect) ?? undefined } : it);
+  const groups: Group3[] = figureGroups(figure, view, true, { hands: { L: hold(H.L, true), R: hold(H.R, false) } }).map((g) => ({
+    ...g,
+    items: g.items.filter((it) => !it.head).map((it) => (view === 'side' && (g.key === 'upperR' || g.key === 'foreR') ? nearSoft(it) : it)),
+  }));
+  // The strap: from behind the neck over the shirt to the ring.
+  const strapPts: P2[] = [];
+  const from = P.strap.from;
+  const to = P.strap.to;
+  const mid = add(scale(add(from, to), 0.5), { x: 30, y: -30, z: 40 });
+  for (let t = 0; t <= 1.0001; t += 0.1) strapPts.push(prj(view, add(scale(from, (1 - t) * (1 - t)), add(scale(mid, 2 * t * (1 - t)), scale(to, t * t)))));
+  const strapItem = (w: number, color: string): FigureItem => ({ path: poly(strapPts, false), stroke: { color, w }, box: bbox(strapPts) });
+  groups.push({ key: 'strap', depth: depthOf(view, s.chest) + 1, items: [strapItem(18, '#07080a'), strapItem(13, STRAP[1])] });
+  groups.sort((a, b) => a.depth - b.depth);
+  const hc = prj(view, s.head);
+  // The neck goes INTO the collar (figure pass 2026-10-15): the head stops at
+  // the shirt's outline instead of lying over the shoulders.
+  const torso = groups.find((g) => g.key === 'torso')?.items[0]?.path ?? null;
+  const head = view === 'side' ? { ...(torso ? intoCollar(headSide(hc, s.headR), torso) : headSide(hc, s.headR)), c: hc, r: s.headR } : { ...headTop(hc, s.headR), c: hc, r: s.headR };
+  return { groups, hornDepth, head };
 }
 
 /** The head in profile, facing +u — the SHARED figure head (PlayerFigure
@@ -359,111 +382,6 @@ function headTop(c: P2, r: number): { line: SkPath; fill: SkPath } {
   return { line, fill };
 }
 
-/** The player's paint, split behind and in front of the instrument. */
-export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; front: Group3[]; head: { line: SkPath; fill: SkPath; c: P2; r: number } } {
-  const s = P.player;
-  const q = (p: Vec3) => prj(view, p);
-  const behind: Group3[] = [];
-  const front: Group3[] = [];
-  const seated = P.kind === 'seated';
-  // The chair (seated), behind everything.
-  if (P.chair) {
-    const { min, max } = P.chair.seat;
-    const legs = P.chair.legs.map(([a, b]) => limbItem(view, a, b, 12, 11, { colors: METAL }, '#202228'));
-    const seat = view === 'side' ? [[min.x, min.y], [max.x, min.y], [max.x, max.y], [min.x, max.y]] as P2[] : [[min.x, min.z], [max.x, min.z], [max.x, max.z], [min.x, max.z]] as P2[];
-    const backrest = view === 'side' ? ([[min.x - 6, min.y - 380], [min.x + 34, min.y - 380], [min.x + 34, min.y], [min.x - 6, min.y]] as P2[]) : null;
-    behind.push({ key: 'chair', items: [...legs, item(seat, { colors: CHAIR }, { color: '#000', w: 2 }, { rim: 1.6 }), ...(backrest ? [item(backrest, { colors: CHAIR }, { color: '#000', w: 2 }, { rim: 1.6 })] : [])] });
-  }
-  // Legs (the far leg darker), shoes.
-  const leg = (side: 'L' | 'R') => {
-    const hip = side === 'L' ? s.hipL : s.hipR;
-    const knee = side === 'L' ? s.kneeL : s.kneeR;
-    const ankle = side === 'L' ? s.ankleL : s.ankleR;
-    const toe = side === 'L' ? s.toeL : s.toeR;
-    return [limbItem(view, hip, knee, 82, 60, { colors: TROUSER }), limbItem(view, knee, ankle, 60, 40, { colors: TROUSER }), limbItem(view, ankle, toe, 42, 36, { colors: SHOE }, '#000')];
-  };
-  behind.push({ key: 'legL', items: leg('L').map((it) => ({ ...it, opacity: 0.85 })) });
-  // The far arm (the left), behind the torso and the horn.
-  const armL = [armItem(view, s.shoulderL, s.elbowL, s.wristL)];
-  behind.push({ key: 'armL', items: armL.map((it) => ({ ...it, opacity: 0.9 })) });
-  // The torso.
-  let torsoSide: SkPath | null = null;
-  if (view === 'side') {
-    const N = q(s.neck);
-    const C = q(s.chest);
-    const Pv = q(s.pelvis);
-    const Sh = q(s.shoulderR);
-    const pts: P2[] = [
-      [N[0] - 48, N[1] - 6],
-      [Sh[0] - 66, Sh[1] + 8],
-      [C[0] - 108, C[1] + 6],
-      [Pv[0] - 84, Pv[1] - 170],
-      [Pv[0] - 104, Pv[1] + 6],
-      [Pv[0] - 72, Pv[1] + (seated ? 70 : 96)],
-      [Pv[0] + 30, Pv[1] + (seated ? 76 : 108)],
-      [Pv[0] + 92, Pv[1] - 18],
-      [C[0] + 112, C[1] + 196],
-      [C[0] + 126, C[1] + 12],
-      [N[0] + 82, N[1] + 70],
-      [N[0] + 52, N[1] + 2],
-    ];
-    torsoSide = smooth(pts, true, 0.5);
-    behind.push({ key: 'torso', items: [{ path: torsoSide, fill: { colors: SHIRT }, stroke: { color: SHIRT_EDGE, w: 2.2 }, box: bbox(pts), rim: 2.4 }] });
-  } else {
-    // From above: the shoulders' broad, rounded girdle — the back flatter,
-    // the chest a gentle curve forward.
-    const C = q(s.chest);
-    const L = q(s.shoulderL);
-    const R = q(s.shoulderR);
-    const pts: P2[] = [
-      [L[0] - 40, L[1] - 18],
-      [C[0] - 98, (L[1] + C[1]) / 2],
-      [C[0] - 104, C[1]],
-      [C[0] - 98, (R[1] + C[1]) / 2],
-      [R[0] - 40, R[1] + 18],
-      [R[0] + 34, R[1] + 10],
-      [C[0] + 102, C[1] + 92],
-      [C[0] + 124, C[1]],
-      [C[0] + 102, C[1] - 92],
-      [L[0] + 34, L[1] - 10],
-    ];
-    behind.push({ key: 'torso', items: [{ path: smooth(pts, true, 0.5), fill: { colors: SHIRT }, stroke: { color: SHIRT_EDGE, w: 2.2 }, box: bbox(pts), rim: 2.4 }] });
-    if (seated) behind.unshift({ key: 'thighsTop', items: [limbItem(view, s.hipL, s.kneeL, 82, 62, { colors: TROUSER }), limbItem(view, s.hipR, s.kneeR, 82, 62, { colors: TROUSER })] });
-  }
-  if (view === 'side') behind.push({ key: 'legR', items: leg('R') });
-  else if (!seated) behind.unshift({ key: 'feet', items: [limbItem(view, s.ankleL, s.toeL, 46, 38, { colors: SHOE }, '#000'), limbItem(view, s.ankleR, s.toeR, 46, 38, { colors: SHOE }, '#000')] });
-  // The strap: behind the horn.
-  const strapPts: P2[] = [];
-  const from = P.strap.from;
-  const to = P.strap.to;
-  const mid = add(scale(add(from, to), 0.5), { x: 30, y: -30, z: 40 });
-  for (let t = 0; t <= 1.0001; t += 0.1) {
-    const a = add(scale(from, (1 - t) * (1 - t)), add(scale(mid, 2 * t * (1 - t)), scale(to, t * t)));
-    strapPts.push(q(a));
-  }
-  behind.push({ key: 'strap', items: [lineItem(strapPts, '#07080a', 18), { ...lineItem(strapPts, STRAP[1], 13), opacity: 0.95 }] });
-  // The left hand (on the far side of the horn): palm and fingers to the
-  // pearls of the upper stack.
-  const handItems = (side: 'L' | 'R'): Item[] => {
-    const w = side === 'L' ? s.wristL : s.wristR;
-    const h = side === 'L' ? s.handL : s.handR;
-    // The wrist (≈ 54 mm) narrower than the heel of the hand, out of the cuff.
-    const palm = limbItem(view, add(w, scale(sub(h, w), -0.12)), h, 27, 36, { colors: SKIN }, SKIN_EDGE);
-    const tips = pearlsOf(P, view).filter((p) => p.hand === side);
-    const fingers = tips.map((t) => limbItem(view, add(h, scale(sub(t.p3, h), 0.2)), t.p3, 11, 8.5, { colors: SKIN }, SKIN_EDGE));
-    return [palm, ...fingers];
-  };
-  behind.push({ key: 'handL', items: handItems('L') });
-  // In front of the horn: the right arm and hand (the camera side).
-  front.push({ key: 'armR', items: [armItem(view, s.shoulderR, s.elbowR, s.wristR)] });
-  front.push({ key: 'handR', items: handItems('R') });
-  const hc = q(s.head);
-  // The neck goes INTO the collar (figure pass 2026-10-15): the head stops at
-  // the shirt's outline instead of lying over the shoulders.
-  const head = view === 'side' ? { ...(torsoSide ? intoCollar(headSide(hc, s.headR), torsoSide) : headSide(hc, s.headR)), c: hc, r: s.headR } : { ...headTop(hc, s.headR), c: hc, r: s.headR };
-  return { behind, front, head };
-}
-
 /** The player's head as part of the figure (owner 2026-10-06: no separate
  *  line-art head icon on a lab figure) — the shared FigureHead skin mass. */
 function HeadArt({ h }: { h: { line: SkPath; fill: SkPath; c: P2; r: number } }) {
@@ -471,8 +389,8 @@ function HeadArt({ h }: { h: { line: SkPath; fill: SkPath; c: P2; r: number } })
 }
 
 /** The instrument alone (its own fingering), for a view. */
-export function SaxInstrument({ P, view, f, dim = 1 }: { P: Placed; view: ViewId; f: Pick<Fingering, 'open' | 'octaveKey'> | null; dim?: number }) {
-  const items = useMemo(() => saxItems(P, view, f), [P, view, f]);
+export function SaxInstrument({ P, view, f, dim = 1, hook, table }: { P: Placed; view: ViewId; f: Pick<Fingering, 'open' | 'octaveKey'> | null; dim?: number; hook?: SaxTouch; table?: SaxHand }) {
+  const items = useMemo(() => saxItems(P, view, f, { hook, table }), [P, view, f, hook, table]);
   return (
     <Group opacity={dim}>
       {items.map((it, i) => (
@@ -485,28 +403,30 @@ export function SaxInstrument({ P, view, f, dim = 1 }: { P: Placed; view: ViewId
 /** The resting fingering the scenes draw (written G4: the left hand down). */
 export const REST_NOTE = 9;
 
-/** The player and the horn, for one view: player behind, horn, near arm,
- *  head over the mouthpiece in the top view. */
+/** The player and the horn, for one view, painted far to near: the player's
+ *  parts behind the horn, the horn, the parts in front of it (the near arm,
+ *  the hands on the keys). Opaque (owner 2026-10-10: a see-through limb reads
+ *  as a mannequin). */
 export function SaxScene({ P, view, f }: { P: SaxPosture; view: ViewId; f?: Pick<Fingering, 'open' | 'octaveKey'> | null }) {
   const fing = useMemo(() => f ?? fingering(P.row, REST_NOTE), [P, f]);
   const pg = useMemo(() => playerGroups(P, view), [P, view]);
+  const hook = useMemo(() => saxHands(P).R.thumb, [P]);
   const draw = (gs: Group3[]) =>
     gs.map((g) => (
       <Group key={g.key}>
         {g.items.map((it, i) => (
-          <PaintItem key={i} it={it} />
+          <FigurePaint key={i} it={it} />
         ))}
       </Group>
     ));
+  const behind = pg.groups.filter((g) => g.depth < pg.hornDepth);
+  const front = pg.groups.filter((g) => g.depth >= pg.hornDepth);
   return (
     <Group>
-      {/* The player recedes (charter §6): behind at 0.8, in front at 0.62. */}
-      <Group layer={<Paint opacity={0.8} />}>
-        {draw(pg.behind)}
-        <HeadArt h={pg.head} />
-      </Group>
-      <SaxInstrument P={P} view={view} f={fing} />
-      <Group layer={<Paint opacity={0.62} />}>{draw(pg.front)}</Group>
+      {draw(behind)}
+      <HeadArt h={pg.head} />
+      <SaxInstrument P={P} view={view} f={fing} hook={hook} table={saxHands(P).L} />
+      {draw(front)}
     </Group>
   );
 }

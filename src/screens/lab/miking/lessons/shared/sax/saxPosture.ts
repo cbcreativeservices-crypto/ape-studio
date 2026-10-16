@@ -64,7 +64,65 @@ export type SaxPosture = {
   chair: { seat: { min: Vec3; max: Vec3 }; legs: [Vec3, Vec3][] } | null;
   /** The neck strap: from the back of the player's neck to the strap ring. */
   strap: { from: Vec3; to: Vec3 };
+  /** Each hand's frame on its key stack (figure pass 3 — saxHands.ts starts
+   *  the 3-D hand here): the station u, the wrist, the way the hand points,
+   *  the way its back faces, toward its thumb. */
+  hands: { L: HandAt; R: HandAt };
 };
+
+export type HandAt = { u: number; wrist: Vec3; along: Vec3; dorsal: Vec3; thumbSide: Vec3 };
+/** A direction or offset in the tube's own frame at u: along it toward the
+ *  bell (t), out of its front (f, away from the player), across it toward
+ *  the player's right (c). */
+export type TubeLocal = readonly [t: number, f: number, c: number];
+/** A hand held on the body: its knuckle row's centre K, the way it points
+ *  (wrist → knuckles), its back, its thumb — tube-local at u. */
+export type SaxHold = { K: TubeLocal; along: TubeLocal; dorsal: TubeLocal; thumb: TubeLocal };
+
+/**
+ * THE HOLDS (figure pass 3, drawing defaults found by fitting the shared hand
+ * to the pearls — saxHands.ts): each palm on its own side of the body (the
+ * left on the player's left, the right on the player's right), the fingers
+ * round its front onto the pearls, the thumbs behind (the left on its rest
+ * under the octave key, the right under the thumb hook). Per row, from the
+ * tube's radius when not tuned.
+ */
+const SAX_HOLDS: Partial<Record<SaxRow['id'], { L: SaxHold; R: SaxHold }>> = {
+  soprano: {
+    L: { K: [22.6, 7.6, -49.2], along: [0.22, 0.8, 0.56], dorsal: [-0.01, 0.58, -0.82], thumb: [-0.98, 0.17, 0.14] },
+    R: { K: [32.5, -5.6, 45.3], along: [0.6, 0.63, -0.48], dorsal: [0.29, 0.39, 0.87], thumb: [-0.74, 0.67, -0.05] },
+  },
+  alto: {
+    L: { K: [24.3, 2.2, -54.2], along: [0.22, 0.81, 0.55], dorsal: [0.12, 0.54, -0.84], thumb: [-0.97, 0.25, 0.03] },
+    R: { K: [37.8, 1.9, 47.2], along: [0.71, 0.63, -0.31], dorsal: [0.33, 0.09, 0.94], thumb: [-0.62, 0.77, 0.14] },
+  },
+  tenor: {
+    L: { K: [46.4, 1.3, -57.1], along: [0.15, 0.84, 0.52], dorsal: [-0.02, 0.53, -0.85], thumb: [-0.99, 0.12, 0.1] },
+    R: { K: [60.8, 17.2, 50.8], along: [-0.1, 0.89, -0.45], dorsal: [-0.46, 0.36, 0.81], thumb: [-0.88, -0.29, -0.37] },
+  },
+  baritone: {
+    L: { K: [47.4, 27.9, -66.7], along: [-0.07, 0.82, 0.56], dorsal: [-0.58, 0.43, -0.7], thumb: [-0.81, -0.37, 0.44] },
+    R: { K: [79.1, 20.6, 56.8], along: [0.01, 0.84, -0.54], dorsal: [-0.44, 0.49, 0.76], thumb: [-0.9, -0.23, -0.37] },
+  },
+};
+function holdsOf(row: SaxRow, r: number): { L: SaxHold; R: SaxHold } {
+  return (
+    SAX_HOLDS[row.id] ?? {
+      L: { K: [10, 4, -(r + 26)], along: [0.22, 0.8, 0.56], dorsal: [-0.05, 0.58, -0.81], thumb: [-1, 0, 0] },
+      R: { K: [-5, -12, r + 24], along: [0.21, 0.81, -0.55], dorsal: [0.4, 0.45, 0.8], thumb: [-0.89, 0.39, 0.23] },
+    }
+  );
+}
+const PALM_TO_KNUCKLES = 95;
+function placeHold(P: Pick<SaxPosture, 'row' | 'ax'>, u: number, h: SaxHold): HandAt {
+  const t = tangent(P, u);
+  const f = frontNormal(P, u);
+  const c = P.ax.n;
+  const loc = (q: TubeLocal) => add(scale(t, q[0]), add(scale(f, q[1]), scale(c, q[2])));
+  const along = norm(loc(h.along));
+  const wrist = sub(add(centre(P, u), loc(h.K)), scale(along, PALM_TO_KNUCKLES));
+  return { u, wrist, along, dorsal: norm(loc(h.dorsal)), thumbSide: norm(loc(h.thumb)) };
+}
 
 const DEG = Math.PI / 180;
 /** The lips (the reed tip) above the floor: standing, seated. */
@@ -254,12 +312,17 @@ export function saxPosture(row: SaxRow, kind: SaxPostureKind): SaxPosture {
   const body = H.filter((h) => h.on === 'body');
   const lhU = body[body.length - 3]?.u ?? (S.tenon + S.bodyEnd) / 2;
   const rhU = body[Math.min(body.length - 1, 3)]?.u ?? S.bodyEnd - 80;
-  const handL = onTube(P0, lhU, -70, 22);
-  const handR = onTube(P0, rhU, 80, 26);
-  const wristL = add(handL, add(scale(ax.a, -40), add(scale(ax.n, -55), { x: 0, y: 28, z: 0 })));
-  const wristR = add(handR, add(scale(ax.a, -50), add(scale(ax.n, 55), { x: 0, y: 18, z: 0 })));
+  // (figure pass 3) Each hand from its hold: the wrist a palm behind the
+  // knuckles, `hand` the palm's centre (the keep-outs' hand capsule).
+  const H0 = holdsOf(row, radiusAt(row, lhU));
+  const HL = placeHold(P0, lhU, H0.L);
+  const HR = placeHold(P0, rhU, holdsOf(row, radiusAt(row, rhU)).R);
+  const wristL = HL.wrist;
+  const wristR = HR.wrist;
+  const handL = add(wristL, scale(HL.along, 60));
+  const handR = add(wristR, scale(HR.along, 60));
   // The elbows hang out to each side and a little back (a relaxed hold).
-  const elbowL = elbowOf(shoulderL, wristL, 290, 255, { x: -0.25, y: 0.5, z: -1 });
+  const elbowL = elbowOf(shoulderL, wristL, 290, 255, { x: -0.25, y: 0.75, z: -1 });
   const elbowR = elbowOf(shoulderR, wristR, 290, 255, { x: -0.3, y: 0.4, z: 1 });
   const yFloor = MOUTH_HEIGHT[kind];
   let kneeL: Vec3;
@@ -310,5 +373,6 @@ export function saxPosture(row: SaxRow, kind: SaxPostureKind): SaxPosture {
     floorY: yFloor,
     chair,
     strap: { from: { x: neck.x - 30, y: neck.y - 20, z: 0 }, to: anchors.ring },
+    hands: { L: HL, R: HR },
   };
 }

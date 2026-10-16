@@ -37,7 +37,9 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { add, dot, len, norm, scale, sub } from '../../../engine/geometry/vec.ts';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { drawHand3, FIGURE_TONES, FigureMass, Nails, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import type { HandView } from '../players/handModel.ts';
+import { PAD, touchAt, touchR, windHands, type Touch } from './windHands.ts';
 import type { PlayerPose, Pt } from '../players/playerPose.ts';
 import { frameAt, samples, type Frame, type Layout } from './windPosture.ts';
 import { holeR, holeS, radiusAt, type Material, type Piece } from './windSpec.ts';
@@ -547,6 +549,105 @@ function extrasFor(L: Layout, view: ViewId): Extras {
   return (m[view] ??= buildExtras(L, view));
 }
 
+/* ── the hands on the keys (figure pass 3: the shared 3-D hand, windHands.ts) ── */
+type HandPaint = { behind: SkPath[]; front: SkPath[]; lines: SkPath; nails: SkPath; touches: Item[] };
+const handCache = new WeakMap<Layout, Partial<Record<ViewId, HandPaint>>>();
+/** The view as the hand model sees it: (u, v) and the depth toward the viewer. */
+const handView = (view: ViewId): HandView => (view === 'side' ? (p) => ({ u: p.x, v: p.y, d: p.z }) : (p) => ({ u: p.x, v: p.z, d: -p.y }));
+/** A touch the art adds under a digit (a finger plate, a spatula, a finger
+ *  hole, a thumb key): drawn as the real part, at its own place on the tube. */
+function touchItems(L: Layout, view: ViewId, t: Touch, top: Vec3, m: Vec3): Item[] {
+  const R = touchR(L.spec, t);
+  const { pts, facing } = discPts(view, top, m, R);
+  if (facing < 0.05) return [];
+  const c = prj(view, top);
+  if (t.kind === 'open') {
+    return [
+      { path: polyPath(pts), fill: { radial: HOLE, c, r: R }, stroke: { color: '#000', w: 0.5, opacity: 0.6 } },
+      { path: polyPath(discPts(view, top, m, R + 1.4).pts), stroke: { color: '#ffffff', w: 0.5, opacity: 0.18 } },
+    ];
+  }
+  // The key's arm down to the tube, then its touch (a plate, a spatula's pad, a thumb key).
+  const base = sub(top, scale(m, 4));
+  const arm = make();
+  const a = prj(view, base);
+  arm.moveTo(c[0], c[1]);
+  arm.lineTo(a[0] + (c[0] - a[0]) * 0.2, a[1] + (c[1] - a[1]) * 0.2);
+  return [
+    { path: arm, stroke: { color: '#59606b', w: 2.4, cap: 'round' } },
+    { path: polyPath(pts), fill: { radial: [KEY[0], KEY[1], KEY[2], KEY[4]], c: [c[0] - R * 0.35, c[1] - R * 0.35], r: R * 1.35 }, stroke: { color: '#2f343c', w: 0.6, opacity: 0.95 } },
+    { path: polyPath(discPts(view, add(top, scale(m, 0.4)), m, R * 0.45).pts), fill: '#ffffff', opacity: 0.35 },
+  ];
+}
+function buildHands(L: Layout, view: ViewId): HandPaint {
+  const V = handView(view);
+  const toV = TO_VIEWER[view];
+  const out: HandPaint = { behind: [], front: [], lines: make(), nails: make(), touches: [] };
+  const hands = windHands(L);
+  for (const side of ['L', 'R'] as const) {
+    const w = hands[side];
+    const e = prj(view, w.elbow);
+    const wr = prj(view, w.sk.frame.o);
+    const fore = Math.atan2(wr[1] - e[1], wr[0] - e[0]);
+    const foreLen = Math.hypot(wr[0] - e[0], wr[1] - e[1]);
+    // The instrument's plane through the tube at the hand: what lies behind it
+    // (a palm under or behind the tube, a thumb on its back) paints before the
+    // instrument, the fingers over it after.
+    const f = frameAt(L, w.s);
+    const nc = sub(toV, scale(f.t, dot(toV, f.t)));
+    const cut = len(nc) > 0.2 ? { p: f.p, n: norm(nc) } : undefined;
+    const d = drawHand3(w.sk, V, { fore, foreshortened: foreLen < 0.85 * 262, cut });
+    if (d.behind) out.behind.push(d.behind);
+    out.front.push(d.path);
+    out.lines.addPath(d.lines);
+    out.nails.addPath(d.nails);
+    // The touches the art adds (where the spec draws no hole or key).
+    w.plan.fingers.forEach((g, i) => {
+      const pad = w.pads[i];
+      if (!pad || !('s' in g) || g.k !== undefined) return;
+      const { m } = touchAt(L, g);
+      out.touches.push(...touchItems(L, view, g, sub(pad, scale(m, PAD)), m));
+    });
+    const tt = w.thumbTouch;
+    if (tt.k === undefined && tt.kind !== 'rest') {
+      const { p, m } = touchAt(L, tt);
+      out.touches.push(...touchItems(L, view, tt, p, m));
+    }
+  }
+  return out;
+}
+function handsFor(L: Layout, view: ViewId): HandPaint {
+  let m = handCache.get(L);
+  if (!m) {
+    m = {};
+    handCache.set(L, m);
+  }
+  return (m[view] ??= buildHands(L, view));
+}
+/** The hands' parts behind the instrument (a palm, a thumb), or over it. */
+function HandsBehind({ L, view, dim }: { L: Layout; view: ViewId; dim: number }) {
+  const h = handsFor(L, view);
+  return (
+    <Group opacity={dim}>
+      {h.behind.map((p, i) => (
+        <FigureMass key={i} path={p} tone="skin" />
+      ))}
+    </Group>
+  );
+}
+function HandsInFront({ L, view, dim }: { L: Layout; view: ViewId; dim: number }) {
+  const h = handsFor(L, view);
+  return (
+    <Group opacity={dim}>
+      {h.front.map((p, i) => (
+        <FigureMass key={i} path={p} tone="skin" />
+      ))}
+      <Path path={h.lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
+      <Nails path={h.nails} />
+    </Group>
+  );
+}
+
 /* ── painting ── */
 function Paint({ it }: { it: Item }) {
   const f = it.fill;
@@ -609,11 +710,15 @@ export function WindScene({ L, view, playerDim = 1, showJet = true }: { L: Layou
       <Paints items={x.chairBack} />
       <PlayerBehind pose={pose} dim={playerDim} />
       <Paints items={x.peg} />
+      <HandsBehind L={L} view={view} dim={playerDim} />
       <Paints items={b.back} />
       <Paints items={b.body} />
       <Paints items={b.keys} />
+      <Paints items={handsFor(L, view).touches} />
       <Paints items={b.front} />
-      <PlayerInFront pose={pose} dim={playerDim} />
+      {/* The near arm; the hands are the shared 3-D hand on the keys (figure pass 3). */}
+      <PlayerInFront pose={pose} dim={playerDim} hands={false} />
+      <HandsInFront L={L} view={view} dim={playerDim} />
       <Paints items={x.strap} />
       {showJet ? <Paints items={x.jet} /> : null}
     </Group>
