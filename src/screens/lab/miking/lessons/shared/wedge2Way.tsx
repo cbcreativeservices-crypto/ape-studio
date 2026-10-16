@@ -69,10 +69,12 @@ export function wedgeParts(W = WEDGE_W_MM, D = WEDGE_D_MM): WedgeParts {
   const handles = Skia.Path.Make();
   handles.addRRect(Skia.RRectXY(Skia.XYWHRect(-60 * k, -HW - 2 * k, 120 * k, 22 * k), 9 * k, 9 * k));
   handles.addRRect(Skia.RRectXY(Skia.XYWHRect(-60 * k, HW - 20 * k, 120 * k, 22 * k), 9 * k, 9 * k));
-  // the recessed rear input panel and its connector
-  const panel = rr(-HD + 6 * k, -55 * k, -HD + 50 * k, 55 * k, 6 * k);
+  // the recessed input plate and its connector on the SIDE panel, toward the
+  // rear (owner 2026-10-15: "the connection into stage wedges is usually into
+  // the side"), clear of the handle recess
+  const panel = rr(-HD + 24 * k, HW - 16 * k, -HD + 104 * k, HW - 2 * k, 4 * k);
   const jack = Skia.Path.Make();
-  jack.addCircle(-HD + 28 * k, 0, 15 * k);
+  jack.addCircle(-HD + 64 * k, HW - 9 * k, 9 * k);
   return { cab, top, baffle, holes, woofer, cap, horn, throat, handles, panel, jack };
 }
 
@@ -82,6 +84,7 @@ export function Wedge2WayTop({ shadow = false, highlight, highlightW = 22 }: { s
   const HW = WEDGE_W_MM / 2;
   const HD = WEDGE_D_MM / 2;
   const topX = -HD + WEDGE_D_MM * 0.3;
+  const WOOF_CX = HD - 18 - 108; // centre of the 12" cone (wedgeParts at true size)
   return (
     <Group>
       {shadow ? (
@@ -96,24 +99,33 @@ export function Wedge2WayTop({ shadow = false, highlight, highlightW = 22 }: { s
       </Path>
       {/* the flat top panel at the back catches the light */}
       <Path path={g.top} color="#33363e" />
-      {/* the sloped baffle: perforated grille with its edge frame */}
-      <Path path={g.baffle} color="#0f1013" />
-      <Path path={g.holes} color="#3f434b" opacity={0.85} />
-      <Path path={g.woofer} color="#0a0b0d" />
-      <Path path={g.woofer} style="stroke" strokeWidth={5} color="#3d4148" />
-      <Path path={g.cap} color="#24262c" />
-      <Path path={g.horn} color="#0a0b0d" />
-      <Path path={g.horn} style="stroke" strokeWidth={4} color="#3d4148" />
-      <Path path={g.throat} style="stroke" strokeWidth={3} color="#2a2c31" />
+      {/* the sloped baffle, drivers OPEN (owner 2026-10-15: "show speaker and
+          tweeter horns — do not cover with grills"): the 12" cone with its
+          surround and dust cap, and the HF horn's flared mouth. */}
+      <Path path={g.baffle} color="#141518" />
+      <Path path={g.woofer}>
+        <RadialGradient c={vec(WOOF_CX, 0)} r={170} colors={['#3a3d44', '#1c1d21', '#0b0c0e']} />
+      </Path>
+      <Path path={g.woofer} style="stroke" strokeWidth={14} color="#2b2d33" />
+      <Path path={g.woofer} style="stroke" strokeWidth={3} color="#6a6e78" />
+      <Path path={g.cap}>
+        <RadialGradient c={vec(WOOF_CX - 10, -14)} r={60} colors={['#5a5e67', '#2a2c31']} />
+      </Path>
+      <Path path={g.cap} style="stroke" strokeWidth={2.5} color="#7a7e88" />
+      <Path path={g.horn}>
+        <LinearGradient start={vec(topX, 0)} end={vec(topX + 50, 0)} colors={['#30333a', '#0c0d0f']} />
+      </Path>
+      <Path path={g.throat} style="stroke" strokeWidth={4} color="#565a63" />
+      <Path path={g.horn} style="stroke" strokeWidth={4} color="#7a7e88" />
       <Path path={g.baffle}>
         <RadialGradient c={vec(topX + 40, -HW + 80)} r={460} colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0)']} />
       </Path>
       <Path path={g.baffle} style="stroke" strokeWidth={5} color="#5d616c" />
       <Path path={g.handles} color="#050506" />
+      {/* side input plate + connector, kept quiet so it doesn't draw the eye */}
       <Path path={g.panel} color="#0d0e11" />
-      <Path path={g.panel} style="stroke" strokeWidth={3} color="#4a4e56" />
       <Path path={g.jack} color="#050506" />
-      <Path path={g.jack} style="stroke" strokeWidth={3} color="#8d9199" />
+      <Path path={g.jack} style="stroke" strokeWidth={2} color="#4a4e56" />
       <Path path={g.cab} style="stroke" strokeWidth={4} color="#70747f" opacity={0.9} />
       {highlight ? <Path path={g.cab} style="stroke" strokeWidth={highlightW} color={highlight} opacity={0.9} /> : null}
     </Group>
