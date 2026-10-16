@@ -32,7 +32,7 @@
  */
 import type { Vec3 } from '../../../engine/model/types.ts';
 import { add, dot, len, norm, scale, sub } from '../../../engine/geometry/vec.ts';
-import { archAt, halfWidth, stationsOf, stringZ, type BowedSpec, type Stations } from './bowedSpec.ts';
+import { archAt, fbHalf, fingerboardZ, halfWidth, stationsOf, stringZ, type BowedSpec, type Stations } from './bowedSpec.ts';
 
 export type PostureKind = 'underChin' | 'seated' | 'standing';
 export type Axes = { x: Vec3; y: Vec3; z: Vec3 };
@@ -139,6 +139,43 @@ export function elbowOf(s: Vec3, h: Vec3, upper: number, fore: number, pole: Vec
   return add(add(s, scale(u, a)), scale(p, hgt));
 }
 
+/** A stop `n` semitones above the open string, as frame-B x (from the bridge). */
+export const stopX = (spec: BowedSpec, n: number) => spec.string.mm * Math.pow(2, -n / 12);
+
+/** How each instrument's stopping hand sits in first position (index … little):
+ *  the semitone each pad stops and the string it stops (0 = lowest), the
+ *  thumb's stop and where it rests. */
+export const FIRST_POSITION: Record<BowedSpec['id'], { semis: readonly number[]; strings: readonly number[]; thumbSemis: number; thumb: 'flank' | 'back' }> = {
+  // D-string E and F♯, A-string D, E-string B: the longer fingers reaching across to the lower string.
+  violin: { semis: [2, 4, 5, 7], strings: [1, 1, 2, 3], thumbSemis: 2.5, thumb: 'flank' },
+  viola: { semis: [2, 4, 5, 7], strings: [1, 1, 2, 3], thumbSemis: 2.5, thumb: 'flank' },
+  // One finger per semitone (closed position), the index and middle on the D string, ring and little on the A.
+  cello: { semis: [2, 3, 4, 5], strings: [1, 1, 2, 2], thumbSemis: 3, thumb: 'back' },
+  // 1-2-4: index, middle and little a semitone apart; the ring finger presses beside the little finger.
+  bass: { semis: [2, 3, 4, 4], strings: [1, 1, 2, 2], thumbSemis: 3, thumb: 'back' },
+};
+
+/**
+ * THE LEFT (STOPPING) HAND's palm in first position (figure pass 3): where the posed hand (bowedHands.leftHand)
+ * puts the middle of its palm — beside the board on the treble side, a little toward the scroll from the middle of
+ * the stops and under the board's face (frame-B mm from the stops' middle, the board's edge and its face). The left
+ * arm's joints (and the keep-outs built on them) reach this palm with an adult arm: upper arm 310 mm, elbow → palm
+ * ≈ 305 (the forearm's 255 and half the hand).
+ */
+export const LEFT_PALM: Record<BowedSpec['id'], { dx: number; dy: number; dz: number }> = {
+  violin: { dx: -11, dy: 29, dz: -31 },
+  viola: { dx: -10, dy: 28, dz: -28 },
+  cello: { dx: -3, dy: 57, dz: -29 },
+  bass: { dx: -6, dy: 34, dz: -66 },
+};
+export const LEFT_ARM = { upper: 310, toPalm: 305 } as const;
+export function leftPalm(spec: BowedSpec): BPoint {
+  const fp = FIRST_POSITION[spec.id];
+  const xm = (stopX(spec, fp.semis[0]) + stopX(spec, fp.semis[fp.semis.length - 1])) / 2;
+  const o = LEFT_PALM[spec.id];
+  return { x: xm + o.dx, y: fbHalf(spec, xm) + o.dy, z: fingerboardZ(spec, xm) + o.dz };
+}
+
 const UPPER_ARM = 290;
 const FOREARM = 300;
 
@@ -190,8 +227,9 @@ export function underChin(spec: BowedSpec, tailDrop = 0, seat = false): Posture 
   const pelvis = seat ? L(v(-90, -545, zm)) : L(v(-70, -960, zm));
   const shoulderL = U(-85, -1425, zm - 185);
   const shoulderR = U(-85, -1425, zm + 185);
-  const handL = toLesson(ax, { x: st.nutX - 32, y: -4, z: -30 });
-  const elbowL = elbowOf(shoulderL, handL, UPPER_ARM, FOREARM, v(0.1, 1, 0.45));
+  // (Figure pass 3: the palm of the posed first-position hand; was B(nut − 32, −4, −30), an arm of 290/300.)
+  const handL = toLesson(ax, leftPalm(spec));
+  const elbowL = elbowOf(shoulderL, handL, LEFT_ARM.upper, LEFT_ARM.toPalm, v(0.1, 1, 0.45));
   const bow = bowOf(spec, st, ax, 1);
   const handR = add(bow.frog, scale(bow.up, 28));
   const poleR = v(-0.1, 1, 0.55);
@@ -240,6 +278,11 @@ export function underChin(spec: BowedSpec, tailDrop = 0, seat = false): Posture 
 /** The seated cellist sits TALL (mm): the collar, the shoulders and the head
  *  raised over the hips (crown ≈ 950 mm over the seat) — owner 2026-10-10. */
 const SIT_UP = 110;
+/** …and UPRIGHT (figure pass 3, owner-approved keep-out move 2026-10-15): the hips 30 mm and the collar, shoulders
+ *  and head 70 mm further back than the instrument-first placement put them, the shoulders turned 10° toward the bow
+ *  (the trunk had leaned 70 mm forward over the hips, the left shoulder 152 mm from the first-position hand — an arm
+ *  folded shut). Now the collar sits over the hips, the left hand is well forward of its shoulder, the elbow out. */
+export const SIT_BACK = { hips: 30, upper: 70, turn: (10 * Math.PI) / 180 } as const;
 
 export function seated(spec: BowedSpec): Posture {
   const st = stationsOf(spec);
@@ -263,12 +306,12 @@ export function seated(spec: BowedSpec): Posture {
   const kneeL = B({ x: xl + 40, y: Wl + 55, z: -rib * 0.5 });
   const kneeR = B({ x: xl + 40, y: -(Wl + 55), z: -rib * 0.5 });
   const seatY = floorY - 460; // the chair (proposal: seat 460 high)
-  const hipL = v(kneeL.x - 410, seatY - 85, kneeL.z * 0.45);
-  const hipR = v(kneeR.x - 410, seatY - 85, kneeR.z * 0.45);
+  const hipL = v(kneeL.x - 410 - SIT_BACK.hips, seatY - 85, kneeL.z * 0.45);
+  const hipR = v(kneeR.x - 410 - SIT_BACK.hips, seatY - 85, kneeR.z * 0.45);
   const pelvis = lerp(hipL, hipR, 0.5);
   // The chest just behind the upper back.
   const back = B({ x: xu - 40, y: 0, z: -rib - spec.archBack.mm - 40 });
-  const chest = v(back.x - 105, back.y + 15, 0);
+  const chest = v(back.x - 105 - (SIT_BACK.hips + SIT_BACK.upper) / 2, back.y + 15, 0);
   // Sitting TALL (owner 2026-10-10: the scroll stood ≈ 115 mm over the crown
   // and the neck crossed the face): the collar, and with it the shoulders and
   // the head, SIT_UP higher; the cello, the bow and the mics stay where they
@@ -276,12 +319,19 @@ export function seated(spec: BowedSpec): Posture {
   // head further back puts the neck across the face in the side view — here
   // the neck passes just in front of the ear and the scroll is level with the
   // top of the head, beside it.
-  const neck = v(chest.x + 15, chest.y - 290 - SIT_UP, 8);
-  const head = v(neck.x + 30, neck.y - 165, 28);
-  const shoulderL = v(neck.x - 15, neck.y + 45, -182);
-  const shoulderR = v(neck.x - 15, neck.y + 45, 182);
-  const handL = B({ x: st.nutX - 70, y: 18, z: -38 });
-  const elbowL = elbowOf(shoulderL, handL, UPPER_ARM + 20, FOREARM + 20, v(0.3, 0.6, -1));
+  const neck = v(back.x - 90 - SIT_BACK.upper, chest.y - 290 - SIT_UP, 8);
+  // (The head a little forward of the collar, looking down at the strings, tilted a touch away from the scroll: the
+  // scroll passes behind it, beside the left ear — figure pass 3; was neck + (30, −165, 20).)
+  const head = v(neck.x + 55, neck.y - 165, 50);
+  // The shoulders turned a little toward the bow side (SIT_BACK.turn): the bow arm's shoulder forward, the left back.
+  const tc = Math.cos(SIT_BACK.turn);
+  const ts = Math.sin(SIT_BACK.turn);
+  const turned = (x: number, z: number): Vec3 => v(neck.x + x * tc + (z - neck.z) * ts, neck.y + 45, neck.z - x * ts + (z - neck.z) * tc);
+  const shoulderL = turned(-15, -182);
+  const shoulderR = turned(-15, 182);
+  // (Figure pass 3: the palm of the posed first-position hand; was B(nut − 70, 18, −38) — 152 mm from the shoulder.)
+  const handL = B(leftPalm(spec));
+  const elbowL = elbowOf(shoulderL, handL, LEFT_ARM.upper, LEFT_ARM.toPalm, v(0.3, 0.6, -1));
   const bow = bowOf(spec, st, ax, -1);
   const handR = add(bow.frog, scale(bow.up, 30));
   const poleR = v(-0.2, 0.7, 1);
@@ -323,6 +373,13 @@ export function seated(spec: BowedSpec): Posture {
 }
 
 /* ── STANDING (double bass) ── */
+/** FIGURE PASS 3 (owner-approved keep-out move 2026-10-15): the bassist's upper body turns toward the bass, the right
+ *  shoulder forward — the bow grip at mid-stroke was 773 mm from the shoulder and the plucking hand 798 (an adult
+ *  arm reaches ≈ 690): the shoulders turn 30° about the collar and lean 30 mm over the bass; the plucking hand works at
+ *  the end of the board. */
+export const BASS_TURN = (35 * Math.PI) / 180;
+export const BASS_LEAN = 40;
+export const PLUCK_AT = 255;
 export function standing(spec: BowedSpec, hands: 'pluck' | 'bow'): Posture {
   const st = stationsOf(spec);
   const D = Math.PI / 180;
@@ -344,21 +401,32 @@ export function standing(spec: BowedSpec, hands: 'pluck' | 'bow'): Posture {
   const zm = contact.z + 150;
   const chest = v(contact.x - 95, floorY - 1300, zm);
   const pelvis = v(chest.x + 10, floorY - 960, zm);
-  const neck = v(chest.x + 5, floorY - 1462, zm - 10);
+  // (Figure pass 3: the collar, head and shoulders lean BASS_LEAN forward over the bass.)
+  const neck = v(chest.x + 5 + BASS_LEAN, floorY - 1462, zm - 10);
   const head = v(neck.x + 20, floorY - 1610, zm - 30);
-  const shoulderL = v(neck.x - 10, neck.y + 35, zm - 185);
-  const shoulderR = v(neck.x - 10, neck.y + 35, zm + 185);
-  const handL = B({ x: st.nutX - 150, y: -12, z: -60 });
-  const elbowL = elbowOf(shoulderL, handL, UPPER_ARM + 20, FOREARM + 20, v(0.2, 0.7, -1));
+  // The shoulders turned toward the bass (figure pass 3): the right shoulder forward, the left back.
+  const turn = (p: Vec3): Vec3 => {
+    const rx = p.x - neck.x;
+    const rz = p.z - neck.z;
+    return v(neck.x + rx * Math.cos(BASS_TURN) + rz * Math.sin(BASS_TURN), p.y, neck.z - rx * Math.sin(BASS_TURN) + rz * Math.cos(BASS_TURN));
+  };
+  const shoulderL = turn(v(neck.x - 10, neck.y + 35, zm - 185));
+  const shoulderR = turn(v(neck.x - 10, neck.y + 35, zm + 185));
+  // (Figure pass 3: the palm of the posed first-position hand; was B(nut − 150, −12, −60).)
+  const handL = B(leftPalm(spec));
+  // (The elbow out to the side and raised, the forearm reaching round to the neck — was pole (0.2, 0.7, −1), hanging.)
+  const elbowL = elbowOf(shoulderL, handL, LEFT_ARM.upper, LEFT_ARM.toPalm, v(0.1, 0.25, -1));
   const bow = bowOf(spec, st, ax, -1);
   const poleR = v(-0.3, 0.8, 1);
-  const pluckHand = B({ x: 200, y: -25, z: stringZ(spec, 200) + 40 });
+  // The plucking hand at the end of the board (figure pass 3; was x 200, the hand 798 mm from its shoulder).
+  const pluckHand = B({ x: PLUCK_AT, y: -25, z: stringZ(spec, PLUCK_AT) + 40 });
   const handR = hands === 'bow' ? add(bow.frog, scale(bow.up, 30)) : pluckHand;
   const elbowR = elbowOf(shoulderR, handR, UPPER_ARM + 20, FOREARM + 20, poleR);
   const player: Skeleton = {
     head,
     headR: 105,
-    face: norm(v(0.95, 0.2, -0.15)),
+    // The face turns with the shoulders (toward the bass's neck and the left hand).
+    face: norm(sub(turn(add(neck, scale(norm(v(0.95, 0.2, -0.15)), 100))), neck)),
     neck,
     chest,
     pelvis,

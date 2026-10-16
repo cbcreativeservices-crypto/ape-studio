@@ -83,7 +83,7 @@ const strokeItem = (pts: P2[], color: string, w: number, opacity = 1): Item => {
 /** A length of tube: outline, metal, lower shade, upper-left highlight. */
 function tubeItems(t: Tube, pr: Proj): Item[] {
   // A valve slide is given by its four corners: drawn with round crooks.
-  const pts = t.pts.length === 4 && /^slide\d$/.test(t.id) ? roundCorners(t.pts.map(pr.pt)) : t.pts.map(pr.pt);
+  const pts = t.pts.length === 4 && /^(slide\d|hook)$/.test(t.id) ? roundCorners(t.pts.map(pr.pt)) : t.pts.map(pr.pt);
   const c = toneOf(t.tone);
   const r = t.r;
   const off = (k: number): P2[] => pts.map(([u, v]) => [u + k * r * 0.55, v + k * r * 0.6]);
@@ -303,25 +303,20 @@ export function hornGroups(P: HornPose, pr: Proj): Group3[] {
 }
 
 /**
- * How the hands HOLD the horn (figure polish 2026-10-10): a valved horn's
- * right-hand fingers curve down ONTO the valve buttons (seen from the
- * player's right; from above, the back of the hand over them), the left hand
- * a fist round the valve casings; a trombone's hands each grip a brace.
+ * How the hands HOLD the horn (figure pass 3, owner 2026-10-15): each hand
+ * is the shared 3-D hand POSED on the horn (brassPosture: every pad on its
+ * button, hook, casing, receiver or brace; the thumbs under the leadpipe,
+ * at the saddle, round the bell brace or behind the slide brace), projected
+ * into the view. From the player's right the trumpet's left hand is behind
+ * the valve block (its fingers show round the front casing), the
+ * trombone's left hand just behind the slide's tubes.
  */
 function brassHands(P: HornPose, view: ViewId): PlayerOpts['hands'] {
-  if (!P.valves.length) return { L: { kind: 'grip' }, R: { kind: 'grip' } };
-  // From above: the back of each hand, its fingers curled over the buttons /
-  // round the casings — knuckles, never a flat open paddle across the horn.
-  if (view !== 'side') return { L: { kind: 'grip' }, R: { kind: 'grip' } };
-  const pr = PROJ[view];
-  const b = P.valves.map((vv) => pr.pt(vv.button));
-  const mid = b[Math.floor(b.length / 2)];
-  const along = Math.atan2(b[b.length - 1][1] - b[0][1], b[b.length - 1][0] - b[0][0]);
-  // The right hand rises from a wrist low behind the casings (the forearm
-  // comes up from the elbow at the player's side, clear of the face and the
-  // leadpipe), the palm up past the casings, the fingers arching forward and
-  // DOWN onto the caps — the front fingertip on the middle button.
-  return { L: { kind: 'grip' }, R: { kind: 'keys', dir: along - 1.05, at: [mid[0], mid[1] + 2] } };
+  const behind = view === 'side' ? (P.valves.length ? -30 : P.slide ? P.slide.z - 2 : undefined) : undefined;
+  return {
+    L: { kind: 'grip', posed: { sk: P.hands.L.sk }, depth: behind },
+    R: { kind: 'grip', posed: { sk: P.hands.R.sk } },
+  };
 }
 
 /** The horn and its player for one engine view, far to near. */

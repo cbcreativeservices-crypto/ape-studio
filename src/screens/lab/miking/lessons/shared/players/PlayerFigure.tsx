@@ -621,12 +621,18 @@ export function drawHand3(sk: HandSkeleton, view: HandView, opts: { fore?: numbe
  *  strokes added to `out` (sampled every ≈ 2 mm). */
 function edgeOver(path: SkPath, keep: (q: Pt) => boolean, out: SkPath): void {
   const it = Skia.ContourMeasureIter(path, true, 1);
-  for (let c = it.next(); c; c = it.next()) {
-    const L = c.length();
+  // (Bounded, and tolerant of a stand-in Skia with no real measures — the node tests' stub.)
+  let guard = 0;
+  for (let c = it.next(); c && guard < 256; c = it.next(), guard++) {
+    const L = Number(c.length());
+    if (!(L > 0)) continue;
     const n = Math.max(4, Math.ceil(L / 2));
     let open = false;
     for (let i = 0; i <= n; i++) {
-      const [pos, tan] = c.getPosTan((i / n) * L);
+      const pt2 = c.getPosTan((i / n) * L);
+      const pos = pt2?.[0];
+      const tan = pt2?.[1];
+      if (!pos || !tan || typeof pos.x !== 'number') return;
       // Test a hair OUTSIDE the shape's edge: what the edge lies over there.
       const q1 = pt(pos.x + tan.y * 2.5, pos.y - tan.x * 2.5);
       const q2 = pt(pos.x - tan.y * 2.5, pos.y + tan.x * 2.5);
