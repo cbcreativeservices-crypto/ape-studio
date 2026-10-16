@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 23:50 · ccode · 2ea18433
+changed: Lab art grading fix: Advanced Mixing routing map — OUT clear of MIX BUS and inside the frame, bus names inside their boxes, FX return off the rhythm wire
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-15 23:50 · ccode · ba1b5818
+changed: Lab art grading fix: de-esser threshold named in the header key, GR numbers off the range cap
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 23:49 · ccode · bc622597
 changed: Lab art grading fix: GR meter reads 0.0 dB at rest, never −0.0 dB
 affects other side: nothing (app only)
