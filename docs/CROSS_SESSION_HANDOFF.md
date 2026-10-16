@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 19:09 · ccode · faf03aaf
+changed: Miking: show the stage/studio plan steps again; name idle zones on the glass
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 18:39 · ccode · bfab662f
 changed: Community rules: show a rephrase message when the server refuses text
 affects other side: Comp A brief 2026-10-15_COMP_A_CHAT_CONTENT_FILTER_BRIEF.md
