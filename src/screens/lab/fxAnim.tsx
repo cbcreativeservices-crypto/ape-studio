@@ -161,7 +161,10 @@ function stageLabel(model: FxAnimModel): string {
     // "M/S WIDTH" names what the green stage does in the width lab: L/R →
     // MID + SIDE, SIDE × width, back to L/R (art grading 2026-10-16: a bare
     // "WIDTH" slab read as an unexplained object).
-    case 'stereo': return model.flavor === 'phase' ? 'PHASE' : 'M/S WIDTH';
+    // "R: Ø · DLY" names what the phase lab's stage does: it acts on the R
+    // channel only — a polarity flip and/or a delay (art grading 2026-10-16:
+    // a bare "PHASE" slab read as an unexplained object).
+    case 'stereo': return model.flavor === 'phase' ? 'R: Ø · DLY' : 'M/S WIDTH';
   }
 }
 
@@ -1001,7 +1004,8 @@ const REV_LOOP_S = 0.0448;
 function revCol(tMid: number, colMs: number, sk: number, P: number, pre: number, decDbS: number, mix: number): number[] {
   'worklet';
   const lmix = 20 * Math.log10(Math.max(mix, 1e-4));
-  const ldry = 20 * Math.log10(Math.max(1 - mix, 1e-4));
+  // 100 % wet leaves no dry at all (not a −80 dB stub).
+  const ldry = mix >= 0.999 ? -200 : 20 * Math.log10(1 - mix);
   const q = Math.floor(tMid / colMs);
   const jit = 1.6 * hashW(q * 1.37 + 5.3);
   let dry = -200;
@@ -2274,14 +2278,19 @@ function StereoFlow({
       w={w}
       h={h}
       label={label}
-      note={flavor === 'width' ? 'STEREO TEST TONE · L ≠ R' : undefined}
-      noteColor={flavor === 'width' ? colors.textSub : undefined}
-      legend={flavor === 'width' ? [{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }] : undefined}
+      note={flavor === 'width' ? 'STEREO TEST TONE · L ≠ R' : 'SAME TONE IN L AND R'}
+      noteColor={colors.textSub}
+      legend={[{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
     >
       <Path path={inR} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.4} />
       <Path path={inL} color={flavor === 'width' ? AMBER : DIM} style="stroke" strokeWidth={1.4} opacity={flavor === 'width' ? 0.5 : 0.85} />
       <FlowGlow path={outR} color={BLUE} width={1.8} opacity={0.9} />
       <FlowGlow path={outL} width={1.8} />
+      {/* Phase lab: L = R until the stage acts, so the R trace would hide
+          under L. A thin R line drawn on TOP keeps both channels visible —
+          one line with a blue core when they agree, two lines when Ø or the
+          delay pulls R away (art grading 2026-10-16). */}
+      {flavor === 'phase' ? <Path path={outR} color={BLUE} style="stroke" strokeWidth={1.1} opacity={0.95} /> : null}
     </FlowScene>
   );
 }
