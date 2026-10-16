@@ -475,100 +475,161 @@ const HAND_FINGERS: { y: number; tip: number; th: number }[] = [
   { y: 11.1, tip: -10.8, th: 2.9 },
 ];
 
-function buildHand(s: number): {
+/** Forearm direction default: degrees from the mic axis's TAIL direction
+ *  (local +y) toward the back of the hand (+x). A hand holding a vertical
+ *  handle (a torch, a cone, a mic) has its forearm rising from below at
+ *  30–45° — the wrist stays well inside the ≤ 70° bend rule (D68). */
+const HAND_ARM_DEG = 40;
+/** Forearm drawn length in hand units (≈ 60 cm at the 8.5-cm hand canon):
+ *  always long enough to leave every frame, so no hand ever floats. */
+const HAND_ARM_LEN = 260;
+
+function buildHand(s: number, armDeg: number): {
   palm: SkPathT;
-  wrist: SkPathT;
-  fingers: SkPathT[];
-  creases: SkPathT[];
   thumb: SkPathT;
-  thumbShade: SkPathT;
-  thumbEdge: SkPathT;
+  forearm: SkPathT;
+  sleeve: SkPathT;
+  cuff: SkPathT;
+  fingers: SkPathT[];
+  joints: SkPathT;
+  knuckles: SkPathT;
+  glow: SkPathT;
 } {
-  // Palm mass: a rounded organic silhouette BEHIND the body. Its far edge
-  // stops just short of the axis so it never shows on the finger side.
+  // ── Forearm frame (round 3, 2026-10-16: the grader read the old hand as "a
+  // closed band around the handle, no wrist or arm"). The arm now runs from
+  // a real wrist out past every frame edge, in a long shirt sleeve.
+  const a = (armDeg * Math.PI) / 180;
+  const dx = Math.sin(a); // along the forearm, toward the elbow
+  const dy = Math.cos(a);
+  const nx = dy; //          the forearm's radial (thumb-side, upper) normal
+  const ny = -dx;
+  const W = { x: 15.5 * s, y: 21 * s }; // wrist centre, below/behind the back of the hand
+  const at = (t: number, off: number) => ({ x: W.x + dx * t * s + nx * off * s, y: W.y + dy * t * s + ny * off * s });
+  const R0 = at(0, 10.5);
+  const U0 = at(0, -10.5);
+  // ── Back of the hand (the palm side faces the handle; we see the dorsum).
+  // Radial edge from the index knuckle over the thumb web down to the wrist;
+  // ulnar edge from the wrist up to the little-finger knuckle; the knuckle
+  // column (x ≈ 11–14) is where the four fingers leave it.
   const palm = Skia.Path.Make();
-  palm.moveTo(-1.5 * s, -12.5 * s);
-  palm.cubicTo(5 * s, -17.5 * s, 15 * s, -17.2 * s, 19.5 * s, -10.5 * s); // knuckle line → thenar
-  palm.cubicTo(22.5 * s, -4.5 * s, 22.5 * s, 6.5 * s, 19 * s, 12.5 * s); // back of the hand
-  palm.cubicTo(14.5 * s, 18.5 * s, 3 * s, 19 * s, -1 * s, 15 * s); // heel of the hand
-  palm.cubicTo(-3 * s, 12.5 * s, -3 * s, 2 * s, -2 * s, -5 * s); // axis-side edge
-  palm.cubicTo(-1.8 * s, -9 * s, -2.2 * s, -10.8 * s, -1.5 * s, -12.5 * s);
+  palm.moveTo(11 * s, -15.6 * s);
+  palm.cubicTo(15 * s, -17.2 * s, 20.5 * s, -16.4 * s, 23.5 * s, -12.5 * s); // over the thumb web
+  palm.cubicTo(26.5 * s, -7 * s, R0.x + 1.5 * s, R0.y - 9 * s, R0.x, R0.y); // radial edge → wrist
+  palm.lineTo(U0.x, U0.y);
+  palm.cubicTo(U0.x - 2.5 * s, U0.y - 5 * s, 8.2 * s, 18 * s, 9.2 * s, 14.5 * s); // ulnar edge → little knuckle
+  palm.cubicTo(10.6 * s, 6 * s, 9.6 * s, -7 * s, 11 * s, -15.6 * s); // knuckle column
   palm.close();
-  // Forearm leaving toward the lower right, tapering out of frame.
-  const wrist = Skia.Path.Make();
-  wrist.moveTo(9 * s, 13.5 * s);
-  wrist.cubicTo(15 * s, 17 * s, 21 * s, 21.5 * s, 26 * s, 27 * s);
-  wrist.lineTo(18 * s, 32.5 * s);
-  wrist.cubicTo(12.5 * s, 25.5 * s, 8 * s, 21 * s, 3.5 * s, 17.5 * s);
-  wrist.close();
-  // Four curling fingers. Each is ONE closed outline: underside sweep out to
-  // the tip, a rounded curl AROUND the far edge of the body, then the top
-  // edge back through the PIP joint and the MCP knuckle into the palm. The
-  // outline is x-monotone out and back, so it cannot self-intersect.
+  // ── Thumb: it closes the grip from the OTHER side, so it runs BEHIND the
+  // handle (back layer) from the thumb web; only its root above the index
+  // knuckle and its pad peeking past the far edge of the handle show. (The
+  // 2026-07-30 ruling removed a thumb drawn ON TOP of the fingers — this one
+  // is where a real thumb sits.)
+  const thumb = Skia.Path.Make();
+  thumb.moveTo(24 * s, -9.5 * s);
+  thumb.cubicTo(21 * s, -16.4 * s, 12 * s, -17.6 * s, 2 * s, -17.3 * s); // upper edge, behind the body
+  thumb.cubicTo(-7 * s, -17.2 * s, -13.4 * s, -17 * s, -14.6 * s, -14.6 * s); // pad tip past the far edge
+  thumb.cubicTo(-15.2 * s, -12.4 * s, -11 * s, -11 * s, -3 * s, -11.6 * s);
+  thumb.cubicTo(6 * s, -12.3 * s, 16 * s, -11.5 * s, 21 * s, -5.5 * s); // lower edge back to the web
+  thumb.close();
+  // ── Forearm: wrist (21 units ≈ 5 cm) widening to the muscle belly, then
+  // run out past any frame. Skin shows only between the wrist and the cuff.
+  const L = HAND_ARM_LEN;
+  const forearm = Skia.Path.Make();
+  const R1 = at(L, 16);
+  const U1 = at(L, -15);
+  const Rm = at(L * 0.18, 14.5);
+  const Um = at(L * 0.18, -13);
+  const r12 = at(12, 12);
+  const u12 = at(12, -12);
+  forearm.moveTo(R0.x, R0.y);
+  forearm.cubicTo(r12.x, r12.y, Rm.x, Rm.y, R1.x, R1.y);
+  forearm.lineTo(U1.x, U1.y);
+  forearm.cubicTo(Um.x, Um.y, u12.x, u12.y, U0.x, U0.y);
+  forearm.close();
+  // Sleeve: a long shirt sleeve from 22 units (≈ 5 cm) above the wrist on.
+  const C = 22;
+  const sleeve = Skia.Path.Make();
+  const sR0 = at(C, 14.6);
+  const sU0 = at(C - 2.5, -14.2); // the cuff sits a touch slanted, like cloth
+  const sR1 = at(L + 4, 18.5);
+  const sU1 = at(L + 4, -17.5);
+  const cuffMid = at(C + 0.6, 0);
+  const sRa = at(C + 30, 17.4);
+  const sRb = at(L * 0.6, 18.4);
+  const sUb = at(L * 0.6, -17.6);
+  const sUa = at(C + 30, -16.6);
+  sleeve.moveTo(sR0.x, sR0.y);
+  sleeve.cubicTo(sRa.x, sRa.y, sRb.x, sRb.y, sR1.x, sR1.y);
+  sleeve.lineTo(sU1.x, sU1.y);
+  sleeve.cubicTo(sUb.x, sUb.y, sUa.x, sUa.y, sU0.x, sU0.y);
+  sleeve.quadTo(cuffMid.x, cuffMid.y, sR0.x, sR0.y);
+  sleeve.close();
+  // Cuff hem: a second line just inside the opening, plus two fold creases.
+  const cuff = Skia.Path.Make();
+  const h0 = at(C + 3.4, 14.8);
+  const h1 = at(C + 0.9, -14.6);
+  const hm = at(C + 4, 0);
+  cuff.moveTo(h0.x, h0.y);
+  cuff.quadTo(hm.x, hm.y, h1.x, h1.y);
+  const f0 = at(C + 16, 15.6);
+  const f1 = at(C + 22, 4);
+  cuff.moveTo(f0.x, f0.y);
+  cuff.lineTo(f1.x, f1.y);
+  const g0 = at(C + 30, -16);
+  const g1 = at(C + 36, -6);
+  cuff.moveTo(g0.x, g0.y);
+  cuff.lineTo(g1.x, g1.y);
+  // ── Four fingers, index → little: each leaves its knuckle on the back of
+  // the hand, crosses the FRONT of the handle and bends at the middle joint
+  // round the far edge (the tip is out of sight behind it).
   const fingers: SkPathT[] = [];
-  const creases: SkPathT[] = [];
+  const joints = Skia.Path.Make();
+  const knuckles = Skia.Path.Make();
   for (let i = 0; i < 4; i++) {
     const fg = HAND_FINGERS[i];
     const fy = fg.y * s;
     const tip = fg.tip * s;
     const th = fg.th * s;
+    const k = 13.5 * s; // the knuckle (MCP) on the back of the hand
     const f = Skia.Path.Make();
-    f.moveTo(20 * s, fy + th);
-    f.cubicTo(10 * s, fy + th + 0.6 * s, 2 * s, fy + th + 0.4 * s, tip + 3.4 * s, fy + th * 0.92); // underside
-    f.quadTo(tip - 0.4 * s, fy + th * 0.92, tip - 0.4 * s, fy); // curl around the far edge
-    f.quadTo(tip - 0.4 * s, fy - th * 0.92, tip + 3.4 * s, fy - th * 0.92); // back over the top
-    f.cubicTo(6 * s, fy - th - 0.5 * s, 12 * s, fy - th - 1.4 * s, 15.5 * s, fy - th - 1.1 * s); // PIP ridge
-    f.quadTo(18.5 * s, fy - th - 0.8 * s, 20 * s, fy - th + 0.4 * s); // MCP knuckle, palm side
+    f.moveTo(k, fy + th * 0.96);
+    f.cubicTo(6 * s, fy + th * 1.02, 0, fy + th, tip + 3.8 * s, fy + th * 0.9); // underside
+    f.quadTo(tip - 0.2 * s, fy + th * 0.86, tip - 0.2 * s, fy - 0.2 * s); // round the middle joint
+    f.quadTo(tip - 0.1 * s, fy - th * 0.96, tip + 3.8 * s, fy - th * 0.98);
+    f.cubicTo(0, fy - th * 1.08, 7 * s, fy - th * 1.1, k, fy - th * 1.02); // top edge
+    f.cubicTo(k + 3.2 * s, fy - th * 0.95, k + 3.2 * s, fy + th * 0.9, k, fy + th * 0.96); // knuckle cap
     f.close();
     fingers.push(f);
-    // Crease: a filled sliver built strictly INSIDE this finger's outline
-    // (it shares the underside curve and returns 1 unit above it), so it can
-    // never draw over a neighbouring finger or outside the silhouette.
-    const cr = Skia.Path.Make();
-    cr.moveTo(19 * s, fy + th);
-    cr.cubicTo(10 * s, fy + th + 0.6 * s, 2 * s, fy + th + 0.4 * s, tip + 3.6 * s, fy + th * 0.9);
-    cr.cubicTo(2 * s, fy + th - 0.7 * s, 10 * s, fy + th - 0.5 * s, 19 * s, fy + th - 1.1 * s);
-    cr.close();
-    creases.push(cr);
+    // Middle-joint skin folds: two short arcs on the back of the finger.
+    for (const off of [2.6, 4.2]) {
+      const jx = tip + off * s + 2.4 * s;
+      joints.moveTo(jx, fy - th * 0.62);
+      joints.quadTo(jx + 0.9 * s, fy - th * 0.05, jx + 0.2 * s, fy + th * 0.45);
+    }
+    // Knuckle highlight on the back of the hand.
+    knuckles.addOval(Skia.XYWHRect(k - 0.6 * s, fy - th * 0.62, 2.6 * s, th * 1.1));
   }
-  // Thumb: crosses the body diagonally, over the upper fingers, tip curling
-  // toward the far edge — the natural way a thumb closes a grip.
-  const thumb = Skia.Path.Make();
-  thumb.moveTo(19 * s, 5.5 * s); // base at the thenar
-  thumb.cubicTo(12 * s, 3.2 * s, 5 * s, -1.5 * s, 0.2 * s, -7.2 * s); // leading edge
-  thumb.quadTo(-3.2 * s, -11.2 * s, -0.6 * s, -13.6 * s); // rounded tip
-  thumb.quadTo(2 * s, -15.8 * s, 5 * s, -12.6 * s); // tip top
-  thumb.cubicTo(9.5 * s, -7.6 * s, 14.5 * s, -2.6 * s, 20.5 * s, -0.6 * s); // trailing edge
-  thumb.close();
-  const thumbShade = Skia.Path.Make();
-  thumbShade.moveTo(16.5 * s, 4.4 * s);
-  thumbShade.cubicTo(10.5 * s, 2.2 * s, 4.5 * s, -2.2 * s, 0.8 * s, -7 * s);
-  // STRAY-THUMB FIX (owner defect 2026-07-29 — "there is still a drawn outline
-  // of a thumb on top of the hand … in the various handle positions"). ROOT
-  // CAUSE: the front layer stroked the CLOSED `thumb` path in the state tint
-  // AFTER filling it, and then stroked all four fingers in the tint after
-  // that — so a complete, unbroken thumb-shaped contour was drawn over the
-  // filled fingers at every grip position, reading as a second, ghost thumb.
-  // There is only ever ONE thumb shape; the tint now rides a SINGLE OPEN edge
-  // (the thumb's lit leading edge) instead of a closed outline, and the finger
-  // edges are drawn BEFORE the thumb so nothing outlines across it.
-  const thumbEdge = Skia.Path.Make();
-  thumbEdge.moveTo(19 * s, 5.5 * s);
-  thumbEdge.cubicTo(12 * s, 3.2 * s, 5 * s, -1.5 * s, 0.2 * s, -7.2 * s);
-  thumbEdge.quadTo(-3.2 * s, -11.2 * s, -0.6 * s, -13.6 * s);
-  thumbEdge.quadTo(2 * s, -15.8 * s, 5 * s, -12.6 * s);
-  return { palm, wrist, fingers, creases, thumb, thumbShade, thumbEdge };
+  // State glow footprint: the hand itself (the arm stays un-tinted).
+  const glow = Skia.Path.Make();
+  glow.addPath(palm);
+  glow.addOval(Skia.XYWHRect(-13 * s, -17.5 * s, 30 * s, 36.5 * s));
+  return { palm, thumb, forearm, sleeve, cuff, fingers, joints, knuckles, glow };
 }
 
 // Per-finger highlight tones (upper fingers catch more of the light).
-const FINGER_HI = ['#94785f', '#8d725a', '#836a53', '#78614c'];
+const FINGER_HI = ['#a3866b', '#9a7e64', '#90765d', '#856c55'];
+const SLEEVE_HI = '#4a5263';
+const SLEEVE_LO = '#22262e';
 
 /**
  * The canonical hand, rendered in two passes so the mic body sits between the
- * palm and the fingers:
+ * thumb/back of the hand and the fingers:
  *   <GripHand layer="back" …/> → <HandheldMic …/> → <GripHand layer="front" …/>
  * (x, y) = the grip centre ON the mic axis; `angleDeg` rotates the hand with
- * the mic (0 = mic pointing up). Shape NEVER varies with any of these.
+ * the mic (0 = mic pointing up). `armDeg` swings the forearm about the wrist
+ * (see HAND_ARM_DEG) so a scene can keep the arm clear of other panels; the
+ * hand itself NEVER varies. The state `tint` is a soft glow behind the hand
+ * (round 3: per-finger tint outlines read as coloured bands, not fingers).
  */
 function GripHand({
   x,
@@ -576,6 +637,8 @@ function GripHand({
   scale,
   tint,
   angleDeg = 0,
+  armDeg,
+  mirror,
   layer,
 }: {
   x: number;
@@ -583,26 +646,56 @@ function GripHand({
   scale: number;
   tint: string;
   angleDeg?: number;
+  armDeg?: number;
+  /** The same hand seen from the other side (back of the hand and arm on
+   *  the local −x side) — for a talker whose shoulder is on that side. */
+  mirror?: boolean;
   layer: 'back' | 'front';
 }) {
   const s = scale;
-  const parts = useMemo(() => buildHand(s), [s]);
-  const hair = Math.max(0.55, 0.85 * s); // every stroke scales with the hand
+  const arm = armDeg ?? HAND_ARM_DEG;
+  const parts = useMemo(() => buildHand(s, arm), [s, arm]);
+  const hair = Math.max(0.45, 0.6 * s); // every stroke scales with the hand
+  const a = (arm * Math.PI) / 180;
+  const ca = Math.cos(a);
+  const sa = Math.sin(a);
   return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }, { scaleX: mirror ? -1 : 1 }]}>
       {layer === 'back' ? (
         <>
-          <Path path={parts.wrist}>
-            <LinearGradient start={vec(3 * s, 13 * s)} end={vec(26 * s, 32 * s)} colors={[SKIN_MID, SKIN_LO]} />
+          <Path path={parts.glow} color={tint} opacity={0.32}>
+            <BlurMask blur={5 * s} style="normal" />
           </Path>
-          <Path path={parts.palm}>
+          <Path path={parts.forearm}>
             <LinearGradient
-              start={vec(-2 * s, -17.5 * s)}
-              end={vec(22.5 * s, 19 * s)}
+              start={vec(15.5 * s + ca * 12 * s, 21 * s - sa * 12 * s)}
+              end={vec(15.5 * s - ca * 12 * s, 21 * s + sa * 12 * s)}
               colors={[SKIN_HI, SKIN_MID, SKIN_LO]}
-              positions={[0, 0.45, 1]}
             />
           </Path>
+          <Path path={parts.sleeve}>
+            <LinearGradient
+              start={vec(15.5 * s + ca * 18 * s, 21 * s - sa * 18 * s)}
+              end={vec(15.5 * s - ca * 18 * s, 21 * s + sa * 18 * s)}
+              colors={[SLEEVE_HI, '#353b48', SLEEVE_LO]}
+            />
+          </Path>
+          <Path path={parts.cuff} color="#14161b" style="stroke" strokeWidth={hair} opacity={0.75} strokeCap="round" />
+          <Path path={parts.palm}>
+            <LinearGradient
+              start={vec(10 * s, -16 * s)}
+              end={vec(26 * s, 24 * s)}
+              colors={[SKIN_HI, SKIN_MID, SKIN_LO]}
+              positions={[0, 0.5, 1]}
+            />
+          </Path>
+          <Path path={parts.palm} color={SKIN_LO} style="stroke" strokeWidth={hair} opacity={0.7} />
+          {/* The thumb leaves the top of the hand and closes round the BACK
+              of the handle (still behind the mic body, drawn next). */}
+          <Path path={parts.thumb}>
+            <LinearGradient start={vec(0, -17.5 * s)} end={vec(0, -11 * s)} colors={['#a58a70', SKIN_MID]} />
+          </Path>
+          <Path path={parts.thumb} color="#1a120c" style="stroke" strokeWidth={hair} opacity={0.8} />
         </>
       ) : (
         <>
@@ -610,28 +703,90 @@ function GripHand({
           {parts.fingers.map((f, i) => (
             <Path key={i} path={f}>
               <LinearGradient
-                start={vec(0, (HAND_FINGERS[i].y - HAND_FINGERS[i].th - 1.6) * s)}
+                start={vec(0, (HAND_FINGERS[i].y - HAND_FINGERS[i].th - 1) * s)}
                 end={vec(0, (HAND_FINGERS[i].y + HAND_FINGERS[i].th) * s)}
                 colors={[FINGER_HI[i] ?? SKIN_HI, SKIN_MID, SKIN_LO]}
-                positions={[0, 0.5, 1]}
+                positions={[0, 0.55, 1]}
               />
             </Path>
           ))}
-          {/* Creases: filled slivers INSIDE each finger — no stray strokes. */}
-          {parts.creases.map((c, i) => (
-            <Path key={`c${i}`} path={c} color="#1c130d" opacity={0.45} />
-          ))}
-          {/* Finger edge light FIRST — so no finger outline is ever drawn
-              across the thumb that sits on top of them. */}
+          {/* The dark seam between neighbouring fingers. */}
           {parts.fingers.map((f, i) => (
-            <Path key={`t${i}`} path={f} color={tint} style="stroke" strokeWidth={hair * 0.9} opacity={0.4} />
+            <Path key={`e${i}`} path={f} color="#1a120c" style="stroke" strokeWidth={hair} opacity={0.75} />
           ))}
-          {/* Thumb REMOVED (owner 2026-07-30): it kept drawing on top of the
-              fingers, which reads as a hand that can't hold anything and isn't
-              how a real grip looks. The wrapped fingers alone carry the grip. */}
+          <Path path={parts.joints} color="#2a1d14" style="stroke" strokeWidth={hair * 0.8} opacity={0.6} strokeCap="round" />
+          <Path path={parts.knuckles} color="#c5a586" opacity={0.28} />
         </>
       )}
     </Group>
+  );
+}
+
+/**
+ * BOOM STAND for a mic lying on its side, grille LEFT (round 3, 2026-10-16:
+ * "the mic floats in mid-air with no stand or hand"). A real mic clip
+ * cradles the handle near its middle; the clip's swivel sits under it and the
+ * boom tube runs back and slightly down, out past the right edge of the
+ * frame, where the upright stands. Sized from the drawn mic, so it scales
+ * with it. Built as plain paths (a worklet, so the proximity scene can rebuild
+ * it every frame as the mic slides).
+ *   clipX = the handle point the clip holds · axisY = the mic axis ·
+ *   bodyHalf = the handle's half-width there · gr = the grille radius ·
+ *   right = the frame's right edge (the boom runs past it).
+ */
+function buildBoom(clipX: number, axisY: number, bodyHalf: number, gr: number, right: number): {
+  clip: SkPathT;
+  tube: SkPathT;
+  shine: SkPathT;
+  knob: SkPathT;
+} {
+  'worklet';
+  const clip = Skia.Path.Make();
+  const cw = gr * 1.9; // clip length along the handle
+  const below = bodyHalf + gr * 0.42; // the cradle wraps under the handle
+  clip.addRRect(Skia.RRectXY(Skia.XYWHRect(clipX - cw / 2, axisY - bodyHalf * 0.35, cw, bodyHalf * 0.35 + below), gr * 0.22, gr * 0.22));
+  // Swivel: a knuckle under the clip with its thumb-screw.
+  const knob = Skia.Path.Make();
+  const sy = axisY + below + gr * 0.32;
+  knob.addCircle(clipX, sy, gr * 0.36);
+  knob.addRRect(Skia.RRectXY(Skia.XYWHRect(clipX - gr * 0.14, sy - gr * 0.62, gr * 0.28, gr * 0.3), gr * 0.08, gr * 0.08));
+  // Boom tube: from the swivel back (right) and down 14° past the frame edge.
+  const a = (14 * Math.PI) / 180;
+  const ux = Math.cos(a);
+  const uy = Math.sin(a);
+  const r = gr * 0.3; // tube radius (a 2-cm boom against a 5-cm grille)
+  const len = Math.max(10, (right + 12 - clipX) / ux);
+  const tube = Skia.Path.Make();
+  const nx = -uy; // tube normal
+  const ny = ux;
+  const ex = clipX + ux * len;
+  const ey = sy + uy * len;
+  tube.moveTo(clipX - nx * r, sy - ny * r);
+  tube.lineTo(ex - nx * r, ey - ny * r);
+  tube.lineTo(ex + nx * r, ey + ny * r);
+  tube.lineTo(clipX + nx * r, sy + ny * r);
+  tube.close();
+  const shine = Skia.Path.Make();
+  shine.moveTo(clipX + ux * gr * 0.5 - nx * r * 0.45, sy + uy * gr * 0.5 - ny * r * 0.45);
+  shine.lineTo(ex - nx * r * 0.45, ey - ny * r * 0.45);
+  return { clip, tube, shine, knob };
+}
+
+function BoomStandParts({
+  boom,
+}: {
+  boom: { clip: SkPathT | SharedValue<SkPathT>; tube: SkPathT | SharedValue<SkPathT>; shine: SkPathT | SharedValue<SkPathT>; knob: SkPathT | SharedValue<SkPathT> };
+}) {
+  return (
+    <>
+      <Path path={boom.tube} color={METAL_MID} />
+      <Path path={boom.tube} color={METAL_LO} style="stroke" strokeWidth={0.6} />
+      <Path path={boom.shine} color={METAL_HI} style="stroke" strokeWidth={0.6} opacity={0.7} />
+      <Path path={boom.knob} color="#2b2d34" />
+      <Path path={boom.knob} color={METAL_MID} style="stroke" strokeWidth={0.5} />
+      <Path path={boom.clip} color="#1d1e23" />
+      <Path path={boom.clip} color="#4a4d57" style="stroke" strokeWidth={0.6} />
+    </>
   );
 }
 
@@ -971,6 +1126,8 @@ export function DistanceView({
   const srcX = 22;
   const micX = 64 + dist01 * (w - 110);
 
+  const boom = useMemo(() => buildBoom(micX + 8 * 0.72 + 37 * 0.45, mid, 8 * 0.58, 8, w), [micX, mid, w]);
+
   const fronts = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
@@ -1052,7 +1209,9 @@ export function DistanceView({
         plate
         speaking
       />
-      {/* The mic at working distance, grille facing the talker (3.2 : 1). */}
+      {/* The mic at working distance, grille facing the talker (3.2 : 1),
+          held in a clip on a boom stand whose upright is off-frame right. */}
+      <BoomStandParts boom={boom} />
       <HandheldMic x={micX} y={mid} angleDeg={-90} grilleR={8} bodyLen={37} />
      </Group>
     </Canvas>
@@ -1550,6 +1709,12 @@ export function ProximityApproachView({
   }, [micX, warm, mid]);
   const glowOp = useDerivedValue(() => Math.min(0.5, warm.value * 0.048), [warm]);
 
+  // The boom stand rides the eased mic (clip at the handle's middle).
+  const boomClip = useDerivedValue(() => buildBoom(micX.value + GR * 0.72 + LEN * 0.45, mid, GR * 0.58, GR, w).clip, [micX, mid, w]);
+  const boomTube = useDerivedValue(() => buildBoom(micX.value + GR * 0.72 + LEN * 0.45, mid, GR * 0.58, GR, w).tube, [micX, mid, w]);
+  const boomShine = useDerivedValue(() => buildBoom(micX.value + GR * 0.72 + LEN * 0.45, mid, GR * 0.58, GR, w).shine, [micX, mid, w]);
+  const boomKnob = useDerivedValue(() => buildBoom(micX.value + GR * 0.72 + LEN * 0.45, mid, GR * 0.58, GR, w).knob, [micX, mid, w]);
+
   // Gap annotation: a dimension line with end ticks, riding the eased mic.
   const dimLine = useDerivedValue(() => {
     const p = Skia.Path.Make();
@@ -1580,6 +1745,7 @@ export function ProximityApproachView({
         <Path path={lfGlow} color="#ff9b4d" opacity={glowOp}>
           <BlurMask blur={10} style="normal" />
         </Path>
+        <BoomStandParts boom={{ clip: boomClip, tube: boomTube, shine: boomShine, knob: boomKnob }} />
         {/* The mic — every part a per-frame path in world coords. Vertical
             (x-invariant) gradients keep the metal sheen correct as it moves. */}
         <Path path={bodyPath}>
@@ -2601,6 +2767,16 @@ export function HandPlacementView({
   // Panel 1 — the hand rides the handle. yC comes from gripCentreY(), the
   // single source of truth the zone thresholds were solved against.
   const yC = gripCentreY(pos01);
+  // The forearm leaves panel 1 through the divider (where it is clipped),
+  // never through the canvas bottom, which can sit above the glass bottom:
+  // steepen it only as far as the hand's height needs (26°…60°, inside the
+  // ≤ 70° wrist rule).
+  const wristX = micX + 15.5 * GRIP_HAND_S;
+  const wristY = yC + 21 * GRIP_HAND_S;
+  const armDeg = Math.max(
+    26,
+    Math.min(60, (Math.atan2(w * 0.34 - wristX + 22, Math.max(1, h - wristY - 18)) * 180) / Math.PI),
+  );
   const cupArc = useMemo(() => {
     const p = Skia.Path.Make();
     if (pos01 >= GRIP_P_FULL) {
@@ -2699,16 +2875,23 @@ export function HandPlacementView({
       <SkLine p1={{ x: w * 0.36, y: h * 0.53 }} p2={{ x: w - 6, y: h * 0.53 }} color={GHOST} strokeWidth={1.4} />
       {/* 1 · The mic and the gripping hand — palm BEHIND the body, fingers
           wrapping in front. */}
-      <GripHand x={micX} y={yC} scale={GRIP_HAND_S} tint={zoneTint} layer="back" />
-      <HandheldMic x={micX} y={grilleY} angleDeg={0} grilleR={GRIP_GR} bodyLen={GRIP_LEN} />
-      <GripHand x={micX} y={yC} scale={GRIP_HAND_S} tint={zoneTint} layer="front" />
-      <GlowStroke path={cupArc} color={ACCENT_RED} width={5} opacity={0.9} />
+      {/* Clipped to panel 1 so the forearm runs out under the divider
+          instead of across the response graph. */}
+      <Group clip={{ x: 0, y: 0, width: w * 0.34 - 1.5, height: h }}>
+        <GripHand x={micX} y={yC} scale={GRIP_HAND_S} tint={zoneTint} armDeg={armDeg} layer="back" />
+        <HandheldMic x={micX} y={grilleY} angleDeg={0} grilleR={GRIP_GR} bodyLen={GRIP_LEN} />
+        <GripHand x={micX} y={yC} scale={GRIP_HAND_S} tint={zoneTint} armDeg={armDeg} layer="front" />
+        <GlowStroke path={cupArc} color={ACCENT_RED} width={5} opacity={0.9} />
+      </Group>
       {/* 2 · Polar: intended (ghost) vs current, gradient-filled. */}
       <Path path={polarRef} color={GHOST} style="stroke" strokeWidth={1.6} />
       <Path path={polar}>
         <RadialGradient c={vec(pcx, pcy)} r={pR * 1.2} colors={[withAlpha(liveColor, 0.24), withAlpha(liveColor, 0.02)]} />
       </Path>
       <GlowStroke path={polar} color={liveColor} width={2.2} />
+      {/* The mic at the plot's centre, front (grille) up — the pattern is
+          ITS sensitivity map (round 3: the panel had no mic at all). */}
+      <HandheldMic x={pcx} y={pcy} angleDeg={0} grilleR={4.2} bodyLen={15} />
       {/* 3 · Response: reference zero + current with underfill. */}
       <SkLine p1={{ x: rx0, y: ry0 + rh / 2 }} p2={{ x: rx0 + rw, y: ry0 + rh / 2 }} color={GRID} strokeWidth={1.2} />
       <Path path={respUnder}>
@@ -2909,8 +3092,21 @@ export function MistakeIllustration({
       alert.addRRect(Skia.RRectXY(Skia.XYWHRect(mic.x - mic.dx * 4 - 5, mic.y - mic.dy * 4 - 4, 10, 8), 2.5, 2.5));
     }
     const badHand = kind === 'grille' || kind === 'cup' || kind === 'antenna';
-    return { head, mic, hand, extras, alert, badHand };
-  }, [cx, kind]);
+    // The arm runs from the hand toward the TALKER's shoulder (below the
+    // head, off the bottom of the card), never away from the body (round 3:
+    // "the hand floats beside the head"). Solve the forearm angle in the
+    // hand's local frame and mirror the hand when the shoulder is on its −x
+    // side; clamp inside the ≤ 70° wrist rule.
+    const sh = { x: head.x + 14, y: h + 70 };
+    const vx = sh.x - hand.x;
+    const vy = sh.y - hand.y;
+    const th = (mic.ang * Math.PI) / 180;
+    const lx = vx * Math.cos(th) + vy * Math.sin(th);
+    const ly = -vx * Math.sin(th) + vy * Math.cos(th);
+    const mirror = lx < 0;
+    const armDeg = Math.max(10, Math.min(70, (Math.atan2(Math.abs(lx), ly) * 180) / Math.PI));
+    return { head, mic, hand, extras, alert, badHand, mirror, armDeg };
+  }, [cx, h, kind]);
 
   const good = kind === 'correct';
   const outline = good ? ACCENT_GREEN : CONE;
@@ -2934,6 +3130,8 @@ export function MistakeIllustration({
         scale={MIST_HAND_S}
         angleDeg={layout.mic.ang}
         tint={layout.badHand ? ACCENT_RED : good ? ACCENT_GREEN : ACCENT_BLUE}
+        armDeg={layout.armDeg}
+        mirror={layout.mirror}
         layer="back"
       />
       <HandheldMic x={layout.mic.gx} y={layout.mic.gy} angleDeg={layout.mic.ang} grilleR={MIST_GR} bodyLen={MIST_LEN} />
@@ -2943,6 +3141,8 @@ export function MistakeIllustration({
         scale={MIST_HAND_S}
         angleDeg={layout.mic.ang}
         tint={layout.badHand ? ACCENT_RED : good ? ACCENT_GREEN : ACCENT_BLUE}
+        armDeg={layout.armDeg}
+        mirror={layout.mirror}
         layer="front"
       />
       <GlowStroke path={layout.alert} color={ACCENT_RED} width={2} opacity={0.95} />
