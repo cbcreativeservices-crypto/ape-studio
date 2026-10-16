@@ -87,8 +87,8 @@ test('Harmonics stage: every px constant is × the stage text scale', () => {
     /const bandH = BAND_H \* ts/,
     /const labelGap = MIN_LABEL_GAP \* ts/,
     /const waveH = WAVE_STRIP_H \* ts/,
-    /fontSize: 9 \* ts/, // the gutter labels (RN mono text)
-    /fontSize=\{9 \* ts\}/, // the piano C labels (SVG, no viewBox)
+    /fontSize: 10 \* ts/, // the gutter labels (RN mono text; 10 pt since the 2026-10-16 art grading)
+    /fontSize=\{10 \* ts\}/, // the piano C labels (SVG, no viewBox)
     /fontSize: 13 \* ts/, // the "no capture" line
     /width: 2 \* ts/, // the playhead
   ]) {

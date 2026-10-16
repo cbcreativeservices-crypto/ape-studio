@@ -114,7 +114,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElem
 import { Animated, AppState, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
@@ -181,15 +181,15 @@ const LOG_MULT = 13.5; // LOG axis top = 13.5×f0 (clamped to Nyquist in live)
 // Stage geometry (rack): the glass height h splits into the shared-axis top
 // row and a thin waveform strip; widths keep the original gutters.
 const STAGE_PAD = 6;
-const WAVE_STRIP_H = 44; // waveform strip height inside the glass
-const GUTTER_W = 84; // fits "12: 1.2k · G#3 +2¢" at mono 9
-const PIANO_W = 30; // right-edge piano-key gutter (LOG axis only)
-const MIN_LABEL_GAP = 12; // px — drop gutter labels that would overlap (LOG crowds high n)
+const WAVE_STRIP_H = 62; // waveform strip height inside the glass (art grading 2026-10-16: 44 read as a sliver on a phone)
+const GUTTER_W = 108; // fits "11: 1.1k C#6 -14¢" at mono 10 (art grading 2026-10-16: 9 pt read too small)
+const PIANO_W = 36; // right-edge piano-key gutter (LOG axis only) — wide enough that the C labels sit on the white keys past the black ones
+const MIN_LABEL_GAP = 13; // px — drop gutter labels that would overlap (LOG crowds high n)
 
 // Analytic model display range (relative to the fundamental = 0 dB) — the
 // same floor the editable model's dBc math is guarded at.
 const MODEL_FLOOR_DB = DBC_FLOOR_DB;
-const BAND_H = 5; // harmonic band/lobe thickness in px
+const BAND_H = 7; // loudest harmonic band thickness in px — quieter bands draw thinner (see modelLevels)
 
 // Live capture: linear downsample grid + rolling history.
 const SPEC_POLL_MS = 150; // ~6.7 Hz column cadence — NOT the 15 Hz meter poll
@@ -531,6 +531,18 @@ function HarmonicStage({
     [markers, model],
   );
 
+  /** Gap (px) from each marker to its nearest neighbour on the axis — caps
+   *  the level-weighted band thickness where the LOG axis crowds high n. */
+  const bandRoom = useMemo(() => {
+    const room = new Map<number, number>();
+    markers.forEach((m, i) => {
+      const up = i + 1 < markers.length ? Math.abs(m.y - markers[i + 1].y) : Infinity;
+      const dn = i > 0 ? Math.abs(m.y - markers[i - 1].y) : Infinity;
+      room.set(m.n, Math.min(up, dn));
+    });
+    return room;
+  }, [markers]);
+
   const modelWavePath = useMemo(
     () => (waveW <= 0 ? '' : buildWavePath(modelWave, waveW, waveH, ts)),
     [modelWave, waveW, waveH, ts],
@@ -709,10 +721,10 @@ function HarmonicStage({
       out.push(
         <Text
           key={m.n}
-          style={[styles.markerLabel, { top: m.y - 6 * ts, right: 4 * ts, width: gutterW - 6 * ts, fontSize: 9 * ts }]}
+          style={[styles.markerLabel, { top: m.y - 7 * ts, right: 4 * ts, width: gutterW - 6 * ts, fontSize: 10 * ts }]}
           numberOfLines={1}
         >
-          {`${m.n}: ${hzShort(m.hz)} · ${m.note.label} ${c >= 0 ? '+' : ''}${c}¢`}
+          {`${m.n}: ${hzShort(m.hz)} ${m.note.label} ${c >= 0 ? '+' : ''}${c}¢`}
         </Text>,
       );
     }
@@ -747,7 +759,7 @@ function HarmonicStage({
       if (kh <= 0) continue;
       if (BLACK_PC.has(pc)) {
         nodes.push(
-          <Rect key={`k${m}`} x={0} y={yTop} width={pianoW * 0.62} height={kh} fill="#131318" />,
+          <Rect key={`k${m}`} x={0} y={yTop} width={pianoW * 0.58} height={kh} fill="#131318" />,
         );
       } else if (pc === 4 || pc === 11) {
         // White-white boundary above E (→F) and B (→C).
@@ -772,10 +784,11 @@ function HarmonicStage({
         nodes.push(
           <SvgText
             key={`c${m}`}
-            x={pianoW - 3 * ts}
-            y={(yTop + yBot) / 2 + 3.2 * ts}
-            fontSize={9 * ts} // ≥ 9 pt on a phone (lab display rule); the Svg is 1:1 pt, no viewBox — × ts in FULL SCREEN
+            x={pianoW - 2 * ts}
+            y={(yTop + yBot) / 2 + 3.6 * ts}
+            fontSize={10 * ts} // ≥ 9 pt on a phone (lab display rule, drawn at 10); the Svg is 1:1 pt, no viewBox — × ts in FULL SCREEN
             fill="#3c3c44"
+            fontFamily={fonts.mono}
             textAnchor="end"
           >
             {`C${Math.floor(m / 12) - 1}`}
@@ -810,26 +823,29 @@ function HarmonicStage({
             view === 'model' ? (
               <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={specW} height={topH}>
                 {markerLines}
-                {modelLevels.map((m) => (
-                  <Rect
-                    key={m.n}
-                    x={0}
-                    y={m.y - bandH / 2}
-                    width={specW}
-                    height={bandH}
-                    // ODD/EVEN highlight tints the groups apart (legend by
-                    // the toggle); otherwise the MIDI ramp by level, opened up
-                    // over the practical window so loud harmonics still differ.
-                    fill={
-                      oddEvenHl
-                        ? m.n % 2 === 1
-                          ? colors.orange
-                          : colors.blue
-                        : bandColor(m.db)
-                    }
-                    opacity={0.5 + 0.5 * m.frac}
-                  />
-                ))}
+                {modelLevels.map((m) => {
+                  // ODD/EVEN highlight tints the groups apart (legend by
+                  // the toggle); otherwise the MIDI ramp by level, opened up
+                  // over the practical window so loud harmonics still differ.
+                  const fill = oddEvenHl ? (m.n % 2 === 1 ? colors.orange : colors.blue) : bandColor(m.db);
+                  // A real spectrogram line is brighter AND wider the louder
+                  // it is (the analysis window's skirt rises out of the floor),
+                  // so the band's thickness follows level too: a −40 dB
+                  // harmonic is a thin dim thread, the fundamental the widest
+                  // (art grading 2026-10-16: equal bars read as a chart).
+                  // Never wider than ~60 % of the gap to the nearest
+                  // neighbour, so the crowded top of the LOG axis still
+                  // shows separate threads instead of one slab.
+                  const room = (bandRoom.get(m.n) ?? bandH) * 0.6;
+                  const core = Math.min(room, bandH * (0.25 + 0.75 * m.frac));
+                  const skirt = Math.min(room * 1.6, core * 2.4);
+                  return (
+                    <G key={m.n}>
+                      <Rect x={0} y={m.y - skirt / 2} width={specW} height={skirt} fill={fill} opacity={0.18 * m.frac} />
+                      <Rect x={0} y={m.y - core / 2} width={specW} height={core} fill={fill} opacity={0.5 + 0.5 * m.frac} />
+                    </G>
+                  );
+                })}
               </Svg>
             ) : (
               <>
@@ -2141,7 +2157,7 @@ const styles = StyleSheet.create({
     right: 4,
     width: GUTTER_W - 6,
     fontFamily: fonts.mono,
-    fontSize: 9,
+    fontSize: 10,
     color: 'rgba(91,255,133,.8)',
     textAlign: 'right',
   },

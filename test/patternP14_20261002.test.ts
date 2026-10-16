@@ -211,7 +211,7 @@ const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
   'screens/lab/HarmonicStems.tsx': { n: 1, why: 'interval names' },
   'screens/lab/HarmonicsView.tsx': {
     n: 1,
-    why: 'harmonic marker at the 9 pt floor (cannot shrink); GUTTER_W sized for "12: 1.2k · G#3 +2¢" at mono 9 — UNVERIFIED on device, flagged',
+    why: 'harmonic marker drawn at 10 pt (cannot shrink); GUTTER_W 108 sized for "11: 1.1k C#6 -14¢" at mono 10 — measured at 390 in the web preview 2026-10-16',
   },
   'screens/lab/kit/gear.tsx': { n: 1, why: 'control name (the knob value uses fitValue)' },
   'screens/lab/kit/LabNavBar.tsx': { n: 2, why: 'noun and position label' },
