@@ -361,7 +361,12 @@ export type Interior = { x0: number; x1: number; rIn: number; c: Vec3; axis?: Ve
 /** `types` (Lab 6 group 6): only these mic types clamp here (a boom pole's
  *  grip in the operator's hands and a lav's clip on the chest share one
  *  scene); absent = every clip mic. */
-export type Rim = { id: string; label: string; c: Vec3; axis: Vec3; r: number; variants?: VariantId[]; types?: readonly string[] };
+/** `lead` (art fix 2026-10-16, Lab 7 body mics): a body-worn mic's cable from
+ *  this clip to its bodypack — the place it goes in under the shirt, then on
+ *  under the clothes to the pack's input (frame of the model). The scene
+ *  draws it (LavLead: a loop at the clip, then dashed = under the clothes)
+ *  whenever a mic is clipped here; absent = no cable drawn. */
+export type Rim = { id: string; label: string; c: Vec3; axis: Vec3; r: number; variants?: VariantId[]; types?: readonly string[]; lead?: readonly Vec3[] };
 /** The scene a lesson variant compiles to: solids + the routing anchors. */
 export type CompiledScene = {
   variant: VariantId;

@@ -42,6 +42,7 @@ import { useDecorativeMotion } from '../../../../../features/settings/decorative
 import type { CompiledScene, DocumentedZone, Envelope, MicBody, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
 import { sdf } from '../geometry/sdf.ts';
 import { KeepOutsAtRest } from './keepOuts.ts';
+import { LavLead } from './LavLead';
 import { viewsOf } from '../model/types.ts';
 import { copyOf } from '../model/copy.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
@@ -2428,6 +2429,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           ))}
           {micsShown.map((m) => (
             <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
+          ))}
+          {/* A body mic's cable to its pack (Rim.lead; art fix 2026-10-16). */}
+          {micsShown.map((m) => (
+            <LavLead key={`lead:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} xf={xf} />
           ))}
           {showPolar
             ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} hk={model.hardwareScale ?? 1} />)
