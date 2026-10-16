@@ -634,6 +634,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 11:52 · ccode · 92e0afd6
+changed: Miking Lab 3 free reeds fix pass: whole harmonica player in the close-ups, real cup, accordion on two shoulder straps
+affects other side: nothing (app only)
+needs: nothing
+
 ### 2026-10-16 09:56 · ccode · b9c5b17d
 changed: Figure review: pass 3 notes (one hand model, families, one garment, joints moved, open list)
 affects other side: nothing (app only)
