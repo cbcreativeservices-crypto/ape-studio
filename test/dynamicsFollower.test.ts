@@ -35,7 +35,9 @@ import { dirname, join } from 'node:path';
 
 type Mode = 'compressor' | 'gate' | 'limiter';
 
-/** Mirror of the follower's edge selection (fxAnim.tsx, the `rising` line). */
+/** The edge convention in gain-reduction terms (which constant drives which
+ *  edge, per processor). Since 2026-10-16 fxAnim mirrors the engine's linear
+ *  detector + gate gain directly; the last test pins those source lines. */
 function step(gr: number, target: number, mode: Mode, aAtk: number, aRel: number): number {
   const rising = target > gr;
   return gr + (target - gr) * (mode === 'gate' ? (rising ? aRel : aAtk) : rising ? aAtk : aRel);
@@ -108,13 +110,17 @@ describe('dynamics follower — which constant drives which edge', () => {
   });
 
   test('the swapped-edge form is NOT what ships (source pin)', () => {
+    // 2026-10-16 (lab-art grading fix): the hero now mirrors Effects.hpp
+    // processStereo line for line — a LINEAR peak detector (attack while the
+    // level rises past it, release while it falls), the static law on it for
+    // comp/limiter, and for the gate a LINEAR gain that opens at ATTACK, holds,
+    // then closes at RELEASE toward the range floor. Pin those lines.
     const here = dirname(fileURLToPath(import.meta.url));
     const src = readFileSync(join(here, '..', 'src', 'screens', 'lab', 'fxAnim.tsx'), 'utf8');
-    assert.match(
-      src,
-      /mode === 'gate' \? \(rising \? aRel : aAtk\)/,
-      'fxAnim.tsx must select the gate’s edges the opposite way round from the compressor’s — see Effects.hpp:398',
-    );
+    assert.match(src, /env \+= \(x > env \? aAtk : aRel\) \* \(x - env\);/, 'peak detector: attack on rises, release on falls');
+    assert.match(src, /gG \+= aAtk \* \(1 - gG\); \/\/ open fast \(attack\)/, 'the gate OPENS on attack — Effects.hpp:398');
+    assert.match(src, /holdLeft -= dt; \/\/ hold: stay where we are/, 'hold freezes the gate gain');
+    assert.match(src, /gG \+= aRel \* \(floorG - gG\); \/\/ close at release speed/, 'the gate CLOSES on release');
     assert.doesNotMatch(
       src,
       /gr \+= \(target - gr\) \* \(target > gr \? aAtk : aRel\);/,

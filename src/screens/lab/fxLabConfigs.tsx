@@ -47,7 +47,8 @@ import {
   type EqBandSpec,
 } from '../../features/lab/fxViz';
 import type { CheckSpec } from './foundations/bits';
-import { FxLabScreen, type FxLabConfig } from './FxLabScreen';
+import { FxLabScreen, type FxLabConfig, type FxSourceSpec } from './FxLabScreen';
+import type { DynSignal } from './fxAnim';
 import { fmt2sig, snap2sig } from '../../features/lab/sliderMaps';
 
 const P = FX_PARAM;
@@ -63,6 +64,23 @@ const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pi
 const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white }, blurb: 'Equal energy per Hz — brighter than pink. The top octaves dominate, so high-end changes leap out.' };
 const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz }, steadyPeakDb: SOURCE_PEAK_DB });
 const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
+
+/** What a dynamics hero draws coming IN, from the selected source (fix pass
+ *  2026-10-16): the click's real tempo, a sine's steady level, or noise. */
+function dynSignalOf(src?: FxSourceSpec): DynSignal {
+  const g = src?.gen;
+  if (g?.mode === GEN_MODES.click) return { kind: 'hits', periodMs: 60000 / (g.clickBpm ?? 120) };
+  if (g?.mode === GEN_MODES.sine) return { kind: 'steady' };
+  return { kind: 'noise' };
+}
+
+/** The chorus scope's tone: the sine source's own pitch; with a noise source,
+ *  440 Hz stands for one component of it (the hero says so on the glass). */
+function chorusToneOf(src?: FxSourceSpec): { srcHz: number; srcIsNoise: boolean } {
+  const g = src?.gen;
+  if (g?.mode === GEN_MODES.sine && g.frequency) return { srcHz: g.frequency, srcIsNoise: false };
+  return { srcHz: 440, srcIsNoise: true };
+}
 
 // Retrieval checks (learning pass 2026-08-31): the FX fleet was the app's
 // sole zero-retrieval holdout — knobs and prose, never "prove you saw it".
@@ -401,16 +419,22 @@ const reverbConfig: FxLabConfig = {
 export const ReverbLabScreen = () => <FxLabScreen config={reverbConfig} />;
 
 // ─────────────────────────────────────────── Mod trio hero (comb sweep) ──
-function combSweepHero(centerMs: number, sweepMs: number, mix: number, fb: number) {
+// A comb repeats every 1/delay in LINEAR frequency, so on this log axis its
+// notches crowd closer than a pixel above a few hundred Hz. `periodHz` makes
+// the graph draw each column's true min..max (grading fix 2026-10-16: the
+// 384-point sampling aliased a 20 ms comb into a random-height amber moiré).
+// `markHz` marks a source tone on the axis (the chorus lab's 440 Hz sine).
+function combSweepHero(centerMs: number, sweepMs: number, mix: number, fb: number, markHz?: number) {
   const lo = Math.max(centerMs - sweepMs, 0.05);
   const hi = centerMs + sweepMs;
   return (
     <ResponseCurveGraph
       dbRange={16}
+      band={markHz ? { f: markHz, color: '#9a9ca8' } : undefined}
       curves={[
-        { at: (f) => combResponseDb(lo, mix, fb, f), emphasis: 'ghost' },
-        { at: (f) => combResponseDb(hi, mix, fb, f), emphasis: 'ghost' },
-        { at: (f) => combResponseDb(centerMs, mix, fb, f), emphasis: 'main' },
+        { at: (f) => combResponseDb(lo, mix, fb, f), emphasis: 'ghost', periodHz: 1000 / lo },
+        { at: (f) => combResponseDb(hi, mix, fb, f), emphasis: 'ghost', periodHz: 1000 / hi },
+        { at: (f) => combResponseDb(centerMs, mix, fb, f), emphasis: 'main', periodHz: 1000 / centerMs },
       ]}
     />
   );
@@ -426,7 +450,13 @@ const chorusConfig: FxLabConfig = {
     'Chorus mixes you with a slightly delayed, pitch-wobbling copy of yourself — like two ' +
     'players who can never be perfectly together. The long delay makes the comb notches so ' +
     'close they blur into shimmer instead of a jet.',
-  exploreCaption: 'Solid amber = the comb right now; ghosts = where the LFO sweeps it. Drag CENTER to sweep the comb by hand.',
+  // NEW COPY 2026-10-16 (grading fix) — owner review. The old line described
+  // the comb graph, not the display above it, and named a CENTER control this
+  // lab does not have (its delay key is DELAY).
+  exploreCaption:
+    'Display: grey = your voice, blue = the delayed copy, the bold glowing line = what you hear (the two mixed; ' +
+    'its colour shows its level). As the slow wobble (the LFO) drifts the delay, the copy slides and the sum swells ' +
+    'and thins — that movement is the chorus.',
   sources: [srcSine(440), SRC_PINK],
   // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
   // only sets param 0 (enabled) to 0 — every other atomic keeps its last
@@ -486,8 +516,11 @@ const chorusConfig: FxLabConfig = {
     { k: 'DEPTH', paramId: P.depth },
     { k: 'MIX', paramId: P.modMix },
   ],
-  Hero: (v) => combSweepHero(v[P.centerMs], 6 * v[P.depth], v[P.modMix], 0),
-  anim: (v) => ({
+  Hero: (v, src) => {
+    const tone = chorusToneOf(src);
+    return combSweepHero(v[P.centerMs], 6 * v[P.depth], v[P.modMix], 0, tone.srcIsNoise ? undefined : tone.srcHz);
+  },
+  anim: (v, src) => ({
     kind: 'mod',
     flavor: 'chorus',
     rateHz: v[P.rateHz],
@@ -495,12 +528,15 @@ const chorusConfig: FxLabConfig = {
     centerMs: v[P.centerMs],
     mix: v[P.modMix],
     feedback: 0,
+    ...chorusToneOf(src),
   }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
     v[P.modMix] >= 1
       ? '100% wet removes the dry voice — nothing left to beat against: that is vibrato, not chorus.'
-      : `~${v[P.centerMs]} ms voice → notches every ${Math.round(1000 / v[P.centerMs])} Hz — too fine to hear as a comb; you hear the BEATING instead.`,
+      : `~${v[P.centerMs]} ms voice → notches every ${Math.round(1000 / v[P.centerMs])} Hz — too fine to hear as a comb; you hear the BEATING instead. ` +
+        'Amber = the comb now, dashed = where the LFO sweeps it; higher up the notches are closer than the screen can draw, so they fill a band. ' +
+        'With the SINE source the grey line marks its 440 Hz, which swells and dips as the notches pass it.',
   checks: [
     {
       question: 'At 100% WET the chorus stops sounding like a chorus. Why?',
@@ -785,7 +821,10 @@ const compConfig: FxLabConfig = {
   intro:
     'Above the threshold, gain is reduced by the ratio — the bend in the transfer curve below. ' +
     'The GR meter is LIVE: it shows the real gain reduction the engine is applying right now.',
-  exploreCaption: 'Push the source over the threshold and watch measured GR appear.',
+  // NEW COPY 2026-10-16 (grading fix) — owner review.
+  exploreCaption:
+    'Push the source over the threshold and watch measured GR appear. On the display the sound flows left → right ' +
+    'through COMP, so each hit’s sharp start leads and its tail trails behind; the dotted outline is the hit untouched.',
   // CLICK FIRST (owner 2026-09-11). A steady 440 Hz sine against a fixed
   // threshold produces CONSTANT gain reduction, so the GR meter lights and then
   // sits perfectly still — correct behaviour that reads as a broken meter, and
@@ -869,7 +908,7 @@ const compConfig: FxLabConfig = {
       sourcePeakDb={src?.steadyPeakDb}
     />
   ),
-  anim: (v) => ({
+  anim: (v, src) => ({
     kind: 'dynamics',
     mode: 'compressor',
     thresholdDb: v[P.thresholdDb],
@@ -880,6 +919,7 @@ const compConfig: FxLabConfig = {
     attackMs: v[P.attackMs],
     releaseMs: v[P.releaseMs],
     holdMs: 0, // a compressor has no hold
+    signal: dynSignalOf(src),
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
@@ -924,7 +964,10 @@ const gateConfig: FxLabConfig = {
   intro:
     'A gate mutes what falls BELOW the threshold — the cliff in the curve below. With the ' +
     'click source you hear it open on every hit and close in the silence between.',
-  exploreCaption: 'CLICK source: the gate opens per hit — tune Hold/Release until it stops chattering.',
+  // NEW COPY 2026-10-16 (grading fix) — owner review.
+  exploreCaption:
+    'CLICK source (90 BPM): the gate opens on each hit — tune Hold/Release until it stops chattering. The sound flows ' +
+    'left → right, so a hit’s start leads and its tail trails; the dotted outline is the hit untouched, the gap is what the gate took.',
   sources: [srcClick(90), SRC_PINK],
   params: [
     {
@@ -972,7 +1015,7 @@ const gateConfig: FxLabConfig = {
     // what the live ladder reads on every burst.
     <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} />
   ),
-  anim: (v) => ({
+  anim: (v, src) => ({
     kind: 'dynamics',
     mode: 'gate',
     thresholdDb: v[P.thresholdDb],
@@ -990,6 +1033,7 @@ const gateConfig: FxLabConfig = {
     attackMs: 10,
     releaseMs: v[P.releaseMs],
     holdMs: v[P.holdMs],
+    signal: dynSignalOf(src),
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
@@ -1034,7 +1078,10 @@ const limiterConfig: FxLabConfig = {
   intro:
     'A limiter is a compressor with an infinite ratio: NOTHING passes the ceiling — the flat ' +
     'shelf in the curve. The live GR meter shows exactly how hard you are hitting it.',
-  exploreCaption: 'The source peaks at −20 dBFS — ceilings below that engage the brickwall.',
+  // NEW COPY 2026-10-16 (grading fix) — owner review.
+  exploreCaption:
+    'The source peaks at −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the ' +
+    'signal before the limiter.',
   // SINE stays first: the ratified caption above and this lab's "constant gain
   // reduction" lesson both depend on a steady tone, and CEILING is expressible
   // on it. But RELEASE is NOT — a steady tone holds the peak follower at a
@@ -1072,7 +1119,7 @@ const limiterConfig: FxLabConfig = {
   Hero: (v, src) => (
     <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} sourcePeakDb={src?.steadyPeakDb} />
   ),
-  anim: (v) => ({
+  anim: (v, src) => ({
     kind: 'dynamics',
     mode: 'limiter',
     thresholdDb: v[P.ceilingDb],
@@ -1087,6 +1134,7 @@ const limiterConfig: FxLabConfig = {
     attackMs: 0.1,
     releaseMs: v[P.releaseMs],
     holdMs: 0, // a limiter has no hold
+    signal: dynSignalOf(src),
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>

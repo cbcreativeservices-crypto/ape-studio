@@ -88,13 +88,31 @@ const PI2 = Math.PI * 2;
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
 // ─────────────────────────────────────────────────────────── model types ──
+/** The dynamics hero's input signal, chosen by the lab's SOURCE key. */
+export type DynSignal = { kind: 'hits'; periodMs: number } | { kind: 'steady' } | { kind: 'noise' };
+
 /** Per-lab animation model — plain resolved numbers, built by each config's
  *  `anim(values)` mapping from the SAME values driving the audio. */
 export type FxAnimModel =
   | { kind: 'eq'; bands: EqBandSpec[] }
   | { kind: 'delay'; timeMs: number; feedback: number; mix: number; pingpong: boolean }
   | { kind: 'reverb'; rt60: number; preDelayMs: number; mix: number }
-  | { kind: 'mod'; flavor: 'chorus' | 'flanger'; rateHz: number; depth: number; centerMs: number; mix: number; feedback: number }
+  | {
+      kind: 'mod';
+      flavor: 'chorus' | 'flanger';
+      rateHz: number;
+      depth: number;
+      centerMs: number;
+      mix: number;
+      feedback: number;
+      /** CHORUS: the frequency of the tone the scope shows (the sine source's
+       *  own pitch; 440 Hz standing in for one component of a noise source).
+       *  The copy's phase lag is then the TRUE 2π·f·τ(t) the DSP produces —
+       *  see ModFlow. Omitted (flanger) ⇒ the older fixed-carrier model. */
+      srcHz?: number;
+      /** The source is noise: the scope's tone is one component of it. */
+      srcIsNoise?: boolean;
+    }
   | { kind: 'phaser'; rateHz: number; depth: number; centerHz: number; stages: number; feedback: number }
   | {
       kind: 'dynamics';
@@ -120,6 +138,11 @@ export type FxAnimModel =
        *  lab teaches it ("20 ms CHATTER"), so the hero has to show it. 0
        *  elsewhere. */
       holdMs: number;
+      /** What the lab's selected SOURCE puts into the processor (2026-10-16
+       *  fix pass): a click → a hit every beat at the click's real tempo; a
+       *  sine → a steady level (the limiter lab's default — constant GR); a
+       *  noise → a level that jitters. Omitted ⇒ hits at 120 BPM. */
+      signal?: DynSignal;
     }
   | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number }
   | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean };
@@ -145,72 +168,79 @@ function hashW(n: number): number {
   return s - Math.floor(s);
 }
 
-/** Meter-style display mapping: dB (−60..0) → 0..1 height. Display scale only
- *  (a 10^(dB/20) linear map would make −40 dB invisible); the dB VALUES obey
- *  the real transfer law. */
-function dispAmp(db: number): number {
-  'worklet';
-  const a = (Math.min(db, 0) + 60) / 60;
-  return a < 0 ? 0 : a;
-}
-
 /* ── the dynamics hero's time domain ──────────────────────────────────────
  * Attack and release are TIME constants, so they can only be drawn against a
- * time axis. The dynamics hero now reads its horizontal span as time: the OUT
- * half spans DYN_WINDOW_MS of signal, and the input is a repeating TRANSIENT
- * rather than the slow sine swell it used to be.
+ * time axis. The hero's horizontal span IS time, and the input is a repeating
+ * TRANSIENT, because against a slow swell a compressor tracks almost perfectly
+ * whatever its time constants are — the test signal could not express the
+ * parameter (2026-09-11).
  *
- * WHY A TRANSIENT, and not just "add the follower to the old wave": against a
- * 4.5-second swell a compressor tracks almost perfectly whatever its time
- * constants are, so a physically correct drawing would STILL have shown
- * near-zero difference between 0.5 ms and 25 ms attack. The old visual was not
- * merely un-wired, it was un-wireable — the test signal could not express the
- * parameter. A hit with a sharp edge and a decay is what makes attack and
- * release legible, and it is exactly the signal the lab's own copy describes
- * ("the drum's HIT... 25 ms PUNCH lets the hit sneak through") and offers as a
- * source (srcClick at 120 BPM).                                             */
+ * REWRITTEN 2026-10-16 (lab-art grading fix, Compression/Gate/Limiter 5.8–5.9):
+ *  • ONE REAL TIME BASE across the whole strip. Signal time at x is
+ *    t(x) = now − (x − stageX)·msPerPx: the stage is "now", the IN half is the
+ *    signal about to arrive, the OUT half is what already left. Everything
+ *    moves RIGHT at true speed (IN ▸ stage ▸ OUT, the family's grammar), so a
+ *    hit seen on IN crosses the stage and arrives on OUT. Before, the carrier
+ *    sine ran right while the hit envelope scrolled LEFT, and IN and OUT drew
+ *    the SAME 900 ms side by side.
+ *  • No cartoon carrier. At 900 ms per half no carrier cycle is resolvable,
+ *    so the waveform is drawn the way a DAW draws an overview: min/max per
+ *    pixel column — a filled envelope symmetric about the centre line
+ *    (feedback_never_stylized_audio).
+ *  • LINEAR amplitude. The old meter-style dB→height map drew a −30 dB tail at
+ *    half height. dB now lives only where it is labelled dB (the ladder, the
+ *    transfer curve, the bezel).
+ *  • The level is the source's: the hit peaks at the lab generator's −20 dBFS
+ *    (was −8, which compressed at thresholds the caption says do nothing),
+ *    hits arrive at the click's real tempo, a sine is a steady level, noise
+ *    jitters. A hit decays exponentially in AMPLITUDE — a straight line in dB.
+ */
 
 /** The OUT half of the stage spans this much signal time. */
 const DYN_WINDOW_MS = 900;
-/** One transient per this interval — two hits fit the window. */
-const DYN_BURST_MS = 450;
-/** Hit decay time constant (the "tail" the release rides). */
+/** Hit amplitude time constant: a(t) = e^(−t/τ) — a drum-like ring. */
 const DYN_DECAY_MS = 90;
-/** Drawn half-height of the dynamics waveform, as a fraction of the panel.
- *  Raised from 0.42 (owner 2026-09-11: "the incoming waveform signal should be
- *  bigger"). Shared by the IN path, the OUT path and the threshold guide, so
- *  the two waves stay directly comparable and the guide keeps meeting them at
- *  the right level — scaling one alone would make the before/after a lie. */
-const DYN_AMP = 0.47;
-const DYN_PEAK_DB = -8;
+/** The same decay in dB per ms (20·log10(e)/τ ≈ 8.69 dB per τ). */
+const DYN_DB_PER_MS = 20 / (Math.LN10 * DYN_DECAY_MS);
+/** The lab generators' level (fxLabConfigs SOURCE_PEAK_DB). */
+const DYN_PEAK_DB = -20;
+/** Bleed / noise floor between hits. */
 const DYN_FLOOR_DB = -52;
+/** The panel edge, in dBFS: the −20 dBFS source plus the +6 dB makeup chip —
+ *  the loudest thing any dynamics lab can output, so nothing is ever drawn
+ *  clipped at the edge that the audio does not clip. */
+const DYN_TOP_DB = -14;
+/** Follower sub-steps per pixel column (≈1.3 ms each): a 5 ms attack is about
+ *  one pixel at this time scale, so the follower must run finer than the
+ *  columns it is drawn into. */
+const DYN_SUB = 4;
 
-/** Input level (dBFS) at a point in time — instant rise, exponential decay. */
-function burstDb(tMs: number): number {
+/** Input level (dBFS) at signal time tMs. kind: 0 hits · 1 steady · 2 noise. */
+function dynLevelDb(tMs: number, kind: number, periodMs: number): number {
   'worklet';
-  const t = tMs - Math.floor(tMs / DYN_BURST_MS) * DYN_BURST_MS;
-  return DYN_FLOOR_DB + (DYN_PEAK_DB - DYN_FLOOR_DB) * Math.exp(-t / DYN_DECAY_MS);
+  if (kind === 1) return DYN_PEAK_DB;
+  if (kind === 2) {
+    // Noise: a level that wanders a little under its peak, smooth over
+    // ~6 ms blocks (deterministic in signal time, so it travels with the wave).
+    const u = tMs / 6;
+    const i = Math.floor(u);
+    const f = u - i;
+    const a = hashW(i * 1.37 + 3.1);
+    const b = hashW((i + 1) * 1.37 + 3.1);
+    // ~3 dB: a min/max overview of noise at ~4 ms a column barely moves
+    // (audio-expert review 2026-10-16 — 8 dB exaggerated the GR movement).
+    return DYN_PEAK_DB - 3 * (a + (b - a) * f);
+  }
+  const tb = tMs - Math.floor(tMs / periodMs) * periodMs;
+  const db = DYN_PEAK_DB - DYN_DB_PER_MS * tb;
+  return db > DYN_FLOOR_DB ? db : DYN_FLOOR_DB;
 }
 
-/** The gain reduction (dB, ≥0) this mode ASKS FOR at a given input level —
- *  the static law, before the envelope follower decides how fast to obey it.
- *  Same three shapes and numbers as transferDb below; expressed as reduction
- *  because that is what a follower smooths. */
-function targetGrDb(
-  dbIn: number,
-  mode: 'compressor' | 'gate' | 'limiter',
-  thr: number,
-  ratio: number,
-  range: number,
-  ceil: number,
-): number {
+/** Linear amplitude (0..1 of the panel half-height) of a dBFS level. */
+function dynLin(db: number): number {
   'worklet';
-  if (mode === 'compressor') {
-    const over = dbIn - thr;
-    return over > 0 ? over * (1 - 1 / Math.max(ratio, 1)) : 0;
-  }
-  if (mode === 'limiter') return Math.max(0, dbIn - ceil);
-  return dbIn < thr ? Math.abs(range) : 0; // gate: attenuation while closed
+  const a = Math.pow(10, (db - DYN_TOP_DB) / 20);
+  return a > 1 ? 1 : a;
 }
 
 /** Mirror of fxViz TransferCurveGraph's outAt — keep in lockstep (the transfer
@@ -259,11 +289,12 @@ function useGlide(target: number, ms = 300): SharedValue<number> {
  *  standard): blue at the mid line → green/yellow/orange → red at ±full scale.
  *  Mapped over the panel height so the colour tracks true level (owner
  *  2026-08-05: amplitude on the flow waves reads in the MIDI schema). */
-function WaveMidiGradient({ h }: { h: number }) {
+function WaveMidiGradient({ h, y0 = 0, y1 = h }: { h: number; y0?: number; y1?: number }) {
+  // y0..y1 = where +full scale and −full scale sit (default: the panel edges).
   return (
     <LinearGradient
-      start={vec(0, 0)}
-      end={vec(0, h)}
+      start={vec(0, y0)}
+      end={vec(0, y1)}
       colors={WAVE_LEVEL_STOPS.map((s) => s.color)}
       positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
     />
@@ -279,12 +310,15 @@ function FlowGlow({
   width = 2.2,
   opacity = 1,
   gradH,
+  gradY,
 }: {
   path: SharedValue<SkPathT>;
   color?: string;
   width?: number;
   opacity?: number;
   gradH?: number;
+  /** Where ±full scale sit, when that is not the panel edges. */
+  gradY?: [number, number];
 }) {
   return (
     <>
@@ -292,7 +326,7 @@ function FlowGlow({
         <BlurMask blur={width * 2.2} style="normal" />
       </Path>
       <Path path={path} color={gradH != null ? undefined : color} style="stroke" strokeWidth={width} strokeCap="round" strokeJoin="round" opacity={opacity}>
-        {gradH != null ? <WaveMidiGradient h={gradH} /> : null}
+        {gradH != null ? <WaveMidiGradient h={gradH} y0={gradY?.[0]} y1={gradY?.[1]} /> : null}
       </Path>
     </>
   );
@@ -307,15 +341,18 @@ function FlowScene({
   label,
   glow,
   note,
+  noteColor,
   children,
 }: {
   w: number;
   h: number;
   label: string;
   glow?: SharedValue<number>;
-  /** A small green key at the bottom-left naming what an overlay is (the EQ
-   *  curve). RN text over Skia: its points grow by ts like IN/OUT. */
+  /** A small key at the bottom-left naming what an overlay is (the EQ
+   *  curve) or what the IN signal is. RN text over Skia: its points grow by
+   *  ts like IN/OUT. Green by default (it names the stage's curve). */
   note?: string;
+  noteColor?: string;
   children: ReactNode;
 }) {
   const stageX = w * STAGE_FRAC;
@@ -357,7 +394,9 @@ function FlowScene({
       >
         {label}
       </Text>
-      {note ? <Text style={[flowStyles.note, { fontSize: 10 * ts, left: 8 * ts, bottom: 3 * ts }]}>{note}</Text> : null}
+      {note ? (
+        <Text style={[flowStyles.note, { fontSize: 10 * ts, left: 8 * ts, bottom: 3 * ts }, noteColor ? { color: noteColor } : null]}>{note}</Text>
+      ) : null}
     </View>
   );
 }
@@ -680,6 +719,8 @@ function ModFlow({
   mix,
   feedback,
   stages,
+  srcHz,
+  srcIsNoise,
 }: {
   w: number;
   h: number;
@@ -693,10 +734,37 @@ function ModFlow({
   mix: number;
   feedback: number;
   stages: number;
+  /** CHORUS: the source tone's frequency — see `trueLag` below. */
+  srcHz?: number;
+  srcIsNoise?: boolean;
 }) {
   const stageX = w * STAGE_FRAC;
   const carrier = usePhaseClock(active, 0.5);
-  const lfo = usePhaseClock(active, Math.min(rateHz, 5)); // true LFO rate
+  /* CHORUS — THE TRUE PHASE LAG (grading fix 2026-10-16, Chorus 5.0 D).
+   * The copy used to sit (centerMs ÷ 40) of a drawn cycle behind the dry wave,
+   * i.e. the strip was drawn as if the source were a 25 Hz tone. At the lab's
+   * own 20 ms default that is HALF a cycle, so dry + copy cancelled and the
+   * resting picture said "chorus silences the sound". What the DSP does
+   * (Effects.hpp ModEffect, chorus: τ = centerMs + depth·6 ms·sin(LFO)) to the
+   * tone the student actually plays is a lag of φ = 2π·f·τ: for 440 Hz and
+   * 20 ms, 8.8 cycles — 0.8 of a cycle on screen — so the 50 % sum has
+   * |cos(π·f·τ)| = 0.81 of the input. As the LFO moves τ by ±3 ms (CLASSIC
+   * depth), φ sweeps ±1.32 cycles: the copy slides, the sum swells and thins
+   * (the beating you hear), and a true null is a moment the sweep passes
+   * through, not a rest. The scope is a few true cycles of that tone; its
+   * drift is slowed.
+   * SIGN: the wave runs right as sin(kc·x − pc), so the copy emitted τ
+   * earlier is sin(kc·x − pc + φ) — its crests sit φ/kc BEHIND (left of) the
+   * dry crests. */
+  const trueLag = flavor === 'chorus' && srcHz != null && srcHz > 0;
+  /* At fast, deep settings the copy slips by 2π·f·(depth·6 ms)·2π·rate rad/s
+   * at peak — at 440 Hz, depth 1, 3 Hz that is ~0.8 of a cycle per frame,
+   * which strobes and can seem to run backwards. The DRAWN LFO is capped so
+   * the slip stays readable (≤ ~45 rad/s), and the glass says SLOWED. */
+  const slipPerHz = trueLag ? PI2 * (srcHz as number) * 0.006 * Math.max(depth, 0.01) * PI2 : 0;
+  const lfoVisHz = trueLag ? Math.min(rateHz, 45 / slipPerHz) : Math.min(rateHz, 5);
+  const lfoSlowed = trueLag && lfoVisHz < rateHz - 1e-6;
+  const lfo = usePhaseClock(active, lfoVisHz); // true LFO rate (chorus: capped, see below)
   const depthG = useGlide(depth);
   const ctrG = useGlide(center);
   const mixG = useGlide(mix);
@@ -725,7 +793,9 @@ function ModFlow({
     const pl = lfo.value;
     let dx = 0;
     let dph = 0;
-    if (flavor === 'chorus') {
+    if (trueLag) {
+      dph = (PI2 * (srcHz as number) * (ctrG.value + 6 * depthG.value * Math.sin(pl))) / 1000;
+    } else if (flavor === 'chorus') {
       dx = (ctrG.value / 40 + ((6 * depthG.value) / 40) * Math.sin(pl)) * lamPx;
     } else if (flavor === 'flanger') {
       dx = (ctrG.value / 8 + ((ctrG.value * 0.85 * depthG.value) / 8) * Math.sin(pl)) * lamPx;
@@ -743,7 +813,7 @@ function ModFlow({
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, lfo, depthG, ctrG, stG, stageX, w, h, kc, lamPx]);
+  }, [carrier, lfo, depthG, ctrG, stG, stageX, w, h, kc, lamPx, trueLag, srcHz]);
 
   const outPath = useDerivedValue(() => {
     const pc = carrier.value;
@@ -752,7 +822,9 @@ function ModFlow({
     const fbV = fbG.value;
     let dx = 0;
     let dph = 0;
-    if (flavor === 'chorus') {
+    if (trueLag) {
+      dph = (PI2 * (srcHz as number) * (ctrG.value + 6 * depthG.value * Math.sin(pl))) / 1000;
+    } else if (flavor === 'chorus') {
       dx = (ctrG.value / 40 + ((6 * depthG.value) / 40) * Math.sin(pl)) * lamPx;
     } else if (flavor === 'flanger') {
       dx = (ctrG.value / 8 + ((ctrG.value * 0.85 * depthG.value) / 8) * Math.sin(pl)) * lamPx;
@@ -773,22 +845,50 @@ function ModFlow({
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, lfo, depthG, ctrG, mixG, fbG, stG, stageX, w, h, kc, lamPx]);
+  }, [carrier, lfo, depthG, ctrG, mixG, fbG, stG, stageX, w, h, kc, lamPx, trueLag, srcHz]);
+
+  // CHORUS: the dry voice carries on past the stage (dim), so the two voices
+  // that MAKE the chorus — you (grey) and the late copy (blue) — sit side by
+  // side with what you hear (amber, their mix).
+  const dryOutPath = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (!trueLag) return p;
+    const pc = carrier.value;
+    const A = h * 0.32;
+    const N = 52;
+    for (let i = 0; i <= N; i++) {
+      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
+      const y = h / 2 - A * Math.sin(kc * x - pc);
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    return p;
+  }, [carrier, trueLag, stageX, w, h, kc]);
+
+  const note = trueLag
+    ? lfoSlowed
+      ? `${srcHz} Hz · LFO SLOWED`
+      : srcIsNoise
+        ? `${srcHz} Hz PART OF THE NOISE`
+        : `SCOPE · ${srcHz} Hz TONE`
+    : undefined;
 
   return (
-    <FlowScene w={w} h={h} label={label}>
+    <FlowScene w={w} h={h} label={label} note={note} noteColor={trueLag ? DIM : undefined}>
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.55} />
+      {trueLag ? <Path path={dryOutPath} color={DIM} style="stroke" strokeWidth={1.1} opacity={0.5} /> : null}
+      <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={trueLag ? 0.8 : 0.55} />
       <FlowGlow path={outPath} gradH={h} />
     </FlowScene>
   );
 }
 
 // ──────────────────────────────────────────────── comp/gate/limiter flow ──
-// An amplitude-varying wave (loud/quiet swells) travels in; the out wave has
-// the transfer law applied per sample — loud parts visibly squeezed (comp/
-// limiter), quiet parts dropped to the floor (gate). Where the engine runs,
-// the LIVE measured GR drives the stage glow.
+// The SOURCE's signal travels in on one real time base (see the time-domain
+// note above); past the stage it carries the transfer law applied THROUGH the
+// envelope follower — loud parts squeezed (comp/limiter), quiet tails dropped
+// (gate). Drawn as a DAW overview: linear amplitude, min/max per column.
+// Where the engine runs, the LIVE measured GR drives the stage glow.
 function DynamicsFlow({
   w,
   h,
@@ -804,6 +904,7 @@ function DynamicsFlow({
   releaseMs,
   holdMs,
   grDb,
+  signal,
 }: {
   w: number;
   h: number;
@@ -819,10 +920,12 @@ function DynamicsFlow({
   releaseMs: number;
   holdMs: number;
   grDb: number;
+  signal?: DynSignal;
 }) {
   const stageX = w * STAGE_FRAC;
-  const carrier = usePhaseClock(active, 0.55);
-  const env = usePhaseClock(active, 0.22);
+  // ONE clock, in real seconds: phase/2π = seconds, so the picture moves at
+  // the true speed of the signal and hits arrive at the click's real tempo.
+  const clock = usePhaseClock(active, 1);
   const thrG = useGlide(thresholdDb);
   const ratG = useGlide(ratio);
   const rngG = useGlide(rangeDb);
@@ -833,164 +936,229 @@ function DynamicsFlow({
   const holdG = useGlide(holdMs);
   const grG = useGlide(grDb, 140); // LIVE measured GR → stage glow
   const glow = useDerivedValue(() => Math.min(grG.value / 12, 1), [grG]);
-  const kc = (PI2 * 6.5) / w;
+  const sigKind = signal?.kind === 'steady' ? 1 : signal?.kind === 'noise' ? 2 : 0;
+  const periodMs = signal?.kind === 'hits' ? Math.max(100, signal.periodMs) : 500;
 
-  /** Shared time base: the OUT half defines ms-per-pixel, and the IN half
-   *  borrows it, so one hit is the SAME WIDTH on both sides of the stage. It
-   *  is one signal crossing one processor; drawing it at two scales would make
-   *  the before/after comparison a lie. */
+  /** Shared time base: the OUT half defines ms-per-pixel and the IN half
+   *  uses the same, so one hit is the SAME WIDTH on both sides of the stage —
+   *  it is one signal crossing one processor. */
+  const inX0 = 6;
+  const inX1 = stageX - 16;
   const outX0 = stageX + 10;
   const outX1 = w - 6;
   const msPerPx = DYN_WINDOW_MS / Math.max(1, outX1 - outX0);
+  const mid = h / 2;
+  /** Half-height of the panel edge (= DYN_TOP_DB). */
+  const A = h / 2 - 5;
+  /** Where ±0 dBFS would sit: the level gradient is pinned to TRUE full
+   *  scale (levelColor: "the colour tracks true level regardless of vertical
+   *  zoom"), so a −20 dBFS hit reads in the quiet colours it really is. */
+  const fsHalf = A * Math.pow(10, -DYN_TOP_DB / 20);
 
   const inPath = useDerivedValue(() => {
-    const pc = carrier.value;
-    const scrollMs = (env.value / PI2) * DYN_BURST_MS;
+    const now = (clock.value / PI2) * 1000;
     const p = Skia.Path.Make();
-    const A = h * DYN_AMP;
-    const N = 72;
-    const x0 = 6;
-    const span = stageX - 16 - x0;
-    for (let i = 0; i <= N; i++) {
-      const x = x0 + (span * i) / N;
-      const dbIn = burstDb(scrollMs + (x - x0) * msPerPx);
-      const y = h / 2 - A * dispAmp(dbIn) * Math.sin(kc * x - pc);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+    const cols = Math.max(2, Math.floor(inX1 - inX0));
+    const cw = (inX1 - inX0) / cols;
+    const amps: number[] = [];
+    for (let c = 0; c < cols; c++) {
+      // min/max per column: the loudest moment inside the column's time span.
+      let best = -200;
+      for (let s = 0; s < DYN_SUB; s++) {
+        const x = inX0 + c * cw + ((s + 0.5) * cw) / DYN_SUB;
+        const db = dynLevelDb(now - (x - stageX) * msPerPx, sigKind, periodMs);
+        if (db > best) best = db;
+      }
+      amps.push(dynLin(best));
     }
+    for (let c = 0; c < cols; c++) {
+      const x = inX0 + (c + 0.5) * cw;
+      if (c === 0) p.moveTo(x, mid - A * amps[c]);
+      else p.lineTo(x, mid - A * amps[c]);
+    }
+    for (let c = cols - 1; c >= 0; c--) p.lineTo(inX0 + (c + 0.5) * cw, mid + A * amps[c]);
+    p.close();
     return p;
-  }, [carrier, env, stageX, h, kc, msPerPx]);
+  }, [clock, inX0, inX1, stageX, msPerPx, mid, A, sigKind, periodMs]);
 
   const outPath = useDerivedValue(() => {
-    const pc = carrier.value;
-    const scrollMs = (env.value / PI2) * DYN_BURST_MS;
+    const now = (clock.value / PI2) * 1000;
     const p = Skia.Path.Make();
-    const A = h * DYN_AMP;
-    const N = 112; // finer than the IN side: a fast attack is a narrow feature
-    const span = outX1 - outX0;
-    const step = span / N;
-    const dt = step * msPerPx;
+    const cols = Math.max(2, Math.floor(outX1 - outX0));
+    const cw = (outX1 - outX0) / cols;
+    const dts = (cw * msPerPx) / DYN_SUB; // follower sub-step, ms
+    const dtc = dts * DYN_SUB; // pre-roll step (one column), ms
     const atk = Math.max(atkG.value, 0.1);
     const rel = Math.max(relG.value, 1);
-
-    /* THE ENVELOPE FOLLOWER — the piece that was missing. One pole: the attack
-     * coefficient while the reduction is deepening, release while it recovers.
-     * That is what the DSP does, and it is why a compressor sounds like a
-     * compressor rather than a waveshaper.
-     *
-     * ⚠️ Written INLINE, deliberately. A nested `'worklet'` helper here throws
-     * "not defined" at runtime: Reanimated's plugin compiles an inner worklet
-     * as a SEPARATE worklet, so it cannot see this function's locals. Inside a
-     * worklet, keep the loop flat. */
-    let gr = 0;
-    /* PERF (2026-09-11, same day the follower landed). The first cut called
-     * Math.exp TWICE PER SAMPLE — once for the burst envelope, once for the
-     * follower coefficient — across a 56-step pre-roll and a 113-step draw:
-     * ~340 transcendentals per frame per lab on the UI thread, where the old
-     * path had none. A hero that stutters reads to a user as "the controls do
-     * nothing", which is exactly the report this fix answers.
-     *
-     * Both are hoistable because `dt` is CONSTANT along the walk:
-     *   • the follower's two coefficients are identical at every step;
-     *   • the burst decay is exponential, so advancing by a fixed dt is a
-     *     MULTIPLY, with one exp at each burst boundary to re-seat the phase
-     *     so it cannot drift.
-     * ~340 exp/frame becomes ~5, with the same output. */
-    const aAtk = 1 - Math.exp(-dt / atk);
-    const aRel = 1 - Math.exp(-dt / rel);
-    const decayStep = Math.exp(-dt / DYN_DECAY_MS);
-    const span01 = DYN_PEAK_DB - DYN_FLOOR_DB;
-    const mk = mkG.value;
-    const thrV = thrG.value;
-    const ratV = ratG.value;
-    const rngV = rngG.value;
-    const ceilV = ceilG.value;
+    const ratV = Math.max(ratG.value, 1);
     const holdV = Math.max(holdG.value, 0);
-    /** GATE HOLD: ms since the input was last above the threshold. A gate does
-     *  not start closing the instant the signal dips — it waits, which is what
-     *  stops it chattering on a decaying tail. Tracked here rather than folded
-     *  into targetGrDb because it is STATE over time, not a function of the
-     *  current level. */
-    let sinceOpen = 1e9;
+    const thrLin = Math.pow(10, thrG.value / 20);
+    const ceilLin = Math.pow(10, ceilG.value / 20);
+    const floorG = Math.pow(10, rngG.value / 20);
+    const mkLin = Math.pow(10, mkG.value / 20);
+    const slope = 1 - 1 / ratV;
+    const peakLin = Math.pow(10, DYN_PEAK_DB / 20);
+    const floorLin = Math.pow(10, DYN_FLOOR_DB / 20);
 
-    // PRE-ROLL. A follower is causal — its value at the left edge depends on
-    // what came before it. Starting from zero would draw a fake "first hit"
-    // every frame at the edge of the panel. One burst period of lead-in settles
-    // it, so what enters the panel is already in the state the signal put it in.
-    const pre = Math.ceil(DYN_BURST_MS / Math.max(dt, 0.01));
-    // Running burst phase + amplitude, walked forward, rather than recomputing
-    // burstDb(t) from scratch at every step. The pre-roll and the draw are ONE
-    // walk now: negative i settles the follower and draws nothing.
-    let tB = scrollMs - pre * dt;
-    tB -= Math.floor(tB / DYN_BURST_MS) * DYN_BURST_MS;
-    let amp = Math.exp(-tB / DYN_DECAY_MS);
+    /* THE ENGINE, MIRRORED LINE FOR LINE (Effects.hpp DynamicsEffect::
+     * processStereo — re-read 2026-10-16; the drawing used to smooth the GAIN
+     * REDUCTION in dB, which is not what the engine does):
+     *   • a PEAK DETECTOR on the linear level — attack coefficient while the
+     *     level rises past it, release while it falls away;
+     *   • COMP / LIMITER: the static law applied to that detector, sample by
+     *     sample (no second smoother);
+     *   • GATE: a linear gain that OPENS at the attack rate while the detector
+     *     is over the threshold, holds for HOLD, then CLOSES at the release rate
+     *     toward the range floor. Opening is the fast edge — the 2026-09-11
+     *     swapped-edge bug drew a gate that never opened.
+     * ⚠️ Written INLINE, deliberately: a nested `'worklet'` helper declared in
+     * here throws "not defined" at runtime (Reanimated compiles it as a
+     * separate worklet that cannot see this function's locals). Coefficients
+     * are hoisted (the step is constant within each phase of the walk), and a
+     * hit's decay is advanced by MULTIPLYING, re-seated once per hit, so the
+     * walk costs a transcendental only where the law actually bites. */
+    const aAtkF = 1 - Math.exp(-dts / atk);
+    const aRelF = 1 - Math.exp(-dts / rel);
+    const aAtkC = 1 - Math.exp(-dtc / atk);
+    const aRelC = 1 - Math.exp(-dtc / rel);
+    const decF = Math.exp(-dts / DYN_DECAY_MS);
+    const decC = Math.exp(-dtc / DYN_DECAY_MS);
 
-    for (let i = -pre; i <= N; i++) {
-      const dbIn = DYN_FLOOR_DB + span01 * amp;
-      if (mode === 'gate' && dbIn >= thrV) sinceOpen = 0;
-      else sinceOpen += dt;
-      // Within the hold window the gate stays fully open, whatever the level.
-      const target =
-        mode === 'gate' && sinceOpen < holdV ? 0 : targetGrDb(dbIn, mode, thrV, ratV, rngV, ceilV);
-      // WHICH EDGE IS "ATTACK" DEPENDS ON THE PROCESSOR.
-      // For a compressor or limiter, `gr` RISING means the reduction is
-      // deepening — that is the attack edge. For a GATE, `gr` is attenuation,
-      // so `gr` FALLING to zero is the gate OPENING, and opening is the fast
-      // edge. The engine is unambiguous (Effects.hpp:398): above threshold it
-      // opens with aA, and after the hold it closes with aR.
-      //
-      // Drawn with the edges swapped — which is how this shipped on
-      // 2026-09-11 — the gate lab applied its hard-coded 1 ms attack to the
-      // CLOSING edge and the student's RELEASE chip to the opening one. At the
-      // lab's own defaults the drawn gate never opened at all: a flat floor
-      // with a bump, under a caption promising "you hear it open on every hit".
-      // This passed its own check because HOLD did visibly move the trace —
-      // the picture responded, it just responded wrongly.
-      const rising = target > gr;
-      gr += (target - gr) * (mode === 'gate' ? (rising ? aRel : aAtk) : rising ? aAtk : aRel);
-
-      if (i >= 0) {
-        const x = outX0 + step * i;
-        const dbOut = dbIn - gr + mk;
-        const y = h / 2 - A * dispAmp(dbOut) * Math.sin(kc * x - pc);
-        if (i === 0) p.moveTo(x, y);
-        else p.lineTo(x, y);
+    // The OLDEST signal on screen is at the right edge. The detector is causal,
+    // so it walks FORWARD in time from before that edge (PRE-ROLL, one column
+    // per step — it only has to settle) and then across the panel right→left,
+    // DYN_SUB steps per column, keeping each column's loudest output.
+    const tOld = now - (outX1 - stageX) * msPerPx;
+    const settleMs = Math.min(2500, Math.max(periodMs, 5 * rel, 5 * atk + holdV, 200));
+    const pre = Math.ceil(settleMs / dtc);
+    const peaks: number[] = [];
+    for (let c = 0; c < cols; c++) peaks.push(0);
+    const total = pre + cols * DYN_SUB;
+    let t = tOld - pre * dtc;
+    let tb = t - Math.floor(t / periodMs) * periodMs; // time since the last hit
+    let xd = peakLin * Math.exp(-tb / DYN_DECAY_MS); // the hit's own decay
+    let env = 0;
+    let gG = floorG;
+    let holdLeft = 0;
+    for (let k = 0; k < total; k++) {
+      const coarse = k < pre;
+      const dt = coarse ? dtc : dts;
+      const x =
+        sigKind === 1 ? peakLin : sigKind === 2 ? Math.pow(10, dynLevelDb(t, 2, periodMs) / 20) : xd > floorLin ? xd : floorLin;
+      const aAtk = coarse ? aAtkC : aAtkF;
+      const aRel = coarse ? aRelC : aRelF;
+      // Peak detector: fast toward rises (attack), slow away (release).
+      env += (x > env ? aAtk : aRel) * (x - env);
+      let gain = 1;
+      if (mode === 'gate') {
+        if (env > thrLin) {
+          holdLeft = holdV;
+          gG += aAtk * (1 - gG); // open fast (attack)
+        } else if (holdLeft > 0) {
+          holdLeft -= dt; // hold: stay where we are
+        } else {
+          gG += aRel * (floorG - gG); // close at release speed
+        }
+        gain = gG;
+      } else if (!coarse) {
+        if (mode === 'compressor') {
+          // over·(1 − 1/ratio) dB of reduction, as a linear gain, plus makeup.
+          gain = (env > thrLin ? Math.exp(-slope * Math.log(env / thrLin)) : 1) * mkLin;
+        } else {
+          gain = env > ceilLin ? ceilLin / env : 1; // limiter: brickwall at the ceiling
+        }
       }
-
-      tB += dt;
-      if (tB >= DYN_BURST_MS) {
-        tB -= DYN_BURST_MS;
-        amp = Math.exp(-tB / DYN_DECAY_MS); // re-seat exactly at the boundary
+      if (!coarse) {
+        const c = cols - 1 - Math.floor((k - pre) / DYN_SUB);
+        const out = x * gain;
+        if (c >= 0 && out > peaks[c]) peaks[c] = out;
+      }
+      t += dt;
+      tb += dt;
+      if (tb >= periodMs) {
+        tb -= periodMs;
+        xd = peakLin * Math.exp(-tb / DYN_DECAY_MS); // re-seat exactly at each hit
       } else {
-        amp *= decayStep;
+        xd *= coarse ? decC : decF;
       }
     }
+    const topLin = Math.pow(10, DYN_TOP_DB / 20);
+    for (let c = 0; c < cols; c++) {
+      const a = peaks[c] / topLin;
+      peaks[c] = a > 1 ? 1 : a;
+      const x = outX0 + (c + 0.5) * cw;
+      if (c === 0) p.moveTo(x, mid - A * peaks[c]);
+      else p.lineTo(x, mid - A * peaks[c]);
+    }
+    for (let c = cols - 1; c >= 0; c--) p.lineTo(outX0 + (c + 0.5) * cw, mid + A * peaks[c]);
+    p.close();
     return p;
-  }, [carrier, env, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, h, kc, msPerPx, mode]);
+  }, [clock, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, stageX, msPerPx, mid, A, mode, sigKind, periodMs]);
 
-  // Dashed limit guides: threshold over the IN side (comp/gate), ceiling over
-  // the OUT side (limiter) — dashed = a limit, the shared grammar.
+  // The UNPROCESSED signal's outline behind OUT (cognitive review 2026-10-16:
+  // with nothing to compare against, a squeezed hit or a gated tail did not
+  // read as "something was taken away"). Same columns, no processor.
+  const dryOutPath = useDerivedValue(() => {
+    const now = (clock.value / PI2) * 1000;
+    const p = Skia.Path.Make();
+    const cols = Math.max(2, Math.floor(outX1 - outX0));
+    const cw = (outX1 - outX0) / cols;
+    const amps: number[] = [];
+    for (let c = 0; c < cols; c++) {
+      let best = -200;
+      for (let s = 0; s < DYN_SUB; s++) {
+        const x = outX0 + c * cw + ((s + 0.5) * cw) / DYN_SUB;
+        const db = dynLevelDb(now - (x - stageX) * msPerPx, sigKind, periodMs);
+        if (db > best) best = db;
+      }
+      amps.push(dynLin(best));
+    }
+    for (let c = 0; c < cols; c++) {
+      const x = outX0 + (c + 0.5) * cw;
+      if (c === 0) p.moveTo(x, mid - A * amps[c]);
+      else p.lineTo(x, mid - A * amps[c]);
+    }
+    for (let c = cols - 1; c >= 0; c--) p.lineTo(outX0 + (c + 0.5) * cw, mid + A * amps[c]);
+    p.close();
+    return p;
+  }, [clock, outX0, outX1, stageX, msPerPx, mid, A, sigKind, periodMs]);
+
+  // Dashed limit guides at their LINEAR height: threshold over the IN side
+  // (comp/gate), ceiling over the OUT side (limiter) — dashed = a limit.
   const guidePath = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const A = h * DYN_AMP;
     const db = mode === 'limiter' ? ceilG.value : thrG.value;
-    const yOff = A * dispAmp(db);
-    const x0 = mode === 'limiter' ? stageX + 10 : 6;
-    const x1 = mode === 'limiter' ? w - 6 : stageX - 16;
-    p.moveTo(x0, h / 2 - yOff);
-    p.lineTo(x1, h / 2 - yOff);
-    p.moveTo(x0, h / 2 + yOff);
-    p.lineTo(x1, h / 2 + yOff);
+    const yOff = A * dynLin(db);
+    const x0 = mode === 'limiter' ? outX0 : inX0;
+    const x1 = mode === 'limiter' ? outX1 : inX1;
+    p.moveTo(x0, mid - yOff);
+    p.lineTo(x1, mid - yOff);
+    p.moveTo(x0, mid + yOff);
+    p.lineTo(x1, mid + yOff);
     return p;
-  }, [thrG, ceilG, stageX, w, h]);
+  }, [thrG, ceilG, mode, inX0, inX1, outX0, outX1, mid, A]);
+
+  // What the IN half is: the source as the hero models it (RN text, ≥ 9 pt).
+  const note =
+        // ⚠️ "DRUM-HIT MODEL": the lab's CLICK is a 5 ms ping (Generator.hpp), so
+    // the drawing borrows only its TEMPO — the decaying hit is a model, and
+    // the glass says so (audio-expert review 2026-10-16).
+    sigKind === 1 ? 'STEADY TONE · −20 dBFS' : sigKind === 2 ? 'NOISE · PEAKS ≈ −20 dBFS' : `DRUM-HIT MODEL · ${Math.round(60000 / periodMs)} BPM`;
 
   return (
-    <FlowScene w={w} h={h} label={label} glow={glow}>
-      <Path path={guidePath} color="rgba(255,198,77,.4)" style="stroke" strokeWidth={1}>
+    <FlowScene w={w} h={h} label={label} glow={glow} note={note} noteColor={DIM}>
+      <Path path={guidePath} color="rgba(255,198,77,.55)" style="stroke" strokeWidth={1}>
         <DashPathEffect intervals={[4, 3]} />
       </Path>
-      <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <FlowGlow path={outPath} width={2} gradH={h} />
+      <Path path={inPath} color={DIM} opacity={0.3} />
+      <Path path={inPath} color={DIM} style="stroke" strokeWidth={1} strokeJoin="round" opacity={0.85} />
+      <Path path={dryOutPath} color={DIM} style="stroke" strokeWidth={1} strokeJoin="round" opacity={0.55}>
+        <DashPathEffect intervals={[3, 2]} />
+      </Path>
+      <Path path={outPath} opacity={0.55}>
+        <WaveMidiGradient h={h} y0={mid - fsHalf} y1={mid + fsHalf} />
+      </Path>
+      <FlowGlow path={outPath} width={1.4} gradH={h} gradY={[mid - fsHalf, mid + fsHalf]} />
     </FlowScene>
   );
 }
@@ -1255,6 +1423,8 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           mix={model.mix}
           feedback={model.feedback}
           stages={0}
+          srcHz={model.srcHz}
+          srcIsNoise={model.srcIsNoise}
         />
       );
     case 'phaser':
@@ -1290,6 +1460,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           releaseMs={model.releaseMs}
           holdMs={model.holdMs}
           grDb={grDb}
+          signal={model.signal}
         />
       );
     case 'distortion':

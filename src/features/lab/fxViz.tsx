@@ -13,7 +13,7 @@
  * the real measured gain reduction from the engine (fxGrStatus), never a
  * simulated needle.
  */
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -243,7 +243,58 @@ export type ResponseCurve = {
    *  EVERY band its own MIDI level colour, so one loud band can no longer
    *  dictate the colour of the whole plot. Omitted ⇒ the emphasis default. */
   color?: string;
+  /** The curve repeats every `periodHz` in LINEAR frequency (a comb: 1/delay).
+   *  On a log axis its notches crowd closer than a pixel, and point sampling
+   *  then aliases into random-height spikes (the chorus graph, grading
+   *  2026-10-16). With this set, every pixel column draws the TRUE min..max
+   *  the curve covers inside it — a single line where the notches resolve, a
+   *  solid band where they are denser than the screen. */
+  periodHz?: number;
 };
+
+/** Column-exact min/max outline of a periodic curve (see ResponseCurve.periodHz):
+ *  `d` is the closed band (top L→R, bottom R→L), `top` the upper edge alone. */
+function periodicBandPath(
+  at: (f: number) => number,
+  periodHz: number,
+  x0: number,
+  x1: number,
+  fAtX: (x: number) => number,
+  yAt: (db: number) => number,
+): { d: string; top: string } {
+  // One whole period, finely: what any column spanning ≥ a period contains.
+  let pMin = Infinity;
+  let pMax = -Infinity;
+  for (let k = 0; k < 256; k++) {
+    const v = at(periodHz * (1 + (k + 0.5) / 256));
+    if (v < pMin) pMin = v;
+    if (v > pMax) pMax = v;
+  }
+  const tops: string[] = [];
+  const bots: string[] = [];
+  for (let x = x0; x < x1; x += 1) {
+    const fa = fAtX(x);
+    const fb = fAtX(Math.min(x + 1, x1));
+    let lo = Infinity;
+    let hi = -Infinity;
+    if (fb - fa >= periodHz) {
+      lo = pMin;
+      hi = pMax;
+    } else {
+      const n = Math.min(128, Math.max(2, Math.ceil((48 * (fb - fa)) / periodHz) + 1));
+      for (let k = 0; k <= n; k++) {
+        const v = at(fa + ((fb - fa) * k) / n);
+        if (v < lo) lo = v;
+        if (v > hi) hi = v;
+      }
+    }
+    const xm = Math.min(x + 0.5, x1).toFixed(1);
+    tops.push(`${xm} ${yAt(hi).toFixed(1)}`);
+    bots.push(`${xm} ${yAt(lo).toFixed(1)}`);
+  }
+  const top = `M${tops.join(' L')}`;
+  return { d: `${top} L${bots.reverse().join(' L')} Z`, top };
+}
 
 /** Log-frequency magnitude chart (20 Hz–20 kHz), ±`dbRange` dB. The workhorse:
  *  EQ curves, comb sweeps, phaser notches, filter shapes. */
@@ -298,6 +349,11 @@ export function ResponseCurveGraph({
   const paths = useMemo(
     () =>
       curves.map((c) => {
+        if (c.periodHz && c.periodHz > 0 && gw > 0) {
+          const band = periodicBandPath(c.at, c.periodHz, padL, gw - padR, (x) => responseGraphF(x, gw), yAt);
+          const fill = c.emphasis === 'main' ? `${band.top} L${(gw - padR).toFixed(1)} ${H - 1} L${padL.toFixed(1)} ${H - 1}Z` : '';
+          return { d: band.d, fill, band: true };
+        }
         const freqs = responseSampleFreqs(samples, focusHz); // 20 → 20k log (+ band centres)
         let d = '';
         for (let i = 0; i < freqs.length; i++) {
@@ -307,7 +363,7 @@ export function ResponseCurveGraph({
         }
         // Underfill for the main trace: close the curve down to the plot floor.
         const fill = c.emphasis === 'main' ? `${d}L${(gw - padR).toFixed(1)} ${H - 1} L${padL.toFixed(1)} ${H - 1}Z` : '';
-        return { d, fill };
+        return { d, fill, band: false };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [curves, dbRange, H, gw, samples, focusHz?.join(',')],
@@ -383,7 +439,13 @@ export function ResponseCurveGraph({
         ),
       )}
       {curves.map((c, i) =>
-        c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={c.color ?? mainColor} width={2.2 * ts} /> : null,
+        c.emphasis === 'main' ? (
+          <Fragment key={`m${i}`}>
+            {/* A periodic band is SOLID where its notches outrun the pixels. */}
+            {paths[i].band ? <Path d={paths[i].d} fill={c.color ?? mainColor ?? AMBER} fillOpacity={0.6} /> : null}
+            <GlowPath d={paths[i].d} color={c.color ?? mainColor} width={2.2 * ts} />
+          </Fragment>
+        ) : null,
       )}
       {FREQ_TICKS.map((f) => (
         <Line key={`t${f}`} x1={xAt(f)} y1={H - 4 * ts} x2={xAt(f)} y2={H} stroke={DIM} strokeWidth={1 * ts} strokeOpacity={0.55} />
@@ -438,15 +500,48 @@ export function TransferCurveGraph({
     // gate: below threshold the output drops by the range (floor); hard curve
     return dbIn < thresholdDb ? Math.max(dbIn + rangeDb, -90) : dbIn;
   };
-  const path = useMemo(() => {
+  // The curve is CLIPPED at the plot floor, never flattened onto it (grading
+  // fix 2026-10-16): a gate's closed region runs out = in + range, parallel to
+  // unity and mostly BELOW −60 — drawn clamped it read as a flat floor line,
+  // a different law. The threshold itself is sampled exactly so the cliff is
+  // vertical. `fillD` (the underfill) may stay clamped: it has no height there.
+  const { path, fillD } = useMemo(() => {
+    const ins: number[] = [];
+    for (let i = 0; i <= 96; i++) ins.push(-60 + (i / 96) * 60);
+    if (thresholdDb > -60 && thresholdDb < 0) ins.push(thresholdDb - 1e-3, thresholdDb);
+    ins.sort((a, b) => a - b);
     let d = '';
-    for (let i = 0; i <= 96; i++) {
-      const dbIn = -60 + (i / 96) * 60;
-      d += `${i === 0 ? 'M' : 'L'}${xAt(dbIn).toFixed(1)} ${yAt(Math.max(outAt(dbIn), -60)).toFixed(1)}`;
+    let f = '';
+    let down = false;
+    let prevIn = ins[0];
+    let prevOut = outAt(ins[0]);
+    for (let i = 0; i < ins.length; i++) {
+      const dbIn = ins[i];
+      const out = outAt(dbIn);
+      f += `${i === 0 ? 'M' : 'L'}${xAt(dbIn).toFixed(1)} ${yAt(Math.max(out, -60)).toFixed(1)}`;
+      if (out >= -60) {
+        if (!down) {
+          // Re-entering through the floor: start exactly where the law crosses −60.
+          const x0 = i === 0 || prevOut >= -60 ? xAt(dbIn) : xAt(prevIn + ((dbIn - prevIn) * (-60 - prevOut)) / (out - prevOut));
+          d += `M${x0.toFixed(1)} ${yAt(i === 0 ? out : -60).toFixed(1)}`;
+          if (i !== 0) d += `L${xAt(dbIn).toFixed(1)} ${yAt(out).toFixed(1)}`;
+          down = true;
+        } else {
+          d += `L${xAt(dbIn).toFixed(1)} ${yAt(out).toFixed(1)}`;
+        }
+      } else if (down) {
+        const xc = xAt(prevIn + ((dbIn - prevIn) * (-60 - prevOut)) / (out - prevOut));
+        d += `L${xc.toFixed(1)} ${yAt(-60).toFixed(1)}`;
+        down = false;
+      }
+      prevIn = dbIn;
+      prevOut = out;
     }
-    return d;
+    return { path: d, fillD: f };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, thresholdDb, ratio, rangeDb, ceilingDb, makeupDb]);
+  /** Gate only: the closed side's law runs below the plot — say where. */
+  const offPlot = mode === 'gate' && outAt(-60) < -60;
   const markerDb = mode === 'limiter' ? ceilingDb : thresholdDb;
   const plotB = H - pad + 8; // plot panel bottom
   // Soft shading over the zone where the processor actually acts.
@@ -473,8 +568,19 @@ export function TransferCurveGraph({
       {/* threshold / ceiling marker (dashed = limit) */}
       <Line x1={xAt(markerDb)} y1={8} x2={xAt(markerDb)} y2={H - pad + 4} stroke="rgba(255,198,77,.4)" strokeWidth={1} strokeDasharray="4 3" />
       {/* gradient underfill, then the glowing transfer curve */}
-      <Path d={`${path}L${xAt(0).toFixed(1)} ${plotB - 2} L${xAt(-60).toFixed(1)} ${plotB - 2}Z`} fill="url(#fxTcgFill)" />
+      <Path d={`${fillD}L${xAt(0).toFixed(1)} ${plotB - 2} L${xAt(-60).toFixed(1)} ${plotB - 2}Z`} fill="url(#fxTcgFill)" />
       <GlowPath d={path} />
+      {offPlot ? (
+        xAt(thresholdDb) - xAt(-60) >= 96 ? (
+          <SvgText x={xAt(-60) + 4} y={plotB - 7} fill={AMBER} fontSize={9} fontFamily={MONO}>
+            {`↓ OUT = IN − ${Math.abs(rangeDb)} dB`}
+          </SvgText>
+        ) : (
+          <SvgText x={xAt(thresholdDb) + 5} y={plotB - 7} fill={AMBER} fontSize={9} fontFamily={MONO}>
+            {`◂ OUT = IN − ${Math.abs(rangeDb)} dB, below`}
+          </SvgText>
+        )
+      ) : null}
       {[-60, -40, -20, 0].map((db) => (
         <SvgText key={db} x={xAt(db)} y={H - pad + 16} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
           {db}
@@ -485,11 +591,13 @@ export function TransferCurveGraph({
           {db}
         </SvgText>
       ))}
-      <SvgText x={W - 10} y={H - pad + 16} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="end">
+      {/* Axis names clear of the tick numbers (grading 2026-10-16: "IN dB" ran
+          into the 0 tick and "OUT" sat on the y "0", reading "IN dB0"/"ØUT"). */}
+      <SvgText x={xAt(-10)} y={H - pad + 16} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
         IN dB
       </SvgText>
-      <SvgText x={4} y={14} fill={colors.textSub} fontSize={9} fontFamily={MONO}>
-        OUT
+      <SvgText x={pad + 4} y={16} fill={colors.textSub} fontSize={9} fontFamily={MONO}>
+        OUT dB
       </SvgText>
       {/* THE OPERATING POINT — where the lab's own source meets the law.
           A hollow dim dot on the unity ghost (what the signal WOULD be
@@ -520,9 +628,12 @@ export function TransferCurveGraph({
                 <Circle cx={x} cy={yU} r={3} fill="none" stroke={DIM} strokeWidth={1.2} />
                 <Circle cx={x} cy={yO} r={3.6} fill={AMBER} />
                 {acting ? (
+                  // BELOW the operating point (grading 2026-10-16: at mid-height
+                  // it sat on the limiter's flat shelf). Right of the source the
+                  // curve only rises or runs flat, so under it is clear.
                   <SvgText
                     x={lx}
-                    y={(yU + yO) / 2 + 3}
+                    y={anchor === 'end' ? (yU + yO) / 2 + 3 : yO + 16}
                     fill={AMBER}
                     fontSize={9}
                     fontFamily={MONO}
@@ -992,7 +1103,9 @@ export function GrLadder({
   const lit = Math.round(frac * segs);
   // Label roughly every other segment, on round dB values, like the desk.
   const stepDb = maxDb <= 24 ? Math.round(maxDb / 8 / 2) * 2 || 2 : Math.round(maxDb / 8 / 5) * 5 || 5;
-  const ticks: number[] = [];
+  // 0 heads the scale (grading 2026-10-16: the ladder "hangs from 0" but never
+  // printed it, so the top looked cut off).
+  const ticks: number[] = [0];
   for (let d = stepDb; d <= maxDb; d += stepDb) ticks.push(d);
   // `height` is the LED COLUMN's usable height. The stack adds its own 2 pt of
   // padding, so the scale beside it must be offset by the same amount or every
@@ -1037,7 +1150,8 @@ export function GrLadder({
             // 9 pt mono on the glass (lab display floor, owner 2026-09-25 —
             // was 8), ×s in full screen; centred on its segment by half the
             // line (~5 pt at 9).
-            <Text key={d} style={[ladderStyles.tick, { fontSize: 9 * s, top: (d / maxDb) * colH - 5 * s }]}>
+            // The 0 sits level with the top segment, not centred on the edge.
+            <Text key={d} style={[ladderStyles.tick, { fontSize: 9 * s, top: d === 0 ? -1 * s : (d / maxDb) * colH - 5 * s }]}>
               {d}
             </Text>
           ))}

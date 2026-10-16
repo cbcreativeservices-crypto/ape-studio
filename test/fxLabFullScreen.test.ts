@@ -39,7 +39,7 @@ describe('FX labs — full screen', () => {
     assert.deepEqual(ids.sort(), [...FX_LABS].sort(), 'the twelve effect labs');
     for (const c of chunks) {
       const id = c.slice(0, c.indexOf("'"));
-      assert.match(c, /\n\s*anim:\s*\(v\)\s*=>/, `${id} has an anim mapping`);
+      assert.match(c, /\n\s*anim:\s*\(v(?:,\s*src)?\)\s*=>/, `${id} has an anim mapping`);
     }
   });
 
@@ -66,7 +66,12 @@ describe('FX labs — full screen', () => {
   test('the GR ladder is in the full-screen path and takes the text scale', () => {
     const stage = screen.slice(screen.indexOf('function FxStage('), screen.indexOf('export function FxLabScreen('));
     assert.match(stage, /<GrLadder[\s\S]*?scale=\{ts\}/, 'GrLadder scale={ts}');
-    assert.match(stage, /height=\{Math\.max\(60,\s*gh - 26\)\}/, 'ladder height in glass units');
+    // Grading fix 2026-10-16: the column is capped to the flow PANEL so the
+    // ladder stands exactly as tall as the display beside it.
+    assert.match(stage, /height=\{Math\.max\(60,\s*Math\.min\(gh - 26,\s*FX_FLOW_PANEL_H - 20\)\)\}/, 'ladder height in glass units');
+    const panel = screen.match(/const FX_FLOW_PANEL_H = (\d+);/);
+    const flowH = anim.match(/const FLOW_H = (\d+);/);
+    assert.ok(panel && flowH && panel[1] === flowH[1], 'FX_FLOW_PANEL_H mirrors fxAnim FLOW_H');
     assert.match(stage, /paddingRight:\s*4 \* ts,\s*paddingLeft:\s*2 \* ts/, 'its margins scale too');
     assert.equal((screen.match(/<GrLadder\b/g) ?? []).length, 1, 'exactly one ladder render path');
   });
@@ -80,14 +85,15 @@ describe('FX labs — full screen', () => {
     assert.match(ladder, /const SEG_GAP = 2 \* s/);
     assert.match(ladder, /const STACK_PAD = 2 \* s/);
     assert.match(ladder, /const colH = height \* s/);
-    assert.match(ladder, /top: \(d \/ maxDb\) \* colH - 5 \* s/, 'tick position scales');
+    assert.match(ladder, /\(d \/ maxDb\) \* colH - 5 \* s/, 'tick position scales');
+    assert.match(ladder, /const ticks: number\[\] = \[0\];/, 'the scale is headed by 0');
     const sheet = ladder.slice(ladder.indexOf('const ladderStyles'));
     assert.doesNotMatch(sheet, /fontSize|width:|height:|gap:|padding:|borderRadius/, 'no fixed pixel in ladderStyles');
   });
 
   test('ladder tick numbers meet the 9 pt lab display floor on the glass', () => {
     const ladder = viz.slice(viz.indexOf('export function GrLadder('), viz.indexOf('const lissaStyles'));
-    const m = ladder.match(/fontSize:\s*(\d+(?:\.\d+)?) \* s,\s*top: \(d \/ maxDb\)/);
+    const m = ladder.match(/fontSize:\s*(\d+(?:\.\d+)?) \* s,\s*top: d === 0/);
     assert.ok(m, 'tick fontSize found');
     assert.ok(Number(m![1]) >= 9, `tick font ${m![1]} pt ≥ 9`);
   });

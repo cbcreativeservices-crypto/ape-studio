@@ -84,6 +84,9 @@ const ACTIVITY_MS = 500;
 // engine to report peak-since-last-read, which is a native change, not a
 // timer change.
 const GR_POLL_MS = 50;
+/** The animated flow panel's height in glass units — fxAnim's FLOW_H (that
+ *  module is Skia-gated, so it cannot be imported here; a test pins the two). */
+const FX_FLOW_PANEL_H = 118;
 
 /** fxAnim — the Skia ANIMATED signal-flow heroes. Loaded ONLY via this inline
  *  require, gated on the foundations Skia probe (skiaGate idiom): pre-Skia
@@ -214,7 +217,7 @@ export type FxLabConfig = {
   /** The ANIMATED signal-flow hero: maps the CURRENT param values to a fxAnim
    *  model. Optional — labs without an authored animation (or clients without
    *  Skia) pin the static Hero on the stage, exactly as before. */
-  anim?: (values: Record<number, number>) => FxAnimModel;
+  anim?: (values: Record<number, number>, src?: FxSourceSpec) => FxAnimModel;
   /** Poll the live GR readout while running (which field to show). */
   pollGr?: 'comp' | 'gate' | 'limiter';
   /** Optional honest note under the audio section. */
@@ -346,7 +349,11 @@ function FxStage({
           <GrLadder
             grDb={running ? grDb : 0}
             maxDb={pollGr === 'gate' ? 70 : 30}
-            height={Math.max(60, gh - 26)}
+            // The column spans the flow PANEL (fxAnim FLOW_H = FX_FLOW_PANEL_H),
+            // head included, so the ladder stands exactly as tall as the display
+            // beside it — it used to run past the panel to within a few points
+            // of the bezel (grading 2026-10-16: "top cut off").
+            height={Math.max(60, Math.min(gh - 26, FX_FLOW_PANEL_H - 20))}
             scale={ts}
           />
         </View>
@@ -664,7 +671,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               running={running}
               pollGr={config.pollGr}
               grDb={grDb}
-              anim={AnimHero ? <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} /> : null}
+              anim={AnimHero ? <AnimHero model={config.anim!(values, config.sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} /> : null}
               staticHero={AnimHero ? null : config.Hero(values, config.sources[sourceIdx])}
             />
           ),
