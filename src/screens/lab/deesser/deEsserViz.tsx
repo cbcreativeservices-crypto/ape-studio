@@ -221,8 +221,12 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
   const cx = (i: number) => 10 + i * slot + slot / 2;
   const pts = processed.map((p, i) => `${cx(i).toFixed(1)},${yA(p.detectorDb).toFixed(1)}`).join(' ');
   const thrY = yA(thresholdDb);
-  // The threshold label rides its own line; flips below it near the top edge.
-  const thrLabelY = thrY - 4 < topA + 4 ? thrY + 10 : thrY - 4;
+  // The threshold is named in the header row as a key (a short gold dash +
+  // its value), not on its line: with an S every third frame there is no
+  // stretch of line clear of the trace, so a label riding the line always sat
+  // on a peak (art grading 2026-10-16).
+  const thrLabel = `THRESHOLD ${thresholdDb.toFixed(0)} dB`;
+  const thrKeyX = W - 10 - thrLabel.length * 4.6 - 6;
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
@@ -246,7 +250,8 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
         </Defs>
         <Polyline points={pts} fill="none" stroke="url(#deesserDetRamp)" strokeWidth={1.8} />
         <Line x1={10} y1={thrY} x2={10 + plotW} y2={thrY} stroke={colors.gold} strokeWidth={1.5} strokeDasharray="5,3" />
-        <SvgText x={10 + plotW - 2} y={thrLabelY} fontSize={LBL} fill={colors.gold} textAnchor="end" fontFamily={fonts.oswaldMedium}>THRESHOLD {thresholdDb.toFixed(0)} dB</SvgText>
+        <Line x1={thrKeyX - 14} y1={9} x2={thrKeyX} y2={9} stroke={colors.gold} strokeWidth={1.5} strokeDasharray="5,3" />
+        <SvgText x={W - 10} y={12} fontSize={LBL} fill={colors.gold} textAnchor="end" fontFamily={fonts.oswaldMedium}>{thrLabel}</SvgText>
         <SvgText x={12} y={topB - 6} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>GAIN REDUCTION · dB, drawn downward · range {rangeDb} · conceptual</SvgText>
         <Line x1={10} y1={topB} x2={10 + plotW} y2={topB} stroke="rgba(255,255,255,0.18)" />
         {capY - topB >= 10 ? <SvgText x={W - 10} y={topB + 4} fontSize={LBL} fill={colors.textMuted} textAnchor="end" fontFamily={F}>0</SvgText> : null}
@@ -257,11 +262,16 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
         {processed.map((p, i) => {
           if (p.grDb <= 0) return null;
           const tip = yB(p.grDb);
-          const below = tip + 10 <= botB; // label under the bar tip, else inside the bar
+          // Label under the bar tip, else inside the bar — but never ON the dashed
+          // Range cap: a tip just above the cap moves its number inside a tall
+          // enough bar, or under the cap (art grading 2026-10-16).
+          const clearOfCap = capY < tip + 1 || capY > tip + 10;
+          const below = tip + 10 <= botB && (clearOfCap || tip - topB < 10);
+          const labelY = below ? (clearOfCap ? tip + 9 : capY + 10) : tip - 3;
           return (
             <G key={`g${i}`}>
               <Rect x={10 + i * slot + slot * 0.2} y={topB} width={slot * 0.6} height={tip - topB} fill={colors.orange} opacity={0.85} />
-              <SvgText x={cx(i)} y={below ? tip + 9 : tip - 3} fontSize={LBL} fill={below ? colors.orange : '#000'} textAnchor="middle" fontFamily={F}>−{p.grDb.toFixed(0)}</SvgText>
+              <SvgText x={cx(i)} y={labelY} fontSize={LBL} fill={below ? colors.orange : '#000'} textAnchor="middle" fontFamily={F}>−{p.grDb.toFixed(0)}</SvgText>
             </G>
           );
         })}

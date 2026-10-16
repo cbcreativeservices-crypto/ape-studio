@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 23:49 · ccode · bc622597
+changed: Lab art grading fix: GR meter reads 0.0 dB at rest, never −0.0 dB
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 23:42 · ccode · c424a4e1
 changed: Lab art grading fix: Cymatics home caption no longer sits on the plate
 affects other side: nothing (app only)
