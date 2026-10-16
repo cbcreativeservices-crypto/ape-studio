@@ -125,6 +125,20 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
         {/* jack body + front bushing */}
         <Rect x={62} y={30} width={262} height={134} rx={8} fill="#101013" stroke="#34353b" strokeWidth={1.4} />
         <Rect x={42} y={80} width={20} height={44} rx={3} fill="#1a1b1f" stroke="#3d3e44" strokeWidth={1.4} />
+        {/* the bay's FRONT PANEL in section (art grading 2026-10-16: the
+            bushing used to float in space): a cut steel plate with the jack's
+            bushing through its hole — the jack hangs from the panel, the
+            plug enters from the front */}
+        {[[8, 80], [124, 192]].map(([y0, y1]) => (
+          <G key={y0}>
+            <Rect x={38} y={y0} width={6} height={y1 - y0} fill="#3a3b41" stroke="#55565e" strokeWidth={0.8} />
+            {Array.from({ length: Math.floor((y1 - y0) / 6) }, (_, k) => (
+              <Line key={k} x1={38} y1={y0 + 6 + k * 6} x2={44} y2={y0 + k * 6} stroke="#6a6b73" strokeWidth={0.6} />
+            ))}
+          </G>
+        ))}
+        <SvgText x={31} y={22} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.4}>FRONT</SvgText>
+        <SvgText x={31} y={33} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.4}>PANEL</SvgText>
         {/* Labels kept OFF the metal they name (clash sweep 2026-10-10): the
             title moved left of the source label, the source label clear of
             the anchor block, TIP SPRING below the leaf (it sat on it), and
@@ -168,10 +182,13 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
         ) : null}
 
         {/* the plug: TT anatomy — tip cap, insulator, ring band, insulator,
-            sleeve — riding the insertion slider */}
+            sleeve — riding the insertion slider. The plug is ALWAYS a whole patch-cord plug: shaft, then its
+            molded handle (TT handle ≈ 7.5 mm across at 5 units per mm), the
+            cord running off the frame to the left — never a bar in space.
+            The handle face stops on the panel nut at full insertion. */}
         {insertion > 0.02 ? (
-          <G>
-            <Rect x={-6} y={92} width={Math.max(0, tipX - 40)} height={22} rx={4} fill="#63656d" stroke="#7d7f88" strokeWidth={1} />
+        <G>
+            <Rect x={Math.max(-6, tipX - 116)} y={92} width={Math.max(0, tipX - 40 - Math.max(-6, tipX - 116))} height={22} rx={4} fill="#63656d" stroke="#7d7f88" strokeWidth={1} />
             <Rect x={Math.max(-6, tipX - 40)} y={92} width={4} height={22} fill="#141518" />
             <Rect x={Math.max(-6, tipX - 36)} y={92} width={14} height={22} fill="#c8a24a" />
             <Rect x={Math.max(-6, tipX - 22)} y={92} width={4} height={22} fill="#141518" />
@@ -179,8 +196,8 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
                 neck groove narrows — the groove the tip spring rides */}
             <Path d={`M ${tipX - 18} 96 L ${tipX - 13} 96 Q ${tipX - 12} 92 ${tipX - 8} 92 Q ${tipX + 1} 92 ${tipX + 1} 103 Q ${tipX + 1} 114 ${tipX - 8} 114 Q ${tipX - 12} 114 ${tipX - 13} 110 L ${tipX - 18} 110 Z`} fill={PB.cord} />
             {/* round-bar shading: a lit band along the top, core shadow below */}
-            <Rect x={-6} y={95} width={Math.max(0, tipX - 10)} height={3} fill="#ffffff" opacity={0.22} />
-            <Rect x={-6} y={107} width={Math.max(0, tipX - 10)} height={6} fill="#000000" opacity={0.22} />
+            <Rect x={Math.max(-6, tipX - 116)} y={95} width={Math.max(0, tipX - 10 - Math.max(-6, tipX - 116))} height={3} fill="#ffffff" opacity={0.22} />
+            <Rect x={Math.max(-6, tipX - 116)} y={107} width={Math.max(0, tipX - 10 - Math.max(-6, tipX - 116))} height={6} fill="#000000" opacity={0.22} />
             {showConductors && insertion > 0.3 ? (
               <G>
                 <SvgText x={tipX - 9} y={128} fontSize={9} fill={PB.cord} textAnchor="middle" fontFamily={fonts.oswaldMedium}>T</SvgText>
@@ -191,9 +208,14 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
                 <Line x1={Math.max(24, tipX - 60)} y1={116} x2={Math.max(24, tipX - 60)} y2={120} stroke="#9a9ca4" strokeWidth={1} />
               </G>
             ) : null}
-          </G>
+          <Path d={`M ${tipX - 115 - 140} 84.5 L ${tipX - 119} 84.5 Q ${tipX - 115} 84.5 ${tipX - 115} 89 L ${tipX - 115} 117 Q ${tipX - 115} 121.5 ${tipX - 119} 121.5 L ${tipX - 115 - 140} 121.5 Z`} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.2} />
+          <Rect x={tipX - 115 - 140} y={88} width={136} height={3} fill="#ffffff" opacity={0.08} />
+        </G>
         ) : (
-          <SvgText x={6} y={73} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.4}>← PLUG OUT</SvgText>
+          <G>
+            <SvgText x={31} y={142} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.4}>PLUG</SvgText>
+            <SvgText x={31} y={153} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.4}>OUT</SvgText>
+          </G>
         )}
       </Svg>
       </View>

@@ -118,7 +118,7 @@ function PageStudioBay({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Lead>
-        Part two. You mastered one vertical pair — now here are EIGHT of them side by side: a real (small) studio bay. Every
+        Part two. You mastered one vertical pair — now here are EIGHT of them side by side: the first eight pairs of a real studio bay (a full 1U bay holds 24). Every
         column is exactly the pair you already know. Tap columns to inspect them; two of these pairs pass NOTHING with an
         empty bay — find them.
       </Lead>

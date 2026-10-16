@@ -34,6 +34,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { resolvePair, type PairState } from '../engine/patchbay';
 import { useDecorativeMotion } from '../../../../features/settings/decorativeMotion';
+import { CordPlug, GearArt, gearKind } from './gearArt';
 
 /* Animated SVG parts — module level, or every render makes a new component
  * type and remounts (kills the loop). Same rule as tuning/primitives. */
@@ -113,25 +114,39 @@ export function useFlowPhase(active: boolean, reduceMotion: boolean): Animated.V
 
 const trim = (s: string, n = 24) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
-function DeviceBox({ y, label, sub, accent }: { y: number; label: string; sub: string; accent: string }) {
+/** A pair end: the real device drawn at its true outline (gearArt), its
+ *  name and role set BESIDE it — never on the metal (art grading
+ *  2026-10-16: the ends used to be labelled rectangles). */
+function DeviceBox({ y, label, sub, accent, end }: { y: number; label: string; sub: string; accent: string; end: 'bottom' | 'top' }) {
   return (
     <G>
-      <Rect x={16} y={y} width={168} height={34} rx={7} fill="#101013" stroke={accent} strokeWidth={1.3} />
-      <SvgText x={100} y={y + 15} fontSize={11} fill={colors.textPrimary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>
+      <GearArt kind={gearKind(label)} x={16} y={y} w={120} h={34} cx={CX} end={end} accent={accent} />
+      <SvgText x={144} y={y + 13} fontSize={11} fill={colors.textPrimary} fontFamily={fonts.oswaldMedium}>
         {trim(label)}
       </SvgText>
-      <SvgText x={100} y={y + 28} fontSize={9} fill={accent} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>
+      <SvgText x={144} y={y + 25} fontSize={9} fill={accent} fontFamily={fonts.oswaldMedium} letterSpacing={1}>
         {sub}
       </SvgText>
     </G>
   );
 }
 
+/** A patchbay jack face-on: the metal bushing nut, the socket, the sleeve
+ *  contact inside. Plugged, the patch cord's plug handle covers it end-on
+ *  and its cord drops away. */
 function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: string }) {
   return (
     <G>
-      <Circle cx={CX} cy={y} r={11} fill={PB.jack} stroke={plugged ? PB.cord : '#3d3e44'} strokeWidth={plugged ? 2.4 : 1.6} />
-      <Circle cx={CX} cy={y} r={4.5} fill={plugged ? PB.cord : '#1c1d21'} />
+      <Circle cx={CX} cy={y} r={11} fill="#2a2b31" stroke={plugged ? PB.cord : '#5a5b63'} strokeWidth={plugged ? 2.2 : 1.2} />
+      <Circle cx={CX - 1.4} cy={y - 1.4} r={9} fill="none" stroke="#ffffff" strokeWidth={0.8} opacity={0.14} />
+      <Circle cx={CX} cy={y} r={6.4} fill="#08080a" />
+      <Circle cx={CX} cy={y} r={4.6} fill="none" stroke="#45464d" strokeWidth={0.9} />
+      {plugged ? (
+        <G>
+          <Circle cx={CX} cy={y} r={8.2} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
+          <Circle cx={CX} cy={y} r={3} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.7} />
+        </G>
+      ) : null}
       <SvgText x={CX - 22} y={y + 3.5} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>
         {label}
       </SvgText>
@@ -145,43 +160,59 @@ function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: 
  *  (design pass 2026-09-10 — the old strip drew the pair side-by-side and
  *  fought the lab's own "signal falls downhill" model). */
 function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bottomPlugged: boolean; w: number }) {
-  const ROW_TOP = 22;
-  const ROW_BOT = 48;
-  const neighbor = (cx: number, cy: number) => (
+  // A SLICE of a real 1U, 48-point bay at true scale (art grading
+  // 2026-10-16: the old strip showed five columns between two rack screws, so
+  // the jacks read oversized): the panel's 44.45 mm height fills the strip,
+  // so 1 mm = 1.395 units; columns sit at the 18.4 mm pitch of a 24-pair
+  // bay, the jack faces are 11 mm across, and both panel ends are torn
+  // BREAK edges — the bay carries on past the slice. Labels sit off the
+  // metal, to the right of the right-hand break.
+  const MM = 62 / 44.45;
+  const PITCH = 18.4 * MM;
+  const ROW_TOP = 2 + 12.5 * MM;
+  const ROW_BOT = 2 + 29.5 * MM;
+  const RIGHT = 214; // the right break edge
+  const cols = [-3, -2, -1, 1, 2, 3, 4].map((k) => CX + k * PITCH).filter((x) => x > 6 && x < RIGHT - 8);
+  const jack = (cx: number, cy: number, featured: boolean, plugged: boolean) => (
     <G key={`${cx}-${cy}`}>
-      <Circle cx={cx} cy={cy} r={7} fill="#0d0d10" stroke="#2c2d33" strokeWidth={1.2} />
-      <Circle cx={cx} cy={cy} r={2.6} fill="#141518" />
+      <Circle cx={cx} cy={cy} r={5.5 * MM} fill="#2a2b31" stroke={plugged ? PB.cord : featured ? '#6a6b73' : '#3a3b41'} strokeWidth={plugged ? 2 : 1.1} />
+      <Circle cx={cx} cy={cy} r={3.2 * MM} fill="#08080a" />
+      <Circle cx={cx} cy={cy} r={2.3 * MM} fill="none" stroke="#3d3e45" strokeWidth={0.7} />
+      {plugged ? (
+        <G>
+          {/* the cord hangs from the plug handle down past the panel's
+              bottom edge (it leaves the picture), just right of the jack below */}
+          <Path d={`M ${cx + 1} ${cy + 2} C ${cx + 4} ${cy + 10}, ${cx + 9} ${cy + 14}, ${cx + 9} ${FACE_H}`} stroke={PB.cord} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+          <Circle cx={cx} cy={cy} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.4} />
+          <Circle cx={cx} cy={cy} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
+        </G>
+      ) : null}
     </G>
   );
-  const featured = (cy: number, plugged: boolean) => (
-    <G>
-      <Circle cx={CX} cy={cy} r={8} fill="#0a0a0c" stroke={plugged ? PB.cord : '#55565e'} strokeWidth={plugged ? 2 : 1.5} />
-      <Circle cx={CX} cy={cy} r={3.2} fill={plugged ? PB.cord : '#17171a'} />
-    </G>
-  );
+  // torn edges: a zigzag down each cut (left edge down, right edge up)
+  const ys: number[] = [];
+  for (let y = 2; y < FACE_H - 2; y += 6) ys.push(y);
+  ys.push(FACE_H - 2);
+  const leftEdge = ys.map((y, i) => `${i % 2 ? 3 : 0} ${y}`);
+  const rightEdge = ys.map((y, i) => `${RIGHT - (i % 2 ? 3 : 0)} ${y}`).reverse();
+  const panelPath = `M ${leftEdge.join(' L ')} L ${rightEdge.join(' L ')} Z`;
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={(w * FACE_H) / W} viewBox={`0 0 ${W} ${FACE_H}`}>
-      <Rect x={0} y={2} width={W} height={FACE_H - 4} rx={6} fill={PB.panel} stroke={PB.panelEdge} />
-      <Circle cx={12} cy={FACE_H / 2} r={2.4} fill="#3a3b41" />
-      <Circle cx={W - 12} cy={FACE_H / 2} r={2.4} fill="#3a3b41" />
+      <Path d={panelPath} fill={PB.panel} stroke={PB.panelEdge} strokeWidth={0.8} />
+      <Line x1={4} y1={3} x2={RIGHT - 4} y2={3} stroke="#ffffff" strokeWidth={1} opacity={0.07} />
       {/* the featured COLUMN — this is the vertical pair */}
-      <Rect x={CX - 14} y={8} width={28} height={FACE_H - 16} rx={7} fill="none" stroke="#45464d" strokeWidth={1.2} />
-      {[CX - 72, CX - 36, CX + 36, CX + 72].map((x) => (
+      <Rect x={CX - 12} y={ROW_TOP - 11} width={24} height={ROW_BOT - ROW_TOP + 22} rx={7} fill="none" stroke="#6a6b73" strokeWidth={1.1} />
+      {cols.map((x) => (
         <G key={x}>
-          {neighbor(x, ROW_TOP)}
-          {neighbor(x, ROW_BOT)}
+          {jack(x, ROW_TOP, false, false)}
+          {jack(x, ROW_BOT, false, false)}
         </G>
       ))}
-      {featured(ROW_TOP, topPlugged)}
-      {featured(ROW_BOT, bottomPlugged)}
-      {/* cords exit on separated paths */}
-      {topPlugged ? <Path d={`M ${CX} ${ROW_TOP} C ${CX + 60} ${ROW_TOP - 8}, ${W - 90} 8, ${W - 24} 10`} stroke={PB.cord} strokeWidth={2.2} fill="none" strokeLinecap="round" /> : null}
-      {bottomPlugged ? <Path d={`M ${CX} ${ROW_BOT} C ${CX + 60} ${ROW_BOT + 8}, ${W - 90} ${FACE_H - 6}, ${W - 24} ${FACE_H - 8}`} stroke={PB.cord} strokeWidth={2.2} fill="none" strokeLinecap="round" /> : null}
-      <SvgText x={W - 30} y={ROW_TOP + 3} fontSize={9} fill={PB.source} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>TOP · SOURCES</SvgText>
-      <SvgText x={W - 30} y={ROW_BOT + 3} fontSize={9} fill={PB.dest} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>BTM · DESTINATIONS</SvgText>
-      {/* ends ≈ 7 units short of the featured column's frame (x 78) — it ran
-          into it (clash sweep 2026-10-10) */}
-      <SvgText x={15} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL</SvgText>
+      {jack(CX, ROW_TOP, true, topPlugged)}
+      {jack(CX, ROW_BOT, true, bottomPlugged)}
+      <SvgText x={RIGHT + 10} y={FACE_H - 4} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL (SLICE)</SvgText>
+      <SvgText x={RIGHT + 10} y={ROW_TOP + 3} fontSize={9} fill={PB.source} fontFamily={fonts.oswaldMedium} letterSpacing={1}>TOP · SOURCES</SvgText>
+      <SvgText x={RIGHT + 10} y={ROW_BOT + 3} fontSize={9} fill={PB.dest} fontFamily={fonts.oswaldMedium} letterSpacing={1}>BTM · DESTINATIONS</SvgText>
     </Svg>
   );
 }
@@ -376,7 +407,7 @@ export function PatchPairDrawing({
             flatten them away). */}
         <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={(w * H) / W} viewBox={`0 0 ${W} ${H}`}>
           {/* SOURCE device and its permanent rear wiring down to the TOP jack */}
-          <DeviceBox y={SRC_Y} label={sourceLabel} sub="SOURCE · OUTPUT" accent={PB.source} />
+          <DeviceBox y={SRC_Y} label={sourceLabel} sub="SOURCE · OUTPUT" accent={PB.source} end="bottom" />
           <FlowPath d={`M ${CX} ${SRC_Y + 34} L ${CX} ${TOP_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
 
           {/* The internal normal zone between the jacks */}
@@ -424,18 +455,20 @@ export function PatchPairDrawing({
                 reduceMotion={reduceMotion}
                 color={PB.cord}
               />
-              <Rect x={W - 116} y={TOP_Y - 44} width={104} height={30} rx={6} fill="#101013" stroke={PB.cord} strokeWidth={1.2} />
-              <SvgText x={W - 64} y={TOP_Y - 31} fontSize={9} fill={PB.cord} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PATCH CORD →</SvgText>
-              <SvgText x={W - 64} y={TOP_Y - 20} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{trim(topPatchLabel, 20)}</SvgText>
+              {/* the cord's far plug, heading off to what it feeds (named beside it) */}
+              <CordPlug x={W - 118} y={TOP_Y - 28} color={PB.cord} />
+              <SvgText x={W - 87} y={TOP_Y - 31} fontSize={9} fill={PB.cord} fontFamily={fonts.oswaldMedium}>PATCH CORD →</SvgText>
+              <SvgText x={W - 87} y={TOP_Y - 20} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(topPatchLabel, 18)}</SvgText>
             </G>
           ) : null}
 
           {/* BOTTOM patch cord bringing in an alternate signal */}
           {state.bottomPlugged ? (
             <G>
-              <Rect x={W - 116} y={BOT_Y - 2} width={104} height={30} rx={6} fill="#101013" stroke={PB.cord} strokeWidth={1.2} />
-              <SvgText x={W - 64} y={BOT_Y + 11} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{trim(bottomPatchLabel, 20)}</SvgText>
-              <SvgText x={W - 64} y={BOT_Y + 22} fontSize={9} fill={PB.cord} textAnchor="middle" fontFamily={fonts.oswaldMedium}>← PATCH CORD</SvgText>
+              {/* the cord's far plug, in the alternate source (named beside it) */}
+              <CordPlug x={W - 118} y={BOT_Y + 14} color={PB.cord} />
+              <SvgText x={W - 87} y={BOT_Y + 11} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(bottomPatchLabel, 18)}</SvgText>
+              <SvgText x={W - 87} y={BOT_Y + 22} fontSize={9} fill={PB.cord} fontFamily={fonts.oswaldMedium}>← PATCH CORD</SvgText>
               <FlowPath
                 d={`M ${W - 118} ${BOT_Y + 14} C ${W - 150} ${BOT_Y + 16}, ${CX + 50} ${BOT_Y + 6}, ${CX + 11} ${BOT_Y}`}
                 flowing={flow.bottomFeedsDestination}
@@ -458,7 +491,7 @@ export function PatchPairDrawing({
             reduceMotion={reduceMotion}
             color={flow.destinationHears === 'patch' ? PB.cord : PB.flow}
           />
-          <DeviceBox y={DEST_Y} label={destLabel} sub="DESTINATION · INPUT" accent={PB.dest} />
+          <DeviceBox y={DEST_Y} label={destLabel} sub="DESTINATION · INPUT" accent={PB.dest} end="top" />
         </Svg>
 
         {/* 44pt tap overlays aligned to the jacks (percent of the viewBox) —

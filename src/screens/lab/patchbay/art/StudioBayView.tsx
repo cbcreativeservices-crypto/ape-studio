@@ -13,18 +13,39 @@
  */
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, G, Line, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import type { StudioPair } from '../engine/scenariosB';
 import { FlowPath, PB, useFlowPhase } from './PatchPairView';
 
+/* True scale (art grading 2026-10-16: "8 pairs across a full 1U width — the
+ * jacks read oversized"). This is the LEFT END of a real 1U, 48-point
+ * (24-pair) ¼-inch TRS bay at 1.95 units per mm: the 44.45 mm panel, the
+ * 15.9 mm rack ear with its slots at the EIA hole heights, columns at the
+ * bay's 18.4 mm pitch, 11 mm jack faces. The panel is torn off past pair 8
+ * (a break edge) — the bay carries on to pair 24. */
+const MM = 1.95;
 const W = 340;
-const H = 108;
-const ROW_TOP = 38;
-const ROW_BOT = 78;
-const X0 = 34; // first column center
-const STEP = 39; // column spacing
+const PY = 14; // panel top (the title sits above the metal)
+const PANEL_H = 44.45 * MM;
+const H = 104;
+const ROW_TOP = PY + 13 * MM;
+const ROW_BOT = PY + 30 * MM;
+const EAR = 15.9 * MM;
+const STEP = 18.4 * MM; // column pitch
+const X0 = 29.7 * MM; // first column center from the panel's left edge
+const BREAK_X = X0 + 7.5 * STEP; // the torn edge, half a pitch past pair 8
+const JACK_R = 5.5 * MM;
+
+/** The panel outline: square left end (the rack ear), torn right edge. */
+function breakPanelPath(): string {
+  const bottom = PY + PANEL_H;
+  let d = `M 0 ${PY} L ${BREAK_X} ${PY}`;
+  let i = 0;
+  for (let y = PY + 6; y < bottom; y += 6, i++) d += ` L ${BREAK_X + (i % 2 ? 0 : -4)} ${y}`;
+  return `${d} L ${BREAK_X} ${bottom} L 0 ${bottom} Z`;
+}
 
 export type BayPlugs = Record<number, { top?: boolean; bottom?: boolean } | undefined>;
 
@@ -49,7 +70,7 @@ export type StudioBayDrawingProps = {
 export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, w, h }: StudioBayDrawingProps) {
   const phase = useFlowPhase(!!showNormals, reduceMotion);
   const a11y =
-    `Studio patchbay, eight vertical pairs. ` +
+    `Studio patchbay, the first eight vertical pairs of a 24-pair bay. ` +
     pairs
       .map((p) => `Pair ${p.n}: ${p.sourceLabel} over ${p.destLabel}, ${p.config === 'thru' ? 'thru' : 'half-normal'}.`)
       .join(' ') +
@@ -57,19 +78,16 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
   return (
       <View style={{ width: w, height: h }}>
         <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
-          {/* the faceplate (art pass 2026-10-10): brushed panel, a lit top
-              bevel, and the rack ears' oval mounting slots */}
-          <Rect x={0} y={4} width={W} height={H - 8} rx={4} fill={PB.panel} stroke={PB.panelEdge} />
-          <Rect x={1} y={5} width={W - 2} height={2} rx={1} fill="#ffffff" opacity={0.07} />
-          {[0, W - 16].map((ex) => (
-            <G key={ex}>
-              <Line x1={ex === 0 ? 16 : W - 16} y1={6} x2={ex === 0 ? 16 : W - 16} y2={H - 6} stroke="#000" strokeWidth={0.8} opacity={0.5} />
-              {[H * 0.3, H * 0.7].map((sy) => (
-                <Rect key={sy} x={ex + 3} y={sy - 2.4} width={10} height={4.8} rx={2.4} fill="#050506" stroke="#3a3b41" strokeWidth={0.8} />
-              ))}
-            </G>
+          {/* the faceplate: brushed panel, a lit top bevel, the left rack
+              ear with its two oval slots, and a torn BREAK edge on the right
+              (the bay continues to pair 24) */}
+          <Path d={breakPanelPath()} fill={PB.panel} stroke={PB.panelEdge} strokeWidth={0.9} />
+          <Rect x={1} y={PY + 1} width={BREAK_X - 6} height={2} rx={1} fill="#ffffff" opacity={0.07} />
+          <Line x1={EAR} y1={PY + 2} x2={EAR} y2={PY + PANEL_H - 2} stroke="#000" strokeWidth={0.8} opacity={0.5} />
+          {[6.35, 38.1].map((mm) => (
+            <Rect key={mm} x={8.75 * MM - 7} y={PY + mm * MM - 3.4} width={14} height={6.8} rx={3.4} fill="#050506" stroke="#3a3b41" strokeWidth={0.8} />
           ))}
-          <SvgText x={16} y={19} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>STUDIO BAY</SvgText>
+          <SvgText x={2} y={10} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.2}>STUDIO BAY · PAIRS 1–8 OF A 24-PAIR, 1U BAY</SvgText>
           {pairs.map((p, i) => {
             const cx = X0 + i * STEP;
             const isSel = selected === p.n;
@@ -78,13 +96,13 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
               <G key={p.n}>
                 {/* selection outline stops clear of both the jack and the
                     numeral (design pass: it used to strike through "01") */}
-                {isSel ? <Rect x={cx - 15} y={22} width={30} height={68} rx={8} fill="none" stroke={colors.cyanBright} strokeWidth={1.4} /> : null}
+                {isSel ? <Rect x={cx - STEP / 2 + 1.5} y={ROW_TOP - JACK_R - 4} width={STEP - 3} height={PY + PANEL_H - 2 - (ROW_TOP - JACK_R - 4)} rx={8} fill="none" stroke={colors.cyanBright} strokeWidth={1.4} /> : null}
                 {/* the internal zone between the rows */}
                 {showNormals ? (
                   p.config === 'thru' ? (
                     <SvgText x={cx} y={(ROW_TOP + ROW_BOT) / 2 + 3} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>THRU</SvgText>
                   ) : (
-                    <FlowPath d={`M ${cx} ${ROW_TOP + 8} L ${cx} ${ROW_BOT - 8}`} flowing phase={phase} reduceMotion={reduceMotion} width={2.2} />
+                    <FlowPath d={`M ${cx} ${ROW_TOP + JACK_R + 1} L ${cx} ${ROW_BOT - JACK_R - 1}`} flowing phase={phase} reduceMotion={reduceMotion} width={2.2} />
                   )
                 ) : null}
                 {/* jacks */}
@@ -93,20 +111,21 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
                     cord's plug handle end-on with its cord dropping away */}
                 {[{ y: ROW_TOP, on: !!plug.top }, { y: ROW_BOT, on: !!plug.bottom }].map(({ y, on }) => (
                   <G key={y}>
-                    <Circle cx={cx} cy={y} r={7} fill="#2a2b31" stroke={on ? PB.cord : isSel ? '#6a6b73' : '#3a3b41'} strokeWidth={on ? 2 : 1.3} />
-                    <Circle cx={cx - 1.2} cy={y - 1.2} r={5.6} fill="none" stroke="#ffffff" strokeWidth={0.6} opacity={0.12} />
-                    <Circle cx={cx} cy={y} r={4.2} fill="#08080a" />
-                    <Circle cx={cx} cy={y} r={3.2} fill="none" stroke="#3d3e45" strokeWidth={0.8} />
+                    <Circle cx={cx} cy={y} r={JACK_R} fill="#2a2b31" stroke={on ? PB.cord : isSel ? '#6a6b73' : '#3a3b41'} strokeWidth={on ? 2 : 1.3} />
+                    <Circle cx={cx - 1.4} cy={y - 1.4} r={JACK_R - 1.6} fill="none" stroke="#ffffff" strokeWidth={0.7} opacity={0.12} />
+                    <Circle cx={cx} cy={y} r={3.2 * MM} fill="#08080a" />
+                    <Circle cx={cx} cy={y} r={2.3 * MM} fill="none" stroke="#3d3e45" strokeWidth={0.8} />
                     {on ? (
                       <>
-                        <Line x1={cx + 2} y1={y + 3} x2={cx + 9} y2={y + 16} stroke={PB.cord} strokeWidth={2.4} strokeLinecap="round" />
-                        <Circle cx={cx} cy={y} r={5.2} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
-                        <Circle cx={cx - 1} cy={y - 1} r={2.4} fill="#ffffff" opacity={0.12} />
+                        {/* the cord hangs from the handle down off the panel */}
+                        <Path d={`M ${cx + 1} ${y + 3} C ${cx + 5} ${y + 13}, ${cx + 12} ${y + 18}, ${cx + 12} ${PY + PANEL_H + 4}`} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+                        <Circle cx={cx} cy={y} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
+                        <Circle cx={cx} cy={y} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
                       </>
                     ) : null}
                   </G>
                 ))}
-                <SvgText x={cx} y={H - 6} fontSize={9} fill={isSel ? colors.cyanBright : colors.textMuted} textAnchor="middle" fontFamily={fonts.mono}>
+                <SvgText x={cx} y={PY + PANEL_H - 5} fontSize={9} fill={isSel ? colors.cyanBright : colors.textMuted} textAnchor="middle" fontFamily={fonts.mono}>
                   {String(p.n).padStart(2, '0')}
                 </SvgText>
               </G>
