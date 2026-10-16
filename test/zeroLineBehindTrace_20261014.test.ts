@@ -63,7 +63,7 @@ test('Tools hub live waveform tile: centre line is chrome UNDER the trace', () =
 
 test('Envelope Lab: zero line behind the wave, envelope on the wave’s own scale', () => {
   const src = read('src/screens/lab/envelope/EnvelopeChart.tsx');
-  zeroBehindTrace(src, /<Line x1=\{10\} y1=\{mid\} x2=\{W - 10\} y2=\{mid\}/, /<Polyline points=\{wavePts\}/, 'EnvelopeChart');
+  zeroBehindTrace(src, /<Line x1=\{10\} y1=\{mid\} x2=\{PX1\} y2=\{mid\}/, /<Polyline points=\{wavePts\}/, 'EnvelopeChart');
   // With the waveform shown, envelope level v sits on the wave's +v peak.
   assert.match(src, /const y = showWave \? \(v: number\) => mid - v \* halfH :/);
 });

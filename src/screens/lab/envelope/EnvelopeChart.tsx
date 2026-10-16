@@ -32,7 +32,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 import Svg, { Circle, Defs, G, Line, LinearGradient, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, { Easing, cancelAnimation, interpolate, runOnJS, useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
-import { adsrCurve, adsrTotalMs, riseTimes, shapedWave, peakAbs, rms, type Adsr } from '../../../features/envelope/envelopeModel';
+import { adsrCurve, adsrTotalMs, columnMinMax, envelopeAudio, riseTimes, peakAbs, rms, DEFAULT_TONE, type Adsr, type ToneSpec } from '../../../features/envelope/envelopeModel';
 import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 
@@ -53,7 +53,7 @@ export const CHART_HONESTY = 'ILLUSTRATIVE MODEL — DRAWN FROM THE SETTINGS, NO
 
 /** A label with a dark backing so it stays legible over the curves. 9 pt of
  *  the viewBox minimum (owner 2026-09-25). */
-function Tag({ x, y, text, anchor = 'start', color, size = 9, family = fonts.barlowMedium }: {
+function Tag({ x, y, text, anchor = 'start', color, size = 10, family = fonts.barlowMedium }: {
   x: number; y: number; text: string; anchor?: 'start' | 'middle' | 'end'; color: string; size?: number; family?: string;
 }) {
   const w = text.length * size * 0.56 + 6;
@@ -68,9 +68,12 @@ function Tag({ x, y, text, anchor = 'start', color, size = 9, family = fonts.bar
 }
 
 export function EnvelopeChart({
-  adsr, height = 150, showWave = true, showRegions = true, showRise = false, showPeakAvg = false, title, sweep = false, reduceMotion = false, caption, controls, readout, fullTitle = 'ENVELOPE',
+  adsr, tone = DEFAULT_TONE, height = 150, showWave = true, showRegions = true, showRise = false, showPeakAvg = false, title, sweep = false, reduceMotion = false, caption, controls, readout, fullTitle = 'ENVELOPE',
 }: {
   adsr: Adsr;
+  /** What the envelope shapes, at its real pitch (+ noise for a snare or a
+   *  cymbal) — drawn as a min/max-per-column overview (round 3, 2026-10-16). */
+  tone?: ToneSpec;
   height?: number;
   showWave?: boolean;
   showRegions?: boolean;
@@ -99,7 +102,11 @@ export function EnvelopeChart({
   const H = height;
   const top = 18, bottom = H - 22;
   const total = Math.max(1, adsrTotalMs(adsr));
-  const x = (ms: number) => 10 + (ms / total) * (W - 20);
+  // Round 3 (2026-10-16): the "10 %" / "90 %" tags sat ON the release line and
+  // the wave at the right edge; with rise markers on, the plot stops short of
+  // a right gutter that holds them.
+  const PX1 = W - 10 - (showRise ? 30 : 0);
+  const x = (ms: number) => 10 + (ms / total) * (PX1 - 10);
   const mid = (top + bottom) / 2;
   const halfH = (bottom - top) / 2;
   // ⛔ ONE SIGNAL, ONE SCALE (owner 2026-10-14). With the waveform drawn, the
@@ -110,8 +117,25 @@ export function EnvelopeChart({
   const y = showWave ? (v: number) => mid - v * halfH : (v: number) => bottom - v * (bottom - top);
   const { t, v } = adsrCurve(adsr, 200);
   const env = Array.from(t, (ms, i) => `${x(ms).toFixed(1)},${y(v[i]).toFixed(1)}`).join(' ');
-  const wave = showWave ? shapedWave(adsr, 600, Math.max(12, Math.min(80, Math.round(total / 25)))) : null;
-  const wavePts = wave ? Array.from(wave, (s, i) => `${(10 + (i / (wave.length - 1)) * (W - 20)).toFixed(1)},${(mid - s * halfH).toFixed(1)}`).join(' ') : '';
+  // REAL TIME BASE (house rule — never a few cartoon cycles; round 3 found
+  // the snare drawn as a pure sine ping): the source at its real pitch (+ the
+  // wires' noise for a snare) under the envelope, drawn min/max per column
+  // like a DAW overview — a short snare still shows its cycles and its noise,
+  // a long tone becomes the solid band a DAW shows.
+  const wave = showWave ? envelopeAudio(adsr, tone) : null;
+  // Column count: a short sound shows its true cycles (many columns per
+  // cycle); a long tone is an EVEN band only when every column holds whole
+  // cycles (≥ 3) — in between, min/max beats into moiré (house rule).
+  const cycles = (total / 1000) * tone.hz;
+  const COLS = cycles / 320 < 0.25 ? 320 : Math.max(40, Math.min(320, Math.floor(cycles / 3)));
+  const wavePts = (() => {
+    if (!wave) return '';
+    const { mn, mx } = columnMinMax(wave, COLS);
+    const cx = (c: number) => (10 + ((c + 0.5) / COLS) * (PX1 - 10)).toFixed(1);
+    const up = Array.from(mx, (v, c) => `${cx(c)},${(mid - v * halfH).toFixed(1)}`);
+    const dn = Array.from(mn, (v, c) => `${cx(c)},${(mid - v * halfH).toFixed(1)}`).reverse();
+    return [...up, ...dn].join(' ');
+  })();
   const aEnd = adsr.attackMs, dEnd = aEnd + adsr.decayMs, sEnd = dEnd + adsr.holdMs;
   const { t10, t90 } = riseTimes(adsr);
   const rise = t90 - t10;
@@ -128,11 +152,11 @@ export function EnvelopeChart({
   const tFrac = Array.from(t, (ms) => ms / total);
   const yVals = Array.from(v, (val) => y(val));
   const headProps = useAnimatedProps(() => {
-    const px = 10 + prog.value * (W - 20);
+    const px = 10 + prog.value * (PX1 - 10);
     return { x1: px, x2: px };
   });
   const dotProps = useAnimatedProps(() => ({
-    cx: 10 + prog.value * (W - 20),
+    cx: 10 + prog.value * (PX1 - 10),
     cy: interpolate(prog.value, tFrac, yVals),
   }));
   const stopSweep = useCallback(() => {
@@ -222,26 +246,27 @@ export function EnvelopeChart({
                     <G key={r.label}>
                       <Rect x={x(r.from)} y={top - 4} width={Math.max(0.5, x(r.to) - x(r.from))} height={bottom - top + 8} fill="#ffffff" opacity={i % 2 ? 0.05 : 0.025} />
                       {i < drawn.length - 1 ? <Line x1={x(r.to)} y1={top - 6} x2={x(r.to)} y2={bottom + 2} stroke="rgba(255,255,255,0.22)" strokeWidth={0.8} strokeDasharray="3,3" /> : null}
-                      <SvgText x={(x(r.from) + x(r.to)) / 2} y={H - 7} fontSize={10} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{r.label}</SvgText>
+                      <SvgText x={(x(r.from) + x(r.to)) / 2} y={H - 6} fontSize={11} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{r.label}</SvgText>
                     </G>
                   ))
                 : null}
               {showWave ? (
                 <>
-                  <Line x1={10} y1={mid} x2={W - 10} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} opacity={0.6} />
-                  <Polyline points={wavePts} fill="none" stroke={`url(#${gradId})`} strokeWidth={0.9} opacity={0.85} />
+                  <Line x1={10} y1={mid} x2={PX1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} opacity={0.6} />
+                  <Polyline points={wavePts} fill={`url(#${gradId})`} fillOpacity={0.5} stroke={`url(#${gradId})`} strokeWidth={0.7} opacity={0.9} />
                 </>
               ) : null}
               <Polyline points={env} fill="none" stroke={`url(#${gradId}env)`} strokeWidth={2.2} />
               {showRise ? (
                 <>
-                  <Line x1={10} y1={y(0.1)} x2={W - 10} y2={y(0.1)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
-                  <Line x1={10} y1={y(0.9)} x2={W - 10} y2={y(0.9)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
+                  <Line x1={10} y1={y(0.1)} x2={PX1 + 2} y2={y(0.1)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
+                  <Line x1={10} y1={y(0.9)} x2={PX1 + 2} y2={y(0.9)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
                   <Circle cx={x(t10)} cy={y(0.1)} r={2.6} fill={colors.gold} />
                   <Circle cx={x(t90)} cy={y(0.9)} r={2.6} fill={colors.gold} />
-                  {/* both tags face INTO the 10–90 band, clear of the duration tag above and the A/D/S/R letters below */}
-                  <Tag x={W - 12} y={y(0.9) + 11} text="90 %" anchor="end" color={colors.gold} />
-                  <Tag x={W - 12} y={y(0.1) - 3} text="10 %" anchor="end" color={colors.gold} />
+                  {/* both tags in the right gutter, past the end of the plot —
+                      never on the release line or the wave (round 3) */}
+                  <Tag x={W - 4} y={y(0.9) + 4} text="90%" anchor="end" color={colors.gold} size={9.5} />
+                  <Tag x={W - 4} y={y(0.1) + 4} text="10%" anchor="end" color={colors.gold} size={9.5} />
                   <Tag x={12} y={12} text={`rise 10→90 %: ${rise.toFixed(1)} ms`} color={colors.gold} size={9} family={fonts.oswaldMedium} />
                 </>
               ) : null}

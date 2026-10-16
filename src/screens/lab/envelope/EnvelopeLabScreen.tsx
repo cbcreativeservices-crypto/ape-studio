@@ -23,7 +23,7 @@ import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-nat
 import { colors, fonts } from '../../../theme/tokens';
 import {
   PRESETS, SPEECH_SYLLABLES, TRANSIENTS, DURATION_BANDS, DURATION_EXAMPLES, logTimePos, speechCurve, riseTimeMs, adsrTotalMs,
-  shapedWave, crestFactorDb, peakAbs, rms, toDb, type Adsr, type TransientKind,
+  envelopeAudio, PRESET_TONES, crestFactorDb, peakAbs, rms, toDb, type Adsr, type TransientKind,
 } from '../../../features/envelope/envelopeModel';
 import { PagedLab, type PageCtx, type PageDef } from '../kit/PagedLab';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
@@ -166,7 +166,7 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
       </Row>
       {preset ? (
         <>
-          <EnvelopeChart adsr={preset.adsr} sweep reduceMotion={ctx.reduceMotion} title={`${preset.name.toUpperCase()} · ${preset.kind.toUpperCase()} · TEACHING SHAPE`} fullTitle="GALLERY" controls={<Row>{presetBtns}</Row>} readout={galleryRead} />
+          <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} sweep reduceMotion={ctx.reduceMotion} title={`${preset.name.toUpperCase()} · ${preset.kind.toUpperCase()} · TEACHING SHAPE`} fullTitle="GALLERY" controls={<Row>{presetBtns}</Row>} readout={galleryRead} />
           <Card>
             <Body>{preset.notice}</Body>
             {preset.bullets.map((b) => <Text key={b} style={styles.gloss}>• {b}</Text>)}
@@ -306,7 +306,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
             {[1, 10, 100, 1000, 10000].map((tick) => (
               <G key={tick}>
                 <Line x1={x(tick)} y1={AXIS} x2={x(tick)} y2={AXIS + 4} stroke={colors.textSub} />
-                <SvgText x={x(tick)} y={AXIS + 15} fontSize={9} fill={colors.textMuted} textAnchor={tick === 1 ? 'start' : 'middle'} fontFamily={fonts.barlowMedium}>{tick >= 1000 ? `${tick / 1000} s` : `${tick} ms`}</SvgText>
+                <SvgText x={x(tick)} y={AXIS + 15} fontSize={10} fill={colors.textMuted} textAnchor={tick === 1 ? 'start' : 'middle'} fontFamily={fonts.barlowMedium}>{tick >= 1000 ? `${tick / 1000} s` : `${tick} ms`}</SvgText>
               </G>
             ))}
             {chosen ? (
@@ -327,7 +327,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
                 </G>
               );
             })}
-            <SvgText x={W - 8} y={H - 8} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>log time →</SvgText>
+            <SvgText x={W - 8} y={H - 8} fontSize={10} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>log time →</SvgText>
           </Svg>
         </View>
         )} />
@@ -356,7 +356,8 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState<'snare' | 'trumpet'>('snare');
   const touch = useTouch(ctx);
   const preset = PRESETS.find((p) => p.id === id)!;
-  const wave = shapedWave(preset.adsr, 2000, 80);
+  // The SAME source the chart draws (real pitch + the snare's wire noise).
+  const wave = envelopeAudio(preset.adsr, PRESET_TONES[preset.id]);
   const pk = peakAbs(wave), av = rms(wave);
   const crest = crestFactorDb(wave);
   // The two shapes: on the page and docked under the chart in full screen.
@@ -376,7 +377,7 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Lead>Two meters can disagree about the same sound: a peak meter follows the transient, an average meter follows the body.</Lead>
       <Prompt>Switch between the two shapes and watch the gap between the PEAK line and the AVERAGE line. That gap is the crest factor.</Prompt>{/* NEW COPY */}
       {shapes}
-      <EnvelopeChart adsr={preset.adsr} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
+      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
       <Card>
         <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO ITS PEAK</Eyebrow>
         {crestRead}

@@ -105,6 +105,72 @@ export function shapedWave(a: Adsr, n = 600, cycles = 40): Float32Array {
   return out;
 }
 
+/* ── the source inside the envelope (lab-art round 3, 2026-10-16) ─────── */
+
+/** What the envelope shapes: a tone at a real pitch, optionally mixed with
+ *  noise (a snare's wires, a cymbal's wash). `noise` is the noise share of
+ *  the peak, 0..1. */
+export type ToneSpec = { hz: number; noise?: number };
+
+/** The default source for a free-drawn envelope: A3, no noise. */
+export const DEFAULT_TONE: ToneSpec = { hz: 220 };
+
+/** Per-preset sources. The grading found the snare drawn as a pure decaying
+ *  sine ("a tom or a sine ping"): a snare is its shell tone PLUS the wires'
+ *  noise burst, which carries most of its energy; a cymbal is almost all
+ *  noise-like wash. Pitches are typical, not measured. */
+export const PRESET_TONES: Record<string, ToneSpec> = {
+  snare: { hz: 190, noise: 0.65 },
+  kick: { hz: 55, noise: 0.08 },
+  piano: { hz: 262 },
+  violin: { hz: 440 },
+  trumpet: { hz: 349 },
+  cymbal: { hz: 420, noise: 0.9 },
+};
+
+/** Sample rate of the drawn source: ≥ 8 samples per cycle of every pitch
+ *  above, so a min/max-per-column overview is exact. */
+export const TONE_FS = 12000;
+
+/** Real-time-base source × envelope: the tone at its real pitch (plus noise)
+ *  at TONE_FS, shaped by the envelope — the input to a min/max-per-column
+ *  waveform overview (house rule: never a few cartoon cycles). The noise is
+ *  a fixed-seed LCG so the picture is stable. */
+export function envelopeAudio(a: Adsr, tone: ToneSpec = DEFAULT_TONE, fs = TONE_FS): Float32Array {
+  const total = Math.max(1, adsrTotalMs(a));
+  const n = Math.max(2, Math.round((total / 1000) * fs));
+  const out = new Float32Array(n);
+  const nz = clamp01(tone.noise ?? 0);
+  let seed = 0x2f6b1d;
+  for (let i = 0; i < n; i++) {
+    const tMs = (i / fs) * 1000;
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const white = (seed / 4294967296) * 2 - 1;
+    const src = (1 - nz) * Math.sin(2 * Math.PI * tone.hz * (i / fs)) + nz * white;
+    out[i] = adsrAt(a, tMs) * src;
+  }
+  return out;
+}
+
+/** Min/max of `x` in `cols` equal columns (a DAW overview). */
+export function columnMinMax(x: Float32Array, cols: number): { mn: Float32Array; mx: Float32Array } {
+  const mn = new Float32Array(cols);
+  const mx = new Float32Array(cols);
+  for (let c = 0; c < cols; c++) {
+    const i0 = Math.floor((c * x.length) / cols);
+    const i1 = Math.max(i0 + 1, Math.floor(((c + 1) * x.length) / cols));
+    let lo = Infinity;
+    let hi = -Infinity;
+    for (let i = i0; i < i1 && i < x.length; i++) {
+      if (x[i] < lo) lo = x[i];
+      if (x[i] > hi) hi = x[i];
+    }
+    mn[c] = lo === Infinity ? 0 : lo;
+    mx[c] = hi === -Infinity ? 0 : hi;
+  }
+  return { mn, mx };
+}
+
 /* ── peak vs average ────────────────────────────────────────────────────── */
 
 export function peakAbs(x: Float32Array): number {
@@ -151,7 +217,7 @@ export const PRESETS: SoundPreset[] = [
   {
     id: 'snare', name: 'Snare drum', kind: 'percussive',
     adsr: { attackMs: 2, decayMs: 120, sustain: 0, releaseMs: 0, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
-    bullets: ['Instant attack', 'Short decay — the whole sound IS the decay', 'No sustain, so nothing is left to release'], // NEW COPY
+    bullets: ['Instant attack', 'Short decay — the whole sound IS the decay', 'No sustain, so nothing is left to release', 'Two sources in one hit: the drum shell’s tone and the snare wires’ noise — the ragged edge on the waveform'], // NEW COPY
     notice: 'Notice there is no S or R region at all: the sound is over in about an eighth of a second, and every part of it is falling.', // NEW COPY
   },
   {
