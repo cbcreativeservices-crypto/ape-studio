@@ -17,6 +17,7 @@
  * elements accept), so a screen reader — and the browser harness — can
  * place gear by name.
  */
+import { FigureAboveSvg } from '../../../../features/lab/figureAboveSvg';
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, LinearGradient, Path, Pattern, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -39,6 +40,9 @@ export const PLOT_H = 330;
 export const PLOT_FS = 13;
 
 /* the room's furniture, in plot units */
+/** The plan's mm scale, taken from its wedge glyph (a 600 mm wedge drawn
+ *  26/64 of a 20-unit box): a performer is drawn at the same scale. */
+const PERSON_PX_PER_MM = (20 * 26) / 64 / 600;
 const DECK = { x: 70, y: 14, w: 220, h: 94 }; // the stage deck; lip at y = 108
 const LIP_Y = DECK.y + DECK.h;
 const AUD = { top: 140, bottom: 314, left: 22, right: 338 };
@@ -705,15 +709,15 @@ export function VenueView(p: VenueViewProps) {
           <Circle key={s.id} cx={s.x} cy={s.y} r={3} fill="none" stroke="#2f343f" strokeWidth={0.8} />
         ))}
 
-        {/* performers on the stage source slots */}
+        {/* performers on the stage source slots, facing the house */}
         {p.performers
           ? (['stageC', 'stageL', 'stageR', 'riserC'] as SlotId[]).map((s) => {
               const q = xy(s);
               return (
-                <G key={s} opacity={0.8}>
-                  <Circle cx={q.x} cy={q.y - 3} r={4.5} fill="none" stroke="#9aa3ad" strokeWidth={1.2} />
-                  <Path d={`M ${q.x - 7} ${q.y + 8} C ${q.x - 7} ${q.y + 1} ${q.x + 7} ${q.y + 1} ${q.x + 7} ${q.y + 8}`} fill="none" stroke="#9aa3ad" strokeWidth={1.2} />
-                </G>
+                // The house plan figure from above at the wedges' own scale
+                // (art fix 2026-10-16: was a head-and-shoulders UI glyph),
+                // facing the house.
+                <FigureAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM} halo="#c3cde2" />
               );
             })
           : null}

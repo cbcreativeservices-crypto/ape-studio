@@ -23,7 +23,8 @@ import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'reac
 import { colors, fonts } from '../../../../theme/tokens';
 import { GearInSvg, INK } from './gearArt';
 import { Wedge2WayPlan, wedgeJackY } from './planArt';
-import { HeadIconSvg, aboveRotation } from '../../../../features/lab/headIconsSvg';
+import { HeadIconSvg } from '../../../../features/lab/headIconsSvg';
+import { FigureAboveSvg } from '../../../../features/lab/figureAboveSvg';
 import { CABLE_COLORS } from './VenueView';
 
 const W = 354;
@@ -199,9 +200,11 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
       <Polygon points={pts.join(' ')} fill={colors.amber} opacity={0.12} stroke={colors.amber} strokeWidth={0.8} strokeOpacity={0.5} />
       <SvgText x={mic.x - R * 0.55} y={mic.y - R * 0.62} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>LIVE ANGLE</SvgText>
       <SvgText x={mic.x + 18 * S} y={mic.y + 16 * S} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>NULL</SvgText>
-      {/* the performer, from above: the owner's ABOVE head icon turned to face
-          the microphone (+x) — head fix 2026-10-08, a lone head in a plan */}
-      <HeadIconSvg view="above" x={perf.x} y={perf.y} size={20 * S} rotation={aboveRotation(1, 0)} color="#9aa3ad" minStroke={1.2} />
+      {/* the performer, from above, facing the microphone (+x): the house
+          plan figure (shoulders, arms and head — art fix 2026-10-16, was a
+          lone head icon) at the wedge's own scale (a 600 mm wedge is
+          WEDGE_W units across) */}
+      <FigureAboveSvg x={perf.x - 2 * S} y={perf.y} pxPerMm={WEDGE_W / 600} facingDeg={-90} />
       {/* the microphone, pointing at the performer */}
       <Line x1={mic.x + 14 * S} y1={mic.y} x2={mic.x - 4 * S} y2={mic.y} stroke={INK.metalHi} strokeWidth={3.2 * S} strokeLinecap="round" />
       <Circle cx={mic.x - 6 * S} cy={mic.y} r={4 * S} fill={INK.metalMid} stroke="#000" strokeWidth={0.5} />

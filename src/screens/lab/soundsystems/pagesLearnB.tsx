@@ -554,7 +554,15 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
 const AMP: AmpRating = { at8: 300, at4: 500, minOhms: 4, bridged8: 1000, minOhmsBridged: 8 };
 
 const RIG_W = 300;
-const RIG_H = 120;
+const RIG_H = 140;
+/** The amp glyph's box and the cabinets' box at ONE scale (art fix
+ *  2026-10-16, grading: "the cabinet is drawn narrower than the amp"): the
+ *  amp's 2U chassis is 482.6 mm wide at 0.0994 glyph-units/mm, the 380 ×
+ *  620 mm two-way cabinet at 52/620 — so a cabinet box of 70 × 0.0994 /
+ *  (52/620) ≈ 83 draws it at the amp's own mm scale (≈ 41 × 67). */
+const RIG_AMP = 70;
+const RIG_CAB = Math.round((RIG_AMP * (60 / (482.6 - 26.3 + 400 * 0.45 * Math.cos((35 * Math.PI) / 180)))) / (52 / 620));
+const RIG_Y = 74;
 
 function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: number; bridged: boolean; verdict: 'safe' | 'marginal' | 'unsafe' | 'open' }) {
   const W = RIG_W;
@@ -566,29 +574,29 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
   // over the cabinets in parallel lanes, square down into each. The run to
   // the farthest cabinet takes the top output, nested so no two
   // cross: top output, innermost riser, highest lane.
-  const portY = (i: number) => 52 + 4 * (count - 1 - i);
+  const cabTop = RIG_Y - RIG_CAB / 2 + 6 * (RIG_CAB / 64);
+  const portY = (i: number) => RIG_Y - 6 + 4 * (count - 1 - i);
   const runs = cabs.map((i) => {
     const k = count - 1 - i;
     const py = portY(i);
     const rx = 84 + 4 * k;
-    const ly = 20 + 4 * k;
+    const ly = 22 + 4 * k;
     const cx = 120 + i * 46;
     const r = 3;
-    return `M 78 ${py} L ${rx - r} ${py} Q ${rx} ${py} ${rx} ${py - r} L ${rx} ${ly + r} Q ${rx} ${ly} ${rx + r} ${ly} L ${cx - r} ${ly} Q ${cx} ${ly} ${cx} ${ly + r} L ${cx} 40`;
+    return `M 78 ${py} L ${rx - r} ${py} Q ${rx} ${py} ${rx} ${py - r} L ${rx} ${ly + r} Q ${rx} ${ly} ${rx + r} ${ly} L ${cx - r} ${ly} Q ${cx} ${ly} ${cx} ${ly + r} L ${cx} ${cabTop}`;
   });
   return (
     <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on one amplifier channel${bridged ? ', bridged' : ''}; the load is ${verdict}`}>
-      <GearInSvg kind="amp" id="lr-amp" x={44} y={58} size={70} power={verdict === 'unsafe' ? 'off' : 'on'} />
-      <SvgText x={44} y={104} fontSize={8.5} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? 'AMP · PROTECT' : bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
+      <GearInSvg kind="amp" id="lr-amp" x={44} y={RIG_Y} size={RIG_AMP} power={verdict === 'unsafe' ? 'off' : 'on'} />
+      <SvgText x={44} y={RIG_Y + 26} fontSize={8.5} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? 'AMP · PROTECT' : bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
       {cabs.map((i) => {
         const x = 120 + i * 46;
-        const y = 56;
         return (
           <G key={i}>
             <Path d={runs[i]} stroke={wire} strokeWidth={2.4} fill="none" strokeLinecap="round" />
             <Path d={runs[i]} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} />
-            <GearInSvg kind="passiveSpeaker" id={`lr-cab-${i}`} x={x} y={y} size={46} />
-            <SvgText x={x} y={y + 34} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.mono}>{ohms} Ω</SvgText>
+            <GearInSvg kind="passiveSpeaker" id={`lr-cab-${i}`} x={x} y={RIG_Y} size={RIG_CAB} />
+            <SvgText x={x} y={cabTop + 52 * (RIG_CAB / 64) + 12} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.mono}>{ohms} Ω</SvgText>
           </G>
         );
       })}

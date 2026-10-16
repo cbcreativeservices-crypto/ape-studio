@@ -112,7 +112,8 @@ const LONE: [string, RegExp][] = [
   ['src/screens/lab/roomdesign/RoomPlanView.tsx', /<HeadIconSvg view="above"/],
   ['src/screens/lab/soundsystems/art/gearArt.tsx', /<HeadIconSvg view="above"/],
   ['src/screens/lab/mastering/stages.tsx', /<HeadIconSvg view="above" x=\{cx\} y=\{listY\}[^>]*rotation=\{Math\.PI\}/],
-  ['src/screens/lab/soundsystems/art/diagrams.tsx', /<HeadIconSvg view="above"[\s\S]*<HeadIconSvg view="above"/],
+  // Art fix 2026-10-16: the feedback plan's performer is a whole plan figure now (BODY); the delay chart's back-row listener stays a lone head.
+  ['src/screens/lab/soundsystems/art/diagrams.tsx', /<HeadIconSvg view="above" x=\{26\} y=\{58\}/],
   ['src/screens/startHere/SignalPathArt.tsx', /<HeadIconSvg view="side" facing="right" speaking[\s\S]*<HeadIconSvg view="side" facing="left"/],
   ['src/screens/startHere/pages.tsx', /<HeadGlyph view="side"/],
   ['src/screens/lab/cableinstall/scenes/floorArt.tsx', /<HeadIconSvg view="above"/],
@@ -129,6 +130,10 @@ const BODY: [string, RegExp][] = [
   // Fix pass 2026-10-16: the coverage scenes draw WHOLE house figures — the plan's guitarist and bassist (BacklinePlan's plan players with PlayerFigure's head) and the singer at a vocal stand (voicePose) in both views.
   ['src/screens/lab/micspeaker/viz.tsx', /<PlanPlayerTop pose=\{p\.kind\} \/>[\s\S]*<FigureHead fill=\{g\.head\} \/>[\s\S]*<PlayerBehind pose=\{SINGER_TOP\} \/>[\s\S]*<PlayerBehind pose=\{SINGER_SIDE\} \/>/],
   ['src/screens/lab/wave/vizWave.tsx', /<FigureHeadAt view="front"/],
+  // Art fix 2026-10-16: Sound Systems' performers (venue plan, feedback plan) are the house plan figure from above — shirt and arms one silhouette, PlayerFigure's headAbove skull.
+  ['src/features/lab/figureAboveSvg.tsx', /const SKULL: XY\[\] = \[H\(0, -98\), H\(62, -80\)/],
+  ['src/screens/lab/soundsystems/art/VenueView.tsx', /<FigureAboveSvg key=\{s\}/],
+  ['src/screens/lab/soundsystems/art/diagrams.tsx', /<FigureAboveSvg x=\{perf\.x/],
   // Figure polish 2026-10-10: these three drew a stick body under the head; each is now a WHOLE shared figure (its head is FigureHeadSvg / PlayerFigure's FigureHead).
   ['src/screens/lab/roomdesign/RoomSideView.tsx', /<FigureSeatedSideSvg /],
   ['src/features/lab/figureBodySvg.tsx', /<FigureHeadSvg view="front"[\s\S]*<FigureHeadSvg view="side"/],
@@ -171,6 +176,7 @@ const GONE: [string, RegExp][] = [
   ['src/screens/lab/cableinstall/svgArt.tsx', /<Ellipse cx=\{x\} cy=\{Y\(163\)\}/],
   ['src/screens/lab/cableinstall/scenes/floorArt.tsx', /<Circle cx=\{x\} cy=\{y - 0\.2\} r=\{3\}/],
   ['src/screens/lab/soundsystems/art/diagrams.tsx', /<Circle cx=\{perf\.x\} cy=\{perf\.y\}/],
+  ['src/screens/lab/soundsystems/art/VenueView.tsx', /<Circle cx=\{q\.x\} cy=\{q\.y - 3\} r=\{4\.5\}/],
   ['src/screens/lab/mastering/stages.tsx', /kind="listener" id="room-ear"/],
   ['src/screens/lab/miking/lessons/shared/metal/metalArt.tsx', /p\.addCircle\(/],
   ['src/screens/lab/miking/lessons/i06bFingerCymbals/art.tsx', /p\.addCircle\(30, -1660/],
