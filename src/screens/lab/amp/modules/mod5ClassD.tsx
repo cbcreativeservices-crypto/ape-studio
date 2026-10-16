@@ -78,7 +78,7 @@ function SwitchingStage({ dutyAtPeak, width, height }: { dutyAtPeak: number; wid
       {/* switching node, with one period of the pulse drawn on it */}
       <Line x1={82} y1={75} x2={150} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Path d={pulse} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
-      <SvgText x={116} y={92} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>one period at the peak</SvgText>
+      <SvgText x={86} y={92} fontSize={F} fill={colors.textMuted} textAnchor="start" fontFamily={fonts.barlowMedium}>one period at the peak</SvgText>
       {/* filter: inductor + capacitor */}
       <Path d="M150 75 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0" fill="none" stroke={colors.textSecondary} strokeWidth={1.6} />
       <Line x1={198} y1={75} x2={250} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
