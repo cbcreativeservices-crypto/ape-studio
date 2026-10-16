@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 19:51 · ccode · 8f47f851
+changed: Miking figures: Wurlitzer player on the shared figure; necks into collars; stick/box figures replaced
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 19:09 · ccode · faf03aaf
 changed: Miking: show the stage/studio plan steps again; name idle zones on the glass
 affects other side: nothing (app only)
