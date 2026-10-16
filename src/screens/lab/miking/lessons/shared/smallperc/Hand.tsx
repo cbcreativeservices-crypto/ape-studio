@@ -13,7 +13,7 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import { drawHand3, FIGURE_SKIN, FigureMass, forearmPath, Nails } from '../players/PlayerFigure';
+import { drawHand3, FIGURE_SKIN, FigureMass, forearmPath, NAIL as FIGURE_NAIL, Nails } from '../players/PlayerFigure';
 import type { HandSkeleton, HandView, V3 } from '../players/handModel.ts';
 import { pt } from '../players/playerPose';
 import { nailOutline, placePt, smoothPathD, tubeOutline, type HandGeo, type Placement, type Pt } from './hands.ts';
@@ -24,8 +24,11 @@ import { nailOutline, placePt, smoothPathD, tubeOutline, type HandGeo, type Plac
  *  creases and knuckle shine are taken from the same tone. */
 export const SKIN = FIGURE_SKIN.ramp;
 export const SKIN_RIM = FIGURE_SKIN.edge;
-const NAIL = FIGURE_SKIN.rim;
-const NAIL_RIM = FIGURE_SKIN.ramp[2];
+/** The nails: the shared figure's own nail tone (art fix round 3, 2026-10-16 —
+ *  the skin's near-white rim tone read as white dots on the fingertips at
+ *  phone size). */
+const NAIL = FIGURE_NAIL.fill;
+const NAIL_RIM = FIGURE_NAIL.edge;
 const CREASE = FIGURE_SKIN.ramp[3];
 /** A shirt sleeve (dark slate), lit from the upper left. */
 export const SLEEVE = ['#5d6b82', '#3f4b5f', '#262e3b'];
@@ -171,8 +174,8 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
         </Group>
       ))}
       {farThumb ? null : thumbEl}
-      <Path path={b.nails} color={NAIL} opacity={farThumb ? 0 : (geo.nailAlpha ?? 1)} />
-      <Path path={b.nails} style="stroke" strokeWidth={0.8} color={NAIL_RIM} opacity={geo.nailAlpha ? 0.8 : 1} />
+      <Path path={b.nails} color={NAIL} opacity={farThumb ? 0 : FIGURE_NAIL.opacity * (geo.nailAlpha ?? 1)} />
+      <Path path={b.nails} style="stroke" strokeWidth={0.8} color={NAIL_RIM} opacity={farThumb ? 0 : 0.5} />
       <Path path={b.creases} style="stroke" strokeWidth={1.1} strokeCap="round" color={CREASE} opacity={0.8} />
       <Path path={b.shine} style="stroke" strokeWidth={3} strokeCap="round" color={FIGURE_SKIN.rim} opacity={0.35} />
     </Group>

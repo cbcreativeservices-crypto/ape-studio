@@ -314,7 +314,11 @@ export function dorsalFlat(curl = 0): HandGeo {
   for (const y of ys) creases.push([[20, y * 0.55], [kx - 22, y * 0.95]]);
   // Nails seen from the back: a rounded plate centred on each last bone
   // (≈ half its length, ≈ ¾ of the fingertip's width), ending short of the tip.
-  const nails: Pt[][] = [...fingers, thumb].map((f) => {
+  // A finger curled past ~45° turns its last bone AWAY from a view of the
+  // back of the hand: its nail is out of sight (art fix round 3, 2026-10-16 —
+  // a curled grip read as four stacked fingers, a pale nail dot on each).
+  // The thumb, alongside, keeps its nail.
+  const nails: Pt[][] = (curl >= 45 ? [thumb] : [...fingers, thumb]).map((f) => {
     const [dx, dy] = f.tipDir;
     const L = f === thumb ? 15 : 12;
     const hw = f.w1 * 0.36;

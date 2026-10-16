@@ -32,7 +32,9 @@ const BACK = dorsalFist();
  *  (clash sweep 2026-10-10: the shell ran lengthwise through the folded
  *  fingers). From the side: the back of that hand, fingers forward along the
  *  shell. From above: the hand's thumb side beside the shell, palm against it. */
-const ALONG_BACK = dorsalFlat(50);
+/** Curled 70° round the shell (art fix round 3: at 50° the fingers read as a
+ *  flat paddle along it), the fingertips turned under, out of sight. */
+const ALONG_BACK = dorsalFlat(70);
 const ALONG_EDGE = openHand(22);
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];

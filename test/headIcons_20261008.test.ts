@@ -146,7 +146,8 @@ const BODY: [string, RegExp][] = [
   ['src/screens/lab/miking/lessons/shared/mallets/MalletArt.tsx', /<PlayerBehind pose=\{b\.player\.pose\} dim=\{0\.42\} \/>[\s\S]*<PlayerBehind pose=\{b\.player\.pose\} \/>/],
   ['src/screens/lab/miking/lessons/shared/keys/KeysArt.tsx', /<PlayerBehind pose=\{side \? WURLI_PLAYER_SIDE : WURLI_PLAYER_TOP\}/],
   ['src/screens/lab/miking/lessons/shared/smallperc/Player.tsx', /<FigureHead fill=\{g\.head\} \/>[\s\S]*<FigureHead fill=\{g\.head\} \/>/],
-  ['src/screens/lab/miking/lessons/i02Cajon/art.tsx', /<FigureHead fill=\{fill\} \/>[\s\S]*<FigureHead fill=\{g\.head\} \/>/],
+  // Art fix round 3 (2026-10-16): the cajón player is the WHOLE shared figure (PlayerFigure's own head), side and above.
+  ['src/screens/lab/miking/lessons/i02Cajon/art.tsx', /<PlayerBehind pose=\{pose\} \/>[\s\S]*<PlayerBehind pose=\{pose\} \/>/],
   ['src/screens/lab/miking/lessons/c12Clavinet/art.tsx', /<FigureHead fill=\{o\.head\} \/>/],
   ['src/screens/lab/miking/lessons/shared/sax/SaxArt.tsx', /return headProfile\(pt\(/],
   ['src/screens/lab/miking/lessons/shared/freereed/PlayerProfile.tsx', /<FigureHead fill=\{b\.head\.fill\} \/>/],

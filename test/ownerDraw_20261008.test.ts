@@ -52,7 +52,8 @@ describe('HF1 — hands wear the shared figure skin (owner 2026-10-08)', () => {
 
   it('the smallperc/cajón players and the free-reed hands take their skin from those modules (no private copy)', () => {
     assert.match(code(`${L}shared/smallperc/Player.tsx`), /import \{[^}]*\bSKIN\b[^}]*\} from '\.\/Hand'/);
-    assert.match(code(`${L}i02Cajon/art.tsx`), /import \{[^}]*\bSKIN\b[^}]*\} from '\.\.\/shared\/smallperc\/Hand'/);
+    // Art fix round 3 (2026-10-16): the cajón player is the shared figure itself (FIGURE_SKIN through PlayerFigure).
+    assert.match(code(`${L}i02Cajon/art.tsx`), /import \{ PlayerBehind, PlayerInFront \} from '\.\.\/shared\/players\/PlayerFigure'/);
     // Figure pass 3 (2026-10-16): the free-reed hands are posed skeletons drawn through PlayerProfile's Hand3Art
     // (the shared drawHand3 with FigureMass tone="skin") — one skin, no private copy.
     for (const f of ['a10Harmonica/art.tsx', 'a11Accordion/art.tsx']) assert.match(code(L + f), /\bHand3Art\b[^}]*\} from '\.\.\/shared\/freereed\/PlayerProfile'/, f);
