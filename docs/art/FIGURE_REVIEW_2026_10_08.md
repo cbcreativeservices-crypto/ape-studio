@@ -134,3 +134,45 @@ Reviewed as an illustrator (proportion, joints, opacity, clashes at 3×) and as 
 - **Flute left hand** sits where the model's key station puts it (≈ 30 cm along the flute); the elbow now bends 65° but would hang lower with the wrist moved toward the head joint (the keyed-winds hand pass).
 - **Joints that feed keep-outs, not moved here:** bowed bass shoulder→grip 773 mm (arm ≈ 690) and plucked 798 mm; cello left hand 152 mm from its shoulder; sitar right elbow 458 mm from the shoulder (adult ≈ 310) and veena upper arm 363 mm; I05a cowbell and I05c woodblock wrists behind the chest (forearm hidden from above); ensemble trumpet/trombone hold points put the elbows at shoulder height (E10, E16).
 - **Gong:** the front and side views are drawn as projections of a player turned toward the gong (the figure itself is frontal / profile).
+
+---
+
+# Pass 3 — 2026-10-16 (owner go): hands on instruments, shoulders and sleeves
+
+**Owner:** "check that the hand is correctly positioned, placed, bent, fingers and digits accounted for … shoulder transitions from shirt sleeves to the shirt body look very unnatural and plug and position interchangeable limbs and parts". Evidence: `C:\Users\profe\Downloads\2026-10-16_MIKING_HANDS_AND_SHOULDERS_BEFORE_AFTER.png` (15 instruments at 3×, 3 full-figure shoulders).
+
+## One hand model
+
+`shared/players/handModel.ts` (pure): an adult hand in 3-D — four fingers of three phalanges (index 38/22/17, middle 43/26/17, ring 40/25/17, little 32/19/16 mm) and a thumb (metacarpal 44, phalanges 31/26) on a knuckle arc; joints limited (MCP −20…90°, PIP 0…110°, DIP 0…80°, spread per finger); IK puts each pad on its target; `fitHand` turns the hand until the pads land with the wrist ≤ 70° (3-D). `PlayerFigure.drawHand3` draws a posed skeleton bone by bone (palm hull, thenar, wrist cut at the cuff, finger-over-finger lines, knuckle row, nails at 3×), split in front of / behind the instrument. Every family poses its hands with it and exports `handCases()`; `test/figureAnatomy_20261008.test.ts` runs them all (five digits, bone lengths, thumb side, joint ranges, 3-D wrist, playing digits ≤ 3 mm).
+
+## Families
+
+| Family | What changed |
+|---|---|
+| Guitar family (C01 C03 C05A–C C07, E07) | Fretting arm solved in 3-D (forearm reaches forward, foreshortened; wrist ≈ 57°); C-major shape — index, middle, ring pads on their strings behind their frets, little finger resting just off the strings, thumb behind the neck; the same skeleton seen from above. Pick held between the thumb's pad and the index, point on the strings. Lap steel: bar hand (index on the bar, thumb and middle on its sides, ring/little resting behind it) and finger-pick hand. |
+| Bowed (C06a C06b C09a–c) | First-position stopping hands (violin spacing, cello one finger per semitone, bass 1-2-4), thumb behind the neck; bow hold with the thumb bent under the frog, fingers draped (violin little finger on top, French bass hold); pizzicato pads on the strings. |
+| High brass (A01 A02) | Valve pads on the buttons, thumb under the leadpipe between valves 1 and 2, little finger on a hook; left hand round the casings; trombone hands on receiver/brace/bell brace and the outer slide brace (braces moved apart). |
+| Low brass (A03 A04a A04b) | Horn levers + little finger in the hook + thumb lever, right hand cupped in the bell; tuba/euphonium pads on every valve button, thumb ring. |
+| Lutes (C13 C14 C15) | Oud risha between thumb and index; sitar mizrab on the index, index/middle pulling the main string; veena right hand on the melody strings. |
+| Winds + sax (A05a–d A06–A09b) | Left hand above right; pads on the keys/rings/plates; thumbs on thumb rest, octave key, B key, hook; flute wrist toward the head joint (elbow 73°, 124 mm below the shoulder). Sax player now the house body (opaque). |
+| Free reed + small perc (A10 A11 I05a I05c) | Accordion chord on the keys, bass hand under the strap on the buttons; harmonica cupping states; cowbell/woodblock stick hands with the forearm in front of the chest. |
+| Ensembles (E02–E16) | 42 posed holds at the ensemble scale; violin/viola left fingers curl down onto the strings; brass elbows hang. |
+
+## One garment
+
+Shared figure: every sleeve **emerges** from the shirt (FigureMass `emerge`: invisible at the point of the shoulder, fully there ≈ 150 mm down; its drop shadow too); the shirt's outline is hushed under the deltoids; rim light and core shadow fade at the shoulder; one soft crease in a bent elbow's crook — never a line along the sleeve. Bowed/brass, low brass, lutes, free reed and small-perc bodies got the same treatment in their own painters. Dimmed players (pianist, tabla, tonbak, harpist) recede by colour, as one opaque layer, instead of by opacity. A robust path union was added (a fretting sleeve once came back as its deltoid cap alone).
+
+## Joints and keep-outs moved (owner approved: keep-outs follow corrected anatomy)
+
+Pass-2 OPEN items closed: bowed bass shoulder→grip 773 → 665 mm (plucked 798 → 650); cello left hand 152 → 257 mm from its shoulder; sitar right upper arm 458 → 310, veena 363 → 310 (oud 367 → 310); I05a/I05c forearms in front of the chest; E10/E16 brass elbows below the shoulders; flute left elbow. Brass valve arm: with real 265 mm forearms and pads on the buttons the right elbow rises to ≈ 20° below level (the round-4 pin now 18–58° for that arm; the holding arm still ≥ 38°). Every dependent keep-out (arm capsules, hand boxes, plan footprints) was re-derived; every suggested starting placement and plan re-checked by the family tests and `mikingPlanCollisions`. Per-family old → new numbers are in the commit messages (0e6c82b5 … 9d49da3a).
+
+## Open
+
+- Veena: the true left-hand reach (arm beneath the neck) needs the player ≈ 15 cm closer; the tala strings are drawn on the audience side (real veenas: the player's side) — moving them moves the two-mic starting placement (owner's call).
+- Bassoon: the model puts the wing joint directly behind the long joint, so the left fingers cannot reach its front (instrument change).
+- Cello/bass: the spec puts the highest string on the player's left; believed to belong on the bow side (owner's call).
+- Brass: the trombone left grip encloses the gooseneck by ≈ 4 mm; the trumpet left palm grazes the bell tube by ≈ 3 mm; side-view trumpet fingertips sit ≈ 30 mm above the caps (the curl is into the picture).
+- Violin/viola bow hand from the side still reads as a closed hand (the slant toward the tip not achieved); angled 1st violinist (E11 vn1.1) seen edge-on to the finger curl.
+- Harmonica partly cupped reads as a pinch plus a hand; accordion side-view black keys at the chest end (needs a reference).
+- Narrow necks (mandolin, ukulele) from the front: the fingers read as parallel and upright; the guitar pick fist is plain.
+- Hand solving costs ≈ 35–300 ms per posture on first draw (cached after).
