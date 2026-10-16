@@ -16,12 +16,14 @@
  *       about a step that is no longer shown (`RETIRED`).
  *   STARTING SETUPS = real mic setups drawn on the instrument (engine/
  *       setups.ts, built from the lesson's own zones and two-mic data) + the
- *       lesson's "before any mic" step, which carries the old setting page's
- *       checks (`setupsKeep`: its last step, and an amplified source's
- *       signal path — a mic decision). Its credit = those checks + looking at
+ *       old setting page's steps — its plans, an amplified source's signal
+ *       path (a mic decision) and its last, "before any mic", which carries
+ *       its checks. Its credit = those checks + looking at
  *       every setup. The plan steps (the stage, the studio, the neighbours'
- *       positions) are gone; the neighbours that bleed into the mic and the
- *       live / studio difference are said as mic decisions on the setups page.
+ *       positions) were hidden on 2026-10-06; owner, 2026-10-15: show them
+ *       again (redrawn at true scale in the 10-10 art pass). They follow
+ *       "what else the mic hears" as explore steps: they credit nothing and
+ *       require nothing, so a page already credited stays credited.
  *
  * A lesson written to the new journey gives `pages.meet` / `pages.setups`
  * itself and is served as written.
@@ -38,12 +40,11 @@ export function meetKeep(key: string, i: number, n: number): boolean {
   return i === n - 1 || !MEET_DROP.has(key);
 }
 
-/** Which of a SETTING page's steps STARTING SETUPS shows: the last ("before
- *  any mic", with the checks), and an amplified source's signal path (mic or
- *  DI — a miking decision). The plans of the stage and the studio are gone. */
-export function setupsKeep(key: string, i: number, n: number): boolean {
-  return i === n - 1 || key === 'path';
-}
+/* STARTING SETUPS shows every step of a SETTING page, in the order written:
+ * the plans (around the instrument, then the stage and the studio), an
+ * amplified source's signal path, and "before any mic" (the checks) last.
+ * Owner 2026-10-15: the plan steps the 2026-10-06 restructure hid (it kept
+ * only the last step and 'path') are shown again. */
 
 /**
  * Checks and quick-check items about a step MEET IT no longer shows (the
@@ -148,7 +149,7 @@ function setupsContent(lesson: Lesson): PageContent {
   const scenarios = (set?.credit.scenarios ?? []).filter((id) => !isRetired(lesson.id, id));
   return {
     title: 'Starting setups',
-    goal: `See real mic setups on the ${lesson.noun.subject ?? lesson.noun.one}, drawn where the mic goes — its type, its aim and its distance — one at a time. Then what to settle before any mic goes up.`,
+    goal: `See real mic setups on the ${lesson.noun.subject ?? lesson.noun.one}, drawn where the mic goes — its type, its aim and its distance — one at a time. Then what else reaches the mic on a stage and in a studio, and what to settle before any mic goes up.`,
     credit: {
       scenarios,
       interactive: 'setupsSeen',

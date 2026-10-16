@@ -65,6 +65,17 @@ import { sceneFrame } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
+/** An idle zone's name on the glass: the zones' blue at 80 % (faint, still
+ *  readable on the dark glass). */
+const ZONE_NAME = '#6fa8ffcc';
+/** The id prefix of an idle zone's name among the glass's labels. */
+const ZONE_LABEL = 'zone:';
+const isZoneLabel = (id: string) => id.startsWith(ZONE_LABEL);
+/** An idle zone is named only when its band is at least this wide (px) on
+ *  the glass: a band thinner than that cannot be told apart to read. */
+const ZONE_NAME_MIN_PX = 10;
+/** …and only within this many px of it (a longer leader is left out). */
+const ZONE_LEADER_MAX_PX = 60;
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
 /** The IDEAL-model colour (charter: blue = SOURCED, amber = TRIAL, grey = ILLUSTRATIVE). */
@@ -1594,7 +1605,8 @@ function SceneLabel({ xf, u, v, text, align, tone, scale, maxX, yieldTo = null, 
     }
     return { opacity, transform: [{ translateX: left }, { translateY: top }] };
   });
-  const color = tone === 'illustrative' ? '#aab0bd' : tone === 'muted' ? colors.textMuted : colors.amberLabel;
+  // 'zone': an idle suggested starting point's name — the zones' blue, faint.
+  const color = tone === 'zone' ? ZONE_NAME : tone === 'illustrative' ? '#aab0bd' : tone === 'muted' ? colors.textMuted : colors.amberLabel;
   return (
     <Animated.View pointerEvents="none" style={[styles.label, { width: W }, style]}>
       <Text style={[styles.labelText, { fontSize: 9.5 * scale, textAlign: align, color }]} {...fitValue(9.5 * scale)}>
@@ -1608,7 +1620,7 @@ function SceneLabel({ xf, u, v, text, align, tone, scale, maxX, yieldTo = null, 
  *  (labelLayout: `leader`). Drawn INSIDE the scene's transform — under the
  *  zones, the stands and the mics — with the label's end worked out in
  *  screen px each frame, so both ends stay attached at every zoom. */
-function LeaderLines({ labels, xf, scale, maxX }: { labels: { u: number; v: number; text: string; align: 'left' | 'center' | 'right'; leader?: { u: number; v: number } }[]; xf: SharedValue<ViewXform>; scale: number; maxX: number }) {
+function LeaderLines({ labels, xf, scale, maxX, color = colors.amberLabel }: { labels: { u: number; v: number; text: string; align: 'left' | 'center' | 'right'; leader?: { u: number; v: number } }[]; xf: SharedValue<ViewXform>; scale: number; maxX: number; color?: string }) {
   const items = useMemo(() => labels.filter((l) => l.leader).map((l) => ({ u: l.u, v: l.v, align: l.align, W: labelWidth(l.text, scale, maxX), au: l.leader!.u, av: l.leader!.v })), [labels, scale, maxX]);
   const H = 9.5 * scale * 1.25;
   const path = useDerivedValue(() => {
@@ -1635,7 +1647,7 @@ function LeaderLines({ labels, xf, scale, maxX }: { labels: { u: number; v: numb
   return (
     <>
       <Path path={path} style="stroke" strokeWidth={halo} color="#000" opacity={0.5} />
-      <Path path={path} style="stroke" strokeWidth={line} color={colors.amberLabel} opacity={0.8} />
+      <Path path={path} style="stroke" strokeWidth={line} color={color} opacity={0.8} />
     </>
   );
 }
@@ -2135,6 +2147,20 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const surfaceId = rig.surfaceId;
   const lineId = rig.lineId;
   const zoneA = useDerivedValue(() => deriveReadouts(ctxA, poseA.value, surfaceId, lineId).zoneId);
+  // The zones a live mic sits in (A as the band's highlight reads it, and B by
+  // its own reference), mirrored to JS only when it changes: an IDLE zone —
+  // one no mic is in — is named on the glass; the one a mic is in is named by
+  // the bezel and the zone card instead.
+  const ctxB = rig.ctx.B;
+  const refB = rig.refOf('B');
+  const [occupied, setOccupied] = useState('');
+  useAnimatedReaction(
+    () => `${hasA ? zoneA.value ?? '' : ''}|${hasB ? deriveReadouts(ctxB, poseB.value, refB.surfaceId, refB.lineId).zoneId ?? '' : ''}`,
+    (cur, prev) => {
+      if (cur !== prev) scheduleOnRN(setOccupied, cur);
+    },
+    [hasA, hasB, refB.surfaceId, refB.lineId],
+  );
   // Keep-outs (owner ruling 2026-10-05): built for every scene that may show
   // them, DRAWN only on approach / on a stop (EnvelopeMark). A mini inset
   // never shows them.
@@ -2252,6 +2278,26 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     // the drawn figure only adds words to the picture (clarity pass
     // 2026-10-05); an off-glass pointer ("← PLAYER") stays.
     const own = art.labels(view, variant).filter((l) => !(micsOn && l.id === 'player' && l.text === 'PLAYER') && (!l.withMics || rig.mics.some((m) => live.includes(m.slot) && m.on && l.withMics!.includes(m.typeId))));
+    // IDLE ZONES NAMED (owner 2026-10-15, I11b's unlabeled blue band): each
+    // suggested starting point no mic sits in carries its name, faintly, in
+    // the zones' blue — laid out by the same level-of-detail rules as the
+    // part names, after them (a zone name never takes a part's place), above
+    // its band or moved into free space with a leader to it. A band too thin
+    // to see at this size (under ZONE_NAME_MIN_PX across) is not named — a
+    // closer zoom (full screen) draws it larger and names it. Its short form
+    // (the words before the first comma: "FARTHER AWAY") only when no other
+    // zone of the lesson starts the same — a bare "CLOSE" could be any of
+    // several bands.
+    const inZone = new Set(occupied.split('|').filter(Boolean));
+    const named = zones.filter((z) => !inZone.has(z.id)).map((z) => ({ z, b: zonePath(z, view, rig).getBounds(), name: z.label.toUpperCase() })).filter(({ b }) => Math.min(b.width, b.height) * base.s >= ZONE_NAME_MIN_PX);
+    const firstWords = (label: string) => (label.indexOf(',') > 0 ? label.slice(0, label.indexOf(',')).toUpperCase() : '');
+    for (const { z, b, name } of named) {
+      const sh = firstWords(z.label);
+      const short = sh && rig.lesson.zones.filter((q) => firstWords(q.label) === sh).length === 1 ? sh : undefined;
+      // `priority` 3 (labelLayout): placed after every part name.
+      const zl = { id: `${ZONE_LABEL}${z.id}`, text: name, ...(short ? { short } : {}), u: b.x + b.width / 2, v: b.y - 6 / base.s, align: 'center' as const, point: { u: b.x + b.width / 2, v: b.y + b.height / 2 }, priority: 3 as const };
+      own.push(zl);
+    }
     // The view's tag in the bottom-left corner ("SIDE · CUTAWAY") is words
     // too: a label never sits on it.
     const tagText = model.viewTags?.[view] ?? viewTag;
@@ -2291,9 +2337,15 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         lines.push({ x1: b2.x, y1: b2.y, x2: b2.x + (b2.x - a.x) * k, y2: b2.y + (b2.y - a.y) * k });
       }
     }
-    return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag, ...guideData.map((g) => g.rect)], minY: reserveTop + 1, labels: own, model, lines });
+    const laid = layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag, ...guideData.map((g) => g.rect)], minY: reserveTop + 1, labels: own, model, lines });
+    // A zone's name stays BY its band: one that only found room far off (a
+    // long leader across the drawing) is left out at this size.
+    return laid.filter((l) => !isZoneLabel(l.id) || !l.leader || Math.hypot(l.u - l.leader.u, l.v - l.leader.v) * base.s <= ZONE_LEADER_MAX_PX);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
-  }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, rig.mics, live, guideData, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
+  }, [mini, showLabels, showZones, zones, occupied, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, rig.mics, live, guideData, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
+  // A zone name's leader is drawn in the zones' blue, a part name's in amber.
+  const partLabels = useMemo(() => labels.filter((l) => !isZoneLabel(l.id)), [labels]);
+  const zoneLabels = useMemo(() => labels.filter((l) => isZoneLabel(l.id)), [labels]);
   const Instrument = memoArt(art.Instrument);
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -2349,7 +2401,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           <KeepOutsAtRest.Provider value={false}>
             <Instrument view={view} variant={variant} />
           </KeepOutsAtRest.Provider>
-          <LeaderLines labels={labels} xf={xf} scale={labelScale} maxX={w} />
+          <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} />
+          <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} />
           {envelopes.map((e) => (
             <EnvelopeMark key={e.id} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} hatchPath={hatchPath} fadeMs={fadeIn} pinned={highlight === e.id} />
           ))}
@@ -2391,7 +2444,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         </Group>
       </Canvas>
       {labels.map((l) => (
-        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
+        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={isZoneLabel(l.id) ? 'zone' : l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
       ))}
       {guideData.filter((d) => !d.hide).map((d) => (
         <GuideLabel key={`gl:${d.slot}`} xf={xf} u={d.au} v={d.av} nx={d.nx} ny={d.ny} W={d.W} H={d.H} text={d.text} scale={textScale} maxX={w} maxY={h} />

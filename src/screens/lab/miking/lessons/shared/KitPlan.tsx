@@ -263,7 +263,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   const ownItem = visible.find((i) => planIdsOf(i).some((p) => isOwn(p)));
   if (ownItem) addItem(ownItem);
   for (const it of visible) addItem(it);
-  labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'PLAYER', u: -1000, v: 125, align: 'left', tone: 'illustrative' });
+  labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: -1000, v: 125, align: 'left', tone: 'illustrative' });
   const seen = new Set<string>();
   const uniq = labels.filter((l) => {
     const k = l.id.split(':')[0];

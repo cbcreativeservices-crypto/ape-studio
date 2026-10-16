@@ -263,7 +263,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
     const visible = items.filter((i) => i.scene === 'all' || i.scene === scene || (scene !== 'kit' && i.scene === 'kit'));
     if (chosen) add(chosen);
     for (const it of visible) add(it);
-    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'PLAYER', u: Math.min(g.tail, fit.torso.min.x) - 40, v: torsoZ0 - 100, align: 'left', tone: 'illustrative' });
+    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: Math.min(g.tail, fit.torso.min.x) - 40, v: torsoZ0 - 100, align: 'left', tone: 'illustrative' });
     const seen = new Set<string>();
     const uniq = labels.filter((l) => {
       const k = l.id.split(':')[0];

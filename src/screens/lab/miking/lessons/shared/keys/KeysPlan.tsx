@@ -183,7 +183,10 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
   const P = KEYS_POS[rig];
   const items = keysItems(rig, scene, wedges);
   const hi = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = items.map((i) => ({ id: i.id, text: shortOf(i.id), u: i.u, v: i.v + i.r * 0.72 + 90, align: 'center' as const, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedal' ? ('muted' as const) : undefined }));
+  // Each name under its object; the reed piano's case is wider than its tap
+  // circle, so its name sits below the case, not on it (review 2026-10-15).
+  const below = (i: { id: string; r: number }) => (rig === 'wurli' && i.id === 'amp' ? WURLI.w.mm / 2 + 110 : i.r * 0.72 + 90);
+  const labels: StaticLabel[] = items.map((i) => ({ id: i.id, text: shortOf(i.id), u: i.u, v: i.v + below(i), align: 'center' as const, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedal' ? ('muted' as const) : undefined }));
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;

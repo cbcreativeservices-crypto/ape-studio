@@ -51,7 +51,7 @@ import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { creditedPages } from './engine/progress/creditMap.ts';
 import { lessonById } from './data/lessons';
 import { isFoundation, journeyPageOf, pageGate, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
-import { meetKeep, pageOf, restructureLesson, setupsKeep } from './engine/restructure.ts';
+import { meetKeep, pageOf, restructureLesson } from './engine/restructure.ts';
 import { ComposedPage, type PagePart } from './engine/compose';
 import { FoundationsCard, type JourneyProps } from './engine/journeyKit';
 import { PageSteps } from './engine/steps';
@@ -107,7 +107,7 @@ export function journeyPages(art: LessonArt): Record<PageId, PageFn> {
   };
   return {
     meet: own.meet ?? compose('MeetIt', [{ key: 'instrument', Page: src('instrument') }, { key: 'sound', Page: src('sound'), keep: meetKeep }]),
-    setups: own.setups ?? compose('StartingSetups', [{ key: 'setups', Page: PSetups }, { key: 'setting', Page: src('setting'), keep: setupsKeep }]),
+    setups: own.setups ?? compose('StartingSetups', [{ key: 'setups', Page: PSetups }, { key: 'setting', Page: src('setting') }]),
     microphone: compose('Microphones', [{ key: 'onit', Page: PMicOnIt }, { key: 'microphone', Page: src('microphone') }]),
     placement: src('placement'),
     context: src('context'),

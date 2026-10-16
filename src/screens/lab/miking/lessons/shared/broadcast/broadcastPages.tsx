@@ -20,7 +20,7 @@
  *                       arrival's comb, the open-mic cost (openMicPanel.ts);
  *     SPEECH AND CONSONANTS (read, 'body')  in words; then the checks.
  *   setting → its last steps on STARTING SETUPS:
- *     WHERE EACH MIC GOES (rack, key 'path' — kept by setupsKeep)
+ *     WHERE EACH MIC GOES (rack, key 'path')
  *                 useRoutingStep: the RoutingPanel; TRACE a source, flip the
  *                 lesson's switches, read the problems in words;
  *     BEFORE ANY MIC (read, 'before')  the lesson's points, hearing, checks.

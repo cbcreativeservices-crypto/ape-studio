@@ -17,8 +17,9 @@
  *   AROUND IT (read) what else reaches the mic, what it must keep clear of,
  *                   and what changes on a stage or in a studio — the old
  *                   "where it sits" page's mic decisions, said as decisions.
- * The lesson's own "before any mic" step (its checks) follows (the composed
- * page, engine/restructure.setupsKeep).
+ * The lesson's own setting steps follow (the composed page): its plans of
+ * the stage and the studio (shown again, owner 2026-10-15), its signal path,
+ * and "before any mic" (its checks).
  *
  * Credit: every setup in one of the four roles looked at (+ the checks).
  */
