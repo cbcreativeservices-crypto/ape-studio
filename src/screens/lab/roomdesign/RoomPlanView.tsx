@@ -366,6 +366,43 @@ export function RoomPlanView({
     const c = T.toPx(f);
     taken.push(textBox(c.x, c.y + fs * 0.35, f.kind.toUpperCase(), fs, 'middle', CAPS_W));
   }
+  // The boundary leaders are obstacles too (art fix 2026-10-16, grading: the
+  // listener's rear-wall leader ran straight through "NEARFIELD · 1.60 m"):
+  // each straight dashed leader becomes a thin box the desk's name and the
+  // angle pair keep off. (The leaders' own numbers sit hard beside their
+  // lines, so the boxes come out again before those are placed.)
+  const bItems = layers.boundaries && analysis.stereo ? boundaryItems(design, analysis, T, fs) : [];
+  // The traced reflection paths, too, for the desk's name (grading: "DESK"
+  // sat under the reflection lines): small boxes stepped along each leg.
+  const obst: Box[] = [];
+  for (const it of bItems) {
+    // The listener's own rear leader is not one: it BREAKS under the angle
+    // pair instead, as a drafted dimension line breaks for its text.
+    if (it.key === 'lis-rear') continue;
+    if (Math.abs(it.a.x - it.bq.x) < 2 || Math.abs(it.a.y - it.bq.y) < 2) {
+      obst.push({ x0: Math.min(it.a.x, it.bq.x) - 2, y0: Math.min(it.a.y, it.bq.y) - 2, x1: Math.max(it.a.x, it.bq.x) + 2, y1: Math.max(it.a.y, it.bq.y) + 2 });
+    }
+  }
+  const nLeaders = obst.length;
+  if (layers.reflections) {
+    for (const r of shownReflections) {
+      const sp = lay.speakers.find((q) => q.role === r.speaker);
+      if (!sp) continue;
+      const pts = [T.toPx(sp), T.toPx(r.point), lisPx];
+      for (let i = 0; i < 2; i++) {
+        const p0 = pts[i];
+        const p1 = pts[i + 1];
+        const n = Math.max(1, Math.ceil(Math.hypot(p1.x - p0.x, p1.y - p0.y) / 4));
+        for (let j = 0; j <= n; j++) {
+          const x = p0.x + ((p1.x - p0.x) * j) / n;
+          const y = p0.y + ((p1.y - p0.y) * j) / n;
+          obst.push({ x0: x - 1.5, y0: y - 1.5, x1: x + 1.5, y1: y + 1.5 });
+        }
+      }
+    }
+  }
+  const leaderFrom = taken.length;
+  taken.push(...obst);
   const deskSpot: Record<string, LabelSpot> = {};
   for (const f of room.features) {
     if (f.kind !== 'desk' || f.w * T.k <= 30) continue;
@@ -373,6 +410,9 @@ export function RoomPlanView({
     deskSpot[f.id] = sp;
     taken.push(...sp.boxes);
   }
+  // The path boxes out again: the paths all meet at the head, where the angle
+  // pair belongs.
+  taken.splice(leaderFrom + nLeaders, obst.length - nLeaders);
   // The angle (or NO TRIANGLE) and the NEARFIELD / MIDFIELD line: two lines,
   // the field line one line under the angle. Preferred where the rules above
   // put them (below the head, or above it), then the other side, then beside
@@ -420,15 +460,18 @@ export function RoomPlanView({
           gh,
         )
       : null;
+  // The leader boxes out (they sat between the fixed boxes and the desk's).
+  taken.splice(leaderFrom, nLeaders);
   if (pair) taken.push(...pair.boxes);
-  const boundary =
-    layers.boundaries && st
-      ? boundaryItems(design, analysis, T, fs).map((item) => {
-          const spot = pickSpot(item.cands, taken, gw, gh);
-          taken.push(...spot.boxes);
-          return { item, spot };
-        })
-      : [];
+  // The rear leader starts under the angle pair when the pair sits on it.
+  const pairOnLeader = pair ? pair.boxes.filter((bx) => bx.x0 - 1 <= lisPx.x && bx.x1 + 1 >= lisPx.x && bx.y1 > lisPx.y) : [];
+  const leaderStartY = pairOnLeader.length ? Math.max(...pairOnLeader.map((bx) => bx.y1)) + 3 : null;
+  const boundary = bItems.map((it) => {
+    const item = it.key === 'lis-rear' && leaderStartY != null && leaderStartY > it.a.y && leaderStartY < it.bq.y ? { ...it, a: { x: it.a.x, y: leaderStartY } } : it;
+    const spot = pickSpot(item.cands, taken, gw, gh);
+    taken.push(...spot.boxes);
+    return { item, spot };
+  });
 
   return (
     <View style={{ width: w, height: h }} {...(edit === 'none' ? {} : pan.panHandlers)} accessible accessibilityLabel={`Room plan, ${fmtLen(b.width, units)} by ${fmtLen(b.length, units)}`}>
@@ -454,7 +497,7 @@ export function RoomPlanView({
 
         {/* Furniture */}
         {room.features.map((f) => (
-          <FeatureGlyph key={f.id} f={f} T={T} fs={fs} selected={selected === `f_${f.id}`} draggable={edit === 'room'} labelAt={deskSpot[f.id]} />
+          <FeatureGlyph key={f.id} f={f} T={T} fs={fs} selected={selected === `f_${f.id}`} draggable={edit === 'room'} labelAt={deskSpot[f.id]} nameOnTop={!!layers.reflections} />
         ))}
 
         {/* Walls — stroked in the wall material's tint */}
@@ -483,6 +526,26 @@ export function RoomPlanView({
         {layers.reflections
           ? shownReflections.map((r, i) => <ReflectionPath key={i} r={r} T={T} lay={lay} fs={fs} />)
           : null}
+        {/* With the paths drawn, the desk's name goes over them on a dark
+            halo, at the spot that crosses the fewest (art fix 2026-10-16:
+            the paths overdrew "DESK"). */}
+        {layers.reflections
+          ? room.features
+              .filter((f) => f.kind === 'desk' && f.w * T.k > 30)
+              .map((f) => {
+                const sp = deskSpot[f.id] ?? deskLabelSpots(f, T, fs)[0];
+                return (
+                  <G key={`dn-${f.id}`}>
+                    <SvgText x={sp.tx} y={sp.ty} fill="none" stroke="#0c0c0f" strokeWidth={3.2} strokeLinejoin="round" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={sp.anchor}>
+                      {f.kind.toUpperCase()}
+                    </SvgText>
+                    <SvgText x={sp.tx} y={sp.ty} fill="#9a9da6" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={sp.anchor}>
+                      {f.kind.toUpperCase()}
+                    </SvgText>
+                  </G>
+                );
+              })
+          : null}
 
         {/* Boundary distance lines */}
         {boundary.length ? <BoundaryLines items={boundary} fs={fs} /> : null}
@@ -498,28 +561,47 @@ export function RoomPlanView({
               strokeDasharray="4 3"
               opacity={0.8}
             />
-            {analysis.stereo && pair ? (
-              // No angle when the seat is not in front of both speakers: two
-              // speakers behind the head make no listening triangle. Drawn at
-              // the spot the label placer picked (`pair`, above).
-              <SvgText x={pair.tx} y={pair.ty} fill={analysis.stereo.inFront ? CYAN : '#ff5a48'} fontSize={fs + 1} fontFamily={analysis.stereo.inFront ? fonts.mono : fonts.oswaldSemiBold} textAnchor={pair.anchor}>
-                {angleText}
-              </SvgText>
-            ) : null}
-            {/* The listening-distance class under the angle: the SETUP tray's
-                NEARFIELD / MIDFIELD pick is drawn, amber when the speakers sit
-                outside the distance that class is heard from. */}
-            {fieldInfo && pair ? (
-              <SvgText x={pair.tx} y={pair.ty + fs + 3} fill={fieldInfo.fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={pair.anchor}>
-                {fieldInfo.text}
-              </SvgText>
-            ) : null}
+            {/* The angle and NEARFIELD words are drawn last, over every line (below). */}
           </G>
         ) : null}
 
         {/* Centre line of the plan */}
         {layers.triangle ? (
           <Line x1={T.toPx({ x: (b.minX + b.maxX) / 2, y: b.minY }).x} y1={T.toPx({ x: 0, y: b.minY }).y} x2={T.toPx({ x: (b.minX + b.maxX) / 2, y: b.maxY }).x} y2={T.toPx({ x: 0, y: b.maxY }).y} stroke={WALL_SOFT} strokeWidth={1} strokeDasharray="2 4" />
+        ) : null}
+
+        {/* The angle and NEARFIELD / MIDFIELD words, over every line on a dark
+            halo (art fix 2026-10-16: the rear leader, the centre line and the
+            reflection paths ran through them). */}
+        {layers.triangle && Lsp && Rsp ? (
+          <G>
+            {analysis.stereo && pair ? (
+              // No angle when the seat is not in front of both speakers: two
+              // speakers behind the head make no listening triangle. Drawn at
+              // the spot the label placer picked (`pair`, above).
+              <G>
+                <SvgText x={pair.tx} y={pair.ty} fill="none" stroke="#0c0c0f" strokeWidth={3.2} strokeLinejoin="round" fontSize={fs + 1} fontFamily={analysis.stereo.inFront ? fonts.mono : fonts.oswaldSemiBold} textAnchor={pair.anchor}>
+                  {angleText}
+                </SvgText>
+                <SvgText x={pair.tx} y={pair.ty} fill={analysis.stereo.inFront ? CYAN : '#ff5a48'} fontSize={fs + 1} fontFamily={analysis.stereo.inFront ? fonts.mono : fonts.oswaldSemiBold} textAnchor={pair.anchor}>
+                  {angleText}
+                </SvgText>
+              </G>
+            ) : null}
+            {/* The listening-distance class under the angle: the SETUP tray's
+                NEARFIELD / MIDFIELD pick is drawn, amber when the speakers sit
+                outside the distance that class is heard from. */}
+            {fieldInfo && pair ? (
+              <G>
+                <SvgText x={pair.tx} y={pair.ty + fs + 3} fill="none" stroke="#0c0c0f" strokeWidth={3.2} strokeLinejoin="round" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={pair.anchor}>
+                  {fieldInfo.text}
+                </SvgText>
+                <SvgText x={pair.tx} y={pair.ty + fs + 3} fill={fieldInfo.fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={pair.anchor}>
+                  {fieldInfo.text}
+                </SvgText>
+              </G>
+            ) : null}
+          </G>
         ) : null}
 
         {/* Vertex handles (room editing) */}
@@ -815,7 +897,7 @@ function deskLabelSpots(f: RoomDesign['room']['features'][number], T: PlanTransf
   return out;
 }
 
-function FeatureGlyph({ f, T, fs, selected, draggable, labelAt }: { f: RoomDesign['room']['features'][number]; T: PlanTransform; fs: number; selected: boolean; draggable: boolean; labelAt?: LabelSpot }) {
+function FeatureGlyph({ f, T, fs, selected, draggable, labelAt, nameOnTop = false }: { f: RoomDesign['room']['features'][number]; T: PlanTransform; fs: number; selected: boolean; draggable: boolean; labelAt?: LabelSpot; /** The desk's name is drawn later, over the reflection paths (DeskNames). */ nameOnTop?: boolean }) {
   const q = T.toPx({ x: f.x - f.w / 2, y: f.y - f.d / 2 });
   const W = f.w * T.k;
   const D = f.d * T.k;
@@ -880,7 +962,7 @@ function FeatureGlyph({ f, T, fs, selected, draggable, labelAt }: { f: RoomDesig
         // The desk's name: the spot planLabels picked (labelAt — clear of the
         // cabinets, the head and the dimension labels), else its first choice.
         f.kind === 'desk' ? (
-          (() => {
+          nameOnTop ? null : (() => {
             const sp = labelAt ?? deskLabelSpots(f, T, fs)[0];
             return (
               <SvgText x={sp.tx} y={sp.ty} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor={sp.anchor}>
