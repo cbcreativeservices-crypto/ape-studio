@@ -7,16 +7,18 @@
  *
  * The LOOK is the shared player's (players/PlayerFigure, clarity pass
  * 2026-10-05): every body mass painted with FigureMass (form gradient, lit rim,
- * core shadow, contour), the hands with fingers (handShape), the head as one
- * more skin mass (FigureHead) — so a lute player reads like the guitar family's players.
- * The geometry below is unchanged: the same joints, the same widths.
+ * core shadow, contour), the hands the shared 3-D hand posed for each lute's
+ * technique (luteHands.ts, drawn by drawHand3), the head as one more skin
+ * mass (FigureHead) — so a lute player reads like the guitar family's players.
  */
 import { BlurMask, Group, Line, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
 import type { ViewId } from '../../../engine/model/types.ts';
 import { bowlPoints, type LuteFit, type LuteScene } from './luteModel.ts';
-import { curve, DEG, ep, make, PAL, rr, type Pt, type SkPath } from './luteDraw';
-import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headFront, intoCollar, limb as limbPath, SLEEVE, splitArm, type GarmentBox, type HeadPaths } from '../players/PlayerFigure';
+import { curve, ep, hull, make, PAL, poly, rr, type Pt, type SkPath } from './luteDraw';
+import { drawHand3, FIGURE_TONES, FigureMass, FigureHead, headAbove, headFront, intoCollar, limb as limbPath, Nails, SLEEVE, splitArm, type GarmentBox, type HeadPaths } from '../players/PlayerFigure';
+import type { HandView, V3 as HV3 } from '../players/handModel.ts';
+import { luteHands, type LuteArm, type Plectrum } from './luteHands.ts';
 
 /** The figure's own head (FigureHead: one skin mass, the same look as the
  *  body). Front: facing the audience, its neck down to `neckY` (default just
@@ -24,57 +26,6 @@ import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headFront, 
 export function Head({ cx, cy, r, above = false, neckY }: { cx: number; cy: number; r: number; above?: boolean; neckY?: number }) {
   const head = useMemo(() => (above ? headAbove({ u: cx, v: cy }, r) : headFront({ u: cx, v: cy }, r, neckY ?? cy + r * 1.35)), [cx, cy, r, above, neckY]);
   return <FigureHead fill={head.fill} />;
-}
-
-/** An arm (a sleeve) through joints, `w` wide: one tapered outline. */
-export function Limb({ pts, w }: { pts: Pt[]; w: number }) {
-  const path = useMemo(() => limbPath(pts.map(([u, v]) => ({ u, v })), pts.map((_, i) => (w / 2) * (1 - (0.18 * i) / Math.max(1, pts.length - 1)))), [pts, w]);
-  return <FigureMass path={path} tone="shirt" />;
-}
-
-/** A hand seen from its back, the fingers together, pointing `rot`°. */
-export function Hand({ x, y, r, rot = 0, fore }: { x: number; y: number; r: number; rot?: number; /** The forearm's direction in the view (rad): the wrist leaves its cuff. */ fore?: number }) {
-  const h = useMemo(() => {
-    const dir = rot * DEG;
-    // The shared hand is true size (about 15 cm long): scaled to this
-    // figure's hand radius so the drawing's proportions are kept.
-    const k = r / 40;
-    const hs = handShape({ wrist: { u: -70, v: 0 }, dir: 0, kind: 'rest' }, fore === undefined ? undefined : fore - dir);
-    return { hs, k, dir };
-  }, [r, rot, fore]);
-  return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: h.dir }, { scale: h.k }]}>
-      <FigureMass path={h.hs.path} tone="skin" contour={2} />
-      <Path path={h.hs.lines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
-    </Group>
-  );
-}
-
-/** Fingers laid across a neck at `at` (view coords), the neck running along `dir`. */
-export function Fingers({ at, dir, across, n = 3 }: { at: Pt; dir: Pt; across: number; n?: number }) {
-  const l = Math.hypot(dir[0], dir[1]) || 1;
-  const d: Pt = [dir[0] / l, dir[1] / l];
-  const a = Math.atan2(d[1], d[0]);
-  const p = useMemo(() => {
-    let out: SkPath | null = null;
-    for (let k = 0; k < n; k++) {
-      const f = limbPath(
-        [
-          { u: -k * 24, v: across / 2 },
-          { u: -k * 24 - 2, v: 0 },
-          { u: -k * 24, v: -across / 2 },
-        ],
-        [8.5, 8, 7],
-      );
-      out = out ? Skia.Path.MakeFromOp(out, f, PathOp.Union) ?? out : f;
-    }
-    return out ?? make();
-  }, [n, across]);
-  return (
-    <Group transform={[{ translateX: at[0] }, { translateY: at[1] }, { rotate: a }]}>
-      <FigureMass path={p} tone="skin" contour={1.8} />
-    </Group>
-  );
 }
 
 /* ═══════════════════════ the body (figure pass 2, 2026-10-15) ═══════════════════════ */
@@ -91,10 +42,10 @@ export function Fingers({ at, dir, across, n = 3 }: { at: Pt; dir: Pt; across: n
  *     its deltoid with no line inside the shoulder (`quiet`), and where it lies
  *     over the shirt body its edge is a soft fold (`soft`), never an outline.
  *   • The neck goes INTO the collar (intoCollar).
- *   • The arms are the shared anatomical arm (armPath, SLEEVE widths): the
- *     upper arm, the elbow's point and crook, the forearm's swell, the cuff,
- *     the bare wrist — the upper arm painted behind the instrument, the
- *     forearm over it (the same outline clipped at the elbow: no seam).
+ *   • The arms are the shared anatomical arm (armPath, SLEEVE widths) on the
+ *     3-D joints of luteHands.ts (an adult's upper arm 310, forearm 255 mm):
+ *     the upper arm painted behind the instrument, the forearm that passes
+ *     over it painted again as its own sleeve from the point of the elbow.
  *   • ONE TROUSER MASS: on a chair (oud) the pelvis, both thighs coming toward
  *     the viewer to the knees, the shins down to the shoes; cross-legged on the
  *     floor (sitar, veena) the pelvis, both thighs out to the knees and the
@@ -105,7 +56,6 @@ export function Fingers({ at, dir, across, n = 3 }: { at: Pt; dir: Pt; across: n
  */
 
 export type LuteArmOpts = { fretDir: Pt; across: number; pluckRot: number };
-const UPPER_ARM = 310; // shoulder joint → elbow, an adult (mm)
 
 type V3 = { x: number; y: number; z: number };
 const P = (q: Pt) => ({ u: q[0], v: q[1] });
@@ -160,30 +110,6 @@ function boxOf(...ps: SkPath[]): GarmentBox {
     y1 = Math.max(y1, r.y + r.height);
   }
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
-}
-
-/** The pluck hand's wrist in the view (the Hand's wrist at −70 mm along it). */
-function pluckWrist(pH: Pt, rot: number): Pt {
-  const a = rot * DEG;
-  return [pH[0] - 70 * Math.cos(a), pH[1] - 70 * Math.sin(a)];
-}
-
-/**
- * The fretting arm's DRAWN elbow (a pure drawing value: the fretting elbow
- * feeds no keep-out or solid; the plan's footprint already spans it). The
- * oud's fit put it 484 mm from the shoulder — an upper arm half as long again
- * as an adult's, the elbow hanging at the hip with the forearm folded back up
- * to the neck. Drawn instead as an oud player holds it: the elbow a little out
- * from the side and forward of the shoulder, an adult upper arm's length
- * (≈ 310 mm) from it, the forearm rising from there under the neck.
- */
-function fretElbow(f: LuteFit): V3 {
-  const s = f.shoulderL;
-  const e = f.elbowL;
-  if (Math.hypot(e.x - s.x, e.y - s.y, e.z - s.z) <= UPPER_ARM * 1.12) return e;
-  const dx = 140;
-  const dz = 140;
-  return { x: s.x + dx, y: s.y + Math.sqrt(UPPER_ARM * UPPER_ARM - dx * dx - dz * dz), z: s.z + dz };
 }
 
 /** The hips and the cross-legged ankles (drawing values, engine frame). */
@@ -275,7 +201,7 @@ function footAbove(a: Pt, s: number, bigToe: number): { path: SkPath; lines: SkP
   return { path: U(body, ...tp), lines };
 }
 
-type ArmGeo = { path: SkPath; foreSide: SkPath; cap: SkPath | null; root: Pt };
+type ArmGeo = { path: SkPath; foreSide: SkPath; cap: SkPath | null; root: Pt; e: Pt; w: Pt };
 type BodyGeo = {
   shirt: SkPath;
   /** The shirt body and both sleeves: one garment, one outline. */
@@ -287,6 +213,9 @@ type BodyGeo = {
   armL: ArmGeo;
   foreR: number;
   foreL: number;
+  /** The forearms' lengths in the picture (a short one reaches toward the viewer). */
+  lenR: number;
+  lenL: number;
   trousers: SkPath;
   trouserBox: GarmentBox;
   /** The near shin over the far leg (cross-legged): full contour, its knee quiet. */
@@ -313,31 +242,89 @@ function bodyGeo(sc: LuteScene, view: ViewId, o: LuteArmOpts): BodyGeo {
   return g;
 }
 
-function arms(sc: LuteScene, view: ViewId, o: LuteArmOpts, rootR: Pt, rootL: Pt) {
-  const f = sc.fit;
-  const eR = ep(view, f.elbowR);
-  const eL = ep(view, fretElbow(f));
-  const wR = pluckWrist(ep(view, f.pluckHand), o.pluckRot);
-  const wL = fretWrist(ep(view, f.fretHand), o.fretDir, o.across);
+/** A view of the engine frame as the hand model sees it: (u, v) the view's
+ *  millimetres, d toward the viewer (front: +z, the audience; above: −y). */
+const HAND_VIEW: Record<'side' | 'top', HandView> = {
+  side: (p) => ({ u: p.x, v: p.y, d: p.z }),
+  top: (p) => ({ u: p.x, v: p.z, d: -p.y }),
+};
+const viewOf = (view: ViewId): HandView => (view === 'side' ? HAND_VIEW.side : HAND_VIEW.top);
+
+/**
+ * How each forearm is painted against the instrument in a view (from the 3-D
+ * pose: which part is nearer the viewer than the instrument it passes):
+ * 'front' over it, 'below' only past the neck's +y edge (a forearm that comes
+ * to the neck from under it), 'behind' not over it at all (the upper arm and
+ * forearm are one outline painted with the shirt, behind the instrument).
+ */
+type ForeMode = 'front' | 'below' | 'behind';
+function foreModes(sc: LuteScene, view: ViewId): { R: ForeMode; L: ForeMode } {
+  if (view === 'side') return sc.kind === 'veena' ? { R: 'behind', L: 'behind' } : { R: 'front', L: 'below' };
+  return sc.kind === 'veena' ? { R: 'front', L: 'front' } : { R: 'front', L: 'behind' };
+}
+
+/** The half-plane past the neck's +y edge at the stopping hand, in a view
+ *  (the side the stopping forearm comes from). */
+function pastNeckEdge(sc: LuteScene, view: ViewId, x: number): SkPath {
+  const half = sc.kind === 'oud' ? sc.oud!.boardHalf(x) : sc.kind === 'sitar' ? sc.sitar!.neck.half : sc.veena!.neck.half;
+  const a = ep(view, sc.posture.P({ x: x - 100, y: half, z: 0 }));
+  const b = ep(view, sc.posture.P({ x: x + 100, y: half, z: 0 }));
+  const c = ep(view, sc.posture.P({ x, y: half + 100, z: 0 }));
+  const l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+  const d: Pt = [(b[0] - a[0]) / l, (b[1] - a[1]) / l];
+  let nn: Pt = [-d[1], d[0]];
+  if ((c[0] - a[0]) * nn[0] + (c[1] - a[1]) * nn[1] < 0) nn = [-nn[0], -nn[1]];
+  const B = 4000;
+  const q = (s: number, t: number): Pt => [a[0] + d[0] * s + nn[0] * t, a[1] + d[1] * s + nn[1] * t];
+  const p = make();
+  const c4 = [q(-B, 0), q(B, 0), q(B, B), q(-B, B)];
+  p.moveTo(c4[0][0], c4[0][1]);
+  for (const k of c4.slice(1)) p.lineTo(k[0], k[1]);
+  p.close();
+  return p;
+}
+
+function arms(sc: LuteScene, view: ViewId, rootR: Pt, rootL: Pt) {
+  const H = luteHands(sc);
+  const eR = ep(view, H.pluck.elbow);
+  const eL = ep(view, H.fret.elbow);
+  const wR = ep(view, H.pluck.wrist);
+  const wL = ep(view, H.fret.wrist);
   const R = splitArm(P(rootR), P(eR), P(wR), SLEEVE);
   const L = splitArm(P(rootL), P(eL), P(wL), SLEEVE);
-  // The fretting forearm comes to the neck from BELOW it (the hand under the
-  // neck, its fingers over the board): only the part past the neck's lower
-  // edge (the fit's fret-hand point lies on it) is in front of the
-  // instrument; the rest passes behind the neck.
-  const fH = ep(view, f.fretHand);
-  const dl = Math.hypot(o.fretDir[0], o.fretDir[1]) || 1;
-  const d: Pt = [o.fretDir[0] / dl, o.fretDir[1] / dl];
-  const nn: Pt = [-d[1], d[0]];
-  const B = 4000;
-  const q = (a: number, b: number): Pt => [fH[0] + d[0] * a + nn[0] * b, fH[1] + d[1] * a + nn[1] * b];
-  const below = make();
-  const c4 = [q(-B, 0), q(B, 0), q(B, B), q(-B, B)];
-  below.moveTo(c4[0][0], c4[0][1]);
-  for (const c of c4.slice(1)) below.lineTo(c[0], c[1]);
-  below.close();
-  L.foreSide = I(L.foreSide, below);
-  return { R, L, foreR: Math.atan2(wR[1] - eR[1], wR[0] - eR[0]), foreL: Math.atan2(wL[1] - eL[1], wL[0] - eL[0]) };
+  // A sharply foreshortened arm can fold its outline over itself (a hole at
+  // the crook): the bones' own tapered mass fills it, the cuff kept short of
+  // the wrist.
+  const core = (r: Pt, e: Pt, w: Pt) => {
+    const l = Math.hypot(w[0] - e[0], w[1] - e[1]) || 1;
+    const c: Pt = [w[0] - ((w[0] - e[0]) / l) * Math.min(SLEEVE.cuffGap + 4, l * 0.3), w[1] - ((w[1] - e[1]) / l) * Math.min(SLEEVE.cuffGap + 4, l * 0.3)];
+    return limbPath([P(r), P(e), P(c)], [SLEEVE.upper - 2, SLEEVE.elbow - 3, SLEEVE.cuff - 3]);
+  };
+  R.path = U(R.path, core(rootR, eR, wR));
+  L.path = U(L.path, core(rootL, eL, wL));
+  const m = foreModes(sc, view);
+  const fx = toInstX(sc, H.fret.wrist);
+  // The forearm over the instrument: its own sleeve from the point of the
+  // elbow to the cuff (the same widths as the arm's outline), so where it
+  // crosses its upper arm the elbow reads as a rounded point — never the
+  // arm's outline cut off at a line across the bend.
+  const tube = (e: Pt, w: Pt) => {
+    const l = Math.hypot(w[0] - e[0], w[1] - e[1]) || 1;
+    const d: Pt = [(w[0] - e[0]) / l, (w[1] - e[1]) / l];
+    const at = (t: number): Pt => [e[0] + d[0] * t, e[1] + d[1] * t];
+    const foreLen = Math.max(1, l - SLEEVE.cuffGap);
+    return limbPath([P(at(0)), P(at(foreLen * 0.28)), P(at(foreLen * 0.62)), P(at(foreLen))], [SLEEVE.elbow, SLEEVE.belly, (SLEEVE.belly + SLEEVE.cuff) / 2 + 1, SLEEVE.cuff]);
+  };
+  const mode = (e: Pt, w: Pt, md: ForeMode) => (md === 'front' ? tube(e, w) : md === 'below' ? I(tube(e, w), pastNeckEdge(sc, view, fx)) : make());
+  R.foreSide = mode(eR, wR, m.R);
+  L.foreSide = mode(eL, wL, m.L);
+  return { R, L, eR, eL, wR, wL, foreR: Math.atan2(wR[1] - eR[1], wR[0] - eR[0]), foreL: Math.atan2(wL[1] - eL[1], wL[0] - eL[0]), lenR: Math.hypot(wR[0] - eR[0], wR[1] - eR[1]), lenL: Math.hypot(wL[0] - eL[0], wL[1] - eL[1]) };
+}
+/** An engine point's distance along the instrument's strings (its x). */
+function toInstX(sc: LuteScene, e: HV3): number {
+  const o = sc.posture.P({ x: 0, y: 0, z: 0 });
+  const ax = sc.posture.D({ x: 1, y: 0, z: 0 });
+  return (e.x - o.x) * ax.x + (e.y - o.y) * ax.y + (e.z - o.z) * ax.z;
 }
 
 /** The scene from the FRONT (the engine's side view: u = x, v = y). */
@@ -381,7 +368,7 @@ function frontBody(sc: LuteScene, o: LuteArmOpts): BodyGeo {
   const beltV = hipV - 38;
   const shirtBody = Dif(torso, rect(hipR[0] - 400, beltV + 12, hipL[0] + 400, beltV + 700));
   const belt = I(rect(hipR[0] - 120, beltV - 16, hipL[0] + 120, beltV + 16), torso);
-  const A = arms(sc, view, o, [sR[0], sR[1] + 12], [sL[0], sL[1] + 12]);
+  const A = arms(sc, view, [sR[0], sR[1] + 12], [sL[0], sL[1] + 12]);
   // The DELTOID turns with the arm (half the arm's swing out from hanging),
   // so a raised arm's sleeve leaves the shoulder line as one curve — never a
   // hanging arm's cap with the sleeve bent off it (a knob).
@@ -393,10 +380,11 @@ function frontBody(sc: LuteScene, o: LuteArmOpts): BodyGeo {
     const Q = (x: number, y: number): Pt => [s[0] + side * x * c - y * sn, s[1] + side * x * sn + y * c];
     return cr([Q(-66, -48), Q(8, -37), Q(45, 4), Q(43, 70), Q(-4, 96), Q(-40, 30)]);
   };
-  const capR = deltoid(sR, -1, ep(view, f.elbowR));
-  const capL = deltoid(sL, 1, ep(view, fretElbow(f)));
-  const armR: ArmGeo = { path: U(capR, A.R.path), foreSide: A.R.foreSide, cap: capR, root: [sR[0], sR[1] + 12] };
-  const armL: ArmGeo = { path: U(capL, A.L.path), foreSide: A.L.foreSide, cap: capL, root: [sL[0], sL[1] + 12] };
+  const HH = luteHands(sc);
+  const capR = deltoid(sR, -1, ep(view, HH.pluck.elbow));
+  const capL = deltoid(sL, 1, ep(view, HH.fret.elbow));
+  const armR: ArmGeo = { path: U(capR, A.R.path), foreSide: A.R.foreSide, cap: capR, root: [sR[0], sR[1] + 12], e: A.eR, w: A.wR };
+  const armL: ArmGeo = { path: U(capL, A.L.path), foreSide: A.L.foreSide, cap: capL, root: [sL[0], sL[1] + 12], e: A.eL, w: A.wL };
   // The legs.
   const floor = sc.floorY;
   const kR = ep(view, f.kneeR);
@@ -472,6 +460,8 @@ function frontBody(sc: LuteScene, o: LuteArmOpts): BodyGeo {
     armL,
     foreR: A.foreR,
     foreL: A.foreL,
+    lenR: A.lenR,
+    lenL: A.lenL,
     trousers,
     trouserBox: boxOf(trousers),
     nearShin,
@@ -514,9 +504,9 @@ function aboveBody(sc: LuteScene, o: LuteArmOpts): BodyGeo {
   ]);
   const rootR: Pt = [sR[0] + 8, sR[1] + 10];
   const rootL: Pt = [sL[0] - 8, sL[1] + 10];
-  const A = arms(sc, view, o, rootR, rootL);
-  const armR: ArmGeo = { path: A.R.path, foreSide: A.R.foreSide, cap: disc(rootR, 70), root: rootR };
-  const armL: ArmGeo = { path: A.L.path, foreSide: A.L.foreSide, cap: disc(rootL, 70), root: rootL };
+  const A = arms(sc, view, rootR, rootL);
+  const armR: ArmGeo = { path: A.R.path, foreSide: A.R.foreSide, cap: disc(rootR, 70), root: rootR, e: A.eR, w: A.wR };
+  const armL: ArmGeo = { path: A.L.path, foreSide: A.L.foreSide, cap: disc(rootL, 70), root: rootL, e: A.eL, w: A.wL };
   // The legs from above: the thighs from the hips (under the body) out to the
   // knees; cross-legged, the shins crossing in front and the bare feet.
   const lb = lowerBody(sc);
@@ -582,6 +572,8 @@ function aboveBody(sc: LuteScene, o: LuteArmOpts): BodyGeo {
     armL,
     foreR: A.foreR,
     foreL: A.foreL,
+    lenR: A.lenR,
+    lenL: A.lenL,
     trousers,
     trouserBox: boxOf(trousers),
     nearShin,
@@ -614,6 +606,58 @@ function SleeveFold({ arm, b }: { arm: ArmGeo; b: BodyGeo }) {
       <Group clip={g.zone}>
         <Path path={arm.path} style="stroke" strokeWidth={1.8} color={t.edge} opacity={0.5} />
       </Group>
+    </Group>
+  );
+}
+
+/**
+ * THE SLEEVE'S TAILORING (figure pass 3, owner 2026-10-15: "shoulder
+ * transitions from shirt sleeves to the shirt body look very unnatural"): the
+ * ARMHOLE SEAM — a soft line across the top of the sleeve where it is sewn
+ * into the shirt, bowed a little down the arm over the deltoid — and, on a
+ * bent arm, two short soft FOLDS gathered in the crook of the elbow. Never a
+ * line along the sleeve (no welts).
+ */
+function sleeveSeam(arm: ArmGeo, seam: boolean): { seam: SkPath | null; folds: SkPath | null } {
+  const [r, e, w] = [arm.root, arm.e, arm.w];
+  const l1 = Math.hypot(e[0] - r[0], e[1] - r[1]);
+  const l2 = Math.hypot(w[0] - e[0], w[1] - e[1]);
+  let seamP: SkPath | null = null;
+  if (seam && l1 > 90) {
+    const d: Pt = [(e[0] - r[0]) / l1, (e[1] - r[1]) / l1];
+    const n: Pt = [-d[1], d[0]];
+    const at = (a: number, c: number): Pt => [r[0] + d[0] * a + n[0] * c, r[1] + d[1] * a + n[1] * c];
+    seamP = curve([at(18, -40), at(30, -18), at(34, 0), at(30, 18), at(18, 40)]);
+  }
+  let folds: SkPath | null = null;
+  if (l1 > 60 && l2 > 60) {
+    const d1: Pt = [(e[0] - r[0]) / l1, (e[1] - r[1]) / l1];
+    const d2: Pt = [(w[0] - e[0]) / l2, (w[1] - e[1]) / l2];
+    const crs = d1[0] * d2[1] - d1[1] * d2[0];
+    const bend = Math.atan2(Math.abs(crs), d1[0] * d2[0] + d1[1] * d2[1]);
+    if (bend > 0.45) {
+      // The crook's side: across the arm toward where the forearm turns.
+      const s = crs >= 0 ? 1 : -1;
+      const n1: Pt = [-d1[1] * s, d1[0] * s];
+      const n2: Pt = [-d2[1] * s, d2[0] * s];
+      const c: Pt = [e[0] + (n1[0] + n2[0]) * 18, e[1] + (n1[1] + n2[1]) * 18];
+      // One soft fold gathered in the crook, bowed toward the elbow's point.
+      folds = curve([
+        [c[0] - d1[0] * 30 - n1[0] * 4, c[1] - d1[1] * 30 - n1[1] * 4],
+        [c[0] - (n1[0] + n2[0]) * 7, c[1] - (n1[1] + n2[1]) * 7],
+        [c[0] + d2[0] * 26 - n2[0] * 4, c[1] + d2[1] * 26 - n2[1] * 4],
+      ]);
+    }
+  }
+  return { seam: seamP, folds };
+}
+function Tailoring({ arm, clip, seam }: { arm: ArmGeo; clip: SkPath; seam: boolean }) {
+  const t = FIGURE_TONES.shirt;
+  const g = useMemo(() => sleeveSeam(arm, seam), [arm, seam]);
+  return (
+    <Group clip={clip}>
+      {g.seam ? <Path path={g.seam} style="stroke" strokeWidth={1.6} strokeCap="round" color={t.edge} opacity={0.42} /> : null}
+      {g.folds ? <Path path={g.folds} style="stroke" strokeWidth={1.8} strokeCap="round" color={t.edge} opacity={0.38} /> : null}
     </Group>
   );
 }
@@ -670,67 +714,161 @@ export function PlayerBack({ sc, view, arms: o }: { sc: LuteScene; view: ViewId;
       </Group>
       <SleeveFold arm={b.armR} b={b} />
       <SleeveFold arm={b.armL} b={b} />
+      <Tailoring arm={b.armR} clip={b.armR.path} seam={view === 'side'} />
+      <Tailoring arm={b.armL} clip={b.armL.path} seam={view === 'side'} />
+      <HandsBehind sc={sc} view={view} b={b} />
       <FigureHead fill={head.fill} />
     </Group>
   );
 }
 
-/** The fretting hand's wrist in view coords: below the neck (in the neck's
- *  own frame: 34 along, half the neck + 82 across). */
-function fretWrist(at: Pt, dir: Pt, across: number): Pt {
-  const l = Math.hypot(dir[0], dir[1]) || 1;
-  const d: Pt = [dir[0] / l, dir[1] / l];
-  const n: Pt = [-d[1], d[0]];
-  const k = 0.9;
-  const x = 34 * k;
-  const y = 82 * k;
-  return [at[0] + d[0] * x + n[0] * y, at[1] + d[1] * x + n[1] * y];
-}
+/* ═══════════════════════ the hands (figure pass 3) ═══════════════════════ */
 
 /**
- * The FRETTING hand (owner review 2026-10-10: a whole open hand was drawn
- * under the neck and a second set of fingers across it): ONE hand, the shared
- * 'fret' hand — the heel of the palm under the neck, the four fingers rising
- * from the knuckle row and curling over onto the strings at four stops, the
- * thumb behind the neck (hidden) — laid along the neck at `at`.
+ * THE HANDS: the shared adult hand posed in 3-D for each lute's technique
+ * (luteHands.ts — the very skeletons the tests measure), drawn in this view
+ * by PlayerFigure.drawHand3 at the house standard (every bone of every digit,
+ * the palm, the thenar, the bare wrist out of the cuff; the nails at close
+ * range). A plane through the neck's axis splits each hand: what lies beyond
+ * it (the thumb behind the neck, the fingers' roots under a board) is painted
+ * BEFORE the instrument (PlayerBack), the rest over it (PlayerHands).
  */
-function FretHand({ at, dir, across, fore }: { at: Pt; dir: Pt; across: number; fore?: number }) {
-  const a = Math.atan2(dir[1], dir[0]);
-  const hs = useMemo(() => {
-    const k = 0.9;
-    const half = across / 2 / k;
-    // The fit's fret-hand point sits just under the neck's centre line (the
-    // old finger stroke spanned it ±0.65 of the neck): the board's centre is
-    // half a neck above it.
-    const bv = -half;
-    return handShape({ wrist: { u: 34, v: bv + half + 82 }, dir: -Math.PI / 2, kind: 'fret', board: { v: bv, half, tips: [-52, -18, 16, 50] } }, fore === undefined ? undefined : fore - a);
-  }, [across, fore, a]);
+type HandPaint = { path: SkPath; behind: SkPath | null; lines: SkPath; nails: SkPath; tool: { path: SkPath; stroke: boolean; w: number } | null };
+
+/** The plane through the instrument's neck axis at x, facing the viewer. */
+function neckCut(sc: LuteScene, view: ViewId, x: number): { p: HV3; n: HV3 } {
+  const depth = sc.kind === 'oud' ? 34 : sc.kind === 'sitar' ? sc.sitar!.neck.depth : sc.veena!.neck.depth;
+  return { p: sc.posture.P({ x, y: 0, z: -depth / 2 }), n: view === 'side' ? { x: 0, y: 0, z: 1 } : { x: 0, y: -1, z: 0 } };
+}
+
+/** The neck's outline in a view: its cross-section (the board, the frets
+ *  and strings over it, the back) swept along its length. */
+function neckBand(sc: LuteScene, view: ViewId): SkPath {
+  const sec =
+    sc.kind === 'oud'
+      ? { x0: sc.oud!.joint, x1: sc.oud!.nut, half: sc.oud!.boardHalf(sc.oud!.joint), z0: -34, z1: 14 }
+      : sc.kind === 'sitar'
+        ? { x0: sc.sitar!.neck.x0, x1: sc.sitar!.nut, half: sc.sitar!.neck.half, z0: -sc.sitar!.neck.depth, z1: 30 }
+        : { x0: sc.veena!.neck.x0, x1: sc.veena!.nut, half: sc.veena!.neck.half, z0: -sc.veena!.neck.depth, z1: 18 };
+  const pts: Pt[] = [];
+  for (const x of [sec.x0, sec.x1]) for (const y of [-sec.half, sec.half]) for (const z of [sec.z0, sec.z1]) pts.push(ep(view, sc.posture.P({ x, y, z })));
+  return poly(hull(pts));
+}
+
+/** The plectrum in the view: the risha a tapered quill, the mizrab a wire
+ *  band round the index's last joint with its point past the tip, the
+ *  veena's finger picks a thin point past each tip. */
+function plectrumPath(pl: Plectrum, hv: HandView): { path: SkPath; stroke: boolean; w: number } {
+  const a = hv(pl.back);
+  const t = hv(pl.tip);
+  if (pl.kind === 'risha') {
+    const l = Math.hypot(t.u - a.u, t.v - a.v) || 1;
+    const n: Pt = [-(t.v - a.v) / l, (t.u - a.u) / l];
+    const w0 = pl.width / 2;
+    const p = make();
+    p.moveTo(a.u + n[0] * w0 * 0.7, a.v + n[1] * w0 * 0.7);
+    p.lineTo(t.u + n[0] * w0 * 0.35, t.v + n[1] * w0 * 0.35);
+    p.quadTo(t.u + (t.u - a.u) / l * 3, t.v + (t.v - a.v) / l * 3, t.u - n[0] * w0 * 0.35, t.v - n[1] * w0 * 0.35);
+    p.lineTo(a.u - n[0] * w0 * 0.7, a.v - n[1] * w0 * 0.7);
+    p.close();
+    return { path: p, stroke: false, w: 0 };
+  }
+  const p = make();
+  p.moveTo(a.u, a.v);
+  p.lineTo(t.u, t.v);
+  return { path: p, stroke: true, w: pl.width };
+}
+
+const handCache = new WeakMap<LuteScene, Map<string, { fret: HandPaint; pluck: HandPaint }>>();
+function handPaint(sc: LuteScene, view: ViewId, b: BodyGeo): { fret: HandPaint; pluck: HandPaint } {
+  let m = handCache.get(sc);
+  if (!m) {
+    m = new Map();
+    handCache.set(sc, m);
+  }
+  const hit = m.get(view);
+  if (hit) return hit;
+  const H = luteHands(sc);
+  const hv = viewOf(view);
+  // 'plane': everything beyond the neck's plane is behind the instrument (the
+  // veena seen from the front, its face turned to the player); 'band': only
+  // what is beyond that plane AND inside the neck's own outline (the thumb
+  // behind the neck — the wrist and palm under it stay in front).
+  const draw = (arm: LuteArm, fore: number, len: number, mode: 'none' | 'plane' | 'band'): HandPaint => {
+    const opts = { fore, foreshortened: len < 0.85 * 255 };
+    const cut = neckCut(sc, view, toInstX(sc, arm.sk.fingers[1].joints[3]));
+    if (mode === 'none') return { ...drawHand3(arm.sk, hv, opts), behind: null, tool: null };
+    if (mode === 'plane') return { ...drawHand3(arm.sk, hv, { ...opts, cut }), tool: null };
+    const split = drawHand3(arm.sk, hv, { ...opts, cut });
+    if (!split.behind) return { ...split, tool: null };
+    const band = neckBand(sc, view);
+    // What lies beyond the plane but outside the neck's outline is seen.
+    const path = U(split.path, Dif(split.behind, band));
+    return { path, behind: I(split.behind, band), lines: split.lines, nails: split.nails, tool: null };
+  };
+  const veenaFront = sc.kind === 'veena' && view === 'side';
+  const fret = draw(H.fret, b.foreL, b.lenL, veenaFront ? 'plane' : 'band');
+  const pluck = draw(H.pluck, b.foreR, b.lenR, veenaFront ? 'plane' : 'none');
+  if (H.pluck.plectrum) {
+    const t = plectrumPath(H.pluck.plectrum, hv);
+    // The risha shows only outside the pinch (the hand painted over it).
+    pluck.tool = t;
+  }
+  const out = { fret, pluck };
+  m.set(view, out);
+  return out;
+}
+
+/** One hand's painted parts: the mass, its digit edges, its nails. */
+function HandMass({ path, lines, nails }: { path: SkPath | null; lines?: SkPath | null; nails?: SkPath | null }) {
+  if (!path) return null;
   return (
-    <Group transform={[{ translateX: at[0] }, { translateY: at[1] }, { rotate: a }, { scale: 0.9 }]}>
-      <FigureMass path={hs.path} tone="skin" contour={2} />
-      <Path path={hs.lines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
+    <Group>
+      <FigureMass path={path} tone="skin" contour={1.8} />
+      {lines ? (
+        <Group clip={path}>
+          <Path path={lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
+        </Group>
+      ) : null}
+      {nails ? <Nails path={nails} /> : null}
     </Group>
   );
 }
 
-/** Drawn AFTER the instrument: both forearms (the sleeve's outline clipped at
- *  the elbow, in the shirt's own light — no seam) and the hands. Opaque.
- *  `fretDir` is the neck's direction in this view; `across` the neck's width there. */
-export function PlayerHands({ sc, view, fretDir, across, pluckRot = 25 }: { sc: LuteScene; view: ViewId; fretDir: Pt; across: number; pluckRot?: number }) {
-  const f = sc.fit;
-  const pH = ep(view, f.pluckHand);
-  const fH = ep(view, f.fretHand);
-  const b = bodyGeo(sc, view, { fretDir, across, pluckRot });
+/** The plectrum's paint: the risha's dark horn, the mizrab's steel wire. */
+function Tool({ t }: { t: HandPaint['tool'] }) {
+  if (!t) return null;
+  return t.stroke ? <Path path={t.path} style="stroke" strokeWidth={t.w} strokeCap="round" color="#c9ccd2" opacity={0.95} /> : <Path path={t.path} color="#2a1d14" />;
+}
+
+/** The hands' parts beyond the neck's plane (painted before the instrument). */
+function HandsBehind({ sc, view, b }: { sc: LuteScene; view: ViewId; b: BodyGeo }) {
+  const h = handPaint(sc, view, b);
   return (
     <Group>
-      <Group clip={b.armR.foreSide}>
-        <FigureMass path={b.armR.path} tone="shirt" box={b.garment} />
-      </Group>
-      <Hand x={pH[0]} y={pH[1]} r={40} rot={pluckRot} fore={b.foreR} />
-      <Group clip={b.armL.foreSide}>
-        <FigureMass path={b.armL.path} tone="shirt" box={b.garment} />
-      </Group>
-      <FretHand at={fH} dir={fretDir} across={across} fore={b.foreL} />
+      <HandMass path={h.pluck.behind} />
+      <HandMass path={h.fret.behind} />
+    </Group>
+  );
+}
+
+/** Drawn AFTER the instrument: the forearms that pass over it (the sleeve's
+ *  outline clipped at the elbow, in the shirt's own light — no seam) and the
+ *  hands. Opaque. (`fretDir`, `across`, `pluckRot`: kept for callers; the
+ *  hands are posed in 3-D now.) */
+export function PlayerHands({ sc, view, fretDir = [1, 0], across = 40, pluckRot = 25 }: { sc: LuteScene; view: ViewId; fretDir?: Pt; across?: number; pluckRot?: number }) {
+  const b = bodyGeo(sc, view, { fretDir, across, pluckRot });
+  const h = handPaint(sc, view, b);
+  return (
+    <Group>
+      {h.pluck.tool && !h.pluck.tool.stroke ? <Tool t={h.pluck.tool} /> : null}
+      <FigureMass path={b.armR.foreSide} tone="shirt" box={b.garment} />
+      <Tailoring arm={b.armR} clip={b.armR.foreSide} seam={false} />
+      <HandMass path={h.pluck.path} lines={h.pluck.lines} nails={h.pluck.nails} />
+      {h.pluck.tool && h.pluck.tool.stroke ? <Tool t={h.pluck.tool} /> : null}
+      <FigureMass path={b.armL.foreSide} tone="shirt" box={b.garment} />
+      <Tailoring arm={b.armL} clip={b.armL.foreSide} seam={false} />
+      <HandMass path={h.fret.path} lines={h.fret.lines} nails={h.fret.nails} />
     </Group>
   );
 }

@@ -155,11 +155,18 @@ export function oudScene(): LuteScene {
     legs: { min: v(-240, hm + 10, -D - 380), max: v(560, floorY, 300) },
     // The risha's arc (proposal env.oud.risha: x −60…+140, z 0…110).
     pluckHand: v(60, 20, 70),
-    pluckBox: { min: v(-60, -120, 0), max: v(140, 120, 110) },
-    elbowR: v(-70, -hm + 20, 30),
+    // (figure pass 3: the posed risha hand strikes toward the main rose —
+    // + 50 mm toward it, + 5 mm out from the face for its knuckles)
+    pluckBox: { min: v(-60, -120, 0), max: v(190, 120, 115) },
+    // The elbows (figure pass 3): an adult arm (upper 310, forearm 255 mm)
+    // solved to the posed hands' wrists — luteHands.ts; kept equal to its
+    // solution (rounded) because they feed the plucking-arm keep-out and the
+    // setting plan's footprint.
+    elbowR: v(-136, -234, -35),
     fretHand: v(520, 40, 10),
-    fretBox: { min: v(g.joint, -70, -90), max: v(g.nut + 20, 100, 110) },
-    elbowL: v(g.joint + 70, hm - 20, -120),
+    // (figure pass 3: the posed hand's wrist under the neck, + 5 mm down and back)
+    fretBox: { min: v(g.joint, -70, -95), max: v(g.nut + 20, 105, 110) },
+    elbowL: v(573, -23, -296),
     kneeR: v(-60, hm + 60, 260),
     kneeL: v(300, hm + 60, 260),
   };
@@ -204,11 +211,15 @@ export function sitarScene(): LuteScene {
     legs: { min: v(-360, floorY - 170, -600), max: v(560, floorY, 170) },
     pluckHand: pluck,
     // The mizrab's arc (proposal env.st.mizrab: x +20…+260, z 0…100), boxed.
-    pluckBox: fitPluck,
-    elbowR: v(-170, -150, -60),
+    // Figure pass 3: grown 45 mm back for the posed hand's wrist and thumb
+    // on the neck's upper edge (the hand reaches behind the board's plane).
+    pluckBox: { min: v(fitPluck.min.x, fitPluck.min.y, -45), max: fitPluck.max },
+    elbowR: v(-166, -176, -223),
     fretHand: P(v(560, 0, 30)),
-    fretBox: { min: v(Math.min(fret0.x, fret1.x), Math.min(fret0.y, fret1.y), -60), max: v(Math.max(fret0.x, fret1.x), Math.max(fret0.y, fret1.y), 110) },
-    elbowL: v(560, -200, -300),
+    // Figure pass 3: grown down and back for the posed hand's palm and wrist
+    // under the neck and its thumb behind it (to y −204, z −106).
+    fretBox: { min: v(Math.min(fret0.x, fret1.x), Math.min(fret0.y, fret1.y), -110), max: v(Math.max(fret0.x, fret1.x), -200, 110) },
+    elbowL: v(430, -86, -284),
     kneeR: v(-200, floorY - 110, 100),
     kneeL: v(480, floorY - 110, 60),
   };
@@ -253,10 +264,12 @@ export function veenaScene(): LuteScene {
     pluckHand: pluck,
     // The plucking hand's arc (proposal env.vn.pluck: x −20…+200, z 0…100), boxed.
     pluckBox: mappedBox(P, { min: v(-20, -55, 0), max: v(200, 55, 100) }),
-    elbowR: v(-70, -130, -140),
+    elbowR: v(-108, -152, -256),
     fretHand: P(v(600, 0, 30)),
-    fretBox: { min: v(Math.min(fp0.x, fp1.x), Math.min(fp0.y, fp1.y), Math.min(fp0.z, fp1.z) - 30), max: v(Math.max(fp0.x, fp1.x), Math.max(fp0.y, fp1.y), Math.max(fp0.z, fp1.z) + 30) },
-    elbowL: v(700, -150, -330),
+    // Figure pass 3: grown back toward the player for the posed hand's wrist
+    // and knuckles on the neck's near side (to z −148).
+    fretBox: { min: v(Math.min(fp0.x, fp1.x), Math.min(fp0.y, fp1.y), -150), max: v(Math.max(fp0.x, fp1.x), Math.max(fp0.y, fp1.y), Math.max(fp0.z, fp1.z) + 30) },
+    elbowL: v(615, -8, -370),
     kneeR: v(60, floorY - 100, 40),
     kneeL: v(640, floorY - 100, 40),
   };
@@ -487,8 +500,9 @@ export function viewsFor(sc: LuteScene): Partial<Record<ViewId, ViewBox>> {
   if (sc.kind === 'oud') {
     const g = sc.oud!;
     return {
-      side: { u0: f.torso.min.x - 80, u1: g.pegboxEnd.x + 160, v0: f.head.c.y - f.head.r - 30, v1: g.halfMax + 240 },
-      top: { u0: f.torso.min.x - 80, u1: g.pegboxEnd.x + 160, v0: f.torso.min.z - 30, v1: 680 },
+      // (u0: room for the plucking elbow out over the oud's tail, figure pass 3)
+      side: { u0: Math.min(f.torso.min.x - 80, f.elbowR.x - 70), u1: g.pegboxEnd.x + 160, v0: f.head.c.y - f.head.r - 30, v1: g.halfMax + 240 },
+      top: { u0: Math.min(f.torso.min.x - 80, f.elbowR.x - 70), u1: g.pegboxEnd.x + 160, v0: f.torso.min.z - 30, v1: 680 },
     };
   }
   if (sc.kind === 'sitar') {
