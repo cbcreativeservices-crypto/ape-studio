@@ -634,8 +634,20 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:39 · ccode · a4480933
+changed: Signal Detective art fix: playhead clear of the stat lines, 10 pt stats, goniometer M off the bar's 0
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:38 · ccode · 988cb8ef
 changed: Bass Lab art fix: headstock past the nut, the string itself vibrates, larger fraction strip
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:35 · ccode · 971e430f
+changed: Glossary CUSTOM STUDY LIST chip: 3-card icon first, STUDY + the Study tab's headphones in the Study blue ([deck] CUSTOM STUDY [headphones] LIST) (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
