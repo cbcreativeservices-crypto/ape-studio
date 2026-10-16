@@ -8,16 +8,24 @@
  *         (seen edge-on, marked), the strings standing between the board and
  *         the curved neck, the pillar and its crown; the lever harp drawn
  *         smaller, with levers along the neck; the harpist on a chair at the
- *         left, the soundbox at their right shoulder (ILLUSTRATIVE).
+ *         left, the soundbox at their right shoulder (ILLUSTRATIVE) — ONE
+ *         seated body in 3-D (harpistPose.ts): the right arm and hand in
+ *         front of the strings, the left behind them, both hands the shared
+ *         hand model with their pads on real strings; the near knee and foot
+ *         in front of the soundbox and the pedals (art fix 2026-10-16).
  *   TOP   the base, the tapering soundbox, the neck and the strings edge-on,
- *         the pillar and crown; the harpist from above.
+ *         the pillar and crown; the harpist from above (the hands over the
+ *         soundbox, under the neck).
  * Light from the upper left; nothing moves (D8); paths built once.
  */
-import { BlurMask, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { harpGeom, harpistAt, type HarpGeom, type Pt } from './harpSpec.ts';
-import { figureCovers, PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { FIGURE_TONES, figureCovers, figureParts, PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { h3, handOn, type HandView, type V3 } from '../shared/players/handModel.ts';
+import type { SharedValue } from 'react-native-reanimated';
+import { harpElbow, harpHandPlan, harpHands, harpistBody, type HarpHand } from './harpistPose.ts';
 import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -132,10 +140,11 @@ function sidePaths(g: HarpGeom, key: string): SidePaths {
 }
 
 /** The harpist's chair from the side (ILLUSTRATIVE, muted). */
-function harpistSide(): SidePaths {
-  const hit = sideCache.get('harpist');
+function harpistSide(lever = false): SidePaths {
+  const key = lever ? 'harpistL' : 'harpist';
+  const hit = sideCache.get(key);
   if (hit) return hit;
-  const h = harpistAt();
+  const h = harpistAt(lever);
   const o: SidePaths = {};
   const s = h.seat;
   o.seat = make();
@@ -146,91 +155,189 @@ function harpistSide(): SidePaths {
   o.back.addRRect(Skia.RRectXY(Skia.XYWHRect(s.x0 - 10, s.y - 450, 34, 450), 10, 10));
   // The harpist is the shared figure (harpistPose). The old blocky body and
   // its oval head + hair were dead code — removed in the head fix 2026-10-08.
-  sideCache.set('harpist', o);
+  sideCache.set(key, o);
   return o;
 }
 
-/** The harpist's joints for the shared player (players/PlayerFigure),
- *  cached: the same anchors as before (the seat, the head, the hands at the
- *  strings), in profile from the side and from above. ILLUSTRATIVE. */
+/**
+ * The harpist for the shared player (players/PlayerFigure), from ONE seated
+ * body in 3-D (harpistPose.ts): the side view from the player's right
+ * (u = x, v = y, +z toward the viewer), the top view from above. The hands
+ * are the shared hand model posed bone by bone with their pads on real
+ * strings (PlayerFigure.drawHand3) — the right hand on the near side of the
+ * strings, the left on the far side, seen through them. ILLUSTRATIVE.
+ */
+const SIDE_HANDS: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
 const harpistPoses = new Map<string, PlayerPose>();
-function harpistPose(view: 'side' | 'top'): PlayerPose {
-  const hit = harpistPoses.get(view);
+export function harpistPose(view: 'side' | 'top', lever = false): PlayerPose {
+  const key = `${view}:${lever ? 'l' : 'p'}`;
+  const hit = harpistPoses.get(key);
   if (hit) return hit;
-  const h = harpistAt();
-  const s = h.seat;
+  const B = harpistBody(lever);
+  const H = harpHands(lever);
   let pose: PlayerPose;
   if (view === 'side') {
-    const hip = pt((s.x0 + s.x1) / 2, s.y - 80);
-    const knee = pt(hip.u + 400, hip.v - 20);
+    const P = (q: V3) => pt(q.x, q.y);
+    const hand = (h: HarpHand) => {
+      const w = h.sk.frame.o;
+      const x = h.sk.frame.x;
+      return { wrist: P(w), dir: Math.atan2(x.y, x.x), kind: 'rest' as const, posed: { sk: h.sk, view: SIDE_HANDS } };
+    };
     pose = {
       view: 'side',
       posture: 'seated',
       facing: 1,
-      head: { c: pt(h.head.x, h.head.y), r: h.headR },
-      neck: pt(h.head.x - 15, h.head.y + 155),
-      shoulderR: pt(h.head.x - 10, h.head.y + 208),
-      shoulderL: pt(h.head.x - 24, h.head.y + 198),
-      elbowR: pt(h.head.x + 190, h.head.y + 420),
-      elbowL: pt(h.head.x + 176, h.head.y + 400),
-      handR: { wrist: pt(h.head.x + 430, h.head.y + 350), dir: -0.25, kind: 'rest' },
-      handL: { wrist: pt(h.head.x + 420, h.head.y + 300), dir: -0.3, kind: 'rest' },
-      hipR: hip,
-      hipL: pt(hip.u - 10, hip.v - 4),
-      kneeR: knee,
-      kneeL: pt(knee.u - 30, knee.v - 6),
-      footR: pt(knee.u + 60, 0),
-      footL: pt(knee.u + 20, 0),
+      head: { c: P(B.head.c), r: B.head.r },
+      neck: P(B.neck),
+      shoulderR: P(B.shoulderR),
+      shoulderL: P(B.shoulderL),
+      elbowR: P(H.R.elbow),
+      elbowL: P(H.L.elbow),
+      handR: hand(H.R),
+      handL: hand(H.L),
+      hipR: P(B.hipR),
+      hipL: P(B.hipL),
+      kneeR: P(B.kneeR),
+      kneeL: P(B.kneeL),
+      footR: P(B.footR),
+      footL: P(B.footL),
       floor: 0,
     };
   } else {
-    // From above, authored chest toward +v round the neck, turned to face +x
-    // (`facing` 0): (right, fwd) lands at world (neck + fwd, neck + right).
-    const n = pt(h.head.x - 10, h.head.z);
-    const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
-    const fwdHands = -420 - 90 - n.u;
+    // From above the figure is authored chest toward +v round the neck and
+    // turned to face +x (`facing` 0): world (x, z) is authored
+    // (n.x − (z − n.z), n.z + (x − n.x)).
+    const n = B.neck;
+    const A = (q: V3) => pt(n.x - (q.z - n.z), n.z + (q.x - n.x));
+    const TOP_HANDS: HandView = (q) => ({ ...A(q), d: -q.y });
+    const hand = (h: HarpHand) => {
+      const w = A(h.sk.frame.o);
+      const tip = A(h3.add(h.sk.frame.o, h.sk.frame.x));
+      return { wrist: w, dir: Math.atan2(tip.v - w.v, tip.u - w.u), kind: 'above' as const, posed: { sk: h.sk, view: TOP_HANDS } };
+    };
     pose = {
       view: 'above',
       posture: 'seated',
       facing: 0,
-      head: { c: L(0, -18), r: h.headR },
-      neck: n,
-      shoulderR: L(188, 4),
-      shoulderL: L(-188, 4),
-      elbowR: L(200, fwdHands * 0.55),
-      elbowL: L(-160, fwdHands * 0.55),
-      handR: { wrist: L(120 - n.v, fwdHands), dir: Math.PI / 2, kind: 'above' },
-      handL: { wrist: L(-60 - n.v, fwdHands), dir: Math.PI / 2, kind: 'above' },
-      hipR: L(106, -40),
-      hipL: L(-106, -40),
-      kneeR: L(150, 400),
-      kneeL: L(-150, 400),
-      footR: L(150, 470),
-      footL: L(-150, 470),
+      head: { c: A(B.head.c), r: B.head.r },
+      neck: A(n),
+      shoulderR: A(B.shoulderR),
+      shoulderL: A(B.shoulderL),
+      elbowR: A(H.R.elbow),
+      elbowL: A(H.L.elbow),
+      handR: hand(H.R),
+      handL: hand(H.L),
+      hipR: A(B.hipR),
+      hipL: A(B.hipL),
+      kneeR: A(B.kneeR),
+      kneeL: A(B.kneeL),
+      footR: A(B.footR),
+      footL: A(B.footL),
       floor: null,
     };
   }
-  harpistPoses.set(view, pose);
+  harpistPoses.set(key, pose);
   return pose;
 }
 
-/** The harpist and chair from the side (ILLUSTRATIVE, muted): the shared
- *  player in profile (clarity pass 2026-10-05). */
-function HarpistSide({ dim = 0.85 }: { dim?: number }) {
-  const o = harpistSide();
-  const h = harpistAt();
-  const pose = harpistPose('side');
+/**
+ * The side pose with the RIGHT hand moved by `d` (mm, frame H) — its pads,
+ * thumb and wrist together, the elbow re-solved from the shoulder (the
+ * pluck sequence: the finger pulling its string aside, the hand off it).
+ */
+const movedPoses = new Map<string, PlayerPose>();
+export function harpistSideMoved(lever: boolean, d: V3): PlayerPose {
+  const key = `${lever ? 'l' : 'p'}:${d.x}:${d.y}:${d.z}`;
+  const hit = movedPoses.get(key);
+  if (hit) return hit;
+  const base = harpistPose('side', lever);
+  const { P, targets, pads } = harpHandPlan(lever, 'R');
+  const mv = (q: V3) => h3.add(q, d);
+  const frame = { ...P.frame, o: mv(P.frame.o) };
+  const goals = pads.map((g) => ((g as V3).z !== undefined ? mv(g as V3) : g));
+  const sk = handOn(frame, goals, mv(targets.thumb));
+  const elbow = harpElbow(harpistBody(lever).shoulderR, sk.frame.o, P.pole);
+  const pose: PlayerPose = {
+    ...base,
+    elbowR: pt(elbow.x, elbow.y),
+    handR: { wrist: pt(sk.frame.o.x, sk.frame.o.y), dir: Math.atan2(sk.frame.x.y, sk.frame.x.x), kind: 'rest', posed: { sk, view: SIDE_HANDS } },
+  };
+  movedPoses.set(key, pose);
+  return pose;
+}
+
+/** The chair from the side (behind the harpist). */
+function ChairSide({ lever }: { lever: boolean }) {
+  const o = harpistSide(lever);
+  const h = harpistAt(lever);
   return (
-    <Group opacity={dim}>
+    <Group>
       <Path path={o.back} color="#2a2b31" />
       <Path path={o.legs} color="#1a1b1f" />
       <Path path={o.seat}>
         <LinearGradient start={vec(h.seat.x0, h.seat.y - 50)} end={vec(h.seat.x1, h.seat.y)} colors={['#4a4c55', '#141418']} />
       </Path>
-      <PlayerBehind pose={pose} />
-      <PlayerInFront pose={pose} />
     </Group>
   );
+}
+
+/**
+ * The near sleeve where it lies over the harp, as plain opaque cloth under
+ * the figure's own sleeve: that sleeve grows out of the shirt through a
+ * mask (PlayerFigure `emerge`) which, on the harp, let the soundbox's ribs
+ * and holes show through the arm (art fix 2026-10-16) — the cloth under it
+ * keeps the arm solid where it crosses the harp.
+ */
+const underCache = new WeakMap<PlayerPose, { path: SkPath; box: { x: number; y: number; width: number; height: number } } | null>();
+const mixHex = (c: string, to: readonly number[], k: number) => {
+  const n = parseInt(c.slice(1), 16);
+  const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((x, i) => Math.round(x * k + to[i] * 255 * (1 - k)));
+  return `rgb(${ch[0]}, ${ch[1]}, ${ch[2]})`;
+};
+/** PlayerFigure's receding blend (its colours toward the stage's dark). */
+const RECEDE_TO = [0.075, 0.078, 0.094] as const;
+function NearSleeveUnder({ pose, dim = 1 }: { pose: PlayerPose; dim?: number }) {
+  let u = underCache.get(pose);
+  if (u === undefined) {
+    const parts = figureParts(pose);
+    const arm = parts.front.find((m) => m.tone === 'shirt');
+    const shirt = parts.behind.find((m) => m.tone === 'shirt' && !m.far);
+    const path = arm && shirt ? Skia.Path.MakeFromOp(arm.path, shirt.path, PathOp.Difference) : null;
+    u = path && arm ? { path, box: arm.box ?? path.getBounds() } : null;
+    underCache.set(pose, u);
+  }
+  if (!u) return null;
+  const b = u.box;
+  return (
+    <Path path={u.path}>
+      <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={dim >= 1 ? [...FIGURE_TONES.shirt.ramp] : FIGURE_TONES.shirt.ramp.map((c) => mixHex(c, RECEDE_TO, Math.max(0, dim)))} positions={[0, 0.38, 0.72, 1]} />
+    </Path>
+  );
+}
+
+/** Where the harpist's NEAR leg and foot lie in front of the harp (the
+ *  right knee beside the soundbox's foot, the right foot on its pedals):
+ *  that leg is painted again there, over the harp. */
+const nearLegClips = new Map<string, SkPath | null>();
+function nearLegClip(lever: boolean): SkPath | null {
+  const key = lever ? 'lever' : 'pedal';
+  if (nearLegClips.has(key)) return nearLegClips.get(key) ?? null;
+  const g = harpGeom(lever);
+  const o = sidePaths(g, key);
+  const parts = figureParts(harpistPose('side', lever));
+  const leg = make();
+  for (const m of parts.behind) if (m.tone === 'trousers' && !m.far) leg.addPath(m.path);
+  for (const m of parts.shoes) if (!m.far) leg.addPath(m.path);
+  // The harp's whole painted area there: the soundbox and its holes (they
+  // sit across its back edge), the base, its feet and pedals, and their
+  // outlines' width.
+  let harp: SkPath = make();
+  for (const q of [o.box, o.holes, o.base, o.pedals, o.feet]) harp = Skia.Path.MakeFromOp(harp, q, PathOp.Union) ?? harp;
+  const edge = harp.copy().stroke({ width: 10 });
+  if (edge) harp = Skia.Path.MakeFromOp(harp, edge, PathOp.Union) ?? harp;
+  const clip = Skia.Path.MakeFromOp(leg, harp, PathOp.Intersect);
+  nearLegClips.set(key, clip);
+  return clip;
 }
 
 export function HarpSide({ variant, dim = 1, highlightString }: { variant: VariantId; dim?: number; highlightString?: number }) {
@@ -342,9 +449,9 @@ function topPaths(g: HarpGeom, key: string): SidePaths {
   return o;
 }
 
-export function HarpistPlan({ dim = 0.85 }: { dim?: number }) {
-  const h = harpistAt();
-  const key = 'harpistTop';
+export function HarpistPlan({ dim = 1, lever = false, part = 'all' }: { dim?: number; lever?: boolean; part?: 'all' | 'behind' | 'front' }) {
+  const h = harpistAt(lever);
+  const key = lever ? 'harpistTopL' : 'harpistTop';
   let o = topCache.get(key);
   if (!o) {
     o = {};
@@ -352,24 +459,48 @@ export function HarpistPlan({ dim = 0.85 }: { dim?: number }) {
     o.seat.addRRect(Skia.RRectXY(Skia.XYWHRect(h.seat.x0, -h.seat.hw, h.seat.x1 - h.seat.x0, h.seat.hw * 2), 30, 30));
     topCache.set(key, o);
   }
-  const pose = harpistPose('top');
+  const pose = harpistPose('top', lever);
   return (
-    <Group opacity={dim}>
-      <Path path={o.seat}>
-        <LinearGradient start={vec(h.seat.x0, -h.seat.hw)} end={vec(h.seat.x1, h.seat.hw)} colors={['#4a4c55', '#141418']} />
-      </Path>
-      <PlayerBehind pose={pose} />
-      <PlayerInFront pose={pose} />
+    <Group>
+      {part !== 'front' ? (
+        <Path path={o.seat}>
+          <LinearGradient start={vec(h.seat.x0, -h.seat.hw)} end={vec(h.seat.x1, h.seat.hw)} colors={['#4a4c55', '#141418']} />
+        </Path>
+      ) : null}
+      {part !== 'front' ? <PlayerBehind pose={pose} dim={dim} /> : null}
+      {part !== 'behind' ? <PlayerInFront pose={pose} dim={dim} /> : null}
     </Group>
   );
 }
 
-export function HarpPlan({ variant, dim = 1 }: { variant: VariantId; dim?: number }) {
+/** The harp and its harpist from above, far to near: the harpist's body and
+ *  far arm; the base, pedals and soundbox; the near arm and both hands over
+ *  the soundbox; the neck, strings, pillar and crown above them all. */
+export function HarpWithHarpistPlan({ variant, dim = 1 }: { variant: VariantId; dim?: number }) {
+  const lever = isLever(variant);
+  return (
+    <Group>
+      <HarpistPlan lever={lever} dim={dim} part="behind" />
+      <HarpPlan variant={variant} part="lower" />
+      <HarpistPlan lever={lever} dim={dim} part="front" />
+      <HarpPlan variant={variant} part="upper" />
+    </Group>
+  );
+}
+
+export function HarpPlan({ variant, dim = 1, part = 'all' }: { variant: VariantId; dim?: number; part?: 'all' | 'lower' | 'upper' }) {
   const lever = isLever(variant);
   const g = harpGeom(lever);
   const o = topPaths(g, lever ? 'lever' : 'pedal');
+  // `part`: from above the harpist's hands work ABOVE the soundbox and BELOW
+  // the neck — 'lower' is the base, pedals and soundbox; 'upper' the neck,
+  // strings, pillar and crown.
+  const lower = part !== 'upper';
+  const upper = part !== 'lower';
   return (
     <Group opacity={dim}>
+      {lower ? (
+        <>
       <Path path={o.base}>
         <LinearGradient start={vec(g.base.x0, -g.base.hw)} end={vec(g.base.x1, g.base.hw)} colors={MAPLE} />
       </Path>
@@ -381,6 +512,10 @@ export function HarpPlan({ variant, dim = 1 }: { variant: VariantId; dim?: numbe
       <Path path={o.strip}>
         <LinearGradient start={vec(g.b1[0], -16)} end={vec(g.b0[0], 16)} colors={SPRUCE} />
       </Path>
+        </>
+      ) : null}
+      {upper ? (
+        <>
       <Path path={o.neck}>
         <LinearGradient start={vec(g.b1[0], -34)} end={vec(g.crown.c[0], 34)} colors={GILT} />
       </Path>
@@ -393,27 +528,55 @@ export function HarpPlan({ variant, dim = 1 }: { variant: VariantId; dim?: numbe
         <RadialGradient c={vec(g.crown.c[0] - 20, -20)} r={g.crown.r * 1.4} colors={GILT} />
       </Path>
       <Path path={o.crown} style="stroke" strokeWidth={4} color="#7c5a18" opacity={0.7} />
+        </>
+      ) : null}
+    </Group>
+  );
+}
+
+/**
+ * The harp and its harpist from the side, far to near: the chair; the
+ * harpist behind the harp (the far arm and hand, the torso, the head, the
+ * legs); the harp; the near leg where it lies in front of the soundbox and
+ * the pedals; the near arm and hand over the strings. Opaque (owner: no
+ * see-through figures). `fronts`: other near arms (the pluck sequence's
+ * moving hand), each shown at its own opacity; `dim` blends the figure toward
+ * the stage's dark (it recedes, still opaque).
+ */
+export function HarpWithHarpistSide({ variant, dim = 1, harpDim = 1, fronts }: { variant: VariantId; dim?: number; harpDim?: number; fronts?: { pose: PlayerPose; opacity: number | SharedValue<number> }[] }) {
+  const lever = isLever(variant);
+  const pose = harpistPose('side', lever);
+  const clip = nearLegClip(lever);
+  const near = fronts ?? [{ pose, opacity: 1 }];
+  return (
+    <Group>
+      <ChairSide lever={lever} />
+      <PlayerBehind pose={pose} dim={dim} />
+      <HarpSide variant={variant} dim={harpDim} />
+      {clip ? (
+        <Group clip={clip}>
+          <PlayerBehind pose={pose} part="legs" dim={dim} />
+        </Group>
+      ) : null}
+      {near.map((f, i) => (
+        <Group key={i} opacity={f.opacity}>
+          <NearSleeveUnder pose={f.pose} dim={dim} />
+          <PlayerInFront pose={f.pose} dim={dim} />
+        </Group>
+      ))}
     </Group>
   );
 }
 
 export function HarpArt({ view, variant }: { view: ViewId; variant: VariantId }) {
-  return view === 'side' ? (
-    <Group>
-      <HarpistSide />
-      <HarpSide variant={variant} />
-    </Group>
-  ) : (
-    <Group>
-      <HarpistPlan />
-      <HarpPlan variant={variant} />
-    </Group>
-  );
+  if (view === 'side') return <HarpWithHarpistSide variant={variant} />;
+  return <HarpWithHarpistPlan variant={variant} />;
 }
 
 export function harpLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const g = harpGeom(isLever(variant));
-  const h = harpistAt();
+  const h = harpistAt(isLever(variant));
+  const hb = harpistBody(isLever(variant));
   const k = g.scale;
   if (view === 'side') {
     const mid = g.boardAt(0.55);
@@ -431,7 +594,7 @@ export function harpLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'strings', text: 'STRINGS', u: g.strings[Math.floor(g.strings.length * 0.3)].x + 20, v: g.boardAt(0.5)[1] - 520 * k, align: 'left', tone: 'muted', at: { u: g.strings[Math.floor(g.strings.length * 0.3)].x, v: g.boardAt(0.5)[1] - 520 * k }, alts: [{ u: g.pillar.a[0] + 70 * k, v: g.boardAt(0.5)[1] - 560 * k, align: 'left' }] },
       { id: 'holes', text: 'SOUND HOLES (ON THE BACK)', short: 'HOLES', u: hole.c[0] - 40 * k, v: hole.c[1] + 120 * k, align: 'right', tone: 'muted', at: { u: hole.c[0], v: hole.c[1] }, alts: [{ u: g.pillar.a[0] + 70 * k, v: hole.c[1] - 40 * k, align: 'left' }, { u: g.pillar.a[0] + 70 * k, v: hole.c[1] + 60 * k, align: 'left' }] },
       ...(g.pedals ? [{ id: 'pedals', text: 'PEDALS', u: g.base.x0 - 40, v: -150, align: 'center' as const, tone: 'muted' as const }] : [{ id: 'levers', text: 'LEVERS ON THE NECK', short: 'LEVERS', u: g.crown.c[0] + 90 * k, v: g.crown.top + 30, align: 'left' as const, tone: 'muted' as const }]),
-      { id: 'harpist', text: 'HARPIST', u: h.head.x, v: h.head.y - 170, align: 'center', tone: 'illustrative' },
+      { id: 'harpist', text: 'HARPIST', u: hb.head.c.x - 40, v: hb.head.c.y - 190, align: 'center', tone: 'illustrative' },
     ];
   }
   return [
@@ -446,7 +609,7 @@ export function harpHitTest(view: ViewId, variant: VariantId, u: number, v: numb
   const lever = isLever(variant);
   const g = harpGeom(lever);
   const pre = lever ? 'lv' : 'hp';
-  const h = harpistAt();
+  const h = harpistAt(lever);
   const near = (a: Pt, b: Pt, r: number) => {
     const vx = b[0] - a[0];
     const vy = b[1] - a[1];
@@ -481,7 +644,7 @@ export const HARP_BASE_ART: Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' 
   labels: harpLabels,
   hitTest: harpHitTest,
   // The drawn harpist, so the part labels keep off the figure too.
-  figureAt: (view, _variant, u, v, tol) => figureCovers(harpistPose(view), u, v, tol),
+  figureAt: (view, variant, u, v, tol) => figureCovers(harpistPose(view, isLever(variant)), u, v, tol),
   // The column right of the pillar is where the mic works: a label the mic
   // sits under steps back (clash sweep 2026-10-10: SOUNDBOARD on the boom).
   labelsYieldToMic: true,

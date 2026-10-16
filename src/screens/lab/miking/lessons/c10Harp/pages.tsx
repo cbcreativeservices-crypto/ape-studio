@@ -15,7 +15,7 @@ import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
 import { makeStagePage } from '../shared/strings/PStagePlan';
 import { HARP_AUDIENCE, HARP_NEAR, HARP_ROOM, HARP_WIDE, HARP_WIDE_STAGE, harpBox, harpCue, harpOwnFoots, harpPlanFoots, harpSpots } from './planModel.ts';
-import { HARP_BASE_ART, HarpistPlan, HarpPlan } from './art';
+import { HARP_BASE_ART, HarpWithHarpistPlan } from './art';
 import { HarpPluckSequence, HarpRadiation } from './soundArt';
 
 const isLever = (v: VariantId) => v === 'lever';
@@ -92,8 +92,7 @@ function ownRing(v: VariantId) {
 function OwnPlan({ variant, lit }: { variant: VariantId; lit: boolean }) {
   return (
     <Group>
-      <HarpistPlan dim={0.85} />
-      <HarpPlan variant={variant} />
+      <HarpWithHarpistPlan variant={variant} dim={0.85} />
       {lit ? <Path path={ownRing(variant)} style="stroke" strokeWidth={22} color="#ffc64d" /> : null}
     </Group>
   );

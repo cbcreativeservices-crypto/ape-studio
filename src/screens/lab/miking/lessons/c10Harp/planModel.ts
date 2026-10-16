@@ -51,7 +51,7 @@ export function harpistHead() {
 export function harpSpots(v: VariantId): PlanSpot[] {
   const g = harpGeom(isLever(v));
   return [
-    { item: 'chair', glyph: 'none', x: -780, z: 0, scene: 'all', r: 330, label: { du: -200, dv: 520 } },
+    { item: 'chair', glyph: 'none', x: isLever(v) ? -630 : -780, z: 0, scene: 'all', r: 330, label: { du: -200, dv: 520 } },
     { item: 'stand', glyph: 'stand', x: g.crown.c[0] + 450, z: -650, faces: { x: -1, z: 0.3 }, scene: 'near', r: 220, label: { du: 0, dv: -330 } },
     { item: 'wedge.harp', glyph: 'wedge', x: 1300, z: 250, faces: { x: -1, z: 0 }, scene: 'stage', r: 330, label: { du: 0, dv: 420 } },
     { item: 'wedge.other', glyph: 'wedge', x: 1700, z: -1300, faces: { x: -0.8, z: -0.6 }, scene: 'stage', r: 330, label: { du: 0, dv: 420 } },
@@ -68,7 +68,7 @@ export function harpSpots(v: VariantId): PlanSpot[] {
 /** The harp and the harpist: one assembly (the soundbox rests on the
  *  harpist's right shoulder). */
 export function harpOwnFoots(v: VariantId): PlanFoot[] {
-  const h = harpistAt();
+  const h = harpistAt(isLever(v));
   return [
     foot('harp', 'instrument', harpBox(v), { group: 'harpist' }),
     foot('harpist', 'player', { u0: h.seat.x0, u1: -290, v0: h.head.z - 190, v1: h.seat.hw }, { group: 'harpist' }),

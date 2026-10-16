@@ -24,7 +24,8 @@ import { useStageTextScale } from '../../../rack/stageAspect';
 import type { VariantId } from '../../engine/model/types.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
-import { HarpSide } from './art';
+import { HarpSide, harpistSideMoved, HarpWithHarpistSide } from './art';
+import { harpHandPlan } from './harpistPose.ts';
 import { harpGeom } from './harpSpec.ts';
 
 const AMBER = '#ffc64d';
@@ -52,7 +53,7 @@ function arcs(p: SkPath, cx: number, cy: number, radii: number[], a0: number, a1
   for (const r of radii) p.addArc(Skia.XYWHRect(cx - r, cy - r, 2 * r, 2 * r), a0, a1 - a0);
 }
 
-type Built = { box: { u0: number; u1: number; v0: number; v1: number }; i: number; x: number; y0: number; y1: number; o: Record<string, SkPath>; b0: [number, number]; b1: [number, number]; n: [number, number] };
+type Built = { box: { u0: number; u1: number; v0: number; v1: number }; i: number; x: number; y0: number; y1: number; fp: number; o: Record<string, SkPath>; b0: [number, number]; b1: [number, number]; n: [number, number] };
 const cache = new Map<string, Built>();
 function build(lever: boolean): Built {
   const key = lever ? 'l' : 'p';
@@ -60,9 +61,13 @@ function build(lever: boolean): Built {
   if (hit) return hit;
   const g = harpGeom(lever);
   const k = g.scale;
-  const i = Math.floor(g.strings.length * 0.3);
+  // The lit string: the one under the harpist's right index finger
+  // (harpistPose.ts), pulled at that finger's pad (art fix 2026-10-16: the
+  // harpist and their hand are drawn; the hand was an oval).
+  const plan = harpHandPlan(lever, 'R');
+  const i = plan.strings.index;
   const s = g.strings[i];
-  const mid = (s.y0 + s.y1) / 2;
+  const mid = plan.targets.index.y;
   const o: Record<string, SkPath> = {};
   o.pull = Skia.Path.Make();
   arrow(o.pull, s.x - 40 * k, mid, s.x - AMP - 70 * k, mid);
@@ -77,28 +82,33 @@ function build(lever: boolean): Built {
   const hole = g.holes[1].c;
   o.back = Skia.Path.Make();
   arcs(o.back, hole[0], hole[1], [110 * k, 170 * k], fa + 180 - 35, fa + 180 + 35);
-  o.hand = Skia.Path.Make();
-  o.hand.addOval(Skia.XYWHRect(s.x - 70 * k, mid - 70 * k, 120 * k, 140 * k));
   o.stop = Skia.Path.Make();
   arrow(o.stop, s.x - 220 * k, mid + 160 * k, s.x - 60 * k, mid + 40 * k, 24);
   const box = { u0: -1050, u1: Math.max(700 * k, 400), v0: g.crown.top - 120, v1: 60 };
-  const out: Built = { box, i, x: s.x, y0: s.y0, y1: s.y1, o, b0: [g.b0[0], g.b0[1]], b1: [g.b1[0], g.b1[1]], n: [g.n[0], g.n[1]] };
+  const out: Built = { box, i, x: s.x, y0: s.y0, y1: s.y1, fp: (s.y0 - mid) / (s.y0 - s.y1), o, b0: [g.b0[0], g.b0[1]], b1: [g.b1[0], g.b1[1]], n: [g.n[0], g.n[1]] };
   cache.set(key, out);
   return out;
 }
 
-/** The lit string at reveal r: bent at the finger (①), swinging (② – ④), straight (⑤). */
-function stringPath(x: number, y0: number, y1: number, r: number, sign: number): SkPath {
+/** The lit string at reveal r: bent at the finger (①), swinging (② – ④),
+ *  straight (⑤). `sign` 1: the moving string — while the reveal runs it
+ *  SWINGS (three swings per event, dying away a little: art fix 2026-10-16,
+ *  the swing was two still lines), resting on its extreme between events;
+ *  −1: the faint opposite extreme it swings to. */
+function stringPath(x: number, y0: number, y1: number, r: number, sign: number, fp: number): SkPath {
   'worklet';
   const p = Skia.Path.Make();
   const n = 32;
   const pulled = r < 2 ? 1 : 0;
-  const swing = r < 2 ? 0 : r < 4.5 ? Math.min(1, (r - 2) * 3) : Math.max(0, 1 - (r - 4.5) * 2);
+  const env = r < 2 ? 0 : r < 4.5 ? Math.min(1, (r - 2) * 3) : Math.max(0, 1 - (r - 4.5) * 2);
+  const decay = r < 2 ? 1 : 1 - 0.12 * Math.min(2.5, r - 2);
+  const swing = sign > 0 ? env * decay * Math.cos(2 * Math.PI * 3 * Math.max(0, r - 2)) : -env * decay;
   for (let j = 0; j <= n; j++) {
     const f = j / n;
     const y = y0 + (y1 - y0) * f;
-    const tri = f < 0.5 ? f * 2 : (1 - f) * 2;
-    const dx = -AMP * (pulled * tri + sign * swing * Math.sin(Math.PI * f));
+    // Bent at the finger: two straight lengths meeting at the pad (fraction fp up from the board).
+    const tri = f < fp ? f / fp : (1 - f) / (1 - fp);
+    const dx = -AMP * (pulled * tri + swing * Math.sin(Math.PI * f));
     if (j === 0) p.moveTo(x + dx, y);
     else p.lineTo(x + dx, y);
   }
@@ -124,13 +134,14 @@ export function HarpPluckSequence({ w, h, variant, reveal, shown, accessibilityL
   const lever = variant === 'lever';
   const B = build(lever);
   const xf = useMemo(() => fitXform('side', B.box, w, h, 6), [B.box, w, h]);
-  const sA = useDerivedValue(() => stringPath(B.x, B.y0, B.y1, reveal.value, 1));
-  const sB = useDerivedValue(() => stringPath(B.x, B.y0, B.y1, reveal.value, -1));
+  const sA = useDerivedValue(() => stringPath(B.x, B.y0, B.y1, reveal.value, 1, B.fp));
+  const sB = useDerivedValue(() => stringPath(B.x, B.y0, B.y1, reveal.value, -1, B.fp));
   const sBOn = useDerivedValue(() => (reveal.value >= 2 && reveal.value < 4.9 ? 0.5 : 0));
   const bd = useDerivedValue(() => {
     const r = reveal.value;
     const a = r < 2.7 ? 0 : r < 4.5 ? Math.min(1, (r - 2.7) * 3) : Math.max(0, 1 - (r - 4.5) * 2);
-    return boardPath(B.b0, B.b1, B.n, BOARD_AMP * a);
+    // The board moves with the string (the same swings, smaller).
+    return boardPath(B.b0, B.b1, B.n, BOARD_AMP * a * Math.cos(2 * Math.PI * 3 * Math.max(0, r - 2)));
   });
   const bOn = useDerivedValue(() => (reveal.value >= 2.7 && reveal.value < 4.95 ? 1 : 0));
   const op = (i: number) => {
@@ -143,6 +154,20 @@ export function HarpPluckSequence({ w, h, variant, reveal, shown, accessibilityL
   const o3 = useDerivedValue(() => (reveal.value < 4.5 ? op(2) : 0));
   const o4 = useDerivedValue(() => (reveal.value < 4.6 ? clamp01(reveal.value - 3) : 0.3));
   const o5 = useDerivedValue(() => clamp01((reveal.value - 4.5) * 2));
+  // The harpist's right hand: ① its index pulling the string aside; ② – ④
+  // off the string (closed toward the palm, a little back and up); ⑤ back
+  // on the string, its pads stopping it.
+  const hPull = useDerivedValue(() => (reveal.value < 2 ? 1 - clamp01((reveal.value - 1.75) * 4) : 0));
+  const hAway = useDerivedValue(() => clamp01((reveal.value - 1.75) * 4) * (1 - clamp01((reveal.value - 4.5) * 4)));
+  const hStop = useDerivedValue(() => clamp01((reveal.value - 4.5) * 4));
+  const fronts = useMemo(
+    () => [
+      { pose: harpistSideMoved(lever, { x: -AMP, y: 0, z: 0 }), opacity: hPull },
+      { pose: harpistSideMoved(lever, { x: -34, y: -26, z: 0 }), opacity: hAway },
+      { pose: harpistSideMoved(lever, { x: 0, y: 0, z: 0 }), opacity: hStop },
+    ],
+    [lever, hPull, hAway, hStop],
+  );
   const mid = (B.y0 + B.y1) / 2;
   const labels: StaticLabel[] = [];
   const at = { u: B.box.u0 + 40, v: B.box.v0 + 90 };
@@ -157,7 +182,7 @@ export function HarpPluckSequence({ w, h, variant, reveal, shown, accessibilityL
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          <HarpSide variant={variant} dim={0.75} />
+          <HarpWithHarpistSide variant={variant} dim={0.8} harpDim={0.75} fronts={fronts} />
           <Group opacity={sBOn}>
             <Path path={sB} style="stroke" strokeWidth={6} color={BLUE} />
           </Group>
@@ -168,6 +193,7 @@ export function HarpPluckSequence({ w, h, variant, reveal, shown, accessibilityL
           <Group opacity={o1}>
             <Path path={B.o.pull} style="stroke" strokeWidth={9} color={AMBER} strokeCap="round" strokeJoin="round" />
           </Group>
+
           <Group opacity={o2}>
             <Path path={B.o.release} style="stroke" strokeWidth={9} color={AMBER} strokeCap="round" strokeJoin="round" />
           </Group>
@@ -183,7 +209,6 @@ export function HarpPluckSequence({ w, h, variant, reveal, shown, accessibilityL
             </Path>
           </Group>
           <Group opacity={o5}>
-            <Path path={B.o.hand} color="#7b6858" />
             <Path path={B.o.stop} style="stroke" strokeWidth={9} color={AMBER} strokeCap="round" strokeJoin="round" />
           </Group>
         </Group>

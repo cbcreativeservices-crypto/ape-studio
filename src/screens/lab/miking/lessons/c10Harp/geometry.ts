@@ -7,7 +7,7 @@
  * and the harpist are ILLUSTRATIVE.
  */
 import type { Envelope, InstrumentModel, Part, Provenance, ReferenceSurface, RefLine, Rim, Shape3, VariantId } from '../../engine/model/types.ts';
-import { dd, HARP_SIZES, type HarpGeom } from './harpSpec.ts';
+import { dd, HARP_SIZES, harpistAt, type HarpGeom } from './harpSpec.ts';
 import { HARPIST, HP, LV, v3 } from './model.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
@@ -77,6 +77,8 @@ const PV: VariantId[] = ['pedal'];
 const LVV: VariantId[] = ['lever'];
 const ALL: VariantId[] = ['pedal', 'lever'];
 const h = HARPIST;
+/** The lever harp's player: seated lower and closer (harpSpec.harpistAt). */
+const hl = harpistAt(true);
 
 const parts: Part[] = [
   ...harpParts(HP, 'hp', PV),
@@ -87,7 +89,12 @@ const parts: Part[] = [
 const envelopes: Envelope[] = [
   stringsEnvelope(HP, PV, 'hp'),
   stringsEnvelope(LV, LVV, 'lv'),
-  { id: 'harpist', label: 'the harpist', shape: box(-1000, h.head.y - h.headR - 20, -430, -580, h.seat.y, 140), prov: ill('the seated harpist (drawing default)'), variants: ALL },
+  // The seated harpist, with the arms held out to either side of the strings
+  // (the elbows ≈ 28 cm out to the player's right and left: art fix 2026-10-16).
+  { id: 'harpist', label: 'the harpist', shape: box(-1000, h.head.y - h.headR - 20, -460, -560, h.seat.y, 340), prov: ill('the seated harpist (drawing default)'), variants: PV },
+  { id: 'harpist.lv', label: 'the harpist', shape: box(-1000 + 150, hl.head.y - hl.headR - 20, -460, -400, hl.seat.y, 340), prov: ill('the seated harpist (drawing default)'), variants: LVV },
+  // The lever harpist's chair, closer to the harp (the 'chair' part's solid is the concert harpist's).
+  { id: 'chair.lv', label: 'the harpist’s chair', shape: box(hl.seat.x0, hl.seat.y - 50, -hl.seat.hw, hl.seat.x1 - 50, 0, hl.seat.hw), prov: ill('the lever harpist’s chair (drawing default)'), variants: LVV },
   { id: 'hp.feet', label: 'the harpist’s feet and the pedals', shape: box(HP.base.x0 - 330, -170, -330, HP.base.x0 + 40, 0, 330), prov: ill('the feet on the pedals'), variants: PV },
   { id: 'lv.feet', label: 'the harpist’s feet', shape: box(-600, -170, -330, LV.base.x0, 0, 330), prov: ill('the feet'), variants: LVV },
 ];

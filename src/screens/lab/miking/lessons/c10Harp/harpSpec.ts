@@ -144,8 +144,15 @@ export function harpGeom(lever: boolean): HarpGeom {
 }
 
 /** The harpist (ILLUSTRATIVE, GEOMETRY_PROPOSAL: seated at x = −750, seat
- *  550, head 1300 up, a little to their left of the soundbox). */
+ *  550, head 1300 up, a little to their left of the soundbox). The LEVER
+ *  harp's player (art fix 2026-10-16): the smaller harp's soundbox top
+ *  rests on the shoulder too, so its player sits on an ordinary chair
+ *  (seat 450) about 15 cm closer to the harp — drawing defaults. */
 export type Harpist = { seat: { x0: number; x1: number; y: number; hw: number }; head: Vec3; headR: number };
-export function harpistAt(): Harpist {
-  return { seat: { x0: -980, x1: -580, y: -D('seatH'), hw: 230 }, head: { x: -760, y: -D('headH'), z: -150 }, headR: 105 };
+export const LEVER_PLAYER_SHIFT = { dx: 150, dy: 100 } as const;
+export function harpistAt(lever = false): Harpist {
+  const p: Harpist = { seat: { x0: -980, x1: -580, y: -D('seatH'), hw: 230 }, head: { x: -760, y: -D('headH'), z: -150 }, headR: 105 };
+  if (!lever) return p;
+  const { dx, dy } = LEVER_PLAYER_SHIFT;
+  return { seat: { x0: p.seat.x0 + dx, x1: p.seat.x1 + dx, y: p.seat.y + dy, hw: p.seat.hw }, head: { x: p.head.x + dx, y: p.head.y + dy, z: p.head.z }, headR: p.headR };
 }
