@@ -805,7 +805,8 @@ export function PeakMeterView(p: {
       </Canvas>
       {p.plain ? null : (
         <>
-      <Lbl x={10} y={6 * ts} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
+      {/* x clears the corner screw (12·ts ± 3.6·ts) — it sat on the "P". */}
+      <Lbl x={20 * ts} y={6 * ts} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
         PEAK PROGRAM
       </Lbl>
       <Lbl x={w / 2 - 26} y={11 * ts} w={52} size={7.5} color="#f4d9d5" ls={1.5}>
@@ -832,7 +833,7 @@ export function PeakMeterView(p: {
         dBFS
       </Lbl>
       {p.plain ? null : (
-      <Lbl x={10} y={h - 13 * ts} w={140} align="left" size={7}>
+      <Lbl x={20 * ts} y={h - 13 * ts} w={140} align="left" size={7}>
         {p.live ? 'LIVE INPUT · MONO' : `CREST ${E.crest.toFixed(1)} dB`}
       </Lbl>
       )}
