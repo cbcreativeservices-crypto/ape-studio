@@ -7,9 +7,9 @@
  * starting points only.
  *
  * FRAME H (lowBrassScene.ts): origin on the floor under the seat; +x toward
- * the audience; +y DOWN; +z the player's right. The bell sits behind and to
- * the right of the right hip and points to the REAR, out and a little down;
- * the right hand is in the bell.
+ * the audience; +y DOWN; +z the player's right. The bell sits beside the
+ * right thigh, just forward of the hip ("off the leg"), and points to the
+ * REAR, out and a little down; the right hand is in the bell.
  *
  * SUGGESTED STARTING POINTS (corrections LB-03 … LB-06):
  *   rear   behind and beside the bell, low, aimed toward it and a little off
@@ -61,10 +61,10 @@ export const HORN_ZONES: DocumentedZone[] = [
     refSurface: 'bell',
     side: 'outside',
     distance: { min: 500, max: 1000 },
-    cone: { min: 8, max: 50, prov: ill('“off axis”: 8–50° from the bell’s axis is the lab’s drawing') },
+    cone: { min: 8, max: 50, toward: DOWN, prov: ill('“off axis … often closer to the ground”: 8–50° from the bell’s axis, on its lower side, is the lab’s drawing') },
     aim: { maxOffAxis: 30, prov: ill('“aiming toward bell”: within 30° of the bell’s centre is the lab’s tolerance') },
     requires: { micTypeIds: ['smallDynCard', 'sdcCard'] },
-    draw: coneDraw(RIM, AXIS, null, 500, 1000, 8, 50),
+    draw: coneDraw(RIM, AXIS, DOWN, 500, 1000, 8, 50),
     start: poseAt(RIM, REAR_DIR, 760),
     tendency: 'A direct, more forceful horn — more brass edge, hand and bell detail, and bigger swings in level — with less of the room. Listen for an unnaturally hard sound; if so, move off axis or farther.',
     checks: ['The bell rising in a “bells up” passage', 'The right hand and a mute going in and out', 'Level swings on the loudest accents'],

@@ -17,17 +17,19 @@ const S = SCENE;
 const valvesAt = S.valves[1].c;
 const slideAt = S.tubes.find((t) => t.id === 'slide1')!.pts[3];
 
+// (Art fix 2026-10-16: the horn now sits forward with its bell beside the
+// thigh — each label stands clear of the player, its leader short.)
 const SIDE: LabelSpot[] = [
-  { id: 'bell', text: 'BELL — POINTS BACK', short: 'BELL', at: S.bell.rim, du: -230, dv: 150, align: 'right', alts: [{ du: -230, dv: -190, align: 'right' }] },
-  { id: 'hand', text: 'RIGHT HAND IN THE BELL', short: 'HAND', at: S.bellHand!.tip, du: -360, dv: 330, align: 'right', alts: [{ du: 120, dv: 260, align: 'left' }] },
-  { id: 'coil', text: 'COILED TUBE', short: 'COIL', at: S.centre, du: 330, dv: -170, align: 'left' },
+  { id: 'bell', text: 'BELL — POINTS BACK', short: 'BELL', at: S.bell.rim, du: -430, dv: 30, align: 'right', alts: [{ du: -400, dv: 480, align: 'right' }] },
+  { id: 'hand', text: 'RIGHT HAND IN THE BELL', short: 'HAND', at: S.bellHand!.tip, du: 280, dv: 380, align: 'left', alts: [{ du: 320, dv: 250, align: 'left' }] },
+  { id: 'coil', text: 'COILED TUBE', short: 'COIL', at: S.centre, du: 330, dv: 155, align: 'left' },
   { id: 'valves', text: 'ROTARY VALVES', short: 'VALVES', at: valvesAt, du: 300, dv: 40, align: 'left' },
-  { id: 'mouth', text: 'MOUTHPIECE', at: S.J.mouth, du: 230, dv: -150, align: 'left' },
-  { id: 'slides', text: 'TUNING SLIDES', short: 'SLIDES', at: slideAt, du: 200, dv: 150, align: 'left' },
+  { id: 'mouth', text: 'MOUTHPIECE', at: S.J.mouth, du: 110, dv: -230, align: 'left' },
+  { id: 'slides', text: 'TUNING SLIDES', short: 'SLIDES', at: slideAt, du: 230, dv: 80, align: 'left' },
 ];
 const TOP: LabelSpot[] = [
-  { id: 'bell', text: 'BELL — POINTS BACK', short: 'BELL', at: S.bell.rim, du: -240, dv: 230, align: 'right' },
-  { id: 'hand', text: 'RIGHT HAND IN THE BELL', short: 'HAND', at: S.bellHand!.tip, du: -330, dv: -150, align: 'right' },
+  { id: 'bell', text: 'BELL — POINTS BACK', short: 'BELL', at: S.bell.rim, du: -260, dv: 330, align: 'right' },
+  { id: 'hand', text: 'RIGHT HAND IN THE BELL', short: 'HAND', at: S.bellHand!.tip, du: 300, dv: 260, align: 'left' },
   { id: 'coil', text: 'COILED TUBE', short: 'COIL', at: S.centre, du: 300, dv: 200, align: 'left' },
   { id: 'valves', text: 'ROTARY VALVES', short: 'VALVES', at: valvesAt, du: 260, dv: -60, align: 'left' },
   { id: 'mouth', text: 'MOUTHPIECE', at: S.J.mouth, du: 230, dv: -200, align: 'left' },
@@ -38,12 +40,12 @@ export const HORN_ART: LessonArt = {
   labels: (view) => placeLabels(view, view === 'side' ? SIDE : TOP),
   hitTest: (view, _v, u, v, tol) => hitTestScene(S, '', view, u, v, tol),
   labelsYieldToMic: true,
-  figure: makeLowBrassPortrait(SPEC, 'back', { u0: -520, u1: 620, v0: -1360, v1: 40 }, 'A horn player seen from the right side, seated on a chair: the horn’s round coil of tubing in front of the right side of the chest, the mouthpiece at the lips, four rotary valves under the left hand, and the flared bell behind the right hip, pointing back, with the right hand inside it.'),
+  figure: makeLowBrassPortrait(SPEC, 'back', { u0: -520, u1: 620, v0: -1360, v1: 40 }, 'A horn player seen from the right side, seated on a chair: the horn’s round coil of tubing in front of the right side of the chest, the mouthpiece at the lips, four rotary valves under the left hand, and the flared bell beside the right thigh, pointing back, with the right hand inside it.'),
   pages: {
     sound: makeLowBrassSoundPage({
       spec: SPEC,
       wall: true,
-      subject: 'A horn player seen from the right side, the bell behind the right hip pointing back, a wall behind the player',
+      subject: 'A horn player seen from the right side, the bell beside the right thigh pointing back, a wall behind the player',
       shapesNote: 'This is a simplified pipe. The real horn is a long, narrow, mostly conical tube with a flaring bell, coiled up — the coiling changes nothing about the air inside. The right hand in the bell changes the shapes a little too: that is how it shades the pitch and the tone.',
       spreadNote: 'Only the overall trend is drawn: low notes spread all round, the higher overtones go mostly where the bell points — behind the player. A listener in front hears the horn largely by way of the room; behind the bell it sounds more forceful. Rooms differ: walk to both places and listen before placing a mic.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the horn: how a real horn sounds depends on the horn, the player’s hand and the room. The pictures show where the sound comes from and where it goes.',
@@ -56,7 +58,7 @@ export const HORN_ART: LessonArt = {
     }),
     setting: makeLowBrassSettingPage({
       ...A03_PLAN,
-      nearA11y: 'A horn player from above: the player on a chair facing right, the horn’s bell behind the right hip pointing back toward a wall, the player’s space hatched, a music stand in front, a second horn to the player’s left and a low-brass player to the right.',
+      nearA11y: 'A horn player from above: the player on a chair facing right, the horn’s bell beside the right thigh pointing back toward a wall, the player’s space hatched, a music stand in front, a second horn to the player’s left and a low-brass player to the right.',
       wideA11y: { stage: 'The same from above, on a stage: the horn player’s wedge in front, a side-fill behind them, off to one side, the wall behind, the audience below.', studio: 'The same from above, in a studio room: a piano to the front left and a main pair in front of the horn; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the horn player — or step through ITEM — to see what it means for a horn mic. There is nothing to answer yet.',
       nearIdle: 'The bell points back toward the wall; the right hand is in it; the bell may rise for “bells up”. Everything else is a neighbour a horn mic will hear — or a surface that sends the horn on.',

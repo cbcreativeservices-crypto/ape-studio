@@ -9,7 +9,7 @@ import type { LessonCopy } from '../../engine/model/copy.ts';
 export const HORN_COPY: Partial<LessonCopy> = {
   variantKey: 'POSTURE',
   variantShort: { back: 'seated' },
-  sceneSubject: { back: 'a horn, the player seated, the bell behind the right hip pointing back' },
+  sceneSubject: { back: 'a horn, the player seated, the bell beside the right thigh pointing back' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },
   axes: {
     x: { plus: 'toward the audience', minus: 'toward the back', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the back of the stage (x), from under the player’s seat. The bell points back.' },
@@ -18,7 +18,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
   },
   instrument: {
     figureBadge: 'A horn, played seated — the bell behind the player, the right hand in it',
-    figureLabel: 'Side view of a seated horn player: the coil in front of the right side of the chest, the mouthpiece at the lips, the rotary valves under the left hand, the bell behind the right hip pointing back with the right hand inside it.',
+    figureLabel: 'Side view of a seated horn player: the coil in front of the right side of the chest, the mouthpiece at the lips, the rotary valves under the left hand, the bell beside the right thigh pointing back with the right hand inside it.',
     partsBadge: 'A horn, played seated · tap a part to name it',
     partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
     partsIdle: 'The lips buzz into the mouthpiece; the air in the long coiled tube vibrates; the sound leaves from the bell — which points BEHIND the player. The next page shows how.',

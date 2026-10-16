@@ -222,57 +222,82 @@ export function flareR(b: Bell, t: number): number {
 }
 
 /* ── the horn ── */
+/**
+ * THE HORN AS IT IS HELD (art fix 2026-10-16, grading: "the right arm swept
+ * far back behind the torso", "the bell floating behind the hip"). The horn
+ * sits FORWARD, in front of the right side of the body: the coil ≈ 9 cm in
+ * front of the chest, the bell's flare leaving the bottom of the wraps and
+ * opening back and out beside the right thigh — "off the leg", its rim just
+ * forward of the hip and level with the top of the thigh, the right hand in
+ * it. The right arm then hangs from the shoulder (the elbow down and out at
+ * the side, a little behind the shoulder) and the forearm comes forward into
+ * the bell, as a horn player holds it. The horn's own shape is unchanged:
+ * every part keeps its place relative to the coil (HORN_SHIFT moves them
+ * together); only the bell's throat is re-seated at the bottom of the wraps.
+ */
+const HORN_C0 = v(150, -885, 255);
+export const HORN_COIL = v(310, -905, 185);
+const HORN_SHIFT = sub(HORN_COIL, HORN_C0);
+const hs = (x: number, y: number, z: number): Vec3 => add(v(x, y, z), HORN_SHIFT);
+/** The two arms the horn player holds it with (lesson frame, mm). */
+export const HORN_ARMS = {
+  elbowR: v(-137, -756, 286),
+  elbowL: v(142, -790, -189),
+  wristL: hs(160, -860, 40),
+};
+
 function hornScene(spec: LowBrassSpec): BrassScene {
   const R = spec.bell.mm / 2;
-  // The coil stands beside the player's right chest, its face to the right.
-  const C = v(150, -885, 255);
+  // The coil stands in front of the right side of the chest, its face to the right.
+  const C = HORN_COIL;
   const nC = norm(v(0.25, 0, 0.97));
   const [e1, e2] = basis(nC, v(1, 0, 0));
-  // The bell: behind and right of the right hip, pointing back, out and a
-  // little down (french_horn/GEOMETRY_PROPOSAL.md §1, moved clear of the
-  // body: LB-02).
-  const axis = norm(v(-0.88, 0.17, 0.44));
-  const rim = v(-150, -690, 335);
-  const throat = sub(rim, scale(axis, 300));
+  // The bell: from the bottom of the wraps, back, out and a little down
+  // (the sourced fact: it faces the rear; french_horn/GEOMETRY_PROPOSAL.md
+  // §1's direction), its rim beside the right thigh, just forward of the hip.
+  const axis = norm(v(-0.8, 0.12, 0.58));
+  const throat = add(C, v(18, 125, -45));
+  const rim = add(throat, scale(axis, 300));
   const bell: Bell = { rim, axis, R, throat, rT: 24 };
   const loops: Tube[] = [125, 109, 94].map((r, i) => ({ id: `coil${i}`, pts: ring(add(C, scale(nC, (i - 1) * 16)), e1, e2, r, 0, 2 * Math.PI, 56), r: 7.5 + i }));
-  // The bell's tail leaves the coil at its lower back and runs to the throat.
-  const tailStart = add(C, add(scale(e1, -0.62 * 112), scale(e2, 0.78 * 112)));
-  const tail: Tube = { id: 'bellTail', pts: spline([add(C, add(scale(e1, 0.2 * 118), scale(e2, 0.98 * 118))), tailStart, add(throat, scale(axis, -40)), throat], 8), r: 16, rr: [9.5, 24] };
+  // The bell's tail leaves the wraps at their lower front and sweeps down
+  // and back into the throat.
+  const tail: Tube = { id: 'bellTail', pts: spline([add(C, add(scale(e1, 0.62 * 118), scale(e2, 0.78 * 118))), add(C, add(scale(e1, 0.3 * 125), scale(e2, 1.02 * 125))), add(throat, scale(axis, -35)), throat], 8), r: 16, rr: [9.5, 24] };
   const mp0 = add(BASE.mouth, v(6, 0, 0));
   const mp1 = v(178, -1128, 38);
-  const valveC = v(205, -912, 178);
+  const valveC = hs(205, -912, 178);
   // THE LEVERS (figure pass 3): the thumb (change) valve's lever from valve
   // 0 to a spatula above and behind the others, where the left thumb rests;
   // valves 1–3's levers converge to three spatulas ≈ 23 mm apart (an adult's
   // finger pitch) on the player's left, in front of the casings — index on
   // top; the little-finger hook just below the ring finger's spatula.
-  const SPAT: Vec3[] = [v(183, -925, 145), v(250, -952, 138), v(245, -929, 141), v(240, -906, 144)];
+  const SPAT: Vec3[] = [hs(183, -925, 145), hs(250, -952, 138), hs(245, -929, 141), hs(240, -906, 144)];
   const valves: Valve[] = [0, 1, 2, 3].map((i) => {
-    const c = add(v(186, -975, 182), scale(v(0.22, 0.97, 0), i * 40));
+    const c = add(hs(186, -975, 182), scale(v(0.22, 0.97, 0), i * 40));
     return { c, axis: nC, r: 21, h: 46, kind: 'rotary', lever: sub(SPAT[i], c) };
   });
-  const hook = v(233, -880, 150);
-  const leadpipe: Tube = { id: 'leadpipe', pts: spline([mp1, v(232, -1080, 120), v(250, -1000, 190), v(222, -960, 205)], 8), r: 9 };
+  const hook = hs(233, -880, 150);
+  // The leadpipe: from the mouthpiece down and forward to the valves.
+  const leadpipe: Tube = { id: 'leadpipe', pts: spline([mp1, v(270, -1112, 70), hs(232, -1080, 120), hs(250, -1000, 190), hs(222, -960, 205)], 8), r: 9 };
   const slides: Tube[] = [
     { id: 'slide1', pts: spline([add(C, scale(e1, 100)), add(add(C, scale(e1, 175)), scale(e2, -20)), add(add(C, scale(e1, 175)), scale(e2, 30)), add(add(C, scale(e1, 100)), scale(e2, 40))], 6), r: 8 },
     { id: 'slide2', pts: spline([add(add(C, scale(e2, -110)), scale(e1, -30)), add(add(C, scale(e2, -170)), scale(e1, -40)), add(add(C, scale(e2, -170)), scale(e1, 20)), add(add(C, scale(e2, -110)), scale(e1, 20))], 6), r: 8 },
   ];
   // The right hand in the bell (hornBellHold: the back of the hand on the far
-  // wall); the arm bent back to it — the elbow back, out and raised, as a
-  // horn player holds it (upper arm 315, forearm 255: wrist bend ≈ 65°).
+  // wall); the upper arm hangs down and out at the side, the forearm comes
+  // forward into the bell (upper arm ≈ 300, forearm ≈ 255).
   const hold = hornBellHold(bell);
   const wristR = hold.wrist;
   const handR = add(wristR, scale(hold.along, 120));
   // The left hand on the levers: the wrist in front of the chest, the elbow
-  // down and out at the side (upper arm 300, forearm 255).
+  // down and out at the side (upper arm ≈ 300, forearm ≈ 255).
   const J: Joints = {
     ...BASE,
-    elbowR: v(-293, -924, 355),
+    elbowR: HORN_ARMS.elbowR,
     wristR,
     handR,
-    elbowL: v(102, -763, -189),
-    wristL: v(160, -860, 40),
+    elbowL: HORN_ARMS.elbowL,
+    wristL: HORN_ARMS.wristL,
     handL: SPAT[2],
   };
   // The little-finger hook: a half ring under the finger, its stem to valve 3's casing.
