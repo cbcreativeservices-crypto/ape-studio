@@ -634,6 +634,42 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:11 · ccode · 27028e98
+changed: Sound Systems art fix: performers drawn as the house plan figure from above at true scale; amp and cabinets at one mm scale (art grading 2026-10-16)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 16:08 · ccode · d40e73d2
+changed: Low brass art fix (A03 horn): the horn held forward, the bell beside the right thigh, the right arm hanging at the side
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:07 · ccode · 7ffead8c
+changed: Mastering Lab art fix: real mastering gear, measured loudness meter, labels off the lines (art grading round 2, 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:05 · ccode · 8109840f
+changed: Tuning & Temperament art fix: piano-roll key strip under the cents rail, every stage label 10-12 pt (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:05 · ccode · a006ce6f
+changed: Digital Audio lab art fix: true-size pencil mic and stands, boxed 8" driver, A/D reference lines named in a key row (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:02 · ccode · f20df3f6
+changed: Noise Lab art fix: 12 pt uncrowded frequency ticks, colour names off the plot, 1 kHz pivot marked (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 15:58 · ccode · 2fd7be6c
 changed: Speech Lab art fix: readable face profile, a real mid-sagittal tongue, lips on the face line, larger anatomy labels
 affects other side: nothing (app only)
