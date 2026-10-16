@@ -21,6 +21,8 @@
 import { fretX } from './guitarSpec.ts';
 import type { GuitarScene } from './guitarModel.ts';
 import { angleOf, BODY, pt, toward, type Hand, type PlayerPose, type Pt } from '../players/playerPose.ts';
+import { FLAT_VIEW, fretArm3, fretFront, pickFront } from '../players/handPoses.ts';
+import { v3, type HandView } from '../players/handModel.ts';
 
 /** Four neighbouring fret spaces within a hand's reach (≤ 100 mm), lowest
  *  first, and the point just behind each fret where a fingertip stops. */
@@ -120,26 +122,31 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
     const ex = f.arm.a.x + 10;
     const edgeV = sp.body.pot ? -Math.sqrt(Math.max(0, (sp.body.pot.d.mm / 2) ** 2 - (ex - sp.body.pot.cx.mm) ** 2)) : -g.halfW(ex, 'bass');
     const elbowR = pt(ex, Math.max(edgeV - 16, sv + 80));
-    const handR = handAt(elbowR, pt(f.arm.b.x + 8, f.arm.b.y + 6), 'pick');
-    // The fretting arm (owner 2026-10-10: the wrist bent ≈ 130°, the forearm
-    // coming down to a hand pointing straight up). The hand ON the neck stays
-    // — the four fingertips on their frets and the knuckle row under the
-    // board's edge (the 'fret' hand builds them from the board) — while the
-    // elbow and forearm move: the elbow hangs from the shoulder (an adult
-    // upper arm, bent down), and the palm lies under the neck from the
-    // knuckle row back toward the body, its wrist a palm's length (95 mm)
-    // away, turned ≈ 55° from the forearm — never past 70°.
-    const knuckles = pt(tipMid + 4, half + 32); // the 'fret' hand's knuckle-row centre, 20 mm under it
-    const arm = fretArm(shoulderL, knuckles);
-    // A short neck held close in front of the shoulder (mandolin, soprano
-    // ukulele): no elbow an adult arm can reach gets the wrist under 70° in
-    // this flat picture (the forearm comes toward the viewer) — the drawing
-    // keeps its earlier arm there.
-    const ok = arm.bend <= 70;
-    const handL: Hand = ok
-      ? { wrist: arm.wrist, dir: angleOf(arm.wrist, knuckles), kind: 'fret', board: { v: 0, half, tips } }
-      : { wrist: pt(tipMid + 34, half + 82), dir: -Math.PI / 2 - 0.22, kind: 'fret', board: { v: 0, half, tips } };
-    const elbowL = ok ? arm.elbow : toward(shoulderL, pt(shoulderL.u + 60, Math.max(sv + 300, half + 60)), 300);
+    // The picking hand (figure pass 3): posed bone by bone — a loose fist, the
+    // pick pinched between the thumb's pad and the side of the index's last
+    // joint, its point on the strings (handPoses.pickFront).
+    const hR0 = handAt(elbowR, pt(f.arm.b.x + 8, f.arm.b.y + 6), 'pick');
+    const pk = pickFront(hR0);
+    const handR: Hand = { ...hR0, posed: { sk: pk, view: FLAT_VIEW, pick: pk.pick } };
+    // THE FRETTING ARM (figure pass 3, owner 2026-10-15: "check that the hand
+    // is correctly positioned, placed, bent, fingers and digits accounted
+    // for"). Solved in 3-D (handPoses.fretArm3): the knuckle row just under
+    // the board's bottom edge and in front of its face, the hand pointing up,
+    // toward the audience and a little toward the headstock, the elbow hanging
+    // from the shoulder beside the body — so the forearm reaches FORWARD to
+    // the hand and the picture shows it foreshortened (as it is seen from the
+    // audience); the wrist ≤ 70° in 3-D. The hand on the neck is built from
+    // the board ('fret': every pad on a string behind its fret, the thumb
+    // behind the neck).
+    const strings = sp.strings.courses;
+    // The thumb behind the neck (owner 2026-10-10), opposite the index and
+    // middle fingers: with the palm under the neck it cannot also wrap over
+    // the top edge (handPoses.fretFront: thumbOver is for a palm behind it).
+    const board = { v: 0, half, tips, strings };
+    const arm = fretArm3(shoulderL, board);
+    const sk = fretFront({ wrist: pt(arm.wrist.x, arm.wrist.y), dir: 0, kind: 'fret', board });
+    const handL: Hand = { wrist: pt(arm.wrist.x, arm.wrist.y), dir: Math.atan2(arm.knuckles.y - arm.wrist.y, arm.knuckles.x - arm.wrist.x), kind: 'fret', board, posed: { sk, view: FLAT_VIEW, cut: { p: v3(0, 0, -16), n: v3(0, 0, 1) } } };
+    const elbowL = pt(arm.elbow.x, arm.elbow.y);
     const seated = sc.variant.posture === 'seated';
     const hipV = neck.v + (seated ? 470 : 500);
     const floor = sc.floorY;
@@ -165,13 +172,27 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
     // pick side on the strings, not an open hand 6–13 cm out in the air.
     // The fist is ≈ 86 mm across (BODY.handW): its centre half that in front
     // of the top, so the pick edge meets the strings' plane.
-    const handR = handAt(elbowR, pt(f.arm.b.x + 6, f.arm.b.z - 8), 'pick');
-    const elbowL = pt(Math.max(shoulderL.u + 40, tipMid - 120), hz + 190);
-    // The fretting hand from above: the palm behind the neck, the fingers
-    // over its edge, the fingertips STOPPING on the strings at the board
-    // (the 'above' hand reaches ≈ 180 mm from its wrist to the fingertips) —
-    // they ran ≈ 7 cm past the fingerboard into the air before.
-    const handL: Hand = { wrist: pt(tipMid + 20, g.h(tipMid) + 2 - 180), dir: Math.PI / 2, kind: 'above', board: { v: 0, half: 26, tips } };
+    // The picking hand from above: the front view's very hand (the same
+    // skeleton), seen from above — the pick's point down on the strings.
+    const frontR = guitarPlayerPose(sc, 'side').handR;
+    const TOPR: HandView = (q) => ({ u: q.x, v: q.z, d: -q.y });
+    const skR = frontR.posed!.sk;
+    const wR = TOPR(skR.frame.o);
+    const handR: Hand = { wrist: pt(wR.u, wR.v), dir: Math.PI / 2, kind: 'pick', posed: { sk: skR, view: TOPR, pick: frontR.posed!.pick } };
+    // THE FRETTING HAND FROM ABOVE (figure pass 3): the very hand of the front
+    // view (the same 3-D skeleton and arm), seen from above — the thumb behind
+    // the neck, the fingers arching over the board's face, the palm and wrist
+    // under the neck (painted behind the instrument, so the neck hides what it
+    // covers). Front-view depth d → z = d + the board's height; looking down,
+    // nearer = higher (−y).
+    const board = { v: 0, half, tips, strings: sp.strings.courses };
+    const arm = fretArm3(pt(hx + BODY.shoulderHalf, f.head.c.y + 150 + 22), board);
+    const sk = fretFront({ wrist: pt(arm.wrist.x, arm.wrist.y), dir: 0, kind: 'fret', board });
+    const H = g.h(tipMid);
+    const TOP: HandView = (q) => ({ u: q.x, v: q.z + H, d: -q.y });
+    const w = TOP(sk.frame.o);
+    const elbowL = pt(arm.elbow.x, arm.elbow.z + H);
+    const handL: Hand = { wrist: pt(w.u, w.v), dir: Math.PI / 2, kind: 'above', board: { v: 0, half: 26, tips }, posed: { sk, view: TOP, cut: { p: v3(0, -half, 0), n: v3(0, -1, 0) } } };
     const seated = sc.variant.posture === 'seated';
     const hipR = pt(hx - 106, hz + 70);
     const hipL = pt(hx + 106, hz + 70);

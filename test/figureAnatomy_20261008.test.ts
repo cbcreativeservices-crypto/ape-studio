@@ -54,6 +54,16 @@ import { COLLAR_B, NECK_B, SEATED_SOLIDS } from '../src/screens/lab/miking/lesso
 import { LAYOUTS as FLUTES } from '../src/screens/lab/miking/lessons/a06Flute/geometry.ts';
 import { SEATED as PICCOLO_SEATED, STANDING as PICCOLO_STANDING } from '../src/screens/lab/miking/lessons/a07Piccolo/geometry.ts';
 import { CY as GONG_CY, GONG, MALLET_REACH, playerAt, strikePoint as gongStrike } from '../src/screens/lab/miking/lessons/i12Gong/model.ts';
+// Figure pass 3 (owner 2026-10-15): hands on instruments, one hand model.
+import { DIP_RATIO, digitLength, fingerFlexDeg, HAND, HAND_LENGTH, handFrame, handOn, LIMITS, thumbSide, wristBendDeg, type HandSkeleton, type V3 as HV3 } from '../src/screens/lab/miking/lessons/shared/players/handModel.ts';
+import { FRET_CONTACT, fretArm3, pickFront } from '../src/screens/lab/miking/lessons/shared/players/handPoses.ts';
+import { guitarPlayerPose } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
+import { sceneOf as guitarSceneOf } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
+import { C01_VARIANTS } from '../src/screens/lab/miking/lessons/c01Guitar/model.ts';
+import { C05A_VARIANTS } from '../src/screens/lab/miking/lessons/c05aBanjo/model.ts';
+import { C05B_VARIANTS } from '../src/screens/lab/miking/lessons/c05bMandolin/model.ts';
+import { C05C_VARIANTS } from '../src/screens/lab/miking/lessons/c05cUkulele/model.ts';
+import { C07_VARIANTS } from '../src/screens/lab/miking/lessons/c07AcousticBass/model.ts';
 
 const BASS_BOW = bowedStanding(DOUBLE_BASS, 'bow');
 const add3 = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => ({ x: a.x + b.x, y: a.y + b.y, z: a.z + b.z });
@@ -697,5 +707,139 @@ describe('figure pass 2 (owner 2026-10-15): collar, flute hold, gong reach, one-
     assert.match(src, /const b = box \?\? own;/);
     // A nearly straight arm's crook never loops into a notch.
     assert.match(src, /if \(bend < 0\.25 \|\| Math\.abs\(back\) > Math\.min\(L1, L2\) \* 0\.42\) \{/);
+  });
+});
+
+/**
+ * FIGURE PASS 3 (owner 2026-10-15): "a separate pass needs to be done looking at
+ * all string instruments that have a neck or wind instruments with keys to
+ * check that the hand is correctly positioned, placed, bent, fingers and digits
+ * accounted for. also shoulder transitions from shirt sleeves to the shirt body
+ * look very unnatural and plug and position interchangeable limbs and parts".
+ *
+ * Every hand on an instrument is ONE hand model with real joints
+ * (players/handModel.ts), posed per instrument; these checks hold every posed
+ * hand the families export (handCases) to:
+ *   DIGITS     five — four fingers of three phalanges and a thumb (metacarpal
+ *              + two phalanges), every bone at the table's length;
+ *   THUMB      on the thumb's (radial) side of the hand;
+ *   JOINTS     each within its range (knuckle −20…90°, middle 0…110°, end
+ *              0…80°, spread within the finger's own limit);
+ *   WRIST      ≤ 70° from the forearm, in 3-D;
+ *   CONTACT    every digit that plays (presses a string, a key, a valve, holds
+ *              a bow or a pick) within 3 mm of its place.
+ */
+type HandCase = { name: string; sk: HandSkeleton; elbow: HV3; contact: number[] };
+
+/** Every problem of one posed hand, as words (empty = sound). */
+function handProblems(c: HandCase): string[] {
+  const out: string[] = [];
+  const { sk } = c;
+  if (sk.fingers.length !== 4) out.push(`${sk.fingers.length} fingers`);
+  sk.fingers.forEach((f, i) => {
+    if (f.joints.length !== 4) out.push(`${f.name}: ${f.joints.length - 1} phalanges`);
+    const want = HAND.fingers[i].seg.reduce((a, b) => a + b, 0);
+    if (Math.abs(digitLength(f) - want) > 0.5) out.push(`${f.name}: ${digitLength(f).toFixed(1)} mm long (bones ${want})`);
+    const q = fingerFlexDeg(sk.frame, f);
+    if (q.mcp < -21 || q.mcp > 91) out.push(`${f.name}: knuckle at ${q.mcp.toFixed(0)}°`);
+    if (q.pip < -0.5 || q.pip > 111) out.push(`${f.name}: middle joint at ${q.pip.toFixed(0)}°`);
+    if (q.dip < -0.5 || q.dip > 81) out.push(`${f.name}: end joint at ${q.dip.toFixed(0)}°`);
+    if (Math.abs(q.spread) > (LIMITS.abd[i] * 180) / Math.PI + 1) out.push(`${f.name}: spread ${q.spread.toFixed(0)}°`);
+  });
+  if (sk.thumb.joints.length !== 4) out.push(`thumb: ${sk.thumb.joints.length - 1} bones`);
+  const tl = HAND.thumb.seg.reduce((a, b) => a + b, 0);
+  if (Math.abs(digitLength(sk.thumb) - tl) > 0.5) out.push(`thumb ${digitLength(sk.thumb).toFixed(1)} mm (bones ${tl})`);
+  if (thumbSide(sk) >= 0) out.push('the thumb is on the little finger side');
+  const w = wristBendDeg(sk, c.elbow);
+  if (w > 70.5) out.push(`wrist bent ${w.toFixed(0)}°`);
+  for (const i of c.contact) if (sk.miss[i] > 3) out.push(`${['index', 'middle', 'ring', 'little', 'thumb'][i]} ${sk.miss[i].toFixed(1)} mm off its place`);
+  return out;
+}
+
+/** The guitar family's hands (C01, C05A–C, C07; E07 draws C01's player): fretting (front = top: one skeleton) and picking. */
+function guitarHandCases(): HandCase[] {
+  const out: HandCase[] = [];
+  for (const gv of [...C01_VARIANTS, ...C05A_VARIANTS, ...C05B_VARIANTS, ...C05C_VARIANTS, ...C07_VARIANTS]) {
+    const sc = guitarSceneOf(gv);
+    if (sc.o.lap) continue;
+    const front = guitarPlayerPose(sc, 'side');
+    const arm = fretArm3(front.shoulderL, front.handL.board!);
+    out.push({ name: `${gv.id} fretting`, sk: front.handL.posed!.sk, elbow: arm.elbow, contact: [...FRET_CONTACT] });
+    // The picking hand: its forearm lies over the bout from the elbow (nearly in the top's plane: the elbow
+    // rests on the bout's edge, 20 mm behind the wrist), the pick pinched by the thumb.
+    const pk = pickFront(front.handR);
+    const e = front.elbowR;
+    out.push({ name: `${gv.id} picking`, sk: pk, elbow: { x: e.u, y: e.v, z: pk.frame.o.z - 20 }, contact: [4] });
+  }
+  return out;
+}
+
+describe('figure pass 3 (owner 2026-10-15): hands on instruments — one hand model, every digit accounted for', () => {
+  it('THE HAND: five digits at adult proportions (phalanges ≈ 1 : 0.6 : 0.45; middle > ring > index > little; hand ≈ 0.8 head)', () => {
+    assert.equal(HAND.fingers.length, 4);
+    for (const f of HAND.fingers) {
+      const [p1, p2, p3] = f.seg;
+      assert.ok(p2 / p1 >= 0.5 && p2 / p1 <= 0.7, `${f.name}: middle/proximal ${(p2 / p1).toFixed(2)}`);
+      assert.ok(p3 / p2 >= 0.6 && p3 / p2 <= 0.85, `${f.name}: distal/middle ${(p3 / p2).toFixed(2)}`);
+      assert.ok(f.r.every((r, i) => i === 0 || r < f.r[i - 1]), `${f.name}: tapers to the tip`);
+    }
+    const reach = HAND.fingers.map((f) => f.mcp.x + f.seg.reduce((a, b) => a + b, 0));
+    const [index, middle, ring, little] = reach;
+    assert.ok(middle > ring && ring > index && index > little, `fingertips ${reach.map((r) => r.toFixed(0)).join('/')}`);
+    assert.ok(HAND_LENGTH / BODY.headH >= 0.75 && HAND_LENGTH / BODY.headH <= 0.82, `hand ${(HAND_LENGTH / BODY.headH).toFixed(2)} heads`);
+    assert.equal(HAND.thumb.seg.length, 3, 'the thumb: a metacarpal and two phalanges');
+    assert.ok(HAND.thumb.cmc.y < 0, 'the thumb grows from the radial side of the palm');
+    assert.ok(DIP_RATIO >= 0.6 && DIP_RATIO <= 0.8, 'the end joint follows the middle joint');
+  });
+
+  it('the checker itself catches a hand with its wrist broken back and a finger off its key', () => {
+    const f = handFrame({ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 0, y: -1, z: 0 });
+    const sk = handOn(f, [{ x: 400, y: 0, z: 0 }, { curl: 0.3 }, { curl: 0.3 }, { curl: 0.3 }]);
+    const issues = handProblems({ name: 'bad', sk, elbow: { x: 100, y: 200, z: 0 }, contact: [0] }).join(' | ');
+    assert.match(issues, /wrist bent/);
+    assert.match(issues, /index .* off its place/);
+  });
+
+  const cases = guitarHandCases();
+  it(`guitar family (C01 C05A–C C07; E07 shares C01): ${cases.length} posed hands`, () => {
+    assert.ok(cases.length >= 16);
+  });
+  for (const c of cases)
+    it(`${c.name}: five digits, thumb on its side, joints in range, wrist ≤ 70° (3-D), playing digits on their places`, () => {
+      assert.deepEqual(handProblems(c), []);
+    });
+
+  it('the fretting hand from above is the SAME skeleton as from the front (one hand, two views)', () => {
+    for (const gv of [...C01_VARIANTS, ...C05B_VARIANTS]) {
+      const sc = guitarSceneOf(gv);
+      const a = guitarPlayerPose(sc, 'side').handL.posed!.sk;
+      const b = guitarPlayerPose(sc, 'top').handL.posed!.sk;
+      assert.deepEqual(a.fingers.map((d) => d.joints), b.fingers.map((d) => d.joints), gv.id);
+    }
+  });
+
+  it('the drawing paints the posed hands (handShape → drawHand3) with nails; the pick shows only outside the pinch', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    assert.match(src, /if \(h\.posed\) \{\s*const d = drawHand3\(h\.posed\.sk, h\.posed\.view/);
+    assert.match(src, /export function drawHand3\(sk: HandSkeleton, view: HandView/);
+    assert.match(src, /<Nails path=\{b\.nails\} \/>/);
+    assert.match(src, /return Skia\.Path\.MakeFromOp\(pk, hand, PathOp\.Difference\) \?\? pk;/);
+    // A robust union: a wrong boolean result is retried, never silently dropping a part (a whole sleeve once came back as its cap).
+    assert.match(src, /function unite\(a: SkPath, b: SkPath\): SkPath \{/);
+  });
+
+  it('SLEEVES GROW OUT OF THE SHIRT: every shared-figure sleeve fades in from the shoulder (no plugged tube, no seam line round the arm)', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    for (const v of ['buildFront(', 'buildAbove(', 'buildSide(']) {
+      const body = src.slice(src.indexOf(`function ${v}`), src.indexOf('\n}\n', src.indexOf(`function ${v}`)));
+      assert.match(body, /emerge: emergeAlong\(/, `${v}: the sleeve emerges from the shirt`);
+    }
+    // The near arm's drop shadow fades with it; the shirt's own outline is hushed under the deltoids (front).
+    assert.match(src, /<Emerging emerge=\{m\.emerge \?\? null\} path=\{m\.path\}>/);
+    assert.match(src, /\{ path: shirt, tone: 'shirt', box: garment, quiet: union\(capL, capR\) \}/);
+    // Cloth folds only at a bent elbow — never a line along the sleeve (owner 2026-10-10: welts).
+    const sf = src.slice(src.indexOf('function sleeveFolds('), src.indexOf('const SEAM_OPACITY'));
+    assert.match(sf, /if \(bend > 0\.6\)/);
+    assert.doesNotMatch(sf, /curve\(\[A\(/, 'no seam drawn round the arm');
   });
 });

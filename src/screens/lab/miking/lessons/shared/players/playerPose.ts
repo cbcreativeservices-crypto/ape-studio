@@ -18,6 +18,8 @@
  * no source gives a player's geometry (acoustic_guitar/GEOMETRY_PROPOSAL.md §5).
  */
 
+import type { HandSkeleton, HandView, V3 } from './handModel.ts';
+
 export type Pt = { u: number; v: number };
 
 /** What a hand is doing (its drawn shape). */
@@ -54,8 +56,17 @@ export type Hand = {
   dir: number;
   kind: HandKind;
   /** 'fret' / 'bar': the fingerboard the fingers lie across — its centre
-   *  line v, its half-width, and the fret spaces (u) the fingertips stop. */
-  board?: { v: number; half: number; tips: number[] };
+   *  line v, its half-width, and the fret spaces (u) the fingertips stop;
+   *  (figure pass 3) how many strings (courses) cross it, and whether the
+   *  thumb's tip shows over the top edge (steel strings) or stays behind the
+   *  neck (a classical guitar, a bass). */
+  board?: { v: number; half: number; tips: number[]; strings?: number; thumbOver?: boolean };
+  /** FIGURE PASS 3: a hand posed bone by bone (handModel.ts) and the view it is
+   *  seen in — the drawing paints this skeleton (PlayerFigure.drawHand3); the
+   *  `wrist` above is its projected wrist. `cut`: parts behind this plane are
+   *  painted behind the instrument; `pick`: a pick held in it (its broad
+   *  end's corners and its point). */
+  posed?: { sk: HandSkeleton; view: HandView; cut?: { p: V3; n: V3 }; pick?: { a: V3; b: V3; tip: V3 } };
 };
 
 /** 'side': in profile (added 2026-10-05 for the pianist and the drummer);

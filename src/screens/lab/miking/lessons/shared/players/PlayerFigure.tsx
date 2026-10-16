@@ -44,9 +44,11 @@
  * lute players) paints it with the same look through <FigureMass/> and
  * <FigureHead/>.
  */
-import { useMemo } from 'react';
-import { BlurMask, Circle, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { useMemo, type ReactNode } from 'react';
+import { BlurMask, Circle, Group, LinearGradient, Mask, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { angleOf, BODY, dist, lerp, poseHit, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
+import { h3, HAND, type HandSkeleton, type HandView, type V3 } from './handModel.ts';
+import { FLAT_VIEW, fretFront, pickFront } from './handPoses.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -106,16 +108,52 @@ export function limb(pts: Pt[], rs: number[]): SkPath {
   let out: SkPath | null = null;
   for (let i = 0; i < pts.length - 1; i++) {
     const c = capsule(pts[i], pts[i + 1], rs[i], rs[i + 1]);
-    out = out ? Skia.Path.MakeFromOp(out, c, PathOp.Union) ?? out : c;
+    out = out ? unite(out, c) : c;
   }
   return out ?? make();
+}
+
+/** Whether `outer`'s bounds hold `inner`'s (within a millimetre). */
+function holds(outer: SkPath, inner: SkPath): boolean {
+  const a = outer.computeTightBounds();
+  const b = inner.computeTightBounds();
+  if (b.width <= 0 && b.height <= 0) return true;
+  return a.x <= b.x + 1 && a.y <= b.y + 1 && a.x + a.width >= b.x + b.width - 1 && a.y + a.height >= b.y + b.height - 1;
+}
+
+/**
+ * A ROBUST UNION (figure pass 3): Skia's path ops can, for some exact
+ * coordinates, return a wrong result instead of failing (a guitarist's whole
+ * fretting sleeve came back as its deltoid cap alone). The result is checked
+ * against both shapes' bounds; on a bad result the union is tried the other
+ * way round, then with the second shape nudged by a few tenths of a
+ * millimetre (far below a pixel) — never silently dropping a part.
+ */
+function unite(a: SkPath, b: SkPath): SkPath {
+  const ok = (r: SkPath | null): r is SkPath => !!r && holds(r, a) && holds(r, b);
+  const r1 = Skia.Path.MakeFromOp(a, b, PathOp.Union);
+  if (ok(r1)) return r1;
+  const r2 = Skia.Path.MakeFromOp(b, a, PathOp.Union);
+  if (ok(r2)) return r2;
+  for (const [dx, dy] of [
+    [0.11, -0.07],
+    [-0.13, 0.17],
+    [0.29, 0.23],
+    [-0.41, -0.37],
+  ]) {
+    const bb = b.copy();
+    bb.offset(dx, dy);
+    const r3 = Skia.Path.MakeFromOp(a, bb, PathOp.Union);
+    if (ok(r3)) return r3;
+  }
+  return r1 ?? a;
 }
 
 function union(...ps: (SkPath | null)[]): SkPath {
   let out: SkPath | null = null;
   for (const p of ps) {
     if (!p) continue;
-    out = out ? Skia.Path.MakeFromOp(out, p, PathOp.Union) ?? out : p;
+    out = out ? unite(out, p) : p;
   }
   return out ?? make();
 }
@@ -210,7 +248,51 @@ function lookOf(path: SkPath, tone: FigureTone): Look {
  * contour. `far`: the far limb in a profile, a little darker. Shared with the
  * art that builds its own figure geometry (bowed, lutes).
  */
-export function FigureMass({ path, tone, far = false, contour = 2.2, quiet = null, box = null, soft = null }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null }) {
+/**
+ * A sleeve that GROWS OUT OF the shirt (figure pass 3, owner 2026-10-15: "shoulder transitions from shirt sleeves to
+ * the shirt body look very unnatural and plug and position interchangeable limbs"): inside the body it leaves (`from`)
+ * the sleeve fades in along its own length — invisible at `a` (the point of the shoulder), fully there at `b`
+ * (≈ where the deltoid ends) — so the shirt's own cloth, light and shadow carry on over the shoulder and the arm
+ * emerges from it; outside the body (the shoulder's silhouette) it is always fully drawn.
+ */
+export type Emerge = { from: SkPath; a: Pt; b: Pt };
+
+export function FigureMass(props: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null; emerge?: Emerge | null }) {
+  return (
+    <Emerging emerge={props.emerge ?? null} path={props.path}>
+      <FigureMassCore {...props} />
+    </Emerging>
+  );
+}
+
+/** Draws its children faded in as `emerge` says (anything that belongs to an emerging sleeve: its mass, its shadow). */
+export function Emerging({ emerge, path, children }: { emerge: Emerge | null; path: SkPath; children: ReactNode }) {
+  const outside = useMemo(() => {
+    if (!emerge) return null;
+    const r = path.getBounds();
+    const q = make();
+    q.addRect(Skia.XYWHRect(r.x - 80, r.y - 80, r.width + 160, r.height + 160));
+    return Skia.Path.MakeFromOp(q, emerge.from, PathOp.Difference);
+  }, [emerge, path]);
+  if (!emerge) return <>{children}</>;
+  return (
+    <Mask
+      mode="alpha"
+      mask={
+        <Group>
+          {outside ? <Path path={outside} color="black" /> : null}
+          <Path path={emerge.from}>
+            <LinearGradient start={vec(emerge.a.u, emerge.a.v)} end={vec(emerge.b.u, emerge.b.v)} colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']} />
+          </Path>
+        </Group>
+      }
+    >
+      {children}
+    </Mask>
+  );
+}
+
+function FigureMassCore({ path, tone, far = false, contour = 2.2, quiet = null, box = null, soft = null }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null }) {
   const t = FIGURE_TONES[tone];
   const look = useMemo(() => lookOf(path, tone), [path, tone]);
   const own = useMemo(() => path.getBounds(), [path]);
@@ -256,6 +338,17 @@ export function FigureMass({ path, tone, far = false, contour = 2.2, quiet = nul
           <BlurMask blur={t.rimW * 0.9} style="normal" />
         </Path>
       </Group>
+      {/* Figure pass 3 (owner 2026-10-15: "plug and position interchangeable limbs"): where the mass melts into the
+          one behind it (a sleeve's top in the shoulder) its own rim light and core shadow FADE out — the garment's
+          plain light is laid back over that region with a soft edge — so no crescent stops on a hard line there. */}
+      {quiet ? (
+        <Group clip={path}>
+          <Path path={quiet}>
+            <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={t.ramp} positions={[0, 0.38, 0.72, 1]} />
+            <BlurMask blur={18} style="normal" />
+          </Path>
+        </Group>
+      ) : null}
       {far ? <Path path={path} color="#000" opacity={0.3} /> : null}
       <Group clip={clips?.hard ?? undefined}>
         <Path path={path} style="stroke" strokeWidth={contour} color={t.edge} opacity={0.95} />
@@ -273,9 +366,9 @@ export function FigureMass({ path, tone, far = false, contour = 2.2, quiet = nul
 export type GarmentBox = { x: number; y: number; width: number; height: number };
 
 /** Creases: a dark fold line with a lit edge just above-left of it. */
-function Folds({ path, light, width = 2.6, clip }: { path: SkPath; light: string; width?: number; clip?: SkPath }) {
+function Folds({ path, light, width = 2.6, clip, opacity = 1 }: { path: SkPath; light: string; width?: number; clip?: SkPath; opacity?: number }) {
   return (
-    <Group clip={clip}>
+    <Group clip={clip} opacity={opacity}>
       <Group transform={[{ translateX: -1.6 }, { translateY: -2.2 }]}>
         <Path path={path} style="stroke" strokeWidth={width * 0.7} strokeCap="round" color={light} opacity={0.32} />
       </Group>
@@ -401,7 +494,203 @@ export function FigureHead({ fill }: { fill: SkPath }) {
 
 /* ── hands ── */
 
-type HandShape = { path: SkPath; lines: SkPath; pick: SkPath | null; bar: SkPath | null; thumbBehind: SkPath | null };
+type HandShape = { path: SkPath; lines: SkPath; pick: SkPath | null; bar: SkPath | null; thumbBehind: SkPath | null; nails?: SkPath | null };
+
+/**
+ * THE HAND MODEL, DRAWN (figure pass 3, owner 2026-10-15: "check that the hand
+ * is correctly positioned, placed, bent, fingers and digits accounted for").
+ * A posed skeleton (handModel.ts) seen in a view: every bone of every digit a
+ * tapered mass between its joints (the digits' true widths), the palm the
+ * outline of its two faces, the thenar mass round the thumb's metacarpal, the
+ * bare wrist out of the cuff. Painted far to near:
+ *   • `path` — what lies in front of `cut` (a plane: the instrument's face),
+ *     `behind` — what lies behind it (the thumb on the back of a neck, the
+ *     fingers' roots below a board), painted before the instrument;
+ *   • `lines` — each digit's edge where it lies over another part (so the
+ *     fingers read apart), and a soft crease over each middle knuckle that
+ *     faces the viewer;
+ *   • `nails` — a nail on each fingertip whose back faces the viewer (seen at
+ *     close range; at full size they are a hint of light on the tips).
+ * `fore`: the forearm's direction in the picture — the wrist is cut square
+ * at the cuff there (no skin over the sleeve).
+ */
+export function drawHand3(sk: HandSkeleton, view: HandView, opts: { fore?: number; foreshortened?: boolean; cut?: { p: V3; n: V3 } } = {}): { path: SkPath; behind: SkPath | null; lines: SkPath; nails: SkPath } {
+  const P = (q: V3) => {
+    const r = view(q);
+    return pt(r.u, r.v);
+  };
+  const D = (q: V3) => view(q).d;
+  const f = sk.frame;
+  const behindOf = (q: V3) => (opts.cut ? h3.dot(h3.sub(q, opts.cut.p), opts.cut.n) < 0 : false);
+  type Part = { path: SkPath; depth: number; back: boolean; digit: boolean };
+  const parts: Part[] = [];
+  // The wrist: from the cuff's edge, along the FOREARM (the wrist bends at
+  // its joint — the column never carries on along the hand into the
+  // sleeve), to the heel of the hand along the hand.
+  // (In the picture: the sleeve, drawn to the wrist along the forearm's
+  // picture direction, ends ARM.cuffGap short of it, so the bare wrist runs
+  // back that way under the cuff's edge and is cut square there.)
+  const w1 = P(f.o);
+  const w0 = opts.fore !== undefined ? pt(w1.u - Math.cos(opts.fore) * (ARM.cuffGap + 24), w1.v - Math.sin(opts.fore) * (ARM.cuffGap + 24)) : P(h3.add(f.o, h3.mul(f.x, -(ARM.cuffGap + 24))));
+  const w2 = P(h3.add(f.o, h3.mul(f.x, 22)));
+  // A forearm reaching toward the viewer (foreshortened) ends BEHIND the
+  // hand: the hand is drawn in front of its own cuff, no column runs back.
+  let wrist = opts.foreshortened ? capsule(w1, w2, HAND.wristHalf, HAND.wristHalf + 4) : union(capsule(w0, w1, HAND.wristHalf, HAND.wristHalf), capsule(w1, w2, HAND.wristHalf, HAND.wristHalf + 4));
+  if (opts.fore !== undefined && !opts.foreshortened) wrist = trimAtCuff(wrist, w1, opts.fore);
+  parts.push({ path: wrist, depth: D(f.o) - 30, back: behindOf(f.o), digit: false });
+  // The palm: the hull of its two faces.
+  const palmPts = sk.palm.map(P);
+  const palm = smooth(hull2(palmPts), 0.5);
+  const pc = sk.palm.reduce((a, q) => h3.add(a, h3.mul(q, 1 / sk.palm.length)), { x: 0, y: 0, z: 0 });
+  parts.push({ path: palm, depth: D(pc), back: behindOf(pc), digit: false });
+  // The digits, bone by bone (each bone painted on its own side of the cut).
+  const digits = [...sk.fingers, sk.thumb];
+  digits.forEach((dg) => {
+    const js = dg.joints.map(P);
+    for (let k = 0; k < js.length - 1; k++) {
+      const mid = h3.mul(h3.add(dg.joints[k], dg.joints[k + 1]), 0.5);
+      // The thumb's metacarpal is the thenar mass: fuller, inside the palm.
+      const ra = dg.name === 'thumb' && k === 0 ? dg.r[0] + 6 : dg.r[k];
+      const rb = dg.name === 'thumb' && k === 0 ? dg.r[1] + 1.5 : dg.r[k + 1];
+      parts.push({ path: capsule(js[k], js[k + 1], ra, rb), depth: D(mid), back: behindOf(mid), digit: true });
+    }
+  });
+  const front = union(...parts.filter((p) => !p.back).map((p) => p.path));
+  const backParts = parts.filter((p) => p.back);
+  const behind = backParts.length ? union(...backParts.map((p) => p.path)) : null;
+  // Lines: each digit (as a whole) where its visible edge lies over a farther
+  // part of the hand — open strokes, only in front of the cut.
+  const lines = make();
+  const digitPaths = digits.map((dg) => ({ path: limb(dg.joints.map(P), dg.r.map((r, k) => (dg.name === 'thumb' && k === 0 ? r + 6 : r))), depth: D(dg.joints[2]) }));
+  const occluders = [...digitPaths, { path: palm, depth: D(pc) }];
+  for (const dp of digitPaths) {
+    let vis: SkPath | null = dp.path;
+    for (const o of occluders) {
+      if (o === dp || o.depth <= dp.depth) continue;
+      vis = vis ? Skia.Path.MakeFromOp(vis, o.path, PathOp.Difference) : null;
+    }
+    const farther = occluders.filter((o) => o !== dp && o.depth < dp.depth);
+    if (!vis || !farther.length) continue;
+    const others = union(...farther.map((o) => o.path));
+    edgeOver(vis, (q) => others.contains(q.u, q.v) && front.contains(q.u, q.v), lines);
+  }
+  // A soft crease over each middle knuckle that faces the viewer.
+  const toViewer = (q: V3, n: V3) => D(h3.add(q, n)) - D(q);
+  for (const dg of sk.fingers) {
+    if (toViewer(dg.joints[1], dg.dorsal[1]) > 0.35) lines.addPath(crease(P(dg.joints[0]), P(dg.joints[1]), 0.97, dg.r[1] * 0.6, 1.5));
+  }
+  // The nails: on each digit's last bone, its back toward the viewer.
+  const nails = make();
+  for (const dg of digits) {
+    const n = dg.dorsal[2];
+    const facing = toViewer(dg.joints[3], n);
+    if (facing < 0.2) continue;
+    const a = dg.joints[2];
+    const b = dg.joints[3];
+    const L = h3.len(h3.sub(b, a)) || 1;
+    const ax = h3.mul(h3.sub(b, a), 1 / L);
+    // Across the nail: square to the bone and to its back.
+    const acr0 = h3.sub(h3.sub(f.y, h3.mul(ax, h3.dot(f.y, ax))), h3.mul(n, h3.dot(f.y, n)));
+    const acr = h3.len(acr0) > 1e-3 ? h3.unit(acr0) : f.y;
+    const rT = dg.r[3];
+    const c = h3.add(h3.add(a, h3.mul(ax, L * 0.62)), h3.mul(n, rT * 0.72));
+    const hl = Math.min(L * 0.36, rT * 0.95);
+    const hw = rT * 0.72;
+    const ring: Pt[] = [];
+    for (let k = 0; k < 12; k++) {
+      const t = (k / 12) * Math.PI * 2;
+      // A rounded rectangle: fuller toward the free edge (the tip).
+      const along = Math.cos(t) * hl * (Math.cos(t) > 0 ? 1 : 0.9);
+      const across = Math.sin(t) * hw * (Math.cos(t) > 0 ? 0.92 : 1);
+      ring.push(P(h3.add(c, h3.add(h3.mul(ax, along), h3.mul(acr, across)))));
+    }
+    nails.addPath(smooth(ring, 0.5));
+  }
+  const nailsIn = Skia.Path.MakeFromOp(nails, front, PathOp.Intersect) ?? nails;
+  return { path: front, behind, lines, nails: nailsIn };
+}
+
+/** The runs of `path`'s outline where `keep` holds just outside it, as open
+ *  strokes added to `out` (sampled every ≈ 2 mm). */
+function edgeOver(path: SkPath, keep: (q: Pt) => boolean, out: SkPath): void {
+  const it = Skia.ContourMeasureIter(path, true, 1);
+  for (let c = it.next(); c; c = it.next()) {
+    const L = c.length();
+    const n = Math.max(4, Math.ceil(L / 2));
+    let open = false;
+    for (let i = 0; i <= n; i++) {
+      const [pos, tan] = c.getPosTan((i / n) * L);
+      // Test a hair OUTSIDE the shape's edge: what the edge lies over there.
+      const q1 = pt(pos.x + tan.y * 2.5, pos.y - tan.x * 2.5);
+      const q2 = pt(pos.x - tan.y * 2.5, pos.y + tan.x * 2.5);
+      const outside = path.contains(q1.u, q1.v) ? q2 : q1;
+      const k = keep(outside);
+      if (k && !open) {
+        out.moveTo(pos.x, pos.y);
+        open = true;
+      } else if (k) out.lineTo(pos.x, pos.y);
+      else open = false;
+    }
+  }
+}
+
+/** A pick held in a posed hand: its rounded broad end in the pinch, its
+ *  point out toward the strings — only what shows outside the hand. */
+function pickPath(pick: { a: V3; b: V3; tip: V3 }, view: HandView, hand: SkPath): SkPath {
+  const P = (q: V3) => {
+    const r = view(q);
+    return pt(r.u, r.v);
+  };
+  const pk = make();
+  const a = P(pick.a);
+  const b = P(pick.b);
+  const t = P(pick.tip);
+  pk.moveTo(a.u, a.v);
+  pk.quadTo((a.u + b.u) / 2 + (a.u + b.u - 2 * t.u) * 0.15, (a.v + b.v) / 2 + (a.v + b.v - 2 * t.v) * 0.15, b.u, b.v);
+  pk.lineTo(t.u, t.v);
+  pk.close();
+  return Skia.Path.MakeFromOp(pk, hand, PathOp.Difference) ?? pk;
+}
+
+/** Both hands' nails as one path. */
+function joinedNails(a: HandShape | null, b: HandShape | null): SkPath {
+  const p = make();
+  if (a?.nails) p.addPath(a.nails);
+  if (b?.nails) p.addPath(b.nails);
+  return p;
+}
+
+/** The convex hull of picture points (monotone chain). */
+function hull2(points: Pt[]): Pt[] {
+  const p = [...points].sort((a, b) => a.u - b.u || a.v - b.v);
+  if (p.length < 3) return p;
+  const cr = (o: Pt, a: Pt, b: Pt) => (a.u - o.u) * (b.v - o.v) - (a.v - o.v) * (b.u - o.u);
+  const lo: Pt[] = [];
+  for (const q of p) {
+    while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop();
+    lo.push(q);
+  }
+  const up: Pt[] = [];
+  for (let i = p.length - 1; i >= 0; i--) {
+    const q = p[i];
+    while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop();
+    up.push(q);
+  }
+  return [...lo.slice(0, -1), ...up.slice(0, -1)];
+}
+
+/** The nails' paint: a paler, faintly glossy plate with a fine edge. */
+export const NAIL = { fill: '#d6bcab', edge: '#6e5646', opacity: 0.62 } as const;
+/** Fingernails painted over a hand (any art with the house hand). */
+export function Nails({ path }: { path: SkPath | null | undefined }) {
+  if (!path) return null;
+  return (
+    <Group opacity={NAIL.opacity}>
+      <Path path={path} color={NAIL.fill} />
+      <Path path={path} style="stroke" strokeWidth={0.9} color={NAIL.edge} opacity={0.7} />
+    </Group>
+  );
+}
 
 /**
  * THE HAND (figure polish 2026-10-10, owner: "high-end drawings everywhere …
@@ -508,12 +797,30 @@ export function wristLimit(fore: number, dir: number, max = (70 * Math.PI) / 180
 
 /** A hand (in its own frame), as one outline plus its knuckle and finger
  *  lines; `pick` adds a pick's tip. Exported for art with its own figure. */
-export function handShape(h: Hand, fore?: number): HandShape {
+export function handShape(h: Hand, fore?: number, foreLen?: number): HandShape {
+  // THE HAND MODEL (figure pass 3): a fretting hand seen from the front and a
+  // pick held over the strings are posed bone by bone (handPoses.ts) — every
+  // pad on its string behind its fret, the thumb behind the neck.
+  if (h.posed) {
+    const d = drawHand3(h.posed.sk, h.posed.view, { fore, foreshortened: foreLen !== undefined && foreLen < 0.85 * 255, cut: h.posed.cut });
+    const pk = h.posed.pick ? pickPath(h.posed.pick, h.posed.view, d.path) : null;
+    return { path: d.path, lines: d.lines, pick: pk, bar: null, thumbBehind: d.behind, nails: d.nails };
+  }
+  if (h.kind === 'fret' && h.board && h.board.tips.length >= 4) {
+    const sk = fretFront(h as Hand & { board: NonNullable<Hand['board']> });
+    const d = drawHand3(sk, FLAT_VIEW, { fore, foreshortened: foreLen !== undefined && foreLen < 0.85 * 255, cut: { p: { x: 0, y: h.board.v, z: -16 }, n: { x: 0, y: 0, z: 1 } } });
+    return { path: d.path, lines: d.lines, pick: null, bar: null, thumbBehind: d.behind, nails: d.nails };
+  }
+  if (h.kind === 'pick') {
+    const sk = pickFront(h);
+    const d = drawHand3(sk, FLAT_VIEW, { fore });
+    return { path: d.path, lines: d.lines, pick: pickPath(sk.pick, FLAT_VIEW, d.path), bar: null, thumbBehind: null, nails: d.nails };
+  }
 
   const L = local(h);
   const W = BODY.handW / 2;
   const lines = make();
-  if (h.kind === 'pick' || h.kind === 'grip') {
+  if (h.kind === 'grip') {
     // A loose FIST seen from its back: the palm, the four proximal phalanges
     // running forward to a row of rounded middle knuckles (the rest of each
     // finger folded under, its middle phalanx peeking below), the thumb along
@@ -540,17 +847,7 @@ export function handShape(h: Hand, fore?: number): HandShape {
     const tj = thumb.joints;
     lines.addPath(crease(tj[1], tj[2], 0.92, 9, 2));
     lines.addPath(crease(tj[2], tj[3], 0.62, 6, -1.5));
-    let pick: SkPath | null = null;
-    if (h.kind === 'pick') {
-      const tip = L(122, -W * 1.08);
-      pick = make();
-      const a = L(110, -W * 1.2);
-      const b = L(114, -W * 0.76);
-      pick.moveTo(a.u, a.v);
-      pick.lineTo(b.u, b.v);
-      pick.lineTo(tip.u + Math.cos(h.dir) * 14, tip.v + Math.sin(h.dir) * 14);
-      pick.close();
-    }
+    const pick: SkPath | null = null;
     return { path: union(wristOf(L, h, fore), palm, ...folded, ...fist, thumb.path), lines, pick, bar: null, thumbBehind: null };
   }
   if (h.kind === 'fret' && h.board) {
@@ -778,7 +1075,7 @@ export function neckHand(tips: Pt[], a: Pt, b: Pt, elbow: Pt): { wrist: Pt; dir:
 
 /* ── the parts ── */
 
-type Mass = { path: SkPath; tone: FigureTone; far?: boolean; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null };
+type Mass = { path: SkPath; tone: FigureTone; far?: boolean; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null; emerge?: Emerge | null };
 
 type Built = {
   behind: Mass[];
@@ -787,6 +1084,8 @@ type Built = {
   foldsBehind: { path: SkPath; light: string; clip?: SkPath }[];
   foldsFront: { path: SkPath; light: string }[];
   handLines: SkPath;
+  /** The fingernails (pass 3): painted over the hands. */
+  nails: SkPath;
   shirtLines: SkPath;
   shirtLinesFront: SkPath;
   buttons: Pt[];
@@ -1017,6 +1316,15 @@ function capAlong(root: Pt, elbow: Pt): SkPath {
   return smooth([A(-44, 0), A(-30, 38), A(10, 45), A(70, 43), A(end * 0.75, 40.5), A(end, 28), A(end, -28), A(end * 0.75, -40.5), A(70, -43), A(10, -45), A(-30, -38)], 0.5);
 }
 
+/** The sleeve growing out of the shirt (FigureMass `emerge`): from the point of
+ *  the shoulder `root` along the upper arm toward `elbow` — gone at 10 mm,
+ *  fully there ≈ 150 mm down (where the deltoid ends). */
+function emergeAlong(body: SkPath, root: Pt, elbow: Pt): Emerge {
+  const L = Math.max(1, dist(root, elbow));
+  const d = pt((elbow.u - root.u) / L, (elbow.v - root.v) / L);
+  return { from: body, a: pt(root.u + d.u * 10, root.v + d.v * 10), b: pt(root.u + d.u * Math.min(150, L * 0.6), root.v + d.v * Math.min(150, L * 0.6)) };
+}
+
 /** Where a sleeve LEAVES the shirt body (FigureMass `soft`): the shirt within
  *  ≈ 150 mm of the shoulder joint. There the sleeve's edge is only a soft fold
  *  (it is the same cloth turning over the shoulder); further down, an arm in
@@ -1050,11 +1358,38 @@ function cuffSeam(e: Pt, w: Pt): SkPath {
   return crease(e, w, Math.max(0, 1 - 36 / L), 31, 2);
 }
 
-/** Sleeve folds: none drawn (owner 2026-10-10 — stroked creases on the
- *  sleeve read as welts on the arm); the sleeve's form comes from its shading. */
-function sleeveFolds(_s: Pt, _e: Pt, _w: Pt): SkPath {
-  return make();
+/**
+ * THE SLEEVE AS CLOTH (figure pass 3, owner 2026-10-15: "shoulder transitions
+ * from shirt sleeves to the shirt body look very unnatural"). Never a line
+ * ALONG the sleeve (owner 2026-10-10: those read as welts) — only where the
+ * cloth folds: at a bent ELBOW, one short soft crease in the crook (the cloth
+ * gathering there), none on a straight arm. (The shoulder needs no line:
+ * the sleeve grows out of the shirt — FigureMass `emerge`.) Drawn faint
+ * (Folds, `SEAM_OPACITY`), clipped to the sleeve.
+ */
+function sleeveFolds(s: Pt, e: Pt, w: Pt): SkPath {
+  const p = make();
+  const L1 = dist(s, e);
+  const L2 = dist(e, w);
+  if (L1 < 90) return p; // foreshortened (seen end-on): the cloth's lines would be guesses
+  const d1 = pt((e.u - s.u) / L1, (e.v - s.v) / L1);
+  if (L2 > 90) {
+    const d2 = pt((w.u - e.u) / L2, (w.v - e.v) / L2);
+    const cr = d1.u * d2.v - d1.v * d2.u;
+    const bend = Math.atan2(Math.abs(cr), d1.u * d2.u + d1.v * d2.v);
+    if (bend > 0.6) {
+      // The crook's side: the bisector between the upper arm (reversed) and the forearm.
+      let bi = pt(-d1.u + d2.u, -d1.v + d2.v);
+      const bl = Math.hypot(bi.u, bi.v) || 1;
+      bi = pt(bi.u / bl, bi.v / bl);
+      // One gentle arc hugging the crook (two nested ones read as tick marks at 3×).
+      p.addPath(curve([pt(e.u + bi.u * 16 - d1.u * 30, e.v + bi.v * 16 - d1.v * 30), pt(e.u + bi.u * 9, e.v + bi.v * 9), pt(e.u + bi.u * 16 + d2.u * 28, e.v + bi.v * 16 + d2.v * 28)]));
+    }
+  }
+  return p;
 }
+/** How strongly the sleeve's seam and creases show (they are cloth, not outlines). */
+const SEAM_OPACITY = 0.5;
 
 /** Trouser folds for one leg: a soft crease below the knee, a short one down
  *  the shin. */
@@ -1155,11 +1490,12 @@ function buildFront(pose: PlayerPose): Built {
   below.addRect(Skia.XYWHRect(pose.hipR.u - 400, beltV + 12, pose.hipL.u - pose.hipR.u + 800, 600));
   const shirt = Skia.Path.MakeFromOp(torso, below, PathOp.Difference) ?? torso;
   const head = intoCollar(headFront(pose.head.c, pose.head.r, n.v), torso);
-  const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist));
-  const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist));
+  const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist), dist(pose.elbowR, pose.handR.wrist));
+  const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist), dist(pose.elbowL, pose.handL.wrist));
   const handLines = make();
   handLines.addPath(hR.lines);
   handLines.addPath(hL.lines);
+  const nails = joinedNails(hR, hL);
   // ONE SHIRT (figure pass 2, owner 2026-10-15: "shoulder transitions from
   // shirt sleeves to the shirt body look very unnatural"): the body and both
   // sleeves shaded in one light; inside the shoulder (the deltoid over the
@@ -1169,12 +1505,14 @@ function buildFront(pose: PlayerPose): Built {
   const inShoulder = (cap: SkPath) => Skia.Path.MakeFromOp(cap, shirt, PathOp.Intersect);
   const behind: Mass[] = [
     { path: trousers, tone: 'trousers' },
-    { path: shirt, tone: 'shirt', box: garment },
-    { path: armL, tone: 'shirt', box: garment, quiet: inShoulder(capL), soft: atShoulder(shirt, sL) },
+    // (Under each deltoid the shirt's own outline is hushed: the sleeve fades in over it there — pass 3.)
+    { path: shirt, tone: 'shirt', box: garment, quiet: union(capL, capR) },
+    { path: armL, tone: 'shirt', box: garment, quiet: inShoulder(capL), soft: atShoulder(shirt, sL), emerge: emergeAlong(shirt, pt(sL.u, sL.v + 12), pose.elbowL) },
   ];
   if (hL.thumbBehind) behind.push({ path: hL.thumbBehind, tone: 'skin' });
+  if (hR.thumbBehind) behind.push({ path: hR.thumbBehind, tone: 'skin' });
   const front: Mass[] = [
-    { path: armR, tone: 'shirt', box: garment, quiet: inShoulder(capR), soft: atShoulder(shirt, sR) },
+    { path: armR, tone: 'shirt', box: garment, quiet: inShoulder(capR), soft: atShoulder(shirt, sR), emerge: emergeAlong(shirt, pt(sR.u, sR.v + 12), pose.elbowR) },
     { path: hR.path, tone: 'skin' },
     { path: hL.path, tone: 'skin' },
   ];
@@ -1211,6 +1549,7 @@ function buildFront(pose: PlayerPose): Built {
     foldsBehind,
     foldsFront,
     handLines,
+    nails,
     shirtLines: lines,
     shirtLinesFront: linesFront,
     buttons,
@@ -1277,19 +1616,22 @@ function buildAbove(pose: PlayerPose): Built {
     return smooth([P(-34, -96), P(34, -96), P(46, -20), P(48, 60), P(34, 128), P(0, 150), P(-34, 128), P(-48, 60), P(-46, -20)], 0.5);
   });
   const head = headAbove(pose.head.c, pose.head.r);
-  const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist));
-  const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist));
+  const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist), dist(pose.elbowR, pose.handR.wrist));
+  const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist), dist(pose.elbowL, pose.handL.wrist));
   const handLines = make();
   handLines.addPath(hR.lines);
   handLines.addPath(hL.lines);
+  const nails = joinedNails(hR, hL);
   const behind: Mass[] = [];
   if (thighs) behind.push({ path: thighs, tone: 'trousers' });
   // One shirt from above too: the sleeves leave the shoulders' outline in the
   // shirt's own light, their edge over the shoulders a soft fold (pass 2).
   const garment = garmentBox(torso, armL, armR);
-  behind.push({ path: torso, tone: 'shirt', box: garment }, { path: armL, tone: 'shirt', box: garment, soft: atShoulder(torso, sL) });
+  behind.push({ path: torso, tone: 'shirt', box: garment }, { path: armL, tone: 'shirt', box: garment, soft: atShoulder(torso, sL), emerge: emergeAlong(torso, sL, pose.elbowL) });
+  // A posed hand's parts behind the instrument (pass 3: a fretting hand's palm under the neck, a thumb behind it).
+  for (const hs of [hL, hR]) if (hs.thumbBehind) behind.push({ path: hs.thumbBehind, tone: 'skin' });
   const front: Mass[] = [
-    { path: armR, tone: 'shirt', box: garment, soft: atShoulder(torso, sR) },
+    { path: armR, tone: 'shirt', box: garment, soft: atShoulder(torso, sR), emerge: emergeAlong(torso, sR, pose.elbowR) },
     { path: hR.path, tone: 'skin' },
     { path: hL.path, tone: 'skin' },
   ];
@@ -1314,6 +1656,7 @@ function buildAbove(pose: PlayerPose): Built {
     ],
     foldsFront: [{ path: sleeveFolds(sR, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }],
     handLines,
+    nails,
     shirtLines: lines,
     shirtLinesFront: make(),
     buttons: [],
@@ -1400,10 +1743,11 @@ function buildSide(pose: PlayerPose): Built {
   const deltoid = Skia.Path.MakeFromOp(deltoidRaw, torso, PathOp.Intersect) ?? deltoidRaw;
   const armNear = sleeveArm(sh, pose.elbowR, pose.handR.wrist, deltoid);
   const head = intoCollar(headProfile(pose.head.c, pose.head.r, n.v + 10, f), torso);
-  const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist));
-  const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist));
+  const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist), dist(pose.elbowR, pose.handR.wrist));
+  const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist), dist(pose.elbowL, pose.handL.wrist));
   // Only the near hand's knuckles show (the far hand is behind the body).
   const handLines = hR.lines;
+  const nails = joinedNails(hR, null);
   // Details: the collar, the belt at the waist, the cuff of the near arm.
   const lines = make();
   lines.addPath(curve([along(1.04, -40), along(0.98, 10), along(1.0, 50)]));
@@ -1459,14 +1803,16 @@ function buildSide(pose: PlayerPose): Built {
     { path: shirt, tone: 'shirt', box: garment },
   ];
   // The sleeve's top inside the shoulder melts into the shirt (no knob).
+  // (Pass 3: the deltoid's whole region, ≈ 120 mm round the joint — the sleeve's own rim and core shadow fade out
+  // there, so its top never reads as a tube's squared end on the shoulder.)
   const shoulderQuiet = (() => {
     const d = make();
-    d.addCircle(sh.u, sh.v, 80);
+    d.addCircle(sh.u, sh.v, 120);
     return Skia.Path.MakeFromOp(d, torso, PathOp.Intersect);
   })();
   const front: Mass[] = [
     // Over the shirt body the sleeve's edge is a soft fold, not a part's outline.
-    { path: armNear, tone: 'shirt', quiet: shoulderQuiet, box: garment, soft: atShoulder(shirt, sh) },
+    { path: armNear, tone: 'shirt', quiet: shoulderQuiet, box: garment, soft: atShoulder(shirt, sh), emerge: emergeAlong(shirt, sh, pose.elbowR) },
     { path: hR.path, tone: 'skin' },
   ];
   return {
@@ -1483,6 +1829,7 @@ function buildSide(pose: PlayerPose): Built {
     ],
     foldsFront: [{ path: sleeveFolds(sh, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }],
     handLines,
+    nails,
     shirtLines: lines,
     shirtLinesFront: linesFront,
     buttons: [],
@@ -1503,6 +1850,12 @@ function built(pose: PlayerPose): Built {
     cache.set(pose, b);
   }
   return b;
+}
+
+/** The figure's built paths for a pose (the masses far → near, the hands'
+ *  lines and nails) — for review tools that draw the figure outside React. */
+export function figureParts(pose: PlayerPose): Readonly<Built> {
+  return built(pose);
 }
 
 /**
@@ -1563,13 +1916,13 @@ export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose
         .map((s, i) => (
           <FigureMass key={`shoeF${i}`} path={s.path} tone={s.tone} far={s.far} />
         ))}
-      {b.behind.map((m, i) => ((isLeg(m.tone) ? legs : upper) ? <FigureMass key={`b${i}`} path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} box={m.box} soft={m.soft} /> : null))}
+      {b.behind.map((m, i) => ((isLeg(m.tone) ? legs : upper) ? <FigureMass key={`b${i}`} path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} box={m.box} soft={m.soft} emerge={m.emerge} /> : null))}
       {(legs ? b.shoes : [])
         .filter((s) => !s.far && pose.view !== 'above')
         .map((s, i) => (
           <FigureMass key={`shoe${i}`} path={s.path} tone={s.tone} />
         ))}
-      {b.foldsBehind.map((fo, i) => ((fo.light === TROUSER_LIGHT ? legs : upper) ? <Folds key={`fb${i}`} path={fo.path} light={fo.light} clip={fo.clip} /> : null))}
+      {b.foldsBehind.map((fo, i) => ((fo.light === TROUSER_LIGHT ? legs : upper) ? <Folds key={`fb${i}`} path={fo.path} light={fo.light} clip={fo.clip} opacity={fo.light === SHIRT_LIGHT ? SEAM_OPACITY : 1} /> : null))}
       {upper ? (
         <>
       <Path path={b.shirtLines} style="stroke" strokeWidth={2.4} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
@@ -1616,21 +1969,24 @@ export function PlayerInFront({ pose, dim = 1, hands = true }: { pose: PlayerPos
       {front.map((m, i) => (
         <Group key={`f${i}`}>
           {i === 0 ? (
-            // The near arm's soft shadow on the instrument under it.
-            <Path path={m.path} color="#000" opacity={0.35} transform={[{ translateX: 8 }, { translateY: 12 }]}>
-              <BlurMask blur={12} style="normal" />
-            </Path>
+            // The near arm's soft shadow on the instrument under it (fading in with the sleeve).
+            <Emerging emerge={m.emerge ?? null} path={m.path}>
+              <Path path={m.path} color="#000" opacity={0.35} transform={[{ translateX: 8 }, { translateY: 12 }]}>
+                <BlurMask blur={12} style="normal" />
+              </Path>
+            </Emerging>
           ) : null}
-          <FigureMass path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} box={m.box} soft={m.soft} />
+          <FigureMass path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} box={m.box} soft={m.soft} emerge={m.emerge} />
           {i === 0
             ? b.foldsFront.map((fo, j) => (
-                <Folds key={`ff${j}`} path={fo.path} light={fo.light} clip={m.path} />
+                <Folds key={`ff${j}`} path={fo.path} light={fo.light} clip={m.path} opacity={SEAM_OPACITY} />
               ))
             : null}
         </Group>
       ))}
       <Path path={b.shirtLinesFront} style="stroke" strokeWidth={2.4} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
       {hands ? <Path path={b.handLines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} /> : null}
+      {hands ? <Nails path={b.nails} /> : null}
       {hands && b.pick ? (
         <Path path={b.pick}>
           <LinearGradient start={vec(b.pick.getBounds().x, b.pick.getBounds().y)} end={vec(b.pick.getBounds().x + 20, b.pick.getBounds().y + 20)} colors={PICK} />

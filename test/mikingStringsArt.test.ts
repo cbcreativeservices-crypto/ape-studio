@@ -37,6 +37,8 @@ import { C07_BUILT } from '../src/screens/lab/miking/lessons/c07AcousticBass/geo
 import type { BuiltGuitarModel } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
 import { guitarPlayerPose } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
 import { BODY } from '../src/screens/lab/miking/lessons/shared/players/playerPose.ts';
+import { FRET_CONTACT, FRET_PAD_D, fretArm3 } from '../src/screens/lab/miking/lessons/shared/players/handPoses.ts';
+import { fingerFlexDeg, wristBendDeg } from '../src/screens/lab/miking/lessons/shared/players/handModel.ts';
 
 const LESSONS: [Lesson, BuiltGuitarModel][] = [
   [C01_LESSON, C01_BUILT],
@@ -119,16 +121,44 @@ describe('the shared player: joints from the model, at true size (guitarPlayer.t
             assert.ok(inBox(sc.fit.fret, t, 0, 'y'), 'inside the fretting hand’s keep-out');
           }
         });
-        it(`${lesson.id}/${v.id}: the fretting wrist bends ≤ 70° from the forearm; adult arm lengths (owner 2026-10-10)`, () => {
+        it(`${lesson.id}/${v.id}: the fretting wrist bends ≤ 70° from the forearm IN 3-D; adult arm lengths (owner 2026-10-10; figure pass 3)`, () => {
+          // Figure pass 3 (owner 2026-10-15): the fretting arm is solved in 3-D (handPoses.fretArm3) — the forearm
+          // reaches FORWARD from the elbow beside the body to the hand under the neck, so the picture shows it
+          // foreshortened (shorter than an adult forearm) and the true bend is the 3-D one. (The flat-picture angle
+          // this test used to hold is no longer the wrist's bend: with a guitar resting on the thigh the elbow is
+          // level with the neck, and no adult arm reaches the hand under it with ≤ 70° in the picture's plane.)
           const w = front.handL.wrist;
           const e = front.elbowL;
-          const fore = Math.atan2(w.v - e.v, w.u - e.u);
-          const bend = Math.abs(Math.atan2(Math.sin(front.handL.dir - fore), Math.cos(front.handL.dir - fore))) * (180 / Math.PI);
-          // A short neck close in front of the shoulder (C05B mandolin, C05C soprano ukulele) cannot reach 70° in
-          // the flat picture with an adult arm; those keep their earlier arm (guitarPlayer.ts) — owner to decide.
-          const close = lesson.id === 'C05B' || lesson.id === 'C05C';
-          assert.ok(close || bend <= 70.5, `wrist bent ${bend.toFixed(0)}°`);
-          assert.ok(Math.hypot(e.u - front.shoulderL.u, e.v - front.shoulderL.v) <= 300 && Math.hypot(w.u - e.u, w.v - e.v) <= 270, 'adult arm lengths');
+          const sk = front.handL.posed!.sk;
+          const arm = fretArm3(front.shoulderL, front.handL.board!);
+          assert.ok(wristBendDeg(sk, arm.elbow) <= 70, `wrist bent ${wristBendDeg(sk, arm.elbow).toFixed(0)}° (3-D)`);
+          assert.ok(Math.abs(sk.frame.o.x - w.u) < 0.01 && Math.abs(sk.frame.o.y - w.v) < 0.01, 'the drawn wrist is the posed hand’s wrist');
+          assert.ok(Math.abs(arm.elbow.x - e.u) < 0.01 && Math.abs(arm.elbow.y - e.v) < 0.01, 'the drawn elbow is the solved elbow');
+          // Adult bones in 3-D (upper arm 300, forearm 255); the picture may only shorten them.
+          const S = arm.shoulder;
+          assert.ok(Math.abs(Math.hypot(arm.elbow.x - S.x, arm.elbow.y - S.y, arm.elbow.z - S.z) - 300) < 0.5, 'upper arm 300 mm');
+          assert.ok(Math.abs(Math.hypot(arm.wrist.x - arm.elbow.x, arm.wrist.y - arm.elbow.y, arm.wrist.z - arm.elbow.z) - 255) < 0.5, 'forearm 255 mm');
+          assert.ok(Math.hypot(e.u - front.shoulderL.u, e.v - front.shoulderL.v) <= 300 && Math.hypot(w.u - e.u, w.v - e.v) <= 255, 'adult arm lengths in the picture');
+        });
+        it(`${lesson.id}/${v.id}: the fretting hand is ON the neck — a C-major shape, each pressing pad on its string behind its fret, the little finger resting just over the strings, the thumb behind the neck, joints bent within their range (figure pass 3)`, () => {
+          const sk = front.handL.posed!.sk;
+          sk.miss.forEach((m, i) => assert.ok(m <= 3, `${['index', 'middle', 'ring', 'little', 'thumb'][i]} misses its place by ${m.toFixed(1)} mm`));
+          assert.deepEqual([...FRET_CONTACT], [0, 1, 2, 4], 'index, middle and ring press; the thumb is behind the neck');
+          for (const i of [0, 1, 2]) assert.ok(Math.abs(sk.fingers[i].joints[3].z - FRET_PAD_D) < 3, `${sk.fingers[i].name}: the pad presses its string`);
+          assert.ok(sk.fingers[3].joints[3].z > FRET_PAD_D + 10, 'the little finger rests just off the strings');
+          const b = front.handL.board!;
+          for (const f of sk.fingers) {
+            const tip = f.joints[3];
+            assert.ok(Math.abs(tip.y - b.v) <= b.half, `${f.name}: the pad is over the board`);
+            assert.ok(Math.min(...b.tips) - 1 <= tip.x && tip.x <= Math.max(...b.tips) + 1, `${f.name}: the pad is at one of the hand's stops`);
+            const { mcp, pip, dip } = fingerFlexDeg(sk.frame, f);
+            assert.ok(mcp >= -21 && mcp <= 91 && pip >= 0 && pip <= 111 && dip >= 0 && dip <= 81, `${f.name}: joints ${mcp.toFixed(0)}/${pip.toFixed(0)}/${dip.toFixed(0)}° within range`);
+            // An arched finger: the middle joint stands in front of the board's face (it never lies flat on it).
+            assert.ok(f.joints[1].z > 5 || f.joints[2].z > 5, `${f.name}: the finger arches over the board`);
+          }
+          const tt = sk.thumb.joints[3];
+          assert.ok(tt.z < -20, `the thumb's pad is behind the neck (${tt.z.toFixed(0)} mm)`);
+          assert.ok(tt.y > b.v - b.half && tt.y < b.v + b.half, 'the thumb is behind the neck, not over or under it');
         });
         it(`${lesson.id}/${v.id}: the picking hand is drawn round the picking envelope's far end, over the strings`, () => {
           const c = { u: front.handR.wrist.u + Math.cos(front.handR.dir) * BODY.handLen * 0.42, v: front.handR.wrist.v + Math.sin(front.handR.dir) * BODY.handLen * 0.42 };
