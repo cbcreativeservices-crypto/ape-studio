@@ -117,6 +117,7 @@ export function SInstrument({ lesson: full, art, variant, setVariant, hidden, jo
             title={lesson.title.toUpperCase()}
             badge={C.instrument.figureBadge}
             label={C.instrument.figureLabel}
+            box={art.figureBox?.(variant)}
           />
           {lesson.orient.map((f) => (
             <Card key={f.title}>

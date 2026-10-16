@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:51 · ccode · e816ae7e
+changed: Mallet keyboards art fix (I07/I08): the player is in the model, framed whole, names kept off the body
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:50 · ccode · d4b077a1
+changed: Reverb hero: 100% wet draws no dry hit (not a -80 dB stub)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:50 · ccode · 4313f7fb
 changed: Level & Amplitude art fix: equal-step meter scale, 3rd harmonic at 1.58 octaves on RTA and spectrogram, envelope-true waveform bars
 affects other side: nothing (app only)
