@@ -143,6 +143,9 @@ import { readingColumn, cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { relatedTermList, relatedTermsText } from '../../features/study/flashcardGestures';
 
+/** The STUDY tab's headphones (same bundled art as the nav bar). */
+const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
+
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
 // Search-field dictation button. Loaded via a GUARDED require so a dev client
@@ -4184,12 +4187,17 @@ ${COPY.glossaryFreeAllowance}`,
           accent={CUSTOM_CYAN}
           active={filter === 'custom'}
           icon={(c) => (
-            // "CUSTOM" + the 3-card deck glyph; count removed (shown in the
-            // top-right "# Terms" readout, user request 2026-07-24).
+            // [deck] CUSTOM STUDY [headphones] LIST (owner 2026-10-16): the deck
+            // leads; STUDY and the Study tab's headphones are in the Study blue,
+            // tying the list to studying. Count lives in the "# Terms" readout.
             <View style={styles.chipIconWrap}>
-              <Text style={[styles.chipText, { color: c }]}>CUSTOM STUDY LIST</Text>
               {/* The deck stays cyan, as on Enrollments, lit or not (owner 2026-10-14). */}
               <DeckIcon color={CUSTOM_CYAN} size={16} fill={filter === 'custom' ? `${CUSTOM_CYAN}33` : 'none'} />
+              <Text style={[styles.chipText, { color: c }]}>
+                CUSTOM <Text style={{ color: colors.blue }}>STUDY</Text>
+              </Text>
+              <ExpoImage source={STUDY_NAV_ICON} style={{ width: 14, height: 14, marginLeft: -2 }} contentFit="contain" />
+              <Text style={[styles.chipText, { color: c }]}>LIST</Text>
             </View>
           )}
           onPress={() => {
