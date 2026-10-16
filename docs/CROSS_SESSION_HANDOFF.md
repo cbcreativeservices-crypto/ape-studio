@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 12:16 · ccode · a57f52ea
+changed: Flashcards: restore the pace timer (bar + Hz/per-minute readouts + modal + time trial) beside the session clock
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 12:12 · ccode · 1a9c2a3a
 changed: Miking stage/studio plans: owner defaults 1-4 of the stage-plot review (2026-10-16)
 affects other side: nothing (app only)
