@@ -372,7 +372,12 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(seating, /function addFig\(b: Batch, tone: FigTone, q: SkPath\): void \{\s*b\.fig\[tone\] = Skia\.Path\.MakeFromOp\(b\.fig\[tone\], q, PathOp\.Union\)/);
     // (2026-10-15: the shoulder line now sits BELOW the chin — its top 14 mm over `sh` — and the neck ends just inside it.)
     assert.match(seating, /const NECK_V = g - sh - 8;/, 'the neck ends at the collar, not below the shoulder line');
-    assert.match(seating, /addFig\(b, 'shirt', ellipse\(P\(o\.u, g - sh \+ 22\), !prof \? 212 : 122, 36\)\)/, 'the shoulder line under the chin');
+    // Figure pass 2 (2026-10-15): the ellipse that made the shoulder line (its
+    // 122 mm half-width bulged at the throat in profile) is replaced by the
+    // shirt's own neckline: the sides of the neck 24 mm above the shoulder
+    // line, and the head stopped at the shirt (intoCollar).
+    assert.match(seating, /\[54, s \+ 24\], \/\/ the side of the neck/, 'the shoulder line under the chin');
+    assert.match(seating, /const head = intoCollar\(!prof \? headFront\(/, 'the neck goes into the collar');
     // Small percussion (I02–I05): the head sits on the collar (head centre 1606 mm, collar 1440 mm).
     assert.match(read('smallperc/Player.tsx'), /headProfile\(pt\(-346, H\(1606\)\), 108, H\(1440\), 1\)/);
   });
@@ -508,11 +513,18 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
       const bulge = chord - p.off; // behind the chord (more negative = further back)
       assert.ok(bulge <= 35, `PlayerFigure back at t=${p.t}: ${bulge.toFixed(0)} mm behind the nape→seat line`);
     }
-    // The bowed/brass figure: the torso is the hull of discs; read their sizes and forward shifts from the source.
+    // The bowed/brass figure (figure pass 2, 2026-10-15): its profile torso is
+    // now the house side figure's (profileTorso, BowedArt) — the same back
+    // check on its own points. (The hull of discs it replaced is gone; the
+    // bulgeOf check below still reads the postures.)
     const bowed = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
-    assert.match(bowed, /circlePts\(q\(add\(s\.chest, scale\(fw, 28\)\)\), 104\)/);
-    assert.match(bowed, /scale\(fw, 20\)\)\), 96\)/);
-    assert.match(bowed, /circlePts\(q\(add\(s\.hipL, scale\(fw, -8\)\)\), 96\)/);
+    const bt = bowed.slice(bowed.indexOf('function profileTorso('), bowed.indexOf('const pelvis', bowed.indexOf('function profileTorso(')));
+    const bBack = [...bt.matchAll(/along\((-?[\d.]+), (-?[\d.]+)\)/g)].map((m) => ({ t: Number(m[1]), off: Number(m[2]) })).filter((p) => p.off < 0).sort((a, b) => a.t - b.t);
+    assert.ok(bBack.length >= 5, 'the bowed profile back is drawn through enough points');
+    for (const p of bBack) {
+      const chord = bBack[0].off + ((p.t - bBack[0].t) / (bBack[bBack.length - 1].t - bBack[0].t)) * (bBack[bBack.length - 1].off - bBack[0].off);
+      assert.ok(chord - p.off <= 35, `bowed back at t=${p.t}: ${(chord - p.off).toFixed(0)} mm behind the nape→seat line`);
+    }
     const bulgeOf = (pl: { face: { x: number; z: number }; chest: V; pelvis: V; shoulderR: V; shoulderL: V; hipR: V; hipL: V }) => {
       const L = Math.hypot(pl.face.x, pl.face.z) || 1;
       const f = { x: pl.face.x / L, z: pl.face.z / L };

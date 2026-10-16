@@ -23,7 +23,7 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { armPath, FigureHead, FigureMass, handShape, headAbove, headFront, headProfile, limb } from '../players/PlayerFigure';
+import { ARM, armPath, FigureHead, FigureMass, handShape, headAbove, headFront, headProfile, intoCollar, limb, type GarmentBox } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose.ts';
 import { outline, BOWED, fbHalf, fingerboardZ, halfWidth, stationsOf, stringYs, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
 import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
@@ -438,16 +438,42 @@ let GRAND_PLAN: { body: SkPath; board: SkPath; plate: SkPath; cutouts: SkPath; s
  * the tube arms and the oval mitten hands. `arm` records where each arm ends
  * so `hand` turns the hand along that forearm.
  */
-function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void) {
+function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void, body: FigureBody | null = null, soft: ((zone: SkPath) => void) | null = null) {
   const ends: { end: P2; dir: number }[] = [];
   const PALM = 50; // the fist's grip point from the wrist (mm)
+  /** One sleeve: the arm's outline from the shoulder joint, its top joined to
+   *  the body's own shoulder (body.cap) so the sleeve flows out of the shirt —
+   *  one garment outline, an armhole seam at most (owner 2026-10-15). */
+  const sleeve = (a: P2, e: P2, wrist: { u: number; v: number }) => {
+    const root = pt(a.u, a.v + (body?.drop ?? 0));
+    const d1 = Math.atan2(e.v - root.v, e.u - root.u);
+    const d2 = Math.atan2(wrist.v - e.v, wrist.u - e.u);
+    // An arm folded back over itself in this view (a horn player's elbow at
+    // the side, the forearm coming toward the viewer and up to the lips):
+    // armPath's crook folds into spikes there — the upper arm down the side
+    // and the forearm over it, the elbow a rounded end below.
+    let p = Math.cos(d2 - d1) < -0.6 ? unite(limb([root, pt(e.u, e.v)], [ARM.root, ARM.elbow]), limb([pt(e.u, e.v), pt(wrist.u, wrist.v)], [ARM.belly, ARM.cuff])) : armPath(root, pt(e.u, e.v), pt(wrist.u, wrist.v));
+    const cap = body?.cap(a, e) ?? null;
+    // Where the sleeve leaves the shirt (its shoulder cap), its edge is only a soft fold.
+    if (cap && soft) soft(cap);
+    if (cap) {
+      // Round the joint nothing of the sleeve rises over the shirt's own
+      // shoulder line (the arm's round root end read as an epaulette); the
+      // shoulder itself is the shirt's (cap).
+      const zone = cut(ellipse(P(a.u, a.v), 58, 58), body!.torso, PathOp.Difference);
+      p = cut(p, zone, PathOp.Difference);
+      p = Skia.Path.MakeFromOp(p, cap, PathOp.Union) ?? p;
+    }
+    addShirt(p);
+  };
   const arm = (pts: P2[]) => {
     const [a, e, w] = pts;
     const dir = Math.atan2(w.v - e.v, w.u - e.u);
     ends.push({ end: w, dir });
-    const wrist = pt(w.u - Math.cos(dir) * PALM, w.v - Math.sin(dir) * PALM);
-    addShirt(armPath(pt(a.u, a.v), pt(e.u, e.v), wrist));
+    sleeve(a, e, pt(w.u - Math.cos(dir) * PALM, w.v - Math.sin(dir) * PALM));
   };
+  /** An arm to a bare wrist (the caller draws the hand). */
+  const armTo = (a: P2, e: P2, wrist: P2) => sleeve(a, e, wrist);
   const hand = (c: P2, ellipseOf: (c: P2) => SkPath) => {
     let best: { end: P2; dir: number } | null = null;
     let bd = 120;
@@ -462,7 +488,163 @@ function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void)
     const wrist = pt(c.u - Math.cos(best.dir) * PALM, c.v - Math.sin(best.dir) * PALM);
     addSkin(handShape({ wrist, dir: best.dir, kind: 'grip' }, best.dir).path);
   };
-  return { arm, hand };
+  return { arm, armTo, hand };
+}
+
+/** A smooth closed outline through points (Catmull-Rom as cubics, as
+ *  PlayerFigure shapes its bodies). */
+function smoothPoly(points: readonly P2[], tension = 0.5): SkPath {
+  const p = make();
+  const n = points.length;
+  const at = (i: number) => points[(i + n) % n];
+  p.moveTo(points[0].u, points[0].v);
+  for (let i = 0; i < n; i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const k = tension / 3;
+    p.cubicTo(p1.u + (p2.u - p0.u) * k, p1.v + (p2.v - p0.v) * k, p2.u - (p3.u - p1.u) * k, p2.v - (p3.v - p1.v) * k, p2.u, p2.v);
+  }
+  p.close();
+  return p;
+}
+const unite = (...ps: SkPath[]): SkPath => ps.reduce((acc, q) => Skia.Path.MakeFromOp(acc, q, PathOp.Union) ?? acc);
+const cut = (a: SkPath, b: SkPath, op: PathOp): SkPath => Skia.Path.MakeFromOp(a, b, op) ?? a;
+
+/**
+ * ONE ENSEMBLE FIGURE'S BODY in elevation (figure pass 2, owner 2026-10-15:
+ * "the boxy ensemble torsos"), shaped as PlayerFigure shapes its bodies, at the
+ * house adult sizes (playerPose BODY):
+ *   • FRONT: the trapezius sloping from the side of the neck to the point of
+ *     the shoulder, the deltoid rounding over the joint (≈ 488 mm across), the
+ *     chest under the arms (half 176–192), the waist narrower (half 150), the
+ *     shirt tucked in at a belt; the trouser pelvis over the hips (half 176),
+ *     the legs as thigh → knee → calf → ankle, real shoes;
+ *   • PROFILE: the chest forward, the belly, a healthy straight back with the
+ *     shoulder blade's shallow curve and the lumbar hollow, the shirt tucked at
+ *     the belt; the trouser pelvis (a flat front, the seat behind) into the near
+ *     thigh; a seated figure's thigh forward on the chair, the shin down, the
+ *     foot flat;
+ *   • a crew neckline: the neck goes INTO the collar (intoCollar).
+ * `cap(root, elbow)`: the body's own shoulder over that joint, unioned into the
+ * sleeve so the sleeve grows out of the shirt — the outer contour continuous
+ * from the neck over the shoulder down the arm, only an armhole seam inside.
+ * Values (mm above the floor `g`): `sh` the top of the shoulder line, the
+ * shoulder joints 40 below it; `hipUp` the hip joints. Pure drawing: the joints
+ * the arms and the instruments use are unchanged.
+ */
+type FigureBody = { torso: SkPath; shirt: SkPath; belt: SkPath; trousers: SkPath; shoes: SkPath; cap: (root: P2, elbow: P2) => SkPath | null; drop: number };
+function elevBody(cu: number, g: number, fs: number, standing: boolean, prof: boolean, sh: number, hipUp: number): FigureBody {
+  const s = sh;
+  const belt = standing ? hipUp + 80 : DIMS.chairSeat + 140;
+  const waist = belt + 92;
+  if (!prof) {
+    const U = (x: number, up: number) => P(cu + x, g - up);
+    const half: [number, number][] = [
+      [54, s + 24], // the side of the neck (the collar)
+      [128, s + 6], // the trapezius
+      [198, s - 8], // over the shoulder joint
+      [244, s - 54], // the deltoid
+      [238, s - 118],
+      [194, s - 190], // the armpit: the side of the chest under the arm
+      [180, s - 250],
+      [164, waist + 50], // the lower ribs
+      [150, waist], // the waist
+      [160, belt],
+      [164, belt - 30],
+    ];
+    const torso = smoothPoly([U(0, s + 2), U(30, s + 14), ...half.map(([x, up]) => U(x, up)), U(0, belt - 36), ...[...half].reverse().map(([x, up]) => U(-x, up)), U(-30, s + 14)], 0.5);
+    const below = rr(cu - 600, g - belt - 14, cu + 600, g + 100, 0);
+    const shirt = cut(torso, below, PathOp.Difference);
+    const low = standing ? hipUp - 90 : DIMS.chairSeat + 10;
+    const pelvis = smoothPoly([U(-160, belt + 18), U(160, belt + 18), U(172, belt - 50), U(176, hipUp - 10), U(150, low), U(0, low + 16), U(-150, low), U(-176, hipUp - 10), U(-172, belt - 50)], 0.5);
+    const beltPath = cut(rr(cu - 300, g - belt - 16, cu + 300, g - belt + 16, 0), unite(torso, pelvis), PathOp.Intersect);
+    const legs: SkPath[] = [];
+    const shoes: SkPath[] = [];
+    for (const sx of [-1, 1]) {
+      const x = (v: number) => sx * v;
+      if (standing) legs.push(limb([pt(cu + x(92), g - hipUp), pt(cu + x(100), g - 500), pt(cu + x(103), g - 360), pt(cu + x(105), g - 86)], [82, 57, 52, 36]));
+      else legs.push(limb([pt(cu + x(104), g - hipUp), pt(cu + x(120), g - 506)], [84, 66]), limb([pt(cu + x(120), g - 506), pt(cu + x(122), g - 360), pt(cu + x(124), g - 86)], [57, 53, 36]));
+      // The shoe from in front: the toe toward the viewer, the instep rising to the ankle.
+      const f = cu + x(standing ? 108 : 124);
+      shoes.push(smoothPoly([P(f - 52, g - 4), P(f - 46, g - 60), P(f, g - 80), P(f + 46, g - 60), P(f + 52 + sx * 6, g - 4)], 0.45));
+    }
+    const cap = (a: P2) => {
+      const sx = Math.sign(a.u - cu);
+      if (!sx) return null;
+      // The deltoid region over the joint; its inner edge is the armhole seam.
+      const R = (x: number, up: number) => P(a.u + sx * x, a.v - up);
+      return cut(torso, smoothPoly([R(-18, 74), R(96, 74), R(96, -72), R(30, -84), R(-26, -42)], 0.5), PathOp.Intersect);
+    };
+    return { torso, shirt, belt: beltPath, trousers: unite(pelvis, ...legs), shoes: unite(...shoes), cap, drop: 12 };
+  }
+  // PROFILE (f: the way the figure faces on screen).
+  const A = (fwd: number, up: number) => P(cu + fs * fwd, g - up);
+  const torso = smoothPoly(
+    [
+      A(42, s - 2), // the front of the collar
+      A(72, s - 62),
+      A(112, s - 170), // the chest
+      A(110, s - 272),
+      A(98, waist), // the belly
+      A(94, belt - 30),
+      A(-106, belt - 30),
+      A(-94, waist + 40), // the small of the back (a gentle lumbar hollow)
+      A(-104, s - 180), // the shoulder blade
+      A(-98, s - 70),
+      A(-72, s - 8),
+      A(-48, s + 22), // the nape
+    ],
+    0.5,
+  );
+  const below = rr(cu - 600, g - belt - 14, cu + 600, g + 100, 0);
+  const shirt = cut(torso, below, PathOp.Difference);
+  // The pelvis in the trousers: a flat front no further forward than the
+  // thigh, the seat behind — one mass with the near leg.
+  const pelvis = standing
+    ? smoothPoly([A(92, belt + 18), A(86, belt - 50), A(84, hipUp - 30), A(60, hipUp - 110), A(-60, hipUp - 110), A(-104, hipUp - 30), A(-112, belt - 40), A(-108, belt + 18)], 0.5)
+    : smoothPoly([A(94, belt + 18), A(90, belt - 60), A(80, hipUp + 40), A(40, DIMS.chairSeat + 4), A(-96, DIMS.chairSeat + 4), A(-118, hipUp + 10), A(-114, belt - 40), A(-108, belt + 18)], 0.5);
+  const beltPath = cut(smoothPoly([A(100, belt + 16), A(-112, belt + 16), A(-112, belt - 16), A(100, belt - 16)], 0.2), unite(torso, pelvis), PathOp.Intersect);
+  let leg: SkPath;
+  let ball: P2;
+  if (standing) {
+    leg = limb([pt(cu, g - hipUp), pt(cu + fs * 10, g - 500), pt(cu - fs * 8, g - 360), pt(cu, g - 86)], [82, 58, 54, 37]);
+    ball = A(40, 0);
+  } else {
+    leg = unite(limb([pt(cu, g - hipUp), pt(cu + fs * 420, g - 512)], [86, 62]), limb([pt(cu + fs * 420, g - 512), pt(cu + fs * 424, g - 350), pt(cu + fs * 440, g - 86)], [58, 54, 37]));
+    ball = A(480, 0);
+  }
+  // The shoe in profile: the heel behind the ankle, the toe forward.
+  const S = (fwd: number, up: number) => P(ball.u + fs * fwd, g - up);
+  const shoe = smoothPoly([S(-96, 2), S(-100, 64), S(-44, 92), S(40, 62), S(140, 34), S(150, 4)], 0.45);
+  const cap = (a: P2, e: P2) => {
+    // The deltoid along the upper arm (PlayerFigure.buildSide's teardrop: no
+    // wider than the sleeve, to ≈ 110 mm down), inside the shirt's outline.
+    const ax = Math.atan2(e.v - a.v, e.u - a.u);
+    const C = (al: number, ac: number) => P(a.u + Math.cos(ax) * al - Math.sin(ax) * ac, a.v + Math.sin(ax) * al + Math.cos(ax) * ac);
+    return cut(torso, smoothPoly([C(-44, 0), C(-30, 40), C(10, 45), C(70, 44), C(112, 43), C(112, -43), C(70, -44), C(10, -45), C(-30, -40)], 0.5), PathOp.Intersect);
+  };
+  return { torso, shirt, belt: beltPath, trousers: unite(pelvis, leg), shoes: shoe, cap, drop: 0 };
+}
+
+/** The shoulders and back from above (PlayerFigure.buildAbove's outline, in a
+ *  seat's local frame: x right, y back, the chest toward −y): a rounded
+ *  rectangle ≈ 456 mm across the deltoids and ≈ 236 mm deep, the back nearly
+ *  flat across the shoulder blades, the chest a little fuller. `cy`: the
+ *  collar's y. */
+function aboveTorso(cy: number): SkPath {
+  const half: [number, number][] = [
+    [118, -108],
+    [178, -88],
+    [222, -50],
+    [228, 4],
+    [218, 52],
+    [174, 84],
+    [90, 116],
+  ];
+  const at = (x: number, fwd: number) => P(x, cy - fwd);
+  return smoothPoly([at(0, -112), ...half.map(([x, f]) => at(-x, f)), at(0, 124), ...[...half].reverse().map(([x, f]) => at(x, f))], 0.5);
 }
 
 export function grandPlan() {
@@ -725,20 +907,25 @@ const BAND_TOOLS: BandTools = { P, capsule, taper, ellipse, rr, poly, line, flar
  *  folder held open in front of the chest. */
 function planVoice(b: Batch, s: Seat) {
   const put = placer(s);
-  for (const sx of [-1, 1]) put(b.fig.shoe, ellipse(P(sx * 100, -70), 48, 72));
-  put(b.fig.shirt, ellipse(P(0, 4), 222, 112));
-  if (s.kind === 'singer') {
-    // The arms hang at the sides: from above, only the tops of the upper arms.
-    for (const sx of [-1, 1]) put(b.fig.shirt, ellipse(P(sx * 206, 10), 50, 64));
-  } else {
+  // A STANDING person from above shows no feet (owner 2026-10-10): the head
+  // and the rounded shoulders read as the person. The arms of a singer hang
+  // under the deltoids (inside the outline): nothing more is drawn.
+  // The shirt is one mass per figure (a union: addPath of the torso and an
+  // arm drawn the other way round would cancel where they overlap).
+  let shirt = aboveTorso(-8);
+  if (s.kind !== 'singer') {
+    // The folder held in front of the chest: each arm from its shoulder, the
+    // elbow at the side, the forearm forward to the folder's edge.
+    const fa = figureArms((p) => (shirt = unite(shirt, p)), (p) => put(b.fig.skin, p));
     for (const sx of [-1, 1]) {
-      put(b.fig.shirt, limb([pt(sx * 180, -8), pt(sx * 186, -130), pt(sx * 150, -232)], [58, 48, 40]));
-      put(b.fig.skin, ellipse(P(sx * 146, -248), 38, 44));
+      fa.arm([P(sx * 186, 0), P(sx * 196, -118), P(sx * 150, -262)]);
+      fa.hand(P(sx * 150, -262), (q) => ellipse(q, 38, 44));
     }
     // The folder, open, tipped toward the singer (black covers, pale pages between).
     put(b.mat.ebony, rr(-182, -338, 182, -236, 12));
     put(b.hair, line(make(), P(0, -334), P(0, -240)));
   }
+  put(b.fig.shirt, shirt);
   const h = headAbove(pt(0, 0), 104);
   const q = h.fill.copy();
   q.transform(Skia.Matrix().translate(0, -37).rotate(Math.PI));
@@ -762,19 +949,22 @@ function planSeat(b: Batch, s: Seat) {
     put(b.fig.seat, rr(-215, -210, 215, 220, 60));
     put(b.fig.seat, rr(-205, 205, 205, 255, 22));
   }
-  // Legs: thighs forward to the knees (seated); feet (standing).
+  // Legs: seated, the thighs forward to the knees and the shoes past them
+  // (the toe forward, the heel under the knee). Standing: no feet from above
+  // (owner 2026-10-10) — the head and the shoulders read as the person.
   if (!standing && k !== 'conductor') {
     for (const sx of [-1, 1]) {
-      put(b.fig.trousers, taper(P(sx * 100, -20), P(sx * 112, -350), 80, 68));
-      put(b.fig.shoe, ellipse(P(sx * 120, -430), 52, 70));
+      put(b.fig.trousers, limb([pt(sx * 100, -20), pt(sx * 112, -350)], [84, 64]));
+      const th = sx * 0.12;
+      const S = (du: number, fwd: number) => P(sx * 120 + du * Math.cos(th) + fwd * Math.sin(th), -380 + du * Math.sin(th) - fwd * Math.cos(th));
+      put(b.fig.shoe, smoothPoly([S(-34, -96), S(34, -96), S(46, -20), S(48, 60), S(34, 128), S(0, 150), S(-34, 128), S(-48, 60), S(-46, -20)], 0.5));
     }
-  } else {
-    for (const sx of [-1, 1]) put(b.fig.shoe, ellipse(P(sx * 110, -90), 50, 72));
   }
-  // Shoulders and torso from above.
-  put(b.fig.shirt, ellipse(P(0, 40), 228, 118));
-  // Arms and the instrument, by kind (local: x right, y back, forward −y).
-  const fa = figureArms((p) => put(b.fig.shirt, p), (p) => put(b.fig.skin, p));
+  // Shoulders and back from above: a rounded outline, never an oval.
+  let shirt = aboveTorso(28);
+  // Arms and the instrument, by kind (local: x right, y back, forward −y):
+  // each sleeve unioned into the figure's one shirt mass.
+  const fa = figureArms((p) => (shirt = unite(shirt, p)), (p) => put(b.fig.skin, p));
   const arm = fa.arm;
   const hand = (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 50));
   const LS = P(-185, 30);
@@ -1105,6 +1295,7 @@ function planSeat(b: Batch, s: Seat) {
       // Group 4: the band players' instruments (BandArt.tsx).
       if (BAND_KINDS.has(k)) bandPlanInstrument(b, s, { ...BAND_TOOLS, put, arm, hand, LS, RS });
   }
+  put(b.fig.shirt, shirt);
   // The head from above (the nose toward the front: rotated half a turn).
   const h = headAbove(pt(0, 0), 104);
   const q = h.fill.copy();
@@ -1180,51 +1371,40 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   } else if (!standing) {
     const w = !prof ? 210 : 230;
     addFig(b, 'seat', rr(o.u - w, g - DIMS.chairSeat - 30, o.u + w, g - DIMS.chairSeat + 10, 12));
-    if (!prof) addFig(b, 'seat', rr(o.u - 200, g - 900, o.u + 200, g - DIMS.chairSeat - 20, 30));
+    if (!prof) addFig(b, 'seat', rr(o.u - 172, g - 880, o.u + 172, g - DIMS.chairSeat - 20, 30));
     else addFig(b, 'seat', rr(X(0, -230) - 25, g - 900, X(0, -230) + 25, g - DIMS.chairSeat, 12));
     line(b.legs, P(o.u - w + 20, g - DIMS.chairSeat), P(o.u - w + 10, g));
     line(b.legs, P(o.u + w - 20, g - DIMS.chairSeat), P(o.u + w - 10, g));
   }
-  // The legs.
-  if (standing) {
-    for (const sx of [-1, 1]) {
-      const xx = !prof ? o.u + sx * 95 : o.u + sx * 18;
-      addFig(b, 'trousers', taper(P(xx, g - hipUp), P(xx + (!prof ? sx * 12 : 0), g - 90), 82, 58));
-      addFig(b, 'shoe', ellipse(P(!prof ? xx + sx * 12 : o.u + Math.sign(fwdU || 1) * 60, g - 35), !prof ? 55 : 120, 38));
-    }
-  } else if (!prof) {
-    for (const sx of [-1, 1]) {
-      addFig(b, 'trousers', taper(P(o.u + sx * 105, g - hipUp), P(o.u + sx * 115, g - 520), 84, 72));
-      addFig(b, 'trousers', taper(P(o.u + sx * 115, g - 520), P(o.u + sx * 125, g - 90), 66, 52));
-      addFig(b, 'shoe', ellipse(P(o.u + sx * 128, g - 35), 58, 38));
-    }
-  } else {
-    const fs = Math.sign(fwdU || -1);
-    const knee = P(o.u + fs * 400, g - 520);
-    addFig(b, 'trousers', taper(P(o.u, g - hipUp), knee, 86, 70));
-    addFig(b, 'trousers', taper(knee, P(knee.u + fs * 20, g - 90), 64, 52));
-    addFig(b, 'shoe', ellipse(P(knee.u + fs * 90, g - 35), 125, 38));
-  }
-  // The torso and shoulders (figure pass 2026-10-15): the chest tapering to
-  // the waist and out a little over the hips; the shoulder line a shallow
-  // curve whose top sits BELOW the chin — the neck shows between them (the
-  // old oval rose 70 mm over the shoulder line, to the chin: the head sat on
-  // the shoulders with no neck).
-  if (!prof)
-    addFig(b, 'shirt', poly([P(o.u - 158, g - hipUp + 30), P(o.u - 150, g - hipUp + 170), P(o.u - 176, g - sh + 230), P(o.u - 200, g - sh + 30), P(o.u + 200, g - sh + 30), P(o.u + 176, g - sh + 230), P(o.u + 150, g - hipUp + 170), P(o.u + 158, g - hipUp + 30)]));
-  else addFig(b, 'shirt', poly([P(o.u - 120, g - hipUp + 30), P(o.u + 120, g - hipUp + 30), P(o.u + 115, g - sh), P(o.u - 115, g - sh)]));
-  addFig(b, 'shirt', ellipse(P(o.u, g - sh + 22), !prof ? 212 : 122, 36));
+  // THE BODY (figure pass 2, 2026-10-15: the boxy masses were ovals and
+  // boxes unioned — no waist, no belt, a rectangle in profile): the shared
+  // figure's shaping (elevBody) — the shirt tucked at a belt, the trouser
+  // pelvis, thigh/knee/calf/ankle, real shoes; the sleeves flow out of the
+  // shirt's own shoulders (body.cap), one garment, no knob at the join.
+  const body = elevBody(o.u, g, fwdU >= 0 ? 1 : -1, standing, prof, sh, hipUp);
+  addFig(b, 'trousers', body.trousers);
+  addFig(b, 'shoe', body.shoes);
+  addFig(b, 'shoe', body.belt);
+  addFig(b, 'shirt', body.shirt);
   // The arms are their own mass over the torso (unioned into it they melted
-  // into one block, so the figure read as a box with no arms).
-  const fa = figureArms((p) => {
-    b.sleeves = Skia.Path.MakeFromOp(b.sleeves, p, PathOp.Union) ?? b.sleeves;
-  }, (p) => addFig(b, 'skin', p));
+  // into one block, so the figure read as a box with no arms) — each grown
+  // out of the shirt's shoulder.
+  const fa = figureArms(
+    (p) => {
+      b.sleeves = Skia.Path.MakeFromOp(b.sleeves, p, PathOp.Union) ?? b.sleeves;
+    },
+    (p) => addFig(b, 'skin', p),
+    body,
+    (z) => {
+      b.shoulders = Skia.Path.MakeFromOp(b.shoulders, z, PathOp.Union) ?? b.shoulders;
+    },
+  );
   const arm = fa.arm;
   const hand = (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 48));
-  const shL = Q(-200, 0, sh - 40);
-  const shR = Q(200, 0, sh - 40);
-  // Where a sleeve grows out of the shoulder: no contour or rim there (no knob).
-  for (const q of [shL, shR]) b.shoulders = Skia.Path.MakeFromOp(b.shoulders, ellipse(q, 80, 80), PathOp.Union) ?? b.shoulders;
+  // The shoulder joints. In profile both lie over the body's mid-depth (the
+  // player's right projected along u put the near arm in front of the chest).
+  const shL = prof ? Q(0, 6, sh - 40) : Q(-200, 0, sh - 40);
+  const shR = prof ? Q(0, 6, sh - 40) : Q(200, 0, sh - 40);
   /** A part that hides the head and hands behind it (a bell seen end-on). */
   let before: SkPath | null = null;
   switch (k) {
@@ -1672,20 +1852,32 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
     }
     /* ── group 2 (voices; group 4's lead vocal is the same `singer`) ── */
     case 'singer': {
-      // Hands free, arms at the sides (group 2).
-      arm([shL, Q(-232, 10, 1150), Q(-244, 30, 870)]);
-      arm([shR, Q(232, 10, 1150), Q(244, 30, 870)]);
+      // Hands free, the arms hanging relaxed at the sides (group 2): the upper
+      // arm ≈ 310 mm to an elbow at the waist, the forearm ≈ 255 mm to the
+      // wrist at the hip, the hand's fingertips at mid-thigh.
       if (prof) {
-        // In profile the hanging hand is seen edge-on beside the thigh: a
-        // narrow hand from the cuff down, fingers toward the floor (clash
-        // sweep 2026-10-10: a round 84 mm blob on the trousers read as a
-        // stray hand at the groin). Both hands coincide here; one is drawn.
-        // (Figure pass 2026-10-15: the shared relaxed hand, fingers down,
-        // beside the thigh's mid-line — a plain rounded rod read as a stub.)
-        addFig(b, 'skin', handShape({ wrist: Q(0, 8, 905), dir: Math.PI / 2, kind: 'rest' }, Math.PI / 2).path);
+        // In profile the near arm hangs over the side of the body, the elbow
+        // a touch behind the shoulder, the wrist a touch ahead; the back of
+        // the relaxed hand toward the viewer, fingers down beside the thigh
+        // (never at the groin: it stays on the body's side line).
+        const w = Q(0, 16, 850);
+        fa.armTo(shR, Q(0, -12, 1100), w);
+        addFig(b, 'skin', handShape({ wrist: w, dir: Math.PI / 2, kind: 'rest' }, Math.atan2(w.v - Q(0, -12, 1100).v, w.u - Q(0, -12, 1100).u)).path);
       } else {
-        hand(Q(-246, 34, 830));
-        hand(Q(246, 34, 830));
+        // From in front the hanging hand is seen from its thumb side: the
+        // fingers curled softly toward the thigh, the thumb along the index.
+        for (const side of [-1, 1]) {
+          const root = side < 0 ? shL : shR;
+          const out = Math.sign(root.u - o.u) || side;
+          const e = P(root.u + out * 24, g - 1100);
+          const w = P(root.u + out * 34, g - 848);
+          fa.armTo(root, e, w);
+          const h = handShape({ wrist: w, dir: Math.PI / 2, kind: 'keys' }, Math.atan2(w.v - e.v, w.u - e.u)).path;
+          // 'keys' curls its fingers toward −u when it points down: mirrored
+          // for a hand on the figure's −u side, so both curl toward the body.
+          if (out < 0) h.transform(Skia.Matrix().translate(w.u, 0).scale(-1, 1).translate(-w.u, 0));
+          addFig(b, 'skin', h);
+        }
       }
       break;
     }
@@ -1716,7 +1908,8 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   // shirt down to below the shoulder line, it read as a stretched neck).
   // …and the neck ends just inside the lowered shoulder line (pass 2026-10-15).
   const NECK_V = g - sh - 8;
-  const head = !prof ? headFront(pt(headC.u, headC.v), 104, NECK_V) : headProfile(pt(headC.u, headC.v), 104, NECK_V, fwdU >= 0 ? 1 : -1);
+  // …and goes INTO the collar: the head's silhouette stops at the shirt.
+  const head = intoCollar(!prof ? headFront(pt(headC.u, headC.v), 104, NECK_V) : headProfile(pt(headC.u, headC.v), 104, NECK_V, fwdU >= 0 ? 1 : -1), body.torso);
   addFig(b, 'skin', head.fill);
   if (before) b.fig.skin = Skia.Path.MakeFromOp(b.fig.skin, before, PathOp.Difference) ?? b.fig.skin;
 }
@@ -1733,7 +1926,13 @@ function elevStand(b: Batch, s: Seat, view: 'front' | 'section') {
 }
 
 /* ═══════════════════ painting a batch ═══════════════════ */
+/** The shirts' and sleeves' common bounds in a batch (FigureMass `box`). */
+function garmentBox(b: Batch): GarmentBox {
+  const r = Skia.Path.MakeFromOp(b.fig.shirt, b.sleeves, PathOp.Union)?.getBounds() ?? b.fig.shirt.getBounds();
+  return { x: r.x, y: r.y, width: r.width, height: r.height };
+}
 function PaintBatch({ b }: { b: Batch }) {
+  const box = useMemo(() => garmentBox(b), [b]);
   return (
     <Group>
       <Path path={b.legs} style="stroke" strokeWidth={16} strokeCap="round" color="#0b0c0f" />
@@ -1745,8 +1944,11 @@ function PaintBatch({ b }: { b: Batch }) {
       <Path path={b.desks} style="stroke" strokeWidth={4} color="#70747f" opacity={0.8} />
       <FigureMass path={b.fig.trousers} tone="trousers" />
       <FigureMass path={b.fig.shoe} tone="shoe" />
-      <FigureMass path={b.fig.shirt} tone="shirt" />
-      <FigureMass path={b.sleeves} tone="shirt" quiet={b.shoulders} />
+      {/* One cloth in one light: the shirt bodies and the sleeves shaded across
+          the same bounds; where a sleeve leaves its shirt (b.shoulders) its edge
+          is only a soft fold, no rim (owner 2026-10-15: no plugged-in limbs). */}
+      <FigureMass path={b.fig.shirt} tone="shirt" box={box} />
+      <FigureMass path={b.sleeves} tone="shirt" box={box} soft={b.shoulders} />
       {(Object.keys(MATS) as MatId[]).map((m) => (m === 'riser' ? null : <Mass key={m} path={b.mat[m]} mat={m} />))}
       <Path path={b.holes} color="#0a0705" opacity={0.85} />
       <Path path={b.stick} style="stroke" strokeWidth={12} strokeCap="round" color="#3a2010" />
