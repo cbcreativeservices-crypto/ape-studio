@@ -6,11 +6,12 @@
  *
  * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the CHAIN
  * DIAGRAM is the hero and PINS on the stage — Source → EQ → Comp → Gate →
- * Dist → Mod → Delay → Reverb → Stereo → Limiter → Out, each module a
- * tappable pill (amber = in the chain, dim = bypassed; tap toggles it LIVE) —
- * with the three live GR meters (comp/gate/limiter, real fxGrStatus) in a
- * compact row on the same glass: toggle a module and WATCH the dynamics
- * react, nothing scrolls away. Bezel = source / chain count / scenario /
+ * Dist → Mod → Delay → Reverb → Stereo → Limiter → Out, drawn as nine
+ * half-rack units on one patch lane (chainRack.tsx, art fix 2026-10-16: lit
+ * = in the chain, dark = bypassed; the MODULES dock key toggles each LIVE),
+ * the comp/gate/limiter units carrying their own GR LEDs and live GR number
+ * (real fxGrStatus): toggle a module and WATCH the dynamics react at the
+ * unit, nothing scrolls away. Bezel = source / chain count / scenario /
  * transport state. Dock: SCENARIO and SOURCE as sticky trays (A/B while the
  * chain re-lights), CLEAR CHAIN in the scenario tray (reset-in-container);
  * PLAY/STOP is the compact HeaderPlayButton. Teaching prose scrolls in the
@@ -31,7 +32,6 @@ import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { startFenced } from '../../features/audio/startFenced';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LessonContent } from '../../features/lab/guidedLessons';
-import { GrMeter } from '../../features/lab/fxViz';
 import { LabReviewButton } from '../../features/lab/LabReviewButton';
 import { ReviewLabEnd } from './kit/ReviewLabEnd';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
@@ -42,6 +42,7 @@ import { LabChip, LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
+import { ChainRack, type ChainUnit } from './chainRack';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -65,17 +66,21 @@ const grMoved = (a: { comp: number; gate: number; limiter: number }, b: { comp: 
   Math.abs(a.comp - b.comp) >= GR_EPS_DB || Math.abs(a.gate - b.gate) >= GR_EPS_DB || Math.abs(a.limiter - b.limiter) >= GR_EPS_DB;
 const P = FX_PARAM;
 
-/** The chain modules in the FIXED canonical order (matches fx::Id routing). */
-const MODULES: { id: number; label: string }[] = [
-  { id: FX.eq, label: 'EQ' },
-  { id: FX.comp, label: 'COMP' },
-  { id: FX.gate, label: 'GATE' },
-  { id: FX.dist, label: 'DIST' },
-  { id: FX.mod, label: 'MOD' },
-  { id: FX.delay, label: 'DELAY' },
-  { id: FX.reverb, label: 'REVERB' },
-  { id: FX.stereo, label: 'STEREO' },
-  { id: FX.limiter, label: 'LIMIT' },
+/** The chain modules in the FIXED canonical order (matches fx::Id routing),
+ *  drawn as half-rack units (chainRack.tsx, art fix 2026-10-16): each with
+ *  its teaching default printed under it and its knobs set there (pointer
+ *  0..1 on the unit's teaching range — log for time, ratio and frequency). */
+const lg = (v: number, lo: number, hi: number) => Math.log(v / lo) / Math.log(hi / lo);
+const MODULES: ChainUnit[] = [
+  { id: FX.eq, label: 'EQ', setting: '+9 dB @150 Hz', knobs: [lg(150, 20, 20000), (9 + 15) / 30, lg(0.7, 0.3, 10)] },
+  { id: FX.comp, label: 'COMP', setting: '−30 dB · 4:1', knobs: [30 / 60, lg(4, 1, 20), lg(5, 0.1, 100), lg(120, 10, 2000)], gr: 'comp', grMax: 24 },
+  { id: FX.gate, label: 'GATE', setting: 'opens −35 dB', knobs: [45 / 80, 70 / 80, lg(100, 10, 2000)], gr: 'gate', grMax: 70 },
+  { id: FX.dist, label: 'DIST', setting: 'drive +12 dB', knobs: [12 / 40, 1] },
+  { id: FX.mod, label: 'MOD', setting: 'chorus 0.25 Hz', knobs: [lg(0.25, 0.05, 10), 0.5, 0.5] },
+  { id: FX.delay, label: 'DELAY', setting: '375 ms · 40 %', knobs: [lg(375, 1, 2000), 0.4, 0.5] },
+  { id: FX.reverb, label: 'REVERB', setting: 'RT60 1.5 s', knobs: [lg(1.5, 0.1, 10), 0.5] },
+  { id: FX.stereo, label: 'STEREO', setting: 'width 150 %', knobs: [150 / 200] },
+  { id: FX.limiter, label: 'LIMIT', setting: 'ceiling −25 dB', knobs: [5 / 30, lg(120, 10, 2000)], gr: 'limiter', grMax: 24 },
 ];
 
 type FxOp = { fx: number; param: number; value: number };
@@ -129,27 +134,29 @@ const DEFAULTS: Record<number, FxOp[]> = {
 
 /** Scenario presets — each demonstrates a signature INTERACTION.
  *  `short` = the dock-button/bezel value (~7 mono chars). */
-const SCENARIOS: { key: string; label: string; short: string; enable: number[]; sourceIdx: number; lesson: string }[] = [
+/** `hot` = the patches the scenario is ABOUT (index i = the cable INTO
+ *  MODULES[i]): lit on the rack so the interaction shows where it happens. */
+const SCENARIOS: { key: string; label: string; short: string; enable: number[]; sourceIdx: number; lesson: string; hot: number[] }[] = [
   {
-    key: 'bass_comp', label: 'EQ BOOST → COMP', short: 'EQ→COMP', enable: [FX.eq, FX.comp], sourceIdx: 1,
+    key: 'bass_comp', label: 'EQ BOOST → COMP', short: 'EQ→COMP', enable: [FX.eq, FX.comp], sourceIdx: 1, hot: [1],
     lesson: 'The +9 dB low shelf feeds the compressor MORE bass — watch its GR rise: EQ before compression changes what the compressor reacts to.',
   },
   {
-    key: 'delay_reverb', label: 'DELAY → REVERB', short: 'DLY→REV', enable: [FX.delay, FX.reverb], sourceIdx: 0,
+    key: 'delay_reverb', label: 'DELAY → REVERB', short: 'DLY→REV', enable: [FX.delay, FX.reverb], sourceIdx: 0, hot: [6],
     lesson: 'Each echo excites the reverb — repeats get washed into space. Reverb→delay would echo the WASH instead: order is a creative choice.',
   },
   {
-    key: 'gate_click', label: 'GATE THE CLICK', short: 'GATE', enable: [FX.gate], sourceIdx: 0,
+    key: 'gate_click', label: 'GATE THE CLICK', short: 'GATE', enable: [FX.gate], sourceIdx: 0, hot: [2],
     lesson: 'The gate opens on every hit and slams shut between — watch its GR drop to zero on each click and return in the silence.',
   },
   {
-    key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1,
+    key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1, hot: [1, 8],
     lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order.',
   },
   {
     // All NINE modules — the name says FULL and the lesson says "the whole path
     // lit"; it used to light only six (Bug+Hater night I2-02).
-    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.eq, FX.comp, FX.gate, FX.dist, FX.mod, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0,
+    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.eq, FX.comp, FX.gate, FX.dist, FX.mod, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0, hot: [],
     lesson: 'The whole path lit. Toggle modules one at a time — the difference between the sum and the parts IS the interaction.',
   },
 ];
@@ -405,66 +412,29 @@ export function SignalChainLabScreen() {
             { k: 'SCENE', v: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'), flex: 1.4, helpKey: 'chain_order' },
             { k: 'OUT', v: running ? 'LIVE' : 'IDLE', helpKey: 'gain_staging' },
           ],
-          render: (_w, h) => (
+          render: (w, h) => (
             <View style={[styles.stageInner, { height: h }]}>
               {/* THE CHAIN — the hero, a READOUT (owner rule 2026-10-10: no
-                  buttons drawn on the display). The MODULES dock key toggles
-                  each module live; a long-press here still opens the lesson. */}
-              <View style={{ gap: 6 }}>
-                <Text style={styles.stageHead}>THE CHAIN — CANONICAL ORDER (MODULES key toggles each)</Text>
-                <View style={styles.chainWrap}>
-                  <Text style={styles.chainEnd}>SRC</Text>
-                  {MODULES.map((m) => (
-                    <View key={m.id} style={styles.chainSeg}>
-                      <Text style={styles.chainArrow}>→</Text>
-                      <Pressable
-                        onLongPress={() => openLesson('module_toggle')}
-                        delayLongPress={350}
-                        style={[styles.node, enabled[m.id] && styles.nodeOn]}
-                        accessibilityLabel={`${m.label} ${enabled[m.id] ? 'in the chain' : 'bypassed'}`}
-                      >
-                        <Text style={[styles.nodeText, enabled[m.id] && styles.nodeTextOn]}>{m.label}</Text>
-                      </Pressable>
-                    </View>
-                  ))}
-                  <Text style={styles.chainArrow}>→</Text>
-                  <Text style={styles.chainEnd}>OUT</Text>
-                </View>
-                {/* First-15s (design pass 2026-08-31): with nothing lit the
-                    glass was two-thirds void and nothing said pills are
-                    buttons. NEW COPY — owner review. */}
-                {chainCount === 0 ? (
-                  <Text style={styles.emptyHint}>
-                    CHAIN EMPTY — OPEN MODULES OR SCENARIO BELOW
-                  </Text>
-                ) : null}
-              </View>
-              {/* LIVE GR — the interaction made measurable (real engine
-                  readout), a compact row on the same glass so a toggle and its
-                  meter reaction are co-visible. Long-press for the lesson. */}
-              {anyDyn ? (
-                <Pressable
-                  /* No accessibilityLabel here — a label on the wrapper would
-                     REPLACE the children for screen readers, hiding the live
-                     GR readouts (the known lab-sweep trap). */
-                  style={{ gap: 6 }}
-                  onLongPress={() => openLesson('gain_reduction')}
-                  delayLongPress={350}
-                >
-                  <Text style={styles.stageHead}>GAIN REDUCTION — LIVE (measured per module)</Text>
-                  <View style={styles.grRow}>
-                    {enabled[FX.comp] ? (
-                      <View style={styles.grCell}><GrMeter grDb={running ? gr.comp : 0} label="COMP" /></View>
-                    ) : null}
-                    {enabled[FX.gate] ? (
-                      <View style={styles.grCell}><GrMeter grDb={running ? gr.gate : 0} maxDb={70} label="GATE" /></View>
-                    ) : null}
-                    {enabled[FX.limiter] ? (
-                      <View style={styles.grCell}><GrMeter grDb={running ? gr.limiter : 0} label="LIMIT" /></View>
-                    ) : null}
-                  </View>
-                </Pressable>
-              ) : null}
+                  buttons drawn on the display): the nine units drawn as
+                  outboard on one patch lane, the dynamics units' GR LEDs and
+                  numbers MEASURED live (chainRack.tsx). The MODULES dock key
+                  toggles each unit; a long-press here opens the lesson. */}
+              <Text style={styles.stageHead}>
+                {chainCount === 0
+                  ? 'THE CHAIN — ALL BYPASSED: THE SIGNAL PASSES DRY (MODULES key)'
+                  : 'THE CHAIN — CANONICAL ORDER (MODULES key toggles each)'}
+              </Text>
+              <Pressable onLongPress={() => openLesson(anyDyn ? 'gain_reduction' : 'module_toggle')} delayLongPress={350} accessible={false}>
+                <ChainRack
+                  w={w - 20}
+                  h={h - 20 - 20}
+                  units={MODULES}
+                  enabled={enabled}
+                  live={running}
+                  gr={gr}
+                  hotPatches={scenario?.hot ?? []}
+                />
+              </Pressable>
             </View>
           ),
         },
@@ -595,32 +565,8 @@ const styles = StyleSheet.create({
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
 
   // Stage: chain diagram on top, GR meter row anchored below on the same glass.
-  stageInner: { padding: 10, justifyContent: 'space-between', gap: 8 },
+  stageInner: { padding: 10, gap: 6 },
   stageHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
-  grRow: { flexDirection: 'row', gap: 10 },
-  grCell: { flex: 1 },
 
   chainWrap: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
-  chainSeg: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  chainEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.textSub, letterSpacing: 0.5 },
-  chainArrow: { fontFamily: fonts.barlowRegular, fontSize: 12, color: '#3a3a44' },
-  emptyHint: {
-    fontFamily: fonts.oswaldMedium,
-    fontSize: 11,
-    letterSpacing: 1,
-    color: colors.textSubAlt,
-    textAlign: 'center',
-    paddingVertical: 18,
-  },
-  node: {
-    borderRadius: 7,
-    borderWidth: 1,
-    borderColor: '#2c2c33',
-    backgroundColor: '#101014',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-  },
-  nodeOn: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
-  nodeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.textSub },
-  nodeTextOn: { color: colors.amber },
 });
