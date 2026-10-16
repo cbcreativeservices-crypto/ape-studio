@@ -634,10 +634,88 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:21 · ccode · 4befee1f
+changed: Wave Physics art fix: plan rooms drawn from above, arrival table off the room, 10 pt room labels
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:21 · ccode · 11d34aec
+changed: Visual Audio Analysis art fix round 3: standard VU face, waveform scale numerals off the trace
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:21 · ccode · 822ffaf5
+changed: Drum Tuning art fix: rack tom on a real tom stand and set higher, larger pitch-ladder words, pillow label off the pillow
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:21 · ccode · 5fac6d2e
+changed: Drum Tuning art fix: rack tom on a real tom stand and set higher, larger pitch-ladder words, pillow label off the pillow
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:21 · ccode · 8c94e228
+changed: Room Design art fix: the rear leader breaks under NEARFIELD; angle, field and desk words drawn over the lines on a halo (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:21 · ccode · df23a0e9
+changed: FX labs: the hero badge and the GR readout in plain words (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:20 · ccode · 755b9222
+changed: EQ Lab + Distortion art fix round 3: curve in its own strip, true-proportion tones, true-level clipping
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:20 · ccode · f2106069
+changed: Modular Synth art fix: the patch is a real Eurorack case (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:20 · ccode · 22937583
+changed: Ear Training SEE IT art fix: 11 pt axis labels, peaks clear of the frame (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:18 · ccode · e86b210c
+changed: Miking engine + location kit (art fix round 2, F09/B04): rear hand on the pole, scene dressed by the mics shown, per-view hardware scale, ORIENT figure frame
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:17 · ccode · 2ce55d2a
+changed: Home free-topic cards: STUDY NOW in the Study tab's blue with the tab's headphones icon, linking the button to the STUDY nav (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:15 · ccode · 6e5f2f5d
+changed: FM Synth Lab art fix: readable frequency axis and amplitude guides, 11 pt key and tags (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:11 · ccode · e2c3973f
+changed: Vacuum Tube art fix: transistor at true size beside the tube, secondaries as electrons, electrons accelerate
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:11 · ccode · 27028e98
 changed: Sound Systems art fix: performers drawn as the house plan figure from above at true scale; amp and cabinets at one mm scale (art grading 2026-10-16)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app only)
+needs: nothing
 
 
 ### 2026-10-16 16:08 · ccode · d40e73d2
