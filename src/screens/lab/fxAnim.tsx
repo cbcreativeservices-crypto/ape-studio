@@ -55,7 +55,7 @@ import { usePhaseClock } from './foundations/viz';
 import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
-import { echoSpacingFrac } from '../../features/lab/sliderMaps';
+import { ECHO_SPAN_MS, echoSpacingFrac } from '../../features/lab/sliderMaps';
 
 // Shared lab grammar (fxViz palette): amber = processed, dim = dry/reference,
 // blue = the effect's internal copy (delayed/shifted voice).
@@ -95,8 +95,8 @@ export type DynSignal = { kind: 'hits'; periodMs: number } | { kind: 'steady' } 
  *  `anim(values)` mapping from the SAME values driving the audio. */
 export type FxAnimModel =
   | { kind: 'eq'; bands: EqBandSpec[] }
-  | { kind: 'delay'; timeMs: number; feedback: number; mix: number; pingpong: boolean }
-  | { kind: 'reverb'; rt60: number; preDelayMs: number; mix: number }
+  | { kind: 'delay'; timeMs: number; feedback: number; mix: number; pingpong: boolean; dampHz: number; src: FxSrc }
+  | { kind: 'reverb'; rt60: number; preDelayMs: number; mix: number; dampHz: number; src: FxSrc }
   | {
       kind: 'mod';
       flavor: 'chorus' | 'flanger';
@@ -112,8 +112,10 @@ export type FxAnimModel =
       srcHz?: number;
       /** The source is noise: the scope's tone is one component of it. */
       srcIsNoise?: boolean;
+      /** FLANGER: which noise the spectrum hero shows (pink = flat). */
+      spectrum?: 'pink' | 'white';
     }
-  | { kind: 'phaser'; rateHz: number; depth: number; centerHz: number; stages: number; feedback: number }
+  | { kind: 'phaser'; rateHz: number; depth: number; centerHz: number; stages: number; feedback: number; spectrum?: 'pink' | 'white' }
   | {
       kind: 'dynamics';
       mode: 'compressor' | 'gate' | 'limiter';
@@ -346,6 +348,8 @@ function FlowScene({
   note,
   noteColor,
   legend,
+  zeroY,
+  overlay,
   children,
 }: {
   w: number;
@@ -360,6 +364,11 @@ function FlowScene({
   /** Trace key at the bottom-right ("L" amber · "R" blue) for two-trace
    *  scenes, so each coloured line is named on the drawing. */
   legend?: { label: string; color: string }[];
+  /** Where the zero line runs (default the middle); null = the scene draws
+   *  its own reference lines (spectrum halves, ping-pong lanes). */
+  zeroY?: number | null;
+  /** RN labels laid over the canvas (GlassText) — rulers, axis ticks. */
+  overlay?: ReactNode;
   children: ReactNode;
 }) {
   const stageX = w * STAGE_FRAC;
@@ -374,7 +383,9 @@ function FlowScene({
       <Canvas style={{ position: 'absolute', width: w * ts, height: h * ts }}>
         <Group transform={[{ scale: ts }]}>
         <RoundedRect x={0} y={0} width={w} height={h} r={8} color={BG} />
-        <SkLine p1={{ x: 4, y: h / 2 }} p2={{ x: w - 4, y: h / 2 }} color={ZERO} strokeWidth={1.1} />
+        {zeroY === null ? null : (
+          <SkLine p1={{ x: 4, y: zeroY ?? h / 2 }} p2={{ x: w - 4, y: zeroY ?? h / 2 }} color={ZERO} strokeWidth={1.1} />
+        )}
         {children}
         {/* The effect stage — the signal visibly passes THROUGH it. GREEN: the
             bar and its label are one green "processor" element (owner 2026-08-05). */}
@@ -414,6 +425,7 @@ function FlowScene({
           ))}
         </View>
       ) : null}
+      {overlay}
     </View>
   );
 }
@@ -557,10 +569,212 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
   );
 }
 
+// ─────────────────────────────────────────────────── time-domain sources ──
+/** What the delay / reverb / flanger / phaser heroes draw coming IN: the
+ *  lab's selected SOURCE as Generator.hpp makes it (fix wave 2026-10-16). A
+ *  click is a 5 ms 1 kHz ping at its BPM; a burst is a 50 ms Hann-windowed
+ *  tone every 250 ms; a tone is a steady sine; noise is steady broadband. */
+export type FxSrc =
+  | { kind: 'click'; periodMs: number }
+  | { kind: 'burst'; hz: number }
+  | { kind: 'tone'; hz: number }
+  | { kind: 'noise'; color: 'pink' | 'white' };
+
+/** Gain at f of the engine's in-loop one-pole low-pass (Effects.hpp:
+ *  y += c·(x − y), c = 1 − e^(−2π·fc/fs)) — the delay's REPEAT DAMPING and
+ *  the reverb's HF DAMPING both run every repeat through it. */
+export function onePoleGain(fcHz: number, fHz: number): number {
+  const fs = 48000;
+  const c = 1 - Math.exp((-2 * Math.PI * fcHz) / fs);
+  const wv = (2 * Math.PI * fHz) / fs;
+  const a = 1 - c;
+  const re = 1 - a * Math.cos(wv);
+  const im = a * Math.sin(wv);
+  return c / Math.sqrt(re * re + im * im);
+}
+
+/** A label over the flow canvas at GLASS coordinates (x = its anchor per
+ *  `align`, y = its top); points and position × ts like IN/OUT, so FULL
+ *  SCREEN zooms it with the drawing. */
+function GlassText({
+  x,
+  y,
+  text,
+  align = 'center',
+  color = DIM,
+  size = 9.5,
+  w = 64,
+}: {
+  x: number;
+  y: number;
+  text: string;
+  align?: 'left' | 'center' | 'right';
+  color?: string;
+  size?: number;
+  w?: number;
+}) {
+  const ts = useStageTextScale();
+  const left = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  return (
+    <Text
+      style={[
+        flowStyles.tag,
+        { fontSize: size * ts, letterSpacing: 0.5 * ts, left: left * ts, top: y * ts, width: w * ts, textAlign: align, color },
+      ]}
+    >
+      {text}
+    </Text>
+  );
+}
+
+/** One click-train column of the delay hero: what lands inside the column's
+ *  time span [tLo, tHi) — [dry hit (0/1), odd repeats, even repeats]; repeat
+ *  n of every earlier hit sits at kP + nD with height mix·g^(n−1). */
+function echoCol(tLo: number, tHi: number, P: number, D: number, mix: number, g: number): number[] {
+  'worklet';
+  const k0 = Math.ceil(tLo / P);
+  const dry = k0 * P < tHi ? 1 : 0;
+  let a = mix;
+  let odd = 0;
+  let even = 0;
+  for (let n = 1; n <= 16; n++) {
+    if (a < 0.008) break;
+    const k = Math.ceil((tLo - n * D) / P);
+    if (k * P + n * D < tHi) {
+      if (n % 2 === 1) odd += a;
+      else even += a;
+    }
+    a *= g;
+  }
+  return [dry, odd, even];
+}
+
+/** The delay hero's OUT side for one frame. kind 0 = the dry hits (grey);
+ *  1 = the L (or only) lane's repeats, 2 = the R lane's — or, for a steady
+ *  source, that lane's steady band. One path per lane, so each lane's level
+ *  colour is pinned to its own centre line. */
+function echoOutPath(
+  kind: number,
+  now: number,
+  sk: number,
+  srcHz: number,
+  periodMs: number,
+  msPerPx: number,
+  stageX: number,
+  outX0: number,
+  outX1: number,
+  pp: number,
+  yc: number,
+  lc: number,
+  rc: number,
+  half: number,
+  halfPP: number,
+  mixV: number,
+  g: number,
+  D: number,
+): SkPathT {
+  'worklet';
+  const p = Skia.Path.Make();
+  const yL = yc + (lc - yc) * pp;
+  const yR = yc + (rc - yc) * pp;
+  const hl = half + (halfPP - half) * pp;
+  const split = pp > 0.5;
+  const cols = Math.max(2, Math.floor(outX1 - outX0));
+  const cw = (outX1 - outX0) / cols;
+  if (sk === 0) {
+    for (let c = 0; c < cols; c++) {
+      const xL = outX0 + c * cw;
+      const xm = xL + cw / 2;
+      const tHi = now - (xL - stageX) * msPerPx;
+      const tLo = tHi - cw * msPerPx;
+      const ev = echoCol(tLo, tHi, periodMs, D, mixV, g);
+      if (kind === 0) {
+        const a = ev[0] * (1 - mixV);
+        if (a * hl > 0.6) {
+          p.moveTo(xm, yL - a * hl);
+          p.lineTo(xm, yL + a * hl);
+          if (split) {
+            p.moveTo(xm, yR - a * hl);
+            p.lineTo(xm, yR + a * hl);
+          }
+        }
+      } else {
+        // kind 1 = the L lane (odd repeats when split, all of them when not),
+        // kind 2 = the R lane (even repeats; empty unless split).
+        const a = kind === 1 ? (split ? ev[1] : ev[1] + ev[2]) : split ? ev[2] : 0;
+        const y0 = kind === 1 ? yL : yR;
+        const ac = Math.min(a, 1.05);
+        if (ac * hl > 0.6) {
+          p.moveTo(xm, y0 - ac * hl);
+          p.lineTo(xm, y0 + ac * hl);
+        }
+      }
+    }
+    return p;
+  }
+  // A steady source: one band per lane at the steady output level.
+  if (kind === 0) return p;
+  let G = 1;
+  if (sk === 1) {
+    // |(1 − m) + m·e^(−jθ)/(1 − g·e^(−jθ))|, θ = 2π·f·D — the comb law.
+    const th = (PI2 * srcHz * D) / 1000;
+    const er = Math.cos(th);
+    const ei = -Math.sin(th);
+    const dr = 1 - g * er;
+    const di = -g * ei;
+    const den = Math.max(dr * dr + di * di, 1e-9);
+    const wr = (er * dr + ei * di) / den;
+    const wi = (ei * dr - er * di) / den;
+    const hr = 1 - mixV + mixV * wr;
+    const hi = mixV * wi;
+    G = Math.sqrt(hr * hr + hi * hi);
+  } else {
+    // The repeats of noise are uncorrelated: they add in power.
+    G = Math.sqrt((1 - mixV) * (1 - mixV) + (mixV * mixV) / Math.max(1 - g * g, 1e-3));
+  }
+  if (kind === 2 && !split) return p;
+  const unit = hl / Math.max(1, G);
+  const y0 = kind === 1 ? yL : yR;
+  const seed = kind === 1 ? 0 : 7.7;
+  for (let c = 0; c <= cols; c++) {
+    const x = outX0 + c * cw;
+    const t = now - (x - stageX) * msPerPx;
+    const a = G * (sk === 1 ? 1 : 0.72 + 0.28 * hashW(Math.floor(t / 12) * 1.37 + 3.1 + seed));
+    if (c === 0) p.moveTo(x, y0 - a * unit);
+    else p.lineTo(x, y0 - a * unit);
+  }
+  for (let c = cols; c >= 0; c--) {
+    const x = outX0 + c * cw;
+    const t = now - (x - stageX) * msPerPx;
+    const a = G * (sk === 1 ? 1 : 0.72 + 0.28 * hashW(Math.floor(t / 12) * 1.37 + 3.1 + seed));
+    p.lineTo(x, y0 + a * unit);
+  }
+  p.close();
+  return p;
+}
+
 // ─────────────────────────────────────────────────────────── delay flow ──
-// A dry pulse travels in; past the stage its echoes march out behind it —
-// spacing = delay time (same px/ms auto-zoom law as EchoTimelineGraph),
-// heights = mix·fb^(n−1) with post-stage dry at (1−mix) (the comb mix law).
+/* REWRITTEN 2026-10-16 (art grading, Delay 7.41: "echoes are bare 2-px ticks
+ * in a mostly empty panel"; "no picture of time vs tempo"). ONE REAL TIME
+ * BASE, the dynamics heroes' grammar: signal time at x is
+ * t(x) = now − (x − stageX)·msPerPx — the stage is "now", IN is what is about
+ * to arrive, OUT what already left, and everything moves right at true speed.
+ * The OUT half spans ECHO_SPAN_MS (the timeline graph's own window) over a
+ * seconds ruler, so the spacing reads as a time.
+ *  • The SOURCE is the lab's: the CLICK is a 5 ms 1 kHz ping at its BPM
+ *    (Generator.hpp). On a 3.25 s window one ping is one pixel column, so it
+ *    is drawn as a DAW overview draws it — a full-height line at its level.
+ *    A steady sine or noise is a band: the repeats of a steady signal sum
+ *    into a steady level (the comb law at that pitch), and the glass says to
+ *    use CLICK.
+ *  • The ENGINE, mirrored (Effects.hpp DelayEffect): out = in·(1 − mix) +
+ *    line·mix, line = in + fb·LP(line, D) — repeat n is mix·(fb·|H|)^(n−1),
+ *    |H| the in-loop damping low-pass at the source's pitch, so REPEAT
+ *    DAMPING visibly shortens the trail.
+ *  • LINEAR amplitude (a DAW overview); the lane edge = the −20 dBFS peak.
+ *  • PING-PONG splits OUT into two lanes, L over R: odd repeats left, even
+ *    right (the designed behaviour — see the fix notes' HOLD on the engine's
+ *    cross-feed with a mono source). */
 function EchoFlow({
   w,
   h,
@@ -570,6 +784,8 @@ function EchoFlow({
   feedback,
   mix,
   pingpong,
+  dampHz,
+  src,
 }: {
   w: number;
   h: number;
@@ -579,71 +795,328 @@ function EchoFlow({
   feedback: number;
   mix: number;
   pingpong: boolean;
+  dampHz: number;
+  src: FxSrc;
 }) {
   const stageX = w * STAGE_FRAC;
-  const phase = usePhaseClock(active, 0.16);
+  // ONE clock in real seconds (phase/2π = s): true speed, the click's tempo.
+  const clock = usePhaseClock(active, 1);
   const dPx = useMemo(() => {
     const outSpan = w - stageX - 12;
     // A FIXED window (slider pass 2026-10-14): max(time × 6.5, 500) kept the
     // spacing constant for every TIME ≥ 77 ms. Echoes past the edge are not drawn.
     return echoSpacingFrac(timeMs) * outSpan;
   }, [w, stageX, timeMs]);
+  const msPerPx = ECHO_SPAN_MS / (w - stageX - 12);
+  // The delay time glides (the engine glides it too, tape-style ~50 ms).
   const dG = useGlide(dPx);
   const fbG = useGlide(feedback);
   const mixG = useGlide(mix);
   const ppG = useGlide(pingpong ? 1 : 0);
+  const srcHz = src.kind === 'tone' ? src.hz : 1000;
+  const hG = useGlide(onePoleGain(dampHz, srcHz));
+  const sk = src.kind === 'tone' ? 1 : src.kind === 'noise' ? 2 : 0;
+  const periodMs = src.kind === 'click' ? Math.max(100, src.periodMs) : 1000;
 
-  const dryPath = useDerivedValue(() => {
-    const d = dG.value;
-    const track = w - 12 + d * 6;
-    const frac = phase.value / PI2;
-    const xDry = 6 + (frac - Math.floor(frac)) * track;
-    const p = Skia.Path.Make();
-    if (xDry <= w - 6) {
-      const hs = h * 0.34 * (xDry > stageX ? 1 - mixG.value : 1);
-      if (hs > 1) {
-        p.moveTo(xDry, h / 2 - hs);
-        p.lineTo(xDry, h / 2 + hs);
-      }
-    }
-    return p;
-  }, [phase, dG, mixG, w, h, stageX]);
+  const inX0 = 6;
+  const inX1 = stageX - 16;
+  const outX0 = stageX + (pingpong ? 22 : 12);
+  const outX1 = w - 6;
+  const top = 24;
+  const bot = h - 20;
+  const yc = (top + bot) / 2;
+  const half = (bot - top) / 2 - 1;
+  const lc = top + (bot - top) / 4;
+  const rc = bot - (bot - top) / 4;
+  const halfPP = (bot - top) / 4 - 2;
 
-  const echoPath = useDerivedValue(() => {
-    const d = dG.value;
-    const track = w - 12 + d * 6;
-    const frac = phase.value / PI2;
-    const xDry = 6 + (frac - Math.floor(frac)) * track;
-    const pp = ppG.value;
+  /** IN: the source, mono, full lane. */
+  const inPath = useDerivedValue(() => {
+    const now = (clock.value / PI2) * 1000;
     const p = Skia.Path.Make();
-    let a = mixG.value;
-    for (let n = 1; n <= 6; n++) {
-      if (a < 0.04) break;
-      const xe = xDry - n * d; // echoes are LATER in time → they trail behind
-      if (xe > stageX + 10 && xe < w - 6) {
-        const hs = h * 0.34 * Math.min(a, 1);
-        const top = n % 2 === 1 ? 1 : 1 - pp; // ping-pong: odd taps up (L),
-        const bot = n % 2 === 1 ? 1 - pp : 1; // even taps down (R)
-        p.moveTo(xe, h / 2 - hs * top);
-        p.lineTo(xe, h / 2 + hs * bot);
+    const cols = Math.max(2, Math.floor(inX1 - inX0));
+    const cw = (inX1 - inX0) / cols;
+    if (sk === 0) {
+      for (let c = 0; c < cols; c++) {
+        const xL = inX0 + c * cw;
+        const tHi = now - (xL - stageX) * msPerPx;
+        const tLo = tHi - cw * msPerPx;
+        const k0 = Math.ceil(tLo / periodMs);
+        if (k0 * periodMs < tHi) {
+          p.moveTo(xL + cw / 2, yc - half);
+          p.lineTo(xL + cw / 2, yc + half);
+        }
       }
-      a *= fbG.value;
+      return p;
     }
+    for (let c = 0; c <= cols; c++) {
+      const x = inX0 + c * cw;
+      const t = now - (x - stageX) * msPerPx;
+      const a = sk === 1 ? 1 : 0.72 + 0.28 * hashW(Math.floor(t / 12) * 1.37 + 3.1);
+      if (c === 0) p.moveTo(x, yc - a * half);
+      else p.lineTo(x, yc - a * half);
+    }
+    for (let c = cols; c >= 0; c--) {
+      const x = inX0 + c * cw;
+      const t = now - (x - stageX) * msPerPx;
+      const a = sk === 1 ? 1 : 0.72 + 0.28 * hashW(Math.floor(t / 12) * 1.37 + 3.1);
+      p.lineTo(x, yc + a * half);
+    }
+    p.close();
     return p;
-  }, [phase, dG, fbG, mixG, ppG, w, h, stageX]);
+  }, [clock, inX0, inX1, stageX, msPerPx, sk, periodMs, yc, half]);
+
+  const outArgs = [sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, yc, lc, rc, half, halfPP] as const;
+  const dryOut = useDerivedValue(
+    () => echoOutPath(0, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
+    [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
+  );
+  const wetL = useDerivedValue(
+    () => echoOutPath(1, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
+    [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
+  );
+  const wetR = useDerivedValue(
+    () => echoOutPath(2, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
+    [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
+  );
+  // Level colour pinned to TRUE full scale (loudness standard): a lane's edge
+  // is the source's −20 dBFS peak, so full scale sits 10× further out and the
+  // repeats read in the quiet colours they really are.
+  const laneL = pingpong ? lc : yc;
+  const laneHalf = pingpong ? halfPP : half;
+  const fsSpan = laneHalf * 10;
+
+  // The seconds ruler under OUT: a tick every 250 ms of age, whole seconds
+  // named — the age of what you see, measured from the stage.
+  const ruler = useMemo(() => {
+    const p = Skia.Path.Make();
+    const marks: { x: number; s: number }[] = [];
+    for (let ms = 250; ms < 10000; ms += 250) {
+      const x = stageX + ms / msPerPx;
+      if (x > outX1) break;
+      if (x < outX0) continue;
+      const major = ms % 1000 === 0;
+      p.moveTo(x, bot + 2);
+      p.lineTo(x, bot + (major ? 6 : 4));
+      if (major && x < outX1 - 10) marks.push({ x, s: ms / 1000 });
+    }
+    return { p, marks };
+  }, [stageX, msPerPx, outX0, outX1, bot]);
+
+  const note =
+    sk === 0 ? `CLICK · ${Math.round(60000 / periodMs)} BPM` : sk === 1 ? 'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK';
 
   return (
-    <FlowScene w={w} h={h} label={label}>
-      <Path path={dryPath} color={DIM} style="stroke" strokeWidth={4} strokeCap="round" opacity={0.9} />
-      <FlowGlow path={echoPath} width={3.4} gradH={h} />
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      note={note}
+      noteColor={DIM}
+      zeroY={pingpong ? null : yc}
+      overlay={
+        <>
+      {ruler.marks.map((m) => (
+          <GlassText key={m.s} x={m.x} y={bot + 5} text={`${m.s} s`} w={30} />
+        ))}
+        {pingpong ? (
+          <>
+            <GlassText x={stageX + 16} y={lc - 7} text="L" w={12} color={colors.textPrimary} />
+            <GlassText x={stageX + 16} y={rc - 7} text="R" w={12} color={colors.textPrimary} />
+          </>
+        ) : null}
+        </>
+      }
+    >
+      <Path path={ruler.p} color={DIM} style="stroke" strokeWidth={1} opacity={0.7} />
+      {pingpong ? (
+        <>
+          <SkLine p1={vec(4, yc)} p2={vec(stageX - 13, yc)} color={ZERO} strokeWidth={1.1} />
+          <SkLine p1={vec(outX0, lc)} p2={vec(outX1, lc)} color={ZERO} strokeWidth={1} />
+          <SkLine p1={vec(outX0, rc)} p2={vec(outX1, rc)} color={ZERO} strokeWidth={1} />
+        </>
+      ) : null}
+      {sk === 0 ? (
+        <Path path={inPath} color={DIM} style="stroke" strokeWidth={2} strokeCap="round" opacity={0.9} />
+      ) : (
+        <Path path={inPath} color={DIM} opacity={0.45} />
+      )}
+      <Path path={dryOut} color={DIM} style="stroke" strokeWidth={2} strokeCap="round" opacity={0.85} />
+      {sk === 0 ? (
+        <>
+          <FlowGlow path={wetL} width={2.2} gradH={h} gradY={[laneL - fsSpan, laneL + fsSpan]} />
+          <FlowGlow path={wetR} width={2.2} gradH={h} gradY={[rc - fsSpan, rc + fsSpan]} />
+        </>
+      ) : (
+        <>
+          <Path path={wetL} opacity={0.8}>
+            <WaveMidiGradient h={h} y0={laneL - fsSpan} y1={laneL + fsSpan} />
+          </Path>
+          <Path path={wetR} opacity={0.8}>
+            <WaveMidiGradient h={h} y0={rc - fsSpan} y1={rc + fsSpan} />
+          </Path>
+        </>
+      )}
     </FlowScene>
   );
 }
 
 // ────────────────────────────────────────────────────────── reverb flow ──
-// A dry pulse travels in; past the stage a DENSE decaying wash trails it —
-// pre-delay gap, then amplitude 10^(−3·Δt/RT60) (−60 dB at RT60, the same law
-// as DecayCurveGraph) on a fixed time scale so longer RT60 = longer tail.
+/* REWRITTEN 2026-10-16 (art grading, Reverb 6.96: "the tail is a ~30 px
+ * wedge; nothing shows thousands of reflections or the RT60 time scale; the
+ * hero does not change visibly with RT60 / pre-delay").
+ *  • IN flows into the stage on the real time base (the delay/dynamics
+ *    grammar). OUT is a TRIGGERED SWEEP, as a decay analyser shows it: each
+ *    click reaching the stage restarts a trace that writes left → right at
+ *    true speed over REV_WIN_MS (a seconds ruler under it), so the decay
+ *    FALLS to the right, the way every RT60 plot and DAW draws it. (On the
+ *    flowing time base the newest signal sits nearest the stage, so a decay
+ *    drew as a slope RISING to the right — tried first, it read backwards.)
+ *  • A dB VIEW, rectified (the level-vs-time view of a decay analyser, or a
+ *    DAW's waveform in dB): the baseline is REV_RANGE_DB below the source's
+ *    −20 dBFS peak, the top edge is that peak. On a dB scale an exponential
+ *    decay is a STRAIGHT SLOPE that falls 60 dB in RT60 — the one picture
+ *    that makes RT60 a time you can see (in linear amplitude the tail is gone
+ *    after a third of it).
+ *  • The ENGINE, mirrored (Effects.hpp ReverbEffect — a 4-line FDN, lines
+ *    31–59 ms, gᵢ = 10^(−3·Dᵢ/(fs·RT60)), in-loop one-pole damping, pre-delay,
+ *    out = in·(1 − mix) + fdn·mix). Levels calibrated on an exact JS port of
+ *    the FDN driven by the lab's 5 ms 1 kHz click (per-column peaks): nothing
+ *    until pre-delay + 31 ms (the shortest line); the first arrivals at about
+ *    −12 dB of the click for ~30 ms; then the dense tail from about −17 dB,
+ *    falling at 60/RT60 dB/s PLUS what the damping low-pass takes from a
+ *    1 kHz ping on every ~45 ms trip round the loop (DARK 2k ≈ +21 dB/s). Each
+ *    hit's tail adds in POWER to the earlier ones still ringing, so a long
+ *    RT60 builds a wash between the clicks.
+ *  • A burst (50 ms of tone every 250 ms) excites the same tail ≈ 8 dB
+ *    louder (the same port); steady noise keeps a steady wash ≈ 5 dB under
+ *    the dry noise — the glass says to use the click. */
+const REV_WIN_MS = 1500;
+const REV_RANGE_DB = 90;
+/** Mean round trip of the four FDN lines (1499–2833 samples at 48 kHz). */
+const REV_LOOP_S = 0.0448;
+
+/** One column of the reverb hero: [dry dB, wet dB] relative to the source's
+ *  peak, at signal time tMid (ms). sk: 0 click · 1 burst · 2 noise. */
+function revCol(tMid: number, colMs: number, sk: number, P: number, pre: number, decDbS: number, mix: number): number[] {
+  'worklet';
+  const lmix = 20 * Math.log10(Math.max(mix, 1e-4));
+  const ldry = 20 * Math.log10(Math.max(1 - mix, 1e-4));
+  const q = Math.floor(tMid / colMs);
+  const jit = 1.6 * hashW(q * 1.37 + 5.3);
+  let dry = -200;
+  let sum = 0;
+  if (sk === 2) {
+    dry = ldry - jit;
+    sum = Math.pow(10, (-5 - 1.6 * hashW(q * 2.11 + 1.7)) / 10);
+  } else {
+    if (sk === 0) {
+      const tLo = tMid - colMs / 2;
+      const k0 = Math.ceil(tLo / P);
+      if (k0 * P < tLo + colMs) dry = ldry;
+    } else {
+      // Hann-windowed 50 ms burst: its loudest point inside the column.
+      let best = 0;
+      for (let s = -1; s <= 1; s++) {
+        const t = tMid + (s * colMs) / 2;
+        const tb = t - Math.floor(t / P) * P;
+        if (tb < 50) {
+          const e = 0.5 * (1 - Math.cos((PI2 * tb) / 50));
+          if (e > best) best = e;
+        }
+      }
+      if (best > 0.003) dry = ldry + 20 * Math.log10(best);
+    }
+    const lead = sk === 1 ? 50 : 0; // a burst keeps feeding the tank for 50 ms
+    const kN = Math.floor((tMid - pre - 31) / P);
+    for (let j = 0; j < 48; j++) {
+      const k = kN - j;
+      const tau = tMid - k * P - pre;
+      let L = 0;
+      if (tau < 31) continue;
+      if (tau < 62 + lead) L = -12;
+      else L = -17 - (decDbS * (tau - 60 - lead)) / 1000;
+      if (sk === 1) L += 8;
+      if (L < -110) break;
+      sum += Math.pow(10, L / 10);
+    }
+  }
+  const wet = sum > 0 ? 10 * Math.log10(sum) + lmix - (sk === 2 ? 0 : jit) : -200;
+  return [dry, wet];
+}
+
+/** The reverb hero's OUT side for one frame — a TRIGGERED SWEEP: x is the
+ *  time since the trigger (a click reaching the stage), left → right like a
+ *  decay analyser or a DAW, so the decay FALLS to the right. The sweep head
+ *  writes at true speed; right of it the previous sweep persists, dimmer.
+ *  kind 0 = the wet area (closed, from the baseline), 1 = this sweep's top
+ *  contour, 2 = the dry part, 3 = the previous sweep's top contour,
+ *  4 = the sweep head. */
+function revOutPath(
+  kind: number,
+  now: number,
+  sk: number,
+  P: number,
+  TP: number,
+  pre: number,
+  dec: number,
+  mix: number,
+  outX0: number,
+  outX1: number,
+  msPerPx: number,
+  top: number,
+  base: number,
+): SkPathT {
+  'worklet';
+  const p = Skia.Path.Make();
+  const tTrig = Math.floor(now / TP) * TP;
+  if (kind === 4) {
+    const xh = outX0 + (now - tTrig) / msPerPx;
+    if (xh < outX1) {
+      p.moveTo(xh, top - 2);
+      p.lineTo(xh, base);
+    }
+    return p;
+  }
+  const cols = Math.max(2, Math.floor(outX1 - outX0));
+  const cw = (outX1 - outX0) / cols;
+  const colMs = cw * msPerPx;
+  let started = false;
+  if (kind === 0) p.moveTo(outX0, base);
+  for (let c = 0; c < cols; c++) {
+    const xm = outX0 + (c + 0.5) * cw;
+    let T = tTrig + (xm - outX0) * msPerPx;
+    const old = T > now;
+    if (old) T -= TP;
+    const v = revCol(T, colMs, sk, P, pre, dec, mix);
+    const db = kind === 2 ? v[0] : v[1];
+    const hgt = Math.max(0, Math.min(1, (db + REV_RANGE_DB) / REV_RANGE_DB)) * (base - top);
+    if (kind === 0) {
+      p.lineTo(xm, base - hgt);
+    } else if (kind === 1 || kind === 3) {
+      if (hgt > 0.5 && old === (kind === 3)) {
+        if (!started) p.moveTo(xm, base - hgt);
+        else p.lineTo(xm, base - hgt);
+        started = true;
+      } else started = false;
+    } else if (hgt > 0.5) {
+      if (sk === 0) {
+        p.moveTo(xm, base);
+        p.lineTo(xm, base - hgt);
+      } else {
+        if (!started) p.moveTo(xm, base - hgt);
+        else p.lineTo(xm, base - hgt);
+        started = true;
+      }
+    } else started = false;
+  }
+  if (kind === 0) {
+    p.lineTo(outX1, base);
+    p.close();
+  }
+  return p;
+}
+
 function ReverbFlow({
   w,
   h,
@@ -652,6 +1125,8 @@ function ReverbFlow({
   rt60,
   preDelayMs,
   mix,
+  dampHz,
+  src,
 }: {
   w: number;
   h: number;
@@ -660,100 +1135,390 @@ function ReverbFlow({
   rt60: number;
   preDelayMs: number;
   mix: number;
+  dampHz: number;
+  src: FxSrc;
 }) {
   const stageX = w * STAGE_FRAC;
-  const phase = usePhaseClock(active, 0.13);
-  const pxPerS = (w - stageX - 12) / 3.2; // fixed scale: ~3.2 s across OUT
-  const preG = useGlide((preDelayMs / 1000) * pxPerS);
-  const washG = useGlide(rt60 * pxPerS); // px to fall 60 dB
+  const clock = usePhaseClock(active, 1); // real seconds
+  const inX0 = 6;
+  const inX1 = stageX - 16;
+  const outX0 = stageX + 10;
+  const outX1 = w - 6;
+  const msPerPx = REV_WIN_MS / (outX1 - outX0);
+  const top = 24;
+  const base = h - 20;
+  const pxPerDb = (base - top) / REV_RANGE_DB;
+  const sk = src.kind === 'click' ? 0 : src.kind === 'burst' ? 1 : 2;
+  const P = src.kind === 'click' ? Math.max(100, src.periodMs) : 250;
+  const srcHz = src.kind === 'burst' ? src.hz : 1000;
+  // dB per second the tail falls at the source's pitch: the RT60 law plus the
+  // in-loop damping's bite per trip round the tank.
+  const decG = useGlide(60 / Math.max(rt60, 0.05) + (-20 * Math.log10(onePoleGain(dampHz, srcHz))) / REV_LOOP_S);
+  const preG = useGlide(preDelayMs);
   const mixG = useGlide(mix);
 
-  const dryPath = useDerivedValue(() => {
-    const track = w - 12 + preG.value + washG.value * 0.62;
-    const frac = phase.value / PI2;
-    const xDry = 6 + (frac - Math.floor(frac)) * track;
-    const p = Skia.Path.Make();
-    if (xDry <= w - 6) {
-      const hs = h * 0.36 * (xDry > stageX ? 1 - mixG.value : 1);
-      if (hs > 1) {
-        p.moveTo(xDry, h / 2 - hs);
-        p.lineTo(xDry, h / 2 + hs);
-      }
-    }
-    return p;
-  }, [phase, preG, washG, mixG, w, h, stageX]);
+  // The sweep re-triggers on a click (every ~1 s of clicks), every 4th burst,
+  // or free-runs over the window for steady noise.
+  const TP = sk === 2 ? REV_WIN_MS : P * Math.max(1, Math.round(1000 / P));
+  const wetArea = useDerivedValue(() => revOutPath(0, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
+  const wetTop = useDerivedValue(() => revOutPath(1, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
+  const dryOut = useDerivedValue(() => revOutPath(2, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
+  const wetOld = useDerivedValue(() => revOutPath(3, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
+  const head = useDerivedValue(() => revOutPath(4, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
 
-  const washFill = useDerivedValue(() => {
-    const pre = preG.value;
-    const wash = washG.value;
-    const track = w - 12 + pre + wash * 0.62;
-    const frac = phase.value / PI2;
-    const xDry = 6 + (frac - Math.floor(frac)) * track;
-    const head = xDry - pre; // the wash starts a pre-delay behind the hit
+  /** IN: the source in the same dB view. */
+  const inPath = useDerivedValue(() => {
+    const now = (clock.value / PI2) * 1000;
     const p = Skia.Path.Make();
-    const x1 = Math.min(head, w - 6);
-    const x0 = Math.max(stageX + 10, head - wash * 0.62);
-    if (!(x1 > x0 + 2 && wash > 4)) return p;
-    const mid = h / 2;
-    const A = h * 0.4 * mixG.value;
-    const tq = Math.floor(phase.value * 4); // quantized shimmer (noise idiom)
-    const N = 40;
-    for (let i = 0; i <= N; i++) {
-      const x = x0 + ((x1 - x0) * i) / N;
-      const env = Math.pow(10, (-3 * (head - x)) / wash); // −60 dB at RT60
-      const y = mid - A * env * (0.45 + 0.55 * hashW(i * 17.9 + tq * 131.7));
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+    const cols = Math.max(2, Math.floor(inX1 - inX0));
+    const cw = (inX1 - inX0) / cols;
+    const colMs = cw * msPerPx;
+    let started = false;
+    for (let c = 0; c < cols; c++) {
+      const xm = inX0 + (c + 0.5) * cw;
+      const v = revCol(now - (xm - stageX) * msPerPx, colMs, sk, P, 0, 60, 0);
+      const hgt = Math.max(0, Math.min(1, (v[0] + REV_RANGE_DB) / REV_RANGE_DB)) * (base - top);
+      if (hgt > 0.5) {
+        if (sk === 0) {
+          p.moveTo(xm, base);
+          p.lineTo(xm, base - hgt);
+        } else {
+          if (!started) p.moveTo(xm, base - hgt);
+          else p.lineTo(xm, base - hgt);
+          started = true;
+        }
+      } else started = false;
     }
-    for (let i = N; i >= 0; i--) {
-      const x = x0 + ((x1 - x0) * i) / N;
-      const env = Math.pow(10, (-3 * (head - x)) / wash);
-      p.lineTo(x, mid + A * env * (0.45 + 0.55 * hashW(i * 23.3 + tq * 97.1 + 7)));
-    }
-    p.close();
     return p;
-  }, [phase, preG, washG, mixG, w, h, stageX]);
+  }, [clock, inX0, inX1, stageX, msPerPx, sk, P, top, base]);
 
-  const envPath = useDerivedValue(() => {
-    const pre = preG.value;
-    const wash = washG.value;
-    const track = w - 12 + pre + wash * 0.62;
-    const frac = phase.value / PI2;
-    const xDry = 6 + (frac - Math.floor(frac)) * track;
-    const head = xDry - pre;
+  // The seconds ruler under OUT (ticks every 100 ms of age, named at 0.5 s).
+  const ruler = useMemo(() => {
     const p = Skia.Path.Make();
-    const x1 = Math.min(head, w - 6);
-    const x0 = Math.max(stageX + 10, head - wash * 0.62);
-    if (!(x1 > x0 + 2 && wash > 4)) return p;
-    const mid = h / 2;
-    const A = h * 0.4 * mixG.value;
-    const N = 24;
-    for (let i = 0; i <= N; i++) {
-      const x = x0 + ((x1 - x0) * i) / N;
-      const y = mid - A * Math.pow(10, (-3 * (head - x)) / wash);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+    const marks: { x: number; s: string }[] = [];
+    for (let ms = 100; ms < 5000; ms += 100) {
+      const x = outX0 + ms / msPerPx; // time since the trigger
+      if (x > outX1) break;
+      if (x < outX0) continue;
+      const major = ms % 500 === 0;
+      p.moveTo(x, base + 2);
+      p.lineTo(x, base + (major ? 6 : 4));
+      if (major && x < outX1 - 12) marks.push({ x, s: ms % 1000 === 0 ? `${ms / 1000} s` : `${(ms / 1000).toFixed(1)} s` });
     }
-    for (let i = 0; i <= N; i++) {
-      const x = x0 + ((x1 - x0) * i) / N;
-      const y = mid + A * Math.pow(10, (-3 * (head - x)) / wash);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+    // dB guides: the source peak (top) and every 30 dB below it.
+    const g = Skia.Path.Make();
+    for (let d = 30; d < REV_RANGE_DB; d += 30) {
+      const y = top + d * pxPerDb;
+      g.moveTo(outX0, y);
+      g.lineTo(outX1, y);
     }
-    return p;
-  }, [phase, preG, washG, mixG, w, h, stageX]);
+    return { p, marks, g };
+  }, [stageX, msPerPx, outX0, outX1, base, top, pxPerDb]);
+
+  const note = sk === 0 ? `CLICK · ${Math.round(60000 / P)} BPM · dB VIEW` : sk === 1 ? 'TONE BURSTS · dB VIEW' : 'STEADY NOISE · TRY CLICK';
 
   return (
-    <FlowScene w={w} h={h} label={label}>
-      <Path path={washFill}>
-        <LinearGradient
-          start={vec(0, 0)}
-          end={vec(0, h)}
-          colors={['rgba(255,198,77,0.30)', 'rgba(255,198,77,0.05)', 'rgba(255,198,77,0.30)']}
-        />
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      note={note}
+      noteColor={DIM}
+      zeroY={base}
+      overlay={
+        <>
+      {ruler.marks.map((m) => (
+          <GlassText key={m.s} x={m.x} y={base + 5} text={m.s} w={34} />
+        ))}
+        </>
+      }
+    >
+      <Path path={ruler.g} color={ZERO} style="stroke" strokeWidth={0.8} opacity={0.6}>
+        <DashPathEffect intervals={[2, 4]} />
       </Path>
-      <FlowGlow path={envPath} width={1.6} opacity={0.9} />
-      <Path path={dryPath} color={DIM} style="stroke" strokeWidth={4} strokeCap="round" opacity={0.9} />
+      <Path path={ruler.p} color={DIM} style="stroke" strokeWidth={1} opacity={0.7} />
+      {sk === 0 ? (
+        <Path path={inPath} color={DIM} style="stroke" strokeWidth={2} strokeCap="round" opacity={0.9} />
+      ) : (
+        <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} strokeJoin="round" opacity={0.9} />
+      )}
+      <Path path={wetArea}>
+        <LinearGradient start={vec(0, top)} end={vec(0, base)} colors={['rgba(255,198,77,0.42)', 'rgba(255,198,77,0.06)']} />
+      </Path>
+      <Path path={wetOld} color={AMBER} style="stroke" strokeWidth={1.2} opacity={0.45} />
+      <FlowGlow path={wetTop} width={1.6} />
+      <Path path={head} color={colors.textPrimary} style="stroke" strokeWidth={1} opacity={0.35} />
+      {sk === 0 ? (
+        <Path path={dryOut} color={DIM} style="stroke" strokeWidth={2} strokeCap="round" opacity={0.9} />
+      ) : (
+        <Path path={dryOut} color={DIM} style="stroke" strokeWidth={1.2} strokeJoin="round" opacity={0.8} />
+      )}
+    </FlowScene>
+  );
+}
+
+// ──────────────────────────────────────────────── flanger/phaser spectrum ──
+/* NEW 2026-10-16 (art grading, Flanger 7.41 / Phaser 7.46: "the hero is two
+ * sine traces; the jet sweep / notch movement is only in the lower graph").
+ * Both labs play NOISE (pink or white), and noise through a flanger or a
+ * phaser does not look like a wobbling sine on any instrument — the effect is
+ * the moving NOTCHES, and the instrument that shows them is a spectrum
+ * analyser. So the hero is two analysers: IN shows the source's spectrum
+ * (pink = flat on an analyser, white = rising 3 dB/octave), OUT the same
+ * spectrum through the effect AS IT IS RIGHT NOW, the notches sweeping at the
+ * TRUE LFO rate (0.1–5 Hz is drawable). The zero line is the source's level;
+ * the dotted line on OUT is the input for comparison.
+ * The ENGINE, mirrored (Effects.hpp ModEffect):
+ *  • FLANGER — wet = x(t − τ) + fb·wet(t − τ), out = (1 − mix)·x + mix·wet,
+ *    τ = centre + depth·0.85·centre·sin(LFO), clamped 0.05–50 ms:
+ *    H(f) = (1 − m) + m·e^(−jωτ)/(1 − fb·e^(−jωτ)) — notches every 1/τ Hz.
+ *  • PHASER — N first-order all-passes at fc = centre·2^(2·depth·sin(LFO))
+ *    (clamped 40 Hz – 0.45·fs), the cascade's output fed back by RES one sample
+ *    late: A = e^(jφ), φ = −2N·atan(tan(πf/fs)/tan(πfc/fs)) (the bilinear
+ *    all-pass the engine runs), y = A·x/(1 − fb·A·e^(−jω)), out = (1 − m)·x +
+ *    m·y with the lab's fixed m = 0.5.
+ * Above a few kHz a flanger's notches are closer together than the screen's
+ * pixels: each column then draws the true min..max of the comb across it (a
+ * solid band), never a moiré of samples. */
+const SPEC_F0 = 20;
+const SPEC_F1 = 20000;
+const SPEC_PX_PER_DB = 1.9;
+
+/** |H| of the flanger (mode 0) or phaser (mode 1) at f, for this frame's
+ *  modulated parameter `par` (τ in ms, or fc in Hz). */
+function modMag(mode: number, f: number, par: number, mix: number, fb: number, stages: number): number {
+  'worklet';
+  let ar = 0;
+  let ai = 0;
+  if (mode === 0) {
+    const th = (PI2 * f * par) / 1000;
+    ar = Math.cos(th);
+    ai = -Math.sin(th);
+  } else {
+    const t = Math.tan((Math.PI * Math.min(f, 23000)) / 48000) / Math.tan((Math.PI * par) / 48000);
+    const phi = -2 * stages * Math.atan(t);
+    // The phaser's feedback is the cascade's PREVIOUS output sample.
+    const wv = (PI2 * f) / 48000;
+    ar = Math.cos(phi);
+    ai = Math.sin(phi);
+    // denominator 1 − fb·A·e^(−jω)
+    const lr = Math.cos(phi - wv);
+    const li = Math.sin(phi - wv);
+    const dr = 1 - fb * lr;
+    const di = -fb * li;
+    const den = Math.max(dr * dr + di * di, 1e-9);
+    const yr = (ar * dr + ai * di) / den;
+    const yi = (ai * dr - ar * di) / den;
+    const hr = 1 - mix + mix * yr;
+    const hi = mix * yi;
+    return Math.sqrt(hr * hr + hi * hi);
+  }
+  const dr = 1 - fb * ar;
+  const di = -fb * ai;
+  const den = Math.max(dr * dr + di * di, 1e-9);
+  const wr = (ar * dr + ai * di) / den;
+  const wi = (ai * dr - ar * di) / den;
+  const hr = 1 - mix + mix * wr;
+  const hi = mix * wi;
+  return Math.sqrt(hr * hr + hi * hi);
+}
+
+/** One frame of a spectrum half: kind 0 = the filled area under the trace,
+ *  1 = the trace as a band (min..max per column), 2 = the plain source line
+ *  (no effect: par < 0). y = y0 − dB·SPEC_PX_PER_DB, clamped to [yTop, yBot]. */
+function specPath(
+  kind: number,
+  x0: number,
+  x1: number,
+  y0: number,
+  yTop: number,
+  yBot: number,
+  white: number,
+  mode: number,
+  par: number,
+  mix: number,
+  fb: number,
+  stages: number,
+): SkPathT {
+  'worklet';
+  const p = Skia.Path.Make();
+  const cols = Math.max(2, Math.floor(x1 - x0));
+  const cw = (x1 - x0) / cols;
+  const lr = Math.log(SPEC_F1 / SPEC_F0);
+  const hiY: number[] = [];
+  const loY: number[] = [];
+  for (let c = 0; c < cols; c++) {
+    const fA = SPEC_F0 * Math.exp((lr * c) / cols);
+    const fB = SPEC_F0 * Math.exp((lr * (c + 1)) / cols);
+    const fm = Math.sqrt(fA * fB);
+    const tilt = white > 0.5 ? 10 * Math.log10(fm / 1000) : 0;
+    let mx = 1;
+    let mn = 1;
+    if (par >= 0) {
+      if (mode === 0 && fB - fA >= 1000 / Math.max(par, 0.01)) {
+        // A whole comb period inside the column: its extremes are at the
+        // in-phase and anti-phase frequencies.
+        const a = Math.abs(1 - mix + mix / (1 - fb));
+        const b = Math.abs(1 - mix - mix / (1 + fb));
+        mx = Math.max(a, b);
+        mn = Math.min(a, b);
+      } else {
+        mx = 0;
+        mn = 1e9;
+        for (let s = 0; s <= 4; s++) {
+          const f = fA * Math.pow(fB / fA, s / 4);
+          const m = modMag(mode, f, par, mix, fb, stages);
+          if (m > mx) mx = m;
+          if (m < mn) mn = m;
+        }
+      }
+    }
+    const yH = y0 - (20 * Math.log10(Math.max(mx, 1e-5)) + tilt) * SPEC_PX_PER_DB;
+    const yL = y0 - (20 * Math.log10(Math.max(mn, 1e-5)) + tilt) * SPEC_PX_PER_DB;
+    hiY.push(Math.max(yTop, Math.min(yBot, yH)));
+    loY.push(Math.max(yTop, Math.min(yBot, yL)));
+  }
+  if (kind === 0) {
+    p.moveTo(x0, yBot);
+    for (let c = 0; c < cols; c++) p.lineTo(x0 + (c + 0.5) * cw, hiY[c]);
+    p.lineTo(x1, yBot);
+    p.close();
+  } else if (kind === 1) {
+    for (let c = 0; c < cols; c++) {
+      if (c === 0) p.moveTo(x0 + 0.5 * cw, hiY[c]);
+      else p.lineTo(x0 + (c + 0.5) * cw, hiY[c]);
+    }
+    for (let c = cols - 1; c >= 0; c--) p.lineTo(x0 + (c + 0.5) * cw, loY[c] + 0.6);
+    p.close();
+  } else {
+    for (let c = 0; c < cols; c++) {
+      if (c === 0) p.moveTo(x0 + 0.5 * cw, hiY[c]);
+      else p.lineTo(x0 + (c + 0.5) * cw, hiY[c]);
+    }
+  }
+  return p;
+}
+
+function SpectrumFlow({
+  w,
+  h,
+  active,
+  label,
+  mode,
+  rateHz,
+  depth,
+  center,
+  mix,
+  feedback,
+  stages,
+  white,
+}: {
+  w: number;
+  h: number;
+  active: boolean;
+  label: string;
+  /** 'flanger' (center = ms) or 'phaser' (center = Hz). */
+  mode: 'flanger' | 'phaser';
+  rateHz: number;
+  depth: number;
+  center: number;
+  mix: number;
+  feedback: number;
+  stages: number;
+  white: boolean;
+}) {
+  const stageX = w * STAGE_FRAC;
+  const lfo = usePhaseClock(active, Math.min(rateHz, 10)); // the TRUE LFO rate
+  const inX0 = 8;
+  const inX1 = stageX - 18;
+  const outX0 = stageX + 14;
+  const outX1 = w - 8;
+  const yTop = 24;
+  const yBot = h - 20;
+  const y0 = 52; // 0 dB: the source's own level
+  const md = mode === 'flanger' ? 0 : 1;
+  const ctrG = useGlide(center);
+  const depthG = useGlide(depth);
+  const mixG = useGlide(mix);
+  const fbG = useGlide(feedback);
+  const stG = useGlide(stages);
+  const wh = white ? 1 : 0;
+
+  // The modulated parameter this frame — exactly the engine's LFO law.
+  const par = useDerivedValue(() => {
+    const s = Math.sin(lfo.value);
+    if (md === 0) return Math.max(0.05, Math.min(50, ctrG.value + depthG.value * 0.85 * ctrG.value * s));
+    return Math.max(40, Math.min(21600, ctrG.value * Math.pow(2, 2 * depthG.value * s)));
+  }, [lfo, ctrG, depthG, md]);
+
+  const inArea = useMemo(() => specPath(0, inX0, inX1, y0, yTop, yBot, wh, md, -1, 0, 0, 0), [inX0, inX1, wh, md, yBot]);
+  const inLine = useMemo(() => specPath(2, inX0, inX1, y0, yTop, yBot, wh, md, -1, 0, 0, 0), [inX0, inX1, wh, md, yBot]);
+  const refLine = useMemo(() => specPath(2, outX0, outX1, y0, yTop, yBot, wh, md, -1, 0, 0, 0), [outX0, outX1, wh, md, yBot]);
+  const outArea = useDerivedValue(
+    () => specPath(0, outX0, outX1, y0, yTop, yBot, wh, md, par.value, mixG.value, fbG.value, stG.value),
+    [par, mixG, fbG, stG, outX0, outX1, yBot, wh, md],
+  );
+  const outBand = useDerivedValue(
+    () => specPath(1, outX0, outX1, y0, yTop, yBot, wh, md, par.value, mixG.value, fbG.value, stG.value),
+    [par, mixG, fbG, stG, outX0, outX1, yBot, wh, md],
+  );
+
+  // Frequency ticks (100 Hz · 1 kHz · 10 kHz) under each half.
+  const ticks = useMemo(() => {
+    const p = Skia.Path.Make();
+    const marks: { x: number; t: string }[] = [];
+    const lr = Math.log(SPEC_F1 / SPEC_F0);
+    for (const [a, b] of [
+      [inX0, inX1],
+      [outX0, outX1],
+    ]) {
+      for (const [f, t] of [
+        [100, '100'],
+        [1000, '1k'],
+        [10000, '10k'],
+      ] as const) {
+        const x = a + ((b - a) * Math.log(f / SPEC_F0)) / lr;
+        p.moveTo(x, yBot + 1);
+        p.lineTo(x, yBot + 4);
+        marks.push({ x, t });
+      }
+    }
+    return { p, marks };
+  }, [inX0, inX1, outX0, outX1, yBot]);
+
+  return (
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      zeroY={null}
+      overlay={
+        <>
+      {ticks.marks.map((m, i) => (
+          <GlassText key={i} x={m.x} y={yBot + 4} text={m.t} w={28} />
+        ))}
+        <GlassText x={52} y={6} align="left" w={90} text={white ? 'WHITE NOISE' : 'PINK NOISE'} />
+        <GlassText x={outX0} y={6} align="left" w={90} text="SPECTRUM (dB)" />
+        </>
+      }
+    >
+      <SkLine p1={vec(inX0, y0)} p2={vec(inX1, y0)} color={ZERO} strokeWidth={1} />
+      <SkLine p1={vec(outX0, y0)} p2={vec(outX1, y0)} color={ZERO} strokeWidth={1} />
+      <SkLine p1={vec(inX0, yBot)} p2={vec(inX1, yBot)} color={FRAME} strokeWidth={1} />
+      <SkLine p1={vec(outX0, yBot)} p2={vec(outX1, yBot)} color={FRAME} strokeWidth={1} />
+      <Path path={ticks.p} color={DIM} style="stroke" strokeWidth={1} opacity={0.7} />
+      <Path path={inArea}>
+        <LinearGradient start={vec(0, yTop)} end={vec(0, yBot)} colors={['rgba(154,156,168,0.32)', 'rgba(154,156,168,0.04)']} />
+      </Path>
+      <Path path={inLine} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.9} />
+      <Path path={outArea}>
+        <LinearGradient start={vec(0, yTop)} end={vec(0, yBot)} colors={['rgba(255,198,77,0.34)', 'rgba(255,198,77,0.04)']} />
+      </Path>
+      <Path path={outBand} color={AMBER} opacity={0.95} />
+      <FlowGlow path={outBand} width={1.2} />
+      <Path path={refLine} color={DIM} style="stroke" strokeWidth={1} opacity={0.75}>
+        <DashPathEffect intervals={[2, 3]} />
+      </Path>
     </FlowScene>
   );
 }
@@ -1530,11 +2295,52 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
       return <EqFlow w={w} h={h} active={active} label={label} bands={model.bands} />;
     case 'delay':
       return (
-        <EchoFlow w={w} h={h} active={active} label={label} timeMs={model.timeMs} feedback={model.feedback} mix={model.mix} pingpong={model.pingpong} />
+        <EchoFlow
+          w={w}
+          h={h}
+          active={active}
+          label={label}
+          timeMs={model.timeMs}
+          feedback={model.feedback}
+          mix={model.mix}
+          pingpong={model.pingpong}
+          dampHz={model.dampHz}
+          src={model.src}
+        />
       );
     case 'reverb':
-      return <ReverbFlow w={w} h={h} active={active} label={label} rt60={model.rt60} preDelayMs={model.preDelayMs} mix={model.mix} />;
+      return (
+        <ReverbFlow
+          w={w}
+          h={h}
+          active={active}
+          label={label}
+          rt60={model.rt60}
+          preDelayMs={model.preDelayMs}
+          mix={model.mix}
+          dampHz={model.dampHz}
+          src={model.src}
+        />
+      );
     case 'mod':
+      if (model.flavor === 'flanger') {
+        return (
+          <SpectrumFlow
+            w={w}
+            h={h}
+            active={active}
+            label={label}
+            mode="flanger"
+            rateHz={model.rateHz}
+            depth={model.depth}
+            center={model.centerMs}
+            mix={model.mix}
+            feedback={model.feedback}
+            stages={0}
+            white={model.spectrum === 'white'}
+          />
+        );
+      }
       return (
         <ModFlow
           w={w}
@@ -1554,18 +2360,19 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
       );
     case 'phaser':
       return (
-        <ModFlow
+        <SpectrumFlow
           w={w}
           h={h}
           active={active}
           label={label}
-          flavor="phaser"
+          mode="phaser"
           rateHz={model.rateHz}
           depth={model.depth}
           center={model.centerHz}
           mix={0.5}
           feedback={model.feedback}
           stages={model.stages}
+          white={model.spectrum === 'white'}
         />
       );
     case 'dynamics':
@@ -1634,6 +2441,8 @@ export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; ac
 }
 
 const flowStyles = StyleSheet.create({
+  // GlassText: rulers, axis ticks, small names over the canvas (size × ts).
+  tag: { position: 'absolute', fontFamily: fonts.oswaldMedium },
   wrap: { width: '100%' },
   // Emphasized IN / OUT signal-flow labels — large, bold, on a subtle chip.
   // Point sizes live in ioScaled() so they ride the stage text scale.

@@ -44,12 +44,11 @@ import {
   STEREO_TEST_LR_RAD,
   eqResponseDb,
   combResponseDb,
-  phaserResponseDb,
   type EqBandSpec,
 } from '../../features/lab/fxViz';
 import type { CheckSpec } from './foundations/bits';
 import { FxLabScreen, type FxLabConfig, type FxSourceSpec } from './FxLabScreen';
-import type { DynSignal } from './fxAnim';
+import type { DynSignal, FxSrc } from './fxAnim';
 import { fmt2sig, snap2sig } from '../../features/lab/sliderMaps';
 
 const P = FX_PARAM;
@@ -81,6 +80,16 @@ function chorusToneOf(src?: FxSourceSpec): { srcHz: number; srcIsNoise: boolean 
   const g = src?.gen;
   if (g?.mode === GEN_MODES.sine && g.frequency) return { srcHz: g.frequency, srcIsNoise: false };
   return { srcHz: 440, srcIsNoise: true };
+}
+
+/** What the delay / reverb / flanger / phaser heroes draw coming IN — the
+ *  selected SOURCE as the generator makes it (fix wave 2026-10-16). */
+function fxSrcOf(src?: FxSourceSpec): FxSrc {
+  const g = src?.gen;
+  if (g?.mode === GEN_MODES.click) return { kind: 'click', periodMs: 60000 / (g.clickBpm ?? 120) };
+  if (g?.mode === GEN_MODES.burst) return { kind: 'burst', hz: g.frequency ?? 1000 };
+  if (g?.mode === GEN_MODES.sine) return { kind: 'tone', hz: g.frequency ?? 1000 };
+  return { kind: 'noise', color: g?.mode === GEN_MODES.white ? 'white' : 'pink' };
 }
 
 // Retrieval checks (learning pass 2026-08-31): the FX fleet was the app's
@@ -225,7 +234,11 @@ const delayConfig: FxLabConfig = {
   intro:
     'A delay repeats the signal after a set time. The timeline below IS the echo pattern: ' +
     'spacing = delay time, shrinking height = feedback, sides = ping-pong.',
-  exploreCaption: 'Use the CLICK source — every click spawns the echo pattern you see below.',
+  // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
+  exploreCaption:
+    'Display: each click (grey) crosses the stage and its repeats follow it out — the gap is the delay TIME, each ' +
+    'repeat smaller by the FEEDBACK. The ruler under OUT counts seconds since the stage. Use the CLICK source: a ' +
+    'steady tone or noise hides its repeats.',
   sources: [srcClick(90), SRC_PINK, srcSine(220)],
   params: [
     {
@@ -288,12 +301,14 @@ const delayConfig: FxLabConfig = {
   Hero: (v) => (
     <EchoTimelineGraph timeMs={v[P.timeMs]} feedback={v[P.delayFeedback]} mix={v[P.delayMix]} pingpong={v[P.pingpong] > 0.5} />
   ),
-  anim: (v) => ({
+  anim: (v, src) => ({
     kind: 'delay',
     timeMs: v[P.timeMs],
     feedback: v[P.delayFeedback],
     mix: v[P.delayMix],
     pingpong: v[P.pingpong] > 0.5,
+    dampHz: v[P.dampHz],
+    src: fxSrcOf(src),
   }),
   heroBadge: 'ECHO PATTERN — ANALYTIC (spacing = time · decay = feedback)',
   heroCaption: (v) =>
@@ -337,8 +352,14 @@ const reverbConfig: FxLabConfig = {
   intro:
     'Reverb is thousands of reflections blurring into a decaying wash. The graph below is the ' +
     'decay: RT60 is WHERE the slope crosses −60 dB — a time, not an amount.',
-  exploreCaption: 'Click or burst sources make the decay audible as a tail after each hit.',
-  sources: [srcClick(60), { label: 'BURST', gen: { mode: GEN_MODES.burst } }, SRC_PINK],
+  // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
+  exploreCaption:
+    'Display: level in decibels (dashed guides 30 dB apart), so a decay is a straight slope. Each click (grey) crosses the stage; after the ' +
+    'pre-delay gap the reverb (amber) arrives and falls 60 dB in RT60 — a longer RT60 is a gentler slope, and the ' +
+    'tails pile up into a wash. OUT redraws from the left each time a click reaches the stage; its ruler counts seconds since then.',
+  // The burst names its pitch: the generator keeps the LAST frequency any lab
+  // set, so a burst with none played whatever tone the previous lab left.
+  sources: [srcClick(60), { label: 'BURST 1 kHz', short: 'BURST', gen: { mode: GEN_MODES.burst, frequency: 1000 } }, SRC_PINK],
   params: [
     {
       label: 'RT60 (DECAY TIME)', short: 'RT60', paramId: P.rt60, lessonKey: 'decay',
@@ -385,7 +406,14 @@ const reverbConfig: FxLabConfig = {
     { k: 'MIX', paramId: P.reverbMix },
   ],
   Hero: (v) => <DecayCurveGraph rt60={v[P.rt60]} preDelayMs={v[P.preDelayMs]} />,
-  anim: (v) => ({ kind: 'reverb', rt60: v[P.rt60], preDelayMs: v[P.preDelayMs], mix: v[P.reverbMix] }),
+  anim: (v, src) => ({
+    kind: 'reverb',
+    rt60: v[P.rt60],
+    preDelayMs: v[P.preDelayMs],
+    mix: v[P.reverbMix],
+    dampHz: v[P.reverbDampHz],
+    src: fxSrcOf(src),
+  }),
   heroBadge: 'DECAY SLOPE — ANALYTIC (RT60 = time to fall 60 dB)',
   heroCaption: (v) =>
     `${v[P.preDelayMs]} ms pre-delay separates the dry hit from the wash, then the tail falls 60 dB in ${v[P.rt60]} s.` +
@@ -576,7 +604,10 @@ const flangerConfig: FxLabConfig = {
   intro:
     'A flanger is a SHORT delay summed with the dry signal: evenly spaced comb notches whose ' +
     'spacing is 1/delay. The LFO moves the delay, so every notch sweeps together — the jet.',
-  exploreCaption: 'Pink noise makes the moving notches audible AND visible below.',
+  // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
+  exploreCaption:
+    'Display: two spectrum analysers — the noise going in, and coming out with the flanger’s evenly spaced notches ' +
+    'sweeping as the LFO moves the delay (that sweep is the jet). Dotted line = the input, for comparison.',
   sources: [SRC_PINK, SRC_WHITE],
   fixed: [{ paramId: P.modMode, value: 1 }],
   params: [
@@ -643,7 +674,7 @@ const flangerConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => combSweepHero(v[P.centerMs], v[P.centerMs] * 0.85 * v[P.depth], v[P.modMix], v[P.modFeedback]),
-  anim: (v) => ({
+  anim: (v, src) => ({
     kind: 'mod',
     flavor: 'flanger',
     rateHz: v[P.rateHz],
@@ -651,6 +682,7 @@ const flangerConfig: FxLabConfig = {
     centerMs: v[P.centerMs],
     mix: v[P.modMix],
     feedback: v[P.modFeedback],
+    spectrum: src?.gen.mode === GEN_MODES.white ? 'white' : 'pink',
   }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
@@ -686,6 +718,22 @@ const flangerConfig: FxLabConfig = {
 export const FlangerLabScreen = () => <FxLabScreen config={flangerConfig} />;
 
 // ─────────────────────────────────────────────────────── LAB 6 · Phaser ──
+/** The phaser's response with RES, as the engine runs it (Effects.hpp
+ *  ModEffect, mode 2): mix 0.5 of dry + N first-order (bilinear) all-passes,
+ *  A = e^(jφ), φ = −2N·atan(tan(πf/fs) / tan(πfc/fs)), the cascade's previous
+ *  output fed back ×RES: y = A·x / (1 − RES·A·e^(−jω)) — the animated
+ *  analyser on the glass draws the same law. */
+function phaserResDb(fc: number, stages: number, fb: number, f: number): number {
+  const fs = 48000;
+  const phi = -2 * stages * Math.atan(Math.tan((Math.PI * Math.min(f, 23000)) / fs) / Math.tan((Math.PI * fc) / fs));
+  const wv = (2 * Math.PI * f) / fs;
+  const ar = Math.cos(phi), ai = Math.sin(phi);
+  const dr = 1 - fb * Math.cos(phi - wv), di = -fb * Math.sin(phi - wv);
+  const den = Math.max(dr * dr + di * di, 1e-12);
+  const yr = (ar * dr + ai * di) / den, yi = (ai * dr - ar * di) / den;
+  const hr = 0.5 + 0.5 * yr, hi = 0.5 * yi;
+  return 10 * Math.log10(Math.max(hr * hr + hi * hi, 1e-12));
+}
 const phaserConfig: FxLabConfig = {
   labId: 'phaser',
   fxId: FX.mod,
@@ -695,7 +743,10 @@ const phaserConfig: FxLabConfig = {
     'A phaser shifts PHASE, not time: all-pass stages create a few notches where the shifted ' +
     'copy cancels the dry. Compare the sparse, UNEVEN notches below with the flanger’s even ' +
     'comb — that difference is the whole lesson.',
-  exploreCaption: 'Count the notches: ≈ stages ÷ 2, unevenly spaced. For a pure manual sweep, set DEPTH to STATIC and drag CENTER yourself.',
+  // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
+  exploreCaption:
+    'Display: the noise’s spectrum going in and coming out — a few UNEVEN notches (≈ stages ÷ 2) sweep as the LFO ' +
+    'moves the all-pass corner; RES feeds the output back, lifting resonant peaks between the notches. For a pure manual sweep, set DEPTH to STATIC and drag CENTER yourself.',
   sources: [SRC_PINK, SRC_WHITE],
   // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
   // only sets param 0 (enabled) to 0 — every other atomic keeps its last
@@ -771,23 +822,27 @@ const phaserConfig: FxLabConfig = {
       valueLabel: (v) => `${v[P.rateHz]}·${Math.round(v[P.depth] * 100)}%`,
     },
   ],
+  // RES is drawn too (fix wave 2026-10-16): the engine feeds the cascade's
+  // output back (Effects.hpp), so RES deepens the notches and lifts peaks —
+  // the curve used to ignore it, and moving RES changed nothing here.
   Hero: (v) => (
     <ResponseCurveGraph
       dbRange={16}
       curves={[
-        { at: (f) => phaserResponseDb(v[P.centerHz] * Math.pow(2, -2 * v[P.depth]), v[P.stages], 0.5, f), emphasis: 'ghost' },
-        { at: (f) => phaserResponseDb(v[P.centerHz] * Math.pow(2, 2 * v[P.depth]), v[P.stages], 0.5, f), emphasis: 'ghost' },
-        { at: (f) => phaserResponseDb(v[P.centerHz], v[P.stages], 0.5, f), emphasis: 'main' },
+        { at: (f) => phaserResDb(v[P.centerHz] * Math.pow(2, -2 * v[P.depth]), v[P.stages], v[P.modFeedback], f), emphasis: 'ghost' },
+        { at: (f) => phaserResDb(v[P.centerHz] * Math.pow(2, 2 * v[P.depth]), v[P.stages], v[P.modFeedback], f), emphasis: 'ghost' },
+        { at: (f) => phaserResDb(v[P.centerHz], v[P.stages], v[P.modFeedback], f), emphasis: 'main' },
       ]}
     />
   ),
-  anim: (v) => ({
+  anim: (v, src) => ({
     kind: 'phaser',
     rateHz: v[P.rateHz],
     depth: v[P.depth],
     centerHz: v[P.centerHz],
     stages: v[P.stages],
     feedback: v[P.modFeedback],
+    spectrum: src?.gen.mode === GEN_MODES.white ? 'white' : 'pink',
   }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
@@ -896,8 +951,10 @@ const compConfig: FxLabConfig = {
   // The time constants share one tray (attack × release = the envelope).
   dockGroups: [
     {
-      id: 'env', label: 'ENV', paramIds: [P.attackMs, P.releaseMs], lessonKey: 'attack',
-      valueLabel: (v) => `${v[P.attackMs]}·${v[P.releaseMs]}`,
+      // "ATK/REL 5/120ms" — the readout names both times and their unit
+      // ("ENV 5·120" was shorthand; art grading 2026-10-16).
+      id: 'env', label: 'ATK/REL', paramIds: [P.attackMs, P.releaseMs], lessonKey: 'attack',
+      valueLabel: (v) => `${v[P.attackMs]}/${v[P.releaseMs]}ms`,
     },
   ],
   Hero: (v, src) => (
