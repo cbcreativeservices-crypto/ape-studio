@@ -205,6 +205,18 @@ export function malletModel(fam: MalletFamily): InstrumentModel {
       variants: only,
       clearance: 10,
     });
+    // KEEP CLEAR: the player standing behind the keyboard (the house figure
+    // MalletArt draws: hips 930, head centre 1650 above the floor, at the
+    // player's line) — so a drawing that shows the parts frames the whole
+    // player (art grading fix 2026-10-16: the head was cut off at the glass's
+    // top) and no part name sits on the body.
+    envelopes.push({
+      id: `env.player.${id}`,
+      label: 'the player',
+      shape: { kind: 'capsule', a: { x: 0, y: yF - 930, z: L.zPlayer }, b: { x: 0, y: yF - 1650, z: L.zPlayer }, r: 200 },
+      prov: ill('a standing adult behind the keyboard (the house figure) — a drawing default'),
+      variants: only,
+    });
   }
   const v0 = fam.variants[0].row.id;
   const viewsByVariant: InstrumentModel['viewsByVariant'] = {};
