@@ -27,6 +27,7 @@ import { SINGER_NECK, SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { VOICE_PART_WORDS } from '../shared/voice/voiceModel.ts';
 import { mouthLine, mouthSurface, onAnchor, voiceRegions } from '../shared/voice/voiceZones.ts';
 import { FUR_CAPSULE_MM, SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
+import { lavLead } from '../shared/broadcast/bodyWorn.ts';
 import { boomStart, frameForShot, headroomKeepOut, powerLineKeepOut, type CameraFrame, type OverheadLine } from '../shared/field/location.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
@@ -58,7 +59,7 @@ export const JAR = v3(790, 650, -180);
 /* ── the boom operator (outside the frame, to the talker's left) ── */
 export const OPERATOR = { feet: v3(1360, FLOOR, -1050), box: { min: v3(1210, -210, -1240), max: v3(1510, FLOOR, -860) } };
 /** The operator's front hand on the pole (the grip the pole is drawn to). */
-export const GRIP = v3(1150, -285, -820);
+export const GRIP = v3(1150, -380, -820);
 
 /* ── the body mic: on the chest, just above the sternum (SHURE-LAV) ── */
 /** The chest's front face (the shared figure's torso). */
@@ -122,7 +123,8 @@ const envelopes: Envelope[] = [
 
 const rims: Rim[] = [
   { id: 'grip', label: 'the boom operator’s hands', c: GRIP, axis: v3(0, 0, 1), r: 0, variants: ['set', 'outdoor'], types: ['locBoomSgCap', 'locBoomHyper', 'locBoomFurCap'] },
-  { id: 'lav', label: 'a clip on the shirt, above the breastbone', c: LAV_CLIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'] },
+  // Its cable in under the shirt to the bodypack (the engine's LavLead; art fix 2026-10-16).
+  { id: 'lav', label: 'a clip on the shirt, above the breastbone', c: LAV_CLIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(LAV_CLIP) },
   { id: 'clip.ear', label: 'a headset over the right ear', c: onAnchor(FRAME_V, { x: EAR.x, y: EAR.y, z: EAR_HALF }), axis: v3(0, 0, 1), r: 0, variants: ['live'], types: ['vocHeadset'] },
 ];
 

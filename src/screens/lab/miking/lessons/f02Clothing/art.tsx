@@ -330,4 +330,6 @@ export const F02_ART: LessonArt = {
   labelObstacles: voiceLabelObstacles(F02_ZONES),
   labelsYieldToMic: true,
   PoleOperator: PoleOperatorArt,
+  // ORIENT's figure: the artist head to floor (art fix 2026-10-16).
+  figureBox: () => ({ u0: -950, u1: 650, v0: -640, v1: 1290 }),
 };

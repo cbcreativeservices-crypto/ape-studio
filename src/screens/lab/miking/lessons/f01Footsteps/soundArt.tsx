@@ -16,21 +16,63 @@
  * and WHERE, never how loud or how long; motion drawn larger. Nothing loops.
  */
 import { useMemo } from 'react';
-import { Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
+import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { make } from '../shared/concert/paths.ts';
-import { AIR, AMBER, Arrow, Burst, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
+import { AIR, Arrow, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
+import { ContactMark } from '../shared/foley/contactMarks';
 import { PitSection } from '../shared/foley/StageArt';
 import { SURFACES, type SurfaceId } from '../shared/foley/stage.ts';
 import { F01_SURFACE } from './geometry.ts';
 
 export const SOUND_BOX = { u0: -420, u1: 420, v0: -330, v1: 190 };
 
+/** The ball of the foot in the shoe's own frame: where the sole creases and
+ *  the shoe pivots as the heel lifts (art fix 2026-10-16). */
+const BALL_X = 205;
+
 /** A leather shoe in profile, the heel's back-bottom corner at (0, 0), the
- *  toe toward +u; `pitch` tilts it about the heel (deg, toe up > 0). */
-export function Shoe({ x, y, pitch = 0, scale = 1 }: { x: number; y: number; pitch?: number; scale?: number }) {
+ *  toe toward +u; `pitch` tilts it about the heel (deg, toe up > 0) — the
+ *  heel landing. `heelLift` (deg) is the push-off: the forefoot stays flat on
+ *  the floor and the rest of the shoe turns up about the ball, the sole
+ *  creasing there (it was a rigid block tipping its toe into the floor). */
+export function Shoe({ x, y, pitch = 0, scale = 1, heelLift = 0 }: { x: number; y: number; pitch?: number; scale?: number; heelLift?: number }) {
+  if (heelLift > 0) {
+    const t = (heelLift * Math.PI) / 180; // clockwise on the screen: the heel rises
+    const clipRear = Skia.XYWHRect(-20, -200, BALL_X + 2 + 20, 240);
+    const clipFront = Skia.XYWHRect(BALL_X - 2, -200, 140, 240);
+    return (
+      <Group transform={[{ translateX: x }, { translateY: y }, { scale }]}>
+        <Group clip={clipFront}>
+          <ShoeBody />
+        </Group>
+        <Group transform={[{ translateX: BALL_X }, { rotate: t }, { translateX: -BALL_X }]}>
+          <Group clip={clipRear}>
+            <ShoeBody />
+          </Group>
+        </Group>
+        {/* The crease across the vamp at the ball. */}
+        <Path path={CREASE} style="stroke" strokeWidth={3} strokeCap="round" color="#2a180b" opacity={0.85} />
+      </Group>
+    );
+  }
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { scale }, { rotate: (-pitch * Math.PI) / 180 }]}>
+      <ShoeBody />
+    </Group>
+  );
+}
+
+const CREASE = (() => {
+  const p = make();
+  p.moveTo(BALL_X - 6, -30);
+  p.quadTo(BALL_X - 2, -60, BALL_X - 14, -92);
+  return p;
+})();
+
+function ShoeBody() {
   const g = useMemo(() => {
     const upper = make();
     upper.moveTo(6, -40);
@@ -63,7 +105,7 @@ export function Shoe({ x, y, pitch = 0, scale = 1 }: { x: number; y: number; pit
     return { upper, sole, heel, welt, lace };
   }, []);
   return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { scale }, { rotate: (-pitch * Math.PI) / 180 }]}>
+    <Group>
       <Path path={g.heel}>
         <LinearGradient start={vec(0, -30)} end={vec(0, 0)} colors={['#3a2a1e', '#1a120c']} />
       </Path>
@@ -86,9 +128,12 @@ const ENDS = { tile: 'TILES CLICK', woodPanel: 'BOARDS KNOCK', gravel: 'STONES C
 export function FootstepStrike({ w, h, variant, shown, accessibilityLabel }: { w: number; h: number; variant: VariantId; reveal: SharedValue<number>; shown: number; accessibilityLabel: string }) {
   const surface: SurfaceId = F01_SURFACE[variant] ?? 'tile';
   const s = SURFACES[surface];
-  // The shoe: heel landing (toe up), rolled flat, toe pushing off.
-  const pitch = shown <= 1 ? 16 : shown === 2 ? 0 : -6;
+  // The shoe: heel landing (toe up), rolled flat, then the heel lifting
+  // about the ball as the toe pushes off (the forefoot stays down).
+  const pitch = shown <= 1 ? 16 : 0;
+  const heelLift = shown >= 3 ? 14 : 0;
   const sx = shown <= 1 ? -230 : -250;
+  const S = 1.4;
   const top = s.layers[0].mm;
   const labels: StaticLabel[] = [];
   if (shown >= 1) labels.push({ id: 's1', text: '① THE HEEL LANDS', short: '① HEEL', u: -410, v: -310, align: 'left', tone: 'amber' });
@@ -99,17 +144,19 @@ export function FootstepStrike({ w, h, variant, shown, accessibilityLabel }: { w
   return (
     <SoundCanvas w={w} h={h} box={SOUND_BOX} label={accessibilityLabel} labels={labels}>
       <PitSection surface={surface} u0={-700} u1={700} />
-      <Shoe x={sx} y={shown <= 1 ? -2 : 0} pitch={pitch} scale={1.4} />
+      <Shoe x={sx} y={shown <= 1 ? -2 : 0} pitch={pitch} heelLift={heelLift} scale={S} />
+      {/* Where each contact happens: a flat ring on the surface (the patch,
+          edge-on), named by the page's circled numbers. */}
       <Group opacity={eventOpacity(shown, 1)}>
         <Arrow a={[sx + 50, -260]} b={[sx + 50, -60]} />
-        <Burst c={[sx + 40, 0]} r0={20} r1={46} n={7} phase={-1.6} />
+        <ContactMark c={[sx + 40 * S / 1.4, 0]} w={110} />
       </Group>
       <Group opacity={eventOpacity(shown, 2)}>
         <Arrow a={[sx + 80, -230]} b={[sx + 330, -230]} />
-        <Burst c={[sx + 360, -4]} r0={14} r1={32} n={6} phase={-1.4} />
+        <ContactMark c={[sx + 160 * S, 0]} w={300} />
       </Group>
       <Group opacity={eventOpacity(shown, 3)}>
-        <Burst c={[sx + 160, top / 2]} r0={22} r1={58} n={9} phase={-1.2} color={AMBER} />
+        <ContactMark c={[sx + BALL_X * S + 40, top / 2]} w={150} />
       </Group>
       <Group opacity={shown >= 4 ? 1 : 0}>
         <Arrow a={[sx + 160, 30]} b={[sx + 160, 130]} color={AIR} width={4} head={12} dashed />

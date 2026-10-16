@@ -331,7 +331,11 @@ export const ROUTE_SITE: FieldSite = {
     { kind: 'tree', c: [9800, 6000], canopy: 3200, h: 13000, trunk: 280 },
     { kind: 'tree', c: [-5200, -11000], canopy: 2600, h: 11000, trunk: 220 },
     { kind: 'tree', c: [-5600, 12000], canopy: 2800, h: 11000, trunk: 240 },
-    { kind: 'bench', c: [-4200, 3000], len: 1800 },
+    // Two younger park trees nearer the mic, inside the section's frame (art
+    // fix 2026-10-16): one beyond the path, one behind the listening point.
+    { kind: 'tree', c: [6300, -6500], canopy: 2300, h: 7000, trunk: 170 },
+    { kind: 'tree', c: [-1900, -8500], canopy: 1900, h: 6400, trunk: 150 },
+    { kind: 'bench', c: [-1900, 4200], len: 1800 },
     { kind: 'person', c: [ROUTE_X, -9000], heading: 90, role: 'walker' },
   ],
   sources: [{ id: 'walker', label: 'the walker', p: { x: ROUTE_X, y: -WALK_SOURCE_H, z: 0 }, kind: 'steps' }],

@@ -25,15 +25,20 @@ const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 export const F04_VARIANTS = ['impact', 'water', 'texture', 'live'] as const;
 const TABLE_H = PROP_DIMS.tableH.mm;
 const BOARD_T = 18;
+/** The basin's table (art fix 2026-10-16): a stable low work table 600 mm
+ *  high, so the artist pours with a bent elbow from a slight bend at the
+ *  hips (on the shared 400 mm low table the arm hung straight from a deep
+ *  stoop). A drawing default. */
+export const WATER_TABLE_H = 600;
 /** The floor's y under each variant's action. */
-export const FLOOR: Readonly<Record<string, number>> = { impact: TABLE_H, water: PROP_DIMS.lowTableH.mm + BASIN.water, texture: TABLE_H + BOARD_T, live: TABLE_H };
+export const FLOOR: Readonly<Record<string, number>> = { impact: TABLE_H, water: WATER_TABLE_H + BASIN.water, texture: TABLE_H + BOARD_T, live: TABLE_H };
 export const floorOf = (v: VariantId) => FLOOR[v] ?? TABLE_H;
 /** The table's top under the action, per variant (the basin's low table under the water's bottom). */
 export const TABLE = { x0: -380, x1: 300, z0: -450, z1: 450 } as const;
 export const tableTop = (v: VariantId) => (v === 'water' ? BASIN.water : v === 'texture' ? BOARD_T : 0);
 
 const IMPACT_BODY: Body3 = standing({ floorY: FLOOR.impact, x: -500, lean: 28, wrR: v3(-110, -180, 40), elR: v3(-330, -300, 230), wrL: v3(-330, -40, -210), elL: v3(-420, -300, -260), kindR: 'grip' });
-const WATER_BODY: Body3 = standing({ floorY: FLOOR.water, x: -560, lean: 30, wrR: v3(-190, -320, 60), elR: v3(-400, -480, 230), wrL: v3(-170, -250, -40), elL: v3(-380, -420, -260), kindR: 'grip' });
+const WATER_BODY: Body3 = standing({ floorY: FLOOR.water, x: -560, lean: 24, wrR: v3(-190, -320, 60), elR: v3(-400, -480, 230), wrL: v3(-170, -250, -40), elL: v3(-380, -420, -260), kindR: 'grip' });
 const TEXTURE_BODY: Body3 = standing({ floorY: FLOOR.texture, x: -520, lean: 25, wrR: v3(-110, -90, 80), elR: v3(-330, -300, 230), wrL: v3(-200, -40, -260), elL: v3(-400, -300, -280), kindR: 'grip' });
 export const BODIES: Readonly<Record<string, Body3>> = { impact: IMPACT_BODY, water: WATER_BODY, texture: TEXTURE_BODY, live: IMPACT_BODY };
 export const bodyOf = (v: VariantId): Body3 => BODIES[v] ?? IMPACT_BODY;
@@ -54,7 +59,7 @@ function parts(): Part[] {
     { id: 'f04.table', label: 'sturdy wooden table', short: 'table', role: 'The table’s top resonates under the hit: part of the body of the sound — and vibration that can reach a stand.', prov: ill('a table 750 mm high (drawing default)'), variants: ['impact', 'live'], solid: { kind: 'box', min: v3(TABLE.x0, 0, TABLE.z0), max: v3(TABLE.x1, TABLE_H, TABLE.z1) } },
     { id: 'f04.tableTex', label: 'sturdy wooden table', short: 'table', role: 'The table under the board: it carries the stroke’s vibration — part of the texture, and a path to a stand.', prov: ill('a table 750 mm high (drawing default)'), variants: ['texture'], solid: { kind: 'box', min: v3(TABLE.x0, BOARD_T, TABLE.z0), max: v3(TABLE.x1, FLOOR.texture, TABLE.z1) } },
     { id: 'f04.basin', label: 'shallow basin of water', short: 'basin', role: 'Water only, in a stable shallow basin on a non-slip mat: the entry, the splash, bubbles, the container wall, the drips.', prov: ill('a basin Ø 400 × 120 mm (drawing default)'), variants: ['water'], solid: { kind: 'cyl', a: v3(0, BASIN.water, 0), b: v3(0, -(BASIN.depth - BASIN.water), 0), r: BASIN.R } },
-    { id: 'f04.lowTable', label: 'stable low table and mat', short: 'low table', role: 'A low, stable table and a non-slip mat under the basin; power, cables and connectors kept away from the wet area.', prov: ill('a low table 400 mm high (drawing default)'), variants: ['water'], solid: { kind: 'box', min: v3(-380, BASIN.water, -380), max: v3(380, FLOOR.water, 380) } },
+    { id: 'f04.lowTable', label: 'stable low table and mat', short: 'low table', role: 'A low, stable table and a non-slip mat under the basin; power, cables and connectors kept away from the wet area.', prov: ill('a low work table 600 mm high (drawing default)'), variants: ['water'], solid: { kind: 'box', min: v3(-380, BASIN.water, -380), max: v3(380, FLOOR.water, 380) } },
     { id: 'f04.board', label: 'fabric-covered board and a dry brush', short: 'board', role: 'A dry brush drawn across coarse fabric: continuous friction along the stroke, the board’s resonance, a natural end.', moving: true, prov: ill('a board 600 × 400 mm (drawing default)'), variants: ['texture'] },
     { id: 'f04.room', label: 'the stage room', short: 'room', role: 'A farther mic joins the source and the room — and may avoid direct splash or air bursts, at the cost of more room noise.', prov: ill('a generic Foley stage room (drawing default)') },
     { id: 'f04.pa', label: 'PA loudspeaker, beside the stage', short: 'PA', role: 'The PA faces the audience — and every open mic hears it too.', prov: ill('a typical theatre layout (drawing default)'), variants: ['live'], solid: boothSolids(FLOOR.live).pa },

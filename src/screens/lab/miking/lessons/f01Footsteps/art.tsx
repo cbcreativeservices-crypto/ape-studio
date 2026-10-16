@@ -120,4 +120,7 @@ export const F01_ART: LessonArt = {
   figureAt: (view, _variant, u, v, tol) => poseCovers(view === 'side' ? WALKER_SIDE : WALKER_TOP, u, v, tol),
   labelObstacles: voiceLabelObstacles(F01_ZONES),
   labelsYieldToMic: true,
+  // ORIENT's figure: the walker whole, the pit cut open under the feet (art
+  // fix 2026-10-16 — the content frame cut the shoes off at the glass).
+  figureBox: () => ({ u0: -1000, u1: 1050, v0: -1900, v1: 470 }),
 };

@@ -17,7 +17,8 @@ import { Group } from '@shopify/react-native-skia';
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import type { StaticLabel } from '../../engine/scene/StaticLabels';
-import { AIR, Arrow, Burst, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
+import { AIR, Arrow, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
+import { ContactMark, Droplet, SplashCrown } from '../shared/foley/contactMarks';
 import { TableArt } from '../shared/foley/StageArt';
 import { Basin, BrushBoard, PaddedBlock } from '../shared/foley/props';
 import { BASIN } from '../shared/foley/propGeom.ts';
@@ -63,8 +64,11 @@ export function ImpactStrike({ w, h, variant, shown, accessibilityLabel }: { w: 
       <Group opacity={eventOpacity(shown, 1)}>
         {v === 'texture' ? <Arrow a={[-260, -120]} b={[-60, -120]} /> : <Arrow a={[-40, water ? -260 : -280]} b={[-10, water ? -70 : -90]} />}
       </Group>
+      {/* The attack: the water's entry throws up its crown; a contact is a
+          flat ring on the surface where it happens (art fix 2026-10-16 —
+          they were starbursts). */}
       <Group opacity={eventOpacity(shown, 2)}>
-        <Burst c={hit} r0={20} r1={58} n={water ? 11 : 8} phase={-1.4} />
+        {water ? <SplashCrown c={hit} k={1} rimY={-(BASIN.depth - BASIN.water)} /> : <ContactMark c={hit} w={v === 'texture' ? 220 : 170} />}
       </Group>
       <Group opacity={eventOpacity(shown, 3)}>
         <Radiate c={water ? [BASIN.R - 20, 10] : [0, 20]} radii={[60, 95]} a0={water ? -60 : 20} a1={water ? 60 : 160} />
@@ -72,8 +76,8 @@ export function ImpactStrike({ w, h, variant, shown, accessibilityLabel }: { w: 
       <Group opacity={shown >= 4 ? 1 : 0}>
         {water ? (
           <>
-            <Burst c={[60, -30]} r0={4} r1={10} n={4} phase={0.2} />
-            <Burst c={[-80, -60]} r0={4} r1={10} n={4} phase={1.1} />
+            <Droplet x={60} y={-34} r={7} />
+            <Droplet x={-80} y={-70} r={6} />
           </>
         ) : null}
         <Radiate c={[0, 0]} radii={[200, 260]} a0={-170} a1={-10} color={AIR} />
@@ -98,11 +102,11 @@ export function WaterHitTail({ w, h, mode, swing, accessibilityLabel }: { w: num
   return (
     <SoundCanvas w={w} h={h} box={PAIR_BOX} label={accessibilityLabel} labels={labels}>
       <Basin view="side" splash={false} />
-      {crown > 0 ? <Burst c={[0, 0]} r0={20} r1={20 + crown * 70} n={11} phase={-1.6} /> : null}
+      {crown > 0 ? <SplashCrown c={[0, 0]} k={crown} rimY={-(BASIN.depth - BASIN.water)} /> : null}
       {drips ? (
         <>
-          <Burst c={[40, -40 - t * 60]} r0={3} r1={8} n={4} phase={0.4} />
-          <Burst c={[-60, -20 - t * 90]} r0={3} r1={8} n={4} phase={1.4} />
+          <Droplet x={40} y={-110 + t * 60} r={6} />
+          <Droplet x={-60} y={-150 + t * 90} r={5} />
           <Radiate c={[0, 0]} radii={[50 * t + 20, 90 * t + 30]} a0={-180} a1={0} />
         </>
       ) : null}

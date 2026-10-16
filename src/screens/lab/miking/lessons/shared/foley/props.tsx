@@ -17,7 +17,7 @@
  * Static (D8); textures are combined Paths.
  */
 import { useMemo } from 'react';
-import { BlurMask, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId } from '../../../engine/model/types.ts';
 import { make, oval, rect, rrect } from '../concert/paths.ts';
 import { BASIN, CHAIR, DOOR, PROP_DIMS, doorEdge, splashRadius } from './propGeom.ts';
@@ -259,28 +259,46 @@ export function PaddedBlock({ view, lift = 0 }: { view: ViewId; lift?: number })
   );
 }
 
-/** A shallow basin of water: the water's surface middle at the origin; on a mat; in plan the splash envelope. */
+/** A shallow basin of water: the water's surface middle at the origin; on a mat; in plan the splash envelope.
+ *  Side (art fix 2026-10-16 — it was a grey trapezoid with the water painted
+ *  on its face): the basin cut through its middle — its tapered wall with a
+ *  rolled rim and a foot ring, the water standing inside to its surface. */
 export function Basin({ view, splash = true }: { view: ViewId; splash?: boolean }) {
   const R = BASIN.R;
   const D = BASIN.depth;
   const w = BASIN.water;
   const g = useMemo(() => {
     if (view === 'side') {
-      const bowl = make();
-      bowl.moveTo(-R, -(D - w));
-      bowl.lineTo(R, -(D - w));
-      bowl.lineTo(R * 0.85, w);
-      bowl.lineTo(-R * 0.85, w);
-      bowl.close();
+      const t = 7; // the wall (a drawing default)
+      const top = -(D - w);
+      const outer = make();
+      outer.moveTo(-R, top);
+      outer.lineTo(R, top);
+      outer.lineTo(R * 0.85, w - 8);
+      outer.lineTo(-R * 0.85, w - 8);
+      outer.close();
+      // Inside face: the wall's slope, `t` in from the outside.
+      const xIn = (y: number) => R - t - ((R * 0.15) * (y - top)) / (w - 8 - top);
+      const inner = make();
+      inner.moveTo(-xIn(top), top);
+      inner.lineTo(xIn(top), top);
+      inner.lineTo(xIn(w - 8 - t), w - 8 - t);
+      inner.lineTo(-xIn(w - 8 - t), w - 8 - t);
+      inner.close();
+      const wall = Skia.Path.MakeFromOp(outer, inner, PathOp.Difference) ?? outer;
+      // The rolled rim and the foot ring.
+      wall.addCircle(-R + 2, top, 7);
+      wall.addCircle(R - 2, top, 7);
+      wall.addRRect(Skia.RRectXY(Skia.XYWHRect(-R * 0.72, w - 9, R * 1.44, 9), 3, 3));
       const water = make();
-      water.moveTo(-R + 8, 0);
-      water.lineTo(R - 8, 0);
-      water.lineTo(R * 0.85 - 6, w - 6);
-      water.lineTo(-R * 0.85 + 6, w - 6);
+      water.moveTo(-xIn(0), 0);
+      water.lineTo(xIn(0), 0);
+      water.lineTo(xIn(w - 8 - t), w - 8 - t);
+      water.lineTo(-xIn(w - 8 - t), w - 8 - t);
       water.close();
       const mat = make();
       rect(mat, -R - 160, w, R + 160, w + 8);
-      return { bowl, water, mat, env: make() };
+      return { bowl: wall, water, mat, env: make() };
     }
     const bowl = oval(make(), 0, 0, R, R);
     const water = oval(make(), 0, 0, R - 18, R - 18);
@@ -297,6 +315,7 @@ export function Basin({ view, splash = true }: { view: ViewId; splash?: boolean 
       <Path path={g.water}>
         {view === 'top' ? <RadialGradient c={vec(-40, -40)} r={R} colors={['#9fd2f0', '#4c8fb8', '#235a7e']} /> : <LinearGradient start={vec(0, 0)} end={vec(0, w)} colors={['#9fd2f0', '#4c8fb8', '#235a7e']} />}
       </Path>
+      {view === 'side' ? <Path path={Skia.Path.Make().moveTo(-R + 14, 0).lineTo(R - 14, 0)} style="stroke" strokeWidth={3} color="#d9f0ff" opacity={0.9} /> : null}
       {view === 'top' && splash ? (
         <Path path={g.env} style="stroke" strokeWidth={6} color="#6fa8ff" opacity={0.8}>
           <DashPathEffect intervals={[16, 12]} />

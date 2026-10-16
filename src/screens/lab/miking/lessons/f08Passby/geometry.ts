@@ -31,7 +31,11 @@ export const WALK_PATH: PathDef = straightPath({ x: ROUTE_X, y: -WALK_SOURCE_H, 
 export const VEH_PATH: PathDef = straightPath({ x: VEH_X, y: -600, z: -22000 }, { x: VEH_X, y: -600, z: 22000 }, VEHICLE_SPEED_MS, VEH_ENVELOPE);
 
 const VIEWS: Readonly<Record<'walk' | 'vehicle', Record<ViewId, ViewBox>>> = {
-  walk: { side: { u0: -6000, u1: 11000, v0: -6500, v1: 1600 }, top: { u0: -6000, u1: 11000, v0: -16500, v1: 16500 } },
+  // The section framed on the people and the mic (art fix 2026-10-16: 17 m
+  // wide, the walker was 30 pt tall): the listening point to just past the
+  // path, the trees' crowns in. The plan keeps the same x (a setup's two
+  // views share it).
+  walk: { side: { u0: -2700, u1: 7000, v0: -7700, v1: 700 }, top: { u0: -2700, u1: 7000, v0: -16500, v1: 16500 } },
   vehicle: { side: { u0: -6000, u1: 15000, v0: -6000, v1: 1600 }, top: { u0: -6000, u1: 15000, v0: -23000, v1: 23000 } },
 };
 
@@ -83,8 +87,13 @@ export const F08_MODEL: InstrumentModel = {
   }),
   // A field site keeps its authored boxes: its ground and paths are drawn, not solid.
   fitAuthored: { side: true, top: true },
+  // A setup never zooms the walking pass back out past them (the aim's end
+  // and the margin had grown the section to 16 m again).
+  setupFrameMaxByVariant: { walk: VIEWS.walk },
   // A site plan metres wide: mics, lobes and stands drawn 6 × life size (said once in the accuracy note).
   hardwareScale: 6,
+  // The framed section needs only 2 × (a 15 cm mic reads at about 12 pt).
+  hardwareScaleByView: { side: 2 },
 };
 
 export const F08_DIMS = { routeX: ROUTE_X, envelope: ROUTE_ENVELOPE, vehX: VEH_X, vehEnvelope: VEH_ENVELOPE, crewLine: CREW_LINE_X };

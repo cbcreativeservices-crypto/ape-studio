@@ -16,7 +16,8 @@ import { Group } from '@shopify/react-native-skia';
 import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId } from '../../engine/model/types.ts';
 import type { StaticLabel } from '../../engine/scene/StaticLabels';
-import { AIR, AMBER, Arrow, Burst, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
+import { AIR, AMBER, Arrow, eventOpacity, Radiate, SoundCanvas } from '../shared/smallperc/soundKit';
+import { ContactMark } from '../shared/foley/contactMarks';
 import { HeldJacket } from './art';
 
 export const SOUND_BOX = { u0: -300, u1: 340, v0: -160, v1: 460 };
@@ -39,7 +40,8 @@ export function ClothStrike({ w, h, shown, accessibilityLabel }: { w: number; h:
         <Arrow a={[200, -80]} b={[110, -60]} />
       </Group>
       <Group opacity={eventOpacity(shown, 2)}>
-        <Burst c={[0, 20]} r0={22} r1={48} n={9} phase={-1.3} />
+        {/* Where the leather rubs: a ring round the fold (it was a starburst). */}
+        <ContactMark c={[0, 20]} w={110} round />
       </Group>
       <Group opacity={eventOpacity(shown, 3)}>
         <Arrow a={[150, 330]} b={[220, 300]} color={AMBER} width={4} head={12} dashed />
@@ -69,14 +71,14 @@ export function ClothMotion({ w, h, mode, swing, accessibilityLabel }: { w: numb
       </Group>
       {a > 0.05 ? (
         precise ? (
-          <Burst c={[0, 20]} r0={20} r1={20 + a * 30} n={8} phase={-1.3} />
+          <ContactMark c={[0, 20]} w={70 + a * 50} round />
         ) : (
           <>
-            <Burst c={[-60, 120]} r0={10} r1={10 + a * 20} n={6} phase={0.3} />
-            <Burst c={[50, 60]} r0={10} r1={10 + a * 20} n={6} phase={1.1} />
-            <Burst c={[10, 220]} r0={10} r1={10 + a * 20} n={6} phase={2.2} />
-            <Burst c={[-40, 300]} r0={10} r1={10 + a * 20} n={6} phase={0.7} />
-            <Burst c={[70, 260]} r0={10} r1={10 + a * 20} n={6} phase={1.7} />
+            <ContactMark c={[-60, 120]} w={36 + a * 30} round />
+            <ContactMark c={[50, 60]} w={36 + a * 30} round />
+            <ContactMark c={[10, 220]} w={36 + a * 30} round />
+            <ContactMark c={[-40, 300]} w={36 + a * 30} round />
+            <ContactMark c={[70, 260]} w={36 + a * 30} round />
           </>
         )
       ) : null}

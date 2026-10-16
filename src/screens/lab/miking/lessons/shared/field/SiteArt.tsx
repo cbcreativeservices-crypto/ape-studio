@@ -93,33 +93,109 @@ function leafDabs(cx: number, cz: number, R: number, seed: number): SkPath {
   return p;
 }
 
+/** The crown's depth in elevation: a park or woodland broadleaf carries its
+ *  crown over the upper ~60 % of its height (art fix 2026-10-16: the crown
+ *  sat on a bare pole as a ball — a "lollipop"). */
+function crownDepth(h: number, R: number): number {
+  return Math.min(h * 0.72, Math.max(R * 1.5, h * 0.62));
+}
+
+/**
+ * A broadleaf tree in elevation (art fix 2026-10-16): the trunk with its root
+ * flare and a slight lean, bark fissures, two or three limbs forking into the
+ * crown; the crown an ovate mass of leaf clumps, each lit from the upper left
+ * with its shadowed lower edge (the clumps lower down overlap the ones
+ * above), its edge scalloped by the clumps, light leaf dabs on the lit side.
+ * Drawn at the site's true size: `h` the height, `canopy` the crown's radius.
+ */
+function treeElevation(cx: number, h: number, R: number, trunkR: number, seed: number) {
+  const rnd = seeded(seed + 11);
+  const top = -h;
+  const D = crownDepth(h, R);
+  const base = top + D;
+  const cy = top + D * 0.5;
+  const rx = R;
+  const ry = D / 2;
+  // Leaf clumps: a ring round the crown's edge and a fill inside it.
+  const clumps: [number, number, number][] = [];
+  const ring = 12;
+  for (let k = 0; k < ring; k++) {
+    const a = (k / ring) * Math.PI * 2 + rnd() * 0.35;
+    const rr = R * (0.3 + rnd() * 0.12);
+    const e = 0.74 + rnd() * 0.08;
+    clumps.push([cx + Math.cos(a) * (rx - rr * 0.55) * e, cy + Math.sin(a) * (ry - rr * 0.55) * e, rr]);
+  }
+  for (let k = 0; k < 8; k++) {
+    const a = rnd() * Math.PI * 2;
+    const d = Math.sqrt(rnd()) * 0.5;
+    clumps.push([cx + Math.cos(a) * rx * d, cy + Math.sin(a) * ry * d, R * (0.34 + rnd() * 0.1)]);
+  }
+  // Painted top first: the lower clumps overlap the upper ones (their lit
+  // tops against the shadowed undersides above them).
+  clumps.sort((p, q) => p[1] - q[1]);
+  const crown = unionCircles(clumps);
+  const dabs = make();
+  for (let k = 0; k < 34; k++) {
+    const a = rnd() * Math.PI * 2;
+    const d = Math.sqrt(rnd()) * 0.86;
+    const x = cx + Math.cos(a) * rx * d;
+    const y = cy + Math.sin(a) * ry * d;
+    // Mostly on the lit (upper-left) side.
+    if (x - cx + (y - cy) * (rx / ry) > R * 0.35 && rnd() < 0.7) continue;
+    dabs.addOval(Skia.XYWHRect(x - R * 0.05, y - R * 0.035, R * (0.07 + rnd() * 0.05), R * (0.05 + rnd() * 0.03)));
+  }
+  // The trunk: a slight lean, tapering, the root flare at the ground.
+  const lean = (rnd() - 0.5) * trunkR * 1.2;
+  const tTop = base + D * 0.12;
+  const wTop = trunkR * 0.62;
+  const trunk = make();
+  trunk.moveTo(cx - trunkR * 1.9, 0);
+  trunk.cubicTo(cx - trunkR * 1.15, -trunkR * 0.25, cx - trunkR * 1.02, -trunkR * 1.1, cx - trunkR, -trunkR * 1.6);
+  trunk.cubicTo(cx - trunkR * 0.92, tTop * 0.45, cx + lean - wTop * 1.1, tTop * 0.8, cx + lean - wTop, tTop);
+  trunk.lineTo(cx + lean + wTop, tTop);
+  trunk.cubicTo(cx + lean + wTop * 1.1, tTop * 0.8, cx + trunkR * 0.92, tTop * 0.45, cx + trunkR, -trunkR * 1.6);
+  trunk.cubicTo(cx + trunkR * 1.02, -trunkR * 1.1, cx + trunkR * 1.15, -trunkR * 0.25, cx + trunkR * 1.9, 0);
+  trunk.close();
+  // Limbs forking from the trunk into the crown (seen where the clumps part).
+  const limbs = make();
+  const fork = base + D * 0.04;
+  const limbEnds: [number, number][] = [
+    [cx - R * 0.55, cy - ry * 0.15],
+    [cx + lean * 0.5 + R * 0.08, cy - ry * 0.55],
+    [cx + R * 0.5, cy + ry * 0.05],
+  ];
+  for (const [ex, ey] of limbEnds) {
+    const w = trunkR * 0.32;
+    limbs.moveTo(cx + lean - w, fork);
+    limbs.quadTo((cx + lean + ex) / 2 - w, (fork + ey) / 2 + ry * 0.1, ex - w * 0.3, ey);
+    limbs.lineTo(ex + w * 0.3, ey);
+    limbs.quadTo((cx + lean + ex) / 2 + w, (fork + ey) / 2 + ry * 0.1, cx + lean + w, fork);
+    limbs.close();
+  }
+  // Bark: long, slightly wavy vertical fissures.
+  const bark = make();
+  for (let k = 0; k < 4; k++) {
+    const o = (k / 3 - 0.5) * trunkR * 1.1;
+    let y = -trunkR * 0.8 - rnd() * 200;
+    bark.moveTo(cx + o, y);
+    while (y > tTop + 300) {
+      const step = 260 + rnd() * 220;
+      bark.quadTo(cx + o + (rnd() - 0.5) * trunkR * 0.25 + lean * (-y / h), y - step / 2, cx + o + lean * ((-y + step) / h), y - step);
+      y -= step;
+      if (rnd() < 0.25) {
+        y -= 160;
+        bark.moveTo(cx + o + lean * (-y / h), y);
+      }
+    }
+  }
+  return { crown, clumps, dabs, trunk, limbs, bark, top, base, cy, ry };
+}
+
 function Tree({ f, view, seed }: { f: Extract<SiteFeature, { kind: 'tree' }>; view: ViewId; seed: number }) {
   const [cx, cz] = f.c;
   const R = f.canopy;
   const plan = useMemo(() => ({ c: canopyPath(cx, cz, R, seed), d: leafDabs(cx, cz, R, seed) }), [cx, cz, R, seed]);
-  const elev = useMemo(() => {
-    const top = -f.h;
-    const bottom = -f.h + R * 1.5;
-    const rnd = seeded(seed + 11);
-    const lobes: [number, number, number][] = [[cx, top + R * 0.8, R * 0.78]];
-    for (let k = 0; k < 7; k++) {
-      const a = (k / 7) * Math.PI * 2 + 0.3;
-      lobes.push([cx + Math.cos(a) * R * 0.6, top + R * 0.8 + Math.sin(a) * R * 0.5, R * (0.36 + rnd() * 0.12)]);
-    }
-    const crown = unionCircles(lobes);
-    const trunk = make();
-    trunk.moveTo(cx - f.trunk * 1.3, 0);
-    trunk.lineTo(cx - f.trunk * 0.6, bottom);
-    trunk.lineTo(cx + f.trunk * 0.6, bottom);
-    trunk.lineTo(cx + f.trunk * 1.3, 0);
-    trunk.close();
-    const bark = make();
-    for (let y = bottom + 300; y < -200; y += 420) {
-      bark.moveTo(cx - f.trunk * 0.7, y);
-      bark.lineTo(cx - f.trunk * 0.2, y + 160);
-    }
-    return { crown, trunk, bark, top, bottom };
-  }, [cx, R, f.h, f.trunk, seed]);
+  const elev = useMemo(() => treeElevation(cx, f.h, R, f.trunk, seed), [cx, R, f.h, f.trunk, seed]);
   if (view === 'top') {
     return (
       <Group>
@@ -134,16 +210,28 @@ function Tree({ f, view, seed }: { f: Extract<SiteFeature, { kind: 'tree' }>; vi
       </Group>
     );
   }
+  const T = f.trunk;
   return (
     <Group>
+      {/* The trunk's shadow on the ground. */}
+      <Path path={Skia.Path.Make().addOval(Skia.XYWHRect(cx - T * 3.2, -T * 0.25, T * 6.4, T * 0.6))} color="#000000" opacity={0.35} />
+      <Path path={elev.limbs}>
+        <LinearGradient start={vec(cx - R, 0)} end={vec(cx + R, 0)} colors={['#5e4a37', '#3b2d21', '#241a12']} />
+      </Path>
       <Path path={elev.trunk}>
-        <LinearGradient start={vec(cx - f.trunk * 1.3, 0)} end={vec(cx + f.trunk * 1.3, 0)} colors={['#6e5640', '#4a3826', '#2c2017']} />
+        <LinearGradient start={vec(cx - T * 1.4, 0)} end={vec(cx + T * 1.4, 0)} colors={['#7a634b', '#4f3d2b', '#2a1f16']} />
       </Path>
-      <Path path={elev.bark} style="stroke" strokeWidth={f.trunk * 0.12} color="#20170f" opacity={0.7} />
-      <Path path={elev.crown}>
-        <RadialGradient c={vec(cx - R * 0.4, elev.top + R * 0.4)} r={R * 1.9} colors={CANOPY} />
-      </Path>
-      <Path path={elev.crown} style="stroke" strokeWidth={R * 0.025} color="#14200f" opacity={0.8} />
+      <Path path={elev.bark} style="stroke" strokeWidth={T * 0.09} strokeCap="round" color="#1c140d" opacity={0.75} />
+      <Path path={elev.trunk} style="stroke" strokeWidth={T * 0.07} color="#140e09" opacity={0.8} />
+      {/* The crown: the mass in shadow, then each clump lit from the upper left. */}
+      <Path path={elev.crown} color={CANOPY[2]} />
+      {elev.clumps.map(([x, y, r], k) => (
+        <Circle key={k} cx={x} cy={y} r={r}>
+          <RadialGradient c={vec(x - r * 0.38, y - r * 0.42)} r={r * 1.25} colors={['#6f8f50', CANOPY[1], CANOPY[2], '#1b2a14']} />
+        </Circle>
+      ))}
+      <Path path={elev.dabs} color="#93b06c" opacity={0.4} />
+      <Path path={elev.crown} style="stroke" strokeWidth={R * 0.02} color="#0f180b" opacity={0.85} />
     </Group>
   );
 }
@@ -208,6 +296,54 @@ function Stream({ f, view }: { f: Extract<SiteFeature, { kind: 'stream' }>; view
   );
 }
 
+/** A path's x-extent where the section cuts it (side view). */
+function pathSpan(f: Extract<SiteFeature, { kind: 'path' }>): [number, number] {
+  const xs = f.pts.map((p) => p[0]);
+  return [Math.min(...xs) - f.width / 2, Math.max(...xs) + f.width / 2];
+}
+
+/**
+ * A path cut through (side view, art fix 2026-10-16 — it was a grey slab
+ * standing on the lawn): its surface flush with the ground. Paved: 80 mm of
+ * paving on a 150 mm crushed-stone base, a concrete edging strip at each
+ * side; gravel: 100 mm of compacted gravel on the soil. Common build-ups,
+ * drawn at true size.
+ */
+function PathSection({ f }: { f: Extract<SiteFeature, { kind: 'path' }> }) {
+  const [x0, x1] = pathSpan(f);
+  const g = useMemo(() => {
+    const paved = f.surface === 'paved';
+    const surf = rectP(make(), x0, 0, x1, paved ? 80 : 100);
+    const baseP = paved ? rectP(make(), x0 + 60, 80, x1 - 60, 230) : make();
+    const edges = make();
+    if (paved) {
+      rectP(edges, x0, 0, x0 + 60, 250, 6);
+      rectP(edges, x1 - 60, 0, x1, 250, 6);
+    }
+    const stones = make();
+    const rnd = seeded(77);
+    const y0 = paved ? 95 : 15;
+    const y1 = paved ? 220 : 90;
+    for (let x = x0 + 70; x < x1 - 70; x += 46) {
+      const r = 10 + rnd() * 12;
+      stones.addOval(Skia.XYWHRect(x + rnd() * 20, y0 + rnd() * (y1 - y0 - r * 2), r * 2, r * 1.4));
+    }
+    return { surf, baseP, edges, stones, paved };
+  }, [f.surface, x0, x1]);
+  return (
+    <Group>
+      {g.paved ? <Path path={g.baseP} color="#4a4740" /> : null}
+      <Path path={g.surf}>
+        <LinearGradient start={vec(0, 0)} end={vec(0, 100)} colors={g.paved ? ['#8a8882', '#5d5b56'] : [GRAVEL[0], GRAVEL[1]]} />
+      </Path>
+      <Path path={g.stones} color={g.paved ? '#7d776a' : '#b3a68c'} opacity={g.paved ? 0.8 : 0.55} />
+      {g.paved ? <Path path={g.edges} color="#a9a69e" /> : null}
+      {g.paved ? <Path path={g.edges} style="stroke" strokeWidth={6} color={INK} opacity={0.6} /> : null}
+      <Path path={rectP(make(), x0, -4, x1, 6)} color="#c9c6bc" opacity={0.55} />
+    </Group>
+  );
+}
+
 function PathBand({ f, view }: { f: Extract<SiteFeature, { kind: 'path' }>; view: ViewId }) {
   const g = useMemo(() => {
     const band = polyPath(bandPolygon(f.pts, f.width / 2));
@@ -244,10 +380,7 @@ function PathBand({ f, view }: { f: Extract<SiteFeature, { kind: 'path' }>; view
     }
     return { band, tex };
   }, [f]);
-  if (view === 'side') {
-    const xs = f.pts.map((p) => p[0]);
-    return <Path path={rectP(make(), Math.min(...xs) - f.width / 2, -30, Math.max(...xs) + f.width / 2, 60)} color={f.surface === 'gravel' ? GRAVEL[1] : PAVED[1]} />;
-  }
+  if (view === 'side') return <PathSection f={f} />;
   const c = f.surface === 'gravel' ? GRAVEL : PAVED;
   return (
     <Group>
@@ -792,7 +925,7 @@ function Person({ f, view }: { f: Extract<SiteFeature, { kind: 'person' }>; view
   );
 }
 
-function Ground({ f, view, seed }: { f: Extract<SiteFeature, { kind: 'ground' }>; view: ViewId; seed: number }) {
+function Ground({ f, view, seed, gaps = [] }: { f: Extract<SiteFeature, { kind: 'ground' }>; view: ViewId; seed: number; gaps?: readonly (readonly [number, number])[] }) {
   const tex = useMemo(() => {
     const p = make();
     const rnd = seeded(seed);
@@ -827,6 +960,8 @@ function Ground({ f, view, seed }: { f: Extract<SiteFeature, { kind: 'ground' }>
     const rnd = seeded(seed + 5);
     if (f.ground === 'forest' || f.ground === 'meadow' || f.ground === 'lawn') {
       for (let x = f.x0; x < f.x1; x += 110) {
+        // No grass on a path the section cuts (its surface is drawn there).
+        if (gaps.some(([a, b]) => x > a - 40 && x < b + 10)) continue;
         top.moveTo(x, 0);
         top.lineTo(x + 30, -(f.ground === 'lawn' ? 60 : 120) - rnd() * (f.ground === 'meadow' ? 260 : 90));
       }
@@ -887,13 +1022,14 @@ export function SiteArt({ site, view, hide = [] }: { site: FieldSite; view: View
   }, [site, view, hide]);
   const z0 = site.box.z0;
   const z1 = site.box.z1;
+  const gaps = useMemo(() => (view === 'side' ? site.features.flatMap((f) => (f.kind === 'path' && !hide.includes('path') ? [pathSpan(f)] : [])) : []), [site, view, hide]);
   return (
     <Group>
       {items.map(({ f, i }) => {
         const key = `${f.kind}${i}`;
         switch (f.kind) {
           case 'ground':
-            return <Ground key={key} f={f} view={view} seed={i * 13 + 1} />;
+            return <Ground key={key} f={f} view={view} seed={i * 13 + 1} gaps={gaps} />;
           case 'tree':
             return (
               <Group key={key} opacity={view === 'side' ? farDim(f.c[1]) : 1}>

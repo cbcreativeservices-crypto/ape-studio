@@ -41,7 +41,9 @@ import { boomStart, distanceDb, frameForShot, micToMouth, SHOT_IDS, SHOTS, turne
 import { Aim, Dim, FieldStage, MicAt, Ray, uvOf } from '../shared/field/FieldStage';
 import { BOOM, F09_VIEWS, GRIP, LAV_P, LENS } from './geometry.ts';
 import { SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
-import { LocationScene } from './scene';
+import { LAV_PACK, LocationScene } from './scene';
+import { LavRun } from './lavRun';
+import { BeltPack } from '../shared/broadcast/BodyWornArt';
 import { Group } from '@shopify/react-native-skia';
 
 type PageFn = (p: PageProps) => ReactNode;
@@ -122,7 +124,7 @@ function useFrameStep(): MikingStep {
         >
           {(px) => (
             <>
-              <LocationScene view="side" variant="set" frame={frame} />
+              <LocationScene view="side" variant="set" frame={frame} mode="stub" lav />
               <Ray a={uvOf('side', tail)} b={uvOf('side', GRIP)} px={px} color="#3a3d45" width={5} dash={[1000, 0]} />
               <MicAt view="side" p={boom.tip} aim={boom.aim} art="shotgun" r={9.5} len={250} />
               <MicAt view="side" p={LAV_P} aim={unit(sub(LIP, LAV_P))} art="lavalier" r={3} len={12} />
@@ -234,7 +236,11 @@ function useTurnStep(hidden: boolean): MikingStep {
               <PlayerInFront pose={BODY_TOP} hands={false} />
               <TurnedHead yawDeg={yaw} />
               <Ray a={uvOf('top', m.mouth)} b={uvOf('top', axisEnd)} px={px} color="#e8eaee" width={2.2} />
+              <BeltPack view="top" at={LAV_PACK} />
+              <LavRun view="top" from={v3(LAV_P.x - 3, 0, 0)} pack={LAV_PACK} />
               <MicAt view="top" p={LAV_P} aim={unit(sub(LIP, LAV_P))} art="lavalier" r={3} len={12} />
+              {/* The pole from the mic's mount back toward the operator's hands. */}
+              <Ray a={uvOf('top', sub(boomTip, v3(boomAim.x * 250, 0, boomAim.z * 250)))} b={uvOf('top', GRIP)} px={px} color="#3a3d45" width={5} dash={[1000, 0]} />
               <MicAt view="top" p={boomTip} aim={boomAim} art="shotgun" r={9.5} len={250} />
               <Aim from={boomTop} dir={{ u: boomAim.x, v: boomAim.z }} len={Math.max(60, Math.hypot(boomAim.x, boomAim.z) * 420)} px={px} />
               <Dim a={uvOf('top', m.mouth)} b={boomTop} px={px} />

@@ -156,7 +156,13 @@ export function impactsLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [];
   if (view === 'side') {
     if (variant === 'impact' || live) out.push({ id: 'block', text: 'PADDED BLOCK', short: 'BLOCK', u: 260, v: -380, align: 'left', at: { u: 60, v: -230 } }, { id: 'table', text: 'WOODEN TABLE', short: 'TABLE', u: 380, v: 330, align: 'left', tone: 'muted', at: { u: TABLE.x1 - 40, v: 200 } });
-    if (variant === 'water') out.push({ id: 'basin', text: 'BASIN · WATER ONLY', short: 'BASIN', u: 300, v: -280, align: 'left', at: { u: BASIN.R - 40, v: 0 } }, { id: 'mat', text: 'NON-SLIP MAT', short: 'MAT', u: 420, v: 160, align: 'left', tone: 'muted', at: { u: BASIN.R + 120, v: BASIN.water + 4 } });
+    if (variant === 'water') {
+      // Above the scene, its leader straight down to the basin between the
+      // pouring hand and the mic's lobe (art fix 2026-10-16: the name and its
+      // leader crossed the lobe and the distance line; the mat, a part of
+      // the low table, is named by a tap).
+      out.push({ id: 'basin', text: 'BASIN · WATER ONLY', short: 'BASIN', u: 60, v: -1250, align: 'center', at: { u: -70, v: -30 } });
+    }
     if (variant === 'texture') out.push({ id: 'brush', text: 'DRY BRUSH ON FABRIC', short: 'BRUSH', u: 260, v: -300, align: 'left', at: { u: 100, v: -50 } });
     if (live) {
       const b = liveBooth(floor);
@@ -207,4 +213,6 @@ export const F04_ART: LessonArt = {
   figureAt: (view, variant, u, v, tol) => poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol),
   labelObstacles: voiceLabelObstacles(F04_ZONES),
   labelsYieldToMic: true,
+  // ORIENT's figure: the artist head to floor at the table (art fix 2026-10-16).
+  figureBox: (v) => ({ u0: -1050, u1: 520, v0: floorOf(v) - 1820, v1: floorOf(v) + 70 }),
 };

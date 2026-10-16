@@ -28,10 +28,10 @@ const HEIGHT = { line: 'ground', min: PB_H - 250, max: PB_H + 250, prov: ill('1.
 const at = (x: number, z = 0, h = PB_H): Vec3 => ({ x, y: -h, z });
 const facing = (p: Vec3): MicPose => ({ p, az: 180, el: 0 });
 
-type Z = Omit<DocumentedZone, 'kind' | 'side' | 'refSurface' | 'distance' | 'box' | 'drawn' | 'radial' | 'requires'> & { variant: 'walk' | 'vehicle'; x0: number; x1: number; z0: number; z1: number; types: string[]; mount?: 'stand' | 'pole'; h?: { min: number; max: number } };
+type Z = Omit<DocumentedZone, 'kind' | 'side' | 'refSurface' | 'distance' | 'box' | 'drawn' | 'radial' | 'requires'> & { variant: 'walk' | 'vehicle'; x0: number; x1: number; z0: number; z1: number; types: string[]; mount?: 'stand' | 'pole'; h?: { min: number; max: number }; planOnly?: boolean };
 function pbZone(o: Z): DocumentedZone {
   const line = o.variant === 'walk' ? ROUTE_X : VEH_X;
-  const { variant, x0, x1, z0, z1, types, mount, h, ...rest } = o;
+  const { variant, x0, x1, z0, z1, types, mount, h, planOnly, ...rest } = o;
   return {
     ...rest,
     kind: 'sourced',
@@ -41,7 +41,10 @@ function pbZone(o: Z): DocumentedZone {
     radial: h ? { ...HEIGHT, min: h.min, max: h.max } : HEIGHT,
     box: { min: { x: x0, y: -4000, z: z0 }, max: { x: x1, y: 0, z: z1 }, prov: ill('the spot along the path: a drawing default') },
     requires: { variant, micTypeIds: types, ...(mount ? { mount } : {}) },
-    drawn: { side: { u0: x0, u1: x1, v0: -(h?.max ?? PB_H + 250), v1: -(h?.min ?? PB_H - 250) }, top: { u0: x0, u1: x1, v0: z0, v1: z1 } },
+    // `planOnly` (art fix 2026-10-16): the start and end mics' zones lie 7–11 m
+    // along the path; the section would stack them, and their names, on the
+    // listening point's. They are drawn in the plan only.
+    drawn: planOnly ? { top: { u0: x0, u1: x1, v0: z0, v1: z1 } } : { side: { u0: x0, u1: x1, v0: -(h?.max ?? PB_H + 250), v1: -(h?.min ?? PB_H - 250) }, top: { u0: x0, u1: x1, v0: z0, v1: z1 } },
   };
 }
 
@@ -111,6 +114,7 @@ export const F08_ZONES: DocumentedZone[] = [
     x1: 1400,
     z0: -11000,
     z1: -7000,
+    planOnly: true,
     types: ['arrCard', 'arrOmni'],
     label: 'A start mic near the approach',
     band: 'A second, separate mic near the approach — outside the envelope — one of two perspectives with an end mic.',
@@ -128,6 +132,7 @@ export const F08_ZONES: DocumentedZone[] = [
     x1: 1400,
     z0: 7000,
     z1: 11000,
+    planOnly: true,
     types: ['arrCard', 'arrOmni'],
     label: 'An end mic near the departure',
     band: 'A second, separate mic near the departure — outside the envelope — one of two perspectives with the start mic.',
