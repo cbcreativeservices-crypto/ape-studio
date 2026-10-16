@@ -23,7 +23,9 @@
  * once per pose.
  */
 import { BlurMask, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { armPath, FIGURE_SKIN, FigureHead, headProfile as figureHeadProfile, intoCollar } from '../players/PlayerFigure';
+import { useMemo } from 'react';
+import { armPath, drawHand3, FIGURE_SKIN, FigureHead, FigureMass, headProfile as figureHeadProfile, intoCollar, Nails } from '../players/PlayerFigure';
+import type { HandSkeleton, HandView, V3 } from '../players/handModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -154,7 +156,7 @@ type Box = { u0: number; v0: number; u1: number; v1: number };
  *  near sleeve takes the shirt body's, so the cloth reads as one garment.
  *  `root`: a disc where the contour stops (the sleeve's root melting into the
  *  shirt at the shoulder: no outline round a plugged-in tube). */
-type Mass = { path: SkPath; ramp: string[]; rim: string; edge: string; box: Box; light?: Box; root?: SkPath | null };
+type Mass = { path: SkPath; ramp: string[]; rim: string; edge: string; box: Box; light?: Box; root?: SkPath | null; soft?: SkPath | null; seam?: SkPath | null };
 const boxOf = (p: SkPath) => {
   const b = p.getBounds();
   return { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height };
@@ -231,7 +233,7 @@ function build(p: ProfilePose): Built {
   return {
     far: [mass(legFar, TROUSER, TROUSER_RIM), mass(armFar, SHIRT_FAR, SHIRT_RIM)],
     body: [mass(union(pelvis, legNear), TROUSER, TROUSER_RIM), mass(union(torso, deltoid), SHIRT, SHIRT_RIM)],
-    near: [{ ...mass(armNear, SHIRT, SHIRT_RIM), light: boxOf(union(torso, deltoid)), root }],
+    near: [{ ...mass(armNear, SHIRT, SHIRT_RIM), light: boxOf(union(torso, deltoid)), root, soft: torso, seam: sewnIn(s, p.elbowNear) }],
     shoes: [
       { path: shoe(p.ankleFar, p.floor), far: true },
       { path: shoe(p.ankleNear, p.floor), far: false },
@@ -246,6 +248,26 @@ function build(p: ProfilePose): Built {
   };
 }
 
+/**
+ * ONE GARMENT (figure pass 3, owner 2026-10-15: "shoulder transitions from
+ * shirt sleeves to the shirt body look very unnatural and plug …
+ * interchangeable limbs"): the near sleeve is SEWN into the shirt — a faint
+ * armhole seam round the deltoid's cap (an arch over the shoulder joint, its
+ * feet toward the armpit) and two soft folds where the cloth gathers under
+ * the arm, on the arm's front. Painted inside the sleeve only.
+ */
+function sewnIn(s: Pt, e: Pt): SkPath {
+  const ax = Math.atan2(e.v - s.v, e.u - s.u);
+  const A = (al: number, ac: number) => pt(s.u + Math.cos(ax) * al - Math.sin(ax) * ac, s.v + Math.sin(ax) * al + Math.cos(ax) * ac);
+  const out = make();
+  out.addPath(curve([A(34, -50), A(-4, -46), A(-30, -24), A(-36, 0), A(-30, 24), A(-4, 46), A(34, 50)]));
+  // The folds: on the side of the arm toward the chest (+u, the way the figure faces).
+  const f = -Math.sin(ax) >= 0 ? 1 : -1;
+  out.addPath(curve([A(40, 46 * f), A(90, 34 * f), A(140, 26 * f)]));
+  out.addPath(curve([A(64, 50 * f), A(120, 42 * f)]));
+  return out;
+}
+
 const cache = new WeakMap<ProfilePose, Built>();
 function built(p: ProfilePose): Built {
   let b = cache.get(p);
@@ -257,7 +279,7 @@ function built(p: ProfilePose): Built {
 }
 
 /** One body mass: form gradient, a rim light on the upper-left edge, contour. */
-export function MassArt({ path, ramp, rim, edge, light, root }: { path: SkPath; ramp: string[]; rim: string; edge: string; light?: Box; root?: SkPath | null }) {
+export function MassArt({ path, ramp, rim, edge, light, root, soft, seam }: { path: SkPath; ramp: string[]; rim: string; edge: string; light?: Box; root?: SkPath | null; soft?: SkPath | null; seam?: SkPath | null }) {
   const pb = path.getBounds();
   const b = light ? { x: light.u0, y: light.v0, width: light.u1 - light.u0, height: light.v1 - light.v0 } : pb;
   const contour = (
@@ -275,13 +297,33 @@ export function MassArt({ path, ramp, rim, edge, light, root }: { path: SkPath; 
       <Path path={path}>
         <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={ramp} />
       </Path>
-      {root ? (
+      {soft ? (
+        // Over the shirt body (`soft`): no rim and only a soft fold for its
+        // edge — the sleeve over the shirt, not a tube on it; the full
+        // contour stays on the figure's silhouette (figure pass 3).
+        <Group clip={root ?? undefined} invertClip={!!root}>
+          <Group clip={soft} invertClip>
+            {contour}
+          </Group>
+          <Group clip={soft}>
+            <Path path={path} style="stroke" strokeWidth={1.6} color={edge} opacity={0.36} />
+          </Group>
+        </Group>
+      ) : root ? (
         <Group clip={root} invertClip>
           {contour}
         </Group>
       ) : (
         contour
       )}
+      {seam ? (
+        <Group clip={path}>
+          <Group transform={[{ translateX: -1.2 }, { translateY: -1.6 }]}>
+            <Path path={seam} style="stroke" strokeWidth={1.1} strokeCap="round" color={rim} opacity={0.22} />
+          </Group>
+          <Path path={seam} style="stroke" strokeWidth={1.4} strokeCap="round" color={edge} opacity={0.4} />
+        </Group>
+      ) : null}
     </Group>
   );
 }
@@ -356,4 +398,28 @@ function ShoeArt({ path, far = false }: { path: SkPath; far?: boolean }) {
 /** A hand-skin mass (for the lessons' own hands). */
 export function SkinArt({ path }: { path: SkPath }) {
   return <MassArt path={path} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />;
+}
+
+/**
+ * A hand posed bone by bone (players/handModel.ts; freeReedHands.ts) drawn at
+ * the house standard (PlayerFigure.drawHand3): tapered bones, palm, thenar,
+ * the bare wrist along the forearm (`fore`: its picture angle;
+ * `foreshortened` when the forearm reaches toward the viewer), knuckle
+ * creases, nails. `cut` splits it at what it holds: `part` 'behind' paints
+ * what lies beyond, 'front' the rest.
+ */
+export function Hand3Art({ sk, view, fore, foreshortened, cut, part = 'all', far = false }: { sk: HandSkeleton; view: HandView; fore?: number; foreshortened?: boolean; cut?: { p: V3; n: V3 }; part?: 'all' | 'behind' | 'front'; far?: boolean }) {
+  const d = useMemo(() => drawHand3(sk, view, { fore, foreshortened, cut }), [sk, view, fore, foreshortened, cut]);
+  return (
+    <Group>
+      {part !== 'front' && d.behind ? <FigureMass path={d.behind} tone="skin" contour={1.8} far={far} /> : null}
+      {part !== 'behind' ? (
+        <>
+          <FigureMass path={d.path} tone="skin" contour={1.8} far={far} />
+          <Path path={d.lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={FIGURE_SKIN.edge} opacity={0.7} />
+          <Nails path={d.nails} />
+        </>
+      ) : null}
+    </Group>
+  );
 }

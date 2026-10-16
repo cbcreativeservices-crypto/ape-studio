@@ -11,7 +11,9 @@
  * mouth and closed-end sections are drawing defaults.
  */
 import type { Dim, DocumentedZone, Vec3, VariantId } from '../../engine/model/types.ts';
-import { add, armTo, drawingDefault, IN, mul, src, targetZone, v3, type Arm } from '../shared/smallperc/geom.ts';
+import { add, drawingDefault, IN, mul, src, targetZone, v3, type Arm } from '../shared/smallperc/geom.ts';
+import { armFor, cradleHand, stickHand } from '../shared/smallperc/percGrip.ts';
+import type { HandSkeleton } from '../shared/players/handModel.ts';
 
 export const BELL_DIMS = {
   len: { mm: 7 * IN, prov: src('MEINL-SCL70B', 'Height: 7″') } as Dim,
@@ -33,14 +35,31 @@ export type BellState = {
   /** The bell's centre, and the unit vector from its closed end to its mouth. */
   c: Vec3;
   ax: Vec3;
-  /** The stick: the right hand's grip and the tip on the bell's top. */
+  /** The stick: where it passes through the right hand, and the tip on the bell's top. */
   stick: { hand: Vec3; tip: Vec3 };
   arm: Arm;
   /** The left hand round the closed end (handheld). */
   holder?: Arm;
+  /** The posed hands (figure pass 3): the stick hand, the holding hand. */
+  hands: { stick: HandSkeleton; holder?: HandSkeleton };
 };
 
 const L = BELL_DIMS.len.mm;
+
+/**
+ * THE HANDS AND ARMS (figure pass 3, owner 2026-10-15; keep-outs re-derived
+ * with the anatomy, owner decisions A): the stick held between the thumb and
+ * the index finger, the other fingers wrapped, the palm down; the arm solved
+ * back from that hand with the elbow hanging beside the body — so the
+ * forearm reaches FORWARD in front of the chest (the wrists sat 80 mm behind
+ * the chest's front, the forearm folded under the upper arm from above).
+ * The grip is chosen so the stick reaches the same tip on the bell (≈ 250 mm
+ * from the hand, the butt ≈ 110 mm behind it) with the wrist bent ≤ 40°.
+ */
+const STICK_GRIP: Record<BellId, { grip: Vec3; back: Vec3 }> = {
+  mounted: { grip: v3(-90, -1110, 220), back: v3(0.3, -1, 0) },
+  handheld: { grip: v3(-80, -1220, 190), back: v3(0, -1, -0.2) },
+};
 
 function state(id: BellId): BellState {
   if (id === 'mounted') {
@@ -48,23 +67,33 @@ function state(id: BellId): BellState {
     const ax = v3(-1, 0, 0); // the mouth toward the player
     const mouth = add(c, mul(ax, L / 2));
     const tip = v3(mouth.x + 26, c.y - BELL_DIMS.mouthH.mm / 2 - 4, 12);
-    const hand = v3(-250, c.y - 190, 140);
-    return { id, c, ax, stick: { hand, tip }, arm: armTo('R', v3(hand.x - 80, hand.y + 40, hand.z + 30), hand) };
+    const { grip, back } = STICK_GRIP.mounted;
+    const sk = stickHand(grip, tip, back);
+    return { id, c, ax, stick: { hand: grip, tip }, arm: armFor('R', sk, grip), hands: { stick: sk } };
   }
   const c = v3(50, -1150, -40);
   const ax = v3(1, 0, 0); // the mouth away from the player
   const closed = add(c, mul(ax, -L / 2));
   const mouth = add(c, mul(ax, L / 2));
   const tip = v3(mouth.x - 30, c.y - BELL_DIMS.mouthH.mm / 2 - 4, c.z + 8);
-  const hand = v3(-200, c.y - 190, 120);
-  const grip = v3(closed.x + 16, c.y + 26, c.z);
+  const { grip, back } = STICK_GRIP.handheld;
+  const sk = stickHand(grip, tip, back);
+  // The left hand under the closed end, palm up, pointing forward and across:
+  // the fingers curled up the bell's right wall, the thumb on its left wall.
+  const half = (x: number, a: number, b: number) => a + ((x - closed.x) / L) * (b - a);
+  const hh = (x: number) => half(x, BELL_DIMS.endH.mm / 2, BELL_DIMS.mouthH.mm / 2);
+  const hw = (x: number) => half(x, BELL_DIMS.endW.mm / 2, BELL_DIMS.mouthW.mm / 2);
+  const pads = [22, 4, -14, -30].map((x) => v3(x, c.y + 2, c.z + hw(x) + 8.5));
+  const rest = v3(-6, c.y + hh(-6), c.z - 25);
+  const holderSk = cradleHand(rest, v3(0.6, 0, 0.8), pads, v3(6, c.y - 14, c.z - hw(6) - 9));
   return {
     id,
     c,
     ax,
-    stick: { hand, tip },
-    arm: armTo('R', v3(hand.x - 80, hand.y + 40, hand.z + 30), hand),
-    holder: armTo('L', v3(grip.x - 90, grip.y + 10, grip.z - 30), grip),
+    stick: { hand: grip, tip },
+    arm: armFor('R', sk, grip),
+    holder: armFor('L', holderSk, rest),
+    hands: { stick: sk, holder: holderSk },
   };
 }
 

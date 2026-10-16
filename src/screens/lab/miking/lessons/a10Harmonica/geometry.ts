@@ -25,6 +25,7 @@ import { SPK_FRONT_ZONES } from '../spk/model.ts';
 import { approachPose, sectorPolys, v3 } from '../shared/handGeom.ts';
 import { conePolys } from '../shared/metal/metalGeom.ts';
 import { HARMONICA } from '../shared/freereed/freeReedSpec.ts';
+import { hmHands } from '../shared/freereed/freeReedHands.ts';
 import { AMP, BODY, FLOOR_Y, H0, HD, HH, HL, STAGE } from './model.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
@@ -34,7 +35,9 @@ const RIGHT: Vec3 = v3(0, 0, 1);
 const at = (dx: number, dy: number, dz: number): Vec3 => v3(H0.x + dx, H0.y + dy, H0.z + dz);
 
 /* ── the acoustic harmonica and the player ── */
-const HAND_R = 75;
+/** The hands' envelope radius (figure pass 3: re-derived from the posed hands, every digit inside; was 75 round (30, 0, ±22)). */
+const HAND_R = 102;
+const ARMS = hmHands('half');
 const harmonicaParts: Part[] = [
   {
     id: 'hm.harp',
@@ -68,7 +71,8 @@ const harmonicaParts: Part[] = [
     label: 'player’s right arm',
     short: 'arm',
     role: 'The arm up to the hands. It moves as the hands open and close.',
-    solid: { kind: 'capsule', a: at(-76, 392, 175), b: at(8, 150, 70), r: 48 },
+    // Figure pass 3: the posed right arm (freeReedHands.hmHands, partly cupped): elbow → wrist.
+    solid: { kind: 'capsule', a: at(ARMS.R.E.x, ARMS.R.E.y, ARMS.R.E.z), b: at(ARMS.R.W.x, ARMS.R.W.y, ARMS.R.W.z), r: 48 },
     listIn: [],
     prov: BODY.prov,
   },
@@ -77,7 +81,7 @@ const harmonicaParts: Part[] = [
     label: 'player’s left arm',
     short: 'arm',
     role: 'The arm up to the hands.',
-    solid: { kind: 'capsule', a: at(-104, 380, -175), b: at(-6, 146, -70), r: 48 },
+    solid: { kind: 'capsule', a: at(ARMS.L.E.x, ARMS.L.E.y, ARMS.L.E.z), b: at(ARMS.L.W.x, ARMS.L.W.y, ARMS.L.W.z), r: 48 },
     listIn: [],
     prov: BODY.prov,
   },
@@ -92,8 +96,8 @@ const envelopes: Envelope[] = [
   {
     id: 'env.hands',
     label: 'the hands and their movement',
-    shape: { kind: 'capsule', a: at(30, 0, -22), b: at(30, 0, 22), r: HAND_R },
-    prov: ill('the hands’ envelope round the harmonica, open to cupped: 140 × 120 × 120 (a drawing default)'),
+    shape: { kind: 'capsule', a: at(45, 10, -35), b: at(45, 10, 50), r: HAND_R },
+    prov: ill('the hands’ envelope round the harmonica, open to cupped and round a harp mic: every finger of the posed hands (freeReedHands.hmHands) inside it (a drawing default)'),
   },
 ];
 

@@ -13,7 +13,9 @@
  * Every size is a drawing default (no maker prints one).
  */
 import type { Dim, DocumentedZone, Vec3, VariantId } from '../../engine/model/types.ts';
-import { armTo, drawingDefault, IN, src, targetZone, v3, type Arm } from '../shared/smallperc/geom.ts';
+import { drawingDefault, IN, src, targetZone, v3, type Arm } from '../shared/smallperc/geom.ts';
+import { armFor, cradleHand, stickHand } from '../shared/smallperc/percGrip.ts';
+import type { HandSkeleton } from '../shared/players/handModel.ts';
 
 export const WB_DIMS = {
   len: drawingDefault(190, 'woodblock length (no maker prints a size)'),
@@ -42,11 +44,27 @@ export type WbState = {
   mallet: { hand: Vec3; head: Vec3 };
   arm: Arm;
   holder?: Arm;
+  /** The posed hands (figure pass 3): the mallet hand, the holding hand. */
+  hands: { stick: HandSkeleton; holder?: HandSkeleton };
 };
 
 const H = WB_DIMS.h.mm;
 const DP = WB_DIMS.depth.mm;
 const HEAD_R = 15;
+
+/**
+ * THE MALLET HAND (figure pass 3, owner 2026-10-15; keep-outs re-derived with
+ * the anatomy, owner decisions A): the handle between the thumb and the index
+ * finger, the other fingers wrapped, the palm down; the arm solved back from
+ * the hand with the elbow hanging beside the body, the forearm reaching
+ * forward in front of the chest (the wrists sat ≈ 55 mm behind the chest's
+ * front). The hand ≈ 250 mm up the handle from the head's centre (≈ 100 mm of
+ * handle behind it), above the block, the wrist bent ≤ 45°.
+ */
+const MALLET_GRIP: Record<WbId, { grip: Vec3; back: Vec3 }> = {
+  table: { grip: v3(-80, -1110, 220), back: v3(0.3, -1, -0.2) },
+  held: { grip: v3(-100, -1250, 220), back: v3(0, -1, -0.2) },
+};
 
 function state(id: WbId): WbState {
   const cy = id === 'table' ? -(WB_DIMS.tableH.mm + WB_DIMS.foamT.mm + H / 2) : -1150;
@@ -55,9 +73,25 @@ function state(id: WbId): WbState {
   const spot = v3(10, cy - H / 2, cz);
   const slot = v3(DP / 2, cy - 0.18 * H, cz);
   const head = v3(spot.x - 4, spot.y - HEAD_R, cz + 10);
-  const hand = v3(head.x - 230, head.y - 190, 95);
-  const out: WbState = { id, c, spot, slot, mallet: { hand, head }, arm: armTo('R', v3(hand.x - 82, hand.y + 30, hand.z + 25), hand) };
-  if (id === 'held') out.holder = armTo('L', v3(-120, cy + 75, cz - 40), v3(-14, cy + H / 2 + 14, cz - 10));
+  const { grip, back } = MALLET_GRIP[id];
+  const sk = stickHand(grip, head, back);
+  const out: WbState = { id, c, spot, slot, mallet: { hand: grip, head }, arm: armFor('R', sk, grip), hands: { stick: sk } };
+  if (id === 'held') {
+    // The left hand under the block, palm up, pointing forward and across
+    // along its length: the fingers' pads under its far half, the thumb at
+    // the foot of the front face — below the slot, never over it.
+    const bottom = cy + H / 2;
+    const pads = [
+      [20, 46],
+      [5, 52],
+      [-10, 48],
+      [-24, 38],
+    ].map(([x, z]) => v3(x, bottom + 8, z));
+    const rest = v3(0, bottom, cz - 35);
+    const holderSk = cradleHand(rest, v3(0.6, 0, 0.8), pads, v3(DP / 2 + 9, bottom - 10, cz - 50));
+    out.holder = armFor('L', holderSk, rest);
+    out.hands.holder = holderSk;
+  }
   return out;
 }
 

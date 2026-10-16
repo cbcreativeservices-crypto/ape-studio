@@ -16,18 +16,27 @@ import { DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { cradle, dorsalFist, placeBetween, type Pt } from '../shared/smallperc/hands.ts';
+import { Hand3, SIDE_VIEW, TOP_VIEW } from '../shared/smallperc/Hand';
+import type { Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { Cowbell, PercStand, Stick } from '../shared/smallperc/objects';
-import { add, mul } from '../shared/smallperc/geom.ts';
+import { add, mul, sub, v3 } from '../shared/smallperc/geom.ts';
 import { BELL_DIMS, stateOf, type BellState } from './model.ts';
 
 const L = BELL_DIMS.len.mm;
-const BACK = dorsalFist();
-const CUP = cradle(20, 70);
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
+/** The forearm's angle in a view (elbow → wrist), for the hand's wrist. */
+const foreIn = (P: (p: { x: number; y: number; z: number }) => Pt, e: { x: number; y: number; z: number }, w: { x: number; y: number; z: number }) => {
+  const a = P(e);
+  const b = P(w);
+  return Math.atan2(b[1] - a[1], b[0] - a[0]);
+};
+/** The stick's butt: ≈ 110 mm behind the hand along the stick (a 16 in stick held about a quarter of the way up). */
+const buttOf = (s: BellState) => {
+  const d = sub(s.stick.hand, s.stick.tip);
+  return add(s.stick.hand, mul(d, 110 / Math.hypot(d.x, d.y, d.z)));
+};
 
 function Bell({ s, view }: { s: BellState; view: ViewId }) {
   const closed = add(s.c, mul(s.ax, -L / 2));
@@ -57,30 +66,31 @@ export function CowbellArt({ view, variant }: { view: ViewId; variant: VariantId
   const a = s.arm;
   const h = s.holder;
   const mounted = s.id === 'mounted';
-  const plStick = useMemo(() => placeBetween(BACK, view === 'side' ? side(a.W) : top(a.W), view === 'side' ? side(a.G) : top(a.G)), [a, view]);
-  const plHold = useMemo(() => (h ? placeBetween(CUP, view === 'side' ? side(h.W) : top(h.W), view === 'side' ? side(h.G) : top(h.G), view === 'top') : null), [h, view]);
   const clampAt = add(s.c, mul(s.ax, -L / 2 - 30));
   const P = view === 'side' ? side : top;
+  const V = view === 'side' ? SIDE_VIEW : TOP_VIEW;
+  // The holding hand: what lies beyond the bell's middle (seen from this
+  // view) is painted behind the bell, the fingers on the near wall over it.
+  const cut = useMemo(() => ({ p: s.c, n: view === 'side' ? v3(0, 0, 1) : v3(0, -1, 0) }), [s, view]);
+  const holdHand =
+    h && s.hands.holder ? (
+      <>
+        <Arm2D s={P(h.S)} e={P(h.E)} w={P(h.W)} />
+        <Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part="behind" />
+      </>
+    ) : null;
   return (
     <Group>
-      {view === 'side' && h && plHold ? (
-        <>
-          <Arm2D s={side(h.S)} e={side(h.E)} w={side(h.W)} />
-          <Hand geo={CUP} pl={plHold} />
-        </>
-      ) : null}
+      {view === 'side' ? holdHand : null}
       {view === 'side' ? <PlayerSide /> : <PlayerTop />}
       {mounted ? (view === 'side' ? <PercStand x={clampAt.x} top={s.c.y} to={side(add(s.c, mul(s.ax, -L / 2)))} /> : <PercStand x={clampAt.x} top={0} to={[clampAt.x, 0]} z />) : null}
-      {view === 'top' && h && plHold ? (
-        <>
-          <Arm2D s={top(h.S)} e={top(h.E)} w={top(h.W)} />
-          <Hand geo={CUP} pl={plHold} />
-        </>
-      ) : null}
+      {view === 'top' ? holdHand : null}
       <Bell s={s} view={view} />
+      {h && s.hands.holder ? <Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part="front" /> : null}
       {view === 'side' ? <Rise s={s} /> : null}
+      <Stick a={P(buttOf(s))} b={P(s.stick.tip)} w={13} />
       <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />
-      <Hand geo={BACK} pl={plStick} heldBehind held={<Stick a={P(s.stick.hand)} b={P(s.stick.tip)} w={13} />} />
+      <Hand3 sk={s.hands.stick} view={V} fore={foreIn(P, a.E, a.W)} />
     </Group>
   );
 }

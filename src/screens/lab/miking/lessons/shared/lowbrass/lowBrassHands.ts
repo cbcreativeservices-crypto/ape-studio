@@ -34,7 +34,7 @@ import { EUPH, HORN, TUBA } from './lowBrassSpec.ts';
 
 /** One posed hand and its arm. `contact`: the digits (0 index … 3 little,
  *  4 thumb) whose pads are ON what they play. */
-export type PosedHand = { sk: HandSkeleton; shoulder: V3; elbow: V3; contact: number[]; thumb: 'lever' | 'ring' | 'free' | 'along' };
+export type PosedHand = { sk: HandSkeleton; shoulder: V3; elbow: V3; contact: number[]; thumb: 'lever' | 'ring' | 'loose' | 'along' };
 export type LowBrassHands = { L: PosedHand; R: PosedHand };
 
 /** A pad's centre ≈ 8 mm off the surface it presses (the pad ≈ 8 mm round). */
@@ -121,7 +121,7 @@ function uprightLeft(s: BrassScene): PosedHand {
     const goals = [btn, { curl: 0.5 }, { curl: 0.58 }, { curl: 0.66 }];
     const thumb: ThumbPose = { yaw: 0.6, pitch: 0.5, mcp: 0.2, ip: 0.25 };
     const sk = fitHand(start, goals, thumb, { elbow: J.elbowL, maxWrist: 62, curl: 0.5, keep: (f) => 1500 * (1 - h3.dot(f.z, D)) });
-    return { sk, shoulder: J.shoulderL, elbow: J.elbowL, contact: [0], thumb: 'free' };
+    return { sk, shoulder: J.shoulderL, elbow: J.elbowL, contact: [0], thumb: 'loose' };
   }
   // The tuba: the pads round the front-left of the bell branch, index on top.
   const branch = s.tubes.find((t) => t.id === 'branchArt')!;
@@ -130,7 +130,7 @@ function uprightLeft(s: BrassScene): PosedHand {
   const D = h3.unit(v3(-0.3, -0.2, -1));
   const start = handFrame(J.wristL, v3(0.56, -0.44, 0.7), D, v3(0, -1, 0));
   const sk = fitHand(start, pads, TUBA_LEFT.thumb, { elbow: J.elbowL, maxWrist: 62, curl: 0.8, keep: (f) => 600 * (1 - h3.dot(f.z, D)) });
-  return { sk, shoulder: J.shoulderL, elbow: J.elbowL, contact: [0, 1, 2, 3], thumb: 'free' };
+  return { sk, shoulder: J.shoulderL, elbow: J.elbowL, contact: [0, 1, 2, 3], thumb: 'loose' };
 }
 /** The tuba's left hand on the bell branch: each pad's height and its angle
  *  round the branch (0 = the front); the thumb lies along the branch's side,
@@ -149,7 +149,7 @@ export function lowBrassHands(s: BrassScene): LowBrassHands {
 
 /** Every posed hand of the family, for the anatomy test (the tuba and the
  *  euphonium hold the same hands whichever way the bell points: one case each). */
-export function handCases(): { name: string; sk: HandSkeleton; elbow: V3; contact: number[]; thumb?: 'behind' | 'free' | string }[] {
+export function handCases(): { name: string; sk: HandSkeleton; elbow: V3; contact: number[]; thumb?: string }[] {
   const out: { name: string; sk: HandSkeleton; elbow: V3; contact: number[]; thumb?: string }[] = [];
   for (const [spec, o] of [[HORN, 'back'], [TUBA, 'up'], [EUPH, 'up']] as const) {
     const h = lowBrassHands(brassScene(spec, o));

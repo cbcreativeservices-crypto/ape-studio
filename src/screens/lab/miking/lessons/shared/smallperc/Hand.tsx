@@ -13,7 +13,8 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import { FIGURE_SKIN, forearmPath } from '../players/PlayerFigure';
+import { drawHand3, FIGURE_SKIN, FigureMass, forearmPath, Nails } from '../players/PlayerFigure';
+import type { HandSkeleton, HandView, V3 } from '../players/handModel.ts';
 import { pt } from '../players/playerPose';
 import { nailOutline, placePt, smoothPathD, tubeOutline, type HandGeo, type Placement, type Pt } from './hands.ts';
 
@@ -174,6 +175,35 @@ export function Hand({ geo, pl, forearm, held, heldBehind, farThumb, opacity = 1
       <Path path={b.nails} style="stroke" strokeWidth={0.8} color={NAIL_RIM} opacity={geo.nailAlpha ? 0.8 : 1} />
       <Path path={b.creases} style="stroke" strokeWidth={1.1} strokeCap="round" color={CREASE} opacity={0.8} />
       <Path path={b.shine} style="stroke" strokeWidth={3} strokeCap="round" color={FIGURE_SKIN.rim} opacity={0.35} />
+    </Group>
+  );
+}
+
+/* ── THE POSED HAND (figure pass 3) ── */
+
+/** Frame H seen from the player's right (u = x, v = y, toward the viewer +z) and from above (u = x, v = z, toward the viewer up). */
+export const SIDE_VIEW: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
+export const TOP_VIEW: HandView = (p) => ({ u: p.x, v: p.z, d: -p.y });
+
+/**
+ * A hand posed bone by bone (players/handModel.ts; percGrip.ts) drawn at the
+ * house standard (PlayerFigure.drawHand3): tapered bones, palm, thenar, the
+ * bare wrist along the forearm (`fore`: its picture angle), knuckle creases,
+ * nails. `cut`: the plane through what the hand holds — `part` 'behind'
+ * paints what lies behind it (before the object), 'front' the rest.
+ */
+export function Hand3({ sk, view, fore, cut, part = 'all' }: { sk: HandSkeleton; view: HandView; fore?: number; cut?: { p: V3; n: V3 }; part?: 'all' | 'behind' | 'front' }) {
+  const d = useMemo(() => drawHand3(sk, view, { fore, cut }), [sk, view, fore, cut]);
+  return (
+    <Group>
+      {part !== 'front' && d.behind ? <FigureMass path={d.behind} tone="skin" contour={1.8} /> : null}
+      {part !== 'behind' ? (
+        <>
+          <FigureMass path={d.path} tone="skin" contour={1.8} />
+          <Path path={d.lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={FIGURE_SKIN.edge} opacity={0.7} />
+          <Nails path={d.nails} />
+        </>
+      ) : null}
     </Group>
   );
 }

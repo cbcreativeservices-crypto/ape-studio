@@ -24,24 +24,28 @@ const TROUSER = ['#3a3f4a', '#23272f', '#14161b'];
 const SIDE_CLOTH = [PLAYER.backX, -1460, PLAYER.chestX, -940] as const;
 const TOP_CLOTH = [PLAYER.shoulderX - 130, -250, PLAYER.shoulderX + 120, 250] as const;
 
+/** The shirt's body in profile (the standing player from the right, facing
+ *  +x): the garment a sleeve flows out of (Arm2D softens its own edge over it). */
+const SIDE_TORSO: Pt[] = [
+  [-300, -1455],
+  [-262, -1385],
+  [-246, -1290],
+  [-252, -1170],
+  [-266, -1040],
+  [-272, -940],
+  [-468, -930],
+  [-452, -1080],
+  [-462, -1250],
+  [-470, -1360],
+  [-420, -1455],
+];
+
 /** The standing player seen from the right: legs, torso, neck, head. The
  *  near (right) arm is drawn separately (Arm2D), over the torso. */
 export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
   const g = useMemo(() => {
     const H = (h: number) => -h;
-    const torso: Pt[] = [
-      [-300, H(1455)],
-      [-262, H(1385)],
-      [-246, H(1290)],
-      [-252, H(1170)],
-      [-266, H(1040)],
-      [-272, H(940)],
-      [-468, H(930)],
-      [-452, H(1080)],
-      [-462, H(1250)],
-      [-470, H(1360)],
-      [-420, H(1455)],
-    ];
+    const torso = SIDE_TORSO;
     const legs: Pt[] = [
       [-282, H(960)],
       [-290, H(520)],
@@ -83,33 +87,37 @@ export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
 
 /** The standing player from above: shoulders and the head — the figure's own
  *  skin silhouette from above (head fix 2026-10-08), facing +x. */
+/**
+ * The shoulders from above (figure pass 2, 2026-10-15; owner: "plug-in
+ * limbs", the shoulders read as a pill): the house shoulders from above
+ * (PlayerFigure buildAbove) turned to face +x — a ROUNDED RECTANGLE ≈ 456 mm
+ * across the deltoids, ≈ 236 mm deep: the back nearly flat across the
+ * shoulder blades, the trapezius falling to each rounded deltoid, the chest a
+ * little fuller than the back. A standing player from above shows NO feet
+ * (owner D68). Arm2D softens a sleeve's edge over it.
+ */
+const TOP_SHOULDERS: Pt[] = ((x: number): Pt[] => [
+  [x - 112, 0], // the upper back, behind the neck
+  [x - 108, 118],
+  [x - 88, 178],
+  [x - 50, 222],
+  [x + 4, 228], // the deltoid
+  [x + 52, 218],
+  [x + 84, 174],
+  [x + 116, 90], // the chest
+  [x + 124, 0],
+  [x + 116, -90],
+  [x + 84, -174],
+  [x + 52, -218],
+  [x + 4, -228],
+  [x - 50, -222],
+  [x - 88, -178],
+  [x - 108, -118],
+])(PLAYER.shoulderX);
+
 export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
   const g = useMemo(() => {
-    const x = PLAYER.shoulderX;
-    // Figure pass 2 (2026-10-15; owner: "plug-in limbs", the shoulders read as
-    // a pill): the house shoulders from above (PlayerFigure buildAbove) turned
-    // to face +x — a ROUNDED RECTANGLE ≈ 456 mm across the deltoids, ≈ 236 mm
-    // deep: the back nearly flat across the shoulder blades, the trapezius
-    // falling to each rounded deltoid, the chest a little fuller than the
-    // back. A standing player from above shows NO feet (owner D68).
-    const sh: Pt[] = [
-      [x - 112, 0], // the upper back, behind the neck
-      [x - 108, 118],
-      [x - 88, 178],
-      [x - 50, 222],
-      [x + 4, 228], // the deltoid
-      [x + 52, 218],
-      [x + 84, 174],
-      [x + 116, 90], // the chest
-      [x + 124, 0],
-      [x + 116, -90],
-      [x + 84, -174],
-      [x + 52, -218],
-      [x + 4, -228],
-      [x - 50, -222],
-      [x - 88, -178],
-      [x - 108, -118],
-    ];
+    const sh = TOP_SHOULDERS;
     return {
       sh: fromD(smoothPathD(sh)),
       shadow: fromD(smoothPathD(sh.map((p) => [p[0] + 18, p[1] + 26] as Pt))),
@@ -192,8 +200,30 @@ export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?:
     root.addCircle(s[0] + Math.cos(ax) * 6, s[1] + Math.sin(ax) * 6, 62);
     // The view: a side view's shoulder is ≈ 1400 mm up (y < 0); a top view's
     // z is within a metre of the midline.
-    const cloth = s[1] < -500 ? SIDE_CLOTH : TOP_CLOTH;
-    return { skin, sleeve, hemShade, all, root, cloth };
+    const sideView = s[1] < -500;
+    const cloth = sideView ? SIDE_CLOTH : TOP_CLOTH;
+    // ONE GARMENT (figure pass 3, owner 2026-10-15: "shoulder transitions
+    // from shirt sleeves to the shirt body look very unnatural and plug …
+    // interchangeable limbs"): on the standing player's own shoulder, where
+    // the sleeve lies over the shirt body its edge is only a soft fold (the
+    // full contour stays on the figure's silhouette), and the sleeve is SEWN
+    // in — a faint armhole seam round the deltoid's cap, and two soft folds
+    // where the cloth gathers under the arm (side view).
+    const own = Math.abs(s[0] - PLAYER.shoulderX) < 1 && (sideView ? Math.abs(s[1] + PLAYER.shoulderH) < 1 : Math.abs(Math.abs(s[1]) - PLAYER.shoulderZ) < 1);
+    const shirt = own ? fromD(smoothPathD(sideView ? SIDE_TORSO : TOP_SHOULDERS)) : null;
+    const seam = Skia.Path.Make();
+    const folds = Skia.Path.Make();
+    if (shirt) {
+      const arc = fromD(smoothPathD([A(30, -47), A(-6, -40), A(-26, -22), A(-31, 0), A(-26, 22), A(-6, 40), A(30, 47)], false));
+      seam.addPath(arc); // painted inside the sleeve only
+      if (sideView) {
+        // Under the arm, on its front (toward +x): the cloth pulled from the armpit.
+        const f = Math.sin(ax) >= 0 ? 1 : -1;
+        folds.addPath(fromD(smoothPathD([A(30, -46 * f), A(hem * 0.38, -30 * f), A(hem * 0.62, -22 * f)], false)));
+        folds.addPath(fromD(smoothPathD([A(52, -50 * f), A(hem * 0.6, -38 * f)], false)));
+      }
+    }
+    return { skin, sleeve, hemShade, all, root, cloth, shirt, seam, folds };
   }, [s, e, w]);
   const shade = Math.min(0.6, (1 - Math.max(0, Math.min(1, opacity))) * 1.6);
   return (
@@ -210,9 +240,32 @@ export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?:
       <Path path={g.sleeve}>
         <LinearGradient start={vec(g.cloth[0], g.cloth[1])} end={vec(g.cloth[2], g.cloth[3])} colors={SLEEVE} />
       </Path>
-      <Group clip={g.root} invertClip>
-        <Path path={g.sleeve} style="stroke" strokeWidth={2.2} color={SLEEVE_RIM} />
-      </Group>
+      {g.shirt ? (
+        <>
+          {/* The silhouette: the full contour, outside the shirt body. */}
+          <Group clip={g.shirt} invertClip>
+            <Path path={g.sleeve} style="stroke" strokeWidth={2.2} color={SLEEVE_RIM} />
+          </Group>
+          {/* Over the shirt body: a soft fold, none at all inside the shoulder. */}
+          <Group clip={g.shirt}>
+            <Group clip={g.root} invertClip>
+              <Path path={g.sleeve} style="stroke" strokeWidth={1.5} color={SLEEVE_RIM} opacity={0.36} />
+            </Group>
+          </Group>
+          <Group clip={g.sleeve}>
+            <Group transform={[{ translateX: -1.2 }, { translateY: -1.6 }]}>
+              <Path path={g.seam} style="stroke" strokeWidth={1.1} strokeCap="round" color={SLEEVE[0]} opacity={0.45} />
+              <Path path={g.folds} style="stroke" strokeWidth={1.6} strokeCap="round" color={SLEEVE[0]} opacity={0.3} />
+            </Group>
+            <Path path={g.seam} style="stroke" strokeWidth={1.3} strokeCap="round" color={SLEEVE_RIM} opacity={0.42} />
+            <Path path={g.folds} style="stroke" strokeWidth={2.2} strokeCap="round" color={SLEEVE_RIM} opacity={0.3} />
+          </Group>
+        </>
+      ) : (
+        <Group clip={g.root} invertClip>
+          <Path path={g.sleeve} style="stroke" strokeWidth={2.2} color={SLEEVE_RIM} />
+        </Group>
+      )}
       {shade > 0 ? <Path path={g.all} color="#000" opacity={shade} /> : null}
     </Group>
   );

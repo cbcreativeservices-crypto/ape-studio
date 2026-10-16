@@ -27,8 +27,10 @@ import { ampExtras, ampLessonArt } from '../shared/speakers/ampArt';
 import { CabFront } from '../shared/speakers/SpeakerArt';
 import { cabFrontHit, frontBox } from '../shared/speakers/cabLabels.ts';
 import { armPath, PlayerBehind } from '../shared/players/PlayerFigure';
+import type { HandView, V3 } from '../shared/players/handModel.ts';
+import { hmHands, type PosedArm } from '../shared/freereed/freeReedHands.ts';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
-import { limb, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_FAR, SKIN_RIM, type Pt } from '../shared/freereed/PlayerProfile';
+import { Hand3Art, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_RIM, type Pt } from '../shared/freereed/PlayerProfile';
 import { BULLET, HARMONICA } from '../shared/freereed/freeReedSpec.ts';
 import { AMP, BREATH, FLOOR_Y, H0, HD, HH, HL, profilePose, type HandState } from './model.ts';
 
@@ -122,36 +124,27 @@ export function HarpTop({ u, z, hi = false }: { u: number; z: number; hi?: boole
 
 /* ═══════════════ the hands (the hand chamber) ═══════════════ */
 
-/** The near hand's line in profile, from the wrist round the back of the
- *  harmonica (offsets from H0, per chamber state). */
-const NEAR_HAND: Record<HandState, Pt[]> = {
-  open: [pt(14, 110), pt(48, 58), pt(80, -2), pt(112, -64)],
-  half: [pt(14, 110), pt(56, 52), pt(86, -8), pt(82, -58), pt(54, -72)],
-  cupped: [pt(14, 110), pt(60, 50), pt(90, -6), pt(84, -56), pt(52, -76), pt(20, -62)],
-  mic: [pt(14, 110), pt(78, 62), pt(134, 4), pt(128, -56), pt(88, -84), pt(36, -70)],
-};
-const FAR_HAND: Pt[] = [pt(0, 104), pt(22, 44), pt(34, -22), pt(18, -52)];
-const RADII = [30, 34, 26, 21, 17, 15];
-
-function handPath(line: Pt[], at: Pt): SkPath {
-  const pts = line.map((q) => pt(at.u + q.u, at.v + q.v));
-  return limb(pts, RADII.slice(0, pts.length));
+/** The forearm's picture angle (elbow → wrist) in a view. */
+function angleIn(view: HandView, a: PosedArm): number {
+  const e = view(a.E);
+  const w = view(a.W);
+  return Math.atan2(w.v - e.v, w.u - e.u);
 }
 
-/** The finger divisions on a hand line's last stretch (three curved strokes). */
-function fingerLines(line: Pt[], at: Pt): SkPath {
-  const p = make();
-  const n = line.length;
-  for (let i = Math.max(1, n - 3); i < n; i++) {
-    const a = line[i - 1];
-    const b = line[i];
-    const m = pt(at.u + (a.u + b.u) / 2, at.v + (a.v + b.v) / 2);
-    const ang = Math.atan2(b.v - a.v, b.u - a.u) + Math.PI / 2;
-    p.moveTo(m.u - Math.cos(ang) * 14, m.v - Math.sin(ang) * 14);
-    p.quadTo(m.u + Math.cos(ang - Math.PI / 2) * 5, m.v + Math.sin(ang - Math.PI / 2) * 5, m.u + Math.cos(ang) * 14, m.v + Math.sin(ang) * 14);
+/** Frame H round H0 seen from the player's right, placed at `at` (the
+ *  harmonica's hole face): u = x, v = y, toward the viewer +z. */
+const profileViews = new Map<string, HandView>();
+function profileView(at: Pt): HandView {
+  const k = `${at.u}:${at.v}`;
+  let v = profileViews.get(k);
+  if (!v) {
+    v = (p: V3) => ({ u: at.u + p.x, v: at.v + p.y, d: p.z });
+    profileViews.set(k, v);
   }
-  return p;
+  return v;
 }
+/** The harmonica's middle plane (z = 0): the left hand's far side lies behind it. */
+const MID_CUT = { p: { x: 0, y: 0, z: 0 }, n: { x: 0, y: 0, z: 1 } };
 
 /** The harp mic (a chrome bullet), its grille's nose at (u, v), pointing −u. */
 export function Bullet({ u, v, scale = 1 }: { u: number; v: number; scale?: number }): ReactElement {
@@ -187,45 +180,38 @@ export function Bullet({ u, v, scale = 1 }: { u: number; v: number; scale?: numb
   );
 }
 
-/** The hands round the harmonica in profile (the far hand behind, then the
- *  harmonica, then the near hand), for a chamber state. */
+/**
+ * The hands round the harmonica in profile, for a chamber state (figure pass
+ * 3: the posed hands, freeReedHands.hmHands): the far (left) hand's far side
+ * behind the harmonica — the thumb under it, the index's pad on its top, the
+ * other fingers curved round its back — then the harmonica (and the harp
+ * mic), then the left hand's near side and the right hand cupped over it.
+ */
 export function HandsProfile({ at, state, hi = false, showHarp = true }: { at: Pt; state: HandState; hi?: boolean; showHarp?: boolean }): ReactElement {
-  const near = handPath(NEAR_HAND[state], at);
-  const far = handPath(FAR_HAND, at);
-  const lines = fingerLines(NEAR_HAND[state], at);
-  const thumb = limb([pt(at.u + 30, at.v + 72), pt(at.u + 12, at.v + 30), pt(at.u + 4, at.v + 16)], [17, 14, 12]);
+  const h = hmHands(state);
+  const view = profileView(at);
   return (
     <Group>
-      <Group opacity={0.75}>
-        <MassArt path={far} ramp={SKIN_FAR} rim={SKIN_RIM} edge={SKIN_EDGE} />
-      </Group>
+      <Hand3Art sk={h.L.sk} view={view} fore={angleIn(view, h.L)} cut={MID_CUT} part="behind" far />
       {state === 'mic' ? <Bullet u={at.u + HD + 2} v={at.v} /> : null}
       {showHarp ? <HarpProfile u={at.u} v={at.v} /> : null}
-      <Path path={near} color="#000" opacity={0.3} transform={[{ translateX: 5 }, { translateY: 8 }]}>
-        <BlurMask blur={8} style="normal" />
-      </Path>
-      <MassArt path={near} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-      <MassArt path={thumb} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-      <Path path={lines} style="stroke" strokeWidth={2} strokeCap="round" color={SKIN_EDGE} opacity={0.55} />
-      {hi ? <Path path={rr(at.u - 30, at.v - 100, at.u + 150, at.v + 140, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
+      <Hand3Art sk={h.L.sk} view={view} fore={angleIn(view, h.L)} cut={MID_CUT} part="front" far />
+      <Hand3Art sk={h.R.sk} view={view} fore={angleIn(view, h.R)} />
+      {hi ? <Path path={rr(at.u - 40, at.v - 110, at.u + 170, at.v + 150, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
 
-/** The hands from above round the harmonica (both hands, mirrored about its centre). */
-function HandsTop({ x, z, hi = false }: { x: number; z: number; hi?: boolean }): ReactElement {
-  const side = (s: number) => limb([pt(x + 6, z + s * 118), pt(x + 46, z + s * 92), pt(x + 84, z + s * 58), pt(x + 96, z + s * 20)], [30, 36, 26, 18]);
+/** The hands from above round the harmonica (the posed hands; the left
+ *  index's pad on its top, the right hand cupped in front). */
+const TOP_HANDS: HandView = (p) => ({ u: H0.x + p.x, v: H0.z + p.z, d: -p.y });
+function HandsTop({ hi = false }: { hi?: boolean }): ReactElement {
+  const h = hmHands(STATE_IN_SCENE);
   return (
     <Group>
-      {[-1, 1].map((s) => (
-        <Group key={s}>
-          <Path path={side(s)} color="#000" opacity={0.3} transform={[{ translateX: 4 }, { translateY: 6 }]}>
-            <BlurMask blur={7} style="normal" />
-          </Path>
-          <MassArt path={side(s)} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-        </Group>
-      ))}
-      {hi ? <Path path={rr(x - 20, z - 160, x + 140, z + 160, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
+      <Hand3Art sk={h.L.sk} view={TOP_HANDS} fore={angleIn(TOP_HANDS, h.L)} />
+      <Hand3Art sk={h.R.sk} view={TOP_HANDS} fore={angleIn(TOP_HANDS, h.R)} />
+      {hi ? <Path path={rr(H0.x - 40, H0.z - 170, H0.x + 170, H0.z + 170, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
@@ -263,10 +249,12 @@ const ABOVE: PlayerPose = {
   neck: { u: 0, v: -24 },
   shoulderR: { u: -188, v: -40 },
   shoulderL: { u: 188, v: -40 },
-  elbowR: { u: -214, v: 60 },
-  elbowL: { u: 214, v: 60 },
-  handR: { wrist: { u: -118, v: 96 }, dir: Math.PI / 2, kind: 'above' },
-  handL: { wrist: { u: 118, v: 96 }, dir: Math.PI / 2, kind: 'above' },
+  // Figure pass 3: the arms end at the posed hands' wrists (frame H round H0,
+  // turned: u = −z, v = x + 90 — the group below turns it to face +x).
+  elbowR: { u: -hmHands('half').R.E.z, v: hmHands('half').R.E.x + 90 },
+  elbowL: { u: -hmHands('half').L.E.z, v: hmHands('half').L.E.x + 90 },
+  handR: { wrist: { u: -hmHands('half').R.W.z, v: hmHands('half').R.W.x + 90 }, dir: Math.PI / 2, kind: 'above' },
+  handL: { wrist: { u: -hmHands('half').L.W.z, v: hmHands('half').L.W.x + 90 }, dir: Math.PI / 2, kind: 'above' },
   hipR: { u: -110, v: -10 },
   hipL: { u: 110, v: -10 },
   kneeR: { u: -110, v: 60 },
@@ -275,9 +263,13 @@ const ABOVE: PlayerPose = {
   footL: { u: 100, v: 196 },
   floor: null,
 };
-/** The near (right) arm from above, in the turned frame (world mm). */
-// The shared anatomical arm (owner 2026-10-10: the tube arms).
-const ARM_R_TOP = armPath(pt(H0.x - 130, H0.z + 188), pt(H0.x - 30, H0.z + 214), pt(H0.x + 6, H0.z + 118));
+/** The near (right) arm from above (world mm): the shared anatomical arm
+ *  from the shoulder to the posed right hand's wrist (figure pass 3). */
+const ARM_R_TOP = (() => {
+  const R = hmHands('half').R;
+  const P = (q: V3) => pt(H0.x + q.x, H0.z + q.z);
+  return armPath(P(R.S), P(R.E), P(R.W));
+})();
 
 function PlayerTop(): ReactElement {
   return (
@@ -327,7 +319,7 @@ function SceneTop({ hi }: { hi: string | null }): ReactElement {
       <PlayerTop />
       <BreathCone view="top" />
       <HarpTop u={H0.x} z={H0.z} hi={hi === 'hm.harp'} />
-      <HandsTop x={H0.x} z={H0.z} hi={hi === 'hm.hands'} />
+      <HandsTop hi={hi === 'hm.hands'} />
     </Group>
   );
 }

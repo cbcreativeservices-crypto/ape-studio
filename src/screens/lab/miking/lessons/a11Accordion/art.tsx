@@ -23,9 +23,11 @@ import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels'
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import type { FrontArt } from '../shared/metal/metalPages';
-import { armPath, handShape, PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { armPath, PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import type { HandView, V3 } from '../shared/players/handModel.ts';
+import { accLeftHand, accRightHand, bassFace, BASS_HAND, type PosedArm } from '../shared/freereed/freeReedHands.ts';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
-import { limb, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_RIM, type ProfilePose, type Pt } from '../shared/freereed/PlayerProfile';
+import { Hand3Art, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, type ProfilePose, type Pt } from '../shared/freereed/PlayerProfile';
 import { BODY, bassBoxAt, FLOOR_Y, GRILLE, KEYS, stateOf, TREBLE } from './model.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -237,29 +239,34 @@ function BassFront({ top, bottom, hi, part = 'box' }: { top: number; bottom: num
   const at = (f: number, g: number): [number, number] => [A[0] + (B[0] - A[0]) * f + nu * E * g, A[1] + (B[1] - A[1]) * f + nv * E * g];
   const endFace = poly([at(0, 0), at(1, 0), at(1, 1), at(0, 1)]);
   const eb = endFace.getBounds();
-  // The button board: the rear 45 % of the end face, a field of buttons.
-  const board = poly([at(0.06, 0.55), at(0.94, 0.55), at(0.94, 0.96), at(0.06, 0.96)]);
+  // The button board toward the FRONT corner of the end (figure pass 3: the
+  // left hand's fingers reach forward round toward the front corner to the
+  // buttons, the strap across the back of the wrist behind them).
+  const [g0, g1] = BASS_HAND.buttons;
+  const board = poly([at(0.06, g0 - 0.03), at(0.94, g0 - 0.03), at(0.94, g1 + 0.04), at(0.06, g1 + 0.04)]);
   const buttons = make();
   for (let r = 0; r < 20; r++) {
     for (let c = 0; c < 6; c++) {
-      const q = at(0.1 + (r / 19) * 0.8, 0.6 + (c / 5) * 0.32);
+      const q = at(0.1 + (r / 19) * 0.8, g0 + 0.02 + (c / 5) * (g1 - g0 - 0.04));
       buttons.addOval(Skia.XYWHRect(q[0] - 2.8, q[1] - 3.6, 5.6, 7.2));
     }
   }
-  // The strap over the front part of the end face, its stitching and buckle.
+  // The strap over the back part of the end face (across the back of the
+  // left wrist), its stitching and buckle.
+  const SG = BASS_HAND.strapG;
   const strap = make();
-  const s0 = at(0.16, 0.24);
-  const s1 = at(0.9, 0.24);
+  const s0 = at(0.16, SG);
+  const s1 = at(0.9, SG);
   strap.moveTo(s0[0], s0[1]);
   strap.lineTo(s1[0], s1[1]);
   const stitch = make();
-  for (const g of [0.14, 0.34]) {
+  for (const g of [SG - 0.1, SG + 0.1]) {
     const q0 = at(0.17, g);
     const q1 = at(0.89, g);
     stitch.moveTo(q0[0], q0[1]);
     stitch.lineTo(q1[0], q1[1]);
   }
-  const bk = at(0.13, 0.24);
+  const bk = at(0.13, SG);
   const buckle = rr(bk[0] - 13, bk[1] - 9, bk[0] + 13, bk[1] + 9, 3);
   const air = at(0.05, 0.3);
   if (part === 'strap') {
@@ -294,10 +301,60 @@ function BassFront({ top, bottom, hi, part = 'box' }: { top: number; bottom: num
   );
 }
 
+/** Frame A seen from the audience: u = -z, v = y, toward the viewer +x. */
+const FRONT_VIEW: HandView = (p) => ({ u: -p.z, v: p.y, d: p.x });
+const SIDE_VIEW: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
+const TOP_VIEW: HandView = (p) => ({ u: p.x, v: p.z, d: -p.y });
+const fv = (p: V3): Pt => ({ u: -p.z, v: p.y });
+
+/**
+ * The bass end as the front view draws it (BassFront: the end face turned a
+ * little toward the audience, a strip beyond the bass side's outer edge, its
+ * front edge on that edge, its back END_E mm out): a point of frame A near
+ * the end face, by its place down the face, front to back, and out from it.
+ */
+const END_E = 88;
+const stripViews = new Map<string, HandView>();
+function stripView(top: number, bottom: number): HandView {
+  const k = `${Math.round(top)}:${Math.round(bottom)}`;
+  let view = stripViews.get(k);
+  if (!view) {
+    const F = bassFace(top, bottom);
+    const A = { u: -F.b.ot.z, v: F.b.ot.y };
+    const B = { u: -F.b.ob.z, v: F.b.ob.y };
+    const dl = Math.hypot(B.u - A.u, B.v - A.v) || 1;
+    const tv = (B.v - A.v) / dl;
+    const tu = (B.u - A.u) / dl;
+    const nu = tv >= 0 ? tv : -tv;
+    const nv = tv >= 0 ? -tu : tu;
+    view = (p) => {
+      const c = F.coords(p);
+      const g = c.g + c.h * 0.0012;
+      return { u: A.u + (B.u - A.u) * c.f + nu * END_E * g, v: A.v + (B.v - A.v) * c.f + nv * END_E * g, d: c.h };
+    };
+    stripViews.set(k, view);
+  }
+  return view;
+}
+
+/** The forearm's picture angle (elbow to wrist) in a view. */
+function angleIn(view: HandView, a: PosedArm): number {
+  const e = view(a.E);
+  const w = view(a.W);
+  return Math.atan2(w.v - e.v, w.u - e.u);
+}
+
 /** The player from the front (the shared player), round the accordion. */
 function frontPose(top: number, bottom: number): PlayerPose {
-  const b = bassBoxAt(top, bottom);
-  const bassU = -b.outlets.z;
+  // The arms end at the posed hands' wrists (figure pass 3): the right hand
+  // on the keyboard's edge, the left under the bass strap on the end.
+  const R = accRightHand();
+  const Lh = accLeftHand(top, bottom);
+  // The forearm ends just inside the bass side's outer edge (behind it, out
+  // of sight), level with the hand on the end strip.
+  const F = bassFace(top, bottom);
+  const c = F.coords(Lh.W);
+  const wl = { u: -(F.b.ot.z + (F.b.ob.z - F.b.ot.z) * c.f) - 24, v: F.b.ot.y + (F.b.ob.y - F.b.ot.y) * c.f };
   return {
     view: 'front',
     posture: 'standing',
@@ -305,11 +362,12 @@ function frontPose(top: number, bottom: number): PlayerPose {
     neck: { u: 0, v: -350 },
     shoulderR: { u: -190, v: -320 },
     shoulderL: { u: 190, v: -320 },
-    elbowR: { u: -280, v: -60 },
-    // The left hand lies on the bass box's END face, under the bass strap.
-    elbowL: { u: Math.max(300, bassU - 60), v: -40 },
-    handR: { wrist: { u: -250, v: 70 }, dir: -0.25, kind: 'rest' },
-    handL: { wrist: { u: bassU + 150, v: 40 }, dir: Math.PI + 0.1, kind: 'rest' },
+    elbowR: fv(R.E),
+    // The left hand lies on the bass box's END face, under the bass strap
+    // (the forearm behind the bass side, out of sight).
+    elbowL: fv(Lh.E),
+    handR: { wrist: fv(R.W), dir: Math.PI / 2, kind: 'rest' },
+    handL: { wrist: { u: wl.u, v: wl.v }, dir: Math.PI, kind: 'rest' },
     hipR: { u: -110, v: 160 },
     hipL: { u: 110, v: 160 },
     kneeR: { u: -110, v: 640 },
@@ -350,7 +408,8 @@ export function AccordionFront({ top, bottom, hi = null, sound = 0 }: { top: num
       <BassFront top={top} bottom={bottom} hi={hi} />
       <TrebleFront hi={hi} />
       {hi === 'ac.bellows' ? <Path path={poly([[-TREBLE.z0, TREBLE.y0], [-b.it.z, b.it.y], [-b.ib.z, b.ib.y], [-TREBLE.z0, TREBLE.y1]])} style="stroke" strokeWidth={8} color={HIGHLIGHT} /> : null}
-      <PlayerInFront pose={pose} />
+      <PlayerInFront pose={pose} hands={false} />
+      <AccHandsFront top={top} bottom={bottom} />
       <BassFront top={top} bottom={bottom} hi={hi} part="strap" />
       {sound ? (
         <Group>
@@ -360,6 +419,21 @@ export function AccordionFront({ top, bottom, hi = null, sound = 0 }: { top: num
           <Path path={bassArcs} style="stroke" strokeWidth={4} color="#ffc64d" opacity={0.6} />
         </Group>
       ) : null}
+    </Group>
+  );
+}
+
+/** The hands from the front (figure pass 3): the right hand on the keyboard's
+ *  edge (the forearm reaching toward the viewer), the left on the bass end
+ *  under the strap (drawn before the strap, which crosses the back of its wrist). */
+function AccHandsFront({ top, bottom }: { top: number; bottom: number }): ReactElement {
+  const R = accRightHand();
+  const Lh = accLeftHand(top, bottom);
+  const sv = stripView(top, bottom);
+  return (
+    <Group>
+      <Hand3Art sk={Lh.sk} view={sv} fore={angleIn(sv, Lh)} />
+      <Hand3Art sk={R.sk} view={FRONT_VIEW} fore={angleIn(FRONT_VIEW, R)} foreshortened />
     </Group>
   );
 }
@@ -380,10 +454,13 @@ const PROFILE: ProfilePose = {
   // behind the chest; the forearm ≈ 220–250 mm seen (it turns out toward the
   // keyboard at the player's right, foreshortened) to the wrist at the
   // keyboard. The far (left) arm works the bellows behind the instrument.
-  elbowNear: { u: TREBLE.x0 - 180, v: 20 },
-  wristNear: { u: TREBLE.x0 + 20, v: 110 },
-  elbowFar: { u: TREBLE.x0 - 185, v: 26 },
-  wristFar: { u: TREBLE.x0 - 40, v: 70 },
+  // Figure pass 3: the joints of the posed arms (freeReedHands.ts) - the
+  // right forearm along the treble side to the hand on the keys, the left to
+  // the bass strap (behind the instrument).
+  elbowNear: { u: accRightHand().E.x, v: accRightHand().E.y },
+  wristNear: { u: accRightHand().W.x, v: accRightHand().W.y },
+  elbowFar: { u: accLeftHand(175, 350).E.x, v: accLeftHand(175, 350).E.y },
+  wristFar: { u: accLeftHand(175, 350).W.x, v: accLeftHand(175, 350).W.y },
   hip: { u: BODY.headC.x - 70, v: 180 },
   kneeNear: { u: BODY.headC.x - 40, v: 650 },
   ankleNear: { u: BODY.headC.x - 60, v: FLOOR_Y - 72 },
@@ -437,20 +514,11 @@ function BassBehindSide({ top, bottom }: { top: number; bottom: number }): React
   );
 }
 
-/** The right hand over the keyboard (its back, the fingers on the keys). */
+/** The right hand on the keyboard (figure pass 3): the posed hand, its back
+ *  toward the viewer, the fingers curved down onto the keys of a chord. */
 function HandOnKeys(): ReactElement {
-  const w = pt(TREBLE.x0 + 20, 110);
-  const k = pt(TREBLE.x0 + 95, 40);
-  const fingers = [-70, -30, 10, 45].map((dv, i) => limb([pt(k.u + 4, k.v + dv * 0.35), pt(k.u + 40, k.v + dv * 0.9 - 6), pt(k.u + 66 - i * 3, k.v + dv * 1.15 - 12)], [15, 12, 10]));
-  const palm = limb([w, pt((w.u + k.u) / 2, (w.v + k.v) / 2), k], [30, 36, 34]);
-  return (
-    <Group>
-      {fingers.map((f, i) => (
-        <MassArt key={i} path={f} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-      ))}
-      <MassArt path={palm} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-    </Group>
-  );
+  const R = accRightHand();
+  return <Hand3Art sk={R.sk} view={SIDE_VIEW} fore={angleIn(SIDE_VIEW, R)} />;
 }
 
 function Floor({ u0, u1 }: { u0: number; u1: number }): ReactElement {
@@ -513,19 +581,13 @@ function SceneTop({ variant, hi }: { variant: VariantId; hi: string | null }): R
   const bassTop = poly([[TREBLE.x0, b.it.z], [TREBLE.x1, b.it.z], [TREBLE.x1, b.ot.z], [TREBLE.x0, b.ot.z]]);
   const bassEnd = poly([[TREBLE.x0, b.ot.z], [TREBLE.x1, b.ot.z], [TREBLE.x1, b.ob.z], [TREBLE.x0, b.ob.z]]);
   const lowFan = poly([[TREBLE.x0 + 8, b.it.z], [TREBLE.x1 - 8, b.it.z], [TREBLE.x1 - 8, b.ib.z], [TREBLE.x0 + 8, b.ib.z]]);
-  // The arms from above (the turned frame: world mm).
-  // The arms and hands from above (owner 2026-10-10): the shared anatomical
-  // arm to the back of the shared hand (the old hands were capsules).
-  const topArm = (s0: Pt, e: Pt, w: Pt, toward: Pt) => {
-    const dir = Math.atan2(toward.v - w.v, toward.u - w.u);
-    return { arm: armPath(s0, e, w), hand: handShape({ wrist: w, dir, kind: 'above' }, Math.atan2(w.v - e.v, w.u - e.u)).path };
-  };
-  const R = topArm(pt(BODY.headC.x - 50, 190), pt(TREBLE.x0 - 40, 300), pt(TREBLE.x0 + 40, TREBLE.z1 + 46), pt(TREBLE.x0 + 140, TREBLE.z1 + 20));
-  const Lh = topArm(pt(BODY.headC.x - 50, -190), pt(TREBLE.x0 - 30, Math.min(-300, b.ot.z + 40)), pt(TREBLE.x0 + 30, b.ob.z - 24), pt(TREBLE.x0 + 130, b.ob.z - 10));
-  const armR = R.arm;
-  const handR = R.hand;
-  const armL = Lh.arm;
-  const handL = Lh.hand;
+  // The arms and hands from above (figure pass 3): the posed arms
+  // (freeReedHands.ts) - the shared anatomical arm to the posed hand.
+  const PR = accRightHand();
+  const PL = accLeftHand(s.top, s.bottom);
+  const tp = (p: V3): Pt => pt(p.x, p.z);
+  const armR = armPath(tp(PR.S), tp(PR.E), tp(PR.W));
+  const armL = armPath(tp(PL.S), tp(PL.E), tp(PL.W));
   return (
     <Group>
       <Group transform={[{ translateX: BODY.headC.x }, { translateY: 0 }, { rotate: -Math.PI / 2 }]}>
@@ -543,8 +605,8 @@ function SceneTop({ variant, hi }: { variant: VariantId; hi: string | null }): R
       </Path>
       <MassArt path={armR} ramp={SHIRT} rim={SHIRT_RIM} edge="#171a21" />
       <MassArt path={armL} ramp={SHIRT} rim={SHIRT_RIM} edge="#171a21" />
-      <MassArt path={handR} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-      <MassArt path={handL} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
+      <Hand3Art sk={PL.sk} view={TOP_VIEW} fore={angleIn(TOP_VIEW, PL)} />
+      <Hand3Art sk={PR.sk} view={TOP_VIEW} fore={angleIn(TOP_VIEW, PR)} />
     </Group>
   );
 }

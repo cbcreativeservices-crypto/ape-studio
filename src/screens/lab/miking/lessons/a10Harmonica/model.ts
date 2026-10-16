@@ -26,6 +26,7 @@ import type { Dim, Provenance, Vec3 } from '../../engine/model/types.ts';
 import { cabDraw } from '../shared/speakers/cabGeometry.ts';
 import { HARMONICA } from '../shared/freereed/freeReedSpec.ts';
 import type { ProfilePose } from '../shared/freereed/PlayerProfile';
+import { hmHands } from '../shared/freereed/freeReedHands.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const placeholder = (mm: number, needed: string): Dim => ({ mm, prov: { kind: 'unknown', needed }, placeholder: true });
@@ -64,6 +65,8 @@ export const HAND_STATES: readonly { id: HandState; label: string; short: string
  * drawing default (no source gives a player's geometry), placed so the lips
  * meet the hole face at H0 and the hands fit inside the hands' envelope.
  */
+const HANDS = hmHands('half');
+
 export function profilePose(): ProfilePose {
   const P = (u: number, v: number) => ({ u: H0.x + u, v: H0.y + v });
   return {
@@ -74,10 +77,13 @@ export function profilePose(): ProfilePose {
     // The collision solids (BODY below) are unchanged.
     neck: P(-140, 132),
     shoulder: P(-152, 186),
-    elbowNear: P(-62, 438),
-    wristNear: P(8, 150),
-    elbowFar: P(-90, 428),
-    wristFar: P(-6, 146),
+    // Figure pass 3: the arms end at the posed hands (freeReedHands.hmHands,
+    // the partly cupped hold the scene shows): the elbows down in front of
+    // the chest, the forearms rising to the hands at the lips.
+    elbowNear: P(HANDS.R.E.x, HANDS.R.E.y),
+    wristNear: P(HANDS.R.W.x, HANDS.R.W.y),
+    elbowFar: P(HANDS.L.E.x, HANDS.L.E.y),
+    wristFar: P(HANDS.L.W.x, HANDS.L.W.y),
     hip: P(-160, 600),
     kneeNear: P(-128, 1040),
     ankleNear: P(-142, 1478),

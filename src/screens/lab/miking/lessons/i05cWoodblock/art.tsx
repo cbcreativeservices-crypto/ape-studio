@@ -15,10 +15,11 @@ import { DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { cradle, dorsalFist, placeBetween, type Pt } from '../shared/smallperc/hands.ts';
+import { Hand3, SIDE_VIEW, TOP_VIEW } from '../shared/smallperc/Hand';
+import type { Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { FoamPad, RUBBER, Stick, TrapTable, Woodblock } from '../shared/smallperc/objects';
+import { add, mul, sub, v3 } from '../shared/smallperc/geom.ts';
 import { stateOf, WB_DIMS, type WbState } from './model.ts';
 import { TABLE } from './geometry.ts';
 
@@ -26,10 +27,20 @@ const L = WB_DIMS.len.mm;
 const DP = WB_DIMS.depth.mm;
 const H = WB_DIMS.h.mm;
 const SLOT = { len: WB_DIMS.slotLen.mm, t: WB_DIMS.slotT.mm, depth: WB_DIMS.slotDepth.mm };
-const BACK = dorsalFist();
-const CUP = cradle(30, 55);
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
+type P3 = { x: number; y: number; z: number };
+/** The forearm's angle in a view (elbow → wrist), for the hand's wrist. */
+const foreIn = (P: (p: P3) => Pt, e: P3, w: P3) => {
+  const a = P(e);
+  const b = P(w);
+  return Math.atan2(b[1] - a[1], b[0] - a[0]);
+};
+/** The handle's end: ≈ 100 mm behind the hand (a 350 mm mallet). */
+const endOf = (s: WbState) => {
+  const d = sub(s.mallet.hand, s.mallet.head);
+  return add(s.mallet.hand, mul(d, 100 / Math.hypot(d.x, d.y, d.z)));
+};
 
 function Swing({ s }: { s: WbState }) {
   const p = useMemo(() => {
@@ -53,31 +64,36 @@ export function WoodblockArt({ view, variant }: { view: ViewId; variant: Variant
   const a = s.arm;
   const h = s.holder;
   const P = view === 'side' ? side : top;
-  const plMallet = useMemo(() => placeBetween(BACK, P(a.W), P(a.G)), [a, view]); // eslint-disable-line react-hooks/exhaustive-deps
-  const plHold = useMemo(() => (h ? placeBetween(CUP, P(h.W), P(h.G), view === 'top') : null), [h, view]); // eslint-disable-line react-hooks/exhaustive-deps
-  const mallet = <Stick a={P(s.mallet.hand)} b={P(s.mallet.head)} w={11} head={{ r: 15, colors: RUBBER }} />;
+  const V = view === 'side' ? SIDE_VIEW : TOP_VIEW;
+  const mallet = <Stick a={P(endOf(s))} b={P(s.mallet.head)} w={11} head={{ r: 15, colors: RUBBER }} />;
   const onTable = s.id === 'table';
+  // The holding hand: what lies beyond the block's middle (seen from this view) behind it.
+  const cut = useMemo(() => ({ p: s.c, n: view === 'side' ? v3(0, 0, 1) : v3(0, -1, 0) }), [s, view]);
+  const hold = (part: 'behind' | 'front') => (h && s.hands.holder ? <Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part={part} /> : null);
+  const malletHand = (
+    <>
+      {mallet}
+      <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />
+      <Hand3 sk={s.hands.stick} view={V} fore={foreIn(P, a.E, a.W)} />
+    </>
+  );
   if (view === 'top') {
     return (
       <Group>
         {onTable ? <TrapTable view="top" x0={TABLE.x0} x1={TABLE.x1} z0={TABLE.z0} z1={TABLE.z1} top={0} /> : null}
         <PlayerTop />
         {onTable ? <FoamPad c={top(s.c)} w={100} h={200} /> : null}
-        {h && plHold ? (
-          <>
-            <Arm2D s={top(h.S)} e={top(h.E)} w={top(h.W)} />
-            <Hand geo={CUP} pl={plHold} />
-          </>
-        ) : null}
+        {h ? <Arm2D s={top(h.S)} e={top(h.E)} w={top(h.W)} /> : null}
+        {hold('behind')}
         <Woodblock c={top(s.c)} w={DP} h={L} slot={SLOT} mode="top" />
-        <Arm2D s={top(a.S)} e={top(a.E)} w={top(a.W)} />
-        <Hand geo={BACK} pl={plMallet} heldBehind held={mallet} />
+        {hold('front')}
+        {malletHand}
       </Group>
     );
   }
   return (
     <Group>
-      {h && plHold ? <Arm2D s={side(h.S)} e={side(h.E)} w={side(h.W)} /> : null}
+      {h ? <Arm2D s={side(h.S)} e={side(h.E)} w={side(h.W)} /> : null}
       <PlayerSide />
       {onTable ? (
         <>
@@ -85,11 +101,11 @@ export function WoodblockArt({ view, variant }: { view: ViewId; variant: Variant
           <FoamPad c={[s.c.x, s.c.y + H / 2 + WB_DIMS.foamT.mm / 2]} w={100} h={WB_DIMS.foamT.mm} />
         </>
       ) : null}
-      {h && plHold ? <Hand geo={CUP} pl={plHold} /> : null}
+      {hold('behind')}
       <Woodblock c={side(s.c)} w={DP} h={H} slot={SLOT} mode="end" />
+      {hold('front')}
       <Swing s={s} />
-      <Arm2D s={side(a.S)} e={side(a.E)} w={side(a.W)} />
-      <Hand geo={BACK} pl={plMallet} heldBehind held={mallet} />
+      {malletHand}
     </Group>
   );
 }
