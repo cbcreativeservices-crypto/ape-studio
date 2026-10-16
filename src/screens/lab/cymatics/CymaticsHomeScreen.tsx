@@ -234,7 +234,9 @@ const styles = StyleSheet.create({
   },
   startHereHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
   startHereSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
-  heroBadge: { position: 'absolute', left: 10, bottom: 8, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
+  // In flow UNDER the plate (art grading 2026-10-16): absolute at the foot it
+  // wrapped to two lines on a phone and sat on the plate's lower edge.
+  heroBadge: { paddingHorizontal: 10, paddingVertical: 8, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
   heroFallback: { alignItems: 'center', justifyContent: 'center' },
   heroFallbackText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
