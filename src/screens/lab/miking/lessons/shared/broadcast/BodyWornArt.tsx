@@ -70,8 +70,10 @@ function jacketPaths(view: ViewId, standing: boolean, tie: boolean) {
     notch.lineTo(X + 4, NECK_Y + 96);
     notch.lineTo(X - 6, NECK_Y + 90);
     notch.close();
-    // A button at the waist, and a pocket's welt below it.
-    button.addCircle(X + 8, NECK_Y + 300, 6.5);
+    // A button at the waist, seen edge-on from the side (art fix 2026-10-16:
+    // drawn face-on it read as an unexplained ring on the jacket's edge), and
+    // a pocket's welt below it.
+    button.addRRect(Skia.RRectXY(Skia.XYWHRect(X + 5, NECK_Y + 293, 5, 14), 2, 2));
     welt.moveTo(X - 2, hem - 150);
     welt.lineTo(X - 70, hem - 156);
     // The shirt collar's wing at the throat.
@@ -124,10 +126,8 @@ export function Jacket({ view, standing = true, tie = false }: { view: ViewId; s
       <Path path={p.notch} color="#2b2d33" />
       <Path path={p.notch} style="stroke" strokeWidth={1.6} color="#0b0c0f" />
       <Path path={p.welt} style="stroke" strokeWidth={2.4} color="#101114" opacity={0.8} />
-      <Path path={p.button} color="#15161a" />
-      <Group transform={[{ translateX: -1.5 }, { translateY: -1.5 }]}>
-        <Path path={p.button} style="stroke" strokeWidth={1.2} color="#a7adb8" opacity={0.6} />
-      </Group>
+      <Path path={p.button} color="#2b2d33" />
+      <Path path={p.button} style="stroke" strokeWidth={1} color="#0b0c0f" />
       <Path path={p.roll} style="stroke" strokeWidth={2.4} color="#0e0f12" opacity={0.85} />
       <Group transform={[{ translateX: -1.4 }, { translateY: -1.4 }]}>
         <Path path={p.roll} style="stroke" strokeWidth={1.2} color="#c3c8d2" opacity={0.4} />

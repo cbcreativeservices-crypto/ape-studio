@@ -27,7 +27,7 @@ import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { DESK_TOP_Y, HOST, SEATED, SEATED_FLOOR, onTalker, type Talker } from '../shared/broadcast/talkerPose.ts';
 import { REACH_PART, VOICE_IDS, talkerIds, talkerParts, talkerVoice } from '../shared/broadcast/talkerModel.ts';
 import { deskPlate } from '../shared/broadcast/deskReflection.ts';
-import { BODY_MOUNTS } from '../shared/broadcast/bodyWorn.ts';
+import { BODY_MOUNTS, lavLead } from '../shared/broadcast/bodyWorn.ts';
 import { SHOT_PRESETS, boomAbove, cameraBody, cameraForShot, headroomFan, sideFan, type BroadcastCamera } from '../shared/broadcast/cameraFrame.ts';
 import { standBoomRule } from '../shared/broadcast/boomPole.ts';
 import { SHOTGUN_BODY } from '../shared/fieldmics/fieldMics.ts';
@@ -76,8 +76,10 @@ export const STAND_RULE = standBoomRule(v3(0, 0, -1));
 
 /* ── the desk mics ── */
 /** The gooseneck's weighted base on the desk, in front of the anchor and a
- *  little to their left (as the panel lesson's: a drawing default). */
-export const GOOSE_BASE = v3(330, DESK_TOP_Y - 30, -210);
+ *  little to their left, beyond the fingertips of the hands resting on the
+ *  desk (art fix 2026-10-16: at 33 cm it sat under the anchor's hand; a
+ *  drawing default, inside the neck's 46 cm reach to its starting place). */
+export const GOOSE_BASE = v3(480, DESK_TOP_Y - 30, -250);
 /** The boundary lying on the desk in front of the anchor, its front toward them. */
 export const BOUNDARY_AT = v3(330, DESK_TOP_Y, 40);
 
@@ -125,8 +127,8 @@ const envelopes: Envelope[] = [
 ];
 
 const rims: Rim[] = [
-  { id: 'clip.sternum', label: 'a clip on the anchor’s shirt, over the breastbone', c: LAV_A.grip, axis: v3(1, 0, 0), r: 0, types: ['locLav'] },
-  { id: 'clip.guest', label: 'a clip on the guest’s shirt, over the breastbone', c: LAV_G_GRIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'] },
+  { id: 'clip.sternum', label: 'a clip on the anchor’s shirt, over the breastbone', c: LAV_A.grip, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(LAV_A.grip, true) },
+  { id: 'clip.guest', label: 'a clip on the guest’s shirt, over the breastbone', c: LAV_G_GRIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(BODY_MOUNTS.sternum.grip, true).map((p) => onTalker(GUEST, p)) },
   { id: 'goose.desk', label: 'the gooseneck’s base on the desk', c: GOOSE_BASE, axis: v3(0, -1, 0), r: 0, types: ['bcGoose', 'bcGooseSuper'] },
 ];
 

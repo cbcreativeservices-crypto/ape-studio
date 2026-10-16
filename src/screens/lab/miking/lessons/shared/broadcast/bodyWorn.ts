@@ -232,6 +232,29 @@ export function packAt(standing: boolean): Vec3 {
   return v3(back - BODY_DIMS.packD.mm / 2 - 2, NECK_Y + (standing ? 520 : 470), -150);
 }
 
+/**
+ * A lav's cable from its clip to the pack (art fix 2026-10-16: the lav sat on
+ * the shirt with no cable — graded "floats"). The engine's Rim.lead: in under
+ * the shirt at the next button below the clip, down the chest, along the
+ * belt round the wearer's left side to the pack's input on the back of the
+ * belt (packAt). Drawing defaults; frame V of the wearer. `seated`: the belt
+ * of a seated wearer (the pack lower too).
+ */
+export function lavLead(grip: Vec3, seated = false): Vec3[] {
+  const pack = packAt(!seated);
+  const belt = NECK_Y + (seated ? 470 : 520);
+  const back = pack.x + BODY_DIMS.packD.mm / 2;
+  const side = (CHEST_X + back) / 2;
+  return [
+    v3(CHEST_X - 4, grip.y + 60, grip.z * 0.6),
+    v3(CHEST_X - 8, belt - 60, 0),
+    v3(CHEST_X - 14, belt - 20, -40),
+    v3(side, belt - 14, -160),
+    v3(pack.x + 30, belt - 20, pack.z - 30),
+    v3(pack.x + 2, pack.y - BODY_DIMS.packH.mm / 2 - 7, pack.z),
+  ];
+}
+
 /* ── safety, exact, in plain words (every body-worn page uses these) ── */
 
 export const SAFETY = {

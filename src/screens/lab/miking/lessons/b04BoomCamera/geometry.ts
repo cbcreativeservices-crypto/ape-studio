@@ -27,7 +27,7 @@ import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { VOICE_PART_WORDS } from '../shared/voice/voiceModel.ts';
 import { mouthLine, mouthSurface, voiceRegions } from '../shared/voice/voiceZones.ts';
 import { REACH_PART } from '../shared/broadcast/talkerModel.ts';
-import { BODY_MOUNTS } from '../shared/broadcast/bodyWorn.ts';
+import { BODY_MOUNTS, lavLead } from '../shared/broadcast/bodyWorn.ts';
 import { SHOT_PRESETS, boomAbove, boomBelow, boomSide, cameraBody, cameraForShot, cameraMic, cameraShoe, footFan, headroomFan, sideFan, type BroadcastCamera } from '../shared/broadcast/cameraFrame.ts';
 import { operatorAt } from '../shared/broadcast/boomPole.ts';
 import { CAM_CAPSULE_MM, SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
@@ -70,9 +70,11 @@ export const CAMMIC_CLOSE = capsuleRead(cameraMic(CAM_CLOSE), CAM_CAPSULE_MM);
 export const CAMMIC_WIDE = capsuleRead(cameraMic(CAM_WIDE), CAM_CAPSULE_MM);
 
 /* ── the boom operator: outside every frame on the talker's left, the pole
- *  held high (drawing defaults; poles reach 2.5 m) ── */
-export const GRIP_CLOSE = v3(1000, -350, -1000);
-export const GRIP_WIDE = v3(900, -450, -1300);
+ *  held high (drawing defaults; poles reach 2.5 m). The front hand 2.0 m up
+ *  (2.1 m in the wide shot), arms raised overhead: the pole clears the
+ *  operator's own head behind the front hand (art fix 2026-10-16). ── */
+export const GRIP_CLOSE = v3(1000, -450, -1000);
+export const GRIP_WIDE = v3(900, -540, -1300);
 export const OP_FEET_CLOSE = operatorAt(GRIP_CLOSE, BOOM_ABOVE.tip, FLOOR);
 export const OP_FEET_WIDE = operatorAt(GRIP_WIDE, BOOM_WIDE.tip, FLOOR);
 
@@ -131,7 +133,7 @@ const rims: Rim[] = [
   { id: 'grip.w', label: 'the boom operator’s hands', c: GRIP_WIDE, axis: v3(0, 0, 1), r: 0, variants: ['wide'], types: POLE_TYPES },
   { id: 'shoe', label: 'the camera’s shoe', c: cameraShoe(CAM_CLOSE), axis: v3(0, -1, 0), r: 0, variants: ['close', 'live'], types: ['camMic'] },
   { id: 'shoe.w', label: 'the camera’s shoe', c: cameraShoe(CAM_WIDE), axis: v3(0, -1, 0), r: 0, variants: ['wide'], types: ['camMic'] },
-  { id: 'clip.sternum', label: 'a clip on the shirt, over the breastbone', c: LAV.grip, axis: v3(1, 0, 0), r: 0, types: ['locLav'] },
+  { id: 'clip.sternum', label: 'a clip on the shirt, over the breastbone', c: LAV.grip, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(LAV.grip) },
 ];
 
 export const B04_MODEL: InstrumentModel = {

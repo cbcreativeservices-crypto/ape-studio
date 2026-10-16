@@ -11,12 +11,16 @@ import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { Desk, DeskNearLegs, GooseBase, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
-import { Jacket } from '../shared/broadcast/BodyWornArt';
+import { BeltPack, Jacket } from '../shared/broadcast/BodyWornArt';
+import { packAt } from '../shared/broadcast/bodyWorn.ts';
 import { BroadcastCameraRig, FrameWedge } from '../shared/broadcast/CameraArt';
 import { cameraBody } from '../shared/broadcast/cameraFrame.ts';
-import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
+import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS, onTalker } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { ANCHOR, B02_VIEWS, CAM_OF, DESK, GOOSE_BASE, GUEST, HEAD_TOP, PA_C } from './geometry.ts';
+
+/** Each talker's bodypack, on the back of the belt (seated). */
+const PACK_SEATED = packAt(false);
 
 type V = 'close' | 'twoShot' | 'public';
 const vOf = (v: VariantId): V => (v === 'twoShot' ? 'twoShot' : v === 'public' ? 'public' : 'close');
@@ -34,6 +38,8 @@ export function B02Scene({ view, variant, headless = false, camera = true, base 
         {v === 'public' ? <PaSpeaker view="side" c={PA_C} faces={1} floor={SEATED_FLOOR} /> : null}
         {camera ? <FrameWedge view="side" cam={cam} reach={cam.lens.x - box.u0} headTop={HEAD_TOP} /> : null}
         <StudioChair view="side" t={ANCHOR} />
+        {/* The lav's bodypack on the back of the belt (its cable: Rim.lead). */}
+        <BeltPack view="side" at={PACK_SEATED} />
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} skirt />
         {base ? <GooseBase view="side" at={GOOSE_BASE} /> : null}
         <Script view="side" at={{ x: 420, y: DESK_TOP_Y, z: 160 }} />
@@ -50,6 +56,8 @@ export function B02Scene({ view, variant, headless = false, camera = true, base 
       {camera ? <FrameWedge view="top" cam={cam} reach={cam.lens.x - box.u0} /> : null}
       <StudioChair view="top" t={ANCHOR} />
       <StudioChair view="top" t={GUEST} />
+      <BeltPack view="top" at={PACK_SEATED} />
+      <BeltPack view="top" at={onTalker(GUEST, PACK_SEATED)} />
       <SeatedTalker view="top" t={ANCHOR} part="lower" />
       <SeatedTalker view="top" t={GUEST} part="lower" />
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} skirt />
@@ -72,7 +80,7 @@ export function b02Labels(view: ViewId, _variant: VariantId): ArtLabel[] {
   if (view === 'side') {
     const out: ArtLabel[] = [
       { id: 'v.mouth', text: 'MOUTH', u: 140, v: -170, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 160, v: 110, align: 'left' }] },
-      { id: 'bc.desk', text: 'ANCHOR DESK', short: 'DESK', u: 560, v: DESK.max.y + 90, align: 'center', tone: 'muted', at: { u: 560, v: DESK.max.y } },
+      { id: 'bc.desk', text: 'ANCHOR DESK', short: 'DESK', u: 690, v: DESK.max.y + 110, align: 'center', tone: 'muted', at: { u: 690, v: DESK.max.y } },
       { id: 'b2.base', text: 'GOOSENECK BASE', short: 'BASE', u: GOOSE_BASE.x + 90, v: DESK_TOP_Y - 160, align: 'left', tone: 'muted', at: { u: GOOSE_BASE.x, v: DESK_TOP_Y - 20 } },
     ];
     // The camera and the PA are named by a tap (THE PARTS): the setups are

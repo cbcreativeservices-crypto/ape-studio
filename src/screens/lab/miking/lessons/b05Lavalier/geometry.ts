@@ -24,7 +24,7 @@ import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { VOICE_PART_WORDS } from '../shared/voice/voiceModel.ts';
 import { mouthLine, mouthSurface, voiceRegions } from '../shared/voice/voiceZones.ts';
 import { REACH_PART } from '../shared/broadcast/talkerModel.ts';
-import { BODY_MOUNTS, packAt } from '../shared/broadcast/bodyWorn.ts';
+import { BODY_MOUNTS, lavLead, packAt } from '../shared/broadcast/bodyWorn.ts';
 import { SHOT_PRESETS, cameraBody, cameraForShot } from '../shared/broadcast/cameraFrame.ts';
 import { LECTERN } from '../b06Panels/geometry.ts';
 
@@ -81,7 +81,7 @@ const parts: Part[] = [
   REACH_PART,
 ];
 
-const garmentRim = (id: keyof typeof BODY_MOUNTS, label: string): Rim => ({ id: `clip.${id}`, label, c: BODY_MOUNTS[id].grip, axis: v3(1, 0, 0), r: 0, types: LAV_TYPES });
+const garmentRim = (id: keyof typeof BODY_MOUNTS, label: string): Rim => ({ id: `clip.${id}`, label, c: BODY_MOUNTS[id].grip, axis: v3(1, 0, 0), r: 0, types: LAV_TYPES, lead: lavLead(BODY_MOUNTS[id].grip) });
 const rims: Rim[] = [
   garmentRim('sternum', 'a clip on the shirt, over the breastbone'),
   garmentRim('lapel', 'a clip on the jacket’s lapel'),

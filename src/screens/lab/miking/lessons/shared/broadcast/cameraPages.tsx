@@ -86,7 +86,10 @@ export function useShotStep(spec: ShotSpec): MikingStep {
   const dBody = spec.bodyMic ? dist(spec.bodyMic, LIP) : null;
   const mainView: ViewId = from === 'side' ? 'top' : 'side';
   const tail = v3(boom.p.x - boom.aim.x * 250, boom.p.y - boom.aim.y * 250, boom.p.z - boom.aim.z * 250);
-  const poleEnd = v3(tail.x - boom.aim.x * 700, tail.y - boom.aim.y * 700, tail.z - boom.aim.z * 700);
+  // The pole runs on out of the picture (art fix 2026-10-16: a 70 cm stub
+  // ended in mid-air — a pole with no one holding it), toward the operator
+  // beyond the drawing's edge (the canvas clips it).
+  const poleEnd = v3(tail.x - boom.aim.x * 5000, tail.y - boom.aim.y * 5000, tail.z - boom.aim.z * 5000);
   const a11y = `${spec.words.subject}, the camera in front: a ${shot.label.toLowerCase()} (${shot.words}). The boom ${FROM_WORDS[from].label.toLowerCase()}, as close as the frame allows: ${cm(dBoom)} from the lips, aimed at the mouth.${spec.camMic ? ` The camera’s own mic is ${cm(dCam)} away.` : ''}${dBody != null ? ` A body mic on the chest is ${cm(dBody)} away.` : ''}`;
   const params: DockParam[] = [
     {
