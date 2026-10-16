@@ -31,33 +31,26 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
-import { Kit, MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
+import { MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
+import { KitTop } from '../kitScene/KitSceneArt';
 import { SaxScene } from './SaxArt';
 import { swingShape } from './saxModel.ts';
 import type { SaxPosture } from './saxPosture.ts';
+import { saxCue, saxFoots, saxShown, type SaxPlanLayout, type SaxPlanObject } from './saxPlanModel.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, type PlanRect } from '../planFoot.ts';
+import { besideLabel, cuePoint, ownRect } from '../brass/hornPlanFoot.ts';
 
 const DEG = Math.PI / 180;
 const make = () => Skia.Path.Make();
 
-/** One object on the plan: what it is, where (lesson frame, top view), how
- *  big for a tap, and — for another saxophonist — their posture. */
-export type SaxPlanObject = {
-  id: string;
-  kind: 'self' | 'sax' | 'stand' | 'kit' | 'pair';
-  at: { x: number; z: number };
-  yaw?: number;
-  r: number;
-  posture?: SaxPosture;
-  label: string;
-  short?: string;
-  scene: 'kit' | 'stage' | 'studio' | 'all';
-};
+export type { SaxPlanObject } from './saxPlanModel.ts';
 
-export type SaxSettingConfig = {
+/** The player (the family's STANDING posture), the plan (saxPlanModel: the
+ *  lesson's plan.ts) and the page's words. */
+export type SaxSettingConfig = SaxPlanLayout & {
   P: SaxPosture;
-  objects: readonly SaxPlanObject[];
-  near: ViewBox;
-  wide: ViewBox;
   nearA11y: string;
   wideA11y: { stage: string; studio: string };
   nearLanding: string;
@@ -104,7 +97,7 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
     }
     return p;
   }, [box]);
-  const shown = cfg.objects.filter((o) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit' && o.kind !== 'self'));
+  const shown = saxShown(cfg, scene);
   const floor = useMemo(() => {
     const p = make();
     p.addRect(Skia.XYWHRect(box.u0, box.v0, box.u1 - box.u0, box.v1 - box.v0));
@@ -121,19 +114,32 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
     p.lineTo(box.u1 - 220, box.v1);
     return p;
   }, [box]);
+  // Collision pass 2026-10-15: every object's footprint (saxPlanModel) —
+  // the words keep clear of them, each name beside its own object (or in
+  // free space with a leader back to it); the studio's headphone mix.
+  const foots = useMemo(() => saxFoots(cfg, self, scene, wedges), [cfg, self, scene, wedges]);
+  // Words keep off the hatched keep-clear space too (it is drawn).
+  const wordFoots = useMemo(() => foots.map((f) => (f.kind === 'keepClear' ? { ...f, zone: false } : f)), [foots]);
+  const cues = useMemo(() => (scene === 'studio' ? saxCue(cfg, self) : []), [cfg, self, scene]);
+  const s = xf.s / textScale;
   const sel = cfg.objects.find((o) => o.id === highlight) ?? null;
   const selItem = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = shown
-    .filter((o) => o.kind !== 'self')
-    // Beside each object, never on it.
-    .map((o) => ({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), u: o.at.x, v: o.at.z + o.r + 70, align: 'center' as const, tone: (highlight === o.id ? undefined : 'muted') as StaticLabel['tone'], alts: [{ u: o.at.x, v: o.at.z - o.r - 60, align: 'center' as const }] }));
-  labels.push({ id: 'player', text: 'THE PLAYER', u: self.player.pelvis.x - 360, v: self.player.pelvis.z + 40, align: 'right', tone: 'muted' });
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', tone: 'muted' });
-  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 120, align: 'left', tone: 'muted' });
+  const tone = (id: string) => (highlight === id ? undefined : 'muted') as StaticLabel['tone'];
+  const centre = (r: PlanRect | null, o: SaxPlanObject) => (r ? { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 } : { u: o.at.x, v: o.at.z });
+  const mid = (o: SaxPlanObject) => centre(ownRect(foots, o.kind === 'self' ? 'player' : o.id), o);
+  const labels: StaticLabel[] = [
+    // The lesson's own player first: its name is never the one dropped.
+    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s),
+    ...shown.filter((o) => o.kind !== 'self').map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s)),
+  ];
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', tone: 'muted', point: { u: box.u1 - 220, v: box.v0 + 60 } });
+  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 120, align: 'left', tone: 'muted', point: { u: box.u0 + 120, v: box.v0 + 120 } });
+  for (const rig of cues) labels.push(...cueLabels(rig, undefined, ['player']).map((l) => ({ ...l, tone: 'illustrative' as const, point: cuePoint(rig, l.id) })));
   const tap = (u: number, v: number) => {
     let best: { id: string; d: number } | null = null;
     for (const o of shown) {
-      const d = Math.hypot(u - o.at.x, v - o.at.z) - o.r;
+      const c = mid(o);
+      const d = Math.hypot(u - c.u, v - c.v) - o.r;
       if (d < 60 && (!best || d < best.d)) best = { id: o.id, d };
     }
     if (scene === 'stage')
@@ -144,11 +150,12 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
     if (best) onTap(best.id);
   };
   const ring = (() => {
-    const at = sel ? sel.at : wedges.find((x) => x.id === highlight)?.p;
+    const wd = wedges.find((x) => x.id === highlight)?.p;
+    const at = sel ? mid(sel) : wd ? { u: wd.x, v: wd.z } : null;
     const r = sel ? sel.r : 330;
     if (!at) return null;
     const p = make();
-    p.addCircle(at.x, 'z' in at ? at.z : 0, r + 40);
+    p.addCircle(at.u, at.v, r + 40);
     return p;
   })();
   return (
@@ -167,7 +174,7 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
             ) : null}
             {shown.map((o) => (
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
-                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <Kit /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'sax' && o.posture ? (
+                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'sax' && o.posture ? (
                   <Group opacity={0.7}>
                     <SaxScene P={o.posture} view="top" />
                   </Group>
@@ -180,11 +187,15 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
               <Path path={hatch} style="stroke" strokeWidth={12} color="#a7adb9" opacity={0.6} />
             </Group>
             <Path path={sweep} style="stroke" strokeWidth={16} color="#a7adb9" opacity={0.85} />
+            {/* Studio: each performer's headphone mix (no wedges in a studio). */}
+            {cues.map((rig, i) => (
+              <CueMixPlan key={rig.id ?? i} rig={rig} />
+            ))}
             {ring ? <Path path={ring} style="stroke" strokeWidth={14} color="#ffc64d" opacity={0.9} /> : null}
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots)} />
     </View>
   );
 }

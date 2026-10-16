@@ -7,6 +7,7 @@
  */
 import type { SettingItem, Wedge } from '../../../engine/model/types.ts';
 import type { PlanThing } from './family.ts';
+import type { PlanCueSpec } from '../handdrums/handPlanModel.ts';
 
 const ILL = (reason: string) => ({ kind: 'illustrative' as const, reason });
 
@@ -40,9 +41,28 @@ export const STAGE_THINGS: PlanThing[] = [
   { id: 'downstage', kind: 'wedge', u: 1400, v: -600, face: Math.PI - 0.3, scene: 'stage' },
   { id: 'fill', kind: 'wedge', u: -1100, v: 0, face: 0, scene: 'stage' },
   { id: 'audience', kind: 'audience', u: 2150, v: 0, scene: 'stage' },
-  { id: 'area', kind: 'micstand', u: 500, v: 650, scene: 'studio' },
+  { id: 'area', kind: 'micstand', u: 650, v: 650, scene: 'studio' },
   { id: 'room', kind: 'room', u: 0, v: 0, scene: 'studio' },
 ];
+
+/**
+ * The studio's headphone mix for the usual station (the player at the
+ * station, the drum kit up and to the left, a singer up and to the right):
+ * each performer's personal mixer at their side, fed from the CONTROL ROOM
+ * on the room's right-hand wall (collision pass 2026-10-15). `main` = the
+ * lesson's own instrument thing (its player is drawn by the lesson's art).
+ */
+export function stationCue(main: string): PlanCueSpec {
+  return {
+    wall: 'u1',
+    hubAt: 300,
+    stations: [
+      { of: main, at: { u: -400, v: -680 } },
+      { of: 'kit', at: { u: -2060, v: -790 }, via: [{ u: -2060, v: -460 }] },
+      { of: 'vocal', at: { u: 650, v: -1800 } },
+    ],
+  };
+}
 
 export function stageItems(the: string, areaNote: string): SettingItem[] {
   return [

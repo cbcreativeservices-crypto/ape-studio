@@ -13,6 +13,7 @@ import type { SpLesson } from '../shared/smallperc/family.ts';
 import { SHK_MODEL } from './geometry.ts';
 import { SHK_ZONES } from './model.ts';
 import { SHK_COPY } from './copy.ts';
+import { stationCue } from '../shared/smallperc/stage.ts';
 
 const W: SpWords = { p: 'shk', the: 'the shaker', a: 'a shaker', noun: 'shaker', player: 'player', loudest: 'the biggest accent' };
 
@@ -585,15 +586,16 @@ export const I03A_LESSON: SpLesson = {
       things: [
         { id: 'shaker', kind: 'drums', u: 0, v: 0, scene: 'all' },
         { id: 'perc', kind: 'perc', u: -250, v: 1050, scene: 'all' },
-        { id: 'kit', kind: 'kit', u: -1500, v: -1350, scene: 'all' },
+        { id: 'kit', kind: 'kit', u: -1500, v: -1250, scene: 'all' },
         { id: 'amp', kind: 'amp', u: -1900, v: 950, face: 0, scene: 'all' },
         { id: 'vocal', kind: 'micstand', u: 1100, v: -1350, scene: 'all' },
         { id: 'downstage', kind: 'wedge', u: 1400, v: -600, face: Math.PI - 0.3, scene: 'stage' },
         { id: 'fill', kind: 'wedge', u: -1100, v: 0, face: 0, scene: 'stage' },
         { id: 'audience', kind: 'audience', u: 2150, v: 0, scene: 'stage' },
-        { id: 'area', kind: 'micstand', u: 500, v: 650, scene: 'studio' },
+        { id: 'area', kind: 'micstand', u: 650, v: 650, scene: 'studio' },
         { id: 'room', kind: 'room', u: 0, v: 0, scene: 'studio' },
       ],
+      cue: stationCue('shaker'),
     },
   },
 };

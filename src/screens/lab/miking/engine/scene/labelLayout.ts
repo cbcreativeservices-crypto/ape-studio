@@ -103,6 +103,11 @@ export type LabelOpts = {
    *  stand). No label's words sit on one and no leader crosses one; a name
    *  with no such place at this zoom is left out (it returns zoomed in). */
   lines?: readonly { x1: number; y1: number; x2: number; y2: number }[];
+  /** The plans (owner 2026-10-15: no word on an object, and no leader
+   *  through one): true when the leader (px, from its part (x1, y1) to the
+   *  words) crosses no OTHER drawn object. A place whose leader would is
+   *  not taken. */
+  leaderClear?: (line: { x1: number; y1: number; x2: number; y2: number }) => boolean;
 };
 
 type Seg = { x1: number; y1: number; x2: number; y2: number };
@@ -250,6 +255,7 @@ export function fitLabels<T extends Fit>(
           if (hardware.some((sg) => !near(sg) && segsCross(sg, cut))) return false;
         }
         if (strict && line && (segs.some((sg) => segsCross(sg, line)) || labelRects.some((k) => segHitsRect(line, k)))) return false;
+        if (line && opts.leaderClear && !opts.leaderClear(line)) return false;
         if (line) segs.push(line);
       }
       kept.push(r);

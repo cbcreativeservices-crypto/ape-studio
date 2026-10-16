@@ -10,7 +10,6 @@
 import type { DiagnosticItem, InstrumentModel, MikingScenario, OrderTask, Provenance, SetupReason, Symptom, VariantId, Wedge } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 import type { GuitarScene } from './guitarModel.ts';
-import type { PlanObject } from './StagePlan';
 export type Noun = { one: string; the: string; player: string };
 
 export const HEARING_EXPLAIN = 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.';
@@ -345,26 +344,9 @@ export function bodyShield(model: InstrumentModel, v: VariantId): string[] {
   return model.parts.filter((p) => p.variants?.includes(v) && /\.body\d+$/.test(p.id)).map((p) => p.id);
 }
 
-/** A typical plan round a string player (lesson frame x, z). */
-export function stringsPlan(sc: GuitarScene, opts: { chair: boolean; vocal: boolean; di: boolean; shared?: boolean }): PlanObject[] {
-  const lap = sc.o.lap;
-  const head = sc.o.P(sc.fit.head.c);
-  const m = sc.o.P(sc.fit.mouth);
-  const out: PlanObject[] = [{ id: 'player', kind: 'player', at: { x: head.x, z: head.z }, scene: 'all', r: 320 }];
-  if (opts.chair) out.push({ id: 'chair', kind: 'chair', at: { x: head.x, z: head.z - (lap ? 120 : 40) }, scene: 'kit', r: 220 });
-  if (opts.vocal) out.push({ id: 'vocal', kind: 'vocal', at: { x: m.x, z: m.z + 90 }, faces: { x: m.x - 60, z: 520 }, scene: 'kit', r: 140 });
-  if (opts.di) out.push({ id: 'di', kind: 'di', at: { x: sc.g.tail - 300, z: 260 }, scene: 'kit', r: 120 });
-  if (opts.shared) out.push({ id: 'shared', kind: 'shared', at: { x: 300, z: 900 }, scene: 'stage', r: 160 });
-  out.push(
-    { id: 'bassAmp', kind: 'bassAmp', at: { x: 1500, z: -1250 }, scene: 'stage', r: 330 },
-    { id: 'kit', kind: 'kit', at: { x: -900, z: -1700 }, scene: 'stage', r: 800 },
-    { id: 'paL', kind: 'pa', at: { x: -2000, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'paR', kind: 'pa', at: { x: 2100, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'audience', kind: 'audience', at: { x: 0, z: 1650 }, scene: 'stage', r: 300 },
-    { id: 'room', kind: 'room', at: { x: -2100, z: -2250 }, scene: 'studio', r: 300 },
-  );
-  return out;
-}
+/** A typical plan round a string player: laid out in stagePlanModel.ts
+ *  (the plan's overlap test reads the same numbers). */
+export { stringsPlan } from './stagePlanModel.ts';
 
 /** The family's words on the shared pages (copy.words), with the noun. */
 export function familyWords(n: Noun): import('../../../engine/model/copy.ts').FamilyWords {

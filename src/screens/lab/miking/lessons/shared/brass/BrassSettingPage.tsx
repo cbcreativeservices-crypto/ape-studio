@@ -33,35 +33,25 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
 import { PaintItem, playerGroups } from '../bowed/BowedArt';
-import { Kit, MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
+import { MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
+import { KitTop } from '../kitScene/KitSceneArt';
 import { PROJ, hornGroups } from './BrassArt';
-import { SLIDE_7TH } from './brassSpec.ts';
 import type { HornPose } from './brassPosture.ts';
+import { brassCue, brassFoots, brassShown, slideReach, type BrassPlanLayout, type BrassPlanObject } from './brassPlanModel.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, type PlanRect } from '../planFoot.ts';
+import { besideLabel, cuePoint, ownRect } from './hornPlanFoot.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 const DEG = Math.PI / 180;
 const make = () => Skia.Path.Make();
 
-/** One object on the plan. */
-export type BrassPlanObject = {
-  id: string;
-  kind: 'self' | 'brass' | 'stand' | 'kit' | 'pair' | 'singer';
-  at: { x: number; z: number };
-  /** Turn on the plan, degrees (from +x toward +z). */
-  yaw?: number;
-  r: number;
-  pose?: HornPose;
-  label: string;
-  short?: string;
-  scene: 'kit' | 'stage' | 'studio' | 'all';
-};
+export type { BrassPlanObject } from './brassPlanModel.ts';
 
-export type BrassSettingConfig = {
-  P: HornPose;
-  objects: readonly BrassPlanObject[];
-  near: ViewBox;
-  wide: ViewBox;
+/** The plan (brassPlanModel: the lesson's plan.ts) and the page's words. */
+export type BrassSettingConfig = BrassPlanLayout & {
   nearA11y: string;
   wideA11y: { stage: string; studio: string };
   nearLanding: string;
@@ -132,7 +122,7 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   const textScale = useStageTextScale();
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
   const self = cfg.P;
-  const shown = cfg.objects.filter((o) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit' && o.kind !== 'self'));
+  const shown = brassShown(cfg, scene);
   const floor = useMemo(() => {
     const p = make();
     p.addRect(Skia.XYWHRect(box.u0, box.v0, box.u1 - box.u0, box.v1 - box.v0));
@@ -144,28 +134,42 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
     return p;
   }, [box]);
   // The player's space: for a trombone, the slide's reach to 7th position.
+  const reachRect = useMemo(() => slideReach(self), [self]);
   const reach = useMemo(() => {
-    if (!self.slide) return null;
-    const s = self.slide;
+    if (!reachRect) return null;
     const p = make();
-    const x0 = s.outerFrom.x - s.s - 20;
-    const x1 = s.crook.x - s.s + SLIDE_7TH + 60;
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(x0, s.z - 80, x1 - x0, 170), 60, 60));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(reachRect.u0, reachRect.v0, reachRect.u1 - reachRect.u0, reachRect.v1 - reachRect.v0), 60, 60));
     return p;
-  }, [self]);
+  }, [reachRect]);
+  // Collision pass 2026-10-15: every object's footprint (brassPlanModel) —
+  // the words keep clear of them, each name beside its own object (or in
+  // free space with a leader back to it); the studio's headphone mix.
+  const foots = useMemo(() => brassFoots(cfg, scene, wedges), [cfg, scene, wedges]);
+  // Words keep off the hatched keep-clear space too (it is drawn).
+  const wordFoots = useMemo(() => foots.map((f) => (f.kind === 'keepClear' ? { ...f, zone: false } : f)), [foots]);
+  const cues = useMemo(() => (scene === 'studio' ? brassCue(cfg) : []), [cfg, scene]);
+  const s = xf.s / textScale;
   const sel = cfg.objects.find((o) => o.id === highlight) ?? null;
   const selItem = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = shown
-    .filter((o) => o.kind !== 'self')
-    .map((o) => ({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), u: o.at.x, v: o.at.z + o.r * 0.8, align: 'center' as const, tone: (highlight === o.id ? undefined : 'muted') as StaticLabel['tone'] }));
-  labels.push({ id: 'player', text: 'THE PLAYER', u: self.player.pelvis.x - 60, v: self.player.pelvis.z - 330, align: 'center', tone: 'muted' });
-  if (reach && self.slide) labels.push({ id: 'reach', text: 'SLIDE AT 7th', short: '7th', u: self.slide.crook.x - self.slide.s + SLIDE_7TH, v: self.slide.z + 170, align: 'center', tone: 'muted' });
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', tone: 'muted' });
-  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 120, align: 'left', tone: 'muted' });
+  const tone = (id: string) => (highlight === id ? undefined : 'muted') as StaticLabel['tone'];
+  const centre = (r: PlanRect | null, o: BrassPlanObject) => (r ? { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 } : { u: o.at.x, v: o.at.z });
+  const mid = (o: BrassPlanObject) => centre(ownRect(foots, o.kind === 'self' ? 'player' : o.id), o);
+  const labels: StaticLabel[] = [
+    // The lesson's own player first: its name is never the one dropped.
+    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s),
+    ...shown
+      .filter((o) => o.kind !== 'self')
+      .map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s)),
+  ];
+  if (reachRect) labels.push(besideLabel({ id: 'reach', text: 'SLIDE AT 7th', short: '7th', tone: 'muted' as const }, reachRect, { u: reachRect.u1 - 120, v: (reachRect.v0 + reachRect.v1) / 2 }, s));
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', tone: 'muted', point: { u: box.u1 - 220, v: box.v0 + 60 } });
+  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 120, align: 'left', tone: 'muted', point: { u: box.u0 + 120, v: box.v0 + 120 } });
+  for (const rig of cues) labels.push(...cueLabels(rig, undefined, ['player']).map((l) => ({ ...l, tone: 'illustrative' as const, point: cuePoint(rig, l.id) })));
   const tap = (u: number, v: number) => {
     let best: { id: string; d: number } | null = null;
     for (const o of shown) {
-      const d = Math.hypot(u - o.at.x, v - o.at.z) - o.r;
+      const c = mid(o);
+      const d = Math.hypot(u - c.u, v - c.v) - o.r;
       if (d < 60 && (!best || d < best.d)) best = { id: o.id, d };
     }
     if (scene === 'stage') {
@@ -177,11 +181,12 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
     if (best) onTap(best.id);
   };
   const ring = (() => {
-    const at = sel ? sel.at : wedges.find((x) => x.id === highlight)?.p;
+    const wd = wedges.find((x) => x.id === highlight)?.p;
+    const at = sel ? mid(sel) : wd ? { u: wd.x, v: wd.z } : null;
     const r = sel ? sel.r : 330;
     if (!at) return null;
     const p = make();
-    p.addCircle(at.x, 'z' in at ? at.z : 0, r + 40);
+    p.addCircle(at.u, at.v, r + 40);
     return p;
   })();
   return (
@@ -211,7 +216,7 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
             ) : null}
             {shown.map((o) => (
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
-                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <Kit /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'singer' ? <SingerTop /> : o.kind === 'brass' && o.pose ? <BrassTop P={o.pose} dim={0.7} /> : null}
+                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'singer' ? <SingerTop /> : o.kind === 'brass' && o.pose ? <BrassTop P={o.pose} dim={0.7} /> : null}
               </Group>
             ))}
             {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}
@@ -224,11 +229,15 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
               </>
             ) : null}
             <BrassTop P={self} dim={1} />
+            {/* Studio: each performer's headphone mix (no wedges in a studio). */}
+            {cues.map((rig, i) => (
+              <CueMixPlan key={rig.id ?? i} rig={rig} />
+            ))}
             {ring ? <Path path={ring} style="stroke" strokeWidth={14} color="#ffc64d" opacity={0.9} /> : null}
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots)} />
     </View>
   );
 }

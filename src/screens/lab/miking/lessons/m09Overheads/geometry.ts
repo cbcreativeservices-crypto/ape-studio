@@ -8,6 +8,7 @@
 import type { Wedge } from '../../engine/model/types.ts';
 import { KICK_GEOM } from '../m01Kick/geometry.ts';
 import { KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
+import { KIT_FILL } from '../shared/kitStage.ts';
 import { kitModel } from '../shared/kitScene/kitSceneModel.ts';
 
 export const M09_VIEWS = {
@@ -44,9 +45,9 @@ export const M09_WEDGES: Wedge[] = [
     id: 'fill',
     label: 'the drummer’s own fill, on the floor beside the throne',
     short: 'DRUM FILL',
-    p: { x: -450, y: KIT_FLOOR_Y, z: 750 },
+    p: { x: KIT_FILL.x, y: KIT_FLOOR_Y, z: KIT_FILL.z },
     lift: 150,
-    faces: { x: -0.2, y: 0, z: -1 },
+    faces: KIT_FILL.faces,
     note: 'Below and behind the side mic: a pattern’s null can face it if you tilt the mic or change its pattern — while it still looks across at the snare.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout (M01’s position); no source gives it' },
   },

@@ -18,6 +18,7 @@ import { windLessonArt } from '../shared/woodwinds/windLessonArt';
 import { WindBody } from '../shared/woodwinds/WindArt';
 import { frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
 import { FLUTE_MODEL, LAYOUTS, layoutOf } from './geometry.ts';
+import { A06_PLAN } from './plan.ts';
 
 const M = LAYOUTS.metal;
 const turn = (L: Layout, dy: number, stand: 0 | 1 = 0) => portraitOf(L, frameAt(L, 300).t, { x: 0, y: -1, z: 0.3 }, { x: 0, y: dy, z: 0 }, stand);
@@ -96,7 +97,7 @@ const art = windLessonArt({
     studioIdle: 'No monitors on the floor. The room — and a main pair above the conductor — are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the first flute ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },
   },
-  plan: { own: 'fl1', layoutOf, ownLabel: 'FLUTE 1 · THIS LESSON' },
+  plan: A06_PLAN,
 });
 
 export const FLUTE_ART: LessonArt = { ...art, figure: { aspect: (TRIO_BOX.u1 - TRIO_BOX.u0) / (TRIO_BOX.v1 - TRIO_BOX.v0), render: (w, h) => <FluteTrio w={w} h={h} /> } };

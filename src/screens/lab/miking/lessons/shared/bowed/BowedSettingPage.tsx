@@ -37,33 +37,22 @@ import { KICK_22x18 } from '../drums/drumSpec.ts';
 import { KIT_CYMBALS, KIT_DRUMS } from '../kitPlanModel.ts';
 import { hatchFor, pluckPath, sceneGroups, sweepPaths } from './BowedArt';
 import type { Posture } from './posture.ts';
+import { KitTop } from '../kitScene/KitSceneArt';
+import { Pianist } from '../piano/PianoArt';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
+import { PIANIST, bowedCue, bowedFoots, bowedPlayerRect, bowedShown, type BowedPlanLayout } from './bowedPlanModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
-/** One object on the plan: what it is, where (lesson frame, top view), how
- *  big for a tap, and — for another string player — their posture. */
-export type PlanObject = {
-  id: string;
-  kind: 'self' | 'bowed' | 'stand' | 'piano' | 'kit' | 'pair';
-  at: { x: number; z: number };
-  /** Turn on the plan, degrees (from +x toward +z). */
-  yaw?: number;
-  r: number;
-  posture?: Posture;
-  label: string;
-  short?: string;
-  scene: 'kit' | 'stage' | 'studio' | 'all';
-};
+/** One object on the plan (bowedPlanModel.ts, pure, so the plans' overlap
+ *  test reads the same layout). */
+export type { PlanObject } from './bowedPlanModel.ts';
 
-export type BowedSettingConfig = {
-  P: Posture;
-  /** What works the strings: the bow (its sweep hatched) or a plucking hand. Default bow. */
-  hands?: 'bow' | 'pluck';
-  objects: readonly PlanObject[];
-  /** The plan boxes (lesson frame, mm): around the player, and the wider room. */
-  near: ViewBox;
-  wide: ViewBox;
-  /** The words. */
+/** The plan's layout (the player, the objects, the boxes, the studio's
+ *  headphone mixers — bowedPlanModel.ts) and the page's words. */
+export type BowedSettingConfig = BowedPlanLayout & {
   nearA11y: string;
   wideA11y: { stage: string; studio: string };
   nearLanding: string;
@@ -358,7 +347,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   const self = cfg.P;
   const sweep = useMemo(() => (cfg.hands === 'pluck' ? pluckPath(self, 'top') : sweepPaths(self, 'top').bow), [self, cfg.hands]);
   const hatch = useMemo(() => hatchFor(box), [box]);
-  const shown = cfg.objects.filter((o) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit' && o.kind !== 'self'));
+  const shown = bowedShown(cfg, scene);
   const floor = useMemo(() => {
     const p = make();
     p.addRect(Skia.XYWHRect(box.u0, box.v0, box.u1 - box.u0, box.v1 - box.v0));
@@ -371,12 +360,29 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   }, [box]);
   const sel = cfg.objects.find((o) => o.id === highlight) ?? null;
   const selItem = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = shown
-    .filter((o) => o.kind !== 'self')
-    .map((o) => ({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), u: o.at.x, v: o.at.z + o.r * 0.75, align: 'center' as const, tone: (highlight === o.id ? undefined : 'muted') as StaticLabel['tone'] }));
-  labels.push({ id: 'player', text: 'THE PLAYER', u: self.player.pelvis.x, v: self.player.pelvis.z - 330, align: 'center', tone: 'muted' });
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', tone: 'muted' });
-  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 120, align: 'left', tone: 'muted' });
+  // Collision pass 2026-10-15: every word keeps clear of every object (the
+  // plan's footprints, bowedPlanModel); a name with no clear spot beside its
+  // object moves to free space with a leader back to it. The lesson's own
+  // player is named first, so it is never the one left out. STUDIO: each
+  // player's headphone mixer, fed from the CONTROL ROOM (no wedges).
+  const foots = useMemo(() => bowedFoots(cfg, scene, wedges), [cfg, scene, wedges]);
+  const cue = useMemo(() => (scene === 'studio' ? bowedCue(cfg) : null), [cfg, scene]);
+  const s = xf.s / textScale;
+  const nameAt = (id: string, r: { u0: number; u1: number; v0: number; v1: number }, text: string, short: string | undefined, point: { u: number; v: number }, tone: StaticLabel['tone']): StaticLabel => {
+    const [first, ...alts] = labelPlaces(r, s);
+    return { id, text, ...(short ? { short } : {}), u: first.u, v: first.v, align: first.align, alts, point, tone };
+  };
+  const selfRect = bowedPlayerRect(self, cfg.hands !== 'pluck');
+  const labels: StaticLabel[] = [nameAt('player', selfRect, 'THE PLAYER', undefined, { u: self.player.pelvis.x, v: self.player.pelvis.z }, 'amber')];
+  for (const o of shown) {
+    if (o.kind === 'self') continue;
+    const own = foots.filter((f) => f.id === o.id || f.group === o.id);
+    const r = own.length ? unionRect(own) : { u0: o.at.x - o.r, u1: o.at.x + o.r, v0: o.at.z - o.r, v1: o.at.z + o.r };
+    labels.push(nameAt(o.id, r, o.label.toUpperCase(), o.short?.toUpperCase(), { u: o.at.x, v: o.at.z }, highlight === o.id ? undefined : 'muted'));
+  }
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', point: { u: box.u1 - 110, v: box.v0 + 200 }, tone: 'muted' });
+  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 160, v: box.v1 - 160, align: 'left', point: { u: box.u0 + 160, v: box.v1 - 200 }, tone: 'muted' });
+  if (cue) labels.push(...cueLabels(cue, undefined, ['self']).map((l) => ({ ...l, tone: 'illustrative' as const })));
   const tap = (u: number, v: number) => {
     let best: { id: string; d: number } | null = null;
     for (const o of shown) {
@@ -410,7 +416,26 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
           {scene === 'stage' ? <Path path={(() => { const p = make(); p.moveTo(box.u1 - 220, box.v0); p.lineTo(box.u1 - 220, box.v1); return p; })()} style="stroke" strokeWidth={10} color="#ffc64d" opacity={0.35}><DashPathEffect intervals={[60, 40]} /></Path> : null}
           {shown.map((o) => (
             <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
-              {o.kind === 'stand' ? <MusicStand /> : o.kind === 'piano' ? <GrandPiano /> : o.kind === 'kit' ? <Kit /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'bowed' && o.posture ? <BowedTop P={o.posture} dim={0.72} /> : null}
+              {o.kind === 'stand' ? (
+                <MusicStand />
+              ) : o.kind === 'piano' ? (
+                <>
+                  <GrandPiano />
+                  {/* the pianist on the bench, at the keyboard's middle */}
+                  <Group transform={[{ translateY: PIANIST.y }]}>
+                    <Pianist view="top" xKey={PIANIST.xKey} pedalX={PIANIST.pedalX} dim={0.8} />
+                  </Group>
+                </>
+              ) : o.kind === 'kit' ? (
+                // the shared five-piece kit with its drummer on the throne
+                <Group opacity={0.85}>
+                  <KitTop keepOuts={false} />
+                </Group>
+              ) : o.kind === 'pair' ? (
+                <MainPair />
+              ) : o.kind === 'bowed' && o.posture ? (
+                <BowedTop P={o.posture} dim={0.72} />
+              ) : null}
             </Group>
           ))}
           {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}
@@ -419,11 +444,12 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
             <Path path={hatch} style="stroke" strokeWidth={2} color="#8a8f9c" opacity={0.5} />
           </Group>
           <Path path={sweep} style="stroke" strokeWidth={2.5} color="#8a8f9c" opacity={0.75} />
+          {cue ? <CueMixPlan rig={cue} /> : null}
           {ring ? <Path path={ring} style="stroke" strokeWidth={14} color="#ffc64d" opacity={0.9} /> : null}
         </Group>
       </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
     </View>
   );
 }
@@ -508,7 +534,7 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
         kind: 'LEARN',
         layout: 'rack',
         rack: {
-          render: (w, h) => <BowedPlan w={w} h={h} cfg={cfg} box={cfg.wide} scene={where} wedges={lesson.live.wedges} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={where === 'stage' ? cfg.wideA11y.stage : cfg.wideA11y.studio} />,
+          render: (w, h) => <BowedPlan w={w} h={h} cfg={cfg} box={cfg.wide} scene={where} wedges={lesson.live.wedges} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={where === 'stage' ? cfg.wideA11y.stage : `${cfg.wideA11y.studio} Each player has a personal headphone mixer beside them, fed from the control room.`} />,
           badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
           bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
           params: [

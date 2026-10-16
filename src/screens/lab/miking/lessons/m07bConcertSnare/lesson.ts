@@ -574,7 +574,7 @@ export const M07B_LESSON: Lesson = {
         id: 'downstage',
         label: 'a floor wedge downstage of the percussion, facing back toward it',
         short: 'DOWNSTAGE',
-        p: { x: 1500, y: FLOOR_Y, z: -400 },
+        p: { x: 930, y: FLOOR_Y, z: 150 },
         lift: 150,
         faces: { x: -1, y: 0, z: 0 },
         note: 'It sits on the audience side, behind and below a spot angled down at the drum — the case a pattern’s null can help with.',

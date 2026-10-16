@@ -10,7 +10,8 @@ import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { add, scale } from '../../engine/geometry/vec.ts';
 import { windLessonArt } from '../shared/woodwinds/windLessonArt';
 import { frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
-import { PICCOLO_MODEL, SEATED, STANDING, layoutOf } from './geometry.ts';
+import { PICCOLO_MODEL, STANDING, layoutOf } from './geometry.ts';
+import { A07_PLAN } from './plan.ts';
 
 const AXIS = frameAt(STANDING, 150).t;
 const UP = { x: 0, y: -1, z: 0.3 };
@@ -72,5 +73,5 @@ export const PICCOLO_ART: LessonArt = windLessonArt({
     studioIdle: 'No monitors on the floor. The room — and a main pair above the conductor, which may already carry the piccolo — are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the piccolo at the end of the flute row ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },
   },
-  plan: { own: 'picc', layoutOf: () => SEATED, ownLabel: 'PICCOLO · THIS LESSON' },
+  plan: A07_PLAN,
 });

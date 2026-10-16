@@ -105,7 +105,7 @@ export const CBD_COPY: LessonCopy = {
     azMax: 45,
     elMax: 60,
     aimBlurb: 'Swing the front up to 45° either way — it still looks toward the playing head.',
-    plan: { u0: -1450, u1: 1000, v0: -1350, v1: 1350 },
+    plan: { u0: -1450, u1: 1000, v0: -1560, v1: 1350 },
     side: { u0: -1450, u1: 1000, v0: -900, v1: 840 },
     target: 'downstage',
     frontIds: ['fill'],

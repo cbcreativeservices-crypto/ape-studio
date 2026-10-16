@@ -14,10 +14,12 @@
  */
 import { Group, Path, Skia } from '@shopify/react-native-skia';
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
-import type { VariantId, ViewBox } from '../../engine/model/types.ts';
+import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
-import { makeStagePage, type PlanSpot } from '../shared/strings/PStagePlan';
-import { ampBox, LAYOUT } from './ampSpec.ts';
+import { makeStagePage } from '../shared/strings/PStagePlan';
+import { ampBox } from './ampSpec.ts';
+import { CLAV_AUDIENCE, CLAV_NEAR, CLAV_PEDALS, CLAV_ROOM, CLAV_SPOTS, CLAV_WIDE, clavCue, clavOwnFoots, clavPlanFoots } from './planModel.ts';
+import { unionRect } from '../shared/planFoot.ts';
 import { AmpTop, CLAV_BASE_ART, ClavinetPlan } from './art';
 import { ClavinetPath, ClavinetSequence } from './soundArt';
 
@@ -76,20 +78,9 @@ const SOUND = makeStringSoundPage({
   silentNote: 'This lab never plays a sound and draws no frequency curve for the clavinet: how a real one sounds depends on the instrument, its switches, the pedals, the amp, the speaker and the room. The pictures show where the sound is made and where it can be captured.',
 });
 
-/* ── the stage plan (frame C from above: u = x toward the audience, v = z) ── */
-const NEAR: ViewBox = { u0: -500, u1: 2000, v0: -1700, v1: 500 };
-const WIDE: ViewBox = { u0: -1150, u1: 3600, v0: -2000, v1: 2600 };
-
-const SPOTS: PlanSpot[] = [
-  { item: 'clav', glyph: 'none', x: (LAYOUT.clav.x0 + LAYOUT.clav.x1) / 2, z: LAYOUT.clav.z0, scene: 'all', r: 420, label: { du: 0, dv: -120 } },
-  { item: 'pedals', glyph: 'none', x: LAYOUT.pedals.x, z: LAYOUT.pedals.z + 160, scene: 'near', r: 220, label: { du: -320, dv: 0 } },
-  { item: 'wedge.keys', glyph: 'wedge', x: 2100, z: -1400, faces: { x: -1, z: 0 }, scene: 'stage', r: 330, label: { du: 0, dv: 420 } },
-  { item: 'wedge.band', glyph: 'wedge', x: -600, z: 1100, faces: { x: 0, z: 1 }, scene: 'stage', r: 330, label: { du: 0, dv: -400 } },
-  { item: 'band', glyph: 'band', x: -150, z: 2050, scene: 'stage', r: 450 },
-  { item: 'pa', glyph: 'pa', x: 3150, z: -700, faces: { x: 1, z: 0 }, scene: 'stage', r: 380, label: { du: 0, dv: 450 } },
-  { item: 'di', glyph: 'none', x: 1100, z: 300, scene: 'studio', r: 240, label: { du: 0, dv: 0 } },
-  { item: 'room', glyph: 'stand', x: 1500, z: 900, faces: { x: -1, z: -0.6 }, scene: 'studio', r: 300, label: { du: 0, dv: 380 } },
-];
+/* ── the stage plan (frame C from above: u = x toward the audience, v = z).
+ *  The layout is pure (planModel.ts): the overlap test reads the same
+ *  numbers. ── */
 
 let ringCache: Record<string, ReturnType<typeof Skia.Path.Make>> = {};
 function ownRing(v: VariantId) {
@@ -120,11 +111,15 @@ const SETTING = makeStagePage({
     const b = ampBox(v === 'cab' ? 'cab' : 'combo');
     return u >= b.x0 - 40 && u <= b.x1 + 40 && w >= b.z0 - 40 && w <= b.z1 + 40;
   },
-  near: () => NEAR,
-  wide: () => WIDE,
-  spots: () => SPOTS,
+  near: () => CLAV_NEAR,
+  wide: () => CLAV_WIDE,
+  spots: () => CLAV_SPOTS,
+  foots: clavPlanFoots,
+  cue: clavCue,
+  room: () => CLAV_ROOM,
+  named: (v, item) => (item === 'pedals' ? CLAV_PEDALS : item === 'clav' ? unionRect(clavOwnFoots(v).filter((f) => f.group === 'keys' && f.id !== 'pedals')) : null),
   nearBadge: 'From above · a typical layout · the amp behind the keyboardist, the audience to the right',
-  audience: () => ({ text: 'AUDIENCE →', u: 3550, v: 300, align: 'right' }),
+  audience: () => CLAV_AUDIENCE,
   nearLooking: 'Plan · the amp, the clavinet and the keyboardist from above',
   hearing: 'Protect your hearing: an amp turned up for the stage is loud right where a close mic and your ears go, and so are the soundcheck and the monitors. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });

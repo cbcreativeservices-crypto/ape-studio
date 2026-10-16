@@ -19,6 +19,7 @@ import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KICK_MODEL } from './geometry.ts';
 import { KICK_DIMS, KICK_ZONES, L } from './model.ts';
 import { KICK_COPY } from './copy.ts';
+import { KIT_FILL } from '../shared/kitStage.ts';
 
 const pages: LessonPages = {
   instrument: {
@@ -732,9 +733,9 @@ export const M01_LESSON: Lesson = {
         id: 'fill',
         label: 'the drummer’s own fill, on the floor beside the throne',
         short: 'DRUM FILL',
-        p: { x: -450, y: KICK_DIMS.yFloor.mm, z: 750 },
+        p: { x: KIT_FILL.x, y: KICK_DIMS.yFloor.mm, z: KIT_FILL.z },
         lift: 150,
-        faces: { x: -0.2, y: 0, z: -1 },
+        faces: KIT_FILL.faces,
         note: 'It sits on the drummer’s side, in FRONT of a kick mic aimed at the drum: no pattern null reaches it. The drum itself — shell and heads — is what shields a mic from it.',
         prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
       },

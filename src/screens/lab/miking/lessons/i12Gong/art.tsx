@@ -159,7 +159,7 @@ function topArt(v: VariantId): ReactElement {
       <Group transform={[{ translateX: PLAYER.x }, { translateY: PLAYER.z }, { scaleX: -1 }, { translateX: 360 }]}>
         <PlayerInk path={playerTop()} faint head="top" />
       </Group>
-      <Mallet grip={[PLAYER.x - 40, PLAYER.z + 160]} head={head} />
+      <Mallet grip={[PLAYER.x - 150, PLAYER.z + 160]} head={head} />
     </Group>
   );
 }

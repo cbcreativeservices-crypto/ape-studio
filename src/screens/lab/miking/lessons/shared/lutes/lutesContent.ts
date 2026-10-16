@@ -56,7 +56,7 @@ export function sitarWedges(sc: LuteScene): Wedge[] {
       id: 'tabla',
       label: 'the tabla, beside the player',
       short: 'TABLA',
-      p: v(920, sc.floorY - 200, 100),
+      p: v(SITAR_TABLA_AT.x, sc.floorY - 200, SITAR_TABLA_AT.z),
       lift: 0,
       faces: v(-1, 0, 0),
       note: 'Beside the sitar, at the mic’s side. Turning the mic changes the sitar’s tone too: distance, balance and the tabla’s own mics do more than a null here.',
@@ -95,8 +95,40 @@ export function veenaWedges(sc: LuteScene): Wedge[] {
 
 /* ── the setting plan ── */
 
+/**
+ * Collision pass 2026-10-15 (owner: "no collisions or impossible layering in
+ * ANY plan"): the accompanists sit clear of the player's space (the tabla
+ * beyond the sitar's neck, the mridangam beyond the veena's, the frame drum
+ * beyond the oud's pegbox), each tanpura player behind, and every one of them
+ * on the rug — now sized to hold them all (a concert rug or riser); the
+ * wedges stand off the rug's front; the PA on the deck's front corners,
+ * upstage of the audience edge. A typical layout (lutePlanModel.ts lays the
+ * footprints out from these same numbers).
+ */
 export type LutePlanKind = 'player' | 'chair' | 'rug' | 'vocal' | 'riq' | 'tabla' | 'tanpura' | 'mridangam' | 'sidefill' | 'pa' | 'audience' | 'room';
-export type LutePlanObject = { id: string; kind: LutePlanKind; at: { x: number; z: number }; faces?: { x: number; z: number }; scene: 'kit' | 'stage' | 'studio' | 'all'; r?: number };
+/** `half`: a rug's half-size (u, v) about `at`. */
+export type LutePlanObject = { id: string; kind: LutePlanKind; at: { x: number; z: number }; faces?: { x: number; z: number }; half?: { x: number; z: number }; scene: 'kit' | 'stage' | 'studio' | 'all'; r?: number };
+
+/** Where the audience edge runs (z) and the PA stacks just upstage of it. */
+export const LUTE_STAGE = { edgeZ: 1650, paU: [-2000, 2100], paHalf: 220, paToEdge: 40 } as const;
+/** Where THE ROOM is named in the studio: open floor downstage right. */
+export const LUTE_ROOM_AT = { x: 1300, z: 1500 } as const;
+/** The tabla beside the sitar, beyond its neck (the tabla source in sitarWedges sits here too). */
+export const SITAR_TABLA_AT = { x: 1150, z: 100 } as const;
+/** The frame drum beside the oud, beyond its pegbox. */
+export const OUD_RIQ_AT = { x: 1100, z: -170 } as const;
+/** The mridangam beside the veena, beyond its neck end. */
+export const VEENA_MRIDANGAM_AT = { x: 1450, z: 60 } as const;
+
+function stageObjects(): LutePlanObject[] {
+  const paZ = LUTE_STAGE.edgeZ - LUTE_STAGE.paToEdge - LUTE_STAGE.paHalf;
+  return [
+    { id: 'paL', kind: 'pa', at: { x: LUTE_STAGE.paU[0], z: paZ }, scene: 'stage', r: 300 },
+    { id: 'paR', kind: 'pa', at: { x: LUTE_STAGE.paU[1], z: paZ }, scene: 'stage', r: 300 },
+    { id: 'audience', kind: 'audience', at: { x: 0, z: LUTE_STAGE.edgeZ + 260 }, scene: 'stage', r: 300 },
+    { id: 'room', kind: 'room', at: LUTE_ROOM_AT, scene: 'studio', r: 300 },
+  ];
+}
 
 export function oudPlan(sc: LuteScene): LutePlanObject[] {
   const h = sc.fit.head.c;
@@ -105,11 +137,8 @@ export function oudPlan(sc: LuteScene): LutePlanObject[] {
     { id: 'player', kind: 'player', at: { x: h.x, z: h.z }, scene: 'all', r: 320 },
     { id: 'chair', kind: 'chair', at: { x: h.x, z: h.z - 40 }, scene: 'kit', r: 220 },
     { id: 'vocal', kind: 'vocal', at: { x: m.x - 40, z: m.z + 110 }, faces: { x: m.x - 160, z: 520 }, scene: 'kit', r: 140 },
-    { id: 'riq', kind: 'riq', at: { x: 1000, z: -170 }, scene: 'kit', r: 240 },
-    { id: 'paL', kind: 'pa', at: { x: -2000, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'paR', kind: 'pa', at: { x: 2100, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'audience', kind: 'audience', at: { x: 0, z: 1650 }, scene: 'stage', r: 300 },
-    { id: 'room', kind: 'room', at: { x: -2100, z: -2250 }, scene: 'studio', r: 300 },
+    { id: 'riq', kind: 'riq', at: OUD_RIQ_AT, scene: 'kit', r: 240 },
+    ...stageObjects(),
   ];
 }
 
@@ -117,13 +146,10 @@ export function sitarPlan(sc: LuteScene): LutePlanObject[] {
   const h = sc.fit.head.c;
   return [
     { id: 'player', kind: 'player', at: { x: h.x, z: h.z }, scene: 'all', r: 360 },
-    { id: 'rug', kind: 'rug', at: { x: 350, z: -250 }, scene: 'all', r: 1100 },
-    { id: 'tabla', kind: 'tabla', at: { x: 920, z: 100 }, scene: 'kit', r: 260 },
-    { id: 'tanpura', kind: 'tanpura', at: { x: -330, z: -930 }, scene: 'kit', r: 260 },
-    { id: 'paL', kind: 'pa', at: { x: -2000, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'paR', kind: 'pa', at: { x: 2100, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'audience', kind: 'audience', at: { x: 0, z: 1650 }, scene: 'stage', r: 300 },
-    { id: 'room', kind: 'room', at: { x: -2100, z: -2250 }, scene: 'studio', r: 300 },
+    { id: 'rug', kind: 'rug', at: { x: 425, z: -390 }, half: { x: 1425, z: 910 }, scene: 'all', r: 1100 },
+    { id: 'tabla', kind: 'tabla', at: SITAR_TABLA_AT, scene: 'kit', r: 260 },
+    { id: 'tanpura', kind: 'tanpura', at: { x: -250, z: -1080 }, scene: 'kit', r: 260 },
+    ...stageObjects(),
   ];
 }
 
@@ -131,14 +157,11 @@ export function veenaPlan(sc: LuteScene): LutePlanObject[] {
   const h = sc.fit.head.c;
   return [
     { id: 'player', kind: 'player', at: { x: h.x, z: h.z }, scene: 'all', r: 360 },
-    { id: 'rug', kind: 'rug', at: { x: 400, z: -250 }, scene: 'all', r: 1100 },
-    { id: 'mridangam', kind: 'mridangam', at: { x: 1280, z: 60 }, scene: 'kit', r: 340 },
+    { id: 'rug', kind: 'rug', at: { x: 740, z: -275 }, half: { x: 1460, z: 835 }, scene: 'all', r: 1100 },
+    { id: 'mridangam', kind: 'mridangam', at: VEENA_MRIDANGAM_AT, scene: 'kit', r: 340 },
     { id: 'tanpura', kind: 'tanpura', at: { x: 780, z: -930 }, scene: 'kit', r: 260 },
     { id: 'sidefill', kind: 'sidefill', at: { x: -1500, z: 250 }, faces: { x: 1, z: -0.2 }, scene: 'stage', r: 260 },
-    { id: 'paL', kind: 'pa', at: { x: -2000, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'paR', kind: 'pa', at: { x: 2100, z: 1950 }, scene: 'stage', r: 300 },
-    { id: 'audience', kind: 'audience', at: { x: 0, z: 1650 }, scene: 'stage', r: 300 },
-    { id: 'room', kind: 'room', at: { x: -2100, z: -2250 }, scene: 'studio', r: 300 },
+    ...stageObjects(),
   ];
 }
 

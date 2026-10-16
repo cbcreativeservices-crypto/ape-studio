@@ -82,7 +82,7 @@ export const A05A_LESSON: Lesson = buildSaxLesson({
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the space in front. They are starting points, not rules. The soprano is straight, so compare more than one: there is no single right answer, and every horn, player and room is different.',
   workedAim: 'Aim it up the body toward the sound holes — the lab counts it while the mic’s axis points into the key stack. On the straight soprano this hears the bell and the lower holes; compare it with the other zones. Distance, height and angle are separate things to try.',
   cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Above the soprano’s bell and aimed up the body, its rear looks down and forward — toward the floor in front, where the wedge is.',
-  wedges: saxWedges(MOUTH_HEIGHT.standing, 1250, 60),
+  wedges: saxWedges(MOUTH_HEIGHT.standing, 1250, 60, { x: 1150, z: 1000 }),
   accuracyExtra: 'The soprano is drawn straight, about 74 cm long with its mouthpiece and an 8.5 cm bell.',
   contextBoxes: { plan: { u0: -500, u1: 1650, v0: -700, v1: 900 }, side: { u0: -500, u1: 1650, v0: -350, v1: 1650 } },
 });

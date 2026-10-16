@@ -12,6 +12,7 @@ import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { windLessonArt } from '../shared/woodwinds/windLessonArt';
 import { frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
 import { BASS_CLARINET_MODEL, LAYOUTS, layoutOf } from './geometry.ts';
+import { A08B_PLAN } from './plan.ts';
 
 const E = LAYOUTS.eflat;
 const AXIS = frameAt(E, 600).t;
@@ -73,5 +74,5 @@ export const BASS_CLARINET_ART: LessonArt = windLessonArt({
     studioIdle: 'No monitors on the floor. The room — its low resonances — and a main pair above the conductor are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the bass clarinet at the end of the clarinets, ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },
   },
-  plan: { own: 'bcl', layoutOf, ownLabel: 'BASS CLARINET · THIS LESSON' },
+  plan: A08B_PLAN,
 });

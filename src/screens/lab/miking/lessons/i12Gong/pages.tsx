@@ -31,7 +31,7 @@ const HAND: HandSpec = {
   plan: {
     items: [
       { id: 'gong', box: { u0: -80, u1: 80, v0: -560, v1: 560 }, scene: 'all', label: { u: 130, v: 640, align: 'left' } },
-      { id: 'player', box: { u0: 150, u1: 500, v0: -800, v1: -330 }, scene: 'all', label: { u: 330, v: -880 } },
+      { id: 'player', box: { u0: 340, u1: 670, v0: -820, v1: -300 }, scene: 'all', label: { u: 500, v: -900 } },
       { id: 'wedge', box: { u0: 1450, u1: 1950, v0: -500, v1: 100 }, scene: 'stage', label: { u: 1700, v: 200 } },
       { id: 'band', box: { u0: -560, u1: 1000, v0: -1430, v1: -880 }, scene: 'stage', label: { u: 200, v: -790 } },
       { id: 'audience', box: { u0: 2000, u1: 2700, v0: -1520, v1: 1700 }, scene: 'stage', label: { u: 2250, v: -1000 } },

@@ -14,6 +14,11 @@
  * The player's KEEP-CLEAR space (hands, knees, the sustain pedal) is drawn
  * dashed. Positions are a typical layout, never a measurement (`prov`
  * internal). Static: it changes only on a tap or a switch (D8).
+ *
+ * The layout lives in keysPlanModel.ts (pure: the plans' overlap test reads
+ * the same numbers). Collision pass 2026-10-15: the shared five-piece kit,
+ * the shared amp and PA, the studio headphone mix (CueMixPlan), and every
+ * word clear of every object.
  */
 import { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
@@ -24,12 +29,17 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from '../speakers/speakerModel.ts';
-import { RHODES, WURLI } from './keysSpec.ts';
-import { C_BASS, C_TREBLE, W } from './wurliModel.ts';
+import { C_BASS, C_TREBLE } from './wurliModel.ts';
 import { KEYS } from './KeysArt';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
+import { KitTop } from '../kitScene/KitSceneArt';
+import { PlanAmpTop, PlanPaStack } from '../speakers/BacklinePlan';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
+import { BENCH, CHAIR_ROW, DI, inAisle, KEYS_BOX, KEYS_KIT_AT, KEYS_POS, OTHER_AMP, PEDAL, SHOULDERS, keyboardDims, keysCue, keysFoots, keysItemFootIds, keysItems, keysKeep, keysPaAt, keysRoomDrawn, keysWedgeAt, type KeysRig, type KeysScene } from './keysPlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -43,64 +53,8 @@ function rr(u0: number, v0: number, u1: number, v1: number, r: number): SkPath {
   return p;
 }
 
-export type KeysRig = 'rhodes' | 'wurli';
-export type KeysScene = 'stage' | 'studio';
-
-/** Typical positions (mm, plan u/v), ILLUSTRATIVE. */
-const SIDE = RHODES.sideBySide.mm;
-export const KEYS_POS = {
-  rhodes: {
-    keyboard: { u: 560, v: SIDE },
-    player: { u: 40, v: SIDE },
-    pedal: { u: 330, v: SIDE + 110 },
-    di: { u: 150, v: SIDE + 720 },
-    drums: { u: -350, v: -1950 },
-    otherAmp: { u: -60, v: -1050 },
-  },
-  wurli: {
-    player: { u: -620, v: 0 },
-    pedal: { u: -230, v: 100 },
-    di: { u: 250, v: -820 },
-    drums: { u: -1450, v: -1850 },
-    otherAmp: { u: -900, v: 1650 },
-  },
-  audience: 3300,
-} as const;
-export const KEYS_BOX = {
-  rhodes: { stage: { u0: -800, u1: 3650, v0: -2750, v1: 2500 }, studio: { u0: -900, u1: 2900, v0: -1300, v1: 2600 } },
-  wurli: { stage: { u0: -2200, u1: 3650, v0: -2600, v1: 2300 }, studio: { u0: -1700, u1: 2600, v0: -1800, v1: 1800 } },
-} as const;
-
-/** Item ids on the plan and where each sits (taps and highlights). */
-export function keysItems(rig: KeysRig, scene: KeysScene, wedges: readonly Wedge[]): { id: string; u: number; v: number; r: number }[] {
-  const P = KEYS_POS[rig];
-  const out: { id: string; u: number; v: number; r: number }[] =
-    rig === 'rhodes'
-      ? [
-          { id: 'amp', u: -100, v: 0, r: 420 },
-          { id: 'keys', u: KEYS_POS.rhodes.keyboard.u, v: KEYS_POS.rhodes.keyboard.v, r: 480 },
-          { id: 'musician', u: P.player.u, v: P.player.v, r: 300 },
-          { id: 'pedal', u: P.pedal.u, v: P.pedal.v, r: 140 },
-          { id: 'dibox', u: P.di.u, v: P.di.v, r: 160 },
-          { id: 'otherAmp', u: P.otherAmp.u, v: P.otherAmp.v, r: 420 },
-        ]
-      : [
-          { id: 'amp', u: 230, v: 0, r: 500 },
-          { id: 'musician', u: P.player.u, v: P.player.v, r: 300 },
-          { id: 'pedal', u: P.pedal.u, v: P.pedal.v, r: 140 },
-          { id: 'dibox', u: P.di.u, v: P.di.v, r: 160 },
-          { id: 'otherAmp', u: P.otherAmp.u, v: P.otherAmp.v, r: 420 },
-        ];
-  if (scene === 'stage') {
-    out.push({ id: 'drums', u: P.drums.u + 200, v: P.drums.v, r: 760 });
-    for (const w of wedges) {
-      const pu = rig === 'rhodes' ? w.p.x : -w.p.x;
-      out.push({ id: w.id === wedges[0].id ? 'wedge' : w.id, u: pu, v: w.p.z, r: 330 });
-    }
-    out.push({ id: 'audience', u: KEYS_POS.audience + 150, v: 0, r: 700 });
-  } else out.push({ id: 'room', u: rig === 'rhodes' ? 2300 : 1900, v: rig === 'rhodes' ? -900 : -1300, r: 420 });
-  return out;
-}
+export type { KeysRig, KeysScene } from './keysPlanModel.ts';
+export { KEYS_BOX, KEYS_POS, keysItems } from './keysPlanModel.ts';
 
 type Built = ReturnType<typeof build>;
 const cache = new Map<KeysRig, Built>();
@@ -131,44 +85,33 @@ function build(rig: KeysRig) {
   const amp = rig === 'rhodes' ? rr(c.box.x0, c.box.z0, c.box.x1, c.box.z1, 16) : null;
   const ampFront = rig === 'rhodes' ? rr(c.box.x1 - 20, c.box.z0 + 24, c.box.x1, c.box.z1 - 24, 4) : null;
   const handle = rig === 'rhodes' ? rr((c.box.x0 + c.box.x1) / 2 - 20, (c.box.z0 + c.box.z1) / 2 - 80, (c.box.x0 + c.box.x1) / 2 + 20, (c.box.z0 + c.box.z1) / 2 + 80, 12) : null;
-  const kb =
-    rig === 'rhodes'
-      ? keyboardTop(KEYS_POS.rhodes.keyboard.u, KEYS_POS.rhodes.keyboard.v, RHODES.stage.w.mm, RHODES.stage.d.mm, 150, 36)
-      : keyboardTop((-W.slipX - W.caseBackX) / 2, 0, WURLI.w.mm, WURLI.d.mm, 168, 38);
+  const k = keyboardDims(rig);
+  const kb = keyboardTop(k.cu, k.cv, k.width, k.depth, k.keyDepth, k.nWhite);
   // the reed piano's two speakers seen from above, facing the player (−u)
   const ovals = make();
   if (rig === 'wurli')
     for (const c2 of [C_BASS, C_TREBLE]) ovals.addRRect(Skia.RRectXY(Skia.XYWHRect(-c2.x - 4, c2.z - 102, 30, 204), 10, 10));
   // the player from above (minimal line art), facing the audience (+u)
   const shoulders = make();
-  shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
+  shoulders.addOval(Skia.XYWHRect(-SHOULDERS.hu, -SHOULDERS.hv, 2 * SHOULDERS.hu, 2 * SHOULDERS.hv));
   // The player's head from above is the figure's own (head fix 2026-10-08: a
   // head ON A BODY is PlayerFigure's skin silhouette, never a circle); its
   // nose points +v, turned below to face +u.
   const headTop = headAbove(pt(0, 0), 100).fill;
-  const bench = rr(-330, -380, -70, 380, 20);
-  const P = KEYS_POS[rig];
-  const keep = rig === 'rhodes' ? rr(P.player.u - 260, SIDE - 520, KEYS_POS.rhodes.keyboard.u - RHODES.stage.d.mm / 2 + 170, SIDE + 520, 60) : rr(P.player.u - 330, -560, 30, 560, 60);
-  const pedal = rr(-70, -45, 70, 45, 14);
-  const di = rr(-60, -45, 60, 45, 10);
-  const other = rr(-200, -320, 200, 320, 16);
-  const drums: { u: number; v: number; r: number; kind: 'drum' | 'cym' }[] = [
-    { u: 0, v: 0, r: 279, kind: 'drum' },
-    { u: 350, v: -380, r: 178, kind: 'drum' },
-    { u: 160, v: 220, r: 152, kind: 'drum' },
-    { u: 360, v: 330, r: 203, kind: 'drum' },
-    { u: 420, v: -620, r: 178, kind: 'cym' },
-    { u: 520, v: 120, r: 228, kind: 'cym' },
-    { u: 80, v: -480, r: 203, kind: 'cym' },
-  ];
-  const pa = rr(-300, -300, 300, 300, 20);
+  const bench = rr(BENCH.u0, BENCH.v0, BENCH.u1, BENCH.v1, 20);
+  const K = keysKeep(rig);
+  const keep = rr(K.u0, K.v0, K.u1, K.v1, 60);
+  const pedal = rr(-PEDAL.hu, -PEDAL.hv, PEDAL.hu, PEDAL.hv, 14);
+  const di = rr(-DI.hu, -DI.hv, DI.hu, DI.hv, 10);
   // The audience: one row of true-size empty chairs facing the stage (−u) —
-  // an audience is its chairs, never heads (owner 2026-10-10).
-  const chairs = makeChairsTop(chairRowFacingStage(KEYS_POS.audience, -2100, 2100));
+  // an audience is its chairs, never heads (owner 2026-10-10) — with a centre
+  // aisle (2026-10-15).
+  const chairs = makeChairsTop(chairRowFacingStage(CHAIR_ROW.u, CHAIR_ROW.v0, CHAIR_ROW.v1).filter(inAisle));
   const B = KEYS_BOX[rig];
   const deck = rr(B.stage.u0, B.stage.v0, KEYS_POS.audience - 450, B.stage.v1, 0);
-  const room = rr(B.studio.u0 + 50, B.studio.v0 + 50, B.studio.u1 - 50, B.studio.v1 - 50, 40);
-  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, other, drums, pa, chairs, deck, room };
+  const R = keysRoomDrawn(rig);
+  const room = rr(R.u0, R.v0, R.u1, R.v1, 40);
+  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, chairs, deck, room };
 }
 
 export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; rig: KeysRig; scene: KeysScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
@@ -183,10 +126,26 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
   const P = KEYS_POS[rig];
   const items = keysItems(rig, scene, wedges);
   const hi = items.find((i) => i.id === highlight);
-  // Each name under its object; the reed piano's case is wider than its tap
-  // circle, so its name sits below the case, not on it (review 2026-10-15).
-  const below = (i: { id: string; r: number }) => (rig === 'wurli' && i.id === 'amp' ? WURLI.w.mm / 2 + 110 : i.r * 0.72 + 90);
-  const labels: StaticLabel[] = items.map((i) => ({ id: i.id, text: shortOf(i.id), u: i.u, v: i.v + below(i), align: 'center' as const, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedal' ? ('muted' as const) : undefined }));
+  // Collision pass 2026-10-15: every word keeps clear of every object (the
+  // plan's footprints) — just outside its own object (below, right, left,
+  // above), else in free space with a leader back to it. The audience is
+  // named in its aisle.
+  const foots = useMemo(() => keysFoots(rig, scene, wedges), [rig, scene, wedges]);
+  const footOf = (id: string) => {
+    const ids = id === 'drums' ? foots.filter((f) => f.group === 'kit').map((f) => f.id) : keysItemFootIds(rig, id, wedges);
+    const fs = foots.filter((f) => ids.includes(f.id));
+    return fs.length ? unionRect(fs) : null;
+  };
+  const cue = scene === 'studio' ? keysCue(rig) : null;
+  const labels: StaticLabel[] = [
+    ...items.map((i) => {
+      const own = footOf(i.id);
+      const places = own ? labelPlaces(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 90, align: 'center' as const }];
+      const first = i.id === 'audience' ? { u: KEYS_POS.audience, v: 0, align: 'center' as const } : places[0];
+      return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedal' ? ('muted' as const) : undefined };
+    }),
+    ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+  ];
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
@@ -201,7 +160,8 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
     }
     if (best) onTap(best);
   };
-  const wedgeAt = (wd: Wedge) => (rig === 'rhodes' ? { u: wd.p.x, v: wd.p.z, a: Math.atan2(wd.faces.z, wd.faces.x) } : { u: -wd.p.x, v: wd.p.z, a: Math.atan2(wd.faces.z, -wd.faces.x) });
+  const wedgeAt = (wd: Wedge) => keysWedgeAt(rig, wd);
+  const K = KEYS_KIT_AT[rig];
   return (
     <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <View pointerEvents="none" style={{ width: w, height: h }}>
@@ -222,22 +182,15 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
             <Path path={g.keep} style="stroke" strokeWidth={22} color={GREY} opacity={0.6}>
               <DashPathEffect intervals={[70, 50]} />
             </Path>
-            {scene === 'stage'
-              ? g.drums.map((d, i) => (
-                  <Group key={`d${i}`} transform={[{ translateX: P.drums.u + d.u }, { translateY: P.drums.v + d.v }]}>
-                    <Circle cx={0} cy={0} r={d.r}>
-                      {d.kind === 'drum' ? <RadialGradient c={vec(-d.r * 0.35, -d.r * 0.35)} r={d.r * 1.5} colors={['#ece6da', '#c9c1b0', '#8c8474']} /> : <RadialGradient c={vec(-d.r * 0.3, -d.r * 0.3)} r={d.r * 1.4} colors={['#e6c574', '#b48a33', '#6e5017']} />}
-                    </Circle>
-                    <Circle cx={0} cy={0} r={d.r} style="stroke" strokeWidth={d.kind === 'drum' ? 24 : 8} color={d.kind === 'drum' ? '#9aa0ab' : '#5a4210'} />
-                  </Group>
-                ))
-              : null}
-            {/* the other amp */}
+            {/* the drum kit (stage only): the shared five-piece kit, true size */}
+            {scene === 'stage' ? (
+              <Group transform={[{ translateX: K.u }, { translateY: K.v }]}>
+                <KitTop keepOuts={false} />
+              </Group>
+            ) : null}
+            {/* the other amp on the backline: a 2 × 12 combo (690 × 270) */}
             <Group transform={[{ translateX: P.otherAmp.u }, { translateY: P.otherAmp.v }]}>
-              <Path path={g.other}>
-                <LinearGradient start={vec(-200, -320)} end={vec(200, 320)} colors={['#3a3b41', '#1d1e22', '#0f1012']} />
-              </Path>
-              <Path path={rr(180, -296, 200, 296, 4)} color="#2b2d33" />
+              <PlanAmpTop u0={OTHER_AMP.u0} u1={OTHER_AMP.u1} v0={OTHER_AMP.v0} v1={OTHER_AMP.v1} />
             </Group>
             {/* the combo (tine piano) */}
             {g.amp ? (
@@ -254,6 +207,13 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
                 <Path path={g.handle!} color="#0a0a0c" />
               </>
             ) : null}
+            {/* the sustain pedal, on the floor: under the front of the tine piano's
+                keybed, so the keyboard is drawn over it (its heel end shows) */}
+            <Group transform={[{ translateX: P.pedal.u }, { translateY: P.pedal.v }]}>
+              <Path path={g.pedal}>
+                <LinearGradient start={vec(-70, -45)} end={vec(70, 45)} colors={[...KEYS.chrome]} />
+              </Path>
+            </Group>
             {/* the keyboard */}
             <Path path={g.kb.body} color="#000" opacity={0.5}>
               <BlurMask blur={30} style="normal" />
@@ -274,12 +234,6 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
             <Group transform={[{ translateX: P.di.u }, { translateY: P.di.v }]}>
               <Path path={g.di}>
                 <LinearGradient start={vec(-60, -45)} end={vec(60, 45)} colors={['#f2f4f8', '#9aa0ab', '#3a3d45']} />
-              </Path>
-            </Group>
-            {/* the sustain pedal */}
-            <Group transform={[{ translateX: P.pedal.u }, { translateY: P.pedal.v }]}>
-              <Path path={g.pedal}>
-                <LinearGradient start={vec(-70, -45)} end={vec(70, 45)} colors={[...KEYS.chrome]} />
               </Path>
             </Group>
             {/* the player on the bench */}
@@ -305,20 +259,20 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
               : null}
             {scene === 'stage' ? (
               <>
-                {[-1950, 1950].map((v) => (
-                  <Group key={v} transform={[{ translateX: 2850 }, { translateY: v }]}>
-                    <Path path={g!.pa}>
-                      <LinearGradient start={vec(-300, -300)} end={vec(300, 300)} colors={['#3a3b41', '#1d1e22', '#0f1012']} />
-                    </Path>
+                {keysPaAt(rig).map((p) => (
+                  <Group key={p.v} transform={[{ translateX: p.u }, { translateY: p.v }]}>
+                    <PlanPaStack />
                   </Group>
                 ))}
                 <ChairsTop seats={g.chairs.seats} backs={g.chairs.backs} color="#7d828d" />
               </>
             ) : null}
+            {/* Studio: the player's headphone mix (no wedges in a studio). */}
+            {cue ? <CueMixPlan rig={cue} /> : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} />
+        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots)} />
       </View>
     </Pressable>
   );

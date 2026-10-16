@@ -12,6 +12,7 @@
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
+import { KIT_FILL } from '../shared/kitStage.ts';
 import { SNARE_MODEL } from './geometry.ts';
 import { NEIGHBOURS, S0_KIT, SNARE_ZONES } from './model.ts';
 import { SNARE_COPY } from './copy.ts';
@@ -645,9 +646,9 @@ const wedges: Wedge[] = [
     id: 'fill',
     label: 'the drummer’s own fill, on the floor beside the throne',
     short: 'DRUM FILL',
-    p: toLesson(-450, KIT_FLOOR_Y, 750),
+    p: toLesson(KIT_FILL.x, KIT_FLOOR_Y, KIT_FILL.z),
     lift: 150,
-    faces: { x: -0.2, y: 0, z: -1 },
+    faces: KIT_FILL.faces,
     note: 'It sits on the drummer’s side of the kit. Aimed down at the snare, the mic’s front half faces that way: little of a null reaches it — the drum and the player block part of its path.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout (the kick lesson’s same monitor); no source gives the position' },
   },

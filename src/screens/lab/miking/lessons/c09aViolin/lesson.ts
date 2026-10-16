@@ -534,7 +534,7 @@ const wedges: Wedge[] = [
     id: 'side',
     label: 'another player’s wedge, off to the violinist’s left',
     short: 'SIDE WEDGE',
-    p: { x: 900, y: floorY, z: -1250 },
+    p: { x: 900, y: floorY, z: -1100 },
     lift: 150,
     faces: { x: -0.6, y: 0, z: 0.8 },
     note: 'Off to one side, facing another player: well off the mic’s axis.',

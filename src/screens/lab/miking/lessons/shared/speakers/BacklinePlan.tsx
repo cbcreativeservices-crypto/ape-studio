@@ -27,6 +27,10 @@ import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from './speakerModel.ts';
 import { bassHead } from './ampModel.ts';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
+import { BACKLINE_BOX, BACKLINE_POS, KIT_AT, OTHER_AMP, PA_AT, DECK_EDGE_U, backlineCue, inFrontRow, backlineFoots, backlineItems, keepRect, type Backline, type BacklineScene } from './backlinePlanModel.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
 import { FigureHead, FigureMass, headAbove, limb } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { KitTop } from '../kitScene/KitSceneArt';
@@ -345,44 +349,8 @@ export function PlanPaStack() {
   );
 }
 
-export type Backline = 'guitar' | 'bass' | 'steel';
-export type BacklineScene = 'stage' | 'studio';
-
-/** Typical positions (mm, plan u/v), ILLUSTRATIVE. */
-export const BACKLINE_POS = {
-  guitar: { player: { u: 950, v: 560 }, pedals: { u: 1380, v: 560 }, di: { u: 560, v: 1050 } },
-  bass: { player: { u: 1050, v: 620 }, pedals: { u: 1480, v: 620 }, di: { u: 620, v: 1150 } },
-  steel: { player: { u: 950, v: 720 }, pedals: { u: 1300, v: 720 }, di: { u: 600, v: 1250 } },
-  drums: { u: -350, v: -1550 },
-  otherAmp: { u: -60, v: 1750 },
-  audience: 3300,
-} as const;
-/** The plan boxes. The stage reaches upstage far enough for the drum kit at
- *  its true size (the art pass of 2026-10-10 drew the real kit, ≈ 1.8 m). */
-export const BACKLINE_BOX = { stage: { u0: -1250, u1: 3650, v0: -2450, v1: 2150 }, studio: { u0: -1000, u1: 3100, v0: -2200, v1: 2300 } } as const;
-/** Where the shared kit's origin (its kick's batter head) sits on the stage:
- *  the kick 560 short of the side fill, the throne inside the plan. */
-const KIT_AT = { u: -250, v: -1600 } as const;
-/** The kit's own centre (its plan box, kitPlanModel PLAN_BOX.kit). */
-const KIT_MID = { u: -135, v: 20 } as const;
-
-/** Item ids on the plan and where each sits (taps and highlights). */
-export function backlineItems(who: Backline, scene: BacklineScene, wedges: readonly Wedge[]): { id: string; u: number; v: number; r: number }[] {
-  const P = BACKLINE_POS[who];
-  const out = [
-    { id: 'amp', u: -100, v: 0, r: 420 },
-    { id: 'player', u: P.player.u, v: P.player.v, r: 300 },
-    { id: 'pedals', u: P.pedals.u, v: P.pedals.v, r: who === 'steel' ? 420 : 260 },
-    { id: 'dibox', u: P.di.u, v: P.di.v, r: 160 },
-    { id: 'otherAmp', u: BACKLINE_POS.otherAmp.u, v: BACKLINE_POS.otherAmp.v, r: 420 },
-  ];
-  if (scene === 'stage') {
-    out.push({ id: 'drums', u: KIT_AT.u + KIT_MID.u, v: KIT_AT.v + KIT_MID.v, r: 900 });
-    for (const w of wedges) out.push({ id: w.id === wedges[0].id ? 'wedge' : w.id, u: w.p.x, v: w.p.z, r: 330 });
-    out.push({ id: 'audience', u: BACKLINE_POS.audience + 150, v: 0, r: 700 });
-  } else out.push({ id: 'room', u: 2500, v: -1700, r: 500 });
-  return out;
-}
+export type { Backline, BacklineScene } from './backlinePlanModel.ts';
+export { BACKLINE_BOX, BACKLINE_POS, backlineItems } from './backlinePlanModel.ts';
 
 type Built = ReturnType<typeof build>;
 const builtCache = new Map<Backline, Built>();
@@ -398,12 +366,14 @@ function build(who: Backline) {
   const headTop = headAbove(pt(0, 0), 100).fill;
   // The player's keep-clear space: a pedalboard at the feet, or the steel's
   // pedals, knee levers and volume pedal under the instrument.
-  const keep = who === 'steel' ? rr(P.player.u - 80, P.player.v - 520, P.player.u + 520, P.player.v + 520, 50) : rr(P.pedals.u - 180, P.pedals.v - 260, P.pedals.u + 180, P.pedals.v + 260, 40);
+  const K = keepRect(who);
+  const keep = rr(K.u0, K.v0, K.u1, K.v1, who === 'steel' ? 50 : 40);
   // The audience: one row of true-size empty chairs facing the stage (−u) —
   // an audience is its chairs, never heads (owner 2026-10-10).
-  const chairs = makeChairsTop(chairRowFacingStage(BACKLINE_POS.audience, -2100, 2100));
+  // The front row (true-size chairs facing the stage), its centre aisle open.
+  const chairs = makeChairsTop(chairRowFacingStage(BACKLINE_POS.audience, -2100, 2100).filter(inFrontRow));
   const room = rr(-950, -2150, 3050, 2250, 40);
-  const deck = rr(BACKLINE_BOX.stage.u0, BACKLINE_BOX.stage.v0, BACKLINE_POS.audience - 450, BACKLINE_BOX.stage.v1, 0);
+  const deck = rr(BACKLINE_BOX.stage.u0, BACKLINE_BOX.stage.v0, DECK_EDGE_U, BACKLINE_BOX.stage.v1, 0);
   return { c, hd, headTop, keep, chairs, room, deck };
 }
 
@@ -419,9 +389,29 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
   const P = BACKLINE_POS[who];
   const items = backlineItems(who, scene, wedges);
   const hi = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = items
-    .filter((i) => i.id !== 'room' || scene === 'studio')
-    .map((i) => ({ id: i.id, text: shortOf(i.id), u: i.id === 'audience' ? i.u : i.u, v: i.v + i.r * 0.72 + 90, align: 'center' as const, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedals' ? ('muted' as const) : undefined }));
+  // Collision pass 2026-10-15: every word keeps clear of every object (the
+  // plan's footprints); a name with no clear spot beside its object moves to
+  // free space with a leader back to it. The audience is named in its aisle.
+  const foots = useMemo(() => backlineFoots(who, scene, wedges), [who, scene, wedges]);
+  const footOf = (id: string) => {
+    const ids = id === 'player' ? ['player', 'instrument', 'steel'] : id === 'drums' ? foots.filter((f) => f.group === 'kit').map((f) => f.id) : [id === 'wedge' ? wedges[0]?.id ?? id : id];
+    const fs = foots.filter((f) => ids.includes(f.id));
+    return fs.length ? unionRect(fs) : null;
+  };
+  const cue = scene === 'studio' ? backlineCue(who) : null;
+  const labels: StaticLabel[] = [
+    ...items
+      .filter((i) => i.id !== 'room' || scene === 'studio')
+      .map((i) => {
+        // The words go just outside the object's own footprint (below, right,
+        // left, above), else into free space with a leader back to it.
+        const own = footOf(i.id);
+        const places = own ? labelPlaces(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 90, align: 'center' as const }];
+        const first = i.id === 'audience' ? { u: BACKLINE_POS.audience, v: 0, align: 'center' as const } : places[0];
+        return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedals' ? ('muted' as const) : undefined };
+      }),
+    ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+  ];
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
@@ -465,7 +455,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             ) : null}
             {/* The other amp on the backline: a 2 × 12 combo (690 × 270). */}
             <Group transform={[{ translateX: BACKLINE_POS.otherAmp.u }, { translateY: BACKLINE_POS.otherAmp.v }]}>
-              <PlanAmpTop u0={-135} u1={135} v0={-345} v1={345} />
+              <PlanAmpTop u0={OTHER_AMP.u0} u1={OTHER_AMP.u1} v0={OTHER_AMP.v0} v1={OTHER_AMP.v1} />
             </Group>
             {/* THE amp (the miked one) and a bass head on top. */}
             <PlanAmpTop u0={c.box.x0} u1={c.box.x1} v0={c.box.z0} v1={c.box.z1} handle={who !== 'bass'} />
@@ -497,18 +487,20 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             {scene === 'stage' ? wedges.map((wd) => <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={false} />) : null}
             {scene === 'stage' ? (
               <>
-                {[-1950, 1950].map((v) => (
-                  <Group key={v} transform={[{ translateX: 2850 }, { translateY: v }]}>
+                {PA_AT.map((p) => (
+                  <Group key={p.v} transform={[{ translateX: p.u }, { translateY: p.v }]}>
                     <PlanPaStack />
                   </Group>
                 ))}
                 <ChairsTop seats={g.chairs.seats} backs={g.chairs.backs} color="#7d828d" />
               </>
             ) : null}
+            {/* Studio: the player's headphone mix (no wedges in a studio). */}
+            {cue ? <CueMixPlan rig={cue} /> : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} />
+        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots)} />
       </View>
     </Pressable>
   );

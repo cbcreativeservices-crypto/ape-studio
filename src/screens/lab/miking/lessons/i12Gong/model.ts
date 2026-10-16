@@ -62,5 +62,7 @@ export const C0: Vec3 = { x: 0, y: CY, z: 0 };
 export const strikeFrac = (v: VariantId): number => (kindOf(v) === 'bossed' ? 0 : 0.25);
 export const strikePoint = (v: VariantId): Vec3 => ({ x: kindOf(v) === 'bossed' ? GONG.bossH.mm : GONG.dome.mm, y: CY, z: -strikeFrac(v) * radiusOf(v) });
 
-/** The player, beside the struck face (frame G), facing the gong. */
-export const PLAYER = { x: 320, z: -560 };
+/** The player, beside the struck face (frame G), facing the gong: standing
+ *  just clear of the frame's front foot (collision pass 2026-10-15 — at
+ *  x = 320 the player stood over the foot), the mallet at arm's reach. */
+export const PLAYER = { x: 500, z: -560 };

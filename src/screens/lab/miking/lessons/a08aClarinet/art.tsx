@@ -10,6 +10,7 @@ import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { windLessonArt } from '../shared/woodwinds/windLessonArt';
 import { frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
 import { CLARINET_MODEL, SEATED, layoutOf } from './geometry.ts';
+import { A08A_PLAN } from './plan.ts';
 
 /** The clarinet turned to be read: the reed at the left, the bell at the right. */
 export const PORTRAIT: Layout = portraitOf(SEATED, frameAt(SEATED, 400).t, { x: 0, y: -1, z: 0.4 });
@@ -66,5 +67,5 @@ export const CLARINET_ART: LessonArt = windLessonArt({
     studioIdle: 'No monitors on the floor. The room — and a main pair above the conductor — are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the first clarinet ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },
   },
-  plan: { own: 'cl1', layoutOf, ownLabel: 'CLARINET 1 · THIS LESSON' },
+  plan: A08A_PLAN,
 });

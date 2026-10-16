@@ -731,7 +731,7 @@ export const C08_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'bassWedge', label: 'the bassist’s wedge, downstage, facing back toward the player', short: 'WEDGE', p: { x: 1900, y: FLOOR, z: 0 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: 'It sits downstage of the player, behind a mic that faces the cabinet.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
-      { id: 'sideFill', label: 'a side-fill monitor at the side of the stage', short: 'SIDE FILL', p: { x: 700, y: FLOOR, z: -1500 }, lift: 150, faces: { x: 0, y: 0, z: 1 }, note: 'Off to the side, about ninety degrees off the mic’s axis: no cardioid null reaches it. Distance, level and the DI do the work there.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'sideFill', label: 'a side-fill monitor at the side of the stage', short: 'SIDE FILL', p: { x: 1000, y: FLOOR, z: -2050 }, lift: 150, faces: { x: 0, y: 0, z: 1 }, note: 'Off to the side, about ninety degrees off the mic’s axis: no cardioid null reaches it. Distance, level and the DI do the work there.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

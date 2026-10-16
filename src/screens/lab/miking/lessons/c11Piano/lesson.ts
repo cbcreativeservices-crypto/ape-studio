@@ -668,9 +668,12 @@ const wedges: Wedge[] = [
     id: 'wedge.vocal',
     label: 'a singer’s wedge, downstage, facing upstage',
     short: 'VOCAL WEDGE',
-    p: { x: 1500, y: FLOOR_Y, z: 1600 },
+    // in front of the singer beside the keyboard end (the setting plan's
+    // singer, facing the audience), facing back at them (collision pass
+    // 2026-10-15: it was drawn nowhere)
+    p: { x: -150, y: FLOOR_Y, z: 2300 },
     lift: 150,
-    faces: { x: -0.6, y: 0, z: -0.8 },
+    faces: { x: 0, y: 0, z: -1 },
     note: 'Out by the singer, on the floor: below the rim, so a mic inside the case is largely shielded from it.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout' },
   },
@@ -748,6 +751,7 @@ export const C11_LESSON: Lesson = {
       { id: 'desk', label: 'the music on the desk', short: 'MUSIC', note: 'The pianist reads the music on the desk: a stand or boom across their sight line is in the way, whatever it sounds like.', prov: { kind: 'illustrative', reason: 'proposal §5: sight line to the music desk' }, tag: 'SIGHT LINE', scene: 'kit' },
       { id: 'singer', label: 'a singer beside the piano', short: 'SINGER', note: 'A singer with a vocal mic close to the piano: the piano mics hear the voice, and the vocal mic hears the piano. Where the two go together belongs to the ensembles lab.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL BOTH WAYS', scene: 'kit' },
       { id: 'wedge.pianist', label: 'the pianist’s wedge (monitor)', short: 'PIANO WEDGE', note: 'A floor monitor by the bench so the pianist hears the band — loud, close, and below the rim.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge.vocal', label: 'the singer’s wedge (monitor)', short: 'VOCAL WEDGE', note: 'A floor monitor downstage of the singer, facing them: below the rim, so a mic inside the case is largely shielded from it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'fill.side', label: 'a side-fill speaker on a stand', short: 'SIDE-FILL', note: 'A speaker on a stand at the side of the stage, at about head height, facing the players: it can reach a mic under the lid through the gap above the rim.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the rest of the band', short: 'BAND', note: 'Drums, amplifiers and other players nearby: they all reach the piano mics. Closer, directional mics and a lower lid help the piano stand out.', prov: { kind: 'illustrative', reason: 'a generic band area' }, tag: 'SPILL', scene: 'stage' },
       { id: 'pa', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience already hears the acoustic piano; the PA adds what the room needs — and the piano’s mics must not feed the PA back into themselves.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },

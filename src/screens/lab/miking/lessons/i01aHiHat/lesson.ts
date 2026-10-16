@@ -12,6 +12,7 @@
  */
 import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Wedge } from '../../engine/model/types.ts';
 import { KIT_DRUMS, KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
+import { KIT_FILL } from '../shared/kitStage.ts';
 import { KICK_GEOM } from '../m01Kick/geometry.ts';
 import type { CymbalLesson } from '../shared/cymbals/cymbalLesson.ts';
 import { BRAND_REASON, CLEAR_REASON, POWER_REASON, docReason, gainCheck, hearingCheck, hearingDiagnostic, nameReason, orderTask, overheadsFirst, polarityCheck, powerCheck, spillCheck, symptoms, type CymWords } from '../shared/cymbals/cymbalItems.ts';
@@ -443,9 +444,9 @@ const wedges: Wedge[] = [
     id: 'fill',
     label: 'the drummer’s own fill, on the floor beside the throne',
     short: 'DRUM FILL',
-    p: { x: -450, y: KIT_FLOOR_Y, z: 750 },
+    p: { x: KIT_FILL.x, y: KIT_FLOOR_Y, z: KIT_FILL.z },
     lift: 150,
-    faces: { x: -0.2, y: 0, z: -1 },
+    faces: KIT_FILL.faces,
     note: 'Below and behind a mic under the hats: aimed up, the mic’s rear faces toward it — a null can help.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout (the kick lesson’s same monitor); no source gives the position' },
   },

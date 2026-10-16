@@ -8,7 +8,7 @@
 import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, feedbackSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, noPhantom, PEAK_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, slowMeter, TECH_REASON, type SpWords } from '../shared/smallperc/commonItems.ts';
 import type { SpLesson } from '../shared/smallperc/family.ts';
-import { STAGE_THINGS, stageItems, standingWedges } from '../shared/smallperc/stage.ts';
+import { STAGE_THINGS, stageItems, standingWedges, stationCue } from '../shared/smallperc/stage.ts';
 import { WB_MODEL } from './geometry.ts';
 import { WB_ZONES } from './model.ts';
 import { WB_COPY } from './copy.ts';
@@ -548,11 +548,12 @@ export const I05C_LESSON: SpLesson = {
       things: [
         { id: 'woodblock', kind: 'drums', u: 0, v: 0, scene: 'all' },
         { id: 'perc', kind: 'perc', u: -250, v: 1050, scene: 'all' },
-        { id: 'kit', kind: 'kit', u: -1500, v: -1350, scene: 'all' },
+        { id: 'kit', kind: 'kit', u: -1500, v: -1250, scene: 'all' },
         { id: 'amp', kind: 'amp', u: -1900, v: 950, face: 0, scene: 'all' },
         { id: 'vocal', kind: 'micstand', u: 1100, v: -1350, scene: 'all' },
         ...STAGE_THINGS,
       ],
+      cue: stationCue('woodblock'),
     },
   },
 };

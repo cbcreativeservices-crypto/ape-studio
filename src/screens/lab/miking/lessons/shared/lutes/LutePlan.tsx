@@ -30,7 +30,11 @@ import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/
 import type { PageProps } from '../../../pages/pageTypes';
 import { WedgePlan, planIdsOf } from '../KitPlan';
 import type { BuiltLute } from './luteModel.ts';
-import type { LutePlanObject } from './lutesContent.ts';
+import { LUTE_STAGE, type LutePlanObject } from './lutesContent.ts';
+import { ACCOMPANIST, LUTE_SIZES, LUTE_WALL, LUTE_WIDE, luteCue, lutePlanFoots, lutePlanObjects, luteShownIn, luteSpace, rugRect } from './lutePlanModel.ts';
+import { clearOfFoots, labelPlaces, unionRect, type PlanFoot } from '../planFoot.ts';
+import { cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { PAL, poly, rr, smooth, type SkPath } from './luteDraw';
 import { LuteSceneArt } from './LuteArt';
 import { Head } from './lutePlayers';
@@ -72,12 +76,13 @@ function Seated({ x, z, w = 210 }: { x: number; z: number; w?: number }) {
 }
 
 function ChairPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
-  const seat = rr(o.at.x - 220, o.at.z - 200, o.at.x + 220, o.at.z + 200, 60);
-  const back = rr(o.at.x - 220, o.at.z - 250, o.at.x + 220, o.at.z - 190, 24);
+  const C = LUTE_SIZES.chair;
+  const seat = rr(o.at.x - C.half, o.at.z - C.front, o.at.x + C.half, o.at.z + C.front, 60);
+  const back = rr(o.at.x - C.half, o.at.z - C.back, o.at.x + C.half, o.at.z - C.back + C.backDepth, 24);
   return (
     <Group>
       <Path path={seat}>
-        <LinearGradient start={vec(o.at.x - 220, o.at.z - 200)} end={vec(o.at.x + 220, o.at.z + 200)} colors={['#3a2a22', '#2a1d17', '#1a120e']} />
+        <LinearGradient start={vec(o.at.x - C.half, o.at.z - C.front)} end={vec(o.at.x + C.half, o.at.z + C.front)} colors={['#3a2a22', '#2a1d17', '#1a120e']} />
       </Path>
       <Path path={back} color="#140d0a" />
       <Halo path={seat} on={hi} />
@@ -87,13 +92,13 @@ function ChairPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 
 /** A performance rug on a low riser, with a woven border. */
 function RugPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
-  const r = o.r ?? 1100;
-  const body = rr(o.at.x - r, o.at.z - r * 0.62, o.at.x + r, o.at.z + r * 0.62, 26);
-  const inner = rr(o.at.x - r + 70, o.at.z - r * 0.62 + 70, o.at.x + r - 70, o.at.z + r * 0.62 - 70, 14);
+  const R = rugRect(o);
+  const body = rr(R.u0, R.v0, R.u1, R.v1, 26);
+  const inner = rr(R.u0 + 70, R.v0 + 70, R.u1 - 70, R.v1 - 70, 14);
   return (
     <Group>
       <Path path={body}>
-        <LinearGradient start={vec(o.at.x - r, o.at.z - r)} end={vec(o.at.x + r, o.at.z + r)} colors={A(PAL.rug)} />
+        <LinearGradient start={vec(R.u0, R.v0)} end={vec(R.u1, R.v1)} colors={A(PAL.rug)} />
       </Path>
       <Path path={inner} style="stroke" strokeWidth={22} color="#7a3a2a" opacity={0.8} />
       <Path path={inner} style="stroke" strokeWidth={8} color={PAL.gold[2]} opacity={0.7}>
@@ -107,7 +112,8 @@ function RugPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 function VocalPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   const base = o.faces ?? { x: o.at.x, z: o.at.z + 380 };
   const ring = useMemo(() => {
-    const p = poly(Array.from({ length: 32 }, (_, i) => [base.x + 125 * Math.cos((i / 32) * Math.PI * 2), base.z + 125 * Math.sin((i / 32) * Math.PI * 2)]));
+    const R = LUTE_SIZES.vocalBase;
+    const p = poly(Array.from({ length: 32 }, (_, i) => [base.x + R * Math.cos((i / 32) * Math.PI * 2), base.z + R * Math.sin((i / 32) * Math.PI * 2)]));
     return p;
   }, [base.x, base.z]);
   const mic = rr(o.at.x - 26, o.at.z - 70, o.at.x + 26, o.at.z + 70, 26);
@@ -138,7 +144,7 @@ function RiqPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   const frame = poly(Array.from({ length: 40 }, (_, i) => [x + 115 * Math.cos((i / 40) * Math.PI * 2), dz + 115 * Math.sin((i / 40) * Math.PI * 2)]));
   return (
     <Group>
-      <Seated x={x} z={z - 60} />
+      <Seated x={x + ACCOMPANIST.riq.head.dx} z={z + ACCOMPANIST.riq.head.dz} w={ACCOMPANIST.riq.w} />
       <Shadow path={frame} />
       <Path path={frame}>
         <LinearGradient start={vec(x - 115, dz - 115)} end={vec(x + 115, dz + 115)} colors={A(PAL.walnut)} />
@@ -181,7 +187,7 @@ function TablaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   };
   return (
     <Group>
-      <Seated x={x} z={z - 170} w={220} />
+      <Seated x={x + ACCOMPANIST.tabla.head.dx} z={z + ACCOMPANIST.tabla.head.dz} w={ACCOMPANIST.tabla.w} />
       {[dayan, bayan].map((d, i) => (
         <Group key={`d${i}`}>
           <Circle cx={d.x + 8} cy={d.z + 12} r={d.r + 14} color="#000" opacity={0.5}>
@@ -212,7 +218,7 @@ function TanpuraPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   const outline = rr(x - 340, z - 120, x + 230, z + 230, 80);
   return (
     <Group>
-      <Seated x={x + 40} z={z - 20} />
+      <Seated x={x + ACCOMPANIST.tanpura.head.dx} z={z + ACCOMPANIST.tanpura.head.dz} w={ACCOMPANIST.tanpura.w} />
       <Circle cx={gx + 8} cy={gz + 12} r={150} color="#000" opacity={0.5}>
         <BlurMask blur={14} style="normal" />
       </Circle>
@@ -252,7 +258,7 @@ function MridangamPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   }
   return (
     <Group>
-      <Seated x={x} z={z - 200} w={220} />
+      <Seated x={x + ACCOMPANIST.mridangam.head.dx} z={z + ACCOMPANIST.mridangam.head.dz} w={ACCOMPANIST.mridangam.w} />
       <Shadow path={barrel} />
       <Path path={barrel}>
         <LinearGradient start={vec(x - L, z - 140)} end={vec(x + L, z + 140)} colors={A(PAL.jack)} />
@@ -271,16 +277,18 @@ function SideFillPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   const { x, z } = o.at;
   const f = o.faces ?? { x: 1, z: 0 };
   const a = Math.atan2(f.z, f.x);
-  const box = rr(-170, -210, 170, 210, 18);
+  const ha = LUTE_SIZES.sideFill.along / 2;
+  const hc = LUTE_SIZES.sideFill.across / 2;
+  const box = rr(-ha, -hc, ha, hc, 18);
   return (
     <Group transform={[{ translateX: x }, { translateY: z }, { rotate: a }]}>
       <Path path={box} color="#000" opacity={0.5} transform={[{ translateX: 10 }, { translateY: 12 }]}>
         <BlurMask blur={14} style="normal" />
       </Path>
       <Path path={box}>
-        <LinearGradient start={vec(-170, -210)} end={vec(170, 210)} colors={['#3b3e46', '#24262c', '#141519']} />
+        <LinearGradient start={vec(-ha, -hc)} end={vec(ha, hc)} colors={['#3b3e46', '#24262c', '#141519']} />
       </Path>
-      <Path path={rr(150, -190, 172, 190, 6)} color="#55595f" />
+      <Path path={rr(ha - 20, -hc + 20, ha + 2, hc - 20, 6)} color="#55595f" />
       <Path path={box} style="stroke" strokeWidth={4} color="#5d616c" />
       <Halo path={box} on={hi} />
     </Group>
@@ -288,16 +296,17 @@ function SideFillPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 }
 
 function PaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
+  const { top, bottom, hv } = LUTE_SIZES.pa;
   const p = poly([
-    [o.at.x - 300, o.at.z - 220],
-    [o.at.x + 300, o.at.z - 220],
-    [o.at.x + 240, o.at.z + 220],
-    [o.at.x - 240, o.at.z + 220],
+    [o.at.x - top, o.at.z - hv],
+    [o.at.x + top, o.at.z - hv],
+    [o.at.x + bottom, o.at.z + hv],
+    [o.at.x - bottom, o.at.z + hv],
   ]);
   return (
     <Group>
       <Path path={p}>
-        <LinearGradient start={vec(o.at.x - 300, o.at.z - 220)} end={vec(o.at.x + 300, o.at.z + 220)} colors={['#3b3e46', '#1d1e23', '#0f1013']} />
+        <LinearGradient start={vec(o.at.x - top, o.at.z - hv)} end={vec(o.at.x + top, o.at.z + hv)} colors={['#3b3e46', '#1d1e23', '#0f1013']} />
       </Path>
       <Path path={p} style="stroke" strokeWidth={4} color="#5d616c" />
       <Halo path={p} on={hi} />
@@ -305,21 +314,34 @@ function PaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   );
 }
 
-export type LutePlanSpec = { objects: readonly LutePlanObject[]; near: ViewBox; wide?: ViewBox; stageEdgeZ: number; hearing: string };
+/** `plan`: the lesson's close-up box (lutePlanModel LUTE_PLANS); the objects
+ *  are laid out from the scene (lutePlanObjects). */
+export type LutePlanSpec = { plan: { near: ViewBox }; hearing: string };
+
+/** Where a headphone-mix word points: its mixer, or the control-room box. */
+function cuePoint(rig: CueRig, id: string): { u: number; v: number } {
+  const st = rig.stations.find((q) => `cueMix:${q.id}` === id);
+  if (st) return st.at;
+  const r = cueHub(rig).rect;
+  return { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 };
+}
 
 export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
   const sc = built.scene;
+  // Laid out once per lesson (lutePlanModel): the objects, the player's space, the studio's headphone mix.
+  const OBJECTS = lutePlanObjects(sc);
+  const SPACE = luteSpace(sc, built.model.parts);
+  const CUE = luteCue(sc, built.model.parts);
   function Plan({ w, h, scene, items, wedges, highlight, onTap, label }: { w: number; h: number; scene: 'kit' | 'stage' | 'studio'; items: readonly SettingItem[]; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; label: string }) {
     const textScale = useStageTextScale();
-    const wide: ViewBox = spec.wide ?? { u0: -2400, u1: 2600, v0: -2500, v1: 2700 };
-    const box = scene === 'kit' ? spec.near : wide;
+    const wide = LUTE_WIDE;
+    const box = scene === 'kit' ? spec.plan.near : wide;
     const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box.u0, box.u1, box.v0, box.v1]); // eslint-disable-line react-hooks/exhaustive-deps
-    const shownHere = (o: { scene: string }) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit');
-    const objs = spec.objects.filter(shownHere);
+    const all = OBJECTS;
+    const objs = all.filter((o) => luteShownIn(o, scene));
     const chosen = items.find((i) => i.id === highlight);
     const lit = new Set<string>(chosen ? planIdsOf(chosen) : []);
-    const f = sc.fit;
-    const space = useMemo(() => rr(f.torso.min.x - 160, f.torso.min.z - 60, Math.max(f.torso.max.x, f.legs.max.x, f.fretBox.max.x) + 80, Math.max(f.legs.max.z, 200) + 40, 60), [f]);
+    const space = useMemo(() => rr(SPACE.u0, SPACE.v0, SPACE.u1, SPACE.v1, 60), []);
     const hatch = useMemo(() => {
       const p = poly([], false);
       for (let d = -3000; d < 3000; d += 60) {
@@ -329,30 +351,59 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
       return p;
     }, []);
     const floorWedges = scene === 'stage' ? wedges.filter((wd) => wd.glyph !== 'none') : [];
-    const walls = rr(wide.u0 + 200, wide.v0 + 200, wide.u1 - 200, wide.v1 - 200, 30);
+    const walls = rr(wide.u0 + LUTE_WALL.inset, wide.v0 + LUTE_WALL.inset, wide.u1 - LUTE_WALL.inset, wide.v1 - LUTE_WALL.inset, 30);
+    // Every object's footprint (the close-up: its own objects only): the
+    // words keep clear of them (owner 2026-10-15: no word on an object).
+    const foots = useMemo<PlanFoot[]>(
+      () => (scene === 'kit' ? lutePlanFoots(sc, built.model.parts, all.filter((o) => luteShownIn(o, 'kit')), 'stage', []) : lutePlanFoots(sc, built.model.parts, all, scene, wedges)),
+      [scene, wedges, all],
+    );
+    const cue = scene === 'studio' ? CUE : null;
+    const footOf = (id: string) => {
+      const ids = id === 'player' ? ['player', 'instrument'] : [id];
+      const fs = foots.filter((f) => ids.includes(f.id));
+      return fs.length ? unionRect(fs) : null;
+    };
+    // Labels: the chosen item first, then the rest. Each name sits just
+    // outside its object's footprint (below, right, left, above), else in
+    // free space with a leader back to it; the rug's name on the rug, the
+    // audience's beyond the edge, the room's in open floor.
     const labels: StaticLabel[] = [];
     const add = (it: SettingItem) => {
       for (const id of planIdsOf(it)) {
         const o = objs.find((q) => q.id === id);
         const wd = floorWedges.find((q) => q.id === id);
-        const at = o ? o.at : wd ? { x: wd.p.x, z: wd.p.z } : null;
-        if (!at) continue;
-        // Behind the player (the chair, the tanpura): the label goes above, upstage.
-        const behind = o?.kind === 'chair';
-        const dz = o?.kind === 'audience' ? -120 : o?.kind === 'room' ? 0 : o?.kind === 'rug' ? (o.r ?? 1100) * 0.62 - 90 : behind ? -((o?.r ?? 260) + 70) : (o?.r ?? 260) + 80;
-        labels.push({ id: `${it.id}:${id}`, text: it.short, u: at.x, v: at.z + dz, align: 'center', tone: highlight === it.id ? 'amber' : undefined });
+        if (!o && !wd) continue;
+        const tone = highlight === it.id ? ('amber' as const) : undefined;
+        if (o && (o.kind === 'audience' || o.kind === 'room')) {
+          labels.push({ id: `${it.id}:${id}`, text: it.short, u: o.at.x, v: o.at.z, align: 'center', point: { u: o.at.x, v: o.at.z }, tone });
+          break;
+        }
+        if (o && o.kind === 'rug') {
+          const R = rugRect(o);
+          const at = { u: R.u0 + 120, v: R.v1 - 90 };
+          labels.push({ id: `${it.id}:${id}`, text: it.short, u: at.u, v: at.v, align: 'left', point: at, tone });
+          break;
+        }
+        const own = footOf(id);
+        if (!own) continue;
+        const [first, ...alts] = labelPlaces(own, xf.s / textScale);
+        labels.push({ id: `${it.id}:${id}`, text: it.short, u: first.u, v: first.v, align: first.align, alts, point: { u: (own.u0 + own.u1) / 2, v: (own.v0 + own.v1) / 2 }, tone });
         break;
       }
     };
-    const visible = items.filter((i) => i.scene === 'all' || i.scene === scene || (scene !== 'kit' && i.scene === 'kit'));
+    const visible = items.filter((i) => luteShownIn(i, scene));
     if (chosen) add(chosen);
     for (const it of visible) add(it);
-    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: f.torso.min.x - 140, v: f.torso.min.z - 100, align: 'left', tone: 'illustrative' });
+    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: SPACE.u0 + 20, v: SPACE.v0 - 40, align: 'left', point: { u: SPACE.u0 + 20, v: SPACE.v0 + 20 }, tone: 'illustrative' });
     const seen = new Set<string>();
-    const uniq = labels.filter((l) => {
-      const k = l.id.split(':')[0];
-      return seen.has(k) ? false : (seen.add(k), true);
-    });
+    const uniq: StaticLabel[] = [
+      ...labels.filter((l) => {
+        const k = l.id.split(':')[0];
+        return seen.has(k) ? false : (seen.add(k), true);
+      }),
+      ...(cue ? cueLabels(cue).map((l) => ({ ...l, point: cuePoint(cue, l.id), tone: 'illustrative' as const })) : []),
+    ];
     const tap = (x: number, y: number) => {
       const u = (x - xf.ox) / xf.s;
       const v = (y - xf.oy) / xf.s;
@@ -376,10 +427,10 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
         <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
           <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={label}>
             <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-              {scene === 'studio' ? <Path path={walls} style="stroke" strokeWidth={60} color="#2a2c32" /> : null}
+              {scene === 'studio' ? <Path path={walls} style="stroke" strokeWidth={LUTE_WALL.stroke} color="#2a2c32" /> : null}
               {scene === 'studio' && lit.has('room') ? <Path path={walls} style="stroke" strokeWidth={30} color={AMBER} opacity={0.8} /> : null}
               {scene === 'stage' ? (
-                <Line p1={vec(wide.u0 + 100, spec.stageEdgeZ)} p2={vec(wide.u1 - 100, spec.stageEdgeZ)} color={lit.has('audience') ? AMBER : '#7a7f8a'} strokeWidth={lit.has('audience') ? 22 : 12}>
+                <Line p1={vec(wide.u0 + 100, LUTE_STAGE.edgeZ)} p2={vec(wide.u1 - 100, LUTE_STAGE.edgeZ)} color={lit.has('audience') ? AMBER : '#7a7f8a'} strokeWidth={lit.has('audience') ? 22 : 12}>
                   <DashPathEffect intervals={[60, 40]} />
                 </Line>
               ) : null}
@@ -401,10 +452,12 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
               <LuteSceneArt sc={sc} view="top" />
               {lit.has('player') ? <Path path={space} style="stroke" strokeWidth={14} color={AMBER} opacity={0.85} /> : null}
               {objs.filter((o) => o.kind === 'vocal').map((o) => <VocalPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
+              {/* Studio: a personal headphone mixer at every performer (no wedges in a studio). */}
+              {cue ? <CueMixPlan rig={cue} /> : null}
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
       </View>
     );
   }

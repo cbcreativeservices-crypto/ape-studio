@@ -1,0 +1,139 @@
+/**
+ * The amplified-chain plans' layout (BacklinePlan.tsx draws it) — pure, so
+ * the plans' overlap test reads the same numbers the drawing uses.
+ *
+ * Frame: the miked amp at the origin, u toward the audience (frame C's x),
+ * v across the stage (frame C's z), mm. Positions are a typical layout,
+ * ILLUSTRATIVE (never a measurement).
+ *
+ * Collision pass 2026-10-15 (owner: "the side fill hovers over the floor tom
+ * and the ride"): the drum kit keeps its corner upstage; the side fill stands
+ * BESIDE it at the stage's side (the lessons' live.wedges); the PA stacks
+ * stand on the deck's downstage corners, clear of the front row; the front
+ * row keeps a centre aisle (where its name sits). STUDIO (owner 2026-10-15):
+ * no wedges — the player's personal headphone mixer at their station, fed
+ * from the CONTROL ROOM at the room's edge (monitoring/cueMix.ts).
+ */
+import type { Wedge } from '../../../engine/model/types.ts';
+import { cabLayout } from './speakerModel.ts';
+import { bassHead } from './ampModel.ts';
+import { chairRowFacingStage } from '../../../../../../features/lab/audienceChairsModel.ts';
+import { chairFoots, foot, kitPieceFoots, rectAround, rectOfCircle, wedgeFoot, type PlanFoot } from '../planFoot.ts';
+import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
+
+export type Backline = 'guitar' | 'bass' | 'steel';
+export type BacklineScene = 'stage' | 'studio';
+
+/** Typical positions (mm, plan u/v), ILLUSTRATIVE. */
+export const BACKLINE_POS = {
+  guitar: { player: { u: 950, v: 560 }, pedals: { u: 1380, v: 560 }, di: { u: 560, v: 1050 } },
+  bass: { player: { u: 1050, v: 620 }, pedals: { u: 1480, v: 620 }, di: { u: 620, v: 1150 } },
+  steel: { player: { u: 950, v: 720 }, pedals: { u: 1300, v: 720 }, di: { u: 600, v: 1250 } },
+  drums: { u: -350, v: -1550 },
+  otherAmp: { u: -60, v: 1750 },
+  audience: 3300,
+} as const;
+/** The plan boxes. The stage reaches upstage far enough for the drum kit at
+ *  its true size (the art pass of 2026-10-10 drew the real kit, ≈ 1.8 m). */
+export const BACKLINE_BOX = { stage: { u0: -1250, u1: 3650, v0: -2450, v1: 2150 }, studio: { u0: -1000, u1: 3100, v0: -2200, v1: 2300 } } as const;
+/** Where the shared kit's origin (its kick's batter head) sits on the stage. */
+export const KIT_AT = { u: -250, v: -1600 } as const;
+/** The kit's own centre (its plan box, kitPlanModel PLAN_BOX.kit). */
+export const KIT_MID = { u: -135, v: 20 } as const;
+/** The stage deck's downstage edge (the audience floor beyond). */
+export const DECK_EDGE_U = BACKLINE_POS.audience - 450;
+/** The PA stacks: on the deck's downstage corners (their sub 700 deep). */
+export const PA_AT = [
+  { u: DECK_EDGE_U - 400, v: -1950 },
+  { u: DECK_EDGE_U - 400, v: 1950 },
+] as const;
+/** The front row: chairs either side of a centre aisle (|v| < AISLE). */
+export const AISLE = 620;
+export const inFrontRow = (c: { y: number }): boolean => Math.abs(c.y) >= AISLE;
+export function backlineChairs(): { x: number; y: number; rotation: number }[] {
+  return chairRowFacingStage(BACKLINE_POS.audience, -2100, 2100).filter(inFrontRow);
+}
+/** The studio room's inner wall faces (the room is drawn 40 mm thick). */
+export const BACKLINE_ROOM = { u0: -930, u1: 3030, v0: -2130, v1: 2230 } as const;
+
+/** The other amp on the backline: a 2 × 12 combo (690 × 270), facing +u. */
+export const OTHER_AMP = { u0: -135, u1: 135, v0: -345, v1: 345 } as const;
+
+/** The player's keep-clear space (the pedalboard, or a steel's pedals). */
+export function keepRect(who: Backline) {
+  const P = BACKLINE_POS[who];
+  return who === 'steel' ? { u0: P.player.u - 80, u1: P.player.u + 520, v0: P.player.v - 520, v1: P.player.v + 520 } : { u0: P.pedals.u - 180, u1: P.pedals.u + 180, v0: P.pedals.v - 260, v1: P.pedals.v + 260 };
+}
+
+/** The player's head (FigureHead at the player's centre, facing +u). */
+export function backlineHead(who: Backline): { u: number; v: number } {
+  return BACKLINE_POS[who].player;
+}
+
+/** The studio headphone mix: the player's mixer at their right hand (the
+ *  side away from the neck), clear of the pedalboard, fed from the control
+ *  room on the room's far (+v) wall. */
+export function backlineCue(who: Backline): CueRig {
+  const P = BACKLINE_POS[who].player;
+  const at = who === 'steel' ? { u: P.u - 430, v: P.v + 830 } : { u: P.u - 120, v: P.v + 560 };
+  return {
+    room: BACKLINE_ROOM,
+    wall: 'v1',
+    hubAt: 1500,
+    stations: [{ id: 'player', at, head: P, facing: 0 }],
+  };
+}
+
+/** Every object's footprint on the plan (mm). */
+export function backlineFoots(who: Backline, scene: BacklineScene, wedges: readonly Wedge[]): PlanFoot[] {
+  const P = BACKLINE_POS[who];
+  const c = cabLayout(who === 'bass' ? 'bass410' : 'combo12');
+  const out: PlanFoot[] = [foot('amp', 'amp', { u0: c.box.x0, u1: c.box.x1, v0: c.box.z0, v1: c.box.z1 })];
+  if (who === 'bass') {
+    const hd = bassHead();
+    out.push(foot('ampHead', 'ampHead', { u0: hd.x0, u1: hd.x1, v0: hd.z0, v1: hd.z1 }));
+  }
+  out.push(foot('otherAmp', 'amp', { u0: BACKLINE_POS.otherAmp.u + OTHER_AMP.u0, u1: BACKLINE_POS.otherAmp.u + OTHER_AMP.u1, v0: BACKLINE_POS.otherAmp.v + OTHER_AMP.v0, v1: BACKLINE_POS.otherAmp.v + OTHER_AMP.v1 }));
+  // the player (shoulders, arms) and the worn instrument, edge-on
+  const g = `player:${who}`;
+  if (who === 'steel') {
+    out.push(foot('player', 'player', { u0: P.player.u - 130, u1: P.player.u + 500, v0: P.player.v - 300, v1: P.player.v + 300 }, { group: g }));
+    out.push(foot('steel', 'instrument', { u0: P.player.u + 160, u1: P.player.u + 480, v0: P.player.v - 450, v1: P.player.v + 450 }, { group: g }));
+  } else {
+    out.push(foot('player', 'player', { u0: P.player.u - 130, u1: P.player.u + 270, v0: P.player.v - 300, v1: P.player.v + 300 }, { group: g }));
+    const bass = who === 'bass';
+    out.push(foot('instrument', 'instrument', { u0: P.player.u + 118, u1: P.player.u + 165, v0: P.player.v + (bass ? -810 : -663), v1: P.player.v + (bass ? 350 : 327) }, { group: g }));
+    out.push(foot('pedals', 'pedalboard', { u0: P.pedals.u - 165, u1: P.pedals.u + 165, v0: P.pedals.v - 250, v1: P.pedals.v + 250 }, { group: g }));
+  }
+  out.push(foot('keepClear', 'keepClear', keepRect(who), { group: g, zone: true }));
+  out.push(foot('dibox', 'dibox', { u0: P.di.u - 70, u1: P.di.u + 70, v0: P.di.v - 42, v1: P.di.v + 42 }));
+  if (scene === 'stage') {
+    out.push(...kitPieceFoots(KIT_AT));
+    for (const w of wedges) if (w.glyph !== 'none') out.push(wedgeFoot(w));
+    PA_AT.forEach((p, i) => out.push(foot(`pa${i}`, 'pa', { u0: p.u - 350, u1: p.u + 350, v0: p.v - 280, v1: p.v + 280 })));
+    out.push(...chairFoots(backlineChairs()));
+  } else {
+    out.push(...cueFootprints(backlineCue(who)));
+  }
+  void rectAround;
+  void rectOfCircle;
+  return out;
+}
+
+/** Item ids on the plan and where each sits (taps and highlights). */
+export function backlineItems(who: Backline, scene: BacklineScene, wedges: readonly Wedge[]): { id: string; u: number; v: number; r: number }[] {
+  const P = BACKLINE_POS[who];
+  const out = [
+    { id: 'amp', u: -100, v: 0, r: 420 },
+    { id: 'player', u: P.player.u, v: P.player.v, r: 300 },
+    { id: 'pedals', u: P.pedals.u, v: P.pedals.v, r: who === 'steel' ? 420 : 260 },
+    { id: 'dibox', u: P.di.u, v: P.di.v, r: 160 },
+    { id: 'otherAmp', u: BACKLINE_POS.otherAmp.u, v: BACKLINE_POS.otherAmp.v, r: 420 },
+  ];
+  if (scene === 'stage') {
+    out.push({ id: 'drums', u: KIT_AT.u + KIT_MID.u, v: KIT_AT.v + KIT_MID.v, r: 900 });
+    for (const w of wedges) out.push({ id: w.id === wedges[0].id ? 'wedge' : w.id, u: w.p.x, v: w.p.z, r: 330 });
+    out.push({ id: 'audience', u: BACKLINE_POS.audience + 150, v: 0, r: 700 });
+  } else out.push({ id: 'room', u: 2500, v: -1700, r: 500 });
+  return out;
+}

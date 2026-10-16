@@ -12,9 +12,8 @@ import { bowedHitTest, bowedLabels, makeBowedInstrument, makeBowedPortrait } fro
 import { makeBowedSoundPage } from '../shared/bowed/BowedSoundPage';
 import { makeBowedSettingPage } from '../shared/bowed/BowedSettingPage';
 import { partIn } from '../shared/bowed/bowedModel.ts';
-import { underChin } from '../shared/bowed/posture.ts';
-import { VIOLA } from '../shared/bowed/bowedSpec.ts';
 import { SEATED, SPEC, STANDING, VIOLIN_MODEL, VIOLIN_VIEWS } from './geometry.ts';
+import { C09A_PLAN } from './plan.ts';
 
 const POSE = (v: VariantId) => (v === 'seated' ? SEATED : STANDING);
 const L = SPEC.string.mm;
@@ -40,9 +39,6 @@ const LABELS = {
     player: { du: -120, dv: 0, align: 'right' as const },
   },
 };
-
-const VIOLA_P = underChin(VIOLA, 20, true);
-const VIOLIN2_P = underChin(SPEC, 0, true);
 
 export const VIOLIN_ART: LessonArt = {
   Instrument: ViolinInstrument,
@@ -72,18 +68,7 @@ export const VIOLIN_ART: LessonArt = {
       reveal: 'The bow never strikes: it grips the string, lets it slip, and grips it again — once every vibration, for as long as it moves.',
     }),
     setting: makeBowedSettingPage({
-      P: STANDING,
-      objects: [
-        { id: 'violin', kind: 'self', at: { x: 0, z: 0 }, r: 260, label: 'violin', scene: 'all' },
-        { id: 'bow', kind: 'self', at: { x: STANDING.bow.frog.x + 120, z: STANDING.bow.frog.z + 120 }, r: 200, label: 'bow', scene: 'kit' },
-        { id: 'head', kind: 'self', at: { x: STANDING.player.head.x, z: STANDING.player.head.z }, r: 120, label: 'head', scene: 'kit' },
-        { id: 'stand', kind: 'stand', at: { x: 760, z: -520 }, yaw: 170, r: 260, label: 'music stand', short: 'stand', scene: 'kit' },
-        { id: 'violin2', kind: 'bowed', posture: VIOLIN2_P, at: { x: 150, z: 1100 }, yaw: 0, r: 380, label: 'violin 2', scene: 'kit' },
-        { id: 'viola', kind: 'bowed', posture: VIOLA_P, at: { x: 1200, z: 950 }, yaw: -60, r: 380, label: 'viola', scene: 'kit' },
-        { id: 'main', kind: 'pair', at: { x: 2500, z: 300 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
-      ],
-      near: { u0: -1200, u1: 1800, v0: -900, v1: 1500 },
-      wide: { u0: -1400, u1: 3200, v0: -1500, v1: 1650 },
+      ...C09A_PLAN,
       nearA11y: 'A violinist from above: the violin under the chin pointing forward-left, the bow’s sweep hatched across it, a music stand in front, a second violin and a viola beside.',
       wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group.' },
       nearLanding: 'Tap anything around the violinist — or step through ITEM — to see what it means for a violin mic. There is nothing to answer yet.',

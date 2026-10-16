@@ -7,22 +7,10 @@
  */
 import type { MalletArt } from '../shared/mallets/family.ts';
 import { malletDrawnAt, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
-import { malletPlanFor, type MalletPlanSpec } from '../shared/mallets/MalletPlan';
+import { malletPlanFor } from '../shared/mallets/MalletPlan';
+import { XYLO_PLAN } from './plan.ts';
 import { MALLET_PAGES } from '../shared/mallets/pages';
 import { XYLO_FAM } from './model.ts';
-
-export const XYLO_PLAN: MalletPlanSpec = {
-  box: { u0: -2700, u1: 3300, v0: -2600, v1: 2600 },
-  things: [
-    { id: 'xylo', kind: 'drums', u: 0, v: 0, scene: 'all' },
-    { id: 'perc', kind: 'perc', u: -1300, v: -1900, scene: 'all' },
-    { id: 'kit', kind: 'kit', u: -1500, v: 1800, scene: 'all' },
-    { id: 'front', kind: 'wedge', u: 1300, v: 0, face: Math.PI, scene: 'stage' },
-    { id: 'side', kind: 'sidefill', u: 0, v: -2200, face: Math.PI / 2, scene: 'stage' },
-    { id: 'audience', kind: 'audience', u: 2500, v: 0, scene: 'stage' },
-    { id: 'room', kind: 'room', u: 0, v: 0, scene: 'studio' },
-  ],
-};
 
 export const I09_ART: MalletArt = {
   Instrument: malletInstrument(XYLO_FAM),

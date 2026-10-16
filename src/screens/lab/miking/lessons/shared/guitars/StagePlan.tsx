@@ -32,21 +32,24 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { WedgePlan, planIdsOf } from '../KitPlan';
 import type { BuiltGuitarModel, GuitarScene } from './guitarModel.ts';
 import { GuitarSceneArt } from './GuitarArt';
+import { GUITAR_WIDE, KIT_CYMBALS, KIT_DRUMS, KIT_RIM, SIZES, WALL, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
+import { clearOfFoots, labelPlaces, unionRect, type PlanFoot } from '../planFoot.ts';
+import { cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
 
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type XZ = { x: number; z: number };
 
-export type PlanKind = 'wedge' | 'vocal' | 'chair' | 'di' | 'bassAmp' | 'kit' | 'pa' | 'player' | 'audience' | 'room' | 'shared';
-export type PlanObject = { id: string; kind: PlanKind; at: XZ; faces?: XZ; scene: 'kit' | 'stage' | 'studio' | 'all'; r?: number };
+export type { PlanKind, PlanObject };
 export type StagePlanSpec = {
-  objects: readonly PlanObject[];
-  /** The close-up box and the wide box (lesson frame x, z). */
+  /** What the plan holds round the player and where the audience edge runs
+   *  (stagePlanModel GUITAR_PLANS): the objects are laid out from the
+   *  variant drawn. */
+  plan: GuitarPlanOpts;
+  /** The close-up box (lesson frame x, z). */
   near?: ViewBox;
-  wide?: ViewBox;
-  /** Where the audience edge runs (z) on a stage. */
-  stageEdgeZ: number;
   /** The hearing note (strings words). */
   hearing: string;
 };
@@ -66,7 +69,7 @@ function VocalPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   const base = o.faces ?? { x: o.at.x, z: o.at.z + 380 };
   const ring = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addCircle(base.x, base.z, 125);
+    p.addCircle(base.x, base.z, SIZES.vocalBase);
     return p;
   }, [base.x, base.z]);
   const mic = rr(o.at.x - 26, o.at.z - 70, o.at.x + 26, o.at.z + 70, 26);
@@ -88,12 +91,13 @@ function VocalPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
 }
 
 function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
-  const seat = rr(o.at.x - 220, o.at.z - 200, o.at.x + 220, o.at.z + 200, 60);
-  const back = rr(o.at.x - 220, o.at.z - 250, o.at.x + 220, o.at.z - 190, 24);
+  const C = SIZES.chair;
+  const seat = rr(o.at.x - C.half, o.at.z - C.front, o.at.x + C.half, o.at.z + C.front, 60);
+  const back = rr(o.at.x - C.half, o.at.z - C.back, o.at.x + C.half, o.at.z - C.back + C.backDepth, 24);
   return (
     <Group>
       <Path path={seat}>
-        <LinearGradient start={vec(o.at.x - 220, o.at.z - 200)} end={vec(o.at.x + 220, o.at.z + 200)} colors={['#3a2a22', '#2a1d17', '#1a120e']} />
+        <LinearGradient start={vec(o.at.x - C.half, o.at.z - C.front)} end={vec(o.at.x + C.half, o.at.z + C.front)} colors={['#3a2a22', '#2a1d17', '#1a120e']} />
       </Path>
       <Path path={back} color="#140d0a" />
       <Halo path={seat} on={hi} />
@@ -102,18 +106,19 @@ function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
 }
 
 function DiPlan({ o, hi, from }: { o: PlanObject; hi: boolean; from: XZ }) {
-  const box = rr(o.at.x - 60, o.at.z - 75, o.at.x + 60, o.at.z + 75, 12);
+  const { hu, hv } = SIZES.di;
+  const box = rr(o.at.x - hu, o.at.z - hv, o.at.x + hu, o.at.z + hv, 12);
   const cable = useMemo(() => {
     const p = Skia.Path.Make();
     p.moveTo(from.x, from.z);
-    p.cubicTo(from.x - 120, from.z + 60, o.at.x + 80, o.at.z - 160, o.at.x, o.at.z - 75);
+    p.cubicTo(from.x - 120, from.z + 60, o.at.x + 80, o.at.z - 160, o.at.x, o.at.z - hv);
     return p;
-  }, [from.x, from.z, o.at.x, o.at.z]);
+  }, [from.x, from.z, o.at.x, o.at.z, hv]);
   return (
     <Group>
       <Path path={cable} style="stroke" strokeWidth={10} color="#0b0c0f" strokeCap="round" />
       <Path path={box}>
-        <LinearGradient start={vec(o.at.x - 60, o.at.z - 75)} end={vec(o.at.x + 60, o.at.z + 75)} colors={['#6b707b', '#3a3d45', '#1d1e23']} />
+        <LinearGradient start={vec(o.at.x - hu, o.at.z - hv)} end={vec(o.at.x + hu, o.at.z + hv)} colors={['#6b707b', '#3a3d45', '#1d1e23']} />
       </Path>
       <Path path={box} style="stroke" strokeWidth={3} color="#9aa0ab" />
       <Halo path={box} on={hi} />
@@ -122,7 +127,8 @@ function DiPlan({ o, hi, from }: { o: PlanObject; hi: boolean; from: XZ }) {
 }
 
 function AmpPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
-  const cab = rr(o.at.x - 320, o.at.z - 190, o.at.x + 320, o.at.z + 190, 26);
+  const { hu, hv } = SIZES.amp;
+  const cab = rr(o.at.x - hu, o.at.z - hv, o.at.x + hu, o.at.z + hv, 26);
   const handle = rr(o.at.x - 90, o.at.z - 26, o.at.x + 90, o.at.z + 26, 20);
   return (
     <Group>
@@ -130,7 +136,7 @@ function AmpPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
         <BlurMask blur={18} style="normal" />
       </Path>
       <Path path={cab}>
-        <LinearGradient start={vec(o.at.x - 320, o.at.z - 190)} end={vec(o.at.x + 320, o.at.z + 190)} colors={['#3b3e46', '#24262c', '#141519']} />
+        <LinearGradient start={vec(o.at.x - hu, o.at.z - hv)} end={vec(o.at.x + hu, o.at.z + hv)} colors={['#3b3e46', '#24262c', '#141519']} />
       </Path>
       <Path path={handle} color="#0c0d10" />
       <Path path={cab} style="stroke" strokeWidth={4} color="#5d616c" />
@@ -140,18 +146,8 @@ function AmpPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
 }
 
 function KitFromAbove({ o, hi }: { o: PlanObject; hi: boolean }) {
-  const drums = [
-    { dx: 0, dz: 0, r: 280 },
-    { dx: -380, dz: 140, r: 180 },
-    { dx: -180, dz: -240, r: 130 },
-    { dx: 140, dz: -260, r: 150 },
-    { dx: 420, dz: 120, r: 205 },
-  ];
-  const cymbals = [
-    { dx: -600, dz: -60, r: 180 },
-    { dx: -320, dz: -480, r: 205 },
-    { dx: 560, dz: -380, r: 255 },
-  ];
+  const drums = KIT_DRUMS;
+  const cymbals = KIT_CYMBALS;
   const outline = useMemo(() => {
     const p = Skia.Path.Make();
     p.addRRect(Skia.RRectXY(Skia.XYWHRect(o.at.x - 860, o.at.z - 760, 1720, 1300), 120, 120));
@@ -161,7 +157,7 @@ function KitFromAbove({ o, hi }: { o: PlanObject; hi: boolean }) {
     <Group>
       {drums.map((d, i) => (
         <Group key={`d${i}`}>
-          <Circle cx={o.at.x + d.dx} cy={o.at.z + d.dz} r={d.r + 12}>
+          <Circle cx={o.at.x + d.dx} cy={o.at.z + d.dz} r={d.r + KIT_RIM}>
             <LinearGradient start={vec(o.at.x + d.dx - d.r, o.at.z + d.dz - d.r)} end={vec(o.at.x + d.dx + d.r, o.at.z + d.dz + d.r)} colors={['#eef1f6', '#9aa0ab', '#4a4e57']} />
           </Circle>
           <Circle cx={o.at.x + d.dx} cy={o.at.z + d.dz} r={d.r}>
@@ -180,19 +176,20 @@ function KitFromAbove({ o, hi }: { o: PlanObject; hi: boolean }) {
 }
 
 function PaPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
+  const { top, bottom, hv } = SIZES.pa;
   const p = useMemo(() => {
     const q = Skia.Path.Make();
-    q.moveTo(o.at.x - 300, o.at.z - 220);
-    q.lineTo(o.at.x + 300, o.at.z - 220);
-    q.lineTo(o.at.x + 240, o.at.z + 220);
-    q.lineTo(o.at.x - 240, o.at.z + 220);
+    q.moveTo(o.at.x - top, o.at.z - hv);
+    q.lineTo(o.at.x + top, o.at.z - hv);
+    q.lineTo(o.at.x + bottom, o.at.z + hv);
+    q.lineTo(o.at.x - bottom, o.at.z + hv);
     q.close();
     return q;
-  }, [o.at.x, o.at.z]);
+  }, [o.at.x, o.at.z, top, bottom, hv]);
   return (
     <Group>
       <Path path={p}>
-        <LinearGradient start={vec(o.at.x - 300, o.at.z - 220)} end={vec(o.at.x + 300, o.at.z + 220)} colors={['#3b3e46', '#1d1e23', '#0f1013']} />
+        <LinearGradient start={vec(o.at.x - top, o.at.z - hv)} end={vec(o.at.x + top, o.at.z + hv)} colors={['#3b3e46', '#1d1e23', '#0f1013']} />
       </Path>
       <Path path={p} style="stroke" strokeWidth={4} color="#5d616c" />
       <Halo path={p} on={hi} />
@@ -204,13 +201,13 @@ function PaPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
 function SharedMicPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   const ring = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addCircle(o.at.x, o.at.z, 150);
+    p.addCircle(o.at.x, o.at.z, SIZES.sharedBase);
     return p;
   }, [o.at.x, o.at.z]);
   return (
     <Group>
       <Path path={ring}>
-        <RadialGradient c={vec(o.at.x - 40, o.at.z - 40)} r={170} colors={['#5b5f69', '#2a2c32', '#16171b']} />
+        <RadialGradient c={vec(o.at.x - 40, o.at.z - 40)} r={SIZES.sharedBase + 20} colors={['#5b5f69', '#2a2c32', '#16171b']} />
       </Path>
       <Path path={rr(o.at.x - 55, o.at.z - 90, o.at.x + 55, o.at.z + 90, 30)}>
         <LinearGradient start={vec(o.at.x - 55, o.at.z - 90)} end={vec(o.at.x + 55, o.at.z + 90)} colors={['#e7eaf0', '#8a909b', '#3a3d45']} />
@@ -220,22 +217,30 @@ function SharedMicPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   );
 }
 
+/** Where a headphone-mix word points: its mixer, or the control-room box. */
+function cuePoint(rig: CueRig, id: string): { u: number; v: number } {
+  const st = rig.stations.find((q) => `cueMix:${q.id}` === id);
+  if (st) return st.at;
+  const r = cueHub(rig).rect;
+  return { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 };
+}
+
 export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) {
   function Plan({ w, h, sc, scene, items, wedges, highlight, onTap, label }: { w: number; h: number; sc: GuitarScene; scene: 'kit' | 'stage' | 'studio'; items: readonly SettingItem[]; wedges: PageProps['lesson']['live']['wedges']; highlight: string | null; onTap: (id: string) => void; label: string }) {
     const g = sc.g;
     const textScale = useStageTextScale();
-    const fit = sc.fit;
-    const lap = sc.o.lap;
-    const torsoZ0 = lap ? fit.torso.min.y : fit.torso.min.z;
-    const near: ViewBox = spec.near ?? { u0: g.tail - 520, u1: g.L + g.spec.neck.headLen.mm + 260, v0: torsoZ0 - 260, v1: 1150 };
-    const wide: ViewBox = spec.wide ?? { u0: -2400, u1: 2600, v0: -2500, v1: 2700 };
+    const F = planFrame(sc);
+    const near: ViewBox = spec.near ?? { u0: g.tail - 520, u1: g.L + g.spec.neck.headLen.mm + 260, v0: F.torsoZ0 - 260, v1: 1150 };
+    const wide = GUITAR_WIDE;
+    const edgeZ = spec.plan.stageEdgeZ;
     const box = scene === 'kit' ? near : wide;
     const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box.u0, box.u1, box.v0, box.v1]); // eslint-disable-line react-hooks/exhaustive-deps
-    const shownHere = (o: { scene: string }) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit');
-    const objs = spec.objects.filter(shownHere);
+    // Laid out from the variant drawn (a lap player and an upright one sit differently).
+    const all = useMemo(() => stringsPlan(sc, spec.plan), [sc]);
+    const objs = all.filter((o) => shownIn(o, scene));
     const chosen = items.find((i) => i.id === highlight);
     const lit = new Set<string>(chosen ? planIdsOf(chosen) : []);
-    const space = useMemo(() => rr(Math.min(g.tail, fit.torso.min.x) - 60, torsoZ0 - 60, g.L + 60, 320, 60), [g.tail, g.L, fit.torso.min.x, torsoZ0]);
+    const space = useMemo(() => rr(F.space.u0, F.space.v0, F.space.u1, F.space.v1, 60), [F.space.u0, F.space.v0, F.space.u1, F.space.v1]);
     const hatch = useMemo(() => {
       const p = Skia.Path.Make();
       for (let d = -3000; d < 3000; d += 60) {
@@ -245,30 +250,54 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
       return p;
     }, []);
     const stageWedges = scene === 'stage' ? wedges.filter((wd) => wd.glyph !== 'none') : [];
-    const walls = rr(wide.u0 + 200, wide.v0 + 200, wide.u1 - 200, wide.v1 - 200, 30);
-    const tailJack = { x: g.tail - 20, z: lap ? 0 : -g.depth / 2 };
-    // Labels: the chosen item first, then the rest (collisions cull later ones).
+    const walls = rr(wide.u0 + WALL.inset, wide.v0 + WALL.inset, wide.u1 - WALL.inset, wide.v1 - WALL.inset, 30);
+    const tailJack = F.tailJack;
+    // Every object's footprint (the close-up: its own objects only): the
+    // words keep clear of them (owner 2026-10-15: no word on an object).
+    const foots = useMemo<PlanFoot[]>(
+      () => (scene === 'kit' ? guitarPlanFoots(sc, built.model.parts, all.filter((o) => shownIn(o, 'kit')), 'stage', []) : guitarPlanFoots(sc, built.model.parts, all, scene, wedges)),
+      [sc, scene, wedges, all],
+    );
+    const cue = scene === 'studio' ? guitarCue(sc) : null;
+    const footOf = (id: string) => {
+      const ids = id === 'player' ? ['player', 'instrument'] : id === 'kit' ? foots.filter((f) => f.group === 'kit').map((f) => f.id) : [id];
+      const fs = foots.filter((f) => ids.includes(f.id));
+      return fs.length ? unionRect(fs) : null;
+    };
+    // Labels: the chosen item first, then the rest. Each name sits just
+    // outside its object's footprint (below, right, left, above), else in
+    // free space with a leader back to it.
     const labels: StaticLabel[] = [];
     const add = (it: SettingItem) => {
       for (const id of planIdsOf(it)) {
         const o = objs.find((q) => q.id === id);
         const wd = stageWedges.find((q) => q.id === id);
-        const at = o ? o.at : wd ? { x: wd.p.x, z: wd.p.z } : null;
-        if (!at) continue;
-        const dz = o?.kind === 'audience' ? -120 : o?.kind === 'room' ? 0 : (o?.r ?? 260) + 80;
-        labels.push({ id: `${it.id}:${id}`, text: it.short, u: at.x, v: at.z + dz, align: 'center', tone: highlight === it.id ? 'amber' : undefined });
+        if (!o && !wd) continue;
+        const tone = highlight === it.id ? ('amber' as const) : undefined;
+        if (o && (o.kind === 'audience' || o.kind === 'room')) {
+          // The audience is named beyond the edge; the room in open floor.
+          labels.push({ id: `${it.id}:${id}`, text: it.short, u: o.at.x, v: o.at.z, align: 'center', point: { u: o.at.x, v: o.at.z }, tone });
+          break;
+        }
+        const own = footOf(id);
+        if (!own) continue;
+        const [first, ...alts] = labelPlaces(own, xf.s / textScale);
+        labels.push({ id: `${it.id}:${id}`, text: it.short, u: first.u, v: first.v, align: first.align, alts, point: { u: (own.u0 + own.u1) / 2, v: (own.v0 + own.v1) / 2 }, tone });
         break;
       }
     };
-    const visible = items.filter((i) => i.scene === 'all' || i.scene === scene || (scene !== 'kit' && i.scene === 'kit'));
+    const visible = items.filter((i) => shownIn(i, scene));
     if (chosen) add(chosen);
     for (const it of visible) add(it);
-    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: Math.min(g.tail, fit.torso.min.x) - 40, v: torsoZ0 - 100, align: 'left', tone: 'illustrative' });
+    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: F.space.u0 + 20, v: F.space.v0 - 40, align: 'left', point: { u: F.space.u0 + 20, v: F.space.v0 + 20 }, tone: 'illustrative' });
     const seen = new Set<string>();
-    const uniq = labels.filter((l) => {
-      const k = l.id.split(':')[0];
-      return seen.has(k) ? false : (seen.add(k), true);
-    });
+    const uniq: StaticLabel[] = [
+      ...labels.filter((l) => {
+        const k = l.id.split(':')[0];
+        return seen.has(k) ? false : (seen.add(k), true);
+      }),
+      ...(cue ? cueLabels(cue).map((l) => ({ ...l, point: cuePoint(cue, l.id), tone: 'illustrative' as const })) : []),
+    ];
     const tap = (x: number, y: number) => {
       const u = (x - xf.ox) / xf.s;
       const v = (y - xf.oy) / xf.s;
@@ -290,15 +319,15 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
         <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
           <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={label}>
             <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-              {scene === 'studio' ? <Path path={walls} style="stroke" strokeWidth={60} color="#2a2c32" /> : null}
+              {scene === 'studio' ? <Path path={walls} style="stroke" strokeWidth={WALL.stroke} color="#2a2c32" /> : null}
               {scene === 'studio' && lit.has('room') ? <Path path={walls} style="stroke" strokeWidth={30} color={AMBER} opacity={0.8} /> : null}
               {scene === 'stage' ? (
-                <Line p1={vec(wide.u0 + 100, spec.stageEdgeZ)} p2={vec(wide.u1 - 100, spec.stageEdgeZ)} color={lit.has('audience') ? AMBER : '#7a7f8a'} strokeWidth={lit.has('audience') ? 22 : 12}>
+                <Line p1={vec(wide.u0 + 100, edgeZ)} p2={vec(wide.u1 - 100, edgeZ)} color={lit.has('audience') ? AMBER : '#7a7f8a'} strokeWidth={lit.has('audience') ? 22 : 12}>
                   <DashPathEffect intervals={[60, 40]} />
                 </Line>
               ) : null}
-              <Path path={rr(g.tail - 700, torsoZ0 - 450, g.L + 500, 800, 80)}>
-                <LinearGradient start={vec(g.tail - 700, torsoZ0 - 450)} end={vec(g.L + 500, 800)} colors={['#3a1c1f', '#2a1416', '#1c0d0f']} />
+              <Path path={rr(F.rug.u0, F.rug.v0, F.rug.u1, F.rug.v1, 80)}>
+                <LinearGradient start={vec(F.rug.u0, F.rug.v0)} end={vec(F.rug.u1, F.rug.v1)} colors={['#3a1c1f', '#2a1416', '#1c0d0f']} />
               </Path>
               <Group clip={space}>
                 <Path path={hatch} style="stroke" strokeWidth={6} color={GREY} opacity={0.4} />
@@ -316,10 +345,12 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
               {lit.has('player') || lit.has('instrument') ? <Path path={space} style="stroke" strokeWidth={14} color={AMBER} opacity={0.85} /> : null}
               {objs.filter((o) => o.kind === 'vocal').map((o) => <VocalPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
               {objs.filter((o) => o.kind === 'shared').map((o) => <SharedMicPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
+              {/* Studio: the player's personal headphone mixer (no wedges in a studio). */}
+              {cue ? <CueMixPlan rig={cue} /> : null}
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
       </View>
     );
   }

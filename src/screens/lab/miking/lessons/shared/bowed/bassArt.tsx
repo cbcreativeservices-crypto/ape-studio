@@ -9,8 +9,9 @@
 import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { bowedHitTest, bowedLabels, makeBowedInstrument, makeBowedPortrait } from './BowedArt';
 import { makeBowedSoundPage } from './BowedSoundPage';
-import { makeBowedSettingPage, type PlanObject } from './BowedSettingPage';
-import { BASS_A, BASS_BOW, BASS_PLUCK, BASS_SPEC, BASS_VIEWS } from './bass.ts';
+import { makeBowedSettingPage } from './BowedSettingPage';
+import { BASS_BOW, BASS_PLUCK, BASS_SPEC, BASS_VIEWS } from './bass.ts';
+import { bassPlan } from './bassPlan.ts';
 import { BASS_HEARING, type BassKind } from './bassWords.ts';
 
 const L = BASS_SPEC.string.mm;
@@ -37,20 +38,13 @@ const LABELS = {
   },
 };
 
-/** The drum kit to the bassist's right, the piano to the left (a typical trio). */
-export const BASS_KIT_AT = { x: 250, z: 1250 };
+/** The drum kit to the bassist's right, the piano to the left (a typical
+ *  trio): the plan's layout lives in bassPlan.ts (pure, for the overlap test). */
+export { BASS_KIT_AT } from './bassPlan.ts';
 
 export function bassArt(kind: BassKind): LessonArt {
   const bowed = kind === 'bow';
   const P = bowed ? BASS_BOW : BASS_PLUCK;
-  const hands = bowed ? { x: P.bow.frog.x, z: P.bow.frog.z } : { x: P.player.handR.x, z: P.player.handR.z };
-  const objects: PlanObject[] = [
-    { id: 'bass', kind: 'self', at: { x: BASS_A.bridgeTop.x, z: BASS_A.bridgeTop.z }, r: 360, label: 'bass', scene: 'all' },
-    { id: 'hands', kind: 'self', at: hands, r: 170, label: bowed ? 'bow' : 'hands', scene: 'kit' },
-    { id: 'endpin', kind: 'self', at: { x: P.endpinTip!.x, z: P.endpinTip!.z }, r: 150, label: 'endpin', scene: 'kit' },
-    { id: 'drums', kind: 'kit', at: BASS_KIT_AT, yaw: -90, r: 650, label: 'drum kit', short: 'drums', scene: 'kit' },
-    { id: 'piano', kind: 'piano', at: { x: -250, z: -2000 }, r: 650, label: 'piano', scene: 'kit' },
-  ];
   return {
     Instrument: makeBowedInstrument(P, BASS_VIEWS, bowed),
     labels: (view) => bowedLabels(P, view, LABELS, bowed),
@@ -99,11 +93,7 @@ export function bassArt(kind: BassKind): LessonArt {
             },
       ),
       setting: makeBowedSettingPage({
-        P,
-        hands: kind,
-        objects,
-        near: { u0: -1500, u1: 2000, v0: -2150, v1: 2000 },
-        wide: { u0: -1600, u1: 3700, v0: -2500, v1: 2600 },
+        ...bassPlan(kind),
         nearA11y: bowed
           ? 'A bass in a small group from above: the bassist standing behind the bass, the bow’s sweep hatched, the endpin, a drum kit to the bassist’s right and a grand piano to the left.'
           : 'A bass in a jazz trio from above: the bassist standing behind the bass, the plucking hand’s path hatched, the endpin, a drum kit to the bassist’s right and a grand piano to the left.',

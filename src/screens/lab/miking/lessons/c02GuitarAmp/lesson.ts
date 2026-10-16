@@ -741,7 +741,7 @@ export const C02_LESSON: Lesson = {
         id: 'sideFill',
         label: 'a side-fill monitor at the side of the stage',
         short: 'SIDE FILL',
-        p: { x: 700, y: FLOOR, z: -1500 },
+        p: { x: 1000, y: FLOOR, z: -2050 },
         lift: 150,
         faces: { x: 0, y: 0, z: 1 },
         note: 'It sits off to the side, about ninety degrees off the mic’s axis: no cardioid null reaches it. Distance and level do the work there.',

@@ -9,15 +9,11 @@ import { partIn } from '../shared/bowed/bowedModel.ts';
 import { brassHitTest, brassLabels, makeBrassInstrument, makeBrassPortrait } from '../shared/brass/BrassArt';
 import { makeBrassSoundPage } from '../shared/brass/BrassSoundPage';
 import { makeBrassSettingPage } from '../shared/brass/BrassSettingPage';
-import { valvedPose, slidePose } from '../shared/brass/brassPosture.ts';
-import { TENOR, TRUMPET } from '../shared/brass/brassSpec.ts';
+import { A01_PLAN } from './plan.ts';
 import { A01_MODEL, FH, TP } from './geometry.ts';
 
 const POSES = { trumpet: TP, flugelhorn: FH };
 const pose = (v: string) => (v === 'flugelhorn' ? FH : TP);
-// The neighbours on the plan: a second trumpet and a trombone (the same family's art).
-const TP2 = valvedPose(TRUMPET);
-const TB_N = slidePose(TENOR);
 
 export const A01_ART: LessonArt = {
   Instrument: makeBrassInstrument(POSES, 'trumpet'),
@@ -91,24 +87,13 @@ export const A01_ART: LessonArt = {
       reveal: 'The lips are the source, but the tube decides the note: the standing wave in the air column locks the lips to it. And the bell decides where the sound goes.',
     }),
     setting: makeBrassSettingPage({
-      P: TP,
-      objects: [
-        { id: 'horn', kind: 'self', at: { x: 0, z: 0 }, r: 250, label: 'trumpet', scene: 'all' },
-        { id: 'stand', kind: 'stand', at: { x: 380, z: -700 }, yaw: 180, r: 260, label: 'music stand', short: 'stand', scene: 'kit' },
-        { id: 'tp2', kind: 'brass', pose: TP2, at: { x: 40, z: 820 }, yaw: 0, r: 420, label: 'second trumpet', short: 'trumpet 2', scene: 'kit' },
-        { id: 'tb', kind: 'brass', pose: TB_N, at: { x: -150, z: 1380 }, yaw: 0, r: 380, label: 'trombone', scene: 'kit' },
-        { id: 'singer', kind: 'singer', at: { x: 800, z: -1400 }, yaw: 0, r: 300, label: 'singer at a mic', short: 'singer', scene: 'kit' },
-        { id: 'kit', kind: 'kit', at: { x: -2300, z: 300 }, yaw: 0, r: 950, label: 'drum kit', short: 'drums', scene: 'kit' },
-        { id: 'main', kind: 'pair', at: { x: 2100, z: 600 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
-      ],
-      near: { u0: -3050, u1: 2350, v0: -1850, v1: 1850 },
-      wide: { u0: -3100, u1: 3300, v0: -2200, v1: 2200 },
+      ...A01_PLAN,
       nearA11y: 'A trumpet player from above, the bell pointing right toward the audience: a music stand to the left, a second trumpet and a trombone beside, a singer at a mic in front and to the left, the drum kit behind.',
-      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge for the singer, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the section.' },
+      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge for the singer, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a trumpet mic. There is nothing to answer yet.',
       nearIdle: 'The bell points out toward the audience — and wherever the player turns. The valve hands work all the time. Everything else is a neighbour a trumpet mic will hear — or a person the bell can blast.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front, and the singer’s. Monitors, the PA and a loud band all reach a trumpet mic.',
-      studioIdle: 'No monitors on the floor. The room — and a main pair, when the trumpet plays in a section — are part of the picture now.',
+      studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the trumpet plays in a section — are part of the picture now.',
       before: [
         { title: 'ASK THE PLAYER FIRST', text: 'Hear the actual part: quiet lyrical notes, the strongest high attacks, falls and shakes, and every mute change. Watch how far the bell moves, and whether the player turns toward the band or a conductor. Hear the horn from where the audience would — the player hears it from behind the bell, which is different.' },
         { title: 'WORK WITH THE HORN AS IT IS', text: 'The horn is the player’s. Nothing clamps to the bell or its finish without their agreement and a clip made for it; nothing touches the valves, the slides or the mute’s path. The player puts mutes in and takes them out.' },

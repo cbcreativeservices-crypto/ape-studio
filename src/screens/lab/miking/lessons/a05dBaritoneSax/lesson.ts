@@ -80,7 +80,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   },
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the top and the bottom of the horn. They are starting points, not rules; the bigger the horn, the farther away it can blend. Move from there and listen: there is no single right answer.',
   unknowns: [{ text: 'The baritone’s length: a museum baritone measures app. 96.7 cm overall; the modern height drawn (1 m) and the low-A extension are drawing defaults.', dims: [] }],
-  wedges: saxWedges(MOUTH_HEIGHT.standing, 820, 200),
+  wedges: saxWedges(MOUTH_HEIGHT.standing, 820, 200, { x: 1300, z: -1100 }),
   accuracyExtra: 'The baritone is drawn about a metre tall with a 16 cm bell and a low A.',
   contextBoxes: { plan: { u0: -500, u1: 1850, v0: -700, v1: 1100 }, side: { u0: -500, u1: 1850, v0: -400, v1: 1650 } },
 });

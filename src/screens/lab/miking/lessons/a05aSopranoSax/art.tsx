@@ -6,13 +6,9 @@
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { makeSaxLessonArt } from '../shared/sax/saxLessonArt';
-import { ALTO, TENOR } from '../shared/sax/saxSpec.ts';
-import { saxPosture } from '../shared/sax/saxPosture.ts';
+import { A05A_PLAN } from './plan.ts';
 import { saxBefore, saxHearing } from '../shared/sax/saxWords.ts';
 import { SOPRANO_SAX } from './geometry.ts';
-
-const ALTO_P = saxPosture(ALTO, 'standing');
-const TENOR_P = saxPosture(TENOR, 'standing');
 
 export const A05A_ART: LessonArt = makeSaxLessonArt(SOPRANO_SAX, {
   figureA11y: 'A straight soprano saxophone seen face-on: the black mouthpiece with its reed and ligature at the top left, a short neck with the octave key, the straight brass body with its key cups, rods and pearl touches, and the bell flaring at the lower right, continuing the line of the body.',
@@ -25,22 +21,13 @@ export const A05A_ART: LessonArt = makeSaxLessonArt(SOPRANO_SAX, {
     reveal: 'Most of a note leaves at the first open hole — the open hole nearest the mouthpiece — and the open holes just past it. The bell carries the high harmonics, and the lowest notes.',
   },
   setting: {
-    objects: [
-      { id: 'sax', kind: 'self', at: { x: 200, z: 0 }, r: 300, label: 'soprano', scene: 'all' },
-      { id: 'stand', kind: 'stand', at: { x: 860, z: -300 }, yaw: 170, r: 260, label: 'music stand', short: 'stand', scene: 'kit' },
-      { id: 'n1', kind: 'sax', posture: ALTO_P, at: { x: -60, z: -950 }, r: 400, label: 'alto', scene: 'kit' },
-      { id: 'n2', kind: 'sax', posture: TENOR_P, at: { x: -60, z: 900 }, r: 420, label: 'tenor', scene: 'kit' },
-      { id: 'kit', kind: 'kit', at: { x: -1900, z: -300 }, r: 700, label: 'drums', scene: 'kit' },
-      { id: 'main', kind: 'pair', at: { x: 1550, z: 150 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
-    ],
-    near: { u0: -2700, u1: 1300, v0: -1450, v1: 1500 },
-    wide: { u0: -2700, u1: 1900, v0: -1550, v1: 1900 },
+    ...A05A_PLAN,
     nearA11y: 'A soprano player from above, the straight horn pointing forward, the horn’s swing hatched round the bell; a music stand in front, an alto player on one side and a tenor on the other, the drum kit behind.',
-    wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group.' },
+    wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
     nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a soprano mic. There is nothing to answer yet.',
     nearIdle: 'The soprano points forward and down from the player’s mouth; the whole horn swings as they move, and the hands never leave the keys. Everything else is a neighbour a soprano mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front, and another player’s to the side. Monitors, the PA and a loud band all reach a soprano mic.',
-    studioIdle: 'No monitors on the floor. The room — and a main pair, when the soprano plays in a group — are part of the picture now.',
+    studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the soprano plays in a group — are part of the picture now.',
     before: saxBefore('soprano'),
     hearing: saxHearing,
   },

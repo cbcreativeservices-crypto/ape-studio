@@ -22,6 +22,7 @@ import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../../engi
 import type { PageProps } from '../../../../pages/pageTypes';
 import { handOf } from '../family.ts';
 import { HandPlan } from '../HandPlan';
+import { modelArtPlan } from '../handPlanModel.ts';
 
 export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProps) {
   const H = handOf(lesson);
@@ -35,6 +36,8 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const byId = (id: string | null): SettingItem | undefined => items.find((i) => i.id === id);
   const shortOf = (id: string) => byId(id)?.short ?? id.toUpperCase();
   const things = H.plan.things;
+  // The drums' own footprint on the plan (the player is the plan's own figure).
+  const artPlan = useMemo(() => modelArtPlan(lesson.model, variant, false), [lesson, variant]);
 
   const pickBand = (id: string) => {
     if (!bandItems.some((i) => i.id === id)) return;
@@ -45,7 +48,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
     if (wideItems.some((i) => i.id === id)) setWideSel(id);
   };
   const render = (scene: 'kit' | 'stage' | 'studio', sel: string | null, onTap: (id: string) => void, label: string) => (w: number, h: number) => (
-    <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={art.Instrument as never} things={things.filter((t) => scene !== 'kit' || t.scene === 'all')} box={H.plan.box} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} />
+    <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={art.Instrument as never} things={things} box={H.plan.box} art={artPlan} cue={H.plan.cue} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} />
   );
   const itemFader = (list: readonly SettingItem[], sel: string | null, pick: (id: string) => void): DockParam => {
     const idx = Math.max(0, list.findIndex((i) => i.id === sel));
@@ -130,7 +133,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: render(where, wideSel, pickWide, where === 'stage' ? `The band on a stage, from above, with the monitors and the audience side. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}` : `The same drums in a studio room, from above: no monitors on the floor. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
+        render: render(where, wideSel, pickWide, where === 'stage' ? `The band on a stage, from above, with the monitors and the audience side. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}` : `The same drums in a studio room, from above: no monitors on the floor — each player has a headphone mixer beside them. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
         badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
         bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: wideParams,
@@ -140,7 +143,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
         <>
           <Landing looking={where === 'stage' ? 'Plan · on a stage' : 'Plan · in a studio'} prompt="Switch STAGE / STUDIO, and tap what is new around the drums." />
           <Body>{where === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
-          {card(wideSelItem, where === 'stage' ? 'A floor monitor in front of the player, facing them, and the audience and PA beyond. Tap them.' : 'No monitors on the floor. The room itself is part of the picture now.')}
+          {card(wideSelItem, where === 'stage' ? 'A floor monitor in front of the player, facing them, and the audience and PA beyond. Tap them.' : 'No monitors on the floor: each player listens on headphones, from a personal headphone mixer beside them, fed from the control room. The room itself is part of the picture now.')}
         </>
       ),
     },

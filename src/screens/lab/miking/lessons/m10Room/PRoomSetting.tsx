@@ -11,6 +11,13 @@
  *   BEFORE ANY MIC (read)    listen first, decide what the room is for,
  *                            nothing on the walls, hearing — then the checks.
  * Credit: the three checks.
+ *
+ * Collision pass 2026-10-15 (owner): every object's footprint comes from
+ * roomPlanModel.ts; the words keep clear of them (a name with no clear spot
+ * moves to free space with a leader). The drummer's fill stands beside the
+ * kit, not over the floor tom and the ride (kitStage.ts). STUDIO: no wedges —
+ * the drummer's personal headphone mixer, fed from the CONTROL ROOM box on
+ * the back wall.
  */
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
@@ -30,6 +37,10 @@ import { KIT_FLOOR_Y, yAt } from '../shared/kitPlanModel.ts';
 import { CORNER_L, CORNER_R, ROOM } from './model.ts';
 import { M10_VIEWS, M10_WEDGES, PA } from './geometry.ts';
 import { RoomArt } from './RoomArt';
+import { m10Cue, m10Foots } from './roomPlanModel.ts';
+import { clearOfFoots, labelPlaces, type PlanRect } from '../shared/planFoot.ts';
+import { CueMixPlan } from '../shared/monitoring/CueMixPlan';
+import { cueLabels } from '../shared/monitoring/cueMix.ts';
 
 const AMBER = '#ffc64d';
 type Where = 'studio' | 'live';
@@ -146,16 +157,35 @@ function FloorWedgeSide({ view, at, faces }: { view: ViewId; at: { x: number; y:
   );
 }
 
+/** A mark's plan rect (for its name's places beside it). */
+function markRect(m: Mark): PlanRect {
+  return m.kind === 'rect' ? { u0: m.u0, u1: m.u1, v0: m.v0, v1: m.v1 } : { u0: m.u - m.r, u1: m.u + m.r, v0: m.v - m.r, v1: m.v + m.r };
+}
+
 function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; h: number; view: ViewId; where: Where; items: readonly SettingItem[]; sel: string | null; onTap: (id: string) => void; label: string }) {
   const textScale = useStageTextScale();
   const box: ViewBox = M10_VIEWS[view];
   const xf = useMemo(() => fitXform(view, box, w, h, 6), [view, box, w, h]);
   const ring = useMemo(() => (sel ? markPath(marksOf(sel, view)) : null), [sel, view]);
-  const labels: StaticLabel[] = items
-    .map((it) => ({ it, at: LABEL_AT[it.id]?.[view] }))
-    .filter((x): x is { it: SettingItem; at: { u: number; v: number; align: 'left' | 'center' | 'right' } } => !!x.at)
-    .sort((a, b) => (a.it.id === sel ? -1 : b.it.id === sel ? 1 : 0))
-    .map(({ it, at }) => ({ id: it.id, text: it.short, u: at.u, v: at.v, align: at.align, tone: it.id === sel ? ('amber' as const) : ('muted' as const) }));
+  // The plan's objects (top view): the words keep clear of them.
+  const foots = useMemo(() => m10Foots(where), [where]);
+  const top = view === 'top';
+  // Studio, from above: the drummer's headphone mix (no wedges in a studio).
+  const cue = where === 'studio' && top ? m10Cue() : null;
+  const labels: StaticLabel[] = [
+    ...items
+      .map((it) => ({ it, at: LABEL_AT[it.id]?.[view] }))
+      .filter((x): x is { it: SettingItem; at: { u: number; v: number; align: 'left' | 'center' | 'right' } } => !!x.at)
+      .sort((a, b) => (a.it.id === sel ? -1 : b.it.id === sel ? 1 : 0))
+      .map(({ it, at }) => {
+        // Its own place first, then just outside its object, else free space
+        // with a leader back to the object.
+        const m = marksOf(it.id, view)[0];
+        const r = m ? markRect(m) : null;
+        return { id: it.id, text: it.short, u: at.u, v: at.v, align: at.align, alts: r && top ? labelPlaces(r, xf.s / textScale) : [], point: r ? { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 } : { u: at.u, v: at.v }, tone: it.id === sel ? ('amber' as const) : ('muted' as const) };
+      }),
+    ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+  ];
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
@@ -171,11 +201,12 @@ function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; 
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
             <RoomArt view={view} variant={where} />
             {where === 'live' ? M10_WEDGES.filter((wd) => wd.glyph !== 'none').map((wd) => <FloorWedge key={wd.id} view={view} at={wd.p} faces={wd.faces} />) : null}
+            {cue ? <CueMixPlan rig={cue} /> : null}
             {ring ? <Path path={ring} style="stroke" strokeWidth={4 / xf.s} color={AMBER} /> : null}
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(top ? foots : [])} />
     </View>
   );
 }
@@ -244,7 +275,7 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: (w, h) => <RoomPlan w={w} h={h} view={view} where="studio" items={roomItems} sel={sel} onTap={pick} label={`The studio live room, ${view === 'top' ? 'from above' : 'from the side'}: about 6.5 by 5.4 metres with a 3 metre ceiling, the kit near the back wall, the door and its walkway behind the drummer's right.${selItem ? ` Highlighted: ${selItem.label}.` : ''}`} />,
+        render: (w, h) => <RoomPlan w={w} h={h} view={view} where="studio" items={roomItems} sel={sel} onTap={pick} label={`The studio live room, ${view === 'top' ? 'from above' : 'from the side'}: about 6.5 by 5.4 metres with a 3 metre ceiling, the kit near the back wall, the door and its walkway behind the drummer's right.${view === 'top' ? ' The drummer’s own headphone mixer stands at the drummer’s right, its cable running back to the control room box on the back wall.' : ''}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`} />,
         badge: 'The room and its size are drawing values · a typical studio live room · grey hatch = the walkway',
         bezel: bezel(selItem, { k: 'LOOKED AT', v: `${seen.size} / ${roomItems.length}`, flex: 1 }),
         params: [fader(roomItems, sel, pick), viewToggle(view, setView)],
@@ -264,7 +295,7 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: (w, h) => <RoomPlan w={w} h={h} view={wview} where={where} items={wideItems} sel={wsel} onTap={pickWide} label={`${where === 'live' ? 'The same space as a stage: a PA pair at the front, the monitors by the kit, the audience beyond.' : 'The studio room: no PA, no monitors.'}${wItem ? ` Highlighted: ${wItem.label}.` : ''}`} />,
+        render: (w, h) => <RoomPlan w={w} h={h} view={wview} where={where} items={wideItems} sel={wsel} onTap={pickWide} label={`${where === 'live' ? 'The same space as a stage: a PA pair at the front, the monitors by the kit, the audience beyond.' : 'The studio room: no PA, no monitors on the floor; the drummer hears the mix on headphones from a personal mixer beside the kit.'}${wItem ? ` Highlighted: ${wItem.label}.` : ''}`} />,
         badge: where === 'live' ? 'A typical small stage · PA and monitors where a stage often puts them' : 'A typical studio live room',
         bezel: bezel(wItem, { k: 'WHERE', v: where === 'live' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: [

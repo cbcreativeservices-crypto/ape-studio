@@ -9,10 +9,9 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { bowedHitTest, bowedLabels, makeBowedInstrument, makeBowedPortrait } from '../shared/bowed/BowedArt';
 import { makeBowedSoundPage } from '../shared/bowed/BowedSoundPage';
 import { makeBowedSettingPage } from '../shared/bowed/BowedSettingPage';
-import { underChin } from '../shared/bowed/posture.ts';
-import { VIOLA, VIOLIN } from '../shared/bowed/bowedSpec.ts';
 import { CELLO_VIEWS } from './geometry.ts';
 import { POSTURE, SPEC } from './model.ts';
+import { C09C_PLAN } from './plan.ts';
 
 const P = POSTURE;
 const L = SPEC.string.mm;
@@ -36,10 +35,6 @@ const LABELS = {
     player: { du: -40, dv: 0, align: 'right' as const },
   },
 };
-
-/** Neighbours on the plan: a viola and a violin of the same family, a stand. */
-const VIOLA_P = underChin(VIOLA, 20);
-const VIOLIN_P = underChin(VIOLIN);
 
 export const CELLO_ART: LessonArt = {
   Instrument: makeBowedInstrument(P, CELLO_VIEWS, true),
@@ -66,18 +61,7 @@ export const CELLO_ART: LessonArt = {
       reveal: 'The bow never strikes: it grips the string, lets it slip, and grips it again — once every vibration, for as long as it moves.',
     }),
     setting: makeBowedSettingPage({
-      P,
-      objects: [
-        { id: 'cello', kind: 'self', at: { x: 0, z: 0 }, r: 300, label: 'cello', scene: 'all' },
-        { id: 'bow', kind: 'self', at: { x: P.bow.frog.x, z: P.bow.frog.z }, r: 160, label: 'bow', scene: 'kit' },
-        { id: 'endpin', kind: 'self', at: { x: P.endpinTip!.x, z: P.endpinTip!.z }, r: 140, label: 'endpin', scene: 'kit' },
-        { id: 'stand', kind: 'stand', at: { x: 760, z: -420 }, yaw: 160, r: 260, label: 'music stand', short: 'stand', scene: 'kit' },
-        { id: 'viola', kind: 'bowed', posture: VIOLA_P, at: { x: 250, z: 900 }, yaw: -40, r: 380, label: 'viola', scene: 'kit' },
-        { id: 'violin', kind: 'bowed', posture: VIOLIN_P, at: { x: 1250, z: 700 }, yaw: -95, r: 380, label: 'violin', scene: 'kit' },
-        { id: 'main', kind: 'pair', at: { x: 2500, z: 350 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
-      ],
-      near: { u0: -1300, u1: 1800, v0: -900, v1: 1300 },
-      wide: { u0: -1400, u1: 3200, v0: -1500, v1: 1650 },
+      ...C09C_PLAN,
       nearA11y: 'A cello quartet seat from above: the cellist on a chair with the cello in front, the bow’s sweep hatched, a music stand in front, a viola and a violin beside.',
       wideA11y: { stage: 'The same from above, on a stage: the cellist’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group.' },
       nearLanding: 'Tap anything around the cellist — or step through ITEM — to see what it means for a cello mic. There is nothing to answer yet.',

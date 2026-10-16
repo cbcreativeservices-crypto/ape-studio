@@ -10,7 +10,10 @@
  * with its jingle pairs, a suspended cymbal, the trap table, chairs, music
  * stands and trombone bells, the podium, the main pair, PA stacks and floor
  * wedges. Positions are a typical layout (orchestraPlanModel.ts, drawing
- * defaults; the badge says so).
+ * defaults; the badge says so). IN A STUDIO: no audience and no wedges —
+ * each performer's personal headphone mixer (CueMixPlan), fed back to the
+ * distribution points on the side walls. Every word keeps clear of every
+ * object (orchestraFoots, StaticLabels `clearOf`).
  *
  * Nothing moves (D8). A tap names an item; the dock's ITEM fader is the
  * no-tap path to the same cards. Same contract as the kit plan (KitPlan.tsx).
@@ -20,7 +23,7 @@ import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
 import { Wedge2WayTop } from '../wedge2Way';
 import { useStageTextScale } from '../../../../rack/stageAspect';
-import type { SettingItem, Wedge } from '../../../engine/model/types.ts';
+import type { SettingItem } from '../../../engine/model/types.ts';
 import type { SettingPlanProps } from '../../../engine/scene/sceneTypes.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
@@ -28,7 +31,10 @@ import { CymbalPlan, DrumPlan } from '../drums/DrumArt';
 import { TimpanoTop } from './TimpaniArt';
 import { CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { AMBER, BRONZE, GREY, LACQUER, legs, make, oval, rect, rrect, seg, type SkPath } from './paths.ts';
-import { dirToPlan, FRONT, LESSON_FRAMES, ORCH_BOX, orchHitTest, orchLabelAt, PERC, playerSpaces, ROWS, timpaniShown, toPlan, type OwnInstrument, type PlanPt } from './orchestraPlanModel.ts';
+import { BASS_STAND, CHAIR, DECK_EDGE_V, FRONT, ORCH_BOX, orchestraCue, orchestraFoots, orchHitTest, orchItemRect, ownPerformer, panelRects, PERC, PERC_STAND, PERC_STANDS, playerSpaces, ROWS, SNARE_STAND, stageWedgesOf, timpaniShown, WALL_T, type OwnInstrument, type PlanPt } from './orchestraPlanModel.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueHub, cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, labelPlaces } from '../planFoot.ts';
 
 type Scene = SettingPlanProps['scene'];
 
@@ -64,7 +70,7 @@ function BassDrumPlan({ hi }: { hi: boolean }) {
   const u1 = B.c.u + L / 2;
   const g = useMemo(() => {
     const shell = rect(make(), u0, B.c.v - R, u1, B.c.v + R);
-    const hoops = rrect(rrect(make(), u0 - 22, B.c.v - R - 18, u0 + 18, B.c.v + R + 18, 10), u1 - 18, B.c.v - R - 18, u1 + 22, B.c.v + R + 18, 10);
+    const hoops = rrect(rrect(make(), u0 - BASS_STAND.hoop, B.c.v - R - 18, u0 + 18, B.c.v + R + 18, 10), u1 - 18, B.c.v - R - 18, u1 + BASS_STAND.hoop, B.c.v + R + 18, 10);
     const rods = make();
     for (const s of [-1, 1]) {
       for (const [a, b] of [
@@ -76,14 +82,15 @@ function BassDrumPlan({ hi }: { hi: boolean }) {
     }
     // The stand: two uprights at the pivots (either side of the shell), the
     // base rails across, four casters at the corners (drawing defaults).
+    const S = BASS_STAND;
     const frame = make();
-    const yo = R + 90;
-    seg(frame, B.c.u - 330, B.c.v - yo, B.c.u + 330, B.c.v - yo);
-    seg(frame, B.c.u - 330, B.c.v + yo, B.c.u + 330, B.c.v + yo);
-    seg(frame, B.c.u - 330, B.c.v - yo, B.c.u - 330, B.c.v + yo);
-    seg(frame, B.c.u + 330, B.c.v - yo, B.c.u + 330, B.c.v + yo);
+    const yo = R + S.yo;
+    seg(frame, B.c.u - S.rail, B.c.v - yo, B.c.u + S.rail, B.c.v - yo);
+    seg(frame, B.c.u - S.rail, B.c.v + yo, B.c.u + S.rail, B.c.v + yo);
+    seg(frame, B.c.u - S.rail, B.c.v - yo, B.c.u - S.rail, B.c.v + yo);
+    seg(frame, B.c.u + S.rail, B.c.v - yo, B.c.u + S.rail, B.c.v + yo);
     const casters = make();
-    for (const su of [-1, 1]) for (const sv of [-1, 1]) oval(casters, B.c.u + su * 330, B.c.v + sv * yo, 40, 40);
+    for (const su of [-1, 1]) for (const sv of [-1, 1]) oval(casters, B.c.u + su * S.rail, B.c.v + sv * yo, S.caster, S.caster);
     const pivots = make();
     for (const sv of [-1, 1]) oval(pivots, B.c.u, B.c.v + sv * (R + 52), 46, 46);
     return { shell, hoops, rods, frame, casters, pivots, yo };
@@ -93,7 +100,7 @@ function BassDrumPlan({ hi }: { hi: boolean }) {
       <Path path={g.shell} color="#000" opacity={0.55} transform={[{ translateX: 30 }, { translateY: 40 }]}>
         <BlurMask blur={40} style="normal" />
       </Path>
-      <Path path={g.frame} style="stroke" strokeWidth={46} strokeCap="round" color="#141519" />
+      <Path path={g.frame} style="stroke" strokeWidth={BASS_STAND.railW} strokeCap="round" color="#141519" />
       <Path path={g.frame} style="stroke" strokeWidth={32} strokeCap="round" color="#5b5f69" />
       <Path path={g.casters} color="#0e0f12" />
       <Path path={g.casters} style="stroke" strokeWidth={8} color="#8a8f99" />
@@ -153,12 +160,13 @@ function chairs(us: readonly number[], v: number, bells: boolean): { seats: SkPa
   const desks = make();
   const legsP = make();
   const bellsP = make();
+  const C = CHAIR;
   for (const u of us) {
-    rrect(seats, u - 210, v - 210, u + 210, v + 190, 50);
-    rrect(backs, u - 200, v - 250, u + 200, v - 190, 26);
-    rrect(desks, u - 250, v + 420, u + 250, v + 470, 14);
-    legs(legsP, u, v + 445, 0, 170, 3, -Math.PI / 2);
-    if (bells) oval(bellsP, u + 130, v + 330, 105, 105);
+    rrect(seats, u - C.seat.hw, v + C.seat.v0, u + C.seat.hw, v + C.seat.v1, C.seat.r);
+    rrect(backs, u - C.back.hw, v + C.back.v0, u + C.back.hw, v + C.back.v1, C.back.r);
+    rrect(desks, u - C.desk.hw, v + C.desk.v0, u + C.desk.hw, v + C.desk.v1, C.desk.r);
+    legs(legsP, u, v + C.legV, 0, C.legR, 3, -Math.PI / 2);
+    if (bells) oval(bellsP, u + C.bell.du, v + C.bell.dv, C.bell.r, C.bell.r);
   }
   return { seats, backs, desks, legsP, bellsP: bells ? bellsP : null };
 }
@@ -234,8 +242,8 @@ function standsOf(pts: readonly PlanPt[]): { desks: SkPath; legsP: SkPath } {
   const desks = make();
   const legsP = make();
   for (const p of pts) {
-    rrect(desks, p.u - 250, p.v - 25, p.u + 250, p.v + 25, 14);
-    legs(legsP, p.u, p.v, 0, 170, 3, -Math.PI / 2);
+    rrect(desks, p.u - PERC_STAND.hw, p.v - PERC_STAND.hd, p.u + PERC_STAND.hw, p.v + PERC_STAND.hd, 14);
+    legs(legsP, p.u, p.v, 0, PERC_STAND.legR, 3, -Math.PI / 2);
   }
   return { desks, legsP };
 }
@@ -243,6 +251,7 @@ function standsOf(pts: readonly PlanPt[]): { desks: SkPath; legsP: SkPath } {
 /* ── the front of the stage ── */
 function Podium({ hi }: { hi: boolean }) {
   const c = FRONT.conductor;
+  const sd = FRONT.scoreDesk;
   return (
     <Group>
       <Path path={rrect(make(), c.u - c.r, c.v - c.r, c.u + c.r, c.v + c.r, 60)} color="#000" opacity={0.5} transform={[{ translateX: 30 }, { translateY: 40 }]}>
@@ -253,10 +262,10 @@ function Podium({ hi }: { hi: boolean }) {
       </Path>
       <Path path={rrect(make(), c.u - c.r + 40, c.v - c.r + 40, c.u + c.r - 40, c.v + c.r - 40, 40)} style="stroke" strokeWidth={10} color="#7a5a40" opacity={0.6} />
       {/* the score desk, upstage of the conductor, facing them */}
-      <Path path={rrect(make(), c.u - 300, c.v - c.r - 170, c.u + 300, c.v - c.r - 110, 18)}>
-        <LinearGradient start={vec(0, c.v - c.r - 170)} end={vec(0, c.v - c.r - 110)} colors={['#5d616c', '#2a2c32']} />
+      <Path path={rrect(make(), c.u - sd.hw, c.v - c.r + sd.dv0, c.u + sd.hw, c.v - c.r + sd.dv1, 18)}>
+        <LinearGradient start={vec(0, c.v - c.r + sd.dv0)} end={vec(0, c.v - c.r + sd.dv1)} colors={['#5d616c', '#2a2c32']} />
       </Path>
-      {hi ? <Path path={rrect(make(), c.u - c.r - 90, c.v - c.r - 250, c.u + c.r + 90, c.v + c.r + 90, 80)} style="stroke" strokeWidth={28} color={AMBER} /> : null}
+      {hi ? <Path path={rrect(make(), c.u - c.r - 90, c.v - c.r + sd.dv0 - 80, c.u + c.r + 90, c.v + c.r + 90, 80)} style="stroke" strokeWidth={28} color={AMBER} /> : null}
     </Group>
   );
 }
@@ -264,7 +273,7 @@ function Podium({ hi }: { hi: boolean }) {
 function MainPair({ hi }: { hi: boolean }) {
   const m = FRONT.main;
   const g = useMemo(() => {
-    const tri = legs(make(), m.u, m.v, 0, 330, 3, -Math.PI / 2);
+    const tri = legs(make(), m.u, m.v, 0, m.legR, 3, -Math.PI / 2);
     const bar = seg(make(), m.u - m.spread - 60, m.v, m.u + m.spread + 60, m.v);
     const mics = make();
     for (const s of [-1, 1]) {
@@ -275,7 +284,7 @@ function MainPair({ hi }: { hi: boolean }) {
       mics.lineTo(x + Math.sin(ang) * 150, m.v - Math.cos(ang) * 150);
     }
     return { tri, bar, mics };
-  }, [m.u, m.v, m.spread]);
+  }, [m.u, m.v, m.spread, m.legR]);
   return (
     <Group>
       <Path path={g.tri} style="stroke" strokeWidth={22} strokeCap="round" color="#3a3d45" />
@@ -290,8 +299,9 @@ function MainPair({ hi }: { hi: boolean }) {
 
 function PaStack({ at, hi }: { at: PlanPt; hi: boolean }) {
   const g = useMemo(() => {
-    const cab = rrect(make(), at.u - 300, at.v - 230, at.u + 300, at.v + 230, 22);
-    const grille = rrect(make(), at.u - 270, at.v + 90, at.u + 270, at.v + 210, 14);
+    const P = FRONT.paCab;
+    const cab = rrect(make(), at.u - P.hw, at.v - P.hd, at.u + P.hw, at.v + P.hd, 22);
+    const grille = rrect(make(), at.u - P.hw + 30, at.v + P.hd - 140, at.u + P.hw - 30, at.v + P.hd - 20, 14);
     return { cab, grille };
   }, [at.u, at.v]);
   return (
@@ -300,11 +310,11 @@ function PaStack({ at, hi }: { at: PlanPt; hi: boolean }) {
         <BlurMask blur={30} style="normal" />
       </Path>
       <Path path={g.cab}>
-        <LinearGradient start={vec(at.u - 300, at.v - 230)} end={vec(at.u + 300, at.v + 230)} colors={['#3b3e46', '#24262c', '#15161a']} />
+        <LinearGradient start={vec(at.u - FRONT.paCab.hw, at.v - FRONT.paCab.hd)} end={vec(at.u + FRONT.paCab.hw, at.v + FRONT.paCab.hd)} colors={['#3b3e46', '#24262c', '#15161a']} />
       </Path>
       <Path path={g.grille} color="#0c0d10" />
       <Path path={g.cab} style="stroke" strokeWidth={10} color="#70747f" opacity={0.9} />
-      {hi ? <Path path={rrect(make(), at.u - 380, at.v - 310, at.u + 380, at.v + 310, 40)} style="stroke" strokeWidth={26} color={AMBER} /> : null}
+      {hi ? <Path path={rrect(make(), at.u - FRONT.paCab.hw - 80, at.v - FRONT.paCab.hd - 80, at.u + FRONT.paCab.hw + 80, at.v + FRONT.paCab.hd + 80, 40)} style="stroke" strokeWidth={26} color={AMBER} /> : null}
     </Group>
   );
 }
@@ -332,10 +342,14 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
   const textScale = useStageTextScale();
   const four = own === 'timpani' && variant === 'four';
   const wide = scene !== 'kit';
+  const studio = scene === 'studio';
   const box = wide ? ORCH_BOX.wide : ORCH_BOX.ensemble;
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
-  const frame = LESSON_FRAMES[own];
-  const stageWedges = scene === 'stage' ? wedges.filter((wd: Wedge) => wd.glyph !== 'none').map((wd) => ({ id: wd.id, at: toPlan(frame, wd.p), faces: dirToPlan(frame, wd.faces) })) : [];
+  const stageWedges = useMemo(() => (scene === 'stage' ? stageWedgesOf(own, wedges) : []), [scene, own, wedges]);
+  // Every object's footprint (the same numbers as the drawing): the words
+  // keep clear of them. The near (kit) view has no wedges, PA or mixers.
+  const foots = useMemo(() => orchestraFoots(own, studio ? 'studio' : 'stage', four, scene === 'stage' ? wedges : []), [own, studio, four, scene, wedges]);
+  const cue = useMemo(() => (studio ? orchestraCue(own, four) : []), [studio, own, four]);
   const spaces = useMemo(() => {
     const p = make();
     for (const poly of playerSpaces(four)) {
@@ -344,11 +358,11 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
     }
     return p;
   }, [four]);
-  const percStands = useMemo(() => standsOf([{ u: PERC.snare.player.u + 420, v: PERC.snare.player.v - 220 }]), []);
+  const percStands = useMemo(() => standsOf(PERC_STANDS.map((s) => s.at)), []);
   const audience = useMemo(() => {
     const p = make();
     const v = FRONT.audienceV;
-    for (const u of [-2600, 0, 2600]) {
+    for (const u of FRONT.audienceArrowsU) {
       p.moveTo(u, v - 40);
       p.lineTo(u, v + 220);
       p.moveTo(u - 60, v + 160);
@@ -362,12 +376,8 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
     return rect(make(), H.u0, H.v0, H.u1, H.v1);
   }, []);
   const panels = useMemo(() => {
-    const H = FRONT.hall;
     const p = make();
-    for (let v = H.v0 + 500; v < H.v1 - 800; v += 1300) {
-      rrect(p, H.u0 + 20, v, H.u0 + 120, v + 700, 20);
-      rrect(p, H.u1 - 120, v, H.u1 - 20, v + 700, 20);
-    }
+    for (const { r } of panelRects()) rrect(p, r.u0, r.v0, r.u1, r.v1, 20);
     return p;
   }, []);
 
@@ -378,14 +388,16 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
   const shownHere = (i: SettingItem) => i.scene === 'all' || i.scene === scene;
   const itemOfPlan = (pid: string) => items.find((i) => shownHere(i) && planIdsOf(i).includes(pid)) ?? null;
 
+  // Collision pass 2026-10-15: each name goes just outside its object's own
+  // footprint (below, right, left, above), else into free space with a
+  // leader back to the object — never on an object.
   const labels: StaticLabel[] = [];
   const addItem = (it: SettingItem) => {
     for (const pid of planIdsOf(it)) {
-      let at = orchLabelAt(pid, four);
-      const wd = stageWedges.find((x) => x.id === pid);
-      if (wd) at = { u: wd.at.u, v: wd.at.v + 420, align: 'center' };
-      if (!at) continue;
-      labels.push({ id: `${it.id}:${pid}`, text: it.short, u: at.u, v: at.v, align: at.align, tone: highlight === it.id || pid === own ? 'amber' : undefined });
+      const r = orchItemRect(pid, foots);
+      if (!r) continue;
+      const places = labelPlaces(r, xf.s / textScale);
+      labels.push({ id: `${it.id}:${pid}`, text: it.short, u: places[0].u, v: places[0].v, align: places[0].align, alts: places.slice(1), point: { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 }, tone: highlight === it.id || pid === own ? 'amber' : undefined });
       break;
     }
   };
@@ -399,6 +411,17 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
     const k = l.id.split(':')[0];
     return seen.has(k) ? false : (seen.add(k), true);
   });
+  // The studio's headphone mix: HEADPHONE MIX at the lesson's own player's
+  // mixer (every performer has the same one) and CONTROL ROOM at its wall box.
+  const mine = `cueMix:${ownPerformer(own)}`;
+  for (const rig of cue) {
+    const hub = cueHub(rig).rect;
+    for (const l of cueLabels(rig)) {
+      const s = rig.stations.find((x) => `cueMix:${x.id}` === l.id);
+      if (s && l.id !== mine) continue;
+      uniq.push({ ...l, tone: 'illustrative', point: s ? s.at : { u: (hub.u0 + hub.u1) / 2, v: (hub.v0 + hub.v1) / 2 } });
+    }
+  }
 
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
@@ -414,20 +437,21 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
       <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-            {/* the stage floor (boards), and the hall in the studio */}
-            <Path path={rect(make(), box.u0, box.v0, box.u1, Math.min(box.v1, FRONT.audienceV - 60))}>
+            {/* the stage floor (boards) to the deck's edge; the whole hall in the studio */}
+            <Path path={rect(make(), box.u0, box.v0, box.u1, studio ? FRONT.hall.v1 : Math.min(box.v1, DECK_EDGE_V))}>
               <LinearGradient start={vec(box.u0, box.v0)} end={vec(box.u1, box.v1)} colors={['#2a2018', '#1e1711', '#15100c']} />
             </Path>
-            {scene === 'studio' ? (
+            {studio ? (
               <>
-                <Path path={walls} style="stroke" strokeWidth={90} color="#2a2c32" />
+                <Path path={walls} style="stroke" strokeWidth={WALL_T} color="#2a2c32" />
                 <Path path={panels} color="#3a3d52" />
                 <Path path={panels} style="stroke" strokeWidth={8} color="#5d6a84" />
               </>
             ) : null}
-            {wide ? (
+            {/* the deck's edge and the audience: a stage only (a studio has no audience) */}
+            {scene === 'stage' ? (
               <>
-                <Line p1={vec(FRONT.hall.u0, FRONT.audienceV - 60)} p2={vec(FRONT.hall.u1, FRONT.audienceV - 60)} color="#5d616c" strokeWidth={18}>
+                <Line p1={vec(FRONT.hall.u0, DECK_EDGE_V)} p2={vec(FRONT.hall.u1, DECK_EDGE_V)} color="#5d616c" strokeWidth={18}>
                   <DashPathEffect intervals={[90, 60]} />
                 </Line>
                 <Path path={audience} style="stroke" strokeWidth={34} color="#aab0bd" strokeCap="round" strokeJoin="round" />
@@ -464,7 +488,7 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
             ) : null}
             <BassDrumPlan hi={hi('bassDrum')} />
             <Group transform={[{ translateX: snare.c.u }, { translateY: snare.c.v }]}>
-              <Path path={legs(make(), 0, 0, 40, snare.d / 2 + 140, 3, Math.PI / 2)} style="stroke" strokeWidth={22} strokeCap="round" color="#7a7f8a" />
+              <Path path={legs(make(), 0, 0, 40, snare.d / 2 + SNARE_STAND.legOut, 3, Math.PI / 2)} style="stroke" strokeWidth={SNARE_STAND.legW} strokeCap="round" color="#7a7f8a" />
               <DrumPlan drum={{ spec: CONCERT_SNARE_14x65, c: { x: 0, y: 0, z: 0 }, tiltDeg: 0 }} />
               {hi('snare') ? <Circle cx={0} cy={0} r={snare.d / 2 + 190} style="stroke" strokeWidth={28} color={AMBER} /> : null}
             </Group>
@@ -483,11 +507,15 @@ export function OrchestraPlan({ w, h, scene, variant, items, wedges, highlight, 
             {stageWedges.map((wd) => (
               <WedgePlan key={wd.id} at={wd.at} faces={wd.faces} hi={lit.has(wd.id)} />
             ))}
-            {scene === 'studio' && lit.has('hall') ? <Path path={walls} style="stroke" strokeWidth={60} color={AMBER} opacity={0.8} /> : null}
+            {/* Studio: each performer's headphone mix (no wedges in a studio). */}
+            {cue.map((rig) => (
+              <CueMixPlan key={rig.id} rig={rig} />
+            ))}
+            {studio && lit.has('hall') ? <Path path={walls} style="stroke" strokeWidth={60} color={AMBER} opacity={0.8} /> : null}
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
     </View>
   );
 }

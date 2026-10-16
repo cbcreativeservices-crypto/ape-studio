@@ -9,6 +9,7 @@ import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { windLessonArt } from '../shared/woodwinds/windLessonArt';
 import { frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
 import { OBOE_MODEL, SEATED, layoutOf } from './geometry.ts';
+import { A09A_PLAN } from './plan.ts';
 
 export const PORTRAIT: Layout = portraitOf(SEATED, frameAt(SEATED, 300).t, { x: 0, y: -1, z: 0.4 });
 const at = (s: number) => frameAt(PORTRAIT, s).p;
@@ -63,5 +64,5 @@ export const OBOE_ART: LessonArt = windLessonArt({
     studioIdle: 'No monitors on the floor. The room — and a main pair above the conductor — are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the first oboe ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },
   },
-  plan: { own: 'ob1', layoutOf, ownLabel: 'OBOE 1 · THIS LESSON' },
+  plan: A09A_PLAN,
 });

@@ -21,7 +21,6 @@ import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { Wedge } from '../../../engine/model/types.ts';
-import { cabLayout, LESLIE } from './speakerModel.ts';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
@@ -29,6 +28,10 @@ import { ChainIcon, type IconArt } from './chainIcons';
 import { PlanAmpTop, PlanDiBox, PlanInstrumentEdge, PlanPaStack, PlanPlayerTop } from './BacklinePlan';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { WedgePlan } from '../KitPlan';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
+import { CAB, CHAIR_ROW, DI_CABLE, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -38,34 +41,13 @@ const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
 const GREY = '#8a8f9c';
 
-export type PlanScene = 'stage' | 'studio';
-
-const CAB = cabLayout('1x12');
-/** Typical positions (mm), ILLUSTRATIVE. */
-const POS = {
-  player: { u: 1050, v: 120 },
-  di: { u: 260, v: 420 },
-  drums: { u: -350, v: -1750 },
-  organ: { u: 500, v: 1850 },
-  bench: { u: 1050, v: 1850 },
-  leslie: { u: -150, v: 2450 },
-  pa: [
-    { u: 2850, v: -2200 },
-    { u: 2850, v: 2650 },
-  ],
-  audience: 3300,
-} as const;
+export type { PlanScene } from './stagePlanModel.ts';
+export { PLAN_BOX, planItems } from './stagePlanModel.ts';
 
 function rr(p: SkPath, u0: number, v0: number, u1: number, v1: number, r: number) {
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(u0, u1), Math.min(v0, v1), Math.abs(u1 - u0), Math.abs(v1 - v0)), r, r));
   return p;
 }
-
-/** The shared five-piece kit's origin on this stage (its kick's batter head)
- *  and its own centre (kitPlanModel PLAN_BOX.kit): the kit at true size,
- *  the kick clear of the side fill (art pass 2026-10-10). */
-const KIT_AT = { u: -400, v: -1770 } as const;
-const KIT_MID = { u: -135, v: 20 } as const;
 
 type Built = ReturnType<typeof build>;
 let built: Built | null = null;
@@ -116,12 +98,12 @@ function build() {
     const v = -462 + i * 66 + 33;
     pedalSharp.addRRect(Skia.RRectXY(Skia.XYWHRect(250, v - 13, 150, 26), 5, 5));
   }
-  const pedalFrame = rr(make(), 240, -510, 560, 510, 14);
-  const bench = rr(make(), -190, -550, 190, 550, 24);
+  const pedalFrame = rr(make(), ORGAN.pedals.u0, ORGAN.pedals.v0, ORGAN.pedals.u1, ORGAN.pedals.v1, 14);
+  const bench = rr(make(), ORGAN.bench.u0, ORGAN.bench.v0, ORGAN.bench.u1, ORGAN.bench.v1, 24);
   const benchLid = rr(make(), -170, -530, 170, 530, 16);
   // The rotary cabinet from above (front toward +u): moulded top, walnut grain.
-  const lw = LESLIE.w.mm / 2;
-  const ld = LESLIE.d.mm / 2;
+  const lw = LESLIE_TOP.hv - 9;
+  const ld = LESLIE_TOP.hu - 9;
   const leslie = rr(make(), -ld - 9, -lw - 9, ld + 9, lw + 9, 14);
   const leslieTop = rr(make(), -ld + 14, -lw + 14, ld - 14, lw - 14, 8);
   const grain = make();
@@ -131,39 +113,18 @@ function build() {
     grain.cubicTo(u + 8, -lw * 0.4, u - 8, lw * 0.3, u + 3, lw - 20);
   }
   // PA and the audience: one row of true-size empty chairs facing the stage
-  // (−u) — never heads (owner 2026-10-10).
-  const chairs = makeChairsTop(chairRowFacingStage(POS.audience, -2400, 2400));
+  // (−u) — never heads (owner 2026-10-10) — with a centre aisle (2026-10-15).
+  const chairs = makeChairsTop(chairRowFacingStage(CHAIR_ROW.u, CHAIR_ROW.v0, CHAIR_ROW.v1).filter(inAisle));
   // The studio room's walls.
-  const room = rr(make(), -1300, -2200, 3200, 2900, 40);
+  const room = rr(make(), ROOM_DRAWN.u0, ROOM_DRAWN.v0, ROOM_DRAWN.u1, ROOM_DRAWN.v1, 40);
   const playerSpace = make();
-  playerSpace.addCircle(POS.player.u, POS.player.v, 520);
-  const organSpace = rr(make(), POS.organ.u - 300, POS.organ.v - 720, POS.bench.u + 420, POS.organ.v + 720, 60);
+  playerSpace.addCircle(POS.player.u, POS.player.v, PLAYER_SPACE_R);
+  const organSpace = rr(make(), ORGAN_SPACE.u0, ORGAN_SPACE.v0, ORGAN_SPACE.u1, ORGAN_SPACE.v1, 60);
   const deck = rr(make(), PLAN_BOX.stage.u0, PLAN_BOX.stage.v0, POS.audience - 450, PLAN_BOX.stage.v1, 0);
   return { head, organ, lid, cheeks, manuals, keyLines, blackKeys, presets, pedalNat, pedalSharp, pedalFrame, bench, benchLid, leslie, leslieTop, grain, chairs, room, playerSpace, organSpace, deck };
 }
 function getBuilt(): Built {
   return (built ??= build());
-}
-
-export const PLAN_BOX = { stage: { u0: -1500, u1: 3750, v0: -2700, v1: 3000 }, studio: { u0: -1400, u1: 3300, v0: -2300, v1: 3000 } } as const;
-
-/** Item ids the plan carries, and where each sits (for taps and highlights). */
-export function planItems(scene: PlanScene, wedges: readonly Wedge[]): { id: string; u: number; v: number; r: number }[] {
-  const out = [
-    { id: 'cab', u: (CAB.box.x0 + CAB.box.x1) / 2, v: 0, r: 330 },
-    { id: 'player', u: POS.player.u, v: POS.player.v, r: 280 },
-    { id: 'di', u: POS.di.u, v: POS.di.v, r: 150 },
-    { id: 'organ', u: (POS.organ.u + POS.bench.u) / 2, v: POS.organ.v, r: 650 },
-    { id: 'leslie', u: POS.leslie.u, v: POS.leslie.v, r: 420 },
-  ];
-  if (scene === 'stage') {
-    out.push({ id: 'drums', u: KIT_AT.u + KIT_MID.u, v: KIT_AT.v + KIT_MID.v, r: 900 });
-    for (const w of wedges) out.push({ id: w.id === 'guitarWedge' ? 'wedge' : w.id, u: w.p.x, v: w.p.z, r: 330 });
-    out.push({ id: 'audience', u: POS.audience + 150, v: 0, r: 700 });
-  } else {
-    out.push({ id: 'room', u: 2600, v: -1700, r: 600 });
-  }
-  return out;
 }
 
 export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; scene: PlanScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
@@ -173,7 +134,26 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
   const b = getBuilt();
   const items = planItems(scene, wedges);
   const hi = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = items.map((i) => ({ id: i.id, text: shortOf(i.id), u: i.u, v: i.v + i.r * 0.72 + 60, align: 'center' as const, tone: i.id === highlight ? ('amber' as const) : ('muted' as const) }));
+  // Collision pass 2026-10-15: every word keeps clear of every object (the
+  // plan's footprints) — just outside its own object (below, right, left,
+  // above), else in free space with a leader back to it. The audience is
+  // named in its aisle.
+  const foots = useMemo(() => spkFoots(scene, wedges), [scene, wedges]);
+  const footOf = (id: string) => {
+    const ids = id === 'drums' ? foots.filter((f) => f.group === 'kit').map((f) => f.id) : spkItemFootIds(id, wedges);
+    const fs = foots.filter((f) => ids.includes(f.id));
+    return fs.length ? unionRect(fs) : null;
+  };
+  const cue = scene === 'studio' ? spkCue() : null;
+  const labels: StaticLabel[] = [
+    ...items.map((i) => {
+      const own = footOf(i.id);
+      const places = own ? labelPlaces(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 60, align: 'center' as const }];
+      const first = i.id === 'audience' ? { u: POS.audience, v: 0, align: 'center' as const } : places[0];
+      return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === highlight ? ('amber' as const) : ('muted' as const) };
+    }),
+    ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+  ];
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
@@ -202,7 +182,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             ) : (
               <>
                 <Path path={b.room}>
-                  <LinearGradient start={vec(-1300, -2200)} end={vec(3200, 2900)} colors={['#1c1915', '#15130f']} />
+                  <LinearGradient start={vec(ROOM_DRAWN.u0, ROOM_DRAWN.v0)} end={vec(ROOM_DRAWN.u1, ROOM_DRAWN.v1)} colors={['#1c1915', '#15130f']} />
                 </Path>
                 <Path path={b.room} style="stroke" strokeWidth={60} color="#3a3d45" />
               </>
@@ -222,10 +202,11 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
                 <KitTop keepOuts={false} />
               </Group>
             ) : null}
-            {/* the guitar's 1 × 12 cabinet (its speaker faces the audience) and its DI box */}
+            {/* the guitar's 1 × 12 cabinet (its speaker faces the audience) and its
+                DI box on the floor behind it, the cable to the amp's back panel */}
             <PlanAmpTop u0={CAB.box.x0} u1={CAB.box.x1} v0={CAB.box.z0} v1={CAB.box.z1} />
-            <Line p1={vec(POS.di.u, POS.di.v)} p2={vec(CAB.box.x0 + 60, 180)} color="#2a2c32" strokeWidth={16} />
-            <Group transform={[{ translateX: POS.di.u }, { translateY: POS.di.v }]}>
+            <Line p1={vec(DI_CABLE.pts[0].u, DI_CABLE.pts[0].v)} p2={vec(DI_CABLE.pts[1].u, DI_CABLE.pts[1].v)} color="#2a2c32" strokeWidth={16} strokeCap="round" />
+            <Group transform={[{ translateX: POS.di.u }, { translateY: POS.di.v }, { rotate: Math.PI }]}>
               <PlanDiBox />
             </Group>
             {/* the guitarist, from above, the guitar worn edge-on */}
@@ -298,7 +279,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             {/* PA and audience */}
             {scene === 'stage' ? (
               <>
-                {POS.pa.map((p, i) => (
+                {PA_AT.map((p, i) => (
                   <Group key={i} transform={[{ translateX: p.u }, { translateY: p.v }]}>
                     <PlanPaStack />
                   </Group>
@@ -306,13 +287,15 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
                 <ChairsTop seats={b.chairs.seats} backs={b.chairs.backs} color="#7d828d" />
               </>
             ) : null}
+            {/* Studio: each performer's headphone mix (no wedges in a studio). */}
+            {cue ? <CueMixPlan rig={cue} /> : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={30} color={AMBER} /> : null}
             <Line p1={vec(CAB.box.x1 + 40, 0)} p2={vec(POS.player.u - 300, 0)} color={BLUE} strokeWidth={14} opacity={0.5}>
               <DashPathEffect intervals={[60, 40]} />
             </Line>
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} />
+        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots)} />
       </View>
     </Pressable>
   );

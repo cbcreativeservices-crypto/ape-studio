@@ -40,7 +40,7 @@ import type { SpLesson } from './family.ts';
 const SP_PAGES: NonNullable<LessonArt['pages']> = { instrument: SInstrument as never, sound: SSound as never };
 
 function withFamily(lesson: SpLesson, art: LessonArt): LessonArt {
-  return { ...art, pages: SP_PAGES, stepCounts: { sound: art.CoupledHeads ? 3 : 2 }, SettingPlan: stationPlanFor(lesson.sp.plan.things, lesson.sp.plan.box, art.Instrument) };
+  return { ...art, pages: SP_PAGES, stepCounts: { sound: art.CoupledHeads ? 3 : 2 }, SettingPlan: stationPlanFor(lesson.sp.plan, lesson.model, art.Instrument) };
 }
 
 export const SMALL_PERC_ART: Record<string, LessonArt> = {

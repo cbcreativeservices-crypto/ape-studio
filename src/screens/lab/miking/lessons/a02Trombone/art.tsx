@@ -10,15 +10,11 @@ import { partIn } from '../shared/bowed/bowedModel.ts';
 import { brassHitTest, brassLabels, makeBrassInstrument, makeBrassPortrait } from '../shared/brass/BrassArt';
 import { makeBrassSoundPage } from '../shared/brass/BrassSoundPage';
 import { makeBrassSettingPage } from '../shared/brass/BrassSettingPage';
-import { slidePose, valvedPose } from '../shared/brass/brassPosture.ts';
-import { TENOR, TRUMPET } from '../shared/brass/brassSpec.ts';
+import { A02_PLAN } from './plan.ts';
 import { A02_MODEL, BT, TB } from './geometry.ts';
 
 const POSES = { tenor: TB, bass: BT };
 const pose = (v: string) => (v === 'bass' ? BT : TB);
-// The neighbours on the plan: a second trombone and a trumpet (the same family's art).
-const TB2 = slidePose(TENOR);
-const TP_N = valvedPose(TRUMPET);
 
 const SLIDE_LABELS = [
   { id: 'bell', text: 'BELL', at: (P: typeof TB) => P.H({ x: -60, y: -P.spec.bell.mm / 2 + 6, z: 0 }), du: 20, dv: -100 },
@@ -89,23 +85,13 @@ export const A02_ART: LessonArt = {
       reveal: 'The lips are the source, but the tube decides the note: the standing wave in the air column locks the lips to it. The slide changes the tube’s length — and moves the crook, the hand and the arm half a metre and more.',
     }),
     setting: makeBrassSettingPage({
-      P: TB,
-      objects: [
-        { id: 'horn', kind: 'self', at: { x: 0, z: 0 }, r: 250, label: 'trombone', scene: 'all' },
-        { id: 'stand', kind: 'stand', at: { x: 380, z: -750 }, yaw: 180, r: 260, label: 'music stand', short: 'stand', scene: 'kit' },
-        { id: 'tb2', kind: 'brass', pose: TB2, at: { x: 40, z: 1000 }, yaw: 0, r: 460, label: 'second trombone', short: 'trombone 2', scene: 'kit' },
-        { id: 'tp', kind: 'brass', pose: TP_N, at: { x: -250, z: -1650 }, yaw: 0, r: 420, label: 'trumpet', scene: 'kit' },
-        { id: 'kit', kind: 'kit', at: { x: -2300, z: 300 }, yaw: 0, r: 950, label: 'drum kit', short: 'drums', scene: 'kit' },
-        { id: 'main', kind: 'pair', at: { x: 2200, z: 300 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
-      ],
-      near: { u0: -3050, u1: 2450, v0: -2100, v1: 1700 },
-      wide: { u0: -3100, u1: 3300, v0: -2300, v1: 2100 },
+      ...A02_PLAN,
       nearA11y: 'A trombonist from above, the bell pointing right toward the audience and the slide reaching past it; the slide’s reach to 7th position dashed. A music stand to the left, a second trombone and a trumpet beside, the drum kit behind.',
-      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another player’s wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the section.' },
+      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another player’s wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a trombone mic. There is nothing to answer yet.',
       nearIdle: 'The slide reaches straight out from the player’s mouth, past the bell, and at 7th position about 56 cm farther. The bell points out toward the audience. Everything else is a neighbour a trombone mic will hear.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front — beyond the slide’s reach — and another player’s to the side. Monitors, the PA and a loud band all reach a trombone mic.',
-      studioIdle: 'No monitors on the floor. The room — and a main pair, when the trombone plays in a section — are part of the picture now.',
+      studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the trombone plays in a section — are part of the picture now.',
       before: [
         { title: 'ASK THE PLAYER FIRST', text: 'With the player, map the slide’s full reach in the passage — out to 7th position, the angle they hold it, standing or seated — and any valve and mute use. Hear the real part: quiet phrases, the strongest accents, the lowest notes. Hear it from where the audience would.' },
         { title: 'THE SLIDE IS PRECISION TUBING', text: 'A small bend can spoil its smooth travel. Never touch, push or hold the slide; nothing — stand, boom, cable or clip — goes in its path, and leave a comfortable buffer. If in doubt, stop and move the hardware with the player.' },

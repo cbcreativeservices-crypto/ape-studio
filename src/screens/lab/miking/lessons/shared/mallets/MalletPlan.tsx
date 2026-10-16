@@ -7,16 +7,16 @@
  * player's left, toward the top). The player is part of the keyboard's art.
  * Positions are ILLUSTRATIVE (the badge says "a typical layout").
  */
-import type { ReactElement } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId } from '../../../engine/model/types.ts';
 import type { SettingPlanProps } from '../../../engine/scene/sceneTypes.ts';
-import type { PlanThing } from '../handdrums/family.ts';
 import { HandPlan } from '../handdrums/HandPlan';
 import { malletInstrument } from './MalletArt';
-import type { MalletFamily } from './malletModel.ts';
+import { malletModel, type MalletFamily } from './malletModel.ts';
+import { malletArtPlan, type MalletPlanSpec } from './malletPlanModel.ts';
 
-export type MalletPlanSpec = { box: { u0: number; u1: number; v0: number; v1: number }; things: readonly PlanThing[] };
+export type { MalletPlanSpec } from './malletPlanModel.ts';
 
 export function malletPlanFor(fam: MalletFamily, plan: MalletPlanSpec) {
   const Instrument = malletInstrument(fam);
@@ -29,8 +29,11 @@ export function malletPlanFor(fam: MalletFamily, plan: MalletPlanSpec) {
       </Group>
     );
   }
+  let model: ReturnType<typeof malletModel> | null = null;
   return function MalletPlan(p: SettingPlanProps) {
     const shortOf = (id: string) => p.items.find((i) => i.id === id)?.short ?? id.toUpperCase();
+    // The keyboard and its player on the plan (the same turn as Turned).
+    const art = useMemo(() => malletArtPlan(fam, (model ??= malletModel(fam)), p.variant), [p.variant]);
     return (
       <HandPlan
         w={p.w}
@@ -38,8 +41,10 @@ export function malletPlanFor(fam: MalletFamily, plan: MalletPlanSpec) {
         scene={p.scene}
         variant={p.variant}
         Drums={Turned}
-        things={plan.things.filter((t) => p.scene !== 'kit' || t.scene === 'all')}
+        things={plan.things}
         box={plan.box}
+        art={art}
+        cue={plan.cue}
         shortOf={shortOf}
         highlight={p.highlight}
         onTap={p.onTap}

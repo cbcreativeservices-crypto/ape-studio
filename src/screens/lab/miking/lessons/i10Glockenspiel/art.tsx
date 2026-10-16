@@ -14,23 +14,11 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import type { MalletArt } from '../shared/mallets/family.ts';
 import { ConflictBand, malletDrawnAt, malletHitTest, malletInstrument, malletLabels } from '../shared/mallets/MalletArt';
-import { malletPlanFor, type MalletPlanSpec } from '../shared/mallets/MalletPlan';
+import { malletPlanFor } from '../shared/mallets/MalletPlan';
+import { GLOCK_PLAN } from './plan.ts';
 import { MALLET_PAGES } from '../shared/mallets/pages';
 import { CLOSE_EXAMPLE, GLOCK_FAM } from './model.ts';
 import { GLOCK_GEOM } from './geometry.ts';
-
-export const GLOCK_PLAN: MalletPlanSpec = {
-  box: { u0: -2400, u1: 3000, v0: -2300, v1: 2300 },
-  things: [
-    { id: 'glock', kind: 'drums', u: 0, v: 0, scene: 'all' },
-    { id: 'perc', kind: 'perc', u: -1200, v: -1600, scene: 'all' },
-    { id: 'kit', kind: 'kit', u: -1300, v: 1650, scene: 'all' },
-    { id: 'front', kind: 'wedge', u: 1100, v: 0, face: Math.PI, scene: 'stage' },
-    { id: 'side', kind: 'sidefill', u: 0, v: -1900, face: Math.PI / 2, scene: 'stage' },
-    { id: 'audience', kind: 'audience', u: 2200, v: 0, scene: 'stage' },
-    { id: 'room', kind: 'room', u: 0, v: 0, scene: 'studio' },
-  ],
-};
 
 const Base = malletInstrument(GLOCK_FAM);
 const baseLabels = malletLabels(GLOCK_FAM);

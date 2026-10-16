@@ -7,6 +7,7 @@
 import type { Lesson, MicPattern, MicPose, VariantId, ViewId } from '../../../engine/model/types.ts';
 import type { LessonCopy } from '../../../engine/model/copy.ts';
 import type { HandDrum } from './handDrumModel.ts';
+import type { PlanCueSpec } from './handPlanModel.ts';
 
 /** A hand-drum scene in words (each lesson's geometry.ts): the subject per
  *  setup, the view tags, POSITION's axes ("86 cm above base": `plus` /
@@ -100,7 +101,7 @@ export type HandExtra = {
   /** HOW IT SOUNDS, step 4's prediction-reveal line (after the strike sequence). */
   soundReveal: string;
   /** THE SETTING. */
-  plan: { box: { u0: number; u1: number; v0: number; v1: number }; things: readonly PlanThing[]; badge: string; looking: string; prompt: string; intro: string; label: string };
+  plan: { box: { u0: number; u1: number; v0: number; v1: number }; things: readonly PlanThing[]; /** The studio's headphone mix (handPlanModel). */ cue?: PlanCueSpec; badge: string; looking: string; prompt: string; intro: string; label: string };
   before: { ask: string; asIs: string };
   /** PLACEMENT: the worked example's zone per variant, the free step's start zone. */
   worked: Partial<Record<VariantId, string>> & { default: string };

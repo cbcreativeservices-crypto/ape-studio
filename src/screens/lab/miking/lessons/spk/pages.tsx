@@ -661,7 +661,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
             highlight={sel}
             onTap={(id) => setSel(id)}
             shortOf={(id) => (id === 'sideFill' ? 'SIDE FILL' : shortOf(id))}
-            accessibilityLabel={scene === 'stage' ? `A stage from above: a guitar combo on the backline with its player in front and the guitarist's wedge downstage, a side fill, a drum kit, an organ with its bench and pedals and the rotary cabinet beside it, and the audience and PA.${ps ? ` Highlighted: ${ps.label}.` : ''}` : `A studio room from above: the guitar combo, the organ and the rotary cabinet, no monitors on the floor.${ps ? ` Highlighted: ${ps.label}.` : ''}`}
+            accessibilityLabel={scene === 'stage' ? `A stage from above: a guitar combo on the backline with its player in front and the guitarist's wedge downstage, a side fill, a drum kit, an organ with its bench and pedals and the rotary cabinet beside it, and the audience and PA.${ps ? ` Highlighted: ${ps.label}.` : ''}` : `A studio room from above: the guitar combo, the organ and the rotary cabinet, no monitors on the floor — each player's headphone mixer, fed from the control room.${ps ? ` Highlighted: ${ps.label}.` : ''}`}
           />
         ),
         badge: scene === 'stage' ? 'From above · a typical layout · grey dashes = the players’ space, keep clear' : 'From above · a typical studio room',

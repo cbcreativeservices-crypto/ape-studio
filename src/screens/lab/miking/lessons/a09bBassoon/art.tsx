@@ -11,6 +11,7 @@ import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { windLessonArt } from '../shared/woodwinds/windLessonArt';
 import { bassoonAxes, frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
 import { BASSOON_MODEL, SEATED, layoutOf } from './geometry.ts';
+import { A09B_PLAN } from './plan.ts';
 
 const AX = bassoonAxes();
 export const PORTRAIT: Layout = portraitOf(SEATED, AX.d, AX.w, { x: 0, y: 0, z: 0 });
@@ -73,5 +74,5 @@ export const BASSOON_ART: LessonArt = windLessonArt({
     studioIdle: 'No monitors on the floor. The room — and a main pair above the conductor — are part of the picture now.',
     a11y: { section: 'The woodwind section from above: flutes and oboes in front, clarinets and bassoons behind, the first bassoon ringed in amber.', stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand above the conductor.' },
   },
-  plan: { own: 'bsn1', layoutOf, ownLabel: 'BASSOON 1 · THIS LESSON' },
+  plan: A09B_PLAN,
 });

@@ -478,7 +478,7 @@ const diagnostic: DiagnosticItem[] = [
 const floorY = LAYOUTS.metal.body.floorY;
 const wedges: Wedge[] = [
   { id: 'wedge', label: 'the player’s floor wedge, in front, facing back at them', short: 'WEDGE', p: { x: -250, y: floorY, z: 1450 }, lift: 150, faces: { x: 0.15, y: 0, z: -1 }, note: 'On the floor in front, facing back at the player: below and behind a mic aimed back at the flute — tilting the mic matters as much as turning it.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-  { id: 'side', label: 'another player’s wedge, off to the flutist’s right', short: 'SIDE WEDGE', p: { x: -1500, y: floorY, z: 800 }, lift: 150, faces: { x: 0.8, y: 0, z: -0.6 }, note: 'Off to one side, facing another player: well off the mic’s axis.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
+  { id: 'side', label: 'another player’s wedge, off to the flutist’s right', short: 'SIDE WEDGE', p: { x: -1500, y: floorY, z: 900 }, lift: 150, faces: { x: 0.8, y: 0, z: -0.6 }, note: 'Off to one side, facing another player: well off the mic’s axis.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
 ];
 
 const copy: Partial<LessonCopy> = {

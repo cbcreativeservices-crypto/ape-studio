@@ -730,7 +730,7 @@ export const C04_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'steelWedge', label: 'the steel player’s wedge, in front of the steel, facing back toward the player', short: 'WEDGE', p: { x: 1800, y: FLOOR, z: 720 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: 'In front of the steel and to one side of the amp: off the mic’s rear axis — aim by the mic’s real pattern.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
-      { id: 'sideFill', label: 'a side-fill monitor at the side of the stage', short: 'SIDE FILL', p: { x: 700, y: FLOOR, z: -1500 }, lift: 150, faces: { x: 0, y: 0, z: 1 }, note: 'Off to the side, about ninety degrees off the mic’s axis: no cardioid null reaches it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'sideFill', label: 'a side-fill monitor at the side of the stage', short: 'SIDE FILL', p: { x: 1000, y: FLOOR, z: -2050 }, lift: 150, faces: { x: 0, y: 0, z: 1 }, note: 'Off to the side, about ninety degrees off the mic’s axis: no cardioid null reaches it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

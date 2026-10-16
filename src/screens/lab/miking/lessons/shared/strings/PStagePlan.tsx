@@ -9,11 +9,18 @@
  *                           step through ITEM) to read what it means for a mic.
  *   STAGE AND STUDIO (rack) the same plan, wider: a STAGE (the monitors the
  *                           lesson's Studio-or-live page uses later, the
- *                           audience and the PA) or a STUDIO (the room, and
- *                           what a distant pair would sit in).
+ *                           audience and the PA) or a STUDIO (the room, what
+ *                           a distant pair would sit in, and each performer's
+ *                           personal headphone mixer — no wedges in a studio).
  *   BEFORE ANY MIC (read)   ask the player and the owner first; protect your
  *                           hearing; then the three checks.
  * Positions are ILLUSTRATIVE (a typical layout); nothing moves (D8).
+ *
+ * Collision pass 2026-10-15 (owner: no collisions or impossible layering in
+ * any plan): every glyph's size and footprint lives in pstagePlanModel.ts
+ * (pure — the overlap test reads the same numbers); the floor wedge is the
+ * shared 2-way wedge at true size (D70); words keep clear of every object
+ * (StaticLabels `clearOf`), moving to free space with a leader.
  */
 import { useMemo, useState, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
@@ -30,14 +37,16 @@ import { copyOf } from '../../../engine/model/copy.ts';
 import type { PageProps } from '../../../pages/pageTypes';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
+import { Wedge2WayTop } from '../wedge2Way';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels, type CueRig } from '../monitoring/cueMix.ts';
+import { clearOfFoots, labelPlaces, rectOfCircle, unionRect, type PlanFoot, type PlanRect } from '../planFoot.ts';
+import { GLYPH, roomOfBox, spotAngle, spotFoots, spotsIn, type PlanGlyph, type PlanScene, type PlanSpot } from './pstagePlanModel.ts';
+
+export type { PlanGlyph, PlanSpot } from './pstagePlanModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const AMBER = '#ffc64d';
-
-export type PlanGlyph = 'wedge' | 'singer' | 'stand' | 'pair' | 'amp' | 'pa' | 'band' | 'chair' | 'none';
-/** An item on the plan: where it sits (lesson frame, plan x / z), what it is
- *  drawn as, and which scene shows it. `item` = the SettingItem it names. */
-export type PlanSpot = { item: string; glyph: PlanGlyph; x: number; z: number; faces?: { x: number; z: number }; scene: 'near' | 'stage' | 'studio' | 'all'; r: number; label?: { du: number; dv: number } };
 
 export type StagePlanSpec = {
   /** The instrument and its player from above (the lesson's own art). */
@@ -48,6 +57,16 @@ export type StagePlanSpec = {
   near: (variant: VariantId) => ViewBox;
   wide: (variant: VariantId) => ViewBox;
   spots: (variant: VariantId) => readonly PlanSpot[];
+  /** Every object's footprint on a plan (the lesson's pure planModel.ts):
+   *  the words keep clear of them. */
+  foots: (variant: VariantId, scene: PlanScene) => readonly PlanFoot[];
+  /** The studio's headphone mix (one personal mixer per performer). */
+  cue: (variant: VariantId) => CueRig;
+  /** The studio room's inner wall faces (default: the wide box, inset). */
+  room?: (variant: VariantId) => PlanRect;
+  /** The plan rect an item drawn by the lesson's own art names (a 'none'
+   *  spot: the player, the pedals…), for its words' places. */
+  named?: (variant: VariantId, item: string) => PlanRect | null;
   nearBadge: string;
   nearLooking: string;
   /** Where the audience is on the wide plan (its label, plan mm). */
@@ -56,10 +75,11 @@ export type StagePlanSpec = {
   hearing: string;
 };
 
-/* ── glyphs from above (mm, about their own origin, facing +u) ── */
+/* ── glyphs from above (mm, about their own origin, facing +u; sizes: GLYPH) ── */
 const glyphCache = new Map<string, Record<string, SkPath>>();
-function glyphPaths(g: PlanGlyph): Record<string, SkPath> {
-  const hit = glyphCache.get(g);
+function glyphPaths(g: PlanGlyph, half?: { u: number; v: number }): Record<string, SkPath> {
+  const key = g === 'band' && half ? `band:${half.u}:${half.v}` : g;
+  const hit = glyphCache.get(key);
   if (hit) return hit;
   const o: Record<string, SkPath> = {};
   const rr = (x: number, y: number, w: number, h: number, r: number) => {
@@ -67,17 +87,19 @@ function glyphPaths(g: PlanGlyph): Record<string, SkPath> {
     p.addRRect(Skia.RRectXY(Skia.XYWHRect(x, y, w, h), r, r));
     return p;
   };
-  if (g === 'wedge') {
-    // A floor monitor from above: its short top panel (back) and its sloped
-    // baffle behind a perforated grille (front, +u).
-    o.cab = rr(-160, -270, 320, 540, 20);
-    o.grille = rr(-40, -250, 180, 500, 14);
-    o.holes = Skia.Path.Make();
-    for (let x = -26; x < 128; x += 22) for (let z = -236; z < 240; z += 22) o.holes.addCircle(x, z, 4.4);
-    o.recess = rr(-130, -70, 52, 140, 14);
-  } else if (g === 'singer' || g === 'chair') {
+  const tripod = (r: number, a0: number, x = 0) => {
+    const p = Skia.Path.Make();
+    for (let k = 0; k < 3; k++) {
+      const a = (k * 2 * Math.PI) / 3 + a0;
+      p.moveTo(x, 0);
+      p.lineTo(x + Math.cos(a) * r, Math.sin(a) * r);
+    }
+    return p;
+  };
+  if (g === 'singer' || g === 'chair') {
+    const S = GLYPH.singer;
     o.shoulders = Skia.Path.Make();
-    o.shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
+    o.shoulders.addOval(Skia.XYWHRect(S.body.u0, S.body.v0, S.body.u1 - S.body.u0, S.body.v1 - S.body.v0));
     // The head is the figure's own skin silhouette from above (head fix
     // 2026-10-08: a head ON A BODY is PlayerFigure's FigureHead, never an
     // oval); nose +v here, turned to the glyph's front (+u) where drawn.
@@ -85,75 +107,73 @@ function glyphPaths(g: PlanGlyph): Record<string, SkPath> {
     if (g === 'singer') {
       o.stand = Skia.Path.Make();
       o.stand.moveTo(150, 0);
-      o.stand.lineTo(330, 0);
-      o.mic = rr(250, -26, 120, 52, 22);
-      o.base = Skia.Path.Make();
-      for (let k = 0; k < 3; k++) {
-        const a = (k * 2 * Math.PI) / 3 + Math.PI / 6;
-        o.base.moveTo(330, 0);
-        o.base.lineTo(330 + Math.cos(a) * 150, Math.sin(a) * 150);
-      }
+      o.stand.lineTo(S.standAt, 0);
+      o.mic = rr(S.micTo - 120, -26, 120, 52, 22);
+      o.base = tripod(S.baseR, Math.PI / 6, S.standAt);
     } else {
-      o.seat = rr(-230, -230, 360, 460, 50);
+      const C = GLYPH.chair;
+      o.seat = rr(C.u0, C.v0, C.u1 - C.u0, C.v1 - C.v0, 50);
     }
   } else if (g === 'stand') {
     // A music stand from above: the desk, edge-on, and its tripod.
-    o.desk = rr(-30, -250, 60, 500, 10);
-    o.base = Skia.Path.Make();
-    for (let k = 0; k < 3; k++) {
-      const a = (k * 2 * Math.PI) / 3;
-      o.base.moveTo(0, 0);
-      o.base.lineTo(Math.cos(a) * 220, Math.sin(a) * 220);
-    }
+    const T = GLYPH.stand;
+    o.desk = rr(-T.deskD / 2, -T.deskW / 2, T.deskD, T.deskW, 10);
+    o.base = tripod(T.baseR, 0);
   } else if (g === 'pair') {
     // Two pencil condensers on a stereo bar, on one stand (from above).
-    o.bar = rr(-30, -200, 60, 400, 14);
+    const P = GLYPH.pair;
+    o.bar = rr(-P.barD / 2, -P.barW / 2, P.barD, P.barW, 14);
     o.micA = rr(-60, -175, 130, 34, 15);
     o.micB = rr(-60, 141, 130, 34, 15);
-    o.base = Skia.Path.Make();
-    for (let k = 0; k < 3; k++) {
-      const a = (k * 2 * Math.PI) / 3 + Math.PI / 6;
-      o.base.moveTo(0, 0);
-      o.base.lineTo(Math.cos(a) * 260, Math.sin(a) * 260);
-    }
+    o.base = tripod(P.baseR, Math.PI / 6);
+  } else if (g === 'mic') {
+    // One condenser on a tripod stand, its front toward `faces`.
+    const M = GLYPH.mic;
+    o.base = tripod(M.baseR, Math.PI / 3);
+    o.mic = rr(M.body.u0, M.body.v0, M.body.u1 - M.body.u0, M.body.v1 - M.body.v0, 15);
+    o.hub = Skia.Path.Make();
+    o.hub.addCircle(0, 0, 26);
   } else if (g === 'amp') {
-    o.cab = rr(-290, -250, 290, 500, 16);
+    const A = GLYPH.amp;
+    o.cab = rr(A.u0, A.v0, A.u1 - A.u0, A.v1 - A.v0, 16);
     o.handle = rr(-190, -90, 70, 180, 30);
     o.grille = rr(-12, -236, 12, 472, 4);
   } else if (g === 'pa') {
-    o.cab = rr(-220, -300, 440, 600, 24);
+    const P = GLYPH.pa;
+    o.cab = rr(P.u0, P.v0, P.u1 - P.u0, P.v1 - P.v0, 24);
     o.horn = rr(80, -120, 120, 240, 20);
+  } else if (g === 'di') {
+    // A passive DI box on the floor: its case and the two jacks at its ends.
+    const D = GLYPH.di;
+    o.cab = rr(D.u0, D.v0, D.u1 - D.u0, D.v1 - D.v0, 10);
+    o.jacks = Skia.Path.Make();
+    o.jacks.addCircle(D.u0 + 18, 0, 11);
+    o.jacks.addCircle(D.u1 - 18, 0, 11);
   } else if (g === 'band') {
     // Other players' area: a riser outline (a generic band, not a source).
-    o.riser = rr(-900, -1100, 1800, 2200, 40);
+    const h = half ?? { u: GLYPH.band.hu, v: GLYPH.band.hv };
+    o.riser = rr(-h.u, -h.v, h.u * 2, h.v * 2, 40);
   }
-  glyphCache.set(g, o);
+  glyphCache.set(key, o);
   return o;
 }
 
 function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
   if (spot.glyph === 'none') return null;
-  const p = glyphPaths(spot.glyph);
-  const ang = spot.faces ? Math.atan2(spot.faces.z, spot.faces.x) : 0;
+  const ang = spotAngle(spot);
+  if (spot.glyph === 'wedge') {
+    // The shared 2-way floor wedge at true size (D70), its baffle to `faces`.
+    return (
+      <Group transform={[{ translateX: spot.x }, { translateY: spot.z }, { rotate: ang }]}>
+        <Wedge2WayTop shadow highlight={lit ? AMBER : undefined} highlightW={14} />
+      </Group>
+    );
+  }
+  const p = glyphPaths(spot.glyph, spot.half);
   const edge = lit ? AMBER : '#70747f';
   return (
     <Group transform={[{ translateX: spot.x }, { translateY: spot.z }, { rotate: ang }]}>
-      {spot.glyph === 'wedge' ? (
-        <>
-          <Group transform={[{ translateX: 16 }, { translateY: 20 }]}>
-            <Path path={p.cab} color="#000" opacity={0.6}>
-              <BlurMask blur={22} style="normal" />
-            </Path>
-          </Group>
-          <Path path={p.cab}>
-            <LinearGradient start={vec(-160, -270)} end={vec(160, 270)} colors={['#3b3e46', '#24262c', '#15161a']} />
-          </Path>
-          <Path path={p.grille} color="#0c0d10" />
-          <Path path={p.holes} color="#4a4e57" />
-          <Path path={p.recess} color="#0e0f12" />
-          <Path path={p.cab} style="stroke" strokeWidth={lit ? 14 : 5} color={edge} />
-        </>
-      ) : spot.glyph === 'singer' || spot.glyph === 'chair' ? (
+      {spot.glyph === 'singer' || spot.glyph === 'chair' ? (
         <>
           {p.seat ? <Path path={p.seat} color="#2a2b31" /> : null}
           <Path path={p.shoulders}>
@@ -185,6 +205,15 @@ function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
           </Path>
           <Path path={p.bar} style="stroke" strokeWidth={lit ? 12 : 3} color={edge} />
         </>
+      ) : spot.glyph === 'mic' ? (
+        <>
+          <Path path={p.base} style="stroke" strokeWidth={14} strokeCap="round" color="#4d515b" />
+          <Path path={p.hub} color="#2a2c32" />
+          <Path path={p.mic}>
+            <LinearGradient start={vec(-60, -17)} end={vec(110, 17)} colors={['#eef1f6', '#9aa0ab', '#4a4e57']} />
+          </Path>
+          <Path path={p.mic} style="stroke" strokeWidth={lit ? 12 : 3} color={edge} />
+        </>
       ) : spot.glyph === 'amp' ? (
         <>
           <Path path={p.cab}>
@@ -202,6 +231,14 @@ function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
           <Path path={p.horn} color="#0c0d10" />
           <Path path={p.cab} style="stroke" strokeWidth={lit ? 14 : 5} color={edge} />
         </>
+      ) : spot.glyph === 'di' ? (
+        <>
+          <Path path={p.cab}>
+            <LinearGradient start={vec(-70, -42)} end={vec(70, 42)} colors={['#5a5f69', '#2c2f36']} />
+          </Path>
+          <Path path={p.jacks} color="#0c0d10" />
+          <Path path={p.cab} style="stroke" strokeWidth={lit ? 12 : 4} color={edge} />
+        </>
       ) : (
         <Path path={p.riser} style="stroke" strokeWidth={lit ? 14 : 6} color={edge} opacity={0.7}>
           <DashPathEffect intervals={[40, 26]} />
@@ -211,30 +248,55 @@ function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
   );
 }
 
+/** The studio room: a 40 mm wall drawn just outside its inner faces. */
 const roomCache = new Map<string, SkPath>();
-function roomPath(box: ViewBox): SkPath {
-  const k = `${box.u0}:${box.u1}:${box.v0}:${box.v1}`;
+function roomPath(r: PlanRect): SkPath {
+  const k = `${r.u0}:${r.u1}:${r.v0}:${r.v1}`;
   let p = roomCache.get(k);
   if (!p) {
     p = Skia.Path.Make();
-    p.addRect(Skia.XYWHRect(box.u0 + 60, box.v0 + 60, box.u1 - box.u0 - 120, box.v1 - box.v0 - 120));
+    p.addRect(Skia.XYWHRect(r.u0 - 20, r.v0 - 20, r.u1 - r.u0 + 40, r.v1 - r.v0 + 40));
     roomCache.set(k, p);
   }
   return p;
 }
 
-export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, onTap, accessibilityLabel }: { spec: StagePlanSpec; w: number; h: number; variant: VariantId; scene: 'near' | 'stage' | 'studio'; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
+export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, onTap, accessibilityLabel }: { spec: StagePlanSpec; w: number; h: number; variant: VariantId; scene: PlanScene; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
   const box = scene === 'near' ? spec.near(variant) : spec.wide(variant);
   const xf = useMemo(() => fitXform('top', box, w, h, 8), [box, w, h]);
-  const spots = spec.spots(variant).filter((s) => s.scene === 'all' || s.scene === scene || (scene !== 'near' && s.scene === 'near'));
+  const spots = spotsIn(spec.spots(variant), scene);
+  const foots = useMemo(() => spec.foots(variant, scene), [spec, variant, scene]);
+  const cue = scene === 'studio' ? spec.cue(variant) : null;
+  const room = scene === 'studio' ? (spec.room ? spec.room(variant) : roomOfBox(box)) : null;
   const Own = spec.Own;
+  // The words go at the lesson's own place, else just outside the named
+  // object (below, right, left, above), else into free space with a leader
+  // back to it — never on an object (clearOf).
+  const rectOf = (s: PlanSpot): PlanRect => {
+    const fs = spotFoots(s).filter((f) => !f.zone);
+    if (fs.length) return unionRect(fs);
+    return spec.named?.(variant, s.item) ?? rectOfCircle({ u: s.x, v: s.z }, s.r * 0.5);
+  };
   const labels: StaticLabel[] = spots.map((s) => {
     const it = items.find((i) => i.id === s.item);
-    return { id: s.item, text: it?.short ?? s.item.toUpperCase(), u: s.x + (s.label?.du ?? 0), v: s.z + (s.label?.dv ?? s.r + 60), align: 'center' as const, tone: highlight === s.item ? ('amber' as const) : ('muted' as const) };
+    return {
+      id: s.item,
+      text: it?.short ?? s.text ?? s.item.toUpperCase(),
+      u: s.x + (s.label?.du ?? 0),
+      v: s.z + (s.label?.dv ?? s.r + 60),
+      align: 'center' as const,
+      alts: labelPlaces(rectOf(s), xf.s / textScale),
+      point: { u: s.x, v: s.z },
+      tone: highlight === s.item ? ('amber' as const) : ('muted' as const),
+    };
   });
-  if (scene === 'stage') labels.push({ id: 'aud', ...spec.audience(variant), tone: 'muted' });
-  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 140, align: 'left', tone: 'muted' });
+  if (scene === 'stage') {
+    const a = spec.audience(variant);
+    labels.push({ id: 'aud', ...a, point: { u: a.u, v: a.v }, tone: 'muted' });
+  }
+  if (room && !labels.some((l) => l.text === 'THE ROOM')) labels.push({ id: 'room.name', text: 'THE ROOM', u: room.u0 + 200, v: room.v0 + 260, align: 'left', point: { u: room.u0 + 200, v: room.v0 + 260 }, tone: 'muted' });
+  if (cue) labels.push(...cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })));
   const onPress = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
@@ -247,9 +309,7 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
       <Pressable onPress={(e) => onPress(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          {scene === 'studio' ? (
-            <Path path={roomPath(box)} style="stroke" strokeWidth={40} color="#3a3d45" />
-          ) : null}
+          {room ? <Path path={roomPath(room)} style="stroke" strokeWidth={40} color="#3a3d45" /> : null}
           {spots.filter((s) => s.glyph === 'band').map((s) => (
             <Glyph key={s.item} spot={s} lit={highlight === s.item} />
           ))}
@@ -257,10 +317,12 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
           {spots.filter((s) => s.glyph !== 'band').map((s) => (
             <Glyph key={s.item} spot={s} lit={highlight === s.item} />
           ))}
+          {/* Studio: each performer's headphone mix (no wedges in a studio). */}
+          {cue ? <CueMixPlan rig={cue} /> : null}
         </Group>
       </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
     </View>
   );
 }

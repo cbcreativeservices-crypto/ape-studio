@@ -698,7 +698,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         kind: 'LEARN',
         layout: 'rack',
         rack: {
-          render: (w, h) => <KeysPlan w={w} h={h} rig={spec.rig} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: ${rhodes ? 'the combo amp, the keyboard to its side with the player and their keep-clear space' : 'the instrument with its speakers facing the player, and the player’s keep-clear space'}, a DI box, another amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ''}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
+          render: (w, h) => <KeysPlan w={w} h={h} rig={spec.rig} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: ${rhodes ? 'the combo amp, the keyboard to its side with the player and their keep-clear space' : 'the instrument with its speakers facing the player, and the player’s keep-clear space'}, a DI box, another amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ', and the player’s headphone mixer, fed from the control room'}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
           badge: scene === 'stage' ? 'From above · a typical layout · grey dashes = the player’s space, keep clear' : 'From above · a typical studio room',
           bezel: [
             { k: 'ITEM', v: ps ? ps.short : 'TAP ONE', flex: 1.4 },

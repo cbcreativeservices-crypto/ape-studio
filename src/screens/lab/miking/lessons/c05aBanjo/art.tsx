@@ -8,7 +8,7 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { makeGuitarArt } from '../shared/guitars/GuitarArt';
 import { makeStringSoundPage } from '../shared/guitars/StringSound';
 import { makeStagePlanPage, STRINGS_HEARING } from '../shared/guitars/StagePlan';
-import { stringsPlan } from '../shared/guitars/stringsContent.ts';
+import { GUITAR_PLANS } from '../shared/guitars/stagePlanModel.ts';
 import { C05A_BUILT, C05A_ZONES } from './geometry.ts';
 
 const sp = C05A_BUILT.scenes.reso.variant.spec;
@@ -18,7 +18,7 @@ export const C05A_ART: LessonArt = {
   ...makeGuitarArt(C05A_BUILT, { zones: C05A_ZONES }),
   pages: {
     sound: makeStringSoundPage(C05A_BUILT, { membrane: { diameterMm: pot.d.mm, hooks: sp.hooks?.mm ?? 24, bridgeMm: Math.abs(pot.cx.mm), label: 'banjo head, from the front' } }),
-    setting: makeStagePlanPage(C05A_BUILT, { objects: stringsPlan(C05A_BUILT.scenes.reso, { chair: false, vocal: true, di: false, shared: true }), stageEdgeZ: 1650, hearing: STRINGS_HEARING }),
+    setting: makeStagePlanPage(C05A_BUILT, { plan: GUITAR_PLANS.C05A, hearing: STRINGS_HEARING }),
   },
   stepCounts: { sound: 5, setting: 3 },
 };

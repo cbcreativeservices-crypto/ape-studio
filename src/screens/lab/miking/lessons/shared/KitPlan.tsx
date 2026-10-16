@@ -13,8 +13,15 @@
  *
  * Nothing moves (D8). A tap names an item; the dock's ITEM fader is the
  * no-tap path to the same cards.
+ *
+ * Collision pass 2026-10-15 (owner): the stage, the studio room, the rug and
+ * every object's footprint come from kitPlanLayout.ts (pure; the overlap
+ * test reads it): the drummer's fill beside the kit, the stage lip
+ * downstage of the downstage wedge, a room round the whole kit, the words
+ * clear of every object. STUDIO: no wedges — the drummer's own headphone
+ * mixer, fed from the CONTROL ROOM box on the wall behind the drummer.
  */
-import { useMemo, type ReactElement } from 'react';
+import { useMemo, type ReactElement, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { Wedge2WayTop } from './wedge2Way';
@@ -22,11 +29,16 @@ import { useStageTextScale } from '../../../rack/stageAspect';
 import type { SettingItem, VariantId, Vec3, Wedge } from '../../engine/model/types.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
-import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_BOX, PLAN_HARDWARE, planHitTest, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
+import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
+import { AUDIENCE_MARK, KITPLAN_BOX, KITPLAN_ROOM, KITPLAN_RUG, KITPLAN_STAGE, kitCue, kitPlanFoots, kitPlanHit, planItemRect, planWedges } from './kitPlanLayout.ts';
+import { clearOfFoots, labelPlaces, type PlanFoot } from './planFoot.ts';
+import { CueMixPlan } from './monitoring/CueMixPlan';
+import { cueLabels } from './monitoring/cueMix.ts';
 import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from './drums/DrumArt';
 import { KICK_22x18 } from './drums/drumSpec.ts';
 
 const AMBER = '#ffc64d';
+const ORIGIN: Vec3 = { x: 0, y: 0, z: 0 };
 const GREY = '#8a8f9c';
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -44,6 +56,12 @@ export type KitPlanProps = {
   OwnArt?: (p: { view: 'top'; variant: VariantId }) => ReactElement;
   /** Where the lesson's frame origin sits on the plan (its wedges are in it). */
   offset?: Vec3;
+  /** A cymbal lesson's own cymbal the shared kit does not draw (or its ring),
+   *  drawn over the kit in the plan's transform; its footprint and its name
+   *  join the plan's (one label layout, clear of every object). */
+  overlay?: ReactNode;
+  overlayFoots?: readonly PlanFoot[];
+  overlayLabels?: readonly StaticLabel[];
   wedges: readonly Wedge[];
   /** The chosen ITEM id (lesson.setting.items), or null. */
   highlight: string | null;
@@ -186,18 +204,24 @@ export function planIdsOf(it: Pick<SettingItem, 'id' | 'planIds'>): readonly str
   return it.planIds && it.planIds.length ? it.planIds : [it.id];
 }
 
-export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offset = { x: 0, y: 0, z: 0 }, wedges, highlight, onTap, accessibilityLabel }: KitPlanProps) {
+export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offset = ORIGIN, overlay, overlayFoots, overlayLabels, wedges, highlight, onTap, accessibilityLabel }: KitPlanProps) {
   const textScale = useStageTextScale();
-  const box = scene === 'kit' ? PLAN_BOX.kit : PLAN_BOX.wide;
+  const box = scene === 'kit' ? KITPLAN_BOX.kit : KITPLAN_BOX.wide;
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
   const space = useMemo(() => poly(KIT.playerSpace), []);
   const isOwn = (id: string) => (typeof ownIn === 'string' ? ownIn === id : ownIn.includes(id));
   // The lesson's wedges are in its own frame: onto the plan.
-  const stageWedges = scene === 'stage' ? wedges.filter((wd) => wd.glyph !== 'none').map((wd) => ({ ...wd, p: { x: wd.p.x + offset.x, y: wd.p.y + offset.y, z: wd.p.z + offset.z } })) : [];
-  const rug = useMemo(() => rr(-1010, -790, 1780, 1640, 30), []);
+  const stageWedges = scene === 'stage' ? planWedges(wedges, offset) : [];
+  // Every object's footprint (collision pass 2026-10-15): the words keep
+  // clear of them; a name with no clear spot beside its object moves to
+  // free space with a leader back to it.
+  const foots = useMemo(() => kitPlanFoots(scene, wedges, offset, overlayFoots ?? []), [scene, wedges, offset, overlayFoots]);
+  // Studio: the drummer's personal headphone mixer, fed from the control room.
+  const cue = scene === 'studio' ? kitCue() : null;
+  const rug = useMemo(() => rr(KITPLAN_RUG.u0, KITPLAN_RUG.v0, KITPLAN_RUG.u1 - KITPLAN_RUG.u0, KITPLAN_RUG.v1 - KITPLAN_RUG.v0, 30), []);
   const audience = useMemo(() => {
     const p = Skia.Path.Make();
-    const u = KIT.audienceU;
+    const u = KITPLAN_STAGE.audienceU;
     for (const v of [-420, 0, 420]) {
       p.moveTo(u - 170, v);
       p.lineTo(u + 40, v);
@@ -208,13 +232,13 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
     return p;
   }, []);
   const walls = useMemo(() => {
-    const r = KIT.room;
+    const r = KITPLAN_ROOM;
     const p = Skia.Path.Make();
     p.addRect(Skia.XYWHRect(r.u0, r.v0, r.u1 - r.u0, r.v1 - r.v0));
     return p;
   }, []);
   const panels = useMemo(() => {
-    const r = KIT.room;
+    const r = KITPLAN_ROOM;
     const p = Skia.Path.Make();
     for (let u = r.u0 + 220; u < r.u1 - 200; u += 520) {
       p.addRRect(Skia.RRectXY(Skia.XYWHRect(u, r.v0 + 10, 300, 46), 8, 8));
@@ -247,13 +271,27 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   const itemOfPlan = (pid: string) => items.find((i) => shownHere(i) && planIdsOf(i).includes(pid)) ?? null;
 
   const labels: StaticLabel[] = [];
+  const k = xf.s / textScale;
   const addItem = (it: SettingItem) => {
     for (const pid of planIdsOf(it)) {
-      let at = planLabelAt(pid);
-      const wd = stageWedges.find((x) => x.id === pid);
-      if (wd) at = { u: wd.p.x, v: wd.p.z + 340, align: 'center' };
+      const tone = highlight === it.id ? ('amber' as const) : undefined;
+      if (pid === 'room') {
+        if (scene !== 'studio') continue;
+        const r = KITPLAN_ROOM;
+        labels.push({ id: `${it.id}:${pid}`, text: it.short, u: r.u0 + 60, v: r.v0 + 130, align: 'left', point: { u: r.u0, v: r.v0 + 130 }, tone });
+        break;
+      }
+      // The words go just outside the object's own footprint (below, right,
+      // left, above), else into free space with a leader back to it.
+      const own = pid === 'audience' ? (scene === 'stage' ? AUDIENCE_MARK : null) : planItemRect(foots, pid);
+      if (own) {
+        const [first, ...alts] = labelPlaces(own, k);
+        labels.push({ id: `${it.id}:${pid}`, text: it.short, u: first.u, v: first.v, align: first.align, alts, point: { u: (own.u0 + own.u1) / 2, v: (own.v0 + own.v1) / 2 }, tone });
+        break;
+      }
+      const at = pid === 'audience' ? null : planLabelAt(pid);
       if (!at) continue;
-      labels.push({ id: `${it.id}:${pid}`, text: it.short, u: at.u, v: at.v, align: at.align, tone: highlight === it.id ? 'amber' : undefined });
+      labels.push({ id: `${it.id}:${pid}`, text: it.short, u: at.u, v: at.v, align: at.align, point: { u: at.u, v: at.v }, tone });
       break;
     }
   };
@@ -262,8 +300,10 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   if (chosen) addItem(chosen);
   const ownItem = visible.find((i) => planIdsOf(i).some((p) => isOwn(p)));
   if (ownItem) addItem(ownItem);
+  for (const l of overlayLabels ?? []) labels.push(l);
   for (const it of visible) addItem(it);
-  labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: -1000, v: 125, align: 'left', tone: 'illustrative' });
+  labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: -1000, v: 125, align: 'left', point: { u: -900, v: 150 }, tone: 'illustrative' });
+  if (cue) for (const l of cueLabels(cue)) labels.push({ ...l, tone: 'illustrative' });
   const seen = new Set<string>();
   const uniq = labels.filter((l) => {
     const k = l.id.split(':')[0];
@@ -273,7 +313,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
-    const pid = planHitTest({ wedges: stageWedges.map((wd) => ({ id: wd.id, u: wd.p.x, v: wd.p.z })), scene }, u, v, 20 / xf.s);
+    const pid = kitPlanHit(scene, stageWedges.map((wd) => ({ id: wd.id, u: wd.p.x, v: wd.p.z })), u, v, 20 / xf.s);
     const it = pid ? itemOfPlan(pid) : null;
     if (it) onTap(it.id);
   };
@@ -288,7 +328,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   return (
     <View style={{ width: w, height: h }}>
       <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
-        <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
+        <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={cue ? `${accessibilityLabel} The drummer’s own headphone mixer stands at the drummer’s right, the headphones resting on the throne, its cable running back to the control room box on the wall behind.` : accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
             {scene === 'studio' ? (
               <>
@@ -299,14 +339,14 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
             ) : null}
             {scene === 'stage' ? (
               <>
-                <Line p1={vec(KIT.audienceU - 230, -840)} p2={vec(KIT.audienceU - 230, 940)} color="#5d616c" strokeWidth={8}>
+                <Line p1={vec(KITPLAN_STAGE.lipU, box.v0 + 40)} p2={vec(KITPLAN_STAGE.lipU, box.v1 - 40)} color="#5d616c" strokeWidth={8}>
                   <DashPathEffect intervals={[40, 26]} />
                 </Line>
                 <Path path={audience} style="stroke" strokeWidth={14} color="#aab0bd" strokeCap="round" strokeJoin="round" />
               </>
             ) : null}
             <Path path={rug}>
-              <LinearGradient start={vec(-1010, -790)} end={vec(770, 850)} colors={['#3a1c1f', '#2a1416', '#1c0d0f']} />
+              <LinearGradient start={vec(KITPLAN_RUG.u0, KITPLAN_RUG.v0)} end={vec(KITPLAN_RUG.u1, KITPLAN_RUG.v1)} colors={['#3a1c1f', '#2a1416', '#1c0d0f']} />
             </Path>
             <Path path={rug} style="stroke" strokeWidth={6} color="#5a2c30" opacity={0.8} />
             {/* the player's space (a keep-out, the lab's grey hatch) */}
@@ -330,15 +370,18 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
             {(['crash1', 'crash2', 'ride'] as const).map((id) => (
               <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} highlight={hi(id)} dim={hi(id) ? 0.85 : 0.36} />
             ))}
+            {overlay}
             {stageWedges.map((wd) => (
               <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={hi(wd.id)} />
             ))}
+            {/* Studio: the drummer's headphone mix (no wedges in a studio). */}
+            {cue ? <CueMixPlan rig={cue} /> : null}
             {hi('room') ? <Path path={walls} style="stroke" strokeWidth={22} color={AMBER} opacity={0.8} /> : null}
             {hi('audience') ? <Path path={audience} style="stroke" strokeWidth={22} color={AMBER} strokeCap="round" opacity={0.85} /> : null}
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots)} />
     </View>
   );
 }

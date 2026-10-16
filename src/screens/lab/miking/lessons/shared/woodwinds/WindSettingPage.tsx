@@ -143,7 +143,7 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
         kind: 'LEARN',
         layout: 'rack',
         rack: {
-          render: render(where, wideSel, pickWide, `${where === 'stage' ? cfg.a11y.stage : cfg.a11y.studio} ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
+          render: render(where, wideSel, pickWide, `${where === 'stage' ? cfg.a11y.stage : `${cfg.a11y.studio} Every player and the conductor have a personal headphone mixer, fed from the control room.`} ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
           badge: where === 'stage' ? 'From above · two wedges where a stage often puts them · the audience below' : 'From above · a studio room · a main pair above the conductor',
           bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
           params: wideParams,

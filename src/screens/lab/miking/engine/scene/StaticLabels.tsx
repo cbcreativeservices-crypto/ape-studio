@@ -23,15 +23,22 @@ export type StaticLabel = {
   at?: { u: number; v: number };
   /** The Lab 4 review's name for `at`. */
   lead?: { u: number; v: number };
+  /** Where the named object is: a label moved into free space (`clearOf`)
+   *  points back here with a leader. */
+  point?: { u: number; v: number };
 };
 
 /** ink* = dark marks for a LIGHT surface (a coated drumhead), with a light halo. */
 const TONE = { muted: colors.textMuted, illustrative: '#aab0bd', amber: '#ffc64d', blue: '#8fbcff', inkBlue: '#123f8c', inkAmber: '#7a4a00' } as const;
 
 /** `laidOut`: the labels come already placed (artLabels.layoutArtLabels —
- *  level of detail, clear of the drawing); draw them as they are. */
-export function StaticLabels({ labels, xf, scale, w, laidOut = false }: { labels: (StaticLabel & { leader?: { u: number; v: number } })[]; xf: ViewXform; scale: number; w: number; laidOut?: boolean }) {
-  const kept = laidOut ? labels : fitLabels(labels, xf, scale, w);
+ *  level of detail, clear of the drawing); draw them as they are.
+ *  `clearOf` (the plans, owner 2026-10-15: no word on an object): true when a
+ *  model rectangle (mm) holds no object — every label then sits clear of the
+ *  objects, inside the glass (`h`), moving to free space with a leader when
+ *  its own place is taken (labelLayout.fitLabels' level-of-detail layout). */
+export function StaticLabels({ labels, xf, scale, w, h, laidOut = false, clearOf }: { labels: (StaticLabel & { leader?: { u: number; v: number } })[]; xf: ViewXform; scale: number; w: number; h?: number; laidOut?: boolean; clearOf?: (u0: number, v0: number, u1: number, v1: number) => boolean }) {
+  const kept = laidOut ? labels : clearOf ? fitLabels(labels, xf, scale, w, undefined, undefined, { clearOf, minY: 2, maxY: h != null ? h - 2 : undefined, leaderClear: leaderClearOf(clearOf, xf) }) : fitLabels(labels, xf, scale, w);
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {kept.map((l) => {
@@ -64,6 +71,29 @@ export function StaticLabels({ labels, xf, scale, w, laidOut = false }: { labels
       })}
     </View>
   );
+}
+
+/** A leader (px) runs clear of every object but its own: sampled every 3 px
+ *  from its part outward — first out of the object it names (the dot sits
+ *  on it), then nothing else may lie under it, up to 2 px from the words. */
+export function leaderClearOf(clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, xf: ViewXform) {
+  return (ln: { x1: number; y1: number; x2: number; y2: number }) => {
+    const L = Math.hypot(ln.x2 - ln.x1, ln.y2 - ln.y1);
+    if (L < 8) return true;
+    let out = false;
+    for (let d = 0; d <= L - 2; d += 3) {
+      const t = d / L;
+      const x = ln.x1 + (ln.x2 - ln.x1) * t;
+      const y = ln.y1 + (ln.y2 - ln.y1) * t;
+      const u = (x - xf.ox) / xf.s;
+      const v = (y - xf.oy) / xf.s;
+      const r = 0.5 / xf.s;
+      const open = clearOf(u - r, v - r, u + r, v + r);
+      if (open) out = true;
+      else if (out) return false;
+    }
+    return true;
+  };
 }
 
 const styles = StyleSheet.create({

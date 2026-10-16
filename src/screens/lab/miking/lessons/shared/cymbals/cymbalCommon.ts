@@ -7,13 +7,14 @@
 import type { Lesson, SettingItem, Wedge } from '../../../engine/model/types.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
 import { KIT_FLOOR_Y } from '../kitPlanModel.ts';
+import { KIT_FILL } from '../kitStage.ts';
 
 const stage = (reason: string) => ({ kind: 'illustrative', reason }) as const;
 
 /** The drummer's fill beside the throne and a downstage wedge (M01's places). */
 export function stageWedges(fillNote: string, downNote: string): Wedge[] {
   return [
-    { id: 'fill', label: 'the drummer’s own fill, on the floor beside the throne', short: 'DRUM FILL', p: { x: -450, y: KIT_FLOOR_Y, z: 750 }, lift: 150, faces: { x: -0.2, y: 0, z: -1 }, note: fillNote, prov: stage('a typical stage layout (the kick lesson’s same monitor); no source gives the position') },
+    { id: 'fill', label: 'the drummer’s own fill, on the floor beside the throne', short: 'DRUM FILL', p: { x: KIT_FILL.x, y: KIT_FLOOR_Y, z: KIT_FILL.z }, lift: 150, faces: KIT_FILL.faces, note: fillNote, prov: stage('a typical stage layout (the kick lesson’s same monitor); no source gives the position') },
     { id: 'downstage', label: 'a floor wedge for another player, downstage of the drums, facing upstage', short: 'DOWNSTAGE', p: { x: KICK_GEOM.L + 900, y: KIT_FLOOR_Y, z: -450 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: downNote, prov: stage('a typical stage layout (the kick lesson’s same monitor); no source gives the position') },
   ];
 }

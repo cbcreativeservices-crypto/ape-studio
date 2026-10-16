@@ -264,6 +264,7 @@ function HandSetting(spec: HandSpec) {
             <HandPlan
               w={w}
               h={h}
+              lessonId={lesson.id}
               art={spec.art}
               variant={variant}
               scene={scene}

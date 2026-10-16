@@ -748,8 +748,10 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
 }
 
 /** The family's wedges at a stage position (ILLUSTRATIVE: no source gives
- *  them): the player's own in front, facing back; another to the side. */
-export function saxWedges(floorY: number, front: number, across: number): Wedge[] {
+ *  them): the player's own in front, facing back; another player's in front
+ *  of that neighbour, facing back at them (`side`: where it sits — collision
+ *  pass 2026-10-15: it stood on the neighbour's feet). */
+export function saxWedges(floorY: number, front: number, across: number, side: { x: number; z: number }): Wedge[] {
   return [
     {
       id: 'wedge',
@@ -765,9 +767,9 @@ export function saxWedges(floorY: number, front: number, across: number): Wedge[
       id: 'side',
       label: 'another player’s wedge, off to the side',
       short: 'SIDE WEDGE',
-      p: { x: 250, y: floorY, z: across + 1250 },
+      p: { x: side.x, y: floorY, z: side.z },
       lift: 150,
-      faces: { x: -0.3, y: 0, z: -1 },
+      faces: { x: -1, y: 0, z: 0 },
       note: 'Off to the side, facing another player: it reaches the horn’s mic from the side.',
       prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
     },

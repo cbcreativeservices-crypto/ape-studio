@@ -342,14 +342,17 @@ export function wurliZones(): DocumentedZone[] {
   });
 }
 
-/** Wedges where a stage often puts them (ILLUSTRATIVE), frame W. */
+/** Wedges where a stage often puts them (ILLUSTRATIVE), frame W. The
+ *  player's wedge stands just outside their keep-clear space and bench
+ *  (collision pass 2026-10-15; was 1150, −600 — the same bearing from the
+ *  instrument). */
 export function wurliWedges(): Wedge[] {
   const f = (x: number, z: number) => {
     const l = Math.hypot(x, z);
     return { x: x / l, y: 0, z: z / l };
   };
   return [
-    { id: 'keysWedge', label: 'the player’s wedge, on the floor beside them, facing them', short: 'WEDGE', p: { x: 1150, y: 0, z: -600 }, lift: 150, faces: f(600 - 1150, 600), note: 'It sits by the player and faces them — behind a mic that faces the grille, where a cardioid rejects most.', prov: ill('a typical stage layout; no source gives the position') },
+    { id: 'keysWedge', label: 'the player’s wedge, on the floor beside them, facing them', short: 'WEDGE', p: { x: 1400, y: 0, z: -730 }, lift: 150, faces: f(600 - 1400, 730), note: 'It sits by the player and faces them — behind a mic that faces the grille, where a cardioid rejects most.', prov: ill('a typical stage layout; no source gives the position') },
     { id: 'sideFill', label: 'a side-fill monitor at the side of the stage', short: 'SIDE FILL', p: { x: 0, y: 0, z: -1700 }, lift: 150, faces: { x: 0, y: 0, z: 1 }, note: 'It sits off to the side, about ninety degrees off the mic’s axis: no cardioid null reaches it. Distance and level do the work there.', prov: ill('a typical stage layout; no source gives the position') },
   ];
 }

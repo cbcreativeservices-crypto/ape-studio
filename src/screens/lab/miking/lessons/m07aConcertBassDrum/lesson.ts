@@ -571,7 +571,7 @@ export const M07A_LESSON: Lesson = {
         id: 'fill',
         label: 'the percussion section’s own monitor, upstage beyond the drum, facing the players',
         short: 'SECTION MON.',
-        p: { x: -1250, y: FLOOR_Y, z: -1050 },
+        p: { x: -1250, y: FLOOR_Y, z: -1180 },
         lift: 150,
         faces: { x: 0.6, y: 0, z: 0.8 },
         note: 'It sits in FRONT of a spot looking at the drum: no pattern null reaches it. The drum itself lies in much of the path.',

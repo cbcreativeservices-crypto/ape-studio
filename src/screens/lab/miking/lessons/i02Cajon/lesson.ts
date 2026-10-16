@@ -543,10 +543,19 @@ export const I02_LESSON: SpLesson = {
       box: { u0: -2600, u1: 2700, v0: -2100, v1: 2100 },
       things: [
         { id: 'cajon', kind: 'drums', u: 0, v: 0, scene: 'all' },
-        { id: 'vocal', kind: 'micstand', u: 900, v: -900, scene: 'all' },
+        { id: 'vocal', kind: 'micstand', u: 850, v: -1000, scene: 'all' },
         { id: 'guitar', kind: 'player', u: -100, v: 1150, scene: 'all' },
         ...STAGE_THINGS,
       ],
+      cue: {
+        wall: 'u1',
+        hubAt: 300,
+        stations: [
+          { of: 'cajon', at: { u: -350, v: 580 }, via: [{ u: -350, v: 850 }] },
+          { of: 'guitar', at: { u: -100, v: 1650 } },
+          { of: 'vocal', at: { u: 400, v: -1450 } },
+        ],
+      },
     },
   },
 };

@@ -4,19 +4,18 @@
  * only, at TRUE size — "not huge heads like Easter Island").
  *
  * Real stacking-chair dimensions, in millimetres: 460 wide, 430 seat depth,
- * seat 450 high, back 880 high. Plans draw in mm, so a plan chair is 1:1; the
+ * seat 450 high, back 880 high — CHAIR_MM = { w: 460, seatD: 430, backD: 60, seatH: 450, backH: 880 },
+ * kept pure in audienceChairsModel.ts (the plans' overlap test reads it). Plans draw in mm, so a plan chair is 1:1; the
  * side view scales by the caller's px-per-metre.
  *
  * Skia-only: load it only from modules that are themselves Skia-gated.
  */
 import { Group, Path, Skia } from '@shopify/react-native-skia';
-import { aboveRotation } from './headIconGeometry';
+import { CHAIR_MM } from './audienceChairsModel.ts';
+
+export { CHAIR_MM, CHAIR_PITCH_MM, chairRect, chairRowFacingStage } from './audienceChairsModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
-
-export const CHAIR_MM = { w: 460, seatD: 430, backD: 60, seatH: 450, backH: 880 } as const;
-/** Centre-to-centre spacing of chairs in a row (a seat plus elbow room). */
-export const CHAIR_PITCH_MM = 520;
 
 const rrect = (p: SkPath, x0: number, y0: number, x1: number, y1: number, r: number) =>
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(x0, y0, x1 - x0, y1 - y0), r, r));
@@ -44,14 +43,6 @@ export function makeChairsTop(at: readonly { x: number; y: number; rotation: num
     backs.addPath(back);
   }
   return { seats, backs };
-}
-
-/** One row of chairs across v ∈ [v0, v1] at depth u, all facing −u (the stage). */
-export function chairRowFacingStage(u: number, v0: number, v1: number): { x: number; y: number; rotation: number }[] {
-  const n = Math.max(1, Math.floor((v1 - v0) / CHAIR_PITCH_MM) + 1);
-  const span = (n - 1) * CHAIR_PITCH_MM;
-  const start = (v0 + v1) / 2 - span / 2;
-  return Array.from({ length: n }, (_, i) => ({ x: u, y: start + i * CHAIR_PITCH_MM, rotation: aboveRotation(-1, 0) }));
 }
 
 /** Draw makeChairsTop output: a dark seat with a light rim, the backrest solid. */

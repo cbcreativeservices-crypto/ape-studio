@@ -7,6 +7,7 @@
  */
 import type { Lesson, ViewBox } from '../../../engine/model/types.ts';
 import type { PlanThing } from '../handdrums/family.ts';
+import type { PlanCueSpec } from '../handdrums/handPlanModel.ts';
 
 export type { PlanThing };
 
@@ -16,7 +17,7 @@ export type SpExtra = {
   /** THE SETTING: the station plan (from above), mm; things at ILLUSTRATIVE
    *  positions (`prov` is on the matching SettingItem). The lesson's own art
    *  (player and instrument, top view) is drawn at the 'drums' thing. */
-  plan: { box: ViewBox; things: readonly PlanThing[] };
+  plan: { box: ViewBox; things: readonly PlanThing[]; /** The studio's headphone mix (handPlanModel). */ cue?: PlanCueSpec };
   /** ORIENT's close-up framing (the figure and THE PARTS): the scene views
    *  are framed for the mics, too wide to read a small instrument. */
   close: { side: ViewBox; top: ViewBox };

@@ -12,11 +12,13 @@
  */
 import { Group, Path, Skia } from '@shopify/react-native-skia';
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
-import type { VariantId, ViewBox } from '../../engine/model/types.ts';
+import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
-import { makeStagePage, type PlanSpot } from '../shared/strings/PStagePlan';
+import { makeStagePage } from '../shared/strings/PStagePlan';
 import { GrandPlan, Pianist, UprightPlan } from '../shared/piano/PianoArt';
 import { GB, GS, SETUP, UP, type PianoVariant } from './model.ts';
+import { pianoAudience, pianoBoxes, pianoCue, pianoOwnFoots, pianoPlanFoots, pianoRoom, pianoSpots } from './planModel.ts';
+import { unionRect } from '../shared/planFoot.ts';
 import { PIANIST_AT } from './geometry.ts';
 import { PIANO_BASE_ART } from './art';
 import { PianoStrikeSequence } from './soundArt';
@@ -90,38 +92,8 @@ const SOUND = makeStringSoundPage({
   silentNote: 'This lab never plays a sound and draws no frequency curve for the piano: how a real piano sounds depends on the instrument, its regulation and voicing, the room, the pianist and the music. The pictures show where the sound comes from and where it leaves.',
 });
 
-/* ── the stage plan ── */
-const grandNear = (g: typeof GB): ViewBox => ({ u0: -1250, u1: g.xTail + 900, v0: -1100, v1: 1600 });
-const grandWide = (g: typeof GB): ViewBox => ({ u0: -1700, u1: g.xTail + 2400, v0: -1900, v1: 2900 });
-const UP_NEAR: ViewBox = { u0: -1500, u1: 1100, v0: -1300, v1: 1400 };
-const UP_WIDE: ViewBox = { u0: -2100, u1: 2600, v0: -2000, v1: 2700 };
-
-function grandSpots(g: typeof GB): PlanSpot[] {
-  return [
-    { item: 'bench', glyph: 'none', x: PIANIST_AT.grand.xKey - 450, z: 0, scene: 'all', r: 330, label: { du: 0, dv: 470 } },
-    { item: 'desk', glyph: 'none', x: g.desk.x0 + 40, z: 0, scene: 'near', r: 190, label: { du: 0, dv: -560 } },
-    { item: 'singer', glyph: 'singer', x: -150, z: g.hw + 480, faces: { x: -1, z: 0 }, scene: 'near', r: 300, label: { du: 420, dv: 0 } },
-    { item: 'wedge.pianist', glyph: 'wedge', x: -700, z: -1100, faces: { x: 0.2, z: 1 }, scene: 'stage', r: 330, label: { du: 0, dv: -400 } },
-    { item: 'fill.side', glyph: 'pa', x: 600, z: 2200, faces: { x: 0, z: -1 }, scene: 'stage', r: 360 },
-    { item: 'band', glyph: 'band', x: g.xTail + 1300, z: -800, scene: 'stage', r: 900 },
-    { item: 'pa', glyph: 'pa', x: g.xTail + 1900, z: 2300, faces: { x: 1, z: 0 }, scene: 'stage', r: 380 },
-    { item: 'pair', glyph: 'pair', x: g.curve.p.x + 800 * g.curve.n.x, z: g.curve.p.z + 800 * g.curve.n.z, faces: { x: -g.curve.n.x, z: -g.curve.n.z }, scene: 'studio', r: 300 },
-    { item: 'room', glyph: 'none', x: g.xTail + 2200, z: -1700, scene: 'studio', r: 500, label: { du: 0, dv: 0 } },
-  ];
-}
-function uprightSpots(): PlanSpot[] {
-  return [
-    { item: 'bench', glyph: 'none', x: PIANIST_AT.upright.xKey - 450, z: 0, scene: 'all', r: 330, label: { du: 0, dv: 470 } },
-    { item: 'desk', glyph: 'none', x: UP.panel.x - 40, z: 0, scene: 'near', r: 160, label: { du: 0, dv: -560 } },
-    { item: 'singer', glyph: 'singer', x: -700, z: UP.hw + 600, faces: { x: 0, z: -1 }, scene: 'near', r: 300 },
-    { item: 'wedge.pianist', glyph: 'wedge', x: -1300, z: -900, faces: { x: 0.4, z: 1 }, scene: 'stage', r: 330 },
-    { item: 'fill.side', glyph: 'pa', x: -400, z: 2000, faces: { x: 0, z: -1 }, scene: 'stage', r: 360 },
-    { item: 'band', glyph: 'band', x: 1300, z: -1300, scene: 'stage', r: 800 },
-    { item: 'pa', glyph: 'pa', x: -1700, z: 2200, faces: { x: -1, z: 0 }, scene: 'stage', r: 380 },
-    { item: 'pair', glyph: 'pair', x: 260, z: 0, faces: { x: -1, z: 0 }, scene: 'studio', r: 260 },
-    { item: 'room', glyph: 'none', x: 2200, z: 2200, scene: 'studio', r: 500, label: { du: 0, dv: 0 } },
-  ];
-}
+/* ── the stage plan: the layout is pure (planModel.ts), the overlap test
+ *  reads the same numbers ── */
 
 const ringCache = new Map<string, ReturnType<typeof Skia.Path.Make>>();
 function ownRing(v: VariantId) {
@@ -173,11 +145,15 @@ const SETTING = makeStagePage({
     }
     return u >= UP.xKey && u <= UP.xBack && Math.abs(w) <= UP.hw;
   },
-  near: (v) => (isGrand(v) ? grandNear(setupOf(v).kind === 'grand' && (setupOf(v) as { id: string }).id === 'S' ? GS : GB) : UP_NEAR),
-  wide: (v) => (isGrand(v) ? grandWide(setupOf(v).kind === 'grand' && (setupOf(v) as { id: string }).id === 'S' ? GS : GB) : UP_WIDE),
-  spots: (v) => (isGrand(v) ? grandSpots((setupOf(v) as { id: string }).id === 'S' ? GS : GB) : uprightSpots()),
+  near: (v) => pianoBoxes(v).near,
+  wide: (v) => pianoBoxes(v).wide,
+  spots: pianoSpots,
+  foots: pianoPlanFoots,
+  cue: pianoCue,
+  room: pianoRoom,
+  named: (v, item) => (item === 'bench' ? unionRect(pianoOwnFoots(v, 'near').filter((f) => f.id.startsWith('pianist:'))) : null),
   nearBadge: 'From above · a typical layout · the pianist at the left, the treble side toward the bottom',
-  audience: (v) => (isGrand(v) ? { text: 'AUDIENCE ↓ (THE CURVED SIDE)', u: 300, v: 2750, align: 'center' } : { text: 'AUDIENCE ↓', u: -300, v: 2550, align: 'center' }),
+  audience: pianoAudience,
   nearLooking: 'Plan · the piano and the pianist from above',
   hearing: 'Protect your hearing during soundcheck and repeated loud passages: close to the hammers a piano can pass 130 dB. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });

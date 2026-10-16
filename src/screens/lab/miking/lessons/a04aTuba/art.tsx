@@ -11,8 +11,8 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { hitTestScene, makeLowBrassInstrument, makeLowBrassPortrait, placeLabels, type LabelSpot } from '../shared/lowbrass/LowBrassArt';
 import { makeLowBrassSoundPage } from '../shared/lowbrass/LowBrassSoundPage';
 import { makeLowBrassSettingPage } from '../shared/lowbrass/LowBrassSettingPage';
+import { A04A_PLAN } from './plan.ts';
 import type { BrassScene } from '../shared/lowbrass/lowBrassScene.ts';
-import { EUPH } from '../shared/lowbrass/lowBrassSpec.ts';
 import { FRONT, SPEC, UP } from './model.ts';
 
 /** The labels for one orientation (off the instrument, with leaders). */
@@ -65,21 +65,13 @@ export const TUBA_ART: LessonArt = {
       },
     }),
     setting: makeLowBrassSettingPage({
-      spec: SPEC,
-      objects: [
-        { id: 'tuba', kind: 'self', at: { x: 0, z: 0 }, r: 420, label: 'tuba', scene: 'all' },
-        { id: 'stand', kind: 'stand', at: { x: 760, z: -150 }, r: 250, label: 'music stand', short: 'stand', scene: 'kit' },
-        { id: 'euph', kind: 'brass', spec: EUPH, orient: 'up', at: { x: 60, z: -1150 }, r: 480, label: 'euphonium beside', short: 'euphonium', scene: 'kit' },
-        { id: 'main', kind: 'pair', at: { x: 2500, z: 0 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
-      ],
-      near: { u0: -1300, u1: 1400, v0: -1800, v1: 1500 },
-      wide: { u0: -1500, u1: 3100, v0: -2200, v1: 2000 },
+      ...A04A_PLAN,
       nearA11y: 'A tuba player from above: the player on a chair facing right, the tuba on the lap with its wide bell beside the head, the player’s space hatched, a music stand in front and a euphonium player to the left.',
-      wideA11y: { stage: 'The same from above, on a stage: the tuba player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the players.' },
+      wideA11y: { stage: 'The same from above, on a stage: the tuba player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the players; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the tuba player — or step through ITEM — to see what it means for a tuba mic. There is nothing to answer yet.',
       nearIdle: 'The tuba rests on the lap; the right hand works the valves; the bell sways a little as the player breathes. Everything else is a neighbour a tuba mic will hear.',
       stageIdle: 'Two floor monitors and a PA with subwoofers: their low end reaches an open tuba mic too — check it with the player silent.',
-      studioIdle: 'No monitors on the floor. The room — and a main pair, when the tuba plays in a group — are part of the picture now.',
+      studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the tuba plays in a group — are part of the picture now.',
       before: [
         { title: 'FIND THE BELL FIRST', text: '“Tuba” is not one shape: ask the player which tuba this is, where its bell points while playing — up, front or back — and whether they use a stand or support. Then hear a low held note, the lowest note actually written, short notes and a loud phrase.' },
         { title: 'WORK WITH THE TUBA AS IT IS', text: 'The tuba is heavy and its slides bend easily. Never use a slide as a handle or a mic mount, and let the player manage the horn while any hardware goes near it. A bell clip only if its maker confirms it fits this bell.' },

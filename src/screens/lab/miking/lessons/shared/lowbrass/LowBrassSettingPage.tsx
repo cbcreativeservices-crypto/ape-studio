@@ -34,34 +34,21 @@ import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/
 import type { PageProps } from '../../../pages/pageTypes';
 import { LowBrassScene } from './LowBrassArt';
 import { brassScene } from './lowBrassScene.ts';
-import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
+import type { Orient } from './lowBrassSpec.ts';
+import { lowBrassCue, lowBrassFoots, lowBrassShown, PIANO, spaceParts, type LowBrassPlanLayout, type PlanObject } from './lowBrassPlanModel.ts';
+import { CueMixPlan } from '../monitoring/CueMixPlan';
+import { cueLabels } from '../monitoring/cueMix.ts';
+import { clearOfFoots, type PlanRect } from '../planFoot.ts';
+import { besideLabel, cuePoint, ownRect } from '../brass/hornPlanFoot.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const DEG = Math.PI / 180;
 
-export type PlanObject = {
-  id: string;
-  kind: 'self' | 'brass' | 'stand' | 'piano' | 'pair' | 'wall';
-  /** Where it sits (lesson frame, plan: x toward the audience, z to the player's right). */
-  at: { x: number; z: number };
-  /** Turn on the plan (deg, from +x toward +z). */
-  yaw?: number;
-  /** Its tap radius (mm). */
-  r: number;
-  /** Another brass player: which instrument and bell. */
-  spec?: LowBrassSpec;
-  orient?: Orient;
-  label: string;
-  short?: string;
-  scene: 'kit' | 'stage' | 'studio' | 'all';
-};
+export type { PlanObject } from './lowBrassPlanModel.ts';
 
-export type LowBrassSettingConfig = {
-  spec: LowBrassSpec;
-  objects: readonly PlanObject[];
-  near: ViewBox;
-  wide: ViewBox;
+/** The plan (lowBrassPlanModel: the lesson's plan.ts) and the page's words. */
+export type LowBrassSettingConfig = LowBrassPlanLayout & {
   nearA11y: string;
   wideA11y: { stage: string; studio: string };
   nearLanding: string;
@@ -101,7 +88,8 @@ function MusicStand() {
 }
 
 /** A grand piano from above (generic): the bentside case, the keyboard
- *  toward the pianist (−x of its own frame), the open lid's outline. */
+ *  toward the pianist (−x of its own frame), the open lid's outline, and the
+ *  pianist's bench. */
 function GrandPiano() {
   const p = useMemo(() => {
     const L = 2100;
@@ -120,10 +108,21 @@ function GrandPiano() {
     for (let i = 0; i < 36; i++) blacks.addRect(Skia.XYWHRect(-150, -W / 2 + 40 + i * ((W - 80) / 36), 95, 18));
     const plate = make();
     plate.addOval(Skia.XYWHRect(L * 0.12, -W * 0.38, L * 0.55, W * 0.72));
-    return { c, keys, blacks, plate };
+    // The pianist's bench in front of the keys (≈ 760 × 360, padded top).
+    const B = PIANO.bench;
+    const bench = make();
+    bench.addRRect(Skia.RRectXY(Skia.XYWHRect(B.x0, -B.z, B.x1 - B.x0, 2 * B.z), 30, 30));
+    const pad = make();
+    pad.addRRect(Skia.RRectXY(Skia.XYWHRect(B.x0 + 25, -B.z + 25, B.x1 - B.x0 - 50, 2 * B.z - 50), 22, 22));
+    return { c, keys, blacks, plate, bench, pad };
   }, []);
   return (
     <>
+      <Path path={p.bench} color="#0d0d10" />
+      <Path path={p.pad}>
+        <LinearGradient start={vec(PIANO.bench.x0, -PIANO.bench.z)} end={vec(PIANO.bench.x1, PIANO.bench.z)} colors={['#3d3f46', '#24262c', '#141518']} />
+      </Path>
+      <Path path={p.bench} style="stroke" strokeWidth={6} color="#7d818c" opacity={0.6} />
       <Path path={p.c}>
         <LinearGradient start={vec(0, -750)} end={vec(2100, 750)} colors={['#3d3f46', '#17181c', '#060607']} />
       </Path>
@@ -210,9 +209,9 @@ function hatchFor(box: ViewBox): SkPath {
   return p;
 }
 
-/** The player's space in plan: the body, the bell and the hands (and a horn's
- *  "bells up"), as one outline. */
-function playerSpace(spec: LowBrassSpec, orient: Orient): SkPath {
+/** The player's space in plan (lowBrassPlanModel spaceParts): the legs and
+ *  feet, the bell and the hand in it, a horn's "bells up" — as one outline. */
+function playerSpace(spec: LowBrassPlanLayout['spec'], orient: Orient): SkPath {
   const s = brassScene(spec, orient);
   const cap = (a: { x: number; z: number }, b: { x: number; z: number }, r: number) => {
     const q = make();
@@ -229,8 +228,12 @@ function playerSpace(spec: LowBrassSpec, orient: Orient): SkPath {
     q.close();
     return q;
   };
-  const parts = [cap({ x: s.J.pelvis.x, z: s.J.pelvis.z }, { x: s.bell.rim.x, z: s.bell.rim.z }, s.bell.R + 110), cap({ x: s.J.pelvis.x, z: -180 }, { x: s.J.toeR.x, z: 180 }, 300)];
-  if (s.bellsUp) parts.push(cap({ x: s.bell.rim.x, z: s.bell.rim.z }, { x: s.bellsUp.x, z: s.bellsUp.z }, s.bell.R + 60));
+  const parts = spaceParts(s).map((p) => {
+    if (p.kind === 'cap') return cap(p.a, p.b, p.r);
+    const q = make();
+    q.addRRect(Skia.RRectXY(Skia.XYWHRect(p.x0, p.z0, p.x1 - p.x0, p.z1 - p.z0), p.r, p.r));
+    return q;
+  });
   let out: SkPath | null = null;
   for (const q of parts) out = out ? Skia.Path.MakeFromOp(out, q, PathOp.Union) ?? out : q;
   return out ?? make();
@@ -242,7 +245,7 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
   const self = brassScene(cfg.spec, orient);
   const space = useMemo(() => playerSpace(cfg.spec, orient), [orient]); // eslint-disable-line react-hooks/exhaustive-deps
   const hatch = useMemo(() => hatchFor(box), [box]);
-  const shown = cfg.objects.filter((o) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit' && o.kind !== 'self'));
+  const shown = lowBrassShown(cfg, scene);
   const floor = useMemo(() => {
     const p = make();
     p.addRect(Skia.XYWHRect(box.u0, box.v0, box.u1 - box.u0, box.v1 - box.v0));
@@ -253,18 +256,32 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
     p.addRect(Skia.XYWHRect(box.u0 + 60, box.v0 + 60, box.u1 - box.u0 - 120, box.v1 - box.v0 - 120));
     return p;
   }, [box]);
+  // Collision pass 2026-10-15: every object's footprint (lowBrassPlanModel)
+  // — the words keep clear of them, each name beside its own object (or in
+  // free space with a leader back to it); the studio's headphone mix.
+  const foots = useMemo(() => lowBrassFoots(cfg, scene, orient, wedges), [cfg, scene, orient, wedges]);
+  // Words keep off the hatched keep-clear space too (it is drawn).
+  const wordFoots = useMemo(() => foots.map((f) => (f.kind === 'keepClear' ? { ...f, zone: false } : f)), [foots]);
+  const cues = useMemo(() => (scene === 'studio' ? lowBrassCue(cfg, orient) : []), [cfg, scene, orient]);
+  const s = xf.s / textScale;
   const sel = cfg.objects.find((o) => o.id === highlight) ?? null;
   const selItem = items.find((i) => i.id === highlight);
-  const labels: StaticLabel[] = shown
-    .filter((o) => o.kind !== 'self')
-    .map((o) => ({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), u: o.at.x, v: o.at.z + o.r * 0.8, align: 'center' as const, tone: (highlight === o.id ? undefined : 'muted') as StaticLabel['tone'] }));
-  labels.push({ id: 'player', text: 'THE PLAYER', u: self.J.pelvis.x - 120, v: -360, align: 'right', tone: 'muted', at: { u: self.J.pelvis.x, v: -150 } });
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 70, align: 'right', tone: 'muted' });
-  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 130, align: 'left', tone: 'muted' });
+  const tone = (id: string) => (highlight === id ? undefined : 'muted') as StaticLabel['tone'];
+  const centre = (r: PlanRect | null, o: PlanObject) => (r ? { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 } : { u: o.at.x, v: o.at.z });
+  const mid = (o: PlanObject) => centre(ownRect(foots, o.kind === 'self' ? 'player' : o.id), o);
+  const labels: StaticLabel[] = [
+    // The lesson's own player first: its name is never the one dropped.
+    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s),
+    ...shown.filter((o) => o.kind !== 'self').map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s)),
+  ];
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 70, align: 'right', tone: 'muted', point: { u: box.u1 - 220, v: box.v0 + 70 } });
+  if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 130, align: 'left', tone: 'muted', point: { u: box.u0 + 120, v: box.v0 + 130 } });
+  for (const rig of cues) labels.push(...cueLabels(rig, undefined, ['player']).map((l) => ({ ...l, tone: 'illustrative' as const, point: cuePoint(rig, l.id) })));
   const tap = (u: number, v: number) => {
     let best: { id: string; d: number } | null = null;
     for (const o of shown) {
-      const d = Math.hypot(u - o.at.x, v - o.at.z) - o.r;
+      const c = mid(o);
+      const d = Math.hypot(u - c.u, v - c.v) - o.r;
       if (d < 60 && (!best || d < best.d)) best = { id: o.id, d };
     }
     if (scene === 'stage') {
@@ -276,11 +293,12 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
     if (best) onTap(best.id);
   };
   const ring = (() => {
-    const at = sel ? sel.at : wedges.find((x) => x.id === highlight)?.p;
+    const wd = wedges.find((x) => x.id === highlight)?.p;
+    const at = sel ? mid(sel) : wd ? { u: wd.x, v: wd.z } : null;
     const r = sel ? sel.r : 330;
     if (!at) return null;
     const p = make();
-    p.addCircle(at.x, 'z' in at ? at.z : 0, r + 40);
+    p.addCircle(at.u, at.v, r + 40);
     return p;
   })();
   return (
@@ -308,11 +326,15 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
               <Path path={hatch} style="stroke" strokeWidth={2} color="#8a8f9c" opacity={0.4} />
             </Group>
             <Path path={space} style="stroke" strokeWidth={2.5} color="#8a8f9c" opacity={0.7} />
+            {/* Studio: each performer's headphone mix (no wedges in a studio). */}
+            {cues.map((rig, i) => (
+              <CueMixPlan key={rig.id ?? i} rig={rig} />
+            ))}
             {ring ? <Path path={ring} style="stroke" strokeWidth={14} color="#ffc64d" opacity={0.9} /> : null}
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
+      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots)} />
     </View>
   );
 }
