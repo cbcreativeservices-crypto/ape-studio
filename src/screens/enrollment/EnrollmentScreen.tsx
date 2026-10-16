@@ -2887,8 +2887,8 @@ export const EnrollmentView = memo(function EnrollmentView({
                 ))
               ) : (
                 <Text style={styles.clEmpty}>
-                  No terms yet — open a term in the Glossary and tap “Add to custom list” to build
-                  this list.
+                  No terms yet — open a term in the Glossary and tap “Add to custom list”, or tap ★
+                  on a flashcard while you study any of your other topics, to build this list.
                 </Text>
               )}
             </ScrollView>
