@@ -9,12 +9,15 @@
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { windLessonArt } from '../shared/woodwinds/windLessonArt';
-import { bassoonAxes, frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
-import { BASSOON_MODEL, SEATED, layoutOf } from './geometry.ts';
+import { bassoonAxes, bassoonLayout, BSN_PORTRAIT_SIDE, frameAt, portraitOf, type Layout } from '../shared/woodwinds/windPosture.ts';
+import { BASSOON_MODEL, SPEC, layoutOf } from './geometry.ts';
 import { A09B_PLAN } from './plan.ts';
 
-const AX = bassoonAxes();
-export const PORTRAIT: Layout = portraitOf(SEATED, AX.d, AX.w, { x: 0, y: 0, z: 0 });
+// The bassoon alone (ORIENT, HOW IT SOUNDS): laid on its side from its own
+// picture layout (the instrument is the scene's; only its turn is the picture's).
+const AX = bassoonAxes(BSN_PORTRAIT_SIDE);
+const ALONE = bassoonLayout('seated', SPEC, BSN_PORTRAIT_SIDE);
+export const PORTRAIT: Layout = portraitOf(ALONE, AX.d, AX.w, { x: 0, y: 0, z: 0 });
 const at = (s: number) => frameAt(PORTRAIT, s).p;
 const lab = (id: string, text: string, s: number, dv: number, short?: string, du = 0): StaticLabel => {
   const p = at(s);
@@ -27,7 +30,7 @@ const minY = Math.min(at(0).y, at(300).y, at(845).y) - 230;
 const maxY = Math.max(at(1270).y, at(2000).y) + 200;
 export const PORTRAIT_BOX = { u0: minX, u1: maxX, v0: minY, v1: maxY };
 /** HOW IT SOUNDS: the bassoon stood up, its bell at the top. */
-export const SOUND_FIG: Layout = portraitOf(SEATED, AX.d, AX.w, { x: 0, y: 0, z: 0 }, -1);
+export const SOUND_FIG: Layout = portraitOf(ALONE, AX.d, AX.w, { x: 0, y: 0, z: 0 }, -1);
 const sp = [0, 345, 845, 1270, 1700, 2655].map((s) => frameAt(SOUND_FIG, s).p);
 export const SOUND_BOX = { u0: Math.min(...sp.map((p) => p.x)) - 300, u1: Math.max(...sp.map((p) => p.x)) + 300, v0: Math.min(...sp.map((p) => p.y)) - 150, v1: Math.max(...sp.map((p) => p.y)) + 150 };
 

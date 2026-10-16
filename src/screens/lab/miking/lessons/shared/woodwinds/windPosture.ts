@@ -286,7 +286,7 @@ const HOLDS: Record<'flute' | 'simpleFlute' | 'piccolo' | 'clarinet' | 'oboe' | 
   },
   bassoon: {
     L: { K: [-14.6, 21.9, 75.2], along: [-0.33, 0.81, -0.5], dorsal: [-0.51, 0.29, 0.81], thumb: [-0.8, -0.52, -0.31] },
-    R: { K: [3.8, 56.6, -51], along: [0.22, 0.78, 0.58], dorsal: [0.13, 0.57, -0.81], thumb: [-0.97, 0.25, 0.02] },
+    R: { K: [3.8, 45, -60], along: [0.22, 0.7, 0.68], dorsal: [0.13, 0.66, -0.74], thumb: [-0.97, 0.25, 0.02] },
   },
 };
 
@@ -409,18 +409,26 @@ export function bassClarinetLayout(spec: WindSpec): Layout {
 export const BSN = {
   base: v(-215, 640, 150),
   dir: norm(v(0.48, -0.866, -0.14)),
-  /** The wing joint and the boot's down bore sit beside the long joint, on
-   *  the player's side, 45 mm away (drawing default). */
+  /** The wing joint and the boot's down bore sit beside the long joint,
+   *  45 mm away (drawing default), SIDE BY SIDE as the audience sees the
+   *  bassoon's front: the wing on the player's left of the long joint,
+   *  nearest the left hand, its finger holes open to the fingers (art fix
+   *  2026-10-16: it sat straight behind the long joint, so the left fingers
+   *  could not reach its holes). */
   gap: 45,
+  /** Which way the wing joint lies from the long joint (before squaring to
+   *  the axis): to the player's left and down, a little back. */
+  wingSide: v(0.6, 0.3, -0.75),
   bootTop: 390,
   wingTop: 890,
   longTop: 1000,
   bellTop: 1350,
 };
-export function bassoonAxes() {
+/** `side`: which way the wing joint lies (BSN.wingSide in the scene; the
+ *  instrument-alone portraits keep their own picture, BSN_PORTRAIT_SIDE). */
+export function bassoonAxes(side: Vec3 = BSN.wingSide) {
   const d = BSN.dir;
-  const back = v(0, 0, -1);
-  const w = norm(sub(back, scale(d, dot(back, d))));
+  const w = norm(sub(side, scale(d, dot(side, d))));
   const L = (h: number) => add(BSN.base, scale(d, h));
   const W = (h: number) => add(add(BSN.base, scale(w, BSN.gap)), scale(d, h));
   return { d, w, L, W };
@@ -430,9 +438,13 @@ export function bassoonAxes() {
  *  S-curve up and over to the wing joint, down the wing joint and the boot,
  *  the U-turn at the boot's bottom, up the long joint to the bell. */
 const BSN_LH_S = 780;
-export function bassoonLayout(posture: PostureKind, spec: WindSpec): Layout {
+/** The portraits' wing side (the bassoon alone, on its side): the picture the
+ *  HOW IT SOUNDS and ORIENT figures were laid out on — the same instrument,
+ *  its bocal curling the same way; only the scene's hold changed. */
+export const BSN_PORTRAIT_SIDE = v(0, 0, -1);
+export function bassoonLayout(posture: PostureKind, spec: WindSpec, wingSide: Vec3 = BSN.wingSide): Layout {
   const body = bodyOf(posture);
-  const { d, w, L, W } = bassoonAxes();
+  const { d, w, L, W } = bassoonAxes(wingSide);
   const S = BASSOON_S;
   const T = v(0, 4, 8);
   const er = norm(v(0.78, 0.12, 0.58));

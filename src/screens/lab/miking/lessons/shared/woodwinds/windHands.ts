@@ -150,12 +150,14 @@ export function holdPlan(L: Layout, side: 'L' | 'R'): HoldPlan {
       return { fingers: [plate(r0), plate(r0 + 42), plate(r0 + 84), { s: r0 + 124, ang: toward(r0 + 124, 58), kind: 'spatula' }], thumb: { s: r0 + 14, ang: 180, kind: 'rest', out: radiusAt(spec, r0) + PAD } };
     }
     case 'bassoon': {
-      // The wing joint's three finger holes (left), on its open side beside the
-      // long joint; the boot's three (right) on the boot's front face.
+      // The wing joint's three finger holes (left) on its front face, turned
+      // toward its open side (away from the long joint, art fix 2026-10-16:
+      // the wing lies beside the long joint, nearest the left hand); the
+      // boot's three (right) on the boot's front face.
       const BOOT_FRONT = 66;
       if (side === 'L') {
         const s0 = L.handL.s - 34;
-        const a = toward(s0, 80);
+        const a = toward(s0, 45);
         const fingers: DigitPlay[] = [0, 34, 68].map((d): Touch => ({ s: s0 + d, ang: a, kind: 'open' }));
         fingers.push({ s: s0 + 92, ang: toward(s0 + 92, 72), kind: 'spatula' });
         return { fingers, thumb: { s: s0 + 20, ang: back(s0, 165), kind: 'thumbKey', roam: { ds: 30, dang: 40 } } };
@@ -164,12 +166,16 @@ export function holdPlan(L: Layout, side: 'L' | 'R'): HoldPlan {
       const fingers: DigitPlay[] = [0, 36, 72].map((d): Touch => ({ s: s0 + d, ang: 0, kind: 'open', out: BOOT_FRONT }));
       fingers.push({ s: s0 + 104, ang: toward(s0 + 104, 18), kind: 'spatula', out: BOOT_FRONT + 2 });
       // The thumb on the boot's back, toward its right-hand edge: on the boot's
-      // surface (≈ 44 mm round the line midway between the bores, 22.5 mm in
-      // front of this bore) at that angle.
-      const ta = toward(s0 + 30, 120);
+      // surface (≈ 44 mm round the line midway between the bores, 22.5 mm from
+      // this bore toward the long joint's) at that angle.
+      const ta = toward(s0 + 30, 165);
+      const ax = bassoonAxes();
+      const off = h3.mul(h3.sub(ax.L(0), ax.W(0)), 0.5);
+      const fb = frameAt(L, s0 + 30);
       const outAt = (ang: number) => {
-        const mn = Math.cos((ang * Math.PI) / 180);
-        return 22.5 * mn + Math.sqrt((22.5 * mn) ** 2 - 22.5 ** 2 + 44 ** 2) + 2;
+        const a = (ang * Math.PI) / 180;
+        const k = h3.dot(h3.add(h3.mul(fb.n, Math.cos(a)), h3.mul(fb.b, Math.sin(a))), off);
+        return k + Math.sqrt(Math.max(0, k * k - h3.dot(off, off) + 44 ** 2)) + 2;
       };
       return { fingers, thumb: { s: s0 + 30, ang: ta, kind: 'thumbKey', out: outAt(ta), roam: { ds: 40, dang: 60, outAt } } };
     }
