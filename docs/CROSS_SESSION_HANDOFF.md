@@ -634,10 +634,65 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 12:12 · ccode · 1a9c2a3a
+changed: Miking stage/studio plans: owner defaults 1-4 of the stage-plot review (2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 12:04 · ccode · 1bce38da
+changed: Speaker Coverage lab art fix: house figures at true scale, rays stop at the floor, rated-angle (-6 dB) physics
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 11:56 · ccode · 3bc22f92
+changed: FX labs (Chorus, Compression, Gate, Limiter): heroes mirror the DSP — grading fix 2026-10-16
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 11:52 · ccode · 92e0afd6
 changed: Miking Lab 3 free reeds fix pass: whole harmonica player in the close-ups, real cup, accordion on two shoulder straps
 affects other side: nothing (app only)
 needs: nothing
+
+
+### 2026-10-16 10:33 · ccode · 7210197b
+changed: Flashcards card button: 3-card icon goes light blue when the term is on the list, grey when not (no frame); filter chip keeps the steady icon + frame (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 10:26 · ccode · 198d8a34
+changed: Flashcards: the 3-card custom-list icon is always the list's light blue; 'on my list' / 'filter on' shows as a light-blue frame (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 10:22 · ccode · 6a27ec48
+changed: Test: custom-list empty-state order check follows the icon wording
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 10:22 · ccode · e3aec52c
+changed: Custom list empty states show the custom list's own 3-card icon, not a ★ (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 10:16 · ccode · a556c349
+changed: Custom list empty state: also say terms can be added with ★ on a flashcard in any other topic (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 10:01 · ccode · c4578b8b
+changed: Home Enrollments card: green label 'SET UP WHAT YOU STUDY' (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
 
 ### 2026-10-16 09:56 · ccode · b9c5b17d
 changed: Figure review: pass 3 notes (one hand model, families, one garment, joints moved, open list)
