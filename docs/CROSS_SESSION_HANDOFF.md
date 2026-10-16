@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 01:25 · ccode · 9d49da3a
+changed: Miking figures pass 3: woodwind and saxophone hands on the keys; the sax player on the house body
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 01:12 · ccode · f8bd6826
 changed: figureAnatomy: pass-3 hand ratchet covers bowed, brass, low brass, lutes, free reed, small percussion and ensembles; pins follow the posed hands
 affects other side: nothing (app only)
