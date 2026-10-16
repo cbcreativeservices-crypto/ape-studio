@@ -36,7 +36,9 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import Svg, { Circle, Defs, G, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Animated, { Easing, cancelAnimation, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
@@ -607,7 +609,7 @@ export function BassLabScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STRING_GAP = 34;
-const LABELS_H = 20; // NUT / fractions / BRIDGE label strip under the board
+const LABELS_H = 22; // BRIDGE / fractions / HEADSTOCK label strip under the board
 /** String rows drawn TAB-style: G on top … E on the bottom. */
 const ROW_TO_STRING = [3, 2, 1, 0] as const;
 
@@ -636,6 +638,15 @@ const GRAIN_ROWS = [0.12, 0.27, 0.41, 0.57, 0.72, 0.88] as const;
 const SCALE_MM = 864;
 /** The neck enters the body at the 20th fret (a classic 20-fret bolt-on). */
 const NECK_FRETS = 20;
+/** How much of the headstock past the nut is drawn (mm). Art grading
+ *  2026-10-16: the instrument stopped dead at the nut. A four-in-line
+ *  headstock's posts sit ≈ 40 / 78 / 116 / 154 mm past the nut (E, A, D, G);
+ *  130 mm shows the E, A and D tuners whole and the G string running on off
+ *  the frame to its post. */
+const HEAD_MM = 130;
+const POST_MM = [154, 116, 78, 40] as const; // by ROW (G, D, A, E)
+/** The vibrating string, animated (module level, so it never remounts). */
+const APath = Animated.createAnimatedComponent(Path);
 
 /** The tappable fretboard: 4 strings, frets 0–12 at true positions, fret
  *  markers, and the selected string's standing wave. Tap maps to the nearest
@@ -667,7 +678,11 @@ function Fretboard({
   // A tap arrives in pixels and is divided back to glass units. ts = 1 on the
   // glass — the glass picture is unchanged.
   const ts = useStageTextScale();
-  const w = width / ts;
+  // The board's nut → bridge scale is `w`; the headstock takes the rest of the
+  // glass width (`H`, at the same mm scale), past the nut.
+  const fullW = width / ts;
+  const w = (fullW * SCALE_MM) / (SCALE_MM + HEAD_MM);
+  const H = fullW - w;
   const pxSvgH = Math.max(80 * ts, height - LABELS_H * ts);
   const svgH = pxSvgH / ts;
   const stringTop = Math.max(24, Math.round((svgH - 3 * STRING_GAP) / 2));
@@ -677,8 +692,9 @@ function Fretboard({
       // Web preview: locationX/Y can arrive undefined → NaN row → the whole
       // app unmounted (no root error boundary). Reproduced 2026-08-31.
       if (w <= 0 || !Number.isFinite(px) || !Number.isFinite(py)) return;
-      // The board is drawn turned 180° — map the tap back into its frame.
-      const x = w - px / ts;
+      // The board is drawn turned 180° — map the tap back into its frame
+      // (and past the headstock, which sits beyond the nut).
+      const x = fullW - px / ts - H;
       const y = svgH - py / ts;
       // Row → string (clamped).
       const row = Math.min(3, Math.max(0, Math.round((y - stringTop) / STRING_GAP)));
@@ -710,7 +726,7 @@ function Fretboard({
         onPick(si, best);
       }
     },
-    [w, ts, stringTop, mode, onPick],
+    [w, fullW, H, ts, stringTop, mode, onPick],
   );
 
   // Standing wave on the selected string: FRETTED = one lobe over the vibrating
@@ -744,6 +760,45 @@ function Fretboard({
 
   const selRow = ROW_TO_STRING.indexOf(stringIdx as 0 | 1 | 2 | 3);
   const selY = stringTop + selRow * STRING_GAP;
+  /** Where the selected string starts to vibrate (the fret, or the nut). */
+  const vibX0 = mode === 'fretted' ? fretPos(fret) * w : 0;
+
+  // THE STRING VIBRATES (art grading 2026-10-16: the wave was a still
+  // envelope). The selected string itself swings between the envelope's two
+  // edges, y = y0 − A·sin(nπx/L)·cos(2πft), slowed right down to watch; a
+  // higher note (or a higher harmonic) swings proportionally faster. Held
+  // still by Low-Light / reduced motion (decorative-motion gate).
+  const motionOk = useDecorativeMotion();
+  const vib = useSharedValue(0);
+  const visHz = 0.45 * (mode === 'fretted' ? Math.pow(2, fret / 12) : harmonicN);
+  useEffect(() => {
+    cancelAnimation(vib);
+    vib.value = 0;
+    if (!motionOk) return;
+    vib.value = withRepeat(withTiming(1, { duration: 1000 / visHz, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(vib);
+  }, [motionOk, visHz, vib]);
+  const swing = useMemo(() => {
+    const x0 = mode === 'fretted' ? fretPos(fret) * w : 0;
+    const lobes = mode === 'fretted' ? 1 : harmonicN;
+    const N = 72;
+    const xs: number[] = [];
+    const as: number[] = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      xs.push(x0 + t * (w - x0));
+      as.push(Math.sin(Math.PI * lobes * t) * 12);
+    }
+    return { xs, as };
+  }, [w, mode, fret, harmonicN]);
+  const swingXs = swing.xs;
+  const swingAs = swing.as;
+  const stringProps = useAnimatedProps(() => {
+    const c = Math.cos(2 * Math.PI * vib.value);
+    let d = '';
+    for (let i = 0; i < swingXs.length; i++) d += `${i === 0 ? 'M' : 'L'}${swingXs[i].toFixed(1)} ${(selY - swingAs[i] * c).toFixed(1)}`;
+    return { d };
+  });
 
   // Instrument background geometry: wood neck on the left, blue body + sound
   // hole toward the bridge (right). The hole is centered on the 4 strings so
@@ -785,7 +840,7 @@ function Fretboard({
           accessibilityRole="button"
           accessibilityLabel="Fretboard — tap a string and fret"
         >
-          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={pxSvgH} viewBox={`0 0 ${w} ${svgH}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={pxSvgH} viewBox={`0 0 ${fullW} ${svgH}`}>
             <Defs>
               {/* Wood: vertical walnut gradient (light from upper-left). */}
               <LinearGradient id="fbWood" x1="0" y1="0" x2="0" y2="1">
@@ -807,6 +862,12 @@ function Fretboard({
                 <Stop offset="0%" stopColor="#f2f4f8" />
                 <Stop offset="50%" stopColor="#9a9ea8" />
                 <Stop offset="100%" stopColor="#5a5e68" />
+              </LinearGradient>
+              {/* Maple headstock face. */}
+              <LinearGradient id="fbMaple" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor="#d9b679" />
+                <Stop offset="55%" stopColor="#c49a58" />
+                <Stop offset="100%" stopColor="#9c733a" />
               </LinearGradient>
               <RadialGradient id="fbPearl" cx="35%" cy="30%" r="80%">
                 <Stop offset="0%" stopColor="#fdf9ee" />
@@ -832,9 +893,11 @@ function Fretboard({
             {/* TURNED 180° (owner 2026-10-10): body on the left, headstock to the right,
                 low E on top — a right-handed bass as seen from the front. Drawn in
                 the nut→bridge frame below; a turn (not a mirror) keeps it right-handed. */}
-            <G transform={`rotate(180 ${w / 2} ${svgH / 2})`}>
+            <G transform={`rotate(180 ${fullW / 2} ${svgH / 2})`}>
             {/* Off the instrument: the dark stage. */}
-            <Rect x={0} y={0} width={w} height={svgH} fill="#0d0d10" />
+            <Rect x={0} y={0} width={fullW} height={svgH} fill="#0d0d10" />
+            {/* the nut → bridge frame, shifted past the headstock */}
+            <G transform={`translate(${H} 0)`}>
             {/* The body (sunburst, both horns) behind the neck. */}
             <Path d={bodyPath} fill="url(#fbBody)" stroke="#120804" strokeWidth={1.2} />
             {/* Three-ply pickguard: white top, black bevel line. */}
@@ -857,6 +920,38 @@ function Fretboard({
               );
             })}
             <Line x1={0} y1={fbTop + 0.6} x2={fbEnd} y2={fbTop + 0.6} stroke="#ffffff" strokeWidth={0.7} opacity={0.12} />
+            {/* THE HEADSTOCK past the nut (four-in-line): maple face flaring
+                toward the tuner side (low E), the tuner keys standing off that
+                edge, a chrome post per string. Each string runs on from the
+                nut to its own post; the G post lies past the frame's edge. */}
+            <Path
+              d={`M0 ${fbTop + 4} L${-H - 2} ${fbTop - 6} L${-H - 2} ${fbBot + 16} L0 ${fbBot - 2} Z`}
+              fill="url(#fbMaple)"
+              stroke="#3a2610"
+              strokeWidth={1}
+            />
+            {ROW_TO_STRING.map((si, row) => {
+              const px = -POST_MM[row] * mm;
+              if (px < -H) return null;
+              const py = stringTop + row * STRING_GAP;
+              const ky = fbBot - 2 + ((-px) / (H + 2)) * 18; // on the flaring edge
+              return (
+                <Fragment key={`tun${si}`}>
+                  {/* the tuner: housing on the edge and its key standing off it */}
+                  <Rect x={px - 5} y={ky - 5} width={10} height={9} rx={2} fill="url(#fbChrome)" stroke="#3a3c44" strokeWidth={0.6} />
+                  <Rect x={px - 1.4} y={ky + 3} width={2.8} height={6} fill="#9a9ea8" />
+                  <Ellipse cx={px} cy={ky + 14} rx={5.5} ry={6.5} fill="url(#fbChrome)" stroke="#3a3c44" strokeWidth={0.7} />
+                  <Circle cx={px} cy={py} r={3.4} fill="url(#fbChrome)" stroke="#3a3c44" strokeWidth={0.7} />
+                  <Circle cx={px} cy={py} r={1.2} fill="#2a2c33" />
+                </Fragment>
+              );
+            })}
+            {ROW_TO_STRING.map((si, row) => {
+              const py = stringTop + row * STRING_GAP;
+              const gauge = 1 + row * 0.8;
+              const end = Math.max(-H - 2, -POST_MM[row] * mm);
+              return <Line key={`hs${si}`} x1={0} y1={py} x2={end} y2={py} stroke={STRING_STEEL} strokeWidth={gauge} />;
+            })}
             {/* The upper frets, 13–20 (the lesson uses 0–12): dimmer wire,
                 single dots at 15, 17 and 19. */}
             {Array.from({ length: NECK_FRETS - NUM_FRETS }, (_, i) => {
@@ -939,12 +1034,12 @@ function Fretboard({
                   {sel ? (
                     <Line x1={0} y1={y} x2={w} y2={y} stroke={colors.amber} strokeWidth={gauge + 5} opacity={0.16} />
                   ) : null}
-                  <Line x1={0} y1={y + gauge * 0.5} x2={w} y2={y + gauge * 0.5} stroke="#000000" strokeWidth={gauge} opacity={0.35} />
-                  <Line x1={0} y1={y} x2={w} y2={y} stroke={sel ? STRING_SEL : STRING_STEEL} strokeWidth={gauge} />
+                  <Line x1={0} y1={y + gauge * 0.5} x2={sel ? vibX0 : w} y2={y + gauge * 0.5} stroke="#000000" strokeWidth={gauge} opacity={0.35} />
+                  <Line x1={0} y1={y} x2={sel ? vibX0 : w} y2={y} stroke={sel ? STRING_SEL : STRING_STEEL} strokeWidth={gauge} />
                   <Line
                     x1={0}
                     y1={y - gauge * 0.25}
-                    x2={w}
+                    x2={sel ? vibX0 : w}
                     y2={y - gauge * 0.25}
                     stroke={STRING_SPEC}
                     strokeWidth={Math.max(0.6, gauge * 0.28)}
@@ -965,26 +1060,20 @@ function Fretboard({
             {/* The standing wave: translucent gradient ENVELOPE + glow-stroked
                 mirrored lobes (same sampled math as before the re-skin). */}
             <Path d={wave.env} fill="url(#fbEnv)" />
-            <Path d={wave.top} stroke={colors.amber} strokeWidth={5} fill="none" opacity={0.18} strokeLinecap="round" />
+            {/* the envelope's two edges: how far the string swings */}
+            <Path d={wave.top} stroke={colors.amber} strokeWidth={1} fill="none" opacity={0.35} strokeDasharray="3 3" />
             <Path
               d={wave.top}
               stroke={colors.amber}
-              strokeWidth={5}
+              strokeWidth={1}
               fill="none"
-              opacity={0.1}
-              strokeLinecap="round"
+              opacity={0.35}
+              strokeDasharray="3 3"
               transform={`translate(0, ${2 * selY}) scale(1, -1)`}
             />
-            <Path d={wave.top} stroke={colors.amber} strokeWidth={1.6} fill="none" opacity={0.95} strokeLinecap="round" />
-            <Path
-              d={wave.top}
-              stroke={colors.amber}
-              strokeWidth={1.6}
-              fill="none"
-              opacity={0.5}
-              strokeLinecap="round"
-              transform={`translate(0, ${2 * selY}) scale(1, -1)`}
-            />
+            {/* the string itself, swinging between them */}
+            <APath animatedProps={stringProps} stroke={colors.amber} strokeWidth={5} fill="none" opacity={0.2} strokeLinecap="round" />
+            <APath animatedProps={stringProps} stroke={STRING_SEL} strokeWidth={1 + selRow * 0.8 + 0.4} fill="none" strokeLinecap="round" />
             {/* HARMONICS: glowing NODE markers at k/n + faint ANTINODE dots at
                 the lobe peaks + the amber touch ring at 1/n. */}
             {mode === 'harmonics'
@@ -1017,6 +1106,7 @@ function Fretboard({
               </>
             ) : null}
             </G>
+            </G>
           </Svg>
         </Pressable>
       ) : (
@@ -1024,13 +1114,13 @@ function Fretboard({
       )}
       {/* Nut/bridge + fraction labels under the board. */}
       <View style={[styles.fbLabels, ts !== 1 ? { marginTop: 3 * ts, paddingHorizontal: 8 * ts } : null]}>
-        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>BRIDGE</Text>
+        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 11 * ts, letterSpacing: ts } : null]}>BRIDGE</Text>
         {mode === 'fretted' ? (
-          <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>5 ≈ ¾ · 7 ≈ ⅔ · 12 = ½</Text>
+          <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 11 * ts, letterSpacing: ts } : null]}>5 ≈ ¾ · 7 ≈ ⅔ · 12 = ½</Text>
         ) : (
-          <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>nodes at ½ · ⅓ · ¼ · ⅕</Text>
+          <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 11 * ts, letterSpacing: ts } : null]}>nodes at ½ · ⅓ · ¼ · ⅕</Text>
         )}
-        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>NUT</Text>
+        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 11 * ts, letterSpacing: ts } : null]}>HEADSTOCK</Text>
       </View>
     </View>
   );
@@ -1045,5 +1135,6 @@ const styles = StyleSheet.create({
   readRow: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   // The label strip lives INSIDE the stage glass now — give it side breathing.
   fbLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 3, paddingHorizontal: 8 },
-  fbLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.textSub },
+  // 11 pt (art grading 2026-10-16: the fraction strip read small at 390 wide)
+  fbLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSecondary },
 });

@@ -49,7 +49,8 @@ test('pixel-authored drawings paint through a (box ÷ ts) viewBox so everything 
     ['FmLabScreen', /viewBox=\{`0 0 \$\{lw\} \$\{lgh\}`\}/],
     ['AutotuneLabScreen', /viewBox=\{`0 0 \$\{w\} \$\{h\}`\}/],
     ['ModularLabScreen', /viewBox=\{`0 0 \$\{w\} \$\{h\}`\}/],
-    ['BassLabScreen', /viewBox=\{`0 0 \$\{w\} \$\{svgH\}`\}/],
+    // Bass (art grading 2026-10-16): the viewBox is the full glass width; the headstock takes the part past the nut.
+    ['BassLabScreen', /viewBox=\{`0 0 \$\{fullW\} \$\{svgH\}`\}/],
   ] as const) {
     const src = read(`${name}.tsx`);
     assert.match(src, /useStageTextScale\(\)/, `${name} reads the stage text scale`);
@@ -62,14 +63,16 @@ test('RN text laid over a drawing grows with the scale', () => {
   assert.match(fm, /fontSize:\s*11\.5 \* ts/, 'FM legend font × ts');
   assert.match(fm, /const gh = h - LEGEND_H \* ts/, 'FM legend strip height × ts');
   const bass = read('BassLabScreen.tsx');
-  assert.match(bass, /fontSize:\s*9\.5 \* ts/, 'Bass NUT/BRIDGE strip font × ts');
+  assert.match(bass, /fontSize:\s*11 \* ts/, 'Bass BRIDGE/HEADSTOCK strip font × ts');
   assert.match(bass, /height - LABELS_H \* ts/, 'Bass label strip height × ts');
 });
 
 test('Bass: a tap in full screen is divided back to glass units before the fret/row snap', () => {
   const src = read('BassLabScreen.tsx');
-  // The board is drawn turned 180° (owner 2026-10-10): still divided by ts, then mapped back.
-  assert.match(src, /const x = w - px \/ ts;\s*const y = svgH - py \/ ts;/);
+  // The board is drawn turned 180° (owner 2026-10-10): still divided by ts, then mapped back
+  // (and, since 2026-10-16, past the headstock drawn beyond the nut).
+  assert.match(src, /const fullW = width \/ ts;/);
+  assert.match(src, /const x = fullW - px \/ ts - H;\s*const y = svgH - py \/ ts;/);
 });
 
 test('Autotune: the stage hands its width in (no blank first frame in full screen)', () => {
