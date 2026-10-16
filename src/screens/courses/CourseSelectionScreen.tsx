@@ -1040,7 +1040,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={color} w={cd.w} text="VIEW YOUR ENROLLMENTS" />
+          <Eyebrow color={color} w={cd.w} text="SET UP WHAT YOU STUDY" />
           <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
         </View>
         <Pressable onPress={onOpenEnrollments} accessible={false}>
