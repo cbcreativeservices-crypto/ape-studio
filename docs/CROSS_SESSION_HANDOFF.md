@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 15:32 · ccode · 5b6cfac3
+changed: Patchbay art fix: real gear at the pair ends, true-scale bay slices, mounted jack cutaway
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 15:32 · ccode · 650e905c
 changed: Stereo Imaging art fix: goniometer draws the flow's stereo test tone, real correlation meter, M/S stage named
 affects other side: nothing (app only)
