@@ -1673,7 +1673,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               replacing the old ★ symbol). */}
           <FilterChip
             label="Custom list"
-            icon={(c) => <DeckIcon color={c} size={17} fill={starredOnly ? `${c}33` : 'none'} />}
+            // Icon always the list's light blue; the chip's frame shows "selected" (owner 2026-10-16).
+            icon={() => <DeckIcon color={colors.customList} size={17} />}
             active={starredOnly}
             activeTint="customList"
             onPress={() => { setStarredOnly((v) => !v); resetToStart(); }}
@@ -1723,18 +1724,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 </Pressable>
                 {/* ★ custom-list toggle next to the bookmark, so a term can go on
                     either list (user request 2026-07-23). */}
+                {/* Owner 2026-10-16: the 3-card icon is ALWAYS the list's light
+                    blue; "on my list" shows as a light-blue frame round it. */}
                 <Pressable
-                  style={styles.cardStar}
+                  style={[styles.cardStar, styles.cardStarFrame, starred.has(card.id) && styles.cardStarFrameOn]}
                   onPress={toggleStarTerm}
                   hitSlop={10}
                   accessibilityRole="button"
+                  accessibilityState={{ selected: starred.has(card.id) }}
                   accessibilityLabel={starred.has(card.id) ? 'Remove from custom list' : 'Add to custom list'}
                 >
-                  <DeckIcon
-                    color={starred.has(card.id) ? colors.customList : colors.textMuted}
-                    size={21}
-                    fill={starred.has(card.id) ? 'rgba(63,211,230,0.22)' : 'none'}
-                  />
+                  <DeckIcon color={colors.customList} size={21} />
                 </Pressable>
                 {/* Glossary-link show/hide toggle, LEFT of the custom-list icon
                     (owner 2026-08-13). Global across every definition; default ON. */}
@@ -2549,6 +2549,10 @@ const styles = StyleSheet.create({
   cardFsBtn: { position: 'absolute', top: 6, left: 8, zIndex: 3 },
   // ★ custom-list toggle, sitting just left of the bookmark (user request 2026-07-23).
   cardStar: { position: 'absolute', top: 6, right: 40, zIndex: 2 },
+  // The custom-list button's frame: invisible until the term is on the list,
+  // then the list's light blue (owner 2026-10-16). Same footprint either way.
+  cardStarFrame: { top: 2, right: 36, padding: 3, borderRadius: 7, borderWidth: 1.5, borderColor: 'transparent' },
+  cardStarFrameOn: { borderColor: colors.customList, backgroundColor: 'rgba(63,211,230,0.12)' },
   cardStarText: { fontSize: 21, lineHeight: 23, color: colors.textMuted },
   // Glossary-links toggle, one slot left of the custom-list icon (owner 2026-08-13).
   cardLink: { position: 'absolute', top: 7, right: 70, zIndex: 2 },
