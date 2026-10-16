@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 14:02 · ccode · 96b26273
+changed: Lab art fix pass 2: sports plan marks clear the keep-clear band; natural clapper and walker
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 12:38 · ccode · 70375ae6
 changed: Lab art fix (review pass): name the camera, the spectators, the rig and the floor mic; close targets label above
 affects other side: nothing (app only)
