@@ -21,7 +21,7 @@
 import { fretX } from './guitarSpec.ts';
 import type { GuitarScene } from './guitarModel.ts';
 import { angleOf, BODY, pt, toward, type Hand, type PlayerPose, type Pt } from '../players/playerPose.ts';
-import { FLAT_VIEW, fretArm3, fretFront, LAP_SIDE, LAP_TOP, lapBarHand, lapPickHand, pickFront } from '../players/handPoses.ts';
+import { FLAT_VIEW, fretArm3, fretFront, fretView, LAP_SIDE, LAP_TOP, lapBarHand, lapPickHand, pickFront } from '../players/handPoses.ts';
 import { v3, type HandView } from '../players/handModel.ts';
 
 /** Four neighbouring fret spaces within a hand's reach (≤ 100 mm), lowest
@@ -181,7 +181,13 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
     const board = { v: 0, half, tips, strings };
     const arm = fretArm3(shoulderL, board);
     const sk = fretFront({ wrist: pt(arm.wrist.x, arm.wrist.y), dir: 0, kind: 'fret', board });
-    const handL: Hand = { wrist: pt(arm.wrist.x, arm.wrist.y), dir: Math.atan2(arm.knuckles.y - arm.wrist.y, arm.knuckles.x - arm.wrist.x), kind: 'fret', board, posed: { sk, view: FLAT_VIEW, cut: { p: v3(0, 0, -16), n: v3(0, 0, 1) } } };
+    // Drawn through the quarter-turned view (handPoses.fretView): the fingers'
+    // arch over the board shows; the pads stay on their strings; the sleeve
+    // ends at the wrist as that view places it.
+    const fv = fretView(Math.sign(tips[0] - tips[tips.length - 1]) || 1);
+    const wv = fv(arm.wrist);
+    const kv = fv(arm.knuckles);
+    const handL: Hand = { wrist: pt(wv.u, wv.v), dir: Math.atan2(kv.v - wv.v, kv.u - wv.u), kind: 'fret', board, posed: { sk, view: fv, cut: { p: v3(0, 0, -16), n: v3(0, 0, 1) } } };
     const elbowL = pt(arm.elbow.x, arm.elbow.y);
     const seated = sc.variant.posture === 'seated';
     const hipV = neck.v + (seated ? 470 : 500);

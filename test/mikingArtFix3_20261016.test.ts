@@ -77,3 +77,23 @@ describe('Cajón & hand percussion — the shared figure, true limbs, no white d
     assert.match(read('shared/smallperc/Hand.tsx'), /const NAIL = FIGURE_NAIL\.fill;/);
   });
 });
+
+describe('Guitars & amps — the fretting hand drawn with its arch; the plucked string rings', () => {
+  it('fretView keeps every pad on its string and fret, and shows what stands toward the viewer turned', async () => {
+    const { fretView, FRET_PAD_D } = await import('../src/screens/lab/miking/lessons/shared/players/handPoses.ts');
+    const fv = fretView(1);
+    const pad = fv({ x: 300, y: -10, z: FRET_PAD_D });
+    assert.deepEqual([pad.u, pad.v], [300, -10]);
+    const pip = fv({ x: 300, y: -10, z: FRET_PAD_D + 30 });
+    assert.ok(pip.u > 300 + 10 && pip.v > -10 + 3, 'a raised joint shows the turn');
+    const gp = read('shared/guitars/guitarPlayer.ts');
+    assert.match(gp, /const fv = fretView\(/);
+    assert.match(gp, /posed: \{ sk, view: fv, cut:/);
+  });
+  it('the pluck sequence swings the string (decorative motion only) and the STRINGS leader keeps off the player', () => {
+    const s = read('shared/guitars/StringSound.tsx');
+    assert.match(s, /const motion = useDecorativeMotion\(\);/);
+    assert.match(s, /<Path path=\{liveString\}/);
+    assert.match(read('shared/guitars/GuitarArt.tsx'), /\.find\(clear\)/);
+  });
+});

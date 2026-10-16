@@ -31,6 +31,7 @@ import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useShare
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
+import { useDecorativeMotion } from '../../../../../../features/settings/decorativeMotion';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import { fewStops, tapsWhenFew } from '../../../engine/rack/fewStops.ts';
@@ -118,6 +119,39 @@ function PluckSequenceCanvas({ sc, w, h, reveal, pickMm, label }: { sc: GuitarSc
   const o4 = useDerivedValue(() => Math.max(0, Math.min(1, reveal.value - 3)));
   // ① is shown only until the string is released.
   const o1only = useDerivedValue(() => (reveal.value < 2 ? 1 : 0));
+  // ② THE STRING RINGS (art fix round 3, 2026-10-16 — graded "nothing
+  // vibrates, the events just fade in"): released, the string swings between
+  // its still ends in its first mode, the swing dying away over ~3 s, slowed
+  // and drawn larger (the caption says so); the envelope stays as its record.
+  // Decorative motion only: with motion off (or Low-Light) the envelope alone.
+  const motion = useDecorativeMotion();
+  const ring = useSharedValue(1);
+  const sy0 = g.stringYs(0)[k];
+  const syN = g.stringYs(g.L)[k];
+  const LL = g.L;
+  useAnimatedReaction(
+    () => reveal.value >= 2 && reveal.value < 2.25,
+    (now, prev) => {
+      if (now && !prev && motion) {
+        ring.value = 0;
+        ring.value = withTiming(1, { duration: 3200, easing: Easing.linear });
+      }
+    },
+    [motion],
+  );
+  const liveString = useDerivedValue(() => {
+    const t = ring.value;
+    const amp = A * Math.exp(-2.4 * t) * Math.cos(2 * Math.PI * 7 * t);
+    const q = Skia.Path.Make();
+    for (let i = 0; i <= 48; i++) {
+      const x = (LL * i) / 48;
+      const y = sy0 + ((syN - sy0) * x) / LL + amp * Math.sin((Math.PI * x) / LL);
+      if (i === 0) q.moveTo(x, y);
+      else q.lineTo(x, y);
+    }
+    return q;
+  });
+  const liveO = useDerivedValue(() => (ring.value < 1 ? o2.value : 0));
   const labels: StaticLabel[] = [
     { id: 'n1', text: '① PICK', u: pickMm, v: paths.y0 + A + 34, align: 'center', tone: 'amber' },
     { id: 'n2', text: '② STRING', u: g.L * 0.62, v: -A - 30, align: 'center', tone: 'amber' },
@@ -140,6 +174,7 @@ function PluckSequenceCanvas({ sc, w, h, reveal, pickMm, label }: { sc: GuitarSc
               <DashPathEffect intervals={[8, 6]} />
             </Path>
             <Path path={paths.env} style="stroke" strokeWidth={2.2} color={AMBER} />
+            <Path path={liveString} style="stroke" strokeWidth={3} color="#f4f6fa" opacity={liveO} />
             <Circle cx={0} cy={g.stringYs(0)[k]} r={6} color="#ffffff" />
             <Circle cx={g.L} cy={g.stringYs(g.L)[k]} r={6} color="#ffffff" />
           </Group>

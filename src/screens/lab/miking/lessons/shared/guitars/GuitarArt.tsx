@@ -1049,7 +1049,15 @@ export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarS
       // when the layout has to set BACK below the instrument, its leader then
       // passes clear of the end of TOP's leader instead of through it.
       out.push(partLabel('back', 'BACK', undefined, { u: g.tail + 80, v: -D }, [{ u: g.tail - 14, v: -D, align: 'right' }, { u: lx, v: vIn(-D - 40), align: 'right' }, { u: lx, v: vIn(-D - 70), align: 'right' }, { u: g.tail + 40, v: vIn(-D - 22), align: 'left' }], 'muted'));
-      const sx = (g.edge + g.L) / 2;
+      // STRINGS where its leader runs clear of the player (art fix round 3,
+      // 2026-10-16: from halfway up the neck it crossed the fretting arm).
+      const pzTop = playerPoseOf(sc, 'top');
+      const lv = vIn(g.h(g.edge) + 26);
+      const clear = (x: number) => {
+        for (let k = 0; k <= 12; k++) if (figureCovers(pzTop, x, g.h(x) + ((lv - g.h(x)) * k) / 12, 8)) return false;
+        return true;
+      };
+      const sx = [0.5, 0.35, 0.65, 0.2, 0.8, 0.1].map((t) => g.edge + t * (g.L - g.edge)).find(clear) ?? (g.edge + g.L) / 2;
       out.push(partLabel('strings', 'STRINGS', undefined, { u: sx, v: g.h(sx) }, [{ u: sx, v: vIn(g.h(g.edge) + 26), align: 'center' }, { u: sx, v: vIn(-50), align: 'center' }, { u: sx, v: vIn(g.h(g.edge) + 96), align: 'center' }]));
       out.push({ id: 'player', text: 'PLAYER', u: f.head.c.x - f.head.r - 14, v: vIn(f.head.c.z), align: 'right', tone: 'muted', alts: [{ u: f.head.c.x + f.head.r + 14, v: vIn(f.head.c.z), align: 'left' }] });
       out.push({ id: 'audience', text: 'AUDIENCE ↓', short: '↓ AUDIENCE', u: box ? box.u1 - 20 : g.L + 60, v: box ? box.v1 - 22 : 560, align: 'right', tone: 'muted' });

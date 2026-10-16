@@ -132,7 +132,10 @@ describe('the shared player: joints from the model, at true size (guitarPlayer.t
           const sk = front.handL.posed!.sk;
           const arm = fretArm3(front.shoulderL, front.handL.board!);
           assert.ok(wristBendDeg(sk, arm.elbow) <= 70, `wrist bent ${wristBendDeg(sk, arm.elbow).toFixed(0)}° (3-D)`);
-          assert.ok(Math.abs(sk.frame.o.x - w.u) < 0.01 && Math.abs(sk.frame.o.y - w.v) < 0.01, 'the drawn wrist is the posed hand’s wrist');
+          // Art fix round 3 (2026-10-16): the hand is drawn through its own quarter-turned view (handPoses.fretView),
+          // so the sleeve ends where THAT view puts the posed wrist.
+          const pw = front.handL.posed!.view(sk.frame.o);
+          assert.ok(Math.abs(pw.u - w.u) < 0.01 && Math.abs(pw.v - w.v) < 0.01, 'the drawn wrist is the posed hand’s wrist');
           assert.ok(Math.abs(arm.elbow.x - e.u) < 0.01 && Math.abs(arm.elbow.y - e.v) < 0.01, 'the drawn elbow is the solved elbow');
           // Adult bones in 3-D (upper arm 300, forearm 255); the picture may only shorten them.
           const S = arm.shoulder;

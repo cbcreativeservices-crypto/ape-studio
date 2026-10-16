@@ -148,6 +148,21 @@ export function fretFront(h: Hand & { board: FrontBoard }): HandSkeleton {
   });
 }
 
+/**
+ * THE FRETTING HAND'S VIEW from the audience, turned a little (art fix round
+ * 3, 2026-10-16 — graded "fingers standing up like a claw"): seen dead
+ * square, a finger that rises toward the viewer and comes back down onto its
+ * string projects as a straight upright tube, its arch lost in depth. An
+ * illustrator's quarter turn: whatever stands toward the viewer from the
+ * strings' plane (the pads' depth) shifts `k` toward the headstock and `m`
+ * down per mm, so every pad stays exactly on its string and fret while the
+ * knuckles and the middle joints show the curve over the board. `sgn`: +1
+ * when the headstock is toward +u.
+ */
+export function fretView(sgn: number, k = 0.45, m = 0.18): HandView {
+  return (p) => ({ u: p.x + sgn * k * (p.z - FRET_PAD_D), v: p.y + m * (p.z - FRET_PAD_D), d: p.z });
+}
+
 /** A pad pressing a string: the pad's centre ≈ 9.5 mm in front of the board's face (string ≈ 3 mm over it, the pad ≈ 7 mm round). */
 export const FRET_PAD_D = 9.5;
 
