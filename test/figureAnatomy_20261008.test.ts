@@ -60,6 +60,12 @@ import { FRET_CONTACT, fretArm3, pickFront } from '../src/screens/lab/miking/les
 import { guitarPlayerPose, lapHands } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
 import { C03_VARIANTS } from '../src/screens/lab/miking/lessons/c03Resonator/model.ts';
 import { handCases as lowBrassHandCases } from '../src/screens/lab/miking/lessons/shared/lowbrass/lowBrassHands.ts';
+import { handCases as brassHandCases } from '../src/screens/lab/miking/lessons/shared/brass/brassHands.ts';
+import { handCases as ensembleHandCases } from '../src/screens/lab/miking/lessons/shared/ensemble/ensembleHands.ts';
+import { handCases as bowedHandCases } from '../src/screens/lab/miking/lessons/shared/bowed/bowedHands.ts';
+import { handCases as luteHandCases } from '../src/screens/lab/miking/lessons/shared/lutes/luteHands.ts';
+import { handCases as freeReedHandCases } from '../src/screens/lab/miking/lessons/shared/freereed/freeReedHands.ts';
+import { handCases as percHandCases } from '../src/screens/lab/miking/lessons/shared/smallperc/percHands.ts';
 import { sceneOf as guitarSceneOf } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
 import { C01_VARIANTS } from '../src/screens/lab/miking/lessons/c01Guitar/model.ts';
 import { C05A_VARIANTS } from '../src/screens/lab/miking/lessons/c05aBanjo/model.ts';
@@ -475,19 +481,14 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(bowed, /export type HandHold = \{\s*kind: HandKind;/);
     assert.match(bowed, /arm\('L', s\.shoulderL, s\.elbowL, s\.handL, wL\.wrist, wL\.depth\)/, 'the forearm ends at the hand’s own wrist');
     assert.match(bowed, /const path = armPath\(P2pt\(S2\), P2pt\(E2\), P2pt\(w2\), view === 'top' \? TOP_ARM : SIDE_ARM\);/, 'each bowed/brass arm is ONE outline (a readable elbow), never two capsules');
-    // The left hand on the neck (owner 2026-10-10: "upside down"): the palm behind the neck, the wrist straight
-    // with the forearm, the fingers arching OVER the board and down onto the strings (side, and the cello/bass
-    // from above).
-    assert.match(bowed, /return \{ kind: 'wrap', neck: \{ tips, a, b \}, depth: instDepth - 1 \};/, 'the left hand wraps the neck from behind it');
-    const fig = read('shared/players/PlayerFigure.tsx');
-    const nh = fig.slice(fig.indexOf('export function neckHand('), fig.indexOf('/* ── the parts ── */'));
-    assert.match(nh, /const W = pt\(km\.u - d\.u \* 96, km\.v - d\.v \* 96\);/, 'the wrist on the elbow→knuckles line (straight)');
-    assert.match(nh, /const front = Skia\.Path\.MakeFromOp\(all, q, PathOp\.Intersect\)/, 'the fingers rise from behind the board');
-    assert.match(bowed, /depth: w\.palmOver \? instDepth \+ 0\.4 : instDepth - 0\.5, items: \[\{ path: w\.neck\.behind/, 'the palm is painted behind the instrument');
-    assert.match(bowed, /depth: instDepth \+ 0\.5, items: \[\{ path: w\.neck\.front/, 'the fingers over it');
+    // The left hand on the neck (owner 2026-10-10: "upside down") — FIGURE PASS 3: a posed skeleton
+    // (bowed/bowedHands.ts: fingers arched over the board onto the strings, thumb behind the neck, wrist in line);
+    // what the neck covers is painted behind it. The checks of the hand itself are in the pass-3 ratchet below.
+    assert.match(bowed, /const L = posedHold\(D\.L, view, instDepth, true, neckHide\(P, view, D\.L\)\);/, 'the left hand wraps the neck from behind it');
     const brass = read('shared/brass/BrassArt.tsx');
     assert.doesNotMatch(brass, /<Paint opacity=\{0\.62\} \/>/, 'the brass player is opaque');
-    assert.match(brass, /R: \{ kind: 'keys', dir: along - 1\.05, at: \[mid\[0\], mid\[1\] \+ 2\] \}/, 'the valve hand’s fingers on the buttons');
+    // (Pass 3: the valve hand is a posed skeleton — brassPosture/brassHands — its pads on the buttons.)
+    assert.match(brass, /R: \{ kind: 'grip', posed: \{ sk: P\.hands\.R\.sk \} \}/, 'the valve hand’s fingers on the buttons');
     // Low brass: opaque, anatomical hands, the forearm routed clear of the piston cluster.
     const low = read('shared/lowbrass/LowBrassArt.tsx');
     assert.doesNotMatch(low, /opacity=\{playerKeys\.has\(it\.key\) \? 0\.82 : 1\}/);
@@ -588,41 +589,38 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
   // Owner 2026-10-10: the bow hand HOLDS the bow at the frog (it was open, palm up, beside the stick).
   it('bowed players: the right hand holds the bow at the frog (a grip on the stick, square to it)', () => {
     const bowed = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx', import.meta.url), 'utf8');
-    assert.match(bowed, /hands: \{ L: neckHold\(P, view, instDepth\), R: bowHold\(P, view\) \}/);
-    // From above: the pronated hand on top of the stick, the fingers slanting toward the tip.
-    assert.match(bowed, /return \{ kind: 'grip', dir, at, over: true \};/);
-    // From the side (owner 2026-10-10 at 3×: "a flat paw"): the bow hold — the fingers draped over the
-    // stick, the thumb bent under it (painted behind the stick).
-    assert.match(bowed, /return \{ kind: 'bow', dir: f \+ 0\.08 \* \(Math\.cos\(f\) >= 0 \? 1 : -1\), at \};/);
-    assert.match(bowed, /if \(hs\.thumbBehind && \(w\.kind === 'bow' \|\| w\.frame\)\)/);
-    // A wrist never bends past ≈ 70° from the forearm.
-    assert.match(bowed, /const lim = wristLimit\(/);
-    for (const P of [VIOLIN_STANDING, CELLO, BASS_BOW]) {
-      const f = add3(P.bow.frog, sc3(P.bow.up, 29));
-      const d = Math.hypot(P.player.handR.x - f.x, P.player.handR.y - f.y, P.player.handR.z - f.z);
-      assert.ok(d <= 12, `the hand point sits on the stick at the frog (${d.toFixed(1)} mm)`);
-    }
+    // FIGURE PASS 3: both hands posed (bowedHands.drawnHands) and handed to the shared figure.
+    assert.match(bowed, /groups\.push\(\.\.\.playerGroups\(P, view, true, \{ hands: \{ L, R \} \}\)\);/);
+    // The bow hold: the thumb bent under the stick at the frog, the fingers draped over it (the stick hidden where the hand covers it).
+    assert.match(bowed, /posedHold\(D\.R, view, instDepth, false, bowed \? stickHide\(P, view\) : neckHide\(P, view, D\.R\)\)/);
+    const bh = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/bowed/bowedHands.ts', import.meta.url), 'utf8');
+    assert.match(bh, /thumb: 'under the stick'/);
   });
 
   // Round 4 (2026-10-10): a brass player's elbows HANG (from above the raised
   // elbows framed the head). Upper arm ≈ 40–55° below horizontal: the elbow
   // 150–250 mm below the shoulder, 80–200 mm in front, 30–120 mm outboard.
-  it('brass players: the elbows hang beside the body (trumpet, flugelhorn; the trombone’s left arm)', () => {
-    const check = (name: string, s: { x: number; y: number; z: number }, e: { x: number; y: number; z: number }, out: 1 | -1) => {
+  // Round 4 (2026-10-10) set the elbows hanging 38–58° below level; FIGURE PASS 3 (2026-10-15) put the right
+  // fingertips ON the valve buttons with an adult forearm (265 mm — the old arms reached the horn with 390–460 mm
+  // forearms): the valve arm's elbow then rises toward level (≈ 20°), still below the shoulder and in front of
+  // the body, never out beside the head; the holding (left) arm still hangs.
+  it('brass players: the elbows sit below the shoulders in front of the body, adult bones (trumpet, flugelhorn; the trombone’s left arm)', () => {
+    const check = (name: string, s: { x: number; y: number; z: number }, e: { x: number; y: number; z: number }, out: 1 | -1, minAng: number) => {
       const down = e.y - s.y;
       const fwd = e.x - s.x;
       const side = (e.z - s.z) * out;
-      assert.ok(down >= 150 && down <= 250, `${name}: elbow ${down.toFixed(0)} mm below the shoulder`);
-      assert.ok(fwd >= 80 && fwd <= 200, `${name}: elbow ${fwd.toFixed(0)} mm in front`);
-      assert.ok(side >= 30 && side <= 120, `${name}: elbow ${side.toFixed(0)} mm outboard`);
+      assert.ok(down >= 100 && down <= 250, `${name}: elbow ${down.toFixed(0)} mm below the shoulder`);
+      assert.ok(fwd >= 150 && fwd <= 290, `${name}: elbow ${fwd.toFixed(0)} mm in front`);
+      assert.ok(side >= -120 && side <= 60, `${name}: elbow ${side.toFixed(0)} mm outboard (never out beside the head)`);
       const ang = (Math.atan2(down, Math.hypot(fwd, side)) * 180) / Math.PI;
-      assert.ok(ang >= 38 && ang <= 58, `${name}: upper arm ${ang.toFixed(0)}° below horizontal`);
+      assert.ok(ang >= minAng && ang <= 58, `${name}: upper arm ${ang.toFixed(0)}° below horizontal`);
+      assert.ok(Math.abs(Math.hypot(e.x - s.x, e.y - s.y, e.z - s.z) - 300) <= 2, `${name}: upper arm 300 mm`);
     };
     for (const [n, P] of [['trumpet', TP], ['flugelhorn', FH]] as const) {
-      check(`${n} R`, P.player.shoulderR, P.player.elbowR, 1);
-      check(`${n} L`, P.player.shoulderL, P.player.elbowL, -1);
+      check(`${n} R`, P.player.shoulderR, P.player.elbowR, 1, 18);
+      check(`${n} L`, P.player.shoulderL, P.player.elbowL, -1, 38);
     }
-    check('trombone L', TB.player.shoulderL, TB.player.elbowL, -1);
+    check('trombone L', TB.player.shoulderL, TB.player.elbowL, -1, 38);
   });
 });
 
@@ -820,8 +818,16 @@ describe('figure pass 3 (owner 2026-10-15): hands on instruments — one hand mo
     });
 
   // The families' own posed hands (each family exports handCases from a pure file).
-  for (const [fam, list] of [['low brass (A03 horn, A04a tuba, A04b euphonium)', lowBrassHandCases()]] as const) {
-    it(`${fam}: every hand posed`, () => assert.ok(list.length >= 6));
+  for (const [fam, list, min] of [
+    ['low brass (A03 horn, A04a tuba, A04b euphonium)', lowBrassHandCases(), 6],
+    ['high brass (A01 trumpet, flugelhorn; A02 tenor and bass trombone)', brassHandCases(), 8],
+    ['ensembles (E02–E16: strings, winds, brass, guitars at the ensemble scale)', ensembleHandCases(), 40],
+    ['bowed strings (C06a C06b C09a–c: stopping hands, bow holds, pizzicato)', bowedHandCases(), 12],
+    ['lutes (C13 oud with risha, C14 sitar with mizrab, C15 veena)', luteHandCases(), 6],
+    ['free reed (A10 harmonica, A11 accordion)', freeReedHandCases(), 6],
+    ['small percussion (I05a cowbell, I05c woodblock: stick and cradle hands)', percHandCases(), 4],
+  ] as const) {
+    it(`${fam}: every hand posed`, () => assert.ok(list.length >= min));
     for (const c of list)
       it(`${fam} — ${c.name}: five digits, thumb on its side, joints in range, wrist ≤ 70° (3-D), playing digits on their places`, () => {
         assert.deepEqual(handProblems(c), []);
