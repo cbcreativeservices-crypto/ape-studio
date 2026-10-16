@@ -204,8 +204,12 @@ export function FrameLines({ view, frame, farX, headTopY, show = 'all' }: { view
 /* ── THE BOOM OPERATOR ── */
 
 /** The operator in profile (facing −x, toward the talker) and from above, both
- *  hands up on the pole's end at `grip`. A drawing default (the shared figure). */
-export function operatorPoses(feet: Vec3, grip: Vec3): { side: PlayerPose; top: PlayerPose } {
+ *  hands up on the pole's end at `grip`. A drawing default (the shared figure).
+ *  `rear` (art fix 2026-10-16, F09): the rear hand's place ON the pole behind
+ *  the front hand. Given, the NEAR arm (drawn over the head) takes the rear
+ *  hand, up and back behind the head, and the FAR arm the front hand, so no
+ *  arm ever crosses the face in profile; both hands sit on the pole's line. */
+export function operatorPoses(feet: Vec3, grip: Vec3, opts: { rear?: Vec3 } = {}): { side: PlayerPose; top: PlayerPose } {
   const floor = feet.y;
   const hx = feet.x + 10;
   const headC = pt(hx, floor - 1750 + 114);
@@ -234,10 +238,20 @@ export function operatorPoses(feet: Vec3, grip: Vec3): { side: PlayerPose; top: 
     }
     return pt(s.u + ux * x + px * h, s.v + uy * x + py * h);
   };
-  const shR = pt(neck.u + 4, neck.v + 58);
-  const shL = pt(neck.u + 18, neck.v + 48);
-  const wrR = pt(grip.x + 20, grip.y + 34);
-  const wrL = pt(grip.x + 150, grip.y + 120);
+  // Arms raised overhead lift the shoulders a little (the shoulder blades
+  // rotate up): 30 mm here when the near arm takes the rear hand.
+  const lift = opts.rear ? 30 : 0;
+  const shR = pt(neck.u + 4, neck.v + 58 - lift);
+  const shL = pt(neck.u + 18, neck.v + 48 - lift);
+  // The wrist sits just under and behind the pole the fist closes on.
+  const front = pt(grip.x + 20, grip.y + 34);
+  const rear = opts.rear ? pt(opts.rear.x + 6, opts.rear.y + 40) : null;
+  const wrR = rear ?? front;
+  const wrL = rear ? front : pt(grip.x + 150, grip.y + 120);
+  const elR = upElbow(shR, wrR);
+  const elL = upElbow(shL, wrL);
+  // The hand carries on along its forearm (a straight wrist round the pole).
+  const along = (e: ReturnType<typeof pt>, w: ReturnType<typeof pt>) => Math.atan2(w.v - e.v, w.u - e.u);
   const side: PlayerPose = {
     view: 'side',
     posture: 'standing',
@@ -246,10 +260,10 @@ export function operatorPoses(feet: Vec3, grip: Vec3): { side: PlayerPose; top: 
     neck,
     shoulderR: shR,
     shoulderL: shL,
-    elbowR: upElbow(shR, wrR),
-    elbowL: upElbow(shL, wrL),
-    handR: { wrist: wrR, dir: -Math.PI / 2 - 0.9, kind: 'grip' },
-    handL: { wrist: wrL, dir: -Math.PI / 2 - 0.9, kind: 'grip' },
+    elbowR: elR,
+    elbowL: elL,
+    handR: { wrist: wrR, dir: rear ? along(elR, wrR) : -Math.PI / 2 - 0.9, kind: 'grip' },
+    handL: { wrist: wrL, dir: rear ? along(elL, wrL) : -Math.PI / 2 - 0.9, kind: 'grip' },
     hipR: pt(neck.u + 14, neck.v + 530),
     hipL: pt(neck.u + 24, neck.v + 524),
     kneeR: pt(neck.u - 4, neck.v + 980),
@@ -300,7 +314,7 @@ export function operatorPoses(feet: Vec3, grip: Vec3): { side: PlayerPose; top: 
 /** The operator, and the pole's rear end behind the front hand (`stub`: the
  *  grip and the pole's far end) — the part of the pole the hands hold; the
  *  mic's side of it is drawn by the scene, from the mic to the grip. */
-export function BoomOperator({ view, poses, dim = 0.82, stub }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number; stub?: { a: Vec3; b: Vec3 } }) {
+export function BoomOperator({ view, poses, dim = 0.82, stub, hands = true }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number; stub?: { a: Vec3; b: Vec3 }; hands?: boolean }) {
   const pose = view === 'side' ? poses.side : poses.top;
   const pole = useMemo(() => {
     const p = make();
@@ -325,7 +339,7 @@ export function BoomOperator({ view, poses, dim = 0.82, stub }: { view: ViewId; 
           </Group>
         </>
       ) : null}
-      <PlayerInFront pose={pose} />
+      <PlayerInFront pose={pose} hands={hands} />
     </Group>
   );
 }

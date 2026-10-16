@@ -575,6 +575,9 @@ export type InstrumentModel = {
    * symbol; the lesson says once that mics are drawn larger). Drawing only:
    * collision, zones and every readout keep true size. Absent = 1. */
   hardwareScale?: number;
+  /** Per view, over `hardwareScale` (art fix 2026-10-16, F08): a section
+   *  framed a few metres wide needs far less than a 30 m plan. */
+  hardwareScaleByView?: Partial<Record<ViewId, number>>;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

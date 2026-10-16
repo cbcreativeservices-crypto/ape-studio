@@ -128,6 +128,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
               title={lesson.title.toUpperCase()}
               badge={C.instrument.figureBadge}
               label={C.instrument.figureLabel}
+              box={art.figureBox?.(variant)}
             />
           )}
           {lesson.orient.map((f) => (

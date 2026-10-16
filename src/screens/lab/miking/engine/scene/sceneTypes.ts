@@ -40,7 +40,12 @@ export type ViewRect = { u0: number; u1: number; v0: number; v1: number };
 
 export type LessonArt = {
   /** The instrument (static; Skia elements in mm). */
-  Instrument: (props: { view: ViewId; variant: VariantId }) => ReactElement;
+  /** `micTypes` (Placement scene only, art fix 2026-10-16): the type ids of
+   *  the mics drawn on it — empty or absent when the drawing shows no mic (a
+   *  part tour, a read-step figure), so a scene can dress for them (a boom
+   *  operator holding the pole only when a pole mic is placed; a body mic's
+   *  bodypack and cable only when a lav is). */
+  Instrument: (props: { view: ViewId; variant: VariantId; micTypes?: readonly string[] }) => ReactElement;
   labels: (view: ViewId, variant: VariantId) => ArtLabel[];
   /** The part under a model point (u, v), `tol` in mm; null = none. */
   hitTest: (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => string | null;
@@ -78,6 +83,9 @@ export type LessonArt = {
    *  better than its side view (added 2026-10-05: a string instrument seen
    *  face-on). `render` draws it at (w, h); `aspect` = w ÷ h. */
   figure?: { aspect: number; render: (w: number, h: number) => ReactNode };
+  /** ORIENT's figure frame (art fix 2026-10-16), when the content frame
+   *  crops what the figure stands on (a Foley performer's feet and pit). */
+  figureBox?: (variant: VariantId) => ViewRect | undefined;
   /** THE SETTING for an instrument that does not sit on the kit (an
    *  orchestra's percussion, a hand drum): the lesson's own plan, drawn in
    *  place of the shared kit plan. Same contract as KitPlan. */

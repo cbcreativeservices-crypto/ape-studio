@@ -1879,6 +1879,7 @@ export function liveReserve(count: number, w: number, textScale: number): number
  * most of the 60–350 ms a dock-fader move cost; the "sliders not working"
  * report). One wrapper per art component, shared by every scene.
  */
+const NO_MIC_TYPES: readonly string[] = [];
 const memoCache = new WeakMap<LessonArt['Instrument'], LessonArt['Instrument']>();
 export function memoArt(C: LessonArt['Instrument']): LessonArt['Instrument'] {
   let m = memoCache.get(C);
@@ -2381,6 +2382,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   }, [highlight, model, view, variant]);
 
   const micsShown = rig.mics.filter((m) => live.includes(m.slot) && m.on);
+  const hkView = model.hardwareScaleByView?.[view] ?? model.hardwareScale ?? 1;
+  // The shown mics' types, for the art's own dressing (sceneTypes Instrument.micTypes).
+  const micTypesKey = micsShown.map((m) => m.typeId).join(',');
+  const micTypes = useMemo<readonly string[]>(() => (micTypesKey ? micTypesKey.split(',') : NO_MIC_TYPES), [micTypesKey]);
   const labelBoxes = useMemo<LabelBox[] | null>(() => (art.labelsYieldToMic ? labels.map((l) => ({ u: l.u, v: l.v, W: labelWidth(l.text, labelScale, w), align: l.align })) : null), [art.labelsYieldToMic, labels, labelScale, w]);
   // The mics the part labels step back from (opt-in per lesson).
   const shownKey = micsShown.map((m) => `${m.slot}:${m.typeId}`).join(',');
@@ -2400,7 +2405,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         <Group transform={matrix}>
           {/* The art's own keep-out shapes stay off this drawing (keepOuts.ts). */}
           <KeepOutsAtRest.Provider value={false}>
-            <Instrument view={view} variant={variant} />
+            <Instrument view={view} variant={variant} micTypes={micTypes} />
           </KeepOutsAtRest.Provider>
           <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} />
           <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} />
@@ -2422,10 +2427,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           ) : null}
           {/* From above, the lowest mount first: a higher boom passes OVER a lower one. */}
           {(view === 'top' ? [...micsShown].sort((a, b) => b.pose.p.y - a.pose.p.y) : micsShown).map((m) => (
-            <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={model.hardwareScale ?? 1} others={micsShown.map((q) => q.slot)} />
+            <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={hkView} others={micsShown.map((q) => q.slot)} />
           ))}
           {micsShown.map((m) => (
-            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={model.hardwareScale ?? 1} />
+            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={hkView} />
           ))}
           {micsShown.map((m) => (
             <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
@@ -2435,13 +2440,13 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <LavLead key={`lead:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} xf={xf} />
           ))}
           {showPolar
-            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} hk={model.hardwareScale ?? 1} />)
+            ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} shotgun={micType(m.typeId).lobe === 'shotgun'} hk={hkView} />)
             : null}
           {guideData.map((d) => (
             <SetupGuide key={`guide:${d.slot}`} g={d.g} view={view} xf={xf} dashMm={10 / base.s} drawDim={!d.short} />
           ))}
           {micsShown.map((m) => (
-            <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} hk={model.hardwareScale ?? 1} />
+            <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} hk={hkView} />
           ))}
           {micsShown.map((m) => (
             <HeldFistGlyph key={`fist:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />

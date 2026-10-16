@@ -504,7 +504,10 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(read('shared/woodwinds/WindArt.tsx'), /kind: front \? \('grip' as const\) : \('above' as const\)/);
     // Boom operator (B04 B10 B11 F09): the elbow raised beside the head, never under the chin.
     const loc = read('shared/field/LocationArt.tsx');
-    assert.match(loc, /elbowR: upElbow\(shR, wrR\),/);
+    assert.match(loc, /const elR = upElbow\(shR, wrR\);/);
+    assert.match(loc, /elbowR: elR,/);
+    // F09 (art fix 2026-10-16): with a rear hand, the near arm takes it — no arm crosses the face.
+    assert.match(loc, /const wrR = rear \?\? front;/);
     // Bongo legs: one trouser mass + a shoe; the near leg a dashed phantom, never a translucent ghost.
     const bongo = read('m04bBongos/art.tsx');
     assert.match(bongo, /path: limb\(\[hip, knee, ankle\], \[82, 62, 40\]\), tone: 'trousers'/);
