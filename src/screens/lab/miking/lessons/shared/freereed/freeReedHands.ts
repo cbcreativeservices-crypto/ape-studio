@@ -54,7 +54,7 @@ export type PosedArm = { sk: HandSkeleton; S: V3; E: V3; W: V3 };
  * and a little out to the arm's side, the forearm rising to the hand (as a
  * cup is held to the lips).
  */
-export const HM_ELBOW = { L: v3(30, 330, -150), R: v3(60, 340, 140) } as const;
+export const HM_ELBOW = { L: v3(20, 460, -180), R: v3(20, 460, 180) } as const;
 export function elbowNatural(S: V3, W: V3, side: 1 | -1): V3 {
   return elbow3(S, W, sub(side > 0 ? HM_ELBOW.R : HM_ELBOW.L, S));
 }
@@ -180,17 +180,25 @@ const hmMemo = new Map<HmState, { L: PosedArm; R: PosedArm }>();
 const HM_CLOSE: Record<HmState, number> = { open: 0, half: 0.55, cupped: 1, mic: 1 };
 /**
  * THE HANDS ROUND THE HARMONICA, for a chamber state (frame H round H0).
+ * The classic cupped hold (fix pass 2026-10-16, the grading report: "the cup
+ * reads as a pinch plus a hand"): the two palms face each other round a
+ * closed space behind the harmonica, the HEELS of the hands together under
+ * it, the right hand's fingers closed over the left hand's.
  * LEFT: the harp's left end in the web between thumb and index, the hand
- * pointing along it to the right — the index's pad on the top cover, the
- * thumb's pad under the bottom cover, the middle, ring and little fingers
- * curved over the top and down behind the back (the small resonating space;
- * with a harp mic, closed round the mic held against the back). The palm
- * toward the audience, the back of the hand toward the player's chin.
+ * pointing up and along it to the right — the index's pad on the top cover,
+ * the thumb's pad under the bottom cover, the middle, ring and little fingers
+ * curved over the top and down behind the back (with a harp mic, closed
+ * round the mic held against the back). The palm toward the audience, the
+ * back of the hand toward the player's chin, the wrist under the harp's left
+ * half.
  * RIGHT: in front of it (toward the audience), the palm toward the
- * harmonica, the fingers together pointing up and across over the left
- * hand's fingers, the edge of the palm against the left hand's heel and
- * thumb — the cup; the thumb up along the harmonica's right end. Partly
- * cupped it swings out from the right; open it stands away.
+ * harmonica and the left palm, the heel against the left hand's heel under
+ * the harmonica, the hand pointing up, the fingers together and curved back
+ * over the top of the left hand's fingers (cupped) — the hinge is the heels:
+ * partly cupped the fingers swing out to the front, open they stand away.
+ * The thumb rests beside the left thumb under the harmonica.
+ * The elbows hang below, a little in front of the chest and out to the
+ * sides; the forearms rise to the wrists.
  */
 export function hmHands(state: HmState): { L: PosedArm; R: PosedArm } {
   const m = hmMemo.get(state);
@@ -202,26 +210,32 @@ export function hmHands(state: HmState): { L: PosedArm; R: PosedArm } {
   const backX = mic ? HD + 2 + BULLET.l.mm * 0.42 : HD + 14;
   const backR = mic ? BR + 8 : 18;
   const lPads = mic
-    ? [v3(13, -HH / 2 - 8, 6), v3(HD + 16, -BR - 8, 0), { curl: 0.75 }, { curl: 0.7 }]
-    : [v3(13, -HH / 2 - 8, 6), v3(backX - 6, -backR, 2), { curl: 0.72 }, { curl: 0.68 }];
-  const lThumb = v3(12, HH / 2 + 9, -8);
-  const lStart = handFrame(v3(0, 34, -HL / 2 - 80), v3(0.2, -0.35, 1), v3(-1, -0.1, 0.1), v3(0, 1, 0));
+    ? [v3(13, -HH / 2 - 8, -14), v3(HD + 16, -BR - 8, -16), { curl: 0.75 }, { curl: 0.7 }]
+    : [v3(13, -HH / 2 - 8, -14), v3(backX - 6, -backR, -16), { curl: 0.72 }, { curl: 0.68 }];
+  const lThumb = v3(12, HH / 2 + 9, -22);
+  const lStart = handFrame(v3(-4, 62, -HL / 2 - 24), v3(0.15, -0.8, 0.6), v3(-1, -0.05, 0.25), v3(0, 1, 0));
   const SL = HM_SHOULDER_L;
-    const keepL = (g: HandFrame) => 1500 * (1 - dot(g.z, lStart.z));
-  let L = fitHand(lStart, lPads, lThumb, { slide: 50, curl: 1.0, keep: keepL });
-  for (let it = 0; it < 2; it++) L = fitHand(L.frame, lPads, lThumb, { slide: 15, curl: 1.0, elbow: elbowNatural(SL, L.frame.o, -1), maxWrist: 50, keep: keepL });
-  // RIGHT hand: in front, over the left fingers (closing with `c`).
+  const keepL = (g: HandFrame) => 1500 * (1 - dot(g.z, lStart.z)) + 600 * (1 - dot(g.x, lStart.x));
+  let L = fitHand(lStart, lPads, lThumb, { slide: 30, curl: 1.0, keep: keepL });
+  for (let it = 0; it < 2; it++) L = fitHand(L.frame, lPads, lThumb, { slide: 12, curl: 1.0, elbow: elbowNatural(SL, L.frame.o, -1), maxWrist: 50, keep: keepL });
+  // RIGHT hand: in front, its heel at the left heel, the fingers closing over (with `c`).
   const c = HM_CLOSE[state];
-  const front = (mic ? HD + BULLET.l.mm * 0.78 : HD + 40) + (1 - c) * 10;
-  const rPads = [0, 1, 2, 3].map((i) => v3(front - 8 + i * 3 - (1 - c) * 10, -HH / 2 - 22 + i * 15 + (1 - c) * 6, 6 - i * 19 - c * 18 + (1 - c) * 40));
-  const rThumb = v3(front - 26, -6, HL / 2 + 14 + (1 - c) * 20);
-  const rStart = handFrame(v3(front + 6 + (1 - c) * 6, 110, 30 + (1 - c) * 55), v3(-0.15 - (1 - c) * 0.1, -1, -0.32 + (1 - c) * 0.4), v3(1, 0, 0.25 + (1 - c) * 0.5), v3(0, 0, 1));
+  const o = 1 - c;
+  // The heel's hinge: the wrist under the harmonica's middle, in front of the left wrist.
+  const wx = (mic ? HD + BULLET.l.mm * 0.55 : HD + 18) + o * 22;
+  const W0 = v3(wx, 92 + o * 6, -30 + o * 10);
+  // The fingers' pads: over the top of the left fingers (cupped), swung forward and up (open).
+  const topX = mic ? HD + BULLET.l.mm * 0.45 : HD + 8;
+  const topY = mic ? -BR - 18 : -HH / 2 - 40;
+  const rPads = [0, 1, 2, 3].map((i) => v3(topX + i * 4 + o * 70, topY + i * 6 - o * 12, 20 - i * 19));
+  const rThumb = mic ? v3(HD + 30, BR + 4, 26) : v3(HD - 2 + o * 30, HH / 2 + 8, 34 + o * 12);
+  const rStart = handFrame(W0, v3(0.3 + o * 0.25, -1, 0.15), v3(1, 0.25 - o * 0.2, 0.1), v3(0, 0, 1));
   const SR = HM_SHOULDER_R;
-    const keepR = (g: HandFrame) => 1500 * (1 - dot(g.z, rStart.z));
+  const keepR = (g: HandFrame) => 1500 * (1 - dot(g.z, rStart.z)) + 400 * (1 - dot(g.x, rStart.x));
   const rGoal = state === 'open' ? [{ curl: 0.3 }, { curl: 0.3 }, { curl: 0.32 }, { curl: 0.35 }] : rPads;
   const rThumbGoal = state === 'open' ? { yaw: 0.55, pitch: 0.25, mcp: 0.15, ip: 0.15 } : rThumb;
-  let R = fitHand(rStart, rGoal, rThumbGoal, { slide: 40, curl: 0.7, keep: keepR });
-  for (let it = 0; it < 2; it++) R = fitHand(R.frame, rGoal, rThumbGoal, { slide: 15, curl: 0.7, elbow: elbowNatural(SR, R.frame.o, 1), maxWrist: 50, keep: keepR });
+  let R = fitHand(rStart, rGoal, rThumbGoal, { slide: 25, curl: 0.9, keep: keepR });
+  for (let it = 0; it < 2; it++) R = fitHand(R.frame, rGoal, rThumbGoal, { slide: 10, curl: 0.9, elbow: elbowNatural(SR, R.frame.o, 1), maxWrist: 55, keep: keepR });
   const out = {
     L: { sk: L, S: SL, E: elbowNatural(SL, L.frame.o, -1), W: L.frame.o },
     R: { sk: R, S: SR, E: elbowNatural(SR, R.frame.o, 1), W: R.frame.o },

@@ -375,8 +375,48 @@ function frontPose(top: number, bottom: number): PlayerPose {
     footR: { u: -120, v: FLOOR_Y },
     footL: { u: 120, v: FLOOR_Y },
     floor: FLOOR_Y,
-    strapTo: { u: -TREBLE.z1 + 40, v: TREBLE.y0 + 10 },
+    // No guitar-style strap across the chest: the accordion hangs from TWO
+    // shoulder straps (AccStraps, fix pass 2026-10-16).
+    strapTo: null,
   };
+}
+
+/**
+ * THE SHOULDER STRAPS from the front (fix pass 2026-10-16, the grading
+ * report): a piano accordion hangs from two straps, one over each shoulder,
+ * both fixed to the treble (keyboard) side — the side that does not move —
+ * at brackets on the back of its top; each runs up over the top of its
+ * shoulder beside the neck and down the back (out of sight), returning under
+ * the arm to the bottom of the treble side. Leather about 40 mm wide.
+ * Drawn behind the instrument (their brackets are on its back) and under
+ * the arms.
+ */
+const STRAP_TOP = TREBLE.y0 + 30;
+function strapBand(from: Pt, to: Pt, bow: number): SkPath {
+  const p = make();
+  p.moveTo(from.u, from.v);
+  p.quadTo((from.u + to.u) / 2 + bow, (from.v + to.v) / 2, to.u, to.v);
+  return p;
+}
+function AccStraps({ pose }: { pose: PlayerPose }): ReactElement {
+  // Over the shoulder's top: between the neck and the shoulder joint, on the trapezius.
+  const over = (s: Pt, side: number): Pt => ({ u: (s.u + pose.neck.u) / 2 + side * 14, v: s.v - 28 });
+  const bands = [strapBand({ u: -TREBLE.z1 + 60, v: STRAP_TOP }, over(pose.shoulderR, -1), -6), strapBand({ u: -TREBLE.z0 - 26, v: STRAP_TOP }, over(pose.shoulderL, 1), 10)];
+  return (
+    <Group>
+      {bands.map((b, i) => (
+        <Group key={i}>
+          <Path path={b} style="stroke" strokeWidth={46} strokeCap="butt" color="#141519" opacity={0.95} />
+          <Path path={b} style="stroke" strokeWidth={40} strokeCap="butt">
+            <LinearGradient start={vec(-200, pose.neck.v)} end={vec(200, TREBLE.y0)} colors={['#6a4528', '#3c2615', '#24170c']} />
+          </Path>
+          <Path path={b} style="stroke" strokeWidth={1.2} color="#c9a36e" opacity={0.45}>
+            <DashPathEffect intervals={[6, 5]} />
+          </Path>
+        </Group>
+      ))}
+    </Group>
+  );
 }
 
 const POSES = new Map<string, PlayerPose>();
@@ -404,6 +444,7 @@ export function AccordionFront({ top, bottom, hi = null, sound = 0 }: { top: num
   return (
     <Group>
       <PlayerBehind pose={pose} />
+      <AccStraps pose={pose} />
       <Bellows top={top} bottom={bottom} view="front" />
       <BassFront top={top} bottom={bottom} hi={hi} />
       <TrebleFront hi={hi} />

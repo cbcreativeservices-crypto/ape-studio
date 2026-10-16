@@ -50,7 +50,8 @@ describe('lab figures: the head belongs to the body', () => {
       // Head fix 2026-10-08: low brass and free reed now wear the SHARED head.
       ['lessons/shared/lowbrass/LowBrassArt.tsx', /<FigureHead key="head" fill=\{headFill\} \/>/],
       ['lessons/shared/freereed/PlayerProfile.tsx', /<FigureHead fill=\{b\.head\.fill\} \/>/],
-      ['lessons/a10Harmonica/art.tsx', /<MassArt path=\{face\} ramp=\{SKIN\}/],
+      // Fix pass 2026-10-16: the harmonica close-ups draw the whole profile player (its shared head), not a face fragment.
+      ['lessons/a10Harmonica/art.tsx', /<ProfileBehind pose=\{pose\} \/>/],
     ] as const) {
       assert.match(readFileSync(`${ROOT}/${f}`, 'utf8'), re, f);
     }

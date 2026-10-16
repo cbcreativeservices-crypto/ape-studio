@@ -35,8 +35,12 @@ const RIGHT: Vec3 = v3(0, 0, 1);
 const at = (dx: number, dy: number, dz: number): Vec3 => v3(H0.x + dx, H0.y + dy, H0.z + dz);
 
 /* ── the acoustic harmonica and the player ── */
-/** The hands' envelope radius (figure pass 3: re-derived from the posed hands, every digit inside; was 75 round (30, 0, ±22)). */
-const HAND_R = 102;
+/** The hands' envelope radius (fix pass 2026-10-16: re-derived from the re-posed cup — the heels together under the harmonica,
+ *  the left wrist under its left half — every joint of every state + 12 mm inside, ending before the stand zone's 150 mm; was 102 round (45, 10, −35 … 50);
+ *  figure pass 3 had it 102, before that 75 round (30, 0, ±22)). */
+const HAND_R = 106;
+/** The envelope's axis (frame H): from under the harp's left half (the heels and the left wrist) up to above its right half (the cupping fingers). */
+const HAND_AXIS = { a: { x: 40, y: 60, z: -70 }, b: { x: 40, y: -30, z: 30 } } as const;
 const ARMS = hmHands('half');
 const harmonicaParts: Part[] = [
   {
@@ -71,7 +75,7 @@ const harmonicaParts: Part[] = [
     label: 'player’s right arm',
     short: 'arm',
     role: 'The arm up to the hands. It moves as the hands open and close.',
-    // Figure pass 3: the posed right arm (freeReedHands.hmHands, partly cupped): elbow → wrist.
+    // The posed right arm (freeReedHands.hmHands, partly cupped): elbow → wrist (re-posed 2026-10-16).
     solid: { kind: 'capsule', a: at(ARMS.R.E.x, ARMS.R.E.y, ARMS.R.E.z), b: at(ARMS.R.W.x, ARMS.R.W.y, ARMS.R.W.z), r: 48 },
     listIn: [],
     prov: BODY.prov,
@@ -96,7 +100,7 @@ const envelopes: Envelope[] = [
   {
     id: 'env.hands',
     label: 'the hands and their movement',
-    shape: { kind: 'capsule', a: at(45, 10, -35), b: at(45, 10, 50), r: HAND_R },
+    shape: { kind: 'capsule', a: at(HAND_AXIS.a.x, HAND_AXIS.a.y, HAND_AXIS.a.z), b: at(HAND_AXIS.b.x, HAND_AXIS.b.y, HAND_AXIS.b.z), r: HAND_R },
     prov: ill('the hands’ envelope round the harmonica, open to cupped and round a harp mic: every finger of the posed hands (freeReedHands.hmHands) inside it (a drawing default)'),
   },
 ];
@@ -244,4 +248,4 @@ export const A10_WEDGES: Wedge[] = [
 ];
 
 /** Exposed for the art and the tests. */
-export const A10_FRAMES = { ACOUSTIC_SIDE, ACOUSTIC_TOP, AMP_BOX: AMP.box, HAND_R };
+export const A10_FRAMES = { ACOUSTIC_SIDE, ACOUSTIC_TOP, AMP_BOX: AMP.box, HAND_R, HAND_AXIS };

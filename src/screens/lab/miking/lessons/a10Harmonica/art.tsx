@@ -8,10 +8,10 @@
  *   top    u = x, v = z — from above: the player's head and shoulders, the
  *          hands round the harmonica; the amp from above
  *   front  the MEET page's close-up: the harmonica taken apart (covers, reed
- *          plates, comb, holes) beside the hands round it; or the amp's front
+ *          plates, comb, holes) beside the player at the lips, true size, in
+ *          a close-up window (PlayerClose); or the amp's front
  * Chrome covers and brass plates lit from the upper left with rim
- * highlights; the comb a dark wood; skin in the shared player's neutral
- * lay-figure grey. Nothing moves by itself (D8).
+ * highlights; the comb a dark wood; skin in the shared figure skin. Nothing moves by itself (D8).
  */
 import { useMemo, type ReactElement } from 'react';
 import { View } from 'react-native';
@@ -26,13 +26,13 @@ import { BRASS, STEEL } from '../shared/metal/metalArt';
 import { ampExtras, ampLessonArt } from '../shared/speakers/ampArt';
 import { CabFront } from '../shared/speakers/SpeakerArt';
 import { cabFrontHit, frontBox } from '../shared/speakers/cabLabels.ts';
-import { armPath, PlayerBehind } from '../shared/players/PlayerFigure';
+import { armPath, FIGURE_SKIN, headProfile, PlayerBehind } from '../shared/players/PlayerFigure';
 import type { HandView, V3 } from '../shared/players/handModel.ts';
 import { hmHands, type PosedArm } from '../shared/freereed/freeReedHands.ts';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
-import { Hand3Art, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_RIM, type Pt } from '../shared/freereed/PlayerProfile';
+import { Hand3Art, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, type Pt } from '../shared/freereed/PlayerProfile';
 import { BULLET, HARMONICA } from '../shared/freereed/freeReedSpec.ts';
-import { AMP, BREATH, FLOOR_Y, H0, HD, HH, HL, profilePose, type HandState } from './model.ts';
+import { AMP, BODY, BREATH, FLOOR_Y, H0, HD, HH, HL, profilePose, type HandState } from './model.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -348,7 +348,7 @@ function harmonicaHit(view: ViewId, u: number, v: number, tol: number): string |
   const halfV = view === 'side' ? HH / 2 : HL / 2;
   if (u >= H0.x - tol && u <= H0.x + HD + tol && Math.abs(v - v0) <= halfV + tol) return 'hm.harp';
   if (Math.hypot(u - (H0.x + 50), v - v0) <= 130 + tol) return 'hm.hands';
-  if (view === 'side' && Math.hypot(u - (H0.x - 90), v - (H0.y - 41)) <= 120 + tol) return 'hm.head';
+  if (view === 'side' && Math.hypot(u - BODY.headC.x, v - BODY.headC.y) <= 120 + tol) return 'hm.head';
   if (u < H0.x && u > H0.x - 320 && (view === 'side' ? v > H0.y + 60 && v < FLOOR_Y : Math.abs(v - v0) < 260)) return 'hm.body';
   return null;
 }
@@ -360,37 +360,30 @@ export const A10_ART: LessonArt = {
   labelsYieldToMic: true,
 };
 
-/** The player's face in profile at the harmonica (house line-art: brow,
- *  nose, lips, chin — no eye), the lips on the hole face at `at`. */
-function facePath(at: Pt): SkPath {
-  const P = (u: number, v: number) => [at.u + u, at.v + v] as const;
-  const f = make();
-  f.moveTo(...P(-64, -160));
-  f.cubicTo(...P(-40, -140), ...P(-30, -112), ...P(-30, -96));
-  f.quadTo(...P(-24, -86), ...P(-20, -76));
-  f.lineTo(...P(6, -44));
-  f.quadTo(...P(4, -36), ...P(-14, -34));
-  f.quadTo(...P(-2, -26), ...P(-3, -16));
-  f.quadTo(...P(-12, -2), ...P(-3, 12));
-  f.quadTo(...P(-6, 26), ...P(-20, 30));
-  f.cubicTo(...P(-12, 52), ...P(-24, 70), ...P(-62, 76));
-  f.lineTo(...P(-112, 82));
-  return f;
-}
-
-/** The face as part of the figure (owner 2026-10-06: no separate line-art
- *  head on a lab figure): the profile above closed into the lower head and
- *  neck, painted as the same lit skin mass as the hands beside it. */
-function faceMass(at: Pt): SkPath {
-  const P = (u: number, v: number) => [at.u + u, at.v + v] as const;
-  const f = facePath(at);
-  // Close it a short way behind the face (the cheek and the jaw), so the
-  // head stays a profile beside the hands and clear of the parts' names.
-  f.lineTo(...P(-122, 90));
-  f.quadTo(...P(-136, 20), ...P(-126, -60));
-  f.quadTo(...P(-112, -150), ...P(-64, -160));
-  f.close();
-  return f;
+/**
+ * THE PLAYER AT THE HARMONICA, CLOSE (fix pass 2026-10-16, the grading
+ * report: a faceless head fragment and hands floating with no body): the
+ * same player as the placement scene — the shared profile head (brow, nose,
+ * lips, chin, the ear) on its neck into the collar, the shoulders, both arms
+ * from the shoulders to the posed hands — round the harmonica whose hole face
+ * is at `at`, cropped by the frame `crop` like a camera's close-up.
+ */
+export function PlayerClose({ at, state, crop, hi = null, showHarp = true }: { at: Pt; state: HandState; crop: SkPath; hi?: string | null; showHarp?: boolean }): ReactElement {
+  const pose = profilePose(at, state);
+  // Close up, the shared head's own line-art detail (the ear, the brow, the
+  // jaw) over its skin mass, above the collar.
+  const head = headProfile(pose.head.c, pose.head.r, pose.neck.v - 10, 1);
+  const above = rr(pose.head.c.u - 200, pose.head.c.v - 200, pose.head.c.u + 200, pose.neck.v - 40, 0);
+  return (
+    <Group clip={crop}>
+      <ProfileBehind pose={pose} />
+      <Group clip={above}>
+        <Path path={head.line} style="stroke" strokeWidth={2} strokeCap="round" color={FIGURE_SKIN.edge} opacity={0.55} />
+      </Group>
+      <ProfileFront pose={pose} />
+      <HandsProfile at={at} state={state} hi={hi === 'hm.hands'} showHarp={showHarp} />
+    </Group>
+  );
 }
 
 /* ═══════════════ the MEET page's close-up ═══════════════ */
@@ -398,7 +391,9 @@ function faceMass(at: Pt): SkPath {
 /* The harmonica taken apart, drawn oblique (a cabinet projection: depth up
  * and to the right), larger than life, beside the hands round it in profile. */
 const OB = { dx: 0.5, dy: -0.36 };
-const EX = { u: 30, top: 70, gap: 30 };
+/* Fix pass 2026-10-16: each part's name sits in the gap ABOVE its layer, so
+ * no name runs onto the player's head (they ran right, onto the face). */
+const EX = { u: 24, top: 78, gap: 48 };
 const LAYERS: { id: string; t: number; kind: 'cover' | 'plate' | 'comb' }[] = [
   { id: 'hm.cover', t: 5, kind: 'cover' },
   { id: 'hm.reeds', t: 3, kind: 'plate' },
@@ -406,7 +401,7 @@ const LAYERS: { id: string; t: number; kind: 'cover' | 'plate' | 'comb' }[] = [
   { id: 'hm.reeds', t: 3, kind: 'plate' },
   { id: 'hm.cover', t: 5, kind: 'cover' },
 ];
-const SCALE = 1.9;
+const SCALE = 1.5;
 function layerBox(i: number) {
   const L = HL * SCALE;
   const D = HD * SCALE;
@@ -416,7 +411,7 @@ function layerBox(i: number) {
 }
 
 /*
- * A 10-hole diatonic harmonica, real-world (drawn here 1.9x): 102 mm long,
+ * A 10-hole diatonic harmonica, real-world (drawn here 1.5x): 102 mm long,
  * 28 mm deep, about 26 mm tall. The comb about 10 mm thick, its ten
  * channels about 5.5 mm wide at a 7.3 mm pitch (holes 1-10 span about
  * 72 mm, a solid end of about 15 mm each side for the fixings); two brass
@@ -527,35 +522,39 @@ function Layer({ i, hi }: { i: number; hi: string | null }): ReactElement {
   );
 }
 
-const CLOSE = { u: 430, v: 170 };
-const MEET_BOX = { u0: 0, u1: 610, v0: 10, v1: 330 };
+/** The close-up: the hole face's place, and the frame that crops the player. */
+const CLOSE = { u: 500, v: 212 };
+const CROP = { u0: 284, u1: 690, v0: 34, v1: 412, r: 18 };
+const MEET_BOX = { u0: 0, u1: 700, v0: 0, v1: 420 };
+const CROP_PATH = rr(CROP.u0, CROP.v0, CROP.u1, CROP.v1, CROP.r);
 
 function MeetHarmonica({ hi }: { hi: string | null }): ReactElement {
-  // The lower face beside the hands, the same lit skin as the hands.
-  const face = faceMass(CLOSE);
   return (
     <Group>
       {LAYERS.map((_, i) => (
         <Layer key={i} i={i} hi={hi} />
       ))}
-      <MassArt path={face} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-      <HandsProfile at={CLOSE} state="half" hi={hi === 'hm.hands'} />
+      {/* The close-up's window, then the player at true size inside it. */}
+      <Path path={CROP_PATH} color="#1d1f25" />
+      <PlayerClose at={CLOSE} state="half" crop={CROP_PATH} hi={hi} />
+      <Path path={CROP_PATH} style="stroke" strokeWidth={2} color="#3a3d47" />
       {hi === 'hm.harp' ? <Path path={rr(CLOSE.u - 8, CLOSE.v - 22, CLOSE.u + HD + 9, CLOSE.v + 22, 5)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
-      {hi === 'hm.holes' ? <Path path={rr(EX.u - 6, layerBox(2).v0 - 6, EX.u + HL * SCALE + 6, layerBox(2).v1 + 6, 4)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
+      {hi === 'hm.holes' ? <Path path={rr(EX.u - 6, layerBox(2).v0 + layerBox(2).dy - 6, EX.u + HL * SCALE + layerBox(2).dx + 6, layerBox(2).v1 + 6, 4)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
     </Group>
   );
 }
 
 function meetLabels(): ArtLabel[] {
   const b = (i: number) => layerBox(i);
-  const r = EX.u + HL * SCALE + 30;
+  /** Above a layer: in the gap between it and the one over it. */
+  const above = (i: number) => b(i).v0 + b(i).dy - 14;
   return [
-    { id: 'cover', text: 'COVER PLATES', short: 'COVERS', u: r, v: b(0).v0 - 2, align: 'left' },
-    { id: 'reeds', text: 'REED PLATES', short: 'REEDS', u: r, v: b(1).v0 - 4, align: 'left' },
-    { id: 'comb', text: 'COMB · HOLES 1–10', short: 'COMB', u: r, v: b(2).v0 - 2, align: 'left' },
-    { id: 'apart', text: 'TAKEN APART · DRAWN LARGER', short: 'TAKEN APART', u: EX.u, v: 30, align: 'left', tone: 'muted' },
-    { id: 'held', text: 'HELD AT THE LIPS', short: 'AT THE LIPS', u: CLOSE.u + 30, v: 30, align: 'center', tone: 'muted' },
-    { id: 'hands', text: 'HANDS', u: CLOSE.u + 150, v: CLOSE.v + 120, align: 'left', at: { u: CLOSE.u + 80, v: CLOSE.v + 50 } },
+    { id: 'cover', text: 'COVER PLATES', short: 'COVERS', u: EX.u, v: above(0), align: 'left' },
+    { id: 'reeds', text: 'REED PLATES', short: 'REEDS', u: EX.u, v: above(1), align: 'left' },
+    { id: 'comb', text: 'COMB · HOLES 1–10', short: 'COMB', u: EX.u, v: above(2), align: 'left' },
+    { id: 'apart', text: 'TAKEN APART · DRAWN LARGER', short: 'TAKEN APART', u: EX.u, v: 16, align: 'left', tone: 'muted' },
+    { id: 'held', text: 'HELD AT THE LIPS · TRUE SIZE', short: 'AT THE LIPS', u: (CROP.u0 + CROP.u1) / 2, v: 16, align: 'center', tone: 'muted' },
+    { id: 'hands', text: 'HANDS', u: CROP.u1 - 14, v: CROP.v0 + 30, align: 'right', at: { u: CLOSE.u + 62, v: CLOSE.v - 52 } },
   ];
 }
 
@@ -588,7 +587,9 @@ export const HARP_FRONT: FrontArt = {
 
 /* ═══════════════ HOW IT SOUNDS: the hand chamber ═══════════════ */
 
-const CH_BOX = { u0: -190, u1: 300, v0: -150, v1: 170 };
+/** The sound page's close-up: the player's head, shoulders and hands (fix pass 2026-10-16: the whole player, cropped, not a face fragment). */
+const CH_BOX = { u0: -230, u1: 300, v0: -180, v1: 240 };
+const CH_CROP = rr(CH_BOX.u0, CH_BOX.v0, CH_BOX.u1, CH_BOX.v1, 0);
 
 export function HandChamber({ w, h, state, accessibilityLabel }: { w: number; h: number; state: HandState; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
@@ -617,20 +618,18 @@ export function HandChamber({ w, h, state, accessibilityLabel }: { w: number; h:
     out.moveTo(HD + 6, 0);
     out.lineTo(HD + 26, 0);
   }
-  const lips = faceMass({ u: 0, v: 0 });
   const st = state;
   const labels: StaticLabel[] = [
     { id: 'harp', text: 'HARMONICA', u: 40, v: -128, align: 'left', tone: 'muted' },
     st === 'mic'
-      ? { id: 'mic', text: 'HARP MIC INSIDE THE CHAMBER', short: 'HARP MIC', u: 120, v: 140, align: 'center', tone: 'amber' }
+      ? { id: 'mic', text: 'HARP MIC INSIDE THE CHAMBER', short: 'HARP MIC', u: 112, v: 190, align: 'left', tone: 'amber' }
       : { id: 'out', text: st === 'cupped' ? 'A CLOSED CHAMBER' : st === 'half' ? 'OUT THROUGH THE GAP' : 'STRAIGHT OUT', short: st === 'cupped' ? 'CLOSED' : 'OUT', u: 200, v: st === 'open' ? 120 : -130, align: 'center', tone: 'blue' },
   ];
   return (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          <MassArt path={lips} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
-          <HandsProfile at={at} state={state} />
+          <PlayerClose at={at} state={state} crop={CH_CROP} />
           <Path path={out} style="stroke" strokeWidth={3} strokeCap="round" color={AIR} opacity={0.8}>
             <DashPathEffect intervals={[10, 7]} />
           </Path>

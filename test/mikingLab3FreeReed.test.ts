@@ -160,8 +160,54 @@ describe('A10 harmonica: the instrument, the player and the harp amp', () => {
     assert.deepEqual([z.distance.min, z.distance.max], [150, 300]);
     const hands = A10_LESSON.model.envelopes.find((e) => e.id === 'env.hands')!.shape;
     assert.equal(hands.kind, 'capsule');
-    if (hands.kind === 'capsule') assert.ok(hands.a.x - hm.H0.x + hands.r < z.distance.min, 'the hands end before the zone begins');
+    if (hands.kind === 'capsule') assert.ok(Math.max(hands.a.x, hands.b.x) - hm.H0.x + hands.r < z.distance.min, 'the hands end before the zone begins');
     assert.ok(Math.abs(z.start.p.y - hm.H0.y) <= 150);
+  });
+  it('fix pass 2026-10-16: the hands’ envelope holds every joint of every chamber state (the re-posed cup)', async () => {
+    const { hmHands } = await import('../src/screens/lab/miking/lessons/shared/freereed/freeReedHands.ts');
+    const env = A10_LESSON.model.envelopes.find((e) => e.id === 'env.hands')!.shape;
+    assert.equal(env.kind, 'capsule');
+    if (env.kind !== 'capsule') return;
+    const A = { x: env.a.x - hm.H0.x, y: env.a.y - hm.H0.y, z: env.a.z - hm.H0.z };
+    const B = { x: env.b.x - hm.H0.x, y: env.b.y - hm.H0.y, z: env.b.z - hm.H0.z };
+    const ab = [B.x - A.x, B.y - A.y, B.z - A.z];
+    const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
+    const dist = (p: { x: number; y: number; z: number }) => {
+      const ap = [p.x - A.x, p.y - A.y, p.z - A.z];
+      const t = Math.max(0, Math.min(1, (ab[0] * ap[0] + ab[1] * ap[1] + ab[2] * ap[2]) / L2));
+      return Math.hypot(ap[0] - t * ab[0], ap[1] - t * ab[1], ap[2] - t * ab[2]);
+    };
+    for (const st of ['open', 'half', 'cupped', 'mic'] as const) {
+      const h = hmHands(st);
+      for (const a of [h.L, h.R]) for (const p of [...a.sk.fingers.flatMap((d) => d.joints), ...a.sk.thumb.joints, ...a.sk.palm]) assert.ok(dist(p) + 10 <= env.r, `${st}: a joint ${dist(p).toFixed(0)} mm from the axis`);
+    }
+  });
+  it('fix pass 2026-10-16: the cup — the heels together under the harmonica, the elbows hanging below the hands, the lips on its middle', async () => {
+    const { hmHands } = await import('../src/screens/lab/miking/lessons/shared/freereed/freeReedHands.ts');
+    for (const st of ['half', 'cupped'] as const) {
+      const h = hmHands(st);
+      // The palms meet (their outline points within a palm's thickness of each other).
+      let gap = Infinity;
+      for (const p of h.L.sk.palm) for (const q of h.R.sk.palm) gap = Math.min(gap, Math.hypot(p.x - q.x, p.y - q.y, p.z - q.z));
+      assert.ok(gap < 45, `${st}: the palms ${gap.toFixed(0)} mm apart`);
+      for (const a of [h.L, h.R]) {
+        assert.ok(a.W.y > spec.HARMONICA.height.mm / 2, `${st}: a wrist under the harmonica`);
+        assert.ok(a.E.y > a.W.y + 150, `${st}: an elbow below its wrist`);
+      }
+      // The cupped right hand's fingertips close over the top of the harmonica.
+      if (st === 'cupped') for (const f of h.R.sk.fingers) assert.ok(f.joints[3].y < -spec.HARMONICA.height.mm / 2, 'a right fingertip above the harmonica');
+    }
+    // The profile head's mouth (between the lips, 63 mm below its centre at r 110) on the hole face's middle.
+    assert.ok(Math.abs(hm.HEAD_C.v + 52) < 1e-9 && Math.abs(hm.BODY.headC.y - (hm.H0.y - 52)) < 1e-9);
+  });
+  it('fix pass 2026-10-16: the close-ups draw the whole player (shared head, arms from the shoulders), never a face fragment', () => {
+    const art = read(`${MIKING}/lessons/a10Harmonica/art.tsx`);
+    assert.doesNotMatch(art, /faceMass|facePath/);
+    assert.match(art, /function MeetHarmonica[\s\S]*<PlayerClose at=\{CLOSE\}/);
+    assert.match(art, /export function HandChamber[\s\S]*<PlayerClose at=\{at\} state=\{state\}/);
+    assert.match(read(`${MIKING}/lessons/a10Harmonica/paths.tsx`), /<PlayerClose at=\{\{ u: 0, v: 0 \}\} state=\{state\}/);
+    // The exploded parts' names sit above their own layers, left of the close-up's window.
+    assert.match(art, /\{ id: 'comb', text: 'COMB · HOLES 1–10', short: 'COMB', u: EX\.u, v: above\(2\), align: 'left' \}/);
   });
   it('the off-breath zone lies outside the drawn breath cone, still aimed at the harmonica', () => {
     const z = A10_LESSON.zones.find((q) => q.id === 'hm.off')!;
@@ -200,6 +246,12 @@ describe('A11 accordion: two sides, one of them moving', () => {
     assert.ok(near(z[0].deg, 0) && z[2].deg > z[1].deg && z[2].deg <= spec.ACCORDION.fanMax.mm + 0.01);
     assert.ok(near(ac.TREBLE.z0 - z[2].ib.z, spec.ACCORDION.bellowsMax.mm), 'the full opening at the bottom');
     assert.ok(near(ac.TREBLE.z0 - z[0].ib.z, spec.ACCORDION.bellowsClosed.mm));
+  });
+  it('fix pass 2026-10-16: the accordion hangs from two shoulder straps on the treble side (no guitar strap across the chest)', () => {
+    const art = read(`${MIKING}/lessons/a11Accordion/art.tsx`);
+    assert.match(art, /strapTo: null,/);
+    assert.match(art, /<PlayerBehind pose=\{pose\} \/>\n\s*<AccStraps pose=\{pose\} \/>/);
+    assert.match(art, /strapBand\(\{ u: -TREBLE\.z1 \+ 60, v: STRAP_TOP \}, over\(pose\.shoulderR, -1\)[\s\S]*strapBand\(\{ u: -TREBLE\.z0 - 26, v: STRAP_TOP \}, over\(pose\.shoulderL, 1\)/);
   });
   it('the bellows keep-out holds the bass side at every stage of the cycle (and the left hand beyond it)', () => {
     const env = A11_LESSON.model.envelopes.find((e) => e.id === 'env.bellows')!.shape;

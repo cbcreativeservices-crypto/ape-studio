@@ -64,22 +64,29 @@ export const HAND_STATES: readonly { id: HandState; label: string; short: string
  * The player in profile (the side view, u = x, v = y), every joint a
  * drawing default (no source gives a player's geometry), placed so the lips
  * meet the hole face at H0 and the hands fit inside the hands' envelope.
+ * `at`: where the hole face is drawn (default H0 — the MEET and sound pages'
+ * close-ups draw the same player round their own harmonica); `state`: the
+ * hand chamber the arms reach to.
  */
-const HANDS = hmHands('half');
-
-export function profilePose(): ProfilePose {
-  const P = (u: number, v: number) => ({ u: H0.x + u, v: H0.y + v });
-  return {
-    head: { c: P(-90, -41), r: 110 },
+const poses = new Map<string, ProfilePose>();
+export function profilePose(at: { u: number; v: number } = { u: H0.x, v: H0.y }, state: HandState = 'half'): ProfilePose {
+  const key = `${at.u}:${at.v}:${state}`;
+  const hit = poses.get(key);
+  if (hit) return hit;
+  const P = (u: number, v: number) => ({ u: at.u + u, v: at.v + v });
+  const HANDS = hmHands(state);
+  const pose: ProfilePose = {
+    // Fix pass 2026-10-16: the mouth (between the lips) on the harmonica's
+    // middle — the head 11 mm higher (the lips met only its lower half).
+    head: { c: P(HEAD_C.u, HEAD_C.v), r: 110 },
     // Figure pass 2026-10-15: the collar ≈ 70 below the chin and the shoulder
     // under it (they sat level with the chin: the head merged into the
     // shoulders); the elbows hang lower so the upper arm keeps its length.
-    // The collision solids (BODY below) are unchanged.
     neck: P(-140, 132),
     shoulder: P(-152, 186),
-    // Figure pass 3: the arms end at the posed hands (freeReedHands.hmHands,
-    // the partly cupped hold the scene shows): the elbows down in front of
-    // the chest, the forearms rising to the hands at the lips.
+    // Figure pass 3: the arms end at the posed hands (freeReedHands.hmHands):
+    // the elbows down in front of the chest, the forearms rising to the
+    // hands at the lips.
     elbowNear: P(HANDS.R.E.x, HANDS.R.E.y),
     wristNear: P(HANDS.R.W.x, HANDS.R.W.y),
     elbowFar: P(HANDS.L.E.x, HANDS.L.E.y),
@@ -89,13 +96,18 @@ export function profilePose(): ProfilePose {
     ankleNear: P(-142, 1478),
     kneeFar: P(-176, 1036),
     ankleFar: P(-196, 1478),
-    floor: FLOOR_Y,
+    floor: at.v + FLOOR_Y - H0.y,
   };
+  poses.set(key, pose);
+  return pose;
 }
+
+/** The head's centre from the hole face (the profile head, r 110: its lips on the harmonica's middle). */
+export const HEAD_C = { u: -90, v: -52 } as const;
 
 /** The joints the collision solids follow (the same drawing defaults). */
 export const BODY = {
-  headC: { x: H0.x - 90, y: H0.y - 41, z: H0.z },
+  headC: { x: H0.x + HEAD_C.u, y: H0.y + HEAD_C.v, z: H0.z },
   shoulderY: H0.y + 138,
   hipY: H0.y + 600,
   backX: H0.x - 270,

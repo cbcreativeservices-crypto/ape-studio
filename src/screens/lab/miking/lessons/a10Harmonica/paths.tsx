@@ -22,7 +22,7 @@ import { CabFront } from '../shared/speakers/SpeakerArt';
 import { ampExtras } from '../shared/speakers/ampArt';
 import { frontBox } from '../shared/speakers/cabLabels.ts';
 import { patchVerdict, type PatchVerdict } from '../shared/speakers/signalChain.ts';
-import { HandsProfile } from './art';
+import { PlayerClose } from './art';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -54,6 +54,27 @@ const BOX = { u0: 0, u1: 1000, v0: 0, v1: 560 };
 const ROW1 = 150;
 const ROW2 = 410;
 const DESK = { u: 885, v: 280 };
+/** The player at the harmonica in each row (fix pass 2026-10-16: the whole
+ *  player, cropped in a small window, not two floating hands): where the
+ *  close-up sits, its scale, and its window (the close-up's own mm). */
+const PLAYER = { u: 100, s: 0.56 } as const;
+const PLAYER_CROP = (() => {
+  const p = Skia.Path.Make();
+  p.addRRect(Skia.RRectXY(Skia.XYWHRect(-150, -175, 325, 345), 24, 24));
+  return p;
+})();
+/** Where the harp mic's own cable ends (Bullet: the cable leaves its back and drops 70 mm). */
+const HARP_CABLE_END: [number, number] = [PLAYER.u + (28 + 2 + 82.6 + 60) * PLAYER.s, ROW2 + 70 * PLAYER.s];
+
+function PlayerRow({ v, state }: { v: number; state: 'open' | 'mic' }): ReactElement {
+  return (
+    <Group transform={[{ translateX: PLAYER.u }, { translateY: v }, { scale: PLAYER.s }]}>
+      <Path path={PLAYER_CROP} color="#1d1f25" />
+      <PlayerClose at={{ u: 0, v: 0 }} state={state} crop={PLAYER_CROP} />
+      <Path path={PLAYER_CROP} style="stroke" strokeWidth={3} color="#3a3d47" />
+    </Group>
+  );
+}
 
 function StandMic({ u, v, faces = -1 }: { u: number; v: number; faces?: 1 | -1 }): ReactElement {
   const pole = make();
@@ -136,11 +157,11 @@ export function HarpPaths({ w, h, patch, accessibilityLabel }: { w: number; h: n
   const tint = verdict === 'ok' ? GREEN : verdict === 'check' ? AMBER : RED;
   // The standard links.
   const micCable1 = link([355, ROW1 + 10], [DESK.u - 80, DESK.v - 10], 40);
-  const hiZ = link([150, ROW2 + 70], [330, ROW2 + 20], 50);
+  const hiZ = link(HARP_CABLE_END, [330, ROW2 + 20], 50);
   const micCable2 = link([655, ROW2 + 10], [DESK.u - 80, DESK.v + 20], -10);
   // The checked patch, drawn over (amber / red).
   const chosen =
-    patch === 'harpToAmp' ? hiZ : patch === 'harpToDesk' ? link([150, ROW2 + 70], [DESK.u - 90, DESK.v + 30], 120) : patch === 'spkToDesk' ? link([470, ROW2 + 20], [DESK.u - 90, DESK.v + 30], 60) : micCable1;
+    patch === 'harpToAmp' ? hiZ : patch === 'harpToDesk' ? link(HARP_CABLE_END, [DESK.u - 90, DESK.v + 30], 120) : patch === 'spkToDesk' ? link([470, ROW2 + 20], [DESK.u - 90, DESK.v + 30], 60) : micCable1;
   const strike = make();
   if (verdict === 'stop') {
     const m = [(470 + DESK.u - 90) / 2, (ROW2 + 20 + DESK.v + 30) / 2 + 30];
@@ -163,16 +184,12 @@ export function HarpPaths({ w, h, patch, accessibilityLabel }: { w: number; h: n
       <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
           {/* row 1: the acoustic path */}
-          <Group transform={[{ translateX: 70 }, { translateY: ROW1 }, { scale: 0.62 }]}>
-            <HandsProfile at={{ u: 0, v: 0 }} state="open" />
-          </Group>
+          <PlayerRow v={ROW1} state="open" />
           <Path path={airWaves(220, ROW1)} style="stroke" strokeWidth={4} color={BLUE} opacity={0.8} />
           <StandMic u={300} v={ROW1} />
           <Path path={micCable1} style="stroke" strokeWidth={6} strokeCap="round" color={CABLE} />
           {/* row 2: the amplified path */}
-          <Group transform={[{ translateX: 70 }, { translateY: ROW2 }, { scale: 0.62 }]}>
-            <HandsProfile at={{ u: 0, v: 0 }} state="mic" />
-          </Group>
+          <PlayerRow v={ROW2} state="mic" />
           <Path path={hiZ} style="stroke" strokeWidth={6} strokeCap="round" color="#2a2b30" />
           <Amp u={410} v={ROW2} />
           <Path path={airWaves(520, ROW2)} style="stroke" strokeWidth={4} color={BLUE} opacity={0.8} />
