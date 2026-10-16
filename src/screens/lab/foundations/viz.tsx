@@ -41,7 +41,7 @@
  * geometry, phase-locked harmonics) are IDENTICAL to the pre-retrofit file —
  * this is a restyle of the DRAWING only.
  */
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, type TextProps, type TextStyle } from 'react-native';
 import {
   BlurMask,
@@ -70,6 +70,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
 import { FigureStandingAt, STANDING_H_MM } from '../../../features/lab/figureHead';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { TRACER_COLOR, TRACER_MARK_COLOR } from './tracer';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
  *  red) → BASE (silence, blue). A stick's height already encodes amplitude, so
@@ -265,80 +266,151 @@ function hash(n: number): number {
   return s - Math.floor(s);
 }
 
-// SPARKLE-TRACKED molecules (owner 2026-08-10 — replaces the coloured tracers):
-// 19 candidate home positions banded left→right across the field. At any
-// moment exactly TWO of them wear a subtle white glint — a thin four-point
-// specular star breathing around the particle while it oscillates IN PLACE.
-// Every ~2 s ONE of the two hands off to a fresh location (staggered; each
-// highlight lives ~4 s), so the viewer's eye keeps landing on a new molecule
-// and the lesson repeats: each particle only moves back and forth — nothing
-// crosses the screen. Monochrome and restrained: a specular highlight, not an
-// ornament.
-const SPARKLE_N = 19;
-const SPARKLE_LIFE = 4; // seconds per highlight; the two slots stagger by 2 s
+// TRACER PARTICLES (owner 2026-10-16 — replaces the 2026-08-10 star glints;
+// the why and the colour live in ./tracer.ts). One or two molecules of the
+// field are drawn in the tracer colour, each with a small FIXED tick at its
+// rest position and a faint ↔ bracket spanning its real swing. Their motion
+// is not a separate animation: `airDx` below is the ONE displacement law the
+// grey field uses too, called with the tracer's own rest x, so a tracer can
+// only ever do what its neighbours do — swing back and forth around its tick
+// while the compression bands travel past.
 
-/** The 19 deterministic homes — one per horizontal band, jittered, so they
- *  cover the display left→right without clustering. */
+/** A tracer: which field molecule it replaces (`idx`, dropped from the grey
+ *  field so the density never changes) and its REST position. */
+export type Tracer = { idx: number; x: number; y: number };
+
 /**
- * Which sparkle homes sit in the MIDDLE of the canvas.
- *
- * Owner 2026-09-13, of the air window: "make sure there is always a few in the
- * center of the display. they can appear more at the sides and then it is not as
- * noticable." Both glint slots used to draw from all 19 homes at random, so the
- * centre could sit empty for a full four-second tenure while the only followable
- * molecule wiggled in a corner — and the whole point of the glint is to make ONE
- * molecule's back-and-forth readable. A reader looking at the middle of the
- * window has to find something moving there.
- *
- * Measured against the FULL canvas width, not the homes' own span: the air
- * window bags a zone off the right for the ear, so its usable strip's midpoint
- * sits left of the picture's midpoint, and "centre" here means where the eye
- * lands. Falls back to every home if a narrow layout leaves the band empty, so a
- * slot can never index an empty list.
- *
- * SHARED by AirParticlesView and WavelengthRulerView. It was inlined in the
- * first and then wanted by the second, which is exactly how two copies of one
- * subtle rule start to drift.
+ * Longitudinal displacement of one molecule (worklet) — the field's law,
+ * shared by the grey field and its tracers so the two can never disagree.
+ *   wave:  ξ = A·D·sin(ωt − k(x + φ))   (along the travel axis only)
+ *   noise: quantized-time hash jitter, still along the travel axis (real
+ *          noise is a superposition of longitudinal waves), keyed by the
+ *          molecule's field index `i`
+ *   still: 0
  */
-function midBandIndices(xs: number[], canvasW: number): number[] {
-  const lo = canvasW * 0.3;
-  const hi = canvasW * 0.7;
-  const mid: number[] = [];
-  for (let i = 0; i < xs.length; i++) if (xs[i] >= lo && xs[i] <= hi) mid.push(i);
-  return mid.length ? mid : xs.map((_, i) => i);
-}
-
-function sparkleHomes(usableW: number, topPad: number, usableH: number): { xs: number[]; ys: number[] } {
-  const xs: number[] = [];
-  const ys: number[] = [];
-  for (let i = 0; i < SPARKLE_N; i++) {
-    xs.push(((i + 0.15 + 0.7 * hashJs(i * 3.31 + 1.7)) / SPARKLE_N) * usableW);
-    ys.push(topPad + hashJs(i * 7.73 + 9.1) * usableH);
-  }
-  return { xs, ys };
-}
-
-/** Compound glint (worklet) — a specular star with real presence (owner
- *  2026-08-10: the single thin star was too easy to miss): a 4-point main
- *  star, a smaller cross rotated 45° (the classic 8-point camera-star look),
- *  and a hot core knot. Still monochrome and professional — just brighter. */
-function addGlint(p: ReturnType<typeof Skia.Path.Make>, x: number, y: number, R: number, rot: number): void {
+function airDx(
+  mode: AirMode,
+  amp: number,
+  dispMax: number,
+  om: number,
+  k: number,
+  t: number,
+  x: number,
+  phasePx: number,
+  i: number,
+): number {
   'worklet';
-  for (let arm = 0; arm < 2; arm++) {
-    const AR = arm === 0 ? R : R * 0.55; // secondary cross at 55% size
-    const off = rot + arm * (Math.PI / 4);
-    const ir = AR * 0.16;
-    for (let k = 0; k < 8; k++) {
-      const a = off + (k * Math.PI) / 4;
-      const rad = k % 2 === 0 ? AR : ir;
-      const vx = x + rad * Math.cos(a);
-      const vy = y + rad * Math.sin(a);
-      if (k === 0) p.moveTo(vx, vy);
-      else p.lineTo(vx, vy);
-    }
-    p.close();
+  if (mode === 'wave') return amp * dispMax * Math.sin(om * t - k * (x + phasePx));
+  if (mode === 'noise') {
+    const tq = Math.floor(t * 22);
+    return amp * dispMax * 0.9 * (hash(i * 127.1 + tq * 311.7) - 0.5) * 2;
   }
-  p.addCircle(x, y, R * 0.2); // hot core knot
+  return 0;
+}
+
+/** Half-width of a molecule's real swing for a mode — the bracket spans
+ *  exactly this either side of the tick (the peak of `airDx`'s magnitude). */
+function airSwing(mode: AirMode, amp: number, dispMax: number): number {
+  if (mode === 'wave') return amp * dispMax;
+  if (mode === 'noise') return 0.9 * amp * dispMax;
+  return 0;
+}
+
+/**
+ * Choose the field molecules that become tracers.
+ *
+ * Each tracer's REST x is snapped to the nearest displacement NODE of the wave
+ * at t = 0: ξ(x, 0) = D·sin(−k(x + φ)) = 0 at x = n·λ/2 − φ. So on a still
+ * display — paused, not yet started, or held still by reduce-motion — the
+ * coloured dot sits exactly ON its tick. The nearest field molecule to that
+ * point is the one replaced; the snap moves it by at most a fraction of a
+ * column, invisible in a jittered field. Two targets that would land on one
+ * node take neighbouring nodes; if none is free inside [xMin, xMax] the view
+ * keeps a single tracer (the owner asked for 1–2).
+ */
+function pickTracers(
+  xs: number[],
+  ys: number[],
+  targets: { x: number; y: number }[],
+  lambda: number,
+  phasePx: number,
+  xMin: number,
+  xMax: number,
+): Tracer[] {
+  const half = Math.max(1, lambda / 2);
+  const out: Tracer[] = [];
+  const usedNodes: number[] = [];
+  for (const tg of targets) {
+    const n0 = Math.round((tg.x + phasePx) / half);
+    let restX = NaN;
+    for (const n of [n0, n0 + 1, n0 - 1, n0 + 2, n0 - 2]) {
+      const x = n * half - phasePx;
+      if (x < xMin || x > xMax || usedNodes.includes(n)) continue;
+      restX = x;
+      usedNodes.push(n);
+      break;
+    }
+    if (Number.isNaN(restX)) continue;
+    let best = -1;
+    let bestD = Infinity;
+    for (let i = 0; i < xs.length; i++) {
+      if (out.some((o) => o.idx === i)) continue;
+      const d = (xs[i] - restX) ** 2 + (ys[i] - tg.y) ** 2;
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    if (best >= 0) out.push({ idx: best, x: restX, y: ys[best] });
+  }
+  return out;
+}
+
+/**
+ * The static marks under each tracer: the FIXED rest tick, and a faint ↔
+ * bracket whose half-width is the molecule's real swing (`airSwing`). Units
+ * are the caller's canvas units; `s` scales the mark sizes (stage text scale
+ * for views that do not paint through a scaled Group, 1 for those that do).
+ * No bracket when the molecule cannot move (still air); arrowheads only when
+ * the swing is wide enough to hold them.
+ */
+function tracerMarks(tr: Tracer[], swing: number, s: number): { ticks: SkPathT; brackets: SkPathT } {
+  const ticks = Skia.Path.Make();
+  const brackets = Skia.Path.Make();
+  for (const { x, y } of tr) {
+    ticks.moveTo(x, y + 3.6 * s);
+    ticks.lineTo(x, y + 11 * s);
+    if (swing < 0.6 * s) continue;
+    const by = y + 7.3 * s;
+    brackets.moveTo(x - swing, by);
+    brackets.lineTo(x + swing, by);
+    if (swing >= 4 * s) {
+      const ah = Math.min(2.6 * s, swing * 0.45);
+      brackets.moveTo(x - swing + ah, by - 2.2 * s);
+      brackets.lineTo(x - swing, by);
+      brackets.lineTo(x - swing + ah, by + 2.2 * s);
+      brackets.moveTo(x + swing - ah, by - 2.2 * s);
+      brackets.lineTo(x + swing, by);
+      brackets.lineTo(x + swing - ah, by + 2.2 * s);
+    }
+  }
+  return { ticks, brackets };
+}
+
+/**
+ * `v` as it was when `key` last changed. The tracers are placed with the
+ * wavelength the view MOUNTED with, so a pitch slider dragging λ never moves a
+ * tick (the owner: the tick never moves); they are re-placed only when the
+ * field itself is rebuilt (a new canvas size — FULL SCREEN). React's
+ * "adjust state while rendering" pattern: the stale render is discarded.
+ */
+function useHeldUntil<T>(key: unknown, v: T): T {
+  const [held, setHeld] = useState({ key, v });
+  if (held.key !== key) {
+    setHeld({ key, v });
+    return v;
+  }
+  return held.v;
 }
 
 export function AirParticlesView({
@@ -376,7 +448,7 @@ export function AirParticlesView({
   lambdaPx?: number;
 }) {
   // Parity pass (owner 2026-09-26, "make sure the head, speaker (objects) …
-  // are also zooming"): every fixed-size mark — molecule radius, glint, blur,
+  // are also zooming"): every fixed-size mark — molecule radius, tracer, blur,
   // the ear — is multiplied by the stage text scale so a doubled picture
   // doubles its objects too. 1 on the glass.
   const ts = useStageTextScale();
@@ -423,81 +495,36 @@ export function AirParticlesView({
   const dispMax = (w / 2.2) / 7; // peak displacement — keyed to the DEFAULT scale so
   // particles never overlap into a solid band even when lambda tightens.
 
-  // Sparkle-tracker homes: 19 spots across the field (clear of the ear zone).
-  const sparkleXY = useMemo(() => sparkleHomes(w - earW, 8, h - 16), [w, earW, h]);
-  const sxs = sparkleXY.xs;
-  const sys = sparkleXY.ys;
-  /**
-   * Indices of the homes that sit in the MIDDLE of the canvas.
-   *
-   * Owner 2026-09-13, on the Pixel: "make sure there is always a few in the
-   * center of the display. they can appear more at the sides and then it is not
-   * as noticable." Both glints used to draw from all 19 homes at random, so the
-   * centre could sit empty for a full 4-second tenure while the only followable
-   * molecule wiggled away in a corner — and the whole point of the glint is to
-   * make ONE molecule's back-and-forth readable. A reader looking at the middle
-   * of the window has to find something moving there.
-   *
-   * The band is measured against the FULL canvas width, not `usableW`: the ear
-   * zone is bagged off the right, so the usable strip's midpoint sits left of
-   * the picture's midpoint, and "centre" here means what the eye lands on.
-   * Falls back to every home if a narrow layout leaves the band empty, so a
-   * slot can never index an empty list.
-   */
-  const sparkleMid = useMemo(() => midBandIndices(sxs, w), [sxs, w]);
-
-  // TWO sparkling molecules at a time, staggered hand-offs every 2 s. Each
-  // follows the SAME displacement law as the field — the glint just makes one
-  // particle followable, so its back-and-forth (never across) reads plainly.
-  const sparkles = useDerivedValue(() => {
-    const t = clock.value;
-    const p = Skia.Path.Make();
-    const k = (2 * Math.PI) / lambda;
-    const om = 2 * Math.PI * visHz;
-    const e0 = Math.floor(t / SPARKLE_LIFE);
-    for (let s = 0; s < 2; s++) {
-      // `tSlot`, not `ts` (fix 2026-09-29): this local used to be called
-      // `ts` and SHADOWED the stage text scale below, so the glint radius
-      // `… * fade * ts` grew with the clock — after a minute on screen the
-      // "sparkle" was a blinding blob covering the ear.
-      const tSlot = t + s * (SPARKLE_LIFE / 2);
-      const e = Math.floor(tSlot / SPARKLE_LIFE);
-      const u = tSlot - e * SPARKLE_LIFE; // 0..LIFE within this slot's tenure
-      // SLOT 0 IS THE CENTRE SLOT — it only ever picks a home from the middle
-      // band, so something followable is always wiggling where the eye is.
-      // Slot 1 roams the whole field, which is what keeps the effect alive and
-      // lets more of them land at the sides (owner: that is fine there).
-      let idx: number;
-      if (s === 0) {
-        idx = sparkleMid[Math.floor(hash(e * 17.31) * sparkleMid.length) % sparkleMid.length];
-      } else {
-        idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
-        const idx0 = sparkleMid[Math.floor(hash(e0 * 17.31) * sparkleMid.length) % sparkleMid.length];
-        if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
-      }
-      const fade = Math.min(1, u / 0.45, (SPARKLE_LIFE - u) / 0.45);
-      if (fade <= 0.02) continue;
-      let dx = 0;
-      if (mode === 'wave') {
-        dx = amp * dispMax * Math.sin(om * t - k * (sxs[idx] + phasePx));
-      } else if (mode === 'noise') {
-        const tq = Math.floor(t * 22);
-        dx = amp * dispMax * 0.9 * (hash(idx * 127.1 + tq * 311.7) - 0.5) * 2;
-      }
-      const x = sxs[idx] + dx;
-      const y = sys[idx];
-      // Dual-frequency shimmer (owner 2026-08-10: more visible, more sparkle):
-      // a slow breath plus a fast flicker, so the glint visibly twinkles.
-      // Size carries the fade — grows in, shrinks out on each hand-off.
-      const R = Math.max(
-        0.5,
-        (7 + 2.2 * Math.sin(t * 6 + idx * 2.1) + 0.9 * Math.sin(t * 13 + idx * 1.7)) * fade * ts,
-      );
-      addGlint(p, x, y, R, t * 1.2 + idx);
-      p.addCircle(x, y, (2.2 + 1.0 * fade) * ts); // the molecule itself, larger + bright
-    }
-    return p;
-  }, [clock, sxs, sys, sparkleMid, visHz, amp, mode, lambda, dispMax, phasePx, ts]);
+  // TRACERS (owner 2026-10-16): two molecules near the middle of the window —
+  // where the eye lands (owner 2026-09-13: "always a few in the center") — on
+  // two different rows, placed with the mount-time wavelength so a pitch drag
+  // never moves a tick. Centre band measured against the FULL canvas width; the
+  // ear zone is kept clear.
+  const usableW = w - earW;
+  const pickLambda = useHeldUntil(xs, lambda);
+  const tracers = useMemo(() => {
+    const rowY = (r: number) => ((r + 0.5) / ROWS) * (h - 8) + 4;
+    return pickTracers(
+      xs,
+      ys,
+      [
+        { x: Math.min(w * 0.38, usableW * 0.6), y: rowY(2) },
+        { x: Math.min(w * 0.62, usableW * 0.88), y: rowY(3) },
+      ],
+      pickLambda,
+      phasePx,
+      usableW * 0.08,
+      usableW * 0.92,
+    );
+  }, [xs, ys, w, h, usableW, pickLambda, phasePx]);
+  // Flat arrays for the worklets (−1 = no tracer in that slot).
+  const skipA = tracers[0]?.idx ?? -1;
+  const skipB = tracers[1]?.idx ?? -1;
+  const trIdx = useMemo(() => tracers.map((tr) => tr.idx), [tracers]);
+  const trX = useMemo(() => tracers.map((tr) => tr.x), [tracers]);
+  const trY = useMemo(() => tracers.map((tr) => tr.y), [tracers]);
+  const swing = airSwing(mode, amp, dispMax);
+  const marks = useMemo(() => tracerMarks(tracers, swing, ts), [tracers, swing, ts]);
 
   const path = useDerivedValue(() => {
     const t = clock.value;
@@ -505,24 +532,24 @@ export function AirParticlesView({
     const om = 2 * Math.PI * visHz;
     const p = Skia.Path.Make();
     for (let i = 0; i < xs.length; i++) {
-      let dx = 0;
-      let dy = 0;
-      if (mode === 'wave') {
-        // Longitudinal ONLY — along the travel axis. That IS the lesson.
-        dx = amp * dispMax * Math.sin(om * t - k * (xs[i] + phasePx));
-      } else if (mode === 'noise') {
-        // Random agitation (noise has no single frequency) — quantized-time
-        // hash jitter. STILL LONGITUDINAL (along the travel axis only): real
-        // noise is a superposition of longitudinal waves, so keeping the motion
-        // axis-only stays consistent with M1's "particles only move back and
-        // forth along the direction of travel".
-        const tq = Math.floor(t * 22);
-        dx = amp * dispMax * 0.9 * (hash(i * 127.1 + tq * 311.7) - 0.5) * 2;
-      }
-      p.addCircle(xs[i] + dx, ys[i] + dy, 2.2 * ts);
+      if (i === skipA || i === skipB) continue; // drawn as a tracer instead
+      // Longitudinal ONLY — along the travel axis. That IS the lesson.
+      p.addCircle(xs[i] + airDx(mode, amp, dispMax, om, k, t, xs[i], phasePx, i), ys[i], 2.2 * ts);
     }
     return p;
-  }, [clock, xs, ys, visHz, amp, mode, lambda, dispMax, phasePx, ts]);
+  }, [clock, xs, ys, visHz, amp, mode, lambda, dispMax, phasePx, ts, skipA, skipB]);
+
+  // The tracer molecules: the SAME law (`airDx`) at their own rest x.
+  const tracerDots = useDerivedValue(() => {
+    const t = clock.value;
+    const k = (2 * Math.PI) / lambda;
+    const om = 2 * Math.PI * visHz;
+    const p = Skia.Path.Make();
+    for (let j = 0; j < trX.length; j++) {
+      p.addCircle(trX[j] + airDx(mode, amp, dispMax, om, k, t, trX[j], phasePx, trIdx[j]), trY[j], 2.9 * ts);
+    }
+    return p;
+  }, [clock, trX, trY, trIdx, visHz, amp, mode, lambda, dispMax, phasePx, ts]);
 
   // Compression/rarefaction ZONE SHADING — pressure p ∝ cos(ωt − kx), the SAME
   // law the co-drawn PressureGraphView plots, so the warm bands sit exactly
@@ -605,16 +632,14 @@ export function AirParticlesView({
         <BlurMask blur={4 * ts} style="normal" />
       </Path>
       <Path path={path} color={PARTICLE} />
-      {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off every
-          ~2 s, each only ever swinging back and forth in place. Three layers
-          (owner 2026-08-10, more visible): wide bloom → tight glow → crisp star. */}
-      <Path path={sparkles} color="#ffffff" opacity={0.32}>
-        <BlurMask blur={14 * ts} style="normal" />
+      {/* TRACERS (owner 2026-10-16): fixed rest tick + faint ↔ swing bracket,
+          then the coloured molecule (soft halo + crisp core) on top. */}
+      <Path path={marks.brackets} color={TRACER_MARK_COLOR} style="stroke" strokeWidth={1.1 * ts} strokeCap="round" strokeJoin="round" opacity={0.6} />
+      <Path path={marks.ticks} color={TRACER_MARK_COLOR} style="stroke" strokeWidth={1.6 * ts} strokeCap="round" opacity={0.95} />
+      <Path path={tracerDots} color={TRACER_COLOR} opacity={0.5}>
+        <BlurMask blur={4 * ts} style="normal" />
       </Path>
-      <Path path={sparkles} color="#ffffff" opacity={0.45}>
-        <BlurMask blur={5 * ts} style="normal" />
-      </Path>
-      <Path path={sparkles} color="#f6f8fc" opacity={0.95} />
+      <Path path={tracerDots} color={TRACER_COLOR} />
       {showEar ? (
         // Scaled up around its centre (owner 2026-08-05) so the ear reads clearly.
         <Group transform={[{ translateX: ear.cx }, { translateY: ear.cy }, { scale: earScale }, { translateX: -ear.cx }, { translateY: -ear.cy }]}>
@@ -1693,7 +1718,6 @@ export const RULER_ROOM_M = 7;
 
 export function WavelengthRulerView({
   phase,
-  clock,
   width,
   height = 158,
   freqHz,
@@ -1701,9 +1725,6 @@ export function WavelengthRulerView({
 }: {
   /** Phase clock (usePhaseClock) — continuous while the slider drags. */
   phase: SharedValue<number>;
-  /** Seconds clock (useVizClock) — paces the sparkle hand-offs (owner
-   *  2026-08-10); without it the sparkle-tracked molecules are skipped. */
-  clock?: SharedValue<number>;
   width: number;
   height?: number;
   freqHz: number;
@@ -1711,7 +1732,7 @@ export function WavelengthRulerView({
 }) {
   // Parity pass (owner 2026-09-26): laid out at the glass size and painted
   // through a Group scaled by the stage text scale, so the molecules, the
-  // glints, the metre ticks, the λ bracket and the person all double with the
+  // tracers, the metre ticks, the λ bracket and the person all double with the
   // room. Every path below is in these (glass) units; overlay labels multiply
   // their positions by `ts` to land on the scaled picture.
   const ts = useStageTextScale();
@@ -1720,56 +1741,6 @@ export function WavelengthRulerView({
   const floorY = h - 18;
   const lambdaM = 343 / Math.max(20, freqHz);
   const lambdaPx = (lambdaM / RULER_ROOM_M) * w;
-  // Sparkle-tracked molecules (owner 2026-08-10, replacing the coloured
-  // tracers): 19 homes over the particle field; two glint at a time.
-  const sparkleXY = useMemo(() => sparkleHomes(w, 12, floorY - 52), [w, floorY]);
-  const sxs = sparkleXY.xs;
-  const sys = sparkleXY.ys;
-  // Same centre guarantee the air window got — see midBandIndices. This view had
-  // the identical defect: on the owner's Module 6 capture the only glint sat at
-  // the far LEFT edge, which is precisely the case they asked to stop. No ear
-  // zone here, so the band is a plain middle-of-canvas span.
-  const sparkleMid = useMemo(() => midBandIndices(sxs, w), [sxs, w]);
-  const sparkles = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    if (!clock) return p;
-    const t = clock.value;
-    const ph = phase.value;
-    const k = (2 * Math.PI) / Math.max(10, lambdaPx);
-    const disp = Math.min(9, lambdaPx / 7); // same excursion as the field dots
-    const e0 = Math.floor(t / SPARKLE_LIFE);
-    for (let s = 0; s < 2; s++) {
-      const ts = t + s * (SPARKLE_LIFE / 2);
-      const e = Math.floor(ts / SPARKLE_LIFE);
-      const u = ts - e * SPARKLE_LIFE;
-      // SLOT 0 IS THE CENTRE SLOT — it only ever picks from the middle band, so
-      // something followable is always wiggling where the eye is. Slot 1 roams
-      // the whole field, which keeps the effect alive and lets more of them land
-      // at the sides (owner: that is fine there).
-      let idx: number;
-      if (s === 0) {
-        idx = sparkleMid[Math.floor(hash(e * 17.31) * sparkleMid.length) % sparkleMid.length];
-      } else {
-        idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
-        const idx0 = sparkleMid[Math.floor(hash(e0 * 17.31) * sparkleMid.length) % sparkleMid.length];
-        if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
-      }
-      const fade = Math.min(1, u / 0.45, (SPARKLE_LIFE - u) / 0.45);
-      if (fade <= 0.02) continue;
-      const dx = amp * disp * Math.sin(ph - k * sxs[idx]);
-      const x = sxs[idx] + dx;
-      const y = sys[idx];
-      // Dual-frequency shimmer (owner 2026-08-10) — see AirParticlesView.
-      const R = Math.max(
-        0.5,
-        (6 + 2 * Math.sin(t * 6 + idx * 2.1) + 0.8 * Math.sin(t * 13 + idx * 1.7)) * fade,
-      );
-      addGlint(p, x, y, R, t * 1.2 + idx);
-      p.addCircle(x, y, 1.9 + 0.9 * fade); // the molecule itself, larger + bright
-    }
-    return p;
-  }, [phase, clock, sxs, sys, sparkleMid, amp, lambdaPx]);
-
   // Dense particle field — compression bands are the star.
   const COLS = 38;
   const ROWS = 6;
@@ -1786,7 +1757,37 @@ export function WavelengthRulerView({
   }, [w, floorY]);
   const gxs = grid.xs;
   const gys = grid.ys;
+  // Displacement capped so tight lambdas never collapse into solid bands.
+  const disp = Math.min(9, lambdaPx / 7);
 
+  // TRACERS (owner 2026-10-16 — replaces the star glints): two molecules near
+  // the middle of the room on two rows, placed with the wavelength the module
+  // opened at so dragging FREQ never moves a tick. Bracket = the real swing.
+  const pickLambda = useHeldUntil(gxs, lambdaPx);
+  const tracers = useMemo(() => {
+    const rowY = (r: number) => 10 + ((r + 0.5) / ROWS) * (floorY - 46);
+    return pickTracers(
+      gxs,
+      gys,
+      [
+        { x: w * 0.38, y: rowY(2) },
+        { x: w * 0.62, y: rowY(3) },
+      ],
+      Math.max(10, pickLambda),
+      0,
+      w * 0.08,
+      w * 0.85, // clear of the person standing at the 7 m end
+    );
+  }, [gxs, gys, w, floorY, pickLambda]);
+  const skipA = tracers[0]?.idx ?? -1;
+  const skipB = tracers[1]?.idx ?? -1;
+  const trIdx = useMemo(() => tracers.map((tr) => tr.idx), [tracers]);
+  const trX = useMemo(() => tracers.map((tr) => tr.x), [tracers]);
+  const trY = useMemo(() => tracers.map((tr) => tr.y), [tracers]);
+  const marks = useMemo(() => tracerMarks(tracers, airSwing('wave', amp, disp), 1), [tracers, amp, disp]);
+
+  // The phase clock IS ωt here, so `airDx` with ω = 1, t = φ is this view's
+  // law ξ = A·D·sin(φ − kx) — one function for the field and its tracers.
   const dots = useDerivedValue(() => {
     const ph = phase.value;
     // TRUE lambda — the drawn band spacing must equal the bracket (the badge
@@ -1794,14 +1795,21 @@ export function WavelengthRulerView({
     // pathology; it never engages within the module's 55–880 Hz range.
     const k = (2 * Math.PI) / Math.max(10, lambdaPx);
     const p = Skia.Path.Make();
-    // Displacement capped so tight lambdas never collapse into solid bands.
-    const disp = Math.min(9, lambdaPx / 7);
     for (let i = 0; i < gxs.length; i++) {
-      const dx = amp * disp * Math.sin(ph - k * gxs[i]);
-      p.addCircle(gxs[i] + dx, gys[i], 1.9);
+      if (i === skipA || i === skipB) continue; // drawn as a tracer instead
+      p.addCircle(gxs[i] + airDx('wave', amp, disp, 1, k, ph, gxs[i], 0, i), gys[i], 1.9);
     }
     return p;
-  }, [phase, lambdaPx, gxs, gys, amp]);
+  }, [phase, lambdaPx, gxs, gys, amp, disp, skipA, skipB]);
+  const tracerDots = useDerivedValue(() => {
+    const ph = phase.value;
+    const k = (2 * Math.PI) / Math.max(10, lambdaPx);
+    const p = Skia.Path.Make();
+    for (let j = 0; j < trX.length; j++) {
+      p.addCircle(trX[j] + airDx('wave', amp, disp, 1, k, ph, trX[j], 0, trIdx[j]), trY[j], 2.6);
+    }
+    return p;
+  }, [phase, lambdaPx, trX, trY, trIdx, amp, disp]);
 
   // Compression-zone tint bands — pressure crests (cos(φ − kx) = 1) at the
   // TRUE drawn λ (same k guard as the dots), so the warm bands ride exactly
@@ -1872,16 +1880,14 @@ export function WavelengthRulerView({
           <BlurMask blur={3.5} style="normal" />
         </Path>
         <Path path={dots} color={PARTICLE} />
-        {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off
-            every ~2 s, each only ever wobbling in place. Three layers (owner
-            2026-08-10, more visible): wide bloom → tight glow → crisp star. */}
-        <Path path={sparkles} color="#ffffff" opacity={0.32}>
-          <BlurMask blur={14} style="normal" />
+        {/* TRACERS (owner 2026-10-16): fixed rest tick + faint ↔ swing
+            bracket, then the coloured molecule on top. */}
+        <Path path={marks.brackets} color={TRACER_MARK_COLOR} style="stroke" strokeWidth={1.1} strokeCap="round" strokeJoin="round" opacity={0.6} />
+        <Path path={marks.ticks} color={TRACER_MARK_COLOR} style="stroke" strokeWidth={1.6} strokeCap="round" opacity={0.95} />
+        <Path path={tracerDots} color={TRACER_COLOR} opacity={0.5}>
+          <BlurMask blur={3.5} style="normal" />
         </Path>
-        <Path path={sparkles} color="#ffffff" opacity={0.45}>
-          <BlurMask blur={5} style="normal" />
-        </Path>
-        <Path path={sparkles} color="#f6f8fc" opacity={0.95} />
+        <Path path={tracerDots} color={TRACER_COLOR} />
         {/* Floor: gradient ground strip + edge line (house Floor idiom). */}
         <RoundedRect x={0} y={floorY} width={w} height={h - floorY} r={0}>
           <LinearGradient start={vec(0, floorY)} end={vec(0, h)} colors={['#17181d', '#0d0d10']} />

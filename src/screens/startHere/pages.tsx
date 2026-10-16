@@ -26,7 +26,8 @@ import { StageTextScale, useStageTextScale } from '../lab/rack/stageAspect';
 import { CollapsibleSection } from '../lab/LabShell';
 import { flipFader } from '../lab/soundsystems/rackLayout';
 import { HeadGlyph } from '../../features/lab/headIconsSvg';
-import { CheckQuestion, LevelMeterBar, VizUnavailableCard } from '../lab/foundations/bits';
+import { CheckQuestion, LevelMeterBar, TracerCaption, VizUnavailableCard } from '../lab/foundations/bits';
+import { TRACER_CAPTION_PLAIN } from '../lab/foundations/tracer';
 import type { VizModule } from '../lab/foundations/skiaGate';
 import type { VizMetersModule } from '../lab/meter/skiaGate';
 import { visHzFor, type ToneApi } from '../lab/foundations/FoundationsCourseScreen';
@@ -350,6 +351,8 @@ function L1Vibrate({ ctx: _ctx }: { ctx: PageCtx }) {
           <StageFallback w={w} />
         )
       }
+      // First appearance of the tracer molecules in Start Here (owner 2026-10-16).
+      wellTop={<TracerCaption text={TRACER_CAPTION_PLAIN} />}
     />
   );
 }

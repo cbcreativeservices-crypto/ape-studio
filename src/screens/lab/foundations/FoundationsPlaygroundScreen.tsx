@@ -58,7 +58,7 @@ import { LabChip } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
 import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
-import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
+import { ConceptBadge, DragSlider, LevelMeterBar, TracerCaption, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
@@ -697,6 +697,8 @@ export function FoundationsPlaygroundScreen() {
             brown −6 dB/oct.
           </Text>
         )}
+        {/* The air window's tracer molecules (owner 2026-10-16). */}
+        <TracerCaption />
         <Text style={styles.caption}>
           AIR — spacing tightens as pitch rises (that spacing IS wavelength). WAVEFORM — pressure
           vs time, one “window” of the signal. SPECTRUM — which frequencies, how strong

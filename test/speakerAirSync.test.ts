@@ -19,7 +19,10 @@ test('three-window view: wave origin = the air window edge, no air phase shift',
   assert.match(v, /const airPhasePx = 0;/);
   // Cone and air share one clock and the same sine law.
   assert.match(v, /off = amp \* excMax \* Math\.sin\(2 \* Math\.PI \* visHz \* t\)/);
-  assert.match(v, /dx = amp \* dispMax \* Math\.sin\(om \* t - k \* \(xs\[i\] \+ phasePx\)\)/);
+  // The air law lives in ONE worklet (airDx, tracer pass 2026-10-16) that the
+  // grey field and its tracer molecules both call.
+  assert.match(v, /return amp \* dispMax \* Math\.sin\(om \* t - k \* \(x \+ phasePx\)\);/);
+  assert.match(v, /xs\[i\] \+ airDx\(mode, amp, dispMax, om, k, t, xs\[i\], phasePx, i\)/);
 });
 
 test('Start Here lab step 1: the graph starts at the air edge too', () => {

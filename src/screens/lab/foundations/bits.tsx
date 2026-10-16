@@ -17,6 +17,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
+import { TRACER_CAPTION, TRACER_COLOR } from './tracer';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -462,6 +463,21 @@ export function ConceptBadge({ extra }: { extra?: string }) {
   );
 }
 
+/**
+ * The legend for the TRACER molecules (owner 2026-10-16), shown under the
+ * first display that carries them: a dot in the tracer colour, then the plain
+ * sentence. Text in the reading column (13 pt), so it never shrinks with the
+ * stage. The copy is NEW and flagged for owner review in ./tracer.ts.
+ */
+export function TracerCaption({ text = TRACER_CAPTION }: { text?: string }) {
+  return (
+    <View style={styles.tracerRow} accessible accessibilityLabel={text}>
+      <View style={styles.tracerDot} />
+      <Text style={styles.tracerText}>{text}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   // CheckQuestion — PURPLE container + eyebrow (owner 2026-08-05).
   checkCard: {
@@ -566,4 +582,8 @@ const styles = StyleSheet.create({
   unavailBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
 
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+
+  tracerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  tracerDot: { width: 9, height: 9, borderRadius: 4.5, marginTop: 5, backgroundColor: TRACER_COLOR },
+  tracerText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
 });

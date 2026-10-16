@@ -67,7 +67,7 @@ import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from '
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { StageTextScale, useStageTextScale } from '../rack/stageAspect';
-import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
+import { CheckQuestion, ConceptBadge, LevelMeterBar, TracerCaption, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
@@ -553,6 +553,8 @@ function M1Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
+      {/* First appearance of the tracer molecules (owner 2026-10-16). */}
+      <TracerCaption />
       <ConceptBadge />
       {wellBottom}
     </RackUnit>
@@ -872,21 +874,20 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
       <Text style={styles.caption}>
         λ = speed ÷ frequency = 343 ÷ {f} ≈ {lambda.toFixed(2)} m — {(7 / lambda).toFixed(1)}{' '}
         wavelength{7 / lambda >= 1.95 ? 's' : ''} fit across the room. The amber bracket IS that
-        length, drawn to scale. Follow any GLINTING molecule — it only wobbles in place as the
-        pattern flows past. The wave crosses the room; the air does not.
+        length, drawn to scale. Follow a coloured molecule — it only swings around its mark as
+        the pattern flows past. The wave crosses the room; the air does not.
       </Text>
       {wellBottom}
     </RackUnit>
   );
 }
 function M6Stage({ viz, w, h, f, focused }: { viz: VizModule; w: number; h: number; f: number; focused: boolean }) {
-  // Phase clock — continuous while the lane drags the frequency; the seconds
-  // clock paces the sparkle-tracked molecules' hand-offs (owner 2026-08-10).
+  // Phase clock — continuous while the lane drags the frequency. The tracer
+  // molecules ride the same phase (owner 2026-10-16), so no second clock.
   const phase = viz.usePhaseClock(focused, visHzFor(f));
-  const clock = viz.useVizClock(focused);
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
-      <viz.WavelengthRulerView phase={phase} clock={clock} width={w} height={h} freqHz={f} />
+      <viz.WavelengthRulerView phase={phase} width={w} height={h} freqHz={f} />
     </View>
   );
 }
