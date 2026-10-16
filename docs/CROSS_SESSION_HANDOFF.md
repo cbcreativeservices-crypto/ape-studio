@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 15:51 · ccode · 9d352cd3
+changed: Beginning Mixing art fix: every page draws, from the lab's own maths (art grading round 2, 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 15:51 · ccode · a549efa1
 changed: Sound Playground art fix: taller glass for the four views, 10.5 pt pane names and balance strip
 affects other side: nothing (app only)
