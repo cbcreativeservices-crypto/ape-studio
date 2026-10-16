@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 09:56 · ccode · b9c5b17d
+changed: Figure review: pass 3 notes (one hand model, families, one garment, joints moved, open list)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 01:25 · ccode · 9d49da3a
 changed: Miking figures pass 3: woodwind and saxophone hands on the keys; the sax player on the house body
 affects other side: nothing (app only)
