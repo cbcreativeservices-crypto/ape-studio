@@ -215,7 +215,6 @@ const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
   },
   'screens/lab/kit/gear.tsx': { n: 1, why: 'control name (the knob value uses fitValue)' },
   'screens/lab/kit/LabNavBar.tsx': { n: 2, why: 'noun and position label' },
-  'screens/lab/micselect/MicSelectLabScreen.tsx': { n: 1, why: 'scene label' },
   'screens/lab/production/ProductionActivityScreen.tsx': { n: 1, why: 'title' },
   'screens/lab/production/ProductionLabScreen.tsx': { n: 1, why: 'project name' },
   'screens/lab/production/ProductionStageScreen.tsx': { n: 1, why: 'stage title' },

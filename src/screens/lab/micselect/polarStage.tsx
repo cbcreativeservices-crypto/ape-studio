@@ -261,10 +261,10 @@ export function PolarStage({ w, h, pattern, verdictFor }: { w: number; h: number
         const left = Math.max(4, Math.min(w - 4 - TAG_W, at.x - TAG_W / 2));
         return (
           <View key={`t-${s.key}`} style={[st.tag, { left, top }]} pointerEvents="none">
-            <Text style={[st.tagName, { color: s.wanted ? colors.green : '#a4a6b0' }]} numberOfLines={1}>
+            <Text style={[st.tagName, { color: s.wanted ? colors.green : '#a4a6b0' }]}>
               {s.label}
             </Text>
-            <Text style={[st.tagVerdict, { color: vd.c }]} numberOfLines={1}>
+            <Text style={[st.tagVerdict, { color: vd.c }]}>
               {vd.v}
             </Text>
           </View>

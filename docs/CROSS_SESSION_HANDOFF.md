@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:47 · ccode · 225fe606
+changed: Miking Lab 6 art fix round 2: Location & film (F08, F09) and Foley stage (F01, F02, F04)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:46 · ccode · e4fcb4bf
+changed: Reverb, Delay, Flanger, Phaser heroes: the real signal, a decay you can read, analysers for the sweeps (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:44 · ccode · b79bfcb8
 changed: Binaural Panner art fix: head at true scale on the rings, sources drawn as loudspeakers, 10.5 pt bearings
 affects other side: nothing (app only)
@@ -744,6 +756,12 @@ needs: nothing
 
 ### 2026-10-16 16:21 · ccode · 5fac6d2e
 changed: Drum Tuning art fix: rack tom on a real tom stand and set higher, larger pitch-ladder words, pillow label off the pillow
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:22 · ccode · f3ec8987
+changed: Cable Install art fix: the as-found rack's AC cord on its own lane, clear of the N-012 cord and flag (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 

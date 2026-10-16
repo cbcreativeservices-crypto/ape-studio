@@ -243,10 +243,10 @@ export function ChainRack({
         const grv = grOf(u);
         return (
           <View key={`l${u.id}`} style={[st.labelRow, { left: g + c.c * colW - 6, top: c.y + uh + 2, width: colW + 12 }]} pointerEvents="none">
-            <Text style={[st.name, on && st.nameOn]} numberOfLines={1}>
+            <Text style={[st.name, on && st.nameOn]}>
               {u.label}
             </Text>
-            <Text style={[st.setting, showGr && st.grLive]} numberOfLines={1}>
+            <Text style={[st.setting, showGr && st.grLive]}>
               {showGr ? (grv >= 0.05 ? `GR −${grv.toFixed(1)} dB` : 'GR 0.0 dB') : on ? u.setting : 'bypassed'}
             </Text>
           </View>
