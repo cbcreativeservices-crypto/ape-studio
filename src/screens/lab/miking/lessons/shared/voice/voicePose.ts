@@ -17,8 +17,19 @@ import { HEAD_C, HEAD_R, VOICE_DIMS } from './voiceSpec.ts';
 /** The floor, below the lip point (frame V, y down). */
 export const FLOOR_Y = VOICE_DIMS.lipStanding.mm;
 
-/** The base of the neck (the collar), under the back of the skull. */
+/** The TORSO DATUM under the back of the skull: every joint below the neck
+ *  (shoulders, elbows, hands, hips, knees) and every body-worn mark (the lav
+ *  places, the pack) is measured from it, so none of them moves. */
 const NECK: Vec3 = { x: HEAD_C.x - 18, y: HEAD_C.y + 172, z: 0 };
+/** How far the drawn COLLAR sits above the torso datum (figure pass 2, owner
+ *  2026-10-15: "neck slightly long"). At the datum the profile showed ≈ 85 mm
+ *  of neck from the jaw to the shirt and ≈ 136 mm at the nape; an adult in a
+ *  shirt shows ≈ 55–60 mm under the jaw. Only the collar (the top of the
+ *  shirt, where the neck goes into it) rises — the shoulders, the arms and
+ *  the body below stay — so the trapezius rises to the neck as on a real body. */
+export const COLLAR_LIFT = 24;
+/** The collar: the base of the neck as drawn (the poses' `neck` joint). */
+const COLLAR: Vec3 = { x: NECK.x, y: NECK.y - COLLAR_LIFT, z: 0 };
 
 /** In profile, facing +x (the side view: u = x, v = y). The near side is the
  *  singer's RIGHT (+z toward the viewer). */
@@ -27,7 +38,7 @@ export const SINGER_SIDE: PlayerPose = {
   posture: 'standing',
   facing: 1,
   head: { c: pt(HEAD_C.x, HEAD_C.y), r: HEAD_R },
-  neck: pt(NECK.x, NECK.y),
+  neck: pt(COLLAR.x, COLLAR.y),
   shoulderR: pt(NECK.x - 4, NECK.y + 58),
   shoulderL: pt(NECK.x - 18, NECK.y + 48),
   // The arms hang at the sides: the hands beside the thighs, never ahead of
@@ -88,10 +99,16 @@ export const SINGER_TOP: PlayerPose = {
  */
 export const SINGER_SOLIDS: Record<'head' | 'neck' | 'torso' | 'legs', Shape3> = {
   head: { kind: 'capsule', a: HEAD_C, b: HEAD_C, r: HEAD_R },
-  neck: { kind: 'capsule', a: { x: HEAD_C.x + 30, y: HEAD_C.y + 90, z: 0 }, b: { x: NECK.x, y: NECK.y, z: 0 }, r: 54 },
-  torso: { kind: 'box', min: { x: NECK.x - 150, y: NECK.y - 10, z: -215 }, max: { x: NECK.x + 112, y: NECK.y + 620, z: 215 } },
+  // The neck ends at the drawn collar and the torso's box starts there (both
+  // re-derived from the raised collar, figure pass 2: the neck 24 mm shorter,
+  // the box's top 24 mm higher; its front, back, sides and bottom unchanged).
+  neck: { kind: 'capsule', a: { x: HEAD_C.x + 30, y: HEAD_C.y + 90, z: 0 }, b: { x: COLLAR.x, y: COLLAR.y, z: 0 }, r: 54 },
+  torso: { kind: 'box', min: { x: NECK.x - 150, y: COLLAR.y - 10, z: -215 }, max: { x: NECK.x + 112, y: NECK.y + 620, z: 215 } },
   legs: { kind: 'box', min: { x: NECK.x - 130, y: NECK.y + 560, z: -170 }, max: { x: NECK.x + 190, y: FLOOR_Y, z: 170 } },
 };
 
-/** The collar, for tests and the art. */
+/** The torso datum (the collar before figure pass 2) — the body-worn marks,
+ *  the standing talker's joints and the measuring operator are built on it. */
 export const SINGER_NECK = NECK;
+/** The drawn collar (the poses' neck joint). */
+export const SINGER_COLLAR = COLLAR;

@@ -62,7 +62,30 @@ export const C0: Vec3 = { x: 0, y: CY, z: 0 };
 export const strikeFrac = (v: VariantId): number => (kindOf(v) === 'bossed' ? 0 : 0.25);
 export const strikePoint = (v: VariantId): Vec3 => ({ x: kindOf(v) === 'bossed' ? GONG.bossH.mm : GONG.dome.mm, y: CY, z: -strikeFrac(v) * radiusOf(v) });
 
-/** The player, beside the struck face (frame G), facing the gong: standing
- *  just clear of the frame's front foot (collision pass 2026-10-15 — at
- *  x = 320 the player stood over the foot), the mallet at arm's reach. */
-export const PLAYER = { x: 500, z: -560 };
+/** The player, beside the struck face (frame G), turned toward the gong:
+ *  standing in front of the face's plane and out beside the frame, clear of
+ *  its feet (collision pass 2026-10-15 — at x = 320 the player stood over the
+ *  front foot).
+ *
+ *  FIGURE PASS 2 (owner 2026-10-15: "mallet hand too near the shoulder — real
+ *  striking reach"): at { x: 500, z: −560 } the right shoulder was ≈ 0.6 m from
+ *  the strike point, so arm and mallet (≈ 0.57 m + 0.46 m) could only reach by
+ *  folding the forearm back to the shoulder. A player strikes from about an
+ *  arm and a mallet away: the shoulder now stands ≈ 0.9 m from the strike
+ *  point, the arm reaching out and a little down with the elbow softly bent
+ *  (≈ 0.5 m shoulder to hand), the mallet's handle running from the hand
+ *  along the face to the head on its spot (the shaft about parallel to the
+ *  face at the moment of the stroke, as a hammer meets a wall). Drawing
+ *  defaults; the true sizes are the 32 in tam-tam, the 18 in bossed gong and
+ *  the 400 mm mallet handle above. */
+export const PLAYER = { x: 580, z: -1000 };
+/** Where the player stands for each gong: the same ≈ 0.88 m from the right
+ *  shoulder to the strike point — the bossed gong's boss is at its centre, so
+ *  its player stands 130 mm nearer the frame (still clear of its feet). */
+export const playerAt = (v: VariantId): { x: number; z: number } => (kindOf(v) === 'bossed' ? { x: PLAYER.x, z: -870 } : PLAYER);
+
+/** Where the mallet hand closes (frame G): from the mallet head on its strike
+ *  point, the handle runs ≈ 330 mm across the face toward the player and
+ *  ≈ 100 mm up (seen from the audience) and ≈ 220 mm out from the face toward
+ *  the audience (seen from the side) — ≈ 410 mm, the 400 mm handle in the fist. */
+export const MALLET_REACH = { across: 330, up: 100, out: 220 } as const;

@@ -225,10 +225,42 @@ const meanS = (spec: WindSpec, ks: number[]) => ks.reduce((a, k) => a + holeS(sp
 
 /* ── the instruments' holds ── */
 
+/**
+ * THE FLUTIST'S SHOULDERS (figure pass 2, owner 2026-10-15: the left upper
+ * arm "reads as a band across the shoulder"). With the shoulders square to the
+ * audience the left hand, ≈ 30 cm out along the flute to the player's right,
+ * was 52 cm from the left shoulder — a nearly straight arm (≈ 37° of elbow
+ * bend) whose upper arm ran level across the chest. A flutist does not stand
+ * square: the chest turns to the RIGHT and the head turns back LEFT to the
+ * flute (the classic flute stance), and the left shoulder comes forward as
+ * the arm reaches across. Here the shoulders turn ≈ 25° about the spine (the
+ * left one forward, the right one back) and the left one comes ≈ 35 mm
+ * forward: the left hand is then ≈ 47 cm from its shoulder, the elbow bends
+ * ≈ 65° and hangs in front of the chest, below the line from the shoulder to
+ * the hand — the real hold. The head, the hips and the legs stay (the twist is
+ * above the waist; the head keeps the lips on the embouchure hole), and the
+ * hands stay on the keys where they were. Drawing defaults.
+ */
+export const FLUTE_TURN_DEG = 25;
+export function flutistBody(b: Body): Body {
+  const a = FLUTE_TURN_DEG * D;
+  const c = Math.cos(a);
+  const s = Math.sin(a);
+  // About the spine's vertical axis through the base of the neck: +x (the
+  // player's left) toward +z (forward).
+  const turn = (p: Vec3): Vec3 => {
+    const dx = p.x - b.neck.x;
+    const dz = p.z - b.neck.z;
+    return { x: b.neck.x + dx * c - dz * s, y: p.y, z: b.neck.z + dx * s + dz * c };
+  };
+  const L = turn(b.shoulderL);
+  return { ...b, shoulderL: { x: L.x - 15, y: L.y + 4, z: L.z + 35 }, shoulderR: turn(b.shoulderR) };
+}
+
 /** Flute and piccolo: the embouchure hole just under the lower lip, the tube
  *  out to the player's right, ~10° forward and ~8° down at the foot. */
 export function fluteLayout(spec: WindSpec, posture: PostureKind): Layout {
-  const body = bodyOf(posture);
+  const body = flutistBody(bodyOf(posture));
   const F0 = v(0, 8, 13);
   const a = norm(v(-Math.cos(8 * D) * Math.cos(10 * D), Math.sin(8 * D), Math.cos(8 * D) * Math.sin(10 * D)));
   const segs: PathSeg[] = [line(-29, spec.end, add(F0, scale(a, -29)), add(F0, scale(a, spec.end)))];

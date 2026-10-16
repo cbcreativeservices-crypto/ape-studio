@@ -22,7 +22,7 @@ import { BRONZE, Floor, HIGHLIGHT, make, PlayerInk, playerFront, playerSide, pla
 import { DiscField } from '../shared/metal/metalFigures';
 import type { FrontArt } from '../shared/metal/metalPages';
 import { buildUpWeights, DISC_SHAPES, discAt, discPeak } from '../shared/metal/metalModes.ts';
-import { CY, frameW, GONG, kindOf, PLAYER, radiusOf, strikeFrac, strikePoint } from './model.ts';
+import { CY, frameW, GONG, kindOf, MALLET_REACH, playerAt, radiusOf, strikeFrac, strikePoint } from './model.ts';
 import { topBarY } from './geometry.ts';
 
 const RIM = GONG.rim.mm;
@@ -32,6 +32,22 @@ const BOSS_H = GONG.bossH.mm;
 const MH = GONG.malletHead.mm / 2;
 const FU = (z: number) => -z;
 const isBossed = (v: VariantId) => kindOf(v) === 'bossed';
+/** The mallet's head on its spot and the hand on the handle, seen from the
+ *  audience (figure pass 2: the handle runs from the head across the face
+ *  toward the player — model.ts MALLET_REACH). */
+function frontMallet(v: VariantId): { headAt: [number, number]; grip: [number, number] } {
+  const sp = strikePoint(v);
+  const headAt: [number, number] = [FU(sp.z) + MH * 0.6, sp.y + MH * 0.2];
+  return { headAt, grip: [headAt[0] + MALLET_REACH.across, CY - MALLET_REACH.up] };
+}
+/** The side and top views' hand on the handle (frame G x, y, z). */
+function gripAt(v: VariantId): { x: number; y: number; z: number } {
+  const sp = strikePoint(v);
+  return { x: sp.x + MALLET_REACH.out, y: CY - MALLET_REACH.up, z: sp.z - MALLET_REACH.across };
+}
+/** metalFigure's side pose stands at u = −362 (mirrored here to face the gong): this
+ *  puts its body at the player's x. */
+const SIDE_BODY_U = 362;
 
 /** The gong's face, face-on, centred at (u, v): bronze, lathe rings, the
  *  turned rim, the cord holes — and a boss. */
@@ -117,8 +133,9 @@ function sideArt(v: VariantId): ReactElement {
       <Rod path={polyPath([[0, -20], [0, top]])} d={GONG.post.mm} pal={STEEL} />
       <Circle cx={0} cy={top} r={GONG.post.mm * 0.7} color={STEEL[3]} />
       <Path path={polyPath([[0, top], [-6, CY - R * 0.69]])} style="stroke" strokeWidth={3} color="#c9b48c" />
-      <Group transform={[{ scaleX: -1 }]}>
-        <PlayerInk path={playerSide([[-(head[0] + 230), head[1] - 120]])} faint head="side" />
+      {/* the player at their x, facing the gong, the arm reaching to the handle */}
+      <Group transform={[{ translateX: playerAt(v).x - SIDE_BODY_U }, { scaleX: -1 }]}>
+        <PlayerInk path={playerSide([[playerAt(v).x - SIDE_BODY_U - gripAt(v).x, gripAt(v).y]])} faint head="side" />
       </Group>
       <Path path={prof}>
         <LinearGradient start={vec(-RIM, CY - R)} end={vec(DOME, CY + R)} colors={[BRONZE[1], BRONZE[2], BRONZE[4]]} />
@@ -131,7 +148,7 @@ function sideArt(v: VariantId): ReactElement {
           </RoundedRect>
         </Group>
       ) : null}
-      <Mallet grip={[head[0] + 230, head[1] - 110]} head={head} />
+      <Mallet grip={[gripAt(v).x, gripAt(v).y]} head={head} />
     </Group>
   );
 }
@@ -156,10 +173,10 @@ function topArt(v: VariantId): ReactElement {
         <LinearGradient start={vec(-RIM, 0)} end={vec(DOME, 0)} colors={[BRONZE[3], BRONZE[1], BRONZE[2]]} />
       </RoundedRect>
       {bossed ? <RoundedRect x={DOME} y={-BOSS_R} width={BOSS_H - DOME} height={2 * BOSS_R} r={10} color={BRONZE[1]} /> : null}
-      <Group transform={[{ translateX: PLAYER.x }, { translateY: PLAYER.z }, { scaleX: -1 }, { translateX: 360 }]}>
-        <PlayerInk path={playerTop()} faint head="top" />
+      <Group transform={[{ translateX: playerAt(v).x }, { translateY: playerAt(v).z }, { scaleX: -1 }, { translateX: 360 }]}>
+        <PlayerInk path={playerTop([[playerAt(v).x - 360 - gripAt(v).x, gripAt(v).z - playerAt(v).z]])} faint head="top" />
       </Group>
-      <Mallet grip={[PLAYER.x - 150, PLAYER.z + 160]} head={head} />
+      <Mallet grip={[gripAt(v).x, gripAt(v).z]} head={head} />
     </Group>
   );
 }
@@ -177,7 +194,7 @@ export function gongLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     return [
       { id: 'gong', text: name, short: 'GONG', u: 60, v: R + 60, align: 'left' },
       { id: 'frame', text: 'FRAME', u: -60, v: -frameW(variant) / 2 - 50, align: 'right', tone: 'muted' },
-      { id: 'player', text: 'PLAYER', u: PLAYER.x + 40, v: PLAYER.z - 280, align: 'center', tone: 'muted' },
+      { id: 'player', text: 'PLAYER', u: playerAt(variant).x + 40, v: playerAt(variant).z - 280, align: 'center', tone: 'muted' },
     ];
   }
   return [
@@ -207,19 +224,13 @@ function frontArt(variant: VariantId, highlight: string | null): ReactElement {
   const W = frameW(variant) / 2;
   const top = topBarY(variant);
   const bossed = isBossed(variant);
-  const sp = strikePoint(variant);
-  const headAt: [number, number] = [FU(sp.z) + MH * 0.6, sp.y + MH * 0.2];
-  const grip: [number, number] = [FU(PLAYER.z) - 120, CY - 140];
+  const { headAt, grip } = frontMallet(variant);
   const holes = [-1, 1].map((s) => [s * R * 0.69, CY - R * 0.69] as [number, number]);
   const anchors = [-1, 1].map((s) => [s * R * 0.52, top] as [number, number]);
   const hl = (id: string) => highlight === id || (highlight === `${id}B`);
   return (
     <Group>
       <Floor u0={-3000} u1={3000} />
-      {/* the player beside the struck face (screen right), the mallet hand reaching in */}
-      <Group transform={[{ translateX: FU(PLAYER.z) }]}>
-        <PlayerInk path={playerFront([[grip[0] - FU(PLAYER.z) + 10, grip[1] + 10]])} faint head="front" />
-      </Group>
       {/* the frame */}
       {hl('gg.frame') ? <RoundedRect x={-W - 40} y={top - 40} width={2 * W + 80} height={-top + 20} r={40} color={HIGHLIGHT} opacity={0.18} /> : null}
       <Rod path={polyPath([[-W, -20], [-W, top], [W, top], [W, -20]])} d={GONG.post.mm} pal={STEEL} />
@@ -231,6 +242,11 @@ function frontArt(variant: VariantId, highlight: string | null): ReactElement {
         <Path key={i} path={polyPath([a, holes[i]])} style="stroke" strokeWidth={hl('gg.cords') ? 9 : 4} color={hl('gg.cords') ? HIGHLIGHT : '#c9b48c'} />
       ))}
       <GongFace u={0} v={CY} R={R} bossed={bossed} glow={highlight} />
+      {/* the player beside the frame (screen right), in front of its post (nearer the
+          audience), the mallet hand reaching in past it (figure pass 2) */}
+      <Group transform={[{ translateX: FU(playerAt(variant).z) }]}>
+        <PlayerInk path={playerFront([[grip[0] - FU(playerAt(variant).z) + 10, grip[1] + 10]])} faint head="front" />
+      </Group>
       {hl('gg.mallet') ? <Path path={polyPath([grip, headAt])} style="stroke" strokeWidth={70} strokeCap="round" color={HIGHLIGHT} opacity={0.25} /> : null}
       <Mallet grip={grip} head={headAt} />
     </Group>
@@ -243,7 +259,7 @@ function FrontImpl({ variant, highlight }: { variant: VariantId; highlight: stri
 
 function frontBox(v: VariantId): ViewBox {
   const W = frameW(v) / 2;
-  return { u0: -W - 140, u1: Math.max(W + 140, FU(PLAYER.z) + 260), v0: topBarY(v) - 140, v1: 60 };
+  return { u0: -W - 140, u1: Math.max(W + 140, FU(playerAt(v).z) + 260), v0: topBarY(v) - 140, v1: 60 };
 }
 
 function frontLabels(v: VariantId): ArtLabel[] {
@@ -256,7 +272,7 @@ function frontLabels(v: VariantId): ArtLabel[] {
     { id: 'gg.rim', text: 'TURNED RIM', short: 'RIM', u: -R * 0.72, v: CY + R + 30, align: 'center', tone: 'muted' },
     { id: 'gg.cords', text: 'CORDS', u: -R * 0.62 - 20, v: (top + CY - R * 0.69) / 2, align: 'right', tone: 'muted' },
     { id: bossed ? 'gg.frameB' : 'gg.frame', text: 'FRAME', u: -W - 30, v: (top + CY + R) / 2 + R * 0.6, align: 'right', tone: 'muted' },
-    { id: 'gg.mallet', text: 'MALLET', u: FU(PLAYER.z) - 70, v: CY - 230, align: 'center' },
+    { id: 'gg.mallet', text: 'MALLET', u: frontMallet(v).grip[0] - 60, v: CY - 230, align: 'center' },
   ];
   if (bossed) out.push({ id: 'gg.boss', text: 'BOSS', u: BOSS_R + 24, v: CY - BOSS_R - 12, align: 'left' });
   return out;
@@ -267,9 +283,7 @@ function frontHit(v: VariantId, u: number, vv: number, tol: number): string | nu
   const W = frameW(v) / 2;
   const top = topBarY(v);
   const bossed = isBossed(v);
-  const sp = strikePoint(v);
-  const headAt: [number, number] = [FU(sp.z) + MH * 0.6, sp.y + MH * 0.2];
-  const grip: [number, number] = [FU(PLAYER.z) - 120, CY - 140];
+  const { headAt, grip } = frontMallet(v);
   const d = Math.hypot(u, vv - CY);
   // the mallet first (it lies over the face)
   const t = Math.max(0, Math.min(1, ((u - grip[0]) * (headAt[0] - grip[0]) + (vv - grip[1]) * (headAt[1] - grip[1])) / ((headAt[0] - grip[0]) ** 2 + (headAt[1] - grip[1]) ** 2)));

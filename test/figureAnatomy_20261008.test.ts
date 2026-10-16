@@ -48,6 +48,12 @@ import { standing as bowedStanding } from '../src/screens/lab/miking/lessons/sha
 import { BASS as DOUBLE_BASS } from '../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts';
 import { WURLI_PLAYER_SIDE, WURLI_PLAYER_TOP, WURLI_SEAT_Y } from '../src/screens/lab/miking/lessons/shared/keys/wurliPlayer.ts';
 import { METAL_ARM, hangingArm, metalFrontPose, metalSidePose, metalTopPose } from '../src/screens/lab/miking/lessons/shared/metal/metalFigure.ts';
+// Figure pass 2 (owner 2026-10-15): the collar, the flute hold, the gong's reach.
+import { COLLAR_LIFT, SINGER_COLLAR, SINGER_NECK, SINGER_SOLIDS } from '../src/screens/lab/miking/lessons/shared/voice/voicePose.ts';
+import { COLLAR_B, NECK_B, SEATED_SOLIDS } from '../src/screens/lab/miking/lessons/shared/broadcast/talkerPose.ts';
+import { LAYOUTS as FLUTES } from '../src/screens/lab/miking/lessons/a06Flute/geometry.ts';
+import { SEATED as PICCOLO_SEATED, STANDING as PICCOLO_STANDING } from '../src/screens/lab/miking/lessons/a07Piccolo/geometry.ts';
+import { CY as GONG_CY, GONG, MALLET_REACH, playerAt, strikePoint as gongStrike } from '../src/screens/lab/miking/lessons/i12Gong/model.ts';
 
 const BASS_BOW = bowedStanding(DOUBLE_BASS, 'bow');
 const add3 = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => ({ x: a.x + b.x, y: a.y + b.y, z: a.z + b.z });
@@ -409,7 +415,16 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     assert.match(ap, /THE CROOK/, 'the elbow’s inner side is a soft concave fold');
     assert.match(ap, /olecranon/, 'the elbow’s outer side shows its point');
     assert.match(ap, /const ring = \[\.\.\.side\(1\)\.reverse\(\), \.\.\.cap, \.\.\.side\(-1\)\];/, 'one outline: up one side, round the shoulder, down the other; the cuff a straight edge');
-    assert.match(src, /function sleeveArm\(root: Pt, e: Pt, w: Pt, cap: SkPath \| null = null\): SkPath \{\s*return union\(cap, armPath\(root, e, w\)\);/);
+    // A SHIRT sleeve (figure pass 2, 2026-10-15): the sleeve's own widths —
+    // cloth over the elbow narrows it only a little (the bare arm's pinch in a
+    // sleeve read as a mannequin's joint).
+    assert.match(src, /function sleeveArm\(root: Pt, e: Pt, w: Pt, cap: SkPath \| null = null\): SkPath \{\s*return union\(cap, armPath\(root, e, w, SLEEVE\)\);/);
+    const sl = src.match(/export const SLEEVE = \{ root: ([\d.]+), upper: ([\d.]+), elbow: ([\d.]+), belly: ([\d.]+), cuff: ([\d.]+), cuffGap: (\d+) \}/);
+    assert.ok(sl, 'the sleeve widths are one table');
+    const [sRoot, sUpper, sElbow, sBelly, sCuff] = sl!.slice(1).map(Number);
+    assert.ok(sRoot >= sUpper && sUpper >= sElbow && sBelly >= sElbow && sBelly > sCuff, 'deltoid ≥ upper sleeve ≥ elbow ≤ forearm sleeve > cuff');
+    assert.ok(sUpper - sElbow <= 3, `the sleeve narrows only ${((sUpper - sElbow) * 2).toFixed(0)} mm over the elbow (cloth, not a joint)`);
+    assert.ok(sCuff * 2 >= 58 && sCuff * 2 <= 66, `sleeve cuff ${sCuff * 2} mm across`);
     // The wrist: narrower than the cuff and the heel of the hand, trimmed square at the cuff (no skin over the sleeve).
     const wr = src.slice(src.indexOf('function wristOf('), src.indexOf('function trimAtCuff('));
     assert.match(wr, /capsule\(M\(0, 0\), L\(18, 0\), half, half \+ 4\.5\)/, 'the heel of the hand is wider than the wrist');
@@ -421,7 +436,9 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
       assert.match(body, /sleeveArm\(/, `${v} draws its arms as sleeves`);
     }
     // The shoulder: a deltoid joined to the arm (front and profile), never a tube's round end over the shoulder line.
-    assert.match(src, /sleeveArm\(pt\(sR\.u, sR\.v \+ 12\), pose\.elbowR, pose\.handR\.wrist, deltoid\(R\)\)/);
+    // (Pass 2: the front deltoid lies ALONG the arm — capAlong — so it turns with it and never stands out as a pad.)
+    assert.match(src, /const capR = capAlong\(pt\(sR\.u, sR\.v \+ 12\), pose\.elbowR\);/);
+    assert.match(src, /sleeveArm\(pt\(sR\.u, sR\.v \+ 12\), pose\.elbowR, pose\.handR\.wrist, capR\)/);
     assert.match(src, /const armNear = sleeveArm\(sh, pose\.elbowR, pose\.handR\.wrist, deltoid\);/);
     assert.match(src, /const deltoid = Skia\.Path\.MakeFromOp\(deltoidRaw, torso, PathOp\.Intersect\)/, 'the profile deltoid stays inside the shoulder line');
     // Small percussion: the arm is opaque (a far arm is darker, never see-through), the sleeve a cut T-shirt sleeve.
@@ -581,5 +598,92 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
       check(`${n} L`, P.player.shoulderL, P.player.elbowL, -1);
     }
     check('trombone L', TB.player.shoulderL, TB.player.elbowL, -1);
+  });
+});
+
+/**
+ * FIGURE PASS 2 (owner 2026-10-15). The owner approved letting the keep-out
+ * zones move with the corrected anatomy; each moved number is pinned here with
+ * its reason.
+ */
+describe('figure pass 2 (owner 2026-10-15): collar, flute hold, gong reach, one-garment shirt', () => {
+  it('singers and talkers: the collar sits COLLAR_LIFT above the torso datum — a shorter neck; the shoulders and body stay', () => {
+    // "neck slightly long — fix the collar point": 24 mm higher. Before, the
+    // profile showed ≈ 85 mm of neck under the jaw (≈ 136 at the nape).
+    assert.ok(COLLAR_LIFT >= 18 && COLLAR_LIFT <= 30, `collar lift ${COLLAR_LIFT} mm`);
+    assert.equal(SINGER_SIDE.neck.v, SINGER_NECK.y - COLLAR_LIFT, 'the singer’s drawn collar');
+    assert.equal(SINGER_COLLAR.y, SINGER_NECK.y - COLLAR_LIFT);
+    assert.equal(SEATED_SIDE.neck.v, NECK_B.y - COLLAR_LIFT, 'the seated talker’s drawn collar');
+    assert.equal(COLLAR_B.y, NECK_B.y - COLLAR_LIFT);
+    // The jaw's underside (headProfile: the chin at 100 head units under the
+    // centre) to the collar: a real neck in a shirt, 35–65 mm.
+    const chin = SINGER_SIDE.head.c.v + 100 * (SINGER_SIDE.head.r / 110);
+    const neck = SINGER_SIDE.neck.v - chin;
+    assert.ok(neck >= 35 && neck <= 65, `≈ ${neck.toFixed(0)} mm of neck under the jaw`);
+    // The shoulders did not move with it (the arms, the lav marks and the pack hang from the datum).
+    assert.equal(SINGER_SIDE.shoulderR.v, SINGER_NECK.y + 58);
+    assert.equal(SEATED_SIDE.shoulderR.v, NECK_B.y + 58);
+    // Re-derived keep-outs: the neck capsule ends at the collar (24 mm shorter);
+    // the torso box's top starts at the collar (24 mm higher; was datum − 10).
+    for (const [n, S, c] of [['standing', SINGER_SOLIDS, SINGER_COLLAR], ['seated', SEATED_SOLIDS, COLLAR_B]] as const) {
+      assert.ok(S.neck.kind === 'capsule' && S.neck.b.y === c.y, `${n}: the neck solid ends at the collar`);
+      assert.ok(S.torso.kind === 'box' && S.torso.min.y === c.y - 10, `${n}: the torso solid starts at the collar`);
+    }
+  });
+
+  it('A06/A07 flute and piccolo: the left elbow bends ≥ 60° and hangs below the shoulder (was a level band across the chest, ≈ 37°)', () => {
+    const d3 = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+    const cases = [...Object.entries(FLUTES).map(([k, L]) => [`flute ${k}`, L] as const), ['piccolo standing', PICCOLO_STANDING] as const, ['piccolo seated', PICCOLO_SEATED] as const];
+    for (const [n, L] of cases) {
+      const sh = L.body.shoulderL;
+      const el = L.handL.elbow;
+      const wr = L.handL.wrist;
+      const up = d3(sh, el);
+      const fore = d3(el, wr);
+      const reach = d3(sh, wr);
+      const interior = (Math.acos((up * up + fore * fore - reach * reach) / (2 * up * fore)) * 180) / Math.PI;
+      assert.ok(180 - interior >= 60, `${n}: the left elbow bends ${(180 - interior).toFixed(0)}°`);
+      assert.ok(el.y - sh.y >= 80, `${n}: the left elbow hangs ${(el.y - sh.y).toFixed(0)} mm below its shoulder`);
+      assert.ok(el.y > wr.y, `${n}: the elbow is below the hand`);
+      // The chest turns right (the left shoulder forward), the hands stay on the keys.
+      assert.ok(L.body.shoulderL.z > L.body.shoulderR.z + 100, `${n}: the shoulders are turned to the right`);
+    }
+  });
+
+  it('I12 gong: the mallet hand reaches out to the stroke — never folded back to the shoulder', () => {
+    const MH = GONG.malletHead.mm / 2;
+    const reach = METAL_ARM.upper + METAL_ARM.fore;
+    for (const v of ['tamtam', 'bossed'] as const) {
+      const P = playerAt(v);
+      const sp = gongStrike(v);
+      // In 3-D: the striking (right) shoulder, on the gong's side, to the hand on the handle.
+      const sh = { x: P.x, y: -1445, z: P.z + BODY.shoulderHalf };
+      const grip = { x: sp.x + MALLET_REACH.out, y: GONG_CY - MALLET_REACH.up, z: sp.z - MALLET_REACH.across };
+      const d = Math.hypot(sh.x - grip.x, sh.y - grip.y, sh.z - grip.z);
+      assert.ok(d >= 0.75 * reach && d <= 0.97 * reach, `${v}: the hand is ${d.toFixed(0)} mm from the shoulder (arm ${reach})`);
+      // From the audience (art.tsx frontArt): the drawn hand well out from the shoulder.
+      const FU = (z: number) => -z;
+      const gripU = FU(sp.z) + MH * 0.6 + MALLET_REACH.across;
+      const pose = metalFrontPose([[gripU - FU(P.z) + 10, GONG_CY - MALLET_REACH.up + 10]]);
+      const seen = Math.hypot(pose.handR.wrist.u - pose.shoulderR.u, pose.handR.wrist.v - pose.shoulderR.v);
+      assert.ok(seen >= 240, `${v}: seen from the audience the wrist is ${seen.toFixed(0)} mm from the shoulder`);
+      assert.deepEqual(anatomy(pose), [], `${v}: front pose`);
+      // The player stands clear of the frame's feet (±300 mm along x).
+      assert.ok(P.x - 160 > GONG.feet.mm / 2 + GONG.post.mm, `${v}: the player's box is clear of the frame's feet`);
+    }
+  });
+
+  it('one shirt (owner: "shoulder transitions from shirt sleeves to the shirt body look very unnatural"): sleeves share the garment’s light and melt into the shoulder', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    for (const v of ['buildFront(', 'buildAbove(', 'buildSide(']) {
+      const body = src.slice(src.indexOf(`function ${v}`), src.indexOf('\n}\n', src.indexOf(`function ${v}`)));
+      assert.match(body, /const garment = garmentBox\(/, `${v} shades the shirt as one garment`);
+      assert.match(body, /tone: 'shirt', box: garment/, `${v}: the shirt body takes the garment's light`);
+      assert.match(body, /soft: atShoulder\(/, `${v}: a sleeve's edge over the shoulder is a soft fold`);
+    }
+    // FigureMass honours the garment's box and the soft region.
+    assert.match(src, /const b = box \?\? own;/);
+    // A nearly straight arm's crook never loops into a notch.
+    assert.match(src, /if \(bend < 0\.25 \|\| Math\.abs\(back\) > Math\.min\(L1, L2\) \* 0\.42\) \{/);
   });
 });

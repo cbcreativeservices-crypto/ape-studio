@@ -210,44 +210,67 @@ function lookOf(path: SkPath, tone: FigureTone): Look {
  * contour. `far`: the far limb in a profile, a little darker. Shared with the
  * art that builds its own figure geometry (bowed, lutes).
  */
-export function FigureMass({ path, tone, far = false, contour = 2.2, quiet = null }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number; quiet?: SkPath | null }) {
+export function FigureMass({ path, tone, far = false, contour = 2.2, quiet = null, box = null, soft = null }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null }) {
   const t = FIGURE_TONES[tone];
   const look = useMemo(() => lookOf(path, tone), [path, tone]);
-  const b = useMemo(() => path.getBounds(), [path]);
+  const own = useMemo(() => path.getBounds(), [path]);
+  // `box`: the GARMENT's bounds (figure pass 2, owner 2026-10-15: "shoulder
+  // transitions from shirt sleeves to the shirt body look very unnatural …
+  // plug and position interchangeable limbs"). A sleeve shaded across its own
+  // bounds came out lighter or darker than the shirt it leaves, so it read as
+  // a separate tube plugged into the body; shaded across the whole shirt's
+  // bounds, sleeve and body are one cloth in one light.
+  const b = box ?? own;
   // `quiet`: where this mass melts into the one behind it (the near arm's top
   // inside the shoulder) — no rim light and no contour there, so the sleeve
   // grows out of the shoulder instead of sitting on it as a knob (owner 2026-10-10).
-  const keep = useMemo(() => {
-    if (!quiet) return null;
+  // `soft`: where the mass lies over the same garment (a sleeve over the shirt
+  // body): no rim light, and its edge only a soft fold line — the sleeve's edge
+  // against the body, not the outline of a separate part. Outside it (the
+  // figure's silhouette) the contour is the full line.
+  const clips = useMemo(() => {
+    if (!quiet && !soft) return null;
     const r = make();
-    r.addRect(Skia.XYWHRect(b.x - 50, b.y - 50, b.width + 100, b.height + 100));
-    return Skia.Path.MakeFromOp(r, quiet, PathOp.Difference) ?? null;
-  }, [quiet, b]);
+    r.addRect(Skia.XYWHRect(own.x - 50, own.y - 50, own.width + 100, own.height + 100));
+    const hush = quiet && soft ? union(quiet, soft) : (quiet ?? soft)!;
+    const hard = Skia.Path.MakeFromOp(r, hush, PathOp.Difference) ?? null;
+    const fold = soft ? (quiet ? Skia.Path.MakeFromOp(soft, quiet, PathOp.Difference) : soft) : null;
+    const lit = hard ? Skia.Path.MakeFromOp(path, hard, PathOp.Intersect) : null;
+    return { hard, fold, lit };
+  }, [quiet, soft, own, path]);
   return (
     <Group>
       <Path path={path}>
         <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={t.ramp} positions={[0, 0.38, 0.72, 1]} />
       </Path>
       <Group clip={path}>
-        <Path path={look.core} color={t.core} opacity={0.55}>
+        <Path path={look.core} color={t.core} opacity={soft ? 0.42 : 0.55}>
           <BlurMask blur={t.coreW * 0.45} style="normal" />
         </Path>
       </Group>
       {/* The lit edge as a soft glow inside the outline — a crisp strip read
           as a line (a "welt") along sleeves (owner 2026-10-10). */}
-      <Group clip={keep ? (Skia.Path.MakeFromOp(path, keep, PathOp.Intersect) ?? path) : path}>
+      <Group clip={clips ? (clips.lit ?? path) : path}>
         <Path path={look.rim} opacity={0.55}>
           <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width * 0.7, b.y + b.height * 0.7)} colors={[t.rim, 'rgba(255,255,255,0)']} />
           <BlurMask blur={t.rimW * 0.9} style="normal" />
         </Path>
       </Group>
       {far ? <Path path={path} color="#000" opacity={0.3} /> : null}
-      <Group clip={keep ?? undefined}>
+      <Group clip={clips?.hard ?? undefined}>
         <Path path={path} style="stroke" strokeWidth={contour} color={t.edge} opacity={0.95} />
       </Group>
+      {clips?.fold ? (
+        <Group clip={clips.fold}>
+          <Path path={path} style="stroke" strokeWidth={contour * 0.8} color={t.edge} opacity={0.42} />
+        </Group>
+      ) : null}
     </Group>
   );
 }
+
+/** A garment's bounds (one cloth shaded in one light: FigureMass `box`). */
+export type GarmentBox = { x: number; y: number; width: number; height: number };
 
 /** Creases: a dark fold line with a lit edge just above-left of it. */
 function Folds({ path, light, width = 2.6, clip }: { path: SkPath; light: string; width?: number; clip?: SkPath }) {
@@ -755,7 +778,7 @@ export function neckHand(tips: Pt[], a: Pt, b: Pt, elbow: Pt): { wrist: Pt; dir:
 
 /* ── the parts ── */
 
-type Mass = { path: SkPath; tone: FigureTone; far?: boolean; quiet?: SkPath | null };
+type Mass = { path: SkPath; tone: FigureTone; far?: boolean; quiet?: SkPath | null; box?: GarmentBox | null; soft?: SkPath | null };
 
 type Built = {
   behind: Mass[];
@@ -851,7 +874,11 @@ export function armPath(root: Pt, e: Pt, w: Pt, R: { root: number; upper: number
       const det = d1.u * -d2.v - d1.v * -d2.u;
       const x = Math.abs(det) > 1e-6 ? ((b0.u - a0.u) * -d2.v - (b0.v - a0.v) * -d2.u) / det : 0;
       const back = -x; // how far behind the elbow (along the upper arm) the edges meet
-      if (back > Math.min(L1, L2) * 0.42) {
+      // A nearly straight arm (a hanging arm, bend < ≈ 14°): the two inner
+      // edges are almost parallel, so their meeting point flies far up or down
+      // the arm and the outline looped into a notch at the elbow (figure pass 2,
+      // seen at 3× on the singer's hanging sleeve) — the edges simply run on.
+      if (bend < 0.25 || Math.abs(back) > Math.min(L1, L2) * 0.42) {
         joint = [on(e, d1, n1, -R.elbow * 0.9, s * R.elbow), on(e, d2, n2, R.elbow * 0.9, s * R.elbow)];
       } else {
         // The fold: the two edges run into it and the curve rounds it softly.
@@ -967,7 +994,54 @@ export function splitArm(root: Pt, e: Pt, w: Pt, R: Parameters<typeof armPath>[3
  * under it so no cap rises above the shoulder line); `cap`: a deltoid mass.
  */
 function sleeveArm(root: Pt, e: Pt, w: Pt, cap: SkPath | null = null): SkPath {
-  return union(cap, armPath(root, e, w));
+  return union(cap, armPath(root, e, w, SLEEVE));
+}
+
+/**
+ * A SHIRT SLEEVE's widths (figure pass 2, owner 2026-10-15): cloth hangs over
+ * the elbow, so the sleeve narrows there only a little (≈ 80 mm across, from
+ * ≈ 84 above it) — the bare arm's pinch (ARM, 74 mm) drawn in a sleeve read as
+ * a mannequin's joint. The elbow still reads by the bend and the point of the
+ * elbow; the forearm's sleeve tapers to the cuff as before.
+ */
+export const SLEEVE = { root: 44, upper: 42, elbow: 40, belly: 40.5, cuff: 31.5, cuffGap: 16 } as const;
+
+/** THE DELTOID along an arm (front view, figure pass 2): rounded over the
+ *  shoulder joint, ≈ 45 mm each side of the arm's line, narrowing into the
+ *  sleeve's own width ≈ 170 mm down — one shape with the sleeve. */
+function capAlong(root: Pt, elbow: Pt): SkPath {
+  const L = Math.max(1, dist(root, elbow));
+  const d = pt((elbow.u - root.u) / L, (elbow.v - root.v) / L);
+  const A = (al: number, ac: number) => pt(root.u + d.u * al - d.v * ac, root.v + d.v * al + d.u * ac);
+  const end = Math.min(170, L * 0.6);
+  return smooth([A(-44, 0), A(-30, 38), A(10, 45), A(70, 43), A(end * 0.75, 40.5), A(end, 28), A(end, -28), A(end * 0.75, -40.5), A(70, -43), A(10, -45), A(-30, -38)], 0.5);
+}
+
+/** Where a sleeve LEAVES the shirt body (FigureMass `soft`): the shirt within
+ *  ≈ 150 mm of the shoulder joint. There the sleeve's edge is only a soft fold
+ *  (it is the same cloth turning over the shoulder); further down, an arm in
+ *  front of the body keeps its full contour — it really is in front. */
+function atShoulder(shirt: SkPath, sh: Pt): SkPath | null {
+  const d = make();
+  d.addCircle(sh.u, sh.v, 150);
+  return Skia.Path.MakeFromOp(d, shirt, PathOp.Intersect);
+}
+
+/** The bounds of a whole garment (its body and sleeves): FigureMass `box`. */
+function garmentBox(...ps: SkPath[]): GarmentBox {
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const p of ps) {
+    const r = p.getBounds();
+    if (r.width <= 0 && r.height <= 0) continue; // an empty path (an arm not drawn)
+    x0 = Math.min(x0, r.x);
+    y0 = Math.min(y0, r.y);
+    x1 = Math.max(x1, r.x + r.width);
+    y1 = Math.max(y1, r.y + r.height);
+  }
+  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
 /** The cuff's seam: a line across the sleeve 36 mm up from its end. */
@@ -1010,8 +1084,11 @@ function buildFront(pose: PlayerPose): Built {
       pt(n.u - 54, n.v - 46),
       R(-70, -50),
       R(8, -38),
-      R(46, 4),
-      R(40, 80),
+      // The point of the shoulder, then straight in under the arm: the
+      // deltoid's swell belongs to the SLEEVE (capAlong), so it turns with the
+      // arm and never stands out past a hanging arm as a pad (pass 2).
+      R(36, 8),
+      R(20, 78),
       R(-14, 170),
       pt(n.u - BODY.waistHalf, waistV),
       pt(pose.hipR.u - 62, hipV + 8),
@@ -1019,8 +1096,8 @@ function buildFront(pose: PlayerPose): Built {
       pt(pose.hipL.u + 62, hipV + 8),
       pt(n.u + BODY.waistHalf, waistV),
       Lf(-14, 170),
-      Lf(40, 80),
-      Lf(46, 4),
+      Lf(20, 78),
+      Lf(36, 8),
       Lf(8, -38),
       Lf(-70, -50),
       pt(n.u + 54, n.v - 46),
@@ -1031,11 +1108,16 @@ function buildFront(pose: PlayerPose): Built {
   // Each arm hangs from its DELTOID — a cap that follows the shoulder's own
   // outline (so no round tube end rises over the shoulder line) with the
   // sleeve's set-in seam on its inner side — then a tapered sleeve.
-  const deltoid = (P: (x: number, y: number) => Pt) => smooth([P(-66, -48), P(8, -37), P(45, 4), P(43, 70), P(-4, 96), P(-40, 30)], 0.5);
+  // (figure pass 2, owner 2026-10-15: the old fixed cap stood out past a
+  // hanging arm as a shoulder pad) — the deltoid now lies ALONG the arm
+  // (capAlong): it rounds over the joint and runs into the sleeve at the
+  // sleeve's own width, whichever way the arm hangs.
   // The fretting arm (behind the neck).
-  const armL = sleeveArm(pt(sL.u, sL.v + 12), pose.elbowL, pose.handL.wrist, deltoid(Lf));
+  const capL = capAlong(pt(sL.u, sL.v + 12), pose.elbowL);
+  const capR = capAlong(pt(sR.u, sR.v + 12), pose.elbowR);
+  const armL = sleeveArm(pt(sL.u, sL.v + 12), pose.elbowL, pose.handL.wrist, capL);
   // The picking arm (over the body).
-  const armR = sleeveArm(pt(sR.u, sR.v + 12), pose.elbowR, pose.handR.wrist, deltoid(R));
+  const armR = sleeveArm(pt(sR.u, sR.v + 12), pose.elbowR, pose.handR.wrist, capR);
   // Legs: thighs toward the viewer (seated: the lap and the knees), shins
   // down to the shoes.
   const seated = pose.posture !== 'standing';
@@ -1078,14 +1160,21 @@ function buildFront(pose: PlayerPose): Built {
   const handLines = make();
   handLines.addPath(hR.lines);
   handLines.addPath(hL.lines);
+  // ONE SHIRT (figure pass 2, owner 2026-10-15: "shoulder transitions from
+  // shirt sleeves to the shirt body look very unnatural"): the body and both
+  // sleeves shaded in one light; inside the shoulder (the deltoid over the
+  // shirt) no line at all, so the sleeve flows out of the shoulder line; where
+  // a sleeve lies over the shirt body its edge is a soft fold, not an outline.
+  const garment = garmentBox(shirt, armL, armR);
+  const inShoulder = (cap: SkPath) => Skia.Path.MakeFromOp(cap, shirt, PathOp.Intersect);
   const behind: Mass[] = [
     { path: trousers, tone: 'trousers' },
-    { path: shirt, tone: 'shirt' },
-    { path: armL, tone: 'shirt' },
+    { path: shirt, tone: 'shirt', box: garment },
+    { path: armL, tone: 'shirt', box: garment, quiet: inShoulder(capL), soft: atShoulder(shirt, sL) },
   ];
   if (hL.thumbBehind) behind.push({ path: hL.thumbBehind, tone: 'skin' });
   const front: Mass[] = [
-    { path: armR, tone: 'shirt' },
+    { path: armR, tone: 'shirt', box: garment, quiet: inShoulder(capR), soft: atShoulder(shirt, sR) },
     { path: hR.path, tone: 'skin' },
     { path: hL.path, tone: 'skin' },
   ];
@@ -1195,9 +1284,12 @@ function buildAbove(pose: PlayerPose): Built {
   handLines.addPath(hL.lines);
   const behind: Mass[] = [];
   if (thighs) behind.push({ path: thighs, tone: 'trousers' });
-  behind.push({ path: torso, tone: 'shirt' }, { path: armL, tone: 'shirt' });
+  // One shirt from above too: the sleeves leave the shoulders' outline in the
+  // shirt's own light, their edge over the shoulders a soft fold (pass 2).
+  const garment = garmentBox(torso, armL, armR);
+  behind.push({ path: torso, tone: 'shirt', box: garment }, { path: armL, tone: 'shirt', box: garment, soft: atShoulder(torso, sL) });
   const front: Mass[] = [
-    { path: armR, tone: 'shirt' },
+    { path: armR, tone: 'shirt', box: garment, soft: atShoulder(torso, sR) },
     { path: hR.path, tone: 'skin' },
     { path: hL.path, tone: 'skin' },
   ];
@@ -1302,7 +1394,9 @@ function buildSide(pose: PlayerPose): Built {
   // shoulder line.
   const armAx = Math.atan2(pose.elbowR.v - sh.v, pose.elbowR.u - sh.u);
   const A = (al: number, ac: number) => pt(sh.u + Math.cos(armAx) * al - Math.sin(armAx) * ac, sh.v + Math.sin(armAx) * al + Math.cos(armAx) * ac);
-  const deltoidRaw = smooth([A(-44, 0), A(-30, 40), A(10, 45), A(70, 44), A(112, 43), A(112, -43), A(70, -44), A(10, -45), A(-30, -40)], 0.5); // no wider than the sleeve — a swell here read as a bulge (owner 2026-10-10)
+  // It narrows INSIDE the sleeve before it closes (pass 2: a cap closing at
+  // the sleeve's width left a dimple in the sleeve's outline there).
+  const deltoidRaw = smooth([A(-44, 0), A(-30, 40), A(10, 45), A(70, 43), A(115, 40.5), A(150, 28), A(150, -28), A(115, -40.5), A(70, -43), A(10, -45), A(-30, -40)], 0.5); // no wider than the sleeve — a swell here read as a bulge (owner 2026-10-10)
   const deltoid = Skia.Path.MakeFromOp(deltoidRaw, torso, PathOp.Intersect) ?? deltoidRaw;
   const armNear = sleeveArm(sh, pose.elbowR, pose.handR.wrist, deltoid);
   const head = intoCollar(headProfile(pose.head.c, pose.head.r, n.v + 10, f), torso);
@@ -1354,12 +1448,15 @@ function buildSide(pose: PlayerPose): Built {
           return p;
         })()
       : null;
+  // ONE SHIRT (figure pass 2, owner 2026-10-15): the body and both sleeves
+  // shaded in one light across the whole garment's bounds.
+  const garment = garmentBox(shirt, armNear, armFar);
   const behind: Mass[] = [
     { path: legFar, tone: 'trousers', far: true },
-    { path: armFar, tone: 'shirt', far: true },
+    { path: armFar, tone: 'shirt', far: true, box: garment },
     { path: hL.path, tone: 'skin', far: true },
     { path: legNear, tone: 'trousers' },
-    { path: shirt, tone: 'shirt' },
+    { path: shirt, tone: 'shirt', box: garment },
   ];
   // The sleeve's top inside the shoulder melts into the shirt (no knob).
   const shoulderQuiet = (() => {
@@ -1368,7 +1465,8 @@ function buildSide(pose: PlayerPose): Built {
     return Skia.Path.MakeFromOp(d, torso, PathOp.Intersect);
   })();
   const front: Mass[] = [
-    { path: armNear, tone: 'shirt', quiet: shoulderQuiet },
+    // Over the shirt body the sleeve's edge is a soft fold, not a part's outline.
+    { path: armNear, tone: 'shirt', quiet: shoulderQuiet, box: garment, soft: atShoulder(shirt, sh) },
     { path: hR.path, tone: 'skin' },
   ];
   return {
@@ -1465,7 +1563,7 @@ export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose
         .map((s, i) => (
           <FigureMass key={`shoeF${i}`} path={s.path} tone={s.tone} far={s.far} />
         ))}
-      {b.behind.map((m, i) => ((isLeg(m.tone) ? legs : upper) ? <FigureMass key={`b${i}`} path={m.path} tone={m.tone} far={m.far} /> : null))}
+      {b.behind.map((m, i) => ((isLeg(m.tone) ? legs : upper) ? <FigureMass key={`b${i}`} path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} box={m.box} soft={m.soft} /> : null))}
       {(legs ? b.shoes : [])
         .filter((s) => !s.far && pose.view !== 'above')
         .map((s, i) => (
@@ -1523,7 +1621,7 @@ export function PlayerInFront({ pose, dim = 1, hands = true }: { pose: PlayerPos
               <BlurMask blur={12} style="normal" />
             </Path>
           ) : null}
-          <FigureMass path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} />
+          <FigureMass path={m.path} tone={m.tone} far={m.far} quiet={m.quiet} box={m.box} soft={m.soft} />
           {i === 0
             ? b.foldsFront.map((fo, j) => (
                 <Folds key={`ff${j}`} path={fo.path} light={fo.light} clip={m.path} />

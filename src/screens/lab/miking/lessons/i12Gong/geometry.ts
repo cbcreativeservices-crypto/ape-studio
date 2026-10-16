@@ -14,7 +14,7 @@
 import type { DocumentedZone, Envelope, InstrumentModel, Part, Provenance, Vec3 } from '../../engine/model/types.ts';
 import { aimTo, approachPose, sub, v3 } from '../shared/handGeom.ts';
 import { conePolys } from '../shared/metal/metalGeom.ts';
-import { C0, CY, diameterOf, frameW, GONG, PLAYER, radiusOf, strikePoint } from './model.ts';
+import { C0, CY, diameterOf, frameW, GONG, playerAt, radiusOf, strikePoint } from './model.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const trial = (note: string): Provenance => ({ kind: 'trial', src: 'LESSON-GONG', note });
@@ -61,14 +61,22 @@ function swingEnv(v: 'tamtam' | 'bossed'): Envelope {
 }
 function malletEnv(v: 'tamtam' | 'bossed'): Envelope {
   const sp = strikePoint(v);
-  return { id: `env.mallet${sfx(v)}`, label: 'the mallet’s arc', shape: { kind: 'capsule', a: v3(PLAYER.x + 20, -1460, PLAYER.z + 70), b: v3(sp.x + 60, sp.y + 40, sp.z), r: 120 }, prov: ill('the mallet from the shoulder to the strike point, plus follow-through: a drawing default'), variants: [v] };
+  const P = playerAt(v);
+  // From the striking (right) shoulder — on the gong's side of the player —
+  // to the strike point (figure pass 2: re-derived with the player's new place).
+  return { id: `env.mallet${sfx(v)}`, label: 'the mallet’s arc', shape: { kind: 'capsule', a: v3(P.x, -1460, P.z + 188), b: v3(sp.x + 60, sp.y + 40, sp.z), r: 120 }, prov: ill('the mallet from the shoulder to the strike point, plus follow-through: a drawing default'), variants: [v] };
+}
+function playerEnv(v: 'tamtam' | 'bossed'): Envelope {
+  const P = playerAt(v);
+  return { id: `env.player${sfx(v)}`, label: 'the player', shape: { kind: 'box', min: v3(P.x - 160, -1850, P.z - 230), max: v3(P.x + 170, 0, P.z + 200) }, prov: ill('a standing player beside the struck face: a drawing default'), variants: [v] };
 }
 const envelopes: Envelope[] = [
   swingEnv('tamtam'),
   swingEnv('bossed'),
   malletEnv('tamtam'),
   malletEnv('bossed'),
-  { id: 'env.player', label: 'the player', shape: { kind: 'box', min: v3(PLAYER.x - 160, -1850, PLAYER.z - 230), max: v3(PLAYER.x + 170, 0, PLAYER.z + 200) }, prov: ill('a standing player beside the struck face: a drawing default') },
+  playerEnv('tamtam'),
+  playerEnv('bossed'),
 ];
 
 /* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind

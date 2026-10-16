@@ -28,7 +28,7 @@ import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { FigureHead, PlayerBehind, PlayerInFront, figureCovers, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt, type PlayerPose } from '../players/playerPose.ts';
 import { EAR, EAR_HALF, HEAD_C, HEAD_R } from '../voice/voiceSpec.ts';
-import { NECK_B, SEATED_FLOOR, SEATED_SIDE, SEATED_TOP, SEAT_Y, TURN_PIVOT, onTalker, poseOnTalker, type Talker } from './talkerPose.ts';
+import { COLLAR_B, NECK_B, SEATED_FLOOR, SEATED_SIDE, SEATED_TOP, SEAT_Y, TURN_PIVOT, onTalker, poseOnTalker, type Talker } from './talkerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -141,7 +141,7 @@ export function TurnedHeadTop({ yawDeg }: { yawDeg: number }) {
   );
 }
 export function TurnedHeadSide({ pitchDeg, phones = false }: { pitchDeg: number; phones?: boolean }) {
-  const head = useMemo(() => headProfile(pt(HEAD_C.x, HEAD_C.y), HEAD_R, NECK_B.y, 1), []);
+  const head = useMemo(() => headProfile(pt(HEAD_C.x, HEAD_C.y), HEAD_R, COLLAR_B.y, 1), []);
   return (
     <Group transform={[{ translateX: TURN_PIVOT.x }, { translateY: TURN_PIVOT.y }, { rotate: -pitchDeg * DEG }, { translateX: -TURN_PIVOT.x }, { translateY: -TURN_PIVOT.y }]}>
       <FigureHead fill={head.fill} />

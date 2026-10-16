@@ -37,6 +37,7 @@ import type { PlayerPose } from '../players/playerPose.ts';
 import { BODY, pt } from '../players/playerPose.ts';
 import type { Shape3, Vec3 } from '../../../engine/model/types.ts';
 import { FRAME_V, HEAD_C, HEAD_R, dd, type VoiceAnchor } from '../voice/voiceSpec.ts';
+import { COLLAR_LIFT } from '../voice/voicePose.ts';
 import { micToMouth } from '../field/location.ts';
 
 const DEG = Math.PI / 180;
@@ -63,6 +64,10 @@ export const SEAT_Y = SEATED_FLOOR - SEATED.seatHeight.mm;
 
 /** The base of the neck (the collar): the voice family's standing figure's. */
 export const NECK_B: Vec3 = v3(HEAD_C.x - 18, HEAD_C.y + 172, 0);
+/** The drawn collar, COLLAR_LIFT above that datum (figure pass 2, owner
+ *  2026-10-15: "neck slightly long" — voicePose.ts). The shoulders, arms
+ *  and body below stay on the datum. */
+export const COLLAR_B: Vec3 = v3(NECK_B.x, NECK_B.y - COLLAR_LIFT, 0);
 
 /* ── the talker's place ── */
 
@@ -107,7 +112,7 @@ export const SEATED_SIDE: PlayerPose = {
   posture: 'seated',
   facing: 1,
   head: { c: pt(HEAD_C.x, HEAD_C.y), r: HEAD_R },
-  neck: pt(N.x, N.y),
+  neck: pt(COLLAR_B.x, COLLAR_B.y),
   shoulderR: pt(N.x - 4, N.y + 58),
   shoulderL: pt(N.x - 18, N.y + 48),
   elbowR: pt(N.x + 60, ELBOW_Y),
@@ -192,8 +197,9 @@ export function poseOnTalker(pose: PlayerPose, t: Talker): PlayerPose {
  */
 export const SEATED_SOLIDS: Record<'head' | 'neck' | 'torso' | 'armR' | 'armL' | 'thighs', Shape3> = {
   head: { kind: 'capsule', a: HEAD_C, b: HEAD_C, r: HEAD_R },
-  neck: { kind: 'capsule', a: v3(HEAD_C.x + 30, HEAD_C.y + 90, 0), b: v3(N.x, N.y, 0), r: 54 },
-  torso: { kind: 'box', min: v3(N.x - 150, N.y - 10, -215), max: v3(N.x + 112, SEAT_Y - 40, 215) },
+  // Neck to the drawn collar; the torso's top from it (figure pass 2).
+  neck: { kind: 'capsule', a: v3(HEAD_C.x + 30, HEAD_C.y + 90, 0), b: v3(COLLAR_B.x, COLLAR_B.y, 0), r: 54 },
+  torso: { kind: 'box', min: v3(N.x - 150, COLLAR_B.y - 10, -215), max: v3(N.x + 112, SEAT_Y - 40, 215) },
   armR: { kind: 'capsule', a: v3(N.x + 40, ELBOW_Y - 10, 205), b: v3(WRIST_X + 120, DESK_TOP_Y - 36, 150), r: 46 },
   armL: { kind: 'capsule', a: v3(N.x + 40, ELBOW_Y - 10, -205), b: v3(WRIST_X + 120, DESK_TOP_Y - 36, -150), r: 46 },
   thighs: { kind: 'box', min: v3(N.x - 120, SEAT_Y - 150, -190), max: v3(N.x + 470, SEAT_Y, 190) },
