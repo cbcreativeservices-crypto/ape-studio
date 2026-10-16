@@ -17,7 +17,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { frac, fracLabel, fracValue, centsToRatio, JUST_MAJOR_THIRD, PYTHAGOREAN_COMMA, frequencyFromRatio, TUNING_SYSTEMS, type Frac } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen, useStableShuffle, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, centsRailH, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen, useStableShuffle, type RailMarker } from '../components/primitives';
 import { OctaveElevator } from '../components/octaveElevator';
 import { HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
@@ -119,7 +119,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
         </StageFit>
       )
     : (w: number, h: number) => (
-        <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+        <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
           <CentsRail markers={eMarkers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
         </StageFit>
       );

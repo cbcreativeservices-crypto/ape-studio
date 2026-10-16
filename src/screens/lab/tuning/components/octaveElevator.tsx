@@ -67,7 +67,7 @@ export function OctaveElevator({
       <View style={[styles.regions, regionsStyle]}>
         {['ABOVE · ratio ≥ 2', 'COMPARISON OCTAVE · 1 ≤ ratio < 2', 'BELOW · ratio < 1'].map((t, i) => (
           <View key={t} style={[styles.region, { height: regionH, paddingHorizontal: 10 * scale }, i === 1 && styles.regionMain]}>
-            <Text style={[styles.regionLabel, { fontSize: 9.5 * scale, letterSpacing: 1.5 * scale }, i === 1 && { color: ROLE.exact }]}>{t}</Text>
+            <Text style={[styles.regionLabel, { fontSize: 11 * scale, letterSpacing: 1.5 * scale }, i === 1 && { color: ROLE.exact }]}>{t}</Text>
           </View>
         ))}
         <Animated.View style={[styles.tile, { right: 14 * scale, minWidth: 74 * scale, height: tileH, borderRadius: 8 * scale, paddingHorizontal: 10 * scale, transform: [{ translateY: y }] }, inRange ? styles.tileIn : styles.tileOut]}>

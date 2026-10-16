@@ -20,7 +20,7 @@ import {
 } from '../../../../features/tuning/tuningMath';
 import { renderNotes, renderPartials } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, usePreloadClips, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, centsRailH, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, usePreloadClips, type RailMarker } from '../components/primitives';
 import { HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
@@ -209,7 +209,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
               soundCell(status),
             ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
             <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
           </StageFit>
         ),

@@ -71,7 +71,7 @@ export function HarmonicComparison({
               {/* 9.5 in the viewBox, not 9 (review 2026-09-30): on a 375-wide
                   phone under 700 pt tall the M glass drops to S and this
                   340 × 150 drawing fits by HEIGHT at ×0.974 — a 9 was 8.8 pt. */}
-              <SvgText x={8} y={rowY[row] - 26} fontSize={9.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>
+              <SvgText x={8} y={rowY[row] - 26} fontSize={11} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>
                 {row === 0 ? rootLabel.toUpperCase() : upperLabel.toUpperCase()} · f = {f0.toFixed(2)} Hz
               </SvgText>
               <Line x1={16} y1={rowY[row]} x2={W - 16} y2={rowY[row]} stroke="rgba(255,255,255,0.12)" />
@@ -83,7 +83,7 @@ export function HarmonicComparison({
                 return (
                   <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={n}>
                     <Line x1={x(f)} y1={rowY[row] - (on ? 18 : 10)} x2={x(f)} y2={rowY[row]} stroke={on ? (aligned ? ROLE.exact : row === 0 ? ROLE.active : ROLE.operation) : colors.textMutedDeep} strokeWidth={on ? 3 : 1.2} opacity={on ? 1 : isolate ? 0.18 : 0.5} />
-                    <SvgText x={x(f)} y={rowY[row] + 12} fontSize={9.5} fill={on ? colors.textPrimary : colors.textMutedDeep} textAnchor="middle" fontFamily={fonts.oswaldMedium} opacity={on || !isolate ? 1 : 0.3}>{n}</SvgText>
+                    <SvgText x={x(f)} y={rowY[row] + 13} fontSize={10.5} fill={on ? colors.textPrimary : colors.textMutedDeep} textAnchor="middle" fontFamily={fonts.oswaldMedium} opacity={on || !isolate ? 1 : 0.3}>{n}</SvgText>
                   </Svg>
                 );
               })}
@@ -100,7 +100,7 @@ export function HarmonicComparison({
             <Line x1={x(pa)} y1={78} x2={x(pb)} y2={78} stroke={gapRole} strokeWidth={2} />
           </>
         )}
-        <SvgText x={W - 8} y={12} fontSize={9.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>{isolate ? 'ISOLATED PARTIALS · ' : ''}LOG-FREQUENCY AXIS</SvgText>
+        <SvgText x={W - 8} y={13} fontSize={10.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>{isolate ? 'ISOLATED PARTIALS · ' : ''}LOG-FREQUENCY AXIS</SvgText>
       </Svg>
       {readout ? (
       <View style={styles.readout}>
@@ -149,7 +149,7 @@ export function BeatingModel({ diffHz, fit, note = true }: { diffHz: number; /**
         <Polyline points={pts1.join(' ')} fill="none" stroke={ROLE.active} strokeWidth={1} opacity={0.8} />
         <Polyline points={pts2.join(' ')} fill="none" stroke={ROLE.operation} strokeWidth={1} opacity={0.8} />
         <Polyline points={env.join(' ')} fill="none" stroke={d < 0.01 ? ROLE.exact : ROLE.near} strokeWidth={2} />
-        <SvgText x={W2 - 8} y={12} fontSize={9.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>EXPLANATORY MODEL · NOT A MEASUREMENT</SvgText>
+        <SvgText x={W2 - 8} y={13} fontSize={10.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>EXPLANATORY MODEL · NOT A MEASUREMENT</SvgText>
       </Svg>
       {note ? (
       <Text style={styles.note}>

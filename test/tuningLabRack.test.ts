@@ -188,7 +188,7 @@ describe('the stage drawings zoom (D35)', () => {
   test('the view-built elevator scales every point constant by the stage text scale', () => {
     const code = strip(read('components/octaveElevator.tsx'));
     assert.match(code, /useStageTextScale\(\)/);
-    assert.match(code, /fontSize: 9\.5 \* scale/);
+    assert.match(code, /fontSize: 11 \* scale/); // region labels, 9.5 -> 11 (art grading 2026-10-16)
     assert.match(code, /fontSize: 17 \* scale/);
   });
 

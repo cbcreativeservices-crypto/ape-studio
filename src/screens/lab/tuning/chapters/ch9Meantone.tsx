@@ -20,7 +20,7 @@ import {
 } from '../../../../features/tuning/tuningMath';
 import { renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Card, CentsRail, CENTS_RAIL_W, DeviationMeter, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, useMarkWhen, usePreloadClips, type RailMarker } from '../components/primitives';
+import { Body, Card, CentsRail, CENTS_RAIL_W, centsRailH, DeviationMeter, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, useMarkWhen, usePreloadClips, type RailMarker } from '../components/primitives';
 import { HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
@@ -97,7 +97,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
   const scaleMarkers: RailMarker[] = MT.notes.slice(0, revealed).map((n, i) => ({ id: `m${i}`, cents: n.value.cents, label: n.spelling, role: i === revealed - 1 ? 'operation' : 'neutral', emphasis: i === revealed - 1, row: i % 2 }));
   const toneMarkers: RailMarker[] = [{ id: 'C', cents: 0, label: 'C · 1', role: 'neutral' }, { id: 'D', cents: MEANTONE_TONE.cents, label: 'D · ×t', role: 'operation', emphasis: true, row: 1 }, { id: 'E', cents: JUST_MAJOR_THIRD.cents, label: 'E · 5/4', role: 'exact' }];
   const rail = (markers: RailMarker[]) => (w: number, h: number) => (
-    <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+    <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
       <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
     </StageFit>
   );

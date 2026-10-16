@@ -15,7 +15,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { centsToRatio, frequencyFromRatio, nearestLandmark, ratioToCents } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Card, CENTS_RAIL_W, Eyebrow, Lead, MathLine, Row, dec, usePreloadClips } from '../components/primitives';
+import { Body, Card, CENTS_RAIL_W, centsRailH, Eyebrow, Lead, MathLine, Row, dec, usePreloadClips } from '../components/primitives';
 import { DragRail, slideTo, snapToLandmark } from '../components/dragRail';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
@@ -106,7 +106,7 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
           soundCell(status),
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
             {/* The root marker lights while a clip that contains it sounds
                 (review 2026-09-30) — a PLAY pick changes the picture, not
                 only the SOUND cell. */}

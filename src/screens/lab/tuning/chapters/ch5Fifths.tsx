@@ -15,7 +15,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { buildPythagoreanFifthChain, frac, fracLabel, frequencyFromRatio, fracValue } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Card, CentsRail, CENTS_RAIL_W, Eyebrow, Lead, MathLine, Prompt, type RailMarker } from '../components/primitives';
+import { Body, Card, CentsRail, CENTS_RAIL_W, centsRailH, Eyebrow, Lead, MathLine, Prompt, type RailMarker } from '../components/primitives';
 import { FifthPath } from '../components/fifthPath';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
@@ -130,7 +130,7 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
           soundCell(status),
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
             <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
           </StageFit>
         ),

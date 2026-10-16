@@ -5,7 +5,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DisplayValue } from '../../../../features/tuning/tuningMath';
 import { fmtDecimal } from '../../../../features/tuning/tuningMath';
@@ -199,8 +199,18 @@ export const centsOfXFrac = (xFrac: number): number => {
   return Math.max(0, Math.min(1200, c));
 };
 
-/** The rail's viewBox width — a stage declares `aspect = RAIL_W / height`. */
+/** The rail's viewBox width — a stage declares `aspect = CENTS_RAIL_W / centsRailH(height)`. */
 export const CENTS_RAIL_W = RAIL_W;
+
+/** The keyboard strip under the rail (art grading 2026-10-16: the bare
+ *  hairline rail floated in an empty display). One cell per equal-tempered
+ *  semitone C→C, centred on its 100-cent tick, white/black as on a piano roll,
+ *  so every just or Pythagorean marker visibly sits on or off a key. */
+const KEYS_H = 30;
+const KEY_NAMES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B', 'C'];
+
+/** The rail's full viewBox height for a given rail `height` (rail + keys). */
+export const centsRailH = (height: number) => height + KEYS_H;
 
 export function CentsRail({
   markers, divisions = true, brackets, height = 96, onPressMarker, selectedId, reduceMotion, fit,
@@ -227,18 +237,40 @@ export function CentsRail({
   const axisY = hasLane1 ? height - 44 : height - 30;
   const endY = hasLane1 ? height - 5 : height - 8;
   const summary = `Cents rail from 0 to 1200. ${markers.map((m) => `${m.label} at ${m.cents.toFixed(2)} cents`).join('; ')}.`;
+  const vbH = centsRailH(height);
+  const keyTop = height + 2;
+  const keyBot = vbH - 4;
+  const cellW = (xOfCents(100) - xOfCents(0));
   return (
     <View accessible accessibilityLabel={summary} accessibilityRole="image" style={{ width: '100%' }}>
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : height} style={fit ? { aspectRatio: RAIL_W / height } : undefined} viewBox={`0 0 ${RAIL_W} ${height}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
-        <Rect x={0} y={0} width={RAIL_W} height={height} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : vbH} style={fit ? { aspectRatio: RAIL_W / vbH } : undefined} viewBox={`0 0 ${RAIL_W} ${vbH}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
+        <Rect x={0} y={0} width={RAIL_W} height={vbH} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
+        {/* Piano-roll key strip: equal-tempered semitones C→C (root C). */}
+        {KEY_NAMES.map((name, k) => {
+          const black = name === '';
+          const x0 = Math.max(xOfCents(0) - cellW / 2, xOfCents(k * 100) - cellW / 2);
+          const x1 = Math.min(xOfCents(1200) + cellW / 2, xOfCents(k * 100) + cellW / 2);
+          return (
+            <G key={`key${k}`}>
+              <Rect x={x0 + 0.5} y={keyTop} width={x1 - x0 - 1} height={keyBot - keyTop} rx={2} fill={black ? '#30303a' : '#cfd0d6'} stroke={black ? '#5a5a66' : '#8e8f98'} strokeWidth={0.8} />
+              {black ? null : (
+                <SvgText x={xOfCents(k * 100)} y={keyBot - 5} fontSize={10.5} fill="#2a2a32" textAnchor="middle" fontFamily={fonts.oswaldMedium}>
+                  {name}
+                </SvgText>
+              )}
+            </G>
+          );
+        })}
+        <Line x1={xOfCents(0)} y1={keyTop - 1} x2={xOfCents(0)} y2={axisY + 4} stroke="rgba(255,255,255,0.10)" strokeWidth={1} />
+        <Line x1={xOfCents(1200)} y1={keyTop - 1} x2={xOfCents(1200)} y2={axisY + 4} stroke="rgba(255,255,255,0.10)" strokeWidth={1} />
         {divisions
           ? Array.from({ length: 13 }, (_, k) => (
               <Line key={k} x1={xOfCents(k * 100)} y1={axisY - (k % 12 === 0 ? 14 : 6)} x2={xOfCents(k * 100)} y2={axisY + 4} stroke={k % 12 === 0 ? colors.textSub : 'rgba(255,255,255,0.14)'} strokeWidth={k % 12 === 0 ? 1.5 : 1} />
             ))
           : null}
         <Line x1={xOfCents(0)} y1={axisY} x2={xOfCents(1200)} y2={axisY} stroke={colors.textSub} strokeWidth={1.5} />
-        <SvgText x={xOfCents(0)} y={endY} fontSize={9.5} fill={colors.textSecondary} textAnchor="start" fontFamily={fonts.oswaldMedium}>1:1 · 0 ¢</SvgText>
-        <SvgText x={xOfCents(1200)} y={endY} fontSize={9.5} fill={colors.textSecondary} textAnchor="end" fontFamily={fonts.oswaldMedium}>2:1 · 1200 ¢</SvgText>
+        <SvgText x={xOfCents(0)} y={endY} fontSize={11} fill={colors.textSecondary} textAnchor="start" fontFamily={fonts.oswaldMedium}>1:1 · 0 ¢</SvgText>
+        <SvgText x={xOfCents(1200)} y={endY} fontSize={11} fill={colors.textSecondary} textAnchor="end" fontFamily={fonts.oswaldMedium}>2:1 · 1200 ¢</SvgText>
         {brackets?.map((b, i) => {
           const x1 = xOfCents(b.fromCents), x2 = xOfCents(b.toCents);
           const y = 14 + i * 12;
@@ -248,7 +280,7 @@ export function CentsRail({
               <Line x1={x1} y1={y} x2={x2} y2={y} stroke={col} strokeWidth={1.5} />
               <Line x1={x1} y1={y - 4} x2={x1} y2={y + 4} stroke={col} strokeWidth={1.5} />
               <Line x1={x2} y1={y - 4} x2={x2} y2={y + 4} stroke={col} strokeWidth={1.5} />
-              <SvgText x={(x1 + x2) / 2} y={y - 5} fontSize={9} fill={col} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.label}</SvgText>
+              <SvgText x={(x1 + x2) / 2} y={y - 5} fontSize={10.5} fill={col} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.label}</SvgText>
             </Svg>
           );
         })}
@@ -274,7 +306,7 @@ function RailMarkerGlyph({ m, axisY, selected, onPress, reduceMotion }: { m: Rai
   const lane = m.lane ?? 0;
   const tipY = axisY - (lane === 0 ? 2 : -2);
   const baseY = lane === 0 ? axisY - 16 : axisY + 16;
-  const labelY = lane === 0 ? axisY - 20 - (m.row ?? 0) * 13 : axisY + 27;
+  const labelY = lane === 0 ? axisY - 20 - (m.row ?? 0) * 14 : axisY + 28;
   // Labels at the extremes anchor inward so they never clip the rail edge.
   const anchor = m.cents < 80 ? 'start' : m.cents > 1120 ? 'end' : 'middle';
   const points = x.interpolate({
@@ -287,7 +319,7 @@ function RailMarkerGlyph({ m, axisY, selected, onPress, reduceMotion }: { m: Rai
   return (
     <Svg onPress={onPress} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <AnimatedPolygon points={points as unknown as string} fill={selected || m.emphasis ? col : 'none'} stroke={col} strokeWidth={selected ? 2 : 1.4} opacity={faint ? 0.35 : 1} />
-      <AnimatedSvgText x={x as unknown as number} y={labelY} fontSize={m.emphasis || selected ? 10 : 9} fill={col} textAnchor={anchor} fontFamily={fonts.oswaldMedium} opacity={faint ? 0.6 : 1}>
+      <AnimatedSvgText x={x as unknown as number} y={labelY} fontSize={m.emphasis || selected ? 12 : 11} fill={col} textAnchor={anchor} fontFamily={fonts.oswaldMedium} opacity={faint ? 0.6 : 1}>
         {m.label}
       </AnimatedSvgText>
     </Svg>
@@ -356,9 +388,9 @@ export function DeviationMeter({ cents, rangeCents = 30, label, fit, bare }: { c
         <Rect x={0} y={0} width={w} height={h} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={h / 2} x2={w - 10} y2={h / 2} stroke="rgba(255,255,255,0.15)" />
         <Line x1={150} y1={6} x2={150} y2={h - 6} stroke={colors.textSub} strokeWidth={1.5} />
-        <SvgText x={150} y={h - 3} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>0</SvgText>
-        <SvgText x={12} y={h - 3} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>−{rangeCents} ¢ NARROWER</SvgText>
-        <SvgText x={w - 12} y={h - 3} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>WIDER +{rangeCents} ¢</SvgText>
+        <SvgText x={150} y={h - 3} fontSize={10.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>0</SvgText>
+        <SvgText x={12} y={h - 3} fontSize={10.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>−{rangeCents} ¢ NARROWER</SvgText>
+        <SvgText x={w - 12} y={h - 3} fontSize={10.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>WIDER +{rangeCents} ¢</SvgText>
         <Polygon points={`${x},${h / 2 - 9} ${x - 6},${h / 2 + 3} ${x + 6},${h / 2 + 3}`} fill={ROLE[role]} />
       </Svg>
       {bare ? null : (

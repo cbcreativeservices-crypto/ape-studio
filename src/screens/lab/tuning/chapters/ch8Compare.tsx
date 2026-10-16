@@ -15,7 +15,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { TUNING_SYSTEMS, SYNTONIC_COMMA, frequencyFromRatio, fracDiv, frac, fracLabel } from '../../../../features/tuning/tuningMath';
 import { concatWithGap, renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Card, CentsRail, CENTS_RAIL_W, Eyebrow, Lead, MathLine, Prompt, usePreloadClips, type RailMarker } from '../components/primitives';
+import { Body, Card, CentsRail, CENTS_RAIL_W, centsRailH, Eyebrow, Lead, MathLine, Prompt, usePreloadClips, type RailMarker } from '../components/primitives';
 import { HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
@@ -128,7 +128,7 @@ export function Ch8Compare({ ctx }: ChapterProps) {
               soundCell(status),
             ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
             <CentsRail
               markers={markers}
               height={RAIL_H}

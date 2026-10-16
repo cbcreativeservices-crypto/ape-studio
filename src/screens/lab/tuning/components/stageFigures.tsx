@@ -49,16 +49,16 @@ export function Spiral({ fit = true, highlight = null }: { fit?: boolean; highli
         {pts.map((p) => (
           <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={p.s.index}>
             <Circle cx={p.x} cy={p.y} r={p.s.index === 0 || p.s.index === 12 ? 6 : 3.5} fill={p.s.index === 12 ? ROLE.error : p.s.index === 0 ? ROLE.exact : colors.textSecondary} />
-            <SvgText x={p.x + (p.x > cx ? 9 : -9)} y={p.y + 3.5} fontSize={10} fill={p.s.index === 12 ? ROLE.error : colors.textSecondary} textAnchor={p.x > cx ? 'start' : 'end'} fontFamily={fonts.oswaldMedium}>{p.s.spelling}</SvgText>
+            <SvgText x={p.x + (p.x > cx ? 9 : -9)} y={p.y + 3.5} fontSize={11.5} fill={p.s.index === 12 ? ROLE.error : colors.textSecondary} textAnchor={p.x > cx ? 'start' : 'end'} fontFamily={fonts.oswaldMedium}>{p.s.spelling}</SvgText>
           </Svg>
         ))}
         {/* the measurement bracket between expected and actual */}
         <Line x1={first.x} y1={first.y - 8} x2={last.x} y2={last.y + 8} stroke={ROLE.error} strokeWidth={1.5} strokeDasharray="3,2" />
         {highlight === 'C' || highlight === 'both' ? <Circle cx={first.x} cy={first.y} r={11} fill="none" stroke={ROLE.exact} strokeWidth={2} /> : null}
         {highlight === 'B♯' || highlight === 'both' ? <Circle cx={last.x} cy={last.y} r={11} fill="none" stroke={ROLE.error} strokeWidth={2} /> : null}
-        <SvgText x={cx} y={cy - 4} fontSize={11} fill={ROLE.error} textAnchor="middle" fontFamily={fonts.oswaldMedium}>gap: {PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢</SvgText>
-        <SvgText x={cx} y={cy + 11} fontSize={10} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>EXPECTED C · ACTUAL B♯</SvgText>
-        <SvgText x={cx} y={cy + 25} fontSize={10} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PYTHAGOREAN COMMA</SvgText>
+        <SvgText x={cx} y={cy - 4} fontSize={12.5} fill={ROLE.error} textAnchor="middle" fontFamily={fonts.oswaldMedium}>gap: {PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢</SvgText>
+        <SvgText x={cx} y={cy + 12} fontSize={11} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>EXPECTED C · ACTUAL B♯</SvgText>
+        <SvgText x={cx} y={cy + 27} fontSize={11} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PYTHAGOREAN COMMA</SvgText>
       </Svg>
     </View>
   );
@@ -83,9 +83,9 @@ export function DeviationChart({ system, selected, onSelect, fit = true }: { sys
             by HEIGHT at ×0.974 — a 9 was 8.8 pt on the glass. */}
         {/* Top right, clear of every bar (the largest positive deviation here
             is +9.78 ¢, 21 px): beside the axis it ran into D's "+3.9" label. */}
-        <SvgText x={W - 12} y={14} fontSize={9.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>0 ¢ = EQUAL TEMPERAMENT</SvgText>
-        <SvgText x={12} y={14} fontSize={9.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>+ HIGHER</SvgText>
-        <SvgText x={12} y={zeroY + 13} fontSize={9.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>− LOWER</SvgText>
+        <SvgText x={W - 12} y={14} fontSize={11} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>0 ¢ = EQUAL TEMPERAMENT</SvgText>
+        <SvgText x={12} y={14} fontSize={11} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>+ HIGHER</SvgText>
+        <SvgText x={12} y={zeroY + 14} fontSize={11} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>− LOWER</SvgText>
         {notes.map((n, i) => {
           const dev = deviationFromEqualCents(n);
           const x = 40 + i * 38;
@@ -97,8 +97,8 @@ export function DeviationChart({ system, selected, onSelect, fit = true }: { sys
               {/* A full-height hit lane per note: the bar alone (18 × 2 px for an exact note) was too small to tap. */}
               <Rect x={x - 18} y={16} width={36} height={H - 24} fill="transparent" />
               <Rect x={x - 9} y={dev >= 0 ? zeroY - h : zeroY} width={18} height={Math.max(2, h)} fill={ROLE[role]} opacity={i === selected ? 1 : 0.6} stroke={i === selected ? ROLE.active : 'none'} />
-              <SvgText x={x} y={H - 8} fontSize={9.5} fill={i === selected ? ROLE.active : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{n.spelling}</SvgText>
-              <SvgText x={x} y={dev >= 0 ? zeroY - h - 4 : zeroY + h + 11} fontSize={9.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{Math.abs(dev) < 0.05 ? '0' : `${dev > 0 ? '+' : ''}${dev.toFixed(1)}`}</SvgText>
+              <SvgText x={x} y={H - 7} fontSize={11.5} fill={i === selected ? ROLE.active : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{n.spelling}</SvgText>
+              <SvgText x={x} y={dev >= 0 ? zeroY - h - 4 : zeroY + h + 12} fontSize={10.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{Math.abs(dev) < 0.05 ? '0' : `${dev > 0 ? '+' : ''}${dev.toFixed(1)}`}</SvgText>
             </Svg>
           );
         })}

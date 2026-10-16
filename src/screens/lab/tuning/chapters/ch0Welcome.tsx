@@ -11,7 +11,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { concatWithGap, renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, Lead, Row, usePreloadClips, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, centsRailH, Lead, Row, usePreloadClips, type RailMarker } from '../components/primitives';
 import { StageFit } from '../../rack/StageFit';
 import { TuningRackLayout, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
@@ -73,7 +73,7 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
           soundCell(status),
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
             <CentsRail markers={markers} divisions={false} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
           </StageFit>
         ),

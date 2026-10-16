@@ -15,7 +15,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { buildEqualChromatic, ET_SEMITONE, ET_SEMITONE_RATIO, ET_FIFTH, ET_MAJOR_THIRD, PURE_FIFTH, JUST_MAJOR_THIRD, frequencyFromRatio } from '../../../../features/tuning/tuningMath';
 import { concatWithGap, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Card, CentsRail, CENTS_RAIL_W, EquationStage, Eyebrow, Lead, MathLine, Prompt, useMarkWhen, usePreloadClips, type RailMarker } from '../components/primitives';
+import { Body, Card, CentsRail, CENTS_RAIL_W, centsRailH, EquationStage, Eyebrow, Lead, MathLine, Prompt, useMarkWhen, usePreloadClips, type RailMarker } from '../components/primitives';
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -91,7 +91,7 @@ export function Ch10Equal({ ctx }: ChapterProps) {
           soundCell(status),
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
             <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
           </StageFit>
         ),
