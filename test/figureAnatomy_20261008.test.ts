@@ -57,7 +57,8 @@ import { CY as GONG_CY, GONG, MALLET_REACH, playerAt, strikePoint as gongStrike 
 // Figure pass 3 (owner 2026-10-15): hands on instruments, one hand model.
 import { DIP_RATIO, digitLength, fingerFlexDeg, HAND, HAND_LENGTH, handFrame, handOn, LIMITS, thumbSide, wristBendDeg, type HandSkeleton, type V3 as HV3 } from '../src/screens/lab/miking/lessons/shared/players/handModel.ts';
 import { FRET_CONTACT, fretArm3, pickFront } from '../src/screens/lab/miking/lessons/shared/players/handPoses.ts';
-import { guitarPlayerPose } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
+import { guitarPlayerPose, lapHands } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
+import { C03_VARIANTS } from '../src/screens/lab/miking/lessons/c03Resonator/model.ts';
 import { sceneOf as guitarSceneOf } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
 import { C01_VARIANTS } from '../src/screens/lab/miking/lessons/c01Guitar/model.ts';
 import { C05A_VARIANTS } from '../src/screens/lab/miking/lessons/c05aBanjo/model.ts';
@@ -759,9 +760,16 @@ function handProblems(c: HandCase): string[] {
 /** The guitar family's hands (C01, C05A–C, C07; E07 draws C01's player): fretting (front = top: one skeleton) and picking. */
 function guitarHandCases(): HandCase[] {
   const out: HandCase[] = [];
-  for (const gv of [...C01_VARIANTS, ...C05A_VARIANTS, ...C05B_VARIANTS, ...C05C_VARIANTS, ...C07_VARIANTS]) {
+  for (const gv of [...C01_VARIANTS, ...C03_VARIANTS, ...C05A_VARIANTS, ...C05B_VARIANTS, ...C05C_VARIANTS, ...C07_VARIANTS]) {
     const sc = guitarSceneOf(gv);
-    if (sc.o.lap) continue;
+    if (sc.o.lap) {
+      // C03 square neck, lap style: the bar hand (index on the bar, thumb and middle on its sides, ring and little
+      // resting behind it) and the picking hand (thumb and finger picks on the strings, ring and little planted).
+      const lap = lapHands(sc);
+      out.push({ name: `${gv.id} bar hand`, sk: lap.L, elbow: lap.elbowL, contact: [0, 1, 2, 3, 4] });
+      out.push({ name: `${gv.id} lap picking`, sk: lap.R, elbow: lap.elbowR, contact: [0, 1, 2, 3, 4] });
+      continue;
+    }
     const front = guitarPlayerPose(sc, 'side');
     const arm = fretArm3(front.shoulderL, front.handL.board!);
     out.push({ name: `${gv.id} fretting`, sk: front.handL.posed!.sk, elbow: arm.elbow, contact: [...FRET_CONTACT] });
@@ -801,8 +809,8 @@ describe('figure pass 3 (owner 2026-10-15): hands on instruments — one hand mo
   });
 
   const cases = guitarHandCases();
-  it(`guitar family (C01 C05A–C C07; E07 shares C01): ${cases.length} posed hands`, () => {
-    assert.ok(cases.length >= 16);
+  it(`guitar family (C01 C03 C05A–C C07; E07 shares C01): ${cases.length} posed hands`, () => {
+    assert.ok(cases.length >= 20);
   });
   for (const c of cases)
     it(`${c.name}: five digits, thumb on its side, joints in range, wrist ≤ 70° (3-D), playing digits on their places`, () => {

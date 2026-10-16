@@ -21,7 +21,7 @@
 import { fretX } from './guitarSpec.ts';
 import type { GuitarScene } from './guitarModel.ts';
 import { angleOf, BODY, pt, toward, type Hand, type PlayerPose, type Pt } from '../players/playerPose.ts';
-import { FLAT_VIEW, fretArm3, fretFront, pickFront } from '../players/handPoses.ts';
+import { FLAT_VIEW, fretArm3, fretFront, LAP_SIDE, LAP_TOP, lapBarHand, lapPickHand, pickFront } from '../players/handPoses.ts';
 import { v3, type HandView } from '../players/handModel.ts';
 
 /** Four neighbouring fret spaces within a hand's reach (≤ 100 mm), lowest
@@ -98,6 +98,42 @@ export function fretArm(s: Pt, k: Pt): { wrist: Pt; elbow: Pt; bend: number } {
     }
   }
   return best!;
+}
+
+/**
+ * THE LAP STEEL'S HANDS (figure pass 3), posed once in the instrument's frame
+ * (x along the strings, y across — the player on −y — z up off the top) and
+ * seen from the audience and from above: the bar hand over the 7th fret
+ * (index on the bar, thumb and middle on its sides, ring and little damping
+ * behind it), the picking hand by the bridge (thumb pick on a low string,
+ * finger picks on high strings, ring and little planted on the top). The
+ * elbows are the two views' drawing elbows read together as one 3-D point.
+ */
+const lapCache = new WeakMap<GuitarScene, ReturnType<typeof lapHandsOf>>();
+export function lapHands(sc: GuitarScene) {
+  let h = lapCache.get(sc);
+  if (!h) {
+    h = lapHandsOf(sc);
+    lapCache.set(sc, h);
+  }
+  return h;
+}
+function lapHandsOf(sc: GuitarScene) {
+  const f = sc.fit;
+  const g = sc.g;
+  const hx = f.head.c.x;
+  const bx = barX(g.L);
+  const zs = g.h(bx);
+  const half = Math.max(14, g.boardHalf(bx) - 4);
+  const sv = -f.head.c.z + 150 + 22;
+  const lh = g.lowerH;
+  const elbowR = v3(hx - 233, -lh - 40, -(sv + 170));
+  const elbowL = v3((Math.min(hx + 270, bx - 30) + Math.min(hx + 250, bx - 40)) / 2, -lh - 30, -(sv + 175));
+  const L = lapBarHand({ bx, zs, half, elbow: elbowL });
+  const xp = Math.max(40, Math.min(f.pick.max.x - 20, 60));
+  const R = lapPickHand({ xp, zs: g.h(xp), half: Math.max(16, g.boardHalf(g.edge) - 2), elbow: elbowR });
+  const bar = { a: v3(bx, -half - 22, zs + 11), b: v3(bx, half + 22, zs + 11), r: 11 };
+  return { L, R, elbowL, elbowR, bar, zs };
 }
 
 export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerPose {
@@ -206,6 +242,7 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
   // LAP. The bar over the 7th fret, resting on the strings.
   const bx = barX(g.L);
   const D = g.depth;
+  const lap3 = lapHands(sc);
   if (view === 'side') {
     // Engine side view of the lap posture: v = −zG (the top faces up, −v).
     const hv = -f.head.c.z;
@@ -214,10 +251,14 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
     const shoulderR = pt(hx - BODY.shoulderHalf, sv);
     const shoulderL = pt(hx + BODY.shoulderHalf, sv);
     const strings = -g.h(g.edge);
-    const elbowR = pt(hx - 236, sv + 170);
-    const handR = handAt(elbowR, pt(40, strings - 46), 'pick');
-    const elbowL = pt(Math.min(hx + 270, bx - 30), sv + 175);
-    const handL: Hand = { ...handAt(elbowL, pt(bx, strings - 58), 'bar'), board: { v: strings - 11, half: 11, tips: [bx] } };
+    void strings;
+    // Figure pass 3: both hands posed bone by bone in the lap steel's frame (lapHands) and seen from the audience.
+    const elbowR = pt(lap3.elbowR.x, -lap3.elbowR.z);
+    const elbowL = pt(lap3.elbowL.x, -lap3.elbowL.z);
+    const wR = LAP_SIDE(lap3.R.frame.o);
+    const wL = LAP_SIDE(lap3.L.frame.o);
+    const handR: Hand = { wrist: pt(wR.u, wR.v), dir: 0, kind: 'pick', posed: { sk: lap3.R, view: LAP_SIDE } };
+    const handL: Hand = { wrist: pt(wL.u, wL.v), dir: 0, kind: 'bar', board: { v: -lap3.zs - 11, half: 11, tips: [bx] }, posed: { sk: lap3.L, view: LAP_SIDE, bar: lap3.bar } };
     const hipV = Math.max(D + 50, neck.v + 470);
     const floor = sc.floorY;
     return {
@@ -246,10 +287,13 @@ export function guitarPlayerPose(sc: GuitarScene, view: 'side' | 'top'): PlayerP
   const neck = pt(hx, hv + 18);
   const shoulderR = pt(hx - BODY.shoulderHalf, hv + 24);
   const shoulderL = pt(hx + BODY.shoulderHalf, hv + 24);
-  const elbowR = pt(hx - 230, -lh - 40);
-  const handR = handAt(elbowR, pt(34, -8), 'above');
-  const elbowL = pt(Math.min(hx + 250, bx - 40), -lh - 30);
-  const handL: Hand = { ...handAt(elbowL, pt(bx + 10, -6), 'bar'), board: { v: 0, half: 38, tips: [bx] } };
+  // Figure pass 3: the same posed hands seen from above.
+  const elbowR = pt(lap3.elbowR.x, lap3.elbowR.y);
+  const elbowL = pt(lap3.elbowL.x, lap3.elbowL.y);
+  const wR = LAP_TOP(lap3.R.frame.o);
+  const wL = LAP_TOP(lap3.L.frame.o);
+  const handR: Hand = { wrist: pt(wR.u, wR.v), dir: Math.PI / 2, kind: 'above', posed: { sk: lap3.R, view: LAP_TOP } };
+  const handL: Hand = { wrist: pt(wL.u, wL.v), dir: Math.PI / 2, kind: 'bar', board: { v: 0, half: 38, tips: [bx] }, posed: { sk: lap3.L, view: LAP_TOP, bar: lap3.bar } };
   return {
     view: 'above',
     posture: 'lap',

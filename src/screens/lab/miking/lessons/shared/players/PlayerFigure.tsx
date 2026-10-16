@@ -45,7 +45,7 @@
  * <FigureHead/>.
  */
 import { useMemo, type ReactNode } from 'react';
-import { BlurMask, Circle, Group, LinearGradient, Mask, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, ColorMatrix, Group, LinearGradient, Mask, Paint, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { angleOf, BODY, dist, lerp, poseHit, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
 import { h3, HAND, type HandSkeleton, type HandView, type V3 } from './handModel.ts';
 import { FLAT_VIEW, fretFront, pickFront } from './handPoses.ts';
@@ -804,7 +804,14 @@ export function handShape(h: Hand, fore?: number, foreLen?: number): HandShape {
   if (h.posed) {
     const d = drawHand3(h.posed.sk, h.posed.view, { fore, foreshortened: foreLen !== undefined && foreLen < 0.85 * 255, cut: h.posed.cut });
     const pk = h.posed.pick ? pickPath(h.posed.pick, h.posed.view, d.path) : null;
-    return { path: d.path, lines: d.lines, pick: pk, bar: null, thumbBehind: d.behind, nails: d.nails };
+    let bar: SkPath | null = null;
+    if (h.posed.bar) {
+      const v = h.posed.view;
+      const a = v(h.posed.bar.a);
+      const b = v(h.posed.bar.b);
+      bar = capsule(pt(a.u, a.v), pt(b.u, b.v), h.posed.bar.r, h.posed.bar.r);
+    }
+    return { path: d.path, lines: d.lines, pick: pk, bar, thumbBehind: d.behind, nails: d.nails };
   }
   if (h.kind === 'fret' && h.board && h.board.tips.length >= 4) {
     const sk = fretFront(h as Hand & { board: NonNullable<Hand['board']> });
@@ -1885,6 +1892,24 @@ function Bar({ b }: { b: Built['bars'][number] }) {
   );
 }
 
+/**
+ * A player that RECEDES (charter §6: neighbours recede) stays OPAQUE (figure
+ * pass 3: dimming by opacity let the thighs show through the arms — the
+ * owner's rule is opaque figures): its colours are blended toward the stage's
+ * dark (`RECEDE_BG`) by `dim`, as one layer.
+ */
+const RECEDE_BG = [0.075, 0.078, 0.094] as const;
+function recede(dim: number) {
+  if (dim >= 1) return undefined;
+  const k = Math.max(0, dim);
+  const m = [k, 0, 0, 0, (1 - k) * RECEDE_BG[0], 0, k, 0, 0, (1 - k) * RECEDE_BG[1], 0, 0, k, 0, (1 - k) * RECEDE_BG[2], 0, 0, 0, 1, 0];
+  return (
+    <Paint>
+      <ColorMatrix matrix={m} />
+    </Paint>
+  );
+}
+
 /** An 'above' pose with a `facing`: turned about the neck so the chest faces
  *  that way (the pose is authored chest toward +v). */
 function aboveTurn(pose: PlayerPose) {
@@ -1903,7 +1928,7 @@ export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose
   const upper = part !== 'legs';
   const isLeg = (tone: FigureTone) => tone === 'trousers' || tone === 'shoe';
   return (
-    <Group opacity={dim} transform={aboveTurn(pose)}>
+    <Group layer={recede(dim)} transform={aboveTurn(pose)}>
       {legs && b.shadow ? (
         <Path path={b.shadow} color="#000" opacity={0.45}>
           <BlurMask blur={14} style="normal" />
@@ -1962,7 +1987,7 @@ export function PlayerInFront({ pose, dim = 1, hands = true }: { pose: PlayerPos
   const b = built(pose);
   const front = hands ? b.front : b.front.filter((m) => m.tone !== 'skin');
   return (
-    <Group opacity={dim} transform={aboveTurn(pose)}>
+    <Group layer={recede(dim)} transform={aboveTurn(pose)}>
       {b.bars.map((q, i) => (
         <Bar key={`bar${i}`} b={q} />
       ))}

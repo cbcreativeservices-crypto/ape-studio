@@ -195,6 +195,56 @@ export function pickFront(h: Hand, stringsD = 6): HandSkeleton & { pick: { a: V3
   return { ...sk, pick: { a: h3.add(c, h3.mul(across, -9)), b: h3.add(c, h3.mul(across, 9)), tip: h3.add(c, h3.mul(pd(f), 17)) } };
 }
 
+/**
+ * LAP STEEL (C03 square neck; figure pass 3) — the instrument face up across
+ * the lap, in its own frame: x along the strings toward the nut, y across
+ * them (−y the player's side, the low strings), z up off the top. `zs`: the
+ * strings' height over the top; `half`: the strings' half-spread there.
+ *
+ * THE BAR HAND (left): palm down over the bar, the fingers pointing across it
+ * away from the player; the index lies along the top of the bar pressing it
+ * down, the thumb (on the bridge side) and the middle finger (on the nut
+ * side) grip its two sides, the ring and little fingers rest on the strings
+ * BEHIND it — between the bar and the nut — to damp them. A bar of radius
+ * `r` lies on the strings at `bx`.
+ */
+export function lapBarHand(o: { bx: number; zs: number; half: number; r?: number; elbow: V3 }): HandSkeleton {
+  const r = o.r ?? 11;
+  const zc = o.zs + r; // the bar's axis
+  const f = handFrame(v3(o.bx + 6, -o.half - 80, zc + 58), v3(0.1, 1, -0.4), v3(0, 0, 1), v3(-1, 0, 0));
+  const fingers = [
+    v3(o.bx + 2, o.half * 0.3, zc + r + 8.5), // index: pad on the top of the bar
+    v3(o.bx + r + 8.5, -o.half * 0.2, zc + 2), // middle: on the bar's nut side
+    v3(o.bx + 36, -o.half * 0.15, o.zs + 8.5), // ring: resting on the strings behind the bar
+    v3(o.bx + 50, -o.half * 0.5, o.zs + 8.5), // little: resting, nearer the player
+  ];
+  const thumb = v3(o.bx - r - 9.5, -o.half * 0.55, zc + 1); // on the bar's bridge side
+  return fitHand(f, fingers, thumb, { elbow: o.elbow, slide: 60, curl: 0.9, keep: (g) => (g.z.z < 0.5 ? 3000 * (0.5 - g.z.z) ** 2 : 0) });
+}
+
+/**
+ * THE PICKING HAND on a lap steel (right): arched over the strings just
+ * toward the neck from the bridge (`xp`), palm down — the thumb (with its
+ * thumb pick) on a low string, the index and middle (finger picks) on high
+ * strings, the ring and little fingers planted on the top beyond the strings
+ * (`topY`: their side's edge of the strings) to steady the hand.
+ */
+export function lapPickHand(o: { xp: number; zs: number; half: number; elbow: V3 }): HandSkeleton {
+  const f = handFrame(v3(o.xp - 70, -o.half - 75, o.zs + 70), v3(0.35, 1, -0.45), v3(0, 0, 1), v3(1, 0, 0));
+  const fingers = [
+    v3(o.xp + 6, o.half * 0.25, o.zs + 8.5),
+    v3(o.xp - 4, o.half * 0.7, o.zs + 8.5),
+    v3(o.xp - 40, o.half + 22, 8.5),
+    v3(o.xp - 58, o.half + 26, 8.5),
+  ];
+  const thumb = v3(o.xp + 16, -o.half * 0.55, o.zs + 9.5);
+  return fitHand(f, fingers, thumb, { elbow: o.elbow, slide: 60, curl: 0.9, keep: (g) => (g.z.z < 0.5 ? 3000 * (0.5 - g.z.z) ** 2 : 0) });
+}
+
+/** The lap steel's views of its own frame: from the audience (the top faces up) and from above. */
+export const LAP_SIDE: HandView = (q) => ({ u: q.x, v: -q.z, d: q.y });
+export const LAP_TOP: HandView = (q) => ({ u: q.x, v: q.y, d: q.z });
+
 /** The hand's reach and widths, for posers that place a hand by its palm. */
 export const PALM_LEN = HAND.fingers[1].mcp.x;
 export const HAND_LEN = BODY.handLen;

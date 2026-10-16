@@ -65,8 +65,9 @@ export type Hand = {
    *  seen in — the drawing paints this skeleton (PlayerFigure.drawHand3); the
    *  `wrist` above is its projected wrist. `cut`: parts behind this plane are
    *  painted behind the instrument; `pick`: a pick held in it (its broad
-   *  end's corners and its point). */
-  posed?: { sk: HandSkeleton; view: HandView; cut?: { p: V3; n: V3 }; pick?: { a: V3; b: V3; tip: V3 } };
+   *  end's corners and its point); `bar`: a steel bar held in it (its axis's
+   *  ends and radius). */
+  posed?: { sk: HandSkeleton; view: HandView; cut?: { p: V3; n: V3 }; pick?: { a: V3; b: V3; tip: V3 }; bar?: { a: V3; b: V3; r: number } };
 };
 
 /** 'side': in profile (added 2026-10-05 for the pianist and the drummer);
