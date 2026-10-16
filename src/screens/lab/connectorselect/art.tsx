@@ -10,9 +10,9 @@
  * layer lists in data/practice.ts. Diagrammatic, not photoreal — these are
  * teaching sections, and nothing here pretends to be a measurement.
  */
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { View } from 'react-native';
-import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import type { SectionKind } from './data/practice';
@@ -132,7 +132,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           <Circle cx={27} cy={CY} r={3.2 * MM} fill="#000" />
           <Path d={`M ${27 - nutR * 0.8} ${CY - nutR * 0.35} L ${27 - nutR * 0.3} ${CY - nutR * 0.85}`} stroke="#ffffff" strokeWidth={0.8} opacity={0.35} />
         </G>
-        <SvgText x={27} y={140} fill={hi('jack') ?? '#7d8590'} fontSize={10} textAnchor="middle">JACK</SvgText>
+        <SvgText x={27} y={134} fill={hi('jack') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>JACK</SvgText>
 
         {/* contacts: tip (ball + neck), insulator, ring, insulator, sleeve */}
         <G onPress={() => onSelect('contacts')}>
@@ -144,7 +144,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           <Cyl x0={x(SHAFT.ring)} x1={x(SHAFT.ins2)} r={R_SHAFT} fill="#141518" stroke="#000" hiOp={0.12} />
           <Cyl x0={x(SHAFT.ins2)} x1={x(SHAFT.sleeve)} r={R_SHAFT} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} sw={sw('contacts')} />
         </G>
-        <SvgText x={(X_TIP + X_BARREL) / 2} y={58} fill={hi('contacts') ?? '#7d8590'} fontSize={10} textAnchor="middle">CONTACTS</SvgText>
+        <SvgText x={(X_TIP + X_BARREL) / 2} y={58} fill={hi('contacts') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>CONTACTS</SvgText>
 
         {/* plug handle: nose cone, barrel with grip grooves */}
         <G onPress={() => onSelect('plug')}>
@@ -154,7 +154,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
             <Line key={f} x1={X_BARREL + (X_BOOT - X_BARREL) * f} y1={CY - R_BARREL + 0.8} x2={X_BARREL + (X_BOOT - X_BARREL) * f} y2={CY + R_BARREL - 0.8} stroke="#15171a" strokeWidth={1.2} />
           ))}
         </G>
-        <SvgText x={(X_BARREL + X_BOOT) / 2} y={104} fill={hi('plug') ?? '#7d8590'} fontSize={10} textAnchor="middle">PLUG</SvgText>
+        <SvgText x={(X_BARREL + X_BOOT) / 2} y={104} fill={hi('plug') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>PLUG</SvgText>
 
         {/* strain-relief boot: ribbed, tapering from Ø10 to the cable */}
         <G onPress={() => onSelect('relief')}>
@@ -166,7 +166,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           })}
           <Path d={`M ${X_BOOT + 1} ${CY - 5 * MM + 1.6} L ${X_JACKET - 1} ${CY - R_CABLE + 0.9}`} stroke="#ffffff" strokeWidth={0.8} opacity={0.18} />
         </G>
-        <SvgText x={(X_BOOT + X_JACKET) / 2} y={58} fill={hi('relief') ?? '#7d8590'} fontSize={10} textAnchor="middle">RELIEF</SvgText>
+        <SvgText x={(X_BOOT + X_JACKET) / 2} y={58} fill={hi('relief') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>RELIEF</SvgText>
 
         {/* jacket */}
         <G onPress={() => onSelect('jacket')}>
@@ -174,7 +174,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           {/* the cut end of the jacket, a ring seen a little end-on */}
           <Path d={`M ${X_SHIELD} ${CY - R_CABLE} Q ${X_SHIELD + 1.8} ${CY} ${X_SHIELD} ${CY + R_CABLE}`} fill="none" stroke="#164a9e" strokeWidth={1} />
         </G>
-        <SvgText x={(X_JACKET + X_SHIELD) / 2} y={100} fill={hi('jacket') ?? '#7d8590'} fontSize={10} textAnchor="middle">JACKET</SvgText>
+        <SvgText x={(X_JACKET + X_SHIELD) / 2} y={104} fill={hi('jacket') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>JACKET</SvgText>
 
         {/* braided shield: a woven sleeve, combed open at its end */}
         <G onPress={() => onSelect('shield')}>
@@ -186,7 +186,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
             <Path key={k} d={`M ${X_INSUL - 6} ${CY + k * 1.1} Q ${X_INSUL - 3} ${CY + k * 2.2} ${X_INSUL - 0.5} ${CY + k * 3.4}`} fill="none" stroke={INK.shield} strokeWidth={0.6} />
           ))}
         </G>
-        <SvgText x={(X_SHIELD + X_INSUL) / 2} y={58} fill={hi('shield') ?? '#7d8590'} fontSize={10} textAnchor="middle">SHIELD</SvgText>
+        <SvgText x={(X_SHIELD + X_INSUL) / 2} y={58} fill={hi('shield') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>SHIELD</SvgText>
 
         {/* insulation: the twisted pair (two coloured insulated conductors) */}
         <G onPress={() => onSelect('insulation')}>
@@ -195,7 +195,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           <Path d={wire(0)} fill="none" stroke={hi('insulation') ?? '#a05f18'} strokeWidth={R_WIRE * 2 + (selected === 'insulation' ? 1.4 : 0.6)} strokeLinecap="round" />
           <Path d={wire(0)} fill="none" stroke={INK.insul} strokeWidth={R_WIRE * 2} strokeLinecap="round" />
         </G>
-        <SvgText x={301} y={100} fill={hi('insulation') ?? '#7d8590'} fontSize={10} textAnchor="middle">INSUL.</SvgText>
+        <SvgText x={301} y={104} fill={hi('insulation') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>INSUL.</SvgText>
 
         {/* conductors: bare stranded copper, the two ends splayed for soldering */}
         <G onPress={() => onSelect('conductors')}>
@@ -212,8 +212,12 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           ))}
         </G>
         {/* Anchored at the right edge: centred on 334 it ran past the
-            viewBox and read "CONDUCTOR" (full-screen pass 2026-09-30). */}
-        <SvgText x={357} y={58} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="end">CONDUCTORS</SvgText>
+            viewBox and read "CONDUCTOR" (full-screen pass 2026-09-30). On
+            the THIRD row, under INSUL. (art fix 2026-10-16: on the top row
+            it sat nine units from SHIELD and read "SHIELD CONDUCTORS"). Every
+            label carries the house face — without fontFamily the web drew
+            them in the browser's serif. */}
+        <SvgText x={357} y={120} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>CONDUCTORS</SvgText>
 
         {/* full-height invisible tap zones on top — the real touch targets */}
         {HIT_ZONES.map((z) => (
@@ -227,13 +231,40 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
 
 /* ── cross-sections ──────────────────────────────────────────────────────── */
 
-function Pair({ cx, cy, r = 7, gap = 8, tint = INK.copper }: { cx: number; cy: number; r?: number; gap?: number; tint?: string }) {
+/** A stranded copper conductor end-on: 7 strands (one round six), lit. */
+function Strands({ cx, cy, r, tint = INK.copper }: { cx: number; cy: number; r: number; tint?: string }) {
+  const s = r / 3;
+  const pts: [number, number][] = [[0, 0], ...[0, 1, 2, 3, 4, 5].map((k) => [Math.cos((Math.PI / 3) * k) * 2 * s, Math.sin((Math.PI / 3) * k) * 2 * s] as [number, number])];
   return (
     <G>
-      <Circle cx={cx - gap / 2} cy={cy} r={r} fill="#d9822b" />
-      <Circle cx={cx - gap / 2} cy={cy} r={r * 0.55} fill={tint} />
-      <Circle cx={cx + gap / 2} cy={cy} r={r} fill="#3d7dd6" />
-      <Circle cx={cx + gap / 2} cy={cy} r={r * 0.55} fill={tint} />
+      <Circle cx={cx} cy={cy} r={r} fill="#6b4a12" />
+      {pts.map(([x, y], i) => (
+        <G key={i}>
+          <Circle cx={cx + x} cy={cy + y} r={s * 0.98} fill={tint} stroke="#8a6418" strokeWidth={0.35} />
+          <Circle cx={cx + x - s * 0.3} cy={cy + y - s * 0.3} r={s * 0.35} fill="#fff3c4" opacity={0.55} />
+        </G>
+      ))}
+    </G>
+  );
+}
+
+/** One insulated conductor end-on: the coloured insulation, lit from the
+ *  upper left, round its stranded copper. */
+function Insulated({ cx, cy, r, color, core = 0.55 }: { cx: number; cy: number; r: number; color: string; core?: number }) {
+  return (
+    <G>
+      <Circle cx={cx} cy={cy} r={r} fill={color} stroke="#0c0d0f" strokeWidth={0.6} />
+      <Path d={`M ${cx - r * 0.78} ${cy - r * 0.15} A ${r * 0.8} ${r * 0.8} 0 0 1 ${cx + r * 0.15} ${cy - r * 0.78}`} fill="none" stroke="#ffffff" strokeWidth={r * 0.14} opacity={0.35} strokeLinecap="round" />
+      <Strands cx={cx} cy={cy} r={r * core} />
+    </G>
+  );
+}
+
+function Pair({ cx, cy, r = 7, gap = 8 }: { cx: number; cy: number; r?: number; gap?: number }) {
+  return (
+    <G>
+      <Insulated cx={cx - gap / 2} cy={cy} r={r} color="#d9822b" />
+      <Insulated cx={cx + gap / 2} cy={cy} r={r} color="#3d7dd6" />
     </G>
   );
 }
@@ -259,7 +290,7 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
         { r: 40, fill: INK.shield },
         { r: 28, fill: '#d9822b' },
       ];
-      inner = <Circle cx={C} cy={C} r={10} fill={INK.copper} />;
+      inner = <Strands cx={C} cy={C} r={10} />;
       break;
     case 'stereo_common':
       rings = [
@@ -272,10 +303,8 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
       rings = [{ r: 52, fill: '#1f1f22' }];
       inner = (
         <G>
-          <Circle cx={C - 16} cy={C} r={17} fill="#d9822b" />
-          <Circle cx={C - 16} cy={C} r={12} fill={INK.copper} />
-          <Circle cx={C + 16} cy={C} r={17} fill="#3d7dd6" />
-          <Circle cx={C + 16} cy={C} r={12} fill={INK.copper} />
+          <Insulated cx={C - 16} cy={C} r={17} color="#d9822b" core={0.7} />
+          <Insulated cx={C + 16} cy={C} r={17} color="#3d7dd6" core={0.7} />
         </G>
       );
       break;
@@ -285,7 +314,13 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
         { r: 42, fill: INK.shield },
         { r: 32, fill: '#e8e8ec' },
       ];
-      inner = <Circle cx={C} cy={C} r={7} fill={INK.copper} />;
+      // a solid centre conductor (75-ohm coax is solid copper)
+      inner = (
+        <G>
+          <Circle cx={C} cy={C} r={7} fill={INK.copper} stroke="#8a6418" strokeWidth={0.5} />
+          <Circle cx={C - 2.2} cy={C - 2.2} r={2.4} fill="#fff3c4" opacity={0.55} />
+        </G>
+      );
       break;
     case 'category':
       rings = [{ r: 52, fill: '#2b7de9' }];
@@ -316,8 +351,8 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
           <Pair cx={C - 16} cy={C - 14} r={6} gap={9} />
           <Pair cx={C + 16} cy={C - 14} r={6} gap={9} />
           <Pair cx={C} cy={C + 6} r={6} gap={9} />
-          <Circle cx={C - 18} cy={C + 20} r={7} fill="#c23a3a" />
-          <Circle cx={C + 18} cy={C + 20} r={7} fill="#1f1f22" stroke="#8b939c" strokeWidth={1} />
+          <Insulated cx={C - 18} cy={C + 20} r={7} color="#c23a3a" />
+          <Insulated cx={C + 18} cy={C + 20} r={7} color="#2a2a2e" />
         </G>
       );
       break;
@@ -326,9 +361,29 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
     <ExpandableFigure aspect={1} width={width} title="CROSS-SECTION" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox="0 0 120 120" width={w} height={h}>
-      {rings.map((ring, i) => (
-        <Circle key={i} cx={C} cy={C} r={ring.r} fill={ring.fill} stroke={ring.stroke ?? '#0c0d0f'} strokeWidth={1} />
-      ))}
+      {/* the cut layers, outside in: each lit from the upper left (a soft
+          highlight arc), a braid drawn as its woven strands (art fix
+          2026-10-16: the sections were flat concentric discs) */}
+      {rings.map((ring, i) => {
+        const next = rings[i + 1]?.r ?? 0;
+        const braid = ring.fill === INK.shield;
+        // an innermost braid is a 6-unit woven tube round the core space
+        const band = next > 0 ? ring.r - next : braid ? 6 : ring.r;
+        return (
+          <G key={i}>
+            <Circle cx={C} cy={C} r={ring.r} fill={ring.fill} stroke={ring.stroke ?? '#0c0d0f'} strokeWidth={1} />
+            {braid ? (
+              <G>
+                <Circle cx={C} cy={C} r={ring.r - band / 2} fill="none" stroke="#7d858f" strokeWidth={band * 0.9} />
+                <Circle cx={C} cy={C} r={ring.r - band * 0.3} fill="none" stroke="#e3e7ec" strokeWidth={band * 0.34} strokeDasharray="2.2 1.6" />
+                <Circle cx={C} cy={C} r={ring.r - band * 0.7} fill="none" stroke="#c9d0d7" strokeWidth={band * 0.34} strokeDasharray="1.6 2.2" />
+                {next === 0 ? <Circle cx={C} cy={C} r={ring.r - band} fill="#23252a" stroke="#0c0d0f" strokeWidth={0.6} /> : null}
+              </G>
+            ) : null}
+            <Path d={`M ${C - ring.r * 0.86} ${C - ring.r * 0.2} A ${ring.r * 0.88} ${ring.r * 0.88} 0 0 1 ${C + ring.r * 0.2} ${C - ring.r * 0.86}`} fill="none" stroke="#ffffff" strokeWidth={Math.max(1, band * 0.18)} opacity={0.16} strokeLinecap="round" />
+          </G>
+        );
+      })}
       {inner}
     </Svg>
     </View>
@@ -372,6 +427,7 @@ export function TesterFace({ state, pulse, a, b, word, controls }: {
   const fill = state === 'lit' ? colors.green : state === 'flicker' ? colors.gold : '#26262b';
   const wordColor = state === 'lit' ? colors.green : state === 'flicker' ? colors.gold : colors.textMuted;
   const ready = a != null && b != null;
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const a11y = ready ? `Continuity lamp ${word}: end A ${a} to end B ${b}.` : 'Continuity tester: pick a test point on each end to read the lamp.';
   return (
     <ExpandableFigure aspect={FACE_W / FACE_H} title="THE TESTER" controls={controls} render={(w, h) => (
@@ -379,10 +435,26 @@ export function TesterFace({ state, pulse, a, b, word, controls }: {
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox={`0 0 ${FACE_W} ${FACE_H}`} width={w} height={h}>
       <Rect x={0} y={0} width={FACE_W} height={FACE_H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
       <SvgText x={10} y={14} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>CONTINUITY TESTER</SvgText>
-      {/* the lamp */}
-      <Circle cx={40} cy={42} r={18} fill="#141416" stroke="#2c2c33" strokeWidth={1} />
-      <Circle cx={40} cy={42} r={14} fill={fill} stroke="#0c0d0f" strokeWidth={2} opacity={state === 'flicker' && pulse ? 0.35 : 1} />
-      {state !== 'dark' ? <Circle cx={35.5} cy={37.5} r={4} fill="#ffffff" opacity={0.5} /> : null}
+      {/* the lamp: a panel indicator (art fix 2026-10-16: was a flat disc) —
+          a knurled chrome bezel, a domed lens lit from inside, its glow on
+          the panel when it conducts */}
+      <Defs>
+        <RadialGradient id={`tfl${uid}`} cx="40%" cy="36%" r="70%">
+          <Stop offset="0" stopColor="#ffffff" stopOpacity={state === 'dark' ? 0.22 : 0.9} />
+          <Stop offset="0.32" stopColor={fill} stopOpacity={1} />
+          <Stop offset="1" stopColor="#050506" stopOpacity={0.85} />
+        </RadialGradient>
+        <LinearGradient id={`tfb${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor="#e1e5ea" />
+          <Stop offset="0.5" stopColor="#8d939c" />
+          <Stop offset="1" stopColor="#3c4048" />
+        </LinearGradient>
+      </Defs>
+      {state !== 'dark' ? <Circle cx={40} cy={42} r={21.5} fill={fill} opacity={state === 'flicker' && pulse ? 0.06 : 0.16} /> : null}
+      <Circle cx={40} cy={42} r={18} fill={`url(#tfb${uid})`} stroke="#0c0d0f" strokeWidth={1} />
+      <Circle cx={40} cy={42} r={16.2} fill="none" stroke="#2a2d33" strokeWidth={1.6} strokeDasharray="1.1 1.1" />
+      <Circle cx={40} cy={42} r={14} fill={`url(#tfl${uid})`} stroke="#0c0d0f" strokeWidth={1.5} opacity={state === 'flicker' && pulse ? 0.45 : 1} />
+      <Path d="M 31.5 38 A 9.5 9.5 0 0 1 37 32.6" fill="none" stroke="#ffffff" strokeWidth={1.6} opacity={0.55} strokeLinecap="round" />
       <SvgText x={40} y={68} fontSize={9} fill={wordColor} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? word : 'LAMP'}</SvgText>
       {/* the two probes: END A → lamp → END B */}
       <SvgText x={80} y={32} fontSize={9} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END A</SvgText>
