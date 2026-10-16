@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 00:42 · ccode · 01dc62ae
+changed: Miking figures pass 3: low brass hands on the instrument (horn levers and bell, tuba/euphonium valves)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 00:36 · ccode · a2918a24
 changed: Miking figures pass 3: lap-steel hands posed (bar and picks); dimmed players stay opaque
 affects other side: nothing (app only)
