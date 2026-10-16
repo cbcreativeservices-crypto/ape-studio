@@ -39,6 +39,7 @@ import {
   LinearGradient,
   Path,
   Rect,
+  RoundedRect,
   Skia,
   vec,
 } from '@shopify/react-native-skia';
@@ -852,14 +853,19 @@ function speakerHalfDeg(src: WaveSource, freq: number): number {
   return 170;
 }
 
-/** Squat sub cabinet with LF radiation rings (subs are omni at these sizes). */
+/** Sub cabinet from above (0.75 m × 0.54 m top panel) with LF radiation
+ *  rings (subs are omni at these sizes). */
 function SubGlyph({ x, y, dim }: { x: number; y: number; dim: boolean }) {
   const parts = useMemo(() => {
     const box = Skia.Path.Make();
     box.addRRect(Skia.RRectXY(Skia.XYWHRect(-9, -6.5, 18, 13), 2, 2));
+    // Seen from ABOVE, a sub shows its top panel: the ports are on the front
+    // and invisible from here (art grading 2026-10-16: two round "ports" on
+    // the top read as a front view). The top carries the two side handle
+    // recesses a real cabinet has.
     const port = Skia.Path.Make();
-    port.addCircle(-4.2, 0, 2.1);
-    port.addCircle(4.2, 0, 2.1);
+    port.addRRect(Skia.RRectXY(Skia.XYWHRect(-7.4, -2.6, 1.6, 5.2), 0.7, 0.7));
+    port.addRRect(Skia.RRectXY(Skia.XYWHRect(5.8, -2.6, 1.6, 5.2), 0.7, 0.7));
     const rings = Skia.Path.Make();
     rings.addCircle(0, 0, 13);
     rings.addCircle(0, 0, 19);
@@ -1331,6 +1337,9 @@ const ARRIVAL_COLORS = [WAVE, ACCENT_BLUE, '#5a6c94'];
  *  material/frequency-driven number). */
 type ArrivalLabel = { ms: string; db: string; color: string };
 
+/** Width of the ARRIVALS time/level table (glass units). */
+const ARRIVAL_STACK_W = 96;
+
 // ── RoomSceneView — the one view all 16 modules render through ───────────────
 
 export function RoomSceneView(p: RoomSceneProps) {
@@ -1349,15 +1358,21 @@ export function RoomSceneView(p: RoomSceneProps) {
   const roomMargin = ROOM_MARGIN + (wallT0 - WALL_T);
   const wallPx = wallT0 * ts;
   const outM = p.outside?.marginM ?? 0;
+  // ARRIVALS legend column (art grading 2026-10-16: the time/level table was
+  // drawn ON the room, over the very rays it lists). With the layer on, the
+  // room is fitted into the width left of a reserved column and the table
+  // stands in that column, off the drawing. On the phone glass the rooms are
+  // height-limited, so the room keeps its size and only moves left.
+  const arrReserve = p.layers.arrivals && outM <= 0 ? (ARRIVAL_STACK_W + 6) * ts : 0;
   const geo = useMemo(() => {
-    if (outM <= 0) return roomGeo(scene, w, h, roomMargin * ts);
+    if (outM <= 0) return roomGeo(scene, w - arrReserve, h, roomMargin * ts);
     // Fit room + outside zone, then inset to the room itself.
     const g = roomGeo({ ...scene, w: scene.w + 2 * outM, h: scene.h + 2 * outM }, w, h, roomMargin * ts);
     const o = outM * g.pxPerM;
     const wPx = scene.w * g.pxPerM;
     const hPx = scene.h * g.pxPerM;
     return { ...g, x0: g.x0 + o, y0: g.y0 + o, x1: g.x0 + o + wPx, y1: g.y0 + o + hPx, wPx, hPx, diag: Math.hypot(wPx, hPx) };
-  }, [scene, w, h, ts, roomMargin, outM]);
+  }, [scene, w, h, ts, roomMargin, outM, arrReserve]);
   // FULL SCREEN: report the room's own shape so the zoomed canvas is the room
   // (plus its label margin), not a tall box with the room floating mid-way.
   const report = useContext(StageAspectReport);
@@ -2189,8 +2204,17 @@ export function RoomSceneView(p: RoomSceneProps) {
         {/* Sources: illustrated glyphs by kind (visual standards §1). Point
             sources use the small side-view PA speaker (same icon as the
             diffraction lab), owner 2026-08-02. */}
+        {/* PLAN view, so the cabinet is drawn from ABOVE (art grading
+            2026-10-16: the side/front-view woofer icon lay flat in a top-down
+            room), true width, front turned to the listener. */}
         {pointSrcs.filter((s) => !s.muted).map((s, i) => (
-          <SideSpeakerGlyph key={`spk${i}`} x={s.x} y={s.y} s={Math.max(FLOOR_SPK_PX * ts, REAL_POINT_SPK_M * geo.pxPerM) / 14} />
+          <TopPointSpeakerGlyph
+            key={`spk${i}`}
+            x={s.x}
+            y={s.y}
+            widthPx={Math.max(FLOOR_SPK_PX * ts, REAL_POINT_SPK_M * geo.pxPerM)}
+            angle={Math.atan2(geo.y0 + scene.listener.y * geo.pxPerM - s.y, geo.x0 + scene.listener.x * geo.pxPerM - s.x)}
+          />
         ))}
         {/* Object glyphs scale about their own anchor with the text scale, so
             the speaker, the sub and the head grow with the room in FULL SCREEN
@@ -2269,22 +2293,27 @@ export function RoomSceneView(p: RoomSceneProps) {
             const ly = geo.y0 + scene.listener.y * geo.pxPerM;
             const src = scene.sources[0];
             const rot = src ? aboveRotation(src.x - scene.listener.x, src.y - scene.listener.y) : 0;
+            // The listener's SHOULDERS seen from above (0.46 m × 0.22 m, true
+            // scale with the head; art grading 2026-10-16: a ring round the
+            // head read as a "ring-and-dot"). Dark fill + light outline keep
+            // the listener findable on any map colour (walkthrough 2026-09-26).
+            const mPx = headPx / REAL_HEAD_ICON_M;
+            const shoulders = Skia.RRectXY(Skia.XYWHRect(lx - 0.23 * mPx, ly - 0.13 * mPx, 0.46 * mPx, 0.22 * mPx), 0.1 * mPx, 0.1 * mPx);
             return headFrontImg ? (
               <>
-                {/* Dark backing disc + light ring: the thin line head vanished on
-                    a black node line and blended into bright maps — the lesson's
-                    "drag the listener" needs it findable on ANY colour
-                    (walkthrough 2026-09-26). */}
-                <Circle cx={lx} cy={ly} r={headPx * 0.62} color={BG} opacity={0.72} />
-                <Circle cx={lx} cy={ly} r={headPx * 0.62} color={LINE} style="stroke" strokeWidth={Math.max(0.8, 0.06 * headPx)} opacity={0.9} />
                 <Group origin={vec(lx, ly)} transform={[{ rotate: rot }]}>
+                  <RoundedRect rect={shoulders} color={BG} opacity={0.85} />
+                  <RoundedRect rect={shoulders} color={LINE} style="stroke" strokeWidth={Math.max(0.8, 0.05 * headPx)} opacity={0.9} />
                   <IconMark image={headFrontImg} cx={lx} cy={ly} size={headPx} color={LINE} plate />
                   <IconMark image={headFrontImg} cx={lx} cy={ly} size={headPx} color={ACCENT_GREEN} opacity={0.28} />
                 </Group>
               </>
             ) : (
               <>
-                <Circle cx={lx} cy={ly} r={headPx * 0.62} color={BG} opacity={0.72} />
+                <Group origin={vec(lx, ly)} transform={[{ rotate: rot }]}>
+                  <RoundedRect rect={shoulders} color={BG} opacity={0.85} />
+                  <RoundedRect rect={shoulders} color={LINE} style="stroke" strokeWidth={Math.max(0.8, 0.05 * headPx)} opacity={0.9} />
+                </Group>
                 <ListenerGlyph x={lx} y={ly} size={headPx * 0.69} rotation={rot} />
               </>
             );
@@ -2348,7 +2377,7 @@ export function RoomSceneView(p: RoomSceneProps) {
                   style={[
                     styles.wallLabel,
                     styles.labelPlate,
-                    { fontSize: 9 * ts, color: '#dfe4ee', width: 120 * ts, textAlign: 'center', paddingHorizontal: 3 * ts, borderRadius: 3 * ts, ...pos },
+                    { fontSize: 10 * ts, color: '#dfe4ee', width: 120 * ts, textAlign: 'center', paddingHorizontal: 3 * ts, borderRadius: 3 * ts, ...pos },
                   ]}
                 >
                   {text}
@@ -2359,7 +2388,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {ringGapWide ? (
           // Inside the room's top-left corner on a plate — in the margin it
           // collided with the top wall's name on a small room (Reverb).
-          <RNText style={[styles.wallLabel, styles.labelPlate, { fontSize: 9 * ts, color: '#c9a45a', left: geo.x0 + 3 * ts, top: geo.y1 - 17 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
+          <RNText style={[styles.wallLabel, styles.labelPlate, { fontSize: 10 * ts, color: '#c9a45a', left: geo.x0 + 3 * ts, top: geo.y1 - 17 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
             RING GAP {'>'} λ
           </RNText>
         ) : null}
@@ -2368,7 +2397,7 @@ export function RoomSceneView(p: RoomSceneProps) {
             key={`probeL${i}`}
             // Dark plate: the blue label vanished on the blue cancelled area
             // exactly when the cardioid worked (walkthrough 2026-09-26).
-            style={[styles.wallLabel, styles.labelPlate, { fontSize: 9 * ts, color: ACCENT_BLUE, left: geo.x0 + pr.x * geo.pxPerM + 9 * ts, top: geo.y0 + pr.y * geo.pxPerM - 7 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}
+            style={[styles.wallLabel, styles.labelPlate, { fontSize: 10 * ts, color: ACCENT_BLUE, left: geo.x0 + pr.x * geo.pxPerM + 9 * ts, top: geo.y0 + pr.y * geo.pxPerM - 7 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}
           >
             {pr.label}
           </RNText>
@@ -2384,7 +2413,7 @@ export function RoomSceneView(p: RoomSceneProps) {
                 styles.wallLabel,
                 styles.labelPlate,
                 {
-                  fontSize: 9 * ts,
+                  fontSize: 10 * ts,
                   color: lb.color ?? '#dfe4ee',
                   paddingHorizontal: 3 * ts,
                   borderRadius: 3 * ts,
@@ -2397,19 +2426,19 @@ export function RoomSceneView(p: RoomSceneProps) {
             </RNText>
           );
         })}
-        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y0 - wallPx - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
+        <RNText style={[styles.wallLabel, { fontSize: 10 * ts, left: midX - 50 * ts, top: geo.y0 - wallPx - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(0)}
         </RNText>
-        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y1 + wallPx + 2 * ts, width: 100 * ts, textAlign: 'center' }]}>
+        <RNText style={[styles.wallLabel, { fontSize: 10 * ts, left: midX - 50 * ts, top: geo.y1 + wallPx + 2 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(2)}
         </RNText>
         <RNText
-          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x1 + wallPx + 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '90deg' }] }]}
+          style={[styles.wallLabel, { fontSize: 10 * ts, left: geo.x1 + wallPx + 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '90deg' }] }]}
         >
           {matLabel(1)}
         </RNText>
         <RNText
-          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x0 - wallPx - 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '-90deg' }] }]}
+          style={[styles.wallLabel, { fontSize: 10 * ts, left: geo.x0 - wallPx - 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '-90deg' }] }]}
         >
           {matLabel(3)}
         </RNText>
@@ -2419,50 +2448,25 @@ export function RoomSceneView(p: RoomSceneProps) {
             each other (legibility pass 2026-09-25); a stack beside the head
             keeps every number readable at 9 pt and never overlaps itself. */}
         {arrivalFan && arrivalFan.rows.length > 0 ? (() => {
-          const rowH = 12 * ts;
+          const rowH = 13 * ts;
           const padX = 5 * ts;
           const padY = 3 * ts;
-          const stackW = 96 * ts;
+          const stackW = ARRIVAL_STACK_W * ts;
           const stackH = arrivalFan.rows.length * rowH + padY * 2;
-          const lx = geo.x0 + scene.listener.x * geo.pxPerM;
           const ly = geo.y0 + scene.listener.y * geo.pxPerM;
-          // Beside the head, clear of the tick fan, on the side AWAY from the
-          // sources when both sides fit (so it never sits on the speaker or the
-          // direct ray); below the head when neither side has the room.
-          const gap = 34 * ts;
-          const srcX = scene.sources.reduce((acc, s) => acc + s.x, 0) / Math.max(1, scene.sources.length);
-          const preferRight = geo.x0 + srcX * geo.pxPerM <= lx;
-          const midTop = Math.max(2, Math.min(h - stackH - 2, ly - stackH / 2));
-          const side = (l: number) => ({ left: l, top: midTop });
-          const candidates = [
-            preferRight ? side(lx + gap) : side(lx - gap - stackW),
-            preferRight ? side(lx - gap - stackW) : side(lx + gap),
-            { left: lx - stackW / 2, top: ly + 22 * ts }, // below the head
-            { left: lx - stackW / 2, top: ly - 50 * ts - stackH }, // above the fan
-          ];
-          // Inside the ROOM, not just the canvas: the canvas margin holds the
-          // wall strip and its material label, which the stack must not cover
-          // (Reflection, deep walls 2026-09-26).
-          const inCanvas = (c: { left: number; top: number }) =>
-            c.left >= geo.x0 + 2 && c.left + stackW <= geo.x1 - 2 && c.top >= geo.y0 + 2 && c.top + stackH <= geo.y1 - 2;
-          const coversSource = (c: { left: number; top: number }) =>
-            scene.sources.some((s) => {
-              const sx = geo.x0 + s.x * geo.pxPerM;
-              const sy = geo.y0 + s.y * geo.pxPerM;
-              const m = 12 * ts;
-              return sx > c.left - m && sx < c.left + stackW + m && sy > c.top - m && sy < c.top + stackH + m;
-            });
-          const pick =
-            candidates.find((c) => inCanvas(c) && !coversSource(c)) ??
-            candidates.find(inCanvas) ??
-            { left: Math.max(geo.x0 + 2, Math.min(geo.x1 - stackW - 2, lx - stackW / 2)), top: midTop };
+          // In the reserved column right of the room, level with the listener
+          // (clamped to the glass) — never over the room or its rays.
+          const pick = {
+            left: w - arrReserve + 2 * ts,
+            top: Math.max(2, Math.min(h - stackH - 2, ly - stackH / 2)),
+          };
           const { left, top } = pick;
           return (
             <View pointerEvents="none" style={[styles.arrivalStack, { left, top, width: stackW, paddingHorizontal: padX, paddingVertical: padY, borderRadius: 4 * ts }]}>
               {arrivalFan.rows.map((l, i) => (
                 <View key={i} style={{ height: rowH, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <RNText style={[styles.msLabel, { fontSize: 9 * ts, color: l.color }]}>{l.ms}</RNText>
-                  <RNText style={[styles.dbLabel, { fontSize: 9 * ts, color: l.color }]}>{l.db}</RNText>
+                  <RNText style={[styles.msLabel, { fontSize: 10 * ts, color: l.color }]}>{l.ms}</RNText>
+                  <RNText style={[styles.dbLabel, { fontSize: 10 * ts, color: l.color }]}>{l.db}</RNText>
                 </View>
               ))}
             </View>
@@ -2570,26 +2574,32 @@ function DiffractedTrain({
   );
 }
 
-/** Small side-view PA speaker (front toward +x) — recognizable object, not a
- *  primitive: gradient cabinet, woofer + dust cap, horn slot, lit upper-left. */
-function SideSpeakerGlyph({ x, y, s }: { x: number; y: number; s: number }) {
+/** A small two-way cabinet seen from ABOVE (plan views): the top panel of a
+ *  0.45 m wide × 0.33 m deep box, the grille strip along its front edge and a
+ *  recessed handle on top, front toward `angle` (radians, canvas frame).
+ *  `widthPx` = the cabinet's real width at the room's scale. */
+function TopPointSpeakerGlyph({ x, y, widthPx, angle }: { x: number; y: number; widthPx: number; angle: number }) {
+  const u = widthPx / 0.45; // px per metre for this cabinet
   const parts = useMemo(() => {
-    const box = Skia.Path.Make();
-    box.addRRect(Skia.RRectXY(Skia.XYWHRect(-11 * s, -8 * s, 14 * s, 16 * s), 1.6 * s, 1.6 * s));
-    const horn = Skia.Path.Make();
-    horn.addRRect(Skia.RRectXY(Skia.XYWHRect(-1.4 * s, -5.6 * s, 3.4 * s, 2.6 * s), 0.8 * s, 0.8 * s));
-    return { box, horn };
-  }, [s]);
+    const W = 0.45 * u;
+    const D = 0.33 * u;
+    // Local frame: front toward +x; (0, 0) = the acoustic centre on the face.
+    const top = Skia.Path.Make();
+    top.addRRect(Skia.RRectXY(Skia.XYWHRect(-D, -W / 2, D, W), 0.03 * u, 0.03 * u));
+    const grille = Skia.Path.Make();
+    grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-0.035 * u, -W / 2 + 0.01 * u, 0.035 * u, W - 0.02 * u), 0.01 * u, 0.01 * u));
+    const handle = Skia.Path.Make();
+    handle.addRRect(Skia.RRectXY(Skia.XYWHRect(-D * 0.62, -0.07 * u, 0.05 * u, 0.14 * u), 0.02 * u, 0.02 * u));
+    return { top, grille, handle, D };
+  }, [u]);
   return (
-    <Group transform={[{ translateX: x }, { translateY: y }]}>
-      <Path path={parts.box}>
-        <LinearGradient start={vec(-11 * s, -8 * s)} end={vec(3 * s, 8 * s)} colors={[BODY_HI, BODY_LO]} />
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: angle }]}>
+      <Path path={parts.top}>
+        <LinearGradient start={vec(-parts.D, 0)} end={vec(0, 0)} colors={[BODY_LO, BODY_HI]} />
       </Path>
-      <Path path={parts.box} color="#5a5e6a" style="stroke" strokeWidth={1} />
-      <Circle cx={-0.4 * s} cy={2.6 * s} r={4.1 * s} color="#101116" />
-      <Circle cx={-0.4 * s} cy={2.6 * s} r={4.1 * s} color="#3c4049" style="stroke" strokeWidth={0.9 * s} />
-      <Circle cx={-0.4 * s} cy={2.6 * s} r={1.3 * s} color="#6d717d" />
-      <Path path={parts.horn} color="#101116" />
+      <Path path={parts.top} color="#5a5e6a" style="stroke" strokeWidth={1} />
+      <Path path={parts.grille} color="#101116" />
+      <Path path={parts.handle} color="#0d0e12" />
     </Group>
   );
 }

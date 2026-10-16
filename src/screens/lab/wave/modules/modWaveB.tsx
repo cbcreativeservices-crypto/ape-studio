@@ -994,13 +994,14 @@ export function CardioidSubModule(p: WaveModuleProps) {
             // 2026-09-26: it printed a level for an invisible spot).
             probes={[{ x: CSUB_REAR_PROBE.x, y: CSUB_REAR_PROBE.y, label: 'REAR MIC' }]}
             // Which box is which, and what is done to the rear one — the
-            // whole lesson (walkthrough 2026-09-26). Right of each sub, past
-            // its 0.75 m cabinet; AUDIENCE on the listener's side.
+            // whole lesson (walkthrough 2026-09-26). Right of each sub, clear
+            // of its 0.75 m cabinet by ~0.5 m (art grading 2026-10-16: at
+            // +0.6 m the tag touched the box); AUDIENCE on the listener's side.
             labels={[
-              { x: CSUB_FRONT.x + 0.6, y: CSUB_FRONT.y, text: 'FRONT SUB' },
+              { x: CSUB_FRONT.x + 0.9, y: CSUB_FRONT.y, text: 'FRONT SUB' },
               ...(soloFront
                 ? []
-                : [{ x: CSUB_REAR.x + 0.6, y: CSUB_REAR.y, text: `REAR SUB${rearInv ? ' · Ø' : ''} · ${rearDelayMs.toFixed(1)} ms`, color: '#ffc64d' }]),
+                : [{ x: CSUB_REAR.x + 0.9, y: CSUB_REAR.y, text: `REAR SUB${rearInv ? ' · Ø' : ''} · ${rearDelayMs.toFixed(1)} ms`, color: '#ffc64d' }]),
               { x: 7, y: 9.55, text: 'AUDIENCE ↓', side: 'center' as const },
             ]}
           />
