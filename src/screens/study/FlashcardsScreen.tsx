@@ -100,6 +100,11 @@ import {
   SessionTimerModal,
   SessionTimerBanner,
 } from '../../features/study/SessionTimer';
+import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { recordPaceSession } from '../../features/study/paceRecords';
+import { PaceTimerBar } from '../../features/study/PaceTimerBar';
+import { PaceTimerModal } from '../../features/study/PaceTimerModal';
+import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
@@ -703,6 +708,91 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   }, [card?.id]);
   const dwellOk = () => Date.now() - cardShownAt.current >= 1500;
 
+  // Pace timer (practice aid — device-local settings, never blocks study),
+  // restored 2026-10-16 (owner: "I had a pace viewer and HZ and BPM
+  // readouts"). It sits BESIDE the session-length clock (SessionTimer), which
+  // stays: the StudyHeader timer button opens the pace modal, the blue clock in
+  // the filter row opens the session length. Flashcards have no graded answer,
+  // so answered = a per-window advance counter (each move to another card), and
+  // marking a card KNOWN is the brain output / time-trial "correct" signal.
+  const { settings: pace, setEnabled, setPreset } = usePaceSettings('flashcards');
+  const running = useRunning('flashcards');
+  const trial = useTimeTrial('flashcards', achievementId);
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [paceAnswered, setPaceAnswered] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const elapsedRef = useRef(0);
+  const recordedRef = useRef(false);
+  const paceShown = pace.enabled || trial.active || !!trial.result;
+
+  // Fresh visit = fresh pace session (B-138, as Fill-in-Blank / Matching): the
+  // brain-output tally and the running flag live in the module-level store and
+  // would otherwise carry over from the previous visit.
+  useEffect(() => {
+    resetBrainOutput('flashcards');
+    setRunning('flashcards', true);
+  }, []);
+
+  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
+  // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
+  useEffect(() => {
+    if (!pace.enabled) {
+      startRef.current = null;
+      elapsedRef.current = 0;
+      recordedRef.current = false;
+      setElapsed(0);
+      resetBrainOutput('flashcards');
+      return;
+    }
+    if (!running) return; // paused → hold the clock where it is
+    startRef.current = Date.now() - elapsedRef.current * 1000; // resume from held time
+    const id = setInterval(() => {
+      if (startRef.current != null) {
+        const e = (Date.now() - startRef.current) / 1000;
+        elapsedRef.current = e;
+        setElapsed(e);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [pace.enabled, running]);
+
+  // RESET zeroes the readout's elapsed + advance counters (a fresh pace
+  // window) — earned study progress is untouched.
+  const handlePaceReset = useCallback(() => {
+    setPaceAnswered(0);
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    recordedRef.current = false;
+    setElapsed(0);
+    resetBrainOutput('flashcards');
+  }, []);
+
+  // ENABLING the timer opens a fresh pace window (same as RESET, B-083) —
+  // re-baselined once the topic loads too, since a persisted ON timer can
+  // hydrate before the cards arrive.
+  useEffect(() => {
+    if (!pace.enabled) return;
+    setPaceAnswered(0);
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    recordedRef.current = false;
+    setElapsed(0);
+    resetBrainOutput('flashcards');
+  }, [pace.enabled, items]);
+
+  // STOPWATCH: once a full pass of the deck has been advanced through inside
+  // the timed window, log the run once. Trivially short runs are skipped.
+  useEffect(() => {
+    if (!pace.enabled || pace.preset !== 'stopwatch' || recordedRef.current) return;
+    if (deck.length === 0 || startRef.current == null) return;
+    if (paceAnswered < deck.length) return;
+    const secs = (Date.now() - startRef.current) / 1000;
+    if (secs < 2) return;
+    recordedRef.current = true;
+    void recordPaceSession('flashcards', secs, deck.length);
+  }, [pace.enabled, pace.preset, paceAnswered, deck.length]);
+
   // Long-press a filter chip → the full term list for that filter's set.
   const openTermList = useCallback((title: string, key: TermListSelKey) => {
     setTermList({ title, key });
@@ -767,7 +857,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     return () => clearTimeout(t);
   }, [introsOwed]);
   const tutorialBlocked =
-    overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen || !introsSettled;
+    overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen || timerOpen || !introsSettled;
   const tutorialBlockedRef = useRef(tutorialBlocked);
   tutorialBlockedRef.current = tutorialBlocked;
   const [pendingTutorial, setPendingTutorial] = useState<
@@ -1130,6 +1220,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       }
       setIdx((i) => (i + dir + deck.length) % deck.length);
       setLevel(0);
+      // Pace: each move to another card counts as one item advanced.
+      setPaceAnswered((n) => n + 1);
       // T2 trigger: after ~5 swipes, offer the "Customize Your Deck" tutorial.
       swipeCount.current += 1;
       if (
@@ -1329,6 +1421,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     } else {
       next.add(card.id);
       setInTermList('known', card.id, true);
+      // Marking a card KNOWN is the flashcard "correct" signal: it advances the
+      // time trial and counts one brain output (the 1.5s dwell guards it).
+      registerTrialAnswer('flashcards', true, achievementId);
+      incBrainOutput('flashcards');
       if (!states[card.id]?.known) {
         session.current?.addEvent({ item: card.id, kind: 'known', value: true });
         setStates((prev) => ({ ...prev, [card.id]: { ...prev[card.id], known: true } }));
@@ -1343,7 +1439,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }
     setHidden(next);
     persistHidden(next);
-  }, [card, hidden, knownList, states, showKnown, bookmarkedOnly, starredOnly, deck.length, persistHidden]);
+  }, [card, hidden, knownList, states, showKnown, bookmarkedOnly, starredOnly, deck.length, persistHidden, achievementId]);
 
   // Reconcile "known" marked in ANY popup list (TermSelectIcons → the global
   // knownList) into THIS method's progress (user request 2026-08-13): a ✓ Known in
@@ -1534,16 +1630,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       <TopicWelcomeSheet
         topicId={achievementId}
         enabled={!flaggedMode}
-        hold={flashIntro.owed || !!termList || sessionTimer.configOpen || fullscreen || (!!tutorial && !tutorialBlocked)}
+        hold={flashIntro.owed || !!termList || sessionTimer.configOpen || timerOpen || fullscreen || (!!tutorial && !tutorialBlocked)}
         onOwedChange={setWelcomeOwed}
       />
       <View style={styles.body}>
-        {/* No pace timer on Flashcards (owner 2026-08-13) — the pace timer is a
-            HOMEWORK-method aid (Fill-in-Blank / Matching / Scenarios). */}
+        {/* Pace timer restored 2026-10-16 (owner): the header timer button opens
+            the pace modal; the session-length clock (blue clock, filter row)
+            is separate and both can run. */}
         <StudyHeader
           method="flashcards"
           title="FLASHCARDS"
           subtitle={`Topic · ${topicName}`}
+          onOpenTimer={() => setTimerOpen(true)}
+          hideTimerButton={paceShown}
         />
         {/* A known guest (only the two free topics open for them): progress
             here is not saved or carried (owner 2026-10-04). Waits for the T1
@@ -1561,6 +1660,23 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           {/* Session-timer countdown, when running and set to show (owner 2026-08-13). */}
           <SessionTimerPill timer={sessionTimer} />
         </View>
+
+        {paceShown ? (
+          <PaceTimerBar
+            method="flashcards"
+            topicId={achievementId}
+            preset={pace.preset}
+            answered={paceAnswered}
+            total={deck.length}
+            elapsed={elapsed}
+            enabled={pace.enabled}
+            onReset={handlePaceReset}
+            running={running}
+            onToggleRunning={() => setRunning('flashcards', !running)}
+            onRemove={() => setEnabled(false)}
+            onPresetChange={setPreset}
+          />
+        ) : null}
 
         {/* Filter rows (Booth 2026-07-08):
             row 1 — ALL · A–Z · SHUFFLE · RESET DECK
@@ -2023,6 +2139,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           >
             <Text style={styles.fsCloseText}>✕</Text>
           </Pressable>
+          {/* Thin, border-less pace strip pinned to the very top — elapsed +
+              signed offset + marker only. Same gate as the in-screen readout. */}
+          {paceShown ? (
+            <PaceTimerBar
+              method="flashcards"
+              topicId={achievementId}
+              preset={pace.preset}
+              answered={paceAnswered}
+              total={deck.length}
+              elapsed={elapsed}
+              variant="fullscreen"
+            />
+          ) : null}
           {/* In Study Sheet mode tapping must NOT flip (term + sections are all
               shown at once); swipe still changes card. */}
           {/* Not ONE button (APE-STUDIO-W/R/S sweep): as one, its label was
@@ -2261,6 +2390,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           Low-Light, or as a second Modal over the fullscreen card. `expired`
           simply waits and shows when the learner is back here. */}
       {tutorialBlocked ? null : <SessionTimerBanner timer={sessionTimer} />}
+      {/* Pace timer settings (header timer button). */}
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="flashcards" topicId={achievementId} />
 
     </View>
   );

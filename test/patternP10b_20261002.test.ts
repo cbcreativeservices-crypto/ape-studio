@@ -229,6 +229,7 @@ const NOT_ANIMATION: Record<string, string> = {
   'src/screens/quiz/QuizScreen.tsx': 'countdown clock',
   'src/screens/results/ResultsScreen.tsx': 'lockout countdown',
   'src/screens/study/FillInBlankScreen.tsx': 'pace timer clock',
+  'src/screens/study/FlashcardsScreen.tsx': 'pace timer clock (restored 2026-10-16, same clock as the other study methods)',
   'src/screens/study/MatchingScreen.tsx': 'pace timer clock (its one-shot layout transitions read the subscribed hook)',
   'src/screens/study/ScenariosScreen.tsx': 'pace timer clock',
   'src/screens/glossary/LinksToggleLabel.tsx': 'finite light-up on a toggle press',

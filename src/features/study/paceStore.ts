@@ -2,9 +2,9 @@
  * paceStore — device-local settings for the study "pace timer" practice aid,
  * one record per study method. See PaceMethodKey below for the real list:
  * Fill-in-Blank, Matching, Scenarios, Flashcards. Ear Training was RETIRED
- * (Booth 2026-07-26) and is no longer a method. Note that of the four keys,
- * only the three homework methods actually mount PaceTimerBar/PaceTimerModal —
- * FlashcardsScreen uses SessionTimer instead and never imports this store.
+ * (Booth 2026-07-26) and is no longer a method. All four mount
+ * PaceTimerBar/PaceTimerModal; FlashcardsScreen ALSO keeps its separate
+ * session-length clock (SessionTimer) — pace restored there 2026-10-16.
  *
  * The RECORDS (best/avg/sessions) live in the backend (see paceRecords.ts).
  * ONLY the per-method settings — is the timer on, which pace, which mode — are
