@@ -59,6 +59,7 @@ import { DIP_RATIO, digitLength, fingerFlexDeg, HAND, HAND_LENGTH, handFrame, ha
 import { FRET_CONTACT, fretArm3, pickFront } from '../src/screens/lab/miking/lessons/shared/players/handPoses.ts';
 import { guitarPlayerPose, lapHands } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
 import { C03_VARIANTS } from '../src/screens/lab/miking/lessons/c03Resonator/model.ts';
+import { handCases as lowBrassHandCases } from '../src/screens/lab/miking/lessons/shared/lowbrass/lowBrassHands.ts';
 import { sceneOf as guitarSceneOf } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
 import { C01_VARIANTS } from '../src/screens/lab/miking/lessons/c01Guitar/model.ts';
 import { C05A_VARIANTS } from '../src/screens/lab/miking/lessons/c05aBanjo/model.ts';
@@ -491,7 +492,8 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const low = read('shared/lowbrass/LowBrassArt.tsx');
     assert.doesNotMatch(low, /opacity=\{playerKeys\.has\(it\.key\) \? 0\.82 : 1\}/);
     assert.doesNotMatch(low, /limb\('hand[LR]', J\.wrist[LR], J\.hand[LR], 30, 36, SKIN\)/, 'no capsule (mitten) hands');
-    assert.match(low, /const hs = handShape\(\{ wrist: pt\(wrist\[0\], wrist\[1\]\), dir, kind \}, Math\.atan2\(wrist\[1\] - E\[1\], wrist\[0\] - E\[0\]\)\);/);
+    // (Pass 3: the low-brass hands are posed 3-D skeletons — lowBrassHands.ts — drawn by the shared drawHand3.)
+    assert.match(low, /const dh = drawHand3\(h\.sk, view3, handOpts\(view, h, g\)\);/);
     // Low brass arms are the shared anatomical arm (no tube arms, no round elbow knob).
     assert.match(low, /const a = splitArm\(/);
     assert.doesNotMatch(low, /limb\('upper[LR]'/);
@@ -816,6 +818,15 @@ describe('figure pass 3 (owner 2026-10-15): hands on instruments — one hand mo
     it(`${c.name}: five digits, thumb on its side, joints in range, wrist ≤ 70° (3-D), playing digits on their places`, () => {
       assert.deepEqual(handProblems(c), []);
     });
+
+  // The families' own posed hands (each family exports handCases from a pure file).
+  for (const [fam, list] of [['low brass (A03 horn, A04a tuba, A04b euphonium)', lowBrassHandCases()]] as const) {
+    it(`${fam}: every hand posed`, () => assert.ok(list.length >= 6));
+    for (const c of list)
+      it(`${fam} — ${c.name}: five digits, thumb on its side, joints in range, wrist ≤ 70° (3-D), playing digits on their places`, () => {
+        assert.deepEqual(handProblems(c), []);
+      });
+  }
 
   it('the fretting hand from above is the SAME skeleton as from the front (one hand, two views)', () => {
     for (const gv of [...C01_VARIANTS, ...C05B_VARIANTS]) {

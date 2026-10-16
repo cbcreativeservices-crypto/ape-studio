@@ -576,6 +576,13 @@ export function drawHand3(sk: HandSkeleton, view: HandView, opts: { fore?: numbe
   }
   // A soft crease over each middle knuckle that faces the viewer.
   const toViewer = (q: V3, n: V3) => D(h3.add(q, n)) - D(q);
+  // The knuckle row across the back of the hand, when its back is toward the viewer.
+  if (toViewer(f.o, f.z) > 0.3) {
+    const row = sk.fingers.map((dg) => P(h3.add(dg.joints[0], h3.add(h3.mul(f.z, 11), h3.mul(f.x, -6)))));
+    const kr = make();
+    kr.addPath(curve(row));
+    edgeOver(kr, (q) => front.contains(q.u, q.v), lines);
+  }
   for (const dg of sk.fingers) {
     if (toViewer(dg.joints[1], dg.dorsal[1]) > 0.35) lines.addPath(crease(P(dg.joints[0]), P(dg.joints[1]), 0.97, dg.r[1] * 0.6, 1.5));
   }
@@ -1016,7 +1023,34 @@ export function handShape(h: Hand, fore?: number, foreLen?: number): HandShape {
     lines.addPath(crease(d.joints[2], d.joints[3], 0.08, 4.5, 1.2));
   }
   lines.addPath(crease(thumb.joints[2], thumb.joints[3], 0.06, 7, 1.5));
-  return { path: union(wristOf(L, h, fore), palm, ...fingers.map((d) => d.path), thumb.path), lines, pick: null, bar: null, thumbBehind: null };
+  // Seen from its back, every digit shows its nail (pass 3: suggested at close range).
+  const nails = make();
+  for (const d of [...fingers, thumb]) {
+    const n = nail2D(d.joints[2], d.joints[3], d === thumb ? 9.6 : FINGERS[fingers.indexOf(d)].r[3]);
+    if (n) nails.addPath(n);
+  }
+  const path = union(wristOf(L, h, fore), palm, ...fingers.map((d) => d.path), thumb.path);
+  return { path, lines, pick: null, bar: null, thumbBehind: null, nails: Skia.Path.MakeFromOp(nails, path, PathOp.Intersect) ?? nails };
+}
+
+/** A nail on a digit's last bone seen from its back (a → b toward the tip):
+ *  a rounded plate ≈ 0.7 of the tip's width, over the outer ≈ 60 % of the bone. */
+function nail2D(a: Pt, b: Pt, rTip: number): SkPath | null {
+  const L = dist(a, b);
+  if (L < 6) return null;
+  const d = pt((b.u - a.u) / L, (b.v - a.v) / L);
+  const n = pt(-d.v, d.u);
+  const c = pt(a.u + d.u * L * 0.64, a.v + d.v * L * 0.64);
+  const hl = Math.min(L * 0.34, rTip * 0.95);
+  const hw = rTip * 0.7;
+  const ring: Pt[] = [];
+  for (let k = 0; k < 12; k++) {
+    const t = (k / 12) * Math.PI * 2;
+    const al = Math.cos(t) * hl;
+    const ac = Math.sin(t) * hw * (Math.cos(t) > 0 ? 0.92 : 1);
+    ring.push(pt(c.u + d.u * al + n.u * ac, c.v + d.v * al + n.v * ac));
+  }
+  return smooth(ring, 0.5);
 }
 
 /**

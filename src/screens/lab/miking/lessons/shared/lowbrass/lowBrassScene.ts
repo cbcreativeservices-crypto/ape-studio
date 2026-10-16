@@ -83,7 +83,36 @@ export type BrassScene = {
   bellHand: { wrist: Vec3; tip: Vec3 } | null;
   /** The bell's rim as it rises in a "bells up" passage (the horn). */
   bellsUp: Vec3 | null;
+  /** The horn's little-finger hook (where the left little finger rests). */
+  hook: Vec3 | null;
+  /** The tuba's / euphonium's thumb ring (where the right thumb rests). */
+  thumbRing: Vec3 | null;
 };
+
+/**
+ * THE HORN'S RIGHT HAND IN THE BELL (figure pass 3, owner 2026-10-15): the
+ * wrist at the rim, the back of the hand against the bell's FAR wall (the
+ * side away from the player's body, turned 0.6 rad toward the top, where the
+ * forearm comes in from the raised elbow), the hand pointing into the bell
+ * tilted 0.45 rad toward the axis so the cupped fingers follow the flare.
+ * Every point of the hand stays inside the metal (≥ 1.5 mm), the back within
+ * ≈ 7 mm of the wall. Drawing and keep-out share it (lowBrassHands, lb.hand).
+ */
+export function hornBellHold(b: Bell): { wrist: Vec3; along: Vec3; dorsal: Vec3; thumbSide: Vec3 } {
+  const a = b.axis;
+  const far = norm(sub(v(0, 0, 1), scale(a, a.z)));
+  const up0 = sub(sub(v(0, -1, 0), scale(a, -a.y)), scale(far, -far.y));
+  const up = norm(up0);
+  const roll = 0.6;
+  const tilt = 0.25;
+  const wall = add(scale(far, Math.cos(roll)), scale(up, Math.sin(roll)));
+  return {
+    wrist: add(b.rim, scale(wall, 55)),
+    along: add(scale(a, -Math.cos(tilt)), scale(wall, -Math.sin(tilt))),
+    dorsal: add(scale(wall, Math.cos(tilt)), scale(a, -Math.sin(tilt))),
+    thumbSide: add(scale(up, Math.cos(roll)), scale(far, -Math.sin(roll))),
+  };
+}
 
 /* ── the seated player (shared: every lesson's player sits the same) ── */
 const BASE = {
@@ -213,24 +242,46 @@ function hornScene(spec: LowBrassSpec): BrassScene {
   const mp0 = add(BASE.mouth, v(6, 0, 0));
   const mp1 = v(178, -1128, 38);
   const valveC = v(205, -912, 178);
-  const valves: Valve[] = [0, 1, 2, 3].map((i) => ({ c: add(v(186, -975, 182), scale(v(0.22, 0.97, 0), i * 40)), axis: nC, r: 21, h: 46, kind: 'rotary', lever: v(-40, -10, -30) }));
+  // THE LEVERS (figure pass 3): the thumb (change) valve's lever from valve
+  // 0 to a spatula above and behind the others, where the left thumb rests;
+  // valves 1–3's levers converge to three spatulas ≈ 23 mm apart (an adult's
+  // finger pitch) on the player's left, in front of the casings — index on
+  // top; the little-finger hook just below the ring finger's spatula.
+  const SPAT: Vec3[] = [v(183, -925, 145), v(250, -952, 138), v(245, -929, 141), v(240, -906, 144)];
+  const valves: Valve[] = [0, 1, 2, 3].map((i) => {
+    const c = add(v(186, -975, 182), scale(v(0.22, 0.97, 0), i * 40));
+    return { c, axis: nC, r: 21, h: 46, kind: 'rotary', lever: sub(SPAT[i], c) };
+  });
+  const hook = v(233, -880, 150);
   const leadpipe: Tube = { id: 'leadpipe', pts: spline([mp1, v(232, -1080, 120), v(250, -1000, 190), v(222, -960, 205)], 8), r: 9 };
   const slides: Tube[] = [
     { id: 'slide1', pts: spline([add(C, scale(e1, 100)), add(add(C, scale(e1, 175)), scale(e2, -20)), add(add(C, scale(e1, 175)), scale(e2, 30)), add(add(C, scale(e1, 100)), scale(e2, 40))], 6), r: 8 },
     { id: 'slide2', pts: spline([add(add(C, scale(e2, -110)), scale(e1, -30)), add(add(C, scale(e2, -170)), scale(e1, -40)), add(add(C, scale(e2, -170)), scale(e1, 20)), add(add(C, scale(e2, -110)), scale(e1, 20))], 6), r: 8 },
   ];
-  // The right hand in the bell; the arm bent back to it.
-  const wristR = sub(rim, scale(axis, 25));
-  const handR = sub(rim, scale(axis, 120));
+  // The right hand in the bell (hornBellHold: the back of the hand on the far
+  // wall); the arm bent back to it — the elbow back, out and raised, as a
+  // horn player holds it (upper arm 315, forearm 255: wrist bend ≈ 65°).
+  const hold = hornBellHold(bell);
+  const wristR = hold.wrist;
+  const handR = add(wristR, scale(hold.along, 120));
+  // The left hand on the levers: the wrist in front of the chest, the elbow
+  // down and out at the side (upper arm 300, forearm 255).
   const J: Joints = {
     ...BASE,
-    elbowR: v(-255, -880, 375),
+    elbowR: v(-293, -924, 355),
     wristR,
     handR,
-    elbowL: v(110, -850, -150),
-    wristL: v(175, -920, 70),
-    handL: v(215, -940, 140),
+    elbowL: v(102, -763, -189),
+    wristL: v(160, -860, 40),
+    handL: SPAT[2],
   };
+  // The little-finger hook: a half ring under the finger, its stem to valve 3's casing.
+  const hookArc: Vec3[] = [];
+  for (let i = 0; i <= 8; i++) {
+    const t = (Math.PI * i) / 8;
+    hookArc.push(add(hook, v(-9 * Math.cos(t) * 0.5, 11 * Math.sin(t), 9 * Math.cos(t))));
+  }
+  const hookTube: Tube = { id: 'fingerHook', pts: [add(valves[3].c, v(0, 6, -16)), add(hook, v(4, 14, 12)), ...hookArc.slice(2)], r: 2.6, art: true };
   // Bells up (a drawing default): the rim rises about 40° about the lips.
   const rel = sub(rim, BASE.mouth);
   const ph = 40 * D2R;
@@ -241,17 +292,22 @@ function hornScene(spec: LowBrassSpec): BrassScene {
     J,
     chair: CHAIR,
     bell,
-    tubes: [...loops, tail, leadpipe, ...slides, { id: 'mouthpiece', pts: [mp0, mp1], r: 7, tone: 'silver' }, { id: 'toValves', pts: spline([v(222, -960, 205), valveC, add(C, scale(e2, -60))], 6), r: 8 }],
+    tubes: [...loops, tail, leadpipe, ...slides, { id: 'mouthpiece', pts: [mp0, mp1], r: 7, tone: 'silver' }, { id: 'toValves', pts: spline([v(222, -960, 205), valveC, add(C, scale(e2, -60))], 6), r: 8 }, hookTube],
     valves,
     centre: C,
     bellHand: { wrist: wristR, tip: handR },
     bellsUp,
+    hook,
+    thumbRing: null,
   };
 }
 
 /* ── the tuba and the euphonium: an upright body on the lap, the bell up or
  *    turned to the front ── */
-type UprightDims = { k: number; bottomY: number; topY: number; branchR: [number, number]; bellLen: number; rT: number; pistonsAt: Vec3; side?: boolean };
+/** `arm`: the right arm's elbow and wrist over the pistons and the left
+ *  arm's (figure pass 3: the posed hands, lowBrassHands, turn about these
+ *  wrists). */
+type UprightDims = { k: number; bottomY: number; topY: number; branchR: [number, number]; bellLen: number; rT: number; pistonsAt: Vec3; side?: boolean; arm: { elbowR: Vec3; wristR: Vec3; elbowL: Vec3; wristL: Vec3; handL: Vec3 } };
 
 function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): BrassScene {
   const R = spec.bell.mm / 2;
@@ -355,7 +411,7 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   const zClear = top.z + rT + 22;
   const leadArt: Tube = {
     id: 'leadArt',
-    pts: spline([mpEnd, v(mpEnd.x - 4, mpEnd.y + 2, 200), v(mpEnd.x + 2, yHi + 15, top.z + 0.6 * rT), v(180, yHi - 4, zClear), v(262, yHi - 4, zClear), v(xs[0], yHi + 4, vz + 30), v(xs[2], yHi + 22 * k, vz), v(xf + 22 * k, P0.y - 120 * k, vz), v(ms0 - 10 * k, P0.y - 70 * k, vz + 16), v(ms0, P0.y - 20 * k, vz + 20)], 8),
+    pts: spline([mpEnd, v(mpEnd.x - 4, mpEnd.y + 2, 200), v(mpEnd.x + 2, yHi + 15, top.z + 0.6 * rT), v(180, yHi - 4, zClear), v(262, yHi - 4, zClear), v(xs[0], yHi + 4, vz + 30), v(xs[2] + 14 * k, yHi + 6 * k, vz), v(xf + 36 * k, P0.y - 128 * k, vz + 8), v(ms0 - 6 * k, P0.y - 70 * k, vz + 16), v(ms0, P0.y - 20 * k, vz + 20)], 8),
     r: 11 * k,
     rr: [6 * k, 11.5 * k],
     art: true,
@@ -390,19 +446,32 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
   // above the casing's centre on the tuba), over valve 3, so the fingers
   // arch forward over valves 1-3 with the little finger free by the 4th.
   const handR = v(xs[Math.min(2, nTop - 1)], P0.y - (94 - 7) * k, vz);
+  // (Figure pass 3, owner 2026-10-15.) The right arm comes round on the near
+  // side: the elbow low at the side, the forearm rising to the wrist above
+  // and out beyond the buttons, the hand arched over them from the player's
+  // right — the fingers across the row of pistons, one on each (the old
+  // wrist sat behind the cluster, so the fingers could only reach one).
   const J: Joints = {
     ...BASE,
-    // The right arm comes round on the near side, in front of the body,
-    // the hand over the buttons.
-    elbowR: v(150, -870, top.z + 1.2 * d.rT),
-    // The wrist slightly above and behind the buttons (where the shared
-    // keys hand puts it), out on the near side, clear of the bell branch.
-    wristR: add(handR, v(-151, -28, 85)),
+    elbowR: d.arm.elbowR,
+    wristR: d.arm.wristR,
     handR,
-    elbowL: v(95, -830, -195),
-    wristL: d.side ? v(205, -905, 0) : v(185, -985, 10),
-    handL: d.side ? v(245, -925, 40) : v(225, -1010, 55),
+    elbowL: d.arm.elbowL,
+    wristL: d.arm.wristL,
+    handL: d.arm.handL,
   };
+  // The thumb ring, where the right thumb falls as the hand drapes over the
+  // pistons from the player's right (a small ring on a stem from valve 1's
+  // casing): the tuba's under the palm on the bell side of the cluster,
+  // between valves 1 and 2 just below the buttons; the euphonium's (its hand
+  // nearer the player) on the player's side of valve 1.
+  const thumbRing = d.side ? v(xs[0] - 22, P0.y - 62, vz + 24) : v(xs[0] + 12 * k, P0.y - 74 * k, vz - 15);
+  {
+    const [e1, e2] = basis(THUMB_RING_AXIS, v(0, 1, 0));
+    const stem0 = d.side ? v(xs[0] - 15 * k + 2, P0.y - 52 * k, vz + 6) : v(xs[0], P0.y - 52 * k, vz - 13 * k);
+    art.push({ id: 'thumbRingStem', pts: [stem0, add(thumbRing, scale(e1, 11))], r: 2.4, art: true });
+    art.push({ id: 'thumbRing', pts: ring(thumbRing, e1, e2, 11, 0, 2 * Math.PI, 20), r: 2.6, art: true });
+  }
   return {
     spec,
     orient,
@@ -414,8 +483,12 @@ function uprightScene(spec: LowBrassSpec, orient: Orient, d: UprightDims): Brass
     centre: v(255, (d.bottomY + d.topY) / 2 - 60, 175),
     bellHand: null,
     bellsUp: null,
+    hook: null,
+    thumbRing,
   };
 }
+/** The thumb ring's axis: along the right thumb's last bone as it lies in the ring. */
+const THUMB_RING_AXIS = norm(v(0.2, 0.5, -0.85));
 
 /** The scene for an instrument and orientation (memoised: the scene is a
  *  pure function of the two, and the art, the model and the zones share it). */
@@ -428,8 +501,8 @@ export function brassScene(spec: LowBrassSpec, orient: Orient): BrassScene {
     spec.id === 'horn'
       ? hornScene(spec)
       : spec.id === 'tuba'
-        ? uprightScene(spec, orient, { k: 1, bottomY: -700, topY: -1185, branchR: [44, 62], bellLen: 290, rT: 100, pistonsAt: v(335, -1000, 95) })
-        : uprightScene(spec, orient, { k: 0.8, bottomY: -735, topY: -1100, branchR: [34, 48], bellLen: 230, rT: 72, pistonsAt: v(310, -1010, 100), side: true });
+        ? uprightScene(spec, orient, { k: 1, bottomY: -700, topY: -1185, branchR: [44, 62], bellLen: 290, rT: 100, pistonsAt: v(335, -1000, 95), arm: { elbowR: v(176, -949, 401), wristR: v(340, -1140, 360), elbowL: v(191, -847, -139), wristL: v(300, -920, 80), handL: v(332, -936, 176) } })
+        : uprightScene(spec, orient, { k: 0.8, bottomY: -735, topY: -1100, branchR: [34, 48], bellLen: 230, rT: 72, pistonsAt: v(310, -1010, 100), side: true, arm: { elbowR: v(146, -925, 418), wristR: v(320, -1110, 400), elbowL: v(136, -789, -225), wristL: v(150, -940, -20), handL: v(250, -926, -25) } });
   memo.set(key, s);
   return s;
 }

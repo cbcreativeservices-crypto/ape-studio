@@ -28,8 +28,10 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { basis, brassScene, flareR, ring, type Bell, type BrassScene, type Tube, type Valve } from './lowBrassScene.ts';
 import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
-import { FIGURE_SKIN, FigureHead, FigureMass, handShape, headAbove, headProfile, intoCollar, limb as limbPath, splitArm, type HeadPaths } from '../players/PlayerFigure';
+import { drawHand3, FIGURE_SKIN, FIGURE_TONES, FigureHead, FigureMass, headAbove, headProfile, intoCollar, limb as limbPath, Nails, splitArm, type GarmentBox, type HeadPaths } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
+import type { HandView } from '../players/handModel';
+import { lowBrassHands, type PosedHand } from './lowBrassHands';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = [number, number];
@@ -345,16 +347,13 @@ export function bellPaths(b: Bell, view: ViewId) {
   return { body, bodyPts: rings.flat(), rim: poly(rim), rimPts: rim, inner: poly(inner) };
 }
 
-function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: { wrist: Vec3; tip: Vec3 } | null }) {
+/** The posed hand in the bell, drawn (drawHand3). */
+type HandPaint = { path: SkPath; lines: SkPath; nails: SkPath };
+
+function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: HandPaint | null }) {
   const p = useMemo(() => bellPaths(b, view), [b, view]);
   const facing = dot(b.axis, TO_VIEWER[view]);
   const rb = bbox(p.rimPts);
-  const handPath = useMemo(() => {
-    if (!hand) return null;
-    const w = prj(view, hand.wrist);
-    const t = prj(view, hand.tip);
-    return poly(limbPts(w, t, 34, 40));
-  }, [hand, view]);
   return (
     <Group>
       <Lit path={p.body} pts={p.bodyPts} ramp={[BRASS.light, BRASS.hi, BRASS.mid, BRASS.low, BRASS.dark]} edge={BRASS.edge} rim={3} w={2} />
@@ -364,9 +363,13 @@ function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: { wrist: Vec3
             <RadialGradient c={vec((rb.u0 + rb.u1) / 2, (rb.v0 + rb.v1) / 2)} r={Math.max(rb.u1 - rb.u0, rb.v1 - rb.v0) * 0.55} colors={['#0d0702', '#2a1a06', '#6e4a14', '#b88a2e']} positions={[0, 0.45, 0.82, 1]} />
           </Path>
           <Path path={p.inner} style="stroke" strokeWidth={2} color="#c99634" opacity={0.25} />
-          {handPath ? (
+          {hand ? (
+            // The right hand cupped in the bell (figure pass 3): seen through
+            // the opening only.
             <Group clip={p.rim}>
-              <Lit path={handPath} pts={bbox2pts(handPath)} ramp={SKIN} edge={SKIN_EDGE} />
+              <FigureMass path={hand.path} tone="skin" contour={1.8} />
+              <Path path={hand.lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={SKIN_EDGE} opacity={0.7} />
+              <Nails path={hand.nails} />
             </Group>
           ) : null}
         </Group>
@@ -381,13 +384,6 @@ function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: { wrist: Vec3
   );
 }
 const sub2 = (a: P2, b: P2): P2 => [a[0] - b[0], a[1] - b[1]];
-const bbox2pts = (p: SkPath): P2[] => {
-  const r = p.getBounds();
-  return [
-    [r.x, r.y],
-    [r.x + r.width, r.y + r.height],
-  ];
-};
 
 function valveItems(vl: Valve, view: ViewId, i: number): Item[] {
   const [e1, e2] = basis(vl.axis, Math.abs(vl.axis.y) > 0.9 ? { x: 1, y: 0, z: 0 } : { x: 0, y: -1, z: 0 });
@@ -557,6 +553,8 @@ type ProfileBody = {
   deltoid: (elbow: P2) => SkPath;
   /** Where the sleeve melts into the shirt (no rim, no contour). */
   quiet: SkPath | null;
+  /** Where the sleeve's edge over the shirt is only a soft fold. */
+  soft: SkPath | null;
 };
 
 /** The house adult head (≈ 228 mm tall: BODY.headH). */
@@ -624,20 +622,109 @@ function profileBody(j: ProfileJoints): ProfileBody {
   const k = PROFILE_HEAD_R / 110;
   const hc = pt(j.lips[0] - f * (88 * k + 2), j.lips[1] - 52 * k);
   const head = intoCollar(headProfile(hc, PROFILE_HEAD_R, n[1] + 10, f), torso);
-  // The deltoid: a teardrop along the upper arm — as wide as the sleeve, broad
-  // over the joint and tapering ≈ 110 mm down — kept inside the shirt's
-  // outline, so it never rises over the shoulder line.
+  // The deltoid: a teardrop along the upper arm — broad over the joint,
+  // narrowing INSIDE the sleeve before it closes ≈ 150 mm down (the house
+  // profile deltoid, PlayerFigure.buildSide: closing at the sleeve's width left
+  // a dimple) — kept inside the shirt's outline, so it never rises over the
+  // shoulder line.
   const sh = j.shoulderN;
   const deltoid = (elbow: P2) => {
     const a = Math.atan2(elbow[1] - sh[1], elbow[0] - sh[0]);
     const A = (al: number, ac: number): P2 => [sh[0] + Math.cos(a) * al - Math.sin(a) * ac, sh[1] + Math.sin(a) * al + Math.cos(a) * ac];
-    const raw = smoothClosed([A(-44, 0), A(-30, 40), A(10, 46), A(70, 45), A(112, 43), A(112, -43), A(70, -45), A(10, -46), A(-30, -40)]);
+    const raw = smoothClosed([A(-44, 0), A(-30, 40), A(10, 45), A(70, 43), A(115, 40.5), A(150, 28), A(150, -28), A(115, -40.5), A(70, -43), A(10, -45), A(-30, -40)]);
     return Skia.Path.MakeFromOp(raw, torso, PathOp.Intersect) ?? raw;
   };
-  const qd = make();
-  qd.addCircle(sh[0], sh[1], 84);
-  const quiet = Skia.Path.MakeFromOp(qd, torso, PathOp.Intersect);
-  return { shirt, torso, legNear, legFar, shoeNear: shoe(j.ankleN), shoeFar: shoe(j.ankleF), belt, collar, head, deltoid, quiet };
+  // (Figure pass 3, owner 2026-10-15: "plug and position interchangeable
+  // limbs".) The sleeve's top melts into the shirt over the deltoid's whole
+  // region (≈ 120 mm round the joint: no rim, no contour — the house
+  // `shoulderQuiet`); within ≈ 150 mm its edge over the shirt is only a soft
+  // fold (the same cloth turning over the shoulder — the house `atShoulder`).
+  const disc = (r: number) => {
+    const d = make();
+    d.addCircle(sh[0], sh[1], r);
+    return d;
+  };
+  const quiet = Skia.Path.MakeFromOp(disc(120), torso, PathOp.Intersect);
+  const soft = Skia.Path.MakeFromOp(disc(150), shirt, PathOp.Intersect);
+  return { shirt, torso, legNear, legFar, shoeNear: shoe(j.ankleN), shoeFar: shoe(j.ankleF), belt, collar, head, deltoid, quiet, soft };
+}
+
+/* ── the posed hands and the sleeves (figure pass 3) ── */
+
+/** The views as the hand model sees them: (u, v) the view's mm, d toward the viewer. */
+const VIEW3: Record<ViewId, HandView> = {
+  side: (p) => ({ u: p.x, v: p.y, d: p.z }),
+  top: (p) => ({ u: p.x, v: p.z, d: -p.y }),
+};
+
+/** How a posed hand meets its cuff in this view: the forearm's picture angle
+ *  (the bare wrist is cut square there), or — a forearm reaching toward the
+ *  viewer, seen end-on — the hand in front of its cuff. */
+function handOpts(view: ViewId, h: PosedHand, g: { E2: P2; W2: P2 }): { fore: number; foreshortened: boolean } {
+  const fore = Math.atan2(g.W2[1] - g.E2[1], g.W2[0] - g.E2[0]);
+  const L3 = Math.hypot(h.sk.frame.o.x - h.elbow.x, h.sk.frame.o.y - h.elbow.y, h.sk.frame.o.z - h.elbow.z);
+  const L2 = Math.hypot(g.W2[0] - g.E2[0], g.W2[1] - g.E2[1]);
+  return { fore, foreshortened: L2 < 0.45 * L3 && depthOf(view, h.sk.frame.o) > depthOf(view, h.elbow) };
+}
+
+/** The bounds of a whole garment (its body and sleeves): FigureMass `box`. */
+function boundsOf(ps: SkPath[]): GarmentBox {
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const p of ps) {
+    const r = p.getBounds();
+    if (r.width <= 0 && r.height <= 0) continue;
+    x0 = Math.min(x0, r.x);
+    y0 = Math.min(y0, r.y);
+    x1 = Math.max(x1, r.x + r.width);
+    y1 = Math.max(y1, r.y + r.height);
+  }
+  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
+}
+
+/** Where a sleeve leaves the shirt body (FigureMass `soft`): the shirt within
+ *  ≈ 150 mm of the shoulder joint — there its edge is only a soft fold. */
+function shoulderSoft(shirt: SkPath, sh: P2): SkPath | null {
+  const d = make();
+  d.addCircle(sh[0], sh[1], 150);
+  return Skia.Path.MakeFromOp(d, shirt, PathOp.Intersect);
+}
+
+/**
+ * THE SLEEVE AS CLOTH (figure pass 3, owner 2026-10-15: "shoulder transitions
+ * from shirt sleeves to the shirt body look very unnatural"). Never a line
+ * ALONG the sleeve (owner 2026-10-10: those read as welts), and no stroked
+ * armhole seam (drawn, it read as a horseshoe stamped on the shoulder at 3×):
+ * only where the cloth folds — at a bent ELBOW one short soft crease hugging
+ * the crook (the cloth gathering there). A foreshortened arm gets none.
+ */
+function sleeveCreases(s: P2, e: P2, w: P2): SkPath | null {
+  const L1 = Math.hypot(e[0] - s[0], e[1] - s[1]);
+  const L2 = Math.hypot(w[0] - e[0], w[1] - e[1]);
+  if (L1 < 90 || L2 < 90) return null;
+  const d1: P2 = [(e[0] - s[0]) / L1, (e[1] - s[1]) / L1];
+  const d2: P2 = [(w[0] - e[0]) / L2, (w[1] - e[1]) / L2];
+  const cr = d1[0] * d2[1] - d1[1] * d2[0];
+  const bend = Math.atan2(Math.abs(cr), d1[0] * d2[0] + d1[1] * d2[1]);
+  if (bend <= 0.6) return null;
+  let bi: P2 = [-d1[0] + d2[0], -d1[1] + d2[1]];
+  const bl = Math.hypot(bi[0], bi[1]) || 1;
+  bi = [bi[0] / bl, bi[1] / bl];
+  return smoothOpen([[e[0] + bi[0] * 16 - d1[0] * 30, e[1] + bi[1] * 16 - d1[1] * 30], [e[0] + bi[0] * 9, e[1] + bi[1] * 9], [e[0] + bi[0] * 16 + d2[0] * 28, e[1] + bi[1] * 16 + d2[1] * 28]]);
+}
+/** The shirt's crease lines: a dark fold line with a lit edge above-left (faint: cloth, not outlines). */
+const CREASE = { line: '#161a24', light: FIGURE_TONES.shirt.rim, opacity: 0.5 } as const;
+function Creases({ path, clip }: { path: SkPath; clip: SkPath }) {
+  return (
+    <Group clip={clip} opacity={CREASE.opacity}>
+      <Group transform={[{ translateX: -1.6 }, { translateY: -2.2 }]}>
+        <Path path={path} style="stroke" strokeWidth={1.8} strokeCap="round" color={CREASE.light} opacity={0.32} />
+      </Group>
+      <Path path={path} style="stroke" strokeWidth={2.4} strokeCap="round" color={CREASE.line} opacity={0.62} />
+    </Group>
+  );
 }
 
 /* ── the player and the chair ── */
@@ -660,6 +747,10 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   const mass = (key: string, depth: number, path: SkPath, tone: 'shirt' | 'trousers' | 'shoe' | 'skin', far = false, quiet: SkPath | null = null) =>
     out.push({ key, depth, node: <FigureMass key={key} path={path} tone={tone} far={far} quiet={quiet} contour={1.8} /> });
   let body: ProfileBody | null = null;
+  // The top view's shoulders and back (the house shoulders from above,
+  // PlayerFigure.buildAbove: a rounded rectangle ≈ 456 × 236 mm, the chest
+  // toward +x).
+  let topTorso: SkPath | null = null;
   if (side) {
     body = profileBody({
       neck: q(J.neck),
@@ -687,22 +778,6 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
         </Group>
       ),
     });
-    out.push({
-      key: 'torso',
-      depth: depthOf(view, J.chest),
-      node: (
-        <Group key="torso">
-          <FigureMass path={b.legNear} tone="trousers" contour={1.8} />
-          <FigureMass path={b.shoeNear} tone="shoe" contour={1.8} />
-          <FigureMass path={b.shirt} tone="shirt" contour={1.8} />
-          <Path path={b.belt}>
-            <LinearGradient start={vec(b.belt.getBounds().x, b.belt.getBounds().y)} end={vec(b.belt.getBounds().x, b.belt.getBounds().y + b.belt.getBounds().height)} colors={['#3a2a20', '#1e150f']} />
-          </Path>
-          <Path path={b.belt} style="stroke" strokeWidth={1.6} color="#0b0806" />
-          <Path path={b.collar} style="stroke" strokeWidth={2.4} strokeCap="round" color="#161a24" opacity={0.9} />
-        </Group>
-      ),
-    });
   } else {
     // Each leg one trouser mass (thigh into shin), its shoe beyond the knee.
     const legTop = (key: string, hip: Vec3, knee: Vec3, ankle: Vec3, toe: Vec3) => {
@@ -716,88 +791,115 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
     };
     legTop('legL', J.hipL, J.kneeL, J.ankleL, J.toeL);
     legTop('legR', J.hipR, J.kneeR, J.ankleR, J.toeR);
-    // The shoulders and back from above, the chest toward +x.
     const n2 = q(J.neck);
     const OUT: P2[] = [[0, -112], [118, -108], [178, -66], [222, -28], [228, 26], [218, 74], [174, 106], [90, 116], [0, 124], [-90, 116], [-174, 106], [-218, 74], [-228, 26], [-222, -28], [-178, -66], [-118, -108]];
-    const torso = smoothClosed(OUT.map(([a, b]) => [n2[0] + b, n2[1] + a] as P2));
-    // Over the upper arms' roots (they leave from under the deltoids), under
-    // the forearms and hands.
-    const upD = Math.max(depthOf(view, scale(add(J.shoulderL, J.elbowL), 0.5)), depthOf(view, scale(add(J.shoulderR, J.elbowR), 0.5)));
-    mass('torso', Math.max(depthOf(view, J.chest), upD + 0.5), torso, 'shirt');
+    topTorso = smoothClosed(OUT.map(([a, b]) => [n2[0] + b, n2[1] + a] as P2));
   }
-  // The arms and HANDS (figure polish 2026-10-10: the hands were capsules —
-  // mittens). Each hand is the shared anatomical hand (PlayerFigure
-  // handShape, the figure skin), holding what it holds:
-  //   • the right hand on top-action pistons, seen from the player's right:
-  //     the wrist behind and above the cluster, the fingers arching forward
-  //     and DOWN onto the buttons (fingertips where the scene puts them), so
-  //     the forearm comes from the elbow behind the casings and the whole
-  //     cluster stays in view; from above, the back of the hand over them;
-  //   • the left hand a fist round the branch (tuba, euphonium), or the
-  //     fingers on the rotor levers (horn).
-  const rotary = s.valves.some((vl) => vl.kind === 'rotary');
-  const handAt = (key: string, kind: 'keys' | 'grip' | 'above', tip: P2, dir: number, depth: number, elbow: Vec3): P2 => {
-    const [ax, ay] = kind === 'keys' ? [151, Math.cos(dir) >= 0 ? 28 : -28] : kind === 'grip' ? [100, 0] : [70, 0];
-    const co = Math.cos(dir);
-    const si = Math.sin(dir);
-    const wrist: P2 = [tip[0] - (ax * co - ay * si), tip[1] - (ax * si + ay * co)];
-    const E = q(elbow);
-    // The shared hand with its wrist out of the arm's cuff (the forearm's direction).
-    const hs = handShape({ wrist: pt(wrist[0], wrist[1]), dir, kind }, Math.atan2(wrist[1] - E[1], wrist[0] - E[0]));
+  // THE ARMS AND HANDS (figure pass 3, owner 2026-10-15: "check that the hand
+  // is correctly positioned, placed, bent, fingers and digits accounted for").
+  // Each hand is the shared 3-D hand model POSED on what it plays
+  // (lowBrassHands: the horn's left fingers on the levers, little finger in
+  // the hook, thumb on the thumb valve, the right hand cupped in the bell; the
+  // tuba's / euphonium's right fingers arched down onto the pistons, thumb in
+  // its ring, the left hand on the bell branch or the side valve), drawn in
+  // this view (drawHand3: every bone, the palm, the bare wrist cut square at
+  // the cuff, the nails at close range). Each ARM is the shared anatomical
+  // arm (splitArm: one outline, the elbow's point and crook, the cuff short of
+  // the wrist) to that hand's own wrist, its upper arm and forearm painted at
+  // their own depths (the farther part whole, the nearer clipped to its side
+  // of the elbow: no seam).
+  const hands = lowBrassHands(s);
+  const view3 = VIEW3[view];
+  const geo = (sh: Vec3, el: Vec3, wr: Vec3) => {
+    const S2 = q(sh);
+    const E2 = q(el);
+    const W2 = q(wr);
+    const a = splitArm(pt(S2[0], S2[1]), pt(E2[0], E2[1]), pt(W2[0], W2[1]));
+    return { S2, E2, W2, a };
+  };
+  const gL = geo(J.shoulderL, J.elbowL, hands.L.sk.frame.o);
+  const gR = geo(J.shoulderR, J.elbowR, hands.R.sk.frame.o);
+  // In profile the near (right) sleeve's deltoid is joined to its outline.
+  const pathR = body ? (Skia.Path.MakeFromOp(gR.a.path, body.deltoid(gR.E2), PathOp.Union) ?? gR.a.path) : gR.a.path;
+  const shirtPath = body ? body.shirt : topTorso!;
+  // ONE SHIRT (the house garment light): the body and both sleeves shaded in
+  // one light across the whole garment's bounds.
+  const garment = boundsOf([shirtPath, gL.a.path, pathR]);
+  if (body) {
+    const b = body;
     out.push({
-      key,
-      depth,
+      key: 'torso',
+      depth: depthOf(view, J.chest),
       node: (
-        <Group key={key}>
-          <FigureMass path={hs.path} tone="skin" contour={1.8} />
-          <Path path={hs.lines} style="stroke" strokeWidth={1.6} strokeCap="round" color={SKIN_EDGE} opacity={0.7} />
+        <Group key="torso">
+          <FigureMass path={b.legNear} tone="trousers" contour={1.8} />
+          <FigureMass path={b.shoeNear} tone="shoe" contour={1.8} />
+          <FigureMass path={b.shirt} tone="shirt" contour={1.8} box={garment} />
+          <Path path={b.belt}>
+            <LinearGradient start={vec(b.belt.getBounds().x, b.belt.getBounds().y)} end={vec(b.belt.getBounds().x, b.belt.getBounds().y + b.belt.getBounds().height)} colors={['#3a2a20', '#1e150f']} />
+          </Path>
+          <Path path={b.belt} style="stroke" strokeWidth={1.6} color="#0b0806" />
+          <Path path={b.collar} style="stroke" strokeWidth={2.4} strokeCap="round" color="#161a24" opacity={0.9} />
         </Group>
       ),
     });
-    return wrist;
-  };
-  // Each ARM is the shared anatomical arm (owner 2026-10-10: the tube arms
-  // and the round elbow knob): one outline — the elbow's point and crook, the
-  // forearm's swell, the cuff short of the wrist — its upper arm and forearm
-  // painted at their own depths (the farther part whole, the nearer clipped
-  // to its side of the elbow: no seam).
-  // In profile the near (right) sleeve grows out of the shoulder: its deltoid
-  // joined to the arm's outline inside the shirt, no outline or rim at the
-  // join (`quiet`); the far (left) arm a little darker, behind the body.
-  const arm = (lr: 'L' | 'R', sh: Vec3, el: Vec3, w2: P2, dUp: number, dFore: number) => {
-    const S2 = q(sh);
-    const E2 = q(el);
-    const a = splitArm(pt(S2[0], S2[1]), pt(E2[0], E2[1]), pt(w2[0], w2[1]));
-    const near = lr === 'R' && body;
-    const path = near ? (Skia.Path.MakeFromOp(a.path, body!.deltoid(E2), PathOp.Union) ?? a.path) : a.path;
-    const quiet = near ? body!.quiet : null;
-    const far = side && lr === 'L';
-    const foreNear = dFore >= dUp;
-    const part = (key: string, depth: number, clip: SkPath | null) =>
-      out.push({ key, depth, node: <Group key={key} clip={clip ?? undefined}><FigureMass path={path} tone="shirt" far={far} quiet={quiet} contour={1.8} /></Group> });
-    part(`upper${lr}`, dUp, foreNear ? null : a.upperSide);
-    part(`fore${lr}`, dFore, foreNear ? a.foreSide : null);
-  };
-  const dirOf = (a: Vec3, b: Vec3) => {
-    const A = q(a);
-    const B = q(b);
-    return Math.atan2(B[1] - A[1], B[0] - A[0]);
-  };
-  const dUpper = (sh: Vec3, el: Vec3) => depthOf(view, scale(add(sh, el), 0.5));
-  {
-    const kind = rotary ? 'keys' : 'grip';
-    const dir = dirOf(J.elbowL, J.handL);
-    const wL = handAt('handL', kind, q(J.handL), dir, depthOf(view, J.handL) + 25, J.elbowL);
-    arm('L', J.shoulderL, J.elbowL, wL, dUpper(J.shoulderL, J.elbowL), depthOf(view, scale(add(J.elbowL, J.wristL), 0.5)));
-  }
-  if (!s.bellHand) {
-    const dir = side ? 0 : dirOf(J.wristR, J.handR);
-    const wR = handAt('handR', side ? 'keys' : 'above', q(J.handR), dir, depthOf(view, J.handR) + 25, J.elbowR);
-    arm('R', J.shoulderR, J.elbowR, wR, dUpper(J.shoulderR, J.elbowR), depthOf(view, scale(add(J.elbowR, J.wristR), 0.5)));
   } else {
-    // The hand inside the bell: the sleeve to the wrist, the hand out of sight.
-    arm('R', J.shoulderR, J.elbowR, q(J.wristR), dUpper(J.shoulderR, J.elbowR), depthOf(view, scale(add(J.elbowR, J.wristR), 0.5)));
+    // Over the upper arms' roots (they leave from under the deltoids), under
+    // the forearms and hands.
+    const upD = Math.max(depthOf(view, scale(add(J.shoulderL, J.elbowL), 0.5)), depthOf(view, scale(add(J.shoulderR, J.elbowR), 0.5)));
+    out.push({ key: 'torso', depth: Math.max(depthOf(view, J.chest), upD + 0.5), node: <FigureMass key="torso" path={topTorso!} tone="shirt" contour={1.8} box={garment} /> });
   }
+  const arm = (lr: 'L' | 'R', g: typeof gL, sh: Vec3, el: Vec3, wr: Vec3) => {
+    const near = lr === 'R' && body !== null;
+    const path = lr === 'R' ? pathR : g.a.path;
+    const far = side && lr === 'L';
+    // The sleeve leaves the shirt as one cloth: shaded in the garment's one
+    // light (`box`), its top melting into the shoulder with no rim or contour
+    // (`quiet`, the deltoid's region), its edge over the shirt near the
+    // shoulder only a soft fold (`soft`). (No fade-in mask: these arms reach
+    // FORWARD across the body, and a sleeve faded over the chest read as
+    // see-through.)
+    const quiet = near ? body!.quiet : null;
+    const soft = near ? body!.soft : far ? null : shoulderSoft(shirtPath, g.S2);
+    const dUp = depthOf(view, scale(add(sh, el), 0.5));
+    const dFore = depthOf(view, scale(add(el, wr), 0.5));
+    const foreNear = dFore >= dUp;
+    const folds = far ? null : sleeveCreases(g.S2, g.E2, g.W2);
+    const part = (key: string, depth: number, clip: SkPath | null) =>
+      out.push({
+        key,
+        depth,
+        node: (
+          <Group key={key} clip={clip ?? undefined}>
+            <FigureMass path={path} tone="shirt" far={far} quiet={quiet} soft={soft} box={garment} contour={1.8} />
+          </Group>
+        ),
+      });
+    part(`upper${lr}`, dUp, foreNear ? null : g.a.upperSide);
+    part(`fore${lr}`, dFore, foreNear ? g.a.foreSide : null);
+    // The seam and the elbow's crease over the whole sleeve, just above its nearer part.
+    if (folds) out.push({ key: `creases${lr}`, depth: Math.max(dUp, dFore) + 0.01, node: <Creases key={`creases${lr}`} path={folds} clip={path} /> });
+  };
+  arm('L', gL, J.shoulderL, J.elbowL, hands.L.sk.frame.o);
+  arm('R', gR, J.shoulderR, J.elbowR, hands.R.sk.frame.o);
+  const handItem = (key: string, h: PosedHand, g: typeof gL) => {
+    const dh = drawHand3(h.sk, view3, handOpts(view, h, g));
+    out.push({
+      key,
+      depth: depthOf(view, h.sk.frame.o) + 25,
+      node: (
+        <Group key={key}>
+          <FigureMass path={dh.path} tone="skin" contour={1.8} />
+          <Path path={dh.lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={SKIN_EDGE} opacity={0.7} />
+          <Nails path={dh.nails} />
+        </Group>
+      ),
+    });
+  };
+  handItem('handL', hands.L, gL);
+  // The horn's right hand is inside the bell (BellArt draws it, clipped to the
+  // opening); the sleeve runs to its wrist at the rim.
+  if (!s.bellHand) handItem('handR', hands.R, gR);
   // The neck, and the head: the SHARED figure head (head fix 2026-10-08 —
   // PlayerFigure headProfile / headAbove + FigureHead, the same skin
   // silhouette every lab figure wears; never a circle). Profile facing +x
@@ -866,7 +968,13 @@ export function sceneItems(s: BrassScene, view: ViewId, opts: { player?: boolean
   for (const t of s.tubes) items.push(...tubeItems(t, view, s));
   s.valves.forEach((vl, i) => items.push(...valveItems(vl, view, i)));
   const b = s.bell;
-  items.push({ key: 'bell', depth: depthOf(view, scale(add(b.rim, b.throat), 0.5)) + 10, node: <BellArt key="bell" b={b} view={view} hand={s.bellHand} /> });
+  let hand: HandPaint | null = null;
+  if (s.bellHand && opts.player !== false) {
+    const h = lowBrassHands(s).R;
+    const dh = drawHand3(h.sk, VIEW3[view], handOpts(view, h, { E2: prj(view, h.elbow), W2: prj(view, h.sk.frame.o) }));
+    hand = { path: dh.path, lines: dh.lines, nails: dh.nails };
+  }
+  items.push({ key: 'bell', depth: depthOf(view, scale(add(b.rim, b.throat), 0.5)) + 10, node: <BellArt key="bell" b={b} view={view} hand={hand} /> });
   return items.sort((a, z) => a.depth - z.depth);
 }
 
