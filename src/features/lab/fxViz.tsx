@@ -964,6 +964,10 @@ function DecayPlayhead({
 }
 
 // ──────────────────────────────────────────────────────── LissajousGraph ──
+/** The width lab's model input: a stereo test tone whose R lags L by this
+ *  much (≈63°, correlation cos 1.1 = +0.45). The flow display (fxAnim
+ *  StereoFlow) and the Lissajous draw the SAME input. */
+export const STEREO_TEST_LR_RAD = 1.1;
 /** Stereo/Phase: the L-vs-R (XY) figure for a sine under the current stereo
  *  params — vertical line = mono (+1), horizontal-leaning = anti-phase (−1),
  *  ellipse/ball = decorrelated. Correlation is computed from the same signal. */
@@ -972,16 +976,23 @@ export function LissajousGraph({
   invertR,
   delayRms,
   toneHz = 440,
+  inputLrRad = 0,
 }: {
   widthPct: number;
   invertR: boolean;
   delayRms: number;
   toneHz?: number;
+  /** The test input's own L/R phase difference (radians). The width lab's
+   *  model input is a STEREO tone (R lags L by STEREO_TEST_LR_RAD), the same
+   *  one its flow display draws — with L = R the SIDE is zero and WIDTH could
+   *  not move the trace at all (art grading 2026-10-16: the scope sat on a
+   *  vertical line at +1.00 at every width while the flow showed L ≠ R). */
+  inputLrRad?: number;
 }) {
   const SIZE = 170;
   const { path, corr } = useMemo(() => {
     const N = 720;
-    const phi = 2 * PI * toneHz * (delayRms / 1000);
+    const phi = 2 * PI * toneHz * (delayRms / 1000) + inputLrRad;
     const width = widthPct / 100;
     let d = '';
     let sLL = 0, sRR = 0, sLR = 0;
@@ -993,15 +1004,18 @@ export function LissajousGraph({
       l = m + s;
       r = m - s;
       sLL += l * l; sRR += r * r; sLR += l * r;
-      // Rotate 45° so mono = vertical (the correlation-meter convention).
-      const px = SIZE / 2 + ((l - r) / 2) * (SIZE / 2 - 12);
+      // Rotate 45° so mono = vertical (the correlation-meter convention), with
+      // a left-only signal leaning up-LEFT as on a real goniometer.
+      const px = SIZE / 2 + ((r - l) / 2) * (SIZE / 2 - 12);
       const py = SIZE / 2 - ((l + r) / 2) * (SIZE / 2 - 12);
       d += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${py.toFixed(1)}`;
     }
     const c = sLR / Math.max(Math.sqrt(sLL * sRR), 1e-9);
     return { path: d, corr: c };
-  }, [widthPct, invertR, delayRms, toneHz]);
+  }, [widthPct, invertR, delayRms, toneHz, inputLrRad]);
   const R = SIZE / 2 - 12;
+  // The correlation meter's needle position (−1 … +1 across the bar).
+  const corrFrac = Math.min(Math.max((corr + 1) / 2, 0), 1);
   return (
     <View style={lissaStyles.row}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
@@ -1011,6 +1025,14 @@ export function LissajousGraph({
         <Circle cx={SIZE / 2} cy={SIZE / 2} r={R / 2} stroke={GRID} strokeWidth={0.75} fill="none" />
         <Line x1={SIZE / 2} y1={6} x2={SIZE / 2} y2={SIZE - 6} stroke={GRID} strokeWidth={1} />
         <Line x1={6} y1={SIZE / 2} x2={SIZE - 6} y2={SIZE / 2} stroke={GRID} strokeWidth={1} />
+        {/* The L and R axes of a goniometer, 45° off the M/S cross (a real
+            phase scope's graticule): a signal in L alone lies along L. */}
+        <Line x1={SIZE / 2 - R * 0.707} y1={SIZE / 2 - R * 0.707} x2={SIZE / 2 + R * 0.707} y2={SIZE / 2 + R * 0.707} stroke={GRID} strokeWidth={0.75} strokeDasharray="3 3" />
+        <Line x1={SIZE / 2 + R * 0.707} y1={SIZE / 2 - R * 0.707} x2={SIZE / 2 - R * 0.707} y2={SIZE / 2 + R * 0.707} stroke={GRID} strokeWidth={0.75} strokeDasharray="3 3" />
+        <SvgText x={SIZE / 2 + 5} y={17} fill={colors.textSub} fontSize={10} fontFamily={fonts.oswaldSemiBold}>M</SvgText>
+        <SvgText x={SIZE - 16} y={SIZE / 2 - 5} fill={colors.textSub} fontSize={10} fontFamily={fonts.oswaldSemiBold}>S</SvgText>
+        <SvgText x={14} y={22} fill={colors.textSub} fontSize={10} fontFamily={fonts.oswaldSemiBold}>L</SvgText>
+        <SvgText x={SIZE - 21} y={22} fill={colors.textSub} fontSize={10} fontFamily={fonts.oswaldSemiBold}>R</SvgText>
         {/* phosphor trace: wide halo → bloom → crisp core */}
         <Path d={path} stroke={AMBER} strokeWidth={6.5} strokeOpacity={0.14} strokeLinecap="round" strokeLinejoin="round" fill="none" />
         <Path d={path} stroke={AMBER} strokeWidth={3} strokeOpacity={0.38} strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -1019,6 +1041,17 @@ export function LissajousGraph({
       <View style={lissaStyles.meter}>
         <Text style={lissaStyles.corrLabel}>CORRELATION</Text>
         <Text style={[lissaStyles.corrValue, corr < -0.9 ? lissaStyles.corrValueBad : null]}>{corr >= 0 ? `+${corr.toFixed(2)}` : corr.toFixed(2)}</Text>
+        {/* The correlation meter itself: a −1 … +1 bar with its centre mark,
+            as on a console's phase-correlation meter. */}
+        <View style={lissaStyles.corrTrack}>
+          <View style={lissaStyles.corrZero} />
+          <View style={[lissaStyles.corrNeedle, { left: `${corrFrac * 100}%` }, corr < -0.9 ? { backgroundColor: RED } : null]} />
+        </View>
+        <View style={lissaStyles.corrScale}>
+          <Text style={lissaStyles.corrTick}>−1</Text>
+          <Text style={lissaStyles.corrTick}>0</Text>
+          <Text style={lissaStyles.corrTick}>+1</Text>
+        </View>
         <Text style={lissaStyles.corrHint}>
           {corr > 0.9 ? 'mono / in phase' : corr < -0.9 ? 'ANTI-PHASE — cancels in mono' : corr < 0 ? 'partly out of phase' : 'wide / decorrelated'}
         </Text>
@@ -1180,9 +1213,14 @@ const ladderStyles = StyleSheet.create({
 const lissaStyles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   meter: { flex: 1, gap: 3 },
-  corrLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
+  corrLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
   corrValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 26, color: colors.amber },
   corrValueBad: { color: RED },
+  corrTrack: { height: 10, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: GRID, marginTop: 2 },
+  corrZero: { position: 'absolute', left: '50%', top: -2, bottom: -2, width: 1, backgroundColor: colors.textSub },
+  corrNeedle: { position: 'absolute', top: -3, bottom: -3, width: 3, marginLeft: -1.5, borderRadius: 1.5, backgroundColor: colors.amber },
+  corrScale: { flexDirection: 'row', justifyContent: 'space-between' },
+  corrTick: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, color: colors.textSub },
   corrHint: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
 });
 

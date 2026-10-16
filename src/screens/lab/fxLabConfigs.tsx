@@ -41,6 +41,7 @@ import {
   EchoTimelineGraph,
   DecayCurveGraph,
   LissajousGraph,
+  STEREO_TEST_LR_RAD,
   eqResponseDb,
   combResponseDb,
   phaserResponseDb,
@@ -1448,7 +1449,7 @@ const stereoConfig: FxLabConfig = {
     { k: 'PAN', paramId: P.pan },
     { k: 'FOLD', paramId: P.monoFold },
   ],
-  Hero: (v) => <LissajousGraph widthPct={v[P.widthPct]} invertR={false} delayRms={0} toneHz={440} />,
+  Hero: (v) => <LissajousGraph widthPct={v[P.widthPct]} invertR={false} delayRms={0} toneHz={440} inputLrRad={STEREO_TEST_LR_RAD} />,
   anim: (v) => ({
     kind: 'stereo',
     flavor: 'width',
@@ -1458,7 +1459,7 @@ const stereoConfig: FxLabConfig = {
     delayRms: 0,
     monoFold: v[P.monoFold] > 0.5,
   }),
-  heroBadge: 'LISSAJOUS + CORRELATION — ANALYTIC (440 Hz model)',
+  heroBadge: 'GONIOMETER + CORRELATION — 440 Hz STEREO TEST TONE (model)',
   heroCaption: (v) =>
     v[P.monoFold] > 0.5
       ? 'MONO CHECK: everything wide is gone — only the MID survives the fold.'

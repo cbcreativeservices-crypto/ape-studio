@@ -49,7 +49,7 @@ import {
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
-import { distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
+import { STEREO_TEST_LR_RAD, distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
 import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
 import { usePhaseClock } from './foundations/viz';
 import { useStageTextScale } from './rack/stageAspect';
@@ -156,7 +156,10 @@ function stageLabel(model: FxAnimModel): string {
     case 'phaser': return 'PHASER';
     case 'dynamics': return model.mode === 'compressor' ? 'COMP' : model.mode === 'gate' ? 'GATE' : 'LIMIT';
     case 'distortion': return 'DRIVE';
-    case 'stereo': return model.flavor === 'phase' ? 'PHASE' : 'WIDTH';
+    // "M/S WIDTH" names what the green stage does in the width lab: L/R →
+    // MID + SIDE, SIDE × width, back to L/R (art grading 2026-10-16: a bare
+    // "WIDTH" slab read as an unexplained object).
+    case 'stereo': return model.flavor === 'phase' ? 'PHASE' : 'M/S WIDTH';
   }
 }
 
@@ -342,6 +345,7 @@ function FlowScene({
   glow,
   note,
   noteColor,
+  legend,
   children,
 }: {
   w: number;
@@ -353,6 +357,9 @@ function FlowScene({
    *  ts like IN/OUT. Green by default (it names the stage's curve). */
   note?: string;
   noteColor?: string;
+  /** Trace key at the bottom-right ("L" amber · "R" blue) for two-trace
+   *  scenes, so each coloured line is named on the drawing. */
+  legend?: { label: string; color: string }[];
   children: ReactNode;
 }) {
   const stageX = w * STAGE_FRAC;
@@ -396,6 +403,16 @@ function FlowScene({
       </Text>
       {note ? (
         <Text style={[flowStyles.note, { fontSize: 10 * ts, left: 8 * ts, bottom: 3 * ts }, noteColor ? { color: noteColor } : null]}>{note}</Text>
+      ) : null}
+      {legend ? (
+        <View style={[flowStyles.legend, { right: 8 * ts, bottom: 3 * ts, gap: 8 * ts }]}>
+          {legend.map((k) => (
+            <Text key={k.label} style={[flowStyles.legendTxt, { fontSize: 11 * ts, color: k.color }]}>
+              {'— '}
+              {k.label}
+            </Text>
+          ))}
+        </View>
       ) : null}
     </View>
   );
@@ -1264,6 +1281,10 @@ function DistFlow({
 }
 
 // ─────────────────────────────────────────────────── phase/stereo flow ──
+/** Trace amplitude (× panel height). The loudest output — WIDTH 200 % on a
+ *  hard pan, |M + 2S|·√2 ≈ 1.9 — still fits inside the panel (0.46 h), so
+ *  the drawing never clips what the DSP does not clip. */
+const STEREO_A = 0.24;
 // Dual traces: L (amber) and R (blue). Past the stage, polarity/phase-delay/
 // width/pan act on the M/S decomposition — mono-fold glides both traces onto
 // the same (L+R)/2 line, so INVERT + MONO visibly cancels to a flatline.
@@ -1301,12 +1322,14 @@ function StereoFlow({
   const lamPx = w / 3.0;
   // The width lab's input carries a built-in L/R difference (otherwise SIDE
   // would be zero and width invisible); the phase lab's input is identical L=R.
-  const d0 = flavor === 'width' ? 1.1 : 0;
+  // The SAME stereo test tone the well's Lissajous draws (fxViz).
+  const d0 = flavor === 'width' ? STEREO_TEST_LR_RAD : 0;
+  const ampK = flavor === 'width' ? STEREO_A : 0.3;
 
   const inL = useDerivedValue(() => {
     const pc = carrier.value;
     const p = Skia.Path.Make();
-    const A = h * 0.3;
+    const A = h * ampK;
     const N = 40;
     for (let i = 0; i <= N; i++) {
       const x = 6 + ((stageX - 16) * i) / N;
@@ -1320,7 +1343,7 @@ function StereoFlow({
   const inR = useDerivedValue(() => {
     const pc = carrier.value;
     const p = Skia.Path.Make();
-    const A = h * 0.3;
+    const A = h * ampK;
     const N = 40;
     for (let i = 0; i <= N; i++) {
       const x = 6 + ((stageX - 16) * i) / N;
@@ -1338,10 +1361,11 @@ function StereoFlow({
     const pg = foldG.value;
     const sgn = 1 - 2 * invG.value; // glides through 0 → visible morph to Ø
     const dxp = dlyG.value * (lamPx / 12);
-    const gL = Math.min(1, 1 - panG.value);
-    const gR = Math.min(1, 1 + panG.value);
+    // Constant-power pan, exactly processStereo's law (×√2 so centre = unity).
+    const gL = Math.cos(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
+    const gR = Math.sin(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
     const p = Skia.Path.Make();
-    const A = h * 0.3;
+    const A = h * ampK;
     const N = 52;
     for (let i = 0; i <= N; i++) {
       const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
@@ -1365,10 +1389,11 @@ function StereoFlow({
     const pg = foldG.value;
     const sgn = 1 - 2 * invG.value;
     const dxp = dlyG.value * (lamPx / 12);
-    const gL = Math.min(1, 1 - panG.value);
-    const gR = Math.min(1, 1 + panG.value);
+    // Constant-power pan, exactly processStereo's law (×√2 so centre = unity).
+    const gL = Math.cos(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
+    const gR = Math.sin(((panG.value + 1) * Math.PI) / 4) * Math.SQRT2;
     const p = Skia.Path.Make();
-    const A = h * 0.3;
+    const A = h * ampK;
     const N = 52;
     for (let i = 0; i <= N; i++) {
       const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
@@ -1387,9 +1412,16 @@ function StereoFlow({
   }, [carrier, widthG, panG, invG, dlyG, foldG, stageX, w, h, kc, lamPx, d0]);
 
   return (
-    <FlowScene w={w} h={h} label={label}>
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      note={flavor === 'width' ? 'STEREO TEST TONE · L ≠ R' : undefined}
+      noteColor={flavor === 'width' ? colors.textSub : undefined}
+      legend={flavor === 'width' ? [{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }] : undefined}
+    >
       <Path path={inR} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.4} />
-      <Path path={inL} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
+      <Path path={inL} color={flavor === 'width' ? AMBER : DIM} style="stroke" strokeWidth={1.4} opacity={flavor === 'width' ? 0.5 : 0.85} />
       <FlowGlow path={outR} color={BLUE} width={1.8} opacity={0.9} />
       <FlowGlow path={outL} width={1.8} />
     </FlowScene>
@@ -1519,6 +1551,8 @@ const flowStyles = StyleSheet.create({
     backgroundColor: 'rgba(12,12,15,.72)',
     overflow: 'hidden',
   },
+  legend: { position: 'absolute', flexDirection: 'row', backgroundColor: 'rgba(12,12,15,.72)' },
+  legendTxt: { fontFamily: fonts.oswaldSemiBold },
   // The overlay key (EQ curve) — green like the stage it describes.
   note: {
     position: 'absolute',
