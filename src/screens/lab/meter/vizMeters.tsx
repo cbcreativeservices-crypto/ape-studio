@@ -425,15 +425,18 @@ export function WaveformView(p: {
   const playhead = useDerivedValue(() => {
     const f = frac01(p.phase.value);
     const x = gut + 2 * ts + f * (w - gut - 4 * ts);
+    // The flag starts BELOW the PK/RMS/CF and DC lines (Signal Detective
+    // grading 2026-10-16: the sweeping flag crossed the stat text).
+    const y0 = (p.plain ? 3 : 31) * ts;
     const pth = Skia.Path.Make();
-    pth.moveTo(x, 3 * ts);
+    pth.moveTo(x, y0);
     pth.lineTo(x, h - 3 * ts);
-    pth.moveTo(x - 4.5 * ts, 3 * ts);
-    pth.lineTo(x + 4.5 * ts, 3 * ts);
-    pth.lineTo(x, 10 * ts);
+    pth.moveTo(x - 4.5 * ts, y0);
+    pth.lineTo(x + 4.5 * ts, y0);
+    pth.lineTo(x, y0 + 7 * ts);
     pth.close();
     return pth;
-  }, [p.phase, w, h, ts, gut]);
+  }, [p.phase, w, h, ts, gut, p.plain]);
 
   const st = S.stats;
   const statLine = `PK ${st.pkDb.toFixed(1)}  RMS ${st.rmsDb.toFixed(1)}  CF ${st.crest.toFixed(1)} dB`;
@@ -484,13 +487,13 @@ export function WaveformView(p: {
           {`−${-d}`}
         </Lbl>
       ))}
-      <Lbl x={w - 230} y={4 * ts} w={226} align="right" size={7}>
+      <Lbl x={w - 230} y={4 * ts} w={226} align="right" size={10}>
         {statLine}
       </Lbl>
         </>
       )}
       {!p.plain && Math.abs(st.dc) > 0.004 ? (
-        <Lbl x={w - 230} y={16 * ts} w={226} align="right" size={7} color={AMBER}>
+        <Lbl x={w - 230} y={17 * ts} w={226} align="right" size={10} color={AMBER}>
           {`DC ${st.dc >= 0 ? '+' : ''}${st.dc.toFixed(2)}`}
         </Lbl>
       ) : null}
@@ -1812,7 +1815,9 @@ export function PhaseMeterView(p: {
       <Lbl x={cxg + Rg * 0.707 + 14 * ts - 10} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
         R
       </Lbl>
-      <Lbl x={cxg - 10} y={cyg - Rg - 12 * ts} w={20} size={7}>
+      {/* M beside the top of the vertical axis, not on it: centred there it
+          stacked under the bar's "0" (Signal Detective grading 2026-10-16). */}
+      <Lbl x={cxg + 4 * ts} y={cyg - Rg - 12 * ts} w={20} align="left" size={7}>
         M
       </Lbl>
       <Lbl x={cxg + Rg + 4 * ts} y={cyg - 4} w={20} align="left" size={7}>
