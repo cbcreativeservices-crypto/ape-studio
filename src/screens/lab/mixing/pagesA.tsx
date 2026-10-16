@@ -11,7 +11,19 @@ import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row, useStableShuffle } from '.
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, MixMantra, useFocalChoice, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
-import { DIMENSIONS, FOCAL_CHOICES, correlatedSumPeakDb } from './engine/mixModel.ts';
+import { DIMENSIONS, FOCAL_CHOICES, correlatedSumPeakDb, type DimensionId } from './engine/mixModel.ts';
+import { FlowArt, HeadroomArt, MixMapArt, PrepArt } from './begArt';
+import { AUTO_BASE } from './pagesD';
+import type { MixSettings } from './audio/mixAudio.ts';
+
+/** Page 1's picture: the demo balance the later pages build (AUTO_BASE),
+ *  with the shared reverb on the lead and snare and the chorus ride. */
+const DEMO_MIX: MixSettings = {
+  ...AUTO_BASE,
+  lead: { ...AUTO_BASE.lead, verbSendDb: -10, auto: { verseDb: 0, chorusDb: 3 } },
+  snare: { ...AUTO_BASE.snare, verbSendDb: -12 },
+  bgv: { ...AUTO_BASE.bgv, verbSendDb: -12, auto: { verseDb: -60, chorusDb: 8 } },
+};
 import { CHANNEL_PATH, STATION_ORDER, firstOrderMistake, isChannelOrderCorrect, type StationId } from './engine/routing.ts';
 
 /* ════ 1 · WHAT MIXING DOES ═══════════════════════════════════════════════ */
@@ -19,6 +31,7 @@ import { CHANNEL_PATH, STATION_ORDER, firstOrderMistake, isChannelOrderCorrect, 
 function PageWhatMixingDoes({ ctx }: { ctx: PageCtx }) {
   const [focal, setFocal] = useFocalChoice();
   const [dimSeen, setDimSeen] = useState<Set<string>>(new Set());
+  const [lastDim, setLastDim] = useState<DimensionId | null>(null);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Open all five dimensions', hit: dimSeen.size >= DIMENSIONS.length },
@@ -36,8 +49,20 @@ function PageWhatMixingDoes({ ctx }: { ctx: PageCtx }) {
         <ConceptList
           items={DIMENSIONS.map((d) => ({ id: d.id, name: d.name, blurb: d.question }))}
           opened={dimSeen}
-          onOpen={(id) => setDimSeen((s) => new Set(s).add(id))}
+          onOpen={(id) => {
+            setDimSeen((s) => new Set(s).add(id));
+            setLastDim(id as DimensionId);
+          }}
         />
+        <MixMapArt
+          settings={DEMO_MIX}
+          verb
+          chorus={lastDim === 'movement'}
+          focus={lastDim}
+          title={lastDim === 'movement' ? 'A MIX · THE CHORUS (BARS 3–4)' : 'A MIX · THE VERSE (BARS 1–2)'}
+          state={lastDim === 'movement' ? 'LEAD +3 · BGV IN' : 'ALL FIVE AT ONCE'}
+        />
+        <Body>Every track of this lab’s session, drawn where the mix puts it: up the page by the range it plays in, across by its pan, wide by its level, glowing by its reverb. Open MOVEMENT to see the chorus.</Body>
       </Card>
       <Card>
         <Eyebrow>YOUR FIRST DECISION</Eyebrow>
@@ -102,6 +127,8 @@ function PagePrepare({ ctx }: { ctx: PageCtx }) {
           opened={seen}
           onOpen={(id) => setSeen((s) => new Set(s).add(id))}
         />
+        <PrepArt opened={seen} />
+        <Body>The session updates as you open each step: names and colours, the junk gone, the quiet clip levelled, headroom on the master meter, references parked, an untouched copy saved.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>SEPARATE THE JOBS</Eyebrow>
@@ -178,6 +205,7 @@ function PageSignalFlow({ ctx }: { ctx: PageCtx }) {
       <Card tone={solved ? 'ok' : 'plain'}>
         <Eyebrow>NOW BUILD THE PATH</Eyebrow>
         <Prompt>Tap the stations in signal order, source to output — from what each one DOES, not from a printed answer.</Prompt>
+        <FlowArt shuffled={shuffled.map((s) => s.id)} placed={placed} solved={solved} />
         <Text style={styles.builtLine} accessibilityLiveRegion="polite">
           {placed.length === 0 ? '—' : placed.map((id) => CHANNEL_PATH.find((s) => s.id === id)!.name).join(' → ')}
         </Text>
@@ -248,6 +276,8 @@ function PageGainStaging({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>WHY HEADROOM</Eyebrow>
         <Body>Digital zero is a hard ceiling: anything past it is clipped, permanently. And peaks GANG UP — two identical −6 dB peaks landing together can reach {sum.toFixed(1)} dB. Eight tracks each “safely” hot leave a mix bus with nowhere to live. Peaks comfortably below zero on every track is the whole rule.</Body>
+        <HeadroomArt measured={pb.measured} />
+        <Body>Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play — B’s bar sits 3 dB higher with nothing else changed.</Body>
       </Card>
       <Card>
         <Eyebrow>A OR B — BLIND</Eyebrow>

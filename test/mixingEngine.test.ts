@@ -105,6 +105,8 @@ describe('console graph — pre/post sends, VCA, double-routing', () => {
     assert.ok(sendPathGain(muted, 'cue', CONSOLE) > 0, 'pre send survives mute');
     const pulled = { ...lead, faderDb: -60 };
     assert.ok(sendPathGain(pulled, 'verb', CONSOLE) < sendPathGain(lead, 'verb', CONSOLE));
+    assert.equal(sendPathGain(pulled, 'verb', CONSOLE), 0, 'the bottom stop is −∞: the post send is silent');
+    assert.equal(mainPathGain(pulled, CONSOLE), 0, 'and so is the main path');
     assert.equal(sendPathGain(pulled, 'cue', CONSOLE), sendPathGain(lead, 'cue', CONSOLE));
   });
   it('a VCA silences the main path and post sends, never pre sends', () => {

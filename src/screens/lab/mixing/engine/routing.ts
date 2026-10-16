@@ -196,6 +196,12 @@ export interface Console {
 }
 
 const db2lin = (db: number) => Math.pow(10, db / 20);
+/** A FADER's gain: the bottom stop (−60 on this lab's faders) is −∞, the
+ *  renderer's own rule (renderMix skips a track at ≤ −60). Without it a
+ *  pulled fader still passed 0.001 and page 12 read "REVERB (post):
+ *  receiving" under the words "the reverb died with the fader" (art fix
+ *  review 2026-10-16). */
+const faderLin = (db: number) => (db <= -60 ? 0 : db2lin(db));
 
 /** The EFFECTIVE gain a channel contributes to the mix bus via its MAIN path
  *  (fader × VCA × subgroup fader; 0 when muted). The audio-truth behind the
@@ -203,7 +209,7 @@ const db2lin = (db: number) => Math.pow(10, db / 20);
  *  through the channel's own route. */
 export function mainPathGain(c: Channel, console_: Console): number {
   if (c.mute) return 0;
-  let g = db2lin(c.faderDb);
+  let g = faderLin(c.faderDb);
   if (c.vca) {
     const v = console_.vcas.find((x) => x.id === c.vca);
     if (v) g *= db2lin(v.levelDb);
@@ -225,7 +231,7 @@ export function sendPathGain(c: Channel, auxId: string, console_: Console): numb
   const sendLin = db2lin(s.levelDb);
   if (s.tap === 'pre') return sendLin;
   if (c.mute) return 0;
-  let g = db2lin(c.faderDb) * sendLin;
+  let g = faderLin(c.faderDb) * sendLin;
   if (c.vca) {
     const v = console_.vcas.find((x) => x.id === c.vca);
     if (v) g *= db2lin(v.levelDb);

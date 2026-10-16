@@ -13,6 +13,8 @@ import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, MiniConsole, countTouched, useFocalChoice, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { SESSION_TRACKS, SUBTRACTIVE_MOVES, TRACK_IDS, panRisk, track, type TrackId } from './engine/mixModel.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
+import { MixMapArt } from './begArt';
+import { AUTO_BASE } from './pagesD';
 
 /* ════ 5 · BUILD A STATIC MIX ═════════════════════════════════════════════ */
 
@@ -61,8 +63,9 @@ function PageStaticMix({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>STEP 3 — BUILD AROUND IT</Eyebrow>
         <Body>Set the anchor where it feels strong, then add the others in order of importance — each one placed relative to what is already there. Mute anything the song does not need yet.</Body>
+        <MixMapArt settings={mix} anchor={anchor} title={touched === 0 ? 'THE WALL · EVERY FADER AT 0' : 'YOUR BALANCE'} state={anchor ? `ANCHOR: ${track(anchor).name}` : undefined} />
         <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: true, pan: true, mute: true, pol: true }} />
-        <Text style={styles.consoleNote}>LEAD and BGV are synth stand-ins for the vocal parts of this session — real stems swap in identically.</Text>
+        <Text style={styles.consoleNote}>The picture follows the console: wider = louder, sideways = panned, dashed = muted. LEAD and BGV are synth stand-ins for the vocal parts of this session — real stems swap in identically.</Text>
         <Btn label="RESET MIX" disabled={touched === 0} onPress={() => setMix({})} a11y="Reset every channel to flat" />
       </Card>
       <Card tone="note">
@@ -96,9 +99,30 @@ const SCENARIO: {
   },
 };
 
+/** The crowded chorus as settings: keys, guitar and the backing pad all
+ *  sustaining near the lead, each with reverb — and what each move changes. */
+const CROWD: MixSettings = {
+  ...AUTO_BASE,
+  gtr: { faderDb: -5, pan: -20, verbSendDb: -8 },
+  keys: { faderDb: -5, pan: 15, verbSendDb: -8 },
+  bgv: { faderDb: -6, pan: -5, verbSendDb: -8 },
+  lead: { faderDb: -3, verbSendDb: -10 },
+};
+const down = (s: MixSettings, ids: readonly ('gtr' | 'keys' | 'bgv')[], patch: (t: NonNullable<MixSettings['gtr']>) => NonNullable<MixSettings['gtr']>): MixSettings =>
+  Object.fromEntries(Object.entries(s).map(([k, v]) => [k, ids.includes(k as 'gtr') ? patch(v!) : v])) as MixSettings;
+const MOVE_SETTINGS: Record<string, MixSettings> = {
+  arrangement: { ...CROWD, bgv: { ...CROWD.bgv, mute: true } },
+  level: down(CROWD, ['gtr', 'keys', 'bgv'], (t) => ({ ...t, faderDb: (t.faderDb ?? 0) - 5 })),
+  frequency: down(CROWD, ['gtr', 'keys'], (t) => ({ ...t, eq: { hz: 1200, gainDb: -6, q: 1 } })),
+  processing: CROWD,
+  space: down(CROWD, ['gtr', 'keys', 'bgv'], (t) => ({ ...t, verbSendDb: undefined })),
+  automation: CROWD,
+};
+
 function PageSubtractive({ ctx }: { ctx: PageCtx }) {
   const [opened, setOpened] = useState<Set<string>>(new Set());
   const [tried, setTried] = useState<Set<string>>(new Set());
+  const [last, setLast] = useState<string | null>(null);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Open all six moves', hit: opened.size >= SUBTRACTIVE_MOVES.length },
@@ -121,12 +145,24 @@ function PageSubtractive({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>DECIDE — {SCENARIO.title.toUpperCase()}</Eyebrow>
         <Prompt>{SCENARIO.problem}</Prompt>
         <Body>Try any move to see how it lands here. Several are legitimate — mixing decisions usually have more than one professional answer.</Body>
+        <MixMapArt
+          settings={last ? MOVE_SETTINGS[last] : CROWD}
+          verb
+          chorus
+          anchor="lead"
+          only={['lead', 'gtr', 'keys', 'bgv']}
+          title={last ? `AFTER: ${SUBTRACTIVE_MOVES.find((m) => m.id === last)!.name.toUpperCase()}` : 'THE CROWDED CHORUS'}
+          state={last === 'processing' || last === 'automation' ? 'NOTHING CHANGES HERE' : 'LEAD RINGED'}
+        />
         {SUBTRACTIVE_MOVES.map((m) => {
           const v = SCENARIO.verdicts[m.id];
           const wasTried = tried.has(m.id);
           return (
             <View key={m.id} style={styles.moveRow}>
-              <Btn label={wasTried ? (v.ok ? `✓ ${m.name}` : `— ${m.name}`) : m.name} tone={wasTried ? (v.ok ? 'primary' : 'plain') : 'plain'} selected={wasTried} onPress={() => setTried((s) => new Set(s).add(m.id))} a11y={`Try ${m.name} on the crowded chorus`} />
+              <Btn label={wasTried ? (v.ok ? `✓ ${m.name}` : `— ${m.name}`) : m.name} tone={wasTried ? (v.ok ? 'primary' : 'plain') : 'plain'} selected={wasTried} onPress={() => {
+                  setTried((s) => new Set(s).add(m.id));
+                  setLast(m.id);
+                }} a11y={`Try ${m.name} on the crowded chorus`} />
               {wasTried ? <Text style={[styles.verdict, { color: v.ok ? colors.green : colors.textMuted }]}>{v.note}</Text> : null}
             </View>
           );
@@ -158,6 +194,7 @@ function PageSubtractive({ ctx }: { ctx: PageCtx }) {
 
 function PagePanning({ ctx }: { ctx: PageCtx }) {
   const [mix, setMix] = useState<MixSettings>({});
+  const [view, setView] = useState<'stereo' | 'mono'>('stereo');
   const variants = useMemo<readonly MixVariant[]>(
     () => [
       { id: 'stereo', label: 'STEREO', settings: mix },
@@ -191,6 +228,7 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>PLACE THE SESSION</Eyebrow>
         <Body>Convention, not law — but a strong default: kick, bass and the focal element live at or near centre; supporting parts earn the sides. Mirror-place similar parts (guitar left, keys right) for balance.</Body>
+        <MixMapArt settings={mix} mono={view === 'mono'} title={view === 'mono' ? 'YOUR PLACEMENT · FOLDED TO MONO' : 'YOUR PLACEMENT'} state={view === 'mono' ? 'MONO FOLD' : 'STEREO'} />
         <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: false, pan: true, mute: true }} />
         {badRisks.length > 0 ? (
           <Text style={styles.riskLine} accessibilityLiveRegion="polite">
@@ -207,7 +245,7 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THE MONO TEST</Eyebrow>
         <Prompt>Clubs, phones, corridor speakers: much of the world hears your mix in mono. Fold your placement down — does anything vanish or collapse?</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="The fold is level-matched. Wide placement should survive it: if a part disappears in mono, its width was doing load-bearing work." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setView(id === 'mono' ? 'mono' : 'stereo')} note="The fold is level-matched. Wide placement should survive it: if a part disappears in mono, its width was doing load-bearing work. The picture above folds with it: dashed = where each part sat in stereo." />
       </Card>
       <UnderstandingCheck
         question="Why do kick and bass conventionally sit at (or very near) centre?"

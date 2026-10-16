@@ -13,12 +13,14 @@ import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, MiniConsole, MixMantra, countTouched, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { TRACK_IDS } from './engine/mixModel.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
+import { BounceArt, MixMapArt } from './begArt';
+import { AutomationLanes } from './advPlots';
 
 /* ════ 12 · BASIC AUTOMATION ══════════════════════════════════════════════ */
 
 /** A serviceable static base so the automation contrast is heard in a MIX,
  *  not on a wall (bars 1–2 read as the verse, 3–4 as the chorus). */
-const AUTO_BASE: MixSettings = {
+export const AUTO_BASE: MixSettings = {
   kick: { faderDb: -2 },
   snare: { faderDb: -4 },
   perc: { faderDb: -10, pan: 40 },
@@ -71,7 +73,14 @@ function PageAutomation({ ctx }: { ctx: PageCtx }) {
           <Btn label="LIFT +3" tone={liftDb === 3 ? 'primary' : 'plain'} selected={liftDb === 3} onPress={() => setLiftDb(3)} a11y="Chorus lift plus three dB" />
           <Btn label="LIFT +6" tone={liftDb === 6 ? 'primary' : 'plain'} selected={liftDb === 6} onPress={() => setLiftDb(6)} a11y="Chorus lift plus six dB" />
         </Row>
-        <AbPlayer pb={pb} variants={variants} note="Level-matched overall — what you hear is CONTRAST, not loudness. Notice how +1 is barely a lift and +6 is an event; taste lives between." />
+        <AutomationLanes
+          rides={[
+            { name: 'LEAD', verseDb: 0, chorusDb: liftDb },
+            { name: 'BGV', verseDb: -60, chorusDb: 8 },
+            { name: 'PERC', verseDb: -4, chorusDb: 0 },
+          ]}
+        />
+        <AbPlayer pb={pb} variants={variants} note="Level-matched overall — what you hear is CONTRAST, not loudness. Notice how +1 is barely a lift and +6 is an event; taste lives between. The lanes above are the AUTOMATED render’s rides, on top of each fader." />
       </Card>
       <UnderstandingCheck
         question="The chorus needs to feel bigger, but the whole mix is already as loud as it can be. The automation answer:"
@@ -104,6 +113,7 @@ const FINISH_HABITS = [
 
 function PageCheckFinish({ ctx }: { ctx: PageCtx }) {
   const [seen, setSeen] = useState<Set<string>>(new Set());
+  const [mono, setMono] = useState(false);
   const [checkDone, setCheckDone] = useState(false);
   const variants = useMemo<readonly MixVariant[]>(
     () => [
@@ -128,7 +138,8 @@ function PageCheckFinish({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>RUN ONE NOW</Eyebrow>
-        <AbPlayer pb={pb} variants={variants} note="The demo balance, stereo and folded — matched. On your own mixes this fold is where panned parts quietly disappear." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setMono(id === 'mono')} note="The demo balance, stereo and folded — matched. On your own mixes this fold is where panned parts quietly disappear." />
+        <MixMapArt settings={AUTO_BASE} mono={mono} title={mono ? 'THE MIX · FOLDED TO MONO' : 'THE MIX · STEREO'} state={mono ? 'MONO FOLD' : 'STEREO'} />
       </Card>
       <UnderstandingCheck
         question="After three hours of mixing, everything sounds dull, so you reach for a big treble boost. The finishing habit says:"
@@ -192,6 +203,7 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>INSPECT THE BOUNCE — ALWAYS</Eyebrow>
         <Prompt>Every export gets opened and checked before it ships. The list:</Prompt>
         <Body>Play the START (clipped count-in? missing pickup?), the END (cut reverb tail? truncation?), scan the waveform for clipping, confirm the duration, and listen for anything missing — a muted return, a bypassed insert, a dead side.</Body>
+        <BounceArt rate={rate} depth={depth} named={named} inspected={inspected} />
         <Btn label={inspected ? '✓ BOUNCE INSPECTED' : 'RUN THE INSPECTION'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => setInspected(true)} a11y="Run the bounce inspection" />
         {inspected ? <Body>✓ Start clean · end tail complete · no clipped samples · length correct · all parts present. THIS pass, every time, is what “professional” mostly means.</Body> : null}
       </Card>
@@ -233,6 +245,7 @@ const FINAL_STEPS: FinalStep[] = [
 function PageFinal({ ctx }: { ctx: PageCtx }) {
   const [mix, setMix] = useState<MixSettings>({});
   const [tapped, setTapped] = useState<Set<string>>(new Set());
+  const [pick, setPick] = useState<string>('final');
   const touched = countTouched(mix, TRACK_IDS);
   const maskingMove = TRACK_IDS.some((id) => mix[id]?.hpHz || mix[id]?.eq);
   // The full final settings — used by BOTH the stereo and mono variants, so
@@ -307,7 +320,14 @@ function PageFinal({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>LISTEN — THEN CALL IT</Eyebrow>
-        <AbPlayer pb={pb} variants={variants} note="Where you started, what you made, and the fold — all matched. If YOUR MIX beats the wall and survives mono, you have mixed. Welcome to the part of audio that never stops being interesting." />
+        <MixMapArt
+          settings={pick === 'wall' ? {} : finalSettings}
+          verb={pick !== 'wall'}
+          mono={pick === 'mono'}
+          title={pick === 'wall' ? 'WHERE YOU STARTED · THE WALL' : pick === 'mono' ? 'YOUR MIX · FOLDED TO MONO' : 'YOUR MIX'}
+          state={pick === 'mono' ? 'MONO FOLD' : 'STEREO'}
+        />
+        <AbPlayer pb={pb} variants={variants} onPick={setPick} note="Where you started, what you made, and the fold — all matched. If YOUR MIX beats the wall and survives mono, you have mixed. Welcome to the part of audio that never stops being interesting." />
       </Card>
       {finished ? (
         <Card tone="ok">

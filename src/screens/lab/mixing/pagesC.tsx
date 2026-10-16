@@ -13,6 +13,9 @@ import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, OpenLabLink, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { PATH_TRUTHS, sendPathGain, vcaSilences, type Console as MixConsole } from './engine/routing.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
+import { CompArt, DoubleRouteArt, MixMapArt, PrePostArt, SpaceArt, TermsArt, TRACK_COLOR, type TermKind } from './begArt';
+import { EqPlot } from './advPlots';
+import type { CompSettings } from './advArt';
 
 /* ════ 8 · BASIC EQ IN CONTEXT (the masking solver) ═══════════════════════ */
 
@@ -31,6 +34,7 @@ const EQ_SOLUTIONS: { id: string; name: string; delta: MixSettings; note: string
 
 function PageEqContext({ ctx }: { ctx: PageCtx }) {
   const [tried, setTried] = useState<Set<string>>(new Set());
+  const [pick, setPick] = useState<string>('clash');
   const [checkDone, setCheckDone] = useState(false);
   const variants = useMemo<readonly MixVariant[]>(
     () => [
@@ -54,12 +58,27 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THE PROBLEM — LISTEN FIRST</Eyebrow>
         <Prompt>The guitar stabs and the lead line share the same range, both centred. Play THE CLASH: the lead is still “loudest”, yet it feels buried.</Prompt>
-        <AbPlayer pb={pb} variants={[variants[0]]} />
+        <AbPlayer pb={pb} variants={[variants[0]]} onPick={setPick} />
       </Card>
       <Card>
         <Eyebrow>FIVE LEGITIMATE FIXES — AUDITION THEM</Eyebrow>
         <Body>Each one applies a REAL change, level-matched to the clash. There is no single correct answer — there is the smallest change that solves the problem for THIS song.</Body>
-        <AbPlayer pb={pb} variants={variants.slice(1)} />
+        <AbPlayer pb={pb} variants={variants.slice(1)} onPick={setPick} />
+        <MixMapArt
+          settings={variants.find((v) => v.id === pick)?.settings ?? CLASH}
+          anchor="lead"
+          only={['lead', 'gtr', 'keys']}
+          title={pick === 'clash' ? 'THE CLASH · GTR +4 dB ON THE LEAD' : `FIX: ${EQ_SOLUTIONS.find((f) => f.id === pick)!.name.split(' — ')[0]}`}
+          state="LEAD RINGED"
+        />
+        {pick === 'eq' || pick === 'hp' ? (
+          <EqPlot
+            a11y={pick === 'eq' ? 'The guitar insert EQ: a 6 dB cut at 2.6 kilohertz, inside the lead’s range, shaded.' : 'The guitar insert high-pass at 350 hertz, below the lead’s range, shaded.'}
+            curves={[{ label: pick === 'eq' ? 'GTR EQ' : 'GTR HPF', color: TRACK_COLOR.gtr, bands: pick === 'eq' ? [{ hz: 2600, gainDb: -6, q: 1.2 }] : [{ hpHz: 350 }], bold: true }]}
+            band={{ lo: 200, hi: 3000, label: 'WHERE THE LEAD PLAYS' }}
+            h={170}
+          />
+        ) : null}
         {lastNote ? <Text style={styles.fixNote}>{lastNote.name}: {lastNote.note}</Text> : <Text style={styles.fixName}>Audition a fix to see its trade-off.</Text>}
       </Card>
       <Card tone="note">
@@ -99,6 +118,7 @@ const SNARE_ONLY: MixSettings = { kick: { mute: true }, perc: { mute: true }, ba
 
 function PageCompression({ ctx }: { ctx: PageCtx }) {
   const [opened, setOpened] = useState<Set<string>>(new Set());
+  const [pick, setPick] = useState<string>('slow');
   const [checkDone, setCheckDone] = useState(false);
   const variants = useMemo<readonly MixVariant[]>(
     () => [
@@ -126,7 +146,9 @@ function PageCompression({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>HEAR THE ENVELOPE CHANGE</Eyebrow>
         <Prompt>The snare, alone, three ways — all level-matched, same threshold and ratio. Only ATTACK differs. Listen to the front of each hit.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Loudness is matched, so the difference you hear is pure envelope. Which one you PREFER depends on the song — that part is yours." />
+        <AbPlayer pb={pb} variants={variants} onPick={setPick} note="Loudness is matched, so the difference you hear is pure envelope. Which one you PREFER depends on the song — that part is yours." />
+        <CompArt settings={(variants.find((v) => v.id === pick)?.settings.snare?.comp as CompSettings | undefined) ?? null} />
+        <Text style={styles.fixName}>The picture follows the button you press: the compressor’s knobs at that render’s settings, one real snare hit from the session before (grey) and after (amber), and the gain the compressor applies.</Text>
       </Card>
       <Card tone="note">
         <Eyebrow>THE HONEST COMPARISON RULE</Eyebrow>
@@ -154,6 +176,7 @@ function PageCompression({ ctx }: { ctx: PageCtx }) {
 
 function PageReverbDelay({ ctx }: { ctx: PageCtx }) {
   const [checkDone, setCheckDone] = useState(false);
+  const [pick, setPick] = useState<string>('shared');
   // The shared plate EVERY send feeds — without sharedVerb on the variant the
   // sends render silent (cognition audit P1-1: the page briefly shipped three
   // identical renders; never let that regress).
@@ -195,7 +218,8 @@ function PageReverbDelay({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>ONE ROOM GLUES THE BAND</Eyebrow>
         <Prompt>Three renders, level-matched: no space at all, a single shared plate fed by four sends, and everything drowned.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="The shared room is ONE reverb with four sends into it — the parts start to feel like they were played in the same place. Drowned is the classic beginner mix: depth everywhere is depth nowhere." />
+        <SpaceArt settings={variants.find((v) => v.id === pick)?.settings ?? {}} on={pick !== 'dry'} />
+        <AbPlayer pb={pb} variants={variants} onPick={setPick} note="The shared room is ONE reverb with four sends into it — the parts start to feel like they were played in the same place. Drowned is the classic beginner mix: depth everywhere is depth nowhere." />
       </Card>
       <UnderstandingCheck
         question="Why feed one shared reverb from sends instead of inserting a separate reverb on each track?"
@@ -233,6 +257,7 @@ const CUE_CONSOLE: MixConsole = {
  *  terms alone, learned by what actually TRAVELS. */
 function PageSixTerms({ ctx }: { ctx: PageCtx }) {
   const [openedTerms, setOpenedTerms] = useState<Set<string>>(new Set());
+  const [lastTerm, setLastTerm] = useState<TermKind | null>(null);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Open all six terms', hit: openedTerms.size >= PATH_TRUTHS.length },
@@ -248,7 +273,10 @@ function PageSixTerms({ ctx }: { ctx: PageCtx }) {
           const open = openedTerms.has(p.kind);
           return (
             <View key={p.kind} style={styles.termRow}>
-              <Btn label={open ? `✓ ${p.name}` : p.name} tone={open ? 'primary' : 'plain'} selected={open} onPress={() => setOpenedTerms((s) => new Set(s).add(p.kind))} a11y={`Open ${p.name}`} />
+              <Btn label={open ? `✓ ${p.name}` : p.name} tone={open ? 'primary' : 'plain'} selected={open} onPress={() => {
+                  setOpenedTerms((s) => new Set(s).add(p.kind));
+                  setLastTerm(p.kind);
+                }} a11y={`Open ${p.name}`} />
               {open ? (
                 <Text style={styles.termNote}>
                   {p.purpose} {p.carriesAudio ? 'Audio flows through it.' : p.remoteGainControl ? 'No audio flows through it — control only.' : p.isRenderedFile ? 'It is a delivered file, not a live path.' : 'No audio passes through the group itself.'}
@@ -257,6 +285,7 @@ function PageSixTerms({ ctx }: { ctx: PageCtx }) {
             </View>
           );
         })}
+        <TermsArt focus={lastTerm} />
       </Card>
       <UnderstandingCheck
         question="Drum SUBGROUP vs drum VCA — what is the real difference?"
@@ -314,6 +343,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
         <Row>
           <Btn label={faderPulled ? 'FADER: PULLED (−∞)' : 'FADER: 0 dB'} tone={faderPulled ? 'primary' : 'plain'} selected={faderPulled} onPress={() => setFaderPulled((v) => !v)} a11y="Toggle the lead fader between 0 dB and pulled down" />
         </Row>
+        <PrePostArt faderDb={ch.faderDb} cueOn={cueGain > 0} verbOn={verbGain > 0} />
         <Text style={styles.busLine} accessibilityLiveRegion="polite">
           REVERB (post): {verbGain > 0 ? 'receiving' : 'SILENT'} · HEADPHONES (pre): {cueGain > 0 ? 'receiving' : 'SILENT'}
         </Text>
@@ -326,6 +356,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
           <Btn label="THE FADER IS BROKEN" tone={detective === 'wrong' ? 'danger' : 'plain'} onPress={() => setDetective('wrong')} a11y="Answer: the fader is broken" />
           <Btn label="TWO LIVE PATHS TO THE MIX" tone={detective === 'right' ? 'primary' : 'plain'} onPress={() => setDetective('right')} a11y="Answer: two live paths to the mix" />
         </Row>
+        {detective === 'right' ? <DoubleRouteArt /> : null}
         {detective === 'right' ? <Body>✓ The channel reaches the mix TWICE — main out plus the forgotten send’s copy. The fader only controls one of them. Kill the extra path; the fader tells the truth again.</Body> : null}
         {detective === 'wrong' ? <Body>The fader works — on the path it owns. The clue is “barely changes”: something ELSE also carries this channel to the mix. Look at the send.</Body> : null}
       </Card>

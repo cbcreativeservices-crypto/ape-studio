@@ -302,6 +302,15 @@ export function kickStemForDrawing(): Mono {
   return stemsCache ? stemsCache.kick : alignStem(synthKick());
 }
 
+/** The SNARE stem exactly as the session plays it — the cached stem, else
+ *  the same seeded synthesis (the snare is the first consumer of the
+ *  session's rng, so a fresh rng on the same seed reproduces it sample for
+ *  sample) and alignment. For the Beginning lab's compression drawing
+ *  (art fix 2026-10-16): a few ms, never the eight-stem cold render. */
+export function snareStemForDrawing(): Mono {
+  return stemsCache ? stemsCache.snare : alignStem(synthSnare(makeRng(20260911)));
+}
+
 /** The gain (dB, ≤ 0) a keyed compressor applies, sample by sample — the
  *  SAME detector and gain computer as the renderer's sidechain stage
  *  (compressKeyed), returned instead of applied, for drawing. */
