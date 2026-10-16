@@ -20,6 +20,8 @@ import type { VariantId, ViewBox, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { Floor, make, PlayerInk, playerFront, playerSide, playerTop, polyPath, Rod, STEEL, HIGHLIGHT } from '../shared/metal/metalArt';
 import { polyBar, type BarGeom } from '../shared/metal/metalFigures';
+import { metalFrontPose } from '../shared/metal/metalFigure.ts';
+import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import type { FrontArt } from '../shared/metal/metalPages';
 import { BAR_SHAPES, barAt } from '../shared/metal/metalModes.ts';
 import { HELD, MOUNTED, P0, ROD_D, rodPath, SIDE, TRI, type Corners } from './model.ts';
@@ -83,7 +85,9 @@ function sideArt(v: VariantId): ReactElement {
   // Edge-on: the rods overlap in one upright line; the level side is seen end-on.
   const upright = polyPath([[0, y0], [0, y1]]);
   const levelY = held ? BASE_Y : MOUNTED.top[1];
-  const hand: [number, number] = [-40, CLIP_Y - 20];
+  // The far (left) fist closed ON the clip, its line hanging from it (art
+  // grading fix 2026-10-16: the hand floated above the clip).
+  const hand: [number, number] = [-6, CLIP_Y + CLIP.h * 0.45];
   const strikeHand: [number, number] = [-230, BASE_Y + 70];
   return (
     <Group>
@@ -202,6 +206,20 @@ function frontTriangle(c: Corners): { rod: ReturnType<typeof polyPath>; pts: [nu
   return { rod: polyPath(pts), pts };
 }
 
+/** The held front view's player: the left fist closed on the clip (its
+ *  centre just above the clip, so the fingers close over the clip's top and
+ *  the clip and its line hang out under them; drawn opaque, receded), the right fist on the beater's grip. */
+const HELD_FRONT_POSE = metalFrontPose([
+  [0, CLIP_Y - 60],
+  [-150, BASE_Y + 105],
+]);
+
+function PlayerBehindQuiet({ pose }: { pose: ReturnType<typeof metalFrontPose> }): ReactElement {
+  return (
+    <PlayerBehind pose={pose} dim={0.5} />
+  );
+}
+
 function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
   const held = variant !== 'mounted';
   const c = cornersOf(variant);
@@ -221,7 +239,7 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
   return (
     <Group>
       <Floor u0={-2000} u1={2000} />
-      <PlayerInk path={playerFront(held ? [[60, CLIP_Y - 25], [-170, BASE_Y + 110]] : [[-150, P0.y + 80], [150, P0.y + 80]])} faint head="front" />
+      {held ? <PlayerBehindQuiet pose={HELD_FRONT_POSE} /> : <PlayerInk path={playerFront([[-150, P0.y + 80], [150, P0.y + 80]])} faint head="front" />}
       {held ? null : (
         <Group>
           <Rod path={polyPath([[0, 0], [0, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
@@ -243,6 +261,9 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
           {hl('tri.clip') ? <Circle cx={0} cy={CLIP_Y + 20} r={40} color={HIGHLIGHT} opacity={0.3} /> : null}
           <Lines u={0} v0={CLIP_Y + CLIP.h} v1={TOP_Y - ROD_D / 2} />
           <Clip u={0} v={CLIP_Y} />
+          {/* the arms and hands over the clip: the left fist closed on it,
+              thumb and fingers round its top, the line hanging free below */}
+          <PlayerInFront pose={HELD_FRONT_POSE} dim={0.62} />
           {hl('tri.beater') ? <Path path={polyPath([grip, tip])} style="stroke" strokeWidth={BD * 5} strokeCap="round" color={HIGHLIGHT} opacity={0.35} /> : null}
           <Beater a={grip} b={tip} />
         </Group>

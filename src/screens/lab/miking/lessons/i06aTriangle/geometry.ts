@@ -106,7 +106,7 @@ const B = HELD.closed[1]; // the base's height (y)
 const envelopes: Envelope[] = [
   { id: 'env.player', label: 'the player', shape: { kind: 'box', min: v3(-560, -1800, -290), max: v3(-240, 0, 290) }, prov: ill('a standing player: chest front at x = −250 (the family’s drawing default)') },
   { id: 'env.beater', label: 'the beater’s path', shape: { kind: 'box', min: v3(-300, B - 90, -130), max: v3(80, B + 90, 260) }, prov: ill('the beater and the striking hand, pushing the base away, plus a margin: no source gives the path'), variants: ['held'] },
-  { id: 'env.hand', label: 'the hand holding the clip', shape: { kind: 'box', min: v3(-260, CLIP_Y - 90, -75), max: v3(45, CLIP_Y + 5, 75) }, prov: ill('the left hand at the clip: a drawing default'), variants: ['held'] },
+  { id: 'env.hand', label: 'the hand holding the clip', shape: { kind: 'box', min: v3(-260, CLIP_Y - 70, -75), max: v3(45, CLIP_Y + CLIP.h * 0.9, 75) }, prov: ill('the left hand at the clip: a drawing default'), variants: ['held'] },
   { id: 'env.beaters', label: 'the two beaters’ paths', shape: { kind: 'box', min: v3(-300, P0.y - 40, -170), max: v3(80, MOUNTED.open[1] + 80, 170) }, prov: ill('two beaters on the lower sides, plus a margin: a drawing default'), variants: ['mounted'] },
 ];
 
