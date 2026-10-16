@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 17:05 · ccode · 31b405c8
+changed: Art fix follow-up: polar-stage and chain-rack words wrap instead of clipping (one-line ratchet); Mic Selection allowlist entry dropped
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:47 · ccode · 225fe606
 changed: Miking Lab 6 art fix round 2: Location & film (F08, F09) and Foley stage (F01, F02, F04)
 affects other side: nothing (app only)
