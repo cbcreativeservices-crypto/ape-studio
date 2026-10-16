@@ -213,7 +213,7 @@ function RoutingMap() {
   const box = (x: number, y: number, w: number, label: string, tone: string) => (
     <G key={label}>
       <Rect x={x} y={y} width={w} height={24} rx={5} fill="#101013" stroke={tone} strokeWidth={1.2} />
-      <SvgText x={x + w / 2} y={y + 16} fill={tone} fontSize={10} fontWeight="600" textAnchor="middle" fontFamily="sans-serif" letterSpacing={1}>
+      <SvgText x={x + w / 2} y={y + 16} fill={tone} fontSize={10} fontWeight="600" textAnchor="middle" fontFamily="sans-serif" letterSpacing={0.5}>
         {label}
       </SvgText>
     </G>
@@ -225,9 +225,13 @@ function RoutingMap() {
   const cw = 40;
   const gap = 4;
   const chanX = (i: number) => 6 + i * (cw + gap);
+  // Art grading 2026-10-16: OUT sat on MIX BUS and ran past the viewBox, the
+  // bus names overflowed their boxes, and the FX return wire entered MIX BUS
+  // from underneath. OUT now stacks below, buses are wider, and the return sits
+  // low-left, clear of the rhythm wire, entering MIX BUS from the side.
   return (
     <View accessible accessibilityRole="image" accessibilityLabel="Routing map: kick, snare, percussion and bass feed the rhythm bus; guitar and keys feed the music bus; lead and backing feed the vocal bus; all three buses feed the mix bus, then the output. A shared effects return also feeds the mix.">
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={150} viewBox="0 0 360 150">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={164} viewBox="0 0 360 164">
         {chans.map((c, i) => box(chanX(i), 4, cw, c, '#8b93a3'))}
         {wire(chanX(0) + cw / 2, 28, 60, 58)}
         {wire(chanX(1) + cw / 2, 28, 60, 58)}
@@ -237,17 +241,17 @@ function RoutingMap() {
         {wire(chanX(5) + cw / 2, 28, 180, 58)}
         {wire(chanX(6) + cw / 2, 28, 292, 58)}
         {wire(chanX(7) + cw / 2, 28, 292, 58)}
-        {box(24, 58, 72, 'RHYTHM BUS', '#ffc64d')}
-        {box(144, 58, 72, 'MUSIC BUS', '#ffc64d')}
-        {box(256, 58, 72, 'VOCAL BUS', '#ffc64d')}
+        {box(20, 58, 80, 'RHYTHM BUS', '#ffc64d')}
+        {box(140, 58, 80, 'MUSIC BUS', '#ffc64d')}
+        {box(252, 58, 80, 'VOCAL BUS', '#ffc64d')}
         {wire(60, 82, 180, 108)}
         {wire(180, 82, 180, 108)}
         {wire(292, 82, 180, 108)}
-        {box(60, 88, 60, 'FX RET', '#5fd9c4')}
-        {wire(90, 112, 180, 108)}
+        {box(40, 128, 60, 'FX RET', '#5fd9c4')}
+        {wire(100, 140, 140, 120)}
         {box(140, 108, 80, 'MIX BUS', '#37e05f')}
-        {wire(180, 132, 180, 136)}
-        {box(150, 128, 60, 'OUT', '#8b93a3')}
+        {wire(180, 132, 180, 140)}
+        {box(150, 140, 60, 'OUT', '#8b93a3')}
       </Svg>
     </View>
   );
