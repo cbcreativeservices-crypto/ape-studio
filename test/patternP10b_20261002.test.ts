@@ -236,7 +236,6 @@ const NOT_ANIMATION: Record<string, string> = {
   'src/screens/lab/cable/lessons/lesson10.tsx': 'finite scan after a learner action; reduce-motion shows the end state',
   'src/screens/lab/cable/lessons/lesson11.tsx': 'finite cascade after a learner action; reduce-motion shows the end state',
   'src/screens/lab/eartraining/EarModuleScreen.tsx': 'fatigue-nudge clock',
-  'src/screens/lab/AutotuneLabScreen.tsx': 'melody note scheduler + audio keepalive',
   'src/screens/lab/BassLabScreen.tsx': 'URL refresh + audio keepalive',
   'src/screens/lab/BinauralLabScreen.tsx': 'audio keepalive + bus status poll',
   'src/screens/lab/cymatics/useDriveTone.ts': 'audio keepalive',

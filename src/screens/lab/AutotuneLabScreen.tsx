@@ -27,8 +27,9 @@
  * pass (the pass corrects with ONE setting), so graph and audio never diverge.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -116,6 +117,8 @@ export function AutotuneLabScreen() {
   // Without this the transport stays lit over silence.
   useStopOnAudioMute(setPlaying);
   const [activeNote, setActiveNote] = useState(-1); // -1 = idle
+  // Bumped at every pass start so the grid's pitch dot restarts in step with the audio.
+  const [passId, setPassId] = useState(0);
   const [genError, setGenError] = useState('');
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
@@ -200,6 +203,7 @@ export function AutotuneLabScreen() {
     if (fenced.status !== 'started') return;
     setPlaying(true);
     setActiveNote(0);
+    setPassId((n) => n + 1);
     noteAudioActivity();
 
     const t0 = Date.now();
@@ -300,7 +304,7 @@ export function AutotuneLabScreen() {
               accessibilityRole="button"
               accessibilityLabel={playing ? 'Tap to stop' : 'Tap to play'}
             >
-              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} width={w} height={h} />
+              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} playing={playing} passId={passId} width={w} height={h} />
             </Pressable>
           ),
         },
@@ -446,12 +450,18 @@ function CentsGrid({
   amount,
   tau,
   activeNote,
+  playing,
+  passId,
   width,
   height,
 }: {
   amount: number;
   tau: number;
   activeNote: number;
+  /** A pass is sounding: the pitch dot rides the curves in step with it. */
+  playing: boolean;
+  /** Changes at every pass start (re-syncs the dot to t = 0). */
+  passId: number;
   /** The stage hands its width in (right on the first frame in FULL SCREEN,
    *  where the grid mounts fresh at a new size); measured when absent. */
   width?: number;
@@ -467,7 +477,7 @@ function CentsGrid({
   const w = pw / ts; // logical (glass-pixel) width
   const h = height / ts; // logical height
   const rowH = (h - TOP_AXIS - 8) / MELODY.length;
-  const padY = Math.max(4, Math.min(8, rowH * 0.18)); // row inner breathing room
+  const padY = Math.max(3, Math.min(5, rowH * 0.12)); // row inner breathing room (trimmed 2026-10-16 so each pitch hook runs longer)
 
   // Pitch range: every semitone from min−1 to max+1 of the melody.
   const midis = MELODY.map((n) => n.midi);
@@ -488,17 +498,68 @@ function CentsGrid({
       const y0 = TOP_AXIS + i * rowH + padY;
       const y1 = TOP_AXIS + (i + 1) * rowH - padY;
       const N = 40;
+      const sungX = xOf(note.midi * 100 + note.offCents);
       let d = '';
+      const xs: number[] = [];
+      const ys: number[] = [];
       for (let k = 0; k <= N; k++) {
         const t = (k / N) * noteSec;
         const c = note.midi * 100 + correctedCents(note.offCents, amount, tau, t);
         const x = xOf(c);
         const y = y0 + (k / N) * (y1 - y0);
+        xs.push(x);
+        ys.push(y);
         d += k === 0 ? `M${x.toFixed(1)} ${y.toFixed(1)}` : `L${x.toFixed(1)} ${y.toFixed(1)}`;
       }
-      return { d, y0, y1, sungX: xOf(note.midi * 100 + note.offCents), gridX: xOf(note.midi * 100) };
+      // The correction itself, as an area: from the sung pitch over to the
+      // curve. A wide amber wedge = a hard, fast pull; a thin sliver = a
+      // gentle one (art grading 2026-10-16: the bare hook was easy to miss).
+      const fill = `${d}L${sungX.toFixed(1)} ${y1.toFixed(1)}L${sungX.toFixed(1)} ${y0.toFixed(1)}Z`;
+      return { d, fill, xs, ys, y0, y1, sungX, gridX: xOf(note.midi * 100) };
     });
   }, [w, rowH, padY, amount, tau, xOf]);
+
+  // ---- The PITCH DOT: where the voice is right now, riding the curves at the
+  // melody's real pace (NOTE_MS per note). While a pass plays it restarts at
+  // t = 0 with the audio (passId) and runs once; idle, it traces the same
+  // pass silently on a loop (decorative pacing — off under Reduce animations,
+  // Low-Light, or when the screen is not focused), drawn as a dim ring so it
+  // never reads as sound. Native-driver transforms: zero re-renders.
+  const motion = useDecorativeMotion();
+  const isFocused = useIsFocused();
+  const dot = useRef(new Animated.Value(0)).current;
+  const dotRange = useMemo(() => {
+    const input: number[] = [];
+    const xs: number[] = [];
+    const ys: number[] = [];
+    const n = curves.length;
+    curves.forEach((c, i) => {
+      const N = c.xs.length - 1;
+      for (let k = 0; k <= N; k++) {
+        // Jump (not slide) between rows: the row's last point sits a hair
+        // before the next row's first.
+        input.push(Math.min(1, (i + (k / N) * 0.9999) / n));
+        xs.push(c.xs[k] * ts);
+        ys.push(c.ys[k] * ts);
+      }
+    });
+    return input.length >= 2 ? { input, xs, ys } : null;
+  }, [curves, ts]);
+  const showDot = dotRange !== null && isFocused && (playing || motion);
+  useEffect(() => {
+    if (!showDot) return;
+    dot.setValue(0);
+    const run = Animated.timing(dot, {
+      toValue: 1,
+      duration: NOTE_MS * MELODY.length,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    });
+    const anim = playing ? run : Animated.loop(Animated.sequence([run, Animated.delay(900)]));
+    anim.start();
+    return () => anim.stop();
+  }, [showDot, playing, passId, dot]);
+  const DOT = 10 * ts;
 
   return (
     <View onLayout={width && width > 0 ? undefined : (e) => setMeasured(Math.round(e.nativeEvent.layout.width))}>
@@ -522,9 +583,10 @@ function CentsGrid({
                 />
                 <SvgText
                   x={x}
-                  y={14}
-                  fill={isTarget ? colors.textSecondary : '#4a4a52'}
-                  fontSize={9.5}
+                  y={16}
+                  fill={isTarget ? colors.textSecondary : '#80808c'}
+                  fontSize={11}
+                  fontFamily={fonts.mono}
                   textAnchor="middle"
                 >
                   {midiName(m)}
@@ -547,6 +609,7 @@ function CentsGrid({
                   rx={4}
                 />
               ) : null}
+              {amount > 0 ? <Path d={c.fill} fill={colors.amber} opacity={0.22} /> : null}
               <Line x1={c.sungX} y1={c.y0} x2={c.sungX} y2={c.y1} stroke="#6a6a74" strokeWidth={2.5} opacity={0.75} />
               {/* At AMOUNT OFF the corrected curve coincides with the sung
                   line — dash it so the gray reference stays visible and the
@@ -554,15 +617,16 @@ function CentsGrid({
               <Path
                 d={c.d}
                 stroke={colors.amber}
-                strokeWidth={2.2}
+                strokeWidth={2.6}
                 fill="none"
                 strokeDasharray={amount === 0 ? '4 4' : undefined}
               />
               <SvgText
                 x={c.sungX + (MELODY[i].offCents >= 0 ? 6 : -6)}
-                y={c.y0 + 10}
-                fill="#8a8a94"
-                fontSize={9.5}
+                y={c.y0 + 11}
+                fill="#b4b4be"
+                fontSize={11}
+                fontFamily={fonts.mono}
                 textAnchor={MELODY[i].offCents >= 0 ? 'start' : 'end'}
               >
                 {`${MELODY[i].offCents > 0 ? '+' : ''}${MELODY[i].offCents}¢`}
@@ -573,6 +637,25 @@ function CentsGrid({
       ) : (
         <View style={{ height }} />
       )}
+      {showDot && dotRange ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            playing ? styles.dotLive : styles.dotIdle,
+            {
+              width: DOT,
+              height: DOT,
+              borderRadius: DOT / 2,
+              left: -DOT / 2,
+              top: -DOT / 2,
+              transform: [
+                { translateX: dot.interpolate({ inputRange: dotRange.input, outputRange: dotRange.xs }) },
+                { translateY: dot.interpolate({ inputRange: dotRange.input, outputRange: dotRange.ys }) },
+              ],
+            },
+          ]}
+        />
+      ) : null}
     </View>
   );
 }
@@ -582,4 +665,7 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
+  // The pitch dot: solid amber while a pass sounds; a dim ring when idle.
+  dotLive: { position: 'absolute', backgroundColor: colors.amber, borderWidth: 2, borderColor: '#fff3cf' },
+  dotIdle: { position: 'absolute', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.55)', backgroundColor: 'rgba(255,198,77,0.25)' },
 });
