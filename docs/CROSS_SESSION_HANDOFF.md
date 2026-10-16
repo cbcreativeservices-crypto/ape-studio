@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:44 · ccode · b79bfcb8
+changed: Binaural Panner art fix: head at true scale on the rings, sources drawn as loudspeakers, 10.5 pt bearings
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:44 · ccode · c77b184d
+changed: Connector Selection art fix: exploded-cable labels on their own rows in the house face; woven braid and stranded copper sections; a real panel lamp (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:44 · ccode · 35012475
+changed: Cymbals art fix (I01a/I01c/I01e): the drummer holds the stick, real cymbal profiles, the swing named
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:40 · ccode · 1dcb85e6
+changed: Brass art fix (A01 trumpet, A02 trombone): the valve hand stands beside the valves; PLAYER off the head
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:39 · ccode · a4480933
 changed: Signal Detective art fix: playhead clear of the stat lines, 10 pt stats, goniometer M off the bar's 0
 affects other side: nothing (app only)
