@@ -219,7 +219,16 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
   const yB = (gr: number) => topB + grDepthFrac(Math.min(rangeDb, gr)) * (botB - topB);
   const capY = topB + grDepthFrac(rangeDb) * (botB - topB);
   const cx = (i: number) => 10 + i * slot + slot / 2;
-  const pts = processed.map((p, i) => `${cx(i).toFixed(1)},${yA(p.detectorDb).toFixed(1)}`).join(' ');
+  // ONE LEVEL PER FRAME, drawn as a step (a meter's block-by-block history):
+  // each frame's detector level is a flat run across its own slot, joined by
+  // risers. Straight lines between the frame centres read as a waveform
+  // (art grading 2026-10-16), which this is not — it is a level per frame.
+  const pts = processed
+    .map((p, i) => {
+      const y = yA(p.detectorDb).toFixed(1);
+      return `${(10 + i * slot).toFixed(1)},${y} ${(10 + (i + 1) * slot).toFixed(1)},${y}`;
+    })
+    .join(' ');
   const thrY = yA(thresholdDb);
   // The threshold is named in the header row as a key (a short gold dash +
   // its value), not on its line: with an S every third frame there is no
@@ -231,7 +240,7 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
     <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
-        <SvgText x={12} y={12} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>DETECTOR · hiss-band level, dB (0 = loudest S)</SvgText>
+        <SvgText x={12} y={12} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>DETECTOR · hiss per frame, dB (0 = loudest S)</SvgText>
         {[0, -10, -20, -30, -40].map((d) => (
           <G key={d}>
             <Line x1={10} y1={yA(d)} x2={10 + plotW} y2={yA(d)} stroke={GRID} />
@@ -248,7 +257,7 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, width, height, 
             {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
           </LinearGradient>
         </Defs>
-        <Polyline points={pts} fill="none" stroke="url(#deesserDetRamp)" strokeWidth={1.8} />
+        <Polyline points={pts} fill="none" stroke="url(#deesserDetRamp)" strokeWidth={1.8} strokeLinejoin="round" />
         <Line x1={10} y1={thrY} x2={10 + plotW} y2={thrY} stroke={colors.gold} strokeWidth={1.5} strokeDasharray="5,3" />
         <Line x1={thrKeyX - 14} y1={9} x2={thrKeyX} y2={9} stroke={colors.gold} strokeWidth={1.5} strokeDasharray="5,3" />
         <SvgText x={W - 10} y={12} fontSize={LBL} fill={colors.gold} textAnchor="end" fontFamily={fonts.oswaldMedium}>{thrLabel}</SvgText>

@@ -16,24 +16,28 @@ export type Frame = {
   /** Where that hiss sits, Hz (S higher than SH). */
   hissHz: number;
   sibilant: boolean;
+  /** The vocal folds are vibrating (vowels, nasals, and the voiced /z/ and
+   *  /ð/): the body is a harmonic series on the voice's fundamental, not a
+   *  smooth hump. */
+  voiced?: boolean;
 };
 
 /** "This is a sentence with essess." — enough S's to make the point. */
 export const PHRASE: Frame[] = [
-  { label: 'th', body: 0.35, hiss: 0.15, hissHz: 5000, sibilant: false },
-  { label: 'i', body: 0.85, hiss: 0.08, hissHz: 5000, sibilant: false },
+  { label: 'th', body: 0.35, hiss: 0.15, hissHz: 5000, sibilant: false, voiced: true },
+  { label: 'i', body: 0.85, hiss: 0.08, hissHz: 5000, sibilant: false, voiced: true },
   { label: 's', body: 0.12, hiss: 0.95, hissHz: 6500, sibilant: true },
   { label: '·', body: 0.02, hiss: 0.02, hissHz: 5000, sibilant: false },
-  { label: 'i', body: 0.8, hiss: 0.08, hissHz: 5000, sibilant: false },
-  { label: 'z', body: 0.4, hiss: 0.75, hissHz: 6000, sibilant: true },
+  { label: 'i', body: 0.8, hiss: 0.08, hissHz: 5000, sibilant: false, voiced: true },
+  { label: 'z', body: 0.4, hiss: 0.75, hissHz: 6000, sibilant: true, voiced: true },
   { label: '·', body: 0.02, hiss: 0.02, hissHz: 5000, sibilant: false },
-  { label: 'a', body: 0.9, hiss: 0.06, hissHz: 5000, sibilant: false },
+  { label: 'a', body: 0.9, hiss: 0.06, hissHz: 5000, sibilant: false, voiced: true },
   { label: 'sh', body: 0.15, hiss: 0.8, hissHz: 4000, sibilant: true },
-  { label: 'ar', body: 0.75, hiss: 0.07, hissHz: 5000, sibilant: false },
+  { label: 'ar', body: 0.75, hiss: 0.07, hissHz: 5000, sibilant: false, voiced: true },
   { label: 'p', body: 0.2, hiss: 0.25, hissHz: 3000, sibilant: false },
   { label: 's', body: 0.1, hiss: 1.0, hissHz: 7000, sibilant: true },
-  { label: 'o', body: 0.85, hiss: 0.05, hissHz: 5000, sibilant: false },
-  { label: 'und', body: 0.6, hiss: 0.1, hissHz: 5000, sibilant: false },
+  { label: 'o', body: 0.85, hiss: 0.05, hissHz: 5000, sibilant: false, voiced: true },
+  { label: 'und', body: 0.6, hiss: 0.1, hissHz: 5000, sibilant: false, voiced: true },
   { label: 's', body: 0.1, hiss: 0.9, hissHz: 6800, sibilant: true },
 ];
 
@@ -218,11 +222,31 @@ export function sFrameSpectrum(frame: Frame, n = 48): { hz: Float64Array; mag: F
   for (let i = 0; i < n; i++) {
     const f = 100 * Math.pow(160, (i + 0.5) / n);
     hz[i] = f;
-    const body = frame.body * (1 / (1 + Math.pow(90 / f, 2))) / Math.sqrt(1 + Math.pow(f / 900, 2));
+    // Each band is ~11 % wide: take the loudest point inside it (5 looks), so a
+    // band that holds a harmonic shows it and the harmonics fuse into one
+    // envelope where the bands get wider than their spacing (above ~1 kHz).
+    let body = 0;
+    for (let k = 0; k < 5; k++) {
+      const fk = 100 * Math.pow(160, (i + 0.1 + 0.2 * k) / n);
+      const env = frame.body * (1 / (1 + Math.pow(90 / fk, 2))) / Math.sqrt(1 + Math.pow(fk / 900, 2));
+      body = Math.max(body, frame.voiced ? env * harmonicComb(fk) : env);
+    }
     const hiss = frame.hiss * Math.exp(-Math.pow((Math.log(f) - Math.log(frame.hissHz)) / 0.32, 2));
     mag[i] = Math.max(body, hiss);
   }
   return { hz, mag };
+}
+
+/** A speaking voice's fundamental (Hz) for the voiced frames' harmonics. */
+export const VOICE_F0_HZ = 120;
+
+/** 0.15..1 — peaks on every harmonic of VOICE_F0_HZ (art grading 2026-10-16:
+ *  the /z/ was drawn as hiss with almost no voiced body; a voiced fricative
+ *  carries the voice's harmonics — the "voice bar" — under its hiss). */
+function harmonicComb(f: number): number {
+  const r = f / VOICE_F0_HZ;
+  const k = Math.max(1, Math.round(r));
+  return 0.15 + 0.85 * Math.exp(-Math.pow((r - k) / 0.16, 2));
 }
 
 export function detectorCurve(s: Settings, n = 48): { hz: Float64Array; mag: Float64Array } {
