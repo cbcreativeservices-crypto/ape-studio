@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 18:39 · ccode · bfab662f
+changed: Community rules: show a rephrase message when the server refuses text
+affects other side: Comp A brief 2026-10-15_COMP_A_CHAT_CONTENT_FILTER_BRIEF.md
+needs: Comp A to apply after approval
+
+
 ### 2026-10-15 16:48 · ccode · a03d9949
 changed: Store readiness: localized paywall prices, delete-account billing note, sign-up terms line
 affects other side: nothing (app only)
