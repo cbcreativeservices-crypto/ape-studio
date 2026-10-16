@@ -30,7 +30,7 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import Animated, {
   Easing,
   useAnimatedProps,
@@ -459,7 +459,7 @@ function SlopeChart({
   running: boolean;
 }) {
   const H = 150;
-  const VH = H + 16; // plot + the frequency-label strip
+  const VH = H + 18; // plot + the frequency-label strip
   const W = Math.max(240, (w / Math.max(1, h)) * VH);
   // FULL SCREEN (2026-09-30): the chart's viewBox follows the box's shape
   // down to 240:166, so in a tall portrait body it would letterbox and leave
@@ -471,7 +471,7 @@ function SlopeChart({
     report?.aspect(W / VH, 0);
   }, [report, W, VH]);
   const padL = 8;
-  const padR = 40; // room for line labels at the right edge (9.5-unit text, 2026-09-30)
+  const padR = 52; // the line labels sit in a dark margin OFF the plot (11.5-unit text, art grading 2026-10-16)
   const OCT_LO = Math.log2(20 / 1000); // ≈ −5.64 octaves re 1 kHz
   const OCT_HI = Math.log2(20000 / 1000); // ≈ +4.32
   const DB_RANGE = 38; // ±38 dB vertical
@@ -539,11 +539,15 @@ function SlopeChart({
   );
 
   const tint = NOISE_TINTS[selectedKey];
-  const freqTicks = [20, 200, 1000, 2000, 20000];
+  // Ticks well apart (1k and 2k sit one octave apart and crowded each other at
+  // phone width): 20 Hz and 20 kHz are the plot's two ends, 100 and 1k between.
+  const freqTicks = [20, 100, 1000, 20000];
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${VH}`}>
       {/* GRAY plot background (owner 2026-08-05) — gives brown enough contrast. */}
-      <Rect x={0} y={0} width={W} height={H} fill="#4d4d53" />
+      {/* …and only as wide as the plot: the colour names sit in the dark
+          margin to its right, not on the plot (art grading 2026-10-16). */}
+      <Rect x={0} y={0} width={W - padR + 1} height={H} fill="#4d4d53" />
       {/* 0 dB reference + 1 kHz anchor (darker than the gray so they read) */}
       <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke="#2c2c32" strokeWidth={1} />
       <Line x1={xAt(0)} y1={4} x2={xAt(0)} y2={H - 4} stroke="#2c2c32" strokeWidth={1} />
@@ -577,23 +581,28 @@ function SlopeChart({
       {lines.map((l) => (
         <SvgText
           key={`t${l.key}`}
-          x={W - padR + 3}
-          y={Math.min(Math.max(l.endY + 3, 10), H - 4)}
+          x={W - padR + 5}
+          y={Math.min(Math.max(l.endY + 4, 11), H - 3)}
           fill={NOISE_TINTS[l.key]}
-          fontSize={9.5} // ≥ 9 pt even on a short phone (S glass, scale ≈ 0.95)
+          fontSize={11.5} // ≈ 12 pt on the M glass, ≥ 10.5 on a short phone (S glass, scale ≈ 0.95)
           fontWeight={l.key === selectedKey ? 'bold' : 'normal'}
         >
           {l.label}
         </SvgText>
       ))}
+      <SvgText x={W - 3} y={H + 13} fill={colors.textSub} fontSize={11.5} textAnchor="end">
+        Hz
+      </SvgText>
+      {/* the pivot every slope shares: 0 dB at 1 kHz */}
+      <Circle cx={xAt(0)} cy={H / 2} r={3.2} fill="#e8e8ec" stroke="#2c2c32" strokeWidth={1} />
       {freqTicks.map((f) => (
         <SvgText
           key={f}
-          x={xAt(Math.log2(f / 1000))}
-          y={H + 12}
+          x={f === 20 ? 2 : xAt(Math.log2(f / 1000))}
+          y={H + 13}
           fill={colors.textSub}
-          fontSize={9.5} // ≥ 9 pt even on a short phone (S glass, scale ≈ 0.95)
-          textAnchor="middle"
+          fontSize={11.5} // ≈ 12 pt on the M glass, ≥ 10.5 on a short phone (S glass, scale ≈ 0.95)
+          textAnchor={f === 20 ? 'start' : f === 20000 ? 'end' : 'middle'}
         >
           {f >= 1000 ? `${f / 1000}k` : `${f}`}
         </SvgText>
