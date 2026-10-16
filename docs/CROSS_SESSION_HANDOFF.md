@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 15:31 · ccode · d1de44b4
+changed: Foundations tracer particles: star glints replaced by the classroom marker (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 15:32 · ccode · 5b6cfac3
 changed: Patchbay art fix: real gear at the pair ends, true-scale bay slices, mounted jack cutaway
 affects other side: nothing (app only)
