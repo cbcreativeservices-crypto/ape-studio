@@ -98,7 +98,8 @@ test('FM: a control changed during the native start is pushed once it resolves',
 
 test('Lab display text ≥ 9 pt: Harmonics piano C labels, mic-select verdicts, amplitude spectrogram labels', () => {
   assert.doesNotMatch(read('src/screens/lab/HarmonicsView.tsx'), /fontSize=\{7\}/);
-  assert.match(read('src/screens/lab/micselect/MicSelectLabScreen.tsx'), /srcVerdict: \{ fontFamily: fonts\.oswaldSemiBold, fontSize: 9,/);
+  // The verdict tags moved to the drawn polar stage (art fix 2026-10-16): 10 pt.
+  assert.match(read('src/screens/lab/micselect/polarStage.tsx'), /tagVerdict: \{ fontFamily: fonts\.oswaldSemiBold, fontSize: 10,/);
   assert.match(read('src/screens/lab/amplitude/AmplitudeOrientation.tsx'), /spectroTimeLabel: \{ fontFamily: fonts\.oswaldSemiBold, fontSize: 9,/);
 });
 

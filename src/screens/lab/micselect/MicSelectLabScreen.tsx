@@ -29,6 +29,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { colors, fonts } from '../../../theme/tokens';
 import { CheckQuestion } from '../foundations/bits';
 import { MicPhotoLightbox, MicVisual } from './micArt';
+import { PolarStage } from './polarStage';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import {
   CHALLENGE_BASE,
@@ -62,7 +63,6 @@ import {
   SOURCE_TIERS,
   SPL_LESSON,
   SPL_MATCH,
-  STAGE_SOURCES,
   type PatternKey,
 } from './micSelectData';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -274,26 +274,9 @@ function PatternsStep() {
   const [pattern, setPattern] = useState<PatternKey>('cardioid');
   const [reason, setReason] = useState<string | null>(null);
   const [w, onLayout] = useWidth();
-  const H = Math.min(240, Math.max(200, w * 0.62));
-  const cx = w / 2;
-  const cy = H / 2;
-  const R = Math.min(cx, cy) - 26;
-
-  const patternPath = useMemo(() => {
-    if (w <= 0) return null;
-    const p = Skia.Path.Make();
-    const N = 180;
-    for (let i = 0; i <= N; i++) {
-      const th = (i / N) * Math.PI * 2;
-      const r = polarR(pattern, th) * R;
-      const x = cx + r * Math.sin(th);
-      const y = cy - r * Math.cos(th);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
-    }
-    p.close();
-    return p;
-  }, [w, pattern, R, cx, cy]);
+  // The polar stage (art fix 2026-10-16): drawn neighbours on a ring outside
+  // the full-pickup circle, so it needs the height for its tags.
+  const H = Math.round(Math.min(380, Math.max(330, w * 0.98)));
 
   // Verdict encodes the OUTCOME, not the pickup-state (fix 2026-08-31): HVAC
   // (unwanted) used to show "picked up" in GREEN. Wanted+picked and
@@ -319,37 +302,14 @@ function PatternsStep() {
           <Chip key={p.key} label={p.name} active={pattern === p.key} onPress={() => { setPattern(p.key); setReason(null); }} />
         ))}
       </View>
-      {/* Coverage map — abstract data, drawn clean per the visual standards. */}
-      <View onLayout={onLayout} style={[styles.stageBox, { height: H || 220 }]}>
-        {w > 0 && patternPath ? (
-          <Canvas style={{ width: w, height: H }}>
-            <SkLine p1={vec(cx, 8)} p2={vec(cx, H - 8)} color="#26262c" strokeWidth={1} />
-            <SkLine p1={vec(8, cy)} p2={vec(w - 8, cy)} color="#26262c" strokeWidth={1} />
-            <SkPath path={patternPath} color="rgba(255,198,77,0.18)" />
-            <SkPath path={patternPath} style="stroke" strokeWidth={2} color={colors.amber} />
-          </Canvas>
-        ) : null}
-        {/* mic marker + source markers over the canvas */}
-        {w > 0 ? (
-          <>
-            <View style={[styles.micDot, { left: cx - 7, top: cy - 7 }]} />
-            {STAGE_SOURCES.map((s) => {
-              const rad = (s.angleDeg * Math.PI) / 180;
-              const x = cx + s.dist * R * Math.sin(rad);
-              const y = cy - s.dist * R * Math.cos(rad);
-              const vd = verdictFor(s.angleDeg, s.wanted === true);
-              return (
-                <View key={s.key} style={[styles.srcMark, { left: x - 44, top: y - 12 }]}>
-                  <Text style={[styles.srcLabel, { color: s.wanted ? colors.green : '#8a8a94' }]} numberOfLines={1}>
-                    {s.label}
-                  </Text>
-                  <Text style={[styles.srcVerdict, { color: vd.c }]}>{vd.v}</Text>
-                </View>
-              );
-            })}
-          </>
-        ) : null}
+      {/* The stage from above: the mic, its pattern and its neighbours, drawn. */}
+      <View onLayout={onLayout} style={[styles.stageBox, { height: H }]}>
+        {w > 0 ? <PolarStage w={w} h={H} pattern={pattern} verdictFor={verdictFor} /> : null}
       </View>
+      <Text style={styles.stageCaption}>
+        Each dashed line runs from the mic toward one neighbour. Where it crosses the outline shows how much of that neighbour the
+        mic hears; the dotted ring is full pickup.
+      </Text>
       <View style={styles.detailCard}>
         <Text style={styles.detailHead}>{`WHY DID YOU CHOOSE ${PATTERNS.find((p) => p.key === pattern)!.name.toUpperCase()}?`}</Text>
         {reasonRows.map((r) => (
@@ -1205,18 +1165,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0c0d11',
     overflow: 'hidden',
   },
-  micDot: {
-    position: 'absolute',
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: colors.amber,
-    borderWidth: 2,
-    borderColor: '#0c0d11',
-  },
-  srcMark: { position: 'absolute', width: 88, alignItems: 'center' },
-  srcLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.6 },
-  srcVerdict: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, opacity: 0.9 }, // ≥ 9 pt (lab display rule)
+  stageCaption: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: '#8d8f99', marginTop: -6 },
   reasonRow: {
     borderRadius: 8,
     borderWidth: 1,

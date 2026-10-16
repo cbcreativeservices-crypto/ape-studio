@@ -395,12 +395,15 @@ export function polarR(p: PatternKey, theta: number): number {
 export type StageSource = { key: string; label: string; angleDeg: number; dist: number; wanted?: boolean };
 
 export const STAGE_SOURCES: StageSource[] = [
-  { key: 'source', label: 'WANTED SOURCE', angleDeg: 0, dist: 0.72, wanted: true },
-  { key: 'audience', label: 'Audience', angleDeg: 38, dist: 0.95 },
+  // A stage vocal mic aimed at the singer (art fix 2026-10-16): the audience
+  // is DOWNSTAGE, behind the mic (it was at 38°, beside the singer, which no
+  // stage layout explains), the wedge straight behind the mic.
+  { key: 'source', label: 'Singer · wanted', angleDeg: 0, dist: 0.72, wanted: true },
+  { key: 'audience', label: 'Audience', angleDeg: 140, dist: 0.95 },
   { key: 'drums', label: 'Drum kit', angleDeg: 96, dist: 0.8 },
-  { key: 'monitor', label: 'Monitor', angleDeg: 180, dist: 0.62 },
+  { key: 'monitor', label: 'Wedge monitor', angleDeg: 180, dist: 0.62 },
   { key: 'wall', label: 'Reflective wall', angleDeg: 232, dist: 0.98 },
-  { key: 'hvac', label: 'HVAC', angleDeg: 292, dist: 0.9 },
+  { key: 'hvac', label: 'HVAC vent', angleDeg: 292, dist: 0.9 },
 ];
 
 export const PATTERN_REASONS: { key: string; text: string; goodFor: PatternKey[] }[] = [
