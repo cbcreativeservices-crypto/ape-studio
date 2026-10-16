@@ -33,7 +33,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
-import { armPath, FIGURE_SKIN, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { armPath, FIGURE_SKIN, FigureHead, headAbove, headProfile, intoCollar } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
@@ -387,6 +387,7 @@ export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; f
   const armL = [armItem(view, s.shoulderL, s.elbowL, s.wristL)];
   behind.push({ key: 'armL', items: armL.map((it) => ({ ...it, opacity: 0.9 })) });
   // The torso.
+  let torsoSide: SkPath | null = null;
   if (view === 'side') {
     const N = q(s.neck);
     const C = q(s.chest);
@@ -406,7 +407,8 @@ export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; f
       [N[0] + 82, N[1] + 70],
       [N[0] + 52, N[1] + 2],
     ];
-    behind.push({ key: 'torso', items: [{ path: smooth(pts, true, 0.5), fill: { colors: SHIRT }, stroke: { color: SHIRT_EDGE, w: 2.2 }, box: bbox(pts), rim: 2.4 }] });
+    torsoSide = smooth(pts, true, 0.5);
+    behind.push({ key: 'torso', items: [{ path: torsoSide, fill: { colors: SHIRT }, stroke: { color: SHIRT_EDGE, w: 2.2 }, box: bbox(pts), rim: 2.4 }] });
   } else {
     // From above: the shoulders' broad, rounded girdle — the back flatter,
     // the chest a gentle curve forward.
@@ -456,7 +458,9 @@ export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; f
   front.push({ key: 'armR', items: [armItem(view, s.shoulderR, s.elbowR, s.wristR)] });
   front.push({ key: 'handR', items: handItems('R') });
   const hc = q(s.head);
-  const head = view === 'side' ? { ...headSide(hc, s.headR), c: hc, r: s.headR } : { ...headTop(hc, s.headR), c: hc, r: s.headR };
+  // The neck goes INTO the collar (figure pass 2026-10-15): the head stops at
+  // the shirt's outline instead of lying over the shoulders.
+  const head = view === 'side' ? { ...(torsoSide ? intoCollar(headSide(hc, s.headR), torsoSide) : headSide(hc, s.headR)), c: hc, r: s.headR } : { ...headTop(hc, s.headR), c: hc, r: s.headR };
   return { behind, front, head };
 }
 

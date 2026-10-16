@@ -30,17 +30,10 @@ import type { VariantId, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { CASE, NODE_FRAC, type Bar, type Layout, type MalletInst, type Tube } from './malletSpec.ts';
 import { frameEnds, malletGeom, type MalletFamily, type MalletGeom } from './malletModel.ts';
-import { FigureHead, headAbove, headFront } from '../players/PlayerFigure';
-import { pt } from '../players/playerPose';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { BODY, pt, type PlayerPose } from '../players/playerPose';
+import { metalFrontPose } from '../metal/metalFigure.ts';
 
-/** The player's head — the figure's own skin silhouette (head fix 2026-10-08:
- *  a head ON A BODY is PlayerFigure's FigureHead, never a circle): face-on
- *  in the side view (the neck down into the shoulders 140 mm below), from
- *  above in the plan (the nose toward the bars, +v). Built once. */
-const playerHeads: Partial<Record<'front' | 'above', ReturnType<typeof headFront>['fill']>> = {};
-function playerHeadFill(view: 'front' | 'above') {
-  return (playerHeads[view] ??= view === 'front' ? headFront(pt(0, 0), 100, 140).fill : headAbove(pt(0, 0), 98).fill);
-}
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -78,7 +71,6 @@ const FLOOR = ['#202128', '#141519', '#0b0b0e'];
 const FELT = ['#ece4d0', '#c9bea4', '#8f846c'];
 const WOOD_CASE = ['#a06a3a', '#6e4421', '#3b2410'];
 const CASE_FELT = '#3a2a4a';
-const PLAYER = ['#5a6e96', '#3f5276', '#26324a'];
 
 /* ── the side view (front elevation from the audience) ── */
 type Cyl = { body: SkPath; hi: SkPath; lo: SkPath; rim: SkPath; cap: SkPath };
@@ -147,7 +139,7 @@ type SideBuilt = {
   lidRail: SkPath | null;
   table: SkPath | null;
   tableLegs: SkPath | null;
-  player: { head: { x: number; y: number }; body: SkPath; arms: SkPath };
+  player: { head: { x: number; y: number }; body: SkPath; arms: SkPath; pose: PlayerPose };
   mallets: { shafts: SkPath; heads: { x: number; y: number }[] };
   yFloor: number;
   barTop: number;
@@ -304,10 +296,45 @@ function buildSide(G: MalletGeom, v: VariantId): SideBuilt {
     lidRail,
     table,
     tableLegs,
-    player: { head: { x: 0, y: yHead }, body, arms },
+    // The player as the house figure (figure pass 2026-10-15: a faint block
+    // with stroked arms, the mallets starting in mid-air): a standing adult
+    // seen from the audience, each hand CLOSED on its mallet's handle end.
+    // (Frame: the floor at v = 0; drawn shifted down to yF.)
+    player: { head: { x: 0, y: yHead }, body, arms, pose: metalFrontPose([[-240, L.yNat - 230 - yF], [260, L.yNat - 300 - yF]]) },
     mallets: { shafts: shaftsM, heads: [hA, hB] },
     yFloor: yF,
     barTop: L.yAcc,
+  };
+}
+
+/** The player from above as the house figure (figure pass 2026-10-15),
+ *  chest toward +v (the audience), each hand over its mallet's handle end. */
+function topPlayer(zP: number, a: { x: number; z: number }, b: { x: number; z: number }): PlayerPose {
+  const Pz = (x: number, z: number) => pt(x, z);
+  const hand = (h: { x: number; z: number }, e: { u: number; v: number }) => {
+    const dir = Math.atan2(h.z - e.v, h.x - e.u);
+    return { wrist: Pz(h.x - Math.cos(dir) * 55, h.z - Math.sin(dir) * 55), dir, kind: 'above' as const };
+  };
+  const eR = Pz(-248, zP + 140);
+  const eL = Pz(256, zP + 132);
+  return {
+    view: 'above',
+    posture: 'standing',
+    head: { c: Pz(0, zP - 14), r: BODY.headH / 2 },
+    neck: Pz(0, zP),
+    shoulderR: Pz(-BODY.shoulderHalf, zP + 4),
+    shoulderL: Pz(BODY.shoulderHalf, zP + 4),
+    elbowR: eR,
+    elbowL: eL,
+    handR: hand(a, eR),
+    handL: hand(b, eL),
+    hipR: Pz(-100, zP - 10),
+    hipL: Pz(100, zP - 10),
+    kneeR: Pz(-100, zP + 10),
+    kneeL: Pz(100, zP + 10),
+    footR: Pz(-110, zP + 90),
+    footL: Pz(110, zP + 90),
+    floor: null,
   };
 }
 
@@ -372,7 +399,7 @@ type TopBuilt = {
   caseFelt: SkPath | null;
   lid: SkPath | null;
   table: SkPath | null;
-  player: { shoulders: SkPath; arms: SkPath; head: { x: number; z: number } };
+  player: { shoulders: SkPath; arms: SkPath; head: { x: number; z: number }; pose: PlayerPose };
   mallets: { shafts: SkPath; heads: { x: number; z: number }[] };
 };
 
@@ -466,7 +493,7 @@ function buildTop(G: MalletGeom, v: VariantId): TopBuilt {
     caseFelt,
     lid,
     table,
-    player: { shoulders, arms, head: { x: 0, z: zP } },
+    player: { shoulders, arms, head: { x: 0, z: zP }, pose: topPlayer(zP, handA, handB) },
     mallets: { shafts, heads: [hA, hB] },
   };
 }
@@ -539,15 +566,9 @@ function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst })
         <BlurMask blur={16} style="normal" />
       </Path>
 
-      {/* The player, behind the keyboard (faint: we look through to them). */}
-      <Group opacity={0.16}>
-        <Path path={b.player.body}>
-          <LinearGradient start={vec(-230, b.player.head.y)} end={vec(230, b.barTop)} colors={PLAYER} />
-        </Path>
-        <Path path={b.player.arms} style="stroke" strokeWidth={70} strokeCap="round" color={PLAYER[1]} />
-        <Group transform={[{ translateX: b.player.head.x }, { translateY: b.player.head.y }]}>
-          <FigureHead fill={playerHeadFill('front')} />
-        </Group>
+      {/* The player, behind the keyboard (quiet: we look past them to the bars). */}
+      <Group transform={[{ translateY: b.yFloor }]}>
+        <PlayerBehind pose={b.player.pose} dim={0.42} />
       </Group>
 
       {/* A table under a case model. */}
@@ -683,6 +704,10 @@ function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst })
       {b.mallets.heads.map((h) => (
         <MalletHead key={`m${h.x}`} x={h.x} y={h.y} r={headR} look={look} />
       ))}
+      {/* the hands closed on the mallets (over the bars and the shafts' ends) */}
+      <Group transform={[{ translateY: b.yFloor }]}>
+        <PlayerInFront pose={b.player.pose} dim={0.9} />
+      </Group>
     </Group>
   );
 }
@@ -778,18 +803,9 @@ function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
         </>
       ) : null}
 
-      {/* The player, from above, reaching in with two mallets. */}
-      <Path path={b.player.arms} style="stroke" strokeWidth={84} strokeCap="round" color="#1c2436" />
-      <Path path={b.player.arms} style="stroke" strokeWidth={68} strokeCap="round" color={PLAYER[1]} />
-      <Path path={b.player.shoulders} color="#000" opacity={0.5}>
-        <BlurMask blur={14} style="normal" />
-      </Path>
-      <Path path={b.player.shoulders}>
-        <LinearGradient start={vec(-240, b.player.head.z - 125)} end={vec(240, b.player.head.z + 125)} colors={PLAYER} />
-      </Path>
-      <Group transform={[{ translateX: b.player.head.x }, { translateY: b.player.head.z }]}>
-        <FigureHead fill={playerHeadFill('above')} />
-      </Group>
+      {/* The player, from above, reaching in with two mallets (the house figure). */}
+      <PlayerBehind pose={b.player.pose} />
+      <PlayerInFront pose={b.player.pose} />
       <Path path={b.mallets.shafts} style="stroke" strokeWidth={9} strokeCap="round" color={INK} opacity={0.8} />
       <Path path={b.mallets.shafts} style="stroke" strokeWidth={6} strokeCap="round" color={look.mallet.shaft} />
       {b.mallets.heads.map((h) => (

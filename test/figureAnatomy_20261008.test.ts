@@ -46,6 +46,8 @@ import { STANDING as VIOLIN_STANDING } from '../src/screens/lab/miking/lessons/c
 import { POSTURE as CELLO } from '../src/screens/lab/miking/lessons/c09cCello/model.ts';
 import { standing as bowedStanding } from '../src/screens/lab/miking/lessons/shared/bowed/posture.ts';
 import { BASS as DOUBLE_BASS } from '../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts';
+import { WURLI_PLAYER_SIDE, WURLI_PLAYER_TOP, WURLI_SEAT_Y } from '../src/screens/lab/miking/lessons/shared/keys/wurliPlayer.ts';
+import { METAL_ARM, hangingArm, metalFrontPose, metalSidePose, metalTopPose } from '../src/screens/lab/miking/lessons/shared/metal/metalFigure.ts';
 
 const BASS_BOW = bowedStanding(DOUBLE_BASS, 'bow');
 const add3 = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => ({ x: a.x + b.x, y: a.y + b.y, z: a.z + b.z });
@@ -169,15 +171,130 @@ function poses(): Record<string, PlayerPose> {
     out[`measure.operator.side.${facing}`] = operatorSide(500, 1200, facing);
     out[`measure.operator.top.${facing}`] = operatorTop(500, 300, facing);
   }
+  // Figure pass 2026-10-15: the reed-piano player (I11b) and the metal /
+  // mallet players (I06a–c, I12, I07–I10) are now shared-figure poses.
+  out['keys.wurli.side'] = WURLI_PLAYER_SIDE;
+  out['keys.wurli.top'] = WURLI_PLAYER_TOP;
+  // the triangle held (clip hand up, beater hand at the chest), arms hanging, the gong mallet, the mallet player
+  out['metal.held.side'] = metalSidePose([[-40, -1500], [-230, -1180]]);
+  out['metal.rest.side'] = metalSidePose([]);
+  out['metal.gong.side'] = metalSidePose([[-150, -1300]]);
+  out['metal.chimes.front'] = metalFrontPose([[-260, -1380]]);
+  out['metal.rest.front'] = metalFrontPose([]);
+  out['mallets.front'] = metalFrontPose([[-240, -1130], [260, -1200]]);
+  out['metal.held.top'] = metalTopPose([[-40, 0], [-230, 150]]).pose;
   return out;
 }
+
+/**
+ * THE CANON and ARTICULATION (owner 2026-10-15: "forearm, elbow, upper arm,
+ * shoulders, chest, waist, hips, thighs, upper leg, lower leg, ankle, foot,
+ * hands, wrist, fingers, knuckles, finger tips … ALL NEED TO BE IN PROPORTION
+ * and articulate correctly"). Per pose, from its joints:
+ *   NECK      the head's centre 0.55–0.85 of a head above the collar: the
+ *             chin clears the shoulders (I11b: "shoulder and head merge");
+ *   WRIST     the hand turns ≤ 70° off its forearm (side and front views);
+ *   ELBOW     never folded tighter than 25° between the bones (a seen arm);
+ *   SEATED    the thigh (hip → knee) 360–480 mm and the lower leg (knee →
+ *             ankle) 340–480 mm, the knee bent 60–150° — bends happen AT the
+ *             hip and the knee, the limbs keep their lengths.
+ */
+function articulation(pose: PlayerPose): string[] {
+  const out: string[] = [];
+  if (pose.view === 'above') return out;
+  const neckGap = d(pose.head.c, pose.neck) / BODY.headH;
+  if (neckGap < 0.55 || neckGap > 0.85) out.push(`head centre ${neckGap.toFixed(2)} heads from the collar`);
+  const ang = (a: number) => Math.abs(Math.atan2(Math.sin(a), Math.cos(a)));
+  for (const [s, sh, el, h] of [
+    ['R', pose.shoulderR, pose.elbowR, pose.handR],
+    ['L', pose.shoulderL, pose.elbowL, pose.handL],
+  ] as const) {
+    if (d(sh, h.wrist) < 1 && d(sh, el) < 1) continue;
+    const fore = Math.atan2(h.wrist.v - el.v, h.wrist.u - el.u);
+    if (d(el, h.wrist) > 40 && ang(h.dir - fore) > (70 * Math.PI) / 180 + 1e-6) out.push(`${s} wrist bent ${((ang(h.dir - fore) * 180) / Math.PI).toFixed(0)}°`);
+    const a1 = Math.atan2(sh.v - el.v, sh.u - el.u);
+    const a2 = Math.atan2(h.wrist.v - el.v, h.wrist.u - el.u);
+    if (d(sh, el) > 120 && d(el, h.wrist) > 120 && ang(a1 - a2) < (25 * Math.PI) / 180) out.push(`${s} elbow folded to ${((ang(a1 - a2) * 180) / Math.PI).toFixed(0)}°`);
+  }
+  if (pose.view === 'side' && pose.posture === 'seated') {
+    const f = pose.facing ?? 1;
+    for (const [s, hp, kn, ft] of [
+      ['R', pose.hipR, pose.kneeR, pose.footR],
+      ['L', pose.hipL, pose.kneeL, pose.footL],
+    ] as const) {
+      const ankle = { u: ft.u - f * 40, v: ft.v - 70 };
+      const thigh = d(hp, kn);
+      const shin = d(kn, ankle);
+      if (thigh < 360 || thigh > 480) out.push(`${s} thigh ${thigh.toFixed(0)} mm`);
+      if (shin < 340 || shin > 480) out.push(`${s} lower leg ${shin.toFixed(0)} mm`);
+      const knee = ang(Math.atan2(hp.v - kn.v, hp.u - kn.u) - Math.atan2(ankle.v - kn.v, ankle.u - kn.u));
+      if (knee < (60 * Math.PI) / 180 || knee > (150 * Math.PI) / 180) out.push(`${s} knee at ${((knee * 180) / Math.PI).toFixed(0)}°`);
+    }
+  }
+  return out;
+}
+
+/** Poses whose neck/wrist the drawing does not take from the pose alone
+ *  (named, so the list can only shrink). */
+const ARTICULATION_EXEMPT = new Set<string>([]);
 
 describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correctly, proportionally and decently', () => {
   for (const [name, pose] of Object.entries(poses())) {
     it(`${name}: ${pose.view} ${pose.posture}`, () => {
       assert.deepEqual(anatomy(pose, ON_SURFACE[name]), []);
     });
+    if (!ARTICULATION_EXEMPT.has(name))
+      it(`${name}: canon + articulation (owner 2026-10-15)`, () => {
+        assert.deepEqual(articulation(pose), []);
+      });
   }
+
+  it('the shared body widths keep an adult canon (owner 2026-10-15)', () => {
+    // shoulders ≈ 2 heads across the deltoids; the hand ≈ the face's length (≈ 0.8 head);
+    // each limb tapers joint to joint: upper arm > elbow > wrist, thigh > knee > ankle.
+    const across = 2 * (BODY.shoulderHalf + 46);
+    assert.ok(across / BODY.headH >= 1.8 && across / BODY.headH <= 2.3, `shoulders ${across} mm = ${(across / BODY.headH).toFixed(2)} heads`);
+    assert.ok(BODY.handLen / BODY.headH >= 0.7 && BODY.handLen / BODY.headH <= 0.9, 'the hand ≈ a face long');
+    assert.ok(BODY.upperArmR > BODY.elbowR && BODY.elbowR > BODY.wristR, 'the arm tapers to the wrist');
+    assert.ok(BODY.thighR > BODY.kneeR && BODY.kneeR > BODY.ankleR, 'the leg tapers to the ankle (ankle narrower than the calf)');
+    assert.ok(BODY.chestHalf > BODY.waistHalf && BODY.hipHalf > BODY.waistHalf, 'chest → waist → hips');
+    assert.ok(METAL_ARM.upper <= ARM.upper && METAL_ARM.fore <= ARM.fore && METAL_ARM.upper / METAL_ARM.fore >= 1 && METAL_ARM.upper / METAL_ARM.fore <= 1.3, 'upper arm ≈ forearm, adult length');
+  });
+
+  it('I11b (figure pass 2026-10-15): the reed-piano player is the shared figure at true scale — seated on the bench, forearms level with the keys', () => {
+    const P = WURLI_PLAYER_SIDE;
+    const hip = mid(P.hipR, P.hipL);
+    assert.ok(Math.abs(P.hipR.v - (WURLI_SEAT_Y - 85)) < 1 && hip.v < WURLI_SEAT_Y, 'the hip joint 85 mm above the seat');
+    const forearm = Math.atan2(P.handR.wrist.v - P.elbowR.v, P.elbowR.u - P.handR.wrist.u);
+    assert.ok(Math.abs(forearm) < (10 * Math.PI) / 180, 'the forearm within 10° of level');
+    assert.ok(P.elbowR.v < -720 && P.elbowR.v > -800, 'the elbow just above the key tops (720)');
+    const tall = P.footL.v - (P.head.c.v - P.head.r * 1.09);
+    assert.ok(tall > 1250 && tall < 1340, `seated, the crown ${tall.toFixed(0)} mm up (inside the authored frame, 1330)`);
+    const art = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/keys/KeysArt.tsx', import.meta.url), 'utf8');
+    assert.doesNotMatch(art, /limb\(\[S\(P\.shoulder/, 'the old hand-built capsule torso is gone');
+    assert.match(art, /<PlayerInFront pose=\{side \? WURLI_PLAYER_SIDE : WURLI_PLAYER_TOP\}/);
+  });
+
+  it('metal players: a hand held close keeps its elbow at the side (the upper arm hangs; never thrown behind the back)', () => {
+    const sh = { u: -380, v: -1445 };
+    const r = hangingArm(sh, { u: -300, v: -1200 }, 1);
+    assert.ok(Math.abs(r.elbow.u - sh.u) < 20 && r.elbow.v > sh.v + 250, 'the elbow hangs under the shoulder');
+    const far = hangingArm(sh, { u: 100, v: -1300 }, 1);
+    assert.ok(d(sh, far.elbow) <= METAL_ARM.upper + 0.5 && d(far.elbow, far.wrist) <= METAL_ARM.fore + 0.5, 'a reach keeps both bones at length');
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/metal/metalArt.tsx', import.meta.url), 'utf8');
+    assert.match(src, /<PlayerBehind pose=\{fig\.pose\} \/>/, 'PlayerInk draws the shared figure');
+  });
+
+  it('the neck goes INTO the collar (owner on I11b: "shoulder and head merge")', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx', import.meta.url), 'utf8');
+    assert.match(src, /const head = intoCollar\(headProfile\(pose\.head\.c/, 'side: the head stops at the shirt');
+    assert.match(src, /const head = intoCollar\(headFront\(pose\.head\.c/, 'front: the head stops at the shirt');
+    const fr = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/freereed/PlayerProfile.tsx', import.meta.url), 'utf8');
+    assert.match(fr, /head: intoCollar\(figureHeadProfile\(/);
+    const seating = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/ensemble/SeatingArt.tsx', import.meta.url), 'utf8');
+    assert.match(seating, /const prof = Math\.abs\(rightU\) < 0\.5;/, 'ensemble bodies turn with the player (a side-on singer is drawn in profile)');
+    assert.doesNotMatch(seating, /addFig\(b, 'skin', capsule\(Q\(0, 30, 880\)/, 'no rod-shaped hand at the thigh');
+  });
 
   it('the checker itself catches the F04 water figure as it was (a far arm from the hip, the hand at the groin)', () => {
     // The joints as shipped before the fix: the far elbow BELOW the hip, the hand at knee height in front of the thigh.
@@ -247,7 +364,9 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const seating = read('ensemble/SeatingArt.tsx');
     assert.doesNotMatch(seating, /b\.fig\.[a-z]+\.addPath\(/);
     assert.match(seating, /function addFig\(b: Batch, tone: FigTone, q: SkPath\): void \{\s*b\.fig\[tone\] = Skia\.Path\.MakeFromOp\(b\.fig\[tone\], q, PathOp\.Union\)/);
-    assert.match(seating, /const NECK_V = g - sh - 55;/, 'the neck ends at the collar, not below the shoulder line');
+    // (2026-10-15: the shoulder line now sits BELOW the chin — its top 14 mm over `sh` — and the neck ends just inside it.)
+    assert.match(seating, /const NECK_V = g - sh - 8;/, 'the neck ends at the collar, not below the shoulder line');
+    assert.match(seating, /addFig\(b, 'shirt', ellipse\(P\(o\.u, g - sh \+ 22\), !prof \? 212 : 122, 36\)\)/, 'the shoulder line under the chin');
     // Small percussion (I02–I05): the head sits on the collar (head centre 1606 mm, collar 1440 mm).
     assert.match(read('smallperc/Player.tsx'), /headProfile\(pt\(-346, H\(1606\)\), 108, H\(1440\), 1\)/);
   });

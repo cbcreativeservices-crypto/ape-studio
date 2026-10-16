@@ -14,7 +14,8 @@
  *                    or at the speakers' height (top) — the placement scene's
  *                    art: the lid shell, the oval speaker in section (on the
  *                    lid, or on the amp rail behind it), the keys, the action
- *                    in shadow, the seated player (minimal line art)
+ *                    in shadow, the seated player (the shared PlayerFigure,
+ *                    wurliPlayer.ts — figure pass 2026-10-15)
  *   OvalFace         one 4 × 8 in oval speaker face-on, the three spots
  *
  * Light from the upper left, gradients for form, rim highlights; the house
@@ -29,8 +30,8 @@ import { SPK } from '../speakers/SpeakerArt';
 import { OVAL_SPOTS, SPEAKER_OVAL_4x8 as OV } from './keysSpec.ts';
 import { RHODES_FRONT, RHODES_TOP, WURLI_FRONT, type KeyRects, type Rect } from './keysGeometry.ts';
 import { C_BASS, C_TREBLE, FACE_TOP, OVAL_SECTION, PLAYER, W, onSpeaker } from './wurliModel.ts';
-import { armPath, FIGURE_TONES, FigureHead, FigureMass, handShape, headAbove, headProfile, limb, type FigureTone } from '../players/PlayerFigure';
-import { pt } from '../players/playerPose';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { WURLI_PLAYER_SIDE, WURLI_PLAYER_TOP } from './wurliPlayer.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -751,16 +752,9 @@ type Built = {
   pedalCable: SkPath;
   spk: { frame: SkPath; cone: SkPath; surround: SkPath; dust: SkPath; magnet: SkPath; bracket: SkPath | null }[];
   slots: SkPath;
-  player: SkPath;
-  playerLine: SkPath;
-  /** The seated player's body masses in the house figure style (round 2,
-   *  2026-10-10; it was stick line art): drawn far → near. */
-  masses: { path: SkPath; tone: FigureTone; far?: boolean; lines?: SkPath }[];
+  /** The bench the player sits on (the player is the shared PlayerFigure:
+   *  wurliPlayer.ts, figure pass 2026-10-15). */
   bench: SkPath;
-  /** The player's head (PlayerFigure skin silhouette) at the origin, and
-   *  where it sits (rot: radians, the from-above head's nose to −x). */
-  head: SkPath;
-  headAt: { x: number; y: number; rot: number };
   /** The action seen through the cut (in shadow). SIDE: one note's parts and
    *  `keyCap` the white key's top; TOP: the rows of reeds, and `keyCap` the
    *  black keys. */
@@ -968,57 +962,11 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
       slots.moveTo(u0, v0);
       slots.lineTo(u1, v1);
     }
-    // the seated player: minimal line art (ILLUSTRATIVE); the head is the
-    // figure's own skin silhouette in profile, facing the keys (−x) — head
-    // fix 2026-10-08: a head ON A BODY is PlayerFigure's FigureHead, never a
-    // circle and never the line-art icon.
-    const player = make();
-    const head = headProfile(pt(0, 0), P.head.r, P.head.r * 1.45, -1).fill;
-    const playerLine = make();
-    playerLine.moveTo(P.head.x + 6, P.head.y + P.head.r * 0.92);
-    playerLine.lineTo(P.shoulder.x, P.shoulder.y);
-    playerLine.lineTo(P.hip.x + 10, P.hip.y);
-    playerLine.moveTo(P.shoulder.x - 6, P.shoulder.y + 20);
-    playerLine.lineTo(P.elbow.x, P.elbow.y);
-    playerLine.lineTo(P.hand.x, P.hand.y);
-    playerLine.moveTo(P.hip.x, P.hip.y);
-    playerLine.lineTo(P.knee.x, P.knee.y);
-    playerLine.lineTo(P.foot.x, P.foot.y);
-    playerLine.lineTo(P.foot.x + 90, P.foot.y + 10);
-    // The body at true scale from the same pose points (chest ≈ 250 deep,
-    // upper arm ≈ 300, forearm ≈ 260 to the keys, thigh ≈ 440, shin ≈ 480,
-    // a shoe ≈ 270 on the pedal): far arm first, then the torso, the near
-    // leg and the near arm.
-    const S = (x: number, y: number) => pt(x, y);
-    // The arms and hands (owner 2026-10-10): the shared anatomical arm —
-    // the elbow's point and crook, the forearm's swell, the cuff short of the
-    // wrist — and the shared hand, its fingers curved down onto the keys
-    // where the old hand ended (the fingertips at the front of the keys).
-    const keysHand = (tip: ReturnType<typeof pt>, elbow: ReturnType<typeof pt>) => {
-      const d = Math.PI; // toward the keys (−x)
-      const wrist = S(tip.u + 151, tip.v - 28);
-      return { wrist, hs: handShape({ wrist, dir: d, kind: 'keys' }, Math.atan2(wrist.v - elbow.v, wrist.u - elbow.u)) };
-    };
-    const farE = S(P.elbow.x + 10, P.elbow.y - 10);
-    const nearE = S(P.elbow.x, P.elbow.y);
-    const farH = keysHand(S(P.hand.x - 60, P.hand.y + 4), farE);
-    const nearH = keysHand(S(P.hand.x - 70, P.hand.y + 12), nearE);
-    const masses: Built['masses'] = [
-      { path: armPath(S(P.shoulder.x - 10, P.shoulder.y + 25), farE, farH.wrist), tone: 'shirt', far: true },
-      { path: farH.hs.path, tone: 'skin', far: true },
-      { path: limb([S(P.hip.x + 10, P.hip.y), S(P.knee.x, P.knee.y), S(P.foot.x + 20, P.foot.y - 20)], [80, 58, 44]), tone: 'trousers', far: true },
-      { path: limb([S(P.head.x + 5, P.head.y + 60), S(P.shoulder.x + 5, P.shoulder.y - 20)], [36, 44]), tone: 'skin' },
-      { path: limb([S(P.shoulder.x + 5, P.shoulder.y + 10), S(P.hip.x + 15, P.hip.y - 10)], [118, 112]), tone: 'shirt' },
-      { path: limb([S(P.hip.x, P.hip.y + 5), S(P.knee.x, P.knee.y), S(P.foot.x, P.foot.y - 25)], [84, 60, 46]), tone: 'trousers' },
-      { path: limb([S(P.foot.x + 95, P.foot.y - 30), S(P.foot.x - 120, -78)], [42, 30]), tone: 'shoe' },
-      { path: armPath(S(P.shoulder.x - 15, P.shoulder.y + 35), nearE, nearH.wrist), tone: 'shirt' },
-      { path: nearH.hs.path, tone: 'skin', lines: nearH.hs.lines },
-    ];
     const bench = make();
-    rr(bench, 470, -500, 800, -470, 6);
-    rr(bench, 490, -470, 510, -4, 3);
-    rr(bench, 760, -470, 780, -4, 3);
-    out = { floor: rr(make(), -1500, 0, 900, 40, 0), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk: [{ ...sp, bracket }], slots, player, playerLine, masses, bench, head, headAt: { x: P.head.x, y: P.head.y, rot: 0 }, act: { board, parts, rails, reedBar, reed, solder, comb, combMount, shank, head: headF, ampRail, keyCap } };
+    rr(bench, 470, -480, 800, -450, 6);
+    rr(bench, 490, -450, 510, -4, 3);
+    rr(bench, 760, -450, 780, -4, 3);
+    out = { floor: rr(make(), -1500, 0, 900, 40, 0), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk: [{ ...sp, bracket }], slots, bench, act: { board, parts, rails, reedBar, reed, solder, comb, combMount, shank, head: headF, ampRail, keyCap } };
   } else {
     // TOP: cut at the speakers' height (y = C_BASS.y): the lid's front panel
     // and back, the ends; both speakers cut along their long axis; the keys
@@ -1094,38 +1042,8 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
         slots.moveTo(fx + 1, c.z + k * 16 - 5);
         slots.lineTo(fx + 1, c.z + k * 16 + 5);
       }
-    const player = make();
-    player.addOval(Skia.XYWHRect(P.shoulder.x - 110, -230, 220, 460));
-    // the head from above (the figure's own, nose turned to the keys, −x)
-    const head = headAbove(pt(0, 0), P.head.r * 0.95).fill;
-    const playerLine = make();
-    for (const sg of [-1, 1]) {
-      playerLine.moveTo(P.shoulder.x - 40, sg * 200);
-      playerLine.lineTo(P.elbow.x, sg * P.elbow.z);
-      playerLine.lineTo(P.hand.x, sg * P.hand.z);
-      playerLine.moveTo(P.hip.x - 30, sg * 120);
-      playerLine.lineTo(P.knee.x, sg * P.knee.z);
-    }
-    // From above: the shoulders (≈ 450 × 220), the arms to the keys, the
-    // hands, the thighs under them, in the house figure style.
-    const T = (x: number, z: number) => pt(x, z);
-    // From above: the shared arm to the back of the shared hand over the keys.
-    const topArm = (sg: number) => {
-      const e = T(P.elbow.x, sg * P.elbow.z);
-      // The fingertips where the old hand ended (P.hand.x − 70): the hand goes no further over the keys.
-      const wrist = T(P.hand.x + 105, sg * P.hand.z);
-      const hs = handShape({ wrist, dir: Math.PI, kind: 'above' }, Math.atan2(wrist.v - e.v, wrist.u - e.u));
-      return { arm: armPath(T(P.shoulder.x - 10, sg * 180), e, wrist), hs };
-    };
-    const arms = [-1, 1].map(topArm);
-    const masses: Built['masses'] = [
-      ...[-1, 1].map((sg) => ({ path: limb([T(P.hip.x - 30, sg * 110), T(P.knee.x, sg * P.knee.z)], [82, 62]), tone: 'trousers' as FigureTone })),
-      { path: limb([T(P.shoulder.x, -118), T(P.shoulder.x, 118)], [108, 108]), tone: 'shirt' },
-      ...arms.map((a) => ({ path: a.arm, tone: 'shirt' as FigureTone })),
-      ...arms.map((a) => ({ path: a.hs.path, tone: 'skin' as FigureTone, lines: a.hs.lines })),
-    ];
     const bench = rr(make(), 470, -380, 800, 380, 14);
-    out = { floor: make(), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk, slots, player, playerLine, masses, bench, head, headAt: { x: P.head.x + 10, y: 0, rot: Math.PI / 2 }, act: actTop };
+    out = { floor: make(), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk, slots, bench, act: actTop };
   }
   builtCache.set(key, out);
   return out;
@@ -1134,6 +1052,14 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
 export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { view: ViewId; mount?: WurliMount; showPlayer?: boolean; hi?: string | null }) {
   const g = buildWurli(view, mount);
   const side = view === 'side';
+  const pedalArt = (
+    <>
+      <Path path={g.pedalCable} style="stroke" strokeWidth={4} color="#202126" />
+      <Path path={g.pedal}>
+        <LinearGradient start={vec(0, -60)} end={vec(0, 0)} colors={[...KEYS.chrome]} />
+      </Path>
+    </>
+  );
   return (
     <Group>
       {side ? (
@@ -1146,25 +1072,19 @@ export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { v
       ) : null}
       {/* behind the cut: the legs (side), the floor shadow */}
       {side ? W.legX.map((x) => <TubeLeg key={x} u0={x} v0={W.caseBottomY} u1={x} dim={0.8} />) : null}
+      {/* from above: the pedal on the floor, under the player's legs */}
+      {!side ? pedalArt : null}
       {showPlayer ? (
         <Group>
           <Path path={g.bench} color="#2a2b31" opacity={0.85} />
-          {/* The seated player in the house figure style (round 2: was stick line art). */}
-          {g.masses.map((m, i) => (
-            <Group key={i}>
-              <FigureMass path={m.path} tone={m.tone} far={m.far} contour={4} />
-              {m.lines ? <Path path={m.lines} style="stroke" strokeWidth={2.4} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} /> : null}
-            </Group>
-          ))}
-          <Group transform={[{ translateX: g.headAt.x }, { translateY: g.headAt.y }, { rotate: g.headAt.rot }]}>
-            <FigureHead fill={g.head} />
-          </Group>
+          {/* The seated player: the shared house figure on an adult skeleton
+              (figure pass 2026-10-15; it was hand-built capsules whose torso
+              rose past the chin). The near arm reaches over the key fronts. */}
+          <PlayerBehind pose={side ? WURLI_PLAYER_SIDE : WURLI_PLAYER_TOP} dim={0.92} />
         </Group>
       ) : null}
-      <Path path={g.pedalCable} style="stroke" strokeWidth={4} color="#202126" />
-      <Path path={g.pedal}>
-        <LinearGradient start={vec(0, -60)} end={vec(0, 0)} colors={[...KEYS.chrome]} />
-      </Path>
+      {/* side: the pedal over the shoe's sole (the foot rests ON it) */}
+      {side ? pedalArt : null}
       {/* the case: a dim inside seen through the cut, the moulded shell */}
       <Path path={g.shellFill} color="#000" opacity={0.55}>
         <BlurMask blur={side ? 8 : 14} style="normal" />
@@ -1255,6 +1175,8 @@ export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { v
           ) : null}
         </>
       )}
+      {/* the near arm and the hands over the keys (the fingertips on them) */}
+      {showPlayer ? <PlayerInFront pose={side ? WURLI_PLAYER_SIDE : WURLI_PLAYER_TOP} dim={0.92} /> : null}
       {/* the lid shell (cut face) and its grille slots */}
       <Path path={g.shell}>
         <LinearGradient start={vec(W.caseBackX, W.caseTopY)} end={vec(W.faceFootX, W.faceFootY)} colors={[...KEYS.plastic]} />
@@ -1273,7 +1195,8 @@ export function wurliSectionLabels(view: ViewId): StaticLabel[] {
       { id: 'lid', text: 'LID', u: (W.caseBackX + FACE_TOP.x) / 2, v: W.caseTopY - 26, align: 'center', tone: 'muted' },
       { id: 'grille', text: 'GRILLE · OVAL SPEAKER', short: 'SPEAKER', u: FACE_TOP.x - 18, v: FACE_TOP.y - 60, align: 'right' },
       { id: 'keys', text: 'KEYS', u: -60, v: W.keyBottomY + 30, align: 'center', tone: 'muted' },
-      { id: 'player', text: 'THE PLAYER', short: 'PLAYER', u: PLAYER.head.x, v: PLAYER.head.y - PLAYER.head.r - 30, align: 'center', tone: 'illustrative' },
+      // in the clear air before the player's face (the head fills the frame's top)
+      { id: 'player', text: 'THE PLAYER', short: 'PLAYER', u: WURLI_PLAYER_SIDE.head.c.u - 330, v: WURLI_PLAYER_SIDE.head.c.v + 10, align: 'center', tone: 'illustrative' },
       { id: 'pedal', text: 'PEDAL', u: (PLAYER.pedal.x0 + PLAYER.pedal.x1) / 2, v: -90, align: 'center', tone: 'muted' },
       { id: 'audience', text: '← AUDIENCE SIDE', short: '← AUDIENCE', u: -1400, v: -60, align: 'left', tone: 'illustrative' },
     ];

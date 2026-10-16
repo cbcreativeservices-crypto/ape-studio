@@ -333,6 +333,18 @@ export function headProfile(c: Pt, r: number, neckV: number, facing: number): He
   return { line, fill };
 }
 
+/**
+ * The neck goes INTO the shirt (figure pass 2026-10-15, owner on I11b:
+ * "shoulder and head merge"): the head's silhouette stops at the shirt's
+ * outline, so the collar line is the shirt's own edge and the neck's round
+ * end never lies over the shoulders as a pale blob. A chin sunk into the
+ * chest would be cut here too — a pose error shows instead of hiding.
+ */
+export function intoCollar(head: HeadPaths, torso: SkPath): HeadPaths {
+  const fill = Skia.Path.MakeFromOp(head.fill, torso, PathOp.Difference);
+  return fill ? { line: head.line, fill } : head;
+}
+
 /** The head from above: the cranium, the ears, the nose's tip toward +v. */
 export function headAbove(c: Pt, r: number): HeadPaths {
   const k = r / 110;
@@ -1060,7 +1072,7 @@ function buildFront(pose: PlayerPose): Built {
   const below = make();
   below.addRect(Skia.XYWHRect(pose.hipR.u - 400, beltV + 12, pose.hipL.u - pose.hipR.u + 800, 600));
   const shirt = Skia.Path.MakeFromOp(torso, below, PathOp.Difference) ?? torso;
-  const head = headFront(pose.head.c, pose.head.r, n.v);
+  const head = intoCollar(headFront(pose.head.c, pose.head.r, n.v), torso);
   const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist));
   const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist));
   const handLines = make();
@@ -1293,7 +1305,7 @@ function buildSide(pose: PlayerPose): Built {
   const deltoidRaw = smooth([A(-44, 0), A(-30, 40), A(10, 45), A(70, 44), A(112, 43), A(112, -43), A(70, -44), A(10, -45), A(-30, -40)], 0.5); // no wider than the sleeve — a swell here read as a bulge (owner 2026-10-10)
   const deltoid = Skia.Path.MakeFromOp(deltoidRaw, torso, PathOp.Intersect) ?? deltoidRaw;
   const armNear = sleeveArm(sh, pose.elbowR, pose.handR.wrist, deltoid);
-  const head = headProfile(pose.head.c, pose.head.r, n.v + 10, f);
+  const head = intoCollar(headProfile(pose.head.c, pose.head.r, n.v + 10, f), torso);
   const hR = handShape(pose.handR, angleOf(pose.elbowR, pose.handR.wrist));
   const hL = handShape(pose.handL, angleOf(pose.elbowL, pose.handL.wrist));
   // Only the near hand's knuckles show (the far hand is behind the body).

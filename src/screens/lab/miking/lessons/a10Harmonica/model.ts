@@ -68,11 +68,15 @@ export function profilePose(): ProfilePose {
   const P = (u: number, v: number) => ({ u: H0.x + u, v: H0.y + v });
   return {
     head: { c: P(-90, -41), r: 110 },
-    neck: P(-128, 78),
-    shoulder: P(-146, 138),
-    elbowNear: P(-76, 392),
+    // Figure pass 2026-10-15: the collar ≈ 70 below the chin and the shoulder
+    // under it (they sat level with the chin: the head merged into the
+    // shoulders); the elbows hang lower so the upper arm keeps its length.
+    // The collision solids (BODY below) are unchanged.
+    neck: P(-140, 132),
+    shoulder: P(-152, 186),
+    elbowNear: P(-62, 438),
     wristNear: P(8, 150),
-    elbowFar: P(-104, 380),
+    elbowFar: P(-90, 428),
     wristFar: P(-6, 146),
     hip: P(-160, 600),
     kneeNear: P(-128, 1040),

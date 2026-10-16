@@ -23,7 +23,7 @@
  * once per pose.
  */
 import { BlurMask, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { armPath, FIGURE_SKIN, FigureHead, headProfile as figureHeadProfile } from '../players/PlayerFigure';
+import { armPath, FIGURE_SKIN, FigureHead, headProfile as figureHeadProfile, intoCollar } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -224,7 +224,8 @@ function build(p: ProfilePose): Built {
     lines,
     // The head joined to the collar by its neck: the SHARED figure head
     // (PlayerFigure headProfile, facing +u), one skin silhouette.
-    head: figureHeadProfile(p.head.c, p.head.r, p.neck.v - 10, 1),
+    // …and stopped at the shirt's outline, so the neck goes into the collar (pass 2026-10-15).
+    head: intoCollar(figureHeadProfile(p.head.c, p.head.r, p.neck.v - 10, 1), torso),
     shadow,
     strap,
   };

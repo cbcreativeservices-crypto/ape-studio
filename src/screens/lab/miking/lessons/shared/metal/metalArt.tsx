@@ -6,11 +6,11 @@
  *   rod        a metal rod along a polyline: a dark under-stroke, the body,
  *              a lit edge toward the upper left and a thin specular line —
  *              so a 12.7 mm steel rod reads as round steel, not a line;
- *   player     a standing player as quiet line art, from the side, from above
- *              and from the front, so the instrument stays the subject; the
- *              head is the figure's own skin silhouette (PlayerFigure
- *              FigureHead — head fix 2026-10-08: a head on a body is never a
- *              circle and never the line-art head icon), drawn quietly too;
+ *   player     a standing player from the side, from above and from the
+ *              front: the house PlayerFigure (figure pass 2026-10-15; it was
+ *              stroked line art with no hands), its hands closed on the clip,
+ *              strap or beater they hold, drawn quietly (dimmed) so the
+ *              instrument stays the subject;
  *   standing   a floor band for the side and front views.
  *
  * Paths are built once per call site (useMemo / module caches); nothing
@@ -18,8 +18,29 @@
  */
 import type { ReactElement } from 'react';
 import { BlurMask, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import { FigureHead, headAbove, headFront, headProfile } from '../players/PlayerFigure';
-import { pt } from '../players/playerPose';
+import { FigureHead, headAbove, headFront, headProfile, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { pt, type PlayerPose } from '../players/playerPose';
+import { metalFrontPose, metalSidePose, metalTopPose } from './metalFigure.ts';
+
+/** The shared-figure pose behind each player path (figure pass 2026-10-15):
+ *  PlayerInk draws the house PlayerFigure from it — hands closed on what
+ *  they hold — in place of the old stroked stick figure. */
+const POSE_OF = new WeakMap<SkPath, { pose: PlayerPose; hands: boolean }>();
+/** The same hands give the same pose object, so the figure's paths (cached by
+ *  pose) are built once, not on every render of a scene. */
+const POSES = new Map<string, { pose: PlayerPose; hands: boolean }>();
+function poseFor(view: 'side' | 'top' | 'front', hands: readonly (readonly [number, number])[]): { pose: PlayerPose; hands: boolean } {
+  const key = `${view}:${hands.map((h) => `${h[0].toFixed(1)},${h[1].toFixed(1)}`).join(';')}`;
+  let hit = POSES.get(key);
+  if (!hit) {
+    if (view === 'top') {
+      const t = metalTopPose(hands);
+      hit = { pose: t.pose, hands: t.handsShown };
+    } else hit = { pose: view === 'side' ? metalSidePose(hands) : metalFrontPose(hands), hands: true };
+    POSES.set(key, hit);
+  }
+  return hit;
+}
 
 export type SkPath = ReturnType<typeof Skia.Path.Make>;
 export const make = (): SkPath => Skia.Path.Make();
@@ -115,6 +136,7 @@ export function playerSide(hands: readonly (readonly [number, number])[] = []): 
     p.lineTo(eu, ev);
     p.lineTo(hx, hy);
   }
+  POSE_OF.set(p, poseFor('side', hands));
   return p;
 }
 
@@ -160,6 +182,7 @@ export function playerTop(hands: readonly (readonly [number, number])[] = []): S
     p.moveTo(-330, sz);
     p.cubicTo(-250, sz * 1.05, (hx - 250) / 2, (hz + sz) / 2, hx, hz);
   }
+  POSE_OF.set(p, poseFor('top', hands));
   return p;
 }
 
@@ -180,6 +203,7 @@ export function playerFront(hands: readonly (readonly [number, number])[] = []):
     p.moveTo(su, -1450);
     p.cubicTo(su * 1.15, -1250, (su + hu) / 2, hv + 120, hu, hv);
   }
+  POSE_OF.set(p, poseFor('front', hands));
   return p;
 }
 
@@ -218,6 +242,16 @@ export function PlayerHead({ view, at, faint = false }: { view: PlayerHeadView; 
 /** The player's line art, drawn quietly behind the instrument, and its head
  *  (`head`: the view the path was built in — playerSide/Top/Front). */
 export function PlayerInk({ path, faint = false, head, headAt }: { path: SkPath; faint?: boolean; head?: PlayerHeadView; headAt?: readonly [number, number] }): ReactElement {
+  const fig = POSE_OF.get(path);
+  if (fig) {
+    // The whole figure, quiet: the instrument stays the subject (charter §6).
+    return (
+      <Group opacity={faint ? 0.55 : 0.85}>
+        <PlayerBehind pose={fig.pose} />
+        <PlayerInFront pose={fig.pose} hands={fig.hands} />
+      </Group>
+    );
+  }
   return (
     <Group>
       <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" strokeJoin="round" color={INK} opacity={faint ? 0.35 : 0.6} />
