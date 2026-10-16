@@ -864,7 +864,9 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       </SvgIn>
       {/* the cord goes on over the patch panel and down the right edge of the
           switch face to the DSP inlet; the mic line to DSP input 2 */}
-      <DrawPath d="M190 29 C214 23 262 21 272 25 C278 28 279 36 279 48 V96 C279 142 250 162 243.5 153.2" len={200} color={P} width={4} enter={enter} delay={at(360)} />
+      {/* (art fix 2026-10-16) its own lane over the top of the manager row, clear
+          of the N-012 cord that runs along it at y 23 and of that cord's flag */}
+      <DrawPath d="M190 29 C204 15 258 13 272 16 C279 18 280 30 280 48 V96 C280 142 250 162 243.5 153.2" len={200} color={P} width={4} enter={enter} delay={at(360)} />
       <SvgIn enter={enter} delay={at(520)}>
         {/* ri-13: the wrap-label flag, folded round the cable just above its
             port — and the strip under that port, which disagrees */}
