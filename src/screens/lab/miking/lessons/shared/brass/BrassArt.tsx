@@ -363,7 +363,7 @@ export function makeBrassInstrument(poses: Readonly<Record<VariantId, HornPose>>
 
 /* ── labels (OFF the instrument, each with a leader to its part) ── */
 
-type LabelSpec = { id: string; text: string; short?: string; at: Vec3; du: number; dv: number; align?: ArtLabel['align']; tone?: ArtLabel['tone'] };
+type LabelSpec = { id: string; text: string; short?: string; at: Vec3; du: number; dv: number; align?: ArtLabel['align']; tone?: ArtLabel['tone']; alts?: { du: number; dv: number; align: ArtLabel['align'] }[]; free?: boolean };
 
 /** The parts' anchors for labels and taps. */
 export function anchors(P: HornPose) {
@@ -388,7 +388,7 @@ export function brassLabels(P: HornPose, view: ViewId): ArtLabel[] {
   const side = view === 'side';
   L.push({ id: 'bell', text: 'BELL', at: side ? A.bellTop : A.bellLeft, du: -40, dv: -(R * 0.5 + 120), align: 'center' });
   if (P.valves.length && A.button) L.push({ id: 'valves', text: 'VALVES', at: side ? A.button : P.valves[2].c, du: side ? 10 : 30, dv: side ? -150 : 170, align: 'center' });
-  L.push({ id: 'mouthpiece', text: 'MOUTHPIECE', short: 'MOUTHPC', at: A.cup, du: 30, dv: side ? 210 : 200, align: 'center' });
+  L.push({ id: 'mouthpiece', text: 'MOUTHPIECE', short: 'MOUTHPC', at: A.cup, du: 30, dv: side ? 210 : 200, align: 'center', alts: side ? [{ du: 40, dv: -250, align: 'center' }] : undefined });
   if (P.slide) {
     const s = P.slide;
     const mid = { x: (s.receiver.x + s.crook.x) / 2 + 120, y: s.legs[1], z: s.z };
@@ -398,10 +398,16 @@ export function brassLabels(P: HornPose, view: ViewId): ArtLabel[] {
     if (P.rotors.length) L.push({ id: 'valves', text: 'F VALVE LOOPS', short: 'VALVES', at: add(P.rotors[0].c, { x: 0, y: 120, z: 0 }), du: -60, dv: side ? 260 : -230, align: 'center' });
   }
   // From above, a slide instrument's tubes run past the head: the word sits farther out.
-  L.push({ id: 'player', text: 'PLAYER', at: A.head, du: -60, dv: P.slide && !side ? -190 : -90, align: 'center', tone: 'muted' });
+  // In profile (art fix 2026-10-16, grading: "PLAYER and MOUTHPIECE stack on
+  // the head", leader dots on the head) the word stands free beside the
+  // player's back at chest height (or, where the glass ends there, in front
+  // of the belt) — no leader, nothing on the figure.
+  if (side) L.push({ id: 'player', text: 'PLAYER', at: A.head, du: -235, dv: 470, align: 'right', tone: 'muted', free: true, alts: [{ du: 230, dv: 820, align: 'left' }] });
+  else L.push({ id: 'player', text: 'PLAYER', at: A.head, du: -60, dv: P.slide ? -190 : -90, align: 'center', tone: 'muted' });
   return L.map((l) => {
     const [u, v] = PROJ[view].pt(l.at);
-    return { id: l.id, text: l.text, short: l.short, u: u + l.du, v: v + l.dv, align: l.align ?? 'left', tone: l.tone, at: { u, v } };
+    const alts = l.alts?.map((a) => ({ u: u + a.du, v: v + a.dv, align: a.align }));
+    return { id: l.id, text: l.text, short: l.short, u: u + l.du, v: v + l.dv, align: l.align ?? 'left', tone: l.tone, ...(l.free ? {} : { at: { u, v } }), ...(alts ? { alts } : {}) };
   });
 }
 

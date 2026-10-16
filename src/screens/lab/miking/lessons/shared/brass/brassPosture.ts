@@ -365,12 +365,16 @@ export function valvedPose(spec: BrassSpec): HornPose {
   const ua = (68 * Math.PI) / 180;
   const under = Hd(v(0, (leadR + 9.6) * Math.cos(ua), (leadR + 9.6) * Math.sin(ua)));
   const thumbR = flugel ? H(v(xv - pitch / 2, yLead - 4, 12 + 9.6)) : add(H(v(xv - pitch / 2, yLead, zLead)), under);
-  // The hand points forward, up and in from a wrist just behind the 1st
-  // valve, so its fingers come over the buttons from behind and above.
-  const alongR = norm(Hd(v(0.6, -0.6, -0.5)));
-  const dorsalR = Hd(v(0.1, -0.65, 0.75));
-  const fR = handFrame(sub(H(v(xv - 38, btnY, 40)), scale(alongR, 96)), alongR, dorsalR, Hd(v(-1, 0, 0)));
-  const R = cached(`${spec.id}:R`, () => poseHand(fR, padsR, thumbR, sh.R, v(0, 1, 0.6), metal, [0, 1, 2, 3, 4], { curl: 1.8, slide: 30, dorsal: dorsalR, dorsalW: 300 }));
+  // (Art fix 2026-10-16, grading: "the valve hand floats above the caps like
+  // a mitten".) The hand stands on the player's right of the valves, the
+  // wrist low beside the casings, the knuckles just above and to the right
+  // of the buttons: the fingers arch IN over the buttons from the side (a
+  // trumpeter's curved fingers), so the back of the hand faces the player's
+  // right and never rises far above the pearls.
+  const alongR = norm(Hd(v(0.12, -0.7, -0.7)));
+  const dorsalR = Hd(v(0.05, -0.55, 0.83));
+  const fR = handFrame(sub(H(v(xv - 8, btnY + 4, 32)), scale(alongR, 96)), alongR, dorsalR, Hd(v(-1, 0, 0)));
+  const R = cached(`${spec.id}:R`, () => poseHand(fR, padsR, thumbR, sh.R, v(0, 1, 0.7), metal, [0, 1, 2, 3, 4], { curl: 1.8, slide: 30, dorsal: dorsalR, dorsalW: 300 }));
   //  • LEFT: the hand round the valve casings below the bell tube — its palm
   //    against their left side, the index, middle and ring fingers wrapped
   //    round the front of the 3rd casing (pads on its far side), the little
@@ -502,7 +506,7 @@ export function slidePose(spec: BrassSpec, s = 0): HornPose {
   // with the brace (and the elbow follows it, straightening toward 7th). The
   // slide and its brace are the same on the bass trombone: one hold for both.
   if ((s !== 0 || spec.id !== TENOR.id) && !handCache.has(`${TENOR.id}:R`)) slidePose(TENOR, 0);
-  const R0 = cached(`${TENOR.id}:R`, () => poseHand(fR, padsR, thumbR, sh.R, v(0, 1, 0.3), metal, [0, 1, 4], { curl: 1.2, slide: 30, dorsal: v(0, 0, 1), dorsalW: 800, freeFirst: true }));
+  const R0 = cached(`${TENOR.id}:R`, () => poseHand(fR, padsR, thumbR, sh.R, v(0, 1, 0.7), metal, [0, 1, 4], { curl: 1.2, slide: 30, dorsal: v(0, 0, 1), dorsalW: 800, freeFirst: true }));
   const skR = s === 0 ? R0.sk : shiftHand(R0.sk, v(s, 0, 0));
   const R = { sk: skR, elbow: s === 0 ? R0.elbow : elbowOf(sh.R, skR.frame.o, ARM.upper, ARM.fore, v(0, 1, 0.3)) };
   const handL = palmMid(L.sk);
