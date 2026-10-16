@@ -4771,7 +4771,13 @@ ${COPY.glossaryFreeAllowance}`,
                       : termListModal?.kind === 'bookmark' && pickedBookmarksUnreadable
                       ? BOOKMARKS_UNREADABLE
                       : termListModal?.kind === 'starred'
-                      ? 'No terms yet — tap ★ on any term to build your custom list.'
+                      ? (
+                          // The custom list's own 3-card icon, not a ★ (owner 2026-10-16).
+                          <>
+                            No terms yet — tap <DeckIcon color={colors.customList} size={15} /> on any term to build your
+                            custom list.
+                          </>
+                        )
                       : termListModal?.kind === 'recent'
                         ? 'Nothing yet — terms you open will appear here.'
                         : 'No terms in this set.'}

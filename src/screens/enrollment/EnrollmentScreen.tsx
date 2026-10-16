@@ -2482,9 +2482,13 @@ export const EnrollmentView = memo(function EnrollmentView({
         {customCentred ? (
           <View style={styles.customPanel}>
             <Text style={styles.customPanelText}>
-              {starredTerms.size === 0
-                ? 'No terms yet. Tap ★ on any glossary term or flashcard to add it here.'
-                : `${starredTerms.size} starred term${starredTerms.size === 1 ? '' : 's'}. LOAD puts this list on your study dashboard as one deck.`}
+              {starredTerms.size === 0 ? (
+                // The custom list's own 3-card icon, not a ★ (owner 2026-10-16).
+                <>
+                  No terms yet. Tap <DeckIcon color={colors.customList} size={15} /> on any glossary term or flashcard to
+                  add it here.
+                </>
+              ) : `${starredTerms.size} starred term${starredTerms.size === 1 ? '' : 's'}. LOAD puts this list on your study dashboard as one deck.`}
             </Text>
             <Pressable
               style={styles.customPanelBtn}
@@ -2887,8 +2891,9 @@ export const EnrollmentView = memo(function EnrollmentView({
                 ))
               ) : (
                 <Text style={styles.clEmpty}>
-                  No terms yet — open a term in the Glossary and tap “Add to custom list”, or tap ★
-                  on a flashcard while you study any of your other topics, to build this list.
+                  No terms yet — open a term in the Glossary and tap “Add to custom list”, or tap{' '}
+                  <DeckIcon color={colors.customList} size={15} /> on a flashcard while you study any of your other topics,
+                  to build this list.
                 </Text>
               )}
             </ScrollView>
