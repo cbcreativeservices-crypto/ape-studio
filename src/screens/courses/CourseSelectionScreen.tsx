@@ -20,6 +20,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Image,
   ImageBackground,
   Pressable,
   StyleSheet,
@@ -64,6 +65,9 @@ import { StudyAreaExplore } from './StudyAreaExplore';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
+
+/** The STUDY tab's headphones (same bundled art as the nav bar) for buttons that lead into Study. */
+const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -1241,7 +1245,16 @@ function CourseCardView({
             // eyebrow above already says FREE TOPIC, so the button should say
             // what it DOES rather than repeat the price.
             <View style={{ width: cd.btnW }}>
-              <GlassButton maxFontSizeMultiplier={HOME_MAX} label="STUDY NOW" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
+              {/* Study-tab blue + the tab's own headphones, so the button and the
+                  STUDY nav icon below read as the same place (owner 2026-10-16). */}
+              <GlassButton
+                maxFontSizeMultiplier={HOME_MAX}
+                label="STUDY NOW"
+                tint="study"
+                height={50}
+                icon={<Image source={STUDY_NAV_ICON} style={{ width: 20, height: 20 }} resizeMode="contain" accessibilityIgnoresInvertColors />}
+                onPress={() => onOpenPublic(free.courseOrder, true, free.gs)}
+              />
             </View>
           ) : isTools ? (
             // Audio Tools is ALWAYS FREE to open (Booth 2026-07-11 #4); the
