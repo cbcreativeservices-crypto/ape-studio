@@ -35,7 +35,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../../modules/ape-dsp';
@@ -137,6 +137,7 @@ function recipe(kind: WaveKind, keep: number, phaseDeg: number, inverted: boolea
 
 export function FoundationsPlaygroundScreen() {
   const insets = useSafeAreaInsets();
+  const { height: winH } = useWindowDimensions();
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
 
@@ -602,6 +603,12 @@ export function FoundationsPlaygroundScreen() {
           hideDragTag: true,
           fullScreen: true, // the rack's ⤢ FULL SCREEN — the three views share the tall box (legibility pass 2026-09-25)
           size: 'L', // the whole playground of views — earns the tall glass
+          // Four views share this glass (art grading 2026-10-16: at 250 dp the
+          // air strip was ~60 dp and the panes cramped at 390 wide). A phone
+          // gets ~39 % of its height (≈330 dp on an 844 phone, the L floor on
+          // short phones); minWell keeps the well readable under it.
+          phoneHeight: Math.round(winH * 0.39),
+          minWell: 170,
           badge: 'CONCEPTUAL MODEL — SLOWED · WAVEFORM/SPECTRUM ANALYTIC, NOT MEASURED',
           onGuide: () => help('waveform'),
           bezel,
@@ -791,7 +798,8 @@ function StageViz({
   const clock = viz.useVizClock(running);
   const ts = useStageTextScale(); // pane names grow with the picture in FULL SCREEN
   const GAP = 3;
-  const LABEL_H = Math.round(13 * ts);
+  // Pane names at 10.5 pt (art grading 2026-10-16: 9 pt read as tiny at 390).
+  const LABEL_H = Math.round(15 * ts);
   // Air row 40% → 30% (design pass 2026-08-31): the two TEACHING panes were
   // squeezed to ~59px — below the visual resolution of the effects being
   // taught (harmonic corners, EQ tilt) — while the air row took 40%.
@@ -830,7 +838,7 @@ function StageViz({
         </View>
       ) : (
         <>
-          <Text style={[styles.stageLabel, { fontSize: 9 * ts, height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
+          <Text style={[styles.stageLabel, { fontSize: 10.5 * ts, height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             WAVEFORM — PRESSURE VS TIME
           </Text>
           <viz.AnalyticWaveformView
@@ -851,10 +859,10 @@ function StageViz({
             visHz={visHz}
             cycles={source === 'wave' ? 1.3 + 4.7 * freq01 : 2.5}
           />
-          <Text style={[styles.stageLabel, { fontSize: 9 * ts, height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
+          <Text style={[styles.stageLabel, { fontSize: 10.5 * ts, height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             SPECTRUM — LOG 40 Hz–16 kHz
-            {!noiseKind && amps.filter((a) => a > 0.001).length === 1 ? ' · 1 PARTIAL — PURE TONE' : ''}
-            {gainDbAt ? ' · EQ APPLIED' : ''}
+            {/* One tag at a time so the 10.5 pt line never truncates at 390. */}
+            {gainDbAt ? ' · EQ APPLIED' : !noiseKind && amps.filter((a) => a > 0.001).length === 1 ? ' · 1 PARTIAL — PURE TONE' : ''}
           </Text>
           <viz.AnalyticSpectrumView width={w} height={paneH} f0={freq} amps={amps} gainDbAt={gainDbAt} noise={noiseKind} level={level} />
         </>
@@ -879,7 +887,7 @@ export function balanceWords(balance: number): string {
 function BalanceStrip({ balance, ts, height, gap }: { balance: number; ts: number; height: number; gap: number }) {
   const b = Math.max(0, Math.min(1, balance));
   const off = Math.abs(b - 0.5) > 0.02;
-  const fs = 9 * ts;
+  const fs = 10.5 * ts;
   return (
     <View
       style={[styles.balRow, { height, marginTop: gap }]}

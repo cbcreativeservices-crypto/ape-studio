@@ -92,7 +92,7 @@ describe('#17 Foundations Playground: STEREO BALANCE has a drawn twin', () => {
   it('the readout uses the fader’s own words and the 9 pt floor (fitValue)', () => {
     assert.match(c, /readout=\{balanceWords\(balance\)\}/);
     assert.match(c, /\{\.\.\.fitValue\(fs\)\}/);
-    assert.match(c, /const fs = 9 \* ts;/);
+    assert.match(c, /const fs = 10\.5 \* ts;/); // 10.5 pt since the art-grading fix 2026-10-16 (floor 9)
     const words = (b: number) => (b < 0.48 ? `L ${Math.round((0.5 - b) * 200)}%` : b > 0.52 ? `R ${Math.round((b - 0.5) * 200)}%` : 'CENTER');
     assert.equal(words(0), 'L 100%');
     assert.equal(words(0.5), 'CENTER');
