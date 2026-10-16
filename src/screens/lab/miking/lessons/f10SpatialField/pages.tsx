@@ -170,6 +170,14 @@ function sourceLabels(variant: string, view: ViewId) {
   ];
 }
 
+/** A rig's name on a scene-scale plan, with a leader to its stand (fix pass
+ *  2026-10-16: at the square's scale a head or a mic is a few pixels). */
+const RIG_NAME: Record<string, string> = { binaural: 'BINAURAL HEAD', foa: 'AMBISONIC MIC', dms: 'DOUBLE M/S', surround50: '5.0 ARRAY', ortf: 'FRONT PAIR', hamasaki: 'REAR SQUARE' };
+function rigLabels(rigs: readonly SpatialRig[], view: ViewId) {
+  if (view !== 'top') return [];
+  return rigs.slice(0, 1).map((r) => ({ id: `rig.${r.id}`, text: RIG_NAME[r.id] ?? 'RIG', short: 'RIG', u: r.c.x, v: r.c.z + 1650, align: 'center' as const, tone: 'amber' as const, at: { u: r.c.x, v: r.c.z + 200 } }));
+}
+
 /* ═══════════════════ 1 · MEET IT ═══════════════════ */
 
 type SceneItem = { id: string; label: string; short: string; at: Vec3; text: string };
@@ -461,6 +469,7 @@ function SetupDrawing({ s, variant, view, w, h }: { s: SpatialSetup; variant: st
       labels={[
         ...(view === 'side' ? [{ id: 'h', text: `${fmtM(-c.y)} UP`, u: c.x + 180, v: c.y / 2, align: 'left' as const, tone: 'muted' as const }] : []),
         ...sourceLabels(variant, view),
+        ...rigLabels(s.rigs, view),
         ...singles.map((z) => ({ id: z.id, text: s.singles[0].typeId === 'vocHeadset' ? 'HEADSET' : 'CLOSE MIC', u: z.start.p.x - 300, v: (view === 'side' ? z.start.p.y : z.start.p.z) - 520, align: 'center' as const, tone: 'muted' as const })),
       ]}
     >
@@ -1032,7 +1041,7 @@ function F10Placement(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, hh) => (
-          <FieldStage w={w} h={hh} view={view} box={siteBox(variant, 'near', view)} a11y={nowWords} labels={sourceLabels(variant, view)} inset={view === 'top' ? rigInset(rigs) : null}>
+          <FieldStage w={w} h={hh} view={view} box={siteBox(variant, 'near', view)} a11y={nowWords} labels={[...sourceLabels(variant, view), ...rigLabels(rigs, view)]} inset={view === 'top' ? rigInset(rigs) : null}>
             {(px) => (
               <>
                 <SiteArt view={view} variant={variant} listener={false} />

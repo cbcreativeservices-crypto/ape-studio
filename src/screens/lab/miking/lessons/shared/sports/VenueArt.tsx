@@ -653,7 +653,13 @@ export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?
   const off = 1100;
   // Lab 7b group 3: a room-sized scene (a few metres across) pulls its labels in with it; a field keeps 1.3 m.
   const k = Math.min(1, (scene.frame.x1 - scene.frame.x0) / 38);
-  if (opts.targets !== false) for (const t of scene.targets) out.push({ id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 1300 * k, v: uv(t.p).v - 500 * k, align: 'left', tone: 'amber' });
+  // A target with another close beside it to the right (B17's U1–U3, 1 m apart)
+  // takes its letters above its ring instead, clear of the neighbour (fix pass 2026-10-16).
+  if (opts.targets !== false)
+    for (const t of scene.targets) {
+      const crowded = scene.targets.some((q) => q !== t && Math.abs(uv(q.p).v - uv(t.p).v) < 600 && uv(q.p).u > uv(t.p).u && uv(q.p).u - uv(t.p).u < 2000);
+      out.push(crowded ? { id: `t.${t.id}`, text: t.short, u: uv(t.p).u, v: uv(t.p).v - 1500 * k, align: 'center', tone: 'amber' } : { id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 1300 * k, v: uv(t.p).v - 500 * k, align: 'left', tone: 'amber' });
+    }
   // Fix pass 2026-10-16: a mark says what it is ("MARK M"), falling back to its letter.
   // 1.8 m out, clear of a tripod's forward legs when a mic stands on the mark.
   if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.kind === 'operator' ? m.short : `MARK ${m.short}`, short: m.short, u: uv(m.p).u + 1800 * k, v: uv(m.p).v + 300 * k, align: 'left' });
