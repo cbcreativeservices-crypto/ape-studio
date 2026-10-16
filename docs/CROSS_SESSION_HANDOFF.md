@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 15:32 · ccode · 650e905c
+changed: Stereo Imaging art fix: goniometer draws the flow's stereo test tone, real correlation meter, M/S stage named
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:31 · ccode · 48d09980
+changed: Mic Selection art fix: the polar stage drawn as a top view - real mic, singer, kit, wedge, chairs; tags off the pattern (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:29 · ccode · b60146e3
+changed: Microphone Principles art fix round 3: real grip hand with thumb, wrist and sleeved arm; boom stands; mic at the polar centre
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:28 · ccode · 231d58b3
+changed: Harmonic Lab art fix: 10 pt tags unclipped, level-weighted spectrogram bands, taller wave strip (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 14:10 · ccode · 23893c96
 changed: Advanced Mixing + Gain Staging art fix: real gear and measured drawings (art grading 2026-10-16)
 affects other side: nothing (app only)
