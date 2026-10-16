@@ -70,7 +70,7 @@ export const VIOLIN_ART: LessonArt = {
     setting: makeBowedSettingPage({
       ...C09A_PLAN,
       nearA11y: 'A violinist from above: the violin under the chin pointing forward-left, the bow’s sweep hatched across it, a music stand in front, a second violin and a viola beside.',
-      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group.' },
+      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the group.' },
       nearLanding: 'Tap anything around the violinist — or step through ITEM — to see what it means for a violin mic. There is nothing to answer yet.',
       nearIdle: 'The violin sits under the chin; the bow sweeps out to the player’s right and back over the left shoulder; the head is at the chin rest. Everything else is a neighbour a violin mic will hear.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front, and another player’s to the side. Monitors, the PA and a loud band all reach a violin mic.',

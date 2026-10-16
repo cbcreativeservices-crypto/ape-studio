@@ -710,7 +710,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
       },
       well: (
         <>
-          <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'} prompt="Tap what sits round the cabinets — or step through ITEM." />
+          <Landing looking={scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'} prompt="Tap what sits round the cabinets — or step through ITEM." />
           <Body>{scene === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
           {ps ? (
             <Card>

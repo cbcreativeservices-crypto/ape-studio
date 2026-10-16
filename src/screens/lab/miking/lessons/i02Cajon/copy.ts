@@ -75,9 +75,9 @@ export const CAJ_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the cajón — or step through ITEM — to see what it means for a cajón mic. There is nothing to answer yet.',
     kitIdle: 'A player sits on the cajón beside a singer and a guitarist; their mics and the monitors share the stage with it.',
     leftHanded: 'Players sit and strike to suit their hands — check this player’s arcs, knees, heels and how they get up.',
-    stageA11y: 'The band on a stage, from above: the cajón player, a floor monitor downstage facing back toward them, their own monitor behind them, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the cajón player, a floor monitor downstage facing back toward them, their own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the cajón, an area mic, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage facing back toward the player, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage facing back toward the player, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. A wider mic may carry the whole instrument and the room.',
     before: [
       { title: 'FIND THE PORT', text: 'Front, back or elsewhere — find it on THIS cajón before anything else. Leave any factory port filter as it is.' },

@@ -94,7 +94,8 @@ export function spCopy(o: SpCopyOpts): LessonCopy {
       plan: o.context.plan ?? { u0: -1300, u1: 1650, v0: -900, v1: 900 },
       side: o.context.side ?? { u0: -1300, u1: 1650, v0: -1800, v1: 60 },
       target: 'downstage',
-      frontIds: ['fill'],
+      // the own wedge now stands downstage, behind the mic (owner 2026-10-16)
+      frontIds: [],
       targetWord: 'monitor',
       looking: o.context.looking ?? `Top view · the mic in front of ${o.the}`,
       prompt: 'The monitor stays where the stage needs it. Turn the MIC (AIM) or change its PATTERN until the downstage wedge sits in the rejection.',

@@ -4,7 +4,8 @@
  * illustrated neighbours, lit from the upper left; reused, not copied) with
  * the lesson's OWN keyboard drawn by its art from above, turned so the
  * player faces the audience at the right of the plan (the low end, the
- * player's left, toward the top). The player is part of the keyboard's art.
+ * player's left, toward the top); the STAGE is drawn turned, the audience
+ * below (HandPlan, planFoot planTurn — owner 2026-10-16). The player is part of the keyboard's art.
  * Positions are ILLUSTRATIVE (the badge says "a typical layout").
  */
 import { useMemo, type ReactElement } from 'react';

@@ -5,7 +5,9 @@
  * wedge, the side fill, louder neighbours, the audience and the PA) or in a
  * studio room. Plan coordinates are the lesson's top view (u = x toward the
  * audience, right on screen; v = z, the player's right, down on screen), so
- * the wedge stands where the Studio-or-live page puts it.
+ * the wedge stands where the Studio-or-live page puts it. The STAGE is drawn
+ * turned a quarter (DOWNSTAGE = BOTTOM, owner 2026-10-16; planFoot planTurn):
+ * the audience below, the player's right to screen-left.
  *
  * Positions are a typical layout, never a measurement. The layout is the pure
  * handPlanModel.ts (the plans' overlap test reads the same numbers).
@@ -26,7 +28,7 @@ import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { HeadIconPaths, aboveRotation, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
-import { clearOfFoots, labelPlaces, type PlanRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, type PlanRect } from '../planFoot.ts';
 import { cueCables, cueHub, cueLabels } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { WedgePlan } from '../KitPlan';
@@ -69,7 +71,9 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
 }) {
   const textScale = useStageTextScale();
   const box = useMemo(() => handPlanBox(lessonId, scene, variant), [lessonId, scene, variant]);
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [box, w, h]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [T, box, w, h]);
   const Instrument = art.Instrument;
   const hand = isHandLesson(lessonId) ? lessonId : null;
   const shown = items.filter((i) => i.scene === 'all' || i.scene === scene);
@@ -112,7 +116,7 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
   const labels: StaticLabel[] = [
     ...shown.map((i) => {
       const own = boxOf(i);
-      const places = labelPlaces(own, ps);
+      const places = T.places(own, ps);
       const authored = i.label && !OBJECT_IDS.includes(i.id) ? [{ u: i.label.u, v: i.label.v, align: i.label.align ?? ('center' as const) }] : [];
       // THE ROOM is named inside the room beside its wall, never on the wall
       // line (its box is the wall strip: the places across it sit on it)
@@ -125,7 +129,7 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
       .filter((wd) => !shown.some((i) => i.id === wd.id))
       .map((wd) => {
         const own = handObjectRect(wd.id, 'stage', lessonId, variant, wedges)!;
-        const places = labelPlaces(own, ps);
+        const places = T.places(own, ps);
         return { id: `w:${wd.id}`, text: wd.short, u: places[0].u, v: places[0].v, align: places[0].align, alts: places.slice(1), point: mid(own), tone: 'muted' as const };
       }),
     ...(cue
@@ -133,7 +137,7 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
       : []),
   ];
   const onPress = (e: { nativeEvent: { locationX: number; locationY: number } }) => {
-    const { u, v } = unproject(xf, e.nativeEvent.locationX, e.nativeEvent.locationY);
+    const { u, v } = T.unPt(unproject(xf, e.nativeEvent.locationX, e.nativeEvent.locationY));
     const tol = 24 / xf.s;
     const hit = shown.find((i) => {
       const b = boxOf(i);
@@ -145,7 +149,7 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
     <View style={{ width: w, height: h }}>
       <Pressable onPress={onPress} accessibilityRole="image" accessibilityLabel={accessibilityLabel} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={accessibilityLabel}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             {scene === 'studio' ? (
               <>
                 <Path path={room} color="#121216" />
@@ -177,7 +181,7 @@ export function HandPlan({ w, h, lessonId, art, variant, scene, wedges, items, l
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+      <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
     </View>
   );
 }

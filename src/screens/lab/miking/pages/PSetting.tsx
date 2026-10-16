@@ -145,7 +145,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       layout: 'rack',
       rack: {
         render: render(where, wideSel, pickWide, `${where === 'stage' ? C.setting.stageA11y : C.setting.studioA11y} ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
-        badge: where === 'stage' ? PW?.stageBadge ?? 'From above · two monitors where a stage often puts them · audience side to the right' : PW?.studioBadge ?? 'From above · a typical studio room',
+        badge: where === 'stage' ? PW?.stageBadge ?? 'From above · two monitors where a stage often puts them · audience below' : PW?.studioBadge ?? 'From above · a typical studio room',
         bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: wideParams,
         initialParam: 'item',

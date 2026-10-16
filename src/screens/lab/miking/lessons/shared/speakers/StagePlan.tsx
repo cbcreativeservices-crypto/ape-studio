@@ -30,7 +30,7 @@ import { KitTop } from '../kitScene/KitSceneArt';
 import { WedgePlan } from '../KitPlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
-import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
 import { CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
@@ -130,7 +130,9 @@ function getBuilt(): Built {
 export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; scene: PlanScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
   const ts = useStageTextScale();
   const box = PLAN_BOX[scene];
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, scene]); // eslint-disable-line react-hooks/exhaustive-deps
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, scene, T]); // eslint-disable-line react-hooks/exhaustive-deps
   const b = getBuilt();
   const items = planItems(scene, wedges);
   const hi = items.find((i) => i.id === highlight);
@@ -148,15 +150,14 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
   const labels: StaticLabel[] = [
     ...items.map((i) => {
       const own = footOf(i.id);
-      const places = own ? labelPlaces(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 60, align: 'center' as const }];
+      const places = own ? T.places(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 60, align: 'center' as const }];
       const first = i.id === 'audience' ? { u: POS.audience, v: 0, align: 'center' as const } : places[0];
       return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === highlight ? ('amber' as const) : ('muted' as const) };
     }),
     ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
   ];
   const tap = (x: number, y: number) => {
-    const u = (x - xf.ox) / xf.s;
-    const v = (y - xf.oy) / xf.s;
+    const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
     let best: string | null = null;
     let bd = Infinity;
     for (const i of items) {
@@ -173,7 +174,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
     <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <View pointerEvents="none" style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             {/* the floor: a stage deck, or the studio room with its walls */}
             {scene === 'stage' ? (
               <Path path={b.deck}>
@@ -295,7 +296,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             </Line>
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
       </View>
     </Pressable>
   );

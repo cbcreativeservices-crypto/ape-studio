@@ -75,9 +75,9 @@ export const GU_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the güiro — or step through ITEM — to see what it means for a güiro mic. There is nothing to answer yet.',
     kitIdle: 'A güiro player stands at the percussion station; cymbals and drums sound nearby, and the player may move between instruments.',
     leftHanded: 'Players hold the güiro to suit their hands — check this player, the whole stroke and the holding hand.',
-    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. A main or percussion mic may already carry the güiro — and the room is part of the sound.',
     before: [
       { title: 'MAP THE WHOLE STROKE', text: 'Have the player play the full part: the ridges used, the scraper past both ends, the return stroke and how the body moves. Stands, booms and cables stay outside all of it.' },

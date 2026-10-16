@@ -84,9 +84,9 @@ export const SHK_COPY: LessonCopy = {
     kitLanding: 'Tap anything around the shaker player — or step through ITEM — to see what it means for a shaker mic. There is nothing to answer yet.',
     kitIdle: 'The shaker player often stands at a percussion station, moving between small instruments. Around them: loud neighbours — cymbals, drums, amps and voices.',
     leftHanded: 'Players shake with either hand, or both, and turn between instruments — check the real part, and where the player stands for it.',
-    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage of it facing back, the player’s own monitor behind them, the audience and the PA at the front.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage of it facing back, the player’s own wedge in front of them, angled up at them, the audience and the PA at the front.',
     studioA11y: 'The band in a studio room, from above: the percussion station, a percussion area mic above it, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. An area mic over the percussion may already carry the shaker — and the room is part of the sound.',
     before: [
       { title: 'WATCH THE WHOLE PART', text: 'Ask for the part at its quietest and loudest, with any big accents, and watch the whole playing arc — not one isolated stroke. Mark a comfortable playing spot.' },
@@ -138,7 +138,8 @@ export const SHK_COPY: LessonCopy = {
     plan: { u0: -1300, u1: 1650, v0: -900, v1: 900 },
     side: { u0: -1300, u1: 1650, v0: -1800, v1: 60 },
     target: 'downstage',
-    frontIds: ['fill'],
+    // the own wedge now stands downstage, behind the mic (owner 2026-10-16)
+    frontIds: [],
     targetWord: 'monitor',
     looking: 'Top view · the mic in front of the shaker',
     prompt: 'The monitor stays where the stage needs it. Turn the MIC (AIM) or change its PATTERN until the downstage wedge sits in the rejection.',

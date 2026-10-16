@@ -23,9 +23,13 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import { allPlanCases, PLAN_FAMILIES, type PlanCase } from '../src/screens/lab/miking/lessons/shared/planCases/index.ts';
-import { clearOfFoots, overlapArea, rectsOverlap, segmentGap, segmentHitsRect, segmentsCross, type PlanFoot, type PlanRect } from '../src/screens/lab/miking/lessons/shared/planFoot.ts';
+import { clearOfFoots, overlapArea, planTurn, rectsOverlap, segmentGap, segmentHitsRect, segmentsCross, turnPt, turnRect, unturnPt, type PlanFoot, type PlanRect } from '../src/screens/lab/miking/lessons/shared/planFoot.ts';
+import { orchDesks, PAIR } from '../src/screens/lab/miking/lessons/shared/concert/orchestraPlanModel.ts';
+import { standingWedges, STAGE_THINGS } from '../src/screens/lab/miking/lessons/shared/smallperc/stage.ts';
+import { C11_LESSON } from '../src/screens/lab/miking/lessons/c11Piano/lesson.ts';
+import { grandSpots, grandOf } from '../src/screens/lab/miking/lessons/c11Piano/planModel.ts';
 import { FRONT_ROW_GAP_MM } from '../src/features/lab/audienceChairsModel.ts';
-import { CUE_LANE, cueMixerRect, cuePhones, PHONES_FRONT } from '../src/screens/lab/miking/lessons/shared/monitoring/cueMix.ts';
+import { CUE_LANE, cueMixerRect, cuePhones, cueSeats, PHONES_FRONT } from '../src/screens/lab/miking/lessons/shared/monitoring/cueMix.ts';
 
 const ROOT = process.cwd();
 const read = (p: string) => readFileSync(join(ROOT, p), 'utf8');
@@ -82,21 +86,32 @@ describe('the studio: no wedges, everything inside the room', () => {
   }
 });
 
-describe('the studio headphone mix: one personal mixer per performer, each fed from the control room', () => {
+describe('the studio headphone mix: a mixer for every performer (one per music stand in an orchestra), each fed from the control room', () => {
+  // Owner 2026-10-16 (stage-plot review HOLD 4): an orchestra records with one
+  // headphone box per MUSIC STAND, shared by the players at that stand; every
+  // other plan gives each performer their own. Either way every performer is
+  // served by exactly one mixer, each player has their own phones cord from
+  // it, and every mixer still has its own traceable feed to the control room.
   for (const c of CASES.filter((x) => x.scene === 'studio')) {
     it(name(c), () => {
       assert.ok(c.cue.length >= 1, `${name(c)}: no headphone mix`);
       const stations = c.cue.flatMap((r) => r.stations);
+      const served = stations.flatMap((s) => cueSeats(s).map((p) => p.id));
       assert.ok(c.performers.length >= 1, `${name(c)}: no performer listed`);
-      for (const p of c.performers) assert.equal(stations.filter((s) => s.id === p.id).length, 1, `${name(c)}: ${p.id} has ${stations.filter((s) => s.id === p.id).length} headphone mixers`);
-      assert.equal(stations.length, c.performers.length, `${name(c)}: a mixer for nobody`);
-      // every mixer has its own feed and its own phones cord
+      for (const p of c.performers) assert.equal(served.filter((id) => id === p.id).length, 1, `${name(c)}: ${p.id} is served by ${served.filter((id) => id === p.id).length} headphone mixers`);
+      assert.equal(served.length, c.performers.length, `${name(c)}: a mixer for nobody`);
+      assert.equal(new Set(stations.map((s) => s.id)).size, stations.length, `${name(c)}: two mixers share an id`);
+      // every mixer has its own feed; every player their own phones cord
       for (const s of stations) {
         assert.equal(c.cables.filter((k) => k.kind === 'cueFeed' && k.from === `cueMixer:${s.id}`).length, 1, `${name(c)}: ${s.id} feed`);
-        assert.equal(c.cables.filter((k) => k.kind === 'phones' && k.from === `cueMixer:${s.id}`).length, 1, `${name(c)}: ${s.id} phones`);
-        // within reach of the performer (a mixer is set by the player, ≤ 1.2 m)
-        const d = Math.hypot(s.at.u - s.head.u, s.at.v - s.head.v);
-        assert.ok(d >= 200 && d <= 1200, `${name(c)}: ${s.id}'s mixer is ${Math.round(d)} mm from them`);
+        const seats = cueSeats(s);
+        assert.equal(c.cables.filter((k) => k.kind === 'phones' && k.from === `cueMixer:${s.id}`).length, seats.length, `${name(c)}: ${s.id} phones`);
+        for (const p of seats) assert.equal(c.cables.filter((k) => k.kind === 'phones' && k.from === `cueMixer:${s.id}` && k.to === `head:${p.id}`).length, 1, `${name(c)}: ${p.id}'s phones cord`);
+        // within reach of every player it serves (set by the player, ≤ 1.2 m)
+        for (const p of seats) {
+          const d = Math.hypot(s.at.u - p.head.u, s.at.v - p.head.v);
+          assert.ok(d >= 200 && d <= 1200, `${name(c)}: ${p.id}'s mixer is ${Math.round(d)} mm from them`);
+        }
         // its footprint is listed
         const m = c.foots.find((f) => f.id === `cueMixer:${s.id}`);
         assert.ok(m, `${name(c)}: ${s.id} mixer footprint`);
@@ -266,4 +281,115 @@ describe('a rect overlap is an overlap', () => {
     assert.equal(rectsOverlap({ u0: 0, u1: 10, v0: 0, v1: 10 }, { u0: 5, u1: 15, v0: 5, v1: 15 }), true);
     assert.equal(rectsOverlap({ u0: 0, u1: 10, v0: 0, v1: 10 }, { u0: 10, u1: 15, v0: 0, v1: 10 }), false);
   });
+});
+
+describe('DOWNSTAGE = BOTTOM: every LIVE plan shows its audience below (owner 2026-10-16)', () => {
+  // Stage-plot review HOLD 1: eleven families put the audience to the right,
+  // five at the bottom. Every stage plan now reads the common way: upstage at
+  // the top, the deck's edge and the PA pair along the bottom, the audience
+  // marks below it. The families laid out with the audience at +u are drawn
+  // TURNED a quarter (planFoot planTurn) — their cases are the turned plan.
+  for (const c of CASES.filter((x) => x.scene === 'stage')) {
+    it(name(c), () => {
+      assert.ok(c.audience, `${name(c)}: no audience`);
+      assert.equal(c.audience!.axis, 'v', `${name(c)}: the audience is not down the screen`);
+      assert.equal(c.audience!.dir, 1, `${name(c)}: the audience is at the top`);
+    });
+  }
+  const TURNED = [
+    'src/screens/lab/miking/lessons/shared/speakers/BacklinePlan.tsx',
+    'src/screens/lab/miking/lessons/shared/KitPlan.tsx',
+    'src/screens/lab/miking/lessons/m10Room/PRoomSetting.tsx',
+    'src/screens/lab/miking/lessons/shared/handdrums/HandPlan.tsx',
+    'src/screens/lab/miking/lessons/shared/hand/HandPlan.tsx',
+    'src/screens/lab/miking/lessons/shared/strings/PStagePlan.tsx',
+    'src/screens/lab/miking/lessons/shared/speakers/StagePlan.tsx',
+    'src/screens/lab/miking/lessons/shared/keys/KeysPlan.tsx',
+    'src/screens/lab/miking/lessons/shared/brass/BrassSettingPage.tsx',
+    'src/screens/lab/miking/lessons/shared/lowbrass/LowBrassSettingPage.tsx',
+    'src/screens/lab/miking/lessons/shared/sax/SaxSettingPage.tsx',
+    'src/screens/lab/miking/lessons/shared/bowed/BowedSettingPage.tsx',
+  ];
+  for (const f of TURNED)
+    it(`${f} draws, fits, labels and taps its stage turned`, () => {
+      const src = read(f);
+      assert.match(src, /planTurn\(/, 'no planTurn');
+      assert.match(src, /fitXform\([^)]*T\.rect\(box\)/, 'the fitted box is not turned');
+      assert.match(src, /\{ rotate: T\.rotate \}/, 'the drawing is not turned');
+      assert.match(src, /labels=\{T\.labels\(/, 'the words are not turned');
+      assert.match(src, /clearOfFoots\(T\.foots\(/, 'the words keep clear of unturned footprints');
+      assert.match(src, /T\.unPt\(/, 'a tap is not turned back');
+      assert.doesNotMatch(src, /AUDIENCE[^'`]*→/, 'an audience arrow still points right');
+    });
+  it('the turn is a quarter turn clockwise: the audience (+u) goes down, the player’s right (+v) to screen-left, distances kept', () => {
+    assert.deepEqual(turnPt({ u: 1000, v: 0 }), { u: -0, v: 1000 });
+    assert.deepEqual(turnPt({ u: 0, v: 1000 }), { u: -1000, v: 0 });
+    const p = { u: 123, v: -456 };
+    assert.deepEqual(unturnPt(turnPt(p)), p);
+    const r = { u0: 10, u1: 30, v0: -5, v1: 45 };
+    const t = turnRect(r);
+    assert.equal(t.u1 - t.u0, r.v1 - r.v0);
+    assert.equal(t.v1 - t.v0, r.u1 - r.u0);
+    // a name placed round a turned object sits round it in the turned frame
+    const T = planTurn(true);
+    const pl = T.places(r, 0.1).map((q) => turnPt(q));
+    assert.ok(pl[0].v > t.v1, 'the first place is below the turned object');
+    assert.equal(planTurn(false).rotate, 0);
+  });
+});
+
+describe('the seated percussionist’s own wedge stands downstage, angled up at them (owner 2026-10-16)', () => {
+  // Stage-plot review HOLD 2 (I02–I05d): OWN MON. stood behind the player,
+  // facing their back — not a standard monitor position.
+  it('in front of the player (toward the audience) and facing back at them', () => {
+    const w = standingWedges('the cajón').find((x) => x.id === 'fill')!;
+    assert.ok(w.p.x > 600, 'downstage of the player');
+    // it faces the player at the origin (within 15°)
+    const toPlayer = Math.atan2(-w.p.z, -w.p.x);
+    const facing = Math.atan2(w.faces.z, w.faces.x);
+    assert.ok(Math.abs(Math.atan2(Math.sin(toPlayer - facing), Math.cos(toPlayer - facing))) < (15 * Math.PI) / 180, 'angled at the player');
+    const t = STAGE_THINGS.find((x) => x.id === 'fill')!;
+    assert.ok(t.u > 600, 'the plan draws it downstage too');
+  });
+});
+
+describe('C11: the grand’s SIDE-FILL stands in the stage wing, facing across (owner 2026-10-16)', () => {
+  // Stage-plot review HOLD 3: downstage-centre facing upstage it was a front
+  // fill. The exercise that nulls it still works (mikingLab4Keys: reachable).
+  it('the lesson’s speaker and the plan’s glyph: past the tail, facing across the stage (−x), at head height', () => {
+    const w = C11_LESSON.live.wedges.find((x) => x.id === 'fill.side')!;
+    assert.ok(w.p.x > 3000, 'in the wing past the tail');
+    assert.equal(w.faces.z, 0);
+    assert.ok(w.faces.x < 0, 'facing across the stage');
+    assert.ok(w.lift >= 1200, 'at head height');
+    for (const v of ['grand', 'short', 'baby'] as const) {
+      const g = grandOf(v);
+      const s = grandSpots(g).find((x) => x.item === 'fill.side')!;
+      assert.ok(s.x > g.xTail + 1500, `${v}: in the wing`);
+      assert.deepEqual(s.faces, { x: -1, z: 0 });
+    }
+  });
+});
+
+describe('the orchestra records with one headphone box per MUSIC STAND (owner 2026-10-16)', () => {
+  // Stage-plot review HOLD 4: desk partners share a stand and its headphone
+  // box (each with their own phones cord); every box keeps its own feed lane.
+  for (const c of CASES.filter((x) => x.family === 'orchestra' && x.scene === 'studio')) {
+    it(name(c), () => {
+      const stations = c.cue.flatMap((r) => r.stations);
+      const desks = orchDesks();
+      const stands = c.foots.filter((f) => f.kind === 'musicStand' && /D\d+:stand$/.test(f.id));
+      assert.equal(stands.length, desks.length, 'one stand per desk');
+      for (const d of desks) {
+        const s = stations.find((x) => x.id === d.id);
+        assert.ok(s, `${d.id}: no box at the stand`);
+        assert.deepEqual(cueSeats(s!).map((p) => p.id), [...d.players], `${d.id}: the box serves the players at its stand`);
+        // between the two seats, on the stand's line
+        assert.equal(s!.at.u, d.u);
+        for (const p of cueSeats(s!)) assert.ok(Math.abs(p.head.u - d.u) === PAIR, `${p.id}: sits ${PAIR} mm off the stand's line`);
+      }
+      // no chair player has a box of their own
+      assert.equal(stations.filter((x) => /^(brass|winds|str\d_)\d+$/.test(x.id)).length, 0);
+    });
+  }
 });

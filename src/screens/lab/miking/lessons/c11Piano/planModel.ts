@@ -82,7 +82,9 @@ export function grandSpots(g: Grand): PlanSpot[] {
     { item: 'singer', glyph: 'singer', x: s.u, z: s.v, faces: { x: 0, z: 1 }, scene: 'near', r: 300, label: { du: -420, dv: 0 } },
     // the lesson's live.wedges positions (the Studio-or-live page)
     { item: 'wedge.pianist', glyph: 'wedge', x: -700, z: -1100, faces: { x: 0.2, z: 1 }, scene: 'stage', r: 330, label: { du: 0, dv: -400 } },
-    { item: 'fill.side', glyph: 'pa', x: 600, z: 2200, faces: { x: 0, z: -1 }, scene: 'stage', r: 360, label: { du: 620, dv: 0 } },
+    // in the stage wing past the tail, facing across the stage at head height
+    // (a side fill — owner 2026-10-16; the lesson's wedge at the short grand)
+    { item: 'fill.side', glyph: 'pa', x: g.xTail + 1960, z: 1000, faces: { x: -1, z: 0 }, scene: 'stage', r: 360, label: { du: 0, dv: 480 } },
     { item: 'wedge.vocal', glyph: 'wedge', x: -150, z: 2300, faces: { x: 0, z: -1 }, scene: 'stage', r: 330, label: { du: -640, dv: 0 } },
     { item: 'band', glyph: 'band', x: g.xTail + 1300, z: -850, half: { u: 900, v: 1000 }, scene: 'stage', r: 900 },
     // the PA pair on the deck's downstage corners, facing the audience

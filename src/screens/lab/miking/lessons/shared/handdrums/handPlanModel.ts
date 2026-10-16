@@ -5,7 +5,8 @@
  * and the mallet-bar plans (I07–I10).
  *
  * Frame: the lesson's own instrument (the 'drums' thing) at its anchor, u
- * toward the audience (right), v across (down), mm. Positions are a typical
+ * toward the audience (right; on a STAGE the plan is drawn turned, the
+ * audience below — planFoot planTurn), v across (down), mm. Positions are a typical
  * layout, ILLUSTRATIVE (never a measurement).
  *
  * Collision pass 2026-10-15 (owner: "no collisions or impossible layering in
@@ -334,9 +335,10 @@ type PlanLabel = { id: string; text: string; u: number; v: number; align: 'left'
  * labelPlaces at the plan's scale `s` = px per mm ÷ the text scale), else in
  * free space with a leader back to `point`; the studio's HEADPHONE MIX and
  * CONTROL ROOM. `blockers`: what a word may not sit on (every object, and
- * the studio's walls).
+ * the studio's walls). `places`: where a name may go round its object (a
+ * turned stage plan passes its turn's, planFoot planTurn).
  */
-export function handPlanLabels(things: readonly PlanThing[], box: PlanBox, scene: PlanScene, art: ArtPlan | null, cue: PlanCueSpec | undefined, shortOf: (id: string) => string, highlight: string | null, s: number): { labels: PlanLabel[]; blockers: PlanFoot[] } {
+export function handPlanLabels(things: readonly PlanThing[], box: PlanBox, scene: PlanScene, art: ArtPlan | null, cue: PlanCueSpec | undefined, shortOf: (id: string) => string, highlight: string | null, s: number, places: (r: PlanRect, s: number) => { u: number; v: number; align: 'left' | 'center' | 'right' }[] = labelPlaces): { labels: PlanLabel[]; blockers: PlanFoot[] } {
   const foots = handPlanFoots(things, box, scene, art, cue);
   const rig = planCue(things, box, art, cue, scene);
   const labels: PlanLabel[] = shownThings(things, scene)
@@ -346,8 +348,8 @@ export function handPlanLabels(things: readonly PlanThing[], box: PlanBox, scene
       const tone = t.id === highlight ? ('amber' as const) : ('muted' as const);
       if (t.kind === 'audience') return { id: t.id, text: shortOf(t.id), u: point.u, v: point.v, align: 'center' as const, tone, point };
       const own = thingFoots(t, box, art).filter((f) => !f.zone);
-      const places = labelPlaces(own.length ? unionRect(own) : { u0: t.u, u1: t.u, v0: t.v, v1: t.v }, s);
-      return { id: t.id, text: shortOf(t.id), u: places[0].u, v: places[0].v, align: places[0].align, alts: places.slice(1), tone, point };
+      const places_ = places(own.length ? unionRect(own) : { u0: t.u, u1: t.u, v0: t.v, v1: t.v }, s);
+      return { id: t.id, text: shortOf(t.id), u: places_[0].u, v: places_[0].v, align: places_[0].align, alts: places_.slice(1), tone, point };
     });
   if (rig) labels.push(...cueLabels(rig).map((l) => ({ ...l, tone: 'illustrative' as const })));
   return { labels, blockers: scene === 'studio' ? [...foots, ...roomWallFoots(box)] : foots };

@@ -134,7 +134,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       layout: 'rack',
       rack: {
         render: render(where, wideSel, pickWide, where === 'stage' ? `The band on a stage, from above, with the monitors and the audience side. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}` : `The same drums in a studio room, from above: no monitors on the floor — each player has a headphone mixer beside them. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
-        badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
+        badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience below' : 'From above · a typical studio room',
         bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: wideParams,
         initialParam: 'item',

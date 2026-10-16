@@ -80,24 +80,35 @@ export const LESSON_FRAMES: Readonly<Record<OwnInstrument, LessonFrame>> = {
 };
 
 /** The rows in front of the percussion: a brass row, then winds and strings. */
+/** DESKS (owner 2026-10-16, stage-plot review HOLD 4): the players sit in
+ *  pairs, desk partners sharing ONE music stand on the line between them,
+ *  `PAIR` mm either side of it — wide enough for the pair's shared headphone
+ *  box on its stand between their seats in the studio. */
+export const PAIR = 410;
+const desks = (v: number, ds: readonly number[]) => ({ v, desks: ds, u: ds.flatMap((d) => [d - PAIR, d + PAIR]) });
 export const ROWS = {
-  brass: { v: 2350, u: [-2700, -1800, -900, 0, 900, 1800, 2700] },
-  winds: { v: 3650, u: [-2250, -1350, -450, 450, 1350, 2250] },
-  strings: [
-    { v: 4850, u: [-3150, -2250, -1350, -450, 450, 1350, 2250, 3150] },
-    { v: 5900, u: [-2700, -1800, -900, 900, 1800, 2700] },
-  ],
+  brass: desks(2350, [-2550, -850, 850, 2550]),
+  winds: desks(3650, [-1700, 0, 1700]),
+  strings: [desks(4850, [-2550, -850, 850, 2550]), desks(5900, [-2700, -1000, 1000, 2700])],
 } as const;
+/** Every shared stand: its row, its centre line and the two players at it
+ *  (their chair ids, `${row}${i}`). */
+export type OrchDesk = { id: string; row: string; u: number; v: number; players: readonly [string, string] };
+export function orchDesks(): OrchDesk[] {
+  const rows: [string, { v: number; desks: readonly number[] }][] = [['brass', ROWS.brass], ['winds', ROWS.winds], ...ROWS.strings.map((r, k): [string, { v: number; desks: readonly number[] }] => [`str${k}_`, r])];
+  return rows.flatMap(([row, r]) => r.desks.map((u, k) => ({ id: `${row}D${k}`, row, u, v: r.v, players: [`${row}${2 * k}`, `${row}${2 * k + 1}`] as const })));
+}
 
-/** One player's chair and music stand (mm from the chair's centre, +v toward
- *  the conductor): the seat, the backrest, the stand's desk and its tripod;
- *  a trombone's bell over the desk in the brass row. */
+/** One player's chair (mm from the chair's centre, +v toward the conductor):
+ *  the seat and the backrest; a trombone's bell forward of it in the brass
+ *  row. The music stand — its desk and tripod — is the desk PAIR's, on the
+ *  line between the two chairs (mm from that line's point on the row). */
 export const CHAIR = {
   seat: { hw: 210, v0: -210, v1: 190, r: 50 },
   back: { hw: 200, v0: -250, v1: -190, r: 26 },
-  desk: { hw: 250, v0: 420, v1: 470, r: 14 },
+  desk: { hw: 250, v0: 475, v1: 525, r: 14 },
   /** The stand's tripod: three legs from (0, legV), 170 long. */
-  legV: 445,
+  legV: 500,
   legR: 170,
   bell: { du: 130, dv: 330, r: 105 },
 } as const;
@@ -255,21 +266,30 @@ export function orchPerformers(): OrchPerformer[] {
   return out;
 }
 
-/** A row's chairs: seat, back, the stand's desk and tripod, a bell. */
-function chairFoots(row: string, us: readonly number[], v: number, bells: boolean): PlanFoot[] {
+/** A row's chairs (seat, back, a bell) and its desks' shared stands (desk
+ *  and tripod, one per pair). */
+function chairFoots(row: string, r: { v: number; u: readonly number[]; desks: readonly number[] }, bells: boolean): PlanFoot[] {
   const C = CHAIR;
-  return us.flatMap((u, i) => {
+  const v = r.v;
+  const chairs = r.u.flatMap((u, i) => {
     const g = `p:${row}${i}`;
     const id = `${row}${i}`;
     const fs = [
       foot(`${id}:seat`, 'chair', { u0: u - C.seat.hw, u1: u + C.seat.hw, v0: v + C.seat.v0, v1: v + C.seat.v1 }, { group: g }),
       foot(`${id}:back`, 'chair', { u0: u - C.back.hw, u1: u + C.back.hw, v0: v + C.back.v0, v1: v + C.back.v1 }, { group: g }),
-      foot(`${id}:desk`, 'musicStand', { u0: u - C.desk.hw, u1: u + C.desk.hw, v0: v + C.desk.v0, v1: v + C.desk.v1 }, { group: g }),
-      foot(`${id}:stand`, 'musicStand', tripodRect({ u, v: v + C.legV }, C.legR), { group: g }),
     ];
-    if (bells) fs.push(foot(`${id}:bell`, 'instrument', rectOfCircle({ u: u + C.bell.du, v: v + C.bell.dv }, C.bell.r), { group: g }));
+    // the bell forward, on the side away from the shared stand (clear of its legs)
+    if (bells) fs.push(foot(`${id}:bell`, 'instrument', rectOfCircle({ u: u + (i % 2 ? 1 : -1) * C.bell.du, v: v + C.bell.dv }, C.bell.r), { group: g }));
     return fs;
   });
+  const stands = r.desks.flatMap((u, k) => {
+    const g = `desk:${row}${k}`;
+    return [
+      foot(`${row}D${k}:desk`, 'musicStand', { u0: u - C.desk.hw, u1: u + C.desk.hw, v0: v + C.desk.v0, v1: v + C.desk.v1 }, { group: g }),
+      foot(`${row}D${k}:stand`, 'musicStand', tripodRect({ u, v: v + C.legV }, C.legR), { group: g }),
+    ];
+  });
+  return [...chairs, ...stands];
 }
 
 /** The lesson's wedges as drawn on the plan (stage only). */
@@ -309,9 +329,9 @@ function percFoots(four: boolean): PlanFoot[] {
 /** Every object the plan draws, at the wide (stage / studio) view. */
 export function orchestraFoots(own: OwnInstrument, scene: 'stage' | 'studio', four: boolean, wedges: readonly Wedge[]): PlanFoot[] {
   const out: PlanFoot[] = [...percFoots(four)];
-  out.push(...chairFoots('brass', ROWS.brass.u, ROWS.brass.v, true));
-  out.push(...chairFoots('winds', ROWS.winds.u, ROWS.winds.v, false));
-  ROWS.strings.forEach((r, k) => out.push(...chairFoots(`str${k}_`, r.u, r.v, false)));
+  out.push(...chairFoots('brass', ROWS.brass, true));
+  out.push(...chairFoots('winds', ROWS.winds, false));
+  ROWS.strings.forEach((r, k) => out.push(...chairFoots(`str${k}_`, r, false)));
   const c = FRONT.conductor;
   out.push(foot('podium', 'podium', { u0: c.u - c.r, u1: c.u + c.r, v0: c.v - c.r, v1: c.v + c.r }, { group: 'p:conductor' }));
   const sd = FRONT.scoreDesk;
@@ -331,11 +351,11 @@ export function orchestraFoots(own: OwnInstrument, scene: 'stage' | 'studio', fo
 
 /* ── the studio headphone mix ── */
 
-/** A chair's mixer: beside the seat (410 mm off its centre, on the side away
- *  from the bell / the bow / a flute's footjoint), a little upstage, so its
- *  feed drops behind the row. Brass: the player's right (−u); the others
- *  their left (+u). */
-export const CUE_SEAT = { du: 410, dv: -60 } as const;
+/** A desk's mixer (owner 2026-10-16: one headphone box per MUSIC STAND,
+ *  shared by the players at it): on its own stand between the pair's seats,
+ *  on the stand's centre line, a little upstage, so its feed drops straight
+ *  back between the chairs' backs to its lane behind the row. */
+export const CUE_SEAT = { du: 0, dv: -60 } as const;
 /** Where each percussionist's and the conductor's mixer stands: behind or
  *  beside them, clear of every player's space. */
 export const CUE_AT: Record<PercPlayer | 'conductor', PlanPt> = {
@@ -347,10 +367,12 @@ export const CUE_AT: Record<PercPlayer | 'conductor', PlanPt> = {
 };
 
 /**
- * The studio's headphone mix: one personal mixer per performer, fed from
- * distribution points on the side walls. Each row splits at its middle: the
- * left half feeds to the left wall, the right half to the right wall, every
- * feed in its own lane behind the row ('row' layout). The timpanist's feed
+ * The studio's headphone mix: one headphone box per music stand (the desk
+ * pair shares it, each with their own phones cord), one each for the
+ * percussionists and the conductor, every box fed from a distribution point
+ * on a side wall by its own cable. Each row splits at its middle: the left
+ * half feeds to the left wall, the right half to the right wall, every feed
+ * in its own lane behind the row ('row' layout). The timpanist's feed
  * runs straight along the back to the left wall; the other three
  * percussionists' run behind the percussion to the right wall; the
  * conductor's straight to the right wall, where CONTROL ROOM names its box
@@ -367,17 +389,27 @@ export function orchestraCue(own: OwnInstrument, four: boolean): CueRig[] {
   };
   const room = STUDIO_ROOM;
   const rigs: CueRig[] = [];
-  const row = (name: string, us: readonly number[], v: number, side: 1 | -1) => {
-    // the chairs left of centre (and a centre chair) feed to the left wall
-    const all = us.map((u, i) => ({ u, s: st(`${name}${i}`, { u: u + side * CUE_SEAT.du, v: v + CUE_SEAT.dv }) }));
+  const row = (name: string) => {
+    // one box per desk, serving its two players; the desks left of centre
+    // (and a centre desk) feed to the left wall
+    const all = orchDesks()
+      .filter((d) => d.row === name)
+      .map((d) => {
+        const seats = d.players.map((id) => {
+          const p = perf.get(id)!;
+          return { id, head: p.head, facing: p.facing, alone: true };
+        });
+        const s: CueStation = { id: d.id, at: { u: d.u + CUE_SEAT.du, v: d.v + CUE_SEAT.dv }, head: seats[0].head, facing: seats[0].facing, alone: true, seats };
+        return { u: d.u, s };
+      });
     const left = all.filter((x) => x.u <= 0).map((x) => x.s);
     const right = all.filter((x) => x.u > 0).map((x) => x.s);
     rigs.push({ id: `${name}L`, room, wall: 'u0', layout: 'row', rowSide: -1, hubAt: 0, hubLabel: null, stations: left });
     rigs.push({ id: `${name}R`, room, wall: 'u1', layout: 'row', rowSide: -1, hubAt: 0, hubLabel: null, stations: right });
   };
-  row('brass', ROWS.brass.u, ROWS.brass.v, -1);
-  row('winds', ROWS.winds.u, ROWS.winds.v, 1);
-  ROWS.strings.forEach((r, k) => row(`str${k}_`, r.u, r.v, 1));
+  row('brass');
+  row('winds');
+  ROWS.strings.forEach((_, k) => row(`str${k}_`));
   const T = CUE_AT.timpanist;
   rigs.push({ id: 'timp', room, wall: 'u0', layout: 'wall', hubAt: T.v, hubLabel: null, stations: [st('timpanist', T)] });
   rigs.push({ id: 'perc', room, wall: 'u1', layout: 'row', rowSide: -1, hubAt: 0, hubLabel: null, stations: (['bassDrummer', 'snarePlayer', 'tambourinist'] as const).map((id) => st(id, CUE_AT[id])) });

@@ -30,7 +30,7 @@ import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../..
 import { BACKLINE_BOX, BACKLINE_POS, KIT_AT, OTHER_AMP, PA_AT, DECK_EDGE_U, backlineCue, inFrontRow, backlineFoots, backlineItems, keepRect, type Backline, type BacklineScene } from './backlinePlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
-import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
 import { FigureHead, FigureMass, headAbove, limb } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { KitTop } from '../kitScene/KitSceneArt';
@@ -380,7 +380,9 @@ function build(who: Backline) {
 export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; who: Backline; scene: BacklineScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
   const ts = useStageTextScale();
   const box = BACKLINE_BOX[scene];
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   let g = builtCache.get(who);
   if (!g) {
     g = build(who);
@@ -406,15 +408,14 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
         // The words go just outside the object's own footprint (below, right,
         // left, above), else into free space with a leader back to it.
         const own = footOf(i.id);
-        const places = own ? labelPlaces(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 90, align: 'center' as const }];
+        const places = own ? T.places(own, xf.s / ts) : [{ u: i.u, v: i.v + i.r * 0.72 + 90, align: 'center' as const }];
         const first = i.id === 'audience' ? { u: BACKLINE_POS.audience, v: 0, align: 'center' as const } : places[0];
         return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedals' ? ('muted' as const) : undefined };
       }),
     ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
   ];
   const tap = (x: number, y: number) => {
-    const u = (x - xf.ox) / xf.s;
-    const v = (y - xf.oy) / xf.s;
+    const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
     let best: string | null = null;
     let bd = Infinity;
     for (const it of items) {
@@ -431,7 +432,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
     <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <View pointerEvents="none" style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             {scene === 'stage' ? (
               <Path path={g.deck}>
                 <LinearGradient start={vec(0, BACKLINE_BOX.stage.v0)} end={vec(0, BACKLINE_BOX.stage.v1)} colors={['#1a1714', '#141210', '#0e0c0b']} />
@@ -500,7 +501,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
       </View>
     </Pressable>
   );

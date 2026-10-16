@@ -144,7 +144,7 @@ const HAND: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: 900, v1: 1040 }, scene: 'studio', label: { u: 200, v: 820 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the accordionist facing the audience, the bass side reaching toward the band, a wedge downstage, a side-fill on the bass side, the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the accordionist, no monitors on the floor.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The player faces the audience with the accordion on their chest: the treble side on their right, the bass side on their left — moving out and in with the bellows.',
     before: [
       { title: 'ASK THE PLAYER', text: 'Which accordion and registers? Are the bass notes and chords essential to the arrangement, or does a bass player carry them? Will they stand, sit or move — and how far do the bellows and the bass side travel?' },

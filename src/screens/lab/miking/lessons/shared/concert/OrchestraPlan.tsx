@@ -154,25 +154,31 @@ function TambourinePlan({ hi }: { hi: boolean }) {
 }
 
 /* ── furniture: a chair, a music stand, a trombone bell, the trap table ── */
-function chairs(us: readonly number[], v: number, bells: boolean): { seats: SkPath; backs: SkPath; desks: SkPath; legsP: SkPath; bellsP: SkPath | null } {
+/** A row's chairs and, per desk pair, their ONE shared music stand on the
+ *  line between them (owner 2026-10-16). */
+function chairs(r: { v: number; u: readonly number[]; desks: readonly number[] }, bells: boolean): { seats: SkPath; backs: SkPath; desks: SkPath; legsP: SkPath; bellsP: SkPath | null } {
+  const v = r.v;
   const seats = make();
   const backs = make();
   const desks = make();
   const legsP = make();
   const bellsP = make();
   const C = CHAIR;
-  for (const u of us) {
+  for (const [i, u] of r.u.entries()) {
     rrect(seats, u - C.seat.hw, v + C.seat.v0, u + C.seat.hw, v + C.seat.v1, C.seat.r);
     rrect(backs, u - C.back.hw, v + C.back.v0, u + C.back.hw, v + C.back.v1, C.back.r);
+    // the bell forward, on the side away from the shared stand
+    if (bells) oval(bellsP, u + (i % 2 ? 1 : -1) * C.bell.du, v + C.bell.dv, C.bell.r, C.bell.r);
+  }
+  for (const u of r.desks) {
     rrect(desks, u - C.desk.hw, v + C.desk.v0, u + C.desk.hw, v + C.desk.v1, C.desk.r);
     legs(legsP, u, v + C.legV, 0, C.legR, 3, -Math.PI / 2);
-    if (bells) oval(bellsP, u + C.bell.du, v + C.bell.dv, C.bell.r, C.bell.r);
   }
   return { seats, backs, desks, legsP, bellsP: bells ? bellsP : null };
 }
 
 function Rows({ wide }: { wide: boolean }) {
-  const g = useMemo(() => ({ brass: chairs(ROWS.brass.u, ROWS.brass.v, true), winds: chairs(ROWS.winds.u, ROWS.winds.v, false), strings: ROWS.strings.map((r) => chairs(r.u, r.v, false)) }), []);
+  const g = useMemo(() => ({ brass: chairs(ROWS.brass, true), winds: chairs(ROWS.winds, false), strings: ROWS.strings.map((r) => chairs(r, false)) }), []);
   const draw = (c: ReturnType<typeof chairs>, key: string) => (
     <Group key={key}>
       <Path path={c.legsP} style="stroke" strokeWidth={14} strokeCap="round" color="#3a3d45" />

@@ -31,7 +31,7 @@ import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
 import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
 import { AUDIENCE_MARK, KITPLAN_BOX, KITPLAN_ROOM, KITPLAN_RUG, KITPLAN_STAGE, kitCue, kitPlanFoots, kitPlanHit, planItemRect, planWedges } from './kitPlanLayout.ts';
-import { clearOfFoots, labelPlaces, type PlanFoot } from './planFoot.ts';
+import { clearOfFoots, planTurn, type PlanFoot } from './planFoot.ts';
 import { CueMixPlan } from './monitoring/CueMixPlan';
 import { cueCables, cueLabels } from './monitoring/cueMix.ts';
 import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from './drums/DrumArt';
@@ -207,7 +207,9 @@ export function planIdsOf(it: Pick<SettingItem, 'id' | 'planIds'>): readonly str
 export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offset = ORIGIN, overlay, overlayFoots, overlayLabels, wedges, highlight, onTap, accessibilityLabel }: KitPlanProps) {
   const textScale = useStageTextScale();
   const box = scene === 'kit' ? KITPLAN_BOX.kit : KITPLAN_BOX.wide;
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   const space = useMemo(() => poly(KIT.playerSpace), []);
   const isOwn = (id: string) => (typeof ownIn === 'string' ? ownIn === id : ownIn.includes(id));
   // The lesson's wedges are in its own frame: onto the plan.
@@ -222,7 +224,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   const audience = useMemo(() => {
     const p = Skia.Path.Make();
     const u = KITPLAN_STAGE.audienceU;
-    for (const v of [-420, 0, 420]) {
+    for (const v of [-320, 0, 320]) {
       p.moveTo(u - 170, v);
       p.lineTo(u + 40, v);
       p.moveTo(u + 4, v - 34);
@@ -283,9 +285,10 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
       }
       // The words go just outside the object's own footprint (below, right,
       // left, above), else into free space with a leader back to it.
-      const own = pid === 'audience' ? (scene === 'stage' ? AUDIENCE_MARK : null) : planItemRect(foots, pid);
+      // the audience's name keeps a little air from its outer arrows
+      const own = pid === 'audience' ? (scene === 'stage' ? { ...AUDIENCE_MARK, v0: AUDIENCE_MARK.v0 - 140, v1: AUDIENCE_MARK.v1 + 140 } : null) : planItemRect(foots, pid);
       if (own) {
-        const [first, ...alts] = labelPlaces(own, k);
+        const [first, ...alts] = T.places(own, k);
         labels.push({ id: `${it.id}:${pid}`, text: it.short, u: first.u, v: first.v, align: first.align, alts, point: { u: (own.u0 + own.u1) / 2, v: (own.v0 + own.v1) / 2 }, tone });
         break;
       }
@@ -311,8 +314,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
   });
 
   const tap = (x: number, y: number) => {
-    const u = (x - xf.ox) / xf.s;
-    const v = (y - xf.oy) / xf.s;
+    const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
     const pid = kitPlanHit(scene, stageWedges.map((wd) => ({ id: wd.id, u: wd.p.x, v: wd.p.z })), u, v, 20 / xf.s);
     const it = pid ? itemOfPlan(pid) : null;
     if (it) onTap(it.id);
@@ -329,7 +331,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
     <View style={{ width: w, height: h }}>
       <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={cue ? `${accessibilityLabel} The drummer’s own headphone mixer stands at the drummer’s right, the headphones resting on the throne, its cable running back to the control room box on the wall behind.` : accessibilityLabel}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             {scene === 'studio' ? (
               <>
                 <Path path={walls} style="stroke" strokeWidth={40} color="#2a2c32" />
@@ -381,7 +383,7 @@ export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offse
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+      <StaticLabels labels={T.labels(uniq)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
     </View>
   );
 }

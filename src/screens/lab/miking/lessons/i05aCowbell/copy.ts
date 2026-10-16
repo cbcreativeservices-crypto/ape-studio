@@ -75,9 +75,9 @@ export const BELL_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the cowbell — or step through ITEM — to see what it means for a cowbell mic. There is nothing to answer yet.',
     kitIdle: 'A cowbell lives on a kit or a timbales rig: cymbals and snare a hand’s width away, overheads above — and a stick moving round it.',
     leftHanded: 'Players set the bell where their hand falls — check this rig, every strike point and every fill.',
-    stageA11y: 'The band on a stage, from above: the kit and percussion, a floor monitor downstage facing back toward them, the player’s own monitor behind, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the kit and percussion, a floor monitor downstage facing back toward them, the player’s own wedge in front, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the kit and percussion, overheads above them, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage facing back toward the player, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage facing back toward the player, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. The kit or percussion overheads may already carry the bell — and the room is part of the sound.',
     before: [
       { title: 'MARK THE STICK’S PATH', text: 'Watch every strike point, the fills, the rebound and the crossover motions. A mic is never a target in the player’s groove.' },

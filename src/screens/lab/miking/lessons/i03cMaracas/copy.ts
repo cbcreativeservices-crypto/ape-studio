@@ -72,9 +72,9 @@ export const MAR_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the maraca player — or step through ITEM — to see what it means for a maraca mic. There is nothing to answer yet.',
     kitIdle: 'Maracas need room for two arms. Around them: loud neighbours, other mics, and sometimes the player’s own vocal mic.',
     leftHanded: 'Each arm may play its own accents; some pairs differ in tone or level. Check this pair, both hands, and every change of height.',
-    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. An area or ensemble mic may already carry the maracas — and the room is part of the sound.',
     before: [
       { title: 'BOTH HEADS, BOTH ARCS', text: 'Ask for the whole part — the largest accent, changes of height, any switch to another instrument or the voice. Find where both heads travel; the mic, boom and cable stay outside both arms’ reach.' },

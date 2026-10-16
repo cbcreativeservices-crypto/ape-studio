@@ -87,7 +87,7 @@ export const A02_ART: LessonArt = {
     setting: makeBrassSettingPage({
       ...A02_PLAN,
       nearA11y: 'A trombonist from above, the bell pointing right toward the audience and the slide reaching past it; the slide’s reach to 7th position dashed. A music stand to the left, a second trombone and a trumpet beside, the drum kit behind.',
-      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another player’s wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
+      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another player’s wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a trombone mic. There is nothing to answer yet.',
       nearIdle: 'The slide reaches straight out from the player’s mouth, past the bell, and at 7th position about 56 cm farther. The bell points out toward the audience. Everything else is a neighbour a trombone mic will hear.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front — beyond the slide’s reach — and another player’s to the side. Monitors, the PA and a loud band all reach a trombone mic.',

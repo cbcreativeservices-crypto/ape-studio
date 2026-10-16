@@ -23,11 +23,12 @@ import { ampBox, LAYOUT } from './ampSpec.ts';
 export const CLAV_NEAR: ViewBox = { u0: -500, u1: 2000, v0: -1700, v1: 500 };
 export const CLAV_WIDE: ViewBox = { u0: -1150, u1: 3600, v0: -2000, v1: 2600 };
 /** The stage's wide plan reaches past the deck's edge for the AUDIENCE word. */
-export const CLAV_WIDE_STAGE: ViewBox = { ...CLAV_WIDE, u1: 4400 };
+export const CLAV_WIDE_STAGE: ViewBox = { ...CLAV_WIDE, u1: 3930 };
 export const CLAV_ROOM = roomOfBox(CLAV_WIDE);
 /** The stage's downstage edge (dashed) just in front of the PA pair; the
- *  house beyond it is an off-plan direction (owner 2026-10-15). */
-export const CLAV_AUDIENCE = { text: 'AUDIENCE →', u: 3470, v: 300, align: 'left' as const, lip: { axis: 'u' as const, at: 3410 } };
+ *  house beyond it is an off-plan direction (owner 2026-10-15). Drawn turned
+ *  (DOWNSTAGE = BOTTOM, owner 2026-10-16): the word centred below the edge. */
+export const CLAV_AUDIENCE = { text: 'AUDIENCE ↓', u: 3650, v: 300, align: 'center' as const, lip: { axis: 'u' as const, at: 3410 } };
 
 export const clavAmpBox = (v: VariantId) => ampBox(v === 'cab' ? 'cab' : 'combo');
 

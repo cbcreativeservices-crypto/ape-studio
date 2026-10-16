@@ -75,7 +75,8 @@ function buildTop() {
   lip.moveTo(ROOM.front, ROOM.left - WALL);
   lip.lineTo(ROOM.front, ROOM.right + WALL);
   const arrows = make();
-  for (const z of [-1500, 0, 1500]) {
+  // two arrows, the AUDIENCE word between them (the plan names it there)
+  for (const z of [-1500, 1500]) {
     arrows.moveTo(ROOM.front + 120, z);
     arrows.lineTo(ROOM.front + 420, z);
     arrows.moveTo(ROOM.front + 370, z - 50);

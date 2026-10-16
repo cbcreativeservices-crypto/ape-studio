@@ -26,7 +26,7 @@ import { StaticLabels } from '../../../engine/scene/StaticLabels';
 import type { PlanThing } from './family.ts';
 import { INK } from './handDrumArt';
 import { AMP_TOP, KEYS_TOP, kitOrigin, MICSTAND_TOP, PA_TOP, PERC_TOP, PLAYER_TOP, ROOM_WALL, SIDEFILL_TOP, handPlanLabels, keysBench, micLegAngles, paStacks, planCue, planRoom, shownThings, type ArtPlan, type PlanBox, type PlanCueSpec } from './handPlanModel.ts';
-import { clearOfFoots } from '../planFoot.ts';
+import { clearOfFoots, planTurn } from '../planFoot.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables } from '../monitoring/cueMix.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
@@ -241,7 +241,7 @@ function Thing({ t, Drums, variant, box }: { t: PlanThing; Drums: (p: { view: 't
       lip.lineTo(t.u, box.v1 - 40);
       const arrows = make();
       const H = box.v1 - box.v0;
-      for (const v of [box.v0 + H * 0.3, box.v1 - H * 0.3]) {
+      for (const v of [box.v0 + H * 0.22, box.v1 - H * 0.22]) {
         arrows.moveTo(t.u + 90, v);
         arrows.lineTo(t.u + 300, v);
         arrows.moveTo(t.u + 264, v - 34);
@@ -285,7 +285,9 @@ export type HandPlanProps = {
 
 export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, shortOf, highlight, onTap, accessibilityLabel }: HandPlanProps) {
   const textScale = useStageTextScale();
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   const shown = shownThings(things, scene);
   // The studio's wall: drawn OUTSIDE the room's inner face (the plan box
   // inset by ROOM_INSET), so nothing in the room stands on it.
@@ -301,13 +303,12 @@ export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, s
   // clear of every object (and of the studio's walls), each pointing back at
   // its object (handPlanModel — the same footprints the overlap test reads).
   const rig = useMemo(() => planCue(things, box, art, cue, scene), [things, box, art, cue, scene]);
-  const { labels, blockers } = handPlanLabels(things, box, scene, art, cue, shortOf, highlight, xf.s / textScale);
+  const { labels, blockers } = handPlanLabels(things, box, scene, art, cue, shortOf, highlight, xf.s / textScale, T.places);
   const hl = shown.find((t) => t.id === highlight);
   return (
     <Pressable
       onPress={(e) => {
-        const u = (e.nativeEvent.locationX - xf.ox) / xf.s;
-        const v = (e.nativeEvent.locationY - xf.oy) / xf.s;
+        const { u, v } = T.unPt({ u: (e.nativeEvent.locationX - xf.ox) / xf.s, v: (e.nativeEvent.locationY - xf.oy) / xf.s });
         const id = planHit(things, scene, u, v, 30 / xf.s, box);
         if (id) onTap(id);
       }}
@@ -317,7 +318,7 @@ export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, s
     >
       <View style={{ width: w, height: h }} pointerEvents="none">
         <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={accessibilityLabel}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             {scene === 'studio' ? (
               <>
                 <Path path={walls.outer} style="stroke" strokeWidth={ROOM_WALL} color="#2a2420" />
@@ -333,7 +334,7 @@ export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, s
             {hl && hl.kind === 'room' ? <Path path={walls.inner} style="stroke" strokeWidth={22} color={AMBER} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(blockers, rig ? cueCables(rig) : [])} />
+        <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(blockers), T.cables(rig ? cueCables(rig) : []))} />
       </View>
     </Pressable>
   );

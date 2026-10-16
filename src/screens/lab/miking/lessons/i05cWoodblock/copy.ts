@@ -75,9 +75,9 @@ export const WB_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the woodblock — or step through ITEM — to see what it means for a woodblock mic. There is nothing to answer yet.',
     kitIdle: 'A woodblock waits on the trap table with the other small instruments; the player moves between them — and cymbals and drums sound nearby.',
     leftHanded: 'Players set the table to suit their hands — check this station, every instrument change and the mallet’s path.',
-    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. An overhead or main mic may already carry the woodblock — and the room is part of the sound.',
     before: [
       { title: 'GIVE THE BLOCK SPACE', text: 'Space underneath — foam, not thick carpet or towels — and the opening toward the audience where possible. Listen to the player’s mallet, stroke and support before moving a mic.' },

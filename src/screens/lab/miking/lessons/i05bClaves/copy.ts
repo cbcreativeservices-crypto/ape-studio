@@ -72,9 +72,9 @@ export const CLV_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the clave player — or step through ITEM — to see what it means for a claves mic. There is nothing to answer yet.',
     kitIdle: 'Claves are small and sharp; the player may switch to other hand percussion at the same station, or sing. Around them: cymbals, drums, amps and voices.',
     leftHanded: 'Players cradle with either hand — check this player’s grip and both hands’ motion.',
-    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. An area or main mic may already carry the claves — and the room is part of the sound.',
     before: [
       { title: 'THE GRIP FIRST', text: 'Is the supported clave cradled over curled fingers, or squeezed into the palm? A mic near a muffled pair hears a louder muffled pair. Follow the player’s technique — never insist on one that hurts.' },

@@ -97,7 +97,7 @@ export function bassArt(kind: BassKind): LessonArt {
         nearA11y: bowed
           ? 'A bass in a small group from above: the bassist standing behind the bass, the bow’s sweep hatched, the endpin, a drum kit to the bassist’s right and a grand piano to the left.'
           : 'A bass in a jazz trio from above: the bassist standing behind the bass, the plucking hand’s path hatched, the endpin, a drum kit to the bassist’s right and a grand piano to the left.',
-        wideA11y: { stage: 'The same from above, on a stage: the bassist’s wedge in front, the audience to the right.', studio: 'The same from above, in a studio room.' },
+        wideA11y: { stage: 'The same from above, on a stage: the bassist’s wedge in front, the audience below.', studio: 'The same from above, in a studio room.' },
         nearLanding: 'Tap anything around the bassist — or step through ITEM — to see what it means for a bass mic. There is nothing to answer yet.',
         nearIdle: bowed
           ? 'The bassist stands behind the bass; the bow sweeps out to both sides; the endpin and the feet share the floor. The drums and the piano are neighbours a bass mic will hear.'

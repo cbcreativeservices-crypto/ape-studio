@@ -203,7 +203,7 @@ const SPEC: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the tabla player seated on the floor with the dayan to the right and the bayan to the left; the player's wedge downstage on the audience side, a side fill to the right, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the tabla player seated on the floor, no monitors, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The player sits on the floor with the two drums in front; both hands move over the heads, the left one across the bayan all the time. Everything else fits round that.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'How do they sit, and how are the drums set? Ask for a short repeated passage: ringing and damped dayan strokes, open bayan tones and glides, strokes on both, quiet finger work — named in their own terms. What is the tabla’s role, and how prominent should the bayan be?' },

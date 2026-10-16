@@ -38,7 +38,7 @@ import type { Orient } from './lowBrassSpec.ts';
 import { lowBrassCue, lowBrassFoots, lowBrassShown, PIANO, spaceParts, type LowBrassPlanLayout, type PlanObject } from './lowBrassPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
-import { clearOfFoots, type PlanRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, type PlanRect } from '../planFoot.ts';
 import { besideLabel, cuePoint, ownRect } from '../brass/hornPlanFoot.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -241,7 +241,9 @@ function playerSpace(spec: LowBrassPlanLayout['spec'], orient: Orient): SkPath {
 
 export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, highlight, onTap, accessibilityLabel }: { w: number; h: number; cfg: LowBrassSettingConfig; orient: Orient; box: ViewBox; scene: 'kit' | 'stage' | 'studio'; wedges: readonly Wedge[]; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   const self = brassScene(cfg.spec, orient);
   const space = useMemo(() => playerSpace(cfg.spec, orient), [orient]); // eslint-disable-line react-hooks/exhaustive-deps
   const hatch = useMemo(() => hatchFor(box), [box]);
@@ -271,10 +273,11 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
   const mid = (o: PlanObject) => centre(ownRect(foots, o.kind === 'self' ? 'player' : o.id), o);
   const labels: StaticLabel[] = [
     // The lesson's own player first: its name is never the one dropped.
-    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s),
-    ...shown.filter((o) => o.kind !== 'self').map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s)),
+    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s, T.places),
+    ...shown.filter((o) => o.kind !== 'self').map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s, T.places)),
   ];
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 70, align: 'right', tone: 'muted', point: { u: box.u1 - 220, v: box.v0 + 70 } });
+  // beyond the deck's dashed edge, centred under the plan (turned: the bottom edge)
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA ↓', short: 'AUDIENCE ↓', u: box.u1 - 110, v: (box.v0 + box.v1) / 2, align: 'center', tone: 'muted', point: { u: box.u1 - 110, v: (box.v0 + box.v1) / 2 } });
   if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 130, align: 'left', tone: 'muted', point: { u: box.u0 + 120, v: box.v0 + 130 } });
   for (const rig of cues) labels.push(...cueLabels(rig, undefined, ['player']).map((l) => ({ ...l, tone: 'illustrative' as const, point: cuePoint(rig, l.id) })));
   const tap = (u: number, v: number) => {
@@ -303,9 +306,12 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
   })();
   return (
     <View style={{ width: w, height: h }}>
-      <Pressable onPress={(e) => tap((e.nativeEvent.locationX - xf.ox) / xf.s, (e.nativeEvent.locationY - xf.oy) / xf.s)} accessible={false} style={{ width: w, height: h }}>
+      <Pressable onPress={(e) => {
+        const q = T.unPt({ u: (e.nativeEvent.locationX - xf.ox) / xf.s, v: (e.nativeEvent.locationY - xf.oy) / xf.s });
+        tap(q.u, q.v);
+      }} accessible={false} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={`${accessibilityLabel}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             <Path path={floor}>
               <LinearGradient start={vec(box.u0, box.v0)} end={vec(box.u1, box.v1)} colors={scene === 'studio' ? ['#2a2420', '#1a1613'] : ['#1d1e22', '#121316']} />
             </Path>
@@ -334,7 +340,7 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots, cues.flatMap(cueCables))} />
+      <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(wordFoots), T.cables(cues.flatMap(cueCables)))} />
     </View>
   );
 }
@@ -421,7 +427,7 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
         layout: 'rack',
         rack: {
           render: (w, h) => <LowBrassPlan w={w} h={h} cfg={cfg} orient={orient} box={cfg.wide} scene={where} wedges={lesson.live.wedges} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={where === 'stage' ? cfg.wideA11y.stage : cfg.wideA11y.studio} />,
-          badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
+          badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience below' : 'From above · a typical studio room',
           bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
           params: [
             fader(wideItems, wideSel, pickWide),

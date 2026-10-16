@@ -40,7 +40,7 @@ import { pt } from '../players/playerPose';
 import { Wedge2WayTop } from '../wedge2Way';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
-import { clearOfFoots, labelPlaces, rectOfCircle, unionRect, type PlanFoot, type PlanRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, type PlanCable, rectOfCircle, unionRect, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { GLYPH, roomOfBox, spotAngle, spotFoots, spotsIn, type PlanGlyph, type PlanScene, type PlanSpot } from './pstagePlanModel.ts';
 
 export type { PlanGlyph, PlanSpot } from './pstagePlanModel.ts';
@@ -268,6 +268,12 @@ function StageLip({ box, lip }: { box: ViewBox; lip: { axis: 'u' | 'v'; at: numb
   );
 }
 
+/** The deck's dashed edge as a line the words keep off (a name never sits on it). */
+function lipLine(box: ViewBox, lip: { axis: 'u' | 'v'; at: number }): PlanCable {
+  const pts = lip.axis === 'u' ? [{ u: lip.at, v: box.v0 + 40 }, { u: lip.at, v: box.v1 - 40 }] : [{ u: box.u0 + 40, v: lip.at }, { u: box.u1 - 40, v: lip.at }];
+  return { id: 'lip', kind: 'deckEdge', pts };
+}
+
 /** The studio room: a 40 mm wall drawn just outside its inner faces. */
 const roomCache = new Map<string, SkPath>();
 function roomPath(r: PlanRect): SkPath {
@@ -284,7 +290,11 @@ function roomPath(r: PlanRect): SkPath {
 export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, onTap, accessibilityLabel }: { spec: StagePlanSpec; w: number; h: number; variant: VariantId; scene: PlanScene; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
   const box = scene === 'near' ? spec.near(variant) : scene === 'stage' && spec.wideStage ? spec.wideStage(variant) : spec.wide(variant);
-  const xf = useMemo(() => fitXform('top', box, w, h, 8), [box, w, h]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): a stage laid out with its audience
+  // at +u (the harp, the clavinet) is drawn turned, the audience below.
+  const turned = scene === 'stage' && spec.audience(variant).lip.axis === 'u';
+  const T = useMemo(() => planTurn(turned), [turned]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 8), [box, w, h, T]);
   const spots = spotsIn(spec.spots(variant), scene);
   const foots = useMemo(() => spec.foots(variant, scene), [spec, variant, scene]);
   const cue = scene === 'studio' ? spec.cue(variant) : null;
@@ -306,7 +316,7 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
       u: s.x + (s.label?.du ?? 0),
       v: s.z + (s.label?.dv ?? s.r + 60),
       align: 'center' as const,
-      alts: labelPlaces(rectOf(s), xf.s / textScale),
+      alts: T.places(rectOf(s), xf.s / textScale),
       point: { u: s.x, v: s.z },
       tone: highlight === s.item ? ('amber' as const) : ('muted' as const),
     };
@@ -319,8 +329,7 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
   if (room && !labels.some((l) => l.text === 'THE ROOM')) labels.push({ id: 'room.name', text: 'THE ROOM', u: room.u0 + 200, v: room.v0 + 260, align: 'left', point: { u: room.u0 + 200, v: room.v0 + 260 }, tone: 'muted' });
   if (cue) labels.push(...cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })));
   const onPress = (x: number, y: number) => {
-    const u = (x - xf.ox) / xf.s;
-    const v = (y - xf.oy) / xf.s;
+    const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
     const near = spots.find((s) => Math.hypot(u - s.x, v - s.z) <= s.r);
     if (near) onTap(near.item);
     else if (spec.ownHit(variant, u, v)) onTap(spec.ownItem);
@@ -329,7 +338,7 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
     <View style={{ width: w, height: h }}>
       <Pressable onPress={(e) => onPress(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-        <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+        <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
           {room ? <Path path={roomPath(room)} style="stroke" strokeWidth={40} color="#3a3d45" /> : null}
           {/* Stage: the deck's downstage edge (dashed), the house beyond it. */}
           {scene === 'stage' ? <StageLip box={box} lip={spec.audience(variant).lip} /> : null}
@@ -345,7 +354,7 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
         </Group>
       </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+      <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : turned ? [lipLine(box, spec.audience(variant).lip)] : []))} />
     </View>
   );
 }

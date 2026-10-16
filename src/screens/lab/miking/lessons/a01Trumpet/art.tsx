@@ -89,7 +89,7 @@ export const A01_ART: LessonArt = {
     setting: makeBrassSettingPage({
       ...A01_PLAN,
       nearA11y: 'A trumpet player from above, the bell pointing right toward the audience: a music stand to the left, a second trumpet and a trombone beside, a singer at a mic in front and to the left, the drum kit behind.',
-      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge for the singer, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
+      wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge for the singer, the audience below.', studio: 'The same from above, in a studio room, with a main pair in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
       nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a trumpet mic. There is nothing to answer yet.',
       nearIdle: 'The bell points out toward the audience — and wherever the player turns. The valve hands work all the time. Everything else is a neighbour a trumpet mic will hear — or a person the bell can blast.',
       stageIdle: 'Two floor monitors: the player’s own wedge in front, and the singer’s. Monitors, the PA and a loud band all reach a trumpet mic.',

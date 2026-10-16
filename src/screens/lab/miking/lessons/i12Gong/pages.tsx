@@ -38,7 +38,7 @@ const HAND: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the gong in its frame with the player beside its struck face; a wedge downstage in front, the band upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the gong in its frame and the player, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The gong hangs in its frame, swinging freely; the player stands beside the struck face with the mallet. Everything else fits round the swing and the mallet’s arc.',
     before: [
       { title: 'IDENTIFY THE GONG', text: 'An orchestral tam-tam (no boss, a broad bloom) or a bossed gong (a raised centre, a more pitch-centred sound)? Do not assume all gongs behave the same. Then ask for quiet and forceful strokes, rolls, the intended decay and any damping.' },

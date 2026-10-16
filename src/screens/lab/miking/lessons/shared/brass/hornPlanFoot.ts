@@ -102,9 +102,9 @@ export function ownRect(fs: readonly PlanFoot[], idOrGroup: string): PlanRect | 
 /** A plan label set just outside its object's footprint (below, right,
  *  left, above — labelPlaces), pointing back at the object (`point`) when the
  *  layout has to move it into free space. `s` = the plan's px per mm ÷ the
- *  text scale. */
-export function besideLabel<T extends { id: string; text: string }>(l: T, own: PlanRect | null, point: PlanPt, s: number): T & { u: number; v: number; align: 'left' | 'center' | 'right'; alts: { u: number; v: number; align: 'left' | 'center' | 'right' }[]; point: PlanPt } {
-  const places = own ? labelPlaces(own, s) : [{ u: point.u, v: point.v + 200, align: 'center' as const }];
+ *  text scale. `places`: a turned stage plan passes its turn's (planTurn). */
+export function besideLabel<T extends { id: string; text: string }>(l: T, own: PlanRect | null, point: PlanPt, s: number, places_: typeof labelPlaces = labelPlaces): T & { u: number; v: number; align: 'left' | 'center' | 'right'; alts: { u: number; v: number; align: 'left' | 'center' | 'right' }[]; point: PlanPt } {
+  const places = own ? places_(own, s) : [{ u: point.u, v: point.v + 200, align: 'center' as const }];
   return { ...l, u: places[0].u, v: places[0].v, align: places[0].align, alts: places.slice(1), point };
 }
 

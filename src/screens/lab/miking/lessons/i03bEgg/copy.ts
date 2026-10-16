@@ -75,9 +75,9 @@ export const EGG_COPY: LessonCopy = spCopy({
     kitLanding: 'Tap anything around the egg player — or step through ITEM — to see what it means for an egg mic. There is nothing to answer yet.',
     kitIdle: 'Egg shakers are quiet and small; around them, loud neighbours — cymbals, drums, amps and voices. The egg chosen matters as much as the mic.',
     leftHanded: 'Players use one egg or two, in either hand — check the real part and how far apart the hands go.',
-    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own wedge in front of them, angled up at them, the audience and the PA.',
     studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own in front of them, angled up at them. The PA faces the audience.',
     studioIdle: 'No monitors. An area or ensemble mic may already carry the eggs — and the room is part of the sound.',
     before: [
       { title: 'CHOOSE THE EGG FIRST', text: 'Eggs come in softer and louder versions for different settings — labels, not calibrated levels. Audition alternatives in context before you add channel gain.' },

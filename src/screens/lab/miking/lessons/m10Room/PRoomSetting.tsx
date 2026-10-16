@@ -38,7 +38,7 @@ import { CORNER_L, CORNER_R, ROOM } from './model.ts';
 import { M10_VIEWS, M10_WEDGES, PA } from './geometry.ts';
 import { RoomArt } from './RoomArt';
 import { LIVE_HOUSE, M10_AUDIENCE_MARK, m10Cue, m10Foots } from './roomPlanModel.ts';
-import { clearOfFoots, labelPlaces, type PlanRect } from '../shared/planFoot.ts';
+import { clearOfFoots, planTurn, type PlanRect } from '../shared/planFoot.ts';
 import { CueMixPlan } from '../shared/monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../shared/monitoring/cueMix.ts';
 
@@ -85,7 +85,8 @@ const LABEL_AT: Record<string, Partial<Record<ViewId, { u: number; v: number; al
   door: { side: { u: ROOM.back + 200, v: yAt(2300), align: 'left' }, top: { u: ROOM.back + 200, v: ROOM.door.z0 - 160, align: 'left' } },
   pa: { side: { u: PA.x, v: yAt(PA.h1) - 160, align: 'center' }, top: { u: PA.x - 300, v: PA.z + 420, align: 'right' } },
   monitors: { side: { u: 400, v: KIT_FLOOR_Y - 520, align: 'center' }, top: { u: 900, v: -800, align: 'center' } },
-  audience: { top: { u: ROOM.front + 90, v: 2250, align: 'left' } },
+  // LIVE only, drawn turned (DOWNSTAGE = BOTTOM): centred below the open front
+  audience: { top: { u: ROOM.front + LIVE_HOUSE * 0.35, v: 0, align: 'center' } },
 };
 
 function markPath(ms: Mark[]) {
@@ -168,11 +169,15 @@ function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; 
   // LIVE: the plan reaches past the stage's open front, where the audience
   // is named (the house is off the plan).
   const box: ViewBox = useMemo(() => (where === 'live' ? { ...M10_VIEWS[view], u1: M10_VIEWS[view].u1 + LIVE_HOUSE } : M10_VIEWS[view]), [view, where]);
-  const xf = useMemo(() => fitXform(view, box, w, h, 6), [view, box, w, h]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the LIVE plan is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(view === 'top' && where === 'live'), [view, where]);
+  const xf = useMemo(() => fitXform(view, T.rect(box), w, h, 6), [view, box, w, h, T]);
   const ring = useMemo(() => (sel ? markPath(marksOf(sel, view)) : null), [sel, view]);
   // The plan's objects (top view): the words keep clear of them.
   const foots = useMemo(() => m10Foots(where), [where]);
   const top = view === 'top';
+  // the words keep off every object (the audience's name sits in its own strip)
+  const wordFoots = top ? foots.filter((f) => !/^audience/i.test(f.kind)) : [];
   // Studio, from above: the drummer's headphone mix (no wedges in a studio).
   const cue = where === 'studio' && top ? m10Cue() : null;
   const labels: StaticLabel[] = [
@@ -185,13 +190,13 @@ function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; 
         // with a leader back to the object.
         const m = marksOf(it.id, view)[0];
         const r = m ? markRect(m) : null;
-        return { id: it.id, text: it.short, u: at.u, v: at.v, align: at.align, alts: r && top ? labelPlaces(r, xf.s / textScale) : [], point: r ? { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 } : { u: at.u, v: at.v }, tone: it.id === sel ? ('amber' as const) : ('muted' as const) };
+        return { id: it.id, text: it.short, u: at.u, v: at.v, align: at.align, alts: r && top ? T.places(r, xf.s / textScale) : [], // the audience is named in its own strip (no leader across the arrows)
+        point: r && it.id !== 'audience' ? { u: (r.u0 + r.u1) / 2, v: (r.v0 + r.v1) / 2 } : { u: at.u, v: at.v }, tone: it.id === sel ? ('amber' as const) : ('muted' as const) };
       }),
     ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
   ];
   const tap = (x: number, y: number) => {
-    const u = (x - xf.ox) / xf.s;
-    const v = (y - xf.oy) / xf.s;
+    const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
     const tol = 20 / xf.s;
     // The smaller things first, the room's walls last.
     const order = ['pa', 'monitors', 'corners', 'door', 'kit', 'audience', 'ceiling', 'floor', 'walls'];
@@ -201,7 +206,7 @@ function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; 
     <View style={{ width: w, height: h }}>
       <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={label}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             <RoomArt view={view} variant={where} />
             {where === 'live' ? M10_WEDGES.filter((wd) => wd.glyph !== 'none').map((wd) => <FloorWedge key={wd.id} view={view} at={wd.p} faces={wd.faces} />) : null}
             {cue ? <CueMixPlan rig={cue} /> : null}
@@ -209,7 +214,7 @@ function RoomPlan({ w, h, view, where, items, sel, onTap, label }: { w: number; 
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(top ? foots : [], cue ? cueCables(cue) : [])} />
+      <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(wordFoots), T.cables(cue ? cueCables(cue) : []))} />
     </View>
   );
 }

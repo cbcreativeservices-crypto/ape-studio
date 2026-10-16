@@ -47,7 +47,7 @@ const HELD: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the player with finger cymbals in front of the chest; a wedge downstage on the audience side, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the player standing, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The player stands with the cymbals in front of the chest — or dances across the stage. Everything else fits round the hands, and the route.',
     before: [
       { title: 'ASK FOR THE WHOLE PASSAGE — OR DANCE', text: 'Accents, fast figures, soft notes and deliberate cutoffs; held still or danced; turns, body position and where the player moves. Do not assume a dancer stands still at chest height.' },

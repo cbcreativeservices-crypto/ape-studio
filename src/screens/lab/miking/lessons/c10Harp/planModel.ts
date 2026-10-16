@@ -23,12 +23,14 @@ const isLever = (v: VariantId) => v === 'lever';
 export const HARP_NEAR = (v: VariantId): ViewBox => (isLever(v) ? { u0: -1250, u1: 900, v0: -950, v1: 750 } : { u0: -1350, u1: 1150, v0: -1050, v1: 800 });
 export const HARP_WIDE: ViewBox = { u0: -1700, u1: 3700, v0: -2500, v1: 1300 };
 /** The stage's wide plan reaches past the deck's edge for the AUDIENCE word. */
-export const HARP_WIDE_STAGE: ViewBox = { ...HARP_WIDE, u1: 4250 };
+export const HARP_WIDE_STAGE: ViewBox = { ...HARP_WIDE, u1: 3780 };
 export const HARP_ROOM = roomOfBox(HARP_WIDE);
 /** The stage's downstage edge (dashed) just in front of the PA pair, and
  *  the way to the house beyond it — an off-plan direction (owner
- *  2026-10-15: an audience is marked only where one fits). */
-export const HARP_AUDIENCE = { text: 'AUDIENCE →', u: 3320, v: -600, align: 'left' as const, lip: { axis: 'u' as const, at: 3260 } };
+ *  2026-10-15: an audience is marked only where one fits). The plan is drawn
+ *  turned (DOWNSTAGE = BOTTOM, owner 2026-10-16): the word sits centred
+ *  below the edge, its arrow down. */
+export const HARP_AUDIENCE = { text: 'AUDIENCE ↓', u: 3500, v: -600, align: 'center' as const, lip: { axis: 'u' as const, at: 3260 } };
 
 /** The harp's own plan box (the soundbox top to the base's front, the
  *  base's width); `pad` widens it (the tap target). */

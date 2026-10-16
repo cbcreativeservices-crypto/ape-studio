@@ -52,7 +52,21 @@ export type CueStation = {
    *  without a head do not read as headphones) — the band's arc over the two
    *  cups, the cord from one cup, true size (PHONES_FRONT). */
   alone?: boolean;
+  /** The players who SHARE this mixer (owner 2026-10-16: an orchestra
+   *  records with one headphone box per music stand, shared by the players at
+   *  that stand): each gets their own phones cord from it. Absent: the
+   *  station serves one player, `id` / `head` / `facing` / `alone`. */
+  seats?: readonly CueSeat[];
 };
+
+/** One player a mixer serves: their id (unique in the plan), head and facing,
+ *  and whether a figure is drawn (`alone`: the phones rest face-on). */
+export type CueSeat = { id: string; head: PlanPt; facing: number; alone?: boolean };
+
+/** The players a station serves (its `seats`, or the one player it names). */
+export function cueSeats(s: CueStation): readonly CueSeat[] {
+  return s.seats ?? [{ id: s.id, head: s.head, facing: s.facing, alone: s.alone }];
+}
 
 /** Closed-back headphones seen face-on, resting (mm, about the rest point;
  *  −v = the band's top): the band's arc over the cups, ≈ 190 across the
@@ -192,7 +206,7 @@ export function cueFeeds(rig: CueRig): PlanCable[] {
 
 /** The headphone cable: from the mixer's front edge (the phones jack faces
  *  the performer) to the ear cup on the mixer's side, with a gentle sag. */
-export function cuePhones(s: CueStation): PlanCable {
+export function cuePhones(s: CueStation, mixer: string = s.id): PlanCable {
   if (s.alone) {
     // face-on phones at rest: the cord leaves the bottom of the cup nearer
     // the mixer and runs to the mixer's front edge, hanging in a slight sag
@@ -204,7 +218,7 @@ export function cuePhones(s: CueStation): PlanCable {
     const l0 = Math.hypot(du0, dv0) || 1;
     const jack = { u: s.at.u + (du0 / l0) * (CUE_MIXER.d / 2), v: s.at.v + (dv0 / l0) * (CUE_MIXER.d / 2) };
     const mid = { u: (jack.u + cup.u) / 2, v: Math.max(jack.v, cup.v) + 50 };
-    return { id: `phones:${s.id}`, kind: 'phones', pts: [jack, mid, cup], from: `cueMixer:${s.id}`, to: `head:${s.id}` };
+    return { id: `phones:${s.id}`, kind: 'phones', pts: [jack, mid, cup], from: `cueMixer:${mixer}`, to: `head:${s.id}` };
   }
   const cup = cueCups(s).find((c, i, all) => Math.hypot(c.u - s.at.u, c.v - s.at.v) <= Math.hypot(all[1 - i].u - s.at.u, all[1 - i].v - s.at.v))!;
   const du = cup.u - s.at.u;
@@ -213,7 +227,7 @@ export function cuePhones(s: CueStation): PlanCable {
   const jack = { u: s.at.u + (du / l) * (CUE_MIXER.d / 2), v: s.at.v + (dv / l) * (CUE_MIXER.d / 2) };
   // a sag to one side of the straight line (a cord hangs, it is not a rod)
   const mid = { u: (jack.u + cup.u) / 2 + (-dv / l) * 60, v: (jack.v + cup.v) / 2 + (du / l) * 60 };
-  return { id: `phones:${s.id}`, kind: 'phones', pts: [jack, mid, cup], from: `cueMixer:${s.id}`, to: `head:${s.id}` };
+  return { id: `phones:${s.id}`, kind: 'phones', pts: [jack, mid, cup], from: `cueMixer:${mixer}`, to: `head:${s.id}` };
 }
 
 /** The two ear cups on the performer's head (mm): either side of the head,
@@ -233,9 +247,15 @@ export function cueFootprints(rig: CueRig): PlanFoot[] {
   return [...rig.stations.map((s) => ({ id: `cueMixer:${s.id}`, kind: 'cueMixer', ...cueMixerRect(s) })), { id: hubId(rig), kind: 'cueHub', ...cueHub(rig).rect }];
 }
 
+/** Every phones cord a station plugs in: one per player it serves, each from
+ *  the station's own mixer to that player. */
+export function cueStationPhones(s: CueStation): PlanCable[] {
+  return cueSeats(s).map((p) => cuePhones({ ...s, ...p }, s.id));
+}
+
 /** Every cable the headphone mix adds to a plan (the overlap test). */
 export function cueCables(rig: CueRig): PlanCable[] {
-  return [...cueFeeds(rig), ...rig.stations.map(cuePhones)];
+  return [...cueFeeds(rig), ...rig.stations.flatMap(cueStationPhones)];
 }
 
 function dedupe(pts: PlanPt[]): PlanPt[] {

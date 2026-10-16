@@ -217,7 +217,7 @@ const SPEC: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the tonbak player seated with the drum across the lap, the head to the player's right; the player's wedge downstage on the audience side, a side fill to the right, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the tonbak player seated, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The player sits with the drum across the lap; the hands move over the head and its edge. Everything else fits round that.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'How do they hold the drum, and how do they move? Ask for their deep, edge and quiet strokes, rolls, and a short real passage — in their own terms. What is the tonbak’s role here, and what must stay audible?' },

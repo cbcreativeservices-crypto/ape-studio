@@ -35,7 +35,7 @@ const HAND: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: bar chimes on a stand with the player behind them; a wedge downstage on the audience side, the cymbals and louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the bar chimes on their stand and the player, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The row runs across in front of the player; the hand sweeps along it and the struck bars swing. Everything else fits round that.',
     before: [
       { title: 'ASK FOR THE WHOLE GESTURE', text: 'Which direction, which start and end bars, how fast, how hard — single accents, repeated sweeps, and any damping. A sound continues after the hand passes unless the player or a damper stops it.' },

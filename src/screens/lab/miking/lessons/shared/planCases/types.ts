@@ -6,7 +6,7 @@
  * 2026-10-15: no collisions or impossible layering in ANY plan; a personal
  * headphone mixer per performer in every studio plan).
  */
-import type { PlanCable, PlanFoot, PlanRect } from '../planFoot.ts';
+import { turnCable, turnRect, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import type { CueRig } from '../monitoring/cueMix.ts';
 
 export type PlanCase = {
@@ -45,11 +45,29 @@ export type PlanCase = {
 /** A word's or an arrow's plan rect round its anchor (mm). */
 export const markAt = (u: number, v: number, hu = 250, hv = 120): PlanRect => ({ u0: u - hu, u1: u + hu, v0: v - hv, v1: v + hv });
 
-/** A plan that shows only the floor round the player: AUDIENCE · PA → is
- *  printed at the plan's downstage (+u) edge, top corner (BrassPlan, SaxPlan,
- *  LowBrassPlan, BowedPlan); the deck's edge lies beyond the plan. */
+/** A plan that shows only the floor round the player: AUDIENCE · PA ↓ is
+ *  printed in the strip past the deck's dashed edge at the plan's downstage
+ *  (+u) edge, centred across it (BrassPlan, SaxPlan, LowBrassPlan, BowedPlan —
+ *  drawn turned, so it is the plan's bottom edge); the house lies beyond. */
 export function offPlanAudience(wide: PlanRect): PlanAudience {
-  return { axis: 'u', dir: 1, lip: wide.u1, kind: 'direction', offPlan: true, marks: [{ u0: wide.u1 - 40 - 900, u1: wide.u1 - 40, v0: wide.v0 + 60 - 110, v1: wide.v0 + 60 + 60 }] };
+  const cv = (wide.v0 + wide.v1) / 2;
+  return { axis: 'u', dir: 1, lip: wide.u1, kind: 'direction', offPlan: true, marks: [{ u0: wide.u1 - 110 - 90, u1: wide.u1 - 110 + 90, v0: cv - 450, v1: cv + 450 }] };
 }
 
 export type PlanAudience = { axis: 'u' | 'v'; dir: 1 | -1; lip: number; kind: 'seats' | 'direction'; marks: PlanRect[]; offPlan?: boolean };
+
+/** A STAGE case as its family DRAWS it turned (planFoot planTurn — DOWNSTAGE
+ *  = BOTTOM, owner 2026-10-16): every footprint, cable, deck and audience
+ *  mark in the turned frame, the audience then down the screen (+v). A turn
+ *  keeps every distance, so the overlap checks read the same; the audience
+ *  check reads the new direction. */
+export function turnCase(c: PlanCase): PlanCase {
+  const A = c.audience;
+  return {
+    ...c,
+    foots: c.foots.map(turnRect),
+    cables: c.cables.map(turnCable),
+    ...(c.deck ? { deck: turnRect(c.deck) } : {}),
+    ...(A ? { audience: { ...A, axis: A.axis === 'u' ? 'v' : 'u', dir: A.axis === 'u' ? A.dir : (-A.dir as 1 | -1), lip: A.axis === 'u' ? A.lip : -A.lip, marks: A.marks.map(turnRect) } } : {}),
+  };
+}

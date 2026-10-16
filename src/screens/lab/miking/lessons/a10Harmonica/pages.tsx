@@ -159,7 +159,7 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: 900, v1: 1040 }, scene: 'studio', label: { u: 200, v: 820 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the harmonica player facing the audience, the harp amp behind and to the side of them, a wedge downstage in front, the band upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the harmonica player and the harp amp, no monitors on the floor.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
     first: 'The player faces the audience with the harmonica in their hands; their amp stands behind and to the side, so they hear it without it pointing at the cupped mic.',
     before: [
       { title: 'ASK THE PLAYER', text: 'Which sound: clean acoustic harmonica, close amplified harp through the PA, or the harp amp itself? Which harmonicas — and do they swap them, sing too, or use a neck holder? Where will they put a hand-held mic down?' },

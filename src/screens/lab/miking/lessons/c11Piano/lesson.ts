@@ -645,12 +645,15 @@ const diagnostic: DiagnosticItem[] = [
 const wedges: Wedge[] = [
   {
     id: 'fill.side',
-    label: 'a side-fill speaker on a stand, beside the piano’s curved side',
+    label: 'a side-fill speaker on a stand in the stage wing, past the piano’s tail',
     short: 'SIDE-FILL',
-    p: { x: 600, y: FLOOR_Y, z: 2200 },
+    // in the wing, past the tail, facing ACROSS the stage at head height — a
+    // true side fill (owner 2026-10-16: downstage-centre facing upstage it
+    // was a front fill)
+    p: { x: 3600, y: FLOOR_Y, z: 1000 },
     lift: 1500,
-    faces: { x: 0, y: 0, z: -1 },
-    note: 'A side-fill on a stand, beside the stage, at about head height: it can reach a mic under the lid through the gap between the rim and the lid — the case a pattern’s rejection can help with.',
+    faces: { x: -1, y: 0, z: 0 },
+    note: 'A side-fill on a stand in the stage wing, at about head height, facing across the stage: it can reach a mic under the lid through the gap between the rim and the lid — the case a pattern’s rejection can help with.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
     glyph: 'none',
   },

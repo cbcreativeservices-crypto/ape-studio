@@ -40,7 +40,7 @@ import type { HornPose } from './brassPosture.ts';
 import { brassCue, brassFoots, brassShown, slideReach, type BrassPlanLayout, type BrassPlanObject } from './brassPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
-import { clearOfFoots, type PlanRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, type PlanRect } from '../planFoot.ts';
 import { besideLabel, cuePoint, ownRect } from './hornPlanFoot.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
@@ -120,7 +120,9 @@ function SingerTop() {
 
 export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap, accessibilityLabel }: { w: number; h: number; cfg: BrassSettingConfig; box: ViewBox; scene: 'kit' | 'stage' | 'studio'; wedges: readonly Wedge[]; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   const self = cfg.P;
   const shown = brassShown(cfg, scene);
   const floor = useMemo(() => {
@@ -156,13 +158,14 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   const mid = (o: BrassPlanObject) => centre(ownRect(foots, o.kind === 'self' ? 'player' : o.id), o);
   const labels: StaticLabel[] = [
     // The lesson's own player first: its name is never the one dropped.
-    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s),
+    besideLabel({ id: 'player', text: 'THE PLAYER', tone: 'muted' as const }, ownRect(foots, 'player'), centre(ownRect(foots, 'player'), cfg.objects[0]), s, T.places),
     ...shown
       .filter((o) => o.kind !== 'self')
-      .map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s)),
+      .map((o) => besideLabel({ id: o.id, text: o.label.toUpperCase(), short: o.short?.toUpperCase(), tone: tone(o.id) }, ownRect(foots, o.id), mid(o), s, T.places)),
   ];
-  if (reachRect) labels.push(besideLabel({ id: 'reach', text: 'SLIDE AT 7th', short: '7th', tone: 'muted' as const }, reachRect, { u: reachRect.u1 - 120, v: (reachRect.v0 + reachRect.v1) / 2 }, s));
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', tone: 'muted', point: { u: box.u1 - 220, v: box.v0 + 60 } });
+  if (reachRect) labels.push(besideLabel({ id: 'reach', text: 'SLIDE AT 7th', short: '7th', tone: 'muted' as const }, reachRect, { u: reachRect.u1 - 120, v: (reachRect.v0 + reachRect.v1) / 2 }, s, T.places));
+  // beyond the deck's dashed edge, centred under the plan (turned: the bottom edge)
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA ↓', short: 'AUDIENCE ↓', u: box.u1 - 110, v: (box.v0 + box.v1) / 2, align: 'center', tone: 'muted', point: { u: box.u1 - 110, v: (box.v0 + box.v1) / 2 } });
   if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 120, v: box.v0 + 120, align: 'left', tone: 'muted', point: { u: box.u0 + 120, v: box.v0 + 120 } });
   for (const rig of cues) labels.push(...cueLabels(rig, undefined, ['player']).map((l) => ({ ...l, tone: 'illustrative' as const, point: cuePoint(rig, l.id) })));
   const tap = (u: number, v: number) => {
@@ -191,9 +194,12 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   })();
   return (
     <View style={{ width: w, height: h }}>
-      <Pressable onPress={(e) => tap((e.nativeEvent.locationX - xf.ox) / xf.s, (e.nativeEvent.locationY - xf.oy) / xf.s)} accessible={false} style={{ width: w, height: h }}>
+      <Pressable onPress={(e) => {
+        const q = T.unPt({ u: (e.nativeEvent.locationX - xf.ox) / xf.s, v: (e.nativeEvent.locationY - xf.oy) / xf.s });
+        tap(q.u, q.v);
+      }} accessible={false} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={`${accessibilityLabel}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`}>
-          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
             <Path path={floor}>
               <LinearGradient start={vec(box.u0, box.v0)} end={vec(box.u1, box.v1)} colors={scene === 'studio' ? ['#2a2420', '#1a1613'] : ['#1d1e22', '#121316']} />
             </Path>
@@ -237,7 +243,7 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
           </Group>
         </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(wordFoots, cues.flatMap(cueCables))} />
+      <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(wordFoots), T.cables(cues.flatMap(cueCables)))} />
     </View>
   );
 }
@@ -323,7 +329,7 @@ export function makeBrassSettingPage(cfg: BrassSettingConfig): (p: PageProps) =>
         layout: 'rack',
         rack: {
           render: (w, h) => <BrassPlan w={w} h={h} cfg={cfg} box={cfg.wide} scene={where} wedges={lesson.live.wedges} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={where === 'stage' ? cfg.wideA11y.stage : cfg.wideA11y.studio} />,
-          badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
+          badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience below' : 'From above · a typical studio room',
           bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
           params: [
             fader(wideItems, wideSel, pickWide),

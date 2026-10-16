@@ -187,3 +187,69 @@ export function labelPlaces(r: PlanRect, s: number): { u: number; v: number; ali
     { u: cu, v: r.v0 - 9 * k, align: 'center' },
   ];
 }
+
+/**
+ * DOWNSTAGE = BOTTOM (owner 2026-10-16, stage-plot review HOLD 1): every LIVE
+ * plan shows the audience at the BOTTOM — upstage at the top, the deck's
+ * downstage edge and its PA pair along the bottom, the audience marks below
+ * it (the common stage-plot convention). Eleven plan families lay their stage
+ * out in the lesson's own top view (u = x, toward the audience); they draw it
+ * TURNED a quarter clockwise, (u, v) → (−v, u): the audience (+u) is down the
+ * screen and the player's right (+v) is screen-left, as seen from above with
+ * the player facing the bottom edge. A turn keeps every distance (no
+ * collision changes); the words are laid out in the turned frame, upright and
+ * clear of the turned footprints. A studio has no audience and is not turned.
+ */
+export const turnPt = (p: PlanPt): PlanPt => ({ u: -p.v, v: p.u });
+export const unturnPt = (p: PlanPt): PlanPt => ({ u: p.v, v: -p.u });
+export function turnRect<R extends PlanRect>(r: R): R {
+  return { ...r, u0: -r.v1, u1: -r.v0, v0: r.u0, v1: r.u1 };
+}
+export const turnCable = (k: PlanCable): PlanCable => ({ ...k, pts: k.pts.map(turnPt) });
+
+type Place = { u: number; v: number; align: 'left' | 'center' | 'right' };
+type TurnableLabel = { u: number; v: number; alts?: readonly Place[]; point?: PlanPt; at?: PlanPt; lead?: PlanPt };
+
+/** A plan's view turn: none, or the quarter turn (DOWNSTAGE = BOTTOM). The
+ *  renderer keeps its model coordinates and asks the turn for: the box to fit
+ *  (`rect`), the Skia group's extra `rotate`, an object's label places
+ *  (`places`: worked out round the TURNED footprint, handed back in model
+ *  coordinates), the finished labels (`labels`: into the turned frame), the
+ *  label blockers (`foots`, `cables`) and a tap (`unPt`: turned → model). */
+export type PlanTurn = {
+  on: boolean;
+  rotate: number;
+  pt: (p: PlanPt) => PlanPt;
+  unPt: (p: PlanPt) => PlanPt;
+  rect: <R extends PlanRect>(r: R) => R;
+  foots: <F extends PlanRect>(fs: readonly F[]) => F[];
+  cables: (ks: readonly PlanCable[]) => PlanCable[];
+  places: (r: PlanRect, s: number) => Place[];
+  labels: <L extends TurnableLabel>(ls: readonly L[]) => L[];
+};
+function same<T>(x: T): T {
+  return x;
+}
+export function planTurn(on: boolean): PlanTurn {
+  if (!on) return { on, rotate: 0, pt: same, unPt: same, rect: same, foots: (fs) => [...fs], cables: (ks) => [...ks], places: labelPlaces, labels: (ls) => [...ls] };
+  const back = (p: Place): Place => ({ ...unturnPt(p), align: p.align });
+  return {
+    on,
+    rotate: Math.PI / 2,
+    pt: turnPt,
+    unPt: unturnPt,
+    rect: turnRect,
+    foots: (fs) => fs.map(turnRect),
+    cables: (ks) => ks.map(turnCable),
+    places: (r, s) => labelPlaces(turnRect(r), s).map(back),
+    labels: (ls) =>
+      ls.map((l) => ({
+        ...l,
+        ...turnPt(l),
+        ...(l.alts ? { alts: l.alts.map((a) => ({ ...turnPt(a), align: a.align })) } : {}),
+        ...(l.point ? { point: turnPt(l.point) } : {}),
+        ...(l.at ? { at: turnPt(l.at) } : {}),
+        ...(l.lead ? { lead: turnPt(l.lead) } : {}),
+      })),
+  };
+}

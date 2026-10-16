@@ -33,7 +33,8 @@ export type KitPlanWhere = 'kit' | 'stage' | 'studio';
  *  marks beyond it (three arrows, `audienceU` = their tips − 40). */
 export const KITPLAN_STAGE = { lipU: 1670, audienceU: 1900 } as const;
 /** The audience arrows' extent (a marking on the floor plan, not an object). */
-export const AUDIENCE_MARK: PlanRect = { u0: KITPLAN_STAGE.audienceU - 170, u1: KITPLAN_STAGE.audienceU + 40, v0: -460, v1: 460 };
+// the arrows at v = 0, ±320 (drawn turned, their name sits clear beside them)
+export const AUDIENCE_MARK: PlanRect = { u0: KITPLAN_STAGE.audienceU - 170, u1: KITPLAN_STAGE.audienceU + 40, v0: -360, v1: 360 };
 
 /** The studio room's inner wall faces (drawn 40 mm thick, absorber panels
  *  46 mm deep on the long walls): a drum room round the whole kit. */

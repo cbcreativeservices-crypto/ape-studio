@@ -18,7 +18,7 @@
  */
 import { useMemo } from 'react';
 import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { CUE_MIXER, cueCups, cueFeeds, cueHub, cuePhones, PHONES_FRONT, type CueRig, type CueStation, type PlanPt } from './cueMix.ts';
+import { CUE_MIXER, cueCups, cueFeeds, cueHub, cueSeats, cueStationPhones, PHONES_FRONT, type CueRig, type CueStation, type PlanPt } from './cueMix.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const INK = '#08080a';
@@ -200,8 +200,7 @@ export function CueMixPlan({ rig }: { rig: CueRig }) {
   const feeds = useMemo(() => cueFeeds(rig).map((c) => polyline(c.pts)), [rig]);
   const cords = useMemo(
     () =>
-      rig.stations.map((s) => {
-        const c = cuePhones(s);
+      rig.stations.flatMap(cueStationPhones).map((c) => {
         const p = Skia.Path.Make();
         p.moveTo(c.pts[0].u, c.pts[0].v);
         p.quadTo(c.pts[1].u, c.pts[1].v, c.pts[2].u, c.pts[2].v);
@@ -222,7 +221,11 @@ export function CueMixPlan({ rig }: { rig: CueRig }) {
         <StandBase key={`b${s.id}`} at={s.at} />
       ))}
       {rig.stations.map((s) => {
-        const ang = Math.atan2(s.head.v - s.at.v, s.head.u - s.at.u);
+        // its front toward the player(s) it serves (a shared box: toward the pair)
+        const seats = cueSeats(s);
+        const hu = seats.reduce((a, p) => a + p.head.u, 0) / seats.length;
+        const hv = seats.reduce((a, p) => a + p.head.v, 0) / seats.length;
+        const ang = Math.atan2(hv - s.at.v, hu - s.at.u);
         return (
           <Group key={`m${s.id}`} transform={[{ translateX: s.at.u }, { translateY: s.at.v }, { rotate: ang }]}>
             <MixerTop />
@@ -235,7 +238,7 @@ export function CueMixPlan({ rig }: { rig: CueRig }) {
           <Path path={p} style="stroke" strokeWidth={9} strokeCap="round" color={PHONES_COLOR} />
         </Group>
       ))}
-      {rig.stations.map((s) => (s.alone ? <PhonesFront key={`p${s.id}`} at={s.head} /> : <PhonesTop key={`p${s.id}`} s={s} />))}
+      {rig.stations.flatMap((s) => cueSeats(s).map((p) => (p.alone ? <PhonesFront key={`p${p.id}`} at={p.head} /> : <PhonesTop key={`p${p.id}`} s={{ ...s, ...p }} />)))}
     </Group>
   );
 }

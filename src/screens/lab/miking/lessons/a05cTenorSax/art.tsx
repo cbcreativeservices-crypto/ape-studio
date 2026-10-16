@@ -23,7 +23,7 @@ export const A05C_ART: LessonArt = makeSaxLessonArt(TENOR_SAX, {
   setting: {
     ...A05C_PLAN,
     nearA11y: 'A tenor player from above, the horn hanging to their right, the bell’s swing hatched round it; a music stand in front, an alto player on one side and a baritone on the other, the drum kit behind.',
-    wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience to the right.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
+    wideA11y: { stage: 'The same from above, on a stage: the player’s wedge in front, another wedge to the side, the audience below.', studio: 'The same from above, in a studio room, with a main pair on a tall stand in front of the section; beside each player a headphone mixer on its stand, each wired back to the control room at the room’s edge.' },
     nearLanding: 'Tap anything around the player — or step through ITEM — to see what it means for a tenor mic. There is nothing to answer yet.',
     nearIdle: 'The tenor hangs on its strap to the player’s right, lower than an alto; the bell swings as they move, and the hands never leave the keys. Everything else is a neighbour a tenor mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front, and another player’s to the side. Monitors, the PA and a loud band all reach a tenor mic.',

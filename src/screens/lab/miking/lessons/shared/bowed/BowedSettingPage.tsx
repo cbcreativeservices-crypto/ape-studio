@@ -41,7 +41,7 @@ import { KitTop } from '../kitScene/KitSceneArt';
 import { Pianist } from '../piano/PianoArt';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
-import { clearOfFoots, labelPlaces, unionRect } from '../planFoot.ts';
+import { clearOfFoots, planTurn, labelPlaces, unionRect } from '../planFoot.ts';
 import { PIANIST, bowedCue, bowedFoots, bowedPlayerRect, bowedShown, type BowedPlanLayout } from './bowedPlanModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -343,7 +343,9 @@ function BowedTop({ P, dim, bow = true }: { P: Posture; dim: number; bow?: boole
 
 export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap, accessibilityLabel }: { w: number; h: number; cfg: BowedSettingConfig; box: ViewBox; scene: 'kit' | 'stage' | 'studio'; wedges: readonly Wedge[]; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
   const textScale = useStageTextScale();
-  const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
+  // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
+  const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
+  const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   const self = cfg.P;
   const sweep = useMemo(() => (cfg.hands === 'pluck' ? pluckPath(self, 'top') : sweepPaths(self, 'top').bow), [self, cfg.hands]);
   const hatch = useMemo(() => hatchFor(box), [box]);
@@ -369,7 +371,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   const cue = useMemo(() => (scene === 'studio' ? bowedCue(cfg) : null), [cfg, scene]);
   const s = xf.s / textScale;
   const nameAt = (id: string, r: { u0: number; u1: number; v0: number; v1: number }, text: string, short: string | undefined, point: { u: number; v: number }, tone: StaticLabel['tone']): StaticLabel => {
-    const [first, ...alts] = labelPlaces(r, s);
+    const [first, ...alts] = T.places(r, s);
     return { id, text, ...(short ? { short } : {}), u: first.u, v: first.v, align: first.align, alts, point, tone };
   };
   const selfRect = bowedPlayerRect(self, cfg.hands !== 'pluck');
@@ -380,7 +382,8 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
     const r = own.length ? unionRect(own) : { u0: o.at.x - o.r, u1: o.at.x + o.r, v0: o.at.z - o.r, v1: o.at.z + o.r };
     labels.push(nameAt(o.id, r, o.label.toUpperCase(), o.short?.toUpperCase(), { u: o.at.x, v: o.at.z }, highlight === o.id ? undefined : 'muted'));
   }
-  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA →', short: 'AUDIENCE →', u: box.u1 - 40, v: box.v0 + 60, align: 'right', point: { u: box.u1 - 110, v: box.v0 + 200 }, tone: 'muted' });
+  // beyond the deck's dashed edge, centred under the plan (turned: the bottom edge)
+  if (scene === 'stage') labels.push({ id: 'aud', text: 'AUDIENCE · PA ↓', short: 'AUDIENCE ↓', u: box.u1 - 110, v: (box.v0 + box.v1) / 2, align: 'center', tone: 'muted', point: { u: box.u1 - 110, v: (box.v0 + box.v1) / 2 } });
   if (scene === 'studio') labels.push({ id: 'room', text: 'THE ROOM', u: box.u0 + 160, v: box.v1 - 160, align: 'left', point: { u: box.u0 + 160, v: box.v1 - 200 }, tone: 'muted' });
   if (cue) labels.push(...cueLabels(cue, undefined, ['self']).map((l) => ({ ...l, tone: 'illustrative' as const })));
   const tap = (u: number, v: number) => {
@@ -406,9 +409,12 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   })();
   return (
     <View style={{ width: w, height: h }}>
-      <Pressable onPress={(e) => tap((e.nativeEvent.locationX - xf.ox) / xf.s, (e.nativeEvent.locationY - xf.oy) / xf.s)} accessible={false} style={{ width: w, height: h }}>
+      <Pressable onPress={(e) => {
+        const q = T.unPt({ u: (e.nativeEvent.locationX - xf.ox) / xf.s, v: (e.nativeEvent.locationY - xf.oy) / xf.s });
+        tap(q.u, q.v);
+      }} accessible={false} style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={`${accessibilityLabel}${selItem ? ` Highlighted: ${selItem.label}.` : ''}`}>
-        <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+        <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }, { rotate: T.rotate }]}>
           <Path path={floor}>
             <LinearGradient start={vec(box.u0, box.v0)} end={vec(box.u1, box.v1)} colors={scene === 'studio' ? ['#2a2420', '#1a1613'] : ['#1d1e22', '#121316']} />
           </Path>
@@ -449,7 +455,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
         </Group>
       </Canvas>
       </Pressable>
-      <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+      <StaticLabels labels={T.labels(labels)} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
     </View>
   );
 }
@@ -535,7 +541,7 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
         layout: 'rack',
         rack: {
           render: (w, h) => <BowedPlan w={w} h={h} cfg={cfg} box={cfg.wide} scene={where} wedges={lesson.live.wedges} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={where === 'stage' ? cfg.wideA11y.stage : `${cfg.wideA11y.studio} Each player has a personal headphone mixer beside them, fed from the control room.`} />,
-          badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
+          badge: where === 'stage' ? 'From above · monitors where a stage often puts them · audience below' : 'From above · a typical studio room',
           bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
           params: [
             fader(wideItems, wideSel, pickWide),
