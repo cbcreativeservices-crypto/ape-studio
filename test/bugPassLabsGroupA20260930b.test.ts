@@ -39,8 +39,10 @@ test('labels that would collide at 9 pt were moved apart, not overlapped', () =>
   // HOLD WINDOWS / LEVEL RUNGS lean away from each other.
   assert.match(chain, /left: xray\.shCx - 46, width: 80/);
   assert.match(chain, /left: xray\.qCx - 34, width: 80/);
-  // "analog rail" sits at the right end of the rail, clear of "0 dBFS".
-  assert.match(chain, /right: w - plotR \+ 4, top: top - 1, fontFamily: fonts\.mono, fontSize: 9, color: withAlpha\(RED, 0\.55\)/);
+  // "0 dBFS", "analog rail" and "noise floor" are named in a KEY ROW above the
+  // plot (art grading 2026-10-16) — never on their lines or in the wave.
+  assert.match(chain, /left: keyX2 \+ 17, top: keyY - 7, fontFamily: fonts\.mono, fontSize: 9/);
+  assert.match(chain, /const top = 22;\s*const bot = h - 48;\s*const keyY = 8;/);
   const dac = read('src/screens/lab/digital/vizDac.tsx');
   assert.match(dac, /\{ right: 10, top: h - 13 \}\]\}>VALUE ERROR/);
   const gain = read('src/screens/lab/gain/gainViz.tsx');

@@ -375,29 +375,79 @@ export function AnalogChainView({
   // the speaker's dust cap + coil so the drive level reads at a glance.
   const ampColor = levelColor(Math.max(0, Math.min(1, amp)));
 
+  /* THE MICROPHONE (art grading 2026-10-16: "the microphone is drawn nearly
+   * as large as the loudspeaker"). A small-diaphragm (pencil) condenser — the
+   * measurement-style mic you aim at a loudspeaker — at the same 3.06 mm a
+   * unit as the 8" driver: Ø21 × ≈110 mm → 7 units across, 36 long. It stands
+   * on a mic stand (clip, pole, weighted base) on the same floor as the
+   * loudspeaker's stand — nothing hangs in mid-air. */
+  const micR = 3.5 * k;
   const grillePath = useMemo(() => {
-    // Mic grille cap facing the speaker (rounded on the sound-facing side).
+    // Grille cap facing the speaker (rounded on the sound-facing end).
     const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(micX - 10 * k, midY - 8.5 * k, 11 * k, 17 * k), 7 * k, 7 * k));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(micX - 9 * k, midY - micR, 10 * k, micR * 2), micR, micR));
     return p;
-  }, [micX, midY, k]);
+  }, [micX, midY, k, micR]);
 
   const diaphragmPath = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(micX - 4.6 * k, midY - 6.2 * k, 2 * k, 12.4 * k), 1 * k, 1 * k));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(micX - 4.4 * k, midY - micR + 0.9 * k, 1.5 * k, micR * 2 - 1.8 * k), 0.7 * k, 0.7 * k));
     return p;
-  }, [micX, midY, k]);
+  }, [micX, midY, k, micR]);
 
   const micBodyPath = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(micX + 1 * k, midY - 7.5 * k, micLen, 15 * k), 3.5 * k, 3.5 * k));
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(micX + 1 * k, midY - micR, micLen, micR * 2), 1.8 * k, 1.8 * k));
     return p;
-  }, [micX, micLen, midY, k]);
+  }, [micX, micLen, midY, k, micR]);
+
+  const floorY = h - 10;
+  // Mic stand: a clip under the body's balance point, the pole, and a round
+  // weighted base seen edge-on, standing on the floor line.
+  const standX = micX + 12 * k;
+  const micStand = useMemo(() => {
+    const clip = Skia.Path.Make();
+    clip.addRRect(Skia.RRectXY(Skia.XYWHRect(standX - 4 * k, midY + micR - 0.5 * k, 8 * k, 4 * k), 1.2 * k, 1.2 * k));
+    const pole = Skia.Path.Make();
+    pole.addRect(Skia.XYWHRect(standX - 1.1 * k, midY + micR + 3.5 * k, 2.2 * k, floorY - 3 * k - (midY + micR + 3.5 * k)));
+    const base = Skia.Path.Make();
+    base.addRRect(Skia.RRectXY(Skia.XYWHRect(standX - 11 * k, floorY - 3 * k, 22 * k, 3 * k), 1.5 * k, 1.5 * k));
+    return { clip, pole, base };
+  }, [standX, midY, micR, floorY, k]);
+
+  /* THE LOUDSPEAKER'S BOX ("the speaker floats with no mount"). The driver is
+   * drawn in side SECTION, so its cabinet is too: back, top and bottom panels
+   * and the front baffle (18 mm board ≈ 4 units), the driver bolted through the
+   * baffle, the box on a speaker stand on the floor. */
+  const cabX0 = 3;
+  const cabT = midY - mouthHalf - 15 * k;
+  const cabB = midY + mouthHalf + 15 * k;
+  const board = 4 * k;
+  const cabinet = useMemo(() => {
+    const inner = Skia.Path.Make();
+    inner.addRect(Skia.XYWHRect(cabX0, cabT, mouthX + 2.6 * k - cabX0, cabB - cabT));
+    const panels = Skia.Path.Make();
+    panels.addRect(Skia.XYWHRect(cabX0, cabT, board, cabB - cabT)); // back
+    panels.addRect(Skia.XYWHRect(cabX0, cabT, mouthX + 2.6 * k - cabX0, board)); // top
+    panels.addRect(Skia.XYWHRect(cabX0, cabB - board, mouthX + 2.6 * k - cabX0, board)); // bottom
+    const holeT = midY - mouthHalf - 5 * k;
+    const holeB = midY + mouthHalf + 5 * k;
+    panels.addRect(Skia.XYWHRect(mouthX - 1.4 * k, cabT, board, holeT - cabT)); // baffle above the cut-out
+    panels.addRect(Skia.XYWHRect(mouthX - 1.4 * k, holeB, board, cabB - holeB)); // baffle below
+    const cx = (cabX0 + mouthX + 2.6 * k) / 2;
+    const stand = Skia.Path.Make();
+    stand.addRect(Skia.XYWHRect(cx - 12 * k, cabB, 24 * k, 2 * k)); // top plate
+    stand.addRect(Skia.XYWHRect(cx - 2.5 * k, cabB + 2 * k, 5 * k, floorY - 3 * k - (cabB + 2 * k))); // column
+    stand.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 16 * k, floorY - 3 * k, 32 * k, 3 * k), 1 * k, 1 * k)); // base
+    return { inner, panels, stand };
+  }, [cabT, cabB, board, mouthX, mouthHalf, midY, floorY, k]);
 
   const wirePath = useMemo(() => {
     const p = Skia.Path.Make();
+    // The mic lead hangs: a short sag between the mic's tail and the trace
+    // it feeds (cables sag under their own weight — never a ruler line).
     p.moveTo(micX + micLen + 1 * k, midY);
-    p.lineTo(gx0, midY);
+    p.quadTo((micX + micLen + gx0) / 2, midY + 9 * k, gx0, midY);
     return p;
   }, [micX, micLen, gx0, midY, k]);
 
@@ -459,7 +509,17 @@ export function AnalogChainView({
       <Canvas style={{ width, height, backgroundColor: BG }}>
         <Group transform={[{ scale: ts }]}>
         {/* Scene depth: floor line under the physical objects. */}
-        <SkLine p1={vec(4, h - 10)} p2={vec(micX + micLen + 4 * k, h - 10)} color="#17171c" strokeWidth={2} />
+        <SkLine p1={vec(2, floorY)} p2={vec(micX + micLen + 4 * k, floorY)} color="#26262e" strokeWidth={2} />
+
+        {/* The cabinet in section (dark inside), on its stand. */}
+        <Path path={cabinet.inner} color="#111116" />
+        <Path path={cabinet.panels}>
+          <LinearGradient start={vec(0, cabT)} end={vec(0, cabB)} colors={['#4b4540', '#2a2622']} />
+        </Path>
+        <Path path={cabinet.panels} color="#5c554e" style="stroke" strokeWidth={0.8} />
+        <Path path={cabinet.stand}>
+          <LinearGradient start={vec(0, cabB)} end={vec(0, floorY)} colors={[METAL_MID, METAL_LO]} />
+        </Path>
 
         {/* Loudspeaker — magnet, moving cone, surround flange. */}
         <Path path={magnetPath.ring}>
@@ -525,10 +585,17 @@ export function AnalogChainView({
         </Group>
         <Path path={micBodyPath}>
           <LinearGradient
-            start={vec(micX, midY - 8 * k)}
-            end={vec(micX + micLen, midY + 8 * k)}
+            start={vec(micX, midY - micR)}
+            end={vec(micX, midY + micR)}
             colors={[BODY_HI, BODY_LO]}
           />
+        </Path>
+        <Path path={micStand.pole}>
+          <LinearGradient start={vec(standX - 1.1 * k, 0)} end={vec(standX + 1.1 * k, 0)} colors={[METAL_HI, METAL_LO]} />
+        </Path>
+        <Path path={micStand.clip} color="#2a2b31" />
+        <Path path={micStand.base}>
+          <LinearGradient start={vec(0, floorY - 3 * k)} end={vec(0, floorY)} colors={[METAL_MID, METAL_LO]} />
         </Path>
         <Path path={wirePath} color="#3c4048" style="stroke" strokeWidth={1.6 * k} />
 
@@ -566,9 +633,11 @@ export function AnalogChainView({
         </Group>
       </Canvas>
 
-      <SText style={[lbl.tag, { left: magX, top: h - 24 }]}>SPEAKER</SText>
+      {/* Names sit clear of the objects: SPEAKER above its box, MIC on the
+          floor beside its stand base (art grading 2026-10-16). */}
+      <SText style={[lbl.tag, { left: cabX0, top: 3 }]}>SPEAKER</SText>
       <SText style={[lbl.tag, { left: mouthX + 8 * k, top: 3 }]}>PRESSURE →</SText>
-      <SText style={[lbl.tag, { left: micX - 10 * k, top: h - 24 }]}>MIC</SText>
+      <SText style={[lbl.tag, { left: standX - 11 * k - 24, top: h - 24 }]}>MIC</SText>
       <SText style={[lbl.tagAmber, { left: gx0, top: 3 }]}>CONTINUOUS VOLTAGE →</SText>
       <SText style={[lbl.mono, { left: gx0 + 2, top: midY - ampPx - 12 }]}>+1.0</SText>
       <SText style={[lbl.mono, { left: gx0 + 2, top: midY - 12 }]}>0</SText>

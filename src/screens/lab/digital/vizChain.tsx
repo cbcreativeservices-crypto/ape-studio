@@ -816,8 +816,16 @@ export function GainStagingView({
   const meterGap = 10;
   const plotR = w - (meterW * 2 + meterGap + 26);
   const plotW = plotR - PL;
-  const top = 10;
+  // A KEY ROW above the plot names the three reference lines (art grading
+  // 2026-10-16: "0 dBFS", "analog rail" and "noise floor" were printed ON
+  // their dashed lines / in the wave's path — the rail sits only ~3 dB above
+  // full scale, so no stretch of either line is free for a label).
+  const top = 22;
   const bot = h - 48;
+  const keyY = 8;
+  const keyX1 = PL;
+  const keyX2 = PL + 131;
+  const keyX3 = PL + 218;
   const mid = (top + bot) / 2;
   const half = (bot - top) / 2;
   const rail = Math.pow(10, GAIN_MODEL.railDb / 20);
@@ -850,6 +858,23 @@ export function GainStagingView({
     p.lineTo(plotR, fsY2);
     return p;
   }, [fsY, fsY2, plotR]);
+
+  const keyMarks = useMemo(() => {
+    const fs = Skia.Path.Make();
+    fs.moveTo(keyX1, keyY);
+    fs.lineTo(keyX1 + 13, keyY);
+    const rl = Skia.Path.Make();
+    rl.moveTo(keyX2, keyY);
+    rl.lineTo(keyX2 + 13, keyY);
+    const nz = Skia.Path.Make();
+    for (let i = 0; i <= 6; i++) {
+      const x = keyX3 + i * 2.2;
+      const y = keyY + (i % 2 === 0 ? -2 : 2) * (i === 3 ? 0.5 : 1);
+      if (i === 0) nz.moveTo(x, y);
+      else nz.lineTo(x, y);
+    }
+    return { fs, rl, nz };
+  }, [keyX1, keyX2, keyX3]);
 
   const railLines = useMemo(() => {
     const p = Skia.Path.Make();
@@ -980,6 +1005,14 @@ export function GainStagingView({
         <Path path={fsLines} color={withAlpha(RED, 0.85)} style="stroke" strokeWidth={1.1}>
           <DashPathEffect intervals={[5, 4]} />
         </Path>
+        {/* Key row: one sample of each reference line, named beside it. */}
+        <Path path={keyMarks.fs} color={withAlpha(RED, 0.85)} style="stroke" strokeWidth={1.1}>
+          <DashPathEffect intervals={[5, 3]} />
+        </Path>
+        <Path path={keyMarks.rl} color={withAlpha(RED, 0.55)} style="stroke" strokeWidth={1}>
+          <DashPathEffect intervals={[2, 3]} />
+        </Path>
+        <Path path={keyMarks.nz} color={LINE} style="stroke" strokeWidth={1} opacity={0.6} />
         {/* Noise floor fuzz */}
         <Path path={noisePath} color={LINE} style="stroke" strokeWidth={1} opacity={0.28}>
           <BlurMask blur={1.5} style="normal" />
@@ -1023,17 +1056,14 @@ export function GainStagingView({
         <RoundedRect x={Math.min(Math.max(markerX - 1.5, PL), w - 11)} y={zoneY - 3} width={3} height={14} r={1.5} color={LINE} />
         </Group>
       </Canvas>
-      <SText style={{ position: 'absolute', left: PL + 4, top: fsY - 11, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.9) }}>
-        0 dBFS (digital full scale)
+      <SText style={{ position: 'absolute', left: keyX1 + 17, top: keyY - 7, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.9) }}>
+        0 dBFS (full scale)
       </SText>
-      {/* Right end of the rail: the rail sits only ~3 dB (≈ 10 pt on a 200-pt
-          stage) above full scale, so at the left it printed on top of the
-          "0 dBFS" label (bug pass 2 2026-09-30). */}
-      <SText style={{ position: 'absolute', right: w - plotR + 4, top: top - 1, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.55) }}>
+      <SText style={{ position: 'absolute', left: keyX2 + 17, top: keyY - 7, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.7) }}>
         analog rail
       </SText>
-      <SText style={{ position: 'absolute', left: PL + 4, top: mid + 6, fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
-        noise floor (drawn)
+      <SText style={{ position: 'absolute', left: keyX3 + 17, top: keyY - 7, fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
+        noise floor
       </SText>
       <SText style={{ position: 'absolute', left: mAx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
         ANLG
@@ -1439,7 +1469,10 @@ export function FloatHeadroomView({
       <SText style={{ position: 'absolute', left: x1, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: AXIS_TEXT }}>
         FIXED-POINT RENDER (24-BIT)
       </SText>
-      <SText style={{ position: 'absolute', left: x0 + 3, top: mid - fsOff - 12, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.85) }}>
+      {/* In the FIXED pane, above its line: nothing there ever rises past full
+          scale (it flat-tops), so the label never sits on the wave — in the
+          float pane the over-zero crests ran through it (art grading 2026-10-16). */}
+      <SText style={{ position: 'absolute', left: x1 + paneW - 44, width: 40, textAlign: 'right', top: mid - fsOff - 14, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.85) }}>
         0 dBFS
       </SText>
       <SText style={{ position: 'absolute', left: x0, width: paneW, top: meterY + meterH + 4, fontFamily: fonts.mono, fontSize: 9, color: floatOver ? AMBER : GREEN }}>
