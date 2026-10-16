@@ -218,32 +218,60 @@ export function CymbalSide({ spec, cx, cy, tiltDeg, mount = true, plate = true, 
   );
 }
 
+/** The plate's outline rocked to each end of its swing (± CYMBAL_SWING at
+ *  the edge), and a curved double arrow at each rim (local frame). */
+export function swingPaths(R: number, rise: number) {
+  const a = Math.atan2(CYMBAL_SWING.mm, R);
+  const ghost = make();
+  for (const s of [-1, 1]) {
+    const c = Math.cos(s * a);
+    const sn = Math.sin(s * a);
+    const P = (x: number, y: number) => [x * c - y * sn, x * sn + y * c] as const;
+    const p0 = P(-R, 0);
+    const p1 = P(0, -rise * 1.7);
+    const p2 = P(R, 0);
+    ghost.moveTo(p0[0], p0[1]);
+    ghost.quadTo(p1[0], p1[1], p2[0], p2[1]);
+  }
+  const arrows = make();
+  const deg = 180 / Math.PI;
+  const rr = R + 18;
+  for (const side of [-1, 1]) {
+    // The arc at this rim (about the centre), arrowheads at both ends.
+    const mid = side > 0 ? 0 : Math.PI;
+    arrows.addArc(Skia.XYWHRect(-rr, -rr, 2 * rr, 2 * rr), (mid - a) * deg, 2 * a * deg);
+    for (const e of [-1, 1]) {
+      const th = mid + e * a;
+      const x = rr * Math.cos(th);
+      const y = rr * Math.sin(th);
+      // tangent along increasing th is (−sin, cos); the head points outward along e
+      const tx = -Math.sin(th) * e;
+      const ty = Math.cos(th) * e;
+      const nx = Math.cos(th);
+      const ny = Math.sin(th);
+      arrows.moveTo(x - tx * 13 + nx * 7, y - ty * 13 + ny * 7);
+      arrows.lineTo(x, y);
+      arrows.lineTo(x - tx * 13 - nx * 7, y - ty * 13 - ny * 7);
+    }
+  }
+  return { ghost, arrows, rimAt: (side: number) => ({ x: side * (R + 18), y: 0 }) };
+}
+
 /** The swing a struck cymbal makes on its felts (side view): the plate's
- *  outline rocked ± the swing at the edge, as a translucent fan — the space
- *  a mic keeps clear of. */
+ *  outline rocked to each end of its swing with a curved double arrow at each
+ *  rim (CymbalKitArt's SwingFan — one look for the family). */
 export function SwingEnvelope({ spec, cx, cy, tiltDeg }: { spec: CymbalSpec; cx: number; cy: number; tiltDeg: number }) {
   const R = spec.d.mm / 2;
-  const ang = Math.atan2(CYMBAL_SWING.mm, R) / DEG;
-  const fan = useMemo(() => {
-    const p = make();
-    // Each half of the plate sweeps a thin wedge about the centre.
-    for (const s of [-1, 1]) {
-      p.moveTo(0, 0);
-      p.lineTo(s * R * Math.cos(ang * DEG), -R * Math.sin(ang * DEG) - spec.rise.mm * 0.2);
-      p.lineTo(s * R * Math.cos(ang * DEG), R * Math.sin(ang * DEG));
-      p.close();
-    }
-    return p;
-  }, [R, ang, spec.rise.mm]);
+  const g = useMemo(() => swingPaths(R, spec.rise.mm), [R, spec.rise.mm]);
   // Not at rest in the placement scene (keepOuts.ts, owner ruling 2026-10-05).
   const keep = useKeepOutsAtRest();
   if (!keep) return null;
   return (
     <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: -tiltDeg * DEG }]}>
-      <Path path={fan} color="#8a8f9c" opacity={0.16} />
-      <Path path={fan} style="stroke" strokeWidth={1.6} color="#8a8f9c" opacity={0.55}>
-        <DashPathEffect intervals={[8, 6]} />
+      <Path path={g.ghost} style="stroke" strokeWidth={2.2} color="#c9a86a" opacity={0.5}>
+        <DashPathEffect intervals={[10, 7]} />
       </Path>
+      <Path path={g.arrows} style="stroke" strokeWidth={3.2} strokeCap="round" strokeJoin="round" color="#d8dce6" opacity={0.8} />
     </Group>
   );
 }

@@ -17,7 +17,8 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, stickFigureAt, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { StickDrummerArt, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
 import { ChinaSide, ChinaTop } from '../shared/cymbals/CymbalFxArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
@@ -30,34 +31,32 @@ const isInv = (v: VariantId) => v === 'inverted';
 const NEAR: Partial<Record<KitPiece, number>> = { tom1: 0.4, kick: 0.5, holder: 0.5, tom2: 0.8, floor: 0.55, ride: 0.5 };
 const AROUND_TOP = kitShow(['crash2'], NEAR);
 
-/** The stick as drawn, per view (also the labels' occupancy). */
-function stickSeg(view: ViewId, variant: VariantId) {
+/** The stick's bead on its spot, held by the drummer (kitScene/stickPlayer:
+ *  the drawn player is also the labels' occupancy). */
+const tipOf = (variant: VariantId) => {
   const s = isInv(variant) ? STRIKE_INV : STRIKE_UP;
-  return view === 'side'
-    ? { from: { x: s.x - 280, y: s.y - 230 }, to: { x: s.x - 4, y: s.y - 4 } }
-    : { from: { x: s.x - 250, y: s.z - 170 }, to: { x: s.x - 4, y: s.z } };
-}
+  return { x: s.x - 4, y: s.y - 4, z: s.z };
+};
 
 export function ChinaArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const p = CHINA_OF(variant);
-  const s = isInv(variant) ? STRIKE_INV : STRIKE_UP;
   if (view === 'side') {
     const own = (
       <Group>
         <PlateGlow c={p.c} tiltDeg={p.tiltDeg} R={R} rise={20} />
         <BoomStandSide id="crash2" />
         <ChinaSide place={p} swing />
-        <StickTo {...stickSeg('side', variant)} />
       </Group>
     );
-    return <KitAround view="side" show={NEAR} own={own} ownZ={p.c.z} />;
+    return <KitAround view="side" show={NEAR} own={own} ownZ={p.c.z} player={tipOf(variant)} />;
   }
   return (
     <Group>
+      <StickDrummerArt view="top" tip={tipOf(variant)} part="legs" />
       <KitAround view="top" show={AROUND_TOP} />
       <BoomStandTop id="crash2" />
       <ChinaTop place={p} />
-      <StickTo {...stickSeg('top', variant)} />
+      <StickDrummerArt view="top" tip={tipOf(variant)} part="upper" />
     </Group>
   );
 }
@@ -65,17 +64,18 @@ export function ChinaArt({ view, variant }: { view: ViewId; variant: VariantId }
 export function chinaLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const p = CHINA_OF(variant);
   const inv = isInv(variant);
-  const s = inv ? STRIKE_INV : STRIKE_UP;
   const st = boomStandPoints('crash2');
   const tom = KIT.drums.tom2;
   if (view === 'side') {
+    const t = p.tiltDeg * DEG;
+    const rim = { u: p.c.x + (R + 18) * Math.cos(t), v: p.c.y - (R + 18) * Math.sin(t) };
     return [
+      { id: 'swing', text: 'SWING', u: rim.u + 30, v: rim.v + 80, align: 'left', tone: 'illustrative', at: rim },
       { id: 'cup', text: inv ? 'CUP (DOWN)' : 'CUP', short: 'CUP', u: p.c.x + 10, v: p.c.y + (inv ? 80 : -80), align: 'center' },
       { id: 'valley', text: inv ? 'RAISED RING' : 'VALLEY', short: inv ? 'RING' : 'VALLEY', u: p.c.x + AREAS.lip[0] * 0.95, v: p.c.y + (inv ? -70 : 60), align: 'center' },
       { id: 'lip', text: 'LIP', u: p.c.x + R + 40, v: p.c.y - 40, align: 'left' },
       { id: 'tom', text: '12 IN TOM', short: 'TOM', u: tom.c.x + 30, v: tom.c.y + 140, align: 'center', tone: 'muted' },
       { id: 'stand', text: 'BOOM STAND', short: 'STAND', u: st.foot.x + 40, v: st.joint.y + 100, align: 'left', tone: 'muted' },
-      { id: 'stick', text: 'STICK', u: s.x - 240, v: s.y - 260, align: 'center', tone: 'illustrative' },
     ];
   }
   return [
@@ -108,7 +108,7 @@ export const CHINA_ART: LessonArt = {
   Instrument: ChinaArt,
   labels: chinaLabels,
   hitTest: chinaHitTest,
-  figureAt: stickFigureAt(stickSeg),
+  figureAt: (view, variant, u, v, tol) => stickDrummerCovers(view, tipOf(variant), u, v, tol),
   plan: { own: 'cymbal.own' },
   SettingPlan: CymbalSettingPlan('china'),
   pages: CYMBAL_PAGES,

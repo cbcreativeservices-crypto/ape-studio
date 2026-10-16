@@ -26,6 +26,7 @@ import { MountStack } from './CymbalKitArt';
 import { surfaceHeight, type CymbalSpec } from './cymbalSpec.ts';
 import { CYMBAL_SHAPES, cymbalShapeAt, cymbalShapePeak } from './cymbalModes.ts';
 import { chinaHeight } from './cymbalFx.ts';
+import { StrikeArm, strikeArmStick } from '../kitScene/stickPlayer';
 
 const AMBER = '#ffc64d';
 const AIR = '#9cc4ff';
@@ -172,7 +173,8 @@ export function CymbalStrikeFx({ w, h, spec, profile, inverted, pairGap, rFrac, 
   // The mount: the felts on the plate's top at the centre.
   const topAt0 = S.top[N / 2];
   const seat = topAt0 + T;
-  const labels: StaticLabel[] = [{ id: 'e1', text: marks[0], short: marks[0].split(' · ')[0], u: S.sx - 100, v: S.tipY - 252, align: 'center', tone: shown === 1 ? 'amber' : 'muted' }];
+  const held = strikeArmStick({ x: S.sx - 4, y: S.tipY - 6 });
+  const labels: StaticLabel[] = [{ id: 'e1', text: marks[0], short: marks[0].split(' · ')[0], u: S.sx + 60, v: S.tipY - 252, align: 'left', tone: shown === 1 ? 'amber' : 'muted', at: { u: held.to.x + (held.from.x - held.to.x) * 0.35, v: held.to.y + (held.from.y - held.to.y) * 0.35 } }];
   if (shown >= 2) labels.push({ id: 'e2', text: marks[1], short: marks[1].split(' · ')[0], u: S.sx, v: S.tipY + 70 + (pairGap ?? 0), align: 'center', tone: shown === 2 ? 'amber' : 'muted' });
   if (shown >= 3) labels.push({ id: 'e3', text: marks[2], short: marks[2].split(' · ')[0], u: R + 40, v: -64, align: 'right', tone: shown === 3 ? 'amber' : 'muted' });
   if (shown >= 4) {
@@ -203,10 +205,10 @@ export function CymbalStrikeFx({ w, h, spec, profile, inverted, pairGap, rFrac, 
           <Path path={statics.rest} style="stroke" strokeWidth={2} color="#e8eaee" opacity={restOn}>
             <DashPathEffect intervals={[8, 6]} />
           </Path>
+          {/* the drummer's stick hand, the arm entering from the frame's edge
+              (kitScene/stickPlayer: a crop of the player, never a loose stick) */}
           <Group opacity={stickOn}>
-            <Path path={statics.stick} style="stroke" strokeWidth={13} strokeCap="round" color="#3b2a17" />
-            <Path path={statics.stick} style="stroke" strokeWidth={9} strokeCap="round" color="#d8b07a" />
-            <Path path={statics.tip} color="#e9cf9f" />
+            <StrikeArm tip={{ x: S.sx - 4, y: S.tipY - 6 }} />
           </Group>
           <Group opacity={rockOn}>
             <Path path={statics.rock} style="stroke" strokeWidth={4} strokeCap="round" strokeJoin="round" color={AMBER} />

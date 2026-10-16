@@ -17,7 +17,8 @@ import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT, KIT_DRUMS, KIT_FLOOR_Y, PLAN_HARDWARE } from '../shared/kitPlanModel.ts';
 import { HiHatSide, HiHatTop } from '../shared/cymbals/CymbalArt';
 import { HIHAT_HARDWARE as HH } from '../shared/cymbals/cymbalSpec.ts';
-import { AirRing, KitAround, StickTo, stickFigureAt, kitShow } from '../shared/cymbals/CymbalKitArt';
+import { AirRing, KitAround, kitShow } from '../shared/cymbals/CymbalKitArt';
+import { StickDrummerArt, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -28,12 +29,9 @@ const gapOf = (v: VariantId) => (v === 'open' ? GAP.open : GAP.closed);
 const SNARE = KIT_DRUMS.snare;
 const CR1 = KIT.cymbals.crash1;
 
-/** The stick as drawn, per view (also the labels' occupancy). */
-function stickSeg(view: ViewId, _variant: VariantId) {
-  return view === 'side'
-    ? { from: { x: STRIKE.x - 330, y: STRIKE.y - 230 }, to: { x: STRIKE.x - 4, y: STRIKE.y - 6 } }
-    : { from: { x: STRIKE.x - 250, y: STRIKE.z + 250 }, to: { x: STRIKE.x - 4, y: STRIKE.z + 3 } };
-}
+/** The stick's bead on the hats' near edge, held by the drummer
+ *  (kitScene/stickPlayer: the drawn player, also the labels' occupancy). */
+const TIP = { x: STRIKE.x - 4, y: STRIKE.y - 6, z: STRIKE.z + 3 };
 
 export function HiHatArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const open = variant === 'open';
@@ -43,22 +41,22 @@ export function HiHatArt({ view, variant }: { view: ViewId; variant: VariantId }
       <Group>
         <AirRing view="side" cx={C.x} cy={C.y} cz={C.z} R={HAT_R} width={HH.airWidth.mm} above={HH.airAbove.mm} below={gap + HAT_RISE * 0.5} />
         <HiHatSide open={open} />
-        <StickTo {...stickSeg('side', variant)} />
       </Group>
     );
-    return <KitAround view="side" show={{ snare: 0.62, crash1: 0.5, tom1: 0.35, kick: 0.3 }} own={own} ownZ={C.z} />;
+    return <KitAround view="side" show={{ snare: 0.62, crash1: 0.5, tom1: 0.35, kick: 0.3 }} own={own} ownZ={C.z} player={TIP} />;
   }
   const own = (
     <Group>
       <AirRing view="top" cx={C.x} cy={C.y} cz={C.z} R={HAT_R} width={HH.airWidth.mm} above={0} below={0} />
       <HiHatTop />
-      <StickTo {...stickSeg('top', variant)} />
     </Group>
   );
   return (
     <Group>
+      <StickDrummerArt view="top" tip={TIP} part="legs" />
       <KitAround view="top" show={kitShow(['hihat', 'crash1', 'crash2', 'ride'], { snare: 0.75 })} />
       {own}
+      <StickDrummerArt view="top" tip={TIP} part="upper" />
       <KitAround view="top" show={{ crash1: 0.45, crash2: 0.3, ride: 0.3 }} />
     </Group>
   );
@@ -73,21 +71,22 @@ export function hiHatLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   // the whole pair, PLAYER to empty glass).
   // The drummer's keep-out fills everything left of the stand (u < C.x), so
   // every name sits right of it.
-  const st = { x: STRIKE.x - 0.17 * 330, y: STRIKE.y - 0.17 * 230 };
   if (view === 'side') {
     const t = (CR1.tiltDeg * Math.PI) / 180;
-    // A column right of the pair, past the crash's stand and under the
-    // inset, in the order that keeps every leader clear of the others (each
-    // label's leader runs up-left to its part, the steeper ones above).
-    const xr = C.x + 243;
+    // One column right of the pair, in the same top-to-bottom order as the
+    // points the leaders land on (art grading fix 2026-10-16: the old column
+    // was in a different order, so four leaders crossed over the stand): the
+    // clutch, the top cymbal, the air burst at the rim, the bottom cymbal.
+    // Every point is on the pair's right half, so no leader crosses the rod.
+    // The drummer fills the left.
+    const xr = C.x + HAT_R + 70;
     return [
-      { id: 'air', text: 'AIR BURST', short: 'AIR', u: xr, v: C.y + 24, align: 'left', tone: 'illustrative', at: { u: C.x + HAT_R + 14, v: C.y + gap * 0.5 } },
-      { id: 'top', text: 'TOP CYMBAL', short: 'TOP', u: xr, v: C.y + 62, align: 'left', at: { u: C.x + HAT_R * 0.7, v: C.y - HAT_RISE * 0.3 } },
-      { id: 'clutch', text: 'CLUTCH', u: xr, v: C.y + 100, align: 'left', at: { u: C.x + 18, v: C.y - HAT_RISE - 34 } },
-      { id: 'bottom', text: 'BOTTOM CYMBAL', short: 'BOTTOM', u: xr, v: C.y + 138, align: 'left', at: { u: C.x + HAT_R * 0.5, v: C.y + gap + HAT_RISE * 0.5 } },
+      { id: 'clutch', text: 'CLUTCH', u: xr, v: C.y - HAT_RISE - 150, align: 'left', at: { u: C.x + 14, v: C.y - HAT_RISE - 45 } },
+      { id: 'top', text: 'TOP CYMBAL', short: 'TOP', u: xr, v: C.y - 85, align: 'left', at: { u: C.x + HAT_R * 0.72, v: C.y - HAT_RISE * 0.25 } },
+      { id: 'air', text: 'AIR BURST', short: 'AIR', u: xr + 40, v: C.y - 5, align: 'left', tone: 'illustrative', at: { u: C.x + HAT_R + 30, v: C.y + gap * 0.5 } },
+      { id: 'bottom', text: 'BOTTOM CYMBAL', short: 'BOTTOM', u: xr, v: C.y + 75, align: 'left', at: { u: C.x + HAT_R * 0.72, v: C.y + gap + HAT_RISE * 0.25 } },
       { id: 'snare', text: 'SNARE', u: SNARE.c.x + 60, v: SNARE.c.y + 110, align: 'center', tone: 'muted' },
       { id: 'crash', text: 'CRASH', u: C.x + HAT_R - 30, v: CR1.c.y + 40, align: 'right', tone: 'muted', at: { u: CR1.c.x - (CR1.d / 2) * 0.9 * Math.cos(t), v: CR1.c.y + (CR1.d / 2) * 0.9 * Math.sin(t) } },
-      { id: 'stick', text: 'STICK', u: C.x + 30, v: C.y - 200, align: 'left', tone: 'illustrative', at: { u: st.x, v: st.y } },
     ];
   }
   return [
@@ -125,7 +124,7 @@ export const HIHAT_ART: LessonArt = {
   Instrument: HiHatArt,
   labels: hiHatLabels,
   hitTest: hiHatHitTest,
-  figureAt: stickFigureAt(stickSeg),
+  figureAt: (view, _variant, u, v, tol) => stickDrummerCovers(view, TIP, u, v, tol),
   plan: { own: 'hihat' },
   SettingPlan: CymbalSettingPlan('hihat'),
   pages: CYMBAL_PAGES,

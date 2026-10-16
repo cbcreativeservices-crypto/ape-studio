@@ -90,9 +90,28 @@ export const CHINA_18: CymbalSpec = {
 
 /**
  * The China's top surface above its rim plane at radius r (mm), upright.
- * Flip the sign for an inverted China (its cup down, its lip up).
+ * Flip the sign for an inverted China (its cup down, its lip up). The raw
+ * profile's corners at the cup (its rim and its foot) are rounded as a
+ * spun-bronze plate's are: a short running average (± 2.5 % of the radius)
+ * over the cup and its foot only (art grading fix 2026-10-16 — the sharp
+ * corners drew a zigzag); the shoulder, the valley and the lip are exact.
  */
 export function chinaHeight(r: number): number {
+  const R = CHINA_18.d.mm / 2;
+  const a = Math.abs(r);
+  const w = 0.025 * R;
+  const footEnd = CHINA_PROFILE.cupR.mm * R + 0.025 * R + 2 * w;
+  if (a >= footEnd + w) return chinaRaw(a);
+  // Mirrored at the centre, so the crown stays level.
+  let sum = 0;
+  for (let k = -4; k <= 4; k++) sum += chinaRaw(Math.abs(a + (k * w) / 4));
+  const avg = sum / 9;
+  // Blend back to the exact profile over the last w before the shoulder.
+  const e = Math.max(0, Math.min(1, (footEnd + w - a) / w));
+  return avg * e + chinaRaw(a) * (1 - e);
+}
+
+function chinaRaw(r: number): number {
   const R = CHINA_18.d.mm / 2;
   const a = Math.min(R, Math.abs(r));
   const cupR = CHINA_PROFILE.cupR.mm * R;

@@ -180,7 +180,7 @@ let kickTop: { shell: SkPath; hoops: SkPath; rods: SkPath; pedal: SkPath } | nul
 
 /* ── the throne and the tom holder ── */
 
-function ThroneSide() {
+export function ThroneSide() {
   const t = KIT.throne;
   const p = (throneSide ??= (() => {
     const seatY = yAt(t.seatH);
@@ -206,7 +206,7 @@ function ThroneSide() {
 }
 let throneSide: { seat: SkPath; post: SkPath; legs: SkPath; seatY: number } | null = null;
 
-function ThroneTop() {
+export function ThroneTop() {
   const t = KIT.throne;
   const legs = (throneLegs ??= (() => {
     const p = make();

@@ -25,9 +25,10 @@ import type { VariantId, ViewId } from '../../../engine/model/types.ts';
 import { KIT, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanModel.ts';
 import { DrumExterior, DrumPlan, FloorTomLegsSide, KickFromAbove, KickSideNeighbour, SnareStandSide, Stick, sideTransform, topTransform } from '../drums/DrumArt';
 import { KICK_22x18, frameOf, pointOn } from '../drums/drumSpec.ts';
-import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatSide, HiHatTop } from './CymbalArt';
+import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatSide, HiHatTop, swingPaths } from './CymbalArt';
 import { CYMBAL_HARDWARE as HW, CYMBAL_SWING, KIT_PLACED_CYMBALS, type CymbalSpec } from './cymbalSpec.ts';
 import { DrummerKeepOut } from '../kitScene/KitSceneArt';
+import { StickDrummerArt, StickHandOver } from '../kitScene/stickPlayer';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -201,11 +202,21 @@ const TOP_ORDER: KitPiece[] = ['kick', 'floor', 'snare', 'holder', 'tom1', 'tom2
  * (0–1). `own`: the lesson's cymbal drawing and its depth (side) — drawn
  * between the pieces behind and in front of it.
  */
-export function KitAround({ view, show, own, ownZ }: { view: ViewId; show: Partial<Record<KitPiece, number>>; own?: ReactNode; ownZ?: number }) {
+export function KitAround({ view, show, own, ownZ, player }: { view: ViewId; show: Partial<Record<KitPiece, number>>; own?: ReactNode; ownZ?: number; player?: { x: number; y: number; z: number } }) {
   const ids = (Object.keys(show) as KitPiece[]).filter((k) => (show[k] ?? 0) > 0);
   if (view === 'side') {
     const items: { z: number; node: ReactNode; key: string }[] = ids.map((k) => ({ z: DEPTH[k], key: k, node: <Group key={k} opacity={show[k]}><SidePiece id={k} /></Group> }));
     if (own) items.push({ z: ownZ ?? 0, key: 'own', node: <Group key="own">{own}</Group> });
+    // The drummer holding the lesson's stick (stickPlayer.tsx), drawn as a
+    // PHANTOM behind the kit (a technical illustration's convention: from the
+    // player's right the body would hide the very pieces the lesson is about),
+    // receded; the stick, the near arm and the fist are drawn again over
+    // everything, so the hand that strikes is never hidden and always closes
+    // over its stick.
+    if (player) {
+      items.push({ z: -Infinity, key: 'player', node: <StickDrummerArt key="player" view="side" tip={player} dim={0.34} /> });
+      items.push({ z: Infinity, key: 'hand', node: <StickHandOver key="hand" view="side" tip={player} dim={0.5} /> });
+    }
     items.sort((a, b) => a.z - b.z);
     return <Group>{items.map((i) => i.node)}</Group>;
   }
@@ -328,26 +339,19 @@ export function MountStack({ seat, top }: { seat: number; top: number }) {
   );
 }
 
-/** The ± swing at a plate's edge from the side (local frame): a translucent
- *  fan, the space a mic keeps clear of. */
+/** The ± swing at a plate's edge from the side (local frame): the plate's
+ *  outline rocked to each end of its swing, faint and dashed, with a curved
+ *  double arrow at each rim — the plate moving on its felts, the space a mic
+ *  keeps clear of (art grading fix 2026-10-16: the old translucent bow-tie
+ *  wedge read as an unexplained shape; the lesson labels it SWING). */
 export function SwingFan({ R, rise }: { R: number; rise: number }) {
-  const fan = useMemo(() => {
-    const p = make();
-    const a = Math.atan2(CYMBAL_SWING.mm, R);
-    for (const s of [-1, 1]) {
-      p.moveTo(0, 0);
-      p.lineTo(s * R * Math.cos(a), -R * Math.sin(a) - rise * 0.2);
-      p.lineTo(s * R * Math.cos(a), R * Math.sin(a));
-      p.close();
-    }
-    return p;
-  }, [R, rise]);
+  const g = useMemo(() => swingPaths(R, rise), [R, rise]);
   return (
     <Group>
-      <Path path={fan} color="#8a8f9c" opacity={0.14} />
-      <Path path={fan} style="stroke" strokeWidth={1.6} color="#8a8f9c" opacity={0.55}>
-        <DashPathEffect intervals={[8, 6]} />
+      <Path path={g.ghost} style="stroke" strokeWidth={2.2} color="#c9a86a" opacity={0.5}>
+        <DashPathEffect intervals={[10, 7]} />
       </Path>
+      <Path path={g.arrows} style="stroke" strokeWidth={3.2} strokeCap="round" strokeJoin="round" color="#d8dce6" opacity={0.8} />
     </Group>
   );
 }

@@ -16,7 +16,8 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, stickFigureAt, SwingFan, kitShow, plateTransform, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, SwingFan, kitShow, plateTransform, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { StickDrummerArt, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -26,20 +27,17 @@ import { CRASH_OF, STRIKE1, STRIKE2, TOM1, TOM2 } from './model.ts';
 const DEG = Math.PI / 180;
 const isTwo = (v: VariantId) => v === 'crash2';
 
-/** The stick as drawn, per view (also the labels' occupancy). */
-function stickSeg(view: ViewId, variant: VariantId) {
-  const two = isTwo(variant);
-  const strike = two ? STRIKE2 : STRIKE1;
-  return view === 'side'
-    ? { from: { x: strike.x - 290, y: strike.y - 230 }, to: { x: strike.x - 4, y: strike.y - 4 } }
-    : { from: { x: strike.x - 250, y: strike.z + (two ? -170 : 170) }, to: { x: strike.x - 4, y: strike.z } };
-}
+/** The stick's bead on the edge, held by the drummer (kitScene/stickPlayer:
+ *  the drawn player is also the labels' occupancy). */
+const tipOf = (variant: VariantId) => {
+  const s = isTwo(variant) ? STRIKE2 : STRIKE1;
+  return { x: s.x - 4, y: s.y - 4, z: s.z };
+};
 
 export function CrashArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const two = isTwo(variant);
   const c = CRASH_OF(variant);
   const id = two ? 'crash2' : 'crash1';
-  const strike = two ? STRIKE2 : STRIKE1;
   const R = c.spec.d.mm / 2;
   const near: Partial<Record<KitPiece, number>> = two
     ? { tom1: 0.45, kick: 0.5, holder: 0.55, tom2: 0.8, floor: 0.6, ride: 0.45, crash1: 0.35 }
@@ -54,19 +52,19 @@ export function CrashArt({ view, variant }: { view: ViewId; variant: VariantId }
           <SwingFan R={R} rise={c.spec.rise.mm} />
         </Group>
         <CymbalSide spec={c.spec} cx={c.c.x} cy={c.c.y} tiltDeg={c.tiltDeg} />
-        <StickTo {...stickSeg('side', variant)} />
       </Group>
     );
-    return <KitAround view="side" show={around} own={own} ownZ={c.c.z} />;
+    return <KitAround view="side" show={around} own={own} ownZ={c.c.z} player={tipOf(variant)} />;
   }
   const below: Partial<Record<KitPiece, number>> = Object.fromEntries(Object.entries(around).filter(([k]) => !['crash1', 'crash2', 'ride'].includes(k)));
   const above: Partial<Record<KitPiece, number>> = Object.fromEntries(Object.entries(around).filter(([k]) => ['crash1', 'crash2', 'ride'].includes(k)));
   return (
     <Group>
+      <StickDrummerArt view="top" tip={tipOf(variant)} part="legs" />
       <KitAround view="top" show={below} />
       <BoomStandTop id={id} />
       <CymbalTop spec={c.spec} cx={c.c.x} cz={c.c.z} tiltDeg={c.tiltDeg} areas dim={0.92} />
-      <StickTo {...stickSeg('top', variant)} />
+      <StickDrummerArt view="top" tip={tipOf(variant)} part="upper" />
       <KitAround view="top" show={above} />
     </Group>
   );
@@ -77,16 +75,17 @@ export function crashLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const c = CRASH_OF(variant);
   const R = c.spec.d.mm / 2;
   const tom = two ? TOM2 : TOM1;
-  const strike = two ? STRIKE2 : STRIKE1;
   const st = boomStandPoints(two ? 'crash2' : 'crash1');
   if (view === 'side') {
+    const t = c.tiltDeg * DEG;
+    const rim = { u: c.c.x + (R + 18) * Math.cos(t), v: c.c.y - (R + 18) * Math.sin(t) };
     return [
+      { id: 'swing', text: 'SWING', u: rim.u + 40, v: rim.v - 70, align: 'left', tone: 'illustrative', at: rim },
       { id: 'edge', text: 'EDGE', u: c.c.x - R - 30, v: c.c.y + 40, align: 'right' },
       { id: 'bow', text: 'BOW', u: c.c.x + R * 0.5, v: c.c.y - 90, align: 'center' },
       { id: 'bell', text: 'BELL', u: c.c.x, v: c.c.y - c.spec.rise.mm - 50, align: 'center', tone: 'muted' },
       { id: 'tom', text: two ? '12 IN TOM' : '10 IN TOM', short: 'TOM', u: tom.c.x + 40, v: tom.c.y + 150, align: 'center', tone: 'muted' },
       { id: 'stand', text: 'BOOM STAND', short: 'STAND', u: st.joint.x + 40, v: st.joint.y + 70, align: 'left', tone: 'muted' },
-      { id: 'stick', text: 'STICK', u: strike.x - 250, v: strike.y - 270, align: 'center', tone: 'illustrative' },
     ];
   }
   return [
@@ -123,7 +122,7 @@ export const CRASH_ART: LessonArt = {
   Instrument: CrashArt,
   labels: crashLabels,
   hitTest: crashHitTest,
-  figureAt: stickFigureAt(stickSeg),
+  figureAt: (view, variant, u, v, tol) => stickDrummerCovers(view, tipOf(variant), u, v, tol),
   plan: { own: 'crash1' },
   SettingPlan: CymbalSettingPlan('crash'),
   pages: CYMBAL_PAGES,

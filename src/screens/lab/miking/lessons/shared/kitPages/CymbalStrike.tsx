@@ -21,7 +21,7 @@ import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { CymbalSide } from '../cymbals/CymbalArt';
-import { Stick } from '../drums/DrumArt';
+import { StrikeArm, strikeArmStick } from '../kitScene/stickPlayer';
 import { CRASH_16, surfaceHeight } from '../cymbals/cymbalSpec.ts';
 import { CYMBAL_SHAPES, cymbalShapeAt, cymbalShapePeak } from '../cymbals/cymbalModes.ts';
 
@@ -97,6 +97,12 @@ const clamp01 = (v: number) => {
 
 export type CymbalStrikeProps = { w: number; h: number; reveal: SharedValue<number>; shown: number; accessibilityLabel: string };
 
+/** A point on the held stick, a third of the way back from its bead. */
+function stickMid(tipY: number) {
+  const s = strikeArmStick({ x: STRIKE_X - 3, y: tipY - 5 });
+  return { u: s.to.x + (s.from.x - s.to.x) * 0.35, v: s.to.y + (s.from.y - s.to.y) * 0.35 };
+}
+
 export function CymbalStrike({ w, h, reveal, shown, accessibilityLabel }: CymbalStrikeProps) {
   const textScale = useStageTextScale();
   const xf = useMemo(() => fitXform('side', STRIKE_BOX, w, h, 6), [w, h]);
@@ -135,7 +141,7 @@ export function CymbalStrike({ w, h, reveal, shown, accessibilityLabel }: Cymbal
   const rockOn = useDerivedValue(() => clamp01(reveal.value - 2) * (reveal.value >= 3.98 ? 0.45 : 1));
   const arcsOn = useDerivedValue(() => clamp01(reveal.value - 3));
   const labels: StaticLabel[] = [
-    { id: 'e1', text: '1 · STICK ON THE BOW', short: '1 · STICK', u: STRIKE_X - 100, v: statics.tipY - 252, align: 'center', tone: shown === 1 ? 'amber' : 'muted' },
+    { id: 'e1', text: '1 · STICK ON THE BOW', short: '1 · STICK', u: STRIKE_X + 60, v: statics.tipY - 252, align: 'left', tone: shown === 1 ? 'amber' : 'muted', at: stickMid(statics.tipY) },
   ];
   if (shown >= 2) labels.push({ id: 'e2', text: '2 · THE PLATE BENDS', short: '2 · BENDS', u: STRIKE_X, v: statics.tipY + 76, align: 'center', tone: shown === 2 ? 'amber' : 'muted' });
   if (shown >= 3) labels.push({ id: 'e3', text: '3 · RINGS AND ROCKS', short: '3 · RINGS', u: R + 40, v: -60, align: 'right', tone: shown === 3 ? 'amber' : 'muted' });
@@ -159,8 +165,9 @@ export function CymbalStrike({ w, h, reveal, shown, accessibilityLabel }: Cymbal
             <DashPathEffect intervals={[8, 6]} />
           </Path>
           <Group opacity={stickOn}>
-            {/* a 16 in hickory stick (Ø 14.7 mm, tapered to its tip bead), the bead on the bow */}
-            <Stick from={{ x: STRIKE_X - 130, y: statics.tipY - 210 }} to={{ x: STRIKE_X - 3, y: statics.tipY - 5 }} />
+            {/* the drummer's hand on a 16 in hickory stick, the bead on the bow;
+                the arm enters from the frame's edge (kitScene/stickPlayer) */}
+            <StrikeArm tip={{ x: STRIKE_X - 3, y: statics.tipY - 5 }} />
           </Group>
           <Group opacity={rockOn}>
             <Path path={statics.rock} style="stroke" strokeWidth={4} strokeCap="round" strokeJoin="round" color={AMBER} />

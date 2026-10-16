@@ -172,20 +172,29 @@ export function cymbalPoint(f: CymbalFrame, r: number, thetaDeg: number, h: numb
 }
 
 /**
- * The TOP surface's height above the edge plane at radius r (mm): a gentle
- * bow rising from the edge to the bell's foot, then the bell's dome. The
- * split (55 % of the rise in the bow, 45 % in the bell) is part of the
- * profile drawing default.
+ * The TOP surface's height above the edge plane at radius r (mm): a smooth,
+ * shallow bow falling almost straight from the bell's foot to the edge, and
+ * the bell a rounded dome — a flat-ish crown, steep sides and a fillet where
+ * it flares into the bow (art grading fix 2026-10-16: the old concave bow and
+ * a near-vertical bell wall drew a wavy "S" line, not a cymbal). The split
+ * (40 % of the rise in the bow, 60 % in the bell) is part of the profile
+ * drawing default; the total rise, the bell's diameter and the edge plane are
+ * unchanged.
  */
 export function surfaceHeight(spec: CymbalSpec, r: number): number {
   const R = spec.d.mm / 2;
   const bellR = spec.bellD.mm / 2;
-  const bow = spec.rise.mm * 0.55;
+  const bow = spec.rise.mm * 0.4;
   const bell = spec.rise.mm - bow;
   const a = Math.min(R, Math.max(0, Math.abs(r)));
-  if (a >= bellR) return bow * Math.pow(1 - (a - bellR) / (R - bellR), 1.35);
+  if (a >= bellR) {
+    // A gentle arch: a straight cone lifted a little in its middle.
+    const t = (a - bellR) / (R - bellR);
+    return bow * ((1 - t) + 0.12 * Math.sin(Math.PI * t));
+  }
+  // The dome: (1 + cos(π q^1.5)) / 2 — level on the crown, zero slope at the foot.
   const q = a / bellR;
-  return bow + bell * Math.pow(Math.max(0, 1 - q * q), 0.75);
+  return bow + bell * 0.5 * (1 + Math.cos(Math.PI * Math.pow(q, 1.5)));
 }
 
 /** The three playing areas, as radii (mm): bell, bow, edge (words: the bell
