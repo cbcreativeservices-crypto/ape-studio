@@ -32,7 +32,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { HeadIconSvg } from '../../features/lab/headIconsSvg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, BIN_SRC } from '../../../modules/ape-dsp';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../modules/ape-gesture-exclusion';
@@ -513,7 +513,10 @@ function Stage({
   const s = size / STAGE_U; // paint scale: px per logical unit
   const c = STAGE_U / 2;
   const rMax = c - 16; // radius of the 4 m ring
-  const fs = stageFont(9.5, s);
+  const fs = stageFont(10.5, s);
+  // True scale (art grading 2026-10-16: the head was drawn ~1.3 m wide on
+  // the 4 m rings, so a 1.5 m source looked almost touching): units per metre.
+  const uPerM = rMax / MAX_DIST;
   // Tell FULL SCREEN the drawing is square, so its canvas at every zoom is
   // the stage's own shape (no blank margin to pan across). A no-op on the glass.
   const report = useContext(StageAspectReport);
@@ -621,26 +624,34 @@ function Stage({
         </SvgText>
         {/* Just inside the 4 m ring (clash sweep 2026-10-10: at the stage's
             right edge the ring ran through the label); the house font. */}
-        <SvgText x={c + rMax - 4} y={c + 3} fill={colors.textSub} fontSize={fs} textAnchor="end" fontFamily={fonts.oswaldMedium}>
+        <SvgText x={c + rMax - 4} y={c + 4} fill={colors.textSub} fontSize={fs} textAnchor="end" fontFamily={fonts.oswaldMedium}>
           +90°
         </SvgText>
+        <SvgText x={c - rMax + 4} y={c + 4} fill={colors.textSub} fontSize={fs} textAnchor="start" fontFamily={fonts.oswaldMedium}>
+          −90°
+        </SvgText>
         {/* The listener's head — the owner's ABOVE head icon, turned to face
-            FRONT 0° (up the screen); head fix 2026-10-08. */}
-        <HeadIconSvg view="above" x={c} y={c} size={36} rotation={Math.PI} plate minStroke={1.4} />
-        {/* Sources. */}
+            FRONT 0° (up the screen); head fix 2026-10-08. At TRUE scale on the
+            rings: the icon box is 0.38 m (a ≈ 0.2 m head), floored at 14 units
+            so it stays findable (≈ 1.4× life at the floor). */}
+        <HeadIconSvg view="above" x={c} y={c} size={Math.max(14, 0.38 * uPerM)} rotation={Math.PI} plate minStroke={1.2} />
+        {/* Sources: a small loudspeaker seen from above (0.44 m wide), its
+            grille turned to the listener, in the source's colour — the colour
+            also rings it so each one is findable and matches its chip. */}
         {sources.map((s, i) => {
           const p = toXY(s);
+          const ang = (Math.atan2(c - p.y, c - p.x) * 180) / Math.PI; // toward the head
+          const W = 12;
+          const D = 9;
+          const col = SRC_COLORS[i];
           return (
-            <Circle
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={i === selected ? 13 : 10}
-              fill={s.on ? SRC_COLORS[i] : 'none'}
-              stroke={SRC_COLORS[i]}
-              strokeWidth={2}
-              opacity={s.on ? 0.95 : 0.55}
-            />
+            <G key={i} opacity={s.on ? 1 : 0.5}>
+              <Circle cx={p.x} cy={p.y} r={i === selected ? 12 : 10} stroke={col} strokeWidth={i === selected ? 2 : 1.2} fill={col} fillOpacity={s.on ? 0.16 : 0} />
+              <G transform={`translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) rotate(${ang.toFixed(1)})`}>
+                <Rect x={-D / 2} y={-W / 2} width={D} height={W} rx={1.2} fill="#3a3d46" stroke="#8a8e9a" strokeWidth={0.8} />
+                <Rect x={D / 2 - 1.8} y={-W / 2 + 0.6} width={1.8} height={W - 1.2} rx={0.6} fill={s.on ? col : '#5a5e6a'} />
+              </G>
+            </G>
           );
         })}
       </Svg>
