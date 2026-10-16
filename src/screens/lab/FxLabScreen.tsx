@@ -100,9 +100,10 @@ function requireFxAnim(): FxAnimModule | null {
   return fxAnimModule;
 }
 
-/** Honesty badge for the animated hero (§1.7 — a model, mirroring the math). */
-const ANIM_BADGE =
-  'SIGNAL THROUGH THE EFFECT — TEACHING VISUAL · EXACT JS MIRROR OF THE DSP MATH (motion modeled, not audio-rate)';
+/** Honesty badge for the animated hero (§1.7 — a model, mirroring the math).
+ *  Plain words (art grading 2026-10-16: "EXACT JS MIRROR OF THE DSP MATH"
+ *  was programmer jargon on a learner's screen). */
+const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';
 
 /** The SOURCE_LESSON control key for a generator source, from its mode. */
 function sourceKeyForGen(gen: GenParams): string {
@@ -533,7 +534,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     }),
     // LIVE measured GR (dynamics labs) — fxGrStatus, never simulated.
     ...(config.pollGr
-      ? [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : fxReady ? '— dB' : 'NO ENG', helpKey: 'gain_reduction' }]
+      ? // "— dB" whenever nothing is measured; the well says why (no audio
+        // engine in this build, or nothing playing) — "NO ENG" was jargon.
+        [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : '— dB', helpKey: 'gain_reduction' }]
       : []),
   ];
 
