@@ -4,10 +4,11 @@
  * and SIGNAL FLOW made explicit: VCO → VCF → VCA plus the three mod sources
  * (ADSR, LFO, sequencer), each explained and each routing drawn.
  *
- * HERO: the patch-flow diagram IS the actual native signal path — audio boxes
- * on the top row, mod sources below, patch cables highlighting exactly the
- * routings currently active (env→VCA always; env→cutoff, LFO→dest, SEQ→pitch
- * as configured). PATCH IDEAS presets set every parameter and state WHY that
+ * HERO: a Eurorack case patched exactly like the native signal path (lab-art
+ * fix 2026-10-16, was a flow chart of boxes) — control sources on the left,
+ * the audio path right to OUT, a cable for exactly the routings currently
+ * active (env→VCA always; env→cutoff, LFO→dest, SEQ→pitch + gate as
+ * configured), every knob at the patch's value. PATCH IDEAS presets set every parameter and state WHY that
  * routing makes that classic sound.
  *
  * LIVE + HONEST: the env meter and the running step highlight read the REAL
@@ -23,7 +24,7 @@
  * trays; only the prose scrolls. The dominant start/stop (RUN SEQUENCE / PLAY
  * DRONE) stays the compact HeaderPlayButton via LabShell's headerAction.
  */
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -45,10 +46,11 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
-import { useStageTextScale } from './rack/stageAspect';
+import { StageAspectReport, useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
+import { ModularSpectrum } from './modular/ModularSpectrum';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -168,8 +170,8 @@ const PATCH_IDEAS: { key: string; label: string; why: string; patch: Patch }[] =
 
 const INTRO =
   'One oscillator, one filter, one amplifier — and three modulators that automate them. ' +
-  'Every classic synth sound is a routing decision: what modulates what. The diagram below ' +
-  'is the actual signal path of the audio engine; patch cables light up as you route.';
+  'Every classic synth sound is a routing decision: what modulates what. The case below is ' +
+  'patched exactly like the audio engine: every cable you see is a live routing.';
 
 export function ModularLabScreen() {
   const { requestAudioOutput } = useAudioOutputGate();
@@ -340,7 +342,7 @@ export function ModularLabScreen() {
       title="MODULAR SYNTH LAB"
       subtitle="VCO · VCF · VCA · LFO · Envelope · Sequencer"
       intro={INTRO}
-      exploreCaption="Route the modulators and listen to what each patch cable does — the diagram is the live signal flow."
+      exploreCaption="Route the modulators and watch the patch cables move — the case is patched exactly like the sound you hear."
       checkEnd={<ModularLabEnd onOpen={stop} />}
       headerAction={
         <HeaderPlayButton
@@ -363,7 +365,7 @@ export function ModularLabScreen() {
           // enough to keep this much well (and the trays gain the same room).
           minWell: 132,
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
-          badge: 'SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT',
+          badge: 'THE PATCH — EVERY CABLE IS LIVE · KNOBS AT YOUR SETTINGS',
           onGuide: () => openLesson('display'),
           bezel: [
             {
@@ -494,8 +496,8 @@ export function ModularLabScreen() {
                     destination with a vanished cable and no explanation. */}
                 <Text style={styles.caption}>
                   {patch.lfoDepth <= 0 || patch.lfoDest === 0
-                    ? 'Routing OFF — a routing is live only with DEPTH above zero AND a destination. The lit cable on the diagram is the proof.'
-                    : `LIVE: LFO ${patch.lfoRate} Hz ${LFO_DESTS.find((d) => d.v === patch.lfoDest)?.label ?? ''} — the lit cable on the diagram confirms it.`}
+                    ? 'Routing OFF — a routing is live only with DEPTH above zero AND a destination. A cable in the case is the proof.'
+                    : `LIVE: LFO ${patch.lfoRate} Hz ${LFO_DESTS.find((d) => d.v === patch.lfoDest)?.label ?? ''} — the blue cable in the case confirms it.`}
                 </Text>
                 <View style={styles.chipRow}>
                   {LFO_RATES.map((r) => (
@@ -587,7 +589,8 @@ export function ModularLabScreen() {
                 ) : null}
                 <Text style={styles.caption}>
                   Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO
-                  and retriggers the envelope. The lit step (in the tray AND on the diagram's SEQ
+                  and retriggers the envelope (the SEQ’s CV and GATE cables). The lit step (in
+                  the tray AND on the SEQ module’s step
                   LEDs) is the REAL native sequencer position.
                 </Text>
               </View>
@@ -599,20 +602,43 @@ export function ModularLabScreen() {
       {!engineReady ? <EngineGate state={gate} /> : null}
 
       <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>READING THE DIAGRAM</Text>
+        <Text style={styles.sectionHead}>READING THE CASE</Text>
         <Text style={styles.caption}>
-          Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
-          always drives the VCA; everything else is a routing you choose. Tap any box for what it
-          does.
+          Seven modules in one row of a Eurorack case. Right side, AMBER cables: the audio path —
+          the VCO’s waveform output into the VCF, then the VCA, then OUT. Left side: the control
+          sources. Each control cable takes its source’s colour (the line under the module’s
+          name: SEQ red, LFO blue, ENV green). It carries control voltage (CV) — it turns a
+          setting for you and makes no sound itself. The envelope always opens the VCA; every
+          other cable is a routing you choose. Tap any module for what it does.
         </Text>
         <Text style={styles.caption}>
-          Every drawn cable is an ACTIVE routing — nothing decorative. The env meter in the ENV box
-          and the lit sequencer step read the real native modStatus while running.
+          Labels sit above each jack; outputs are in the shaded boxes; each knob sits at your
+          setting. V/OCT and PITCH = pitch inputs · GATE = note on/off · MAN = the envelope’s
+          hand gate, held down for the drone when the sequencer is off · CV1 / CV2 = control
+          inputs (the VCF’s CV1 knob sets how far the envelope moves the filter) · the ENV has
+          two OUT jacks carrying the same envelope, so it can feed two places · the VCA is a pair
+          in a row: OFS 1 closed (the envelope opens it), OFS 2 open (the LFO can only dip it) ·
+          LVL = output level.
+        </Text>
+        <Text style={styles.caption}>
+          Every cable is a live routing — nothing decorative. While the voice runs, the ENV light
+          glows with the real envelope level, the lit SEQ step button is the real sequencer step
+          and OUT’s ON light is lit.
         </Text>
       </View>
 
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>THE VOICE, AS SOUND</Text>
+        {/* The RESULT, computed (lab-art fix 2026-10-16): the VCO's harmonics
+            and what the VCF leaves of them, from the patch's own numbers. */}
+        <ModularSpectrum shape={patch.shape} f0={BASE_FREQ} cutoff={patch.cutoff} res={patch.res} cutLabel={fmtCut(patch.cutoff)} />
+        <Text style={styles.caption}>
+          Each bar is one harmonic of the {BASE_FREQ} Hz note — taller is louder. Grey shows
+          what the VCF removed; drag CUTOFF and watch the bars right of the line turn grey.
+          Calculated from your patch with the engine’s filter formula: the steady note at the
+          CUTOFF setting, before the envelope or LFO move it and before the output stage’s soft
+          saturation. Learn here; measure real gear with a calibrated analyzer.
+        </Text>
         {/* AUDIO — engine-gated ≥ v7, honest below. RUN/PLAY lives in the
             header (▶ = run sequence with SEQ on, play drone with it off). */}
         {engineReady ? (
@@ -627,8 +653,8 @@ export function ModularLabScreen() {
             </>
           ) : (
             <Text style={styles.caption}>
-              Modular audio needs the v7 engine build — this dev client predates it. The patch
-              diagram and lessons are fully functional; install the v7 build to hear the voice.
+              Modular audio needs the v7 engine build — this dev client predates it. The patched
+              case and lessons are fully functional; install the v7 build to hear the voice.
             </Text>
           )
         ) : null}
@@ -735,20 +761,208 @@ function ModularLabEnd({ onOpen }: { onOpen: () => void }) {
   );
 }
 
-// Routing identity colors — shared by the cables/boxes AND the bezel tints.
+// Routing identity colors — shared by the cables AND the bezel tints.
 const LFO_COLOR = '#6fa8ff';
 const ENV_COLOR = '#5bff85';
 const SEQ_COLOR = '#ff8d7a';
 
-/** The live patch-flow diagram: audio boxes VCO→VCF→VCA→OUT on top, mod
- *  sources LFO · ENV · SEQ below; patch cables drawn ONLY for active routings
- *  (env→VCA always; env→cutoff / LFO→dest / SEQ→pitch as configured). The env
- *  box doubles as the REAL env meter while running; the SEQ box carries 8 step
- *  LEDs lit from the REAL native sequencer position. 2026-07-29 visual-
- *  standards re-skin: gradient module plates with screws + engraved labels,
- *  sagging glow-stroked cables with jack plugs — same layout, taps, and state.
- *  2026-08-23: sized by the stage's (w, h) instead of self-measuring — the mod
- *  row anchors to the bottom so the cables gain sag room on the tall glass. */
+// ── THE EURORACK CASE (lab-art fix 2026-10-16) ──────────────────────────────
+// The graded flow chart (rounded boxes VCO → VCF → VCA → OUT, LFO · ENV · SEQ)
+// is now the real thing: seven Eurorack modules at true HP widths (1 HP =
+// 5.08 mm) and 3U height (128.5 mm), mounted in one row of a case between
+// its rails, every knob turned to the lab's actual value and every jack
+// labelled. Patch cables run between the actual jacks — one cable per
+// routing, each its own lane (own jacks, own sag depth), hanging under
+// gravity from plug to plug and colour-coded: amber = the AUDIO path, the
+// source's colour = a CONTROL (CV) cable. Control sources sit on the left,
+// the audio path runs left → right to OUT on the right, and a bracket above
+// the case names each group (outside the panels — labels never on objects).
+//
+// Real conventions kept: jacks low on the panel with their legend above;
+// OUTPUTS sit in shaded boxes (inputs do not); the VCO has one output per
+// waveform (the VCO tray's choice IS which jack the audio cable leaves from);
+// the envelope's amount into the filter is the VCF's CV1 attenuverter
+// (centre = 0); the sequencer's GATE drives the envelope's GATE input and its
+// CV drives the VCO's 1 V/oct input — exactly the engine's retune + retrigger
+// (Modular.hpp). Live readouts stay REAL (§1.7): the ENV LED glows with the
+// native envelope level, the SEQ step button lights at the native step, the
+// OUT LED is lit while the voice runs.
+const HP_MM = 5.08;
+const U3_MM = 128.5;
+
+type JackSpec = {
+  id: string;
+  /** Centre, in HP from the module's left edge. */
+  x: number;
+  /** 0 = the bottom jack row, 1 = the row above it. */
+  row: 0 | 1;
+  out?: boolean;
+  label?: string;
+  /** VCO waveform outputs carry the classic panel glyph instead of a word. */
+  glyph?: number;
+};
+type KnobSpec = { id: string; x: number; f: number; big?: boolean; label: string; bipolar?: boolean };
+type ModuleSpec = { key: string; name: string; hp: number; help: string; trim: string; jacks: JackSpec[]; knobs: KnobSpec[] };
+
+/** Left → right in the case. Widths are true HP for modules of this kind. */
+const RACK: ModuleSpec[] = [
+  {
+    key: 'seq',
+    name: 'SEQ',
+    hp: 12,
+    help: 'sequencer',
+    trim: SEQ_COLOR,
+    knobs: [{ id: 'rate', x: 2.6, f: 1, label: 'RATE' }],
+    jacks: [
+      { id: 'cv', x: 6, row: 0, out: true, label: 'CV' },
+      { id: 'gate', x: 10, row: 0, out: true, label: 'GATE' },
+    ],
+  },
+  {
+    key: 'lfo',
+    name: 'LFO',
+    hp: 6,
+    help: 'lfo',
+    trim: LFO_COLOR,
+    knobs: [
+      { id: 'rate', x: 3, f: 0.15, big: true, label: 'RATE' },
+      { id: 'level', x: 3, f: 0.85, label: 'LEVEL' },
+    ],
+    jacks: [{ id: 'out', x: 3, row: 0, out: true, label: 'OUT' }],
+  },
+  {
+    key: 'env',
+    name: 'ENV',
+    hp: 8,
+    help: 'envelope',
+    trim: ENV_COLOR,
+    knobs: [
+      { id: 'a', x: 2, f: 0.1, label: 'A' },
+      { id: 'd', x: 6, f: 0.1, label: 'D' },
+      { id: 's', x: 2, f: 0.9, label: 'S' },
+      { id: 'r', x: 6, f: 0.9, label: 'R' },
+    ],
+    jacks: [
+      // Outputs staggered: the upper one's cable leaves rightward, past
+      // (never across) the lower one.
+      { id: 'gate', x: 1.8, row: 0, label: 'GATE' },
+      { id: 'outF', x: 6.3, row: 1, out: true, label: 'OUT' },
+      { id: 'outA', x: 4.8, row: 0, out: true, label: 'OUT' },
+    ],
+  },
+  {
+    key: 'vco',
+    name: 'VCO',
+    hp: 12,
+    help: 'vco',
+    trim: colors.amber,
+    knobs: [{ id: 'tune', x: 6, f: 0.4, big: true, label: 'TUNE' }],
+    // Inputs high on the left (their cables leave leftward, toward the
+    // control sources); the four waveform outputs low on the right.
+    jacks: [
+      // PITCH = a second (exponential) pitch-CV input: the LFO's vibrato
+      // moves the note in semitones, as the engine does — not linear FM.
+      { id: 'voct', x: 1.8, row: 1, label: 'V/OCT' },
+      { id: 'fm', x: 5.6, row: 1, label: 'PITCH' },
+      { id: 'w0', x: 5.6, row: 0, out: true, glyph: 0 },
+      { id: 'w1', x: 7.3, row: 0, out: true, glyph: 1 },
+      { id: 'w2', x: 9, row: 0, out: true, glyph: 2 },
+      { id: 'w3', x: 10.7, row: 0, out: true, glyph: 3 },
+    ],
+  },
+  {
+    key: 'vcf',
+    name: 'VCF',
+    hp: 8,
+    help: 'vcf',
+    trim: colors.amber,
+    knobs: [
+      { id: 'freq', x: 4, f: 0.1, big: true, label: 'FREQ' },
+      { id: 'res', x: 2, f: 0.95, label: 'RES' },
+      { id: 'cv1', x: 6, f: 0.95, label: 'CV1', bipolar: true },
+    ],
+    jacks: [
+      { id: 'cv1', x: 1.8, row: 1, label: 'CV1' },
+      { id: 'cv2', x: 4.4, row: 1, label: 'CV2' },
+      { id: 'in', x: 4.2, row: 0, label: 'IN' },
+      { id: 'out', x: 6.6, row: 0, out: true, label: 'OUT' },
+    ],
+  },
+  {
+    key: 'vca',
+    name: 'VCA',
+    hp: 8,
+    help: 'vca',
+    trim: colors.amber,
+    // A DUAL VCA, channel 1 normalled into channel 2 (the engine MULTIPLIES:
+    // gain = env × tremolo): CV1 = the envelope opening channel 1 from
+    // OFFSET 1 = 0; CV2 = the LFO dipping channel 2, whose OFFSET 2 sits fully
+    // open. IN feeds channel 1, OUT leaves channel 2.
+    knobs: [
+      { id: 'ofs1', x: 2, f: 0.5, label: 'OFS 1' },
+      { id: 'ofs2', x: 6, f: 0.5, label: 'OFS 2' },
+    ],
+    jacks: [
+      { id: 'cv1', x: 1.8, row: 1, label: 'CV1' },
+      { id: 'cv2', x: 4.4, row: 1, label: 'CV2' },
+      { id: 'in', x: 4.2, row: 0, label: 'IN' },
+      { id: 'out', x: 6.6, row: 0, out: true, label: 'OUT' },
+    ],
+  },
+  {
+    key: 'out',
+    name: 'OUT',
+    hp: 4,
+    help: 'out',
+    trim: colors.amber,
+    knobs: [{ id: 'level', x: 2, f: 0.35, label: 'LVL' }],
+    jacks: [{ id: 'in', x: 2, row: 0, label: 'IN' }],
+  },
+];
+const RACK_HP = RACK.reduce((s, m) => s + m.hp, 0); // 58 HP
+/** The glass's own shape — full screen opens at it, so 1× is the glass drawing. */
+const CASE_ASPECT = 1.5;
+
+/** Knob position 0..1 at the lab's REAL value (log where the parameter is). */
+const logPos = (v: number, lo: number, hi: number) => Math.log(Math.max(lo, Math.min(hi, v)) / lo) / Math.log(hi / lo);
+function knobPos(mod: string, id: string, p: Patch): number {
+  const env = ENV_PRESETS.find((e) => e.key === p.envKey)!;
+  switch (`${mod}.${id}`) {
+    case 'seq.rate':
+      return logPos(p.seqRate, 0.5, 16); // engine range, steps/s
+    case 'lfo.rate':
+      return logPos(p.lfoRate, 0.05, 30);
+    case 'lfo.level':
+      return p.lfoDepth;
+    case 'env.a':
+      return logPos(env.a, 0.001, 5);
+    case 'env.d':
+      return logPos(env.d, 0.001, 5);
+    case 'env.s':
+      return env.s;
+    case 'env.r':
+      return logPos(env.r, 0.001, 5);
+    case 'vco.tune':
+      return 0.5; // 110 Hz (A2) — the lab's fixed root
+    case 'vcf.freq':
+      return logPos(p.cutoff, 60, 14000); // engine range
+    case 'vcf.res':
+      return p.res;
+    case 'vcf.cv1':
+      return 0.5 + 0.5 * p.envToCut; // attenuverter: centre = none
+    case 'vca.ofs1':
+      return 0; // channel 1 closed — only the envelope opens it
+    case 'vca.ofs2':
+      return 1; // channel 2 open — the LFO (tremolo) only ever turns it down
+    case 'out.level':
+      return (-18 - -60) / (-12 - -60); // −18 dBFS on a −60…−12 dB pot
+    default:
+      return 0;
+  }
+}
+
+/** The live patch, drawn as a Eurorack case. Same taps (a module → its
+ *  lesson), same state, same honest live readouts as the old flow chart. */
 function PatchDiagram({
   w: pw,
   h: ph,
@@ -763,217 +977,414 @@ function PatchDiagram({
   h: number;
   patch: Patch;
   envLevel: number;
-  /** REAL native sequencer position (−1 when idle) — lights the step LEDs. */
+  /** REAL native sequencer position (−1 when idle) — lights the step buttons. */
   activeStep: number;
   running: boolean;
-  /** Tap a box → open that section's "what it does" help. */
+  /** Tap a module → open that section's "what it does" help. */
   onBox: (key: string) => void;
 }) {
-  // FULL SCREEN (2026-09-30, D35 "everything zooms"): the diagram is authored
-  // in GLASS pixels (w, h below) and painted through a viewBox of (pw ÷ ts) ×
-  // (ph ÷ ts), so the plates, screws, cables, plugs, LEDs, the env meter and
-  // every label are × the step. ts = 1 on the glass — unchanged there.
+  // FULL SCREEN (D35 "everything zooms"): authored in GLASS pixels and painted
+  // through a viewBox of (pw ÷ ts) × (ph ÷ ts) — the case, knobs, jacks,
+  // plugs, cables, LEDs and every legend grow with the step. ts = 1 on the glass.
   const ts = useStageTextScale();
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(CASE_ASPECT, 0);
+  }, [report]);
   const w = pw / ts;
   const h = ph / ts;
-  const boxW = Math.min(74, (w - 60) / 4);
-  const boxH = 34;
-  const topY = 22;
-  // Mod row rides the bottom edge (footer strip below it); never collides with
-  // the audio row even on a hard-clamped short glass.
-  const botY = Math.max(topY + boxH + 24, h - 64);
-  const xs = [0, 1, 2, 3].map((i) => 10 + i * ((w - 20 - boxW) / 3));
-  const audio = ['VCO', 'VCF', 'VCA', 'OUT'];
-  const audioKeys = ['vco', 'vcf', 'vca', 'out'];
-  const mods = ['LFO', 'ENV', 'SEQ'];
-  const modKeys = ['lfo', 'envelope', 'sequencer'];
-  const mxs = [0, 1, 2].map((i) => 30 + i * ((w - 60 - boxW) / 2));
-  const cx = (i: number, top: boolean) => (top ? xs[i] : mxs[i]) + boxW / 2;
 
-  /** Corner screws for one module plate (panel-hardware detail). */
-  const screws = (x: number, y: number, key: string) =>
-    (
-      [
-        [x + 5, y + 5],
-        [x + boxW - 5, y + 5],
-        [x + 5, y + boxH - 5],
-        [x + boxW - 5, y + boxH - 5],
-      ] as const
-    ).map(([sx, sy], k) => (
-      <Fragment key={`${key}${k}`}>
-        <Circle cx={sx} cy={sy} r={1.7} fill="url(#mdScrew)" />
-        <Line x1={sx - 1} y1={sy + 1} x2={sx + 1} y2={sy - 1} stroke="#0d0d11" strokeWidth={0.6} />
-      </Fragment>
-    ));
+  // ── Geometry: one 3U row, scaled to the glass (width first). ──
+  const TOP = 19; // group brackets above the case
+  const RAIL = 4; // case rail band above / below the panels
+  const CHEEK = 5; // case side cheeks
+  // Room under the case for the cables to hang: 34 px, given up (to 14) on a
+  // short glass before the case — and its 9 pt legends — would shrink.
+  const kW = (w - CHEEK * 2 - 6) / (RACK_HP * HP_MM);
+  const hang = Math.max(14, Math.min(34, h - TOP - RAIL * 2 - U3_MM * kW));
+  const k = Math.max(0.5, Math.min(kW, (h - TOP - RAIL * 2 - hang) / U3_MM));
+  const hpPx = HP_MM * k;
+  const H = U3_MM * k;
+  const caseW = RACK_HP * hpPx + CHEEK * 2;
+  const caseX = (w - caseW) / 2;
+  const panelX0 = caseX + CHEEK;
+  const panelTop = TOP + RAIL;
+  const caseBottom = panelTop + H + RAIL;
+  const starts: number[] = [];
+  RACK.reduce((x, m) => (starts.push(x), x + m.hp), 0);
+  const mx = (i: number) => panelX0 + starts[i] * hpPx;
+  const idx = (key: string) => RACK.findIndex((m) => m.key === key);
 
-  /** Engraved-style label: dark inset copy under the lit face. */
-  const label = (x: number, y: number, text: string, fill: string, key: string) => (
-    <Fragment key={key}>
-      <SvgText x={x} y={y + 1} fill="#000000" fillOpacity={0.55} fontSize={11.5} fontWeight="bold" textAnchor="middle">
-        {text}
-      </SvgText>
-      <SvgText x={x} y={y} fill={fill} fontSize={11.5} fontWeight="bold" textAnchor="middle">
-        {text}
-      </SvgText>
-    </Fragment>
-  );
+  // Hardware at true size (mm × k), floored so it stays drawable when small.
+  const rNut = Math.max(3.2, 3.2 * k);
+  const rHole = rNut * 0.52;
+  const rPlug = Math.max(4, 4 * k);
+  const rKnobBig = Math.max(6, 6.4 * k);
+  const rKnob = Math.max(4.6, 4.6 * k);
+  const LEG = 9; // legend size — the 9 pt floor (rendered 1:1 on the glass)
+  // Jack rows from the panel bottom; a row needs legend + nut + air.
+  const rowGap = Math.max(17.5 * k, LEG + rNut * 2 + 5);
+  const jackY = (row: number) => panelTop + H - Math.max(11 * k, rNut + 7) - row * rowGap;
+  const jackPos = (mod: string, id: string) => {
+    const i = idx(mod);
+    const j = RACK[i].jacks.find((q) => q.id === id)!;
+    return { x: mx(i) + j.x * hpPx, y: jackY(j.row) };
+  };
+  const zone = (m: ModuleSpec) => {
+    const rows = m.jacks.reduce((r, j) => Math.max(r, j.row + 1), 0);
+    return { top: panelTop + 22, bot: jackY(rows - 1) - rNut - LEG - 6 };
+  };
 
-  /** A patch cable from mod box mi up to audio box ai: sagging bezier (it
-   *  hangs below the straight run, staying between the rows), color-coded,
-   *  glow-stroked — every drawn cable IS an active routing — with jack plugs
-   *  at both ends. Same endpoints as before the re-skin. */
-  //  OWN LANES (D69 "every cable its own traceable lane", emulator pass
-  //  2026-10-14): ACID BASS drew ENV→VCF and ENV→VCA out of ONE jack, so the
-  //  two cables merged at the source. Each cable now has its own jack at both
-  //  ends — an output jack per destination on the source plate (left→right in
-  //  destination order, so a source's cables fan out without crossing) and an
-  //  input jack per source on the destination plate (LFO left, ENV centre, SEQ
-  //  right) — and its own sag depth, so two cables never share a point.
-  const cable = (mi: number, ai: number, color: string, key: string) => {
-    const jack = Math.min(10, boxW / 7);
-    const x1 = cx(mi, false) + (ai - 1.5) * jack;
-    const y1 = botY;
-    const x2 = cx(ai, true) + (mi - 1) * jack * 1.2;
-    const y2 = topY + boxH;
-    const sagY = Math.min(y1 - 2, (y1 + y2) / 2 + 8 + mi * 6 + ai * 2);
-    const d = `M${x1} ${y1} C ${x1 + (x2 - x1) * 0.2} ${sagY}, ${x1 + (x2 - x1) * 0.8} ${sagY}, ${x2} ${y2}`;
+  // ── Cables: one per ACTIVE routing (nothing decorative). ──
+  type Cable = { key: string; a: { x: number; y: number }; b: { x: number; y: number }; color: string };
+  const cables: Cable[] = [];
+  const add = (key: string, from: [string, string], to: [string, string], color: string) =>
+    cables.push({ key, a: jackPos(from[0], from[1]), b: jackPos(to[0], to[1]), color });
+  // The audio path — always patched (the engine's fixed VCO → VCF → VCA → out).
+  add('a-vco', ['vco', `w${patch.shape}`], ['vcf', 'in'], colors.amber);
+  add('a-vcf', ['vcf', 'out'], ['vca', 'in'], colors.amber);
+  add('a-vca', ['vca', 'out'], ['out', 'in'], colors.amber);
+  // Control (CV) — the envelope always opens the VCA.
+  add('env-vca', ['env', 'outA'], ['vca', 'cv1'], ENV_COLOR);
+  if (patch.envToCut > 0) add('env-vcf', ['env', 'outF'], ['vcf', 'cv1'], ENV_COLOR);
+  if (patch.lfoDepth > 0 && patch.lfoDest === 1) add('lfo-vco', ['lfo', 'out'], ['vco', 'fm'], LFO_COLOR);
+  if (patch.lfoDepth > 0 && patch.lfoDest === 2) add('lfo-vcf', ['lfo', 'out'], ['vcf', 'cv2'], LFO_COLOR);
+  if (patch.lfoDepth > 0 && patch.lfoDest === 3) add('lfo-vca', ['lfo', 'out'], ['vca', 'cv2'], LFO_COLOR);
+  if (patch.seqOn) {
+    add('seq-cv', ['seq', 'cv'], ['vco', 'voct'], SEQ_COLOR);
+    add('seq-gate', ['seq', 'gate'], ['env', 'gate'], SEQ_COLOR);
+  }
+  // Sag: a longer cable is a longer cable — it hangs lower. Each gets its own
+  // depth (≥ 5 px from every other), clamped inside the glass, so no two
+  // cables ever share a run.
+  // The case stands on a desktop stand; the desk top is the glass's foot —
+  // a cable too long to hang free rests on it (never through it).
+  const DESK = 5;
+  const floor = h - DESK - 2;
+  const hung = cables
+    .map((c) => {
+      const span = Math.abs(c.b.x - c.a.x);
+      const low = Math.max(c.a.y, c.b.y) + 8 + span * 0.3;
+      return { ...c, span, low };
+    })
+    .sort((p, q) => p.low - q.low);
+  for (let i = 1; i < hung.length; i++) hung[i].low = Math.max(hung[i].low, hung[i - 1].low + 5);
+  const over = hung.length ? hung[hung.length - 1].low - floor : 0;
+  if (over > 0) {
+    // Squeeze the depths into the glass, keeping their order and spacing.
+    const base = Math.max(caseBottom - 4, hung[0].low - over);
+    const top = hung[0].low;
+    const span = hung[hung.length - 1].low - top || 1;
+    hung.forEach((c) => {
+      const nl = base + ((c.low - top) / span) * (floor - base);
+      c.low = Math.max(Math.max(c.a.y, c.b.y) + 6, nl);
+    });
+  }
+  /** Plug → hanging loop → plug. Both control points sit below the low point
+   *  so the curve leaves each plug falling, angled toward its far end. */
+  const cablePath = (c: (typeof hung)[number]) => {
+    const { a, b } = c;
+    const yC = (c.low - 0.25 * Math.min(a.y, b.y)) / 0.75; // cubic low point = c.low
+    const lean = (b.x - a.x) * 0.4;
+    return `M${a.x} ${a.y} C ${a.x + lean} ${yC}, ${b.x - lean} ${yC}, ${b.x} ${b.y}`;
+  };
+
+  const plugAt = new Map<string, string>(); // "x,y" → cable colour
+  hung.forEach((c) => {
+    plugAt.set(`${c.a.x},${c.a.y}`, c.color);
+    plugAt.set(`${c.b.x},${c.b.y}`, c.color);
+  });
+
+  /** A knob: skirt, scale ticks, cap and white pointer at pos (0..1 over 270°). */
+  const knob = (cx: number, cy: number, r: number, pos: number, bipolar: boolean | undefined, key: string) => {
+    const ang = (-135 + 270 * Math.max(0, Math.min(1, pos))) * (Math.PI / 180);
+    const ticks = r > 6 ? 11 : 7;
     return (
-      <Fragment key={key}>
-        <Path d={d} stroke={color} strokeWidth={6} fill="none" opacity={0.18} strokeLinecap="round" />
-        <Path d={d} stroke={color} strokeWidth={2.2} fill="none" opacity={0.95} strokeLinecap="round" />
-        <Path d={d} stroke="#ffffff" strokeWidth={0.7} fill="none" opacity={0.28} strokeLinecap="round" />
-        <Circle cx={x1} cy={y1} r={3.4} fill="#0c0c0f" stroke={color} strokeWidth={1.8} />
-        <Circle cx={x2} cy={y2} r={3.4} fill="#0c0c0f" stroke={color} strokeWidth={1.8} />
-      </Fragment>
+      <G key={key}>
+        {Array.from({ length: ticks }, (_, t) => {
+          const ta = (-135 + (270 * t) / (ticks - 1)) * (Math.PI / 180);
+          const long = bipolar && t === (ticks - 1) / 2;
+          const r1 = r + 1.4;
+          const r2 = r + (long ? 4.2 : 2.8);
+          return (
+            <Line
+              key={t}
+              x1={cx + r1 * Math.sin(ta)}
+              y1={cy - r1 * Math.cos(ta)}
+              x2={cx + r2 * Math.sin(ta)}
+              y2={cy - r2 * Math.cos(ta)}
+              stroke="#c9ccd4"
+              strokeOpacity={long ? 0.9 : 0.55}
+              strokeWidth={0.8}
+            />
+          );
+        })}
+        <Circle cx={cx + 0.6} cy={cy + 1.2} r={r} fill="#000000" opacity={0.5} />
+        <Circle cx={cx} cy={cy} r={r} fill="url(#mkSkirt)" stroke="#4a4b55" strokeWidth={0.6} />
+        <Circle cx={cx} cy={cy} r={r * 0.74} fill="url(#mkCap)" />
+        <Line
+          x1={cx + r * 0.18 * Math.sin(ang)}
+          y1={cy - r * 0.18 * Math.cos(ang)}
+          x2={cx + r * 0.94 * Math.sin(ang)}
+          y2={cy - r * 0.94 * Math.cos(ang)}
+          stroke="#f4f4f6"
+          strokeWidth={Math.max(1.1, r * 0.17)}
+          strokeLinecap="round"
+        />
+      </G>
     );
   };
 
-  const lfoColor = LFO_COLOR;
-  const envColor = ENV_COLOR;
-  const seqColor = SEQ_COLOR;
-  const envW = (boxW - 4) * Math.max(0, Math.min(1, envLevel));
+  /** One cycle of a waveform — the VCO output's panel glyph. */
+  const glyph = (shape: number, cx: number, cy: number, key: string) => {
+    const gw = 4;
+    const gh = 3;
+    const d =
+      shape === 0
+        ? `M${cx - gw} ${cy + gh} L${cx + gw * 0.6} ${cy - gh} L${cx + gw * 0.6} ${cy + gh} L${cx + gw} ${cy + gh * 0.2}`
+        : shape === 1
+          ? `M${cx - gw} ${cy + gh} L${cx - gw} ${cy - gh} L${cx} ${cy - gh} L${cx} ${cy + gh} L${cx + gw} ${cy + gh} L${cx + gw} ${cy - gh}`
+          : shape === 2
+            ? `M${cx - gw} ${cy + gh} L${cx - gw / 2} ${cy - gh} L${cx + gw / 2} ${cy + gh} L${cx + gw} ${cy - gh * 0.2}`
+            : `M${cx - gw} ${cy} Q ${cx - gw / 2} ${cy - gh * 2} ${cx} ${cy} T ${cx + gw} ${cy}`;
+    return <Path key={key} d={d} stroke="#e4e6ec" strokeWidth={1.1} fill="none" strokeLinejoin="round" />;
+  };
+
+  const legend = (x: number, y: number, text: string, key: string, fill = '#dfe1e7') => (
+    <SvgText key={key} x={x} y={y} fill={fill} fontSize={LEG} fontFamily={fonts.barlowCondensedSemiBold} textAnchor="middle">
+      {text}
+    </SvgText>
+  );
+
+  const ctrlEnd = mx(idx('env')) + RACK[idx('env')].hp * hpPx;
+  const audioStart = mx(idx('vco'));
+  const audioEnd = mx(RACK.length - 1) + RACK[RACK.length - 1].hp * hpPx;
 
   return (
     <View>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={pw} height={ph} viewBox={`0 0 ${w} ${h}`}>
         <Defs>
           <LinearGradient id="mdBg" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0%" stopColor="#14141a" />
+            <Stop offset="0%" stopColor="#16161c" />
             <Stop offset="100%" stopColor="#0a0a0e" />
           </LinearGradient>
-          {/* Module plate: brushed-panel gradient, lit from the top. */}
-          <LinearGradient id="mdPlate" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0%" stopColor="#26262e" />
-            <Stop offset="45%" stopColor="#17171c" />
-            <Stop offset="100%" stopColor="#101014" />
+          {/* Black-anodised aluminium panel, lit from above. */}
+          <LinearGradient id="mkPanel" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#2a2b32" />
+            <Stop offset="55%" stopColor="#1d1e23" />
+            <Stop offset="100%" stopColor="#16171b" />
           </LinearGradient>
-          <RadialGradient id="mdScrew" cx="35%" cy="30%" r="80%">
-            <Stop offset="0%" stopColor="#b9b9c4" />
-            <Stop offset="100%" stopColor="#52525c" />
+          <LinearGradient id="mkRail" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#9a9da6" />
+            <Stop offset="50%" stopColor="#5d6069" />
+            <Stop offset="100%" stopColor="#3a3c43" />
+          </LinearGradient>
+          <LinearGradient id="mkCheek" x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0%" stopColor="#3a3b42" />
+            <Stop offset="100%" stopColor="#141418" />
+          </LinearGradient>
+          <RadialGradient id="mkScrew" cx="35%" cy="30%" r="80%">
+            <Stop offset="0%" stopColor="#d4d6dd" />
+            <Stop offset="100%" stopColor="#5a5c66" />
+          </RadialGradient>
+          <RadialGradient id="mkNut" cx="38%" cy="32%" r="75%">
+            <Stop offset="0%" stopColor="#e9ebf0" />
+            <Stop offset="70%" stopColor="#8d9099" />
+            <Stop offset="100%" stopColor="#5b5e67" />
+          </RadialGradient>
+          <RadialGradient id="mkSkirt" cx="40%" cy="35%" r="80%">
+            <Stop offset="0%" stopColor="#3a3b43" />
+            <Stop offset="100%" stopColor="#0d0d10" />
+          </RadialGradient>
+          <RadialGradient id="mkCap" cx="38%" cy="30%" r="80%">
+            <Stop offset="0%" stopColor="#4a4b54" />
+            <Stop offset="100%" stopColor="#141418" />
           </RadialGradient>
         </Defs>
         <Rect x={0} y={0} width={w} height={h} rx={8} fill="url(#mdBg)" />
-        {/* Audio path: glow-backed amber run with arrowheads. */}
-        {[0, 1, 2].map((i) => {
-          const y = topY + boxH / 2;
-          return (
-            <Fragment key={i}>
-              <Line x1={xs[i] + boxW} y1={y} x2={xs[i + 1]} y2={y} stroke={colors.amber} strokeWidth={5.5} opacity={0.15} />
-              <Line x1={xs[i] + boxW} y1={y} x2={xs[i + 1] - 4} y2={y} stroke={colors.amber} strokeWidth={2.2} />
-              <Path d={`M${xs[i + 1] - 6.5} ${y - 4} L${xs[i + 1]} ${y} L${xs[i + 1] - 6.5} ${y + 4} Z`} fill={colors.amber} />
-            </Fragment>
-          );
-        })}
-        {/* Active patch cables. */}
-        {cable(1, 2, envColor, 'env-vca') /* env → VCA — always */}
-        {patch.envToCut > 0 ? cable(1, 1, envColor, 'env-vcf') : null}
-        {patch.lfoDepth > 0 && patch.lfoDest === 1 ? cable(0, 0, lfoColor, 'lfo-vco') : null}
-        {patch.lfoDepth > 0 && patch.lfoDest === 2 ? cable(0, 1, lfoColor, 'lfo-vcf') : null}
-        {patch.lfoDepth > 0 && patch.lfoDest === 3 ? cable(0, 2, lfoColor, 'lfo-vca') : null}
-        {patch.seqOn ? cable(2, 0, seqColor, 'seq-vco') : null}
-        {/* Audio boxes — tap for what each does. */}
-        {audio.map((name, i) => (
-          <G key={name} onPress={() => onBox(audioKeys[i])}>
-            <Rect x={xs[i] + 1.5} y={topY + 2.5} width={boxW} height={boxH} rx={7} fill="#000000" opacity={0.45} />
-            <Rect x={xs[i]} y={topY} width={boxW} height={boxH} rx={7} fill="url(#mdPlate)" stroke={colors.amber} strokeWidth={1.4} />
-            <Rect x={xs[i] + 1.5} y={topY + 1.5} width={boxW - 3} height={boxH - 3} rx={5.5} fill="none" stroke="#ffffff" strokeOpacity={0.07} strokeWidth={1} />
-            {screws(xs[i], topY, `as${i}`)}
-            {label(xs[i] + boxW / 2, i === 1 ? topY + 15 : topY + boxH / 2 + 4, name, colors.textPrimary, `al${i}`)}
-            {i === 1 ? (
-              // The CUTOFF lane's value on the VCF plate (2026-10-14) — the
-              // drag is visible on the glass, not only in the bezel.
-              <SvgText x={xs[i] + boxW / 2} y={topY + boxH - 6} fill={colors.amber} fontSize={10} fontWeight="bold" textAnchor="middle">
-                {fmtCut(patch.cutoff)}
-              </SvgText>
-            ) : null}
-          </G>
+
+        {/* What is what — named ABOVE the case, never on a panel. */}
+        <SvgText x={(mx(0) + ctrlEnd) / 2} y={10} fill={colors.textSub} fontSize={9.5} fontFamily={fonts.oswaldSemiBold} letterSpacing={0.8} textAnchor="middle">
+          CONTROL SOURCES (CV)
+        </SvgText>
+        <Path d={`M${mx(0) + 2} ${TOP - 2} L${mx(0) + 2} ${TOP - 5} L${ctrlEnd - 2} ${TOP - 5} L${ctrlEnd - 2} ${TOP - 2}`} stroke={colors.textSub} strokeOpacity={0.7} strokeWidth={1} fill="none" />
+        <SvgText x={(audioStart + audioEnd) / 2} y={10} fill={colors.amber} fontSize={9.5} fontFamily={fonts.oswaldSemiBold} letterSpacing={0.8} textAnchor="middle">
+          AUDIO PATH → OUT
+        </SvgText>
+        <Path d={`M${audioStart + 2} ${TOP - 2} L${audioStart + 2} ${TOP - 5} L${audioEnd - 6} ${TOP - 5}`} stroke={colors.amber} strokeOpacity={0.8} strokeWidth={1} fill="none" />
+        <Path d={`M${audioEnd - 7} ${TOP - 8} L${audioEnd - 2} ${TOP - 5} L${audioEnd - 7} ${TOP - 2} Z`} fill={colors.amber} fillOpacity={0.85} />
+
+        {/* The desk under the stand (the cables hang free above it). */}
+        <Rect x={0} y={h - DESK} width={w} height={DESK} fill="#1a1611" />
+        <Line x1={0} y1={h - DESK + 0.4} x2={w} y2={h - DESK + 0.4} stroke="#4a3f31" strokeWidth={0.8} />
+        {/* Stand legs under the cheeks: the case is raised, not floating. */}
+        {[caseX + 0.5, caseX + caseW - CHEEK + 0.5].map((lx, li) => (
+          <Fragment key={`leg${li}`}>
+            <Rect x={lx} y={caseBottom - 2} width={CHEEK - 1} height={h - DESK - caseBottom + 2} fill="url(#mkCheek)" />
+            <Rect x={lx - 3} y={h - DESK - 2} width={CHEEK + 5} height={2} rx={1} fill="#2a2b31" />
+          </Fragment>
         ))}
-        {/* Mod boxes (ENV doubles as the real env meter while running; SEQ
-            carries the real step LEDs). */}
-        {mods.map((name, i) => {
-          const color = i === 0 ? lfoColor : i === 1 ? envColor : seqColor;
-          const active =
-            i === 0 ? patch.lfoDepth > 0 && patch.lfoDest > 0 : i === 1 ? true : patch.seqOn;
+
+        {/* The case: side cheeks, top + bottom rails behind the panels. */}
+        <Rect x={caseX + 1.5} y={TOP + 2.5} width={caseW} height={caseBottom - TOP} rx={2} fill="#000000" opacity={0.5} />
+        <Rect x={caseX} y={TOP} width={caseW} height={caseBottom - TOP} rx={2} fill="#111114" />
+        <Rect x={panelX0} y={TOP} width={RACK_HP * hpPx} height={RAIL + 2} fill="url(#mkRail)" />
+        <Rect x={panelX0} y={caseBottom - RAIL - 2} width={RACK_HP * hpPx} height={RAIL + 2} fill="url(#mkRail)" />
+        <Rect x={caseX} y={TOP} width={CHEEK} height={caseBottom - TOP} rx={1.5} fill="url(#mkCheek)" />
+        <Rect x={caseX + caseW - CHEEK} y={TOP} width={CHEEK} height={caseBottom - TOP} rx={1.5} fill="url(#mkCheek)" />
+
+        {/* The modules — tap one for what it does. */}
+        {RACK.map((m, i) => {
+          const x = mx(i);
+          const pw2 = m.hp * hpPx;
+          const z = zone(m);
+          const screwX = Math.min(7.5 * k, pw2 / 2);
+          const screwY = [panelTop + 3 * k, panelTop + H - 3 * k];
           return (
-            <G key={name} onPress={() => onBox(modKeys[i])}>
-              <Rect x={mxs[i] + 1.5} y={botY + 2.5} width={boxW} height={boxH} rx={7} fill="#000000" opacity={0.45} />
-              <Rect
-                x={mxs[i]}
-                y={botY}
-                width={boxW}
-                height={boxH}
-                rx={7}
-                fill="url(#mdPlate)"
-                stroke={color}
-                strokeWidth={1.4}
-                opacity={active ? 1 : 0.35}
-              />
-              <Rect x={mxs[i] + 1.5} y={botY + 1.5} width={boxW - 3} height={boxH - 3} rx={5.5} fill="none" stroke="#ffffff" strokeOpacity={0.07} strokeWidth={1} />
-              {screws(mxs[i], botY, `ms${i}`)}
-              {i === 1 && running ? (
-                <Fragment key="meter">
-                  {/* Lit-LED env meter: glow halo + fill + hot leading edge. */}
-                  <Rect x={mxs[i] + 0.5} y={botY + 0.5} width={envW + 3} height={boxH - 1} rx={5} fill={envColor} opacity={0.12} />
-                  <Rect x={mxs[i] + 2} y={botY + 2} width={envW} height={boxH - 4} rx={4} fill={envColor} opacity={0.3} />
-                  <Line x1={mxs[i] + 2 + envW} y1={botY + 4} x2={mxs[i] + 2 + envW} y2={botY + boxH - 4} stroke="#c9ffd9" strokeWidth={1.5} opacity={0.9} />
-                </Fragment>
-              ) : null}
-              {i === 2
-                ? patch.steps.map((s, k) => {
-                    const lx = mxs[i] + (boxW / 9) * (k + 1);
-                    const ly = botY + boxH - 6;
-                    const lit = running && patch.seqOn && activeStep === k;
-                    const gated = s >= 0;
+            <G key={m.key} onPress={() => onBox(m.help)}>
+              <Rect x={x + 0.35} y={panelTop} width={pw2 - 0.7} height={H} fill="url(#mkPanel)" />
+              <Rect x={x + 0.35} y={panelTop} width={pw2 - 0.7} height={H} fill="none" stroke="#ffffff" strokeOpacity={0.08} strokeWidth={0.6} />
+              <Line x1={x + 0.35} y1={panelTop} x2={x + 0.35} y2={panelTop + H} stroke="#000000" strokeOpacity={0.7} strokeWidth={0.7} />
+              {/* Mounting screws: two on a narrow panel, four from 10 HP. */}
+              {(m.hp >= 10 ? [screwX, pw2 - screwX] : [screwX]).flatMap((sx, s) =>
+                screwY.map((sy, t) => (
+                  <Fragment key={`sc${s}${t}`}>
+                    <Circle cx={x + sx} cy={sy} r={Math.max(1.4, 1.5 * k)} fill="url(#mkScrew)" />
+                    <Line x1={x + sx - 1} y1={sy + 1} x2={x + sx + 1} y2={sy - 1} stroke="#1a1a1e" strokeWidth={0.6} />
+                  </Fragment>
+                )),
+              )}
+              {/* Title + its routing-colour trim. */}
+              <SvgText x={x + pw2 / 2} y={panelTop + 14.5} fill={colors.textPrimary} fontSize={10.5} fontFamily={fonts.oswaldSemiBold} letterSpacing={0.5} textAnchor="middle">
+                {m.name}
+              </SvgText>
+              <Line x1={x + pw2 / 2 - Math.min(9, pw2 * 0.3)} y1={panelTop + 17.5} x2={x + pw2 / 2 + Math.min(9, pw2 * 0.3)} y2={panelTop + 17.5} stroke={m.trim} strokeWidth={1.4} strokeOpacity={0.9} />
+
+              {/* Knobs, each at the lab's actual value. */}
+              {m.knobs.map((kn) => {
+                const r = kn.big ? rKnobBig : rKnob;
+                const yTop = z.top + LEG + r + 4;
+                const yBot = Math.max(yTop, z.bot - r - 3);
+                const cy = kn.id === 'rate' && m.key === 'seq' ? jackY(0) : yTop + kn.f * (yBot - yTop);
+                const cx = x + kn.x * hpPx;
+                return (
+                  <Fragment key={kn.id}>
+                    {legend(cx, cy - r - 4.5, kn.label, `kl${kn.id}`)}
+                    {knob(cx, cy, r, knobPos(m.key, kn.id, patch), kn.bipolar, `k${kn.id}`)}
+                  </Fragment>
+                );
+              })}
+
+              {/* SEQ: eight step knobs (semitones 0…+12) over their gate
+                  buttons — lit = the REAL native step, dark = a rest. */}
+              {m.key === 'seq'
+                ? patch.steps.map((s, sI) => {
+                    const col = sI % 4;
+                    const rowI = Math.floor(sI / 4);
+                    const cx = x + (1.5 + col * 3) * hpPx;
+                    const bandTop = z.top + 2;
+                    const bandBot = jackY(0) - rKnob - LEG - 10;
+                    const rowH = (bandBot - bandTop) / 2;
+                    const cy = bandTop + rowH * rowI + LEG + rKnob + 2;
+                    const by = cy + rKnob + 3;
+                    const lit = running && patch.seqOn && activeStep === sI;
                     return (
-                      <Fragment key={`led${k}`}>
-                        {lit ? <Circle cx={lx} cy={ly} r={4.5} fill={seqColor} opacity={0.35} /> : null}
-                        <Circle
-                          cx={lx}
-                          cy={ly}
-                          r={1.8}
-                          fill={lit ? '#ffd9cf' : gated ? seqColor : '#3a3a42'}
-                          opacity={lit ? 1 : gated ? (patch.seqOn ? 0.55 : 0.3) : 0.8}
+                      <Fragment key={`st${sI}`}>
+                        {legend(cx, cy - rKnob - 3, String(sI + 1), `sn${sI}`, '#b9bcc5')}
+                        {knob(cx, cy, rKnob * 0.92, s < 0 ? 0 : s / 12, false, `sk${sI}`)}
+                        {lit ? <Rect x={cx - 6} y={by - 2} width={12} height={8} rx={3} fill={SEQ_COLOR} opacity={0.35} /> : null}
+                        <Rect
+                          x={cx - 4}
+                          y={by}
+                          width={8}
+                          height={4}
+                          rx={1}
+                          fill={lit ? '#ffe3da' : s >= 0 ? SEQ_COLOR : '#26262c'}
+                          fillOpacity={lit ? 1 : s >= 0 ? (patch.seqOn ? 0.6 : 0.3) : 1}
+                          stroke={s >= 0 ? SEQ_COLOR : '#55565f'}
+                          strokeOpacity={0.8}
+                          strokeWidth={0.6}
                         />
                       </Fragment>
                     );
                   })
                 : null}
-              {label(
-                mxs[i] + boxW / 2,
-                botY + boxH / 2 + (i === 2 ? 1 : 4),
-                name,
-                active ? colors.textPrimary : colors.textSub,
-                `ml${i}`,
-              )}
+
+              {/* LEDs that read REAL engine state. */}
+              {m.key === 'env' ? (
+                <Fragment>
+                  {running && envLevel > 0.02 ? (
+                    <Circle cx={x + pw2 - 6} cy={panelTop + 11} r={4.5} fill={ENV_COLOR} opacity={0.35 * Math.min(1, envLevel)} />
+                  ) : null}
+                  <Circle cx={x + pw2 - 6} cy={panelTop + 11} r={1.9} fill={running ? ENV_COLOR : '#1d3324'} fillOpacity={running ? 0.25 + 0.75 * Math.max(0, Math.min(1, envLevel)) : 1} />
+                </Fragment>
+              ) : null}
+              {m.key === 'out' ? (
+                <Fragment>
+                  {running ? <Circle cx={x + pw2 / 2} cy={jackY(0) - rNut - LEG - 10} r={4.2} fill={colors.amber} opacity={0.35} /> : null}
+                  <Circle cx={x + pw2 / 2} cy={jackY(0) - rNut - LEG - 10} r={1.9} fill={running ? '#ffe7b0' : '#3a3220'} />
+                  {legend(x + pw2 / 2, jackY(0) - rNut - LEG - 15, 'ON', 'onl')}
+                </Fragment>
+              ) : null}
+              {m.key === 'env' ? (
+                // MAN(ual) gate: with the sequencer OFF the engine holds the
+                // envelope's gate open while the voice runs — the drone. Lit
+                // exactly then (on real gear an unplugged GATE never opens).
+                <Fragment>
+                  {legend(x + 1.8 * hpPx, jackY(1) - rNut - 3, 'MAN', 'manl')}
+                  {running && !patch.seqOn ? <Circle cx={x + 1.8 * hpPx} cy={jackY(1)} r={rNut + 2.5} fill={ENV_COLOR} opacity={0.3} /> : null}
+                  <Rect x={x + 1.8 * hpPx - rNut} y={jackY(1) - rNut} width={rNut * 2} height={rNut * 2} rx={1.5} fill="#2b2c33" stroke="#6a6c76" strokeWidth={0.7} />
+                  <Rect x={x + 1.8 * hpPx - rNut * 0.6} y={jackY(1) - rNut * 0.6} width={rNut * 1.2} height={rNut * 1.2} rx={1} fill={running && !patch.seqOn ? '#c8ffd6' : '#1d3324'} />
+                </Fragment>
+              ) : null}
+
+              {/* Jacks: legend above; outputs sit in a shaded box. */}
+              {m.jacks.map((j) => {
+                const cx = x + j.x * hpPx;
+                const cy = jackY(j.row);
+                const bw = Math.max(rNut * 2 + 4, (j.label?.length ?? 2) * 4.7 + 3);
+                return (
+                  <Fragment key={j.id}>
+                    {j.out && j.glyph == null ? (
+                      <Rect x={cx - bw / 2} y={cy - rNut - LEG - 4} width={bw} height={rNut * 2 + LEG + 6} rx={2} fill="#4a4c56" fillOpacity={0.55} />
+                    ) : null}
+                    {j.glyph === 0 ? (
+                      // One shared output box under the four waveform jacks.
+                      <Rect x={cx - hpPx * 1.05} y={cy - rNut - LEG - 4} width={hpPx * (10.7 - 5.6 + 2.1)} height={rNut * 2 + LEG + 6} rx={2} fill="#4a4c56" fillOpacity={0.55} />
+                    ) : null}
+                    {j.glyph != null ? glyph(j.glyph, cx, cy - rNut - 6, `g${j.id}`) : legend(cx, cy - rNut - 3, j.label ?? '', `jl${j.id}`)}
+                    <Circle cx={cx} cy={cy} r={rNut} fill="url(#mkNut)" />
+                    <Circle cx={cx} cy={cy} r={rHole} fill="#050506" />
+                  </Fragment>
+                );
+              })}
             </G>
           );
         })}
-        <SvgText x={10} y={h - 6} fill="#4a4a52" fontSize={9}>
-          audio path
-        </SvgText>
-        <SvgText x={w - 10} y={h - 6} fill="#4a4a52" fontSize={9} textAnchor="end">
-          mod sources — cables = active routings
-        </SvgText>
+
+        {/* Patch cables — drawn deepest first, plugs over their jacks. */}
+        {[...hung].reverse().map((c) => {
+          const d = cablePath(c);
+          return (
+            <Fragment key={c.key}>
+              <Path d={d} stroke="#000000" strokeWidth={4.6} fill="none" opacity={0.45} strokeLinecap="round" transform="translate(1.2 2)" />
+              <Path d={d} stroke="#000000" strokeWidth={4} fill="none" opacity={0.7} strokeLinecap="round" />
+              <Path d={d} stroke={c.color} strokeWidth={2.9} fill="none" strokeLinecap="round" />
+              <Path d={d} stroke="#ffffff" strokeWidth={0.8} fill="none" opacity={0.3} strokeLinecap="round" transform="translate(-0.5 -0.5)" />
+            </Fragment>
+          );
+        })}
+        {[...plugAt.entries()].map(([pos, color]) => {
+          const [px, py] = pos.split(',').map(Number);
+          return (
+            <G key={`p${pos}`}>
+              <Circle cx={px + 0.8} cy={py + 1.4} r={rPlug} fill="#000000" opacity={0.5} />
+              <Circle cx={px} cy={py} r={rPlug} fill={color} stroke="#000000" strokeOpacity={0.55} strokeWidth={0.8} />
+              <Circle cx={px} cy={py} r={rPlug * 0.58} fill="#000000" opacity={0.28} />
+              <Circle cx={px - rPlug * 0.35} cy={py - rPlug * 0.4} r={rPlug * 0.28} fill="#ffffff" opacity={0.45} />
+            </G>
+          );
+        })}
       </Svg>
     </View>
   );

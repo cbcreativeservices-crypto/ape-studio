@@ -89,7 +89,10 @@ describe('S3 — modular CUTOFF fast path', () => {
     // no side effect inside the state updater
     assert.match(body, /setPatch\(\(prev\) => \(prev\.cutoff === hz \? prev : \{ \.\.\.prev, cutoff: hz \}\)\)/);
   });
-  test('the cutoff reads on the VCF plate', () => {
+  // Since the Eurorack case (2026-10-16) the VCF's FREQ knob turns with the
+  // lane and the cutoff prints on the well's spectrum (labels never on a panel).
+  test('the cutoff reads on the glass (FREQ knob) and on the spectrum', () => {
+    assert.match(src, /case 'vcf\.freq':\s*return logPos\(p\.cutoff, 60, 14000\)/);
     assert.match(src, /\{fmtCut\(patch\.cutoff\)\}/);
   });
 });

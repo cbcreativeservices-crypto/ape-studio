@@ -796,10 +796,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'The canonical subtractive voice: an oscillator (VCO) makes a bright wave, a filter ' +
       '(VCF) sculpts its harmonics, an amplifier (VCA) shapes its loudness — and the MOD ' +
       'sources (envelope, LFO, sequencer) automate those controls over time. Every classic ' +
-      'synth sound is a ROUTING decision: what modulates what. The patch diagram in this lab ' +
-      'is the actual signal flow of the audio you hear.',
+      'synth sound is a ROUTING decision: what modulates what. The Eurorack case in this lab ' +
+      'is patched exactly like the audio you hear — every cable is a live routing.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The patch diagram is the signal path: VCO (pitch) → VCF (filter) → VCA (loudness) → OUT, with LFO / ENV / SEQ as modulators feeding in. Tap any box for what that module does; the cables show what drives what." },
+      { key: 'display', name: 'What the display shows', definition: "A row of Eurorack modules, patched. On the right, AMBER cables carry the audio: VCO (pitch) → VCF (filter) → VCA (loudness) → OUT. On the left, SEQ / LFO / ENV make control voltage (CV); their coloured cables run to what they move (pitch, filter, loudness). Labels sit above each jack, outputs are in shaded boxes, every knob shows your setting. With the sequencer off, the envelope's MAN button holds its gate open — the drone. Tap any module for what it does." },
       { key: 'vco', name: 'VCO (oscillator)', definition: 'The tone source: saw (every harmonic, 1/n), square (odd harmonics), triangle (odd, 1/n² — mellow), sine (fundamental only — nothing for the filter to remove!).' },
       { key: 'vcf', name: 'VCF (filter)', definition: 'A resonant low-pass: cutoff sets how many harmonics survive; resonance boosts right at the cutoff, giving the honk/squelch. Subtractive synthesis = start bright, carve away.', range: 'cutoff 250 Hz–8 kHz · resonance 0–1' },
       { key: 'envelope', name: 'ADSR envelope', definition: 'Attack·Decay·Sustain·Release — the loudness contour of each note (always on the VCA). Routed to the filter (env→cutoff) it makes each note open bright and close dark: the classic synth pluck.' },
