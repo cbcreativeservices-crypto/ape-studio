@@ -424,14 +424,29 @@ function ioScaled(ts: number) {
 }
 
 // ───────────────────────────────────────────────────────────── EQ flow ──
-// A 3-band composite (low/mid/high sine components) travels in; the out wave
-// is the SAME composite re-weighted by eqResponseDb at each component's
-// frequency — boost/cut visibly reshapes the blend.
+// A 3-tone composite (150 Hz · 1 kHz · 6 kHz) travels in; the out wave is the
+// SAME composite re-weighted by eqResponseDb at each tone's frequency —
+// boost/cut visibly reshapes the blend.
+//
+// Round 3 (lab-art grading 2026-10-16): the 20 Hz–20 kHz EQ curve used to be
+// drawn ACROSS the time-domain wave box (a beginner can read a frequency curve
+// as the wave's envelope), and the three tones were drawn at 1.3 / 3.6 / 9
+// cycles — not in proportion. Now (1) the curve has its OWN strip under the
+// wave box, with its own frame, zero line and frequency axis; (2) the box
+// spans a true time window (EQ_WINDOW_MS), so each tone shows f × window
+// cycles: 150 Hz ≈ 1.2, 1 kHz = 8, 6 kHz = 48 — the real 1 : 6.7 : 40.
 const EQ_COMP_FREQS = [150, 1000, 6000];
-const EQ_CYCLES = [1.3, 3.6, 9.0];
+/** The wave box's true time span, ms (the whole panel width). */
+const EQ_WINDOW_MS = 8;
 const TRAVEL_PX_PER_RAD = 13;
+/** The curve strip's height (glass units) and the gap above it; the wave box
+ *  gets the rest of FLOW_H, so the hero keeps its glass size. */
+const EQ_STRIP_H = 44;
+const EQ_STRIP_GAP = 3;
 
 function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: boolean; label: string; bands: EqBandSpec[] }) {
+  const ts = useStageTextScale();
+  const hw = h - EQ_STRIP_H - EQ_STRIP_GAP; // the wave box
   const stageX = w * STAGE_FRAC;
   const phase = usePhaseClock(active, 0.5);
   // Linear gains at the component frequencies — the EXACT fxViz curve math.
@@ -439,50 +454,56 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
     () => EQ_COMP_FREQS.map((f) => Math.min(Math.pow(10, eqResponseDb(bands, f) / 20), 4)),
     [bands],
   );
-  // THE RESPONSE CURVE on the display (owner hold #27, 2026-10-14: the bell
-  // was only drawn in the well below). Frequency runs 20 Hz → 20 kHz across
-  // the whole panel, 0 dB on the flow's zero line, from eqResponseDb on the
-  // SAME band the DSP runs — so it follows every fader live. The dots mark the
-  // three component frequencies of the travelling wave: the gain the curve
-  // gives each one is exactly how much that component grows or shrinks in OUT.
+  // THE RESPONSE CURVE (owner hold #27, 2026-10-14: it must be on the display)
+  // in its own strip: 20 Hz → 20 kHz across, 0 dB on the strip's zero line,
+  // from eqResponseDb on the SAME band the DSP runs. The three dots are the
+  // wave's tones: the gain the curve gives each is how much it grows in OUT.
+  const sh = EQ_STRIP_H;
   const curve = useMemo(() => {
     const x0 = 8;
     const x1 = w - 8;
-    const halfH = h / 2 - 18;
+    const halfH = sh / 2 - 5;
     const centre = bands.length === 1 ? bands[0].freq : undefined;
-    const pts = eqCurvePoints((f) => eqResponseDb(bands, f), x0, x1, h / 2, halfH, centre);
+    const pts = eqCurvePoints((f) => eqResponseDb(bands, f), x0, x1, sh / 2, halfH, centre);
     const line = Skia.Path.Make();
     pts.forEach((pt, i) => (i === 0 ? line.moveTo(pt.x, pt.y) : line.lineTo(pt.x, pt.y)));
     const area = line.copy();
-    area.lineTo(x1, h / 2);
-    area.lineTo(x0, h / 2);
+    area.lineTo(x1, sh / 2);
+    area.lineTo(x0, sh / 2);
     area.close();
     const dots = Skia.Path.Make();
-    for (const f of EQ_COMP_FREQS) dots.addCircle(eqCurveX(f, x0, x1), eqCurveY(eqResponseDb(bands, f), h / 2, halfH), 2.6);
-    return { line, area, dots };
-  }, [bands, w, h]);
+    for (const f of EQ_COMP_FREQS) dots.addCircle(eqCurveX(f, x0, x1), eqCurveY(eqResponseDb(bands, f), sh / 2, halfH), 2.6);
+    const ticks = Skia.Path.Make();
+    for (const f of [100, 1000, 10000]) {
+      const x = eqCurveX(f, x0, x1);
+      ticks.moveTo(x, 3);
+      ticks.lineTo(x, sh - 3);
+    }
+    return { line, area, dots, ticks };
+  }, [bands, w, sh]);
   const g0 = useGlide(gains[0]);
   const g1 = useGlide(gains[1]);
   const g2 = useGlide(gains[2]);
-  const k0 = (PI2 * EQ_CYCLES[0]) / w;
-  const k1 = (PI2 * EQ_CYCLES[1]) / w;
-  const k2 = (PI2 * EQ_CYCLES[2]) / w;
+  // True proportion: k = 2π · f · window / w (cycles per glass unit).
+  const k0 = (PI2 * EQ_COMP_FREQS[0] * EQ_WINDOW_MS) / 1000 / w;
+  const k1 = (PI2 * EQ_COMP_FREQS[1] * EQ_WINDOW_MS) / 1000 / w;
+  const k2 = (PI2 * EQ_COMP_FREQS[2] * EQ_WINDOW_MS) / 1000 / w;
 
   const inPath = useDerivedValue(() => {
     const s = phase.value * TRAVEL_PX_PER_RAD;
     const p = Skia.Path.Make();
     const x0 = 6;
     const x1 = stageX - 10;
-    const A = h * 0.32;
-    const N = 44;
+    const A = hw * 0.32;
+    const N = Math.ceil((x1 - x0) / 0.8); // ≥ 8 points per 6 kHz cycle
     for (let i = 0; i <= N; i++) {
       const x = x0 + ((x1 - x0) * i) / N;
-      const y = h / 2 - (A / 3) * (Math.sin(k0 * (x - s)) + Math.sin(k1 * (x - s)) + Math.sin(k2 * (x - s)));
+      const y = hw / 2 - (A / 3) * (Math.sin(k0 * (x - s)) + Math.sin(k1 * (x - s)) + Math.sin(k2 * (x - s)));
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [phase, stageX, w, h]);
+  }, [phase, stageX, w, hw]);
 
   const outPath = useDerivedValue(() => {
     const s = phase.value * TRAVEL_PX_PER_RAD;
@@ -494,27 +515,45 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
     const p = Skia.Path.Make();
     const x0 = stageX + 10;
     const x1 = w - 6;
-    const A = h * 0.32;
-    const N = 56;
+    const A = hw * 0.32;
+    const N = Math.ceil((x1 - x0) / 0.8);
     for (let i = 0; i <= N; i++) {
       const x = x0 + ((x1 - x0) * i) / N;
       const y =
-        h / 2 -
+        hw / 2 -
         ((A * norm) / 3) * (a0 * Math.sin(k0 * (x - s)) + a1 * Math.sin(k1 * (x - s)) + a2 * Math.sin(k2 * (x - s)));
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [phase, g0, g1, g2, stageX, w, h]);
+  }, [phase, g0, g1, g2, stageX, w, hw]);
 
   return (
-    <FlowScene w={w} h={h} label={label} note={`EQ CURVE · ${EQ_CURVE_F_MIN} Hz → ${EQ_CURVE_F_MAX / 1000} kHz`}>
-      <Path path={curve.area} color={STAGE_GREEN} opacity={0.08} />
-      <Path path={curve.line} color={STAGE_GREEN} style="stroke" strokeWidth={1.6} strokeJoin="round" opacity={0.75} />
-      <Path path={curve.dots} color={STAGE_GREEN} opacity={0.9} />
-      <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <FlowGlow path={outPath} gradH={h} />
-    </FlowScene>
+    <View>
+      <FlowScene w={w} h={hw} label={label}>
+        <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.1} opacity={0.85} />
+        <FlowGlow path={outPath} gradH={hw} width={1.6} />
+      </FlowScene>
+      <View style={{ width: w * ts, height: sh * ts, marginTop: EQ_STRIP_GAP * ts }}>
+        <Canvas style={{ position: 'absolute', width: w * ts, height: sh * ts }}>
+          <Group transform={[{ scale: ts }]}>
+            <RoundedRect x={0} y={0} width={w} height={sh} r={6} color={BG} />
+            <Path path={curve.ticks} color={FRAME} style="stroke" strokeWidth={0.8} />
+            <SkLine p1={{ x: 4, y: sh / 2 }} p2={{ x: w - 4, y: sh / 2 }} color={ZERO} strokeWidth={1} />
+            <Path path={curve.area} color={STAGE_GREEN} opacity={0.1} />
+            <Path path={curve.line} color={STAGE_GREEN} style="stroke" strokeWidth={1.6} strokeJoin="round" opacity={0.85} />
+            <Path path={curve.dots} color={STAGE_GREEN} opacity={0.95} />
+            <RoundedRect x={0.5} y={0.5} width={w - 1} height={sh - 1} r={5.5} color={FRAME} style="stroke" strokeWidth={1} />
+          </Group>
+        </Canvas>
+        <Text style={[flowStyles.note, flowStyles.noteChip, { fontSize: 10 * ts, left: 6 * ts, top: 2 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
+          {`EQ CURVE · ${EQ_CURVE_F_MIN} Hz → ${EQ_CURVE_F_MAX / 1000} kHz`}
+        </Text>
+        <Text style={[flowStyles.note, flowStyles.noteChip, { fontSize: 10 * ts, right: 6 * ts, bottom: 2 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
+          {'● = the wave’s 150 Hz · 1k · 6k tones'}
+        </Text>
+      </View>
+    </View>
   );
 }
 
@@ -1181,10 +1220,34 @@ function DynamicsFlow({
 }
 
 // ────────────────────────────────────────────────────── distortion flow ──
-// A clean sine travels in; the out wave is the SAME cycle bent through
-// distShape (drive applied like the DSP, shape-normalized like the static
-// hero) — table built once per param change, crossfaded so drive glides.
+// A clean sine travels in; the out wave is the SAME cycle through the DSP's
+// chain: x·drive → distShape → DC block → mix with the dry → out.
+//
+// Round 3 (lab-art grading 2026-10-16: "the hard-clipped square is drawn
+// TALLER than the input sine — implies clipping raises peak level"): the old
+// flow normalised the shaped wave to its own peak (shape-only). Now both
+// sides share ONE true level scale — the dashed lines are the ±0 dBFS
+// ceiling the shaper cannot pass, the input is the lab's real −20 dBFS sine,
+// and a dashed ghost shows the DRIVEN wave before the ceiling, so the learner
+// sees exactly what drive pushes into the clipper and what the clipper cuts.
 const DIST_TAB_N = 96;
+/** The lab sine's peak (fxLabConfigs SOURCE_PEAK_DB = −20 dBFS). */
+export const DIST_IN_PEAK = Math.pow(10, -20 / 20);
+/** Where the ±0 dBFS ceiling sits: this far in from the panel's top/bottom,
+ *  clear of the IN/OUT chips and the bottom keys. */
+const DIST_CEIL_INSET = 22;
+const CEIL_RED = '#ff7a6b';
+
+/** One cycle of the shaper's output in full-scale units, DC removed (the DSP's
+ *  ~10 Hz DC blocker in steady state) — exported for the test. */
+export function distCycle(type: 'hard' | 'soft' | 'tube', driveDb: number, n = DIST_TAB_N): number[] {
+  const drive = Math.pow(10, driveDb / 20);
+  const out: number[] = [];
+  for (let i = 0; i <= n; i++) out.push(distShape(DIST_IN_PEAK * drive * Math.sin((PI2 * i) / n), type));
+  let mean = 0;
+  for (let i = 0; i < n; i++) mean += out[i] / n;
+  return out.map((y) => y - mean);
+}
 
 function DistFlow({
   w,
@@ -1206,21 +1269,11 @@ function DistFlow({
   const stageX = w * STAGE_FRAC;
   const carrier = usePhaseClock(active, 0.5);
   const mixG = useGlide(mix);
+  const driveG = useGlide(Math.pow(10, driveDb / 20));
   const kc = (PI2 * 3.2) / w;
+  const A = h / 2 - DIST_CEIL_INSET; // px per full scale (the ceiling)
 
-  // One shaped cycle via the EXACT fxViz shaper, normalized to its own peak
-  // (the WaveshapeGraph convention: compare SHAPE, not level).
-  const table = useMemo(() => {
-    const drive = Math.pow(10, driveDb / 20);
-    const out: number[] = [];
-    let peak = 1e-9;
-    for (let i = 0; i <= DIST_TAB_N; i++) {
-      const y = distShape(0.9 * Math.sin((PI2 * i) / DIST_TAB_N) * drive, type);
-      out.push(y);
-      peak = Math.max(peak, Math.abs(y));
-    }
-    return out.map((y) => y / peak);
-  }, [type, driveDb]);
+  const table = useMemo(() => distCycle(type, driveDb), [type, driveDb]);
 
   // Crossfade old table → new so TYPE/DRIVE chip presses glide, never snap.
   const prevTab = useSharedValue<number[]>(table);
@@ -1241,16 +1294,32 @@ function DistFlow({
   const inPath = useDerivedValue(() => {
     const pc = carrier.value;
     const p = Skia.Path.Make();
-    const A = h * 0.36;
-    const N = 40;
+    const N = 60;
     for (let i = 0; i <= N; i++) {
       const x = 6 + ((stageX - 16) * i) / N;
-      const y = h / 2 - A * 0.9 * Math.sin(kc * x - pc);
+      const y = h / 2 - A * DIST_IN_PEAK * Math.sin(kc * x - pc);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, stageX, h, kc]);
+  }, [carrier, stageX, h, kc, A]);
+
+  // The driven wave BEFORE the shaper (input × drive), held inside the panel.
+  const drivenPath = useDerivedValue(() => {
+    const pc = carrier.value;
+    const g = DIST_IN_PEAK * driveG.value;
+    const p = Skia.Path.Make();
+    const N = 96;
+    const lim = h / 2 - 3;
+    for (let i = 0; i <= N; i++) {
+      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
+      const d = A * g * Math.sin(kc * x - pc);
+      const y = h / 2 - (d > lim ? lim : d < -lim ? -lim : d);
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    return p;
+  }, [carrier, driveG, stageX, w, h, kc, A]);
 
   const outPath = useDerivedValue(() => {
     const pc = carrier.value;
@@ -1259,23 +1328,47 @@ function DistFlow({
     const cur = curTab.value;
     const mixV = mixG.value;
     const p = Skia.Path.Make();
-    const A = h * 0.36;
-    const N = 64;
+    const N = 96;
     for (let i = 0; i <= N; i++) {
       const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
       const u = (kc * x - pc) / PI2;
       const shaped = tabAt(prev, u) * (1 - b) + tabAt(cur, u) * b;
-      const y = h / 2 - A * (mixV * shaped + (1 - mixV) * 0.9 * Math.sin(kc * x - pc));
+      const y = h / 2 - A * (mixV * shaped + (1 - mixV) * DIST_IN_PEAK * Math.sin(kc * x - pc));
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, blend, prevTab, curTab, mixG, stageX, w, h, kc]);
+  }, [carrier, blend, prevTab, curTab, mixG, stageX, w, h, kc, A]);
+
+  const ceil = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(4, h / 2 - A);
+    p.lineTo(w - 4, h / 2 - A);
+    p.moveTo(4, h / 2 + A);
+    p.lineTo(w - 4, h / 2 + A);
+    return p;
+  }, [w, h, A]);
 
   return (
-    <FlowScene w={w} h={h} label={label}>
-      <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <FlowGlow path={outPath} width={2} gradH={h} />
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      note="IN = −20 dBFS sine"
+      noteColor={DIM}
+      legend={[
+        { label: 'DRIVEN (before clip)', color: DIM },
+        { label: '0 dBFS', color: CEIL_RED },
+      ]}
+    >
+      <Path path={ceil} color={CEIL_RED} style="stroke" strokeWidth={1} opacity={0.6}>
+        <DashPathEffect intervals={[5, 4]} />
+      </Path>
+      <Path path={drivenPath} color={DIM} style="stroke" strokeWidth={1} opacity={0.55}>
+        <DashPathEffect intervals={[3, 3]} />
+      </Path>
+      <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.9} />
+      <FlowGlow path={outPath} width={2} gradH={h} gradY={[h / 2 - A, h / 2 + A]} />
     </FlowScene>
   );
 }
@@ -1560,6 +1653,9 @@ const flowStyles = StyleSheet.create({
     color: STAGE_GREEN,
     opacity: 0.9,
   },
+  // The EQ strip's keys sit on a dark chip so the curve can pass under them
+  // (padding and radius are set inline × ts, like every point size here).
+  noteChip: { backgroundColor: 'rgba(12,12,15,.78)', overflow: 'hidden' },
   // Processor name along the divider — rotated to run vertically down the bar,
   // green to match it (owner 2026-08-05). Size/spacing set inline × ts.
   stageLbl: {

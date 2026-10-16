@@ -27,9 +27,10 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Ellipse, Line, Path, Polygon, Rect } from 'react-native-svg';
+import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Rect } from 'react-native-svg';
 import { FigureStandingFrontSvg } from '../../../../features/lab/figureBodySvg';
-import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph } from './eqResponseGraph';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -56,7 +57,12 @@ const GRAPH_H = 116;
 const FIG_ASPECT = W / (SCENE_H + GRAPH_H + 14);
 const FLOOR_Y = 116;
 const FOV_TOP = 42;
-const CAM_APEX: [number, number] = [160, 148];
+/** The camera stands on the NEAR floor (round 3, 2026-10-16: it used to sit
+ *  below the floor's edge, with its tripod feet on the graph frame). Its feet
+ *  are at y 160, inside the floor that now runs to FLOOR_NEAR_Y. */
+const CAM_DY = -8;
+const FLOOR_NEAR_Y = 165;
+const CAM_APEX: [number, number] = [160, 148 + CAM_DY];
 
 // ---- Analogy ↔︎ EQ mapping ---------------------------------------------------
 const bwFromZoom = (z: number) => 4 - 3.75 * z; // wide 4 oct … tight 0.25 oct
@@ -116,7 +122,12 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={SCENE_H * s} viewBox={`0 0 ${W} ${SCENE_H}`}>
       {/* Back wall / floor split for depth */}
       <Rect x={PAD} y={28} width={PLOT_W} height={FLOOR_Y - 28} fill="#101216" />
-      <Polygon points={`${PAD},${FLOOR_Y} ${W - PAD},${FLOOR_Y} ${W - PAD - 14},${FLOOR_Y + 16} ${PAD + 14},${FLOOR_Y + 16}`} fill="#0c0d11" />
+      {/* The floor runs from the back wall to the viewer (the camera's
+          tripod stands on its near part); faint boards converge to the wall. */}
+      <Rect x={PAD} y={FLOOR_Y} width={PLOT_W} height={FLOOR_NEAR_Y - FLOOR_Y} fill="#0d0e12" />
+      {[-150, -100, -50, 0, 50, 100, 150].map((d) => (
+        <Line key={d} x1={160 + d * 0.62} y1={FLOOR_Y} x2={160 + d} y2={FLOOR_NEAR_Y} stroke="#20242d" strokeWidth={0.8} />
+      ))}
       <Line x1={PAD} y1={FLOOR_Y} x2={W - PAD} y2={FLOOR_Y} stroke="#3a4150" strokeWidth={1.2} />
 
       {/* WINDOW — framed, no sill (owner 2026-10-10: the sill looked odd) */}
@@ -179,6 +190,7 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
           with the viewfinder hump on top centre, mode dial and shutter button,
           the right-hand grip, the rear screen; a pan head on three splayed
           legs. (Its lens faces into the room — the field of view's apex.) */}
+      <G transform={`translate(0 ${CAM_DY})`}>
       <Path d="M152.5 150.5 L154.5 146.2 L165.5 146.2 L167.5 150.5 Z" fill={FILL2} stroke={colors.amber} strokeWidth={1.2} strokeLinejoin="round" />
       <Rect x={147.5} y={147.6} width={5} height={2.6} rx={1} fill={FILL} stroke={colors.amber} strokeWidth={1} />
       <Rect x={168.6} y={148.4} width={3.4} height={1.8} rx={0.9} fill={colors.amber} />
@@ -187,6 +199,7 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
       <Rect x={149} y={152.6} width={16.4} height={9} rx={1.2} fill="#0b0c10" stroke={colors.amber} strokeWidth={0.8} strokeOpacity={0.7} />
       <Rect x={157} y={164} width={6} height={1.6} fill={FILL} stroke={colors.amber} strokeWidth={0.9} />
       <Path d="M158 165.6 L147 168 M162 165.6 L173 168 M160 165.6 L160 168" stroke={colors.amber} strokeWidth={1.3} strokeLinecap="round" />
+      </G>
     </Svg>
   );
 }

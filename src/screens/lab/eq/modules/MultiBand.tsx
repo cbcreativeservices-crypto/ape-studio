@@ -18,18 +18,8 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import {
-  ResponseCurveGraph,
-  eqResponseDb,
-  responseGraphDb,
-  responseGraphF,
-  responseGraphPadB,
-  responseGraphTextScale,
-  responseGraphX,
-  responseGraphY,
-  type EqBandSpec,
-  type ResponseCurve,
-} from '../../../../features/lab/fxViz';
+import { eqResponseDb, responseGraphDb, responseGraphF, responseGraphPadB, responseGraphTextScale, responseGraphX, responseGraphY, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph } from './eqResponseGraph';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RackUnit } from '../../rack/RackUnit';

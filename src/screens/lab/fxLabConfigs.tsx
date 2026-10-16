@@ -1238,11 +1238,17 @@ const distConfig: FxLabConfig = {
     driveDb: v[P.driveDb],
     mix: v[P.distMix],
   }),
-  heroBadge: 'WAVESHAPE — ANALYTIC (input dim · output amber, shape-normalized)',
-  heroCaption: (v) =>
-    v[P.distType] === 2
+  heroBadge: 'WAVESHAPE — TRUE LEVEL: input −20 dBFS (dim) · input × drive before the clip (dashed) · output (amber) · dashed bounds = 0 dBFS',
+  heroCaption: (v) => {
+    // True level (round 3): the −20 dBFS sine × DRIVE only reaches the 0 dBFS
+    // ceiling past +20 dB, so the caption must not claim clipping below it.
+    const peak = SOURCE_PEAK_DB + v[P.driveDb];
+    if (v[P.distType] === 0 && peak < 0)
+      return `DRIVE +${Math.round(v[P.driveDb])} dB lifts the −20 dBFS sine to ${Math.round(peak)} dBFS — still under the 0 dBFS ceiling, so the hard clipper has nothing to cut yet: so far DRIVE is just gain. Push past +20 dB to flatten the tops.`;
+    return v[P.distType] === 2
       ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics — the “warm” tube signature.'
-      : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.',
+      : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.';
+  },
   note: 'Bitcrush and sample-rate reduction are in the engine (hear them via the lesson’s theory); their quantization visual lands with the analyzer view.',
   checks: [
     {

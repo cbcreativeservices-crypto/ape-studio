@@ -667,29 +667,34 @@ export function WaveshapeGraph({
 }) {
   const H = 120;
   const drive = Math.pow(10, driveDb / 20);
-  const { inPath, outPath } = useMemo(() => {
+  // TRUE LEVEL (lab-art round 3, 2026-10-16: the old graph normalised the
+  // shaped wave to its own peak, so a hard-clipped square stood TALLER than
+  // the input — as if clipping raised the peak). One scale for everything:
+  // the dashed bounds are the ±0 dBFS ceiling, the input is the lab's real
+  // −20 dBFS sine, the thin dashed ghost is input × drive BEFORE the shaper
+  // (cut at the frame), and the output is what the DSP makes of it: shaped,
+  // DC-blocked (tube), mixed with the dry like processStereo.
+  const { inPath, drivenPath, outPath } = useMemo(() => {
     const N = 160;
-    let a = '', b = '';
-    // Normalize the shaped wave to its own peak so the SHAPE difference (not
-    // level) is what the student compares — then blend against the dry sine
-    // exactly like the DSP: mix·shaped + (1−mix)·dry.
-    let peak = 1e-9;
+    const aIn = Math.pow(10, -20 / 20); // fxLabConfigs SOURCE_PEAK_DB
+    const A = H / 2 - 8;
+    const lim = H / 2 - 2;
+    let a = '', d = '', b = '';
     const outs: number[] = [];
-    for (let i = 0; i <= N; i++) {
-      const x = 0.9 * Math.sin((2 * PI * i) / N);
-      const y = distShape(x * drive, type);
-      outs.push(y);
-      peak = Math.max(peak, Math.abs(y));
-    }
+    for (let i = 0; i <= N; i++) outs.push(distShape(aIn * drive * Math.sin((2 * PI * i) / N), type));
+    let mean = 0;
+    for (let i = 0; i < N; i++) mean += outs[i] / N;
     const mixV = Math.max(0, Math.min(1, mix));
     for (let i = 0; i <= N; i++) {
       const px = (i / N) * W;
-      const xin = 0.9 * Math.sin((2 * PI * i) / N);
-      const blended = mixV * (outs[i] / peak) + (1 - mixV) * xin;
-      a += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - xin * (H / 2 - 8)).toFixed(1)}`;
-      b += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - blended * (H / 2 - 8)).toFixed(1)}`;
+      const xin = aIn * Math.sin((2 * PI * i) / N);
+      const blended = mixV * (outs[i] - mean) + (1 - mixV) * xin;
+      const dv = Math.max(-lim, Math.min(lim, xin * drive * A));
+      a += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - xin * A).toFixed(1)}`;
+      d += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - dv).toFixed(1)}`;
+      b += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - blended * A).toFixed(1)}`;
     }
-    return { inPath: a, outPath: b };
+    return { inPath: a, drivenPath: d, outPath: b };
   }, [type, drive, mix]);
   const yTop = H / 2 - (H / 2 - 8); // +1.0 full scale
   const yBot = H / 2 + (H / 2 - 8); // −1.0 full scale
@@ -704,14 +709,16 @@ export function WaveshapeGraph({
         </LinearGradient>
       </Defs>
       <PlotFrame w={W} h={H} />
-      {/* ±full-scale bounds (dashed = limit) */}
+      {/* ±0 dBFS ceiling (dashed = the limit the shaper cannot pass) */}
       <Line x1={4} y1={yTop} x2={W - 4} y2={yTop} stroke="rgba(255,198,77,.28)" strokeWidth={1} strokeDasharray="4 3" />
       <Line x1={4} y1={yBot} x2={W - 4} y2={yBot} stroke="rgba(255,198,77,.28)" strokeWidth={1} strokeDasharray="4 3" />
       <Line x1={0} y1={H / 2} x2={W} y2={H / 2} stroke={AXIS} strokeWidth={1.1} />
       {/* shaped output: gradient fill against the zero line, under the glow trace */}
       <Path d={`${outPath}Z`} fill="url(#fxWsFill)" />
-      {/* input sine — dim ghost reference */}
-      <Path d={inPath} stroke={DIM} strokeWidth={1.1} strokeOpacity={0.8} strokeDasharray="4 3" fill="none" />
+      {/* driven wave before the shaper (input × drive) — thin dashed ghost */}
+      <Path d={drivenPath} stroke={DIM} strokeWidth={0.9} strokeOpacity={0.55} strokeDasharray="3 3" fill="none" />
+      {/* input sine at its true −20 dBFS — solid dim reference */}
+      <Path d={inPath} stroke={DIM} strokeWidth={1.3} strokeOpacity={0.9} fill="none" />
       <GlowPath d={outPath} width={2} />
     </Svg>
   );

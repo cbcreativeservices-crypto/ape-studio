@@ -14,7 +14,8 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph } from './eqResponseGraph';
 import { colors, fonts } from '../../../../theme/tokens';
 import { bwOctFromQ, fFromNorm, fmtHz, gainColor, maxPosDb, normFromF } from './eqMath';
 import { RackUnit } from '../../rack/RackUnit';
@@ -185,7 +186,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
         size: 'L',
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend, verbatim from the pre-rack panel head.
-        badge: 'TARGET (dim) vs YOUR EQ (amber)',
+        badge: 'TARGET = thin grey line · YOUR EQ = bold line (its colour follows its gain)',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
@@ -196,7 +197,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
     >
       <View style={styles.well}>
         <Text style={styles.body}>
-          Recreate the dim TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
+          Recreate the thin grey TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
           required — this is pure understanding of frequency, gain and Q.
           {bands.length > 1 ? ' Tap the BAND key to switch bands.' : ''}
         </Text>

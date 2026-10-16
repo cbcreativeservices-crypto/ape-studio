@@ -21,7 +21,8 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ResponseCurveGraph, rbjPeaking, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { rbjPeaking, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph } from './eqResponseGraph';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { CurveOverBoard, GraphicBoard } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -165,7 +166,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
                   mainColor={gainColor(Math.max(0, ...gains), 12)}
                 />
               ) : (
-                <ResponseCurveGraph curves={phaseCurves} dbRange={180} width={gw} totalHeight={totalH} />
+                <ResponseCurveGraph unit="°" curves={phaseCurves} dbRange={180} width={gw} totalHeight={totalH} />
               )
             }
             board={

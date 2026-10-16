@@ -14,7 +14,8 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph } from './eqResponseGraph';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RackUnit } from '../../rack/RackUnit';

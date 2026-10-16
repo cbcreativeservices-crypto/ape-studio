@@ -156,9 +156,11 @@ describe('#27 — FX EQ draws the bell on the display', () => {
   });
   test('wired: EqFlow draws it from eqResponseDb on the SAME bands the DSP runs', () => {
     const anim = read('screens/lab/fxAnim.tsx');
-    assert.match(anim, /eqCurvePoints\(\(f\) => eqResponseDb\(bands, f\), x0, x1, h \/ 2, halfH, centre\)/);
+    // Round 3 (2026-10-16): the curve lives in its OWN strip (sh tall) under
+    // the time-domain wave box, never across the wave.
+    assert.match(anim, /eqCurvePoints\(\(f\) => eqResponseDb\(bands, f\), x0, x1, sh \/ 2, halfH, centre\)/);
     assert.match(anim, /<Path path=\{curve\.line\} color=\{STAGE_GREEN\} style="stroke"/);
-    assert.match(anim, /note=\{`EQ CURVE · \$\{EQ_CURVE_F_MIN\} Hz → \$\{EQ_CURVE_F_MAX \/ 1000\} kHz`\}/);
+    assert.match(anim, /\{`EQ CURVE · \$\{EQ_CURVE_F_MIN\} Hz → \$\{EQ_CURVE_F_MAX \/ 1000\} kHz`\}/);
     // The note's points ride the stage text scale (≥ 9 pt at 1×).
     assert.match(anim, /fontSize: 10 \* ts, left: 8 \* ts, bottom: 3 \* ts/);
   });
