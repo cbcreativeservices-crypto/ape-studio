@@ -4,15 +4,15 @@
  * every group draws its own display and AMOUNT changes the picture) → LEARN
  * (read: analog and digital) → PRACTICE (choose a tool for the job) → REVIEW.
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { faderParam, flipFader } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
 import { Body, Card, KeyTerms, Point, ScenarioDeck, SectionTitle } from '../kit';
 import { KEY_TERMS, TOOL_GROUPS, TOOL_SCENARIOS } from '../masteringContent';
-import { overview, type Overview } from '../masteringEngine';
-import { TOOL_ASPECT, ToolStage, dynamicsLawDb, widthCorrelation, type ToolView } from '../stages';
+import { loudnessHistory, overview, shiftHistory, type LoudnessHistory, type Overview } from '../masteringEngine';
+import { TOOL_ASPECT, ToolStage, dynamicsLawDb, meterGainDb, widthCorrelation, type ToolView } from '../stages';
 import { programme, programmeIfRendered, useDrawProgramme } from '../useMasterPlayback';
-import { MODEL_BADGE, type ModuleProps } from './shared';
+import { METER_BADGE, MODEL_BADGE, type ModuleProps } from './shared';
 
 /** ONE short-name table for the key, the bezel and the tray (cognitive
  *  review 2026-10-01, finding 14). */
@@ -30,18 +30,18 @@ function amountText(view: ToolView, a: number): string {
     case 'analog': return `±${Math.abs(a * 3).toFixed(1)} dB ${a > 0 ? 'brighter' : a < 0 ? 'warmer' : 'flat'}`;
     case 'dyn': return `${(1 + Math.max(0, a) * 19).toFixed(1)} : 1`;
     case 'stereo': return `×${(Math.max(0, a) * 2).toFixed(2)}`;
-    case 'meters': return `${(-12 + Math.max(0, a) * 12).toFixed(1)} dBFS pk`;
+    case 'meters': { const g = meterGainDb(a); return `${g > 0 ? '+' : ''}${g.toFixed(1)} dB gain`; }
     case 'monitor': return `${Math.round(70 + Math.max(0, a) * 20)} dB SPL (C)`;
     default: return `${(Math.max(0, a) * 4).toFixed(1)} s`;
   }
 }
 
 /** A second readout only where it adds a number the AMOUNT cell lacks. */
-function secondReadout(view: ToolView, a: number): { k: string; v: string } | null {
+function secondReadout(view: ToolView, a: number, loud: LoudnessHistory | null): { k: string; v: string } | null {
   switch (view) {
     case 'dyn': return { k: 'OUT AT 0 IN', v: `${dynamicsLawDb(0, -12, 1 + Math.max(0, a) * 19).toFixed(1)} dB` };
     case 'stereo': return { k: 'CORRELATION', v: widthCorrelation(Math.max(0, a) * 2).toFixed(2) };
-    case 'meters': return { k: 'LUFS', v: `${(-24 + Math.max(0, a) * 12).toFixed(1)}` };
+    case 'meters': return { k: 'LUFS (I)', v: loud ? shiftHistory(loud, meterGainDb(a)).integrated.toFixed(1) : '—' };
     default: return null;
   }
 }
@@ -61,7 +61,11 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
   // Bipolar amounts for the EQ views; 0..1 for the rest.
   const bipolar = view === 'eq' || view === 'analog';
   const a = bipolar ? amount : Math.max(0, amount);
-  const second = secondReadout(view, a);
+  // The METERS view's loudness meter: measured ONCE from the rendered
+  // programme (K-weighted short-term + integrated, 4× true peak); the LEVEL
+  // fader then shifts every number by its gain (shiftHistory).
+  const loud = useMemo(() => (view === 'meters' && ov ? loudnessHistory(programme(), 60) : null), [view, ov]);
+  const second = secondReadout(view, a, loud);
   const needsProgramme = (view === 'playback' || view === 'meters') && !ov;
 
   return (
@@ -83,9 +87,11 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
         {
           key: 'shelf', title: 'The tool shelf', kind: 'EXPLORE', layout: 'rack',
           rack: {
-            render: (w, h) => <ToolStage width={w} height={h} view={view} amount={a} ov={ov} />,
+            render: (w, h) => <ToolStage width={w} height={h} view={view} amount={a} ov={ov} loud={loud} />,
             aspect: TOOL_ASPECT,
-            badge: MODEL_BADGE,
+            size: 'L',
+            // The METERS view reads the rendered mix; every other view is a model.
+            badge: view === 'meters' && ov ? METER_BADGE : MODEL_BADGE,
             bezel: [
               { k: 'TOOL', v: TOOL_SHORT[view], flex: 1.1 },
               { k: AMOUNT_LABEL[view], v: amountText(view, a), flex: 1.5 },
@@ -113,7 +119,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
                 <Point title="EQ">Broad tonal shaping (shelves, tilt) and problem correction (narrow). Compared at matched level — a shelf changes loudness as well as tone.</Point>
                 <Point title="Dynamics">Compression for density and shape, limiting for a peak ceiling, other dynamics tools where a goal asks for them. The curve on the glass is static — attack, release and knee are not shown.</Point>
                 <Point title="Stereo / spatial">Width or channel balance — always with a mono-compatibility check, because width that only lives in the sides vanishes in a fold.</Point>
-                <Point title="Meters and analysis">Peak and true-peak, loudness (the BS.1770 family), phase correlation, spectrum. They verify a decision made by listening; they do not make it. The TP bar here is a model (+0.6 over the sample peak); real material runs 0.3–1 dB over.</Point>
+                <Point title="Meters and analysis">Peak and true-peak, loudness (the BS.1770 family), phase correlation, spectrum. They verify a decision made by listening; they do not make it. The meter on the glass reads the client's mix through LEVEL (a plain gain): short-term and integrated loudness and true peak are measured from the render, and true peak over the −1 dBTP line reads red.</Point>
               </Card>
             </>
           ),

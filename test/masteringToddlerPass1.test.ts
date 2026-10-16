@@ -199,7 +199,7 @@ describe('measured: no drawing line runs past the 360-unit edge', () => {
     const lines = [...fn.matchAll(/<SvgText x=\{x0\} y=\{H - (?:4|16)\} fontSize=\{fs\}[^>]*fontFamily=\{fonts\.barlowRegular\}>([^<{]+)<\/SvgText>/g)].map((m) => m[1]);
     assert.ok(lines.length >= 4, `found ${lines.length} literal footers`);
     for (const [w, h] of PHONES) {
-      const bst = boostAt(360 / 180, 'M', w, h);
+      const bst = boostAt(360 / 236, 'L', w, h);
       for (const l of lines) assert.ok(34 + barlow(l, 11 * bst) <= 356, `${w}×${h}: "${l}" ends at ${(34 + barlow(l, 11 * bst)).toFixed(0)}`);
     }
   });

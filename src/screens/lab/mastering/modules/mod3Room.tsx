@@ -70,7 +70,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
                 <Point title="Room noise">Fans, traffic, HVAC: a low noise floor is what lets quiet detail, fades and tails be heard at a moderate level.</Point>
                 <Point title="Reflections">Early reflections from nearby surfaces smear the direct sound; treatment at the first-reflection points (the amber pads in the drawing) keeps the stereo image honest.</Point>
                 <Point title="Low-frequency behaviour">Room modes and boundary effects set the bass at the listening position — the corner traps are for this. It is the hardest part to get right and the one most likely to mislead a tonal decision.</Point>
-                <Point title="Listening position">Symmetrical, away from the walls, with the monitors and the listener forming the triangle the monitors were designed for.</Point>
+                <Point title="Listening position">Symmetrical, away from the walls, with the monitors and the listener forming the triangle the monitors were designed for. In the drawing the listener sits about 38 % of the way down the room's length (an example, not a rule) — the plan is to scale, a 5 m room with 330 × 400 mm monitors.</Point>
                 <Point title="Avoiding misleading coloration">Everything above is about ONE thing: hearing the programme, not the room, so that what you fix is in the file.</Point>
               </Card>
               <SectionTitle>MAIN MONITORS AND SECONDARY CHECKS</SectionTitle>
@@ -123,6 +123,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           rack: {
             render: (w, h) => <MonitorPathStage width={w} height={h} chain={chain} grade={verdict.grade} reason={verdict.reason} next={placed ? undefined : next} />,
             aspect: PATH_ASPECT,
+            size: 'L',
             badge: 'DIAGRAM · real systems vary',
             bezel: [
               { k: 'STAGES', v: `${chain.length} / 5` },
@@ -144,7 +145,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Choose a DEVICE — it appears faintly in the next free slot — then + CONNECT it (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
+              <Body>Choose a DEVICE — it appears faintly at the end of the chain, marked NEXT › — then + CONNECT it (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. Each cable is drawn by what it carries: USB from the computer, balanced line between the boxes, the red-and-black speaker pair from a power amplifier. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
               <Card tone={verdict.grade === 'complete' ? 'accent' : 'plain'}>
                 {verdict.notes.length ? verdict.notes.map((n) => <Body key={n}>• {n}</Body>) : <Body>Every stage in order. Try the other loudspeaker type: a passive pair needs the amplifier, an active pair makes it a mistake.</Body>}
               </Card>

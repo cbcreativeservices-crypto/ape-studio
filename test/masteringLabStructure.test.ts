@@ -234,8 +234,12 @@ describe('safety rules (safety review 2026-10-01)', () => {
     assert.match(m6, /look-ahead and true-peak detection/);
     assert.match(strip(read(`${DIR}/modules/shared.tsx`)), /miniature limiter \(no look-ahead\)/);
     const st = strip(read(`${DIR}/stages.tsx`));
-    assert.match(st, /'TP MODEL'/);
-    assert.match(st, /typically 0\.3–1 dB over on dense material/);
+    // Art fix 2026-10-16: the METERS view is a loudness meter MEASURED from
+    // the render (no more "TP MODEL = peak + 0.6"), true peak against the
+    // −1 dBTP line in peak red.
+    assert.match(st, /<LoudnessMeterFace /);
+    assert.match(st, /TP = true peak: over the −1 dBTP line it reads red/);
+    assert.doesNotMatch(st, /'TP MODEL'/);
     assert.match(st, /a static curve \(no attack, release or knee\)/);
     assert.match(st, /side level half the mid/);
     assert.match(st, /50 Hz · ISO 226-style model, simplified/);

@@ -23,7 +23,7 @@
  * Never certified metering. The screens say so (badge + AccuracyNote).
  */
 import { SR, applyBiquad, rbj, type Mono, type Stereo } from '../../../features/ear/earDsp.ts';
-import { loudnessLufsEstimate } from '../mixing/engine/advanced.ts';
+import { kWeight, loudnessLufsEstimate } from '../mixing/engine/advanced.ts';
 import type { MixSettings } from '../mixing/audio/mixAudio.ts';
 
 /* ── the delivered mix ───────────────────────────────────────────────────── */
@@ -109,7 +109,11 @@ export type LimiterResult = {
  * a sample-peak ceiling lets through between samples, which is exactly the
  * lesson Module 6 draws.
  */
-export function peakLimiter(s: Stereo, driveDb: number, ceilingDb: number, releaseMs = 80, columns = 160): LimiterResult {
+/** The limiter's release (ms) — the RELEASE knob the drawn faceplate shows
+ *  (art fix 2026-10-16: the faceplate prints the lab's real settings). */
+export const LIMITER_RELEASE_MS = 80;
+
+export function peakLimiter(s: Stereo, driveDb: number, ceilingDb: number, releaseMs = LIMITER_RELEASE_MS, columns = 160): LimiterResult {
   const n = s.l.length;
   const g0 = db2lin(driveDb);
   const ceil = db2lin(ceilingDb);
@@ -295,6 +299,144 @@ export function measure(s: Stereo): Measure {
   return { peakDb, truePeakDb, lufs, plr: truePeakDb - lufs, rmsDb: rmsDbOf(s) };
 }
 
+/* ── the loudness meter's picture (art fix 2026-10-16) ───────────────────── */
+
+/** BS.1770 short-term loudness window, seconds. */
+export const SHORT_TERM_SEC = 3;
+
+export type LoudnessHistory = {
+  seconds: number;
+  /** SHORT-TERM loudness (LUFS, K-weighted, 3 s window, ungated — the
+   *  BS.1770 short-term definition) at each column's END time; null until
+   *  the first full 3 s window exists. */
+  st: (number | null)[];
+  /** The highest short-term value (LUFS). */
+  stMax: number;
+  /** Integrated loudness (the lab's gated estimate, LUFS). */
+  integrated: number;
+  /** True-peak estimate (dBTP) and sample peak (dBFS). */
+  truePeakDb: number;
+  peakDb: number;
+};
+
+/** What a loudness meter shows for a whole programme: the short-term trace,
+ *  its maximum, the integrated value and the true peak — every number from
+ *  the same K-weighting and true-peak code the lab's bezels use. Pure. */
+export function loudnessHistory(s: Stereo, columns = 60): LoudnessHistory {
+  const l = kWeight(s.l);
+  const r = kWeight(s.r);
+  const n = l.length;
+  const cum = new Float64Array(n + 1);
+  for (let i = 0; i < n; i++) cum[i + 1] = cum[i] + l[i] * l[i] + r[i] * r[i];
+  const win = Math.round(SHORT_TERM_SEC * SR);
+  const st: (number | null)[] = [];
+  let stMax = -Infinity;
+  for (let c = 0; c < columns; c++) {
+    const end = Math.round(((c + 1) / columns) * n);
+    if (end < win) {
+      st.push(null);
+      continue;
+    }
+    const ms = (cum[end] - cum[end - win]) / win;
+    const v = -0.691 + 10 * Math.log10(Math.max(ms, 1e-12));
+    st.push(v);
+    if (v > stMax) stMax = v;
+  }
+  return { seconds: n / SR, st, stMax, integrated: loudnessLufsEstimate(s), truePeakDb: truePeakDbFast(s), peakDb: samplePeakDb(s) };
+}
+
+/** A plain gain moves every loudness and peak number by exactly that many
+ *  dB (the meter maths is linear in level), so a LEVEL fader re-reads a
+ *  measured history without measuring again. Pure. */
+export function shiftHistory(h: LoudnessHistory, gainDb: number): LoudnessHistory {
+  if (!gainDb) return h;
+  return {
+    ...h,
+    st: h.st.map((v) => (v == null ? null : v + gainDb)),
+    stMax: h.stMax + gainDb,
+    integrated: h.integrated + gainDb,
+    truePeakDb: h.truePeakDb + gainDb,
+    peakDb: h.peakDb + gainDb,
+  };
+}
+
+/** The release-delivery true-peak line the meters draw (dBTP): anything over
+ *  it reads in peak red. A common delivery ceiling, not a rule for every
+ *  destination (Module 7 says check the current spec). */
+export const TP_WARN_DBTP = -1;
+
+/* ── drawing helpers, node-tested (art fix 2026-10-16) ───────────────────── */
+
+/**
+ * A label's baseline that keeps it CLEAR of a curve ("labels never on
+ * lines"): the label spans [xa, xb]; above → its descenders sit `pad` over
+ * the curve's highest point in that span; below → its cap height sits `pad`
+ * under the lowest point. y is drawing units, downwards.
+ */
+export function labelBaselineClearOf(curveY: (x: number) => number, xa: number, xb: number, side: 'above' | 'below', fontUnits: number, pad = 2): number {
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (let i = 0; i <= 16; i++) {
+    const y = curveY(xa + ((xb - xa) * i) / 16);
+    if (y < lo) lo = y;
+    if (y > hi) hi = y;
+  }
+  return side === 'above' ? lo - pad - fontUnits * 0.22 : hi + pad + fontUnits * 0.74;
+}
+
+export type LabelBox = { x0: number; y0: number; x1: number; y1: number };
+
+const boxesMeet = (a: LabelBox, b: LabelBox) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+
+/**
+ * Place a curve's label so it touches NO line: tried at each left edge in
+ * `xs`, above then below its own curve, it is kept only if its box stays
+ * inside `bounds`, misses every `avoid` box and no curve in `others` passes
+ * through it. Returns the baseline-left point, or null (then draw no label
+ * rather than one on a line). Pure, node-tested.
+ */
+export function placeClearLabel(own: (x: number) => number, others: readonly ((x: number) => number)[], xs: readonly number[], w: number, fontUnits: number, bounds: LabelBox, avoid: readonly LabelBox[]): { x: number; y: number } | null {
+  for (const xa of xs) {
+    for (const side of ['above', 'below'] as const) {
+      const y = labelBaselineClearOf(own, xa, xa + w, side, fontUnits);
+      const box = { x0: xa, y0: y - fontUnits * 0.74 - 1, x1: xa + w, y1: y + fontUnits * 0.22 + 1 };
+      if (box.x0 < bounds.x0 || box.x1 > bounds.x1 || box.y0 < bounds.y0 || box.y1 > bounds.y1) continue;
+      if (avoid.some((a) => boxesMeet(a, box))) continue;
+      let hit = false;
+      for (const c of others) {
+        for (let i = 0; i <= 16 && !hit; i++) {
+          const cy = c(xa + (w * i) / 16);
+          if (cy > box.y0 && cy < box.y1) hit = true;
+        }
+        if (hit) break;
+      }
+      if (!hit) return { x: xa, y };
+    }
+  }
+  return null;
+}
+
+/** Each monitoring-path device's drawn width (design units) at its own true
+ *  aspect — a 16 : 9 display on a stand, a half-rack 1U converter, a desktop
+ *  controller, a 2U power amplifier, a 1 : 1.6 two-way monitor. */
+export const GEAR_DRAW_W: Record<PathDevice, number> = { daw: 64, dac: 60, monitorCtl: 50, amp: 74, passive: 32, active: 32 };
+
+/** Left edges of a chain of devices laid out across [x0, x1] with equal
+ *  gaps (≥ 10, ≤ 26), centred. Pure, node-tested: never wider than the span. */
+export function chainXs(kinds: readonly PathDevice[], x0: number, x1: number): { xs: number[]; gap: number } {
+  const total = kinds.reduce((a, k) => a + GEAR_DRAW_W[k], 0);
+  const n = kinds.length;
+  const gap = n > 1 ? Math.max(10, Math.min(26, (x1 - x0 - total) / (n - 1))) : 0;
+  const used = total + gap * Math.max(0, n - 1);
+  let x = x0 + Math.max(0, (x1 - x0 - used) / 2);
+  const xs: number[] = [];
+  for (const k of kinds) {
+    xs.push(x);
+    x += GEAR_DRAW_W[k] + gap;
+  }
+  return { xs, gap };
+}
+
 /* ── matched-level listening ─────────────────────────────────────────────── */
 
 /**
@@ -376,6 +518,15 @@ export function perceivedBalanceShift(levelDbSpl: number, referenceDbSpl = 83): 
 /** The NIOSH recommended exposure limit: 85 dBA over 8 hours, halving for
  *  every 3 dB above (88 → 4 h, 91 → 2 h, 94 → 1 h, 97 → 30 min, 100 →
  *  15 min). Below 85 the daily limit is "8 h+" — a full working day. */
+/** The drawn balance curve (dB vs 1 kHz) at frequency f for a shift of
+ *  `bassDb` (full below 50 Hz, gone by 700 Hz) and `trebleDb` (from 2.5 kHz,
+ *  full by 12 kHz) — the shape the monitoring-level stage draws. Pure. */
+export function balanceCurveDb(f: number, bassDb: number, trebleDb: number): number {
+  const lf = Math.max(0, Math.min(1, (Math.log10(700) - Math.log10(f)) / (Math.log10(700) - Math.log10(50))));
+  const hf = Math.max(0, Math.min(1, (Math.log10(f) - Math.log10(2500)) / (Math.log10(12000) - Math.log10(2500))));
+  return bassDb * lf * lf + trebleDb * hf;
+}
+
 export const NIOSH_LIMIT_DBA = 85;
 export function dailyLimitHours(levelDbSpl: number): number {
   return 8 * Math.pow(2, (NIOSH_LIMIT_DBA - levelDbSpl) / 3);

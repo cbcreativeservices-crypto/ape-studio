@@ -100,7 +100,7 @@ const kHp: Biquad = SR === 48000
   ? { b0: 1, b1: -2, b2: 1, a1: -1.99004745483398, a2: 0.99007225036621 }
   : rbj(38.135, 0.5, 0, 'highpass');
 
-function kWeight(x: Mono): Mono {
+export function kWeight(x: Mono): Mono {
   return applyBiquad(applyBiquad(x, kShelf), kHp);
 }
 

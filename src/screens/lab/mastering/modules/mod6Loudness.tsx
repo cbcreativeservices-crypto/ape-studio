@@ -184,7 +184,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Quieter and louder, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={preview ? preview.ov : (m?.overview ?? null)} grDb={preview ? preview.grDb : m?.grDb} maxGrDb={preview ? preview.maxGrDb : m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} previewNote={preview ? DRIVE_PREVIEW_NOTE : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={preview ? preview.ov : (m?.overview ?? null)} grDb={preview ? preview.grDb : m?.grDb} maxGrDb={preview ? preview.maxGrDb : m?.maxGrDb} ceilingDb={CEILING} unit={{ kind: 'limiter', driveDb: shown === 'loud' ? drive : 0, ceilingDb: CEILING }} drawnGainDb={preview ? ((preview as { matchDb?: number }).matchDb ?? 0) : m?.matchDb} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} previewNote={preview ? DRIVE_PREVIEW_NOTE : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
@@ -217,6 +217,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
                 </Card>
               ) : null}
               <Card>
+                <Point title="The faceplate on the glass">The limiter at the settings the shown version used: INPUT is DRIVE (0 dB for QUIETER), CEILING {CEILING} dBFS, RELEASE 80 ms; GR lights to the deepest gain reduction.</Point>
                 <Point title="This lab's limiter, honestly">A miniature: a plain sample-peak clamp with no look-ahead, which is why TRUE PK can read over the ceiling. Real mastering limiters use look-ahead and true-peak detection (oversampling) — that is what holds a −1 dBTP ceiling in practice.</Point>
                 <Point title="There is no fixed target in this lab">The correct loudness depends on the content and the destination. A dense rock mix and a solo piano piece do not share a number; destinations publish their requirements and change them. The lab shows you the trade; the spec sheet of the day gives you the number.</Point>
               </Card>

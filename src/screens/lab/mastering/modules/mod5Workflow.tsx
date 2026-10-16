@@ -101,7 +101,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'A considered change, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} unit={{ kind: 'eq', tiltDb: tilt, trimDb: EQ_TRIM_DB, ceilingDb: SAFETY_CEILING_DB, bypassed: shown !== 'eq' }} drawnGainDb={m?.matchDb} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
@@ -135,6 +135,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
                 <Point title="Before you switch MATCH off">{unmatchedWarning(current ? mix?.lufs : undefined, current ? eq?.lufs : undefined, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
               </Card>
               <Card>
+                <Point title="The faceplate on the glass">The EQ at the settings WITH EQ uses: TILT split between the 200 Hz and 2.5 kHz shelves, the +2 dB OUTPUT trim, and the SAFETY ceiling that holds the trim's peaks. BYPASS shows it bypassed (BYP lit).</Point>
                 <Point title="The habit">Make the change for a reason you can name. Bypass. Match. Listen again. Keep it only if it serves the goal.</Point>
               </Card>
             </>

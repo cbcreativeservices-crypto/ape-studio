@@ -14,13 +14,14 @@ import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reani
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { MIDLINE_BLUE, levelColor, levelColorForDb, splColorForDba } from '../../../features/tools/levelColor';
+import { Monitor } from '../mixing/advArt';
 import { eqResponseDb, type EqBandSpec } from '../../../features/lab/fxViz';
-import { GearInSvg, type GlyphKind } from '../soundsystems/art/gearArt';
 import { HeadIconSvg } from '../../../features/lab/headIconsSvg';
 import { MonitorPlan } from '../roomdesign/studioPlanArt';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { PEAK_RED } from './kit';
-import { XF_OVERLAP_SEC, fitFontBoost, linToDb, perceivedBalanceShift, type Overview, type PathDevice, type PathGrade, type SeqBlock } from './masteringEngine';
+import { ChainArt, LimiterFace, LoudnessMeterFace, RACK_2U, RackFace, TiltEqFace } from './mastArt';
+import { LIMITER_RELEASE_MS, XF_OVERLAP_SEC, balanceCurveDb, chainXs, fitFontBoost, linToDb, perceivedBalanceShift, placeClearLabel, shiftHistory, type LabelBox, type LoudnessHistory, type Overview, type PathDevice, type PathGrade, type SeqBlock } from './masteringEngine';
 import { CONTROL_ITEMS, type ControlItem } from './masteringContent';
 
 export const W = 360;
@@ -107,15 +108,32 @@ export function PipelineStage({ width, height, index }: { width: number; height:
 
 /* ── the programme overview (LISTEN pages) ───────────────────────────────── */
 
-export const WAVE_ASPECT = 360 / 200;
+/** 216 units (art fix 2026-10-16): the processor's faceplate rides above
+ *  the gain-reduction strip and the waveform. ≥ 9 pt holds on the short
+ *  phone (375 × 667, glass M): 186 × 360/216 = 310 wide → 10.5 × 0.861. */
+export const WAVE_H = 216;
+export const WAVE_ASPECT = 360 / WAVE_H;
+
+/** The processor the shown version went through, drawn as its faceplate at
+ *  the lab's real settings (bypassed = the unprocessed version). */
+export type WaveUnit =
+  | { kind: 'limiter'; driveDb: number; ceilingDb: number; bypassed?: boolean }
+  | { kind: 'eq'; tiltDb: number; trimDb: number; ceilingDb: number | null; bypassed?: boolean };
 
 /**
  * The rendered version on a REAL time base: min/max columns of the mono
  * fold over 0…10 s, coloured per column on the amplitude ramp, the limiter's
  * gain-reduction trace above, the ceiling marked, the playhead riding the
  * sounding clip (a SharedValue — never React state per frame).
+ *
+ * The waveform is drawn AS PLAYED: with MATCH on, a louder version is drawn
+ * turned down by its match gain (`drawnGainDb`). The ceiling line is drawn
+ * where the limiter's ceiling lands in THAT picture, and its key sits in the
+ * legend row above the waveform — never on the line (grading 2026-10-16:
+ * "LOUDER peaks near −8 dB under a 'ceiling −0.3 dBFS' line while PEAK reads
+ * −0.3 — confusing").
  */
-export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, pending, preparing, onTap, previewNote }: {
+export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, drawnGainDb, unit, progress, playing, pending, preparing, onTap, previewNote }: {
   width: number;
   height: number;
   ov: Overview | null;
@@ -124,6 +142,11 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
   ceilingDb?: number | null;
   label: string;
   matchDb?: number;
+  /** The gain (dB, ≤ 0) already applied to the drawn overview — the match
+   *  gain it was rendered with. */
+  drawnGainDb?: number;
+  /** The processor faceplate for the shown version. */
+  unit?: WaveUnit | null;
   progress: SharedValue<number>;
   playing: boolean;
   /** A version is queued (rendering): a tap on the glass cancels it, the
@@ -140,11 +163,14 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
    *  HOLD #20): this note says so where the match line sits. */
   previewNote?: string;
 }) {
-  const H = 200;
-  const grTop = 14;
-  const grH = 30;
-  const top = 54;
-  const bot = 170;
+  const H = WAVE_H;
+  const faceY = 3;
+  const grLabelY = 50;
+  const grTop = 54;
+  const grH = 12;
+  const legendY = 78;
+  const top = 84;
+  const bot = 186;
   const mid = (top + bot) / 2;
   const half = (bot - top) / 2;
   const x0 = 28;
@@ -152,12 +178,16 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
   const cols = ov?.hi.length ?? 0;
   const cw = cols ? (x1 - x0) / cols : 0;
   const seconds = ov?.seconds ?? 10;
-  const ceilY = ceilingDb != null ? mid - half * Math.pow(10, ceilingDb / 20) : null;
+  const drawnDb = Math.min(0, drawnGainDb ?? 0);
+  // Where the ceiling lands in the drawn (as-played) picture.
+  const ceilAsDrawn = ceilingDb != null ? ceilingDb + drawnDb : null;
+  const ceilY = ceilAsDrawn != null ? mid - half * Math.pow(10, ceilAsDrawn / 20) : null;
   const s = width / W; // design → pixels
   const headStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: (x0 + progress.value * (x1 - x0)) * s }],
     opacity: playing ? 1 : 0,
   }));
+  const fmt = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}`;
   return (
     <Pressable
       style={{ width, height }}
@@ -167,18 +197,33 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
       accessibilityLabel={onTap ? (playing || pending ? `Stop ${label}` : preparing ? `Preparing the audio. Play ${label} when ready` : `Play ${label}`) : undefined}
     >
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+        {/* the processor this version went through, at its real settings */}
+        {unit?.kind === 'limiter' ? (
+          <LimiterFace x={8} y={faceY} w={W - 16} driveDb={unit.driveDb} ceilingDb={unit.ceilingDb} releaseMs={LIMITER_RELEASE_MS} maxGrDb={maxGrDb ?? 0} bypassed={unit.bypassed} />
+        ) : unit?.kind === 'eq' ? (
+          <TiltEqFace x={8} y={faceY} w={W - 16} tiltDb={unit.tiltDb} trimDb={unit.trimDb} ceilingDb={unit.ceilingDb} bypassed={unit.bypassed} />
+        ) : null}
         {/* gain-reduction strip */}
-        <SvgText x={x0} y={grTop + 8} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>GAIN REDUCTION</SvgText>
-        <SvgText x={x1} y={grTop + 8} fontSize={FONT} fill={maxGrDb ? ink.amber : ink.dim} textAnchor="end" fontFamily={fonts.mono}>
+        <SvgText x={x0} y={grLabelY} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>GAIN REDUCTION</SvgText>
+        <SvgText x={x1} y={grLabelY} fontSize={FONT} fill={maxGrDb ? ink.amber : ink.dim} textAnchor="end" fontFamily={fonts.mono}>
           {maxGrDb ? `max −${maxGrDb.toFixed(1)} dB` : 'none'}
         </SvgText>
-        <Rect x={x0} y={grTop + 12} width={x1 - x0} height={grH - 12} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
+        <Rect x={x0} y={grTop} width={x1 - x0} height={grH} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
         {grDb && grDb.length ? grDb.map((g, c) => {
           if (g <= 0) return null;
-          const hh = Math.min(1, g / 12) * (grH - 12);
+          const hh = Math.min(1, g / 12) * grH;
           const n = grDb.length;
-          return <Rect key={c} x={x0 + (c / n) * (x1 - x0)} y={grTop + 12} width={Math.max(1, (x1 - x0) / n)} height={hh} fill={levelColor(Math.min(1, g / 12))} />;
+          return <Rect key={c} x={x0 + (c / n) * (x1 - x0)} y={grTop} width={Math.max(1, (x1 - x0) / n)} height={hh} fill={levelColor(Math.min(1, g / 12))} />;
         }) : null}
+        {/* the legend row: the ceiling's key sits HERE, off its line */}
+        {ceilY != null ? (
+          <G>
+            <Line x1={x0} y1={legendY - 3.5} x2={x0 + 16} y2={legendY - 3.5} stroke={PEAK_RED} strokeWidth={0.9} strokeDasharray="3,2" />
+            <SvgText x={x0 + 20} y={legendY} fontSize={FONT_S} fill={PEAK_RED} fontFamily={fonts.mono}>
+              {drawnDb <= -0.05 ? `ceiling ${fmt(ceilingDb ?? 0)} dBFS · drawn ${Math.abs(drawnDb).toFixed(1)} dB down, matched` : `limiter ceiling ${fmt(ceilingDb ?? 0)} dBFS`}
+            </SvgText>
+          </G>
+        ) : null}
         {/* waveform */}
         <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
         {[0, -6, -12].map((db) => {
@@ -206,7 +251,6 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
           <G>
             <Line x1={x0} y1={ceilY} x2={x1} y2={ceilY} stroke={PEAK_RED} strokeWidth={0.8} strokeDasharray="3,2" />
             <Line x1={x0} y1={2 * mid - ceilY} x2={x1} y2={2 * mid - ceilY} stroke={PEAK_RED} strokeWidth={0.8} strokeDasharray="3,2" />
-            <SvgText x={x1 - 2} y={ceilY - 2} fontSize={FONT_S} fill={PEAK_RED} textAnchor="end" fontFamily={fonts.mono}>ceiling {ceilingDb} dBFS</SvgText>
           </G>
         ) : null}
         {/* time axis */}
@@ -300,18 +344,36 @@ export function MonitorLevelStage({ width, height, levelDb }: { width: number; h
     const pts: string[] = [];
     for (let i = 0; i <= 60; i++) {
       const f = 20 * Math.pow(1000, i / 60);
-      const lf = Math.max(0, Math.min(1, (Math.log10(700) - Math.log10(f)) / (Math.log10(700) - Math.log10(50))));
-      const hf = Math.max(0, Math.min(1, (Math.log10(f) - Math.log10(2500)) / (Math.log10(12000) - Math.log10(2500))));
-      const db = b * lf * lf + t * hf;
-      pts.push(`${i === 0 ? 'M' : 'L'}${fx(f, x0, x1).toFixed(1)} ${yOf(db).toFixed(1)}`);
+      pts.push(`${i === 0 ? 'M' : 'L'}${fx(f, x0, x1).toFixed(1)} ${yOf(balanceCurveDb(f, b, t)).toFixed(1)}`);
     }
     return pts.join(' ');
   };
   const pts = [curveFor(bassDb, trebleDb)];
-  // Ghost curves at three fixed levels, so the live curve has company.
-  const ghosts = [65, 83, 95].map((l) => {
+  // y of a curve at drawing x — what the ghost labels are kept clear of.
+  const fOfX = (x: number) => 20 * Math.pow(1000, (x - x0) / (x1 - x0));
+  const curveY = (b: number, t: number) => (x: number) => yOf(balanceCurveDb(fOfX(x), b, t));
+  const live = curveY(bassDb, trebleDb);
+  // Ghost curves at three fixed levels, so the live curve has company. Their
+  // labels sit OFF every line (grading 2026-10-16: "the 95/83/65 dB labels
+  // sit on their curves"): placed clear of all four curves, the 0 dB line,
+  // the title and the readout — or not drawn at all.
+  const ghostLevels = [95, 83, 65];
+  const ghostFns = ghostLevels.map((l) => {
     const s = perceivedBalanceShift(l);
-    return { l, d: curveFor(s.bassDb, s.trebleDb), y: yOf(s.bassDb * 0.9) };
+    return { l, s, fn: curveY(s.bassDb, s.trebleDb) };
+  });
+  const zeroLine = () => yOf(0);
+  // the ±6 dB grid lines count as lines too: a label never sits across one
+  const gridLines = [6, -6].map((db) => () => yOf(db));
+  const placedBoxes: LabelBox[] = [
+    { x0: x0, y0: top, x1: x0 + 184, y1: top + 16 },
+    { x0: x1 - 160, y0: bot - 18, x1: x1, y1: bot },
+  ];
+  const ghosts = ghostFns.map((g) => {
+    const others = [live, ...ghostFns.filter((o) => o.l !== g.l).map((o) => o.fn), ...(g.l === 83 ? [] : [zeroLine]), ...gridLines];
+    const at = placeClearLabel(g.fn, others, [x0 + 6, x0 + 40, x0 + 76, x0 + 112, x0 + 150, x0 + 190, x0 + 226], 33, FONT_S, { x0: x0 + 2, y0: top + 1, x1: x1 - 2, y1: bot - 1 }, placedBoxes);
+    if (at) placedBoxes.push({ x0: at.x, y0: at.y - FONT_S * 0.74 - 1, x1: at.x + 33, y1: at.y + FONT_S * 0.22 + 1 });
+    return { l: g.l, d: curveFor(g.s.bassDb, g.s.trebleDb), at };
   });
   const barX = 322;
   const barTop = 18;
@@ -337,7 +399,7 @@ export function MonitorLevelStage({ width, height, levelDb }: { width: number; h
       {ghosts.map((g) => (
         <G key={g.l}>
           <Path d={g.d} stroke={splColorForDba(g.l)} strokeWidth={1} fill="none" opacity={0.45} strokeDasharray="3,3" />
-          <SvgText x={x0 + 6} y={g.y + (g.l === 83 ? -3 : g.l === 65 ? 11 : -3)} fontSize={FONT_S} fill={splColorForDba(g.l)} opacity={0.8} fontFamily={fonts.mono}>{`${g.l} dB`}</SvgText>
+          {g.at ? <SvgText x={g.at.x} y={g.at.y} fontSize={FONT_S} fill={splColorForDba(g.l)} opacity={0.85} fontFamily={fonts.mono}>{`${g.l} dB`}</SvgText> : null}
         </G>
       ))}
       <Path d={pts[0]} stroke={ink.amber} strokeWidth={2} fill="none" />
@@ -363,21 +425,12 @@ export function MonitorLevelStage({ width, height, levelDb }: { width: number; h
 
 /* ── 3 · build a monitoring path ─────────────────────────────────────────── */
 
-export const PATH_ASPECT = 360 / 164;
-
-const GLYPH_FOR: Record<PathDevice, GlyphKind> = {
-  daw: 'playback',
-  dac: 'processor',
-  monitorCtl: 'console',
-  amp: 'amp',
-  passive: 'passiveSpeaker',
-  active: 'poweredSpeaker',
-};
-const SHORT_FOR: Record<PathDevice, string> = { daw: 'DAW', dac: 'DAC', monitorCtl: 'MON CTL', amp: 'POWER AMP', passive: 'PASSIVE', active: 'ACTIVE' };
-
-/** The chain the learner assembled, drawn with the Sound Systems gear art:
- *  five slots, arrows between filled ones, a verdict strip underneath. */
-export const PATH_ASPECT_H = 164;
+/** The chain the learner assembled, drawn as the GEAR (art fix 2026-10-16:
+ *  "a laptop glyph with DAW?, four empty dashed SLOT boxes"): each device at
+ *  its true aspect with its own cable to the next; nothing is drawn for a
+ *  device not yet chosen. A verdict strip underneath. */
+export const PATH_ASPECT_H = 190;
+export const PATH_ASPECT = 360 / PATH_ASPECT_H;
 
 /** The three-state verdict (cognitive review 2026-10-01, finding 5):
  *  COMPLETE (green) · WORKS · MINIMAL (amber) · CHECK THE CHAIN (amber) ·
@@ -389,46 +442,32 @@ export function MonitorPathStage({ width, height, chain, grade, reason, next }: 
   grade: PathGrade;
   reason: string;
   /** The device the DEVICE key has chosen but not yet connected: drawn as a
-   *  ghost in the next free slot, so choosing changes the picture before
+   *  ghost after the chain, so choosing changes the picture before
    *  + CONNECT does (every dock control changes the display). */
   next?: PathDevice;
 }) {
   const slots = 5;
-  const sw = (W - 12) / slots;
-  const cy = 60;
+  const cy = 72;
   const tone = grade === 'complete' ? ink.green : grade === 'empty' ? ink.dim : ink.amber;
   const fill = grade === 'complete' ? '#0f1d14' : grade === 'empty' ? '#121215' : '#17130d';
   const headline = grade === 'complete' ? 'PATH COMPLETE' : grade === 'minimal' ? 'WORKS · MINIMAL' : grade === 'fail' ? 'CHECK THE CHAIN' : 'EMPTY CHAIN';
   const lines = wrapWords(reason, 60).slice(0, 2);
   const ghostAt = next && !chain.includes(next) && chain.length < slots ? chain.length : -1;
+  const ghost = ghostAt >= 0 ? next : undefined;
+  const kinds = ghost ? [...chain, ghost] : [...chain];
+  const { xs } = chainXs(kinds, 8, W - 8);
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${PATH_ASPECT_H}`}>
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>PLAYBACK → CONVERSION → LEVEL → AMPLIFICATION → AIR</SvgText>
-      {Array.from({ length: slots }, (_, i) => {
-        const d = chain[i];
-        const cx = 6 + i * sw + sw / 2;
-        const ghost = i === ghostAt ? next : undefined;
-        return (
-          <G key={i}>
-            <Rect x={6 + i * sw + 3} y={28} width={sw - 6} height={70} rx={6} fill={d ? ink.box : '#0d0d10'} stroke={d ? tone : ghost ? ink.amber : ink.stroke} strokeWidth={d ? 1.3 : 0.8} strokeDasharray={d ? undefined : '3,3'} />
-            {d ? (
-              <GearInSvg kind={GLYPH_FOR[d]} id={`mp-${i}-${d}`} x={cx} y={cy} size={46} />
-            ) : ghost ? (
-              <G opacity={0.4}>
-                <GearInSvg kind={GLYPH_FOR[ghost]} id={`mp-ghost-${ghost}`} x={cx} y={cy} size={46} />
-              </G>
-            ) : (
-              <SvgText x={cx} y={cy + 4} fontSize={FONT} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{`SLOT ${i + 1}`}</SvgText>
-            )}
-            <SvgText x={cx} y={92} fontSize={FONT_S} fill={d ? ink.text : ghost ? ink.amber : ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{d ? SHORT_FOR[d] : ghost ? `${SHORT_FOR[ghost]}?` : '—'}</SvgText>
-            {d && chain[i + 1] ? <Path d={`M${6 + (i + 1) * sw - 3} ${cy} l6 0 m-3 -3 l3 3 l-3 3`} stroke={ink.green} strokeWidth={1.3} fill="none" /> : null}
-          </G>
-        );
-      })}
-      <Rect x={6} y={108} width={W - 12} height={50} rx={5} fill={fill} stroke={tone} strokeWidth={1} />
-      <SvgText x={12} y={122} fontSize={FONT} fill={tone} fontFamily={fonts.oswaldMedium}>{headline}</SvgText>
+      {kinds.length ? (
+        <ChainArt chain={chain} ghost={ghost} xs={xs} cy={cy} />
+      ) : (
+        <SvgText x={W / 2} y={cy + 4} fontSize={FONT} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>choose a DEVICE, then + CONNECT — the chain draws here</SvgText>
+      )}
+      <Rect x={6} y={132} width={W - 12} height={54} rx={5} fill={fill} stroke={tone} strokeWidth={1} />
+      <SvgText x={12} y={147} fontSize={FONT} fill={tone} fontFamily={fonts.oswaldMedium}>{headline}</SvgText>
       {lines.map((l, i) => (
-        <SvgText key={i} x={12} y={136 + i * 13} fontSize={FONT_S} fill={ink.text} fontFamily={fonts.barlowRegular}>{l}</SvgText>
+        <SvgText key={i} x={12} y={162 + i * 14} fontSize={FONT_S} fill={ink.text} fontFamily={fonts.barlowRegular}>{l}</SvgText>
       ))}
     </Svg>
   );
@@ -436,7 +475,10 @@ export function MonitorPathStage({ width, height, chain, grade, reason, next }: 
 
 /* ── 4 · the tool shelf ──────────────────────────────────────────────────── */
 
-export const TOOL_ASPECT = 360 / 180;
+/** 236 units (art fix 2026-10-16): room for a 2U faceplate above the curve
+ *  it draws. On the L glass; the short phone's M glass boosts the fonts. */
+export const TOOL_H = 236;
+export const TOOL_ASPECT = 360 / TOOL_H;
 
 export type ToolView = 'playback' | 'monitor' | 'eq' | 'dyn' | 'stereo' | 'meters' | 'analog';
 
@@ -453,12 +495,30 @@ export function widthCorrelation(widthMult: number, sideRatio = 0.5): number {
   return (m * m - s * s) / (m * m + s * s);
 }
 
-export function ToolStage({ width, height, view, amount, ov }: { width: number; height: number; view: ToolView; amount: number; ov: Overview | null }) {
-  const H = 180;
+/** The METERS view's LEVEL: a plain gain on the delivered mix, ±8 dB about
+ *  0 at the fader's middle. */
+export const meterGainDb = (a: number) => Math.round((Math.max(0, Math.min(1, a)) - 0.5) * 160) / 10;
+
+/** The EQ views' bands — ONE table for the faceplate and the curve. */
+export function toolEqBands(view: 'eq' | 'analog', amount: number): EqBandSpec[] {
+  return view === 'eq'
+    ? [{ type: 'lowShelf', freq: 200, q: 0.7, gainDb: -amount * 3 }, { type: 'highShelf', freq: 2500, q: 0.7, gainDb: amount * 3 }]
+    : [{ type: 'peak', freq: 120, q: 0.6, gainDb: amount * 3 }, { type: 'highShelf', freq: 8000, q: 0.5, gainDb: amount * 2.5 }];
+}
+
+const fmtGain = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(Math.abs(Math.round(v * 10) - v * 10) > 1e-6 ? 2 : 1)} dB`;
+
+export function ToolStage({ width, height, view, amount, ov, loud }: { width: number; height: number; view: ToolView; amount: number; ov: Overview | null; loud?: LoudnessHistory | null }) {
+  const H = TOOL_H;
   const x0 = 34;
   const x1 = W - 10;
-  const top = 18;
-  const bot = 150;
+  // A 2U faceplate (482.6 × 88.9 mm) 300 units wide rides above the curve
+  // for the processor views; the others use the whole height.
+  const faced = view === 'eq' || view === 'analog' || view === 'dyn';
+  const faceW = 300;
+  const faceY = 4;
+  const top = faced ? faceY + faceW / RACK_2U + 12 : 18;
+  const bot = 186;
   const midY = (top + bot) / 2;
   // The 9 pt floor on a short phone (see boostFor): 1 at or above 1 : 1.
   const bst = boostFor(width);
@@ -466,9 +526,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   const fsS = FONT_S * bst;
   const curve = useMemo(() => {
     if (view !== 'eq' && view !== 'analog') return '';
-    const bands: EqBandSpec[] = view === 'eq'
-      ? [{ type: 'lowShelf', freq: 200, q: 0.7, gainDb: -amount * 3 }, { type: 'highShelf', freq: 2500, q: 0.7, gainDb: amount * 3 }]
-      : [{ type: 'peak', freq: 120, q: 0.6, gainDb: amount * 3 }, { type: 'highShelf', freq: 8000, q: 0.5, gainDb: amount * 2.5 }];
+    const bands = toolEqBands(view, amount);
     const pts: string[] = [];
     for (let i = 0; i <= 80; i++) {
       const f = 20 * Math.pow(1000, i / 80);
@@ -476,7 +534,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
       pts.push(`${i === 0 ? 'M' : 'L'}${fx(f, x0, x1).toFixed(1)} ${(midY - (db / 12) * ((bot - top) / 2)).toFixed(1)}`);
     }
     return pts.join(' ');
-  }, [view, amount]);
+  }, [view, amount, midY, top]);
 
   const frame = (title: string) => (
     <>
@@ -486,8 +544,27 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   );
 
   if (view === 'eq' || view === 'analog') {
+    const b = toolEqBands(view, amount);
+    const lo = b[0].gainDb;
+    const hi = b[1].gainDb;
     return (
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+        {/* the EQ itself, its knobs at the curve's real settings */}
+        <RackFace
+          x={(W - faceW) / 2}
+          y={faceY}
+          w={faceW}
+          units={2}
+          style={view === 'eq' ? 'digital' : 'analog'}
+          title={view === 'eq' ? ['MASTERING', 'EQ'] : ['ANALOG', 'EQ']}
+          ts={bst}
+          cells={[
+            { name: view === 'eq' ? 'LO SHELF' : 'LO PEAK', val: `${b[0].freq} Hz`, frac: view === 'eq' ? 0.42 : 0.3, stepped: true },
+            { name: 'LO GAIN', val: fmtGain(lo), frac: (lo + 6) / 12, stepped: true },
+            { name: 'HI SHELF', val: b[1].freq >= 1000 ? `${b[1].freq / 1000} kHz` : `${b[1].freq} Hz`, frac: view === 'eq' ? 0.5 : 0.78, stepped: true },
+            { name: 'HI GAIN', val: fmtGain(hi), frac: (hi + 6) / 12, stepped: true },
+          ]}
+        />
         {frame(view === 'eq' ? 'TILT EQ · broad tonal shaping' : 'ANALOG EQ · a different hand, same decision')}
         {[-12, -6, 0, 6, 12].map((db) => (
           <G key={db}>
@@ -510,6 +587,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   if (view === 'dyn') {
     const ratio = 1 + amount * 19; // 1:1 … 20:1
     const thr = -12;
+    const grAt0 = -dynamicsLawDb(0, thr, ratio);
     const pts: string[] = [];
     for (let i = 0; i <= 60; i++) {
       const inDb = -60 + i;
@@ -518,6 +596,22 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
     }
     return (
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
+        {/* the compressor, its knobs at the curve's settings; the GR meter
+            reads what a 0 dBFS peak loses on this static curve */}
+        <RackFace
+          x={(W - faceW) / 2}
+          y={faceY}
+          w={faceW}
+          units={2}
+          title={['COMPRESSOR']}
+          ts={bst}
+          cells={[
+            { name: 'THRESH', val: `${thr} dB`.replace('-', '−'), frac: (thr + 60) / 60 },
+            { name: 'RATIO', val: `${ratio.toFixed(1)}:1`, frac: Math.log(ratio) / Math.log(20) },
+            { name: 'MAKEUP', val: '0.0 dB', frac: 0, stepped: true },
+          ]}
+          meter={{ label: 'GR', db: grAt0, steps: [12, 10, 8, 6, 4, 3, 2, 1] }}
+        />
         {frame(ratio >= 10 ? 'LIMITER · a ceiling on peaks' : 'COMPRESSOR · gentle control')}
         {[-48, -36, -24, -12, 0].map((db) => {
           const xi = x0 + ((db + 60) / 60) * (x1 - x0);
@@ -534,13 +628,16 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         <Line x1={x0} y1={bot} x2={x1} y2={top} stroke="#1f1f24" strokeWidth={0.8} strokeDasharray="3,3" />
         <Path d={pts.join(' ')} stroke={levelColor(Math.min(1, amount))} strokeWidth={2} fill="none" />
         <Line x1={x0 + ((thr + 60) / 60) * (x1 - x0)} y1={top} x2={x0 + ((thr + 60) / 60) * (x1 - x0)} y2={bot} stroke={ink.amber} strokeWidth={0.8} strokeDasharray="2,2" />
-        <SvgText x={x0 + ((thr + 60) / 60) * (x1 - x0) - 3} y={top + 26} fontSize={fsS} fill={ink.amber} textAnchor="end" fontFamily={fonts.mono}>thr {thr} dB</SvgText>
-        <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`ratio ${ratio.toFixed(1)} : 1`}</SvgText>
+        {/* Both labels sit in the empty space UNDER the knee — clear of the
+            curve, the 1 : 1 line and the threshold line (they used to sit on
+            the knee and across the threshold line). */}
+        <SvgText x={x0 + ((thr + 60) / 60) * (x1 - x0) + 4} y={top + 44} fontSize={fsS} fill={ink.amber} fontFamily={fonts.mono}>thr {thr}</SvgText>
+        <SvgText x={x0 + ((thr + 60) / 60) * (x1 - x0) - 5} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`ratio ${ratio.toFixed(1)} : 1`}</SvgText>
         <SvgText x={x1 - 4} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>in dB →</SvgText>
         <SvgText x={x0 + 6} y={top + 26} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>↑ out dB</SvgText>
         {/* ≤ 316 units at 11 (the old line ran to x 424 of 360 and was cut
             off mid-word on every phone and in full screen). */}
-        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>a static curve (no attack, release or knee) · peaks down past thr</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>a static curve (no attack, release or knee) · it bends at thr</SvgText>
       </Svg>
     );
   }
@@ -574,51 +671,25 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
     );
   }
   if (view === 'meters') {
-    const peak = -12 + amount * 12;
-    const lufs = -24 + amount * 12;
-    const bar = (x: number, db: number, lo: number, lbl: string, tint: string) => {
-      const l = Math.max(0, Math.min(1, (db - lo) / -lo));
-      const h = (bot - top - 42) * l;
-      return (
-        <G key={lbl}>
-          <Rect x={x} y={top + 30} width={34} height={bot - top - 42} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
-          <Rect x={x + 1} y={bot - 12 - h} width={32} height={h} fill={tint} />
-          <SvgText x={x + 17} y={bot - 1} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{lbl}</SvgText>
-          <SvgText x={x + 17} y={top + 26} fontSize={fsS} fill={tint} textAnchor="middle" fontFamily={fonts.mono}>{db.toFixed(1)}</SvgText>
-        </G>
-      );
-    };
+    // A loudness meter reading the delivered mix through a plain LEVEL gain:
+    // every number MEASURED from the render (K-weighted short-term and
+    // integrated, 4× true peak), shifted by the gain.
+    const hist = loud ? shiftHistory(loud, meterGainDb(amount)) : null;
     return (
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
-        {frame('METERS · verify, never guess')}
-        {bar(x0 + 20, peak, -60, 'PEAK', levelColorForDb(peak))}
-        {bar(x0 + 70, peak + 0.6, -60, 'TP MODEL', peak + 0.6 > 0 ? PEAK_RED : levelColorForDb(peak + 0.6))}
-        {bar(x0 + 120, lufs, -36, 'LUFS', levelColorForDb(lufs, -36, 0))}
-        <Rect x={x0 + 180} y={top + 30} width={120} height={bot - top - 42} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
-        {ov ? ov.hi.map((hi, c) => {
-          const n = ov.hi.length;
-          const cw2 = 118 / n;
-          const h = (bot - top - 42) * ov.level[c];
-          return <Rect key={c} x={x0 + 181 + c * cw2} y={bot - 12 - h} width={Math.max(0.6, cw2)} height={h} fill={levelColor(ov.level[c])} opacity={0.9} />;
-        }) : <SvgText x={x0 + 240} y={midY} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>spectrum / history</SvgText>}
-        <SvgText x={x0 + 240} y={bot - 1} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PROGRAMME LEVEL HISTORY</SvgText>
-        <SvgText x={x0} y={H - 16} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>TP MODEL = peak +0.6 · typically 0.3–1 dB over on dense material</SvgText>
-        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>louder moves every meter — numbers verify, never decide</SvgText>
+        <LoudnessMeterFace x={8} y={4} w={W - 16} h={H - 40} hist={hist} ts={bst} />
+        <SvgText x={x0} y={H - 16} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>S = short-term (3 s) · I = integrated (the whole song)</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>TP = true peak: over the −1 dBTP line it reads red</SvgText>
       </Svg>
     );
   }
   if (view === 'monitor') {
     const chain: PathDevice[] = ['daw', 'dac', 'monitorCtl', 'active'];
+    const { xs } = chainXs(chain, x0, x1);
     return (
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {frame('MONITORING CHAIN · trust what you hear')}
-        {chain.map((d, i) => (
-          <G key={d}>
-            <GearInSvg kind={GLYPH_FOR[d]} id={`ts-${d}`} x={x0 + 40 + i * 76} y={midY - 4} size={50} />
-            <SvgText x={x0 + 40 + i * 76} y={midY + 30} fontSize={fsS} fill={ink.text} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{SHORT_FOR[d]}</SvgText>
-            {i < chain.length - 1 ? <Path d={`M${x0 + 68 + i * 76} ${midY - 4} l12 0 m-4 -3 l4 3 l-4 3`} stroke={ink.green} strokeWidth={1.3} fill="none" /> : null}
-          </G>
-        ))}
+        <ChainArt chain={chain} xs={xs} cy={midY - 6} ts={bst} />
         <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{`listening level ${Math.round(70 + amount * 20)} dB SPL (C) — keep it moderate and repeatable`}</SvgText>
       </Svg>
     );
@@ -728,7 +799,6 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
   const H = TRANSLATION_H;
   const x0 = 34;
   const x1 = W - 10;
-  const top = 18;
   const bot = 150;
   const isRef = system.bands.length === 0 && !system.mono;
   // The 9 pt floor on a short phone (see boostFor): 1 at or above 1 : 1.
@@ -739,16 +809,20 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
   // stacked lines by the boosted line height.
   const noteLines = wrapWords(system.note, Math.floor(62 / bst)).slice(0, 2);
   const lh = 13 * bst;
-  const yOf = (db: number) => bot - ((Math.max(-48, Math.min(6, db)) + 48) / 54) * (bot - top);
+  // The title is a HEADER above the plot (grading 2026-10-16: "programme-
+  // spectrum peaks run up under the title plate and are hidden"), and the
+  // scale runs to +12 dB so a system's boost is drawn, never clamped flat.
+  const top = 13 * bst + lh + 7;
+  const yOf = (db: number) => bot - ((Math.max(-48, Math.min(12, db)) + 48) / 60) * (bot - top);
   const ref = programmeDb.map((p, i) => `${i === 0 ? 'M' : 'L'}${fx(p.f, x0, x1).toFixed(1)} ${yOf(p.db).toFixed(1)}`).join(' ');
   const heard = programmeDb.map((p, i) => `${i === 0 ? 'M' : 'L'}${fx(p.f, x0, x1).toFixed(1)} ${yOf(p.db + eqResponseDb(system.bands, p.f)).toFixed(1)}`).join(' ');
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
-      {[0, -12, -24, -36].map((db) => (
+      {[12, 0, -12, -24, -36].map((db) => (
         <G key={db}>
           <Line x1={x0} y1={yOf(db)} x2={x1} y2={yOf(db)} stroke="#1f1f24" strokeWidth={0.6} />
-          <SvgText x={x0 - 3} y={yOf(db) + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
+          <SvgText x={x0 - 3} y={yOf(db) + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db > 0 ? `+${db}` : db}</SvgText>
         </G>
       ))}
       {[100, 1000, 10000].map((f) => (
@@ -759,14 +833,10 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
       ))}
       {programmeDb.length && !isRef ? <Path d={ref} stroke={ink.dim} strokeWidth={1.2} fill="none" strokeDasharray="3,2" /> : null}
       {programmeDb.length ? <Path d={heard} stroke={system.mono ? colors.orange : ink.amber} strokeWidth={2} fill="none" /> : null}
-      {/* The two-line title on a backing plate (clash sweep 2026-10-10): the
-          programme curve peaks near 0 dB, right where the title sits, and ran
-          through the words. */}
-      <Rect x={x0 + 1} y={top + 1} width={Math.min(x1 - x0 - 90, 150 * bst)} height={14 + lh} rx={2} fill="#0b0b0e" opacity={0.86} />
-      <SvgText x={x0 + 4} y={top + 12} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAMME SPECTRUM · as heard on</SvgText>
-      <SvgText x={x0 + 4} y={top + 12 + lh} fontSize={fs} fill={system.mono ? colors.orange : ink.amber} fontFamily={fonts.oswaldMedium}>{system.name.toUpperCase()}</SvgText>
-      {!isRef ? <SvgText x={x1 - 4} y={top + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>dashed = as mastered</SvgText> : <SvgText x={x1 - 4} y={top + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>the reference</SvgText>}
-      {system.mono ? <SvgText x={x1 - 4} y={top + 12 + lh} fontSize={fsS} fill={colors.orange} textAnchor="end" fontFamily={fonts.mono}>MONO FOLD</SvgText> : null}
+      <SvgText x={x0} y={13 * bst} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAMME SPECTRUM · as heard on</SvgText>
+      <SvgText x={x0} y={13 * bst + lh} fontSize={fs} fill={system.mono ? colors.orange : ink.amber} fontFamily={fonts.oswaldMedium}>{system.name.toUpperCase()}</SvgText>
+      {!isRef ? <SvgText x={x1} y={13 * bst} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>dashed = as mastered</SvgText> : <SvgText x={x1} y={13 * bst} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>the reference</SvgText>}
+      {system.mono ? <SvgText x={x1} y={13 * bst + lh} fontSize={fsS} fill={colors.orange} textAnchor="end" fontFamily={fonts.mono}>MONO FOLD</SvgText> : null}
       {noteLines.map((l, i) => (
         <SvgText key={i} x={x0} y={H - 4 - (noteLines.length - 1 - i) * lh} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{l}</SvgText>
       ))}
@@ -1058,8 +1128,20 @@ export function RoomDiagram({ width, height }: { width: number; height: number }
       <Rect x={lx0} y={ry0 + 110} width={6} height={10} fill="#1f2a1f" stroke={ink.green} strokeWidth={0.6} />
       <Rect x={lx0 + 8} y={ry0 + 108} width={6} height={12} fill="#1f2a1f" stroke={ink.green} strokeWidth={0.6} />
       <SvgText x={lt} y={ry0 + 118} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>rear-wall diffusion</SvgText>
-      <SvgText x={lx0} y={ry0 + 142} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>listener ≈ 38 % of</SvgText>
-      <SvgText x={lx0} y={ry0 + 154} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>the length (example)</SvgText>
+      {/* the main monitor itself, face-on beside its plan (grading 2026-10-16:
+          "monitors in the room plan are rotated squares") — 330 × 400 × 520 mm
+          two-way, the plan drawn at the room's scale */}
+      <Monitor x={lx0 + 1} y={ry0 + 126} w={12} />
+      <G transform={`translate(${lx0 + 7},${ry0 + 154})`}>
+        <MonitorPlan w={0.33 * ROOM_U} d={0.4 * ROOM_U} stroke="#6b707c" strokeWidth={0.9} />
+      </G>
+      <SvgText x={lt} y={ry0 + 136} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>main monitor, face</SvgText>
+      <SvgText x={lt} y={ry0 + 158} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>and from above</SvgText>
+      {/* the scale: everything in the plan is drawn to it */}
+      <Line x1={lx0} y1={ry0 + 172} x2={lx0 + ROOM_U} y2={ry0 + 172} stroke={ink.text} strokeWidth={1} />
+      <Line x1={lx0} y1={ry0 + 168} x2={lx0} y2={ry0 + 176} stroke={ink.text} strokeWidth={1} />
+      <Line x1={lx0 + ROOM_U} y1={ry0 + 168} x2={lx0 + ROOM_U} y2={ry0 + 176} stroke={ink.text} strokeWidth={1} />
+      <SvgText x={lx0 + ROOM_U + 5} y={ry0 + 176} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>1 m · to scale</SvgText>
     </Svg>
   );
 }
@@ -1078,10 +1160,12 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
   ));
   let body: ReactNode = null;
   if (kind === 'streaming') {
-    // A current phone, 71.5 × 147 mm (k = 0.653 units/mm): near-edge-to-edge
-    // screen (≈ 2.2 mm border), punch-hole camera, volume keys on the left
-    // edge and the side key on the right, a music player on screen.
-    const cx = 60;
+    // The distributor's upload page (the masters going out), then the
+    // listener's phone (where they arrive). A current phone, 71.5 × 147 mm
+    // (k = 0.653 units/mm): near-edge-to-edge screen (≈ 2.2 mm border),
+    // punch-hole camera, volume keys on the left edge and the side key on
+    // the right, a music player on screen.
+    const cx = 184;
     const k = 96 / 147;
     const pw = 71.5 * k;
     const ph = 96;
@@ -1114,10 +1198,22 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
         <Path d={`M${cx - 2.6} ${sy0 + 33.4 + art} l 6 3.6 l -6 3.6 z`} fill="#e8e8e8" />
         <Path d={`M${cx + 13} ${sy0 + 34 + art} l 0 6 M${cx + 12.4} ${sy0 + 37 + art} l -4.4 -3 l 0 6 z`} stroke="#c9ccd4" strokeWidth={0.9} fill="#c9ccd4" />
         <Rect x={cx - 9} y={py0 + ph - bz - 3.4} width={18} height={1.3} rx={0.65} fill="#5a5e68" />
-        {/* the upload path to the distributor's cloud */}
-        <Path d={`M${cx + 30} ${cy} l 50 0 m -5 -4 l 5 4 l -5 4`} stroke={ink.cyan} strokeWidth={1.2} fill="none" />
-        <Path d={`M${cx + 96} ${cy - 10} c 0 -18 30 -18 30 0 c 14 -2 18 14 4 16 l -40 0 c -14 0 -14 -16 6 -16`} fill="#121216" stroke={ink.cyan} strokeWidth={1.2} />
-        <SvgText x={cx + 112} y={cy + 22} fontSize={FONT_S} fill={ink.cyan} textAnchor="middle" fontFamily={fonts.mono}>distributor</SvgText>
+        {/* the distributor's upload page in a browser window: the masters
+            listed and checked, the upload complete (grading 2026-10-16: the
+            cloud was an icon) — then the arrow out to the listener */}
+        <Rect x={10} y={cy - 44} width={124} height={80} rx={4} fill="#121216" stroke="#5a5e68" strokeWidth={1} />
+        <Path d={`M10 ${cy - 34} l124 0`} stroke="#3a3c44" strokeWidth={0.8} />
+        {[0, 1, 2].map((i) => <Circle key={i} cx={17 + i * 6} cy={cy - 39} r={1.6} fill={i === 0 ? '#c4372a' : i === 1 ? '#b8892b' : '#2f8f63'} />)}
+        <Rect x={38} y={cy - 42} width={90} height={6} rx={3} fill="#1d1f25" />
+        {['01-Signal.wav', '02-Harbour.wav', '03-Static.wav'].map((f, i) => (
+          <G key={f}>
+            <SvgText x={16} y={cy - 19 + i * 13} fontSize={FONT_S} fill={ink.text} fontFamily={fonts.mono}>{f}</SvgText>
+            <Path d={`M${120} ${cy - 23 + i * 13} l2.5 2.5 l4.5 -5`} stroke={ink.green} strokeWidth={1.4} fill="none" />
+          </G>
+        ))}
+        <Rect x={16} y={cy + 24} width={112} height={4} rx={2} fill={ink.green} />
+        <SvgText x={72} y={cy + 50} fontSize={FONT_S} fill={ink.cyan} textAnchor="middle" fontFamily={fonts.mono}>distributor upload</SvgText>
+        <Path d={`M137 ${cy} l 18 0 m -5 -4 l 5 4 l -5 4`} stroke={ink.cyan} strokeWidth={1.2} fill="none" />
         {caption(['24-bit WAV masters', '+ instrumentals,', 'ISRCs and titles'])}
       </G>
     );

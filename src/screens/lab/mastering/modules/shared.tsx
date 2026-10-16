@@ -12,4 +12,6 @@ export const MODEL_BADGE = 'MODEL · illustration, not a measurement';
  *  heard through an uncalibrated phone output. The limiter is a miniature:
  *  no look-ahead, sample-peak detection — real mastering limiters use
  *  look-ahead and true-peak detection. */
+/** The tool shelf's METERS view: the delivered mix measured offline. */
+export const METER_BADGE = 'MEASURED · offline render of the mix, estimated meters (BS.1770-style)';
 export const RENDER_BADGE = 'MEASURED · offline render, estimated meters (BS.1770-style), miniature limiter (no look-ahead), uncalibrated output';

@@ -103,7 +103,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Louder is not better', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} unit={{ kind: 'limiter', driveDb: shown === 'loud' ? 8 : 0, ceilingDb: CEILING, bypassed: shown !== 'loud' }} drawnGainDb={m?.matchDb} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
@@ -140,6 +140,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
                 </Card>
               ) : null}
               <Card>
+                <Point title="The faceplate on the glass">The limiter LOUDER went through, at its real settings: INPUT (the drive), CEILING and RELEASE, with the deepest gain reduction lit on GR. When THE MIX plays it reads BYP — bypassed, nothing processed.</Point>
                 <Point title="What to listen for at matched level">The transients of the kick and snare, the space between hits, the sense of movement. Limiting trades those for density. Sometimes that is the right trade; it is never automatically "better".</Point>
                 <Point title="Honesty">An offline render of a synthesized session through your phone's uncalibrated output: the comparison is real, the absolute numbers are estimates.</Point>
               </Card>
