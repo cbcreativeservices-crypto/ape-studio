@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 15:58 · ccode · 2fd7be6c
+changed: Speech Lab art fix: readable face profile, a real mid-sagittal tongue, lips on the face line, larger anatomy labels
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:51 · ccode · 337757a4
+changed: Miking Measurement art fix round 3 (F11, F13, F14): operator reads the log sheet, names keep off the mic band, real room seats and curtain
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 15:51 · ccode · 9d352cd3
 changed: Beginning Mixing art fix: every page draws, from the lab's own maths (art grading round 2, 2026-10-16)
 affects other side: nothing (app only)
