@@ -462,9 +462,11 @@ function displayCardTitle(item: Card): string {
 
 function dotColorFor(card: Card): string {
   switch (card.kind) {
-    case 'tools':
     case 'glossary':
+      return '#5bb0ff'; // the Glossary card's blue frame (owner 2026-10-16)
     case 'enrollments':
+      return colors.textPrimary; // the Enrollments card's off-white frame (owner 2026-10-16)
+    case 'tools':
     case 'lab':
     case 'startHere':
     case 'careerFinder':
@@ -1015,7 +1017,9 @@ function CourseCardView({
   // is a publish, and none happens while a store build is in review (D74).
   if (item.kind === 'enrollments') {
     const color = '#5bff85';
-    const border = 'rgba(55,224,95,.6)';
+    // Off-white frame (owner 2026-10-16: frame only — the eyebrow, title and
+    // OPEN ENROLLMENTS button keep their colours). Its carousel dot matches.
+    const border = 'rgba(240,240,240,.6)';
     const inner = (
       <>
         <LinearGradient
@@ -1060,7 +1064,10 @@ function CourseCardView({
     const url = cardImageUrl(item.kind);
     const color = calc ? '#c4a2ff' : '#5bff85';
     const border = calc ? 'rgba(150,90,220,.6)' : 'rgba(55,224,95,.6)';
-    const eyebrow = calc ? 'AUDIO CALCULATORS' : upsell ? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY';
+    // Calculators read like the Glossary / Tools cards (owner 2026-10-16):
+    // "INCLUDED FOR EVERYONE" — members still get the plain name (no
+    // free/included copy to members, owner 2026-09-29).
+    const eyebrow = calc ? (upsell ? 'INCLUDED FOR EVERYONE' : 'AUDIO CALCULATORS') : upsell ? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY';
     const onPress = calc ? onOpenCalculators : onOpenCareerFinder;
     const inner = (
       <>
