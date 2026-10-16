@@ -64,8 +64,11 @@ const PF_MARKS: Mark[] = [
   { id: 'M', label: 'comparison mark M (15, −6)', short: 'M', p: PF.M, kind: 'mic' },
   { id: 'E', label: 'the fixed ambience mark E', short: 'E', p: PF.E, kind: 'ambience', placeholder: true },
 ];
-/** The crew strip M and E stand in (a drawing default 1.5 m wide). */
-export const PF_CREW: PlanRect = { x0: -2, y0: -7, x1: 32, y1: -5.5 };
+/** The crew strip M and E stand in: outside the pitch's touchline, from it
+ *  back to 7 m out (a drawing default — fix pass 2026-10-16: the keep-clear
+ *  band now runs from the touchline to the rectangle, so a mic and its stand
+ *  on M, drawn as a plan mark, stay clear of it). */
+export const PF_CREW: PlanRect = { x0: -2, y0: -7, x1: 32, y1: -4 };
 /** The operator's turn arc at M: 40° either side of straight ahead — a
  *  drawing default wide enough for A, B and C (B is 32° left). */
 export const PF_ARC: TurnArc = { at: PF.M, fromDeg: -40, toDeg: 40, reach: 26 };
@@ -109,7 +112,7 @@ export const PRACTICE_FIELD: VenueScene = {
       id: 'offset',
       label: 'the 6 m practice offset',
       short: 'KEEP CLEAR',
-      poly: [p2(-2, -5.5), p2(32, -5.5), p2(32, 0), p2(-2, 0)],
+      poly: [p2(-2, PF_CREW.y1), p2(32, PF_CREW.y1), p2(32, 0), p2(-2, 0)],
       basis: 'lesson',
       note: 'The space between the rectangle and the crew strip. The 6 m is this practice’s own layout, not a rule of any sport — it may be made larger.',
     },

@@ -62,7 +62,10 @@ function Floor({ u0, u1, px }: { u0: number; u1: number; px: number }) {
  * `hs` — drawn mirrored so they face the mic, the hands on the source point.
  */
 function clapPose(hs: number) {
-  return sidePose(standing({ floorY: 0, x: 0, wrR: v3(300, -hs, 30), wrL: v3(300, -hs - 20, -30), elR: v3(120, -hs - 140, 150), elL: v3(110, -hs - 150, -150), kindR: 'rest', kindL: 'rest', stepR: 40, stepL: -30 }));
+  // Elbows bent and a little ahead of the hips, the forearms forward to the
+  // hands meeting palm to palm in front of the body — a low, gentle clap at
+  // the lesson's height; the weight on both feet, one a half step ahead.
+  return sidePose(standing({ floorY: 0, x: 0, wrR: v3(310, -hs, 25), wrL: v3(300, -hs - 15, -25), elR: v3(70, -hs - 110, 175), elL: v3(60, -hs - 120, -175), kindR: 'rest', kindL: 'rest', stepR: 90, stepL: -60 }));
 }
 function Clapper({ x, hs }: { x: number; hs: number }) {
   const pose = useMemo(() => clapPose(hs), [hs]);
@@ -105,8 +108,9 @@ export function BoundarySection({ g, px, u0 = -900, u1, clapper = false }: { g: 
       <Path path={rays.direct} style="stroke" strokeWidth={2.4 * px} color={BLUE} />
       {clapper ? <Clapper x={g.x} hs={g.hs} /> : null}
       {/* The source point: a ring at the clap's height (round the hands when the person is drawn). */}
-      <Circle cx={g.x} cy={-g.hs} r={9 * px} color={AMBER} opacity={clapper ? 0.12 : 0.2} />
-      <Circle cx={g.x} cy={-g.hs} r={9 * px} style="stroke" strokeWidth={2 * px} color={AMBER} opacity={clapper ? 0.8 : 1} />
+      {/* (Round the hands, a wider thin ring that leaves them visible.) */}
+      {clapper ? null : <Circle cx={g.x} cy={-g.hs} r={9 * px} color={AMBER} opacity={0.2} />}
+      <Circle cx={g.x} cy={-g.hs} r={(clapper ? 15 : 9) * px} style="stroke" strokeWidth={(clapper ? 1.4 : 2) * px} color={AMBER} opacity={clapper ? 0.75 : 1} />
       {atSurface ? (
         // A boundary plate lying on the floor, its capsule at the surface.
         <Group transform={[{ translateX: -70 }, { translateY: -2 }, { rotate: -Math.PI / 2 }]}>

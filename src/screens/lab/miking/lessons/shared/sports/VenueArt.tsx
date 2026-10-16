@@ -714,11 +714,22 @@ export function PlanMic(props: { at: P2; aimDeg: number; kind: PlanMicKind; px: 
   const onStand = props.kind !== 'boundary' && props.kind !== 'dish' && props.kind !== 'hydrophone';
   return (
     <Group>
-      {onStand ? <TripodAbove u={hub.u} v={hub.v} back={screen + Math.PI} r={L * 0.72} px={props.px} /> : null}
+      {onStand ? <TripodAbove u={hub.u} v={hub.v} back={screen + Math.PI} r={L * 0.65} px={props.px} /> : null}
       {props.kind === 'dish' ? <DishOperatorAbove at={props.at} aimDeg={props.aimDeg} px={props.px} sizePx={props.sizePx ?? 26} /> : null}
+      {props.kind === 'shotgun' ? <ShotgunHalo at={props.at} d={d} L={L} px={props.px} /> : null}
       <PlanMicGlyph {...props} />
     </Group>
   );
+}
+/** A pale rim under a shotgun on the plan — the slim dark tube reads on dark
+ *  grass or boards (a highlight, not a part). Capsule at `at`, tube ahead. */
+function ShotgunHalo({ at, d, L, px }: { at: P2; d: P2; L: number; px: number }) {
+  const a = uv({ x: at.x - (d.x * 0.2 * L) / 1000, y: at.y - (d.y * 0.2 * L) / 1000 });
+  const b = uv({ x: at.x + (d.x * 0.8 * L) / 1000, y: at.y + (d.y * 0.8 * L) / 1000 });
+  const p = make();
+  p.moveTo(a.u, a.v);
+  p.lineTo(b.u, b.v);
+  return <Path path={p} style="stroke" strokeWidth={4.2 * px} strokeCap="round" color="#e8eef5" opacity={0.42} />;
 }
 /*
  * A compact tripod mic stand from above (the class MicStandSide draws from

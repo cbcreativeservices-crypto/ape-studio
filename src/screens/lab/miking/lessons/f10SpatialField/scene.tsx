@@ -103,14 +103,18 @@ export function walkerPoses(at: Vec3): { side: PlayerPose; top: PlayerPose } {
     neck: pt(x, headV + 124),
     shoulderR: pt(x - 188, headV + 150),
     shoulderL: pt(x + 188, headV + 150),
-    elbowR: pt(x - 228, headV + 430),
-    elbowL: pt(x + 214, headV + 420),
-    handR: { wrist: pt(x - 214, headV + 690), dir: Math.PI / 2 + 0.12, kind: 'rest' },
-    handL: { wrist: pt(x + 200, headV + 680), dir: Math.PI / 2 - 0.12, kind: 'rest' },
+    // Mid-stride toward the viewer (fix pass 2026-10-16: was standing still):
+    // the right foot ahead, the left trailing with its knee bent, the arms
+    // swinging the other way — the left forearm forward (foreshortened, the
+    // hand higher), the right arm back.
+    elbowR: pt(x - 232, headV + 440),
+    elbowL: pt(x + 206, headV + 400),
+    handR: { wrist: pt(x - 226, headV + 705), dir: Math.PI / 2 + 0.18, kind: 'rest' },
+    handL: { wrist: pt(x + 176, headV + 610), dir: Math.PI / 2 - 0.3, kind: 'rest' },
     hipR: pt(x - 108, headV + 640),
-    hipL: pt(x + 108, headV + 640),
-    kneeR: pt(x - 118, headV + 1110),
-    kneeL: pt(x + 104, headV + 1100),
+    hipL: pt(x + 108, headV + 646),
+    kneeR: pt(x - 116, headV + 1100),
+    kneeL: pt(x + 98, headV + 1135),
     footR: pt(x - 128, g),
     footL: pt(x + 116, g),
     floor: g,
@@ -501,8 +505,9 @@ export function spatialLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     const s = PLAZA.singerMouth;
     // Side: on the ground under her (fix pass 2026-10-16) — above her head the
     // close mic's aim ring and the glass's corner inset meet.
-    out.push({ id: 'sp.singer', text: 'STREET SINGER', short: 'SINGER', u: s.x - 250, v: view === 'side' ? 190 : -700, align: 'center', at: view === 'side' ? { u: s.x - 120, v: -60 } : { u: s.x + 60, v: 0 } });
-    out.push({ id: 'sp.walker', text: 'WALKER', u: 2900, v: view === 'side' ? -2200 : -2700, align: 'center', at: { u: 2900, v: view === 'side' ? -1600 : -1750 } });
+    out.push({ id: 'sp.singer', text: 'STREET SINGER', short: 'SINGER', u: s.x - 250, v: view === 'side' ? 190 : -700, align: 'center', at: view === 'side' ? { u: s.x + 150, v: -420 } : { u: s.x + 60, v: 0 } });
+    // The side leader ends on the chest, not the face (fix pass 2026-10-16).
+    out.push({ id: 'sp.walker', text: 'WALKER', u: 2900, v: view === 'side' ? -2200 : -2700, align: 'center', at: { u: 2900, v: view === 'side' ? -1250 : -1750 } });
     if (view === 'top') out.push({ id: 'sp.path', text: 'PUBLIC FOOTPATH', short: 'PATH', u: 2900, v: 2700, align: 'center', tone: 'muted' });
     out.push({ id: 'sp.wall', text: 'WALL', u: PLAZA.wallX + 200, v: view === 'side' ? -2600 : 2700, align: 'left', tone: 'muted' });
   } else {

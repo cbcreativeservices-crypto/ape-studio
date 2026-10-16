@@ -109,7 +109,10 @@ export function devIndex(key = 'setup'): number {
 
 /** A mic glyph's length on a plan (mm): about a tenth of the plan's width,
  *  so it reads at 1× and zooms with the drawing in full screen. */
-export const glyphMm = (r: PlanRect): number => Math.min(((r.x1 - r.x0) * 1000) / (r.x1 - r.x0 < 14 ? 12 : 8), 4500); // a room-sized plan (Lab 7b group 3): a smaller mark
+// Fix pass 2026-10-16 (owner): a sixteenth of the plan's width — the mark
+// (mic, stand and all) reads at 1× yet stays inside its crew strip or
+// equipment area, clear of the keep-clear hatching.
+export const glyphMm = (r: PlanRect): number => Math.min(((r.x1 - r.x0) * 1000) / 16, 4500);
 
 /** A plan on the glass: the venue, then the step's own layer, then labels. */
 export function PlanStage({ w, h, scene, box, a11y, labels, inset, children, show, activeFootprint, highlight }: { w: number; h: number; scene: VenueScene; box?: PlanRect; a11y: string; labels: StaticLabel[]; inset?: FieldInset | null; children?: (px: number, g: number) => ReactNode; show?: Parameters<typeof VenuePlan>[0]['show']; activeFootprint?: string | null; highlight?: string | null }) {
