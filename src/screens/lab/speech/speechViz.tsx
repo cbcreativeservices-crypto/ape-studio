@@ -136,7 +136,7 @@ function VocalFoldsSvg({ voiced, reduceMotion, w, h }: { voiced: boolean; reduce
     : '← CYAN: AIR RISING TOWARD YOU';
   const leaderX = 59;
   const lab = (y: number, text: string) => (
-    <SvgText x={leaderX - 2} y={y + 3} fontSize={9} fill={colors.textSecondary} textAnchor="end" fontFamily={F}>{text}</SvgText>
+    <SvgText x={leaderX - 2} y={y + 3} fontSize={10.5} fill={colors.textSecondary} textAnchor="end" fontFamily={F}>{text}</SvgText>
   );
   const leaderLine = { stroke: 'rgba(255,255,255,0.55)', strokeWidth: 0.8 } as const;
   const leaderDot = { r: 1.4, fill: '#ffffff', stroke: '#000000', strokeWidth: 0.5 } as const;

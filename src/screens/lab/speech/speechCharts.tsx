@@ -88,7 +88,7 @@ export function TraceSvg({ wave, durMs, height = 120, a11y, w, h }: { wave: Floa
         <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke="rgba(255,255,255,0.14)" strokeWidth={0.6} />
         <Path d={d} fill={`url(#${gid})`} stroke={`url(#${gid})`} strokeWidth={0.4} strokeLinejoin="round" />
         {ticks.map((t, i) => (
-          <SvgText key={t} x={tx(t)} y={H - 5} fontSize={9} fill={colors.textMuted} textAnchor={i === 0 ? 'start' : i === ticks.length - 1 ? 'end' : 'middle'} fontFamily={F}>{i === ticks.length - 1 ? `${t} ms` : `${t}`}</SvgText>
+          <SvgText key={t} x={tx(t)} y={H - 5} fontSize={10} fill={colors.textMuted} textAnchor={i === 0 ? 'start' : i === ticks.length - 1 ? 'end' : 'middle'} fontFamily={F}>{i === ticks.length - 1 ? `${t} ms` : `${t}`}</SvgText>
         ))}
         <SvgText x={W - 10} y={11} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>dashed = full scale (the loudest a recorder takes)</SvgText>
       </Svg>
@@ -209,11 +209,11 @@ export function SpectrumSvg({
             stays visible where the bars cover it */}
         {ghostLv ? <Path d={stepD(ghostLv, x0, bw, top, bottom)} fill="none" stroke="#cfd0d8" strokeWidth={1.1} opacity={0.75} strokeLinejoin="round" /> : null}
         {dbTicks.map((v) => (
-          <SvgText key={`t${v}`} x={x0 - 4} y={yDb(v) + 3} fontSize={9} fill={levelColor((v - SPECTRUM_FLOOR_DB) / -SPECTRUM_FLOOR_DB)} textAnchor="end" fontFamily={F}>{v === 0 ? '0 dB' : `${v}`}</SvgText>
+          <SvgText key={`t${v}`} x={x0 - 4} y={yDb(v) + 3} fontSize={10} fill={levelColor((v - SPECTRUM_FLOOR_DB) / -SPECTRUM_FLOOR_DB)} textAnchor="end" fontFamily={F}>{v === 0 ? '0 dB' : `${v}`}</SvgText>
         ))}
         {band && bandLabel ? <SvgText x={x(band[0]) + 4} y={top - 3} fontSize={9} fill={bandColor} fontFamily={fonts.oswaldMedium}>{bandLabel}</SvgText> : null}
         {ticks.map((t) => (
-          <SvgText key={t} x={x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
+          <SvgText key={t} x={x(t)} y={H - 6} fontSize={10} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
         ))}
         <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>0 dB = loudest band · illustrative</SvgText>
       </Svg>

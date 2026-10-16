@@ -33,7 +33,9 @@ import { ExpandableFigure } from '../kit/ExpandableFigure';
 const F = fonts.barlowMedium;
 
 const SKIN = '#17181d';
-const SKIN_EDGE = '#3d3f48';
+// The profile line is what makes the face read (nose, lips, chin): at
+// #3d3f48 it vanished on the dark glass (art grading 2026-10-16).
+const SKIN_EDGE = '#6c6f7c';
 const CAVITY = '#1a1b21';
 const BRAIN = '#202129';
 const BRAIN_EDGE = '#2d2e37';
@@ -137,9 +139,16 @@ const DIAPHRAGM_AT = (lift: number) => {
 
 /* ── moving parts (page 2): same command structure, two poses ───────── */
 
-// tongue: rest, and tip raised to the alveolar ridge (as for T, D, N, L)
-const TONGUE_REST = [74, 140, 76, 132, 82, 127, 90, 124, 100, 120, 116, 120, 126, 124, 134, 128, 140, 136, 142, 146, 145, 156, 145, 166, 142, 172, 128, 176, 110, 172, 94, 164, 84, 156, 80, 152, 76, 148, 74, 140];
-const TONGUE_TIP = [78, 135, 74, 130, 75, 125, 81, 123, 96, 121, 114, 121, 126, 124, 134, 128, 140, 136, 142, 146, 145, 156, 145, 166, 142, 172, 128, 176, 110, 172, 94, 164, 84, 156, 81, 150, 79, 142, 78, 135];
+// tongue: rest, and tip raised to the alveolar ridge (as for T, D, N, L).
+// Redrawn 2026-10-16 (art grading: "an oversized red ellipse filling the
+// mouth"): a real mid-sagittal tongue — a pointed tip resting behind the
+// lower incisors, the blade and dorsum arching UNDER the palate with the
+// oral air showing between them (~4 mm at rest), the dorsum turning down
+// into the root that forms the front wall of the oropharynx and ends at the
+// vallecula over the hyoid; the underside runs back to the genial tubercle.
+// 20 points: P0, C×3 (blade, dorsum, back), C (root), L, C×2 (underside).
+const TONGUE_REST = [76, 139.5, 78, 135, 84, 131, 93, 128.5, 104, 125.5, 118, 125, 127, 128, 135, 131, 139.5, 137, 140.5, 146, 141.5, 155, 140.5, 164, 136.5, 171, 126, 175.5, 110, 171.5, 96, 165, 87, 158, 82, 154, 77, 146, 76, 139.5];
+const TONGUE_TIP = [77, 126, 82, 124.5, 88, 125.5, 96, 127.5, 106, 126, 118, 125.5, 127, 128, 135, 131, 139.5, 137, 140.5, 146, 141.5, 155, 140.5, 164, 136.5, 171, 126, 175.5, 110, 171.5, 96, 165, 87, 158, 82, 152, 78, 138, 77, 126];
 function tongueD(k: number): string {
   'worklet';
   const p: string[] = [];
@@ -342,8 +351,11 @@ function HeadSvg({ w, h, selected, onSelect, highlight, stage, reduceMotion }: {
       <Path d={SOFT_PALATE} fill={MUCOSA_DEEP} stroke={MUSCLE_EDGE} strokeWidth={0.8} />
       <Path d={UPPER_INCISOR} fill={ENAMEL} />
       <Path d={LOWER_INCISOR} fill={ENAMEL} />
-      <APath animatedProps={lipU} d={upperLipD(lipRest)} fill={MUSCLE} stroke={MUCOSA} strokeWidth={0.8} />
-      <APath animatedProps={lipL} d={lowerLipD(lipRest)} fill={MUSCLE} stroke={MUCOSA} strokeWidth={0.8} />
+      {/* Lips: the muscle ring in section, outlined with the FACE's own
+          profile line so the nose → lips → chin read as one continuous profile
+          (art grading 2026-10-16: pink-rimmed lips read as loose blobs). */}
+      <APath animatedProps={lipU} d={upperLipD(lipRest)} fill={MUSCLE} stroke={SKIN_EDGE} strokeWidth={1.2} strokeLinejoin="round" />
+      <APath animatedProps={lipL} d={lowerLipD(lipRest)} fill={MUSCLE} stroke={SKIN_EDGE} strokeWidth={1.2} strokeLinejoin="round" />
       <Path d={HYOID} fill={BONE} />
 
       {/* larynx */}
@@ -384,8 +396,11 @@ function HeadSvg({ w, h, selected, onSelect, highlight, stage, reduceMotion }: {
       {hi('lips') ? <><APath animatedProps={lipU} d={upperLipD(0)} fill={HI} fillOpacity={0.4} stroke={HI} strokeWidth={1.1} /><APath animatedProps={lipL} d={lowerLipD(0)} fill={HI} fillOpacity={0.4} stroke={HI} strokeWidth={1.1} /></> : null}
 
       {/* ── captions ── */}
-      <SvgText x={12} y={16} fontSize={9} fill={colors.textMuted} fontFamily={F}>SIDE VIEW · HEAD AND NECK</SvgText>
-      <SvgText x={12} y={27} fontSize={9} fill={colors.textMuted} fontFamily={F}>NOT TO SCALE</SvgText>
+      {/* Three short lines clear of the skull (the one-line caption ran onto
+          the crown at 390 wide — art grading 2026-10-16). */}
+      <SvgText x={12} y={16} fontSize={9} fill={colors.textMuted} fontFamily={F}>HEAD AND NECK</SvgText>
+      <SvgText x={12} y={27} fontSize={9} fill={colors.textMuted} fontFamily={F}>SIDE VIEW</SvgText>
+      <SvgText x={12} y={38} fontSize={9} fill={colors.textMuted} fontFamily={F}>NOT TO SCALE</SvgText>
       <SvgText x={12} y={CHEST_TOP + 12} fontSize={9} fill={colors.textMuted} fontFamily={F}>CHEST</SvgText>
       <SvgText x={12} y={CHEST_TOP + 23} fontSize={9} fill={colors.textMuted} fontFamily={F}>FRONT VIEW</SvgText>
 

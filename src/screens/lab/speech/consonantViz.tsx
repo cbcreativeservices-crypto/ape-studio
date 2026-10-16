@@ -59,7 +59,7 @@ export function ConsonantSpectrogram({ family, a11y, controls }: { family: Conso
           {/* frequency guides, behind nothing important: faint */}
           {[2000, 4000, 6000].map((f) => <Line key={f} x1={x0} y1={fy(f)} x2={x1} y2={fy(f)} stroke="rgba(255,255,255,0.08)" strokeDasharray="2,3" />)}
           {[0, 2000, 4000, 6000, 8000].map((f) => (
-            <SvgText key={f} x={x0 - 3} y={fy(f) + (f === 8000 ? 6 : f === 0 ? 0 : 3)} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>{f === 0 ? '0' : `${f / 1000}k`}</SvgText>
+            <SvgText key={f} x={x0 - 3} y={fy(f) + (f === 8000 ? 6 : f === 0 ? 0 : 3)} fontSize={10} fill={colors.textMuted} textAnchor="end" fontFamily={F}>{f === 0 ? '0' : `${f / 1000}k`}</SvgText>
           ))}
           {/* the parts of the syllable */}
           {data.syl.segments.map((s, i) => {
@@ -69,10 +69,10 @@ export function ConsonantSpectrogram({ family, a11y, controls }: { family: Conso
             );
           })}
           {[0, 100, 200, 300, 400].map((t, i, arr) => (
-            <SvgText key={t} x={tx(t / 1000)} y={H - 14} fontSize={9} fill={colors.textMuted} textAnchor={i === 0 ? 'start' : i === arr.length - 1 ? 'end' : 'middle'} fontFamily={F}>{i === arr.length - 1 ? `${t} ms` : `${t}`}</SvgText>
+            <SvgText key={t} x={tx(t / 1000)} y={H - 14} fontSize={10} fill={colors.textMuted} textAnchor={i === 0 ? 'start' : i === arr.length - 1 ? 'end' : 'middle'} fontFamily={F}>{i === arr.length - 1 ? `${t} ms` : `${t}`}</SvgText>
           ))}
-          <SvgText x={x0} y={H - 3} fontSize={9} fill={colors.textMuted} fontFamily={F}>{`"${data.syl.text.toUpperCase()}" · black = silence · blue → red = quiet → loud`}</SvgText>
-          <SvgText x={4} y={12} fontSize={9} fill={colors.textMuted} fontFamily={F}>Hz</SvgText>
+          <SvgText x={x0} y={H - 3} fontSize={10} fill={colors.textMuted} fontFamily={F}>{`"${data.syl.text.toUpperCase()}" · black = silence · blue → red = quiet → loud`}</SvgText>
+          <SvgText x={4} y={12} fontSize={10} fill={colors.textMuted} fontFamily={F}>Hz</SvgText>
         </Svg>
       </View>
     )} />
