@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:38 · ccode · 988cb8ef
+changed: Bass Lab art fix: headstock past the nut, the string itself vibrates, larger fraction strip
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:21 · ccode · 822ffaf5
+changed: Drum Tuning art fix: rack tom on a real tom stand and set higher, larger pitch-ladder words, pillow label off the pillow
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:11 · ccode · e2c3973f
+changed: Vacuum Tube art fix: transistor at true size beside the tube, secondaries as electrons, electrons accelerate
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:50 · ccode · f96985af
+changed: Start Here / Foundations air field: the ear sits on a listener's head, not alone in the air
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:34 · ccode · 9671d66b
 changed: C10 Harp art fix round 2: real harpist hands on the strings, one seated body
 affects other side: nothing (app only)
