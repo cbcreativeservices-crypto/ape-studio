@@ -12,9 +12,9 @@ const read = (p: string) => readFileSync(p, 'utf8');
 it('WaveformView: the audio is synthesised per signal/width, never per fader step', () => {
   const src = read('src/screens/lab/meter/vizMeters.tsx');
   // renderOverview lives in the memo keyed on signal/overview/width…
-  assert.match(src, /renderOverview\(p\.signal\)[\s\S]*?\}, \[p\.signal, overview, w\]\);/);
+  assert.match(src, /renderOverview\(p\.signal\)[\s\S]*?\}, \[p\.signal, overview, w, gut\]\);/);
   // …and the gain-dependent memo depends on that result, not on p.signal.
-  assert.match(src, /\}, \[R, gain, dc, inv, showClip, w, h, ts\]\);/);
+  assert.match(src, /\}, \[R, gain, dc, inv, showClip, w, h, ts, gut\]\);/);
 });
 
 it('Start Here: START OVER stops the tone (it lands on a page with no PLAY)', () => {

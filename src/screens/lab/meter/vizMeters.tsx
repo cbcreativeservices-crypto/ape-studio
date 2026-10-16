@@ -306,6 +306,11 @@ export function WaveformView(p: {
   const AMAX = 1.28;
   const half = h / 2 - 8 * ts;
   const yOf = (a: number) => h / 2 - (a / AMAX) * half;
+  // Scale gutter (round 3, lab-art grading 2026-10-16): the −6/−12/−24 dB
+  // numerals were printed at x 3 ON the waveform body, so "−12" and "−24"
+  // read as "−1"/"−2" against the trace. The audio is now drawn right of a
+  // numeral gutter, and the numerals sit in it at the 9-pt floor.
+  const gut = p.plain ? 0 : 30 * ts;
 
   // DRAW real audio at a real time base (owner 2026-09-29: never stylized
   // audio). Program material — and every signal in the beginner view — is
@@ -327,7 +332,7 @@ export function WaveformView(p: {
     // PK / RMS / crest numbers are unchanged (peaks match by construction).
     const ref = overview ? renderSignal(p.signal, 2048) : raw;
     // Per-column min/max at DEVICE-PIXEL density (owner: hero resolution).
-    const cols = Math.max(96, Math.min(Math.round(w * DPR), n));
+    const cols = Math.max(96, Math.min(Math.round((w - gut) * DPR), n));
     const rMin = new Array<number>(cols);
     const rMax = new Array<number>(cols);
     for (let c = 0; c < cols; c++) {
@@ -344,7 +349,7 @@ export function WaveformView(p: {
       rMax[c] = mx;
     }
     return { ref, cols, rMin, rMax };
-  }, [p.signal, overview, w]);
+  }, [p.signal, overview, w, gut]);
 
   const S = useMemo(() => {
     const sgn = inv ? -1 : 1;
@@ -352,7 +357,7 @@ export function WaveformView(p: {
     const ref = R.ref.map((v) => k * v + dc);
     const stats = { pkDb: db(peakOf(ref)), rmsDb: db(rmsOf(ref)), crest: crestDb(ref), dc: dcOf(ref) };
     const cols = R.cols;
-    const colW = w / cols;
+    const colW = (w - gut) / cols;
     const lim = showClip ? 1 : 1.2; // showClip shears the tops at the rails
     const topA = new Array<number>(cols);
     const botA = new Array<number>(cols);
@@ -375,9 +380,9 @@ export function WaveformView(p: {
     // dcOffset ≠ 0 — that IS the module's lesson); the envelope stroke below
     // keeps that flat line visible.
     const body = Skia.Path.Make();
-    body.moveTo(0.5 * colW, yOf(topA[0]));
-    for (let c = 1; c < cols; c++) body.lineTo((c + 0.5) * colW, yOf(topA[c]));
-    for (let c = cols - 1; c >= 0; c--) body.lineTo((c + 0.5) * colW, yOf(botA[c]));
+    body.moveTo(gut + 0.5 * colW, yOf(topA[0]));
+    for (let c = 1; c < cols; c++) body.lineTo(gut + (c + 0.5) * colW, yOf(topA[c]));
+    for (let c = cols - 1; c >= 0; c--) body.lineTo(gut + (c + 0.5) * colW, yOf(botA[c]));
     body.close();
     // Red sheared flat-tops where |x| ≥ 1 post-gain (run-length merged).
     const caps = Skia.Path.Make();
@@ -388,7 +393,7 @@ export function WaveformView(p: {
           const on = c < cols && flags[c];
           if (on && s0 < 0) s0 = c;
           if (!on && s0 >= 0) {
-            caps.addRect(Skia.XYWHRect(s0 * colW, y - 1.3 * ts, (c - s0) * colW, 2.6 * ts));
+            caps.addRect(Skia.XYWHRect(gut + s0 * colW, y - 1.3 * ts, (c - s0) * colW, 2.6 * ts));
             s0 = -1;
           }
         }
@@ -401,25 +406,25 @@ export function WaveformView(p: {
     for (const d of [-6, -12, -24]) {
       const a = Math.pow(10, d / 20);
       for (const s2 of [1, -1]) {
-        grid.moveTo(0, yOf(a * s2));
+        grid.moveTo(gut > 0 ? gut - 4 * ts : 0, yOf(a * s2));
         grid.lineTo(w, yOf(a * s2));
       }
     }
     const rails = Skia.Path.Make();
-    rails.moveTo(0, yOf(1));
+    rails.moveTo(gut > 0 ? gut - 4 * ts : 0, yOf(1));
     rails.lineTo(w, yOf(1));
-    rails.moveTo(0, yOf(-1));
+    rails.moveTo(gut > 0 ? gut - 4 * ts : 0, yOf(-1));
     rails.lineTo(w, yOf(-1));
     // Is the signal actually clipping right now? (owner 2026-08-05: whole
     // waveform goes red while clipping, back to the MIDI ramp when under.)
     const clipping = clT.some(Boolean) || clB.some(Boolean);
     return { body, caps, grid, rails, stats, clipping };
-  }, [R, gain, dc, inv, showClip, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [R, gain, dc, inv, showClip, w, h, ts, gut]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Playhead sweeping the loop on the phase clock (the ONLY per-frame path).
   const playhead = useDerivedValue(() => {
     const f = frac01(p.phase.value);
-    const x = 2 * ts + f * (w - 4 * ts);
+    const x = gut + 2 * ts + f * (w - gut - 4 * ts);
     const pth = Skia.Path.Make();
     pth.moveTo(x, 3 * ts);
     pth.lineTo(x, h - 3 * ts);
@@ -428,7 +433,7 @@ export function WaveformView(p: {
     pth.lineTo(x, 10 * ts);
     pth.close();
     return pth;
-  }, [p.phase, w, h, ts]);
+  }, [p.phase, w, h, ts, gut]);
 
   const st = S.stats;
   const statLine = `PK ${st.pkDb.toFixed(1)}  RMS ${st.rmsDb.toFixed(1)}  CF ${st.crest.toFixed(1)} dB`;
@@ -438,7 +443,7 @@ export function WaveformView(p: {
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         <Path path={S.grid} color={GHOST} style="stroke" strokeWidth={ts} />
-        <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color="#3a3b43" strokeWidth={1.2 * ts} />
+        <SkLine p1={{ x: gut, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color="#3a3b43" strokeWidth={1.2 * ts} />
         <Path path={S.rails} color={showClip ? RED : '#33343c'} style="stroke" strokeWidth={1.1 * ts} opacity={showClip ? 0.85 : 1} />
         {/* Amplitude painted by the MIDI loudness ramp (blue at the zero line →
             red at ±full scale); the WHOLE body flips solid red while clipping,
@@ -471,12 +476,12 @@ export function WaveformView(p: {
       </Canvas>
       {p.plain ? null : (
         <>
-      <Lbl x={3} y={yOf(1) - 4} w={30} align="left" size={7} color={showClip ? RED : TEXT_DIM}>
+      <Lbl x={2} y={yOf(1) - 5} w={26} align="right" size={9} color={showClip ? RED : TEXT_DIM}>
         0
       </Lbl>
       {[-6, -12, -24].map((d) => (
-        <Lbl key={d} x={3} y={yOf(Math.pow(10, d / 20)) - 4} w={30} align="left" size={7}>
-          {`${d}`}
+        <Lbl key={d} x={2} y={yOf(Math.pow(10, d / 20)) - 5} w={26} align="right" size={9}>
+          {`−${-d}`}
         </Lbl>
       ))}
       <Lbl x={w - 230} y={4 * ts} w={226} align="right" size={7}>

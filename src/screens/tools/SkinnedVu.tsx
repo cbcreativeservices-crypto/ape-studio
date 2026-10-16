@@ -37,21 +37,21 @@ export const VU_CTR = { x: 795, y: 803 }; // the dome — the FIXED needle pivot
 // Radii (owner 2026-08-19 rev4): arc apex ≈ y278 — halfway between the old
 // jammed-at-top (y228) and the too-low rev3 (y328). R_NUM − R_MAJ = 60 keeps
 // the numbers well clear of the ticks. The − / + ends are pushed to ±52° so
-// they no longer collide with the −20 / +5 numbers.
+// they no longer collide with the −20 / +3 numbers.
 const R_LINE = 429; // the arc baseline the ticks rise from
 const R_MAJ = 465; // major tick tops
 const R_MIN = 449; // minor tick tops
 const R_ZERO = 477; // the 0 tick is extra tall
 const R_NUM = 525; // number centres (60 clear of the major ticks)
 const ANG_END_L = -52; // the − end (11° past −20 at −41° — clear of the number)
-const ANG_END_R = 52; // the + end (9° past +5 at +43°)
+const ANG_END_R = 54; // the + end (3° past +3 at +50.9° — the needle's pin stop)
 export const VU_NEEDLE_TIP = 475; // needle tip radius (reaches the tick line)
 // Secondary SPL scale (owner 2026-09-01): printed INSIDE the arc baseline, the
 // way a real dual-scale meter prints its second row — so it reads as part of
 // the face, never as an overlay on top of it.
 const R_SPL = 366; // the SPL number row
 // The caption sits in the face's LOWER-LEFT dead zone. The needle only ever
-// sweeps −48°…+46°, so at −74° nothing crosses it, and it stays clear of the
+// sweeps −48°…+54°, so at −74° nothing crosses it, and it stays clear of the
 // number row (which would otherwise read as one string with the −20 value).
 const A_SPL_CAP = -74;
 const R_SPL_CAP = 330;
@@ -62,17 +62,18 @@ const R_SPL_CAP = 330;
 // existing importer keeps working unchanged.
 export { SKIN_VB, VU_FACE };
 
-/* ── Deflection about the dome: voltage-linear black side, compressed red ── */
-// θ(v=0)=−48° (rest, just left of −20) … θ(v=1 / 0 VU)=+22°; red side 4.2°/dB
-// to +5 → +43°, capped at the + end. Matches the reference face's angular
-// positions to within a degree.
+/* ── Deflection about the dome: VOLTAGE-LINEAR across the whole face ── */
+// θ(v=0)=−48° (rest, just left of −20) … θ(v=1 / 0 VU)=+22° … θ(+3 VU =
+// 1.413 V/V)=+50.9°, pinned at the + end (54°). A real VU movement is a
+// voltage-linear (rectifier) meter: the dB marks crowd toward the right on
+// their own. Round 3 (lab-art grading 2026-10-16): the face used to print a
+// compressed red side running to +5 with no −2/−1/+1/+2 marks — the studio
+// standard (ANSI C16.5) face is −20 … +3, with every dB from −3 up marked.
 export function vuAngle(v: number): number {
   'worklet';
   const t = v < 0 ? 0 : v;
-  if (t <= 1) return -48 + 70 * t;
-  const db = (20 * Math.log(t)) / Math.LN10;
-  const a = 22 + 4.2 * db;
-  return a > 46 ? 46 : a;
+  const a = -48 + 70 * t;
+  return a > 54 ? 54 : a;
 }
 const vuDbAngle = (dbv: number) => vuAngle(Math.pow(10, dbv / 20));
 export const skinPt = (deg: number, r: number) => {
@@ -91,10 +92,11 @@ const INK = '#241606'; // scale ink on the cream face
 const INK_RED = '#b3231a';
 
 /** Major marks: measured/derived angles via the deflection law. */
-const MAJORS: ReadonlyArray<{ db: number; label: string }> = [
+export const MAJORS: ReadonlyArray<{ db: number; label: string }> = [
   { db: -20, label: '20' }, { db: -10, label: '10' }, { db: -7, label: '7' },
-  { db: -5, label: '5' }, { db: -3, label: '3' }, { db: 0, label: '0' },
-  { db: 3, label: '3' }, { db: 5, label: '5' },
+  { db: -5, label: '5' }, { db: -3, label: '3' }, { db: -2, label: '2' },
+  { db: -1, label: '1' }, { db: 0, label: '0' }, { db: 1, label: '1' },
+  { db: 2, label: '2' }, { db: 3, label: '3' },
 ];
 /** Minor ticks at ANGULAR subdivisions of each gap (how the reference face
  *  spaces them — evenly within a gap, not at dB positions). */
@@ -107,10 +109,12 @@ function minorAngles(): number[] {
     ...between(a(-10), a(-7), 1),
     ...between(a(-7), a(-5), 1),
     ...between(a(-5), a(-3), 1),
-    ...between(a(-3), a(0), 3),
-    ...between(a(0), a(3), 2),
-    ...between(a(3), a(5), 1),
-    ...between(a(5), ANG_END_R, 1),
+    ...between(a(-3), a(-2), 1),
+    ...between(a(-2), a(-1), 1),
+    ...between(a(-1), a(0), 1),
+    ...between(a(0), a(1), 1),
+    ...between(a(1), a(2), 1),
+    ...between(a(2), a(3), 1),
   ];
 }
 
@@ -159,14 +163,15 @@ export const SPL_SCALE = (() => {
   });
   // − / + end symbols, just above the arc ends.
   const pMinus = skinPt(ANG_END_L, R_NUM - 18);
-  const pPlus = skinPt(ANG_END_R, R_NUM - 18);
+  // The + sits past the +3 number (they used to share the arc end).
+  const pPlus = skinPt(ANG_END_R + 6, R_NUM - 18);
   els.push(
     <SvgText key="sM" x={pMinus.x} y={pMinus.y + 22} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={66} textAnchor="middle" transform={`rotate(${ANG_END_L} ${pMinus.x.toFixed(1)} ${pMinus.y.toFixed(1)})`}>
       −
     </SvgText>,
   );
   els.push(
-    <SvgText key="sP" x={pPlus.x} y={pPlus.y + 22} fill={INK_RED} fontFamily={fonts.oswaldSemiBold} fontSize={66} textAnchor="middle" transform={`rotate(${ANG_END_R} ${pPlus.x.toFixed(1)} ${pPlus.y.toFixed(1)})`}>
+    <SvgText key="sP" x={pPlus.x} y={pPlus.y + 22} fill={INK_RED} fontFamily={fonts.oswaldSemiBold} fontSize={66} textAnchor="middle" transform={`rotate(${ANG_END_R + 6} ${pPlus.x.toFixed(1)} ${pPlus.y.toFixed(1)})`}>
       +
     </SvgText>,
   );
