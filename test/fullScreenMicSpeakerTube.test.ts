@@ -132,8 +132,10 @@ test('tube/viz — all eight drawings lay out in glass points and paint through 
   for (const v of ['TubeCutawayView', 'ElectronFlowView', 'GridControlView', 'AmplifyView', 'HighVoltageView', 'BiasView', 'SaturationView', 'TubeVsTransistorView']) {
     assertScaledView(src, v);
   }
-  // Every scaled Group is closed inside its Canvas.
-  assert.equal((src.match(/<Group transform=\{\[\{ scale: ts \}\]\}>/g) ?? []).length, (src.match(/<\/Group>/g) ?? []).length);
+  // Every Group (the scaled ones, plus the tube-vs-transistor inset's own
+  // magnifying Group, art grading 2026-10-16) is closed inside its Canvas.
+  assert.ok((src.match(/<Group transform=\{\[\{ scale: ts \}\]\}>/g) ?? []).length >= 8);
+  assert.equal((src.match(/<Group transform=/g) ?? []).length, (src.match(/<\/Group>/g) ?? []).length);
 });
 
 test('GlassShape — records the glass size, reports its shape (or a fixed height) only in full screen', () => {
