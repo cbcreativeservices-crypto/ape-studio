@@ -34,12 +34,21 @@ const fmtG = fmtDb;
 const fmtLv = (lv: number) => `${Math.round(lv)} dB`;
 
 /** The too-low / healthy / overload legend, shown once up top. */
-function ZoneLegend() {
+export function ZoneLegend() {
   return (
     <View style={styles.legend}>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#2f74ff' }]} /><Text style={styles.legendText}>TOO LOW</Text></View>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#3fae52' }]} /><Text style={styles.legendText}>HEALTHY</Text></View>
       <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>OVERLOAD</Text></View>
+      {/* The grey band at a meter's foot is the stage's hiss — the noise floor
+          every stage amplifies (art grading 2026-10-16: it had no key). */}
+      <View style={[styles.legendItem]}>
+        {/* drawn as it appears on a meter: the grey hiss over the blue foot */}
+        <View style={[styles.sw, { backgroundColor: '#2f74ff', overflow: 'hidden' }]}>
+          <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(158,158,168,0.55)', borderTopWidth: 1, borderTopColor: 'rgba(214,214,222,0.85)' }} />
+        </View>
+        <Text style={styles.legendText}>HISS (NOISE FLOOR)</Text>
+      </View>
     </View>
   );
 }
@@ -168,6 +177,7 @@ export function InputGainModule(_p: GainModuleComponentProps) {
           Everything starts with input gain. The preamp brings a quiet source up to a usable level —
           strong enough to work with, but not so hot that it clips.
         </GlossaryText>
+        <ZoneLegend />
         <Text style={styles.instruction}>
           ONLY the PREAMP fader is yours on this screen — the source and output are FIXED. Raise the
           input gain until the preamp meter sits in the healthy green without touching overload.
@@ -256,6 +266,7 @@ export function FollowModule(_p: GainModuleComponentProps) {
           setting starves everything after it; a hot setting clips, and the distortion rides all the
           way to the output.
         </GlossaryText>
+        <ZoneLegend />
         <Text style={styles.caption}>
           Notice you can’t rescue a bad preamp setting with anything that comes after it — a decision
           early in the chain has already shaped everything downstream.
@@ -379,6 +390,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
           of turning the output down afterward will clean it up. Try each SCENARIO, then ride the
           faders yourself.
         </GlossaryText>
+        <ZoneLegend />
         {/* Reworked (learning pass 2026-08-31): the old logic said "BALANCED:
             healthy level at every stage" whenever the FINAL level was healthy —
             including the too-low-early scenario it exists to condemn. Verdict
@@ -482,6 +494,7 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
           key does it in one press), then pull the fader down. The output gets quieter — but watch
           the DIST tag: the fader lowered the level, and did nothing to the distortion.
         </GlossaryText>
+        <ZoneLegend />
         <View style={[styles.note, outDistorted && styles.noteBad]}>
           <Text style={styles.noteText}>
             {outDistorted && fader < 0

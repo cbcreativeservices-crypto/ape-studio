@@ -6,13 +6,13 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg, { G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import { loadPagedProgress } from '../../../features/lab/pagedProgress';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, OpenLabLink, useMixPlayback, useMixPriorities, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
+import { AuxArt, GroupsArt, RoutingMapArt, groupsPullReadout, type GroupComp, type GroupPull } from './advFigures';
 
 /* ════ 1 · BEFORE YOU BEGIN (the prerequisite gate) ═══════════════════════ */
 
@@ -187,7 +187,9 @@ function PageSessionMgmt({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THIS SESSION’S ROUTING MAP</Eyebrow>
         <Body>The map for the 8-track session you will repair in the final — channels into family buses, buses into the mix. On a real 80-track session this drawing is the difference between routing and archaeology.</Body>
-        <RoutingMap />
+        {/* Art fix 2026-10-16: drawn as the mixer itself — strips, group and
+            master faders, every wire on its own pin (advFigures). */}
+        <RoutingMapArt />
       </Card>
       <UnderstandingCheck
         question="EQ before the compressor, or after? The advanced answer:"
@@ -203,56 +205,6 @@ function PageSessionMgmt({ ctx }: { ctx: PageCtx }) {
         onCorrect={() => setCheckDone(true)}
       />
       <GoalChips goals={goals} latched={latched} />
-    </View>
-  );
-}
-
-/** The session's routing map, drawn (design pass P2-5): eight channels into
- *  three family buses into the mix — the architecture the final repairs. */
-function RoutingMap() {
-  const box = (x: number, y: number, w: number, label: string, tone: string) => (
-    <G key={label}>
-      <Rect x={x} y={y} width={w} height={24} rx={5} fill="#101013" stroke={tone} strokeWidth={1.2} />
-      <SvgText x={x + w / 2} y={y + 16} fill={tone} fontSize={10} fontWeight="600" textAnchor="middle" fontFamily="sans-serif" letterSpacing={0.5}>
-        {label}
-      </SvgText>
-    </G>
-  );
-  const wire = (x1: number, y1: number, x2: number, y2: number) => (
-    <Path key={`${x1}${y1}${x2}${y2}`} d={`M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}`} stroke="#3a4354" strokeWidth={1.4} fill="none" />
-  );
-  const chans = ['KICK', 'SNARE', 'PERC', 'BASS', 'GTR', 'KEYS', 'LEAD', 'BGV'];
-  const cw = 40;
-  const gap = 4;
-  const chanX = (i: number) => 6 + i * (cw + gap);
-  // Art grading 2026-10-16: OUT sat on MIX BUS and ran past the viewBox, the
-  // bus names overflowed their boxes, and the FX return wire entered MIX BUS
-  // from underneath. OUT now stacks below, buses are wider, and the return sits
-  // low-left, clear of the rhythm wire, entering MIX BUS from the side.
-  return (
-    <View accessible accessibilityRole="image" accessibilityLabel="Routing map: kick, snare, percussion and bass feed the rhythm bus; guitar and keys feed the music bus; lead and backing feed the vocal bus; all three buses feed the mix bus, then the output. A shared effects return also feeds the mix.">
-      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={164} viewBox="0 0 360 164">
-        {chans.map((c, i) => box(chanX(i), 4, cw, c, '#8b93a3'))}
-        {wire(chanX(0) + cw / 2, 28, 60, 58)}
-        {wire(chanX(1) + cw / 2, 28, 60, 58)}
-        {wire(chanX(2) + cw / 2, 28, 60, 58)}
-        {wire(chanX(3) + cw / 2, 28, 60, 58)}
-        {wire(chanX(4) + cw / 2, 28, 180, 58)}
-        {wire(chanX(5) + cw / 2, 28, 180, 58)}
-        {wire(chanX(6) + cw / 2, 28, 292, 58)}
-        {wire(chanX(7) + cw / 2, 28, 292, 58)}
-        {box(20, 58, 80, 'RHYTHM BUS', '#ffc64d')}
-        {box(140, 58, 80, 'MUSIC BUS', '#ffc64d')}
-        {box(252, 58, 80, 'VOCAL BUS', '#ffc64d')}
-        {wire(60, 82, 180, 108)}
-        {wire(180, 82, 180, 108)}
-        {wire(292, 82, 180, 108)}
-        {box(40, 128, 60, 'FX RET', '#5fd9c4')}
-        {wire(100, 140, 140, 120)}
-        {box(140, 108, 80, 'MIX BUS', '#37e05f')}
-        {wire(180, 132, 180, 140)}
-        {box(150, 140, 60, 'OUT', '#8b93a3')}
-      </Svg>
     </View>
   );
 }
@@ -276,6 +228,10 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(busVariants);
+  // The drawing follows the picked variant at once (even with sound off),
+  // and the PULL keys show where a −6 dB move acts (art fix 2026-10-16).
+  const [comp, setComp] = useState<GroupComp>('dry');
+  const [pull, setPull] = useState<GroupPull>('none');
   const heardAll = ['dry', 'bus', 'each'].every((id) => pb.heard.includes(id));
   const goals = [
     { label: 'Hear dry, bus comp, per-track comp', hit: heardAll },
@@ -288,7 +244,24 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>GLUE, HEARD</Eyebrow>
         <Prompt>Drums only, three ways, level-matched. In ONE BUS COMP the whole kit breathes as a unit — the kick’s hit pulls the hat down with it (one shared envelope). In PER-TRACK COMP each drum is squeezed privately: controlled, but never glued.</Prompt>
-        <AbPlayer pb={pb} variants={busVariants} note="This is why 'drum subgroup + one compressor' is a sound, and 'the same compressor on every drum' is only a setting." />
+        <AbPlayer pb={pb} variants={busVariants} onPick={(id) => setComp(id as GroupComp)} note="This is why 'drum subgroup + one compressor' is a sound, and 'the same compressor on every drum' is only a setting." />
+      </Card>
+      <Card>
+        <Eyebrow>WHERE THE COMPRESSOR SITS — AND WHERE A PULL ACTS</Eyebrow>
+        <Prompt>The drawing follows your pick above. Then pull the VCA or the subgroup down 6 dB and watch which fader moves.</Prompt>
+        <GroupsArt comp={comp} pull={pull} />
+        <Row>
+          {(
+            [
+              { id: 'none', label: 'NO PULL' },
+              { id: 'vca', label: 'PULL VCA −6' },
+              { id: 'sub', label: 'PULL SUBGROUP −6' },
+            ] as const
+          ).map((o) => (
+            <Btn key={o.id} label={o.label} tone={pull === o.id ? 'primary' : 'plain'} selected={pull === o.id} onPress={() => setPull(o.id)} a11y={o.id === 'none' ? 'No fader pulled' : `Pull the ${o.id === 'vca' ? 'VCA' : 'subgroup'} down 6 dB`} />
+          ))}
+        </Row>
+        <Body>{groupsPullReadout(pull, comp)}</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>WHEN EACH TOOL WINS</Eyebrow>
@@ -338,6 +311,8 @@ function PageAuxAdvanced({ ctx }: { ctx: PageCtx }) {
       <Lead>The aux system is the mixer’s nervous system: copies of anything, sent anywhere, at any level. Advanced mixing is largely knowing which copies exist and where every one of them ends up.</Lead>
       <Card>
         <Eyebrow>THE TOOLS</Eyebrow>
+        <Prompt>Open a tool — the drawing lights its path (every tool you have opened stays lit).</Prompt>
+        <AuxArt opened={seen} />
         <ConceptList items={AUX_TOPICS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
       </Card>
       <UnderstandingCheck

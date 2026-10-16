@@ -133,7 +133,8 @@ test('the Gain ChainStage and its meters scale every px with the stage', () => {
   // and a two-line "QUIET SOURCE" reserves its second line.
   assert.match(stage, /const room = h \/ ts - METER_CHROME;/, 'meter height scales from the glass rule');
   assert.match(stage, /Math\.max\(MIN_METER, room - [^;]*\) \* ts;/);
-  assert.match(stage, /<StageIcon kind=\{c\.kind\} size=\{20 \* ts\} \/>/);
+  // Art fix 2026-10-16: the line icon became the drawn gear, still scaled by ts.
+  assert.match(stage, /<StageGear node=\{c\.node\} w=\{GEAR_H \* GEAR_ASPECT \* ts\} h=\{GEAR_H \* ts\} hidden=\{display === 'hidden'\} \/>/);
   assert.doesNotMatch(stage, /styles\./, 'ChainStage never reads the unscaled sheet');
   const meter = body(file, 'StageMeterV');
   assert.match(meter, /const s = useScaledStyles\(styles\);/);

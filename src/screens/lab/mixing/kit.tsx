@@ -759,7 +759,20 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
 /** A/B(/C…) comparison row driven by useMixPlayback. The RENDERING banner
  *  shows only when the pending variant belongs to THIS row, and the pressed
  *  button itself carries the pending state (design pass 4). */
-export function AbPlayer({ pb, variants, note }: { pb: MixPlayback; variants: readonly MixVariant[]; note?: string }) {
+export function AbPlayer({
+  pb,
+  variants,
+  note,
+  onPick,
+}: {
+  pb: MixPlayback;
+  variants: readonly MixVariant[];
+  note?: string;
+  /** Told which variant was pressed, at once — before the audio gate or the
+   *  render — so a page's drawing can show that variant's routing and
+   *  settings even with sound off (Advanced Mixing art fix 2026-10-16). */
+  onPick?: (id: string) => void;
+}) {
   const pendingHere = pb.pending != null && variants.some((v) => v.id === pb.pending);
   const failedHere = pb.failed != null && variants.some((v) => v.id === pb.failed);
   return (
@@ -774,7 +787,11 @@ export function AbPlayer({ pb, variants, note }: { pb: MixPlayback; variants: re
               label={isActive ? `■ ${v.label}` : isPending ? `… ${v.label}` : `▶ ${v.label}`}
               tone={isActive || isPending ? 'primary' : 'plain'}
               selected={isActive || isPending}
-              onPress={() => (isActive ? pb.stop() : pb.play(v.id))}
+              onPress={() => {
+                onPick?.(v.id);
+                if (isActive) pb.stop();
+                else pb.play(v.id);
+              }}
               a11y={isActive ? `Stop ${v.label}` : isPending ? `${v.label} is rendering` : `Play ${v.label}`}
             />
           );

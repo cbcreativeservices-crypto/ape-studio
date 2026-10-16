@@ -81,6 +81,12 @@ export type ChainNode = {
    *  reason gain EARLY beats gain LATE (learning pass 2026-08-31: the lab's
    *  too-low story had no visual referent). Teaching model, not a spec. */
   noise: number;
+  /** The stage's own gain setting and its control range (dB) — what the
+   *  drawn gear's knob or fader cap shows (art fix 2026-10-16). Absent on
+   *  the source, which is a level, not a gain. */
+  gain?: number;
+  gainMin?: number;
+  gainMax?: number;
 };
 
 /**
@@ -119,6 +125,9 @@ export function computeChain(sourceLevel: number, stages: Stage[]): ChainNode[] 
       stageClipped,
       distorted,
       noise,
+      gain: st.gain,
+      gainMin: st.min,
+      gainMax: st.max,
     });
   }
   return nodes;

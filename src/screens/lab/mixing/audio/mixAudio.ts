@@ -277,17 +277,47 @@ export function sessionStems(): Record<TrackId, Mono> {
     lead: synthLead(),
     bgv: synthBgv(),
   };
-  for (const id of TRACK_IDS) {
-    let x = dspGainDb(raw[id], -20 - rmsDb(raw[id]));
-    // Peak-safe: spiky stems (snare crest factor) may exceed unity at −20 dB
-    // RMS — cap the peak at 0.95 and accept the lower loudness honestly.
-    let peak = 0;
-    for (let i = 0; i < x.length; i++) if (Math.abs(x[i]) > peak) peak = Math.abs(x[i]);
-    if (peak > 0.95) x = dspGainDb(x, 20 * Math.log10(0.95 / peak));
-    raw[id] = x;
-  }
+  for (const id of TRACK_IDS) raw[id] = alignStem(raw[id]);
   stemsCache = raw;
   return raw;
+}
+
+/** −20 dB RMS, then peak-safe: spiky stems (snare crest factor) may exceed
+ *  unity at −20 dB RMS — cap the peak at 0.95 and accept the lower loudness
+ *  honestly. */
+function alignStem(raw: Mono): Mono {
+  let x = dspGainDb(raw, -20 - rmsDb(raw));
+  let peak = 0;
+  for (let i = 0; i < x.length; i++) if (Math.abs(x[i]) > peak) peak = Math.abs(x[i]);
+  if (peak > 0.95) x = dspGainDb(x, 20 * Math.log10(0.95 / peak));
+  return x;
+}
+
+/** The KICK stem exactly as the session plays it — the cached stem when the
+ *  lab has rendered, else the same deterministic synthesis and alignment
+ *  (a few ms: the kick alone, never the eight-stem cold render). For
+ *  drawings that must show the real signal (Advanced Mixing's sidechain
+ *  page draws this kick and the bass gain it keys, 2026-10-16). */
+export function kickStemForDrawing(): Mono {
+  return stemsCache ? stemsCache.kick : alignStem(synthKick());
+}
+
+/** The gain (dB, ≤ 0) a keyed compressor applies, sample by sample — the
+ *  SAME detector and gain computer as the renderer's sidechain stage
+ *  (compressKeyed), returned instead of applied, for drawing. */
+export function keyedGainDb(key: Mono, ratio: number, thresholdDb: number, attackMs: number, releaseMs: number): Float32Array {
+  const out = new Float32Array(key.length);
+  const atk = Math.exp(-1 / ((attackMs / 1000) * SR));
+  const rel = Math.exp(-1 / ((releaseMs / 1000) * SR));
+  let env = 0;
+  for (let i = 0; i < key.length; i++) {
+    const a = Math.abs(key[i]);
+    env = a > env ? atk * env + (1 - atk) * a : rel * env + (1 - rel) * a;
+    const envDb = 20 * Math.log10(Math.max(env, 1e-9));
+    const over = envDb - thresholdDb;
+    out[i] = over > 0 ? -over * (1 - 1 / ratio) : 0;
+  }
+  return out;
 }
 
 /** True when the stems are already synthesized (perf hunt 2026-10-03): the

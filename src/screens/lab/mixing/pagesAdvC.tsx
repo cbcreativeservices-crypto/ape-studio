@@ -11,6 +11,8 @@ import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
+import { BusChainArt, type BusChain } from './advFigures';
+import { AutomationLanes, DrivePlot, WidthArt, type Ride, type WidthView } from './advPlots';
 
 /* ════ 11 · HARMONIC PROCESSING ═══════════════════════════════════════════ */
 
@@ -25,6 +27,8 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  // Art fix 2026-10-16: the drawing shows the picked variant's drive.
+  const [drive, setDrive] = useState<'clean' | 'warm' | 'hot'>('clean');
   const satItems = [
     { id: 'what', name: 'What saturation adds', blurb: 'Harmonics related to the signal — density and “weight” that EQ cannot fabricate, plus soft peak rounding.' },
     { id: 'flavors', name: 'Tape, console, tube', blurb: 'Different curves, same idea: nonlinearity as colour. DAW-neutral truth: judge with ears, level-matched — not by the label.' },
@@ -45,7 +49,8 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THE DRIVE, HEARD</Eyebrow>
         <Prompt>The full session through a soft saturator, level-matched: clean · gentle drive · hard drive. Listen for density first, then for what the hard version COSTS (the transients dull, the top fizzes).</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Level-matched on purpose — saturation’s loudness flattery is removed, so what remains is the actual colour trade." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setDrive(id as 'clean' | 'warm' | 'hot')} note="Level-matched on purpose — saturation’s loudness flattery is removed, so what remains is the actual colour trade." />
+        <DrivePlot driveDb={variants.find((v) => v.id === drive)?.busDriveDb ?? 0} />
       </Card>
       <Card>
         <Eyebrow>THE TOOLKIT</Eyebrow>
@@ -84,6 +89,7 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const [view, setView] = useState<WidthView>('mixed');
   const heardAll = ['mixed', 'wide', 'widemono'].every((id) => pb.heard.includes(id));
   const goals = [
     { label: 'Hear mixed, widened, and the mono price', hit: heardAll },
@@ -96,7 +102,12 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>WIDTH AND ITS INVOICE, HEARD</Eyebrow>
         <Prompt>AS MIXED · the same mix WIDENED 1.6× (side channel scaled up) · and the widened mix folded to MONO. Level-matched throughout.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Widened sounds impressive on speakers — then the fold arrives and everything that lived in the side channel thins or vanishes. Width added by side-scaling is energy mono cannot keep." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setView(id as WidthView)} note="Widened sounds impressive on speakers — then the fold arrives and everything that lived in the side channel thins or vanishes. Width added by side-scaling is energy mono cannot keep." />
+      </Card>
+      <Card>
+        <Eyebrow>WHERE EACH PART SITS — AND WHAT MONO COSTS IT</Eyebrow>
+        <Prompt>This session’s pans, through the same pan law and M/S width the audio uses. The right column is the level each part loses when the mix folds to mono.</Prompt>
+        <WidthArt view={view} />
       </Card>
       <Card tone="note">
         <Eyebrow>THE STABLE-CENTRE RULE</Eyebrow>
@@ -155,6 +166,17 @@ function PageAdvAutomation({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const [autoView, setAutoView] = useState<'static' | 'section'>('static');
+  const rides = useMemo<readonly Ride[]>(() => {
+    const v = variants.find((x) => x.id === autoView) ?? variants[0];
+    return (['lead', 'bgv', 'perc', 'gtr', 'keys'] as const).map((id) => ({
+      name: id === 'bgv' ? 'BGV PAD' : id.toUpperCase(),
+      // A DAW volume lane shows the fader's level: the static balance plus
+      // the section ride the renderer applies on top of it.
+      verseDb: (v.settings[id]?.faderDb ?? 0) + (v.settings[id]?.auto?.verseDb ?? 0),
+      chorusDb: (v.settings[id]?.faderDb ?? 0) + (v.settings[id]?.auto?.chorusDb ?? 0),
+    }));
+  }, [variants, autoView]);
   const autoItems = [
     { id: 'rides', name: 'Detailed rides', blurb: 'Word-level vocal rides — half a dB here, one dB there — that keep every syllable spoken TO the listener.' },
     { id: 'group', name: 'Subgroup & VCA automation', blurb: 'Ride whole families at once: the drum bus into the chorus, the music VCA under the vocal.' },
@@ -174,7 +196,8 @@ function PageAdvAutomation({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>SECTION DESIGN, HEARD</Eyebrow>
         <Prompt>Level-matched: one static balance vs a designed transition — lead and guitar rise into the chorus while the keys STEP BACK, the pad enters, the percussion opens. Count the simultaneous moves.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="The keys getting QUIETER in the chorus is the advanced move: contrast is built by giving as well as taking." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setAutoView(id as 'static' | 'section')} note="The keys getting QUIETER in the chorus is the advanced move: contrast is built by giving as well as taking." />
+        <AutomationLanes rides={rides} />
       </Card>
       <Card>
         <Eyebrow>THE MOVES</Eyebrow>
@@ -228,6 +251,11 @@ function PageMixBus({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const [busView, setBusView] = useState<'clean' | 'gentle' | 'crushed'>('clean');
+  const chain = useMemo<BusChain>(() => {
+    const v = variants.find((x) => x.id === busView) ?? variants[0];
+    return { comp: v.busComp ?? null, driveDb: v.busDriveDb ?? 0 };
+  }, [variants, busView]);
   const heardAll = ['clean', 'gentle', 'crushed'].every((id) => pb.heard.includes(id));
   const goals = [
     { label: 'Hear clean, conservative, overcooked', hit: heardAll },
@@ -240,7 +268,8 @@ function PageMixBus({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THE BUS CHAIN, THREE WAYS</Eyebrow>
         <Prompt>Level-matched: no chain · a conservative chain (2:1, slow attack, gentle drive — the mix “holds hands”) · an overcooked one (fast, deep, driven — the mix breathes like it ran here).</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Conservative bus processing should be MISSED when bypassed, not noticed when active. If you can hear it working, it is working too hard." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setBusView(id as 'clean' | 'gentle' | 'crushed')} note="Conservative bus processing should be MISSED when bypassed, not noticed when active. If you can hear it working, it is working too hard." />
+        <BusChainArt chain={chain} />
       </Card>
       <Card tone="note">
         <Eyebrow>THE MASTERING BORDER</Eyebrow>

@@ -13,6 +13,8 @@ import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { combNotchesHz, combPeaksHz } from './engine/advanced.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
+import { ParallelArt, type ParallelMode } from './advFigures';
+import { CombPlot, DecayPlot, DuckArt, EqPlot, type EqCurve } from './advPlots';
 
 const DRUMS_ONLY: MixSettings = { bass: { mute: true }, gtr: { mute: true }, keys: { mute: true }, lead: { mute: true }, bgv: { mute: true } };
 
@@ -39,6 +41,9 @@ function PageParallel({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  // The drawing follows the picked variant at once (art fix 2026-10-16).
+  const [mode, setMode] = useState<ParallelMode>('dry');
+  const m = pb.measured[mode];
   const heardAll = ['dry', 'insert', 'parallel'].every((id) => pb.heard.includes(id));
   const goals = [
     { label: 'Hear dry, insert, parallel', hit: heardAll },
@@ -51,7 +56,13 @@ function PageParallel({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>INSERT VS PARALLEL, HEARD</Eyebrow>
         <Prompt>The kit three ways, level-matched: dry · the crush as an INSERT (it replaces the signal) · the same crush in PARALLEL, blended −6 dB under the dry kit. (Here per drum; the classic New-York move runs one crushed copy of the whole KIT bus.)</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Insert: the crush is the sound. Parallel: the dry transients lead, the crush thickens underneath — density without surrendering the punch." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setMode(id as ParallelMode)} note="Insert: the crush is the sound. Parallel: the dry transients lead, the crush thickens underneath — density without surrendering the punch." />
+        <ParallelArt mode={mode} />
+        <Text style={styles.combLine}>
+          {m ? `AS HEARD (level-matched): PEAK ${fmtDb(m.peakDb)} · RMS ${fmtDb(m.rmsDb)} · CREST ${(m.peakDb - m.rmsDb).toFixed(1)} dB` : 'Play a version to measure its peak, RMS and crest factor.'}
+        </Text>
+        {m ? <Body>Same loudness, different shape: the crest factor (peak above RMS) is the punch. The insert crush flattens it; the parallel blend keeps the dry peaks on top.</Body> : null}
+        <Body>Drawn here as a split inside the insert. On a desk or in a DAW the same move is just as often a send to a bus with its own compressor, or the compressor’s own MIX knob.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>MULTIBUS THINKING</Eyebrow>
@@ -77,6 +88,17 @@ function PageParallel({ ctx }: { ctx: PageCtx }) {
 
 /* ════ 7 · ADVANCED EQ & MASKING ══════════════════════════════════════════ */
 
+/** The variants' own EQ moves, drawn (art fix 2026-10-16). CROWDED has no
+ *  EQ at all — one flat line stands for all three, never three merged ones. */
+const CROWDED_CURVES: readonly EqCurve[] = [{ label: 'KEYS · GTR · LEAD — NO EQ', color: '#9aa3b5', bands: [] }];
+const COMPL_CURVES: readonly EqCurve[] = [
+  { label: 'KEYS −5 dB', color: '#5b8fe0', bands: [{ hz: 2600, gainDb: -5, q: 1.1 }] },
+  { label: 'GTR −4 dB', color: '#3fae7a', bands: [{ hz: 2600, gainDb: -4, q: 1.1 }] },
+  { label: 'LEAD +2 dB', color: '#ffc64d', bands: [{ hz: 2600, gainDb: 2, q: 1.3 }], bold: true },
+];
+
+const fmtDb = (db: number) => `${db.toFixed(1)} dB`.replace('-', '−');
+
 function PageAdvEq({ ctx }: { ctx: PageCtx }) {
   const [checkDone, setCheckDone] = useState(false);
   const variants = useMemo<readonly MixVariant[]>(
@@ -96,6 +118,7 @@ function PageAdvEq({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const [eqView, setEqView] = useState<'clash' | 'compl'>('clash');
   const conceptItems = [
     { id: 'compl', name: 'Complementary EQ', blurb: 'Cut the crowd where the star lives, lift the star gently in the same range — opposite moves, one pocket.' },
     { id: 'dyneq', name: 'Dynamic EQ', blurb: 'A band that only cuts WHEN the masker plays — surgical, and only as often as needed. (Deep dive: the EQ Lab.)' },
@@ -115,7 +138,16 @@ function PageAdvEq({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>COMPLEMENTARY EQ, HEARD</Eyebrow>
         <Prompt>Keys and guitar crowd the lead’s presence range. COMPLEMENTARY cuts both crowders at 2.6 kHz and lifts the lead 2 dB in the same pocket — three small moves, one opened window.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Level-matched. Notice the lead comes forward without a fader move — the space around it changed." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setEqView(id as 'clash' | 'compl')} note="Level-matched. Notice the lead comes forward without a fader move — the space around it changed." />
+        <EqPlot
+          curves={eqView === 'compl' ? COMPL_CURVES : CROWDED_CURVES}
+          band={{ lo: 2000, hi: 4000, label: 'LEAD’S PRESENCE' }}
+          a11y={
+            eqView === 'compl'
+              ? 'EQ curves, complementary: keys cut 5 dB and guitar cut 4 dB at 2.6 kilohertz, the lead lifted 2 dB in the same pocket.'
+              : 'EQ curves, crowded: no EQ on keys, guitar or lead — all three flat, all at full level inside the lead’s 2 to 4 kilohertz presence range.'
+          }
+        />
       </Card>
       <Card>
         <Eyebrow>THE ADVANCED TOOLKIT</Eyebrow>
@@ -155,6 +187,7 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const [ducked, setDucked] = useState(false);
   const toolItems = [
     { id: 'serial', name: 'Serial compression', blurb: 'Two gentle stages instead of one working hard — each catches what the other missed, neither audibly grabbing.' },
     { id: 'multiband', name: 'Multiband compression', blurb: 'Compression per frequency band — tame a boomy low end without touching the mids. Powerful, and easy to overuse.' },
@@ -175,7 +208,12 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>SIDECHAIN, HEARD</Eyebrow>
         <Prompt>Kick and bass only. In KICK DUCKS BASS, the bass compressor’s detector listens to the KICK — every kick hit presses the bass down for a moment, then releases. The low end takes turns instead of colliding.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Deliberately NOT level-matched: the ducking dip IS the event you are listening for. Notice the kick suddenly has room without you touching the bass fader — the bass only dips while the kick speaks, then comes right back." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setDucked(id === 'duck')} note="Deliberately NOT level-matched: the ducking dip IS the event you are listening for. Notice the kick suddenly has room without you touching the bass fader — the bass only dips while the kick speaks, then comes right back." />
+      </Card>
+      <Card>
+        <Eyebrow>THE KEY, DRAWN FROM THE REAL KICK</Eyebrow>
+        <Prompt>The kick track itself, two bars of it — and underneath, the gain the bass compressor applies, computed by the same detector the audio uses.</Prompt>
+        <DuckArt ducking={ducked} />
       </Card>
       <Card>
         <Eyebrow>THE ADVANCED TOOLKIT</Eyebrow>
@@ -243,6 +281,7 @@ function PagePhase({ ctx }: { ctx: PageCtx }) {
             />
           ))}
         </Row>
+        <CombPlot ms={ms} />
         {notches && peaks ? (
           <Text style={styles.combLine} accessibilityLiveRegion="polite">
             NOTCHES: {notches.map((f) => (f >= 1000 ? `${(f / 1000).toFixed(1)}k` : Math.round(f))).join(' · ')} Hz — PEAKS: {peaks.map((f) => (f >= 1000 ? `${(f / 1000).toFixed(1)}k` : Math.round(f))).join(' · ')} Hz
@@ -295,6 +334,7 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const [space, setSpace] = useState<'room' | 'hall'>('room');
   const depthItems = [
     { id: 'multi', name: 'Multiple spaces', blurb: 'A tight room for the band, a longer space for the vocal, a plate for the snare — layers of distance, each on its own return.' },
     { id: 'predelay', name: 'Pre-delay as position', blurb: 'Longer pre-delay = the voice steps FORWARD of its room. The gap before the reverb answers is a distance dial.' },
@@ -314,7 +354,12 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THE SIZE OF THE ROOM, HEARD</Eyebrow>
         <Prompt>Same sends, two different shared spaces, level-matched: a TIGHT ROOM keeps everything close; a BIG HALL pushes the same parts back and apart.</Prompt>
-        <AbPlayer pb={pb} variants={variants} note="Depth is a decision, not a preset: the question is never 'which reverb is best' — it is 'how far away should THIS part live?'" />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setSpace(id as 'room' | 'hall')} note="Depth is a decision, not a preset: the question is never 'which reverb is best' — it is 'how far away should THIS part live?'" />
+      </Card>
+      <Card>
+        <Eyebrow>THE TWO SPACES, MEASURED</Eyebrow>
+        <Prompt>The shared reverb’s own decay, measured: how long each space takes to fall 60 dB (its RT60). A longer tail reads as a bigger, further room.</Prompt>
+        <DecayPlot space={space} />
       </Card>
       <Card>
         <Eyebrow>THE SET-DESIGN TOOLKIT</Eyebrow>

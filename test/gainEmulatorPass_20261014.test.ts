@@ -28,7 +28,8 @@ describe('Gain ChainStage keeps every column on the glass', () => {
     assert.match(stage, /const twoLineLabel = cols\.some\(/);
     assert.match(stage, /const shortLabel = twoLineLabel && room - REGION_LINE < MIN_METER;/);
     assert.match(stage, /twoLineLabel && !shortLabel \? REGION_LINE : 0/);
-    assert.match(stage, /<StageMeterV node=\{c\.node\} height=\{meterH\} shortLabel=\{shortLabel\} \/>/);
+    // Art fix 2026-10-16: `index` staggers the ripple through the chain.
+    assert.match(stage, /<StageMeterV node=\{c\.node\} height=\{meterH\} shortLabel=\{shortLabel\} index=\{i\} \/>/);
   });
   it('the short label keeps the first word ("QUIET"), the readout/FIXED tag below is untouched', () => {
     const meter = body(viz, 'StageMeterV');

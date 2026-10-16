@@ -16,6 +16,8 @@ import { PRIORITY_CHOICES } from './pagesAdvA';
 import { loudnessLufsEstimate, nullResidueDb, sumStereo, truePeakDbFast } from './engine/advanced.ts';
 import { renderMix, type MixSettings } from './audio/mixAudio.ts';
 import { TRACK_IDS, type TrackId } from './engine/mixModel.ts';
+import { BuriedArt, NullTestArt } from './advFigures';
+import { EqPlot, LoudnessArt, PEAK_RED, StemsTimeline, type EqCurve, type StemFocus } from './advPlots';
 
 /* ════ 15 · TRANSLATION & QUALITY CONTROL ═════════════════════════════════ */
 
@@ -80,6 +82,8 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
           ))}
         </Row>
         <Btn label={measuring ? 'MEASURING…' : 'MEASURE'} tone="primary" onPress={() => void measure()} disabled={measuring} a11y={measuring ? 'Measuring, please wait' : 'Measure loudness and true peak'} />
+        {/* The two delivery meters, drawn from the measurement (art fix 2026-10-16). */}
+        <LoudnessArt lufs={measured?.lufs ?? null} tp={measured?.tp ?? null} />
         {measured ? (
           <View style={styles.statRow}>
             <View style={styles.statTile} accessible accessibilityLabel={`Loudness ${measured.lufs.toFixed(1)} LUFS at ${measured.masterDb} dB trim`}>
@@ -89,7 +93,7 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
             </View>
             <View style={styles.statTile} accessible accessibilityLabel={`True peak ${measured.tp.toFixed(1)} dB true peak${measured.tp <= -1 ? ', within the common ceiling' : ', hot'}`}>
               <Text style={styles.statEyebrow}>TRUE PEAK</Text>
-              <Text style={[styles.statValue, { color: measured.tp <= -1 ? colors.green : colors.gold }]}>{measured.tp.toFixed(1)}</Text>
+              <Text style={[styles.statValue, { color: measured.tp <= -1 ? colors.green : PEAK_RED }]}>{measured.tp.toFixed(1)}</Text>
               <Text style={styles.statUnit}>dBTP {measured.tp <= -1 ? '· clear of −1' : '· above −1'}</Text>
             </View>
           </View>
@@ -131,6 +135,7 @@ const DELIVERABLES = [
 
 function PageStems({ ctx }: { ctx: PageCtx }) {
   const [seen, setSeen] = useState<Set<string>>(new Set());
+  const [focus, setFocus] = useState<StemFocus>(null);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Open all five cards', hit: seen.size >= DELIVERABLES.length },
@@ -142,7 +147,16 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
       <Lead>After “the mix is approved” comes the real product: the deliverables. Stems, alternates, and files whose names still make sense in five years — this is where professional and almost-professional part ways.</Lead>
       <Card>
         <Eyebrow>THE DELIVERABLES VOCABULARY</Eyebrow>
-        <ConceptList items={DELIVERABLES.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <Prompt>A five-stem delivery, as it lands on the receiving engineer’s timeline. Open a card — the drawing marks what it is about.</Prompt>
+        <StemsTimeline focus={focus} />
+        <ConceptList
+          items={DELIVERABLES.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))}
+          opened={seen}
+          onOpen={(id) => {
+            setSeen((s) => new Set(s).add(id));
+            setFocus(id as StemFocus);
+          }}
+        />
       </Card>
       <UnderstandingCheck
         question="The label asks for “the stems”. Before bouncing anything, the professional question is:"
@@ -257,7 +271,8 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
       <Lead>The stem contract: summed back together, the stems must REBUILD the approved mix. The proof is a null test — flip one side, sum, and listen to (or measure) what refuses to disappear.</Lead>
       <Card>
         <Eyebrow>RUN IT — REAL MATH ON THE REAL SESSION</Eyebrow>
-        <Prompt>Two stems (rhythm · music) are rendered and summed, then measured against the full mix — first with a clean mix bus, then with a bus compressor on the FULL mix only.</Prompt>
+        <Prompt>Two stems (rhythm · everything else — music and vocals) are rendered and summed, then measured against the full mix — first with a clean mix bus, then with a bus compressor on the FULL mix only.</Prompt>
+        <NullTestArt result={result} />
         <Btn label={running ? stage || 'RENDERING & MEASURING…' : 'RUN THE NULL TEST'} tone="primary" disabled={running} onPress={() => void runNull()} a11y={running ? `Rendering, please wait. ${stage}` : 'Run the stem null test'} />
         {result ? (
           <View style={styles.nullRows}>
@@ -422,6 +437,8 @@ function PageDiagnosis({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(caseVariants);
+  // Each case's drawing follows its own pick (art fix 2026-10-16).
+  const [caseView, setCaseView] = useState<Record<string, boolean>>({});
   const goals = [{ label: 'Solve all three cases', hit: solved.size >= CASES.length }];
   const latched = useVisitGoals(ctx, goals);
   return (
@@ -431,7 +448,13 @@ function PageDiagnosis({ ctx }: { ctx: PageCtx }) {
         <Card key={c.id}>
           <Eyebrow>{c.name}</Eyebrow>
           <Prompt>{c.symptom}</Prompt>
-          <AbPlayer pb={pb} variants={caseVariants.filter((v) => v.id.startsWith(c.id))} note="Flawed and repaired, level-matched — diagnose from the FLAWED one before peeking via the repair." />
+          <AbPlayer
+            pb={pb}
+            variants={caseVariants.filter((v) => v.id.startsWith(c.id))}
+            onPick={(id) => setCaseView((v) => ({ ...v, [c.id]: id.endsWith('-fix') }))}
+            note="Flawed and repaired, level-matched — diagnose from the FLAWED one before peeking via the repair."
+          />
+          <CaseArt id={c.id} fixed={!!caseView[c.id]} reveal={solved.has(c.id) || pb.heard.includes(`${c.id}-fix`)} />
           <UnderstandingCheck
             eyebrow={`${c.name} — THE DIAGNOSIS`}
             question="What is actually wrong?"
@@ -444,6 +467,43 @@ function PageDiagnosis({ ctx }: { ctx: PageCtx }) {
         </Card>
       ))}
       <GoalChips goals={goals} latched={latched} />
+    </View>
+  );
+}
+
+const CASE_COLORS = { keys: '#5b8fe0', gtr: '#3fae7a', bgv: '#c07ae0', lead: '#ffc64d' } as const;
+const CASE_TRACKS = ['keys', 'gtr', 'bgv', 'lead'] as const;
+
+/** Each case's real settings, drawn: the EQ moves (muddy, harsh) or the
+ *  console (buried). Flawed until the learner picks the repair. A band at
+ *  0 dB is drawn as nothing — it IS no EQ — and named under the plot. */
+function CaseArt({ id, fixed, reveal }: { id: string; fixed: boolean; reveal: boolean }) {
+  if (id === 'buried') return <BuriedArt fixed={fixed} reveal={reveal} />;
+  // Until the check is answered or the repair played, the FLAWED view shows
+  // the curves without names, values or the band label: diagnose by ear
+  // first (review 2026-10-16).
+  const show = reveal || fixed;
+  const c = CASES.find((x) => x.id === id)!;
+  const set = fixed ? c.fixed : c.flawed;
+  const curves: EqCurve[] = [];
+  const flat: string[] = [];
+  for (const t of CASE_TRACKS) {
+    const tr = set[t];
+    const name = t === 'bgv' ? 'BGV' : t.toUpperCase();
+    if (tr?.hpHz) curves.push({ label: show ? `${name} HPF ${tr.hpHz} Hz` : name, color: CASE_COLORS[t], bands: [{ hpHz: tr.hpHz }] });
+    else if (tr?.eq && tr.eq.gainDb !== 0) curves.push({ label: show ? `${name} ${tr.eq.gainDb > 0 ? '+' : '−'}${Math.abs(tr.eq.gainDb)} dB` : name, color: CASE_COLORS[t], bands: [{ hz: tr.eq.hz, gainDb: tr.eq.gainDb, q: tr.eq.q ?? 1.4 }] });
+    else if (tr?.eq) flat.push(name);
+  }
+  const notes = show ? [id === 'harsh' ? `PERC FADER ${fixed ? '−2' : '+4'} dB` : null, flat.length ? `${flat.join(' · ')} EQ BACK TO FLAT` : null].filter(Boolean) : [];
+  return (
+    <View style={styles.caseArt}>
+      <EqPlot
+        curves={curves}
+        rangeDb={12}
+        band={show ? (id === 'muddy' ? { lo: 180, hi: 320, label: 'LOW-MID BUILD-UP' } : { lo: 2000, hi: 4000, label: 'PRESENCE 2–4 kHz' }) : undefined}
+        a11y={show ? `${fixed ? 'Repaired' : 'Flawed'} EQ moves for ${c.name.toLowerCase()}: ${[...curves.map((x) => x.label), ...notes].join(', ')}.` : `The flawed EQ curves for ${c.name.toLowerCase()}, values hidden until you answer the check or play the repair.`}
+      />
+      {notes.length ? <Text style={styles.measureLine}>{notes.join(' · ')}</Text> : null}
     </View>
   );
 }
@@ -616,6 +676,7 @@ export const MIXING_ADV_PAGES_D: PageDef[] = [
 const styles = StyleSheet.create({
   page: { gap: 12 },
   measureLine: { color: colors.amber, fontFamily: fonts.mono, fontSize: 12.5, lineHeight: 18 },
+  caseArt: { gap: 6 },
   finalRow: { gap: 4 },
   finalBlurb: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   finalStatus: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 0.8 },

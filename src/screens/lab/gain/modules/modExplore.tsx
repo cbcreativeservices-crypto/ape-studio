@@ -29,6 +29,7 @@ import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { SView } from '../../stageScale';
 import { ChainStage, DragSlider, GainBtn, stageStatus, stageTint, type StageColSpec } from '../gainViz';
+import { ZoneLegend } from './modLearn';
 import { chainIsHealthy, computeChain, type Stage } from '../gainEngine';
 import type { GainModuleComponentProps } from './registry';
 
@@ -188,6 +189,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
           is a SIG light and a CLIP light. SIGNAL X-RAY sees through every box at once: the level at
           every point in the chain, gain staging as a system instead of isolated knobs.
         </GlossaryText>
+        <ZoneLegend />
         <Text style={styles.caption}>
           The source is a quiet instrument/source — fixed. The preamp rides the dock lane; the rest
           of the chain lives in the PROCESS and LEVELS trays.
@@ -324,6 +326,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
           Feed the rig a whisper or a scream, make deliberate mistakes, recover cleanly. Nothing is
           graded; the chain just tells the truth.
         </GlossaryText>
+        <ZoneLegend />
       </View>
     </RackUnit>
   );
@@ -492,6 +495,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
           cascades downstream, so work back upstream). Find it, then fix it the same way — one
           device at a time.
         </GlossaryText>
+        <ZoneLegend />
 
         {!found && revealed && revealed !== round.faultKey && revealedNode ? (
           <View style={styles.note}>
