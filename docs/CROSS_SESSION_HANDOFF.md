@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 22:29 · ccode · d5eaf840
+changed: Miking figures pass 2: lute players (oud, sitar, veena) as one body in one shirt
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-15 22:26 · ccode · ea35cef8
+changed: Miking figures pass 2: low brass players on the house body (horn, tuba, euphonium)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 22:24 · ccode · b1f15613
 changed: Miking figures pass 2: one-garment shirt, shorter singer necks, real flute elbow, gong reach
 affects other side: nothing (app only)

@@ -375,9 +375,14 @@ const PROFILE: ProfilePose = {
   head: { c: { u: BODY.headC.x, v: BODY.headC.y }, r: 108 },
   neck: { u: BODY.headC.x - 40, v: -340 },
   shoulder: { u: BODY.headC.x - 60, v: -280 },
-  elbowNear: { u: TREBLE.x0 - 120, v: -40 },
+  // Figure pass 2 (2026-10-15): true adult arm lengths — the upper arm
+  // ≈ 305 mm hanging from the shoulder to an elbow at the side, a little
+  // behind the chest; the forearm ≈ 220–250 mm seen (it turns out toward the
+  // keyboard at the player's right, foreshortened) to the wrist at the
+  // keyboard. The far (left) arm works the bellows behind the instrument.
+  elbowNear: { u: TREBLE.x0 - 180, v: 20 },
   wristNear: { u: TREBLE.x0 + 20, v: 110 },
-  elbowFar: { u: TREBLE.x0 - 130, v: -60 },
+  elbowFar: { u: TREBLE.x0 - 185, v: 26 },
   wristFar: { u: TREBLE.x0 - 40, v: 70 },
   hip: { u: BODY.headC.x - 70, v: 180 },
   kneeNear: { u: BODY.headC.x - 40, v: 650 },

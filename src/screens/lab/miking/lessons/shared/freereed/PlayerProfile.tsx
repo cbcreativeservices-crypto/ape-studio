@@ -149,7 +149,12 @@ export function curve(points: Pt[]): SkPath {
   return p;
 }
 
-type Mass = { path: SkPath; ramp: string[]; rim: string; edge: string; box: { u0: number; v0: number; u1: number; v1: number } };
+type Box = { u0: number; v0: number; u1: number; v1: number };
+/** `light`: the box the form gradient spans (default the mass's own) — the
+ *  near sleeve takes the shirt body's, so the cloth reads as one garment.
+ *  `root`: a disc where the contour stops (the sleeve's root melting into the
+ *  shirt at the shoulder: no outline round a plugged-in tube). */
+type Mass = { path: SkPath; ramp: string[]; rim: string; edge: string; box: Box; light?: Box; root?: SkPath | null };
 const boxOf = (p: SkPath) => {
   const b = p.getBounds();
   return { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height };
@@ -195,6 +200,10 @@ function build(p: ProfilePose): Built {
   const armFar = armPath(pt(s.u + 10, s.v + 4), p.elbowFar, p.wristFar);
   const armNear = armPath(pt(s.u, s.v + 6), p.elbowNear, p.wristNear);
   const deltoid = capsule(pt(s.u - 6, s.v - 10), pt(s.u + 4, s.v + 40), 58, 52);
+  // The near sleeve's root melts into the shirt: no contour over the deltoid
+  // (the shirt body's outline is the shoulder line), and the body's light.
+  const root = make();
+  root.addCircle(s.u, s.v + 18, 66);
   const lines = make();
   // The collar and the placket, a cuff on each arm.
   lines.addPath(curve([pt(n.u - 40, n.v - 4), pt(n.u + 6, n.v + 20), pt(n.u + 40, n.v - 2)]));
@@ -209,14 +218,20 @@ function build(p: ProfilePose): Built {
   void cuff; // no cuff seam stroke (owner 2026-10-10: a line across the sleeve read as a welt)
   const shadow = make();
   shadow.addOval(Skia.XYWHRect(h.u - 260, p.floor - 20, 600, 40));
+  // The shoulder strap (an accordion's, figure pass 2 2026-10-15): from the
+  // instrument's top corner UP the front of the chest, OVER the top of the
+  // shoulder (lying on the trapezius, not floating above it) and DOWN the
+  // back toward the waist, where it runs to the instrument's bottom corner
+  // behind the body. One band of webbing ≈ 40 mm wide, its edges stroked.
   let strap: SkPath | null = null;
   if (p.strapTo) {
-    strap = curve([pt(s.u - 30, s.v - 40), pt((s.u + p.strapTo.u) / 2 + 30, (s.v + p.strapTo.v) / 2), p.strapTo]);
+    const t = p.strapTo;
+    strap = curve([t, pt(s.u + 52, s.v - 8), pt(s.u + 10, s.v - 44), pt(s.u - 50, s.v - 36), pt(n.u - 100, n.v + 120), pt(n.u - 94, n.v + 300)]);
   }
   return {
     far: [mass(legFar, TROUSER, TROUSER_RIM), mass(armFar, SHIRT_FAR, SHIRT_RIM)],
     body: [mass(union(pelvis, legNear), TROUSER, TROUSER_RIM), mass(union(torso, deltoid), SHIRT, SHIRT_RIM)],
-    near: [mass(armNear, SHIRT, SHIRT_RIM)],
+    near: [{ ...mass(armNear, SHIRT, SHIRT_RIM), light: boxOf(union(torso, deltoid)), root }],
     shoes: [
       { path: shoe(p.ankleFar, p.floor), far: true },
       { path: shoe(p.ankleNear, p.floor), far: false },
@@ -242,19 +257,31 @@ function built(p: ProfilePose): Built {
 }
 
 /** One body mass: form gradient, a rim light on the upper-left edge, contour. */
-export function MassArt({ path, ramp, rim, edge }: { path: SkPath; ramp: string[]; rim: string; edge: string }) {
-  const b = path.getBounds();
-  return (
-    <Group>
-      <Path path={path}>
-        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={ramp} />
-      </Path>
+export function MassArt({ path, ramp, rim, edge, light, root }: { path: SkPath; ramp: string[]; rim: string; edge: string; light?: Box; root?: SkPath | null }) {
+  const pb = path.getBounds();
+  const b = light ? { x: light.u0, y: light.v0, width: light.u1 - light.u0, height: light.v1 - light.v0 } : pb;
+  const contour = (
+    <>
       <Group clip={path}>
         <Path path={path} style="stroke" strokeWidth={9} opacity={0.5}>
           <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width * 0.55, b.y + b.height * 0.55)} colors={[rim, 'rgba(0,0,0,0)']} />
         </Path>
       </Group>
       <Path path={path} style="stroke" strokeWidth={2.4} color={edge} opacity={0.9} />
+    </>
+  );
+  return (
+    <Group>
+      <Path path={path}>
+        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={ramp} />
+      </Path>
+      {root ? (
+        <Group clip={root} invertClip>
+          {contour}
+        </Group>
+      ) : (
+        contour
+      )}
     </Group>
   );
 }
@@ -283,9 +310,9 @@ export function ProfileBehind({ pose, dim = 1 }: { pose: ProfilePose; dim?: numb
       <Path path={b.lines} style="stroke" strokeWidth={2.2} strokeCap="round" color="#252a35" opacity={0.9} />
       {b.strap ? (
         <>
-          <Path path={b.strap} style="stroke" strokeWidth={46} strokeCap="round" color="#141519" opacity={0.95} />
-          <Path path={b.strap} style="stroke" strokeWidth={40} strokeCap="round">
-            <LinearGradient start={vec(pose.shoulder.u - 60, pose.shoulder.v)} end={vec(pose.shoulder.u + 60, pose.shoulder.v + 300)} colors={['#5a3a22', '#3c2615', '#24170c']} />
+          <Path path={b.strap} style="stroke" strokeWidth={44} strokeCap="butt" color="#141519" opacity={0.95} />
+          <Path path={b.strap} style="stroke" strokeWidth={39} strokeCap="butt">
+            <LinearGradient start={vec(pose.shoulder.u - 60, pose.shoulder.v - 60)} end={vec(pose.shoulder.u + 60, pose.shoulder.v + 300)} colors={['#6a4528', '#3c2615', '#24170c']} />
           </Path>
         </>
       ) : null}

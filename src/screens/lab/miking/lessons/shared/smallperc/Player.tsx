@@ -16,6 +16,13 @@ import { pt } from '../players/playerPose';
 
 const fromD = (d: string) => Skia.Path.MakeFromSVGString(d) ?? Skia.Path.Make();
 const TROUSER = ['#3a3f4a', '#23272f', '#14161b'];
+/** The shirt's light, one gradient per view (start x, y, end x, y): the torso
+ *  and the sleeves share it, so a sleeve flows out of the shirt body as one
+ *  garment, never a separately shaded tube butted against it (owner
+ *  2026-10-15). Side: across the body from the back's top to the chest's
+ *  foot; top: across the shoulders. */
+const SIDE_CLOTH = [PLAYER.backX, -1460, PLAYER.chestX, -940] as const;
+const TOP_CLOTH = [PLAYER.shoulderX - 130, -250, PLAYER.shoulderX + 120, 250] as const;
 
 /** The standing player seen from the right: legs, torso, neck, head. The
  *  near (right) arm is drawn separately (Arm2D), over the torso. */
@@ -66,7 +73,7 @@ export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
       <Path path={g.legs} style="stroke" strokeWidth={2.2} color="#0b0c0f" />
       <FigureHead fill={g.head} />
       <Path path={g.torso}>
-        <LinearGradient start={vec(PLAYER.backX, -1460)} end={vec(PLAYER.chestX, -940)} colors={SLEEVE} />
+        <LinearGradient start={vec(SIDE_CLOTH[0], SIDE_CLOTH[1])} end={vec(SIDE_CLOTH[2], SIDE_CLOTH[3])} colors={SLEEVE} />
       </Path>
       <Path path={g.torso} style="stroke" strokeWidth={2.4} color={SLEEVE_RIM} />
       <Path path={g.belt} style="stroke" strokeWidth={14} strokeCap="round" color="#17181c" />
@@ -79,15 +86,29 @@ export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
 export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
   const g = useMemo(() => {
     const x = PLAYER.shoulderX;
+    // Figure pass 2 (2026-10-15; owner: "plug-in limbs", the shoulders read as
+    // a pill): the house shoulders from above (PlayerFigure buildAbove) turned
+    // to face +x — a ROUNDED RECTANGLE ≈ 456 mm across the deltoids, ≈ 236 mm
+    // deep: the back nearly flat across the shoulder blades, the trapezius
+    // falling to each rounded deltoid, the chest a little fuller than the
+    // back. A standing player from above shows NO feet (owner D68).
     const sh: Pt[] = [
-      [x - 100, -235],
-      [x + 30, -255],
-      [x + 105, -160],
-      [x + 118, 0],
-      [x + 105, 160],
-      [x + 30, 255],
-      [x - 100, 235],
-      [x - 128, 0],
+      [x - 112, 0], // the upper back, behind the neck
+      [x - 108, 118],
+      [x - 88, 178],
+      [x - 50, 222],
+      [x + 4, 228], // the deltoid
+      [x + 52, 218],
+      [x + 84, 174],
+      [x + 116, 90], // the chest
+      [x + 124, 0],
+      [x + 116, -90],
+      [x + 84, -174],
+      [x + 52, -218],
+      [x + 4, -228],
+      [x - 50, -222],
+      [x - 88, -178],
+      [x - 108, -118],
     ];
     return {
       sh: fromD(smoothPathD(sh)),
@@ -95,17 +116,16 @@ export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
       head: headAbove(pt(0, 0), 100).fill,
     };
   }, []);
-  const x = PLAYER.shoulderX;
   return (
     <Group opacity={opacity}>
       <Path path={g.shadow} color="#000" opacity={0.45}>
         <BlurMask blur={16} style="normal" />
       </Path>
       <Path path={g.sh}>
-        <LinearGradient start={vec(x - 130, -250)} end={vec(x + 120, 250)} colors={SLEEVE} />
+        <LinearGradient start={vec(TOP_CLOTH[0], TOP_CLOTH[1])} end={vec(TOP_CLOTH[2], TOP_CLOTH[3])} colors={SLEEVE} />
       </Path>
       <Path path={g.sh} style="stroke" strokeWidth={2.4} color={SLEEVE_RIM} />
-      <Group transform={[{ translateX: x + 4 }, { rotate: -Math.PI / 2 }]}>
+      <Group transform={[{ translateX: PLAYER.shoulderX + 4 }, { rotate: -Math.PI / 2 }]}>
         <FigureHead fill={g.head} />
       </Group>
     </Group>
@@ -163,7 +183,17 @@ export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?:
       return q;
     })(), PathOp.Intersect);
     const all = Skia.Path.MakeFromOp(skin, sleeve, PathOp.Union) ?? skin;
-    return { skin, sleeve, hemShade, all };
+    // The sleeve's ROOT melts into the shirt body (owner 2026-10-15: "plug and
+    // position interchangeable limbs"): no contour round the deltoid cap —
+    // the shirt's own outline is the shoulder line — and the cloth lit by the
+    // torso's gradient. `root` is where the contour stops (a disc over the
+    // shoulder joint, the cap's depth).
+    const root = Skia.Path.Make();
+    root.addCircle(s[0] + Math.cos(ax) * 6, s[1] + Math.sin(ax) * 6, 62);
+    // The view: a side view's shoulder is ≈ 1400 mm up (y < 0); a top view's
+    // z is within a metre of the midline.
+    const cloth = s[1] < -500 ? SIDE_CLOTH : TOP_CLOTH;
+    return { skin, sleeve, hemShade, all, root, cloth };
   }, [s, e, w]);
   const shade = Math.min(0.6, (1 - Math.max(0, Math.min(1, opacity))) * 1.6);
   return (
@@ -178,9 +208,11 @@ export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?:
       ) : null}
       <Path path={g.skin} style="stroke" strokeWidth={2} color={SKIN_RIM} />
       <Path path={g.sleeve}>
-        <LinearGradient start={vec(s[0] - 60, s[1] - 60)} end={vec(e[0] + 60, e[1] + 60)} colors={SLEEVE} />
+        <LinearGradient start={vec(g.cloth[0], g.cloth[1])} end={vec(g.cloth[2], g.cloth[3])} colors={SLEEVE} />
       </Path>
-      <Path path={g.sleeve} style="stroke" strokeWidth={2.2} color={SLEEVE_RIM} />
+      <Group clip={g.root} invertClip>
+        <Path path={g.sleeve} style="stroke" strokeWidth={2.2} color={SLEEVE_RIM} />
+      </Group>
       {shade > 0 ? <Path path={g.all} color="#000" opacity={shade} /> : null}
     </Group>
   );

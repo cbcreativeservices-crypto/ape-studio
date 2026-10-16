@@ -24,13 +24,13 @@
  * vibraphone bars over anodised tubes, rosewood marimba and xylophone bars
  * over dark and tan tubes, bright steel glockenspiel bars.
  */
-import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { ReactElement } from 'react';
 import type { VariantId, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { CASE, NODE_FRAC, type Bar, type Layout, type MalletInst, type Tube } from './malletSpec.ts';
 import { frameEnds, malletGeom, type MalletFamily, type MalletGeom } from './malletModel.ts';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { FIGURE_TONES, FigureMass, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { BODY, pt, type PlayerPose } from '../players/playerPose';
 import { metalFrontPose } from '../metal/metalFigure.ts';
 
@@ -53,6 +53,188 @@ function seg(p: SkPath, a: number, b: number, c: number, d: number) {
 function oval(p: SkPath, cx: number, cy: number, rx: number, ry: number) {
   p.addOval(Skia.XYWHRect(cx - rx, cy - ry, rx * 2, ry * 2));
   return p;
+}
+
+/* ── the fist ON the mallet (figure pass 2, owner 2026-10-15) ──
+ * The owner: the fists must GRIP ALONG THE MALLET SHAFT — the shaft passes
+ * through the closed fist, out between the thumb and the index finger at the
+ * front, the butt end just past the little finger — never a fist beside or
+ * under the shaft. The grip drawn is the thumb-on-top hold a two-mallet
+ * player uses: the palm turned in, the thumb lying along the top of the
+ * shaft, the index finger curled under it, the other fingers wrapped below,
+ * the butt coming out under the heel of the hand. Seen from the thumb's side
+ * (from above, and as the audience sees a raised fist).
+ * The hand in its own frame (mm, true adult size — the house hand 185 × 86):
+ * the wrist crease at the origin, +x toward the knuckles, −y the BACK of the
+ * hand, +y the palm side. `m` mirrors y (a left hand, or a right hand seen
+ * the other way round) so the back of the hand always faces out. */
+const F_PHI = (-18 * Math.PI) / 180; // the shaft's slant through the fist (the butt toward the palm side)
+const F_THRU = { x: 100, y: 10 } as const; // where the shaft leaves the fist: between the thumb's tip and the index
+const fLineY = (x: number) => F_THRU.y + (F_THRU.x - x) * Math.tan(-F_PHI);
+const F_GRIP = { x: 70, y: fLineY(70) } as const; // the grip point: the shaft under the thumb, mid-fist
+type FPt = { u: number; v: number };
+export type MalletFist = { body: SkPath; thumb: SkPath; nail: SkPath; lines: SkPath; butt: SkPath; front: SkPath; wrist: FPt; dir: number };
+
+function fistPaths(wrist: FPt, dir: number, m: number, head: FPt): MalletFist {
+  const c = Math.cos(dir);
+  const sn = Math.sin(dir);
+  const P = (x: number, y: number): FPt => ({ u: wrist.u + x * c - m * y * sn, v: wrist.v + x * sn + m * y * c });
+  const smoothP = (pts: FPt[], closed = true) => {
+    const q = make();
+    const n = pts.length;
+    const at = (i: number) => pts[closed ? (i + n) % n : Math.max(0, Math.min(n - 1, i))];
+    q.moveTo(pts[0].u, pts[0].v);
+    for (let i = 0; i < (closed ? n : n - 1); i++) {
+      const p0 = at(i - 1);
+      const p1 = at(i);
+      const p2 = at(i + 1);
+      const p3 = at(i + 2);
+      q.cubicTo(p1.u + (p2.u - p0.u) / 6, p1.v + (p2.v - p0.v) / 6, p2.u - (p3.u - p1.u) / 6, p2.v - (p3.v - p1.v) / 6, p2.u, p2.v);
+    }
+    if (closed) q.close();
+    return q;
+  };
+  // A tapered digit: the hull of circles along its joints (radius r0 → r1).
+  const tube = (pts: [number, number][], r0: number, r1: number) => {
+    let out: SkPath | null = null;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = P(pts[i][0], pts[i][1]);
+      const b = P(pts[i + 1][0], pts[i + 1][1]);
+      const ra = r0 + ((r1 - r0) * i) / (pts.length - 1);
+      const rb = r0 + ((r1 - r0) * (i + 1)) / (pts.length - 1);
+      const d = Math.hypot(b.u - a.u, b.v - a.v) || 1;
+      const nx = -(b.v - a.v) / d;
+      const ny = (b.u - a.u) / d;
+      const q = make();
+      q.moveTo(a.u + nx * ra, a.v + ny * ra);
+      q.lineTo(b.u + nx * rb, b.v + ny * rb);
+      q.lineTo(b.u - nx * rb, b.v - ny * rb);
+      q.lineTo(a.u - nx * ra, a.v - ny * ra);
+      q.close();
+      const ca = make();
+      ca.addCircle(a.u, a.v, ra);
+      const cb = make();
+      cb.addCircle(b.u, b.v, rb);
+      let sq = Skia.Path.MakeFromOp(q, ca, PathOp.Union) ?? q;
+      sq = Skia.Path.MakeFromOp(sq, cb, PathOp.Union) ?? sq;
+      out = out ? Skia.Path.MakeFromOp(out, sq, PathOp.Union) ?? out : sq;
+    }
+    return out ?? make();
+  };
+  // The bare wrist out of the cuff (≈ 54 mm), widening into the heel.
+  const wristCol = tube([[-26, 0], [6, 1]], 26, 29);
+  // The back of the hand rising to the index knuckle; round the curled index
+  // at the front; the palm side (the curled fingers' backs, the thenar) back
+  // to the wrist.
+  const palm = smoothP([P(-2, -27), P(40, -32), P(78, -37), P(96, -35), P(108, -22), P(104, 8), P(92, 30), P(70, 38), P(40, 36), P(14, 31), P(-2, 26)]);
+  // The index finger seen from its side: the proximal phalanx forward from
+  // the knuckle, the middle phalanx turning back under the shaft, the tip
+  // tucked in against the thumb's base (r 11 → 8 mm).
+  const index = tube([[92, -26], [124, -11], [124, 11], [110, 21]], 11.2, 8.4);
+  // The middle, ring and little fingers curled below it, each a step back
+  // and toward the palm side (the fist seen a little from the palm's side):
+  // their middle knuckles a scalloped edge, the tips tucked in.
+  const curled = [
+    tube([[92, 14], [120, 24], [112, 39]], 11, 9),
+    tube([[86, 24], [110, 35], [100, 47]], 10.5, 8.6),
+    tube([[78, 32], [97, 43], [86, 52]], 9.4, 7.8),
+  ];
+  let body = Skia.Path.MakeFromOp(Skia.Path.MakeFromOp(wristCol, palm, PathOp.Union) ?? palm, index, PathOp.Union) ?? palm;
+  for (const f of curled) body = Skia.Path.MakeFromOp(body, f, PathOp.Union) ?? body;
+  // The thumb on top, along the shaft from the thenar to its tip just short
+  // of where the shaft leaves the fist (r 13.5 → 9.6 mm).
+  const tp: [number, number][] = [[50, fLineY(50) - 8], [74, fLineY(74) - 4], [98, fLineY(98) - 2], [111, fLineY(111) - 3]];
+  const thumb = tube(tp, 13.5, 9.6);
+  // The thumbnail: a rounded plate on the last bone, seen from above.
+  const nail = tube([[tp[3][0] - 13, tp[3][1] - 0.5], [tp[3][0] - 1.5, tp[3][1] - 0.5]], 5.2, 4.6);
+  const lines = make();
+  // The index's middle knuckle, the thumb's joint crease, the knuckle ridge.
+  const crease = (x: number, y: number, ax: number, ay: number) => {
+    const a = P(x - ax, y - ay);
+    const b = P(x + ax, y + ay);
+    lines.moveTo(a.u, a.v);
+    lines.lineTo(b.u, b.v);
+  };
+  crease(120, -8, 5, -6);
+  crease(115, 27, 5, -4);
+  crease(105, 38, 4.5, -4);
+  crease(92, 45, 4, -3.5);
+  crease(86, fLineY(86) - 3, 1.5, 9);
+  lines.addPath(smoothP([P(60, -33), P(84, -35), P(98, -30)], false));
+  // The shaft: the butt end under the heel (painted before the hand), the
+  // length from inside the fist to the head (painted over the curled index,
+  // under the thumb).
+  const butt = make();
+  const b0 = P(2, fLineY(2));
+  const b1 = P(84, fLineY(84));
+  butt.moveTo(b0.u, b0.v);
+  butt.lineTo(b1.u, b1.v);
+  const front = make();
+  front.moveTo(b1.u, b1.v);
+  front.lineTo(head.u, head.v);
+  return { body, thumb, nail, lines, butt, front, wrist, dir };
+}
+
+/** The back of the hand (local −y) for mirror m at direction dir. */
+const fBack = (dir: number, m: number): FPt => ({ u: m * Math.sin(dir), v: -m * Math.cos(dir) });
+
+/** A fist whose grip point sits ON the shaft at `grip`, the shaft running to
+ *  `head`; `out`: the side the back of the hand faces. */
+export function fistAtGrip(grip: FPt, head: FPt, out: FPt): MalletFist {
+  const th = Math.atan2(head.v - grip.v, head.u - grip.u);
+  const pick = [1, -1].map((m) => {
+    const dir = th - m * F_PHI;
+    const c = Math.cos(dir);
+    const sn = Math.sin(dir);
+    const wrist = { u: grip.u - (F_GRIP.x * c - m * F_GRIP.y * sn), v: grip.v - (F_GRIP.x * sn + m * F_GRIP.y * c) };
+    const b = fBack(dir, m);
+    return { m, dir, wrist, dot: b.u * out.u + b.v * out.v };
+  }).sort((a, b) => b.dot - a.dot)[0];
+  return fistPaths(pick.wrist, pick.dir, pick.m, head);
+}
+
+/** A fist on a FIXED wrist (the arm's), turned so its shaft reaches `head`. */
+export function fistAtWrist(wrist: FPt, head: FPt, out: FPt): MalletFist {
+  const pick = [1, -1].map((m) => {
+    let th = Math.atan2(head.v - wrist.v, head.u - wrist.u);
+    let dir = th;
+    for (let i = 0; i < 12; i++) {
+      dir = th - m * F_PHI;
+      const g = { u: wrist.u + F_GRIP.x * Math.cos(dir) - m * F_GRIP.y * Math.sin(dir), v: wrist.v + F_GRIP.x * Math.sin(dir) + m * F_GRIP.y * Math.cos(dir) };
+      th = Math.atan2(head.v - g.v, head.u - g.u);
+    }
+    const b = fBack(dir, m);
+    return { m, dir, dot: b.u * out.u + b.v * out.v };
+  }).sort((a, b) => b.dot - a.dot)[0];
+  return fistPaths(wrist, pick.dir, pick.m, head);
+}
+
+/** The fists and their mallets, painted: the butt under the heel, the hand,
+ *  the shaft over the curled index, the head, the thumb on top. */
+function Fists({ fists, heads, r, look }: { fists: MalletFist[]; heads: { x: number; y: number }[]; r: number; look: Look }) {
+  return (
+    <>
+      {fists.map((f, i) => (
+        <Group key={`fb${i}`}>
+          <Path path={f.butt} style="stroke" strokeWidth={11} strokeCap="round" color={INK} opacity={0.8} />
+          <Path path={f.butt} style="stroke" strokeWidth={8} strokeCap="round" color={look.mallet.shaft} />
+          <FigureMass path={f.body} tone="skin" />
+          <Path path={f.front} style="stroke" strokeWidth={11} strokeCap="round" color={INK} opacity={0.8} />
+          <Path path={f.front} style="stroke" strokeWidth={8} strokeCap="round" color={look.mallet.shaft} />
+        </Group>
+      ))}
+      {heads.map((h) => (
+        <MalletHead key={`m${h.x}`} x={h.x} y={h.y} r={r} look={look} />
+      ))}
+      {fists.map((f, i) => (
+        <Group key={`ft${i}`}>
+          <FigureMass path={f.thumb} tone="skin" />
+          <Path path={f.nail} color={FIGURE_TONES.skin.rim} opacity={0.55} />
+          <Path path={f.lines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
+        </Group>
+      ))}
+    </>
+  );
 }
 
 /* ── palette: house tokens + material ramps (light from the upper left) ── */
@@ -140,7 +322,7 @@ type SideBuilt = {
   table: SkPath | null;
   tableLegs: SkPath | null;
   player: { head: { x: number; y: number }; body: SkPath; arms: SkPath; pose: PlayerPose };
-  mallets: { shafts: SkPath; heads: { x: number; y: number }[] };
+  mallets: { shafts: SkPath; heads: { x: number; y: number }[]; fists: MalletFist[] };
   yFloor: number;
   barTop: number;
 };
@@ -267,6 +449,14 @@ function buildSide(G: MalletGeom, v: VariantId): SideBuilt {
   const hB = { x: midB.x, y: L.yNat - Math.min(row.malletH.mm - 40, 300) };
   seg(shaftsM, -240, L.yNat - 230, hA.x, hA.y);
   seg(shaftsM, 260, L.yNat - 300, hB.x, hB.y);
+  // Each fist closed ON its mallet (owner 2026-10-15): the arm's own wrist,
+  // the hand turned so the shaft runs through the fist to its head; the back
+  // of the hand out and up (the audience sees the fists from the front).
+  const frontPose = metalFrontPose([[-240, L.yNat - 230 - yF], [260, L.yNat - 300 - yF]]);
+  const frontFists = [
+    fistAtWrist({ u: frontPose.handR.wrist.u, v: frontPose.handR.wrist.v + yF }, { u: hA.x, v: hA.y }, { u: -1, v: -0.6 }),
+    fistAtWrist({ u: frontPose.handL.wrist.u, v: frontPose.handL.wrist.v + yF }, { u: hB.x, v: hB.y }, { u: 1, v: -0.6 }),
+  ];
   return {
     kind: 'side',
     floorBand,
@@ -300,8 +490,8 @@ function buildSide(G: MalletGeom, v: VariantId): SideBuilt {
     // with stroked arms, the mallets starting in mid-air): a standing adult
     // seen from the audience, each hand CLOSED on its mallet's handle end.
     // (Frame: the floor at v = 0; drawn shifted down to yF.)
-    player: { head: { x: 0, y: yHead }, body, arms, pose: metalFrontPose([[-240, L.yNat - 230 - yF], [260, L.yNat - 300 - yF]]) },
-    mallets: { shafts: shaftsM, heads: [hA, hB] },
+    player: { head: { x: 0, y: yHead }, body, arms, pose: frontPose },
+    mallets: { shafts: shaftsM, heads: [hA, hB], fists: frontFists },
     yFloor: yF,
     barTop: L.yAcc,
   };
@@ -309,12 +499,12 @@ function buildSide(G: MalletGeom, v: VariantId): SideBuilt {
 
 /** The player from above as the house figure (figure pass 2026-10-15),
  *  chest toward +v (the audience), each hand over its mallet's handle end. */
-function topPlayer(zP: number, a: { x: number; z: number }, b: { x: number; z: number }): PlayerPose {
+function topPlayer(zP: number, fists: MalletFist[]): PlayerPose {
   const Pz = (x: number, z: number) => pt(x, z);
-  const hand = (h: { x: number; z: number }, e: { u: number; v: number }) => {
-    const dir = Math.atan2(h.z - e.v, h.x - e.u);
-    return { wrist: Pz(h.x - Math.cos(dir) * 55, h.z - Math.sin(dir) * 55), dir, kind: 'above' as const };
-  };
+  // The arm ends at its fist's own wrist (the fist is drawn by the art, on
+  // the shaft — the figure's hands are not drawn).
+  const hand = (f: MalletFist, _e: { u: number; v: number }) => ({ wrist: Pz(f.wrist.u, f.wrist.v), dir: f.dir, kind: 'grip' as const });
+  const [a, b] = fists;
   const eR = Pz(-248, zP + 140);
   const eL = Pz(256, zP + 132);
   return {
@@ -400,7 +590,7 @@ type TopBuilt = {
   lid: SkPath | null;
   table: SkPath | null;
   player: { shoulders: SkPath; arms: SkPath; head: { x: number; z: number }; pose: PlayerPose };
-  mallets: { shafts: SkPath; heads: { x: number; z: number }[] };
+  mallets: { shafts: SkPath; heads: { x: number; z: number }[]; fists: MalletFist[] };
 };
 
 function buildTop(G: MalletGeom, v: VariantId): TopBuilt {
@@ -475,6 +665,9 @@ function buildTop(G: MalletGeom, v: VariantId): TopBuilt {
   const hB = { x: midB.x, z: midB.z - midB.L * 0.15 };
   seg(shafts, handA.x, handA.z, hA.x, hA.z);
   seg(shafts, handB.x, handB.z, hB.x, hB.z);
+  // Each fist closed ON its mallet at the hand's grip point (owner
+  // 2026-10-15): the back of the hand out to the side, the palm turned in.
+  const fists = [fistAtGrip({ u: handA.x, v: handA.z }, { u: hA.x, v: hA.z }, { u: -1, v: 0 }), fistAtGrip({ u: handB.x, v: handB.z }, { u: hB.x, v: hB.z }, { u: 1, v: 0 })];
   return {
     kind: 'top',
     frameShadow,
@@ -493,8 +686,8 @@ function buildTop(G: MalletGeom, v: VariantId): TopBuilt {
     caseFelt,
     lid,
     table,
-    player: { shoulders, arms, head: { x: 0, z: zP }, pose: topPlayer(zP, handA, handB) },
-    mallets: { shafts, heads: [hA, hB] },
+    player: { shoulders, arms, head: { x: 0, z: zP }, pose: topPlayer(zP, fists) },
+    mallets: { shafts, heads: [hA, hB], fists },
   };
 }
 
@@ -698,16 +891,12 @@ function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst })
         </>
       ) : null}
 
-      {/* Two mallets in the player's hands: one striking, one raised. */}
-      <Path path={b.mallets.shafts} style="stroke" strokeWidth={9} strokeCap="round" color={INK} opacity={0.8} />
-      <Path path={b.mallets.shafts} style="stroke" strokeWidth={6} strokeCap="round" color={look.mallet.shaft} />
-      {b.mallets.heads.map((h) => (
-        <MalletHead key={`m${h.x}`} x={h.x} y={h.y} r={headR} look={look} />
-      ))}
-      {/* the hands closed on the mallets (over the bars and the shafts' ends) */}
+      {/* The arms over the bars, then two mallets in the player's fists —
+          one striking, one raised — each shaft THROUGH its fist. */}
       <Group transform={[{ translateY: b.yFloor }]}>
-        <PlayerInFront pose={b.player.pose} dim={0.9} />
+        <PlayerInFront pose={b.player.pose} dim={0.9} hands={false} />
       </Group>
+      <Fists fists={b.mallets.fists} heads={b.mallets.heads} r={headR} look={look} />
     </Group>
   );
 }
@@ -805,12 +994,8 @@ function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
 
       {/* The player, from above, reaching in with two mallets (the house figure). */}
       <PlayerBehind pose={b.player.pose} />
-      <PlayerInFront pose={b.player.pose} />
-      <Path path={b.mallets.shafts} style="stroke" strokeWidth={9} strokeCap="round" color={INK} opacity={0.8} />
-      <Path path={b.mallets.shafts} style="stroke" strokeWidth={6} strokeCap="round" color={look.mallet.shaft} />
-      {b.mallets.heads.map((h) => (
-        <MalletHead key={`m${h.x}`} x={h.x} y={h.z} r={headR} look={look} />
-      ))}
+      <PlayerInFront pose={b.player.pose} hands={false} />
+      <Fists fists={b.mallets.fists} heads={b.mallets.heads.map((h) => ({ x: h.x, y: h.z }))} r={headR} look={look} />
     </Group>
   );
 }
