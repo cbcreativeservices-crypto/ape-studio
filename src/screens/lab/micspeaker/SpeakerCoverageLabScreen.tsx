@@ -68,13 +68,13 @@ const SIDE_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE, NOT SPL';
 // row's own level means it cannot drift again.
 function Legend() {
   const rows: { c: string; t: string }[] = [
-    { c: jetColor(1), t: 'RED / ORANGE — hottest: too loud, or heavy overlap' },
+    { c: jetColor(1), t: 'RED / ORANGE — hottest: right in front of a box, or heavy overlap' },
     { c: jetColor(0.55), t: 'YELLOW — strong, upper end of the listening range' },
     { c: jetColor(0.32), t: 'GREEN — the target listening range' },
-    { c: jetColor(0.14), t: 'CYAN / BLUE — quiet: pattern edge, or far away' },
+    { c: jetColor(0.14), t: 'CYAN / BLUE — quiet: past the pattern’s edge, or far away' },
     // Zero coverage reads BLACK, not blue (owner 2026-08-28: blue fades to
     // black at zero signal, so "nothing there" is honest rather than decorative).
-    { c: jetColor(0), t: 'BLACK — no coverage at all (dead zone)' },
+    { c: jetColor(0), t: 'BLACK — the pattern doesn’t reach it at a workable level (dead zone)' },
   ];
   return (
     <View style={{ gap: 3 }}>
@@ -84,8 +84,17 @@ function Legend() {
           <Text style={styles.caption}>{r.t}</Text>
         </View>
       ))}
+      {/* The map's physics in one breath (fix pass 2026-10-16): the ramp is a
+          level scale, the distance law and the rated-angle meaning are real. */}
       <Text style={styles.caption}>
-        Overlapping speakers read as hot ridges where their beams cross.
+        Red to deep blue spans about 20 dB; BLACK is below that — the pattern has not arrived. Each
+        time the distance doubles, a seat drops about 6 dB down the ramp, and a box’s rated angle
+        (90°, 60°…) is where it is already 6 dB quieter than straight ahead. Overlapping speakers read
+        as hot ridges where their beams cross.
+      </Text>
+      <Text style={styles.caption}>
+        People, chairs and cabinets are drawn at their real size — the 5 m bar under each map is the
+        scale.
       </Text>
     </View>
   );
@@ -108,7 +117,7 @@ const READING_CHECK: CheckSpec = {
   question: 'A seat painted BLACK on the coverage map is…',
   options: [
     'Just far away — it will still hear fine',
-    'A dead zone — the pattern never arrives; it needs a fill or a delay box',
+    'A dead zone — the pattern never reaches it at a workable level; it needs a fill or a delay box',
     'Too loud — black marks the hottest spots',
   ],
   correctIdx: 1,
@@ -138,7 +147,7 @@ function ConceptsSection({ help }: { help: (k: string) => void }) {
     { t: 'COVERAGE', d: 'Every listener inside the pattern at a workable level — the entire goal of placement.' },
     { t: 'DISPERSION', d: 'The nominal H° × V° wedge a cabinet actually controls. Outside it, level and tone fall apart.' },
     { t: 'HOT SPOT', d: 'Somewhere too loud — usually too close to a box, or two boxes overlapping.' },
-    { t: 'DEAD ZONE', d: 'Somewhere the pattern never reaches — under-balcony rear rows are the classic.' },
+    { t: 'DEAD ZONE', d: 'Somewhere the pattern never reaches at a workable level (the lows may still leak in, dull and muddy) — under-balcony rear rows are the classic.' },
     { t: 'OVERLAP', d: 'Two speakers covering the same seats: louder, but rough — real systems minimize or control it.' },
     { t: 'FRONT FILLS', d: 'Small speakers along the stage lip covering the rows the flown mains pass over.' },
     { t: 'DELAY SPEAKERS', d: 'Extra cabinets deeper in the room, time-aligned to the mains, extending coverage rearward.' },
@@ -188,7 +197,7 @@ function LessonRow({ onPress }: { onPress: () => void }) {
 }
 
 const SECTIONS: { key: string; label: string; title: string; blurb: string }[] = [
-  { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their dispersion, aim them — and watch who they reach.' },
+  { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their dispersion, aim them — and watch who they reach. Black seats get no useful sound: add SPKR 2 or FILLS. (Stage right is the performers’ right — the left of your screen.)' },
   { key: 'side', label: 'SIDE VIEW', title: 'HEIGHT & TILT', blurb: 'Raise, tilt, and shape the room — make the wedge land on every row.' },
   { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.' },
 ];
@@ -236,7 +245,9 @@ export function SpeakerCoverageLabScreen() {
    *  speaker 2 (blue) or the fill pair (green — moves them in/out from the
    *  stage's center line, always symmetric). */
   const [editTarget, setEditTarget] = useState<'spk1' | 'spk2' | 'fills'>('spk1');
-  const [fillSpread, setFillSpread] = useState(0.375);
+  // Default 0.125 puts the fills at 0.4 / 0.6 — inboard of the default mains,
+  // on the centre-front gap they exist to cover (audio review 2026-10-16).
+  const [fillSpread, setFillSpread] = useState(0.125);
 
   // ── SIDE VIEW state ───────────────────────────────────────────────────────
   const [sideDispIdx, setSideDispIdx] = useState(1);
@@ -244,7 +255,9 @@ export function SpeakerCoverageLabScreen() {
   const [tilt, setTilt] = useState(12);
   const [stage01, setStage01] = useState(0.4);
   const [ceil01, setCeil01] = useState(0.6);
-  const [depth01, setDepth01] = useState(0.85);
+  // Default 0.35 (was 0.85): the front row ≈ 2.5 m off the lip, like the plan
+  // view's house, so a LOW box visibly blasts the front rows (audio review 2026-10-16).
+  const [depth01, setDepth01] = useState(0.35);
   const [sloped, setSloped] = useState(false);
   const [delayOn, setDelayOn] = useState(false);
   const [lineArray, setLineArray] = useState(false);
@@ -647,8 +660,9 @@ export function SpeakerCoverageLabScreen() {
           {sectionIdx === 1 && rearDelay ? (
             <Text style={styles.badge}>
               DELAY ALIGNMENT — CONCEPTUAL MODEL, NOT TRUE TIME-ALIGNMENT MATH. The two travelling
-              fronts illustrate firing the rear speaker late so arrivals fuse; timing here is
-              illustrative only.
+              fronts (green lines) illustrate firing the rear speaker late so arrivals fuse. In the
+              field it is set a few milliseconds LATER still, so the ear keeps locating the sound on
+              the stage (the precedence effect). Timing here is illustrative only.
             </Text>
           ) : null}
           <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
@@ -662,8 +676,9 @@ export function SpeakerCoverageLabScreen() {
                 Narrow boxes (60°) put the same power into a smaller wedge, so they arrive louder at the
                 back — but they demand careful aim. Wide boxes (120°) spread that power over far more
                 area, so they cover close and wide at a lower level everywhere, not just at the back.
-                Two overlapping speakers turn the shared zone RED — energy piles up (and, in the real
-                world, combs). Front fills rescue the first rows the mains fly over.
+                Where two speakers overlap, the shared zone runs hotter (about +3 dB) — energy piles up
+                (and, in the real world, combs). Front fills cover the gap between the mains at the
+                front — and, when the mains fly, the first rows they pass over.
               </Text>
             ) : (
               <Text style={styles.caption}>

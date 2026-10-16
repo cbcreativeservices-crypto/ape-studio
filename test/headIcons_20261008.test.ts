@@ -124,7 +124,8 @@ const LONE: [string, RegExp][] = [
 
 /** Bodies → the figure's own head (FigureHead / FigureHeadAt / FigureHeadSvg / PlayerHead). */
 const BODY: [string, RegExp][] = [
-  ['src/screens/lab/micspeaker/viz.tsx', /<FigureHeadAt view="front"/],
+  // Fix pass 2026-10-16: the coverage scenes draw WHOLE house figures — the plan's guitarist and bassist (BacklinePlan's plan players with PlayerFigure's head) and the singer at a vocal stand (voicePose) in both views.
+  ['src/screens/lab/micspeaker/viz.tsx', /<PlanPlayerTop pose=\{p\.kind\} \/>[\s\S]*<FigureHead fill=\{g\.head\} \/>[\s\S]*<PlayerBehind pose=\{SINGER_TOP\} \/>[\s\S]*<PlayerBehind pose=\{SINGER_SIDE\} \/>/],
   ['src/screens/lab/wave/vizWave.tsx', /<FigureHeadAt view="front"/],
   // Figure polish 2026-10-10: these three drew a stick body under the head; each is now a WHOLE shared figure (its head is FigureHeadSvg / PlayerFigure's FigureHead).
   ['src/screens/lab/roomdesign/RoomSideView.tsx', /<FigureSeatedSideSvg /],
@@ -155,6 +156,8 @@ const BODY: [string, RegExp][] = [
 const GONE: [string, RegExp][] = [
   ['src/screens/lab/micspeaker/viz.tsx', /body\.addCircle\(0, -42\.5 \* s/],
   ['src/screens/lab/micspeaker/viz.tsx', /dots\.addCircle\(/],
+  // Fix pass 2026-10-16: the stick-figure guitarist and the band as line-art plan heads are gone for good.
+  ['src/screens/lab/micspeaker/viz.tsx', /function buildGuitarist|<Guitarist |FigureHeadAt|const performers = \[0\.42, 0\.5, 0\.58\]/],
   ['src/screens/lab/wave/vizWave.tsx', /p\.addCircle\(hx, hy, 0\.12 \* u\)/],
   ['src/screens/lab/wave/vizWave.tsx', /heads\.addCircle\(/],
   ['src/screens/lab/wave/vizWave.tsx', /lines\.addCircle\(0, -8\.4, 4\.8\)/],
