@@ -936,7 +936,8 @@ export function GrMeter({ grDb, maxDb = 24, label = 'GAIN REDUCTION' }: { grDb: 
     <View style={grStyles.wrap}>
       <View style={grStyles.head}>
         <Text style={grStyles.label}>{label}</Text>
-        <Text style={grStyles.value}>{`−${grDb.toFixed(1)} dB`}</Text>
+        {/* No reduction reads 0.0 dB, never "−0.0 dB" (art grading 2026-10-16). */}
+        <Text style={grStyles.value}>{grDb >= 0.05 ? `−${grDb.toFixed(1)} dB` : '0.0 dB'}</Text>
       </View>
       <View style={grStyles.track}>
         {GR_SEG_COLORS.map((c, i) => (
