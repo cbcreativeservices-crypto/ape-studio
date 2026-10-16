@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 23:42 · ccode · c424a4e1
+changed: Lab art grading fix: Cymatics home caption no longer sits on the plate
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 23:34 · ccode · fdb9b1eb
 changed: Lab art grading fix: Peak meter labels clear the corner screws
 affects other side: nothing (app only)
