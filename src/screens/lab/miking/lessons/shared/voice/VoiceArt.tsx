@@ -150,10 +150,19 @@ export function voiceLabels(view: ViewId, variant: VariantId, opts: VoiceArtOpts
   const work = !!opts.workZone?.includes(variant);
   if (view === 'side') {
     const out: ArtLabel[] = [
-      { id: 'v.mouth', text: 'MOUTH', u: 150, v: 150, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 130, v: -150, align: 'left' }, { u: 210, v: 60, align: 'left' }] },
+      // MOUTH sits low and close in front of the chest, its leader dropping
+      // straight from the lips (lab art fix 2026-10-16: at (150, 150) it
+      // printed on a studio condenser's body, which hangs there — the label
+      // layout sees the drawing, not the mics). Every vocal mic sits ahead
+      // of the mouth at 5–35 cm, between ≈ 11 cm above and ≈ 20 cm below
+      // the mouth line, and the distance's words sit above it: this channel
+      // in front of the chest is the one place none of them reaches.
+      { id: 'v.mouth', text: 'MOUTH', u: 45, v: 215, align: 'left', at: { u: 0, v: 2 }, alts: [{ u: 60, v: 270, align: 'left' }, { u: 130, v: -150, align: 'left' }] },
       // (The nose and the head are named by a tap on THE PARTS: fewer words
       // round the face, where the mics and their dimensions go.)
-      { id: 'v.folds', text: 'VOCAL FOLDS', short: 'FOLDS', u: 150, v: 250, align: 'left', at: { u: FOLDS.x, v: FOLDS.y }, alts: [{ u: 120, v: 330, align: 'left' }] },
+      // VOCAL FOLDS behind the neck: its leader leaves the throat backward
+      // over the skin of the neck only (it ran down across the shirt).
+      { id: 'v.folds', text: 'VOCAL FOLDS', short: 'FOLDS', u: -300, v: -20, align: 'right', at: { u: FOLDS.x, v: FOLDS.y }, alts: [{ u: -300, v: 20, align: 'right' }, { u: -300, v: 50, align: 'right' }] },
       { id: 'v.chest', text: 'CHEST', u: 150, v: 410, align: 'left', at: { u: SINGER_SOLIDS.torso.kind === 'box' ? SINGER_SOLIDS.torso.max.x - 6 : 0, v: SINGER_NECK.y + 200 } },
     ];
     if (phones) out.push({ id: 'v.phones', text: 'HEADPHONES', short: 'PHONES', u: -300, v: -180, align: 'right', at: { u: EAR.x - 30, v: EAR.y - 20 }, alts: [{ u: -280, v: 40, align: 'right' }] });

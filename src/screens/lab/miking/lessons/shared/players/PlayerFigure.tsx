@@ -437,7 +437,11 @@ export function headProfile(c: Pt, r: number, neckV: number, facing: number): He
   // The neck column.
   const nb = (neckV - c.v) / k;
   line.addPath(curve([P(-34, 100), P(-36, (100 + nb) / 2), P(-30, nb)]));
-  line.addPath(curve([P(58, 90), P(66, (90 + nb) / 2), P(78, nb)]));
+  // Its back runs down from the nape into the shirt's own nape (lab art
+  // fix 2026-10-16, the singer's "thick" neck: it flared 20 units back to
+  // the collar and stood out past the shirt's back as a wedge of skin) — a
+  // column, ≈ 100 mm deep at the collar, an adult's neck in profile.
+  line.addPath(curve([P(58, 90), P(63, (90 + nb) / 2), P(70, nb)]));
   // The ear: an outer helix oval and a small inner fold.
   line.addPath(smooth([P(18, -14), P(40, -18), P(50, 6), P(44, 34), P(24, 40), P(16, 18)], 0.6));
   line.addPath(curve([P(28, -2), P(38, 6), P(34, 22), P(26, 24)]));
@@ -445,7 +449,7 @@ export function headProfile(c: Pt, r: number, neckV: number, facing: number): He
   line.addPath(curve([P(-76, -30), P(-60, -36), P(-44, -32)]));
   // The neck leans forward from the collar to the skull and joins it behind
   // the jaw (under the ear), never as a stalk under the chin.
-  const fill = union(smooth([...back, ...face.slice(1), P(-4, 96)], 0.5), capsule(P(12, 84), P(24, nb - 6), 50 * k, 56 * k));
+  const fill = union(smooth([...back, ...face.slice(1), P(-4, 96)], 0.5), capsule(P(12, 84), P(18, nb - 6), 50 * k, 52 * k));
   return { line, fill };
 }
 
