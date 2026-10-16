@@ -30,6 +30,8 @@ import {
   type TesterCable,
   type TesterDisposition,
 } from '../data/testerCables';
+import { WiringTrace, traceAspect } from '../art/wiring';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import {
   CheckDoneBanner,
   DetailCard,
@@ -56,7 +58,7 @@ const SCAN_STEP_MS = 150;
  *  With `animate`, rows reveal sequentially like a tester stepping through
  *  conductors (owner direction 2026-08-15: strategic animation); static under
  *  reduced motion, and the finished map is announced either way. */
-function ContinuityMap({ cable, animate }: { cable: TesterCable; animate?: boolean }) {
+function ContinuityMap({ cable, animate, named = true }: { cable: TesterCable; animate?: boolean; named?: boolean }) {
   const reduceMotion = useReduceMotion();
   const total = cable.expectedMap.length;
   const [shown, setShown] = useState(animate ? 0 : total);
@@ -95,6 +97,13 @@ function ContinuityMap({ cable, animate }: { cable: TesterCable; animate?: boole
           connector ends after the test runs (ruling 2026-08-15: connector
           artwork is owner-supplied; no drawn stand-ins). Until it arrives,
           the labeled rows below are the complete, honest reading. */}
+      {/* CODE-DRAWN trace beside the slot (fix pass 2026-10-16): derived
+          from this cable's MEASURED map, lighting in step with the scan. */}
+      <ExpandableFigure
+        aspect={traceAspect(cable)}
+        title="INSIDE THE CABLE"
+        render={(w) => <WiringTrace cable={cable} width={w} progress={total ? shown / total : 1} named={named} />}
+      />
       <View style={st.mapRow}>
         <Text style={[st.mapCell, st.mapHead, st.cellPath]}>PATH</Text>
         <Text style={[st.mapCell, st.mapHead, st.cellVal]}>EXPECTED</Text>
@@ -254,7 +263,8 @@ export function Lesson10Body() {
                 <OptionChip label="RUN TEST ›" active action onPress={() => setTested(true)} />
               </>
             ) : (
-              <ContinuityMap cable={cable} animate />
+              // the trace NAMES the fault only once the learner has (never a giveaway)
+              <ContinuityMap cable={cable} animate named={faultSolved} />
             )}
           </DetailCard>
 

@@ -4,10 +4,11 @@
  * every family reads identically).
  *
  * Renders ONLY what the verified data says — no copy of its own beyond
- * structural labels. Pin diagrams are owner-supplied artwork (ruling
- * 2026-08-15) — until they land, contacts render as labeled rows with ink
- * swatches (+ text labels, never color alone). ART SLOT comments mark the
- * mount points.
+ * structural labels. Contacts render as labeled rows with ink swatches
+ * (+ text labels, never color alone). Owner-supplied pin artwork keeps its
+ * ART SLOT (the photo frame); since the fix pass 2026-10-16 a CODE-DRAWN,
+ * to-scale anatomy figure (art/plugs.tsx) names the contacts on the
+ * connector itself for the core analog + speakON records.
  */
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -15,6 +16,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 // so a photo seen once paints at once on every later page and lightbox.
 import { Image } from 'expo-image';
 import { connectorImages } from '../connectorImages';
+import { ConnectorAnatomy, connectorArtAspect, hasConnectorArt } from '../art/plugs';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CONNECTOR_INKS, CONNECTOR_INK_LABELS, type ConnectorInk } from '../connectorInks';
 import type { ConnectorId, ConnectorRecord, PinoutVariant } from '../cableTypes';
@@ -163,6 +166,16 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
       ) : null}
 
       <Section title="CONTACTS & USES" startOpen>
+        {/* CODE-DRAWN anatomy (fix pass 2026-10-16): the contacts NAMED on
+            the connector itself, to scale. It sits beside the photo above —
+            the photo slot stays the owner's — and beside the rows below. */}
+        {hasConnectorArt(rec.id) ? (
+          <ExpandableFigure
+            aspect={connectorArtAspect(rec.id)}
+            title={rec.displayName.toUpperCase()}
+            render={(w) => <ConnectorAnatomy id={rec.id} width={w} />}
+          />
+        ) : null}
         {rec.pinouts.length ? rec.pinouts.map((v) => <Pinout key={v.id} v={v} />) : null}
         <Text style={styles.kv}>
           <Text style={styles.k}>From: </Text>

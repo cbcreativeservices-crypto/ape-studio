@@ -499,6 +499,7 @@ export function Connector({
   k,
   angle = 0,
   jacket = 'black',
+  shadow = true,
 }: {
   kind: ConnKind;
   x: number;
@@ -506,6 +507,10 @@ export function Connector({
   k: number;
   angle?: number;
   jacket?: JacketKey | string;
+  /** The contact shadow under the connector (default on). Off where the
+   *  connector is drawn free-standing on a dark panel (Cable Fundamentals
+   *  lineups), where it reads as a stray block. */
+  shadow?: boolean;
 }) {
   const id = useUid();
   const base = jacketHex(jacket);
@@ -530,7 +535,7 @@ export function Connector({
         </LinearGradient>
       </Defs>
       {/* contact shadow */}
-      <Rect x={2} y={-7} width={kind === 'rj45' || kind === 'lc' ? 30 : kind === 'trs' ? 64 : 62} height={14} rx={5} fill="rgba(0,0,0,0.35)" transform="translate(1.4 2.4)" />
+      {shadow ? <Rect x={2} y={-7} width={kind === 'rj45' || kind === 'lc' ? 30 : kind === 'trs' ? 64 : 62} height={14} rx={5} fill="rgba(0,0,0,0.35)" transform="translate(1.4 2.4)" /> : null}
       {kind === 'rj45' || kind === 'lc' ? null : <Boot id={id} len={20} r0={3.4} r1={6.2} />}
       {kind === 'xlrF' || kind === 'xlrM' ? <Xlr id={id} female={kind === 'xlrF'} /> : null}
       {kind === 'trs' ? <Trs id={id} /> : null}

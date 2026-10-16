@@ -41,6 +41,7 @@ import {
   useShuffled,
 } from './bits';
 import { ConnectorCard, InkLegend, RecognitionStrip, usePrefetchConnectorImages } from './connectorCard';
+import { SECTION_SHORT, SectionTile } from '../art/sections';
 
 export function Lesson05Body() {
   // ── connector-card browser (six verified speaker records) ─────────────────
@@ -129,6 +130,17 @@ export function Lesson05Body() {
       {/* ART SLOT: owner-supplied side-by-side cross-section pair (shielded
           small-conductor instrument cable vs two heavier unshielded
           loudspeaker conductors) mounts here, above the comparison card. */}
+      {/* CODE-DRAWN pair beside the slot (fix pass 2026-10-16): both cables
+          cut open at ONE true scale — the size difference is real. */}
+      <View style={cmp.pairRow} accessibilityRole="image" accessibilityLabel="Cross-sections at one scale: instrument cable, one small conductor in a braid shield; loudspeaker cable, two heavy conductors and no shield.">
+        {(['instrument_unbalanced', 'speaker_2c'] as const).map((id) => (
+          <View key={id} style={cmp.pairCell}>
+            <Text style={cmp.colHead}>{id === 'speaker_2c' ? 'LOUDSPEAKER CABLE' : 'INSTRUMENT CABLE'}</Text>
+            <SectionTile id={id} k={12} size={112} />
+            <Text style={[s.hint, { textAlign: 'center' }]}>{SECTION_SHORT[id]}</Text>
+          </View>
+        ))}
+      </View>
       <DetailCard>
         <Text style={s.cardTitle}>SAME PLUG — DIFFERENT CABLE</Text>
         <View style={cmp.row}>
@@ -202,6 +214,8 @@ export function Lesson05Body() {
 const cmp = StyleSheet.create({
   row: { flexDirection: 'row', gap: 12 },
   col: { flex: 1 },
+  pairRow: { flexDirection: 'row', gap: 12, borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#0b0b0e', padding: 10 },
+  pairCell: { flex: 1, alignItems: 'center', gap: 4 },
   colHead: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,

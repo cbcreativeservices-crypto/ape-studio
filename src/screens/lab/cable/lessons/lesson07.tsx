@@ -34,6 +34,8 @@ import {
   type L07GroupId,
 } from '../data/lesson07';
 import { getConnector } from '../data/registry';
+import { NemaPlugFace } from '../art/plugs';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import {
   CheckDoneBanner,
   DetailCard,
@@ -128,6 +130,13 @@ export function Lesson07Body() {
           contact chips below carry the interaction on their own. */}
       {roles.length ? (
         <>
+          {/* CODE-DRAWN plug face beside the slot (fix pass 2026-10-16):
+              tap a blade or the pin, or a chip — one shared selection. */}
+          <ExpandableFigure
+            aspect={340 / 196}
+            title="NEMA 5-15 PLUG FACE"
+            render={(w) => <NemaPlugFace width={w} labels={roles.map((c) => c.label)} selected={roleIdx} onSelect={setRoleIdx} />}
+          />
           <View style={s.chipWrap}>
             {roles.map((c, i) => (
               <OptionChip key={c.label} label={c.label.toUpperCase()} active={i === roleIdx} onPress={() => setRoleIdx(i)} />

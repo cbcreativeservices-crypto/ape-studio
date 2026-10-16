@@ -7,9 +7,10 @@
  * credit marked ONLY when all three checks are genuinely solved
  * (markLabUnit → af_cables/l02_anatomy — §1.7 honesty).
  *
- * NO ART is drawn here (ruling 2026-08-15): cross-section artwork is
- * owner-supplied later; the peel interaction runs on labeled text rows with
- * an ART SLOT comment at the mount point.
+ * ART (fix pass 2026-10-16): the ART SLOT stays reserved for owner-supplied
+ * artwork; a CODE-DRAWN, to-scale cross-section + peel figure
+ * (art/sections.tsx) sits beside it, and the labeled rows still carry the
+ * words.
  */
 import { useCallback, useRef, useState } from 'react';
 import { AccessibilityInfo, LayoutAnimation, StyleSheet, Text, View } from 'react-native';
@@ -24,6 +25,7 @@ import {
   L02_CHECKS,
   L02_RULE,
 } from '../data/lesson02';
+import { CableSectionFigure, SECTION_CAPTION } from '../art/sections';
 import { CheckDoneBanner, DetailCard, Eyebrow, LessonBanner, OptionChip, lessonStyles as s, useReduceMotion } from './bits';
 
 
@@ -132,8 +134,18 @@ export function Lesson02Body() {
             construction mounts here (peel art keyed to `revealed`, outside→
             inside) — the labeled text rows below carry the teaching until the
             artwork lands. */}
+        {/* CODE-DRAWN cross-section + peel (fix pass 2026-10-16), placed
+            beside the slot (the slot stays reserved for owner art): the cut
+            end and the cable stripped back one layer per peel, to scale. */}
         <Text style={s.cardTitle}>{sec.label}</Text>
         <Text style={s.hint}>{sec.tagline}</Text>
+        <CableSectionFigure
+          id={sec.id}
+          revealed={revealed}
+          names={sec.layers.map((ly) => ly.name)}
+          controls={revealed < sec.layers.length ? <OptionChip label={revealed === 0 ? 'PEEL THE FIRST LAYER ›' : 'PEEL DEEPER ›'} active action onPress={peelNext} /> : null}
+        />
+        <Text style={s.hint}>{SECTION_CAPTION[sec.id]}</Text>
         <Text style={s.cardHead}>
           {revealed === 0
             ? 'UNOPENED — PEEL FROM THE OUTSIDE IN'

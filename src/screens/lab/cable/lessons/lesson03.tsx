@@ -27,6 +27,9 @@ import {
   PrincipleBanner,
   lessonStyles as s,
 } from './bits';
+import { AnalogLineup, LINEUP_H } from '../art/plugs';
+import { BalancedFigure } from '../art/wiring';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { ConnectorCard, InkLegend, RecognitionStrip, usePrefetchConnectorImages } from './connectorCard';
 
 /** Recognition-tier records surfaced view-only alongside the analog family
@@ -103,6 +106,13 @@ export function Lesson03Body() {
       {/* ART SLOT: owner-supplied analog-family lineup illustration (all seven
           connectors, front views) mounts here once delivered — nothing renders
           until then. Per-connector artwork mounts inside ConnectorCard. */}
+      {/* CODE-DRAWN lineup beside the slot (fix pass 2026-10-16): all seven at
+          one true scale; tapping a row picks its card, like the chips. */}
+      <ExpandableFigure
+        aspect={340 / LINEUP_H}
+        title="THE ANALOG FAMILY"
+        render={(w) => <AnalogLineup width={w} selected={sel} onSelect={setSel} />}
+      />
       <View style={s.chipWrap}>
         {L03_ENTRIES.map((e) => (
           <OptionChip key={e.id} label={e.chip} active={e.id === sel} onPress={() => setSel(e.id)} />
@@ -125,6 +135,15 @@ export function Lesson03Body() {
           <ConnectorCard rec={rec} />
         </>
       ) : null}
+
+      {/* CODE-DRAWN (fix pass 2026-10-16): why the balanced pair rejects
+          interference — the subtraction the input performs, drawn. */}
+      <Eyebrow text="BALANCED VS UNBALANCED — WHAT THE WIRING DOES" />
+      <Text style={s.body}>
+        The same interference reaches every cable. On an unbalanced line it stays in the signal. On a balanced line it
+        lands equally on both legs of the twisted pair, and the input keeps only their difference.
+      </Text>
+      <ExpandableFigure aspect={340 / 262} title="BALANCED VS UNBALANCED" render={(w) => <BalancedFigure width={w} />} />
 
       <Eyebrow text={`KNOWLEDGE CHECK · ${solvedCount} OF ${L03_CHECKS.length} SOLVED`} />
       {!allSolved ? (

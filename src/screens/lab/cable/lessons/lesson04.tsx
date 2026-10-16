@@ -15,6 +15,8 @@ import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { PLUG_COMPARISONS, type InterchangeAnswer } from '../data/lesson04';
+import { SECTION_SHORT, SectionTile, type SectionId } from '../art/sections';
+import { SharedPlugFigure, type SharedPlug } from '../art/plugs';
 import {
   CheckDoneBanner,
   DetailCard,
@@ -51,6 +53,8 @@ export function Lesson04Body() {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [allDone, setAllDone] = useState(false);
   const comp = PLUG_COMPARISONS[Math.min(idx, PLUG_COMPARISONS.length - 1)];
+  const art = L04_ART[comp.id];
+  const [plugW, setPlugW] = useState(0);
 
   const pick = useCallback(
     (opt: InterchangeChoice) => {
@@ -88,6 +92,13 @@ export function Lesson04Body() {
 
       {!allDone ? (
         <>
+          {art ? (
+            <View style={{ gap: 4 }} onLayout={(e) => setPlugW(Math.round(e.nativeEvent.layout.width))}>
+              <Text style={s.cardHead}>THE PLUG BOTH CABLES WEAR</Text>
+              {plugW > 0 ? <SharedPlugFigure plug={art.plug} width={plugW} /> : null}
+              <Text style={s.hint}>Below: each cable cut open, drawn at one scale.</Text>
+            </View>
+          ) : null}
           <View style={styles.compareRow}>
             <View style={styles.side}>
               <DetailCard>
@@ -96,6 +107,7 @@ export function Lesson04Body() {
                     carries the comparison until it lands. */}
                 <Text style={s.cardHead}>A</Text>
                 <Text style={s.cardTitle}>{comp.aLabel}</Text>
+                {art ? <SideSection id={art.a} /> : null}
               </DetailCard>
             </View>
             <View style={styles.side}>
@@ -104,6 +116,7 @@ export function Lesson04Body() {
                     comparison mounts here. */}
                 <Text style={s.cardHead}>B</Text>
                 <Text style={s.cardTitle}>{comp.bLabel}</Text>
+                {art ? <SideSection id={art.b} /> : null}
               </DetailCard>
             </View>
             {comp.cLabel ? (
@@ -113,6 +126,7 @@ export function Lesson04Body() {
                       three-way comparison only) mounts here. */}
                   <Text style={s.cardHead}>C</Text>
                   <Text style={s.cardTitle}>{comp.cLabel}</Text>
+                  {art?.c ? <SideSection id={art.c} /> : null}
                 </DetailCard>
               </View>
             ) : null}
@@ -161,6 +175,29 @@ export function Lesson04Body() {
 
       <PrincipleBanner />
     </>
+  );
+}
+
+/** Code-drawn art per look-alike (fix pass 2026-10-16): the shared plug once,
+ *  then each side's cable cut open at ONE scale. Pairs whose difference is
+ *  not in the copper (USB-C feature sets, optical protocols, powerCON
+ *  families) keep their text-only cards. */
+const L04_ART: Record<string, { plug: SharedPlug; a: SectionId; b: SectionId; c?: SectionId }> = {
+  ts_instrument_vs_speaker: { plug: 'ts', a: 'instrument_unbalanced', b: 'speaker_2c' },
+  xlr_analog_vs_aes3: { plug: 'xlr', a: 'balanced_shielded', b: 'aes3_110' },
+  xlr_mic_vs_dmx: { plug: 'xlr', a: 'balanced_shielded', b: 'dmx_120' },
+  rca_analog_vs_spdif: { plug: 'rca', a: 'audio_coax', b: 'coax' },
+  bnc_50_vs_75: { plug: 'bnc', a: 'rg58_50', b: 'coax' },
+  trs_three_jobs: { plug: 'trs', a: 'balanced_shielded', b: 'balanced_shielded', c: 'insert_y' },
+  eth_8p8c_protocols: { plug: 'rj45', a: 'ethernet_4pair', b: 'ethernet_4pair' },
+};
+
+function SideSection({ id }: { id: SectionId }) {
+  return (
+    <View style={{ alignItems: 'center', gap: 2, marginTop: 4 }}>
+      <SectionTile id={id} k={11} size={104} />
+      <Text style={[s.hint, { textAlign: 'center' }]}>{SECTION_SHORT[id]}</Text>
+    </View>
   );
 }
 
