@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 00:36 · ccode · a2918a24
+changed: Miking figures pass 3: lap-steel hands posed (bar and picks); dimmed players stay opaque
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 00:19 · ccode · 0e6c82b5
 changed: Miking figures pass 3: one hand model with real joints; guitar-family hands posed on the neck; sleeves grow out of the shirt
 affects other side: nothing (app only)
