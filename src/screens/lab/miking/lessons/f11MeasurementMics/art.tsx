@@ -9,7 +9,7 @@ import { Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { Operator, TestSpeaker, make, rectP } from '../shared/measure/MeasureArt';
+import { ReadingOperator, TestSpeaker, make, rectP } from '../shared/measure/MeasureArt';
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
 import { MIC_ANATOMY_ASPECT, MicAnatomy } from '../shared/measure/MicAnatomy';
 import { F11_GROUND, F11_OP, F11_OP_SIDE, F11_OP_TOP, F11_SPK, F11_VIEWS } from './geometry.ts';
@@ -51,7 +51,7 @@ function BenchScene({ view }: { view: ViewId; variant: VariantId }) {
     <Group>
       <Floor view={view} />
       <TestSpeaker g={F11_SPK} view={view} />
-      <Operator pose={view === 'side' ? F11_OP_SIDE : F11_OP_TOP} />
+      <ReadingOperator pose={view === 'side' ? F11_OP_SIDE : F11_OP_TOP} />
     </Group>
   );
 }
@@ -62,22 +62,22 @@ const HITS: SceneHits = {
     { id: 'spk.woofer', u0: -30, u1: 30, v0: -30, v1: 140 },
     { id: 'spk.box', u0: -250, u1: 0, v0: -230, v1: 170 },
     { id: 'spk.stand', u0: -315, u1: 65, v0: 170, v1: F11_GROUND },
-    { id: 'op', u0: F11_OP.x - 260, u1: F11_OP.x + 260, v0: F11_GROUND - 1800, v1: F11_GROUND },
+    { id: 'op', u0: F11_OP.x - 560, u1: F11_OP.x + 260, v0: F11_GROUND - 1800, v1: F11_GROUND },
   ],
   top: [
     { id: 'spk.box', u0: -250, u1: 20, v0: -125, v1: 125 },
     { id: 'spk.stand', u0: -315, u1: 65, v0: -170, v1: 170 },
-    { id: 'op', u0: F11_OP.x - 280, u1: F11_OP.x + 280, v0: F11_OP.z - 280, v1: F11_OP.z + 280 },
+    { id: 'op', u0: F11_OP.x - 560, u1: F11_OP.x + 280, v0: F11_OP.z - 280, v1: F11_OP.z + 280 },
   ],
 };
 
 const LABELS = {
   side: [
-    { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -300, align: 'center' as const, at: { u: -125, v: -230 } },
-    { id: 'spk.tweeter', text: 'TWEETER', u: 60, v: -200, align: 'left' as const, at: { u: 10, v: -140 } },
-    { id: 'spk.woofer', text: 'WOOFER', u: 60, v: 150, align: 'left' as const, at: { u: 15, v: 55 } },
+    { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -590, align: 'center' as const, at: { u: -125, v: -230 } },
+    { id: 'spk.tweeter', text: 'TWEETER', u: 60, v: -420, align: 'left' as const, at: { u: 10, v: -140 } },
+    { id: 'spk.woofer', text: 'WOOFER', u: 130, v: 420, align: 'left' as const, at: { u: 15, v: 55 } },
     { id: 'spk.stand', text: 'STAND', u: -125, v: 760, align: 'center' as const },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: F11_OP.x, v: F11_GROUND - 1900, align: 'center' as const, at: { u: F11_OP.x, v: F11_GROUND - 1640 }, alts: [{ u: F11_OP.x - 420, v: F11_GROUND - 1300, align: 'right' as const }] },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: F11_OP.x - 240, v: F11_GROUND - 1720, align: 'right' as const, at: { u: F11_OP.x, v: F11_GROUND - 1640 }, alts: [{ u: F11_OP.x, v: F11_GROUND - 1900, align: 'center' as const }, { u: F11_OP.x - 300, v: F11_GROUND - 420, align: 'right' as const }] },
   ],
   top: [
     { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -260, align: 'center' as const },
@@ -85,11 +85,23 @@ const LABELS = {
   ],
 };
 
+/** Where the setups put the mic, its boom, its lobe and its distance bracket:
+ *  in front of the baffle, on the axis (art fix round 3, 2026-10-16 — the
+ *  operator's name and TWEETER sat on the bracket and under the mic, faded).
+ *  The part names keep off this band as they keep off a drawn figure
+ *  (LessonArt.figureAt feeds only the labels' occupancy, never a tap). */
+const MIC_BAND = {
+  side: { u0: 40, u1: F11_OP.x - 300, v0: -250, v1: 260 },
+  top: { u0: 40, u1: F11_OP.x - 300, v0: -320, v1: 320 },
+} as const;
+const inBand = (r: { u0: number; u1: number; v0: number; v1: number }, u: number, v: number, tol: number) => u >= r.u0 - tol && u <= r.u1 + tol && v >= r.v0 - tol && v <= r.v1 + tol;
+
 export const F11_ART: LessonArt = {
   Instrument: BenchScene,
   labels: labelsOf(LABELS),
   hitTest: hitTestOf(HITS),
   labelsYieldToMic: true,
+  figureAt: (view, _variant, u, v, tol) => inBand(MIC_BAND[view === 'side' ? 'side' : 'top'], u, v, tol),
   figure: { aspect: MIC_ANATOMY_ASPECT, render: (w, h) => <MicAnatomy w={w} h={h} label="A measurement microphone drawn large: the protection grid over the half-inch capsule, the preamp of the same diameter, the connector, and its cable to a power unit and an analyzer — one chain." /> },
   pages: F11_PAGES,
   stepCounts: F11_STEP_COUNTS,

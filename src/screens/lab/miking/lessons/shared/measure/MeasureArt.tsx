@@ -18,6 +18,7 @@ import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGr
 import type { ViewId } from '../../../engine/model/types.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import type { PlayerPose } from '../players/playerPose.ts';
+import { CLIPBOARD, sheetOf } from './measureModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 export const make = (): SkPath => Skia.Path.Make();
@@ -223,6 +224,101 @@ export function Operator({ pose, dim = 0.9 }: { pose: PlayerPose; dim?: number }
     <Group>
       <PlayerBehind pose={pose} dim={dim} />
       <PlayerInFront pose={pose} dim={dim} hands={pose.view !== 'above'} />
+    </Group>
+  );
+}
+
+/* ── the person running the measurement, READING THE LOG SHEET (art fix
+ *    round 3, 2026-10-16): the same figure, both fists on the clipboard's
+ *    lower corners — the far arm, then the board, then the body and the near
+ *    arm, so the near fist closes over the board's edge. ── */
+
+function buildSheet(pose: PlayerPose) {
+  const s = sheetOf(pose);
+  const board = make();
+  const paper = make();
+  const clip = make();
+  const lines = make();
+  if (s.kind === 'side') {
+    const dx = s.high.u - s.low.u;
+    const dy = s.high.v - s.low.v;
+    const l = Math.hypot(dx, dy) || 1;
+    const d = { u: dx / l, v: dy / l };
+    // The board's face toward the reader: the normal that points up.
+    let n = { u: d.v, v: -d.u };
+    if (n.v > 0) n = { u: -n.u, v: -n.v };
+    const quad = (p: SkPath, a0: number, a1: number, o0: number, o1: number) => {
+      const at = (a: number, o: number) => ({ x: s.low.u + d.u * a + n.u * o, y: s.low.v + d.v * a + n.v * o });
+      const c = [at(a0, o0), at(a1, o0), at(a1, o1), at(a0, o1)];
+      p.moveTo(c[0].x, c[0].y);
+      for (let i = 1; i < 4; i++) p.lineTo(c[i].x, c[i].y);
+      p.close();
+    };
+    // The board turned a little toward the viewer (an illustrator's quarter
+    // turn, ~15°), so its sheet shows as a narrow face, not a stick: the
+    // board's edge, then the face (60 mm of the 230 mm width, foreshortened).
+    // Its lower edge runs into the fists, which close over it.
+    const face = Math.sin((15 * Math.PI) / 180) * CLIPBOARD.w;
+    quad(board, -40, l, -CLIPBOARD.thick, face + 6);
+    quad(paper, 4, l - 30, 4, face);
+    // Ruled lines on the sheet (the log's rows), across the face.
+    for (let a = 40; a < l - 70; a += 34) quad(lines, a, a + 3, 12, face - 8);
+    // The spring clip across the top edge.
+    quad(clip, l - 64, l - 10, 8, face - 4);
+  } else {
+    const c = s.corners;
+    board.moveTo(c[0].u, c[0].v);
+    for (let i = 1; i < 4; i++) board.lineTo(c[i].u, c[i].v);
+    board.close();
+    // The sheet inset 10 mm, the clip across the far edge's middle.
+    const mid = (a: { u: number; v: number }, b: { u: number; v: number }, t: number) => ({ u: a.u + (b.u - a.u) * t, v: a.v + (b.v - a.v) * t });
+    const p0 = mid(c[0], c[2], 0.04);
+    const p2 = mid(c[0], c[2], 0.96);
+    const p1 = mid(c[1], c[3], 0.04);
+    const p3 = mid(c[1], c[3], 0.96);
+    paper.moveTo(p0.u, p0.v);
+    paper.lineTo(p1.u, p1.v);
+    paper.lineTo(p2.u, p2.v);
+    paper.lineTo(p3.u, p3.v);
+    paper.close();
+    const k0 = mid(c[3], c[2], 0.3);
+    const k1 = mid(c[3], c[2], 0.7);
+    const k2 = mid(mid(c[0], c[1], 0.7), k1, 0.82);
+    const k3 = mid(mid(c[0], c[1], 0.3), k0, 0.82);
+    clip.moveTo(k0.u, k0.v);
+    clip.lineTo(k1.u, k1.v);
+    clip.lineTo(k2.u, k2.v);
+    clip.lineTo(k3.u, k3.v);
+    clip.close();
+  }
+  return { board, paper, clip, lines };
+}
+
+function Sheet({ pose }: { pose: PlayerPose }) {
+  const p = useMemo(() => buildSheet(pose), [pose]);
+  const turn = pose.view === 'above' && pose.facing !== undefined ? [{ translateX: pose.neck.u }, { translateY: pose.neck.v }, { rotate: pose.facing - Math.PI / 2 }, { translateX: -pose.neck.u }, { translateY: -pose.neck.v }] : undefined;
+  return (
+    <Group transform={turn}>
+      <Path path={p.board} color="#5b4430" />
+      <Path path={p.board} style="stroke" strokeWidth={3} color={EDGE} />
+      <Path path={p.paper} color="#e9e6dc" />
+      <Path path={p.paper} style="stroke" strokeWidth={1.5} color="#8f8b80" />
+      <Path path={p.lines} color="#9fb2c8" opacity={0.8} />
+      <Path path={p.clip}>
+        <LinearGradient start={vec(0, 0)} end={vec(40, 40)} colors={['#d9dde4', '#7e838d']} />
+      </Path>
+      <Path path={p.clip} style="stroke" strokeWidth={2} color={EDGE} />
+    </Group>
+  );
+}
+
+/** The operator reading the clipboard (poses: measureModel.operatorSideReading / operatorTopReading). */
+export function ReadingOperator({ pose, dim = 0.9 }: { pose: PlayerPose; dim?: number }) {
+  return (
+    <Group>
+      <PlayerBehind pose={pose} dim={dim} />
+      <Sheet pose={pose} />
+      <PlayerInFront pose={pose} dim={dim} />
     </Group>
   );
 }

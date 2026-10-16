@@ -12,7 +12,7 @@
  * is the proposal's drawing default and is never taught as a rule.
  */
 import type { Envelope, InstrumentModel, Part, RefLine, ReferenceSurface, ViewBox } from '../../engine/model/types.ts';
-import { ill, measureModel, operatorPart, operatorSide, operatorTop } from '../shared/measure/measureModel.ts';
+import { ill, measureModel, operatorPart, operatorReadingSolid, operatorSideReading, operatorTopReading } from '../shared/measure/measureModel.ts';
 import type { TestSpeakerGeom } from '../shared/measure/MeasureArt';
 
 /** The floor, below the reference axis (drawing default 1.2 m). */
@@ -62,7 +62,7 @@ const PARTS: Part[] = [
     solid: { kind: 'box', min: { x: -125 - 190, y: F11_SPK.bottom, z: -170 }, max: { x: -125 + 190, y: F11_GROUND, z: 170 } },
     prov: SPK_PROV,
   },
-  operatorPart(F11_OP.x, F11_OP.z, F11_GROUND, 'You, back from the mic and to one side. A person near the capsule reflects sound into it and changes the very field being measured — so keep back, as the method asks.'),
+  { ...operatorPart(F11_OP.x, F11_OP.z, F11_GROUND, 'You, back from the mic and to one side, the log sheet in your hands. A person near the capsule reflects sound into it and changes the very field being measured — so keep back, as the method asks.'), solid: operatorReadingSolid(F11_OP.x, F11_OP.z, F11_GROUND, -1) },
 ];
 
 export const F11_SURFACES: ReferenceSurface[] = [
@@ -73,8 +73,8 @@ export const F11_SURFACES: ReferenceSurface[] = [
 export const F11_LINES: RefLine[] = [{ id: 'axis', label: 'the loudspeaker’s axis', point: { x: 0, y: 0, z: 0 }, dir: { x: 1, y: 0, z: 0 } }];
 
 /** The operator's poses (the art draws them; the solid above is the same body). */
-export const F11_OP_SIDE = operatorSide(F11_OP.x, F11_GROUND, -1);
-export const F11_OP_TOP = operatorTop(F11_OP.x, F11_OP.z, -1);
+export const F11_OP_SIDE = operatorSideReading(F11_OP.x, F11_GROUND, -1);
+export const F11_OP_TOP = operatorTopReading(F11_OP.x, F11_OP.z, -1);
 
 const ENVELOPES: Envelope[] = [];
 

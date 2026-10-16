@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 import { DashPathEffect, Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { make, Operator, rectP, TestSpeaker } from '../shared/measure/MeasureArt';
+import { make, ReadingOperator, rectP, TestSpeaker } from '../shared/measure/MeasureArt';
 import { VenueArt } from '../shared/measure/VenueArt';
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
 import { VENUE } from '../shared/measure/venue.ts';
@@ -59,7 +59,7 @@ function Bench({ view }: { view: ViewId }) {
     <Group>
       <Floor view={view} box={F14_VIEWS.bench[view]} />
       <TestSpeaker g={SPK14} view={view} />
-      <Operator pose={view === 'side' ? F14_OP_SIDE : F14_OP_TOP} />
+      <ReadingOperator pose={view === 'side' ? F14_OP_SIDE : F14_OP_TOP} />
     </Group>
   );
 }
@@ -153,7 +153,7 @@ const HITS: SceneHits = {
     { id: 'spk.port', u0: -10, u1: 10, v0: -1076, v1: -1050, variants: B },
     { id: 'spk.box', u0: -250, u1: 0, v0: -1430, v1: -1030, variants: B },
     { id: 'spk.stand', u0: -315, u1: 65, v0: -1030, v1: 0, variants: B },
-    { id: 'op', u0: OP14.x - 260, u1: OP14.x + 260, v0: -1800, v1: 0, variants: B },
+    { id: 'op', u0: OP14.x - 560, u1: OP14.x + 260, v0: -1800, v1: 0, variants: B },
     { id: 'mainL', u0: M.front - M.depth, u1: M.front + 30, v0: M.top, v1: M.bottom, variants: VN },
     { id: 'mainL.stand', u0: M.front - M.depth / 2 - 190, u1: M.front - M.depth / 2 + 190, v0: M.bottom, v1: -V.stage.deck, variants: VN },
     { id: 'fill', u0: V.fill.x - V.fill.depth, u1: V.fill.x + 30, v0: -V.stage.deck - V.fill.h, v1: -V.stage.deck, variants: VN },
@@ -169,7 +169,7 @@ const HITS: SceneHits = {
   top: [
     { id: 'spk.box', u0: -250, u1: 20, v0: -125, v1: 125, variants: B },
     { id: 'spk.stand', u0: -315, u1: 65, v0: -170, v1: 170, variants: B },
-    { id: 'op', u0: OP14.x - 280, u1: OP14.x + 280, v0: OP14.z - 280, v1: OP14.z + 280, variants: B },
+    { id: 'op', u0: OP14.x - 560, u1: OP14.x + 280, v0: OP14.z - 280, v1: OP14.z + 280, variants: B },
     { id: 'mainL', u0: M.front - M.depth - 200, u1: M.front + 30, v0: -V.main.z - 280, v1: -V.main.z + 280, variants: VN },
     { id: 'mainR', u0: M.front - M.depth - 200, u1: M.front + 30, v0: V.main.z - 280, v1: V.main.z + 280, variants: VN },
     { id: 'fill', u0: V.fill.x - V.fill.depth, u1: V.fill.x + 30, v0: -V.fill.half, v1: V.fill.half, variants: VN },
@@ -186,11 +186,11 @@ const HITS: SceneHits = {
 
 const LABELS = {
   side: [
-    { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -1560, align: 'center' as const, at: { u: -125, v: -1430 }, variants: B },
-    { id: 'spk.tweeter', text: 'TWEETER', u: 90, v: -1420, align: 'left' as const, at: { u: 12, v: -1340 }, variants: B },
-    { id: 'spk.woofer', text: 'WOOFER', u: 110, v: -1030, align: 'left' as const, at: { u: 18, v: -1145 }, variants: B },
+    { id: 'spk.box', text: 'TEST LOUDSPEAKER', short: 'SPEAKER', u: -125, v: -1800, align: 'center' as const, at: { u: -125, v: -1430 }, variants: B },
+    { id: 'spk.tweeter', text: 'TWEETER', u: 90, v: -1620, align: 'left' as const, at: { u: 12, v: -1340 }, variants: B },
+    { id: 'spk.woofer', text: 'WOOFER', u: 150, v: -790, align: 'left' as const, at: { u: 18, v: -1145 }, variants: B },
     { id: 'spk.stand', text: 'STAND', u: -125, v: -380, align: 'center' as const, variants: B },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP14.x, v: -1900, align: 'center' as const, variants: B, at: { u: OP14.x, v: -1640 }, alts: [{ u: OP14.x - 420, v: -1300, align: 'right' as const }] },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP14.x - 240, v: -1720, align: 'right' as const, variants: B, at: { u: OP14.x, v: -1640 }, alts: [{ u: OP14.x, v: -1900, align: 'center' as const }, { u: OP14.x - 300, v: -420, align: 'right' as const }] },
     { id: 'mainL', text: 'LEFT MAIN', short: 'MAIN', u: M.front - M.depth / 2, v: M.top - 260, align: 'center' as const, at: { u: M.front - M.depth / 2, v: M.top }, variants: VN },
     { id: 'fill', text: 'FRONT FILL', short: 'FILL', u: 300, v: -1500, align: 'left' as const, at: { u: V.fill.x - 100, v: -V.stage.deck - V.fill.h }, variants: VN },
     { id: 'sub', text: 'SUB', u: (V.sub.x0 + V.sub.x1) / 2 + 900, v: -900, align: 'left' as const, at: { u: V.sub.x1, v: -V.sub.h }, variants: VN },
@@ -214,11 +214,23 @@ const LABELS = {
   ],
 };
 
+/** The bench setups' mic band — in front of the baffle about the reference
+ *  axis, where the mic, its boom, its lobe and its distance bracket go (art
+ *  fix round 3, 2026-10-16: the operator's name sat faded on the boom). The
+ *  part names keep off it as they keep off a drawn figure (figureAt feeds
+ *  only the labels' occupancy, never a tap). */
+const MIC_BAND = {
+  side: { u0: 40, u1: OP14.x - 300, v0: -1450, v1: -940 },
+  top: { u0: 40, u1: OP14.x - 300, v0: -320, v1: 320 },
+} as const;
+const inBand = (r: { u0: number; u1: number; v0: number; v1: number }, u: number, v: number, tol: number) => u >= r.u0 - tol && u <= r.u1 + tol && v >= r.v0 - tol && v <= r.v1 + tol;
+
 export const F14_ART: LessonArt = {
   Instrument: Scene,
   labels: labelsOf(LABELS),
   hitTest: hitTestOf(HITS),
   labelsYieldToMic: true,
+  figureAt: (view, variant, u, v, tol) => variant === 'bench' && inBand(MIC_BAND[view === 'side' ? 'side' : 'top'], u, v, tol),
   pages: F14_PAGES,
   stepCounts: F14_STEP_COUNTS,
 };

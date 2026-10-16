@@ -35,23 +35,43 @@ function buildSide() {
     slats.moveTo(x, TOP + 10);
     slats.lineTo(x, TOP + 62);
   }
-  // A seat in profile per row (the near seats): a seat pan, a back, a leg.
+  // A seat in profile per row (the near seats; art fix round 3, 2026-10-16 —
+  // graded "seats are tick marks"): an upholstered cushion and a reclined,
+  // padded back at their true thickness (90 / 80 mm), the armrest over them,
+  // and the steel pedestal on its floor plate. Drawing defaults: seat 450
+  // above the floor, back to 900, armrest 650.
   const seats = make();
+  const backs = make();
+  const steel = make();
+  const arms = make();
+  const F = F13_FLOOR;
   for (const x of ROWS) {
-    const s = make();
-    s.moveTo(x - 230, F13_FLOOR - 450);
-    s.lineTo(x + 230, F13_FLOOR - 450);
-    s.lineTo(x + 230, F13_FLOOR - 400);
-    s.lineTo(x + 270, F13_FLOOR - 400);
-    s.lineTo(x + 300, F13_FLOOR - 880);
-    s.lineTo(x + 250, F13_FLOOR - 890);
-    s.lineTo(x + 215, F13_FLOOR - 470);
-    s.lineTo(x - 230, F13_FLOOR - 470);
-    s.close();
-    seats.addPath(s);
-    rectP(seats, x - 30, F13_FLOOR - 420, x + 30, F13_FLOOR, 8);
+    rectP(seats, x - 225, F - 480, x + 215, F - 392, 34);
+    const b = make();
+    b.moveTo(x + 150, F - 470);
+    b.quadTo(x + 175, F - 700, x + 228, F - 905);
+    b.quadTo(x + 268, F - 935, x + 306, F - 900);
+    b.quadTo(x + 268, F - 690, x + 240, F - 450);
+    b.close();
+    backs.addPath(b);
+    // The pedestal: a column from under the cushion to a floor plate.
+    rectP(steel, x - 26, F - 400, x + 26, F - 18, 8);
+    rectP(steel, x - 150, F - 22, x + 150, F, 6);
+    // The armrest on its bracket, over the cushion's rear half.
+    rectP(arms, x - 120, F - 672, x + 240, F - 630, 18);
+    rectP(arms, x + 150, F - 640, x + 196, F - 470, 6);
   }
-  return { floor, boards, ceiling, walls, door, vent, slats, seats };
+  // The far side wall seen past the seats: its curtain hanging in folds
+  // between x 1500 and 7600 (the plan's curtains), floor to 2.7 m (drawing default).
+  const curtain = make();
+  const folds = make();
+  rectP(curtain, 1500, F - 2700, 7600, F - 20, 8);
+  for (let x = 1580; x < 7600; x += 160) {
+    folds.moveTo(x, F - 2650);
+    folds.lineTo(x, F - 40);
+  }
+  const rail = rectP(make(), 1440, F - 2760, 7660, F - 2700, 10);
+  return { floor, boards, ceiling, walls, door, vent, slats, seats, backs, steel, arms, curtain, folds, rail };
 }
 
 function buildTop() {
@@ -96,6 +116,12 @@ export function RoomArt13({ view, variant }: { view: ViewId; variant: VariantId 
     return (
       <Group>
         <Path path={s.ceiling} color="#2d2e33" />
+        {/* The far wall's curtain, quiet behind everything else. */}
+        <Path path={s.curtain}>
+          <LinearGradient start={vec(0, F13_FLOOR - 2700)} end={vec(0, F13_FLOOR)} colors={['#261a1d', '#1c1416']} />
+        </Path>
+        <Path path={s.folds} style="stroke" strokeWidth={34} color="#33232a" opacity={0.5} />
+        <Path path={s.rail} color="#55585f" />
         <Path path={s.walls}>
           <LinearGradient start={vec(0, TOP)} end={vec(0, F13_FLOOR)} colors={['#3a3b40', '#26272b']} />
         </Path>
@@ -106,10 +132,22 @@ export function RoomArt13({ view, variant }: { view: ViewId; variant: VariantId 
         <Path path={s.door} color="#5d4a38" />
         <Path path={s.vent} color="#55585f" />
         <Path path={s.slats} style="stroke" strokeWidth={10} color="#2a2c31" />
+        <Path path={s.steel}>
+          <LinearGradient start={vec(0, F13_FLOOR - 400)} end={vec(0, F13_FLOOR)} colors={['#6b6f78', '#2f3137']} />
+        </Path>
+        <Path path={s.steel} style="stroke" strokeWidth={8} color="#0b0b0c" />
+        <Path path={s.backs}>
+          <LinearGradient start={vec(0, F13_FLOOR - 930)} end={vec(0, F13_FLOOR - 450)} colors={['#6a4f74', '#3a2b41']} />
+        </Path>
+        <Path path={s.backs} style="stroke" strokeWidth={10} color="#0b0b0c" />
         <Path path={s.seats}>
-          <LinearGradient start={vec(0, F13_FLOOR - 900)} end={vec(0, F13_FLOOR)} colors={['#4b3a52', '#2c2231']} />
+          <LinearGradient start={vec(0, F13_FLOOR - 480)} end={vec(0, F13_FLOOR - 392)} colors={['#7a5c85', '#3f2f47']} />
         </Path>
         <Path path={s.seats} style="stroke" strokeWidth={10} color="#0b0b0c" />
+        <Path path={s.arms}>
+          <LinearGradient start={vec(0, F13_FLOOR - 672)} end={vec(0, F13_FLOOR - 470)} colors={['#5a4636', '#2e241c']} />
+        </Path>
+        <Path path={s.arms} style="stroke" strokeWidth={8} color="#0b0b0c" />
         {pa ? <TestSpeaker g={PA_GEOM(-PA13.z)} view="side" /> : <OmniSource cu={0} cv={0} r={SRC_R} floorV={F13_FLOOR} />}
       </Group>
     );

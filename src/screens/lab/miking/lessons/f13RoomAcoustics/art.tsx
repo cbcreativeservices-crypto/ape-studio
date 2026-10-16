@@ -24,6 +24,8 @@ const HITS: SceneHits = {
     { id: 'vent', u0: 3600, u1: 4400, v0: TOP - 90, v1: TOP + 80 },
     { id: 'door', u0: ROOM13.front - 80, u1: ROOM13.front + 160, v0: F13_FLOOR - 2100, v1: F13_FLOOR },
     { id: 'seats', u0: ROWS[0] - 250, u1: ROWS[ROWS.length - 1] + 320, v0: F13_FLOOR - 900, v1: F13_FLOOR },
+    // The far wall's curtain behind the seats (art fix round 3).
+    { id: 'curtains', u0: 1500, u1: 7600, v0: F13_FLOOR - 2760, v1: F13_FLOOR },
   ],
   top: [
     { id: 'src', u0: -SRC_R - 30, u1: SRC_R + 30, v0: -SRC_R - 30, v1: SRC_R + 30, variants: ['room'] },
@@ -41,8 +43,9 @@ const LABELS = {
     { id: 'vent', text: 'AIR VENT', u: 4000, v: TOP + 420, align: 'center' as const, at: { u: 4000, v: TOP + 80 } },
     // Above the receivers' ear height, between the rows and the door: never
     // under the receiver's ring (owner decision X6, 2026-10-08).
-    { id: 'seats', text: 'SEATS', u: 5650, v: F13_FLOOR - 2400, align: 'center' as const, at: { u: 5650, v: F13_FLOOR - 900 } },
-    { id: 'door', text: 'DOOR', u: ROOM13.front - 500, v: F13_FLOOR - 2600, align: 'right' as const, at: { u: ROOM13.front - 40, v: F13_FLOOR - 2100 } },
+    { id: 'seats', text: 'SEATS', u: 5650, v: F13_FLOOR - 2950, align: 'center' as const, at: { u: 5650, v: F13_FLOOR - 900 } },
+    { id: 'curtains', text: 'CURTAINS', u: 2700, v: F13_FLOOR - 2950, align: 'center' as const, at: { u: 2700, v: F13_FLOOR - 2730 } },
+    { id: 'door', text: 'DOOR', u: ROOM13.front - 500, v: F13_FLOOR - 2950, align: 'right' as const, at: { u: ROOM13.front - 40, v: F13_FLOOR - 2100 } },
   ],
   top: [
     { id: 'src', text: 'OMNI TEST SOURCE', short: 'SOURCE', u: 0, v: -900, align: 'center' as const, at: { u: 0, v: -SRC_R }, variants: ['room'] },

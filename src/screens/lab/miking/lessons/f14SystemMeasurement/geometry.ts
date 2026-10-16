@@ -19,7 +19,7 @@
  * (MEYER-MAPP), used as a sensible listener height, never as the method's rule.
  */
 import type { InstrumentModel, Part, RefLine, ReferenceSurface, Vec3, ViewBox } from '../../engine/model/types.ts';
-import { ill, measureModel, operatorPart, operatorSide, operatorTop } from '../shared/measure/measureModel.ts';
+import { ill, measureModel, operatorPart, operatorReadingSolid, operatorSideReading, operatorTopReading } from '../shared/measure/measureModel.ts';
 import type { TestSpeakerGeom } from '../shared/measure/MeasureArt';
 import { FILL, MAIN_L, MAIN_R, SUB, VENUE } from '../shared/measure/venue.ts';
 
@@ -81,7 +81,7 @@ const PARTS: Part[] = [
   { id: 'spk.tweeter', label: 'the tweeter', short: 'tweeter', role: 'The small driver for the highs. A mic too far above or below the axis hears the two drivers at different distances.', variants: ['bench'], prov: SPK },
   { id: 'spk.port', label: 'the port', short: 'port', role: 'The reflex port under the woofer: another place the lows leave, and one a close mic on the cone alone does not hear.', variants: ['bench'], prov: SPK },
   { id: 'spk.stand', label: 'the loudspeaker stand', short: 'stand', role: 'A rigid stand on a weighted base: the loudspeaker does not move between readings.', variants: ['bench'], solid: { kind: 'box', min: { x: -125 - 190, y: SPK14.bottom, z: -170 }, max: { x: -125 + 190, y: 0, z: 170 } }, prov: SPK },
-  { ...operatorPart(OP14.x, OP14.z, 0, 'You, back from the mic and to one side: a person near the capsule reflects sound into it and changes the very field being measured.'), variants: ['bench'] },
+  { ...operatorPart(OP14.x, OP14.z, 0, 'You, back from the mic and to one side, the log sheet in your hands: a person near the capsule reflects sound into it and changes the very field being measured.'), solid: operatorReadingSolid(OP14.x, OP14.z, 0, -1), variants: ['bench'] },
   /* venue */
   ...cabinet('mainL', 'the left main loudspeaker', 'left main', 'The left main on its stand at the stage’s corner: the sound most of the left side of the audience hears. Measure it alone across its seats first.', MAIN_L_GEOM, ['venue'], VEN),
   ...cabinet('mainR', 'the right main loudspeaker', 'right main', 'The right main, mirrored: muted while you measure the left one alone.', MAIN_R_GEOM, ['venue'], VEN, []),
@@ -126,8 +126,8 @@ export const F14_LINES: RefLine[] = [
   { id: 'wooferAxis', label: 'the woofer’s axis', point: WOOFER14, dir: { x: 1, y: 0, z: 0 }, variants: ['bench'], surfaces: ['woofer'] },
 ];
 
-export const F14_OP_SIDE = operatorSide(OP14.x, 0, -1);
-export const F14_OP_TOP = operatorTop(OP14.x, OP14.z, -1);
+export const F14_OP_SIDE = operatorSideReading(OP14.x, 0, -1);
+export const F14_OP_TOP = operatorTopReading(OP14.x, OP14.z, -1);
 
 /** The sources' points the pages draw (re-exported for the art and the tests). */
 export { FILL, MAIN_L, MAIN_R, SUB };

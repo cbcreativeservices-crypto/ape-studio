@@ -117,7 +117,8 @@ describe('X6 — leaders never cross', () => {
   });
   it('the named labels moved (F12 AIR UNIT, F13 SEATS, B11 PERIMETER BOOM) and venue labels point at their part', () => {
     assert.match(readFileSync(join(MIKING, 'lessons/f12SoundLevel/art.tsx'), 'utf8'), /text: 'AIR UNIT', u: 1400, v: -2650/);
-    assert.match(readFileSync(join(MIKING, 'lessons/f13RoomAcoustics/art.tsx'), 'utf8'), /text: 'SEATS', u: 5650, v: F13_FLOOR - 2400/);
+    // Round 3 (2026-10-16): above the far wall's curtain now (still well above the receivers' ear height).
+    assert.match(readFileSync(join(MIKING, 'lessons/f13RoomAcoustics/art.tsx'), 'utf8'), /text: 'SEATS', u: 5650, v: F13_FLOOR - 2950/);
     assert.match(readFileSync(join(MIKING, 'lessons/b11Athletes/scene.tsx'), 'utf8'), /'PERIMETER BOOM', short: 'BOOM', u: OPERATOR\.feet\.x, v: -700/);
     assert.match(readFileSync(join(MIKING, 'lessons/shared/sports/sportsArt.tsx'), 'utf8'), /point: planUV\(m\.p\)/);
   });
