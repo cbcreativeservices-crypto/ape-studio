@@ -634,6 +634,48 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 15:51 · ccode · a549efa1
+changed: Sound Playground art fix: taller glass for the four views, 10.5 pt pane names and balance strip
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:51 · ccode · 57fb2bf3
+changed: Signal Chain art fix: the chain drawn as nine half-rack units on one patch lane, GR at the unit, scenario patch lit (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:50 · ccode · cee36ab2
+changed: Miking Lab 7 body mics art fix: lav cable to its bodypack, gooseneck base clear of the hand (art grading 2026-10-16, round 2)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:50 · ccode · f96985af
+changed: Start Here / Foundations air field: the ear sits on a listener's head, not alone in the air
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:49 · ccode · 46658ba9
+changed: De-Esser lab art fix: detector drawn as one level per frame; voiced frames show the voice's harmonics (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:43 · ccode · 6ad0304d
+changed: Harmonograph art fix: oscillator key off the table legs, platform post and shadow, no unexplained tabletop marks (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 15:38 · ccode · 18c5a572
+changed: Autotune Lab art fix: 11 pt grid labels, filled correction wedge, pitch dot rides the curves (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 15:31 · ccode · d1de44b4
 changed: Foundations tracer particles: star glints replaced by the classroom marker (owner 2026-10-16)
 affects other side: nothing (app only)
