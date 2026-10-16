@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 12:38 · ccode · 70375ae6
+changed: Lab art fix (review pass): name the camera, the spectators, the rig and the floor mic; close targets label above
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 12:31 · ccode · e441281b
 changed: Lab art fix: Spatial (F10) and Sports (B13-B15, B17) drawn as real objects
 affects other side: nothing (app only)
