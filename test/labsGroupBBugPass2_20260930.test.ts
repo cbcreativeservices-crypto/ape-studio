@@ -132,5 +132,5 @@ test('Harmonics LIVE: the EngineGate card gets the LIVE start as its TRY AGAIN',
 });
 
 test('Ear training See-it plots: axis labels ≥ 9 pt (fixed-height Svg, fit scale ≤ 1)', () => {
-  assert.match(read('src/screens/lab/eartraining/SeeItView.tsx'), /const AXIS_PX = 9;/);
+  assert.match(read('src/screens/lab/eartraining/SeeItView.tsx'), /const AXIS_PX = 11;/);
 });

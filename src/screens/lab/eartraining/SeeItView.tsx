@@ -28,7 +28,7 @@ import { levelColor, rampColors } from '../../../features/tools/levelColor';
 const W = 320;
 const H = 150;
 const PLOT_L = 30; // left gutter — dB ticks / lane labels
-const PLOT_R = W - 6;
+const PLOT_R = W - 14; // clear of the frame: a 16 kHz peak no longer hugs it (art grading 2026-10-16)
 const PLOT_T = 6;
 const PLOT_B = H - 20; // above the Hz label row
 const F_LO = 40;
@@ -45,7 +45,8 @@ const LABEL_FONT = fonts.oswaldMedium;
 // ≥ 9 pt on a phone (owner 2026-09-25 hard rule; bug hunt 2026-09-30 pass 2):
 // every plot here is a fixed-HEIGHT Svg with width 100%, so the fit scale is
 // min(width / 320, 1) — never above 1 — and 8.5 drew 8.5 pt axis labels.
-const AXIS_PX = 9;
+// 11 since the art grading (2026-10-16): 9 met the floor but read as ~7 px glyphs.
+const AXIS_PX = 11;
 
 const clampHz = (hz: number) => Math.max(F_LO, Math.min(F_HI, hz));
 const xOf = (hz: number) =>
@@ -154,7 +155,9 @@ function DifferenceSeeIt({
   const nameOf = trial.clips[d.of]?.label ?? '';
   const nameRef = trial.clips[d.ref]?.label ?? '';
   const kTicks: number[] = [];
-  for (let f = 1000; f <= d.maxHz; f += 1000) kTicks.push(f);
+  // At most ~8 labels across the plot, so the 11-unit tags never touch.
+  const kStep = 1000 * Math.max(1, Math.ceil(d.maxHz / 1000 / 8));
+  for (let f = kStep; f <= d.maxHz; f += kStep) kTicks.push(f);
   const a11y = `Measured power of ${clipName(nameOf)} relative to ${clipName(nameRef)}, 0 to ${d.maxHz / 1000} kilohertz on a linear axis`;
   return (
     <ExpandableFigure aspect={W / DIFF_H} title={`${nameOf} RELATIVE TO ${nameRef}`} controls={controls} render={(w, h) => (
@@ -314,9 +317,9 @@ function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind:
           const w = xOf(Math.min(b.hi, F_HI)) - x;
           if (w < 28) return null;
           const text = BAND_ABBR[b.label] ?? b.label.toUpperCase();
-          const tw = text.length * 4.6 + 6;
+          const tw = text.length * 5.6 + 6;
           return (
-            <Rect key={`bb${b.label}`} x={x + w / 2 - tw / 2} y={PLOT_T + 2} width={tw} height={11} rx={2} fill="#0a0a0c" fillOpacity={0.85} />
+            <Rect key={`bb${b.label}`} x={x + w / 2 - tw / 2} y={PLOT_T + 1} width={tw} height={13} rx={2} fill="#0a0a0c" fillOpacity={0.85} />
           );
         })}
         {spec.bands?.map((b) => {
@@ -327,7 +330,7 @@ function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind:
             <SvgText
               key={`bl${b.label}`}
               x={x + w / 2}
-              y={PLOT_T + 10}
+              y={PLOT_T + 11}
               fontSize={AXIS_PX}
               fontFamily={AXIS_FONT}
               fill={hiBand?.label === b.label ? colors.green : colors.textMuted}
@@ -341,11 +344,11 @@ function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind:
           ? (() => {
               const cx = Math.max(PLOT_L + 30, Math.min(PLOT_R - 30, xOf(Math.sqrt(hiBand.lo * Math.min(hiBand.hi, F_HI)))));
               const text = hiBand.label.toUpperCase();
-              const tw = text.length * 6 + 8;
+              const tw = text.length * 6.6 + 8;
               return (
                 <>
-                  <Rect x={cx - tw / 2} y={PLOT_T + 13} width={tw} height={13} rx={2} fill="#0a0a0c" fillOpacity={0.85} />
-                  <SvgText x={cx} y={PLOT_T + 23} fontSize={9.5} fontFamily={LABEL_FONT} fill={colors.green} textAnchor="middle">
+                  <Rect x={cx - tw / 2} y={PLOT_T + 15} width={tw} height={15} rx={2} fill="#0a0a0c" fillOpacity={0.85} />
+                  <SvgText x={cx} y={PLOT_T + 26.5} fontSize={11} fontFamily={LABEL_FONT} fill={colors.green} textAnchor="middle">
                     {text}
                   </SvgText>
                 </>
@@ -448,7 +451,7 @@ function WaveSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'wa
         })}
         {lanes.map((l, i) =>
           l.label !== '▶' ? (
-            <SvgText key={`ll${i}`} x={6} y={top + i * (laneH + gap) + 12} fontSize={10} fontFamily={LABEL_FONT} fill={colors.textSub}>
+            <SvgText key={`ll${i}`} x={6} y={top + i * (laneH + gap) + 12} fontSize={11} fontFamily={LABEL_FONT} fill={colors.textSub}>
               {l.label}
             </SvgText>
           ) : null,
@@ -462,7 +465,7 @@ function WaveSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'wa
             <SvgText
               x={Math.max(PLOT_L + 16, (xT(markers[0]) + xT(markers[1])) / 2)}
               y={top - 9}
-              fontSize={9}
+              fontSize={10.5}
               fontFamily={READOUT_FONT}
               fill={colors.gold}
               textAnchor="middle"
@@ -550,12 +553,12 @@ function GonioSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'g
             <Line x1={22} y1={22} x2={118} y2={118} stroke="rgba(255,255,255,0.06)" />
             <Line x1={118} y1={22} x2={22} y2={118} stroke="rgba(255,255,255,0.06)" />
             <Polyline points={p.pts} fill="none" stroke={TRACE_COLORS[i]} strokeWidth={0.7} opacity={0.85} />
-            <SvgText x={14} y={18} fontSize={9.5} fontFamily={LABEL_FONT} fill={colors.textMuted}>L</SvgText>
-            <SvgText x={126} y={18} fontSize={9.5} fontFamily={LABEL_FONT} fill={colors.textMuted} textAnchor="end">R</SvgText>
+            <SvgText x={14} y={18} fontSize={11} fontFamily={LABEL_FONT} fill={colors.textMuted}>L</SvgText>
+            <SvgText x={126} y={18} fontSize={11} fontFamily={LABEL_FONT} fill={colors.textMuted} textAnchor="end">R</SvgText>
             <SvgText x={70} y={131} fontSize={AXIS_PX} fontFamily={AXIS_FONT} fill={colors.textMuted} textAnchor="middle">
               M up · S across
             </SvgText>
-            <SvgText x={70} y={GONIO_PANE + 13} fontSize={10} fontFamily={LABEL_FONT} fill={colors.textPrimary} textAnchor="middle">
+            <SvgText x={70} y={GONIO_PANE + 13} fontSize={11} fontFamily={LABEL_FONT} fill={colors.textPrimary} textAnchor="middle">
               {p.label !== '▶' ? `${p.label} · ` : ''}corr {p.corr.toFixed(2)}
             </SvgText>
         </G>
