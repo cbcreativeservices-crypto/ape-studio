@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 00:12 · ccode · 03af8ed2
+changed: Lab art grading fix: Class D stage label 'one period at the peak' off the low-side box and the rail line
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 23:50 · ccode · 2ea18433
 changed: Lab art grading fix: Advanced Mixing routing map — OUT clear of MIX BUS and inside the frame, bus names inside their boxes, FX return off the rhythm wire
 affects other side: nothing (app only)
