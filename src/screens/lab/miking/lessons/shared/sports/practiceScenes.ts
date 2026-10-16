@@ -70,13 +70,40 @@ export const PF_CREW: PlanRect = { x0: -2, y0: -7, x1: 32, y1: -5.5 };
  *  drawing default wide enough for A, B and C (B is 32° left). */
 export const PF_ARC: TurnArc = { at: PF.M, fromDeg: -40, toDeg: 40, reach: 26 };
 
+/**
+ * The training pitch the practice rectangle is laid out on (fix pass
+ * 2026-10-16: the plan showed a bare green box). A football (soccer) pitch's
+ * near corner, to the Laws of the Game: the touchline 4 m below the
+ * rectangle and the goal line 1 m to its right (both drawing defaults — the
+ * lesson places only the rectangle), lines 12 cm wide, the corner arc r 1 m.
+ * The rest of the pitch runs on off the plan; the crew strip and the camera
+ * stand on the grass outside the touchline.
+ */
+export const PITCH = { touchY: -4, goalX: 31, cornerR: 1 } as const;
+function arcPts(c: P2, r: number, a0: number, a1: number, n = 12): P2[] {
+  return Array.from({ length: n + 1 }, (_, i) => {
+    const a = ((a0 + ((a1 - a0) * i) / n) * Math.PI) / 180;
+    return p2(c.x + r * Math.cos(a), c.y + r * Math.sin(a));
+  });
+}
+const PITCH_CORNER = [
+  { pts: [p2(-40, PITCH.touchY), p2(PITCH.goalX, PITCH.touchY)] },
+  { pts: [p2(PITCH.goalX, PITCH.touchY), p2(PITCH.goalX, 60)] },
+  { pts: arcPts(p2(PITCH.goalX, PITCH.touchY), PITCH.cornerR, 90, 180) },
+] as const;
+
 export const PRACTICE_FIELD: VenueScene = {
   id: 'practiceField',
   label: 'Practice field',
   blurb: 'A 30 × 20 m rectangle on an inactive training field; the comparison mark M 6 m outside it, three targets inside.',
   play: [p2(0, 0), p2(30, 0), p2(30, 20), p2(0, 20)],
   surface: 'grass',
-  markings: [{ pts: [p2(0, 0), p2(30, 0), p2(30, 20), p2(0, 20)], closed: true }],
+  setting: { surface: 'grass', poly: [p2(-40, -40), p2(80, -40), p2(80, 60), p2(-40, 60)] },
+  markings: [
+    // The practice rectangle, painted in yellow as a training grid is (white is the pitch's).
+    { pts: [p2(0, 0), p2(30, 0), p2(30, 20), p2(0, 20)], closed: true, ink: 'yellow', weight: 0.55 },
+    ...PITCH_CORNER,
+  ],
   keepClear: [
     {
       id: 'offset',
@@ -124,13 +151,33 @@ export const PL_PRINTED = { A: 5, B: 8, C: 11 } as const;
 export const PL_OUTSIDE: PlanRect = { x0: -6.5, y0: -4.5, x1: 6.5, y1: -0.3 };
 export const PL_ARC: TurnArc = { at: PL.M, fromDeg: -45, toDeg: 45, reach: 11.5 };
 
+/**
+ * The gym court the mock boundary is laid out on (fix pass 2026-10-16: the
+ * plan was a bare grey box). An inactive basketball court, to FIBA's lines:
+ * the mock boundary is its sideline (y = 0), A, B and C stand on its centre
+ * line (x = 0); the court 28 × 15 m, the centre circle r 1.80 m, the
+ * three-point arcs r 6.75 m round the baskets 1.575 m in from each end line.
+ * The court's place is a drawing default; only the lesson's line and marks
+ * are its own.
+ */
+export const COURT = { len: 28, wid: 15, centreR: 1.8, threeR: 6.75, basketIn: 1.575 } as const;
+const COURT_MIDDLE = [
+  { pts: [p2(0, 0), p2(0, COURT.wid)] },
+  { pts: [p2(-20, COURT.wid), p2(20, COURT.wid)] },
+  { pts: [], circle: { c: p2(0, COURT.wid / 2), r: COURT.centreR } },
+  // The three-point arcs: ±78° about each basket meets the corner lines 0.9 m in from the sidelines.
+  { pts: arcPts(p2(-(COURT.len / 2 - COURT.basketIn), COURT.wid / 2), COURT.threeR, -78, 78, 24) },
+  { pts: arcPts(p2(COURT.len / 2 - COURT.basketIn, COURT.wid / 2), COURT.threeR, 102, 258, 24) },
+] as const;
+
 export const PRACTICE_LINE: VenueScene = {
   id: 'practiceLine',
   label: 'Practice line',
   blurb: 'A straight mock boundary on an inactive dry floor: A, B and C at 2, 5 and 8 m inside it, the mic mark M 3 m outside — all on one line.',
   play: [p2(-6.5, 0), p2(6.5, 0), p2(6.5, 10), p2(-6.5, 10)],
   surface: 'mock',
-  markings: [{ pts: [p2(-7, 0), p2(7, 0)] }],
+  setting: { surface: 'court', poly: [p2(-30, -20), p2(30, -20), p2(30, 30), p2(-30, 30)] },
+  markings: [{ pts: [p2(-20, 0), p2(20, 0)] }, ...COURT_MIDDLE],
   keepClear: [],
   routes: [{ id: 'walk', label: 'the source participant’s walking route', short: 'WALK', pts: [p2(0.9, 1.2), p2(0.9, 8.8)], kind: 'players' }],
   footprints: [{ id: 'outside', label: 'the outside zone', short: 'OUTSIDE ZONE', rect: PL_OUTSIDE }],
@@ -242,7 +289,9 @@ export const PRACTICE_SMALL: VenueScene = {
   blurb: 'A quiet, cleared room: three source points A, B and C 2 m apart on one walking line, and two separate equipment areas M1 and M2, 2 m either side of B.',
   play: [p2(PS_AREA.x0, PS_AREA.y0), p2(PS_AREA.x1, PS_AREA.y0), p2(PS_AREA.x1, PS_AREA.y1), p2(PS_AREA.x0, PS_AREA.y1)],
   surface: 'mock',
-  markings: [{ pts: [PS.A, PS.C] }],
+  // Fix pass 2026-10-16: the room is a sports hall — its hardwood floor (a drawing default).
+  setting: { surface: 'court', poly: [p2(-20, -20), p2(30, -20), p2(30, 20), p2(-20, 20)] },
+  markings: [{ pts: [PS.A, PS.C] }, { pts: [p2(PS_AREA.x0, PS_AREA.y0), p2(PS_AREA.x1, PS_AREA.y0), p2(PS_AREA.x1, PS_AREA.y1), p2(PS_AREA.x0, PS_AREA.y1)], closed: true, ink: 'yellow', weight: 0.4 }],
   keepClear: [
     { id: 'clear.0', label: 'the walking path’s clearance', short: 'KEEP CLEAR', poly: [p2(-0.8, -1.2), p2(4.8, -1.2), p2(4.8, -0.7), p2(-0.8, -0.7)], basis: 'drawing', note: PS_CLEAR_NOTE },
     { id: 'clear.1', label: 'the walking path’s clearance', short: 'KEEP CLEAR', poly: [p2(-0.8, 0.7), p2(4.8, 0.7), p2(4.8, 1.2), p2(-0.8, 1.2)], basis: 'drawing', note: PS_CLEAR_NOTE },
@@ -303,7 +352,9 @@ export const PRACTICE_CROWD: VenueScene = {
   blurb: 'A dry room laid out as a small venue: the action point A, three audience places U1–U3 in front of the stereo centre S, the action mic D beside A, and a separate commentary station.',
   play: [p2(PC_AREA.x0, PC_AREA.y0), p2(PC_AREA.x1, PC_AREA.y0), p2(PC_AREA.x1, PC_AREA.y1), p2(PC_AREA.x0, PC_AREA.y1)],
   surface: 'mock',
-  markings: [{ pts: [p2(-1.2, -2), p2(1.2, -2)] }],
+  // Fix pass 2026-10-16: the mock venue is a sports hall — its hardwood floor (a drawing default).
+  setting: { surface: 'court', poly: [p2(-20, -20), p2(30, -20), p2(30, 20), p2(-20, 20)] },
+  markings: [{ pts: [p2(-1.2, -2), p2(1.2, -2)] }, { pts: [p2(PC_AREA.x0, PC_AREA.y0), p2(PC_AREA.x1, PC_AREA.y0), p2(PC_AREA.x1, PC_AREA.y1), p2(PC_AREA.x0, PC_AREA.y1)], closed: true, ink: 'yellow', weight: 0.4 }],
   keepClear: [],
   routes: [{ id: 'access', label: 'the access route', short: 'ACCESS', pts: [p2(-3.4, -4.8), p2(-3.4, 1.0)], kind: 'exit' }],
   footprints: [

@@ -158,7 +158,8 @@ export function useBoundaryStep({ onInteractive, done, prediction, source = { x:
   }, [seen, done, onInteractive]);
   const hWords = h === 0 ? 'at the surface (a boundary mic)' : h >= 100 ? `${h / 10} cm above the floor` : `${h / 10} cm above the floor`;
   const words = `A capsule ${hWords}; the source ${(x / 1000).toFixed(1)} m away, ${(source.hs / 1000).toFixed(1)} m up. The reflected path is ${Math.round(pth.extra)} mm longer than the direct one; ${n1 ? `the first notch of their sum is near ${fmtHz(n1)}` : 'the first notch is above the audio band'}.`;
-  const box = { u0: -700, u1: x + 700, v0: -Math.max(source.hs, h) - 600, v1: Math.max(source.hs, 300) + 250 };
+  // Tall enough for the person clapping at the source (1.8 m) — fix pass 2026-10-16.
+  const box = { u0: -700, u1: x + 700, v0: -Math.max(source.hs + 600, h + 600, 2000), v1: Math.max(source.hs, 300) + 250 };
   return {
     key: 'boundary',
     title: 'A mic at the floor',
@@ -173,12 +174,13 @@ export function useBoundaryStep({ onInteractive, done, prediction, source = { x:
           box={box}
           a11y={words}
           labels={[
-            { id: 's', text: 'SOURCE', u: x, v: -source.hs - 260, align: 'center', tone: 'amber' },
+            { id: 's', text: 'SOURCE · A CLAP', short: 'CLAP', u: x - 380, v: -source.hs - 330, align: 'right', tone: 'amber', at: { u: x - 60, v: -source.hs - 60 } },
             { id: 'img', text: 'ITS MIRROR IMAGE', short: 'IMAGE', u: x, v: source.hs + 160, align: 'center', tone: 'muted' },
             { id: 'fl', text: 'HARD FLOOR', short: 'FLOOR', u: -600, v: 180, align: 'left', tone: 'muted' },
+            { id: 'mic', text: h === 0 ? 'BOUNDARY MIC' : 'MIC', short: 'MIC', u: -450, v: -Math.max(h, 300) - 450, align: 'center', tone: 'amber', at: { u: -40, v: -Math.max(h, 30) - 30 } },
           ]}
         >
-          {(px) => <BoundarySection g={g} px={px} u0={-700} u1={x + 700} />}
+          {(px) => <BoundarySection g={g} px={px} u0={-700} u1={x + 700} clapper />}
         </FieldStage>
       ),
       badge: 'A simplified picture: blue = direct, amber = off the floor · a large hard floor, equal arrivals, no edges',

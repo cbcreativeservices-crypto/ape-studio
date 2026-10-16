@@ -27,6 +27,9 @@ import { useMemo, type ReactNode } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { MikingMicArt } from '../../../../../../features/lab/micDrawings';
 import { ShotgunArt } from '../fieldmics/FieldMicArt';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { standing, topPose } from '../foley/performer.ts';
+import { v3 } from '../foley/frameF.ts';
 import { shotgunLobe } from '../../../engine/physics/shotgun.ts';
 import { gain } from '../../../engine/physics/polar.ts';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
@@ -90,23 +93,26 @@ const SURFACE: Record<VenueScene['surface'], { around: [string, string]; play: [
 };
 
 function Surface({ scene, px }: { scene: VenueScene; px: number }) {
-  const s = SURFACE[scene.surface];
+  // A practice scene laid out on a real ground (scene.setting): that ground's
+  // surface fills the setting, and the practice area is not filled apart from it.
+  const kind = scene.setting?.surface ?? scene.surface;
+  const s = SURFACE[kind];
   const g = useMemo(() => {
     const fr = scene.frame;
     const around = make();
     around.addRect(Skia.XYWHRect(fr.x0 * 1000 - 50000, -fr.y1 * 1000 - 50000, (fr.x1 - fr.x0) * 1000 + 100000, (fr.y1 - fr.y0) * 1000 + 100000));
-    const play = polyPath(scene.play);
-    const b = bounds(scene.play);
+    const play = polyPath(scene.setting?.poly ?? scene.play);
+    const b = bounds(scene.setting?.poly ?? scene.play);
     // Mowing stripes (grass) or boards (a court): bands across x.
     const stripes = make();
-    if (scene.surface === 'grass' || scene.surface === 'diamond') {
+    if (kind === 'grass' || kind === 'diamond') {
       // Bands across x, 5 m from the left edge by default; a football field is
       // mown on its 5-yard lines (scene.mowing), so the bands meet the lines.
       const mw = (scene.mowing?.w ?? 5) * 1000;
       const m0 = scene.mowing ? scene.mowing.x0 * 1000 : b.u0;
       const first = m0 - Math.ceil((m0 - b.u0) / mw) * mw;
       for (let u = first, k = Math.round((first - m0) / mw); u < b.u1; u += mw, k++) if (((k % 2) + 2) % 2 === 0) stripes.addRect(Skia.XYWHRect(u, b.v0, mw, b.v1 - b.v0));
-    } else if (scene.surface === 'court') {
+    } else if (kind === 'court') {
       for (let v = b.v0; v < b.v1; v += 600) {
         stripes.moveTo(b.u0, v);
         stripes.lineTo(b.u1, v);
@@ -168,7 +174,7 @@ function Surface({ scene, px }: { scene: VenueScene; px: number }) {
           </Path>
         </Group>
       ) : null}
-      <Path path={g.play} style="stroke" strokeWidth={1.4 * px} color="#000" opacity={0.45} />
+      {scene.setting ? null : <Path path={g.play} style="stroke" strokeWidth={1.4 * px} color="#000" opacity={0.45} />}
     </Group>
   );
 }
@@ -588,21 +594,32 @@ export function TargetRing({ p, px, active = false }: { p: P2; px: number; activ
     </Group>
   );
 }
-/** A mark (where a mic or operator starts): a white cross in a ring. */
-export function MarkCross({ p, px, tint = WHITE, dashed = false }: { p: P2; px: number; tint?: string; dashed?: boolean }) {
+/** A mark (where a mic or operator starts): a spike mark on the ground —
+ *  two crossed strips of cloth tape, as a crew tapes a position (fix pass
+ *  2026-10-16: was a crosshair in a ring). A fixed screen size (a mark);
+ *  a drawing-default place is the same tape, fainter. */
+export function MarkCross({ p, px, tint = '#e9e3cf', dashed = false }: { p: P2; px: number; tint?: string; dashed?: boolean }) {
   const o = uv(p);
-  const x = make();
-  const s = 6 * px;
-  x.moveTo(o.u - s, o.v);
-  x.lineTo(o.u + s, o.v);
-  x.moveTo(o.u, o.v - s);
-  x.lineTo(o.u, o.v + s);
+  const g = useMemo(() => {
+    const tape = make();
+    const L = 7 * px;
+    const W = 1.5 * px;
+    for (const a of [Math.PI / 4, -Math.PI / 4]) {
+      const c = Math.cos(a);
+      const s2 = Math.sin(a);
+      // A strip L either side of the centre, W wide, its ends torn square.
+      const q = (x: number, y: number) => [o.u + x * c - y * s2, o.v + x * s2 + y * c] as const;
+      const pts = [q(-L, -W), q(L, -W), q(L, W), q(-L, W)];
+      tape.moveTo(pts[0][0], pts[0][1]);
+      for (const [x, y] of pts.slice(1)) tape.lineTo(x, y);
+      tape.close();
+    }
+    return tape;
+  }, [o.u, o.v, px]);
   return (
-    <Group>
-      <Circle cx={o.u} cy={o.v} r={8 * px} style="stroke" strokeWidth={1.6 * px} color={tint} opacity={0.85}>
-        {dashed ? <DashPathEffect intervals={[3 * px, 3 * px]} /> : null}
-      </Circle>
-      <Path path={x} style="stroke" strokeWidth={1.4 * px} color={tint} opacity={0.85} />
+    <Group opacity={dashed ? 0.62 : 1}>
+      <Path path={g} style="stroke" strokeWidth={1.2 * px} color="#0b0c0f" opacity={0.85} />
+      <Path path={g} color={tint} />
     </Group>
   );
 }
@@ -637,7 +654,19 @@ export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?
   // Lab 7b group 3: a room-sized scene (a few metres across) pulls its labels in with it; a field keeps 1.3 m.
   const k = Math.min(1, (scene.frame.x1 - scene.frame.x0) / 38);
   if (opts.targets !== false) for (const t of scene.targets) out.push({ id: `t.${t.id}`, text: t.short, u: uv(t.p).u + 1300 * k, v: uv(t.p).v - 500 * k, align: 'left', tone: 'amber' });
-  if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.short, u: uv(m.p).u + 1300 * k, v: uv(m.p).v + 300 * k, align: 'left' });
+  // Fix pass 2026-10-16: a mark says what it is ("MARK M"), falling back to its letter.
+  // 1.8 m out, clear of a tripod's forward legs when a mic stands on the mark.
+  if (opts.marks !== false) for (const m of scene.marks) out.push({ id: `m.${m.id}`, text: m.kind === 'operator' ? m.short : `MARK ${m.short}`, short: m.short, u: uv(m.p).u + 1800 * k, v: uv(m.p).v + 300 * k, align: 'left' });
+  // The camera and the spectators are named too (fix pass 2026-10-16: they read as an unexplained mic and a grey block).
+  for (const c of scene.cameras) {
+    const d = dirFromDeg(c.dirDeg + 180);
+    out.push({ id: `c.${c.id}`, text: 'CAMERA', short: 'CAM', u: uv(c.p).u + d.x * 1600 * k, v: uv(c.p).v - d.y * 1600 * k + 500 * k, align: 'center', tone: 'muted' });
+  }
+  // (with the layers only: on a working step the corner close-up covers the stand)
+  if (opts.layers) for (const sec of scene.sectors) if (sec.kind === 'crowd') {
+    const b = bounds(sec.poly);
+    out.push({ id: `s.${sec.id}`, text: sec.short === 'CROWD' ? 'SPECTATORS' : sec.short, short: sec.short, u: (b.u0 + b.u1) / 2, v: b.v0 - 500 * k, align: 'center', tone: 'muted' });
+  }
   if (opts.layers) {
     const seen = new Set<string>();
     for (const k of scene.keepClear) {
@@ -646,7 +675,16 @@ export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?
       const b = bounds(k.poly);
       out.push({ id: `k.${k.id}`, text: k.short, u: (b.u0 + b.u1) / 2, v: (b.v0 + b.v1) / 2, align: 'center', tone: 'muted' });
     }
-    for (const f of scene.footprints.slice(0, 2)) out.push({ id: `f.${f.id}`, text: f.short, u: uv({ x: f.rect.x1, y: f.rect.y0 }).u + 400 * k, v: uv({ x: f.rect.x1, y: f.rect.y0 }).v - off * 0.2 * k, align: 'left', tone: 'muted' });
+    // Beside the box's right end, level with its middle — clear of its outline (fix pass 2026-10-16).
+    // Inside its top-left corner when the frame has no room beside it.
+    for (const f of scene.footprints.slice(0, 2)) {
+      const beside = scene.frame.x1 - f.rect.x1 > 3.2;
+      out.push(
+        beside
+          ? { id: `f.${f.id}`, text: f.short, u: uv({ x: f.rect.x1, y: f.rect.y0 }).u + 700 * k, v: uv({ x: f.rect.x1, y: (f.rect.y0 + f.rect.y1) / 2 }).v + 150 * k, align: 'left', tone: 'muted' }
+          : { id: `f.${f.id}`, text: f.short, u: uv({ x: f.rect.x0, y: f.rect.y1 }).u + 500 * k, v: uv({ x: f.rect.x0, y: f.rect.y1 }).v + 900 * k, align: 'left', tone: 'muted' },
+      );
+    }
   }
   return out;
 }
@@ -655,23 +693,60 @@ export function venueLabels(scene: VenueScene, opts: { targets?: boolean; marks?
 
 export type PlanMicKind = 'shotgun' | 'compact' | 'dish' | 'boundary' | 'xy' | G3MicKind;
 /** A mic glyph at a plan point, aimed at `aimDeg` (as dirFromDeg), drawn at a
- *  fixed screen size (`sizePx` long): a MARK on the plan, not to scale. */
+ *  fixed screen size (`sizePx` long): a MARK on the plan, not to scale.
+ *  Fix pass 2026-10-16: the mic stands on its real support, drawn at the
+ *  glyph's own scale — a compact tripod under a stand-mounted mic, the
+ *  operator holding a dish, nothing under a boundary plate or a hydrophone
+ *  — instead of a pale disc. */
 export function PlanMic(props: { at: P2; aimDeg: number; kind: PlanMicKind; px: number; sizePx?: number; tint?: string }) {
-  // A pale disc under the glyph: dark equipment stays readable on dark grass or floor.
   const L = (props.sizePx ?? 30) * props.px;
   const d = dirFromDeg(props.aimDeg);
-  // The disc sits on the glyph's middle: a shotgun's tube runs ahead of its capsule, a pencil's body behind its front.
-  const k = props.kind === 'shotgun' ? 0.3 : props.kind === 'dish' ? 0.15 : -0.4;
-  const o = uv({ x: props.at.x + (d.x * k * L) / 1000, y: props.at.y + (d.y * k * L) / 1000 });
-  const r = L * 0.62;
+  // Where the stand meets the mic (its mount), along the aim from the glyph's origin.
+  const k = props.kind === 'shotgun' ? -0.1 : props.kind === 'xy' ? -0.3 : props.kind === 'compact' ? -0.6 : -0.5;
+  const hub = uv({ x: props.at.x + (d.x * k * L) / 1000, y: props.at.y + (d.y * k * L) / 1000 });
+  const screen = Math.atan2(-d.y, d.x);
+  const onStand = props.kind !== 'boundary' && props.kind !== 'dish' && props.kind !== 'hydrophone';
   return (
     <Group>
-      <Circle cx={o.u} cy={o.v} r={r} color="#e8eef5" opacity={0.36} />
-      <Circle cx={o.u} cy={o.v} r={r} style="stroke" strokeWidth={1.2 * props.px} color="#e8eef5" opacity={0.6} />
+      {onStand ? <TripodAbove u={hub.u} v={hub.v} back={screen + Math.PI} r={L * 0.72} px={props.px} /> : null}
+      {props.kind === 'dish' ? <DishOperatorAbove at={props.at} aimDeg={props.aimDeg} px={props.px} sizePx={props.sizePx ?? 26} /> : null}
       <PlanMicGlyph {...props} />
     </Group>
   );
 }
+/*
+ * A compact tripod mic stand from above (the class MicStandSide draws from
+ * the side): three legs from the hub at 120°, one straight back from the
+ * mic's aim so the front stays clear, a rubber foot on each, the hub and the
+ * stand tube at the centre. `r` = the feet's radius, at the glyph's scale.
+ */
+function TripodAbove({ u, v, back, r, px }: { u: number; v: number; back: number; r: number; px: number }) {
+  const g = useMemo(() => {
+    const legs = make();
+    const feet = make();
+    for (const a of [back, back + (2 * Math.PI) / 3, back - (2 * Math.PI) / 3]) {
+      legs.moveTo(u + Math.cos(a) * r * 0.08, v + Math.sin(a) * r * 0.08);
+      legs.lineTo(u + Math.cos(a) * r, v + Math.sin(a) * r);
+      feet.addCircle(u + Math.cos(a) * r, v + Math.sin(a) * r, r * 0.055);
+    }
+    return { legs, feet };
+  }, [u, v, back, r]);
+  const w = Math.max(r * 0.04, 1.4 * px);
+  return (
+    <Group>
+      {/* A soft ground shadow along each leg (lit from the upper left). */}
+      <Group transform={[{ translateX: r * 0.04 }, { translateY: r * 0.05 }]}>
+        <Path path={g.legs} style="stroke" strokeWidth={w * 1.6} strokeCap="round" color="#000" opacity={0.35} />
+      </Group>
+      <Path path={g.legs} style="stroke" strokeWidth={w + 1.4 * px} strokeCap="round" color="#0b0c0f" />
+      <Path path={g.legs} style="stroke" strokeWidth={w} strokeCap="round" color="#7a7f89" />
+      <Path path={g.feet} color="#16171b" />
+      <Circle cx={u} cy={v} r={r * 0.11} color="#2a2c32" />
+      <Circle cx={u} cy={v} r={r * 0.11} style="stroke" strokeWidth={Math.max(r * 0.02, 0.8 * px)} color="#9aa0ab" />
+    </Group>
+  );
+}
+
 function PlanMicGlyph({ at, aimDeg, kind, px, sizePx = 30, tint }: { at: P2; aimDeg: number; kind: PlanMicKind; px: number; sizePx?: number; tint?: string }) {
   const o = uv(at);
   const d = dirFromDeg(aimDeg);
@@ -694,6 +769,30 @@ function PlanMicGlyph({ at, aimDeg, kind, px, sizePx = 30, tint }: { at: P2; aim
   return (
     <Group transform={[{ translateX: o.u }, { translateY: o.v }, { rotate: rot }, { scale: (sizePx * px) / (kind === 'boundary' ? 140 : 104) }]}>
       {kind === 'boundary' ? <MikingMicArt art="boundary" r={10} len={140} cross={95} tint={tint} /> : <MikingMicArt art="sdc" r={10.5} len={104} tint={tint} />}
+    </Group>
+  );
+}
+
+/*
+ * The dish's operator from above (fix pass 2026-10-16: the dish read as a
+ * grey half-disc on its own): the house standing figure, at the dish's own
+ * scale (its 660 mm bowl), behind the bowl — the right hand on the pistol
+ * grip at the back, the left steadying the bowl's back — the dish at chest
+ * height. Authored in the dish's frame: the neck at the origin facing +x,
+ * then set 430 mm behind the bowl's vertex.
+ */
+const DISH_OP_TOP = topPose(
+  standing({ floorY: 0, x: 0, wrR: v3(300, -1280, 40), wrL: v3(380, -1300, -110), elR: v3(150, -1100, 230), elL: v3(200, -1120, -260), kindR: 'grip', kindL: 'rest', stepR: 60, stepL: -40 }),
+);
+function DishOperatorAbove({ at, aimDeg, px, sizePx = 26 }: { at: P2; aimDeg: number; px: number; sizePx?: number }) {
+  const o = uv(at);
+  const d = dirFromDeg(aimDeg);
+  const screen = Math.atan2(-d.y, d.x);
+  const k = (sizePx * px) / 660;
+  return (
+    <Group transform={[{ translateX: o.u }, { translateY: o.v }, { rotate: screen }, { scale: k }, { translateX: -430 }]}>
+      <PlayerBehind pose={DISH_OP_TOP} />
+      <PlayerInFront pose={DISH_OP_TOP} />
     </Group>
   );
 }

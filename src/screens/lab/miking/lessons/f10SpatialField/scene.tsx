@@ -140,6 +140,38 @@ export function walkerPoses(at: Vec3): { side: PlayerPose; top: PlayerPose } {
   return { side, top };
 }
 
+/** A listener standing at the listener's point, facing the scene front (+x),
+ *  from above: the voice family's pose turned to face +x, its head centred
+ *  on the point (the middle of the ears). Fix pass 2026-10-16: the point was
+ *  a bare dashed ring. */
+export function listenerTop(): PlayerPose {
+  const T = SINGER_TOP;
+  const d = { u: T.head.c.u - T.neck.u, v: T.head.c.v - T.neck.v };
+  // aboveTurn turns about the neck by facing − π/2 = −π/2: (x, y) → (y, −x).
+  const du = -d.v - T.neck.u;
+  const dv = d.u - T.neck.v;
+  const sh = (p: { u: number; v: number }) => pt(p.u + du, p.v + dv);
+  return {
+    ...T,
+    facing: 0,
+    head: { c: sh(T.head.c), r: T.head.r },
+    neck: sh(T.neck),
+    shoulderR: sh(T.shoulderR),
+    shoulderL: sh(T.shoulderL),
+    elbowR: sh(T.elbowR),
+    elbowL: sh(T.elbowL),
+    handR: { ...T.handR, wrist: sh(T.handR.wrist) },
+    handL: { ...T.handL, wrist: sh(T.handL.wrist) },
+    hipR: sh(T.hipR),
+    hipL: sh(T.hipL),
+    kneeR: sh(T.kneeR),
+    kneeL: sh(T.kneeL),
+    footR: sh(T.footR),
+    footL: sh(T.footL),
+  };
+}
+const LISTENER_TOP = listenerTop();
+
 export const SINGER_POSES = facingBack(PLAZA.singerMouth);
 export const PERFORMER_POSES = facingBack(EVENT.perfMouth);
 
@@ -274,9 +306,9 @@ function Event({ view }: { view: ViewId }) {
   );
 }
 
-/** The listener's point: a dashed upright from the ground (side), a ring
- *  and the scene-front arrow (top). */
-function ListenerMark({ view, h = -LISTENER.y }: { view: ViewId; h?: number }) {
+/** The listener's point: a dashed upright from the ground (side); from
+ *  above, a listener standing there (`figure`) and the scene-front arrow. */
+function ListenerMark({ view, h = -LISTENER.y, figure = true }: { view: ViewId; h?: number; figure?: boolean }) {
   const p = useMemo(() => {
     const line = make();
     const arrow = make();
@@ -284,7 +316,6 @@ function ListenerMark({ view, h = -LISTENER.y }: { view: ViewId; h?: number }) {
       line.moveTo(0, 0);
       line.lineTo(0, -h);
     } else {
-      line.addCircle(0, 0, 420);
       arrow.moveTo(500, 0);
       arrow.lineTo(1500, 0);
       arrow.moveTo(1360, -110);
@@ -295,6 +326,12 @@ function ListenerMark({ view, h = -LISTENER.y }: { view: ViewId; h?: number }) {
   }, [view, h]);
   return (
     <Group>
+      {view === 'top' && figure ? (
+        <Group layer={<Paint opacity={0.8} />}>
+          <PlayerBehind pose={LISTENER_TOP} />
+          <PlayerInFront pose={LISTENER_TOP} hands={false} />
+        </Group>
+      ) : null}
       <Path path={p.line} style="stroke" strokeWidth={22} color={AMBER} opacity={0.7}>
         <DashPathEffect intervals={[70, 50]} />
       </Path>
@@ -305,13 +342,13 @@ function ListenerMark({ view, h = -LISTENER.y }: { view: ViewId; h?: number }) {
 
 /** The whole scene (behind the rigs). `walkerT`: the walker's place along
  *  the footpath (0 … 1). `listener`: draw the listener's mark. */
-export function SiteArt({ view, variant, walkerT = WALKER_AT, listener = true }: { view: ViewId; variant: VariantId; walkerT?: number; listener?: boolean }): ReactElement {
+export function SiteArt({ view, variant, walkerT = WALKER_AT, listener = true }: { view: ViewId; variant: VariantId; walkerT?: number; /** 'arrow': the scene front only (a rig stands at the point). */ listener?: boolean | 'arrow' }): ReactElement {
   const w = along(PLAZA.walk.a, PLAZA.walk.b, walkerT);
   const walker = useMemo(() => walkerPoses(v3(w.x, 0, w.z)), [w.x, w.z]);
   return (
     <Group>
       {variant === 'event' ? <Event view={view} /> : <Plaza view={view} />}
-      {listener ? <ListenerMark view={view} /> : null}
+      {listener ? <ListenerMark view={view} figure={listener === true} /> : null}
       {variant === 'event' ? <Person view={view} poses={PERFORMER_POSES} /> : <Person view={view} poses={SINGER_POSES} />}
       {variant === 'plaza' ? <Person view={view} poses={walker} dim={0.8} /> : null}
     </Group>
@@ -321,7 +358,7 @@ export function SiteArt({ view, variant, walkerT = WALKER_AT, listener = true }:
 /** The engine's instrument for F10 (the scene, no rig). */
 export function SpatialInstrument({ view, variant }: { view: ViewId; variant: VariantId }): ReactElement {
   // From the side the engine draws the stand and the height itself.
-  return <SiteArt view={view} variant={variant} listener={view === 'top'} />;
+  return <SiteArt view={view} variant={variant} listener={view === 'top' ? 'arrow' : false} />;
 }
 
 /* ── the rigs ── */
@@ -361,6 +398,17 @@ export function RigArt({ view, rig, px, lobes = true }: { view: ViewId; rig: Spa
   const hw = useMemo(() => {
     const stands = make();
     const bars = make();
+    // From above, each stand is a tripod (fix pass 2026-10-16: was a dot):
+    // three legs at 120° to feet 480 mm out (a full-height stand's spread,
+    // a drawing default), one straight back from the rig's front.
+    const legs = make();
+    const back = Math.atan2(-front.z, -front.x);
+    const tripod = (u: number, v: number) => {
+      for (const a of [back, back + (2 * Math.PI) / 3, back - (2 * Math.PI) / 3]) {
+        legs.moveTo(u + Math.cos(a) * 30, v + Math.sin(a) * 30);
+        legs.lineTo(u + Math.cos(a) * 480, v + Math.sin(a) * 480);
+      }
+    };
     const own = def.family === 'surround' && rig.id === 'hamasaki';
     if (own) {
       // A wide square: four stands, one under each capsule.
@@ -369,7 +417,10 @@ export function RigArt({ view, rig, px, lobes = true }: { view: ViewId; rig: Spa
         if (view === 'side') {
           stands.moveTo(o.u, o.v + 30);
           stands.lineTo(o.u, 0);
-        } else stands.addCircle(o.u, o.v, 26);
+        } else {
+          stands.addCircle(o.u, o.v, 26);
+          tripod(o.u, o.v);
+        }
       }
     } else {
       const o = uvOf(view, c);
@@ -381,7 +432,10 @@ export function RigArt({ view, rig, px, lobes = true }: { view: ViewId; rig: Spa
         stands.lineTo(o.u - 320, 0);
         stands.moveTo(o.u, -300);
         stands.lineTo(o.u + 280, 0);
-      } else stands.addCircle(o.u, o.v, 22);
+      } else {
+        stands.addCircle(o.u, o.v, 22);
+        tripod(o.u, o.v);
+      }
       // Arms from the centre to each spaced capsule (a star bar).
       if (def.family === 'surround' || rig.id === 'ortf') {
         for (const q of caps) {
@@ -391,12 +445,14 @@ export function RigArt({ view, rig, px, lobes = true }: { view: ViewId; rig: Spa
         }
       }
     }
-    return { stands, bars };
-  }, [view, caps, c, def.family, rig.id]);
+    return { stands, bars, legs };
+  }, [view, caps, c, def.family, rig.id, front.x, front.z]);
   const lobePaths = useMemo(() => (lobes && view === 'top' && def.family !== 'binaural' && def.family !== 'ambisonic' ? caps.map((q) => lobe(view, q, def.family === 'surround' ? 260 : 200)) : []), [lobes, view, caps, def.family]);
   const special = def.family === 'binaural' ? 'dummyHead' : def.family === 'ambisonic' ? 'ambiTetra' : rig.id === 'dms' ? 'dmsCluster' : null;
   return (
     <Group>
+      <Path path={hw.legs} style="stroke" strokeWidth={Math.max(30, 2.6 * px)} strokeCap="round" color="#0b0c0f" opacity={0.85} />
+      <Path path={hw.legs} style="stroke" strokeWidth={Math.max(18, 1.4 * px)} strokeCap="round" color="#8a8f99" />
       <Path path={hw.stands} style="stroke" strokeWidth={view === 'side' ? 20 : 4 * px} strokeCap="round" color="#0b0c0f" />
       <Path path={hw.stands} style="stroke" strokeWidth={view === 'side' ? 13 : 2.4 * px} strokeCap="round" color="#5b5f69" />
       <Path path={hw.bars} style="stroke" strokeWidth={14} strokeCap="round" color="#0b0c0f" />
@@ -443,7 +499,9 @@ export function spatialLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   if (view === 'top') out.push({ id: 'front', text: 'SCENE FRONT', short: 'FRONT', u: 1600, v: 260, align: 'left', tone: 'muted' });
   if (variant === 'plaza') {
     const s = PLAZA.singerMouth;
-    out.push({ id: 'sp.singer', text: 'STREET SINGER', short: 'SINGER', u: s.x, v: view === 'side' ? -2300 : -700, align: 'center', at: { u: s.x + 60, v: view === 'side' ? s.y - 60 : 0 } });
+    // Side: on the ground under her (fix pass 2026-10-16) — above her head the
+    // close mic's aim ring and the glass's corner inset meet.
+    out.push({ id: 'sp.singer', text: 'STREET SINGER', short: 'SINGER', u: s.x - 250, v: view === 'side' ? 190 : -700, align: 'center', at: view === 'side' ? { u: s.x - 120, v: -60 } : { u: s.x + 60, v: 0 } });
     out.push({ id: 'sp.walker', text: 'WALKER', u: 2900, v: view === 'side' ? -2200 : -2700, align: 'center', at: { u: 2900, v: view === 'side' ? -1600 : -1750 } });
     if (view === 'top') out.push({ id: 'sp.path', text: 'PUBLIC FOOTPATH', short: 'PATH', u: 2900, v: 2700, align: 'center', tone: 'muted' });
     out.push({ id: 'sp.wall', text: 'WALL', u: PLAZA.wallX + 200, v: view === 'side' ? -2600 : 2700, align: 'left', tone: 'muted' });

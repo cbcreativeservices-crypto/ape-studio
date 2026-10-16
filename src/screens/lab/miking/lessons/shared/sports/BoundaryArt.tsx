@@ -18,6 +18,9 @@ import { useMemo } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { MikingMicArt } from '../../../../../../features/lab/micDrawings';
 import { ShockMountArt } from '../fieldmics/FieldMicArt';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { sidePose, standing } from '../foley/performer.ts';
+import { v3 } from '../foley/frameF.ts';
 import { bouncePoint, type BoundaryGeom, type PlantMount } from './boundary.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -52,7 +55,26 @@ function Floor({ u0, u1, px }: { u0: number; u1: number; px: number }) {
   );
 }
 
-export function BoundarySection({ g, px, u0 = -900, u1 }: { g: BoundaryGeom; px: number; u0?: number; u1?: number }) {
+/*
+ * The person making the clap (fix pass 2026-10-16: the source was a bare
+ * amber ring): the house standing figure, side view, authored facing +u
+ * with the neck at the origin and both hands together 300 mm in front at
+ * `hs` — drawn mirrored so they face the mic, the hands on the source point.
+ */
+function clapPose(hs: number) {
+  return sidePose(standing({ floorY: 0, x: 0, wrR: v3(300, -hs, 30), wrL: v3(300, -hs - 20, -30), elR: v3(120, -hs - 140, 150), elL: v3(110, -hs - 150, -150), kindR: 'rest', kindL: 'rest', stepR: 40, stepL: -30 }));
+}
+function Clapper({ x, hs }: { x: number; hs: number }) {
+  const pose = useMemo(() => clapPose(hs), [hs]);
+  return (
+    <Group transform={[{ translateX: x + 300 }, { scaleX: -1 }]}>
+      <PlayerBehind pose={pose} />
+      <PlayerInFront pose={pose} />
+    </Group>
+  );
+}
+
+export function BoundarySection({ g, px, u0 = -900, u1, clapper = false }: { g: BoundaryGeom; px: number; u0?: number; u1?: number; /** Draw the person clapping at the source. */ clapper?: boolean }) {
   const end = u1 ?? g.x + 900;
   const b = bouncePoint(g);
   const rays = useMemo(() => {
@@ -81,9 +103,10 @@ export function BoundarySection({ g, px, u0 = -900, u1 }: { g: BoundaryGeom; px:
       </Circle>
       <Path path={rays.refl} style="stroke" strokeWidth={2.2 * px} color={AMBER} opacity={atSurface ? 0.35 : 0.95} strokeJoin="round" />
       <Path path={rays.direct} style="stroke" strokeWidth={2.4 * px} color={BLUE} />
-      {/* The source: a ring at the clap's height. */}
-      <Circle cx={g.x} cy={-g.hs} r={9 * px} color={AMBER} opacity={0.2} />
-      <Circle cx={g.x} cy={-g.hs} r={9 * px} style="stroke" strokeWidth={2 * px} color={AMBER} />
+      {clapper ? <Clapper x={g.x} hs={g.hs} /> : null}
+      {/* The source point: a ring at the clap's height (round the hands when the person is drawn). */}
+      <Circle cx={g.x} cy={-g.hs} r={9 * px} color={AMBER} opacity={clapper ? 0.12 : 0.2} />
+      <Circle cx={g.x} cy={-g.hs} r={9 * px} style="stroke" strokeWidth={2 * px} color={AMBER} opacity={clapper ? 0.8 : 1} />
       {atSurface ? (
         // A boundary plate lying on the floor, its capsule at the surface.
         <Group transform={[{ translateX: -70 }, { translateY: -2 }, { rotate: -Math.PI / 2 }]}>

@@ -220,6 +220,12 @@ export type VenueScene = {
   zones?: readonly PaintedZone[];
   /** Painted yard numbers (football). */
   numerals?: readonly FieldNumeral[];
+  /** The real ground a PRACTICE scene is laid out on (fix pass 2026-10-16:
+   *  a practice rectangle on a training pitch, a mock line on a gym's
+   *  court): that surface fills `poly` and the practice area itself is not
+   *  filled apart from it — its lines and the setting's own markings (in
+   *  `markings`) show where it is. */
+  setting?: { surface: 'grass' | 'court'; poly: readonly P2[] };
   /** Mowing stripes: where the first band starts and how wide each is (m) —
    *  a football field is mown on its 5-yard lines. Default: 5 m from the left. */
   mowing?: { x0: number; w: number };

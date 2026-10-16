@@ -99,9 +99,12 @@ export const F10_VARIANTS: Variant[] = [
 ];
 
 /** The engine's views (side: from the listener's right; top: from above). */
+// The side views keep sky above the people (fix pass 2026-10-16): the glass's
+// corner inset of the other view sits top-right, and with the old 2.9 m top
+// it covered the street singer and the close mic on her.
 export const F10_VIEWS: Record<'plaza' | 'event', { side: ViewBox; top: ViewBox }> = {
-  plaza: { side: { u0: -1100, u1: 6600, v0: -2900, v1: 250 }, top: { u0: -1100, u1: 6600, v0: -3600, v1: 3600 } },
-  event: { side: { u0: -1100, u1: 8000, v0: -3400, v1: 250 }, top: { u0: -1100, u1: 8000, v0: -4200, v1: 4200 } },
+  plaza: { side: { u0: -1100, u1: 6600, v0: -4400, v1: 250 }, top: { u0: -1100, u1: 6600, v0: -3600, v1: 3600 } },
+  event: { side: { u0: -1100, u1: 8000, v0: -5200, v1: 250 }, top: { u0: -1100, u1: 8000, v0: -4200, v1: 4200 } },
 };
 
 const SING = figureSolids(PLAZA.singerMouth);

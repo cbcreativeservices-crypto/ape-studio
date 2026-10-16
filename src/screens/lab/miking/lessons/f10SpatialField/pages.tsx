@@ -33,7 +33,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import { DashPathEffect, Group, LinearGradient, Path, RoundedRect, Skia, vec, Circle } from '@shopify/react-native-skia';
+import { BlurMask, DashPathEffect, Group, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec, Circle } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../rack/rackTypes';
 import { faderUnlessFew, tapsWhenFew } from '../../engine/rack/fewStops.ts';
@@ -113,7 +113,7 @@ const SITE: Record<'plaza' | 'event', Record<'whole' | 'near', Record<ViewId, Vi
 const siteBox = (variant: string, which: 'whole' | 'near', view: ViewId): ViewBox => SITE[isEvent(variant) ? 'event' : 'plaza'][which][view];
 
 /** A rig's own box (its capsules ± a margin, the stand to the ground in a side view). */
-function rigBox(rigs: readonly SpatialRig[], view: ViewId): ViewBox {
+function rigBox(rigs: readonly SpatialRig[], view: ViewId, tight = false): ViewBox {
   let u0 = Infinity;
   let u1 = -Infinity;
   let w0 = Infinity;
@@ -128,19 +128,21 @@ function rigBox(rigs: readonly SpatialRig[], view: ViewId): ViewBox {
       w1 = Math.max(w1, o.v);
     }
   }
-  const m = Math.max(260, 0.22 * Math.max(u1 - u0, w1 - w0));
+  // `tight` (the corner inset, fix pass 2026-10-16): a single head or mic fills the box.
+  const m = Math.max(tight ? 130 : 260, 0.22 * Math.max(u1 - u0, w1 - w0));
   if (view === 'side') return { u0: u0 - m, u1: u1 + m, v0: w0 - m, v1: w0 + Math.max(2 * m, (w1 - w0) + m) };
   return { u0: u0 - m, u1: u1 + m, v0: w0 - m, v1: w1 + m };
 }
 
 /** The rig's exact shape, in the corner (an example layout: no numbers). */
 function rigInset(rigs: readonly SpatialRig[]): FieldInset {
-  const box = rigBox(rigs, 'top');
+  const box = rigBox(rigs, 'top', true);
   const ex = rigs.some((r) => ARRAYS[r.id].example);
   return {
     view: 'top',
     box,
-    at: { x: 0.645, y: 0.02, w: 0.34, h: 0.34 },
+    // Bottom-right (fix pass 2026-10-16): the walker crosses the top of the plan.
+    at: { x: 0.645, y: 0.64, w: 0.34, h: 0.34 },
     draw: (px) => (
       <>
         {rigs.map((r, i) => (
@@ -150,6 +152,22 @@ function rigInset(rigs: readonly SpatialRig[]): FieldInset {
     ),
     labels: [{ id: 'in', text: ex ? 'AN EXAMPLE LAYOUT' : 'THE RIG FROM ABOVE', short: ex ? 'EXAMPLE' : 'RIG', u: (box.u0 + box.u1) / 2, v: box.v0 + (box.v1 - box.v0) * 0.06, align: 'center', tone: 'muted' }],
   };
+}
+
+/** The sources named on a working drawing (fix pass 2026-10-16: the singer
+ *  and the walker were unlabelled shapes at the plan's edge). */
+function sourceLabels(variant: string, view: ViewId) {
+  const top = view === 'top';
+  if (isEvent(variant)) {
+    const s = EVENT.perfMouth;
+    return [{ id: 'src.perf', text: 'PERFORMER', short: 'PERF', u: s.x, v: top ? -600 : s.y - 700, align: 'center' as const, tone: 'muted' as const }];
+  }
+  const s = PLAZA.singerMouth;
+  const w = along(PLAZA.walk.a, PLAZA.walk.b, WALKER_AT);
+  return [
+    { id: 'src.singer', text: 'SINGER', u: s.x - 200, v: top ? -600 : s.y - 700, align: 'center' as const, tone: 'muted' as const },
+    { id: 'src.walker', text: 'WALKER', u: w.x, v: top ? w.z - 600 : w.y - 800, align: 'center' as const, tone: 'muted' as const },
+  ];
 }
 
 /* ═══════════════════ 1 · MEET IT ═══════════════════ */
@@ -222,7 +240,7 @@ function F10Meet(p: PageProps) {
         title="THE SCENE"
         aspect={(siteBox(variant, 'whole', 'top').u1 - siteBox(variant, 'whole', 'top').u0) / (siteBox(variant, 'whole', 'top').v1 - siteBox(variant, 'whole', 'top').v0)}
         render={(w: number, h: number) => (
-          <FieldStage w={w} h={h} view="top" box={siteBox(variant, 'whole', 'top')} a11y={`${lesson.model.variants.find((v) => v.id === variant)?.blurb ?? ''} The listener’s point is marked, the scene front to the right.`} labels={[]}>
+          <FieldStage w={w} h={h} view="top" box={siteBox(variant, 'whole', 'top')} a11y={`${lesson.model.variants.find((v) => v.id === variant)?.blurb ?? ''} The listener’s point is marked, the scene front to the right.`} labels={items.map((q) => ({ id: q.id, text: q.short, u: uvOf('top', q.at).u, v: uvOf('top', q.at).v - 520, align: 'center' as const, tone: q.id === 'sp.listener' || q.id === 'front' ? undefined : ('muted' as const) }))}>
             {() => <SiteArt view="top" variant={variant} />}
           </FieldStage>
         )}
@@ -307,14 +325,15 @@ function F10Meet(p: PageProps) {
               isEvent(variant)
                 ? [{ id: 'pa', text: 'THE PA, LEFT AND RIGHT', short: 'PA', u: 3600, v: -2400, align: 'center', tone: 'blue' }]
                 : [
-                    { id: 'echo', text: `OFF THE WALL · +${late.toFixed(0)} ms`, short: `+${late.toFixed(0)} ms`, u: -1900, v: hit.z + (hit.z < 0 ? -420 : 420), align: 'center', tone: 'amber' },
-                    { id: 'walk', text: `WALKER · ${Math.abs(Math.round(wDir))}° ${wSide}`, short: `${Math.abs(Math.round(wDir))}°`, u: walker.x, v: walker.z + (walker.z < 0 ? -520 : 520), align: 'center', tone: 'amber' },
+                    // Clear of the dashed paths (fix pass 2026-10-16): the echo's words beyond its two legs, the walker's past its head.
+                    { id: 'echo', text: `OFF THE WALL · +${late.toFixed(0)} ms`, short: `+${late.toFixed(0)} ms`, u: -1700, v: hit.z + (hit.z < 0 ? -1500 : 1500), align: 'center', tone: 'amber' },
+                    { id: 'walk', text: `WALKER · ${Math.abs(Math.round(wDir))}° ${wSide}`, short: `${Math.abs(Math.round(wDir))}°`, u: walker.x + 400, v: walker.z + (walker.z < 0 ? -950 : 950), align: 'center', tone: 'amber' },
                   ]
             }
           >
             {(px) => (
               <>
-                <SiteArt view="top" variant={variant} walkerT={t} />
+                <SiteArt view="top" variant={variant} walkerT={t} listener="arrow" />
                 <Ray a={uvOf('top', src)} b={uvOf('top', LISTENER)} px={px} width={2.6} />
                 {isEvent(variant) ? (
                   EVENT.pa.map((q, i) => <Ray key={i} a={{ u: q.x - EVENT.paSize.x / 2, v: q.z }} b={uvOf('top', LISTENER)} px={px} width={2.2} color="#6fa8ff" />)
@@ -441,6 +460,7 @@ function SetupDrawing({ s, variant, view, w, h }: { s: SpatialSetup; variant: st
       inset={view === 'top' ? rigInset(s.rigs) : null}
       labels={[
         ...(view === 'side' ? [{ id: 'h', text: `${fmtM(-c.y)} UP`, u: c.x + 180, v: c.y / 2, align: 'left' as const, tone: 'muted' as const }] : []),
+        ...sourceLabels(variant, view),
         ...singles.map((z) => ({ id: z.id, text: s.singles[0].typeId === 'vocHeadset' ? 'HEADSET' : 'CLOSE MIC', u: z.start.p.x - 300, v: (view === 'side' ? z.start.p.y : z.start.p.z) - 520, align: 'center' as const, tone: 'muted' as const })),
       ]}
     >
@@ -606,6 +626,15 @@ const SYSTEMS: readonly { id: SystemId; label: string; short: string; rigs: Spat
   { id: 'addon', label: 'A rear add-on to a front array', short: 'ADD-ON', rigs: [{ id: 'ortf', c: LISTENER }, { id: 'hamasaki', c: v3(-1500, -EAR_STANDING, 0) }], channels: '2 front + 4 ambience', where: 'A front array at the listener’s point; a small square of cardioids or a wide square of figure-8s behind it — an example layout.', playback: 'A surround layout, the ambience layer under the front.', limit: 'Not a whole five-channel array on its own; check timing, direct-sound leakage and the downmix.' },
 ];
 
+/** Close-up boxes that fill the glass with the object (fix pass 2026-10-16:
+ *  the head and the Ambisonic mic were a small blob in a wide box). */
+const CLOSE_BOX: Partial<Record<SystemId, ViewBox>> = {
+  binaural: { u0: -250, u1: 250, v0: -215, v1: 215 },
+  inear: { u0: -300, u1: 300, v0: -255, v1: 255 },
+  foa: { u0: -95, u1: 95, v0: -82, v1: 82 },
+  compact: { u0: -260, u1: 260, v0: -220, v1: 220 },
+};
+
 function F10Microphone(p: PageProps) {
   const { lesson, answers, onAnswered } = p;
   const [sid, setSid] = useState<SystemId>('binaural');
@@ -626,9 +655,9 @@ function F10Microphone(p: PageProps) {
             w={w}
             h={h}
             view="top"
-            box={sid === 'inear' ? { u0: -330, u1: 330, v0: -260, v1: 260 } : box}
+            box={CLOSE_BOX[sid] ?? box}
             a11y={`From above, close up: ${sys.label}. ${sys.channels}. ${sys.where}`}
-            labels={sid === 'inear' ? [{ id: 'l', text: 'LEFT EAR', u: -90, v: -200, align: 'center', tone: 'amber' }, { id: 'r', text: 'RIGHT EAR', u: -90, v: 200, align: 'center', tone: 'amber' }] : rigCapsules(sys.rigs[0]).length > 1 && !['binaural', 'foa', 'dms'].includes(sys.rigs[0].id) ? rigCapsules(sys.rigs[0]).map((q) => ({ id: q.id, text: q.label, u: q.p.x + q.dir.x * 380, v: q.p.z + q.dir.z * 380, align: 'center' as const, tone: 'muted' as const })) : []}
+            labels={sid === 'inear' ? [{ id: 'l', text: 'LEFT-EAR MIC', short: 'LEFT', u: 80, v: -200, align: 'center', tone: 'amber', at: { u: -2, v: -90 } }, { id: 'r', text: 'RIGHT-EAR MIC', short: 'RIGHT', u: 80, v: 200, align: 'center', tone: 'amber', at: { u: -2, v: 90 } }] : rigCapsules(sys.rigs[0]).length > 1 && !['binaural', 'foa', 'dms'].includes(sys.rigs[0].id) ? rigCapsules(sys.rigs[0]).map((q) => ({ id: q.id, text: q.label, u: q.p.x + q.dir.x * 380, v: q.p.z + q.dir.z * 380, align: 'center' as const, tone: 'muted' as const })) : []}
           >
             {(px) =>
               sid === 'inear' ? (
@@ -694,48 +723,107 @@ function F10Microphone(p: PageProps) {
   return <PageSteps steps={steps} />;
 }
 
-/** In-ear mics on a person, from above: the figure's own head and two capsules in the ears. */
+/** In-ear mics on a person, from above: the figure's own head and a
+ *  binaural in-ear mic in each ear — a small capsule body seated in the ear
+ *  opening, its grille facing out, its thin cable running back over the ear
+ *  (fix pass 2026-10-16: was two rings). The housing 18 × 12 mm, a drawing
+ *  default for the class. */
 function InEarHead({ px }: { px: number }) {
   const head = useMemo(() => headAbove(pt(0, 0), 114), []);
+  const g = useMemo(() => {
+    const body = Skia.Path.Make();
+    const grille = Skia.Path.Make();
+    const cable = Skia.Path.Make();
+    for (const s of [-1, 1]) {
+      // The capsule housing (16 × 10 mm) seated in the ear opening at z = ±80,
+      // standing 9 mm out of it; its grille facing out.
+      body.addRRect(Skia.RRectXY(Skia.XYWHRect(-13, s < 0 ? -91 : 79, 18, 12), 5, 5));
+      grille.addCircle(-4, s * 85, 3.8);
+      // Its cable back over the ear, then down behind it (out of sight from above).
+      cable.moveTo(-13, s * 86);
+      cable.cubicTo(-30, s * 88, -46, s * 86, -58, s * 80);
+    }
+    return { body, grille, cable };
+  }, []);
   return (
     <Group>
       <Group transform={[{ rotate: -Math.PI / 2 }]}>
         <FigureHead fill={head.fill} />
       </Group>
-      {[-1, 1].map((s) => (
-        <Group key={s}>
-          <Circle cx={-6} cy={s * 104} r={9} color="#0b0c0e" />
-          <Circle cx={-6} cy={s * 104} r={9} style="stroke" strokeWidth={1.6 * px} color={AMBER} />
-        </Group>
-      ))}
+      <Path path={g.cable} style="stroke" strokeWidth={Math.max(2.2, 1.2 * px)} strokeCap="round" color="#0b0c0e" />
+      <Path path={g.cable} style="stroke" strokeWidth={Math.max(1.2, 0.6 * px)} strokeCap="round" color="#4a4e57" />
+      <Path path={g.body}>
+        <LinearGradient start={vec(-13, -120)} end={vec(1, 120)} colors={['#5a5e67', '#22242a', '#0e0f12']} />
+      </Path>
+      <Path path={g.body} style="stroke" strokeWidth={Math.max(0.8, 0.5 * px)} color="#08080a" />
+      <Path path={g.grille} color="#1a1b1f" />
+      <Path path={g.grille} style="stroke" strokeWidth={Math.max(0.8, 0.6 * px)} color={AMBER} opacity={0.9} />
     </Group>
   );
 }
 
-/** A compact surround mic from above: one body, five capsules round it. */
+/*
+ * A compact surround mic from above (fix pass 2026-10-16: was a flat disc
+ * with ring "capsules"): the class of one-piece surround mics built as a
+ * smooth head — here an egg-shaped shell 190 mm long × 150 mm wide (a
+ * drawing default, no maker's dimensions), five capsule ports flush in its
+ * surface (L, C, R in front, Ls, Rs behind) each with its grille, the front
+ * mark on the nose. Lit from the upper left.
+ */
 function CompactUnit({ px }: { px: number }) {
   const caps = [0, 40, -40, 140, -140];
+  const g = useMemo(() => {
+    const shell = Skia.Path.Make();
+    // An egg: a fuller back (−x), a narrower nose (+x).
+    shell.moveTo(95, 0);
+    shell.cubicTo(95, 48, 52, 75, 0, 75);
+    shell.cubicTo(-58, 75, -95, 50, -95, 0);
+    shell.cubicTo(-95, -50, -58, -75, 0, -75);
+    shell.cubicTo(52, -75, 95, -48, 95, 0);
+    shell.close();
+    const seam = Skia.Path.Make();
+    seam.moveTo(-60, -58);
+    seam.cubicTo(-20, -30, -20, 30, -60, 58);
+    const mark = Skia.Path.Make();
+    mark.addRRect(Skia.RRectXY(Skia.XYWHRect(80, -5, 10, 10), 3, 3));
+    return { shell, seam, mark };
+  }, []);
+  // Where each port sits on the shell (its outline at the port's angle).
+  const port = (deg: number) => {
+    const r = (deg * Math.PI) / 180;
+    const k = 1 / Math.hypot(Math.cos(r) / 95, Math.sin(r) / 75);
+    return { x: Math.cos(r) * k * 0.86, z: Math.sin(r) * k * 0.86, r };
+  };
   return (
     <Group>
-      <Circle cx={0} cy={0} r={70} color="#2a2c32" />
-      <Circle cx={0} cy={0} r={70} style="stroke" strokeWidth={2 * px} color="#9aa0ab" />
+      <Group transform={[{ translateX: 8 }, { translateY: 10 }]}>
+        <Path path={g.shell} color="#000" opacity={0.4}>
+          <BlurMask blur={8} style="normal" />
+        </Path>
+      </Group>
+      <Path path={g.shell}>
+        <RadialGradient c={vec(-30, -35)} r={130} colors={['#6c707a', '#3a3d45', '#1c1d22']} positions={[0, 0.55, 1]} />
+      </Path>
+      <Path path={g.seam} style="stroke" strokeWidth={Math.max(1, 0.5 * px)} color="#0e0f12" opacity={0.6} />
       {caps.map((a) => {
-        const r = (a * Math.PI) / 180;
-        const x = Math.cos(r) * 52;
-        const z = Math.sin(r) * 52;
+        const q = port(a);
         const path = Skia.Path.Make();
-        path.moveTo(x, z);
-        path.lineTo(x + Math.cos(r) * 150, z + Math.sin(r) * 150);
+        path.moveTo(q.x + Math.cos(q.r) * 18, q.z + Math.sin(q.r) * 18);
+        path.lineTo(q.x + Math.cos(q.r) * 170, q.z + Math.sin(q.r) * 170);
         return (
           <Group key={a}>
-            <Circle cx={x} cy={z} r={14} color="#121317" />
-            <Circle cx={x} cy={z} r={14} style="stroke" strokeWidth={1.4 * px} color="#b9912f" />
+            <Circle cx={q.x} cy={q.z} r={11} color="#121317" />
+            <Circle cx={q.x} cy={q.z} r={7} color="#2a2c32" />
+            <Circle cx={q.x} cy={q.z} r={11} style="stroke" strokeWidth={Math.max(1.2, 0.7 * px)} color="#b9912f" />
             <Path path={path} style="stroke" strokeWidth={2 * px} color={AMBER}>
               <DashPathEffect intervals={[8 * px, 6 * px]} />
             </Path>
           </Group>
         );
       })}
+      <Path path={g.mark} color={AMBER} />
+      <Path path={g.shell} style="stroke" strokeWidth={Math.max(1.2, 0.7 * px)} color="#08080a" />
+      <Path path={g.shell} style="stroke" strokeWidth={Math.max(0.8, 0.4 * px)} color="#c9ced8" opacity={0.3} />
     </Group>
   );
 }
@@ -906,7 +994,7 @@ function F10Placement(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, hh) => (
-          <FieldStage w={w} h={hh} view={pc.view} box={siteBox(variant, 'near', pc.view)} a11y={`A worked example, placed for you: a binaural head at the listener’s point. ${pc.title.toLowerCase()}: ${pc.text}`} labels={pc.view === 'side' ? [{ id: 'h', text: `${fmtM(EAR_STANDING)} UP`, u: 200, v: -900, align: 'left', tone: 'muted' }] : []} inset={pc.view === 'top' ? rigInset([{ id: 'binaural', c: LISTENER }]) : null}>
+          <FieldStage w={w} h={hh} view={pc.view} box={siteBox(variant, 'near', pc.view)} a11y={`A worked example, placed for you: a binaural head at the listener’s point. ${pc.title.toLowerCase()}: ${pc.text}`} labels={pc.view === 'side' ? [{ id: 'h', text: `${fmtM(EAR_STANDING)} UP`, u: 200, v: -900, align: 'left', tone: 'muted' }] : [...sourceLabels(variant, 'top'), { id: 'rig', text: 'BINAURAL HEAD', short: 'HEAD', u: 0, v: 1100, align: 'center', tone: 'amber', at: { u: 0, v: 220 } }]} inset={pc.view === 'top' ? rigInset([{ id: 'binaural', c: LISTENER }]) : null}>
             {(px) => (
               <>
                 <SiteArt view={pc.view} variant={variant} listener={false} />
@@ -944,7 +1032,7 @@ function F10Placement(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, hh) => (
-          <FieldStage w={w} h={hh} view={view} box={siteBox(variant, 'near', view)} a11y={nowWords} labels={[]} inset={view === 'top' ? rigInset(rigs) : null}>
+          <FieldStage w={w} h={hh} view={view} box={siteBox(variant, 'near', view)} a11y={nowWords} labels={sourceLabels(variant, view)} inset={view === 'top' ? rigInset(rigs) : null}>
             {(px) => (
               <>
                 <SiteArt view={view} variant={variant} listener={false} />
