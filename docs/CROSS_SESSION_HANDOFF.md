@@ -634,6 +634,36 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 01:12 · ccode · f8bd6826
+changed: figureAnatomy: pass-3 hand ratchet covers bowed, brass, low brass, lutes, free reed, small percussion and ensembles; pins follow the posed hands
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 01:12 · ccode · 8daa046f
+changed: Miking figures pass 3: ensemble players' hands on their instruments; brass elbows hang
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 01:12 · ccode · 33514634
+changed: Miking figures pass 3: accordion, harmonica and small-percussion hands; cowbell/woodblock forearms in front of the chest
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 01:12 · ccode · b85d9019
+changed: Miking figures pass 3: lute players' hands (oud risha, sitar mizrab, veena) and arms at adult length
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 01:11 · ccode · e1693058
+changed: Miking figures pass 3: bowed strings and high brass hands posed on the instrument
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 00:42 · ccode · 01dc62ae
 changed: Miking figures pass 3: low brass hands on the instrument (horn levers and bell, tuba/euphonium valves)
 affects other side: nothing (app only)
