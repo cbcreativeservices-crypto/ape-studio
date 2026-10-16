@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 22:46 · ccode · d22adb74
+changed: Miking figures pass 2: bowed/brass 3-D figure and ensemble bodies redrawn (one shirt, real torsos)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 22:33 · ccode · 7d37142d
 changed: Miking figures pass 2: small-percussion tops, vibraphone fists on the shaft, free-reed profile
 affects other side: nothing (app only)

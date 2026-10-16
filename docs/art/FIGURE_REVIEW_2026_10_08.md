@@ -94,3 +94,43 @@ No figure had a mirrored leg chain in the data. The "turned around" look came fr
 - **I05a cowbell, from above.** The folded arm's forearm is hidden under the upper arm (correct from above), so the sleeve reads as a stump.
 - **Leaning Foley performer (F03 paper, F04).** The throat is a little thick because the profile head's neck column stays vertical.
 - **Figures drawn only on later pages** (for example the brass setting page's singer, the hand-drum plans and the sport pages). These are not on MEET IT, so they were reviewed in the code, not captured.
+
+---
+
+# Pass 2 — 2026-10-15 (owner go)
+
+**Owner's standard:** "arm and leg proportions (forearm, elbow, upper arm, shoulders, chest, waist, hips, thighs, upper leg, lower leg, ankle, foot. hands, wrist, fingers, knuckles, finger tips, finger nails ALL NEED TO BE IN PROPORTION and articulate correctly." Mid-pass the owner added: "shoulder transitions from shirt sleeves to the shirt body look very unnatural and plug and position interchangeable limbs and parts rather than a beautifully drawn human figure." Hands ON instruments (necked strings, keyed winds) were left for a dedicated pass that follows this one.
+
+## Owner decisions A (keep-outs allowed to move with the anatomy)
+
+| Item | Was | Now | Keep-outs re-derived | Placements |
+|---|---|---|---|---|
+| Singers / talkers (E01 E03, B lessons) — neck too long | collar at the torso datum: ≈ 85 mm of neck under the jaw | the drawn collar 24 mm higher (`COLLAR_LIFT`); shoulders, arms, lav marks, pack stay on the datum | neck capsule ends at the collar (24 mm shorter); torso box top = collar − 10 (24 mm higher) — standing and seated | all suggested placements still clear (Lab 5/7 tests) |
+| A06/A07 flute, piccolo — left upper arm a level band across the chest | shoulders square; left elbow bend ≈ 37° | the chest turns 25° right, the left shoulder 35 mm forward (`flutistBody`); bend ≈ 65° (flute), elbow 86 mm below the shoulder | shoulders capsule and arm capsules follow the joints; hands, flute, reference points unchanged | unchanged (woodwind tests) |
+| I12 gong — mallet hand at the shoulder | player {500, −560}: shoulder ≈ 0.6 m from the strike point | {580, −1000} (bossed {580, −870}, `playerAt`); hand on the handle (`MALLET_REACH`), shoulder→hand 0.84–0.91 of reach; front view draws the player in front of the post | `env.player` per variant around the new place; `env.mallet` from the striking shoulder to the strike point | unchanged; all clear (52/52) |
+
+## Shared figure (PlayerFigure) — one garment
+
+- The shirt body and both sleeves are shaded in ONE light (FigureMass `box` = the garment's bounds): a sleeve no longer reads lighter or darker than the shirt it leaves.
+- Within ≈ 150 mm of the shoulder a sleeve's edge over the shirt is a soft fold with no rim (`soft`); lower down an arm in front of the body keeps its contour.
+- The front deltoid lies ALONG the arm (`capAlong`), so it turns with it and never stands out as a pad; the profile deltoid closes inside the sleeve (no dimple).
+- Shirt sleeves have their own widths (`SLEEVE`): cloth over the elbow, not the bare arm's pinch. A nearly straight arm's crook no longer loops into a notch.
+
+## Families
+
+| Family | Lessons | What changed (body only — hands on instruments untouched) |
+|---|---|---|
+| Bowed strings + brass sharing the body (`bowed/BowedArt.playerGroups`) | C06a C06b C09a–c, A01 A02 | Profile torso = the house side figure (collar, chest, belly, healthy back, tucked shirt, belt, trouser pelvis); neck into the collar; house legs and shoes; near sleeve flows out of the shirt (one light, soft join); a forward shoulder (trombone slide arm, bass bow arm) grows the shirt round it; top view one garment, no feet on standing figures; bow arm at adult lengths (upper 315, forearm ≈ 255; was 170–190) |
+| Low brass (`lowbrass/LowBrassArt`) | A03 A04a A04b | `profileBody()` with buildSide's shaping; pelvis joined to the near leg; shoes flat on the floor; sleeve joined at the deltoid with no rim at the join |
+| Lutes (`lutes/lutePlayers`) | C13 C14 C15 | One shirt with one outline; front shaping; oud thighs into knees (no knee ovals); sitar/veena cross-legged, near shin over far, bare feet; oud upper arm drawn at 310 mm |
+| Small percussion, free reed, mallets | I03a–I05d, A10 A11, I07–I10 | Top view house shoulder outline; sleeves in the shirt's light; A11 upper arms ≈ 305 mm (were 240), strap over the shoulder; vibraphone fists grip ALONG the shaft (thumb-on-top hold) |
+| Ensembles (`ensemble/SeatingArt`, BandArt through it) | E02–E16 | One body builder (front/profile, standing/seated): sloped shoulders, chest > waist > hips, belt, legs to real shoes; sleeves joined to the shirt's shoulder; neck into the collar; singers' hands beside the thighs; plan shoulders rounded, no feet from above |
+
+Reviewed as an illustrator (proportion, joints, opacity, clashes at 3×) and as a player (posture and holds) — `C:\Users\profe\Downloads\2026-10-15_MIKING_FIGURES_PASS2_BEFORE_AFTER.png` holds the labelled pairs.
+
+## Open (for the hands-on-instrument pass, or needing a model joint moved)
+
+- **Hands on instruments (next pass):** guitar fretting hand still a raised fan; bow holds and string left hands; trumpet/trombone/horn/tuba fingers; oud risha, sitar mizrab, veena left hand from below; accordion keyboard/bass hands; ensemble quartet and horn fists; no fingernails on the shared PlayerFigure hands.
+- **Flute left hand** sits where the model's key station puts it (≈ 30 cm along the flute); the elbow now bends 65° but would hang lower with the wrist moved toward the head joint (the keyed-winds hand pass).
+- **Joints that feed keep-outs, not moved here:** bowed bass shoulder→grip 773 mm (arm ≈ 690) and plucked 798 mm; cello left hand 152 mm from its shoulder; sitar right elbow 458 mm from the shoulder (adult ≈ 310) and veena upper arm 363 mm; I05a cowbell and I05c woodblock wrists behind the chest (forearm hidden from above); ensemble trumpet/trombone hold points put the elbows at shoulder height (E10, E16).
+- **Gong:** the front and side views are drawn as projections of a player turned toward the gong (the figure itself is frontal / profile).
