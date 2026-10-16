@@ -196,6 +196,22 @@ function chairPaths(view: ViewId) {
 }
 const CHAIR = { side: chairPaths('side'), top: chairPaths('top') };
 
+/** Whether a talker's studio chair covers (u, v) (mm, within `tol`): its seat,
+ *  its backrest and (from the side) its column and base — the part labels
+ *  keep off the chair too (lab art fix 2026-10-16: B09's NOTES, MOUTH and
+ *  SCREEN were laid out over the chairs' backs, which no hit test named). */
+export function chairCovers(view: ViewId, t: Talker, u: number, v: number, tol: number): boolean {
+  const n = NECK_B;
+  const x = (u - t.lip.x) * t.facing;
+  const inR = (x0: number, x1: number, y0: number, y1: number, y: number) => x >= x0 - tol && x <= x1 + tol && y >= y0 - tol && y <= y1 + tol;
+  if (view === 'side') {
+    const y = v - t.lip.y;
+    return inR(n.x - 190, n.x + 270, SEAT_Y - 6, SEAT_Y + 68, y) || inR(n.x - 250, n.x - 170, SEAT_Y - 560, SEAT_Y - 90, y) || inR(n.x + 12, n.x + 46, SEAT_Y + 66, SEATED_FLOOR - 84, y) || inR(n.x - 281, n.x + 339, SEATED_FLOOR - 100, SEATED_FLOOR, y);
+  }
+  const z = (v - t.lip.z) * t.facing;
+  return inR(n.x - 190, n.x + 270, -230, 230, z) || inR(n.x - 270, n.x - 190, -240, 240, z);
+}
+
 /** A studio chair under a talker (frame V; drawn on the talker). */
 export function StudioChair({ view, t }: { view: ViewId; t: Talker }) {
   const p = CHAIR[view];

@@ -61,7 +61,7 @@ import { liveLine, withStop } from './readoutText.ts';
 import { frustumOutline } from '../geometry/outline.ts';
 import { refLabels } from './sceneWords.ts';
 import { labelWidth } from './labelLayout.ts';
-import { layoutArtLabels } from './artLabels.ts';
+import { bodyOf, layoutArtLabels, occupancy } from './artLabels.ts';
 import { sceneFrame } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
@@ -2220,6 +2220,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const guideKey = guides && !mini ? rig.mics.filter((m) => live.includes(m.slot) && m.on).map((m) => `${m.slot}:${m.pose.p.x},${m.pose.p.y},${m.pose.p.z},${m.pose.az},${m.pose.el}:${rig.refOf(m.slot).surfaceId}`).join(';') : '';
   const guideData = useMemo(() => {
     if (!guideKey) return [];
+    const occ = occupancy(art, view, variant, authoredBox, bodyOf(model, variant));
     const cu = (box.u0 + box.u1) / 2;
     const cv = (box.v0 + box.v1) / 2;
     const raw = rig.mics
@@ -2244,9 +2245,40 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         }
         const au = short ? pr.u0 : mu;
         const av = short ? pr.v0 : mv;
-        const px = base.ox + au * base.s + nx * (W / 2 + 6);
-        const py = base.oy + av * base.s + ny * (H / 2 + 6);
-        return { slot: m.slot, g, pr, short, text, W, H, au, av, nx, ny, rect: { x0: px - W / 2, x1: px + W / 2, y0: py - H / 2, y1: py + H / 2 } };
+        // THE WORDS OFF THE PART (lab art fix 2026-10-16, the grader at 3x:
+        // "the distance chip covers the lips"): the chip is wider than a
+        // short dimension, so beside its middle it can lie over the face or
+        // the instrument the distance is read from. It keeps its side when
+        // that side is clear of the drawing; else it slides along the line
+        // toward the mic's end, then steps a little further out on its side
+        // (over a mic and its screen), then tries the other side — the first
+        // clear place wins, and the old place stays when none is.
+        // (pr runs from the mic's front, u0, to the part, u1: −t is toward the mic.)
+        const tu = pr.len > 1e-6 ? (pr.u1 - pr.u0) / pr.len : 1;
+        const tv = pr.len > 1e-6 ? (pr.v1 - pr.v0) / pr.len : 0;
+        const at = (sx: number, sy: number, k: number, lift = 0) => {
+          const u = au - (tu * k) / base.s + (sx * lift) / base.s;
+          const v = av - (tv * k) / base.s + (sy * lift) / base.s;
+          const px = base.ox + u * base.s + sx * (W / 2 + 6);
+          const py = base.oy + v * base.s + sy * (H / 2 + 6);
+          return { u, v, rect: { x0: px - W / 2, x1: px + W / 2, y0: py - H / 2, y1: py + H / 2 } };
+        };
+        // Clear of the drawing (the art's hit test and figure) and of every
+        // shown mic's head (its front point, with a margin).
+        const heads = rig.mics.filter((q) => live.includes(q.slot) && q.on).map((q) => ({ x: base.ox + q.pose.p.x * base.s, y: base.oy + (view === 'side' ? q.pose.p.y : q.pose.p.z) * base.s }));
+        const clearPx = (r: { x0: number; x1: number; y0: number; y1: number }) =>
+          !heads.some((q) => q.x > r.x0 - 14 && q.x < r.x1 + 14 && q.y > r.y0 - 14 && q.y < r.y1 + 14) && occ.clearOf((r.x0 - base.ox) / base.s, (r.y0 - base.oy) / base.s, (r.x1 - base.ox) / base.s, (r.y1 - base.oy) / base.s);
+        const slide = short ? 0 : Math.max(0, (W - pr.len * base.s) / 2 + 6);
+        let place = { nx, ny, ...at(nx, ny, 0) };
+        if (!clearPx(place.rect))
+          for (const [sx, sy, k, lift] of [[nx, ny, slide, 0], [nx, ny, 0, H * 1.6], [nx, ny, slide, H * 1.6], [nx, ny, slide * 1.8 + 8, H * 2.2], [-nx, -ny, 0, 0], [-nx, -ny, slide, 0]] as const) {
+            const c = at(sx, sy, k, lift);
+            if (clearPx(c.rect)) {
+              place = { nx: sx, ny: sy, ...c };
+              break;
+            }
+          }
+        return { slot: m.slot, g, pr, short, text, W, H, au: place.u, av: place.v, nx: place.nx, ny: place.ny, rect: place.rect };
       })
       .filter((x): x is NonNullable<typeof x> => !!x);
     // A pair's two dimensions side by side (the piano's spaced pair): a label
@@ -2269,7 +2301,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- by the poses' key
-  }, [guideKey, view, box, base, textScale, w, model.surfaces]);
+  }, [guideKey, view, box, base, textScale, w, model.surfaces, art, variant, authoredBox, model]);
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
   const labels = useMemo(() => {

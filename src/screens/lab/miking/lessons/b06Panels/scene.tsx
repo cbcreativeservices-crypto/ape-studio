@@ -14,7 +14,7 @@ import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { VoiceFigure, voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
 import { PlayerBehind, PlayerInFront, figureCovers } from '../shared/players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP } from '../shared/voice/voicePose.ts';
-import { Desk, DeskNearLegs, GooseBase, Lectern, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { Desk, DeskNearLegs, GooseBase, Lectern, PaSpeaker, Script, SeatedTalker, StudioChair, chairCovers, talkerCovers } from '../shared/broadcast/BroadcastArt';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS, poseOnTalker } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { ASKER, FOCUS, LECTERN, P1, P3, P4, PA_C, STAND_FLOOR, TABLE, gooseBase } from './geometry.ts';
@@ -147,6 +147,6 @@ export function b06HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 
 export function b06FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
   if (variant === 'lectern') return voiceFigureAt(view, variant, u, v, tol) || figureCovers(view === 'side' ? ASK_SIDE : ASK_TOP, u, v, tol);
-  if (view === 'side') return talkerCovers(view, FOCUS, u, v, tol);
-  return PANEL.some((t) => talkerCovers(view, t, u, v, tol));
+  if (view === 'side') return talkerCovers(view, FOCUS, u, v, tol) || chairCovers(view, FOCUS, u, v, tol);
+  return PANEL.some((t) => talkerCovers(view, t, u, v, tol) || chairCovers(view, t, u, v, tol));
 }

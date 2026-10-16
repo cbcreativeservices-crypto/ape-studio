@@ -46,7 +46,7 @@ export const TABLE = { min: v3(SEATED.deskEdge.mm, DESK_TOP_Y, -PITCH - 420), ma
 /** A gooseneck's table base in front of each panelist, a little to their
  *  left (the paper and the hands on their right); the grip is the neck's
  *  foot on the base. */
-export const BASE_DX = 330;
+export const BASE_DX = 500;
 export const BASE_DZ = -210;
 export const gooseBase = (t: Talker): Vec3 => v3(t.lip.x + BASE_DX, DESK_TOP_Y - 30, t.lip.z + BASE_DZ);
 /** The shared boundary on the table between the focus panelist and P3. */

@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { ArmClamp, Desk, DeskNearLegs, Laptop, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
+import { ArmClamp, Desk, DeskNearLegs, Laptop, PaSpeaker, Script, SeatedTalker, StudioChair, talkerCovers, chairCovers } from '../shared/broadcast/BroadcastArt';
 import { BoothWindow, CrowdStand, SeatedHolding } from '../shared/broadcast/SportSpeechArt';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
@@ -79,14 +79,21 @@ export function b09Labels(view: ViewId, variant: VariantId): ArtLabel[] {
     if (open) out.push({ id: 'b9.pa', text: 'PA CLUSTER', short: 'PA', u: PA_C.x - 200, v: PA_C.y - 420, align: 'center', at: { u: PA_C.x, v: PA_C.y - 200 } });
     return out;
   }
+  // From above the mouth is ringed by the head, the arms and the desk: any
+  // leader to it crossed the head or an arm, and its word landed on a chair
+  // (lab art fix 2026-10-16). The side view names it; the top view does not.
+  // NOTES and SCREEN name objects ON the desk: their words sit off the desk —
+  // NOTES past its end on the commentator's left, SCREEN past its end on the
+  // analyst's right — each on a leader over the bare desk top.
   const out: ArtLabel[] = [
-    { id: 'v.mouth', text: 'MOUTH', u: 160, v: -200, align: 'left', at: { u: 2, v: 0 }, alts: [{ u: 160, v: 200, align: 'left' }] },
-    { id: 'b9.notes', text: 'NOTES', u: NOTES.x, v: NOTES.z - 220, align: 'center', tone: 'muted', at: { u: NOTES.x, v: NOTES.z - 120 }, alts: [{ u: NOTES.x + 260, v: NOTES.z - 60, align: 'left' }] },
+    { id: 'b9.notes', text: 'NOTES', u: NOTES.x, v: DESK.min.z - 70, align: 'center', tone: 'muted', at: { u: NOTES.x, v: NOTES.z - 140 }, alts: [{ u: DESK.max.x + 20, v: NOTES.z - 60, align: 'left' }] },
     { id: 'b9.crowd', text: open ? 'CROWD' : 'THE FIELD', u: FRONT_X + 700, v: open ? 700 : DESK.max.z + 160, align: 'center', tone: 'muted' },
   ];
   if (open) out.push({ id: 'b9.pa', text: 'PA CLUSTER', short: 'PA', u: PA_C.x, v: PA_C.z + 420, align: 'center', at: { u: PA_C.x, v: PA_C.z + 200 } });
-  if (!open) out.push({ id: 'b9.screen', text: 'SCREEN', u: SCREEN.x + 30, v: SCREEN.z - 290, align: 'center', tone: 'muted', at: { u: SCREEN.x, v: SCREEN.z - 170 }, alts: [{ u: SCREEN.x + 240, v: SCREEN.z, align: 'left' }] });
-  if (b) out.push({ id: 'b9B.head', text: 'ANALYST', u: ANALYST.lip.x - 120, v: ANALYST.lip.z + 330, align: 'center', at: { u: ANALYST.lip.x + HEAD_C.x, v: ANALYST.lip.z } });
+  if (!open) out.push({ id: 'b9.screen', text: 'SCREEN', u: SCREEN.x, v: DESK.max.z + 70, align: 'center', tone: 'muted', at: { u: SCREEN.x, v: SCREEN.z + 150 }, alts: [{ u: SCREEN.x + 30, v: SCREEN.z - 290, align: 'center' }] });
+  // The analyst's name to the left of their chair, its leader ending at the
+  // back of the head (it sat on the shoulder).
+  if (b) out.push({ id: 'b9B.head', text: 'ANALYST', u: ANALYST.lip.x - 420, v: ANALYST.lip.z, align: 'right', at: { u: ANALYST.lip.x + HEAD_C.x - 70, v: ANALYST.lip.z } });
   return out;
 }
 
@@ -124,6 +131,6 @@ export function b09HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b09FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (talkerCovers(view, CALLER, u, v, tol)) return true;
-  return two(variant) && view === 'top' && talkerCovers(view, ANALYST, u, v, tol);
+  if (talkerCovers(view, CALLER, u, v, tol) || chairCovers(view, CALLER, u, v, tol)) return true;
+  return two(variant) && view === 'top' && (talkerCovers(view, ANALYST, u, v, tol) || chairCovers(view, ANALYST, u, v, tol));
 }
