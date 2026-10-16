@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:50 · ccode · 4313f7fb
+changed: Level & Amplitude art fix: equal-step meter scale, 3rd harmonic at 1.58 octaves on RTA and spectrogram, envelope-true waveform bars
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:49 · ccode · 9c754b48
+changed: Desk/booth/panel art fix (fix4): gooseneck base clear of the hands, labels off the chairs, distance chip off the face
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 17:05 · ccode · 31b405c8
 changed: Art fix follow-up: polar-stage and chain-rack words wrap instead of clipping (one-line ratchet); Mic Selection allowlist entry dropped
 affects other side: nothing (app only)
