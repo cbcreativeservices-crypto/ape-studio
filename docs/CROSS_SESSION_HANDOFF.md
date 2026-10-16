@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 22:24 · ccode · b1f15613
+changed: Miking figures pass 2: one-garment shirt, shorter singer necks, real flute elbow, gong reach
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-15 21:42 · ccode · 5c50559f
+changed: Miking wedges: drivers shown open (12in cone + HF horn, no grille); input plate on the side panel, not a bright ring on the rear edge (owner 2026-10-15)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 20:23 · ccode · d9cb809c
 changed: Miking plans: a headphone mix at every studio performer; no collisions in any plan
 affects other side: nothing (app only)

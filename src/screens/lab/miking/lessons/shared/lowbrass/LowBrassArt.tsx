@@ -28,7 +28,7 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { basis, brassScene, flareR, ring, type Bell, type BrassScene, type Tube, type Valve } from './lowBrassScene.ts';
 import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
-import { FIGURE_SKIN, FigureHead, FigureMass, handShape, headAbove, headProfile, splitArm } from '../players/PlayerFigure';
+import { FIGURE_SKIN, FigureHead, FigureMass, handShape, headAbove, headProfile, intoCollar, limb as limbPath, splitArm, type HeadPaths } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -44,13 +44,10 @@ const TO_VIEWER: Record<ViewId, Vec3> = { side: { x: 0, y: 0, z: 1 }, top: { x: 
 /* ── palette ── */
 const BRASS = { light: '#fff0b8', hi: '#f2cf6e', mid: '#c99634', low: '#8a5f17', dark: '#4a300a', edge: '#241604' };
 const SILVER = { light: '#ffffff', hi: '#e6e9ee', mid: '#aeb4bd', low: '#6c727c', dark: '#3a3e45', edge: '#15171a' };
-const SHIRT = ['#5d687e', '#465064', '#2f3645'];
-const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
 /** The hands and neck wear the shared figure skin, like the head (owner
  *  2026-10-08, HF1 — they were a grey neutral). */
 const SKIN = FIGURE_SKIN.ramp;
 const SKIN_EDGE = FIGURE_SKIN.edge;
-const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
 const OUTLINE = '#08090b';
 const CHAIR = ['#3a3c43', '#1d1e22', '#0c0c0e'];
 
@@ -491,29 +488,243 @@ function valveItems(vl: Valve, view: ViewId, i: number): Item[] {
   return [{ key: `valve${i}`, depth: depthOf(view, vl.c) + 4, node: <Group key={`valve${i}`}>{nodes}</Group> }];
 }
 
+/* ── THE SEATED PLAYER'S BODY IN PROFILE (figure pass 2, owner 2026-10-15) ──
+ * The house profile (PlayerFigure.buildSide's shaping) built from this
+ * family's own joints, so the low-brass player wears the same body as every
+ * other lab figure: a real torso — the collar, the chest forward of the
+ * waist, a healthy straight back with a gentle lumbar hollow, the shirt
+ * tucked in at the belt — the pelvis in the trousers joined to the near leg
+ * (thigh → knee → shin → ankle as one mass), shoes flat on the floor, the
+ * neck going INTO the collar (intoCollar), and the near sleeve's DELTOID
+ * grown out of the shirt with no outline or rim at the join (`quiet`).
+ * Drawing only: no joint moves; the solids keep the scene's numbers. */
+
+/** An open smooth stroke through points. */
+function smoothOpen(pts: P2[]): SkPath {
+  const p = make();
+  const n = pts.length;
+  const at = (i: number) => pts[Math.max(0, Math.min(n - 1, i))];
+  p.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const k = 1 / 6;
+    p.cubicTo(p1[0] + (p2[0] - p0[0]) * k, p1[1] + (p2[1] - p0[1]) * k, p2[0] - (p3[0] - p1[0]) * k, p2[1] - (p3[1] - p1[1]) * k, p2[0], p2[1]);
+  }
+  return p;
+}
+
+/** The joints a profile body is drawn from (the view's mm). N = the near
+ *  side (toward the viewer), F = the far side. */
+type ProfileJoints = {
+  neck: P2;
+  /** The hips' midpoint. */
+  hip: P2;
+  shoulderN: P2;
+  hipN: P2;
+  kneeN: P2;
+  ankleN: P2;
+  hipF: P2;
+  kneeF: P2;
+  ankleF: P2;
+  /** The floor's v. */
+  floorV: number;
+  /** Where the lips meet the mouthpiece's rim: the profile head is placed so
+   *  its lips are there (the head joint's solid is unchanged). */
+  lips: P2;
+  /** +1 the figure faces +u. */
+  facing: 1 | -1;
+  seated: boolean;
+};
+
+type ProfileBody = {
+  /** The shirt (the torso above the belt). */
+  shirt: SkPath;
+  /** The whole torso outline (for the collar and the deltoid). */
+  torso: SkPath;
+  /** The pelvis in the trousers joined to the near leg. */
+  legNear: SkPath;
+  legFar: SkPath;
+  shoeNear: SkPath;
+  shoeFar: SkPath;
+  belt: SkPath;
+  collar: SkPath;
+  head: HeadPaths;
+  /** The near sleeve's deltoid along the upper arm toward `elbow`, inside the
+   *  shirt's outline. */
+  deltoid: (elbow: P2) => SkPath;
+  /** Where the sleeve melts into the shirt (no rim, no contour). */
+  quiet: SkPath | null;
+};
+
+/** The house adult head (≈ 228 mm tall: BODY.headH). */
+const PROFILE_HEAD_R = 112;
+
+/** The profile body (PlayerFigure.buildSide's shaping, from these joints). */
+function profileBody(j: ProfileJoints): ProfileBody {
+  const f = j.facing;
+  const n = j.neck;
+  const hip = j.hip;
+  const ax = Math.atan2(n[1] - hip[1], n[0] - hip[0]);
+  let nu = -Math.sin(ax);
+  let nv = Math.cos(ax);
+  if (Math.sign(nu || f) !== Math.sign(f)) {
+    nu = -nu;
+    nv = -nv;
+  }
+  const along = (t: number, fwd: number): P2 => [hip[0] + (n[0] - hip[0]) * t + nu * fwd, hip[1] + (n[1] - hip[1]) * t + nv * fwd];
+  const torso = smoothClosed([
+    along(1.02, 46), // the front of the collar
+    along(0.86, 104), // the chest
+    along(0.6, 112),
+    along(0.32, 96), // the belly
+    along(0.06, 104),
+    along(-0.1, 40),
+    along(-0.06, -112), // the seat
+    along(0.24, -90), // the lumbar hollow
+    along(0.45, -98),
+    along(0.7, -100), // the shoulder blade
+    along(0.9, -82),
+    along(1.02, -52), // the nape
+  ]);
+  const foot = (a: P2): P2 => [a[0] + f * 40, j.floorV];
+  const kneeR = j.seated ? 60 : 56;
+  const leg = (h: P2, k: P2, a: P2) => limbPath([pt(h[0], h[1]), pt(k[0], k[1]), pt(a[0], a[1])], [82, kneeR, 38]);
+  const pelvis = smoothClosed([along(0.15, 92), along(0.02, 88), along(-0.1, 80), along(-0.17, 20), along(-0.16, -64), along(-0.06, -106), along(0.06, -112), along(0.15, -100)]);
+  const legNear = union([pelvis, leg(j.hipN, j.kneeN, j.ankleN)]);
+  const legFar = leg(j.hipF, j.kneeF, j.ankleF);
+  // Shoes in profile: the heel behind the ankle, the sole flat on the floor.
+  const shoe = (a: P2) => {
+    const ft = foot(a);
+    return smoothClosed([
+      [ft[0] - f * 96, ft[1] - 2],
+      [ft[0] - f * 100, ft[1] - 64],
+      [ft[0] - f * 44, ft[1] - 92],
+      [ft[0] + f * 40, ft[1] - 62],
+      [ft[0] + f * 140, ft[1] - 34],
+      [ft[0] + f * 150, ft[1] - 4],
+    ]);
+  };
+  // The belt across the waist; the shirt tucked in below it.
+  const quad = (a: P2, b: P2, c: P2, d: P2) => poly([a, b, c, d]);
+  const b0 = along(0.12, 160);
+  const b1 = along(0.12, -160);
+  const th = Math.atan2(b1[1] - b0[1], b1[0] - b0[0]);
+  const ox = -Math.sin(th) * 16;
+  const oy = Math.cos(th) * 16;
+  const band = quad([b0[0] + ox, b0[1] + oy], [b1[0] + ox, b1[1] + oy], [b1[0] - ox, b1[1] - oy], [b0[0] - ox, b0[1] - oy]);
+  const belt = Skia.Path.MakeFromOp(band, torso, PathOp.Intersect) ?? band;
+  const tuck = quad(along(0.12, 400), along(0.12, -400), along(-3, -400), along(-3, 400));
+  const shirt = Skia.Path.MakeFromOp(torso, tuck, PathOp.Difference) ?? torso;
+  const collar = smoothOpen([along(1.04, -40), along(0.98, 10), along(1.0, 50)]);
+  // The head: its lips on the mouthpiece's rim (headProfile's lips ≈ 88 k in
+  // front of and 52 k below its centre), the neck down into the collar.
+  const k = PROFILE_HEAD_R / 110;
+  const hc = pt(j.lips[0] - f * (88 * k + 2), j.lips[1] - 52 * k);
+  const head = intoCollar(headProfile(hc, PROFILE_HEAD_R, n[1] + 10, f), torso);
+  // The deltoid: a teardrop along the upper arm — as wide as the sleeve, broad
+  // over the joint and tapering ≈ 110 mm down — kept inside the shirt's
+  // outline, so it never rises over the shoulder line.
+  const sh = j.shoulderN;
+  const deltoid = (elbow: P2) => {
+    const a = Math.atan2(elbow[1] - sh[1], elbow[0] - sh[0]);
+    const A = (al: number, ac: number): P2 => [sh[0] + Math.cos(a) * al - Math.sin(a) * ac, sh[1] + Math.sin(a) * al + Math.cos(a) * ac];
+    const raw = smoothClosed([A(-44, 0), A(-30, 40), A(10, 46), A(70, 45), A(112, 43), A(112, -43), A(70, -45), A(10, -46), A(-30, -40)]);
+    return Skia.Path.MakeFromOp(raw, torso, PathOp.Intersect) ?? raw;
+  };
+  const qd = make();
+  qd.addCircle(sh[0], sh[1], 84);
+  const quiet = Skia.Path.MakeFromOp(qd, torso, PathOp.Intersect);
+  return { shirt, torso, legNear, legFar, shoeNear: shoe(j.ankleN), shoeFar: shoe(j.ankleF), belt, collar, head, deltoid, quiet };
+}
+
 /* ── the player and the chair ── */
 function playerItems(s: BrassScene, view: ViewId): Item[] {
   const J = s.J;
   const q = (p: Vec3) => prj(view, p);
   const out: Item[] = [];
-  const limb = (key: string, a: Vec3, b: Vec3, ra: number, rb: number, ramp: string[]) => {
-    const pts = limbPts(q(a), q(b), ra, rb);
-    out.push({ key, depth: depthOf(view, scale(add(a, b), 0.5)), node: <Lit key={key} path={poly(pts)} pts={pts} ramp={ramp} edge={ramp === SKIN ? SKIN_EDGE : OUTLINE} /> });
-  };
-  limb('thighL', J.hipL, J.kneeL, 82, 62, TROUSER);
-  limb('thighR', J.hipR, J.kneeR, 82, 62, TROUSER);
-  limb('shinL', J.kneeL, J.ankleL, 60, 42, TROUSER);
-  limb('shinR', J.kneeR, J.ankleR, 60, 42, TROUSER);
-  limb('footL', J.ankleL, J.toeL, 44, 36, SHOE);
-  limb('footR', J.ankleR, J.toeR, 44, 36, SHOE);
-  // The torso: the hull of the shoulders, chest, waist and hips.
-  // A healthy back (owner 2026-10-10: the chest disc on the spine bulged a
-  // hump): chest and waist forward of the spine (the player faces +x), the
-  // hips a little back for the seat — the back nearly straight.
-  const FW = { x: 1, y: 0, z: 0 };
-  const tc: P2[] = [...circ(q(J.shoulderL), 66), ...circ(q(J.shoulderR), 66), ...circ(q(add(J.chest, scale(FW, 28))), 106), ...circ(q(add(add(scale(J.chest, 0.4), scale(J.pelvis, 0.6)), scale(FW, 20))), 96), ...circ(q(add(J.hipL, scale(FW, -8))), 96), ...circ(q(add(J.hipR, scale(FW, -8))), 96)];
-  const torso = hull(tc);
-  out.push({ key: 'torso', depth: depthOf(view, J.chest), node: <Lit key="torso" path={poly(torso)} pts={torso} ramp={SHIRT} /> });
+  const side = view === 'side';
+  // THE BODY (figure pass 2, owner 2026-10-15: the hull torso read as a tube,
+  // the legs as capsules). In profile: the house PROFILE BODY (profileBody
+  // above — PlayerFigure.buildSide's shaping from these joints): the
+  // shirt with its chest, waist and straight back, tucked in at the belt; the
+  // pelvis in the trousers joined to the near leg — the thigh ON the seat,
+  // the knee, the shin down, the shoe flat on the floor — the far leg a
+  // little darker behind; the head with its lips on the mouthpiece and its
+  // neck going into the collar. From above: the house shoulders (a rounded
+  // rectangle ≈ 456 × 236 mm, PlayerFigure.buildAbove), the thighs on the
+  // seat and the shoes beyond the knees. Drawing only: the joints (and so
+  // the solids) are unchanged.
+  const mass = (key: string, depth: number, path: SkPath, tone: 'shirt' | 'trousers' | 'shoe' | 'skin', far = false, quiet: SkPath | null = null) =>
+    out.push({ key, depth, node: <FigureMass key={key} path={path} tone={tone} far={far} quiet={quiet} contour={1.8} /> });
+  let body: ProfileBody | null = null;
+  if (side) {
+    body = profileBody({
+      neck: q(J.neck),
+      hip: q(scale(add(J.hipL, J.hipR), 0.5)),
+      shoulderN: q(J.shoulderR),
+      hipN: q(J.hipR),
+      kneeN: q(J.kneeR),
+      ankleN: q(J.ankleR),
+      hipF: q(J.hipL),
+      kneeF: q(J.kneeL),
+      ankleF: q(J.ankleL),
+      floorV: 0,
+      lips: q(add(J.mouth, { x: 6, y: 0, z: 0 })),
+      facing: 1,
+      seated: true,
+    });
+    const b = body;
+    out.push({
+      key: 'legFar',
+      depth: depthOf(view, J.hipL),
+      node: (
+        <Group key="legFar">
+          <FigureMass path={b.shoeFar} tone="shoe" far contour={1.8} />
+          <FigureMass path={b.legFar} tone="trousers" far contour={1.8} />
+        </Group>
+      ),
+    });
+    out.push({
+      key: 'torso',
+      depth: depthOf(view, J.chest),
+      node: (
+        <Group key="torso">
+          <FigureMass path={b.legNear} tone="trousers" contour={1.8} />
+          <FigureMass path={b.shoeNear} tone="shoe" contour={1.8} />
+          <FigureMass path={b.shirt} tone="shirt" contour={1.8} />
+          <Path path={b.belt}>
+            <LinearGradient start={vec(b.belt.getBounds().x, b.belt.getBounds().y)} end={vec(b.belt.getBounds().x, b.belt.getBounds().y + b.belt.getBounds().height)} colors={['#3a2a20', '#1e150f']} />
+          </Path>
+          <Path path={b.belt} style="stroke" strokeWidth={1.6} color="#0b0806" />
+          <Path path={b.collar} style="stroke" strokeWidth={2.4} strokeCap="round" color="#161a24" opacity={0.9} />
+        </Group>
+      ),
+    });
+  } else {
+    // Each leg one trouser mass (thigh into shin), its shoe beyond the knee.
+    const legTop = (key: string, hip: Vec3, knee: Vec3, ankle: Vec3, toe: Vec3) => {
+      const shoe = poly(limbPts(q(ankle), q(toe), 46, 38));
+      mass(`${key}Shoe`, depthOf(view, toe), shoe, 'shoe');
+      const H2 = q(hip);
+      const K2 = q(knee);
+      const A2 = q(ankle);
+      const path = union([poly(limbPts(H2, K2, 82, 64)), poly(limbPts(K2, A2, 62, 44))]);
+      mass(key, depthOf(view, scale(add(hip, knee), 0.5)), path, 'trousers');
+    };
+    legTop('legL', J.hipL, J.kneeL, J.ankleL, J.toeL);
+    legTop('legR', J.hipR, J.kneeR, J.ankleR, J.toeR);
+    // The shoulders and back from above, the chest toward +x.
+    const n2 = q(J.neck);
+    const OUT: P2[] = [[0, -112], [118, -108], [178, -66], [222, -28], [228, 26], [218, 74], [174, 106], [90, 116], [0, 124], [-90, 116], [-174, 106], [-218, 74], [-228, 26], [-222, -28], [-178, -66], [-118, -108]];
+    const torso = smoothClosed(OUT.map(([a, b]) => [n2[0] + b, n2[1] + a] as P2));
+    // Over the upper arms' roots (they leave from under the deltoids), under
+    // the forearms and hands.
+    const upD = Math.max(depthOf(view, scale(add(J.shoulderL, J.elbowL), 0.5)), depthOf(view, scale(add(J.shoulderR, J.elbowR), 0.5)));
+    mass('torso', Math.max(depthOf(view, J.chest), upD + 0.5), torso, 'shirt');
+  }
   // The arms and HANDS (figure polish 2026-10-10: the hands were capsules —
   // mittens). Each hand is the shared anatomical hand (PlayerFigure
   // handShape, the figure skin), holding what it holds:
@@ -525,7 +736,6 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   //   • the left hand a fist round the branch (tuba, euphonium), or the
   //     fingers on the rotor levers (horn).
   const rotary = s.valves.some((vl) => vl.kind === 'rotary');
-  const side = view === 'side';
   const handAt = (key: string, kind: 'keys' | 'grip' | 'above', tip: P2, dir: number, depth: number, elbow: Vec3): P2 => {
     const [ax, ay] = kind === 'keys' ? [151, Math.cos(dir) >= 0 ? 28 : -28] : kind === 'grip' ? [100, 0] : [70, 0];
     const co = Math.cos(dir);
@@ -551,16 +761,22 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   // forearm's swell, the cuff short of the wrist — its upper arm and forearm
   // painted at their own depths (the farther part whole, the nearer clipped
   // to its side of the elbow: no seam).
-  const arm = (side: 'L' | 'R', sh: Vec3, el: Vec3, w2: P2, dUp: number, dFore: number) => {
+  // In profile the near (right) sleeve grows out of the shoulder: its deltoid
+  // joined to the arm's outline inside the shirt, no outline or rim at the
+  // join (`quiet`); the far (left) arm a little darker, behind the body.
+  const arm = (lr: 'L' | 'R', sh: Vec3, el: Vec3, w2: P2, dUp: number, dFore: number) => {
     const S2 = q(sh);
     const E2 = q(el);
     const a = splitArm(pt(S2[0], S2[1]), pt(E2[0], E2[1]), pt(w2[0], w2[1]));
-    const pts: P2[] = [S2, E2, w2];
+    const near = lr === 'R' && body;
+    const path = near ? (Skia.Path.MakeFromOp(a.path, body!.deltoid(E2), PathOp.Union) ?? a.path) : a.path;
+    const quiet = near ? body!.quiet : null;
+    const far = side && lr === 'L';
     const foreNear = dFore >= dUp;
     const part = (key: string, depth: number, clip: SkPath | null) =>
-      out.push({ key, depth, node: <Group key={key} clip={clip ?? undefined}><Lit path={a.path} pts={pts} ramp={SHIRT} /></Group> });
-    part(`upper${side}`, dUp, foreNear ? null : a.upperSide);
-    part(`fore${side}`, dFore, foreNear ? a.foreSide : null);
+      out.push({ key, depth, node: <Group key={key} clip={clip ?? undefined}><FigureMass path={path} tone="shirt" far={far} quiet={quiet} contour={1.8} /></Group> });
+    part(`upper${lr}`, dUp, foreNear ? null : a.upperSide);
+    part(`fore${lr}`, dFore, foreNear ? a.foreSide : null);
   };
   const dirOf = (a: Vec3, b: Vec3) => {
     const A = q(a);
@@ -586,12 +802,12 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   // PlayerFigure headProfile / headAbove + FigureHead, the same skin
   // silhouette every lab figure wears; never a circle). Profile facing +x
   // (a short neck stub over the neck limb); from above, the nose toward +x.
-  const nb = sub(J.head, scale({ x: 0, y: -1, z: 0 }, -J.headR * 0.55));
-  limb('neckLimb', J.neck, nb, 48, 44, SKIN);
+  // (No separate neck limb: in profile the head's own neck goes into the
+  // collar — profileBody / intoCollar; from above the head covers it.)
   const hc = q(J.head);
   const r = J.headR;
   const headFill = (() => {
-    if (view === 'side') return headProfile(pt(hc[0] + r * 0.1, hc[1]), r * 1.05, hc[1] + r * 1.15, 1).fill; // lips on the mouthpiece, as before
+    if (body) return body.head.fill; // lips on the mouthpiece, the neck into the collar
     const f = headAbove(pt(0, 0), r).fill.copy();
     f.transform(Skia.Matrix().translate(hc[0], hc[1]).rotate(-Math.PI / 2));
     return f;
