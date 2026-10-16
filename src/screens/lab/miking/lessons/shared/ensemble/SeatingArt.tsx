@@ -23,8 +23,12 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { ARM, armPath, FigureHead, FigureMass, handShape, headAbove, headFront, headProfile, intoCollar, limb, type GarmentBox } from '../players/PlayerFigure';
+import { ARM, armPath, drawHand3, FIGURE_SKIN, FIGURE_TONES, FigureHead, FigureMass, handShape, headAbove, headFront, headProfile, intoCollar, limb, Nails, type GarmentBox } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose.ts';
+import { HAND, h3, type HandSkeleton, type HandView, type V3 } from '../players/handModel.ts';
+// Figure pass 3: every necked string and keyed wind or brass player's arms
+// and hands, solved once per kind in the player's frame (ensembleHands.ts).
+import { boardLine, BOWED_POSE, FLUTE, holdOf, TROMBONE, TRUMPET, trumpetAxis, tromboneAxis, WIND, type Arm3, type Hold } from './ensembleHands.ts';
 import { outline, BOWED, fbHalf, fingerboardZ, halfWidth, stationsOf, stringYs, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
 import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
 import { DrumPlan, CymbalPlan, CymbalSide, DrumExterior, SnareStandSide } from '../drums/DrumArt';
@@ -134,10 +138,22 @@ type Batch = {
   holes: SkPath;
   /** Items drawn by their own components (timpani, the snare, a cymbal, the piano). */
   extra: { key: string; el: ReactElement }[];
+  /** Figure pass 3: the posed hands' parts BEHIND what they hold (a thumb
+   *  behind a neck, fingers round the far side of a tube) — painted before
+   *  the instruments; the digits' edges and the nails over the hands. */
+  skinBack: SkPath;
+  handLines: SkPath;
+  nails: SkPath;
+  /** The sleeves' creases (the crook of each bent elbow), drawn on the sleeves. */
+  folds: SkPath;
 };
 function newBatch(): Batch {
   return {
     fig: { shirt: make(), trousers: make(), skin: make(), shoe: make(), seat: make() },
+    skinBack: make(),
+    folds: make(),
+    handLines: make(),
+    nails: make(),
     sleeves: make(),
     shoulders: make(),
     mat: Object.fromEntries((Object.keys(MATS) as MatId[]).map((k) => [k, make()])) as Record<MatId, SkPath>,
@@ -222,14 +238,21 @@ const neckLen = (s: BowedSpec) => s.overall.mm - s.body.mm;
 /** Add a path (in a seat's local plan frame: x = the player's right, y =
  *  BACK; the player faces −y) to a batch path, placed at the seat. */
 function placer(s: Seat) {
+  const at = placeOf(s);
+  return (into: SkPath, local: SkPath) => {
+    into.addPath(at(local));
+  };
+}
+/** A seat's local plan path, placed on the stage (a copy). */
+function placeOf(s: Seat) {
   const F = (s.face * Math.PI) / 180;
   // A child is the adult figure at its scale (group 2; drawn from above only).
   const k = s.kind === 'child' ? VOX.child.scale : 1;
   const m = Skia.Matrix().translate(s.p.x, s.p.z).rotate(F).scale(k, k);
-  return (into: SkPath, local: SkPath) => {
+  return (local: SkPath) => {
     const q = local.copy();
     q.transform(m);
-    into.addPath(q);
+    return q;
   };
 }
 /** A local plan point (x right, y back) of a seat, in plan (u, v). */
@@ -438,7 +461,7 @@ let GRAND_PLAN: { body: SkPath; board: SkPath; plate: SkPath; cutouts: SkPath; s
  * the tube arms and the oval mitten hands. `arm` records where each arm ends
  * so `hand` turns the hand along that forearm.
  */
-function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void, body: FigureBody | null = null, soft: ((zone: SkPath) => void) | null = null) {
+function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void, body: FigureBody | null = null, soft: ((zone: SkPath) => void) | null = null, fold: ((p: SkPath) => void) | null = null) {
   const ends: { end: P2; dir: number }[] = [];
   const PALM = 50; // the fist's grip point from the wrist (mm)
   /** One sleeve: the arm's outline from the shoulder joint, its top joined to
@@ -465,6 +488,31 @@ function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void,
       p = Skia.Path.MakeFromOp(p, cap, PathOp.Union) ?? p;
     }
     addShirt(p);
+    // Cloth gathers in the crook of a bent elbow (figure pass 3, owner
+    // 2026-10-15: "fabric folds at the shoulder and the elbow"): two soft
+    // creases across the inside of the bend, the longer at the joint.
+    if (fold) {
+      const L1 = Math.hypot(e.u - root.u, e.v - root.v) || 1;
+      const L2 = Math.hypot(wrist.u - e.u, wrist.v - e.v) || 1;
+      const u1 = P((e.u - root.u) / L1, (e.v - root.v) / L1);
+      const u2 = P((wrist.u - e.u) / L2, (wrist.v - e.v) / L2);
+      const cb = u1.u * u2.u + u1.v * u2.v;
+      if (cb < 0.9 && cb > -0.6 && L2 > 90) {
+        const nl = Math.hypot(u2.u - u1.u, u2.v - u1.v) || 1;
+        const n = P((u2.u - u1.u) / nl, (u2.v - u1.v) / nl);
+        const t = P(-n.v, n.u);
+        const crease = (c: P2, half: number) => {
+          const q = make();
+          q.moveTo(c.u - t.u * half, c.v - t.v * half);
+          q.quadTo(c.u - n.u * 7, c.v - n.v * 7, c.u + t.u * half, c.v + t.v * half);
+          return q;
+        };
+        const c1 = P(e.u + n.u * ARM.elbow * 0.42, e.v + n.v * ARM.elbow * 0.42);
+        const f = crease(c1, 20);
+        f.addPath(crease(P(c1.u + u2.u * 26 - n.u * 3, c1.v + u2.v * 26 - n.v * 3), 13));
+        fold(f);
+      }
+    }
   };
   const arm = (pts: P2[]) => {
     const [a, e, w] = pts;
@@ -511,6 +559,171 @@ function smoothPoly(points: readonly P2[], tension = 0.5): SkPath {
 }
 const unite = (...ps: SkPath[]): SkPath => ps.reduce((acc, q) => Skia.Path.MakeFromOp(acc, q, PathOp.Union) ?? acc);
 const cut = (a: SkPath, b: SkPath, op: PathOp): SkPath => Skia.Path.MakeFromOp(a, b, op) ?? a;
+
+/* ── figure pass 3: the posed hands (ensembleHands.ts) drawn into a batch ── */
+
+/** A big seating (an orchestra, a big band) draws each posed hand as its
+ *  silhouette — the same skeleton, five digits, the thumb on its side — with
+ *  no inner lines: at its size on a phone a hand there is a few pixels, and
+ *  sixty players' full hands would cost the build a second. */
+export const LIGHT_HANDS_ABOVE = 12;
+
+/** The convex hull of picture points (the palm's two faces). */
+function hull(points: P2[]): P2[] {
+  const p = [...points].sort((a, b) => a.u - b.u || a.v - b.v);
+  if (p.length < 3) return p;
+  const cr = (o: P2, a: P2, b: P2) => (a.u - o.u) * (b.v - o.v) - (a.v - o.v) * (b.u - o.u);
+  const lo: P2[] = [];
+  for (const q of p) {
+    while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop();
+    lo.push(q);
+  }
+  const up: P2[] = [];
+  for (let i = p.length - 1; i >= 0; i--) {
+    const q = p[i];
+    while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop();
+    up.push(q);
+  }
+  return [...lo.slice(0, -1), ...up.slice(0, -1)];
+}
+
+/** The posed hand's silhouette (a big seating): the bare wrist out of the
+ *  cuff, the palm, each digit along its joints at its own widths — split at
+ *  the plane `cut` like drawHand3 (beyond it: painted behind the instrument). */
+function handSilhouette(sk: HandSkeleton, view: HandView, fore: number, cutAt: { p: V3; n: V3 }): { path: SkPath; behind: SkPath | null } {
+  const Pv = (q: V3) => {
+    const r = view(q);
+    return P(r.u, r.v);
+  };
+  const behind = (q: V3) => h3.dot(h3.sub(q, cutAt.p), cutAt.n) < 0;
+  const front: SkPath[] = [];
+  const back: SkPath[] = [];
+  const w1 = Pv(sk.frame.o);
+  const w0 = P(w1.u - Math.cos(fore) * (ARM.cuffGap + 10), w1.v - Math.sin(fore) * (ARM.cuffGap + 10));
+  const w2 = Pv(h3.add(sk.frame.o, h3.mul(sk.frame.x, 22)));
+  (behind(sk.frame.o) ? back : front).push(limb([pt(w0.u, w0.v), pt(w1.u, w1.v), pt(w2.u, w2.v)], [HAND.wristHalf, HAND.wristHalf, HAND.wristHalf + 4]));
+  const pc = sk.palm.reduce((a, q) => h3.add(a, h3.mul(q, 1 / sk.palm.length)), { x: 0, y: 0, z: 0 });
+  const ring = hull(sk.palm.map(Pv));
+  (behind(pc) ? back : front).push(smoothPoly(HULL_REVERSED() ? ring.reverse() : ring, 0.5));
+  for (const dg of [...sk.fingers, sk.thumb]) {
+    const rs = dg.r.map((r, k) => (dg.name === 'thumb' && k === 0 ? r + 6 : r));
+    (behind(dg.joints[2]) ? back : front).push(limb(dg.joints.map((q) => pt(Pv(q).u, Pv(q).v)), rs));
+  }
+  // Every part is one closed outline of the SAME turning sense (the limbs and
+  // the palm's hull), so added into one path they fill as one silhouette by
+  // the winding rule — no boolean op per part (sixty players' hands).
+  const join = (ps: SkPath[]) => {
+    const out = make();
+    for (const q of ps) out.addPath(q);
+    return out;
+  };
+  return { path: join(front), behind: back.length ? join(back) : null };
+}
+/** The silhouettes already drawn, per skeleton and per view direction: every
+ *  player of a kind holds the same hand, and players facing the same way see
+ *  it the same — only moved (an orchestra's desk partners, the plan). */
+const silCache = new WeakMap<HandSkeleton, Map<string, { path: SkPath; behind: SkPath | null; at: P2 }>>();
+function silhouetteOf(sk: HandSkeleton, view: HandView, fore: number, cutAt: { p: V3; n: V3 }): { path: SkPath; behind: SkPath | null } {
+  const o = view({ x: 0, y: 0, z: 0 });
+  const ax = (q: V3) => {
+    const r = view(q);
+    return `${(r.u - o.u).toFixed(4)},${(r.v - o.v).toFixed(4)},${(r.d - o.d).toFixed(4)}`;
+  };
+  const key = `${ax({ x: 1, y: 0, z: 0 })}|${ax({ x: 0, y: 1, z: 0 })}|${ax({ x: 0, y: 0, z: 1 })}|${fore.toFixed(3)}|${cutAt.n.x.toFixed(4)},${cutAt.n.z.toFixed(4)}`;
+  let m = silCache.get(sk);
+  if (!m) {
+    m = new Map();
+    silCache.set(sk, m);
+  }
+  const w = view(sk.frame.o);
+  const hit = m.get(key);
+  if (hit) {
+    const mv = Skia.Matrix().translate(w.u - hit.at.u, w.v - hit.at.v);
+    const move = (q: SkPath) => {
+      const c = q.copy();
+      c.transform(mv);
+      return c;
+    };
+    return { path: move(hit.path), behind: hit.behind ? move(hit.behind) : null };
+  }
+  const made = handSilhouette(sk, view, fore, cutAt);
+  m.set(key, { ...made, at: P(w.u, w.v) });
+  return made;
+}
+/** Whether the palm's hull (counter-clockwise on screen) must be reversed to
+ *  turn the same way as limb()'s outlines (found once). */
+let hullRev: boolean | null = null;
+function HULL_REVERSED(): boolean {
+  if (hullRev !== null) return hullRev;
+  const a = limb([pt(0, 0), pt(100, 0)], [20, 20]);
+  const ring = hull([P(40, -10), P(160, -10), P(160, 10), P(40, 10)]);
+  const t = make();
+  t.addPath(a);
+  t.addPath(poly(ring));
+  // Where the two overlap, opposite turning cancels under the winding rule.
+  hullRev = !t.contains(60, 0);
+  return hullRev;
+}
+
+/**
+ * ONE POSED ARM AND HAND into a batch (figure pass 3): the sleeve from the
+ * drawn shoulder to the elbow and the wrist the hold solved (projected into
+ * this view), then the hand — PlayerFigure.drawHand3 (a small group), or its
+ * silhouette (a big seating) — what lies beyond the instrument's plane
+ * painted behind it, the rest over it. `place`: a plan seat's transform (the
+ * local plan frame to the stage); the elevations draw in place.
+ */
+function heldArm(b: Batch, a: Arm3, root: P2, view: HandView, toViewer: V3, armTo: (a: P2, e: P2, w: P2) => void, light: boolean, place: ((p: SkPath) => SkPath) | null): Held | null {
+  const e = view(a.elbow);
+  const w = view(a.wrist);
+  armTo(root, P(e.u, e.v), P(w.u, w.v));
+  const fore = Math.atan2(w.v - e.v, w.u - e.u);
+  const foreshortened = Math.hypot(w.u - e.u, w.v - e.v) < 0.85 * 255;
+  const cutAt = { p: a.at, n: toViewer };
+  const out = light ? { ...silhouetteOf(a.sk, view, fore, cutAt), lines: null, nails: null } : drawHand3(a.sk, view, { fore, foreshortened, cut: cutAt });
+  const at = (p: SkPath) => (place ? place(p) : p);
+  // (From above the plan's single layer holds every player: each hand is
+  // added as its own closed outline, as the plan adds its heads — a union
+  // into the whole stage's skin per hand cost an orchestra a second.)
+  const back = (p: SkPath) => {
+    if (place) b.skinBack.addPath(at(p));
+    else b.skinBack = Skia.Path.MakeFromOp(b.skinBack, at(p), PathOp.Union) ?? b.skinBack;
+  };
+  if (out.behind) back(out.behind);
+  // A hand inside the instrument (the horn's bell) is behind it from every side.
+  if (a.hidden) {
+    back(out.path);
+    return null;
+  }
+  const front = at(out.path);
+  if (place) putSkin(b, front);
+  else addFig(b, 'skin', front);
+  return { path: front, lines: out.lines ? at(out.lines) : null, nails: out.nails ? at(out.nails) : null };
+}
+/** A plan hand into the skin batch the way the plan adds its heads (its own outline). */
+function putSkin(b: Batch, p: SkPath) {
+  const into = b.fig.skin;
+  into.addPath(p);
+}
+/** A drawn hand: its front mass, its inner lines and nails (added by the caller). */
+type Held = { path: SkPath; lines: SkPath | null; nails: SkPath | null };
+/** Both arms of a hold. */
+function heldArms(b: Batch, h: Hold, roots: { L: P2; R: P2 }, view: HandView, toViewer: V3, armTo: (a: P2, e: P2, w: P2) => void, light: boolean, place: ((p: SkPath) => SkPath) | null = null): Held[] {
+  const out: Held[] = [];
+  for (const a of [h.L, h.R]) {
+    if (!a) continue;
+    const p = heldArm(b, a, a.side === 'L' ? roots.L : roots.R, view, toViewer, armTo, light, place);
+    if (p) out.push(p);
+  }
+  return out;
+}
+/** The hold a seat's player uses (a band's double bass is plucked; an orchestra's bowed). */
+function holdFor(s: Seat, lift: number, bowedBass: boolean): Hold | null {
+  if (s.kind === 'bass') return holdOf(bowedBass ? 'bass' : 'bassPizz');
+  return holdOf(s.kind, lift);
+}
+/** How each view is built (build passes it down). */
+type SeatOpts = { light: boolean; bowedBass: boolean };
 
 /**
  * ONE ENSEMBLE FIGURE'S BODY in elevation (figure pass 2, owner 2026-10-15:
@@ -932,7 +1145,7 @@ function planVoice(b: Batch, s: Seat) {
   put(b.fig.skin, q);
 }
 
-function planSeat(b: Batch, s: Seat) {
+function planSeat(b: Batch, s: Seat, o: SeatOpts) {
   // Group 4: the drum kit draws itself, its drummer included.
   if (bandPlanWhole(b, s)) return;
   // group 2: a singer (group 4's lead vocal is the same kind).
@@ -965,10 +1178,23 @@ function planSeat(b: Batch, s: Seat) {
   // Arms and the instrument, by kind (local: x right, y back, forward −y):
   // each sleeve unioned into the figure's one shirt mass.
   const fa = figureArms((p) => (shirt = unite(shirt, p)), (p) => put(b.fig.skin, p));
-  const arm = fa.arm;
-  const hand = (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 50));
   const LS = P(-185, 30);
   const RS = P(185, 30);
+  // Figure pass 3: a necked string, keyed wind or brass player's arms and
+  // hands are the hold's (ensembleHands.ts), seen from above (u = right,
+  // v = back, d = up); the kind's own arm and hand calls below then draw nothing.
+  const lift = standing && KIND[k].posture === 'seated' ? STAND_LIFT : 0;
+  const hold = holdFor(s, lift, o.bowedBass);
+  const PLAN_VIEW: HandView = (q) => ({ u: q.x, v: -q.z, d: q.y });
+  if (hold) {
+    for (const hp of heldArms(b, hold, { L: LS, R: RS }, PLAN_VIEW, { x: 0, y: 1, z: 0 }, fa.armTo, o.light, placeOf(s))) {
+      if (hp.lines) b.handLines.addPath(hp.lines);
+      if (hp.nails) b.nails.addPath(hp.nails);
+    }
+  }
+  const onPlan = (q: V3) => P(q.x, -q.z);
+  const arm = hold ? () => undefined : fa.arm;
+  const hand = hold ? (_c: P2) => undefined : (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 50));
   switch (k) {
     case 'violin':
     case 'viola': {
@@ -987,23 +1213,27 @@ function planSeat(b: Batch, s: Seat) {
       const hR = P(170, -250);
       arm([RS, P(280, -130), hR]);
       hand(hR);
-      const ang = Math.atan2(bridge.v - hR.v, bridge.u - hR.u);
-      const tip = P(hR.u + Math.cos(ang) * spec.bow.mm, hR.v + Math.sin(ang) * spec.bow.mm);
-      put(b.stick, line(make(), hR, tip));
-      put(b.hair, line(make(), P(hR.u + 8, hR.v + 14), P(tip.u + 6, tip.v + 12)));
+      // The bow from the frog in the right hand across the strings (the hold's).
+      const frog = hold?.pts?.frog ? onPlan(hold.pts.frog) : hR;
+      const ang = Math.atan2(bridge.v - frog.v, bridge.u - frog.u);
+      const tip = hold?.pts?.tip ? onPlan(hold.pts.tip) : P(frog.u + Math.cos(ang) * spec.bow.mm, frog.v + Math.sin(ang) * spec.bow.mm);
+      put(b.stick, line(make(), frog, tip));
+      put(b.hair, line(make(), P(frog.u + 8, frog.v + 14), P(tip.u + 6, tip.v + 12)));
       break;
     }
     case 'cello': {
       // Between the knees, leaning back about 25°, the neck passing the
       // player's left ear; the bow crosses the strings at the contact point.
-      const { lh, contact } = uprightPlan(b, put, BOWED.cello, P(20, -470), P(-0.3, 1), 25);
+      // (Figure pass 3: drawn from the hold's pose — the same tail, lean and tilt as the elevations.)
+      const C = BOWED_POSE.cello;
+      const { lh, contact } = uprightPlan(b, put, BOWED.cello, onPlan(C.tail), P(C.d.x, -C.d.z), Math.acos(C.d.y) / DEG);
       arm([LS, P(-250, -100), P(lh.u - 30, lh.v + 10)]);
       hand(P(lh.u - 20, lh.v));
-      const hR = P(330, -330);
+      const hR = hold?.pts?.frog ? onPlan(hold.pts.frog) : P(330, -330);
       arm([RS, P(300, -120), hR]);
       hand(hR);
       const bl = Math.hypot(contact.u - hR.u, contact.v - hR.v) || 1;
-      const tip = P(hR.u + ((contact.u - hR.u) / bl) * BOWED.cello.bow.mm, hR.v + ((contact.v - hR.v) / bl) * BOWED.cello.bow.mm);
+      const tip = hold?.pts?.tip ? onPlan(hold.pts.tip) : P(hR.u + ((contact.u - hR.u) / bl) * BOWED.cello.bow.mm, hR.v + ((contact.v - hR.v) / bl) * BOWED.cello.bow.mm);
       put(b.stick, line(make(), hR, tip));
       put(b.hair, line(make(), P(hR.u, hR.v - 12), P(tip.u, tip.v - 12)));
       break;
@@ -1011,17 +1241,25 @@ function planSeat(b: Batch, s: Seat) {
     case 'bass': {
       // Upright at the player's left front, leaning back about 20°, the
       // scroll beside the head; the right hand plucks over the fingerboard's end.
-      const { lh, pluck } = uprightPlan(b, put, BOWED.bass, P(-120, -600), P(-0.15, 1), 20);
+      const C = BOWED_POSE.bass;
+      const { lh, pluck } = uprightPlan(b, put, BOWED.bass, onPlan(C.tail), P(C.d.x, -C.d.z), Math.acos(C.d.y) / DEG);
       arm([LS, P(-250, -80), P(lh.u - 30, lh.v + 10)]);
       hand(P(lh.u - 20, lh.v));
       const hR = P(pluck.u + 70, pluck.v + 40);
       arm([RS, P(200, -200), hR]);
       hand(hR);
+      // An orchestra's bass is bowed (the hold's bow, frog to tip).
+      if (hold?.pts?.frog && hold.pts.tip) {
+        const f0 = onPlan(hold.pts.frog);
+        const t0 = onPlan(hold.pts.tip);
+        put(b.stick, line(make(), f0, t0));
+        put(b.hair, line(make(), P(f0.u, f0.v - 12), P(t0.u, t0.v - 12)));
+      }
       break;
     }
     case 'flute': {
-      const a = P(-60, -130);
-      const e = P(560, -170);
+      const a = onPlan(FLUTE.a);
+      const e = onPlan(FLUTE.b);
       put(b.mat.silver, capsule(a, e, 10));
       arm([LS, P(-120, -230), P(40, -150)]);
       hand(P(40, -150));
@@ -1031,8 +1269,9 @@ function planSeat(b: Batch, s: Seat) {
     }
     case 'oboe':
     case 'clarinet': {
-      const end = P(0, -630);
-      put(b.mat.blackwood, capsule(P(0, -120), P(0, end.v + 40), 15));
+      // (Its length foreshortened from above: it points down and forward from the lips.)
+      const end = onPlan(WIND.reed.end);
+      put(b.mat.blackwood, capsule(onPlan(WIND.reed.top), P(0, end.v + 40), 15));
       put(b.mat.blackwood, flare(P(0, end.v + 60), end, 16, k === 'clarinet' ? 33 : 24));
       if (k === 'clarinet') put(b.holes, ellipse(end, 20, 20));
       arm([LS, P(-150, -200), P(-10, -270)]);
@@ -1042,10 +1281,13 @@ function planSeat(b: Batch, s: Seat) {
       break;
     }
     case 'bassoon': {
-      put(b.mat.maple, capsule(P(170, -160), P(-200, 70), 30));
-      put(b.mat.maple, ellipse(P(-215, 80), 34, 34));
-      put(b.holes, ellipse(P(-215, 80), 20, 20));
-      put(b.mat.silver, capsule(P(20, -120), P(140, -170), 5));
+      // (Figure pass 3: held clear of the chest, as the elevations draw it.)
+      const boot = onPlan(WIND.bassoon.boot);
+      const top = onPlan(WIND.bassoon.bell);
+      put(b.mat.maple, capsule(boot, top, 30));
+      put(b.mat.maple, ellipse(top, 34, 34));
+      put(b.holes, ellipse(top, 20, 20));
+      put(b.mat.silver, capsule(P(30, -130), onPlan(WIND.bassoon.bocal), 5));
       arm([LS, P(-210, -80), P(-90, -60)]);
       hand(P(-90, -60));
       arm([RS, P(230, -120), P(150, -170)]);
@@ -1073,7 +1315,7 @@ function planSeat(b: Batch, s: Seat) {
     case 'trumpet': {
       put(b.mat.brass, rr(-35, -470, 35, -140, 18));
       put(b.mat.brass, flare(P(0, -440), P(0, -580), 24, 62));
-      for (const vy of [-250, -290, -330]) put(b.mat.silver, ellipse(P(30, vy), 14, 14));
+      for (const vz of TRUMPET.valves) put(b.mat.silver, ellipse(onPlan(trumpetAxis(vz)), 13, 13));
       arm([LS, P(-170, -190), P(-30, -300)]);
       hand(P(-30, -300));
       arm([RS, P(170, -200), P(40, -290)]);
@@ -1081,7 +1323,13 @@ function planSeat(b: Batch, s: Seat) {
       break;
     }
     case 'trombone': {
-      put(b.mat.brass, rr(-26, -900, 26, -140, 14));
+      // The slide's two tubes (the mouthpiece's on the left), the crook 900 mm
+      // out, the slide brace at second position; the bell section on the left.
+      const mx = TROMBONE.mouth.x;
+      put(b.mat.brass, capsule(P(mx, -110), P(mx, -900), 9));
+      put(b.mat.brass, capsule(P(mx + 100, -150), P(mx + 100, -900), 9));
+      put(b.mat.brass, capsule(P(mx, -900), P(mx + 100, -900), 12));
+      put(b.mat.brass, capsule(P(mx, -TROMBONE.brace), P(mx + 100, -TROMBONE.brace), 7));
       put(b.mat.brass, flare(P(-70, -200), P(-75, -520), 22, 110));
       arm([LS, P(-180, -200), P(-60, -230)]);
       hand(P(-60, -230));
@@ -1324,7 +1572,7 @@ function planStand(b: Batch, s: Seat) {
  *  viewer (front: facing the hall; section: in profile toward the
  *  conductor); the instrument follows the player's real facing (its local
  *  right and forward projected into the view). */
-function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
+function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
   // Children are drawn from above only (E06, the lead ruling): never a
   // figure in elevation — SeatingView marks their area instead.
   if (s.kind === 'child') return;
@@ -1398,13 +1646,25 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
     (z) => {
       b.shoulders = Skia.Path.MakeFromOp(b.shoulders, z, PathOp.Union) ?? b.shoulders;
     },
+    (f) => b.folds.addPath(f),
   );
-  const arm = fa.arm;
-  const hand = (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 48));
   // The shoulder joints. In profile both lie over the body's mid-depth (the
   // player's right projected along u put the near arm in front of the chest).
   const shL = prof ? Q(0, 6, sh - 40) : Q(-200, 0, sh - 40);
   const shR = prof ? Q(0, 6, sh - 40) : Q(200, 0, sh - 40);
+  // Figure pass 3: a necked string, keyed wind or brass player's arms and
+  // hands are the hold's (ensembleHands.ts), solved once in the player's
+  // frame and projected here — u and v as Q's, d toward the viewer (the hall
+  // for the front, the conductor's right for the section); the kind's own
+  // arm and hand calls below then draw nothing.
+  const dR = front ? Math.sin(F) : Math.cos(F);
+  const dF = front ? -Math.cos(F) : Math.sin(F);
+  const VIEW: HandView = (q) => ({ u: X(q.x, q.z), v: g - q.y, d: q.x * dR + q.z * dF });
+  const onView = (q: V3) => P(X(q.x, q.z), g - q.y);
+  const hold = holdFor(s, lift, so.bowedBass);
+  const heldHands = hold ? heldArms(b, hold, { L: shL, R: shR }, VIEW, { x: dR, y: 0, z: dF }, fa.armTo, so.light) : [];
+  const arm = hold ? () => undefined : fa.arm;
+  const hand = hold ? (_c: P2) => undefined : (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 48));
   /** A part that hides the head and hands behind it (a bell seen end-on). */
   let before: SkPath | null = null;
   switch (k) {
@@ -1423,18 +1683,28 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       arm([shR, Q(300, 60, 880), hR]);
       hand(hR);
       const br = P(tail.u + d.u * 150 * kf, tail.v + d.v * 150 * kf);
-      line(b.stick, hR, P(hR.u + (br.u - hR.u) * 2.4, hR.v + (br.v - hR.v) * 2.4));
+      // The bow from the frog in the right hand to its tip (the hold's).
+      if (hold?.pts?.frog && hold.pts.tip) line(b.stick, onView(hold.pts.frog), onView(hold.pts.tip));
+      else line(b.stick, hR, P(hR.u + (br.u - hR.u) * 2.4, hR.v + (br.v - hR.v) * 2.4));
       break;
     }
     case 'cello':
     case 'bass': {
       const spec = BOWED[k];
-      const tail = Q(k === 'bass' ? -120 : 0, k === 'bass' ? 260 : 330, k === 'cello' ? 120 : 160);
-      const { d, k: kf } = dirOf(-0.05, 0.94, -0.33);
+      // (Figure pass 3: the hold's pose — the cello's back against the chest,
+      // its neck past the left ear; the bass at the left front, leaning back.)
+      const C = BOWED_POSE[k];
+      const tail = Q(C.tail.x, C.tail.z, C.tail.y);
+      const { d, k: kf } = dirOf(C.d.x, C.d.y, C.d.z);
       b.mat.varnish.addPath(bodyPath(spec, tail, d, kf, faceOn));
       const nb = P(tail.u + d.u * bodyLen(spec) * kf, tail.v + d.v * bodyLen(spec) * kf);
-      const sc = P(nb.u + d.u * neckLen(spec) * kf, nb.v + d.v * neckLen(spec) * kf);
-      b.mat.ebony.addPath(capsule(nb, sc, k === 'cello' ? 18 : 24));
+      // The neck and fingerboard where the left hand stops the strings: the
+      // board's face raised off the top plate (figure pass 3: drawn on the
+      // plate's line, the board sat 70–90 mm off the bass player's fingers).
+      const bl = boardLine(k);
+      const sc = onView(bl.scroll);
+      b.mat.ebony.addPath(capsule(onView(bl.heel), onView(bl.nut), k === 'cello' ? 18 : 24));
+      b.mat.varnish.addPath(capsule(onView(bl.nut), sc, k === 'cello' ? 14 : 18));
       b.mat.varnish.addPath(ellipse(sc, 30, 34));
       line(b.stick, tail, P(tail.u, g));
       if (faceOn > 0.6) {
@@ -1447,7 +1717,9 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       const hR = Q(330, 260, k === 'cello' ? 540 : 820);
       arm([shR, Q(330, 100, 760), hR]);
       hand(hR);
-      line(b.stick, hR, Q(-380, 300, k === 'cello' ? 520 : 800));
+      // The bow (bowed: the hold's frog to its tip; a band's bass is plucked).
+      if (hold?.pts?.frog && hold.pts.tip) line(b.stick, onView(hold.pts.frog), onView(hold.pts.tip));
+      else if (!hold) line(b.stick, hR, Q(-380, 300, k === 'cello' ? 520 : 800));
       break;
     }
     case 'flute': {
@@ -1473,11 +1745,12 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       break;
     }
     case 'bassoon': {
-      const boot = Q(160, 160, 520);
-      const bell = Q(-180, 40, 1740);
+      // (Figure pass 3: held clear of the chest, the wing joint ≈ 150 mm in front of it.)
+      const boot = onView(WIND.bassoon.boot);
+      const bell = onView(WIND.bassoon.bell);
       b.mat.maple.addPath(capsule(boot, bell, 32));
       b.mat.maple.addPath(rr(bell.u - 36, bell.v - 30, bell.u + 36, bell.v + 30, 14));
-      b.mat.silver.addPath(capsule(Q(30, 130, 1160), Q(130, 150, 1080), 5));
+      b.mat.silver.addPath(capsule(Q(30, 130, 1160), onView(WIND.bassoon.bocal), 5));
       const h1 = P(boot.u + (bell.u - boot.u) * 0.55, boot.v + (bell.v - boot.v) * 0.55);
       const h2 = P(boot.u + (bell.u - boot.u) * 0.2, boot.v + (bell.v - boot.v) * 0.2);
       arm([shL, Q(-200, 120, 900), h1]);
@@ -1532,6 +1805,22 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
         const along = (f: number, dv: number) => P(mouth.u + d.u * f * kf, mouth.v + d.v * f * kf + dv);
         b.mat.brass.addPath(capsule(mouth, along(L, 20), tb ? 16 : 18));
         b.mat.brass.addPath(flare(along(tb ? 200 : 300, 6), along(tb ? 420 : 470, 6), 20, tb ? 110 : 62));
+        // The trumpet's three valve casings and their buttons (the right hand's fingertips are on them).
+        if (!tb) {
+          const lp = { x: 0, y: lift, z: 0 };
+          for (const vz of TRUMPET.valves) {
+            const c0 = h3.add(trumpetAxis(vz), lp);
+            b.mat.brass.addPath(capsule(onView(h3.add(c0, { x: 0, y: -40, z: 0 })), onView(h3.add(c0, { x: 0, y: 44, z: 0 })), 12));
+            b.mat.silver.addPath(capsule(onView(h3.add(c0, { x: 0, y: 44, z: 0 })), onView(h3.add(c0, { x: 0, y: TRUMPET.button - 4, z: 0 })), 3));
+            b.mat.silver.addPath(ellipse(onView(h3.add(c0, { x: 0, y: TRUMPET.button, z: 0 })), 11, 4));
+          }
+        }
+        // The slide's brace at second position, across its two tubes (the right hand's).
+        if (tb) {
+          const c0 = tromboneAxis(TROMBONE.brace);
+          const lp = { x: 0, y: lift, z: 0 };
+          b.mat.brass.addPath(capsule(onView(h3.add(c0, lp)), onView(h3.add(c0, { x: 100, y: lift, z: 0 })), 8));
+        }
       }
       // The hands ride the tilted horn: the left at the bell brace, the right on the slide.
       const hL = Q(-30, 280, 1130 + lift + (tb ? up(280) : 0));
@@ -1911,7 +2200,24 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   // …and goes INTO the collar: the head's silhouette stops at the shirt.
   const head = intoCollar(!prof ? headFront(pt(headC.u, headC.v), 104, NECK_V) : headProfile(pt(headC.u, headC.v), 104, NECK_V, fwdU >= 0 ? 1 : -1), body.torso);
   addFig(b, 'skin', head.fill);
-  if (before) b.fig.skin = Skia.Path.MakeFromOp(b.fig.skin, before, PathOp.Difference) ?? b.fig.skin;
+  // A posed hand in front of the face (a trumpet's, a bass player's left
+  // hand): the skin is one mass, so the hand reads by its own outline there —
+  // its inner lines and nails stay off the face.
+  for (const hp of heldHands) {
+    const over = Skia.Path.MakeFromOp(hp.path, head.fill, PathOp.Intersect);
+    if (over && over.getBounds().width > 0) {
+      b.handLines.addPath(over);
+      continue;
+    }
+    if (hp.lines) b.handLines.addPath(hp.lines);
+    if (hp.nails) b.nails.addPath(hp.nails);
+  }
+  if (before) {
+    b.fig.skin = Skia.Path.MakeFromOp(b.fig.skin, before, PathOp.Difference) ?? b.fig.skin;
+    // (The posed hands' lines and nails behind the bell go with them.)
+    b.handLines = Skia.Path.MakeFromOp(b.handLines, before, PathOp.Difference) ?? b.handLines;
+    b.nails = Skia.Path.MakeFromOp(b.nails, before, PathOp.Difference) ?? b.nails;
+  }
 }
 
 function elevStand(b: Batch, s: Seat, view: 'front' | 'section') {
@@ -1949,12 +2255,21 @@ function PaintBatch({ b }: { b: Batch }) {
           is only a soft fold, no rim (owner 2026-10-15: no plugged-in limbs). */}
       <FigureMass path={b.fig.shirt} tone="shirt" box={box} />
       <FigureMass path={b.sleeves} tone="shirt" box={box} soft={b.shoulders} />
+      <Group clip={b.sleeves}>
+        <Path path={b.folds} style="stroke" strokeWidth={3.2} strokeCap="round" color={FIGURE_TONES.shirt.edge} opacity={0.42} />
+      </Group>
+      {/* Figure pass 3: the posed hands' parts beyond what they hold (a thumb
+          behind a neck), under the instruments. */}
+      <FigureMass path={b.skinBack} tone="skin" contour={2.6} />
       {(Object.keys(MATS) as MatId[]).map((m) => (m === 'riser' ? null : <Mass key={m} path={b.mat[m]} mat={m} />))}
       <Path path={b.holes} color="#0a0705" opacity={0.85} />
       <Path path={b.stick} style="stroke" strokeWidth={12} strokeCap="round" color="#3a2010" />
       <Path path={b.hair} style="stroke" strokeWidth={5} strokeCap="round" color="#efe6cc" opacity={0.9} />
       {b.extra.map((e) => e.el)}
       <FigureHead fill={b.fig.skin} />
+      {/* The posed hands' digits read apart; their nails (a hint at this size). */}
+      <Path path={b.handLines} style="stroke" strokeWidth={3} strokeCap="round" color={FIGURE_SKIN.edge} opacity={0.7} />
+      <Nails path={b.nails} />
     </Group>
   );
 }
@@ -1992,6 +2307,8 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
   // Plan: one layer (nothing overlaps from above but the stands); the
   // elevations: a layer per ~600 mm of depth, painted far to near.
   const step = view === 'plan' ? Infinity : 600;
+  // Figure pass 3: a big seating's hands as silhouettes; an orchestra's basses bowed.
+  const so: SeatOpts = { light: s.seats.length > LIGHT_HANDS_ABOVE, bowedBass: /^(orch|strings|chamber)\./.test(s.id) };
   let cur: Batch | null = null;
   let curD = -Infinity;
   const paint = (into: Batch, it: Item) => {
@@ -2003,10 +2320,10 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
     const q = it.seat!;
     if (view === 'plan') {
       planStand(into, q);
-      planSeat(into, q);
+      planSeat(into, q, so);
     } else {
       elevStand(into, q, view);
-      elevSeat(into, q, view);
+      elevSeat(into, q, view, so);
     }
   };
   for (const it of sorted) {
