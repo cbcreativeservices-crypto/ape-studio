@@ -552,7 +552,7 @@ function HarmonicBars({
   // line and its dots are authored in glass pixels and × ts too, so the
   // whole recipe (not just its numbers) is 2× at 2×.
   const ts = useStageTextScale();
-  const fs = 9 * ts;
+  const fs = 11 * ts; // 9 -> 11 (art grading 2026-10-16: the 1-12 read as ~7 px glyphs)
   const labelH = Math.round(fs + 6 * ts);
   const H = Math.max(40, height - labelH); // chart area; the label strip sits under it
   const pad = 6 * ts;
@@ -577,6 +577,9 @@ function HarmonicBars({
         </LinearGradient>
       </Defs>
       <Rect x={0} y={0} width={width} height={H} fill="#0c0c0f" />
+      {/* The seam between the wave strip above and this chart: the two panels
+          read as two views, not one picture (art grading 2026-10-16). */}
+      <Line x1={0} y1={0.5 * ts} x2={width} y2={0.5 * ts} stroke="rgba(255,255,255,0.16)" strokeWidth={1 * ts} />
       {amps.map((a, i) => (
         <SettleBar key={i} x={pad + i * bw + 3 * ts} width={bw - 6 * ts} amp={a} chartH={H} ts={ts} />
       ))}
@@ -591,6 +594,7 @@ function HarmonicBars({
           y={H + labelH - 3 * ts}
           fill={colors.textSub}
           fontSize={fs}
+          fontFamily={fonts.mono}
           textAnchor="middle"
         >
           {`${i + 1}`}
