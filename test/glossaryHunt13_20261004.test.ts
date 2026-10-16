@@ -69,7 +69,8 @@ describe('2 · Custom and Bookmarks: unreadable is not empty', () => {
   });
   it('the held-chip list says so before "No terms yet"', () => {
     const at = SCREEN.indexOf("termListModal?.kind === 'starred' && starredUnreadable");
-    const empty = SCREEN.indexOf("'No terms yet — tap ★ on any term to build your custom list.'");
+    // Wording now shows the 3-card icon inline (owner 2026-10-16), so match its opening words.
+    const empty = SCREEN.indexOf('No terms yet — tap <DeckIcon');
     assert.ok(at > 0 && empty > at);
     assert.match(SCREEN, /termListModal\?\.kind === 'bookmark' && pickedBookmarksUnreadable\s*\? BOOKMARKS_UNREADABLE/);
   });
