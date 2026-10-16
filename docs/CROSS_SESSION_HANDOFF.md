@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-15 23:05 · ccode · 1c8012af
+changed: Miking plans: expert review — audience only where it fits, face-on idle phones, true kit, words off cables
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-15 22:46 · ccode · d22adb74
 changed: Miking figures pass 2: bowed/brass 3-D figure and ensemble bodies redrawn (one shirt, real torsos)
 affects other side: nothing (app only)
