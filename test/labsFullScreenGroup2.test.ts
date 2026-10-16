@@ -59,7 +59,7 @@ test('pixel-authored drawings paint through a (box ÷ ts) viewBox so everything 
 
 test('RN text laid over a drawing grows with the scale', () => {
   const fm = read('FmLabScreen.tsx');
-  assert.match(fm, /fontSize:\s*10\.5 \* ts/, 'FM legend font × ts');
+  assert.match(fm, /fontSize:\s*11\.5 \* ts/, 'FM legend font × ts');
   assert.match(fm, /const gh = h - LEGEND_H \* ts/, 'FM legend strip height × ts');
   const bass = read('BassLabScreen.tsx');
   assert.match(bass, /fontSize:\s*9\.5 \* ts/, 'Bass NUT/BRIDGE strip font × ts');

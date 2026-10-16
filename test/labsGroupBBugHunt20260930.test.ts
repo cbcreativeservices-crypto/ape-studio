@@ -99,7 +99,7 @@ test('LabShell: ▶ backup timer dies with the next touch; LAB NOTES stay mounte
 });
 
 test('FM legend reserves two lines; Noise chart labels ≥ 9 pt on a short phone', () => {
-  assert.match(read('src/screens/lab/FmLabScreen.tsx'), /const LEGEND_H = 30;/);
+  assert.match(read('src/screens/lab/FmLabScreen.tsx'), /const LEGEND_H = 36;/);
   const n = read('src/screens/lab/NoiseLabScreen.tsx');
   assert.doesNotMatch(n, /fontSize=\{8\}/);
 });

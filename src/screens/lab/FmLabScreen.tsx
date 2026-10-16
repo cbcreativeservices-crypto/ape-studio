@@ -26,7 +26,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
@@ -409,7 +409,7 @@ const PAD = 14;
 // Color-key strip inside the glass, under the plot. Two lines (bug hunt
 // 2026-09-30): the key wraps on every phone glass, and at 18 the fixed-height
 // glass clipped line two — "red dashed = ALIASED past Nyquist".
-const LEGEND_H = 30;
+const LEGEND_H = 36; // two lines of the 11.5-pt key (art grading 2026-10-16: 10.5 read too small)
 
 /** The sideband stick spectrum: |J_k(I)| at fc ± k·fm, k = 0..K where K covers
  *  Carson + 2. Folds (negative frequencies / above-Nyquist) are drawn dashed
@@ -459,39 +459,80 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
   // honest picture of equal ±k·fm spacing, WHICH IS the lesson).
   const fMax = Math.max(fc * 2, ...sticks.map((s) => s.f)) * 1.15;
 
+  // A real frequency axis (art grading 2026-10-16: only "fc" and the right
+  // end were labelled): round ticks, at most ~5 across the glass, in Hz.
+  const tickStep = [100, 200, 250, 500, 1000, 2000, 2500, 5000].find((st) => fMax / st <= 5) ?? 10000;
+  const ticks: number[] = [];
+  for (let f = 0; f <= fMax; f += tickStep) ticks.push(f);
+  const xOf = (f: number) => PAD + (f / fMax) * (lw - 2 * PAD);
+  const base = lgh - 24; // baseline y
+  const ampH = lgh - 54; // |J| = 1 height
+  const hzLabel = (f: number) => (f === 0 ? '0' : f >= 1000 ? `${+(f / 1000).toFixed(2)}k` : `${f}`);
+
   return (
     <View style={{ width: w, height: h }}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={gh} viewBox={`0 0 ${lw} ${lgh}`}>
         <Rect x={0} y={0} width={lw} height={lgh} fill="#0c0c0f" />
-        {/* Baseline + carrier marker. */}
-        <Line x1={PAD} y1={lgh - 22} x2={lw - PAD} y2={lgh - 22} stroke="#3a3b46" strokeWidth={1.5} />
+        {/* Amplitude guides: |J| = 1 and 0.5 (the stick heights are exact
+            Bessel magnitudes, so the scale is real). */}
+        {[1, 0.5].map((a) => (
+          <Fragment key={`g${a}`}>
+            <Line x1={PAD} y1={base - a * ampH} x2={lw - PAD} y2={base - a * ampH} stroke="#23242c" strokeWidth={1} strokeDasharray="2 4" />
+            <SvgText x={lw - PAD} y={base - a * ampH - 3} fill="#7a7a86" fontSize={10.5} fontFamily={fonts.mono} textAnchor="end">
+              {a === 1 ? '|J| 1' : '0.5'}
+            </SvgText>
+          </Fragment>
+        ))}
+        {/* Baseline + frequency ticks. */}
+        <Line x1={PAD} y1={base} x2={lw - PAD} y2={base} stroke="#3a3b46" strokeWidth={1.5} />
+        {ticks.map((f) => (
+          <Fragment key={`t${f}`}>
+            <Line x1={xOf(f)} y1={base} x2={xOf(f)} y2={base + 4} stroke="#55566a" strokeWidth={1} />
+            <SvgText x={xOf(f)} y={base + 16} fill="#9a9aa6" fontSize={11} fontFamily={fonts.mono} textAnchor={f === 0 ? 'start' : 'middle'}>
+              {hzLabel(f)}
+            </SvgText>
+          </Fragment>
+        ))}
+        <SvgText x={lw - PAD} y={base + 16} fill="#9a9aa6" fontSize={11} fontFamily={fonts.mono} textAnchor="end">
+          Hz
+        </SvgText>
         {sticks.map((s, i) => {
-          const x = PAD + (s.f / fMax) * (lw - 2 * PAD);
-          const sh = s.a * (lgh - 50);
+          const x = xOf(s.f);
+          const sh = s.a * ampH;
           // Folded sticks never wear carrier green (QA night 2026-09-01):
           // a reflect landing exactly on fc contradicted the legend.
           const isCarrier = s.fold === 'none' && Math.abs(s.f - fc) < 1e-6;
+          const col = s.fold === 'alias' ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber;
           return (
             <Fragment key={i}>
               <Line
                 x1={x}
-                y1={lgh - 22}
+                y1={base}
                 x2={x}
-                y2={lgh - 22 - sh}
-                stroke={s.fold === 'alias' ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber}
+                y2={base - sh}
+                stroke={col}
                 strokeWidth={isCarrier ? 3 : 2}
                 strokeDasharray={s.fold !== 'none' ? '3 3' : undefined}
                 opacity={s.fold === 'reflect' ? 0.55 : 1}
               />
+              {/* the stick's head: where its amplitude reads (true components
+                  only — a folded copy stays a plain dashed line, so where it
+                  lands on top of another stick it does not add a second dot) */}
+              {s.fold === 'none' ? <Circle cx={x} cy={base - sh} r={2.6} fill={col} /> : null}
             </Fragment>
           );
         })}
-        <SvgText x={PAD + (fc / fMax) * (lw - 2 * PAD)} y={lgh - 8} fill="#5bff85" fontSize={9.5} textAnchor="middle">
-          {`fc ${fc}`}
-        </SvgText>
-        <SvgText x={lw - PAD} y={lgh - 8} fill="#4a4a52" fontSize={9.5} textAnchor="end">
-          {`${(fMax / 1000).toFixed(1)} kHz`}
-        </SvgText>
+        {/* fc tag rides above the carrier stick (green, like the stick). */}
+        {(() => {
+          // Above the TALLEST thing at fc (a reflected sideband can land there).
+          const top = Math.max(0, ...sticks.filter((s) => Math.abs(s.f - fc) < 1e-6).map((s) => s.a));
+          const y = base - top * ampH - 8;
+          return (
+            <SvgText x={xOf(fc)} y={Math.max(12, y)} fill="#5bff85" fontSize={11} fontFamily={fonts.mono} textAnchor="middle">
+              {`fc ${fc}`}
+            </SvgText>
+          );
+        })()}
       </Svg>
       {/* No numberOfLines (2026-09-11 layout pass): this is a 106-character
           sentence — ~530px of 10.5px Barlow in a ~328px card, so a one-line
@@ -499,7 +540,7 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
           "red dashed = ALIASED past Nyquist", the only thing that explains the
           red trace. It was truncating at the DESIGN text size, not just a
           large one. It wraps now. */}
-      <Text style={[styles.legend, ts !== 1 ? { fontSize: 10.5 * ts, paddingTop: 2 * ts } : null]}>
+      <Text style={[styles.legend, ts !== 1 ? { fontSize: 11.5 * ts, lineHeight: 15 * ts, paddingTop: 2 * ts } : null]}>
         green = carrier · amber = sidebands · dim dashed = reflected below 0 Hz · red dashed = ALIASED past Nyquist
       </Text>
     </View>
@@ -511,5 +552,5 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  legend: { fontFamily: fonts.barlowRegular, fontSize: 10.5, color: colors.textSub, textAlign: 'center', paddingTop: 2 },
+  legend: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub, textAlign: 'center', paddingTop: 2 },
 });
