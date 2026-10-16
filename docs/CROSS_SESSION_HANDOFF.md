@@ -634,6 +634,54 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 16:34 · ccode · 9671d66b
+changed: C10 Harp art fix round 2: real harpist hands on the strings, one seated body
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:34 · ccode · fb000b80
+changed: Miking hand percussion art fix round 3 (I02 cajón, I03a shaker, I05d güiro): the shared figure on the cajón, curled grips, no white nail dots
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:33 · ccode · f3f23ff6
+changed: B04 boom operator art fix: no arm across the face; one straight pole in both hands; the operator dressed by the mic shown (art grading 2026-10-16, round 2)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:32 · ccode · d42f8441
+changed: Amplifier Principles art fix round 3: closed Class D half-bridge, real device symbols, drawn loudspeakers
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:32 · ccode · 21f2d9af
+changed: Sound Envelope art fix round 3: real-pitch audio under the envelope, a snare with its wires, 10%/90% tags off the release line
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:29 · ccode · 60af2001
+changed: Cable Fundamentals: code-drawn cable + connector art (fix pass 2)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:24 · ccode · ba7e7f33
+changed: Lead vocal art fix (fix4): MOUTH off the condenser, VOCAL FOLDS leader off the shirt, profile neck no wider than the shirt's nape
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:22 · ccode · 44e88f1c
+changed: Oscillator Lab art fix: 11 pt harmonic numbers, seam between wave strip and chart (art grading 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:21 · ccode · 4befee1f
 changed: Wave Physics art fix: plan rooms drawn from above, arrival table off the room, 10 pt room labels
 affects other side: nothing (app only)
