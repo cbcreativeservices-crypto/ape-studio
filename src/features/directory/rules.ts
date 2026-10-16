@@ -151,6 +151,18 @@ export function slugify(label: string): string {
 }
 
 /**
+ * The words a member sees when the server's community-rules filter refuses a
+ * message, a contact request or About text (Apple Guideline 1.2 — Comp A brief
+ * Downloads/2026-10-15_COMP_A_CHAT_CONTENT_FILTER_BRIEF.md). The server raises
+ * `message = 'community_rules', detail = <category>`; the category is for the
+ * moderation log and is never shown. ⏸ Copy pending owner approval.
+ * Until the server filter is applied nothing raises it, so this changes no
+ * behaviour today.
+ */
+export const COMMUNITY_RULES_MESSAGE =
+  'That can’t be sent: it looks like it breaks our community rules. Please rephrase.';
+
+/**
  * Postgres speaks precisely but not to people. Translate the errors a member
  * can actually provoke; pass anything else through rather than inventing a
  * friendly lie about a failure we did not anticipate.
@@ -161,6 +173,10 @@ export function readableError(message: string | undefined): string {
   // surfaced a blank error string painted an empty red banner with no text.
   if (message !== undefined && message.trim().length === 0) message = undefined;
   const m = (message ?? '').toLowerCase();
+  // The community-rules filter (2026-10-15) — FIRST, a stable machine code
+  // that no other branch may swallow. Retrying the same text fails the same
+  // way, so the copy asks for a rephrase, not a retry.
+  if (m.includes('community_rules')) return COMMUNITY_RULES_MESSAGE;
   // PostgREST rejects an anon caller at the GRANT before the function body
   // runs, so the friendly "sign in to browse" guard inside directory_search is
   // unreachable for a signed-out visitor — they got the raw
