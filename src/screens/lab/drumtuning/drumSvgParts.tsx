@@ -331,9 +331,36 @@ export function ExteriorDrum({ cx, yHead, dIn, depthIn, k, lugs, phaseDeg, legs 
       );
     }
   }
+  // The rack tom's STAND (art grading 2026-10-16: the old 62 mm tripod read as
+  // a snare stand). A real tom/cymbal stand, drawn BEHIND the drum: a Ø 25 mm
+  // upright from the floor to the arm clamp under the tom, a memory-lock
+  // collar, and tripod legs braced ≈ 230 mm up, feet ≈ 170 mm out each side
+  // (the third leg points at the camera).
+  const standEls: ReactNode[] = [];
+  if (mount && fv != null) {
+    const sx = mount.to[0];
+    const collarV = fv - 230;
+    standEls.push(
+      <G key="stand">
+        <Line x1={X(sx)} y1={Y(mount.to[1] - 30)} x2={X(sx)} y2={Y(fv - 4)} stroke="#2a2c32" strokeWidth={30 * k} strokeLinecap="round" />
+        <Line x1={X(sx)} y1={Y(mount.to[1] - 30)} x2={X(sx)} y2={Y(fv - 4)} stroke="#a3a8b2" strokeWidth={24 * k} strokeLinecap="round" />
+        {[-1, 1].map((sd) => (
+          <G key={sd}>
+            <Line x1={X(sx)} y1={Y(collarV)} x2={X(sx + sd * 170)} y2={Y(fv - 6)} stroke="#2a2c32" strokeWidth={16 * k} strokeLinecap="round" />
+            <Line x1={X(sx)} y1={Y(collarV)} x2={X(sx + sd * 170)} y2={Y(fv - 6)} stroke="#a3a8b2" strokeWidth={11 * k} strokeLinecap="round" />
+            <Rect x={X(sx + sd * 170 - 14)} y={Y(fv - 12)} width={28 * k} height={12 * k} rx={4 * k} fill="#141518" />
+          </G>
+        ))}
+        {/* the third leg, toward the camera: foreshortened straight down */}
+        <Line x1={X(sx)} y1={Y(collarV)} x2={X(sx + 30)} y2={Y(fv - 4)} stroke="#a3a8b2" strokeWidth={11 * k} strokeLinecap="round" opacity={0.9} />
+        <Rect x={X(sx - 22)} y={Y(collarV - 30)} width={44 * k} height={40 * k} rx={6 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
+      </G>,
+    );
+  }
   return (
     <G>
       {legEls}
+      {standEls}
       {/* shell: a lit lacquered cylinder */}
       <Rect x={X(-R)} y={Y(0)} width={2 * R * k} height={D * k} fill="url(#dtWood)" stroke="#140b05" strokeWidth={0.6} />
       <Rect x={X(-R)} y={Y(0)} width={2 * R * k} height={D * k} fill="url(#dtCavity)" opacity={0.22} />
@@ -344,20 +371,9 @@ export function ExteriorDrum({ cx, yHead, dIn, depthIn, k, lugs, phaseDeg, legs 
           <Line x1={X(mount.from[0])} y1={Y(mount.from[1])} x2={X(mount.to[0])} y2={Y(mount.to[1])} stroke="#a3a8b2" strokeWidth={10.5 * k} strokeLinecap="round" />
           <Rect x={X(mount.from[0] - 22)} y={Y(mount.from[1] - 22)} width={44 * k} height={44 * k} rx={6 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
           {fv != null ? (
-            <G>
-              {/* the arm's clamp on a stand (Ø 25 tube to a tripod on the
-                  floor): the tom never hangs in the air (clash sweep 2026-10-10) */}
-              <Line x1={X(mount.to[0])} y1={Y(mount.to[1] - 40)} x2={X(mount.to[0])} y2={Y(fv - 4)} stroke="#2a2c32" strokeWidth={30 * k} strokeLinecap="round" />
-              <Line x1={X(mount.to[0])} y1={Y(mount.to[1] - 40)} x2={X(mount.to[0])} y2={Y(fv - 4)} stroke="#a3a8b2" strokeWidth={24 * k} strokeLinecap="round" />
-              {[-1, 1].map((sd) => (
-                <G key={sd}>
-                  <Line x1={X(mount.to[0])} y1={Y(fv - 70)} x2={X(mount.to[0] + sd * 62)} y2={Y(fv - 5)} stroke="#2a2c32" strokeWidth={14 * k} strokeLinecap="round" />
-                  <Line x1={X(mount.to[0])} y1={Y(fv - 70)} x2={X(mount.to[0] + sd * 62)} y2={Y(fv - 5)} stroke="#a3a8b2" strokeWidth={9 * k} strokeLinecap="round" />
-                  <Rect x={X(mount.to[0] + sd * 62 - 9)} y={Y(fv - 10)} width={18 * k} height={10 * k} rx={3 * k} fill="#141518" />
-                </G>
-              ))}
-              <Rect x={X(mount.to[0] - 24)} y={Y(mount.to[1] - 30)} width={48 * k} height={56 * k} rx={6 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
-            </G>
+            // the arm's clamp on the stand's upright (the stand itself is
+            // drawn behind the shell): the tom never hangs in the air
+            <Rect x={X(mount.to[0] - 24)} y={Y(mount.to[1] - 30)} width={48 * k} height={56 * k} rx={6 * k} fill="url(#dtChrome)" stroke="#2a2c32" strokeWidth={0.5} />
           ) : null}
         </G>
       ) : null}

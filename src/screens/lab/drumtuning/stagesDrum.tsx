@@ -610,16 +610,19 @@ export const SNARE_ASPECT = W / SNARE_H;
  *  other head sit, so the BATTER and SNARE SIDE / front-head faders move
  *  something on the glass. Log scale over [lo, hi] Hz. */
 function PitchLadder({ x, top, bot, lo, hi, ticks, bst = 1 }: { x: number; top: number; bot: number; lo: number; hi: number; ticks: { hz: number; label: string; color: string }[]; bst?: number }) {
-  const fsS = FONT_S * bst;
+  // Art grading 2026-10-16: the ladder's words read small — the heading at
+  // the body size, the tick labels at the readout size.
+  const fsH = FONT * bst;
+  const fsT = F2 * bst;
   const yOf = (hz: number) => bot - (Math.log2(Math.max(lo, Math.min(hi, hz)) / lo) / Math.log2(hi / lo)) * (bot - top);
   return (
     <G>
       <Line x1={x} y1={top} x2={x} y2={bot} stroke={ink.stroke} strokeWidth={1} />
-      <SvgText x={x} y={top - 5} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>pitch</SvgText>
+      <SvgText x={x} y={top - 6} fontSize={fsH} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>pitch</SvgText>
       {ticks.map((t) => (
         <G key={t.label}>
           <Line x1={x - 6} y1={yOf(t.hz)} x2={x + 6} y2={yOf(t.hz)} stroke={t.color} strokeWidth={2} />
-          <SvgText x={x + 9} y={yOf(t.hz) + 4} fontSize={fsS} fill={t.color} fontFamily={fonts.mono}>{t.label}</SvgText>
+          <SvgText x={x + 8} y={yOf(t.hz) + 4.5} fontSize={fsT} fill={t.color} fontFamily={fonts.mono}>{t.label}</SvgText>
         </G>
       ))}
     </G>
@@ -909,9 +912,10 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
       <Circle cx={ax} cy={ay} r={5.2} fill="#1b1c21" stroke="#6c717c" strokeWidth={0.6} />
       <Circle cx={ax} cy={ay} r={1.8} fill="#d9dde5" />
       {/* the pitch ladder on the batter side */}
-      {batterHz != null ? <PitchLadder x={W - 30} top={yT + 14} bot={yB - 30} lo={40} hi={110} ticks={[{ hz: batterHz, label: `${batterHz.toFixed(0)}`, color: ink.cyan }]} bst={bst} /> : null}
+      {batterHz != null ? <PitchLadder x={W - 34} top={yT + 14} bot={yB - 30} lo={40} hi={110} ticks={[{ hz: batterHz, label: `${batterHz.toFixed(0)}`, color: ink.cyan }]} bst={bst} /> : null}
       {/* labels */}
-      {d > 0.02 ? <SvgText x={x1 - (pillowLen * k) / 2} y={cy + (R - tSh - pillowH / 2) * k + 4} fontSize={fs} fill="#3a3528" textAnchor="middle" fontFamily={fonts.barlowMedium}>pillow</SvgText> : null}
+      {/* the label sits in the air just above the pillow, never on it (art grading 2026-10-16) */}
+      {d > 0.02 ? <SvgText x={x1 - (pillowLen * k) / 2} y={cy + (R - tSh - pillowH) * k - 5} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>pillow</SvgText> : null}
       {front === 'ported' ? <SvgText x={x0 - 22} y={cy + (port.a + port.b) / 2 + 4} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>port</SvgText> : null}
       <SvgText x={x1 + 2} y={floorY + 12} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>batter</SvgText>
       <SvgText x={x0 - 2} y={floorY + 12} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'removed' ? 'front head off' : 'front head'}</SvgText>
@@ -956,6 +960,8 @@ function KickClawRod({ pl }: { pl: { xShell: number; yHead: number; side: -1 | 1
 export const KIT_H = 210;
 /** Kit-ladder drawing scale: design units per mm (both toms true to size). */
 const KIT_K = 0.21;
+/** How much higher the rack tom sits than the old stub stand held it (mm). */
+const RACK_LIFT = 250;
 export const KIT_ASPECT = W / KIT_H;
 
 /** Which tom is sounding, for the glow: `both` plays the rack for the first
@@ -997,16 +1003,20 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
     return { opacity: on && lit ? envAmpAt(env, t) * 0.75 : 0 };
   });
   // True scale for both toms (k = 0.21 units/mm): the 12 × 8 in rack tom
-  // (6 lugs a head, on its L-arm) and the 16 × 16 in floor tom (8 lugs, three
-  // legs), heads at y = 150 − depth.
+  // (6 lugs a head, on its L-arm and a tom stand) and the 16 × 16 in floor
+  // tom (8 lugs, three legs), on one floor. As on a real kit the rack tom
+  // sits HIGHER than the floor tom (art grading 2026-10-16): its head is
+  // RACK_LIFT mm above where the old stub stand held it (floor-tom head
+  // ≈ 51 cm off the floor; rack-tom head ≈ 31 cm before, ≈ 56 cm now).
   const drum = (cx: number, dIn: number, depthIn: number, label: string, hz: number, legs: boolean) => {
     const h = depthIn * 25.4 * KIT_K;
-    const y = 150 - h;
+    const lift = legs ? 0 : RACK_LIFT * KIT_K;
+    const y = 150 - h - lift;
     return (
       <G>
-        <ExteriorDrum cx={cx} yHead={y} dIn={dIn} depthIn={depthIn} k={KIT_K} lugs={legs ? 8 : 6} phaseDeg={legs ? 22.5 : 30} legs={legs ? 3 : 0} mount={legs ? null : { from: [-70, depthIn * 25.4 * 0.45], to: [-176, depthIn * 25.4 + 30], floorV: depthIn * 25.4 + 104 }} />
-        <SvgText x={cx} y={y - 10} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
-        <SvgText x={cx} y={y + h + (legs ? 34 : 16)} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
+        <ExteriorDrum cx={cx} yHead={y} dIn={dIn} depthIn={depthIn} k={KIT_K} lugs={legs ? 8 : 6} phaseDeg={legs ? 22.5 : 30} legs={legs ? 3 : 0} mount={legs ? null : { from: [-70, depthIn * 25.4 * 0.45], to: [-40, depthIn * 25.4 + 60], floorV: depthIn * 25.4 + 104 + RACK_LIFT }} />
+        <SvgText x={cx} y={legs ? y - 10 : y - 24} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
+        <SvgText x={cx} y={legs ? y + h + 34 : y - 9} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
       </G>
     );
   };
@@ -1041,7 +1051,7 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
       <SvgText x={W - 6} y={KIT_H - 6} fontSize={fs} fill={tint} textAnchor="end" fontFamily={fonts.oswaldMedium}>{verdict.toUpperCase()}</SvgText>
     </Svg>
     {/* the sounding tom's head glows with the hit (rack: centre 54, Ø 64; floor: centre 143, Ø 85; heads at 150 − depth) */}
-    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 19 * sc, top: (150 - 8 * 25.4 * KIT_K - 3) * sc, width: 70 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, rackGlow]} />
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 19 * sc, top: (150 - 8 * 25.4 * KIT_K - RACK_LIFT * KIT_K - 3) * sc, width: 70 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, rackGlow]} />
     <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: (143 - 8 * 25.4 * KIT_K - 3) * sc, top: (150 - 16 * 25.4 * KIT_K - 3) * sc, width: (16 * 25.4 * KIT_K + 6) * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, floorGlow]} />
     </View>
   );
