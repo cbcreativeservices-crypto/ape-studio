@@ -127,6 +127,10 @@ const SETTING = makeStagePage({
 
 export const CLAV_ART: LessonArt = {
   ...CLAV_BASE_ART,
+  // A close amp mic sits on the speaker's axis at the grille, where DUST CAP
+  // and GRILLE are written: the words step back while a mic is under them
+  // (lab art fix 2026-10-16: DUST CAP printed on the mic).
+  labelsYieldToMic: true,
   StrikeSequence: ClavinetSequence,
   pages: { sound: SOUND, setting: SETTING },
 };

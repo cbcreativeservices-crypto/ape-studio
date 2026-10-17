@@ -15,7 +15,7 @@ import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { GrandPlan, GrandSide, HammerLine, Pianist, UprightPlan, UprightSide } from '../shared/piano/PianoArt';
-import { FLOOR_Y, KEY_TOP_Y, KEYS_Z0, lidPoint, lidUnderY, type GrandGeom } from '../shared/piano/pianoSpec.ts';
+import { FLOOR_Y, KEY_TOP_Y, KEYS_Z0, lidPoint, lidUnderY, pianistAt, type GrandGeom } from '../shared/piano/pianoSpec.ts';
 import { GB, GS, SETUP, UP, type PianoVariant } from './model.ts';
 import { PIANIST_AT } from './geometry.ts';
 
@@ -60,14 +60,27 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     const g = geomOf(variant);
     const lidTop = lidPoint(g, s.lid, (g.xs + g.tail.cx) / 2, g.bentZ((g.xs + g.tail.cx) / 2), 'top');
     if (view === 'side') {
+      // LABEL PLACES (lab art fix 2026-10-16, the grader at 3x: MUSIC DESK and
+      // DAMPERS stacked into one block with crossing leaders, HAMMER LINE ran
+      // a second leader down through the lid beside them, PIANIST's leader
+      // ran down through the body). The action is named from ABOVE the lid's
+      // front — HAMMER LINE to the left of its leader, DAMPERS to the right
+      // of theirs, so the two never cross (a mic over the hammers hangs
+      // between them, its stand and boom to the right); the strings and the
+      // board from BELOW the case, each on a short vertical leader; the desk
+      // up and to the left, in the air over the keys; the pianist above the
+      // head.
+      const head = pianistAt(PIANIST_AT.grand.xKey, PIANIST_AT.grand.pedalX);
+      const over = lidPoint(g, s.lid, 0, g.bentZ(Math.max(0, g.xs)), 'top').y - 150;
+      const below = g.caseBottom + 125;
       return [
         { id: 'lid', text: s.lid === 'short' ? 'LID · SHORT STICK' : 'LID · FULL STICK', short: 'LID', u: lidTop.x, v: lidTop.y - 40, align: 'center' },
-        { id: 'strings', text: 'STRINGS', u: 560, v: -48, align: 'left' },
-        { id: 'board', text: 'SOUNDBOARD', short: 'BOARD', u: 560, v: 150, align: 'left', tone: 'muted' },
-        { id: 'hammer', text: 'HAMMER LINE', short: 'HAMMERS', u: 10, v: 135, align: 'left' },
-        { id: 'damper', text: 'DAMPERS', u: 110, v: -110, align: 'left', tone: 'muted' },
-        { id: 'desk', text: 'MUSIC DESK', short: 'DESK', u: g.desk.x1 + 30, v: g.desk.y0 + 40, align: 'left', tone: 'muted' },
-        { id: 'pianist', text: 'PIANIST', u: PIANIST_AT.grand.xKey - 470, v: -620, align: 'center', tone: 'illustrative' },
+        { id: 'hammer', text: 'HAMMER LINE', short: 'HAMMERS', u: -30, v: over, align: 'right', at: { u: 0, v: -120 }, alts: [{ u: -30, v: over - 110, align: 'right' }] },
+        { id: 'damper', text: 'DAMPERS', u: 130, v: over, align: 'left', tone: 'muted', at: { u: 90, v: -60 }, alts: [{ u: 130, v: over - 110, align: 'left' }] },
+        { id: 'strings', text: 'STRINGS', u: 560, v: below, align: 'center', at: { u: 560, v: 0 }, alts: [{ u: 560, v: below + 120, align: 'center' }] },
+        { id: 'board', text: 'SOUNDBOARD', short: 'BOARD', u: 980, v: below + 120, align: 'center', tone: 'muted', at: { u: 980, v: 110 }, alts: [{ u: 980, v: below, align: 'center' }] },
+        { id: 'desk', text: 'MUSIC DESK', short: 'DESK', u: g.desk.x0 - 150, v: g.desk.y0 - 110, align: 'center', tone: 'muted', at: { u: (g.desk.x0 + g.desk.x1) / 2, v: g.desk.y0 + 60 } },
+        { id: 'pianist', text: 'PIANIST', u: head.head.x, v: head.head.y - head.headR - 150, align: 'center', tone: 'illustrative', at: { u: head.head.x, v: head.head.y - head.headR - 8 } },
         { id: 'pedals', text: 'PEDALS', u: g.lyre.x - 120, v: FLOOR_Y - 120, align: 'center', tone: 'muted' },
         { id: 'cut', text: 'CURVED SIDE CUT AWAY', short: 'CUT AWAY', u: g.xTail - 40, v: g.caseBottom + 70, align: 'right', tone: 'muted' },
       ];
@@ -89,6 +102,7 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     ];
   }
   const u = UP;
+  const upHead = pianistAt(PIANIST_AT.upright.xKey, PIANIST_AT.upright.pedalX);
   if (view === 'side') {
     return [
       { id: 'top', text: 'TOP LID (OPEN)', short: 'LID', u: u.lid.tip.x + 30, v: u.lid.tip.y + 80, align: 'left' },
@@ -96,8 +110,11 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'strings', text: 'STRINGS', u: -30, v: u.strings.y1 - 20, align: 'right', tone: 'muted' },
       { id: 'hammer', text: 'HAMMERS', u: -90, v: u.hammerY - 55, align: 'right' },
       { id: 'panel', text: s.panel ? 'FRONT PANEL' : 'PANEL OFF', u: u.panel.x - 30, v: u.panel.y0 + 40, align: 'right', tone: s.panel ? 'muted' : undefined },
-      { id: 'wall', text: 'WALL', u: u.wallX + 30, v: -980, align: 'center', tone: 'muted' },
-      { id: 'pianist', text: 'PIANIST', u: u.xKey - 450, v: -620, align: 'center', tone: 'illustrative' },
+      // WALL in the gap behind the piano, low, pointing at the wall (lab art
+      // fix 2026-10-16: at the top it lay under the other view's inset and
+      // ran a leader across the whole drawing); PIANIST above the head.
+      { id: 'wall', text: 'WALL', u: u.wallX - 25, v: 230, align: 'right', tone: 'muted', at: { u: u.wallX, v: 230 }, alts: [{ u: u.wallX - 25, v: 560, align: 'right' }] },
+      { id: 'pianist', text: 'PIANIST', u: upHead.head.x, v: upHead.head.y - upHead.headR - 150, align: 'center', tone: 'illustrative', at: { u: upHead.head.x, v: upHead.head.y - upHead.headR - 8 } },
     ];
   }
   return [

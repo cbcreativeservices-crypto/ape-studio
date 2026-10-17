@@ -1002,12 +1002,17 @@ export function handShape(h: Hand, fore?: number, foreLen?: number): HandShape {
     const flip = Math.cos(h.dir) >= 0 ? 1 : -1;
     const K = (x: number, y: number) => L(x, y * flip);
     const palm = smooth([K(-10, -24), K(40, -32), K(92, -26), K(108, -10), K(104, 12), K(60, 22), K(-10, 20)], 0.55);
+    // (Lab art fix 2026-10-16, the grader at 3x: "flat mitts with a hint of
+    // fingers".) Each finger stands a little further back than the one in
+    // front and curls a little more at its middle joint, and each one's
+    // outline is drawn where it lies over the next — so the three read as
+    // separate fingers arched onto the keys, not one rounded block.
     const fingers = [
-      { dx: 0, dy: 0, k: 1 },
-      { dx: -6, dy: -5, k: 0.94 },
-      { dx: -13, dy: -9, k: 0.8 },
+      { dx: 0, dy: 0, k: 1, c: 0 },
+      { dx: -8, dy: -6, k: 0.94, c: 0.06 },
+      { dx: -17, dy: -11, k: 0.8, c: 0.1 },
     ].map((o, i) => {
-      const d = digit(K, 98 + o.dx, -12 + o.dy, -0.05, [34 * o.k, 22 * o.k, 17 * o.k], [0.28, 0.6, 0.42], [10, 9.2, 8.2, 7]);
+      const d = digit(K, 98 + o.dx, -12 + o.dy, -0.05, [34 * o.k, 22 * o.k, 17 * o.k], [0.3, 0.64 + o.c, 0.44], [10, 9.2, 8.2, 7]);
       if (i === 0) {
         lines.addPath(crease(d.joints[0], d.joints[1], 0.95, 8, 2));
         lines.addPath(crease(d.joints[1], d.joints[2], 0.95, 7, 2));
@@ -1015,6 +1020,11 @@ export function handShape(h: Hand, fore?: number, foreLen?: number): HandShape {
       }
       return d.path;
     });
+    // The near fingers' edges over the ones behind them (never inside the palm).
+    for (let i = 0; i < fingers.length - 1; i++) {
+      const edge = Skia.Path.MakeFromOp(fingers[i], palm, PathOp.Difference);
+      if (edge) lines.addPath(edge);
+    }
     lines.addPath(curve([K(96, -24), K(104, -10)]));
     if (h.kind === 'wrap') return { path: union(wristOf(L, h, fore, 23.5), palm, ...fingers), lines, pick: null, bar: null, thumbBehind: null };
     const thumb = digit(K, 18, 10, 0.32, [40, 28, 20], [0, -0.2, 0.25], [14, 12, 10.5, 9]);

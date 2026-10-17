@@ -2250,8 +2250,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         // short dimension, so beside its middle it can lie over the face or
         // the instrument the distance is read from. It keeps its side when
         // that side is clear of the drawing; else it slides along the line
-        // toward the mic's end, then steps a little further out on its side
-        // (over a mic and its screen), then tries the other side — the first
+        // toward the mic's end, or takes the other side, or steps a little
+        // further out on its own side (over a mic and its screen) — the first
         // clear place wins, and the old place stays when none is.
         // (pr runs from the mic's front, u0, to the part, u1: −t is toward the mic.)
         const tu = pr.len > 1e-6 ? (pr.u1 - pr.u0) / pr.len : 1;
@@ -2267,13 +2267,19 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         // shown mic's head (its front point, with a margin).
         const heads = rig.mics.filter((q) => live.includes(q.slot) && q.on).map((q) => ({ x: base.ox + q.pose.p.x * base.s, y: base.oy + (view === 'side' ? q.pose.p.y : q.pose.p.z) * base.s }));
         const clearPx = (r: { x0: number; x1: number; y0: number; y1: number }) =>
-          !heads.some((q) => q.x > r.x0 - 14 && q.x < r.x1 + 14 && q.y > r.y0 - 14 && q.y < r.y1 + 14) && occ.clearOf((r.x0 - base.ox) / base.s, (r.y0 - base.oy) / base.s, (r.x1 - base.ox) / base.s, (r.y1 - base.oy) / base.s);
+          !heads.some((q) => q.x > r.x0 - 8 && q.x < r.x1 + 8 && q.y > r.y0 - 8 && q.y < r.y1 + 8) && occ.clearOf((r.x0 - base.ox) / base.s, (r.y0 - base.oy) / base.s, (r.x1 - base.ox) / base.s, (r.y1 - base.oy) / base.s);
         const slide = short ? 0 : Math.max(0, (W - pr.len * base.s) / 2 + 6);
         let place = { nx, ny, ...at(nx, ny, 0) };
         if (!clearPx(place.rect))
-          for (const [sx, sy, k, lift] of [[nx, ny, slide, 0], [nx, ny, 0, H * 1.6], [nx, ny, slide, H * 1.6], [nx, ny, slide * 1.8 + 8, H * 2.2], [-nx, -ny, 0, 0], [-nx, -ny, slide, 0]] as const) {
+          for (const [sx, sy, k, lift] of [[nx, ny, slide, 0], [-nx, -ny, 0, 0], [nx, ny, 0, H * 1.6], [nx, ny, slide, H * 1.6], [-nx, -ny, slide, 0], [nx, ny, slide * 1.8 + 8, H * 2.2]] as const) {
             const c = at(sx, sy, k, lift);
-            if (clearPx(c.rect)) {
+            // …but never so far that the words stop reading as this line's
+            // (the piano's chip went up past the lid, beside PIANIST).
+            // The chip stays by the line's own span along it (a chip's width past
+            // a level line's end, a chip's height past an upright one's).
+            const along = Math.abs(((c.rect.x0 + c.rect.x1) / 2 - (base.ox + mu * base.s)) * tu + ((c.rect.y0 + c.rect.y1) / 2 - (base.oy + mv * base.s)) * tv);
+            const far = along > (pr.len * base.s) / 2 + Math.abs(tu) * W + Math.abs(tv) * H;
+            if (!far && clearPx(c.rect)) {
               place = { nx: sx, ny: sy, ...c };
               break;
             }

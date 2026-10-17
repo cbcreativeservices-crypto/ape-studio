@@ -136,7 +136,11 @@ export function ampLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       // just under the axis.
       { id: 'cone', text: 'SPEAKER CONE', short: 'CONE', u: -70, v: R + 40, align: 'center', at: { u: -45, v: R * 0.6 }, alts: [{ u: b.x0 - 30, v: b.y1 - 50, align: 'right' }] },
       { id: 'dust', text: 'DUST CAP', u: GRILLE_X + 40, v: 26, align: 'left', tone: 'muted' },
-      { id: 'back', text: b.open ? 'OPEN BACK' : 'CLOSED BACK', u: b.x0 - 30, v: b.open ? (b.openY0 + b.openY1) / 2 : 0, align: 'right', tone: 'muted' },
+      // OPEN BACK points at the opening (lab art fix 2026-10-16: on a glass
+      // with no room left of the cabinet it was moved to the grille side and
+      // its leader ran across the whole cabinet); with no room there it goes
+      // above the back corner, its leader down the outside of the back panel.
+      { id: 'back', text: b.open ? 'OPEN BACK' : 'CLOSED BACK', u: b.x0 - 30, v: b.open ? (b.openY0 + b.openY1) / 2 : 0, align: 'right', tone: 'muted', at: { u: b.x0, v: b.open ? (b.openY0 + b.openY1) / 2 : 0 }, alts: [{ u: b.x0 + 30, v: b.y0 - 170, align: 'right' }] },
     ];
     if (b.chassis) out.push({ id: 'chassis', text: 'CHASSIS · TUBES', short: 'TUBES', u: (b.x0 + b.x1) / 2, v: b.y0 - 60, align: 'center', tone: 'muted' });
     return out;

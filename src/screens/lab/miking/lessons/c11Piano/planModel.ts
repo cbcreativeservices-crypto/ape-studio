@@ -65,7 +65,8 @@ export function pianoAudience(v: VariantId) {
   // house beyond it is an off-plan direction (owner 2026-10-15)
   return isGrandPlan(v)
     ? { text: 'AUDIENCE ↓ (THE CURVED SIDE)', u: grandOf(v).xTail - 600, v: 2900, align: 'center' as const, lip: { axis: 'v' as const, at: 2560 } }
-    : { text: 'AUDIENCE ↓', u: -700, v: 3200, align: 'center' as const, lip: { axis: 'v' as const, at: 2860 } };
+    : // (under the left PA, so the vocal wedge's name has the space under the wedge: lab art fix 2026-10-16)
+      { text: 'AUDIENCE ↓', u: -2000, v: 3200, align: 'center' as const, lip: { axis: 'v' as const, at: 2860 } };
 }
 
 /** The singer (a near item, so on every plan): beside the piano, facing the
@@ -100,16 +101,20 @@ export function uprightSpots(): PlanSpot[] {
   return [
     { item: 'bench', glyph: 'none', x: PIANIST_AT.upright.xKey - 450, z: 0, scene: 'all', r: 330, label: { du: 0, dv: 470 } },
     { item: 'desk', glyph: 'none', x: UP.panel.x - 40, z: 0, scene: 'near', r: 160, label: { du: 0, dv: -560 } },
-    { item: 'singer', glyph: 'singer', x: s.u, z: s.v, faces: { x: 0, z: 1 }, scene: 'near', r: 300 },
+    // (Lab art fix 2026-10-16: SINGER, VOCAL WEDGE and AUDIENCE stacked in
+    // one column on the downstage edge.) The singer's name to their left, the
+    // wedge's above and to its right (between the singer and the PA), the
+    // right PA's below it — so AUDIENCE alone sits under the wedge.
+    { item: 'singer', glyph: 'singer', x: s.u, z: s.v, faces: { x: 0, z: 1 }, scene: 'near', r: 300, label: { du: -720, dv: 0 } },
     { item: 'wedge.pianist', glyph: 'wedge', x: -1300, z: -900, faces: { x: 0.4, z: 1 }, scene: 'stage', r: 330 },
     // at the stage's side, facing across it at head height
     { item: 'fill.side', glyph: 'pa', x: -2200, z: 900, faces: { x: 1, z: 0 }, scene: 'stage', r: 360 },
-    { item: 'wedge.vocal', glyph: 'wedge', x: s.u, z: 2500, faces: { x: 0, z: -1 }, scene: 'stage', r: 330, label: { du: 640, dv: 0 } },
+    { item: 'wedge.vocal', glyph: 'wedge', x: s.u, z: 2500, faces: { x: 0, z: -1 }, scene: 'stage', r: 330, label: { du: 760, dv: -440 } },
     // upstage, on the pianist's side of the wall
     { item: 'band', glyph: 'band', x: -1100, z: -1800, half: { u: 1000, v: 500 }, scene: 'stage', r: 800 },
     // the PA pair on the deck's downstage corners, facing the audience
     { item: 'pa', glyph: 'pa', x: -2200, z: 2600, faces: { x: 0, z: 1 }, scene: 'stage', r: 380 },
-    { item: 'pa.2', glyph: 'pa', x: 600, z: 2600, faces: { x: 0, z: 1 }, scene: 'stage', r: 0, text: 'PA', label: { du: 0, dv: -420 } },
+    { item: 'pa.2', glyph: 'pa', x: 600, z: 2600, faces: { x: 0, z: 1 }, scene: 'stage', r: 0, text: 'PA', label: { du: 0, dv: 460 } },
     { item: 'pair', glyph: 'pair', x: -250, z: -1250, faces: { x: 0, z: 1 }, scene: 'studio', r: 300 },
     { item: 'room', glyph: 'none', x: -1700, z: -300, scene: 'studio', r: 500, label: { du: 0, dv: 0 } },
   ];
