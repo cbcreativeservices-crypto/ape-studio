@@ -34,7 +34,8 @@ import { strokeShares } from './strokes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { BRASS, CHROME, FLOOR, GOAT, INK, RAWHIDE, FILM, WOOD } from './handDrumArt';
 import type { HandDrum } from './handDrumModel.ts';
-import { FIGURE_SKIN } from '../players/PlayerFigure';
+import { armPath, FIGURE_SKIN, FigureMass } from '../players/PlayerFigure';
+import { pt as ppt } from '../players/playerPose.ts';
 import { Hand } from '../smallperc/Hand';
 import { dorsalFlat, openHand, placePt, sideNails, smoothPathD, tubeOutline, wristFor, type HandGeo, type Placement, type Pt } from '../smallperc/hands.ts';
 import type { StrokeSpec } from './family.ts';
@@ -147,14 +148,35 @@ function handShadow(g: HandGeo, pl: Placement): SkPath {
   for (const f of [...g.fingers, g.thumb]) add(tubeOutline(f.pts, f.w0, f.w1));
   return p;
 }
-/** The forearm from a placed hand's wrist back toward the player (off the
- *  drawing), a shirt sleeve on its far part. */
-function forearmOf(pl: Placement): { from: Pt; w: number; sleeve: number } {
+/** The ARM behind a placed hand (art grading fix 2026-10-16: a 62 cm
+ *  straight forearm ran off the drawing with no elbow — "a disembodied
+ *  forearm"): an adult forearm (≈ 25 cm, wrist to elbow) continuing the
+ *  hand's line, a real elbow, and the upper arm (≈ 30 cm) turning up
+ *  (side view) or back (from above) toward the shoulder off the frame — one
+ *  long-sleeved arm (the house figure's armPath), the bare wrist below the
+ *  cuff. Returns the hand's short skin forearm (cuff → wrist) and the sleeve. */
+function armOf(pl: Placement, view: 'side' | 'top'): { forearm: { from: Pt; w: number; sleeve: number }; sleeve: SkPath } {
   const a = (pl.angle * Math.PI) / 180;
-  const back = 620;
-  // the forearm continues the hand's line back past the wrist, rising a little
   const ang = a + (pl.angle === 0 ? 0 : 0.18);
-  return { from: [pl.at[0] - Math.cos(ang) * back, pl.at[1] - Math.sin(ang) * back], w: 54, sleeve: 420 };
+  const c = Math.cos(ang);
+  const sn = Math.sin(ang);
+  const W: Pt = pl.at;
+  const cuff: Pt = [W[0] - c * 45, W[1] - sn * 45];
+  const E: Pt = [W[0] - c * 250, W[1] - sn * 250];
+  // back along the forearm, then turned: up toward the shoulder (side), or a
+  // little out to the player's side (from above)
+  let bx = -c;
+  let by = -sn;
+  if (view === 'side') {
+    bx = bx * 0.55;
+    by = by * 0.55 - 0.85;
+  } else {
+    const t = 0.45;
+    [bx, by] = [bx * Math.cos(t) - by * Math.sin(t), bx * Math.sin(t) + by * Math.cos(t)];
+  }
+  const L = Math.hypot(bx, by) || 1;
+  const S: Pt = [E[0] + (bx / L) * 300, E[1] + (by / L) * 300];
+  return { forearm: { from: cuff, w: 54, sleeve: 0 }, sleeve: armPath(ppt(S[0], S[1]), ppt(E[0], E[1]), ppt(cuff[0], cuff[1])) };
 }
 
 /** The striking hand wears the shared figure skin (owner 2026-10-08, HF1). */
@@ -292,6 +314,7 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
   const toolY = d.headY - 4;
   const sidePl = useMemo(() => (spec.tool === 'hand' ? sidePlacement(g.sx, d.headY) : null), [spec.tool, g.sx, d.headY]);
   const sideShadow = useMemo(() => (sidePl ? handShadow(SIDE_HAND, sidePl) : null), [sidePl]);
+  const sideArm = useMemo(() => (sidePl ? armOf(sidePl, 'side') : null), [sidePl]);
   const skin = spec.head === 'rawhide' ? RAWHIDE : spec.head === 'goat' ? GOAT : FILM;
   const labels: StaticLabel[] = [];
   if (shown >= 1) labels.push({ id: 's1', text: words.s1, short: '①', u: g.sx - 80, v: d.headY - 250, align: 'right', tone: 'amber' });
@@ -355,7 +378,8 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
                     <BlurMask blur={7} style="normal" />
                   </Path>
                 </Group>
-                <Hand geo={SIDE_HAND} pl={sidePl} forearm={forearmOf(sidePl)} />
+                <FigureMass path={sideArm!.sleeve} tone="shirt" />
+                <Hand geo={SIDE_HAND} pl={sidePl} forearm={sideArm!.forearm} />
               </Group>
             ) : (
               <Group>
@@ -463,7 +487,7 @@ export function StrokeMap({ w, h, drum, head, stroke, accessibilityLabel, scaleR
     const mid = geo.fingers.find((f) => f.layer === 2)!;
     const spot: Pt = stroke.tool === 'palm' ? [52, mid.pts[0][1]] : stroke.tool === 'tips' ? [mid.tip[0] - 4, mid.tip[1]] : [mid.pts[0][0] + 62, mid.pts[0][1]];
     const pl: Placement = { at: [sx - spot[0], -spot[1]], angle: 0 };
-    return { geo, pl, shadow: handShadow(geo, pl), arm: forearmOf(pl) };
+    return { geo, pl, shadow: handShadow(geo, pl), arm: armOf(pl, 'top') };
   }, [stroke.tool, sx]);
   const labels: StaticLabel[] = [
     { id: 'title', text: 'HOW STRONGLY THIS SPOT DRIVES EACH SHAPE', short: 'EACH SHAPE', u: barX0, v: -rrB - 30, align: 'left', tone: 'muted' },
@@ -494,7 +518,8 @@ export function StrokeMap({ w, h, drum, head, stroke, accessibilityLabel, scaleR
                   <BlurMask blur={8} style="normal" />
                 </Path>
               </Group>
-              <Hand geo={topHand!.geo} pl={topHand!.pl} forearm={topHand!.arm} />
+              <FigureMass path={topHand!.arm.sleeve} tone="shirt" />
+              <Hand geo={topHand!.geo} pl={topHand!.pl} forearm={topHand!.arm.forearm} />
             </Group>
           )}
           <Circle cx={sx} cy={0} r={18} style="stroke" strokeWidth={5} color={AMBER} />
