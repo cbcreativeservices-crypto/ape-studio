@@ -609,6 +609,96 @@ function CaseSection(): ReactElement {
   );
 }
 
+/**
+ * THE NAVE'S FAR WALL, seen from the cut (art fix 2026-10-16, grading: "the
+ * nave is a stylised church", "the side of the case is a plain box"): the
+ * inside face of the opposite wall, dim so the mics and the sound read
+ * first — a plastered wall on a panelled dado (1 m), pilasters on the bays'
+ * centres (≈ 5 m, a drawing default) with moulded bases and capitals, and
+ * between them tall round-headed windows (sill 3.2 m, 1.6 m wide, head ≈ 8.4
+ * m) with their leaded lights; the vault springing from a string course at
+ * 11 m. Real-world
+ * church proportions, not a particular building.
+ */
+function NaveWall(): ReactElement {
+  const x0 = 0;
+  const x1 = NAVE.x1;
+  const wall = rr(x0, NAVE.top, x1, 0, 0);
+  // The vault springs from a moulded string course at 11 m.
+  const course = make();
+  course.moveTo(x0, -11000);
+  course.lineTo(x1, -11000);
+  const dado = make();
+  dado.moveTo(x0, -1000);
+  dado.lineTo(x1, -1000);
+  const pil = make();
+  const caps = make();
+  const wins = make();
+  const leads = make();
+  for (let x = 4000; x < x1; x += 5000) {
+    pil.addRect(Skia.XYWHRect(x - 250, -11000, 500, 11000));
+    caps.addRect(Skia.XYWHRect(x - 330, -9000, 660, 260));
+    caps.addRect(Skia.XYWHRect(x - 330, -1000, 660, 160));
+  }
+  for (let x = 6500; x < x1; x += 5000) {
+    const w = make();
+    w.moveTo(x - 800, -3200);
+    w.lineTo(x - 800, -7600);
+    w.cubicTo(x - 800, -8042, x - 442, -8400, x, -8400);
+    w.cubicTo(x + 442, -8400, x + 800, -8042, x + 800, -7600);
+    w.lineTo(x + 800, -3200);
+    w.close();
+    wins.addPath(w);
+    leads.moveTo(x, -3200);
+    leads.lineTo(x, -8400);
+    for (let y = -3800; y > -7700; y -= 700) {
+      leads.moveTo(x - 800, y);
+      leads.lineTo(x + 800, y);
+    }
+  }
+  return (
+    <Group>
+      <Path path={wall}>
+        <LinearGradient start={vec(0, NAVE.top)} end={vec(0, 0)} colors={['#121215', '#1d1c20', '#222024']} />
+      </Path>
+      <Path path={course} style="stroke" strokeWidth={180} color="#2a282d" />
+      <Path path={pil} color="#26252a" />
+      <Path path={caps} color="#2e2c31" />
+      <Path path={wins}>
+        <LinearGradient start={vec(0, -8400)} end={vec(0, -3200)} colors={['#2c3442', '#232a36', '#1b2029']} />
+      </Path>
+      <Path path={leads} style="stroke" strokeWidth={26} color="#121418" opacity={0.9} />
+      <Path path={wins} style="stroke" strokeWidth={60} color="#121214" />
+      <Path path={dado} style="stroke" strokeWidth={40} color="#2c2a2e" />
+    </Group>
+  );
+}
+
+/**
+ * The FAR PEDAL TOWER in side elevation, behind the cut (art fix 2026-10-16):
+ * the Pedal towers stand off the centre line at the case's sides, so the cut
+ * passes between them and the far one is seen whole beyond it — its oak side
+ * with raised panels, its crown cornice above the main case, the base, and
+ * at its front its biggest pipe in profile (Ø 230, a 16-ft class principal),
+ * mouth to the nave.
+ */
+function PedalTowerSide(): ReactElement {
+  const x0 = -900;
+  const x1 = 260;
+  const top = DIVISIONS.pedal.y0 - 200;
+  const side = rr(x0, top, x1, 0, 12);
+  const panels = make();
+  for (const [a, b] of [[-1500, -400], [-6000, -1700], [top + 500, -6300]] as const) panels.addRRect(Skia.RRectXY(Skia.XYWHRect(x0 + 140, a, x1 - x0 - 420, b - a), 14, 14));
+  return (
+    <Group opacity={0.92}>
+      <Oak path={side} u0={x0} v0={top} u1={x1} v1={0} />
+      <Path path={panels} style="stroke" strokeWidth={16} color="#1e1108" opacity={0.75} />
+      <PipeSide x={x1 - 150} w={230} top={DIVISIONS.pedal.y0 + 250} mouth={-2300} toe={-1500} />
+      <Cornice z0={x0} z1={x1} v={top} />
+    </Group>
+  );
+}
+
 /** A flue pipe in profile, its mouth facing the nave (+x): the body, the
  *  flatted upper lip and the cut-up on the near edge, the conical foot. */
 function PipeSide({ x, w, top, mouth, toe }: { x: number; w: number; top: number; mouth: number; toe: number }): ReactElement {
@@ -698,10 +788,13 @@ export function OrganSide({ variant, hi = null }: { variant: string; hi?: string
   const floor = rr(-3000, 0, NAVE.x1, 300, 0);
   return (
     <Group>
+      <NaveWall />
       <Path path={floor}>
         <LinearGradient start={vec(0, 0)} end={vec(0, 300)} colors={['#3a3530', '#1c1a17']} />
       </Path>
+      <PedalTowerSide />
       <CaseSection />
+      <Cornice z0={CASE.x0} z1={CASE.x1 + 150} v={CASE.top} />
       {hi === 'org.case' ? <Path path={caseProfile} style="stroke" strokeWidth={110} color={HIGHLIGHT} opacity={0.8} /> : null}
       <ConsoleSide x0={CONSOLE.x0} x1={CONSOLE.x1} h={CONSOLE.h} />
       <Path path={pews}>
