@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 17:30 · ccode · 5094e1da
+changed: Lab art fix round 2: Miking Lab 5 quartet + orchestra (E11, E13, E14)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:30 · ccode · ec6fdc38
+changed: Miking pluck sequence: the three sound fronts are a bounded sequence, never a loop (D8 ratchet)
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 17:29 · ccode · 8a7f4ee0
 changed: Hand drums art fix (M04a/M04b/M05): the striking hand has a whole arm
 affects other side: nothing (app only)
