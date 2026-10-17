@@ -4,6 +4,8 @@
  * conversion (scripts/mixing-guides/edits.py), not this file.
  *
  * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: the "Before you low-cut the keys" note under the EQ table.
  */
 import type { MixingGuide } from '../types';
 
@@ -146,7 +148,12 @@ export const GUIDE: MixingGuide = {
         "notes": "Common vocal lifts sit around 4–5 kHz and 12–14 kHz"
       }
     ],
-    "notes": []
+    "notes": [
+      {
+        "label": "Before you low-cut the keys:",
+        "text": "Talk with the keyboardist first, or know their music. Many players cover the bass with the left hand, the organ pedals or a synth bass, especially when there is no bass player or in certain songs. When they do, keep their low end, send it to the subs with the bass, and balance the two as one line instead of filtering it out."
+      }
+    ]
   },
   "compression": {
     "rows": [
