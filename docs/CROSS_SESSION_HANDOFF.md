@@ -634,6 +634,84 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 17:23 · ccode · 1704b5b5
+changed: Miking guitars pluck sequence: sound fronts move out from the driven top (decorative motion; art fix round 3)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 17:23 · ccode · 953c1ca9
+changed: Piccolo (A07): the RIGHT EAR name gets places above the ear when beside it is taken
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:23 · ccode · 866406a8
+changed: Speaker cabinets art fix (SPK): the speaker shows through the grille cloth; names off the cone axis
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:21 · ccode · 280825ca
+changed: Miking oud: BRIDGE named beside the tail, never from the far right across the face (art fix round 3 review)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 17:20 · ccode · d738795c
+changed: Flute and piccolo art fix (A07; A06 via the engine): names off the player's face
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:20 · ccode · 493bd28d
+changed: Saxophones art fix (A05b, A05d) + Miking engine: no ghost labels under a mic; sax keys and holes named on the bell's stack
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:19 · ccode · 36518650
+changed: Concert drums art fix (M06/M07a): the players hold the mallets
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:14 · ccode · 6d353cda
+changed: Drum kit art fix (M02/M03/M09/M11): sticks in the drummer's hand, no hatched oval over the drummer
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:11 · ccode · c5e930de
+changed: Bowed strings art fix (fix4): violin and cello part names set off the instrument on leaders, stepping back under a mic; the string names in full colour
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:11 · ccode · 25621670
+changed: Miking lutes art fix round 3 (C13 oud, C14 sitar, C15 veena): tala strings on the player side, the veena player nearer, adult oud shoulders, the string rings
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 17:06 · ccode · 66e2c185
+changed: Piano & clavinet art fix (fix4): the grand's action named without crossings, upright WALL/PIANIST and plan labels unstacked, fingers apart on the keys
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:04 · ccode · ae53c478
+changed: Wurlitzer art fix (I11b): part names keep off the seated player
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:02 · ccode · 4d67b98b
+changed: Organ art fix (A12): the nave drawn as a church; the far Pedal tower and the cornice on the case side
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 17:02 · ccode · 0db1de24
 changed: Cymatics art fix: drive hint in its own band, real drive hardware, Leissa first pair on the free square plate
 affects other side: nothing (app only)
@@ -7780,15 +7858,3 @@ SWITCH: `public.lab_requirements_enforced()` — returns FALSE. Turn ON only at 
 ccode verified read-only 2026-10-13: switch false, 540 req rows, 227 labs rows, gate present, anon cannot execute award_required_labs, authenticated can.
 affects other side: nothing further until the OTA.
 needs: nothing — the switch flip is on the post-approval checklist.
-### 2026-10-16 17:11 · ccode · c5e930de
-changed: Bowed strings art fix (fix4): violin and cello part names set off the instrument on leaders, stepping back under a mic; the string names in full colour
-affects other side: nothing (app only)
-needs: nothing
-
-
-### 2026-10-16 17:06 · ccode · 66e2c185
-changed: Piano & clavinet art fix (fix4): the grand's action named without crossings, upright WALL/PIANIST and plan labels unstacked, fingers apart on the keys
-affects other side: nothing (app only)
-needs: nothing
-
-
