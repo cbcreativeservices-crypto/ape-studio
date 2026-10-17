@@ -12,6 +12,8 @@
  * conversion; regenerating would undo these and earlier fixes.)
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -19,18 +21,18 @@ export const GUIDE: MixingGuide = {
   "id": "salsa",
   "num": 38,
   "title": "Salsa",
-  "expects": "Audiences expect brassy excitement, a crisp percussive piano, a bass felt in the hips, and a sonero whose improvised inspiraciones are clear word by word.",
+  "expects": "Audiences expect brassy excitement, a crisp percussive piano, a bass felt in the hips, and a sonero (lead improvising singer) whose improvised inspiraciones (improvised sung lines) are clear word by word.",
   "glance": {
-    "origin": "New York City, mid-1960s–1970s (Fania era), built on Cuban son montuno, mambo and guaracha with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica from the mid-1980s",
-    "tempo": "About 160–220 BPM counted in quarter notes (felt in cut time, roughly 80–110); romántica sits at the slower end, descargas and Cali-style tunes push past 220",
-    "ensemble": "10–16 piece orquesta: piano, baby bass, timbales, congas, bongó (doubling campana), 2–3 trumpets, 2–3 trombones (sometimes sax), lead singer (sonero) plus 2–4 coro singers",
-    "priority": "The rhythm-section lock (piano montuno, bass tumbao, congas, bells) with the sonero and coro clearly on top",
+    "origin": "New York City, mid-1960s–1970s (Fania era), built on Cuban son montuno (Cuban son built on a vamp), mambo (1940s–50s Cuban big-band dance style) and guaracha (fast, playful Cuban song style) with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica (smooth romantic salsa) from the mid-1980s",
+    "tempo": "About 160–220 BPM counted in quarter notes (felt in cut time, roughly 80–110); romántica (smooth romantic salsa) sits at the slower end, descargas (jam sessions) and Cali-style tunes push past 220",
+    "ensemble": "10–16 piece orquesta (dance orchestra): piano, baby bass, timbales (two metal-shelled drums with cymbal and cowbells), congas, bongó (small pair of hand drums, doubling campana, the hand-held cowbell), 2–3 trumpets, 2–3 trombones (sometimes sax), lead singer (sonero) plus 2–4 coro (vocal chorus) singers",
+    "priority": "The rhythm-section lock (piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas, bells) with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
     "liveSpl": "94–100 dBA Leq (LAeq-15 min) in dance halls; 98–102 dBA at festivals and arenas; about 110–118 dBC",
     "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (classic Fania reissues around −13 to −10); streaming normalizes to about −14"
   },
   "purpose": [
     {
-      "text": "Salsa is first of all dance music: couples at clubs, socials and festivals lock to the clave and to the bass and conga accents that mark the step, on 1 (LA style) or on 2 (New York style, following the conga tumbao). It is also a music of Latino identity and pride, from barrio storytelling and social commentary (salsa dura) to love songs (romántica). Audiences expect brassy excitement, a crisp percussive piano, a bass felt in the hips, and a sonero whose improvised inspiraciones are clear word by word. They will say “that sounded wrong” if the cowbell vanishes, the piano montuno disappears under the horns, the coro is buried, the bass is boomy and late-sounding, or the mix is muddied by long reverb that blurs the clave."
+      "text": "Salsa is first of all dance music: couples at clubs, socials and festivals lock to the clave (the 2-bar rhythm key) and to the bass and conga accents that mark the step, on 1 (LA style) or on 2 (New York style, following the conga tumbao (the conga's repeating pattern)). It is also a music of Latino identity and pride, from barrio (neighborhood) storytelling and social commentary (salsa dura) to love songs (romántica). Audiences expect brassy excitement, a crisp percussive piano, a bass felt in the hips, and a sonero (lead improvising singer) whose improvised inspiraciones (improvised sung lines) are clear word by word. They will say “that sounded wrong” if the cowbell vanishes, the piano montuno (the piano's repeating syncopated pattern) disappears under the horns, the coro (vocal chorus) is buried, the bass is boomy and late-sounding, or the mix is muddied by long reverb that blurs the clave."
     }
   ],
   "instruments": [
@@ -41,7 +43,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Bass:",
-      "text": "baby bass (electric upright), upright or electric bass, playing the anticipated tumbao.",
+      "text": "baby bass (electric upright), upright or electric bass, playing the anticipated tumbao (the bass's repeating rhythm pattern).",
       "bullet": true
     },
     {
@@ -51,50 +53,50 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Congas:",
-      "text": "two or three drums (quinto, conga, tumba) with open tones, slaps and the ponche accent.",
+      "text": "two or three drums (quinto, conga, tumba) with open tones, slaps and the ponche (on beat 4) accent.",
       "bullet": true
     },
     {
-      "label": "Bongó and campana:",
-      "text": "bongó in verses, switching to the hand bell in the montuno; the bell often drives the dance floor.",
+      "label": "Bongó (small pair of hand drums) and campana:",
+      "text": "bongó in verses, switching to the hand bell in the montuno (the call-and-response section); the bell often drives the dance floor.",
       "bullet": true
     },
     {
       "label": "Hand percussion:",
-      "text": "güiro, maracas and clave, often played by singers.",
+      "text": "güiro (scraped gourd), maracas and clave (pair of wooden sticks), often played by singers.",
       "bullet": true
     },
     {
       "label": "Horns:",
-      "text": "trumpets and trombones (the Palmieri/Colón trombone sound defines much salsa dura), sometimes sax or flute.",
+      "text": "trumpets and trombones (the Palmieri/Colón trombone sound defines much salsa dura (hard-hitting, horn-heavy salsa)), sometimes sax or flute.",
       "bullet": true
     },
     {
       "label": "Others:",
-      "text": "tres or cuatro in some bands, synth pads in romántica; playback is rare and most bands play without a click.",
+      "text": "tres (Cuban three-course guitar) or cuatro (Puerto Rican ten-string guitar) in some bands, synth pads in romántica (smooth romantic salsa); playback is rare and most bands play without a click.",
       "bullet": true
     }
   ],
   "arrangement": [
     {
-      "text": "Common layout: percussion across the back, piano on one side, bass near the congas, horns opposite the piano, coro front, sonero center. Songs follow the son montuno model: an introduction (often horn-led), the verse sung by the lead, then the montuno, a call-and-response section where the coro repeats a refrain and the sonero improvises between lines. Inside it come mambo and moña sections (layered horn riffs in counterpoint), percussion breaks, the bongó-to-bell switch and often a push in tempo. Piano and bass hold guajeo and tumbao throughout; congas and bells mark the pulse; horns punctuate and take over in the mambos. The final section is the loudest and busiest."
+      "text": "Common layout: percussion across the back, piano on one side, bass near the congas, horns opposite the piano, coro (vocal chorus) front, sonero (lead improvising singer) center. Songs follow the son montuno (Cuban son built on a vamp) model: an introduction (often horn-led), the verse sung by the lead, then the montuno, a call-and-response section where the coro repeats a refrain and the sonero improvises between lines. Inside it come mambo and moña sections (layered horn riffs in counterpoint), percussion breaks, the bongó-to-bell (hand drums to cowbell) switch and often a push in tempo. Piano and bass hold guajeo (the piano's repeating pattern) and tumbao (the bass's repeating rhythm pattern) throughout; congas and bells mark the pulse; horns punctuate and take over in the mambos (horn-led instrumental sections). The final section is the loudest and busiest."
     }
   ],
   "dynamics": [
     {
-      "text": "Salsa has moderate macro-dynamics: verse to mambo is often 6–10 dB in the room, with horn hits and timbal fills producing sharp transient peaks well above the average. The excitement comes from those attacks (horn stabs, rimshots, slaps, bell), so preserve transients and control level with rides and gentle compression rather than heavy squashing. Leave 4–6 dB of FOH headroom for the final mambo. Romántica is smoother and more even; dura tolerates rawer punch."
+      "text": "Salsa has moderate macro-dynamics: verse to mambo (horn-led instrumental section) is often 6–10 dB in the room, with horn hits and timbal (the timbales) fills producing sharp transient peaks well above the average. The excitement comes from those attacks (horn stabs, rimshots, slaps, bell), so preserve transients and control level with rides and gentle compression rather than heavy squashing. Leave 4–6 dB of FOH headroom for the final mambo. Romántica (smooth romantic salsa) is smoother and more even; dura (hard-hitting, horn-heavy salsa) tolerates rawer punch."
     }
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal, coro (close behind, sometimes nearly equal in the montuno), bass, piano, horns (pushed up in intros and mambos), congas, timbales and bell, bongó, güiro and maracas, effects. The cowbell is often surprisingly loud, near vocal level in the montuno. There is often no kick drum: the bass, the piano’s left hand and the tumba carry the low end. The piano often switches from its montuno to doubling the bass in octaves or unison, so let bass and piano share roughly 50–200 Hz as one full line, and keep the tumba’s body around 100–200 Hz from masking them; with no kick, sub content is moderate, but the bass and the piano both belong in it. Lead vocal, bass and clave/maracas center. A common studio image (audience view): timbales slightly left with the high shell left, congas near center with the drums spread a little, bongó and bell to the right, piano either narrow mono slightly off-center or wide stereo, trombones spread, trumpets nearer center, coro spread wide in a stereo pair. Live, keep panning minimal; experienced salsa FOH engineers separate parts with mic choice and EQ rather than panning."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal, coro (vocal chorus; close behind, sometimes nearly equal in the montuno, the call-and-response section), bass, piano, horns (pushed up in intros and mambos (horn-led instrumental sections)), congas, timbales (two metal-shelled drums with cymbal and cowbells) and bell, bongó (small pair of hand drums), güiro (scraped gourd) and maracas, effects. The cowbell is often surprisingly loud, near vocal level in the montuno. There is often no kick drum: the bass, the piano’s left hand and the tumba (the lowest conga) carry the low end. The piano often switches from its montuno to doubling the bass in octaves or unison, so let bass and piano share roughly 50–200 Hz as one full line, and keep the tumba’s body around 100–200 Hz from masking them; with no kick, sub content is moderate, but the bass and the piano both belong in it. Lead vocal, bass and clave (wooden sticks)/maracas center. A common studio image (audience view): timbales slightly left with the high shell left, congas near center with the drums spread a little, bongó and bell to the right, piano either narrow mono slightly off-center or wide stereo, trombones spread, trumpets nearer center, coro spread wide in a stereo pair. Live, keep panning minimal; experienced salsa FOH engineers separate parts with mic choice and EQ rather than panning."
     }
   ],
   "eq": {
     "rows": [
       // NEW COPY — owner review (2026-10-16 keyboard low-end pass): the piano keeps its low end.
       {
-        "source": "Piano (montuno)",
+        "source": "Piano (montuno: its repeating syncopated pattern)",
         "cut": "No low cut that reaches the left hand: at most a rumble filter below the lowest note (27.5 Hz); −2–3 dB at 300–600 Hz only if boxy",
         "boost": "+2–3 dB at 2.5–4 kHz (attack); +1–2 dB shelf at 8–10 kHz",
         "notes": "The montuno reads as percussion, and the piano often switches from the montuno to doubling the bass, so its low end goes to the subs with the bass (see the caution below)"
@@ -103,16 +105,16 @@ export const GUIDE: MixingGuide = {
         "source": "Baby bass / bass",
         "cut": "HPF 35–40 Hz; −2–3 dB at 200–300 Hz if woofy",
         "boost": "+2 dB at 60–90 Hz; +2–3 dB at 700 Hz–1.2 kHz (note definition)",
-        "notes": "Baby bass pickup can be boomy; mids make the tumbao audible on small speakers"
+        "notes": "Baby bass pickup can be boomy; mids make the tumbao (the bass's repeating rhythm pattern) audible on small speakers"
       },
       {
         "source": "Congas",
         "cut": "HPF 60–80 Hz; −2–3 dB at about 200 Hz (ring/boom)",
         "boost": "+1–3 dB at 300–400 Hz (tone); +2–3 dB at 4–6 kHz (slap)",
-        "notes": "Each drum often needs its own low cut; tumba keeps more low end"
+        "notes": "Each drum often needs its own low cut; tumba (the lowest conga) keeps more low end"
       },
       {
-        "source": "Timbales (top)",
+        "source": "Timbales (metal-shelled drums, top)",
         "cut": "HPF 100–150 Hz; −2–3 dB at 400–800 Hz (ring)",
         "boost": "+2 dB at 3–5 kHz (stick crack)",
         "notes": "Cymbal and bells bleed in; watch harshness at 2–4 kHz"
@@ -130,7 +132,7 @@ export const GUIDE: MixingGuide = {
         "notes": "It’s naturally loud; tame rather than push"
       },
       {
-        "source": "Güiro / maracas",
+        "source": "Güiro (scraped gourd) / maracas",
         "cut": "HPF 300–400 Hz; −3–4 dB around 6 kHz if spitty",
         "boost": "Light shelf at 10–12 kHz",
         "notes": "Treat the güiro like a hi-hat"
@@ -145,7 +147,7 @@ export const GUIDE: MixingGuide = {
         "source": "Trombones",
         "cut": "HPF 70–90 Hz; −2–3 dB at 400–600 Hz (honk)",
         "boost": "+2 dB at 120–200 Hz (weight); +2 dB at 1.5–3 kHz (bite)",
-        "notes": "The trombone growl is the salsa dura signature, so don’t thin it out"
+        "notes": "The trombone growl is the salsa dura (hard-hitting, horn-heavy salsa) signature, so don’t thin it out"
       },
       {
         "source": "Lead vocal",
@@ -154,7 +156,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Spanish consonants need clarity; check sibilance after boosting"
       },
       {
-        "source": "Coro",
+        "source": "Coro (vocal chorus)",
         "cut": "HPF 120–150 Hz; −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 4–6 kHz",
         "notes": "Thinner than the lead so the stack blends without mud"
@@ -164,7 +166,7 @@ export const GUIDE: MixingGuide = {
       // NEW COPY — owner review (2026-10-16): the caution the owner asked for, explained rather than silently fixed.
       {
         "label": "Caution — don’t low-cut the piano:",
-        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos, breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son, mambo, cha-cha-chá, timba and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room. Talk with the keyboardist first, or know their music."
+        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos (horn-led instrumental sections), breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son (Cuban roots song style), mambo (1940s–50s Cuban big-band dance style), cha-cha-chá, timba (modern Cuban dance music) and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room. Talk with the keyboardist first, or know their music."
       }
     ]
   },
@@ -176,15 +178,15 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "3–10 ms / 60–120 ms",
         "gainReduction": "3–6 dB",
-        "notes": "Soneros jump from quiet phrases to belted inspiraciones; ride the fader too"
+        "notes": "Soneros (lead improvising singers) jump from quiet phrases to belted inspiraciones (improvised sung lines); ride the fader too"
       },
       {
-        "source": "Coro bus",
+        "source": "Coro (vocal chorus) bus",
         "use": "Yes",
         "ratio": "3:1–4:1",
         "attackRelease": "5–10 ms / auto",
         "gainReduction": "3–5 dB",
-        "notes": "Holds the refrain steady against the sonero"
+        "notes": "Holds the refrain steady against the sonero (lead improvising singer)"
       },
       {
         "source": "Bass",
@@ -192,7 +194,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "10–30 ms / 100–150 ms",
         "gainReduction": "3–6 dB",
-        "notes": "Even notes keep the tumbao steady for dancers"
+        "notes": "Even notes keep the tumbao (the bass's repeating rhythm pattern) steady for dancers"
       },
       {
         "source": "Piano",
@@ -200,7 +202,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1–3:1",
         "attackRelease": "10–20 ms / 80 ms",
         "gainReduction": "2–3 dB",
-        "notes": "Too much flattens the montuno’s accents"
+        "notes": "Too much flattens the montuno’s (piano pattern’s) accents"
       },
       {
         "source": "Congas",
@@ -211,7 +213,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Avoid fast attack; it kills the slap"
       },
       {
-        "source": "Timbales",
+        "source": "Timbales (metal-shelled drums)",
         "use": "Optional",
         "ratio": "3:1–4:1",
         "attackRelease": "10–20 ms / 80 ms",
@@ -251,7 +253,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Hall reverb",
-        "appliedTo": "Horns, coro",
+        "appliedTo": "Horns, coro (vocal chorus)",
         "setting": "1.4–2.0 s decay, 30–50 ms pre-delay, HPF return 250 Hz",
         "amount": "Moderate in romántica; subtle in dura"
       },
@@ -276,41 +278,41 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Keep the rhythm section dry and put the space on horns and vocals; long reverb on congas or piano blurs the clave."
+        "text": "Keep the rhythm section dry and put the space on horns and vocals; long reverb on congas or piano blurs the clave (the 2-bar rhythm key)."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The sonero is the star. Sit the lead about 2–4 dB above the band, forward but warm, with every Spanish syllable clear; salsa audiences sing along and follow the improvised lines. The coro is close behind, often only 2–4 dB below the lead in the montuno, panned wide, compressed a bit harder and voiced brighter and thinner than the lead. Pitch correction should be light and inaudible on the lead; the coro can be tightened more in romántica productions, where polish is part of the style. Live, use rugged dynamics or handheld condensers; coro singers often play güiro and maracas into their mics, so high-pass coro mics and check that the shakers don’t overwhelm."
+      "text": "The sonero (lead improvising singer) is the star. Sit the lead about 2–4 dB above the band, forward but warm, with every Spanish syllable clear; salsa audiences sing along and follow the improvised lines. The coro (vocal chorus) is close behind, often only 2–4 dB below the lead in the montuno (the call-and-response section), panned wide, compressed a bit harder and voiced brighter and thinner than the lead. Pitch correction should be light and inaudible on the lead; the coro can be tightened more in romántica (smooth romantic salsa) productions, where polish is part of the style. Live, use rugged dynamics or handheld condensers; coro singers often play güiro (scraped gourd) and maracas into their mics, so high-pass coro mics and check that the shakers don’t overwhelm."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Salsa clubs and dance halls typically run 94–100 dBA LAeq-15 at FOH, festivals and arenas 98–102 dBA, with C-weighted levels around 110–118 dBC. Because there is no kick and the low end is bass, piano and tumba, sub energy is moderate; a C-minus-A gap of more than about 15–18 dB suggests too much sub for this style, and a gap of 20 dB or more is a hearing-risk flag. Hard-floored halls get harsh fast at 2–4 kHz. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so long dance nights favor the lower end of the range."
+      "text": "Salsa clubs and dance halls typically run 94–100 dBA LAeq-15 at FOH, festivals and arenas 98–102 dBA, with C-weighted levels around 110–118 dBC. Because there is no kick and the low end is bass, piano and tumba (the lowest conga), sub energy is moderate; a C-minus-A gap of more than about 15–18 dB suggests too much sub for this style, and a gap of 20 dB or more is a hearing-risk flag. Hard-floored halls get harsh fast at 2–4 kHz. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so long dance nights favor the lower end of the range."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary salsa masters usually land at −10 to −8 LUFS-I with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Fania-era reissues sit around −13 to −10 LUFS-I. Most streaming services normalize to −14 LUFS, so very loud masters gain nothing and lose horn and percussion snap. A PLR of 10–13 dB (about −12 to −14 LUFS-I at −2 dBTP, quieter than contemporary masters) and a loudness range of 5–8 LU keep transients and mambo lift alive."
+      "text": "Contemporary salsa masters usually land at −10 to −8 LUFS-I with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Fania-era reissues sit around −13 to −10 LUFS-I. Most streaming services normalize to −14 LUFS, so very loud masters gain nothing and lose horn and percussion snap. A PLR of 10–13 dB (about −12 to −14 LUFS-I at −2 dBTP, quieter than contemporary masters) and a loudness range of 5–8 LU keep transients and mambo (horn-led instrumental section) lift alive."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Inputs",
-        "live": "45–72 channels for a large orquesta; 30+ open percussion and horn mics create heavy bleed",
+        "live": "45–72 channels for a large orquesta (dance orchestra); 30+ open percussion and horn mics create heavy bleed",
         "studio": "Isolated booths or overdubs; percussion often tracked separately"
       },
       {
         "area": "Low end",
-        "live": "No kick; bass, piano and tumba carry it. Send the piano to the subs with the bass; high-pass the parts that carry no low line (horns, vocals, bells, shakers)",
+        "live": "No kick; bass, piano and tumba (the lowest conga) carry it. Send the piano to the subs with the bass; high-pass the parts that carry no low line (horns, vocals, bells, shakers)",
         "studio": "Balance bass and piano as one line; fine-tune bass vs tumba with EQ carving"
       },
       {
         "area": "Percussion",
         "live": "Few mics per player; bleed is the “room”; minimal panning",
-        "studio": "Multiple mics per drum (top/under timbales), detailed panning"
+        "studio": "Multiple mics per drum (top/under timbales, the metal-shelled drums), detailed panning"
       },
       {
         "area": "Horns",
@@ -319,8 +321,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Vocals",
-        "live": "Gain before feedback limits EQ; coro mics pick up shakers",
-        "studio": "Comping, doubles, detailed rides, more polish in romántica"
+        "live": "Gain before feedback limits EQ; coro (vocal chorus) mics pick up shakers",
+        "studio": "Comping, doubles, detailed rides, more polish in romántica (smooth romantic salsa)"
       },
       {
         "area": "Effects",
@@ -341,7 +343,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Know the arrangement: push horns for intros and mambos, the coro for every refrain.",
+      "text": "Know the arrangement: push horns for intros and mambos (horn-led instrumental sections), the coro (vocal chorus) for every refrain.",
       "bullet": true
     },
     {
@@ -366,7 +368,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Many bands play without a click; tempo pushes in the montuno are intended.",
+      "text": "Many bands play without a click; tempo pushes in the montuno (the call-and-response section) are intended.",
       "bullet": true
     }
   ],

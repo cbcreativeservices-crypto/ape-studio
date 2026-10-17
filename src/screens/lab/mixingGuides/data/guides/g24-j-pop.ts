@@ -4,6 +4,8 @@
  * conversion (scripts/mixing-guides/edits.py), not this file.
  *
  * Keyboardist caution owner-approved 2026-10-16: the "Before you low-cut the keys" note under the EQ table.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -13,7 +15,7 @@ export const GUIDE: MixingGuide = {
   "title": "J-pop",
   "expects": "The words matter enormously—songs are tied to drama themes, anime storylines and commercials—so the audience expects to hear every syllable.",
   "glance": {
-    "origin": "Japan; grew out of kayōkyoku, 1970s “new music” and city pop, and YMO-era technopop; the term “J-pop” took hold around 1990, with idol, anison (anime song) and band-style J-rock branches",
+    "origin": "Japan; grew out of kayōkyoku (postwar Japanese pop), 1970s “new music” and city pop, and YMO-era technopop; the term “J-pop” took hold around 1990, with idol, anison (anime song) and band-style J-rock branches",
     "tempo": "120–180 BPM for up-tempo idol and anime openings (many sit around 160–180); ballads 65–90; band J-pop 130–160",
     "ensemble": "Solo singer + 5–7 piece band (often with strings or horns on tour); idol groups of 3–20+ singers over tracks; 4–5 piece bands with sequenced synths and strings",
     "priority": "A big, bright, fully intelligible lead vocal on top of a dense arrangement",
@@ -64,7 +66,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Recorded J-pop has small micro-dynamics and moderate macro-dynamics: the arrangement thins in the ochi-sabi and swells into the last chorus, but the master itself is heavily limited. Live, preserve the section contrast (a 4–8 dB lift from ochi-sabi to final chorus) and ride the lead vocal constantly, since idol singers’ levels change with choreography and breath. Ballads with piano and strings need real dynamic room; do not run them at the same level as the dance numbers."
+      "text": "Recorded J-pop has small micro-dynamics and moderate macro-dynamics: the arrangement thins in the ochi-sabi (stripped chorus) and swells into the last chorus, but the master itself is heavily limited. Live, preserve the section contrast (a 4–8 dB lift from ochi-sabi to final chorus) and ride the lead vocal constantly, since idol singers’ levels change with choreography and breath. Ballads with piano and strings need real dynamic room; do not run them at the same level as the dance numbers."
     }
   ],
   "balance": [
@@ -260,7 +262,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits clearly above the band—roughly 3–5 dB louder in perceived level than it would in a rock mix—with every mora intelligible. Tone is bright and clean; many leads are light, high voices, so high-pass more and watch 2–4 kHz harshness. Pitch correction is expected and usually tight but natural on ballads; hard-tuned vocals are an aesthetic choice in technopop (Perfume) and some idol material. Chorus vocals are doubled and stacked with harmony parts; idol songs alternate solo lines and unison, so balance members to equal loudness and ride solo lines up 1–2 dB. Live, solo artists use high-end handhelds (often condenser or premium dynamic capsules); dancing idols use headset or handheld wireless, sometimes over a backing vocal track—keep the live mic audibly on top so it reads as live. Anison singers belt hard; leave 6–10 dB of headroom on the input."
+      "text": "The lead vocal sits clearly above the band—roughly 3–5 dB louder in perceived level than it would in a rock mix—with every mora (syllable-like sound unit) intelligible. Tone is bright and clean; many leads are light, high voices, so high-pass more and watch 2–4 kHz harshness. Pitch correction is expected and usually tight but natural on ballads; hard-tuned vocals are an aesthetic choice in technopop (Perfume) and some idol material. Chorus vocals are doubled and stacked with harmony parts; idol songs alternate solo lines and unison, so balance members to equal loudness and ride solo lines up 1–2 dB. Live, solo artists use high-end handhelds (often condenser or premium dynamic capsules); dancing idols use headset or handheld wireless, sometimes over a backing vocal track—keep the live mic audibly on top so it reads as live. Anison singers belt hard; leave 6–10 dB of headroom on the input."
     }
   ],
   "loudness": [

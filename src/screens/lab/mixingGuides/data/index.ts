@@ -68,22 +68,22 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "reggaeton",
     "num": 8,
     "title": "Reggaeton",
-    "line": "The dembow pulse (kick, sub and snare/timbal) locked and huge, with a clear, upfront Spanish lead vocal riding on it",
-    "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim; global from 2004, with Latin trap rising out of Puerto Rico from the mid-2000s"
+    "line": "The dembow (reggaeton's core drum pattern) pulse (kick, sub and snare/timbal) locked and huge, with a clear, upfront Spanish lead vocal riding on it",
+    "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap rising out of Puerto Rico from the mid-2000s"
   },
   {
     "id": "regional-mexican",
     "num": 9,
     "title": "Regional Mexican",
-    "line": "The lead singer’s words and emotion on top of a firmly locked low end (tuba, tololoche, guitarrón or bass)",
-    "origin": "Mexico and the US borderlands: banda from Sinaloa brass bands (1880s onward), mariachi from Jalisco and western Mexico (19th century, standardized by the 1950s), norteño from Nuevo León/Texas (late 1800s–1930s), corridos tumbados from Sinaloa, Sonora and Los Angeles (late 2010s)"
+    "line": "The lead singer’s words and emotion on top of a firmly locked low end (tuba, tololoche (upright bass), guitarrón (large acoustic bass) or bass)",
+    "origin": "Mexico and the US borderlands: banda (Mexican brass band) from Sinaloa brass bands (1880s onward), mariachi from Jalisco and western Mexico (19th century, standardized by the 1950s), norteño (northern Mexican accordion music) from Nuevo León/Texas (late 1800s–1930s), corridos tumbados (laid-back, trap-flavored corridos) from Sinaloa, Sonora and Los Angeles (late 2010s)"
   },
   {
     "id": "k-pop",
     "num": 10,
     "title": "K-pop",
     "line": "Every member’s voice identifiable and on top of a hard, bright, fully produced track, with the low end punching underneath",
-    "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; global “Hallyu” wave from the 2010s"
+    "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; global “Hallyu” (Korean pop-culture) wave from the 2010s"
   },
   {
     "id": "alternative-indie-rock",
@@ -110,7 +110,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "afrobeats",
     "num": 14,
     "title": "Afrobeats",
-    "line": "The percussion groove (rimshot, shakers, clave pattern) bright and forward, with the lead vocal hook riding on it",
+    "line": "The percussion groove (rimshot, shakers, clave (a 2-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat"
   },
   {
@@ -181,14 +181,14 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 24,
     "title": "J-pop",
     "line": "A big, bright, fully intelligible lead vocal on top of a dense arrangement",
-    "origin": "Japan; grew out of kayōkyoku, 1970s “new music” and city pop, and YMO-era technopop; the term “J-pop” took hold around 1990, with idol, anison (anime song) and band-style J-rock branches"
+    "origin": "Japan; grew out of kayōkyoku (postwar Japanese pop), 1970s “new music” and city pop, and YMO-era technopop; the term “J-pop” took hold around 1990, with idol, anison (anime song) and band-style J-rock branches"
   },
   {
     "id": "c-pop-mandopop",
     "num": 25,
     "title": "C-pop / Mandopop",
     "line": "A clear, intimate, fully intelligible lead vocal; every lyric must be understood",
-    "origin": "Shanghai shidaiqu of the 1920s–40s; moved to Hong Kong after 1949; Taiwan became the Mandopop hub in the 1970s–90s; Cantopop grew in Hong Kong from the mid-1970s; today mainland China, Taiwan, Hong Kong, Singapore and Malaysia"
+    "origin": "Shanghai shidaiqu (jazz-age Shanghai pop) of the 1920s–40s; moved to Hong Kong after 1949; Taiwan became the Mandopop hub in the 1970s–90s; Cantopop (Cantonese-language pop) grew in Hong Kong from the mid-1970s; today mainland China, Taiwan, Hong Kong, Singapore and Malaysia"
   },
   {
     "id": "indie-pop",
@@ -209,14 +209,14 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 28,
     "title": "Reggae",
     "line": "Drum and bass: a deep, round, melodic bass line locked to a dry one-drop kick, with the lead vocal clear on top",
-    "origin": "Kingston, Jamaica, late 1960s (out of ska and rocksteady); roots and dub through the 1970s; UK sound systems in London from the mid-1950s and lovers rock there from the mid-1970s"
+    "origin": "Kingston, Jamaica, late 1960s (out of ska and rocksteady); roots and dub (echo-heavy remix style) through the 1970s; UK sound systems in London from the mid-1950s and lovers rock there from the mid-1970s"
   },
   {
     "id": "sertanejo",
     "num": 29,
     "title": "Sertanejo",
     "line": "The two lead voices in tight, intelligible harmony on top of a crowd that sings every word",
-    "origin": "Brazilian interior (São Paulo, Minas Gerais, Goiás, Paraná, Mato Grosso do Sul), from 1920s música caipira; electrified in the late 1960s, romantic-pop in the 1980s–90s, “sertanejo universitário” from the mid-2000s"
+    "origin": "Brazilian interior (São Paulo, Minas Gerais, Goiás, Paraná, Mato Grosso do Sul), from 1920s música caipira (rural folk music); electrified in the late 1960s, romantic-pop in the 1980s–90s, “sertanejo universitário” (“college” sertanejo) from the mid-2000s"
   },
   {
     "id": "punjabi-pop-bhangra",
@@ -257,14 +257,14 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "brazilian-funk",
     "num": 35,
     "title": "Brazilian Funk (Baile Funk)",
-    "line": "The beat’s low end (kick, surdo-like tamborzão hits and 808) hitting hard and clean in mono, with the MC’s hook shouting clearly on top",
-    "origin": "Rio de Janeiro favelas and subúrbios, mid/late 1980s (Miami bass and electro at sound-system bailes), Portuguese-language from 1989; tamborzão from 1998; São Paulo funk paulista, ostentação and mandelão from the late 2000s–2010s"
+    "line": "The beat’s low end (kick, surdo-like tamborzão (the funk drum-machine beat) hits and 808) hitting hard and clean in mono, with the MC’s hook shouting clearly on top",
+    "origin": "Rio de Janeiro favelas (hillside working-class neighborhoods) and subúrbios (outer working-class suburbs), mid/late 1980s (Miami bass and electro at sound-system bailes (dance parties)), Portuguese-language from 1989; tamborzão (the funk drum-machine beat) from 1998; São Paulo funk paulista (São Paulo funk), ostentação (flashy “bling” funk) and mandelão (stripped, distorted São Paulo funk) from the late 2000s–2010s"
   },
   {
     "id": "dancehall",
     "num": 36,
     "title": "Dancehall",
-    "line": "The riddim’s kick-and-bass weight with the deejay’s voice cutting through clearly on top",
+    "line": "The riddim’s (backing track’s) kick-and-bass weight with the deejay’s (chanting MC’s) voice cutting through clearly on top",
     "origin": "Kingston, Jamaica, late 1970s (out of reggae and sound system culture); went digital with “Sleng Teng” in 1985; global pop crossover from the 2000s"
   },
   {
@@ -272,34 +272,34 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 37,
     "title": "Amapiano",
     "line": "The log drum: weighty in the sub, woody and pitched in the mids, landing between the kicks without masking them",
-    "origin": "Gauteng townships, South Africa (Mamelodi, Atteridgeville, Soweto, Alexandra, Katlehong), roughly 2012–2016; rooted in kwaito, deep house, Bacardi and jazz; national breakout 2019"
+    "origin": "Gauteng townships, South Africa (Mamelodi, Atteridgeville, Soweto, Alexandra, Katlehong), roughly 2012–2016; rooted in kwaito (South African township house), deep house, Bacardi and jazz; national breakout 2019"
   },
   {
     "id": "salsa",
     "num": 38,
     "title": "Salsa",
-    "line": "The rhythm-section lock (piano montuno, bass tumbao, congas, bells) with the sonero and coro clearly on top",
-    "origin": "New York City, mid-1960s–1970s (Fania era), built on Cuban son montuno, mambo and guaracha with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica from the mid-1980s"
+    "line": "The rhythm-section lock (piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas, bells) with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
+    "origin": "New York City, mid-1960s–1970s (Fania era), built on Cuban son montuno (Cuban son built on a vamp), mambo (1940s–50s Cuban big-band dance style) and guaracha (fast, playful Cuban song style) with Puerto Rican players and arrangers; later centers in Puerto Rico, Colombia (Cali), Venezuela and Miami. Salsa romántica (smooth romantic salsa) from the mid-1980s"
   },
   {
     "id": "bachata",
     "num": 39,
     "title": "Bachata",
-    "line": "The lead vocal and the requinto trading phrases on top of a steady güira–bass pulse dancers can feel",
-    "origin": "Dominican Republic, early 1960s (first recording 1962), from rural bolero and son traditions played in working-class bars; electrified in the 1980s; “urban bachata” grew among Dominican-Americans in New York from the late 1990s"
+    "line": "The lead vocal and the requinto (lead guitar) trading phrases on top of a steady güira (metal scraper)–bass pulse dancers can feel",
+    "origin": "Dominican Republic, early 1960s (first recording 1962), from rural bolero (slow romantic song) and son (Cuban roots song style) traditions played in working-class bars; electrified in the 1980s; “urban bachata” grew among Dominican-Americans in New York from the late 1990s"
   },
   {
     "id": "cumbia",
     "num": 40,
     "title": "Cumbia",
     "line": "The bass-and-güiro groove: the bass on 1 and the “and” of 2, with the scraper’s steady chop always audible",
-    "origin": "Caribbean coast of Colombia (Magdalena River basin, Depresión Momposina), documented by the early 1800s; urbanized by Discos Fuentes-era orchestras in the 1940s–60s, then spread into Mexican sonidera and tecnocumbia, Peruvian chicha (late 1960s) and Argentine villera (1999)"
+    "origin": "Caribbean coast of Colombia (Magdalena River basin, Depresión Momposina), documented by the early 1800s; urbanized by Discos Fuentes-era orchestras in the 1940s–60s, then spread into Mexican sonidera (Mexican sound-system style) and tecnocumbia (keyboard-driven cumbia), Peruvian chicha (psychedelic cumbia, late 1960s) and Argentine villera (shantytown cumbia, 1999)"
   },
   {
     "id": "arabic-pop",
     "num": 41,
     "title": "Arabic Pop",
-    "line": "The lead vocal, with every ornament, microtone and word clear, riding on a locked darbuka/kick groove",
+    "line": "The lead vocal, with every ornament, microtone and word clear, riding on a locked darbuka (goblet drum)/kick groove",
     "origin": "Cairo and Beirut from the 1970s (out of Egyptian film music and the firqa orchestra tradition); Gulf “Khaleeji” pop rising strongly since about 2000"
   },
   {
@@ -307,28 +307,28 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 42,
     "title": "Turkish Pop",
     "line": "The lead vocal, with every ornament and word clear, riding over a darbuka-and-kick groove that makes people dance",
-    "origin": "Turkey (Istanbul studios and stages), from late-1950s Western covers and the 1970s aranjman era; reshaped by arabesk (late 1960s–80s) and the 1990s pop boom of Sezen Aksu, Tarkan and their producers"
+    "origin": "Turkey (Istanbul studios and stages), from late-1950s Western covers and the 1970s aranjman (Turkish-lyric cover songs) era; reshaped by arabesk (melancholic Arab-influenced style, late 1960s–80s) and the 1990s pop boom of Sezen Aksu, Tarkan and their producers"
   },
   {
     "id": "dangdut",
     "num": 43,
     "title": "Dangdut",
-    "line": "The kendang: the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
-    "origin": "Indonesia: grew from Orkes Melayu in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s"
+    "line": "The kendang (two-headed hand drum): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
+    "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s"
   },
   {
     "id": "mpb-bossa-nova",
     "num": 44,
     "title": "MPB / Bossa Nova",
     "line": "The voice and the nylon-string guitar as an equal, intimate pair, with every word of Portuguese clear",
-    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; samba and pagode roots in Rio’s subúrbios (Cacique de Ramos, late 1970s)"
+    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; samba and pagode (informal party samba) roots in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)"
   },
   {
     "id": "drum-and-bass",
     "num": 45,
     "title": "Drum & Bass",
     "line": "Sub bass and drums coexisting: a clean, mono, controlled sub under a snare that cracks through on beats 2 and 4",
-    "origin": "UK (London, Bristol, West Midlands), early 1990s; breakbeat hardcore (1989–93) became jungle, then drum & bass by about 1995–96, rooted in Caribbean sound-system and dub culture"
+    "origin": "UK (London, Bristol, West Midlands), early 1990s; breakbeat hardcore (1989–93) became jungle, then drum & bass by about 1995–96, rooted in Caribbean sound-system and dub (echo-heavy remix style) culture"
   },
   {
     "id": "lo-fi-chillhop",
@@ -363,6 +363,6 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 50,
     "title": "French Variété / Chanson",
     "line": "The lead vocal and every word of the French text — clear, natural, and in front",
-    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)"
+    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)"
   }
 ];

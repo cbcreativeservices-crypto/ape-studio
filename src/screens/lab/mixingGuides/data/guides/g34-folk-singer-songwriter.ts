@@ -7,6 +7,8 @@
  * correction): NEW COPY awaiting owner approval in the piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -51,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Percussion:",
-      "text": "brushes on a small kit, cajón, tambourine, foot stomps.",
+      "text": "brushes on a small kit, cajón (box drum), tambourine, foot stomps.",
       "bullet": true
     },
     {

@@ -7,6 +7,8 @@
  * correction): NEW COPY awaiting owner approval in the piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -25,18 +27,18 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Latin pop is romance, nostalgia and celebration sung in Spanish or Portuguese. Its roots are the balada romántica, grown from bolero and defined by Julio Iglesias, Roberto Carlos, José José and Luis Miguel, later reshaped into dance-pop by Gloria Estefan, Ricky Martin and Shakira. The lyric is the center: audiences know every word, and stadium shows become mass sing-alongs. Fans expect an intimate, expensive-sounding voice, a lush but tidy band, and audible Latin flavor (percussion, nylon guitar, a tropical or urban groove). They will say “that sounded wrong” when the words blur, the vocal turns harsh in its high belted notes, the percussion is either missing or clattering, or the mix sounds generic and stripped of its Latin color."
+      "text": "Latin pop is romance, nostalgia and celebration sung in Spanish or Portuguese. Its roots are the balada romántica (romantic ballad style), grown from bolero (slow romantic song) and defined by Julio Iglesias, Roberto Carlos, José José and Luis Miguel, later reshaped into dance-pop by Gloria Estefan, Ricky Martin and Shakira. The lyric is the center: audiences know every word, and stadium shows become mass sing-alongs. Fans expect an intimate, expensive-sounding voice, a lush but tidy band, and audible Latin flavor (percussion, nylon guitar, a tropical or urban groove). They will say “that sounded wrong” when the words blur, the vocal turns harsh in its high belted notes, the percussion is either missing or clattering, or the mix sounds generic and stripped of its Latin color."
     }
   ],
   "instruments": [
     {
       "label": "Drums and programming:",
-      "text": "acoustic kit plus electronic layers; dance tracks often blend kick samples or 808-style subs, reggaeton-influenced songs carry the dembow pattern.",
+      "text": "acoustic kit plus electronic layers; dance tracks often blend kick samples or 808-style subs, reggaeton-influenced songs carry the dembow (reggaeton's core drum pattern) pattern.",
       "bullet": true
     },
     {
       "label": "Bass:",
-      "text": "electric or synth bass, typically playing tumbao-like anticipated figures in tropical songs and long sustains in ballads.",
+      "text": "electric or synth bass, typically playing tumbao-like (salsa-bass-style) anticipated figures in tropical songs and long sustains in ballads.",
       "bullet": true
     },
     {
@@ -51,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Latin percussion:",
-      "text": "congas, bongos, timbales, güiro, shaker, campana (cowbell), cajón and flamenco palmas in Spanish pop; pandeiro, surdo and cavaquinho in Brazilian pop; accordion and caja vallenata for Colombian vallenato-pop.",
+      "text": "congas, bongos, timbales (two metal-shelled drums with cymbal and cowbells), güiro (scraped gourd), shaker, campana (cowbell), cajón (box drum) and flamenco palmas (handclaps) in Spanish pop; pandeiro (Brazilian tambourine), surdo (deep samba bass drum) and cavaquinho (small four-string guitar) in Brazilian pop; accordion and caja vallenata (small vallenato hand drum) for Colombian vallenato-pop (Colombian accordion pop).",
       "bullet": true
     },
     {
@@ -77,7 +79,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal (clearly on top—more than in rock), kick and bass, snare/clap, piano or main harmonic instrument, nylon guitar and percussion, backing vocals, pads and strings, effects returns. The vocal sits roughly 2–4 dB above the densest instrument. Low end is clean and round: in dance-pop the kick owns 50–70 Hz and the bass fills around it; in ballads, carve bass and piano left hand so 150–300 Hz stays clear. Center vocal, kick, snare and bass; pan congas opposite timbales or shaker (30–60 percent), guitars opposite each other, strings and BVs wide. Percussion is sparkle and motion, not volume."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal (clearly on top—more than in rock), kick and bass, snare/clap, piano or main harmonic instrument, nylon guitar and percussion, backing vocals, pads and strings, effects returns. The vocal sits roughly 2–4 dB above the densest instrument. Low end is clean and round: in dance-pop the kick owns 50–70 Hz and the bass fills around it; in ballads, carve bass and piano left hand so 150–300 Hz stays clear. Center vocal, kick, snare and bass; pan congas opposite timbales (two metal-shelled drums with cymbal and cowbells) or shaker (30–60 percent), guitars opposite each other, strings and BVs wide. Percussion is sparkle and motion, not volume."
     }
   ],
   "eq": {
@@ -104,7 +106,7 @@ export const GUIDE: MixingGuide = {
         "source": "Bass (electric/synth)",
         "cut": "HPF 30–40 Hz; −2 dB at 200–250 Hz",
         "boost": "+2 dB at 60–80 Hz; +2 dB at 700 Hz–1 kHz",
-        "notes": "Mid boost keeps tumbao lines audible on phones"
+        "notes": "Mid boost keeps tumbao (the bass's repeating rhythm pattern) lines audible on phones"
       },
       {
         "source": "Congas / bongos",
@@ -113,13 +115,13 @@ export const GUIDE: MixingGuide = {
         "notes": "Often needs little EQ; bongos sit higher and brighter"
       },
       {
-        "source": "Timbales / campana",
+        "source": "Timbales (metal-shelled drums) / campana (hand-held cowbell)",
         "cut": "HPF 150–250 Hz; dip 1–2 kHz if clangy",
         "boost": "+1–2 dB at 8–10 kHz",
         "notes": "Very loud transients—control with level, not EQ alone"
       },
       {
-        "source": "Shaker / güiro",
+        "source": "Shaker / güiro (scraped gourd)",
         "cut": "HPF 300–500 Hz",
         "boost": "+1–2 dB at 8–12 kHz",
         "notes": "Tuck low; harsh 3–5 kHz competes with sibilance"
@@ -135,7 +137,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano",
         "cut": "HPF 50–80 Hz in ballads and pop arrangements; −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 3–5 kHz",
-        "notes": "Duck mids under the vocal in ballads. In tropical, salsa-style songs where the piano switches from its montuno to doubling the bass, keep its low end (see the Salsa guide). Talk with the keyboardist first, or know their music."
+        "notes": "Duck mids under the vocal in ballads. In tropical, salsa-style songs where the piano switches from its montuno (the piano's repeating syncopated pattern) to doubling the bass, keep its low end (see the Salsa guide). Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Strings",
@@ -339,7 +341,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Don’t bury the percussion, the cultural fingerprint, but keep timbales and campana below the vocal.",
+      "text": "Don’t bury the percussion, the cultural fingerprint, but keep timbales (two metal-shelled drums with cymbal and cowbells) and campana (hand-held cowbell) below the vocal.",
       "bullet": true
     },
     {

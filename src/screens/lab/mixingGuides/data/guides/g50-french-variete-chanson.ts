@@ -7,6 +7,8 @@
  * correction): NEW COPY awaiting owner approval in the grand piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -16,8 +18,8 @@ export const GUIDE: MixingGuide = {
   "title": "French Variété / Chanson",
   "expects": "The audience treats the text as the point: the French public expects to understand the lyrics, because the songs follow the rhythms of the language and are valued for their writing.",
   "glance": {
-    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)",
-    "tempo": "60–130 BPM (ballads 60–80; valse musette in 3/4 at 140–180 BPM; modern variété-pop 95–125)",
+    "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)",
+    "tempo": "60–130 BPM (ballads 60–80; valse musette (accordion waltz) in 3/4 at 140–180 BPM; modern variété-pop 95–125)",
     "ensemble": "From solo voice + piano or guitar, to a 3–5 piece chanson band (piano, accordion, double bass, guitar, light drums), to a 7–12 piece variété touring band with backing vocals, strings or brass",
     "priority": "The lead vocal and every word of the French text — clear, natural, and in front",
     "liveSpl": "Theatre/concert-hall chanson 85–92 dBA LAeq-15; variété arena shows 95–100 dBA; French law caps public venues at 102 dBA / 118 dBC LAeq-15",
@@ -36,12 +38,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Piano:",
-      "text": "grand piano is the backbone of rive-gauche chanson (Barbara, Brel with Gérard Jouannest); often the only accompaniment.",
+      "text": "grand piano is the backbone of rive-gauche (Left Bank) chanson (Barbara, Brel with Gérard Jouannest); often the only accompaniment.",
       "bullet": true
     },
     {
       "label": "Accordion:",
-      "text": "the signature colour of musette and realist chanson, revived by the nouvelle scène (Les Têtes Raides, Zaz). Treble and bass sides behave like two instruments; bellows and key noise are part of the sound.",
+      "text": "the signature colour of musette (accordion dance-hall style) and realist chanson, revived by the nouvelle scène (new generation: Les Têtes Raides, Zaz). Treble and bass sides behave like two instruments; bellows and key noise are part of the sound.",
       "bullet": true
     },
     {
@@ -56,7 +58,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Drums/percussion:",
-      "text": "brushes, light kits, cajón; full pop kits and programmed beats in variété.",
+      "text": "brushes, light kits, cajón (box drum); full pop kits and programmed beats in variété.",
       "bullet": true
     },
     {
@@ -269,7 +271,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the desk. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theatres."
+      "text": "Seated chanson in théâtres and concert halls typically runs 85–92 dBA LAeq-15 at FOH, with C-weighted levels around 95–105 dBC and peaks around 100–105 dBA. Variété arena and festival shows sit at 95–100 dBA, 110–116 dBC. French décret (decree) 2017-1244 limits any publicly accessible area to 102 dBA and 118 dBC over 15 minutes (94 dBA / 104 dBC for shows aimed at children under six); venues must offer free earplugs and provide rest zones, and those over 300 capacity must also record and display levels at the desk. Sub content is modest in chanson; keep a C-minus-A gap under about 15 dB. Delay and front-fill speakers let you keep FOH lower and still reach the back rows — the right approach for theatres."
     },
     {
       "label": "Studio / streaming:",

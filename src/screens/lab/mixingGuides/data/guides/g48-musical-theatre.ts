@@ -7,6 +7,8 @@
  * correction): NEW COPY awaiting owner approval in the piano/keys EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -17,7 +19,7 @@ export const GUIDE: MixingGuide = {
   "expects": "Theatre audiences are seated, attentive and paying high ticket prices; they expect the sound to be clear, warm and “invisible,” with the voice appearing to come from the performer’s mouth rather than from a speaker cluster.",
   "glance": {
     "origin": "Broadway (New York) and London’s West End, from operetta and vaudeville roots in the early 1900s; radio-mic’d “megamusical” sound from the 1980s; now worldwide touring and resident productions",
-    "tempo": "Wide: 60–90 BPM ballads, 100–140 BPM up-tempo and dance numbers, frequent rubato, tempo changes and spoken-over underscore within a single song",
+    "tempo": "Wide: 60–90 BPM ballads, 100–140 BPM up-tempo and dance numbers, frequent rubato (flexible, push-pull tempo), tempo changes and spoken-over underscore within a single song",
     "ensemble": "15–40 cast on body mics (principals often double-mic’d) plus a 6–25 piece pit orchestra or band; 100–140+ inputs on a large show",
     "priority": "Every word intelligible — lyrics and dialogue carry the story — with voices that seem to come from the actor, not the speakers",
     "liveSpl": "Book/legit shows roughly 80–88 dBA LAeq over an act, big numbers peaking 95–100 dBA; rock/pop-score musicals 90–96 dBA LAeq with peaks near 105 dBA (approximate industry ranges, not published limits)",

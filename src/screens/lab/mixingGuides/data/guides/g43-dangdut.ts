@@ -4,6 +4,8 @@
  * conversion (scripts/mixing-guides/edits.py), not this file.
  *
  * Keyboardist caution owner-approved 2026-10-16: the "Before you low-cut the keys" note under the EQ table.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -11,24 +13,24 @@ export const GUIDE: MixingGuide = {
   "id": "dangdut",
   "num": 43,
   "title": "Dangdut",
-  "expects": "Audiences want to feel the kendang in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling and keyboard hooks answer the singer.",
+  "expects": "Audiences want to feel the kendang (two-headed hand drum) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer.",
   "glance": {
-    "origin": "Indonesia: grew from Orkes Melayu in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s",
-    "tempo": "Classic dangdut 120–140 BPM; koplo feels faster (130–160 BPM) because the kendang packs in more strokes per bar; slow ballads 70–90 BPM",
-    "ensemble": "Orkes (OM): 7–12 players — kendang, suling, 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; solo “organ tunggal” keyboardist + kendang + singer",
-    "priority": "The kendang: the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
+    "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s",
+    "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) feels faster (130–160 BPM) because the kendang (two-headed hand drum) packs in more strokes per bar; slow ballads 70–90 BPM",
+    "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (two-headed hand drum), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; solo “organ tunggal” (one-keyboardist band) keyboardist + kendang + singer",
+    "priority": "The kendang (two-headed hand drum): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
     "liveSpl": "96–102 dBA LAeq-15 for village stages and festivals; 115–125 dBC; East Java caps static systems at 120 dB (2025 rule)",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); streaming services normalize to about −14"
   },
   "purpose": [
     {
-      "text": "Dangdut is dance music for crowds. Joget (free dancing) in front of the stage is the point, and koplo shows add saweran: fans hand money to the singer mid-song. Born among the urban working class and turned into a national sound by Rhoma Irama, it now plays at weddings, circumcision feasts, Independence Day stages, election rallies, TV shows and stadiums. Audiences want to feel the kendang in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling and keyboard hooks answer the singer. It “sounds wrong” when the kendang is buried under the kit, the sub turns the dhut to mush, the vocal is harsh or unclear, or the band sounds polite. Koplo “jos” breaks and fills are cue points where the dancing jumps."
+      "text": "Dangdut is dance music for crowds. Joget (free dancing) in front of the stage is the point, and koplo (fast East-Java style) shows add saweran: fans hand money to the singer mid-song. Born among the urban working class and turned into a national sound by Rhoma Irama, it now plays at weddings, circumcision feasts, Independence Day stages, election rallies, TV shows and stadiums. Audiences want to feel the kendang (two-headed hand drum) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer. It “sounds wrong” when the kendang is buried under the kit, the sub turns the dhut to mush, the vocal is harsh or unclear, or the band sounds polite. Koplo “jos” breaks and fills are cue points where the dancing jumps."
     }
   ],
   "instruments": [
     {
       "label": "Kendang / gendang (ketipung):",
-      "text": "paired hand drums, wood or PVC. The larger head (~20 cm) gives the low, pitch-bent “dhut” (like a tabla bayan); the small head (~15 cm) the sharp “tak.” East Java koplo may add bem and sabet drums. This is the lead rhythm voice.",
+      "text": "paired hand drums, wood or PVC. The larger head (~20 cm) gives the low, pitch-bent “dhut” (like a tabla bayan (the bass tabla drum)); the small head (~15 cm) the sharp “tak.” East Java koplo (fast East-Java style) may add bem and sabet drums. This is the lead rhythm voice.",
       "bullet": true
     },
     {
@@ -38,7 +40,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keyboards:",
-      "text": "arranger workstations (home arranger keyboards are iconic) for strings, brass, organ, melodic leads and sometimes drum/bass patterns; in organ tunggal one keyboardist covers everything.",
+      "text": "arranger workstations (home arranger keyboards are iconic) for strings, brass, organ, melodic leads and sometimes drum/bass patterns; in organ tunggal (one-keyboardist band) one keyboardist covers everything.",
       "bullet": true
     },
     {
@@ -48,7 +50,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Mandolin:",
-      "text": "tremolo lines carried over from Orkes Melayu, still heard in classic dangdut.",
+      "text": "tremolo lines carried over from Orkes Melayu (Malay orchestra), still heard in classic dangdut.",
       "bullet": true
     },
     {
@@ -69,23 +71,23 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "On a typical OM stage the kendang sits center on a riser near the front, keyboards to one side, guitars and bass on the other, suling near the singers, who take turns at center front. The kendang player is the real band leader: his fills cue starts, breaks, tempo shifts and endings. Classic dangdut runs intro (suling or guitar), a slower sung opening, then the full groove, with “dang” on beat 4 and “dhut” on beat 1. Koplo reverses this, fills each bar with five or more strokes, and adds a “reff” where the drums double up and the crowd sings. Guitar or suling solos between verses. Harmony: keyboards and rhythm guitar; melody: vocal, suling, keyboard lead, lead guitar; rhythm: kendang, bass, kit."
+      "text": "On a typical OM stage the kendang (two-headed hand drum) sits center on a riser near the front, keyboards to one side, guitars and bass on the other, suling (bamboo flute) near the singers, who take turns at center front. The kendang player is the real band leader: his fills cue starts, breaks, tempo shifts and endings. Classic dangdut runs intro (suling or guitar), a slower sung opening, then the full groove, with “dang” on beat 4 and “dhut” on beat 1. Koplo (fast East-Java style) reverses this, fills each bar with five or more strokes, and adds a “reff” (chorus) where the drums double up and the crowd sings. Guitar or suling solos between verses. Harmony: keyboards and rhythm guitar; melody: vocal, suling, keyboard lead, lead guitar; rhythm: kendang, bass, kit."
     }
   ],
   "dynamics": [
     {
-      "text": "The slow intro can sit 8–12 dB below the full groove, with the koplo double-time reff as the peak. Kendang slaps and fills can jump 10–15 dB above the pattern. Indonesian studio practice favors fader automation over heavy compression. Preserve the intro-to-groove jump and reff lift; control kendang peaks and the level swings between rotating singers; ride the suling up for fills."
+      "text": "The slow intro can sit 8–12 dB below the full groove, with the koplo (fast East-Java style) double-time reff (chorus) as the peak. Kendang (two-headed hand drum) slaps and fills can jump 10–15 dB above the pattern. Indonesian studio practice favors fader automation over heavy compression. Preserve the intro-to-groove jump and reff lift; control kendang peaks and the level swings between rotating singers; ride the suling (bamboo flute) up for fills."
     }
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal and kendang (roughly equal; the dhut is often the loudest low element), bass, suling and keyboard lead in their fills, lead guitar in solos, kick and hats, rhythm guitar and pads, mandolin, backing vocals, effects returns. Low end: the dhut lives around 80–150 Hz with a pitch bend, so the bass sits under it (40–90 Hz); keep the kit kick short and never let sub mask the kendang. Panning: vocal, kendang, suling, bass, kick and lead guitar center; keyboards and rhythm guitar left/right; mandolin, tambourine and backing vocals wide, with keyboard lows kept mono."
+      "text": "Hierarchy, loudest to quietest: lead vocal and kendang (two-headed hand drum; roughly equal; the dhut is often the loudest low element), bass, suling (bamboo flute) and keyboard lead in their fills, lead guitar in solos, kick and hats, rhythm guitar and pads, mandolin, backing vocals, effects returns. Low end: the dhut lives around 80–150 Hz with a pitch bend, so the bass sits under it (40–90 Hz); keep the kit kick short and never let sub mask the kendang. Panning: vocal, kendang, suling, bass, kick and lead guitar center; keyboards and rhythm guitar left/right; mandolin, tambourine and backing vocals wide, with keyboard lows kept mono."
     }
   ],
   "eq": {
     "rows": [
       {
-        "source": "Kendang – dhut (large head)",
+        "source": "Kendang (two-headed hand drum) – dhut (large head)",
         "cut": "HPF 45–55 Hz; −2–4 dB at 250–400 Hz (boxy)",
         "boost": "+2–4 dB at 90–130 Hz (body/bend); +2 dB at 2–3 kHz (finger slap)",
         "notes": "Find the pitch of the bend and keep the bass off it"
@@ -97,7 +99,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Don’t let 4 kHz turn painful on big PA; dynamic EQ helps"
       },
       {
-        "source": "Suling",
+        "source": "Suling (bamboo flute)",
         "cut": "HPF 250–350 Hz; −2–3 dB at 5–6 kHz if breath is excessive",
         "boost": "+1–2 dB at 700 Hz–1 kHz (warmth); +1–2 dB at 2.5–3 kHz (presence)",
         "notes": "Keep some breath; it’s part of the sound"
@@ -155,7 +157,7 @@ export const GUIDE: MixingGuide = {
   "compression": {
     "rows": [
       {
-        "source": "Kendang (each mic)",
+        "source": "Kendang (hand drum, each mic)",
         "use": "Yes",
         "ratio": "3:1–4:1",
         "attackRelease": "10–20 ms / 60–100 ms",
@@ -179,7 +181,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Singers rotate; save a scene or preset per singer"
       },
       {
-        "source": "Suling",
+        "source": "Suling (bamboo flute)",
         "use": "Light",
         "ratio": "2:1–3:1",
         "attackRelease": "10–20 ms / auto",
@@ -227,19 +229,19 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Tempo delay",
-        "appliedTo": "Vocal phrase ends, cengkok tails",
+        "appliedTo": "Vocal phrase ends, cengkok (vocal ornaments) tails",
         "setting": "1/4 or dotted 1/8, 20–30% feedback, LPF 5 kHz",
         "amount": "Subtle–moderate, more in slow intros"
       },
       {
         "effect": "Room / short plate",
-        "appliedTo": "Kendang",
+        "appliedTo": "Kendang (two-headed hand drum)",
         "setting": "0.6–1.0 s decay, 10–20 ms pre-delay",
         "amount": "Subtle; adds “resonance” without smearing strokes"
       },
       {
         "effect": "Hall reverb",
-        "appliedTo": "Suling",
+        "appliedTo": "Suling (bamboo flute)",
         "setting": "1.8–2.5 s decay, 30–60 ms pre-delay",
         "amount": "Moderate"
       },
@@ -258,29 +260,29 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "On big stages, pull vocal reverb back about a third in the koplo reff."
+        "text": "On big stages, pull vocal reverb back about a third in the koplo (fast East-Java style) reff (chorus)."
       }
     ]
   },
   "vocals": [
     {
-      "text": "The singer is the star: about 3–5 dB above the band by feel, every word clear. Audiences judge the cengkok — slides, slow vibrato, rapid turns and, in modern koplo, Arabic-style throat ornaments — so compress gently enough that ornaments survive. Pitch correction is light and slow; hard tuning destroys cengkok (except in deliberate remix styles). Tone is bright and forward, often slightly nasal, with a generous reverb tail. Backing and crowd-answer vocals sit wide, 6–10 dB under. Male/female duets are common; match levels and EQ beforehand. Live, use a rugged dynamic, wired or wireless. Singers roam into the crowd during saweran, so pick a high-rejection capsule, ring out monitors and watch the front fills. Lyrics are mostly Indonesian or Javanese; clear consonants (2–4 kHz) matter more than air."
+      "text": "The singer is the star: about 3–5 dB above the band by feel, every word clear. Audiences judge the cengkok (vocal ornaments) — slides, slow vibrato, rapid turns and, in modern koplo (fast East-Java style), Arabic-style throat ornaments — so compress gently enough that ornaments survive. Pitch correction is light and slow; hard tuning destroys cengkok (except in deliberate remix styles). Tone is bright and forward, often slightly nasal, with a generous reverb tail. Backing and crowd-answer vocals sit wide, 6–10 dB under. Male/female duets are common; match levels and EQ beforehand. Live, use a rugged dynamic, wired or wireless. Singers roam into the crowd during saweran (fans tipping the singer), so pick a high-rejection capsule, ring out monitors and watch the front fills. Lyrics are mostly Indonesian or Javanese; clear consonants (2–4 kHz) matter more than air."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, around 115–125 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dB and moving units at 85 dB. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. Common hearing-safety guidance rates 100 dBA safe for about 15 minutes, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
+      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, around 115–125 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dB and moving units at 85 dB. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. Common hearing-safety guidance rates 100 dBA safe for about 15 minutes, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP) and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
+      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang (two-headed hand drum) punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP) and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
     }
   ],
   "liveStudio": {
     "rows": [
       {
-        "area": "Kendang",
+        "area": "Kendang (two-headed hand drum)",
         "live": "Two close dynamics on tak and dhut heads, 3–8 cm; protect from keyboard and vocal bleed",
         "studio": "Add a condenser 30–60 cm above for natural tone; parallel bus for weight"
       },
@@ -301,7 +303,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Effects",
-        "live": "Tap-tempo delay and one vocal reverb; less wet in loud reff sections",
+        "live": "Tap-tempo delay and one vocal reverb; less wet in loud reff (chorus) sections",
         "studio": "Multiple reverbs (plate, hall, room) automated by section"
       },
       {
@@ -319,7 +321,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Build the mix from kendang and vocal, then bass, then the rest.",
+      "text": "Build the mix from kendang (two-headed hand drum) and vocal, then bass, then the rest.",
       "bullet": true
     },
     {
@@ -343,11 +345,11 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Avoid hard tuning and over-limiting; both erase cengkok and kendang dynamics.",
+      "text": "Avoid hard tuning and over-limiting; both erase cengkok (vocal ornaments) and kendang dynamics.",
       "bullet": true
     },
     {
-      "text": "Leave headroom: koplo sets build for hours as the crowd joins in.",
+      "text": "Leave headroom: koplo (fast East-Java style) sets build for hours as the crowd joins in.",
       "bullet": true
     }
   ],

@@ -4,6 +4,8 @@
  * conversion (scripts/mixing-guides/edits.py), not this file.
  *
  * Keyboardist caution owner-approved 2026-10-16: the "Before you low-cut the keys" note under the EQ table.
+ *
+ * Glosses for non-English terms added by hand 2026-10-16 (owner); regenerating would undo them.
  */
 import type { MixingGuide } from '../types';
 
@@ -13,7 +15,7 @@ export const GUIDE: MixingGuide = {
   "title": "C-pop / Mandopop",
   "expects": "At concerts, fans wave synchronized lightsticks, sing whole choruses back (the “big chorus,” 大合唱) and judge live vocals harshly; post-show complaints often say the singer could not be heard.",
   "glance": {
-    "origin": "Shanghai shidaiqu of the 1920s–40s; moved to Hong Kong after 1949; Taiwan became the Mandopop hub in the 1970s–90s; Cantopop grew in Hong Kong from the mid-1970s; today mainland China, Taiwan, Hong Kong, Singapore and Malaysia",
+    "origin": "Shanghai shidaiqu (jazz-age Shanghai pop) of the 1920s–40s; moved to Hong Kong after 1949; Taiwan became the Mandopop hub in the 1970s–90s; Cantopop (Cantonese-language pop) grew in Hong Kong from the mid-1970s; today mainland China, Taiwan, Hong Kong, Singapore and Malaysia",
     "tempo": "Ballads 60–80 BPM (the core of the repertoire); mid-tempo pop/R&B 85–110; dance and idol pop 110–128",
     "ensemble": "Solo singer with 5–8 piece band (drums, bass, 2 guitars, 2 keys) plus 2–4 backing vocalists; arena shows add strings and 1–3 Chinese instrumentalists; TV and smaller shows run on backing tracks",
     "priority": "A clear, intimate, fully intelligible lead vocal; every lyric must be understood",
@@ -25,7 +27,7 @@ export const GUIDE: MixingGuide = {
       "text": "C-pop is above all a singer’s and a lyricist’s music. Its emotional center is the love ballad (qingge): songs of longing, regret and nostalgia that listeners sing in KTV rooms, in the car and at concerts. Teresa Teng’s soft, close-mic’d delivery set a template of intimacy that still defines the genre, and lyricists such as Vincent Fang and Lin Xi are stars in their own right. Mandarin and Cantonese are tonal, so a muffled consonant or buried vowel can change meaning, not just tone."
     },
     {
-      "text": "At concerts, fans wave synchronized lightsticks, sing whole choruses back (the “big chorus,” 大合唱) and judge live vocals harshly; post-show complaints often say the singer could not be heard. The audience will say “that sounded wrong” if the vocal is buried, sibilant, or swimming in reverb; if the ballad sections are loud and harsh; or if a famous intro (a piano figure, an erhu line) is missing or thin."
+      "text": "At concerts, fans wave synchronized lightsticks, sing whole choruses back (the “big chorus,” 大合唱) and judge live vocals harshly; post-show complaints often say the singer could not be heard. The audience will say “that sounded wrong” if the vocal is buried, sibilant, or swimming in reverb; if the ballad sections are loud and harsh; or if a famous intro (a piano figure, an erhu (two-string fiddle) line) is missing or thin."
     }
   ],
   "instruments": [
@@ -46,7 +48,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Chinese instruments (zhongguofeng, “China wind” style):",
-      "text": "erhu (bowed, voice-like, 400 Hz–3 kHz core), guzheng (plucked zither with long resonance and glissandi), pipa (bright plucked lute with sharp attack), dizi and xiao (bamboo flutes, dizi with its buzzing membrane), yangqin (hammered dulcimer), sheng (mouth organ), suona (very loud double reed), plus gongs, woodblocks and Chinese cymbals.",
+      "text": "erhu (bowed, voice-like, 400 Hz–3 kHz core), guzheng (plucked zither with long resonance and glissandi, or slides), pipa (bright plucked lute with sharp attack), dizi and xiao (bamboo flutes, dizi with its buzzing membrane), yangqin (hammered dulcimer), sheng (mouth organ), suona (very loud double reed), plus gongs, woodblocks and Chinese cymbals.",
       "bullet": true
     },
     {
@@ -57,7 +59,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The singer works a catwalk or B-stage in front of the PA; band upstage on risers, featured erhu or guzheng player on a riser. Arrangements build: intro hook (piano or Chinese instrument), sparse piano verse, pre-chorus adding bass and strings, full chorus, drop-out bridge, then often a half- or whole-step key change into a final double chorus. Zhongguofeng tracks pair pentatonic melodies and traditional timbres with R&B or hip-hop beats. Drums and bass carry rhythm, piano and strings harmony, and the voice the melody, with Chinese instruments answering between vocal phrases."
+      "text": "The singer works a catwalk or B-stage in front of the PA; band upstage on risers, featured erhu (two-string fiddle) or guzheng (plucked zither) player on a riser. Arrangements build: intro hook (piano or Chinese instrument), sparse piano verse, pre-chorus adding bass and strings, full chorus, drop-out bridge, then often a half- or whole-step key change into a final double chorus. Zhongguofeng (“China wind” style) tracks pair pentatonic melodies and traditional timbres with R&B or hip-hop beats. Drums and bass carry rhythm, piano and strings harmony, and the voice the melody, with Chinese instruments answering between vocal phrases."
     }
   ],
   "dynamics": [
@@ -67,7 +69,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Loudest to quietest: lead vocal (often 2–4 dB more forward than in rock), piano or main harmonic instrument, featured Chinese instrument in its spots, kick and bass, strings, drums and guitars, backing vocals, effects. In ballads the kick is soft and rounded; bass provides warmth from 50–150 Hz without boom. In dance tracks the 808 or synth bass carries the sub (35–60 Hz) and the kick sits on top at 60–90 Hz. Lead vocal, kick, snare and bass are centered; piano is a wide but not hard-panned stereo image; strings wide; erhu or dizi slightly off-center or centered when it carries a melody; guzheng and yangqin in stereo with modest width. Backing vocals spread wide and tucked under the lead."
+      "text": "Loudest to quietest: lead vocal (often 2–4 dB more forward than in rock), piano or main harmonic instrument, featured Chinese instrument in its spots, kick and bass, strings, drums and guitars, backing vocals, effects. In ballads the kick is soft and rounded; bass provides warmth from 50–150 Hz without boom. In dance tracks the 808 or synth bass carries the sub (35–60 Hz) and the kick sits on top at 60–90 Hz. Lead vocal, kick, snare and bass are centered; piano is a wide but not hard-panned stereo image; strings wide; erhu (two-string fiddle) or dizi (bamboo flute) slightly off-center or centered when it carries a melody; guzheng (plucked zither) and yangqin (hammered dulcimer) in stereo with modest width. Backing vocals spread wide and tucked under the lead."
     }
   ],
   "eq": {
@@ -85,25 +87,25 @@ export const GUIDE: MixingGuide = {
         "notes": "Dip 2–4 kHz slightly if it competes with the vocal"
       },
       {
-        "source": "Erhu",
+        "source": "Erhu (two-string fiddle)",
         "cut": "HPF 150–200 Hz; −2–4 dB at 2.5–3.5 kHz if nasal or scratchy",
         "boost": "+1–2 dB at 600 Hz–1 kHz (warmth/voice)",
         "notes": "Close mics pick up bow and snake-skin resonator noise; mic the soundbox"
       },
       {
-        "source": "Guzheng",
+        "source": "Guzheng (plucked zither)",
         "cut": "HPF 50–70 Hz; −2–3 dB at 200–300 Hz (boom from body)",
         "boost": "+2 dB at 3–6 kHz (pluck); shelf at 10 kHz for shimmer",
         "notes": "Fullness comes from the soundholes under the body; long sustain fills space"
       },
       {
-        "source": "Pipa",
+        "source": "Pipa (plucked lute)",
         "cut": "HPF 100–120 Hz; −2–4 dB at 2–4 kHz if pick attack is spiky",
         "boost": "+1–2 dB at 400–800 Hz (body)",
         "notes": "Miking too close gives all pluck and no resonance; ~60 cm works in studio"
       },
       {
-        "source": "Dizi / xiao",
+        "source": "Dizi / xiao (bamboo flutes)",
         "cut": "HPF 200–300 Hz (dizi), 120–150 Hz (xiao); dip 3–5 kHz if the membrane buzz is harsh",
         "boost": "+1 dB at 8–10 kHz (breath)",
         "notes": "Dizi is very loud and piercing in its upper register; keep it out of the vocal band"
@@ -175,7 +177,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Too much kills the expressive touch in ballads"
       },
       {
-        "source": "Erhu / dizi",
+        "source": "Erhu (two-string fiddle) / dizi (bamboo flute)",
         "use": "Light",
         "ratio": "2:1–3:1",
         "attackRelease": "10–20 ms / 100 ms",
@@ -223,7 +225,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Hall reverb",
-        "appliedTo": "Strings, piano, final chorus, guzheng",
+        "appliedTo": "Strings, piano, final chorus, guzheng (plucked zither)",
         "setting": "2.2–3.0 s decay, 30–60 ms pre-delay",
         "amount": "Moderate–heavy on ballad climaxes"
       },
@@ -247,9 +249,9 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Long ambient reverb / shimmer",
-        "appliedTo": "Dizi, xiao, erhu intro lines",
+        "appliedTo": "Dizi (bamboo flute), xiao (end-blown bamboo flute), erhu (two-string fiddle) intro lines",
         "setting": "3–4 s decay",
-        "amount": "Moderate; a classic “misty landscape” zhongguofeng texture"
+        "amount": "Moderate; a classic “misty landscape” zhongguofeng (“China wind” style) texture"
       }
     ],
     "notes": [
@@ -286,7 +288,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Chinese instruments",
         "live": "Pickups or clip-on condensers for isolation; often playback stems",
-        "studio": "Large-diaphragm or small condensers at 30–60 cm; under the guzheng, at the erhu soundbox"
+        "studio": "Large-diaphragm or small condensers at 30–60 cm; under the guzheng (plucked zither), at the erhu (two-string fiddle) soundbox"
       },
       {
         "area": "Low end",
@@ -330,7 +332,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Treat a featured erhu or dizi like a second vocalist, and don’t mic plucked Chinese instruments too close.",
+      "text": "Treat a featured erhu (two-string fiddle) or dizi (bamboo flute) like a second vocalist, and don’t mic plucked Chinese instruments too close.",
       "bullet": true
     },
     {
