@@ -634,6 +634,54 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 19:39 · ccode · 477495bb
+changed: Mixing Guides: plain-English glosses for non-English terms (owner 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 19:29 · ccode · 54923e88
+changed: Mixing Guides: talk-with-the-keyboardist caution under every EQ table (owner-approved 2026-10-16)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 19:17 · ccode · d5cfbd01
+changed: Owner rulings 2026-10-16 on the lab-art HOLDs — Distortion DRIVE default +24 dB; Sound Systems venue plan people 2.5× + "people enlarged for clarity"; Miking E11/E13 hidden players ghosted; B04 setup 5 boom held low (opt-in Rim.zones / Instrument.setup). Recorded, no code: French horn stays "off the leg"; Cable Fundamentals connector photos stay; Advanced Mixing p8 duck stays exaggerated with its label. Queued for the next native build (memory project_next_build_queue items 10–11): Delay ping-pong input to one line only; Stereo Imaging needs a stereo source.
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 19:09 · ccode · c67c7808
+changed: Salsa / Latin-pop guides: the montuno does not double the tumbao — the piano SWITCHES from its montuno to doubling the bass (mambos, breaks, unison lines) (owner 2026-10-16)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 19:00 · ccode · 48d29e02
+changed: Salsa guide caution: an electric/stage piano on DI brings no mud; an acoustic piano only via mics pushed into the subs — keep mics close and the sub send moderate, don't cut the piano's lows (owner 2026-10-16; caution wording approved)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 18:55 · ccode · 1c9ac0bf
+changed: Mixing Guides: keyboards keep their low end where they carry the bass (owner 2026-10-16, salsa piano)
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 18:47 · ccode · 844997de
+changed: Test: the tracer ↔ bracket is built from the same amplitude the tracer moves by, so it changes length with the swing (owner 2026-10-16)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-16 18:45 · ccode · adebddba
+changed: Foundations / Start Here air field: back to the owner's floating ear (owner 2026-10-16: the large white head 'is not an improvement'); tracer particles kept
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-16 18:34 Â· ccode Â· 525ab6dc
 changed: Start Here / Foundations listener: bigger ear on a true-proportion head (close-up framing; owner 2026-10-16 'bigger ear, keep head')
 affects other side: nothing (app only)
