@@ -1575,6 +1575,27 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
  *  its body length (mm), so the label can tell when a mic sits under it. */
 type MicYield = { poses: SharedValue<MicPose>[]; lens: number[]; surf: boolean[] } | null;
 
+/** Whether a shown mic's body lies over a label's box (screen px, + a 10 px
+ *  margin): sampled from the capsule's front to its tail. */
+function micOverBox(yieldTo: MicYield, c: ViewXform, view: ViewId, left: number, top: number, W: number, H: number): boolean {
+  'worklet';
+  if (!yieldTo) return false;
+  for (let i = 0; i < yieldTo.poses.length; i++) {
+    const p = yieldTo.poses[i].value;
+    const aim = aimVec(p.az, yieldTo.surf[i] ? 0 : p.el);
+    const fx = c.ox + p.p.x * c.s;
+    const fy = c.oy + (view === 'side' ? p.p.y : p.p.z) * c.s;
+    const tx = fx - aim.x * yieldTo.lens[i] * c.s;
+    const ty = fy - (view === 'side' ? aim.y : aim.z) * yieldTo.lens[i] * c.s;
+    for (let k = 0; k <= 6; k++) {
+      const sx = fx + ((tx - fx) * k) / 6;
+      const sy = fy + ((ty - fy) * k) / 6;
+      if (sx > left - 10 && sx < left + W + 10 && sy > top - 10 && sy < top + H + 10) return true;
+    }
+  }
+  return false;
+}
+
 function SceneLabel({ xf, u, v, text, align, tone, scale, maxX, yieldTo = null, view }: { xf: SharedValue<ViewXform>; u: number; v: number; text: string; align: 'left' | 'center' | 'right'; tone?: string; scale: number; maxX: number; yieldTo?: MicYield; view: ViewId }) {
   // Width from the text (Oswald ≈ 0.55 em per glyph), so a label can be kept
   // wholly inside the canvas instead of running off its edge.
@@ -1585,25 +1606,11 @@ function SceneLabel({ xf, u, v, text, align, tone, scale, maxX, yieldTo = null, 
     const y = xf.value.oy + v * xf.value.s;
     const left = Math.max(2, Math.min(maxX - W - 2, align === 'left' ? x : align === 'right' ? x - W : x - W / 2));
     const top = y - 7 * scale;
-    // A mic under the words: the label steps back (the mic, its lobe and the
-    // readout it drives are the lesson; the part's name can wait).
-    let opacity = 1;
-    if (yieldTo) {
-      for (let i = 0; i < yieldTo.poses.length; i++) {
-        const p = yieldTo.poses[i].value;
-        const aim = aimVec(p.az, yieldTo.surf[i] ? 0 : p.el);
-        const fx = xf.value.ox + p.p.x * xf.value.s;
-        const fy = xf.value.oy + (view === 'side' ? p.p.y : p.p.z) * xf.value.s;
-        const tx = fx - aim.x * yieldTo.lens[i] * xf.value.s;
-        const ty = fy - (view === 'side' ? aim.y : aim.z) * yieldTo.lens[i] * xf.value.s;
-        // Sample the body from front to tail against the label's box (+ a margin).
-        for (let k = 0; k <= 6; k++) {
-          const sx = fx + ((tx - fx) * k) / 6;
-          const sy = fy + ((ty - fy) * k) / 6;
-          if (sx > left - 10 && sx < left + W + 10 && sy > top - 10 && sy < top + H + 10) opacity = 0.14;
-        }
-      }
-    }
+    // A mic under the words: the label steps aside (the mic, its lobe and
+    // the readout it drives are the lesson; the part's name can wait) — out
+    // of the picture with its leader, never left as a faded ghost over the
+    // mic (art fix 2026-10-16, grading: "dimmed duplicate labels").
+    const opacity = micOverBox(yieldTo, xf.value, view, left, top, W, H) ? 0 : 1;
     return { opacity, transform: [{ translateX: left }, { translateY: top }] };
   });
   // 'zone': an idle suggested starting point's name — the zones' blue, faint.
@@ -1621,7 +1628,7 @@ function SceneLabel({ xf, u, v, text, align, tone, scale, maxX, yieldTo = null, 
  *  (labelLayout: `leader`). Drawn INSIDE the scene's transform — under the
  *  zones, the stands and the mics — with the label's end worked out in
  *  screen px each frame, so both ends stay attached at every zoom. */
-function LeaderLines({ labels, xf, scale, maxX, color = colors.amberLabel }: { labels: { u: number; v: number; text: string; align: 'left' | 'center' | 'right'; leader?: { u: number; v: number } }[]; xf: SharedValue<ViewXform>; scale: number; maxX: number; color?: string }) {
+function LeaderLines({ labels, xf, scale, maxX, color = colors.amberLabel, yieldTo = null, view = 'side' }: { labels: { u: number; v: number; text: string; align: 'left' | 'center' | 'right'; leader?: { u: number; v: number } }[]; xf: SharedValue<ViewXform>; scale: number; maxX: number; color?: string; /** The mics a label steps aside for: its leader goes with it. */ yieldTo?: MicYield; view?: ViewId }) {
   const items = useMemo(() => labels.filter((l) => l.leader).map((l) => ({ u: l.u, v: l.v, align: l.align, W: labelWidth(l.text, scale, maxX), au: l.leader!.u, av: l.leader!.v })), [labels, scale, maxX]);
   const H = 9.5 * scale * 1.25;
   const path = useDerivedValue(() => {
@@ -1633,6 +1640,7 @@ function LeaderLines({ labels, xf, scale, maxX, color = colors.amberLabel }: { l
       const top = c.oy + it.v * c.s - 7 * scale;
       const ax = c.ox + it.au * c.s;
       const ay = c.oy + it.av * c.s;
+      if (micOverBox(yieldTo, c, view, left, top, it.W, H)) continue;
       const ex = Math.max(left + 3, Math.min(left + it.W - 3, ax));
       const ey = Math.max(top + 2, Math.min(top + H - 2, ay));
       // Back into mm (the group's transform draws them).
@@ -1641,7 +1649,7 @@ function LeaderLines({ labels, xf, scale, maxX, color = colors.amberLabel }: { l
       p.addCircle(it.au, it.av, 2.4 / c.s);
     }
     return p;
-  }, [items]);
+  }, [items, yieldTo]);
   const halo = useDerivedValue(() => 3 / xf.value.s);
   const line = useDerivedValue(() => 1.1 / xf.value.s);
   if (!items.length) return null;
@@ -2445,8 +2453,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           <KeepOutsAtRest.Provider value={false}>
             <Instrument view={view} variant={variant} micTypes={micTypes} />
           </KeepOutsAtRest.Provider>
-          <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} />
-          <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} />
+          <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
+          <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} yieldTo={yieldTo} view={view} />
           {envelopes.map((e) => (
             <EnvelopeMark key={e.id} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} hatchPath={hatchPath} fadeMs={fadeIn} pinned={highlight === e.id} />
           ))}

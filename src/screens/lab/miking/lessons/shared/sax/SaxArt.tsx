@@ -471,12 +471,18 @@ export function saxLabels(P: SaxPosture, view: ViewId): ArtLabel[] {
       { id: 'player', text: 'PLAYER', u: P.player.chest.x - 120, v: P.player.chest.z - 260, align: 'center', tone: 'muted' },
     ];
   }
+  // (Art fix 2026-10-16, grading: "leaders crossing the bell".) The keys
+  // and holes are named on the BELL's own stack where it has one — it faces
+  // the right-hand column — so no leader runs across the bell to the body.
+  const onBell = H.filter((h) => h.on === 'bell');
+  const keysAt = onBell.length ? onTube(P, onBell[0].u, 20, 6) : onTube(P, body[body.length - 3]?.u ?? mid.u, 20, 6);
+  const holesAt = onBell.length ? onTube(P, onBell[onBell.length - 1].u, 30, 4) : onTube(P, mid.u, 30, 4);
   const out: ArtLabel[] = [
     L('mouthpiece', 'MOUTHPIECE · REED', centre(P, S.mouthEnd * 0.45), -150, 'MOUTHPIECE'),
     L('octave', 'OCTAVE KEY', onTube(P, octU, 4, 6), -90, 'OCTAVE'),
     L('neck', 'NECK', centre(P, (S.mouthEnd + S.tenon) / 2 + 30), -20),
-    L('keys', 'KEYS · PADS', onTube(P, body[body.length - 3]?.u ?? mid.u, 20, 6), 0, 'KEYS'),
-    L('holes', 'TONE HOLES', onTube(P, mid.u, 30, 4), 40, 'HOLES'),
+    { ...L('keys', 'KEYS · PADS', keysAt, 60, 'KEYS'), alts: [130, -10, 200, 270].map((dv) => ({ u: right, v: at(keysAt).v + dv, align: 'left' as const })) },
+    L('holes', 'TONE HOLES', holesAt, 40, 'HOLES'),
     L('bell', 'BELL', A.rimC, -30),
   ];
   if (S.bellStart > S.bodyEnd + 1) out.push(L('bow', 'BOW', centre(P, (S.bodyEnd + S.bellStart) / 2), 40));
@@ -596,15 +602,21 @@ export function portraitLabels(row: SaxRow, box: ViewBox): StaticLabel[] {
   const R = box.u1 - 30;
   const Lc = box.u0 + 30;
   const lab = (id: string, text: string, p: Vec3, side: 'L' | 'R', dv = 0, short?: string): StaticLabel => ({ id, text, short, u: side === 'R' ? R : Lc, v: p.y + dv, align: side === 'R' ? 'right' : 'left', at: pt(p) });
+  // (Art fix 2026-10-16, grading: "leaders crossing the bell".) The right
+  // column names the cups and holes on the BELL's own stack (the low keys),
+  // which face that column, so no leader runs across the bell to the body.
+  const onBell = H.filter((h) => h.on === 'bell');
+  const cupAt = onBell.length ? onTube(P, onBell[Math.floor(onBell.length / 2)].u, 30, 8) : onTube(P, body[Math.floor(body.length / 2)]?.u ?? S.tenon, 30, 8);
+  const holeAt = onBell.length ? onTube(P, onBell[onBell.length - 1].u, 30, 4) : onTube(P, body[2]?.u ?? S.bodyEnd, 30, 4);
   const out: StaticLabel[] = [
     lab('mouthpiece', 'MOUTHPIECE', centre(P, S.mouthEnd * 0.4), 'L', -20, 'MOUTH-PIECE'),
     lab('reed', 'REED · LIGATURE', onTube(P, S.mouthEnd * 0.38, 180, 2), 'L', 30, 'REED'),
     lab('neck', 'NECK', centre(P, (S.mouthEnd + S.tenon) / 2), 'L', 40),
     lab('octave', 'OCTAVE KEY', onTube(P, S.mouthEnd + (S.tenon - S.mouthEnd) * 0.36, 4, 6), 'R', -30, 'OCTAVE'),
     lab('pearls', 'PEARL TOUCHES', pearlsOf(P, 'side')[0]?.p3 ?? A.upperKeys, 'L', 0, 'PEARLS'),
-    lab('cups', 'KEY CUPS · PADS', onTube(P, body[Math.floor(body.length / 2)]?.u ?? S.tenon, 30, 8), 'R', -10, 'CUPS'),
+    lab('cups', 'KEY CUPS · PADS', cupAt, 'R', -10, 'CUPS'),
     lab('rods', 'RODS', onTube(P, body[Math.floor((body.length * 2) / 3)]?.u ?? S.tenon, 100, 8), 'R', 30),
-    lab('holes', 'TONE HOLES', onTube(P, body[2]?.u ?? S.bodyEnd, 30, 4), 'R', 20, 'HOLES'),
+    lab('holes', 'TONE HOLES', holeAt, 'R', 20, 'HOLES'),
     lab('body', 'BODY', centre(P, (S.tenon + S.bodyEnd) / 2), 'L', 60),
     lab('bell', 'BELL', A.rimC, 'R', 0),
   ];
