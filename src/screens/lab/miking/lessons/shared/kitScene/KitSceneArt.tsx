@@ -473,7 +473,7 @@ function keepOutPaths(view: ViewId) {
 
 /** The drummer's keep-outs: the body hatched grey (the lab's keep-out
  *  look), the sticks' reach dashed. */
-export function DrummerKeepOut({ view, reach = true }: { view: ViewId; reach?: boolean }) {
+export function DrummerKeepOut({ view, reach = true, body = true }: { view: ViewId; reach?: boolean; body?: boolean }) {
   const k = keepOutPaths(view);
   // The placement scene (keepOuts.ts): no hatch and no reach at rest — the
   // drummer (DrummerFigure) is drawn as a person; the engine shows the
@@ -482,10 +482,14 @@ export function DrummerKeepOut({ view, reach = true }: { view: ViewId; reach?: b
   if (!keep) return null;
   return (
     <Group>
-      <Group clip={k.body}>
-        <Path path={hatch()} style="stroke" strokeWidth={4} color={GREY} opacity={0.5} />
-      </Group>
-      <Path path={k.body} style="stroke" strokeWidth={4} color={GREY} opacity={0.85} />
+      {body ? (
+        <Group>
+          <Group clip={k.body}>
+            <Path path={hatch()} style="stroke" strokeWidth={4} color={GREY} opacity={0.5} />
+          </Group>
+          <Path path={k.body} style="stroke" strokeWidth={4} color={GREY} opacity={0.85} />
+        </Group>
+      ) : null}
       {reach ? (
         <Path path={k.reach} style="stroke" strokeWidth={4} color={GREY} opacity={0.6}>
           <DashPathEffect intervals={[22, 16]} />
@@ -574,7 +578,10 @@ export function KitSide({ swing = false, dim = 1, keepOuts = true, reach = true 
             return <SwingEnvelope key={id} spec={p.spec} cx={p.c.x} cy={p.c.y} tiltDeg={p.tiltDeg} />;
           })
         : null}
-      {keepOuts ? <DrummerKeepOut view="side" reach={reach} /> : null}
+      {/* The drummer is drawn as a person here, so the body's hatched keep-out
+          is not drawn over him (art grading fix 2026-10-16: a grey hatched
+          oval lay across the drummer); only the sticks' reach, dashed. */}
+      {keepOuts && reach ? <DrummerKeepOut view="side" reach body={false} /> : null}
     </Group>
   );
 }
@@ -610,7 +617,10 @@ export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = nul
       {cym('crash1')}
       {cym('crash2')}
       {highlight === 'kit.throne' ? <Circle cx={KIT.throne.c.u} cy={KIT.throne.c.v} r={KIT.throne.r + 40} style="stroke" strokeWidth={9} color={AMBER} /> : null}
-      {keepOuts ? <DrummerKeepOut view="top" reach={reach} /> : null}
+      {/* The drummer is drawn as a person here, so the body's hatched keep-out
+          is not drawn over him (art grading fix 2026-10-16: a grey hatched
+          oval lay across the drummer); only the sticks' reach, dashed. */}
+      {keepOuts && reach ? <DrummerKeepOut view="top" reach body={false} /> : null}
     </Group>
   );
 }
@@ -640,7 +650,10 @@ export function kitLabels(view: ViewId, opts: { drummer?: boolean } = {}): ArtLa
       { id: 'hihat', text: 'HI-HATS', short: 'HATS', u: c.hihat.c.x + 60, v: c.hihat.c.y - 380, align: 'center', at: on('hihat', R('hihat') * 0.6) },
       { id: 'kick', text: 'KICK', u: KICK_GEOM.L / 2, v: 40, align: 'center' },
       { id: 'floor', text: 'FLOOR TOM', short: 'FLOOR', u: KIT_DRUMS.floor.c.x, v: KIT_DRUMS.floor.c.y + KIT_DRUMS.floor.spec.depth.mm / 2, align: 'center' },
-      { id: 'snare', text: 'SNARE', u: S0.x - 210, v: S0.y + 30, align: 'right', at: { u: S0.x + snR * 0.75, v: S0.y - 6 } },
+      // Above the snare's far edge, between the hands and the floor tom, a short
+      // leader straight down (art grading fix 2026-10-16: pushed out to the
+      // right, its leader ran across the floor tom and under the rack tom).
+      { id: 'snare', text: 'SNARE', u: S0.x + snR + 40, v: S0.y - 120, align: 'left', at: { u: S0.x + snR * 0.8, v: S0.y - 6 } },
     ];
     if (opts.drummer !== false) out.push({ id: 'drummer', text: 'DRUMMER', u: DRUMMER.headTop.x, v: DRUMMER.headTop.y + 120, align: 'center', tone: 'illustrative' });
     return out;

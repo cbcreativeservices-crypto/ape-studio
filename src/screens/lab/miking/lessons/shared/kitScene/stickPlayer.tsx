@@ -83,10 +83,12 @@ export function stickDrummer(view: ViewId, tip: P3, back = 1): StickDrummer {
     const S = { x: head.x - 12, y: head.y + 212 };
     // The fist: up and back from the tip toward the player, in front of the
     // chest (x ≥ S.x + 110), never lower than the tip's 14 cm above it.
-    // A low target (the hats, the snare) keeps the fist at chest height: the
-    // stick then runs mostly across the body (toward −z) and its side view is
-    // short — as a real side view of a drummer shows it.
-    const want = { x: Math.max(tip.x - 170 * back, S.x + 110), y: Math.min(tip.y - 150 * back, S.y + 40) };
+    // The fist 15 cm above the strike and back toward the player; for a target
+    // below the shoulder (the hats, the drums) never higher than just under
+    // the shoulder — the stick then runs partly across the body (toward −z)
+    // and its side view is short, as a real side view of a drummer shows it.
+    const up = tip.y - 150 * back;
+    const want = { x: Math.max(tip.x - 170 * back, S.x + 110), y: tip.y > S.y ? Math.max(up, S.y + 40) : up };
     const dWant = Math.hypot(tip.x - want.x, tip.y - want.y) || 1;
     // Keep the stick's projected length within its playing length.
     const k = dWant > PLAY_LEN ? PLAY_LEN / dWant : 1;
@@ -300,11 +302,27 @@ const STRIKE_BACK = 1.35;
 export function StrikeArm({ tip, dim = 0.55 }: { tip: P2; dim?: number }) {
   const dx = tip.x - STRIKE_REF.x;
   const dy = tip.y - STRIKE_REF.y;
+  const pose = strikePose();
+  const s = stickDrummer('side', STRIKE_REF, STRIKE_BACK).stick;
   return (
     <Group transform={[{ translateX: dx }, { translateY: dy }]}>
-      <StickDrummerArt view="side" tip={STRIKE_REF} dim={dim} back={STRIKE_BACK} />
+      <PlayerBehind pose={pose} dim={dim} />
+      <HeldStick s={s} />
+      <PlayerInFront pose={pose} dim={dim} />
     </Group>
   );
+}
+
+/** The close-up's pose: the stick arm as the kit drummer's, the other arm
+ *  hanging at the side (out of the close-up: no second stick crossing the
+ *  frame's corner). */
+let strikePoseCache: PlayerPose | null = null;
+function strikePose(): PlayerPose {
+  if (strikePoseCache) return strikePoseCache;
+  const p = stickDrummer('side', STRIKE_REF, STRIKE_BACK).pose;
+  const sh = p.shoulderL;
+  strikePoseCache = { ...p, elbowL: pt(sh.u + 10, sh.v + 280), handL: { wrist: pt(sh.u + 20, sh.v + 540), dir: Math.PI / 2, kind: 'rest' } };
+  return strikePoseCache;
 }
 
 /** Where the strike close-up's held stick runs, in the close-up's frame. */
@@ -313,4 +331,24 @@ export function strikeArmStick(tip: P2): { from: P2; to: P2 } {
   const dx = tip.x - STRIKE_REF.x;
   const dy = tip.y - STRIKE_REF.y;
   return { from: { x: s.from.x + dx, y: s.from.y + dy }, to: { x: s.to.x + dx, y: s.to.y + dy } };
+}
+
+/**
+ * The same drummer in a LESSON frame that is the kit frame moved by
+ * `origin` (a drum lesson centred on its own drum: M02 the snare, M03 a tom).
+ * `tipK` is the bead in the KIT frame. 'phantom': the receded drummer behind
+ * the drawing; 'hand': the stick, near arm and fist drawn again on top.
+ */
+export function LessonDrummer({ view, tipK, origin, layer }: { view: ViewId; tipK: P3; origin: P3; layer: 'phantom' | 'legs' | 'upper' | 'hand' }) {
+  const t = view === 'side' ? [{ translateX: -origin.x }, { translateY: -origin.y }] : [{ translateX: -origin.x }, { translateY: -origin.z }];
+  return (
+    <Group transform={t}>
+      {layer === 'phantom' ? <StickDrummerArt view={view} tip={tipK} dim={0.34} /> : layer === 'hand' ? <StickHandOver view={view} tip={tipK} dim={0.5} /> : <StickDrummerArt view={view} tip={tipK} part={layer} />}
+    </Group>
+  );
+}
+
+/** Label occupancy for LessonDrummer (u, v in the lesson frame). */
+export function lessonDrummerCovers(view: ViewId, tipK: P3, origin: P3, u: number, v: number, tol: number): boolean {
+  return stickDrummerCovers(view, tipK, u + origin.x, v + (view === 'side' ? origin.y : origin.z), tol);
 }

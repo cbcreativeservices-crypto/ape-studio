@@ -19,10 +19,11 @@ import { Circle, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-n
 import { useMemo } from 'react';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { BoomStandSide, CymbalPlan, CymbalSide, DrumExterior, DrumPlan, DrumSection, FloorTomLegsSide, KickFromAbove, KickSideNeighbour, Stick, sideTransform, topTransform } from '../shared/drums/DrumArt';
+import { BoomStandSide, CymbalPlan, CymbalSide, DrumExterior, DrumPlan, DrumSection, FloorTomLegsSide, KickFromAbove, KickSideNeighbour, sideTransform, topTransform } from '../shared/drums/DrumArt';
 import { makeUprightSound } from '../shared/drums/UprightSound';
 import { FLOOR_16x16, KICK_22x18, TOM_12x8 } from '../shared/drums/drumSpec.ts';
 import { KIT, KIT_CYMBALS, PLAN_HARDWARE } from '../shared/kitPlanModel.ts';
+import { LessonDrummer, lessonDrummerCovers } from '../shared/kitScene/stickPlayer';
 import { F2, FF, FLOOR, TOM1, TOM2 } from './model.ts';
 import { FLOOR_LEGS, MOUNT } from './geometry.ts';
 
@@ -67,21 +68,21 @@ function FloorLine({ u0, u1 }: { u0: number; u1: number }) {
   );
 }
 
-/** The sticks from above (the same strikes as the side views). */
-const RACK_STICK_TOP = { from: { x: TOM2.c.x - 330, y: TOM2.c.z + 90 }, to: { x: TOM2.c.x - 14, y: TOM2.c.z - 4 } };
-const FLOOR_STICK_TOP = { from: { x: FLOOR.c.x - 300, y: FLOOR.c.z - 120 }, to: { x: FLOOR.c.x - 14, y: FLOOR.c.z - 4 } };
-
-/** The stick, from the player's side to the strike at a drum's centre. */
-function stickTo(c: { x: number; y: number }) {
-  return { from: { x: c.x - 360, y: c.y - 150 }, to: { x: c.x - 6, y: c.y - 9 } };
-}
+/** The stick's bead on the tom's batter, a little toward the player, held by
+ *  the drummer (kitScene/stickPlayer; art grading fix 2026-10-16: the stick
+ *  floated with no hand). This lesson draws in the kit frame. */
+const ORIGIN = { x: 0, y: 0, z: 0 };
+const tipOf = (variant: VariantId) => {
+  const c = isRack(variant) ? TOM2.c : FLOOR.c;
+  return { x: c.x - 6, y: c.y - 9, z: c.z };
+};
 
 export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   if (isRack(variant)) {
     if (view === 'side') {
-      const st = stickTo(TOM2.c);
       return (
         <Group>
+          <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="phantom" />
           {/* the far crash's own stand (it hung in the air: clash sweep
               2026-10-10), behind everything */}
           <BoomStandSide foot={PLAN_HARDWARE.booms.crash1.u} top={C1.c.y + 140} cym={{ x: C1.c.x, y: C1.c.y }} floorY={FLOOR_Y} dim={0.25} />
@@ -96,12 +97,13 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
           <Group transform={sideTransform(TOM2)}>
             <DrumSection spec={TOM_12x8} />
           </Group>
-          <Stick from={st.from} to={st.to} />
+          <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="hand" />
         </Group>
       );
     }
     return (
       <Group>
+        <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="legs" />
         <KickFromAbove spec={KICK_22x18} u0={0} z={0} dim={0.55} />
         <Group transform={topTransform(TOM1)}>
           <DrumPlan drum={TOM1} />
@@ -109,7 +111,7 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
         <Group transform={topTransform(TOM2)}>
           <DrumPlan drum={TOM2} />
         </Group>
-        <Stick from={RACK_STICK_TOP.from} to={RACK_STICK_TOP.to} />
+        <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="upper" />
         <CymbalPlan cx={C1.c.x} cz={C1.c.z} d={C1.d} tiltDeg={C1.tiltDeg} dim={0.42} />
         <CymbalPlan cx={C2.c.x} cz={C2.c.z} d={C2.d} tiltDeg={C2.tiltDeg} dim={0.42} />
       </Group>
@@ -117,26 +119,27 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
   }
   const open = variant === 'open';
   if (view === 'side') {
-    const st = stickTo(FLOOR.c);
     return (
       <Group>
         <FloorLine u0={-2000} u1={2000} />
+        <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="phantom" />
         <BoomStandSide foot={PLAN_HARDWARE.booms.ride.u} top={RIDE.c.y + 140} cym={{ x: RIDE.c.x, y: RIDE.c.y }} floorY={FLOOR_Y} dim={0.35} />
         <CymbalSide cx={RIDE.c.x} cy={RIDE.c.y} d={RIDE.d} tiltDeg={RIDE.tiltDeg} dim={0.8} />
         <Group transform={sideTransform(FLOOR)}>
           <FloorTomLegsSide spec={FLOOR_16x16} floorS={FLOOR_Y - FLOOR.c.y} />
           <DrumSection spec={FLOOR_16x16} reso={!open} />
         </Group>
-        <Stick from={st.from} to={st.to} />
+        <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="hand" />
       </Group>
     );
   }
   return (
     <Group>
+      <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="legs" />
       <Group transform={topTransform(FLOOR)}>
         <DrumPlan drum={FLOOR} />
       </Group>
-      <Stick from={FLOOR_STICK_TOP.from} to={FLOOR_STICK_TOP.to} />
+      <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="upper" />
       <CymbalPlan cx={RIDE.c.x} cz={RIDE.c.z} d={RIDE.d} tiltDeg={RIDE.tiltDeg} dim={0.42} />
     </Group>
   );
@@ -251,13 +254,10 @@ function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: numb
  *  occupancy only; taps are unchanged). */
 export function tomsDrawnAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
   // From above: the stick (a name sat on it, clash sweep 2026-10-10).
-  if (view !== 'side') {
-    const st = isRack(variant) ? RACK_STICK_TOP : FLOOR_STICK_TOP;
-    return segDist(u, v, st.from, st.to) <= 9 + tol;
-  }
+  // (Now the drummer holds it: the drawn player and both sticks.)
+  if (lessonDrummerCovers(view, tipOf(variant), ORIGIN, u, v, tol)) return true;
+  if (view !== 'side') return false;
   if (isRack(variant)) {
-    const st = stickTo(TOM2.c);
-    if (segDist(u, v, st.from, st.to) <= 9 + tol) return true;
     const foot1 = PLAN_HARDWARE.booms.crash1.u;
     if (Math.abs(u - foot1) <= 20 + tol && v >= C1.c.y + 130) return true;
     if (segDist(u, v, { x: foot1, y: C1.c.y + 140 }, { x: C1.c.x, y: C1.c.y + 24 }) <= 14 + tol) return true;
@@ -265,8 +265,6 @@ export function tomsDrawnAt(view: ViewId, variant: VariantId, u: number, v: numb
     if (Math.abs(u - foot) <= 20 + tol && v >= C2.c.y + 130) return true;
     return segDist(u, v, { x: foot, y: C2.c.y + 140 }, { x: C2.c.x, y: C2.c.y + 24 }) <= 14 + tol;
   }
-  const st = stickTo(FLOOR.c);
-  if (segDist(u, v, st.from, st.to) <= 9 + tol) return true;
   const foot = PLAN_HARDWARE.booms.ride.u;
   if (Math.abs(u - foot) <= 20 + tol && v >= RIDE.c.y + 130) return true;
   return segDist(u, v, { x: foot, y: RIDE.c.y + 140 }, { x: RIDE.c.x, y: RIDE.c.y + 24 }) <= 14 + tol;

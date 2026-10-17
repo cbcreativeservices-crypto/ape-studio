@@ -18,10 +18,11 @@
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { BoomStandSide, CymbalPlan, CymbalSide, DrumPlan, DrumSection, HiHatSide, KickFromAbove, SnareStandSide, Stick, sideTransform, topTransform } from '../shared/drums/DrumArt';
+import { BoomStandSide, CymbalPlan, CymbalSide, DrumPlan, DrumSection, HiHatSide, KickFromAbove, SnareStandSide, sideTransform, topTransform } from '../shared/drums/DrumArt';
 import { makeUprightSound } from '../shared/drums/UprightSound';
 import { KICK_22x18 } from '../shared/drums/drumSpec.ts';
 import { PLAN_HARDWARE } from '../shared/kitPlanModel.ts';
+import { LessonDrummer, heldStickSeg, lessonDrummerCovers } from '../shared/kitScene/stickPlayer';
 import { DEPTH, H_UP, HOOP, NEIGHBOURS as NB, R, S0_KIT, SPEC, STAND } from './model.ts';
 import { FLOOR_Y, SNARE_DRUM } from './geometry.ts';
 
@@ -32,13 +33,24 @@ const CRASH_FOOT = { x: PLAN_HARDWARE.booms.crash1.u - S0_KIT.x, z: PLAN_HARDWAR
  *  player's side: a 16 in (406 mm) stick, its bead on the batter between the
  *  centre and the player's edge — clear of the hi-hat stand (u = −80), which
  *  stands behind the snare, nearer the centre. */
-const STICK = { from: { x: -495, y: -156 }, to: { x: -125, y: -4 } };
-const STICK_TOP = { from: { x: -490, y: 70 }, to: { x: -125, y: -10 } };
+const STICK_TIP = { x: -125, y: -4 };
+/** The bead in the KIT frame, held by the drummer (kitScene/stickPlayer; art
+ *  grading fix 2026-10-16: the stick floated with no hand). This lesson is
+ *  the kit frame moved to the snare's batter centre (S0). */
+const TIP_K = { x: S0_KIT.x + STICK_TIP.x, y: S0_KIT.y + STICK_TIP.y, z: S0_KIT.z };
+/** A point on the held stick (lesson frame), a third of the way back from the bead. */
+const STICK_AT = (() => {
+  const h = heldStickSeg('side', TIP_K);
+  return { u: h.to.x + (h.from.x - h.to.x) * 0.33 - S0_KIT.x, v: h.to.y + (h.from.y - h.to.y) * 0.33 - S0_KIT.y };
+})();
 
 export function SnareArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   if (view === 'side') {
     return (
       <Group>
+        {/* the drummer, receded behind the cut (a phantom: from this side the
+            body would hide the drum); the stick hand is drawn again on top */}
+        <LessonDrummer view="side" tipK={TIP_K} origin={S0_KIT} layer="phantom" />
         {/* The cut removes what stands in front of it (the kick and the rack
             tom are nearer the viewer than the snare's centre plane); what is
             behind it stays: the hi-hat, and the crash's stand (the crash
@@ -51,12 +63,13 @@ export function SnareArt({ view, variant }: { view: ViewId; variant: VariantId }
         <Group transform={sideTransform(SNARE_DRUM)}>
           <DrumSection spec={SPEC} wires={wiresOf(variant)} />
         </Group>
-        <Stick from={STICK.from} to={STICK.to} />
+        <LessonDrummer view="side" tipK={TIP_K} origin={S0_KIT} layer="hand" />
       </Group>
     );
   }
   return (
     <Group>
+      <LessonDrummer view="top" tipK={TIP_K} origin={S0_KIT} layer="legs" />
       <KickFromAbove spec={KICK_22x18} u0={NB.kick.c.x} z={NB.kick.c.z} dim={0.55} />
       <Group transform={topTransform(NB.tom1)}>
         <DrumPlan drum={NB.tom1} dim={0.7} />
@@ -64,7 +77,7 @@ export function SnareArt({ view, variant }: { view: ViewId; variant: VariantId }
       <Group transform={topTransform(SNARE_DRUM)}>
         <DrumPlan drum={SNARE_DRUM} />
       </Group>
-      <Stick from={STICK_TOP.from} to={STICK_TOP.to} />
+      <LessonDrummer view="top" tipK={TIP_K} origin={S0_KIT} layer="upper" />
       {/* above the snare: the hi-hat and the crash, translucent */}
       <CymbalPlan cx={NB.hihat.c.x} cz={NB.hihat.c.z} d={NB.hihat.d} tiltDeg={0} dim={0.62} />
       <CymbalPlan cx={NB.crash1.c.x} cz={NB.crash1.c.z} d={NB.crash1.d} tiltDeg={NB.crash1.tiltDeg} dim={0.5} />
@@ -86,7 +99,7 @@ export function snareLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'wires', text: variant === 'off' ? 'WIRES (OFF)' : 'WIRES (ON)', short: 'WIRES', u: 255, v: DEPTH + 60, align: 'left', at: { u: 110, v: DEPTH + 8 } },
       { id: 'stand', text: 'STAND', u: 255, v: DEPTH + 150, align: 'left', tone: 'muted', at: { u: 22, v: DEPTH + 150 } },
       { id: 'hihat', text: 'HI-HAT', u: -95, v: -400, align: 'right', tone: 'muted', at: { u: -200, v: NB.hihat.c.y - 5 } },
-      { id: 'stick', text: 'STICK', u: -45, v: -400, align: 'left', tone: 'illustrative', at: { u: -160, v: -20 } },
+      { id: 'stick', text: 'STICK', u: -45, v: -400, align: 'left', tone: 'illustrative', at: STICK_AT },
       { id: 'strainer', text: 'STRAINER', u: -14, v: -100, align: 'left', tone: 'muted', at: { u: -R - 22, v: DEPTH * 0.5 } },
     ];
   }
@@ -143,8 +156,9 @@ function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: numb
  *  and legs, the crash boom — so the part labels keep off it too (label
  *  occupancy only; taps are unchanged). */
 export function snareDrawnAt(view: ViewId, _variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (view !== 'side') return segDist(u, v, STICK_TOP.from, STICK_TOP.to) <= 9 + tol;
-  if (segDist(u, v, STICK.from, STICK.to) <= 9 + tol) return true;
+  // The drummer and both sticks (the player is drawn now: no name on the body).
+  if (lessonDrummerCovers(view, TIP_K, S0_KIT, u, v, tol)) return true;
+  if (view !== 'side') return false;
   // the snare stand: centre tube, basket, legs
   if (Math.abs(u) <= 22 + tol && v >= DEPTH && v <= FLOOR_Y) return true;
   if (v >= DEPTH && v <= DEPTH + H_UP + 60 && Math.abs(u) <= HOOP.rOut + 10 + tol) return true;

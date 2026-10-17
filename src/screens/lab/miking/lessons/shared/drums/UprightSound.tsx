@@ -32,7 +32,8 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { lowestProfile } from '../../../engine/physics/membrane.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { DrumSpec } from './drumSpec.ts';
-import { DrumSection, Stick } from './DrumArt';
+import { DrumSection } from './DrumArt';
+import { StrikeArm } from '../kitScene/stickPlayer';
 
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
@@ -194,7 +195,9 @@ export function makeUprightSound(setupOf: (v: VariantId) => UprightSetup, names:
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
             <DrumSection spec={spec} reso={S.reso} wires={S.wires} />
-            <Stick from={{ x: -R - 160, y: -125 }} to={{ x: -6, y: -9 }} />
+            {/* the drummer's stick hand, the arm entering from the frame's edge
+                (kitScene/stickPlayer: a crop of the player, never a loose stick) */}
+            <StrikeArm tip={{ x: -6, y: -9 }} />
             {/* ① the stick's tip at the strike point */}
             <Group opacity={o1}>
               <Path path={o.strike} style="stroke" strokeWidth={6} color={AMBER} strokeCap="round" strokeJoin="round" />
