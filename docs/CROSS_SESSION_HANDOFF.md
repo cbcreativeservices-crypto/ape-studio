@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 17:02 · ccode · 0db1de24
+changed: Cymatics art fix: drive hint in its own band, real drive hardware, Leissa first pair on the free square plate
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:58 · ccode · d9dd382f
+changed: Triangle art fix (I06a): the hand holds the clip
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:56 · ccode · 080b62fd
+changed: Bassoon art fix (A09b): the wing joint beside the long joint, its holes open to the left fingers
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 16:55 · ccode · 9883e1e9
+changed: Miking guitars & amps art fix round 3 (C01-C05C, C08): fretting hand drawn with its arch, the plucked string rings, STRINGS leader off the arm
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 16:51 · ccode · e816ae7e
 changed: Mallet keyboards art fix (I07/I08): the player is in the model, framed whole, names kept off the body
 affects other side: nothing (app only)
