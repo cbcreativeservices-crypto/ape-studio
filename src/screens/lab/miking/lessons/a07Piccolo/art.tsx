@@ -47,7 +47,7 @@ export const PICCOLO_ART: LessonArt = windLessonArt({
       // the jet's out to the right under the jaw.
       { id: 'jet', text: 'AIR JET', at: (L) => jetTip(L), du: 230, dv: 60 },
       { id: 'head', text: 'HEAD JOINT · LIP PLATE', short: 'HEAD JOINT', at: (L) => frameAt(L, 30).p, du: 240, dv: -15 },
-      { id: 'ear', text: 'RIGHT EAR', at: (L) => add(L.body.head.c, { x: -92, y: 10, z: 0 }), du: -90, dv: -30 },
+      { id: 'ear', text: 'RIGHT EAR', at: (L) => add(L.body.head.c, { x: -92, y: 10, z: 0 }), du: -90, dv: -30, alts: [{ du: -60, dv: -150 }, { du: 0, dv: -230 }] },
     ],
     top: [{ id: 'jet', text: 'AIR JET', at: (L) => jetTip(L), du: 90, dv: 40 }],
   },

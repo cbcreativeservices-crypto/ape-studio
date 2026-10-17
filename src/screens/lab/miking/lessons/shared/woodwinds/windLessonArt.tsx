@@ -16,7 +16,7 @@ import { makeWindSettingPage, type WindSettingConfig } from './WindSettingPage';
 import { windPlanFor, type WindPlanConfig } from './WindPlan';
 import type { Layout } from './windPosture.ts';
 
-export type PointSpec = { id: string; text: string; short?: string; at: (L: Layout) => { x: number; y: number; z: number }; du: number; dv: number };
+export type PointSpec = { id: string; text: string; short?: string; at: (L: Layout) => { x: number; y: number; z: number }; du: number; dv: number; /** More places to try, before the mirrored one (offsets like du, dv). */ alts?: readonly { du: number; dv: number }[] };
 
 export type WindArtConfig = {
   model: InstrumentModel;
@@ -38,7 +38,7 @@ export function windLessonArt(c: WindArtConfig): LessonArt {
     let out = cache.get(key);
     if (!out) {
       const L = c.layoutOf(variant);
-      out = [...c.labels[view].map((l) => tubeLabel(L, view, l)), ...(c.points?.[view] ?? []).map((p) => pointLabel(view, p.id, p.text, p.at(L), p.du, p.dv, p.short))];
+      out = [...c.labels[view].map((l) => tubeLabel(L, view, l)), ...(c.points?.[view] ?? []).map((p) => withAlts(pointLabel(view, p.id, p.text, p.at(L), p.du, p.dv, p.short), p.alts))];
       cache.set(key, out);
     }
     return out;
@@ -59,4 +59,12 @@ export function windLessonArt(c: WindArtConfig): LessonArt {
     stepCounts: { sound: 4, setting: 3 },
     SettingPlan: windPlanFor(c.plan),
   };
+}
+
+/** A point label with extra places tried before its mirrored one. */
+function withAlts(l: ArtLabel, alts?: readonly { du: number; dv: number }[]): ArtLabel {
+  if (!alts?.length || !l.at) return l;
+  const at = l.at;
+  const extra = alts.map((a) => ({ u: at.u + a.du, v: at.v + a.dv, align: (a.du > 20 ? 'left' : a.du < -20 ? 'right' : 'center') as ArtLabel['align'] }));
+  return { ...l, alts: [...extra, ...(l.alts ?? [])] };
 }
