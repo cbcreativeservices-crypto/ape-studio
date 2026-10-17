@@ -967,7 +967,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             [hz1Label, COL_A, 'line'],
             [hz2Label, COL_B, 'line'],
             [rotary ? hz3Label : undefined, COL_P, 'ring'],
-          ] as const
+          ] as ReadonlyArray<readonly [string | undefined, string, 'line' | 'ring']>
         )
           .filter((k): k is readonly [string, string, 'line' | 'ring'] => !!k[0])
           .map(([txt, col, kind], i) => {
