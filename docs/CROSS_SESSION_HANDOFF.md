@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 22:17 · ccode · f2224b83
+changed: Images: Comp C round installed (owner-approved): MIDI, Advanced Test & Measurement, Audio Coding & Codecs tiles
+affects other side: three topic tiles reach the bucket in the approval-day upload (no script change)
+needs: nothing
+
+
 ### 2026-10-16 20:25 · ccode · 256ea164
 changed: Images: Comp C trial round installed (owner-approved, option A each): Studio Recording Engineer cert, Amplifiers tile, AI-ML tile
 affects other side: the two topic tiles and the certificate square reach the storage buckets in the approval-day upload (no change to the scripts)
