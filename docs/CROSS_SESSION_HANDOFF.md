@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 20:25 · ccode · 256ea164
+changed: Images: Comp C trial round installed (owner-approved, option A each): Studio Recording Engineer cert, Amplifiers tile, AI-ML tile
+affects other side: the two topic tiles and the certificate square reach the storage buckets in the approval-day upload (no change to the scripts)
+needs: nothing
+
+
 ### 2026-10-16 20:12 · ccode · c9ee6177
 changed: Mixing Guides: keyboardist caution also in K-pop, Afrobeats, hard rock, cumbia, disco (owner 2026-10-16)
 affects other side: nothing (app only)
