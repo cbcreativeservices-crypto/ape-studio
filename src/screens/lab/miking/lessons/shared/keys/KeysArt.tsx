@@ -30,7 +30,7 @@ import { SPK } from '../speakers/SpeakerArt';
 import { OVAL_SPOTS, SPEAKER_OVAL_4x8 as OV } from './keysSpec.ts';
 import { RHODES_FRONT, RHODES_TOP, WURLI_FRONT, type KeyRects, type Rect } from './keysGeometry.ts';
 import { C_BASS, C_TREBLE, FACE_TOP, OVAL_SECTION, PLAYER, W, onSpeaker } from './wurliModel.ts';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { figureCovers, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { WURLI_PLAYER_SIDE, WURLI_PLAYER_TOP } from './wurliPlayer.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -1192,12 +1192,16 @@ export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { v
 export function wurliSectionLabels(view: ViewId): StaticLabel[] {
   if (view === 'side') {
     return [
-      { id: 'lid', text: 'LID', u: (W.caseBackX + FACE_TOP.x) / 2, v: W.caseTopY - 26, align: 'center', tone: 'muted' },
-      { id: 'grille', text: 'GRILLE · OVAL SPEAKER', short: 'SPEAKER', u: FACE_TOP.x - 18, v: FACE_TOP.y - 60, align: 'right' },
-      { id: 'keys', text: 'KEYS', u: -60, v: W.keyBottomY + 30, align: 'center', tone: 'muted' },
+      // Above the instrument and on its audience side, each leader short and
+      // clear of the player (art grading fix 2026-10-16: GRILLE ran across
+      // the player's legs and KEYS sat on the arm; the figure is now the
+      // labels' occupancy too — wurliLessonArt.figureAt).
+      { id: 'lid', text: 'LID', u: W.caseBackX - 30, v: W.caseTopY + 10, align: 'right', tone: 'muted', at: { u: W.caseBackX + 30, v: W.caseTopY + 6 } },
+      { id: 'grille', text: 'GRILLE · OVAL SPEAKER', short: 'SPEAKER', u: (W.caseBackX + FACE_TOP.x) / 2, v: W.caseTopY - 70, align: 'center', at: { u: C_BASS.x - 4, v: C_BASS.y } },
+      { id: 'keys', text: 'KEYS', u: W.caseBackX - 30, v: W.keyBottomY + 40, align: 'right', tone: 'muted', at: { u: W.faceFootX + 20, v: W.keyBottomY - 4 } },
       // in the clear air before the player's face (the head fills the frame's top)
       { id: 'player', text: 'THE PLAYER', short: 'PLAYER', u: WURLI_PLAYER_SIDE.head.c.u - 330, v: WURLI_PLAYER_SIDE.head.c.v + 10, align: 'center', tone: 'illustrative' },
-      { id: 'pedal', text: 'PEDAL', u: (PLAYER.pedal.x0 + PLAYER.pedal.x1) / 2, v: -90, align: 'center', tone: 'muted' },
+      { id: 'pedal', text: 'PEDAL', u: PLAYER.pedal.x0 - 140, v: -40, align: 'right', tone: 'muted', at: { u: PLAYER.pedal.x0 + 10, v: -30 } },
       { id: 'audience', text: '← AUDIENCE SIDE', short: '← AUDIENCE', u: -1400, v: -60, align: 'left', tone: 'illustrative' },
     ];
   }
@@ -1229,14 +1233,28 @@ export function wurliHitTest(view: ViewId, u: number, v: number, tol: number): s
   return null;
 }
 
+/** Whether the drawn player covers (u, v) — an 'above' pose is authored chest
+ *  toward +v and turned to its `facing` about the neck when drawn, so the
+ *  point is turned back first. */
+function poseCovers(pose: typeof WURLI_PLAYER_SIDE, u: number, v: number, tol: number): boolean {
+  if (pose.view !== 'above' || pose.facing === undefined) return figureCovers(pose, u, v, tol);
+  const a = pose.facing - Math.PI / 2;
+  const n = pose.neck;
+  const du = u - n.u;
+  const dv = v - n.v;
+  return figureCovers(pose, n.u + du * Math.cos(a) + dv * Math.sin(a), n.v - du * Math.sin(a) + dv * Math.cos(a), tol);
+}
+
 let lessonArt: LessonArt | null = null;
 /** The reed piano's LessonArt for the engine's placement scene. */
 export function wurliLessonArt(): LessonArt {
   if (lessonArt) return lessonArt;
   lessonArt = {
     Instrument: ({ view }: { view: ViewId }) => <WurliSection view={view} />,
-    labels: (view) => wurliSectionLabels(view).map((l) => ({ id: l.id, text: l.text, short: l.short, u: l.u, v: l.v, align: l.align, tone: l.tone === 'illustrative' ? 'illustrative' : 'muted' })),
+    labels: (view) => wurliSectionLabels(view).map((l) => ({ id: l.id, text: l.text, short: l.short, u: l.u, v: l.v, align: l.align, tone: l.tone === 'illustrative' ? 'illustrative' : 'muted', at: l.at })),
     hitTest: (view, _variant, u, v, tol) => wurliHitTest(view, u, v, tol),
+    // The seated player is the labels' occupancy: no name or leader on the body.
+    figureAt: (view, _variant, u, v, tol) => poseCovers(view === 'side' ? WURLI_PLAYER_SIDE : WURLI_PLAYER_TOP, u, v, tol),
   };
   return lessonArt;
 }
