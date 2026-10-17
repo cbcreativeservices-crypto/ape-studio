@@ -455,9 +455,7 @@ export function AirParticlesView({
   const ROWS = 6;
   const w = width;
   const h = height;
-  // History: owner 2026-09-13 on the Pixel, "the ear needs to be bigger" —
-  // the ear stays large (~38 px tall in a 186 px field, was 58 px floating)
-  // but now sits on a true-proportion head.
+  // History: owner 2026-09-13 on the Pixel, "the ear needs to be bigger".
   // THE LISTENER (art grading 2026-10-16: the ear floated in the air with no
   // head, nearly as tall as the speaker). The ear is now on a HEAD — the
   // owner's side head icon (a lone head, D60), facing the speaker, at true
@@ -465,11 +463,17 @@ export function AirParticlesView({
   // edge (the listener stands below the frame). Its ear (~ 6 cm on a 23 cm head) is the
   // receiving point. The air reaches the head: only molecules inside the head
   // are dropped, and the tracers stay in front of the face.
-  const headS = (0.7 * h) / SIDE_CANON.height; // px per head unit
-  // the mouth (icon origin): the whole head inside the field, its back 6 head
-  // units clear of the right edge (the canvas runs a little under the card's edge)
-  const headX = w - (SIDE_CANON.occiput + 6) * headS;
-  const headY = h - SIDE_CANON.neckBase * headS;
+  // Owner 2026-10-16: "bigger ear, keep head" — the head is drawn as a CLOSE-UP
+  // (crown→chin 115 % of the field) so its ear is back to ~60 px, the size the
+  // owner asked for on 2026-09-13, while still sitting on a true-proportion
+  // head. The crown and the back of the skull run off the frame; the ear sits
+  // mid-field and the face (nose, lips, chin) stays in view.
+  const headS = (1.05 * h) / SIDE_CANON.height; // px per head unit
+  // the mouth (icon origin): the whole back of the skull (and so the ear)
+  // inside the right edge; the ear lands about mid-height, the crown runs off
+  // the top and the neck off the bottom.
+  const headX = w - (SIDE_CANON.occiput + 3) * headS;
+  const headY = h / 2 + 12 * headS;
   const noseX = headX + SIDE_CANON.noseTip * headS;
   const crownY = headY + SIDE_CANON.crown * headS;
   const earW = showEar ? w - noseX + 4 * ts : 0;
