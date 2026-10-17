@@ -7780,3 +7780,15 @@ SWITCH: `public.lab_requirements_enforced()` — returns FALSE. Turn ON only at 
 ccode verified read-only 2026-10-13: switch false, 540 req rows, 227 labs rows, gate present, anon cannot execute award_required_labs, authenticated can.
 affects other side: nothing further until the OTA.
 needs: nothing — the switch flip is on the post-approval checklist.
+### 2026-10-16 17:11 · ccode · c5e930de
+changed: Bowed strings art fix (fix4): violin and cello part names set off the instrument on leaders, stepping back under a mic; the string names in full colour
+affects other side: nothing (app only)
+needs: nothing
+
+
+### 2026-10-16 17:06 · ccode · 66e2c185
+changed: Piano & clavinet art fix (fix4): the grand's action named without crossings, upright WALL/PIANIST and plan labels unstacked, fingers apart on the keys
+affects other side: nothing (app only)
+needs: nothing
+
+
