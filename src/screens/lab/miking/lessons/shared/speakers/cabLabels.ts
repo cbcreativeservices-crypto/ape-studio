@@ -35,8 +35,10 @@ export function cabLabels(kind: CabKind, back: Back, view: CabView): CabLabel[] 
     // behind the back panel is inside the words' air, so both labels fell to
     // free space IN FRONT — SPEAKER on the mic, its arrow and the suggested
     // starting points. Each now steps farther out behind the box first.
-    { id: 'speaker', text: 'SPEAKER', u: c.box.x0 - 14, v: (v0 + v1) / 2 - 60, align: 'right', tone: 'muted', at: { u: s.xMagnetBack, v: 0 }, alts: [{ u: c.box.x0 - 40, v: (v0 + v1) / 2 - 60, align: 'right' }, { u: c.box.x0 - 40, v: v0 + 40, align: 'right' }] },
-    { id: 'back', text: back === 'open' ? 'OPEN BACK' : 'CLOSED BACK', short: back === 'open' ? 'OPEN' : 'BACK', u: c.box.x0 - 14, v: (v0 + v1) / 2 + 60, align: 'right', tone: 'muted', alts: [{ u: c.box.x0 - 40, v: (v0 + v1) / 2 + 60, align: 'right' }, { u: c.box.x0 - 40, v: v1 - 40, align: 'right' }] },
+    { id: 'speaker', text: 'SPEAKER', u: c.box.x0 - 14, v: (v0 + v1) / 2 - 110, align: 'right', tone: 'muted', at: { u: s.xMagnetBack, v: 0 }, alts: [{ u: c.box.x0 - 40, v: (v0 + v1) / 2 - 110, align: 'right' }, { u: c.box.x0 - 40, v: v0 + 40, align: 'right' }] },
+    { id: 'back', text: back === 'open' ? 'OPEN BACK' : 'CLOSED BACK', short: back === 'open' ? 'OPEN' : 'BACK', u: c.box.x0 - 14, v: (v0 + v1) / 2 + 110, align: 'right', tone: 'muted', alts: [{ u: c.box.x0 - 40, v: (v0 + v1) / 2 + 110, align: 'right' }, { u: c.box.x0 - 40, v: v1 - 40, align: 'right' }] },
+    // (art grading fix 2026-10-16: SPEAKER and BACK stand well off the cone
+    // axis line, which runs through v = 0 across the glass.)
     // Off the stand: in the section the boom runs at or just above the axis
     // (the words go under it); from above a tripod leg runs out under the
     // axis, so the words go well above the boom and its counterweight.

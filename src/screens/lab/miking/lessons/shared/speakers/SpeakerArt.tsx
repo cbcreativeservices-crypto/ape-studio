@@ -633,10 +633,14 @@ export function CabFront({ kind, mode, spot }: { kind: CabKind; mode: FrontMode;
       {/* The grille cloth over it all (woven, translucent) — or taken away. */}
       {mode === 'cloth' ? (
         <>
-          <Path path={f.cloth} opacity={0.88}>
+          {/* Thin enough that the speakers' rims, cones and dust caps show
+              through as shadows, as they do on a real cabinet (art grading
+              fix 2026-10-16: an opaque grey square with dashed circles drawn
+              on it read as a diagram, not a cabinet). */}
+          <Path path={f.cloth} opacity={0.7}>
             <LinearGradient start={vec(c.box.z0, c.box.y0)} end={vec(c.box.z1, c.box.y1)} colors={[...SPK.cloth]} />
           </Path>
-          <Path path={f.weave} style="stroke" strokeWidth={0.8} color="#7b808a" opacity={0.22} />
+          <Path path={f.weave} style="stroke" strokeWidth={0.8} color="#7b808a" opacity={0.3} />
         </>
       ) : (
         <Path path={f.cloth} style="stroke" strokeWidth={2} color={SPK.piping} opacity={0.35}>
@@ -647,16 +651,13 @@ export function CabFront({ kind, mode, spot }: { kind: CabKind; mode: FrontMode;
       <Path path={f.corners}>
         <LinearGradient start={vec(c.box.z0, c.box.y0)} end={vec(c.box.z0 + 40, c.box.y0 + 40)} colors={[...SPK.corner]} />
       </Path>
-      {/* The active (miked) speaker, ringed in amber; on the cloth, the
-          dust-cap region and outer cone marked "from outside the grille". */}
-      <Circle cx={act.u} cy={act.v} r={act.rCut + 10} style="stroke" strokeWidth={5} color={SPK.amber} opacity={0.85}>
-        <DashPathEffect intervals={[20, 12]} />
+      {/* The active (miked) speaker: a soft amber glow round its rim (the
+          selection, like the lessons' other highlights) — the speaker itself
+          shows through the cloth. */}
+      <Circle cx={act.u} cy={act.v} r={act.rCut + 10} style="stroke" strokeWidth={14} color={SPK.amber} opacity={0.28}>
+        <BlurMask blur={8} style="normal" />
       </Circle>
-      {mode === 'cloth' ? (
-        <Circle cx={act.u} cy={act.v} r={act.rDust} style="stroke" strokeWidth={4} color={SPK.amber} opacity={0.7}>
-          <DashPathEffect intervals={[10, 8]} />
-        </Circle>
-      ) : null}
+      <Circle cx={act.u} cy={act.v} r={act.rCut + 10} style="stroke" strokeWidth={3} color={SPK.amber} opacity={0.75} />
       {spotR != null ? (
         <>
           <Circle cx={act.u} cy={act.v - spotR} r={14} style="stroke" strokeWidth={5} color="#6fa8ff" />
