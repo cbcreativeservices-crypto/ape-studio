@@ -264,7 +264,9 @@ export type VeenaGeom = {
   frets: number[];
   stringZ: (x: number) => number;
   melodyYs: (x: number) => number[];
-  /** The tala strings: their side-bridge y and the peg x on the +y side. */
+  /** The tala strings: their side-bridge y and the peg x, on the PLAYER's side
+   *  of the neck (−y), where the right hand's little finger plays them (art
+   *  fix round 3, 2026-10-16: they were drawn on the audience side). */
   tala: { y: number; pegX: number }[];
   gourd: { x: number; r: number; z: number };
 };
@@ -297,7 +299,7 @@ export function veenaGeom(): VeenaGeom {
     frets,
     stringZ,
     melodyYs,
-    tala: [0, 1, 2].map((i) => ({ y: neckHalf + 10 + 7 * i, pegX: 250 + 55 * i })),
+    tala: [0, 1, 2].map((i) => ({ y: -(neckHalf + 10 + 7 * i), pegX: 250 + 55 * i })),
     gourd: { x: VEENA.gourdX.mm, r: VEENA.gourdD.mm / 2, z: -VEENA.neckDepth.mm - VEENA.gourdD.mm / 2 - 12 },
   };
 }

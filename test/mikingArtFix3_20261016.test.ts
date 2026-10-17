@@ -97,3 +97,30 @@ describe('Guitars & amps — the fretting hand drawn with its arch; the plucked 
     assert.match(read('shared/guitars/GuitarArt.tsx'), /\.find\(clear\)/);
   });
 });
+
+describe('Lutes — the veena player close, the tala strings on the player side, an adult oud player, the string rings', () => {
+  it('veena: tala strings on the −y (player) side; the player 100 mm nearer; oud shoulders at the house breadth', async () => {
+    const { veenaGeom } = await import('../src/screens/lab/miking/lessons/shared/lutes/luteSpec.ts');
+    const { sceneOfKind } = await import('../src/screens/lab/miking/lessons/shared/lutes/luteModel.ts');
+    const { luteHands } = await import('../src/screens/lab/miking/lessons/shared/lutes/luteHands.ts');
+    const { BODY } = await import('../src/screens/lab/miking/lessons/shared/players/playerPose.ts');
+    for (const t of veenaGeom().tala) assert.ok(t.y < 0, 'tala on the player side');
+    const vn = sceneOfKind('veena');
+    assert.equal(vn.fit.head.c.z, -300);
+    assert.ok(vn.at.tala.y < 0);
+    const oud = sceneOfKind('oud');
+    assert.equal(oud.fit.shoulderL.x - oud.fit.shoulderR.x, 2 * BODY.shoulderHalf);
+    // The fit's elbows stay the posed arms' solutions (they feed the keep-outs and the plan).
+    for (const sc of [vn, oud]) {
+      const H = luteHands(sc);
+      for (const [a, b] of [[sc.fit.elbowL, H.fret.elbow], [sc.fit.elbowR, H.pluck.elbow]] as const) assert.ok(Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < 1.5, `${sc.kind} elbow kept equal`);
+    }
+    const art = read('shared/lutes/veenaArt.tsx');
+    assert.match(art, /tip: F\(t\.pegX, -nh - 62, -20\)/);
+  });
+  it('the lute pluck sequence swings the string (decorative motion only)', () => {
+    const s = read('shared/lutes/LuteSound.tsx');
+    assert.match(s, /const motion = useDecorativeMotion\(\);/);
+    assert.match(s, /<Path path=\{liveString\}/);
+  });
+});

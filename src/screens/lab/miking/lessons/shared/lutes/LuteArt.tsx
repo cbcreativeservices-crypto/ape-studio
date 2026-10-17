@@ -57,15 +57,19 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
   if (sc.kind === 'oud') {
     const g = sc.oud!;
     if (view === 'side') {
-      out.push(L('roseMain', 'MAIN ROSE', [OUD.roseMainX.mm, -OUD.roseMainD.mm / 2 - 26]));
+      // Art fix round 3 (2026-10-16): each leader lands on its part from the
+      // side the strings do not cross — the main rose's upper rim, the
+      // bridge's tail end, the board by the body — never across the strings
+      // or the face.
+      out.push(L('roseMain', 'MAIN ROSE', [OUD.roseMainX.mm, -OUD.roseMainD.mm / 2 - 70], 'center', at([OUD.roseMainX.mm, -OUD.roseMainD.mm / 2 + 8])));
       out.push(L('roseSmall', 'SMALL ROSES', [OUD.roseSmallX.mm, OUD.roseSmallY.mm + 46], 'center', { short: 'ROSES', ...at([OUD.roseSmallX.mm, OUD.roseSmallY.mm]), alts: [{ u: 650, v: 170, align: 'left' }] }));
       // CLASH SWEEP 2026-10-10: the place under the bridge is on the face
       // and everything below the face is the lap's keep-out, so BRIDGE fell
       // to free space and its leader crossed SMALL ROSES'. Both now stack in
       // the clear column right of the fretting arm, BRIDGE (the higher part)
       // on the higher row, so the two leaders never cross.
-      out.push(L('bridge', 'BRIDGE', [-6, OUD.bridgeW.mm / 2 + 30], 'center', { ...at([-6, OUD.bridgeW.mm / 2 - 6]), alts: [{ u: 650, v: 112, align: 'left' }] }));
-      out.push(L('board', 'FRETLESS NECK', [(g.joint + g.nut) / 2, -g.boardHalf(g.joint) - 26], 'center', { short: 'NECK' }));
+      out.push(L('bridge', 'BRIDGE', [g.tail - 40, OUD.bridgeW.mm / 2 + 10], 'right', { ...at([-14, OUD.bridgeW.mm / 2 - 6]), alts: [{ u: -6, v: OUD.bridgeW.mm / 2 + 30, align: 'center' }, { u: 650, v: 112, align: 'left' }] }));
+      out.push(L('board', 'FRETLESS NECK', [g.joint + 40, -g.boardHalf(g.joint) - 90], 'center', { short: 'NECK', ...at([g.joint + 40, -g.boardHalf(g.joint) + 4]), alts: [{ u: g.nut + 60, v: 110, align: 'left' }] }));
       out.push(L('pegbox', 'PEGBOX', [g.pegboxEnd.x + 10, -96]));
       out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
     } else {
@@ -109,8 +113,8 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
     out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
   } else {
     out.push(L('plate', 'TOP PLATE', V(g.bowl.cx, -g.plateR - 40, 0), 'center', { short: 'PLATE' }));
-    const tala = V(330, g.neck.half, 10);
-    out.push(L('tala', 'TALA STRINGS', [tala[0], tala[1] + 160], 'center', { short: 'TALA', ...at(tala) }));
+    const tala = V(330, -g.neck.half, 10);
+    out.push(L('tala', 'TALA STRINGS', [tala[0], tala[1] - 130], 'center', { short: 'TALA', ...at(tala), alts: [{ u: tala[0], v: tala[1] + 200, align: 'center' }] }));
     out.push(L('yali', 'YALI', V(g.tip + 40, 0, 0), 'left', at(V(g.tip - 60, 0, -40))));
     out.push(L('player', 'PLAYER', [head[0], sc.fit.torso.min.z + 30], 'center', { tone: 'muted' }));
     out.push(L('audience', 'AUDIENCE ↓', [900, 640], 'center', { tone: 'muted' }));

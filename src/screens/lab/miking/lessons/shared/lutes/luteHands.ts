@@ -31,8 +31,8 @@
  *     pointing up the strings toward the neck, its back up, the thumb toward
  *     the far side; the index and middle pads on two melody strings by the
  *     neck's start, the ring curled, the little finger over the board's NEAR
- *     edge (where a veena carries its tala strings — this drawing still shows
- *     them on the audience side: an open item). The left hand: the true
+ *     edge, toward the tala strings on the player's side (art fix round 3,
+ *     2026-10-16: they were drawn on the audience side). The left hand: the true
  *     technique (the arm passing beneath the neck, the fingers coming over
  *     the far edge) cannot be reached by an adult arm in this scene (the neck
  *     ≈ 390 mm in front of the shoulder joint and ≈ 230 below it) — the hand

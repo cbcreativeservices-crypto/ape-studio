@@ -25,11 +25,12 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
+import { useDecorativeMotion } from '../../../../../../features/settings/decorativeMotion';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import { fewStops, tapsWhenFew } from '../../../engine/rack/fewStops.ts';
@@ -161,13 +162,54 @@ function PluckCanvas({ sc, w, h, reveal, pickMm, label }: { sc: LuteScene; w: nu
       const g = sc.sitar!;
       for (const t of g.taraf) taraf.addPath(poly([V(SITAR.tarafBridgeX.mm, t.y0, 6), V(t.pegX, -g.neck.half + 3, 6)], false));
     }
-    return { pulled, env, rest, topC, topR, rings, holeRings, bridge, taraf, pickPt: V(pg.pick, yAt(pg.pick) + amp), e0: V(0, yAt(0)), e1: V(pg.L, yAt(pg.L)) };
+    // The ringing string's rest points and its unit swing, projected (the view is linear).
+    const base: number[] = [];
+    for (let i = 0; i <= 48; i++) {
+      const x = (pg.L * i) / 48;
+      const q = V(x, yAt(x));
+      base.push(q[0], q[1], Math.sin((Math.PI * x) / pg.L));
+    }
+    const o0 = V(0, yAt(0));
+    const o1 = V(0, yAt(0) + 1);
+    const swingDir: Pt = [o1[0] - o0[0], o1[1] - o0[1]];
+    return { pulled, env, rest, topC, topR, rings, holeRings, bridge, taraf, pickPt: V(pg.pick, yAt(pg.pick) + amp), e0: V(0, yAt(0)), e1: V(pg.L, yAt(pg.L)), base, swingDir };
   }, [sc, view, pickMm]); // eslint-disable-line react-hooks/exhaustive-deps
   const o1only = useDerivedValue(() => (reveal.value < 2 ? 1 : 0));
   const o2 = useDerivedValue(() => Math.max(0, Math.min(1, reveal.value - 1)));
   const o3 = useDerivedValue(() => Math.max(0, Math.min(1, reveal.value - 2)));
   const o4 = useDerivedValue(() => Math.max(0, Math.min(1, reveal.value - 3)));
   const o5 = useDerivedValue(() => Math.max(0, Math.min(1, reveal.value - 4)));
+  // ② THE STRING RINGS (art fix round 3, 2026-10-16 — graded "the events
+  // just fade in"): released, it swings in its first mode, dying away over
+  // ~3 s, slowed and drawn larger; the envelope stays as its record.
+  // Decorative motion only (off, or Low-Light: the envelope alone).
+  const motion = useDecorativeMotion();
+  const ring = useSharedValue(1);
+  const sBase = ov.base;
+  const sDir = ov.swingDir;
+  useAnimatedReaction(
+    () => reveal.value >= 2 && reveal.value < 2.25,
+    (now, prev) => {
+      if (now && !prev && motion) {
+        ring.value = 0;
+        ring.value = withTiming(1, { duration: 3200, easing: Easing.linear });
+      }
+    },
+    [motion],
+  );
+  const liveString = useDerivedValue(() => {
+    const t = ring.value;
+    const a = amp * Math.exp(-2.4 * t) * Math.cos(2 * Math.PI * 7 * t);
+    const q = Skia.Path.Make();
+    for (let i = 0; i < sBase.length; i += 3) {
+      const x = sBase[i] + sDir[0] * a * sBase[i + 2];
+      const y = sBase[i + 1] + sDir[1] * a * sBase[i + 2];
+      if (i === 0) q.moveTo(x, y);
+      else q.lineTo(x, y);
+    }
+    return q;
+  });
+  const liveO = useDerivedValue(() => (ring.value < 1 ? o2.value : 0));
   const radiator = sc.kind === 'oud' ? 'FACE' : sc.kind === 'sitar' ? 'BOARD' : 'TOP PLATE';
   const striker = sc.kind === 'oud' ? 'RISHA' : sc.kind === 'sitar' ? 'MIZRAB' : 'FINGER';
   const mid = vp(sc, view, { x: pg.L * 0.6, y: 0, z: pg.z });
@@ -192,6 +234,7 @@ function PluckCanvas({ sc, w, h, reveal, pickMm, label }: { sc: LuteScene; w: nu
               <DashPathEffect intervals={[8, 6]} />
             </Path>
             <Path path={ov.env} style="stroke" strokeWidth={2.4} color={AMBER} />
+            <Path path={liveString} style="stroke" strokeWidth={3} color="#f4f6fa" opacity={liveO} />
             <Circle cx={ov.e0[0]} cy={ov.e0[1]} r={7} color="#ffffff" />
             <Circle cx={ov.e1[0]} cy={ov.e1[1]} r={7} color="#ffffff" />
           </Group>

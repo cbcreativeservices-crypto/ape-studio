@@ -13,7 +13,7 @@
  *               yali head at the neck's end.
  *   VeenaAbove  from above: the top plate with its inlaid border and the
  *               broad flat bridge, the frets across their wax beds, the
- *               strings, the tala strings along the audience side, the yali.
+ *               strings, the tala strings along the player's side, the yali.
  * Sizes: the overall length and the resonator's width are the Met veena's
  * (sourced); the rest are drawing defaults (luteSpec.ts). The yali is drawn
  * with care as a carved and gilded head — no particular maker's carving.
@@ -126,12 +126,14 @@ function build(sc: LuteScene) {
   const fretTicks = g.frets.map((f) => poly([F(f, nh - 2, 13), F(f, -nh + 2, 13)], false));
   const tailX = g.tail + 14;
   const stringsF = g.melodyYs(0).map((y, i) => poly([F(tailX, y * 0.4, -4), F(0, y, VEENA.bridgeH.mm), F(g.nut, g.melodyYs(g.nut)[i], g.stringZ(g.nut)), F(g.nut + 30 + 12 * i, y * 0.6, 4)], false));
-  const talaF = g.tala.map((t, i) => poly([F(tailX + 20, t.y - 20, -8), F(4, t.y, 13 - i), F(t.pegX, nh + 4, -18)], false));
-  const talaPegF = g.tala.map((t) => ({ base: F(t.pegX, nh, -20), tip: F(t.pegX, nh + 62, -20) }));
+  // The tala strings on the PLAYER's side of the neck (−y), their pegs out
+  // toward the player (art fix round 3, 2026-10-16).
+  const talaF = g.tala.map((t, i) => poly([F(tailX + 20, t.y + 20, -8), F(4, t.y, 13 - i), F(t.pegX, -nh - 4, -18)], false));
+  const talaPegF = g.tala.map((t) => ({ base: F(t.pegX, -nh, -20), tip: F(t.pegX, -nh - 62, -20) }));
   const mainPegs = [790, 836].map((x) => ({ base: F(x, nh, -30), tip: F(x, nh + 70, -30) }));
   const bridgeF = poly([F(-15, 28, 0), F(15, 28, 0), F(15, 28, VEENA.bridgeH.mm), F(-15, 28, VEENA.bridgeH.mm)]);
   const bridgeTopF = poly([F(-15, 28, VEENA.bridgeH.mm), F(15, 28, VEENA.bridgeH.mm), F(15, -28, VEENA.bridgeH.mm), F(-15, -28, VEENA.bridgeH.mm)]);
-  const sideBridgeF = curve([F(-8, 30, 8), F(-2, 48, 14), F(6, 64, 10)]);
+  const sideBridgeF = curve([F(-8, -30, 8), F(-2, -48, 14), F(6, -64, 10)]);
   const gourdC = F(g.gourd.x, 0, g.gourd.z);
   const collar = poly([F(g.gourd.x - 26, 0, -g.neck.depth), F(g.gourd.x + 26, 0, -g.neck.depth), F(g.gourd.x + 22, 0, g.gourd.z + g.gourd.r - 4), F(g.gourd.x - 22, 0, g.gourd.z + g.gourd.r - 4)]);
   const Y = (x: number, z: number) => F(x, nh * 0.2, z);
@@ -167,8 +169,8 @@ function build(sc: LuteScene) {
   const wax = [poly([T(fx0, 20, 0), T(fx1, 20, 0), T(fx1, 34, 0), T(fx0, 34, 0)]), poly([T(fx0, -34, 0), T(fx1, -34, 0), T(fx1, -20, 0), T(fx0, -20, 0)])];
   const fretsT = g.frets.map((f) => poly([T(f, -36, 13), T(f, 36, 13)], false));
   const stringsT = g.melodyYs(0).map((y, i) => poly([T(tailX, y * 0.4, -4), T(0, y, VEENA.bridgeH.mm), T(g.nut, g.melodyYs(g.nut)[i], g.stringZ(g.nut))], false));
-  const talaT = g.tala.map((t) => poly([T(tailX + 20, t.y - 20, -8), T(4, t.y, 13), T(t.pegX, nh + 4, -18)], false));
-  const talaPegT = g.tala.map((t) => ({ base: T(t.pegX, nh, -20), tip: T(t.pegX, nh + 62, -20) }));
+  const talaT = g.tala.map((t) => poly([T(tailX + 20, t.y + 20, -8), T(4, t.y, 13), T(t.pegX, -nh - 4, -18)], false));
+  const talaPegT = g.tala.map((t) => ({ base: T(t.pegX, -nh, -20), tip: T(t.pegX, -nh - 62, -20) }));
   const mainPegT = [790, 836].flatMap((x) => [
     { base: T(x, nh, -30), tip: T(x, nh + 70, -30) },
     { base: T(x, -nh, -30), tip: T(x, -nh - 70, -30) },
@@ -181,7 +183,7 @@ function build(sc: LuteScene) {
   const hitsFront: HitArea[] = [
     { id: 'veena.yali', pts: YALI.map(([x, z]) => F(x, nh * 0.2, z)) },
     { id: 'veena.pegs', pts: [F(770, nh, -40), F(850, nh, -40), F(850, nh + 80, -40), F(770, nh + 80, -40), F(770, nh, 30)] },
-    { id: 'veena.tala', pts: [...talaPegF.map((q) => q.tip), F(g.tala[2].pegX + 20, nh, -10), F(10, 64, 14), F(-10, 48, 14)] },
+    { id: 'veena.tala', pts: [...talaPegF.map((q) => q.tip), F(g.tala[2].pegX + 20, -nh, -10), F(10, -64, 14), F(-10, -48, 14)] },
     { id: 'veena.bridge', pts: [F(-20, 30, -4), F(20, 30, -4), F(20, 30, 22), F(-20, 30, 22)] },
     { id: 'veena.frets', pts: [F(fx0, nh, 0), F(fx1, nh, 0), F(fx1, nh, 22), F(fx0, nh, 22)] },
     { id: 'veena.gourd', pts: Array.from({ length: 24 }, (_, i) => [gourdC[0] + g.gourd.r * Math.cos((i / 24) * Math.PI * 2), gourdC[1] + g.gourd.r * Math.sin((i / 24) * Math.PI * 2)] as Pt) },
@@ -192,7 +194,7 @@ function build(sc: LuteScene) {
   const hitsAbove: HitArea[] = [
     { id: 'veena.yali', pts: YALI_TOP.map(([x, y]) => T(x, y, 20)) },
     { id: 'veena.pegs', pts: [...mainPegT.map((q) => q.tip), T(780, 0, 0)] },
-    { id: 'veena.tala', pts: [...talaPegT.map((q) => q.tip), T(g.tala[2].pegX + 20, nh, 0), T(0, 64, 13), T(0, 44, 13)] },
+    { id: 'veena.tala', pts: [...talaPegT.map((q) => q.tip), T(g.tala[2].pegX + 20, -nh, 0), T(0, -64, 13), T(0, -44, 13)] },
     { id: 'veena.bridge', pts: [T(-20, -32, 16), T(20, -32, 16), T(20, 32, 16), T(-20, 32, 16)] },
     { id: 'veena.frets', pts: [T(fx0, -nh, 13), T(fx1, -nh, 13), T(fx1, nh, 13), T(fx0, nh, 13)] },
     { id: 'veena.neck', pts: [T(x0, nh, 0), T(x1, nh, 0), T(x1, -nh, 0), T(x0, -nh, 0)] },
@@ -324,7 +326,7 @@ export function VeenaFront({ sc, dim = 1 }: { sc: LuteScene; dim?: number }) {
           <Path path={p} style="stroke" strokeWidth={1.2} color={PAL.inlay} opacity={0.8} />
         </Group>
       ))}
-      {/* tala pegs and main pegs, out toward the audience */}
+      {/* tala pegs (on the player's side) and main pegs (toward the audience) */}
       {B.talaPegF.map((q, i) => (
         <Peg key={`tp${i}`} base={q.base} tip={q.tip} r={10} />
       ))}
@@ -417,7 +419,7 @@ export function VeenaAbove({ sc, dim = 1 }: { sc: LuteScene; dim?: number }) {
         <DashPathEffect intervals={[6, 4]} />
       </Path>
       <Path path={B.plateInlay2} style="stroke" strokeWidth={1.4} color={PAL.gold[2]} opacity={0.8} />
-      {/* main pegs both sides, tala pegs on the audience side */}
+      {/* main pegs both sides, tala pegs on the player's side */}
       {B.mainPegT.map((q, i) => (
         <Peg key={`mp${i}`} base={q.base} tip={q.tip} r={14} />
       ))}

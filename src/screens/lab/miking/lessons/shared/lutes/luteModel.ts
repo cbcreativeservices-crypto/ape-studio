@@ -148,8 +148,11 @@ export function oudScene(): LuteScene {
     seat: 'chair',
     head,
     mouth: v(head.c.x, head.c.y + 60, head.c.z + 100),
-    shoulderR: v(head.c.x - 200, head.c.y + 170, head.c.z - 10),
-    shoulderL: v(head.c.x + 200, head.c.y + 170, head.c.z - 10),
+    // Art fix round 3 (2026-10-16 — graded "shoulders far too wide, a deep
+    // hunch"): the shoulder joints 376 mm apart (the shared figure's adult
+    // breadth, BODY.shoulderHalf) and 188 mm under the head's centre.
+    shoulderR: v(head.c.x - 188, head.c.y + 188, head.c.z - 10),
+    shoulderL: v(head.c.x + 188, head.c.y + 188, head.c.z - 10),
     hipY: hm + 30,
     torso: { min: v(head.c.x - 260, head.c.y + 80, -D - 330), max: v(head.c.x + 260, hm + 40, -D - 10) },
     legs: { min: v(-240, hm + 10, -D - 380), max: v(560, floorY, 300) },
@@ -162,11 +165,11 @@ export function oudScene(): LuteScene {
     // solved to the posed hands' wrists — luteHands.ts; kept equal to its
     // solution (rounded) because they feed the plucking-arm keep-out and the
     // setting plan's footprint.
-    elbowR: v(-136, -234, -35),
+    elbowR: v(-131, -237, -36),
     fretHand: v(520, 40, 10),
     // (figure pass 3: the posed hand's wrist under the neck, + 5 mm down and back)
     fretBox: { min: v(g.joint, -70, -95), max: v(g.nut + 20, 105, 110) },
-    elbowL: v(573, -23, -296),
+    elbowL: v(577, -17, -297),
     kneeR: v(-60, hm + 60, 260),
     kneeL: v(300, hm + 60, 260),
   };
@@ -248,7 +251,10 @@ export function veenaScene(): LuteScene {
   // The resonator rests on the floor (DERIVED: its lowest point).
   const floorY = Math.max(...bowlPoints(g.bowl.cx, g.bowl.a, g.bowl.c, g.bowl.zc, 0).map((p) => P(p).y));
   const N = posture.D(v(0, 0, 1));
-  const head = { c: v(330, floorY - 780, -400), r: 105 };
+  // The player sits close behind the instrument (art fix round 3, 2026-10-16:
+  // 100 mm nearer than before — graded "too far back"; the resonator still
+  // clears the torso and the plucking arm reaches over it unstretched).
+  const head = { c: v(330, floorY - 780, -300), r: 105 };
   const pluck = P(v(120, 0, 40));
   const fp0 = P(v(400, -50, -30));
   const fp1 = P(v(830, 50, 110));
@@ -259,17 +265,17 @@ export function veenaScene(): LuteScene {
     shoulderR: v(head.c.x - 205, head.c.y + 175, head.c.z + 10),
     shoulderL: v(head.c.x + 205, head.c.y + 175, head.c.z + 10),
     hipY: floorY - 120,
-    torso: { min: v(head.c.x - 255, head.c.y + 85, -560), max: v(head.c.x + 255, floorY - 110, -250) },
-    legs: { min: v(-20, floorY - 160, -560), max: v(860, floorY, 110) },
+    torso: { min: v(head.c.x - 255, head.c.y + 85, -460), max: v(head.c.x + 255, floorY - 110, -150) },
+    legs: { min: v(-20, floorY - 160, -460), max: v(860, floorY, 110) },
     pluckHand: pluck,
     // The plucking hand's arc (proposal env.vn.pluck: x −20…+200, z 0…100), boxed.
     pluckBox: mappedBox(P, { min: v(-20, -55, 0), max: v(200, 55, 100) }),
-    elbowR: v(-108, -152, -256),
+    elbowR: v(-136, -146, -240),
     fretHand: P(v(600, 0, 30)),
     // Figure pass 3: grown back toward the player for the posed hand's wrist
     // and knuckles on the neck's near side (to z −148).
     fretBox: { min: v(Math.min(fp0.x, fp1.x), Math.min(fp0.y, fp1.y), -150), max: v(Math.max(fp0.x, fp1.x), Math.max(fp0.y, fp1.y), Math.max(fp0.z, fp1.z) + 30) },
-    elbowL: v(615, -8, -370),
+    elbowL: v(612, -19, -375),
     kneeR: v(60, floorY - 100, 40),
     kneeL: v(640, floorY - 100, 40),
   };
@@ -284,7 +290,7 @@ export function veenaScene(): LuteScene {
       plate: v(-110, 0, 0),
       top: v(g.bowl.cx, 0, 0),
       neck: v(150, 0, 0),
-      tala: v(40, g.neck.half + 18, 0),
+      tala: v(40, -(g.neck.half + 18), 0),
       nut: v(g.nut, 0, g.stringZ(g.nut)),
     },
     veena: g,
