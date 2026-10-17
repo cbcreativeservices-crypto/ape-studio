@@ -634,10 +634,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-16 17:29 · ccode · 8a7f4ee0
+changed: Hand drums art fix (M04a/M04b/M05): the striking hand has a whole arm
+affects other side: nothing (app only)
+needs: nothing
+
+
 ### 2026-10-16 17:23 · ccode · 1704b5b5
 changed: Miking guitars pluck sequence: sound fronts move out from the driven top (decorative motion; art fix round 3)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app only)
+needs: nothing
 
 
 ### 2026-10-16 17:23 · ccode · 953c1ca9
@@ -654,8 +660,8 @@ needs: nothing
 
 ### 2026-10-16 17:21 · ccode · 280825ca
 changed: Miking oud: BRIDGE named beside the tail, never from the far right across the face (art fix round 3 review)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app only)
+needs: nothing
 
 
 ### 2026-10-16 17:20 · ccode · d738795c
@@ -690,8 +696,8 @@ needs: nothing
 
 ### 2026-10-16 17:11 · ccode · 25621670
 changed: Miking lutes art fix round 3 (C13 oud, C14 sitar, C15 veena): tala strings on the player side, the veena player nearer, adult oud shoulders, the string rings
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (app only)
+needs: nothing
 
 
 ### 2026-10-16 17:06 · ccode · 66e2c185
