@@ -235,10 +235,19 @@ export function plateModes(spec: PlateSpec, count = 14): PlateMode[] {
           const Wnm = (x: number, y: number) => Math.cos(n * Math.PI * x) * Math.cos(m * Math.PI * y);
           const lo = Math.min(m, n);
           const hi = Math.max(m, n);
-          // Real square plates split the pair slightly (ν ≠ 0): the "+" figure
-          // sits a little lower than the "−" figure.
-          modes.push({ id: `sq-${hi}-${lo}-p`, label: `(${hi},${lo}) + (${lo},${hi})`, lam2: lam2 * 0.97, hz: hz * 0.97, drive: 1, nodalLines: hi, shape: (x, y) => (Wmn(x, y) + Wnm(x, y)) / 2 });
-          modes.push({ id: `sq-${hi}-${lo}-m`, label: `(${hi},${lo}) − (${lo},${hi})`, lam2: lam2 * 1.03, hz: hz * 1.03, drive: 1, nodalLines: hi, shape: (x, y) => (Wmn(x, y) - Wnm(x, y)) / 2 });
+          // Real square plates split the pair (ν ≠ 0). For the classic first
+          // pair on a FREE square plate the split is tabulated (Leissa, NASA
+          // SP-160, ν = 0.3): the "−" figure (nodal lines on the diagonals)
+          // at λ² = 19.596 and the "+" figure (the closed ring) at 24.270,
+          // against the beam-function β₂² = 22.373 — so the ring is ABOVE the
+          // X (art grading 2026-10-16: the "+" ran ~10 % low at 92.7 Hz vs
+          // ≈ 103 Hz for 240 × 1 mm aluminium, and the pair was ordered the
+          // wrong way round). Other pairs keep the generic ±3 % split.
+          const leissa = spec.edge === 'free' && hi === 2 && lo === 0;
+          const fP = leissa ? 24.27 / 22.373 : 0.97;
+          const fM = leissa ? 19.596 / 22.373 : 1.03;
+          modes.push({ id: `sq-${hi}-${lo}-p`, label: `(${hi},${lo}) + (${lo},${hi})`, lam2: lam2 * fP, hz: hz * fP, drive: 1, nodalLines: hi, shape: (x, y) => (Wmn(x, y) + Wnm(x, y)) / 2 });
+          modes.push({ id: `sq-${hi}-${lo}-m`, label: `(${hi},${lo}) − (${lo},${hi})`, lam2: lam2 * fM, hz: hz * fM, drive: 1, nodalLines: hi, shape: (x, y) => (Wmn(x, y) - Wnm(x, y)) / 2 });
         } else {
           modes.push({ id: `r-${m}-${n}`, label: `(${m},${n})`, lam2, hz, drive: 1, nodalLines: Math.max(0, m - 1) + Math.max(0, n - 1) + (m === 0 || n === 0 ? 1 : 0), shape: Wmn });
         }

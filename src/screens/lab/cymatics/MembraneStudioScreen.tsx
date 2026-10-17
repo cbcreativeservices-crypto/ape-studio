@@ -523,6 +523,10 @@ function MembraneStudio() {
                   onStrike={(r, th) => patch({ strike: { r, thetaDeg: th } })}
                   onSection={setSectionY}
                   cone={{ read: cone, grid: coneGrid, driver, hz: freq }}
+                  // The drive hint's own band over the drum head (always kept,
+                  // so nothing jumps when a drive starts); the speaker view has
+                  // its own top labels and layout.
+                  topBand={isSpeaker ? 0 : 24}
                 />
                 {/* HOLD #19: a still head / cone says why — nothing drives it.
                     Below the speaker view's top labels (CUTAWAY / CONE FROM THE FRONT). */}

@@ -138,6 +138,9 @@ export type PlateViewProps = {
   dragTarget: 'exciter' | 'support' | 'section' | null;
   onPlace?: (kind: 'exciter' | 'support', x: number, y: number) => void;
   onSection?: (y01: number) => void;
+  /** Glass px kept clear ABOVE the drawing for the drive hint (art grading
+   *  2026-10-16: the PRESS ▶ PLAY pill sat on the top edge). Default 0. */
+  topBand?: number;
 };
 
 export function PlateView(p: PlateViewProps) {
@@ -160,8 +163,9 @@ export function PlateView(p: PlateViewProps) {
 
   // Plate rectangle in canvas px (padded, aspect-correct).
   const pad = 14;
+  const band = p.topBand ?? 0;
   const availW = width - pad * 2;
-  const availH = height - pad * 2;
+  const availH = height - pad * 2 - band;
   const is3d = view === 'plate3d';
   const isSection = view === 'section';
   // 3D tilts the plate; CROSS-SECTION needs room UNDER the plate for the
@@ -170,7 +174,7 @@ export function PlateView(p: PlateViewProps) {
   const plateW = Math.min(availW, availH / aspect) * (is3d ? 0.78 : isSection ? 0.7 : 1);
   const plateH = plateW * aspect;
   const ox = (width - plateW) / 2;
-  const oy = (height - plateH) / 2 + (is3d ? plateH * 0.08 : isSection ? -height * 0.13 : 0);
+  const oy = band + (height - band - plateH) / 2 + (is3d ? plateH * 0.08 : isSection ? -height * 0.13 : 0);
 
   // ── shared frame clock (strobed / slow-mo) ────────────────────────────────
   const clock = useSharedValue(0);
@@ -686,15 +690,23 @@ export function PlateView(p: PlateViewProps) {
         {/* Driver puck (magnet + coil) and clamp */}
         {!is3d ? (
           <Group>
-            {/* Driver puck: a steel magnet cup lit from the upper-left, its copper coil ring, a drop shadow lower-right */}
-            <Circle cx={exX + 2} cy={exY + 3} r={11} color="rgba(0,0,0,0.55)" />
-            <Circle cx={exX} cy={exY} r={10}>
-              <RadialGradient c={vec(exX - 3.5, exY - 3.5)} r={13} colors={['#7c7c88', '#3a3a42', '#17171b']} />
+            {/* The drive point seen from ABOVE (art grading 2026-10-16: a copper
+                ring with a red centre read as a button/target): the wave
+                driver's shaft comes up through the plate and is held by a
+                steel washer and a hex nut on the threaded stud — what you see
+                on a real centre-driven Chladni plate. Lit from the upper-left,
+                drop shadow lower-right; amber edge only while dragged. */}
+            <Circle cx={exX + 1.5} cy={exY + 2.5} r={9.5} color="rgba(0,0,0,0.5)" />
+            <Circle cx={exX} cy={exY} r={9}>
+              <RadialGradient c={vec(exX - 3, exY - 3)} r={12} colors={['#c9ccd4', '#8b8f99', '#4d5059']} />
             </Circle>
-            <Circle cx={exX} cy={exY} r={10} style="stroke" strokeWidth={1.2} color={p.dragTarget === 'exciter' ? '#ffc64d' : 'rgba(255,255,255,0.35)'} />
-            <Circle cx={exX} cy={exY} r={6.2} style="stroke" strokeWidth={2.2} color="#b8743a" />
-            <Circle cx={exX} cy={exY} r={6.2} style="stroke" strokeWidth={0.8} color="#e2a565" opacity={0.7} />
-            <Circle cx={exX} cy={exY} r={2.6} color="#ff6b5e" />
+            <Circle cx={exX} cy={exY} r={9} style="stroke" strokeWidth={1.2} color={p.dragTarget === 'exciter' ? '#ffc64d' : 'rgba(20,20,24,0.7)'} />
+            <Path path={hexNut(exX, exY, 5.6)}>
+              <LinearGradient start={vec(exX - 5, exY - 5)} end={vec(exX + 5, exY + 5)} colors={['#a9adb7', '#5d616b']} />
+            </Path>
+            <Path path={hexNut(exX, exY, 5.6)} style="stroke" strokeWidth={0.8} color="#2a2c32" />
+            <Circle cx={exX} cy={exY} r={2.5} color="#3c3f47" />
+            <Circle cx={exX - 0.6} cy={exY - 0.6} r={1.2} color="#9a9ea8" opacity={0.8} />
             {spX != null && spY != null ? (
               <Group>
                 {/* Clamp pad: a rubber-faced foot with a screw head */}
@@ -713,6 +725,20 @@ export function PlateView(p: PlateViewProps) {
       </Canvas>
     </View>
   );
+}
+
+/** A hexagonal nut outline (across-corners radius r), flats top and bottom. */
+function hexNut(cx: number, cy: number, r: number) {
+  const p = Skia.Path.Make();
+  for (let k = 0; k < 6; k++) {
+    const a = (Math.PI / 3) * k;
+    const x = cx + r * Math.cos(a);
+    const y = cy + r * Math.sin(a);
+    if (k === 0) p.moveTo(x, y);
+    else p.lineTo(x, y);
+  }
+  p.close();
+  return p;
 }
 
 /** Intro strip: a pressure wave travelling as compressions / rarefactions of

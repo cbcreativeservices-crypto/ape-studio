@@ -114,6 +114,9 @@ export type MembraneViewProps = {
   dragTarget: 'strike' | 'section' | null;
   onStrike?: (r: number, thetaDeg: number) => void;
   onSection?: (y01: number) => void;
+  /** Glass px kept clear ABOVE the drawing for the drive hint (art grading
+   *  2026-10-16: the PRESS ▶ PLAY pill sat on the top edge). Default 0. */
+  topBand?: number;
   /** LOUDSPEAKER view: the cone's read + profile grid at the drive frequency. */
   cone?: { read: ConeRead; grid: Float32Array; driver: Driver; hz: number };
 };
@@ -152,11 +155,12 @@ export function MembraneView(p: MembraneViewProps) {
   const is3d = view === 'head3d';
   const isSection = view === 'section';
   const pad = 16;
+  const band = p.topBand ?? 0;
   const availW = width - pad * 2;
-  const availH = height - pad * 2;
+  const availH = height - pad * 2 - band;
   const D = Math.min(availW, availH) * (is3d ? 0.82 : isSection ? 0.68 : 0.92);
   const cx = width / 2;
-  const cy = height / 2 + (is3d ? D * 0.06 : isSection ? -height * 0.12 : 0);
+  const cy = band + (height - band) / 2 + (is3d ? D * 0.06 : isSection ? -height * 0.12 : 0);
   const R = D / 2;
   const ox = cx - R;
   const oy = cy - R;
@@ -723,10 +727,13 @@ export function MembraneView(p: MembraneViewProps) {
             {/* Bearing edge */}
             <Circle cx={cx} cy={cy} r={R} style="stroke" strokeWidth={2} color="#c4cad2" />
             {/* Strike point: the mallet head */}
-            <Circle cx={strikeX} cy={strikeY} r={9} color="rgba(0,0,0,0.45)" />
-            <Circle cx={strikeX} cy={strikeY} r={7.5} color="#e9e4d2" />
-            <Circle cx={strikeX} cy={strikeY} r={7.5} style="stroke" strokeWidth={2} color={p.dragTarget === 'strike' ? '#ffc64d' : '#8e8e96'} />
-            <Circle cx={strikeX} cy={strikeY} r={2.4} color="#ff6b5e" />
+            {/* A felt ball seen from above, lit from the upper-left (art grading
+                2026-10-16: a red centre dot made it read as a button/target). */}
+            <Circle cx={strikeX + 1.5} cy={strikeY + 2} r={8.5} color="rgba(0,0,0,0.45)" />
+            <Circle cx={strikeX} cy={strikeY} r={7.5}>
+              <RadialGradient c={vec(strikeX - 2.5, strikeY - 2.5)} r={10} colors={['#f6f1e2', '#ddd4bd', '#a99f88']} />
+            </Circle>
+            <Circle cx={strikeX} cy={strikeY} r={7.5} style="stroke" strokeWidth={p.dragTarget === 'strike' ? 2 : 1} color={p.dragTarget === 'strike' ? '#ffc64d' : '#6f6a5e'} />
             {isSection ? (
               <Group>
                 <SkLine p1={vec(ox, oy + D + 54)} p2={vec(ox + D, oy + D + 54)} color={MIDLINE_BLUE} strokeWidth={1} />

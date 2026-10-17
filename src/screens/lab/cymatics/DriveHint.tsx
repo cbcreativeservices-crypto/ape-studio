@@ -47,9 +47,14 @@ export function DriveHint({
   const sub = canPlay ? `or ${silentKey} — moves it without sound` : 'the tone is not available — the picture still moves';
   return (
     <View pointerEvents="none" style={[styles.wrap, { top: top * ts }]}>
-      <View style={styles.pill} accessible accessibilityRole="text" accessibilityLabel={`${main}. ${sub}.`}>
+      <View style={[styles.pill, { paddingVertical: 3 * ts }]} accessible accessibilityRole="text" accessibilityLabel={`${main}. ${sub}.`}>
         <Text style={[styles.main, { fontSize: 11 * ts }]}>{main}</Text>
-        <Text style={[styles.sub, { fontSize: 9.5 * ts }]}>{sub}</Text>
+        {/* ONE line while ▶ works (art grading 2026-10-16: the two-line pill
+            reached down over the plate's / the head's top edge). The silent-
+            drive alternative is in the well caption and the label above; it
+            stays on the glass only when ▶ is unavailable, where it is the
+            only way to move the picture. */}
+        {canPlay ? null : <Text style={[styles.sub, { fontSize: 9.5 * ts }]}>{sub}</Text>}
       </View>
     </View>
   );
@@ -60,7 +65,6 @@ const styles = StyleSheet.create({
   pill: {
     alignItems: 'center',
     paddingHorizontal: 10,
-    paddingVertical: 4,
     borderRadius: 8,
     backgroundColor: 'rgba(13,14,18,0.78)',
     borderWidth: 1,

@@ -634,6 +634,9 @@ function PlateStudio() {
                   dragTarget={dragTarget}
                   onPlace={(kind, x, y) => patch(kind === 'exciter' ? { exciter: { x, y } } : { support: { x, y } })}
                   onSection={setSectionY}
+                  // The drive hint's own band, always kept (no jump when a
+                  // drive starts): the pill never sits on the plate.
+                  topBand={24}
                 />
                 {/* HOLD #19: a still plate says why — nothing drives it. */}
                 <DriveHint driving={driving} canPlay={tone.engineReady} what="plate" silentKey="DRIVE › SILENT DRIVE" />

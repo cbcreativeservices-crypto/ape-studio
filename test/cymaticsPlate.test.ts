@@ -88,7 +88,11 @@ test('square degenerate pair: "+" is zero on the diagonals, "−" on the centre 
   // |cos(π/2)·1 − 1·cos(π)| / 2 = 0.5 exactly at (0.25, 0.5) (sign depends on
   // which member of the pair is m and which is n)
   assert.ok(Math.abs(Math.abs(minus.shape(0.25, 0.5)) - 0.5) < 1e-9, 'off-diagonal moves');
-  assert.ok(plus.hz < minus.hz, 'the "+" figure sits slightly lower');
+  // Leissa (NASA SP-160), free square plate, ν = 0.3: the diagonal "X"
+  // (−) at λ² = 19.596 sits BELOW the ring (+) at 24.270 (fix 2026-10-16).
+  assert.ok(minus.hz < plus.hz, 'the "−" (X) figure sits below the "+" (ring)');
+  assert.ok(Math.abs(plus.lam2 - 24.27) < 0.05, `+ λ² ${plus.lam2}`);
+  assert.ok(Math.abs(minus.lam2 - 19.596) < 0.05, `− λ² ${minus.lam2}`);
 });
 
 test('resonance readout: below / at / between', () => {
