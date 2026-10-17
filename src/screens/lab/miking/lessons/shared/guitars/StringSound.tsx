@@ -27,7 +27,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
+import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
@@ -111,7 +111,9 @@ function PluckSequenceCanvas({ sc, w, h, reveal, pickMm, label }: { sc: GuitarSc
     if (sp.opening.kind === 'round' || sp.opening.kind === 'oval') for (const kk of [1.5, 2.1]) ringsHole.addOval(Skia.XYWHRect(g.hole.x - g.hole.r * kk, -g.hole.r2 * kk, g.hole.r * 2 * kk, g.hole.r2 * 2 * kk));
     if (sp.opening.kind === 'coverplate' && sp.opening.ports) for (const s of [-1, 1]) ringsHole.addCircle(sp.opening.ports.x.mm, s * sp.opening.ports.y.mm, sp.opening.ports.d.mm * 0.8);
     if (sp.opening.kind === 'fholes') for (const s of [-1, 1]) ringsHole.addOval(Skia.XYWHRect(sp.opening.x.mm - 70, s * (sp.opening.d2?.mm ?? 60) - 22, 140, 44));
-    return { pulled, env, rest, ringsTop, ringsHole, topC, topR, y0: yAt(pickMm) };
+    const front = Skia.Path.Make();
+    front.addOval(Skia.XYWHRect(topC.x - topR, -topR * 0.92, topR * 2, topR * 2 * 0.92));
+    return { pulled, env, rest, ringsTop, ringsHole, topC, topR, front, y0: yAt(pickMm) };
   }, [sc, k, pickMm, A]); // eslint-disable-line react-hooks/exhaustive-deps
   // Each event fades in as the reveal reaches it (and stays once shown).
   const o2 = useDerivedValue(() => Math.max(0, Math.min(1, reveal.value - 1)));
@@ -152,6 +154,22 @@ function PluckSequenceCanvas({ sc, w, h, reveal, pickMm, label }: { sc: GuitarSc
     return q;
   });
   const liveO = useDerivedValue(() => (ring.value < 1 ? o2.value : 0));
+  // ④ SOUND LEAVES as fronts moving OUT from the driven top (three, then
+  // still; decorative motion only) — the dashed rings stay as the record.
+  const wave = useSharedValue(1);
+  useAnimatedReaction(
+    () => reveal.value >= 4,
+    (now, prev) => {
+      if (now && !prev && motion) {
+        wave.value = 0;
+        wave.value = withRepeat(withTiming(1, { duration: 1100, easing: Easing.out(Easing.quad) }), 3, false);
+      }
+    },
+    [motion],
+  );
+  const waveCx = paths.topC.x;
+  const waveT = useDerivedValue(() => [{ translateX: waveCx }, { scale: 1 + 0.75 * wave.value }, { translateX: -waveCx }]);
+  const waveO = useDerivedValue(() => (wave.value < 1 ? o4.value * (1 - wave.value) * 0.9 : 0));
   const labels: StaticLabel[] = [
     { id: 'n1', text: '① PICK', u: pickMm, v: paths.y0 + A + 34, align: 'center', tone: 'amber' },
     { id: 'n2', text: '② STRING', u: g.L * 0.62, v: -A - 30, align: 'center', tone: 'amber' },
@@ -186,6 +204,9 @@ function PluckSequenceCanvas({ sc, w, h, reveal, pickMm, label }: { sc: GuitarSc
             <Path path={brk(sp.bridge.x.mm, sp.bridge.w.mm)} style="stroke" strokeWidth={4} color={AMBER} />
           </Group>
           {/* ④ sound leaves the top and the opening */}
+          <Group transform={waveT} opacity={waveO}>
+            <Path path={paths.front} style="stroke" strokeWidth={4} color={BLUE} />
+          </Group>
           <Group opacity={o4}>
             <Path path={paths.ringsTop} style="stroke" strokeWidth={3} color={BLUE} opacity={0.75}>
               <DashPathEffect intervals={[18, 10]} />
