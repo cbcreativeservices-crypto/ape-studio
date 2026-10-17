@@ -4,7 +4,8 @@
  * conversion (scripts/mixing-guides/edits.py), not this file.
  *
  * HAND EDIT 2026-10-16 (owner, a working salsa pianist): the piano keeps its
- * low end — it doubles the bass. NEW COPY awaiting owner approval in: the EQ
+ * low end — it often switches from its montuno to doubling the bass (the
+ * montuno itself does NOT double the tumbao). Owner-APPROVED copy in: the EQ
  * piano row, the EQ caution note, the balance low-end sentence, the live
  * low-end row, the loudness "bass, piano and tumba" phrase and one
  * common-mistakes bullet. (The guide files have been hand-edited since the
@@ -84,7 +85,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal, coro (close behind, sometimes nearly equal in the montuno), bass, piano, horns (pushed up in intros and mambos), congas, timbales and bell, bongó, güiro and maracas, effects. The cowbell is often surprisingly loud, near vocal level in the montuno. There is often no kick drum: the bass, the piano’s left hand and the tumba carry the low end. The piano often doubles the bass in octaves or unison, so let bass and piano share roughly 50–200 Hz as one full line, and keep the tumba’s body around 100–200 Hz from masking them; with no kick, sub content is moderate, but the bass and the piano both belong in it. Lead vocal, bass and clave/maracas center. A common studio image (audience view): timbales slightly left with the high shell left, congas near center with the drums spread a little, bongó and bell to the right, piano either narrow mono slightly off-center or wide stereo, trombones spread, trumpets nearer center, coro spread wide in a stereo pair. Live, keep panning minimal; experienced salsa FOH engineers separate parts with mic choice and EQ rather than panning."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal, coro (close behind, sometimes nearly equal in the montuno), bass, piano, horns (pushed up in intros and mambos), congas, timbales and bell, bongó, güiro and maracas, effects. The cowbell is often surprisingly loud, near vocal level in the montuno. There is often no kick drum: the bass, the piano’s left hand and the tumba carry the low end. The piano often switches from its montuno to doubling the bass in octaves or unison, so let bass and piano share roughly 50–200 Hz as one full line, and keep the tumba’s body around 100–200 Hz from masking them; with no kick, sub content is moderate, but the bass and the piano both belong in it. Lead vocal, bass and clave/maracas center. A common studio image (audience view): timbales slightly left with the high shell left, congas near center with the drums spread a little, bongó and bell to the right, piano either narrow mono slightly off-center or wide stereo, trombones spread, trumpets nearer center, coro spread wide in a stereo pair. Live, keep panning minimal; experienced salsa FOH engineers separate parts with mic choice and EQ rather than panning."
     }
   ],
   "eq": {
@@ -94,7 +95,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano (montuno)",
         "cut": "No low cut that reaches the left hand: at most a rumble filter below the lowest note (27.5 Hz); −2–3 dB at 300–600 Hz only if boxy",
         "boost": "+2–3 dB at 2.5–4 kHz (attack); +1–2 dB shelf at 8–10 kHz",
-        "notes": "It reads as percussion and as bass: the montuno doubles the tumbao, so its low end goes to the subs with the bass (see the caution below)"
+        "notes": "The montuno reads as percussion, and the piano often switches from the montuno to doubling the bass, so its low end goes to the subs with the bass (see the caution below)"
       },
       {
         "source": "Baby bass / bass",
@@ -161,7 +162,7 @@ export const GUIDE: MixingGuide = {
       // NEW COPY — owner review (2026-10-16): the caution the owner asked for, explained rather than silently fixed.
       {
         "label": "Caution — don’t low-cut the piano:",
-        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano doubles the bass: the montuno’s left hand and the unison lines of the mambos and breaks run in octaves or unison with the tumbao. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son, mambo, cha-cha-chá, timba and Latin jazz, wherever the piano plays a montuno or doubles the bass. Use your ears and the room."
+        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos, breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son, mambo, cha-cha-chá, timba and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room."
       }
     ]
   },
@@ -351,7 +352,7 @@ export const GUIDE: MixingGuide = {
     },
     // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
     {
-      "text": "Don’t high-pass the piano like a pop keyboard: it doubles the bass and belongs in the subs with it (see the caution under EQ).",
+      "text": "Don’t high-pass the piano like a pop keyboard: it often switches to doubling the bass and belongs in the subs with it (see the caution under EQ).",
       "bullet": true
     },
     {
