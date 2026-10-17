@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the piano/Hammond EQ row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -144,7 +146,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano / Hammond",
         "cut": "HPF 60–100 Hz for comping chords; when the left hand plays boogie or walking bass, only a rumble filter below the lowest note; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 2–4 kHz on piano for attack",
-        "notes": "A boogie left hand often doubles the bass line: balance the two as one line rather than filtering it away. In an organ combo with no bassist, the organ plays the bass — leave its lows in"
+        "notes": "A boogie left hand often doubles the bass line: balance the two as one line rather than filtering it away. In an organ combo with no bassist, the organ plays the bass — leave its lows in. Talk with the keyboardist first, or know their music."
       }
     ],
     "notes": []

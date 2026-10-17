@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the organ-trio note under the EQ table.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -141,7 +143,7 @@ export const GUIDE: MixingGuide = {
       // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
       {
         "label": "Organ trio:",
-        "text": "the organist usually plays the bass line with the left hand or the pedals, so there is no bassist to make room for. Leave the organ’s low end in (a rumble filter at most) and send it to the subs; a high-pass set for a comping keyboard removes the band’s bass."
+        "text": "the organist usually plays the bass line with the left hand or the pedals, so there is no bassist to make room for. Leave the organ’s low end in (a rumble filter at most) and send it to the subs; a high-pass set for a comping keyboard removes the band’s bass. Talk with the keyboardist first, or know their music."
       }
     ]
   },

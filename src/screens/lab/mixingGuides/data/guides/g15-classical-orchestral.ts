@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the soloist/piano EQ row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -128,7 +130,7 @@ export const GUIDE: MixingGuide = {
         "source": "Concerto soloist / piano",
         "cut": "Soloist: HPF 40–80 Hz. Piano: a rumble filter only, below its lowest note (27.5 Hz) — the bottom octave is part of the music; −1–3 dB at 2–4 kHz if harsh",
         "boost": "Gentle +1 dB at 8–12 kHz for air",
-        "notes": "Keep the soloist in the hall, not in your lap"
+        "notes": "Keep the soloist in the hall, not in your lap. Talk with the keyboardist first, or know their music."
       }
     ],
     "notes": [

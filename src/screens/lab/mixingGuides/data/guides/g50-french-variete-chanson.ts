@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the grand piano EQ row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -96,7 +98,7 @@ export const GUIDE: MixingGuide = {
         "source": "Grand piano",
         "cut": "Piano and voice alone: a rumble filter only, below the lowest note — the left hand is the bass. With double bass or band: HPF 40–60 Hz; −2–3 dB at 250–400 Hz; dip 2–3 kHz under the vocal",
         "boost": "+1–2 dB at 80–120 Hz for weight; shelf at 8–10 kHz",
-        "notes": "Close mics live under the lid; carve a gentle pocket for the voice"
+        "notes": "Close mics live under the lid; carve a gentle pocket for the voice. Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Accordion",

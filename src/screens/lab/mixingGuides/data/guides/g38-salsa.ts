@@ -10,6 +10,8 @@
  * low-end row, the loudness "bass, piano and tumba" phrase and one
  * common-mistakes bullet. (The guide files have been hand-edited since the
  * conversion; regenerating would undo these and earlier fixes.)
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -162,7 +164,7 @@ export const GUIDE: MixingGuide = {
       // NEW COPY — owner review (2026-10-16): the caution the owner asked for, explained rather than silently fixed.
       {
         "label": "Caution — don’t low-cut the piano:",
-        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos, breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son, mambo, cha-cha-chá, timba and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room."
+        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos, breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son, mambo, cha-cha-chá, timba and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room. Talk with the keyboardist first, or know their music."
       }
     ]
   },

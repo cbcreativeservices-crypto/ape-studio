@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the piano EQ row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -133,7 +135,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano",
         "cut": "HPF 50–80 Hz in ballads and pop arrangements; −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 3–5 kHz",
-        "notes": "Duck mids under the vocal in ballads. In tropical, salsa-style songs where the piano switches from its montuno to doubling the bass, keep its low end (see the Salsa guide)"
+        "notes": "Duck mids under the vocal in ballads. In tropical, salsa-style songs where the piano switches from its montuno to doubling the bass, keep its low end (see the Salsa guide). Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Strings",

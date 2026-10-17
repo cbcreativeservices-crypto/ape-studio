@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the piano/keys EQ row, the organ sentence in balance and the live low-end row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -115,7 +117,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano / keys",
         "cut": "HPF 80–100 Hz for comping keys; when the piano’s left hand doubles the bass (common in shout music and traditional gospel), only a rumble filter below its lowest note; −2 dB at 250–500 Hz",
         "boost": "+2 dB at 2–5 kHz for definition",
-        "notes": "Keep out of the lead vocal’s 2–4 kHz zone"
+        "notes": "Keep out of the lead vocal’s 2–4 kHz zone. Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Bass",

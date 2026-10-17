@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the piano/keys EQ row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -111,7 +113,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano / keys",
         "cut": "HPF 60–80 Hz, but nothing above rumble when a keyboard part covers the bass line (common in reduced orchestrations); −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 3–5 kHz",
-        "notes": "Keep synth pads out of 1–4 kHz vocal zone"
+        "notes": "Keep synth pads out of 1–4 kHz vocal zone. Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Bass",

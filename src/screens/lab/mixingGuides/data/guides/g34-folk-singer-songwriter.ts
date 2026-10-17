@@ -5,6 +5,8 @@
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
  * correction): NEW COPY awaiting owner approval in the piano EQ row.
+ *
+ * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
 import type { MixingGuide } from '../types';
 
@@ -104,7 +106,7 @@ export const GUIDE: MixingGuide = {
         "source": "Piano",
         "cut": "Piano and voice alone: a rumble filter only, below the lowest note (27.5 Hz) — the left hand is the bass. With a band: HPF 80–100 Hz if the bass covers the low end; −2–3 dB at 250–500 Hz",
         "boost": "+1–2 dB at 3–5 kHz; shelf at 10 kHz",
-        "notes": "Dip 2–4 kHz slightly if it masks the voice"
+        "notes": "Dip 2–4 kHz slightly if it masks the voice. Talk with the keyboardist first, or know their music."
       },
       {
         "source": "Harmony vocals",
