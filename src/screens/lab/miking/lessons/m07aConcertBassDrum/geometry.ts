@@ -100,7 +100,8 @@ export const CBD_MODEL: InstrumentModel = {
   variants: [{ id: 'set', label: 'AS SET UP', blurb: 'Hanging in its tilting stand, the heads vertical, the brakes and wing bolts locked — as the percussion crew set it. The lab never moves the drum.', phrase: 'its stand locked' }],
   defaultVariant: 'set',
   views: {
-    side: { u0: -760, u1: 980, v0: -820, v1: FLOOR_Y + 30 },
+    // The top takes in the standing player's head (art grading fix 2026-10-16).
+    side: { u0: -760, u1: 980, v0: FLOOR_Y - 1820, v1: FLOOR_Y + 30 },
     top: { u0: -760, u1: 980, v0: -820, v1: 1150 },
   },
   yFloor: CBD_DIMS.centreH,

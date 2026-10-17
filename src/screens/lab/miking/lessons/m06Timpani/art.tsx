@@ -17,6 +17,8 @@ import { TIMPANO_DRAW } from '../shared/concert/timpanoSpec.ts';
 import { Mallet } from '../shared/concert/Mallets';
 import { FLOOR, make, rect, seg } from '../shared/concert/paths.ts';
 import { drumOf, HEAD_Y, R26, R29, TIMPANI, type Timpano } from './model.ts';
+import { metalSidePose, metalTopPose } from '../shared/metal/metalFigure.ts';
+import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 
 /** The mallets as drawn (illustrative: one about to strike, one raised). */
 export const MALLETS = {
@@ -30,6 +32,18 @@ export const MALLETS = {
   ],
 } as const;
 
+/** THE TIMPANIST (art grading fix 2026-10-16: the mallets hung in mid-air
+ *  with only a "← PLAYER" arrow): the house figure standing behind the pair,
+ *  inside the model's player keep-out (env.player, x −1080 … −R29 − 230), a
+ *  fist closed on each mallet — the right (near) hand on the one about to
+ *  strike, the left on the raised one. The metal family's standing poses
+ *  stand at u ≈ −362; they are moved by PLAYER_SHIFT. Drawn receded. */
+const PLAYER_SHIFT = -488;
+const mv = (p: { x: number; y: number }) => [p.x - PLAYER_SHIFT, p.y] as const;
+const SIDE_POSE = metalSidePose([mv(MALLETS.side[1].grip), mv(MALLETS.side[0].grip)]);
+const TOP_POSE = metalTopPose([mv(MALLETS.top[0].grip), mv(MALLETS.top[1].grip)]).pose;
+const SHIFT = [{ translateX: PLAYER_SHIFT }];
+
 const shown = (variant: VariantId): Timpano[] => TIMPANI.filter((t) => variant === 'four' || !t.four);
 
 let fl: { floor: ReturnType<typeof make>; edge: ReturnType<typeof make> } | null = null;
@@ -40,6 +54,9 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
   if (view === 'top') {
     return (
       <Group>
+        <Group transform={SHIFT}>
+          <PlayerBehind pose={TOP_POSE} dim={0.6} />
+        </Group>
         {drums.map((t) => (
           <Group key={t.id} transform={[{ translateX: t.c.x }, { translateY: t.c.z }]}>
             <TimpanoTop R={t.d.mm / 2} pedalA={Math.PI} />
@@ -48,6 +65,9 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
         {MALLETS.top.map((m, i) => (
           <Mallet key={i} kind="timpani" grip={m.grip} head={m.head} />
         ))}
+        <Group transform={SHIFT}>
+          <PlayerInFront pose={TOP_POSE} dim={0.6} />
+        </Group>
       </Group>
     );
   }
@@ -60,6 +80,9 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
         <LinearGradient start={vec(0, 0)} end={vec(0, 60)} colors={FLOOR} />
       </Path>
       <Path path={FL.edge} style="stroke" strokeWidth={2.5} color="#4a4c58" />
+      <Group transform={SHIFT}>
+        <PlayerBehind pose={SIDE_POSE} dim={0.6} />
+      </Group>
       {order.map((t, i) => (
         <Group key={t.id} transform={[{ translateX: t.c.x }]}>
           <TimpanoSide R={t.d.mm / 2} headY={HEAD_Y} floorY={0} dim={i === order.length - 1 ? 1 : 0.62 + 0.12 * i} />
@@ -68,6 +91,9 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
       {MALLETS.side.map((m, i) => (
         <Mallet key={i} kind="timpani" grip={m.grip} head={m.head} opacity={i === 1 ? 0.55 : 1} />
       ))}
+      <Group transform={SHIFT}>
+        <PlayerInFront pose={SIDE_POSE} dim={0.6} />
+      </Group>
     </Group>
   );
 }
@@ -76,7 +102,7 @@ export function timpaniLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const four = variant === 'four';
   if (view === 'top') {
     const out: ArtLabel[] = shown(variant).map((t) => ({ id: `d${t.inch}`, text: `${t.inch} IN`, u: t.c.x + t.d.mm / 2 + 70, v: t.c.z, align: 'left' as const, at: { u: t.c.x + t.d.mm * 0.3, v: t.c.z } }));
-    out.push({ id: 'player', text: '← PLAYER', u: -900, v: four ? -40 : -40, align: 'center', tone: 'muted', point: { u: -6000, v: -40 } });
+    out.push({ id: 'player', text: 'TIMPANIST', u: -900, v: four ? -560 : -480, align: 'center', tone: 'muted', at: { u: -362 + PLAYER_SHIFT, v: -14 } });
     out.push({ id: 'cond', text: 'CONDUCTOR →', short: 'CONDUCTOR', u: 930, v: four ? 1420 : 820, align: 'right', tone: 'muted' });
     // its leader to the 29 in drum's pedal (it ended in empty glass: clash sweep 2026-10-10)
     out.push({ id: 'pedals', text: 'PEDALS', u: -R29 - 140, v: four ? -760 : -650, align: 'center', tone: 'illustrative', at: { u: -R29 - 140, v: drumOf('t29').c.z } });
@@ -90,7 +116,7 @@ export function timpaniLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'bowl', text: 'BOWLS (KETTLES)', short: 'BOWLS', u: R26 + 80, v: HEAD_Y + 240, align: 'left', at: { u: R26 * 0.55, v: HEAD_Y + 170 } },
     { id: 'pedal', text: 'PEDAL', u: -R29 - 160, v: -120, align: 'center', tone: 'illustrative', at: { u: -R29 - 140, v: -30 } },
     { id: 'mallets', text: 'MALLETS', u: -560, v: -1250, align: 'center', tone: 'illustrative', at: { u: (MALLETS.side[1].grip.x + MALLETS.side[1].head.x) / 2, v: (MALLETS.side[1].grip.y + MALLETS.side[1].head.y) / 2 } },
-    { id: 'player', text: '← PLAYER', u: -930, v: -560, align: 'center', tone: 'muted', point: { u: -6000, v: -560 } },
+    { id: 'player', text: 'TIMPANIST', u: -560, v: -1780, align: 'left', tone: 'muted', at: { u: -345 + PLAYER_SHIFT + 60, v: -1700 } },
     { id: 'cond', text: 'CONDUCTOR →', short: 'COND. →', u: 930, v: -560, align: 'right', tone: 'muted' },
     { id: 'floor', text: 'FLOOR', u: 930, v: -24, align: 'right', tone: 'illustrative' },
   ];

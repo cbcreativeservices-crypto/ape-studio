@@ -18,6 +18,21 @@ import { Mallet } from '../shared/concert/Mallets';
 import { CAVITY, CHROME, CHROME_DARK, FLOOR, HEAD_CALF, HEAD_COATED, HOOP_CUT, HOOP_FAR, INK, PLY, PLY_LINE, make, oval, rect, rrect, seg } from '../shared/concert/paths.ts';
 import { HOOP, HOOP_X, MALLET, STAND } from './geometry.ts';
 import { D, FLOOR_Y, MID_X, R, SPEC } from './model.ts';
+import { metalSidePose, metalTopPose } from '../shared/metal/metalFigure.ts';
+import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+
+/** THE PLAYER (art grading fix 2026-10-16: the mallet hung in mid-air beside
+ *  the drum with a "PLAYER →" arrow): the house figure standing beyond the
+ *  playing head, inside the model's player keep-out (env.player, x 480–940,
+ *  z −760 … −150), facing the drum, the fist closed on the mallet's grip.
+ *  The metal family's standing poses face +x at u ≈ −362; mirrored about
+ *  MIRROR_C they stand at x ≈ 620 facing −x. Drawn receded. */
+const MIRROR_C = 258;
+const PLAYER_Z = -450;
+const SIDE_POSE = metalSidePose([[MIRROR_C - MALLET.grip.x, MALLET.grip.y - FLOOR_Y]]);
+const TOP_POSE = metalTopPose([[MIRROR_C - MALLET.grip.x, MALLET.grip.z - PLAYER_Z]]).pose;
+const SIDE_XF = [{ translateX: MIRROR_C }, { translateY: FLOOR_Y }, { scaleX: -1 }];
+const TOP_XF = [{ translateX: MIRROR_C }, { translateY: PLAYER_Z }, { scaleX: -1 }];
 
 const T = SPEC.tShell.mm;
 const RIN = R - T;
@@ -117,6 +132,9 @@ export function ConcertBassDrumArt({ view }: { view: ViewId; variant: VariantId 
   const side = view === 'side';
   return (
     <Group>
+      <Group transform={side ? SIDE_XF : TOP_XF}>
+        <PlayerBehind pose={side ? SIDE_POSE : TOP_POSE} dim={0.6} />
+      </Group>
       {side ? (
         <>
           <Path path={g.floor}>
@@ -190,6 +208,9 @@ export function ConcertBassDrumArt({ view }: { view: ViewId; variant: VariantId 
       ) : (
         <Mallet kind="bass" grip={{ x: MALLET.grip.x, y: MALLET.grip.z }} head={{ x: MALLET.head.x, y: MALLET.head.z }} />
       )}
+      <Group transform={side ? SIDE_XF : TOP_XF}>
+        <PlayerInFront pose={side ? SIDE_POSE : TOP_POSE} dim={0.6} />
+      </Group>
     </Group>
   );
 }
@@ -204,10 +225,10 @@ export function concertBassDrumLabels(view: ViewId): ArtLabel[] {
   if (view === 'side') {
     out.push({ id: 'stand', text: 'STAND (BRAKES LOCKED)', short: 'STAND', u: MID_X, v: FLOOR_Y - 120, align: 'center', tone: 'illustrative' });
     out.push({ id: 'mallet', text: 'MALLET', u: 600, v: -300, align: 'center', tone: 'illustrative', at: { u: (MALLET.head.x + MALLET.grip.x) / 2 + 40, v: (MALLET.head.y + MALLET.grip.y) / 2 - 18 } });
-    out.push({ id: 'player', text: 'PLAYER →', u: 960, v: 220, align: 'right', tone: 'muted', point: { u: 2400, v: 220 } });
+    out.push({ id: 'player', text: 'PLAYER', u: 960, v: FLOOR_Y - 1500, align: 'right', tone: 'muted', at: { u: MIRROR_C + 345, v: FLOOR_Y - 1650 } });
     out.push({ id: 'pivot', text: 'PIVOT', u: MID_X + 40, v: 36, align: 'left', tone: 'muted', at: { u: MID_X, v: 0 } });
   } else {
-    out.push({ id: 'player', text: 'PLAYER →', u: 960, v: -560, align: 'right', tone: 'muted', point: { u: 2400, v: -560 } });
+    out.push({ id: 'player', text: 'PLAYER', u: 960, v: PLAYER_Z - 330, align: 'right', tone: 'muted', at: { u: MIRROR_C + 362, v: PLAYER_Z } });
     out.push({ id: 'cond', text: 'CONDUCTOR ↓', short: 'COND. ↓', u: MID_X, v: 1080, align: 'center', tone: 'muted' });
     out.push({ id: 'rods', text: 'RODS ON BOTH HEADS', short: 'RODS', u: MID_X, v: HOOP.rOut + 110, align: 'center', tone: 'illustrative' });
   }
