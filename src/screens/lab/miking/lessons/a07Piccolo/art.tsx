@@ -32,7 +32,7 @@ export const PICCOLO_ART: LessonArt = windLessonArt({
   layoutOf,
   labels: {
     side: [
-      { id: 'body', text: 'BODY · KEYS', short: 'BODY', s: 230, side: -1, off: 150 },
+      { id: 'body', text: 'BODY · KEYS', short: 'BODY', s: 290, side: -1, off: 340 },
     ],
     top: [
       { id: 'head', text: 'HEAD JOINT', s: 40, side: -1, off: 140 },
@@ -41,9 +41,13 @@ export const PICCOLO_ART: LessonArt = windLessonArt({
   },
   points: {
     side: [
-      { id: 'jet', text: 'AIR JET', at: (L) => jetTip(L), du: 70, dv: 70 },
-      { id: 'head', text: 'HEAD JOINT · LIP PLATE', short: 'HEAD JOINT', at: (L) => frameAt(L, 30).p, du: -300, dv: -90 },
-      { id: 'ear', text: 'RIGHT EAR', at: (L) => add(L.body.head.c, { x: -92, y: 10, z: 0 }), du: -150, dv: -190 },
+      // (Art fix 2026-10-16, grading: "labels on the player's face".) Each
+      // name stands off the head with a short leader that leaves the face at
+      // once: the ear's to the left at its own height, the lip plate's and
+      // the jet's out to the right under the jaw.
+      { id: 'jet', text: 'AIR JET', at: (L) => jetTip(L), du: 230, dv: 60 },
+      { id: 'head', text: 'HEAD JOINT · LIP PLATE', short: 'HEAD JOINT', at: (L) => frameAt(L, 30).p, du: 240, dv: -15 },
+      { id: 'ear', text: 'RIGHT EAR', at: (L) => add(L.body.head.c, { x: -92, y: 10, z: 0 }), du: -90, dv: -30 },
     ],
     top: [{ id: 'jet', text: 'AIR JET', at: (L) => jetTip(L), du: 90, dv: 40 }],
   },
