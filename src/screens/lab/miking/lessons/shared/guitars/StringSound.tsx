@@ -27,7 +27,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
+import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
@@ -162,7 +162,11 @@ function PluckSequenceCanvas({ sc, w, h, reveal, pickMm, label }: { sc: GuitarSc
     (now, prev) => {
       if (now && !prev && motion) {
         wave.value = 0;
-        wave.value = withRepeat(withTiming(1, { duration: 1100, easing: Easing.out(Easing.quad) }), 3, false);
+        // Three fronts, one after another — a bounded sequence started by the
+        // learner's own STEP or PLAY ONCE, never a loop (D8).
+        const out = () => withTiming(1, { duration: 1100, easing: Easing.out(Easing.quad) });
+        const back = () => withTiming(0, { duration: 0 });
+        wave.value = withSequence(out(), back(), out(), back(), out());
       }
     },
     [motion],

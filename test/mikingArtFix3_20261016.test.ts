@@ -96,7 +96,8 @@ describe('Guitars & amps — the fretting hand drawn with its arch; the plucked 
     assert.match(s, /<Path path=\{liveString\}/);
     assert.match(read('shared/guitars/GuitarArt.tsx'), /\.find\(clear\)/);
     // ④ fronts move out from the driven top (three, then still).
-    assert.match(s, /withRepeat\(withTiming\(1, \{ duration: 1100/);
+    assert.match(s, /wave\.value = withSequence\(out\(\), back\(\), out\(\), back\(\), out\(\)\);/);
+    assert.doesNotMatch(s, /\bwithRepeat\(/, 'never a loop (D8)');
     assert.match(s, /<Group transform=\{waveT\} opacity=\{waveO\}>/);
   });
 });
