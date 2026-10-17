@@ -318,7 +318,8 @@ describe('figure anatomy (owner 2026-10-08): every pose builder is drawn correct
     const fr = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/freereed/PlayerProfile.tsx', import.meta.url), 'utf8');
     assert.match(fr, /head: intoCollar\(figureHeadProfile\(/);
     const seating = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/ensemble/SeatingArt.tsx', import.meta.url), 'utf8');
-    assert.match(seating, /const prof = Math\.abs\(rightU\) < 0\.5;/, 'ensemble bodies turn with the player (a side-on singer is drawn in profile)');
+    // (Lab art fix 2026-10-16: a classical group's 60°-turned players face-on, both ends alike.)
+    assert.match(seating, /const prof = Math\.abs\(rightU\) < \(so\.classical \? 0\.45 : 0\.5\);/, 'ensemble bodies turn with the player (a side-on singer is drawn in profile)');
     assert.doesNotMatch(seating, /addFig\(b, 'skin', capsule\(Q\(0, 30, 880\)/, 'no rod-shaped hand at the thigh');
   });
 

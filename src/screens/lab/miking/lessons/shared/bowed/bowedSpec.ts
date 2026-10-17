@@ -201,6 +201,38 @@ export const BASS: BowedSpec = {
   shoulderSlope: 0.85,
 };
 
+/**
+ * THE ORCHESTRA'S DOUBLE BASS (lab art fix 2026-10-16): the 3/4 size most
+ * orchestral and jazz players use — about 1.8 m from the tail to the
+ * scroll (the full-size museum bass above is 1.97 m). The ensembles draw and
+ * pose this one: on its endpin the nut sits at the player's eye level and the
+ * bridge at the top of the thigh. Every number is a drawing default of the
+ * usual 3/4 class (body ≈ 111 cm, string ≈ 105 cm, bouts ≈ 52 / 37 / 67 cm,
+ * ribs ≈ 20 cm); the flat back and the sloping shoulders as BASS.
+ */
+export const BASS_34: BowedSpec = {
+  ...BASS,
+  body: dd(1110, '3/4 bass body length'),
+  overall: dd(1800, '3/4 bass overall length, tail to scroll'),
+  lower: dd(670, '3/4 bass lower bout'),
+  middle: dd(370, '3/4 bass middle bout'),
+  upper: dd(520, '3/4 bass upper bout'),
+  rib: dd(200, '3/4 bass rib height'),
+  stop: dd(630, '3/4 bass stop (body neck edge to bridge)'),
+  string: dd(1050, '3/4 bass vibrating string length'),
+  bridgeH: dd(150, '3/4 bass bridge height'),
+  bridgeW: dd(150, '3/4 bass bridge width'),
+  fholeY: dd(160, '3/4 bass f-hole offset across the top'),
+  fholeX: [-142, 125],
+  tailpiece: [-440, -162],
+  archTop: dd(28, '3/4 bass top arching height'),
+  fbNut: dd(43, '3/4 bass fingerboard width at the nut'),
+  fbEnd: dd(96, '3/4 bass fingerboard width at its end'),
+  endpin: dd(90, '3/4 bass endpin out-length (set so the nut is at eye level)'),
+  collar: dd(25, '3/4 bass endpin collar below the tail'),
+  contact: [38, 160],
+};
+
 export const BOWED: Record<BowedId, BowedSpec> = { violin: VIOLIN, viola: VIOLA, cello: CELLO, bass: BASS };
 
 /* ── frame-B stations, DERIVED from the row ── */
@@ -273,7 +305,10 @@ const TPL_L = 356;
 const TPL_LOWER: readonly Q[] = [[0, 0], [3, 32], [12, 62], [30, 86], [56, 100], [85, 103], [114, 98], [132, 88], [143, 79]];
 const TPL_C: readonly Q[] = [[143, 79], [137, 72], [141, 64], [152, 58], [178, 55.5], [203, 58.5], [213, 63], [219, 70], [214, 77]];
 const TPL_UPPER_ROUND: readonly Q[] = [[214, 77], [224, 80.5], [242, 83], [268, 84], [300, 80], [326, 66], [345, 42], [354, 18], [356, 0]];
-const TPL_UPPER_VIOL: readonly Q[] = [[214, 77], [222, 80], [236, 82], [250, 82.5], [272, 78.5], [300, 65], [326, 47], [345, 33], [353, 24], [356, 12], [356, 0]];
+// (Lab art fix 2026-10-16: the bass's SLOPING SHOULDERS start just past the
+// upper corner and run in a near-straight diagonal to the neck block — the old
+// run stayed wide to u 272 and rounded over like a violin's upper bout.)
+const TPL_UPPER_VIOL: readonly Q[] = [[214, 77], [221, 80.5], [230, 82], [240, 81.5], [254, 77], [274, 67], [298, 55.5], [322, 41.5], [340, 32], [350, 25], [355, 14], [356, 0]];
 
 /** A Catmull-Rom run through `pts` (the ends held), `n` steps a span. */
 function catmull(pts: readonly Q[], n = 10): [number, number][] {
@@ -310,8 +345,8 @@ function patternOf(s: BowedSpec): Pattern {
   if (hit) return hit;
   const viol = s.shoulderSlope > 0.5;
   const upper = viol ? TPL_UPPER_VIOL : TPL_UPPER_ROUND;
-  const upMax = viol ? 82.5 : 84;
-  const upAt = viol ? 250 : 268;
+  const upMax = viol ? 82 : 84;
+  const upAt = viol ? 230 : 268;
   // Template u → the row's fraction of the body (its three stations).
   const uMap: readonly Q[] = [[0, 0], [85, s.stations.lower], [178, s.stations.waist], [upAt, s.stations.upper], [TPL_L, 1]];
   // Template w → mm: the lower bout's scale to the lower corner, the middle's at the waist, the upper's from the upper corner.

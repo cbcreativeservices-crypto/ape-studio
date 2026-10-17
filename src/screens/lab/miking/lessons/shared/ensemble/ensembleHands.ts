@@ -25,7 +25,7 @@
  * to the lips by the hands, the upper arms down beside the body.
  */
 import { curled, fitHand, h3, handFrame, handOn, HAND, jointBendsDeg, reachThumb, thumbJoints, THUMB_REST, v3, wristBendDeg, type DigitGoal, type HandFrame, type HandSkeleton, type ThumbGoal, type ThumbPose, type V3 } from '../players/handModel.ts';
-import { BOWED, fbHalf, fingerboardZ, stationsOf, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
+import { BASS_34, BOWED, fbHalf, fingerboardZ, stationsOf, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
 import { GUITAR_POSE, type GuitarKind } from './bandStage.ts';
 
 const { add, sub, mul, dot, len, unit } = h3;
@@ -308,24 +308,40 @@ export const BOWED_POSE = {
   // ear in front of the shoulder (the old axis leaned 19° back from 330 mm
   // ahead and ran the neck through the chest).
   cello: { tail: L3(0, 400, 120), d: unit(L3(-0.22, -0.242, 0.945)) },
-  // The bass standing at the player's left front, its bridge where the band
-  // seatings hear it (bandStage.UB_BRIDGE: 470 ahead, 60 left, 830 up), leaning
-  // ≈ 13° back toward the player.
-  bass: { tail: sub(L3(-60, 470, 830), mul(unit(L3(-0.07, -0.21, 0.975)), 497)), d: unit(L3(-0.07, -0.21, 0.975)) },
+  // The bass (the 3/4 orchestra size, BASS_34 — lab art fix 2026-10-16)
+  // standing at the player's left front, leaning ≈ 13° back toward the player,
+  // its ENDPIN ON THE FLOOR: the tail block where the endpin and its collar
+  // (mounted at the rib's middle) reach the boards, so the bridge is at the top of the thigh and the nut
+  // at eye level (the old pose hung a full-size bass from its bridge at
+  // 830 mm: the endpin 70 mm off the floor and the scroll 2.26 m up).
+  bass: { tail: L3(-40, 560, ((BASS_34.endpin?.mm ?? 0) + (BASS_34.collar?.mm ?? 0)) * 0.975 + (BASS_34.rib.mm / 2) * 0.21), d: unit(L3(-0.07, -0.21, 0.975)) },
 } as const;
+
+/** A bowed instrument's frame as the hold poses it (the drawings use the same
+ *  one, so the hands sit on the drawn board): frame-B (x along, y across to the
+ *  highest string, z out of the top) into the player's frame. */
+export function bowedFrameOf(k: 'violin' | 'viola' | 'cello' | 'bass') {
+  const spec = ensembleBowed(k);
+  const P0 = BOWED_POSE[k];
+  const under = k === 'violin' || k === 'viola';
+  return { spec, d: P0.d, ...bowedFrame(spec, P0.tail, P0.d, under ? 28 * DEG : 0, v3(1, 0, 0)) };
+}
+
+/** The spec the ensembles draw and pose (the bass is the 3/4 size). */
+export const ensembleBowed = (k: 'violin' | 'viola' | 'cello' | 'bass'): BowedSpec => (k === 'bass' ? BASS_34 : BOWED[k]);
 
 /** An upright instrument's neck as the hands see it (the drawings follow
  *  it): the fingerboard's face from the neck's heel to the nut — raised off
  *  the top plate by the board's height — and the scroll beyond. */
 export function boardLine(k: 'cello' | 'bass'): { heel: V3; nut: V3; scroll: V3 } {
-  const spec = BOWED[k];
+  const spec = ensembleBowed(k);
   const P0 = BOWED_POSE[k];
   const { st, B } = bowedFrame(spec, P0.tail, P0.d, 0, v3(1, 0, 0));
   return { heel: B(st.neckX, 0, fingerboardZ(spec, st.neckX)), nut: B(st.nutX, 0, fingerboardZ(spec, st.nutX)), scroll: B(st.scrollX, 0, fingerboardZ(spec, st.nutX) * 0.6) };
 }
 
 function bowedHold(k: 'violin' | 'viola' | 'cello' | 'bass', plucked: boolean): Hold {
-  const spec = BOWED[k];
+  const spec = ensembleBowed(k);
   const P0 = BOWED_POSE[k];
   const under = k === 'violin' || k === 'viola';
   const standing = k === 'bass';
@@ -358,7 +374,7 @@ function bowedHold(k: 'violin' | 'viola' | 'cello' | 'bass', plucked: boolean): 
   const left = arm('L', S.L, lsk, [0, 1, 2, 3, 4], 'behind', B(midX, 0, fz), under ? {} : { high: true });
   // The bow: its grip point (the frog), the stick toward the contact point.
   const contact = B(st.contactX, 0, stringZ(spec, st.contactX));
-  const frog = under ? L3(230, 225, 985) : k === 'cello' ? L3(320, 330, 560) : L3(300, 380, 900);
+  const frog = under ? L3(230, 225, 985) : k === 'cello' ? L3(320, 330, 560) : L3(300, 400, 740);
   if (plucked) {
     // Pizzicato (a jazz or folk bass): the index and middle fingers pull the
     // strings over the fingerboard's end, the thumb anchored on the board's edge.

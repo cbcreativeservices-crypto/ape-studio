@@ -18,7 +18,7 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Canvas, Circle, DashPathEffect, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, DashPathEffect, Group, Line, Path, PathOp, Skia, vec, type SkRect } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import { fitValue } from '../../../../../../theme/legibility';
 import { MikingMicArt } from '../../../../../../features/lab/micDrawings';
@@ -32,7 +32,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import { add, DEG, dist, fmtM, mul, planDir, unit, uv, uvDir, v3, type StageView } from './frameS.ts';
 import { arrayCapsules } from './stereoArray.ts';
 import { headTop, soundPoint, type Seat, type Seating } from './seating.ts';
-import { SeatingView, SECTION_SLICE } from './SeatingArt';
+import { isClassical, SeatingView, seatShapes, SECTION_SLICE, type SeatShape } from './SeatingArt';
 import { ArrayDetail, ArrayRig, rigHardware, rigPoints, type RigSpec } from './ArrayArt';
 import { stageClearOf, stageHit, stageLabels } from './stageLabels.ts';
 import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
@@ -233,7 +233,10 @@ const NONE: readonly never[] = Object.freeze([]);
  * such place keeps its own places (fitLabels then decides). Px throughout;
  * the result is the label's first place, so fitLabels takes it as it is.
  */
-function rowLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, topV: number, floorV: number, rightFirst: boolean, aboveFirst: boolean): { out: StaticLabel[]; failed: Set<number> } {
+/** A label's part points in the order to try (its `ats`, else its `at`). */
+const atsOf = (l: StaticLabel): { u: number; v: number }[] => ((l as StaticLabel & { ats?: { u: number; v: number }[] }).ats ?? (l.at ? [l.at] : []));
+type LeaderOk = ((ln: { x1: number; y1: number; x2: number; y2: number }, id: string) => boolean) | null;
+function rowLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, topV: number, floorV: number, rightFirst: boolean, aboveFirst: boolean, leaderOk: LeaderOk = null): { out: StaticLabel[]; failed: Set<number> } {
   const hpx = 9.5 * scale * 1.25;
   const taken: LabelRect[] = [...(corner ? [corner] : []), ...fixed.map((l) => labelRect(l, xf, scale, maxX))];
   const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -282,14 +285,24 @@ function rowLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXfor
         if (taken.some((t) => overlaps(r, t)) || !inMm(r)) continue;
         const fat = { x0: r.x0 - 5, x1: r.x1 + 5, y0: r.y0 - 3, y1: r.y1 + 3 };
         if (lines.some((sg) => segHitsRect(sg, fat))) continue;
-        const ln = leaderLine(r, xf, at);
-        if (ln && (taken.some((t) => segHitsRect(ln, { x0: t.x0 - 5, x1: t.x1 + 5, y0: t.y0 - 3, y1: t.y1 + 3 })) || lines.some((sg) => segsCross(sg, ln)) || dots.some((d) => passes(ln, d)))) continue;
-        const me = { x: xf.ox + at.u * xf.s, y: xf.oy + at.v * xf.s };
-        if (lines.some((sg) => passes(sg, me))) continue;
+        // (Lab art fix 2026-10-16: the section's visible points in turn — a
+        // leader to the nearest one that keeps off every other section.)
+        let pick: { at: { u: number; v: number }; ln: ReturnType<typeof leaderLine> } | null = null;
+        for (const a of atsOf(l)) {
+          const ln = leaderLine(r, xf, a);
+          if (ln && (taken.some((t) => segHitsRect(ln, { x0: t.x0 - 5, x1: t.x1 + 5, y0: t.y0 - 3, y1: t.y1 + 3 })) || lines.some((sg) => segsCross(sg, ln)) || dots.some((d) => passes(ln, d)))) continue;
+          const me = { x: xf.ox + a.u * xf.s, y: xf.oy + a.v * xf.s };
+          if (lines.some((sg) => passes(sg, me))) continue;
+          if (ln && leaderOk && !leaderOk(ln, l.id)) continue;
+          pick = { at: a, ln };
+          break;
+        }
+        if (!pick) continue;
+        const ln = pick.ln;
         taken.push(r);
         if (ln) lines.push(ln);
         row.used.push([r.x0, r.x1]);
-        out[i] = { ...cand, alts: l.alts };
+        out[i] = { ...cand, at: pick.at, alts: l.alts };
         done = true;
         break;
       }
@@ -305,11 +318,11 @@ function rowLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXfor
  *  A section name with no clean place at this zoom is LEFT OUT (the house
  *  level-of-detail rule: no crossing leaders, no words on the drawing) — it
  *  appears when the drawing is zoomed in, and a tap still names the section. */
-function rowLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, topV: number, floorV: number): StaticLabel[] {
+function rowLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, topV: number, floorV: number, leaderOk: LeaderOk = null): StaticLabel[] {
   let best: { out: StaticLabel[]; failed: Set<number> } | null = null;
   for (const rightFirst of [false, true])
     for (const aboveFirst of [false, true]) {
-      const r = rowLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, topV, floorV, rightFirst, aboveFirst);
+      const r = rowLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, topV, floorV, rightFirst, aboveFirst, leaderOk);
       if (!best || r.failed.size < best.failed.size) best = r;
       if (best.failed.size === 0) break;
     }
@@ -327,7 +340,7 @@ function rowLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, s
  * A name with no clean place at this zoom is left out (the house
  * level-of-detail rule); it appears when zoomed in, and a tap still names it.
  */
-function planLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, reverse: boolean): { out: StaticLabel[]; failed: Set<number> } {
+function planLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, reverse: boolean, leaderOk: LeaderOk = null): { out: StaticLabel[]; failed: Set<number> } {
   const hpx = 9.5 * scale * 1.25;
   const taken: LabelRect[] = [...(corner ? [corner] : []), ...fixed.map((l) => labelRect(l, xf, scale, maxX))];
   const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -396,13 +409,23 @@ function planLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXfo
         if (taken.some((t) => overlaps(r, t)) || !inMm(r)) continue;
         const fat = { x0: r.x0 - 5, x1: r.x1 + 5, y0: r.y0 - 3, y1: r.y1 + 3 };
         if (lines.some((sg) => segHitsRect(sg, fat))) continue;
-        const ln = leaderLine(r, xf, at);
-        if (ln && (taken.some((t) => segHitsRect(ln, { x0: t.x0 - 5, x1: t.x1 + 5, y0: t.y0 - 3, y1: t.y1 + 3 })) || lines.some((sg) => segsCross(sg, ln)) || dots.some((d) => passes(ln, d)))) continue;
-        if (lines.some((sg) => passes(sg, { x: ax, y: ay }))) continue;
+        // (Lab art fix 2026-10-16: the section's visible points in turn; no
+        // leader across another section's players.)
+        let pick: { at: { u: number; v: number }; ln: ReturnType<typeof leaderLine> } | null = null;
+        for (const a of atsOf(l)) {
+          const ln = leaderLine(r, xf, a);
+          if (ln && (taken.some((t) => segHitsRect(ln, { x0: t.x0 - 5, x1: t.x1 + 5, y0: t.y0 - 3, y1: t.y1 + 3 })) || lines.some((sg) => segsCross(sg, ln)) || dots.some((d) => passes(ln, d)))) continue;
+          if (lines.some((sg) => passes(sg, { x: xf.ox + a.u * xf.s, y: xf.oy + a.v * xf.s }))) continue;
+          if (ln && leaderOk && !leaderOk(ln, l.id)) continue;
+          pick = { at: a, ln };
+          break;
+        }
+        if (!pick) continue;
+        const ln = pick.ln;
         taken.push(r);
         if (ln) lines.push(ln);
         // The place is final: fitLabels keeps it (no alts to wander to).
-        out[i] = { ...cand, alts: undefined };
+        out[i] = { ...cand, at: pick.at, alts: undefined };
         done = true;
         break;
       }
@@ -414,11 +437,111 @@ function planLayoutOnce(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXfo
   for (const { l, i } of rest) if (!place(l, i, false)) failed.add(i);
   return { out, failed };
 }
-function planLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null): StaticLabel[] {
-  const a = planLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, false);
-  const b = a.failed.size ? planLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, true) : a;
+function planLayout(labels: StaticLabel[], fixed: StaticLabel[], xf: ViewXform, scale: number, maxX: number, maxY: number, clearOf: (u0: number, v0: number, u1: number, v1: number) => boolean, corner: LabelRect | null, leaderOk: LeaderOk = null): StaticLabel[] {
+  const a = planLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, false, leaderOk);
+  const b = a.failed.size ? planLayoutOnce(labels, fixed, xf, scale, maxX, maxY, clearOf, corner, true, leaderOk) : a;
   const best = b.failed.size < a.failed.size ? b : a;
   return best.out.filter((_, i) => !best.failed.has(i));
+}
+
+/**
+ * THE PLAYERS' REAL SHAPES as the label rules' obstacles (lab art fix
+ * 2026-10-16; SeatingArt.seatShapes): what is at a point (the NEAREST
+ * player's shape there — an elevation's occlusion), whether a box of words
+ * touches any drawn part, where a section can be seen, and whether a leader
+ * keeps to its own section until it reaches open floor.
+ */
+function shapeTools(shapes: readonly SeatShape[]) {
+  const inside = (b: SkRect, u: number, v: number) => u >= b.x && u <= b.x + b.width && v >= b.y && v <= b.y + b.height;
+  const meets = (b: SkRect, u0: number, v0: number, u1: number, v1: number) => b.x < u1 && b.x + b.width > u0 && b.y < v1 && b.y + b.height > v0;
+  const topAt = (u: number, v: number): SeatShape | null => {
+    let best: SeatShape | null = null;
+    for (const sh of shapes) {
+      if (best && sh.near <= best.near) continue;
+      if (!inside(sh.bounds, u, v)) continue;
+      if (sh.parts.some((q) => inside(q.b, u, v) && q.p.contains(u, v))) best = sh;
+    }
+    return best;
+  };
+  const rectClear = (u0: number, v0: number, u1: number, v1: number): boolean => {
+    let box: ReturnType<typeof Skia.Path.Make> | null = null;
+    for (const sh of shapes) {
+      if (!meets(sh.bounds, u0, v0, u1, v1)) continue;
+      for (const q of sh.parts) {
+        if (!meets(q.b, u0, v0, u1, v1)) continue;
+        if (q.b.x >= u0 && q.b.x + q.b.width <= u1 && q.b.y >= v0 && q.b.y + q.b.height <= v1) return false;
+        if (!box) {
+          box = Skia.Path.Make();
+          box.addRect(Skia.XYWHRect(u0, v0, u1 - u0, v1 - v0));
+        }
+        const x = Skia.Path.MakeFromOp(box, q.p, PathOp.Intersect);
+        if (x && !x.isEmpty()) {
+          const r = x.getBounds();
+          if (r.width > 0.5 && r.height > 0.5) return false;
+        }
+      }
+    }
+    return true;
+  };
+  /** Where a section's name points: a point of one of its players that no
+   *  nearer player hides (the front-most player first: the instrument, then
+   *  the head, then the chest); `fallback` when none shows. */
+  const anchors = (s: Seating, view: StageView, id: string, fallback: { u: number; v: number } | undefined): { u: number; v: number }[] => {
+    const mine = shapes.filter((q) => q.section === id).sort((a, b) => b.near - a.near);
+    const out: { u: number; v: number }[] = [];
+    const ok = (c: { u: number; v: number }) => topAt(c.u, c.v)?.section === id;
+    if (!mine.length) return id === 'cond' && fallback ? [fallback] : [];
+    const seats = mine.map((m) => (id === 'cond' ? s.conductor : s.seats.find((q) => q.id === m.id))).filter((q): q is Seat => !!q);
+    if (view === 'plan' && seats.length > 1) {
+      // From above: the player nearest the section's middle.
+      const cx = seats.reduce((a, q) => a + q.p.x, 0) / seats.length;
+      const cz = seats.reduce((a, q) => a + q.p.z, 0) / seats.length;
+      seats.sort((a, b) => Math.hypot(a.p.x - cx, a.p.z - cz) - Math.hypot(b.p.x - cx, b.p.z - cz));
+    }
+    if (fallback && ok(fallback)) out.push(fallback);
+    for (const q of seats) {
+      const sp = soundPoint(q);
+      const o = uv(view, q.p);
+      const cands = view === 'plan' ? [uv('plan', v3(sp.x, 0, sp.z)), o] : [uv(view, sp), { u: o.u, v: o.v - headTop(q) + 113 }, { u: o.u, v: o.v - headTop(q) + 420 }];
+      // (A grand is named on its case and lid, not on its pianist's chair.)
+      if (q.kind === 'piano' && view !== 'plan') cands.unshift(uv(view, v3(sp.x, sp.y - 450, sp.z)), uv(view, v3(sp.x, sp.y - 150, sp.z)));
+      for (const c of cands) if (ok(c)) out.push(c);
+      if (view !== 'plan') {
+        // An elevation: the player's lowest and highest visible points in a
+        // few columns (a short leader to the floor row or the row overhead
+        // when a nearer player covers the middle).
+        const top = o.v - headTop(q) - 40;
+        for (const du of [0, -120, 120, -240, 240]) {
+          // (From the lap up: a leader never names a section by a chair leg or a shoe.)
+          for (let v = o.v - 480; v > top; v -= 30) if (ok({ u: o.u + du, v })) {
+            out.push({ u: o.u + du, v });
+            break;
+          }
+          for (let v = top; v < o.v - 480; v += 30) if (ok({ u: o.u + du, v })) {
+            out.push({ u: o.u + du, v });
+            break;
+          }
+        }
+      }
+      if (out.length >= 14) break;
+    }
+    if (!out.length && id === 'cond' && fallback) out.push(fallback);
+    return out;
+  };
+  /** A leader (px) from its part to the words: through its own section's
+   *  players and open floor — never through another section's player. */
+  const leaderClear = (ln: { x1: number; y1: number; x2: number; y2: number }, id: string, xf: ViewXform) => {
+    const L = Math.hypot(ln.x2 - ln.x1, ln.y2 - ln.y1);
+    for (let d = 0; d <= L - 1.5; d += 2) {
+      const t = d / Math.max(1e-6, L);
+      const u = (ln.x1 + (ln.x2 - ln.x1) * t - xf.ox) / xf.s;
+      const v = (ln.y1 + (ln.y2 - ln.y1) * t - xf.oy) / xf.s;
+      const top = topAt(u, v);
+      if (top && top.section !== id) return false;
+    }
+    return true;
+  };
+  return { topAt, rectClear, anchors, leaderClear };
 }
 
 export function EnsembleStage(p: EnsembleStageProps) {
@@ -629,7 +752,25 @@ export function EnsembleStage(p: EnsembleStageProps) {
     // Round 2 (2026-10-10): a label's words keep off the main array's stand
     // and boom too (CONDUCTOR had landed on the mast) — the rig's mast and
     // boom as segments, 250 mm either side.
-    const players = stageClearOf(seating, view, slice);
+    // Lab art fix 2026-10-16 (the classical groups): the players' REAL drawn
+    // shapes keep the words off them, every section is pointed at where its
+    // player can be seen, and no leader runs through another section.
+    const real = isClassical(seating) ? shapeTools(seatShapes(seating, view)) : null;
+    const boxes = stageClearOf(seating, view, slice);
+    const podium = seating.podium ? (() => {
+      const P0 = seating.podium!;
+      const a = uv(view, v3(P0.c.x - P0.w / 2, -P0.h, P0.c.z - P0.d / 2));
+      const b = uv(view, v3(P0.c.x + P0.w / 2, 0, P0.c.z + P0.d / 2));
+      return { u0: Math.min(a.u, b.u), u1: Math.max(a.u, b.u), v0: Math.min(a.v, b.v), v1: Math.max(a.v, b.v) };
+    })() : null;
+    const players = real ? (u0: number, v0: number, u1: number, v1: number) => real.rectClear(u0, v0, u1, v1) && !(podium && u0 < podium.u1 && u1 > podium.u0 && v0 < podium.v1 && v1 > podium.v0) : boxes;
+    // (A section no point of which can be seen — a player wholly behind a
+    // nearer one in a side view — is not pointed at: a tap still names it.)
+    const art2 = real ? art.flatMap((l) => {
+      const ats = real.anchors(seating, view, l.id, l.at);
+      return ats.length ? [{ ...l, at: ats[0], ats }] : [];
+    }) : art;
+    const leaderOk: LeaderOk = real ? (ln, id) => real.leaderClear(ln, id, xf) : null;
     const segsOf = rigs.flatMap((r) => {
       const hw = rigHardware(r, arrayCapsules(r.id, r.params, r.place));
       const a = uv(view, v3(hw.foot.x, -380, hw.foot.z));
@@ -649,7 +790,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
     };
     const fixed: StaticLabel[] = [...(dimG?.lab ?? []), ...singlesG.flatMap((q) => (q.dim ? [q.dim.label] : [])), ...extraLabels];
     const heads = seating.seats.filter((q) => view !== 'section' || Math.abs(q.p.x) <= slice).map((q) => uv(view, q.p).v - headTop(q));
-    const planned = view === 'plan' ? planLayout(art, fixed, xf, textScale, w, h, clearOf, corner ?? null) : rowLayout(art, fixed, xf, textScale, w, h, clearOf, corner ?? null, Math.min(...heads, 0), 0);
+    const planned = view === 'plan' ? planLayout(art2, fixed, xf, textScale, w, h, clearOf, corner ?? null, leaderOk) : rowLayout(art2, fixed, xf, textScale, w, h, clearOf, corner ?? null, Math.min(...heads, 0), 0, leaderOk);
     return fitLabels([...fixed, ...planned], xf, textScale, w, undefined, corner ? [corner] : undefined, { clearOf, minY: 1, maxY: h - 1 });
   }, [labels, seating, view, slice, hi, dimG, singlesG, extraLabels, xf, textScale, w, h, corner, p.focus, rigs]);
 

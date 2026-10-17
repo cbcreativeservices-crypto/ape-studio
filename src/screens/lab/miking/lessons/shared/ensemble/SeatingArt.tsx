@@ -22,13 +22,13 @@
  * outline marks it too).
  */
 import { useMemo, type ReactElement } from 'react';
-import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, ColorMatrix, DashPathEffect, Group, LinearGradient, Paint, Path, PathOp, RadialGradient, Skia, vec, type SkRect } from '@shopify/react-native-skia';
 import { ARM, armPath, drawHand3, FIGURE_SKIN, FIGURE_TONES, FigureHead, FigureMass, handShape, headAbove, headFront, headProfile, intoCollar, limb, Nails, type GarmentBox } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose.ts';
 import { HAND, h3, type HandSkeleton, type HandView, type V3 } from '../players/handModel.ts';
 // Figure pass 3: every necked string and keyed wind or brass player's arms
 // and hands, solved once per kind in the player's frame (ensembleHands.ts).
-import { boardLine, BOWED_POSE, FLUTE, holdOf, TROMBONE, TRUMPET, trumpetAxis, tromboneAxis, WIND, type Arm3, type Hold } from './ensembleHands.ts';
+import { bowedFrameOf, BOWED_POSE, ensembleBowed, FLUTE, holdOf, TROMBONE, TRUMPET, trumpetAxis, tromboneAxis, WIND, type Arm3, type Hold } from './ensembleHands.ts';
 import { outline, BOWED, fbHalf, fingerboardZ, halfWidth, stationsOf, stringYs, stringZ, type BowedSpec } from '../bowed/bowedSpec.ts';
 import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
 import { DrumPlan, CymbalPlan, CymbalSide, DrumExterior, SnareStandSide } from '../drums/DrumArt';
@@ -62,6 +62,8 @@ const MATS = {
   /** A bowed instrument's ribs seen from above at a grazing angle (art pass 2026-10-10): the varnish, in shade.
    *  FIRST, so the fingerboard and the pegbox paint over it. */
   rib: { ramp: ['#8a4a1e', '#5a2a0e', '#381806', '#1c0b03'], rim: '#c98a52', core: '#0e0501', edge: '#140702', rimW: 3, coreW: 10 },
+  /** The same ribs in elevation, where they face the viewer (lab art fix 2026-10-16). */
+  ribLit: { ramp: ['#c27a3c', '#93501f', '#5e2c0c', '#2e1204'], rim: '#f0b070', core: '#140702', edge: '#1e0c04', rimW: 4, coreW: 14 },
   varnish: { ramp: ['#e8a860', '#b86a2a', '#7a3a12', '#3d1a06'], rim: '#ffd9a0', core: '#1a0a02', edge: '#2a1206', rimW: 6, coreW: 22 },
   ebony: { ramp: ['#3a332e', '#1d1815', '#0c0a08', '#050403'], rim: '#8a7d70', core: '#000', edge: '#000', rimW: 3, coreW: 8 },
   brass: { ramp: ['#fff1b8', '#e8c25c', '#a87a1e', '#5e3e0a'], rim: '#fffbe0', core: '#2e1e04', edge: '#3a2806', rimW: 5, coreW: 18 },
@@ -80,10 +82,24 @@ const MATS = {
   sunburst: { ramp: ['#f0b25a', '#c4561c', '#6e1e0a', '#260803'], rim: '#ffd9a0', core: '#120402', edge: '#1c0703', rimW: 5, coreW: 18 },
   cherry: { ramp: ['#e06a6a', '#a2222a', '#5a0c12', '#2a0507'], rim: '#ffc0c0', core: '#140203', edge: '#1e0406', rimW: 5, coreW: 18 },
   ivory: { ramp: ['#ffffff', '#eeeae0', '#cfc9bb', '#9e9889'], rim: '#ffffff', core: '#5e594d', edge: '#4a463c', rimW: 2, coreW: 6 },
+  /** Hair (lab art fix 2026-10-16: no bald mannequins) — four everyday tones,
+   *  painted over the heads (HAIR_MATS), never in the instruments' pass. */
+  hairBlack: { ramp: ['#4a4440', '#26211e', '#141110', '#080706'], rim: '#8a8078', core: '#000', edge: '#050404', rimW: 3, coreW: 9 },
+  hairBrown: { ramp: ['#8a5a36', '#5e3a20', '#3a2312', '#1e1209'], rim: '#c08a5c', core: '#0e0804', edge: '#140b05', rimW: 3, coreW: 9 },
+  hairDark: { ramp: ['#5e4430', '#3e2a1c', '#261910', '#130c07'], rim: '#9a785a', core: '#060403', edge: '#0c0805', rimW: 3, coreW: 9 },
+  hairGrey: { ramp: ['#d6d4d0', '#a8a5a0', '#76736e', '#4a4844'], rim: '#ffffff', core: '#2a2826', edge: '#3a3835', rimW: 3, coreW: 9 },
   /** group 5: a rawhide drum head (the hand-drum family's RAWHIDE tones). */
   hide: { ramp: ['#f6e9cc', '#e6cf9e', '#c9a874', '#8e7046'], rim: '#fffaf0', core: '#5a4428', edge: '#5e4626', rimW: 4, coreW: 14 },
 } satisfies Record<string, Mat>;
 type MatId = keyof typeof MATS;
+const HAIR_MATS = ['hairBlack', 'hairBrown', 'hairDark', 'hairGrey'] as const satisfies readonly MatId[];
+const isHair = (m: MatId) => (HAIR_MATS as readonly MatId[]).includes(m);
+/** A player's hair tone, fixed per seat (a spread of everyday colours). */
+function hairOf(s: Seat): (typeof HAIR_MATS)[number] {
+  let h = 0;
+  for (let i = 0; i < s.id.length; i++) h = (h * 31 + s.id.charCodeAt(i)) >>> 0;
+  return HAIR_MATS[[0, 1, 2, 0, 2, 1, 3, 2, 0, 1][h % 10]];
+}
 type FigTone = 'shirt' | 'trousers' | 'skin' | 'shoe' | 'seat';
 
 const lookCache = new WeakMap<SkPath, { rim: SkPath; core: SkPath }>();
@@ -136,8 +152,9 @@ type Batch = {
   desks: SkPath;
   /** Dark openings (bells seen into, f-holes). */
   holes: SkPath;
-  /** Items drawn by their own components (timpani, the snare, a cymbal, the piano). */
-  extra: { key: string; el: ReactElement }[];
+  /** Items drawn by their own components (timpani, the snare, a cymbal, the piano);
+   *  `foot`: the item's outline in the view (the labels keep off it). */
+  extra: { key: string; el: ReactElement; foot?: SkPath }[];
   /** Figure pass 3: the posed hands' parts BEHIND what they hold (a thumb
    *  behind a neck, fingers round the far side of a tube) — painted before
    *  the instruments; the digits' edges and the nails over the hands. */
@@ -146,12 +163,19 @@ type Batch = {
   nails: SkPath;
   /** The sleeves' creases (the crook of each bent elbow), drawn on the sleeves. */
   folds: SkPath;
+  /** A bow on the far side of its instrument (painted before the instruments). */
+  stickBack: SkPath;
+  /** The shirt's creases seen from above (the shoulder blades, the spine's
+   *  groove), drawn on the shirts. */
+  creases: SkPath;
 };
 function newBatch(): Batch {
   return {
     fig: { shirt: make(), trousers: make(), skin: make(), shoe: make(), seat: make() },
     skinBack: make(),
     folds: make(),
+    creases: make(),
+    stickBack: make(),
     handLines: make(),
     nails: make(),
     sleeves: make(),
@@ -222,15 +246,24 @@ function flare(a: P2, b: P2, ra: number, rb: number): SkPath {
   p.close();
   return p;
 }
-/** A bowed instrument's outline as a path: its body axis from `tail` toward
- *  `dir` (unit, in the view), scaled `k` along the axis (foreshortening) and
- *  `w` across. */
-function bodyPath(spec: BowedSpec, tail: P2, dir: P2, k = 1, w = 1): SkPath {
-  const pts = outline(spec, 40);
-  const x0 = pts[0][0];
-  const nx = -dir.v;
-  const ny = dir.u;
-  return poly(pts.map(([x, y]) => P(tail.u + dir.u * (x - x0) * k + nx * y * w, tail.v + dir.v * (x - x0) * k + ny * y * w)));
+/**
+ * A woodwind's KEYWORK along its body from `a` (the top) to `b` (lab art fix
+ * 2026-10-16: at 3× the oboes and clarinets were black bars): the silver
+ * rings at the joints, a key cup or ring every few centimetres alternating a
+ * little to each side, and the long rods between them. `r`: the body's half-width.
+ */
+function keywork(into: (to: SkPath, p: SkPath) => void, b: Batch, a: P2, e: P2, r: number, joints: readonly number[], keys: number) {
+  const L = Math.hypot(e.u - a.u, e.v - a.v) || 1;
+  const t = P((e.u - a.u) / L, (e.v - a.v) / L);
+  const n = P(-t.v, t.u);
+  const at = (f: number, side = 0) => P(a.u + t.u * L * f + n.u * side, a.v + t.v * L * f + n.v * side);
+  for (const f of joints) into(b.mat.silver, capsule(at(f, -r - 2), at(f, r + 2), 3.5));
+  for (let i = 0; i < keys; i++) {
+    const f = 0.16 + (0.7 * i) / Math.max(1, keys - 1);
+    const side = (i % 2 ? 1 : -1) * r * 0.35;
+    into(b.mat.silver, ellipse(at(f, side), r * 0.42, r * 0.42));
+  }
+  into(b.mat.silver, capsule(at(0.2, r * 0.75), at(0.82, r * 0.75), 2.2));
 }
 const bodyLen = (s: BowedSpec) => s.body.mm;
 const neckLen = (s: BowedSpec) => s.overall.mm - s.body.mm;
@@ -407,6 +440,181 @@ function uprightPlan(b: Batch, put: (into: SkPath, local: SkPath) => void, spec:
   };
 }
 
+/**
+ * A BOWED INSTRUMENT AS THE SOLID IT IS, in any view (lab art fix 2026-10-16:
+ * in elevation the cello and the bass were their front outline squeezed
+ * across — a scaled violin cut-out with no sides, no back and no scroll — and
+ * the violins a flat leaf under the chin). Built in the hold's own frame
+ * (ensembleHands.bowedFrameOf: the hands sit on this board) and projected by
+ * `view` (a player-frame point → the picture; `toViewer` the direction to the
+ * eye in the player's frame):
+ *   • the BODY: the top's outline, the back's outline a rib-depth behind it
+ *     and the ribs swept between (the double bass's FLAT BACK with its break:
+ *     full depth to the upper corners, then the back angles in toward the
+ *     neck, 62% of the depth at the neck block); the plate that faces the
+ *     viewer drawn over the ribs;
+ *   • on the top (when it shows): the f-holes, the bridge (standing off the
+ *     top — a sliver from the side), the tailpiece, the strings;
+ *   • the NECK (maple) under the FINGERBOARD (ebony), raised off the top to
+ *     the nut; the PEGBOX and the SCROLL (a disc in the neck's plane, its eye
+ *     on the near side); the cello's pegs, the bass's brass machine plates
+ *     and keys;
+ *   • the cello's and the bass's ENDPIN from the tail block to the floor.
+ * Every size from the spec (bowedSpec); `into(path, local)` adds a part.
+ */
+function bowedSolid(b: Batch, into: (to: SkPath, p: SkPath) => void, k: 'violin' | 'viola' | 'cello' | 'bass', view: (q: V3) => P2, toViewer: V3, floorY: number | null) {
+  const { spec, st, n, s, B, d } = bowedFrameOf(k);
+  const at = (x: number, y = 0, z = 0) => view(B(x, y, z));
+  const upright = k === 'cello' || k === 'bass';
+  const bass = k === 'bass';
+  const L = spec.body.mm;
+  // The back's distance behind the top (the rib height; the bass's break).
+  const depth = (x: number) => {
+    const u = (x - st.tailX) / L;
+    if (!bass || u < 0.74) return spec.rib.mm;
+    return spec.rib.mm * (1 - 0.38 * Math.min(1, (u - 0.74) / 0.26));
+  };
+  const facing = h3.dot(n, toViewer);
+  const rim = outline(spec);
+  const ring = (t: number) => poly(rim.map(([x, y]) => at(x, y, -t * depth(x))));
+  // The body's solid: the top's outline swept back to the back's (each point
+  // by its own rib depth) — the Minkowski boundary walked edge by edge: an
+  // edge whose outward side faces the sweep is the BACK's edge, the others the
+  // top's, joined by the rib's line where they change; one path op resolves it.
+  const T = rim.map(([x, y]) => at(x, y, 0));
+  const Bk = rim.map(([x, y]) => at(x, y, -depth(x)));
+  const N = T.length;
+  let area = 0;
+  for (let i = 0; i < N; i++) {
+    const a = T[i];
+    const c = T[(i + 1) % N];
+    area += a.u * c.v - c.u * a.v;
+  }
+  const sgn = area >= 0 ? 1 : -1;
+  const back = T.map((a, i) => {
+    const c = T[(i + 1) % N];
+    const nx = sgn * (c.v - a.v);
+    const ny = -sgn * (c.u - a.u);
+    return nx * (Bk[i].u - a.u) + ny * (Bk[i].v - a.v) > 0;
+  });
+  const sweep: P2[] = [];
+  for (let i = 0; i < N; i++) {
+    const j = (i + 1) % N;
+    sweep.push(back[i] ? Bk[i] : T[i], back[i] ? Bk[j] : T[j]);
+    if (back[i] !== back[j]) sweep.push(back[j] ? Bk[j] : T[j]);
+  }
+  const solid = resolved(poly(sweep));
+  into(b.mat.ribLit, solid);
+  const showTop = facing > 0.12;
+  const showBack = facing < -0.12;
+  if (showTop) into(b.mat.varnish, ring(0));
+  if (showBack) into(b.mat.varnish, ring(1));
+  /** A convex part: the hull of its corners, projected. */
+  const prism = (pts: V3[]) => poly(hull(pts.map(view)));
+  const zn = fingerboardZ(spec, st.nutX);
+  // The neck (maple) from the body's neck edge to the nut, under the board.
+  const thick = bass ? 14 : k === 'cello' ? 11 : 6;
+  const heelW = bass ? 58 : k === 'cello' ? 42 : 18;
+  const neckD = (x: number) => (bass ? 70 : k === 'cello' ? 52 : 20) + ((bass ? 60 : k === 'cello' ? 40 : 10) * (st.nutX - x)) / Math.max(1, st.nutX - st.neckX);
+  const neckPts: V3[] = [];
+  for (const x of [st.neckX - 10, st.nutX]) {
+    const w = x < st.nutX - 1 ? heelW : spec.fbNut.mm / 2;
+    const zt = fingerboardZ(spec, x) - thick;
+    for (const y of [-w, w]) neckPts.push(B(x, y, zt), B(x, y, Math.min(-6, zt - neckD(x))));
+  }
+  into(b.mat.maple, prism(neckPts));
+  // The pegbox past the nut and the scroll (maple), the pegs or machines.
+  const scrollR = bass ? 56 : k === 'cello' ? 40 : 17;
+  const pbw = spec.fbNut.mm * (bass ? 0.7 : 0.62);
+  const pb0 = st.nutX + 8;
+  const pb1 = st.scrollX - scrollR * 1.6;
+  const pbD = bass ? 78 : k === 'cello' ? 54 : 24;
+  const pbPts: V3[] = [];
+  for (const x of [pb0, pb1]) for (const y of [-pbw, pbw]) pbPts.push(B(x, y, zn), B(x, y, zn - pbD));
+  into(b.mat.maple, prism(pbPts));
+  const sc = { x: st.scrollX - scrollR, z: zn - pbD * 0.45 };
+  const scPts: V3[] = [];
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    for (const y of [-pbw * 0.85, pbw * 0.85]) scPts.push(B(sc.x + Math.cos(a) * scrollR, y, sc.z + Math.sin(a) * scrollR));
+  }
+  into(b.mat.maple, prism(scPts));
+  // The scroll's eye on the side toward the viewer (a dark turn).
+  const near = h3.dot(s, toViewer) >= 0 ? 1 : -1;
+  if (Math.abs(h3.dot(s, toViewer)) > 0.3) {
+    const eye = at(sc.x, near * pbw * 0.9, sc.z);
+    const r = scrollR * 0.32 * Math.abs(h3.dot(s, toViewer));
+    into(b.holes, ellipse(eye, Math.max(4, r), Math.max(4, r)));
+  }
+  // Pegs (ebony) or, the bass, a brass machine plate each side with two keys.
+  for (const [i, sy] of [[0, -1], [1, 1], [2, -1], [3, 1]] as const) {
+    const x = pb0 + (pb1 - pb0) * (bass ? [0.3, 0.3, 0.72, 0.72][i] : [0.22, 0.42, 0.62, 0.82][i]);
+    const out = bass ? 62 : k === 'cello' ? 64 : 28;
+    into(bass ? b.mat.silver : b.mat.ebony, capsule(at(x, sy * pbw, zn - pbD * 0.5), at(x, sy * (pbw + out), zn - pbD * 0.5), bass ? 7 : k === 'cello' ? 8 : 4));
+    into(bass ? b.mat.silver : b.mat.ebony, prism([B(x - 14, sy * (pbw + out), zn - pbD * 0.5 - 18), B(x + 14, sy * (pbw + out), zn - pbD * 0.5 - 18), B(x - 14, sy * (pbw + out + 8), zn - pbD * 0.5 + 18), B(x + 14, sy * (pbw + out + 8), zn - pbD * 0.5 + 18)]));
+  }
+  if (bass) for (const sy of [-1, 1]) into(b.mat.brass, prism([B(pb0 + 20, sy * pbw, zn - 8), B(pb1 - 10, sy * pbw, zn - 8), B(pb0 + 20, sy * (pbw + 4), zn - pbD + 8), B(pb1 - 10, sy * (pbw + 4), zn - pbD + 8)]));
+  // The fingerboard (ebony), its free end over the top, raised to the nut.
+  const fbPts: V3[] = [];
+  for (const x of [st.fbEndX, st.nutX]) {
+    const w = fbHalf(spec, x);
+    const z = fingerboardZ(spec, x);
+    for (const y of [-w, w]) fbPts.push(B(x, y, z), B(x, y, z - thick));
+  }
+  let fb = prism(fbPts);
+  // From behind, the body hides the board over it.
+  if (showBack) fb = cut(fb, solid, PathOp.Difference);
+  into(b.mat.ebony, fb);
+  if (!showBack) {
+    // The bridge (pale maple) standing on the top: its outline in the plane
+    // across the strings, a little thickness so it shows edge-on as a sliver.
+    const bw = spec.bridgeW.mm / 2;
+    const bh = spec.bridgeH.mm;
+    const BR: [number, number][] = [
+      [-0.92, 0], [-0.62, 0], [-0.5, 0.2], [0, 0.26], [0.5, 0.2], [0.62, 0], [0.92, 0],
+      [0.88, 0.12], [0.56, 0.42], [0.74, 0.7], [0.66, 0.86], [0, 1], [-0.66, 0.86], [-0.74, 0.7], [-0.56, 0.42], [-0.88, 0.12],
+    ];
+    const tb = bass ? 12 : k === 'cello' ? 9 : 4;
+    into(b.mat.hide, unite(poly(BR.map(([y, z]) => at(-tb, y * bw, z * bh))), poly(BR.map(([y, z]) => at(tb, y * bw, z * bh))), prism([B(-tb, -bw * 0.9, 0), B(tb, -bw * 0.9, 0), B(-tb, bw * 0.9, 0), B(tb, bw * 0.9, 0), B(-tb, 0, bh), B(tb, 0, bh)])));
+    // The tailpiece (ebony), narrow at the saddle, wide under the strings.
+    const [t0, t1] = spec.tailpiece;
+    const tz0 = stringZ(spec, t0) * 0.6;
+    const tz1 = stringZ(spec, t1) - spec.bridgeH.mm * 0.08;
+    into(b.mat.ebony, prism([B(t0, -spec.bridgeW.mm * 0.16, tz0), B(t1, -spec.bridgeW.mm * 0.34, tz1), B(t1 + 12, 0, tz1), B(t1, spec.bridgeW.mm * 0.34, tz1), B(t0, spec.bridgeW.mm * 0.16, tz0), B(t0, 0, tz0 - 12), B(t1, 0, tz1 - 14)]));
+    if (showTop) {
+      // The f-holes: a slit between two round eyes, each side of the bridge.
+      const [f0, f1] = spec.fholeX;
+      const slit = spec.lower.mm * 0.012;
+      for (const sy of [-1, 1]) {
+        const y = sy * spec.fholeY.mm;
+        into(b.holes, poly([at(f0, y - slit), at(f1, y - slit * 0.6), at(f1, y + slit * 0.6), at(f0, y + slit)]));
+        into(b.holes, ellipse(at(f0, y + sy * slit), slit * 1.6 * Math.max(0.4, facing), slit * 1.6));
+        into(b.holes, ellipse(at(f1, y - sy * slit), slit * 1.4 * Math.max(0.4, facing), slit * 1.4));
+      }
+    }
+    // The four strings: the tailpiece, over the bridge, to the nut.
+    for (let i = 0; i < 4; i++) {
+      const s0 = at(t1, stringYs(spec, t1)[i] * 0.9, tz1);
+      const s1 = at(0, stringYs(spec, 0)[i], bh);
+      const s2 = at(st.nutX, stringYs(spec, st.nutX)[i], stringZ(spec, st.nutX));
+      const p = make();
+      p.moveTo(s0.u, s0.v);
+      p.lineTo(s1.u, s1.v);
+      p.lineTo(s2.u, s2.v);
+      into(b.hair, p);
+    }
+  }
+  // The endpin: from the tail block's middle along the axis to the floor.
+  if (upright && floorY != null) {
+    const e0 = B(st.tailX, 0, -depth(st.tailX) / 2);
+    const t = (e0.y - floorY) / Math.max(0.2, d.y);
+    const e1 = h3.sub(e0, h3.mul(d, t));
+    const c1 = h3.sub(e0, h3.mul(d, spec.collar?.mm ?? 25));
+    into(b.mat.ebony, prism([h3.add(e0, h3.mul(s, 22)), h3.sub(e0, h3.mul(s, 22)), h3.add(c1, h3.mul(s, 16)), h3.sub(c1, h3.mul(s, 16)), h3.add(e0, h3.mul(n, 22)), h3.sub(e0, h3.mul(n, 22))]));
+    into(b.mat.steel, capsule(view(c1), view(e1), bass ? 8 : 6));
+  }
+}
+
 /** The grand's case outline from above as points (x across, + = treble;
  *  a = ahead of the keyboard's front edge), mm: the front, the treble side's
  *  straight run, the knee, the long concave bentside, the convex tail round
@@ -557,6 +765,9 @@ function smoothPoly(points: readonly P2[], tension = 0.5): SkPath {
   p.close();
   return p;
 }
+/** A path's overlapping outlines resolved into their union (one path op;
+ *  `simplify` is missing on the web build). */
+const resolved = (p: SkPath): SkPath => asWinding(Skia.Path.MakeFromOp(p, make(), PathOp.Union) ?? p);
 const unite = (...ps: SkPath[]): SkPath => ps.reduce((acc, q) => Skia.Path.MakeFromOp(acc, q, PathOp.Union) ?? acc);
 const cut = (a: SkPath, b: SkPath, op: PathOp): SkPath => Skia.Path.MakeFromOp(a, b, op) ?? a;
 
@@ -587,53 +798,23 @@ function hull(points: P2[]): P2[] {
   return [...lo.slice(0, -1), ...up.slice(0, -1)];
 }
 
-/** The posed hand's silhouette (a big seating): the bare wrist out of the
- *  cuff, the palm, each digit along its joints at its own widths — split at
- *  the plane `cut` like drawHand3 (beyond it: painted behind the instrument). */
-function handSilhouette(sk: HandSkeleton, view: HandView, fore: number, cutAt: { p: V3; n: V3 }): { path: SkPath; behind: SkPath | null } {
-  const Pv = (q: V3) => {
-    const r = view(q);
-    return P(r.u, r.v);
-  };
-  const behind = (q: V3) => h3.dot(h3.sub(q, cutAt.p), cutAt.n) < 0;
-  const front: SkPath[] = [];
-  const back: SkPath[] = [];
-  const w1 = Pv(sk.frame.o);
-  const w0 = P(w1.u - Math.cos(fore) * (ARM.cuffGap + 10), w1.v - Math.sin(fore) * (ARM.cuffGap + 10));
-  const w2 = Pv(h3.add(sk.frame.o, h3.mul(sk.frame.x, 22)));
-  (behind(sk.frame.o) ? back : front).push(limb([pt(w0.u, w0.v), pt(w1.u, w1.v), pt(w2.u, w2.v)], [HAND.wristHalf, HAND.wristHalf, HAND.wristHalf + 4]));
-  const pc = sk.palm.reduce((a, q) => h3.add(a, h3.mul(q, 1 / sk.palm.length)), { x: 0, y: 0, z: 0 });
-  const ring = hull(sk.palm.map(Pv));
-  (behind(pc) ? back : front).push(smoothPoly(HULL_REVERSED() ? ring.reverse() : ring, 0.5));
-  for (const dg of [...sk.fingers, sk.thumb]) {
-    const rs = dg.r.map((r, k) => (dg.name === 'thumb' && k === 0 ? r + 6 : r));
-    (behind(dg.joints[2]) ? back : front).push(limb(dg.joints.map((q) => pt(Pv(q).u, Pv(q).v)), rs));
-  }
-  // Every part is one closed outline of the SAME turning sense (the limbs and
-  // the palm's hull), so added into one path they fill as one silhouette by
-  // the winding rule — no boolean op per part (sixty players' hands).
-  const join = (ps: SkPath[]) => {
-    const out = make();
-    for (const q of ps) out.addPath(q);
-    return out;
-  };
-  return { path: join(front), behind: back.length ? join(back) : null };
-}
-/** The silhouettes already drawn, per skeleton and per view direction: every
- *  player of a kind holds the same hand, and players facing the same way see
- *  it the same — only moved (an orchestra's desk partners, the plan). */
-const silCache = new WeakMap<HandSkeleton, Map<string, { path: SkPath; behind: SkPath | null; at: P2 }>>();
-function silhouetteOf(sk: HandSkeleton, view: HandView, fore: number, cutAt: { p: V3; n: V3 }): { path: SkPath; behind: SkPath | null } {
+/** The FULL posed hand (drawHand3: the digits' edges and the nails too) for a
+ *  big seating, cached like the silhouettes (lab art fix 2026-10-16: at 3× the
+ *  orchestra's silhouette hands read as mittens) — players of a kind facing
+ *  the same way hold the same hand, only moved, so sixty players cost a few
+ *  hands' work. */
+const hand3Cache = new WeakMap<HandSkeleton, Map<string, { path: SkPath; behind: SkPath | null; lines: SkPath; nails: SkPath; at: P2 }>>();
+function hand3Of(sk: HandSkeleton, view: HandView, opts: { fore: number; foreshortened: boolean; cut: { p: V3; n: V3 } }): { path: SkPath; behind: SkPath | null; lines: SkPath; nails: SkPath } {
   const o = view({ x: 0, y: 0, z: 0 });
   const ax = (q: V3) => {
     const r = view(q);
     return `${(r.u - o.u).toFixed(4)},${(r.v - o.v).toFixed(4)},${(r.d - o.d).toFixed(4)}`;
   };
-  const key = `${ax({ x: 1, y: 0, z: 0 })}|${ax({ x: 0, y: 1, z: 0 })}|${ax({ x: 0, y: 0, z: 1 })}|${fore.toFixed(3)}|${cutAt.n.x.toFixed(4)},${cutAt.n.z.toFixed(4)}`;
-  let m = silCache.get(sk);
+  const key = `${ax({ x: 1, y: 0, z: 0 })}|${ax({ x: 0, y: 1, z: 0 })}|${ax({ x: 0, y: 0, z: 1 })}|${opts.fore.toFixed(3)}|${opts.foreshortened ? 1 : 0}|${opts.cut.n.x.toFixed(4)},${opts.cut.n.y.toFixed(4)},${opts.cut.n.z.toFixed(4)}`;
+  let m = hand3Cache.get(sk);
   if (!m) {
     m = new Map();
-    silCache.set(sk, m);
+    hand3Cache.set(sk, m);
   }
   const w = view(sk.frame.o);
   const hit = m.get(key);
@@ -644,25 +825,11 @@ function silhouetteOf(sk: HandSkeleton, view: HandView, fore: number, cutAt: { p
       c.transform(mv);
       return c;
     };
-    return { path: move(hit.path), behind: hit.behind ? move(hit.behind) : null };
+    return { path: move(hit.path), behind: hit.behind ? move(hit.behind) : null, lines: move(hit.lines), nails: move(hit.nails) };
   }
-  const made = handSilhouette(sk, view, fore, cutAt);
+  const made = drawHand3(sk, view, opts);
   m.set(key, { ...made, at: P(w.u, w.v) });
   return made;
-}
-/** Whether the palm's hull (counter-clockwise on screen) must be reversed to
- *  turn the same way as limb()'s outlines (found once). */
-let hullRev: boolean | null = null;
-function HULL_REVERSED(): boolean {
-  if (hullRev !== null) return hullRev;
-  const a = limb([pt(0, 0), pt(100, 0)], [20, 20]);
-  const ring = hull([P(40, -10), P(160, -10), P(160, 10), P(40, 10)]);
-  const t = make();
-  t.addPath(a);
-  t.addPath(poly(ring));
-  // Where the two overlap, opposite turning cancels under the winding rule.
-  hullRev = !t.contains(60, 0);
-  return hullRev;
 }
 
 /**
@@ -680,7 +847,9 @@ function heldArm(b: Batch, a: Arm3, root: P2, view: HandView, toViewer: V3, armT
   const fore = Math.atan2(w.v - e.v, w.u - e.u);
   const foreshortened = Math.hypot(w.u - e.u, w.v - e.v) < 0.85 * 255;
   const cutAt = { p: a.at, n: toViewer };
-  const out = light ? { ...silhouetteOf(a.sk, view, fore, cutAt), lines: null, nails: null } : drawHand3(a.sk, view, { fore, foreshortened, cut: cutAt });
+  // (A big seating's hands from the cache: the same full hand, five digits
+  // with their edges and nails — never the bare silhouette, a mitten at 3×.)
+  const out = light ? hand3Of(a.sk, view, { fore, foreshortened, cut: cutAt }) : drawHand3(a.sk, view, { fore, foreshortened, cut: cutAt });
   const at = (p: SkPath) => (place ? place(p) : p);
   // (From above the plan's single layer holds every player: each hand is
   // added as its own closed outline, as the plan adds its heads — a union
@@ -723,7 +892,7 @@ function holdFor(s: Seat, lift: number, bowedBass: boolean): Hold | null {
   return holdOf(s.kind, lift);
 }
 /** How each view is built (build passes it down). */
-type SeatOpts = { light: boolean; bowedBass: boolean };
+type SeatOpts = { light: boolean; bowedBass: boolean; classical?: boolean };
 
 /**
  * ONE ENSEMBLE FIGURE'S BODY in elevation (figure pass 2, owner 2026-10-15:
@@ -841,23 +1010,66 @@ function elevBody(cu: number, g: number, fs: number, standing: boolean, prof: bo
   return { torso, shirt, belt: beltPath, trousers: unite(pelvis, leg), shoes: shoe, cap, drop: 0 };
 }
 
-/** The shoulders and back from above (PlayerFigure.buildAbove's outline, in a
- *  seat's local frame: x right, y back, the chest toward −y): a rounded
- *  rectangle ≈ 456 mm across the deltoids and ≈ 236 mm deep, the back nearly
- *  flat across the shoulder blades, the chest a little fuller. `cy`: the
- *  collar's y. */
+/** The shoulders and back from above (after PlayerFigure.buildAbove, in a
+ *  seat's local frame: x right, y back, the chest toward −y): ≈ 460 mm
+ *  across the deltoids and ≈ 242 mm deep. `cy`: the collar's y. */
 function aboveTorso(cy: number): SkPath {
+  // (Lab art fix 2026-10-16, "boxy torsos": the deltoids round over the
+  // joints, the chest flatter in front, the upper back a rounded curve to the
+  // shoulder blades — no longer a rounded rectangle.)
   const half: [number, number][] = [
-    [118, -108],
-    [178, -88],
-    [222, -50],
-    [228, 4],
-    [218, 52],
-    [174, 84],
-    [90, 116],
+    [64, -116],
+    [124, -104],
+    [172, -86],
+    [208, -62],
+    [228, -24],
+    [230, 12],
+    [220, 46],
+    [192, 76],
+    [146, 100],
+    [84, 116],
   ];
   const at = (x: number, fwd: number) => P(x, cy - fwd);
-  return smoothPoly([at(0, -112), ...half.map(([x, f]) => at(-x, f)), at(0, 124), ...[...half].reverse().map(([x, f]) => at(x, f))], 0.5);
+  return smoothPoly([at(0, -122), ...half.map(([x, f]) => at(-x, f)), at(0, 120), ...[...half].reverse().map(([x, f]) => at(x, f))], 0.5);
+}
+/** The shirt's creases from above at a torso's collar `cy` (on the shirt only): the shoulder blades and the spine's groove. */
+function aboveCreases(cy: number): SkPath {
+  const p = make();
+  // The shoulder blades: a short soft arc each side.
+  for (const sx of [-1, 1]) {
+    p.moveTo(sx * 46, cy + 100);
+    p.quadTo(sx * 70, cy + 84, sx * 104, cy + 90);
+  }
+  // The spine's groove.
+  p.moveTo(0, cy + 78);
+  p.lineTo(0, cy + 114);
+  return p;
+}
+
+/**
+ * HAIR (lab art fix 2026-10-16: "bald mannequins"): a cap of hair over each
+ * head in the head's own authored frame (PlayerFigure's heads: r 104, the
+ * skull ±81 wide, its top at −118) — from above the crown and the back with
+ * the face's strip, ears and nose bare; from the front a hairline over the
+ * forehead (the whole back of the head for a player turned away); in profile
+ * over the crown and down the back to the nape, the ear and the face bare.
+ */
+function hairAbove(): SkPath {
+  const k = 104 / 110;
+  const H = (x: number, y: number) => P(x * k, y * k);
+  return smoothPoly([H(0, -104), H(60, -90), H(82, -40), H(80, 10), H(70, 46), H(44, 64), H(0, 70), H(-44, 64), H(-70, 46), H(-80, 10), H(-82, -40), H(-60, -90)], 0.5);
+}
+function hairFront(c: P2, toward: boolean): SkPath {
+  const k = 104 / 110;
+  const H = (x: number, y: number) => P(c.u + x * k, c.v + y * k);
+  if (!toward) return smoothPoly([H(-84, -10), H(-86, -56), H(-60, -106), H(0, -126), H(60, -106), H(86, -56), H(84, -10), H(78, 40), H(56, 74), H(0, 84), H(-56, 74), H(-78, 40)], 0.5);
+  return smoothPoly([H(-84, -8), H(-87, -58), H(-60, -108), H(-20, -125), H(20, -125), H(60, -108), H(87, -58), H(84, -8), H(77, -16), H(70, -52), H(42, -76), H(0, -82), H(-42, -76), H(-70, -52), H(-77, -16)], 0.45);
+}
+function hairProfile(c: P2, facing: number): SkPath {
+  const k = 104 / 110;
+  const sx = facing >= 0 ? -1 : 1;
+  const H = (x: number, y: number) => P(c.u + sx * x * k, c.v + y * k);
+  return smoothPoly([H(-74, -74), H(-50, -108), H(-6, -126), H(44, -120), H(86, -90), H(108, -36), H(108, 18), H(94, 62), H(70, 86), H(56, 60), H(58, 8), H(52, -22), H(34, -30), H(12, -26), H(2, -6), H(-6, -40), H(-40, -64)], 0.45);
 }
 
 export function grandPlan() {
@@ -1126,6 +1338,7 @@ function planVoice(b: Batch, s: Seat) {
   // The shirt is one mass per figure (a union: addPath of the torso and an
   // arm drawn the other way round would cancel where they overlap).
   let shirt = aboveTorso(-8);
+  put(b.creases, aboveCreases(-8));
   if (s.kind !== 'singer') {
     // The folder held in front of the chest: each arm from its shoulder, the
     // elbow at the side, the forearm forward to the folder's edge.
@@ -1141,8 +1354,12 @@ function planVoice(b: Batch, s: Seat) {
   put(b.fig.shirt, shirt);
   const h = headAbove(pt(0, 0), 104);
   const q = h.fill.copy();
-  q.transform(Skia.Matrix().translate(0, -37).rotate(Math.PI));
+  const hm = Skia.Matrix().translate(0, -37).rotate(Math.PI);
+  q.transform(hm);
   put(b.fig.skin, q);
+  const hair = hairAbove();
+  hair.transform(hm);
+  put(b.mat[hairOf(s)], hair);
 }
 
 function planSeat(b: Batch, s: Seat, o: SeatOpts) {
@@ -1175,6 +1392,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
   }
   // Shoulders and back from above: a rounded outline, never an oval.
   let shirt = aboveTorso(28);
+  put(b.creases, aboveCreases(28));
   // Arms and the instrument, by kind (local: x right, y back, forward −y):
   // each sleeve unioned into the figure's one shirt mass.
   const fa = figureArms((p) => (shirt = unite(shirt, p)), (p) => put(b.fig.skin, p));
@@ -1201,11 +1419,10 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       const spec = BOWED[k];
       const dir = P(-Math.sin(38 * DEG), -Math.cos(38 * DEG));
       const tail = P(-60, -10);
-      put(b.mat.varnish, bodyPath(spec, tail, dir));
+      // (Lab art fix 2026-10-16: the solid the hold poses, seen from above.)
+      bowedSolid(b, put, k, onPlan, { x: 0, y: 1, z: 0 }, null);
       const nb = P(tail.u + dir.u * bodyLen(spec), tail.v + dir.v * bodyLen(spec));
       const scroll = P(nb.u + dir.u * neckLen(spec), nb.v + dir.v * neckLen(spec));
-      put(b.mat.ebony, capsule(nb, scroll, 14));
-      put(b.mat.varnish, ellipse(scroll, 24, 24));
       const bridge = P(tail.u + dir.u * 150, tail.v + dir.v * 150);
       arm([LS, P(-300, -210), P(scroll.u + 40, scroll.v + 60)]);
       hand(P(scroll.u + 30, scroll.v + 50));
@@ -1242,7 +1459,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       // Upright at the player's left front, leaning back about 20°, the
       // scroll beside the head; the right hand plucks over the fingerboard's end.
       const C = BOWED_POSE.bass;
-      const { lh, pluck } = uprightPlan(b, put, BOWED.bass, onPlan(C.tail), P(C.d.x, -C.d.z), Math.acos(C.d.y) / DEG);
+      const { lh, pluck } = uprightPlan(b, put, ensembleBowed('bass'), onPlan(C.tail), P(C.d.x, -C.d.z), Math.acos(C.d.y) / DEG);
       arm([LS, P(-250, -80), P(lh.u - 30, lh.v + 10)]);
       hand(P(lh.u - 20, lh.v));
       const hR = P(pluck.u + 70, pluck.v + 40);
@@ -1261,6 +1478,13 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       const a = onPlan(FLUTE.a);
       const e = onPlan(FLUTE.b);
       put(b.mat.silver, capsule(a, e, 10));
+      // The lip plate at the head joint and the key cups along the body.
+      put(b.mat.silver, ellipse(P(a.u + (e.u - a.u) * 0.06, a.v + (e.v - a.v) * 0.06), 16, 12));
+      keywork(put, b, P(a.u + (e.u - a.u) * 0.3, a.v + (e.v - a.v) * 0.3), e, 10, [0], 8);
+      for (let i = 0; i < 8; i++) {
+        const f = 0.3 + 0.7 * (0.16 + (0.7 * i) / 7);
+        put(b.holes, ellipse(P(a.u + (e.u - a.u) * f, a.v + (e.v - a.v) * f), 3, 3));
+      }
       arm([LS, P(-120, -230), P(40, -150)]);
       hand(P(40, -150));
       arm([RS, P(330, -60), P(380, -170)]);
@@ -1274,6 +1498,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       put(b.mat.blackwood, capsule(onPlan(WIND.reed.top), P(0, end.v + 40), 15));
       put(b.mat.blackwood, flare(P(0, end.v + 60), end, 16, k === 'clarinet' ? 33 : 24));
       if (k === 'clarinet') put(b.holes, ellipse(end, 20, 20));
+      keywork(put, b, onPlan(WIND.reed.top), P(0, end.v + 40), 15, k === 'clarinet' ? [0.12, 0.5] : [0.4, 0.75], 7);
       arm([LS, P(-150, -200), P(-10, -270)]);
       hand(P(-5, -270));
       arm([RS, P(150, -280), P(10, -450)]);
@@ -1398,7 +1623,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       for (const [i, dr] of drums.entries()) {
         const c = toPlan(s, Math.sin(dr.a * DEG) * 720, -Math.cos(dr.a * DEG) * 720);
         const pedalA = Math.atan2(s.p.z - c.v, s.p.x - c.u);
-        b.extra.push({ key: `tp:${s.id}:${i}`, el: <Group key={`tp:${s.id}:${i}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><TimpanoTop R={dr.d / 2} pedalA={pedalA} /></Group> });
+        b.extra.push({ key: `tp:${s.id}:${i}`, el: <Group key={`tp:${s.id}:${i}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><TimpanoTop R={dr.d / 2} pedalA={pedalA} /></Group>, foot: ellipse(c, dr.d / 2 + 30, dr.d / 2 + 30) });
       }
       arm([LS, P(-260, -180), P(-200, -380)]);
       arm([RS, P(260, -180), P(200, -380)]);
@@ -1413,7 +1638,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       if (!second) {
         // A concert bass drum on its tilting stand (BassDrumPlan): the heads
         // face the player's left and right; the beater toward the right head.
-        b.extra.push({ key: `bd:${s.id}`, el: <Group key={`bd:${s.id}`} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: (s.face * Math.PI) / 180 }]}><BassDrumPlan cy={-BASS_DRUM_STATION.ahead} /></Group> });
+        b.extra.push({ key: `bd:${s.id}`, el: <Group key={`bd:${s.id}`} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: (s.face * Math.PI) / 180 }]}><BassDrumPlan cy={-BASS_DRUM_STATION.ahead} /></Group>, foot: placeOf(s)(rr(-BD.D / 2 - 40, -BASS_DRUM_STATION.ahead - BD.R, BD.D / 2 + 40, -BASS_DRUM_STATION.ahead + BD.R, 20)) });
         arm([LS, P(-220, -160), P(-150, -260)]);
         arm([RS, P(240, -200), P(180, -320)]);
         hand(P(180, -320));
@@ -1422,9 +1647,9 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
         put(b.mat.hide, ellipse(P(236, -590), 40, 46));
       } else {
         const c = toPlan(s, -120, -480);
-        b.extra.push({ key: `sn:${s.id}`, el: <Group key={`sn:${s.id}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><DrumPlan drum={{ spec: CONCERT_SNARE_14x65, c: { x: 0, y: 0, z: 0 }, tiltDeg: 0 }} /></Group> });
+        b.extra.push({ key: `sn:${s.id}`, el: <Group key={`sn:${s.id}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><DrumPlan drum={{ spec: CONCERT_SNARE_14x65, c: { x: 0, y: 0, z: 0 }, tiltDeg: 0 }} /></Group>, foot: ellipse(c, CONCERT_SNARE_14x65.d.mm / 2 + 30, CONCERT_SNARE_14x65.d.mm / 2 + 30) });
         const cy = toPlan(s, 420, -420);
-        b.extra.push({ key: `cy:${s.id}`, el: <CymbalPlan key={`cy:${s.id}`} cx={cy.u} cz={cy.v} d={18 * IN} tiltDeg={0} dim={0.9} /> });
+        b.extra.push({ key: `cy:${s.id}`, el: <CymbalPlan key={`cy:${s.id}`} cx={cy.u} cz={cy.v} d={18 * IN} tiltDeg={0} dim={0.9} />, foot: ellipse(cy, 9 * IN, 9 * IN) });
         arm([LS, P(-220, -160), P(-140, -330)]);
         arm([RS, P(220, -160), P(80, -330)]);
         hand(P(-140, -330));
@@ -1524,7 +1749,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       put(b.mat.maple, rr(-60, -360, 90, -300, 10));
       put(b.hair, poly([P(200, -300), P(340, -300), P(270, -420)]));
       const cy = toPlan(s, 650, -380);
-      b.extra.push({ key: `pcy:${s.id}`, el: <CymbalPlan key={`pcy:${s.id}`} cx={cy.u} cz={cy.v} d={18 * IN} tiltDeg={0} dim={0.88} /> });
+      b.extra.push({ key: `pcy:${s.id}`, el: <CymbalPlan key={`pcy:${s.id}`} cx={cy.u} cz={cy.v} d={18 * IN} tiltDeg={0} dim={0.88} />, foot: ellipse(cy, 9 * IN, 9 * IN) });
       arm([LS, P(-220, -170), P(-160, -330)]);
       arm([RS, P(220, -170), P(140, -330)]);
       hand(P(-160, -330));
@@ -1547,8 +1772,12 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
   // The head from above (the nose toward the front: rotated half a turn).
   const h = headAbove(pt(0, 0), 104);
   const q = h.fill.copy();
-  q.transform(Skia.Matrix().translate(0, 20).rotate(Math.PI));
+  const hm = Skia.Matrix().translate(0, 20).rotate(Math.PI);
+  q.transform(hm);
   put(b.fig.skin, q);
+  const hair = hairAbove();
+  hair.transform(hm);
+  put(b.mat[hairOf(s)], hair);
 }
 
 function planStand(b: Batch, s: Seat) {
@@ -1603,7 +1832,10 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
    *  facing the audience in the section. It was keyed on the VIEW alone, so a
    *  side-on singer in the front elevation got a face-on torso, head and legs
    *  with the profile's single hanging hand centred on it — at the groin. */
-  const prof = Math.abs(rightU) < 0.5;
+  // (Lab art fix 2026-10-16: a classical group's players turned 60° — the
+  // quartet's outer chairs — fell either side of 0.5 by rounding, one drawn
+  // in profile and its mirror partner face-on; both now face-on.)
+  const prof = Math.abs(rightU) < (so.classical ? 0.45 : 0.5);
   /** How square-on a face that points the player's way is to this view. */
   const faceOn = Math.max(0.3, front ? Math.abs(Math.cos(F)) : Math.abs(Math.sin(F)));
   const sh = standing ? 1450 : DIMS.seatedShoulder;
@@ -1670,13 +1902,15 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
   switch (k) {
     case 'violin':
     case 'viola': {
-      const spec = BOWED[k];
+      // (Lab art fix 2026-10-16: the instrument as the solid the hold poses —
+      // ribs, the arched top rolled toward the E string, the neck and the
+      // scroll — in place of a flat outline.)
+      bowedSolid(b, (to, p) => to.addPath(p), k, onView, { x: dR, y: 0, z: dF }, null);
       const tail = Q(-60, 40, 1060);
       const { d, k: kf } = dirOf(-Math.sin(38 * DEG), 0.12, Math.cos(38 * DEG));
-      b.mat.varnish.addPath(bodyPath(spec, tail, d, kf, 0.5));
+      const spec = BOWED[k];
       const nb = P(tail.u + d.u * bodyLen(spec) * kf, tail.v + d.v * bodyLen(spec) * kf);
       const sc = P(nb.u + d.u * neckLen(spec) * kf, nb.v + d.v * neckLen(spec) * kf);
-      b.mat.ebony.addPath(capsule(nb, sc, 12));
       arm([shL, Q(-280, 220, 860), sc]);
       hand(sc);
       const hR = Q(240, 230, 980);
@@ -1690,27 +1924,20 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
     }
     case 'cello':
     case 'bass': {
-      const spec = BOWED[k];
+      const spec = ensembleBowed(k);
       // (Figure pass 3: the hold's pose — the cello's back against the chest,
       // its neck past the left ear; the bass at the left front, leaning back.)
+      // Lab art fix 2026-10-16: the instrument as a SOLID (bowedSolid) — the
+      // bass a true 3/4 double bass with its flat back, sloping shoulders,
+      // machine heads and its endpin on the floor, never a stretched outline.
       const C = BOWED_POSE[k];
       const tail = Q(C.tail.x, C.tail.z, C.tail.y);
       const { d, k: kf } = dirOf(C.d.x, C.d.y, C.d.z);
-      b.mat.varnish.addPath(bodyPath(spec, tail, d, kf, faceOn));
+      bowedSolid(b, (to, p) => to.addPath(p), k, onView, { x: dR, y: 0, z: dF }, 0);
+      // Seen from behind (its back toward the viewer) the bow is on the far
+      // side of the body: painted before the instrument.
+      const topAway = bowedFrameOf(k).n.x * dR + bowedFrameOf(k).n.z * dF < 0;
       const nb = P(tail.u + d.u * bodyLen(spec) * kf, tail.v + d.v * bodyLen(spec) * kf);
-      // The neck and fingerboard where the left hand stops the strings: the
-      // board's face raised off the top plate (figure pass 3: drawn on the
-      // plate's line, the board sat 70–90 mm off the bass player's fingers).
-      const bl = boardLine(k);
-      const sc = onView(bl.scroll);
-      b.mat.ebony.addPath(capsule(onView(bl.heel), onView(bl.nut), k === 'cello' ? 18 : 24));
-      b.mat.varnish.addPath(capsule(onView(bl.nut), sc, k === 'cello' ? 14 : 18));
-      b.mat.varnish.addPath(ellipse(sc, 30, 34));
-      line(b.stick, tail, P(tail.u, g));
-      if (faceOn > 0.6) {
-        const mid = P(tail.u + d.u * bodyLen(spec) * kf * 0.45, tail.v + d.v * bodyLen(spec) * kf * 0.45);
-        for (const sx of [-1, 1]) b.holes.addPath(ellipse(P(mid.u + sx * spec.fholeY.mm * faceOn, mid.v), 9, spec.body.mm * 0.08));
-      }
       const lh = P(nb.u + d.u * 120, nb.v + d.v * 120);
       arm([shL, P((shL.u + lh.u) / 2, (shL.v + lh.v) / 2 + 60), lh]);
       hand(lh);
@@ -1718,12 +1945,13 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
       arm([shR, Q(330, 100, 760), hR]);
       hand(hR);
       // The bow (bowed: the hold's frog to its tip; a band's bass is plucked).
-      if (hold?.pts?.frog && hold.pts.tip) line(b.stick, onView(hold.pts.frog), onView(hold.pts.tip));
+      if (hold?.pts?.frog && hold.pts.tip) line(topAway ? b.stickBack : b.stick, onView(hold.pts.frog), onView(hold.pts.tip));
       else if (!hold) line(b.stick, hR, Q(-380, 300, k === 'cello' ? 520 : 800));
       break;
     }
     case 'flute': {
       b.mat.silver.addPath(capsule(Q(-40, 120, 1180), Q(600, 160, 1190), 10));
+      keywork((to, p) => to.addPath(p), b, Q(140, 130, 1182), Q(600, 160, 1190), 10, [0], 8);
       arm([shL, Q(-60, 200, 950), Q(40, 140, 1170)]);
       arm([shR, Q(330, 80, 920), Q(380, 160, 1180)]);
       hand(Q(40, 140, 1170));
@@ -1736,6 +1964,7 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
       const end = Q(0, 520, 640);
       b.mat.blackwood.addPath(capsule(top, end, 15));
       b.mat.blackwood.addPath(flare(P(top.u + (end.u - top.u) * 0.86, top.v + (end.v - top.v) * 0.86), end, 16, k === 'clarinet' ? 34 : 25));
+      keywork((to, p) => to.addPath(p), b, top, end, 15, k === 'clarinet' ? [0.12, 0.5, 0.86] : [0.4, 0.75, 0.86], 7);
       const h1 = P(top.u + (end.u - top.u) * 0.25, top.v + (end.v - top.v) * 0.25);
       const h2 = P(top.u + (end.u - top.u) * 0.6, top.v + (end.v - top.v) * 0.6);
       arm([shL, Q(-150, 160, 900), h1]);
@@ -1959,7 +2188,7 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
       TIMP.forEach((dr, i) => {
         const c = toPlan(s, Math.sin(dr.a * DEG) * 720, -Math.cos(dr.a * DEG) * 720);
         const at = uv(view, { x: c.u, y: s.p.y, z: c.v });
-        b.extra.push({ key: `tp:${s.id}:${i}:${view}`, el: <Group key={`tp:${s.id}:${i}:${view}`} transform={[{ translateX: at.u }]}><TimpanoSide R={dr.d / 2} headY={g - 820} floorY={g} /></Group> });
+        b.extra.push({ key: `tp:${s.id}:${i}:${view}`, el: <Group key={`tp:${s.id}:${i}:${view}`} transform={[{ translateX: at.u }]}><TimpanoSide R={dr.d / 2} headY={g - 820} floorY={g} /></Group>, foot: rr(at.u - dr.d / 2 - 20, g - 840, at.u + dr.d / 2 + 20, g, 10) });
       });
       arm([shL, Q(-260, 60, 1150), Q(-200, 380, 1000)]);
       arm([shR, Q(260, 60, 1150), Q(200, 380, 1000)]);
@@ -1972,19 +2201,19 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
         // A concert bass drum on its stand (BassDrumElev): its axis is the
         // player's left–right, so side-on to a view where that runs along u.
         const c = Q(0, BASS_DRUM_STATION.ahead, 0);
-        b.extra.push({ key: `bd:${s.id}:${view}`, el: <BassDrumElev key={`bd:${s.id}:${view}`} cu={c.u} floorV={g} a={rightU} /> });
+        b.extra.push({ key: `bd:${s.id}:${view}`, el: <BassDrumElev key={`bd:${s.id}:${view}`} cu={c.u} floorV={g} a={rightU} />, foot: rr(c.u - (BD.R * Math.sqrt(Math.max(0, 1 - rightU * rightU)) + (BD.D / 2) * Math.abs(rightU) + 30), g - BD.cy - BD.R - 30, c.u + (BD.R * Math.sqrt(Math.max(0, 1 - rightU * rightU)) + (BD.D / 2) * Math.abs(rightU) + 30), g, 10) });
       } else {
         // The concert snare (14 × 6½ in) on its stand, its batter head at
         // 820 mm; an 18 in suspended cymbal on a straight stand at 1150 mm.
         const sn = X(-120, 480);
         const top = g - 820;
         const D = CONCERT_SNARE_14x65.depth.mm;
-        b.extra.push({ key: `sn:${s.id}:${view}`, el: <Group key={`sn:${s.id}:${view}`}><SnareStandSide cx={sn} basketY={top + D + 14} hoopR={CONCERT_SNARE_14x65.d.mm / 2} floorY={g} armsDeg={[20, 160, 270]} /><Group transform={[{ translateX: sn }, { translateY: top }]}><DrumExterior spec={CONCERT_SNARE_14x65} /></Group></Group> });
+        b.extra.push({ key: `sn:${s.id}:${view}`, el: <Group key={`sn:${s.id}:${view}`}><SnareStandSide cx={sn} basketY={top + D + 14} hoopR={CONCERT_SNARE_14x65.d.mm / 2} floorY={g} armsDeg={[20, 160, 270]} /><Group transform={[{ translateX: sn }, { translateY: top }]}><DrumExterior spec={CONCERT_SNARE_14x65} /></Group></Group>, foot: rr(sn - CONCERT_SNARE_14x65.d.mm / 2 - 20, top - 20, sn + CONCERT_SNARE_14x65.d.mm / 2 + 20, g, 10) });
         const cy = Q(420, 420, 1150);
         line(b.legs, P(cy.u, cy.v + 30), P(cy.u, g - 120));
         line(b.legs, P(cy.u, g - 120), P(cy.u - 220, g));
         line(b.legs, P(cy.u, g - 120), P(cy.u + 220, g));
-        b.extra.push({ key: `scy:${s.id}:${view}`, el: <CymbalSide key={`scy:${s.id}:${view}`} cx={cy.u} cy={cy.v} d={18 * IN} tiltDeg={0} /> });
+        b.extra.push({ key: `scy:${s.id}:${view}`, el: <CymbalSide key={`scy:${s.id}:${view}`} cx={cy.u} cy={cy.v} d={18 * IN} tiltDeg={0} />, foot: rr(cy.u - 9 * IN, cy.v - 40, cy.u + 9 * IN, cy.v + 40, 10) });
       }
       arm([shL, Q(-220, 60, 1100), Q(-140, 330, 950)]);
       arm([shR, Q(220, 60, 1100), Q(80, 330, 950)]);
@@ -2200,6 +2429,11 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
   // …and goes INTO the collar: the head's silhouette stops at the shirt.
   const head = intoCollar(!prof ? headFront(pt(headC.u, headC.v), 104, NECK_V) : headProfile(pt(headC.u, headC.v), 104, NECK_V, fwdU >= 0 ? 1 : -1), body.torso);
   addFig(b, 'skin', head.fill);
+  // The hair over the head (never over a hand held in front of the face).
+  let hair = !prof ? hairFront(headC, dF > -0.2) : hairProfile(headC, fwdU >= 0 ? 1 : -1);
+  for (const hp of heldHands) hair = cut(hair, hp.path, PathOp.Difference);
+  if (before) hair = cut(hair, before, PathOp.Difference);
+  b.mat[hairOf(s)].addPath(asWinding(hair));
   // A posed hand in front of the face (a trumpet's, a bass player's left
   // hand): the skin is one mass, so the hand reads by its own outline there —
   // its inner lines and nails stay off the face.
@@ -2255,18 +2489,25 @@ function PaintBatch({ b }: { b: Batch }) {
           is only a soft fold, no rim (owner 2026-10-15: no plugged-in limbs). */}
       <FigureMass path={b.fig.shirt} tone="shirt" box={box} />
       <FigureMass path={b.sleeves} tone="shirt" box={box} soft={b.shoulders} />
+      <Group clip={b.fig.shirt}>
+        <Path path={b.creases} style="stroke" strokeWidth={3.5} strokeCap="round" color={FIGURE_TONES.shirt.edge} opacity={0.3} />
+      </Group>
       <Group clip={b.sleeves}>
         <Path path={b.folds} style="stroke" strokeWidth={3.2} strokeCap="round" color={FIGURE_TONES.shirt.edge} opacity={0.42} />
       </Group>
       {/* Figure pass 3: the posed hands' parts beyond what they hold (a thumb
           behind a neck), under the instruments. */}
       <FigureMass path={b.skinBack} tone="skin" contour={2.6} />
-      {(Object.keys(MATS) as MatId[]).map((m) => (m === 'riser' ? null : <Mass key={m} path={b.mat[m]} mat={m} />))}
+      <Path path={b.stickBack} style="stroke" strokeWidth={12} strokeCap="round" color="#3a2010" />
+      {(Object.keys(MATS) as MatId[]).map((m) => (m === 'riser' || isHair(m) ? null : <Mass key={m} path={b.mat[m]} mat={m} />))}
       <Path path={b.holes} color="#0a0705" opacity={0.85} />
       <Path path={b.stick} style="stroke" strokeWidth={12} strokeCap="round" color="#3a2010" />
       <Path path={b.hair} style="stroke" strokeWidth={5} strokeCap="round" color="#efe6cc" opacity={0.9} />
       {b.extra.map((e) => e.el)}
       <FigureHead fill={b.fig.skin} />
+      {HAIR_MATS.map((m) => (
+        <Mass key={m} path={b.mat[m]} mat={m} contour={2.2} />
+      ))}
       {/* The posed hands' digits read apart; their nails (a hint at this size). */}
       <Path path={b.handLines} style="stroke" strokeWidth={3} strokeCap="round" color={FIGURE_SKIN.edge} opacity={0.7} />
       <Nails path={b.nails} />
@@ -2285,8 +2526,97 @@ function risersPlan(s: Seating): SkPath {
   return p;
 }
 
-type Built = { layers: Batch[]; hiBatch: Batch | null };
+/**
+ * WHAT EACH PLAYER OCCUPIES in a view (lab art fix 2026-10-16): the drawn
+ * parts of one seat (its figure, chair, stand, instrument; thin strokes as
+ * their stroked outlines; the timpani's and drums' own outlines), so the
+ * labels keep off the real drawing and a leader never runs through another
+ * section's player (the old test was a 360 mm disc or a box per player).
+ * `near`: larger = nearer the viewer (an elevation's occlusion order).
+ */
+export type SeatShape = { id: string; section: string; near: number; bounds: SkRect; parts: { p: SkPath; b: SkRect }[] };
+
+/** The seatings drawn with depth separation and real-shape label rules
+ *  (Lab 5's classical groups: the quartet, the string sections, the mixed
+ *  chamber group, the orchestra). */
+export const isClassical = (s: Seating) => /^(orch|strings|chamber|quartet)\./.test(s.id);
+
+function shapeOf(sb: Batch, id: string, section: string, near: number): SeatShape | null {
+  const parts: { p: SkPath; b: SkRect }[] = [];
+  const add = (p: SkPath) => {
+    if (p.isEmpty()) return;
+    const b = p.getBounds();
+    if (b.width <= 0 && b.height <= 0) return;
+    parts.push({ p, b });
+  };
+  const stroked = (p: SkPath, w: number) => {
+    if (p.isEmpty()) return;
+    const q = p.copy().stroke({ width: w });
+    if (q) add(q);
+  };
+  for (const t of Object.keys(sb.fig) as FigTone[]) add(sb.fig[t]);
+  add(sb.sleeves);
+  add(sb.skinBack);
+  for (const m of Object.keys(sb.mat) as MatId[]) add(sb.mat[m]);
+  add(sb.desks);
+  stroked(sb.stick, 14);
+  stroked(sb.stickBack, 14);
+  stroked(sb.legs, 16);
+  stroked(sb.hair, 6);
+  for (const e of sb.extra) if (e.foot) add(e.foot);
+  if (!parts.length) return null;
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const q of parts) {
+    x0 = Math.min(x0, q.b.x);
+    y0 = Math.min(y0, q.b.y);
+    x1 = Math.max(x1, q.b.x + q.b.width);
+    y1 = Math.max(y1, q.b.y + q.b.height);
+  }
+  return { id, section, near, bounds: { x: x0, y: y0, width: x1 - x0, height: y1 - y0 }, parts };
+}
+
+/** One seat's batch merged into a layer (plan: appended, as the plan has
+ *  always added its parts; elevation: the figure masses united, so two
+ *  overlapping players never cancel into a hole). */
+function mergeInto(into: Batch, from: Batch, plan: boolean) {
+  const join = (a: SkPath, b: SkPath): SkPath => {
+    if (b.isEmpty()) return a;
+    if (plan || a.isEmpty()) {
+      a.addPath(b);
+      return a;
+    }
+    return Skia.Path.MakeFromOp(a, b, PathOp.Union) ?? a;
+  };
+  for (const t of Object.keys(from.fig) as FigTone[]) into.fig[t] = join(into.fig[t], from.fig[t]);
+  into.sleeves = join(into.sleeves, from.sleeves);
+  into.shoulders = join(into.shoulders, from.shoulders);
+  into.skinBack = join(into.skinBack, from.skinBack);
+  for (const m of Object.keys(from.mat) as MatId[]) if (!from.mat[m].isEmpty()) into.mat[m].addPath(from.mat[m]);
+  for (const k of ['hair', 'stick', 'legs', 'desks', 'holes', 'handLines', 'nails', 'folds', 'creases', 'stickBack'] as const) if (!from[k].isEmpty()) into[k].addPath(from[k]);
+  into.extra.push(...from.extra);
+}
+
+/** A layer's silhouette (its keyline: the dark edge that parts it from what
+ *  is behind — lab art fix 2026-10-16, the side views' players had merged
+ *  into one mass). */
+function silhouetteOfLayer(b: Batch): SkPath {
+  const ps: SkPath[] = [...(Object.keys(b.fig) as FigTone[]).map((t) => b.fig[t]), b.sleeves, b.skinBack, ...(Object.keys(b.mat) as MatId[]).map((m) => b.mat[m])].filter((p) => !p.isEmpty());
+  // (Every part's own outline resolved, then all of them in one pass.)
+  const out = make();
+  for (const p of ps) out.addPath(resolved(p));
+  return resolved(out);
+}
+
+type Built = { layers: Batch[]; hiBatch: Batch | null; shapes: SeatShape[]; keys: (SkPath | null)[]; shade: number[]; keyW: number };
 const cache = new Map<string, Built>();
+
+/** The seat shapes of a seating in a view (built with the drawing, cached). */
+export function seatShapes(s: Seating, view: StageView): SeatShape[] {
+  return build(s, view, null).shapes;
+}
 
 function build(s: Seating, view: StageView, hi: string | null): Built {
   const k = `${s.id}|${view}|${hi ?? ''}`;
@@ -2308,7 +2638,7 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
   // elevations: a layer per ~600 mm of depth, painted far to near.
   const step = view === 'plan' ? Infinity : 600;
   // Figure pass 3: a big seating's hands as silhouettes; an orchestra's basses bowed.
-  const so: SeatOpts = { light: s.seats.length > LIGHT_HANDS_ABOVE, bowedBass: /^(orch|strings|chamber)\./.test(s.id) };
+  const so: SeatOpts = { light: s.seats.length > LIGHT_HANDS_ABOVE, bowedBass: /^(orch|strings|chamber)\./.test(s.id), classical: isClassical(s) };
   let cur: Batch | null = null;
   let curD = -Infinity;
   const paint = (into: Batch, it: Item) => {
@@ -2326,22 +2656,78 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
       elevSeat(into, q, view, so);
     }
   };
-  for (const it of sorted) {
-    if (!cur || depth(it) - curD > step) {
+  // Lab art fix 2026-10-16 (the classical groups): in elevation a small
+  // group gives every player a layer of their own and a big one a layer per
+  // 600 mm; each nearer layer gets a dark keyline round its silhouette and
+  // the farther ones a little less light, so overlapping players read as
+  // people one behind another — never one merged mass.
+  const classical = isClassical(s) && view !== 'plan';
+  const own = classical && s.seats.length <= LIGHT_HANDS_ABOVE;
+  const shapes: SeatShape[] = [];
+  const layerD: number[] = [];
+  const painted = sorted.map((it) => {
+    const sb = newBatch();
+    paint(sb, it);
+    const sh = it.seat ? shapeOf(sb, it.seat.id, it.seat.kind === 'conductor' ? 'cond' : it.seat.section, view === 'plan' ? 0 : depth(it)) : null;
+    return { it, sb, sh };
+  });
+  // A small group in elevation: a player standing almost wholly behind a
+  // nearer one (the quartet's mirror partners from the side) is left out —
+  // the fragments of a hidden player (a viola at the cellist's chin) read as
+  // one person playing two instruments. The plan names every player, and a
+  // section picked by name is still drawn over the veil (hiBatch).
+  const covered = (a: SeatShape) =>
+    painted.some(({ sh: b }) => {
+      if (!b || b === a || b.near <= a.near) return false;
+      const w = Math.min(a.bounds.x + a.bounds.width, b.bounds.x + b.bounds.width) - Math.max(a.bounds.x, b.bounds.x);
+      const h = Math.min(a.bounds.y + a.bounds.height, b.bounds.y + b.bounds.height) - Math.max(a.bounds.y, b.bounds.y);
+      return w > 0 && h > 0 && (w * h) / Math.max(1, a.bounds.width * a.bounds.height) >= 0.6;
+    });
+  for (const { it, sb, sh } of painted) {
+    if (own && sh && covered(sh)) continue;
+    if (!cur || own || depth(it) - curD > step) {
       cur = newBatch();
       curD = depth(it);
       layers.push(cur);
+      layerD.push(curD);
     }
-    paint(cur, it);
+    if (sh) shapes.push(sh);
+    mergeInto(cur, sb, view === 'plan');
   }
+  const d0 = Math.min(...layerD);
+  const d1 = Math.max(...layerD);
+  // (A small group's players one behind another: the farthest at half light,
+  // so the nearer figure reads as in front; a big seating's back rows 30% down.)
+  const shade = layerD.map((d) => (classical && d1 > d0 ? 1 - (own ? 0.48 : 0.3) * ((d1 - d) / (d1 - d0)) : 1));
+  // (Keylines for the small groups, whose players stand wholly one behind
+  // another; a big seating's rows read by their shading.)
+  const keys = layers.map((b, i) => (own && i > 0 ? silhouetteOfLayer(b) : null));
+  const keyW = Math.max(18, (s.stage.x1 - s.stage.x0) / 190);
   let hiBatch: Batch | null = null;
   if (hi) {
     hiBatch = newBatch();
     for (const it of sorted.filter((x) => (x.seat ? x.seat.section === hi || (hi === 'cond' && x.seat.kind === 'conductor') : x.gear!.section === hi))) paint(hiBatch, it);
   }
-  const out = { layers, hiBatch };
+  const out = { layers, hiBatch, shapes, keys, shade, keyW };
   cache.set(k, out);
   return out;
+}
+
+/** A layer painted a little darker with distance (a colour matrix on its own layer). */
+function Shaded({ f, children }: { f: number; children: ReactElement }) {
+  if (f >= 0.999) return children;
+  const m = [f, 0, 0, 0, 0, 0, f, 0, 0, 0, 0, 0, f, 0, 0, 0, 0, 0, 1, 0];
+  return (
+    <Group
+      layer={
+        <Paint>
+          <ColorMatrix matrix={m} />
+        </Paint>
+      }
+    >
+      {children}
+    </Group>
+  );
 }
 
 /** The section's outline in a view (amber, a rounded box): never colour alone. */
@@ -2455,7 +2841,12 @@ export function SeatingView({ seating, view, hi = null }: { seating: Seating; vi
       ) : null}
       {podium ? <Mass path={podium} mat="riser" contour={6} /> : null}
       {g.layers.map((b, i) => (
-        <PaintBatch key={i} b={b} />
+        <Group key={i}>
+          {g.keys[i] ? <Path path={g.keys[i]!} style="stroke" strokeWidth={g.keyW} strokeJoin="round" color="#06070a" opacity={0.92} /> : null}
+          <Shaded f={g.shade[i]}>
+            <PaintBatch b={b} />
+          </Shaded>
+        </Group>
       ))}
       {hi && g.hiBatch ? (
         <>
