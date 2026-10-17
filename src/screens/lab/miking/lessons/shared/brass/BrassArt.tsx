@@ -363,7 +363,7 @@ export function makeBrassInstrument(poses: Readonly<Record<VariantId, HornPose>>
 
 /* ── labels (OFF the instrument, each with a leader to its part) ── */
 
-type LabelSpec = { id: string; text: string; short?: string; at: Vec3; du: number; dv: number; align?: ArtLabel['align']; tone?: ArtLabel['tone']; alts?: { du: number; dv: number; align: ArtLabel['align'] }[]; free?: boolean };
+type LabelSpec = { id: string; text: string; short?: string; at: Vec3; du: number; dv: number; align?: ArtLabel['align']; tone?: ArtLabel['tone']; alts?: { du: number; dv: number; align: ArtLabel['align'] }[]; unanchored?: boolean };
 
 /** The parts' anchors for labels and taps. */
 export function anchors(P: HornPose) {
@@ -399,15 +399,15 @@ export function brassLabels(P: HornPose, view: ViewId): ArtLabel[] {
   }
   // From above, a slide instrument's tubes run past the head: the word sits farther out.
   // In profile (art fix 2026-10-16, grading: "PLAYER and MOUTHPIECE stack on
-  // the head", leader dots on the head) the word stands free beside the
+  // the head", leader dots on the head) the word stands apart beside the
   // player's back at chest height (or, where the glass ends there, in front
   // of the belt) — no leader, nothing on the figure.
-  if (side) L.push({ id: 'player', text: 'PLAYER', at: A.head, du: -235, dv: 470, align: 'right', tone: 'muted', free: true, alts: [{ du: 230, dv: 820, align: 'left' }] });
+  if (side) L.push({ id: 'player', text: 'PLAYER', at: A.head, du: -235, dv: 470, align: 'right', tone: 'muted', unanchored: true, alts: [{ du: 230, dv: 820, align: 'left' }] });
   else L.push({ id: 'player', text: 'PLAYER', at: A.head, du: -60, dv: P.slide ? -190 : -90, align: 'center', tone: 'muted' });
   return L.map((l) => {
     const [u, v] = PROJ[view].pt(l.at);
     const alts = l.alts?.map((a) => ({ u: u + a.du, v: v + a.dv, align: a.align }));
-    return { id: l.id, text: l.text, short: l.short, u: u + l.du, v: v + l.dv, align: l.align ?? 'left', tone: l.tone, ...(l.free ? {} : { at: { u, v } }), ...(alts ? { alts } : {}) };
+    return { id: l.id, text: l.text, short: l.short, u: u + l.du, v: v + l.dv, align: l.align ?? 'left', tone: l.tone, ...(l.unanchored ? {} : { at: { u, v } }), ...(alts ? { alts } : {}) };
   });
 }
 
