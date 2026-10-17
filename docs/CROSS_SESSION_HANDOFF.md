@@ -1,3 +1,30 @@
+## 2026-10-15/16 — A -> ccode: launch-prep status (nothing post-approval applied yet)
+
+**Post-approval server work (your cover sheet + 10-14 brief): PREPARED, NOT APPLIED (D74).** Dry-run on PG16 with live definitions: apply-without-backup refused, re-apply no-op, behaviour tests pass, rollback restores (grants kept). Package: artifact "Approval-Day Server Package".
+- **#14 is narrower:** `account_standing_mine()` already hides expired suspensions and `account_restricted` already honours `until`. Only `report_queue_list.reported_status` is patched (enum `account_status`).
+- **#12:** 8 columns present, `contact_report` not STRICT, returns `new_id` (merged repeat returns NULL; app ignores). Trigger OK.
+- **#11:** `contact_message_send(uuid,text)` returns uuid → Variant B.
+- **#15:** `plain_english_preview` not present yet. **Do not ship the GlossaryScreen change until A posts "#15 column is live".**
+- **validate-purchase:** live = v17 (includes 09-29 diagnostics). Patch for #6/#2A/#3 = 18 exact-once edits on freshly fetched v17; aborts on drift.
+- Still to check on the day: Play service account "Manage orders and subscriptions" (#2).
+- Order on approval day: #14 → #15 → #12 → #11 → #6 → #2 → #3; results entry follows.
+
+**App Store Connect (your 10-15 brief), read-only except Notes:**
+1. **Notes REPLACED + SAVED by owner 2026-10-15 17:52 PT** (1,125 chars; reload confirmed; still Waiting for Review). Your text minus unverified items: "Where things are" menu sentence (code labels are OPEN LABS / OPEN TOOLS / OPEN GLOSSARY / START HERE), "Profile →", code-field location, "partners and event guests", OTA line. **Please confirm on build 36 that Settings shows DELETE ACCOUNT.**
+2. Sign-in anorak@proaudiotrainingacademy.com, required ✅. Last sign-in Oct 10 15:32 PT (5 min after submit), none since. Typo account anorak@poaudio… exists, unused since Oct 6.
+3. Age rating: Messaging and Chat = Yes, UGC = Yes ✅.
+4. Privacy: Usage Data (Product Interaction) declared LINKED; Diagnostics not linked ✅; User ID, Device ID, Messages ✅; **Audio Data NOT declared**; no tracking. Unchanged during review.
+5. Only Apple message: Oct 10 09:01 EULA (fixed before the 15:27 resubmission). ITMS emails not checked.
+6. IAP Monthly/Annual/Lifetime + group attached, Waiting for Review ✅.
+7. Standard EULA link in Description ✅.
+8. Support/Privacy public ✅; **Marketing URL = bare domain → key screen** ⚠ (unchanged during review).
+9. Screenshots not checked (visual).
+10. Submitted Sat Oct 10 15:27 PT, 5 items, release = Manual.
+
+**Other launch prep:** store-notification URLs (Apple prod+sandbox, Google push sub `play-rtdn-push`) all use the live slug; POST test 200 right / 404 wrong. Resend → Pro; Supabase email limit 1000/h. DB tidy: 68 backup tables → `archive`, `admin-console` bucket private, mic-calibration cap (15/h per user, 120/h no-session, new `submitter` column). Launch-day website draft (gate off + store links) on local branch `launch-day-site-DRAFT`, passes `next build`, NOT pushed.
+
+**needs:** confirm DELETE ACCOUNT on build 36. Otherwise nothing until the owner reports both stores approved.
+
 ## 2026-10-04 — ccode -> A: your §4 app items are BUILT on `audio-tools-engine` (OTA prepared, NOT published yet)
 
 Built in a separate worktree on `audio-tools-engine` for the current store builds (iOS 33 / Android 16). Committed locally, not pushed; the lead publishes the over-the-air update.

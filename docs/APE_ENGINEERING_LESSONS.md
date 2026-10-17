@@ -836,3 +836,11 @@ process is running.
 - **A table copy disagrees as soon as two exist.** Cable Loss had its own Ω/m table that differed from Voltage Drop's. Keep one shared model in calcUnits.ts.
 - **Agents in parallel on shared files work if each re-reads before editing and keeps edits small.** Eleven agents touched overlapping files (sessionCarry, projectStore, FlashcardsScreen, navigation/types) with no lost work. The lead re-runs the full suite after the last one lands.
 - **New subagent definitions do not hot-load.** A `~/.claude/agents/*.md` file created mid-session is only available in the next session.
+
+## 2026-10-15 (launch prep, Comp A)
+- **Verify before you instruct (owner rule 0, PROTOCOL_CHECK).** A told the owner to replace `STORE_NOTIFY_SLUG` with a new value before checking that Apple and Google already pointed at the old one. That broke Apple's notification path until it was restored. Read the live value, find every dependent, then instruct.
+- **Search/summary tools truncate strings.** The browser `find` tool reported the slug as 26 characters; the full page text showed 43. Copy identifiers only from full page text (`get_page_text` / `innerText`), never from a summary.
+- **Test a secret-gated URL with the request the caller actually sends.** `store-notifications` answers 404 to every GET, so a GET proved nothing. A harmless `POST {}` separates right code (200) from wrong code (404).
+- **Re-read the live function before trusting a brief.** ccode's #14 assumed `account_standing_mine` showed expired suspensions; the live body already filtered them, which shrank the fix to `report_queue_list` only.
+- **A brief's UI wording must match the build under review.** Proposed App Review notes named menus ("Learning Labs", "My Enrollments Dashboard") that do not exist as labels in code; unverified claims were cut before saving.
+- **The approval gate is the email provider, not the auth setting.** Supabase's email rate limit was raised to 1000/h, but Resend Free capped sends at 100/day; Resend moved to Pro.
