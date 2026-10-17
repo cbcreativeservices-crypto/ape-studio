@@ -52,7 +52,9 @@ export const OPERATOR_BACK = 320;
 export const OPERATOR_R = 190;
 export const OPERATOR_H = 1650;
 
-export function compileScene(model: InstrumentModel, variant: VariantId): CompiledScene {
+/** `zones`: the starting points a STARTING SETUPS drawing shows — only then
+ *  does a rim that names them (Rim.zones) join the scene. */
+export function compileScene(model: InstrumentModel, variant: VariantId, zones?: readonly string[]): CompiledScene {
   const solids: Solid[] = [];
   for (const part of model.parts) {
     if (!part.solid) continue;
@@ -73,7 +75,7 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     port: model.ports[variant] ?? null,
     interior: model.interior,
     interiors: model.interiors ?? [],
-    rims: (model.rims ?? []).filter((r) => !r.variants || r.variants.includes(variant)),
+    rims: (model.rims ?? []).filter((r) => (!r.variants || r.variants.includes(variant)) && (!r.zones || !!zones?.some((z) => r.zones!.includes(z)))),
     yFloor,
     boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: model.mountRule?.length ?? BOOM_BEHIND, route: model.boomRoute?.[variant] ?? null, low: model.lowBoomRoute?.[variant] ?? null },
     standRadius: STAND_RADIUS,

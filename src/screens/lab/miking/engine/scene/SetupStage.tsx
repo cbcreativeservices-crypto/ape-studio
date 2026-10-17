@@ -28,6 +28,7 @@ import type { Lesson } from '../model/types.ts';
 export function SetupStage({ lesson, art, setup, view, setView, w, h, label }: { lesson: Lesson; art: LessonArt; setup: StartingSetup; view: ViewId; setView: (v: ViewId) => void; w: number; h: number; label: string }) {
   const rig = useRig(lesson, {
     variant: setup.variant,
+    zones: setup.zones.map((z) => z.id),
     mics: setup.mics.map((m) => ({ slot: m.slot, typeId: m.typeId, pattern: m.pattern, pose: m.pose, polarity: m.polarity, surfaceId: m.surfaceId })),
   });
   const first = setup.mics[0];

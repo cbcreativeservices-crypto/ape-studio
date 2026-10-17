@@ -1248,7 +1248,10 @@ const distConfig: FxLabConfig = {
       // flat-topping (and hear the grit) grow with every dB.
       label: 'DRIVE', paramId: P.driveDb, lessonKey: 'saturation',
       choices: [6, 12, 24, 36].map((d) => ({ label: `+${d} dB`, value: d })),
-      initial: 12,
+      // Owner 2026-10-16: +24 dB, so the first screen already shows (and
+      // plays) the −20 dBFS sine clipping (+4 dB over the 0 dBFS ceiling);
+      // +12 dB lifts it only to −8 dBFS, clean gain.
+      initial: 24,
       fader: { min: 6, max: 36, snap: Math.round, format: (v) => `+${Math.round(v)} dB` },
     },
     {

@@ -2451,7 +2451,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         <Group transform={matrix}>
           {/* The art's own keep-out shapes stay off this drawing (keepOuts.ts). */}
           <KeepOutsAtRest.Provider value={false}>
-            <Instrument view={view} variant={variant} micTypes={micTypes} />
+            <Instrument view={view} variant={variant} micTypes={micTypes} setup={zoneIds} />
           </KeepOutsAtRest.Provider>
           <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
           <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} yieldTo={yieldTo} view={view} />

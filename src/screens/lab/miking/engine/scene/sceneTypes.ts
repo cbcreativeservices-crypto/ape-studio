@@ -45,7 +45,11 @@ export type LessonArt = {
    *  part tour, a read-step figure), so a scene can dress for them (a boom
    *  operator holding the pole only when a pole mic is placed; a body mic's
    *  bodypack and cable only when a lav is). */
-  Instrument: (props: { view: ViewId; variant: VariantId; micTypes?: readonly string[] }) => ReactElement;
+  /** `setup` (owner 2026-10-16): the starting points of the STARTING SETUPS
+   *  drawing being shown (SetupStage) — absent everywhere else — so a scene
+   *  can dress for one setup (B04's boom held low for the below-the-frame
+   *  start). A scene that ignores it is unchanged. */
+  Instrument: (props: { view: ViewId; variant: VariantId; micTypes?: readonly string[]; setup?: readonly string[] }) => ReactElement;
   labels: (view: ViewId, variant: VariantId) => ArtLabel[];
   /** The part under a model point (u, v), `tol` in mm; null = none. */
   hitTest: (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => string | null;

@@ -209,7 +209,11 @@ export function FrameLines({ view, frame, farX, headTopY, show = 'all' }: { view
  *  the front hand. Given, the NEAR arm (drawn over the head) takes the rear
  *  hand, up and back behind the head, and the FAR arm the front hand, so no
  *  arm ever crosses the face in profile; both hands sit on the pole's line. */
-export function operatorPoses(feet: Vec3, grip: Vec3, opts: { rear?: Vec3 } = {}): { side: PlayerPose; top: PlayerPose } {
+/** `low` (owner 2026-10-16, B04 setup 5: the boom below the frame): the
+ *  pole held LOW, the hands about chest height; the near arm takes the FRONT
+ *  hand (the rear hand is behind the body from the side), the elbows bent
+ *  down and back, the shoulders not lifted. Absent: unchanged. */
+export function operatorPoses(feet: Vec3, grip: Vec3, opts: { rear?: Vec3; low?: boolean } = {}): { side: PlayerPose; top: PlayerPose } {
   const floor = feet.y;
   const hx = feet.x + 10;
   const headC = pt(hx, floor - 1750 + 114);
@@ -219,7 +223,9 @@ export function operatorPoses(feet: Vec3, grip: Vec3, opts: { rear?: Vec3 } = {}
   // (upper 300, forearm 265 mm) from each shoulder to its wrist, the elbow
   // raised BESIDE and behind the head — the way an operator holds a boom
   // overhead — so the face stays clear.
-  const upElbow = (s: ReturnType<typeof pt>, w: ReturnType<typeof pt>): ReturnType<typeof pt> => {
+  // `k` < 1: the elbow foreshortened (it points out to the side, across the
+  // view: the low hold's far arm, its hand at the far hip).
+  const upElbow = (s: ReturnType<typeof pt>, w: ReturnType<typeof pt>, k = 1): ReturnType<typeof pt> => {
     const A = 300;
     const B = 265;
     const dx = w.u - s.u;
@@ -236,20 +242,20 @@ export function operatorPoses(feet: Vec3, grip: Vec3, opts: { rear?: Vec3 } = {}
       px = -px;
       py = -py;
     }
-    return pt(s.u + ux * x + px * h, s.v + uy * x + py * h);
+    return pt(s.u + ux * x + px * h * k, s.v + uy * x + py * h * k);
   };
   // Arms raised overhead lift the shoulders a little (the shoulder blades
   // rotate up): 30 mm here when the near arm takes the rear hand.
-  const lift = opts.rear ? 30 : 0;
+  const lift = opts.rear && !opts.low ? 30 : 0;
   const shR = pt(neck.u + 4, neck.v + 58 - lift);
   const shL = pt(neck.u + 18, neck.v + 48 - lift);
   // The wrist sits just under and behind the pole the fist closes on.
   const front = pt(grip.x + 20, grip.y + 34);
   const rear = opts.rear ? pt(opts.rear.x + 6, opts.rear.y + 40) : null;
-  const wrR = rear ?? front;
-  const wrL = rear ? front : pt(grip.x + 150, grip.y + 120);
+  const wrR = opts.low ? front : rear ?? front;
+  const wrL = opts.low ? rear ?? pt(grip.x + 150, grip.y + 120) : rear ? front : pt(grip.x + 150, grip.y + 120);
   const elR = upElbow(shR, wrR);
-  const elL = upElbow(shL, wrL);
+  const elL = upElbow(shL, wrL, opts.low ? 0.2 : 1);
   // The hand carries on along its forearm (a straight wrist round the pole).
   const along = (e: ReturnType<typeof pt>, w: ReturnType<typeof pt>) => Math.atan2(w.v - e.v, w.u - e.u);
   const side: PlayerPose = {
@@ -314,7 +320,10 @@ export function operatorPoses(feet: Vec3, grip: Vec3, opts: { rear?: Vec3 } = {}
 /** The operator, and the pole's rear end behind the front hand (`stub`: the
  *  grip and the pole's far end) — the part of the pole the hands hold; the
  *  mic's side of it is drawn by the scene, from the mic to the grip. */
-export function BoomOperator({ view, poses, dim = 0.82, stub, hands = true }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number; stub?: { a: Vec3; b: Vec3 }; hands?: boolean }) {
+/** `low` (owner 2026-10-16): the pole held low runs BEHIND the body (past
+ *  the far side of the torso at chest height, and under the head and
+ *  shoulders from above), so its stub is drawn first. Absent: unchanged. */
+export function BoomOperator({ view, poses, dim = 0.82, stub, hands = true, low = false }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number; stub?: { a: Vec3; b: Vec3 }; hands?: boolean; low?: boolean }) {
   const pose = view === 'side' ? poses.side : poses.top;
   const pole = useMemo(() => {
     const p = make();
@@ -327,18 +336,20 @@ export function BoomOperator({ view, poses, dim = 0.82, stub, hands = true }: { 
   // The whole operator is faded as ONE layer (clash sweep 2026-10-10: each
   // part faded on its own let the far arm and the torso show through the
   // near arm and the head).
+  const poleArt = stub ? (
+    <>
+      <Path path={pole} style="stroke" strokeWidth={36} strokeCap="round" color="#0b0c0f" />
+      <Path path={pole} style="stroke" strokeWidth={32} strokeCap="round" color="#3a3d45" />
+      <Group transform={[{ translateX: -1.5 }, { translateY: -2 }]}>
+        <Path path={pole} style="stroke" strokeWidth={7} strokeCap="round" color="#d4d8e0" opacity={0.45} />
+      </Group>
+    </>
+  ) : null;
   return (
     <Group layer={<Paint opacity={dim} />}>
+      {low ? poleArt : null}
       <PlayerBehind pose={pose} />
-      {stub ? (
-        <>
-          <Path path={pole} style="stroke" strokeWidth={36} strokeCap="round" color="#0b0c0f" />
-          <Path path={pole} style="stroke" strokeWidth={32} strokeCap="round" color="#3a3d45" />
-          <Group transform={[{ translateX: -1.5 }, { translateY: -2 }]}>
-            <Path path={pole} style="stroke" strokeWidth={7} strokeCap="round" color="#d4d8e0" opacity={0.45} />
-          </Group>
-        </>
-      ) : null}
+      {low ? null : poleArt}
       <PlayerInFront pose={pose} hands={hands} />
     </Group>
   );

@@ -78,7 +78,9 @@ export type Rig = {
 
 /** `surfaceId`: the head this mic's readouts measure from when it is not the
  *  rig's shared reference (a bottom mic beside a top one). */
-export type RigInit = { variant?: VariantId; mics: { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity?: 1 | -1; on?: boolean; surfaceId?: string }[] };
+/** `zones` (owner 2026-10-16): a STARTING SETUPS drawing's own starting
+ *  points, so a setup-only grip (Rim.zones) joins its scene. */
+export type RigInit = { variant?: VariantId; zones?: readonly string[]; mics: { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity?: 1 | -1; on?: boolean; surfaceId?: string }[] };
 
 function pinFor(lesson: Lesson, typeId: string): SurfacePin {
   const t = micType(typeId);
@@ -104,7 +106,9 @@ function firstSurface(lesson: Lesson, v: VariantId): string {
 
 export function useRig(lesson: Lesson, init: RigInit): Rig {
   const [variant, setVariantRaw] = useState<VariantId>(init.variant ?? lesson.model.defaultVariant);
-  const scene = useMemo(() => compileScene(lesson.model, variant), [lesson, variant]);
+  const zonesKey = init.zones ? init.zones.join('|') : '';
+  const zones = useMemo(() => (zonesKey ? zonesKey.split('|') : undefined), [zonesKey]);
+  const scene = useMemo(() => compileScene(lesson.model, variant, zones), [lesson, variant, zones]);
   const bounds = useMemo(() => boundsOf(lesson, variant), [lesson, variant]);
   // A surface mic STARTS on its surface, like every later move (a zone's
   // start pose is a point in the zone; the plate rests on the pillow's top).
@@ -339,7 +343,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   );
   const setVariant = useCallback(
     (v: VariantId) => {
-      const sc = compileScene(lesson.model, v);
+      const sc = compileScene(lesson.model, v, zones);
       const moved: Partial<Record<MicSlot, MicPose>> = {};
       for (const m of micsRef.current) moved[m.slot] = settle(m.slot, m.typeId, sc);
       setMics((prev) => prev.map((m) => (moved[m.slot] ? { ...m, pose: moved[m.slot]! } : m)));
@@ -348,7 +352,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       setSurfaceId((cur) => (lesson.model.surfaces.some((s) => s.id === cur && (!s.variants || s.variants.includes(v))) ? cur : firstSurface(lesson, v)));
       setVersion((n) => n + 1);
     },
-    [lesson, settle],
+    [lesson, settle, zones],
   );
   const setPattern = useCallback((slot: MicSlot, p: MicPattern) => setMics((prev) => prev.map((m) => (m.slot === slot ? { ...m, pattern: p } : m))), []);
   const setPolarity = useCallback((slot: MicSlot, pol: 1 | -1) => {

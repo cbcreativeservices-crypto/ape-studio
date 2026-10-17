@@ -366,7 +366,11 @@ export type Interior = { x0: number; x1: number; rIn: number; c: Vec3; axis?: Ve
  *  under the clothes to the pack's input (frame of the model). The scene
  *  draws it (LavLead: a loop at the clip, then dashed = under the clothes)
  *  whenever a mic is clipped here; absent = no cable drawn. */
-export type Rim = { id: string; label: string; c: Vec3; axis: Vec3; r: number; variants?: VariantId[]; types?: readonly string[]; lead?: readonly Vec3[] };
+/** `zones` (owner 2026-10-16, B04 setup 5): opt-in — this clamp place
+ *  exists only in a STARTING SETUPS drawing of one of these starting points
+ *  (SetupStage passes its zones to compileScene); every other drawing, the
+ *  Placement Studio and the checks never see it. Absent = always there. */
+export type Rim = { id: string; label: string; c: Vec3; axis: Vec3; r: number; variants?: VariantId[]; types?: readonly string[]; lead?: readonly Vec3[]; zones?: readonly string[] };
 /** The scene a lesson variant compiles to: solids + the routing anchors. */
 export type CompiledScene = {
   variant: VariantId;

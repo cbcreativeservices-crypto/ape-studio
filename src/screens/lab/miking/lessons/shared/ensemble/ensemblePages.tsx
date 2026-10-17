@@ -131,8 +131,8 @@ function devSetupIndex(): number {
 
 const VIEW_WORDS: Record<StageView, { label: string; blurb: string; tag: string }> = {
   plan: { label: 'FROM ABOVE', blurb: 'The seating plan as the conductor sees it: the conductor at the bottom, the ensemble beyond.', tag: 'FROM ABOVE · THE CONDUCTOR’S VIEW' },
-  section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the conductor’s right: heights, rows and how far forward everything is. A player hidden behind a nearer one is named from above.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
-  front: { label: 'FROM THE HALL', blurb: 'As the audience sees the stage: heights and how wide everything is.', tag: 'FROM THE HALL' },
+  section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the conductor’s right: heights, rows and how far forward everything is. A player hidden behind a nearer one is drawn faint, with a dashed outline; the view from above names everyone.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
+  front: { label: 'FROM THE HALL', blurb: 'As the audience sees the stage: heights and how wide everything is. A player hidden behind a nearer one is drawn faint, with a dashed outline.', tag: 'FROM THE HALL' },
 };
 /** Group 4: a stage plot's views, said as the audience sees the stage. */
 const PLOT_VIEW_WORDS: Record<StageView, { label: string; blurb: string; tag: string }> = {

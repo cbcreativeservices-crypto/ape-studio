@@ -77,6 +77,12 @@ export const GRIP_CLOSE = v3(1000, -450, -1000);
 export const GRIP_WIDE = v3(900, -540, -1300);
 export const OP_FEET_CLOSE = operatorAt(GRIP_CLOSE, BOOM_ABOVE.tip, FLOOR);
 export const OP_FEET_WIDE = operatorAt(GRIP_WIDE, BOOM_WIDE.tip, FLOOR);
+/** Owner 2026-10-16 (setup 5, the boom BELOW the frame): the operator holds
+ *  the pole LOW, the front hand about 1.17 m up (lower chest), where it was
+ *  in plan, so the pole runs straight from the hands to the mic below the
+ *  frame. A setup-only grip (Rim.zones): every other drawing keeps the
+ *  overhead hold. */
+export const GRIP_LOW = v3(GRIP_CLOSE.x, FLOOR - 1170, GRIP_CLOSE.z);
 
 /** The PA (live): at the stage's front corner on the talker's left, beyond
  *  the operator, facing the audience (+x): 2 m out, 1.9 m across, its
@@ -131,6 +137,7 @@ const envelopes: Envelope[] = [
 const rims: Rim[] = [
   { id: 'grip', label: 'the boom operator’s hands', c: GRIP_CLOSE, axis: v3(0, 0, 1), r: 0, variants: ['close', 'live'], types: POLE_TYPES },
   { id: 'grip.w', label: 'the boom operator’s hands', c: GRIP_WIDE, axis: v3(0, 0, 1), r: 0, variants: ['wide'], types: POLE_TYPES },
+  { id: 'grip.low', label: 'the boom operator’s hands, held low', c: GRIP_LOW, axis: v3(0, 0, 1), r: 0, variants: ['close'], types: POLE_TYPES, zones: ['b4.below'] },
   { id: 'shoe', label: 'the camera’s shoe', c: cameraShoe(CAM_CLOSE), axis: v3(0, -1, 0), r: 0, variants: ['close', 'live'], types: ['camMic'] },
   { id: 'shoe.w', label: 'the camera’s shoe', c: cameraShoe(CAM_WIDE), axis: v3(0, -1, 0), r: 0, variants: ['wide'], types: ['camMic'] },
   { id: 'clip.sternum', label: 'a clip on the shirt, over the breastbone', c: LAV.grip, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(LAV.grip) },

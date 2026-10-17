@@ -43,6 +43,12 @@ export const PLOT_FS = 13;
 /** The plan's mm scale, taken from its wedge glyph (a 600 mm wedge drawn
  *  26/64 of a 20-unit box): a performer is drawn at the same scale. */
 const PERSON_PX_PER_MM = (20 * 26) / 64 / 600;
+/** Owner 2026-10-16: on the venue plan the PEOPLE are drawn 2.5× their true
+ *  size so they read on a phone (at true scale a performer is ~6 units
+ *  across); the gear and the room stay true scale, and the plot says so
+ *  (PEOPLE_NOTE). */
+export const PEOPLE_ENLARGED = 2.5;
+export const PEOPLE_NOTE = 'people enlarged for clarity';
 const DECK = { x: 70, y: 14, w: 220, h: 94 }; // the stage deck; lip at y = 108
 const LIP_Y = DECK.y + DECK.h;
 const AUD = { top: 140, bottom: 314, left: 22, right: 338 };
@@ -717,10 +723,17 @@ export function VenueView(p: VenueViewProps) {
                 // The house plan figure from above at the wedges' own scale
                 // (art fix 2026-10-16: was a head-and-shoulders UI glyph),
                 // facing the house.
-                <FigureAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM} halo="#c3cde2" />
+                <FigureAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM * PEOPLE_ENLARGED} halo="#c3cde2" />
               );
             })
           : null}
+        {p.performers ? (
+          // The plain note that the people (only) are enlarged: at the plot's
+          // own word size (13 units ≈ 9.3 pt), in the open house.
+          <PlotLabel x={180} y={CROSS.top - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.barlowRegular} textAnchor="middle" letterSpacing={0}>
+            {PEOPLE_NOTE}
+          </PlotLabel>
+        ) : null}
 
         {/* placed gear, as plan glyphs rotated to aim */}
         {placed.map((x) => {

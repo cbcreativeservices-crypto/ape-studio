@@ -2610,7 +2610,28 @@ function silhouetteOfLayer(b: Batch): SkPath {
   return resolved(out);
 }
 
-type Built = { layers: Batch[]; hiBatch: Batch | null; shapes: SeatShape[]; keys: (SkPath | null)[]; shade: number[]; keyW: number };
+/** A silhouette's OUTER edge only (a ghost's hidden line): every contour that
+ *  lies inside another one (the seams and holes inside a figure) dropped, and
+ *  islands smaller than `minSide` across. */
+function outerContours(p: SkPath, minSide: number): SkPath {
+  const parts = p
+    .toSVGString()
+    .split(/(?=M)/)
+    .map((d) => d.trim())
+    .filter(Boolean)
+    .map((d) => Skia.Path.MakeFromSVGString(d))
+    .filter((q): q is SkPath => !!q && !q.isEmpty())
+    .map((q) => ({ q, b: q.getBounds() }))
+    .filter((o) => Math.max(o.b.width, o.b.height) >= minSide);
+  const out = make();
+  for (const o of parts) {
+    const inside = parts.some((x) => x !== o && x.b.width * x.b.height > o.b.width * o.b.height && o.b.x >= x.b.x && o.b.y >= x.b.y && o.b.x + o.b.width <= x.b.x + x.b.width && o.b.y + o.b.height <= x.b.y + x.b.height);
+    if (!inside) out.addPath(o.q);
+  }
+  return out;
+}
+
+type Built = { layers: Batch[]; hiBatch: Batch | null; shapes: SeatShape[]; keys: (SkPath | null)[]; shade: number[]; keyW: number; ghost: boolean[]; ghostLines: (SkPath | null)[] };
 const cache = new Map<string, Built>();
 
 /** The seat shapes of a seating in a view (built with the drawing, cached). */
@@ -2672,10 +2693,12 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
     return { it, sb, sh };
   });
   // A small group in elevation: a player standing almost wholly behind a
-  // nearer one (the quartet's mirror partners from the side) is left out —
-  // the fragments of a hidden player (a viola at the cellist's chin) read as
-  // one person playing two instruments. The plan names every player, and a
-  // section picked by name is still drawn over the veil (hiBatch).
+  // nearer one (the quartet's mirror partners from the side) is drawn
+  // GHOSTED (owner 2026-10-16: every player accounted for) — faint, in its
+  // own place behind the nearer player, with no keyline, so its fragments
+  // (a viola at the cellist's chin) never read as the nearer player's own.
+  // The plan names every player, and a section picked by name is still
+  // drawn over the veil (hiBatch). A ghost is no label obstacle (as before).
   const covered = (a: SeatShape) =>
     painted.some(({ sh: b }) => {
       if (!b || b === a || b.near <= a.near) return false;
@@ -2683,13 +2706,19 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
       const h = Math.min(a.bounds.y + a.bounds.height, b.bounds.y + b.bounds.height) - Math.max(a.bounds.y, b.bounds.y);
       return w > 0 && h > 0 && (w * h) / Math.max(1, a.bounds.width * a.bounds.height) >= 0.6;
     });
+  const ghost: boolean[] = [];
   for (const { it, sb, sh } of painted) {
-    if (own && sh && covered(sh)) continue;
-    if (!cur || own || depth(it) - curD > step) {
+    const hid = !!(own && sh && covered(sh));
+    if (hid || !cur || own || depth(it) - curD > step) {
       cur = newBatch();
       curD = depth(it);
       layers.push(cur);
       layerD.push(curD);
+      ghost.push(hid);
+    }
+    if (hid) {
+      mergeInto(cur, sb, false);
+      continue;
     }
     if (sh) shapes.push(sh);
     mergeInto(cur, sb, view === 'plan');
@@ -2701,22 +2730,29 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
   const shade = layerD.map((d) => (classical && d1 > d0 ? 1 - (own ? 0.48 : 0.3) * ((d1 - d) / (d1 - d0)) : 1));
   // (Keylines for the small groups, whose players stand wholly one behind
   // another; a big seating's rows read by their shading.)
-  const keys = layers.map((b, i) => (own && i > 0 ? silhouetteOfLayer(b) : null));
+  const keys = layers.map((b, i) => (own && i > 0 && !ghost[i] ? silhouetteOfLayer(b) : null));
+  // A ghost's whole outline, dashed (the hidden-line convention), drawn over
+  // the nearer players so the hidden player's place and size read too.
   const keyW = Math.max(18, (s.stage.x1 - s.stage.x0) / 190);
+  const ghostLines = layers.map((b, i) => (ghost[i] ? outerContours(silhouetteOfLayer(b), keyW * 6) : null));
   let hiBatch: Batch | null = null;
   if (hi) {
     hiBatch = newBatch();
     for (const it of sorted.filter((x) => (x.seat ? x.seat.section === hi || (hi === 'cond' && x.seat.kind === 'conductor') : x.gear!.section === hi))) paint(hiBatch, it);
   }
-  const out = { layers, hiBatch, shapes, keys, shade, keyW };
+  const out = { layers, hiBatch, shapes, keys, shade, keyW, ghost, ghostLines };
   cache.set(k, out);
   return out;
 }
 
-/** A layer painted a little darker with distance (a colour matrix on its own layer). */
-function Shaded({ f, children }: { f: number; children: ReactElement }) {
-  if (f >= 0.999) return children;
-  const m = [f, 0, 0, 0, 0, 0, f, 0, 0, 0, 0, 0, f, 0, 0, 0, 0, 0, 1, 0];
+/** The opacity of a GHOSTED player (owner 2026-10-16): faint, behind the nearer one. */
+export const GHOST_ALPHA = 0.3;
+
+/** A layer painted a little darker with distance (a colour matrix on its own
+ *  layer); `a` < 1 fades it as one layer (a ghosted player). */
+function Shaded({ f, a = 1, children }: { f: number; a?: number; children: ReactElement }) {
+  if (f >= 0.999 && a >= 0.999) return children;
+  const m = [f, 0, 0, 0, 0, 0, f, 0, 0, 0, 0, 0, f, 0, 0, 0, 0, 0, a, 0];
   return (
     <Group
       layer={
@@ -2843,11 +2879,18 @@ export function SeatingView({ seating, view, hi = null }: { seating: Seating; vi
       {g.layers.map((b, i) => (
         <Group key={i}>
           {g.keys[i] ? <Path path={g.keys[i]!} style="stroke" strokeWidth={g.keyW} strokeJoin="round" color="#06070a" opacity={0.92} /> : null}
-          <Shaded f={g.shade[i]}>
+          <Shaded f={g.shade[i]} a={g.ghost[i] ? GHOST_ALPHA : 1}>
             <PaintBatch b={b} />
           </Shaded>
         </Group>
       ))}
+      {g.ghostLines.map((q, i) =>
+        q ? (
+          <Path key={`gh${i}`} path={q} style="stroke" strokeWidth={g.keyW * 0.5} strokeJoin="round" color="#c3cde2" opacity={0.45}>
+            <DashPathEffect intervals={[g.keyW * 2.2, g.keyW * 1.6]} />
+          </Path>
+        ) : null,
+      )}
       {hi && g.hiBatch ? (
         <>
           <Path path={veil} color="#05060a" opacity={0.42} />

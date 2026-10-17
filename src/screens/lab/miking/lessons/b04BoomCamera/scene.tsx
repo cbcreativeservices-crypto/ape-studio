@@ -26,7 +26,7 @@ import { MicAt } from '../shared/field/FieldStage';
 import { operatorSide, operatorTop } from '../shared/measure/measureModel.ts';
 import { SHOTGUN_BODY } from '../shared/fieldmics/fieldMics.ts';
 import { SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
-import { B04_VIEWS, BOOM_ABOVE, BOOM_WIDE, CAM_OF, FLOOR, GRIP_CLOSE, GRIP_WIDE, HEAD_TOP, OP_FEET_CLOSE, OP_FEET_WIDE, PA_C } from './geometry.ts';
+import { B04_VIEWS, BOOM_ABOVE, BOOM_BELOW, BOOM_WIDE, CAM_OF, FLOOR, GRIP_CLOSE, GRIP_LOW, GRIP_WIDE, HEAD_TOP, OP_FEET_CLOSE, OP_FEET_WIDE, PA_C } from './geometry.ts';
 
 type V = 'close' | 'wide' | 'live';
 const vOf = (v: VariantId): V => (v === 'wide' ? 'wide' : v === 'live' ? 'live' : 'close');
@@ -46,13 +46,21 @@ function poleLine(grip: Vec3, boom: { tip: Vec3; aim: Vec3 }) {
 }
 const POLE_CLOSE = poleLine(GRIP_CLOSE, BOOM_ABOVE);
 const POLE_WIDE = poleLine(GRIP_WIDE, BOOM_WIDE);
+/** Owner 2026-10-16 (setup 5): the pole from the mic below the frame to the
+ *  hands held low (geometry GRIP_LOW: the engine clamps that setup's pole
+ *  there, Rim.zones), on behind them along the same straight line. */
+const POLE_LOW = poleLine(GRIP_LOW, BOOM_BELOW);
 export const OPERATOR = {
   // Art fix 2026-10-16 (B04 graded "the arm crosses his face"): the near arm
   // takes the rear hand on the pole, the far arm the front hand (LocationArt
   // operatorPoses `rear`), both hands on the pole's one line.
   close: { poses: operatorPoses(OP_FEET_CLOSE, GRIP_CLOSE, { rear: POLE_CLOSE.rear }), stub: POLE_CLOSE.stub, pole: POLE_CLOSE },
   wide: { poses: operatorPoses(OP_FEET_WIDE, GRIP_WIDE, { rear: POLE_WIDE.rear }), stub: POLE_WIDE.stub, pole: POLE_WIDE },
+  // Same stance, the pole held LOW (the below-the-frame starting setup only).
+  low: { poses: operatorPoses(OP_FEET_CLOSE, GRIP_LOW, { rear: POLE_LOW.rear, low: true }), stub: POLE_LOW.stub, pole: POLE_LOW },
 } as const;
+/** The starting setup that holds the boom low (B04_ZONES: below the frame). */
+export const LOW_HOLD_SETUP = 'b4.below';
 const POLE_MICS: readonly string[] = ['locBoomSgCap', 'locBoomHyper', 'locBoomFurCap'];
 
 /** What the operator does in a drawing (the same three as F09's, art fix
@@ -75,18 +83,20 @@ const opOf = (v: V) => (v === 'wide' ? OPERATOR.wide : OPERATOR.close);
 /** Everything round the talker, far side first. `headless`: the talker drawn
  *  without a head (a step draws it turned); `operator` false hides the
  *  operator (a step draws its own boom); `micTypes`: the mics the engine has
- *  placed (the operator's mode). */
-export function B04Scene({ view, variant, headless = false, operator = true, camera = true, micTypes }: { view: ViewId; variant: VariantId; headless?: boolean; operator?: boolean; camera?: boolean; micTypes?: readonly string[] }): ReactElement {
+ *  placed (the operator's mode); `setup`: the starting setup's points (the
+ *  engine, STARTING SETUPS only): the below-the-frame one holds the boom low. */
+export function B04Scene({ view, variant, headless = false, operator = true, camera = true, micTypes, setup }: { view: ViewId; variant: VariantId; headless?: boolean; operator?: boolean; camera?: boolean; micTypes?: readonly string[]; setup?: readonly string[] }): ReactElement {
   const v = vOf(variant);
   const cam = CAM_OF[v];
   const box = B04_VIEWS[v][view];
-  const op = opOf(v);
   const mode = operatorMode(micTypes);
+  const low = mode === 'stub' && v === 'close' && !!setup?.includes(LOW_HOLD_SETUP);
+  const op = low ? OPERATOR.low : opOf(v);
   const opArt =
     mode === 'idle' ? (
       <BoomOperator view={view} poses={IDLE[v === 'wide' ? 'wide' : 'close']} />
     ) : (
-      <BoomOperator view={view} poses={op.poses} stub={mode === 'full' ? { a: op.pole.tail, b: op.stub.b } : op.stub} />
+      <BoomOperator view={view} poses={op.poses} stub={mode === 'full' ? { a: op.pole.tail, b: op.stub.b } : op.stub} low={low} />
     );
   // The scene's own boom mic (no mic placed): the short shotgun in its
   // suspension at the starting place, aimed at the mouth.
@@ -104,8 +114,8 @@ export function B04Scene({ view, variant, headless = false, operator = true, cam
   );
 }
 
-export function B04Instrument({ view, variant, micTypes }: { view: ViewId; variant: VariantId; micTypes?: readonly string[] }): ReactElement {
-  return <B04Scene view={view} variant={variant} micTypes={micTypes} />;
+export function B04Instrument({ view, variant, micTypes, setup }: { view: ViewId; variant: VariantId; micTypes?: readonly string[]; setup?: readonly string[] }): ReactElement {
+  return <B04Scene view={view} variant={variant} micTypes={micTypes} setup={setup} />;
 }
 
 export function b04Labels(view: ViewId, variant: VariantId): ArtLabel[] {
