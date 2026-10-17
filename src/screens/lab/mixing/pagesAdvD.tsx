@@ -396,7 +396,8 @@ const CASES: { id: string; name: string; symptom: string; flawed: MixSettings; f
     fixed: { keys: { hpHz: 220 }, gtr: { hpHz: 200 }, bgv: { hpHz: 240 } },
     options: ['Too much treble stacking up everywhere at once', 'Low-mid buildup — several parts stacking energy near 250 Hz', 'The whole mix is simply too quiet and needs level', 'Not enough reverb to smooth the rough edges over'],
     correct: 1,
-    explain: 'Mud is almost always ACCUMULATED low-mids — each part harmless alone, oppressive summed. The repair: high-pass the non-bass parts and carve the buildup, not “more of anything”.',
+    // NEW COPY — owner review (2026-10-16 keyboard low-end pass): "non-bass" now means the part, not the instrument.
+    explain: 'Mud is almost always ACCUMULATED low-mids — each part harmless alone, oppressive summed. The repair: high-pass the parts that carry no bass line and carve the buildup, not “more of anything”. Here the keys are a sustained pad; a piano that doubles the bass keeps its lows.',
     wrong: ['Treble is the one range NOT crowded here — listen low.', undefined, 'Level changes move the mud with everything else.', 'Reverb ADDS energy to the crowd — the opposite direction.'],
   },
   {
