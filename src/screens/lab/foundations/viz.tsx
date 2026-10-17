@@ -71,8 +71,6 @@ import { useStageTextScale } from '../rack/stageAspect';
 import { FigureStandingAt, STANDING_H_MM } from '../../../features/lab/figureHead';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { TRACER_COLOR, TRACER_MARK_COLOR } from './tracer';
-import { HeadIcon, buildHeadIcon } from '../../../features/lab/headIcons';
-import { SIDE_CANON } from '../../../features/lab/headIconGeometry';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
  *  red) → BASE (silence, blue). A stick's height already encodes amplitude, so
@@ -108,7 +106,10 @@ const METAL_LO = '#3a3c44';
 const CONE_HI = '#7b7f8a';
 const CONE_MID = '#565962';
 const CONE_LO = '#2f3037';
-
+// Skin tones for the illustrated ear (micspeaker hand palette).
+const SKIN_HI = '#8a6f5a';
+const SKIN_MID = '#5d4a3c';
+const SKIN_LO = '#2e2620';
 // Compression/rarefaction tint bands (warm squeeze / cool stretch).
 const WARM_BAND = '#ff9a5e';
 const COOL_BAND = '#5e8fff';
@@ -455,28 +456,17 @@ export function AirParticlesView({
   const ROWS = 6;
   const w = width;
   const h = height;
-  // History: owner 2026-09-13 on the Pixel, "the ear needs to be bigger".
-  // THE LISTENER (art grading 2026-10-16: the ear floated in the air with no
-  // head, nearly as tall as the speaker). The ear is now on a HEAD — the
-  // owner's side head icon (a lone head, D60), facing the speaker, at true
-  // proportion: crown→chin 70 % of the field, the neck running off the bottom
-  // edge (the listener stands below the frame). Its ear (~ 6 cm on a 23 cm head) is the
-  // receiving point. The air reaches the head: only molecules inside the head
-  // are dropped, and the tracers stay in front of the face.
-  // Owner 2026-10-16: "bigger ear, keep head" — the head is drawn as a CLOSE-UP
-  // (crown→chin 115 % of the field) so its ear is back to ~60 px, the size the
-  // owner asked for on 2026-09-13, while still sitting on a true-proportion
-  // head. The crown and the back of the skull run off the frame; the ear sits
-  // mid-field and the face (nose, lips, chin) stays in view.
-  const headS = (1.05 * h) / SIDE_CANON.height; // px per head unit
-  // the mouth (icon origin): the whole back of the skull (and so the ear)
-  // inside the right edge; the ear lands about mid-height, the crown runs off
-  // the top and the neck off the bottom.
-  const headX = w - (SIDE_CANON.occiput + 3) * headS;
-  const headY = h / 2 + 12 * headS;
-  const noseX = headX + SIDE_CANON.noseTip * headS;
-  const crownY = headY + SIDE_CANON.crown * headS;
-  const earW = showEar ? w - noseX + 4 * ts : 0;
+  // Reserve a little clear zone on the far RIGHT for a LARGER ear (owner
+  // 2026-08-05) — like the speaker's own space on the left. Only when showEar.
+  // Owner 2026-09-13, on the Pixel: "the ear needs to be bigger". Was 50 / 1.55,
+  // which measured 26 x 41 logical px in a 365 x 186 canvas — 22% of the panel
+  // height and easy to miss at the end of the wave. 2.2 roughly DOUBLES its
+  // area (~37 x 58, 31% of the height). The zone widens with it so the particle
+  // clear-out still matches the drawing and the right margin stays ~12 px:
+  // `cx = w - earW / 2`, so a bigger ear in the OLD zone would have crowded the
+  // panel edge.
+  const earW = showEar ? 62 * ts : 0;
+  const earScale = 2.2 * ts;
 
   // Rest grid + per-particle jitter (deterministic — stable across renders).
   // Particles that would fall in the ear zone are dropped so the ear reads
@@ -488,8 +478,7 @@ export function AirParticlesView({
         const jx = (hashJs(r * COLS + c) - 0.5) * (w / COLS) * 0.55;
         const jy = (hashJs(r * COLS + c + 999) - 0.5) * (h / ROWS) * 0.55;
         const px = ((c + 0.5) / COLS) * w + jx;
-        const py = ((r + 0.5) / ROWS) * (h - 8) + 4 + jy;
-        if (showEar && px > noseX - 3 * ts && py > crownY - 3 * ts) continue; // inside the head
+        if (px > w - earW) continue; // leave the ear zone clear
         pts.push({
           x: px,
           y: ((r + 0.5) / ROWS) * (h - 8) + 4 + jy,
@@ -497,7 +486,7 @@ export function AirParticlesView({
       }
     }
     return pts;
-  }, [w, h, showEar, noseX, crownY, ts]);
+  }, [w, h, earW]);
   // Flat arrays capture cleanly into the worklet.
   const xs = useMemo(() => rest.map((p) => p.x), [rest]);
   const ys = useMemo(() => rest.map((p) => p.y), [rest]);
@@ -598,9 +587,31 @@ export function AirParticlesView({
     return p;
   }, [clock, visHz, mode, lambda, w, h, phasePx]);
 
-  // The listener's head silhouette, filled with the field's background so the
-  // air molecules pass BEHIND the head, never through it.
-  const headPlate = useMemo(() => buildHeadIcon('side', headS).plate, [headS]);
+  // The EAR — a recognizable illustrated ear at the receiving end (standards
+  // rule 1: no circle standing in for a body part). Static geometry: organic
+  // helix outline, inner ridge + tragus, skin gradient lit from upper-left.
+  const ear = useMemo(() => {
+    const cx = w - earW / 2; // centred in the reserved ear zone
+    const cy = h / 2;
+    const outline = Skia.Path.Make();
+    outline.moveTo(cx - 4, cy - 13);
+    outline.cubicTo(cx + 5, cy - 16, cx + 11, cy - 9, cx + 10, cy - 1);
+    outline.cubicTo(cx + 9.4, cy + 6, cx + 5, cy + 12, cx - 1, cy + 14.5);
+    outline.cubicTo(cx - 5, cy + 16, cx - 8.5, cy + 13, cx - 7.5, cy + 9.5);
+    outline.cubicTo(cx - 7, cy + 7.5, cx - 6.4, cy + 5.5, cx - 6.4, cy + 3);
+    outline.cubicTo(cx - 6.4, cy - 3, cx - 8.5, cy - 6, cx - 8, cy - 9);
+    outline.cubicTo(cx - 7.6, cy - 11.6, cx - 6.4, cy - 12.6, cx - 4, cy - 13);
+    outline.close();
+    const ridges = Skia.Path.Make();
+    // Antihelix ridge just inside the rim.
+    ridges.moveTo(cx - 3, cy - 9.5);
+    ridges.cubicTo(cx + 3, cy - 11.5, cx + 7, cy - 6.5, cx + 6.2, cy - 0.5);
+    ridges.cubicTo(cx + 5.6, cy + 4, cx + 3, cy + 8, cx - 0.5, cy + 10);
+    // Tragus flap over the canal.
+    ridges.moveTo(cx - 4.6, cy - 2);
+    ridges.quadTo(cx - 1.6, cy - 0.5, cx - 2.2, cy + 3.5);
+    return { outline, ridges, cx, cy };
+  }, [w, h, earW]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -630,11 +641,22 @@ export function AirParticlesView({
       </Path>
       <Path path={tracerDots} color={TRACER_COLOR} />
       {showEar ? (
-        <Group>
-          <Group transform={[{ translateX: headX }, { translateY: headY }]}>
-            <Path path={headPlate} color={BG} />
-          </Group>
-          <HeadIcon view="side" x={headX} y={headY} scale={headS} facing="left" />
+        // Scaled up around its centre (owner 2026-08-05) so the ear reads clearly.
+        <Group transform={[{ translateX: ear.cx }, { translateY: ear.cy }, { scale: earScale }, { translateX: -ear.cx }, { translateY: -ear.cy }]}>
+          {/* Receiving glow — the ear is where the wave lands. */}
+          <Circle cx={ear.cx} cy={ear.cy} r={16} color={ACCENT_GREEN} opacity={0.14}>
+            <BlurMask blur={12} style="normal" />
+          </Circle>
+          <Path path={ear.outline}>
+            <LinearGradient
+              start={vec(ear.cx - 9, ear.cy - 14)}
+              end={vec(ear.cx + 11, ear.cy + 15)}
+              colors={[SKIN_HI, SKIN_MID, SKIN_LO]}
+              positions={[0, 0.5, 1]}
+            />
+          </Path>
+          <Path path={ear.outline} color={SKIN_LO} style="stroke" strokeWidth={1.2} opacity={0.9} />
+          <Path path={ear.ridges} color="#1c130d" style="stroke" strokeWidth={1.4} strokeCap="round" opacity={0.55} />
         </Group>
       ) : null}
       <Vignette w={w} h={h} />

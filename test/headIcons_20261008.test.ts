@@ -121,8 +121,6 @@ const LONE: [string, RegExp][] = [
   ['src/screens/lab/miking/lessons/shared/brass/BrassSoundArt.tsx', /<HeadIcon view="above"/],
   ['src/screens/lab/miking/lessons/shared/lowbrass/LowBrassSoundArt.tsx', /<HeadIcon view="above"/],
   ['src/screens/lab/miking/lessons/shared/hand/HandPlan.tsx', /makeHeadIconPaths\(\s*'above'/],
-  // Art grading 2026-10-16: the air field's listener is a lone side head (the ear used to float with no head).
-  ['src/screens/lab/foundations/viz.tsx', /<HeadIcon view="side" x=\{headX\} y=\{headY\} scale=\{headS\} facing="left" \/>/],
 ];
 
 /** Bodies → the figure's own head (FigureHead / FigureHeadAt / FigureHeadSvg / PlayerHead). */
