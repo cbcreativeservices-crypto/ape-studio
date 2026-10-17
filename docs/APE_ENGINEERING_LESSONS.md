@@ -891,3 +891,28 @@ process is running.
   - `uiautomator dump` hangs on constantly animating pages (Amp), so use screenshots there.
   - The AVD needs `hw.keyboard = yes` for the owner to type; after a restart, re-run the three-button overlay, `wm size 1080x1920` and `adb reverse tcp:8081`.
 - **Parallel agents on one worktree work when each owns disjoint folders.** Five opus-high agents carried out 19 HOLD items at once. One item sat in a folder nobody owned (Mastering GAP), so it was reported and done by the lead. Give each agent explicit folder boundaries and a "STOP and report" rule for shared files.
+
+## 2026-10-15/16 — grading waves, fix waves, approval-day prep
+
+- **Switching branches in ape-build-snap broke the OTA fingerprint.** core.autocrlf rewrote `.gitignore` with CRLF, and `.gitignore` is a fingerprint input: Android went b975a5d1 → 6a85bd75 and the OTA would have missed build 20.
+  - Find the cause with `eas fingerprint:compare --build-id <build>`.
+  - Fix it by converting the LF-in-git / CRLF-on-disk files back to LF.
+  - Demos go in a separate worktree. Check both fingerprints before every OTA.
+- **"M" in git status with an empty `git diff --stat`** is stat-only (line-ending warnings). `git update-index --refresh` confirms it; nothing needs committing.
+- **Many helpers on one worktree:**
+  - One helper's `git add` swept another's staged files into its commit, and a sync-channel stub was filled under the wrong sha.
+  - Commit only named paths, never `-a` or `.`, and fill handoff stubs by sha.
+  - Stop helpers as they finish so the load drops.
+  - Under heavy load Bash fork fails; switch to PowerShell or the Grep/Edit tools.
+- **Graders vs owner art:** a grading helper "fixed" the owner's floating ear into a large white head, and the owner rejected it. Owner-designed art goes on an override list in every fix brief (D79).
+- **Reaching a screen with no deep link in the web preview:**
+  - The fastest way is a temporary `(globalThis as any).__nav = navigationRef;` line at the end of `src/navigation/navigationRef.ts`, then `__nav.navigate('<Route>')`.
+  - NEVER commit it, and say when it is in place.
+  - Removing it reloads the page, so the screen disappears. Leave it in while the owner is looking, and remove it (with `git checkout`) when they say they are done.
+- **Component PNGs for the owner's promo work:**
+  - Playwright `newContext({ deviceScaleFactor: 4 })` plus `locator.screenshot`.
+  - For a clear background, set every element outside the target to `background: transparent` and pass `omitBackground: true`.
+  - A fresh browser context starts at the app's first screen; navigate to the static screen before capturing.
+  - The button labels are CSS uppercase, so match the text case-insensitively and use `:visible`, because hidden stack screens share text.
+- **The hub-card 4-line clamp** cut off 38 of the 50 Mixing Guide lines even before the glosses. Measure clamps with `scrollHeight > clientHeight` on `-webkit-line-clamp` elements.
+- **Comp C returns** come back unnamed. Matching them against the concept lines in IMAGE_SPECS.md (`grep "^\*\*Concept"`) identified every one in minutes. Each slot holds ONE image, so ask the owner A or B before installing.
