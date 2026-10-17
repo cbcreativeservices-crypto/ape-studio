@@ -1416,7 +1416,8 @@ export function portraitLabels(spec: BowedSpec): StaticLabel[] {
     { id: 'tail', text: 'TAILPIECE', short: 'TAIL', u: tailU, v: below, align: 'center', lead: { u: tailU, v: spec.bridgeW.mm * 0.2 } },
     { id: 'fhole', text: 'F-HOLE', u: fhU + 30 * k, v: below, align: 'left', lead: { u: fhU, v: spec.fholeY.mm } },
     spec.endpin ? { id: 'endpin', text: 'ENDPIN', u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: -W * 0.72, align: 'center', lead: { u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: 0 } } : { id: 'chin', text: 'CHIN REST', short: 'CHIN', u: st.tailX - 10, v: above, align: 'right', lead: { u: st.tailX + 30, v: -W * 0.35 } },
-    { id: 'strings', text: `STRINGS ${spec.strings.join(' ')}`, short: 'STRINGS', u: st.nutX * 0.7, v: below, align: 'center', tone: 'muted', lead: { u: st.nutX * 0.7, v: 0 } },
+    // (Lab art fix 2026-10-16: the string names were dim grey; they are what a learner reads here.)
+    { id: 'strings', text: `STRINGS ${spec.strings.join(' ')}`, short: 'STRINGS', u: st.nutX * 0.7, v: below, align: 'center', lead: { u: st.nutX * 0.7, v: 0 } },
     { id: 'tip', text: 'BOW · TIP', short: 'TIP', u: P.bow.tip.x, v: P.bow.tip.y + 38 * k + 12, align: 'left' },
     { id: 'hair', text: 'HAIR', u: P.bow.contact.x, v: P.bow.tip.y + 30 * k + 8, align: 'center', tone: 'muted' },
     { id: 'frog', text: 'FROG', u: P.bow.frog.x, v: P.bow.tip.y + 38 * k + 12, align: 'right' },

@@ -18,8 +18,8 @@ const L = SPEC.string.mm;
 
 const LABELS = {
   side: {
-    bridge: { du: 70, dv: -30 },
-    fb: { du: 90, dv: -30 },
+    bridge: { du: 70, dv: -30, lead: true },
+    fb: { du: 90, dv: -30, lead: true },
     // No SCROLL here: seated tall, the cellist's head hides the scroll from
     // the player's right (owner 2026-10-10) — it stays named from above.
     tail: { du: 90, dv: 30 },
@@ -37,6 +37,8 @@ const LABELS = {
 };
 
 export const CELLO_ART: LessonArt = {
+  // A mic in front of the bridge: a word under it steps back (lab art fix 2026-10-16).
+  labelsYieldToMic: true,
   Instrument: makeBowedInstrument(P, CELLO_VIEWS, true),
   labels: (view) => bowedLabels(P, view, LABELS, true),
   hitTest: (view, _v, u, v, tol) => bowedHitTest(P, view, u, v, tol, true),

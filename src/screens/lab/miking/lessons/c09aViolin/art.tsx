@@ -25,10 +25,12 @@ function ViolinInstrument({ view, variant }: { view: ViewId; variant: VariantId 
 }
 
 const LABELS = {
+  // (Lab art fix 2026-10-16, the grader at 3x: BRIDGE, SCROLL and BOW sat on
+  // the violin.) Set clear of the instrument, each on a leader to its part.
   side: {
-    bridge: { du: 60, dv: -60 },
-    scroll: { du: 50, dv: -30 },
-    bow: { du: 0, dv: -40, align: 'center' as const },
+    bridge: { du: 30, dv: -130, align: 'center' as const, lead: true },
+    scroll: { du: 70, dv: -70, lead: true },
+    bow: { du: 70, dv: -70, lead: true },
     player: { du: -150, dv: 30, align: 'right' as const },
   },
   top: {
@@ -42,6 +44,8 @@ const LABELS = {
 
 export const VIOLIN_ART: LessonArt = {
   Instrument: ViolinInstrument,
+  // A mic over the violin: a word under it steps back (the mic is the lesson).
+  labelsYieldToMic: true,
   labels: (view, variant) => bowedLabels(POSE(variant), view, LABELS, true),
   hitTest: (view, variant, u, v, tol) => {
     const id = bowedHitTest(POSE(variant), view, u, v, tol, true);
