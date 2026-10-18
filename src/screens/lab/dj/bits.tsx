@@ -39,6 +39,16 @@ export function P({ children }: { children: ReactNode }) {
   return <Text style={styles.p}>{children}</Text>;
 }
 
+/** The first line of Step 1: what the picture above shows, in plain words
+ *  (the canvas's own accessibility description, for every reader). */
+export function Look({ children }: { children: ReactNode }) {
+  return (
+    <View style={styles.look}>
+      <Text style={styles.lookText}>{children}</Text>
+    </View>
+  );
+}
+
 /** A prompt: what to do now. */
 export function Do({ children }: { children: ReactNode }) {
   return <Text style={styles.do}>{children}</Text>;
@@ -209,6 +219,8 @@ const styles = StyleSheet.create({
   stepBody: { gap: 8 },
   p: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21 },
   do: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 21 },
+  look: { borderLeftWidth: 2, borderLeftColor: colors.amber, paddingLeft: 9 },
+  lookText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
   note: { borderRadius: 9, borderWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0d0d10', padding: 10 },
   noteSafety: { borderColor: 'rgba(255,107,94,0.5)', backgroundColor: 'rgba(255,107,94,0.06)' },
   noteTry: { borderColor: 'rgba(111,168,255,0.45)', backgroundColor: 'rgba(111,168,255,0.06)' },
