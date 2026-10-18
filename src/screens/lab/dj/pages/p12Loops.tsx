@@ -217,7 +217,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
             spec={{
               // the working half of deck B (pads, loop and jump keys, jog,
               // transport CUE) — its own screen is drawn large above as the lane
-              view: { x: BOOTH_LAYOUT.B.x - 66, y: 138, w: 392, h: 256 },
+              view: { x: BOOTH_LAYOUT.B.x - 66, y: 146, w: 392, h: 248 },
               fit: (W, H) => ({ x: 0, y: lanesH(H), w: W, h: H - lanesH(H) }),
               highlight: { B: ['hotCues', 'loop', 'jump', 'cue'] },
               callouts: [
@@ -282,7 +282,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
               />
             ),
           },
-          { kind: 'group', id: 'sampler', label: 'SAMPLER', valueLabel: `ON ${booth.sampler.on}`, render: () => <SamplerTray audio={audio} onHit={onHit} /> },
+          { kind: 'group', id: 'sampler', label: 'SAMPLE', valueLabel: `ON ${booth.sampler.on}`, render: () => <SamplerTray audio={audio} onHit={onHit} /> },
           { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: (['A', 'B'] as const).filter((d) => booth.decks[d].playing).join('+') || '—', render: () => <BoothTray booth={getBooth()} tr={tr} /> },
           stopKey(tr),
         ],
@@ -300,7 +300,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Open LOOP and press 4: four beats repeat, marked green on the waveform. Exit and the track carries on in time. Try a beat jump of 16 beats — four bars — forward and back.</P>
-        <P>Open SAMPLER and fire a pad: you hear it in your headphones, the crowd does not — channel 2 is cued and its fader is down.</P>
+        <P>Open SAMPLE (the sampler) and fire a pad: you hear it in your headphones, the crowd does not — channel 2 is cued and its fader is down.</P>
       </Step>
       <Step n={4}>
         <Do>Store a hot cue and jump to it, run a loop and exit on time, beat jump, and preview a sample privately.</Do>
@@ -335,7 +335,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
             updateBooth((x, t) => ({ ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: t } }, sampler: { on: 'A', hits: [{ at: boothNow() + audio.leadSec(), id: 'chordHit' }] }, perspective: 'CROWD' }));
           }}
           fixed={faultFixed}
-          hints={['Which deck hosts the sampler? Look at the bezel’s SAMPLER →.', 'The sampler was on deck A — the deck the crowd is hearing.', 'Put the sampler on deck B (cued, fader down) and fire a pad there.']}
+          hints={['Which deck hosts the sampler? Look at SAMPLER → on the readout strip.', 'The sampler was on deck A — the deck the crowd is hearing.', 'Put the sampler on deck B (cued, fader down) and fire a pad there.']}
           why="The sampler plays out of its host deck’s channel. On deck A — the deck on air — every pad went straight to the PA. On deck B, cued with its fader down, you hear it first and bring it in when you choose."
           onFixed={() => setFaultFixed(true)}
         />

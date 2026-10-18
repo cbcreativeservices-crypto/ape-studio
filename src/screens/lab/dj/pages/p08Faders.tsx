@@ -174,7 +174,7 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open SETUP: put CH1 on A and CH2 on B. Open DECKS and play both. Then ride the X-FADER and watch the plot’s two curves and the bezel.</Do>
+        <Do>Open SETUP: put CH1 on A and CH2 on B. Open DECKS and play both. Then ride the X-FADER and watch the plot’s two curves and the readout strip.</Do>
       </Step>
       <Step n={3}>
         <P>Listen as the CROWD while you move across: on BLEND the level holds steady; switch to CUT and the middle gets louder, because both tracks are at full level together.</P>

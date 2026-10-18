@@ -15,7 +15,7 @@
  *
  * Each screen keeps its five steps together (UNDERSTAND · EXPLORE · LISTEN &
  * OBSERVE · PRACTICE · CHECK YOURSELF) under the pinned booth; a screen marks
- * itself done when its practice goals, its check and (where it has one) its
+ * itself done when its practice goals, its check and its
  * troubleshooting exercise are met. FINISH opens the what's-left screen
  * (PagedLab → LabEndScreen): every screen not yet done, by name, PRACTISE
  * AGAIN and DONE. Credit is never removed; START OVER (PRACTICE) only clears
@@ -44,7 +44,7 @@ export const DJ_LAB_TITLE = 'DJ Systems Lab';
 export const DJ_ACCURACY_DETAIL =
   'This lab MODELS a DJ booth on your phone. Its music is synthesised in the app, its mixer is one generic design (real mixers differ — their manuals win), and its meters read this model in dBFS, never your ears or a room. The phone plays it through one uncalibrated output at a level you choose, behind a protective limiter — that is not a safe-listening measurement, and a phone microphone cannot measure what reaches your ears. Learn the method here; check levels with a calibrated meter and your own equipment.';
 
-const HANDS_ON = 'Its practice goals, its check, and its troubleshooting exercise where it has one — NEXT moves on without counting it.';
+const HANDS_ON = 'Its practice goals, its check and its troubleshooting exercise — NEXT moves on without counting it.';
 
 export function DJSystemsLabScreen() {
   // Leaving the lab releases the synthesised tracks' clip banks and the deck

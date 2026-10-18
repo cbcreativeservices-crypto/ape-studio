@@ -143,8 +143,8 @@ function Screen({ deck, d }: { deck: DeckId; d: DeckState }) {
         {/* an empty deck says so, over its empty lane */}
         {track ? null : (
           <>
-            <SceneText x={S.x + S.w / 2} y={S.y + 52} size={13} text="NO TRACK" color={INK.print} face="label" align="center" />
-            <SceneText x={S.x + S.w / 2} y={S.y + 74} size={12.5} text="BROWSE TO LOAD" color={INK.printDim} face="label" align="center" />
+            <SceneText x={S.x + S.w / 2} y={S.y + 52} size={13.5} text="NO TRACK" color={INK.print} face="label" align="center" />
+            <SceneText x={S.x + S.w / 2} y={S.y + 74} size={13} text="BROWSE TO LOAD" color={INK.printDim} face="label" align="center" />
           </>
         )}
         {/* footer readouts */}

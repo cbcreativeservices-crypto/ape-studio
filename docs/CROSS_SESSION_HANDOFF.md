@@ -634,6 +634,48 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 14:58 · ccode · 7fde28ad
+changed: DJ Systems Lab stage 1: visual polish pass + faults on screens 1-2
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
+### 2026-10-18 14:58 · ccode · 279d3e77
+changed: DJ Systems Lab stage 1: wiring (members-only route, catalog, preview, tests)
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
+### 2026-10-18 14:26 · ccode · 305ca9c8
+changed: DJ Systems Lab stage 1: screens 9-12 and the host
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
+### 2026-10-18 14:26 · ccode · 23a02320
+changed: DJ Systems Lab stage 1: screens 5-8
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
+### 2026-10-18 14:26 · ccode · bf12e05b
+changed: DJ Systems Lab stage 1: screens 1-4
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
+### 2026-10-18 14:26 · ccode · 2a474e11
+changed: DJ Systems Lab stage 1: booth drawings, rack wrapper, sound/clock engine
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
+### 2026-10-18 13:32 · ccode · 9f11cc07
+changed: DJ Systems Lab stage 1: shared booth model, music and signal engine
+affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
+
+
 ### 2026-10-18 12:32 · ccode · 102ab895
 changed: Session handoff 2026-10-18; image-round lessons; local background-swap script
 affects other side: Comp A — docs/SESSION_HANDOFF_2026-10-18.md (image state; approval-day order unchanged)

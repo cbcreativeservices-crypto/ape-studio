@@ -172,13 +172,13 @@ function PagePlay({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <P>Deck A is playing to the crowd — it is ON AIR. Deck B is free. You prepare the next track on the free deck: load it, find where it should start, and set a cue point there, all while the crowd keeps hearing deck A.</P>
+        <P>Picture a set in progress: deck A plays to the crowd — it is ON AIR (start it from BROWSE → DECK A → PLAY A if you want to hear it). Deck B is free. You prepare the next track on the free deck: load it, find where it should start, and set a cue point there, all while the crowd keeps hearing deck A.</P>
         <P>The transport CUE on a player is a place in the track. It is not the mixer’s headphone CUE (Screen 7) — same word, different job.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Open BROWSE, make sure you are operating DECK B, and LOAD a track. Then PLAY and pause it, and use JOG to search.</Do>
-        <P>The camera follows the deck you are operating; the bezel always says which deck is ON AIR. Glance at that before you press anything.</P>
+        <P>The camera follows the deck you are operating; the readout strip always says which deck is ON AIR. Glance at that before you press anything.</P>
       </Step>
       <Step n={3}>
         <P>A loaded track starts at its first beat. Pause, search a little with JOG, then press CUE: that is your new cue point. Press PLAY, then CUE again — the deck jumps back and stops, ready.</P>

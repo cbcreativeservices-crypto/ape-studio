@@ -284,7 +284,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
         <P>USB, LAN and the digital coax carry DATA or DIGITAL audio. A linked-player network shares track lists and timing — it does not carry the music to the mixer, so the analog RCA pair is still needed.</P>
       </Step>
       <Step n={3}>
-        <P>Open PLAY, start deck A and watch LEFT ← and RIGHT ← on the bezel. Pull the red plug: the right side of the crowd’s sound disappears, and the cable stops glowing.</P>
+        <P>Open PLAY, start deck A and watch LEFT ← and RIGHT ← on the readout strip. Pull the red plug: the right side of the crowd’s sound disappears, and the cable stops glowing.</P>
         <P>Switch SOURCE to the TURNTABLE with its switch on PHONO. Into a LINE input it is tiny and thin; into PHONO (with the selector on PHONO) it is full and even.</P>
         <Note>A line-level player plugged into PHONO is the opposite mistake: the phono stage overloads before the TRIM — turning the trim down cannot fix it.</Note>
       </Step>

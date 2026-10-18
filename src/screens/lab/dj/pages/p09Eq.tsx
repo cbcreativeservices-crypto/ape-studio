@@ -153,7 +153,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
           {
             kind: 'fader',
             id: 'res',
-            label: 'RESONANCE',
+            label: 'RESO',
             value: booth.mixer.resonance,
             onChange: (v) => updateBooth((b) => ({ ...b, mixer: { ...b.mixer, resonance: v } })),
             format: (v) => `RESONANCE ${Math.round(v * 100)}% (Q ${filterQ(v).toFixed(1)})`,
@@ -175,7 +175,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Listen as the CROWD with both lows up: two kicks and two bass lines fight — louder, but blurry. Kill one LOW and the blend clears up: that is masking going away.</P>
-        <P>Sweep a FILTER slowly, then raise RESONANCE and sweep again: you hear the peak ride up and down. A little adds movement; a lot whistles and eats headroom.</P>
+        <P>Sweep a FILTER slowly, then raise RESONANCE (RESO in the dock) and sweep again: you hear the peak ride up and down. A little adds movement; a lot whistles and eats headroom.</P>
       </Step>
       <Step n={4}>
         <Do>Kill deck B’s LOW, then hand the bass over: bring B’s LOW up as you take A’s LOW down. Then sweep a filter, and try it with resonance.</Do>

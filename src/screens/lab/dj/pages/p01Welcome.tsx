@@ -6,6 +6,7 @@
  * of truth); the guideline is described in plain words, never by name.
  */
 import { useState } from 'react';
+import { Group, RoundedRect } from '@shopify/react-native-skia';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
@@ -13,6 +14,8 @@ import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { nioshDose } from '../../calc/workspaces/splSafety';
 import { BoothStage } from '../art/BoothStage';
+import { INK } from '../art/ink';
+import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
@@ -20,7 +23,7 @@ import { boothKey, listenKey, playKey, stopKey } from '../dock';
 import { setBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, freshBooth, useScreenSetup } from '../booth/setup';
 import { soundCell, useBoothKit } from './shared';
-import { dbStr, listenDb } from '../model/djModel';
+import { dbStr, listenDb, type Perspective } from '../model/djModel';
 
 const TERMS = [
   { term: 'dBA', def: 'Sound level in the air, weighted roughly the way ears hear it. It is measured with a sound level meter in the room or at the ear, never by a phone’s volume setting.' },
@@ -53,6 +56,36 @@ function ExposureTile({ onUsed }: { onUsed: () => void }) {
       <Text style={[styles.dose, { color: dose > 100 ? '#ff5a48' : dose > 50 ? colors.amber : colors.green }]}>{`${Math.round(dose)} % of a day’s allowance`}</Text>
       <Text style={styles.tileFine}>A model for learning, not a guarantee for any one person’s ears. Booths and clubs are often louder than you think — measure with a calibrated meter, and use earplugs made for music.</Text>
     </View>
+  );
+}
+
+const STRIP_H = 50;
+const WHO: { id: Perspective; top: string; sub: string }[] = [
+  { id: 'CROWD', top: 'CROWD', sub: 'THE PA SPEAKERS' },
+  { id: 'BOOTH', top: 'BOOTH', sub: 'THE BOOTH MONITORS' },
+  { id: 'PHONES', top: 'YOU', sub: 'YOUR HEADPHONES' },
+];
+
+/** Under the booth: whose ears the phone is playing right now (LISTEN). */
+function PerspectiveStrip({ w, h, now }: { w: number; h: number; now: Perspective }) {
+  const gap = 6;
+  const tw = (w - 12 - gap * 2) / 3;
+  const y = h - STRIP_H + 4;
+  return (
+    <Group>
+      {WHO.map((p, i) => {
+        const x = 6 + i * (tw + gap);
+        const on = p.id === now;
+        return (
+          <Group key={p.id}>
+            <RoundedRect x={x} y={y} width={tw} height={STRIP_H - 10} r={7} color={on ? 'rgba(255,198,77,0.14)' : '#0b0c0f'} />
+            <RoundedRect x={x + 0.5} y={y + 0.5} width={tw - 1} height={STRIP_H - 11} r={7} style="stroke" strokeWidth={1} color={on ? INK.amber : '#2a2c32'} />
+            <SceneText x={x + tw / 2} y={y + 17} size={12} text={p.top} color={on ? INK.amber : INK.printDim} face="label" align="center" />
+            <SceneText x={x + tw / 2} y={y + 31} size={9.5} text={p.sub} color={on ? INK.print : INK.printDim} face="label" align="center" />
+          </Group>
+        );
+      })}
+    </Group>
   );
 }
 
@@ -93,6 +126,8 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
             motion={motion}
             spec={{
               view: 'booth',
+              fit: (W, H) => ({ x: 0, y: 0, w: W, h: H - STRIP_H }),
+              screenOverlay: (W, H) => <PerspectiveStrip w={W} h={H} now={booth.perspective} />,
               highlight: { A: ['play'] },
               callouts: [
                 { id: 'a', text: 'DECK A', at: { x: BOOTH_LAYOUT.A.x + 160, y: -2 }, dx: 0, dy: -14 },
@@ -100,7 +135,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
                 { id: 'b', text: 'DECK B', at: { x: BOOTH_LAYOUT.B.x + 160, y: -2 }, dx: 0, dy: -14 },
                 { id: 'p', text: 'PLAY', at: { x: BOOTH_LAYOUT.A.x + PLAYER.play.cx, y: PLAYER.play.cy + 18 }, dx: 0, dy: 22 },
               ],
-              a11y: 'The DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right.',
+              a11y: `The DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right. Underneath, who you are listening as: ${booth.perspective}.`,
             }}
           />
         ),
