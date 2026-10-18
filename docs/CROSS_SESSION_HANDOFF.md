@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-17 23:18 · ccode · 001c55ca
+changed: Images: owner-approved returns installed: Recording Fundamentals, Troubleshooting, Advanced Parallel & Bus, Vinyl/Disc Mastering tiles; Worship Audio cert
+affects other side: 4 topic tiles + 1 certificate square reach the buckets in the approval-day upload (no script change)
+needs: nothing
+
+
 ### 2026-10-16 22:26 · ccode · 3a4b7652
 changed: Governance D77–D84 (2026-10-16), AGENTS.md rules, engineering lessons 10-15/16
 affects other side: Comp A — read D81 (chat filter rulings) and D83 (approval-day OTA + 1.0.1 timing) in docs/APE_GOVERNANCE_DECISIONS_2026_10_16.md
