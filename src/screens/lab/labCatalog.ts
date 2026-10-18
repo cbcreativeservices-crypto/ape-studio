@@ -320,6 +320,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Sound Systems Lab', blurb: 'Begin with an empty venue; finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system — fourteen chapters, a venue builder, a live console, an operating walk-through and a twenty-two-fault bench.', route: 'SoundSystemsLab', member: true },
+      // DJ Systems Lab (owner GO 2026-10-18): Stage 1, twelve screens on one
+      // shared two-deck booth. Members only — nothing free for a guest.
+      { name: 'DJ Systems Lab', blurb: 'Connect, cue, mix and troubleshoot a two-deck DJ booth — safe listening, the gear, cables and levels, building the system, gain and meters, headphone cue, faders, EQ and filters, beatmatching, grids and sync, cues, loops and samples.', route: 'DJSystemsLab', member: true },
     ],
   },
   {

@@ -109,7 +109,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type La
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, accuracyDetail }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -137,6 +137,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  still moves on — it just does not count that page — so the end screen
    *  says plainly why it is still listed. Omitted = no line (as before). */
   handsOnDetail?: string;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): the lab's own calibration caveat,
+   *  shown emphasised at the top of the ⚖️ note (AccuracyNote `detail`) on
+   *  every page. Omitted = the standard note, exactly as before. */
+  accuracyDetail?: string;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -477,7 +481,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={def.rack && !ending ? <AccuracyNote compact /> : undefined} />
+        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} /> : undefined} />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {/* Before a guest begins (owner 2026-10-04): progress here is not
@@ -510,7 +514,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
                   of them after the first sitting, never saw it again. The subtitle is
                   genuinely a first-page thing; the calibration note is a standing
                   statement about every page. */}
-              <AccuracyNote style={styles.accuracy} />
+              <AccuracyNote style={styles.accuracy} detail={accuracyDetail} />
               {holdPageBody ? null : (
                 <>
                   {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
