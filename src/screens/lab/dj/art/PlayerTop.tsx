@@ -1,17 +1,22 @@
 /**
  * PlayerTop — a club-class media player seen from above, AUTHORED IN
- * MILLIMETRES (320 × 410, geometry/boothGeometry.PLAYER). Generic: no brand
- * likeness.
+ * MILLIMETRES (320 × 410, geometry/boothGeometry.PLAYER: a 7-inch screen,
+ * a Ø 206 mm jog, a 100 mm tempo fader). Generic: no brand likeness.
  *
  * What moves, and from what (one clock, motion.ts):
- *   - the SCREEN: the zoomed waveform scrolls past a fixed playhead at the
- *     deck's real position (min/max of the real audio, art/waves.ts), the
- *     ANALYSED beat grid scrolls with it, the overview's playhead walks the
- *     whole track; time and bar.beat count from the same position;
+ *   - the SCREEN: the zoomed waveform (the real audio's peak envelope, RMS
+ *     core and low band — waveDraw) scrolls past a fixed playhead at the
+ *     deck's real position, the ANALYSED beat grid on top of it, the
+ *     overview's playhead walks the whole track; time and bar.beat count
+ *     from the same position;
  *   - the JOG display's position marker turns at 33⅓ rpm × the tempo rate;
- *   - PLAY is lit while the deck plays; hot-cue pads light once stored; the
- *     loop keys light while a loop holds; the tempo fader sits at the
- *     deck's pitch (+ toward the DJ, the common convention).
+ *   - PLAY is lit while the deck plays; hot-cue pads light once stored (and
+ *     flash while a sampler pad on this deck sounds); the loop keys light
+ *     while a loop holds; the tempo fader sits at the deck's pitch.
+ *
+ * The printed legends (LOAD, BACK, IN / OUT, SYNC, MASTER, QUANTIZE, the pad
+ * numbers…) are drawn at their real silk-screen size and appear once the
+ * zoom renders them at 9 pt or more (sceneText).
  */
 import { memo, useMemo } from 'react';
 import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
@@ -24,7 +29,7 @@ import { PLAYER, PLAYER_D, PLAYER_W } from '../geometry/boothGeometry';
 import { CUE_COLOURS, INK } from './ink';
 import { Fader, Halo, Key, Knob, RoundButton } from './parts';
 import { useDeckPos, useSpinAngle } from './motion';
-import { gridPath, wavePath, WAVE_COLOURS, WAVE_POSITIONS } from './waves';
+import { GridOver, WaveBody } from './waveDraw';
 import { SceneText } from './sceneText';
 
 export type PlayerPart = 'screen' | 'browse' | 'load' | 'hotCues' | 'loop' | 'jump' | 'jog' | 'cue' | 'play' | 'sync' | 'quantize' | 'tempo' | 'slots';
@@ -48,35 +53,37 @@ export function playerPartBox(p: PlayerPart): { x: number; y: number; w: number;
   }
 }
 
+/** Every control's box (local mm) — the labels' obstacles. */
+export const PLAYER_PARTS: readonly PlayerPart[] = ['screen', 'browse', 'load', 'hotCues', 'loop', 'jump', 'jog', 'cue', 'play', 'sync', 'quantize', 'tempo', 'slots'];
+
 /** Seconds of track visible across the zoomed waveform. */
 export const ZOOM_SPAN_S = 6;
 
+/** Legend type: 4 mm (capitals ≈ 3 mm, real silk-screen size). */
+const LEG = 4;
 
 /** The player's screen: zoomed waveform + grid, overview, readouts. */
-function Screen({ deck, d }: { deck: DeckId; d: DeckState }) {
+function Screen({ d }: { d: DeckState }) {
   const S = PLAYER.screen;
   const pos = useDeckPos(d);
   const track = d.track;
-  const zoom = track ? wavePath(track) : null;
-  const over = track ? wavePath(track, 4) : null;
   const grid = analysedGrid(d);
-  const lines = track && grid ? gridPath(track, grid) : null;
   // zoomed window (inside the screen)
-  const zx = S.x + 6;
-  const zw = S.w - 12;
-  const zy = S.y + 22;
-  const zh = 58;
+  const zx = S.x + 4;
+  const zw = S.w - 8;
+  const zy = S.y + 16;
+  const zh = 42;
   const zc = zy + zh / 2;
   const pxPerSec = zw / ZOOM_SPAN_S;
   const head = zx + zw / 2;
-  const zoomXf = useDerivedValue(() => [{ translateX: head - pos.value * pxPerSec }, { translateY: zc }, { scaleX: pxPerSec }, { scaleY: zh / 2 - 2 }]);
+  const zoomXf = useDerivedValue(() => [{ translateX: head - pos.value * pxPerSec }, { translateY: zc }, { scaleX: pxPerSec }, { scaleY: zh / 2 - 1 }]);
   // overview strip
   const total = track ? trackSeconds(track) : 1;
-  const ox = S.x + 6;
-  const ow = S.w - 12;
-  const oy = S.y + 88;
-  const oh = 16;
-  const overXf = useMemo(() => [{ translateX: ox }, { translateY: oy + oh / 2 }, { scaleX: ow / total }, { scaleY: oh / 2 - 1 }], [ox, oy, oh, ow, total]);
+  const ox = S.x + 4;
+  const ow = S.w - 8;
+  const oy = S.y + 62;
+  const oh = 11;
+  const overXf = useMemo(() => [{ translateX: ox }, { translateY: oy + oh / 2 }, { scaleX: ow / total }, { scaleY: oh / 2 - 0.5 }], [ox, oy, oh, ow, total]);
   const playX = useDerivedValue(() => ox + (pos.value / total) * ow);
   const playP1 = useDerivedValue(() => vec(playX.value, oy - 1));
   const playP2 = useDerivedValue(() => vec(playX.value, oy + oh + 1));
@@ -89,75 +96,76 @@ function Screen({ deck, d }: { deck: DeckId; d: DeckState }) {
     return `-${m}:${s < 10 ? '0' : ''}${s.toFixed(1)}`;
   });
   const g = grid;
+  // bar.beat, padded to a fixed five-character slot (right-aligned without
+  // measuring a moving string: it can never run out of its window, D36)
   const barText = useDerivedValue(() => {
     if (!g) return '';
     const b = ((pos.value - g.firstBeatSec) * g.bpm) / 60;
-    return b < 0 ? '0.0' : `${Math.floor(b / 4) + 1}.${(((Math.floor(b) % 4) + 4) % 4) + 1}`;
+    const t = b < 0 ? '0.0' : `${Math.floor(b / 4) + 1}.${(((Math.floor(b) % 4) + 4) % 4) + 1}`;
+    return ('     ' + t).slice(-5);
   });
   const shownBpm = grid ? grid.bpm * (1 + d.pitch / 100) : 0;
   return (
     <Group>
-      {/* bezel */}
-      <RoundedRect x={S.x - 3} y={S.y - 3} width={S.w + 6} height={S.h + 6} r={5} color="#050506" />
-      <RoundedRect x={S.x} y={S.y} width={S.w} height={S.h} r={3}>
+      {/* bezel and glass */}
+      <RoundedRect x={S.x - 3.5} y={S.y - 3.5} width={S.w + 7} height={S.h + 7} r={5} color="#050506" />
+      <RoundedRect x={S.x - 3.5} y={S.y - 3.5} width={S.w + 7} height={S.h + 7} r={5} style="stroke" strokeWidth={0.7} color="rgba(255,255,255,0.08)" />
+      <RoundedRect x={S.x} y={S.y} width={S.w} height={S.h} r={2.5}>
         <LinearGradient start={vec(S.x, S.y)} end={vec(S.x, S.y + S.h)} colors={[INK.lcdHi, INK.lcdLo]} />
       </RoundedRect>
       <Group clip={Skia.XYWHRect(S.x, S.y, S.w, S.h)}>
-        {/* header */}
         {track ? (
           <>
-            <SceneText x={S.x + 6} y={S.y + 15} size={12.5} text={TRACKS[track].title.toUpperCase()} color={INK.white} face="label" />
-            <SceneText x={S.x + S.w - 6} y={S.y + 15} size={12.5} text={shownBpm.toFixed(1)} color={INK.amber} align="right" />
+            <SceneText x={S.x + 4} y={S.y + 11.5} size={9.5} text={TRACKS[track].title.toUpperCase()} color={INK.white} face="label" />
+            <SceneText x={S.x + S.w - 4} y={S.y + 11.5} size={9.5} text={shownBpm.toFixed(1)} color={INK.amber} align="right" />
           </>
         ) : null}
         {/* zoomed waveform */}
         <Group clip={Skia.XYWHRect(zx, zy, zw, zh)}>
           <Rect x={zx} y={zy} width={zw} height={zh} color="#040a11" />
-          {zoom ? (
+          {track ? (
             <Group transform={zoomXf}>
-              {lines ? <Path path={lines.beats} style="stroke" strokeWidth={0.012} color="rgba(255,255,255,0.22)" /> : null}
-              {lines ? <Path path={lines.bars} style="stroke" strokeWidth={0.03} color="rgba(255,198,77,0.65)" /> : null}
-              <Path path={zoom}>
-                <LinearGradient start={vec(0, -1)} end={vec(0, 1)} colors={WAVE_COLOURS} positions={WAVE_POSITIONS} />
-              </Path>
+              <WaveBody id={track} />
+              {grid ? <GridOver id={track} grid={grid} pps={pxPerSec} k={0.45} /> : null}
             </Group>
           ) : null}
-          <Line p1={vec(zx, zc)} p2={vec(zx + zw, zc)} color="rgba(47,116,255,0.5)" strokeWidth={0.5} />
-          {d.loop && zoom ? <LoopBand d={d} head={head} pxPerSec={pxPerSec} zy={zy} zh={zh} /> : null}
-          {zoom ? <CueMarks d={d} head={head} pxPerSec={pxPerSec} zy={zy} zh={zh} /> : null}
-          <Line p1={vec(head, zy)} p2={vec(head, zy + zh)} color={INK.white} strokeWidth={0.9} />
+          {d.loop && track ? <LoopBand d={d} head={head} pxPerSec={pxPerSec} zy={zy} zh={zh} /> : null}
+          {track ? <CueMarks d={d} head={head} pxPerSec={pxPerSec} zy={zy} zh={zh} /> : null}
+          {track ? (
+            <Group>
+              <Line p1={vec(head, zy)} p2={vec(head, zy + zh)} color="rgba(0,0,0,0.7)" strokeWidth={1.8} />
+              <Line p1={vec(head, zy)} p2={vec(head, zy + zh)} color={INK.white} strokeWidth={0.8} />
+            </Group>
+          ) : null}
         </Group>
         {/* overview */}
-        {over ? (
+        {track ? (
           <Group>
             <Rect x={ox} y={oy} width={ow} height={oh} color="#040a11" />
             <Group transform={overXf}>
-              <Path path={over}>
-                <LinearGradient start={vec(0, -1)} end={vec(0, 1)} colors={WAVE_COLOURS} positions={WAVE_POSITIONS} />
-              </Path>
+              <WaveBody id={track} step={4} low={false} />
             </Group>
             <Rect x={ox} y={oy} width={playedW} height={oh} color="rgba(0,0,0,0.45)" />
             <Line p1={playP1} p2={playP2} color={INK.white} strokeWidth={0.9} />
           </Group>
         ) : null}
-        {/* an empty deck says so, over its empty lane */}
+        {/* an empty deck says so, on a clean screen (no playhead through it) */}
         {track ? null : (
           <>
-            <SceneText x={S.x + S.w / 2} y={S.y + 52} size={13.5} text="NO TRACK" color={INK.print} face="label" align="center" />
-            <SceneText x={S.x + S.w / 2} y={S.y + 74} size={13} text="BROWSE TO LOAD" color={INK.printDim} face="label" align="center" />
+            <SceneText x={S.x + S.w / 2} y={S.y + 40} size={14} text="NO TRACK" color={INK.print} face="label" align="center" />
+            <SceneText x={S.x + S.w / 2} y={S.y + 62} size={13} text="BROWSE TO LOAD" color={INK.printDim} face="label" align="center" />
           </>
         )}
-        {/* footer readouts */}
         {track ? (
           <>
-            <SceneText x={S.x + 6} y={S.y + S.h - 4} size={11} text={timeText} color={INK.white} />
-            <SceneText x={S.x + S.w / 2} y={S.y + S.h - 4} size={11} text={`${d.pitch >= 0 ? '+' : '−'}${Math.abs(d.pitch).toFixed(1)}%`} color={INK.print} align="center" />
-            <SceneText x={S.x + S.w - 6} y={S.y + S.h - 4} size={11} text={barText} color={INK.amber} align="right" />
+            <SceneText x={S.x + 4} y={S.y + S.h - 3.5} size={9} text={timeText} color={INK.white} />
+            <SceneText x={S.x + S.w / 2} y={S.y + S.h - 3.5} size={9} text={`${d.pitch >= 0 ? '+' : '−'}${Math.abs(d.pitch).toFixed(1)}%`} color={INK.print} align="center" />
+            <SceneText x={S.x + S.w - 4} y={S.y + S.h - 3.5} size={9} text={barText} color={INK.amber} align="right" slot={5} />
           </>
         ) : null}
       </Group>
-      {/* glass */}
-      <RoundedRect x={S.x} y={S.y} width={S.w} height={S.h * 0.45} r={3} color={INK.lcdGlass} />
+      {/* the glass's reflection */}
+      <RoundedRect x={S.x} y={S.y} width={S.w} height={S.h * 0.42} r={2.5} color={INK.lcdGlass} />
     </Group>
   );
 }
@@ -179,11 +187,11 @@ function CueMarks({ d, head, pxPerSec, zy, zh }: { d: DeckState; head: number; p
     for (const m of marks) {
       const p = Skia.PathBuilder.Make();
       const x = m.t * pxPerSec;
-      p.moveTo(x - 3, zy);
-      p.lineTo(x + 3, zy);
-      p.lineTo(x, zy + 4.5);
+      p.moveTo(x - 2.4, zy);
+      p.lineTo(x + 2.4, zy);
+      p.lineTo(x, zy + 3.6);
       p.close();
-      p.moveTo(x, zy + 4.5);
+      p.moveTo(x, zy + 3.6);
       p.lineTo(x, zy + zh);
       out.push({ path: p.detach(), c: m.c });
     }
@@ -193,7 +201,7 @@ function CueMarks({ d, head, pxPerSec, zy, zh }: { d: DeckState; head: number; p
   return (
     <Group transform={xf}>
       {tri.map((m, i) => (
-        <Path key={i} path={m.path} color={m.c} style="stroke" strokeWidth={0.8} />
+        <Path key={i} path={m.path} color={m.c} style="stroke" strokeWidth={0.7} />
       ))}
       {tri.map((m, i) => (
         <Path key={`f${i}`} path={m.path} color={m.c} />
@@ -247,7 +255,7 @@ function Jog({ d }: { d: DeckState }) {
         <RadialGradient c={vec(J.cx, J.cy - dispR * 0.4)} r={dispR * 1.3} colors={[INK.lcdHi, INK.lcdLo]} />
       </Circle>
       <Circle cx={J.cx} cy={J.cy} r={dispR * 0.86} style="stroke" strokeWidth={2.2} color="rgba(255,255,255,0.08)" />
-      <Path path={arc} style="stroke" strokeWidth={2.2} color={INK.blue} strokeCap="round" />
+      {d.track ? <Path path={arc} style="stroke" strokeWidth={2.2} color={INK.blue} strokeCap="round" /> : null}
       <Group origin={vec(J.cx, J.cy)} transform={markerXf}>
         <RoundedRect x={J.cx - 1.6} y={J.cy - dispR * 0.98} width={3.2} height={dispR * 0.4} r={1.2} color={INK.white} />
       </Group>
@@ -262,11 +270,17 @@ function Jog({ d }: { d: DeckState }) {
   );
 }
 
-export const PlayerTop = memo(function PlayerTop({ x, y, deck, d, highlight = [], quantizeLit, syncLit }: { x: number; y: number; deck: DeckId; d: DeckState; highlight?: readonly PlayerPart[]; quantizeLit?: boolean; syncLit?: boolean }) {
+/** A legend in the panel's print colour, at silk-screen size. */
+function Leg({ x, y, t, align = 'center', dim = false, size = LEG }: { x: number; y: number; t: string; align?: 'left' | 'center' | 'right'; dim?: boolean; size?: number }) {
+  return <SceneText x={x} y={y} size={size} text={t} color={dim ? INK.printDim : INK.print} face="label" align={align} />;
+}
+
+export const PlayerTop = memo(function PlayerTop({ x, y, deck, d, highlight = [], quantizeLit, syncLit, padFlash }: { x: number; y: number; deck: DeckId; d: DeckState; highlight?: readonly PlayerPart[]; quantizeLit?: boolean; syncLit?: boolean; padFlash?: boolean }) {
   const P = PLAYER;
   const W = PLAYER_W;
   const D = PLAYER_D;
   const tempoValue = 1 - (d.pitch + PITCH_RANGE_PCT) / (2 * PITCH_RANGE_PCT);
+  const loopWords = ['IN', 'OUT', 'EXIT', '4 BEAT'];
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
       <RoundedRect x={5} y={9} width={W} height={D} r={14} color="rgba(0,0,0,0.75)">
@@ -283,28 +297,52 @@ export const PlayerTop = memo(function PlayerTop({ x, y, deck, d, highlight = []
       <RoundedRect x={P.slots.usb.x} y={P.slots.usb.y} width={P.slots.usb.w} height={P.slots.usb.h} r={1.5} color="#050506" />
       <RoundedRect x={P.slots.usb.x + 5} y={P.slots.usb.y + 2.2} width={P.slots.usb.w - 10} height={P.slots.usb.h - 4.4} r={0.8} color="#1e2a3a" />
       <RoundedRect x={P.slots.sd.x} y={P.slots.sd.y} width={P.slots.sd.w} height={P.slots.sd.h} r={1.2} color="#050506" />
-      <Screen deck={deck} d={d} />
+      <Leg x={P.slots.usb.x + P.slots.usb.w / 2} y={P.slots.usb.y - 3} t="USB" />
+      <Leg x={P.slots.sd.x + P.slots.sd.w / 2} y={P.slots.sd.y + P.slots.sd.h + 5} t="SD" dim />
+      <Screen d={d} />
       <Knob cx={P.browse.x} cy={P.browse.y} d={P.browse.d} value={0.5} scale={false} capTone="black" />
+      <Leg x={P.browse.x} y={P.browse.y - P.browse.d / 2 - 4} t="BROWSE" />
       <Key x={P.load.x} y={P.load.y} w={P.load.w} h={P.load.h} />
       <Key x={P.back.x} y={P.back.y} w={P.back.w} h={P.back.h} />
-      {/* hot cue pads */}
+      <Leg x={P.load.x + P.load.w / 2} y={P.load.y + P.load.h / 2 + LEG * 0.36} t="LOAD" />
+      <Leg x={P.back.x + P.back.w / 2} y={P.back.y + P.back.h / 2 + LEG * 0.36} t="BACK" />
+      {/* hot cue pads (numbered) */}
       {P.hotCues.xs.map((hx, i) => (
-        <Key key={i} x={hx} y={P.hotCues.y} w={P.hotCues.w} h={P.hotCues.h} lit={d.hotCues[i] != null} colour={CUE_COLOURS[i]} />
+        <Group key={i}>
+          <Key x={hx} y={P.hotCues.y} w={P.hotCues.w} h={P.hotCues.h} lit={d.hotCues[i] != null || !!padFlash} colour={CUE_COLOURS[i]} />
+          <Leg x={hx + P.hotCues.w / 2} y={P.hotCues.y + P.hotCues.h / 2 + 5 * 0.36} t={String(i + 1)} size={5} />
+        </Group>
       ))}
+      <Leg x={P.hotCues.xs[0]} y={P.hotCues.y - 3} t="HOT CUE" align="left" dim />
       {/* loop and beat-jump keys */}
       {[0, 1, 2, 3].map((i) => (
-        <Key key={`lp${i}`} x={P.loop.x} y={P.loop.y + i * P.loop.gap} w={P.loop.w} h={P.loop.h} lit={!!d.loop && i < 2} colour={INK.green} />
+        <Group key={`lp${i}`}>
+          <Key x={P.loop.x} y={P.loop.y + i * P.loop.gap} w={P.loop.w} h={P.loop.h} lit={!!d.loop && i < 2} colour={INK.green} />
+          <Leg x={P.loop.x + P.loop.w / 2} y={P.loop.y + i * P.loop.gap + P.loop.h / 2 + LEG * 0.36} t={loopWords[i]} />
+        </Group>
       ))}
+      <Leg x={P.loop.x} y={P.loop.y - 3} t="LOOP" align="left" dim />
       <Key x={P.jump.x} y={P.jump.y} w={P.jump.w} h={P.jump.h} />
       <Key x={P.jump.x} y={P.jump.y + P.jump.gap} w={P.jump.w} h={P.jump.h} />
+      <Leg x={P.jump.x + P.jump.w / 2} y={P.jump.y + P.jump.h / 2 + LEG * 0.36} t="◀ JUMP" />
+      <Leg x={P.jump.x + P.jump.w / 2} y={P.jump.y + P.jump.gap + P.jump.h / 2 + LEG * 0.36} t="JUMP ▶" />
       <Jog d={d} />
       <RoundButton cx={P.cue.cx} cy={P.cue.cy} d={P.cue.d} lit={!d.playing && !!d.track && Math.abs(d.posSec - d.cueSec) < 0.01} colour={INK.amber} glyph="cue" />
       <RoundButton cx={P.play.cx} cy={P.play.cy} d={P.play.d} lit={d.playing} colour={INK.green} glyph="play" />
+      <Leg x={P.cue.cx} y={P.cue.cy - P.cue.d / 2 - 3} t="CUE" />
+      <Leg x={P.play.cx} y={P.play.cy - P.play.d / 2 - 3} t="PLAY / PAUSE" />
       <Key x={P.quantize.x} y={P.quantize.y} w={P.quantize.w} h={P.quantize.h} lit={quantizeLit ?? d.quantize} colour={INK.red} />
       <Key x={P.sync.x} y={P.sync.y} w={P.sync.w} h={P.sync.h} lit={!!syncLit} colour={INK.blue} />
       <Key x={P.masterBtn.x} y={P.masterBtn.y} w={P.masterBtn.w} h={P.masterBtn.h} />
+      <Leg x={P.quantize.x + P.quantize.w / 2} y={P.quantize.y + P.quantize.h / 2 + 3.4 * 0.36} t="QUANTIZE" size={3.4} />
+      <Leg x={P.sync.x + P.sync.w / 2} y={P.sync.y + P.sync.h / 2 + LEG * 0.36} t="SYNC" />
+      <Leg x={P.masterBtn.x + P.masterBtn.w / 2} y={P.masterBtn.y + P.masterBtn.h / 2 + 3.4 * 0.36} t="MASTER" size={3.4} />
       <Fader x={P.tempo.x} y={P.tempo.top} len={P.tempo.len} value={tempoValue} capW={P.tempo.capW} capL={P.tempo.capL} ticks={9} accent={Math.abs(d.pitch) < 0.05 ? INK.green : INK.white} />
+      <Leg x={P.tempo.x} y={P.tempo.top - 9} t="TEMPO" />
+      <Leg x={P.tempo.x - 12} y={P.tempo.top + 2} t="−" align="right" dim />
+      <Leg x={P.tempo.x - 12} y={P.tempo.top + P.tempo.len + 2} t="+" align="right" dim />
       <Key x={P.tempoRange.x} y={P.tempoRange.y} w={P.tempoRange.w} h={P.tempoRange.h} />
+      <Leg x={P.tempoRange.x + P.tempoRange.w / 2} y={P.tempoRange.y + P.tempoRange.h / 2 + LEG * 0.36} t={`±${PITCH_RANGE_PCT}%`} />
       <SceneText x={P.browse.x} y={P.back.y + P.back.h + 16} size={12} text={deck} color={INK.amber} face="label" align="center" />
       {highlight.map((p) => (
         <Halo key={p} b={playerPartBox(p)} round={p === 'jog' || p === 'cue' || p === 'play' || p === 'browse'} />

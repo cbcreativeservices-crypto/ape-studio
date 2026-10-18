@@ -58,10 +58,20 @@ numbers). No brand likeness, no trade dress, no logos.
 
 | Object | Typical class dimensions used |
 |---|---|
-| Media player (club class) | 320 W × 410 D mm top; jog wheel Ø 206 mm; 7-inch screen; 100 mm tempo fader |
+| Media player (club class) | 320 W × 410 D mm top; jog wheel Ø 206 mm; 7-inch 16:9 screen = 155 × 87 mm of glass (was drawn 204 × 120, corrected 2026-10-18); 100 mm tempo fader (was 140, corrected 2026-10-18) |
 | Two-channel mixer (club class) | 270 W × 390 D mm; 60 mm channel faders; 45 mm crossfader |
-| Turntable (direct-drive DJ class) | 453 W × 353 D mm; platter Ø 332 mm; 12-inch record Ø 302 mm; tonearm ~230 mm effective |
+| Turntable (direct-drive DJ class) | 453 W × 353 D mm; platter Ø 332 mm; 12-inch record Ø 302 mm; tonearm 230 mm effective (one rigid arm that only rotates), pivot 215 mm from the spindle, 8.5 mm S-tube, 22° headshell offset; strobe lamp lit whenever powered |
 | Powered PA speaker (12-inch two-way) | 365 W × 600 H mm |
 | Booth monitor (8-inch two-way) | 270 W × 420 H mm |
-| Headphones (closed-back DJ) | cups Ø ~ 90 mm |
+| Headphones (closed-back DJ) | cups ~ 70 × 95 mm seen nearly edge-on from the front (drawn as worn: L on the wearer's left); 6.35 mm TRS plug |
 | Controller (two-deck, with audio interface) | 550 W × 320 D mm; jog Ø 150 mm |
+| Audio interface (small USB) | 160 W × 110 D mm top; rear: two balanced 6.35 mm TRS outputs and USB-C |
+| Power strip (switched, 8 outlets) | 330 × 64 mm; moulded mains plug ~34 × 40 mm with strain-relief boot; device end IEC C13 |
+
+## Simplifications register (drawings)
+
+- Screen 4's room band draws the speakers, stands and table at 15 % size with the distances NOT to scale (said on the drawing); the patch band below is full size. The map is seen from BEHIND, so it is mirrored throughout (deck B left, PA R left, MASTER R left, strip outlet 1 on the right).
+- The strobe dots are drawn as the eye sees them under the strobe lamp (still at 0 % pitch, drifting in proportion to the pitch offset), not at the platter's true speed, which would only alias on a 60 Hz screen.
+- The cable flow pulse is an overlay of WHERE the signal goes; it claims no speed (decorative motion).
+- Waveforms: peak envelope (min/max), RMS core and the drums' low band (the kick, 140 Hz) are all measured from the assembled tracks offline (djMusic.analyseTrack, shipped in djTrackData.ts, pinned by test/djMusic.test.ts); each lane is scaled so the track's 99th-percentile peak reaches 80 % of its half-height, and the colour keeps the true level. Kick ticks are the low band's onsets.
+- Silk-screen legends are drawn at real size (4 mm type, capitals about 3 mm) and appear only once the zoom renders them at 9 pt or more.

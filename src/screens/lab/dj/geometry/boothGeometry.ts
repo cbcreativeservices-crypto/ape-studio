@@ -10,9 +10,11 @@
  * camera views are all derived from these anchors.
  *
  * DIMENSIONS are typical of each generic device class (docs/labs/dj/SOURCES.md
- * "Drawings"): a club-class media player 320 × 410 mm (jog Ø 206 mm), a
- * two-channel club mixer 270 × 390 mm (60 mm channel faders, 46 mm
- * crossfader), a direct-drive turntable 453 × 353 mm (platter Ø 332 mm).
+ * "Drawings"): a club-class media player 320 × 410 mm (jog Ø 206 mm, a 7-inch
+ * screen 155 × 87 mm, a 100 mm tempo fader), a two-channel club mixer
+ * 270 × 390 mm (60 mm channel faders, 46 mm crossfader), a direct-drive
+ * turntable 453 × 353 mm (platter Ø 332 mm; a tonearm of 230 mm effective
+ * length whose pivot stands 215 mm from the spindle).
  */
 
 export type Pt = { x: number; y: number };
@@ -57,13 +59,13 @@ export const PLAYER_W = 320;
 export const PLAYER_D = 410;
 
 export const PLAYER = {
-  screen: { x: 58, y: 18, w: 204, h: 120 },
+  /** A 7-inch 16:9 screen: 155 × 87 mm of glass. */
+  screen: { x: 82.5, y: 18, w: 155, h: 87 },
   browse: { x: 30, y: 52, d: 22 },
   load: { x: 18, y: 86, w: 24, h: 10 },
   back: { x: 18, y: 102, w: 24, h: 10 },
   slots: { usb: { x: 278, y: 30, w: 26, h: 8 }, sd: { x: 278, y: 44, w: 26, h: 5 } },
-  hotCues: { y: 150, h: 18, xs: [58, 111, 164, 217] as const, w: 46 },
-  samplerTag: { y: 150 },
+  hotCues: { y: 120, h: 18, xs: [58, 111, 164, 217] as const, w: 46 },
   loop: { x: 14, y: 182, w: 34, h: 13, gap: 17 },
   jump: { x: 14, y: 250, w: 34, h: 12, gap: 15 },
   jog: { cx: 160, cy: 272, d: 206, displayD: 72 },
@@ -72,9 +74,9 @@ export const PLAYER = {
   sync: { x: 276, y: 176, w: 34, h: 13 },
   masterBtn: { x: 276, y: 194, w: 34, h: 11 },
   quantize: { x: 276, y: 150, w: 34, h: 11 },
-  tempo: { x: 293, top: 226, len: 140, capW: 20, capL: 11 },
-  tempoRange: { x: 276, y: 376, w: 34, h: 10 },
-  deckBadge: { x: 66, y: 168 },
+  /** A 100 mm tempo fader (the cap's travel). */
+  tempo: { x: 293, top: 228, len: 100, capW: 20, capL: 11 },
+  tempoRange: { x: 276, y: 352, w: 34, h: 10 },
 } as const;
 
 /* ── the booth table: player A · mixer · player B ─────────────────────── */
@@ -100,18 +102,55 @@ export const TT_D = 353;
 export const TT = {
   platter: { cx: 190, cy: 182, d: 332 },
   record: { d: 302, label: 100 },
-  armPivot: { x: 392, y: 78 },
-  armRest: { x: 404, y: 238 },
-  /** Where the stylus sits when playing (the lead-in groove region). */
-  stylusPlay: { x: 300, y: 248 },
-  counterweight: { x: 398, y: 34 },
+  /** The tonearm's vertical pivot: 215 mm from the spindle. */
+  armPivot: { x: 384, y: 88 },
+  /** Effective length (pivot → stylus) and the headshell's offset angle. */
+  arm: { effective: 230, offsetDeg: 22, tube: 8.5, stub: 58 },
+  /** The arm rest post (holds the tube; the headshell clears the pitch fader). */
+  armRest: { x: 384, y: 236 },
+  /** The cue (lift) lever on its own base. */
+  lift: { x: 414, y: 146 },
+  /** The stylus at the record's lead-in groove (computed from the arm). */
+  stylusPlay: { x: 282.9, y: 294.6 },
+  counterweight: { x: 384, y: 32 },
   startStop: { x: 26, y: 300, w: 46, h: 30 },
   speed33: { x: 82, y: 312, w: 26, h: 12 },
   speed45: { x: 114, y: 312, w: 26, h: 12 },
-  pitch: { x: 425, top: 180, len: 120, capW: 18, capL: 10 },
+  pitch: { x: 425, top: 186, len: 110, capW: 18, capL: 10 },
   targetLight: { x: 28, y: 36 },
   strobe: { cx: 30, cy: 236 },
 } as const;
+
+/**
+ * The stylus position (plinth mm) when the arm turns `ang` radians about its
+ * pivot (0 = the arm points straight down the page, toward the DJ; positive
+ * swings the head LEFT, over the record). A rigid arm: its length never
+ * changes (charter §5).
+ */
+export function stylusAt(ang: number): Pt {
+  const L = TT.arm.effective;
+  return { x: TT.armPivot.x - Math.sin(ang) * L, y: TT.armPivot.y + Math.cos(ang) * L };
+}
+/** The arm angle that sets the stylus on a groove `r` mm from the spindle. */
+export function armAngleFor(r: number): number {
+  // bisection on the arc (monotonic over the swing the arm can make)
+  let lo = 0;
+  let hi = 1.2;
+  const dist = (a: number) => {
+    const s = stylusAt(a);
+    return Math.hypot(s.x - TT.platter.cx, s.y - TT.platter.cy);
+  };
+  for (let i = 0; i < 40; i++) {
+    const m = (lo + hi) / 2;
+    if (dist(m) > r) lo = m;
+    else hi = m;
+  }
+  return (lo + hi) / 2;
+}
+/** The arm at rest: along the rest post (pointing down the page). */
+export const ARM_REST_ANGLE = 0;
+/** The lead-in (outermost music) and run-out grooves, mm from the spindle. */
+export const GROOVE = { leadIn: 146, runOut: 62 } as const;
 
 /* ── rear panels, face-on (width × height) ────────────────────────────── */
 
@@ -137,14 +176,15 @@ export const MIXER_REAR_JACKS = {
   'ch1.phono.L': { x: 88, y: 40 }, 'ch1.phono.R': { x: 88, y: 64 },
   'ch1.line.L': { x: 110, y: 40 }, 'ch1.line.R': { x: 110, y: 64 },
   'booth.L': { x: 138, y: 40 }, 'booth.R': { x: 138, y: 70 },
-  'master.L': { x: 170, y: 46 }, 'master.R': { x: 200, y: 46 },
+  // seen from behind the mixer is mirrored: MASTER R on the left, L on the right
+  'master.R': { x: 170, y: 46 }, 'master.L': { x: 200, y: 46 },
   usb: { x: 222, y: 76 },
   ac: { x: 236, y: 34 },
 } as const;
 
 /* ── camera views ─────────────────────────────────────────────────────── */
 
-export type ViewName = 'booth' | 'mixer' | 'mixerUpper' | 'mixerLower' | 'deckA' | 'deckB' | 'jogs';
+export type ViewName = 'booth' | 'mixer' | 'mixerUpper' | 'mixerLower' | 'deckA' | 'deckB' | 'jogs' | 'deckBWide';
 
 /** Each view's frame in booth mm (padding included). */
 export const VIEWS: Record<ViewName, Box> = {
@@ -155,6 +195,8 @@ export const VIEWS: Record<ViewName, Box> = {
   deckA: { x: -10, y: -10, w: PLAYER_W + 20, h: PLAYER_D + 20 },
   deckB: { x: BOOTH_LAYOUT.B.x - 10, y: -10, w: PLAYER_W + 20, h: PLAYER_D + 20 },
   jogs: { x: 120, y: 150, w: BOOTH_W - 240, h: 262 },
+  /** Deck B whole (the Screen 10 glass; deck A and the mixer come as insets). */
+  deckBWide: { x: BOOTH_LAYOUT.B.x - 8, y: -8, w: PLAYER_W + 16, h: PLAYER_D + 16 },
 };
 
 /** Fit a frame into a w × h box (points), centred; returns the scale (pt per

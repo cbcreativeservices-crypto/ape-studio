@@ -8,6 +8,10 @@
  * the slide switches at the input, assign and curve settings, the CUE keys
  * lit when cued. The LED columns (CH1 · MASTER L · MASTER R · CH2) and the
  * BUS OVER light run from the meter taps under the one clock.
+ *
+ * The printed legends and the meter scale (−24 · −12 · −6 · −2 · CLIP) are
+ * drawn at real silk-screen size (4 mm type, capitals ≈ 3 mm) and appear
+ * once the zoom renders them at 9 pt or more (sceneText).
  */
 import { memo } from 'react';
 import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
@@ -15,14 +19,21 @@ import type { Booth, ChannelId } from '../model/djModel';
 import { filterQ } from '../model/djModel';
 import { MIXER, MIXER_D, MIXER_W, STRIP_X } from '../geometry/boothGeometry';
 import { INK } from './ink';
-import { Fader, Halo, Key, Knob, Led, LedColumn, SlideSwitch } from './parts';
+import { Fader, Halo, Key, Knob, LED_DB, Led, LedColumn, SlideSwitch } from './parts';
 import { useBusOver, useTapDb } from './motion';
 import { SceneText } from './sceneText';
 
 export type MixerPart =
   | 'trim1' | 'trim2' | 'eq1' | 'eq2' | 'filter1' | 'filter2' | 'cue1' | 'cue2' | 'fader1' | 'fader2'
   | 'input1' | 'input2' | 'assign1' | 'assign2' | 'xfader' | 'curve' | 'meters' | 'master' | 'booth'
-  | 'cueMix' | 'phones' | 'split' | 'resonance' | 'busOver' | 'phonesJack';
+  | 'cueMix' | 'phones' | 'split' | 'resonance' | 'busOver' | 'phonesJack'
+  | 'hi1' | 'mid1' | 'lo1' | 'hi2' | 'mid2' | 'lo2';
+
+/** Every control's box (local mm) — the labels' obstacles. */
+export const MIXER_PARTS: readonly MixerPart[] = [
+  'trim1', 'trim2', 'hi1', 'mid1', 'lo1', 'hi2', 'mid2', 'lo2', 'filter1', 'filter2', 'cue1', 'cue2', 'fader1', 'fader2',
+  'input1', 'input2', 'assign1', 'assign2', 'xfader', 'curve', 'meters', 'master', 'booth', 'cueMix', 'phones', 'split', 'resonance', 'busOver', 'phonesJack',
+];
 
 /** Where each highlightable part is (local mm) and how big its halo is. */
 export function mixerPartBox(p: MixerPart): { x: number; y: number; w: number; h: number } {
@@ -31,6 +42,12 @@ export function mixerPartBox(p: MixerPart): { x: number; y: number; w: number; h
   switch (p) {
     case 'trim1': return k(s(1), MIXER.trim.y, MIXER.trim.d);
     case 'trim2': return k(s(2), MIXER.trim.y, MIXER.trim.d);
+    case 'hi1': return k(s(1), MIXER.hi.y, MIXER.hi.d);
+    case 'mid1': return k(s(1), MIXER.mid.y, MIXER.mid.d);
+    case 'lo1': return k(s(1), MIXER.lo.y, MIXER.lo.d);
+    case 'hi2': return k(s(2), MIXER.hi.y, MIXER.hi.d);
+    case 'mid2': return k(s(2), MIXER.mid.y, MIXER.mid.d);
+    case 'lo2': return k(s(2), MIXER.lo.y, MIXER.lo.d);
     case 'eq1': return { x: s(1) - 18, y: MIXER.hi.y - 18, w: 36, h: MIXER.lo.y - MIXER.hi.y + 36 };
     case 'eq2': return { x: s(2) - 18, y: MIXER.hi.y - 18, w: 36, h: MIXER.lo.y - MIXER.hi.y + 36 };
     case 'filter1': return k(s(1), MIXER.filter.y, MIXER.filter.d);
@@ -53,11 +70,11 @@ export function mixerPartBox(p: MixerPart): { x: number; y: number; w: number; h
     case 'split': return { x: MIXER.split.x - 4, y: MIXER.split.y - 4, w: MIXER.split.w + 8, h: MIXER.split.h + 8 };
     case 'resonance': return k(MIXER.resonance.x, MIXER.resonance.y, MIXER.resonance.d);
     case 'busOver': return { x: MIXER.busOver.x - 8, y: MIXER.busOver.y - 8, w: 16, h: 16 };
-    case 'phonesJack': return { x: MIXER.front.phones635 - 10, y: MIXER.front.y - 4, w: 34, h: 12 };
+    case 'phonesJack': return { x: MIXER.front.phones635 - 10, y: MIXER.front.y - 6, w: 36, h: 12 };
   }
 }
 
-const ROUND_PARTS = new Set<MixerPart>(['trim1', 'trim2', 'filter1', 'filter2', 'master', 'booth', 'cueMix', 'phones', 'resonance', 'busOver']);
+const ROUND_PARTS = new Set<MixerPart>(['trim1', 'trim2', 'filter1', 'filter2', 'master', 'booth', 'cueMix', 'phones', 'resonance', 'busOver', 'hi1', 'mid1', 'lo1', 'hi2', 'mid2', 'lo2']);
 
 const inputPos = (i: Booth['ch'][1]['input']) => (i === 'PHONO' ? 0 : i === 'LINE' ? 1 : 2);
 const assignPos = (a: Booth['ch'][1]['xf']) => (a === 'A' ? 0 : a === 'THRU' ? 1 : 2);
@@ -68,8 +85,10 @@ const filterKnob = (f: number) => (f + 1) / 2;
 
 /** Printed panel legends — drawn only where they render at 9 pt or more
  *  (sceneText), so a small view shows clean metal and a close view reads
- *  like the real panel. CH1's legends sit left of its knobs, CH2's right. */
-const LEG = 7.6;
+ *  like the real panel. CH1's legends sit left of its knobs, CH2's right.
+ *  4 mm type (capitals ≈ 3 mm): real silk-screen size. */
+const LEG = 4;
+const LEG_S = 3.4;
 function StripLegends({ ch }: { ch: ChannelId }) {
   const x = STRIP_X[ch];
   const lx = ch === 1 ? x - 16 : x + 16;
@@ -83,8 +102,9 @@ function StripLegends({ ch }: { ch: ChannelId }) {
       {row(MIXER.lo.y, 'LOW')}
       {row(MIXER.filter.y, 'FILTER')}
       {row(MIXER.cue.y, 'CUE')}
-      <SceneText x={x} y={MIXER.inputSel.y - 8} size={6.2} text="PHONO · LINE · USB" color={INK.printDim} face="label" align="center" />
-      <SceneText x={x} y={MIXER.assign.y + 14} size={6.2} text="A · THRU · B" color={INK.printDim} face="label" align="center" />
+      <SceneText x={x} y={MIXER.inputSel.y - 7} size={LEG_S} text="PHONO · LINE · USB" color={INK.printDim} face="label" align="center" />
+      <SceneText x={x} y={MIXER.assign.y + 10} size={LEG_S} text="A · THRU · B" color={INK.printDim} face="label" align="center" />
+      <SceneText x={x} y={MIXER.trim.y - 14} size={LEG_S} text={'CH ' + ch} color={INK.amber} face="label" align="center" />
       <SceneText x={ch === 1 ? x - 22 : x + 22} y={MIXER.fader.top + 34} size={12} text={String(ch)} color={INK.print} face="label" align="center" />
     </Group>
   );
@@ -128,9 +148,83 @@ function Meters() {
       <LedColumn x={xs[3]} y={y} w={w} h={h} level={ch2} hold={ch2h} />
       <Led cx={MIXER.busOver.x} cy={MIXER.busOver.y} r={2.4} on={over} colour={INK.peak} />
       {(['1', 'L', 'R', '2'] as const).map((t, i) => (
-        <SceneText key={t} x={xs[i] + w / 2} y={y + h + 9} size={6.4} text={t} color={INK.print} face="label" align="center" />
+        <SceneText key={t} x={xs[i] + w / 2} y={y + h + 7} size={LEG} text={t} color={INK.print} face="label" align="center" />
       ))}
-      <SceneText x={MIXER.busOver.x + 6} y={MIXER.busOver.y + 2.2} size={6.2} text="BUS OVER" color={INK.printDim} face="label" />
+      <SceneText x={MIXER.busOver.x + 5} y={MIXER.busOver.y + 1.3} size={LEG_S} text="BUS OVER" color={INK.printDim} face="label" />
+      <MeterScale />
+    </Group>
+  );
+}
+
+/** The meters' printed scale, between MASTER L and R: −24 · −12 · −6 · −2
+ *  and the CLIP cap on the top (0 dBFS) segment, each beside its segment. */
+export const METER_SCALE = [
+  { db: -24, t: '−24' },
+  { db: -12, t: '−12' },
+  { db: -6, t: '−6' },
+  { db: -2, t: '−2' },
+  { db: 0, t: 'CLIP' },
+] as const;
+/** The centre (local mm) of the LED segment that lights at `db`. */
+export function meterSegY(db: number): number {
+  const { y, h } = MIXER.meters;
+  const i = (LED_DB as readonly number[]).indexOf(db);
+  const pitch = h / LED_DB.length;
+  return y + h - (i + 0.5) * pitch;
+}
+function MeterScale() {
+  const { xs, w } = MIXER.meters;
+  const cx = (xs[1] + w + xs[2]) / 2;
+  return (
+    <Group>
+      {METER_SCALE.map((m) => (
+        <Group key={m.t}>
+          <Line p1={vec(xs[1] + w + 0.8, meterSegY(m.db))} p2={vec(xs[1] + w + 2.2, meterSegY(m.db))} color={INK.printDim} strokeWidth={0.4} />
+          <Line p1={vec(xs[2] - 2.2, meterSegY(m.db))} p2={vec(xs[2] - 0.8, meterSegY(m.db))} color={INK.printDim} strokeWidth={0.4} />
+          <SceneText x={cx} y={meterSegY(m.db) + 1.1} size={m.db === 0 ? 2.9 : 3.1} text={m.t} color={m.db === 0 ? INK.peak : INK.print} face="label" align="center" />
+        </Group>
+      ))}
+    </Group>
+  );
+}
+
+/** The front edge: a chamfered lip carrying the two headphone jacks (6.35 mm
+ *  and 3.5 mm), each a knurled nut round its socket, seen from above. */
+function FrontLip() {
+  const W = MIXER_W;
+  const D = MIXER_D;
+  const knurl = (cx: number, r: number) => {
+    const p = Skia.PathBuilder.Make();
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2;
+      p.moveTo(cx + Math.cos(a) * r * 0.78, D - 6 + Math.sin(a) * r * 0.42);
+      p.lineTo(cx + Math.cos(a) * r, D - 6 + Math.sin(a) * r * 0.54);
+    }
+    return p.detach();
+  };
+  const jack = (cx: number, r: number, key: string) => (
+    <Group key={key}>
+      <Oval x={cx - r - 0.6} y={D - 6 - r * 0.54 + 0.9} width={(r + 0.6) * 2} height={r * 1.08} color="rgba(0,0,0,0.7)">
+        <BlurMask blur={0.8} style="normal" />
+      </Oval>
+      <Oval x={cx - r} y={D - 6 - r * 0.54} width={r * 2} height={r * 1.08}>
+        <LinearGradient start={vec(cx - r, D - 9)} end={vec(cx + r, D - 3)} colors={[INK.metalHi, INK.metalMid, INK.metalLo]} />
+      </Oval>
+      <Path path={knurl(cx, r)} style="stroke" strokeWidth={0.35} color="rgba(0,0,0,0.5)" />
+      <Oval x={cx - r * 0.56} y={D - 6 - r * 0.3} width={r * 1.12} height={r * 0.6} color="#1a1b1f" />
+      <Oval x={cx - r * 0.36} y={D - 6 - r * 0.2} width={r * 0.72} height={r * 0.4} color="#020203" />
+    </Group>
+  );
+  return (
+    <Group>
+      {/* the chamfer: lit along its top edge, falling into shadow */}
+      <RoundedRect x={8} y={D - 11} width={W - 16} height={9} r={2.5}>
+        <LinearGradient start={vec(0, D - 11)} end={vec(0, D - 2)} colors={['#3a3d44', '#1a1b1f', '#0b0c0e']} positions={[0, 0.35, 1]} />
+      </RoundedRect>
+      <Line p1={vec(10, D - 10.6)} p2={vec(W - 10, D - 10.6)} color="rgba(255,255,255,0.16)" strokeWidth={0.5} />
+      {jack(MIXER.front.phones635, 5.6, 'j635')}
+      {jack(MIXER.front.phones35, 3.6, 'j35')}
+      <SceneText x={(MIXER.front.phones635 + MIXER.front.phones35) / 2} y={D - 13} size={LEG_S} text="PHONES" color={INK.printDim} face="label" align="center" />
     </Group>
   );
 }
@@ -185,24 +279,24 @@ export const MixerTop = memo(function MixerTop({ x, y, booth, highlight = [] }: 
       <RoundedRect x={7} y={7} width={W - 14} height={D - 18} r={6} style="stroke" strokeWidth={0.8} color="rgba(0,0,0,0.6)" />
       <Path path={sectionLines()} style="stroke" strokeWidth={0.6} color={INK.printDim} opacity={0.6} />
       {/* the front lip and its headphone jacks */}
-      <RoundedRect x={10} y={D - 9} width={W - 20} height={6} r={2} color="#0b0c0e" />
-      <Oval x={MIXER.front.phones635 - 5} y={D - 8.5} width={10} height={5} color="#9aa0a8" />
-      <Oval x={MIXER.front.phones635 - 2.6} y={D - 7.3} width={5.2} height={2.6} color="#050506" />
-      <Oval x={MIXER.front.phones35 - 3.4} y={D - 8} width={6.8} height={4} color="#9aa0a8" />
-      <Oval x={MIXER.front.phones35 - 1.6} y={D - 7} width={3.2} height={2} color="#050506" />
+      <FrontLip />
       {[[14, 14], [W - 14, 14], [14, D - 20], [W - 14, D - 20]].map(([sx, sy]) => (
         <Screw key={`${sx}-${sy}`} cx={sx} cy={sy} />
       ))}
       <Strip ch={1} booth={booth} />
       <Strip ch={2} booth={booth} />
       <Meters />
-      <SceneText x={MIXER.master.x} y={MIXER.master.y - 15} size={6.4} text="MASTER" color={INK.print} face="label" align="center" />
-      <SceneText x={MIXER.booth.x} y={MIXER.booth.y - 15} size={6.4} text="BOOTH" color={INK.print} face="label" align="center" />
-      <SceneText x={MIXER.cueMix.x} y={MIXER.cueMix.y - 13} size={6.2} text="CUE ↔ MST" color={INK.print} face="label" align="center" />
-      <SceneText x={MIXER.phones.x} y={MIXER.phones.y - 13} size={6.2} text="PHONES" color={INK.print} face="label" align="center" />
-      <SceneText x={MIXER.split.x + MIXER.split.w / 2} y={MIXER.split.y + MIXER.split.h + 8} size={6} text="SPLIT CUE" color={INK.printDim} face="label" align="center" />
-      <SceneText x={MIXER.resonance.x} y={MIXER.resonance.y + 15} size={6} text="RESONANCE" color={INK.printDim} face="label" align="center" />
-      <SceneText x={MIXER.curve.x + MIXER.curve.w / 2} y={MIXER.curve.y - 4} size={6} text="X-FADER CURVE" color={INK.printDim} face="label" align="center" />
+      <SceneText x={MIXER.master.x} y={MIXER.master.y - 15} size={LEG} text="MASTER" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.booth.x} y={MIXER.booth.y - 15} size={LEG} text="BOOTH" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.cueMix.x} y={MIXER.cueMix.y - 13} size={LEG_S} text="CUE ↔ MST" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.phones.x} y={MIXER.phones.y - 13} size={LEG_S} text="PHONES" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.split.x + MIXER.split.w / 2} y={MIXER.split.y + MIXER.split.h + 5} size={LEG_S} text="SPLIT CUE" color={INK.printDim} face="label" align="center" />
+      <SceneText x={MIXER.resonance.x} y={MIXER.resonance.y + 13} size={LEG_S} text="RESONANCE" color={INK.printDim} face="label" align="center" />
+      <SceneText x={MIXER.curve.x + MIXER.curve.w / 2} y={MIXER.curve.y - 3} size={LEG_S} text="X-FADER CURVE" color={INK.printDim} face="label" align="center" />
+      <SceneText x={MIXER.curve.x - 3} y={MIXER.curve.y + MIXER.curve.h / 2 + 1.2} size={LEG_S} text="BLEND" color={INK.printDim} face="label" align="right" />
+      <SceneText x={MIXER.curve.x + MIXER.curve.w + 3} y={MIXER.curve.y + MIXER.curve.h / 2 + 1.2} size={LEG_S} text="CUT" color={INK.printDim} face="label" />
+      <SceneText x={MIXER.xfader.left - 8} y={MIXER.xfader.y + 1.4} size={LEG} text="A" color={INK.print} face="label" align="right" />
+      <SceneText x={MIXER.xfader.left + MIXER.xfader.len + 8} y={MIXER.xfader.y + 1.4} size={LEG} text="B" color={INK.print} face="label" />
       <Knob cx={MIXER.master.x} cy={MIXER.master.y} d={MIXER.master.d} value={m.master} />
       <Knob cx={MIXER.booth.x} cy={MIXER.booth.y} d={MIXER.booth.d} value={m.booth} />
       <Knob cx={MIXER.cueMix.x} cy={MIXER.cueMix.y} d={MIXER.cueMix.d} value={m.cueMix} centre />

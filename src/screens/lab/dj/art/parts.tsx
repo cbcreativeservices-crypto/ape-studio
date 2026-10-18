@@ -14,6 +14,8 @@ import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, Ra
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
 import { INK } from './ink';
+import { useMotion } from './motion';
+import { PLUG_R, type PlugKindMap } from '../geometry/mapGeometry';
 
 const DEG = Math.PI / 180;
 
@@ -23,14 +25,15 @@ const DEG = Math.PI / 180;
  * The lesson's ATTENTION mark around a part: a soft amber glow and a hairline
  * ring — never a fill over the control (the control itself stays readable).
  */
-export function Halo({ b, round = false }: { b: { x: number; y: number; w: number; h: number }; round?: boolean }) {
+export function Halo({ b, round = false, tone = 'amber' }: { b: { x: number; y: number; w: number; h: number }; round?: boolean; tone?: 'amber' | 'red' }) {
   const r = round ? Math.min(b.w, b.h) / 2 : Math.min(8, Math.min(b.w, b.h) * 0.3);
+  const c = tone === 'red' ? INK.peak : INK.amber;
   return (
     <Group>
-      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={3.2} color={INK.amber} opacity={0.35}>
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={3.2} color={c} opacity={tone === 'red' ? 0.6 : 0.35}>
         <BlurMask blur={3.5} style="normal" />
       </RoundedRect>
-      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={0.8} color={INK.amber} opacity={0.95} />
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={tone === 'red' ? 1.6 : 0.8} color={c} opacity={0.95} />
     </Group>
   );
 }
@@ -561,29 +564,66 @@ export function GroundPost({ cx, cy, d }: { cx: number; cy: number; d: number })
 
 /* ── cable runs ───────────────────────────────────────────────────────── */
 
-export type CableStyle = { colour: string; width: number; dash?: number[]; label?: string };
+/** A cable's look: jacket colour and width, and its PATTERN — the cable
+ *  types are told apart by pattern and label, never by colour alone (D69,
+ *  charter §8). */
+export type CablePattern = 'plain' | 'stripe' | 'dots' | 'ribs' | 'dash';
+export type CableStyle = { colour: string; width: number; pattern?: CablePattern; dash?: number[]; label?: string };
 
-/** A cable as a smooth run through `pts` (mm), with its jacket highlight, so
- *  it reads as a round cable. Its own lane: never merged with another. */
-export function Cable({ pts, style, glow }: { pts: [number, number][]; style: CableStyle; glow?: string | null }) {
-  const path = useMemo(() => smoothPath(pts), [pts]);
+/**
+ * A cable as a smooth run through `pts` (mm), with its jacket highlight, so
+ * it reads as a round cable. Its own lane: never merged with another. `glow`
+ * marks it live; with `flow` the glow carries a slow travelling pulse from
+ * the one clock (a signal-flow OVERLAY — it claims no speed; decorative, so
+ * the caller passes it only when useDecorativeMotion allows).
+ */
+export function Cable({ pts, style, glow, flow = false, path: given }: { pts: [number, number][]; style: CableStyle; glow?: string | null; flow?: boolean; path?: SkPath }) {
+  const path = useMemo(() => given ?? smoothPath(pts), [pts, given]);
+  const w = style.width;
+  const pattern = style.pattern ?? (style.dash ? 'dash' : 'plain');
   return (
     <Group>
       {glow ? (
-        <Path path={path} style="stroke" strokeWidth={style.width * 2.6} color={glow} opacity={0.35} strokeCap="round" strokeJoin="round">
-          <BlurMask blur={style.width * 1.2} style="normal" />
+        <Path path={path} style="stroke" strokeWidth={w * 2.6} color={glow} opacity={0.32} strokeCap="round" strokeJoin="round">
+          <BlurMask blur={w * 1.2} style="normal" />
         </Path>
       ) : null}
-      <Path path={path} style="stroke" strokeWidth={style.width * 1.25} color="rgba(0,0,0,0.7)" strokeCap="round" strokeJoin="round" />
-      <Path path={path} style="stroke" strokeWidth={style.width} color={style.colour} strokeCap="round" strokeJoin="round" />
-      {style.dash ? (
-        <Path path={path} style="stroke" strokeWidth={style.width * 0.38} color="rgba(0,0,0,0.55)" strokeCap="butt">
-          <DashPathEffect intervals={style.dash} />
+      {/* the soft shadow it casts, then the jacket and its round highlight */}
+      <Path path={path} style="stroke" strokeWidth={w * 1.1} color="rgba(0,0,0,0.55)" strokeCap="round" strokeJoin="round" transform={[{ translateX: w * 0.35 }, { translateY: w * 0.5 }]}>
+        <BlurMask blur={w * 0.5} style="normal" />
+      </Path>
+      <Path path={path} style="stroke" strokeWidth={w * 1.22} color="rgba(0,0,0,0.75)" strokeCap="round" strokeJoin="round" />
+      <Path path={path} style="stroke" strokeWidth={w} color={style.colour} strokeCap="round" strokeJoin="round" />
+      <Path path={path} style="stroke" strokeWidth={w * 0.2} color={INK.cableHi} strokeCap="round" strokeJoin="round" transform={[{ translateX: -w * 0.18 }, { translateY: -w * 0.22 }]} />
+      {pattern === 'dash' ? (
+        <Path path={path} style="stroke" strokeWidth={w * 0.36} color="rgba(0,0,0,0.55)" strokeCap="butt">
+          <DashPathEffect intervals={style.dash ?? [5, 3.5]} />
         </Path>
-      ) : (
-        <Path path={path} style="stroke" strokeWidth={style.width * 0.22} color={INK.cableHi} strokeCap="round" strokeJoin="round" />
-      )}
+      ) : pattern === 'stripe' ? (
+        <Path path={path} style="stroke" strokeWidth={w * 0.16} color="rgba(190,196,206,0.8)" strokeCap="butt" />
+      ) : pattern === 'dots' ? (
+        <Path path={path} style="stroke" strokeWidth={w * 0.34} color="rgba(170,176,186,0.85)" strokeCap="round">
+          <DashPathEffect intervals={[0.01, w * 1.3]} />
+        </Path>
+      ) : pattern === 'ribs' ? (
+        <Path path={path} style="stroke" strokeWidth={w * 0.78} color="rgba(255,255,255,0.10)" strokeCap="butt">
+          <DashPathEffect intervals={[w * 0.18, w * 0.32]} />
+        </Path>
+      ) : null}
+      {glow && flow ? <FlowPulse path={path} w={w} colour={glow} /> : null}
     </Group>
+  );
+}
+
+/** The travelling pulse along a live cable: dashes moving from the source
+ *  end at a slow, readable pace (an overlay of WHERE the signal goes). */
+function FlowPulse({ path, w, colour }: { path: SkPath; w: number; colour: string }) {
+  const { clock } = useMotion();
+  const phase = useDerivedValue(() => -((clock.value * 26) % 40));
+  return (
+    <Path path={path} style="stroke" strokeWidth={w * 0.55} color={colour} opacity={0.95} strokeCap="round">
+      <DashPathEffect intervals={[7, 33]} phase={phase} />
+    </Path>
   );
 }
 
@@ -615,19 +655,41 @@ export function smoothPath(pts: [number, number][]): SkPath {
   return p.detach();
 }
 
-/** A plugged-in connector's back seen face-on (looking at the panel, the
- *  plug's body points at you): RCA — its coloured collar, the metal shell and
- *  the rubber boot the cable leaves through; XLR — the barrel with its grip
- *  rings and boot; 6.35 mm jack — the barrel and boot; IEC — the moulded plug. */
-export function PlugFace({ cx, cy, kind, colour }: { cx: number; cy: number; kind: 'rca' | 'xlr' | 'trs' | 'iec'; colour: string }) {
+/** A loose cable's run: from its fixed end, sagging under its own weight (a
+ *  quadratic dipping `sag` mm below the chord) to where its plug lies. */
+export function sagPath(a: [number, number], b: [number, number], sag: number): SkPath {
+  const p = Skia.PathBuilder.Make();
+  p.moveTo(a[0], a[1]);
+  const mx = (a[0] + b[0]) / 2;
+  const my = Math.max(a[1], b[1]) + sag;
+  p.quadTo(mx, my, b[0], b[1]);
+  return p.detach();
+}
+
+export type PlugKind = PlugKindMap;
+export { PLUG_R };
+
+/**
+ * A plugged-in connector seen face-on on its panel (the plug's body points
+ * at you, in a slight perspective down and to the right, with a blurred
+ * shadow cast on the panel by the upper-left light): RCA — coloured collar,
+ * metal shell and boot; XLR — barrel, grip rings, boot; 6.35 mm jack —
+ * barrel and boot; IEC — the moulded C13 at a device's inlet; MAINS — the
+ * moulded plug at the power strip, its strain-relief boot turned toward
+ * `dir` (radians, the way its cord leaves).
+ */
+export function PlugFace({ cx, cy, kind, colour, dir = -Math.PI / 2 }: { cx: number; cy: number; kind: PlugKind; colour: string; dir?: number }) {
+  if (kind === 'mains') return <MainsPlug cx={cx} cy={cy} dir={dir} />;
   if (kind === 'iec') {
     return (
       <Group>
-        <RoundedRect x={cx - 15 + 1} y={cy - 11 + 1.5} width={30} height={22} r={4} color="rgba(0,0,0,0.7)">
-          <BlurMask blur={1.5} style="normal" />
+        <RoundedRect x={cx - 15 + 3} y={cy - 11 + 4.5} width={30} height={22} r={4} color="rgba(0,0,0,0.7)">
+          <BlurMask blur={2.2} style="normal" />
         </RoundedRect>
+        {/* the body's side, toward the panel */}
+        <RoundedRect x={cx - 15 + 1.2} y={cy - 11 + 1.6} width={30} height={22} r={4} color="#060607" />
         <RoundedRect x={cx - 15} y={cy - 11} width={30} height={22} r={4}>
-          <LinearGradient start={vec(cx - 15, cy - 11)} end={vec(cx + 15, cy + 11)} colors={['#2a2c31', '#0b0b0d']} />
+          <LinearGradient start={vec(cx - 15, cy - 11)} end={vec(cx + 15, cy + 11)} colors={['#2e3035', '#0b0b0d']} />
         </RoundedRect>
         <RoundedRect x={cx - 15} y={cy - 11} width={30} height={22} r={4} style="stroke" strokeWidth={0.7} color="rgba(255,255,255,0.16)" />
         {[-6, 0, 6].map((g) => (
@@ -639,35 +701,202 @@ export function PlugFace({ cx, cy, kind, colour }: { cx: number; cy: number; kin
   }
   const shell = kind === 'xlr' ? 10.5 : kind === 'trs' ? 6.4 : 5.4;
   const boot = kind === 'xlr' ? 5 : kind === 'trs' ? 3.6 : 2.9;
+  const depth = kind === 'xlr' ? 3.4 : 2.6; // the barrel showing in perspective
+  const nx = cx + depth * 0.55;
+  const ny = cy + depth * 0.75;
   return (
     <Group>
-      <Circle cx={cx + 0.7} cy={cy + 1} r={shell * 1.04} color="rgba(0,0,0,0.75)">
-        <BlurMask blur={1.6} style="normal" />
+      <Circle cx={cx + shell * 0.45} cy={cy + shell * 0.6} r={shell * 1.08} color="rgba(0,0,0,0.75)">
+        <BlurMask blur={shell * 0.35} style="normal" />
       </Circle>
+      {/* the barrel's side, from the panel out to its near end */}
+      <Line p1={vec(cx, cy)} p2={vec(nx, ny)} strokeWidth={shell * 2} strokeCap="round" color={kind === 'rca' ? shade(colour, 0.45) : '#2c2f34'} />
       {kind === 'rca' ? (
         <Group>
-          <Circle cx={cx} cy={cy} r={shell}>
-            <RadialGradient c={vec(cx - shell * 0.3, cy - shell * 0.35)} r={shell * 1.3} colors={[colour, shade(colour, 0.55)]} />
+          <Circle cx={nx} cy={ny} r={shell}>
+            <RadialGradient c={vec(nx - shell * 0.3, ny - shell * 0.35)} r={shell * 1.3} colors={[colour, shade(colour, 0.55)]} />
           </Circle>
-          <Circle cx={cx} cy={cy} r={shell * 0.72}>
-            <RadialGradient c={vec(cx - 1, cy - 1)} r={shell} colors={[INK.metalHi, INK.metalLo]} />
+          <Circle cx={nx} cy={ny} r={shell * 0.72}>
+            <RadialGradient c={vec(nx - 1, ny - 1)} r={shell} colors={[INK.metalHi, INK.metalLo]} />
           </Circle>
         </Group>
       ) : (
         <Group>
-          <Circle cx={cx} cy={cy} r={shell}>
-            <RadialGradient c={vec(cx - shell * 0.3, cy - shell * 0.35)} r={shell * 1.3} colors={['#d6dae0', '#7a8089', '#3a3e45']} />
+          <Circle cx={nx} cy={ny} r={shell}>
+            <RadialGradient c={vec(nx - shell * 0.3, ny - shell * 0.35)} r={shell * 1.3} colors={['#d6dae0', '#7a8089', '#3a3e45']} />
           </Circle>
-          <Circle cx={cx} cy={cy} r={shell * 0.84} style="stroke" strokeWidth={shell * 0.08} color="rgba(0,0,0,0.35)" />
-          <Circle cx={cx} cy={cy} r={shell * 0.68} style="stroke" strokeWidth={shell * 0.06} color="rgba(0,0,0,0.3)" />
+          <Circle cx={nx} cy={ny} r={shell * 0.84} style="stroke" strokeWidth={shell * 0.08} color="rgba(0,0,0,0.35)" />
+          <Circle cx={nx} cy={ny} r={shell * 0.68} style="stroke" strokeWidth={shell * 0.06} color="rgba(0,0,0,0.3)" />
         </Group>
       )}
-      <Circle cx={cx} cy={cy} r={boot}>
-        <RadialGradient c={vec(cx - boot * 0.3, cy - boot * 0.35)} r={boot * 1.4} colors={['#3a3c42', '#0b0b0d']} />
+      <Circle cx={nx} cy={ny} r={boot}>
+        <RadialGradient c={vec(nx - boot * 0.3, ny - boot * 0.35)} r={boot * 1.4} colors={['#3a3c42', '#0b0b0d']} />
       </Circle>
-      <Circle cx={cx - shell * 0.32} cy={cy - shell * 0.36} r={shell * 0.18} color="rgba(255,255,255,0.45)">
+      <Circle cx={nx - shell * 0.32} cy={ny - shell * 0.36} r={shell * 0.18} color="rgba(255,255,255,0.45)">
         <BlurMask blur={shell * 0.12} style="normal" />
       </Circle>
+    </Group>
+  );
+}
+
+/** The moulded mains plug in a strip outlet, from above: a 34 × 40 mm body
+ *  with grip ribs and the strain-relief boot its cord leaves through. */
+function MainsPlug({ cx, cy, dir }: { cx: number; cy: number; dir: number }) {
+  const deg = (dir * 180) / Math.PI + 90; // the boot is drawn pointing up (−y) at 0
+  const boot = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.moveTo(-8, -18);
+    p.lineTo(8, -18);
+    p.lineTo(4.6, -34);
+    p.lineTo(-4.6, -34);
+    p.close();
+    return p.detach();
+  }, []);
+  return (
+    <Group transform={[{ translateX: cx }, { translateY: cy }]}>
+      <RoundedRect x={-17 + 3} y={-20 + 4} width={34} height={40} r={7} color="rgba(0,0,0,0.7)">
+        <BlurMask blur={2.4} style="normal" />
+      </RoundedRect>
+      <Group transform={[{ rotate: (deg * Math.PI) / 180 }]}>
+        <Path path={boot}>
+          <LinearGradient start={vec(-8, 0)} end={vec(8, 0)} colors={['#2e3035', '#141518', '#060607']} />
+        </Path>
+        {[-22, -26, -30].map((g) => (
+          <Line key={g} p1={vec(-6.5 + (g + 18) * -0.18, g)} p2={vec(6.5 - (g + 18) * -0.18, g)} color="rgba(255,255,255,0.08)" strokeWidth={0.8} />
+        ))}
+      </Group>
+      <RoundedRect x={-17} y={-20} width={34} height={40} r={7}>
+        <LinearGradient start={vec(-17, -20)} end={vec(17, 20)} colors={['#34373d', '#17181b', '#0a0a0c']} positions={[0, 0.5, 1]} />
+      </RoundedRect>
+      <RoundedRect x={-17} y={-20} width={34} height={40} r={7} style="stroke" strokeWidth={0.8} color="rgba(255,255,255,0.16)" />
+      {[-13, 13].map((gx) => (
+        <Group key={gx}>
+          {[-10, -5, 0, 5, 10].map((gy) => (
+            <Line key={gy} p1={vec(gx - 2, gy)} p2={vec(gx + 2, gy)} color="rgba(255,255,255,0.10)" strokeWidth={0.8} strokeCap="round" />
+          ))}
+        </Group>
+      ))}
+      <Circle cx={-6} cy={-8} r={6} color="rgba(255,255,255,0.06)">
+        <BlurMask blur={4} style="normal" />
+      </Circle>
+    </Group>
+  );
+}
+
+/**
+ * A LOOSE plug lying free at the end of its cable, seen from the side,
+ * pointing along `ang` (radians): RCA — boot, coloured collar, nickel barrel
+ * with its split ground sleeve and the centre pin; XLR (male) — barrel with
+ * grip rings, latch and pins; 6.35 mm jack; mains — moulded body and blades.
+ */
+export function LoosePlug({ x, y, ang, kind, colour }: { x: number; y: number; ang: number; kind: PlugKind | 'phones'; colour: string }) {
+  const body = (() => {
+    if (kind === 'rca') {
+      return (
+        <Group>
+          <RoundedRect x={0} y={-3.4} width={9} height={6.8} r={2}>
+            <LinearGradient start={vec(0, -3.4)} end={vec(0, 3.4)} colors={['#3a3c42', '#0b0b0d']} />
+          </RoundedRect>
+          <Rect x={9} y={-4.2} width={4} height={8.4}>
+            <LinearGradient start={vec(0, -4.2)} end={vec(0, 4.2)} colors={[colour, shade(colour, 0.5)]} />
+          </Rect>
+          <Rect x={13} y={-3.8} width={9} height={7.6}>
+            <LinearGradient start={vec(0, -3.8)} end={vec(0, 3.8)} colors={['#eef1f4', '#9aa0a8', '#5c626b']} positions={[0, 0.4, 1]} />
+          </Rect>
+          <Line p1={vec(15, 0)} p2={vec(22, 0)} color="rgba(0,0,0,0.45)" strokeWidth={0.6} />
+          <Rect x={22} y={-1} width={6} height={2} color="#d8dce2" />
+        </Group>
+      );
+    }
+    if (kind === 'xlr') {
+      return (
+        <Group>
+          <RoundedRect x={0} y={-5} width={12} height={10} r={3}>
+            <LinearGradient start={vec(0, -5)} end={vec(0, 5)} colors={['#3a3c42', '#0b0b0d']} />
+          </RoundedRect>
+          <RoundedRect x={12} y={-9.5} width={34} height={19} r={2.5}>
+            <LinearGradient start={vec(0, -9.5)} end={vec(0, 9.5)} colors={['#eef1f4', '#9aa0a8', '#4a4f57']} positions={[0, 0.35, 1]} />
+          </RoundedRect>
+          {[16, 19, 22].map((g) => (
+            <Line key={g} p1={vec(g, -9.5)} p2={vec(g, 9.5)} color="rgba(0,0,0,0.3)" strokeWidth={0.6} />
+          ))}
+          <RoundedRect x={30} y={-11} width={9} height={2.4} r={1} color="#6e737c" />
+          <Rect x={46} y={-4.5} width={6} height={1.6} color="#e9d39a" />
+          <Rect x={46} y={2.9} width={6} height={1.6} color="#e9d39a" />
+        </Group>
+      );
+    }
+    if (kind === 'mains') {
+      return (
+        <Group>
+          <RoundedRect x={0} y={-5} width={14} height={10} r={3}>
+            <LinearGradient start={vec(0, -5)} end={vec(0, 5)} colors={['#2e3035', '#0b0b0d']} />
+          </RoundedRect>
+          <RoundedRect x={14} y={-12} width={22} height={24} r={5}>
+            <LinearGradient start={vec(0, -12)} end={vec(0, 12)} colors={['#34373d', '#0a0a0c']} />
+          </RoundedRect>
+          <Rect x={36} y={-7} width={15} height={2} color="#c9ccd2" />
+          <Rect x={36} y={5} width={15} height={2} color="#c9ccd2" />
+          <RoundedRect x={36} y={-1.6} width={17} height={3.2} r={1.6} color="#c9ccd2" />
+        </Group>
+      );
+    }
+    // trs / phones / iec: a 6.35 mm jack, or a C13 body for iec
+    if (kind === 'iec') {
+      return (
+        <Group>
+          <RoundedRect x={0} y={-5} width={12} height={10} r={3} color="#141518" />
+          <RoundedRect x={12} y={-11} width={28} height={22} r={4}>
+            <LinearGradient start={vec(0, -11)} end={vec(0, 11)} colors={['#2e3035', '#0b0b0d']} />
+          </RoundedRect>
+        </Group>
+      );
+    }
+    return (
+      <Group>
+        <RoundedRect x={0} y={-3.2} width={10} height={6.4} r={2} color="#141518" />
+        <RoundedRect x={10} y={-5} width={17} height={10} r={1.6}>
+          <LinearGradient start={vec(0, -5)} end={vec(0, 5)} colors={['#eef1f4', '#8a9099', '#5c626b']} />
+        </RoundedRect>
+        <Rect x={27} y={-3.9} width={2.2} height={7.8} color="#c7ad62" />
+        <Rect x={29.2} y={-3.17} width={13.6} height={6.35} color="#c9ced5" />
+        <Rect x={42.8} y={-3.17} width={1.3} height={6.35} color="#0b0b0d" />
+        <Rect x={44.1} y={-3.17} width={5.6} height={6.35} color="#c9ced5" />
+        <Rect x={49.7} y={-3.17} width={1.3} height={6.35} color="#0b0b0d" />
+        <RoundedRect x={51} y={-3.17} width={6} height={6.35} r={3} color="#d8dce2" />
+      </Group>
+    );
+  })();
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: ang }]}>
+      <Group transform={[{ translateX: 1.2 }, { translateY: 2.2 }]} opacity={0.6}>
+        <RoundedRect x={0} y={-6} width={kind === 'xlr' ? 52 : kind === 'mains' ? 50 : 40} height={12} r={5} color="#000">
+          <BlurMask blur={2.2} style="normal" />
+        </RoundedRect>
+      </Group>
+      {body}
+    </Group>
+  );
+}
+
+/** A USB-C socket (face-on); with `plugged`, its plug's overmould seated in
+ *  it and its boot toward the viewer. */
+export function UsbC({ cx, cy, plugged }: { cx: number; cy: number; plugged: boolean }) {
+  return (
+    <Group>
+      <RoundedRect x={cx - 5.2} y={cy - 2} width={10.4} height={4} r={2} color="#9aa0a8" />
+      <RoundedRect x={cx - 4.4} y={cy - 1.3} width={8.8} height={2.6} r={1.3} color="#050506" />
+      {plugged ? (
+        <Group>
+          <RoundedRect x={cx - 6 + 2} y={cy - 4 + 3} width={12} height={8} r={3} color="rgba(0,0,0,0.65)">
+            <BlurMask blur={1.6} style="normal" />
+          </RoundedRect>
+          <RoundedRect x={cx - 6} y={cy - 4} width={12} height={8} r={3}>
+            <LinearGradient start={vec(cx - 6, cy - 4)} end={vec(cx + 6, cy + 4)} colors={['#3a3d43', '#121315']} />
+          </RoundedRect>
+          <Circle cx={cx + 0.6} cy={cy + 0.8} r={2.4} color="#0b0b0d" />
+        </Group>
+      ) : null}
     </Group>
   );
 }
