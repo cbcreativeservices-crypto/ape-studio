@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 12:32 · ccode · 102ab895
+changed: Session handoff 2026-10-18; image-round lessons; local background-swap script
+affects other side: Comp A — docs/SESSION_HANDOFF_2026-10-18.md (image state; approval-day order unchanged)
+needs: nothing
+
+
 ### 2026-10-18 09:44 · ccode · ea11091f
 changed: Images: Comp C round 5, owner-approved: Radio Production tile (A, ON button + ON AIR), Assisted Listening cert (A, neckloop receiver + loop sign)
 affects other side: 1 topic tile + 1 cert square reach the buckets in the approval-day upload
