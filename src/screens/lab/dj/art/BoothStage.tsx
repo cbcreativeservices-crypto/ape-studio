@@ -8,9 +8,9 @@
  * booth's live state (charter §8: every teaching canvas).
  */
 import type { ReactNode } from 'react';
-import { LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
+import { LinearGradient, Rect, vec } from '@shopify/react-native-skia';
 import type { Booth } from '../model/djModel';
-import { BOOTH_D, BOOTH_LAYOUT, BOOTH_W, MIXER_D, MIXER_W, PLAYER_D, PLAYER_W, VIEWS, type Box, type ViewName } from '../geometry/boothGeometry';
+import { BOOTH_D, BOOTH_LAYOUT, MIXER_D, MIXER_W, PLAYER_D, PLAYER_W, VIEWS, type Box, type ViewName } from '../geometry/boothGeometry';
 import { MixerTop, type MixerPart } from './MixerTop';
 import { PlayerTop, type PlayerPart } from './PlayerTop';
 import type { BoothMotion } from './motion';
@@ -54,10 +54,15 @@ export function BoothStage({ w, h, booth, spec, motion }: { w: number; h: number
   };
   return (
     <Scene w={w} h={h} frame={view} motion={motion} callouts={spec.callouts} screenOverlay={spec.screenOverlay} fit={spec.fit?.(w, h)} a11y={`${spec.a11y} ${boothSummary(booth)}`}>
-      {/* the booth table */}
-      <RoundedRect x={-40} y={-30} width={BOOTH_W + 80} height={BOOTH_D + 70} r={18}>
-        <LinearGradient start={vec(0, -30)} end={vec(0, BOOTH_D + 40)} colors={['#141519', '#0e0f12']} />
-      </RoundedRect>
+      {/* the booth table: a matte top running past every edge of the glass,
+          its front edge with a lit bevel, and the dark booth front below */}
+      <Rect x={-2000} y={-2000} width={5000} height={2000 + BOOTH_D + 44}>
+        <LinearGradient start={vec(0, -200)} end={vec(0, BOOTH_D + 44)} colors={['#0f1013', '#17181c', '#121316']} positions={[0, 0.7, 1]} />
+      </Rect>
+      <Rect x={-2000} y={BOOTH_D + 44} width={5000} height={3} color="rgba(255,255,255,0.10)" />
+      <Rect x={-2000} y={BOOTH_D + 47} width={5000} height={2000}>
+        <LinearGradient start={vec(0, BOOTH_D + 47)} end={vec(0, BOOTH_D + 160)} colors={['#0a0a0c', '#050506']} />
+      </Rect>
       {show.A ? <PlayerTop x={BOOTH_LAYOUT.A.x} y={BOOTH_LAYOUT.A.y} deck="A" d={booth.decks.A} highlight={spec.highlight?.A} syncLit={spec.syncLit?.A} /> : null}
       {show.mixer ? <MixerTop x={BOOTH_LAYOUT.mixer.x} y={BOOTH_LAYOUT.mixer.y} booth={booth} highlight={spec.highlight?.mixer} /> : null}
       {show.B ? <PlayerTop x={BOOTH_LAYOUT.B.x} y={BOOTH_LAYOUT.B.y} deck="B" d={booth.decks.B} highlight={spec.highlight?.B} syncLit={spec.syncLit?.B} /> : null}

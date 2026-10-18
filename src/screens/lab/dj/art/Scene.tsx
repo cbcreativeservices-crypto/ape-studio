@@ -11,7 +11,7 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Canvas, Group, Line, LinearGradient, Rect, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, Group, Line, LinearGradient, Rect, Skia, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../theme/tokens';
 import { fitValue } from '../../../../theme/legibility';
 import { fitView, type Box, type Pt } from '../geometry/boothGeometry';
@@ -53,6 +53,7 @@ export function Scene({ w, h, frame, motion, callouts = [], screenOverlay, a11y,
   }, [frame, w, h, pad, fit?.x, fit?.y, fit?.w, fit?.h]);
   const { s, ox, oy } = xf;
   const toScreen = (p: Pt) => ({ x: ox + p.x * s, y: oy + p.y * s });
+  const boxes = useMemo(() => layoutCallouts(callouts, toScreen, w, h), [callouts, ox, oy, s, w, h]);
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
@@ -68,37 +69,59 @@ export function Scene({ w, h, frame, motion, callouts = [], screenOverlay, a11y,
           {/* screen-space overlays (plots, panels) draw at 1 pt per unit */}
           {screenOverlay ? <SceneFontsProvider s={1}>{screenOverlay(w, h, xf)}</SceneFontsProvider> : null}
         </MotionContext.Provider>
-        {callouts.map((c) => {
-          const p = toScreen(c.at);
-          return <Line key={`l${c.id}`} p1={vec(p.x, p.y)} p2={vec(p.x + c.dx, p.y + c.dy)} color={EDGE[c.tone ?? 'amber']} strokeWidth={1} />;
-        })}
+        {boxes.map((b) => (
+          <Group key={`l${b.c.id}`}>
+            <Line p1={vec(b.px, b.py)} p2={vec(b.lx, b.ly)} color={EDGE[b.c.tone ?? 'amber']} strokeWidth={1} />
+            <Circle cx={b.px} cy={b.py} r={1.8} color={EDGE[b.c.tone ?? 'amber']} />
+          </Group>
+        ))}
       </Canvas>
-      {callouts.map((c) => {
-        const p = toScreen(c.at);
-        const left = c.dx < 0;
-        const centre = c.dx === 0;
-        return (
-          <View
-            key={c.id}
-            pointerEvents="none"
-            style={[
-              styles.callout,
-              { borderColor: EDGE[c.tone ?? 'amber'], top: p.y + c.dy - 9 },
-              centre ? { left: p.x - 60, width: 120, alignItems: 'center', backgroundColor: 'transparent', borderWidth: 0 } : left ? { right: w - (p.x + c.dx) } : { left: p.x + c.dx },
-            ]}
-          >
-            <Text style={[styles.calloutText, centre && styles.calloutPill, { color: TONE[c.tone ?? 'amber'], borderColor: EDGE[c.tone ?? 'amber'] }]} {...fitValue(10.5)}>
-              {c.text}
-            </Text>
-          </View>
-        );
-      })}
+      {boxes.map((b) => (
+        <View key={b.c.id} pointerEvents="none" style={[styles.callout, { borderColor: EDGE[b.c.tone ?? 'amber'], left: b.x, top: b.y, width: b.w }]}>
+          <Text style={[styles.calloutText, { color: TONE[b.c.tone ?? 'amber'] }]} {...fitValue(10.5)}>
+            {b.c.text}
+          </Text>
+        </View>
+      ))}
     </View>
   );
 }
 
+/** Callout boxes: placed at the part + (dx, dy), kept inside the glass, pushed
+ *  apart when two would overlap, each with a leader from its part to the
+ *  nearest point of its box. */
+const CH = 18;
+function layoutCallouts(cs: readonly Callout[], toScreen: (p: Pt) => { x: number; y: number }, w: number, h: number) {
+  const out = cs.map((c) => {
+    const p = toScreen(c.at);
+    const bw = Math.min(160, Math.round(c.text.length * 6.4 + 14));
+    const qx = p.x + c.dx;
+    const qy = p.y + c.dy;
+    let x = c.dx < 0 ? qx - bw : c.dx > 0 ? qx : qx - bw / 2;
+    let y = qy - CH / 2;
+    x = Math.max(3, Math.min(w - bw - 3, x));
+    y = Math.max(3, Math.min(h - CH - 3, y));
+    return { c, px: p.x, py: p.y, x, y, w: bw, lx: 0, ly: 0 };
+  });
+  // push apart, top to bottom
+  const order = [...out].sort((a, b) => a.y - b.y);
+  for (let i = 0; i < order.length; i++) {
+    for (let j = 0; j < i; j++) {
+      const a = order[j];
+      const b = order[i];
+      const overlapX = a.x < b.x + b.w + 2 && b.x < a.x + a.w + 2;
+      const overlapY = a.y < b.y + CH + 2 && b.y < a.y + CH + 2;
+      if (overlapX && overlapY) b.y = Math.min(h - CH - 3, a.y + CH + 3);
+    }
+  }
+  for (const b of out) {
+    b.lx = Math.max(b.x, Math.min(b.x + b.w, b.px));
+    b.ly = Math.max(b.y, Math.min(b.y + CH, b.py));
+  }
+  return out;
+}
+
 const styles = StyleSheet.create({
-  callout: { position: 'absolute', backgroundColor: 'rgba(8,8,10,0.88)', borderRadius: 5, borderWidth: 1, paddingHorizontal: 5, paddingVertical: 1.5, maxWidth: 150 },
+  callout: { position: 'absolute', height: CH, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(8,8,10,0.88)', borderRadius: 5, borderWidth: 1, paddingHorizontal: 4 },
   calloutText: { fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.6 },
-  calloutPill: { backgroundColor: 'rgba(8,8,10,0.88)', borderRadius: 5, borderWidth: 1, paddingHorizontal: 5, paddingVertical: 1.5, overflow: 'hidden' },
 });

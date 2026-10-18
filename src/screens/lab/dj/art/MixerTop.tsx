@@ -10,13 +10,14 @@
  * BUS OVER light run from the meter taps under the one clock.
  */
 import { memo } from 'react';
-import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec, type SkPath } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { Booth, ChannelId } from '../model/djModel';
 import { filterQ } from '../model/djModel';
 import { MIXER, MIXER_D, MIXER_W, STRIP_X } from '../geometry/boothGeometry';
 import { INK } from './ink';
 import { Fader, Halo, Key, Knob, Led, LedColumn, SlideSwitch } from './parts';
 import { useBusOver, useTapDb } from './motion';
+import { SceneText } from './sceneText';
 
 export type MixerPart =
   | 'trim1' | 'trim2' | 'eq1' | 'eq2' | 'filter1' | 'filter2' | 'cue1' | 'cue2' | 'fader1' | 'fader2'
@@ -65,11 +66,36 @@ const curvePos = (c: Booth['mixer']['xfCurve']) => (c === 'BLEND' ? 0 : c === 'D
 const filterKnob = (f: number) => (f + 1) / 2;
 
 
+/** Printed panel legends — drawn only where they render at 9 pt or more
+ *  (sceneText), so a small view shows clean metal and a close view reads
+ *  like the real panel. CH1's legends sit left of its knobs, CH2's right. */
+const LEG = 7.6;
+function StripLegends({ ch }: { ch: ChannelId }) {
+  const x = STRIP_X[ch];
+  const lx = ch === 1 ? x - 16 : x + 16;
+  const al = ch === 1 ? 'right' : 'left';
+  const row = (y: number, t: string) => <SceneText key={t} x={lx} y={y + LEG * 0.36} size={LEG} text={t} color={INK.print} face="label" align={al} />;
+  return (
+    <Group>
+      {row(MIXER.trim.y, 'TRIM')}
+      {row(MIXER.hi.y, 'HI')}
+      {row(MIXER.mid.y, 'MID')}
+      {row(MIXER.lo.y, 'LOW')}
+      {row(MIXER.filter.y, 'FILTER')}
+      {row(MIXER.cue.y, 'CUE')}
+      <SceneText x={x} y={MIXER.inputSel.y - 8} size={6.2} text="PHONO · LINE · USB" color={INK.printDim} face="label" align="center" />
+      <SceneText x={x} y={MIXER.assign.y + 14} size={6.2} text="A · THRU · B" color={INK.printDim} face="label" align="center" />
+      <SceneText x={ch === 1 ? x - 22 : x + 22} y={MIXER.fader.top + 34} size={12} text={String(ch)} color={INK.print} face="label" align="center" />
+    </Group>
+  );
+}
+
 function Strip({ ch, booth }: { ch: ChannelId; booth: Booth }) {
   const c = booth.ch[ch];
   const x = STRIP_X[ch];
   return (
     <Group>
+      <StripLegends ch={ch} />
       <SlideSwitch x={x - MIXER.inputSel.w / 2} y={MIXER.inputSel.y - MIXER.inputSel.h / 2} w={MIXER.inputSel.w} h={MIXER.inputSel.h} pos={inputPos(c.input)} />
       <Knob cx={x} cy={MIXER.trim.y} d={MIXER.trim.d} value={c.trim} />
       <Knob cx={x} cy={MIXER.hi.y} d={MIXER.hi.d} value={c.eq.hi} centre />
@@ -101,6 +127,10 @@ function Meters() {
       <LedColumn x={xs[2]} y={y} w={w} h={h} level={mR} hold={mRh} />
       <LedColumn x={xs[3]} y={y} w={w} h={h} level={ch2} hold={ch2h} />
       <Led cx={MIXER.busOver.x} cy={MIXER.busOver.y} r={2.4} on={over} colour={INK.peak} />
+      {(['1', 'L', 'R', '2'] as const).map((t, i) => (
+        <SceneText key={t} x={xs[i] + w / 2} y={y + h + 9} size={6.4} text={t} color={INK.print} face="label" align="center" />
+      ))}
+      <SceneText x={MIXER.busOver.x + 6} y={MIXER.busOver.y + 2.2} size={6.2} text="BUS OVER" color={INK.printDim} face="label" />
     </Group>
   );
 }
@@ -166,6 +196,13 @@ export const MixerTop = memo(function MixerTop({ x, y, booth, highlight = [] }: 
       <Strip ch={1} booth={booth} />
       <Strip ch={2} booth={booth} />
       <Meters />
+      <SceneText x={MIXER.master.x} y={MIXER.master.y - 15} size={6.4} text="MASTER" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.booth.x} y={MIXER.booth.y - 15} size={6.4} text="BOOTH" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.cueMix.x} y={MIXER.cueMix.y - 13} size={6.2} text="CUE ↔ MST" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.phones.x} y={MIXER.phones.y - 13} size={6.2} text="PHONES" color={INK.print} face="label" align="center" />
+      <SceneText x={MIXER.split.x + MIXER.split.w / 2} y={MIXER.split.y + MIXER.split.h + 8} size={6} text="SPLIT CUE" color={INK.printDim} face="label" align="center" />
+      <SceneText x={MIXER.resonance.x} y={MIXER.resonance.y + 15} size={6} text="RESONANCE" color={INK.printDim} face="label" align="center" />
+      <SceneText x={MIXER.curve.x + MIXER.curve.w / 2} y={MIXER.curve.y - 4} size={6} text="X-FADER CURVE" color={INK.printDim} face="label" align="center" />
       <Knob cx={MIXER.master.x} cy={MIXER.master.y} d={MIXER.master.d} value={m.master} />
       <Knob cx={MIXER.booth.x} cy={MIXER.booth.y} d={MIXER.booth.d} value={m.booth} />
       <Knob cx={MIXER.cueMix.x} cy={MIXER.cueMix.y} d={MIXER.cueMix.d} value={m.cueMix} centre />

@@ -15,6 +15,9 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
 import { MixerTop } from '../art/MixerTop';
 import { Headphones, PowerSpeaker } from '../art/gear';
+import { LedColumn } from '../art/parts';
+import { useTapDb } from '../art/motion';
+import { Group, LinearGradient, Rect, Skia, vec } from '@shopify/react-native-skia';
 import { INK } from '../art/ink';
 import { MIXER, STRIP_X, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
@@ -32,9 +35,16 @@ const TERMS = [
   { term: 'Booth level', def: 'The booth monitors’ own level, separate from the MASTER that feeds the crowd. Turn the booth down and the room stays the same.' },
 ] as const;
 
-const FRAME: Box = { x: -12, y: -14, w: 440, h: 418 };
-const HP = { x: 300, y: 4, s: 0.6 };
-const BM = { x: 312, y: 214, s: 0.38 };
+/** The stage: a band cut from the mixer (its booth, headphone and CUE
+ *  controls — local y 150 … 268), the headphones, a booth monitor, and the
+ *  three outputs' meters (phones L, phones R, booth) from the render. */
+const BAND_TOP = 150;
+const BAND_H = 118;
+const FRAME: Box = { x: -8, y: -8, w: 292, h: 286 };
+const HP = { x: 4, y: 128, s: 0.56 };
+const BM = { x: 168, y: 136, s: 0.3 };
+const MET = { y: 140, h: 118, w: 8, l: 118, r: 136, booth: 262 };
+const band = (y: number) => y - BAND_TOP;
 
 function CueTray() {
   const b = getBooth();
@@ -54,6 +64,23 @@ function CueTray() {
         ))}
       </View>
     </View>
+  );
+}
+
+/** The phones L / R and booth meters, from the render's taps (one clock). */
+function MeterCols() {
+  const l = useTapDb('phonesL');
+  const lh = useTapDb('phonesL', 'hold');
+  const r = useTapDb('phonesR');
+  const rh = useTapDb('phonesR', 'hold');
+  const b = useTapDb('booth');
+  const bh = useTapDb('booth', 'hold');
+  return (
+    <Group>
+      <LedColumn x={MET.l} y={MET.y} w={MET.w} h={MET.h} level={l} hold={lh} />
+      <LedColumn x={MET.r} y={MET.y} w={MET.w} h={MET.h} level={r} hold={rh} />
+      <LedColumn x={MET.booth} y={MET.y} w={MET.w} h={MET.h} level={b} hold={bh} />
+    </Group>
   );
 }
 
@@ -98,19 +125,31 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
             motion={motion}
             a11y={`The mixer with its CUE buttons and headphone section, the headphones and a booth monitor. Left ear: ${leftGlow === INK.amber ? 'cue' : leftGlow ? 'master' : 'silent'}; right ear: ${rightGlow === INK.amber ? 'cue' : rightGlow ? 'master' : 'silent'}.`}
             callouts={[
-              { id: 'c1', text: 'CUE 1', at: { x: STRIP_X[1] - 14, y: MIXER.cue.y }, dx: -34, dy: 0 },
-              { id: 'c2', text: 'CUE 2', at: { x: STRIP_X[2] - 14, y: MIXER.cue.y }, dx: -10, dy: 22 },
-              { id: 'mx', text: 'CUE ↔ MASTER', at: { x: MIXER.cueMix.x - 9, y: MIXER.cueMix.y }, dx: -60, dy: 6 },
-              { id: 'pl', text: 'PHONES LEVEL', at: { x: MIXER.phones.x + 9, y: MIXER.phones.y }, dx: 44, dy: 26 },
-              { id: 'bt', text: 'BOOTH', at: { x: MIXER.booth.x + 10, y: MIXER.booth.y }, dx: 40, dy: 40 },
-              { id: 'l', text: leftGlow === INK.amber ? 'L: CUE' : leftGlow ? 'L: MASTER' : 'L: —', at: { x: HP.x + 36 * HP.s, y: HP.y + 190 * HP.s }, dx: 0, dy: 14, tone: leftGlow === INK.amber ? 'amber' : leftGlow ? 'blue' : 'plain' },
-              { id: 'r', text: rightGlow === INK.amber ? 'R: CUE' : rightGlow ? 'R: MASTER' : 'R: —', at: { x: HP.x + 154 * HP.s, y: HP.y + 190 * HP.s }, dx: 0, dy: 14, tone: rightGlow === INK.amber ? 'amber' : rightGlow ? 'blue' : 'plain' },
-              { id: 'bm', text: `BOOTH ${boothDb}`, at: { x: BM.x + 135 * BM.s, y: BM.y + 420 * BM.s }, dx: 0, dy: 12, tone: 'plain' },
+              { id: 'bt', text: 'BOOTH LEVEL', at: { x: MIXER.booth.x + 10, y: band(MIXER.booth.y) }, dx: 10, dy: -4 },
+              { id: 'mx', text: 'CUE ↔ MASTER', at: { x: MIXER.cueMix.x - 9, y: band(MIXER.cueMix.y) }, dx: -16, dy: -12 },
+              { id: 'pl', text: 'PHONES LEVEL', at: { x: MIXER.phones.x + 9, y: band(MIXER.phones.y) }, dx: 12, dy: 6 },
+              { id: 'sp', text: 'SPLIT', at: { x: MIXER.split.x + 14, y: band(MIXER.split.y + 9) }, dx: 0, dy: 14 },
+              { id: 'c1', text: 'CUE 1', at: { x: STRIP_X[1], y: band(MIXER.cue.y + 6) }, dx: 0, dy: 14 },
+              { id: 'c2', text: 'CUE 2', at: { x: STRIP_X[2], y: band(MIXER.cue.y + 6) }, dx: 0, dy: 14 },
+              { id: 'l', text: leftGlow === INK.amber ? 'L: CUE' : leftGlow ? 'L: MASTER' : 'L: —', at: { x: HP.x + 36 * HP.s, y: HP.y + 188 * HP.s }, dx: 0, dy: 16, tone: leftGlow === INK.amber ? 'amber' : leftGlow ? 'blue' : 'plain' },
+              { id: 'r', text: rightGlow === INK.amber ? 'R: CUE' : rightGlow ? 'R: MASTER' : 'R: —', at: { x: HP.x + 154 * HP.s, y: HP.y + 188 * HP.s }, dx: 0, dy: 36, tone: rightGlow === INK.amber ? 'amber' : rightGlow ? 'blue' : 'plain' },
+              { id: 'pm', text: 'L · R', at: { x: (MET.l + MET.r + MET.w) / 2, y: MET.y + MET.h }, dx: 0, dy: 12, tone: 'plain' },
+              { id: 'bm', text: `BOOTH ${boothDb}`, at: { x: BM.x + 135 * BM.s, y: MET.y + MET.h }, dx: 0, dy: 12, tone: 'plain' },
             ]}
           >
-            <MixerTop x={0} y={0} booth={booth} highlight={['cue1', 'cue2', 'cueMix', 'phones', 'split', 'booth']} />
+            <Group clip={Skia.RRectXY(Skia.XYWHRect(-4, 0, 278, BAND_H), 8, 8)}>
+              <MixerTop x={0} y={-BAND_TOP} booth={booth} highlight={['cue1', 'cue2', 'cueMix', 'phones', 'split', 'booth']} />
+              {/* the band continues above and below: soft fades say so */}
+              <Rect x={-4} y={0} width={278} height={10}>
+                <LinearGradient start={vec(0, 0)} end={vec(0, 10)} colors={['rgba(14,15,19,0.95)', 'rgba(14,15,19,0)']} />
+              </Rect>
+              <Rect x={-4} y={BAND_H - 10} width={278} height={10}>
+                <LinearGradient start={vec(0, BAND_H - 10)} end={vec(0, BAND_H)} colors={['rgba(14,15,19,0)', 'rgba(14,15,19,0.95)']} />
+              </Rect>
+            </Group>
             <Headphones x={HP.x} y={HP.y} s={HP.s} leftGlow={leftGlow} rightGlow={rightGlow} />
             <PowerSpeaker x={BM.x} y={BM.y} s={BM.s} small on signal={!!last && last.rmsDb.booth > -70} />
+            <MeterCols />
           </Scene>
         ),
         bezel: [peakCell('CUE BUS', peakDb(last, 'cue')), peakCell('PHONES L', peakDb(last, 'phonesL')), peakCell('PHONES R', peakDb(last, 'phonesR')), { k: 'LISTENING', v: booth.perspective, tint: colors.amber }],

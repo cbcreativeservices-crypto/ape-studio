@@ -5,10 +5,10 @@
  * (accessibility), and a glow only while the renderer says audio is flowing
  * along that exact route.
  */
-import { Circle, Group, RoundedRect } from '@shopify/react-native-skia';
+import { Circle, Group, Path, RoundedRect } from '@shopify/react-native-skia';
 import type { CableKind } from '../model/djModel';
 import { INK } from './ink';
-import { Cable, PlugFace, type CableStyle } from './parts';
+import { Cable, PlugFace, smoothPath, type CableStyle } from './parts';
 import { SceneText } from './sceneText';
 
 export type Run = {
@@ -42,8 +42,10 @@ export function CableRun({ r, flow = true, labelAt }: { r: Run; flow?: boolean; 
   const plugKind = r.kind === 'phones' ? 'trs' : r.kind;
   return (
     <Group>
-      <Cable pts={r.pts} style={st} glow={r.live && flow ? (r.kind === 'iec' ? 'rgba(255,198,77,0.8)' : INK.blue) : null} />
-      <PlugFace cx={a[0]} cy={a[1]} kind={plugKind} colour={r.colour} />
+      <Cable pts={r.pts} style={st} glow={r.live && flow && r.kind !== 'iec' ? INK.blue : null} />
+      {r.live && r.kind === 'iec' ? <Path path={smoothPath(r.pts)} style="stroke" strokeWidth={0.9} color={INK.amber} opacity={0.75} strokeCap="round" strokeJoin="round" /> : null}
+      {/* a headphone cable is fixed INTO the headphones: no plug at that end */}
+      {r.kind === 'phones' ? null : <PlugFace cx={a[0]} cy={a[1]} kind={plugKind} colour={r.colour} />}
       {r.plugged ? (
         <PlugFace cx={b[0]} cy={b[1]} kind={plugKind} colour={r.colour} />
       ) : (

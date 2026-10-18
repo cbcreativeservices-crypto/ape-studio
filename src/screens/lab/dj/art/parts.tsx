@@ -615,30 +615,58 @@ export function smoothPath(pts: [number, number][]): SkPath {
   return p.detach();
 }
 
-/** A plugged-in connector's back shell seen face-on (the collar over a
- *  socket): RCA coloured collar, XLR barrel, jack barrel, IEC plug. */
+/** A plugged-in connector's back seen face-on (looking at the panel, the
+ *  plug's body points at you): RCA — its coloured collar, the metal shell and
+ *  the rubber boot the cable leaves through; XLR — the barrel with its grip
+ *  rings and boot; 6.35 mm jack — the barrel and boot; IEC — the moulded plug. */
 export function PlugFace({ cx, cy, kind, colour }: { cx: number; cy: number; kind: 'rca' | 'xlr' | 'trs' | 'iec'; colour: string }) {
-  const r = kind === 'rca' ? 5.6 : kind === 'xlr' ? 10 : kind === 'trs' ? 6.2 : 0;
   if (kind === 'iec') {
     return (
       <Group>
-        <RoundedRect x={cx - 15} y={cy - 11} width={30} height={22} r={4} color="#0c0c0e" />
-        <RoundedRect x={cx - 15} y={cy - 11} width={30} height={22} r={4} style="stroke" strokeWidth={0.8} color="rgba(255,255,255,0.18)" />
-        <RoundedRect x={cx - 6} y={cy + 2} width={12} height={16} r={3} color="#0c0c0e" />
+        <RoundedRect x={cx - 15 + 1} y={cy - 11 + 1.5} width={30} height={22} r={4} color="rgba(0,0,0,0.7)">
+          <BlurMask blur={1.5} style="normal" />
+        </RoundedRect>
+        <RoundedRect x={cx - 15} y={cy - 11} width={30} height={22} r={4}>
+          <LinearGradient start={vec(cx - 15, cy - 11)} end={vec(cx + 15, cy + 11)} colors={['#2a2c31', '#0b0b0d']} />
+        </RoundedRect>
+        <RoundedRect x={cx - 15} y={cy - 11} width={30} height={22} r={4} style="stroke" strokeWidth={0.7} color="rgba(255,255,255,0.16)" />
+        {[-6, 0, 6].map((g) => (
+          <Rect key={g} x={cx + g - 0.5} y={cy - 7} width={1} height={14} color="rgba(255,255,255,0.06)" />
+        ))}
+        <Circle cx={cx} cy={cy + 2} r={4.5} color="#050506" />
       </Group>
     );
   }
+  const shell = kind === 'xlr' ? 10.5 : kind === 'trs' ? 6.4 : 5.4;
+  const boot = kind === 'xlr' ? 5 : kind === 'trs' ? 3.6 : 2.9;
   return (
     <Group>
-      <Circle cx={cx + 0.6} cy={cy + 0.9} r={r * 1.05} color="rgba(0,0,0,0.7)">
-        <BlurMask blur={1.4} style="normal" />
+      <Circle cx={cx + 0.7} cy={cy + 1} r={shell * 1.04} color="rgba(0,0,0,0.75)">
+        <BlurMask blur={1.6} style="normal" />
       </Circle>
-      <Circle cx={cx} cy={cy} r={r}>
-        <RadialGradient c={vec(cx - r * 0.3, cy - r * 0.35)} r={r * 1.3} colors={[kind === 'rca' ? colour : '#4a4d54', kind === 'rca' ? shade(colour, 0.55) : '#101114']} />
+      {kind === 'rca' ? (
+        <Group>
+          <Circle cx={cx} cy={cy} r={shell}>
+            <RadialGradient c={vec(cx - shell * 0.3, cy - shell * 0.35)} r={shell * 1.3} colors={[colour, shade(colour, 0.55)]} />
+          </Circle>
+          <Circle cx={cx} cy={cy} r={shell * 0.72}>
+            <RadialGradient c={vec(cx - 1, cy - 1)} r={shell} colors={[INK.metalHi, INK.metalLo]} />
+          </Circle>
+        </Group>
+      ) : (
+        <Group>
+          <Circle cx={cx} cy={cy} r={shell}>
+            <RadialGradient c={vec(cx - shell * 0.3, cy - shell * 0.35)} r={shell * 1.3} colors={['#d6dae0', '#7a8089', '#3a3e45']} />
+          </Circle>
+          <Circle cx={cx} cy={cy} r={shell * 0.84} style="stroke" strokeWidth={shell * 0.08} color="rgba(0,0,0,0.35)" />
+          <Circle cx={cx} cy={cy} r={shell * 0.68} style="stroke" strokeWidth={shell * 0.06} color="rgba(0,0,0,0.3)" />
+        </Group>
+      )}
+      <Circle cx={cx} cy={cy} r={boot}>
+        <RadialGradient c={vec(cx - boot * 0.3, cy - boot * 0.35)} r={boot * 1.4} colors={['#3a3c42', '#0b0b0d']} />
       </Circle>
-      <Circle cx={cx} cy={cy} r={r * 0.55} color={kind === 'rca' ? shade(colour, 0.4) : '#08090a'} />
-      <Circle cx={cx - r * 0.3} cy={cy - r * 0.35} r={r * 0.2} color="rgba(255,255,255,0.4)">
-        <BlurMask blur={r * 0.15} style="normal" />
+      <Circle cx={cx - shell * 0.32} cy={cy - shell * 0.36} r={shell * 0.18} color="rgba(255,255,255,0.45)">
+        <BlurMask blur={shell * 0.12} style="normal" />
       </Circle>
     </Group>
   );

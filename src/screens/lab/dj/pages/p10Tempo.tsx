@@ -203,7 +203,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
           { k: 'A BPM', v: bpmA.toFixed(2), tint: colors.textPrimary },
           { k: 'B BPM', v: bpmB.toFixed(2), tint: Math.abs(bpmA - bpmB) < 0.05 ? colors.green : '#8fbcff' },
           { k: 'B vs A', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
-          { k: 'A PHRASE', v: ba != null && ba >= 0 ? `bar ${barInPhrase(ba)} of 8` : '—', tint: colors.textPrimary },
+          { k: 'A PHRASE', v: ba != null && ba >= 0 ? `${barInPhrase(ba)} / 8` : '—', tint: colors.textPrimary },
         ],
         params: [
           tempoKey(booth, 'B'),

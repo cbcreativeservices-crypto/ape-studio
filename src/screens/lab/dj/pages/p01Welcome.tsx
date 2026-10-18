@@ -15,9 +15,9 @@ import { nioshDose } from '../../calc/workspaces/splSafety';
 import { BoothStage } from '../art/BoothStage';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, listenKey, playKey, stopKey } from '../dock';
-import { setBooth } from '../booth/boothStore';
+import { setBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, freshBooth, useScreenSetup } from '../booth/setup';
 import { soundCell, useBoothKit } from './shared';
 import { dbStr, listenDb } from '../model/djModel';
@@ -68,6 +68,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
   const [reset, setReset] = useState(false);
   const [tile, setTile] = useState(false);
   const [check, setCheck] = useState(false);
+  const [faultFixed, setFaultFixed] = useState(false);
   if (booth.decks.A.playing && !heardA) setHeardA(true);
   if (booth.perspective !== 'CROWD' && !switched) setSwitched(true);
   if (heardA && !booth.decks.A.playing && !booth.decks.B.playing && !stopped && audio.status === 'idle') setStopped(true);
@@ -78,6 +79,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
     { label: 'Reset the booth', hit: reset },
     { label: 'Work out a loud night', hit: tile },
     { label: 'Pass the check', hit: check },
+    { label: 'Fix the silent start', hit: faultFixed },
   ];
   const latched = useVisitGoals(ctx, goals);
   return (
@@ -93,9 +95,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
               view: 'booth',
               highlight: { A: ['play'] },
               callouts: [
-                { id: 'a', text: 'DECK A', at: { x: BOOTH_LAYOUT.A.x + 160, y: 8 }, dx: 0, dy: -2 },
-                { id: 'm', text: 'MIXER', at: { x: BOOTH_LAYOUT.mixer.x + 135, y: 8 }, dx: 0, dy: -2 },
-                { id: 'b', text: 'DECK B', at: { x: BOOTH_LAYOUT.B.x + 160, y: 8 }, dx: 0, dy: -2 },
+                { id: 'a', text: 'DECK A', at: { x: BOOTH_LAYOUT.A.x + 160, y: -2 }, dx: 0, dy: -14 },
+                { id: 'm', text: 'MIXER', at: { x: BOOTH_LAYOUT.mixer.x + 135, y: 8 }, dx: 0, dy: -24 },
+                { id: 'b', text: 'DECK B', at: { x: BOOTH_LAYOUT.B.x + 160, y: -2 }, dx: 0, dy: -14 },
                 { id: 'p', text: 'PLAY', at: { x: BOOTH_LAYOUT.A.x + PLAYER.play.cx, y: PLAYER.play.cy + 18 }, dx: 0, dy: 22 },
               ],
               a11y: 'The DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right.',
@@ -156,6 +158,24 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
           explain="A volume percentage is not a sound level. The same setting can be gentle in one pair of headphones and very loud in another. Level and time decide exposure; only a calibrated measurement at the ear can say how loud it really is."
           wrong={[undefined, 'There is no safe percentage — the headphones and the phone change everything.', 'There is no fixed danger percentage either; the level at the ear and the time decide it.', 'Music gets louder in a set, and a safe start says nothing about the next two hours.']}
           onCorrect={() => setCheck(true)}
+        />
+        <FaultCard
+          title="PLAY IS LIT, BUT YOU HEAR NOTHING"
+          symptom="Deck A is playing and its waveform is moving, yet the phone is silent. The temptation is to turn everything up."
+          start={() => {
+            void audio.requestSound();
+            setPerspective('PHONES');
+            updateBooth((b, t) => ({
+              ...b,
+              decks: { ...b.decks, A: { ...b.decks.A, playing: true, at: t } },
+              ch: { ...b.ch, 1: { ...b.ch[1], cue: false } },
+              mixer: { ...b.mixer, cueMix: 0, splitCue: false },
+            }));
+          }}
+          fixed={booth.decks.A.playing && booth.perspective !== 'PHONES'}
+          hints={['Before turning anything up, check WHO you are listening as. Open LISTEN.', 'You are listening as the headphones, and nothing is sent to the headphone cue.', 'Switch LISTEN to CROWD to hear what the room hears.']}
+          why="Nothing was wrong with the music: you were listening in the headphones, and no channel was cued to them. Turning the level up would only have made the next sound much too loud. Check where you are listening before you reach for a volume control."
+          onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />
       </Step>

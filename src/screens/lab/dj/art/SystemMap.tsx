@@ -22,7 +22,7 @@ import { CableRun, type Run } from './cables';
 import { Headphones, PHONES_CABLE_END, PowerSpeaker, PowerStrip, SPEAKER_H, SPEAKER_W, STRIP_D, STRIP_W, stripOutletX } from './gear';
 import { MixerRear, PlayerRear } from './RearPanels';
 
-export const MAP_FRAME: Box = { x: -6, y: -6, w: 1052, h: 722 };
+export const MAP_FRAME: Box = { x: -6, y: -6, w: 1052, h: 750 };
 
 const SPK_S = 0.42;
 const PH_S = 0.35;
@@ -35,7 +35,7 @@ export const MAP = {
   A: { x: 20, y: 440 },
   mixer: { x: 385, y: 440 },
   B: { x: 700, y: 440 },
-  phones: { x: 470, y: 586 },
+  phones: { x: 712, y: 606 },
   strip: { x: 355, y: 646 },
 } as const;
 
@@ -120,8 +120,11 @@ export function routeOf(p: PlugId, to: JackId | null): [number, number][] {
   // power
   const edge = EDGE_LANE[p];
   if (edge != null) {
-    const lane = 612 + Object.keys(EDGE_LANE).indexOf(p) * 7;
-    return [[a.x, a.y], [a.x, a.y + 10], [edge, a.y + 10], [edge, lane], [b.x, lane], [b.x, b.y]];
+    // the speakers' cords run down the room's edges and in UNDER the strip,
+    // so they never cross the table's cords above it
+    const lane = 724 + (p.endsWith('L') ? 0 : 7) + (p.includes('booth') ? 0 : 0);
+    const inner = p.includes('booth') ? 7 : 0;
+    return [[a.x, a.y], [a.x, a.y + 10], [edge, a.y + 10], [edge, lane + inner], [b.x, lane + inner], [b.x, b.y]];
   }
   const lane = LANE[p] ?? 620;
   return [[a.x, a.y], [a.x, lane], [b.x, lane], [b.x, b.y]];

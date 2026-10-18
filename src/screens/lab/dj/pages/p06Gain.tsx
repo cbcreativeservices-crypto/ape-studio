@@ -68,14 +68,13 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
             booth={booth}
             motion={motion}
             spec={{
-              view: 'mixer',
+              view: 'mixerUpper',
               highlight: { mixer: ['trim1', 'trim2', 'meters', 'busOver', 'master'] },
               callouts: [
-                { id: 't1', text: 'TRIM 1', at: onMixer(STRIP_X[1] - 9, MIXER.trim.y), dx: -34, dy: -6 },
-                { id: 't2', text: 'TRIM 2', at: onMixer(STRIP_X[2] + 9, MIXER.trim.y), dx: 30, dy: -6 },
-                { id: 'mt', text: 'CH1 · L · R · CH2', at: onMixer(110, MIXER.meters.y + 40), dx: -78, dy: 34 },
-                { id: 'bo', text: 'BUS OVER', at: onMixer(MIXER.busOver.x + 3, MIXER.busOver.y), dx: 46, dy: -10, tone: 'red' },
-                { id: 'ms', text: 'MASTER', at: onMixer(MIXER.master.x - 10, MIXER.master.y), dx: -70, dy: 6 },
+                { id: 't1', text: 'TRIM 1', at: onMixer(STRIP_X[1] + 10, MIXER.trim.y), dx: 8, dy: -16 },
+                { id: 't2', text: 'TRIM 2', at: onMixer(STRIP_X[2] - 10, MIXER.trim.y), dx: -8, dy: -16 },
+                { id: 'bo', text: 'BUS OVER', at: onMixer(MIXER.busOver.x + 3, MIXER.busOver.y), dx: 26, dy: -6, tone: 'red' },
+                { id: 'ms', text: 'MASTER', at: onMixer(MIXER.master.x - 10, MIXER.master.y + 4), dx: -14, dy: 22 },
               ],
               a11y: 'The mixer from above: the two TRIM knobs, the four meters (channel 1, master left, master right, channel 2) and the BUS OVER light.',
             }}

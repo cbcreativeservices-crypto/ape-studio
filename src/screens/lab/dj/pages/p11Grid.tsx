@@ -140,7 +140,8 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
             booth={booth}
             motion={motion}
             spec={{
-              view: { x: BOOTH_LAYOUT.B.x - 8, y: 136, w: PLAYER_W_HALF + 16, h: 140 },
+              // starts just under deck B's own screen (the lanes above ARE its screen)
+              view: { x: BOOTH_LAYOUT.B.x - 8, y: 142, w: PLAYER_W_HALF + 16, h: 134 },
               fit: (W, H) => ({ x: 0, y: lanesH(H), w: W, h: H - lanesH(H) }),
               highlight: { B: ['sync', 'quantize'] },
               syncLit: { B: syncLit },
@@ -163,7 +164,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'B GRID', v: gB ? `${gB.bpm.toFixed(1)} BPM` : '—', tint: gridCorrect(B) ? colors.green : colors.amber },
+          { k: 'B GRID', v: gB ? gB.bpm.toFixed(1) : '—', tint: gridCorrect(B) ? colors.green : colors.amber },
           { k: 'FIRST BEAT', v: gridCorrect(B) ? 'ON THE KICK' : 'OFF', tint: gridCorrect(B) ? colors.green : '#ff8a7e', flex: 1.2 },
           { k: 'REAL BEATS', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
           { k: 'B BPM', v: bpmB.toFixed(1), tint: colors.textPrimary },

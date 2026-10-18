@@ -19,7 +19,7 @@ import { WaveLane } from '../art/plots';
 import { CUE_COLOURS } from '../art/ink';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, stopKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -215,7 +215,9 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
             booth={booth}
             motion={motion}
             spec={{
-              view: 'deckB',
+              // the working half of deck B (pads, loop and jump keys, jog,
+              // transport CUE) — its own screen is drawn large above as the lane
+              view: { x: BOOTH_LAYOUT.B.x - 66, y: 138, w: 392, h: 256 },
               fit: (W, H) => ({ x: 0, y: lanesH(H), w: W, h: H - lanesH(H) }),
               highlight: { B: ['hotCues', 'loop', 'jump', 'cue'] },
               callouts: [

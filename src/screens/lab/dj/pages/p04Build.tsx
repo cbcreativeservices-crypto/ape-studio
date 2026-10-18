@@ -105,9 +105,9 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
           </Scene>
         ),
         bezel: [
-          { k: 'AUDIO CABLES', v: `${audioOk} / 9`, tint: audioOk === 9 ? colors.green : colors.amber },
+          { k: 'CABLES', v: `${audioOk} / 9`, tint: audioOk === 9 ? colors.green : colors.amber },
           { k: 'POWERED', v: `${powerOk} / 7`, tint: powerOk === 7 ? colors.green : colors.amber },
-          { k: 'CROWD HEARS', v: crowdLive ? 'MUSIC' : 'NOTHING', tint: crowdLive ? colors.green : colors.textSub },
+          { k: 'CROWD', v: crowdLive ? 'MUSIC' : 'SILENT', tint: crowdLive ? colors.green : colors.textSub },
           soundCell(audio),
         ],
         params: [
@@ -171,7 +171,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
               let x: Booth = { ...b };
               const plugs = { ...x.plugs };
               for (const p of [...AUDIO_PLUGS, ...POWER_PLUGS]) plugs[p] = null;
-              x = { ...x, plugs: { ...plugs, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'ac.playerA': 'strip.1', 'ac.playerB': 'strip.2', 'ac.mixer': 'strip.3', 'ac.paL': 'strip.4', 'ac.paR': 'strip.5', 'ac.boothL': 'strip.6', 'ac.boothR': 'strip.7' } };
+              x = { ...x, plugs: { ...plugs, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7' } };
               x = connect(connect(x, 'mst.xlrR', 'paR.in')!, 'mst.xlrL', 'boothL.in')!;
               const power = { ...x.power };
               for (const d of POWERED) power[d] = true;

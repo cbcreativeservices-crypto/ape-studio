@@ -66,8 +66,12 @@ export type BoothAudio = {
   meters: SharedValue<MeterFrame | null>;
   /** The latest chunk's render, for the well's words (chunk-rate React state). */
   last: BoothRender | null;
-  /** Ask the sound gate (call from a PLAY press). Resolves whether sound is on. */
-  requestSound: () => Promise<boolean>;
+  /** Ask the sound gate (call from a PLAY press). Resolves whether sound is
+   *  on. Once the learner has said no on this screen, a PLAY press does not
+   *  ask again (the booth runs silently); `force` (a TURN SOUND ON press) does. */
+  requestSound: (force?: boolean) => Promise<boolean>;
+  /** The learner closed the sound warning without turning sound on. */
+  soundDeclined: boolean;
   /** STOP ALL: decks and sound. */
   stop: () => void;
   /** The decorative signal-flow pulse may run. */
@@ -257,9 +261,14 @@ export function useBoothAudio(): BoothAudio {
     resyncClock();
   }, [meters, resyncClock, silencePlayers]);
 
-  const requestSound = useCallback(async (): Promise<boolean> => {
+  const [soundDeclined, setSoundDeclined] = useState(false);
+  const declinedRef = useRef(false);
+  const requestSound = useCallback(async (force = false): Promise<boolean> => {
+    if (declinedRef.current && !force && !isAudioOutputEnabled()) return false;
     const ok = await requestAudioOutput();
     if (!aliveRef.current) return false;
+    declinedRef.current = !ok;
+    setSoundDeclined(!ok);
     const was = soundRef.current;
     soundRef.current = ok && !getLabPreview().active;
     if (soundRef.current && !was) AccessibilityInfo.announceForAccessibility?.('Sound on.');
@@ -291,5 +300,5 @@ export function useBoothAudio(): BoothAudio {
   useStopOnClose(stop);
 
   const leadSec = useCallback(() => latencyRef.current + 0.06, []);
-  return useMemo(() => ({ status, clock, meters, last, requestSound, stop, flowMotion, leadSec }), [status, clock, meters, last, requestSound, stop, flowMotion, leadSec]);
+  return useMemo(() => ({ status, clock, meters, last, requestSound, soundDeclined, stop, flowMotion, leadSec }), [status, clock, meters, last, requestSound, soundDeclined, stop, flowMotion, leadSec]);
 }

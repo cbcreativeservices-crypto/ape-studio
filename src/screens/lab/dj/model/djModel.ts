@@ -201,7 +201,9 @@ export const BUILT_PLUGS: Record<PlugId, JackId | null> = {
   'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R',
   'tt.rcaL': null, 'tt.rcaR': null,
   'mst.xlrL': 'paL.in', 'mst.xlrR': 'paR.in', 'bth.trsL': 'boothL.in', 'bth.trsR': 'boothR.in', phones: 'mix.phones',
-  'ac.playerA': 'strip.1', 'ac.playerB': 'strip.2', 'ac.mixer': 'strip.3', 'ac.paL': 'strip.4', 'ac.paR': 'strip.5', 'ac.boothL': 'strip.6', 'ac.boothR': 'strip.7',
+  // power: any outlet is correct; these follow the devices left to right so
+  // the cords never cross on the way to the strip
+  'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7',
 };
 
 /* ── state ────────────────────────────────────────────────────────────── */

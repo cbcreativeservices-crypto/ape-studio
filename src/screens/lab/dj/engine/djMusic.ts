@@ -119,9 +119,6 @@ function noise(n: number, seed: number): Float32Array {
 function hp(x: Float32Array, hz: number, q = 0.707): void {
   biquadInPlace(x, rbj(hz, q, 0, 'highpass'), bqState());
 }
-function lpf(x: Float32Array, hz: number, q = 0.707): void {
-  biquadInPlace(x, rbj(hz, q, 0, 'lowpass'), bqState());
-}
 function softSat(x: Float32Array, drive: number): void {
   const k = Math.tanh(drive);
   for (let i = 0; i < x.length; i++) x[i] = Math.tanh(drive * x[i]) / k;
@@ -355,8 +352,6 @@ type Song = {
   /** The events of 0-based bar `bar`. */
   events: (bar: number) => Ev[];
 };
-
-const inRange = (bar: number, a: number, b: number) => bar >= a && bar <= b;
 
 function nightFerrySong(): Song {
   const roots = [33, 29, 36, 31];

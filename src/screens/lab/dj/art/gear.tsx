@@ -19,8 +19,8 @@
  * Generic: no brand likeness, no logos, no trade dress.
  */
 import { memo, useMemo } from 'react';
-import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
-import { INK } from './ink';
+import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
+import { CUE_COLOURS, INK } from './ink';
 import { ComboSocket, Fader, Key, Knob, Led, IecInlet, RcaSocket, Rocker, RoundButton, TrsSocket, UsbB, XlrSocket } from './parts';
 import { wavePath, WAVE_COLOURS, WAVE_POSITIONS } from './waves';
 import { SceneText } from './sceneText';
@@ -181,13 +181,14 @@ export const PowerSpeaker = memo(function PowerSpeaker({ x, y, s = 1, on, small 
       <RoundedRect x={W / 2 - W * 0.26} y={g.y + g.h * 0.07} width={W * 0.52} height={g.h * 0.2} r={10} color="#0b0b0d" />
       <RoundedRect x={W / 2 - W * 0.12} y={g.y + g.h * 0.12} width={W * 0.24} height={g.h * 0.1} r={6} color="#050506" />
       <Circle cx={W / 2} cy={wy} r={wR} color="#09090b" />
+      <Circle cx={W / 2} cy={wy} r={wR * 0.93} style="stroke" strokeWidth={wR * 0.07} color="#2a2c31" />
       <Circle cx={W / 2} cy={wy} r={wR * 0.86}>
         <RadialGradient c={vec(W / 2 - wR * 0.3, wy - wR * 0.3)} r={wR * 1.2} colors={['#2a2c31', '#0c0d0f']} />
       </Circle>
       <Circle cx={W / 2} cy={wy} r={wR * 0.25} color="#16171a" />
       {/* the perforated steel grille */}
-      <RoundedRect x={g.x} y={g.y} width={g.w} height={g.h} r={10} color="rgba(40,42,47,0.55)" />
-      <Path path={holes} color="rgba(0,0,0,0.55)" />
+      <RoundedRect x={g.x} y={g.y} width={g.w} height={g.h} r={10} color="rgba(40,42,47,0.38)" />
+      <Path path={holes} color="rgba(0,0,0,0.42)" />
       <RoundedRect x={g.x} y={g.y} width={g.w} height={g.h} r={10} style="stroke" strokeWidth={3} color="#3a3d43" />
       <RoundedRect x={g.x} y={g.y} width={g.w} height={g.h * 0.5} r={10} color="rgba(255,255,255,0.05)" />
       {/* the front power LED */}
@@ -293,19 +294,36 @@ export const CTRL_W = 550;
 export const CTRL_D = 320;
 
 export const ControllerTop = memo(function ControllerTop({ x, y, s = 1, standalone = false }: { x: number; y: number; s?: number; standalone?: boolean }) {
+  const dimples = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    for (const cx of [122, 428]) {
+      for (let i = 0; i < 72; i++) {
+        const a = (i / 72) * Math.PI * 2;
+        p.addCircle(cx + Math.cos(a) * 61, 194 + Math.sin(a) * 61, 0.8);
+      }
+    }
+    return p.detach();
+  }, []);
   const jog = (cx: number) => (
     <Group key={cx}>
+      <Circle cx={cx} cy={194} r={80} color="#0d0e11" />
       <Circle cx={cx + 3} cy={198} r={76} color="rgba(0,0,0,0.6)">
         <BlurMask blur={6} style="normal" />
       </Circle>
       <Circle cx={cx} cy={194} r={75}>
-        <RadialGradient c={vec(cx - 25, 170)} r={110} colors={['#c9ced5', '#6f757e', '#3a3e45']} />
+        <SweepGradient c={vec(cx, 194)} colors={['#9da3ac', '#d9dde3', '#7d838c', '#c5cad1', '#8b919a', '#e0e4ea', '#9da3ac']} />
       </Circle>
-      <Circle cx={cx} cy={194} r={66}>
+      <Circle cx={cx} cy={194} r={68}>
         <RadialGradient c={vec(cx - 20, 172)} r={90} colors={['#33363c', '#121315']} />
       </Circle>
-      <Circle cx={cx} cy={194} r={18} color="#0a0b0d" />
-      <RoundedRect x={cx - 1.5} y={130} width={3} height={14} r={1} color={INK.white} opacity={0.7} />
+      <Circle cx={cx} cy={194} r={26} color="#050506" />
+      <Circle cx={cx} cy={194} r={23}>
+        <RadialGradient c={vec(cx, 186)} r={28} colors={[INK.lcdHi, INK.lcdLo]} />
+      </Circle>
+      <RoundedRect x={cx - 1.4} y={172} width={2.8} height={9} r={1} color={INK.white} />
+      <Circle cx={cx - 22} cy={172} r={14} color="rgba(255,255,255,0.05)">
+        <BlurMask blur={8} style="normal" />
+      </Circle>
     </Group>
   );
   const W = CTRL_W;
@@ -321,17 +339,34 @@ export const ControllerTop = memo(function ControllerTop({ x, y, s = 1, standalo
       <RoundedRect x={0.7} y={0.7} width={W - 1.4} height={D - 1.4} r={17} style="stroke" strokeWidth={1.4} color={INK.bevel} />
       {jog(122)}
       {jog(428)}
+      <Path path={dimples} color="rgba(0,0,0,0.5)" />
       {/* the centre mixer section */}
       <RoundedRect x={212} y={14} width={126} height={292} r={8} color="#141518" />
       {standalone ? (
         <Group>
-          <RoundedRect x={222} y={20} width={106} height={66} r={3} color="#050506" />
-          <RoundedRect x={225} y={23} width={100} height={60} r={2}>
-            <LinearGradient start={vec(0, 23)} end={vec(0, 83)} colors={[INK.lcdHi, INK.lcdLo]} />
+          <RoundedRect x={220} y={18} width={110} height={70} r={4} color="#050506" />
+          <RoundedRect x={223} y={21} width={104} height={64} r={2}>
+            <LinearGradient start={vec(0, 21)} end={vec(0, 85)} colors={[INK.lcdHi, INK.lcdLo]} />
           </RoundedRect>
-          {[0, 1].map((k) => (
-            <Rect key={k} x={229} y={30 + k * 22} width={92} height={16} color={k ? '#0f2b23' : '#102438'} />
-          ))}
+          {[0, 1].map((k) => {
+            const w = wavePath(k ? 'glassHarbour' : 'nightFerry', 4);
+            const top = 26 + k * 28;
+            return (
+              <Group key={k}>
+                <Rect x={226} y={top} width={98} height={22} color="#06101a" />
+                {w ? (
+                  <Group clip={Skia.XYWHRect(226, top, 98, 22)}>
+                    <Group transform={[{ translateX: 226 - 34 * 8 }, { translateY: top + 11 }, { scaleX: 8 }, { scaleY: 10 }]}>
+                      <Path path={w}>
+                        <LinearGradient start={vec(0, -1)} end={vec(0, 1)} colors={WAVE_COLOURS} positions={WAVE_POSITIONS} />
+                      </Path>
+                    </Group>
+                  </Group>
+                ) : null}
+                <Line p1={vec(275, top)} p2={vec(275, top + 22)} color={INK.white} strokeWidth={0.8} />
+              </Group>
+            );
+          })}
         </Group>
       ) : (
         <Knob cx={275} cy={40} d={20} value={0.5} capTone="black" scale={false} />
@@ -349,10 +384,17 @@ export const ControllerTop = memo(function ControllerTop({ x, y, s = 1, standalo
       {[26, 506].map((tx) => (
         <Fader key={tx} x={tx + 10} y={110} len={140} value={0.5} capW={16} capL={10} ticks={9} />
       ))}
-      {[60, 366].map((px) => (
+      {[60, 366].map((px, side) => (
         <Group key={px}>
           {[0, 1, 2, 3].map((i) => (
-            <Key key={i} x={px + i * 30} y={278} w={26} h={22} />
+            <Key key={i} x={px + i * 30} y={278} w={26} h={22} lit={side === 0 && i < 2} colour={CUE_COLOURS[i]} />
+          ))}
+        </Group>
+      ))}
+      {[262, 288].map((mx) => (
+        <Group key={mx}>
+          {Array.from({ length: 8 }, (_, i) => (
+            <RoundedRect key={i} x={mx - 2} y={176 - i * 6} width={4} height={4} r={1} color={i < 5 ? '#2f6b3a' : '#3a2f12'} />
           ))}
         </Group>
       ))}

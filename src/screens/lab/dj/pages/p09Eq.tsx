@@ -12,7 +12,7 @@ import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { BoothStage } from '../art/BoothStage';
 import { EqPlot } from '../art/plots';
-import { MIXER, STRIP_X, onMixer } from '../geometry/boothGeometry';
+import { BOOTH_LAYOUT, MIXER, MIXER_W, STRIP_X, onMixer } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, stopKey } from '../dock';
@@ -20,7 +20,7 @@ import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { dbStr, eqDb, filterQ, type Booth, type ChannelId } from '../model/djModel';
 import { filterOf } from '../engine/djDsp';
-import { peakCell, peakDb, useBoothKit } from './shared';
+import { useBoothKit } from './shared';
 
 const TERMS = [
   { term: 'EQ band', def: 'A slice of the frequency range with its own knob. This mixer has three: LOW (below about 250 Hz), MID, and HIGH (above about 2.5 kHz).' },
@@ -81,15 +81,14 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
             booth={booth}
             motion={motion}
             spec={{
-              view: 'mixerUpper',
+              view: { x: BOOTH_LAYOUT.mixer.x - 6, y: 44, w: MIXER_W + 12, h: 178 },
               fit: (W, H) => ({ x: 0, y: plotH(H), w: W, h: H - plotH(H) }),
-              highlight: { mixer: [`eq${eqSel.ch}` as 'eq1', `filter${filtCh}` as 'filter1', 'resonance'] },
+              highlight: { mixer: [`eq${eqSel.ch}` as 'eq1', `filter${filtCh}` as 'filter1'] },
               callouts: [
-                { id: 'hi', text: 'HIGH', at: onMixer(STRIP_X[1] - 10, MIXER.hi.y), dx: -30, dy: 0 },
-                { id: 'mid', text: 'MID', at: onMixer(STRIP_X[1] - 10, MIXER.mid.y), dx: -30, dy: 0 },
-                { id: 'lo', text: 'LOW', at: onMixer(STRIP_X[1] - 10, MIXER.lo.y), dx: -30, dy: 0 },
-                { id: 'fl', text: 'FILTER', at: onMixer(STRIP_X[2] + 11, MIXER.filter.y), dx: 30, dy: 0 },
-                { id: 'rs', text: 'RESONANCE', at: onMixer(MIXER.resonance.x, MIXER.resonance.y + 8), dx: 0, dy: 16 },
+                { id: 'hi', text: 'HIGH', at: onMixer(STRIP_X[1] + 10, MIXER.hi.y), dx: 10, dy: 0 },
+                { id: 'mid', text: 'MID', at: onMixer(STRIP_X[1] + 10, MIXER.mid.y), dx: 10, dy: 0 },
+                { id: 'lo', text: 'LOW', at: onMixer(STRIP_X[1] + 10, MIXER.lo.y), dx: 10, dy: 0 },
+                { id: 'fl', text: 'FILTER', at: onMixer(STRIP_X[2] - 11, MIXER.filter.y), dx: -10, dy: 0 },
               ],
               screenOverlay: (W, H) => <EqPlot b={{ x: 8, y: 6, w: W - 16, h: plotH(H) - 10 }} ch={c} resonance={booth.mixer.resonance} label={`CH${plotCh} EQ + FILTER`} />,
               a11y: `The mixer's EQ and filter knobs, under the frequency response of channel ${plotCh}.`,
@@ -101,7 +100,6 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
           { k: 'MID', v: bandDb(c.eq.mid), tint: colors.textPrimary },
           { k: 'HIGH', v: bandDb(c.eq.hi), tint: colors.textPrimary },
           { k: 'FILTER', v: filtWord, tint: fs.kind === 'off' ? colors.textSub : '#8fbcff' },
-          peakCell('MIX', peakDb(audio.last, 'bus')),
         ],
         params: [
           {

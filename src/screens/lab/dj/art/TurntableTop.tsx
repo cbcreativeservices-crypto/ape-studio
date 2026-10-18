@@ -70,6 +70,27 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
     return p.detach();
   }, [P.cx, P.cy, R]);
   const sheen = useSheen(P.cx, P.cy, rr);
+  const labelPrint = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.addArc(Skia.XYWHRect(P.cx - 34, P.cy - 34, 68, 68), 205, 130);
+    return p.detach();
+  }, [P.cx, P.cy]);
+  const labelPrintSmall = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.addArc(Skia.XYWHRect(P.cx - 28, P.cy - 28, 56, 56), 35, 50);
+    p.addArc(Skia.XYWHRect(P.cx - 28, P.cy - 28, 56, 56), 100, 45);
+    return p.detach();
+  }, [P.cx, P.cy]);
+  const knurl = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    const pv = TT.armPivot;
+    for (let i = 0; i < 36; i++) {
+      const a = (i / 36) * Math.PI * 2;
+      p.moveTo(pv.x + Math.cos(a) * 15, pv.y + Math.sin(a) * 15);
+      p.lineTo(pv.x + Math.cos(a) * 19, pv.y + Math.sin(a) * 19);
+    }
+    return p.detach();
+  }, []);
   const arm = armGeometry(playing);
   const armPath = useMemo((): SkPath => {
     // an S-shaped tube: out from the pivot, a gentle double bend, to the headshell
@@ -120,12 +141,14 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
             {/* the run-out and the lead-in bands */}
             <Circle cx={P.cx} cy={P.cy} r={rr - 2} style="stroke" strokeWidth={1.2} color="#050506" />
             <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2 + 5} style="stroke" strokeWidth={4} color="#08080a" />
-            {/* label */}
+            {/* label: paper, a printed ring and two lines of print along the curve */}
             <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2}>
               <RadialGradient c={vec(P.cx - 12, P.cy - 14)} r={TT.record.label * 0.7} colors={['#ffd36b', '#e0a028']} />
             </Circle>
-            <RoundedRect x={P.cx - 26} y={P.cy - 31} width={52} height={10} r={3} color="#3a2a08" opacity={0.75} />
-            <RoundedRect x={P.cx - 16} y={P.cy + 20} width={32} height={6} r={2} color="#3a2a08" opacity={0.5} />
+            <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2 - 4} style="stroke" strokeWidth={0.8} color="#7a5208" opacity={0.7} />
+            <Path path={labelPrint} style="stroke" strokeWidth={3.2} color="#5a3a06" opacity={0.75} strokeCap="round" />
+            <Path path={labelPrintSmall} style="stroke" strokeWidth={2} color="#5a3a06" opacity={0.6} strokeCap="round" />
+            <Circle cx={P.cx} cy={P.cy} r={9} color="#f2c254" />
           </Group>
         ) : null}
       </Group>
@@ -146,14 +169,27 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
       </Circle>
       <Circle cx={TT.strobe.cx} cy={TT.strobe.cy} r={8} color="#08090a" />
       <Circle cx={TT.strobe.cx} cy={TT.strobe.cy} r={5} color={playing ? '#ff7a4a' : '#3a2018'} />
-      {/* the tonearm base, the counterweight, the arm and the headshell */}
-      <Circle cx={arm.pv.x + 2} cy={arm.pv.y + 3} r={22} color="rgba(0,0,0,0.6)">
+      {/* the tonearm base: its plate, the knurled height-adjust ring, the gimbal housing; the anti-skate dial beside it */}
+      <Circle cx={arm.pv.x + 2} cy={arm.pv.y + 3} r={27} color="rgba(0,0,0,0.6)">
         <BlurMask blur={5} style="normal" />
       </Circle>
-      <Circle cx={arm.pv.x} cy={arm.pv.y} r={21}>
-        <RadialGradient c={vec(arm.pv.x - 6, arm.pv.y - 7)} r={26} colors={['#4a4e56', '#1a1b1e']} />
+      <Circle cx={arm.pv.x} cy={arm.pv.y} r={26}>
+        <RadialGradient c={vec(arm.pv.x - 8, arm.pv.y - 9)} r={32} colors={['#3e4148', '#16171a']} />
       </Circle>
-      <Circle cx={arm.pv.x} cy={arm.pv.y} r={13} style="stroke" strokeWidth={1.4} color="rgba(255,255,255,0.12)" />
+      <Circle cx={arm.pv.x} cy={arm.pv.y} r={19}>
+        <RadialGradient c={vec(arm.pv.x - 6, arm.pv.y - 6)} r={24} colors={['#c9ced5', '#6f757e', '#3a3e45']} />
+      </Circle>
+      <Path path={knurl} style="stroke" strokeWidth={0.8} color="rgba(0,0,0,0.45)" />
+      <Circle cx={arm.pv.x} cy={arm.pv.y} r={12}>
+        <RadialGradient c={vec(arm.pv.x - 4, arm.pv.y - 4)} r={15} colors={['#e6e9ee', '#8a9099', '#4a4f57']} />
+      </Circle>
+      <Circle cx={arm.pv.x - 4} cy={arm.pv.y - 4} r={3} color="rgba(255,255,255,0.55)">
+        <BlurMask blur={2} style="normal" />
+      </Circle>
+      <Circle cx={arm.pv.x + 34} cy={arm.pv.y + 30} r={7}>
+        <RadialGradient c={vec(arm.pv.x + 32, arm.pv.y + 28)} r={9} colors={['#4a4e56', '#141518']} />
+      </Circle>
+      <Line p1={vec(arm.pv.x + 34, arm.pv.y + 30)} p2={vec(arm.pv.x + 34, arm.pv.y + 24)} color={INK.white} strokeWidth={1.2} strokeCap="round" />
       {/* counterweight on its stub, behind the pivot */}
       <Line p1={vec(arm.pv.x, arm.pv.y)} p2={vec(cw.x, cw.y)} color="#b9bec6" strokeWidth={5} strokeCap="round" />
       <RoundedRect x={cw.x - 11} y={cw.y - 13} width={22} height={24} r={6}>
@@ -162,11 +198,16 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
       {[0, 1, 2, 3, 4].map((i) => (
         <Line key={i} p1={vec(cw.x - 11, cw.y - 9 + i * 4)} p2={vec(cw.x + 11, cw.y - 9 + i * 4)} color="rgba(0,0,0,0.25)" strokeWidth={0.6} />
       ))}
-      {/* arm rest + cue lever */}
-      <RoundedRect x={TT.armRest.x - 6} y={TT.armRest.y - 6} width={14} height={20} r={3} color="#0b0c0e" />
-      <RoundedRect x={TT.armRest.x + 14} y={TT.armRest.y - 40} width={8} height={26} r={3}>
-        <LinearGradient start={vec(TT.armRest.x + 14, 0)} end={vec(TT.armRest.x + 22, 0)} colors={['#9aa0a8', '#4c5159']} />
+      {/* arm rest (a post with its clip) and the cue lever */}
+      <Circle cx={TT.armRest.x + 1} cy={TT.armRest.y + 3} r={8} color="rgba(0,0,0,0.55)">
+        <BlurMask blur={2.5} style="normal" />
+      </Circle>
+      <Circle cx={TT.armRest.x} cy={TT.armRest.y} r={7} color="#0b0c0e" />
+      <Circle cx={TT.armRest.x} cy={TT.armRest.y} r={4.6} color="#2a2c31" />
+      <RoundedRect x={TT.armRest.x + 12} y={TT.armRest.y - 44} width={10} height={30} r={4}>
+        <LinearGradient start={vec(TT.armRest.x + 12, 0)} end={vec(TT.armRest.x + 22, 0)} colors={['#c9ced5', '#6f757e', '#3a3e45']} />
       </RoundedRect>
+      <RoundedRect x={TT.armRest.x + 9} y={TT.armRest.y - 50} width={16} height={9} r={3} color="#1a1b1e" />
       <Path path={armPath} style="stroke" strokeWidth={7.5} color="rgba(0,0,0,0.55)" strokeCap="round" />
       <Path path={armPath} style="stroke" strokeWidth={6} color="#c9ced5" strokeCap="round" />
       <Path path={armPath} style="stroke" strokeWidth={1.8} color="rgba(255,255,255,0.65)" strokeCap="round" />

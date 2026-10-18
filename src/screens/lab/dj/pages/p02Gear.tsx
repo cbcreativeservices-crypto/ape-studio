@@ -18,7 +18,7 @@ import { CTRL_D, CTRL_W, ControllerTop, Headphones, IFACE_D, IFACE_W, InterfaceT
 import { Cable } from '../art/parts';
 import { MIXER, MIXER_D, MIXER_W, PLAYER, PLAYER_D, PLAYER_W, STRIP_X, TT, TT_D, TT_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
 import { useScreenSetup } from '../booth/setup';
 import { builtBooth, freshDeck, type Booth } from '../model/djModel';
@@ -51,6 +51,13 @@ const TERMS = [
   { term: 'Booth monitor', def: 'A speaker aimed at the DJ, fed from the mixer’s BOOTH output, so you can hear the mix without the PA blasting the booth.' },
 ] as const;
 
+/** Where the DJ software sends its audio (the laptop + controller fault). */
+type SoftwareOut = 'CONTROLLER' | 'LAPTOP';
+const SOFTWARE_OUTS: { id: SoftwareOut; label: string; blurb: string }[] = [
+  { id: 'CONTROLLER', label: 'CONTROLLER OUTPUTS', blurb: 'The controller’s built-in audio interface: its MASTER OUT feeds the speakers and its PHONES jack feeds your headphones.' },
+  { id: 'LAPTOP', label: 'LAPTOP’S OWN AUDIO', blurb: 'The computer’s built-in speakers or headphone jack. The controller’s outputs stay silent.' },
+];
+
 const lab = (id: string, text: string, x: number, y: number, dx: number, dy: number): Callout => ({ id, text, at: { x, y }, dx, dy });
 
 function useItemScene(item: Item, booth: Booth): { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string } {
@@ -61,7 +68,7 @@ function useItemScene(item: Item, booth: Booth): { frame: Box; body: ReactNode; 
         return {
           frame: { x: -14, y: -16, w: TT_W + 28, h: TT_D + 32 },
           body: <TurntableTop x={0} y={0} d={still} playing={false} />,
-          callouts: [lab('pl', 'PLATTER', TT.platter.cx - 160, TT.platter.cy + 30, -8, 46), lab('rec', 'RECORD', TT.platter.cx - 70, TT.platter.cy - 90, -24, -22), lab('arm', 'TONEARM', 352, 150, 30, -10), lab('hs', 'HEADSHELL', TT.stylusPlay.x - 120, TT.armRest.y + 10, 20, 30), lab('cw', 'COUNTERWEIGHT', TT.counterweight.x, TT.counterweight.y - 12, -20, -18), lab('ss', 'START/STOP', TT.startStop.x + 20, TT.startStop.y + 30, 8, 18), lab('pt', 'PITCH', TT.pitch.x, TT.pitch.top + 60, 14, 40)],
+          callouts: [lab('pl', 'PLATTER', TT.platter.cx - 150, TT.platter.cy + 70, 6, 40), lab('rec', 'RECORD', TT.platter.cx - 70, TT.platter.cy - 90, -24, -22), lab('arm', 'TONEARM', 352, 150, 30, -10), lab('hs', 'HEADSHELL', TT.armRest.x - 6, TT.armRest.y + 4, -30, 34), lab('cw', 'COUNTERWEIGHT', TT.counterweight.x, TT.counterweight.y - 12, -20, -18), lab('ss', 'START/STOP', TT.startStop.x + 20, TT.startStop.y + 30, 8, 18), lab('pt', 'PITCH', TT.pitch.x, TT.pitch.top + TT.pitch.len, -10, 34)],
           a11y: 'A DJ turntable from above: the platter and record, the tonearm with its headshell and counterweight, start/stop and the pitch fader.',
         };
       case 'player':
@@ -134,7 +141,7 @@ function useItemScene(item: Item, booth: Booth): { frame: Box; body: ReactNode; 
   }, [item, booth, still]);
 }
 
-function useSystemScene(sys: System, booth: Booth): { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string } {
+function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string } {
   const still = useMemo(() => freshDeck('nightFerry'), []);
   return useMemo(() => {
     switch (sys) {
@@ -164,8 +171,14 @@ function useSystemScene(sys: System, booth: Booth): { frame: Box; body: ReactNod
               <ControllerTop x={0} y={LAPTOP_H + 30} />
             </>
           ),
-          callouts: [lab('lp', 'MUSIC PLAYS HERE', CTRL_W / 2, 40, 0, -18), lab('c', 'CONTROLLER + INTERFACE: OUTPUTS HERE', CTRL_W / 2, LAPTOP_H + 30 + CTRL_D, 0, 16)],
-          a11y: 'A laptop and controller system.',
+          callouts:
+            swOut === 'CONTROLLER'
+              ? [lab('lp', 'MUSIC PLAYS HERE', CTRL_W / 2, 40, 0, -18), lab('c', 'BUILT-IN INTERFACE: OUTPUTS', CTRL_W / 2, LAPTOP_H + 30 + CTRL_D, 0, 16)]
+              : [
+                  { ...lab('lp', 'AUDIO → LAPTOP SPEAKERS', CTRL_W / 2, 40, 0, -18), tone: 'red' },
+                  { ...lab('c', 'CONTROLLER OUTPUTS: SILENT', CTRL_W / 2, LAPTOP_H + 30 + CTRL_D, 0, 16), tone: 'red' },
+                ],
+          a11y: `A laptop and controller system. The software sends its audio to ${swOut === 'CONTROLLER' ? 'the controller’s outputs' : 'the laptop’s own speakers, so the controller’s outputs are silent'}.`,
         };
       case 'standalone':
         return {
@@ -190,7 +203,7 @@ function useSystemScene(sys: System, booth: Booth): { frame: Box; body: ReactNod
         };
       }
     }
-  }, [sys, booth, still]);
+  }, [sys, booth, still, swOut]);
 }
 
 function Scaled({ s, x, y, children }: { s: number; x: number; y: number; children: ReactNode }) {
@@ -207,15 +220,18 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
   const [seenS, setSeenS] = useState<Set<System>>(() => new Set());
   const [c1, setC1] = useState(false);
   const [c2, setC2] = useState(false);
+  const [swOut, setSwOut] = useState<SoftwareOut>('CONTROLLER');
+  const [faultFixed, setFaultFixed] = useState(false);
   const display = booth.decks.A.track ? booth : builtBooth();
   const itemScene = useItemScene(item, display);
-  const sysScene = useSystemScene(sys, display);
+  const sysScene = useSystemScene(sys, display, swOut);
   const scene = mode === 'item' ? itemScene : sysScene;
   const goals = [
     { label: 'Open all eight pieces', hit: seenI.size >= ITEMS.length },
     { label: 'Compare all four systems', hit: seenS.size >= SYSTEMS.length },
     { label: 'Match a job to its gear', hit: c1 },
     { label: 'Pick a system for a gig', hit: c2 },
+    { label: 'Fix the silent laptop set', hit: faultFixed },
   ];
   const latched = useVisitGoals(ctx, goals);
   const itemDef = ITEMS.find((i) => i.id === item)!;
@@ -231,6 +247,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: mode === 'item' ? 'EQUIPMENT' : 'SYSTEM', v: mode === 'item' ? itemDef.label : sysDef.label, tint: colors.amber, flex: 2 },
           { k: 'SEEN', v: `${seenI.size}/8 · ${seenS.size}/4`, tint: colors.textPrimary },
+          { k: 'SENDS TO', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 },
         ],
         params: [
           {
@@ -262,6 +279,16 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
               setSys(id as System);
               setSeenS((p) => new Set(p).add(id as System));
             },
+          },
+          {
+            kind: 'options',
+            id: 'swout',
+            label: 'OUTPUT',
+            valueLabel: swOut === 'CONTROLLER' ? 'CTRL' : 'LAPTOP',
+            valueA11y: SOFTWARE_OUTS.find((o) => o.id === swOut)!.label,
+            options: SOFTWARE_OUTS,
+            selectedId: swOut,
+            onSelect: (id) => setSwOut(id as SoftwareOut),
           },
           stopKey(tr),
         ],
@@ -303,6 +330,20 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
           explain="A standalone unit plays from local media with no laptop and no internet. A tested spare stick covers a failed one. A streaming service may need a connection, and a controller needs its computer."
           wrong={[undefined, 'A streaming service may need a working connection — the one thing you do not have.', 'Turntables need records to play.', 'Most controllers do nothing without their computer and software.']}
           onCorrect={() => setC2(true)}
+        />
+        <FaultCard
+          title="THE SOFTWARE PLAYS, THE ROOM IS SILENT"
+          symptom="A laptop + controller set: the track is moving on the laptop screen and the controller’s lights respond, but nothing comes out of the speakers plugged into the controller."
+          start={() => {
+            setMode('system');
+            setSys('laptop');
+            setSeenS((p) => new Set(p).add('laptop'));
+            setSwOut('LAPTOP');
+          }}
+          fixed={swOut === 'CONTROLLER'}
+          hints={['The music is made in the laptop. Where is the software SENDING it?', 'Look at SENDS TO on the readout strip.', 'Open OUTPUT and send the audio to the controller’s outputs.']}
+          why="The software was sending its audio to the laptop’s own speakers, so the controller’s built-in interface had nothing to play. In DJ software this is the audio device (or audio output) setting; check it whenever you connect a controller or change computers."
+          onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(2)} latched={latched.slice(2)} />
       </Step>

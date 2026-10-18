@@ -22,6 +22,9 @@ export type Transport = {
   toggle: (deck: DeckId) => void;
   play: (deck: DeckId) => void;
   stopAll: () => void;
+  /** The learner said no to sound on this screen: offer to ask again. */
+  soundDeclined: boolean;
+  soundOn: () => void;
 };
 
 export function transportOf(audio: BoothAudio): Transport {
@@ -35,6 +38,8 @@ export function transportOf(audio: BoothAudio): Transport {
       updateBooth((b, t) => setPlaying(b, t, deck, true));
     },
     stopAll: audio.stop,
+    soundDeclined: audio.soundDeclined,
+    soundOn: () => void audio.requestSound(true),
   };
 }
 
@@ -204,7 +209,9 @@ export function BoothTray({ booth, tr, decks = ['A', 'B'] }: { booth: Booth; tr:
         {decks.map((d) => (
           <LabChip key={d} label={`${booth.decks[d].playing ? '❚❚ PAUSE' : '▶ PLAY'} ${d}`} selected={booth.decks[d].playing} onPress={() => tr.toggle(d)} />
         ))}
+        {tr.soundDeclined ? <LabChip label="TURN SOUND ON" selected={false} onPress={tr.soundOn} /> : null}
       </View>
+      {tr.soundDeclined ? <Text style={styles.trayFine}>Sound is off: the booth still runs and its meters still read the model — you just do not hear it.</Text> : null}
       <ListenTray booth={booth} />
     </View>
   );

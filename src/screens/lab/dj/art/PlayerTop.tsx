@@ -14,12 +14,12 @@
  *     deck's pitch (+ toward the DJ, the common convention).
  */
 import { memo, useMemo } from 'react';
-import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec, type SkPath } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
 import { useDerivedValue } from 'react-native-reanimated';
 import type { DeckId, DeckState } from '../model/djModel';
 import { analysedGrid } from '../model/djDeck';
 import { TRACKS, trackSeconds } from '../engine/djMusic';
-import { PITCH_RANGE_PCT, beatAt, formatBarBeat } from '../model/djTime';
+import { PITCH_RANGE_PCT } from '../model/djTime';
 import { PLAYER, PLAYER_D, PLAYER_W } from '../geometry/boothGeometry';
 import { CUE_COLOURS, INK } from './ink';
 import { Fader, Halo, Key, Knob, RoundButton } from './parts';
@@ -94,15 +94,7 @@ function Screen({ deck, d }: { deck: DeckId; d: DeckState }) {
     const b = ((pos.value - g.firstBeatSec) * g.bpm) / 60;
     return b < 0 ? '0.0' : `${Math.floor(b / 4) + 1}.${(((Math.floor(b) % 4) + 4) % 4) + 1}`;
   });
-  void formatBarBeat;
-  void beatAt;
   const shownBpm = grid ? grid.bpm * (1 + d.pitch / 100) : 0;
-  // cue + hot cue + loop markers, scrolled with the waveform
-  const markers = useMemo(() => {
-    const p = Skia.PathBuilder.Make();
-    return p.detach();
-  }, []);
-  void markers;
   return (
     <Group>
       {/* bezel */}
@@ -112,8 +104,12 @@ function Screen({ deck, d }: { deck: DeckId; d: DeckState }) {
       </RoundedRect>
       <Group clip={Skia.XYWHRect(S.x, S.y, S.w, S.h)}>
         {/* header */}
-        <SceneText x={S.x + 6} y={S.y + 13} size={8.5} text={track ? TRACKS[track].title.toUpperCase() : 'NO TRACK'} color={INK.white} face="label" />
-        <SceneText x={S.x + S.w - 6} y={S.y + 13} size={8.5} text={track ? shownBpm.toFixed(1) : ''} color={INK.amber} align="right" />
+        {track ? (
+          <>
+            <SceneText x={S.x + 6} y={S.y + 15} size={12.5} text={TRACKS[track].title.toUpperCase()} color={INK.white} face="label" />
+            <SceneText x={S.x + S.w - 6} y={S.y + 15} size={12.5} text={shownBpm.toFixed(1)} color={INK.amber} align="right" />
+          </>
+        ) : null}
         {/* zoomed waveform */}
         <Group clip={Skia.XYWHRect(zx, zy, zw, zh)}>
           <Rect x={zx} y={zy} width={zw} height={zh} color="#040a11" />
@@ -144,14 +140,24 @@ function Screen({ deck, d }: { deck: DeckId; d: DeckState }) {
             <Line p1={playP1} p2={playP2} color={INK.white} strokeWidth={0.9} />
           </Group>
         ) : null}
+        {/* an empty deck says so, over its empty lane */}
+        {track ? null : (
+          <>
+            <SceneText x={S.x + S.w / 2} y={S.y + 52} size={13} text="NO TRACK" color={INK.print} face="label" align="center" />
+            <SceneText x={S.x + S.w / 2} y={S.y + 74} size={12.5} text="BROWSE TO LOAD" color={INK.printDim} face="label" align="center" />
+          </>
+        )}
         {/* footer readouts */}
-        <SceneText x={S.x + 6} y={S.y + S.h - 5} size={8.5} text={track ? timeText : ''} color={INK.white} />
-        <SceneText x={S.x + S.w / 2} y={S.y + S.h - 5} size={8.5} text={`${d.pitch >= 0 ? '+' : '−'}${Math.abs(d.pitch).toFixed(1)}%`} color={INK.print} align="center" />
-        <SceneText x={S.x + S.w - 6} y={S.y + S.h - 5} size={8.5} text={track ? barText : ''} color={INK.amber} align="right" />
+        {track ? (
+          <>
+            <SceneText x={S.x + 6} y={S.y + S.h - 4} size={11} text={timeText} color={INK.white} />
+            <SceneText x={S.x + S.w / 2} y={S.y + S.h - 4} size={11} text={`${d.pitch >= 0 ? '+' : '−'}${Math.abs(d.pitch).toFixed(1)}%`} color={INK.print} align="center" />
+            <SceneText x={S.x + S.w - 6} y={S.y + S.h - 4} size={11} text={barText} color={INK.amber} align="right" />
+          </>
+        ) : null}
       </Group>
       {/* glass */}
       <RoundedRect x={S.x} y={S.y} width={S.w} height={S.h * 0.45} r={3} color={INK.lcdGlass} />
-      <SceneText x={S.x - 0} y={S.y - 0} size={0.01} text={deck} color="transparent" />
     </Group>
   );
 }
@@ -299,7 +305,7 @@ export const PlayerTop = memo(function PlayerTop({ x, y, deck, d, highlight = []
       <Key x={P.masterBtn.x} y={P.masterBtn.y} w={P.masterBtn.w} h={P.masterBtn.h} />
       <Fader x={P.tempo.x} y={P.tempo.top} len={P.tempo.len} value={tempoValue} capW={P.tempo.capW} capL={P.tempo.capL} ticks={9} accent={Math.abs(d.pitch) < 0.05 ? INK.green : INK.white} />
       <Key x={P.tempoRange.x} y={P.tempoRange.y} w={P.tempoRange.w} h={P.tempoRange.h} />
-      <SceneText x={P.deckBadge.x} y={P.deckBadge.y + 4} size={12} text={`DECK ${deck}`} color={INK.print} face="label" />
+      <SceneText x={P.browse.x} y={P.back.y + P.back.h + 16} size={12} text={deck} color={INK.amber} face="label" align="center" />
       {highlight.map((p) => (
         <Halo key={p} b={playerPartBox(p)} round={p === 'jog' || p === 'cue' || p === 'play' || p === 'browse'} />
       ))}
