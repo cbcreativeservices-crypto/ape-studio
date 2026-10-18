@@ -98,6 +98,8 @@ describe('the shipped analysis (djTrackData.ts) is a fresh analysis', () => {
       assert.equal(fresh.hi, stored.hi, `${id} overview hi is stale`);
       assert.equal(fresh.lo, stored.lo, `${id} overview lo is stale`);
       assert.equal(fresh.peak, stored.peak, `${id} overview peak is stale`);
+      assert.equal(fresh.rms, stored.rms, `${id} overview RMS core is stale`);
+      assert.equal(fresh.low, stored.low, `${id} overview low band is stale`);
     }
     releaseTracks();
     assert.ok(overviewOf('slowOrbit'), 'the stored overview decodes');

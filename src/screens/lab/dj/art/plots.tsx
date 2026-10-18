@@ -21,7 +21,9 @@ import { eqDb, filterQ, xfGains, type ChannelState, type DeckState, type XfCurve
 import { analysedGrid } from '../model/djDeck';
 import { CUE_COLOURS, INK } from './ink';
 import { useDeckPos } from './motion';
-import { gridPath, wavePath, WAVE_COLOURS, WAVE_POSITIONS } from './waves';
+import { WAVE_LOW } from './waves';
+import { GridOver, WaveBody } from './waveDraw';
+import { textWidthPt } from './Scene';
 import { SceneText } from './sceneText';
 
 export type PlotBox = { x: number; y: number; w: number; h: number };
@@ -147,48 +149,60 @@ export function EqPlot({ b, ch, resonance, label }: { b: PlotBox; ch: ChannelSta
 }
 
 /**
- * One deck's zoomed waveform in a screen-space lane: the real audio's
- * min/max scrolling past a fixed playhead at the deck's position, the
- * ANALYSED grid's beat lines (bars bold), a label and the played BPM.
+ * One deck's zoomed waveform in a screen-space lane: the real audio's layers
+ * (peak envelope, RMS core, low band — waveDraw) scrolling past a fixed
+ * playhead at the deck's position, the ANALYSED grid drawn ON TOP with
+ * keylines (bars bold amber, beats thin white), a label and the played BPM.
+ * `k` grows the words and strokes with the full-screen zoom.
  */
-export function WaveLane({ b, d, label, spanSec = 4, colourHead = INK.white, marks = false }: { b: PlotBox; d: DeckState; label: string; spanSec?: number; colourHead?: string; marks?: boolean }) {
+export function WaveLane({ b, d, label, spanSec = 4, colourHead = INK.white, marks = false, k = 1, lowKey = false }: { b: PlotBox; d: DeckState; label: string; spanSec?: number; colourHead?: string; marks?: boolean; k?: number; lowKey?: boolean }) {
   const pos = useDeckPos(d);
-  const wave = d.track ? wavePath(d.track) : null;
   const grid = analysedGrid(d);
-  const lines = d.track && grid ? gridPath(d.track, grid) : null;
   const pps = b.w / spanSec;
   const head = b.x + b.w / 2;
   const mid = b.y + b.h / 2;
-  const xf = useDerivedValue(() => [{ translateX: head - pos.value * pps }, { translateY: mid }, { scaleX: pps }, { scaleY: b.h / 2 - 3 }]);
+  const halfH = b.h / 2 - 2;
+  const xf = useDerivedValue(() => [{ translateX: head - pos.value * pps }, { translateY: mid }, { scaleX: pps }, { scaleY: halfH }]);
+  const fs = 10 * k;
+  const chipW = textWidthPt(label, k) * 0.95 + 12 * k;
   return (
     <Group>
       <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={6} color="#040a11" />
       <Group clip={Skia.XYWHRect(b.x, b.y, b.w, b.h)}>
-        {wave ? (
+        <Line p1={vec(b.x, mid)} p2={vec(b.x + b.w, mid)} color="rgba(47,116,255,0.35)" strokeWidth={0.8} />
+        {d.track ? (
           <Group transform={xf}>
-            {lines ? <Path path={lines.beats} style="stroke" strokeWidth={1 / pps} color="rgba(255,255,255,0.28)" /> : null}
-            {lines ? <Path path={lines.bars} style="stroke" strokeWidth={2.2 / pps} color="rgba(255,198,77,0.8)" /> : null}
-            {marks && d.loop ? <Rect x={d.loop.startSec} y={-1} width={d.loop.lengthSec} height={2} color="rgba(91,255,133,0.18)" /> : null}
-            <Path path={wave}>
-              <LinearGradient start={vec(0, -1)} end={vec(0, 1)} colors={WAVE_COLOURS} positions={WAVE_POSITIONS} />
-            </Path>
+            {marks && d.loop ? <Rect x={d.loop.startSec} y={-1} width={d.loop.lengthSec} height={2} color="rgba(91,255,133,0.16)" /> : null}
+            <WaveBody id={d.track} kicks={(2.6 * k) / pps} />
+            {grid ? <GridOver id={d.track} grid={grid} pps={pps} k={k} /> : null}
             {marks && d.loop ? (
               <Group>
-                <Rect x={d.loop.startSec} y={-1} width={2 / pps} height={2} color={INK.green} />
-                <Rect x={d.loop.startSec + d.loop.lengthSec - 2 / pps} y={-1} width={2 / pps} height={2} color={INK.green} />
+                <Rect x={d.loop.startSec} y={-1} width={(2 * k) / pps} height={2} color={INK.green} />
+                <Rect x={d.loop.startSec + d.loop.lengthSec - (2 * k) / pps} y={-1} width={(2 * k) / pps} height={2} color={INK.green} />
               </Group>
             ) : null}
-            {marks ? <Rect x={d.cueSec - 0.8 / pps} y={-1} width={1.6 / pps} height={2} color={INK.amber} /> : null}
+            {marks ? <Rect x={d.cueSec - (0.8 * k) / pps} y={-1} width={(1.6 * k) / pps} height={2} color={INK.amber} /> : null}
             {marks
-              ? d.hotCues.map((c, i) => (c == null ? null : <Rect key={i} x={c - 1 / pps} y={-1} width={2 / pps} height={0.5} color={CUE_COLOURS[i]} />))
+              ? d.hotCues.map((c, i) => (c == null ? null : <Rect key={i} x={c - (1.2 * k) / pps} y={-1} width={(2.4 * k) / pps} height={0.5} color={CUE_COLOURS[i]} />))
               : null}
           </Group>
         ) : null}
-        <Line p1={vec(b.x, mid)} p2={vec(b.x + b.w, mid)} color="rgba(47,116,255,0.45)" strokeWidth={0.8} />
       </Group>
-      <Line p1={vec(head, b.y - 2)} p2={vec(head, b.y + b.h + 2)} color={colourHead} strokeWidth={1.6} />
-      <RoundedRect x={b.x + 4} y={b.y + 4} width={label.length * 7 + 10} height={15} r={4} color="rgba(0,0,0,0.6)" />
-      <SceneText x={b.x + 9} y={b.y + 15.5} size={10} text={label} color={INK.amber} face="label" minPt={9.5} />
+      {d.track ? (
+        <Group>
+          <Line p1={vec(head, b.y - 2)} p2={vec(head, b.y + b.h + 2)} color="rgba(0,0,0,0.7)" strokeWidth={3.4 * k} />
+          <Line p1={vec(head, b.y - 2)} p2={vec(head, b.y + b.h + 2)} color={colourHead} strokeWidth={1.6 * k} />
+        </Group>
+      ) : null}
+      <RoundedRect x={b.x + 4} y={b.y + 4} width={chipW} height={15 * k} r={4} color="rgba(0,0,0,0.66)" />
+      <SceneText x={b.x + 4 + 6 * k} y={b.y + 4 + 11 * k} size={fs} text={label} color={INK.amber} face="label" minPt={9.5} />
+      {lowKey ? (
+        <Group>
+          <RoundedRect x={b.x + b.w - 58 * k} y={b.y + 4} width={54 * k} height={15 * k} r={4} color="rgba(0,0,0,0.66)" />
+          <RoundedRect x={b.x + b.w - 54 * k} y={b.y + 4 + 4.5 * k} width={8 * k} height={6 * k} r={1.5} color={WAVE_LOW} />
+          <SceneText x={b.x + b.w - 43 * k} y={b.y + 4 + 11 * k} size={fs} text="KICKS" color={INK.print} face="label" minPt={9.5} />
+        </Group>
+      ) : null}
     </Group>
   );
 }

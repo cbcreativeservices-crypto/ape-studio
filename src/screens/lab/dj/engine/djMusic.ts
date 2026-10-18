@@ -759,8 +759,18 @@ export type TrackOverview = {
   /** Per column, peak |sample| over both channels (0..1), for the level
    *  colour ramp and the meters' sanity tests. */
   peak: Float32Array;
+  /** Per column, the RMS of the mono fold AFTER the master curve (0..1): the
+   *  body of the sound, drawn as the waveform's solid core. */
+  rms: Float32Array;
+  /** Per column, the peak of the DRUMS' low band (the drum part's mono fold
+   *  through the master curve and two one-pole low-passes at 140 Hz; 0..1):
+   *  the kick, drawn as the waveform's kick tint and tick row. */
+  low: Float32Array;
   seconds: number;
 };
+
+/** The low band's corner for the waveform's kick tint (Hz). */
+export const OVERVIEW_LOW_HZ = 140;
 
 /** Columns per second of the stored overview (≈ 16 per beat at 122 BPM). */
 export const OVERVIEW_COLS_PER_SEC = 32;
@@ -809,8 +819,39 @@ export async function analyseTrack(id: TrackId, breath?: () => Promise<void>): P
     lo[c] = Number.isFinite(loRaw[c]) ? f(loRaw[c]) : 0;
     peak[c] = f(pkRaw[c]);
   }
+  // A second pass over the same audio, through the master curve now that it
+  // is known: each column's RMS and its low band's peak (drawing data only —
+  // the sound itself is never touched here).
+  const ss = new Float64Array(cols);
+  const nn = new Float64Array(cols);
+  const low = new Float32Array(cols);
+  const a = 1 - Math.exp((-2 * Math.PI * OVERVIEW_LOW_HZ) / SR);
+  let z1 = 0;
+  let z2 = 0;
+  for (let t0 = 0; t0 < total; t0 += chunkSec) {
+    const n = Math.min(chunkN, Math.round((total - t0) * SR));
+    if (n <= 0) break;
+    const { mix, stems } = assembleRaw(id, t0, n, true);
+    const drums = stems!.drums;
+    const base = Math.round(t0 * SR);
+    const perCol = SR / OVERVIEW_COLS_PER_SEC;
+    for (let i = 0; i < n; i++) {
+      const m = f((mix.l[i] + mix.r[i]) / 2);
+      const c = Math.min(cols - 1, Math.floor((base + i) / perCol));
+      ss[c] += m * m;
+      nn[c] += 1;
+      const dk = f((drums.l[i] + drums.r[i]) / 2);
+      z1 += a * (dk - z1);
+      z2 += a * (z1 - z2);
+      const al = z2 < 0 ? -z2 : z2;
+      if (al > low[c]) low[c] = al;
+    }
+    if (breath) await breath();
+  }
+  const rms = new Float32Array(cols);
+  for (let c = 0; c < cols; c++) rms[c] = nn[c] > 0 ? Math.sqrt(ss[c] / nn[c]) : 0;
   p.rawPeak = rawPeak;
-  p.overview = { colSec: 1 / OVERVIEW_COLS_PER_SEC, hi, lo, peak, seconds: total };
+  p.overview = { colSec: 1 / OVERVIEW_COLS_PER_SEC, hi, lo, peak, rms, low, seconds: total };
   return p.overview;
 }
 
@@ -868,18 +909,22 @@ export function b64ToBytes(s: string): Uint8Array {
 
 /** The overview quantised for shipping: hi/lo as signed bytes (×127), the
  *  per-column peak as an unsigned byte (×255). */
-export function quantiseOverview(o: TrackOverview): { cols: number; hi: string; lo: string; peak: string } {
+export function quantiseOverview(o: TrackOverview): { cols: number; hi: string; lo: string; peak: string; rms: string; low: string } {
   const n = o.hi.length;
   const q = (v: number, k: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v * k)));
   const hi = new Uint8Array(n);
   const lo = new Uint8Array(n);
   const pk = new Uint8Array(n);
+  const rm = new Uint8Array(n);
+  const lw = new Uint8Array(n);
   for (let c = 0; c < n; c++) {
     hi[c] = q(o.hi[c], 127, -127, 127) & 255;
     lo[c] = q(o.lo[c], 127, -127, 127) & 255;
     pk[c] = q(o.peak[c], 255, 0, 255);
+    rm[c] = q(o.rms[c], 255, 0, 255);
+    lw[c] = q(o.low[c], 255, 0, 255);
   }
-  return { cols: n, hi: bytesToB64(hi), lo: bytesToB64(lo), peak: bytesToB64(pk) };
+  return { cols: n, hi: bytesToB64(hi), lo: bytesToB64(lo), peak: bytesToB64(pk), rms: bytesToB64(rm), low: bytesToB64(lw) };
 }
 
 function decodeStored(id: TrackId): TrackOverview | null {
@@ -889,15 +934,21 @@ function decodeStored(id: TrackId): TrackOverview | null {
   const hiB = b64ToBytes(d.hi);
   const loB = b64ToBytes(d.lo);
   const pkB = b64ToBytes(d.peak);
+  const rmB = b64ToBytes(d.rms);
+  const lwB = b64ToBytes(d.low);
   const hi = new Float32Array(d.cols);
   const lo = new Float32Array(d.cols);
   const peak = new Float32Array(d.cols);
+  const rms = new Float32Array(d.cols);
+  const low = new Float32Array(d.cols);
   for (let c = 0; c < d.cols; c++) {
     hi[c] = s8(hiB[c]);
     lo[c] = s8(loB[c]);
     peak[c] = pkB[c] / 255;
+    rms[c] = rmB[c] / 255;
+    low[c] = lwB[c] / 255;
   }
-  return { colSec: 1 / OVERVIEW_COLS_PER_SEC, hi, lo, peak, seconds: trackSeconds(id) };
+  return { colSec: 1 / OVERVIEW_COLS_PER_SEC, hi, lo, peak, rms, low, seconds: trackSeconds(id) };
 }
 
 /**
