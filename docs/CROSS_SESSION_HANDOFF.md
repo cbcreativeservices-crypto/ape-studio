@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 09:36 · ccode · e17d4665
+changed: Images: Loudspeaker Types & Drivers tile, owner's woofer cutaway (background darkened to the tile standard; speaker unchanged)
+affects other side: 1 topic tile reaches the bucket in the approval-day upload
+needs: nothing
+
+
 ### 2026-10-18 09:05 · ccode · 8b524911
 changed: Images: Comp C round 4, owner-approved: Hearing Health cert (B, dosimeter at a live show), Broadcast/Podcast/Streaming program (B, ON button + ON AIR)
 affects other side: 1 cert + 1 program square reach the course-cards bucket in the approval-day upload (upload-credential-cards.mjs already takes prog-*.webp)
