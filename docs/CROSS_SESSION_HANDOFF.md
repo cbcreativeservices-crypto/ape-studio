@@ -634,6 +634,36 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 16:55 · ccode · ba9e83a7
+changed: DJ Systems Lab art: pages, captions, callouts, after screenshots
+affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 16:55 · ccode · ec7f9cd1
+changed: DJ Systems Lab art: Screen 4 as a room + patch elevation, traceable cables
+affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 16:55 · ccode · 18f27c01
+changed: DJ Systems Lab art: gear redrawn to true dimensions with silk-screen legends
+affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 16:55 · ccode · f3789b31
+changed: DJ Systems Lab art: obstacle-aware plain labels, cached scene fonts, insets
+affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 16:55 · ccode · a105ca7c
+changed: DJ Systems Lab art: one layered waveform renderer from the real audio
+affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
+needs: nothing
+
+
 ### 2026-10-18 14:58 · ccode · 7fde28ad
 changed: DJ Systems Lab stage 1: visual polish pass + faults on screens 1-2
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
