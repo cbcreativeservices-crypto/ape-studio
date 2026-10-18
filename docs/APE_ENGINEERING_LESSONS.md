@@ -916,3 +916,11 @@ process is running.
   - The button labels are CSS uppercase, so match the text case-insensitively and use `:visible`, because hidden stack screens share text.
 - **The hub-card 4-line clamp** cut off 38 of the 50 Mixing Guide lines even before the glosses. Measure clamps with `scrollHeight > clientHeight` on `-webkit-line-clamp` elements.
 - **Comp C returns** come back unnamed. Matching them against the concept lines in IMAGE_SPECS.md (`grep "^\*\*Concept"`) identified every one in minutes. Each slot holds ONE image, so ask the owner A or B before installing.
+
+## 2026-10-17/18 — image rounds
+
+- **Comp C kept working without the spec** ("IMAGE_SPECS.md inaccessible") and guessed concepts from slot titles, so 31 of 33 slots failed review. Anything sent to Comp C must carry the spec text INLINE (`Downloads/2026-10-18_COMP_C_ROUND4_SEND_BACK.md` does). After that, round 5's second pass fixed most of the named defects.
+- **Parallel spec reviewers** (4 agents × 8 slots, read-only, full-size Read of each PNG plus Grep of the spec section) reviewed 66 images in about 2.5 minutes. Their concrete defect lists (wrong sign arrowhead, cable count, GR meter direction) are what make send-backs useful.
+- **Image generators cannot edit only the background.** They re-invent the subject (the owner tried; the cutaway came back hallucinated). Use `scripts/images/darken_background.py` locally. A plain flood with a single threshold bites into low-contrast rims, and a global closing adds grey halos in concave areas. Do a contrast-boosted flood plus closing ONLY in the rim band and an exact flood elsewhere.
+- **Program squares** are not bundled in their own folder. They live beside the certificate squares as `assets/Certificate_Squares/prog-*.webp`, and the upload script takes both.
+- **Python on this machine has PIL but no numpy.** `python -I` drops the user site-packages, so PIL disappears with it. Run scripts that only read local files without `-I`, from the scratchpad.
