@@ -16,7 +16,7 @@ import { BoothStage } from '../art/BoothStage';
 import { CurvePlot } from '../art/plots';
 import { MIXER, STRIP_X, onMixer } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, pct, stopKey, xfaderKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -169,6 +169,7 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{`You are looking at the mixer’s faders, the crossfader and its assign and curve switches, under a plot of the ${m.xfCurve} crossfader curve.`}</Look>
         <P>Each channel fader sets how much of its channel goes into the mix. The crossfader then fades between the channels assigned to side A and side B; a channel on THRU ignores the crossfader.</P>
         <P>The CURVE decides how the two sides trade places. BLEND keeps the total steady through the middle (each side −3 dB there); DIP sags in the middle (each −6 dB); CUT keeps both full until the very ends, so a tiny move cuts a sound in or out.</P>
         <Terms items={TERMS} />

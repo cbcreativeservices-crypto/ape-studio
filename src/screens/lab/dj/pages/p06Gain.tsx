@@ -8,10 +8,15 @@
 import { useState } from 'react';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
+import { Group, Line, vec } from '@shopify/react-native-skia';
 import { BoothStage } from '../art/BoothStage';
-import { onMixer, STRIP_X, MIXER } from '../geometry/boothGeometry';
+import { METER_SCALE, meterSegY } from '../art/MixerTop';
+import { INK } from '../art/ink';
+import { SceneText } from '../art/sceneText';
+import type { Xf } from '../art/Scene';
+import { BOOTH_LAYOUT, onMixer, STRIP_X, MIXER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, levelKey, stopKey, trimKey } from '../dock';
 import { updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -26,6 +31,30 @@ const TERMS = [
   { term: 'Peak meter', def: 'A meter that jumps to the loudest instant at once and falls back slowly, so short peaks are not missed.' },
   { term: 'Mix bus', def: 'Where the channels add together after their faders and the crossfader. It has its own limit, and two clean channels can still overload it.' },
 ] as const;
+
+/** The meters' scale and column names at phone size (screen points, 9.5 pt
+ *  and up): dB marks level with their segments to the left of the CH1
+ *  column, and CH1 · L · R · CH2 under the four columns. */
+function MeterScaleStrip({ xf, k }: { xf: Xf; k: number }) {
+  const X = (mx: number) => xf.ox + (BOOTH_LAYOUT.mixer.x + mx) * xf.s;
+  const Y = (my: number) => xf.oy + (BOOTH_LAYOUT.mixer.y + my) * xf.s;
+  const { xs, w, y, h } = MIXER.meters;
+  const fs = Math.max(9.5, 9.5 * Math.sqrt(k));
+  const names = ['CH1', 'L', 'R', 'CH2'];
+  return (
+    <Group>
+      {METER_SCALE.map((m) => (
+        <Group key={m.t}>
+          <Line p1={vec(X(xs[0]) - 4, Y(meterSegY(m.db)))} p2={vec(X(xs[0]) - 1, Y(meterSegY(m.db)))} color={INK.print} strokeWidth={1} />
+          <SceneText x={X(xs[0]) - 6} y={Y(meterSegY(m.db)) + fs * 0.36} size={fs} text={m.db === 0 ? 'CLIP' : m.t} color={m.db === 0 ? INK.peak : INK.print} face="label" align="right" minPt={9} />
+        </Group>
+      ))}
+      {names.map((t, i) => (
+        <SceneText key={t} x={X(xs[i] + w / 2)} y={Y(y + h) + fs * 1.25} size={fs} text={t} color={INK.amber} face="label" align="center" minPt={9} />
+      ))}
+    </Group>
+  );
+}
 
 function PageGain({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
@@ -71,11 +100,13 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
               view: 'mixerUpper',
               highlight: { mixer: ['trim1', 'trim2', 'meters', 'busOver', 'master'] },
               callouts: [
-                { id: 't1', text: 'TRIM 1', at: onMixer(STRIP_X[1] + 10, MIXER.trim.y), dx: 8, dy: -16 },
-                { id: 't2', text: 'TRIM 2', at: onMixer(STRIP_X[2] - 10, MIXER.trim.y), dx: -8, dy: -16 },
+                { id: 't1', text: 'TRIM 1', at: onMixer(STRIP_X[1] - 9, MIXER.trim.y), dx: -16, dy: 0 },
+                { id: 't2', text: 'TRIM 2', at: onMixer(STRIP_X[2] + 9, MIXER.trim.y), dx: 16, dy: 0 },
                 { id: 'bo', text: 'BUS OVER', at: onMixer(MIXER.busOver.x + 3, MIXER.busOver.y), dx: 26, dy: -6, tone: 'red' },
                 { id: 'ms', text: 'MASTER', at: onMixer(MIXER.master.x - 10, MIXER.master.y + 4), dx: -14, dy: 22 },
               ],
+              obstacles: [{ x: BOOTH_LAYOUT.mixer.x + 64, y: BOOTH_LAYOUT.mixer.y + MIXER.meters.y - 6, w: 44, h: MIXER.meters.h + 12 }, { x: BOOTH_LAYOUT.mixer.x + 100, y: BOOTH_LAYOUT.mixer.y + MIXER.meters.y + MIXER.meters.h, w: 72, h: 16 }],
+              screenOverlay: (_W, _H, xf, k) => <MeterScaleStrip xf={xf} k={k} />,
               a11y: 'The mixer from above: the two TRIM knobs, the four meters (channel 1, master left, master right, channel 2) and the BUS OVER light.',
             }}
           />
@@ -87,6 +118,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
     >
       {wiredForYou ? <Note>The booth is wired and powered for you on this screen (Screen 4 shows how).</Note> : null}
       <Step n={1}>
+        <Look>You are looking at the mixer from above: the two TRIM knobs, the four meters (channel 1, master left, master right, channel 2) with their scale, and the BUS OVER light.</Look>
         <P>The TRIM decides how much of a track comes into its channel. Set it once for each track, so the channel fader is left for the mix itself.</P>
         <P>Read the meter at the stage you are setting. On this mixer each channel’s meter shows the channel after TRIM and EQ, before its fader. The MASTER meters show the output, after the MASTER knob.</P>
         <P>Tracks arrive at different levels. Night Ferry (deck A) was mastered quietly; Glass Harbour (deck B) was mastered loud. The trims are how you even them out.</P>

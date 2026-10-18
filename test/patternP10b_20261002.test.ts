@@ -198,6 +198,7 @@ const LESSON_DISPLAY: Record<string, string> = {
   'src/screens/lab/speech/speechPagesA.tsx': 'AUTO step-through the learner switched on; reduce-motion still holds it',
   'src/screens/lab/deesser/DeEsserLabScreen.tsx': 'AUTO step-through the learner switched on; reduce-motion still holds it',
   'src/screens/lab/connectorselect/pagesC.tsx': 'the FLICKERING lamp is the tester’s reading of the learner’s probe; reduce-motion holds it, the word carries it',
+  'src/screens/lab/dj/booth/useBoothAudio.ts': 'the DJ booth clock: platters, jog rings, the tonearm, the waveform scroll and the meters run from the decks the learner started (the sound IS the clock); only the cable flow pulse is decorative, and it rides useDecorativeMotion (`flowMotion`)',
 };
 
 /** Repeating work that animates nothing (or runs once): clocks, engine polls,

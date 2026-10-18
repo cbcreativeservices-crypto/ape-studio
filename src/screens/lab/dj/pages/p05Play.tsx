@@ -14,7 +14,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { BoothStage } from '../art/BoothStage';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -172,6 +172,7 @@ function PagePlay({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{`You are looking at deck ${deck} from above: its screen, jog wheel, CUE and PLAY.`}</Look>
         <P>Picture a set in progress: deck A plays to the crowd — it is ON AIR (start it from BROWSE → DECK A → PLAY A if you want to hear it). Deck B is free. You prepare the next track on the free deck: load it, find where it should start, and set a cue point there, all while the crowd keeps hearing deck A.</P>
         <P>The transport CUE on a player is a place in the track. It is not the mixer’s headphone CUE (Screen 7) — same word, different job.</P>
         <Terms items={TERMS} />

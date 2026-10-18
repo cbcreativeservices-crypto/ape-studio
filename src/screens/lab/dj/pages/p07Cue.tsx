@@ -13,7 +13,7 @@ import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
-import { MixerTop } from '../art/MixerTop';
+import { MIXER_PARTS, MixerTop, mixerPartBox } from '../art/MixerTop';
 import { Headphones, PowerSpeaker } from '../art/gear';
 import { LedColumn } from '../art/parts';
 import { useTapDb } from '../art/motion';
@@ -21,7 +21,7 @@ import { Group, LinearGradient, Rect, Skia, vec } from '@shopify/react-native-sk
 import { INK } from '../art/ink';
 import { MIXER, STRIP_X, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, levelKey, stopKey } from '../dock';
 import { getBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -40,11 +40,20 @@ const TERMS = [
  *  three outputs' meters (phones L, phones R, booth) from the render. */
 const BAND_TOP = 150;
 const BAND_H = 118;
-const FRAME: Box = { x: -8, y: -8, w: 292, h: 286 };
-const HP = { x: 4, y: 128, s: 0.56 };
-const BM = { x: 168, y: 136, s: 0.3 };
-const MET = { y: 140, h: 118, w: 8, l: 118, r: 136, booth: 262 };
+const FRAME: Box = { x: -8, y: -8, w: 300, h: 286 };
+const HP = { x: 4, y: 130, s: 0.48 };
+const BM = { x: 158, y: 136, s: 0.3 };
+const MET = { y: 140, h: 112, w: 8, l: 112, r: 128, booth: 252, crowd: 270 };
 const band = (y: number) => y - BAND_TOP;
+/** Label obstacles: the band's controls, the headphones, the monitor, the meters. */
+const OBST: Box[] = [
+  ...MIXER_PARTS.map((p) => mixerPartBox(p)).filter((b) => b.y + b.h > BAND_TOP && b.y < BAND_TOP + BAND_H).map((b) => ({ ...b, y: b.y - BAND_TOP })),
+  { x: HP.x + 8, y: HP.y + 4, w: 184 * HP.s, h: 300 * HP.s },
+  { x: BM.x, y: BM.y, w: 270 * BM.s, h: 420 * BM.s },
+  ...[MET.l, MET.r, MET.booth, MET.crowd].map((x) => ({ x: x - 3, y: MET.y - 3, w: MET.w + 6, h: MET.h + 6 })),
+];
+
+const LOOK = 'You are looking at the mixer’s headphone and booth controls, your headphones (as you wear them), a booth monitor, and four meters: your headphones’ left and right, the booth, and what the crowd hears.';
 
 function CueTray() {
   const b = getBooth();
@@ -75,11 +84,14 @@ function MeterCols() {
   const rh = useTapDb('phonesR', 'hold');
   const b = useTapDb('booth');
   const bh = useTapDb('booth', 'hold');
+  const c = useTapDb('crowd');
+  const ch = useTapDb('crowd', 'hold');
   return (
     <Group>
       <LedColumn x={MET.l} y={MET.y} w={MET.w} h={MET.h} level={l} hold={lh} />
       <LedColumn x={MET.r} y={MET.y} w={MET.w} h={MET.h} level={r} hold={rh} />
       <LedColumn x={MET.booth} y={MET.y} w={MET.w} h={MET.h} level={b} hold={bh} />
+      <LedColumn x={MET.crowd} y={MET.y} w={MET.w} h={MET.h} level={c} hold={ch} />
     </Group>
   );
 }
@@ -123,7 +135,8 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
             h={h}
             frame={FRAME}
             motion={motion}
-            a11y={`The mixer with its CUE buttons and headphone section, the headphones and a booth monitor. Left ear: ${leftGlow === INK.amber ? 'cue' : leftGlow ? 'master' : 'silent'}; right ear: ${rightGlow === INK.amber ? 'cue' : rightGlow ? 'master' : 'silent'}.`}
+            a11y={`${LOOK} Left ear: ${leftGlow === INK.amber ? 'cue' : leftGlow ? 'master' : 'silent'}; right ear: ${rightGlow === INK.amber ? 'cue' : rightGlow ? 'master' : 'silent'}.`}
+            obstacles={OBST}
             callouts={[
               { id: 'bt', text: 'BOOTH LEVEL', at: { x: MIXER.booth.x + 10, y: band(MIXER.booth.y) }, dx: 10, dy: -4 },
               { id: 'mx', text: 'CUE ↔ MASTER', at: { x: MIXER.cueMix.x - 9, y: band(MIXER.cueMix.y) }, dx: -16, dy: -12 },
@@ -131,10 +144,11 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
               { id: 'sp', text: 'SPLIT', at: { x: MIXER.split.x + 14, y: band(MIXER.split.y + 9) }, dx: 0, dy: 14 },
               { id: 'c1', text: 'CUE 1', at: { x: STRIP_X[1], y: band(MIXER.cue.y + 6) }, dx: 0, dy: 14 },
               { id: 'c2', text: 'CUE 2', at: { x: STRIP_X[2], y: band(MIXER.cue.y + 6) }, dx: 0, dy: 14 },
-              { id: 'l', text: leftGlow === INK.amber ? 'L: CUE' : leftGlow ? 'L: MASTER' : 'L: —', at: { x: HP.x + 36 * HP.s, y: HP.y + 188 * HP.s }, dx: 0, dy: 16, tone: leftGlow === INK.amber ? 'amber' : leftGlow ? 'blue' : 'plain' },
-              { id: 'r', text: rightGlow === INK.amber ? 'R: CUE' : rightGlow ? 'R: MASTER' : 'R: —', at: { x: HP.x + 154 * HP.s, y: HP.y + 188 * HP.s }, dx: 0, dy: 36, tone: rightGlow === INK.amber ? 'amber' : rightGlow ? 'blue' : 'plain' },
-              { id: 'pm', text: 'L · R', at: { x: (MET.l + MET.r + MET.w) / 2, y: MET.y + MET.h }, dx: 0, dy: 12, tone: 'plain' },
-              { id: 'bm', text: `BOOTH ${boothDb}`, at: { x: BM.x + 135 * BM.s, y: MET.y + MET.h }, dx: 0, dy: 12, tone: 'plain' },
+              { id: 'l', text: leftGlow === INK.amber ? 'L: CUE' : leftGlow ? 'L: MASTER' : 'L: —', at: { x: HP.x + 46 * HP.s, y: HP.y + 209 * HP.s }, dx: -8, dy: 14, tone: leftGlow === INK.amber ? 'amber' : leftGlow ? 'blue' : 'plain' },
+              { id: 'r', text: rightGlow === INK.amber ? 'R: CUE' : rightGlow ? 'R: MASTER' : 'R: —', at: { x: HP.x + 154 * HP.s, y: HP.y + 209 * HP.s }, dx: 8, dy: 14, tone: rightGlow === INK.amber ? 'amber' : rightGlow ? 'blue' : 'plain' },
+              { id: 'pm', text: 'PHONES L · R', at: { x: (MET.l + MET.r + MET.w) / 2, y: MET.y + MET.h + 2 }, dx: 0, dy: 12, tone: 'plain' },
+              { id: 'bm', text: `BOOTH ${boothDb}`, at: { x: MET.booth + MET.w / 2, y: MET.y + MET.h + 2 }, dx: -6, dy: 14, tone: 'plain' },
+              { id: 'cr', text: 'CROWD', at: { x: MET.crowd + MET.w / 2, y: MET.y - 2 }, dx: 0, dy: -12, tone: 'plain' },
             ]}
           >
             <Group clip={Skia.RRectXY(Skia.XYWHRect(-4, 0, 278, BAND_H), 8, 8)}>
@@ -183,6 +197,7 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{LOOK}</Look>
         <P>The crowd hears the MASTER. You hear the next track first, privately, in your headphones: press that channel’s CUE. The cue is taken before the channel fader, so the fader can stay down — the crowd hears nothing of it.</P>
         <P>A phone has one headphone output, so here you switch what it plays: PHONES is your headphones, CROWD is the PA, BOOTH is the booth monitors. Split cue is shown as left and right inside the headphone feed — this lab cannot give you a separate cue output.</P>
         <Terms items={TERMS} />

@@ -16,9 +16,9 @@ import { nioshDose } from '../../calc/workspaces/splSafety';
 import { BoothStage } from '../art/BoothStage';
 import { INK } from '../art/ink';
 import { SceneText } from '../art/sceneText';
-import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
+import { BOOTH_LAYOUT, PLAYER, VIEWS } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, listenKey, playKey, stopKey } from '../dock';
 import { setBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, freshBooth, useScreenSetup } from '../booth/setup';
@@ -66,11 +66,20 @@ const WHO: { id: Perspective; top: string; sub: string }[] = [
   { id: 'PHONES', top: 'YOU', sub: 'YOUR HEADPHONES' },
 ];
 
+/** The booth drawing's height on a glass `w` wide (its own aspect), and
+ *  where it sits so the strip follows right under it (no empty band). */
+function boothFit(W: number, H: number) {
+  const v = VIEWS.booth;
+  const dh = Math.min(H - STRIP_H, ((W - 12) / v.w) * v.h + 12);
+  const y0 = Math.max(0, (H - STRIP_H - dh) / 2);
+  return { x: 0, y: y0, w: W, h: dh };
+}
+
 /** Under the booth: whose ears the phone is playing right now (LISTEN). */
-function PerspectiveStrip({ w, h, now }: { w: number; h: number; now: Perspective }) {
+function PerspectiveStrip({ w, top, now }: { w: number; top: number; now: Perspective }) {
   const gap = 6;
   const tw = (w - 12 - gap * 2) / 3;
-  const y = h - STRIP_H + 4;
+  const y = top + 2;
   return (
     <Group>
       {WHO.map((p, i) => {
@@ -126,8 +135,15 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
             motion={motion}
             spec={{
               view: 'booth',
-              fit: (W, H) => ({ x: 0, y: 0, w: W, h: H - STRIP_H }),
-              screenOverlay: (W, H) => <PerspectiveStrip w={W} h={H} now={booth.perspective} />,
+              fit: (W, H) => boothFit(W, H),
+              labelsOutsideFit: true,
+              aspect: VIEWS.booth.w / (VIEWS.booth.h + 70 + STRIP_H * (VIEWS.booth.w / 374)),
+              // the listening strip right under the drawing: no label there
+              obstacles: [{ x: -2000, y: VIEWS.booth.y + VIEWS.booth.h, w: 5000, h: 400 }],
+              screenOverlay: (W, H) => {
+                const f = boothFit(W, H);
+                return <PerspectiveStrip w={W} top={f.y + f.h} now={booth.perspective} />;
+              },
               highlight: { A: ['play'] },
               callouts: [
                 { id: 'a', text: 'DECK A', at: { x: BOOTH_LAYOUT.A.x + 160, y: -2 }, dx: 0, dy: -14 },
@@ -160,6 +176,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>You are looking at the DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right. Underneath, who you are listening as.</Look>
         <P>In this lab you will build a two-deck DJ system, follow the music from the players to the speakers, cue the next track privately in your headphones, mix with faders, EQ and tempo, and find faults the way a working DJ does.</P>
         <P>Everything here plays from ONE booth that stays set up as you move from screen to screen. The music is the lab’s own, made inside the app.</P>
         <P>Your hearing comes first. Loudness and time add up: a few hours in a loud booth can use more than a whole day’s safe allowance.</P>

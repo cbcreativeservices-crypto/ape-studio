@@ -5,19 +5,21 @@
  * connect on the system map; every cable in its own lane; the blue glow is
  * the render's real route. The fault: half (or none) of the PA.
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { colors } from '../../../../theme/tokens';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
-import { MAP, MAP_FRAME, SystemMap, speakerInput } from '../art/SystemMap';
+import { SystemMap, roomSpeakerBox } from '../art/SystemMap';
+import { MAP, MAP_BODIES, MAP_FRAME, type SpeakerKey } from '../geometry/mapGeometry';
+import { PLAYER_REAR, MIXER_REAR } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, stopKey } from '../dock';
 import { PatchTray, PowerTray, type PowerEvent } from '../trays';
 import { getBooth, setBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
-import { AUDIO_PLUGS, POWERED, POWER_PLUGS, SPEAKERS, connect, deviceLive, plugCorrect, systemBuilt, type Booth } from '../model/djModel';
+import { AUDIO_PLUGS, POWERED, POWER_PLUGS, SPEAKERS, connect, deviceLive, plugCorrect, speakerCabled, systemBuilt, type Booth } from '../model/djModel';
 import { soundCell, useBoothKit } from './shared';
 
 const TERMS = [
@@ -27,6 +29,8 @@ const TERMS = [
   { term: 'Power sequencing', def: 'The order you switch things on and off: sources and mixer first, amplified speakers LAST (and off FIRST), so switching bangs never reach them.' },
   { term: 'Protective earth', def: 'The mains safety connection (the earth pin). Never remove or tape it to cure hum — it is what protects people if a fault happens.' },
 ] as const;
+
+const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach round to wire it, so it is mirrored: deck B, the mixer and deck A along the table, the PA speakers on their stands at the top corners (PA R on the left), the booth monitors on the table, and below, at full size, each speaker’s input plate, the three rear panels, the headphones and the power strip.';
 
 function unbuilt(b: Booth): Booth {
   const plugs = { ...b.plugs };
@@ -47,9 +51,17 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
   const [heard, setHeard] = useState(false);
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
+  // the speakers that just THUMPED: flashed red on the map for a moment
+  const [thump, setThump] = useState<readonly SpeakerKey[]>([]);
+  useEffect(() => {
+    if (!thump.length) return;
+    const id = setTimeout(() => setThump([]), 1300);
+    return () => clearTimeout(id);
+  }, [thump]);
   const onPower = (e: PowerEvent) => {
     setLastPower(e);
     const b = getBooth();
+    if (e.thump) setThump(SPEAKERS.filter((sp) => deviceLive(b, sp) && speakerCabled(b, sp)));
     const allOn = POWERED.every((d) => deviceLive(b, d));
     const allOff = POWERED.every((d) => !b.power[d]);
     const s = seq.current;
@@ -82,7 +94,12 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
     { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);
-  const label = (id: string, text: string, at: { x: number; y: number }, dx: number, dy: number, tone?: 'blue' | 'amber') => ({ id, text, at, dx, dy, tone });
+  const label = (id: string, text: string, at: { x: number; y: number }, dx: number, dy: number, tone?: 'blue' | 'amber' | 'red' | 'plain') => ({ id, text, at, dx, dy, tone });
+  const top = (k: SpeakerKey) => {
+    const b = roomSpeakerBox(k);
+    return { x: b.x + b.w / 2, y: b.y + 4 };
+  };
+  const hard = [...MAP_BODIES, ...(['paR', 'boothR', 'boothL', 'paL'] as const).map((k) => roomSpeakerBox(k)), { x: MAP.phones.x, y: MAP.phones.y, w: 70, h: 105 }, { x: MAP.room.table.x, y: 190, w: MAP.room.table.w, h: 140 }];
   return (
     <DjRack
       spec={{
@@ -92,16 +109,22 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
             h={h}
             frame={MAP_FRAME}
             motion={motion}
-            a11y={`The whole system, wired from behind: deck A, the mixer and deck B along the back of the table, the PA speakers and booth monitors above, the headphones at the mixer front, the power strip below. ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.`}
+            a11y={`${LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${thump.length ? ' A speaker just thumped.' : ''}`}
+            obstacles={hard}
             callouts={[
-              label('pal', 'PA L', { x: MAP.paL.x + 76, y: MAP.paL.y + 12 }, 0, -2),
-              label('par', 'PA R', { x: MAP.paR.x + 76, y: MAP.paR.y + 12 }, 0, -2),
-              label('bl', 'BOOTH L', speakerInput('boothL'), 0, 12),
-              label('br', 'BOOTH R', speakerInput('boothR'), 0, 12),
-              label('st', 'POWER STRIP', { x: MAP.strip.x + 165, y: MAP.strip.y + 64 }, 0, 6),
+              label('db', 'DECK B', { x: MAP.B.x + PLAYER_REAR.w / 2, y: MAP.B.y + 4 }, 0, -14, 'plain'),
+              label('mx', 'MIXER', { x: MAP.mixer.x + MIXER_REAR.w / 2, y: MAP.mixer.y + 4 }, 0, -14, 'plain'),
+              label('da', 'DECK A', { x: MAP.A.x + PLAYER_REAR.w / 2, y: MAP.A.y + 4 }, 0, -14, 'plain'),
+              label('hp', 'HEADPHONES', { x: MAP.phones.x + 12, y: MAP.phones.y + 60 }, -20, 0, 'plain'),
+              ...thump.map((k) => label(`th${k}`, 'THUMP', top(k), 0, -10, 'red')),
+              label('par', 'PA R', top('paR'), 16, 0),
+              label('pal', 'PA L', top('paL'), -16, 0),
+              label('br', 'BOOTH R', top('boothR'), -14, -10),
+              label('bl', 'BOOTH L', top('boothL'), 14, -10),
+              label('st', 'POWER STRIP', { x: MAP.strip.x + 165, y: MAP.strip.y + 60 }, 0, 10),
             ]}
           >
-            <SystemMap booth={booth} last={audio.last} flow />
+            <SystemMap booth={booth} last={audio.last} flow={audio.flowMotion} thump={thump} />
           </Scene>
         ),
         bezel: [
@@ -131,6 +154,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{LOOK}</Look>
         <P>A first system: each player’s AUDIO OUT goes to a mixer LINE input with an RCA pair (white is left, red is right). The mixer’s MASTER OUT (balanced XLR) feeds the two PA speakers — the crowd. Its BOOTH OUT (TRS) feeds the booth monitors — you. The headphones plug into the front of the mixer.</P>
         <P>Every powered device also needs a power cord. Audio flows player → cable → mixer input → channel → mix → MASTER → PA. When something is silent, follow that path until the music stops.</P>
         <Terms items={TERMS} />

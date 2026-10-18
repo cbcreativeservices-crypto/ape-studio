@@ -23,7 +23,7 @@ import { Halo } from '../art/parts';
 import { INK } from '../art/ink';
 import { MIXER_REAR_JACKS, PLAYER_REAR_JACKS, type Box, type Pt } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
@@ -80,7 +80,7 @@ const SOCKETS: Sock[] = [
   { id: 'line', label: 'CH1 LINE IN', blurb: 'An INPUT at line level, stereo on an RCA pair. Players, interfaces, a turntable with its preamp ON.', box: () => ({ x: mixJack('ch1.line.L').x - 9, y: mixJack('ch1.line.L').y - 9, w: 18, h: 42 }) },
   { id: 'phono', label: 'CH1 PHONO IN', blurb: 'An INPUT for a raw turntable cartridge: it adds about 36 dB of gain and undoes the record’s RIAA curve. A line-level source here overloads it.', box: () => ({ x: mixJack('ch1.phono.L').x - 9, y: mixJack('ch1.phono.L').y - 9, w: 18, h: 42 }) },
   { id: 'gnd', label: 'GND POST', blurb: 'Where a turntable’s thin ground wire goes (a SIGNAL ground, against hum). It is not the mains earth, and nothing replaces that.', box: () => ring(mixJack('gnd'), 9) },
-  { id: 'master', label: 'MASTER OUT (XLR)', blurb: 'OUTPUTS, balanced, line level: one XLR per side, left and right. Each is a MONO balanced channel — a stereo feed is two cables.', box: () => ({ x: mixJack('master.L').x - 14, y: mixJack('master.L').y - 14, w: mixJack('master.R').x - mixJack('master.L').x + 28, h: 28 }) },
+  { id: 'master', label: 'MASTER OUT (XLR)', blurb: 'OUTPUTS, balanced, line level: one XLR per side, left and right. Each is a MONO balanced channel — a stereo feed is two cables.', box: () => ({ x: Math.min(mixJack('master.L').x, mixJack('master.R').x) - 14, y: mixJack('master.L').y - 14, w: Math.abs(mixJack('master.R').x - mixJack('master.L').x) + 28, h: 28 }) },
   { id: 'booth', label: 'BOOTH OUT (TRS)', blurb: 'OUTPUTS, balanced, line level, on 6.35 mm TRS jacks — here each TRS is ONE mono channel (L or R). The same plug shape as stereo headphones, a different job.', box: () => ({ x: mixJack('booth.L').x - 10, y: mixJack('booth.L').y - 10, w: 20, h: mixJack('booth.R').y - mixJack('booth.L').y + 20 }) },
 ];
 
@@ -274,6 +274,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{`You are looking at the back of ${src === 'A' ? 'deck A' : 'the turntable'} above the back of the mixer, with the source’s white and red RCA plugs. Seen from behind, the mixer is mirrored: channel 2 and MASTER R are on the left.`}</Look>
         <P>Every socket has a DIRECTION (out or in), a CONNECTOR, a SIGNAL (analog audio, digital audio, data or power), a LEVEL and a number of CHANNELS. Read all five before you plug in — the shape alone never proves two things belong together.</P>
         <P>Levels differ by thousands of times: a cartridge gives a few thousandths of a volt; line level is around a third of a volt to a volt. That is why a mixer has separate PHONO and LINE inputs.</P>
         <LevelLadder />

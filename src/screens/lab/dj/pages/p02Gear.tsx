@@ -11,14 +11,14 @@ import { colors } from '../../../../theme/tokens';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
-import { MixerTop } from '../art/MixerTop';
-import { PlayerTop } from '../art/PlayerTop';
-import { TurntableTop } from '../art/TurntableTop';
-import { CTRL_D, CTRL_W, ControllerTop, Headphones, IFACE_D, IFACE_W, InterfaceTop, LAPTOP_H, LAPTOP_W, Laptop, PHONES_H, PHONES_W, PowerSpeaker, SPEAKER_H, SPEAKER_REAR, SPEAKER_REAR_H, SPEAKER_REAR_W, SPEAKER_W, SpeakerRear } from '../art/gear';
-import { Cable } from '../art/parts';
+import { MIXER_PARTS, MixerTop, mixerPartBox } from '../art/MixerTop';
+import { PLAYER_PARTS, PlayerTop, playerPartBox } from '../art/PlayerTop';
+import { ARM_AT_REST, TT_PARTS, TurntableTop, turntablePartBox } from '../art/TurntableTop';
+import { CTRL_D, CTRL_OUT, CTRL_USB, CTRL_W, ControllerTop, Headphones, IFACE_D, IFACE_REAR, IFACE_W, InterfaceRear, InterfaceTop, LAPTOP_H, LAPTOP_USB, LAPTOP_W, Laptop, PHONES_H, PHONES_W, PowerSpeaker, RearPlugTop, SPEAKER_H, SPEAKER_REAR, SPEAKER_REAR_H, SPEAKER_REAR_W, SPEAKER_W, SpeakerRear, UsbAPlugTop } from '../art/gear';
+import { Cable, PlugFace } from '../art/parts';
 import { MIXER, MIXER_D, MIXER_W, PLAYER, PLAYER_D, PLAYER_W, STRIP_X, TT, TT_D, TT_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
 import { useScreenSetup } from '../booth/setup';
 import { builtBooth, freshDeck, type Booth } from '../model/djModel';
@@ -58,72 +58,152 @@ const SOFTWARE_OUTS: { id: SoftwareOut; label: string; blurb: string }[] = [
   { id: 'LAPTOP', label: 'LAPTOP’S OWN AUDIO', blurb: 'The computer’s built-in speakers or headphone jack. The controller’s outputs stay silent.' },
 ];
 
-const lab = (id: string, text: string, x: number, y: number, dx: number, dy: number): Callout => ({ id, text, at: { x, y }, dx, dy });
+const lab = (id: string, text: string, x: number, y: number, dx: number, dy: number, tone?: Callout['tone']): Callout => ({ id, text, at: { x, y }, dx, dy, tone });
+const circBox = (cx: number, cy: number, d: number): Box => ({ x: cx - d / 2, y: cy - d / 2, w: d, h: d });
 
-function useItemScene(item: Item, booth: Booth): { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string } {
+type ItemScene = { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string; obstacles: Box[] };
+
+/** The laptop above the controller, joined by a real USB cable: a USB-A
+ *  plug in the laptop's left port, the cable dressed down and across, a
+ *  USB-B plug into the controller's rear edge; the controller's MASTER OUT
+ *  plugs on its rear edge with their cables leaving toward the speakers. */
+const LX = (CTRL_W - LAPTOP_W) / 2;
+const CY = LAPTOP_H + 60;
+function LaptopAndController({ out }: { out: SoftwareOut }) {
+  const usbStart: [number, number] = [LX + LAPTOP_USB.L.x - 34, LAPTOP_USB.L.y];
+  const usbPts: [number, number][] = [usbStart, [LX - 56, LAPTOP_USB.L.y], [LX - 56, CY - 44], [CTRL_USB.x, CY - 44], [CTRL_USB.x, CY - 22]];
+  const outs = [CTRL_OUT.x - 14, CTRL_OUT.x + 14];
+  return (
+    <>
+      <Laptop x={LX} y={0} />
+      <Cable pts={usbPts} style={{ colour: '#2a2c31', width: 4, pattern: 'plain' }} />
+      <UsbAPlugTop x={LX + LAPTOP_USB.L.x} y={LAPTOP_USB.L.y} dir={-1} />
+      <ControllerTop x={0} y={CY} />
+      <RearPlugTop x={CTRL_USB.x} y={CY + 2} kind="usb" />
+      {outs.map((ox, i) => (
+        <Group key={ox}>
+          <Cable pts={[[ox, CY - 30], [ox, CY - 52 - i * 9], [CTRL_W + 30, CY - 52 - i * 9]]} style={{ colour: '#3d4046', width: 4.6, pattern: i ? 'dash' : 'stripe' }} glow={out === 'CONTROLLER' ? '#6fa8ff' : null} />
+          <RearPlugTop x={ox} y={CY + 2} kind="xlr" />
+        </Group>
+      ))}
+    </>
+  );
+}
+
+function useItemScene(item: Item, booth: Booth): ItemScene {
   const still = useMemo(() => freshDeck('nightFerry'), []);
-  return useMemo(() => {
+  return useMemo((): ItemScene => {
     switch (item) {
-      case 'turntable':
+      case 'turntable': {
+        const A = ARM_AT_REST;
         return {
           frame: { x: -14, y: -16, w: TT_W + 28, h: TT_D + 32 },
           body: <TurntableTop x={0} y={0} d={still} playing={false} />,
-          callouts: [lab('pl', 'PLATTER', TT.platter.cx - 150, TT.platter.cy + 70, 6, 40), lab('rec', 'RECORD', TT.platter.cx - 70, TT.platter.cy - 90, -24, -22), lab('arm', 'TONEARM', 352, 150, 30, -10), lab('hs', 'HEADSHELL', TT.armRest.x - 6, TT.armRest.y + 4, -30, 34), lab('cw', 'COUNTERWEIGHT', TT.counterweight.x, TT.counterweight.y - 12, -20, -18), lab('ss', 'START/STOP', TT.startStop.x + 20, TT.startStop.y + 30, 8, 18), lab('pt', 'PITCH', TT.pitch.x, TT.pitch.top + TT.pitch.len, -10, 34)],
-          a11y: 'A DJ turntable from above: the platter and record, the tonearm with its headshell and counterweight, start/stop and the pitch fader.',
+          callouts: [
+            lab('pl', 'PLATTER', TT.platter.cx - 150, TT.platter.cy + 80, -10, 24),
+            lab('rec', 'RECORD', TT.platter.cx - 70, TT.platter.cy - 90, -24, -22),
+            lab('arm', 'TONEARM', A.tube.x - 4, A.tube.y, -30, -6),
+            lab('hs', 'HEADSHELL', A.headshell.x, A.headshell.y + 10, -26, 22),
+            lab('cw', 'COUNTERWEIGHT', A.counterweight.x, A.counterweight.y - 14, -20, -16),
+            lab('ss', 'START / STOP', TT.startStop.x + 4, TT.startStop.y + TT.startStop.h, -6, 18),
+            lab('pt', 'PITCH', TT.pitch.x, TT.pitch.top + TT.pitch.len + 8, 10, 22),
+            lab('sb', 'STROBE LAMP', TT.strobe.cx, TT.strobe.cy, -10, 0),
+          ],
+          a11y: 'A DJ turntable from above: the platter with its strobe dots and the record, the tonearm on its pivot with the headshell, the counterweight behind and the cue lever beside it, start/stop, 33/45 and the pitch fader.',
+          obstacles: TT_PARTS.map((p) => turntablePartBox(p)),
         };
+      }
       case 'player':
         return {
           frame: { x: -12, y: -14, w: PLAYER_W + 24, h: PLAYER_D + 28 },
           body: <PlayerTop x={0} y={0} deck="A" d={booth.decks.A} />,
-          callouts: [lab('sc', 'SCREEN', PLAYER.screen.x + 10, PLAYER.screen.y + 20, -40, -18), lab('jg', 'JOG WHEEL', PLAYER.jog.cx + 70, PLAYER.jog.cy + 70, 20, 30), lab('hc', 'HOT CUES', PLAYER.hotCues.xs[3] + 40, PLAYER.hotCues.y + 9, 22, -8), lab('cue', 'CUE', PLAYER.cue.cx - 14, PLAYER.cue.cy, -24, -10), lab('pl', 'PLAY', PLAYER.play.cx - 14, PLAYER.play.cy, -24, 10), lab('tp', 'TEMPO', PLAYER.tempo.x + 8, PLAYER.tempo.top + 90, 18, 30), lab('usb', 'USB / SD', PLAYER.slots.usb.x + 13, PLAYER.slots.usb.y, 4, -18)],
-          a11y: 'A media player from above: its screen, the jog wheel, hot cue pads, CUE and PLAY, and the tempo fader.',
+          callouts: [
+            lab('sc', 'SCREEN', PLAYER.screen.x + 10, PLAYER.screen.y + 10, -30, -18),
+            lab('jg', 'JOG WHEEL', PLAYER.jog.cx + 70, PLAYER.jog.cy + 70, 20, 30),
+            lab('hc', 'HOT CUES', PLAYER.hotCues.xs[0] + 6, PLAYER.hotCues.y + 9, -20, 0),
+            lab('cue', 'CUE', PLAYER.cue.cx - 16, PLAYER.cue.cy, -20, 0),
+            lab('pl', 'PLAY', PLAYER.play.cx - 16, PLAYER.play.cy, -20, 0),
+            lab('tp', 'TEMPO', PLAYER.tempo.x + 10, PLAYER.tempo.top + 60, 18, 0),
+            lab('usb', 'USB / SD', PLAYER.slots.usb.x + 13, PLAYER.slots.usb.y, 4, -18),
+          ],
+          a11y: 'A media player from above: its 7-inch screen with the waveform, the jog wheel, hot cue pads, loop keys, CUE and PLAY, SYNC and the tempo fader.',
+          obstacles: PLAYER_PARTS.map((p) => playerPartBox(p)),
         };
       case 'mixer':
         return {
           frame: { x: -12, y: -14, w: MIXER_W + 24, h: MIXER_D + 26 },
           body: <MixerTop x={0} y={0} booth={booth} />,
-          callouts: [lab('tr', 'TRIM', STRIP_X[1] - 9, MIXER.trim.y, -34, -8), lab('eq', 'EQ', STRIP_X[1] - 10, MIXER.mid.y, -36, 0), lab('fl', 'FILTER', STRIP_X[1] - 10, MIXER.filter.y, -38, 6), lab('fd', 'CH FADER', STRIP_X[1] - 8, MIXER.fader.top + 30, -46, 10), lab('xf', 'CROSSFADER', MIXER.xfader.left + 23, MIXER.xfader.y + 8, 0, 26), lab('mt', 'METERS', 135, MIXER.meters.y + 12, 74, -20), lab('ms', 'MASTER · BOOTH', MIXER.booth.x + 10, MIXER.booth.y, 30, 4), lab('ph', 'PHONES', MIXER.phones.x + 9, MIXER.phones.y, 30, 16)],
+          callouts: [
+            lab('tr', 'TRIM', STRIP_X[1] - 10, MIXER.trim.y, -20, 0),
+            lab('eq', 'EQ', STRIP_X[1] - 11, MIXER.mid.y, -20, 0),
+            lab('fl', 'FILTER', STRIP_X[1] - 11, MIXER.filter.y, -20, 0),
+            lab('fd', 'CH FADER', STRIP_X[1] - 8, MIXER.fader.top + 30, -20, 0),
+            lab('xf', 'CROSSFADER', MIXER.xfader.left + 23, MIXER.xfader.y + 8, 0, 20),
+            lab('mt', 'METERS', 135, MIXER.meters.y + 4, 0, -18),
+            lab('ms', 'MASTER · BOOTH', MIXER.booth.x + 11, MIXER.booth.y, 20, 0),
+            lab('ph', 'PHONES', MIXER.phones.x + 9, MIXER.phones.y, 20, 0),
+          ],
           a11y: 'A two-channel DJ mixer from above: trims, EQ, filters, channel faders, the crossfader, the meters, master, booth and headphone controls.',
+          obstacles: MIXER_PARTS.map((p) => mixerPartBox(p)),
         };
       case 'controller':
       case 'standalone': {
         const sa = item === 'standalone';
         return {
-          frame: sa ? { x: -14, y: -16, w: CTRL_W + 28, h: CTRL_D + 32 } : { x: -14, y: -16, w: CTRL_W + 28, h: CTRL_D + LAPTOP_H + 50 },
-          body: sa ? (
-            <ControllerTop x={0} y={0} standalone />
-          ) : (
-            <>
-              <Laptop x={(CTRL_W - LAPTOP_W) / 2} y={0} />
-              <Cable pts={[[CTRL_W / 2 + 40, LAPTOP_H - 2], [CTRL_W / 2 + 40, LAPTOP_H + 22], [CTRL_W / 2 + 10, LAPTOP_H + 30]]} style={{ colour: '#8e939b', width: 3, dash: [4, 3] }} />
-              <ControllerTop x={0} y={LAPTOP_H + 30} />
-            </>
-          ),
+          frame: sa ? { x: -14, y: -16, w: CTRL_W + 28, h: CTRL_D + 32 } : { x: -70, y: -16, w: CTRL_W + 120, h: CY + CTRL_D + 30 },
+          body: sa ? <ControllerTop x={0} y={0} standalone /> : <LaptopAndController out="CONTROLLER" />,
           callouts: sa
-            ? [lab('sc', 'BUILT-IN SCREEN', CTRL_W / 2, 20, 0, -16), lab('jg', 'JOG', 122, 194, -10, 100), lab('mx', 'MIXER SECTION', CTRL_W / 2, 200, 0, 92), lab('sl', 'MEDIA SLOT', 409, 18, 30, -12)]
-            : [lab('lp', 'LAPTOP: THE SOFTWARE PLAYS', CTRL_W / 2, 40, 0, -20), lab('usb', 'USB: CONTROL + AUDIO', CTRL_W / 2 + 40, LAPTOP_H + 14, 54, 0), lab('jg', 'JOG', 122, LAPTOP_H + 30 + 194, -10, 90), lab('mx', 'MIXER SECTION', CTRL_W / 2, LAPTOP_H + 30 + 220, 0, 80)],
-          a11y: sa ? 'A standalone DJ system: two decks and a mixer in one unit with its own screen and media slot.' : 'A laptop running DJ software connected by USB to a two-deck controller.',
+            ? [lab('sc', 'BUILT-IN SCREEN', CTRL_W / 2, 16, 0, -16), lab('jg', 'JOG', 112, 196, -10, 100), lab('mx', 'MIXER SECTION', CTRL_W / 2, 230, 0, 92), lab('sl', 'MEDIA SLOT', 409, 12, 30, -12)]
+            : [lab('lp', 'LAPTOP: THE SOFTWARE PLAYS', CTRL_W / 2, 2, 0, -12), lab('usb', 'USB: CONTROL + AUDIO', LX - 56, 300, -10, 0), lab('jg', 'JOG', 112, CY + 196, -10, 90), lab('mx', 'MIXER SECTION', CTRL_W / 2, CY + 230, 0, 80), lab('out', 'MASTER OUT', CTRL_OUT.x, CY - 20, 20, -20)],
+          a11y: sa ? 'A standalone DJ system: two decks and a mixer in one unit with its own screen and media slot.' : 'A laptop seen from above, joined by a USB cable to a two-deck controller whose master outputs leave from its back edge.',
+          obstacles: [circBox(112, (sa ? 0 : CY) + 196, 166), circBox(438, (sa ? 0 : CY) + 196, 166), { x: 212, y: (sa ? 0 : CY) + 12, w: 126, h: 296 }, ...(sa ? [] : [{ x: LX, y: 0, w: LAPTOP_W, h: LAPTOP_H }])],
         };
       }
-      case 'interface':
+      case 'interface': {
+        const IX = 85;
+        const IY = 410;
+        const RY = 548;
+        const usb: [number, number][] = [[LAPTOP_USB.R.x + 34, LAPTOP_USB.R.y], [LAPTOP_W + 50, LAPTOP_USB.R.y], [LAPTOP_W + 50, RY + IFACE_REAR.usb.y], [IX + IFACE_REAR.usb.x, RY + IFACE_REAR.usb.y]];
         return {
-          frame: { x: -20, y: -20, w: LAPTOP_W + 40, h: LAPTOP_H + IFACE_D + 90 },
+          frame: { x: -20, y: -20, w: LAPTOP_W + 100, h: RY + IFACE_REAR.h + 90 },
           body: (
             <>
               <Laptop x={0} y={0} />
-              <Cable pts={[[LAPTOP_W - 30, LAPTOP_H - 4], [LAPTOP_W - 30, LAPTOP_H + 30], [IFACE_W + 100, LAPTOP_H + 60]]} style={{ colour: '#8e939b', width: 3, dash: [4, 3] }} />
-              <InterfaceTop x={(LAPTOP_W - IFACE_W) / 2} y={LAPTOP_H + 50} />
+              <Cable pts={usb} style={{ colour: '#2a2c31', width: 4, pattern: 'plain' }} />
+              <UsbAPlugTop x={LAPTOP_USB.R.x} y={LAPTOP_USB.R.y} dir={1} />
+              <InterfaceTop x={IX} y={IY} />
+              <InterfaceRear x={IX} y={RY} usbIn />
+              {[IFACE_REAR.outL, IFACE_REAR.outR].map((o, i) => (
+                <Group key={i}>
+                  <Cable pts={[[IX + o.x, RY + o.y], [IX + o.x + (i ? 6 : -6), RY + o.y + 40], [IX + o.x + (i ? 14 : -14), RY + o.y + 70]]} style={{ colour: '#101113', width: 4.2, pattern: 'dots' }} />
+                  <PlugFace cx={IX + o.x} cy={RY + o.y} kind="trs" colour="#2a2c31" />
+                </Group>
+              ))}
             </>
           ),
-          callouts: [lab('if', 'AUDIO INTERFACE', LAPTOP_W / 2, LAPTOP_H + 50 + IFACE_D, 0, 16), lab('usb', 'USB (DATA)', LAPTOP_W - 30, LAPTOP_H + 24, 22, 0), lab('lp', 'COMPUTER', LAPTOP_W / 2, 40, 0, -20)],
-          a11y: 'A laptop connected by USB to a small audio interface.',
+          callouts: [
+            lab('if', 'AUDIO INTERFACE', IX + IFACE_W, IY + 40, 16, 0),
+            lab('rr', 'ITS BACK: OUT L · OUT R · USB', IX + IFACE_REAR.w / 2, RY + IFACE_REAR.h, 0, 20),
+            lab('usb', 'USB (DATA + AUDIO)', LAPTOP_W + 50, 420, 10, 0),
+            lab('lp', 'COMPUTER', LAPTOP_W / 2, 2, 0, -12),
+          ],
+          a11y: 'A laptop seen from above, joined by a USB cable to the back of a small audio interface; the interface’s two balanced outputs carry the sound on.',
+          obstacles: [{ x: IX, y: IY, w: IFACE_W, h: IFACE_D }, { x: IX, y: RY, w: IFACE_REAR.w, h: IFACE_REAR.h }, { x: 0, y: 0, w: LAPTOP_W, h: LAPTOP_H }],
         };
+      }
       case 'headphones':
         return {
-          frame: { x: -20, y: -16, w: PHONES_W + 40, h: PHONES_H + 46 },
+          frame: { x: -24, y: -16, w: PHONES_W + 48, h: PHONES_H + 26 },
           body: <Headphones x={0} y={0} />,
-          callouts: [lab('l', 'LEFT CUP', 20, 120, -10, 0), lab('r', 'RIGHT CUP', 170, 120, 10, 0), lab('c', 'COILED CABLE', 64, 200, -20, 10), lab('p', '6.35 mm STEREO (TRS) PLUG', 84, 262, 0, 14)],
-          a11y: 'Closed-back DJ headphones from the front, with a coiled cable and a 6.35 millimetre stereo plug.',
+          callouts: [
+            lab('l', 'LEFT CUP', 46 - 34, 162, -14, 0),
+            lab('r', 'RIGHT CUP', 154 + 34, 162, 14, 0),
+            lab('hb', 'PADDED HEADBAND', 100, 24, 0, -16),
+            lab('c', 'COILED CABLE', 74, 226, -16, 10),
+            lab('p', '6.35 mm STEREO (TRS) PLUG', 100, 290, 0, 12),
+          ],
+          a11y: 'Closed-back DJ headphones from the front, drawn as you wear them (the left cup on your left): a padded headband, sliders into swivel yokes marked L and R, a coiled cable and a 6.35 millimetre stereo plug.',
+          obstacles: [{ x: 8, y: 110, w: 84, h: 104 }, { x: 108, y: 110, w: 84, h: 104 }],
         };
       case 'speaker':
         return {
@@ -134,16 +214,29 @@ function useItemScene(item: Item, booth: Booth): { frame: Box; body: ReactNode; 
               <SpeakerRear x={SPEAKER_W + 24} y={(SPEAKER_H - SPEAKER_REAR_H) / 2} on={false} />
             </>
           ),
-          callouts: [lab('hn', 'HORN (HIGHS)', SPEAKER_W / 2, 100, 0, -24), lab('wf', 'WOOFER (LOWS)', SPEAKER_W / 2, 390, 0, 30), lab('in', 'INPUT (XLR/TRS)', SPEAKER_W + 24 + SPEAKER_REAR.input.x, (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.input.y - 16, 0, -26), lab('lv', 'LEVEL', SPEAKER_W + 24 + SPEAKER_REAR.level.x + 14, (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.level.y, 30, 0), lab('ac', 'POWER IN', SPEAKER_W + 24 + SPEAKER_REAR.ac.x, (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.ac.y + 14, 0, 26)],
-          a11y: 'A powered PA speaker: the front with its grille, horn and woofer, and its rear amplifier panel with the input, level knob and power inlet.',
+          callouts: [
+            lab('hd', 'HANDLE', SPEAKER_W / 2, 26, 0, -14),
+            lab('hn', 'HORN (HIGHS)', SPEAKER_W / 2 + 80, 146, 20, 0),
+            lab('wf', 'WOOFER (LOWS)', SPEAKER_W / 2, 393 + 150, 0, 16),
+            lab('in', 'INPUT (XLR / TRS)', SPEAKER_W + 24 + SPEAKER_REAR.input.x, (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.input.y - 16, 0, -26),
+            lab('lv', 'LEVEL', SPEAKER_W + 24 + SPEAKER_REAR.level.x + 14, (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.level.y, 30, 0),
+            lab('ac', 'POWER IN', SPEAKER_W + 24 + SPEAKER_REAR.ac.x, (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.ac.y + 14, 0, 26),
+          ],
+          a11y: 'A powered PA speaker: the front with its handle, the waveguide horn and the 12-inch woofer behind the perforated grille, and its rear amplifier panel with the input, level knob and power inlet.',
+          obstacles: [
+            { x: SPEAKER_W + 24 + SPEAKER_REAR.input.x - 22, y: (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.input.y - 22, w: 44, h: 44 },
+            { x: SPEAKER_W + 24 + SPEAKER_REAR.thru.x - 18, y: (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.thru.y - 18, w: 36, h: 36 },
+            { x: SPEAKER_W + 24 + SPEAKER_REAR.level.x - 18, y: (SPEAKER_H - SPEAKER_REAR_H) / 2 + SPEAKER_REAR.level.y - 18, w: 36, h: 36 },
+            { x: SPEAKER_W + 24 + 30, y: (SPEAKER_H - SPEAKER_REAR_H) / 2 + 190, w: 110, h: 50 },
+          ],
         };
     }
   }, [item, booth, still]);
 }
 
-function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string } {
+function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): ItemScene {
   const still = useMemo(() => freshDeck('nightFerry'), []);
-  return useMemo(() => {
+  return useMemo((): ItemScene => {
     switch (sys) {
       case 'vinyl': {
         const s = 0.62;
@@ -159,26 +252,19 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): { frame:
           ),
           callouts: [lab('a', 'TURNTABLE', tw / 2, 20, 0, -14), lab('m', 'MIXER (PHONO INPUTS)', tw + 16 + (MIXER_W * s) / 2, 0, 0, -14), lab('b', 'TURNTABLE', tw * 1.5 + 32 + MIXER_W * s, 20, 0, -14)],
           a11y: 'A vinyl system: two turntables either side of a mixer.',
+          obstacles: [],
         };
       }
       case 'laptop':
         return {
-          frame: { x: -14, y: -20, w: CTRL_W + 28, h: CTRL_D + LAPTOP_H + 56 },
-          body: (
-            <>
-              <Laptop x={(CTRL_W - LAPTOP_W) / 2} y={0} />
-              <Cable pts={[[CTRL_W / 2 + 40, LAPTOP_H - 2], [CTRL_W / 2 + 40, LAPTOP_H + 22], [CTRL_W / 2 + 10, LAPTOP_H + 30]]} style={{ colour: '#8e939b', width: 3, dash: [4, 3] }} />
-              <ControllerTop x={0} y={LAPTOP_H + 30} />
-            </>
-          ),
+          frame: { x: -70, y: -20, w: CTRL_W + 120, h: CY + CTRL_D + 36 },
+          body: <LaptopAndController out={swOut} />,
           callouts:
             swOut === 'CONTROLLER'
-              ? [lab('lp', 'MUSIC PLAYS HERE', CTRL_W / 2, 40, 0, -18), lab('c', 'BUILT-IN INTERFACE: OUTPUTS', CTRL_W / 2, LAPTOP_H + 30 + CTRL_D, 0, 16)]
-              : [
-                  { ...lab('lp', 'AUDIO → LAPTOP SPEAKERS', CTRL_W / 2, 40, 0, -18), tone: 'red' },
-                  { ...lab('c', 'CONTROLLER OUTPUTS: SILENT', CTRL_W / 2, LAPTOP_H + 30 + CTRL_D, 0, 16), tone: 'red' },
-                ],
+              ? [lab('lp', 'MUSIC PLAYS HERE', CTRL_W / 2, 2, 0, -12), lab('c', 'OUTPUTS HERE', CTRL_OUT.x, CY - 20, 20, -24)]
+              : [lab('lp', 'AUDIO → LAPTOP SPEAKERS', CTRL_W / 2, 2, 0, -12, 'red'), lab('c', 'OUTPUTS: SILENT', CTRL_OUT.x, CY - 20, 20, -24, 'red')],
           a11y: `A laptop and controller system. The software sends its audio to ${swOut === 'CONTROLLER' ? 'the controller’s outputs' : 'the laptop’s own speakers, so the controller’s outputs are silent'}.`,
+          obstacles: [circBox(112, CY + 196, 166), circBox(438, CY + 196, 166), { x: 212, y: CY + 12, w: 126, h: 296 }, { x: LX, y: 0, w: LAPTOP_W, h: LAPTOP_H }],
         };
       case 'standalone':
         return {
@@ -186,6 +272,7 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): { frame:
           body: <ControllerTop x={0} y={0} standalone />,
           callouts: [lab('s', 'NO LAPTOP: MUSIC FROM USB / SD', CTRL_W / 2, 0, 0, -14)],
           a11y: 'A standalone system.',
+          obstacles: [],
         };
       case 'modular': {
         const s = 0.5;
@@ -200,6 +287,7 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): { frame:
           ),
           callouts: [lab('a', 'PLAYER', (PLAYER_W * s) / 2, 0, 0, -14), lab('m', 'MIXER', PLAYER_W * s + 8 + (MIXER_W * s) / 2, 5, 0, -14), lab('b', 'PLAYER', (PLAYER_W * 1.5 + MIXER_W) * s + 16, 0, 0, -14)],
           a11y: 'A modular system: two media players either side of a separate mixer.',
+          obstacles: [],
         };
       }
     }
@@ -240,14 +328,16 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
     <DjRack
       spec={{
         render: (w, h) => (
-          <Scene w={w} h={h} frame={scene.frame} motion={motion} callouts={scene.callouts} a11y={scene.a11y}>
+          <Scene w={w} h={h} frame={scene.frame} motion={motion} callouts={scene.callouts} obstacles={scene.obstacles} a11y={scene.a11y}>
             {scene.body}
           </Scene>
         ),
         bezel: [
           { k: mode === 'item' ? 'EQUIPMENT' : 'SYSTEM', v: mode === 'item' ? itemDef.label : sysDef.label, tint: colors.amber, flex: 2 },
           { k: 'SEEN', v: `${seenI.size}/8 · ${seenS.size}/4`, tint: colors.textPrimary },
-          { k: 'SENDS TO', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 },
+          // the software's output is a laptop + controller setting: shown
+          // only where it means something (visual review finding 24)
+          ...(mode === 'system' && sys === 'laptop' ? [{ k: 'SENDS TO', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 }] : []),
         ],
         params: [
           {
@@ -296,6 +386,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{`You are looking at ${scene.a11y.charAt(0).toLowerCase()}${scene.a11y.slice(1)}`}</Look>
         <P>Every DJ setup does the same four jobs: something PLAYS the music, something MIXES it, something lets YOU hear the next track privately, and something lets the ROOM hear the mix. Different gear splits those jobs differently.</P>
         <P>A controller is a control surface; whether it also contains an audio interface or a mixer depends on the model. A standalone unit plays without a laptop, and some can also act as a controller. These are not tidy, separate boxes — check what each one actually does.</P>
         <Terms items={TERMS} />

@@ -7,7 +7,7 @@
  * screen of Stage 1 closes with what this lab has given you. The fault: a
  * sample fired straight into the crowd.
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Group } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -16,10 +16,13 @@ import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { BoothStage } from '../art/BoothStage';
 import { WaveLane } from '../art/plots';
-import { CUE_COLOURS } from '../art/ink';
+import { CUE_COLOURS, INK } from '../art/ink';
+import { LedColumn } from '../art/parts';
+import { useTapDb } from '../art/motion';
+import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, stopKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -38,6 +41,27 @@ const TERMS = [
   { term: 'Sampler', def: 'Pads that play short sounds. Here they live in deck B’s software, so they come out of deck B’s channel: its fader, its CUE, its crossfader side.' },
   { term: 'Transport cue vs headphone cue', def: 'The player’s CUE is a place in a track. The mixer’s CUE sends a channel to your headphones. Same word, two jobs.' },
 ] as const;
+
+const LOOK = 'You are looking at deck B’s waveform with its cue points and any loop marked, two small meters (what reaches your headphones, and what reaches the crowd), and below, deck B’s hot cue pads, loop and beat-jump keys and its transport CUE.';
+
+/** Two small meters beside the lane: where a sampler hit LANDS — in your
+ *  headphones, the crowd, or both (the render's own taps). */
+function LandingMeters({ x, y, h, k }: { x: number; y: number; h: number; k: number }) {
+  const ph = useTapDb('phonesL');
+  const phh = useTapDb('phonesL', 'hold');
+  const cr = useTapDb('crowd');
+  const crh = useTapDb('crowd', 'hold');
+  const fs = 9.5 * k;
+  const colH = h - fs * 1.5;
+  return (
+    <Group>
+      <LedColumn x={x + 15 * k} y={y} w={7} h={colH} level={ph} hold={phh} />
+      <LedColumn x={x + 53 * k} y={y} w={7} h={colH} level={cr} hold={crh} />
+      <SceneText x={x + 15 * k + 3.5} y={y + h} size={fs} text="PHONES" color={INK.amber} face="label" align="center" minPt={9} />
+      <SceneText x={x + 53 * k + 3.5} y={y + h} size={fs} text="CROWD" color={INK.print} face="label" align="center" minPt={9} />
+    </Group>
+  );
+}
 
 /** Is this deck's channel reaching the crowd? */
 function chOnAir(b: Booth, d: DeckId): boolean {
@@ -177,6 +201,13 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
     return { ...x, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0, xf: 'THRU', cue: true } }, mixer: { ...x.mixer, splitCue: false, cueMix: 0.5 }, sampler: { on: 'B', hits: [] }, perspective: 'PHONES' };
   });
   const s = useRef({ set: false, jumped: false, looped: false, exited: false, beatJumped: false, preview: false });
+  // a sampler hit flashes its host deck's pads (from when it sounds)
+  const [flash, setFlash] = useState<{ deck: DeckId; n: number } | null>(null);
+  useEffect(() => {
+    if (!flash) return;
+    const id = setTimeout(() => setFlash(null), 420);
+    return () => clearTimeout(id);
+  }, [flash]);
   const [, force] = useState(0);
   const bump = () => force((n) => n + 1);
   const [check, setCheck] = useState(false);
@@ -187,6 +218,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
   const onHit = () => {
     const b = getBooth();
     const host = b.sampler.on;
+    setFlash({ deck: host, n: Date.now() });
     const ch = host === 'A' ? 1 : 2;
     if (!chOnAir(b, host) && b.ch[ch].cue) s.current.preview = true;
     if (faultOn && !chOnAir(b, host) && b.ch[ch].cue) setFaultFixed(true);
@@ -202,7 +234,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
     { label: 'Pass both checks', hit: check && check2 },
   ];
   const latched = useVisitGoals(ctx, goals);
-  const lanesH = (h: number) => Math.round(Math.min(96, h * 0.32));
+  const lanesH = (h: number, k = 1) => Math.round(Math.min(104 * k, h * 0.34));
   const g = analysedGrid(B);
   const loopBeats = B.loop && g ? Math.round((B.loop.lengthSec * g.bpm) / 60) : 0;
   return (
@@ -217,21 +249,27 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
             spec={{
               // the working half of deck B (pads, loop and jump keys, jog,
               // transport CUE) — its own screen is drawn large above as the lane
-              view: { x: BOOTH_LAYOUT.B.x - 66, y: 146, w: 392, h: 248 },
-              fit: (W, H) => ({ x: 0, y: lanesH(H), w: W, h: H - lanesH(H) }),
+              view: { x: BOOTH_LAYOUT.B.x - 66, y: 110, w: 392, h: 284 },
+              fit: (W, H, k) => ({ x: 0, y: lanesH(H, k), w: W, h: H - lanesH(H, k) }),
               highlight: { B: ['hotCues', 'loop', 'jump', 'cue'] },
+              padFlash: flash ? { [flash.deck]: true } : undefined,
               callouts: [
                 { id: 'hc', text: 'HOT CUES', at: { x: BOOTH_LAYOUT.B.x + PLAYER.hotCues.xs[3] + PLAYER.hotCues.w, y: PLAYER.hotCues.y + 9 }, dx: 16, dy: -12 },
                 { id: 'lp', text: 'LOOP', at: { x: BOOTH_LAYOUT.B.x + PLAYER.loop.x, y: PLAYER.loop.y + 20 }, dx: -16, dy: 0 },
                 { id: 'bj', text: 'JUMP', at: { x: BOOTH_LAYOUT.B.x + PLAYER.jump.x, y: PLAYER.jump.y + 12 }, dx: -16, dy: 0 },
                 { id: 'tc', text: 'TRANSPORT CUE', at: { x: BOOTH_LAYOUT.B.x + PLAYER.cue.cx + 18, y: PLAYER.cue.cy }, dx: 24, dy: 0 },
               ],
-              screenOverlay: (W, H) => (
-                <Group>
-                  <WaveLane b={{ x: 6, y: 4, w: W - 12, h: lanesH(H) - 10 }} d={B} marks spanSec={6} label={`DECK B${loopBeats ? ` · LOOP ${loopBeats} BEATS` : ''}`} />
-                </Group>
-              ),
-              a11y: `Deck B with its hot cue pads, loop and beat-jump keys and its transport CUE, under its waveform with the cue points and any loop marked. ${loopBeats ? `A ${loopBeats}-beat loop is running.` : 'No loop.'}`,
+              screenOverlay: (W, H, _xf, k) => {
+                const kk = Math.sqrt(k);
+                const mw = 76 * kk;
+                return (
+                  <Group>
+                    <WaveLane b={{ x: 6, y: 4, w: W - 18 - mw, h: lanesH(H, k) - 10 }} d={B} marks spanSec={6} k={kk} label={`DECK B${loopBeats ? ` · LOOP ${loopBeats} BEATS` : ''}`} />
+                    <LandingMeters x={W - 6 - mw} y={6} h={lanesH(H, k) - 14} k={kk} />
+                  </Group>
+                );
+              },
+              a11y: `${LOOK} ${loopBeats ? `A ${loopBeats}-beat loop is running.` : 'No loop.'}`,
             }}
           />
         ),
@@ -290,6 +328,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{LOOK}</Look>
         <P>HOT CUES are saved places on pads; LOOPS repeat a few beats of the grid; BEAT JUMP moves in time by a set number of beats. The SAMPLER plays short sounds — here from deck B’s software, so they come out of channel 2 and obey its fader, its CUE and its crossfader side.</P>
         <P>Two different CUEs: the player’s transport CUE is a place in the track; the mixer’s CUE sends a channel to your headphones.</P>
         <Terms items={TERMS} />

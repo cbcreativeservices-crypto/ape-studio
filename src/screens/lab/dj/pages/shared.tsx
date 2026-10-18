@@ -37,10 +37,12 @@ export const anyClip = (r: BoothRender | null, stages?: readonly Stage[]): boole
 
 export const PEAK_RED = '#ff5a48';
 
-/** "−6.2" / "OVER +1.4" / "—" for a peak readout, tinted on the ramp. */
+/** "−6.2 dBFS" / "CLIP" / "—" for a peak readout, tinted on the ramp. A
+ *  real meter cannot read above full scale, so a level at or over 0 dBFS
+ *  reads CLIP (audio review 2026-10-18 #30). */
 export function peakCell(k: string, db: number | null): BezelItem {
   if (db == null || db === -Infinity) return { k, v: '—', tint: colors.textSub };
-  if (db >= 0) return { k, v: `OVER +${db.toFixed(1)}`, tint: PEAK_RED };
+  if (db >= 0) return { k, v: 'CLIP', tint: PEAK_RED };
   return { k, v: `${db.toFixed(1)} dBFS`, tint: levelColorForDb(db, -40, 0) };
 }
 

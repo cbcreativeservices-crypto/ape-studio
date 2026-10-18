@@ -19,7 +19,7 @@ import { BoothStage } from '../art/BoothStage';
 import { WaveLane } from '../art/plots';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, stopKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -43,6 +43,8 @@ const SCEN: { id: GridMode; label: string; blurb: string }[] = [
   { id: 'LATE_HALF', label: 'FIRST BEAT LATE', blurb: 'The first beat was placed half a beat late: every line sits on an off-beat hat, not the kick.' },
   { id: 'HALF_BPM', label: 'HALF BPM', blurb: 'The analysis read 63 BPM for a 126 BPM track: lines on every other beat.' },
 ];
+
+const LOOK = 'You are looking at deck A’s and deck B’s waveforms, about two bars each, with their beat grids drawn over them (thin white beat lines, bold amber bar lines) and the kicks tinted violet; below, deck B’s SYNC and QUANTIZE keys.';
 
 function GridTray({ onScenario }: { onScenario: (g: GridMode) => void }) {
   const b = getBooth();
@@ -129,7 +131,9 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
     { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);
-  const lanesH = (h: number) => Math.round(Math.min(180, h * 0.58));
+  const lanesH = (h: number, k = 1) => Math.round(Math.min(180 * k, h * 0.58));
+  // about two bars across each lane, so every beat line and every kick reads
+  const span = (8 * 60) / 124;
   return (
     <DjRack
       spec={{
@@ -142,24 +146,25 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
             spec={{
               // starts just under deck B's own screen (the lanes above ARE its screen)
               view: { x: BOOTH_LAYOUT.B.x - 8, y: 142, w: PLAYER_W_HALF + 16, h: 134 },
-              fit: (W, H) => ({ x: 0, y: lanesH(H), w: W, h: H - lanesH(H) }),
+              fit: (W, H, k) => ({ x: 0, y: lanesH(H, k), w: W, h: H - lanesH(H, k) }),
               highlight: { B: ['sync', 'quantize'] },
               syncLit: { B: syncLit },
               callouts: [
                 { id: 'sy', text: 'SYNC', at: { x: BOOTH_LAYOUT.B.x + PLAYER.sync.x, y: PLAYER.sync.y + 6 }, dx: -30, dy: 0 },
                 { id: 'qz', text: 'QUANTIZE', at: { x: BOOTH_LAYOUT.B.x + PLAYER.quantize.x, y: PLAYER.quantize.y + 5 }, dx: -30, dy: -6 },
               ],
-              screenOverlay: (W, H) => {
-                const L = lanesH(H);
+              screenOverlay: (W, H, _xf, k) => {
+                const L = lanesH(H, k);
                 const lh = (L - 12) / 2;
+                const kk = Math.sqrt(k);
                 return (
                   <Group>
-                    <WaveLane b={{ x: 6, y: 4, w: W - 12, h: lh }} d={A} label={`A · GRID RIGHT · ${bpmA.toFixed(1)}`} />
-                    <WaveLane b={{ x: 6, y: 8 + lh, w: W - 12, h: lh }} d={B} marks label={`B · GRID ${gB ? gB.bpm.toFixed(1) : '—'} BPM${gridCorrect(B) ? ' · RIGHT' : ' · CHECK IT'}`} />
+                    <WaveLane b={{ x: 6, y: 4, w: W - 12, h: lh }} d={A} spanSec={span} k={kk} lowKey label={`A · GRID RIGHT · ${bpmA.toFixed(1)}`} />
+                    <WaveLane b={{ x: 6, y: 8 + lh, w: W - 12, h: lh }} d={B} spanSec={span} k={kk} marks label={`B · GRID ${gB ? gB.bpm.toFixed(1) : '—'} BPM${gridCorrect(B) ? ' · RIGHT' : ' · CHECK IT'}`} />
                   </Group>
                 );
               },
-              a11y: `Deck A's and deck B's waveforms with their beat grids, over deck B's SYNC and QUANTIZE buttons. Deck B's grid is ${gridCorrect(B) ? 'correct' : 'wrong'}.`,
+              a11y: `${LOOK} Deck B's grid is ${gridCorrect(B) ? 'correct' : 'wrong'}.`,
             }}
           />
         ),
@@ -194,6 +199,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{LOOK}</Look>
         <P>Before a track is played, the software analyses it: its BPM, where its beats are, where bar 1 starts. That BEATGRID drives SYNC, QUANTIZE, loops and beat jumps. It is usually right — and when it is wrong, everything built on it is wrong in the same way.</P>
         <P>Deck B’s grid here starts half a beat LATE. Its lines sit on the off-beat hats, not the kicks. Look at deck B’s waveform: the tall kick peaks fall BETWEEN the lines.</P>
         <Terms items={TERMS} />

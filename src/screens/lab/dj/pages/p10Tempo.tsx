@@ -19,9 +19,9 @@ import { WaveLane } from '../art/plots';
 import { INK } from '../art/ink';
 import { useDeckPos } from '../art/motion';
 import { SceneText } from '../art/sceneText';
-import { BOOTH_LAYOUT, PLAYER, type Box } from '../geometry/boothGeometry';
+import { BOOTH_LAYOUT, MIXER, PLAYER, PLAYER_D, PLAYER_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, stopKey, tempoKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -40,7 +40,23 @@ const TERMS = [
   { term: 'Offset', def: 'When the tempos match but the beats land at different moments — a steady flam. Fix offset with a jog NUDGE, not the tempo fader.' },
 ] as const;
 
-const VIEW: Box = { x: 150, y: 150, w: 806, h: 262 };
+/** Deck B whole (the deck you operate); deck A's tempo column and the
+ *  mixer from its channel faders down come as insets beside it. */
+const VIEW: Box = { x: BOOTH_LAYOUT.B.x - 8, y: -8, w: PLAYER_W + 16, h: PLAYER_D + 16 };
+const INSET_TEMPO_A: Box = { x: BOOTH_LAYOUT.A.x + 262, y: BOOTH_LAYOUT.A.y + 206, w: 58, h: 166 };
+const INSET_MIXER: Box = { x: BOOTH_LAYOUT.mixer.x - 4, y: BOOTH_LAYOUT.mixer.y + MIXER.fader.top - 16, w: 278, h: 392 - MIXER.fader.top + 16 };
+/** The stage below the lanes: [tempo A inset | mixer inset | deck B]. */
+function stageLayout(W: number, H: number, L: number) {
+  const top = L;
+  const hh = H - L;
+  const deckW = Math.min(W * 0.48, (hh - 4) * (VIEW.w / VIEW.h));
+  const tempoW = Math.max(46, Math.min(70, W * 0.15));
+  return {
+    deck: { x: W - deckW - 2, y: top, w: deckW + 2, h: hh },
+    tempo: { x: 6, y: top + 4, w: tempoW, h: hh - 8 },
+    mixer: { x: 12 + tempoW, y: top + 4, w: W - deckW - tempoW - 22, h: hh - 8 },
+  };
+}
 
 /** The phase strip: where B's beat lands against A's (−½ … +½ beat), per frame. */
 function PhaseStrip({ b, booth }: { b: Box; booth: Booth }) {
@@ -78,6 +94,8 @@ function PhaseStrip({ b, booth }: { b: Box; booth: Booth }) {
     </Group>
   );
 }
+
+const LOOK = 'You are looking at two zoomed waveforms, deck A over deck B, with their beat grids and a phase strip; below them deck B whole, with deck A’s tempo fader and the mixer’s faders beside it.';
 
 function JogTray({ onStartB }: { onStartB: () => void }) {
   const b = getBooth();
@@ -165,7 +183,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
     { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);
-  const lanesH = (h: number) => Math.round(Math.min(160, h * 0.52));
+  const lanesH = (h: number, k = 1) => Math.round(Math.min(160 * k, h * 0.52));
   return (
     <DjRack
       spec={{
@@ -177,25 +195,30 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
             motion={motion}
             spec={{
               view: VIEW,
-              fit: (W, H) => ({ x: 0, y: lanesH(H), w: W, h: H - lanesH(H) }),
+              fullView: 'booth',
+              fullFit: (W, H, k) => ({ x: 0, y: lanesH(H, k), w: W, h: H - lanesH(H, k) }),
+              fit: (W, H, k) => stageLayout(W, H, lanesH(H, k)).deck,
+              insets: [
+                { frame: INSET_TEMPO_A, label: 'A TEMPO', at: (W, H, k) => stageLayout(W, H, lanesH(H, k)).tempo },
+                { frame: INSET_MIXER, label: 'MIXER', at: (W, H, k) => stageLayout(W, H, lanesH(H, k)).mixer },
+              ],
               highlight: { A: ['tempo'], B: ['tempo', 'jog'] },
               callouts: [
-                { id: 'ta', text: 'TEMPO A', at: { x: BOOTH_LAYOUT.A.x + PLAYER.tempo.x, y: PLAYER.tempo.top - 8 }, dx: 0, dy: -10 },
-                { id: 'tb', text: 'TEMPO B', at: { x: BOOTH_LAYOUT.B.x + PLAYER.tempo.x, y: PLAYER.tempo.top - 8 }, dx: 0, dy: -10 },
-                { id: 'jb', text: 'JOG B', at: { x: BOOTH_LAYOUT.B.x + PLAYER.jog.cx, y: PLAYER.jog.cy - 104 }, dx: 0, dy: -10 },
+                { id: 'tb', text: 'TEMPO B', at: { x: BOOTH_LAYOUT.B.x + PLAYER.tempo.x, y: PLAYER.tempo.top + 40 }, dx: 0, dy: -10 },
+                { id: 'jb', text: 'JOG B', at: { x: BOOTH_LAYOUT.B.x + PLAYER.jog.cx - 60, y: PLAYER.jog.cy - 60 }, dx: -10, dy: -10 },
               ],
-              screenOverlay: (W, H) => {
-                const L = lanesH(H);
+              screenOverlay: (W, H, _xf, k) => {
+                const L = lanesH(H, k);
                 const lh = (L - 34) / 2;
                 return (
                   <Group>
-                    <WaveLane b={{ x: 6, y: 4, w: W - 12, h: lh }} d={A} label={`A · ${bpmA.toFixed(1)} BPM`} />
-                    <WaveLane b={{ x: 6, y: 8 + lh, w: W - 12, h: lh }} d={B} label={`B · ${bpmB.toFixed(1)} BPM`} />
+                    <WaveLane b={{ x: 6, y: 4, w: W - 12, h: lh }} d={A} label={`A · ${bpmA.toFixed(1)} BPM`} k={Math.sqrt(k)} lowKey />
+                    <WaveLane b={{ x: 6, y: 8 + lh, w: W - 12, h: lh }} d={B} label={`B · ${bpmB.toFixed(1)} BPM`} k={Math.sqrt(k)} />
                     <PhaseStrip b={{ x: 6, y: 12 + lh * 2, w: W - 12, h: 18 }} booth={booth} />
                   </Group>
                 );
               },
-              a11y: `Two zoomed waveforms, deck A over deck B, with their beat grids, a phase strip, and the two jog wheels and tempo faders. Deck A ${bpmA.toFixed(2)} BPM, deck B ${bpmB.toFixed(2)} BPM; B is ${off >= 0 ? 'early' : 'late'} by ${Math.abs(off).toFixed(2)} of a beat.`,
+              a11y: `${LOOK} Deck A ${bpmA.toFixed(2)} BPM, deck B ${bpmB.toFixed(2)} BPM; B is ${off >= 0 ? 'early' : 'late'} by ${Math.abs(off).toFixed(2)} of a beat.`,
             }}
           />
         ),
@@ -216,6 +239,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{LOOK}</Look>
         <P>Music here is counted in BEATS, four to a BAR, eight bars to a PHRASE. Deck A (122 BPM) is playing to the crowd. Deck B (126 BPM) is cued in your headphones — split cue is on: B in your left ear, the room’s mix in your right.</P>
         <P>Two different problems sound alike. DRIFT: the tempos differ, so the beats slide apart steadily — fix it with the TEMPO fader. OFFSET: the tempos match but the beats land apart — fix it with a jog NUDGE.</P>
         <Terms items={TERMS} />

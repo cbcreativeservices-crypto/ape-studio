@@ -14,7 +14,7 @@ import { BoothStage } from '../art/BoothStage';
 import { EqPlot } from '../art/plots';
 import { BOOTH_LAYOUT, MIXER, MIXER_W, STRIP_X, onMixer } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { BoothTray, stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -70,7 +70,11 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
   const fs = filterOf(c.filter, filterQ(booth.mixer.resonance));
   const filtWord = fs.kind === 'off' ? 'OFF' : `${fs.kind === 'lp' ? 'LP' : 'HP'} ${fs.hz >= 1000 ? `${(fs.hz / 1000).toFixed(1)}k` : Math.round(fs.hz)} Hz`;
   const bandDb = (v: number) => (eqDb(v) === -Infinity ? 'KILL' : dbStr(eqDb(v)));
-  const plotH = (h: number) => Math.round(Math.min(132, h * 0.42));
+  const plotH = (h: number, k = 1) => Math.round(Math.min(132 * k, h * 0.42));
+  // every label follows the knob it names: the selected EQ knob and the
+  // selected filter, each on its strip's OUTER side (CH1 left, CH2 right)
+  const outer = (ch: ChannelId) => (ch === 1 ? -1 : 1);
+  const knobY = { hi: MIXER.hi.y, mid: MIXER.mid.y, lo: MIXER.lo.y } as const;
   return (
     <DjRack
       spec={{
@@ -81,17 +85,17 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
             booth={booth}
             motion={motion}
             spec={{
-              view: { x: BOOTH_LAYOUT.mixer.x - 6, y: 44, w: MIXER_W + 12, h: 178 },
-              fit: (W, H) => ({ x: 0, y: plotH(H), w: W, h: H - plotH(H) }),
-              highlight: { mixer: [`eq${eqSel.ch}` as 'eq1', `filter${filtCh}` as 'filter1'] },
+              view: { x: BOOTH_LAYOUT.mixer.x - 6, y: 84, w: MIXER_W + 12, h: 150 },
+              fit: (W, H, k) => ({ x: 0, y: plotH(H, k), w: W, h: H - plotH(H, k) }),
+              highlight: { mixer: [`${eqSel.band}${eqSel.ch}` as 'hi1', `filter${filtCh}` as 'filter1'] },
               callouts: [
-                { id: 'hi', text: 'HIGH', at: onMixer(STRIP_X[1] + 10, MIXER.hi.y), dx: 10, dy: 0 },
-                { id: 'mid', text: 'MID', at: onMixer(STRIP_X[1] + 10, MIXER.mid.y), dx: 10, dy: 0 },
-                { id: 'lo', text: 'LOW', at: onMixer(STRIP_X[1] + 10, MIXER.lo.y), dx: 10, dy: 0 },
-                { id: 'fl', text: 'FILTER', at: onMixer(STRIP_X[2] - 11, MIXER.filter.y), dx: -10, dy: 0 },
+                { id: 'eq', text: `CH${eqSel.ch} ${BAND_WORD[eqSel.band]}`, at: onMixer(STRIP_X[eqSel.ch] + outer(eqSel.ch) * 11, knobY[eqSel.band]), dx: outer(eqSel.ch) * 12, dy: 0 },
+                { id: 'fl', text: `CH${filtCh} FILTER`, at: onMixer(STRIP_X[filtCh] + outer(filtCh) * 12, MIXER.filter.y), dx: outer(filtCh) * 12, dy: 0, tone: 'blue' },
+                { id: 's1', text: 'CH1', at: onMixer(STRIP_X[1], MIXER.hi.y - 14), dx: 0, dy: -8, tone: 'plain' },
+                { id: 's2', text: 'CH2', at: onMixer(STRIP_X[2], MIXER.hi.y - 14), dx: 0, dy: -8, tone: 'plain' },
               ],
-              screenOverlay: (W, H) => <EqPlot b={{ x: 8, y: 6, w: W - 16, h: plotH(H) - 10 }} ch={c} resonance={booth.mixer.resonance} label={`CH${plotCh} EQ + FILTER`} />,
-              a11y: `The mixer's EQ and filter knobs, under the frequency response of channel ${plotCh}.`,
+              screenOverlay: (W, H, _xf, k) => <EqPlot b={{ x: 8, y: 6, w: W - 16, h: plotH(H, k) - 10 }} ch={c} resonance={booth.mixer.resonance} label={`CH${plotCh} EQ + FILTER`} />,
+              a11y: `You are looking at the mixer’s EQ and filter knobs for both channels, under the frequency response of channel ${plotCh}; the CH${eqSel.ch} ${BAND_WORD[eqSel.band]} knob and the CH${filtCh} filter are marked.`,
             }}
           />
         ),
@@ -166,6 +170,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        <Look>{`You are looking at the mixer’s EQ and filter knobs for both channels (CH1 on the left, CH2 on the right), under the frequency response of channel ${plotCh}. The ring marks the knob EQ moves now: CH${eqSel.ch} ${BAND_WORD[eqSel.band]}.`}</Look>
         <P>Each channel’s EQ splits its sound into three bands — LOW, MID and HIGH. On this mixer they cross over at about 250 Hz and 2.5 kHz. Each knob boosts a little (up to +6 dB) and cuts a lot (down to −26 dB), and at its end stop it KILLS the band. That deep cut is what makes it an isolator.</P>
         <P>The FILTER is one knob: turn left for a low-pass (darker, further away), right for a high-pass (thinner), centre for off. Its slope here is 12 dB per octave; RESONANCE adds a peak at its edge.</P>
         <Terms items={TERMS} />
