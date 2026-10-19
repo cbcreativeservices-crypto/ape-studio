@@ -16,6 +16,7 @@ import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
+import { useStageTextScale } from '../../rack/stageAspect';
 import { TurntableTop, TT_PARTS, armPoseAngle, turntablePartBox } from '../art/TurntableTop';
 import { DvsRig, DvsRoute, DvsScope } from '../art/dvsArt';
 import { TT_D, TT_W } from '../geometry/boothGeometry';
@@ -105,6 +106,9 @@ function SignalTray({ onCal }: { onCal: (ok: boolean) => void }) {
 
 function PageDvs({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
+  // FULL SCREEN: the text scale the Scene hands its screenOverlay — the top
+  // panel's height is taken at it, so the gear's room must start there too
+  const kz = useStageTextScale();
   const { ready } = useScreenSetup((b) => {
     let x = connect(connect(b, 'tt.rcaL', 'ch1.phono.L')!, 'tt.rcaR', 'ch1.phono.R')!;
     const pos = TRACKS.nightFerry.leadInSec + 16 * barSec('nightFerry');
@@ -183,7 +187,9 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
             h={hh}
             frame={frame}
             motion={motion}
-            fit={{ x: 0, y: topH(hh, 1), w: ttW(w), h: hh - topH(hh, 1) }}
+            // the panels' height at the overlay's text scale (it was taken at
+            // 1: in FULL SCREEN the scope and map ran down over the turntable)
+            fit={{ x: 0, y: topH(hh, kz), w: ttW(w), h: hh - topH(hh, kz) }}
             // FULL SCREEN's shape: scope and map over the turntable and the cabling
             aspect={1.12}
             obstacles={[{ x: 0, y: 0, w: TT_W, h: TT_D }, ...TT_PARTS.map((p) => turntablePartBox(p, armAng))]}

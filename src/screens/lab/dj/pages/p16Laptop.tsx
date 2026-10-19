@@ -14,6 +14,7 @@ import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
+import { useStageTextScale } from '../../rack/stageAspect';
 import { AudioSetupPanel, LaptopRig, RIG, RIG_BODIES, RIG_FRAME, RIG_POINTS } from '../art/laptopArt';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
@@ -104,6 +105,9 @@ function RigTray() {
 
 function PageLaptop({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
+  // FULL SCREEN: the text scale the Scene hands its screenOverlay — the top
+  // panel's height is taken at it, so the gear's room must start there too
+  const kz = useStageTextScale();
   const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 17));
@@ -171,7 +175,9 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
             h={hh}
             frame={RIG_FRAME}
             motion={motion}
-            fit={{ x: 0, y: panelH(hh, 1), w, h: hh - panelH(hh, 1) }}
+            // the panel's height at the overlay's text scale (it was taken at
+            // 1: in FULL SCREEN the panel ran down over the rig and its labels)
+            fit={{ x: 0, y: panelH(hh, kz), w, h: hh - panelH(hh, kz) }}
             // FULL SCREEN's shape: the setup window over the one-scale rig
             aspect={1.35}
             // the gear and its plugs are HARD obstacles: no label lies on them

@@ -62,3 +62,16 @@ describe('Screen 17: the side views zoom with the full-screen step', () => {
     assert.ok(clipEnd > art.indexOf('<Group clip={zo ?'), 'the footer is drawn after the clipped words, outside them');
   });
 });
+
+describe('Screens 16 and 18: the same fix — the top panel never covers the gear in full screen', () => {
+  const p16 = readFileSync(join(root, 'pages', 'p16Laptop.tsx'), 'utf8');
+  const p18 = readFileSync(join(root, 'pages', 'p18Dvs.tsx'), 'utf8');
+  it('screen 16 starts the rig where the setup window ends', () => {
+    assert.match(p16, /fit=\{\{ x: 0, y: panelH\(hh, kz\), w, h: hh - panelH\(hh, kz\) \}\}/);
+    assert.doesNotMatch(p16, /panelH\(hh, 1\)/);
+  });
+  it('screen 18 starts the turntable where the scope and map end', () => {
+    assert.match(p18, /fit=\{\{ x: 0, y: topH\(hh, kz\), w: ttW\(w\), h: hh - topH\(hh, kz\) \}\}/);
+    assert.doesNotMatch(p18, /topH\(hh, 1\)/);
+  });
+});
