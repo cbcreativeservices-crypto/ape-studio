@@ -2,7 +2,7 @@
  * djEventRender — the EVENT RIG's signal path (screens 19–24), built ON the
  * Stage 1 booth render (djRender.renderBooth), never beside it: one booth
  * state, one render, one set of meters. Pure TypeScript; pinned by
- * test/djEventRender.test.ts. Model in docs/labs/dj/MODEL.md §12–§17.
+ * test/djEventRender.test.ts. Model in docs/labs/dj/MODEL.md §13–§19.
  *
  *   renderBooth(…, { inject, keep })
  *     inject: a laptop on CH 1 / CH 2's USB input, a drum machine in CH 2's

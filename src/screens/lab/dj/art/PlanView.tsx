@@ -2,7 +2,15 @@
  * PlanView — THE ROOM from above (screens 19, 20, 23, 24), authored in
  * CENTIMETRES from model/djRoom (1 unit = 1 cm; the back wall at the top of
  * the glass, the dance floor below; +x — the DJ's left as they face the
- * crowd — is drawn to the right).
+ * crowd — is drawn to the right, so PA L, at HOUSE LEFT (the audience's
+ * left), is on the viewer's left).
+ *
+ * Second visual review 2026-10-18 (#16): each top's -6 dB edges stop where
+ * they meet the centre line, so two edges never lie on one another; the
+ * speakers are held at least 18 pt across with their horn drawn (a symbol
+ * size); the BASS map is the subs' COHERENT sum at 60 Hz
+ * (djRoom.subsCoherentAt), so spaced subs show their loud and quiet
+ * stripes; the legend sits in its own strip under the field, never on it.
  *
  * What it draws is the model, not a picture of one:
  *   - the COVERAGE FIELD: each cell's level from djRoom (the tops' mid-band
@@ -21,12 +29,12 @@
  * The field is the mid band (1–4 kHz) of the stated model; the room's
  * reflections are not modelled (said once on the screen).
  */
-import { memo, useMemo } from 'react';
+import { memo, useContext, useMemo } from 'react';
 import { AlphaType, BlurMask, Circle, ColorType, DashPathEffect, FilterMode, Group, Image as SkImage, Line, LinearGradient, MipmapMode, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { heatColor, heatRgbW } from '../../../../features/tools/levelColor';
 import { INK } from './ink';
-import { SceneText, useLabelMm } from './sceneText';
-import { MONITORS, PLACEMENTS, ROOM, SUB_PLACES, cardioidDb, coverageGrid, subsRelAt, topsDbaAt, type Placement, type Speaker, type SubPlace, type V2 } from '../model/djRoom';
+import { SceneFontsContext, SceneText, useLabelMm } from './sceneText';
+import { BASS_MAP_HZ, MONITORS, PLACEMENTS, ROOM, SUB_PLACES, cardioidDb, coverageGrid, subsCoherentAt, topsDbaAt, type Placement, type Speaker, type SubPlace, type V2 } from '../model/djRoom';
 import { MIC_POS, type Feedback, type MicPos } from '../model/djEvent';
 import type { Box } from '../geometry/boothGeometry';
 
@@ -59,7 +67,7 @@ const ROWS = 70;
 function useField(mode: MapMode, place: Placement, subPos: SubPlace, feedDbfs: number) {
   return useMemo(() => {
     if (mode === 'NONE') return null;
-    const g = mode === 'TOPS' ? coverageGrid(COLS, ROWS, (p) => topsDbaAt(p, place, feedDbfs)) : coverageGrid(COLS, ROWS, (p) => subsRelAt(p, subPos));
+    const g = mode === 'TOPS' ? coverageGrid(COLS, ROWS, (p) => topsDbaAt(p, place, feedDbfs)) : coverageGrid(COLS, ROWS, (p) => subsCoherentAt(p, subPos, BASS_MAP_HZ));
     const win = mapWindow(place, feedDbfs);
     let ref = -Infinity;
     if (mode === 'BASS') for (let i = 0; i < g.db.length; i++) ref = Math.max(ref, g.db[i]);
@@ -81,11 +89,20 @@ function useField(mode: MapMode, place: Placement, subPos: SubPlace, feedDbfs: n
 
 const aimAngle = (s: Speaker): number => Math.atan2(s.aim.y - s.at.y, s.aim.x - s.at.x);
 
+/** The least size (pt) a speaker is drawn at, whatever the plan's scale. */
+export const SPEAKER_MIN_PT = 18;
+/** How much larger than true a speaker is drawn at this scale (>= 1). */
+export function useGlyphScale(trueCm: number): number {
+  const { s } = useContext(SceneFontsContext);
+  return Math.max(1, SPEAKER_MIN_PT / Math.max(1e-6, trueCm * s));
+}
+
 /** A 12-inch top on its tripod (top view): the cabinet's trapezoid (wide
  *  front), the horn's mouth on the front edge, the top handle, the legs. */
 function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?: 'amber' | 'red' }) {
   const c = P(s.at);
   const a = aimAngle(s) - Math.PI / 2; // local +y = the way it points
+  const g = useGlyphScale(40);
   const cab = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     p.moveTo(-18.25, 20);
@@ -96,7 +113,7 @@ function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?:
     return p.detach();
   }, []);
   return (
-    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }]}>
+    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
       {/* tripod legs (spread 110 cm), under the box */}
       {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((t) => (
         <Line key={t} p1={vec(0, 0)} p2={vec(Math.sin(t + 0.5) * 55, -Math.cos(t + 0.5) * 55)} color="#3a3d43" strokeWidth={3.2} strokeCap="round" />
@@ -108,9 +125,10 @@ function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?:
         <LinearGradient start={vec(-18, -20)} end={vec(18, 20)} colors={['#3a3d43', '#1c1d21', '#0e0f11']} />
       </Path>
       <Path path={cab} style="stroke" strokeWidth={1.2} color={lit ? (tone === 'red' ? INK.peak : INK.amber) : 'rgba(255,255,255,0.18)'} />
-      {/* the grille (front edge) and the horn mouth behind it */}
-      <Line p1={vec(-17, 19)} p2={vec(17, 19)} color="#5a5e66" strokeWidth={2.4} />
-      <RoundedRect x={-10} y={12} width={20} height={5} r={2} color="#050506" />
+      {/* the horn's mouth flaring to the grille on the front edge */}
+      <Path path={HORN} color="#050506" />
+      <Path path={HORN} style="stroke" strokeWidth={0.8} color="rgba(255,255,255,0.22)" />
+      <Line p1={vec(-17, 19)} p2={vec(17, 19)} color="#6a6e76" strokeWidth={2.4} />
       {/* the handle cut-out on top */}
       <RoundedRect x={-6.5} y={-6} width={13} height={4} r={2} color="#060607" />
     </Group>
@@ -121,8 +139,9 @@ function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?:
 function SubPlan({ s }: { s: Speaker }) {
   const c = P(s.at);
   const a = aimAngle(s) - Math.PI / 2;
+  const g = useGlyphScale(55);
   return (
-    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }]}>
+    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
       <RoundedRect x={-27.5 + 3} y={-35 + 4} width={55} height={70} r={3} color="rgba(0,0,0,0.6)">
         <BlurMask blur={4} style="normal" />
       </RoundedRect>
@@ -142,8 +161,9 @@ function SubPlan({ s }: { s: Speaker }) {
 function MonitorPlan({ s, lit }: { s: Speaker; lit?: boolean }) {
   const c = P(s.at);
   const a = aimAngle(s) - Math.PI / 2;
+  const g = Math.min(useGlyphScale(30), 1.6);
   return (
-    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }]}>
+    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
       <RoundedRect x={-13.5 + 2} y={-15 + 3} width={27} height={30} r={3} color="rgba(0,0,0,0.6)">
         <BlurMask blur={3} style="normal" />
       </RoundedRect>
@@ -291,17 +311,12 @@ export const PlanView = memo(function PlanView({ spec }: { spec: PlanSpec }) {
   const labelMm = useLabelMm(9.5);
   const edgePath = useMemo(() => {
     const p = Skia.PathBuilder.Make();
-    for (const t of [tops.L, tops.R]) {
-      const c = P(t.at);
-      const a = aimAngle(t);
-      const half = ((t.coverageDeg / 2) * Math.PI) / 180;
-      for (const s of [-1, 1]) {
-        p.moveTo(c.x, c.y);
-        p.lineTo(c.x + Math.cos(a + s * half) * 900, c.y + Math.sin(a + s * half) * 900);
-      }
+    for (const [x0, y0, x1, y1] of edgeSegments(spec.place)) {
+      p.moveTo(x0, y0);
+      p.lineTo(x1, y1);
     }
     return p.detach();
-  }, [tops]);
+  }, [spec.place]);
   return (
     <Group>
       {/* the room: walls, the stage, the floor */}
@@ -324,7 +339,7 @@ export const PlanView = memo(function PlanView({ spec }: { spec: PlanSpec }) {
       <Rect x={-W / 2 - 14} y={-14} width={W + 28} height={14} color="#2a2c31" />
       <Rect x={-W / 2 - 14} y={0} width={14} height={D} color="#2a2c31" />
       <Rect x={W / 2} y={0} width={14} height={D} color="#2a2c31" />
-      <SceneText x={0} y={300 + labelMm * 1.5} size={labelMm} text="DANCE FLOOR" color="rgba(255,255,255,0.45)" face="label" align="center" minPt={8.9} />
+      <SceneText x={0} y={300 + labelMm * 1.5} size={labelMm} text="DANCE FLOOR" color="rgba(255,255,255,0.45)" face="label" align="center" />
       <BoothTable turntable={!!spec.turntable} />
       {spec.subs ? subs.map((s) => <SubPlan key={s.id} s={s} />) : null}
       <TopPlan s={tops.L} lit={spec.hotTop === 'topL'} tone="red" />
@@ -386,10 +401,45 @@ function FeedbackPaths({ mic, fb, place }: { mic: MicPos; fb: Feedback; place: P
   );
 }
 
-/** The heat ramp's legend, in screen points (top-right of the glass): the
- *  colours from quiet to loud with their dBA (or relative dB) marks. */
-export function HeatLegend({ w, h, k = 1, mode, place = 'CORNERS', feedDbfs = -20 }: { w: number; h: number; k?: number; mode: MapMode; place?: Placement; feedDbfs?: number }) {
+/** The legend strip's height (pt, x k) under the field (`strip`). */
+export const LEGEND_H = 30;
+
+/** Each top's -6 dB edges as segments (cm): an edge that heads toward the
+ *  room's centre line stops there, so the two tops' inner edges meet and
+ *  are drawn ONCE, never one over the other; the outer edges run to the
+ *  walls or the end of the plan. Pure (pinned by test). */
+export function edgeSegments(place: Placement): [number, number, number, number][] {
+  const out: [number, number, number, number][] = [];
+  const t = PLACEMENTS[place].tops;
+  const W = (ROOM.w * 100) / 2;
+  const D = ROOM.d * 100;
+  for (const top of [t.L, t.R]) {
+    const c = P(top.at);
+    const a = aimAngle(top);
+    const half = ((top.coverageDeg / 2) * Math.PI) / 180;
+    for (const sg of [-1, 1]) {
+      const dx = Math.cos(a + sg * half);
+      const dy = Math.sin(a + sg * half);
+      let len = 4000;
+      if (dx > 1e-6) len = Math.min(len, (W - c.x) / dx);
+      if (dx < -1e-6) len = Math.min(len, (-W - c.x) / dx);
+      if (dy > 1e-6) len = Math.min(len, (D - c.y) / dy);
+      if (dy < -1e-6) len = Math.min(len, (0 - c.y) / dy);
+      // toward the centre line: stop at it
+      if (Math.abs(c.x) > 1 && Math.abs(dx) > 1e-6 && Math.sign(dx) === -Math.sign(c.x)) len = Math.min(len, -c.x / dx);
+      out.push([c.x, c.y, c.x + dx * len, c.y + dy * len]);
+    }
+  }
+  return out;
+}
+
+/** The heat ramp's legend, in screen points: the colours from quiet to loud
+ *  with their dBA (or relative dB) marks. `strip`: a full-width strip in its
+ *  own band under the field (the page fits the field above it, so the
+ *  legend never covers it); else a small panel at the bottom right. */
+export function HeatLegend({ w, h, k = 1, mode, place = 'CORNERS', feedDbfs = -20, strip = false }: { w: number; h: number; k?: number; mode: MapMode; place?: Placement; feedDbfs?: number; strip?: boolean }) {
   if (mode === 'NONE') return null;
+  if (strip) return <HeatStrip w={w} h={h} k={k} mode={mode} place={place} feedDbfs={feedDbfs} />;
   const bw = 96 * k;
   const bh = 7 * k;
   const fs = 9 * k;
@@ -406,9 +456,39 @@ export function HeatLegend({ w, h, k = 1, mode, place = 'CORNERS', feedDbfs = -2
       <RoundedRect x={x} y={y + fs + 2 * k} width={bw} height={bh} r={2 * k}>
         <LinearGradient start={vec(x, 0)} end={vec(x + bw, 0)} colors={stops} />
       </RoundedRect>
-      <SceneText x={x} y={y + fs - 1 * k} size={fs} text={mode === 'TOPS' ? 'TOPS · dBA (MODEL)' : 'BASS · dB'} color={INK.print} face="label" minPt={8.9} />
+      <SceneText x={x} y={y + fs - 1 * k} size={fs} text={mode === 'TOPS' ? 'TOPS · dBA (MODEL)' : 'BASS · dB'} color={INK.print} face="label" />
       {marks.map((m) => (
-        <SceneText key={m} x={x + pos(m) * bw} y={y + fs * 2 + bh + 4 * k} size={fs} text={String(m)} color={INK.printDim} face="label" align="center" minPt={8.9} />
+        <SceneText key={m} x={x + pos(m) * bw} y={y + fs * 2 + bh + 4 * k} size={fs} text={String(m)} color={INK.printDim} face="label" align="center" />
+      ))}
+    </Group>
+  );
+}
+
+const HORN = Skia.Path.MakeFromSVGString('M -4 4 L 4 4 L 14 18 L -14 18 Z')!;
+
+function HeatStrip({ w, h, k, mode, place, feedDbfs }: { w: number; h: number; k: number; mode: MapMode; place: Placement; feedDbfs: number }) {
+  const fs = 9 * k;
+  const y0 = h - LEGEND_H * k;
+  const label = mode === 'TOPS' ? 'TOPS · dBA (MODEL)' : `BASS AT ${BASS_MAP_HZ} Hz · dB`;
+  const lw = (mode === 'TOPS' ? 100 : 112) * k;
+  const x = 8 * k + lw;
+  const bw = Math.max(60, w - x - 14 * k);
+  const bh = 6 * k;
+  const stops = Array.from({ length: 11 }, (_, i) => heatColor(0.02 + (0.98 * i) / 10));
+  const win = mapWindow(place, feedDbfs);
+  const m0 = Math.ceil(win.lo / 5) * 5;
+  const marks = mode === 'TOPS' ? [m0, m0 + 5, m0 + 10, m0 + 15, m0 + 20].filter((m) => m <= win.hi) : [-24, -18, -12, -6, 0];
+  const pos = (v: number) => (mode === 'TOPS' ? (v - win.lo) / (win.hi - win.lo) : (v + 24) / 24);
+  return (
+    <Group>
+      <Rect x={0} y={y0} width={w} height={LEGEND_H * k} color="#0b0b0d" />
+      <Line p1={vec(0, y0)} p2={vec(w, y0)} color="rgba(255,255,255,0.12)" strokeWidth={1} />
+      <SceneText x={8 * k} y={y0 + 4 * k + fs} size={fs} text={label} color={INK.print} face="label" />
+      <RoundedRect x={x} y={y0 + 6 * k} width={bw} height={bh} r={2 * k}>
+        <LinearGradient start={vec(x, 0)} end={vec(x + bw, 0)} colors={stops} />
+      </RoundedRect>
+      {marks.map((m) => (
+        <SceneText key={m} x={x + pos(m) * bw} y={y0 + 6 * k + bh + 2 * k + fs} size={fs} text={String(m)} color={INK.printDim} face="label" align="center" />
       ))}
     </Group>
   );

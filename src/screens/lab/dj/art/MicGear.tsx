@@ -30,7 +30,9 @@ import { ComboSocket, Halo, Key, Knob, Led, TrsSocket } from './parts';
 import { SceneText } from './sceneText';
 import type { MicDevice, MicState } from '../model/djEvent';
 
-const LEG = 3.6;
+/** Silk-screen legends, authored so they read from the 2× full-screen step
+ *  (visual review 2026-10-18, #22): 4.8 mm × the 2× pt-per-mm (about 1.9) ≥ 9 pt. */
+const LEG = 4.8;
 
 /* ── the handheld microphone (side view, head at the origin, tail to +x) ── */
 
@@ -143,6 +145,37 @@ export function MicXlrPlug({ x, y, ang = 0 }: { x: number; y: number; ang?: numb
       <RoundedRect x={30} y={-6} width={14} height={12} r={3}>
         <LinearGradient start={vec(0, -6)} end={vec(0, 6)} colors={['#3a3c42', '#0b0b0d']} />
       </RoundedRect>
+    </Group>
+  );
+}
+
+/** A male XLR plugged into a FRONT-panel socket, seen from the front with
+ *  its cable dropping away below: the cast shadow, the metal barrel in
+ *  slight perspective with its latch tab, the rubber boot and its ribs, and
+ *  the strain relief bending down into the cable (visual review #14). */
+export function XlrPlugged({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <Group>
+      <Oval x={cx - 12} y={cy - 9} width={26} height={24} color="rgba(0,0,0,0.55)">
+        <BlurMask blur={3} style="normal" />
+      </Oval>
+      {/* the barrel */}
+      <Oval x={cx - 11} y={cy - 11} width={22} height={21}>
+        <RadialGradient c={vec(cx - 4, cy - 5)} r={14} colors={['#eef1f4', '#9aa0a8', '#3c4048']} />
+      </Oval>
+      <Oval x={cx - 8.4} y={cy - 8.4} width={16.8} height={16} style="stroke" strokeWidth={0.7} color="rgba(0,0,0,0.45)" />
+      {/* the latch tab on top */}
+      <RoundedRect x={cx - 2.6} y={cy - 13.6} width={5.2} height={4} r={1}>
+        <LinearGradient start={vec(0, cy - 13.6)} end={vec(0, cy - 9.6)} colors={['#c9ccd2', '#5c626b']} />
+      </RoundedRect>
+      {/* the boot, bending down into the cable */}
+      <RoundedRect x={cx - 6} y={cy - 4} width={12} height={20} r={5}>
+        <LinearGradient start={vec(cx - 6, 0)} end={vec(cx + 6, 0)} colors={['#3a3c42', '#121315', '#0b0b0d']} />
+      </RoundedRect>
+      {[2, 6, 10, 14].map((d) => (
+        <Line key={d} p1={vec(cx - 5.2, cy + d)} p2={vec(cx + 5.2, cy + d)} color="rgba(255,255,255,0.10)" strokeWidth={0.6} />
+      ))}
+      <RoundedRect x={cx - 3.4} y={cy + 14} width={6.8} height={8} r={2.4} color="#16171a" />
     </Group>
   );
 }

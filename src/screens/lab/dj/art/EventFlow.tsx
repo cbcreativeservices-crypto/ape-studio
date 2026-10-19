@@ -11,8 +11,15 @@
  * of the real object (a laptop, a player, a mic, a speaker, headphones, a
  * recorder), never a bare box standing for it. Text is 9 pt or more at
  * every size (useLabelMm) and grows with the full-screen zoom.
+ *
+ * SECOND VISUAL REVIEW 2026-10-18 (findings 20, 21): every card measures
+ * its words and wraps a line that does not fit (never runs past its edge);
+ * the meter ladder has its own slot; a route's label sits on its own lane
+ * on a plate; prediction tags sit off the junctions; power cords are ONE
+ * line each, in their own lanes, hopping where they cross, with a plug
+ * body at the outlet (`Cords`).
  */
-import { useMemo, type ReactNode } from 'react';
+import { useContext, useMemo, type ReactNode } from 'react';
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Oval, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
 import { LedColumn } from './parts';
@@ -20,7 +27,7 @@ import { useTapDb } from './motion';
 import { useExtTapDb } from './eventMotion';
 import type { Tap } from '../engine/djRender';
 import type { EvTap } from '../engine/djEventRender';
-import { SceneText, useLabelMm } from './sceneText';
+import { SceneFontsContext, SceneText, useLabelMm } from './sceneText';
 
 export type FlowIcon = 'laptop' | 'player' | 'mic' | 'mixer' | 'speaker' | 'monitor' | 'phones' | 'recorder' | 'strip' | 'wall';
 export type FlowState = 'live' | 'idle' | 'cut' | 'hum' | 'clip';
@@ -39,6 +46,9 @@ export type FlowNode = {
   extTap?: EvTap;
   state?: FlowState;
   onAir?: boolean;
+  /** ADDITIVE: an outlet card (a strip, a wall socket) draws a socket at
+   *  each of these x (board units) along its top edge — where the cords end. */
+  sockets?: readonly number[];
 };
 
 export type FlowLink = { from: string; to: string; state: FlowState; label?: string; tag?: number; bend?: number; fromY?: number; toY?: number };
@@ -157,10 +167,48 @@ function Icon({ kind, x, y, s }: { kind: FlowIcon; x: number; y: number; s: numb
 
 /* ── a card ───────────────────────────────────────────────────────────── */
 
+/** Split `text` into lines that fit `room` (mm) at `size` mm in the label
+ *  face: one line when it fits, else at the best space; never cut. */
+function wrapMm(text: string, size: number, room: number, width: (t: string) => number): string[] {
+  if (!text) return [];
+  if (width(text) * size <= room) return [text];
+  const words = text.split(' ');
+  if (words.length < 2) return [text];
+  let best: string[] = [text];
+  let bestW = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(' ');
+    const b = words.slice(i).join(' ');
+    const w = Math.max(width(a), width(b));
+    if (w < bestW) {
+      bestW = w;
+      best = [a, b];
+    }
+  }
+  return best;
+}
+
+/** The text room of a card (mm from its text x to its meter slot). */
+export function cardTextBox(n: FlowNode): { x: number; room: number; iconS: number } {
+  const iconS = n.icon ? Math.min(1, (Math.min(n.h, 34) - 6) / 18, n.w / 90) : 0;
+  const x = n.x + (n.icon ? 4 + 24 * iconS + 2 : 5);
+  // the meter has its own slot on the right (it never sits under words)
+  const right = n.x + n.w - (n.tap || n.extTap ? 13 : 4);
+  return { x, room: right - x, iconS };
+}
+
 export function FlowCard({ n, tag }: { n: FlowNode; tag?: { num: number; verdict?: 'right' | 'wrong' | null } }) {
   const lm = useLabelMm(9);
+  const f = useContext(SceneFontsContext);
+  const font = f.label;
+  // width of a string per mm of font size
+  const width = (t: string) => (font ? font.getTextWidth(t) / 10 : t.length * 0.52);
   const ring = n.state ? STATE_COL[n.state] : 'rgba(255,255,255,0.14)';
-  const iconS = Math.min(1, (n.h - 6) / 18, n.w / 90);
+  const tb = cardTextBox(n);
+  const title = wrapMm(n.title, lm, tb.room, width);
+  const sub = wrapMm(n.sub ?? '', lm, tb.room, width);
+  const lh = lm * 1.12;
+  const subCol = n.state === 'cut' || n.state === 'clip' ? '#ff8a7e' : n.state === 'hum' ? INK.amber : INK.printDim;
   return (
     <Group>
       <RoundedRect x={n.x + 1.5} y={n.y + 2.5} width={n.w} height={n.h} r={5} color="rgba(0,0,0,0.6)">
@@ -171,17 +219,25 @@ export function FlowCard({ n, tag }: { n: FlowNode; tag?: { num: number; verdict
       </RoundedRect>
       <RoundedRect x={n.x} y={n.y} width={n.w} height={n.h} r={5} style="stroke" strokeWidth={n.state === 'cut' || n.state === 'clip' || n.state === 'hum' ? 1.6 : 0.9} color={ring} />
       {n.onAir ? (
-        <Group>
-          <RoundedRect x={n.x - 1} y={n.y - 1} width={n.w + 2} height={n.h + 2} r={6} style="stroke" strokeWidth={2.4} color={INK.red} opacity={0.5}>
-            <BlurMask blur={2.4} style="normal" />
-          </RoundedRect>
-        </Group>
+        <RoundedRect x={n.x - 1} y={n.y - 1} width={n.w + 2} height={n.h + 2} r={6} style="stroke" strokeWidth={2.4} color={INK.red} opacity={0.5}>
+          <BlurMask blur={2.4} style="normal" />
+        </RoundedRect>
       ) : null}
-      {n.icon ? <Icon kind={n.icon} x={n.x + 3} y={n.y + 3} s={iconS} /> : null}
-      <SceneText x={n.x + (n.icon ? 4 + 24 * iconS + 2 : 5)} y={n.y + 3 + lm} size={lm} text={n.title} color={INK.white} face="label" minPt={8.9} />
-      {n.sub ? <SceneText x={n.x + (n.icon ? 4 + 24 * iconS + 2 : 5)} y={n.y + 4 + lm * 2.15} size={lm} text={n.sub} color={n.state === 'cut' || n.state === 'clip' ? '#ff8a7e' : n.state === 'hum' ? INK.amber : INK.printDim} face="label" minPt={8.9} /> : null}
-      {n.onAir ? <SceneText x={n.x + n.w - (n.tap || n.extTap ? 12 : 4)} y={n.y + n.h - 4} size={lm} text="ON AIR" color="#ff6b5e" face="label" align="right" minPt={8.9} /> : null}
-      {n.tap ? <TapMeter tap={n.tap} x={n.x + n.w - 8} y={n.y + 4} h={n.h - 8} /> : n.extTap ? <ExtMeter tap={n.extTap} x={n.x + n.w - 8} y={n.y + 4} h={n.h - 8} /> : null}
+      {n.sockets?.map((sx) => (
+        <Group key={sx}>
+          <RoundedRect x={sx - 3.6} y={n.y + 2} width={7.2} height={6} r={1.4} color="#050506" />
+          <RoundedRect x={sx - 3.6} y={n.y + 2} width={7.2} height={6} r={1.4} style="stroke" strokeWidth={0.4} color="rgba(255,255,255,0.18)" />
+        </Group>
+      ))}
+      {n.icon ? <Icon kind={n.icon} x={n.x + 3} y={n.y + (n.sockets ? n.h - 3 - 18 * tb.iconS : 3)} s={tb.iconS} /> : null}
+      {title.map((t, i) => (
+        <SceneText key={`t${i}`} x={tb.x} y={n.y + (n.sockets ? n.h - 4 - lh * (title.length + sub.length - 1) : 3 + lm) + i * lh} size={lm} text={t} color={INK.white} face="label" />
+      ))}
+      {sub.map((t, i) => (
+        <SceneText key={`s${i}`} x={tb.x} y={n.y + (n.sockets ? n.h - 4 - lh * (sub.length - 1) : 4 + lm + lh * title.length) + i * lh} size={lm} text={t} color={subCol} face="label" />
+      ))}
+      {n.onAir ? <SceneText x={tb.x + tb.room} y={n.y + n.h - 4} size={lm} text="ON AIR" color="#ff6b5e" face="label" align="right" /> : null}
+      {n.tap ? <TapMeter tap={n.tap} x={n.x + n.w - 9} y={n.y + 4} h={n.h - 8} /> : n.extTap ? <ExtMeter tap={n.extTap} x={n.x + n.w - 9} y={n.y + 4} h={n.h - 8} /> : null}
       {tag ? <Tag x={n.x - 3} y={n.y - 3} num={tag.num} verdict={tag.verdict ?? null} /> : null}
     </Group>
   );
@@ -207,14 +263,18 @@ export function Tag({ x, y, num, verdict }: { x: number; y: number; num: number;
     <Group>
       <Circle cx={x} cy={y} r={r + 1} color="#050506" />
       <Circle cx={x} cy={y} r={r} color={col} />
-      <SceneText x={x} y={y + lm * 0.36} size={lm} text={String(num)} color="#0b0b0d" face="label" align="center" minPt={8.9} />
+      <SceneText x={x} y={y + lm * 0.36} size={lm} text={String(num)} color="#0b0b0d" face="label" align="center" />
     </Group>
   );
 }
 
-/** A route between two cards (right edge of `from` → left edge of `to`). */
+/** A route between two cards (right edge of `from` → left edge of `to`).
+ *  Its label sits ON the wire, centred in the lane between the cards, on a
+ *  dark plate; its prediction tag sits just after the source, above the
+ *  wire (never on a junction). */
 export function FlowRoute({ a, b, l, tagVerdict }: { a: FlowNode; b: FlowNode; l: FlowLink; tagVerdict?: 'right' | 'wrong' | null }) {
   const lm = useLabelMm(9);
+  const f = useContext(SceneFontsContext);
   const x0 = a.x + a.w;
   const y0 = l.fromY ?? a.y + a.h / 2;
   const x1 = b.x;
@@ -229,6 +289,9 @@ export function FlowRoute({ a, b, l, tagVerdict }: { a: FlowNode; b: FlowNode; l
   const col = STATE_COL[l.state];
   const mx = (x0 + x1) / 2 + (l.bend ?? 0) * 0.75;
   const my = (y0 + y1) / 2;
+  const lines = l.label ? l.label.split('\n') : [];
+  const tw = lines.length ? Math.max(...lines.map((t) => (f.label ? (f.label.getTextWidth(t) * lm) / 10 : t.length * lm * 0.52))) : 0;
+  const plateH = lines.length * lm * 1.1 + lm * 0.35;
   return (
     <Group>
       {l.state === 'live' || l.state === 'hum' ? (
@@ -245,8 +308,16 @@ export function FlowRoute({ a, b, l, tagVerdict }: { a: FlowNode; b: FlowNode; l
           <Line p1={vec(mx - 3.5, my + 3.5)} p2={vec(mx + 3.5, my - 3.5)} color={INK.peak} strokeWidth={2} strokeCap="round" />
         </Group>
       ) : null}
-      {l.label ? <SceneText x={mx} y={my - 3} size={lm} text={l.label} color={l.state === 'live' ? '#8fbcff' : INK.printDim} face="label" align="center" minPt={8.9} /> : null}
-      {l.tag != null ? <Tag x={mx} y={my + (l.label ? lm * 0.8 : 0)} num={l.tag} verdict={tagVerdict ?? null} /> : null}
+      {lines.length ? (
+        <Group>
+          <RoundedRect x={mx - tw / 2 - 2} y={my - plateH / 2} width={tw + 4} height={plateH} r={2} color="rgba(10,11,13,0.92)" />
+          <RoundedRect x={mx - tw / 2 - 2} y={my - plateH / 2} width={tw + 4} height={plateH} r={2} style="stroke" strokeWidth={0.5} color={col} opacity={0.7} />
+          {lines.map((t, i) => (
+            <SceneText key={i} x={mx} y={my - plateH / 2 + lm * 0.95 + i * lm * 1.1} size={lm} text={t} color={l.state === 'live' ? '#8fbcff' : l.state === 'hum' ? INK.amber : INK.print} face="label" align="center" />
+          ))}
+        </Group>
+      ) : null}
+      {l.tag != null ? <Tag x={mx} y={my - (lines.length ? plateH / 2 : 0) - lm * 0.95} num={l.tag} verdict={tagVerdict ?? null} /> : null}
     </Group>
   );
 }
@@ -265,3 +336,106 @@ export function FlowBoard({ nodes, links, tags }: { nodes: readonly FlowNode[]; 
 }
 
 export const flowBoxes = (nodes: readonly FlowNode[]) => nodes.map((n) => ({ x: n.x, y: n.y, w: n.w, h: n.h }));
+
+/* ── power cords (visual review 2026-10-18, findings 20 / 21) ─────────────
+ * ONE line per cord, each on its own lane (the caller lays the lanes 6 mm
+ * apart), a HOP wherever a cord crosses one drawn before it (a junction dot
+ * never appears: cords never join), and a plug body at the outlet end. A
+ * cord in a ground loop glows amber. */
+
+export type Cord = { id: string; pts: readonly [number, number][]; tone?: 'plain' | 'hum' | 'off'; plug?: boolean };
+
+const HOP_R = 2.6;
+
+/** Crossings of segment a (axis-aligned) with segment b (perpendicular). */
+function crossAt(a0: readonly [number, number], a1: readonly [number, number], b0: readonly [number, number], b1: readonly [number, number]): [number, number] | null {
+  const aH = Math.abs(a0[1] - a1[1]) < 1e-6;
+  const bH = Math.abs(b0[1] - b1[1]) < 1e-6;
+  if (aH === bH) return null;
+  const [h0, h1, v0, v1] = aH ? [a0, a1, b0, b1] : [b0, b1, a0, a1];
+  const x = v0[0];
+  const y = h0[1];
+  const inH = x > Math.min(h0[0], h1[0]) + HOP_R && x < Math.max(h0[0], h1[0]) - HOP_R;
+  const inV = y > Math.min(v0[1], v1[1]) + HOP_R && y < Math.max(v0[1], v1[1]) - HOP_R;
+  return inH && inV ? [x, y] : null;
+}
+
+/** Every crossing between two orthogonal polylines (pure; for the tests). */
+export function cordCrossings(a: readonly [number, number][], b: readonly [number, number][]): [number, number][] {
+  const out: [number, number][] = [];
+  for (let i = 1; i < a.length; i++) for (let j = 1; j < b.length; j++) {
+    const c = crossAt(a[i - 1], a[i], b[j - 1], b[j]);
+    if (c) out.push(c);
+  }
+  return out;
+}
+
+/** The cord's path with a hop at each of `hops` (points on its segments). */
+function hopPath(pts: readonly [number, number][], hops: readonly [number, number][]) {
+  const p = Skia.PathBuilder.Make();
+  p.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) {
+    const [ax, ay] = pts[i - 1];
+    const [bx, by] = pts[i];
+    const horiz = Math.abs(ay - by) < 1e-6;
+    const dir = horiz ? Math.sign(bx - ax) : Math.sign(by - ay);
+    const on = hops
+      .filter(([hx, hy]) => (horiz ? Math.abs(hy - ay) < 1e-6 && (hx - ax) * dir > 0 && (bx - hx) * dir > 0 : Math.abs(hx - ax) < 1e-6 && (hy - ay) * dir > 0 && (by - hy) * dir > 0))
+      .sort((u, v) => (horiz ? (u[0] - v[0]) * dir : (u[1] - v[1]) * dir));
+    for (const [hx, hy] of on) {
+      if (horiz) {
+        p.lineTo(hx - HOP_R * dir, hy);
+        p.quadTo(hx, hy - HOP_R * 2, hx + HOP_R * dir, hy);
+      } else {
+        p.lineTo(hx, hy - HOP_R * dir);
+        p.quadTo(hx + HOP_R * 2, hy, hx, hy + HOP_R * dir);
+      }
+    }
+    p.lineTo(bx, by);
+  }
+  return p.detach();
+}
+
+export function Cords({ cords }: { cords: readonly Cord[] }) {
+  const drawn = useMemo(
+    () =>
+      cords.map((c, i) => {
+        const hops: [number, number][] = [];
+        for (let j = 0; j < i; j++) hops.push(...cordCrossings(c.pts as [number, number][], cords[j].pts as [number, number][]));
+        return { c, path: hopPath(c.pts, hops) };
+      }),
+    [cords],
+  );
+  return (
+    <Group>
+      {drawn.map(({ c, path }) => {
+        const col = c.tone === 'hum' ? INK.amber : c.tone === 'off' ? '#3a3d43' : '#7d828b';
+        const end = c.pts[c.pts.length - 1];
+        const prev = c.pts[c.pts.length - 2] ?? end;
+        const down = end[1] >= prev[1];
+        return (
+          <Group key={c.id}>
+            {/* a dark keyline under each cord: a crossing reads as a gap */}
+            <Path path={path} style="stroke" strokeWidth={4.2} color="#0b0b0d" strokeCap="round" strokeJoin="round" />
+            {c.tone === 'hum' ? (
+              <Path path={path} style="stroke" strokeWidth={5} color={INK.amber} opacity={0.35} strokeCap="round" strokeJoin="round">
+                <BlurMask blur={2.2} style="normal" />
+              </Path>
+            ) : null}
+            <Path path={path} style="stroke" strokeWidth={1.6} color={col} strokeCap="round" strokeJoin="round" />
+            {c.plug !== false ? (
+              <Group transform={[{ translateX: end[0] }, { translateY: end[1] }, { rotate: down ? 0 : Math.PI }]}>
+                {/* a mains plug body seated in its socket: the body, its two pins */}
+                <RoundedRect x={-3} y={-7.5} width={6} height={6} r={1.2}>
+                  <LinearGradient start={vec(-3, -7.5)} end={vec(3, -1.5)} colors={c.tone === 'hum' ? ['#ffd98a', '#9a7420'] : ['#5a5e66', '#1d1f23']} />
+                </RoundedRect>
+                <Line p1={vec(-1.4, -1.5)} p2={vec(-1.4, 0.6)} color="#c9ccd2" strokeWidth={0.8} />
+                <Line p1={vec(1.4, -1.5)} p2={vec(1.4, 0.6)} color="#c9ccd2" strokeWidth={0.8} />
+              </Group>
+            ) : null}
+          </Group>
+        );
+      })}
+    </Group>
+  );
+}

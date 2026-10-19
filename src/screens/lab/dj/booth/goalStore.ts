@@ -23,11 +23,15 @@ export function reportGoals(page: string, labels: readonly string[], latched: re
 }
 
 /** The what's-left line for a screen: its unmet goals from the last visit,
- *  or all of them when it has not been opened this session. */
+ *  or all of them when it has not been opened this session — the first
+ *  three, then "+ n more" (second learning review 2026-10-18 W9: a fresh
+ *  learner's list was a wall of 21 rows of 6–8 goals). */
+export const LEFT_SHOWN = 3;
 export function leftLine(page: string, allLabels: readonly string[]): string {
   const left = reported.get(page) ?? allLabels;
   if (!left.length) return 'Every goal is met — open it once more to count it.';
-  return `Left: ${left.join(' · ')}`;
+  const more = left.length - LEFT_SHOWN;
+  return `Left: ${left.slice(0, LEFT_SHOWN).join(' · ')}${more > 0 ? ` · + ${more} more` : ''}`;
 }
 
 /** Forget every report (tests; a fresh session). */

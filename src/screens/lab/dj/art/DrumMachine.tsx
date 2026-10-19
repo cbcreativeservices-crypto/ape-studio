@@ -19,7 +19,7 @@
  * they read the booth's one clock. Generic: no brand, no logo.
  */
 import { memo } from 'react';
-import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, RoundedRect, Skia, vec, type SkPath } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec, type SkPath } from '@shopify/react-native-skia';
 import { useDerivedValue } from 'react-native-reanimated';
 import { INK } from './ink';
 import { Key, Knob, Led, TrsSocket } from './parts';
@@ -27,6 +27,9 @@ import { DinSocket } from './eventParts';
 import { SceneText } from './sceneText';
 import { useMotion } from './motion';
 import { UsbC } from './parts';
+
+/** Legends read from the 2x full-screen step (visual review #22). */
+const LEG = 4.6;
 
 export const DM_W = 330;
 export const DM_D = 176;
@@ -55,6 +58,30 @@ function StepKeys({ clock }: { clock: StepClock }) {
         const x = 20 + i * 18.5 + Math.floor(i / 4) * 2;
         return <StepKey key={i} x={x} i={i} step={step} />;
       })}
+    </Group>
+  );
+}
+
+/** A rubber voice pad seen from above: its cast shadow, the domed cap lit
+ *  from the upper left (radial gradient), a 1 pt rim light on its top-left
+ *  edge, and an inner glow in the voice's colour while it plays (visual
+ *  review 2026-10-18, #19). */
+function Pad({ x, y, w, h, colour, lit }: { x: number; y: number; w: number; h: number; colour: string; lit: boolean }) {
+  return (
+    <Group>
+      <RoundedRect x={x + 1.2} y={y + 2} width={w} height={h} r={4} color="rgba(0,0,0,0.6)">
+        <BlurMask blur={2} style="normal" />
+      </RoundedRect>
+      <RoundedRect x={x} y={y} width={w} height={h} r={4}>
+        <RadialGradient c={vec(x + w * 0.32, y + h * 0.28)} r={Math.max(w, h) * 0.85} colors={lit ? ['#5a5d64', '#2a2c31', '#141518'] : ['#4a4d54', '#24262b', '#111214']} positions={[0, 0.55, 1]} />
+      </RoundedRect>
+      {lit ? (
+        <RoundedRect x={x + 2} y={y + 2} width={w - 4} height={h - 4} r={3} color={colour} opacity={0.38}>
+          <BlurMask blur={3} style="normal" />
+        </RoundedRect>
+      ) : null}
+      <Path path={Skia.Path.MakeFromSVGString(`M ${x + 1} ${y + h - 3} L ${x + 1} ${y + 4} Q ${x + 1} ${y + 1} ${x + 4} ${y + 1} L ${x + w - 3} ${y + 1}`)!} style="stroke" strokeWidth={0.8} color="rgba(255,255,255,0.28)" strokeCap="round" />
+      <RoundedRect x={x} y={y} width={w} height={h} r={4} style="stroke" strokeWidth={0.5} color="rgba(0,0,0,0.7)" />
     </Group>
   );
 }
@@ -113,25 +140,35 @@ export const DrumMachineTop = memo(function DrumMachineTop({ x, y, running, sync
       <SceneText x={112} y={30} size={6} text="BPM" color={INK.printDim} face="label" />
       <SceneText x={26} y={57} size={6.4} text={sync === 'EXT' ? (clockIn ? 'CLOCK: EXT · LOCKED' : 'CLOCK: EXT · NONE') : 'CLOCK: INTERNAL'} color={sync === 'EXT' && !clockIn ? INK.red : INK.print} face="label" />
       <ClockLed x={128} y={50} beatClock={clockIn ? beatClock : null} />
-      <SceneText x={128} y={30} size={4} text="CLK" color={INK.printDim} face="label" align="center" />
+      <SceneText x={128} y={30} size={LEG} text="CLK" color={INK.printDim} face="label" align="center" />
       {/* tempo, level */}
       <Knob cx={170} cy={40} d={22} value={tempoKnob} />
       <Knob cx={212} cy={40} d={22} value={level} />
-      <SceneText x={170} y={18} size={4.4} text="TEMPO" color={INK.print} face="label" align="center" />
-      <SceneText x={212} y={18} size={4.4} text="LEVEL" color={INK.print} face="label" align="center" />
+      <SceneText x={170} y={18} size={LEG} text="TEMPO" color={INK.print} face="label" align="center" />
+      <SceneText x={212} y={18} size={LEG} text="LEVEL" color={INK.print} face="label" align="center" />
       {/* transport */}
       <Key x={244} y={28} w={30} h={20} lit={running} colour={INK.green} />
       <Key x={282} y={28} w={30} h={20} />
-      <SceneText x={259} y={60} size={4.4} text="PLAY" color={INK.print} face="label" align="center" />
-      <SceneText x={297} y={60} size={4.4} text="STOP" color={INK.print} face="label" align="center" />
+      <SceneText x={259} y={60} size={LEG} text="PLAY" color={INK.print} face="label" align="center" />
+      <SceneText x={297} y={60} size={LEG} text="STOP" color={INK.print} face="label" align="center" />
       {/* the four voices */}
       {['SHAKER', 'RIM', 'CONGA L', 'CONGA H'].map((t, i) => (
         <Group key={t}>
-          <Key x={22 + i * 42} y={76} w={34} h={20} lit={running} colour={['#6fa8ff', '#5bff85', '#ffc64d', '#ff8a3d'][i]} dim={!running} />
-          <SceneText x={39 + i * 42} y={106} size={4} text={t} color={INK.print} face="label" align="center" />
+          <Pad x={22 + i * 42} y={74} w={34} h={22} lit={running} colour={['#6fa8ff', '#5bff85', '#ffc64d', '#ff8a3d'][i]} />
+          <SceneText x={39 + i * 42} y={106} size={LEG} text={t} color={INK.print} face="label" align="center" />
         </Group>
       ))}
-      <SceneText x={20} y={120} size={4} text="STEPS 1 – 16" color={INK.printDim} face="label" />
+      <SceneText x={20} y={120} size={LEG} text="STEPS 1 – 16" color={INK.printDim} face="label" />
+      {/* a printed bar line at the start of every beat group (steps 1, 5, 9, 13) */}
+      {[0, 4, 8, 12].map((i) => {
+        const gx = 20 + i * 18.5 + Math.floor(i / 4) * 2 - 2.2;
+        return (
+          <Group key={i}>
+            <Line p1={vec(gx, 124)} p2={vec(gx, 154)} color={INK.amberDim} strokeWidth={0.9} />
+            <SceneText x={gx + 1.5} y={160} size={LEG} text={String(i + 1)} color={INK.printDim} face="label" />
+          </Group>
+        );
+      })}
       <StepKeys clock={running ? steps : null} />
     </Group>
   );
@@ -139,7 +176,7 @@ export const DrumMachineTop = memo(function DrumMachineTop({ x, y, running, sync
 
 export const DrumMachineRear = memo(function DrumMachineRear({ x, y }: { x: number; y: number }) {
   const R = DM_REAR;
-  const leg = (cx: number, t: string) => <SceneText x={cx} y={46} size={4} text={t} color={INK.print} face="label" align="center" />;
+  const leg = (cx: number, t: string) => <SceneText x={cx} y={46} size={LEG} text={t} color={INK.print} face="label" align="center" />;
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
       <RoundedRect x={3} y={5} width={DM_W} height={DM_REAR_H} r={6} color="rgba(0,0,0,0.6)">

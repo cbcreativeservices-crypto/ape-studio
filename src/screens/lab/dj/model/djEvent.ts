@@ -4,7 +4,7 @@
  * changeovers, the capstone). It lives on the ONE shared booth as the
  * optional `booth.ev` (djModel.Booth), so every change re-renders through
  * the same engine and the same snapshot. Pure TypeScript; pinned by
- * test/djEvent.test.ts. Documented in docs/labs/dj/MODEL.md §12–§17.
+ * test/djEvent.test.ts. Documented in docs/labs/dj/MODEL.md §13–§19.
  *
  * ONE GENERIC DEVICE PROFILE (as Stage 1): real mixers differ in where the
  * microphone is sent, which inputs carry phantom power, what the record

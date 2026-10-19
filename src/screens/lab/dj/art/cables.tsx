@@ -100,7 +100,7 @@ export function CableFlag({ x, y, text, live, edge }: { x: number; y: number; te
     <Group>
       <RoundedRect x={x - w / 2} y={y - h / 2} width={w} height={h} r={h * 0.3} color="rgba(10,11,13,0.92)" />
       <RoundedRect x={x - w / 2} y={y - h / 2} width={w} height={h} r={h * 0.3} style="stroke" strokeWidth={mm * 0.12} color={edge} />
-      <SceneText x={x} y={y + mm * 0.36} size={mm} text={text} color={live ? '#8fbcff' : INK.print} face="label" align="center" minPt={8.9} />
+      <SceneText x={x} y={y + mm * 0.36} size={mm} text={text} color={live ? '#8fbcff' : INK.print} face="label" align="center" />
     </Group>
   );
 }
