@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 02:51 · ccode · 1aaf3d7f
+changed: DJ Systems Lab 17-18: final3 captures (390 wide, 3x)
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 02:46 · ccode · 3c4c8e5c
+changed: DJ Systems Lab 17-18: one arm pose for every view, true-scale side views, real rear cabling
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-19 02:22 · ccode · a2a36a4c
 changed: DJ Systems Lab 19: the mic lies on the booth table; labels clear of the panel and the meters
 affects other side: nothing (client only)
