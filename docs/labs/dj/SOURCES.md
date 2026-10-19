@@ -170,7 +170,7 @@ numbers). No brand likeness, no trade dress, no logos.
 |---|---|
 | Handheld vocal mic | 182 mm long; ball grille Ø 50 mm (condenser Ø 46, finer, flatter); body Ø 36 → 24 mm; male XLR at the tail; wireless transmitter 236 mm, no XLR |
 | Wireless receiver (half-rack), rear | 210 × 44 mm; two antennas about 150 mm drawn; BNC, DC IN, XLR out with a MIC / LINE switch |
-| Mixer front panel | 270 × 56 mm (this lab's mixer is 270 mm wide); combo inputs Ø 20–22 mm; knobs Ø 11–14 mm |
+| Mixer front panel | 270 × 56 mm (this lab's mixer is 270 mm wide); combo inputs Ø 24 mm (both inputs, one part); knobs Ø 11–14 mm |
 | Stage box face | 200 × 116 mm; four female XLR; scribble strip |
 | 12-inch top (plan) | 36.5 × 40 cm footprint; tripod legs 110 cm spread |
 | 18-inch subwoofer | 550 × 700 mm front; plan 55 × 70 cm |

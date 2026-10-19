@@ -42,7 +42,7 @@ import { memo, useMemo, type ReactNode } from 'react';
 import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
 import { Key, Knob, SlideSwitch } from './parts';
-import { HandheldMic, MicXlrPlug } from './MicGear';
+import { HandheldMic, MIC_TRUE, MicXlrPlug } from './MicGear';
 import { SceneText } from './sceneText';
 import type { InputSel, XfAssign } from '../model/djModel';
 import { TILE_SIZE, WALL_PLATE } from './eventBoardGeometry';
@@ -635,7 +635,7 @@ const RecorderTile = memo(function RecorderTile({ b, armed, clip }: { b: B; arme
 const MIC_ANG = 0.62;
 const MIC_S = 0.24;
 const MIC_HEAD = { x: 35 - 100 * MIC_S * Math.cos(MIC_ANG), y: 33 - 100 * MIC_S * Math.sin(MIC_ANG) };
-const MIC_TAIL = { x: MIC_HEAD.x + 182 * MIC_S * Math.cos(MIC_ANG), y: MIC_HEAD.y + 182 * MIC_S * Math.sin(MIC_ANG) };
+const MIC_TAIL = { x: MIC_HEAD.x + MIC_TRUE.tail.DYNAMIC * MIC_S * Math.cos(MIC_ANG), y: MIC_HEAD.y + MIC_TRUE.tail.DYNAMIC * MIC_S * Math.sin(MIC_ANG) };
 
 const MicTile = memo(function MicTile({ b, on }: { b: B; on: boolean }) {
   const g = b.w / TILE_SIZE.mic.w;
@@ -665,7 +665,7 @@ const MicTile = memo(function MicTile({ b, on }: { b: B; on: boolean }) {
       {/* the lead from the mic's plug, lying on the table */}
       <Path path={lead} style="stroke" strokeWidth={2.2} color="#3d4046" strokeCap="round" />
       <Path path={lead} style="stroke" strokeWidth={0.4} color="rgba(190,196,206,0.8)" />
-      <HandheldMic x={MIC_HEAD.x} y={MIC_HEAD.y} ang={MIC_ANG} s={MIC_S} device="DYNAMIC" live={on} />
+      <HandheldMic x={MIC_HEAD.x} y={MIC_HEAD.y} ang={MIC_ANG} s={MIC_S} device="DYNAMIC" live={on} tail={MIC_TRUE.tail.DYNAMIC} />
       <Group transform={[{ translateX: MIC_TAIL.x }, { translateY: MIC_TAIL.y }, { rotate: MIC_ANG }, { scale: MIC_S }]}>
         <MicXlrPlug x={0} y={0} />
       </Group>
