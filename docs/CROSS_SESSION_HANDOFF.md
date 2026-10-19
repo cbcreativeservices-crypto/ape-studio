@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 08:47 · ccode · 6438511e
+changed: Rack dock (every lab): a cut-off key word shrinks to fit, 9 pt minimum
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 08:47 · ccode · 982a70e0
+changed: DJ Systems Lab: a redo is a fresh practice run; earned marks kept
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-19 08:00 · ccode · dda6be8b
 changed: DJ Systems Lab toddler test, shared files: armed faults, stale readings, takes per take
 affects other side: nothing (client only)
