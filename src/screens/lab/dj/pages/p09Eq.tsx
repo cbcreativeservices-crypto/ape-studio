@@ -70,12 +70,16 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals, 'EQ');
   const plotCh = chOf(focus);
   const c = booth.ch[plotCh];
-  const filtersOff = booth.ch[1].filter === 0 && booth.ch[2].filter === 0;
+  // OFF as the audio hears it (djDsp.filterOf's dead zone), not "exactly 0":
+  // a knob just off centre is silent, so RESONANCE stays locked and the
+  // readouts say NO FILTER, matching the dock's "CH1 OFF" (toddler pass 10-19)
+  const filterOn = (ch: ChannelId) => filterOf(booth.ch[ch].filter).kind !== 'off';
+  const filtersOff = !filterOn(1) && !filterOn(2);
   const fWord = (ch: ChannelId) => {
     const fs = filterOf(booth.ch[ch].filter, filterQ(booth.mixer.resonance));
     return fs.kind === 'off' ? 'OFF' : `${fs.kind === 'lp' ? 'LP' : 'HP'} ${fs.hz >= 1000 ? `${(fs.hz / 1000).toFixed(1)}k` : Math.round(fs.hz)}`;
   };
-  const filtCh: ChannelId = sel === 'f2' ? 2 : sel === 'f1' ? 1 : booth.ch[2].filter !== 0 && booth.ch[1].filter === 0 ? 2 : 1;
+  const filtCh: ChannelId = sel === 'f2' ? 2 : sel === 'f1' ? 1 : filterOn(2) && !filterOn(1) ? 2 : 1;
   const bandDb = (v: number) => (eqDb(v) === -Infinity ? 'KILL' : dbStr(eqDb(v)));
   const shortDb = (v: number) => (eqDb(v) === -Infinity ? 'KILL' : `${Math.round(eqDb(v))}`);
   const plotH = (h: number, k = 1) => Math.round(Math.min(132 * k, h * 0.42));
@@ -151,7 +155,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'CH1 LOW', v: bandDb(lo1), tint: lo1 <= 0.04 ? '#ff8a7e' : colors.textPrimary },
           { k: 'CH2 LOW', v: bandDb(lo2), tint: lo2 <= 0.04 ? '#ff8a7e' : colors.textPrimary },
-          { k: `CH${filtCh} FILTER`, v: fWord(filtCh), tint: booth.ch[filtCh].filter === 0 ? colors.textSub : '#8fbcff' },
+          { k: `CH${filtCh} FILTER`, v: fWord(filtCh), tint: filterOn(filtCh) ? '#8fbcff' : colors.textSub },
           { k: 'RES', v: filtersOff ? 'NO FILTER' : `${Math.round(booth.mixer.resonance * 100)}%`, tint: filtersOff ? colors.textSub : colors.amber },
         ],
         params: [

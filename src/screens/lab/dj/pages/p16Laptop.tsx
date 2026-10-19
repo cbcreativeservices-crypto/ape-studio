@@ -26,6 +26,7 @@ import { STRIP_X } from '../geometry/boothGeometry';
 import { useBoothKit } from './shared';
 import { Choices, EvidenceCheck, TrayNote, s2Of, s2styles } from './s2kit';
 import { SkipOptional } from './skipOptional';
+import { freshCleanRun, stepCleanRun, type CleanRun } from './p16CleanRun';
 
 const TERMS = [
   { term: 'Audio interface', def: 'The part that turns the software’s numbers into analog sound (and back). Here it is built into the mixer; it can be a separate box, or part of a controller.' },
@@ -123,21 +124,18 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
   // the dropouts the render put in the sound: the lamp flashes at each, the count runs
   const dropTimes = useSharedValue<number[]>([]);
   const settingKey = `${l.buffer}:${l.rate}:${l.workload}:${l.device}:${l.usbMixer}`;
-  const run = useRef({ key: '', clean: 0, count: 0, seen: null as unknown });
+  // the run is measured in booth time (p16CleanRun): a re-render replaces the
+  // rest of the chunk before it, so mashing a chip never adds seconds
+  const run = useRef<CleanRun>(freshCleanRun());
+  const seen = useRef<unknown>(null);
   const [, bump] = useState(0);
   useEffect(() => {
-    if (!last || run.current.seen === last) return;
-    run.current.seen = last;
+    if (!last || seen.current === last) return;
+    seen.current = last;
     const drops = last.s2?.dropouts ?? [];
     dropTimes.value = drops;
-    if (run.current.key !== settingKey) {
-      run.current.key = settingKey;
-      run.current.clean = 0;
-      run.current.count = 0;
-    }
-    run.current.count += drops.length;
     const feeding = (A.playing || B.playing) && l.device === 'MIXER USB' && l.usbMixer;
-    run.current.clean = drops.length === 0 && feeding ? run.current.clean + last.seconds : 0;
+    run.current = stepCleanRun(run.current, { t0: last.t0, seconds: last.seconds, drops }, settingKey, feeding);
     bump((n) => n + 1);
   }, [last, settingKey, dropTimes, A.playing, B.playing, l.device, l.usbMixer]);
   const h = useRef({ device: false, two: false, heavy: false, ctrl: false, hi: false, check: false });

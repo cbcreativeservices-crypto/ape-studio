@@ -354,6 +354,11 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
           symptom="You meant to preview a sound in your headphones, but the whole room heard it."
           start={() => {
             setFaultOn(true);
+            // a fresh run (PRACTISE AGAIN): the last run's fix must not read as
+            // this one's, or the card says FIXED the instant it starts, with the
+            // sampler still on the deck on air (toddler pass 2026-10-19). The
+            // goal chip is latched and keeps its credit.
+            setFaultFixed(false);
             void audio.requestSound();
             updateBooth((x, t) => ({ ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: t } }, sampler: { on: 'A', hits: [{ at: boothNow() + audio.leadSec(), id: 'chordHit' }] }, perspective: 'CROWD' }));
           }}
