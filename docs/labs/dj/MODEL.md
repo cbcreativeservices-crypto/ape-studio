@@ -1,4 +1,4 @@
-# DJ Systems Lab — the shared booth model (Stage 1)
+# DJ Systems Lab — the shared booth model (Stages 1 and 2)
 
 Internal document. Nothing here is shown to learners. The code is the source
 of truth; this file states it in words so a reviewer can check it.
@@ -164,3 +164,116 @@ NOT YET MEASURED (Node: an 8 s two-deck render with EQ and filter ≈ 0.18 s).
 | One phone output | perspectives instead of independent outputs | stated on Screens 1 and 7 |
 | Chunked audio | short gaps possible at chunk joins (filters and meters continue across them) | — |
 | Hot-patch | flagged, never played | "a half-inserted plug buzzes" |
+
+## 12. Stage 2 (Screens 13–18)
+
+One hook in the render, `engine/djStage2.stage2Of`, called at fixed points of
+`renderBooth`; it returns null when the booth carries none of the Stage 2
+state, so every Stage 1 render is unchanged sample for sample. Pinned by
+`test/djStage2Engine.test.ts`; the pages' rules by `test/djStage2Pages.test.ts`.
+
+```
+deck source  → key lock / key shift / stems (djStretch + djStems) instead of the plain resample
+turntable    → control record tone (DVS) · stylus up · mistracking · ground hum · acoustic loop
+channel in   → USB: the laptop's decks on their pair (+ dropouts, DVS stutter, THRU) · FX return on CH2
+… trim, EQ, filter, CHANNEL METER / CUE tap (unchanged: the cue stays DRY) …
+after fader  → FX INSERT on CH1 / CH2 (post-fader, pre-crossfader) · the FX SEND (post-fader)
+mix bus      → SEND/RETURN (wet × RETURN added) · MASTER insert — both BEFORE the bus clip
+listen       → −9 dB safety trim while a return loop, a turntable howl or a control tone is on a speaker
+```
+
+The turntable now runs the booth clock and the sound on its own
+(`djDeck.anyPlaying` includes it; STOP ALL stops it too), so Screens 17–18
+(and Screen 3's turntable) have meters and audio without a deck playing.
+
+### Effects (model/djEffects, engine/djFx)
+- ONE unit with a ROUTE switch: CH1, CH2 (inserts), MASTER, SEND. TIME in beats at
+  the routed deck's PLAYED tempo (MASTER and SEND follow deck A): ECHO ¼ ½ ¾ 1 2
+  beats; FILTER sweeps 1–16 beats; FLANGER 2–32 beats; REVERB decay 0.6–6 s.
+- ECHO: a delay line, feedback × 0.92 at most, a 6 kHz one-pole low-pass in the
+  loop. REVERB: 8 damped combs + 4 all-passes (Freeverb tunings scaled to
+  48 kHz), comb gain 10^(−3·delay/RT60). FILTER: a TPT state-variable low-pass,
+  Q 3, 200 Hz ↔ 8 kHz on a beat-locked triangle. FLANGER: a 0.6–5.6 ms modulated
+  delay with feedback.
+- DRY/WET (insert, MASTER): dry = min(1, 2(1−w)), wet = min(1, 2w). SEND: the
+  same knob is the RETURN (wet × w); the dry never changes.
+- FX OFF stops feeding; the tail rings out (trails). A re-render inside a chunk
+  REPLAYS the chunk's own effect input to the exact moment (`fxReplay`), so a
+  fader move never cuts an echo (tested: the continuation matches to 1e-4).
+- RETURN TO CH2 with CH2's SEND up is a LOOP: gain = RETURN × CH2 trim × fader ×
+  SEND (CH2's EQ taken as flat), with a 10 ms outer path; while a loop is in, the
+  unit's output is held under −12 dBFS by a soft limiter (a real one climbs to
+  full scale) and the listen level drops 9 dB.
+
+### Speed, pitch, key (model/djKey, engine/djStretch)
+- Pitch in semitones = 12·log2(rate) + shift (key lock OFF), = shift (ON).
+- Speed plan: lock OFF: pitch = rate × p, stretch = 1/p; lock ON: pitch = p,
+  stretch = rate/p (p = 2^(shift/12)); tempo = stretch × pitch always.
+- Stretch = WSOLA: 2048-sample (42.7 ms) Hann grains at 50 % overlap, ±512
+  samples of search by normalised cross-correlation (4× decimated, then
+  refined), then a linear resample by `pitch`. Simple, real, audible at large
+  ratios.
+- Keys are named by tonic; within ¾ semitone the track's own key is named with
+  its offset ("D minor −0.56 st"). OUT OF TUNE = more than 0.15 st from a whole
+  step apart; else SAME / NEIGHBOURS (one step on the circle of fifths) / DISTANT.
+- A deck's tempo range may be ±16 (`tempoRange`, Screen 14). Loops are not
+  supported on the Stage 2 deck path (Screens 13–18 never set one).
+
+### Stems (engine/djStems)
+- ORIGINAL = the track's own four parts (drums, bass, chords, lead = MELODY),
+  summed, then through the track's master curve: all four on = the track
+  (Night Ferry exactly).
+- SEPARATED (SIMULATED) = each part split at 200 Hz (a low-pass and its
+  complement) and shared between the four outputs by fixed leakage matrices
+  whose columns sum to 1, plus a ±0.08 random wobble of the melody's own share
+  every 1024 samples. All on = the track; a muted melody leaves a ghost (about
+  −19 dB).
+
+### Laptop (model/djLaptop)
+- The mixer's USB pairs: USB 1/2 → CH1, USB 3/4 → CH2 (selector on USB). Device
+  BUILT-IN = nothing reaches the mixer. No laptop state = USB silent (Stage 1).
+- Buffer P = B/SR; output latency = P + 1 ms; round trip × 2. Work per buffer
+  C = 0.25 ms + B × (3 / 6 / 14 µs) for TWO DECKS / FOUR + FX / STEMS LIVE. On
+  2 % of buffers a spike (exponential, mean 0.8 ms, at most 4 ms) steals time;
+  C + spike > P is a DROPOUT (that buffer zeroed in the USB audio). Stable
+  buffers at 48 kHz: 256 / 512 / 1024. Deterministic per buffer index.
+
+### Vinyl (model/djVinyl)
+- True force = weight − 2.3 (the hidden balance point); dial = weight − ring
+  zero (0.8 as found: the dial reads 4.0 g, the arm tracks at 2.5 g).
+  The lab's cartridge: 3–5 g.
+- Walls: skate = 0.12 × (F − anti-skate); L = F + skate, R = F − skate.
+  Tracking ability = wall / 2.85 g; below 1, loud bright passages distort
+  (compressed, with a noise "spit"), per channel; under 1.6 g it skips one
+  revolution once per sound chunk.
+- No ground wire: 50 Hz with its 3rd and 5th harmonics at a 0.2 mV equivalent at
+  the cartridge (it then gets the phono stage's gain and RIAA bass boost).
+- Acoustic loop G = 1.25 × booth gain × (CH1 fader gain / 0.72) × (near 1 / away
+  0.35) × (feet off 1 / on 0.22): an 80 Hz band-pass (Q 2.5) in an 8 ms loop;
+  G ≥ 1 builds a howl held under 0.3 (line) by a soft limiter; listen −9 dB.
+
+### DVS (model/djDvs)
+- Control record = a 1 kHz quadrature tone, phase = the record's position,
+  amplitude ∝ platter speed (a stopped platter is silence). Into CH1 PHONO; the
+  mixer sends its phono signal over USB; deck 1 (deck A) comes back on USB 1/2.
+- Quality: × 0.6 preamp on LINE (it clips), × 0.72 no ground, × 0.62 dirty,
+  × 0.85 not calibrated; 0 when the plugs are not in CH1 PHONO or the USB is out.
+  ≥ 0.8 LOCKED; ≥ 0.55 UNSTABLE (40–90 ms gaps now and then); else LOST (stops).
+- ABSOLUTE: deck A takes the record's position (drops and skips jump it);
+  RELATIVE: speed only; INTERNAL: ignores the platter; THRU: the turntable's own
+  sound on USB 1/2 (with a control record: the tone). A dirty record skips a
+  revolution once per sound chunk.
+
+### Stage 2 simplifications (added to §11)
+
+| What | How it is simplified | How the learner is told |
+|---|---|---|
+| One FX unit | four places by a switch, not a beat-FX unit plus an outboard loop | "this lab's mixer"; "real mixers differ" |
+| FX return loop | its gain from trim × fader × send (EQ flat); held under −12 dBFS | "the lab held it under a safe level and played it quieter" |
+| Key lock | a simple WSOLA stretch; no transient preservation | "a real, simple time-stretch … every stretch has some" artifacts |
+| Separation | a leakage matrix + wobble, not an algorithm | "SEPARATED (SIMULATED)", "a prepared imitation" |
+| Laptop, USB, drivers | a workload model, no device | "This lab simulates the laptop, its USB and the interface" |
+| Mistracking | a level-and-brightness threshold distortion | "spit and fizz"; the numbers are this lab's cartridge |
+| Turntable feedback | one resonance, one loop gain | held safe and quiet, said on the screen |
+| DVS decoding | the following is modelled from a quality score; the tone itself is real | "no real control record is read" |
+| Chunk joins | the stretch and the separation restart at a join (a short seam is possible) | — |

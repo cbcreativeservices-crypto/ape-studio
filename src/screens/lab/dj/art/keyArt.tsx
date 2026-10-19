@@ -12,6 +12,9 @@ import { BlurMask, Circle, Group, Line, Path, RoundedRect, Skia, vec } from '@sh
 import { INK } from './ink';
 import { SceneText } from './sceneText';
 import { NOTE_NAMES } from '../model/djKey';
+
+/** The scene fonts have no ♯ / ♭ glyphs: drawn note names use # and b. */
+const ascii = (t: string) => t.replace(/♯/g, '#').replace(/♭/g, 'b');
 import type { Box } from '../geometry/boothGeometry';
 
 function Frame({ b, title, k }: { b: Box; title: string; k: number }) {
@@ -74,7 +77,7 @@ export function PitchPlot({ b, pitch, range, keyLock, shift, k = 1 }: { b: Box; 
 
 /** One octave, twelve equal columns; markers at each deck's sounding tonic. */
 export function KeyStrip({ b, a, bTonic, aWord, bWord, relation, k = 1 }: { b: Box; a: number | null; bTonic: number | null; aWord: string; bWord: string; relation: string; k?: number }) {
-  const inner = { x: b.x + 8, y: b.y + 34 * k, w: b.w - 16, h: b.h - 50 * k };
+  const inner = { x: b.x + 8, y: b.y + 42 * k, w: b.w - 16, h: b.h - 58 * k };
   const col = inner.w / 12;
   const xOf = (pc: number) => inner.x + (((pc % 12) + 12) % 12 + 0.5) * col;
   const fs = 9.5 * k;
@@ -96,7 +99,7 @@ export function KeyStrip({ b, a, bTonic, aWord, bWord, relation, k = 1 }: { b: B
       {Array.from({ length: 12 }, (_, i) => (
         <Group key={i}>
           <RoundedRect x={inner.x + i * col + 1} y={inner.y} width={col - 2} height={inner.h} r={2} color={black.includes(i) ? '#17181c' : '#c9ccd2'} />
-          <SceneText x={inner.x + (i + 0.5) * col} y={inner.y + 12 * k} size={fs} text={NOTE_NAMES[i]} color={black.includes(i) ? INK.print : '#2a2c31'} face="label" align="center" minPt={9.5} />
+          <SceneText x={inner.x + (i + 0.5) * col} y={inner.y + 12 * k} size={fs} text={ascii(NOTE_NAMES[i])} color={black.includes(i) ? INK.print : '#2a2c31'} face="label" align="center" minPt={9.5} />
         </Group>
       ))}
       {a != null ? (
@@ -111,8 +114,8 @@ export function KeyStrip({ b, a, bTonic, aWord, bWord, relation, k = 1 }: { b: B
           <Path path={tri(xOf(bTonic), inner.y + inner.h + 2, true)} color={bad ? INK.red : INK.blue} />
         </Group>
       ) : null}
-      <SceneText x={b.x + 8} y={b.y + 27 * k} size={fs} text={`A · ${aWord}`} color={INK.white} face="label" minPt={9.5} />
-      <SceneText x={b.x + b.w - 8} y={b.y + 27 * k} size={fs} text={`B · ${bWord.replace(' st', '')}`} color={bad ? INK.red : INK.blue} face="label" align="right" minPt={9.5} />
+      <SceneText x={b.x + 8} y={b.y + 27 * k} size={fs} text={ascii(`A · ${aWord}`)} color={INK.white} face="label" minPt={9.5} />
+      <SceneText x={b.x + b.w - 8} y={b.y + 27 * k} size={fs} text={ascii(`B · ${bWord.replace(' st', '')}`)} color={bad ? INK.red : INK.blue} face="label" align="right" minPt={9.5} />
     </Group>
   );
 }

@@ -75,3 +75,38 @@ numbers). No brand likeness, no trade dress, no logos.
 - The cable flow pulse is an overlay of WHERE the signal goes; it claims no speed (decorative motion).
 - Waveforms: peak envelope (min/max), RMS core and the drums' low band (the kick, 140 Hz) are all measured from the assembled tracks offline (djMusic.analyseTrack, shipped in djTrackData.ts, pinned by test/djMusic.test.ts); each lane is scaled so the track's 99th-percentile peak reaches 80 % of its half-height, and the colour keeps the true level. Kick ticks are the low band's onsets.
 - Silk-screen legends are drawn at real size (4 mm type, capitals about 3 mm) and appear only once the zoom renders them at 9 pt or more.
+
+## Fact clusters used in Stage 2 (Screens 13–18), checked 2026-10-18
+
+| # | Fact cluster | Source (research plan ID) | Used on | Status |
+|---|---|---|---|---|
+| F25 | Channel insert, send/return and master effects differ in what they process; dry/wet, delay time in beats, feedback, reverb tails, filtering, modulation | S01, S03 | 13 | as stated; the unit, its law and its places are THIS LAB's (MODEL.md §12) |
+| F26 | An effects return fed back into a channel that also feeds the send makes a loop | plan, advanced faults | 13 | as stated; held safe in the lab |
+| F27 | Speed changes pitch (12·log2 of the rate); key lock time-stretches; key shift; stretch artifacts | S11, S12 (plan DJ20) + mathematics | 14 | the maths is exact (tested); the artifacts are real, from the lab's own WSOLA |
+| F28 | Original multitrack stems differ from algorithmically separated stems (leakage, artifacts); supported stem controls vary | S11, S12 | 15 | the separation is a labelled SIMULATION, never called an algorithm's output |
+| F29 | Device selection, channel mapping, sample rate and buffer latency; smaller buffers trade margin for responsiveness | S07 | 16 | as stated; the workload numbers are this model's |
+| F30 | Turntable setup: balance, zero, then set the tracking force; anti-skate; slipmat; follow the cartridge's instructions | S05 | 17 | method as stated; 3–5 g is the lab's teaching cartridge (UNKNOWN for any real one) |
+| F31 | Skating pulls the arm inward; too little anti-skate mistracks the outer wall (the right channel) first | general turntable engineering | 17 | standard behaviour; the magnitudes are this model's |
+| F32 | The turntable ground wire is a signal ground; protective mains earth is never removed for hum | S14, S15 | 17 | as stated |
+| F33 | Turntable acoustic feedback through the table and stylus differs from microphone feedback; isolation and placement reduce it | S05 (plan DJ22) | 17 | modelled as one resonance; held safe |
+| F34 | DVS: a control signal (speed, direction, position) read by software after calibration; absolute, relative, internal and thru modes; poor signals and recovery; never route the control tone to the PA | S08, S19 | 18 | generic; quadrature is a common principle — real timecodes also carry position data (not modelled) |
+| F35 | Mains hum is 50 or 60 Hz by country | general engineering | 17 | the lab uses 50 Hz and says "or 60" |
+
+## Stage 2 UNKNOWNS
+
+- U6 — Any real mixer's FX tap points (pre/post fader), trails behaviour and send/return routing: the lab states its own and says real mixers differ.
+- U7 — A real player's key-lock quality and the ratio where its artifacts become audible.
+- U8 — Real separation leakage levels (they depend on the algorithm and the music); the lab's −19 dB ghost is a teaching value.
+- U9 — Any real laptop's dropout behaviour; the buffer and workload numbers are a model.
+- U10 — Any real cartridge's tracking-force range and anti-skate setting.
+- U11 — Any real DVS timecode format, calibration procedure and quality thresholds.
+
+## Stage 2 drawings
+
+| Object | Typical class dimensions used |
+|---|---|
+| Mixer effects section | a 300 × 84 mm panel: type selector, LCD 104 × 50 mm, LEVEL and FEEDBACK knobs, SEND 1 / 2, CH SELECT, RETURN TO switch, FX ON key |
+| Player KEY LOCK and KEY − / + keys | in the clear space left of the tempo-range key (38 × 10 and 17 × 9 mm), outside the jog's well |
+| Laptop rig | the Stage 1 laptop (× 0.8), controller (× 0.48) and mixer (× 1) at their class dimensions; USB-A plugs at the laptop, plugs seated in the devices' rear edges |
+| Control record | 12-inch, white vinyl, black label (generic — no timecode artwork) |
+| Tonearm side view, booth side view | schematic elevations, labelled by function, not to scale (said in their titles: SIDE VIEW) |

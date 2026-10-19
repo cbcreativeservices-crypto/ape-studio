@@ -134,13 +134,16 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
   const s2 = s2Of(audio.last);
   const F = trueForce(v);
   const G = feedbackLoopGain(booth, v);
-  // very light, the stylus jumps a groove now and then (one revolution on)
+  // very light, the stylus jumps a groove (one revolution on) once per sound
+  // chunk while it is too light — driven by the render, no timer
   const skipping = tt.playing && skips(v);
+  const lastSkip = useRef<unknown>(null);
   useEffect(() => {
-    if (!skipping) return;
-    const id = setInterval(() => updateBooth((b, t) => ({ ...b, tt: { ...b.tt, posSec: b.tt.posSec + REV_SEC, at: t } })), 3200);
-    return () => clearInterval(id);
-  }, [skipping]);
+    const l = audio.last;
+    if (!skipping || !l || lastSkip.current === l) return;
+    lastSkip.current = l;
+    updateBooth((b, t) => ({ ...b, tt: { ...b.tt, posSec: b.tt.posSec + REV_SEC, at: t } }));
+  }, [skipping, audio.last]);
   const zeroedRight = v.ringZero != null && Math.abs(v.ringZero - BALANCE_AT) <= 0.1;
   if (!v.armUp && zeroedRight && Math.abs(F - FORCE_RANGE.suggest) <= 0.2 && Math.abs(dialReads(v) - FORCE_RANGE.suggest) <= 0.2) h.current.set = true;
   if (v.scale && !v.armUp && inRange(v)) h.current.scale = true;
@@ -208,7 +211,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
           {
             kind: 'group',
             id: 'tt',
-            label: 'TURNTABLE',
+            label: 'PLATTER',
             valueLabel: tt.playing ? 'PLAYING' : 'STOPPED',
             render: () => (
               <View style={s2styles.tray}>

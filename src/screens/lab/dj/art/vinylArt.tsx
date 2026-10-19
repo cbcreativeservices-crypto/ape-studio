@@ -58,7 +58,7 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
   const dial = dialReads(v);
   return (
     <Group>
-      <Frame b={b} title="TONEARM · SIDE VIEW" k={k} right={v.armUp ? (balanced ? 'FLOATS LEVEL ✓' : F > 0 ? 'FRONT DIPS' : 'TAIL HEAVY') : 'ON THE RECORD'} rightTint={v.armUp ? (balanced ? INK.green : INK.amber) : INK.print} />
+      <Frame b={b} title="TONEARM · SIDE VIEW" k={k} right={v.armUp ? (balanced ? 'FLOATS LEVEL: BALANCED' : F > 0 ? 'FRONT DIPS' : 'TAIL HEAVY') : 'ON THE RECORD'} rightTint={v.armUp ? (balanced ? INK.green : INK.amber) : INK.print} />
       {/* plinth, platter and record */}
       <Rect3 x={b.x + 8} y={plinth} w={b.w - 16} h={b.h * 0.12} c0="#2e3036" c1="#121316" />
       <Rect3 x={b.x + b.w * 0.06} y={plinth - b.h * 0.07} w={b.w * 0.6} h={b.h * 0.07} c0="#dfe3e8" c1="#7d838c" />
@@ -125,7 +125,7 @@ export type PhonoCount = 0 | 1 | 2;
 
 export function PhonoChain({ b, preamp, input, count, k = 1 }: { b: Box; preamp: 'PHONO' | 'LINE'; input: 'LINE' | 'PHONO' | 'USB'; count: PhonoCount; k?: number }) {
   const fs = 9.5 * k;
-  const verdict = count === 1 ? 'ONE PHONO STAGE ✓' : count === 0 ? 'NO PHONO STAGE — THIN, QUIET' : 'TWO PHONO STAGES — BOOMY, DISTORTED';
+  const verdict = count === 1 ? 'ONE PHONO STAGE: RIGHT' : count === 0 ? 'NO PHONO STAGE — THIN, QUIET' : 'TWO PHONO STAGES — BOOMY, DISTORTED';
   const tint = count === 1 ? INK.green : '#ff8a7e';
   const rowY = b.y + 26 * k;
   const bh = 30 * k;
@@ -161,7 +161,7 @@ export function PhonoChain({ b, preamp, input, count, k = 1 }: { b: Box; preamp:
   return (
     <Group>
       <Frame b={b} title="THE PHONO STAGE" k={k} right={verdict} rightTint={tint} />
-      {box(0, 'CARTRIDGE', '≈ 5 mV', true)}
+      {box(0, 'CARTRIDGE', 'ABOUT 5 mV', true)}
       {box(1, 'TT PREAMP', preamp === 'LINE' ? 'ON (+RIAA)' : 'OFF', preamp === 'LINE')}
       {box(2, 'MIXER IN', input === 'PHONO' ? 'PHONO +RIAA' : input, input === 'PHONO', count === 2)}
       {box(3, 'CHANNEL', count === 1 ? 'LINE LEVEL' : count === 0 ? 'TOO QUIET' : 'OVERLOAD', count === 1, count !== 1)}
@@ -197,7 +197,7 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   const monW = 40 * k;
   const monH = 56 * k;
   const monTop = v.monitorNear ? tableTop - monH : floor - monH - 50 * k;
-  const status = gain >= 1 ? 'HOWL — IT BUILDS' : gain >= 0.6 ? 'BOOMY' : gain > 0.02 ? 'QUIET' : 'NO LOOP';
+  const status = gain >= 1 ? 'HOWL' : gain >= 0.6 ? 'BOOMY' : gain > 0.02 ? 'QUIET' : 'NO LOOP';
   const tint = gain >= 1 ? INK.peak : gain >= 0.6 ? INK.amber : INK.green;
   const loop = useMemo(() => {
     const p = Skia.PathBuilder.Make();
@@ -216,7 +216,7 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   }, [tx0, tableTop, floor, monX, monW, monTop, monH, k]);
   return (
     <Group>
-      <Frame b={b} title="THE BOOTH · SIDE VIEW" k={k} right={`LOOP ×${gain.toFixed(2)} · ${status}`} rightTint={tint} />
+      <Frame b={b} title="THE BOOTH · SIDE VIEW" k={k} right={`LOOP x${gain.toFixed(2)} · ${status}`} rightTint={tint} />
       <Line p1={vec(b.x + 6, floor)} p2={vec(b.x + b.w - 6, floor)} color="rgba(255,255,255,0.18)" strokeWidth={1} />
       {/* the table */}
       <Rect3 x={tx0} y={tableTop} w={tx1 - tx0} h={7 * k} c0="#3a3d43" c1="#1a1b1f" />
@@ -236,13 +236,13 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
         <LinearGradient start={vec(monX, monTop)} end={vec(monX + monW, monTop + monH)} colors={['#3a3d44', '#1a1b1f', '#0d0e11']} />
       </RoundedRect>
       <RoundedRect x={monX} y={monTop} width={5 * k} height={monH} r={2} color="#5c626b" />
-      <SceneText x={monX + monW / 2} y={monTop - 4} size={fs} text={v.monitorNear ? 'MONITOR · NEAR' : 'MONITOR · AWAY'} color={INK.print} face="label" align="center" minPt={9.5} />
+      <SceneText x={monX + monW / 2 + 2 * k} y={monTop + monH - 6 * k} size={fs} text="MONITOR" color={INK.print} face="label" align="center" minPt={9.5} />
       {/* the loop */}
       <Path path={loop} style="stroke" strokeWidth={2.2} color={tint} opacity={gain > 0.02 ? 0.95 : 0.3}>
         <DashPathEffect intervals={[6, 5]} />
       </Path>
       <Path path={back} style="stroke" strokeWidth={1.6} color={INK.blue} opacity={gain > 0.02 ? 0.8 : 0.3} />
-      <SceneText x={(monX + tx1) / 2} y={monTop - 18 * k} size={fs} text="SOUND SHAKES THE TABLE" color={tint} face="label" align="center" minPt={9.5} />
+      <SceneText x={monX - 6 * k} y={ttY - 12 * k} size={fs} text="SOUND SHAKES THE TABLE" color={tint} face="label" align="right" minPt={9.5} />
       <SceneText x={(tx0 + monX) / 2} y={floor - 12 * k} size={fs} text="STYLUS, MIXER, MONITOR: A LOOP" color={INK.blue} face="label" align="center" minPt={9.5} />
       {howlDb > -60 ? <SceneText x={b.x + 10} y={b.y + 27 * k} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} /> : null}
     </Group>

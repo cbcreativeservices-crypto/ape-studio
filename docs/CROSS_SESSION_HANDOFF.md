@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 20:29 · ccode · 9fa31669
+changed: DJ Systems Lab Stage 2 screens 13-18: effects, key, stems, laptop, vinyl, DVS
+affects other side: nothing (client-only DJ Systems Lab Stage 2 on the unpublished branch dj-lab; no DB, no OTA, no new dependency)
+needs: nothing
+
+
+### 2026-10-18 19:57 · ccode · 5806f7f2
+changed: DJ Systems Lab Stage 2 engine: effects, key lock (WSOLA), stems, laptop USB, vinyl setup, DVS
+affects other side: nothing (client-only DJ Systems Lab Stage 2 on the unpublished branch dj-lab; no DB, no OTA, no new dependency)
+needs: nothing
+
+
 ### 2026-10-18 18:07 · ccode · ea675ab0
 changed: DJ Systems Lab: final 390 px screenshots after fix round 2
 affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)

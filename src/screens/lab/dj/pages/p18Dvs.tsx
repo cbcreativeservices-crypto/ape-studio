@@ -131,12 +131,15 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
   const last = audio.last;
   const s2 = s2Of(last);
   // a dusty record makes the needle jump a groove now and then
+  // (once per sound chunk while it is dusty — driven by the render, no timer)
   const skipping = tt.playing && d.dirty;
+  const lastSkip = useRef<unknown>(null);
   useEffect(() => {
-    if (!skipping) return;
-    const id = setInterval(() => dvsUpdate((b, t) => ({ ...b, tt: { ...b.tt, posSec: b.tt.posSec + REV_SEC, at: t } })), 4100);
-    return () => clearInterval(id);
-  }, [skipping]);
+    const l = audio.last;
+    if (!skipping || !l || lastSkip.current === l) return;
+    lastSkip.current = l;
+    dvsUpdate((b, t) => ({ ...b, tt: { ...b.tt, posSec: b.tt.posSec + REV_SEC, at: t } }));
+  }, [skipping, audio.last]);
   const musicLive = A.playing && booth.ch[1].input === 'USB' && d.mode !== 'THRU';
   if (d.mode === 'ABS' && tt.playing && lock === 'LOCKED' && A.playing && booth.ch[1].input === 'USB' && last && last.rmsDb.ch1 > -45) h.current.play = true;
   if (d.dirty && tt.playing && d.mode === 'INT' && A.playing) h.current.ride = true;
@@ -210,7 +213,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
           {
             kind: 'options',
             id: 'in1',
-            label: 'CH1 INPUT',
+            label: 'CH1 IN',
             valueLabel: booth.ch[1].input,
             options: [
               { id: 'USB', label: 'USB (the software’s music)', blurb: 'Channel 1 hears software deck 1 on USB 1/2.' },

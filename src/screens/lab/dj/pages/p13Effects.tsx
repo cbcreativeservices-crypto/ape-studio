@@ -153,7 +153,15 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
   const fx = booth.fx ?? freshFx();
   const last = audio.last;
   const s2 = s2Of(last);
-  const segs = useChunkSegs<FxSeg>(last, (r) => (r.s2?.fxIn && r.s2.fxOut ? { t0: r.t0, inDb: r.s2.fxIn, outDb: r.s2.fxOut } : null));
+  const segs = useChunkSegs<FxSeg>(
+    last,
+    (r) => (r.s2?.fxIn && r.s2.fxOut ? { t0: r.t0, inDb: r.s2.fxIn, outDb: r.s2.fxOut } : null),
+    3,
+    (x, t) => {
+      const k = Math.max(0, Math.min(x.inDb.length, Math.round((t - x.t0) / 0.01)));
+      return k >= x.inDb.length ? x : { t0: x.t0, inDb: x.inDb.subarray(0, k), outDb: x.outDb.subarray(0, k) };
+    },
+  );
   const outMax = s2?.fxOut ? Math.max(...Array.from(s2.fxOut)) : -120;
   const A = booth.decks.A;
   const B = booth.decks.B;
@@ -221,7 +229,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
           { k: 'EFFECT', v: `${fx.type} ${fx.on ? 'ON' : 'OFF'}`, tint: fx.on ? colors.amber : colors.textSub, flex: 1.3 },
           { k: 'SITS ON', v: routeWord, tint: loop ? '#ff8a7e' : colors.textPrimary },
           { k: 'TIME', v: fx.type === 'REVERB' ? fxTimeWord(fx.type, fx.time) : `${Math.round(fxTimeSec(fx, bpm) * 1000)} ms`, sub: fx.type === 'REVERB' ? 'DECAY' : fxTimeWord(fx.type, fx.time), tint: colors.textPrimary },
-          peakShort('MIX BUS PEAK', busPk == null ? null : busPk <= -59.9 ? -Infinity : busPk),
+          peakShort('BUS PEAK', busPk == null ? null : busPk <= -59.9 ? -Infinity : busPk),
         ],
         params: [
           { kind: 'group', id: 'fx', label: 'FX', valueLabel: `${fx.type.slice(0, 4)} ${fx.on ? 'ON' : 'OFF'}`, valueA11y: `${fx.type} ${fx.on ? 'on' : 'off'}, ${fx.route}`, render: () => <FxTray /> },

@@ -176,7 +176,7 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
         ],
         params: [
           { kind: 'group', id: 'setup', label: 'SETUP', valueLabel: `${l.buffer}`, valueA11y: `buffer ${l.buffer} samples, ${l.device}`, render: () => <SetupTray /> },
-          { kind: 'group', id: 'outs', label: 'OUTPUTS', valueLabel: l.assign.A === 'USB 1/2' && l.assign.B === 'USB 3/4' ? '1→1 2→2' : 'CHECK', render: () => <OutputsTray /> },
+          { kind: 'group', id: 'outs', label: 'OUTPUT', valueLabel: l.assign.A === 'USB 1/2' && l.assign.B === 'USB 3/4' ? '1→1 2→2' : 'CHECK', render: () => <OutputsTray /> },
           { kind: 'group', id: 'rig', label: 'RIG', valueLabel: `${l.usbMixer ? 'MIX' : '—'} ${l.usbCtrl ? 'CTL' : '—'}`, valueA11y: `mixer cable ${l.usbMixer ? 'in' : 'out'}, controller cable ${l.usbCtrl ? 'in' : 'out'}`, render: () => <RigTray /> },
           boothKey(booth, tr),
           stopKey(tr),

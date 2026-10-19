@@ -94,7 +94,8 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
   // measure the parts off the render path (each part's real min/max)
   useEffect(() => {
     let live = true;
-    const breath = () => new Promise<void>((r) => setTimeout(r, 0));
+    // a real macrotask between chunks of the measuring (the house helper)
+    const breath = () => new Promise<void>((r) => void runSoon(r));
     const jobs: [string, () => Promise<StemOverview>][] = [
       ['nightFerry:ORIGINAL', () => stemOverview('nightFerry', 'ORIGINAL', breath)],
       ['glassHarbour:ORIGINAL', () => stemOverview('glassHarbour', 'ORIGINAL', breath)],

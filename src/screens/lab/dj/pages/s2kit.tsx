@@ -22,7 +22,7 @@ export const s2Of = (r: BoothRender | null): S2Report | null => r?.s2 ?? null;
  * plot has the seconds before this chunk too. A re-render that starts inside
  * a kept chunk replaces the rest of it.
  */
-export function useChunkSegs<T extends { t0: number }>(last: BoothRender | null, pick: (r: BoothRender) => T | null, keep = 2): T[] {
+export function useChunkSegs<T extends { t0: number }>(last: BoothRender | null, pick: (r: BoothRender) => T | null, keep = 2, trim?: (x: T, t: number) => T): T[] {
   const [segs, setSegs] = useState<T[]>([]);
   const seen = useRef<BoothRender | null>(null);
   const pickRef = useRef(pick);
@@ -33,9 +33,11 @@ export function useChunkSegs<T extends { t0: number }>(last: BoothRender | null,
     const v = pickRef.current(last);
     setSegs((s) => {
       if (!v) return s;
-      const kept = s.filter((x) => x.t0 < v.t0 - 1e-6).slice(-(keep - 1));
+      // an earlier chunk keeps what it had BEFORE this one starts
+      const kept = s.filter((x) => x.t0 < v.t0 - 1e-6).slice(-(keep - 1)).map((x) => (trim ? trim(x, v.t0) : x));
       return [...kept, v];
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [last, keep]);
   return segs;
 }
