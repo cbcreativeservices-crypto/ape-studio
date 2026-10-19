@@ -47,11 +47,14 @@ function playingA(): Booth {
 }
 
 describe('tapers and curves (stated in MODEL.md)', () => {
-  it('trim −20 … +12 dB, linear in dB', () => {
+  it('trim −20 … +12 dB, 0 dB at the 12 o’clock centre detent, linear in dB each side', () => {
     assert.equal(trimDb(0), -20);
     assert.equal(trimDb(1), 12);
+    assert.equal(TRIM_UNITY, 0.5);
     near(trimDb(TRIM_UNITY), 0, 1e-12);
-    near(trimPos(6), 26 / 32, 1e-12);
+    near(trimPos(6), 0.75, 1e-12);
+    near(trimPos(-10), 0.25, 1e-12);
+    for (const d of [-20, -7.5, 0, 3, 12]) near(trimDb(trimPos(d)), d, 1e-9);
   });
   it('isolator knob: +6 dB … −26 dB, then a kill at the end stop', () => {
     assert.equal(eqDb(0.5), 0);

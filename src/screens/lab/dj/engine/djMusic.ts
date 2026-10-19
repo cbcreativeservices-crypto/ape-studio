@@ -4,7 +4,7 @@
  * React Native; deterministic (seeded), so every learner hears the same
  * tracks and test/djMusic.test.ts can pin them.
  *
- * THREE TRACKS, each 64 bars of 4/4 in 8-bar phrases:
+ * THREE TRACKS, each 72 bars of 4/4 in 8-bar phrases:
  *
  *   NIGHT FERRY   122 BPM · A minor · house — a quiet, dynamic master
  *                 (peaks −6 dBFS): offbeat bass, electric-piano stabs, a
@@ -20,8 +20,11 @@
  * ARRANGEMENT (bar numbers 1-based, the same map for every track):
  *   1–8 INTRO (drums) · 9–16 INTRO + bass · 17–32 MAIN · 33–40 BREAKDOWN
  *   (no kick; the riser builds over 39–40) · 41–56 DROP (everything + the
- *   hook) · 57–64 OUTRO (drums + bass, then drums). Phrase starts: 1, 9, 17,
- *   25, 33, 41, 49, 57 — the places a DJ starts and ends a blend.
+ *   hook) · 57–72 OUTRO: 16 bars that mirror the intro — 57–64 drums + bass,
+ *   65–72 DRUMS ONLY (thinning to kick and hats from 69), so a mix out has
+ *   room (audio review 2026-10-18 #17). Phrase starts: 1, 9, 17, 25, 33, 41,
+ *   49, 57, 65 — the places a DJ starts and ends a blend. A crash marks the
+ *   "one" of bars 17, 41 and 57; a tom fill ends bars 16, 32, 48, 56 and 64.
  *
  * THE ENGINE IS A SEQUENCER. Each part is a bank of short one-shot clips
  * (a kick, a hat, one bass note, one chord stab …) synthesised once per
@@ -56,9 +59,13 @@ export const SECTIONS: readonly Section[] = [
   { name: 'MAIN', startBar: 16, bars: 16 },
   { name: 'BREAKDOWN', startBar: 32, bars: 8 },
   { name: 'DROP', startBar: 40, bars: 16 },
-  { name: 'OUTRO', startBar: 56, bars: 8 },
+  { name: 'OUTRO', startBar: 56, bars: 16 },
 ];
-export const TRACK_BARS = 64;
+export const TRACK_BARS = 72;
+/** 0-based bar where the outro drops to DRUMS ONLY (bass and music out). */
+export const OUTRO_DRUMS_ONLY = 64;
+/** 0-based bar where the drums-only outro thins to kick and hats. */
+export const OUTRO_THIN = 68;
 
 export type TrackDef = {
   id: TrackId;
@@ -86,7 +93,7 @@ export const TRACKS: Record<TrackId, TrackDef> = {
 export const trueGrid = (id: TrackId): Grid => ({ bpm: TRACKS[id].bpm, firstBeatSec: TRACKS[id].leadInSec });
 
 export const barSec = (id: TrackId): number => (BEATS_PER_BAR * 60) / TRACKS[id].bpm;
-/** The whole file's length (lead-in + 64 bars + a 1 s tail). */
+/** The whole file's length (lead-in + 72 bars + a 1 s tail). */
 export const trackSeconds = (id: TrackId): number => TRACKS[id].leadInSec + TRACK_BARS * barSec(id) + 1;
 
 export function sectionAtBar(bar0: number): Section {
@@ -394,7 +401,7 @@ function nightFerrySong(): Song {
     const k = bar % 4;
     const ev: Ev[] = [];
     const kick = s !== 'BREAKDOWN';
-    const fullDrums = s === 'MAIN' || s === 'DROP' || (s === 'INTRO' && bar >= 8) || (s === 'OUTRO' && bar < 60);
+    const fullDrums = s === 'MAIN' || s === 'DROP' || (s === 'INTRO' && bar >= 8) || (s === 'OUTRO' && bar < OUTRO_THIN);
     if (kick) for (let q = 0; q < 4; q++) ev.push({ stem: 'drums', clip: 'kick', beat: q, gain: 0.75, pan: 0 });
     if (fullDrums || s === 'BREAKDOWN') {
       if (s !== 'BREAKDOWN' || bar >= 36) for (const q of [1, 3]) ev.push({ stem: 'drums', clip: 'clap', beat: q, gain: s === 'BREAKDOWN' ? 0.5 : 0.75, pan: 0 });
@@ -405,12 +412,12 @@ function nightFerrySong(): Song {
       ev.push({ stem: 'drums', clip: 'shaker', beat: q / 4 + 0.01, gain: (q % 4 === 2 ? 0.55 : 0.32) * (s === 'BREAKDOWN' ? 0.6 : 1), pan: -0.25 });
     }
     if (fullDrums) for (const q of [0.5, 1.5, 2.5, 3.5]) ev.push({ stem: 'drums', clip: 'hatO', beat: q, gain: 0.62, pan: 0.18 });
-    if (bar === 16 || bar === 40) ev.push({ stem: 'drums', clip: 'crash', beat: 0, gain: 0.32, pan: 0 });
-    if (bar === 15 || bar === 31 || bar === 47 || bar === 55) {
+    if (bar === 16 || bar === 40 || bar === 56) ev.push({ stem: 'drums', clip: 'crash', beat: 0, gain: 0.32, pan: 0 });
+    if (bar === 15 || bar === 31 || bar === 47 || bar === 55 || bar === 63) {
       [['tomH', 3], ['tomH', 3.25], ['tomM', 3.5], ['tomL', 3.75]].forEach(([c, q]) => ev.push({ stem: 'drums', clip: c as string, beat: q as number, gain: 0.42, pan: c === 'tomH' ? 0.3 : c === 'tomL' ? -0.3 : 0 }));
     }
     if (bar === 38) ev.push({ stem: 'drums', clip: 'riser', beat: 0, gain: 0.3, pan: 0 });
-    const bass = (s === 'INTRO' && bar >= 8) || s === 'MAIN' || s === 'DROP' || (s === 'OUTRO' && bar < 60);
+    const bass = (s === 'INTRO' && bar >= 8) || s === 'MAIN' || s === 'DROP' || (s === 'OUTRO' && bar < OUTRO_DRUMS_ONLY);
     if (bass) {
       for (const q of [0.5, 1.5, 2.5]) ev.push({ stem: 'bass', clip: `bass${k}`, beat: q, gain: 0.8, pan: 0 });
       ev.push({ stem: 'bass', clip: `bassOct${k}`, beat: 3.5, gain: 0.62, pan: 0 });
@@ -477,19 +484,19 @@ function glassHarbourSong(): Song {
     const ev: Ev[] = [];
     const kick = s !== 'BREAKDOWN';
     if (kick) for (let q = 0; q < 4; q++) ev.push({ stem: 'drums', clip: 'kick', beat: q, gain: 0.8, pan: 0 });
-    const full = s === 'MAIN' || s === 'DROP' || (s === 'INTRO' && bar >= 8) || (s === 'OUTRO' && bar < 60);
+    const full = s === 'MAIN' || s === 'DROP' || (s === 'INTRO' && bar >= 8) || (s === 'OUTRO' && bar < OUTRO_THIN);
     if (full || (s === 'BREAKDOWN' && bar >= 36)) for (const q of [1, 3]) ev.push({ stem: 'drums', clip: 'clap', beat: q, gain: 0.7, pan: 0 });
     for (let q = 0; q < 16; q++) {
       if (s !== 'BREAKDOWN') ev.push({ stem: 'drums', clip: 'hatC', beat: q / 4, gain: q % 2 === 1 ? 0.8 : 0.5, pan: -0.15 });
       if (full) ev.push({ stem: 'drums', clip: 'shaker', beat: q / 4 + 0.012, gain: q % 4 === 3 ? 0.48 : 0.27, pan: 0.3 });
     }
     if (s !== 'BREAKDOWN') for (const q of [0.5, 1.5, 2.5, 3.5]) ev.push({ stem: 'drums', clip: 'ride', beat: q, gain: 0.55, pan: 0.2 });
-    if (bar === 16 || bar === 40) ev.push({ stem: 'drums', clip: 'crash', beat: 0, gain: 0.3, pan: 0 });
-    if (bar === 15 || bar === 31 || bar === 47 || bar === 55) {
+    if (bar === 16 || bar === 40 || bar === 56) ev.push({ stem: 'drums', clip: 'crash', beat: 0, gain: 0.3, pan: 0 });
+    if (bar === 15 || bar === 31 || bar === 47 || bar === 55 || bar === 63) {
       [['tomH', 3], ['tomM', 3.25], ['tomM', 3.5], ['tomL', 3.75]].forEach(([c, q]) => ev.push({ stem: 'drums', clip: c as string, beat: q as number, gain: 0.4, pan: 0 }));
     }
     if (bar === 38) ev.push({ stem: 'drums', clip: 'riser', beat: 0, gain: 0.28, pan: 0 });
-    const bass = (s === 'INTRO' && bar >= 8) || s === 'MAIN' || s === 'DROP' || (s === 'OUTRO' && bar < 60);
+    const bass = (s === 'INTRO' && bar >= 8) || s === 'MAIN' || s === 'DROP' || (s === 'OUTRO' && bar < OUTRO_DRUMS_ONLY);
     if (bass) {
       for (const q of [0.5, 1.5, 2.5, 3.5]) {
         ev.push({ stem: 'bass', clip: `bass${k}`, beat: q, gain: 0.78, pan: 0 });
@@ -549,19 +556,19 @@ function slowOrbitSong(): Song {
     const ev: Ev[] = [];
     const kick = s !== 'BREAKDOWN';
     if (kick) for (const q of [0, 1.75, 2.5]) ev.push({ stem: 'drums', clip: 'kick', beat: q, gain: q === 0 ? 0.9 : 0.72, pan: 0 });
-    const full = s === 'MAIN' || s === 'DROP' || (s === 'INTRO' && bar >= 8) || (s === 'OUTRO' && bar < 60);
+    const full = s === 'MAIN' || s === 'DROP' || (s === 'INTRO' && bar >= 8) || (s === 'OUTRO' && bar < OUTRO_THIN);
     if (full) for (const q of [1, 3]) ev.push({ stem: 'drums', clip: 'clap', beat: q, gain: 0.75, pan: 0 });
     for (let q = 0; q < 8; q++) {
       const swing = q % 2 === 1 ? 0.08 : 0;
       if (s !== 'BREAKDOWN') ev.push({ stem: 'drums', clip: q === 7 ? 'hatO' : 'hatC', beat: q / 2 + swing, gain: q % 2 === 0 ? 0.8 : 0.55, pan: 0.15 });
       if (full) ev.push({ stem: 'drums', clip: 'shaker', beat: q / 2 + 0.25 + swing, gain: 0.3, pan: -0.3 });
     }
-    if (bar === 16 || bar === 40) ev.push({ stem: 'drums', clip: 'crash', beat: 0, gain: 0.3, pan: 0 });
-    if (bar === 15 || bar === 31 || bar === 47 || bar === 55) {
+    if (bar === 16 || bar === 40 || bar === 56) ev.push({ stem: 'drums', clip: 'crash', beat: 0, gain: 0.3, pan: 0 });
+    if (bar === 15 || bar === 31 || bar === 47 || bar === 55 || bar === 63) {
       [['tomH', 3], ['tomM', 3.33], ['tomL', 3.66]].forEach(([c, q]) => ev.push({ stem: 'drums', clip: c as string, beat: q as number, gain: 0.42, pan: 0 }));
     }
     if (bar === 38) ev.push({ stem: 'drums', clip: 'riser', beat: 0, gain: 0.26, pan: 0 });
-    const bass = (s === 'INTRO' && bar >= 8) || s === 'MAIN' || s === 'DROP' || (s === 'OUTRO' && bar < 60);
+    const bass = (s === 'INTRO' && bar >= 8) || s === 'MAIN' || s === 'DROP' || (s === 'OUTRO' && bar < OUTRO_DRUMS_ONLY);
     if (bass) {
       ev.push({ stem: 'bass', clip: `bass${k}`, beat: 0, gain: 0.6, pan: 0 });
       ev.push({ stem: 'bass', clip: `bassFifth${k}`, beat: 2.5, gain: 0.48, pan: 0 });

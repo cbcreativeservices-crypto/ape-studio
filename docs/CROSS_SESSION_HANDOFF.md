@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 17:15 · ccode · 4714da74
+changed: DJ Systems Lab: the three expert reviews of Stage 1 (2026-10-18)
+affects other side: nothing (review documents only, branch dj-lab; no DB, no OTA)
+needs: nothing
+
+
 ### 2026-10-18 16:55 · ccode · ba9e83a7
 changed: DJ Systems Lab art: pages, captions, callouts, after screenshots
 affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)

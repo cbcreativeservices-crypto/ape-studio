@@ -12,7 +12,9 @@
  * CHUNKS. While any deck plays, the booth is rendered in chunks of booth
  * time — a SHORT one (3 s) right after a start or a change, then 8 s ones,
  * each prepared ahead and started when the last one ends. Two players take
- * turns so the next chunk loads while one sounds. A change (a fader, a
+ * turns so the next chunk loads while one sounds. Each chunk continues the
+ * last one's filter and meter state (djRender `carryAt`), so a join never
+ * clicks and the meters never dip. A change (a fader, a
  * cable, a deck button) re-renders from a moment just ahead of now, so the
  * sound catches up with the controls within a render's time.
  *
@@ -45,7 +47,7 @@ import { getLabPreview } from '../../../../features/lab/labPreviewStore';
 import { useDecorativeMotion } from '../../../../features/settings/decorativeMotion';
 import { anchorAt } from '../model/djModel';
 import { anyPlaying } from '../model/djDeck';
-import { renderBooth, TAPS, type BoothRender, type Tap } from '../engine/djRender';
+import { carryAt, renderBooth, TAPS, type BoothRender, type Tap } from '../engine/djRender';
 import { boothNow, boothRunning, getBooth, stopBooth, subscribeBooth, syncClock } from './boothStore';
 
 /** What the drawing reads for the meters (one chunk). */
@@ -169,7 +171,9 @@ export function useBoothAudio(): BoothAudio {
       await breath();
       if (!aliveRef.current || gen !== genRef.current) return;
       const booth = anchorAt(getBooth(), t0);
-      const render = renderBooth(booth, t0, dur);
+      // continue the stream: a contiguous chunk carries every filter memory
+      // and meter; a re-render inside the sounding chunk carries the meters
+      const render = renderBooth(booth, t0, dur, carryAt(currentRef.current?.render ?? null, t0));
       if (!aliveRef.current || gen !== genRef.current) return;
       const wantSound = soundRef.current && isAudioOutputEnabled() && !getLabPreview().active;
       const k = nextPlayerRef.current;

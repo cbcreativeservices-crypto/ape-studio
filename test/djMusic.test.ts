@@ -13,6 +13,7 @@ import {
   TRACKS,
   TRACK_BARS,
   TRACK_IDS,
+  OUTRO_DRUMS_ONLY,
   analyseTrack,
   barEvents,
   barSec,
@@ -30,11 +31,35 @@ import { SR, peakOf, rmsOf } from '../src/screens/lab/dj/engine/djDsp.ts';
 const db = (x: number) => 20 * Math.log10(x);
 
 describe('the tracks', () => {
-  it('three original tracks at the stated tempos, 64 bars in 8-bar phrases', () => {
+  it('three original tracks at the stated tempos, 72 bars in 8-bar phrases', () => {
     assert.deepEqual(TRACK_IDS.map((t) => TRACKS[t].bpm), [122, 126, 100]);
-    assert.equal(TRACK_BARS, 64);
+    assert.equal(TRACK_BARS, 72);
     for (const s of SECTIONS) assert.equal(s.startBar % 8, 0, `${s.name} starts on a phrase`);
-    assert.equal(SECTIONS.reduce((n, s) => n + s.bars, 0), 64);
+    assert.equal(SECTIONS.reduce((n, s) => n + s.bars, 0), 72);
+  });
+  it('a DJ-friendly outro: 16 bars mirroring the 16-bar intro, the last 8 drums only (audio review #17)', () => {
+    const intro = SECTIONS.find((s) => s.name === 'INTRO')!;
+    const outro = SECTIONS.find((s) => s.name === 'OUTRO')!;
+    assert.equal(outro.bars, 16);
+    assert.equal(intro.bars, 16);
+    assert.equal(outro.startBar + outro.bars, TRACK_BARS);
+    assert.equal(OUTRO_DRUMS_ONLY - outro.startBar, 8, 'eight bars of drums + bass first');
+    assert.equal(TRACK_BARS - OUTRO_DRUMS_ONLY, 8, 'then eight bars of drums only');
+    for (const id of TRACK_IDS) {
+      for (let bar = outro.startBar; bar < TRACK_BARS; bar++) {
+        const ev = barEvents(id, bar);
+        assert.ok(ev.some((e) => e.stem === 'drums' && e.clip === 'kick'), `${id} bar ${bar + 1} keeps its kick`);
+        const music = ev.filter((e) => e.stem !== 'drums');
+        if (bar < OUTRO_DRUMS_ONLY) assert.ok(music.some((e) => e.stem === 'bass'), `${id} bar ${bar + 1} has its bass`);
+        else assert.equal(music.length, 0, `${id} bar ${bar + 1} is drums only`);
+      }
+      // the "one" of the outro is marked from the structure: a crash, after a fill
+      assert.ok(barEvents(id, outro.startBar).some((e) => e.clip === 'crash'), `${id} crash on bar ${outro.startBar + 1}`);
+      assert.ok(barEvents(id, outro.startBar - 1).some((e) => e.clip.startsWith('tom')), `${id} fill before the outro`);
+    }
+    // a mix started at bar 17 now has more than two minutes before the end
+    const id = 'nightFerry';
+    assert.ok((TRACK_BARS - 16) * barSec(id) > 110, 'room for a long blend');
   });
   it('the arrangement is real: no kick in the breakdown, bass enters at bar 9, the hook only in the drop', () => {
     for (const id of TRACK_IDS) {

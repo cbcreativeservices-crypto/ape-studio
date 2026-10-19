@@ -176,6 +176,26 @@ export function sync(b: Booth, t: number, id: DeckId): Booth | null {
   return { ...a, decks: { ...a.decks, [id]: { ...fol, pitch: p, posSec: clampPos(fol, posSec) } } };
 }
 
+/**
+ * Line `id` up with the other deck's beat phase (the ANALYSED grids), moving
+ * only `id`'s position — its tempo stays where it is. The screens that teach
+ * EQ and crossfader blends start deck B already tempo-matched (setup) and
+ * phase-locked by this whenever a deck starts, so a blend is never judged on
+ * a train wreck (audio review 2026-10-18 #2).
+ */
+export function alignPhase(b: Booth, t: number, id: DeckId): Booth {
+  const other: DeckId = id === 'A' ? 'B' : 'A';
+  const a = anchorAt(b, t);
+  const lead = a.decks[other];
+  const fol = a.decks[id];
+  const lg = analysedGrid(lead);
+  const fg = analysedGrid(fol);
+  if (!lg || !fg || !lead.playing) return a;
+  let posSec = syncPhaseTime(lg, lead.posSec, fg, fol.posSec);
+  while (posSec < 0) posSec += 60 / fg.bpm;
+  return { ...a, decks: { ...a.decks, [id]: { ...fol, posSec: clampPos(fol, posSec) } } };
+}
+
 export function setGrid(b: Booth, t: number, id: DeckId, patch: Partial<Pick<DeckState, 'gridMode' | 'gridShiftBeats' | 'bpmFix' | 'quantize'>>): Booth {
   return mapDeck(b, t, id, (d) => ({ ...d, ...patch }));
 }

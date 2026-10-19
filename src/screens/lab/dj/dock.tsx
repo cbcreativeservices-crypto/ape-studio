@@ -14,7 +14,7 @@ import type { BoothAudio } from './booth/useBoothAudio';
 import { getBooth, setPerspective, updateBooth } from './booth/boothStore';
 import { playPause, setPitch, setPlaying } from './model/djDeck';
 import { PITCH_RANGE_PCT } from './model/djTime';
-import { dbStr, eqDb, faderGain, levelKnobGain, listenDb, trimDb, type Booth, type ChannelId, type DeckId, type Perspective } from './model/djModel';
+import { TRIM_UNITY, dbStr, eqDb, faderGain, levelKnobGain, listenDb, trimDb, trimPos, type Booth, type ChannelId, type DeckId, type Perspective } from './model/djModel';
 
 /* ── the transport (a PLAY press also asks the sound gate) ────────────── */
 
@@ -77,13 +77,13 @@ export const trimKey = (booth: Booth, ch: ChannelId): DockParam => ({
   label: `TRIM ${ch}`,
   value: booth.ch[ch].trim,
   level: true,
-  home: 0.625,
+  home: TRIM_UNITY,
   onChange: (v) => updateBooth((b) => ({ ...b, ch: { ...b.ch, [ch]: { ...b.ch[ch], trim: v } } })),
   format: (v) => `TRIM ${ch} ${dbStr(trimDb(v))}`,
   formatShort: (v) => dbStr(trimDb(v)).replace(' dB', ''),
   nudges: [
-    { label: '−1 dB', onPress: () => updateBooth((b) => ({ ...b, ch: { ...b.ch, [ch]: { ...b.ch[ch], trim: Math.max(0, b.ch[ch].trim - 1 / 32) } } })), a11y: 'Trim down one decibel' },
-    { label: '+1 dB', onPress: () => updateBooth((b) => ({ ...b, ch: { ...b.ch, [ch]: { ...b.ch[ch], trim: Math.min(1, b.ch[ch].trim + 1 / 32) } } })), a11y: 'Trim up one decibel' },
+    { label: '−1 dB', onPress: () => updateBooth((b) => ({ ...b, ch: { ...b.ch, [ch]: { ...b.ch[ch], trim: trimPos(Math.round(trimDb(b.ch[ch].trim)) - 1) } } })), a11y: 'Trim down one decibel' },
+    { label: '+1 dB', onPress: () => updateBooth((b) => ({ ...b, ch: { ...b.ch, [ch]: { ...b.ch[ch], trim: trimPos(Math.round(trimDb(b.ch[ch].trim)) + 1) } } })), a11y: 'Trim up one decibel' },
   ],
 });
 

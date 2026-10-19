@@ -277,8 +277,11 @@ const LIMIT_RELEASE_S = 0.12;
  * drops at once to what the next block needs and recovers with a 120 ms
  * release, interpolated per sample, then a final clip at the ceiling so no
  * sample can exceed it. Returns the deepest gain reduction in dB (≤ 0).
+ * `st` carries the gain across contiguous blocks of one stream (the booth's
+ * chunks), so a join never snaps the gain back to unity.
  */
-export function protectiveLimitInPlace(l: Float32Array, r: Float32Array, ceilingDb = LIMIT_CEILING_DB): number {
+export type LimiterState = { g: number };
+export function protectiveLimitInPlace(l: Float32Array, r: Float32Array, ceilingDb = LIMIT_CEILING_DB, st?: LimiterState): number {
   const ceil = dbToLin(ceilingDb);
   const n = l.length;
   const blocks = Math.ceil(n / LIMIT_BLOCK);
@@ -296,7 +299,7 @@ export function protectiveLimitInPlace(l: Float32Array, r: Float32Array, ceiling
   }
   const rel = 1 - Math.exp(-LIMIT_BLOCK / (LIMIT_RELEASE_S * SR));
   const g = new Float32Array(blocks + 1);
-  let cur = 1;
+  let cur = st ? st.g : 1;
   for (let b = 0; b <= blocks; b++) {
     // look one block ahead so the gain is already down when the peak lands
     const want = Math.min(need[b], b + 1 <= blocks ? need[b + 1] : 1);
@@ -323,6 +326,7 @@ export function protectiveLimitInPlace(l: Float32Array, r: Float32Array, ceiling
       r[i] = c;
     }
   }
+  if (st) st.g = g[blocks];
   return linToDb(deepest);
 }
 

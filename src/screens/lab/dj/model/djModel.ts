@@ -18,7 +18,7 @@
  *     → INPUT jack class (LINE / PHONO) — a phono jack adds +36 dB and RIAA
  *       playback EQ, then CLIPS (the phono stage)
  *     → INPUT SELECTOR (which jack pair the channel listens to)
- *     → TRIM  (−20 … +12 dB)
+ *     → TRIM  (−20 … +12 dB, 0 dB at the centre detent)
  *     → EQ    (3-band isolator: +6 dB … −26 dB, then KILL)
  *     → FILTER (one knob: low-pass ← off → high-pass)
  *     → CHANNEL CLIP (0 dBFS)  ── CHANNEL METER tap and CUE tap (pre-fader)
@@ -56,11 +56,18 @@ export type GridMode = 'TRUE' | 'LATE_HALF' | 'HALF_BPM';
 
 export const TRIM_MIN_DB = -20;
 export const TRIM_MAX_DB = 12;
-/** Trim: linear in dB across its travel. */
-export const trimDb = (p: number): number => TRIM_MIN_DB + (TRIM_MAX_DB - TRIM_MIN_DB) * clamp01(p);
-export const trimPos = (db: number): number => clamp01((db - TRIM_MIN_DB) / (TRIM_MAX_DB - TRIM_MIN_DB));
-/** The trim position that is unity (0 dB). */
-export const TRIM_UNITY = trimPos(0);
+/** Trim: 0 dB at the 12 o'clock centre detent, as real trims are marked
+ *  (audio review 2026-10-18 #24) — linear in dB on each half: the left half
+ *  −20 … 0 dB, the right half 0 … +12 dB. */
+export const TRIM_UNITY = 0.5;
+export function trimDb(p: number): number {
+  const x = clamp01(p);
+  return x <= TRIM_UNITY ? TRIM_MIN_DB * (1 - x / TRIM_UNITY) : (TRIM_MAX_DB * (x - TRIM_UNITY)) / (1 - TRIM_UNITY);
+}
+export function trimPos(db: number): number {
+  const d = Math.max(TRIM_MIN_DB, Math.min(TRIM_MAX_DB, db));
+  return d <= 0 ? TRIM_UNITY * (1 - d / TRIM_MIN_DB) : TRIM_UNITY + (1 - TRIM_UNITY) * (d / TRIM_MAX_DB);
+}
 
 export const EQ_BOOST_DB = 6;
 export const EQ_CUT_DB = -26;
@@ -174,7 +181,7 @@ export const PLUGS: Record<PlugId, PlugDef> = {
   'mst.xlrR': { id: 'mst.xlrR', kind: 'xlr', from: 'Mixer MASTER OUT R (XLR)', device: 'mixer', short: 'MST·R', fits: SPEAKER_JACKS },
   'bth.trsL': { id: 'bth.trsL', kind: 'trs', from: 'Mixer BOOTH OUT L (TRS)', device: 'mixer', short: 'BTH·L', fits: SPEAKER_JACKS },
   'bth.trsR': { id: 'bth.trsR', kind: 'trs', from: 'Mixer BOOTH OUT R (TRS)', device: 'mixer', short: 'BTH·R', fits: SPEAKER_JACKS },
-  phones: { id: 'phones', kind: 'phones', from: 'Headphones (6.35 mm TRS plug)', device: 'phones', short: 'PHONES', fits: ['mix.phones'] },
+  phones: { id: 'phones', kind: 'phones', from: 'Headphones (stereo plug)', device: 'phones', short: 'PHONES', fits: ['mix.phones'] },
   'ac.playerA': { id: 'ac.playerA', kind: 'iec', from: 'Deck A power cord', device: 'playerA', short: 'PWR A', fits: STRIP_JACKS },
   'ac.playerB': { id: 'ac.playerB', kind: 'iec', from: 'Deck B power cord', device: 'playerB', short: 'PWR B', fits: STRIP_JACKS },
   'ac.mixer': { id: 'ac.mixer', kind: 'iec', from: 'Mixer power cord', device: 'mixer', short: 'PWR MIX', fits: STRIP_JACKS },
@@ -455,6 +462,51 @@ export function powerThump(b: Booth, d: DeviceId): boolean {
 export function speakerCabled(b: Booth, s: SpeakerId): boolean {
   const jack = `${s}.in` as JackId;
   return (['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR'] as PlugId[]).some((p) => b.plugs[p] === jack);
+}
+
+/** Where a mixer output's level is up enough to carry a bang. */
+const LEVEL_DOWN = 0.02;
+
+/**
+ * HOT-PATCHING (audio review 2026-10-18 #3): plugging or unplugging an audio
+ * cable while it is live sends a pop or a buzz straight to the speakers — a
+ * half-inserted RCA plug buzzes loudly through a live PA, and a master cable
+ * pushed into a live powered speaker can bang. This model FLAGS it (never
+ * plays it). Returns the speakers that would hear it (empty = safe):
+ *   - a MASTER / BOOTH cable moved into or out of a LIVE speaker while the
+ *     mixer is on and that output's level is up;
+ *   - a SOURCE cable moved on a jack its channel is listening to, while that
+ *     channel's fader is up — every live speaker fed from the mixer hears it.
+ * The safe habit: fader (or MASTER) down, or the speakers off, first.
+ */
+export function hotPatchSpeakers(b: Booth, p: PlugId, to: JackId | null): SpeakerId[] {
+  const from = b.plugs[p];
+  if (from === to || !deviceLive(b, 'mixer')) return [];
+  const kind = PLUGS[p].kind;
+  if (kind === 'xlr' || kind === 'trs') {
+    const level = p.startsWith('mst') ? b.mixer.master : b.mixer.booth;
+    if (level <= LEVEL_DOWN) return [];
+    const hit: SpeakerId[] = [];
+    for (const j of [from, to]) {
+      if (!j || !j.endsWith('.in')) continue;
+      const spk = j.slice(0, -3) as SpeakerId;
+      if (deviceLive(b, spk) && !hit.includes(spk)) hit.push(spk);
+    }
+    return hit;
+  }
+  if (kind !== 'rca') return [];
+  const touched = [from, to].some((j) => {
+    if (!j || !j.startsWith('ch')) return false;
+    const ch = Number(j[2]) as ChannelId;
+    const sel = selectedJacks(ch, b.ch[ch].input);
+    return !!sel && (sel.L === j || sel.R === j) && b.ch[ch].fader > LEVEL_DOWN;
+  });
+  if (!touched) return [];
+  return SPEAKERS.filter((spk) => {
+    const f = speakerFeed(b, spk);
+    if (!f) return false;
+    return (f.out === 'MASTER' ? b.mixer.master : b.mixer.booth) > LEVEL_DOWN;
+  });
 }
 
 /* ── decks: position, grid ────────────────────────────────────────────── */

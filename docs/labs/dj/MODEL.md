@@ -26,7 +26,7 @@ source (player line out, stereo)
   → cable: each plug (L, R) is its own conductor
   → input jack class: LINE, or PHONO (+36 dB at 1 kHz + RIAA playback, then the phono stage CLIPS)
   → INPUT SELECTOR (LINE / PHONO / USB — USB computer audio is not part of Stage 1: silence)
-  → TRIM            −20 … +12 dB, linear in dB; unity at 62.5 % of travel
+  → TRIM            −20 … +12 dB; 0 dB at the 12 o'clock centre detent, linear in dB each side
   → EQ (isolator)   per band +6 dB … −26 dB, then KILL below 4 % of travel
   → FILTER          one knob; left = low-pass, right = high-pass, centre dead zone ±3 % = bypass
   → CHANNEL CLIP at 0 dBFS
@@ -50,7 +50,7 @@ quieter but keeps the flattened waveform (test: "CLIP BEFORE OUTPUT").
 
 | Control | Model |
 |---|---|
-| TRIM | −20 … +12 dB, linear in dB |
+| TRIM | −20 … +12 dB: left half −20 … 0 dB, right half 0 … +12 dB, linear in dB on each; 0 dB at the centre detent (p = 0.5) |
 | EQ band | p ≥ 0.5: 0 … +6 dB linear; 0.04 < p < 0.5: −26 … 0 dB linear; p ≤ 0.04: kill |
 | Channel fader | gain = p² |
 | MASTER / BOOTH / PHONES | gain = (p / 0.75)²: unity at ¾ travel, +5.0 dB at the stop |
@@ -100,6 +100,14 @@ Neither is a universal peak increase for arbitrary songs. Pinned by
   then aligns the analysed beat phase.
 - A jog nudge is modelled as a position step (±10 ms per touch) instead of a
   continuous bend.
+- The practice tracks are 72 bars in 8-bar phrases: a 16-bar intro (8 drums,
+  then 8 with bass) and a 16-bar outro that mirrors it (8 drums + bass, then
+  8 drums only), so a mix in and a mix out both have room. A crash marks the
+  "one" of bars 17, 41 and 57, after a tom fill — the bar lines of a correct
+  grid sit there; in four-on-the-floor music every kick is equally strong.
+- Screens 6, 8 and 9 start deck B tempo-matched to deck A (−3.17 % on its
+  tempo fader) and phase-lock whichever deck starts second (`alignPhase`), so
+  no gain, crossfader or EQ blend is judged on drifting beats.
 
 ## 8. Connections and power
 
@@ -110,6 +118,13 @@ its cord is in the strip AND its switch is on. Switching a source or the
 mixer while a connected powered speaker is on is flagged as a THUMP (never
 played loud). Safe order: on = sources → mixer → speakers last; off =
 speakers first.
+
+HOT-PATCH (`hotPatchSpeakers`): moving an audio cable while it is live is
+flagged too (never played) — a MASTER/BOOTH cable into or out of a live
+speaker while the mixer is on and that output's level is up, or a source
+plug on a jack its channel listens to while that channel's fader is up
+(every live speaker fed from the mixer would hear the pop or buzz). The
+safe habit: fader or MASTER down, or the speakers off, first.
 
 ## 9. Listening (one phone output)
 
@@ -126,7 +141,14 @@ Offline render in JS at 48 kHz (`renderBooth`), chunked (a short first chunk
 after a change, then longer ones), encoded to WAV and played through
 `EarClipPlayer` behind the app's sound gate (`requestAudioOutput`,
 `startFenced`). Two players alternate so the next chunk loads while one
-plays; a small gap at chunk joins is a known limit. Device render time is
+plays; a small gap at chunk joins is a known limit. Each render returns its
+end state (`carry`: every channel's isolator / filter / phono-stage filter
+memories, the turntable's cartridge curve, the listener limiter's gain, every
+meter's level, hold and hold age); the next CONTIGUOUS chunk continues from
+it, so filters never click and meters never dip at a join (pinned in
+`test/djLessons.test.ts`). A re-render that starts inside the sounding chunk
+(a control changed) carries the meters from that moment and starts the
+filters fresh, because the sound restarts there. Device render time is
 NOT YET MEASURED (Node: an 8 s two-deck render with EQ and filter ≈ 0.18 s).
 
 ## 11. Simplifications register
@@ -140,4 +162,5 @@ NOT YET MEASURED (Node: an 8 s two-deck render with EQ and filter ≈ 0.18 s).
 | Thump | flagged, never played | "the speakers would thump" |
 | Phono levels | typical values (5 mV cartridge, +36 dB stage) | "about", "varies by cartridge" |
 | One phone output | perspectives instead of independent outputs | stated on Screens 1 and 7 |
-| Chunked audio | short gaps possible at chunk joins | — |
+| Chunked audio | short gaps possible at chunk joins (filters and meters continue across them) | — |
+| Hot-patch | flagged, never played | "a half-inserted plug buzzes" |

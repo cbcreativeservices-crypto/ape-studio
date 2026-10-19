@@ -14,11 +14,21 @@
  * The meters, the cable glow and the sound all come from this one render, so
  * a picture can never claim a route the audio does not take.
  *
+ * CONTINUITY (audio review 2026-10-18 #29). The booth is rendered in chunks
+ * (3 s, then 8 s). Each render hands back its END STATE (`carry`): every
+ * channel's isolator, filter and phono-stage filter memories, the turntable's
+ * cartridge curve, the listener limiter's gain and every meter's level and
+ * hold. The next CONTIGUOUS chunk starts from it, so a resonant filter, an EQ
+ * cut or a phono stage never clicks or thumps at a join, and the meters never
+ * dip. A re-render that starts INSIDE an earlier chunk (a control changed)
+ * carries the meters from that moment (`carryAt`) and starts the filters
+ * fresh, because the sound itself restarts there.
+ *
  * Order of processing and tap points: see the header of model/djModel.ts and
  * docs/labs/dj/MODEL.md. The PROTECTIVE LIMITER is listener safety only —
  * it runs after every modelled stage and can never un-clip a stage.
  */
-import { SR, RIAA_PLAYBACK, RIAA_RECORDING, biquadInPlace, bqState, dbToLin, filterBiquad, filterOf, isoState, isolatorInPlace, linToDb, protectiveLimitInPlace, resampleLinear, type BqState, type IsoState } from './djDsp.ts';
+import { SR, RIAA_PLAYBACK, RIAA_RECORDING, biquadInPlace, bqState, dbToLin, filterBiquad, filterOf, isoState, isolatorInPlace, linToDb, protectiveLimitInPlace, resampleLinear, type BqState, type IsoState, type LimiterState } from './djDsp.ts';
 import { sampleBuf, trackSeconds, trackWindow, type StereoBuf, type TrackId } from './djMusic.ts';
 import {
   CHANNEL_IDS,
@@ -74,6 +84,20 @@ export type BoothRender = {
   rmsDb: Record<Tap, number>;
   /** The deepest the listener's limiter reduced, dB (≤ 0). */
   limiterDb: number;
+  /** The state at the end of this render, for the next contiguous chunk. */
+  carry: RenderCarry;
+};
+
+/** One meter's ballistic state: displayed level, hold level, blocks held. */
+export type MeterState = { m: number; h: number; age: number };
+type ChanDsp = { iso: [IsoState, IsoState]; filt: [BqState, BqState]; riaa: [BqState, BqState] };
+export type StreamDsp = { ch: Record<ChannelId, ChanDsp>; tt: [BqState, BqState]; lim: LimiterState };
+export type RenderCarry = {
+  /** Booth time the state belongs to (where the next render must start). */
+  t1: number;
+  /** The signal path's filter memories — null when only the meters carry. */
+  dsp: StreamDsp | null;
+  meters: Record<Tap, MeterState>;
 };
 
 /* ── deck sources ─────────────────────────────────────────────────────── */
@@ -159,12 +183,12 @@ export function clearDeckCache(): void {
 
 /** The turntable's output: a RAW cartridge signal (RIAA recording curve,
  *  −36 dB) with its preamp switched to PHONO, a line signal with it on LINE. */
-function turntableSignal(b: Booth, n: number): StereoBuf {
+function turntableSignal(b: Booth, n: number, st: [BqState, BqState]): StereoBuf {
   const s = deckSignal('TT', { ...b.tt, playing: b.tt.playing && deviceLive(b, 'turntable') }, n);
   if (b.ttPreamp === 'PHONO') {
     const g = dbToLin(-PHONO_GAIN_DB);
-    biquadInPlace(s.l, RIAA_RECORDING, bqState());
-    biquadInPlace(s.r, RIAA_RECORDING, bqState());
+    biquadInPlace(s.l, RIAA_RECORDING, st[0]);
+    biquadInPlace(s.r, RIAA_RECORDING, st[1]);
     for (let i = 0; i < n; i++) {
       s.l[i] *= g;
       s.r[i] *= g;
@@ -175,8 +199,32 @@ function turntableSignal(b: Booth, n: number): StereoBuf {
 
 /* ── the mixer ────────────────────────────────────────────────────────── */
 
-type ChanDsp = { iso: [IsoState, IsoState]; filt: [BqState, BqState]; riaa: [BqState, BqState] };
 const chanDsp = (): ChanDsp => ({ iso: [isoState(), isoState()], filt: [bqState(), bqState()], riaa: [bqState(), bqState()] });
+const freshDsp = (): StreamDsp => ({ ch: { 1: chanDsp(), 2: chanDsp() }, tt: [bqState(), bqState()], lim: { g: 1 } });
+const cloneBq = (q: BqState): BqState => ({ ...q });
+const cloneChan = (c: ChanDsp): ChanDsp => ({
+  iso: [{ s: c.iso[0].s.map(cloneBq) }, { s: c.iso[1].s.map(cloneBq) }],
+  filt: [cloneBq(c.filt[0]), cloneBq(c.filt[1])],
+  riaa: [cloneBq(c.riaa[0]), cloneBq(c.riaa[1])],
+});
+const cloneDsp = (d: StreamDsp): StreamDsp => ({ ch: { 1: cloneChan(d.ch[1]), 2: cloneChan(d.ch[2]) }, tt: [cloneBq(d.tt[0]), cloneBq(d.tt[1])], lim: { g: d.lim.g } });
+const FLOOR_STATE: MeterState = { m: METER_FLOOR_DB, h: METER_FLOOR_DB, age: 0 };
+/** A join this close (s) counts as contiguous. */
+const JOIN_TOL_S = 0.002;
+
+/** The state to start a render at booth time `t` from an earlier render `r`:
+ *  its full end state when `t` is where `r` ends (a contiguous chunk), the
+ *  meters at that moment when `t` falls inside `r` (a re-render after a
+ *  change), nothing otherwise. Pure. */
+export function carryAt(r: BoothRender | null, t: number): RenderCarry | null {
+  if (!r) return null;
+  if (Math.abs(r.carry.t1 - t) <= JOIN_TOL_S) return r.carry;
+  const k = Math.floor((t - r.t0) / METER_BLOCK_S);
+  if (k < 0 || k >= r.meter.ch1.length) return null;
+  const meters = {} as Record<Tap, MeterState>;
+  for (const tap of TAPS) meters[tap] = { m: r.meter[tap][k], h: r.hold[tap][k], age: 0 };
+  return { t1: t, dsp: null, meters };
+}
 
 function blockPeaks(x: Float32Array, y: Float32Array | null, n: number): Float32Array {
   const blocks = Math.ceil(n / BLOCK);
@@ -213,16 +261,16 @@ const rmsDbOf = (l: Float32Array, r: Float32Array | null): number => {
 };
 
 /** Displayed meter + hold from raw block peaks (dBFS). */
-export function ballistics(rawLin: Float32Array, startDb = METER_FLOOR_DB, startHold = METER_FLOOR_DB): { meter: Float32Array; hold: Float32Array; raw: Float32Array } {
+export function ballistics(rawLin: Float32Array, start: MeterState = FLOOR_STATE): { meter: Float32Array; hold: Float32Array; raw: Float32Array; end: MeterState } {
   const n = rawLin.length;
   const meter = new Float32Array(n);
   const hold = new Float32Array(n);
   const raw = new Float32Array(n);
   const fall = METER_FALL_DB_PER_S * METER_BLOCK_S;
   const holdBlocks = Math.round(METER_HOLD_S / METER_BLOCK_S);
-  let m = startDb;
-  let h = startHold;
-  let hAge = 0;
+  let m = start.m;
+  let h = start.h;
+  let hAge = start.age;
   for (let k = 0; k < n; k++) {
     const db = Math.max(METER_FLOOR_DB, linToDb(rawLin[k]));
     raw[k] = db;
@@ -234,20 +282,24 @@ export function ballistics(rawLin: Float32Array, startDb = METER_FLOOR_DB, start
     meter[k] = m;
     hold[k] = h;
   }
-  return { meter, hold, raw };
+  return { meter, hold, raw, end: { m, h, age: hAge } };
 }
 
 /**
  * Render the booth for `seconds` from booth time `t0` (the booth must be
- * anchored at t0 — deck positions are read as they are).
+ * anchored at t0 — deck positions are read as they are). `from` is the state
+ * to continue (see `carryAt`); without it every filter and meter starts at
+ * rest.
  */
-export function renderBooth(b: Booth, t0: number, seconds: number): BoothRender {
+export function renderBooth(b: Booth, t0: number, seconds: number, from?: RenderCarry | null): BoothRender {
   const n = Math.max(1, Math.round(seconds * SR));
+  const joined = !!from && Math.abs(from.t1 - t0) <= JOIN_TOL_S;
+  const dspAll: StreamDsp = joined && from!.dsp ? cloneDsp(from!.dsp) : freshDsp();
   // Sources: the two players (+ any sampler pads on their software) and the turntable.
   const src: Record<'A' | 'B' | 'TT', StereoBuf> = {
     A: deckSignal('A', { ...b.decks.A, playing: b.decks.A.playing && deviceLive(b, 'playerA') }, n),
     B: deckSignal('B', { ...b.decks.B, playing: b.decks.B.playing && deviceLive(b, 'playerB') }, n),
-    TT: turntableSignal(b, n),
+    TT: turntableSignal(b, n, dspAll.tt),
   };
   const host = b.sampler.on;
   if (deviceLive(b, host === 'A' ? 'playerA' : 'playerB')) {
@@ -277,7 +329,7 @@ export function renderBooth(b: Booth, t0: number, seconds: number): BoothRender 
     const r = new Float32Array(n);
     if (route.L) l.set(src[route.L.source][route.L.side === 'L' ? 'l' : 'r']);
     if (route.R) r.set(src[route.R.source][route.R.side === 'L' ? 'l' : 'r']);
-    const dsp = chanDsp();
+    const dsp = dspAll.ch[ch];
     if (route.jackClass === 'phono') {
       // The PHONO stage: +36 dB with the RIAA playback curve, then its own clip.
       const g = dbToLin(PHONO_GAIN_DB);
@@ -411,18 +463,21 @@ export function renderBooth(b: Booth, t0: number, seconds: number): BoothRender 
     playL[i] = (fl ? fl[i] : 0) * lg;
     playR[i] = (fr ? fr[i] : 0) * lg;
   }
-  const limiterDb = protectiveLimitInPlace(playL, playR);
+  const limiterDb = protectiveLimitInPlace(playL, playR, undefined, dspAll.lim);
 
   const meter = {} as Record<Tap, Float32Array>;
   const hold = {} as Record<Tap, Float32Array>;
   const raw = {} as Record<Tap, Float32Array>;
+  const ends = {} as Record<Tap, MeterState>;
   for (const tap of TAPS) {
-    const bl = ballistics(peaks[tap] ?? new Float32Array(Math.ceil(n / BLOCK)));
+    const bl = ballistics(peaks[tap] ?? new Float32Array(Math.ceil(n / BLOCK)), joined ? from!.meters[tap] : undefined);
     meter[tap] = bl.meter;
     hold[tap] = bl.hold;
     raw[tap] = bl.raw;
+    ends[tap] = bl.end;
   }
-  return { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb };
+  const carry: RenderCarry = { t1: t0 + n / SR, dsp: dspAll, meters: ends };
+  return { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb, carry };
 }
 
 /** The channel a tap belongs to, for the drawing. */
