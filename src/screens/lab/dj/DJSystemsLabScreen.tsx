@@ -1,7 +1,10 @@
 /**
- * DJ Systems Lab (owner GO 2026-10-18) — STAGE 1: the first twelve screens of
- * the owner's 24-screen outline (docs/labs/dj/OWNER_24_SCREEN_OUTLINE.txt),
- * a complete lab on the PagedLab shell. Every screen is a Rack Unit page over
+ * DJ Systems Lab (owner GO 2026-10-18) — the owner's 24-screen outline
+ * (docs/labs/dj/OWNER_24_SCREEN_OUTLINE.txt) on the PagedLab shell: Stage 1
+ * (screens 1–12), 13–18 (branch dj-lab, merged later; 16–18 are OPTIONAL
+ * equipment paths) and Stage 2b (19–24: microphones, the PA and the venue,
+ * recording, hybrid rigs, changeovers, and the closing event challenge,
+ * which ends the lab). Every screen is a Rack Unit page over
  * ONE shared booth (booth/boothStore): two media players, a two-channel
  * mixer, PA speakers, booth monitors and headphones, revealed as the lessons
  * need them.
@@ -12,6 +15,17 @@
  *   4 Build your first DJ system     10 Tempo, beatmatching and phrasing
  *   5 Load and play music            11 Beatgrids, sync and quantize
  *   6 Set gain and read meters       12 Cue points, loops and samples
+ *  13–18 (branch dj-lab)             19 Microphones and talkover
+ *                                    20 PA speakers, subs and the venue
+ *                                    21 Recording and streaming
+ *                                    22 Hybrid DJ systems
+ *                                    23 Performer changeovers and backups
+ *                                    24 Troubleshooting: the event challenge
+ *
+ * OPTIONAL PATHS (owner outline): 16–18 are equipment paths a learner may
+ * skip; the lab counts as complete with every other screen done
+ * (pages/registry, PagedLab `optionalPage`). Matched BY OUTLINE NUMBER
+ * (DJ_PAGE_NO), so the rule holds once 13–18 arrive.
  *
  * Each screen keeps its five steps together (UNDERSTAND · EXPLORE · LISTEN &
  * OBSERVE · PRACTICE · CHECK YOURSELF) under the pinned booth; a screen marks
@@ -36,7 +50,8 @@ import { useEffect } from 'react';
 import { PagedLab } from '../kit/PagedLab';
 import { releaseTracks } from './engine/djMusic';
 import { clearDeckCache } from './engine/djRender';
-import { DJ_GOALS, DJ_PAGES } from './pages';
+import { DJ_GOALS, DJ_PAGE_NO, DJ_PAGES } from './pages';
+import { isOptionalNo } from './pages/registry';
 import { leftLine } from './booth/goalStore';
 
 export const DJ_LAB_ID = 'dj-systems';
@@ -50,7 +65,14 @@ const HANDS_ON = 'Its practice goals, its check and its troubleshooting exercise
 /** A screen's what's-left row: the goals it still has to meet, by name
  *  (learning review 2026-10-18 X5) — from its last visit this session, or
  *  every goal of a screen not opened yet. NEXT still moves on without it. */
-const leftDetail = (i: number): string | undefined => (DJ_PAGES[i] && DJ_GOALS[i] ? leftLine(DJ_PAGES[i].short, DJ_GOALS[i]) : undefined);
+const leftDetail = (i: number): string | undefined => {
+  if (!DJ_PAGES[i] || !DJ_GOALS[i]) return undefined;
+  const line = leftLine(DJ_PAGES[i].short, DJ_GOALS[i]);
+  return optionalPage(i) ? `Optional equipment path — not needed to complete the lab. ${line}` : line;
+};
+
+/** Screens 16–18 (by outline number) are optional equipment paths. */
+const optionalPage = (i: number): boolean => i < DJ_PAGES.length && isOptionalNo(DJ_PAGE_NO[i] ?? -1);
 
 export function DJSystemsLabScreen() {
   // Leaving the lab releases the synthesised tracks' clip banks and the deck
@@ -71,6 +93,7 @@ export function DJSystemsLabScreen() {
       handsOnDetail={HANDS_ON}
       pageDetail={leftDetail}
       accuracyDetail={DJ_ACCURACY_DETAIL}
+      optionalPage={optionalPage}
     />
   );
 }

@@ -113,7 +113,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type La
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -149,6 +149,12 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  shown emphasised at the top of the ⚖️ note (AccuracyNote `detail`) on
    *  every page. Omitted = the standard note, exactly as before. */
   accuracyDetail?: string;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): page `index` is an OPTIONAL path
+   *  (an equipment path a learner may skip). CONTENTS marks it optional, the
+   *  what's-left screen lists it under OPTIONAL PATHS without counting it,
+   *  and the lab counts as done once every OTHER page is. Omitted = every
+   *  page is required, exactly as before. */
+  optionalPage?: (index: number) => boolean;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -198,6 +204,18 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     [check, pages, labId, title],
   );
 
+
+  // Every page done — or, with optional paths, every REQUIRED page done.
+  const optionalRef = useRef(optionalPage);
+  optionalRef.current = optionalPage;
+  const allDone = useCallback(
+    (completed: readonly number[]): boolean => {
+      const opt = optionalRef.current;
+      if (!opt) return completed.length >= pagesWithCheck.length;
+      return pagesWithCheck.every((_, i) => opt(i) || completed.includes(i));
+    },
+    [pagesWithCheck],
+  );
 
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -321,7 +339,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         next = {
           ...p,
           completed,
-          done: completed.length >= pagesWithCheck.length,
+          done: allDone(completed),
           lastPage: pre.lastPage ?? p.lastPage,
         };
         if (!guestRef.current && !loadedAsGuestRef.current) void savePagedProgress(labId, next);
@@ -382,7 +400,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     }
     const fresh = !base.completed.includes(page);
     const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
-    persist({ completed, done: completed.length >= pagesWithCheck.length });
+    persist({ completed, done: allDone(completed) });
     /**
      * ⛔ THE APPENDED CHECK PAGE IS NOT ONE OF THE LAB'S PAGES
      * (owner 2026-09-21 bug pass — latent until the first check is authored).
@@ -394,7 +412,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
      * the unit that actually exists.
      */
     if (fresh && page < pages.length) onPageDone?.(page);
-  }, [page, persist, pagesWithCheck.length, pages.length, onPageDone]);
+  }, [page, persist, pagesWithCheck.length, pages.length, onPageDone, allDone]);
   // Bug pass 2026-10-01: (1) a guest's reset is in memory only — the stored
   // copy is device-wide, so removing it as a guest erased the previous
   // account's place (a guest copy is never written, and a removal is a write);
@@ -448,7 +466,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
       : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
   );
-  const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i) }));
+  const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i), ...(optionalPage?.(i) ? { optional: true } : null) }));
   const endCleared = new Set<string>();
   pagesWithCheck.forEach((_, i) => {
     const banked = check && i === pages.length
@@ -466,7 +484,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // too, or it is unreachable except by NEXT off the page before it.
   const navUnits: LabNavUnit[] = pagesWithCheck.map((p, i) => ({
     id: String(i),
-    title: p.title,
+    title: optionalPage?.(i) ? `${p.title} (optional)` : p.title,
     done: endCleared.has(String(i)),
     kind: check && i === pages.length ? 'check' : 'unit',
   }));

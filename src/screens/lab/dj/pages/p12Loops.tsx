@@ -3,9 +3,9 @@
  * versus headphone cue, hot cues, loop creation and length, loop exit, beat
  * jump and sample playback with a visible deck and bus assignment. The
  * sampler lives in a player's software, so its pads come out of THAT player's
- * channel: preview them with the channel cued and its fader down. The last
- * screen of Stage 1 closes with what this lab has given you. The fault: a
- * sample fired straight into the crowd.
+ * channel: preview them with the channel cued and its fader down. The
+ * fault: a sample fired straight into the crowd. (What the whole lab covers
+ * now closes the lab, on Screen 24.)
  */
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -41,23 +41,6 @@ const TERMS = [
 ] as const;
 
 export const GOALS_LOOPS = ['Store a hot cue', 'Jump back to it', 'Loop, then exit', 'Beat jump', 'Preview a sample privately', 'Keep the sample off the crowd', 'Pass the check'] as const;
-
-/** What the lab covers, screen by screen — ticked only for a screen that is
- *  really done (learning review p12 #2). */
-const COVERS = [
-  'Work safely: low levels first, STOP within reach, speakers on last and off first.',
-  'Name the gear of any DJ system and say what each piece does.',
-  'Read a socket — direction, connector, signal, level, channels — and patch a stereo source without losing a side.',
-  'Build a complete system and follow the music from the players to the crowd.',
-  'Load, cue and play on the spare deck without stopping the dance floor.',
-  'Set gain by average level with headroom, read the meters, and find the stage that clipped.',
-  'Cue privately, use split cue, and set the booth without touching the crowd.',
-  'Choose crossfader curves and assignments; blend and cut.',
-  'Use isolators and filters to manage two bass lines.',
-  'Beatmatch with your ears and the displays, tell drift from offset, and start on a phrase.',
-  'Check and fix a beatgrid before trusting SYNC.',
-  'Use hot cues, loops, beat jumps and samples in time.',
-] as const;
 
 const LOOK = 'You are looking at deck B’s waveform with its cue points and any loop marked, two small meters (what reaches your headphones, and what reaches the crowd), and below, deck B’s hot cue pads, loop and beat-jump keys and its transport CUE.';
 
@@ -381,19 +364,6 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />
       </Step>
-      <View style={styles.summary}>
-        <Text style={styles.sumHead}>WHAT THIS LAB COVERS</Text>
-        <Text style={styles.sumFoot}>✓ marks a screen you have done; • one still to do.</Text>
-        {COVERS.map((t, i) => {
-          const done = i === 11 ? ctx.isDone || !!ctx.isPageDone?.(i) : !!ctx.isPageDone?.(i);
-          return (
-            <Text key={t} style={[styles.sumItem, done && { color: colors.textPrimary }]} accessibilityLabel={`Screen ${i + 1}: ${t} ${done ? 'Done.' : 'Not done yet.'}`}>
-              {`${done ? '✓' : '•'}  ${t}`}
-            </Text>
-          );
-        })}
-        <Text style={styles.sumFoot}>FINISH › shows what is left in this lab, screen by screen. Every screen can be done again for practice — credit you have earned stays.</Text>
-      </View>
     </DjRack>
   );
 }
@@ -404,10 +374,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
   note: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   swatch: { width: 22, height: 10, borderRadius: 3 },
-  summary: { borderRadius: 12, borderWidth: 1, borderColor: 'rgba(91,255,133,0.4)', backgroundColor: '#0d1a12', padding: 12, gap: 6 },
-  sumHead: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4 },
-  sumItem: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
-  sumFoot: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, marginTop: 4 },
 });
 
 export const P12: PageDef = { title: 'Cue points, loops and samples', short: 'LOOPS', Component: PageLoops, manualDone: true, rack: true };

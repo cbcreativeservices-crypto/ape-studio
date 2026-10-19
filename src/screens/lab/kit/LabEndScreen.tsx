@@ -140,7 +140,7 @@ export function LabEndScreen({
       onPress={() => onJump(r.id)}
       style={[styles.row, dim && styles.rowDim]}
       accessibilityRole="button"
-      accessibilityLabel={`${r.kind === 'check' ? '' : `${noun} ${r.num}, `}${r.label}${r.credited ? `, ${tag.toLowerCase()}` : ''}. ${r.detail ?? ''} Opens it.`}
+      accessibilityLabel={`${r.kind === 'check' ? '' : `${noun} ${r.num}, `}${r.label}${r.optional ? ', optional' : ''}${r.credited ? `, ${tag.toLowerCase()}` : ''}. ${r.detail ?? ''} Opens it.`}
     >
       <Text style={[styles.rowNum, r.kind === 'check' && styles.rowNumCheck]}>
         {r.kind === 'check' ? 'CHECK' : String(r.num).padStart(2, '0')}
@@ -178,6 +178,15 @@ export function LabEndScreen({
         </View>
       ) : null}
 
+      {/* ADDITIVE (2026-10-18): OPTIONAL paths still open — never counted,
+          never holding LAB COMPLETE (no lab without optional units shows this) */}
+      {w.optionalLeft.length > 0 ? (
+        <>
+          <Text style={styles.optionalHead}>{`OPTIONAL PATHS · ${w.optionalLeft.length} NOT DONE — not needed to complete the lab`}</Text>
+          <View style={styles.list}>{w.optionalLeft.map((r) => row(r, false))}</View>
+        </>
+      ) : null}
+
       {w.credited.length > 0 ? (
         <>
           <Pressable
@@ -189,7 +198,7 @@ export function LabEndScreen({
             accessibilityLabel={`${w.credited.length} ${tag.toLowerCase()}. ${showCredited ? 'Hide' : 'Show'} them to review`}
           >
             <Text style={styles.creditedText}>
-              ✓ {tag} · {w.credited.length} OF {w.total}
+              ✓ {tag} · {w.credited.filter((r) => !r.optional).length} OF {w.total}
             </Text>
             <Text style={styles.creditedToggle}>{showCredited ? 'HIDE ▴' : 'REVIEW ▾'}</Text>
           </Pressable>
@@ -248,6 +257,7 @@ const styles = StyleSheet.create({
   rowDetail: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   rowTag: { color: colors.green, fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1 },
   rowGo: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
+  optionalHead: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, marginTop: 4 },
   creditedHead: {
     flexDirection: 'row',
     alignItems: 'center',

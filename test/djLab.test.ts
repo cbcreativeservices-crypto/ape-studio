@@ -66,13 +66,13 @@ describe('DJ Systems Lab — wiring', () => {
     assert.match(read('src/dev/webPreviews.tsx'), /DJSystemsLab: DJSystemsLabScreen/);
     assert.match(read('src/features/audio/ExposureCheckin.tsx'), /'DJSystemsLab'/);
   });
-  it('has the twelve Stage 1 screens, in order, each a rack page', () => {
+  it('has its screens in outline order (1–12, then 19–24; 13–18 slot in from branch dj-lab), each a rack page', () => {
     const idx = read(`${DJ}/pages/index.ts`);
     const list = idx.match(/DJ_PAGES[^=]*=\s*\[([^\]]+)\]/);
     assert.ok(list);
-    const ids = list![1].split(',').map((s) => s.trim()).filter(Boolean);
-    // Stage 2 appends its screens in order (the count grows to the owner's 24)
-    assert.ok(ids.length >= 12);
+    // counted generically (comments dropped): the owner's 24 screens, in order
+    const ids = list![1].replace(/\/\/[^\n]*/g, '').split(',').map((s) => s.trim()).filter(Boolean);
+    assert.equal(ids.length, 24, `${ids.length} screens`);
     assert.deepEqual(ids, ids.map((_, i) => `P${String(i + 1).padStart(2, '0')}`));
     for (const f of FILES.filter((x) => /pages\/p\d\d/.test(x))) {
       const s = read(f);

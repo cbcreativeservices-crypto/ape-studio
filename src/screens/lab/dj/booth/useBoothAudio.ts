@@ -45,7 +45,7 @@ import { useStopOnClose } from '../../../../features/audio/useStopOnBlur';
 import { isAudioOutputEnabled } from '../../../../features/audio/audioOutputStore';
 import { getLabPreview } from '../../../../features/lab/labPreviewStore';
 import { useDecorativeMotion } from '../../../../features/settings/decorativeMotion';
-import { anchorAt } from '../model/djModel';
+import { anchorAt, type Booth } from '../model/djModel';
 import { anyPlaying } from '../model/djDeck';
 import { carryAt, renderBooth, TAPS, type BoothRender, type Tap } from '../engine/djRender';
 import { boothNow, boothRunning, getBooth, stopBooth, subscribeBooth, syncClock } from './boothStore';
@@ -57,6 +57,18 @@ export type MeterFrame = {
   meter: Record<Tap, number[]>;
   hold: Record<Tap, number[]>;
   over: number[];
+  /** ADDITIVE (Stage 2b): the event rig's own taps (mic, recorder, sub) and
+   *  the talkover dip per block (`duck`, dB) — present only when the
+   *  screen renders with the event renderer. */
+  ext?: { meter: Record<string, number[]>; hold: Record<string, number[]>; duck: number[]; speech: number[] };
+};
+
+/** ADDITIVE (Stage 2b): a screen may render its booth through another
+ *  renderer built ON renderBooth (engine/djEventRender), and hear about
+ *  each chunk the moment it starts sounding (the recorder's take). */
+export type BoothAudioOpts = {
+  render?: (b: Booth, t0: number, seconds: number, prev: BoothRender | null) => BoothRender;
+  onChunk?: (r: BoothRender) => void;
 };
 
 export type BoothAudio = {
@@ -95,12 +107,25 @@ function frameOf(r: BoothRender): MeterFrame {
     meter[t] = Array.from(r.meter[t]);
     hold[t] = Array.from(r.hold[t]);
   }
-  return { t0: r.t0, blocks: r.meter.ch1.length, meter, hold, over: Array.from(r.busOver) };
+  const out: MeterFrame = { t0: r.t0, blocks: r.meter.ch1.length, meter, hold, over: Array.from(r.busOver) };
+  const ext = (r as BoothRender & { ext?: { meter: Record<string, Float32Array>; hold: Record<string, Float32Array>; duckDb: Float32Array; speech: Uint8Array } }).ext;
+  if (ext) {
+    const em: Record<string, number[]> = {};
+    const eh: Record<string, number[]> = {};
+    for (const k of Object.keys(ext.meter)) {
+      em[k] = Array.from(ext.meter[k]);
+      eh[k] = Array.from(ext.hold[k]);
+    }
+    out.ext = { meter: em, hold: eh, duck: Array.from(ext.duckDb), speech: Array.from(ext.speech) };
+  }
+  return out;
 }
 
 const breath = () => new Promise<void>((res) => setTimeout(res, 0));
 
-export function useBoothAudio(): BoothAudio {
+export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
   const { requestAudioOutput } = useAudioOutputGate();
   const flowMotion = useDecorativeMotion();
   const [status, setStatus] = useState<BoothAudio['status']>('idle');
@@ -173,7 +198,8 @@ export function useBoothAudio(): BoothAudio {
       const booth = anchorAt(getBooth(), t0);
       // continue the stream: a contiguous chunk carries every filter memory
       // and meter; a re-render inside the sounding chunk carries the meters
-      const render = renderBooth(booth, t0, dur, carryAt(currentRef.current?.render ?? null, t0));
+      const custom = optsRef.current?.render;
+      const render = custom ? custom(booth, t0, dur, currentRef.current?.render ?? null) : renderBooth(booth, t0, dur, carryAt(currentRef.current?.render ?? null, t0));
       if (!aliveRef.current || gen !== genRef.current) return;
       const wantSound = soundRef.current && isAudioOutputEnabled() && !getLabPreview().active;
       const k = nextPlayerRef.current;
@@ -205,6 +231,7 @@ export function useBoothAudio(): BoothAudio {
         resyncClock();
         currentRef.current = { t0, dur, render, player: k };
         meters.value = frameOf(render);
+        optsRef.current?.onChunk?.(render);
         setLast(render);
         setStatus(wantSound ? 'playing' : 'silent');
         // Prepare the next chunk to start exactly as this one ends.

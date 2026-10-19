@@ -8,7 +8,7 @@ import { colors } from '../../../../theme/tokens';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
 import type { BezelItem } from '../../rack/rackTypes';
 import { useBooth } from '../booth/boothStore';
-import { useBoothAudio, type BoothAudio } from '../booth/useBoothAudio';
+import { useBoothAudio, type BoothAudio, type BoothAudioOpts } from '../booth/useBoothAudio';
 import { transportOf, type Transport } from '../dock';
 import type { BoothRender, Stage, Tap } from '../engine/djRender';
 import type { Booth } from '../model/djModel';
@@ -18,9 +18,10 @@ export type BoothKit = { booth: Booth; audio: BoothAudio; tr: Transport; motion:
 
 /** `lockPhase`: decks start in phase with each other (the pre-matched blend
  *  screens 6, 8 and 9). */
-export function useBoothKit(opts?: { lockPhase?: boolean }): BoothKit {
+export function useBoothKit(opts?: { lockPhase?: boolean; audio?: BoothAudioOpts }): BoothKit {
   const booth = useBooth();
-  const audio = useBoothAudio();
+  // ADDITIVE (Stage 2b): an event screen renders through engine/djEventRender
+  const audio = useBoothAudio(opts?.audio);
   const lockPhase = !!opts?.lockPhase;
   const tr = useMemo(() => transportOf(audio, { lockPhase }), [audio, lockPhase]);
   const motion = useMemo(() => ({ clock: audio.clock, meters: audio.meters }), [audio.clock, audio.meters]);

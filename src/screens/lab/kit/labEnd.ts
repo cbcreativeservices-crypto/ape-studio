@@ -73,6 +73,10 @@ export type LabEndUnit = {
   detail?: string;
   /** An assessment rather than a page: listed last, worded as a check. */
   kind?: 'unit' | 'check';
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): an OPTIONAL path (an equipment
+   *  path a learner may skip). Listed under its own heading when not done,
+   *  never counted in "n of N", and never keeps the lab from LAB COMPLETE. */
+  optional?: boolean;
 };
 
 export type LabEndRow = LabEndUnit & {
@@ -90,6 +94,9 @@ export type WhatsLeft = {
   total: number;
   /** True only when there is at least one unit and none is left. */
   complete: boolean;
+  /** ADDITIVE: OPTIONAL units not done yet (never in `left`, `total` or the
+   *  complete test). Empty for every lab without optional units. */
+  optionalLeft: LabEndRow[];
 };
 
 /**
@@ -102,15 +109,19 @@ export function whatsLeft(units: readonly LabEndUnit[], cleared: ReadonlySet<str
   const seen = new Set<string>();
   const left: LabEndRow[] = [];
   const credited: LabEndRow[] = [];
+  const optionalLeft: LabEndRow[] = [];
   let num = 0;
+  let required = 0;
   for (const u of units) {
     if (seen.has(u.id)) continue;
     seen.add(u.id);
     num += 1;
     const row: LabEndRow = { ...u, num, credited: cleared.has(u.id) };
-    (row.credited ? credited : left).push(row);
+    if (!u.optional) required += 1;
+    if (row.credited) credited.push(row);
+    else (u.optional ? optionalLeft : left).push(row);
   }
-  return { left, credited, total: num, complete: num > 0 && left.length === 0 };
+  return { left, credited, total: required, complete: required > 0 && left.length === 0, optionalLeft };
 }
 
 /** The big title: LAB COMPLETE only when everything is banked. */
@@ -149,7 +160,7 @@ export function endLead(
   const plural = (n: number) => `${n} ${noun}${n === 1 ? '' : 's'}`;
   // A check row (final exam / understanding check) is not a module or page —
   // count it separately so "8 modules + the check" never reads "9 modules of 9".
-  const all = [...w.left, ...w.credited];
+  const all = [...w.left, ...w.credited].filter((r) => !r.optional);
   const unitsTotal = all.filter((r) => r.kind !== 'check').length;
   const unitsLeft = w.left.filter((r) => r.kind !== 'check').length;
   const checkLeft = w.left.some((r) => r.kind === 'check');

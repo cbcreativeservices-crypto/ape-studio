@@ -17,7 +17,9 @@ import { memo } from 'react';
 import { BlurMask, Group, Line, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS } from '../geometry/boothGeometry';
 import { INK } from './ink';
-import { GroundPost, IecInlet, RcaSocket, Rj45, Rocker, TrsSocket, UsbB, XlrSocket } from './parts';
+import { GroundPost, IecInlet, RcaSocket, Rj45, Rocker, SlideSwitch, TrsSocket, UsbB, XlrSocket } from './parts';
+import { DinSocket } from './eventParts';
+import { MIXER_REAR_EXTRA } from '../geometry/eventGeometry';
 import { SceneText } from './sceneText';
 
 export const TT_REAR = { w: 300, h: 90 } as const;
@@ -96,6 +98,23 @@ export const PlayerRear = memo(function PlayerRear({ x, y, on, label }: { x: num
   );
 });
 
+function MixerRearExtrasDraw({ clock }: { clock: MixerRearExtras['clock'] }) {
+  const E = MIXER_REAR_EXTRA;
+  return (
+    <Group>
+      <RcaSocket cx={E['rec.L'].x} cy={E['rec.L'].y} d={E['rec.L'].d} ring={INK.rcaWhite} />
+      <RcaSocket cx={E['rec.R'].x} cy={E['rec.R'].y} d={E['rec.R'].d} ring={INK.rcaRed} />
+      <Leg x={(E['rec.L'].x + E['rec.R'].x) / 2} y={103} t="REC OUT" size={LEG_S} />
+      <DinSocket cx={E.midiOut.x} cy={E.midiOut.y} d={E.midiOut.d} />
+      <Leg x={E.midiOut.x} y={104} t="MIDI OUT" size={LEG_S} />
+      <SlideSwitch x={E.clock.x} y={E.clock.y} w={E.clock.w} h={E.clock.h} pos={clock === 1 ? 0 : clock === 'OFF' ? 1 : 2} />
+      <Leg x={E.clock.x + E.clock.w / 2} y={104} t="CLOCK 1·OFF·2" size={LEG_S} />
+      <Leg x={E.usb2.x} y={E.usb2.y - 8} t="USB 2" size={LEG_S} />
+      <UsbB x={E.usb2.x - 6} y={E.usb2.y - 5.5} s={1} />
+    </Group>
+  );
+}
+
 export const TurntableRear = memo(function TurntableRear({ x, y, on, preamp }: { x: number; y: number; on: boolean; preamp: 'PHONO' | 'LINE' }) {
   const J = TT_REAR_JACKS;
   return (
@@ -123,7 +142,12 @@ export const TurntableRear = memo(function TurntableRear({ x, y, on, preamp }: {
   );
 });
 
-export const MixerRear = memo(function MixerRear({ x, y, on }: { x: number; y: number; on: boolean }) {
+/** ADDITIVE (Stage 2b): the mixer's lower-band extras — REC OUT, MIDI OUT
+ *  with its CLOCK switch, and USB 2 (geometry/eventGeometry). Omitted =
+ *  the Stage 1 panel exactly as before. */
+export type MixerRearExtras = { clock: 'OFF' | 1 | 2 };
+
+export const MixerRear = memo(function MixerRear({ x, y, on, extras }: { x: number; y: number; on: boolean; extras?: MixerRearExtras }) {
   const J = MIXER_REAR_JACKS;
   const col = (k: 'ch2.phono' | 'ch2.line' | 'ch1.phono' | 'ch1.line') => (
     <Group key={k}>
@@ -140,7 +164,7 @@ export const MixerRear = memo(function MixerRear({ x, y, on }: { x: number; y: n
   );
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
-      <Panel w={MIXER_REAR.w} h={MIXER_REAR.h} vents={{ x0: 150, x1: 262 }} />
+      <Panel w={MIXER_REAR.w} h={MIXER_REAR.h} vents={extras ? { x0: 236, x1: 262 } : { x0: 150, x1: 262 }} />
       <SceneText x={8} y={13} size={6} text="MIXER (REAR)" color={INK.amber} face="label" />
       <Bracket x0={J['ch2.phono.L'].x - 7} x1={J['ch2.line.L'].x + 7} y={27} t="CH 2" />
       <Bracket x0={J['ch1.phono.L'].x - 7} x1={J['ch1.line.L'].x + 7} y={27} t="CH 1" />
@@ -159,7 +183,8 @@ export const MixerRear = memo(function MixerRear({ x, y, on }: { x: number; y: n
       <XlrSocket cx={J['master.L'].x} cy={J['master.L'].y} d={19} male />
       <Leg x={J['master.R'].x} y={J['master.R'].y + 19} t="R" />
       <Leg x={J['master.L'].x} y={J['master.L'].y + 19} t="L" />
-      <Leg x={J.usb.x} y={J.usb.y - 8} t="USB" size={LEG_S} />
+      <Leg x={J.usb.x} y={J.usb.y - 8} t={extras ? 'USB 1' : 'USB'} size={LEG_S} />
+      {extras ? <MixerRearExtrasDraw clock={extras.clock} /> : null}
       <UsbB x={J.usb.x - 6} y={J.usb.y - 5.5} s={1} />
       <Leg x={J.ac.x} y={J.ac.y - 13} t="AC IN" size={LEG_S} />
       <IecInlet x={J.ac.x - 12} y={J.ac.y - 8} s={1} />
