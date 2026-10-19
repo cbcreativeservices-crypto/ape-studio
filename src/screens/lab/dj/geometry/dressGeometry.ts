@@ -22,7 +22,7 @@
  */
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from './boothGeometry.ts';
 import { MONITOR_H, MONITOR_W, SPEAKER_H, SPEAKER_W } from './gearGeometry.ts';
-import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, TIED, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, phonesJackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
+import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, TIED, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, phonesJackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
 import { PLUGS, deviceLive, speakerFeed, type Booth, type JackId, type PlugId } from '../model/djModel.ts';
 import type { BoothRender } from '../engine/djRender.ts';
 
@@ -872,6 +872,11 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     { kind: 'name', id: 'mf', text: 'MIXER’S FRONT EDGE', box: MAP.front, optional: !!opt.view || !near },
     { kind: 'name', id: 'st', text: 'POWER STRIP', box: MAP_BODIES[3], optional: !!opt.view || !(near || powerFocus) },
     { kind: 'name', id: 'hp', text: 'TO THE HEADPHONES', box: { x: PHONES_BREAK.x - 6, y: PHONES_BREAK.y - 7, w: 12, h: 14 }, optional: !!opt.view || !near },
+    // close up (the CABLE view) the room's speaker names are off the glass:
+    // each input plate says whose it is
+    ...(opt.view
+      ? (['paR', 'boothR', 'boothL', 'paL'] as const).map((k) => ({ kind: 'name' as const, id: `pl${k}`, text: `${k.startsWith('pa') ? 'PA' : 'BOOTH'} ${k.endsWith('L') ? 'L' : 'R'} INPUT`, box: plateBox(k), optional: true }))
+      : []),
   ].filter((n) => inView(n.box)) as (LabelItem & { kind: 'name' })[];
   const shownFlags = shown.filter((p) => !dropped.has(p));
   const required = shownFlags.filter((p) => focus.has(p));

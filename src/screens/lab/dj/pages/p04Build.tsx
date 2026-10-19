@@ -6,7 +6,9 @@
  * the render's real route. The fault: half (or none) of the PA.
  */
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { colors } from '../../../../theme/tokens';
+import { StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '../../../../theme/tokens';
+import { LabChip } from '../../LabShell';
 import { StageInFullScreen } from '../../rack/stageAspect';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
@@ -42,6 +44,10 @@ type Flash = { keys: readonly SpeakerKey[]; word: 'THUMP' | 'HOT-PATCH' };
  *  the WHOLE BOOTH (the room over everything you plug), or CABLE — close up
  *  on the cable you are working on, end to end. */
 type View4 = 'BOOTH' | 'CABLE';
+const VIEWS: readonly { id: View4; label: string }[] = [
+  { id: 'BOOTH', label: 'WHOLE BOOTH' },
+  { id: 'CABLE', label: 'FOLLOW THE CABLE' },
+];
 
 /** The map on the glass (round 2, grades screen 4). On the glass the cables
  *  in FOCUS — the one being patched, the one just patched, any in the wrong
@@ -160,7 +166,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
   };
   const onPower = (e: PowerEvent) => {
     setPowerTask(true);
-    if (!viewChosen.current) setView('BOOTH');
+    setView('BOOTH');
     setLastPower(e);
     const b = getBooth();
     if (e.thump) setFlash({ keys: SPEAKERS.filter((sp) => deviceLive(b, sp) && speakerCabled(b, sp)), word: 'THUMP' });
@@ -225,23 +231,27 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
             id: 'patch',
             label: 'PATCH',
             valueLabel: `${audioOk}/9`,
-            render: () => <PatchTray plugs={[...AUDIO_PLUGS, ...POWER_PLUGS]} initial={selPlug} onSelect={onPick} onPatched={(p) => setJustPatched(p)} onHot={onHot} />,
-          },
-          {
-            kind: 'options',
-            id: 'view',
-            label: 'VIEW',
-            valueLabel: view === 'CABLE' ? 'CABLE' : 'BOOTH',
-            valueA11y: view === 'CABLE' ? 'close up on the cable you are patching' : 'the whole booth',
-            options: [
-              { id: 'BOOTH', label: 'WHOLE BOOTH', blurb: 'The room, and everything you plug, from behind. The cable you are working on stays bright; the rest step back.' },
-              { id: 'CABLE', label: 'FOLLOW THE CABLE', blurb: 'Close up on the cable you are patching, from one plug to the other.' },
-            ],
-            selectedId: view,
-            onSelect: (id) => {
-              viewChosen.current = true;
-              setView(id as View4);
-            },
+            render: () => (
+              <View style={styles.tray}>
+                {/* the VIEW switch rides in the PATCH tray (six dock keys would crop at 390) */}
+                <Text style={styles.trayHead}>{`VIEW → ${view === 'CABLE' ? 'FOLLOW THE CABLE (close up)' : 'WHOLE BOOTH'}`}</Text>
+                <View style={styles.row}>
+                  {VIEWS.map((v) => (
+                    <LabChip
+                      key={v.id}
+                      label={v.label}
+                      selected={view === v.id}
+                      compact
+                      onPress={() => {
+                        viewChosen.current = true;
+                        setView(v.id);
+                      }}
+                    />
+                  ))}
+                </View>
+                <PatchTray plugs={[...AUDIO_PLUGS, ...POWER_PLUGS]} initial={selPlug} onSelect={onPick} onPatched={(p) => setJustPatched(p)} onHot={onHot} />
+              </View>
+            ),
           },
           { kind: 'group', id: 'power', label: 'POWER', valueLabel: `${powerOk}/7`, render: () => <PowerTray onEvent={onPower} lastEvent={lastPower} /> },
           boothKey(booth, tr),
@@ -268,7 +278,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open PATCH. Pick a cable by the end that is already in its source, then tap where its loose end goes. The map follows that cable close up, from one plug to the other; VIEW switches between it and the whole booth, where the cable you are working on stays bright and carries its label while the rest step back. FULL SCREEN shows every cable and label.</Do>
+        <Do>Open PATCH. Pick a cable by the end that is already in its source, then tap where its loose end goes. The map follows that cable close up, from one plug to the other; VIEW (at the top of PATCH) switches between it and the whole booth, where the cable you are working on stays bright and carries its label while the rest step back. FULL SCREEN shows every cable and label.</Do>
         <P>Look at the mixer’s rear: seen from behind, channel 2’s inputs are on the LEFT. That catches people out on real gear too.</P>
       </Step>
       <Step n={3}>
@@ -326,3 +336,9 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
 }
 
 export const P04: PageDef = { title: 'Build your first DJ system', short: 'BUILD', Component: PageBuild, manualDone: true, rack: true };
+
+const styles = StyleSheet.create({
+  tray: { gap: 8 },
+  trayHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.1 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+});

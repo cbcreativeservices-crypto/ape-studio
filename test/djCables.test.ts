@@ -510,7 +510,8 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
       }
     }
     const p04 = read('src/screens/lab/dj/pages/p04Build.tsx');
-    assert.match(p04, /id: 'view',\s*label: 'VIEW'/);
+    assert.match(p04, /\{ id: 'CABLE', label: 'FOLLOW THE CABLE' \}/);
+    assert.match(p04, /VIEWS\.map/);
     assert.match(p04, /frame=\{cable \? patchBox\(follow\) : MAP_FRAME\}/);
     // the less dense glass: focus at full strength, the rest stepping back, cords fading with no power task
     assert.match(p04, /dimRest=\{!inFull\}/);

@@ -319,7 +319,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
           // there (AUDIO OUT: the halo marks it; a callout covered the
           // hanging plugs and the patched lead, round 2)
           ...(box && sock.id !== 'out' ? [{ id: 'id', text: sock.label, at: { x: box.x + box.w / 2, y: box.y + box.h / 2 }, dx: 0, dy: -16, tone: 'blue' as const }] : []),
-          ...(parked.length ? [{ id: 'park', text: `${otherName}’S PLUGS`, at: { x: parked[0].stub[1][0], y: parked[0].stub[1][1] }, dx: 18, dy: 10, tone: 'plain' as const }] : []),
+          ...(parked.length ? [{ id: 'park', text: `${otherName}’S PLUGS`, at: parked[0].at, dx: 22, dy: -14, tone: 'plain' as const }] : []),
           { id: 'line', text: selPair === 'line' ? 'SELECTOR → LINE' : 'CH1 LINE', at: { x: mixJack('ch1.line.L').x + 8, y: mixJack('ch1.line.L').y - 8 }, dx: 26, dy: -26, tone: selPair === 'line' ? ('green' as const) : undefined },
           { id: 'phono', text: selPair === 'phono' ? 'SELECTOR → PHONO' : 'CH1 PHONO', at: { x: mixJack('ch1.phono.L').x - 8, y: mixJack('ch1.phono.L').y - 8 }, dx: -26, dy: -26, tone: selPair === 'phono' ? ('green' as const) : undefined },
           ...(src === 'TT' ? [{ id: 'gw', text: 'GROUND WIRE', at: { x: groundLane3()[0][0], y: S3.lane.gnd - 14 }, dx: -20, dy: -6, tone: 'plain' as const }] : []),
