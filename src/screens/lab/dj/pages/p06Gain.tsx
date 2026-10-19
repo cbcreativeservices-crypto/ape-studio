@@ -7,7 +7,7 @@
  * crowd hears crackle while the MASTER meter looks fine (the mix bus clipped
  * first; a lower master cannot repair it).
  */
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { colors } from '../../../../theme/tokens';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
 import type { BezelItem } from '../../rack/rackTypes';
@@ -23,7 +23,8 @@ import { BOOTH_LAYOUT, onMixer, STRIP_X, MIXER } from '../geometry/boothGeometry
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { ChipRow, boothKey, pct, stopKey, trimKey } from '../dock';
-import { getBooth, updateBooth } from '../booth/boothStore';
+import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
+import { renderedSince } from './s1Guards';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, dbStr, faderGain, levelKnobGain, trimPos, type InputSel } from '../model/djModel';
 import { alignPhase } from '../model/djDeck';
@@ -113,6 +114,10 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
   const [foundInput, setFoundInput] = useState(false);
   const [checkDone, setCheckDone] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
+  // the booth time the fault was started at: "fixed" is judged only on a
+  // render made after it (a chunk from before showed the clean booth, so
+  // START THE FAULT read Fixed at once — toddler test 2026-10-19)
+  const faultAt = useRef<number | null>(null);
   const c2 = booth.ch[2];
   if (!foundInput && booth.decks.B.playing && c2.input === 'LINE' && l2.avg != null) setFoundInput(true);
   const hits = [
@@ -230,6 +235,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
           symptom="Both decks are playing. The sound is harsh and crackly, yet the MASTER meters stay well below the top."
           start={() => {
             void audio.requestSound();
+            faultAt.current = boothNow();
             updateBooth((b, t) => {
               let x = b;
               for (const d of ['A', 'B'] as const) x = { ...x, decks: { ...x.decks, [d]: { ...x.decks[d], playing: true, at: t } } };
@@ -237,7 +243,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
               return { ...x, ch: { 1: { ...x.ch[1], input: 'LINE', trim: trimPos(9), fader: 1 }, 2: { ...x.ch[2], input: 'LINE', trim: trimPos(4), fader: 1 } }, mixer: { ...x.mixer, master: 0.32 } };
             });
           }}
-          fixed={bothPlaying && !!last && last.clipped.bus === 0 && last.clipped.ch1 === 0 && last.clipped.ch2 === 0}
+          fixed={bothPlaying && !!last && renderedSince(last, faultAt.current) && last.clipped.bus === 0 && last.clipped.ch1 === 0 && last.clipped.ch2 === 0}
           hints={['Look past the MASTER meters: is the BUS OVER light flashing?', 'Turning the MASTER down made it quieter, not cleaner.', 'Bring the TRIMS down until the channel meters and the bus stay out of the red.']}
           why="On this mixer the mix bus was clipping before the MASTER knob. Lowering the trims (the stage that was too hot) removed the clipping; the master only ever set how loud the damage was."
           onFixed={() => setFaultFixed(true)}

@@ -21,7 +21,8 @@ import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { TRACKS, TRACK_IDS, trackSeconds, type TrackId } from '../engine/djMusic';
 import { cue, load, seek } from '../model/djDeck';
-import { faderGain, xfGainFor, type Booth, type DeckId } from '../model/djModel';
+import type { Booth, DeckId } from '../model/djModel';
+import { deckOnAir, loadVerdict } from './s1Guards';
 import { PITCH_RANGE_PCT, formatClock, pitchFor, playedBpm } from '../model/djTime';
 import { INK } from '../art/ink';
 import { SceneText } from '../art/sceneText';
@@ -62,13 +63,9 @@ function OnAirMarker({ w, k, other, air }: { w: number; k: number; other: DeckId
 }
 
 /** Is this deck reaching the crowd? */
-export function onAir(b: Booth, d: DeckId): boolean {
-  const ch = d === 'A' ? 1 : 2;
-  const c = b.ch[ch];
-  return b.decks[d].playing && faderGain(c.fader) * xfGainFor(c.xf, b.mixer.xf, b.mixer.xfCurve) > 0.01;
-}
+export const onAir = deckOnAir;
 
-function BrowseTray({ deck, setDeck, onLoaded, note }: { deck: DeckId; setDeck: (d: DeckId) => void; onLoaded: (d: DeckId, t: TrackId) => void; note: { ok: boolean; text: string } | null }) {
+function BrowseTray({ deck, setDeck, onLoaded, note }: { deck: DeckId; setDeck: (d: DeckId) => void; onLoaded: (d: DeckId, t: TrackId, before: Booth) => void; note: { ok: boolean; text: string } | null }) {
   const b = getBooth();
   return (
     <View style={styles.tray}>
@@ -92,8 +89,10 @@ function BrowseTray({ deck, setDeck, onLoaded, note }: { deck: DeckId; setDeck: 
               label={`LOAD ${deck}`}
               selected={b.decks[deck].track === t}
               onPress={() => {
+                // judged on the booth BEFORE the load: a load stops the deck
+                const before = getBooth();
                 updateBooth((x, tt) => load(x, tt, deck, t));
-                onLoaded(deck, t);
+                onLoaded(deck, t, before);
               }}
               compact
             />
@@ -106,7 +105,7 @@ function BrowseTray({ deck, setDeck, onLoaded, note }: { deck: DeckId; setDeck: 
 
 function PagePlay({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     const x = cueAtBar(b, 'A', 'nightFerry', 17);
     return { ...x, decks: { ...x.decks, B: { ...x.decks.B, track: null, playing: false } }, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU' }, 2: { ...x.ch[2], fader: 0, xf: 'THRU' } }, perspective: 'CROWD' };
   });
@@ -121,21 +120,27 @@ function PagePlay({ ctx }: { ctx: PageCtx }) {
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
   const d = booth.decks[deck];
-  const onLoaded = (dk: DeckId, t: TrackId) => {
-    const b = getBooth();
-    const other: DeckId = dk === 'A' ? 'B' : 'A';
-    if (onAir(b, dk)) {
+  const onLoaded = (dk: DeckId, t: TrackId, before: Booth) => {
+    // `before`: the booth as it was before the load (after it, the loaded
+    // deck is always stopped, so "was it on air?" read false every time and
+    // a load onto the on-air deck credited the spare-deck goal with no
+    // warning — toddler test 2026-10-19)
+    const m = dk === 'B' ? matchable(before, t) : { ok: true, why: '' };
+    const v = loadVerdict(before, dk, m.ok);
+    if (v.stoppedCrowd) {
       setLoadMsg({ ok: false, text: `That deck was ON AIR — the load stopped the crowd’s music. Load on the spare deck.` });
       return;
     }
-    const m = dk === 'B' ? matchable(b, t) : { ok: true, why: '' };
     setLoadMsg(m.why ? { ok: m.ok, text: m.why } : null);
-    if (m.ok && (onAir(b, other) || !onAir(b, dk))) setLoadedSpare(true);
+    if (v.credit) setLoadedSpare(true);
   };
-  if (booth.decks.B.playing && booth.decks.B.track && !playedB) setPlayedB(true);
   const airA = onAir(booth, 'A');
   const airB = onAir(booth, 'B');
-  if (airA && !aOnAir) setAOnAir(true);
+  // judged only once this screen's setup is applied: the first render still
+  // sees the last screen's booth (deck A on air, deck B playing), which ticked
+  // "Put deck A on air" and "Play and pause it" on arrival
+  if (ready && booth.decks.B.playing && booth.decks.B.track && !playedB) setPlayedB(true);
+  if (ready && airA && !aOnAir) setAOnAir(true);
   const hits = [aOnAir, loadedSpare, playedB && !booth.decks.B.playing, cueSet, cueBack, searched, faultFixed, check];
   const goals = GOALS_PLAY.map((label, i) => ({ label, hit: hits[i] }));
   const latched = useVisitGoals(ctx, goals, 'PLAY');
@@ -205,7 +210,8 @@ function PagePlay({ ctx }: { ctx: PageCtx }) {
           },
           stopKey(tr),
         ],
-        initialParam: 'browse',
+        // the lane binds a FADER (BROWSE is a tray: the rack warned and bound SEARCH anyway)
+        initialParam: 'search',
       }}
     >
       <Step n={1}>

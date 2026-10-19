@@ -243,7 +243,7 @@ function PatchRca({ src }: { src: Source }) {
 
 function PageConnect({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = connect(connect(b, 'A.rcaL', null)!, 'A.rcaR', null)!;
     x = connect(connect(x, 'tt.rcaL', null)!, 'tt.rcaR', null)!;
     return { ...x, ttPreamp: 'PHONO', tt: { ...x.tt, playing: false }, ch: { ...x.ch, 1: { ...x.ch[1], input: 'LINE', fader: 0.8, xf: 'THRU' } }, perspective: 'CROWD' };
@@ -269,7 +269,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
   const otherName = other === 'A' ? 'DECK A' : 'TURNTABLE';
   const aBoth = booth.plugs['A.rcaL'] === 'ch1.line.L' && booth.plugs['A.rcaR'] === 'ch1.line.R' && booth.ch[1].input === 'LINE' && booth.decks.A.playing && !!last && last.rmsDb.masterL > -60 && last.rmsDb.masterR > -60;
   const lOnly = booth.decks.A.playing && !!last && (last.rmsDb.masterL > -60) !== (last.rmsDb.masterR > -60);
-  if (lOnly && !oneSide) setOneSide(true);
+  if (ready && lOnly && !oneSide) setOneSide(true);
   const ttOk = booth.tt.playing && booth.ttPreamp === 'PHONO' && booth.plugs['tt.rcaL'] === 'ch1.phono.L' && booth.plugs['tt.rcaR'] === 'ch1.phono.R' && booth.ch[1].input === 'PHONO' && !!last && last.rmsDb.ch1 > -40 && last.clipped.phono1 === 0;
   const hits = [find >= FINDS.length, aBoth, oneSide, ttOk, faultFixed, check];
   const goals = GOALS_CONNECT.map((label, i) => ({ label, hit: hits[i] }));
@@ -392,11 +392,17 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
             kind: 'group',
             id: 'decks',
             label: 'PLAY',
-            valueLabel: src === 'A' ? (booth.decks.A.playing ? 'A ▶' : 'STOPPED') : booth.tt.playing ? 'TT ▶' : 'STOPPED',
+            // both sources: a turntable left running when SOURCE goes back to
+            // deck A still plays, so the key never reads STOPPED over it
+            // (toddler test 2026-10-19)
+            valueLabel: [booth.decks.A.playing ? 'A ▶' : '', booth.tt.playing ? 'TT ▶' : ''].filter(Boolean).join(' ') || 'STOPPED',
             render: () => (
               <View style={styles.tray}>
                 {src === 'A' ? (
-                  <LabChip label={booth.decks.A.playing ? '❚❚ PAUSE DECK A' : '▶ PLAY DECK A'} selected={booth.decks.A.playing} onPress={() => tr.toggle('A')} />
+                  <>
+                    <LabChip label={getBooth().decks.A.playing ? '❚❚ PAUSE DECK A' : '▶ PLAY DECK A'} selected={getBooth().decks.A.playing} onPress={() => tr.toggle('A')} />
+                    {getBooth().tt.playing ? <LabChip label="■ STOP TURNTABLE" selected onPress={() => updateBooth((x, t) => ({ ...x, tt: { ...x.tt, playing: false, at: t } }))} /> : null}
+                  </>
                 ) : (
                   <>
                     <LabChip label={getBooth().tt.playing ? '■ STOP TURNTABLE' : '▶ START TURNTABLE'} selected={getBooth().tt.playing} onPress={() => {

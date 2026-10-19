@@ -139,7 +139,12 @@ function unbuilt(b: Booth): Booth {
 
 function PageBuild({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => (systemBuilt(b) ? b : { ...unbuilt(b), perspective: 'CROWD' }), false);
+  // Not done yet: start UNWIRED, always. Other screens wire the booth for the
+  // learner (Screen 1 on the way in), so a built booth here was usually not
+  // the learner's work — and it ticked the three wiring goals on arrival
+  // (toddler test 2026-10-19). Once done, a redo keeps the learner's system
+  // (UNWIRE starts again).
+  useScreenSetup((b) => (ctx.isDone && systemBuilt(b) ? b : { ...unbuilt(b), perspective: 'CROWD' }), false);
   const [lastPower, setLastPower] = useState<PowerEvent | null>(null);
   // the power story since the last time everything was off
   const seq = useRef<{ thumpOn: boolean; wasAllOn: boolean; thumpOff: boolean; offOk: boolean }>({ thumpOn: false, wasAllOn: false, thumpOff: false, offOk: false });
@@ -275,6 +280,8 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
               setJustPatched(null);
               seq.current = { thumpOn: false, wasAllOn: false, thumpOff: false, offOk: false };
               setLastPower(null);
+              // a fresh start: the last "that order thumped" note no longer applies
+              setMiss(null);
             },
           },
           stopKey(tr),

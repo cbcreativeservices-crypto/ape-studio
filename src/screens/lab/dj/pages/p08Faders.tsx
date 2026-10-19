@@ -64,7 +64,7 @@ function SetupTray({ onDemo }: { onDemo: () => void }) {
 
 function PageFaders({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 17));
     // the trims matched by average for you (Screen 6), so two tracks add like equals
@@ -77,11 +77,15 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
   const m = booth.mixer;
   const both = booth.decks.A.playing && booth.decks.B.playing;
   const assigned = booth.ch[1].xf === 'A' && booth.ch[2].xf === 'B';
-  if (both && assigned && m.xfCurve === 'BLEND') {
+  // judged only once this screen's setup is applied: the first render still
+  // sees the last screen's booth (both decks playing, CH1 → A, CH2 → B, CUT
+  // at one end), which ticked the blend and cut goals on arrival (toddler
+  // test 2026-10-19)
+  if (ready && both && assigned && m.xfCurve === 'BLEND') {
     if (m.xf < 0.15) travel.current.blendLo = true;
     if (m.xf > 0.85) travel.current.blendHi = true;
   }
-  if (both && assigned && m.xfCurve === 'CUT' && (m.xf < 0.02 || m.xf > 0.98)) travel.current.cut = true;
+  if (ready && both && assigned && m.xfCurve === 'CUT' && (m.xf < 0.02 || m.xf > 0.98)) travel.current.cut = true;
   const last = audio.last;
   // ADDED: how much the mix bus rises with CH2 in, read against CH1's own
   // meter (content-free) — measured with CH2 down first, then with it up.

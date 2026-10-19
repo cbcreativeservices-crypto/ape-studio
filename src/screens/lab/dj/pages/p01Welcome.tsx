@@ -23,7 +23,8 @@ import { listenKey, playKey, stopKey } from '../dock';
 import { setBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, freshBooth, useScreenSetup } from '../booth/setup';
 import { soundCell, useBoothKit } from './shared';
-import { dbStr, listenDb, type Perspective } from '../model/djModel';
+import { dbStr, listenDb, type Booth, type Perspective } from '../model/djModel';
+import type { TrackId } from '../engine/djMusic';
 
 const TERMS = [
   { term: 'dBA', def: 'Sound level in the air, weighted roughly the way ears hear it. It is measured with a sound level meter in the room or at the ear, never by a phone’s volume setting.' },
@@ -109,12 +110,17 @@ function PerspectiveStrip({ w, top, now }: { w: number; top: number; now: Perspe
   );
 }
 
+/** The booth Screen 1 starts from (and RESET returns to): deck A cued at bar
+ *  17 with its channel fader UP — a fresh booth's faders are down, so a
+ *  reset that skipped this left PLAY A silent (toddler test 2026-10-19). */
+const welcomeBooth = (b: Booth, track: TrackId): Booth => {
+  const x = cueAtBar(b, 'A', track, 17);
+  return { ...x, ch: { ...x.ch, 1: { ...x.ch[1], fader: 0.8, xf: 'THRU' } }, perspective: 'CROWD' };
+};
+
 function PageWelcome({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => {
-    const x = cueAtBar(b, 'A', b.decks.A.track ?? 'nightFerry', 17);
-    return { ...x, ch: { ...x.ch, 1: { ...x.ch[1], fader: 0.8, xf: 'THRU' } }, perspective: 'CROWD' };
-  });
+  const { ready } = useScreenSetup((b) => welcomeBooth(b, b.decks.A.track ?? 'nightFerry'));
   const [heardA, setHeardA] = useState(false);
   const [switched, setSwitched] = useState(false);
   const [stopped, setStopped] = useState(false);
@@ -122,9 +128,13 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
   const [tile, setTile] = useState(false);
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
-  if (booth.decks.A.playing && !heardA) setHeardA(true);
-  if (booth.perspective !== 'CROWD' && !switched) setSwitched(true);
-  if (heardA && !booth.decks.A.playing && !booth.decks.B.playing && !stopped && audio.status === 'idle') setStopped(true);
+  // judged only once this screen's setup is applied: the first render still
+  // sees the booth the last screen left (deck A playing, PHONES), which
+  // ticked "Start deck A", "Switch who you listen as" and "Stop everything"
+  // on arrival (toddler test 2026-10-19)
+  if (ready && booth.decks.A.playing && !heardA) setHeardA(true);
+  if (ready && booth.perspective !== 'CROWD' && !switched) setSwitched(true);
+  if (ready && heardA && !booth.decks.A.playing && !booth.decks.B.playing && !stopped && audio.status === 'idle') setStopped(true);
   const hits = [heardA, switched, stopped, reset, tile, check, faultFixed];
   const goals = GOALS_WELCOME.map((label, i) => ({ label, hit: hits[i] }));
   const latched = useVisitGoals(ctx, goals, 'WELCOME');
@@ -169,7 +179,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
             label: 'RESET',
             onPress: () => {
               tr.stopAll();
-              setBooth(cueAtBar(freshBooth(), 'A', 'nightFerry', 17));
+              setBooth(welcomeBooth(freshBooth(), 'nightFerry'));
               setReset(true);
             },
           },

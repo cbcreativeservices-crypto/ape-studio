@@ -25,7 +25,8 @@ import { MONITOR_H, MONITOR_W } from '../geometry/gearGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { decksValue, levelKey, stopKey, type Transport } from '../dock';
-import { getBooth, setPerspective, updateBooth } from '../booth/boothStore';
+import { boothNow, getBooth, setPerspective, updateBooth } from '../booth/boothStore';
+import { renderedSince } from './s1Guards';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { dbStr, levelKnobGain, type Booth } from '../model/djModel';
 import { peakDb, peakShort, useBoothKit } from './shared';
@@ -336,6 +337,10 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
   const upDown = useRef({ up: false, down: false });
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
+  // the booth time the fault was started at: "fixed" is judged only on a
+  // render made after it (a chunk from before still had sound in the
+  // headphones, so START THE FAULT read Fixed at once — toddler test 2026-10-19)
+  const faultAt = useRef<number | null>(null);
   const last = audio.last;
   const m = booth.mixer;
   const cueSig = !!last && last.rmsDb.cue > -55;
@@ -448,7 +453,8 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
           levelKey(booth, 'booth', 'BOOTH'),
           stopKey(tr),
         ],
-        initialParam: 'cue',
+        // the lane binds a FADER (CUE is a tray: the rack warned and bound PHONES anyway)
+        initialParam: 'phones',
       }}
     >
       <Step n={1}>
@@ -486,6 +492,7 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
           symptom="Both decks are playing and the crowd hears the mix, but your headphones are silent."
           start={() => {
             void audio.requestSound();
+            faultAt.current = boothNow();
             updateBooth((b, t) => ({
               ...b,
               decks: { A: { ...b.decks.A, playing: true, at: t }, B: { ...b.decks.B, playing: true, at: t } },
@@ -495,7 +502,7 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
               listen: b.listen,
             }));
           }}
-          fixed={booth.decks.A.playing && booth.decks.B.playing && booth.perspective === 'PHONES' && !!last && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -60}
+          fixed={booth.decks.A.playing && booth.decks.B.playing && booth.perspective === 'PHONES' && !!last && renderedSince(last, faultAt.current) && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -60}
           hints={['Check the headphone bus on its own: which channel is cued?', 'The blend is all the way to CUE, and no channel is cued — so the cue bus is empty.', 'Open CUE and press CUE on the deck you want to hear (or move BLEND toward MASTER).']}
           why="The headphones were set to hear ONLY the cue, and nothing was cued. The headphone feed is its own bus: check what it is fed from, separately from what the crowd hears."
           onFixed={() => setFaultFixed(true)}
