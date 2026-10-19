@@ -74,6 +74,43 @@ export function mixerPartBox(p: MixerPart): { x: number; y: number; w: number; h
   }
 }
 
+/**
+ * ADDITIVE (grade 2026-10-19, Screens 6–7): the boxes (local mm) of the
+ * PRINTED legends — a page passes them as label obstacles so that, once a
+ * zoom makes the silk-screen readable, no callout covers it. Widths are a
+ * generous estimate of the label face (0.62 em per capital).
+ */
+export function mixerLegendBoxes(): { x: number; y: number; w: number; h: number; size: number }[] {
+  const box = (x: number, y: number, size: number, t: string, align: 'left' | 'center' | 'right') => {
+    const w = t.length * size * 0.62 + 1;
+    const x0 = align === 'left' ? x : align === 'right' ? x - w : x - w / 2;
+    return { x: x0 - 0.5, y: y - size * 0.82, w: w + 1, h: size + 0.4, size };
+  };
+  const out: { x: number; y: number; w: number; h: number; size: number }[] = [];
+  for (const ch of [1, 2] as const) {
+    const x = STRIP_X[ch];
+    const lx = ch === 1 ? x - 16 : x + 16;
+    const al = ch === 1 ? 'right' : 'left';
+    for (const [y, t] of [[MIXER.trim.y, 'TRIM'], [MIXER.hi.y, 'HI'], [MIXER.mid.y, 'MID'], [MIXER.lo.y, 'LOW'], [MIXER.filter.y, 'FILTER'], [MIXER.cue.y, 'CUE']] as const) out.push(box(lx, y + LEG * 0.36, LEG, t, al));
+    out.push(box(x, MIXER.inputSel.y - 7, LEG_S, 'PHONO · LINE · USB', 'center'));
+    out.push(box(x, MIXER.assign.y + 10, LEG_S, 'A · THRU · B', 'center'));
+    out.push(box(x, MIXER.trim.y - 14, LEG_S, 'CH ' + ch, 'center'));
+    out.push(box(ch === 1 ? x - 22 : x + 22, MIXER.fader.top + 34, 12, String(ch), 'center'));
+  }
+  out.push(box(MIXER.master.x, MIXER.master.y - 15, LEG, 'MASTER', 'center'));
+  out.push(box(MIXER.booth.x, MIXER.booth.y - 15, LEG, 'BOOTH', 'center'));
+  out.push(box(MIXER.cueMix.x, MIXER.cueMix.y - 13, LEG_S, 'CUE ↔ MST', 'center'));
+  out.push(box(MIXER.phones.x, MIXER.phones.y - 13, LEG_S, 'PHONES', 'center'));
+  out.push(box(MIXER.split.x + MIXER.split.w / 2, MIXER.split.y + MIXER.split.h + 5, LEG_S, 'SPLIT CUE', 'center'));
+  out.push(box(MIXER.resonance.x, MIXER.resonance.y + 13, LEG_S, 'RESONANCE', 'center'));
+  out.push(box(MIXER.curve.x + MIXER.curve.w / 2, MIXER.curve.y - 3, LEG_S, 'X-FADER CURVE', 'center'));
+  out.push(box(MIXER.curve.x - 3, MIXER.curve.y + MIXER.curve.h / 2 + 1.2, LEG_S, 'BLEND', 'right'));
+  out.push(box(MIXER.curve.x + MIXER.curve.w + 3, MIXER.curve.y + MIXER.curve.h / 2 + 1.2, LEG_S, 'CUT', 'left'));
+  out.push(box((MIXER.front.phones635 + MIXER.front.phones35) / 2, MIXER_D - 13, LEG_S, 'PHONES', 'center'));
+  out.push(box(MIXER.busOver.x + 5, MIXER.busOver.y + 1.3, LEG_S, 'BUS OVER', 'left'));
+  return out;
+}
+
 const ROUND_PARTS = new Set<MixerPart>(['trim1', 'trim2', 'filter1', 'filter2', 'master', 'booth', 'cueMix', 'phones', 'resonance', 'busOver', 'hi1', 'mid1', 'lo1', 'hi2', 'mid2', 'lo2']);
 
 const inputPos = (i: Booth['ch'][1]['input']) => (i === 'PHONO' ? 0 : i === 'LINE' ? 1 : 2);

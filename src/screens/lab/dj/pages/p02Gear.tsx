@@ -6,15 +6,15 @@
  * is made of and the one question it raises.
  */
 import { useMemo, useState, type ReactNode } from 'react';
-import { Group } from '@shopify/react-native-skia';
+import { DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
-import { MIXER_PARTS, MixerTop, mixerPartBox } from '../art/MixerTop';
+import { MIXER_PARTS, MixerTop, mixerLegendBoxes, mixerPartBox } from '../art/MixerTop';
 import { PLAYER_PARTS, PlayerTop, playerPartBox } from '../art/PlayerTop';
 import { ARM_AT_REST, TT_PARTS, TurntableTop, turntablePartBox } from '../art/TurntableTop';
-import { CTRL_D, CTRL_OUT, CTRL_USB, CTRL_W, ControllerTop, Headphones, IFACE_D, IFACE_REAR, IFACE_W, InterfaceRear, InterfaceTop, LAPTOP_H, LAPTOP_USB, LAPTOP_W, Laptop, PHONES_H, PHONES_W, PowerSpeaker, RearPlugTop, SPEAKER_H, SPEAKER_REAR, SPEAKER_REAR_H, SPEAKER_REAR_W, SPEAKER_W, SpeakerRear, UsbAPlugTop } from '../art/gear';
+import { CTRL_D, CTRL_OUT, CTRL_USB, CTRL_W, ControllerTop, Headphones, IFACE_D, IFACE_REAR, IFACE_W, InterfaceRear, InterfaceTop, LAPTOP_H, LAPTOP_USB, LAPTOP_W, Laptop, PHONES_H, PHONES_W, PLATE, PLATE_H, PLATE_W, PowerSpeaker, RearPlugTop, SPEAKER_H, SPEAKER_REAR, SPEAKER_REAR_H, SPEAKER_REAR_W, SPEAKER_W, SmallPlugTop, SpeakerPlate, SpeakerRear, UsbAPlugTop, curvePath, curveSamples, offsetPts, type P2 } from '../art/gear';
 import { Cable, PlugFace } from '../art/parts';
 import { MIXER, MIXER_D, MIXER_W, PLAYER, PLAYER_D, PLAYER_W, STRIP_X, TT, TT_D, TT_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
@@ -72,34 +72,119 @@ const SOFTWARE_OUTS: { id: SoftwareOut; label: string; blurb: string }[] = [
 const lab = (id: string, text: string, x: number, y: number, dx: number, dy: number, tone?: Callout['tone']): Callout => ({ id, text, at: { x, y }, dx, dy, tone });
 const circBox = (cx: number, cy: number, d: number): Box => ({ x: cx - d / 2, y: cy - d / 2, w: d, h: d });
 
-type ItemScene = { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string; obstacles: Box[] };
+type ItemScene = { frame: Box; body: ReactNode; callouts: Callout[]; a11y: string; obstacles: Box[]; printed?: readonly (Box & { size: number })[]; focus?: Box };
+/** Where FULL SCREEN zoom opens in the laptop + controller views: the
+ *  MASTER OUT plugs and the speakers' inputs they run to. */
+const CTRL_FOCUS: Box = { x: 420, y: 100, w: 240, h: 300 };
+/** The mixer's printed legends: callouts keep off them once a zoom makes
+ *  them legible (Scene `printed`). */
+const MIXER_LEGENDS = mixerLegendBoxes();
 
 /** The laptop above the controller, joined by a real USB cable: a USB-A
- *  plug in the laptop's left port, the cable dressed down and across, a
- *  USB-B plug into the controller's rear edge; the controller's MASTER OUT
- *  plugs on its rear edge with their cables leaving toward the speakers. */
+ *  plug in the laptop's left port, the cable lying in an easy curve round to
+ *  a USB-B plug in the controller's rear edge. The controller's two MASTER
+ *  OUT cables (XLR) run, each in its own lane, to the input panels of the
+ *  two powered speakers, their plugs seated (grade 2026-10-19: no cable
+ *  ends in mid-air). */
 const LX = (CTRL_W - LAPTOP_W) / 2;
 const CY = LAPTOP_H + 60;
+/** The speakers' input panels, right of the laptop (face-on, as Screen 3
+ *  shows them), and where each MASTER OUT cable plugs in. */
+const SPK = { x: 492, L: 104, R: 226 } as const;
+const spkIn = (side: 'L' | 'R'): P2 => [SPK.x + PLATE.input.x, SPK[side] + PLATE.input.y];
+const CTRL_OUTS = [CTRL_OUT.x - 14, CTRL_OUT.x + 14] as const;
+const USB_RUN: P2[] = [[LX + LAPTOP_USB.L.x - 34, LAPTOP_USB.L.y], [LX - 70, LAPTOP_USB.L.y + 12], [LX - 88, 292], [LX - 62, 344], [LX + 10, 366], [CTRL_USB.x - 70, 366], [CTRL_USB.x - 6, 374], [CTRL_USB.x, CY - 20]];
+const OUT_RUNS: P2[][] = [
+  [[CTRL_OUTS[0], CY - 30], [CTRL_OUTS[0] + 12, CY - 48], [458, 336], [464, 270], [470, 206], [spkIn('L')[0] - 18, spkIn('L')[1] + 4], spkIn('L')],
+  [[CTRL_OUTS[1], CY - 30], [CTRL_OUTS[1] + 10, CY - 48], [488, 344], spkIn('R')],
+];
 function LaptopAndController({ out }: { out: SoftwareOut }) {
-  const usbStart: [number, number] = [LX + LAPTOP_USB.L.x - 34, LAPTOP_USB.L.y];
-  const usbPts: [number, number][] = [usbStart, [LX - 56, LAPTOP_USB.L.y], [LX - 56, CY - 44], [CTRL_USB.x, CY - 44], [CTRL_USB.x, CY - 22]];
-  const outs = [CTRL_OUT.x - 14, CTRL_OUT.x + 14];
+  const usbPath = useMemo(() => curvePath(USB_RUN), []);
+  const outPaths = useMemo(() => OUT_RUNS.map((r) => curvePath(r)), []);
+  const live = out === 'CONTROLLER';
   return (
     <>
       <Laptop x={LX} y={0} />
-      <Cable pts={usbPts} style={{ colour: '#2a2c31', width: 4, pattern: 'plain' }} />
+      <SpeakerPlate x={SPK.x} y={SPK.L} on title="SPEAKER L · INPUT" live={live} />
+      <SpeakerPlate x={SPK.x} y={SPK.R} on title="SPEAKER R · INPUT" live={live} />
+      <Cable pts={USB_RUN} path={usbPath} style={{ colour: '#2a2c31', width: 4, pattern: 'plain' }} />
       <UsbAPlugTop x={LX + LAPTOP_USB.L.x} y={LAPTOP_USB.L.y} dir={-1} />
       <ControllerTop x={0} y={CY} />
       <RearPlugTop x={CTRL_USB.x} y={CY + 2} kind="usb" />
-      {outs.map((ox, i) => (
+      {CTRL_OUTS.map((ox, i) => (
         <Group key={ox}>
-          <Cable pts={[[ox, CY - 30], [ox, CY - 52 - i * 9], [CTRL_W + 30, CY - 52 - i * 9]]} style={{ colour: '#3d4046', width: 4.6, pattern: i ? 'dash' : 'stripe' }} glow={out === 'CONTROLLER' ? '#6fa8ff' : null} />
+          <Cable pts={OUT_RUNS[i]} path={outPaths[i]} style={{ colour: '#3d4046', width: 4.6, pattern: i ? 'dash' : 'stripe' }} glow={live ? '#6fa8ff' : null} />
           <RearPlugTop x={ox} y={CY + 2} kind="xlr" />
+          <PlugFace cx={spkIn(i ? 'R' : 'L')[0]} cy={spkIn(i ? 'R' : 'L')[1]} kind="xlr" colour="#3d4046" dir={Math.PI * 0.75} />
         </Group>
       ))}
     </>
   );
 }
+/** The audio interface view: the laptop, the interface from above, and
+ *  beside it the SAME box's back panel (a dashed fold arrow joins its rear
+ *  edge to that panel, grade 2026-10-19: one device, not two), the USB cable
+ *  from the laptop into the back's USB-C, and OUT L / OUT R running down to
+ *  the two powered speakers' input panels. */
+const IF = { x: 40, y: 420, rx: 244, ry: 444, spkY: 548, spkL: 120, spkR: 318 } as const;
+const ifJack = (k: 'outL' | 'outR' | 'usb'): P2 => [IF.rx + IFACE_REAR[k].x, IF.ry + IFACE_REAR[k].y];
+const ifSpkIn = (side: 'L' | 'R'): P2 => [(side === 'L' ? IF.spkL : IF.spkR) + PLATE.input.x, IF.spkY + PLATE.input.y];
+const IF_USB: P2[] = [[LAPTOP_W + 34, LAPTOP_USB.R.y], [LAPTOP_W + 58, LAPTOP_USB.R.y + 22], [LAPTOP_W + 64, 330], [ifJack('usb')[0] + 8, 404], [ifJack('usb')[0], ifJack('usb')[1] - 6]];
+const IF_OUTS: P2[][] = [
+  [ifJack('outL'), [ifJack('outL')[0] - 6, ifJack('outL')[1] + 30], [ifSpkIn('L')[0] + 40, IF.spkY - 8], [ifSpkIn('L')[0] + 6, IF.spkY + 22], ifSpkIn('L')],
+  [ifJack('outR'), [ifJack('outR')[0] + 8, ifJack('outR')[1] + 30], [ifSpkIn('R')[0] - 4, IF.spkY - 6], ifSpkIn('R')],
+];
+function InterfaceView() {
+  const usbPath = useMemo(() => curvePath(IF_USB), []);
+  const outPaths = useMemo(() => IF_OUTS.map((r) => curvePath(r)), []);
+  const fold = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.moveTo(IF.x + IFACE_W / 2, IF.y - 4);
+    p.quadTo(IF.x + IFACE_W / 2 + 60, IF.y - 70, IF.rx + IFACE_REAR.w / 2 - 6, IF.ry - 8);
+    return p.detach();
+  }, []);
+  const tip = IF.rx + IFACE_REAR.w / 2 - 6;
+  return (
+    <>
+      <Laptop x={0} y={0} />
+      <Cable pts={IF_USB} path={usbPath} style={{ colour: '#2a2c31', width: 4, pattern: 'plain' }} />
+      <UsbAPlugTop x={LAPTOP_USB.R.x} y={LAPTOP_USB.R.y} dir={1} />
+      <InterfaceTop x={IF.x} y={IF.y} />
+      {/* the fold: this panel is the top view's rear edge, turned to face you */}
+      <Path path={fold} style="stroke" strokeWidth={1.6} color="rgba(255,198,77,0.7)">
+        <DashPathEffect intervals={[6, 5]} />
+      </Path>
+      <Path path={arrowHead(tip, IF.ry - 8)} color="rgba(255,198,77,0.85)" />
+      <InterfaceRear x={IF.rx} y={IF.ry} usbIn />
+      <SpeakerPlate x={IF.spkL} y={IF.spkY} on title="SPEAKER L · INPUT" />
+      <SpeakerPlate x={IF.spkR} y={IF.spkY} on title="SPEAKER R · INPUT" />
+      {IF_OUTS.map((r, i) => (
+        <Group key={i}>
+          <Cable pts={r} path={outPaths[i]} style={{ colour: '#101113', width: 4.2, pattern: 'dots' }} />
+          <PlugFace cx={r[0][0]} cy={r[0][1]} kind="trs" colour="#2a2c31" />
+          <PlugFace cx={r[r.length - 1][0]} cy={r[r.length - 1][1]} kind="trs" colour="#2a2c31" />
+        </Group>
+      ))}
+    </>
+  );
+}
+/** A small arrowhead pointing down at (x, y). */
+function arrowHead(x: number, y: number) {
+  const p = Skia.PathBuilder.Make();
+  p.moveTo(x, y + 6);
+  p.lineTo(x - 5, y - 4);
+  p.lineTo(x + 5, y - 4);
+  p.close();
+  return p.detach();
+}
+
+const CTRL_SPK_OBST: Box[] = [
+  { x: SPK.x, y: SPK.L, w: PLATE_W, h: PLATE_H },
+  { x: SPK.x, y: SPK.R, w: PLATE_W, h: PLATE_H },
+];
+/** The cables' own lanes: no label sits on a cable. */
+const CTRL_CABLE_OBST: Box[] = [...OUT_RUNS, USB_RUN].flatMap((r) => curveSamples(r, 16).map((p) => ({ x: p.x - 6, y: p.y - 6, w: 12, h: 12 })));
+const CTRL_FRAME: Box = { x: -84, y: -16, w: SPK.x + PLATE_W + 100, h: CY + CTRL_D + 30 };
 
 function useItemScene(item: Item, booth: Booth): ItemScene {
   const still = useMemo(() => freshDeck('nightFerry'), []);
@@ -107,21 +192,24 @@ function useItemScene(item: Item, booth: Booth): ItemScene {
     switch (item) {
       case 'turntable': {
         const A = ARM_AT_REST;
+        // PLATTER and RECORD point at their edges and sit in the margins
+        // above and below, never on the record (grade 2026-10-19)
+        const pr = TT.platter.d / 2;
         return {
-          frame: { x: -14, y: -16, w: TT_W + 28, h: TT_D + 32 },
+          frame: { x: -80, y: -46, w: TT_W + 150, h: TT_D + 92 },
           body: <TurntableTop x={0} y={0} d={still} playing={false} />,
           callouts: [
-            lab('pl', 'PLATTER', TT.platter.cx - 150, TT.platter.cy + 80, -10, 24),
-            lab('rec', 'RECORD', TT.platter.cx - 70, TT.platter.cy - 90, -24, -22),
-            lab('arm', 'TONEARM', A.tube.x - 4, A.tube.y, -30, -6),
-            lab('hs', 'HEADSHELL', A.headshell.x, A.headshell.y + 10, -26, 22),
+            lab('sb', 'STROBE LAMP', TT.strobe.cx - 6, TT.strobe.cy, -14, 0),
+            lab('ss', 'START / STOP', TT.startStop.x + 8, TT.startStop.y + TT.startStop.h, -10, 22),
+            lab('pl', 'PLATTER', TT.platter.cx - pr * 0.1, TT.platter.cy + pr * 0.995, 4, 26),
+            lab('rec', 'RECORD', TT.platter.cx + TT.record.d * 0.12, TT.platter.cy - TT.record.d * 0.48, 6, -26),
             lab('cw', 'COUNTERWEIGHT', A.counterweight.x, A.counterweight.y - 14, -20, -16),
-            lab('ss', 'START / STOP', TT.startStop.x + 4, TT.startStop.y + TT.startStop.h, -6, 18),
-            lab('pt', 'PITCH', TT.pitch.x, TT.pitch.top + TT.pitch.len + 8, 10, 22),
-            lab('sb', 'STROBE LAMP', TT.strobe.cx, TT.strobe.cy, -10, 0),
+            lab('arm', 'TONEARM', A.tube.x + 4, A.tube.y - 30, 34, -10),
+            lab('pt', 'PITCH', TT.pitch.x + 10, TT.pitch.top + TT.pitch.len * 0.5, 20, 0),
+            lab('hs', 'HEADSHELL', A.headshell.x, A.headshell.y + 10, -10, 26),
           ],
           a11y: 'A DJ turntable from above: the platter with its strobe dots and the record, the tonearm on its pivot with the headshell, the counterweight behind and the cue lever beside it, start/stop, 33/45 and the pitch fader.',
-          obstacles: TT_PARTS.map((p) => turntablePartBox(p)),
+          obstacles: [...TT_PARTS.map((p) => turntablePartBox(p)), circBox(TT.platter.cx, TT.platter.cy, TT.platter.d)],
         };
       }
       case 'player':
@@ -151,57 +239,51 @@ function useItemScene(item: Item, booth: Booth): ItemScene {
             lab('fd', 'CH FADER', STRIP_X[1] - 8, MIXER.fader.top + 30, -20, 0),
             lab('xf', 'CROSSFADER', MIXER.xfader.left + 23, MIXER.xfader.y + 8, 0, 20),
             lab('mt', 'METERS', 135, MIXER.meters.y + 4, 0, -18),
-            lab('ms', 'MASTER · BOOTH', MIXER.booth.x + 11, MIXER.booth.y, 20, 0),
-            lab('ph', 'PHONES', MIXER.phones.x + 9, MIXER.phones.y, 20, 0),
+            // its leader runs out between CH2's LOW and FILTER knobs
+            lab('ms', 'MASTER · BOOTH', MIXER.booth.x + 8, MIXER.booth.y + 14, 20, 0),
+            // the headphone jack on the front edge: a short leader to the
+            // margin, not a long one down through the centre column
+            lab('ph', 'PHONES', MIXER.front.phones635 - 6, MIXER.front.y, -14, 8),
           ],
           a11y: 'A two-channel DJ mixer from above: trims, EQ, filters, channel faders, the crossfader, the meters, master, booth and headphone controls.',
           obstacles: MIXER_PARTS.map((p) => mixerPartBox(p)),
+          printed: MIXER_LEGENDS,
         };
       case 'controller':
       case 'standalone': {
         const sa = item === 'standalone';
         return {
-          frame: sa ? { x: -14, y: -16, w: CTRL_W + 28, h: CTRL_D + 32 } : { x: -70, y: -16, w: CTRL_W + 120, h: CY + CTRL_D + 30 },
+          frame: sa ? { x: -14, y: -16, w: CTRL_W + 28, h: CTRL_D + 32 } : CTRL_FRAME,
           body: sa ? <ControllerTop x={0} y={0} standalone /> : <LaptopAndController out="CONTROLLER" />,
           callouts: sa
             ? [lab('sc', 'BUILT-IN SCREEN', CTRL_W / 2, 16, 0, -16), lab('jg', 'JOG', 112, 196, -10, 100), lab('mx', 'MIXER SECTION', CTRL_W / 2, 230, 0, 92), lab('sl', 'MEDIA SLOT', 409, 12, 30, -12)]
-            : [lab('lp', 'LAPTOP: THE SOFTWARE PLAYS', CTRL_W / 2, 2, 0, -12), lab('usb', 'USB: CONTROL + AUDIO', LX - 56, 300, -10, 0), lab('jg', 'JOG', 112, CY + 196, -10, 90), lab('mx', 'MIXER SECTION', CTRL_W / 2, CY + 230, 0, 80), lab('out', 'MASTER OUT', CTRL_OUT.x, CY - 20, 20, -20)],
-          a11y: sa ? 'A standalone DJ system: two decks and a mixer in one unit with its own screen and media slot.' : 'A laptop seen from above, joined by a USB cable to a two-deck controller whose master outputs leave from its back edge.',
-          obstacles: [circBox(112, (sa ? 0 : CY) + 196, 166), circBox(438, (sa ? 0 : CY) + 196, 166), { x: 212, y: (sa ? 0 : CY) + 12, w: 126, h: 296 }, ...(sa ? [] : [{ x: LX, y: 0, w: LAPTOP_W, h: LAPTOP_H }])],
+            : [lab('lp', 'LAPTOP: THE SOFTWARE PLAYS', CTRL_W / 2, 2, 0, -12), lab('usb', 'USB: CONTROL + AUDIO', USB_RUN[2][0], USB_RUN[2][1], -10, 0), lab('jg', 'JOG', 112, CY + 196, -10, 90), lab('mx', 'MIXER SECTION', CTRL_W / 2, CY + 230, 0, 80), lab('out', 'MASTER OUT', CTRL_OUT.x + 14, CY - 22, 24, 6), lab('spk', 'SPEAKER INPUTS', SPK.x + PLATE_W, SPK.L + PLATE_H / 2, 10, -6)],
+          a11y: sa ? 'A standalone DJ system: two decks and a mixer in one unit with its own screen and media slot.' : 'A laptop seen from above, joined by a USB cable to a two-deck controller; its two master output cables run from its back edge to the inputs of two powered speakers.',
+          obstacles: [circBox(112, (sa ? 0 : CY) + 196, 166), circBox(438, (sa ? 0 : CY) + 196, 166), { x: 212, y: (sa ? 0 : CY) + 12, w: 126, h: 296 }, ...(sa ? [] : [{ x: LX, y: 0, w: LAPTOP_W, h: LAPTOP_H }, ...CTRL_SPK_OBST, ...CTRL_CABLE_OBST])],
+          focus: sa ? undefined : CTRL_FOCUS,
         };
       }
-      case 'interface': {
-        const IX = 85;
-        const IY = 410;
-        const RY = 548;
-        const usb: [number, number][] = [[LAPTOP_USB.R.x + 34, LAPTOP_USB.R.y], [LAPTOP_W + 50, LAPTOP_USB.R.y], [LAPTOP_W + 50, RY + IFACE_REAR.usb.y], [IX + IFACE_REAR.usb.x, RY + IFACE_REAR.usb.y]];
+      case 'interface':
         return {
-          frame: { x: -20, y: -20, w: LAPTOP_W + 100, h: RY + IFACE_REAR.h + 90 },
-          body: (
-            <>
-              <Laptop x={0} y={0} />
-              <Cable pts={usb} style={{ colour: '#2a2c31', width: 4, pattern: 'plain' }} />
-              <UsbAPlugTop x={LAPTOP_USB.R.x} y={LAPTOP_USB.R.y} dir={1} />
-              <InterfaceTop x={IX} y={IY} />
-              <InterfaceRear x={IX} y={RY} usbIn />
-              {[IFACE_REAR.outL, IFACE_REAR.outR].map((o, i) => (
-                <Group key={i}>
-                  <Cable pts={[[IX + o.x, RY + o.y], [IX + o.x + (i ? 6 : -6), RY + o.y + 40], [IX + o.x + (i ? 14 : -14), RY + o.y + 70]]} style={{ colour: '#101113', width: 4.2, pattern: 'dots' }} />
-                  <PlugFace cx={IX + o.x} cy={RY + o.y} kind="trs" colour="#2a2c31" />
-                </Group>
-              ))}
-            </>
-          ),
+          frame: { x: -36, y: -20, w: LAPTOP_W + 230, h: IF.spkY + PLATE_H + 44 },
+          body: <InterfaceView />,
           callouts: [
-            lab('if', 'AUDIO INTERFACE', IX + IFACE_W, IY + 40, 16, 0),
-            lab('rr', 'ITS BACK: OUT L · OUT R · USB', IX + IFACE_REAR.w / 2, RY + IFACE_REAR.h, 0, 20),
-            lab('usb', 'USB (DATA + AUDIO)', LAPTOP_W + 50, 420, 10, 0),
+            lab('if', 'AUDIO INTERFACE (TOP)', IF.x, IF.y + 50, -16, 0),
+            lab('rr', 'ITS BACK PANEL', IF.rx + IFACE_REAR.w, IF.ry + 23, 14, 0),
+            lab('usb', 'USB (DATA + AUDIO)', LAPTOP_W + 64, 330, 12, 0),
             lab('lp', 'COMPUTER', LAPTOP_W / 2, 2, 0, -12),
+            lab('pa', 'SPEAKER INPUTS', IF.spkR + PLATE_W, IF.spkY + PLATE_H / 2, 12, 0),
           ],
-          a11y: 'A laptop seen from above, joined by a USB cable to the back of a small audio interface; the interface’s two balanced outputs carry the sound on.',
-          obstacles: [{ x: IX, y: IY, w: IFACE_W, h: IFACE_D }, { x: IX, y: RY, w: IFACE_REAR.w, h: IFACE_REAR.h }, { x: 0, y: 0, w: LAPTOP_W, h: LAPTOP_H }],
+          a11y: 'A laptop seen from above, joined by a USB cable to the back of a small audio interface (shown beside it, turned to face you); the interface’s OUT L and OUT R cables run to the inputs of two powered speakers.',
+          obstacles: [
+            { x: IF.x, y: IF.y, w: IFACE_W, h: IFACE_D },
+            { x: IF.rx, y: IF.ry, w: IFACE_REAR.w, h: IFACE_REAR.h },
+            { x: 0, y: 0, w: LAPTOP_W, h: LAPTOP_H },
+            { x: IF.spkL, y: IF.spkY, w: PLATE_W, h: PLATE_H },
+            { x: IF.spkR, y: IF.spkY, w: PLATE_W, h: PLATE_H },
+            ...IF_OUTS.flatMap((r) => r.map(([px, py]) => ({ x: px - 6, y: py - 6, w: 12, h: 12 }))),
+          ],
         };
-      }
       case 'headphones':
         return {
           frame: { x: -24, y: -16, w: PHONES_W + 48, h: PHONES_H + 26 },
@@ -250,32 +332,40 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): ItemScen
   return useMemo((): ItemScene => {
     switch (sys) {
       case 'vinyl': {
-        const s = 0.62;
+        const s = VINYL_S;
         const tw = TT_W * s;
         return {
-          frame: { x: -12, y: -20, w: tw * 2 + MIXER_W * s + 56, h: Math.max(TT_D, MIXER_D) * s + 40 },
+          frame: { x: -12, y: -150, w: tw * 2 + MIXER_W * s + 56, h: Math.max(TT_D, MIXER_D) * s + 196 },
           body: (
             <>
               <Scaled s={s} x={0} y={20}><TurntableTop x={0} y={0} d={still} playing={false} /></Scaled>
               <Scaled s={s} x={tw + 16} y={0}><MixerTop x={0} y={0} booth={booth} /></Scaled>
               <Scaled s={s} x={tw + 32 + MIXER_W * s} y={20}><TurntableTop x={0} y={0} d={still} playing={false} /></Scaled>
+              <RcaRun pts={VINYL_RUNS[0]} s={s} />
+              <RcaRun pts={VINYL_RUNS[1]} s={s} />
             </>
           ),
-          callouts: [lab('a', 'TURNTABLE', tw / 2, 20, 0, -14), lab('m', 'MIXER (PHONO INPUTS)', tw + 16 + (MIXER_W * s) / 2, 0, 0, -14), lab('b', 'TURNTABLE', tw * 1.5 + 32 + MIXER_W * s, 20, 0, -14)],
-          a11y: 'A vinyl system: two turntables either side of a mixer.',
-          obstacles: [],
+          callouts: [
+            lab('ph', 'TO EACH PHONO INPUT (RCA)', VINYL_RUNS[0][3][0], VINYL_RUNS[0][3][1], 0, -16),
+            lab('a', 'TURNTABLE', tw / 2, 20 + TT_D * s, 0, 14),
+            lab('m', 'MIXER', tw + 16 + (MIXER_W * s) / 2, MIXER_D * s, 0, 14),
+            lab('b', 'TURNTABLE', tw * 1.5 + 32 + MIXER_W * s, 20 + TT_D * s, 0, 14),
+          ],
+          a11y: 'A vinyl system: two turntables either side of a mixer, each turntable’s stereo RCA cable running from its back edge to its own PHONO input on the mixer’s back.',
+          obstacles: [{ x: 0, y: 20, w: tw, h: TT_D * s }, { x: tw + 16, y: 0, w: MIXER_W * s, h: MIXER_D * s }, { x: tw + 32 + MIXER_W * s, y: 20, w: tw, h: TT_D * s }, ...runObst(VINYL_RUNS)],
         };
       }
       case 'laptop':
         return {
-          frame: { x: -70, y: -20, w: CTRL_W + 120, h: CY + CTRL_D + 36 },
+          frame: { ...CTRL_FRAME, y: -20, h: CTRL_FRAME.h + 6 },
           body: <LaptopAndController out={swOut} />,
           callouts:
             swOut === 'CONTROLLER'
-              ? [lab('lp', 'MUSIC PLAYS HERE', CTRL_W / 2, 2, 0, -12), lab('c', 'OUTPUTS HERE', CTRL_OUT.x, CY - 20, 20, -24)]
-              : [lab('lp', 'AUDIO → LAPTOP SPEAKERS', CTRL_W / 2, 2, 0, -12, 'red'), lab('c', 'OUTPUTS: SILENT', CTRL_OUT.x, CY - 20, 20, -24, 'red')],
-          a11y: `A laptop and controller system. The software sends its audio to ${swOut === 'CONTROLLER' ? 'the controller’s outputs' : 'the laptop’s own speakers, so the controller’s outputs are silent'}.`,
-          obstacles: [circBox(112, CY + 196, 166), circBox(438, CY + 196, 166), { x: 212, y: CY + 12, w: 126, h: 296 }, { x: LX, y: 0, w: LAPTOP_W, h: LAPTOP_H }],
+              ? [lab('lp', 'MUSIC PLAYS HERE', CTRL_W / 2, 2, 0, -12), lab('c', 'OUTPUTS HERE', CTRL_OUT.x + 14, CY - 22, 24, 6), lab('spk', 'SPEAKERS: SIGNAL IN', SPK.x + PLATE_W, SPK.L + PLATE_H / 2, 10, -6, 'green')]
+              : [lab('lp', 'AUDIO → LAPTOP SPEAKERS', CTRL_W / 2, 2, 0, -12, 'red'), lab('c', 'OUTPUTS: SILENT', CTRL_OUT.x + 14, CY - 22, 24, 6, 'red'), lab('spk', 'SPEAKERS: NO SIGNAL', SPK.x + PLATE_W, SPK.L + PLATE_H / 2, 10, -6, 'red')],
+          a11y: `A laptop and controller system; the controller’s master outputs are cabled to two powered speakers. The software sends its audio to ${swOut === 'CONTROLLER' ? 'the controller’s outputs, so the speakers have signal' : 'the laptop’s own speakers, so the controller’s outputs and the powered speakers are silent'}.`,
+          obstacles: [circBox(112, CY + 196, 166), circBox(438, CY + 196, 166), { x: 212, y: CY + 12, w: 126, h: 296 }, { x: LX, y: 0, w: LAPTOP_W, h: LAPTOP_H }, ...CTRL_SPK_OBST, ...CTRL_CABLE_OBST],
+          focus: CTRL_FOCUS,
         };
       case 'standalone':
         return {
@@ -286,23 +376,109 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): ItemScen
           obstacles: [],
         };
       case 'modular': {
-        const s = 0.5;
+        const s = MOD_S;
         return {
-          frame: { x: -12, y: -22, w: (PLAYER_W * 2 + MIXER_W) * s + 40, h: PLAYER_D * s + 44 },
+          frame: { x: -12, y: -140, w: (PLAYER_W * 2 + MIXER_W) * s + 40, h: PLAYER_D * s + 186 },
           body: (
             <>
               <Scaled s={s} x={0} y={0}><PlayerTop x={0} y={0} deck="A" d={booth.decks.A} /></Scaled>
               <Scaled s={s} x={PLAYER_W * s + 8} y={5}><MixerTop x={0} y={0} booth={booth} /></Scaled>
               <Scaled s={s} x={(PLAYER_W + MIXER_W) * s + 16} y={0}><PlayerTop x={0} y={0} deck="B" d={booth.decks.B} /></Scaled>
+              <LanRun pts={MOD_LAN} s={s} />
+              <RcaRun pts={MOD_RUNS[0]} s={s} />
+              <RcaRun pts={MOD_RUNS[1]} s={s} />
             </>
           ),
-          callouts: [lab('a', 'PLAYER', (PLAYER_W * s) / 2, 0, 0, -14), lab('m', 'MIXER', PLAYER_W * s + 8 + (MIXER_W * s) / 2, 5, 0, -14), lab('b', 'PLAYER', (PLAYER_W * 1.5 + MIXER_W) * s + 16, 0, 0, -14)],
-          a11y: 'A modular system: two media players either side of a separate mixer.',
-          obstacles: [],
+          callouts: [
+            lab('lk', 'LINK (LAN): DATA, NO AUDIO', MOD_LAN[3][0], MOD_LAN[3][1], 0, -14, 'blue'),
+            lab('au', 'AUDIO (RCA) → LINE IN', MOD_RUNS[0][2][0], MOD_RUNS[0][2][1], -4, 20),
+            lab('a', 'PLAYER', (PLAYER_W * s) / 2, PLAYER_D * s, 0, 14),
+            lab('m', 'MIXER', PLAYER_W * s + 8 + (MIXER_W * s) / 2, 5 + MIXER_D * s, 0, 14),
+            lab('b', 'PLAYER', (PLAYER_W * 1.5 + MIXER_W) * s + 16, PLAYER_D * s, 0, 14),
+          ],
+          a11y: 'A modular system: two media players either side of a separate mixer. Each player’s stereo RCA audio cable runs to a LINE input on the mixer’s back; a LAN cable links the two players and carries data only, no audio.',
+          obstacles: [{ x: 0, y: 0, w: PLAYER_W * s, h: PLAYER_D * s }, { x: PLAYER_W * s + 8, y: 5, w: MIXER_W * s, h: MIXER_D * s }, { x: (PLAYER_W + MIXER_W) * s + 16, y: 0, w: PLAYER_W * s, h: PLAYER_D * s }, ...runObst([...MOD_RUNS, MOD_LAN])],
         };
       }
     }
   }, [sys, booth, still, swOut]);
+}
+
+/**
+ * The system views' cables (grade 2026-10-19: each system's question is
+ * about its cables, so they are drawn). Seen from above, every cable leaves
+ * a back edge as a plug body and lies on the desk behind the gear in an easy
+ * curve to the back edge it plugs into. Positions are on the stage (the
+ * gear is drawn at VINYL_S / MOD_S); a stereo RCA cable is two conductors,
+ * each in its own lane.
+ */
+const VINYL_S = 0.62;
+const MOD_S = 0.5;
+const RCA_LEN = 22; // an RCA plug body, mm
+const VT = { tw: TT_W * VINYL_S, mx: TT_W * VINYL_S + 16, bx: TT_W * VINYL_S + 32 + MIXER_W * VINYL_S };
+/** Turntable outputs at the back, left of centre (local x 52); the mixer's
+ *  PHONO inputs at the back of each channel (local x 62 and 208). */
+const VINYL_RUNS: P2[][] = (() => {
+  const top = (edge: number) => edge - RCA_LEN * VINYL_S;
+  const a = 52 * VINYL_S;
+  const c1 = VT.mx + 62 * VINYL_S;
+  const c2 = VT.mx + 208 * VINYL_S;
+  const b = VT.bx + 52 * VINYL_S;
+  return [
+    [[a, top(20)], [a, -18], [a + 40, -58], [180, -70], [c1 - 30, -56], [c1, -26], [c1, top(0)]],
+    [[b, top(20)], [b, -18], [b - 24, -48], [c2 + 24, -54], [c2, -26], [c2, top(0)]],
+  ];
+})();
+/** Player audio outputs (local x 250 on A, 70 on B), the mixer's LINE inputs
+ *  (local 62, 208), and the LAN link between the players (local x 160). */
+const MT = { mx: PLAYER_W * MOD_S + 8, bx: (PLAYER_W + MIXER_W) * MOD_S + 16 };
+const MOD_RUNS: P2[][] = (() => {
+  const a = 250 * MOD_S;
+  const b = MT.bx + 70 * MOD_S;
+  const c1 = MT.mx + 62 * MOD_S;
+  const c2 = MT.mx + 208 * MOD_S;
+  const t = -RCA_LEN * MOD_S;
+  return [
+    [[a, t], [a, -28], [(a + c1) / 2, -50], [c1, -26], [c1, 5 + t]],
+    [[b, t], [b, -28], [(b + c2) / 2, -50], [c2, -26], [c2, 5 + t]],
+  ];
+})();
+const MOD_LAN: P2[] = (() => {
+  const a = 160 * MOD_S;
+  const b = MT.bx + 160 * MOD_S;
+  const t = -24 * MOD_S;
+  return [[a, t], [a, -52], [a + 40, -92], [(a + b) / 2, -102], [b - 40, -92], [b, -52], [b, t]];
+})();
+const runObst = (runs: P2[][]): Box[] => runs.flatMap((r) => curveSamples(r, 10).map((p) => ({ x: p.x - 5, y: p.y - 5, w: 10, h: 10 })));
+
+/** A stereo RCA cable along `pts`: white and red conductors side by side,
+ *  each with its plug seated in a back edge at both ends. */
+function RcaRun({ pts, s }: { pts: P2[]; s: number }) {
+  const lanes = useMemo(() => [offsetPts(pts, 3.4), offsetPts(pts, -3.4)], [pts]);
+  const paths = useMemo(() => lanes.map((l) => curvePath(l)), [lanes]);
+  const w = 3.2 * s + 0.6;
+  return (
+    <Group>
+      {lanes.map((l, i) => (
+        <Group key={i}>
+          <Cable pts={l} path={paths[i]} style={i ? { colour: '#7a2018', width: w, pattern: 'dash', dash: [4, 3] } : { colour: '#8d9097', width: w, pattern: 'plain' }} />
+          <SmallPlugTop x={l[0][0]} y={l[0][1] + RCA_LEN * s} kind={i ? 'rcaRed' : 'rcaWhite'} s={s} />
+          <SmallPlugTop x={l[l.length - 1][0]} y={l[l.length - 1][1] + RCA_LEN * s} kind={i ? 'rcaRed' : 'rcaWhite'} s={s} />
+        </Group>
+      ))}
+    </Group>
+  );
+}
+/** The LAN link cable along `pts`, an RJ45 plug in each player's back. */
+function LanRun({ pts, s }: { pts: P2[]; s: number }) {
+  const path = useMemo(() => curvePath(pts), [pts]);
+  return (
+    <Group>
+      <Cable pts={pts} path={path} style={{ colour: '#3f6f9a', width: 5.6 * s + 0.6, pattern: 'ribs' }} />
+      <SmallPlugTop x={pts[0][0]} y={pts[0][1] + 24 * s} kind="lan" s={s} />
+      <SmallPlugTop x={pts[pts.length - 1][0]} y={pts[pts.length - 1][1] + 24 * s} kind="lan" s={s} />
+    </Group>
+  );
 }
 
 function Scaled({ s, x, y, children }: { s: number; x: number; y: number; children: ReactNode }) {
@@ -344,7 +520,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
     <DjRack
       spec={{
         render: (w, h) => (
-          <Scene w={w} h={h} frame={scene.frame} motion={motion} callouts={scene.callouts} obstacles={scene.obstacles} a11y={scene.a11y}>
+          <Scene w={w} h={h} frame={scene.frame} motion={motion} callouts={scene.callouts} obstacles={scene.obstacles} printed={scene.printed} focus={scene.focus} a11y={scene.a11y}>
             {scene.body}
           </Scene>
         ),
