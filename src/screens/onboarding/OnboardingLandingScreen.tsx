@@ -26,6 +26,7 @@ import { safeGoBack } from '../../lib/safeGoBack';
 import { armLandingReturn } from '../../features/onboarding/landingReturn';
 import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
+import { AttractRing } from '../../features/onboarding/AttractCue';
 import { ResetIcon } from '../../components/ResetIcon';
 import { HomeIcon } from '../../components/HomeIcon';
 import { MethodGlyph } from '../../components/MethodIcon';
@@ -52,6 +53,8 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
   const upsell = useUpsellAllowed();
   // The logo matches the title block's measured height (owner 2026-10-10).
   const [titleH, setTitleH] = useState(0);
+  // MEMBERSHIP glows (the Home Explore ring) until it is tapped once.
+  const [memberTapped, setMemberTapped] = useState(false);
   // Logo + gap + title must fit the column: the row is ~9.5 × fontSize + 41 wide.
   const { width } = useWindowDimensions();
   // Smallest phones (< 360 wide): no logo, the original centred title (owner 2026-10-10).
@@ -116,7 +119,12 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
 
         {upsell ? (
           <View style={styles.block}>
-            <GlassButton label="MEMBERSHIP" tint="gold" height={62} fontSize={20} onPress={() => choose('membership')} />
+            {/* the Home Explore button's breathing gold ring (owner 2026-10-19),
+                until the learner taps MEMBERSHIP */}
+            <View>
+              <GlassButton label="MEMBERSHIP" tint="gold" height={62} fontSize={20} onPress={() => { setMemberTapped(true); choose('membership'); }} />
+              <AttractRing active={!memberTapped} radius={8.5} />
+            </View>
             <Text style={styles.caption}>
               Become a member and unlock all of the academy’s learning resources.
             </Text>
