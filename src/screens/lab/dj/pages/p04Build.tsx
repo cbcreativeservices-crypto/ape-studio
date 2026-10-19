@@ -5,7 +5,7 @@
  * connect on the system map; every cable in its own lane; the blue glow is
  * the render's real route. The fault: half (or none) of the PA.
  */
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { colors } from '../../../../theme/tokens';
 import { StageInFullScreen } from '../../rack/stageAspect';
 import { UnderstandingCheck } from '../../tuning/components/check';
@@ -13,7 +13,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
 import { MAP_FRAME, SystemMap, patchBox, roomSpeakerBox } from '../art/SystemMap';
 import { MAP_BODIES, type SpeakerKey } from '../geometry/mapGeometry';
-import { ROOM_FLOOR, roomPhonesBox, speakerLit } from '../geometry/dressGeometry';
+import { ROOM_FLOOR, followBox4, roomPhonesBox, speakerLit } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, stopKey } from '../dock';
@@ -38,12 +38,21 @@ export const GOALS_BUILD = ['Both players to the mixer', 'PA and booth monitors'
  *  HOT-PATCH — the speakers that would have banged. */
 type Flash = { keys: readonly SpeakerKey[]; word: 'THUMP' | 'HOT-PATCH' };
 
-/** The map on the glass. On a phone at 1× the AUDIO cables that are plugged
- *  in carry their flags, with the cable being patched, the one just patched
- *  and any in the wrong place; the mains cords' flags join them in FULL
- *  SCREEN. The room's names are callouts kept in the room band; the patch
- *  band's words are placed by the map itself (art/SystemMap placeLabels). */
-function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatched, audioOk, powerOk }: {
+/** The two views (round 2, grades screen 4 — "unreadable at phone size"):
+ *  the WHOLE BOOTH (the room over everything you plug), or CABLE — close up
+ *  on the cable you are working on, end to end. */
+type View4 = 'BOOTH' | 'CABLE';
+
+/** The map on the glass (round 2, grades screen 4). On the glass the cables
+ *  in FOCUS — the one being patched, the one just patched, any in the wrong
+ *  place — are drawn at full strength and carry their flags; every other run
+ *  steps back (audio that is flowing stays bright), and the mains cords fade
+ *  further while no power task is on. The CABLE view frames the focus cable
+ *  close up. FULL SCREEN keeps the full detail: the whole map, every cable at
+ *  full strength, every flag that finds clean air (CABLE opens its zoom on
+ *  that cable). The room's names are callouts kept in the room band; the
+ *  patch band's words are placed by the map itself (placeLabels). */
+function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatched, audioOk, powerOk, view, powerTask }: {
   w: number;
   h: number;
   booth: Booth;
@@ -55,9 +64,21 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   justPatched: PlugId | null;
   audioOk: number;
   powerOk: number;
+  view: View4;
+  powerTask: boolean;
 }) {
   const inFull = useContext(StageInFullScreen);
-  const flagFor = (p: PlugId) => inFull || p === sel || p === justPatched || (booth.plugs[p] != null && (!plugCorrect(booth, p) || PLUGS[p].kind !== 'iec'));
+  // the cables the screen is about right now
+  const focus = useMemo(() => {
+    const f = new Set<PlugId>([sel]);
+    if (justPatched) f.add(justPatched);
+    for (const p of [...AUDIO_PLUGS, ...POWER_PLUGS]) if (booth.plugs[p] != null && !plugCorrect(booth, p)) f.add(p);
+    return [...f];
+  }, [sel, justPatched, booth]);
+  const flagFor = (p: PlugId) => inFull || focus.includes(p);
+  // the CABLE view: the focus cable's whole run, grown to the glass's shape
+  const follow = useMemo(() => followBox4(sel, booth.plugs, Math.max(0.3, (w - 12) / Math.max(1, h - 12))), [sel, booth.plugs, w, h]);
+  const cable = view === 'CABLE' && !inFull;
   const label = (id: string, text: string, at: { x: number; y: number }, dx: number, dy: number, tone?: 'blue' | 'amber' | 'red' | 'plain') => ({ id, text, at, dx, dy, tone });
   const top = (k: SpeakerKey) => {
     const b = roomSpeakerBox(k);
@@ -70,20 +91,25 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
     <Scene
       w={w}
       h={h}
-      frame={MAP_FRAME}
+      frame={cable ? patchBox(follow) : MAP_FRAME}
+      aspect={MAP_FRAME.w / MAP_FRAME.h}
       motion={motion}
-      a11y={`${LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
-      obstacles={hard}
-      focus={patchBox(MAP_BODIES[1])}
-      callouts={[
-        ...keys.map((k) => label(`th${k}`, flash!.word, top(k), 0, -10, 'red')),
-        label('par', 'PA R', top('paR'), 18, 0),
-        label('pal', 'PA L', top('paL'), -18, 0),
-        label('br', 'BOOTH R', top('boothR'), -16, -12),
-        label('bl', 'BOOTH L', top('boothL'), 16, -12),
-      ]}
+      a11y={`${cable ? `Close up on the ${PLUGS[sel].short} cable, from behind the booth.` : LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
+      obstacles={cable ? [] : hard}
+      focus={view === 'CABLE' ? patchBox(follow) : patchBox(MAP_BODIES[1])}
+      callouts={
+        cable
+          ? []
+          : [
+              ...keys.map((k) => label(`th${k}`, flash!.word, top(k), 0, -10, 'red')),
+              label('par', 'PA R', top('paR'), 18, 0),
+              label('pal', 'PA L', top('paL'), -18, 0),
+              label('br', 'BOOTH R', top('boothR'), -16, -12),
+              label('bl', 'BOOTH L', top('boothL'), 16, -12),
+            ]
+      }
     >
-      <SystemMap booth={booth} last={last} flow={flowMotion} thump={keys} flagFor={flagFor} />
+      <SystemMap booth={booth} last={last} flow={flowMotion} thump={keys} flagFor={flagFor} focus={focus} dimRest={!inFull} cordAlpha={powerTask ? 1 : inFull ? 0.55 : 0.3} labelView={cable ? follow : undefined} />
     </Scene>
   );
 }
@@ -121,7 +147,20 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
   const [justPatched, setJustPatched] = useState<PlugId | null>(null);
   // a power order that thumped: said plainly, with the way to try again
   const [miss, setMiss] = useState<'on' | 'off' | null>(null);
+  // the view, and whether the learner is wiring audio or power: picking a
+  // cable follows it close up, a power switch shows the whole booth — until
+  // the learner picks a VIEW themselves
+  const [view, setView] = useState<View4>('BOOTH');
+  const viewChosen = useRef(false);
+  const [powerTask, setPowerTask] = useState(false);
+  const onPick = (p: PlugId) => {
+    setSelPlug(p);
+    setPowerTask(PLUGS[p].kind === 'iec');
+    if (!viewChosen.current) setView('CABLE');
+  };
   const onPower = (e: PowerEvent) => {
+    setPowerTask(true);
+    if (!viewChosen.current) setView('BOOTH');
     setLastPower(e);
     const b = getBooth();
     if (e.thump) setFlash({ keys: SPEAKERS.filter((sp) => deviceLive(b, sp) && speakerCabled(b, sp)), word: 'THUMP' });
@@ -173,7 +212,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
   return (
     <DjRack
       spec={{
-        render: (w, h) => <BuildMap w={w} h={h} booth={booth} last={last} motion={motion} flowMotion={audio.flowMotion} flash={flash} sel={selPlug} justPatched={justPatched} audioOk={audioOk} powerOk={powerOk} />,
+        render: (w, h) => <BuildMap w={w} h={h} booth={booth} last={last} motion={motion} flowMotion={audio.flowMotion} flash={flash} sel={selPlug} justPatched={justPatched} audioOk={audioOk} powerOk={powerOk} view={view} powerTask={powerTask} />,
         bezel: [
           { k: 'CABLES', v: `${audioOk} / 9`, tint: audioOk === 9 ? colors.green : colors.amber },
           { k: 'POWERED', v: `${powerOk} / 7`, tint: powerOk === 7 ? colors.green : colors.amber },
@@ -186,7 +225,23 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
             id: 'patch',
             label: 'PATCH',
             valueLabel: `${audioOk}/9`,
-            render: () => <PatchTray plugs={[...AUDIO_PLUGS, ...POWER_PLUGS]} initial={selPlug} onSelect={(p) => setSelPlug(p)} onPatched={(p) => setJustPatched(p)} onHot={onHot} />,
+            render: () => <PatchTray plugs={[...AUDIO_PLUGS, ...POWER_PLUGS]} initial={selPlug} onSelect={onPick} onPatched={(p) => setJustPatched(p)} onHot={onHot} />,
+          },
+          {
+            kind: 'options',
+            id: 'view',
+            label: 'VIEW',
+            valueLabel: view === 'CABLE' ? 'CABLE' : 'BOOTH',
+            valueA11y: view === 'CABLE' ? 'close up on the cable you are patching' : 'the whole booth',
+            options: [
+              { id: 'BOOTH', label: 'WHOLE BOOTH', blurb: 'The room, and everything you plug, from behind. The cable you are working on stays bright; the rest step back.' },
+              { id: 'CABLE', label: 'FOLLOW THE CABLE', blurb: 'Close up on the cable you are patching, from one plug to the other.' },
+            ],
+            selectedId: view,
+            onSelect: (id) => {
+              viewChosen.current = true;
+              setView(id as View4);
+            },
           },
           { kind: 'group', id: 'power', label: 'POWER', valueLabel: `${powerOk}/7`, render: () => <PowerTray onEvent={onPower} lastEvent={lastPower} /> },
           boothKey(booth, tr),
@@ -213,7 +268,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open PATCH. Pick a cable by the end that is already in its source, then tap where its loose end goes. Watch the map: every cable gets its own lane, and the one you are patching carries its label (FULL SCREEN shows every label).</Do>
+        <Do>Open PATCH. Pick a cable by the end that is already in its source, then tap where its loose end goes. The map follows that cable close up, from one plug to the other; VIEW switches between it and the whole booth, where the cable you are working on stays bright and carries its label while the rest step back. FULL SCREEN shows every cable and label.</Do>
         <P>Look at the mixer’s rear: seen from behind, channel 2’s inputs are on the LEFT. That catches people out on real gear too.</P>
       </Step>
       <Step n={3}>
@@ -246,6 +301,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
           symptom="The crowd hears the music only from one side, and the left booth monitor is playing the crowd’s mix."
           start={() => {
             void audio.requestSound();
+            if (!viewChosen.current) setView('BOOTH');
             updateBooth((b, t) => {
               let x: Booth = { ...b };
               const plugs = { ...x.plugs };

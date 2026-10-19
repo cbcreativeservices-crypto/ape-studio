@@ -19,10 +19,10 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
 import { GndPost, MixerRear, PlayerRear, TT_REAR_JACKS, TurntableRear } from '../art/RearPanels';
 import { CableRun, type Run } from '../art/cables';
-import { Halo } from '../art/parts';
+import { Halo, PlugFace } from '../art/parts';
 import { INK } from '../art/ink';
 import { MIXER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from '../geometry/boothGeometry';
-import { GND_LUG, S3, groundLane3, groundRun3, lane3, mixJack3, run3, srcBox3, srcJack3, ttGnd3, type Source3 } from '../geometry/dressGeometry';
+import { GND_LUG, S3, groundLane3, groundRun3, lane3, mixJack3, parked3, run3, srcBox3, srcJack3, ttGnd3, type Parked3, type Source3 } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
@@ -54,6 +54,34 @@ function runFor(b: Booth, src: Source, side: 'L' | 'R', live: boolean): Run {
   const into = to && to.startsWith('ch') ? to : null;
   const colour = side === 'L' ? INK.rcaWhite : INK.rcaRed;
   return { id: plug, kind: 'rca', colour, pts: lane3(src, side, into), dense: run3(src, side, into), plugged: !!into, live: !!into && live, label: side, dashed: side === 'R', looseSag: 1 };
+}
+
+/** The OTHER source's lead, still in its jack after a SOURCE switch (round
+ *  2, grades screen 3: the bezel said "CH1 L GETS DECK A L" while the drawing
+ *  showed the jack empty). Its plug stays in the jack; its lead leaves the
+ *  plug and fades out, because its source is off this picture. Drawn a step
+ *  back from the shown source's leads (geometry: dressGeometry.parked3). */
+function ParkedLead({ p }: { p: Parked3 }) {
+  const colour = p.side === 'L' ? INK.rcaWhite : INK.rcaRed;
+  const jacket = p.side === 'L' ? ['rgb(141,144,151)', 'rgba(141,144,151,0)'] : ['rgb(122,32,24)', 'rgba(122,32,24,0)'];
+  const [a, b] = p.stub;
+  const path = useMemo(() => {
+    const pb = Skia.PathBuilder.Make();
+    pb.moveTo(a[0], a[1]);
+    pb.lineTo(b[0], b[1]);
+    return pb.detach();
+  }, [a, b]);
+  return (
+    <Group opacity={0.62}>
+      <Path path={path} style="stroke" strokeWidth={3.6} strokeCap="round">
+        <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0)']} />
+      </Path>
+      <Path path={path} style="stroke" strokeWidth={3.2} strokeCap="round">
+        <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={jacket} />
+      </Path>
+      <PlugFace cx={a[0]} cy={a[1]} kind="rca" colour={colour} dir={Math.atan2(b[1] - a[1], b[0] - a[0])} />
+    </Group>
+  );
 }
 
 /** A spade (fork) lug, crimped onto the ground wire, clamped under a GND
@@ -231,6 +259,12 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
   const liveL = sourcePlaying && !!route.L && route.L.source === src;
   const liveR = sourcePlaying && !!route.R && route.R.source === src;
   const runs = [runFor(booth, src, 'L', liveL), runFor(booth, src, 'R', liveR)];
+  // the other source's plugs stay in their jacks when you switch SOURCE
+  const other: Source = src === 'A' ? 'TT' : 'A';
+  const plugOf = (s: Source, side: 'L' | 'R'): PlugId => (s === 'A' ? (side === 'L' ? 'A.rcaL' : 'A.rcaR') : side === 'L' ? 'tt.rcaL' : 'tt.rcaR');
+  const parked = parked3(src, { L: booth.plugs[plugOf(src, 'L')] ?? null, R: booth.plugs[plugOf(src, 'R')] ?? null }, { L: booth.plugs[plugOf(other, 'L')] ?? null, R: booth.plugs[plugOf(other, 'R')] ?? null });
+  const parkedKey = parked.map((q) => `${q.side}${q.jack}`).join(',');
+  const otherName = other === 'A' ? 'DECK A' : 'TURNTABLE';
   const aBoth = booth.plugs['A.rcaL'] === 'ch1.line.L' && booth.plugs['A.rcaR'] === 'ch1.line.R' && booth.ch[1].input === 'LINE' && booth.decks.A.playing && !!last && last.rmsDb.masterL > -60 && last.rmsDb.masterR > -60;
   const lOnly = booth.decks.A.playing && !!last && (last.rmsDb.masterL > -60) !== (last.rmsDb.masterR > -60);
   if (lOnly && !oneSide) setOneSide(true);
@@ -264,6 +298,10 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
       leadBoxes.push({ x: Math.min(x0, x1) - 4, y: Math.min(y0, y1) - 4, w: Math.abs(x1 - x0) + 8, h: Math.abs(y1 - y0) + 12 });
     }
   }
+  for (const q of parked) {
+    const [a, b] = q.stub;
+    leadBoxes.push({ x: Math.min(a[0], b[0]) - 7, y: Math.min(a[1], b[1]) - 7, w: Math.abs(b[0] - a[0]) + 14, h: Math.abs(b[1] - a[1]) + 14 });
+  }
   const stage = useMemo(
     () => (w: number, h: number) => (
       <Scene
@@ -271,13 +309,17 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
         h={h}
         frame={FRAME}
         motion={motion}
-        a11y={`The back of ${src === 'A' ? 'deck A' : 'the turntable'} above the back of the mixer, with the source's white and red RCA plugs. Channel 1 left hears ${sideWord(route.L)}, right hears ${sideWord(route.R)}; input selector ${booth.ch[1].input}.`}
+        a11y={`The back of ${src === 'A' ? 'deck A' : 'the turntable'} above the back of the mixer, with the source's white and red RCA plugs.${parked.length ? ` ${otherName === 'DECK A' ? 'Deck A' : 'The turntable'} is still plugged into ${parked.map((q) => q.jack.replace('ch1.', 'channel 1 ').replace('.', ' ')).join(' and ')}.` : ''} Channel 1 left hears ${sideWord(route.L)}, right hears ${sideWord(route.R)}; input selector ${booth.ch[1].input}.`}
         // labels keep OFF both panels (they sit in the gap or the margins,
         // with a leader) and prefer the space clear of the leads
         obstacles={[srcBox3(src), { x: S3.mix.x, y: S3.mix.y, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...leadBoxes]}
         soft={[{ x: 52, y: srcBox3(src).h, w: 104, h: S3.mix.y - srcBox3(src).h }]}
         callouts={[
-          ...(box ? [{ id: 'id', text: sock.label, at: { x: box.x + box.w / 2, y: box.y + box.h / 2 }, dx: 0, dy: -16, tone: 'blue' as const }] : []),
+          // the picked socket's name, unless the panel already prints it right
+          // there (AUDIO OUT: the halo marks it; a callout covered the
+          // hanging plugs and the patched lead, round 2)
+          ...(box && sock.id !== 'out' ? [{ id: 'id', text: sock.label, at: { x: box.x + box.w / 2, y: box.y + box.h / 2 }, dx: 0, dy: -16, tone: 'blue' as const }] : []),
+          ...(parked.length ? [{ id: 'park', text: `${otherName}’S PLUGS`, at: { x: parked[0].stub[1][0], y: parked[0].stub[1][1] }, dx: 18, dy: 10, tone: 'plain' as const }] : []),
           { id: 'line', text: selPair === 'line' ? 'SELECTOR → LINE' : 'CH1 LINE', at: { x: mixJack('ch1.line.L').x + 8, y: mixJack('ch1.line.L').y - 8 }, dx: 26, dy: -26, tone: selPair === 'line' ? ('green' as const) : undefined },
           { id: 'phono', text: selPair === 'phono' ? 'SELECTOR → PHONO' : 'CH1 PHONO', at: { x: mixJack('ch1.phono.L').x - 8, y: mixJack('ch1.phono.L').y - 8 }, dx: -26, dy: -26, tone: selPair === 'phono' ? ('green' as const) : undefined },
           ...(src === 'TT' ? [{ id: 'gw', text: 'GROUND WIRE', at: { x: groundLane3()[0][0], y: S3.lane.gnd - 14 }, dx: -20, dy: -6, tone: 'plain' as const }] : []),
@@ -290,6 +332,9 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
           const pb = pairBox(k);
           return selPair === k ? null : <RoundedRect key={k} x={pb.x} y={pb.y} width={pb.w} height={pb.h} r={4} color="rgba(6,6,8,0.55)" />;
         })}
+        {parked.map((q) => (
+          <ParkedLead key={`${q.side}${q.jack}`} p={q} />
+        ))}
         {runs.map((r) => (
           <SwingingLead key={r.id} r={r} pivot={srcJack3(src, r.label as 'L' | 'R')} swing={audio.flowMotion} />
         ))}
@@ -298,7 +343,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
       </Scene>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [src, booth, motion, box, sock.label, liveL, liveR, selPair],
+    [src, booth, motion, box, sock.label, sock.id, liveL, liveR, selPair, parkedKey],
   );
   return (
     <DjRack

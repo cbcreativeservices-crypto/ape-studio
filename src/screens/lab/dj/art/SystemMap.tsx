@@ -21,11 +21,19 @@
  * (speakerLit): its cabinet glows blue and its plate's light turns green.
  *
  * Every word on the patch band (cable flags, device names) is placed by one
- * pass that keeps them off the gear, off each other and off other cables, at
- * whatever zoom (placeLabels).
+ * pass that keeps them off the gear, off each other and off EVERY cable, at
+ * whatever zoom (placeLabels): a flag sits just beside its own cable with a
+ * short leader to it, never on a cable or a crossing (round 2, 2026-10-19).
+ *
+ * LESS DENSE ON THE GLASS (round 2, grades screen 4 — "a tangle at 390"):
+ * the page names the cables in FOCUS (the one being patched, the one just
+ * patched, any in the wrong place); with `dimRest` every other run steps
+ * back (audio that is flowing stays bright: the signal path leads), and the
+ * mains cords fade further while no power task is on (`cordAlpha`). FULL
+ * SCREEN keeps the full detail.
  */
 import { memo, useContext, useMemo } from 'react';
-import { BlurMask, Group, Line, LinearGradient, Oval, Path, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, Line, LinearGradient, Oval, Path, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { Booth, PlugId } from '../model/djModel';
 import { deviceLive, phonesPlugged, PLUGS } from '../model/djModel';
 import type { BoothRender } from '../engine/djRender';
@@ -33,6 +41,7 @@ import { MIXER_REAR, PLAYER_REAR } from '../geometry/boothGeometry';
 import { PLATE_H, PLATE_W } from '../geometry/gearGeometry';
 import { FLAG_TEXT, MAP, MAP_PLUGS, TIED, farKindOf, phonesJackPt, type SpeakerKey } from '../geometry/mapGeometry';
 import { PATCH_DY, PHONES_BREAK, ROOM4, ROOM_F, ROOM_FLOOR, lane4, patchLabels4, roomPhonesBox, roomSpeakerBox4, roomTableTop, run4, speakerLit, type P2, type Placed } from '../geometry/dressGeometry';
+import type { Box } from '../geometry/boothGeometry';
 import { INK } from './ink';
 import { CableFlag, CableRun, LaneTies, type Run } from './cables';
 import { Headphones, PowerSpeaker, PowerStrip, SpeakerPlate, TripodStand } from './gear';
@@ -159,7 +168,9 @@ function Room({ booth, last, thump }: { booth: Booth; last: BoothRender | null; 
 
 /* ── the patch band (1:1) ─────────────────────────────────────────────── */
 
-/** The mixer's front edge, at full size, with its headphone jack. */
+/** The mixer's front edge, at full size, with its headphone jack. It is the
+ *  SAME mixer seen from its front, and the words say so ("MIXER'S FRONT
+ *  EDGE", placed by placeLabels clear of every cable). */
 function MixerFront() {
   const F0 = MAP.front;
   const j = phonesJackPt;
@@ -176,7 +187,6 @@ function MixerFront() {
       </Oval>
       <Oval x={j.x - 3.4} y={j.y - 2.8} width={6.8} height={5.6} color="#020203" />
       <SceneText x={j.x + 12} y={j.y + 1.4} size={4} text="PHONES" color={INK.printDim} face="label" />
-      <SceneText x={F0.x + F0.w - 6} y={j.y + 1.4} size={4} text="MIXER (FRONT)" color={INK.printDim} face="label" align="right" />
     </Group>
   );
 }
@@ -214,12 +224,16 @@ function NameTag({ p }: { p: Placed }) {
 }
 
 /**
- * `flagFor`: which cables carry their label flag (default: every flag).
- * Screen 4 shows every audio flag once it is plugged, the cable being
- * patched, the one just patched and any in the wrong place; FULL SCREEN
- * shows them all.
+ * `flagFor`: which cables may carry their label flag (default: every flag).
+ * `focus`: the cables the page is about right now (the one being patched,
+ * the one just patched, any in the wrong place): drawn at full strength, and
+ * their flags always show; another shown flag shows only where it finds
+ * clean air. `dimRest`: every run outside the focus steps back (flowing
+ * audio stays bright). `cordAlpha`: how strongly a mains cord outside the
+ * focus is drawn. `labelView`: the part of the patch band on the glass (patch
+ * mm), for the CABLE view's words.
  */
-export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = [], flagFor }: { booth: Booth; last: BoothRender | null; flow: boolean; thump?: readonly SpeakerKey[]; flagFor?: (p: PlugId) => boolean }) {
+export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = [], flagFor, focus, dimRest = false, cordAlpha = 1, labelView }: { booth: Booth; last: BoothRender | null; flow: boolean; thump?: readonly SpeakerKey[]; flagFor?: (p: PlugId) => boolean; focus?: readonly PlugId[]; dimRest?: boolean; cordAlpha?: number; labelView?: Box }) {
   const { s, textScale } = useContext(SceneFontsContext);
   const plugsKey = MAP_PLUGS.map((p) => booth.plugs[p] ?? '-').join('|');
   const geo = useMemo(() => {
@@ -273,12 +287,20 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
   // the words, placed once per wiring and zoom
   const flagsShown = MAP_PLUGS.filter((p) => !flagFor || flagFor(p));
   const shownKey = flagsShown.join(',');
+  const focusKey = (focus ?? []).join(',');
+  const viewKey = labelView ? [labelView.x, labelView.y, labelView.w, labelView.h].map((v) => Math.round(v)).join(',') : '';
   const liveKey = runs.map((r) => (r.live ? 1 : 0)).join('');
   const placed = useMemo(
-    () => patchLabels4(booth.plugs, flagsShown, (p) => runs.find((r) => r.id === p)!.live, Math.max(1e-6, s), textScale, textWidthPt),
+    () => patchLabels4(booth.plugs, flagsShown, (p) => runs.find((r) => r.id === p)!.live, Math.max(1e-6, s), textScale, textWidthPt, { focus: focus ?? flagsShown, view: labelView }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [plugsKey, shownKey, liveKey, s, textScale],
+    [plugsKey, shownKey, focusKey, viewKey, liveKey, s, textScale],
   );
+  // how strongly each run is drawn: the focus at full strength; with dimRest
+  // the rest step back (audio that flows stays bright — the signal path
+  // leads); a mains cord outside the focus at cordAlpha
+  const inFocus = (id: string) => !!focus && focus.includes(id as PlugId);
+  const alphaOf = (r: Run) => (inFocus(r.id) ? 1 : r.quiet ? cordAlpha : dimRest ? (r.live ? 1 : 0.4) : 1);
+  const tieAlpha = (a: PlugId, b: PlugId) => Math.max(alphaOf(runs.find((r) => r.id === a)!), alphaOf(runs.find((r) => r.id === b)!));
   return (
     <Group>
       <Room booth={booth} last={last} thump={thump} />
@@ -307,20 +329,34 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
         {runs
           .filter((r) => r.quiet)
           .map((r) => (
-            <CableRun key={r.id} r={r} flow={false} />
+            <Group key={r.id} opacity={alphaOf(r)}>
+              <CableRun r={r} flow={false} />
+            </Group>
           ))}
         {runs
           .filter((r) => !r.quiet)
           .map((r) => (
-            <CableRun key={r.id} r={r} flow={flow} />
+            <Group key={r.id} opacity={alphaOf(r)}>
+              <CableRun r={r} flow={flow} />
+            </Group>
           ))}
         <CableBreak />
-        {ties.map((t) => (t ? <LaneTies key={t.key} x0={t.x0} x1={t.x1} y0={t.y0} y1={t.y1} sag={t.sag} /> : null))}
+        {ties.map((t, i) => (t ? (
+          <Group key={t.key} opacity={tieAlpha(TIED[i][0], TIED[i][1])}>
+            <LaneTies x0={t.x0} x1={t.x1} y0={t.y0} y1={t.y1} sag={t.sag} />
+          </Group>
+        ) : null))}
         {/* the words last, over every cable */}
         {placed.map((p) =>
           p.kind === 'flag' ? (
             <Group key={`f${p.id}`}>
-              {p.leader ? <Line p1={vec(p.leader.x0, p.leader.y0)} p2={vec(p.leader.x1, p.leader.y1)} color="rgba(200,206,214,0.55)" strokeWidth={1 / Math.max(1e-6, s)} /> : null}
+              {p.leader ? (
+                <Group>
+                  <Line p1={vec(p.leader.x0, p.leader.y0)} p2={vec(p.leader.x1, p.leader.y1)} color="rgba(0,0,0,0.6)" strokeWidth={2.4 / Math.max(1e-6, s)} />
+                  <Line p1={vec(p.leader.x0, p.leader.y0)} p2={vec(p.leader.x1, p.leader.y1)} color="rgba(200,206,214,0.8)" strokeWidth={1 / Math.max(1e-6, s)} />
+                  <Circle cx={p.leader.x0} cy={p.leader.y0} r={1.8 / Math.max(1e-6, s)} color="rgba(220,226,234,0.9)" />
+                </Group>
+              ) : null}
               <CableFlag x={p.x + p.w / 2} y={p.y + p.h / 2} text={p.text} live={!!p.live} edge={p.edge ?? '#6f757e'} />
             </Group>
           ) : (

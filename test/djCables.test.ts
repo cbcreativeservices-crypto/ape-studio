@@ -11,13 +11,17 @@
  *    215 mm from the spindle, its rest clear of the pitch fader.
  *  - The waveform's headroom scaling puts the 99th-percentile peak at 80 %.
  *  - The cable flow pulse is decorative: Screen 4 passes it the gate.
+ *  - Round 2 (2026-10-19): no flag or name on ANY cable (flags sit beside
+ *    their cable with a short leader); re-spaced lanes; the mixer's cord off
+ *    the panel's edge; the CABLE view; Screen 3's other-source plugs stay in
+ *    their jacks across a SOURCE switch.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { BUILT_PLUGS, PLUGS, type JackId, type PlugId } from '../src/screens/lab/dj/model/djModel.ts';
-import { MAP, MAP_BODIES, MAP_PLUGS, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf } from '../src/screens/lab/dj/geometry/mapGeometry.ts';
+import { MAP, MAP_BODIES, MAP_PLUGS, PLUG_R, TIED, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf } from '../src/screens/lab/dj/geometry/mapGeometry.ts';
 import { PLAYER, TT, stylusAt, armAngleFor, GROOVE } from '../src/screens/lab/dj/geometry/boothGeometry.ts';
 import { builtBooth, type Booth } from '../src/screens/lab/dj/model/djModel.ts';
 import type { BoothRender } from '../src/screens/lab/dj/engine/djRender.ts';
@@ -257,6 +261,49 @@ describe('DJ Systems Lab — Screen 3’s leads (dressed, laned, clear of every 
   it('the swing of a pulled lead is decorative motion (it follows the gate)', () => {
     assert.match(read('src/screens/lab/dj/pages/p03Connect.tsx'), /swing=\{audio\.flowMotion\}/);
   });
+
+  it('round 2: the OTHER source’s plugs stay drawn in their jacks across a SOURCE switch, their leads clear of the shown ones', () => {
+    // the finding: deck A into LINE, then SOURCE → TURNTABLE
+    const kept = D.parked3('TT', { L: null, R: null }, { L: 'ch1.line.L', R: 'ch1.line.R' });
+    assert.deepEqual(kept.map((q) => `${q.side}→${q.jack}`), ['L→ch1.line.L', 'R→ch1.line.R']);
+    for (const q of kept) {
+      const j = D.mixJack3(q.jack as 'ch1.line.L');
+      assert.deepEqual(q.stub[0], [j.x, j.y], 'the plug sits IN its jack');
+      assert.ok(q.stub[1][1] > q.stub[0][1], 'its lead hangs away from it');
+    }
+    // and back the other way: the turntable in PHONO while deck A is shown
+    assert.equal(D.parked3('A', { L: null, R: null }, { L: 'ch1.phono.L', R: 'ch1.phono.R' }).length, 2);
+    // every patch the tray allows, both sources: a kept lead never touches a shown lead or a shown plug
+    const J = ['ch1.line.L', 'ch1.line.R', 'ch1.phono.L', 'ch1.phono.R', null] as const;
+    const bad: string[] = [];
+    for (const src of ['A', 'TT'] as const) {
+      for (const aL of J) for (const aR of J) for (const oL of J) for (const oR of J) {
+        const used = [aL, aR, oL, oR].filter(Boolean);
+        if (new Set(used).size !== used.length) continue;
+        const runs = [D.run3(src, 'L', aL), D.run3(src, 'R', aR)];
+        const plugs = [D.srcJack3(src, 'L'), D.srcJack3(src, 'R'), ...[aL, aR].filter(Boolean).map((j) => D.mixJack3(j!))];
+        const kept2 = D.parked3(src, { L: aL, R: aR }, { L: oL, R: oR });
+        assert.equal(kept2.length, [oL, oR].filter(Boolean).length, `${src}: every plugged lead of the other source is drawn`);
+        for (const q of kept2) {
+          const [a, b] = q.stub;
+          const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+          for (let t = 6; t <= L; t += 1) {
+            const x = a[0] + ((b[0] - a[0]) * t) / L;
+            const y = a[1] + ((b[1] - a[1]) * t) / L;
+            for (const r of runs) if (D.distToPolyline(r, x, y) < RCA_HALF * 2) bad.push(`${src} ${aL}/${aR} kept ${q.jack}: its lead touches a shown lead`);
+            for (const pl of plugs) if (Math.hypot(pl.x - x, pl.y - y) < PLUG_R.rca + RCA_HALF) bad.push(`${src} ${aL}/${aR} kept ${q.jack}: its lead runs over a plug`);
+          }
+        }
+      }
+    }
+    assert.deepEqual([...new Set(bad)], []);
+    // the drawing draws them, and the AUDIO OUT callout (which covered the
+    // hanging plugs and repeated the printed legend) is gone
+    const p03 = read('src/screens/lab/dj/pages/p03Connect.tsx');
+    assert.match(p03, /const parked = parked3\(src,/);
+    assert.match(p03, /<ParkedLead key=/);
+    assert.match(p03, /box && sock\.id !== 'out'/);
+  });
 });
 
 describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed lights)', () => {
@@ -300,7 +347,17 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
       const ra = D.run4(a, WIRED);
       const rb = D.run4(b, WIRED);
       let touching = 0;
-      for (let i = 1; i < ra.length; i++) if (D.distToPolyline(rb, ra[i][0], ra[i][1]) < 3.5) touching += Math.hypot(ra[i][0] - ra[i - 1][0], ra[i][1] - ra[i - 1][1]);
+      // measured every 1 mm along the run (a dressed run's long straight segments
+      // would otherwise count whole where only their end meets a crossing)
+      for (let i = 1; i < ra.length; i++) {
+        const L = Math.hypot(ra[i][0] - ra[i - 1][0], ra[i][1] - ra[i - 1][1]);
+        const n = Math.max(1, Math.ceil(L));
+        for (let j = 1; j <= n; j++) {
+          const x = ra[i - 1][0] + ((ra[i][0] - ra[i - 1][0]) * j) / n;
+          const y = ra[i - 1][1] + ((ra[i][1] - ra[i - 1][1]) * j) / n;
+          if (D.distToPolyline(rb, x, y) < 3.5) touching += L / n;
+        }
+      }
       assert.ok(touching < 16, `${a} and ${b} touch along ${touching.toFixed(1)} mm`);
     }
     // and they do hang: deck B's pair dips well below its lane
@@ -363,7 +420,7 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     assert.equal(D.speakerLit(b, null, 'paR'), false);
   });
 
-  it('every word on the patch band keeps off the gear and off the other words — on the phone, full screen and at 3×', () => {
+  it('every word on the patch band keeps off the gear, the other words and EVERY cable — on the phone, in the CABLE view, full screen and at 3× (round 2)', () => {
     // the label face's measure (a copy of art/Scene textWidthPt, which is .tsx)
     const tw = (t: string, k = 1) => {
       let em = 0;
@@ -373,19 +430,93 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     const ov = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
     const bad: string[] = [];
     for (const [name, st] of [['wired', WIRED], ['fault', FAULT], ['unwired', UNWIRED]] as const) {
-      // phone (1×, the plugged audio flags), FULL SCREEN 1× and 3× (every flag)
-      const audio = MAP_PLUGS.filter((p) => PLUGS[p].kind !== 'iec' && st[p]);
-      for (const [s, k, shown] of [[0.33, 1, audio], [0.37, 1, MAP_PLUGS], [1.08, Math.sqrt(3), MAP_PLUGS]] as const) {
-        const placed = D.patchLabels4(st, shown, () => false, s, k, tw);
-        for (const p of placed) {
-          for (const b of [...MAP_BODIES, MAP.front]) if (ov(p, b) > 0.5) bad.push(`${name} @${s}: ${p.id} on the gear at (${b.x}, ${b.y})`);
-          for (const q of placed) if (q !== p && ov(p, q) > 0) bad.push(`${name} @${s}: ${p.id} on ${q.id}`);
+      const cables = D.cableObstacles4(st);
+      const wrong = MAP_PLUGS.filter((p) => st[p] && st[p] !== WIRED[p] && PLUGS[p].kind !== 'iec');
+      for (const sel of MAP_PLUGS) {
+        // what Screen 4 asks for: the cable being patched and any in the wrong place
+        const focus = [...new Set([sel, ...wrong])];
+        const fb = D.followBox4(sel, st, 345 / 318);
+        const cases: [string, number, number, readonly PlugId[], typeof fb | undefined][] = [
+          ['phone', 0.327, 1, focus, undefined],
+          ['cable view', 345 / fb.w, 1, focus, fb],
+          ['full 1×', 0.37, 1, MAP_PLUGS, undefined],
+          ['full 3×', 1.08, Math.sqrt(3), MAP_PLUGS, undefined],
+        ];
+        for (const [view, s, k, shown, box] of cases) {
+          const placed = D.patchLabels4(st, shown, () => false, s, k, tw, { focus, view: box });
+          const at = `${name}, ${sel}, ${view}`;
+          for (const p of placed) {
+            for (const b of [...MAP_BODIES, MAP.front]) if (ov(p, b) > 0.5) bad.push(`${at}: ${p.id} on the gear at (${b.x}, ${b.y})`);
+            for (const q of placed) if (q !== p && ov(p, q) > 0) bad.push(`${at}: ${p.id} on ${q.id}`);
+            // the finding: no flag (and no name) on a cable or a crossing
+            for (const c of cables) {
+              const len = D.cableInBox(c.pts, p, c.half);
+              if (len > 0) bad.push(`${at}: ${p.kind} ${p.id} on the ${c.id} cable (${len.toFixed(1)} mm)`);
+            }
+            // a flag sits JUST off its cable: its leader is short
+            if (p.kind === 'flag' && p.leader) {
+              const L = Math.hypot(p.leader.x1 - p.leader.x0, p.leader.y1 - p.leader.y0) * s;
+              const limit = st[p.id as PlugId] ? 100 : 140; // a loose end's flag may reach a little further
+              if (L > limit) bad.push(`${at}: ${p.id}'s leader is ${L.toFixed(0)} pt`);
+            }
+          }
+          // the cable you are working on always carries its flag (in the CABLE view: the one it follows)
+          for (const f of box ? [sel] : focus) if (!placed.some((q) => q.id === f || (q.text.endsWith('L·R') && q.text.startsWith(f[0])))) bad.push(`${at}: ${f} has no flag`);
+          // at 3× there is room for every audio flag of the wired booth
+          if (view === 'full 3×' && name === 'wired') for (const p of MAP_PLUGS) if (PLUGS[p].kind !== 'iec' && !placed.some((q) => q.id === p)) bad.push(`${at}: ${p} has no flag`);
         }
-        // every audio flag that is asked for is placed (only a mains cord's may wait for a closer zoom)
-        for (const p of shown) if (PLUGS[p].kind !== 'iec' && !placed.some((q) => q.id === p || (q.text.endsWith('L·R') && q.text.startsWith(p[0])))) bad.push(`${name} @${s}: ${p} has no flag`);
       }
     }
     assert.deepEqual(bad, []);
+  });
+
+  it('the lanes are re-spaced: runs that share a stretch keep ≥ 11 mm apart (a tied RCA pair its 8 mm)', () => {
+    const segs: { p: PlugId; y: number; x0: number; x1: number }[] = [];
+    for (const p of MAP_PLUGS) {
+      const r = D.lane4(p, WIRED[p] ?? null);
+      for (let i = 1; i < r.length; i++) if (r[i][1] === r[i - 1][1] && Math.abs(r[i][0] - r[i - 1][0]) > 1) segs.push({ p, y: r[i][1], x0: Math.min(r[i][0], r[i - 1][0]), x1: Math.max(r[i][0], r[i - 1][0]) });
+    }
+    const pair = (a: PlugId, b: PlugId) => TIED.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+    const bad: string[] = [];
+    for (let i = 0; i < segs.length; i++) {
+      for (let j = i + 1; j < segs.length; j++) {
+        const a = segs[i];
+        const b = segs[j];
+        if (a.p === b.p) continue;
+        if (Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) <= 2) continue;
+        const need = pair(a.p, b.p) ? 8 : 11;
+        if (Math.abs(a.y - b.y) < need) bad.push(`${a.p} and ${b.p} run ${Math.abs(a.y - b.y)} mm apart`);
+      }
+    }
+    assert.deepEqual(bad, []);
+  });
+
+  it('the mixer’s power cord leaves OFF the panel’s edge, never down across its rear panel', () => {
+    const m = MAP_BODIES[1];
+    const r = D.run4('ac.mixer', WIRED);
+    const inlet = r[0];
+    for (const [x, y] of r) if (y > inlet[1] + 0.5 && y < m.y + m.h) assert.ok(x > m.x + m.w, `the cord drops at x ${x.toFixed(1)}, on the panel's face`);
+    assert.ok(Math.max(...r.map((q) => q[0])) > m.x + m.w, 'it goes round the panel’s right edge');
+  });
+
+  it('the CABLE view frames the whole cable at the glass’s shape, and makes it big on a phone', () => {
+    for (const [name, st] of [['wired', WIRED], ['fault', FAULT], ['unwired', UNWIRED]] as const) {
+      for (const p of MAP_PLUGS) {
+        const b = D.followBox4(p, st, 345 / 318);
+        assert.ok(Math.abs(b.w / b.h - 345 / 318) < 0.02 || b.w >= 1055, `${name} ${p}: the frame keeps the glass's shape`);
+        for (const q of D.drawnRun4(p, st)) assert.ok(q[0] >= b.x - 0.5 && q[0] <= b.x + b.w + 0.5 && q[1] >= b.y - 0.5 && q[1] <= b.y + b.h + 0.5, `${name} ${p}: the whole run is in view`);
+        // at least about 1.7× the whole map's scale on a 390-wide phone
+        assert.ok(345 / b.w >= 0.55, `${name} ${p}: ${(345 / b.w).toFixed(2)} pt per mm`);
+      }
+    }
+    const p04 = read('src/screens/lab/dj/pages/p04Build.tsx');
+    assert.match(p04, /id: 'view',\s*label: 'VIEW'/);
+    assert.match(p04, /frame=\{cable \? patchBox\(follow\) : MAP_FRAME\}/);
+    // the less dense glass: focus at full strength, the rest stepping back, cords fading with no power task
+    assert.match(p04, /dimRest=\{!inFull\}/);
+    assert.match(p04, /cordAlpha=\{powerTask \? 1 : inFull \? 0\.55 : 0\.3\}/);
+    assert.match(read('src/screens/lab/dj/art/SystemMap.tsx'), /MIXER’S FRONT EDGE|patchLabels4\(/);
+    assert.match(read('src/screens/lab/dj/geometry/dressGeometry.ts'), /text: 'MIXER’S FRONT EDGE'/);
   });
 
   it('the drawing and the bezel both use the per-feed light; mains cords are secondary, under the audio', () => {
