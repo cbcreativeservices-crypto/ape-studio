@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 08:36 · ccode · e2f33c62
+changed: Onboarding landing: MEMBERSHIP gets the Home Explore button's breathing gold ring until tapped
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-18 12:32 · ccode · 102ab895
 changed: Session handoff 2026-10-18; image-round lessons; local background-swap script
 affects other side: Comp A — docs/SESSION_HANDOFF_2026-10-18.md (image state; approval-day order unchanged)
