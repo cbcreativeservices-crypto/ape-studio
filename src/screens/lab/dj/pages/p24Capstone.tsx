@@ -31,9 +31,14 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
+import { Group } from '@shopify/react-native-skia';
 import { Scene } from '../art/Scene';
+import { INK } from '../art/ink';
+import { SceneText, useLabelMm } from '../art/sceneText';
 import { BoothStage } from '../art/BoothStage';
+import { B24, board24Cords } from '../art/eventBoardGeometry';
 import { Cords, FlowBoard, flowBoxes, type Cord, type FlowLink, type FlowNode } from '../art/EventFlow';
+import type { TileArt } from '../art/eventTiles';
 import { BOOTH_LAYOUT, MIXER_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
@@ -61,20 +66,17 @@ const TERMS = [
 
 export const GOALS_EVENT = ['Power up safely: speakers last', 'Cue deck B privately', 'A clean transition: no gap, no clip', 'Announce to the room AND the recording', 'Find and fix the fault', 'Debrief: cause, evidence, repair, prevention', 'Pass the check'] as const;
 
-const LOOK_FLOW = 'You are looking at the event’s signal-flow board: the decks and the mic on the left, the mixer in the middle, the outputs on the right — each with its live meter — and the power cords to the strip and the wall below.';
+const LOOK_FLOW = 'You are looking at the event’s signal-flow board: the mic and the two players on the left, the mixer’s strips and master section in the middle, the headphones, recorder, PA and booth monitors on the right — each with its live meter — and every power cord, each named under its outlet on the strip below.';
 const LOOK_BOOTH = 'You are looking at the DJ booth from above: the mixer, with the inner halves of deck A (left) and deck B (right).';
 
 /* ── the board (board units, about a millimetre) ──────────────────────── */
 
-const FRAME: Box = { x: -16, y: -6, w: 440, h: 360 };
 /** The booth view, cropped to the mixer and the decks' inner halves, so it
  *  fills the glass with no empty band (visual review 2026-10-18 #27). */
 const BOOTH_VIEW: Box = { x: BOOTH_LAYOUT.mixer.x - 172, y: -14, w: MIXER_W + 344, h: 438 };
 
-/** The strip's and the wall socket's outlets (board x), and each cord's lane. */
-const SOCK = { A: 22, B: 40, mixer: 150, boothR: 200, boothL: 220, paR: 240, paL: 260, wall: 344 } as const;
-const STRIP: Box = { x: 6, y: 298, w: 294, h: 50 };
-const WALL: Box = { x: 312, y: 298, w: 110, h: 50 };
+const { FRAME, STRIP, OUT, SPARE, WALL_AT, OUT_X, OUT_W, ROW } = B24;
+const mid = (r: { y: number; h: number }) => r.y + r.h / 2;
 
 function eventBoardOf(b: Booth, last: EventRender | null) {
   const ev = evOf(b);
@@ -88,52 +90,80 @@ function eventBoardOf(b: Booth, last: EventRender | null) {
   const paRClip = !!ev.paRMic && on('paR') && fedR && (last?.ext.clipped.paR ?? 0) > 0;
   const recClip = (last?.ext.clipped.rec ?? 0) > 0;
   const spk = (d: DeviceId, cut: boolean) => (!on(d) ? 'OFF' : cut ? 'NO CABLE' : undefined);
+  const deckArt = (d: 'A' | 'B', dev: DeviceId): TileArt => ({ kind: 'player', screen: !on(dev) ? 'off' : d === 'B' && ev.mediaFail ? 'error' : !b.decks[d].track ? 'empty' : b.decks[d].playing ? 'playing' : 'cued', stick: !!b.decks[d].track || (d === 'B' && ev.mediaFail) });
+  const chArt = (ch: ChannelId): TileArt => ({ kind: 'channel', input: b.ch[ch].input, trim: b.ch[ch].trim, eq: b.ch[ch].eq, fader: b.ch[ch].fader, cue: b.ch[ch].cue, xf: b.ch[ch].xf });
+  const chDetail = (ch: ChannelId): string[] => [`FADER ${Math.round(b.ch[ch].fader * 100)}%`, `CUE ${b.ch[ch].cue ? 'ON' : 'OFF'}`, `X-F ${b.ch[ch].xf}`];
   const nodes: FlowNode[] = [
-    { id: 'A', x: 6, y: 6, w: 96, h: 44, title: 'DECK A', sub: !on('playerA') ? 'OFF' : !b.decks.A.track ? 'NO TRACK' : b.decks.A.playing ? 'PLAYING' : 'CUED', icon: 'player', state: on('playerA') && b.decks.A.playing ? 'live' : 'idle' },
-    { id: 'B', x: 6, y: 64, w: 96, h: 44, title: 'DECK B', sub: !on('playerB') ? 'OFF' : ev.mediaFail ? 'FILE ERROR' : !b.decks.B.track ? 'NO TRACK' : b.decks.B.playing ? 'PLAYING' : 'CUED', icon: 'player', state: ev.mediaFail ? 'cut' : on('playerB') && b.decks.B.playing ? 'live' : 'idle' },
-    { id: 'mic', x: 6, y: 122, w: 96, h: 42, title: 'MIC', sub: ev.mic.on ? 'ON' : 'OFF', icon: 'mic' },
-    { id: 'c1', x: 132, y: 6, w: 92, h: 44, title: 'CH 1', sub: `${b.ch[1].input} · ${dbStr(trimDb(b.ch[1].trim), 0)}`, tap: 'ch1' },
-    { id: 'c2', x: 132, y: 64, w: 92, h: 44, title: 'CH 2', sub: `${b.ch[2].input} · ${b.ch[2].xf}`, tap: 'ch2' },
-    { id: 'mc', x: 132, y: 122, w: 92, h: 42, title: 'MIC CH', sub: `TO REC ${ev.mic.toRec ? 'ON' : 'OFF'}`, extTap: 'mic' },
-    { id: 'mix', x: 244, y: 24, w: 44, h: 132, title: 'MIX', tap: 'bus' },
-    { id: 'paL', x: 306, y: 4, w: 92, h: 40, title: 'PA L', sub: spk('paL', !cabledL) ?? (humL ? 'HUM' : undefined), icon: 'speaker', tap: fedL ? 'masterL' : undefined, state: !cabledL ? 'cut' : humL ? 'hum' : undefined },
-    { id: 'paR', x: 306, y: 52, w: 92, h: 40, title: 'PA R', sub: spk('paR', !cabledR) ?? (paRClip ? 'CLIPPING' : undefined), icon: 'speaker', tap: fedR ? 'masterR' : undefined, state: !cabledR ? 'cut' : paRClip ? 'clip' : undefined },
-    { id: 'bth', x: 306, y: 100, w: 92, h: 40, title: 'BOOTH', sub: !on('boothL') && !on('boothR') ? 'OFF' : undefined, icon: 'monitor', tap: 'booth' },
-    { id: 'ph', x: 306, y: 148, w: 92, h: 36, title: 'PHONES', icon: 'phones', tap: 'phonesL' },
-    { id: 'rec', x: 306, y: 192, w: 92, h: 46, title: 'RECORDER', sub: recClip ? 'CLIPPING' : ev.rec.armedAt != null ? 'RECORDING' : 'STOPPED', icon: 'recorder', extTap: 'recL', state: recClip ? 'clip' : undefined },
-    { id: 'strip', ...STRIP, title: 'BOOTH STRIP', sub: 'ONE CIRCUIT', icon: 'strip', sockets: [SOCK.A, SOCK.B, SOCK.mixer, SOCK.boothR, SOCK.boothL, SOCK.paR, SOCK.paL] },
-    { id: 'wall', ...WALL, title: 'WALL SOCKET', sub: ev.paLWall ? 'OTHER CIRCUIT · PA L' : 'OTHER CIRCUIT', icon: 'wall', sockets: [SOCK.wall], state: humL ? 'hum' : undefined },
+    { id: 'mic', x: 0, y: 0, w: 100, h: 64, title: 'MIC', sub: ev.mic.on ? 'ON' : 'OFF', art: { kind: 'mic', on: ev.mic.on }, detail: ['DYNAMIC', 'IN MIC 1'] },
+    { id: 'A', x: 0, y: 74, w: 100, h: 100, title: 'DECK A', sub: !on('playerA') ? 'OFF' : !b.decks.A.track ? 'NO TRACK' : b.decks.A.playing ? 'PLAYING' : 'CUED', art: deckArt('A', 'playerA'), state: on('playerA') && b.decks.A.playing ? 'live' : 'idle', reserve: ['PLAYING'], detail: ['TO CH 1 LINE'] },
+    { id: 'B', x: 0, y: 184, w: 100, h: 100, title: 'DECK B', sub: !on('playerB') ? 'OFF' : ev.mediaFail ? 'FILE ERROR' : !b.decks.B.track ? 'NO TRACK' : b.decks.B.playing ? 'PLAYING' : 'CUED', art: deckArt('B', 'playerB'), state: ev.mediaFail ? 'cut' : on('playerB') && b.decks.B.playing ? 'live' : 'idle', reserve: ['PLAYING'], detail: ['TO CH 2 LINE'] },
+    { id: 'mc', x: 140, y: 0, w: 84, h: 64, title: 'MIC CH', sub: `TO REC ${ev.mic.toRec ? 'ON' : 'OFF'}`, art: { kind: 'micch', level: ev.mic.level, on: ev.mic.on, talkover: !!ev.mic.talkover, toBooth: !!ev.mic.toBooth, toRec: !!ev.mic.toRec }, extTap: 'mic', detail: [`LEVEL ${Math.round(ev.mic.level * 100)}%`, `TALK OVER ${ev.mic.talkover ? 'ON' : 'OFF'}`] },
+    { id: 'c1', x: 140, y: 74, w: 84, h: 100, title: 'CH 1', sub: [b.ch[1].input, dbStr(trimDb(b.ch[1].trim), 0)], art: chArt(1), tap: 'ch1', reserve: ['PHONO', '+12 dB'], detail: chDetail(1) },
+    { id: 'c2', x: 140, y: 184, w: 84, h: 100, title: 'CH 2', sub: [b.ch[2].input, ...(b.ch[2].xf === 'THRU' ? [] : [`X-F ${b.ch[2].xf}`])], art: chArt(2), tap: 'ch2', reserve: ['PHONO', 'X-F A'], detail: chDetail(2) },
+    { id: 'mix', x: 240, y: 0, w: 42, h: 284, title: 'MIX', art: { kind: 'master', master: b.mixer.master, booth: b.mixer.booth, phones: b.mixer.phones, cueMix: b.mixer.cueMix, xf: b.mixer.xf }, tap: 'bus' },
+    { id: 'ph', x: OUT_X, ...ROW.ph, w: OUT_W, title: 'PHONES', art: { kind: 'phones' }, tap: 'phonesL', detail: [b.mixer.cueMix < 0.1 ? 'BLEND: CUE' : b.mixer.cueMix > 0.9 ? 'BLEND: MASTER' : 'BLEND: MID'] },
+    { id: 'rec', x: OUT_X, ...ROW.rec, w: OUT_W, title: 'RECORDER', sub: recClip ? 'CLIPPING' : ev.rec.armedAt != null ? 'REC ON' : 'STOPPED', art: { kind: 'recorder', armed: ev.rec.armedAt != null, clip: recClip }, extTap: 'recL', state: recClip ? 'clip' : undefined, reserve: ['CLIPPING'], detail: [`INPUT ${recGainDb(ev.rec.gain) >= 0 ? '+' : '−'}${Math.abs(recGainDb(ev.rec.gain)).toFixed(0)} dB`] },
+    { id: 'paL', x: OUT_X, ...ROW.paL, w: OUT_W, title: 'PA L', sub: spk('paL', !cabledL) ?? (humL ? 'HUM' : undefined), art: { kind: 'speaker', on: on('paL') }, tap: fedL ? 'masterL' : undefined, state: !cabledL ? 'cut' : humL ? 'hum' : undefined, reserve: ['CABLE'], detail: [ev.paLWall ? 'POWER: WALL' : 'POWER: STRIP', 'INPUT LINE'] },
+    { id: 'paR', x: OUT_X, ...ROW.paR, w: OUT_W, title: 'PA R', sub: spk('paR', !cabledR) ?? (paRClip ? 'CLIPPING' : undefined), art: { kind: 'speaker', on: on('paR'), clip: !!paRClip }, tap: fedR ? 'masterR' : undefined, state: !cabledR ? 'cut' : paRClip ? 'clip' : undefined, reserve: ['CABLE'], detail: ['POWER: STRIP', `INPUT ${ev.paRMic ? 'MIC' : 'LINE'}`] },
+    { id: 'bth', x: OUT_X, ...ROW.bth, w: OUT_W, title: 'BOOTH', sub: !on('boothL') && !on('boothR') ? 'OFF' : undefined, art: { kind: 'monitors', on: on('boothL') || on('boothR') }, tap: 'booth' },
+    { id: 'wall', x: WALL_AT.x, y: WALL_AT.y, w: 30, h: 48, title: '', art: { kind: 'wall' }, bare: true },
   ];
+  const strip: FlowNode = {
+    id: 'strip',
+    ...STRIP,
+    title: 'BOOTH STRIP',
+    sub: 'ONE CIRCUIT',
+    strip: {
+      on: true,
+      textX: 86,
+      outlets: [
+        { x: OUT.A, label: 'DECK A' },
+        { x: OUT.B, label: 'DECK B' },
+        { x: OUT.mixer, label: 'MIXER' },
+        { x: OUT.boothL, label: 'BOOTH L' },
+        { x: OUT.boothR, label: 'BOOTH R' },
+        { x: OUT.paR, label: 'PA R' },
+        { x: OUT.paL, label: ev.paLWall ? undefined : 'PA L' },
+        ...SPARE.map((x) => ({ x })),
+      ],
+    },
+  };
+  nodes.push(strip);
   const live = (x: boolean) => (x ? 'live' : 'idle') as 'live' | 'idle';
   const links: FlowLink[] = [
-    { from: 'A', to: 'c1', state: live(b.decks.A.playing && on('playerA')), label: 'LINE' },
-    { from: 'B', to: 'c2', state: live(b.decks.B.playing && on('playerB') && b.ch[2].input === 'LINE'), label: 'LINE' },
-    { from: 'mic', to: 'mc', state: live(ev.mic.on) },
-    { from: 'c1', to: 'mix', state: live(b.ch[1].fader > 0.05 && b.decks.A.playing), toY: 44 },
-    { from: 'c2', to: 'mix', state: live(b.ch[2].fader > 0.05 && b.decks.B.playing && xf2 > 0.05), toY: 90 },
-    { from: 'mc', to: 'mix', state: live(ev.mic.on), toY: 136 },
-    { from: 'mix', to: 'paL', state: !cabledL ? 'cut' : fedL ? (humL ? 'hum' : 'live') : 'idle', fromY: 46 },
-    { from: 'mix', to: 'paR', state: !cabledR ? 'cut' : fedR ? (paRClip ? 'clip' : 'live') : 'idle', fromY: 70 },
-    { from: 'mix', to: 'bth', state: live(on('mixer') && on('boothL')), fromY: 94 },
-    { from: 'mix', to: 'ph', state: live(on('mixer')), fromY: 116 },
-    { from: 'mix', to: 'rec', state: ev.rec.tap === 'REC_OUT' && on('mixer') ? (recClip ? 'clip' : 'live') : 'idle', fromY: 138 },
+    { from: 'A', to: 'c1', state: live(b.decks.A.playing && on('playerA')), label: 'LINE', fromY: 124, toY: 124 },
+    { from: 'B', to: 'c2', state: live(b.decks.B.playing && on('playerB') && b.ch[2].input === 'LINE'), label: 'LINE', fromY: 234, toY: 234 },
+    { from: 'mic', to: 'mc', state: live(ev.mic.on), label: 'XLR', fromY: 32, toY: 32 },
+    { from: 'mc', to: 'mix', state: live(ev.mic.on), fromY: 32, toY: 32 },
+    { from: 'c1', to: 'mix', state: live(b.ch[1].fader > 0.05 && b.decks.A.playing), fromY: 124, toY: 124 },
+    { from: 'c2', to: 'mix', state: live(b.ch[2].fader > 0.05 && b.decks.B.playing && xf2 > 0.05), fromY: 234, toY: 234 },
+    { from: 'mix', to: 'ph', state: live(on('mixer')), fromY: mid(ROW.ph), toY: mid(ROW.ph) },
+    { from: 'mix', to: 'rec', state: ev.rec.tap === 'REC_OUT' && on('mixer') ? (recClip ? 'clip' : 'live') : 'idle', fromY: mid(ROW.rec), toY: mid(ROW.rec) },
+    { from: 'mix', to: 'paL', state: !cabledL ? 'cut' : fedL ? (humL ? 'hum' : 'live') : 'idle', fromY: mid(ROW.paL), toY: mid(ROW.paL) },
+    { from: 'mix', to: 'paR', state: !cabledR ? 'cut' : fedR ? (paRClip ? 'clip' : 'live') : 'idle', fromY: mid(ROW.paR), toY: mid(ROW.paR) },
+    { from: 'mix', to: 'bth', state: live(on('mixer') && on('boothL')), fromY: mid(ROW.bth), toY: mid(ROW.bth) },
   ];
-  // ONE cord per device, each in its own lane (nested so they never cross:
-  // the outer gutter lane takes the lowest lane and the outermost outlet)
-  const tone = (d: DeviceId, hum = false): Cord['tone'] => (hum ? 'hum' : b.power[d] ? 'plain' : 'off');
-  const top = STRIP.y + 5;
-  const cords: Cord[] = [
-    { id: 'A', pts: [[6, 40], [-11, 40], [-11, 284], [SOCK.A, 284], [SOCK.A, top]], tone: tone('playerA') },
-    { id: 'B', pts: [[6, 98], [-5, 98], [-5, 276], [SOCK.B, 276], [SOCK.B, top]], tone: tone('playerB') },
-    { id: 'mixer', pts: [[266, 156], [266, 244], [SOCK.mixer, 244], [SOCK.mixer, top]], tone: tone('mixer') },
-    { id: 'boothR', pts: [[398, 130], [403, 130], [403, 252], [SOCK.boothR, 252], [SOCK.boothR, top]], tone: tone('boothR') },
-    { id: 'boothL', pts: [[398, 112], [408, 112], [408, 260], [SOCK.boothL, 260], [SOCK.boothL, top]], tone: tone('boothL') },
-    { id: 'paR', pts: [[398, 72], [413, 72], [413, 268], [SOCK.paR, 268], [SOCK.paR, top]], tone: tone('paR') },
-    ev.paLWall
-      ? { id: 'paL', pts: [[398, 24], [418, 24], [418, 290], [SOCK.wall, 290], [SOCK.wall, WALL.y + 5]], tone: tone('paL', humL) }
-      : { id: 'paL', pts: [[398, 24], [418, 24], [418, 276], [SOCK.paL, 276], [SOCK.paL, top]], tone: tone('paL') },
-  ];
+  // ONE cord per device, each in its own lane and with its own pattern
+  const hum = ev.paLWall && !ev.paLIsolator && on('paL');
+  const dev: Record<string, DeviceId> = { A: 'playerA', B: 'playerB', mixer: 'mixer', boothL: 'boothL', boothR: 'boothR', paR: 'paR', paL: 'paL' };
+  const cords: Cord[] = board24Cords(ev.paLWall).map((c) => ({ ...c, tone: c.id === 'paL' && hum ? 'hum' : b.power[dev[c.id]] ? 'plain' : 'off' }));
   return { nodes, links, cords };
+}
+
+/** The wall socket's name, in the free margin over its plate (words never
+ *  sit on a card or a cord). */
+function WallWords({ hum }: { hum: boolean }) {
+  const lm = useLabelMm(9);
+  const lh = lm * 1.12;
+  const x = WALL_AT.x + 30;
+  const lines = ['WALL', 'SOCKET', 'OTHER', 'CIRCUIT'];
+  return (
+    <Group>
+      {lines.map((t, i) => (
+        <SceneText key={t} x={x} y={WALL_AT.y - 5 - (lines.length - 1 - i) * lh} size={lm} text={t} color={hum ? INK.amber : i < 2 ? INK.white : INK.printDim} face="label" align="right" />
+      ))}
+    </Group>
+  );
 }
 
 /* ── the trays ───────────────────────────────────────────────────────── */
@@ -428,8 +458,9 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         render: (w, h) =>
           view === 'FLOW' ? (
             <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 120, y: 0, w: 200, h: 170 }} a11y={`${LOOK_FLOW} ${allOn ? 'Everything is switched on.' : 'Some of the system is still off.'}${ev.paLWall ? ' PA L is plugged into the wall socket on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
-              <Cords cords={board.cords} />
               <FlowBoard nodes={board.nodes} links={board.links} />
+              <Cords cords={board.cords} />
+              <WallWords hum={ev.paLWall && !ev.paLIsolator && deviceLive(booth, 'paL')} />
             </Scene>
           ) : (
             <BoothStage w={w} h={h} booth={booth} motion={motion} spec={{ view: BOOTH_VIEW, a11y: LOOK_BOOTH, highlight: { mixer: ['fader1', 'fader2', 'cue1', 'cue2'] } }} />

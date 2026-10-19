@@ -25,12 +25,13 @@ import { Group, Line, vec } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
-import { Scene, type Callout } from '../art/Scene';
+import { Scene } from '../art/Scene';
+import { B23, board23Cords } from '../art/eventBoardGeometry';
 import { Cords, FlowBoard, Tag, flowBoxes, type Cord, type FlowLink, type FlowNode, type FlowState } from '../art/EventFlow';
+import type { TileArt } from '../art/eventTiles';
 import { INK } from '../art/ink';
 import { SceneText, useLabelMm } from '../art/sceneText';
 import { DashPathEffect } from '@shopify/react-native-skia';
-import type { Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, trimKey, type Transport } from '../dock';
@@ -40,7 +41,7 @@ import { TRACKS } from '../engine/djMusic';
 import { chanLevels } from '../model/djLessons';
 import { pitchFor, playedBpm } from '../model/djTime';
 import { setPlaying } from '../model/djDeck';
-import { type Booth, type ChannelId } from '../model/djModel';
+import { dbStr, trimDb, type Booth, type ChannelId } from '../model/djModel';
 import { EARTH_LIFT_REFUSAL, evOf, lapPlay, withLap } from '../model/djEvent';
 import { CHANGE_ITEMS, CHANGE_NAMES, changeoverHum, gradePrediction, onAir, programOn, sourceOf, type ChangeItem } from '../model/djChangeover';
 import { TRANSITION_FRESH, transitionStepBy, type TransitionState } from '../model/djCapstone';
@@ -56,15 +57,12 @@ const TERMS = [
 
 export const GOALS_CHANGE = ['Predict what would stop the music', 'Connect with CH 2 down', 'Kill the hum safely', 'Match levels in the headphones', 'Change over with no gap', 'Recover from the frozen laptop', 'Pass the check'] as const;
 
-const LOOK = 'You are looking at the signal-flow board: the laptops and players on the left, the mixer’s channels and mix in the middle, the outputs on the right, and the power cords below.';
+const LOOK = 'You are looking at the signal-flow board: each laptop and player on the left, the mixer’s channel strips and its master section in the middle, the speakers and headphones on the right, and the power cords below — into the booth strip, or a wall socket on another circuit.';
 
 /* ── the board (board units, about a millimetre) ──────────────────────── */
 
-const FRAME: Box = { x: -22, y: -8, w: 426, h: 372 };
 const TAG: Record<ChangeItem, number> = { 'lap1.usb': 1, 'lap1.charger': 2, 'lap2.usb': 3, 'deckA.stick': 4, 'deckB.stick': 5, 'mixer.power': 6, master: 7, booth: 8 };
-const WALL: Box = { x: 4, y: 300, w: 112, h: 58 };
-const STRIP: Box = { x: 158, y: 300, w: 200, h: 58 };
-const SOCK = { wall: 40, lap1: 168, lap2: 186, mixer: 284 } as const;
+const { FRAME, WALL, STRIP, OUT, SPARE, KEY, LOOP_AT } = B23;
 
 function boardOf(b: Booth, hum: boolean, verdict: Record<ChangeItem, boolean> | null) {
   const ev = evOf(b);
@@ -76,68 +74,102 @@ function boardOf(b: Booth, hum: boolean, verdict: Record<ChangeItem, boolean> | 
   };
   const lapSub = (k: 1 | 2) => {
     const l = k === 1 ? ev.lap1 : ev.lap2;
-    if (!l.usb) return 'NOT CONNECTED';
+    if (!l.usb) return 'NO USB';
     if (!l.alive) return 'FROZEN';
     return l.deck.playing ? 'PLAYING' : 'READY';
   };
+  const lapArt = (k: 1 | 2): TileArt => {
+    const l = k === 1 ? ev.lap1 : ev.lap2;
+    return { kind: 'laptop', screen: !l.alive ? 'frozen' : l.deck.playing ? 'playing' : 'ready', usb: l.usb };
+  };
+  const lapDetail = (k: 1 | 2): string[] => {
+    const l = k === 1 ? ev.lap1 : ev.lap2;
+    return [l.charger === 'NONE' ? 'ON BATTERY' : `CHARGER: ${l.charger}`, ...(l.isolator ? ['USB ISOLATOR'] : [])];
+  };
+  const chDetail = (ch: ChannelId): string[] => [`TRIM ${dbStr(trimDb(b.ch[ch].trim), 0)}`, `FADER ${Math.round(b.ch[ch].fader * 100)}%`, `CUE ${b.ch[ch].cue ? 'ON' : 'OFF'}`];
   const deckSub = (d: 'A' | 'B') => (!b.decks[d].track ? 'NO STICK' : b.decks[d].playing ? (d === 'B' ? 'BACKUP PLAYING' : 'PLAYING') : d === 'B' ? 'BACKUP CUED' : 'CUED');
+  const deckArt = (d: 'A' | 'B'): TileArt => ({ kind: 'player', screen: !b.decks[d].track ? 'empty' : b.decks[d].playing ? 'playing' : 'cued', stick: !!b.decks[d].track });
+  const chArt = (ch: ChannelId): TileArt => ({ kind: 'channel', input: b.ch[ch].input, trim: b.ch[ch].trim, eq: b.ch[ch].eq, fader: b.ch[ch].fader, cue: b.ch[ch].cue, xf: b.ch[ch].xf });
+  const chIn = (ch: ChannelId) => (b.ch[ch].input === 'USB' ? `USB ${ch}` : b.ch[ch].input);
+  const v = (it: ChangeItem) => (verdict ? (verdict[it] ? 'right' : 'wrong') : null) as 'right' | 'wrong' | null;
+  const lap2Out = ev.lap2.charger === 'STRIP';
+  const wallNode: FlowNode = { id: 'wall', ...WALL, title: 'WALL SOCKET', sub: 'ANOTHER CIRCUIT', art: { kind: 'wall' }, state: hum ? 'hum' : undefined };
+  const stripNode: FlowNode = {
+    id: 'strip',
+    ...STRIP,
+    title: 'BOOTH STRIP',
+    sub: 'ALSO THE DECKS, PA AND BOOTH',
+    strip: {
+      on: true,
+      textX: 322,
+      outlets: [
+        { x: OUT.lap2, label: lap2Out ? 'DJ 2’S CHARGER' : undefined },
+        { x: OUT.lap1, label: 'DJ 1’S CHARGER', tag: TAG['lap1.charger'], tagVerdict: v('lap1.charger') },
+        { x: OUT.mixer, label: 'MIXER', tag: TAG['mixer.power'], tagVerdict: v('mixer.power') },
+        ...SPARE.map((x) => ({ x })),
+      ],
+    },
+  };
   const nodes: FlowNode[] = [
-    { id: 'lap1', x: 4, y: 6, w: 104, h: 50, title: 'LAPTOP · DJ 1', sub: lapSub(1), icon: 'laptop', state: lapState(1) },
-    { id: 'deckA', x: 4, y: 70, w: 104, h: 42, title: 'DECK A', sub: deckSub('A'), icon: 'player', state: b.decks.A.playing ? 'live' : 'idle' },
-    { id: 'lap2', x: 4, y: 128, w: 104, h: 50, title: 'LAPTOP · DJ 2', sub: lapSub(2), icon: 'laptop', state: hum ? 'hum' : lapState(2) },
-    { id: 'deckB', x: 4, y: 192, w: 104, h: 46, title: 'DECK B', sub: deckSub('B'), icon: 'player', state: b.decks.B.playing ? 'live' : 'idle' },
-    { id: 'ch1', x: 158, y: 14, w: 82, h: 66, title: 'CH 1', sub: `INPUT ${b.ch[1].input === 'USB' ? 'USB 1' : b.ch[1].input}`, tap: 'ch1', onAir: onAir(b, 1) },
-    { id: 'ch2', x: 158, y: 140, w: 82, h: 66, title: 'CH 2', sub: hum ? 'HUM · USB 2' : `INPUT ${b.ch[2].input === 'USB' ? 'USB 2' : b.ch[2].input}`, tap: 'ch2', onAir: onAir(b, 2), state: hum ? 'hum' : undefined },
-    { id: 'bus', x: 262, y: 70, w: 44, h: 104, title: 'MIX', tap: 'bus' },
-    { id: 'pa', x: 320, y: 10, w: 80, h: 46, title: 'PA', icon: 'speaker', tap: 'crowd' },
-    { id: 'mon', x: 320, y: 76, w: 80, h: 46, title: 'BOOTH', icon: 'monitor', tap: 'booth' },
-    { id: 'ph', x: 320, y: 142, w: 80, h: 46, title: 'PHONES', icon: 'phones', tap: 'phonesL' },
-    { id: 'wall', ...WALL, title: 'WALL SOCKET', sub: 'ANOTHER CIRCUIT', icon: 'wall', sockets: [SOCK.wall], state: hum ? 'hum' : undefined },
-    { id: 'strip', ...STRIP, title: 'BOOTH STRIP', sub: 'ALSO THE DECKS · PA · BOOTH', icon: 'strip', sockets: [SOCK.lap1, SOCK.lap2, SOCK.mixer] },
+    { id: 'lap1', x: 0, y: 0, w: 108, h: 58, title: 'DJ 1 LAPTOP', sub: lapSub(1), art: lapArt(1), state: lapState(1), reserve: ['PLAYING'], detail: lapDetail(1) },
+    { id: 'deckA', x: 0, y: 68, w: 108, h: 56, title: 'DECK A', sub: deckSub('A'), art: deckArt('A'), state: b.decks.A.playing ? 'live' : 'idle', reserve: ['NO STICK'], detail: ['NO COMPUTER', 'TO CH 1 LINE'] },
+    { id: 'lap2', x: 0, y: 134, w: 108, h: 58, title: 'DJ 2 LAPTOP', sub: lapSub(2), art: lapArt(2), state: hum ? 'hum' : lapState(2), reserve: ['PLAYING'], detail: lapDetail(2) },
+    { id: 'deckB', x: 0, y: 202, w: 108, h: 56, title: 'DECK B', sub: deckSub('B'), art: deckArt('B'), state: b.decks.B.playing ? 'live' : 'idle', reserve: ['BACKUP'], detail: ['NO COMPUTER', 'TO CH 2 LINE'] },
+    { id: 'ch1', x: 162, y: 0, w: 84, h: 124, title: 'CH 1', sub: chIn(1), art: chArt(1), tap: 'ch1', onAir: onAir(b, 1), reserve: ['USB 1', 'ON AIR'], detail: chDetail(1) },
+    { id: 'ch2', x: 162, y: 134, w: 84, h: 124, title: 'CH 2', sub: hum ? ['HUM', chIn(2)] : chIn(2), art: chArt(2), tap: 'ch2', onAir: onAir(b, 2), state: hum ? 'hum' : undefined, reserve: ['USB 2', 'ON AIR'], detail: chDetail(2) },
+    { id: 'bus', x: 266, y: 0, w: 44, h: 258, title: 'MIX', art: { kind: 'master', master: b.mixer.master, booth: b.mixer.booth, phones: b.mixer.phones, cueMix: b.mixer.cueMix, xf: b.mixer.xf }, tap: 'bus' },
+    { id: 'pa', x: 328, y: 0, w: 84, h: 58, title: 'PA', art: { kind: 'speaker', on: true }, tap: 'crowd', tagAt: 'tl', detail: ['MASTER OUT', `LEVEL ${Math.round(b.mixer.master * 100)}%`] },
+    { id: 'mon', x: 328, y: 78, w: 84, h: 58, title: 'BOOTH', art: { kind: 'monitors', on: true }, tap: 'booth', tagAt: 'tl', detail: ['BOOTH OUT', `LEVEL ${Math.round(b.mixer.booth * 100)}%`] },
+    { id: 'ph', x: 328, y: 156, w: 84, h: 54, title: 'PHONES', art: { kind: 'phones' }, tap: 'phonesL', detail: [`LEVEL ${Math.round(b.mixer.phones * 100)}%`] },
+    wallNode,
+    stripNode,
   ];
   const links: FlowLink[] = [
-    { from: 'lap1', to: 'ch1', state: !ev.lap1.usb ? 'idle' : b.ch[1].input === 'USB' && ev.lap1.alive && ev.lap1.deck.playing ? 'live' : 'idle', label: 'USB 1', tag: TAG['lap1.usb'], toY: 31 },
-    { from: 'deckA', to: 'ch1', state: b.ch[1].input === 'LINE' && b.decks.A.playing ? 'live' : 'idle', label: 'LINE', toY: 70 },
-    { from: 'lap2', to: 'ch2', state: !ev.lap2.usb ? 'idle' : hum ? 'hum' : b.ch[2].input === 'USB' && ev.lap2.alive && ev.lap2.deck.playing ? 'live' : 'idle', label: ev.lap2.isolator ? 'USB 2\nISOLATOR' : 'USB 2', tag: TAG['lap2.usb'], toY: 153 },
-    { from: 'deckB', to: 'ch2', state: b.ch[2].input === 'LINE' && b.decks.B.playing ? 'live' : 'idle', label: 'LINE', toY: 194 },
-    { from: 'ch1', to: 'bus', state: onAir(b, 1) ? 'live' : 'idle', toY: 100 },
-    { from: 'ch2', to: 'bus', state: onAir(b, 2) ? (hum ? 'hum' : 'live') : 'idle', toY: 146 },
-    { from: 'bus', to: 'pa', state: programOn(b) ? 'live' : 'idle', fromY: 96 },
-    { from: 'bus', to: 'mon', state: 'live', fromY: 122 },
-    { from: 'bus', to: 'ph', state: 'live', fromY: 148 },
+    { from: 'lap1', to: 'ch1', state: !ev.lap1.usb ? 'idle' : b.ch[1].input === 'USB' && ev.lap1.alive && ev.lap1.deck.playing ? 'live' : 'idle', label: 'USB 1', tag: TAG['lap1.usb'], fromY: 29, toY: 29 },
+    { from: 'deckA', to: 'ch1', state: b.ch[1].input === 'LINE' && b.decks.A.playing ? 'live' : 'idle', label: 'LINE', fromY: 96, toY: 96 },
+    { from: 'lap2', to: 'ch2', state: !ev.lap2.usb ? 'idle' : hum ? 'hum' : b.ch[2].input === 'USB' && ev.lap2.alive && ev.lap2.deck.playing ? 'live' : 'idle', label: ev.lap2.isolator ? 'USB 2\nISOLATOR' : 'USB 2', tag: TAG['lap2.usb'], fromY: 163, toY: 163 },
+    { from: 'deckB', to: 'ch2', state: b.ch[2].input === 'LINE' && b.decks.B.playing ? 'live' : 'idle', label: 'LINE', fromY: 230, toY: 230 },
+    { from: 'ch1', to: 'bus', state: onAir(b, 1) ? 'live' : 'idle', fromY: 62, toY: 62 },
+    { from: 'ch2', to: 'bus', state: onAir(b, 2) ? (hum ? 'hum' : 'live') : 'idle', fromY: 196, toY: 196 },
+    { from: 'bus', to: 'pa', state: programOn(b) ? 'live' : 'idle', fromY: 29, toY: 29 },
+    { from: 'bus', to: 'mon', state: 'live', fromY: 107, toY: 107 },
+    { from: 'bus', to: 'ph', state: 'live', fromY: 183, toY: 183 },
   ];
-  const v = (it: ChangeItem) => (verdict ? (verdict[it] ? 'right' : 'wrong') : null) as 'right' | 'wrong' | null;
   const tags: Record<string, { num: number; verdict?: 'right' | 'wrong' | null }> = {
     deckA: { num: TAG['deckA.stick'], verdict: v('deckA.stick') },
     deckB: { num: TAG['deckB.stick'], verdict: v('deckB.stick') },
-    strip: { num: TAG['mixer.power'], verdict: v('mixer.power') },
     pa: { num: TAG.master, verdict: v('master') },
     mon: { num: TAG.booth, verdict: v('booth') },
   };
   for (const it of ['lap1.usb', 'lap2.usb'] as ChangeItem[]) tags[`link:${TAG[it]}`] = { num: TAG[it], verdict: v(it) };
-  // ONE cord per device, each in its own lane; DJ 2's charger goes to the
-  // wall (another circuit), to the strip, or nowhere (the battery)
-  const top = STRIP.y + 5;
-  const cords: Cord[] = [{ id: 'lap1', pts: [[4, 44], [-8, 44], [-8, 280], [SOCK.lap1, 280], [SOCK.lap1, top]] }];
-  if (ev.lap2.charger === 'WALL') cords.push({ id: 'lap2', pts: [[4, 166], [-15, 166], [-15, 288], [SOCK.wall, 288], [SOCK.wall, WALL.y + 5]], tone: hum ? 'hum' : 'plain' });
-  else if (ev.lap2.charger === 'STRIP') cords.push({ id: 'lap2', pts: [[4, 166], [-3, 166], [-3, 272], [SOCK.lap2, 272], [SOCK.lap2, top]] });
-  cords.push({ id: 'mixer', pts: [[SOCK.mixer, 174], [SOCK.mixer, top]], tone: hum ? 'hum' : 'plain' });
-  return { nodes, links, tags, cords, chargerTag: v('lap1.charger') };
+  // ONE cord per device, each in its own lane and pattern; DJ 2's charger
+  // goes to the wall (another circuit), to the strip, or nowhere (battery)
+  const tone = (id: string): Cord['tone'] => (hum && (id === 'lap2' || id === 'mixer') ? 'hum' : 'plain');
+  const cords: Cord[] = board23Cords(ev.lap2.charger).map((c) => ({ ...c, tone: tone(c.id) }));
+  return { nodes, links, tags, cords };
 }
 
 /** The building's earth between the two outlets (always there; amber when
- *  it closes the ground loop), and the charger's prediction tag on DJ 1's
- *  cord. */
-function BoardExtras({ hum, chargerVerdict }: { hum: boolean; chargerVerdict: 'right' | 'wrong' | null }) {
+ *  it closes the ground loop), and the KEY to the numbered tags. */
+function BoardExtras({ hum }: { hum: boolean }) {
   const lm = useLabelMm(9);
-  const y = WALL.y + WALL.h / 2 + 6;
+  const y = WALL.y + 42;
+  const lh = lm * 1.12;
   return (
     <Group>
       <Line p1={vec(WALL.x + WALL.w, y)} p2={vec(STRIP.x, y)} color={hum ? INK.amber : '#555a63'} strokeWidth={hum ? 2 : 1.4}>
         <DashPathEffect intervals={[3, 2.5]} />
       </Line>
       <SceneText x={(WALL.x + WALL.w + STRIP.x) / 2} y={y - 3} size={lm} text="EARTH" color={hum ? INK.amber : INK.printDim} face="label" align="center" />
-      <Tag x={124} y={280} num={TAG['lap1.charger']} verdict={chargerVerdict} />
+      {/* the tags' key */}
+      <Tag x={KEY.x + lm * 0.8} y={KEY.y + lm * 0.4} num={1} verdict={null} />
+      <SceneText x={KEY.x + lm * 1.9} y={KEY.y + lm * 0.76} size={lm} text="–" color={INK.amber} face="label" />
+      <Tag x={KEY.x + lm * 3.2} y={KEY.y + lm * 0.4} num={8} verdict={null} />
+      <SceneText x={KEY.x} y={KEY.y + lm * 0.76 + lh * 1.15} size={lm} text="PREDICT:" color={INK.amber} face="label" />
+      <SceneText x={KEY.x} y={KEY.y + lm * 0.76 + lh * 2.15} size={lm} text="WOULD LOSING IT" color={INK.print} face="label" />
+      <SceneText x={KEY.x} y={KEY.y + lm * 0.76 + lh * 3.15} size={lm} text="STOP THE MUSIC?" color={INK.print} face="label" />
+      {/* the loop, named where it runs (no leader across a cord) */}
+      {hum ? <SceneText x={LOOP_AT.x} y={LOOP_AT.y + lm * 0.95} size={lm} text="GROUND LOOP · HUM" color={INK.amber} face="label" /> : null}
     </Group>
   );
 }
@@ -313,17 +345,15 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
   const goals = GOALS_CHANGE.map((label, i) => ({ label, hit: hits[i] }));
   const latched = useVisitGoals(ctx, goals, 'CHANGE', ready);
   const board = boardOf(booth, hum, verdict?.perItem ?? null);
-  // the loop's cause: DJ 2's charger cord to the wall (its vertical run)
-  const callouts: Callout[] = hum ? [{ id: 'gl', text: 'GROUND LOOP · HUM', at: { x: -15, y: 250 }, dx: 26, dy: 4, tone: 'amber' }] : [];
 
   return (
     <DjRack
       spec={{
         render: (w, h) => (
-          <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 0, y: 130, w: 250, h: 170 }} a11y={`${LOOK} ${programOn(booth) ? 'The crowd hears music.' : 'The crowd hears nothing.'}${hum ? ' There is a ground-loop hum on CH 2: DJ 2’s charger is in a wall socket on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)} callouts={callouts}>
-            <Cords cords={board.cords} />
-            <BoardExtras hum={hum} chargerVerdict={board.chargerTag} />
+          <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 0, y: 130, w: 250, h: 170 }} a11y={`${LOOK} ${programOn(booth) ? 'The crowd hears music.' : 'The crowd hears nothing.'}${hum ? ' There is a ground-loop hum on CH 2: DJ 2’s charger is in a wall socket on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
             <FlowBoard nodes={board.nodes} links={board.links} tags={board.tags} />
+            <Cords cords={board.cords} />
+            <BoardExtras hum={hum} />
           </Scene>
         ),
         bezel: [
