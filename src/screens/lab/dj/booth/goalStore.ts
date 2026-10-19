@@ -34,3 +34,47 @@ export function leftLine(page: string, allLabels: readonly string[]): string {
 export function clearGoalReports(): void {
   reported.clear();
 }
+
+/* ── is a screen's setup still waiting? ──────────────────────────────────
+ * A screen's FIRST render still sees the booth the previous screen left
+ * (booth/setup.useScreenSetup applies its setup in a layout effect, after
+ * that render). A goal judged on that render can be met by a leftover — the
+ * capstone's "Power up safely" ticked itself on arrival from a fully powered
+ * screen (learning review 2026-10-18, 24 #1, BLOCKER). So a screen's setup
+ * is PENDING from its first render until its layout effect has applied it,
+ * and bits.useVisitGoals latches nothing while any setup is pending — on
+ * every screen, whether or not the screen passes `ready` itself. A mark
+ * that never commits (a discarded render) lapses after PENDING_LAPSE_MS. */
+export const PENDING_LAPSE_MS = 1500;
+const pending = new Map<object, number>();
+
+/** Is some screen's setup not yet applied? (`now` for tests.) */
+export function setupPending(now: number = Date.now()): boolean {
+  let any = false;
+  for (const [k, at] of pending) {
+    if (now - at > PENDING_LAPSE_MS) pending.delete(k);
+    else any = true;
+  }
+  return any;
+}
+
+export function markSetupPending(key: object, at: number = Date.now()): void {
+  if (!pending.has(key)) pending.set(key, at);
+}
+export function clearSetupPending(key: object): void {
+  pending.delete(key);
+}
+
+/**
+ * One render's latch step (pure; bits.useVisitGoals): every goal hit NOW
+ * latches — unless the screen is not `ready` (its setup not yet applied),
+ * when nothing new latches. Latched goals never unlatch (credit is kept).
+ */
+export function latchGoals(prev: readonly boolean[], hits: readonly boolean[], ready: boolean): boolean[] {
+  const out = hits.map((_, i) => prev[i] ?? false);
+  if (!ready) return out;
+  hits.forEach((h, i) => {
+    if (h) out[i] = true;
+  });
+  return out;
+}

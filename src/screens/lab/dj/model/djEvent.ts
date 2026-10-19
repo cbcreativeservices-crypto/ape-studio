@@ -57,10 +57,14 @@ export const duckDepthDb = (p: number): number => -(6 + 18 * Math.max(0, Math.mi
  *  the grille). A gain of about +44 dB puts speech peaks near −8 dBFS. */
 export const SPEECH_PEAK_AT_0DB = -52;
 /** The mic SIGNAL relative to a dynamic mic (dB): a condenser is hotter; a
- *  wireless receiver's output switch picks mic level or LINE (≈ +38 dB). */
+ *  wireless receiver's output switch picks mic level or LINE. Line level is
+ *  some 40–55 dB above a dynamic mic on close speech (about −52 dBu against
+ *  −10 dBV / +4 dBu): the model uses +44 dB (second audio review
+ *  2026-10-18 #6; it overloads the mic input exactly as before). */
+export const LINE_OVER_MIC_DB = 44;
 export function micSensDb(device: MicDevice, rxOut: RxOut): number {
   if (device === 'CONDENSER') return 12;
-  if (device === 'WIRELESS') return rxOut === 'LINE' ? 38 : 0;
+  if (device === 'WIRELESS') return rxOut === 'LINE' ? LINE_OVER_MIC_DB : 0;
   return 0;
 }
 /** The mic input stage overloads above this level (dBFS at 0 dB gain) —
@@ -68,7 +72,11 @@ export function micSensDb(device: MicDevice, rxOut: RxOut): number {
  *  signal in a mic input. */
 export const MIC_INPUT_CLIP_AT_0DB = -20;
 
-export type MicSay = { at: number };
+/** One announcement: when its first syllable sounds, and (ADDITIVE) how
+ *  much louder than normal speech it is — a shout is about +10 dB. */
+export type MicSay = { at: number; db?: number };
+/** A DJ's "make some noise!" over conversational speech (dB). */
+export const SHOUT_DB = 10;
 
 export type MicState = {
   device: MicDevice;
@@ -257,7 +265,10 @@ export const UNBAL_HUM_DBFS = -50;
  * louder. Model margin (dB) at about 60 Hz: the sub level at the decks (re
  * the floor centre's bass), how loud the system plays, and the isolation.
  */
-export const TT_RUMBLE_HZ = 60;
+/** The turntable-and-table resonance: ONE value for the whole lab (second
+ *  audio review 2026-10-18 #4) — the same 80 Hz as Screen 17's model
+ *  (djVinyl FEEDBACK_HZ), within the usual 60–80 Hz. */
+export const TT_RUMBLE_HZ = 80;
 /** Isolation feet (or a heavy isolation platform) under the turntable. */
 export const TT_ISOLATION_DB = 18;
 /** The margin with the subs' bass at the decks equal to the floor centre's,
@@ -359,10 +370,17 @@ export const freshLaptop = (track: TrackId | null): Laptop => ({ deck: freshDeck
 /** A ground loop: the laptop's charger is earthed in a DIFFERENT circuit
  *  (a wall socket across the room) and its USB ties it to the mixer's
  *  ground, with nothing breaking the loop. The cure keeps protective earth:
- *  the battery, the booth's own strip, or an isolator in the AUDIO/USB path. */
+ *  the battery, the booth's own strip, or an isolator in the AUDIO/USB path.
+ *  In this model the shared strip cures it; in life it OFTEN does — a
+ *  two-pin charger can still leak a whine into USB on the same strip, and
+ *  then the battery is the test (second audio review 2026-10-18 #27). */
 export const laptopHum = (l: Laptop): boolean => l.usb && l.charger === 'WALL' && !l.isolator;
 export const HUM_DBFS = -42;
-export const HUM_HZ = 60;
+/** The MAINS frequency of every hum in this lab: 60 Hz, the US standard
+ *  (50 Hz in many other countries). One booth, one mains (second audio
+ *  review 2026-10-18 #4; Screen 17's model uses the same value). */
+export const MAINS_HZ = 60;
+export const HUM_HZ = MAINS_HZ;
 
 /** Why lifting the mains earth is refused (it is never applied). */
 export const EARTH_LIFT_REFUSAL =
@@ -386,6 +404,10 @@ export type EventRig = {
   paLIsolator: boolean;
   /** Capstone: deck B's next file fails to load until the backup copy is used. */
   mediaFail: boolean;
+  /** Capstone (ADDITIVE, audio review #30): PA R's own input switch is on
+   *  MIC, so the line feed overloads the speaker's input — PA R distorts,
+   *  its clip light is red, the MASTER meters stay clean. */
+  paRMic?: boolean;
 };
 
 export function freshEvent(): EventRig {
@@ -400,6 +422,7 @@ export function freshEvent(): EventRig {
     paLWall: false,
     paLIsolator: false,
     mediaFail: false,
+    paRMic: false,
   };
 }
 

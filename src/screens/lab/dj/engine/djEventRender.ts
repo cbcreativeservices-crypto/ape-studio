@@ -85,8 +85,9 @@ export type EvExt = {
   micIn: { master: number; booth: number; rec: number; crowd: number };
   /** Average level of each feed over the render (dBFS). */
   feedRms: { master: number; booth: number; rec: number; venue: number };
-  /** Clipped samples: the mic preamp, the mic input stage, the recorder. */
-  clipped: { micPre: number; micInput: number; rec: number };
+  /** Clipped samples: the mic preamp, the mic input stage, the recorder;
+   *  `paR` (ADDITIVE): PA R's own input overloading (its input on MIC). */
+  clipped: { micPre: number; micInput: number; rec: number; paR?: number };
   /** A hum is in the crowd's feed / in CH 2's input now. */
   hum: { crowd: boolean; ch1: boolean; ch2: boolean };
   /** The recorder's captured signal (after its clip) and the mic-only part
@@ -296,7 +297,7 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
   const m = ev.mic;
   const mic = new Float32Array(n);
   const micMeterSig = new Float32Array(n);
-  const clipped = { micPre: 0, micInput: 0, rec: 0 };
+  const clipped: EvExt['clipped'] = { micPre: 0, micInput: 0, rec: 0, paR: 0 };
   if (mixerOn && micAlive(m)) {
     const v = voiceBuf();
     const sens = dbToLin(micSensDb(m.device, m.rxOut));
@@ -304,8 +305,10 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
     const g = dbToLin(micGainDb(micGainKnob(m)));
     for (const say of m.says) {
       const at = Math.round((say.at - t0) * SR);
+      // a SHOUT ("make some noise!") is louder than speech (say.db, ADDITIVE)
+      const sg = sens * dbToLin(say.db ?? 0);
       for (let i = Math.max(0, -at); i < v.length && at + i < n; i++) {
-        let x = v[i] * sens;
+        let x = v[i] * sg;
         if (x > inClip) {
           x = inClip;
           clipped.micInput++;
@@ -491,6 +494,23 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
   } else {
     crowdL = spk('paL') ?? z;
     crowdR = spk('paR') ?? z;
+    // capstone: PA R's input switch on MIC — the line feed overloads the
+    // speaker's own input stage (+30 dB into a soft clip). The level is held
+    // near the clean side's so the lab never plays it loud: the fault is the
+    // distortion, shown on PA R's own clip light.
+    if (ev.paRMic && spk('paR')) {
+      const d = new Float32Array(n);
+      const drive = dbToLin(30);
+      const ceil = 0.32;
+      let over = 0;
+      for (let i = 0; i < n; i++) {
+        const x = crowdR[i] * drive;
+        if (Math.abs(x) > 1) over++;
+        d[i] = ceil * Math.tanh(x);
+      }
+      crowdR = d;
+      clipped.paR = over;
+    }
     if (ev.paLWall && !ev.paLIsolator && spk('paL')) {
       const h = new Float32Array(n);
       h.set(crowdL);

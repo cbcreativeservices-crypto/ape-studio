@@ -118,4 +118,21 @@ describe('changeover continuity', () => {
     const c = transitionStepBy({ started: true, done: false, failed: null }, true, true, 0.5, { crowdMinDb: -20, clipped: true });
     assert.ok(c.failed);
   });
+  it('a gap then a finished change is NOT done: it stays failed until re-armed (learning review 2026-10-18, 23 #1)', () => {
+    let s = transitionStepBy(TRANSITION_FRESH, true, true, 0.4, ok);
+    s = transitionStepBy(s, true, true, 0.5, { crowdMinDb: -60, clipped: false });
+    assert.ok(s.failed, 'the gap is caught');
+    s = transitionStepBy(s, false, true, 0.85, ok);
+    assert.equal(s.done, false, 'a clean chunk after the gap does not pass it');
+    assert.ok(s.failed, 'the reason is kept to be shown');
+    s = transitionStepBy(s, false, true, 0.85, ok);
+    assert.equal(s.done, false);
+    // re-armed only from the start state: old up, new down
+    s = transitionStepBy(s, true, false, 0, ok);
+    assert.deepEqual(s, TRANSITION_FRESH);
+    s = transitionStepBy(s, true, true, 0.4, ok);
+    s = transitionStepBy(s, false, true, 0.85, ok);
+    assert.equal(s.done, true);
+    assert.equal(s.failed, null);
+  });
 });
