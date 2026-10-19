@@ -14,7 +14,7 @@
  * mono. (The booth MONITORS are the DJ's own: monitor L on the DJ's left.)
  *
  *   back wall  y = 0
- *   DJ         (0, 0.8)            table y 1.1 … 1.8, x ±1.1
+ *   DJ         (0, 0.8)            table y 1.1 … 1.8, x ±0.85
  *   monitors   (±1.25, 1.3), aimed at the DJ
  *   PA tops    real staging spots (see PLACEMENTS), 2.2 m up on stands
  *   floor      y 3.2 … 11, x ±6.4  (the floor centre (0, 7))
@@ -48,7 +48,10 @@ export const ROOM = {
   w: 14,
   d: 11.6,
   dj: { x: 0, y: 0.8 },
-  table: { x: -1.1, y: 1.1, w: 2.2, d: 0.7 },
+  /** 1.7 m: the decks and the mixer butted together with room at each end
+   *  (for the turntable, battle style); the booth monitors stand clear of
+   *  its ends (lab-art grade 2026-10-19: nothing on the plan overlaps). */
+  table: { x: -0.85, y: 1.1, w: 1.7, d: 0.7 },
   /** Where the decks and the turntable sit on the table. */
   decks: { x: 0, y: 1.45 },
   floor: { x0: -6.4, x1: 6.4, y0: 3.2, y1: 11 },
@@ -257,4 +260,122 @@ export function micAngleDeg(m: V2, axis: V2, s: V2): number {
   if (la < 1e-9 || ld < 1e-9) return 0;
   const c = Math.max(-1, Math.min(1, (axis.x * d.x + axis.y * d.y) / (la * ld)));
   return (Math.acos(c) * 180) / Math.PI;
+}
+
+/* ── the plan's footprints (placement only; lab-art grade 2026-10-19) ─── */
+
+/** One thing standing on the plan (cm): its centre, its width across and
+ *  depth along where it points, and the angle (rad) its front points to
+ *  (local +y; 0 = toward +y, the crowd). `under`: it stands under the
+ *  booth table (drawn hidden), so the decks over it are not a clash;
+ *  `stack`: a top on its pole over this sub. */
+export type Footprint = { id: string; kind: 'player' | 'mixer' | 'tt' | 'top' | 'sub' | 'monitor'; cx: number; cy: number; w: number; d: number; ang: number; under?: boolean; stack?: string };
+
+/** The gap (cm) between the units on the table: butted together, as in a
+ *  club booth. */
+export const ROW_GAP_CM = 1.5;
+/** Footprints (cm): players 32 × 41, the two-channel mixer 27 × 39, a
+ *  turntable 45 × 35 — turned 90° (battle style, tonearm away from the DJ)
+ *  so it fits beside deck B on the 1.7 m table. */
+export const DECK_CM = { player: { w: 32, d: 41 }, mixer: { w: 27, d: 39 }, tt: { w: 35, d: 45 } } as const;
+/** How far in from the table's DJ edge the units stand (cm). */
+export const ROW_INSET_CM = 12;
+
+/** The booth table's row, deck B · mixer · deck A (+x, the DJ's left, is
+ *  drawn on the right), and the turntable beyond deck B when shown. */
+export function boothRow(turntable: boolean): Footprint[] {
+  const y0 = ROOM.table.y * 100 + ROW_INSET_CM;
+  const P = DECK_CM.player;
+  const M = DECK_CM.mixer;
+  const T = DECK_CM.tt;
+  const px = M.w / 2 + ROW_GAP_CM + P.w / 2;
+  const row: Footprint[] = [
+    { id: 'deckB', kind: 'player', cx: -px, cy: y0 + P.d / 2, w: P.w, d: P.d, ang: 0 },
+    { id: 'mixer', kind: 'mixer', cx: 0, cy: y0 + M.d / 2, w: M.w, d: M.d, ang: 0 },
+    { id: 'deckA', kind: 'player', cx: px, cy: y0 + P.d / 2, w: P.w, d: P.d, ang: 0 },
+  ];
+  if (turntable) row.push({ id: 'tt', kind: 'tt', cx: -(px + P.w / 2 + ROW_GAP_CM + T.w / 2), cy: y0 + T.d / 2, w: T.w, d: T.d, ang: 0 });
+  return row;
+}
+
+/** How much larger than true a speaker symbol is drawn so it is at least
+ *  `minPt` across its larger side at `ptPerCm` (≥ 1; capped at `cap`). */
+export function symbolScale(trueCm: number, ptPerCm: number, minPt: number, cap = Infinity): number {
+  return Math.min(cap, Math.max(1, minPt / Math.max(1e-6, trueCm * ptPerCm)));
+}
+
+/** The speakers' true footprints (cm): a 12-inch top 36.5 × 40, an 18-inch
+ *  sub 55 × 70, an 8-inch booth monitor 27 × 30. A top's tripod legs reach
+ *  TRIPOD_R_CM from its pole (true size, never enlarged). */
+export const SPEAKER_CM = { top: { w: 36.5, d: 40 }, sub: { w: 55, d: 70 }, monitor: { w: 27, d: 30 } } as const;
+export const TRIPOD_R_CM = 55;
+
+/** The angle (rad, local +y = front) a speaker's symbol is turned to. */
+export const symbolAngle = (s: Speaker): number => Math.atan2(s.aim.y - s.at.y, s.aim.x - s.at.x) - Math.PI / 2;
+
+export type PlanSymbols = { place: Placement; subPos: SubPlace; subs: boolean; monitors: boolean; turntable: boolean; ptPerCm: number; minPt: number; monitorCap: number };
+
+/** Everything standing on the plan as it is DRAWN (speaker symbols at their
+ *  enlarged size) — what the plan's no-overlap test and the label
+ *  obstacles read. */
+export function planFootprints(o: PlanSymbols): Footprint[] {
+  const out = boothRow(o.turntable);
+  const t = PLACEMENTS[o.place].tops;
+  const tab = ROOM.table;
+  const underTable = (v: V2) => v.x > tab.x && v.x < tab.x + tab.w && v.y > tab.y && v.y < tab.y + tab.d;
+  const subs = o.subs ? SUB_PLACES[o.subPos].subs : [];
+  const gT = symbolScale(SPEAKER_CM.top.d, o.ptPerCm, o.minPt);
+  for (const s of [t.L, t.R]) {
+    const st = subs.find((u) => Math.abs(u.at.x - s.at.x) < 0.3 && Math.abs(u.at.y - s.at.y) < 0.3);
+    out.push({ id: s.id, kind: 'top', cx: s.at.x * 100, cy: s.at.y * 100, w: SPEAKER_CM.top.w * gT, d: SPEAKER_CM.top.d * gT, ang: symbolAngle(s), stack: st?.id });
+  }
+  const gS = symbolScale(SPEAKER_CM.sub.w, o.ptPerCm, o.minPt);
+  for (const s of subs) out.push({ id: s.id, kind: 'sub', cx: s.at.x * 100, cy: s.at.y * 100, w: SPEAKER_CM.sub.w * gS, d: SPEAKER_CM.sub.d * gS, ang: symbolAngle(s), under: underTable(s.at) });
+  if (o.monitors) {
+    const gM = symbolScale(SPEAKER_CM.monitor.d, o.ptPerCm, o.minPt, o.monitorCap);
+    for (const s of [MONITORS.L, MONITORS.R]) out.push({ id: s.id, kind: 'monitor', cx: s.at.x * 100, cy: s.at.y * 100, w: SPEAKER_CM.monitor.w * gM, d: SPEAKER_CM.monitor.d * gM, ang: symbolAngle(s) });
+  }
+  return out;
+}
+
+/** A footprint's corners (cm), turned as drawn. */
+export function footprintCorners(f: Footprint): V2[] {
+  const c = Math.cos(f.ang);
+  const s = Math.sin(f.ang);
+  return [
+    [-f.w / 2, -f.d / 2],
+    [f.w / 2, -f.d / 2],
+    [f.w / 2, f.d / 2],
+    [-f.w / 2, f.d / 2],
+  ].map(([x, y]) => ({ x: f.cx + x * c - y * s, y: f.cy + x * s + y * c }));
+}
+
+/** Do two drawn footprints overlap (separating-axis test on the turned
+ *  rectangles; touching is not overlapping)? */
+export function footprintsOverlap(a: Footprint, b: Footprint): boolean {
+  const pa = footprintCorners(a);
+  const pb = footprintCorners(b);
+  for (const poly of [pa, pb]) {
+    for (let i = 0; i < 4; i++) {
+      const p = poly[i];
+      const q = poly[(i + 1) % 4];
+      const nx = -(q.y - p.y);
+      const ny = q.x - p.x;
+      const proj = (ps: V2[]) => ps.map((v) => v.x * nx + v.y * ny);
+      const A = proj(pa);
+      const B = proj(pb);
+      if (Math.max(...A) <= Math.min(...B) + 1e-6 || Math.max(...B) <= Math.min(...A) + 1e-6) return false;
+    }
+  }
+  return true;
+}
+
+/** A footprint's bounding box (cm). */
+export function footprintBox(f: Footprint, grow = 0): { x: number; y: number; w: number; h: number } {
+  const ps = footprintCorners(f);
+  const xs = ps.map((p) => p.x);
+  const ys = ps.map((p) => p.y);
+  const x0 = Math.min(...xs) - grow;
+  const y0 = Math.min(...ys) - grow;
+  return { x: x0, y: y0, w: Math.max(...xs) + grow - x0, h: Math.max(...ys) + grow - y0 };
 }

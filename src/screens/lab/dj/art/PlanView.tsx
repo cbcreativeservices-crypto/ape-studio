@@ -21,7 +21,7 @@
  *   - the speakers as top views at their true footprints (a 12-inch top
  *     36.5 × 40 cm on its tripod, an 18-inch sub 55 × 70 cm, an 8-inch booth
  *     monitor 27 × 30 cm), aimed as placed;
- *   - the booth table (220 × 70 cm) with the decks and the mixer at their
+ *   - the booth table (170 × 70 cm) with the decks and the mixer at their
  *     true footprints, a turntable when the lesson has one;
  *   - the DJ's listening point, and the microphone with its CARDIOID pickup
  *     drawn as a polar outline round it, pointing where it points, and the
@@ -34,7 +34,7 @@ import { AlphaType, BlurMask, Circle, ColorType, DashPathEffect, FilterMode, Gro
 import { heatColor, heatRgbW } from '../../../../features/tools/levelColor';
 import { INK } from './ink';
 import { SceneFontsContext, SceneText, useLabelMm } from './sceneText';
-import { BASS_MAP_HZ, MONITORS, PLACEMENTS, ROOM, SUB_PLACES, cardioidDb, coverageGrid, subsCoherentAt, topsDbaAt, type Placement, type Speaker, type SubPlace, type V2 } from '../model/djRoom';
+import { BASS_MAP_HZ, MONITORS, PLACEMENTS, ROOM, SPEAKER_CM, SUB_PLACES, TRIPOD_R_CM, boothRow, cardioidDb, coverageGrid, footprintBox, planFootprints, subsCoherentAt, symbolAngle, symbolScale, topsDbaAt, type Footprint, type Placement, type Speaker, type SubPlace, type V2 } from '../model/djRoom';
 import { MIC_POS, type Feedback, type MicPos } from '../model/djEvent';
 import type { Box } from '../geometry/boothGeometry';
 
@@ -89,20 +89,24 @@ function useField(mode: MapMode, place: Placement, subPos: SubPlace, feedDbfs: n
 
 const aimAngle = (s: Speaker): number => Math.atan2(s.aim.y - s.at.y, s.aim.x - s.at.x);
 
-/** The least size (pt) a speaker is drawn at, whatever the plan's scale. */
+/** The least size (pt) a speaker is drawn at, whatever the plan's scale
+ *  (a page may ask for more: `PlanSpec.symbolPt`). */
 export const SPEAKER_MIN_PT = 18;
+/** A booth monitor is never drawn more than this x true size unless the
+ *  page asks for a symbol size (`symbolPt`) and has room for it. */
+export const MONITOR_CAP = 1.6;
 /** How much larger than true a speaker is drawn at this scale (>= 1). */
-export function useGlyphScale(trueCm: number): number {
+export function useGlyphScale(trueCm: number, minPt = SPEAKER_MIN_PT, cap = Infinity): number {
   const { s } = useContext(SceneFontsContext);
-  return Math.max(1, SPEAKER_MIN_PT / Math.max(1e-6, trueCm * s));
+  return symbolScale(trueCm, s, minPt, cap);
 }
 
 /** A 12-inch top on its tripod (top view): the cabinet's trapezoid (wide
  *  front), the horn's mouth on the front edge, the top handle, the legs. */
-function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?: 'amber' | 'red' }) {
+function TopPlan({ s, lit, tone = 'amber', minPt }: { s: Speaker; lit?: boolean; tone?: 'amber' | 'red'; minPt: number }) {
   const c = P(s.at);
-  const a = aimAngle(s) - Math.PI / 2; // local +y = the way it points
-  const g = useGlyphScale(40);
+  const a = symbolAngle(s); // local +y = the way it points
+  const g = useGlyphScale(SPEAKER_CM.top.d, minPt);
   const cab = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     p.moveTo(-18.25, 20);
@@ -113,11 +117,22 @@ function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?:
     return p.detach();
   }, []);
   return (
-    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
-      {/* tripod legs (spread 110 cm), under the box */}
-      {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((t) => (
-        <Line key={t} p1={vec(0, 0)} p2={vec(Math.sin(t + 0.5) * 55, -Math.cos(t + 0.5) * 55)} color="#3a3d43" strokeWidth={3.2} strokeCap="round" />
-      ))}
+    <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }]}>
+      {/* the tripod at TRUE size (legs spread 110 cm), under the box: three
+          legs from the pole, each ending in its rubber foot (grade 2026-10-19:
+          not unexplained whiskers) */}
+      {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((t) => {
+        const fx = Math.sin(t + 0.5) * TRIPOD_R_CM;
+        const fy = -Math.cos(t + 0.5) * TRIPOD_R_CM;
+        return (
+          <Group key={t}>
+            <Line p1={vec(0, 0)} p2={vec(fx, fy)} color="#5a5e66" strokeWidth={3.6} strokeCap="round" />
+            <Circle cx={fx} cy={fy} r={4.5} color="#2a2c31" />
+            <Circle cx={fx} cy={fy} r={4.5} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.35)" />
+          </Group>
+        );
+      })}
+      <Group transform={[{ scale: g }]}>
       <Path path={cab} color="rgba(0,0,0,0.6)" transform={[{ translateX: 3 }, { translateY: 4 }]}>
         <BlurMask blur={4} style="normal" />
       </Path>
@@ -131,15 +146,27 @@ function TopPlan({ s, lit, tone = 'amber' }: { s: Speaker; lit?: boolean; tone?:
       <Line p1={vec(-17, 19)} p2={vec(17, 19)} color="#6a6e76" strokeWidth={2.4} />
       {/* the handle cut-out on top */}
       <RoundedRect x={-6.5} y={-6} width={13} height={4} r={2} color="#060607" />
+      </Group>
     </Group>
   );
 }
 
 /** An 18-inch sub (top view): 55 × 70 cm, its front edge grille. */
-function SubPlan({ s }: { s: Speaker }) {
+function SubPlan({ s, minPt, hidden = false }: { s: Speaker; minPt: number; hidden?: boolean }) {
   const c = P(s.at);
-  const a = aimAngle(s) - Math.PI / 2;
-  const g = useGlyphScale(55);
+  const a = symbolAngle(s);
+  const g = useGlyphScale(SPEAKER_CM.sub.w, minPt);
+  if (hidden) {
+    // under the booth table: drawn the way a plan draws a hidden object, a
+    // dashed outline over the table with its decks still in view
+    return (
+      <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
+        <RoundedRect x={-27.5} y={-35} width={55} height={70} r={3} style="stroke" strokeWidth={2.2 / g} color="rgba(255,255,255,0.7)">
+          <DashPathEffect intervals={[6 / g, 4 / g]} />
+        </RoundedRect>
+      </Group>
+    );
+  }
   return (
     <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
       <RoundedRect x={-27.5 + 3} y={-35 + 4} width={55} height={70} r={3} color="rgba(0,0,0,0.6)">
@@ -158,10 +185,10 @@ function SubPlan({ s }: { s: Speaker }) {
 }
 
 /** An 8-inch booth monitor (top view): 27 × 30 cm. */
-function MonitorPlan({ s, lit }: { s: Speaker; lit?: boolean }) {
+function MonitorPlan({ s, lit, minPt, cap }: { s: Speaker; lit?: boolean; minPt: number; cap: number }) {
   const c = P(s.at);
-  const a = aimAngle(s) - Math.PI / 2;
-  const g = Math.min(useGlyphScale(30), 1.6);
+  const a = symbolAngle(s);
+  const g = useGlyphScale(SPEAKER_CM.monitor.d, minPt, cap);
   return (
     <Group transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: a }, { scale: g }]}>
       <RoundedRect x={-13.5 + 2} y={-15 + 3} width={27} height={30} r={3} color="rgba(0,0,0,0.6)">
@@ -177,41 +204,50 @@ function MonitorPlan({ s, lit }: { s: Speaker; lit?: boolean }) {
 }
 
 /** The booth table with the decks and the mixer at their true footprints
- *  (players 32 × 41, mixer 27 × 39 cm; a turntable 45 × 35 when shown). */
+ *  (djRoom.boothRow: players 32 x 41, mixer 27 x 39 cm, butted together;
+ *  a turntable 45 x 35 turned battle style beyond deck B when shown). */
 function BoothTable({ turntable }: { turntable: boolean }) {
   const t = ROOM.table;
   const x0 = t.x * 100;
   const y0 = t.y * 100;
   const w = t.w * 100;
   const d = t.d * 100;
-  const dev = (cx: number, ww: number, dd: number, kind: 'player' | 'mixer' | 'tt') => (
-    <Group key={`${kind}${cx}`}>
-      <RoundedRect x={cx - ww / 2} y={y0 + 12} width={ww} height={dd} r={2}>
-        <LinearGradient start={vec(cx - ww / 2, y0)} end={vec(cx + ww / 2, y0 + dd)} colors={['#33363d', '#1b1c20']} />
-      </RoundedRect>
-      <RoundedRect x={cx - ww / 2} y={y0 + 12} width={ww} height={dd} r={2} style="stroke" strokeWidth={0.6} color="rgba(255,255,255,0.15)" />
-      {kind === 'player' ? (
-        <Group>
-          <Circle cx={cx} cy={y0 + 12 + dd * 0.62} r={10.3} color="#0b0c0e" />
-          <Circle cx={cx} cy={y0 + 12 + dd * 0.62} r={10.3} style="stroke" strokeWidth={0.6} color="rgba(255,255,255,0.2)" />
-          <Rect x={cx - 7.7} y={y0 + 12 + 3} width={15.5} height={8.7} color="#0b1a28" />
-        </Group>
-      ) : kind === 'tt' ? (
-        <Group>
-          <Circle cx={cx - 4} cy={y0 + 12 + dd / 2} r={16.6} color="#0a0a0c" />
-          <Circle cx={cx - 4} cy={y0 + 12 + dd / 2} r={15.1} style="stroke" strokeWidth={0.5} color="rgba(255,255,255,0.12)" />
-          <Line p1={vec(cx + 16, y0 + 12 + 6)} p2={vec(cx + 4, y0 + 12 + dd * 0.68)} color="#c9ccd2" strokeWidth={1} />
-        </Group>
-      ) : (
-        <Group>
-          {[-8, 8].map((o) => (
-            <Line key={o} p1={vec(cx + o, y0 + 12 + 24)} p2={vec(cx + o, y0 + 12 + 30)} color="#050506" strokeWidth={1.4} />
-          ))}
-          <Line p1={vec(cx - 4, y0 + 12 + 36)} p2={vec(cx + 4, y0 + 12 + 36)} color="#050506" strokeWidth={1.4} />
-        </Group>
-      )}
-    </Group>
-  );
+  const dev = (f: Footprint) => {
+    const fx = f.cx - f.w / 2;
+    const fy = f.cy - f.d / 2;
+    return (
+      <Group key={f.id}>
+        <RoundedRect x={fx} y={fy} width={f.w} height={f.d} r={2}>
+          <LinearGradient start={vec(fx, fy)} end={vec(fx + f.w, fy + f.d)} colors={['#33363d', '#1b1c20']} />
+        </RoundedRect>
+        <RoundedRect x={fx} y={fy} width={f.w} height={f.d} r={2} style="stroke" strokeWidth={0.6} color="rgba(255,255,255,0.15)" />
+        {f.kind === 'player' ? (
+          <Group>
+            <Circle cx={f.cx} cy={fy + f.d * 0.62} r={10.3} color="#0b0c0e" />
+            <Circle cx={f.cx} cy={fy + f.d * 0.62} r={10.3} style="stroke" strokeWidth={0.6} color="rgba(255,255,255,0.2)" />
+            <Rect x={f.cx - 7.7} y={fy + 3} width={15.5} height={8.7} color="#0b1a28" />
+          </Group>
+        ) : f.kind === 'tt' ? (
+          <Group>
+            {/* battle style: the platter toward the DJ, the tonearm's pivot
+                at the far end, its arm resting across the record */}
+            <Circle cx={f.cx} cy={fy + 17.5} r={15.5} color="#0a0a0c" />
+            <Circle cx={f.cx} cy={fy + 17.5} r={14.2} style="stroke" strokeWidth={0.5} color="rgba(255,255,255,0.12)" />
+            <Circle cx={f.cx} cy={fy + 17.5} r={1.2} color="#c9ccd2" />
+            <Circle cx={f.cx + 11} cy={fy + f.d - 6} r={2.4} color="#5c626b" />
+            <Line p1={vec(f.cx + 11, fy + f.d - 6)} p2={vec(f.cx + 4, fy + 22)} color="#c9ccd2" strokeWidth={1} />
+          </Group>
+        ) : (
+          <Group>
+            {[-8, 8].map((o) => (
+              <Line key={o} p1={vec(f.cx + o, fy + 24)} p2={vec(f.cx + o, fy + 30)} color="#050506" strokeWidth={1.4} />
+            ))}
+            <Line p1={vec(f.cx - 4, fy + 36)} p2={vec(f.cx + 4, fy + 36)} color="#050506" strokeWidth={1.4} />
+          </Group>
+        )}
+      </Group>
+    );
+  };
   return (
     <Group>
       <RoundedRect x={x0 + 4} y={y0 + 6} width={w} height={d} r={3} color="rgba(0,0,0,0.6)">
@@ -222,10 +258,7 @@ function BoothTable({ turntable }: { turntable: boolean }) {
       </RoundedRect>
       <RoundedRect x={x0} y={y0} width={w} height={d} r={3} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.10)" />
       {/* the deck B · mixer · deck A row (seen from above, DJ's left on the right) */}
-      {dev(-30.5 - 18 - 13.5, 32, 41, 'player')}
-      {dev(0, 27, 39, 'mixer')}
-      {dev(30.5 + 18 + 13.5, 32, 41, 'player')}
-      {turntable ? dev(-92, 45, 35, 'tt') : null}
+      {boothRow(turntable).map(dev)}
     </Group>
   );
 }
@@ -300,6 +333,10 @@ export type PlanSpec = {
   hotTop?: 'topL' | 'topR' | null;
   /** Draw the floor-centre and front-centre measuring points. */
   points?: boolean;
+  /** The least size (pt) of every speaker symbol, booth monitors included
+   *  (uncapped). Default SPEAKER_MIN_PT with the monitors capped at
+   *  MONITOR_CAP x true. */
+  symbolPt?: number;
 };
 
 export const PlanView = memo(function PlanView({ spec }: { spec: PlanSpec }) {
@@ -309,6 +346,10 @@ export const PlanView = memo(function PlanView({ spec }: { spec: PlanSpec }) {
   const W = ROOM.w * 100;
   const D = ROOM.d * 100;
   const labelMm = useLabelMm(9.5);
+  const minPt = spec.symbolPt ?? SPEAKER_MIN_PT;
+  const monCap = spec.symbolPt != null ? Infinity : MONITOR_CAP;
+  const tab = ROOM.table;
+  const underTable = (v: V2) => v.x > tab.x && v.x < tab.x + tab.w && v.y > tab.y && v.y < tab.y + tab.d;
   const edgePath = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     for (const [x0, y0, x1, y1] of edgeSegments(spec.place)) {
@@ -340,14 +381,17 @@ export const PlanView = memo(function PlanView({ spec }: { spec: PlanSpec }) {
       <Rect x={-W / 2 - 14} y={0} width={14} height={D} color="#2a2c31" />
       <Rect x={W / 2} y={0} width={14} height={D} color="#2a2c31" />
       <SceneText x={0} y={300 + labelMm * 1.5} size={labelMm} text="DANCE FLOOR" color="rgba(255,255,255,0.45)" face="label" align="center" />
+      {/* a sub under the booth stands BELOW the table: drawn first, then its
+          dashed outline over the table */}
+      {spec.subs ? subs.filter((s) => underTable(s.at)).map((s) => <SubPlan key={s.id} s={s} minPt={minPt} />) : null}
       <BoothTable turntable={!!spec.turntable} />
-      {spec.subs ? subs.map((s) => <SubPlan key={s.id} s={s} />) : null}
-      <TopPlan s={tops.L} lit={spec.hotTop === 'topL'} tone="red" />
-      <TopPlan s={tops.R} lit={spec.hotTop === 'topR'} tone="red" />
+      {spec.subs ? subs.map((s) => <SubPlan key={`${s.id}${underTable(s.at) ? 'h' : ''}`} s={s} minPt={minPt} hidden={underTable(s.at)} />) : null}
+      <TopPlan s={tops.L} lit={spec.hotTop === 'topL'} tone="red" minPt={minPt} />
+      <TopPlan s={tops.R} lit={spec.hotTop === 'topR'} tone="red" minPt={minPt} />
       {spec.monitors ? (
         <>
-          <MonitorPlan s={MONITORS.L} />
-          <MonitorPlan s={MONITORS.R} />
+          <MonitorPlan s={MONITORS.L} minPt={minPt} cap={monCap} />
+          <MonitorPlan s={MONITORS.R} minPt={minPt} cap={monCap} />
         </>
       ) : null}
       {spec.mic ? <FeedbackPaths mic={spec.mic.pos} fb={spec.mic.fb} place={spec.place} /> : null}
@@ -507,12 +551,20 @@ export const planAt = {
   decks: () => P(ROOM.decks),
 };
 
-/** Bodies (for label placement) on the plan, cm. */
-export function planObstacles(place: Placement, subPos: SubPlace, subs: boolean, monitors: boolean): Box[] {
+/** The plan's scale (pt per cm) at a 390-wide phone for the screen-20
+ *  whole-room frame: the default the label obstacles are sized at. */
+export const PLAN_PT_PER_CM_390 = 0.2;
+
+/** Bodies (for label placement) on the plan, cm, at their DRAWN size (the
+ *  speaker symbols enlarged to their least point size, a top's tripod
+ *  feet): a label never sits on a speaker. */
+export function planObstacles(place: Placement, subPos: SubPlace, subs: boolean, monitors: boolean, ptPerCm = PLAN_PT_PER_CM_390, symbolPt?: number): Box[] {
   const box = (v: V2, r: number): Box => ({ x: v.x * 100 - r, y: v.y * 100 - r, w: r * 2, h: r * 2 });
   const t = PLACEMENTS[place].tops;
-  const out: Box[] = [box(t.L.at, 30), box(t.R.at, 30), { x: ROOM.table.x * 100, y: ROOM.table.y * 100, w: ROOM.table.w * 100, h: ROOM.table.d * 100 }, box(ROOM.dj, 18)];
-  if (subs) for (const s of SUB_PLACES[subPos].subs) out.push(box(s.at, 40));
-  if (monitors) out.push(box(MONITORS.L.at, 20), box(MONITORS.R.at, 20));
+  const out: Box[] = [{ x: ROOM.table.x * 100, y: ROOM.table.y * 100, w: ROOM.table.w * 100, h: ROOM.table.d * 100 }, box(ROOM.dj, 18)];
+  const fps = planFootprints({ place, subPos, subs, monitors, turntable: false, ptPerCm, minPt: symbolPt ?? SPEAKER_MIN_PT, monitorCap: symbolPt != null ? Infinity : MONITOR_CAP });
+  for (const f of fps) if (f.kind === 'top' || f.kind === 'sub' || f.kind === 'monitor') out.push(footprintBox(f, 4));
+  // the tripods' feet round each top
+  out.push(box(t.L.at, TRIPOD_R_CM + 6), box(t.R.at, TRIPOD_R_CM + 6));
   return out;
 }

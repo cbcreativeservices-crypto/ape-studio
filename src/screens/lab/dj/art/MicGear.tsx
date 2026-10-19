@@ -5,7 +5,9 @@
  *
  *   HandheldMic       a handheld vocal mic seen from the side: the ball
  *                     grille (Ø 50 mm) over its foam, the grille ring, the
- *                     tapered body (185 mm), the male XLR at its tail. The
+ *                     tapered body, the male XLR at its tail — 170 mm
+ *                     overall at TRUE size (MIC_TRUE; lab-art grade
+ *                     2026-10-19: sized from the 24 mm combo jack). The
  *                     CONDENSER has a finer, flatter grille and a gold band;
  *                     the WIRELESS transmitter is longer, with a battery
  *                     cover, a status window and an antenna cap, and no XLR.
@@ -40,22 +42,42 @@ const LEG = 4.8;
 
 /* ── the handheld microphone (side view, head at the origin, tail to +x) ── */
 
+/** The tail (local mm, from the grille ball's centre) of the mic as first
+ *  drawn: kept for callers that size it themselves (the 23/24 event tile). */
 export const MIC_LEN = { DYNAMIC: 182, CONDENSER: 182, WIRELESS: 236 } as const;
-/** Where the cable leaves the mic (local mm) for a wired mic. */
+/** Where the cable leaves the mic (local mm) for a wired mic (as MIC_LEN). */
 export const MIC_TAIL = { x: 182, y: 0 } as const;
 
-export const HandheldMic = memo(function HandheldMic({ x, y, ang = 0, s = 1, device, live = false }: { x: number; y: number; ang?: number; s?: number; device: MicDevice; live?: boolean }) {
+/** THE TRUE SIZE (mm), from a real handheld: a wired dynamic or condenser
+ *  vocal mic is about 160–180 mm overall with a Ø 46–51 mm grille; a
+ *  handheld wireless transmitter is longer, about 220–260 mm (its battery
+ *  and antenna). `tail` is measured from the ball's centre; overall =
+ *  grille radius + tail. Against this mixer's combo jack (FRONT.mic1.d,
+ *  24 mm across) the wired mic is about 7 jacks long and its grille about
+ *  2 jacks across. */
+export const MIC_TRUE = {
+  grilleR: { DYNAMIC: 25, CONDENSER: 23, WIRELESS: 25 },
+  tail: { DYNAMIC: 145, CONDENSER: 147, WIRELESS: 205 },
+} as const;
+/** The cable's female XLR beyond the mic's tail (its shell and boot), mm. */
+export const MIC_PLUG_LEN = 44;
+
+export const HandheldMic = memo(function HandheldMic({ x, y, ang = 0, s = 1, device, live = false, tail }: { x: number; y: number; ang?: number; s?: number; device: MicDevice; live?: boolean; tail?: number }) {
   const wireless = device === 'WIRELESS';
   const R = device === 'CONDENSER' ? 23 : 25;
-  const bodyEnd = wireless ? 222 : 160;
-  const r0 = wireless ? 19 : 18;
+  const end = tail ?? MIC_LEN[device];
+  const bodyEnd = end - (wireless ? 14 : 22);
+  // the body's details stand at the same fractions of its length
+  const k = (bodyEnd - 26) / ((wireless ? 222 : 160) - 26);
+  const at = (v: number) => 26 + (v - 26) * k;
+  const r0 = wireless ? 19 : 17.5;
   const r1 = wireless ? 14.5 : 12;
   const body = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     p.moveTo(26, -r0);
-    p.cubicTo(70, -r0 + 1, 120, -r1 - 2, bodyEnd, -r1);
+    p.cubicTo(26 + (bodyEnd - 26) * 0.33, -r0 + 1, 26 + (bodyEnd - 26) * 0.7, -r1 - 2, bodyEnd, -r1);
     p.lineTo(bodyEnd, r1);
-    p.cubicTo(120, r1 + 2, 70, r0 - 1, 26, r0);
+    p.cubicTo(26 + (bodyEnd - 26) * 0.7, r1 + 2, 26 + (bodyEnd - 26) * 0.33, r0 - 1, 26, r0);
     p.close();
     return p.detach();
   }, [r0, r1, bodyEnd]);
@@ -95,12 +117,12 @@ export const HandheldMic = memo(function HandheldMic({ x, y, ang = 0, s = 1, dev
       {wireless ? (
         <Group>
           {/* battery cover seam, status window, power slide, antenna cap */}
-          <Line p1={vec(150, -r1 - 1.5)} p2={vec(150, r1 + 1.5)} color="rgba(0,0,0,0.65)" strokeWidth={0.8} />
-          <RoundedRect x={92} y={-5} width={22} height={10} r={2} color="#05080c" />
-          <RoundedRect x={92} y={-5} width={22} height={10} r={2} style="stroke" strokeWidth={0.5} color="rgba(120,170,220,0.4)" />
-          <Rect x={95} y={-1.5} width={8} height={3} color={live ? INK.green : INK.ledOff} />
-          <RoundedRect x={124} y={-3} width={12} height={6} r={1.6} color="#0b0c0e" />
-          <RoundedRect x={live ? 130 : 125} y={-2.2} width={5} height={4.4} r={1} color="#9aa0a8" />
+          <Line p1={vec(at(150), -r1 - 1.5)} p2={vec(at(150), r1 + 1.5)} color="rgba(0,0,0,0.65)" strokeWidth={0.8} />
+          <RoundedRect x={at(92)} y={-5} width={22} height={10} r={2} color="#05080c" />
+          <RoundedRect x={at(92)} y={-5} width={22} height={10} r={2} style="stroke" strokeWidth={0.5} color="rgba(120,170,220,0.4)" />
+          <Rect x={at(92) + 3} y={-1.5} width={8} height={3} color={live ? INK.green : INK.ledOff} />
+          <RoundedRect x={at(124)} y={-3} width={12} height={6} r={1.6} color="#0b0c0e" />
+          <RoundedRect x={at(124) + (live ? 6 : 1)} y={-2.2} width={5} height={4.4} r={1} color="#9aa0a8" />
           <RoundedRect x={bodyEnd - 1} y={-r1 + 1.5} width={14} height={(r1 - 1.5) * 2} r={6}>
             <LinearGradient start={vec(0, -r1)} end={vec(0, r1)} colors={['#3a3c42', '#0b0b0d']} />
           </RoundedRect>
@@ -111,7 +133,7 @@ export const HandheldMic = memo(function HandheldMic({ x, y, ang = 0, s = 1, dev
           <RoundedRect x={bodyEnd - 1} y={-11} width={22} height={22} r={2}>
             <LinearGradient start={vec(0, -11)} end={vec(0, 11)} colors={['#e6e9ee', '#9aa0a8', '#4a4f57']} positions={[0, 0.35, 1]} />
           </RoundedRect>
-          {[166, 170, 174].map((g) => (
+          {[bodyEnd + 6, bodyEnd + 10, bodyEnd + 14].map((g) => (
             <Line key={g} p1={vec(g, -11)} p2={vec(g, 11)} color="rgba(0,0,0,0.28)" strokeWidth={0.5} />
           ))}
         </Group>
@@ -304,12 +326,12 @@ export function TableTop({ x0, x1, y, depth }: { x0: number; x1: number; y: numb
 export const FRONT_W = 270;
 export const FRONT_H = 56;
 export const FRONT = {
-  mic2: { x: 22, y: 31, d: 20 },
+  mic2: { x: 24, y: 31, d: 24 },
   gain2: { x: 47, y: 31, d: 12 },
   phones635: { x: 66, y: 31, d: 11 },
   phones35: { x: 88, y: 31, d: 7 },
   gain1: { x: 111, y: 31, d: 12 },
-  mic1: { x: 136, y: 31, d: 22 },
+  mic1: { x: 136, y: 31, d: 24 },
   phantom: { x: 156, y: 18, w: 10, h: 6 },
   phantomLed: { x: 161, y: 31 },
   level: { x: 180, y: 31, d: 14 },
@@ -374,8 +396,8 @@ export const MixerFront = memo(function MixerFront({ x, y, mic, highlight = [], 
       <Line p1={vec(3, 3.6)} p2={vec(FRONT_W - 3, 3.6)} color="rgba(0,0,0,0.6)" strokeWidth={0.5} />
       <RoundedRect x={0.5} y={0.5} width={FRONT_W - 1} height={FRONT_H - 1} r={4.5} style="stroke" strokeWidth={0.8} color={INK.bevel} />
       {/* group frames: MIC 2 · PHONES · MIC 1 · MIC CHANNEL */}
-      <RoundedRect x={8} y={14} width={50} height={36} r={3} style="stroke" strokeWidth={0.4} color={INK.printDim} />
-      <RoundedRect x={97} y={14} width={74} height={36} r={3} style="stroke" strokeWidth={0.4} color={INK.printDim} />
+      <RoundedRect x={5} y={13} width={53} height={38} r={3} style="stroke" strokeWidth={0.4} color={INK.printDim} />
+      <RoundedRect x={97} y={13} width={74} height={38} r={3} style="stroke" strokeWidth={0.4} color={INK.printDim} />
       {/* MIC 2: combo, no phantom */}
       <ComboSocket cx={F.mic2.x} cy={F.mic2.y} d={F.mic2.d} />
       {leg(F.mic2.x, 'MIC 2')}
