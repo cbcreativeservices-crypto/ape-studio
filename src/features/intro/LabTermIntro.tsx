@@ -21,8 +21,10 @@
  *    'checking' and 'unconfirmed' show nothing, and a members-only preview
  *    scrim is never covered. Nothing is marked seen for a non-member, so the
  *    first open AS a member still gets it.
- *  • ONCE per lab per device: CONTINUE writes the seen flag (ape:intro:labTerms,
- *    labTermSeenStore). A failed read shows nothing and writes nothing.
+ *  • ONCE per TERM per device: CONTINUE writes the seen flag (ape:intro:labTerms,
+ *    labTermSeenStore), and every other lab that uses the same glossary term
+ *    shows nothing (owner 2026-10-19: "do not make user have to see it again
+ *    for the other lab"). A failed read shows nothing and writes nothing.
  *  • FIRST: while it is owed, the lab's own first-open popups wait
  *    (useScreenIntro → ProNote; GuestStartReminder) — setLabTermIntroOwed.
  *  • NEVER STACKED: not while another DimModal is open, not during a closing

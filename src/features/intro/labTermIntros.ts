@@ -14,6 +14,8 @@
  * This file holds no React and no storage, so the rules are node-testable:
  *   • labTermKey     — which catalog lab a route (and its params) is;
  *   • wiredLabTerm   — its term + exact glossary text, or null (HOLD / none);
+ *   • isLabTermSeen  — seen per glossary TERM: one CONTINUE covers every lab
+ *     that uses the same term (labTermSeenFlag is what CONTINUE stores);
  *   • labTermIntroState — whether the popup is OWED (the lab's own intros
  *     wait for it) and whether it may SHOW now.
  * The screen half is LabTermIntro.tsx; the seen flags labTermSeenStore.ts.
@@ -49,14 +51,43 @@ export function labTermKey(routeName: string, params?: unknown): string | null {
   return key in LAB_TERM_ENTRIES ? key : null;
 }
 
-export type WiredLabTerm = { key: string; term: string; plainEnglish: string };
+export type WiredLabTerm = { key: string; term: string; plainEnglish: string; glossaryId: string };
 
 /** The popup's copy for a lab, or null: not a catalog lab, or on HOLD. */
 export function wiredLabTerm(key: string | null): WiredLabTerm | null {
   if (!key) return null;
   const e = LAB_TERM_ENTRIES[key];
   if (!e || e.status !== 'wired') return null;
-  return { key, term: e.term, plainEnglish: e.plainEnglish };
+  return { key, term: e.term, plainEnglish: e.plainEnglish, glossaryId: e.glossaryId };
+}
+
+/**
+ * SEEN IS PER TERM, not per lab (owner 2026-10-19: "any pop up word like
+ * 'Miking' - if shown twice for 2 different labs, do not make user have to see
+ * it again for the other lab that uses the same pop up intro term/definition").
+ *
+ * The term is its glossary ROW (glossaryId), so the eight miking labs, the
+ * three mixing labs and the two EQ labs each share one flag. CONTINUE stores
+ * `term:<glossaryId>`. A plain lab key in the list (the per-lab flags written
+ * before this rule) still counts, and counts for its TERM: every lab that uses
+ * the same glossary row is seen too.
+ */
+export const LAB_TERM_SEEN_PREFIX = 'term:';
+export function labTermSeenFlag(labKey: string): string {
+  const e = LAB_TERM_ENTRIES[labKey];
+  return e && e.status === 'wired' ? LAB_TERM_SEEN_PREFIX + e.glossaryId : labKey;
+}
+/** Pure: whether a lab's popup was already seen, by this lab or any lab
+ *  sharing its glossary term. */
+export function isLabTermSeen(seen: readonly string[], labKey: string): boolean {
+  if (seen.includes(labKey)) return true;
+  const e = LAB_TERM_ENTRIES[labKey];
+  if (!e || e.status !== 'wired') return false;
+  if (seen.includes(LAB_TERM_SEEN_PREFIX + e.glossaryId)) return true;
+  return seen.some((k) => {
+    const other = LAB_TERM_ENTRIES[k];
+    return !!other && other.status === 'wired' && other.glossaryId === e.glossaryId;
+  });
 }
 
 /** The title as shown: the glossary's own term with its first letter raised
@@ -65,7 +96,8 @@ export function labTermTitle(term: string): string {
   return term.length ? term[0].toUpperCase() + term.slice(1) : term;
 }
 
-/** The popup's seen flags: lab keys, de-duplicated, in the order seen. */
+/** The popup's seen flags (`term:<glossaryId>`, or an older plain lab key),
+ *  de-duplicated, in the order seen. */
 export function parseSeenLabTerms(parsed: unknown): string[] {
   if (!Array.isArray(parsed)) throw new Error('lab term seen flags: not a list');
   return Array.from(new Set(parsed.filter((k): k is string => typeof k === 'string' && k.length > 0)));

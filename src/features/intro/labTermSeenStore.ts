@@ -14,13 +14,19 @@
  *     and, through onScreenIntrosReset, drops this store's memory too, so
  *     every lab popup comes back without a relaunch.
  *
+ * SEEN IS PER GLOSSARY TERM (owner 2026-10-19): CONTINUE stores
+ * `term:<glossaryId>`, and every lab that uses the same term reads as seen
+ * (the eight miking labs, the three mixing labs, the two EQ labs). A plain lab
+ * key written before that rule still counts, for its term too
+ * (isLabTermSeen in labTermIntros.ts).
+ *
  * A failed READ is UNREADABLE: the popup shows nothing and nothing is written
  * over the stored list (createLocalStore's rule). Only CONTINUE writes.
  */
 import { useSyncExternalStore } from 'react';
 import { createLocalStore } from '../storage/localStore';
 import { onScreenIntrosReset } from './screenIntros';
-import { parseSeenLabTerms, withSeenLabTerm } from './labTermIntros';
+import { isLabTermSeen, labTermSeenFlag, parseSeenLabTerms, withSeenLabTerm } from './labTermIntros';
 
 export const LAB_TERMS_SEEN_KEY = 'ape:intro:labTerms';
 
@@ -43,7 +49,8 @@ export function useLabTermSeen(key: string): 'loading' | 'unreadable' | boolean 
   return labTermSeenOf(hydrated, unreadable, list, key);
 }
 
-/** Pure: the stored flags' answer for one lab. */
+/** Pure: the stored flags' answer for one lab (seen by any lab that shares
+ *  its glossary term). */
 export function labTermSeenOf(
   hydrated: boolean,
   unreadable: boolean,
@@ -51,12 +58,13 @@ export function labTermSeenOf(
   key: string,
 ): 'loading' | 'unreadable' | boolean {
   if (!hydrated) return unreadable ? 'unreadable' : 'loading';
-  return list.includes(key);
+  return isLabTermSeen(list, key);
 }
 
-/** CONTINUE: this lab's popup never shows again on this device. */
+/** CONTINUE: this lab's TERM never shows again on this device, in this lab
+ *  or any other lab that uses it. */
 export function markLabTermSeen(key: string): Promise<boolean> {
-  return store.mutate((seen) => withSeenLabTerm(seen, key));
+  return store.mutate((seen) => withSeenLabTerm(seen, labTermSeenFlag(key)));
 }
 
 /** For tests and the dev index: the list as the screen sees it. */

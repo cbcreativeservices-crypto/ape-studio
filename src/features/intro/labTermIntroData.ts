@@ -7,19 +7,35 @@
  * paraphrase; `glossaryId` names the row it came from, so a later glossary
  * edit can be re-copied. Keyed by labTermKey() (labTermIntros.ts).
  *
- *   'wired' — the popup shows (members only, once per lab per device).
- *   'hold'  — no single obvious term, or the glossary row means something
- *             else: NO popup until the owner picks. The candidates and the
- *             suggestion are in Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md.
+ *   'wired' — the popup shows (members only, once per glossary TERM per
+ *             device: labs that share a term share one seen flag).
+ *   'hold'  — no usable glossary row yet: NO popup. The proposed new
+ *             glossary entry is in Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md.
  *             To wire one: change it to a wired row with the chosen term,
  *             its exact plain-English text and its glossary id.
+ *
+ * THE RULE (owner 2026-10-19): each popup explains the lab's ACTION, or its
+ * device, as it applies to audio ("always explain the action"; "miking is the
+ * action, that is what is defined"). Never a row with the wrong meaning (the
+ * air-pressure "Compression", the synth "Voice", the RF "Spectrum Analyzer",
+ * the operations "Monitoring") and never a row whose text names a maker,
+ * model or product ("FM Synthesis", "Microphone types", "Auto-Tune", and
+ * "Pitch Correction", whose text ends with the product's name). Rows re-read
+ * and md5-checked against the live glossary 2026-10-19.
  */
 export type LabTermEntry =
   | { status: 'wired'; lab: string; term: string; plainEnglish: string; glossaryId: string }
   | { status: 'hold'; lab: string; candidates: readonly string[]; suggested: string | null };
 
 export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
-  AmplitudeLab: { status: 'hold', lab: "Understanding Level & Amplitude", candidates: ["Amplitude", "Level"], suggested: "Amplitude" },
+  AmplitudeLab: {
+    status: 'wired',
+    lab: "Understanding Level & Amplitude",
+    term: "Amplitude",
+    plainEnglish:
+      "Amplitude is how big the wave is, the height of its swings. Bigger amplitude usually means a louder sound, though how loud we feel it also depends on frequency.",
+    glossaryId: "b5abc50e-bdb3-4c2f-be1b-1e571b5adad6",
+  },
   FoundationsCourse: {
     status: 'wired',
     lab: "Foundations of Sound",
@@ -28,7 +44,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "Sound is a vibration that travels through air or another material. Something vibrates, pushes on the air, and the disturbance spreads out as a wave. Your ears pick up these vibrations and your brain hears them. Sound cannot travel through empty space because there is nothing to carry it.",
     glossaryId: "446db798-ef6e-434f-9e39-e18197e18635",
   },
-  FoundationsPlayground: { status: 'hold', lab: "Sound Playground", candidates: ["Sound", "Sound Wave", "Wave"], suggested: "Sound" },
+  FoundationsPlayground: {
+    status: 'wired',
+    lab: "Sound Playground",
+    term: "Sound Wave",
+    plainEnglish:
+      "It is the back-and-forth pressure ripple that travels through air and lets us hear. The air molecules just vibrate in place and pass the energy along, rather than flying from the source to your ear.",
+    glossaryId: "ae191bcd-f5eb-4ec1-ae40-c4cc52e7706a",
+  },
   MicLab: {
     status: 'wired',
     lab: "Microphone Principles",
@@ -37,9 +60,30 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "A microphone is the first link in the audio chain. It turns sound in the air into an electrical signal your gear can work with. The types work in different ways. Condenser mics are sensitive and detailed. Dynamic mics are rugged. Knowing your mics is basic to good recording.",
     glossaryId: "651bcc9f-dd53-4c67-8900-92d119497ad2",
   },
-  WaveLab: { status: 'hold', lab: "Wave Physics Laboratory", candidates: ["Acoustics", "Wave", "Sound Wave"], suggested: "Acoustics" },
-  SpeakerLab: { status: 'hold', lab: "Speaker Placement & Coverage", candidates: ["Speaker Placement", "Coverage", "Dispersion"], suggested: "Speaker Placement" },
-  RoomDesignLab: { status: 'hold', lab: "Room Design & Monitoring", candidates: ["Room Acoustics", "Studio Monitor", "Room modes"], suggested: "Room Acoustics" },
+  WaveLab: {
+    status: 'wired',
+    lab: "Wave Physics Laboratory",
+    term: "Acoustics",
+    plainEnglish:
+      "Acoustics is the physics and science of sound. It explains why some rooms sound great and others are muddy, how sound travels through materials, what happens when sound bounces off walls, and why some frequencies get louder in certain spots. Understanding acoustics helps you control how spaces handle sound.",
+    glossaryId: "abbad623-df2d-42a3-92bb-1ce1dd3d20a2",
+  },
+  SpeakerLab: {
+    status: 'wired',
+    lab: "Speaker Placement & Coverage",
+    term: "Coverage pattern",
+    plainEnglish:
+      "A coverage pattern is the footprint of sound a speaker throws on the audience. Picture a flashlight beam landing on the seats. Designers shape and aim that footprint to cover people evenly. Sound aimed at walls instead of people is wasted.",
+    glossaryId: "1d902c18-a95e-5c78-9277-144b666580ed",
+  },
+  RoomDesignLab: {
+    status: 'wired',
+    lab: "Room Design & Monitoring",
+    term: "Acoustic Treatment",
+    plainEnglish:
+      "Acoustic treatment changes how a room sounds by controlling reflections, echoes, and resonances. You add absorbers to kill reflections, diffusers to scatter sound, and bass traps to tame low frequencies. Good treatment makes a room sound controlled but not dead, and clear but not harsh.",
+    glossaryId: "f6b731bd-e2ec-4b59-b34a-9909e5fe24c2",
+  },
   DigitalLab: {
     status: 'wired',
     lab: "Digital Audio Systems",
@@ -48,7 +92,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "Digital audio is sound stored as a stream of numbers. To create it, the sound is measured many times per second and each measurement is saved as a number. Once stored this way, the audio can be copied, edited, and moved with no added noise or quality loss, which was a problem with older analog tape. This makes it the foundation of modern recording and live sound systems.",
     glossaryId: "e9071a60-cd10-4b1c-a41f-3f033ce9c421",
   },
-  MeterLab: { status: 'hold', lab: "Visual Audio Analysis", candidates: ["Metering", "Waveform"], suggested: "Metering" },
+  MeterLab: {
+    status: 'wired',
+    lab: "Visual Audio Analysis",
+    term: "Audio Analyzer",
+    plainEnglish:
+      "An audio analyzer is a tool that listens to or measures an audio signal. It tells you exactly what the signal is doing: how loud it is, what frequencies are present, and how clean it is.",
+    glossaryId: "a0b9c0cc-ad43-455c-aabc-8c27750c893e",
+  },
   SignalChainLab: {
     status: 'wired',
     lab: "Signal Chain Builder",
@@ -57,9 +108,30 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "The signal chain is the route audio takes - mic, preamp, processing, mixer, output. Knowing the order matters because each stage affects level and tone, and the sequence (e.g. EQ before or after compression) changes the result.",
     glossaryId: "985f3b96-2654-4edc-b1be-4652ab4b1448",
   },
-  "MeterModule:detective": { status: 'hold', lab: "Signal Detective", candidates: ["Troubleshooting", "Metering", "Signal flow"], suggested: "Troubleshooting" },
-  CableLab: { status: 'hold', lab: "Cable & Connector Fundamentals", candidates: ["Cables (audio)", "Connectors", "Audio cable"], suggested: "Cables (audio)" },
-  ConnectorSelectLab: { status: 'hold', lab: "Audio Connectors & Cable Selection", candidates: ["Connectors", "Connector", "Cables (audio)"], suggested: "Connectors" },
+  "MeterModule:detective": {
+    status: 'wired',
+    lab: "Signal Detective",
+    term: "Troubleshooting",
+    plainEnglish:
+      "Troubleshooting is carefully tracking down why the system is not working. You check each part of the chain, from the sound source to the loudspeaker, until you find the problem.",
+    glossaryId: "5fcb98b8-b98a-4537-bccd-382bdf630033",
+  },
+  CableLab: {
+    status: 'wired',
+    lab: "Cable & Connector Fundamentals",
+    term: "Cables (audio)",
+    plainEnglish:
+      "Audio cables move your signal from one piece of gear to the next. They come in different builds for different jobs: balanced mic and line cables for clean long runs, unbalanced instrument and consumer cables for short hops, speaker cables (no shield, heavier wire) for amp-to-speaker, and coax for digital and video. Good cable has solid shielding, strong strain relief at the plugs, and the right gauge. Cheap or damaged cable is a top cause of hum and dropouts. Picking the correct type for each signal level keeps a system quiet.",
+    glossaryId: "655b0ee1-89ca-4f10-a50b-51819adc2750",
+  },
+  ConnectorSelectLab: {
+    status: 'wired',
+    lab: "Audio Connectors & Cable Selection",
+    term: "Connector",
+    plainEnglish:
+      "A connector is the plug-and-socket hardware on the end of a cable. It makes a firm electrical contact you can also undo. Each family fits its own jack and carries its own kind of signal. The right connector matches the signal and the job.",
+    glossaryId: "8538ff6d-d841-50b7-a36b-25ba4d86a137",
+  },
   CableInstallLab: {
     status: 'wired',
     lab: "Cable Dressing & Installation",
@@ -68,7 +140,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "Cable dressing means arranging cables so they are neat and tidy. You route them along clear paths and tie them gently in place. This protects the plugs and makes cables easy to follow. It also keeps power and audio lines apart to avoid noise.",
     glossaryId: "2cd72ce8-81c7-472d-8e37-33468dcf4a74",
   },
-  PatchbayLab: { status: 'hold', lab: "Patchbay Signal Flow & Normalling", candidates: ["Patch bay", "patchbay", "Normalling"], suggested: "Patch bay" },
+  PatchbayLab: {
+    status: 'wired',
+    lab: "Patchbay Signal Flow & Normalling",
+    term: "Patch bay",
+    plainEnglish:
+      "A patch bay brings the inputs and outputs of all your gear onto one row of jacks. Instead of crawling behind racks to re-cable, you re-route signals by moving short patch cables on the front. The tricky part is 'normalling,' which sets what each jack does when nothing is plugged in. A normalled point passes a default connection straight through until you insert a cable. A non-normalled point connects nothing until you patch it. Good labeling and a logical layout make even a complex studio fast to use.",
+    glossaryId: "ecebd487-9163-4e3b-88cd-d7c2ffb280ab",
+  },
   GainLabHome: {
     status: 'wired',
     lab: "Gain Staging",
@@ -101,7 +180,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "Mastering is the last polish before release. It balances loudness and tone so songs sound good everywhere.",
     glossaryId: "198ba359-9c41-4dff-9f94-e9358ef41f60",
   },
-  MixingGuides: { status: 'hold', lab: "Mixing Guides", candidates: ["Mix", "Mixing"], suggested: "Mix" },
+  MixingGuides: {
+    status: 'wired',
+    lab: "Mixing Guides",
+    term: "Mixing",
+    plainEnglish:
+      "Mixing is where many tracks become one polished piece. You balance levels, place sounds left to right, shape tone, control dynamics, and add effects. The goal is to make everything work together.",
+    glossaryId: "5e7e653d-d01d-4cfa-87e9-b81392f97f67",
+  },
   PreProdLab: {
     status: 'wired',
     lab: "Audio Pre-Production",
@@ -142,8 +228,22 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.",
     glossaryId: "09b3ec3d-8fbe-4a04-8c85-77aa44546a87",
   },
-  CompressionLab: { status: 'hold', lab: "Compression", candidates: ["Dynamic range compression", "Compressor", "Compression"], suggested: "Dynamic range compression" },
-  GateLab: { status: 'hold', lab: "Gate / Expander", candidates: ["Gate", "Noise Gate", "Expander"], suggested: "Gate" },
+  CompressionLab: {
+    status: 'wired',
+    lab: "Compression",
+    term: "Dynamic range compression",
+    plainEnglish:
+      "A compressor makes loud parts quieter, shrinking the gap between soft and loud. Above a set level (the threshold), it turns the signal down by a chosen ratio. Attack and release set how fast it reacts. Make-up gain restores overall loudness.",
+    glossaryId: "037a431c-1b1a-418f-b6c1-51e0cea14a9b",
+  },
+  GateLab: {
+    status: 'wired',
+    lab: "Gate / Expander",
+    term: "Downward expansion",
+    plainEnglish:
+      "Downward expansion makes quiet sounds even quieter. When the signal drops below a set level, the tool turns it down further. This pushes soft background noise down between the loud parts. A noise gate is an extreme version of the same idea.",
+    glossaryId: "484e28c0-8ddc-40c8-8f06-347ee12fb285",
+  },
   LimiterLab: {
     status: 'wired',
     lab: "Limiter",
@@ -152,7 +252,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "A limiter is an extreme compressor with an infinite ratio. You set a threshold, and any signal above it is absolutely stopped from going higher. This protects against surprise clipping. Limiters are essential on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.",
     glossaryId: "7f621dc4-6d04-4c29-bc61-e6352f8afcd8",
   },
-  SmartProcessorsLab: { status: 'hold', lab: "Smart Processors Lab", candidates: ["De-esser", "Dynamics processors", "Sibilance"], suggested: "De-esser" },
+  SmartProcessorsLab: {
+    status: 'wired',
+    lab: "Smart Processors Lab",
+    term: "De-esser",
+    plainEnglish:
+      "Sibilance is the harsh 'S' sound in words like 'yes,' 'sister,' or 'sound,' and it sits around 4 to 8 kHz. A de-esser is a processor that spots this excessive sibilance and turns it down. Some work by compressing only at the sibilance frequencies, an approach called dynamic EQ. Others find the specific 'S' syllables and reduce just those. De-essers are key in vocal recording, where harsh esses can be distracting.",
+    glossaryId: "13de599c-2d67-45b9-8e64-d1a6ebb9219f",
+  },
   DelayLab: {
     status: 'wired',
     lab: "Delay",
@@ -233,7 +340,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "Harmonics are extra tones that sit above a note's main pitch. Their pitches are simple multiples of that main pitch. The mix of harmonics gives each instrument its own tone color. A flute and a guitar differ because their harmonics differ.",
     glossaryId: "1a3d423e-5d58-4039-88da-8b2d6cd8e6b1",
   },
-  FmLab: { status: 'hold', lab: "FM Synthesis", candidates: ["FM Synthesis", "Frequency modulation"], suggested: "FM Synthesis" },
+  FmLab: {
+    status: 'wired',
+    lab: "FM Synthesis",
+    term: "Frequency modulation synthesis",
+    plainEnglish:
+      "A way to build sounds by using one fast wobbling tone to shake the pitch of another tone. That shaking adds many extra tones (overtones), so a plain tone can turn bright, metallic, or bell-like.",
+    glossaryId: "79923475-794e-49df-8132-25c70ab44c91",
+  },
   ModularLab: {
     status: 'wired',
     lab: "Modular Synth",
@@ -242,7 +356,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "A modular synth is built from separate boxes you wire together. Patch cables decide how the sound flows. Every patch builds a new instrument. Nothing is fixed and nothing is saved — that is the appeal.",
     glossaryId: "d72bd8a0-4b38-5114-b86a-b5a38677b9a1",
   },
-  EnvelopeLab: { status: 'hold', lab: "Sound Envelope & Transients Lab", candidates: ["Envelope", "Transient", "ADSR"], suggested: "Envelope" },
+  EnvelopeLab: {
+    status: 'wired',
+    lab: "Sound Envelope & Transients Lab",
+    term: "Envelope",
+    plainEnglish:
+      "The envelope is the shape of a sound's loudness from start to finish. A drum hit has a spiky envelope - a sharp burst that dies away fast. A bowed string has a gentle one that swells and holds. Synthesizers and processors like compressors work by shaping this loudness contour, often described in four stages: attack, decay, sustain, and release.",
+    glossaryId: "2497363d-569d-4afb-abd6-f934e723ef84",
+  },
   StereoLab: {
     status: 'wired',
     lab: "Stereo Imaging",
@@ -251,9 +372,30 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "Stereo imaging is where sounds seem to sit between your two speakers. Level and timing differences between the left and right channels place each sound. A good image lets you point to where each instrument sounds like it is.",
     glossaryId: "75592455-aff1-4ec1-9100-a805acac9ee2",
   },
-  BinauralLab: { status: 'hold', lab: "Binaural Panner", candidates: ["Binaural rendering", "Binaural sound", "Pan"], suggested: "Binaural rendering" },
-  AutotuneLab: { status: 'hold', lab: "Autotune", candidates: ["Pitch Correction", "Auto-Tune"], suggested: "Pitch Correction" },
-  TuningLab: { status: 'hold', lab: "Tuning & Temperament Lab", candidates: ["temperament", "Tuning systems", "Equal temperament"], suggested: "temperament" },
+  BinauralLab: {
+    status: 'wired',
+    lab: "Binaural Panner",
+    term: "Binaural rendering",
+    plainEnglish:
+      "This makes headphone sound seem to come from around you. Each sound is filtered for the left and right ear. The filters copy how your head and ears change sound by direction. Your brain then hears a direction.",
+    glossaryId: "dac286af-6c80-4042-a8bb-83a8976bcfb8",
+  },
+  AutotuneLab: {
+    status: 'wired',
+    lab: "Autotune",
+    term: "Vocal tuning pass",
+    plainEnglish:
+      "A round of fixing notes that are slightly out of tune. Software nudges each note to the right pitch, like snapping it to the correct key.",
+    glossaryId: "241fa144-2edc-47f4-99e5-1c02a2b41035",
+  },
+  TuningLab: {
+    status: 'wired',
+    lab: "Tuning & Temperament Lab",
+    term: "Tuning systems",
+    plainEnglish:
+      "A tuning system decides the exact pitches used in music. One common system splits the octave into twelve equal steps. Another uses simple whole-number ratios between notes. Musicians measure tiny pitch gaps in units called cents.",
+    glossaryId: "5be5e0bc-00d7-4ec5-bdb3-b914fa4ece5f",
+  },
   DrumTuningLab: {
     status: 'wired',
     lab: "Drum Tuning Lab",
@@ -278,16 +420,86 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "A harmonograph draws pictures with swinging pendulums. One pendulum moves the pen and another moves the paper. Musical ratios between the swings draw beautiful looping figures. As the swinging dies down, the drawing spirals inward.",
     glossaryId: "20aaf2d0-6a59-5d55-b39e-2f0ead18f687",
   },
-  BassLab: { status: 'hold', lab: "Bass Guitar Physics", candidates: ["String length", "String harmonic", "Harmonic"], suggested: "String length" },
-  MicSelectLab: { status: 'hold', lab: "Microphone Selection Lab", candidates: ["Microphone (Mic)", "miking", "Microphone types"], suggested: "Microphone (Mic)" },
-  "MikingHub:drums": { status: 'hold', lab: "Membranophones (Miking Lab 1)", candidates: ["membranophone", "miking"], suggested: "membranophone" },
-  "MikingHub:percussion": { status: 'hold', lab: "Idiophones (Miking Lab 2)", candidates: ["Idiophone", "miking"], suggested: "Idiophone" },
-  "MikingHub:winds": { status: 'hold', lab: "Aerophones (Miking Lab 3)", candidates: ["Aerophone", "miking"], suggested: "Aerophone" },
-  "MikingHub:strings": { status: 'hold', lab: "Chordophones (Miking Lab 4)", candidates: ["Chordophone", "miking"], suggested: "Chordophone" },
-  "MikingHub:ensembles": { status: 'hold', lab: "Voice & Ensemble (Miking Lab 5)", candidates: ["miking", "Ensemble"], suggested: "miking" },
-  "MikingHub:field": { status: 'hold', lab: "Foley, Field & Scientific (Miking Lab 6)", candidates: ["miking", "Foley", "Field recording"], suggested: "miking" },
-  "MikingHub:broadcast": { status: 'hold', lab: "Sports & Broadcast (Miking Lab 7)", candidates: ["miking", "Broadcast"], suggested: "miking" },
-  SpeechLab: { status: 'hold', lab: "Speech & Voice Lab", candidates: ["speech chain", "Formant"], suggested: "speech chain" },
+  BassLab: {
+    status: 'wired',
+    lab: "Bass Guitar Physics",
+    term: "String length",
+    plainEnglish:
+      "String length is the part of the string free to vibrate. Shorter length means higher pitch. Halve the length and the note jumps an octave. Pressing a fret just shortens the vibrating part.",
+    glossaryId: "e2db8c3d-790d-50d1-91d0-2d00fb3f10e6",
+  },
+  MicSelectLab: {
+    status: 'wired',
+    lab: "Microphone Selection Lab",
+    term: "Mic Technique",
+    plainEnglish:
+      "The whole skill of picking the right mic and putting it in the right place to get the sound you want. It is the part of recording that happens before any knob on the console is touched.",
+    glossaryId: "786545cf-6e0b-4b3e-9d3c-cf2fb1ec561c",
+  },
+  "MikingHub:drums": {
+    status: 'wired',
+    lab: "Membranophones (Miking Lab 1)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  "MikingHub:percussion": {
+    status: 'wired',
+    lab: "Idiophones (Miking Lab 2)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  "MikingHub:winds": {
+    status: 'wired',
+    lab: "Aerophones (Miking Lab 3)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  "MikingHub:strings": {
+    status: 'wired',
+    lab: "Chordophones (Miking Lab 4)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  "MikingHub:ensembles": {
+    status: 'wired',
+    lab: "Voice & Ensemble (Miking Lab 5)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  "MikingHub:field": {
+    status: 'wired',
+    lab: "Foley, Field & Scientific (Miking Lab 6)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  "MikingHub:broadcast": {
+    status: 'wired',
+    lab: "Sports & Broadcast (Miking Lab 7)",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
+  SpeechLab: {
+    status: 'wired',
+    lab: "Speech & Voice Lab",
+    term: "miking",
+    plainEnglish:
+      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
+    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+  },
   TubeLab: {
     status: 'wired',
     lab: "Vacuum Tube Fundamentals",

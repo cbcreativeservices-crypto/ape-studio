@@ -17,7 +17,8 @@
  *   5. ordering: it shows FIRST — the lab's own intros hold while it is owed —
  *      and never stacks on another Modal, a closing fade, a push, or the
  *      amplitude orientation page;
- *   6. once per lab: CONTINUE writes the seen flag on the shared safe store,
+ *   6. once per TERM: CONTINUE writes the seen flag on the shared safe store
+ *      (one flag per glossary row, so labs sharing a term share it),
  *      it is never shown again, it survives both wipes (intro family) and
  *      "Reset onboarding hints" brings it back;
  *   7. it stays out of the app-start graph.
@@ -103,10 +104,10 @@ describe('1. every catalog lab is mapped (wired or HOLD) — and nothing else is
     const stale = Object.keys(L.LAB_TERM_ENTRIES).filter((k) => !keys.has(k));
     assert.deepEqual(stale, []);
   });
-  it('the counts the owner was given: 33 wired, 30 on HOLD', () => {
-    const all = Object.values(L.LAB_TERM_ENTRIES);
-    assert.equal(all.filter((e) => e.status === 'wired').length, 33);
-    assert.equal(all.filter((e) => e.status === 'hold').length, 30);
+  it('after the owner’s rulings (2026-10-19): 62 wired, 1 on HOLD (the calculator lab: no glossary row yet)', () => {
+    const all = Object.entries(L.LAB_TERM_ENTRIES);
+    assert.equal(all.filter(([, e]) => e.status === 'wired').length, 62);
+    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), ['CalcLab']);
   });
   it('route + params pick the catalog row; module screens are not labs', () => {
     assert.equal(L.labTermKey('MikingHub', { lab: 'drums' }), 'MikingHub:drums');
@@ -158,9 +159,40 @@ describe('2. the right term — and the right meaning — per lab', () => {
       TubeLab: 'Vacuum tube',
       AmpLab: 'Amplifier',
       EarTrainingLab: 'ear training',
+      // The owner's rulings, 2026-10-19: the ACTION (or the device) as it
+      // applies to audio — "always explain the action".
+      AmplitudeLab: 'Amplitude',
+      FoundationsPlayground: 'Sound Wave',
+      WaveLab: 'Acoustics',
+      SpeakerLab: 'Coverage pattern',
+      RoomDesignLab: 'Acoustic Treatment',
+      MeterLab: 'Audio Analyzer',
+      'MeterModule:detective': 'Troubleshooting',
+      CableLab: 'Cables (audio)',
+      ConnectorSelectLab: 'Connector',
+      PatchbayLab: 'Patch bay',
+      MixingGuides: 'Mixing',
+      CompressionLab: 'Dynamic range compression',
+      GateLab: 'Downward expansion',
+      SmartProcessorsLab: 'De-esser',
+      FmLab: 'Frequency modulation synthesis',
+      EnvelopeLab: 'Envelope',
+      BinauralLab: 'Binaural rendering',
+      AutotuneLab: 'Vocal tuning pass',
+      TuningLab: 'Tuning systems',
+      BassLab: 'String length',
+      MicSelectLab: 'Mic Technique',
+      'MikingHub:drums': 'miking',
+      'MikingHub:percussion': 'miking',
+      'MikingHub:winds': 'miking',
+      'MikingHub:strings': 'miking',
+      'MikingHub:ensembles': 'miking',
+      'MikingHub:field': 'miking',
+      'MikingHub:broadcast': 'miking',
+      SpeechLab: 'miking',
     };
-    for (const [route, term] of Object.entries(want)) assert.equal(wired(route)?.term, term, route);
-    assert.equal(Object.keys(want).length, 33, 'every wired lab is pinned here');
+    for (const [key, term] of Object.entries(want)) assert.equal(L.wiredLabTerm(key)?.term, term, key);
+    assert.equal(Object.keys(want).length, 62, 'every wired lab is pinned here');
   });
   it('the words are the glossary’s, not a paraphrase (spot checks, copied 2026-10-19)', () => {
     assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
@@ -177,25 +209,55 @@ describe('2. the right term — and the right meaning — per lab', () => {
       assert.match(e.glossaryId, /^[0-9a-f-]{36}$/, `${e.lab}: names its glossary row`);
     }
   });
-  it('Compression is NOT wired to the glossary’s air-pressure "Compression" (or file compression) — it waits for the owner', () => {
-    assert.equal(wired('CompressionLab'), null);
-    const e = L.LAB_TERM_ENTRIES.CompressionLab;
-    assert.equal(e.status, 'hold');
-    if (e.status === 'hold') {
-      assert.equal(e.suggested, 'Dynamic range compression');
-      assert.ok(!e.candidates.includes('Audio compression') && !e.candidates.includes('Data compression'));
-    }
+  it('Compression is the DYNAMICS process — never the air-pressure "Compression" or file "Audio compression"', () => {
+    const c = wired('CompressionLab');
+    assert.equal(c?.term, 'Dynamic range compression');
+    assert.equal(c?.glossaryId, '037a431c-1b1a-418f-b6c1-51e0cea14a9b');
+    assert.equal(
+      c?.plainEnglish,
+      'A compressor makes loud parts quieter, shrinking the gap between soft and loud. Above a set level (the threshold), it turns the signal down by a chosen ratio. Attack and release set how fast it reacts. Make-up gain restores overall loudness.',
+    );
   });
-  it('no wired text names a maker or model; the senses that would be wrong are not wired', () => {
+  it('miking is the ACTION: every miking lab, the Speech & Voice lab and the Voice & Ensemble tile define "miking"', () => {
+    const MIKING_ID = 'a40d40b1-35b3-496c-b488-65163b445bed';
+    for (const lab of ['drums', 'percussion', 'winds', 'strings', 'ensembles', 'field', 'broadcast']) {
+      assert.equal(wired('MikingHub', { lab })?.glossaryId, MIKING_ID, lab);
+    }
+    assert.equal(wired('SpeechLab')?.glossaryId, MIKING_ID);
+    assert.equal(
+      wired('MikingHub', { lab: 'ensembles' })?.plainEnglish,
+      'Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.',
+    );
+    // Microphone Selection: the glossary's "Mic Technique" (picking + placing the mic).
+    assert.equal(wired('MicSelectLab')?.glossaryId, '786545cf-6e0b-4b3e-9d3c-cf2fb1ec561c');
+  });
+  it('no wired term or text names a maker, model or product; no wrong-meaning or brand-name row is used', () => {
+    const BRAND = /Yamaha|DX7|Shure|Neumann|Royer|SM7B|U87|R-121|auto-?tune|Antares|Melodyne|Speakon|Digital Performer/i;
+    // Wrong meaning for a lab: air-pressure "Compression", file "Audio compression",
+    // synth "Voice", RF "Spectrum Analyzer", operations "Monitoring".
+    // A brand or product in the text: "FM Synthesis" (DX7), "Microphone types" (three makers),
+    // "Auto-Tune", and "Pitch Correction" (its text ends with 'auto-tune').
+    const BANNED = new Set([
+      '0944f59b-bf79-4181-81bb-92d2c386b560',
+      '7c954ccd-5c2b-4583-806d-5e3e11b9d745',
+      '4fe4d0a5-eb3c-46ff-8060-2f6a9f490071',
+      'fc1e912c-784d-438b-80f6-0355dcbaae68',
+      '3da4e8b1-4f93-4963-be24-f28c9b3b780b',
+      '745577c4-83bd-4537-a5bf-0f71af58519e',
+      '54aff4e0-22ca-48de-8b4a-11a04317760f',
+      'ba8a3ddf-2979-5b0d-b944-485136f685a4',
+      '76962e8d-9fa1-4ecf-85b7-69dc19cbf989',
+    ]);
     for (const e of Object.values(L.LAB_TERM_ENTRIES)) {
       if (e.status !== 'wired') continue;
-      assert.doesNotMatch(e.plainEnglish, /Yamaha|DX7|Shure|Neumann|Royer|SM7B|U87|Auto-Tune/, e.lab);
+      assert.doesNotMatch(e.plainEnglish, BRAND, e.lab);
+      assert.doesNotMatch(e.term, BRAND, e.lab);
+      assert.ok(!BANNED.has(e.glossaryId), `${e.lab}: uses a wrong-meaning or brand-name glossary row`);
+      assert.ok(!['Compression', 'Voice', 'Spectrum Analyzer', 'Monitoring', 'FM Synthesis', 'Microphone types'].includes(e.term), e.lab);
     }
-    // The glossary's "Voice" is a synth voice and "Spectrum Analyzer" is an RF tool.
-    assert.equal(wired('SpeechLab'), null);
-    assert.equal(wired('MeterLab'), null);
-    assert.equal(wired('FmLab'), null);
-    assert.equal(wired('AutotuneLab'), null);
+    // FM by its generic name; Autotune by pitch-correction software, no product name.
+    assert.equal(wired('FmLab')?.term, 'Frequency modulation synthesis');
+    assert.match(wired('AutotuneLab')?.plainEnglish ?? '', /Software nudges each note to the right pitch/);
   });
   it('the title raises only the first letter; the definition is untouched', () => {
     assert.equal(L.labTermTitle('delay'), 'Delay');
@@ -326,20 +388,63 @@ describe('5. ordering — first, and never stacked', () => {
   });
 });
 
-describe('6. once per lab, on the shared safe store', () => {
+describe('6. once per TERM (glossary row), on the shared safe store', () => {
   it('a new device: unseen → CONTINUE → seen, written, and never shown again', async () => {
     AS.clear();
     await seenStore.labTermsSeenHydrate();
     assert.equal(seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), 'CompressionLab'), false);
     assert.equal(await seenStore.markLabTermSeen('LimiterLab'), true);
-    assert.deepEqual(JSON.parse(AS.get('ape:intro:labTerms') ?? 'null'), ['LimiterLab']);
+    // Stored per glossary TERM (its row id), not per lab.
+    assert.deepEqual(JSON.parse(AS.get('ape:intro:labTerms') ?? 'null'), ['term:7f621dc4-6d04-4c29-bc61-e6352f8afcd8']);
     assert.equal(seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), 'LimiterLab'), true);
     assert.deepEqual(state({ seen: true }), { owed: false, show: false });
     // Twice is still once.
     await seenStore.markLabTermSeen('LimiterLab');
-    assert.deepEqual(JSON.parse(AS.get('ape:intro:labTerms') ?? 'null'), ['LimiterLab']);
+    assert.deepEqual(JSON.parse(AS.get('ape:intro:labTerms') ?? 'null'), ['term:7f621dc4-6d04-4c29-bc61-e6352f8afcd8']);
     // Per lab: another lab is still owed.
     assert.equal(seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), 'ReverbLab'), false);
+  });
+  it('one term, many labs: CONTINUE on one miking lab means no popup on any other miking lab (owner 2026-10-19)', async () => {
+    // A fresh device: the reset drops both the stored key and the store's memory.
+    await intros.resetScreenIntros();
+    await settle();
+    await seenStore.labTermsSeenHydrate();
+    assert.deepEqual([...seenStore.seenLabTerms()], []);
+    const seenOf = (k: string) => seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), k);
+    const MIKING = ['MikingHub:drums', 'MikingHub:percussion', 'MikingHub:winds', 'MikingHub:strings', 'MikingHub:ensembles', 'MikingHub:field', 'MikingHub:broadcast', 'SpeechLab'];
+    for (const k of MIKING) assert.equal(seenOf(k), false, k);
+    await seenStore.markLabTermSeen('MikingHub:drums');
+    for (const k of MIKING) assert.equal(seenOf(k), true, k);
+    assert.deepEqual(state({ seen: seenOf('MikingHub:strings') }), { owed: false, show: false });
+    // A different term is still owed, even a close cousin ("Mic Technique").
+    assert.equal(seenOf('MicSelectLab'), false);
+    assert.equal(seenOf('CompressionLab'), false);
+  });
+  it('one shared term: Beginning Mixing seen → Advanced Mixing and Mixing Guides seen; EQ the same', async () => {
+    // A fresh device: the reset drops both the stored key and the store's memory.
+    await intros.resetScreenIntros();
+    await settle();
+    await seenStore.labTermsSeenHydrate();
+    assert.deepEqual([...seenStore.seenLabTerms()], []);
+    const seenOf = (k: string) => seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), k);
+    await seenStore.markLabTermSeen('BeginningMixingLab');
+    assert.equal(seenOf('AdvancedMixingLab'), true);
+    assert.equal(seenOf('MixingGuides'), true);
+    assert.equal(seenOf('EqLabHome'), false);
+    await seenStore.markLabTermSeen('EqLab');
+    assert.equal(seenOf('EqLabHome'), true);
+    // Two flags cover five labs.
+    assert.equal(JSON.parse(AS.get('ape:intro:labTerms') ?? '[]').length, 2);
+  });
+  it('an older per-LAB flag still counts, for its term: a lab already seen means its term is seen', () => {
+    assert.equal(L.isLabTermSeen(['MikingHub:winds'], 'MikingHub:winds'), true);
+    assert.equal(L.isLabTermSeen(['MikingHub:winds'], 'MikingHub:field'), true);
+    assert.equal(L.isLabTermSeen(['AdvancedMixingLab'], 'BeginningMixingLab'), true);
+    assert.equal(L.isLabTermSeen(['AdvancedMixingLab'], 'MasteringLab'), false);
+    assert.equal(L.isLabTermSeen([], 'MikingHub:winds'), false);
+    // A HOLD lab has no term, so only its own key could ever count.
+    assert.equal(L.labTermSeenFlag('CalcLab'), 'CalcLab');
+    assert.equal(L.labTermSeenFlag('SpeechLab'), 'term:a40d40b1-35b3-496c-b488-65163b445bed');
   });
   it('"Reset onboarding hints" brings every lab popup back without a relaunch', async () => {
     await seenStore.markLabTermSeen('ReverbLab');
