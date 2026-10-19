@@ -1,0 +1,99 @@
+[
+ {
+  "screen": 3,
+  "title": "Connections and signal types",
+  "scores": {
+   "1": 8,
+   "2": 6,
+   "3": 8,
+   "4": 7,
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 7,
+   "10": 8,
+   "11": 8,
+   "12": 7,
+   "13": 7,
+   "14": 7,
+   "15": 7,
+   "16": 7,
+   "17": 8,
+   "18": 8,
+   "19": 8,
+   "20": 6
+  },
+  "areas": {
+   "A": 7.25,
+   "B": null,
+   "C": 7.67,
+   "D": 7.0,
+   "E": 8.0,
+   "F": 7.0
+  },
+  "overall": 7.34,
+  "capped": false,
+  "letter": "B",
+  "evidence": {
+   "2": "The turntable's rear panel is drawn 300 mm wide (dressGeometry TT_REAR) next to a 270 mm mixer and a 320 mm player, so on the glass the turntable reads the same size as the media player. A DJ turntable's plinth is about 450 mm wide; at 2/3 size it is visibly out of scale beside the mixer.",
+   "20": "Unchanged from round 1: at 390 the RCA jacks are about 10 px and the panel's printed CH1 / PHONO / LINE legends are hidden, so telling LINE from PHONO by the panel itself needs FULL SCREEN 3x. The new parked plugs and their fading stubs are barely visible at 390; only the callout says they are there."
+  },
+  "worst3": [
+   "Phone readability unchanged: jacks about 10 px and the printed CH1/PHONO/LINE legends hidden at 390; the panel can only be read at FULL SCREEN 3x",
+   "The parked (other-source) plugs are drawn at 62% opacity with a stub that fades to nothing. At 3x the L stub is a translucent grey streak across the green selector ring and the R stub's red fade lies over the printed LINE legend, so they read like glare, not cable",
+   "The turntable's rear is 300 mm wide (a real DJ deck is about 450 mm), so it looks the same size as the media player. Also, a lead that has just been pulled still swings as a rigid stick around its socket (spring damping 1.6 rotates the whole run)"
+  ],
+  "screenshot": "final3/03r2_tt_selected_deckA_plugs_stay_in_line_390.jpg"
+ },
+ {
+  "screen": 4,
+  "title": "Build your first DJ system",
+  "scores": {
+   "1": 7,
+   "2": 7,
+   "3": 8,
+   "4": 6,
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 6,
+   "10": 8,
+   "11": 7,
+   "12": 6,
+   "13": 8,
+   "14": 6,
+   "15": 7,
+   "16": 6,
+   "17": 7,
+   "18": 7,
+   "19": 8,
+   "20": 7
+  },
+  "areas": {
+   "A": 7.0,
+   "B": null,
+   "C": 7.0,
+   "D": 6.6,
+   "E": 7.0,
+   "F": 7.5
+  },
+  "overall": 6.97,
+  "capped": false,
+  "letter": "C",
+  "evidence": {
+   "4": "UNWIRE (and the screen's first, unbuilt state) leaves the loose ends fanned out at about 45 degrees instead of hanging. At 3x the MST L and MST R XLR plugs cross each other in an X over the mixer's rear panel, and the BTH plugs splay down over the front-edge bar. A loose plug on a lead hangs straight down.",
+   "9": "Still the only motion: the glow pulse along live cables, LED changes, the HOT-PATCH flash and the zoom into the CABLE view. Nothing physical moves, so the motion is decorative.",
+   "12": "Fault fix at 390: when MST L moves into PA L IN, the red HOT-PATCH flash lands on the room band's title and covers 'SHORTENED', and the PA L name drops below its speaker. Unwired at 3x: the two loose XLR plugs overlap each other on the mixer's face. Wired at 3x: the PWR B flag sits on the left end of the mixer's front-edge bar.",
+   "14": "Flags now sit off the cables, which is the round-1 fix. But on the glass the 'TO THE HEADPHONES' and 'MIXER'S FRONT EDGE' names are optional and drop out in the wired and fault states, so the break mark and the bar go unlabelled. The MIXER name also vanishes when a focus flag takes its air (wired, BTH L just patched). FULL SCREEN 1x labels only five of the sixteen runs (B L·R, MST L, BTH L, A L·R, PWR A). At 390 the flags are at the 9-pt floor.",
+   "16": "At 390 in the wired and fault states, an unlabelled '//' break mark under the mixer and a bare dark bar (the mixer's front edge) sit in the patch band. They are the owner's 'what is that?' test: they are explained only in the unwired state or at a closer zoom. The parallel lanes are calmer than in round 1, but they still read as a web at the glass size."
+  },
+  "worst3": [
+   "Loose ends after UNWIRE (and on first entry) splay at about 45 degrees, and the two MASTER XLR plugs cross in an X over the mixer's rear panel: a gravity and collision fault on the state the learner starts from",
+   "Labels drop out when they are most needed. The '//' headphone break and the front-edge bar are unlabelled on the glass in the wired and fault states, MIXER can vanish, FULL SCREEN 1x flags only five runs, and the HOT-PATCH flash covers the room title during the fault fix",
+   "FULL SCREEN 1x draws the map no larger than the glass (black above and below), so at 390 the booth view still needs 3x and panning. The CABLE view is the only phone-size way to trace a lead, and the mixer is still drawn as a rear panel plus a separate front-edge bar"
+  ],
+  "screenshot": "final3/04r2_fault_booth_view_390.jpg"
+ }
+]
