@@ -7,18 +7,23 @@
  *             the mixer's phono stage (engine/djStage2.controlScope). Round
  *             and sharp = good; hum wobbles it, a hot signal squares it, a
  *             dirty record fuzzes it, a stopped platter is a dot.
+ *   DvsRig    behind the booth: the real rear panels, the laptop on its
+ *             stand and every lead, at one scale (below).
  *   DvsRoute  where each signal goes: the turntable's CONTROL tone into the
  *             mixer's PHONO jacks and over USB to the software; the software's
  *             MUSIC back over USB 1/2 to channel 1 and the crowd — and, in
  *             red, a control tone on its way to the speakers.
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
-import { RcaSocket, UsbB } from './parts';
+import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { Cable, PlugFace } from './parts';
+import { styleOf } from './cables';
+import { MixerRear, TT_REAR_JACKS, TurntableRear } from './RearPanels';
+import { armPartAt } from '../geometry/armGeometry';
 import { INK } from './ink';
 import { SceneText } from './sceneText';
 import { DNode, DWire } from './s2Diagram';
-import type { Box } from '../geometry/boothGeometry';
+import { MIXER_REAR_JACKS, TT, type Box } from '../geometry/boothGeometry';
 import { DVS_MODE_WORDS, type DvsLock, type DvsMode } from '../model/djDvs';
 
 export function DvsScope({ b, scope, quality, lock, mode, k = 1 }: { b: Box; scope: { l: number[]; r: number[] } | null; quality: number; lock: DvsLock; mode: DvsMode; k?: number }) {
@@ -55,144 +60,236 @@ export function DvsScope({ b, scope, quality, lock, mode, k = 1 }: { b: Box; sco
 }
 
 /**
- * The DVS CABLING, face-on at the rear (visual review 2 #12): the turntable's
- * rear (ground lug, RCA pair), the mixer's rear (GND post, PHONO 1 pair, its
- * USB-B socket) and the laptop seen from its left side (base, keyboard deck,
- * lid, its USB-A port). The control tone's RCA leads, the ground lead and the
- * USB cable each run in their OWN lane, flagged on the run ("CTRL L/R",
- * "USB"); a loose ground spade hangs off its post. Screen points.
+ * BEHIND THE BOOTH — the DVS cabling as you see it reaching round the back
+ * (grade 2026-10-19: real rear panels and a real laptop, at ONE scale, on a
+ * table). Authored in mm (x right, y DOWN, the table top at y = 0), drawn at
+ * one scale — as near the turntable top view's scale beside it as the inset
+ * allows:
+ *   - the MIXER's rear (the house panel, MixerRear: its printed legends, the
+ *     CH 1 PHONO pair, the GND post, the USB-B socket) on its feet;
+ *   - the TURNTABLE's back: its 453 mm plinth on its domed feet, its rear
+ *     connector plate (the house panel, TurntableRear: OUT L / R, GND, the
+ *     PHONO / LINE switch, AC IN), and over the plinth the platter's rim
+ *     with its strobe dots, the record, and the arm from behind (its pillar,
+ *     the counterweight's end face, the tube out to the headshell — the SAME
+ *     pose as the top view);
+ *   - the LAPTOP on its stand behind the mixer, seen from behind: the lid's
+ *     back, the hinge, the base's rear face with its ports, the stand's legs
+ *     on the table.
+ * Every lead is the house cable (its plug bodies, its own lane, rounded
+ * bends, no merging): the control record's RCA pair (white L, red R, amber
+ * glow while the platter turns), the thin ground wire (a LOOSE spade lies on
+ * the table), the USB cable (blue glow while it carries audio). Their names
+ * sit in the free bands, never on a cable or a panel.
  */
-export function DvsRig({ b, gnd, ttPlaying, usbLive, k = 1 }: { b: Box; gnd: boolean; ttPlaying: boolean; usbLive: boolean; k?: number }) {
-  const fs = 9.5 * k;
-  const top = b.y + fs + 6;
-  const h = b.h - fs - 10;
-  const ttW = Math.min(50 * k, b.w * 0.24);
-  const mxW = Math.min(58 * k, b.w * 0.28);
-  const lpW = Math.min(46 * k, b.w * 0.22);
-  const gap = (b.w - ttW - mxW - lpW - 8) / 2;
-  const tt = { x: b.x + 4, y: top, w: ttW, h };
-  const mx = { x: tt.x + ttW + gap, y: top, w: mxW, h };
-  const lp = { x: mx.x + mxW + gap, y: top, w: lpW, h };
-  const step = h / 4.6;
-  const row = (i: number) => top + step * (i + 0.65);
-  const d = Math.min(10 * k, step * 0.74);
-  const tx = tt.x + tt.w * 0.68;
-  const mxs = mx.x + mx.w * 0.3;
-  const lug = { x: tx, y: row(0) };
-  const post = { x: mxs, y: row(0) };
-  const L = { y: row(1) };
-  const R = { y: row(2) };
-  const usb = { x: mx.x + mx.w * 0.72, y: row(3) };
-  const port = { x: lp.x + 6 * k, y: row(3) };
-  const plate = (r: Box, title: string) => (
-    <Group>
-      <RoundedRect x={r.x} y={r.y} width={r.w} height={r.h} r={4}>
-        <LinearGradient start={vec(0, r.y)} end={vec(0, r.y + r.h)} colors={['#2a2c31', '#17181c']} />
-      </RoundedRect>
-      <RoundedRect x={r.x + 0.5} y={r.y + 0.5} width={r.w - 1} height={r.h - 1} r={4} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.12)" />
-      <SceneText x={r.x + r.w / 2} y={r.y - 3} size={fs} text={title} color={INK.print} face="label" align="center" minPt={9.5} />
-    </Group>
-  );
-  const plug = (x: number, y: number, ring: string) => (
-    <Group>
-      <Circle cx={x} cy={y} r={d * 0.6}>
-        <RadialGradient c={vec(x - d * 0.15, y - d * 0.2)} r={d * 0.7} colors={['#e1e5ea', '#8a9099', '#3a3e45']} />
-      </Circle>
-      <Circle cx={x} cy={y} r={d * 0.6} style="stroke" strokeWidth={d * 0.16} color={ring} />
-    </Group>
-  );
-  const flag = (x: number, y: number, t: string, c: string) => {
-    const w = t.length * fs * 0.56 + 8;
-    return (
-      <Group>
-        <RoundedRect x={x - w / 2} y={y - fs * 0.75} width={w} height={fs * 1.5} r={3} color="rgba(8,8,10,0.9)" />
-        <RoundedRect x={x - w / 2} y={y - fs * 0.75} width={w} height={fs * 1.5} r={3} style="stroke" strokeWidth={1} color={c} opacity={0.7} />
-        <SceneText x={x} y={y + fs * 0.36} size={fs} text={t} color={c} face="label" align="center" minPt={9.5} />
-      </Group>
-    );
-  };
-  const g1 = (tt.x + tt.w + mx.x) / 2;
-  const g2 = (mx.x + mx.w + lp.x) / 2;
-  const ctrl = ttPlaying ? INK.amber : INK.printDim;
+const RIG = {
+  mixer: { x: 0, y: -116, feetH: 8 },
+  tt: { x: 295, w: 453, plinth: 104, feet: 34, plateX: 20, plateY: 7 },
+  lap: { x: -40, w: 330, stand: 120, base: 17, lid: 200 },
+  view: { x0: -46, x1: 620, y0: -347, y1: 12 },
+} as const;
+const TT_TOP = -(RIG.tt.feet + RIG.tt.plinth);
+const TT_PLATE = { x: RIG.tt.x + RIG.tt.plateX, y: TT_TOP + RIG.tt.plateY };
+const ttJack = (j: keyof typeof TT_REAR_JACKS): [number, number] => [TT_PLATE.x + TT_REAR_JACKS[j].x, TT_PLATE.y + TT_REAR_JACKS[j].y];
+const mixJack = (j: keyof typeof MIXER_REAR_JACKS): [number, number] => [RIG.mixer.x + MIXER_REAR_JACKS[j].x, RIG.mixer.y + MIXER_REAR_JACKS[j].y];
+const LAP_BASE = -(RIG.lap.stand + RIG.lap.base);
+const LAP_PORT: [number, number] = [219, LAP_BASE + RIG.lap.base / 2];
+
+/** The leads' lanes (mm), each its own: the RCA pair and the ground wire run
+ *  along the table in front of the panels' feet, nested so none crosses
+ *  another; the USB cable drops from the laptop over the mixer's back. */
+export function dvsRigRuns(gnd: boolean) {
+  const [tl, tly] = ttJack('outL');
+  const [tr, try_] = ttJack('outR');
+  const [tg, tgy] = ttJack('gnd');
+  const ml = mixJack('ch1.phono.L');
+  const mr = mixJack('ch1.phono.R');
+  const mg = mixJack('gnd');
+  const mu = mixJack('usb');
+  const L: [number, number][] = [[tl, tly], [tl, -17], [99, -17], [99, ml[1]], [ml[0], ml[1]]];
+  const R: [number, number][] = [[tr, try_], [tr, -11.5], [mr[0], -11.5], [mr[0], mr[1]]];
+  const G: [number, number][] = gnd ? [[tg, tgy], [tg, -5], [56, -5], [56, mg[1]], [mg[0], mg[1]]] : [[tg, tgy], [tg, -5], [118, -5], [104, -3]];
+  const U: [number, number][] = [[LAP_PORT[0], LAP_PORT[1] + 4], [215, -110], [215, -62], [mu[0], mu[1] - 9]];
+  return { L, R, G, U, usb: mu };
+}
+
+function LaptopFromBehind() {
+  const { x, w, base, lid } = RIG.lap;
+  const by = LAP_BASE;
+  const ly = by - lid;
   return (
     <Group>
-      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={8} color="rgba(6,7,9,0.94)" />
-      {plate(tt, 'TURNTABLE')}
-      {plate(mx, 'MIXER REAR')}
-      {/* the laptop, seen from its left side: base, lid, its USB port */}
-      <SceneText x={lp.x + lp.w / 2} y={lp.y - 3} size={fs} text="LAPTOP" color={INK.print} face="label" align="center" minPt={9.5} />
-      <RoundedRect x={lp.x} y={row(3) - 5 * k} width={lp.w} height={10 * k} r={3 * k}>
-        <LinearGradient start={vec(0, row(3) - 5 * k)} end={vec(0, row(3) + 5 * k)} colors={['#5a5e66', '#33363c', '#1e2024']} />
+      {/* the stand: its platform and two legs down to the table */}
+      {[x + 10, x + w - 20].map((lx) => (
+        <RoundedRect key={lx} x={lx} y={by + base} width={10} height={RIG.lap.stand} r={2}>
+          <LinearGradient start={vec(lx, 0)} end={vec(lx + 10, 0)} colors={['#c9ced5', '#8a9099', '#4a4e56']} />
+        </RoundedRect>
+      ))}
+      <RoundedRect x={x + 4} y={by + base} width={w - 8} height={4} r={1.5}>
+        <LinearGradient start={vec(0, by + base)} end={vec(0, by + base + 4)} colors={['#b9bec6', '#5c626b']} />
       </RoundedRect>
-      {/* the lid, open and leaning back from its hinge at the rear: its
-          outer shell and, inside it, the screen's edge */}
-      {(() => {
-        const hx = lp.x + lp.w - 4 * k;
-        const hy = row(3) - 5 * k;
-        const len = Math.min(lp.w * 0.95, hy - lp.y - 4);
-        const a = (100 * Math.PI) / 180;
-        const tx = hx - Math.cos(a) * len;
-        const ty = hy - Math.sin(a) * len;
-        const p = Skia.PathBuilder.Make();
-        p.moveTo(hx, hy);
-        p.lineTo(tx, ty);
-        p.lineTo(tx - 4.5 * k, ty + 0.8 * k);
-        p.lineTo(hx - 5 * k, hy);
-        p.close();
-        return (
-          <Group>
-            <Path path={p.detach()}>
-              <LinearGradient start={vec(hx - 5 * k, 0)} end={vec(hx, 0)} colors={['#1a1b1f', '#4a4e56']} />
-            </Path>
-            <Line p1={vec(hx - 4.6 * k, hy - 2 * k)} p2={vec(tx - 4 * k, ty + 2 * k)} color="#0f2233" strokeWidth={1.4 * k} />
-            <Circle cx={hx - 2.5 * k} cy={hy} r={2 * k} color="#5a5e66" />
-          </Group>
-        );
-      })()}
-      <RoundedRect x={port.x - 2 * k} y={port.y - 2 * k} width={6 * k} height={4 * k} r={1} color="#050506" />
-      {/* the turntable's ground lug and RCA pair */}
-      <Circle cx={lug.x} cy={lug.y} r={d * 0.4}>
-        <RadialGradient c={vec(lug.x - 1, lug.y - 1)} r={d * 0.5} colors={['#e1e5ea', '#6c727b']} />
-      </Circle>
-      <RcaSocket cx={tx} cy={L.y} d={d} ring="#e9ecef" />
-      <RcaSocket cx={tx} cy={R.y} d={d} ring="#d9453a" />
-      <SceneText x={tt.x + 3} y={lug.y + fs * 0.36} size={fs} text="GND" color={INK.printDim} face="label" minPt={9.5} />
-      {/* the mixer's GND post, PHONO 1 pair and USB-B socket */}
-      <Circle cx={post.x} cy={post.y} r={d * 0.46}>
-        <RadialGradient c={vec(post.x - 1.5, post.y - 1.5)} r={d * 0.6} colors={['#f2d27a', '#9a7a2a']} />
-      </Circle>
-      <RcaSocket cx={mxs} cy={L.y} d={d} ring="#e9ecef" />
-      <RcaSocket cx={mxs} cy={R.y} d={d} ring="#d9453a" />
-      <UsbB x={usb.x - 6 * (d / 10)} y={usb.y - 5.5 * (d / 10)} s={d / 10} />
-      <SceneText x={mx.x + mx.w - 3} y={(L.y + R.y) / 2 + fs * 0.36} size={fs} text="PH 1" color={INK.amber} face="label" align="right" minPt={9.5} />
-      <SceneText x={mx.x + 3} y={usb.y + fs * 0.36} size={fs} text="USB" color={INK.print} face="label" minPt={9.5} />
-      {/* the leads, each in its own lane */}
-      {gnd ? (
-        <Line p1={vec(lug.x, lug.y)} p2={vec(post.x, post.y)} color="#8a9099" strokeWidth={1.6 * k} />
-      ) : (
-        <Group>
-          <Path path={(() => { const p = Skia.PathBuilder.Make(); p.moveTo(lug.x, lug.y); p.lineTo(g1 - 4 * k, lug.y); p.lineTo(g1 - 6 * k, lug.y + step * 0.55); return p.detach(); })()} style="stroke" strokeWidth={1.6 * k} color="#8a9099" />
-          <RoundedRect x={g1 - 9 * k} y={lug.y + step * 0.55} width={6 * k} height={4 * k} r={1} color="#c9ced5" />
-          <SceneText x={g1} y={b.y + fs} size={fs} text="LOOSE" color={INK.peak} face="label" align="center" minPt={9.5} />
-        </Group>
-      )}
-      <Line p1={vec(tx, L.y)} p2={vec(mxs, L.y)} color="#c9ccd2" strokeWidth={3 * k} strokeCap="round" />
-      <Line p1={vec(tx, R.y)} p2={vec(mxs, R.y)} color="#c0392b" strokeWidth={3 * k} strokeCap="round" />
-      {ttPlaying ? <Line p1={vec(tx, (L.y + R.y) / 2)} p2={vec(mxs, (L.y + R.y) / 2)} color={INK.amber} strokeWidth={6 * k} opacity={0.18} /> : null}
-      {plug(tx, L.y, '#e9ecef')}
-      {plug(tx, R.y, '#d9453a')}
-      {plug(mxs, L.y, '#e9ecef')}
-      {plug(mxs, R.y, '#d9453a')}
-      <Line p1={vec(usb.x, usb.y)} p2={vec(port.x, port.y)} color="#3a3d43" strokeWidth={3.4 * k} strokeCap="round" />
-      {usbLive ? <Line p1={vec(usb.x, usb.y)} p2={vec(port.x, port.y)} color={INK.blue} strokeWidth={7 * k} opacity={0.22} /> : null}
-      <RoundedRect x={usb.x - 4 * k} y={usb.y - 4 * k} width={8 * k} height={8 * k} r={2} color="#2a2c31" />
-      <RoundedRect x={port.x - 8 * k} y={port.y - 3.5 * k} width={10 * k} height={7 * k} r={2} color="#2a2c31" />
-      {flag(g1, (L.y + R.y) / 2, 'CTRL L/R', ctrl)}
-      {flag(g2, usb.y, 'USB', usbLive ? INK.blue : INK.printDim)}
+      {/* the lid's back (the screen faces the DJ, away from us): a dark
+          shell, lit from the upper left, its rim catching the light; the
+          screen's glow spills over its top edge */}
+      <RoundedRect x={x + 6} y={ly - 6} width={w - 12} height={10} r={5} color="rgba(120,170,255,0.10)">
+        <BlurMask blur={5} style="normal" />
+      </RoundedRect>
+      <RoundedRect x={x + 4} y={ly} width={w - 8} height={lid + 2} r={9}>
+        <LinearGradient start={vec(x, ly)} end={vec(x + w, by)} colors={['#3e4148', '#2a2c31', '#1c1d21']} />
+      </RoundedRect>
+      <RoundedRect x={x + 4.6} y={ly + 0.6} width={w - 9.2} height={lid} r={8.5} style="stroke" strokeWidth={1.2} color="rgba(255,255,255,0.16)" />
+      <Line p1={vec(x + 30, by - 20)} p2={vec(x + 150, ly + 12)} color="rgba(255,255,255,0.05)" strokeWidth={26} strokeCap="round" />
+      {/* the hinge, then the base's rear face: vents, ports, rubber feet */}
+      <RoundedRect x={x + 22} y={by - 3} width={w - 44} height={6} r={3}>
+        <LinearGradient start={vec(0, by - 3)} end={vec(0, by + 3)} colors={['#4a4e56', '#16171a']} />
+      </RoundedRect>
+      <RoundedRect x={x} y={by} width={w} height={base} r={3}>
+        <LinearGradient start={vec(0, by)} end={vec(0, by + base)} colors={['#4a4d54', '#2a2c31', '#17181c']} />
+      </RoundedRect>
+      {Array.from({ length: 16 }, (_, i) => (
+        <RoundedRect key={i} x={x + 40 + i * 6.5} y={by + 6} width={3.6} height={6} r={1.2} color="#08090b" />
+      ))}
+      {/* a USB-C, a second USB-A, and the USB-A the cable is in */}
+      <RoundedRect x={163} y={LAP_PORT[1] - 1.6} width={9} height={3.2} r={1.6} color="#050506" />
+      <RoundedRect x={186} y={LAP_PORT[1] - 2.4} width={13} height={4.8} r={0.6} color="#050506" />
+      <Rect x={188} y={LAP_PORT[1] - 0.2} width={9} height={1.4} color="#2a5ea8" />
+      <RoundedRect x={x + 20} y={by + base - 1} width={18} height={2.4} r={1.2} color="#0b0c0e" />
+      <RoundedRect x={x + w - 38} y={by + base - 1} width={18} height={2.4} r={1.2} color="#0b0c0e" />
     </Group>
   );
 }
 
+/** The turntable from behind, on its own feet: the plinth's back with its
+ *  connector plate, and above it the platter's rim, the record and the arm. */
+function TurntableFromBehind({ preamp, ang }: { preamp: 'PHONO' | 'LINE'; ang: number }) {
+  const { x, w, plinth, feet } = RIG.tt;
+  const top = TT_TOP;
+  // from behind the turntable is mirrored: plinth x (from its front-left)
+  // becomes w − x from its left end as we see it
+  const mx = (px: number) => x + w - px;
+  const platterX = mx(TT.platter.cx);
+  const pivotX = mx(TT.armPivot.x);
+  const stylusX = mx(armPartAt('stylus', ang).x);
+  const tubeY = top - 43;
+  const recTop = top - 22;
+  const dots = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    for (let i = 0; i < 22; i++) p.addRect(Skia.XYWHRect(platterX - 160 + i * 15.2, top - 11, 4, 4));
+    return p.detach();
+  }, [platterX, top]);
+  return (
+    <Group>
+      {/* the domed feet, then the plinth's back face */}
+      {[x + 26, x + w - 76].map((fx) => (
+        <RoundedRect key={fx} x={fx} y={-feet} width={50} height={feet} r={12}>
+          <LinearGradient start={vec(fx, 0)} end={vec(fx + 50, 0)} colors={['#3a3c42', '#1e1f23', '#0b0c0e']} />
+        </RoundedRect>
+      ))}
+      <RoundedRect x={x} y={top} width={w} height={plinth} r={6}>
+        <LinearGradient start={vec(0, top)} end={vec(0, top + plinth)} colors={['#34373d', '#23252a', '#16171a']} />
+      </RoundedRect>
+      <Line p1={vec(x + 4, top + 0.7)} p2={vec(x + w - 4, top + 0.7)} color="rgba(255,255,255,0.2)" strokeWidth={1} />
+      <TurntableRear x={TT_PLATE.x} y={TT_PLATE.y} on preamp={preamp} />
+      {/* the platter's rim (its strobe dots) and the record on it */}
+      <RoundedRect x={platterX - 166} y={top - 17} width={332} height={17} r={1.5}>
+        <LinearGradient start={vec(0, top - 17)} end={vec(0, top)} colors={['#eef1f4', '#b9bec6', '#6c727b']} />
+      </RoundedRect>
+      <Path path={dots} color="#3a3e45" />
+      <RoundedRect x={platterX - 151} y={recTop} width={302} height={5} r={1} color="#d4d7dc" />
+      {/* the arm from behind: its base and pillar, the counterweight's end
+          face toward us, the tube out to the headshell over the record */}
+      <Line p1={vec(pivotX, tubeY)} p2={vec(stylusX, recTop - 16)} color="#b9bec6" strokeWidth={8.5} strokeCap="round" />
+      <RoundedRect x={stylusX - 12} y={recTop - 20} width={24} height={18} r={2} color="#16171a" />
+      <RoundedRect x={pivotX - 26} y={top - 6} width={52} height={6} r={2} color="#2a2c31" />
+      <RoundedRect x={pivotX - 11} y={tubeY} width={22} height={top - 6 - tubeY} r={2}>
+        <LinearGradient start={vec(pivotX - 11, 0)} end={vec(pivotX + 11, 0)} colors={['#eef1f4', '#9aa0a8', '#4a4e56']} />
+      </RoundedRect>
+      <Circle cx={pivotX} cy={tubeY} r={15}>
+        <RadialGradient c={vec(pivotX - 5, tubeY - 5)} r={18} colors={['#eef1f4', '#9aa0a8', '#3a3e45']} />
+      </Circle>
+      <Circle cx={pivotX} cy={tubeY} r={15} style="stroke" strokeWidth={1} color="rgba(0,0,0,0.5)" />
+      <Circle cx={pivotX} cy={tubeY} r={4} color="#3a3e45" />
+    </Group>
+  );
+}
+
+export function DvsRig({ b, gnd, ttPlaying, usbLive, preamp, ang, scale, k = 1 }: { b: Box; gnd: boolean; ttPlaying: boolean; usbLive: boolean; preamp: 'PHONO' | 'LINE'; ang: number; scale: number; k?: number }) {
+  const fs = 9.5 * k;
+  const V = RIG.view;
+  const head = fs + 8;
+  const foot = fs + 8;
+  const s = Math.min(scale, (b.w - 8) / (V.x1 - V.x0), (b.h - head - foot) / (V.y1 - V.y0));
+  // centred in the height left over; the names band right under the table
+  const hC = (V.y1 - V.y0) * s;
+  const top = b.y + head + Math.max(0, (b.h - head - foot - hC) / 2);
+  const ox = b.x + 4 - V.x0 * s;
+  const oy = top - V.y0 * s;
+  const bandY = top + hC + fs + 3;
+  const X = (x: number) => ox + x * s;
+  const Y = (y: number) => oy + y * s;
+  const runs = useMemo(() => dvsRigRuns(gnd), [gnd]);
+  const rcaL = styleOf({ id: 'L', kind: 'rca', colour: INK.rcaWhite, pts: [], plugged: true, live: false, label: 'L' });
+  const rcaR = styleOf({ id: 'R', kind: 'rca', colour: INK.rcaRed, pts: [], plugged: true, live: false, label: 'R', dashed: true });
+  const ctrl = ttPlaying ? INK.amber : null;
+  const usbPlug = runs.usb;
+  const table = { y: 0, h: 12 };
+  return (
+    <Group>
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={8} color="rgba(6,7,9,0.94)" />
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={8} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.10)" />
+      <SceneText x={b.x + 8} y={b.y + 13 * k} size={fs} text="BEHIND THE BOOTH" color={INK.amber} face="label" minPt={9.5} />
+      {gnd ? null : <SceneText x={b.x + b.w - 8} y={b.y + 13 * k} size={fs} text="GND LOOSE: HUM" color={INK.peak} face="label" align="right" minPt={9.5} />}
+      <Group clip={Skia.XYWHRect(b.x + 2, top - 2, b.w - 4, hC + 4)}>
+        <Group transform={[{ translateX: ox }, { translateY: oy }, { scale: s }]}>
+          {/* furthest first: the laptop on its stand, behind the mixer */}
+          <LaptopFromBehind />
+          {/* the table's back edge, everything standing on it */}
+          <Rect x={V.x0 - 10} y={table.y} width={V.x1 - V.x0 + 140} height={table.h} color="#2a2c31" />
+          <Line p1={vec(V.x0 - 10, 0.6)} p2={vec(V.x1 + 130, 0.6)} color="rgba(255,255,255,0.22)" strokeWidth={1} />
+          {/* the mixer on its feet, its rear panel */}
+          {[RIG.mixer.x + 16, RIG.mixer.x + 234].map((fx) => (
+            <RoundedRect key={fx} x={fx} y={-RIG.mixer.feetH} width={20} height={RIG.mixer.feetH} r={2} color="#141518" />
+          ))}
+          <MixerRear x={RIG.mixer.x} y={RIG.mixer.y} on />
+          <TurntableFromBehind preamp={preamp} ang={ang} />
+          {/* the leads, each in its own lane: the ground wire, the RCA pair
+              (the control tone, amber while the platter turns), the USB */}
+          <Cable pts={runs.G} style={{ colour: '#7d838c', width: 1.8, pattern: 'plain' }} />
+          {gnd ? (
+            <RoundedRect x={mixJack('gnd')[0] - 7} y={mixJack('gnd')[1] - 2.5} width={8} height={5} r={1} color="#c9ced5" />
+          ) : (
+            <Group>
+              <RoundedRect x={98} y={-6} width={9} height={5} r={1} color="#c9ced5" />
+              <Circle cx={100.5} cy={-3.5} r={1.4} color="#2a2c31" />
+            </Group>
+          )}
+          <Circle cx={ttJack('gnd')[0]} cy={ttJack('gnd')[1]} r={3.4} color="#c9ced5" />
+          <Cable pts={runs.R} style={rcaR} glow={ctrl} />
+          <Cable pts={runs.L} style={rcaL} glow={ctrl} />
+          {[runs.L[0], runs.L[runs.L.length - 1]].map(([px, py], i) => <PlugFace key={`l${i}`} cx={px} cy={py} kind="rca" colour={INK.rcaWhite} />)}
+          {[runs.R[0], runs.R[runs.R.length - 1]].map(([px, py], i) => <PlugFace key={`r${i}`} cx={px} cy={py} kind="rca" colour={INK.rcaRed} />)}
+          <Cable pts={runs.U} style={{ colour: '#50545c', width: 4.2, pattern: 'dots' }} glow={usbLive ? INK.blue : null} />
+          {/* the USB-A plug in the laptop, and the USB-B plug in the mixer, face-on */}
+          <RoundedRect x={LAP_PORT[0] - 8} y={LAP_PORT[1] - 4.5} width={16} height={9} r={2}>
+            <LinearGradient start={vec(0, LAP_PORT[1] - 4.5)} end={vec(0, LAP_PORT[1] + 4.5)} colors={['#4a4d54', '#16171a']} />
+          </RoundedRect>
+          <RoundedRect x={usbPlug[0] - 8.5} y={usbPlug[1] - 9} width={17} height={17} r={3}>
+            <LinearGradient start={vec(usbPlug[0] - 8.5, 0)} end={vec(usbPlug[0] + 8.5, 0)} colors={['#2a2c31', '#4a4d54', '#121315']} />
+          </RoundedRect>
+          <Line p1={vec(usbPlug[0], usbPlug[1] - 5)} p2={vec(usbPlug[0], usbPlug[1] + 4)} color="rgba(255,255,255,0.28)" strokeWidth={0.8} />
+          <Line p1={vec(usbPlug[0] - 3, usbPlug[1] - 2)} p2={vec(usbPlug[0] + 3, usbPlug[1] - 2)} color="rgba(255,255,255,0.28)" strokeWidth={0.8} />
+        </Group>
+      </Group>
+      {/* the names, in the free air and the band under the table — never on
+          a panel or a cable */}
+      <SceneText x={X(RIG.lap.x + RIG.lap.w + 8)} y={Y(-290)} size={fs} text="LAPTOP" color={INK.print} face="label" minPt={9.5} />
+      <SceneText x={X(V.x1) - 4} y={Y(TT_TOP - 62)} size={fs} text="TURNTABLE" color={INK.print} face="label" align="right" minPt={9.5} />
+      <SceneText x={X(RIG.mixer.x) + 2} y={bandY} size={fs} text="MIXER" color={INK.print} face="label" minPt={9.5} />
+      <SceneText x={X(usbPlug[0])} y={bandY} size={fs} text="USB" color={usbLive ? INK.blue : INK.printDim} face="label" align="center" minPt={9.5} />
+      <SceneText x={X(V.x1) - 4} y={bandY} size={fs} text="CTRL L/R" color={ttPlaying ? INK.amber : INK.printDim} face="label" align="right" minPt={9.5} />
+    </Group>
+  );
+}
 export function DvsRoute({ b, ttPlaying, toneOnCh1, thru, lock, chInput, musicLive, k = 1, flow = false }: { b: Box; ttPlaying: boolean; toneOnCh1: boolean; thru: boolean; lock: DvsLock; chInput: string; musicLive: boolean; k?: number; flow?: boolean }) {
   const fs = 10.6 * k;
   const w = (b.w - 24) / 2;

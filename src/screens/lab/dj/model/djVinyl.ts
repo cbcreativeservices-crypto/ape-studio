@@ -37,6 +37,7 @@
  * a safe level and plays quietly.
  */
 import { channelRoute, faderGain, levelKnobGain, type Booth } from './djModel.ts';
+import { ARM_SIDE, type ArmAway } from '../geometry/armGeometry.ts';
 
 export type VinylState = {
   slipmat: boolean;
@@ -116,6 +117,35 @@ export function feedbackLoopGain(b: Booth, v: VinylState): number {
   if (!b.tt.playing || v.armUp) return 0;
   const g = levelKnobGain(b.mixer.booth) * (faderGain(b.ch[1].fader) / 0.72) * (v.monitorNear ? 1 : 0.35) * (v.feet ? 0.22 : 1);
   return 1.25 * g;
+}
+
+/**
+ * THE ARM'S POSE, for every view of it (grade 2026-10-19: the top and the
+ * side views must agree). A DJ turntable has NO auto-return: stopping the
+ * platter leaves the stylus in its groove. On this screen the arm is either
+ * ON THE RECORD (in the groove, or on the stylus scale standing on the
+ * record) or LIFTED CLEAR — swung just past the platter's rim and floating
+ * free, to balance it. Never on its rest.
+ */
+export const vinylArmOn = (v: Pick<VinylState, 'armUp'>): boolean => !v.armUp;
+export const VINYL_ARM_AWAY: ArmAway = 'clear';
+
+/** The arm's tilt in the SIDE view (radians, + = the FRONT down), and the
+ *  stylus tip's height above the record (mm). Pure (tests reach it). */
+export function armSidePose(v: Pick<VinylState, 'armUp' | 'weight' | 'scale'>): { angle: number; tipAbove: number; onRecord: boolean } {
+  const { L } = ARM_SIDE;
+  if (v.armUp) {
+    // swung clear of the record, the arm floats free by its own imbalance:
+    // the front dips — never down to the plinth — or the tail sinks
+    const room = -ARM_SIDE.recTop - 4; // the stylus stays 4 mm over the plinth
+    const angle = Math.max(-0.09, Math.min(Math.asin(room / L), floatTilt(v as VinylState) * 0.7));
+    return { angle, tipAbove: -Math.sin(angle) * L, onRecord: false };
+  }
+  if (v.scale) {
+    // on a stylus gauge standing on the record: the tip rests on its 8 mm pad
+    return { angle: -Math.asin(8 / L), tipAbove: 8, onRecord: true };
+  }
+  return { angle: 0, tipAbove: 0, onRecord: true };
 }
 
 /** Zero the dial ring here (the weight does not move). */

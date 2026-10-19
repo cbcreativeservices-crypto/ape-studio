@@ -16,7 +16,7 @@ import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
-import { TurntableTop, TT_PARTS, armAngleAt, turntablePartBox } from '../art/TurntableTop';
+import { TurntableTop, TT_PARTS, armPoseAngle, turntablePartBox } from '../art/TurntableTop';
 import { DvsRig, DvsRoute, DvsScope } from '../art/dvsArt';
 import { TT_D, TT_W } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
@@ -163,9 +163,11 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
   // the bottom of the glass: the turntable (left) beside the DVS cabling at
   // the rear (right), so every connection the lesson names is drawn
   const ttW = (W: number) => Math.round(W * 0.42);
-  // the arm's angle now: the label obstacles ride the arm
+  // the arm's angle now: the label obstacles ride the arm. The needle stays
+  // in the control record's groove whether the platter turns or not (a DJ
+  // deck has no auto-return; calibration needs it there, platter stopped)
   const spinning = tt.playing && !!tt.track;
-  const armAng = armAngleAt(spinning ? tt.posSec + Math.max(0, motion.clock.value - tt.at) * (1 + tt.pitch / 100) : tt.posSec, tt.track ? trackSeconds(tt.track) : 1, spinning);
+  const armAng = armPoseAngle(true, 'rest', spinning ? tt.posSec + Math.max(0, motion.clock.value - tt.at) * (1 + tt.pitch / 100) : tt.posSec, tt.track ? trackSeconds(tt.track) : 1);
   return (
     <DjRack
       spec={{
@@ -179,7 +181,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
             // FULL SCREEN's shape: scope and map over the turntable and the cabling
             aspect={1.12}
             obstacles={[{ x: 0, y: 0, w: TT_W, h: TT_D }, ...TT_PARTS.map((p) => turntablePartBox(p, armAng))]}
-            screenOverlay={(W, H, _xf, k) => {
+            screenOverlay={(W, H, xf, k) => {
               const kk = Math.sqrt(k);
               const th = topH(H, k) - 8;
               const sw = Math.round(Math.min(th, W * 0.4));
@@ -187,13 +189,13 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
                 <Group>
                   <DvsScope b={{ x: 6, y: 4, w: sw, h: th }} scope={scope} quality={q} lock={lock} mode={d.mode} k={kk} />
                   <DvsRoute b={{ x: sw + 12, y: 4, w: W - sw - 18, h: th }} ttPlaying={tt.playing} toneOnCh1={tone} thru={d.mode === 'THRU' && tt.playing} lock={lock} chInput={booth.ch[1].input} musicLive={musicLive} k={kk} flow={audio.flowMotion} />
-                  <DvsRig b={{ x: ttW(W) + 4, y: topH(H, k) + 2, w: W - ttW(W) - 10, h: H - topH(H, k) - 6 }} gnd={(booth.vinyl ?? setVinyl()).gnd} ttPlaying={tt.playing} usbLive={musicLive || tt.playing} k={kk} />
+                  <DvsRig b={{ x: ttW(W) + 4, y: topH(H, k) + 2, w: W - ttW(W) - 10, h: H - topH(H, k) - 6 }} gnd={(booth.vinyl ?? setVinyl()).gnd} ttPlaying={tt.playing} usbLive={musicLive || tt.playing} preamp={booth.ttPreamp} ang={armAng} scale={xf.s} k={kk} />
                 </Group>
               );
             }}
             a11y={`You are looking at the control signal as the software sees it (quality ${Math.round(q * 100)} percent, ${lock.toLowerCase()}), a map of where each signal goes, the turntable with its control record, and the cabling at the rear: the turntable's leads and ground to the mixer's PHONO 1 and GND post, and the USB cable to the laptop. Mode ${DVS_MODE_WORDS[d.mode].toLowerCase()}; channel 1 input ${booth.ch[1].input}.${tone ? ' The control tone is reaching the speakers.' : ''}`}
           >
-            <TurntableTop x={0} y={0} d={tt} playing={tt.playing} record="control" />
+            <TurntableTop x={0} y={0} d={tt} playing={tt.playing} record="control" armOn />
           </Scene>
         ),
         bezel: [

@@ -8,22 +8,24 @@
  * THE ARM is one rigid part (charter §5): an 8.5 mm S-tube from its gimbal
  * to an offset headshell (22°), the counterweight on the stub behind the
  * pivot; it only ever ROTATES about the pivot. At rest it lies in its rest
- * clip; playing, the stylus rides the groove from the lead-in toward the
- * run-out as the track plays (the angle solved from the arm's true length,
- * per frame, from the one clock). The cue lever stands on its own base.
+ * clip; on the record, the stylus rides the groove from the lead-in toward
+ * the run-out as the track plays (the angle solved from the arm's true
+ * length, per frame, from the one clock) and STAYS in its groove when the
+ * platter stops — a DJ deck has no auto-return. Lifted to balance it, the arm
+ * swings clear of the platter. The cue lever stands on its own base.
  *
  * THE STROBE: a real strobe lamp lights whenever the deck is powered, and
  * under it the rim's dots stand STILL at exactly 33⅓ rpm and drift slowly in
  * proportion to the pitch offset — the stroboscopic truth, drawn as the eye
  * sees it (at true speed 90 dots would only alias on a 60 Hz screen).
  */
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, SweepGradient, vec, type SkPath } from '@shopify/react-native-skia';
-import { useDerivedValue } from 'react-native-reanimated';
+import { Easing, useDerivedValue, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import type { DeckState } from '../model/djModel';
 import { trackSeconds } from '../engine/djMusic';
 import { TT, TT_D, TT_W } from '../geometry/boothGeometry';
-import { ARM_AT_REST, ARM_HALOS, AX, COLLAR, L, TUBE, armAngleAt, turntablePartBox, type TurntablePart } from '../geometry/armGeometry';
+import { ARM_AT_REST, ARM_HALOS, ARM_MOVE, AX, COLLAR, L, TUBE, armAwayAngle, armPoseAngle, turntablePartBox, type ArmAway, type TurntablePart } from '../geometry/armGeometry';
 
 export * from '../geometry/armGeometry';
 import { INK } from './ink';
@@ -33,7 +35,7 @@ import { SceneText } from './sceneText';
 
 const LEG = 4;
 
-export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true, slipmat = true, record = 'music', armOff = false }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean; /** Stage 2 (additive): the felt slipmat under the record. */ slipmat?: boolean; /** Stage 2 (additive): a DVS CONTROL record (white vinyl, black label) instead of music. */ record?: 'music' | 'control'; /** Stage 2 review 2 (additive): the arm lifted and swung clear (balancing) — drawn back at its rest while the platter turns. */ armOff?: boolean }) {
+export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true, slipmat = true, record = 'music', armOn, armAway = 'rest' }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean; /** Stage 2 (additive): the felt slipmat under the record. */ slipmat?: boolean; /** Stage 2 (additive): a DVS CONTROL record (white vinyl, black label) instead of music. */ record?: 'music' | 'control'; /** The stylus is in the groove (spinning or not: no auto-return). Omitted = while the platter turns (Screen 2's still deck sits at rest). */ armOn?: boolean; /** Where the arm is when it is NOT on the record: its rest, or lifted and swung clear (balancing). */ armAway?: ArmAway }) {
   const P = TT.platter;
   const R = P.d / 2;
   const rr = TT.record.d / 2;
@@ -53,11 +55,19 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
     const dt = spinning ? Math.max(0, clock.value - at) : 0;
     return [{ rotate: (dt * (rate - 1) * (100 / 3) * 2 * Math.PI) / 60 }];
   });
-  // the arm: rest, or riding the groove as the track plays
+  // the arm: in the groove the track has reached (riding it while the
+  // platter turns, staying put when it stops — a DJ deck has no auto-return),
+  // or away (its rest, or swung clear). A change of pose is a MOVE: the cue
+  // lift, then the swing (ARM_MOVE — the side view moves on the same timing)
   const pos = useDeckPos({ ...d, playing: spinning });
   const total = d.track ? trackSeconds(d.track) : 1;
-  const armRides = spinning && !armOff;
-  const armXf = useDerivedValue(() => [{ rotate: armAngleAt(pos.value, total, armRides) }]);
+  const on = armOn ?? spinning;
+  const away = armAwayAngle(armAway);
+  const toward = useSharedValue(on ? 1 : 0);
+  useEffect(() => {
+    toward.value = withDelay(ARM_MOVE.liftMs, withTiming(on ? 1 : 0, { duration: ARM_MOVE.swingMs, easing: Easing.inOut(Easing.cubic) }));
+  }, [on, toward]);
+  const armXf = useDerivedValue(() => [{ rotate: away + (armPoseAngle(true, armAway, pos.value, total) - away) * toward.value }]);
   const grooves = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     for (let r = TT.record.label / 2 + 6; r < rr - 3; r += 1.6) p.addCircle(P.cx, P.cy, r);

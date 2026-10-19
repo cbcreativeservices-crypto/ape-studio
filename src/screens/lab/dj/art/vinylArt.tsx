@@ -35,13 +35,15 @@
  *              path drawn apart as a labelled overlay (stylus → mixer →
  *              monitor).
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { Easing, useDerivedValue, useSharedValue, withDelay, withSequence, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
 import { RcaSocket } from './parts';
 import { SceneText } from './sceneText';
-import { FORCE_RANGE, dialReads, floatTilt, isBalanced, trueForce, type VinylState } from '../model/djVinyl';
-import type { Box } from '../geometry/boothGeometry';
+import { FORCE_RANGE, armSidePose, dialReads, isBalanced, trueForce, type VinylState } from '../model/djVinyl';
+import { ARM_MOVE, ARM_SIDE, armPartAt, armSection } from '../geometry/armGeometry';
+import { TT, type Box } from '../geometry/boothGeometry';
 
 function Frame({ b, title, k, right, rightTint }: { b: Box; title: string; k: number; right?: string; rightTint?: string }) {
   return (
@@ -67,49 +69,56 @@ const GRAPHITE = ['#3a3d44', '#24262b', '#121316'] as const;
 
 /* ── the arm, side elevation ─────────────────────────────────────────── */
 
-/** ArmSide's geometry (mm; x right, y DOWN, the plinth's top at y = 0). */
-export const ARM_SIDE = {
-  /** The stylus on the record at play; the pivot an effective length behind. */
-  stylusX: 34,
-  pivotX: 34 + 230,
-  /** The record's top surface; the tube's centre line (parallel at play). */
-  recTop: -21,
-  tubeY: -43,
-  L: 230,
-} as const;
+export { ARM_SIDE, armSidePose };
 
-/** The arm's angle in the side view (radians, + = the FRONT down), and the
- *  stylus tip's height above the record (mm). Pure (tests reach it). */
-export function armSidePose(v: Pick<VinylState, 'armUp' | 'weight' | 'scale'>): { angle: number; tipAbove: number; onCue: boolean } {
-  const { L } = ARM_SIDE;
-  if (v.armUp) {
-    // lifted clear on the cue lever and swung off the record (beside the
-    // platter), the arm floats free by its own imbalance: the front dips —
-    // never down to the plinth — or the tail sinks; level when balanced
-    const room = -ARM_SIDE.recTop - 4; // the stylus stays 4 mm over the plinth
-    const angle = Math.max(-0.09, Math.min(Math.asin(room / L), floatTilt(v as VinylState) * 0.7));
-    return { angle, tipAbove: -Math.sin(angle) * L, onCue: false };
-  }
-  if (v.scale) {
-    // on a stylus gauge: the tip rests on its 8 mm pad
-    const a = -Math.asin(8 / L);
-    return { angle: a, tipAbove: 8, onCue: false };
-  }
-  return { angle: 0, tipAbove: 0, onCue: false };
+/** A lit solid whose x and width are animated (the record and the platter
+ *  under the arm's line move as the arm swings). */
+function ASolid({ x, y, w, h, c, r = 0.8 }: { x: SharedValue<number>; y: number; w: SharedValue<number>; h: number; c: readonly string[]; r?: number }) {
+  return (
+    <RoundedRect x={x} y={y} width={w} height={h} r={r}>
+      <LinearGradient start={vec(0, y)} end={vec(0, y + h)} colors={c as string[]} />
+    </RoundedRect>
+  );
 }
 
-export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) {
+/** The cue lift, front up (rad): the stylus 14 mm over where it was. */
+const CUE_LIFT = -Math.asin(14 / ARM_SIDE.L);
+/** The front never dips the stylus lower than 4 mm over the plinth. */
+const MAX_DIP = Math.asin((-ARM_SIDE.recTop - 4) / ARM_SIDE.L);
+/** Where the cue lever's bar reaches under the tube, and the anti-skate
+ *  knob, along the arm's line (mm from the pivot): beside the arm base,
+ *  clear of the platter's rim at every groove. */
+const CUE_U = 44;
+const AS_U = 28;
+/** A floating arm is a balance beam on a near-frictionless gimbal: lightly
+ *  damped, it rocks a few times (about 1.3 s a swing) before it settles. */
+const FLOAT_SPRING = { stiffness: 24, damping: 3.6, mass: 1 } as const;
+
+/**
+ * The tonearm in SIDE ELEVATION, authored in mm, looking square-on at the
+ * arm's line: the record, slipmat and platter are drawn where they really
+ * are UNDER that line (armSection: at the lead-in a 12-inch record reaches
+ * to about 97 mm from the pivot, at the run-out to about 67 mm), the plinth
+ * cropped by the frame. The arm takes the SAME pose as the top view (`ang`,
+ * and armSidePose): on the record (PARALLEL, or on the stylus scale), or
+ * lifted clear past the platter's rim, floating. A change of pose moves on
+ * the top view's timing (ARM_MOVE): the cue bar lifts the arm, it swings,
+ * then the bar lowers it (onto the record) or lets it float — and a floating
+ * arm settles about the gimbal like the balance beam it is.
+ */
+export function ArmSide({ b, v, ang, k = 1 }: { b: Box; v: VinylState; ang: number; k?: number }) {
   const fs = 9.5 * k;
   const S = ARM_SIDE;
-  // the drawing's mm box: x −14 … 342, y −62 … 60 (the feet), beside the loupe
+  // the drawing's mm box: x −24 … 342 (the record runs on past the left
+  // edge), y −62 … 20 (the plinth runs on below, cropped by the footer band)
   const loupeW = 78 * k;
   const head = 20 * k;
   const foot = 14 * k;
-  const mmW = 348;
-  const mmH = 122;
+  const mmX0 = -24;
+  const mmW = 366;
+  const mmH = 82;
   const s = Math.min((b.w - loupeW - 22) / mmW, (b.h - head - foot) / mmH);
-  const ox = b.x + 8 + 6 * s;
-  // centred in the height left between the title and the footer line
+  const ox = b.x + 6 - mmX0 * s;
   const oy = b.y + head + Math.max(0, (b.h - head - foot - mmH * s) / 2) + 62 * s;
   const X = (x: number) => ox + x * s;
   const Y = (y: number) => oy + y * s;
@@ -118,15 +127,48 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
   const balanced = v.armUp && isBalanced(v);
   const dial = dialReads(v);
   const P = { x: S.pivotX, y: S.tubeY };
-  // the cue lever's bar: up under the tube when lifted
-  const cueX = P.x - 58;
-  const tubeUnder = (x: number) => P.y + 4.25 + Math.sin(pose.angle) * (P.x - x);
-  // the bar rests down: lowered at play, and free of the floating arm
-  void tubeUnder;
-  const barTop = P.y + 12;
-  // balancing, the arm is swung clear of the record: the platter is drawn
-  // behind it, moved aside
-  const platterShift = v.armUp ? -96 : 0;
+  // ── the motion (the same timing as the top view's swing) ──
+  const swing = useSharedValue(ang);
+  const base = useSharedValue(pose.angle);
+  const cueUp = useSharedValue(0);
+  const was = useRef({ on: pose.onRecord, angle: pose.angle, ang });
+  useEffect(() => {
+    const w = was.current;
+    if (w.on !== pose.onRecord) {
+      // a MOVE: the cue bar lifts the arm, it swings, then the bar lowers it
+      // onto the record — or, swung clear, lets it go to float free
+      cueUp.value = withSequence(withTiming(1, { duration: ARM_MOVE.liftMs, easing: Easing.out(Easing.quad) }), withDelay(ARM_MOVE.swingMs, withTiming(0, { duration: ARM_MOVE.lowerMs, easing: Easing.inOut(Easing.quad) })));
+      swing.value = withDelay(ARM_MOVE.liftMs, withTiming(ang, { duration: ARM_MOVE.swingMs, easing: Easing.inOut(Easing.cubic) }));
+      base.value = pose.onRecord ? pose.angle : withDelay(ARM_MOVE.liftMs + ARM_MOVE.swingMs, withSpring(pose.angle, FLOAT_SPRING));
+    } else {
+      if (w.ang !== ang) swing.value = withTiming(ang, { duration: 300 });
+      // floating, a turn of the weight sets the arm rocking about the gimbal
+      // until it settles; on the record, the cue lever sets it down
+      if (w.angle !== pose.angle) base.value = pose.onRecord ? withTiming(pose.angle, { duration: ARM_MOVE.lowerMs, easing: Easing.out(Easing.quad) }) : withSpring(pose.angle, FLOAT_SPRING);
+    }
+    was.current = { on: pose.onRecord, angle: pose.angle, ang };
+  }, [pose.onRecord, pose.angle, ang, swing, base, cueUp]);
+  // the tilt drawn: the floating pose (never dipping the stylus onto the
+  // plinth), lifted by the cue bar while it is up
+  const tiltNow = useDerivedValue(() => {
+    const a = Math.min(MAX_DIP, base.value);
+    return a + (CUE_LIFT - a) * cueUp.value;
+  });
+  const armXf = useDerivedValue(() => [{ rotate: -tiltNow.value }]);
+  // the record and the platter under the arm's line, as the arm swings
+  const sec = useDerivedValue(() => armSection(swing.value));
+  const recX = useDerivedValue(() => (sec.value.record ? S.pivotX - sec.value.record[1] : 0));
+  const recW = useDerivedValue(() => (sec.value.record ? sec.value.record[1] - sec.value.record[0] : 0));
+  const platX = useDerivedValue(() => (sec.value.platter ? S.pivotX - sec.value.platter[1] : 0));
+  const platW = useDerivedValue(() => (sec.value.platter ? sec.value.platter[1] - sec.value.platter[0] : 0));
+  const rimX = useDerivedValue(() => (sec.value.platter ? S.pivotX - sec.value.platter[0] - 3 : 0));
+  const rimW = useDerivedValue((): number => (sec.value.platter ? 3 : 0));
+  // the cue lever: its bar rises under the tube with the lift
+  const cueX = P.x - CUE_U;
+  const barRest = P.y + 12;
+  const barLift = P.y + 4.25 + Math.sin(CUE_LIFT) * CUE_U;
+  const barY = useDerivedValue(() => barRest + (barLift - barRest) * cueUp.value);
+  const handleEnd = useDerivedValue(() => vec(cueX + 14, -26 - 10 * cueUp.value));
   const knurl = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     for (let i = 0; i <= 8; i++) {
@@ -182,47 +224,33 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
   const status = v.armUp ? (balanced ? 'FLOATS LEVEL: BALANCED' : F > 0 ? 'FRONT DIPS' : 'TAIL HEAVY') : v.scale ? 'ON THE STYLUS SCALE' : 'ON THE RECORD · PARALLEL';
   const statusTint = v.armUp ? (balanced ? INK.green : INK.amber) : INK.print;
   const inRangeF = F >= FORCE_RANGE.min - 0.05 && F <= FORCE_RANGE.max + 0.05;
+  const footY = b.y + b.h - 4;
   return (
     <Group>
       <Frame b={b} title="TONEARM · SIDE VIEW" k={k} right={status} rightTint={statusTint} />
-      <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 2, loupe.x - b.x - 4, b.h - head)}>
+      {/* the drawing, clipped above the footer band (no part ever under a word) */}
+      <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 2, loupe.x - b.x - 6, b.h - head - foot + 1)}>
         <Group transform={[{ translateX: ox }, { translateY: oy }, { scale: s }]}>
-          {/* the plinth on its domed feet */}
-          {[22, 300].map((x) => (
-            <Group key={x}>
-              <RoundedRect x={x - 18} y={44} width={36} height={14} r={7}>
-                <LinearGradient start={vec(0, 44)} end={vec(0, 58)} colors={['#3a3c42', '#121317']} />
-              </RoundedRect>
-            </Group>
-          ))}
-          <Solid x={-14} y={0} w={356} h={44} c={['#3a3d44', '#24262b', '#15161a']} r={4} />
-          <Line p1={vec(-14, 0.6)} p2={vec(342, 0.6)} color="rgba(255,255,255,0.22)" strokeWidth={0.8} />
-          {/* the platter: its rim (strobe dots), the slipmat and the record */}
-          <Group transform={[{ translateX: platterShift }]} opacity={v.armUp ? 0.55 : 1}>
-          <Solid x={-14} y={-16} w={118} h={14} c={METAL} r={1.5} />
-          {Array.from({ length: 19 }, (_, i) => (
-            <RoundedRect key={i} x={-12 + i * 6} y={-12} width={2.6} height={3} r={0.6} color="#3a3e45" />
-          ))}
-          <Solid x={-14} y={-2} w={110} h={2} c={['#0b0c0e', '#0b0c0e']} r={0} />
-          <Solid x={-14} y={-19} w={112} h={3} c={['#3a3b40', '#2a2b30']} r={0.6} />
-          <Solid x={-14} y={-21} w={106} h={2.2} c={['#2a2b30', '#060607']} r={0.8} />
-          <Line p1={vec(-14, -20.8)} p2={vec(91, -20.8)} color="rgba(255,255,255,0.25)" strokeWidth={0.5} />
-          </Group>
-          {/* the arm rest and its clip (behind the arm) */}
-          <Group opacity={0.7}>
-            <Solid x={P.x - 132} y={-34} w={6} h={34} c={GRAPHITE} r={1} />
-            <Path path={(() => { const p = Skia.PathBuilder.Make(); p.moveTo(P.x - 135, -50); p.lineTo(P.x - 135, -34); p.lineTo(P.x - 123, -34); p.lineTo(P.x - 123, -50); return p.detach(); })()} style="stroke" strokeWidth={1.6} color="#4a4e56" />
-          </Group>
+          {/* the plinth, its top face lit; it runs on below the frame */}
+          <Solid x={-80} y={0} w={480} h={140} c={['#3a3d44', '#24262b', '#15161a']} r={2} />
+          <Line p1={vec(-80, 0.6)} p2={vec(400, 0.6)} color="rgba(255,255,255,0.22)" strokeWidth={0.8} />
+          {/* under the arm's line: the platter (its machined rim at the near
+              end), the slipmat and the record — where they really are */}
+          <ASolid x={platX} y={ARM_SIDE.platterTop} w={platW} h={-ARM_SIDE.platterTop - 2} c={['#7c828b', '#4e535b', '#2c2f35']} r={1.5} />
+          <ASolid x={rimX} y={ARM_SIDE.platterTop} w={rimW} h={-ARM_SIDE.platterTop - 2} c={['#f4f6f8', '#9aa0a8', '#4a4e56']} r={0.6} />
+          <ASolid x={recX} y={ARM_SIDE.matTop} w={recW} h={3} c={['#3a3b40', '#2a2b30']} r={0.6} />
+          <ASolid x={recX} y={S.recTop} w={recW} h={2.2} c={['#2a2b30', '#060607']} r={0.8} />
           {/* the anti-skate knob (knurled), beside the arm base */}
-          <Group transform={[{ translateX: P.x - 34 }, { translateY: 0 }]}>
+          <Group transform={[{ translateX: P.x - AS_U }, { translateY: 0 }]}>
             <Solid x={-8} y={-10} w={16} h={10} c={['#4a4e56', '#24262b', '#121316']} r={1.5} />
             <Path path={asKnurl} style="stroke" strokeWidth={0.5} color="rgba(0,0,0,0.6)" />
             <RoundedRect x={-8} y={-11.5} width={16} height={2} r={1} color="#8a9099" />
           </Group>
-          {/* the cue lever: its post, its bar, its handle */}
+          {/* the cue lever: its post, its bar (rising under the tube to lift
+              the arm), its handle */}
           <Solid x={cueX - 3} y={-28} w={6} h={28} c={METAL} r={1} />
-          <Solid x={cueX - 7} y={barTop} w={14} h={3} c={['#6c727b', '#2a2c31']} r={1} />
-          <Line p1={vec(cueX, -24)} p2={vec(cueX + 14, v.armUp ? -36 : -26)} color="#9aa0a8" strokeWidth={2.4} strokeCap="round" />
+          <RoundedRect x={cueX - 7} y={barY} width={14} height={3} r={1} color="#4a4e56" />
+          <Line p1={vec(cueX, -24)} p2={handleEnd} color="#9aa0a8" strokeWidth={2.4} strokeCap="round" />
           {/* the arm base: the plate, the height collar (knurled), the yoke */}
           <Solid x={P.x - 22} y={-6} w={44} h={6} c={['#3e4148', '#16171a']} r={2} />
           <Group transform={[{ translateX: P.x }, { translateY: 0 }]}>
@@ -233,7 +261,7 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
           <Solid x={P.x - 11} y={P.y - 4} w={4} h={18} c={['#6c727b', '#3a3e45']} r={1} />
           <Solid x={P.x + 7} y={P.y - 4} w={4} h={18} c={['#6c727b', '#3a3e45']} r={1} />
           {/* THE ARM — one rigid part, turned about the gimbal's axis */}
-          <Group origin={vec(P.x, P.y)} transform={[{ rotate: -pose.angle }]}>
+          <Group origin={vec(P.x, P.y)} transform={armXf}>
             {/* the stub and the counterweight: a lit cylinder, its ring at the front */}
             <Solid x={P.x} y={P.y - 3} w={66} h={6} c={METAL} r={3} />
             <Solid x={P.x + 30} y={P.y - 15} w={34} h={30} c={['#eef1f4', '#b9bec6', '#6c727b', '#2a2d33']} r={3} />
@@ -274,21 +302,19 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
             <Group>
               <Solid x={S.stylusX - 30} y={S.recTop - 8} w={70} h={8} c={['#2a2c31', '#121316']} r={2} />
               <RoundedRect x={S.stylusX - 4} y={S.recTop - 9.5} width={8} height={1.6} r={0.6} color="#8a9099" />
-              {/* its LCD, lit, on the gauge's front face */}
               <RoundedRect x={S.stylusX - 26} y={S.recTop - 6.4} width={18} height={4.6} r={0.8} color={inRangeF ? '#1d6b3a' : '#6b1d1d'} />
             </Group>
           ) : null}
         </Group>
       </Group>
-      {/* words, in screen points, in the free space */}
+      {/* the footer band, words only: the cartridge's range (or the scale's
+          reading), and the anti-skate dial */}
       {v.scale && !v.armUp ? (
-        <Group>
-          <SceneText x={b.x + 10} y={b.y + b.h - 4} size={fs} text={`STYLUS SCALE READS ${Math.max(0, F).toFixed(2)} g: THE TRUE FORCE`} color={inRangeF ? INK.green : '#ff8a7e'} face="label" minPt={9.5} />
-        </Group>
+        <SceneText x={b.x + 10} y={footY} size={fs} text={`SCALE READS ${Math.max(0, F).toFixed(2)} g (TRUE FORCE)`} color={inRangeF ? INK.green : '#ff8a7e'} face="label" minPt={9.5} />
       ) : (
-        <SceneText x={b.x + 10} y={b.y + b.h - 4} size={fs} text={`THIS CARTRIDGE: ${FORCE_RANGE.min}–${FORCE_RANGE.max} g`} color={INK.printDim} face="label" minPt={9.5} />
+        <SceneText x={b.x + 10} y={footY} size={fs} text={`THIS CARTRIDGE: ${FORCE_RANGE.min}–${FORCE_RANGE.max} g`} color={INK.printDim} face="label" minPt={9.5} />
       )}
-      <SceneText x={X(P.x - 34)} y={Y(30)} size={fs} text={`ANTI-SKATE ${v.antiSkate.toFixed(0)}`} color={INK.print} face="label" align="center" minPt={9.5} />
+      <SceneText x={loupe.x - 8} y={footY} size={fs} text={`ANTI-SKATE ${v.antiSkate.toFixed(0)}`} color={INK.print} face="label" align="right" minPt={9.5} />
       {/* the loupe: the counterweight's dial ring, read at its pointer line */}
       <Line p1={vec(X(P.x + 46), Y(P.y - 16))} p2={vec(loupe.x, loupe.y + loupe.h / 2)} color="rgba(255,198,77,0.45)" strokeWidth={1} />
       <RoundedRect x={loupe.x} y={loupe.y} width={loupe.w} height={loupe.h} r={8} color="#0b0c0f" />
@@ -363,8 +389,9 @@ function RearInset({ b, preamp, plugTo, gnd, k }: { b: Box; preamp: 'PHONO' | 'L
   const gapMid = (gapX0 + gapX1) / 2;
   const hum = useMemo(() => {
     const p = Skia.PathBuilder.Make();
+    // the hum, drawn in the clear band over the ground row (never on a lead)
     const x0 = gapMid - 10 * k;
-    const y0 = (row(0) + row(1)) / 2;
+    const y0 = row(0) - step * 0.5;
     for (let i = 0; i <= 20; i++) {
       const x = x0 + i * k;
       const y = y0 - Math.sin((i / 20) * Math.PI * 4) * 2.6 * k;
@@ -433,8 +460,10 @@ function RearInset({ b, preamp, plugTo, gnd, k }: { b: Box; preamp: 'PHONO' | 'L
         </Group>
       ) : (
         <Group>
-          <Path path={polyPath([[lug.x, lug.y], [gapMid - 14 * k, lug.y], [gapMid - 16 * k, lug.y + step * 0.7]])} style="stroke" strokeWidth={1.6 * k} color="#8a9099" />
-          <RoundedRect x={gapMid - 19 * k} y={lug.y + step * 0.7} width={6 * k} height={4 * k} r={1} color="#c9ced5" />
+          {/* LOOSE: the wire droops off the lug, its spade hanging free above
+              the white lead's lane */}
+          <Path path={polyPath([[lug.x, lug.y], [gapMid - 14 * k, lug.y], [gapMid - 15 * k, lug.y + step * 0.22]])} style="stroke" strokeWidth={1.6 * k} color="#8a9099" />
+          <RoundedRect x={gapMid - 18 * k} y={lug.y + step * 0.22} width={6 * k} height={4 * k} r={1} color="#c9ced5" />
           <Path path={hum} style="stroke" strokeWidth={1.4 * k} color={INK.peak} />
           <SceneText x={gapMid} y={b.y + fs} size={fs} text="60 Hz HUM" color={INK.peak} face="label" align="center" minPt={9.5} />
         </Group>
@@ -515,7 +544,9 @@ export function PhonoChain({ b, preamp, input, count, plugTo, gnd, k = 1 }: { b:
       </Path>
       <Path path={curve} style="stroke" strokeWidth={2} color={INK.blue} />
       <Circle cx={fx(20000)} cy={fy(hiEnd)} r={2.6} color={INK.blue} />
-      <SceneText x={fx(20000) - 4} y={fy(hiEnd) - 5} size={fs} text={hiEnd.toFixed(1)} color={INK.blue} face="mono" align="right" minPt={9.5} />
+      {/* the 20 kHz end's value, in the plot's empty top-right corner (the
+          curve is low there), never on the curve */}
+      <SceneText x={plot.x + plot.w} y={fy(12) + fs * 0.36} size={fs} text={`20 kHz ${hiEnd.toFixed(1)}`} color={INK.blue} face="mono" align="right" minPt={9.5} />
       <SceneText x={plot.x - 4} y={fy(20) + 3.5} size={fs} text="+20" color={INK.printDim} align="right" minPt={9.5} />
       <SceneText x={plot.x - 4} y={fy(0) + 3.5} size={fs} text="0" color={INK.printDim} align="right" minPt={9.5} />
       <SceneText x={plot.x - 4} y={fy(-20) + 3.5} size={fs} text="−20" color={INK.printDim} align="right" minPt={9.5} />
@@ -528,36 +559,56 @@ export function PhonoChain({ b, preamp, input, count, plugTo, gnd, k = 1 }: { b:
 
 /* ── the room: the booth in side elevation ───────────────────────────── */
 
-/** RoomView's scene, in mm (x right, y UP from the floor). */
+/** RoomView's scene, in mm (x right, y UP from the floor). The turntable at
+ *  a DJ deck's true size: 453 mm wide, about 160 mm tall on its own feet
+ *  (a 104 mm plinth, 34 mm domed feet, the platter 17 mm proud with the
+ *  slipmat and the record on it). */
 export const ROOM_SIDE = {
   tableTop: 900,
   tableEnd: 1000,
-  tt: { x: 110, w: 453, plinth: 60 },
+  tableStart: -420,
+  tt: { x: 110, w: 453, plinth: 104, feet: 34, isoFeet: 46, platter: 17, disc: 5 },
   near: { x: 640, base: 930 },
   away: { x: 1260, base: 1060 },
   mon: { w: 250, h: 380, d: 240 },
-  view: { x0: -40, x1: 1560, y0: 760, y1: 1530 },
+  /** x0 … x1 and the top y1 are fixed; the bottom shows as much of the legs
+   *  as the panel's shape allows — down to the floor when it can. */
+  view: { x0: -440, x1: 1560, y0: 620, y1: 1530 },
 } as const;
 
-export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState; gain: number; howlDb: number; k?: number }) {
+/** The turntable's heights in the room (mm above the floor), from its feet. */
+export function roomTurntable(feet: boolean) {
+  const R = ROOM_SIDE;
+  const feetH = feet ? R.tt.isoFeet : R.tt.feet;
+  const base = R.tableTop + feetH;
+  const top = base + R.tt.plinth;
+  const platterTop = top + R.tt.platter;
+  return { feetH, base, top, platterTop, recTop: platterTop + R.tt.disc, total: platterTop + R.tt.disc - R.tableTop };
+}
+
+export function RoomView({ b, v, ang, gain, howlDb, k = 1 }: { b: Box; v: VinylState; ang: number; gain: number; howlDb: number; k?: number }) {
   const fs = 9.5 * k;
   const R = ROOM_SIDE;
   const head = 30 * k;
   // a footer band of its own for the status words: the scene is clipped
   // above it, so no gear part can ever draw over a word there
   const foot = fs + 8;
-  const s = Math.min((b.w - 12) / (R.view.x1 - R.view.x0), (b.h - head - foot - 4) / (R.view.y1 - R.view.y0));
+  const availH = b.h - head - foot - 4;
+  const s = Math.min((b.w - 12) / (R.view.x1 - R.view.x0), availH / (R.view.y1 - R.view.y0));
+  // the bottom of the view: the floor when the panel is tall enough
+  const y0 = Math.max(-30, R.view.y1 - availH / s);
+  const floorShown = y0 <= 0;
   const ox = b.x + (b.w - (R.view.x1 - R.view.x0) * s) / 2 - R.view.x0 * s;
   const oy = b.y + head + R.view.y1 * s;
   const X = (x: number) => ox + x * s;
   const Y = (y: number) => oy - y * s;
   const status = gain >= 1 ? 'HOWL' : gain >= 0.6 ? 'BOOMY' : gain > 0.02 ? 'QUIET' : 'NO LOOP';
   const tint = gain >= 1 ? INK.peak : gain >= 0.6 ? INK.amber : INK.green;
-  const feetH = v.feet ? 34 : 18;
-  const ttBase = R.tableTop + feetH;
-  const ttTop = ttBase + R.tt.plinth;
-  const platterTop = ttTop + 18;
-  const recTop = platterTop + 5;
+  const T = roomTurntable(v.feet);
+  const { feetH } = T;
+  const ttTop = T.top;
+  const platterTop = T.platterTop;
+  const recTop = T.recTop;
   const M = v.monitorNear ? R.near : R.away;
   const mon = { x: M.x, y: M.base, w: R.mon.w, h: R.mon.h };
   const depth = R.mon.d * 0.42; // the side face, foreshortened (three-quarter view)
@@ -566,6 +617,19 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   const woof = { x: X(mon.x + depth * 0.5), y: Y(mon.y + mon.h * 0.36), rx: depth * 0.5 * s * 0.82, ry: 82 * s };
   const tw = { x: X(mon.x + depth * 0.5), y: Y(mon.y + mon.h * 0.78), rx: depth * 0.5 * s * 0.36, ry: 16 * s };
   const g = Math.min(1.4, gain);
+  // THE ARM, from the SAME pose as the top view (front elevation: the
+  // turntable is seen from its front edge, so a point's x is its plinth x):
+  // the pivot, the stylus where the top view puts it, the counterweight
+  // behind the pivot; lifted clear, it floats over the bare plinth
+  const pivotX = R.tt.x + TT.armPivot.x;
+  const stylus = armPartAt('stylus', ang);
+  const cw = armPartAt('counterweight', ang);
+  const sx = R.tt.x + stylus.x;
+  const cwx = R.tt.x + cw.x;
+  const pose = armSidePose(v);
+  const tubeH = ttTop + 43;
+  const tipH = pose.onRecord ? recTop + pose.tipAbove : ttTop + 22 + pose.tipAbove;
+  const headH = tipH + 22;
   const air = useMemo(() => {
     // three wavefronts from the woofer toward the platter, a quarter turn wide
     const out = [];
@@ -584,16 +648,14 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   const wire = useMemo(() => {
     // the ELECTRICAL path, drawn apart as an overlay: stylus → mixer → monitor
     const p = Skia.PathBuilder.Make();
-    const sx = X(R.tt.x + 150);
-    const sy = Y(recTop + 6);
     const top = Y(R.view.y1 - 40);
-    p.moveTo(sx, sy);
-    p.lineTo(sx, top);
+    p.moveTo(X(sx), Y(headH + 14));
+    p.lineTo(X(sx), top);
     p.lineTo(X(mon.x + depth + R.mon.w * 0.6), top);
     p.lineTo(X(mon.x + depth + R.mon.w * 0.6), Y(mon.y + mon.h) - 2);
     return p.detach();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s, ox, oy, recTop, mon.x, mon.y]);
+  }, [s, ox, oy, sx, headH, mon.x, mon.y]);
   const arrow = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     const x = X(mon.x + depth + R.mon.w * 0.6);
@@ -605,22 +667,41 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
     return p.detach();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s, ox, oy, mon.x, mon.y, k]);
-  const leg = (x: number, back: boolean) => (
-    <RoundedRect key={`${x}${back}`} x={X(x)} y={Y(R.tableTop - 80)} width={40 * s} height={(R.tableTop - 80 - R.view.y0 + 40) * s} r={1} color={back ? '#1c1d21' : '#2a2c31'} />
-  );
+  // the table's legs: 40 mm square, from under the apron to the floor (or,
+  // when the floor is below the frame, fading out as they run on down)
+  const legBot = floorShown ? 0 : y0;
+  const leg = (x: number, back: boolean) => {
+    const c = back ? '#1c1d21' : '#2a2c31';
+    const top = Y(R.tableTop - 80);
+    const bot = Y(legBot);
+    return (
+      <RoundedRect key={`${x}${back}`} x={X(x)} y={top} width={40 * s} height={bot - top} r={1}>
+        <LinearGradient start={vec(0, top)} end={vec(0, bot)} colors={floorShown ? [c, c] : [c, c, back ? 'rgba(28,29,33,0)' : 'rgba(42,44,49,0)']} positions={floorShown ? [0, 1] : [0, 0.55, 1]} />
+      </RoundedRect>
+    );
+  };
+  const feetLabel = v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET';
+  const footL = R.tt.x + 40 - (v.feet ? 33 : 22);
   return (
     <Group>
       <Frame b={b} title="THE BOOTH · SIDE VIEW, TO SCALE" k={k} right={`LOOP ×${gain.toFixed(2)} · ${status}`} rightTint={tint} />
-            <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 4, b.w - 4, b.h - head - foot + 4)}>
+      <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 4, b.w - 4, b.h - head - foot + 4)}>
+        {/* the AIR path first: wavefronts from the woofer to the platter, its
+            loop gain in their weight — the gear in front stops them */}
+        {air.map((p, i) => (
+          <Path key={i} path={p} style="stroke" strokeWidth={(1 + g * 2.2) * Math.min(k, 1.6)} color={INK.amber} opacity={gain > 0.02 ? 0.35 + 0.45 * Math.min(1, g) - i * 0.08 : 0.16} strokeCap="round" />
+        ))}
+        {floorShown ? <Line p1={vec(X(R.view.x0), Y(0))} p2={vec(X(R.view.x1), Y(0))} color="rgba(255,255,255,0.18)" strokeWidth={1} /> : null}
         {/* the table: back legs (further, darker), the apron, the top, front legs */}
-        {leg(40, true)}
+        {leg(R.tableStart + 60, true)}
         {leg(R.tableEnd - 20, true)}
-        <Solid x={X(R.view.x0)} y={Y(R.tableTop - 30)} w={(R.tableEnd - 30 - R.view.x0) * s} h={50 * s} c={['#2a2c31', '#17181c']} r={0} />
-        <Solid x={X(R.view.x0)} y={Y(R.tableTop)} w={(R.tableEnd - R.view.x0) * s} h={30 * s} c={['#4a4d54', '#2a2c31', '#1a1b1f']} r={2} />
-        <Line p1={vec(X(R.view.x0), Y(R.tableTop) + 0.6)} p2={vec(X(R.tableEnd), Y(R.tableTop) + 0.6)} color="rgba(255,255,255,0.25)" strokeWidth={0.8} />
-        {leg(0, false)}
+        <Solid x={X(R.tableStart)} y={Y(R.tableTop - 30)} w={(R.tableEnd - 30 - R.tableStart) * s} h={50 * s} c={['#2a2c31', '#17181c']} r={0} />
+        <Solid x={X(R.tableStart)} y={Y(R.tableTop)} w={(R.tableEnd - R.tableStart) * s} h={30 * s} c={['#4a4d54', '#2a2c31', '#1a1b1f']} r={2} />
+        <Line p1={vec(X(R.tableStart), Y(R.tableTop) + 0.6)} p2={vec(X(R.tableEnd), Y(R.tableTop) + 0.6)} color="rgba(255,255,255,0.25)" strokeWidth={0.8} />
+        {leg(R.tableStart + 20, false)}
         {leg(R.tableEnd - 60, false)}
-        {/* the turntable in profile: feet, plinth, platter rim (strobe dots), record, arm */}
+        {/* the turntable from its front: feet, plinth, platter rim (strobe
+            dots), slipmat and record, spindle, the arm */}
         {[R.tt.x + 40, R.tt.x + R.tt.w - 40].map((x) => {
           const fw = (v.feet ? 66 : 44) * s;
           const fx = X(x) - fw / 2;
@@ -635,8 +716,8 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
               </RoundedRect>
               {v.feet ? (
                 <Group>
-                  {/* an isolation puck: a dark elastomer body, lit down its side,
-                      under a machined metal cap */}
+                  {/* an isolation foot: a dark elastomer body, lit down its
+                      side, under a machined metal cap */}
                   <RoundedRect x={fx} y={top + fh * 0.22} width={fw} height={fh * 0.78} r={Math.min(3, fh * 0.2)}>
                     <LinearGradient start={vec(fx, 0)} end={vec(fx + fw, 0)} colors={['#3a3c42', '#26272c', '#141518', '#0b0c0e']} positions={[0, 0.35, 0.75, 1]} />
                   </RoundedRect>
@@ -646,31 +727,40 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
                   <Line p1={vec(fx + 1, top + fh * 0.62)} p2={vec(fx + fw - 1, top + fh * 0.62)} color="rgba(0,0,0,0.45)" strokeWidth={0.8} />
                 </Group>
               ) : (
-                // the turntable's own foot: a domed rubber foot
-                <RoundedRect x={fx} y={top} width={fw} height={fh} r={fh * 0.45}>
-                  <LinearGradient start={vec(fx, 0)} end={vec(fx + fw, 0)} colors={['#3a3c42', '#1e1f23', '#0b0c0e']} />
-                </RoundedRect>
+                // the turntable's own foot: a domed, damped rubber foot
+                <Group>
+                  <RoundedRect x={fx} y={top} width={fw} height={fh} r={fh * 0.3}>
+                    <LinearGradient start={vec(fx, 0)} end={vec(fx + fw, 0)} colors={['#3a3c42', '#1e1f23', '#0b0c0e']} />
+                  </RoundedRect>
+                  <Line p1={vec(fx + 1, top + fh * 0.4)} p2={vec(fx + fw - 1, top + fh * 0.4)} color="rgba(0,0,0,0.5)" strokeWidth={0.8} />
+                </Group>
               )}
             </Group>
           );
         })}
-        <Solid x={X(R.tt.x)} y={Y(ttTop)} w={R.tt.w * s} h={R.tt.plinth * s} c={['#3e4148', '#24262b', '#121316']} r={3} />
-        <Solid x={X(R.tt.x + 24)} y={Y(platterTop)} w={332 * s} h={18 * s} c={METAL} r={1} />
+        <Solid x={X(R.tt.x)} y={Y(ttTop)} w={R.tt.w * s} h={R.tt.plinth * s} c={['#3e4148', '#24262b', '#121316']} r={4 * s + 1} />
+        <Line p1={vec(X(R.tt.x) + 2, Y(ttTop) + 0.7)} p2={vec(X(R.tt.x + R.tt.w) - 2, Y(ttTop) + 0.7)} color="rgba(255,255,255,0.22)" strokeWidth={0.8} />
+        <Line p1={vec(X(R.tt.x) + 2, Y(T.base) - 0.7)} p2={vec(X(R.tt.x + R.tt.w) - 2, Y(T.base) - 0.7)} color="rgba(0,0,0,0.6)" strokeWidth={1} />
+        <Solid x={X(R.tt.x + 24)} y={Y(platterTop)} w={332 * s} h={R.tt.platter * s} c={METAL} r={1} />
         {Array.from({ length: 22 }, (_, i) => (
-          <RoundedRect key={i} x={X(R.tt.x + 30 + i * 15)} y={Y(platterTop - 6)} width={Math.max(1, 5 * s)} height={Math.max(1, 5 * s)} r={0.5} color="#3a3e45" />
+          <RoundedRect key={i} x={X(R.tt.x + 30 + i * 15)} y={Y(platterTop - 7)} width={Math.max(1, 4 * s)} height={Math.max(1, 4 * s)} r={0.5} color="#3a3e45" />
         ))}
-        <Solid x={X(R.tt.x + 40)} y={Y(recTop)} w={302 * s} h={Math.max(1.2, 5 * s)} c={['#2a2b30', '#060607']} r={0.5} />
-        {/* the arm pillar, counterweight and tube over the record */}
-        <Solid x={X(R.tt.x + 385)} y={Y(ttTop + 42)} w={26 * s} h={42 * s} c={METAL} r={1} />
-        <Solid x={X(R.tt.x + 400)} y={Y(ttTop + 58)} w={40 * s} h={30 * s} c={['#eef1f4', '#8a9099', '#3a3e45']} r={2} />
-        <Line p1={vec(X(R.tt.x + 398), Y(ttTop + 43))} p2={vec(X(R.tt.x + 160), Y(ttTop + 43))} color="#b9bec6" strokeWidth={Math.max(1.2, 8.5 * s)} strokeCap="round" />
-        <Solid x={X(R.tt.x + 140)} y={Y(ttTop + 46)} w={34 * s} h={(46 - (recTop - ttTop)) * s} c={['#3a3d44', '#121316']} r={1} />
+        <Solid x={X(R.tt.x + 39)} y={Y(recTop)} w={302 * s} h={Math.max(1.2, R.tt.disc * s)} c={['#2a2b30', '#060607']} r={0.5} />
+        <Solid x={X(R.tt.x + TT.platter.cx - 2)} y={Y(recTop + 12)} w={Math.max(1, 4 * s)} h={12 * s} c={METAL} r={0.5} />
+        {/* the arm: its base, pillar and gimbal at the pivot, the counterweight
+            behind it, the tube out to the headshell over the stylus */}
+        <Solid x={X(pivotX - 26)} y={Y(ttTop + 6)} w={52 * s} h={6 * s} c={['#3e4148', '#16171a']} r={1} />
+        <Solid x={X(pivotX - 11)} y={Y(tubeH)} w={22 * s} h={(tubeH - ttTop - 6) * s} c={METAL} r={1} />
+        <Solid x={X(cwx - 15)} y={Y(tubeH + 15)} w={30 * s} h={30 * s} c={['#eef1f4', '#8a9099', '#3a3e45']} r={3 * s} />
+        <Line p1={vec(X(pivotX), Y(tubeH))} p2={vec(X(sx + 8), Y(headH + 6))} color="#b9bec6" strokeWidth={Math.max(1.2, 8.5 * s)} strokeCap="round" />
+        <Circle cx={X(pivotX)} cy={Y(tubeH)} r={Math.max(1.6, 11 * s)} color="#9aa0a8" />
+        <Solid x={X(sx - 14)} y={Y(headH + 8)} w={34 * s} h={(headH + 8 - tipH) * s} c={['#3a3d44', '#121316']} r={1} />
         {/* the monitor: a pad on the table, or a pole stand of its own */}
         {v.monitorNear ? (
           <Solid x={X(mon.x - 10)} y={Y(mon.y)} w={(depth + R.mon.w + 20) * s} h={30 * s} c={['#3a3c42', '#1e1f23']} r={2} />
         ) : (
           <Group>
-            <Solid x={X(mon.x + depth + 70)} y={Y(mon.y)} w={36 * s} h={(mon.y - R.view.y0 + 40) * s} c={['#4a4e56', '#2a2c31']} r={1} />
+            <Solid x={X(mon.x + depth + 70)} y={Y(mon.y)} w={36 * s} h={(mon.y - legBot) * s} c={['#4a4e56', '#2a2c31']} r={1} />
             <Solid x={X(mon.x + depth + 40)} y={Y(mon.y)} w={100 * s} h={18 * s} c={['#3a3d44', '#1a1b1f']} r={2} />
           </Group>
         )}
@@ -681,7 +771,6 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
         <RoundedRect x={baffle.x0} y={baffle.y0} width={baffle.x1 - baffle.x0} height={baffle.y1 - baffle.y0} r={3 * s}>
           <LinearGradient start={vec(baffle.x0, baffle.y0)} end={vec(baffle.x1, baffle.y1)} colors={['#3a3d44', '#1a1b1f', '#0d0e11']} />
         </RoundedRect>
-        <Circle cx={woof.x} cy={woof.y} r={1} color="transparent" />
         <Group transform={[{ translateX: woof.x }, { translateY: woof.y }, { scaleX: woof.rx / woof.ry }]}>
           <Circle cx={0} cy={0} r={woof.ry}>
             <RadialGradient c={vec(-woof.ry * 0.2, -woof.ry * 0.25)} r={woof.ry} colors={['#3a3c42', '#0b0c0e']} />
@@ -695,25 +784,20 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
           </Circle>
         </Group>
         <RoundedRect x={X(mon.x + depth * 0.25)} y={Y(mon.y + 40)} width={depth * 0.5 * s} height={Math.max(1.5, 14 * s)} r={2} color="#050506" />
-        {/* the AIR path: wavefronts from the woofer to the platter, its loop gain in their weight */}
-        {air.map((p, i) => (
-          <Path key={i} path={p} style="stroke" strokeWidth={(1 + g * 2.2) * Math.min(k, 1.6)} color={INK.amber} opacity={gain > 0.02 ? 0.35 + 0.45 * Math.min(1, g) - i * 0.08 : 0.16} strokeCap="round" />
-        ))}
         {/* the ELECTRICAL path, an overlay: stylus → mixer → monitor */}
         <Path path={wire} style="stroke" strokeWidth={1.4} color={INK.blue} opacity={0.85}>
           <DashPathEffect intervals={[6, 4]} />
         </Path>
         <Path path={arrow} color={INK.blue} opacity={0.85} />
       </Group>
-      <SceneText x={(X(R.tt.x + 150) + X(mon.x + depth + R.mon.w * 0.6)) / 2} y={Y(R.view.y1 - 40) - 4} size={fs} text="ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR" color={INK.blue} face="label" align="center" minPt={9.5} />
-      <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 330)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
+      <SceneText x={(X(sx) + X(mon.x + depth + R.mon.w * 0.6)) / 2} y={Y(R.view.y1 - 40) - 4} size={fs} text="ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR" color={INK.blue} face="label" align="center" minPt={9.5} />
+      <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 300)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
       {/* the footer band: status words only, clear of every gear part */}
       {howlDb > -60 ? <SceneText x={b.x + 10} y={b.y + b.h - 6} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} /> : null}
-      {/* the feet's name, in the clear air left of the turntable, with a
-          hairline leader straight down to the left foot it names */}
-      <SceneText x={b.x + 8} y={Y(R.tableTop + feetH + 95)} size={fs} text={v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET'} color={INK.print} face="label" minPt={9.5} />
-      <Line p1={vec(X(R.tt.x + 40), Y(R.tableTop + feetH + 95) + 3)} p2={vec(X(R.tt.x + 40), Y(R.tableTop + feetH) - 1)} color={INK.printDim} strokeWidth={1} />
-      <Circle cx={X(R.tt.x + 40)} cy={Y(R.tableTop + feetH) - 1} r={1.6} color={INK.printDim} />
+      {/* the feet's name, in the clear air over the table left of the
+          turntable, with a short leader to the left foot it names */}
+      <SceneText x={X(R.tt.x) - 6} y={Y(R.tableTop) - 3} size={fs} text={feetLabel} color={INK.print} face="label" align="right" minPt={9.5} />
+      <Line p1={vec(X(R.tt.x) - 3, Y(R.tableTop) - 3 - fs * 0.36)} p2={vec(X(footL) - 1, Y(R.tableTop) - 3 - fs * 0.36)} color={INK.printDim} strokeWidth={1} />
     </Group>
   );
 }

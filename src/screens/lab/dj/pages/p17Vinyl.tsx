@@ -17,7 +17,7 @@ import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
-import { TurntableTop, TT_PARTS, armAngleAt, armPartAt, turntablePartBox } from '../art/TurntableTop';
+import { TurntableTop, TT_PARTS, armPartAt, armPoseAngle, turntablePartBox } from '../art/TurntableTop';
 import { ArmSide, PhonoChain, RoomView, type PhonoCount } from '../art/vinylArt';
 import { TT, TT_D, TT_W } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
@@ -27,7 +27,7 @@ import { getBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, channelRoute, connect, hotPatchSpeakers, type Booth, type JackId } from '../model/djModel';
 import { TRACKS, barSec, trackSeconds } from '../engine/djMusic';
-import { FORCE_RANGE, armMoveThumps, dialReads, feedbackLoopGain, freshVinyl, inRange, skips, tooHeavy, trackAbility, trueForce, wallForce, zeroDial, BALANCE_AT, type VinylState } from '../model/djVinyl';
+import { FORCE_RANGE, VINYL_ARM_AWAY, armMoveThumps, dialReads, feedbackLoopGain, freshVinyl, inRange, skips, tooHeavy, trackAbility, trueForce, vinylArmOn, wallForce, zeroDial, BALANCE_AT, type VinylState } from '../model/djVinyl';
 import { REV_SEC } from '../model/djDvs';
 import { useBoothKit } from './shared';
 import { Choices, TrayNote, s2Of, s2styles } from './s2kit';
@@ -68,7 +68,7 @@ function ArmTray({ onView }: { onView: () => void }) {
     <View style={s2styles.tray}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         <LabChip
-          label={v.armUp ? 'LOWER ONTO THE RECORD (CUE LEVER)' : 'LIFT ON THE CUE LEVER TO BALANCE'}
+          label={v.armUp ? 'LOWER ONTO THE RECORD (CUE LEVER)' : 'LIFT THE ARM CLEAR TO BALANCE'}
           selected={v.armUp}
           onPress={() => {
             onView();
@@ -85,7 +85,7 @@ function ArmTray({ onView }: { onView: () => void }) {
         <LabChip label={v.scale ? 'STYLUS SCALE: ON' : 'STYLUS SCALE'} selected={v.scale} onPress={() => { onView(); setV((x) => ({ scale: !x.scale && !x.armUp })); }} compact />
       </View>
       <Choices head="ANTI-SKATE DIAL" value={v.antiSkate} items={[0, 1, 2, 3, 4, 5].map((g) => ({ id: g, label: String(g) }))} onPick={(g) => { onView(); setV(() => ({ antiSkate: g as number })); }} />
-      <TrayNote>The method: lift the arm on the cue lever and turn the weight until the arm FLOATS level; zero the ring without moving the weight; then turn weight and ring together to the force. Check with a scale if you have one. (A slipmat under the record lets it slip for cueing; it is not part of the signal.)</TrayNote>
+      <TrayNote>The method: lift the arm clear of the record (cue lever down, so it floats free) and turn the weight until the arm FLOATS level; zero the ring without moving the weight; then turn weight and ring together to the force. Check with a scale if you have one. (A slipmat under the record lets it slip for cueing; it is not part of the signal.)</TrayNote>
     </View>
   );
 }
@@ -184,11 +184,14 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
   const count = phonoCount(booth);
   const panelH = (H: number, k: number) => (view === 'ROOM' ? Math.round(Math.min(204 * Math.sqrt(k), H * 0.62)) : Math.round(Math.min(160 * Math.sqrt(k), H * 0.52)));
   const frame = { x: -10, y: -10, w: TT_W + 20, h: TT_D + 20 };
-  // the arm's angle NOW, from the same formula its transform uses: the
-  // callouts and the label obstacles ride the arm (visual review 2, blocker 3)
+  // the arm's angle NOW, from the same pose the drawing turns it to: the
+  // callouts, the label obstacles AND the side views ride the arm (visual
+  // review 2, blocker 3). One pose for every view: on the record (playing or
+  // stopped — no auto-return) or lifted clear to balance (grade 2026-10-19)
   const spinning = tt.playing && !!tt.track;
   const posNow = spinning ? tt.posSec + Math.max(0, motion.clock.value - tt.at) * (1 + tt.pitch / 100) : tt.posSec;
-  const armAng = armAngleAt(posNow, tt.track ? trackSeconds(tt.track) : 1, spinning && !v.armUp);
+  const armOn = vinylArmOn(v);
+  const armAng = armPoseAngle(armOn, VINYL_ARM_AWAY, posNow, tt.track ? trackSeconds(tt.track) : 1);
   const hl = view === 'ARM' ? (['counterweight', 'headshell'] as const) : view === 'ROOM' ? (['platter'] as const) : ([] as const);
   const callouts: Callout[] =
     view === 'ARM'
@@ -198,7 +201,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
           { id: 'as', text: 'ANTI-SKATE', at: { x: TT.armPivot.x + 26, y: TT.armPivot.y + 36 }, dx: 18, dy: 6, tone: 'plain' },
         ]
       : view === 'ROOM'
-        ? [{ id: 'pl', text: 'PLATTER · PICKS UP THE SHAKING', at: { x: TT.platter.cx - 96, y: TT.platter.cy - 128 }, dx: -10, dy: -12, tone: 'plain' }]
+        ? [{ id: 'pl', text: 'PLATTER · PICKS UP THE SHAKING', at: { x: TT.platter.cx - 30, y: TT.platter.cy + 155 }, dx: 0, dy: 26, tone: 'plain' }]
         : [];
   return (
     <DjRack
@@ -217,11 +220,11 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
             screenOverlay={(W, H, _xf, k) => {
               const kk = Math.sqrt(k);
               const b = { x: 6, y: 4, w: W - 12, h: panelH(H, k) - 8 };
-              return view === 'ARM' ? <ArmSide b={b} v={v} k={kk} /> : view === 'PHONO' ? <PhonoChain b={b} preamp={booth.ttPreamp} input={booth.ch[1].input} count={count} plugTo={plugTarget(booth)} gnd={v.gnd} k={kk} /> : <RoomView b={b} v={v} gain={G} howlDb={s2?.howlDb ?? -120} k={kk} />;
+              return view === 'ARM' ? <ArmSide b={b} v={v} ang={armAng} k={kk} /> : view === 'PHONO' ? <PhonoChain b={b} preamp={booth.ttPreamp} input={booth.ch[1].input} count={count} plugTo={plugTarget(booth)} gnd={v.gnd} k={kk} /> : <RoomView b={b} v={v} ang={armAng} gain={G} howlDb={s2?.howlDb ?? -120} k={kk} />;
             }}
             a11y={`You are looking at ${view === 'ARM' ? 'the tonearm from the side — its gimbal, counterweight and dial ring, the cue lever, the headshell and cartridge over the record' : view === 'PHONO' ? 'the phono chain from the cartridge to the channel, the turntable’s and the mixer’s rear panels with the leads and the ground wire, and the RIAA playback curve' : 'the booth from the side, drawn to one scale: the table, the turntable on its feet and the booth monitor, with the sound’s path through the air and, as an overlay, the electrical path'}, above the turntable from the top. Dial ${dialReads(v).toFixed(1)} grams; tracking ${trackWord.toLowerCase()}.`}
           >
-            <TurntableTop x={0} y={0} d={tt} playing={tt.playing} highlight={hl} slipmat={v.slipmat} armOff={v.armUp} />
+            <TurntableTop x={0} y={0} d={tt} playing={tt.playing} highlight={hl} slipmat={v.slipmat} armOn={armOn} armAway={VINYL_ARM_AWAY} />
           </Scene>
         ),
         bezel: [
