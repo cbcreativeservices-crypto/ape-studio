@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 07:38 · ccode · 328f3aad
+changed: DJ Systems Lab 9-16 toddler pass: faults that read FIXED too early, a clean run that counted re-renders
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-19 06:15 · ccode · 0e18b88f
 changed: DJ Systems Lab full screen: a tap or 1x drag no longer sends 2x/3x off-screen
 affects other side: nothing (client only)
