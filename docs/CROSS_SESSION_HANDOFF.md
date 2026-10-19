@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 10:12 · ccode · a36559dd
+changed: Session handoff 2026-10-19 (DJ lab, custom list, lab intro popups, cloud-session notes)
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-19 08:47 · ccode · 6438511e
 changed: Rack dock (every lab): a cut-off key word shrinks to fit, 9 pt minimum
 affects other side: nothing (client only)
