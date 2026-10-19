@@ -24,7 +24,7 @@ import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
 import { HandheldMic, MicXlrPlug, MixerFront, ReceiverRear, FRONT, frontPartBox, RX_JACKS, RX_W, RX_H, type FrontPart } from '../art/MicGear';
-import { HeatLegend, PlanView, PLAN_FRAME, planAt, planObstacles } from '../art/PlanView';
+import { HeatLegend, PlanView, PLAN_STAGE, planAt, planObstacles } from '../art/PlanView';
 import { CableRun } from '../art/cables';
 import { LedColumn } from '../art/parts';
 import { useTapDb } from '../art/motion';
@@ -374,7 +374,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
               <MixerView booth={booth} live={live} voiceLive={voiceLive} voice={[voiceLive, voiceIn(last, 'crowd'), voiceIn(last, 'booth'), voiceIn(last, 'rec')]} />
             </Scene>
           ) : (
-            <Scene w={w} h={h} frame={PLAN_FRAME} motion={motion} screenOverlay={(sw, sh, _xf, kz) => <HeatLegend w={sw} h={sh} k={Math.sqrt(Math.max(1, kz))} mode="TOPS" />} a11y={`${LOOK_ROOM} The mic is ${MIC_POS[m.pos].label.toLowerCase()}; ${fb.state === 'RINGING' ? 'it is ringing' : fb.state === 'EDGE' ? 'it is on the edge of feedback' : 'it is safe from feedback'}.`} obstacles={planObstacles(ev.venue.place, ev.venue.subPos, false, true)} callouts={roomCallouts}>
+            <Scene w={w} h={h} frame={PLAN_STAGE} motion={motion} screenOverlay={(sw, sh, _xf, kz) => <HeatLegend w={sw} h={sh} k={Math.sqrt(Math.max(1, kz))} mode="TOPS" place={ev.venue.place} feedDbfs={last?.ext.feedRms.master ?? -24} />} a11y={`${LOOK_ROOM} The mic is ${MIC_POS[m.pos].label.toLowerCase()}; ${fb.state === 'RINGING' ? 'it is ringing' : fb.state === 'EDGE' ? 'it is on the edge of feedback' : 'it is safe from feedback'}.`} obstacles={planObstacles(ev.venue.place, ev.venue.subPos, false, true)} callouts={roomCallouts}>
               <PlanView spec={{ map: 'TOPS', place: ev.venue.place, subPos: ev.venue.subPos, subs: false, feedDbfs: last?.ext.feedRms.master ?? -24, monitors: true, mic: live ? { pos: m.pos, fb } : { pos: m.pos, fb: { ...fb, state: 'SAFE' } }, edges: true, hotTop: fb.state !== 'SAFE' && fb.worst?.id.startsWith('top') ? (fb.worst.id as 'topL' | 'topR') : null }} />
             </Scene>
           ),

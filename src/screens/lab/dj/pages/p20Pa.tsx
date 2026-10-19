@@ -57,7 +57,7 @@ type View3 = 'ROOM' | 'HANDOFF' | 'SYSTEM';
 const LOOK: Record<View3, string> = {
   ROOM: 'You are looking down on the venue: the dance floor coloured by how loud the tops are (or the subs’ bass), the tops with their −6 dB coverage edges, the subs, the booth table with the decks and the DJ’s listening point.',
   HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box beside the booth: MASTER L and R on XLR cables into the inputs labelled DJ L and DJ R, which run to the engineer.',
-  SYSTEM: 'You are looking at the venue’s system: the crossover’s response (tops in blue, the sub in violet, what you hear in white), and below, a top, a sub — and the amplifier a passive system needs — at true size.',
+  SYSTEM: 'You are looking at the venue’s system: the crossover’s response (tops in blue, the sub in violet, what you hear in white), and below, a top and a sub at true size (with passive tops, their power amplifier too).',
 };
 
 /* ── the HANDOFF view (mm) ────────────────────────────────────────────── */
@@ -277,17 +277,17 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
 
   const fourth =
     view === 'ROOM'
-      ? { k: 'TURNTABLE LOOP', v: Number.isFinite(ttMargin) ? (ttMargin <= 0 ? 'HOWLING' : `${ttMargin.toFixed(0)} dB`) : 'NO SUBS', sub: Number.isFinite(ttMargin) && ttMargin > 0 ? 'SPARE' : undefined, tint: ttMargin <= 0 ? PEAK_RED : ttMargin < 6 ? colors.amber : colors.green }
+      ? { k: 'TURNTABLE', v: Number.isFinite(ttMargin) ? (ttMargin <= 0 ? 'HOWLING' : `${ttMargin.toFixed(0)} dB`) : 'NO SUBS', sub: Number.isFinite(ttMargin) && ttMargin > 0 ? 'SPARE' : undefined, tint: ttMargin <= 0 ? PEAK_RED : ttMargin < 6 ? colors.amber : colors.green }
       : view === 'HANDOFF'
         ? { k: 'DJ L · DJ R', v: `${v.djL === 'MST_L' ? '✓' : v.djL ? '✗' : '—'} · ${v.djR === 'MST_R' ? '✓' : v.djR ? '✗' : '—'}`, tint: venueHandoffOk(v) ? colors.green : colors.amber }
-        : { k: 'AT 100 Hz', v: `${at100 >= 0 ? '+' : '−'}${Math.abs(at100).toFixed(1)}`, sub: 'dB', tint: flatAt100 ? colors.green : colors.amber };
+        : { k: 'AT 100 Hz', v: Math.abs(at100) < 0.05 ? '0.0' : `${at100 > 0 ? '+' : '−'}${Math.abs(at100).toFixed(1)}`, sub: 'dB', tint: flatAt100 ? colors.green : colors.amber };
 
   return (
     <DjRack
       spec={{
         render: (w, h) =>
           view === 'ROOM' ? (
-            <Scene w={w} h={h} frame={PLAN_FRAME} motion={motion} a11y={`${LOOK.ROOM} Floor centre about ${fmtDba(fc)} dBA, the decks ${fmtDba(decks)}.`} obstacles={planObstacles(v.place, v.subPos, v.subs, true)} callouts={roomCallouts} screenOverlay={(sw, sh, _x, kz) => <HeatLegend w={sw} h={sh} k={Math.sqrt(Math.max(1, kz))} mode={map} />}>
+            <Scene w={w} h={h} frame={PLAN_FRAME} motion={motion} a11y={`${LOOK.ROOM} Floor centre about ${fmtDba(fc)} dBA, the decks ${fmtDba(decks)}.`} obstacles={planObstacles(v.place, v.subPos, v.subs, true)} callouts={roomCallouts} screenOverlay={(sw, sh, _x, kz) => <HeatLegend w={sw} h={sh} k={Math.sqrt(Math.max(1, kz))} mode={map} place={v.place} feedDbfs={feed > -90 ? feed : -20} />}>
               <PlanView spec={{ map, place: v.place, subPos: v.subPos, subs: v.subs, feedDbfs: feed > -90 ? feed : -20, monitors: true, turntable: true, edges: map === 'TOPS', points: true, djTone: dose != null && dose > 100 ? '#ff5a48' : '#5bff85' }} />
             </Scene>
           ) : view === 'HANDOFF' ? (
@@ -348,7 +348,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>In SYSTEM, the crossover is OFF: the tops’ and the sub’s own roll-offs overlap and the sum bulges round 100 Hz. Turn it ON and watch the white line go flat — the tops above, the sub below, in mono.</P>
-        <P>In the ROOM, the tops aimed straight down leave a hole in front of the floor. Try each placement: the front corners, aimed in, cover the floor evenly and keep the decks out of their beam; behind the DJ, the decks become the loudest seat in the house.</P>
+        <P>In the ROOM, the tops aimed straight down leave a hole in front of the floor. Try each placement: the front corners, aimed in, cover the floor evenly and keep the decks out of their beam; behind the DJ, the decks become the loudest seat in the house. (The map is a simplified picture of the mid range: no height, no reflections.)</P>
         <Note tone="safety">At the decks you hear the PA’s spill AND the booth monitors, for hours. A 4-hour set at more than about 88 dBA is over the 85 dBA / 8-hour reference (3 dB exchange). Turn the BOOTH down before you turn the headphones up; take breaks; wear musicians’ earplugs. This is a modelled level — a phone’s volume is not your ears’ level.</Note>
       </Step>
       <Step n={4}>

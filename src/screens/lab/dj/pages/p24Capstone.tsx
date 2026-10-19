@@ -18,7 +18,7 @@
  */
 import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Group } from '@shopify/react-native-skia';
+import { Group, Path, Skia } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
@@ -58,7 +58,7 @@ const LOOK_BOOTH = 'You are looking at the DJ booth from above: deck A on the le
 
 /* ── the board ────────────────────────────────────────────────────────── */
 
-const FRAME: Box = { x: -10, y: -12, w: 388, h: 246 };
+const FRAME: Box = { x: -10, y: -12, w: 404, h: 246 };
 
 function eventBoardOf(b: Booth) {
   const ev = evOf(b);
@@ -82,7 +82,7 @@ function eventBoardOf(b: Booth) {
     { id: 'ph', x: 288, y: 102, w: 92, h: 30, title: 'PHONES', icon: 'phones', tap: 'phonesL' },
     { id: 'rec', x: 288, y: 140, w: 92, h: 36, title: 'RECORDER', sub: ev.rec.armedAt != null ? 'RECORDING' : 'STOPPED', icon: 'recorder', extTap: 'recL' },
     { id: 'strip', x: 122, y: 196, w: 112, h: 32, title: 'BOOTH STRIP', icon: 'strip' },
-    ...(ev.paLWall ? [{ id: 'wall', x: 288, y: 196, w: 92, h: 32, title: 'WALL', sub: 'OTHER CIRCUIT', icon: 'wall' as const }] : []),
+    { id: 'wall', x: 288, y: 196, w: 92, h: 32, title: 'WALL SOCKET', sub: 'OTHER CIRCUIT', icon: 'wall' },
   ];
   const live = (x: boolean) => (x ? 'live' : 'idle') as 'live' | 'idle';
   const links: FlowLink[] = [
@@ -99,6 +99,31 @@ function eventBoardOf(b: Booth) {
     { from: 'mix', to: 'rec', state: ev.rec.tap === 'REC_OUT' && on('mixer') ? 'live' : 'idle' },
   ];
   return { nodes, links };
+}
+
+/** Every device's power cord down to where it is plugged: the booth strip,
+ *  or (PA L, in one fault) a wall socket on another circuit. */
+function PowerCords({ b }: { b: Booth }) {
+  const ev = evOf(b);
+  const path = (pts: [number, number][]) => {
+    const p = Skia.PathBuilder.Make();
+    p.moveTo(pts[0][0], pts[0][1]);
+    for (const q of pts.slice(1)) p.lineTo(q[0], q[1]);
+    return p.detach();
+  };
+  const toStrip = (x: number, y: number, lane: number) => path([[x, y], [x, lane], [178, lane], [178, 196]]);
+  const cords = [
+    toStrip(50, 42, 186), toStrip(50, 88, 188), toStrip(166, 44, 190),
+    ev.paLWall ? path([[384, 15], [388, 15], [388, 210], [380, 210]]) : path([[384, 15], [388, 15], [388, 192], [210, 192], [210, 196]]),
+    path([[384, 49], [386, 49], [386, 194], [204, 194], [204, 196]]),
+  ];
+  return (
+    <Group>
+      {cords.map((c, i) => (
+        <Path key={i} path={c} style="stroke" strokeWidth={1.5} color={i === 3 && ev.paLWall ? '#c9a24d' : '#555a63'} />
+      ))}
+    </Group>
+  );
 }
 
 /* ── the trays ───────────────────────────────────────────────────────── */
@@ -234,7 +259,6 @@ const PART_HEAD: Record<DebriefPart, string> = { cause: 'THE CAUSE', evidence: '
 function Debrief({ scenario, onDone }: { scenario: Scenario; onDone: () => void }) {
   const fault = scenario.faults[0];
   const qs = useMemo(() => DEBRIEF_PARTS.map((p) => ({ part: p, ...debriefOptions(fault, p, scenario.seed) })), [fault, scenario.seed]);
-  const order = useMemo(() => qs.map((q) => q.options.map((_, i) => i).sort((a, b) => ((a * 7919 + scenario.seed) % 13) - ((b * 7919 + scenario.seed) % 13))), [qs, scenario.seed]);
   const [picked, setPicked] = useState<Record<DebriefPart, number | null>>({ cause: null, evidence: null, repair: null, prevention: null });
   const fired = useRef(false);
   const allRight = qs.every((q) => picked[q.part] === q.correct);
@@ -245,10 +269,10 @@ function Debrief({ scenario, onDone }: { scenario: Scenario; onDone: () => void 
   return (
     <View style={styles.debrief}>
       <Text style={styles.debriefHead}>DEBRIEF · THE EVENT’S FAULT</Text>
-      {qs.map((q, qi) => (
+      {qs.map((q) => (
         <View key={q.part} style={styles.tray}>
           <Text style={styles.sub}>{PART_HEAD[q.part]}</Text>
-          {order[qi].map((oi) => (
+          {q.options.map((_, oi) => (
             <LabChip key={oi} label={`${picked[q.part] === oi ? (oi === q.correct ? '✓ ' : '✗ ') : ''}${q.options[oi]}`} selected={picked[q.part] === oi} onPress={() => setPicked((p) => ({ ...p, [q.part]: oi }))} />
           ))}
           {picked[q.part] != null && picked[q.part] !== q.correct ? (
@@ -356,6 +380,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         render: (w, h) =>
           view === 'FLOW' ? (
             <Scene w={w} h={h} frame={FRAME} motion={motion} a11y={`${LOOK_FLOW} ${allOn ? 'Everything is switched on.' : 'Some of the system is still off.'}`} obstacles={flowBoxes(board.nodes)}>
+              <PowerCords b={booth} />
               <FlowBoard nodes={board.nodes} links={board.links} />
             </Scene>
           ) : (
@@ -364,19 +389,19 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'EVENT', v: `#${seed}`, sub: doorsOpen ? 'DOORS OPEN' : 'SETTING UP', tint: colors.amber },
           { k: 'POWER', v: `${POWERED.filter((d) => deviceLive(booth, d)).length}/7`, tint: allOn ? colors.green : colors.amber },
-          { k: 'THE ROOM', v: !last ? '—' : last.rmsDb.crowd < -50 ? 'SILENT' : last.clipped.master + last.clipped.bus > 0 ? 'CLIPPING' : ev.paLWall && !ev.paLIsolator ? 'HUM' : 'MUSIC', tint: !last ? colors.textSub : last.rmsDb.crowd < -50 || last.clipped.master + last.clipped.bus > 0 ? PEAK_RED : colors.green },
-          { k: 'ON AIR', v: decksValue(booth), tint: colors.amber },
+          { k: 'THE ROOM', v: !last ? '—' : last.rmsDb.crowd < -50 ? 'SILENT' : last.clipped.master + last.clipped.bus > 0 ? 'CLIPPING' : last.ext.hum.crowd ? 'HUM' : 'MUSIC', tint: !last ? colors.textSub : last.rmsDb.crowd < -50 || last.clipped.master + last.clipped.bus > 0 ? PEAK_RED : last.ext.hum.crowd ? colors.amber : colors.green },
+          { k: 'PLAYING', v: decksValue(booth), tint: colors.amber },
         ],
         params: [
           {
             kind: 'fader',
             id: 'fader',
-            label: 'FADER',
+            label: 'FADER 2',
             value: booth.ch[2].fader,
             level: true,
             onChange: (v) => updateBooth((b) => ({ ...b, ch: { ...b.ch, 2: { ...b.ch[2], fader: v } } })),
             format: (v) => `CH 2 FADER ${Math.round(v * 100)}%`,
-            formatShort: (v) => `2·${Math.round(v * 100)}%`,
+            formatShort: (v) => `${Math.round(v * 100)}%`,
             nudges: [
               { label: 'CH 1 ↓', onPress: () => updateBooth((b) => ({ ...b, ch: { ...b.ch, 1: { ...b.ch[1], fader: Math.max(0, Math.round((b.ch[1].fader - 0.1) * 20) / 20) } } })), a11y: 'Channel 1 fader down a step' },
               { label: 'CH 1 ↑', onPress: () => updateBooth((b) => ({ ...b, ch: { ...b.ch, 1: { ...b.ch[1], fader: Math.min(1, Math.round((b.ch[1].fader + 0.1) * 20) / 20) } } })), a11y: 'Channel 1 fader up a step' },
@@ -427,7 +452,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={fixedAll}
           hints={['Trace it on the board: from the source, card by card, to the room. Where is the last live meter?', FAULTS[scenario.faults[0]].evidence, FAULTS[scenario.faults[0]].repair]}
-          why={`${FAULTS[scenario.faults[0]].cause}${scenario.faults.length > 1 ? ` And a second fault: ${FAULTS[scenario.faults[1]].cause}` : ''}`}
+          why={scenario.faults.length > 1 ? 'Both faults are cleared: the room, the booth and the recording carry what they should. Now debrief the first one below.' : 'The room, the booth and the recording carry what they should. Now debrief it below — the cause, the evidence, the repair, and how to prevent it.'}
         />
         {fixedAll ? <Debrief scenario={scenario} onDone={() => setDebriefed(true)} /> : null}
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />

@@ -203,7 +203,13 @@ export function debriefOptions(fault: FaultId, part: DebriefPart, seed: number):
   const options = [FAULTS[fault][part], ...picks.map((f) => FAULTS[f][part])];
   // the unsafe "fix" is always offered as a wrong prevention or repair
   if (part === 'repair' || part === 'prevention') options.push('Lift the mains earth on the noisy unit so the hum stops.');
-  return { options, correct: 0 };
+  // a seeded Fisher–Yates: the right answer moves, the same way every replay
+  const order = options.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(r() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return { options: order.map((i) => options[i]), correct: order.indexOf(0) };
 }
 
 /* ── the capstone's own checks ────────────────────────────────────────── */

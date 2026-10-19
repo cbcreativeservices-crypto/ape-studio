@@ -105,6 +105,13 @@ describe('the debrief', () => {
         assert.deepEqual(debriefOptions(f, p, 42), q);
       }
   });
+  it('the right answer is not always in the same place', () => {
+    const at = new Set<number>();
+    for (let seed = 1; seed <= 60; seed++) for (const f of FAULT_IDS) at.add(debriefOptions(f, 'cause', seed).correct);
+    assert.ok(at.size >= 3, [...at].join(','));
+    const first = FAULT_IDS.flatMap((f) => DEBRIEF_PARTS.map((p) => debriefOptions(f, p, 11).correct === 0)).filter(Boolean).length;
+    assert.ok(first < FAULT_IDS.length * DEBRIEF_PARTS.length * 0.6, 'not mostly first');
+  });
   it('the unsafe earth lift is always a WRONG repair and prevention', () => {
     for (const f of FAULT_IDS)
       for (const p of ['repair', 'prevention'] as const) {

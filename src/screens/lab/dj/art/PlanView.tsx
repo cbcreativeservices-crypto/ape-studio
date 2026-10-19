@@ -22,8 +22,8 @@
  * reflections are not modelled (said once on the screen).
  */
 import { memo, useMemo } from 'react';
-import { BlurMask, Circle, createPicture, DashPathEffect, Group, Line, LinearGradient, Path, Picture, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
-import { heatColor } from '../../../../features/tools/levelColor';
+import { AlphaType, BlurMask, Circle, ColorType, DashPathEffect, FilterMode, Group, Image as SkImage, Line, LinearGradient, MipmapMode, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { heatColor, heatRgbW } from '../../../../features/tools/levelColor';
 import { INK } from './ink';
 import { SceneText, useLabelMm } from './sceneText';
 import { MONITORS, PLACEMENTS, ROOM, SUB_PLACES, cardioidDb, coverageGrid, subsRelAt, topsDbaAt, type Placement, type Speaker, type SubPlace, type V2 } from '../model/djRoom';
@@ -35,37 +35,45 @@ export const P = (v: V2): { x: number; y: number } => ({ x: v.x * 100, y: v.y * 
 
 /** The whole room, framed. */
 export const PLAN_FRAME: Box = { x: -720, y: -40, w: 1440, h: ROOM.d * 100 + 60 };
-/** The stage end only (the booth, the tops, the front of the floor). */
-export const PLAN_STAGE: Box = { x: -620, y: -30, w: 1240, h: 640 };
+/** The stage end and the front of the floor, closer (the field runs on
+ *  past the frame, so the glass is filled). */
+export const PLAN_STAGE: Box = { x: -600, y: -40, w: 1200, h: 860 };
 
 export type MapMode = 'TOPS' | 'BASS' | 'NONE';
 
-/** The heat ramp's window for the tops' field (dBA). */
-export const MAP_DBA = { lo: 78, hi: 106 } as const;
+/** The heat ramp's window for the tops' field (dBA): it follows the level
+ *  at the floor centre, so the SHAPE of the coverage reads at any volume
+ *  (the legend prints the real numbers). */
+export function mapWindow(place: Placement, feedDbfs: number): { lo: number; hi: number } {
+  const c = topsDbaAt(ROOM.floorCentre, place, feedDbfs);
+  return { lo: c - 18, hi: c + 8 };
+}
 
 /* ── the field (one picture per setting) ──────────────────────────────── */
 
-const COLS = 56;
-const ROWS = 46;
+const COLS = 84;
+const ROWS = 70;
 
+/** The field as a small image, one pixel per cell, drawn stretched over the
+ *  room with LINEAR sampling — a smooth field at every zoom, never blocks. */
 function useField(mode: MapMode, place: Placement, subPos: SubPlace, feedDbfs: number) {
   return useMemo(() => {
     if (mode === 'NONE') return null;
     const g = mode === 'TOPS' ? coverageGrid(COLS, ROWS, (p) => topsDbaAt(p, place, feedDbfs)) : coverageGrid(COLS, ROWS, (p) => subsRelAt(p, subPos));
+    const win = mapWindow(place, feedDbfs);
     let ref = -Infinity;
     if (mode === 'BASS') for (let i = 0; i < g.db.length; i++) ref = Math.max(ref, g.db[i]);
-    const pic = createPicture((canvas) => {
-      const paint = Skia.Paint();
-      for (let j = 0; j < g.rows; j++) {
-        for (let i = 0; i < g.cols; i++) {
-          const v = g.db[j * g.cols + i];
-          const t = mode === 'TOPS' ? (v - MAP_DBA.lo) / (MAP_DBA.hi - MAP_DBA.lo) : (v - ref + 24) / 24;
-          paint.setColor(Skia.Color(heatColor(Math.max(0.02, Math.min(1, t)))));
-          canvas.drawRect(Skia.XYWHRect((g.x0 + i * g.cw) * 100, (g.y0 + j * g.ch) * 100, g.cw * 100 + 0.6, g.ch * 100 + 0.6), paint);
-        }
-      }
-    });
-    return pic;
+    const px = new Uint8Array(COLS * ROWS * 4);
+    for (let i = 0; i < g.db.length; i++) {
+      const v = g.db[i];
+      const t = mode === 'TOPS' ? (v - win.lo) / (win.hi - win.lo) : (v - ref + 24) / 24;
+      const [r, gg, b] = heatRgbW(Math.max(0.02, Math.min(1, t)));
+      px[i * 4] = Math.round(r);
+      px[i * 4 + 1] = Math.round(gg);
+      px[i * 4 + 2] = Math.round(b);
+      px[i * 4 + 3] = 255;
+    }
+    return Skia.Image.MakeImage({ width: COLS, height: ROWS, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul }, Skia.Data.fromBytes(px), COLS * 4);
   }, [mode, place, subPos, mode === 'TOPS' ? Math.round(feedDbfs) : 0]);
 }
 
@@ -301,7 +309,7 @@ export const PlanView = memo(function PlanView({ spec }: { spec: PlanSpec }) {
         <Rect x={-W / 2} y={0} width={W} height={D}>
           <LinearGradient start={vec(0, 0)} end={vec(0, D)} colors={['#141519', '#0c0d10']} />
         </Rect>
-        {field ? <Picture picture={field} /> : null}
+        {field ? <SkImage image={field} x={-W / 2} y={0} width={W} height={D} fit="fill" sampling={{ filter: FilterMode.Linear, mipmap: MipmapMode.None }} /> : null}
         {/* the stage riser (back 3 m) */}
         <Rect x={-W / 2} y={0} width={W} height={300} color="rgba(255,255,255,0.035)" />
         <Line p1={vec(-W / 2, 300)} p2={vec(W / 2, 300)} color="rgba(255,255,255,0.18)" strokeWidth={2}>
@@ -380,17 +388,18 @@ function FeedbackPaths({ mic, fb, place }: { mic: MicPos; fb: Feedback; place: P
 
 /** The heat ramp's legend, in screen points (top-right of the glass): the
  *  colours from quiet to loud with their dBA (or relative dB) marks. */
-export function HeatLegend({ w, h, k = 1, mode }: { w: number; h: number; k?: number; mode: MapMode }) {
-  void h;
+export function HeatLegend({ w, h, k = 1, mode, place = 'CORNERS', feedDbfs = -20 }: { w: number; h: number; k?: number; mode: MapMode; place?: Placement; feedDbfs?: number }) {
   if (mode === 'NONE') return null;
   const bw = 96 * k;
   const bh = 7 * k;
-  const x = w - bw - 10 * k;
-  const y = 10 * k;
-  const stops = Array.from({ length: 11 }, (_, i) => heatColor(0.02 + (0.98 * i) / 10));
-  const marks = mode === 'TOPS' ? [80, 90, 100] : [-18, -12, -6, 0];
-  const pos = (v: number) => (mode === 'TOPS' ? (v - MAP_DBA.lo) / (MAP_DBA.hi - MAP_DBA.lo) : (v + 24) / 24);
   const fs = 9 * k;
+  const x = w - bw - 10 * k;
+  const y = h - bh - fs * 2 - 14 * k;
+  const stops = Array.from({ length: 11 }, (_, i) => heatColor(0.02 + (0.98 * i) / 10));
+  const win = mapWindow(place, feedDbfs);
+  const m0 = Math.ceil(win.lo / 5) * 5;
+  const marks = mode === 'TOPS' ? [m0, m0 + 10, m0 + 20].filter((m) => m <= win.hi) : [-18, -12, -6, 0];
+  const pos = (v: number) => (mode === 'TOPS' ? (v - win.lo) / (win.hi - win.lo) : (v + 24) / 24);
   return (
     <Group>
       <RoundedRect x={x - 6 * k} y={y - 4 * k} width={bw + 12 * k} height={bh + fs * 2 + 10 * k} r={5 * k} color="rgba(8,8,10,0.78)" />

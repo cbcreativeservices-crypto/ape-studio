@@ -79,7 +79,7 @@ function boardOf(b: Booth, hum: boolean, verdict: Record<ChangeItem, boolean> | 
     { id: 'lap2', x: 4, y: 100, w: 96, h: 40, title: 'LAPTOP · DJ 2', sub: lapSub(2), icon: 'laptop', state: hum ? 'hum' : lapState(2) },
     { id: 'deckB', x: 4, y: 148, w: 96, h: 36, title: 'DECK B · BACKUP', sub: deckSub('B'), icon: 'player', state: b.decks.B.playing ? 'live' : 'idle' },
     { id: 'ch1', x: 136, y: 16, w: 86, h: 56, title: 'CH 1', sub: `INPUT ${b.ch[1].input === 'USB' ? 'USB 1' : b.ch[1].input}`, icon: 'mixer', tap: 'ch1', onAir: onAir(b, 1) },
-    { id: 'ch2', x: 136, y: 112, w: 86, h: 56, title: 'CH 2', sub: hum ? 'HUM ON ITS INPUT' : `INPUT ${b.ch[2].input === 'USB' ? 'USB 2' : b.ch[2].input}`, icon: 'mixer', tap: 'ch2', onAir: onAir(b, 2), state: hum ? 'hum' : undefined },
+    { id: 'ch2', x: 136, y: 112, w: 86, h: 56, title: 'CH 2', sub: hum ? 'HUM · USB 2' : `INPUT ${b.ch[2].input === 'USB' ? 'USB 2' : b.ch[2].input}`, icon: 'mixer', tap: 'ch2', onAir: onAir(b, 2), state: hum ? 'hum' : undefined },
     { id: 'bus', x: 250, y: 66, w: 48, h: 56, title: 'MIX', tap: 'bus' },
     { id: 'pa', x: 318, y: 10, w: 74, h: 40, title: 'PA', icon: 'speaker', tap: 'crowd' },
     { id: 'mon', x: 318, y: 60, w: 74, h: 40, title: 'BOOTH', icon: 'monitor', tap: 'booth' },

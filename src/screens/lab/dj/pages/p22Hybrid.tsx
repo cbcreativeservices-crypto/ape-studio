@@ -117,7 +117,7 @@ function Stage({ booth, now }: { booth: Booth; now: number }) {
             </Group>
           )}
           {arrives && dm.sync === 'EXT' ? <ClockTicks path={path} beatClock={beatClock} spacing={14} /> : null}
-          <CableFlag x={route[1][0] + 30} y={route[1][1] + (dm.cable === 'USB' ? 0 : 0)} text={dm.cable === 'USB' ? 'USB' : dm.cable === 'DIN' ? 'MIDI · CLOCK' : `TRS-MIDI ${dm.cable === 'TRS_A' ? 'A' : 'B'}`} live={false} edge="#7a6aa8" />
+          <CableFlag x={(route[1][0] + route[2][0]) / 2} y={route[1][1]} text={dm.cable === 'USB' ? 'USB' : `${dm.cable === 'DIN' ? 'MIDI' : `TRS-MIDI ${dm.cable === 'TRS_A' ? 'A' : 'B'}`} · ${dm.clockSrc === 'OFF' ? 'CLOCK OFF' : `CLOCK CH ${dm.clockSrc}`}`} live={false} edge="#7a6aa8" />
         </Group>
       ) : null}
     </Group>
@@ -276,10 +276,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
 
   const DT = (x: number, y: number) => ({ x: DMT.x + x, y: DMT.y + y });
   const callouts: Callout[] = [
-    { id: 'mo', text: 'MIDI OUT', at: { x: E.midiOut.x, y: E.midiOut.y - 8 }, dx: 0, dy: -16, tone: 'plain' },
-    { id: 'cs', text: `CLOCK ${dm.clockSrc === 'OFF' ? 'OFF' : `FROM CH ${dm.clockSrc}`}`, at: { x: E.clock.x + E.clock.w / 2, y: E.clock.y }, dx: 14, dy: -16, tone: dm.clockSrc === 'OFF' ? 'plain' : 'amber' },
     { id: 'c2', text: dm.audio ? 'CH 2 LINE ← DRUM MACHINE' : 'CH 2 LINE ← DECK B', at: { x: J['ch2.line.L'].x, y: J['ch2.line.L'].y - 8 }, dx: 10, dy: -18, tone: dm.audio ? 'green' : 'plain' },
-    { id: 'mi', text: dm.cable === 'NONE' ? 'MIDI IN' : CLOCK_CABLES[dm.cable].works ? 'CLOCK IN ✓' : 'NO CLOCK ARRIVES', at: dm.cable === 'USB' ? dmJack('usb') : dm.cable === 'DIN' ? dmJack('midiDin') : dmJack('midiTrs'), dx: 0, dy: 26, tone: dm.cable === 'NONE' ? 'plain' : CLOCK_CABLES[dm.cable].works ? 'green' : 'red' },
     { id: 'ou', text: 'OUT L · R (AUDIO)', at: { x: (dmJack('outL').x + dmJack('outR').x) / 2, y: dmJack('outL').y + 8 }, dx: 0, dy: 22, tone: dm.audio ? 'blue' : 'plain' },
     { id: 'ds', text: dm.sync === 'EXT' ? (arrives ? 'FOLLOWING THE CLOCK' : 'EXT · NO CLOCK') : 'INTERNAL TEMPO', at: DT(78, 60), dx: 0, dy: 14, tone: dm.sync === 'EXT' && !arrives ? 'red' : 'amber' },
     { id: 'st', text: 'STEP LIGHTS = ITS BEAT', at: DT(170, 129), dx: 0, dy: 22, tone: 'plain' },
@@ -289,7 +286,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
     <DjRack
       spec={{
         render: (w, h) => (
-          <Scene w={w} h={h} frame={FRAME} motion={motion} a11y={`${LOOK} The drum machine is ${running ? `running at ${bpm?.toFixed(1)} BPM` : 'stopped'}, ${dm.sync === 'EXT' ? (arrives ? 'following the clock' : 'waiting for a clock') : 'on its own tempo'}; its audio is ${dm.audio ? 'in CH 2' : 'not connected'}.`} obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, { x: DMR.x, y: DMR.y, w: DM_W, h: DM_REAR_H }, { x: DMT.x, y: DMT.y, w: DM_W, h: DM_D }]} callouts={callouts}>
+          <Scene w={w} h={h} frame={FRAME} motion={motion} a11y={`${LOOK} The drum machine is ${running ? `running at ${bpm?.toFixed(1)} BPM` : 'stopped'}, ${dm.sync === 'EXT' ? (arrives ? 'following the clock' : 'waiting for a clock') : 'on its own tempo'}; its audio is ${dm.audio ? 'in CH 2' : 'not connected'}.`} obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, { x: FRAME.x, y: MIXER_REAR.h, w: FRAME.w, h: DMR.y - MIXER_REAR.h } /* the leads' band: their own flags label it */, { x: DMR.x, y: DMR.y, w: DM_W, h: DM_REAR_H }, { x: DMT.x, y: DMT.y, w: DM_W, h: DM_D }]} callouts={callouts}>
             <Stage booth={booth} now={now} />
           </Scene>
         ),
