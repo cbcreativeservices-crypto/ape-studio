@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 21:32 · ccode · 35216080
+changed: DJ Systems Lab Stage 2b: keep two ratchets green
+affects other side: nothing (client-only on unpublished branch dj-lab-b; a PagedLab line moved and one ratchet entry classified; no DB, no OTA)
+needs: nothing
+
+
 ### 2026-10-18 21:28 · ccode · 3c0c1142
 changed: DJ Systems Lab Stage 2b: screen polish from the 390 px pass
 affects other side: nothing (client-only screen polish on unpublished branch dj-lab-b; no DB, no OTA)
