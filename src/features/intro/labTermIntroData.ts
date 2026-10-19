@@ -9,10 +9,11 @@
  *
  *   'wired' — the popup shows (members only, once per glossary TERM per
  *             device: labs that share a term share one seen flag).
- *   'hold'  — no usable glossary row yet: NO popup. The proposed new
- *             glossary entry is in Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md.
- *             To wire one: change it to a wired row with the chosen term,
- *             its exact plain-English text and its glossary id.
+ *   'hold'  — no usable glossary row yet: NO popup until one exists (none
+ *             today). To wire one: change it to a wired row with the chosen
+ *             term, its exact plain-English text and its glossary id.
+ *   'none'  — no popup, by the owner's decision (the Audio Calculator
+ *             Laboratory). Not pending.
  *
  * THE RULE (owner 2026-10-19): each popup explains the lab's ACTION, or its
  * device, as it applies to audio ("always explain the action"; "miking is the
@@ -25,7 +26,9 @@
  */
 export type LabTermEntry =
   | { status: 'wired'; lab: string; term: string; plainEnglish: string; glossaryId: string }
-  | { status: 'hold'; lab: string; candidates: readonly string[]; suggested: string | null };
+  | { status: 'hold'; lab: string; candidates: readonly string[]; suggested: string | null }
+  /** No popup for this lab, by the owner's decision (not pending). */
+  | { status: 'none'; lab: string; reason: string };
 
 export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
   AmplitudeLab: {
@@ -524,5 +527,6 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "It means training your ears the way a musician trains for pitch. You listen to known changes over and over until you recognise them instantly. Then you can hear a boost at a certain frequency, or too much compression, and name it. It turns vague reactions into clear decisions at the desk.",
     glossaryId: "c9f87f96-20eb-44a4-a8fe-5465e49816a2",
   },
-  CalcLab: { status: 'hold', lab: "Audio Calculator Laboratory", candidates: ["Decibel", "Sound Pressure Level"], suggested: null },
+  // Owner 2026-10-19: the Calculator lab gets NO glossary popup.
+  CalcLab: { status: 'none', lab: "Audio Calculator Laboratory", reason: "owner 2026-10-19: no glossary popup for the calculator lab" },
 };

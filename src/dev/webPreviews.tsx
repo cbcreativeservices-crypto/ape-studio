@@ -16,6 +16,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useRoute } from '@react-navigation/native';
 import { LabTermIntroHost } from '../features/intro/LabTermIntro';
+import { isMemberOnlyLabRoute } from '../screens/lab/labCatalog';
 import { Spl3dGaugePreview } from '../screens/tools/Spl3dGaugePreview';
 import { PatchbayPreview } from '../screens/lab/patchbay/PatchbayPreview';
 import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
@@ -218,7 +219,8 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
  * The lab's first-open glossary popup (owner 2026-10-19), mounted beside each
  * harness screen the way withMembershipPreview mounts it in the navigator —
  * WITHOUT the member gate, so the harness keeps opening every lab. The popup
- * applies its own rules (members only: pin the dev tier to academy). Harness
+ * applies its own rules (free labs: everyone; members-only labs: pin the dev
+ * tier to academy). Harness
  * names that differ from the real routes (MicPrinciples, VacuumTube…) are not
  * catalog labs and show none.
  */
@@ -231,7 +233,7 @@ function withLabTermPopup(Screen: ComponentType): ComponentType {
     return (
       <>
         <Screen {...props} />
-        <LabTermIntroHost routeName={route.name} params={route.params} />
+        <LabTermIntroHost routeName={route.name} params={route.params} freeLab={!isMemberOnlyLabRoute(route.name)} />
       </>
     );
   }

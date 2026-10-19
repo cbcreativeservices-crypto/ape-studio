@@ -15,7 +15,9 @@
  * this is in the app-start graph.
  *
  * THE RULES (state machine: labTermIntroState in labTermIntros.ts)
- *  • MEMBERS ONLY (owner 2026-10-19: "do not show the glossary pop up for
+ *  • FREE LABS: everyone (owner 2026-10-19, "yes, free labs should show pop
+ *    up"): `freeLab` (not members-only in labCatalog) skips the gate below.
+ *  • MEMBERS-ONLY LABS: members only (owner 2026-10-19: "do not show the glossary pop up for
  *    free non-members … free users should be going straight to the
  *    membership gate denial"). useMemberGate() must be 'open'; 'locked',
  *    'checking' and 'unconfirmed' show nothing, and a members-only preview
@@ -54,13 +56,23 @@ import { markLabTermSeen, useLabTermSeen } from './labTermSeenStore';
 const AFTER_PUSH_MS = 120;
 const PUSH_FALLBACK_MS = 900;
 
-export function LabTermIntroHost({ routeName, params }: { routeName: string; params?: unknown }) {
+export function LabTermIntroHost({
+  routeName,
+  params,
+  freeLab = false,
+}: {
+  routeName: string;
+  params?: unknown;
+  /** The lab is free (!isMemberOnlyLabRoute): everyone gets the popup.
+   *  Default false: members only, the safe side. */
+  freeLab?: boolean;
+}) {
   const term = wiredLabTerm(labTermKey(routeName, params));
-  if (!term) return null; // not a catalog lab, or on HOLD: nothing, and nothing owed
-  return <LabTermIntro term={term} />;
+  if (!term) return null; // not a catalog lab, on HOLD, or 'none': nothing, and nothing owed
+  return <LabTermIntro term={term} freeLab={freeLab} />;
 }
 
-function LabTermIntro({ term }: { term: WiredLabTerm }) {
+function LabTermIntro({ term, freeLab }: { term: WiredLabTerm; freeLab: boolean }) {
   const navigation = useNavigation();
   const focused = useIsFocused();
   const gate = useMemberGate();
@@ -98,6 +110,7 @@ function LabTermIntro({ term }: { term: WiredLabTerm }) {
 
   const base = {
     wired: true,
+    freeLab,
     gate,
     previewActive,
     seen,

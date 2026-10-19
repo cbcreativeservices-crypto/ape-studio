@@ -8,10 +8,13 @@
  * And: "do not show the glossary pop up for free non-members. this is for
  * members when they are opening the lab."
  *
- *   1. every catalog lab is mapped — wired to a glossary term, or on HOLD;
+ *   1. every catalog lab is mapped — wired to a glossary term, or 'none'
+ *      (the calculator lab, owner 2026-10-19); nothing is pending;
  *   2. the right term (and the right MEANING of it) per lab, the glossary
  *      text verbatim, and HOLD labs show nothing;
- *   3. members only: locked / checking / unconfirmed / preview → nothing,
+ *   3. who sees it: FREE labs show it to everyone ("yes, free labs should
+ *      show pop up", owner 2026-10-19); on a MEMBERS-ONLY lab, members only:
+ *      locked / checking / unconfirmed / preview → nothing,
  *      nothing owed, nothing marked seen;
  *   4. Low-Light (and the dev kill switch, the sampler) never auto-show it;
  *   5. ordering: it shows FIRST — the lab's own intros hold while it is owed —
@@ -65,7 +68,7 @@ registerHooks({
 });
 
 process.env.EXPO_PUBLIC_MIKING_PREVIEW = '1';
-const { LAB_CATEGORIES, categoryEntries } = await import('../src/screens/lab/labCatalog.ts');
+const { LAB_CATEGORIES, categoryEntries, isMemberOnlyLabRoute } = await import('../src/screens/lab/labCatalog.ts');
 const L = await import('../src/features/intro/labTermIntros.ts');
 const intros = await import('../src/features/intro/screenIntros.ts');
 const seenStore = await import('../src/features/intro/labTermSeenStore.ts');
@@ -80,6 +83,7 @@ const leaves: Leaf[] = (LAB_CATEGORIES as never[]).flatMap((c) => categoryEntrie
 /** A member on a focused lab, everything clear — each case changes one thing. */
 const CLEAR = {
   wired: true,
+  freeLab: false,
   gate: 'open' as const,
   previewActive: false,
   seen: false as const,
@@ -94,7 +98,7 @@ const CLEAR = {
 };
 const state = (over: Partial<Parameters<typeof L.labTermIntroState>[0]>) => L.labTermIntroState({ ...CLEAR, ...over });
 
-describe('1. every catalog lab is mapped (wired or HOLD) — and nothing else is', () => {
+describe('1. every catalog lab is mapped (wired, HOLD or none) — and nothing else is', () => {
   it('each catalog lab row resolves to an entry', () => {
     const missing = leaves.filter((l) => L.labTermKey(l.route as string, l.params) == null).map((l) => `${l.name} (${l.route})`);
     assert.deepEqual(missing, [], 'a catalog lab with no term entry — add it as wired or hold');
@@ -104,10 +108,12 @@ describe('1. every catalog lab is mapped (wired or HOLD) — and nothing else is
     const stale = Object.keys(L.LAB_TERM_ENTRIES).filter((k) => !keys.has(k));
     assert.deepEqual(stale, []);
   });
-  it('after the owner’s rulings (2026-10-19): 62 wired, 1 on HOLD (the calculator lab: no glossary row yet)', () => {
+  it('after the owner’s rulings (2026-10-19): 62 wired, none pending, the calculator lab has NO popup', () => {
     const all = Object.entries(L.LAB_TERM_ENTRIES);
     assert.equal(all.filter(([, e]) => e.status === 'wired').length, 62);
-    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), ['CalcLab']);
+    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), []);
+    assert.deepEqual(all.filter(([, e]) => e.status === 'none').map(([k]) => k), ['CalcLab']);
+    assert.equal(L.wiredLabTerm(L.labTermKey('CalcLab')), null);
   });
   it('route + params pick the catalog row; module screens are not labs', () => {
     assert.equal(L.labTermKey('MikingHub', { lab: 'drums' }), 'MikingHub:drums');
@@ -263,8 +269,8 @@ describe('2. the right term — and the right meaning — per lab', () => {
     assert.equal(L.labTermTitle('delay'), 'Delay');
     assert.equal(L.labTermTitle('Signal Chain (Signal Path)'), 'Signal Chain (Signal Path)');
   });
-  it('HOLD labs show nothing and owe nothing', () => {
-    const holds = Object.entries(L.LAB_TERM_ENTRIES).filter(([, e]) => e.status === 'hold');
+  it('HOLD and "none" labs show nothing and owe nothing', () => {
+    const holds = Object.entries(L.LAB_TERM_ENTRIES).filter(([, e]) => e.status !== 'wired');
     assert.ok(holds.length > 0);
     for (const [key] of holds) assert.equal(L.wiredLabTerm(key), null, key);
     assert.deepEqual(state({ wired: false }), { owed: false, show: false });
@@ -273,8 +279,8 @@ describe('2. the right term — and the right meaning — per lab', () => {
   });
 });
 
-describe('3. members only', () => {
-  it('locked (guest or free), checking and unconfirmed: nothing shown, nothing owed', () => {
+describe('3. who sees it: everyone on a FREE lab, members only on a members-only lab', () => {
+  it('members-only lab — locked (guest or free), checking and unconfirmed: nothing shown, nothing owed', () => {
     for (const gate of ['locked', 'checking', 'unconfirmed'] as const) {
       assert.deepEqual(state({ gate }), { owed: false, show: false }, gate);
     }
@@ -282,9 +288,31 @@ describe('3. members only', () => {
   it('never over a members-only preview scrim', () => {
     assert.deepEqual(state({ previewActive: true }), { owed: false, show: false });
   });
-  it('a FREE lab opened by a non-member gets nothing either (members only, owner 2026-10-19)', () => {
+  it('a FREE lab shows it to guests and free users too (owner 2026-10-19: "yes, free labs should show pop up")', () => {
     assert.equal(L.wiredLabTerm(L.labTermKey('FoundationsCourse'))?.term, 'Sound');
-    assert.deepEqual(state({ gate: 'locked' }), { owed: false, show: false });
+    for (const gate of ['open', 'locked', 'checking', 'unconfirmed'] as const) {
+      assert.deepEqual(state({ freeLab: true, gate }), { owed: true, show: true }, gate);
+    }
+    // First time only: once seen (by any lab with that term) it never comes back.
+    assert.deepEqual(state({ freeLab: true, gate: 'locked', seen: true }), { owed: false, show: false });
+    // Low-Light and the stacking rules still apply.
+    assert.deepEqual(state({ freeLab: true, gate: 'locked', suppressed: true }), { owed: true, show: false });
+  });
+  it('the free labs are exactly the catalog’s non-members-only labs (calculator: no popup)', () => {
+    const free = [...new Set(leaves.filter((l) => !isMemberOnlyLabRoute(l.route as string)).map((l) => L.labTermKey(l.route as string, l.params)))].sort();
+    assert.deepEqual(free, ['AmplitudeLab', 'CalcLab', 'FoundationsCourse', 'WaveLab']);
+    for (const k of ['AmplitudeLab', 'FoundationsCourse', 'WaveLab']) assert.ok(L.wiredLabTerm(k), k);
+    assert.equal(L.wiredLabTerm('CalcLab'), null);
+    // Members-only labs stay members-only, for example the miking tiles and Compression.
+    assert.equal(isMemberOnlyLabRoute('MikingHub'), true);
+    assert.equal(isMemberOnlyLabRoute('CompressionLab'), true);
+  });
+  it('the wrapper tells the popup which kind of lab it is, from the same rule it gates on', () => {
+    const gate = code('src/features/lab/withMembershipPreview.tsx');
+    assert.match(gate, /<LabTermIntroHost routeName=\{routeName\} params=\{params\} freeLab=\{!isMemberOnlyLabRoute\(routeName\)\} \/>/);
+    const host = code('src/features/intro/LabTermIntro.tsx');
+    assert.match(host, /freeLab = false,/, 'members only unless told the lab is free');
+    assert.match(host, /const base = \{\s*wired: true,\s*freeLab,/);
   });
   it('a member does get it', () => {
     assert.deepEqual(state({}), { owed: true, show: true });

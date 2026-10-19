@@ -137,13 +137,15 @@ const styles = StyleSheet.create({
  * popup is mounted here, ONCE, beside the screen. `require`d on first use, not
  * imported: this file is in the app-start graph and the popup (its data and
  * its store) must not be (perf start trim, 2026-10-04). It decides for itself
- * — members only, never over the preview scrim, once per lab.
+ * — everyone on a FREE lab, members only on a members-only lab (the same
+ * isMemberOnlyLabRoute this wrapper gates on), never over the preview scrim,
+ * once per glossary term.
  */
 type LabTermIntroModule = typeof import('../intro/LabTermIntro');
 function LabTermIntroSlot({ routeName, params }: { routeName: string; params?: unknown }) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { LabTermIntroHost } = require('../intro/LabTermIntro') as LabTermIntroModule;
-  return <LabTermIntroHost routeName={routeName} params={params} />;
+  return <LabTermIntroHost routeName={routeName} params={params} freeLab={!isMemberOnlyLabRoute(routeName)} />;
 }
 
 export function withMembershipPreview<P extends object>(
@@ -152,7 +154,8 @@ export function withMembershipPreview<P extends object>(
   function Guarded(props: P) {
     const route = useRoute();
     // Mounted in every branch (so it sees the push end), shown in none of the
-    // gated ones: the popup itself requires academy standing and no preview.
+    // gated ones: on a members-only lab the popup itself requires academy
+    // standing and no preview; on a free lab it is for everyone.
     const termIntro = <LabTermIntroSlot routeName={route.name} params={route.params} />;
     return (
       <>

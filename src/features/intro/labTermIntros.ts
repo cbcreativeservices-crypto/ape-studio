@@ -10,6 +10,11 @@
  * And (owner, same day): "do not show the glossary pop up for free
  * non-members. this is for members when they are opening the lab. free users
  * should be going straight to the membership gate denial."
+ * Then (owner, same day): "yes, free labs should show pop up". So a FREE
+ * lab (not members-only in labCatalog: Foundations of Sound, Understanding
+ * Level & Amplitude, Wave Physics) shows it to everyone, guests and free users
+ * too; a members-only lab still shows it only to a confirmed member, and a
+ * non-member there goes straight to the denial with nothing marked seen.
  *
  * This file holds no React and no storage, so the rules are node-testable:
  *   • labTermKey     — which catalog lab a route (and its params) is;
@@ -110,7 +115,11 @@ export function withSeenLabTerm(seen: readonly string[], key: string): string[] 
 export type LabTermIntroInput = {
   /** The lab is wired (a term and its text exist). */
   wired: boolean;
-  /** useMemberGate(): only 'open' (academy standing) ever gets the popup. */
+  /** The lab is FREE (not members-only: !isMemberOnlyLabRoute). Everyone
+   *  gets its popup; a members-only lab's popup needs gate 'open'. */
+  freeLab: boolean;
+  /** useMemberGate(): on a members-only lab only 'open' (academy standing)
+   *  gets the popup. */
   gate: 'open' | 'locked' | 'checking' | 'unconfirmed';
   /** A members-only preview (scrim + upgrade sheet) is armed. */
   previewActive: boolean;
@@ -140,7 +149,7 @@ export type LabTermIntroInput = {
 /**
  * `owed`: the popup is still to come on this visit, so the lab's OWN first-open
  * popups (ProNote, the guest reminder, any useScreenIntro) wait for it — it
- * shows first. Only for a member, only while focused, and never for a stored
+ * shows first. Only for a member (or anyone, on a free lab), only while focused, and never for a stored
  * flag that could not be read (a failed read shows nothing, the house rule
  * for seen flags, and must not hold the lab's own intros forever).
  *
@@ -150,8 +159,8 @@ export type LabTermIntroInput = {
  * members-only preview. Once presented it stays until CONTINUE.
  */
 export function labTermIntroState(i: LabTermIntroInput): { owed: boolean; show: boolean } {
-  const forMember = i.wired && i.gate === 'open' && !i.previewActive;
-  if (!forMember || !i.focused || i.dismissed || i.seen === 'unreadable' || i.seen === true) {
+  const forThisUser = i.wired && (i.freeLab || i.gate === 'open') && !i.previewActive;
+  if (!forThisUser || !i.focused || i.dismissed || i.seen === 'unreadable' || i.seen === true) {
     return { owed: false, show: false };
   }
   if (i.seen === 'loading') return { owed: true, show: false };
