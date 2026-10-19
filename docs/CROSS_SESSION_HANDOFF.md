@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 09:39 · ccode · e8930c4f
+changed: Labs: glossary popup wired for 29 more labs (owner rulings), seen once per TERM
+affects other side: no DB change; read-only queries only. The popup now copies glossary.plain_english for 62 labs (22 distinct new rows, each md5-checked against the live row 2026-10-19), so an edit to those rows does not reach the popup until it is re-copied. Rows the popup now uses include "Dynamic range compression", "miking", "Mic Technique", "Vocal tuning pass", "Frequency modulation synthesis", "Audio Analyzer", "Downward expansion", "Coverage pattern", "Acoustic Treatment", "Connector".
+needs: Comp A, glossary fixes listed in Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md Part 3: wrong meaning for an audio app — "Compression" (air pressure only), "Voice" (synth only), "Spectrum Analyzer" (RF only), "Monitoring" (operations only); brand/model text — "FM Synthesis" (DX7 sentence), "Microphone types" (three makers/models); also "Pitch Correction" ends with 'auto-tune'. Plus a NEW row "Audio calculations" (draft in Part 2) so the Audio Calculator Laboratory can leave HOLD. Tell ccode when any of these change so the popup text is re-copied.
+
+
 ### 2026-10-19 09:20 · ccode · 5ab12363
 changed: My Custom List: every meter reads 100% from the start and never moves (owner ruling)
 affects other side: client only, no DB change. The owner DECIDED the four questions in the custom-list brief (now rules in Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md §4): substitute a no-question term from the same list; practice only, counts toward nothing; no scenario/quiz progress stored for the list, so no server progress row; length 30 to the full list with the normal per-question time. Re-read §4 before building the RPCs.
