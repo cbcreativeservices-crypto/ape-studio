@@ -288,7 +288,8 @@ describe('RATCHET B: a one-line value shrinks, it never ends in "…"', () => {
 
 describe('the value sites migrated on 2026-10-02 stay on fitValue', () => {
   const sites: Array<[string, RegExp]> = [
-    ['src/screens/lab/rack/DockButton.tsx', /styles\.value, [^\]]*\]\} \{\.\.\.fitValue\(14\)\}>\s*\{value\}/],
+    // 2026-10-19: the size it fits at (dockFit; 14 when it fits today).
+    ['src/screens/lab/rack/DockButton.tsx', /styles\.value, [^\]]*\]\} \{\.\.\.fitValue\(valueFs\)\}>\s*\{value\}/],
     ['src/screens/lab/rack/ParamLane.tsx', /styles\.laneValue, [^\]]*\]\} \{\.\.\.fitValue\(12\.5\)\}>\s*\{readout\}/],
     ['src/screens/lab/rack/RackUnit.tsx', /styles\.dragTagText\} \{\.\.\.fitValue\(13\)\}>\s*\{bound\.label\}  \{bound\.format\(bound\.value\)\}/],
     ['src/screens/lab/kit/gear.tsx', /\bs\.knobValue\} \{\.\.\.fitValue\(10\.5\)\}>\s*\{fmt\(value\)\}/],
