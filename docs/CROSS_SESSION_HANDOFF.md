@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 09:19 · ccode · 75fa2d6d
+changed: Labs: first-open glossary popup (term + exact plain-English text, CONTINUE), members only
+affects other side: nothing in the DB. The popup copies glossary.plain_english for 33 labs into the app (labTermIntroData.ts, each with its glossary row id, read-only query 2026-10-19); a later edit of those rows does NOT reach the popup until the text is re-copied. Noted for the glossary owner: the row "Compression" is the air-pressure meaning, "Spectrum Analyzer" is an RF tool, "Voice" is a synth voice, and "Microphone types" / "FM Synthesis" name makers/models, so those labs are on HOLD.
+needs: nothing from A. The owner picks the 30 HOLD labs from Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md; not pushed, not published.
+
+
 ### 2026-10-19 09:10 · ccode · 53ff4e2f
 changed: My Custom List: always on the Study dashboard, every method open, 30-term list quiz (quiz + scenarios on HOLD)
 affects other side: no DB change made, and nothing new is called yet. The custom list ('flagged' pseudo-topic, glossary ids) now offers Flashcards / Fill in the Blank / Matching device-only (glossary_study_v by id, no record_study_progress). Its Scenarios and 30…all-term random-draw quiz are client-built but on HOLD (studyGate.CUSTOM_LIST_SERVER_READY = false) because start_quiz_attempt / submit_quiz (1–30) / get_scenario_homework / record_scenario_answer / complete_scenario_round all take one topic uuid only. The app guarantees 'flagged' is never sent to them (test/customListAlways_20261019).
