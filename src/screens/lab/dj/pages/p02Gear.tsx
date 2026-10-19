@@ -27,29 +27,40 @@ import { useBoothKit } from './shared';
 type Item = 'turntable' | 'player' | 'mixer' | 'controller' | 'standalone' | 'interface' | 'headphones' | 'speaker';
 type System = 'vinyl' | 'laptop' | 'standalone' | 'modular';
 
-const ITEMS: { id: Item; label: string; blurb: string }[] = [
-  { id: 'turntable', label: 'TURNTABLE', blurb: 'Plays vinyl records. A motor turns the platter at 33⅓ or 45 rpm; the stylus reads the groove; its signal is phono level unless it has a built-in preamp.' },
-  { id: 'player', label: 'MEDIA PLAYER', blurb: 'Plays digital files from a USB stick or SD card (or a linked computer). Jog wheel, tempo fader, cue, loops — its AUDIO OUT is line level.' },
-  { id: 'mixer', label: 'MIXER', blurb: 'Takes two or more sources, sets their gain, tone and level, blends them, and feeds the PA, the booth and your headphones.' },
-  { id: 'controller', label: 'CONTROLLER + LAPTOP', blurb: 'A control surface for DJ software. The music plays in the laptop; this one also has a built-in audio interface that makes the outputs.' },
-  { id: 'standalone', label: 'STANDALONE SYSTEM', blurb: 'Players and a mixer in one unit with its own screen and media slots: it plays with no laptop at all (and some can also act as a controller).' },
-  { id: 'interface', label: 'AUDIO INTERFACE', blurb: 'Turns a computer’s digital audio into analog outputs (and inputs). Some controllers and mixers have one built in.' },
-  { id: 'headphones', label: 'HEADPHONES', blurb: 'Closed-back so you can hear the next track over a loud room. One 6.35 mm stereo plug carries both ears.' },
-  { id: 'speaker', label: 'POWERED SPEAKER', blurb: 'A speaker with its amplifier built in: line-level input, its own level control and its own mains power.' },
+const ITEMS: { id: Item; label: string; short: string; blurb: string }[] = [
+  { id: 'turntable', label: 'TURNTABLE', short: 'TURNTABLE', blurb: 'Plays vinyl records. A motor turns the platter at 33⅓ or 45 rpm and the stylus reads the groove. Its signal is very small and needs a special PHONO input (Screen 3), unless it has its own built-in booster.' },
+  { id: 'player', label: 'MEDIA PLAYER', short: 'PLAYER', blurb: 'Plays digital files from a USB stick or SD card (or a linked computer). Jog wheel, tempo fader, cue, loops — its AUDIO OUT is line level.' },
+  { id: 'mixer', label: 'MIXER', short: 'MIXER', blurb: 'Takes two or more sources, sets their gain, tone and level, blends them, and feeds the PA, the booth and your headphones.' },
+  { id: 'controller', label: 'CONTROLLER + LAPTOP', short: 'CTRL+LAPTOP', blurb: 'A control surface for DJ software. The music plays in the laptop; this one also has a built-in audio interface that makes the outputs.' },
+  { id: 'standalone', label: 'STANDALONE SYSTEM', short: 'STANDALONE', blurb: 'Players and a mixer in one unit with its own screen and media slots: it plays with no laptop at all (and some can also act as a controller).' },
+  { id: 'interface', label: 'AUDIO INTERFACE', short: 'INTERFACE', blurb: 'Turns a computer’s digital audio into analog outputs (and inputs). Some controllers and mixers have one built in.' },
+  { id: 'headphones', label: 'HEADPHONES', short: 'PHONES', blurb: 'Closed-back so you can hear the next track over a loud room. One stereo plug carries both ears — often 3.5 mm, with a 6.35 mm adapter for the mixer.' },
+  { id: 'speaker', label: 'POWERED SPEAKER', short: 'SPEAKER', blurb: 'A speaker with its amplifier built in: line-level input, its own level control and its own mains power.' },
 ];
 const SYSTEMS: { id: System; label: string; blurb: string }[] = [
-  { id: 'vinyl', label: 'VINYL', blurb: 'Two turntables and a mixer. The question: is the cartridge getting the right gain and the RIAA curve (a PHONO input)?' },
+  { id: 'vinyl', label: 'VINYL', blurb: 'Two turntables and a mixer. The question: is the mixer giving each turntable’s tiny signal its own PHONO input?' },
   { id: 'laptop', label: 'LAPTOP + CONTROLLER', blurb: 'Software plays the music; the controller sends control data over USB and its interface makes the audio. The question: where is the audio made, and which device has the outputs?' },
   { id: 'standalone', label: 'STANDALONE', blurb: 'Everything in one unit, music from USB or SD. The question: which functions still work with no laptop and no internet?' },
   { id: 'modular', label: 'MODULAR PLAYERS', blurb: 'Separate players into a separate mixer — the club layout this lab’s booth uses. The question: which cables carry the audio, and which only link the players?' },
 ];
 
 const TERMS = [
-  { term: 'Controller', def: 'A control surface: knobs, faders and jogs that send control data (often MIDI or HID over USB) to software. Whether it also makes audio depends on the model.' },
+  { term: 'Controller', def: 'A control surface: knobs, faders and jogs that send control messages over USB to software. Whether it also makes audio depends on the model.' },
   { term: 'Audio interface', def: 'The part that turns digital audio into the analog outputs you plug into a mixer or speakers (and back). It can be its own box or built in.' },
   { term: 'Standalone', def: 'Plays music without a computer, from its own media slots or storage.' },
   { term: 'Booth monitor', def: 'A speaker aimed at the DJ, fed from the mixer’s BOOTH output, so you can hear the mix without the PA blasting the booth.' },
 ] as const;
+
+/** The four jobs every setup does — the find-the-gear task (learning review
+ *  p02 #3): each job is met by picking a piece that really does it. */
+const JOBS: { bezel: string; ask: string; fits: readonly Item[]; why: string }[] = [
+  { bezel: 'ROOM HEARS', ask: 'lets the ROOM hear the mix', fits: ['speaker'], why: 'The powered speakers (the PA) are what the room hears.' },
+  { bezel: 'YOU PREVIEW', ask: 'lets YOU hear the next track privately', fits: ['headphones'], why: 'Headphones carry the cue — the next track — to you alone.' },
+  { bezel: 'MIXES', ask: 'MIXES two tracks together', fits: ['mixer', 'controller', 'standalone'], why: 'A mixer blends the sources; a controller or a standalone unit has a mixer section built in.' },
+  { bezel: 'PLAYS', ask: 'PLAYS the music', fits: ['turntable', 'player', 'controller', 'standalone'], why: 'Turntables and media players play; with a controller the laptop’s software plays; a standalone unit plays from its own slots.' },
+];
+
+export const GOALS_GEAR = ['Find the gear for all four jobs', 'Pass the interface check', 'Pick a system for a gig', 'Fix the silent laptop set'] as const;
 
 /** Where the DJ software sends its audio (the laptop + controller fault). */
 type SoftwareOut = 'CONTROLLER' | 'LAPTOP';
@@ -200,9 +211,9 @@ function useItemScene(item: Item, booth: Booth): ItemScene {
             lab('r', 'RIGHT CUP', 154 + 34, 162, 14, 0),
             lab('hb', 'PADDED HEADBAND', 100, 24, 0, -16),
             lab('c', 'COILED CABLE', 74, 226, -16, 10),
-            lab('p', '6.35 mm STEREO (TRS) PLUG', 100, 290, 0, 12),
+            lab('p', 'STEREO (TRS) PLUG', 100, 290, 0, 12),
           ],
-          a11y: 'Closed-back DJ headphones from the front, drawn as you wear them (the left cup on your left): a padded headband, sliders into swivel yokes marked L and R, a coiled cable and a 6.35 millimetre stereo plug.',
+          a11y: 'Closed-back DJ headphones from the front, drawn as you wear them (the left cup on your left): a padded headband, sliders into swivel yokes marked L and R, a coiled cable and a stereo plug.',
           obstacles: [{ x: 8, y: 110, w: 84, h: 104 }, { x: 108, y: 110, w: 84, h: 104 }],
         };
       case 'speaker':
@@ -304,8 +315,8 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
   const [mode, setMode] = useState<'item' | 'system'>('item');
   const [item, setItem] = useState<Item>('player');
   const [sys, setSys] = useState<System>('modular');
-  const [seenI, setSeenI] = useState<Set<Item>>(() => new Set(['player']));
-  const [seenS, setSeenS] = useState<Set<System>>(() => new Set());
+  const [job, setJob] = useState(0);
+  const [jobMsg, setJobMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [c1, setC1] = useState(false);
   const [c2, setC2] = useState(false);
   const [swOut, setSwOut] = useState<SoftwareOut>('CONTROLLER');
@@ -314,16 +325,21 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
   const itemScene = useItemScene(item, display);
   const sysScene = useSystemScene(sys, display, swOut);
   const scene = mode === 'item' ? itemScene : sysScene;
-  const goals = [
-    { label: 'Open all eight pieces', hit: seenI.size >= ITEMS.length },
-    { label: 'Compare all four systems', hit: seenS.size >= SYSTEMS.length },
-    { label: 'Match a job to its gear', hit: c1 },
-    { label: 'Pick a system for a gig', hit: c2 },
-    { label: 'Fix the silent laptop set', hit: faultFixed },
-  ];
-  const latched = useVisitGoals(ctx, goals);
+  const hits = [job >= JOBS.length, c1, c2, faultFixed];
+  const goals = GOALS_GEAR.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'GEAR');
   const itemDef = ITEMS.find((i) => i.id === item)!;
   const sysDef = SYSTEMS.find((s) => s.id === sys)!;
+  const laptopView = mode === 'system' && sys === 'laptop';
+  const pickItem = (id: Item) => {
+    if (job >= JOBS.length) return;
+    const j = JOBS[job];
+    const name = ITEMS.find((i) => i.id === id)!.label.toLowerCase();
+    if (j.fits.includes(id)) {
+      setJobMsg({ ok: true, text: `Yes — ${j.why}` });
+      setJob((n) => n + 1);
+    } else setJobMsg({ ok: false, text: `Not the ${name} — look for what ${j.ask}.` });
+  };
   return (
     <DjRack
       spec={{
@@ -333,8 +349,8 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
           </Scene>
         ),
         bezel: [
-          { k: mode === 'item' ? 'EQUIPMENT' : 'SYSTEM', v: mode === 'item' ? itemDef.label : sysDef.label, tint: colors.amber, flex: 2 },
-          { k: 'SEEN', v: `${seenI.size}/8 · ${seenS.size}/4`, tint: colors.textPrimary },
+          { k: mode === 'item' ? 'EQUIPMENT' : 'SYSTEM', v: mode === 'item' ? (itemDef.label.length > 14 ? itemDef.short : itemDef.label) : sysDef.label.replace('CONTROLLER', 'CTRL'), vA11y: mode === 'item' ? itemDef.label : sysDef.label, tint: colors.amber, flex: 2 },
+          job < JOBS.length ? { k: `FIND ${job + 1}/4`, v: JOBS[job].bezel, tint: jobMsg && !jobMsg.ok ? '#ff8a7e' : colors.textPrimary, flex: 1.3 } : { k: 'JOBS', v: '4/4 FOUND', tint: colors.green },
           // the software's output is a laptop + controller setting: shown
           // only where it means something (visual review finding 24)
           ...(mode === 'system' && sys === 'laptop' ? [{ k: 'SENDS TO', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 }] : []),
@@ -344,7 +360,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
             kind: 'options',
             id: 'item',
             label: 'EQUIPMENT',
-            valueLabel: itemDef.label.split(' ')[0],
+            valueLabel: itemDef.short,
             valueA11y: itemDef.label,
             options: ITEMS.map((i) => ({ id: i.id, label: i.label, blurb: i.blurb })),
             selectedId: mode === 'item' ? item : null,
@@ -352,7 +368,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
             onSelect: (id) => {
               setMode('item');
               setItem(id as Item);
-              setSeenI((p) => new Set(p).add(id as Item));
+              pickItem(id as Item);
             },
           },
           {
@@ -367,17 +383,18 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
             onSelect: (id) => {
               setMode('system');
               setSys(id as System);
-              setSeenS((p) => new Set(p).add(id as System));
             },
           },
           {
             kind: 'options',
             id: 'swout',
-            label: 'OUTPUT',
+            label: 'SENDS TO',
             valueLabel: swOut === 'CONTROLLER' ? 'CTRL' : 'LAPTOP',
             valueA11y: SOFTWARE_OUTS.find((o) => o.id === swOut)!.label,
             options: SOFTWARE_OUTS,
             selectedId: swOut,
+            // the software's output means something only in the laptop view
+            locked: laptopView ? undefined : 'Open SYSTEM → LAPTOP + CONTROLLER to see where the software sends its audio',
             onSelect: (id) => setSwOut(id as SoftwareOut),
           },
           stopKey(tr),
@@ -387,20 +404,21 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{`You are looking at ${scene.a11y.charAt(0).toLowerCase()}${scene.a11y.slice(1)}`}</Look>
-        <P>Every DJ setup does the same four jobs: something PLAYS the music, something MIXES it, something lets YOU hear the next track privately, and something lets the ROOM hear the mix. Different gear splits those jobs differently.</P>
-        <P>A controller is a control surface; whether it also contains an audio interface or a mixer depends on the model. A standalone unit plays without a laptop, and some can also act as a controller. These are not tidy, separate boxes — check what each one actually does.</P>
+        <P>Every DJ setup does the same four jobs: something PLAYS the music, something MIXES it, something lets YOU hear the next track privately, and something lets the ROOM hear the mix.</P>
+        <P>Different gear splits those jobs differently, and the boxes are not tidy — a controller may or may not contain an audio interface, and a standalone unit plays with no laptop at all.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open EQUIPMENT and step through all eight pieces. The parts on each drawing are named; the tray says what each piece is for.</Do>
+        <Do>{job < JOBS.length ? `Find what ${JOBS[job].ask}: open EQUIPMENT and pick it. (${job + 1} of 4 — FIND on the readout strip.)` : 'All four jobs found. Step through the rest of EQUIPMENT for anything you have not met.'}</Do>
+        {jobMsg ? <Note tone={jobMsg.ok ? 'try' : 'safety'}>{jobMsg.text}</Note> : null}
       </Step>
       <Step n={3}>
-        <Do>Open SYSTEM and compare the four ways to put them together. Each one asks its own question — read it on the tray.</Do>
+        <Do>Open SYSTEM: each system answers one question — which device makes the sound the room hears?</Do>
         <P>{mode === 'item' ? itemDef.blurb : sysDef.blurb}</P>
       </Step>
       <Step n={4}>
         <P>Pick gear for the job, not the other way round: what has to play, what has to be heard, what happens if the laptop or the internet fails?</P>
-        <GoalChips goals={goals.slice(0, 2)} latched={latched.slice(0, 2)} />
+        <GoalChips goals={goals.slice(0, 1)} latched={latched.slice(0, 1)} />
         <Note tone="try">There is no single right setup. Many DJs start on a controller, play out on whatever the venue provides, and keep a USB stick that works on the club’s players as a backup.</Note>
       </Step>
       <Step n={5}>
@@ -428,15 +446,14 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
           start={() => {
             setMode('system');
             setSys('laptop');
-            setSeenS((p) => new Set(p).add('laptop'));
             setSwOut('LAPTOP');
           }}
           fixed={swOut === 'CONTROLLER'}
-          hints={['The music is made in the laptop. Where is the software SENDING it?', 'Look at SENDS TO on the readout strip.', 'Open OUTPUT and send the audio to the controller’s outputs.']}
+          hints={['The music is made in the laptop. Where is the software SENDING it?', 'Look at SENDS TO on the readout strip.', 'Open SENDS TO and pick the controller’s outputs.']}
           why="The software was sending its audio to the laptop’s own speakers, so the controller’s built-in interface had nothing to play. In DJ software this is the audio device (or audio output) setting; check it whenever you connect a controller or change computers."
           onFixed={() => setFaultFixed(true)}
         />
-        <GoalChips goals={goals.slice(2)} latched={latched.slice(2)} />
+        <GoalChips goals={goals.slice(1)} latched={latched.slice(1)} />
       </Step>
     </DjRack>
   );

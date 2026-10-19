@@ -22,8 +22,8 @@ import { useTapDb } from '../art/motion';
 import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Look, P, Step, Terms, useVisitGoals } from '../bits';
-import { BoothTray, stopKey } from '../dock';
+import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { boothKey, stopKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { SAMPLE_IDS, SAMPLE_NAMES, type SampleId } from '../engine/djMusic';
@@ -35,11 +35,28 @@ import { useBoothKit } from './shared';
 
 const TERMS = [
   { term: 'Hot cue', def: 'A saved place in a track on its own pad. Empty pad: press to store where you are. Stored pad: press to jump there and play.' },
-  { term: 'Loop', def: 'A stretch of the track that repeats. Beat loops are counted in beats of the grid — 1, 2, 4, 8, 16.' },
-  { term: 'Loop exit', def: 'Leaving a loop: the track plays on from where the loop was, in time.' },
-  { term: 'Beat jump', def: 'Moves the playhead forward or back by a set number of beats, in time with the grid.' },
-  { term: 'Sampler', def: 'Pads that play short sounds. Here they live in deck B’s software, so they come out of deck B’s channel: its fader, its CUE, its crossfader side.' },
-  { term: 'Transport cue vs headphone cue', def: 'The player’s CUE is a place in a track. The mixer’s CUE sends a channel to your headphones. Same word, two jobs.' },
+  { term: 'Loop', def: 'A stretch of the track that repeats, counted in beats of the grid — 1, 2, 4, 8, 16. EXIT leaves it and the track plays on from there, in time.' },
+  { term: 'Beat jump', def: 'Moves the playhead forward or back by a set number of beats, in time with the grid. On this player a jump leaves a running loop; on many players a beat jump inside a loop MOVES the loop instead.' },
+  { term: 'Sampler', def: 'Pads that play short sounds. Where a sampler plays out depends on the system: in some it follows a deck’s channel (as here — deck B’s fader, CUE and crossfader side); in many it goes straight to the master with its own level and headphone-cue button. Check before you fire a pad on a live system.' },
+] as const;
+
+export const GOALS_LOOPS = ['Store a hot cue', 'Jump back to it', 'Loop, then exit', 'Beat jump', 'Preview a sample privately', 'Keep the sample off the crowd', 'Pass the check'] as const;
+
+/** What the lab covers, screen by screen — ticked only for a screen that is
+ *  really done (learning review p12 #2). */
+const COVERS = [
+  'Work safely: low levels first, STOP within reach, speakers on last and off first.',
+  'Name the gear of any DJ system and say what each piece does.',
+  'Read a socket — direction, connector, signal, level, channels — and patch a stereo source without losing a side.',
+  'Build a complete system and follow the music from the players to the crowd.',
+  'Load, cue and play on the spare deck without stopping the dance floor.',
+  'Set gain by average level with headroom, read the meters, and find the stage that clipped.',
+  'Cue privately, use split cue, and set the booth without touching the crowd.',
+  'Choose crossfader curves and assignments; blend and cut.',
+  'Use isolators and filters to manage two bass lines.',
+  'Beatmatch with your ears and the displays, tell drift from offset, and start on a phrase.',
+  'Check and fix a beatgrid before trusting SYNC.',
+  'Use hot cues, loops, beat jumps and samples in time.',
 ] as const;
 
 const LOOK = 'You are looking at deck B’s waveform with its cue points and any loop marked, two small meters (what reaches your headphones, and what reaches the crowd), and below, deck B’s hot cue pads, loop and beat-jump keys and its transport CUE.';
@@ -187,7 +204,7 @@ function SamplerTray({ audio, onHit }: { audio: BoothAudio; onHit: (id: SampleId
           />
         ))}
       </View>
-      <Text style={styles.note}>The pads play out of their deck’s channel: with that channel CUED and its fader DOWN, only you hear them.</Text>
+      <Text style={styles.note}>In this booth the pads play out of their deck’s channel: with that channel CUED and its fader DOWN, only you hear them. Other systems send the sampler straight to the master — check before you fire a pad.</Text>
     </View>
   );
 }
@@ -211,7 +228,6 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
   const [, force] = useState(0);
   const bump = () => force((n) => n + 1);
   const [check, setCheck] = useState(false);
-  const [check2, setCheck2] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
   const [faultOn, setFaultOn] = useState(false);
   const B = booth.decks.B;
@@ -224,16 +240,9 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
     if (faultOn && !chOnAir(b, host) && b.ch[ch].cue) setFaultFixed(true);
     bump();
   };
-  const goals = [
-    { label: 'Store a hot cue', hit: s.current.set },
-    { label: 'Jump back to it', hit: s.current.jumped },
-    { label: 'Loop, then exit on time', hit: s.current.looped && s.current.exited },
-    { label: 'Beat jump', hit: s.current.beatJumped },
-    { label: 'Preview a sample privately', hit: s.current.preview },
-    { label: 'Keep the sample off the crowd', hit: faultFixed },
-    { label: 'Pass both checks', hit: check && check2 },
-  ];
-  const latched = useVisitGoals(ctx, goals);
+  const hits = [s.current.set, s.current.jumped, s.current.looped && s.current.exited, s.current.beatJumped, s.current.preview, faultFixed, check];
+  const goals = GOALS_LOOPS.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'LOOPS');
   const lanesH = (h: number, k = 1) => Math.round(Math.min(104 * k, h * 0.34));
   const g = analysedGrid(B);
   const loopBeats = B.loop && g ? Math.round((B.loop.lengthSec * g.bpm) / 60) : 0;
@@ -320,8 +329,8 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
               />
             ),
           },
-          { kind: 'group', id: 'sampler', label: 'SAMPLE', valueLabel: `ON ${booth.sampler.on}`, render: () => <SamplerTray audio={audio} onHit={onHit} /> },
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: (['A', 'B'] as const).filter((d) => booth.decks[d].playing).join('+') || '—', render: () => <BoothTray booth={getBooth()} tr={tr} /> },
+          { kind: 'group', id: 'sampler', label: 'SAMPLER', valueLabel: `ON ${booth.sampler.on}`, render: () => <SamplerTray audio={audio} onHit={onHit} /> },
+          boothKey(booth, tr),
           stopKey(tr),
         ],
         initialParam: 'hot',
@@ -329,8 +338,8 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>HOT CUES are saved places on pads; LOOPS repeat a few beats of the grid; BEAT JUMP moves in time by a set number of beats. The SAMPLER plays short sounds — here from deck B’s software, so they come out of channel 2 and obey its fader, its CUE and its crossfader side.</P>
-        <P>Two different CUEs: the player’s transport CUE is a place in the track; the mixer’s CUE sends a channel to your headphones.</P>
+        <P>HOT CUES are saved places on pads, LOOPS repeat a few beats of the grid, and BEAT JUMP moves in time by a set number of beats.</P>
+        <P>In this booth the SAMPLER lives in deck B’s software, so its sounds come out of channel 2 and obey its fader, CUE and crossfader side; and the player’s transport CUE (a place in the track) is not the mixer’s CUE (your headphones).</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -339,12 +348,13 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Open LOOP and press 4: four beats repeat, marked green on the waveform. Exit and the track carries on in time. Try a beat jump of 16 beats — four bars — forward and back.</P>
-        <P>Open SAMPLE (the sampler) and fire a pad: you hear it in your headphones, the crowd does not — channel 2 is cued and its fader is down.</P>
+        <P>Open SAMPLER and fire a pad: you hear it in your headphones, the crowd does not — channel 2 is cued and its fader is down. Watch the two small meters by the waveform: PHONES moves, CROWD does not.</P>
       </Step>
       <Step n={4}>
-        <Do>Store a hot cue and jump to it, run a loop and exit on time, beat jump, and preview a sample privately.</Do>
+        <Do>Store a hot cue and jump to it, run a loop and exit it, beat jump, and preview a sample privately.</Do>
         <P>A loop of 8 or 16 beats is a common way to stretch an intro while you finish a blend — one idea among many. Experimentation is encouraged.</P>
         <GoalChips goals={goals.slice(0, 5)} latched={latched.slice(0, 5)} />
+        <Note tone="try">Try it: stretch an intro. Run an 8-beat loop on deck B and exit it so B’s next bar 1 lands on the start of one of deck A’s phrases (Screen 10’s A PHRASE count helps).</Note>
       </Step>
       <Step n={5}>
         <UnderstandingCheck
@@ -356,15 +366,6 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
           wrong={[undefined, 'That is the mixer’s headphone CUE, on the channel strip.', 'Hot cues live on the numbered pads.', 'Loops exit with the loop EXIT key.']}
           onCorrect={() => setCheck(true)}
         />
-        <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
-          question="A 4-beat loop at 126 BPM — how long is it?"
-          options={['About 1.9 seconds', 'About 4 seconds', 'About 0.5 seconds', 'It depends on the key']}
-          correct={0}
-          explain="One beat at 126 BPM is 60 ÷ 126 ≈ 0.476 s, so four beats ≈ 1.9 s. Speed the deck up and the loop gets shorter in real time; it is always four beats."
-          wrong={[undefined, 'That would be about 60 BPM.', 'That is one beat.', 'Loop length is counted in beats; the key has nothing to do with it.']}
-          onCorrect={() => setCheck2(true)}
-        />
         <FaultCard
           title="THE SAMPLE HIT THE DANCE FLOOR"
           symptom="You meant to preview a sound in your headphones, but the whole room heard it."
@@ -374,30 +375,23 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
             updateBooth((x, t) => ({ ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: t } }, sampler: { on: 'A', hits: [{ at: boothNow() + audio.leadSec(), id: 'chordHit' }] }, perspective: 'CROWD' }));
           }}
           fixed={faultFixed}
-          hints={['Which deck hosts the sampler? Look at SAMPLER → on the readout strip.', 'The sampler was on deck A — the deck the crowd is hearing.', 'Put the sampler on deck B (cued, fader down) and fire a pad there.']}
-          why="The sampler plays out of its host deck’s channel. On deck A — the deck on air — every pad went straight to the PA. On deck B, cued with its fader down, you hear it first and bring it in when you choose."
+          hints={['Which deck hosts the sampler? Look at SAMPLER → on the readout strip.', 'The sampler was on deck A — the deck the crowd is hearing.', 'Open SAMPLER, put it on deck B (cued, fader down) and fire a pad there.']}
+          why="In this booth the sampler plays out of its host deck’s channel. On deck A — the deck on air — every pad went straight to the PA. On deck B, cued with its fader down, you hear it first and bring it in when you choose. On a system whose sampler goes straight to the master, use its own headphone-cue button and level instead."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />
       </Step>
       <View style={styles.summary}>
-        <Text style={styles.sumHead}>WHAT YOU CAN DO NOW</Text>
-        {[
-          'Work safely: low levels first, STOP within reach, speakers on last and off first.',
-          'Name the gear of any DJ system and say what each piece does.',
-          'Read a socket — direction, connector, signal, level, channels — and patch a stereo source without losing a side.',
-          'Build a complete system and follow the music from the players to the crowd.',
-          'Load, cue and play on the free deck without stopping the dance floor.',
-          'Set gain with headroom, read the meters, and find the stage that clipped.',
-          'Cue privately, use split cue, and set the booth without touching the crowd.',
-          'Choose crossfader curves and assignments; blend and cut.',
-          'Use isolators and filters to manage two bass lines.',
-          'Beatmatch by ear, tell drift from offset, and start on a phrase.',
-          'Check and fix a beatgrid before trusting SYNC.',
-          'Use hot cues, loops, beat jumps and samples in time.',
-        ].map((t) => (
-          <Text key={t} style={styles.sumItem}>{`✓  ${t}`}</Text>
-        ))}
+        <Text style={styles.sumHead}>WHAT THIS LAB COVERS</Text>
+        <Text style={styles.sumFoot}>✓ marks a screen you have done; • one still to do.</Text>
+        {COVERS.map((t, i) => {
+          const done = i === 11 ? ctx.isDone || !!ctx.isPageDone?.(i) : !!ctx.isPageDone?.(i);
+          return (
+            <Text key={t} style={[styles.sumItem, done && { color: colors.textPrimary }]} accessibilityLabel={`Screen ${i + 1}: ${t} ${done ? 'Done.' : 'Not done yet.'}`}>
+              {`${done ? '✓' : '•'}  ${t}`}
+            </Text>
+          );
+        })}
         <Text style={styles.sumFoot}>FINISH › shows what is left in this lab, screen by screen. Every screen can be done again for practice — credit you have earned stays.</Text>
       </View>
     </DjRack>

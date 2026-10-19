@@ -22,14 +22,14 @@ import { INK } from '../art/ink';
 import { MIXER, STRIP_X, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
-import { BoothTray, levelKey, stopKey } from '../dock';
+import { decksValue, levelKey, stopKey, type Transport } from '../dock';
 import { getBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { dbStr, levelKnobGain, type Booth } from '../model/djModel';
-import { peakCell, peakDb, useBoothKit } from './shared';
+import { peakDb, peakShort, useBoothKit } from './shared';
 
 const TERMS = [
-  { term: 'Headphone cue (PFL)', def: 'Pressing a channel’s CUE sends that channel to your headphones — taken BEFORE its fader, so you can hear it with the fader down and the crowd hearing nothing of it.' },
+  { term: 'Headphone cue (PFL)', def: 'Pressing a channel’s CUE sends that channel to your headphones — taken BEFORE its fader (on this mixer after trim, EQ and filter; real mixers vary), so you can hear it with the fader down and the crowd hearing nothing of it.' },
   { term: 'Cue / master blend', def: 'One knob that fades your headphones from the cue (left end) to the master mix (right end), so you can hear the next track against what the room hears.' },
   { term: 'Split cue', def: 'Cue in one ear, master in the other, each in mono. Some DJs like it for beatmatching; others prefer the blend.' },
   { term: 'Booth level', def: 'The booth monitors’ own level, separate from the MASTER that feeds the crowd. Turn the booth down and the room stays the same.' },
@@ -55,16 +55,32 @@ const OBST: Box[] = [
 
 const LOOK = 'You are looking at the mixer’s headphone and booth controls, your headphones (as you wear them), a booth monitor, and four meters: your headphones’ left and right, the booth, and what the crowd hears.';
 
-function CueTray() {
+export const GOALS_CUE = ['Cue deck B, fader down', 'Hear it in your headphones', 'CH2 up: crowd hears B; down: only you', 'Split: cue left, master right', 'Booth 6 dB quieter, crowd unchanged', 'Fix the silent headphones', 'Pass the check'] as const;
+
+const gainDb = (g: number) => 20 * Math.log10(Math.max(1e-6, g));
+
+function CueTray({ tr }: { tr: Transport }) {
   const b = getBooth();
   const flip = (k: 1 | 2) => updateBooth((x) => ({ ...x, ch: { ...x.ch, [k]: { ...x.ch[k], cue: !x.ch[k].cue } } }));
+  const f2 = (v: number) => updateBooth((x) => ({ ...x, ch: { ...x.ch, 2: { ...x.ch[2], fader: v } } }));
   return (
     <View style={styles.tray}>
+      <View style={styles.row}>
+        {(['A', 'B'] as const).map((d) => (
+          <LabChip key={d} label={`${b.decks[d].playing ? '❚❚ PAUSE' : '▶ PLAY'} ${d}`} selected={b.decks[d].playing} onPress={() => tr.toggle(d)} />
+        ))}
+        {tr.soundDeclined ? <LabChip label="TURN SOUND ON" selected={false} onPress={tr.soundOn} /> : null}
+      </View>
       <Text style={styles.head}>HEADPHONE CUE (press one or both)</Text>
       <View style={styles.row}>
         <LabChip label={`CUE 1${b.ch[1].cue ? ' ●' : ''}`} selected={b.ch[1].cue} onPress={() => flip(1)} />
         <LabChip label={`CUE 2${b.ch[2].cue ? ' ●' : ''}`} selected={b.ch[2].cue} onPress={() => flip(2)} />
         <LabChip label={b.mixer.splitCue ? 'SPLIT: ON' : 'SPLIT: OFF'} selected={b.mixer.splitCue} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, splitCue: !x.mixer.splitCue } }))} />
+      </View>
+      <Text style={styles.head}>{`CH2 FADER → ${Math.round(b.ch[2].fader * 100)}% (deck B into the mix)`}</Text>
+      <View style={styles.row}>
+        <LabChip label="DOWN" selected={b.ch[2].fader <= 0.02} onPress={() => f2(0)} compact />
+        <LabChip label="UP 85%" selected={Math.abs(b.ch[2].fader - 0.85) < 0.02} onPress={() => f2(0.85)} compact />
       </View>
       <Text style={styles.head}>LISTEN AS (the phone plays ONE of these)</Text>
       <View style={styles.row}>
@@ -103,9 +119,10 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
     x = cueAtBar(x, 'B', 'glassHarbour', 1);
     return { ...x, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0, xf: 'THRU', cue: false } }, mixer: { ...x.mixer, cueMix: 0, splitCue: false, booth: 0.6, master: 0.6, phones: 0.45 }, perspective: 'PHONES' };
   });
-  const [phonesBand, setPhonesBand] = useState<'level' | 'mix'>('level');
   const start = useRef<{ booth: number; master: number } | null>(null);
   if (!start.current) start.current = { booth: 0.6, master: 0.6 };
+  // CH2 up (the crowd hears B), then back down (only you do)
+  const upDown = useRef({ up: false, down: false });
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
   const last = audio.last;
@@ -116,16 +133,22 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
   const hearR = !!last && last.rmsDb.phonesR > -60;
   const leftGlow = !hearL ? null : m.splitCue ? INK.amber : m.cueMix < 0.5 && cueSig ? INK.amber : INK.blue;
   const rightGlow = !hearR ? null : m.splitCue ? INK.blue : m.cueMix < 0.5 && cueSig ? INK.amber : INK.blue;
-  const goals = [
-    { label: 'Cue deck B, fader down', hit: booth.decks.B.playing && booth.ch[2].cue && booth.ch[2].fader <= 0.05 },
-    { label: 'Hear it in your headphones', hit: booth.perspective === 'PHONES' && cueSig && booth.ch[2].fader <= 0.05 && (hearL || hearR) },
-    { label: 'Split: cue left, master right', hit: m.splitCue && cueSig && mstSig && hearL && hearR },
-    { label: 'Booth down, crowd unchanged', hit: m.booth <= start.current.booth - 0.15 && Math.abs(m.master - start.current.master) < 0.005 },
-    { label: 'Fix the silent headphones', hit: faultFixed },
-    { label: 'Pass the check', hit: check },
+  const crowdB = !!last && booth.decks.B.playing && booth.ch[2].fader > 0.5 && last.rmsDb.crowd > -60;
+  if (crowdB && booth.ch[2].cue) upDown.current.up = true;
+  if (upDown.current.up && booth.decks.B.playing && booth.ch[2].fader <= 0.02 && booth.ch[2].cue && cueSig) upDown.current.down = true;
+  const boothDown = gainDb(levelKnobGain(start.current.booth)) - gainDb(levelKnobGain(m.booth));
+  const hits = [
+    booth.decks.B.playing && booth.ch[2].cue && booth.ch[2].fader <= 0.05,
+    booth.perspective === 'PHONES' && cueSig && booth.ch[2].fader <= 0.05 && (hearL || hearR),
+    upDown.current.down,
+    m.splitCue && cueSig && mstSig && hearL && hearR,
+    boothDown >= 5.5 && boothDown <= 7 && Math.abs(m.master - start.current.master) < 0.005,
+    faultFixed,
+    check,
   ];
-  const latched = useVisitGoals(ctx, goals);
-  const boothDb = dbStr(20 * Math.log10(Math.max(1e-6, levelKnobGain(m.booth))));
+  const goals = GOALS_CUE.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'CUE');
+  const boothDb = dbStr(gainDb(levelKnobGain(m.booth)));
   return (
     <DjRack
       spec={{
@@ -166,31 +189,33 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
             <MeterCols />
           </Scene>
         ),
-        bezel: [peakCell('CUE BUS', peakDb(last, 'cue')), peakCell('PHONES L', peakDb(last, 'phonesL')), peakCell('PHONES R', peakDb(last, 'phonesR')), { k: 'LISTENING', v: booth.perspective, tint: colors.amber }],
+        bezel: [peakShort('CUE BUS', peakDb(last, 'cue')), peakShort('PHONES L', peakDb(last, 'phonesL')), peakShort('PHONES R', peakDb(last, 'phonesR')), { k: 'LISTENING', v: booth.perspective, tint: colors.amber }],
         params: [
-          { kind: 'group', id: 'cue', label: 'CUE', valueLabel: [booth.ch[1].cue ? '1' : '', booth.ch[2].cue ? '2' : ''].filter(Boolean).join('+') || '—', render: () => <CueTray /> },
+          { kind: 'group', id: 'cue', label: 'CUE', valueLabel: [booth.ch[1].cue ? '1' : '', booth.ch[2].cue ? '2' : ''].filter(Boolean).join('+') || 'NONE', valueA11y: `cued: ${[booth.ch[1].cue ? 'channel 1' : '', booth.ch[2].cue ? 'channel 2' : ''].filter(Boolean).join(' and ') || 'nothing'}; decks ${decksValue(booth).toLowerCase()}`, render: () => <CueTray tr={tr} /> },
+          // the two headphone controls, each on its own key (learning p07 #3):
+          // PHONES = the level, BLEND = cue ↔ master
           {
             kind: 'fader',
             id: 'phones',
             label: 'PHONES',
-            value: phonesBand === 'level' ? m.phones : m.cueMix,
-            level: phonesBand === 'level',
-            home: phonesBand === 'mix' ? 0.5 : 0.75,
-            onChange: (v) => updateBooth((b: Booth) => ({ ...b, mixer: { ...b.mixer, [phonesBand === 'level' ? 'phones' : 'cueMix']: v } })),
-            format: (v) => (phonesBand === 'level' ? `PHONES LEVEL ${Math.round(v * 100)}%` : v < 0.03 ? 'CUE ↔ MASTER: all CUE' : v > 0.97 ? 'CUE ↔ MASTER: all MASTER' : `CUE ↔ MASTER ${Math.round((1 - v) * 100)} cue · ${Math.round(v * 100)} master`),
-            formatShort: (v) => (phonesBand === 'level' ? `${Math.round(v * 100)}%` : v < 0.03 ? 'CUE' : v > 0.97 ? 'MST' : `${Math.round(v * 100)}%`),
-            chooser: {
-              title: 'HEADPHONE CONTROL',
-              options: [
-                { id: 'level', label: 'LEVEL', blurb: 'How loud the headphones are. Start low and bring it up slowly.' },
-                { id: 'mix', label: 'CUE ↔ MASTER', blurb: 'Left = only the cued channel; right = only the master mix; between = both.' },
-              ],
-              selectedId: phonesBand,
-              onSelect: (id) => setPhonesBand(id as 'level' | 'mix'),
-            },
+            value: m.phones,
+            level: true,
+            home: 0.75,
+            onChange: (v) => updateBooth((b: Booth) => ({ ...b, mixer: { ...b.mixer, phones: v } })),
+            format: (v) => `PHONES LEVEL ${Math.round(v * 100)}% · ${dbStr(gainDb(levelKnobGain(v)))}`,
+            formatShort: (v) => `${Math.round(v * 100)}%`,
+          },
+          {
+            kind: 'fader',
+            id: 'cueMix',
+            label: 'BLEND',
+            value: m.cueMix,
+            home: 0.5,
+            onChange: (v) => updateBooth((b: Booth) => ({ ...b, mixer: { ...b.mixer, cueMix: v } })),
+            format: (v) => (v < 0.03 ? 'CUE ↔ MASTER: all CUE' : v > 0.97 ? 'CUE ↔ MASTER: all MASTER' : `CUE ↔ MASTER ${Math.round((1 - v) * 100)} cue · ${Math.round(v * 100)} master`),
+            formatShort: (v) => (v < 0.03 ? 'CUE' : v > 0.97 ? 'MST' : `${Math.round(v * 100)}%`),
           },
           levelKey(booth, 'booth', 'BOOTH'),
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: (['A', 'B'] as const).filter((d) => booth.decks[d].playing).join('+') || '—', render: () => <BoothTray booth={getBooth()} tr={tr} /> },
           stopKey(tr),
         ],
         initialParam: 'cue',
@@ -198,30 +223,32 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>The crowd hears the MASTER. You hear the next track first, privately, in your headphones: press that channel’s CUE. The cue is taken before the channel fader, so the fader can stay down — the crowd hears nothing of it.</P>
-        <P>A phone has one headphone output, so here you switch what it plays: PHONES is your headphones, CROWD is the PA, BOOTH is the booth monitors. Split cue is shown as left and right inside the headphone feed — this lab cannot give you a separate cue output.</P>
+        <P>The crowd hears the MASTER; you hear the next track first, privately, by pressing that channel’s CUE, which is taken before the channel fader — so the fader stays down and the crowd hears nothing of it.</P>
+        <P>A phone has one headphone output, so here you switch what it plays (PHONES, CROWD or BOOTH), and split cue is heard as left and right inside the headphone feed.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open DECKS and play both. Open CUE and press CUE 2 — deck B is now in your headphones while its fader stays down.</Do>
+        <Do>Open CUE and play both decks. Press CUE 2 — deck B is now in your headphones while its fader stays down.</Do>
         <P>Watch the headphones on the stage: each cup lights amber for cue and blue for master, from what that ear really carries.</P>
+        <P>Still in CUE: bring the CH2 FADER UP — the CROWD meter jumps, the room hears B. Back DOWN: only your headphones carry B. That is what “before the fader” means.</P>
       </Step>
       <Step n={3}>
-        <P>Ride PHONES → CUE ↔ MASTER from CUE to MASTER and back. Then turn SPLIT on: deck B in your left ear, the room’s mix in your right, each in mono. Some DJs love split cue; others prefer the blend. Experimentation is encouraged.</P>
+        <P>Ride BLEND (the cue ↔ master knob) from CUE to MASTER and back. Then turn SPLIT on: deck B in your left ear, the room’s mix in your right, each in mono. Some DJs love split cue; others prefer the blend — a suggested starting point, not a rule.</P>
+        <Note>In a big room the PA reaches you late — about 3 ms for every metre. Match the next track against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
         <Note tone="safety">Headphones are the loudest thing in a DJ’s day. Start PHONES low, bring it up slowly, and lift one cup off when you can. Turning the headphones up to beat a loud booth is how ears get hurt — turn the BOOTH down instead.</Note>
       </Step>
       <Step n={4}>
-        <Do>Prepare deck B privately (cued, fader down), hear it in PHONES, try split cue, and lower the BOOTH without touching MASTER — the crowd hears no change.</Do>
-        <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
+        <Do>Prepare deck B privately (cued, fader down), hear it as PHONES, bring CH2 up and back down, try split cue, and make the booth 6 dB quieter without touching MASTER — read BOOTH on the drawing; the crowd hears no change.</Do>
+        <GoalChips goals={goals.slice(0, 5)} latched={latched.slice(0, 5)} />
       </Step>
       <Step n={5}>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question="The booth monitors are far too loud for you, but the room sounds right. Which control do you turn down?"
-          options={['BOOTH — it feeds only the booth monitors', 'MASTER — it is the main level', 'The channel faders', 'PHONES']}
+          question="Deck B is cued and you can hear it in your headphones. Its channel fader is all the way down. What does the crowd hear of deck B?"
+          options={['Nothing — the cue is taken before the fader', 'All of it — CUE sends a channel to the PA', 'Half of it, until the fader comes up', 'Only its bass']}
           correct={0}
-          explain="BOOTH sets the booth monitors alone. MASTER feeds the crowd, so turning it down would change the room. The channel faders change the mix itself, and PHONES only changes your headphones."
-          wrong={[undefined, 'MASTER changes what the crowd hears — exactly what you wanted to keep.', 'The faders change the mix for everyone, not just the booth.', 'PHONES only sets your headphones.']}
+          explain="The headphone cue is a tap BEFORE the channel fader. With the fader down, deck B reaches your headphones and nothing reaches the mix, so the crowd hears none of it until you bring the fader up."
+          wrong={[undefined, 'CUE sends a channel to your headphones, not to the PA.', 'With the fader fully down nothing of the channel reaches the mix.', 'The cue carries the whole channel; the fader decides whether the mix gets any of it.']}
           onCorrect={() => setCheck(true)}
         />
         <FaultCard
@@ -239,11 +266,11 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
             }));
           }}
           fixed={booth.decks.A.playing && booth.decks.B.playing && booth.perspective === 'PHONES' && !!last && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -60}
-          hints={['Check the headphone bus on its own: which channel is cued?', 'The blend is all the way to CUE, and no channel is cued — so the cue bus is empty.', 'Press CUE on the deck you want to hear (or move the blend toward MASTER).']}
+          hints={['Check the headphone bus on its own: which channel is cued?', 'The blend is all the way to CUE, and no channel is cued — so the cue bus is empty.', 'Open CUE and press CUE on the deck you want to hear (or move BLEND toward MASTER).']}
           why="The headphones were set to hear ONLY the cue, and nothing was cued. The headphone feed is its own bus: check what it is fed from, separately from what the crowd hears."
           onFixed={() => setFaultFixed(true)}
         />
-        <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />
+        <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />
       </Step>
     </DjRack>
   );

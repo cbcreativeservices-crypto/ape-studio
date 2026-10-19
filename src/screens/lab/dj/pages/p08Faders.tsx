@@ -17,20 +17,23 @@ import { CurvePlot } from '../art/plots';
 import { MIXER, STRIP_X, onMixer } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
-import { BoothTray, pct, stopKey, xfaderKey } from '../dock';
+import { boothKey, pct, stopKey, xfaderKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
-import { cueAtBar, useScreenSetup } from '../booth/setup';
-import { faderGain, xfGainFor, type Booth, type ChannelId, type XfAssign, type XfCurve } from '../model/djModel';
+import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
+import { TRIM_UNITY, faderGain, trimPos, xfGainFor, type Booth, type ChannelId, type XfAssign, type XfCurve } from '../model/djModel';
+import { alignPhase } from '../model/djDeck';
+import { busOverCh1, copiesState, sameTrackBoth, twoCopiesResult } from '../model/djLessons';
 import { linToDb } from '../engine/djDsp';
-import { peakCell, peakDb, useBoothKit } from './shared';
+import { peakDb, peakShort, useBoothKit } from './shared';
 
 const TERMS = [
-  { term: 'Channel fader', def: 'Each channel’s level into the mix. On this mixer it is square-law: half way up is about −12 dB.' },
-  { term: 'Crossfader', def: 'A side-to-side fader that fades between the channels assigned to side A and side B.' },
-  { term: 'THRU', def: 'A channel set to THRU ignores the crossfader completely — only its channel fader matters.' },
-  { term: 'Curve', def: 'How the crossfader’s two gains change across its travel. BLEND keeps the total level steady; DIP lets it sag in the middle; CUT keeps both full until the very ends, for quick cuts.' },
-  { term: 'Cut-in', def: 'How far the crossfader travels before a side comes in. A short cut-in (CUT) makes a sound appear almost the instant you move it.' },
+  { term: 'Channel fader', def: 'Each channel’s level into the mix. On this mixer half way up is about −12 dB — much quieter than half. Some mixers have a switch for the channel-fader curve too.' },
+  { term: 'Crossfader', def: 'A side-to-side fader that fades between the channels assigned to side A and side B. A channel on THRU ignores it completely — only its channel fader matters.' },
+  { term: 'Curve', def: 'How the crossfader’s two gains change across its travel. BLEND keeps the total level steady; DIP lets it sag in the middle; CUT keeps both full until the very ends — a short “cut-in”, so a sound appears almost the instant you move it.' },
+  { term: 'Reverse (hamster)', def: 'A switch that swaps the crossfader’s sides. Check it when a cut comes in backwards.' },
 ] as const;
+
+export const GOALS_FADERS = ['Assign CH1 → A, CH2 → B', 'Blend across with BLEND', 'Cut to one side with CUT', 'Measure two copies: +6 dB on CUT', 'Fix the silent channel', 'Pass the check'] as const;
 
 function SetupTray({ onDemo }: { onDemo: () => void }) {
   const b = getBooth();
@@ -60,17 +63,17 @@ function SetupTray({ onDemo }: { onDemo: () => void }) {
 }
 
 function PageFaders({ ctx }: { ctx: PageCtx }) {
-  const { booth, audio, tr, motion } = useBoothKit();
+  const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
   useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
-    x = cueAtBar(x, 'B', 'glassHarbour', 17);
-    return { ...x, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0.85, xf: 'THRU', cue: false } }, mixer: { ...x.mixer, xf: 0.5, xfCurve: 'BLEND' }, perspective: 'CROWD' };
+    x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 17));
+    // the trims matched by average for you (Screen 6), so two tracks add like equals
+    return { ...x, ch: { 1: { ...x.ch[1], trim: TRIM_UNITY, fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], trim: trimPos(-11), fader: 0.85, xf: 'THRU', cue: false } }, mixer: { ...x.mixer, xf: 0.5, xfCurve: 'BLEND' }, perspective: 'CROWD' };
   });
   const [faderCh, setFaderCh] = useState<ChannelId>(1);
-  const [demo, setDemo] = useState(false);
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
-  const travel = useRef({ blendLo: false, blendHi: false, cut: false });
+  const travel = useRef({ blendLo: false, blendHi: false, cut: false, copies: false });
   const m = booth.mixer;
   const both = booth.decks.A.playing && booth.decks.B.playing;
   const assigned = booth.ch[1].xf === 'A' && booth.ch[2].xf === 'B';
@@ -80,15 +83,20 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
   }
   if (both && assigned && m.xfCurve === 'CUT' && (m.xf < 0.02 || m.xf > 0.98)) travel.current.cut = true;
   const last = audio.last;
-  const goals = [
-    { label: 'Assign CH1 → A, CH2 → B', hit: assigned },
-    { label: 'Blend across with BLEND', hit: travel.current.blendLo && travel.current.blendHi },
-    { label: 'Cut to one side with CUT', hit: travel.current.cut },
-    { label: 'Hear two copies add +6 dB', hit: demo && both && m.xfCurve !== 'BLEND' && Math.abs(m.xf - 0.5) < 0.1 },
-    { label: 'Fix the silent channel', hit: faultFixed },
-    { label: 'Pass the check', hit: check },
-  ];
-  const latched = useVisitGoals(ctx, goals);
+  // ADDED: how much the mix bus rises with CH2 in, read against CH1's own
+  // meter (content-free) — measured with CH2 down first, then with it up.
+  // The reference holds only while CH1's fader, the curve and the sides stay.
+  const refKey = `${booth.ch[1].fader.toFixed(3)}|${m.xfCurve}|${m.xf.toFixed(2)}|${booth.ch[1].xf}|${booth.ch[2].xf}|${booth.decks.B.track}`;
+  const ref = useRef<{ key: string; rel: number; copies: boolean } | null>(null);
+  const rel = busOverCh1(last);
+  if (booth.decks.A.playing && booth.ch[2].fader <= 0.02 && rel != null && booth.ch[1].fader >= 0.3) ref.current = { key: refKey, rel, copies: copiesState(booth) === 'one' };
+  if (ref.current && ref.current.key !== refKey) ref.current = null;
+  const added = ref.current && rel != null && booth.decks.B.playing && booth.ch[2].fader > 0.3 ? rel - ref.current.rel : null;
+  const copies = twoCopiesResult(booth, ref.current?.copies ? ref.current.rel : null, last);
+  if (copies.met && !travel.current.copies) travel.current.copies = true;
+  const hits = [assigned, travel.current.blendLo && travel.current.blendHi, travel.current.cut, travel.current.copies, faultFixed, check];
+  const goals = GOALS_FADERS.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'FADERS');
   const gA = faderGain(booth.ch[1].fader) * xfGainFor(booth.ch[1].xf, m.xf, m.xfCurve);
   const gB = faderGain(booth.ch[2].fader) * xfGainFor(booth.ch[2].xf, m.xf, m.xfCurve);
   const fdb = (g: number) => (g <= 1e-6 ? '−∞' : `${linToDb(g) >= 0 ? '+' : '−'}${Math.abs(linToDb(g)).toFixed(1)}`);
@@ -120,8 +128,10 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'CH1 → MIX', v: `${fdb(gA)} dB`, tint: colors.textPrimary },
           { k: 'CH2 → MIX', v: `${fdb(gB)} dB`, tint: '#8fbcff' },
-          { k: 'CURVE', v: m.xfCurve, tint: colors.amber },
-          peakCell('MIX BUS', peakDb(last, 'bus')),
+          added == null
+            ? { k: 'ADDED', v: booth.ch[2].fader <= 0.02 ? 'CH2 DOWN' : '—', tint: colors.textSub }
+            : { k: sameTrackBoth(booth) ? 'TWO COPIES' : 'ADDED', v: `${added >= 0 ? '+' : '−'}${Math.abs(added).toFixed(1)} dB`, tint: copies.met ? colors.green : colors.amber },
+          peakShort('MIX BUS', peakDb(last, 'bus')),
         ],
         params: [
           {
@@ -132,7 +142,7 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
             level: true,
             onChange: (v) => updateBooth((b: Booth) => ({ ...b, ch: { ...b.ch, [faderCh]: { ...b.ch[faderCh], fader: v } } })),
             format: (v) => `CH${faderCh} FADER ${pct(v)}`,
-            formatShort: (v) => `${faderCh}·${pct(v)}`,
+            formatShort: (v) => `CH${faderCh} ${pct(v)}`,
             chooser: {
               title: 'WHICH CHANNEL FADER',
               options: [
@@ -153,16 +163,15 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
               <SetupTray
                 onDemo={() => {
                   void audio.requestSound();
-                  setDemo(true);
                   updateBooth((b, t) => {
                     const a = b.decks.A;
-                    return { ...b, decks: { A: { ...a, playing: true, at: t }, B: { ...a, playing: true, at: t } }, ch: { 1: { ...b.ch[1], fader: 0.85, xf: 'A' }, 2: { ...b.ch[2], fader: 0.85, xf: 'B' } }, mixer: { ...b.mixer, xfCurve: 'CUT', xf: 0.5 } };
+                    return { ...b, decks: { A: { ...a, playing: true, at: t }, B: { ...a, playing: true, at: t } }, ch: { 1: { ...b.ch[1], fader: 0.85, xf: 'A' }, 2: { ...b.ch[2], trim: b.ch[1].trim, eq: b.ch[1].eq, filter: b.ch[1].filter, fader: 0.85, xf: 'B' } }, mixer: { ...b.mixer, xfCurve: 'CUT', xf: 0.5 } };
                   });
                 }}
               />
             ),
           },
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: (['A', 'B'] as const).filter((d) => booth.decks[d].playing).join('+') || '—', render: () => <BoothTray booth={getBooth()} tr={tr} /> },
+          boothKey(booth, tr),
           stopKey(tr),
         ],
         initialParam: 'xf',
@@ -170,8 +179,8 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{`You are looking at the mixer’s faders, the crossfader and its assign and curve switches, under a plot of the ${m.xfCurve} crossfader curve.`}</Look>
-        <P>Each channel fader sets how much of its channel goes into the mix. The crossfader then fades between the channels assigned to side A and side B; a channel on THRU ignores the crossfader.</P>
-        <P>The CURVE decides how the two sides trade places. BLEND keeps the total steady through the middle (each side −3 dB there); DIP sags in the middle (each −6 dB); CUT keeps both full until the very ends, so a tiny move cuts a sound in or out.</P>
+        <P>Each channel fader sets how much of its channel goes into the mix, and the crossfader then fades between the channels assigned to side A and side B.</P>
+        <P>The CURVE decides how the two sides trade places: BLEND keeps the total steady (each side −3 dB in the middle), DIP sags (each −6 dB), and CUT keeps both full until the very ends.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -179,19 +188,20 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Listen as the CROWD while you move across: on BLEND the level holds steady; switch to CUT and the middle gets louder, because both tracks are at full level together.</P>
-        <P>Now the summing demonstration (SETUP → the same track on both decks, aligned). Two identical copies add up to TWICE the amplitude: +6.02 dB on the mix bus. Two different tracks at equal level add about +3 dB of average power instead — different conditions, different answers.</P>
-        <Note>Those numbers are for these exact conditions. Real songs vary, so watch the mix bus meter rather than counting on a rule of thumb.</Note>
+        <P>Now the summing demonstration (SETUP → the same track on both decks, aligned; it sets CUT with the crossfader in the middle, so both sides are at full level). Pull CH2 to 0 (FADERS → CH2) and read TWO COPIES on the readout strip; bring it back to 85 %. Two identical copies add up to TWICE the amplitude: +6.02 dB on the mix bus. Two different tracks at equal level add about +3 dB of average power instead.</P>
+        <Note>Those numbers are for these exact conditions. Real copies are never sample-aligned: a few milliseconds apart they phase (a jet-like comb sound). Real songs vary, so watch the mix bus meter rather than counting on a rule of thumb.</Note>
+        <Note>Deck B’s tempo has been matched to deck A for you — Screen 10 shows how — and the trims are matched by their average level (Screen 6).</Note>
       </Step>
       <Step n={4}>
-        <Do>Assign the sides, blend slowly from A to B on BLEND, cut to one side on CUT, then hear the +6 dB of two aligned copies.</Do>
+        <Do>Assign the sides, blend slowly from A to B on BLEND, cut to one side on CUT, then measure two aligned copies on CUT: CH2 down, then back up — TWO COPIES reads about +6 dB.</Do>
         <P>A gradual curve suits long blends; a fast one suits cuts and scratching. Both are starting points — use your ears and the room.</P>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
       </Step>
       <Step n={5}>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question="Two different tracks play at the same level, both faders up, crossfader in the middle on CUT. Roughly how much louder is the mix than one track alone?"
-          options={['About 3 dB louder on average', 'Exactly 6 dB louder', 'No louder — CUT keeps the level steady', 'Twice as loud to the ear (10 dB)']}
+          question="Two different tracks at matched average levels (as set up here), CUT, crossfader in the middle. Pull CH2 down, then bring it level with CH1: about how much does ADDED on the readout strip read? Try it."
+          options={['About +3 dB on average', 'Exactly +6 dB', '0 dB — CUT keeps the level steady', '+10 dB — twice as loud to the ear']}
           correct={0}
           explain="Two unrelated signals of equal level add about 3 dB in average power. +6 dB happens only for two identical, aligned copies. CUT keeps both sides at full level in the middle, so the sum is louder there."
           wrong={[undefined, 'Only two identical, perfectly aligned copies add exactly +6 dB.', 'That is BLEND’s job; CUT keeps both sides at full level in the middle.', 'About 10 dB is roughly "twice as loud" to the ear — far more than two tracks add.']}
@@ -202,10 +212,10 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
           symptom="Deck B is playing with its channel fader all the way up, but the crowd cannot hear it."
           start={() => {
             void audio.requestSound();
-            updateBooth((b, t) => ({ ...b, decks: { A: { ...b.decks.A, playing: true, at: t }, B: { ...b.decks.B, playing: true, at: t } }, ch: { 1: { ...b.ch[1], fader: 0, xf: 'A' }, 2: { ...b.ch[2], fader: 1, xf: 'A' } }, mixer: { ...b.mixer, xf: 1, xfCurve: 'CUT' }, perspective: 'CROWD' }));
+            updateBooth((b, t) => alignPhase({ ...b, decks: { A: { ...b.decks.A, playing: true, at: t }, B: { ...b.decks.B, playing: true, at: t } }, ch: { 1: { ...b.ch[1], fader: 0, xf: 'A' }, 2: { ...b.ch[2], fader: 1, xf: 'A' } }, mixer: { ...b.mixer, xf: 1, xfCurve: 'CUT' }, perspective: 'CROWD' }, t, 'B'));
           }}
           fixed={booth.decks.B.playing && faderGain(booth.ch[2].fader) * xfGainFor(booth.ch[2].xf, m.xf, m.xfCurve) > 0.25}
-          hints={['The channel meter shows deck B is there — so where does it stop?', 'Look at channel 2’s crossfader assign, and where the crossfader is.', 'Channel 2 is on side A while the crossfader sits fully at B. Assign it to B (or THRU), or move the crossfader.']}
+          hints={['CH2 → MIX on the readout strip says −∞ dB: deck B reaches the channel but not the mix.', 'Look at channel 2’s crossfader assign, and where the crossfader is.', 'Channel 2 is on side A while the crossfader sits fully at B. Assign it to B (or THRU), or move the crossfader.']}
           why="Channel 2 was assigned to side A, and the crossfader was fully on side B, so its gain was zero however high its fader went. Check the assign switches before blaming the faders."
           onFixed={() => setFaultFixed(true)}
         />

@@ -6,7 +6,7 @@
  * against deck A's, per frame, from the TRUE grids (what the ear hears).
  * The fault: matched BPMs that still clash (half a beat off).
  */
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { BlurMask, Group, Line, RoundedRect, vec } from '@shopify/react-native-skia';
 import { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
@@ -22,7 +22,7 @@ import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, MIXER, PLAYER, PLAYER_D, PLAYER_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
-import { BoothTray, stopKey, tempoKey } from '../dock';
+import { boothKey, stopKey, tempoKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { TRACKS, trueGrid } from '../engine/djMusic';
@@ -33,12 +33,12 @@ import { useBoothKit } from './shared';
 
 const TERMS = [
   { term: 'BPM', def: 'Beats per minute: the tempo. 122 BPM is about two beats a second.' },
-  { term: 'Bar', def: 'A group of four beats in this music (4/4 time). The first beat of a bar — the “one” — is the strongest.' },
-  { term: 'Phrase', def: 'A run of bars that belongs together — here 8 bars (32 beats). New parts tend to arrive at the start of a phrase, so blends usually start there too.' },
-  { term: 'Tempo fader', def: 'Speeds a deck up or slows it down (here up to ±8 %). Without key lock, faster also means higher in pitch.' },
-  { term: 'Drift', def: 'When two tempos differ even slightly, the beats slide apart steadily. Fix drift with the TEMPO fader.' },
-  { term: 'Offset', def: 'When the tempos match but the beats land at different moments — a steady flam. Fix offset with a jog NUDGE, not the tempo fader.' },
+  { term: 'Phrase', def: 'A run of bars that belongs together — here 8 bars of 4 beats (32 beats). The first beat of a bar is the “one”; new parts tend to arrive at the start of a phrase, so blends usually start there too.' },
+  { term: 'Drift', def: 'When two tempos differ even slightly, the beats slide apart steadily. Fix drift with the TEMPO fader (here up to ±8 %; without key lock, faster also means higher in pitch).' },
+  { term: 'Offset', def: 'When the tempos match but the beats land at different moments — a steady flam. Fix it with a jog nudge (or a quick push of the tempo fader and straight back — leave it moved and you create drift).' },
 ] as const;
+
+export const GOALS_TEMPO = ['Match the tempo (±0.1 BPM)', 'Line the beats up (≤ 1/16 beat)', 'Start B on a phrase', 'Fix the clash', 'Pass the check'] as const;
 
 /** Deck B whole (the deck you operate); deck A's tempo column and the
  *  mixer from its channel faders down come as insets beside it. */
@@ -97,27 +97,36 @@ function PhaseStrip({ b, booth }: { b: Box; booth: Booth }) {
 
 const LOOK = 'You are looking at two zoomed waveforms, deck A over deck B, with their beat grids and a phase strip; below them deck B whole, with deck A’s tempo fader and the mixer’s faders beside it.';
 
-function JogTray({ onStartB }: { onStartB: () => void }) {
+function JogTray({ onStartB, startMsg }: { onStartB: () => void; startMsg: string | null }) {
   const b = getBooth();
   const n = (ms: number) => updateBooth((x, t) => nudge(x, t, 'B', ms));
+  // a quarter of a beat of deck B's track: the BIG PUSH for a big offset
+  const quarterMs = b.decks.B.track ? (0.25 * 60 * 1000) / TRACKS[b.decks.B.track].bpm : 120;
+  const f2 = (v: number) => updateBooth((x) => ({ ...x, ch: { ...x.ch, 2: { ...x.ch[2], fader: v } } }));
   return (
     <View style={styles.tray}>
-      <Text style={styles.head}>DECK B JOG (touch the platter edge)</Text>
+      <Text style={styles.head}>DECK B JOG (push or drag the outer ring)</Text>
       <View style={styles.row}>
         <LabChip label="‹‹ HOLD BACK" selected={false} onPress={() => n(-20)} />
         <LabChip label="‹ BACK" selected={false} onPress={() => n(-8)} />
         <LabChip label="PUSH ›" selected={false} onPress={() => n(8)} />
         <LabChip label="PUSH ››" selected={false} onPress={() => n(20)} />
       </View>
-      <Text style={styles.note}>A nudge corrects OFFSET (the beats landing apart). If they keep sliding apart afterwards, that is DRIFT — fix it with TEMPO B.</Text>
-      <Text style={styles.head}>START DECK B</Text>
+      <View style={styles.row}>
+        <LabChip label="◀◀ BIG HOLD ¼ BEAT" selected={false} onPress={() => n(-quarterMs)} compact />
+        <LabChip label="BIG PUSH ¼ BEAT ▶▶" selected={false} onPress={() => n(quarterMs)} compact />
+      </View>
+      <Text style={styles.note}>A nudge corrects OFFSET (the beats landing apart); the BIG steps move a quarter of a beat. If the beats keep sliding apart afterwards, that is DRIFT — fix it with TEMPO B. On a real jog, push or drag the outer ring; in VINYL mode pressing the top plate grabs the track like a record — never rest your hand on it.</Text>
+      <Text style={styles.head}>START DECK B (or re-drop it on the one)</Text>
       <View style={styles.row}>
         <LabChip label={b.decks.B.playing ? '❚❚ PAUSE B' : '▶ PLAY B NOW'} selected={b.decks.B.playing} onPress={onStartB} />
-        <LabChip
-          label="CUE B BACK TO BAR 1"
-          selected={false}
-          onPress={() => updateBooth((x) => cueAtBar(x, 'B', x.decks.B.track ?? 'glassHarbour', 1))}
-        />
+        <LabChip label="CUE B BACK TO BAR 1" selected={false} onPress={() => updateBooth((x) => cueAtBar(x, 'B', x.decks.B.track ?? 'glassHarbour', 1))} />
+      </View>
+      {startMsg ? <Text style={styles.note}>{startMsg}</Text> : null}
+      <Text style={styles.head}>{`CH2 FADER → ${Math.round(b.ch[2].fader * 100)}% (deck B in the mix)`}</Text>
+      <View style={styles.row}>
+        <LabChip label="DOWN (FIX IN CUE)" selected={b.ch[2].fader <= 0.02} onPress={() => f2(0)} compact />
+        <LabChip label="UP 85%" selected={Math.abs(b.ch[2].fader - 0.85) < 0.02} onPress={() => f2(0.85)} compact />
       </View>
     </View>
   );
@@ -151,6 +160,9 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
   const [phraseStart, setPhraseStart] = useState(false);
+  const [startMsg, setStartMsg] = useState<string | null>(null);
+  // the clash fault: B pulled out of the mix, fixed in cue, brought back
+  const fault = useRef({ on: false, pulled: false });
   const t = boothNow();
   const A = booth.decks.A;
   const B = booth.decks.B;
@@ -168,22 +180,27 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
       const nowBeat = trueBeat(b0, 'A', boothNow());
       const bBeat = trueBeat(b0, 'B', boothNow());
       if (b0.decks.A.playing && nowBeat != null && bBeat != null) {
-        const toPhrase = Math.abs(nowBeat - Math.round(nowBeat / BEATS_PER_PHRASE) * BEATS_PER_PHRASE);
+        const phrase = Math.round(nowBeat / BEATS_PER_PHRASE) * BEATS_PER_PHRASE;
+        const late = nowBeat - phrase;
         const bOnPhrase = Math.abs(bBeat - Math.round(bBeat / BEATS_PER_PHRASE) * BEATS_PER_PHRASE) < 0.1;
-        if (toPhrase < 0.35 && bOnPhrase) setPhraseStart(true);
+        if (Math.abs(late) < 0.35 && bOnPhrase) {
+          setPhraseStart(true);
+          setStartMsg('On the phrase: B started with A’s phrase. Now match the tempo and line the beats up.');
+        } else if (!bOnPhrase) {
+          setStartMsg('B was not cued at the start of a phrase. Pause B, press CUE B BACK TO BAR 1, and press PLAY on the ONE when A PHRASE reads 1 / 8.');
+        } else {
+          setStartMsg(`B started ${Math.abs(late).toFixed(1)} beats ${late > 0 ? 'after' : 'before'} A’s phrase ${late > 0 ? 'began' : 'begins'} — pause B, CUE B BACK TO BAR 1, and press PLAY on the ONE when A PHRASE reads 1 / 8 (it flashes on bar 8 as a count-in).`);
+        }
       }
     }
     tr.toggle('B');
   };
-  const goals = [
-    { label: 'Match the tempo (±0.1 BPM)', hit: tempoOk },
-    { label: 'Line the beats up (≤ 1/16 beat)', hit: aligned },
-    { label: 'Start B on a phrase', hit: phraseStart },
-    { label: 'Fix the clash', hit: faultFixed },
-    { label: 'Pass the check', hit: check },
-  ];
-  const latched = useVisitGoals(ctx, goals);
+  if (fault.current.on && B.playing && booth.ch[2].fader <= 0.05) fault.current.pulled = true;
+  const hits = [tempoOk, aligned, phraseStart, faultFixed, check];
+  const goals = GOALS_TEMPO.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'TEMPO');
   const lanesH = (h: number, k = 1) => Math.round(Math.min(160 * k, h * 0.52));
+  const aBar = ba != null && ba >= 0 ? barInPhrase(ba) : null;
   return (
     <DjRack
       spec={{
@@ -226,13 +243,14 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
           { k: 'A BPM', v: bpmA.toFixed(2), tint: colors.textPrimary },
           { k: 'B BPM', v: bpmB.toFixed(2), tint: Math.abs(bpmA - bpmB) < 0.05 ? colors.green : '#8fbcff' },
           { k: 'B vs A', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
-          { k: 'A PHRASE', v: ba != null && ba >= 0 ? `${barInPhrase(ba)} / 8` : '—', tint: colors.textPrimary },
+          // bar 8 is the count-in: the cell flashes before the phrase's ONE
+          { k: 'A PHRASE', v: aBar == null ? '—' : aBar === 8 ? '8 / 8 ▸' : `${aBar} / 8`, tint: aBar === 8 ? '#ff8a7e' : aBar === 1 ? colors.green : colors.textPrimary },
         ],
         params: [
           tempoKey(booth, 'B'),
-          { kind: 'group', id: 'jog', label: 'JOG B', valueLabel: 'NUDGE', render: () => <JogTray onStartB={startB} /> },
+          { kind: 'group', id: 'jog', label: 'JOG B', valueLabel: 'NUDGE', render: () => <JogTray onStartB={startB} startMsg={startMsg} /> },
           { kind: 'toggle', id: 'playB', label: 'PLAY B', value: B.playing, onToggle: startB },
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: (['A', 'B'] as const).filter((d) => booth.decks[d].playing).join('+') || '—', render: () => <BoothTray booth={getBooth()} tr={tr} /> },
+          boothKey(booth, tr),
           stopKey(tr),
         ],
         initialParam: 'tempoB',
@@ -240,31 +258,34 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>Music here is counted in BEATS, four to a BAR, eight bars to a PHRASE. Deck A (122 BPM) is playing to the crowd. Deck B (126 BPM) is cued in your headphones — split cue is on: B in your left ear, the room’s mix in your right.</P>
-        <P>Two different problems sound alike. DRIFT: the tempos differ, so the beats slide apart steadily — fix it with the TEMPO fader. OFFSET: the tempos match but the beats land apart — fix it with a jog NUDGE.</P>
+        <P>Deck A (122 BPM) will play to the crowd; deck B (126 BPM) is cued in your headphones with split cue on — B in your left ear, the room’s mix in your right.</P>
+        <P>Two problems sound alike: DRIFT (the tempos differ, so the beats slide apart steadily — the TEMPO fader) and OFFSET (the tempos match but the beats land apart — a jog nudge).</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open DECKS and play deck A. Start deck B on the first beat of one of A’s phrases (JOG B → PLAY B NOW, or the PLAY B key), then bring TEMPO B down until its BPM reads like A’s.</Do>
+        <Do>Open DECKS and play deck A. Deck A is on air — never touch its tempo; you match B to A. Deck B waits at bar 1: start it on the ONE of one of A’s phrases (PLAY B when A PHRASE turns 1 / 8 — it flashes on bar 8 as a count-in).</Do>
+        <P>Missed it? Pause B, open JOG B → CUE B BACK TO BAR 1, and try on the next phrase. Then slow deck B: move TEMPO B toward − (away from you on the player) until its BPM reads like A’s.</P>
         <P>The waveforms show each track’s real kicks under its grid; the PHASE strip shows where B’s beat sits against A’s. Centre and green is together.</P>
       </Step>
       <Step n={3}>
         <P>Listen to the kicks in your two ears. A steady “flam” (a doubled kick) is offset — nudge. A flam that grows, then turns into chaos, is drift — tempo. Use the fine TEMPO steps (±0.05 %) under the fader to stop the last of the drift.</P>
-        <Note>On this lab’s players the tempo fader changes speed AND pitch (no key lock): deck B pulled down to 122 BPM also sounds about half a semitone lower. Key lock arrives later in the course.</Note>
+        <Note>On this lab’s players the tempo fader changes speed AND pitch (no key lock): deck B pulled down to 122 BPM also sounds about half a semitone lower — enough to sound sour against deck A’s bass and chords. Blend over drum-only intros, or use key lock (later in the course).</Note>
+        <Note>In a big room the PA reaches you late — about 3 ms for every metre. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
       </Step>
       <Step n={4}>
         <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat, and start deck B on a phrase.</Do>
-        <P>Then try the blend: bring B’s fader up as the next phrase begins. Where you start is a musical choice — the start of a phrase is a strong suggested starting point.</P>
+        {startMsg ? <Note tone={phraseStart ? 'try' : 'safety'}>{startMsg}</Note> : null}
+        <P>Then try the blend: bring B’s fader up (JOG B → CH2 FADER) as the next phrase begins. Where you start is a musical choice — the start of a phrase is a strong suggested starting point.</P>
         <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />
       </Step>
       <Step n={5}>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question="Both decks read 124.0 BPM, but every kick flams by the same small amount, bar after bar. What do you do?"
-          options={['Nudge the jog until the kicks land together — it is an offset', 'Move the tempo fader — it is drift', 'Press SYNC and hope', 'Nothing — matching BPMs are always aligned']}
+          question="You line the kicks up, but over the next 8 bars the flam slowly grows again. Which control fixes it?"
+          options={['The TEMPO fader — a growing flam is drift: the tempos still differ', 'The jog — nudge again every bar', 'The channel fader', 'The EQ — cut the LOW so the flam is hidden']}
           correct={0}
-          explain="A steady flam with matched tempos is an OFFSET: the beats start at different moments. Nudge the platter until they line up. Drift would make the flam grow over time."
-          wrong={[undefined, 'The tempos already match; moving the fader would CREATE drift.', 'SYNC can line up grids, but only if the grids are right — and you would not learn what was wrong.', 'Equal BPMs say nothing about where each beat lands.']}
+          explain="A flam that GROWS is drift: one deck is still a little faster. Nudging only resets it for a while; a fine move of the TEMPO fader stops it. A steady flam that never grows would be an offset — a nudge."
+          wrong={[undefined, 'Nudging resets the beats, but they keep sliding apart — the tempos still differ.', 'The fader changes how loud B is, not when its beats land.', 'Hiding the kick hides the symptom; the tempos still differ.']}
           onCorrect={() => setCheck(true)}
         />
         <FaultCard
@@ -272,6 +293,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
           symptom="Both decks show the same BPM, yet the mix sounds like a galloping mess."
           start={() => {
             void audio.requestSound();
+            fault.current = { on: true, pulled: false };
             updateBooth((b, tt) => {
               let x = cueAtBar(b, 'A', 'nightFerry', 17);
               x = cueAtBar(x, 'B', 'nightFerry', 41);
@@ -284,9 +306,9 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
               };
             });
           }}
-          fixed={both && Math.abs(bpmA - bpmB) < 0.05 && Math.abs(off) < 1 / 16}
-          hints={['The BPMs match, so this is not drift.', 'Look at the PHASE strip: B sits about half a beat away from A.', 'Use JOG B (PUSH or HOLD BACK) until the line sits in the green.']}
-          why="The tempos matched exactly, but deck B was half a beat late — an offset, not drift. A few nudges lined the kicks up; the tempo fader would only have made them slide."
+          fixed={both && fault.current.pulled && Math.abs(bpmA - bpmB) < 0.05 && Math.abs(off) < 1 / 16 && booth.ch[2].fader >= 0.5}
+          hints={['First pull B out of the mix (JOG B → CH2 FADER DOWN) and fix it in your headphones — the crowd should not hear the clash. The BPMs match, so this is not drift.', 'Look at the PHASE strip: B sits about half a beat away from A. Two BIG PUSHes (¼ beat each) cover most of it, or re-drop B on the one.', 'Finish with small nudges until the line sits in the green, then bring CH2 back UP.']}
+          why="The tempos matched exactly, but deck B was half a beat late — an offset, not drift. You took B out of the mix, fixed it in your headphones and brought it back. A big offset is quickest fixed by restarting B on the one (or a firm push); small nudges are for the last few milliseconds. The tempo fader would only have made them slide."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(3)} latched={latched.slice(3)} />

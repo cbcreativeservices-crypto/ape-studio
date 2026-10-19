@@ -19,7 +19,7 @@ import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, PLAYER, VIEWS } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
-import { boothKey, listenKey, playKey, stopKey } from '../dock';
+import { listenKey, playKey, stopKey } from '../dock';
 import { setBooth, setPerspective, updateBooth } from '../booth/boothStore';
 import { cueAtBar, freshBooth, useScreenSetup } from '../booth/setup';
 import { soundCell, useBoothKit } from './shared';
@@ -34,23 +34,34 @@ const TERMS = [
 
 const LEVELS = [85, 88, 91, 94, 97, 100] as const;
 const HOURS = [1, 2, 4] as const;
+/** The loudest level a 4-hour set can run at and stay within the allowance
+ *  (computed, never typed: 88 dBA with this guideline). */
+const LOUDEST_4H = Math.max(...LEVELS.filter((L) => Math.round(nioshDose([L], [240])) <= 100));
 
-function ExposureTile({ onUsed }: { onUsed: () => void }) {
+export const GOALS_WELCOME = ['Start deck A', 'Switch who you listen as', 'Stop everything', 'Reset the booth', 'Find the loudest safe 4-hour level', 'Pass the check', 'Fix the silent start'] as const;
+
+/** A find-the-answer task (learning review p01 #1): it latches only on the
+ *  loudest level that keeps a 4-hour set at or under 100 %. */
+function ExposureTile({ onFound }: { onFound: () => void }) {
   const [db, setDb] = useState<number>(94);
-  const [h, setH] = useState<number>(4);
+  const [h, setH] = useState<number>(2);
   const dose = nioshDose([db], [h * 60]);
+  const pick = (L: number, H: number) => {
+    if (L === LOUDEST_4H && H === 4) onFound();
+  };
   return (
     <View style={styles.tile}>
       <Text style={styles.tileHead}>A LOUD NIGHT, IN NUMBERS</Text>
-      <Text style={styles.tileBody}>A widely used workplace guideline allows 85 dBA for 8 hours, and HALVES the time for every 3 dB more. Pick a level and a set length:</Text>
+      <Text style={styles.tileBody}>A widely used workplace guideline allows 85 dBA for 8 hours, and HALVES the time for every 3 dB more.</Text>
+      <Text style={styles.tileDo}>Pick a 4 h set, then find the LOUDEST level that stays at 100 % or less.</Text>
       <View style={styles.chips}>
         {LEVELS.map((L) => (
-          <LabChip key={L} label={`${L} dBA`} selected={db === L} onPress={() => (setDb(L), onUsed())} compact />
+          <LabChip key={L} label={`${L} dBA`} selected={db === L} onPress={() => (setDb(L), pick(L, h))} compact />
         ))}
       </View>
       <View style={styles.chips}>
         {HOURS.map((x) => (
-          <LabChip key={x} label={`${x} h set`} selected={h === x} onPress={() => (setH(x), onUsed())} compact />
+          <LabChip key={x} label={`${x} h set`} selected={h === x} onPress={() => (setH(x), pick(db, x))} compact />
         ))}
       </View>
       <Text style={[styles.dose, { color: dose > 100 ? '#ff5a48' : dose > 50 ? colors.amber : colors.green }]}>{`${Math.round(dose)} % of a day’s allowance`}</Text>
@@ -63,7 +74,7 @@ const STRIP_H = 50;
 const WHO: { id: Perspective; top: string; sub: string }[] = [
   { id: 'CROWD', top: 'CROWD', sub: 'THE PA SPEAKERS' },
   { id: 'BOOTH', top: 'BOOTH', sub: 'THE BOOTH MONITORS' },
-  { id: 'PHONES', top: 'YOU', sub: 'YOUR HEADPHONES' },
+  { id: 'PHONES', top: 'PHONES', sub: 'YOUR HEADPHONES' },
 ];
 
 /** The booth drawing's height on a glass `w` wide (its own aspect), and
@@ -114,16 +125,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
   if (booth.decks.A.playing && !heardA) setHeardA(true);
   if (booth.perspective !== 'CROWD' && !switched) setSwitched(true);
   if (heardA && !booth.decks.A.playing && !booth.decks.B.playing && !stopped && audio.status === 'idle') setStopped(true);
-  const goals = [
-    { label: 'Start deck A', hit: heardA },
-    { label: 'Switch who you listen as', hit: switched },
-    { label: 'Stop everything', hit: stopped },
-    { label: 'Reset the booth', hit: reset },
-    { label: 'Work out a loud night', hit: tile },
-    { label: 'Pass the check', hit: check },
-    { label: 'Fix the silent start', hit: faultFixed },
-  ];
-  const latched = useVisitGoals(ctx, goals);
+  const hits = [heardA, switched, stopped, reset, tile, check, faultFixed];
+  const goals = GOALS_WELCOME.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'WELCOME');
   return (
     <DjRack
       spec={{
@@ -159,7 +163,6 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
         params: [
           playKey(booth, tr, 'A'),
           listenKey(booth),
-          boothKey(booth, tr),
           {
             kind: 'action',
             id: 'reset',
@@ -177,22 +180,21 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>You are looking at the DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right. Underneath, who you are listening as.</Look>
-        <P>In this lab you will build a two-deck DJ system, follow the music from the players to the speakers, cue the next track privately in your headphones, mix with faders, EQ and tempo, and find faults the way a working DJ does.</P>
-        <P>Everything here plays from ONE booth that stays set up as you move from screen to screen. The music is the lab’s own, made inside the app.</P>
-        <P>Your hearing comes first. Loudness and time add up: a few hours in a loud booth can use more than a whole day’s safe allowance.</P>
+        <P>In this lab you build a two-deck DJ system, cue and mix on it, and find faults the way a working DJ does — all on ONE booth that stays set up from screen to screen.</P>
+        <P>The music is the lab’s own, made inside the app. Your hearing comes first: loudness and time add up, and a few hours in a loud booth can use more than a whole day’s safe allowance.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Find ■ STOP in the dock — it stops every deck and every sound, at any moment. Then press PLAY A.</Do>
-        <P>Open LISTEN to choose whose ears the phone plays: the CROWD (the PA speakers), the BOOTH monitors, or your HEADPHONES. A phone has one headphone output, so here you switch between what the crowd hears and what you hear.</P>
+        <P>Open LISTEN to choose whose ears the phone plays: the CROWD (the PA speakers), the BOOTH monitors, or your PHONES (headphones).</P>
       </Step>
       <Step n={3}>
         <P>Each time you switch, the playback starts LOW again. Turn it up slowly with LOUDER until it is comfortable — never to the top.</P>
         <Note tone="safety">The PLAYBACK number is how loud the lab asks the phone to play. It is not a calibrated or safe level: the same number is much louder in some headphones than others. A phone’s microphone cannot measure what reaches your ears in headphones.</Note>
       </Step>
       <Step n={4}>
-        <Do>Start deck A, switch who you listen as, stop everything with ■ STOP, then RESET the booth.</Do>
-        <ExposureTile onUsed={() => setTile(true)} />
+        <Do>Start deck A, switch who you listen as, stop everything with ■ STOP, then RESET the booth. Then find the loudest safe level for a 4-hour set.</Do>
+        <ExposureTile onFound={() => setTile(true)} />
         <GoalChips goals={goals.slice(0, 5)} latched={latched.slice(0, 5)} />
         <Note tone="try">In a real booth: start with the headphone and booth levels DOWN, bring them up slowly, wear one ear off the headphones when you can, take breaks in quiet, and use earplugs made for music in loud rooms.</Note>
       </Step>
@@ -224,9 +226,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
               mixer: { ...b.mixer, cueMix: 0, splitCue: false },
             }));
           }}
-          fixed={booth.decks.A.playing && booth.perspective !== 'PHONES'}
-          hints={['Before turning anything up, check WHO you are listening as. Open LISTEN.', 'You are listening as the headphones, and nothing is sent to the headphone cue.', 'Switch LISTEN to CROWD to hear what the room hears.']}
-          why="Nothing was wrong with the music: you were listening in the headphones, and no channel was cued to them. Turning the level up would only have made the next sound much too loud. Check where you are listening before you reach for a volume control."
+          fixed={booth.decks.A.playing && (booth.perspective !== 'PHONES' || booth.ch[1].cue || booth.mixer.cueMix > 0.5)}
+          hints={['Before turning anything up, check WHO you are listening as. Open LISTEN.', 'You are listening as the headphones, and nothing is being sent to them yet.', 'Switch LISTEN to CROWD to hear what the room hears.']}
+          why="Nothing was wrong with the music: you were listening as the headphones, and nothing was being sent to them yet (Screen 7 shows how — a channel’s CUE, or the headphone blend toward the master). Turning a level up would only have made the next sound much too loud. Check WHO you are listening as before you touch a volume."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />
@@ -239,6 +241,7 @@ const styles = StyleSheet.create({
   tile: { borderRadius: 12, borderWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0d0d10', padding: 12, gap: 8 },
   tileHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.4 },
   tileBody: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
+  tileDo: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 20 },
   tileFine: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   dose: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 0.4 },

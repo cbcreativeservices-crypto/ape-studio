@@ -130,7 +130,9 @@ describe('DJ Systems Lab — the room map’s cables', () => {
   });
 
   it('the flow pulse is decorative: Screen 4 hands the map the decorative gate', () => {
-    assert.match(read('src/screens/lab/dj/pages/p04Build.tsx'), /<SystemMap booth=\{booth\} last=\{audio\.last\} flow=\{audio\.flowMotion\}/);
+    const p04 = read('src/screens/lab/dj/pages/p04Build.tsx');
+    assert.match(p04, /flowMotion=\{audio\.flowMotion\}/);
+    assert.match(p04, /<SystemMap booth=\{booth\} last=\{last\} flow=\{flowMotion\}/);
     assert.match(read('src/screens/lab/dj/booth/useBoothAudio.ts'), /const flowMotion = useDecorativeMotion\(\);/);
   });
 });

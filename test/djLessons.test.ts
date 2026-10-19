@@ -12,6 +12,8 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { SR } from '../src/screens/lab/dj/engine/djDsp.ts';
 import { TRACKS, barSec } from '../src/screens/lab/dj/engine/djMusic.ts';
 import { carryAt, clearDeckCache, renderBooth } from '../src/screens/lab/dj/engine/djRender.ts';
@@ -207,5 +209,31 @@ describe('the what’s-left screen names each screen’s unmet goals (learning X
     assert.deepEqual(unmetGoals(labels, [false, true, false]), ['Start deck A', 'Pass the check']);
     clearGoalReports();
   });
-
+  it('the lab wires it: every screen reports under its own name and the shell reads it', () => {
+    const ROOT = join(import.meta.dirname, '..');
+    const dir = join(ROOT, 'src/screens/lab/dj/pages');
+    const shorts: string[] = [];
+    for (const f of readdirSync(dir).filter((n) => /^p\d\d/.test(n))) {
+      const s = readFileSync(join(dir, f), 'utf8');
+      const short = s.match(/: PageDef = \{[^}]*short: '([A-Z]+)'/)?.[1];
+      assert.ok(short, `${f} has a short name`);
+      assert.match(s, new RegExp(`useVisitGoals\\(ctx, goals, '${short}'\\)`), `${f} reports its goals as ${short}`);
+      assert.match(s, /export const GOALS_[A-Z]+ = \[/, `${f} declares its goal labels`);
+      shorts.push(short!);
+    }
+    assert.equal(shorts.length, 12);
+    // every goal chip shows exactly once: the practice chips end where the
+    // check-yourself chips begin
+    for (const f of readdirSync(dir).filter((n) => /^p\d\d/.test(n))) {
+      const s = readFileSync(join(dir, f), 'utf8');
+      const cuts = [...s.matchAll(/<GoalChips goals=\{goals\.slice\((\d+)(?:, (\d+))?\)\}/g)];
+      assert.equal(cuts.length, 2, `${f} has two goal rows`);
+      assert.equal(cuts[0][1], '0', `${f} first row starts at 0`);
+      assert.equal(cuts[0][2], cuts[1][1], `${f}: the second row starts where the first ends`);
+      assert.equal(cuts[1][2], undefined, `${f}: the second row runs to the end`);
+    }
+    const shell = readFileSync(join(ROOT, 'src/screens/lab/dj/DJSystemsLabScreen.tsx'), 'utf8');
+    assert.match(shell, /pageDetail=\{/);
+    assert.match(shell, /leftLine\(/);
+  });
 });

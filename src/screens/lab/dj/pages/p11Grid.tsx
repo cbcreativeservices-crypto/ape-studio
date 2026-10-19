@@ -20,42 +20,49 @@ import { WaveLane } from '../art/plots';
 import { BOOTH_LAYOUT, PLAYER } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
-import { BoothTray, stopKey } from '../dock';
+import { boothKey, stopKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { TRACKS } from '../engine/djMusic';
 import { analysedGrid, gridCorrect, loopIn, setGrid, sync, trueBeat } from '../model/djDeck';
-import { phaseOffset, playedBpm } from '../model/djTime';
-import type { GridMode } from '../model/djModel';
+import { beatAt, phaseOffset, playedBpm } from '../model/djTime';
+import { deckPos, type DeckState, type GridMode } from '../model/djModel';
 import { useBoothKit } from './shared';
 
 const TERMS = [
-  { term: 'Analysis', def: 'The software (or player) listens to a track ahead of time to estimate its BPM, where its beats are and where beat 1 is. It is usually right — not always.' },
-  { term: 'Beatgrid', def: 'The software’s map of the beats: a line on every beat, a bold one on every bar. It is an interpretation of the music, and you can edit it.' },
+  { term: 'Beatgrid', def: 'The software’s map of the beats, made when it analyses a track ahead of time: a thin line on every kick and a bold bar line on the “one” — where a crash, a chord change or a new part lands, and straight after a drum fill. It is an interpretation, and you can edit it.' },
   { term: 'First beat', def: 'Where the grid thinks bar 1 beat 1 is. If it is off, every bar line, loop and sync is off by the same amount.' },
-  { term: 'Half / double BPM', def: 'An analyser can read a 126 BPM track as 63 (or 252). The beat lines then fall on every other beat, and “4-beat” loops come out 8 real beats long.' },
+  { term: 'Half / double BPM', def: 'An analyser can read a tempo at half or double: drum & bass at 174 read as 87, hip-hop at 85 read as 170, dubstep at 140 read as 70. The beat lines then fall on every other beat (or twice per beat), and “4-beat” loops come out the wrong length.' },
   { term: 'SYNC', def: 'Matches one deck’s tempo and beat phase to the other, using their GRIDS. With a wrong grid, sync faithfully lines up the wrong thing.' },
-  { term: 'Quantize', def: 'Snaps your actions — cues, loops, jumps — to the nearest beat of the grid, so they land in time even if your press is a little early or late.' },
 ] as const;
 
-const SCEN: { id: GridMode; label: string; blurb: string }[] = [
-  { id: 'TRUE', label: 'GRID RIGHT', blurb: 'The analysis got it right: every line on a kick.' },
-  { id: 'LATE_HALF', label: 'FIRST BEAT LATE', blurb: 'The first beat was placed half a beat late: every line sits on an off-beat hat, not the kick.' },
-  { id: 'HALF_BPM', label: 'HALF BPM', blurb: 'The analysis read 63 BPM for a 126 BPM track: lines on every other beat.' },
-];
+export const GOALS_GRID = ['SYNC on a wrong grid — hear the flam', 'Put the first beat right', 'SYNC again — locked', 'Loop with QUANTIZE on, then off', 'Fix a half-BPM reading', 'Pass the check'] as const;
 
-const LOOK = 'You are looking at deck A’s and deck B’s waveforms, about two bars each, with their beat grids drawn over them (thin white beat lines, bold amber bar lines) and the kicks tinted violet; below, deck B’s SYNC and QUANTIZE keys.';
+const LOOK = 'You are looking at deck A’s and deck B’s waveforms (Night Ferry on both — its kicks are easy to see), about two bars each, with their beat grids drawn over them (thin white beat lines, bold amber bar lines) and the kicks tinted violet; below, deck B’s SYNC and QUANTIZE keys.';
 
-function GridTray({ onScenario }: { onScenario: (g: GridMode) => void }) {
+/** The GRID cell in one word (learning review p11 #4). */
+function gridWord(d: DeckState): string {
+  if (!d.track) return '—';
+  if (gridCorrect(d)) return 'RIGHT';
+  const a = analysedGrid(d)!;
+  const t = TRACKS[d.track].bpm;
+  if (Math.abs(a.bpm - t / 2) < 0.01) return 'HALF BPM';
+  if (Math.abs(a.bpm - t * 2) < 0.01) return 'DOUBLE BPM';
+  return Math.abs(a.bpm - t) < 0.01 ? 'BEAT 1 OFF' : 'BPM WRONG';
+}
+
+function GridTray({ onScenario, onLoop, loopMsg }: { onScenario: (g: GridMode) => void; onLoop: () => void; loopMsg: string | null }) {
   const b = getBooth();
   const d = b.decks.B;
   const g = analysedGrid(d);
+  const tb = d.track ? TRACKS[d.track].bpm : 122;
+  const scen = SCEN_OF(tb);
   const edit = (patch: Parameters<typeof setGrid>[3]) => updateBooth((x, t) => setGrid(x, t, 'B', patch));
   return (
     <View style={styles.tray}>
       <Text style={styles.head}>DECK B’S ANALYSIS (start a scenario)</Text>
       <View style={styles.row}>
-        {SCEN.map((s) => (
+        {scen.map((s) => (
           <LabChip key={s.id} label={s.label} selected={d.gridMode === s.id && d.gridShiftBeats === 0 && d.bpmFix === 1} onPress={() => onScenario(s.id)} compact />
         ))}
       </View>
@@ -69,18 +76,27 @@ function GridTray({ onScenario }: { onScenario: (g: GridMode) => void }) {
       <View style={styles.row}>
         <LabChip label="BPM ×2" selected={d.bpmFix === 2} onPress={() => edit({ bpmFix: d.bpmFix === 0.5 ? 1 : 2 })} compact />
         <LabChip label="BPM ÷2" selected={d.bpmFix === 0.5} onPress={() => edit({ bpmFix: d.bpmFix === 2 ? 1 : 0.5 })} compact />
-        <LabChip label="LOOP 4 BEATS" selected={!!d.loop} onPress={() => updateBooth((x, t) => (x.decks.B.loop ? { ...x, decks: { ...x.decks, B: { ...x.decks.B, loop: null } } } : loopIn(x, t, 'B', 4)))} compact />
+        <LabChip label={d.loop ? 'LOOP EXIT' : 'LOOP 4 BEATS'} selected={!!d.loop} onPress={onLoop} compact />
       </View>
-      <Text style={styles.note}>Watch the waveform: a correct grid puts its bold bar lines on the strongest kicks, and every thin line on a kick.</Text>
+      {loopMsg ? <Text style={styles.note}>{loopMsg}</Text> : null}
+      <Text style={styles.note}>Watch the waveform: a correct grid puts a thin line on every kick and a bold bar line on the “one” — where a crash or a new part lands, straight after a drum fill. In four-on-the-floor music every kick is equally strong, so the music’s structure finds the one, not the loudest kick.</Text>
     </View>
   );
 }
 
+const SCEN_OF = (bpm: number): { id: GridMode; label: string; blurb: string }[] => [
+  { id: 'TRUE', label: 'GRID RIGHT', blurb: 'The analysis got it right: every line on a kick.' },
+  { id: 'LATE_HALF', label: 'FIRST BEAT LATE', blurb: 'The first beat was placed half a beat late: every line sits on an off-beat hat, not the kick.' },
+  { id: 'HALF_BPM', label: 'HALF BPM', blurb: `The analysis read ${bpm / 2} BPM for a ${bpm} BPM track: lines on every other beat.` },
+];
+
 function PageGrid({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
   useScreenSetup((b) => {
+    // Night Ferry on both decks (A at bar 17, B at bar 41): its kicks stand
+    // clear of the rest, so lines against kicks can be SEEN (audio review #5)
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
-    x = cueAtBar(x, 'B', 'glassHarbour', 17);
+    x = cueAtBar(x, 'B', 'nightFerry', 41);
     x = { ...x, decks: { A: { ...x.decks.A, pitch: 0 }, B: { ...x.decks.B, pitch: 0, gridMode: 'LATE_HALF', gridShiftBeats: 0, bpmFix: 1, quantize: true } } };
     return { ...x, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0.85, xf: 'THRU', cue: false } }, mixer: { ...x.mixer, splitCue: false }, perspective: 'CROWD' };
   });
@@ -89,7 +105,8 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
   useAnimatedReaction(() => Math.floor(motion.clock.value * 4), (n, p) => {
     if (n !== p) runOnJS(bump)(n);
   });
-  const story = useRef({ wrongSync: false, fixed: false, lockSync: false, halfStarted: false });
+  const story = useRef({ wrongSync: false, fixed: false, lockSync: false, halfStarted: false, qOn: false, qOff: false, realLoop: false });
+  const [loopMsg, setLoopMsg] = useState<string | null>(null);
   const [syncLit, setSyncLit] = useState(false);
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
@@ -107,6 +124,10 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
   if (B.gridMode === 'LATE_HALF' && gridCorrect(B)) story.current.fixed = true;
   const pressSync = () => {
     const b0 = getBooth();
+    if (!b0.decks.A.playing || !b0.decks.B.playing) {
+      setMsg('Play both decks first, then SYNC.');
+      return;
+    }
     const next = sync(b0, boothNow(), 'B');
     if (!next) {
       setMsg('SYNC could not find a tempo inside the ±8 % range.');
@@ -123,14 +144,40 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
       if (gridCorrect(next.decks.B) && o < 1 / 16) story.current.lockSync = true;
     }
   };
-  const goals = [
-    { label: 'SYNC on a wrong grid — hear the flam', hit: story.current.wrongSync },
-    { label: 'Put the first beat right', hit: story.current.fixed },
-    { label: 'SYNC again — locked', hit: story.current.lockSync },
-    { label: 'Fix a half-BPM reading', hit: faultFixed },
-    { label: 'Pass the check', hit: check },
-  ];
-  const latched = useVisitGoals(ctx, goals);
+  /** LOOP 4 BEATS / EXIT: where the loop started, against the grid. */
+  const pressLoop = () => {
+    const b0 = getBooth();
+    if (b0.decks.B.loop) {
+      updateBooth((x) => ({ ...x, decks: { ...x.decks, B: { ...x.decks.B, loop: null } } }));
+      return;
+    }
+    if (!b0.decks.B.playing) {
+      setLoopMsg('Play deck B first, then press LOOP 4 BEATS a little after a grid line.');
+      return;
+    }
+    const t0 = boothNow();
+    updateBooth((x, t) => loopIn(x, t, 'B', 4));
+    const after = getBooth().decks.B;
+    const g = analysedGrid(after);
+    if (!after.loop || !g || !after.track) return;
+    const beatPos = beatAt(g, after.loop.startSec);
+    const fromLine = Math.abs(beatPos - Math.round(beatPos));
+    const real = (after.loop.lengthSec * TRACKS[after.track].bpm) / 60;
+    if (story.current.halfStarted && gridCorrect(after) && Math.abs(real - 4) < 0.01) story.current.realLoop = true;
+    if (after.quantize) {
+      story.current.qOn = true;
+      setLoopMsg(`QUANTIZE on: the loop snapped back to the grid line — its start sits on a beat line. Now turn QUANTIZE off and try again. (${(real).toFixed(0)} real beats long.)`);
+    } else {
+      const pressed = beatAt(g, deckPos(b0.decks.B, t0));
+      const off = pressed - Math.floor(pressed + 1e-6);
+      if (fromLine > 0.05) story.current.qOff = true;
+      setLoopMsg(fromLine > 0.05 ? `QUANTIZE off: the loop started where you pressed — ${off.toFixed(2)} of a beat after the line. On the dance floor that is a stumble every 4 beats.` : 'QUANTIZE off, but you pressed right on a line — try pressing a little late to see the difference.');
+    }
+  };
+  const hits = [story.current.wrongSync, story.current.fixed, story.current.lockSync, story.current.qOn && story.current.qOff, faultFixed, check];
+  const goals = GOALS_GRID.map((label, i) => ({ label, hit: hits[i] }));
+  const latched = useVisitGoals(ctx, goals, 'GRID');
+  const loopReal = B.loop && B.track ? (B.loop.lengthSec * TRACKS[B.track].bpm) / 60 : 0;
   const lanesH = (h: number, k = 1) => Math.round(Math.min(180 * k, h * 0.58));
   // about two bars across each lane, so every beat line and every kick reads
   const span = (8 * 60) / 124;
@@ -160,7 +207,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
                 return (
                   <Group>
                     <WaveLane b={{ x: 6, y: 4, w: W - 12, h: lh }} d={A} spanSec={span} k={kk} lowKey label={`A · GRID RIGHT · ${bpmA.toFixed(1)}`} />
-                    <WaveLane b={{ x: 6, y: 8 + lh, w: W - 12, h: lh }} d={B} spanSec={span} k={kk} marks label={`B · GRID ${gB ? gB.bpm.toFixed(1) : '—'} BPM${gridCorrect(B) ? ' · RIGHT' : ' · CHECK IT'}`} />
+                    <WaveLane b={{ x: 6, y: 8 + lh, w: W - 12, h: lh }} d={B} spanSec={span} k={kk} marks label={`B · GRID ${gB ? gB.bpm.toFixed(1) : '—'} BPM${gridCorrect(B) ? ' · RIGHT' : ' · CHECK IT'}${loopReal ? ` · LOOP = ${Math.round(loopReal)} REAL BEATS` : ''}`} />
                   </Group>
                 );
               },
@@ -169,8 +216,8 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'B GRID', v: gB ? gB.bpm.toFixed(1) : '—', tint: gridCorrect(B) ? colors.green : colors.amber },
-          { k: 'FIRST BEAT', v: gridCorrect(B) ? 'ON THE KICK' : 'OFF', tint: gridCorrect(B) ? colors.green : '#ff8a7e', flex: 1.2 },
+          { k: 'B GRID BPM', v: gB ? gB.bpm.toFixed(1) : '—', tint: gridCorrect(B) ? colors.green : colors.amber },
+          { k: 'GRID', v: gridWord(B), vA11y: gridWord(B) === 'BEAT 1 OFF' ? 'first beat off' : gridWord(B).toLowerCase(), tint: gridCorrect(B) ? colors.green : '#ff8a7e', flex: 1.4 },
           { k: 'REAL BEATS', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
           { k: 'B BPM', v: bpmB.toFixed(1), tint: colors.textPrimary },
         ],
@@ -182,6 +229,8 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
             valueLabel: gridCorrect(B) ? 'RIGHT' : 'CHECK',
             render: () => (
               <GridTray
+                onLoop={pressLoop}
+                loopMsg={loopMsg}
                 onScenario={(gm) => {
                   setSyncLit(false);
                   if (gm === 'HALF_BPM') story.current.halfStarted = true;
@@ -192,7 +241,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
           },
           { kind: 'action', id: 'sync', label: 'SYNC B', onPress: pressSync, tint: '#6fa8ff' },
           { kind: 'toggle', id: 'quant', label: 'QUANTIZE', value: B.quantize, onToggle: () => updateBooth((x, tt) => setGrid(x, tt, 'B', { quantize: !x.decks.B.quantize })) },
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: (['A', 'B'] as const).filter((d) => booth.decks[d].playing).join('+') || '—', render: () => <BoothTray booth={getBooth()} tr={tr} /> },
+          boothKey(booth, tr),
           stopKey(tr),
         ],
         initialParam: 'grid',
@@ -200,8 +249,8 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>Before a track is played, the software analyses it: its BPM, where its beats are, where bar 1 starts. That BEATGRID drives SYNC, QUANTIZE, loops and beat jumps. It is usually right — and when it is wrong, everything built on it is wrong in the same way.</P>
-        <P>Deck B’s grid here starts half a beat LATE. Its lines sit on the off-beat hats, not the kicks. Look at deck B’s waveform: the tall kick peaks fall BETWEEN the lines.</P>
+        <P>Before a track is played the software analyses it — its BPM, its beats, where bar 1 starts — and that BEATGRID drives SYNC, QUANTIZE (snapping your presses to the nearest beat), loops (a stretch of the track that repeats) and beat jumps.</P>
+        <P>Deck B’s grid here starts half a beat LATE: look at its waveform, and the violet kick marks fall BETWEEN the lines.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -213,17 +262,19 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={4}>
         <Do>Sync on the wrong grid and hear it, put the first beat right, then sync again until it locks.</Do>
-        <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />
         {msg ? <Text style={styles.warn}>{msg}</Text> : null}
+        <Do>Then QUANTIZE: with it on, press GRID → LOOP 4 BEATS a little late — the green loop bracket snaps back to a grid line. Exit, turn QUANTIZE off and try again — it starts where you pressed.</Do>
+        {loopMsg ? <Note tone="try">{loopMsg}</Note> : null}
+        <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
       </Step>
       <Step n={5}>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question="After pressing SYNC, both decks show the same BPM but the kicks flam half a beat apart. What is the most likely cause?"
-          options={['One deck’s grid has the wrong first beat', 'The tempo fader is broken', 'SYNC needs pressing three times', 'The tracks are in different keys']}
+          question="Every kick in a house track is equally loud. How do you find where the grid’s bold bar line — the “one” — belongs?"
+          options={['From the music’s structure: where a crash, a chord change or a new part lands, straight after a fill', 'On the loudest kick', 'On the very first sound in the file', 'Anywhere — bar lines are only decoration']}
           correct={0}
-          explain="SYNC matches tempo and lines up the GRIDS. If one grid starts half a beat late, sync puts that deck’s real beats half a beat off — a steady flam. Fix the grid, then sync again."
-          wrong={[undefined, 'The tempos match exactly — the fader did its job.', 'Pressing again lines up the same wrong grid again.', 'Key affects how the notes fit, not when the kicks land.']}
+          explain="In four-on-the-floor music the kicks are all the same, so loudness cannot find the one. The arrangement does: new parts, crashes and chord changes land on the one, and a drum fill leads into it. Put the bold line there, and loops, jumps and sync count bars correctly."
+          wrong={[undefined, 'Every kick is equally strong here — there is no loudest one to find.', 'Many files start with silence or a pickup; the first sound is not always beat 1.', 'Bar lines drive loops, phrases and sync — a wrong one puts all of them off.']}
           onCorrect={() => setCheck(true)}
         />
         <FaultCard
@@ -238,12 +289,12 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
               return y;
             });
           }}
-          fixed={story.current.halfStarted && B.gridMode === 'HALF_BPM' && gridCorrect(B)}
-          hints={['Count the kicks between the grid lines on deck B.', 'The analysis read 63 BPM for a 126 BPM track, so every “beat” it counts is two real beats.', 'GRID → BPM ×2.']}
-          why="The analysis had read half the real tempo, so the grid had a line on every other kick and a ‘4-beat’ loop was 8 real beats. Doubling the BPM put a line on every kick; loops, jumps and sync now count real beats."
+          fixed={story.current.halfStarted && B.gridMode === 'HALF_BPM' && gridCorrect(B) && story.current.realLoop}
+          hints={['Count the kicks between the grid lines on deck B.', `The analysis read ${B.track ? TRACKS[B.track].bpm / 2 : 61} BPM for a ${B.track ? TRACKS[B.track].bpm : 122} BPM track, so every “beat” it counts is two real beats.`, 'GRID → BPM ×2, then set a NEW loop (LOOP EXIT, then LOOP 4 BEATS): the old one was made on the wrong grid.']}
+          why="The analysis had read half the real tempo, so the grid had a line on every other kick and a ‘4-beat’ loop was 8 real beats. Doubling the BPM put a line on every kick, and the new loop is 4 real beats; loops, jumps and sync now count real beats."
           onFixed={() => setFaultFixed(true)}
         />
-        <GoalChips goals={goals.slice(3)} latched={latched.slice(3)} />
+        <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />
       </Step>
     </DjRack>
   );

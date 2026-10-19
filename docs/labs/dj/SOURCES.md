@@ -29,7 +29,7 @@ list). Checked 2026-10-18 by the Stage 1 build (Claude, Opus 5.5).
 | F15 | Gain staging: source gain separate from performance faders; check the meter at the selected stage; a lower output cannot repair earlier clipping | S01, S07 | 6 | as stated (modelled) |
 | F16 | Zero on an analog mixer meter is not necessarily digital clipping | S01, S07 | 6 | as stated |
 | F17 | Cue selection, cue/master blend, split cue, headphone level and booth level are separate controls | S01 | 7 | as stated |
-| F18 | Crossfader assignment, thru/bypass, response curves, cut-in, reverse | S01 | 8 | assignment, thru and curves built; REVERSE (hamster) mentioned only |
+| F18 | Crossfader assignment, thru/bypass, response curves, cut-in, reverse | S01 | 8 | assignment, thru and curves built; REVERSE (hamster) and the channel-fader curve switch named in Screen 8's words (not modelled) |
 | F19 | Isolator EQ deeper than tone-control EQ; filters HP/LP with resonance; bass handover is one option, not a rule | S01 (plan text) | 9 | slopes and ranges are THIS MODEL's (MODEL.md §4) |
 | F20 | Beatgrids are an editable interpretation; first-beat errors and half/double BPM analysis happen | S10 | 11 | as stated |
 | F21 | Transport cue versus headphone cue; hot cues, loops, beat jump, samples | plan DJ18 | 12 | generic player behaviour; real players differ |
