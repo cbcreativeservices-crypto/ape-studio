@@ -27,9 +27,19 @@ export type IntroKey =
   | 'mixingProNote' // Mixing family (Beginning/Advanced Mixing, Mastering, Mixing Guides) — first open
   | 'introVideo'; // onboarding video, first Academy menu visit (owner 2026-10-09) — never drawn as a sheet
 
+import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const INTRO_STORAGE_PREFIX = 'ape:intro:';
+
+/** In-memory intro stores under `ape:intro:*` that must forget what they
+ *  hold when the keys are cleared (the lab term popup's seen list). Each
+ *  registers itself when its module is first evaluated; a store never loaded
+ *  holds nothing to forget. */
+const introResetListeners = new Set<() => void>();
+export function onScreenIntrosReset(fn: () => void): void {
+  introResetListeners.add(fn);
+}
 
 /** Clear every "seen" screen-intro flag so all intros (incl. the app Welcome)
  *  show again — called by Settings → "Reset onboarding hints" (user request
@@ -38,6 +48,78 @@ export async function resetScreenIntros(): Promise<void> {
   const keys = await AsyncStorage.getAllKeys();
   const introKeys = keys.filter((k) => k.startsWith(INTRO_STORAGE_PREFIX));
   if (introKeys.length) await AsyncStorage.multiRemove(introKeys);
+  for (const fn of Array.from(introResetListeners)) {
+    try {
+      fn();
+    } catch {
+      // one store failing to forget must not stop the others
+    }
+  }
+}
+
+/**
+ * ⛔ THE LAB TERM POPUP SHOWS FIRST (owner 2026-10-19: "a popup to appear
+ * first … then a continue button and on into the lab").
+ *
+ * Two module-level signals, kept here because every intro already imports
+ * this file (no new module at app start — perf start trim, 2026-10-04):
+ *
+ *  • OWED — a focused lab's term popup is still to come on this visit
+ *    (LabTermIntro publishes it). The lab's own first-open popups hold while
+ *    it is: useScreenIntro (ProNote and any screen intro) and
+ *    GuestStartReminder. Two root Modals at once are refused on iOS (K10).
+ *  • HELD — something owns the lab's screen before the lab itself: the
+ *    amplitude orientation page, drawn IN PLACE of a visual lab until it is
+ *    completed. The term popup waits for it, so it introduces the lab and not
+ *    the orientation.
+ *
+ * Plain objects, not `let`: neither is user data (they only order popups),
+ * and both empty themselves when their screens unmount.
+ */
+const labTermSignal = { owed: new Set<number>(), holds: new Set<number>(), seq: 0 };
+const labTermListeners = new Set<() => void>();
+function emitLabTerm(): void {
+  for (const l of Array.from(labTermListeners)) l();
+}
+function subscribeLabTerm(l: () => void): () => void {
+  labTermListeners.add(l);
+  return () => {
+    labTermListeners.delete(l);
+  };
+}
+/** A new owner id for setLabTermIntroOwed / holdLabTermIntro. */
+export function labTermSignalId(): number {
+  labTermSignal.seq += 1;
+  return labTermSignal.seq;
+}
+export function setLabTermIntroOwed(id: number, owed: boolean): void {
+  const had = labTermSignal.owed.has(id);
+  if (owed === had) return;
+  if (owed) labTermSignal.owed.add(id);
+  else labTermSignal.owed.delete(id);
+  emitLabTerm();
+}
+export function isLabTermIntroOwed(): boolean {
+  return labTermSignal.owed.size > 0;
+}
+export function useLabTermIntroOwed(): boolean {
+  return useSyncExternalStore(subscribeLabTerm, isLabTermIntroOwed, isLabTermIntroOwed);
+}
+/** Hold the term popup back while the caller owns the screen; returns the
+ *  release (an effect cleanup). */
+export function holdLabTermIntro(): () => void {
+  const id = labTermSignalId();
+  labTermSignal.holds.add(id);
+  emitLabTerm();
+  return () => {
+    if (labTermSignal.holds.delete(id)) emitLabTerm();
+  };
+}
+export function isLabTermIntroHeld(): boolean {
+  return labTermSignal.holds.size > 0;
+}
+export function useLabTermIntroHeld(): boolean {
+  return useSyncExternalStore(subscribeLabTerm, isLabTermIntroHeld, isLabTermIntroHeld);
 }
 
 /** `placeholder` (default true) tags an entry whose copy is not final — the

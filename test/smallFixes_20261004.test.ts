@@ -87,7 +87,8 @@ const SHEET_STUBS: Record<string, string> = {
   '../../theme/tokens': mod(`export const colors = {}; export const fonts = {};`),
   '../../components/DimModal': mod(`export const Modal = 'M'; export const rootModalHoldMs = () => globalThis.__SF_HOLD_MS__;`),
   './screenIntros': mod(`export const INTRO_STORAGE_PREFIX = 'ape:intro:';
-    export const SCREEN_INTROS = { flashcards: { placeholder: false, title: 't', body: 'b' } };`),
+    export const SCREEN_INTROS = { flashcards: { placeholder: false, title: 't', body: 'b' } };
+    export const useLabTermIntroOwed = () => false; // no lab term popup owed (2026-10-19)`),
   '../../lib/supabase': mod(`export const supabase = {
     auth: { getSession: async () => ({ data: { session: null }, error: null }) },
     from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { flashcard_welcome_title: 'Welcome', flashcard_welcome_body: 'Body' }, error: null }) }) }) }),

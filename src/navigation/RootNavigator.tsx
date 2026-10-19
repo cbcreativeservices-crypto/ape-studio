@@ -125,7 +125,10 @@ const Lazy = {
   AudioLearning: lazyScreen(() => require('../screens/lab/AudioLearningScreen').AudioLearningScreen),
   EarLab: lazyScreen(() => require('../screens/lab/EarLabScreen').EarLabScreen),
   LabCategory: lazyScreen(() => require('../screens/lab/LabCategoryScreen').LabCategoryScreen),
-  CalcLab: lazyScreen(() => require('../screens/lab/calc/CalcLabScreen').CalcLabScreen),
+  // The four FREE catalog labs pass through withMembershipPreview too (a no-op
+  // gate for a route that is not members-only) so the lab's first-open
+  // glossary popup (owner 2026-10-19, LabTermIntro) reaches every lab.
+  CalcLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/calc/CalcLabScreen').CalcLabScreen)),
   CalcWorkspace: lazyScreen(() => require('../screens/lab/calc/CalcWorkspaceScreen').CalcWorkspaceScreen),
   CalcSymbolsKey: lazyScreen(() => require('../screens/lab/calc/CalcSymbolsKeyScreen').CalcSymbolsKeyScreen),
   CalcWorkflows: lazyScreen(() => require('../screens/lab/calc/CalcWorkflowsScreen').CalcWorkflowsScreen),
@@ -133,9 +136,9 @@ const Lazy = {
   CalcWorkflowRun: lazyScreen(() => require('../screens/lab/calc/CalcWorkflowRunScreen').CalcWorkflowRunScreen),
   CalcProjects: lazyScreen(() => require('../screens/lab/calc/CalcProjectsScreen').CalcProjectsScreen),
   CalcResults: lazyScreen(() => require('../screens/lab/calc/CalcResultsScreen').CalcResultsScreen),
-  WaveLab: lazyScreen(() => require('../screens/lab/wave/WaveLabHomeScreen').WaveLabHomeScreen),
-  AmplitudeLab: lazyScreen(() => require('../screens/lab/amplitude/AmplitudeOrientation').AmplitudeLabScreen),
-  FoundationsCourse: lazyScreen(() => require('../screens/lab/foundations/FoundationsCourseScreen').FoundationsCourseScreen),
+  WaveLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/wave/WaveLabHomeScreen').WaveLabHomeScreen)),
+  AmplitudeLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/amplitude/AmplitudeOrientation').AmplitudeLabScreen)),
+  FoundationsCourse: lazyScreen(() => withMembershipPreview(require('../screens/lab/foundations/FoundationsCourseScreen').FoundationsCourseScreen)),
   CareerFinder: lazyScreen(() => require('../screens/careerfinder/CareerFinderScreen').CareerFinderScreen),
   CareerFinderQuiz: lazyScreen(() => require('../screens/careerfinder/CareerFinderQuizScreen').CareerFinderQuizScreen),
   CareerFinderResults: lazyScreen(() => require('../screens/careerfinder/CareerFinderResultsScreen').CareerFinderResultsScreen),

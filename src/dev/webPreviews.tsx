@@ -14,6 +14,8 @@
 import type { ComponentType, ReactElement } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useRoute } from '@react-navigation/native';
+import { LabTermIntroHost } from '../features/intro/LabTermIntro';
 import { Spl3dGaugePreview } from '../screens/tools/Spl3dGaugePreview';
 import { PatchbayPreview } from '../screens/lab/patchbay/PatchbayPreview';
 import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
@@ -212,6 +214,31 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MixingGuides: MixingGuidesHubScreen as ComponentType,
   MixingGuide: MixingGuideScreen as ComponentType,
 };
+/**
+ * The lab's first-open glossary popup (owner 2026-10-19), mounted beside each
+ * harness screen the way withMembershipPreview mounts it in the navigator —
+ * WITHOUT the member gate, so the harness keeps opening every lab. The popup
+ * applies its own rules (members only: pin the dev tier to academy). Harness
+ * names that differ from the real routes (MicPrinciples, VacuumTube…) are not
+ * catalog labs and show none.
+ */
+const termWrapped = new Map<ComponentType, ComponentType>();
+function withLabTermPopup(Screen: ComponentType): ComponentType {
+  const hit = termWrapped.get(Screen);
+  if (hit) return hit;
+  function WithLabTerm(props: object) {
+    const route = useRoute();
+    return (
+      <>
+        <Screen {...props} />
+        <LabTermIntroHost routeName={route.name} params={route.params} />
+      </>
+    );
+  }
+  termWrapped.set(Screen, WithLabTerm);
+  return WithLabTerm;
+}
+
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)
  *  works. `<id>` becomes `{ id }` for module screens. */
@@ -222,11 +249,11 @@ function labPreviewFromHash(hash: string): { name: string; component: ComponentT
   if (!component) return null;
   return {
     name,
-    component,
+    component: withLabTermPopup(component),
     initialParams: id ? { id } : undefined,
     screens: Object.entries(LAB_PREVIEW_SCREENS)
       .filter(([n]) => n !== name)
-      .map(([n, c]) => ({ name: n, component: c })),
+      .map(([n, c]) => ({ name: n, component: withLabTermPopup(c) })),
   };
 }
 

@@ -41,6 +41,7 @@ import { trainingKeyForCheck } from '../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../features/lab/labCompletion';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
+import { isLabTermIntroOwed, useLabTermIntroOwed } from '../../features/intro/screenIntros';
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
 // avoids an import cycle). Re-exported here so the 30+ existing call sites
@@ -559,7 +560,16 @@ export function LabShell({
   // (react-native-screens runs them natively), so it fired mid-push anyway.
   // transitionEnd is the real signal; the timer covers a screen with no push
   // animation (the web harness, a restored state).
+  //
+  // ⛔ AND AFTER THE LAB'S FIRST-OPEN TERM POPUP (owner 2026-10-19: the
+  // glossary definition comes "first … then a continue button and on into
+  // the lab"). While it is owed the ask waits; once CONTINUE clears it the
+  // effect runs again and asks (the fallback timer also waits out the popup's
+  // fade). Asked at most once per visit.
+  const labTermFirst = useLabTermIntroOwed();
+  const entryAskedRef = useRef(false);
   useEffect(() => {
+    if (labTermFirst || entryAskedRef.current) return undefined;
     let done = false;
     const ask = () => {
       if (done) return;
@@ -568,6 +578,8 @@ export function LabShell({
       // auto-appears — bug hunt 2026-09-29. The gate still asks when the
       // learner taps ▶, which is a deliberate act.
       if (areOverlaysSuppressed()) return;
+      if (isLabTermIntroOwed()) return; // the effect re-runs when it clears
+      entryAskedRef.current = true;
       void requestAudioOutput();
     };
     const unsub = (navigation as any).addListener('transitionEnd', (e: { data?: { closing?: boolean } }) => {
@@ -580,7 +592,7 @@ export function LabShell({
       unsub?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [labTermFirst]);
 
   return (
     <View

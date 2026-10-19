@@ -84,7 +84,8 @@ const STUBS: Record<string, string> = {
   '../../theme/tokens': mod(`export const colors = {}; export const fonts = {};`),
   '../../components/DimModal': mod(`export const Modal = 'M';`),
   './screenIntros': mod(`export const INTRO_STORAGE_PREFIX = 'ape:intro:';
-    export const SCREEN_INTROS = { commitment: { placeholder: false, title: 't', body: 'b' } };`),
+    export const SCREEN_INTROS = { commitment: { placeholder: false, title: 't', body: 'b' } };
+    export const useLabTermIntroOwed = () => false; // no lab term popup owed (2026-10-19)`),
 };
 
 const SRC_URL = new URL('../src/features/intro/ScreenIntroOverlay.tsx', import.meta.url).href;

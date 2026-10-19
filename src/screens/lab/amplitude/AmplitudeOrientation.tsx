@@ -27,7 +27,7 @@
  * (features/tools/levelColor): levelColor() for meters/curves, heatColor() for
  * the 2-D spectrogram field, WAVE_LEVEL_STOPS for the ±full-scale trace.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,6 +53,7 @@ import {
 } from '../../../features/lab/amplitudeOrientation';
 import { useOverlaysSuppressed } from '../../../features/dev/popupSuppressStore';
 import { useSamplingActive } from '../../../features/intro/onboardingSampling';
+import { holdLabTermIntro } from '../../../features/intro/screenIntros';
 import { GlassButton } from '../../../components/GlassButton';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
@@ -1079,6 +1080,10 @@ export function AmplitudeLabScreen() {
 export function AmplitudeOrientationGatePage() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  // Drawn IN PLACE of the lab the learner chose: that lab's first-open term
+  // popup (owner 2026-10-19) waits until this page is done, so it introduces
+  // the lab, not the orientation.
+  useEffect(() => holdLabTermIntro(), []);
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.gateHeader}>

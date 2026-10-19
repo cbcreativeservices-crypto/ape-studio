@@ -25,6 +25,7 @@ import { confirmDialog } from '../../lib/confirm';
 import { useGuestWording, useTier } from '../commercial/useTier';
 import { areOverlaysSuppressed, useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { sessionCarryOpen } from './sessionCarry';
+import { useLabTermIntroOwed } from '../intro/screenIntros';
 import {
   GUEST_REMINDER_CONTINUE,
   GUEST_REMINDER_SIGN_IN,
@@ -39,7 +40,7 @@ import {
 export function GuestStartReminder({
   activity,
   kind = 'credit',
-  hold = false,
+  hold: holdProp = false,
   style,
 }: {
   /** One id per activity (a lab key / route): the reminder shows once for it. */
@@ -57,6 +58,11 @@ export function GuestStartReminder({
   const wording = useGuestWording();
   const suppressed = useOverlaysSuppressed();
   const asGuest = remindAsGuest(tier, wording.guest);
+  // The lab's first-open TERM popup goes first (owner 2026-10-19). It is
+  // members-only, so a guest never meets both — held anyway, so the order
+  // holds whatever the tier does mid-visit.
+  const labTermFirst = useLabTermIntroOwed();
+  const hold = holdProp || labTermFirst;
 
   // One open of the sign-in screen per tap burst: once it is pushed this
   // screen is no longer focused, so a second tap does nothing (K11).

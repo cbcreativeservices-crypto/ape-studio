@@ -18,7 +18,7 @@ import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { useSamplingActive } from './onboardingSampling';
 import { colors, fonts } from '../../theme/tokens';
 import { Modal } from '../../components/DimModal';
-import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from './screenIntros';
+import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, useLabTermIntroOwed, type IntroKey } from './screenIntros';
 
 // Session-only "seen" flags — in-memory, cleared on app process restart — for
 // intros that must reshow once each new app session instead of retiring forever
@@ -47,6 +47,9 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
   // the Study stack's initial route, so it mounts under the Glossary; without
   // this gate its "Method Cards" intro flashed before the Glossary appeared).
   const focused = useIsFocused();
+  // A focused lab's first-open TERM popup comes first (owner 2026-10-19):
+  // this intro waits — still owed, never marked seen — until it is gone.
+  const labTermFirst = useLabTermIntroOwed();
 
   useEffect(() => {
     let alive = true;
@@ -133,7 +136,7 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
    * beside this one is refused on iOS and never marked seen.
    */
   const owed = !decided || (visible && !dismissedRef.current);
-  return { visible: visible && focused && !suppressed && !hold, dismiss, owed };
+  return { visible: visible && focused && !suppressed && !hold && !labTermFirst, dismiss, owed };
 }
 
 export function IntroSheet({

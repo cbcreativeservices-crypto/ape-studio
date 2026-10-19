@@ -131,10 +131,37 @@ const styles = StyleSheet.create({
   holdBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.8 },
 });
 
+/**
+ * The lab's first-open glossary popup (owner 2026-10-19; features/intro/
+ * LabTermIntro.tsx). Every lab route passes through this wrapper, so the
+ * popup is mounted here, ONCE, beside the screen. `require`d on first use, not
+ * imported: this file is in the app-start graph and the popup (its data and
+ * its store) must not be (perf start trim, 2026-10-04). It decides for itself
+ * — members only, never over the preview scrim, once per lab.
+ */
+type LabTermIntroModule = typeof import('../intro/LabTermIntro');
+function LabTermIntroSlot({ routeName, params }: { routeName: string; params?: unknown }) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { LabTermIntroHost } = require('../intro/LabTermIntro') as LabTermIntroModule;
+  return <LabTermIntroHost routeName={routeName} params={params} />;
+}
+
 export function withMembershipPreview<P extends object>(
   Screen: React.ComponentType<P>,
 ): React.ComponentType<P> {
   function Guarded(props: P) {
+    const route = useRoute();
+    // Mounted in every branch (so it sees the push end), shown in none of the
+    // gated ones: the popup itself requires academy standing and no preview.
+    const termIntro = <LabTermIntroSlot routeName={route.name} params={route.params} />;
+    return (
+      <>
+        <GuardedBody {...props} />
+        {termIntro}
+      </>
+    );
+  }
+  function GuardedBody(props: P) {
     const route = useRoute();
     const navigation = useNavigation();
     // Real academy standing, as four honest states (tier sweep 2026-10-03):
@@ -231,6 +258,7 @@ export function withMembershipPreview<P extends object>(
 
     return <Screen {...props} />;
   }
+  GuardedBody.displayName = `MembershipPreviewBody(${Screen.displayName ?? Screen.name ?? 'Screen'})`;
   Guarded.displayName = `WithMembershipPreview(${Screen.displayName ?? Screen.name ?? 'Screen'})`;
   return Guarded;
 }
